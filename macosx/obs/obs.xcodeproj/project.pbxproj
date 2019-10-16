@@ -7,6 +7,65 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B54D2E442357DC3E008FFEF4 /* libobs.0.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C342357BF8100BD37CF /* libobs.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E452357DC3E008FFEF4 /* libobs.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C4B2357BF8100BD37CF /* libobs.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E462357DC67008FFEF4 /* libtheoraenc.1.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C302357BF8100BD37CF /* libtheoraenc.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E472357DC67008FFEF4 /* libp11-kit.0.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C312357BF8100BD37CF /* libp11-kit.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E482357DC67008FFEF4 /* libpcre.1.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C322357BF8100BD37CF /* libpcre.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E492357DC67008FFEF4 /* libpostproc.55.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C332357BF8100BD37CF /* libpostproc.55.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E4A2357DC67008FFEF4 /* libvorbisenc.2.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C352357BF8100BD37CF /* libvorbisenc.2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E4B2357DC67008FFEF4 /* libgraphite2.3.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C362357BF8100BD37CF /* libgraphite2.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E4C2357DC67008FFEF4 /* libgnutls.30.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C372357BF8100BD37CF /* libgnutls.30.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E4D2357DC67008FFEF4 /* libswscale.5.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C382357BF8100BD37CF /* libswscale.5.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E4E2357DC67008FFEF4 /* libswresample.3.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C392357BF8100BD37CF /* libswresample.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E4F2357DC67008FFEF4 /* libtasn1.6.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C3A2357BF8100BD37CF /* libtasn1.6.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E502357DC67008FFEF4 /* liblept.5.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C3B2357BF8100BD37CF /* liblept.5.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E512357DC67008FFEF4 /* libavfilter.7.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C3C2357BF8100BD37CF /* libavfilter.7.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E522357DC67008FFEF4 /* libglib-2.0.0.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C3D2357BF8100BD37CF /* libglib-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E532357DC67008FFEF4 /* libopenjp2.7.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C3E2357BF8100BD37CF /* libopenjp2.7.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E542357DC67008FFEF4 /* libavformat.58.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C3F2357BF8100BD37CF /* libavformat.58.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E552357DC67008FFEF4 /* libtheoradec.1.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C402357BF8100BD37CF /* libtheoradec.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E562357DC67008FFEF4 /* libpng16.16.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C412357BF8100BD37CF /* libpng16.16.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E572357DC67008FFEF4 /* libobsglad.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C422357BF8100BD37CF /* libobsglad.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E582357DC67008FFEF4 /* libmp3lame.0.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C432357BF8100BD37CF /* libmp3lame.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E592357DC67008FFEF4 /* libfreetype.6.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C442357BF8100BD37CF /* libfreetype.6.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E5A2357DC67008FFEF4 /* libnettle.6.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C452357BF8100BD37CF /* libnettle.6.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E5B2357DC67008FFEF4 /* libcrypto.1.0.0.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C462357BF8100BD37CF /* libcrypto.1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E5C2357DC67008FFEF4 /* libavutil.56.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C472357BF8100BD37CF /* libavutil.56.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E5D2357DC67008FFEF4 /* libharfbuzz.0.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C482357BF8100BD37CF /* libharfbuzz.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E5E2357DC67008FFEF4 /* libopencore-amrnb.0.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C492357BF8100BD37CF /* libopencore-amrnb.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E5F2357DC67008FFEF4 /* libgif.7.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C4A2357BF8100BD37CF /* libgif.7.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E602357DC67008FFEF4 /* libavresample.4.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C4C2357BF8100BD37CF /* libavresample.4.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E612357DC67008FFEF4 /* libsoxr.0.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C4D2357BF8100BD37CF /* libsoxr.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E622357DC67008FFEF4 /* libhogweed.4.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C4E2357BF8100BD37CF /* libhogweed.4.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E632357DC67008FFEF4 /* librubberband.2.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C4F2357BF8100BD37CF /* librubberband.2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E642357DC67008FFEF4 /* libjpeg.9.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C502357BF8100BD37CF /* libjpeg.9.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E652357DC67008FFEF4 /* libintl.8.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C512357BF8100BD37CF /* libintl.8.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E662357DC67008FFEF4 /* libwebp.7.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C522357BF8100BD37CF /* libwebp.7.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E672357DC67008FFEF4 /* libobs-opengl.so in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C532357BF8100BD37CF /* libobs-opengl.so */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E682357DC67008FFEF4 /* libfribidi.0.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C542357BF8100BD37CF /* libfribidi.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E692357DC67008FFEF4 /* libavdevice.58.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C552357BF8100BD37CF /* libavdevice.58.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E6A2357DC67008FFEF4 /* libfontconfig.1.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C562357BF8100BD37CF /* libfontconfig.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E6B2357DC67008FFEF4 /* libssl.1.0.0.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C572357BF8100BD37CF /* libssl.1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E6C2357DC67008FFEF4 /* libass.9.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C582357BF8100BD37CF /* libass.9.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E6D2357DC67008FFEF4 /* libvorbis.0.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C592357BF8100BD37CF /* libvorbis.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E6E2357DC67008FFEF4 /* libobsglad.0.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C5A2357BF8100BD37CF /* libobsglad.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E6F2357DC67008FFEF4 /* libunistring.2.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C5B2357BF8100BD37CF /* libunistring.2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E702357DC67008FFEF4 /* libtiff.5.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C5C2357BF8100BD37CF /* libtiff.5.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E712357DC67008FFEF4 /* liblzma.5.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C5D2357BF8100BD37CF /* liblzma.5.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E722357DC67008FFEF4 /* libx264.155.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C5E2357BF8100BD37CF /* libx264.155.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E732357DC67008FFEF4 /* libspeex.1.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C5F2357BF8100BD37CF /* libspeex.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E742357DC67008FFEF4 /* libsnappy.1.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C602357BF8100BD37CF /* libsnappy.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E752357DC67008FFEF4 /* libopencore-amrwb.0.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C612357BF8100BD37CF /* libopencore-amrwb.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E762357DC67008FFEF4 /* libx265.169.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C622357BF8100BD37CF /* libx265.169.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E772357DC67008FFEF4 /* librtmp.1.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C632357BF8100BD37CF /* librtmp.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E782357DC67008FFEF4 /* libbluray.2.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C642357BF8100BD37CF /* libbluray.2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E792357DC67008FFEF4 /* libgmp.10.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C652357BF8100BD37CF /* libgmp.10.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E7A2357DC67008FFEF4 /* libffi.6.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C662357BF8100BD37CF /* libffi.6.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E7B2357DC67008FFEF4 /* libavcodec.58.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C672357BF8100BD37CF /* libavcodec.58.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E7C2357DC67008FFEF4 /* libogg.0.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C682357BF8100BD37CF /* libogg.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E7D2357DC67008FFEF4 /* libtesseract.4.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C692357BF8100BD37CF /* libtesseract.4.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B54D2E7E2357DC67008FFEF4 /* libopus.0.dylib in Copy obs dylibs to Executables */ = {isa = PBXBuildFile; fileRef = B5CC6C6A2357BF8100BD37CF /* libopus.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		B5BEDF3D2357C162003EB260 /* obs-defs.h in Headers */ = {isa = PBXBuildFile; fileRef = B5BEDEE12357C162003EB260 /* obs-defs.h */; };
 		B5BEDF3E2357C162003EB260 /* obs-interaction.h in Headers */ = {isa = PBXBuildFile; fileRef = B5BEDEE22357C162003EB260 /* obs-interaction.h */; };
 		B5BEDF3F2357C162003EB260 /* format-conversion.h in Headers */ = {isa = PBXBuildFile; fileRef = B5BEDEE42357C162003EB260 /* format-conversion.h */; };
@@ -90,7 +149,6 @@
 		B5BEDF8D2357C163003EB260 /* libnsgif.h in Headers */ = {isa = PBXBuildFile; fileRef = B5BEDF3A2357C162003EB260 /* libnsgif.h */; };
 		B5BEDF8E2357C163003EB260 /* obs-output.h in Headers */ = {isa = PBXBuildFile; fileRef = B5BEDF3B2357C162003EB260 /* obs-output.h */; };
 		B5BEDF8F2357C163003EB260 /* obs-properties.h in Headers */ = {isa = PBXBuildFile; fileRef = B5BEDF3C2357C162003EB260 /* obs-properties.h */; };
-		B5BEDFAD2357C41B003EB260 /* obs.h in Headers */ = {isa = PBXBuildFile; fileRef = B5BEDFAC2357C41B003EB260 /* obs.h */; };
 		B5CC6C6B2357BF8100BD37CF /* libtheoraenc.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B5CC6C302357BF8100BD37CF /* libtheoraenc.1.dylib */; };
 		B5CC6C6C2357BF8100BD37CF /* libp11-kit.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B5CC6C312357BF8100BD37CF /* libp11-kit.0.dylib */; };
 		B5CC6C6D2357BF8100BD37CF /* libpcre.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B5CC6C322357BF8100BD37CF /* libpcre.1.dylib */; };
@@ -151,6 +209,78 @@
 		B5CC6CA42357BF8100BD37CF /* libtesseract.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B5CC6C692357BF8100BD37CF /* libtesseract.4.dylib */; };
 		B5CC6CA52357BF8100BD37CF /* libopus.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B5CC6C6A2357BF8100BD37CF /* libopus.0.dylib */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		B54D2E432357DC24008FFEF4 /* Copy obs dylibs to Executables */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				B54D2E462357DC67008FFEF4 /* libtheoraenc.1.dylib in Copy obs dylibs to Executables */,
+				B54D2E472357DC67008FFEF4 /* libp11-kit.0.dylib in Copy obs dylibs to Executables */,
+				B54D2E482357DC67008FFEF4 /* libpcre.1.dylib in Copy obs dylibs to Executables */,
+				B54D2E492357DC67008FFEF4 /* libpostproc.55.dylib in Copy obs dylibs to Executables */,
+				B54D2E4A2357DC67008FFEF4 /* libvorbisenc.2.dylib in Copy obs dylibs to Executables */,
+				B54D2E4B2357DC67008FFEF4 /* libgraphite2.3.dylib in Copy obs dylibs to Executables */,
+				B54D2E4C2357DC67008FFEF4 /* libgnutls.30.dylib in Copy obs dylibs to Executables */,
+				B54D2E4D2357DC67008FFEF4 /* libswscale.5.dylib in Copy obs dylibs to Executables */,
+				B54D2E4E2357DC67008FFEF4 /* libswresample.3.dylib in Copy obs dylibs to Executables */,
+				B54D2E4F2357DC67008FFEF4 /* libtasn1.6.dylib in Copy obs dylibs to Executables */,
+				B54D2E502357DC67008FFEF4 /* liblept.5.dylib in Copy obs dylibs to Executables */,
+				B54D2E512357DC67008FFEF4 /* libavfilter.7.dylib in Copy obs dylibs to Executables */,
+				B54D2E522357DC67008FFEF4 /* libglib-2.0.0.dylib in Copy obs dylibs to Executables */,
+				B54D2E532357DC67008FFEF4 /* libopenjp2.7.dylib in Copy obs dylibs to Executables */,
+				B54D2E542357DC67008FFEF4 /* libavformat.58.dylib in Copy obs dylibs to Executables */,
+				B54D2E552357DC67008FFEF4 /* libtheoradec.1.dylib in Copy obs dylibs to Executables */,
+				B54D2E562357DC67008FFEF4 /* libpng16.16.dylib in Copy obs dylibs to Executables */,
+				B54D2E572357DC67008FFEF4 /* libobsglad.dylib in Copy obs dylibs to Executables */,
+				B54D2E582357DC67008FFEF4 /* libmp3lame.0.dylib in Copy obs dylibs to Executables */,
+				B54D2E592357DC67008FFEF4 /* libfreetype.6.dylib in Copy obs dylibs to Executables */,
+				B54D2E5A2357DC67008FFEF4 /* libnettle.6.dylib in Copy obs dylibs to Executables */,
+				B54D2E5B2357DC67008FFEF4 /* libcrypto.1.0.0.dylib in Copy obs dylibs to Executables */,
+				B54D2E5C2357DC67008FFEF4 /* libavutil.56.dylib in Copy obs dylibs to Executables */,
+				B54D2E5D2357DC67008FFEF4 /* libharfbuzz.0.dylib in Copy obs dylibs to Executables */,
+				B54D2E5E2357DC67008FFEF4 /* libopencore-amrnb.0.dylib in Copy obs dylibs to Executables */,
+				B54D2E5F2357DC67008FFEF4 /* libgif.7.dylib in Copy obs dylibs to Executables */,
+				B54D2E602357DC67008FFEF4 /* libavresample.4.dylib in Copy obs dylibs to Executables */,
+				B54D2E612357DC67008FFEF4 /* libsoxr.0.dylib in Copy obs dylibs to Executables */,
+				B54D2E622357DC67008FFEF4 /* libhogweed.4.dylib in Copy obs dylibs to Executables */,
+				B54D2E632357DC67008FFEF4 /* librubberband.2.dylib in Copy obs dylibs to Executables */,
+				B54D2E642357DC67008FFEF4 /* libjpeg.9.dylib in Copy obs dylibs to Executables */,
+				B54D2E652357DC67008FFEF4 /* libintl.8.dylib in Copy obs dylibs to Executables */,
+				B54D2E662357DC67008FFEF4 /* libwebp.7.dylib in Copy obs dylibs to Executables */,
+				B54D2E672357DC67008FFEF4 /* libobs-opengl.so in Copy obs dylibs to Executables */,
+				B54D2E682357DC67008FFEF4 /* libfribidi.0.dylib in Copy obs dylibs to Executables */,
+				B54D2E692357DC67008FFEF4 /* libavdevice.58.dylib in Copy obs dylibs to Executables */,
+				B54D2E6A2357DC67008FFEF4 /* libfontconfig.1.dylib in Copy obs dylibs to Executables */,
+				B54D2E6B2357DC67008FFEF4 /* libssl.1.0.0.dylib in Copy obs dylibs to Executables */,
+				B54D2E6C2357DC67008FFEF4 /* libass.9.dylib in Copy obs dylibs to Executables */,
+				B54D2E6D2357DC67008FFEF4 /* libvorbis.0.dylib in Copy obs dylibs to Executables */,
+				B54D2E6E2357DC67008FFEF4 /* libobsglad.0.dylib in Copy obs dylibs to Executables */,
+				B54D2E6F2357DC67008FFEF4 /* libunistring.2.dylib in Copy obs dylibs to Executables */,
+				B54D2E702357DC67008FFEF4 /* libtiff.5.dylib in Copy obs dylibs to Executables */,
+				B54D2E712357DC67008FFEF4 /* liblzma.5.dylib in Copy obs dylibs to Executables */,
+				B54D2E722357DC67008FFEF4 /* libx264.155.dylib in Copy obs dylibs to Executables */,
+				B54D2E732357DC67008FFEF4 /* libspeex.1.dylib in Copy obs dylibs to Executables */,
+				B54D2E742357DC67008FFEF4 /* libsnappy.1.dylib in Copy obs dylibs to Executables */,
+				B54D2E752357DC67008FFEF4 /* libopencore-amrwb.0.dylib in Copy obs dylibs to Executables */,
+				B54D2E762357DC67008FFEF4 /* libx265.169.dylib in Copy obs dylibs to Executables */,
+				B54D2E772357DC67008FFEF4 /* librtmp.1.dylib in Copy obs dylibs to Executables */,
+				B54D2E782357DC67008FFEF4 /* libbluray.2.dylib in Copy obs dylibs to Executables */,
+				B54D2E792357DC67008FFEF4 /* libgmp.10.dylib in Copy obs dylibs to Executables */,
+				B54D2E7A2357DC67008FFEF4 /* libffi.6.dylib in Copy obs dylibs to Executables */,
+				B54D2E7B2357DC67008FFEF4 /* libavcodec.58.dylib in Copy obs dylibs to Executables */,
+				B54D2E7C2357DC67008FFEF4 /* libogg.0.dylib in Copy obs dylibs to Executables */,
+				B54D2E7D2357DC67008FFEF4 /* libtesseract.4.dylib in Copy obs dylibs to Executables */,
+				B54D2E7E2357DC67008FFEF4 /* libopus.0.dylib in Copy obs dylibs to Executables */,
+				B54D2E442357DC3E008FFEF4 /* libobs.0.dylib in Copy obs dylibs to Executables */,
+				B54D2E452357DC3E008FFEF4 /* libobs.dylib in Copy obs dylibs to Executables */,
+			);
+			name = "Copy obs dylibs to Executables";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		B5BEDEE12357C162003EB260 /* obs-defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "obs-defs.h"; sourceTree = "<group>"; };
@@ -694,7 +824,6 @@
 				B5BEDF722357C162003EB260 /* obs-source.h in Headers */,
 				B5BEDF4B2357C162003EB260 /* obs-hotkeys.h in Headers */,
 				B5BEDF592357C162003EB260 /* pipe.h in Headers */,
-				B5BEDFAD2357C41B003EB260 /* obs.h in Headers */,
 				B5BEDF422357C162003EB260 /* video-frame.h in Headers */,
 				B5BEDF542357C162003EB260 /* vc_stdint.h in Headers */,
 				B5BEDF4F2357C162003EB260 /* threading.h in Headers */,
@@ -729,6 +858,7 @@
 				B5CC653F2357BE5800BD37CF /* Sources */,
 				B5CC65402357BE5800BD37CF /* Frameworks */,
 				B5CC65412357BE5800BD37CF /* Resources */,
+				B54D2E432357DC24008FFEF4 /* Copy obs dylibs to Executables */,
 			);
 			buildRules = (
 			);
@@ -931,10 +1061,10 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/bin",
-					"$(PROJECT_DIR)/include",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = builders.game.obs;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				REEXPORTED_LIBRARY_NAMES = obs;
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
@@ -961,10 +1091,10 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/bin",
-					"$(PROJECT_DIR)/include",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = builders.game.obs;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				REEXPORTED_LIBRARY_NAMES = obs;
 				SKIP_INSTALL = YES;
 			};
 			name = Release;
