@@ -920,6 +920,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/include";
 				INFOPLIST_FILE = obs/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -929,8 +930,8 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/src/obs/bin",
 					"$(PROJECT_DIR)/bin",
+					"$(PROJECT_DIR)/include",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = builders.game.obs;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -949,6 +950,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/include";
 				INFOPLIST_FILE = obs/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -958,8 +960,8 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/src/obs/bin",
 					"$(PROJECT_DIR)/bin",
+					"$(PROJECT_DIR)/include",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = builders.game.obs;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
