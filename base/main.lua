@@ -157,6 +157,54 @@ if isMobile then
 end
 
 
+-- Recording
+
+local recording, startRecording, stopRecording, updateRecording
+do
+    recording = false
+
+    local frameRate = 30
+    local lastCaptureTime
+    local frames = {}
+
+    function startRecording()
+        recording = true
+        lastCaptureTime = nil
+
+        print('Recording')
+    end
+
+    love.filesystem.createDirectory('recording')
+
+    function stopRecording()
+        recording = false
+
+        for i = 1, #frames do
+            frames[i]:encode('tga', 'recording/frame_' .. i .. '.tga')
+            print("Recorded to '" .. love.filesystem.getSaveDirectory() .. "/recording'")
+        end
+    end
+
+    function updateRecording()
+        if not recording then
+            return
+        end
+
+        local time = love.timer.getTime()
+        if not lastCaptureTime or time - lastCaptureTime >= 1 / frameRate then
+            love.graphics.captureScreenshot(function(frame)
+                lastCaptureTime = time
+                table.insert(frames, frame)
+                while #frames > 120 do
+                    table.remove(frames, 1)
+                end
+                print('Captured frame...')
+            end)
+        end
+    end
+end
+
+
 -- Top-level Love callbacks
 
 local initialFileDropped -- In case a `love.filedropped` occurred before home experience is loaded
@@ -264,6 +312,8 @@ function main.update(dt)
             home:update(dt)
         end
     end
+
+    updateRecording()
 end
 
 function main.draw(...)
@@ -301,6 +351,15 @@ function main.keypressed(key, ...)
     -- Chat focus
     if ctrl and key == 'g' then
         C.ghostFocusChat()
+    end
+
+    -- Recording
+    if ctrl and key == 'e' then
+        if recording then
+            stopRecording()
+        else
+            startRecording()
+        end
     end
 
     if home then
