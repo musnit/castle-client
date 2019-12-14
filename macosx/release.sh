@@ -60,6 +60,10 @@ echo -e "\n\b\bCreated '$ZIP_PATH'"
 if [[ "$*" == *--no-upload* ]]
 then
     echo "--no-upload flag provided, succeeded without uploading"
+    ARTIFACTS_PATH=/tmp/castle-notarize-artifacts
+    mkdir -p $ARTIFACTS_PATH
+    echo "copying archive to artifacts..."
+    mv $ZIP_PATH $ARTIFACTS_PATH/.
     exit 0
 fi
 
