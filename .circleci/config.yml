@@ -4,6 +4,7 @@ jobs:
     branches:
       only:
         - release/macos
+        - ben/new-love-mpg123
 
     macos:
       xcode: "11.2.1"
@@ -13,7 +14,7 @@ jobs:
 
       - run:
           name: Build and Upload
-          command: cd macosx && ./release.sh
+          command: cd macosx && ./release.sh --no-upload
 
       - store_artifacts:
           path: /tmp/castle-notarize-artifacts
