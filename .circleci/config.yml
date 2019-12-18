@@ -7,7 +7,7 @@ jobs:
         - ben/fix-libmodplug
 
     macos:
-      xcode: "10.1.0"
+      xcode: "11.2.1"
 
     steps:
       - checkout
