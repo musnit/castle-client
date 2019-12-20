@@ -37,6 +37,7 @@ popd
 
 echo "Begin codesigning..."
 ./tools/codesign-archive.sh archive.xcarchive $TEMP_CERT_PATH/macos/CastleDeveloperID.p12
+exit 0
 
 APP_PATH=archive.xcarchive/Products/Applications/Castle.app
 ZIP_PATH=Castle-$MACOS_VERSION.zip
@@ -46,6 +47,9 @@ echo "Cleaning up source plists..."
 /usr/libexec/PlistBuddy -c "Set GHGitHash GIT_HASH_UNSET" Supporting/ghost-macosx.plist
 /usr/libexec/PlistBuddy -c "Set CFBundleVersion VERSION_UNSET" Supporting/ghost-macosx.plist
 /usr/libexec/PlistBuddy -c "Set CFBundleShortVersionString VERSION_UNSET" Supporting/ghost-macosx.plist
+
+##### BROKEN HERE
+exit 0
 
 # notarize the archive
 echo "Begin notarization..."
