@@ -65,15 +65,15 @@ find $APP_PATH/Contents/Resources -perm +111 -type f -exec codesign --verbose --
 # find $APP_PATH/Contents/Resources/obs/bin -name "*.dylib" -exec codesign --verbose --deep --force --keychain $TEMP_KEYCHAIN_PATH -s "${CODESIGN_IDENTITY}" {} \;
 
 echo "Codesigning Castle Helper.app..."
-codesign --verbose --deep --options runtime --entitlements "entitlements-helper.plist" --keychain $TEMP_KEYCHAIN_PATH -s "${CODESIGN_IDENTITY}" "${APP_PATH}/Contents/Frameworks/Castle Helper.app"
+codesign --verbose --deep --options runtime --entitlements "/Users/jesseruder/ghost/ghost/macosx/tools/entitlements-helper.plist" --keychain $TEMP_KEYCHAIN_PATH -s "${CODESIGN_IDENTITY}" "${APP_PATH}/Contents/Frameworks/Castle Helper.app"
 
 echo "Codesigning Castle.app..."
-codesign --verbose --deep --options runtime --entitlements "entitlements-browser.plist" --keychain $TEMP_KEYCHAIN_PATH -s "${CODESIGN_IDENTITY}" "${APP_PATH}/Contents/Frameworks/Chromium Embedded Framework.framework/Libraries/libEGL.dylib"
-codesign --verbose --deep --options runtime --entitlements "entitlements-browser.plist" --keychain $TEMP_KEYCHAIN_PATH -s "${CODESIGN_IDENTITY}" "${APP_PATH}/Contents/Frameworks/Chromium Embedded Framework.framework/Libraries/libswiftshader_libEGL.dylib"
-codesign --verbose --deep --options runtime --entitlements "entitlements-browser.plist" --keychain $TEMP_KEYCHAIN_PATH -s "${CODESIGN_IDENTITY}" "${APP_PATH}/Contents/Frameworks/Chromium Embedded Framework.framework/Libraries/libGLESv2.dylib"
-codesign --verbose --deep --options runtime --entitlements "entitlements-browser.plist" --keychain $TEMP_KEYCHAIN_PATH -s "${CODESIGN_IDENTITY}" "${APP_PATH}/Contents/Frameworks/Chromium Embedded Framework.framework/Libraries/libswiftshader_libGLESv2.dylib"
-codesign --verbose --deep --options runtime --entitlements "entitlements-browser.plist" --keychain $TEMP_KEYCHAIN_PATH -s "${CODESIGN_IDENTITY}" "${APP_PATH}/Contents/Frameworks/Chromium Embedded Framework.framework"
-codesign --verbose --deep --options runtime --entitlements "entitlements-browser.plist" --keychain $TEMP_KEYCHAIN_PATH -s "${CODESIGN_IDENTITY}" $APP_PATH
+#codesign --verbose --deep --options runtime --entitlements "/Users/jesseruder/ghost/ghost/macosx/tools/entitlements-browser.plist" --keychain $TEMP_KEYCHAIN_PATH -s "${CODESIGN_IDENTITY}" "${APP_PATH}/Contents/Frameworks/Chromium Embedded Framework.framework/Libraries/libEGL.dylib"
+#codesign --verbose --deep --options runtime --entitlements "/Users/jesseruder/ghost/ghost/macosx/tools/entitlements-browser.plist" --keychain $TEMP_KEYCHAIN_PATH -s "${CODESIGN_IDENTITY}" "${APP_PATH}/Contents/Frameworks/Chromium Embedded Framework.framework/Libraries/libswiftshader_libEGL.dylib"
+#codesign --verbose --deep --options runtime --entitlements "/Users/jesseruder/ghost/ghost/macosx/tools/entitlements-browser.plist" --keychain $TEMP_KEYCHAIN_PATH -s "${CODESIGN_IDENTITY}" "${APP_PATH}/Contents/Frameworks/Chromium Embedded Framework.framework/Libraries/libGLESv2.dylib"
+#codesign --verbose --deep --options runtime --entitlements "/Users/jesseruder/ghost/ghost/macosx/tools/entitlements-browser.plist" --keychain $TEMP_KEYCHAIN_PATH -s "${CODESIGN_IDENTITY}" "${APP_PATH}/Contents/Frameworks/Chromium Embedded Framework.framework/Libraries/libswiftshader_libGLESv2.dylib"
+#codesign --verbose --deep --options runtime --entitlements "/Users/jesseruder/ghost/ghost/macosx/tools/entitlements-browser.plist" --keychain $TEMP_KEYCHAIN_PATH -s "${CODESIGN_IDENTITY}" "${APP_PATH}/Contents/Frameworks/Chromium Embedded Framework.framework"
+codesign --verbose --deep --options runtime --entitlements "/Users/jesseruder/ghost/ghost/macosx/tools/entitlements-browser.plist" --keychain $TEMP_KEYCHAIN_PATH -s "${CODESIGN_IDENTITY}" $APP_PATH
 
 echo "Cleaning up keychain..."
 security delete-keychain $TEMP_KEYCHAIN_PATH
