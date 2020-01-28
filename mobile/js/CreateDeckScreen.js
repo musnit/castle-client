@@ -7,6 +7,7 @@ import { useQuery } from '@apollo/react-hooks';
 import { useNavigation, useNavigationEvents } from 'react-navigation-hooks';
 
 import CardsGrid from './CardsGrid';
+import ConfigureDeck from './ConfigureDeck';
 import DeckHeader from './DeckHeader';
 
 const styles = StyleSheet.create({
@@ -53,6 +54,9 @@ const CreateDeckScreen = (props) => {
   if (!query.loading && !query.error && query.data) {
     deck = query.data.deck;
   }
+
+  const onChangeDeck = () => {}; // TODO: actually save deck
+
   return (
     <SafeAreaView style={styles.container}>
       <DeckHeader
@@ -62,7 +66,11 @@ const CreateDeckScreen = (props) => {
         onChangeMode={setMode}
       />
       <KeyboardAwareScrollView style={styles.scrollView} contentContainerStyle={{ flex: 1 }}>
-        {mode === 'cards' ? <CardsGrid deck={deck} /> : null}
+        {mode === 'cards' ? (
+          <CardsGrid deck={deck} />
+        ) : (
+          <ConfigureDeck deck={deck} onChange={onChangeDeck} />
+        )}
       </KeyboardAwareScrollView>
     </SafeAreaView>
   );
