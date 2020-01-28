@@ -6,6 +6,8 @@ import SafeAreaView from 'react-native-safe-area-view';
 import { useQuery } from '@apollo/react-hooks';
 import { useNavigation, useNavigationEvents } from 'react-navigation-hooks';
 
+import DeckHeader from './DeckHeader';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -13,24 +15,26 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    flexShrink: 1,
   },
-  header: {
+  cards: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  card: {
     padding: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    color: '#fff',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    backgroundColor: '#f2f2f2',
   },
 });
 
-const DeckHeader = ({ deck }) => {
-  return (
-    <View style={styles.header}>
-      <Text style={styles.title}>{deck && deck.title}</Text>
-    </View>
-  );
-};
+const CardCell = ({ card, onPress }) => (
+  <TouchableOpacity style={styles.card} onPress={onPress}>
+    <Text>{card.title}</Text>
+  </TouchableOpacity>
+);
 
 const CreateDeckScreen = (props) => {
   let lastFocusedTime;
@@ -66,8 +70,23 @@ const CreateDeckScreen = (props) => {
   }
   return (
     <SafeAreaView style={styles.container}>
+      <DeckHeader deck={deck} onPressBack={() => navigation.goBack()} />
       <KeyboardAwareScrollView style={styles.scrollView} contentContainerStyle={{ flex: 1 }}>
-        <DeckHeader deck={deck} />
+        <View style={styles.cards}>
+          {deck &&
+            deck.cards.map((card) => (
+              <CardCell
+                key={card.cardId}
+                card={card}
+                onPress={() =>
+                  navigation.push('CreateCard', {
+                    deckIdToEdit: deck.deckId,
+                    cardIdToEdit: card.cardId,
+                  })
+                }
+              />
+            ))}
+        </View>
       </KeyboardAwareScrollView>
     </SafeAreaView>
   );
