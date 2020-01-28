@@ -1,11 +1,12 @@
 import React from 'react';
 import gql from 'graphql-tag';
-import { View, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import SafeAreaView from 'react-native-safe-area-view';
 import { useQuery } from '@apollo/react-hooks';
 import { useNavigation, useNavigationEvents } from 'react-navigation-hooks';
 
+import CardsGrid from './CardsGrid';
 import DeckHeader from './DeckHeader';
 
 const styles = StyleSheet.create({
@@ -17,42 +18,13 @@ const styles = StyleSheet.create({
     flex: 1,
     flexShrink: 1,
   },
-  cards: {
-    marginTop: 16,
-    paddingLeft: 8,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  cardContainer: {
-    paddingBottom: 8,
-    paddingRight: 8,
-    width: '33%',
-    height: 192, // TODO: correct ratio
-  },
-  card: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 6,
-    backgroundColor: '#f2f2f2',
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
 });
-
-const CardCell = ({ card, onPress }) => (
-  <View style={styles.cardContainer}>
-    <TouchableOpacity style={styles.card} onPress={onPress}>
-      <Text>{card.title}</Text>
-    </TouchableOpacity>
-  </View>
-);
 
 const CreateDeckScreen = (props) => {
   let lastFocusedTime;
   const navigation = useNavigation();
   const deckId = navigation.state.params.deckIdToEdit;
+  const [mode, setMode] = React.useState('cards');
   const query = useQuery(
     gql`
       query Deck($deckId: ID!) {
@@ -83,23 +55,14 @@ const CreateDeckScreen = (props) => {
   }
   return (
     <SafeAreaView style={styles.container}>
-      <DeckHeader deck={deck} onPressBack={() => navigation.goBack()} />
+      <DeckHeader
+        deck={deck}
+        onPressBack={() => navigation.goBack()}
+        mode={mode}
+        onChangeMode={setMode}
+      />
       <KeyboardAwareScrollView style={styles.scrollView} contentContainerStyle={{ flex: 1 }}>
-        <View style={styles.cards}>
-          {deck &&
-            deck.cards.map((card) => (
-              <CardCell
-                key={card.cardId}
-                card={card}
-                onPress={() =>
-                  navigation.push('CreateCard', {
-                    deckIdToEdit: deck.deckId,
-                    cardIdToEdit: card.cardId,
-                  })
-                }
-              />
-            ))}
-        </View>
+        {mode === 'cards' ? <CardsGrid deck={deck} /> : null}
       </KeyboardAwareScrollView>
     </SafeAreaView>
   );

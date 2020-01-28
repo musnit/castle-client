@@ -2,9 +2,10 @@ import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
+import SegmentedNavigation from './SegmentedNavigation';
+
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: 24,
     borderBottomWidth: 1,
     borderColor: '#888',
   },
@@ -25,6 +26,7 @@ const styles = StyleSheet.create({
   header: {
     marginTop: 54,
     padding: 8,
+    paddingBottom: 16,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -33,6 +35,17 @@ const styles = StyleSheet.create({
     fontSize: 32,
   },
 });
+
+const MODE_ITEMS = [
+  {
+    name: 'Cards',
+    value: 'cards',
+  },
+  {
+    name: 'Settings',
+    value: 'settings',
+  },
+];
 
 const DeckHeader = (props) => {
   const { deck } = props;
@@ -52,6 +65,11 @@ const DeckHeader = (props) => {
       <View style={styles.header}>
         <Text style={styles.title}>{deck && deck.title}</Text>
       </View>
+      <SegmentedNavigation
+        items={MODE_ITEMS}
+        selectedItem={MODE_ITEMS.find((item) => item.value === props.mode)}
+        onSelectItem={(item) => props.onChangeMode(item.value)}
+      />
     </View>
   );
 };
