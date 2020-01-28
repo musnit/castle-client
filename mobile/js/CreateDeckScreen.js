@@ -18,22 +18,35 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   cards: {
+    marginTop: 16,
+    paddingLeft: 8,
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
+  cardContainer: {
+    paddingBottom: 8,
+    paddingRight: 8,
+    width: '33%',
+    height: 192, // TODO: correct ratio
+  },
   card: {
-    padding: 8,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 6,
     backgroundColor: '#f2f2f2',
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
 const CardCell = ({ card, onPress }) => (
-  <TouchableOpacity style={styles.card} onPress={onPress}>
-    <Text>{card.title}</Text>
-  </TouchableOpacity>
+  <View style={styles.cardContainer}>
+    <TouchableOpacity style={styles.card} onPress={onPress}>
+      <Text>{card.title}</Text>
+    </TouchableOpacity>
+  </View>
 );
 
 const CreateDeckScreen = (props) => {
