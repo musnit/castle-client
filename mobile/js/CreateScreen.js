@@ -9,31 +9,40 @@ import { useNavigation, useNavigationEvents } from 'react-navigation-hooks';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#000',
   },
   scrollView: {
     padding: 16,
   },
   decks: {
+    marginTop: 16,
+    paddingLeft: 8,
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
   sectionTitle: {
-    color: '#888',
-    fontWeight: '700',
+    color: '#fff',
     marginVertical: 8,
+    fontSize: 32,
+    width: '100%',
+    textAlign: 'center',
+  },
+  cellContainer: {
+    paddingBottom: 8,
+    paddingRight: 8,
+    width: '33%',
+    height: 192, // TODO: correct ratio
   },
   cell: {
+    borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 6,
-    borderWidth: 1,
-    width: 128,
-    height: 228,
-    padding: 8,
+    backgroundColor: '#f2f2f2',
+    width: '100%',
+    height: '100%',
     alignItems: 'flex-start',
     justifyContent: 'flex-end',
-    marginRight: 16,
-    marginBottom: 16,
+    padding: 8,
   },
   cellTitle: {
     fontSize: 10,
@@ -48,27 +57,31 @@ const EditDeckCell = (props) => {
   const { deck, onPress } = props;
   const title = deck && deck.title ? deck.title : 'Untitled Deck';
   return (
-    <TouchableOpacity style={styles.cell} onPress={onPress}>
-      <Text style={styles.cellTitle}>{title}</Text>
-    </TouchableOpacity>
+    <View style={styles.cellContainer}>
+      <TouchableOpacity style={styles.cell} onPress={onPress}>
+        <Text style={styles.cellTitle}>{title}</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
 const CreateDeckCell = (props) => {
   return (
-    <TouchableOpacity style={[styles.cell, styles.createCell]} onPress={props.onPress}>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <FastImage
-          style={{
-            width: 8,
-            aspectRatio: 1,
-            marginRight: 4,
-          }}
-          source={require('../assets/images/add.png')}
-        />
-        <Text style={[styles.cellTitle, { fontWeight: '700', color: '#fff' }]}>Create Deck</Text>
-      </View>
-    </TouchableOpacity>
+    <View style={styles.cellContainer}>
+      <TouchableOpacity style={[styles.cell, styles.createCell]} onPress={props.onPress}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <FastImage
+            style={{
+              width: 8,
+              aspectRatio: 1,
+              marginRight: 4,
+            }}
+            source={require('../assets/images/add.png')}
+          />
+          <Text style={[styles.cellTitle, { fontWeight: '700', color: '#fff' }]}>Create Deck</Text>
+        </View>
+      </TouchableOpacity>
+    </View>
   );
 };
 
