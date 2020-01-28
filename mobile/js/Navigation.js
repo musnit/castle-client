@@ -13,6 +13,7 @@ import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './AuthSc
 import * as Constants from './Constants';
 import CreateScreen from './CreateScreen';
 import CreateCardScreen from './CreateCardScreen';
+import CreateDeckScreen from './CreateDeckScreen';
 import DecksScreen from './DecksScreen';
 import * as DeepLinks from './DeepLinks';
 import HomeScreen from './HomeScreen';
@@ -70,6 +71,9 @@ const CreateNavigator = createStackNavigator(
     },
     CreateCard: {
       screen: CreateCardScreen,
+    },
+    CreateDeck: {
+      screen: CreateDeckScreen,
     },
   },
   {

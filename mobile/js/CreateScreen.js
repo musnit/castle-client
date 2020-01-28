@@ -120,9 +120,8 @@ const CreateScreen = () => {
                 key={deck.deckId}
                 deck={deck}
                 onPress={() => {
-                  navigation.push('CreateCard', {
+                  navigation.push('CreateDeck', {
                     deckIdToEdit: deck.deckId,
-                    cardIdToEdit: deck.initialCard.cardId,
                   });
                 }}
               />
