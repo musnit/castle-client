@@ -61,6 +61,15 @@ const HomeNavigator = createStackNavigator(
   }
 );
 
+const CreateDeckNavigator = createSwitchNavigator({
+  CreateDeck: {
+    screen: CreateDeckScreen,
+  },
+  CreateCard: {
+    screen: CreateCardScreen,
+  },
+});
+
 const CreateNavigator = createStackNavigator(
   {
     Create: {
@@ -69,11 +78,8 @@ const CreateNavigator = createStackNavigator(
         title: 'Create',
       },
     },
-    CreateCard: {
-      screen: CreateCardScreen,
-    },
     CreateDeck: {
-      screen: CreateDeckScreen,
+      screen: CreateDeckNavigator,
     },
   },
   {

@@ -57,11 +57,14 @@ const CreateDeckScreen = (props) => {
 
   const onChangeDeck = () => {}; // TODO: actually save deck
 
+  // we use `dangerouslyGetParent()` because
+  // CreateDeckScreen is presented inside its own switch navigator,
+  // which is itself inside the higher-level stack navigator which brought us here.
   return (
     <SafeAreaView style={styles.container}>
       <DeckHeader
         deck={deck}
-        onPressBack={() => navigation.goBack()}
+        onPressBack={() => navigation.dangerouslyGetParent().goBack()}
         mode={mode}
         onChangeMode={setMode}
       />

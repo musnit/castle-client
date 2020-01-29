@@ -45,7 +45,7 @@ const CardsGrid = ({ deck }) => {
             key={card.cardId}
             card={card}
             onPress={() =>
-              navigation.push('CreateCard', {
+              navigation.navigate('CreateCard', {
                 deckIdToEdit: deck.deckId,
                 cardIdToEdit: card.cardId,
               })

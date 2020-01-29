@@ -69,7 +69,7 @@ const CardHeader = (props) => {
               width: 22,
               aspectRatio: 1,
             }}
-            source={require('../assets/images/arrow-left.png')}
+            source={require('../assets/images/dismiss.png')}
           />
         </TouchableOpacity>
         <TouchableOpacity style={styles.titleContainer} onPress={props.onPressTitle}>

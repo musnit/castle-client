@@ -269,7 +269,7 @@ class CreateCardScreen extends React.Component {
     );
     if (updatedBlock && updatedBlock.destinationCardId) {
       setTimeout(() => {
-        this.props.navigation.push('CreateCard', {
+        this.props.navigation.navigate('CreateCard', {
           deckIdToEdit: this.state.deck.deckId,
           cardIdToEdit: updatedBlock.destinationCardId,
         });
@@ -364,7 +364,9 @@ class CreateCardScreen extends React.Component {
         <CardHeader
           card={card}
           expanded={isHeaderExpanded}
-          onPressBack={() => this.props.navigation.goBack()}
+          onPressBack={() =>
+            this.props.navigation.navigate('CreateDeck', { deckIdToEdit: deck.deckId })
+          }
           onPressTitle={this._toggleHeaderExpanded}
           onChange={this._handleCardChange}
         />
