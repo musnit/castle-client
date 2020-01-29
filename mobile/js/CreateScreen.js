@@ -4,6 +4,7 @@ import FastImage from 'react-native-fast-image';
 import gql from 'graphql-tag';
 import SafeAreaView from 'react-native-safe-area-view';
 import { useQuery } from '@apollo/react-hooks';
+import { NavigationActions } from 'react-navigation';
 import { useNavigation, useNavigationEvents } from 'react-navigation-hooks';
 
 const styles = StyleSheet.create({
@@ -126,7 +127,11 @@ const CreateScreen = () => {
           <CreateDeckCell
             key="create"
             onPress={() => {
-              navigation.push('CreateCard');
+              navigation.push(
+                'CreateDeck',
+                {},
+                NavigationActions.navigate({ routeName: 'CreateCard' })
+              );
             }}
           />
           {decks &&
