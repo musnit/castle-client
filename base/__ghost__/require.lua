@@ -41,7 +41,10 @@ local function parseResources(code)
                 c and c[1] == 'string' and
                 d and (d[1] == 'operator' and (d[2] == ')' or d[2] == ',')) then
             -- `<func>('...')` or `<func>('...',` with a `resourceFuncs` above
-            table.insert(result, { type = 'asset', path = load('return ' .. c[2])() })
+            local path = load('return ' .. c[2])()
+            if not path:match('\n') then -- `love.graphics.newShader` may have inline code
+                table.insert(result, { type = 'asset', path = path })
+            end
         end
     end
     return result
