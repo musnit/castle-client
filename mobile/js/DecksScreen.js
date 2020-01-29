@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import gql from 'graphql-tag';
 import SafeAreaView from 'react-native-safe-area-view';
 import { useQuery } from '@apollo/react-hooks';
-import { useNavigation } from 'react-navigation-hooks';
+import { useNavigation, useNavigationEvents } from 'react-navigation-hooks';
 
 import GameUrlInput from './GameUrlInput';
 import Viewport from './viewport';
@@ -63,6 +63,11 @@ const DeckFeedItem = (props) => {
 };
 
 const DecksScreen = (props) => {
+  useNavigationEvents((event) => {
+    if (event.type == 'didFocus') {
+      StatusBar.setBarStyle('dark-content'); // needed for tab navigator
+    }
+  });
   const query = useQuery(gql`
     query {
       allDecks {
@@ -82,6 +87,7 @@ const DecksScreen = (props) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" />
       <View style={styles.urlInput}>
         <GameUrlInput />
       </View>

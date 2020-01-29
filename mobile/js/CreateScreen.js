@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import gql from 'graphql-tag';
 import SafeAreaView from 'react-native-safe-area-view';
@@ -104,6 +104,7 @@ const CreateScreen = () => {
   `);
   useNavigationEvents((event) => {
     if (event.type == 'didFocus') {
+      StatusBar.setBarStyle('light-content'); // needed for tab navigator
       if (lastFocusedTime) {
         query.refetch();
       }
@@ -118,6 +119,7 @@ const CreateScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" />
       <ScrollView contentContainerStyle={styles.scrollView}>
         <Text style={styles.sectionTitle}>My Decks</Text>
         <View style={styles.decks}>

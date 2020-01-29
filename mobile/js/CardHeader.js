@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
 import ConfigureInput from './ConfigureInput';
@@ -58,6 +58,7 @@ const CardHeader = (props) => {
   const title = card.title ? card.title : 'Untitled Card';
   return (
     <View style={styles.container}>
+      <StatusBar hidden={true} />
       <View style={styles.drawer}>
         {expanded ? <ConfigureCard card={card} onChange={props.onChange} /> : null}
         <View style={[styles.cardTop, { height: expanded ? 12 : 54 }]} />

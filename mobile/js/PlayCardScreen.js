@@ -1,7 +1,6 @@
 import React from 'react';
 import gql from 'graphql-tag';
 import { TouchableWithoutFeedback, ScrollView, StyleSheet, View } from 'react-native';
-import SafeAreaView from 'react-native-safe-area-view';
 import { useQuery } from '@apollo/react-hooks';
 import { useNavigation } from 'react-navigation-hooks';
 
@@ -92,8 +91,10 @@ const PlayCardScreen = (props) => {
     }
   };
 
+  // we don't use SafeAreaView because it does not respond to StatusBar being hidden
+  // https://github.com/facebook/react-native/pull/20999
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <CardHeader card={card} onPressBack={() => navigation.navigate('HomeScreen')} />
       <ScrollView style={styles.scrollView} contentContainerStyle={{ flex: 1 }}>
         <TouchableWithoutFeedback onPress={_handlePressScene}>
@@ -103,7 +104,7 @@ const PlayCardScreen = (props) => {
           <CardBlocks card={card} onSelectBlock={_handleSelectBlock} />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
 import SegmentedNavigation from './SegmentedNavigation';
@@ -51,6 +51,7 @@ const DeckHeader = (props) => {
   const { deck } = props;
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="light-content" />
       <View style={styles.fixedHeader}>
         <TouchableOpacity style={styles.back} onPress={props.onPressBack}>
           <FastImage
