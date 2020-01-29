@@ -48,13 +48,13 @@ const styles = StyleSheet.create({
 });
 
 const DeckFeedItem = (props) => {
-  const navigation = useNavigation(); // TODO: navigate to deck
+  const navigation = useNavigation();
   return (
     <View style={styles.deckFeedItemContainer}>
       <TouchableOpacity
         style={styles.deckFeedItemCard}
         onPress={() => {
-          navigation.navigate('PlayCard');
+          navigation.navigate('PlayCard', { deckId: props.deck.deckId });
         }}>
         <Text>{props.deck.title}</Text>
       </TouchableOpacity>
