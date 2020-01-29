@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const CardBlock = props => {
+const CardBlock = (props) => {
   const { block } = props;
   let blockStyles, textStyles;
   switch (block.type) {
@@ -71,9 +71,8 @@ const CardBlock = props => {
   }
 };
 
-const CardBlocks = props => {
+const CardBlocks = (props) => {
   const card = props.card || {};
-  // card.blocks = DUMMY_BLOCKS;
   if (card.blocks && card.blocks.length) {
     const orderedBlocks = card.blocks.sort((a, b) => a.type - b.type);
     return (
@@ -92,8 +91,10 @@ const CardBlocks = props => {
         })}
       </React.Fragment>
     );
-  } else {
+  } else if (props.isEditable) {
     return <AddBlockPlaceholder onPress={() => props.onSelectBlock(null)} />;
+  } else {
+    return null;
   }
 };
 
