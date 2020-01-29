@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import gql from 'graphql-tag';
+import SafeAreaView from 'react-native-safe-area-view';
 import { useQuery } from '@apollo/react-hooks';
 import { useNavigation } from 'react-navigation-hooks';
 
@@ -12,6 +13,7 @@ const { vw, vh } = Viewport;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f2f2f2',
   },
   scrollView: {
     padding: 12,
@@ -19,7 +21,10 @@ const styles = StyleSheet.create({
   urlInput: {
     width: '100%',
     paddingTop: 4,
+    paddingHorizontal: 12,
     paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
   },
   deckFeedItemContainer: {
     width: '100%',
@@ -28,7 +33,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: 8,
+    marginBottom: 16,
     backgroundColor: '#f2f2f2',
     padding: 8,
   },
@@ -46,7 +51,11 @@ const DeckFeedItem = (props) => {
   const navigation = useNavigation(); // TODO: navigate to deck
   return (
     <View style={styles.deckFeedItemContainer}>
-      <TouchableOpacity style={styles.deckFeedItemCard} onPress={() => {}}>
+      <TouchableOpacity
+        style={styles.deckFeedItemCard}
+        onPress={() => {
+          navigation.navigate('PlayCard');
+        }}>
         <Text>{props.deck.title}</Text>
       </TouchableOpacity>
     </View>
@@ -72,16 +81,16 @@ const DecksScreen = (props) => {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.urlInput}>
+        <GameUrlInput />
+      </View>
       <ScrollView contentContainerStyle={styles.scrollView}>
-        <View style={styles.urlInput}>
-          <GameUrlInput />
-        </View>
         <React.Fragment>
           {decks && decks.map((deck) => <DeckFeedItem key={deck.deckId} deck={deck} />)}
         </React.Fragment>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 

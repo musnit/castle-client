@@ -18,48 +18,71 @@ import DecksScreen from './DecksScreen';
 import * as DeepLinks from './DeepLinks';
 import HomeScreen from './HomeScreen';
 import * as Session from './Session';
+import PlayCardScreen from './PlayCardScreen';
 import ProfileScreen from './ProfileScreen';
 
 // App UI layout
 
-const HomeNavigator = createStackNavigator(
-  {
-    HomeScreen: {
-      screen: Constants.USE_CARDS_PROTOTYPE ? DecksScreen : HomeScreen,
-      navigationOptions: {
-        headerTitle: (
-          <View style={{ paddingHorizontal: 16, flexDirection: 'row', alignItems: 'flex-end' }}>
-            <FastImage
-              style={{
-                width: 30,
-                aspectRatio: 1,
-                marginBottom: 4,
-                marginRight: 8,
-              }}
-              source={require('../assets/images/castle-classic-yellow.png')}
-            />
-            <Text style={{ fontSize: 24, letterSpacing: 0.5, fontFamily: 'RTAliasGrotesk-Bold' }}>
-              Castle
-            </Text>
-          </View>
-        ),
-        headerStyle: {
-          shadowColor: '#000',
-          shadowOffset: {
-            width: 0,
-            height: 1,
+let HomeNavigator;
+
+if (Constants.USE_CARDS_PROTOTYPE) {
+  HomeNavigator = createSwitchNavigator(
+    {
+      HomeScreen: {
+        screen: DecksScreen,
+      },
+      PlayCard: {
+        screen: PlayCardScreen,
+      },
+    },
+    {
+      navigationOptions: ({ navigation }) => {
+        return {
+          tabBarVisible: navigation.state.index == 0,
+        };
+      },
+    }
+  );
+} else {
+  HomeNavigator = createStackNavigator(
+    {
+      HomeScreen: {
+        screen: HomeScreen,
+        navigationOptions: {
+          headerTitle: (
+            <View style={{ paddingHorizontal: 16, flexDirection: 'row', alignItems: 'flex-end' }}>
+              <FastImage
+                style={{
+                  width: 30,
+                  aspectRatio: 1,
+                  marginBottom: 4,
+                  marginRight: 8,
+                }}
+                source={require('../assets/images/castle-classic-yellow.png')}
+              />
+              <Text style={{ fontSize: 24, letterSpacing: 0.5, fontFamily: 'RTAliasGrotesk-Bold' }}>
+                Castle
+              </Text>
+            </View>
+          ),
+          headerStyle: {
+            shadowColor: '#000',
+            shadowOffset: {
+              width: 0,
+              height: 1,
+            },
+            shadowOpacity: 0.2,
+            shadowRadius: 1.41,
+            elevation: 2,
           },
-          shadowOpacity: 0.2,
-          shadowRadius: 1.41,
-          elevation: 2,
         },
       },
     },
-  },
-  {
-    headerLayoutPreset: 'left',
-  }
-);
+    {
+      headerLayoutPreset: 'left',
+    }
+  );
+}
 
 const CreateDeckNavigator = createSwitchNavigator({
   CreateDeck: {
