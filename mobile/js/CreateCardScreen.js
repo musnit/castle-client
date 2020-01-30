@@ -2,6 +2,8 @@ import React from 'react';
 import gql from 'graphql-tag';
 import { View, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import SafeAreaView from 'react-native-safe-area-view';
+
 import uuid from 'uuid/v4';
 import { withNavigation, withNavigationFocus } from 'react-navigation';
 
@@ -359,10 +361,10 @@ class CreateCardScreen extends React.Component {
         ? card.blocks.find((block) => block.cardBlockId === blockIdToEdit)
         : EMPTY_BLOCK;
 
-    // we don't use SafeAreaView because it does not respond to StatusBar being hidden
+    // SafeAreaView doesn't respond to statusbar being hidden right now
     // https://github.com/facebook/react-native/pull/20999
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <CardHeader
           card={card}
           expanded={isHeaderExpanded}
@@ -401,7 +403,7 @@ class CreateCardScreen extends React.Component {
             <ActionButton onPress={this._handlePublish}>Publish</ActionButton>
           </View>
         </KeyboardAwareScrollView>
-      </View>
+      </SafeAreaView>
     );
   }
 }
