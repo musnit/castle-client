@@ -43,6 +43,14 @@ const CreateDeckScreen = (props) => {
     `
   );
 
+  const [deleteDeck] = useMutation(
+    gql`
+      mutation DeleteDeck($deckId: ID!) {
+        deleteDeck(deckId: $deckId)
+      }
+    `
+  );
+
   const loadDeck = useQuery(
     gql`
       query Deck($deckId: ID!) {
@@ -80,11 +88,21 @@ const CreateDeckScreen = (props) => {
     }
   });
 
+  // we use `dangerouslyGetParent()` because
+  // CreateDeckScreen is presented inside its own switch navigator,
+  // which is itself inside the higher-level stack navigator which brought us here.
+  const _goBack = () => navigation.dangerouslyGetParent().goBack();
+
+  const _deleteDeck = async () => {
+    await deleteDeck({ variables: { deckId } });
+    _goBack();
+  };
+
   if (!loadDeck.loading && !loadDeck.error && loadDeck.data && deck === null) {
     setDeck(loadDeck.data.deck);
   }
 
-  const onChangeDeck = (changes) => {
+  const _changeDeck = (changes) => {
     setDeck({
       ...deck,
       ...changes,
@@ -92,14 +110,11 @@ const CreateDeckScreen = (props) => {
     });
   };
 
-  // we use `dangerouslyGetParent()` because
-  // CreateDeckScreen is presented inside its own switch navigator,
-  // which is itself inside the higher-level stack navigator which brought us here.
   return (
     <SafeAreaView style={styles.container}>
       <DeckHeader
         deck={deck}
-        onPressBack={() => navigation.dangerouslyGetParent().goBack()}
+        onPressBack={_goBack}
         mode={mode}
         onChangeMode={(mode) => {
           _maybeSaveDeck();
@@ -110,7 +125,7 @@ const CreateDeckScreen = (props) => {
         {mode === 'cards' ? (
           <CardsGrid deck={deck} />
         ) : (
-          <ConfigureDeck deck={deck} onChange={onChangeDeck} />
+          <ConfigureDeck deck={deck} onChange={_changeDeck} onDeleteDeck={_deleteDeck} />
         )}
       </KeyboardAwareScrollView>
     </SafeAreaView>

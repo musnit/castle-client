@@ -87,7 +87,7 @@ const CreateDeckCell = (props) => {
 };
 
 const CreateScreen = () => {
-  let lastFocusedTime;
+  const [lastFocusedTime, setLastFocusedTime] = React.useState(null);
   const navigation = useNavigation();
   const query = useQuery(gql`
     query Me {
@@ -109,7 +109,7 @@ const CreateScreen = () => {
       if (lastFocusedTime) {
         query.refetch();
       }
-      lastFocusedTime = Date.now();
+      setLastFocusedTime(Date.now());
     }
   });
 

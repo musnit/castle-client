@@ -30,7 +30,7 @@ const ConfigureDeck = (props) => {
         value={props.deck.title}
         onChangeText={(title) => props.onChange({ title })}
       />
-      <TouchableOpacity style={styles.deleteButton}>
+      <TouchableOpacity style={styles.deleteButton} onPress={props.onDeleteDeck}>
         <Text style={styles.deleteLabel}>Delete Deck</Text>
       </TouchableOpacity>
     </View>
