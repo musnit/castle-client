@@ -15,10 +15,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000',
   },
-  scrollView: {
-    flex: 1,
-    flexShrink: 1,
-  },
+  scrollView: {},
 });
 
 const CreateDeckScreen = (props) => {
@@ -121,7 +118,7 @@ const CreateDeckScreen = (props) => {
           return setMode(mode);
         }}
       />
-      <KeyboardAwareScrollView style={styles.scrollView} contentContainerStyle={{ flex: 1 }}>
+      <KeyboardAwareScrollView contentContainerStyle={styles.scrollView}>
         {mode === 'cards' ? (
           <CardsGrid deck={deck} />
         ) : (

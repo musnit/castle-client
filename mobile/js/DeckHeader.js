@@ -9,11 +9,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: '#888',
   },
-  fixedHeader: {
+  navigationRow: {
     width: '100%',
-    height: 54,
-    position: 'absolute',
-    top: 0,
     height: 54,
     flexDirection: 'row',
   },
@@ -24,7 +21,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   header: {
-    marginTop: 54,
     padding: 8,
     paddingBottom: 16,
     alignItems: 'center',
@@ -52,7 +48,7 @@ const DeckHeader = (props) => {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
-      <View style={styles.fixedHeader}>
+      <View style={styles.navigationRow}>
         <TouchableOpacity style={styles.back} onPress={props.onPressBack}>
           <FastImage
             style={{

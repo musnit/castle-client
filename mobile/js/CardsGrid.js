@@ -6,6 +6,7 @@ const styles = StyleSheet.create({
   cards: {
     marginTop: 16,
     paddingLeft: 8,
+    flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
