@@ -63,11 +63,8 @@ const DeckFeedItem = (props) => {
 };
 
 const DecksScreen = (props) => {
-  useNavigationEvents((event) => {
-    if (event.type == 'didFocus') {
-      StatusBar.setBarStyle('dark-content'); // needed for tab navigator
-    }
-  });
+  const [lastFocusedTime, setLastFocusedTime] = React.useState(null);
+
   const query = useQuery(gql`
     query {
       allDecks {
@@ -80,6 +77,17 @@ const DecksScreen = (props) => {
       }
     }
   `);
+
+  useNavigationEvents((event) => {
+    if (event.type == 'didFocus') {
+      StatusBar.setBarStyle('dark-content'); // needed for tab navigator
+      if (lastFocusedTime) {
+        query.refetch();
+      }
+      setLastFocusedTime(Date.now());
+    }
+  });
+
   let decks;
   if (!query.loading && !query.error && query.data) {
     decks = query.data.allDecks;
