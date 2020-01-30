@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 import { View, StyleSheet, Text } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import SafeAreaView from 'react-native-safe-area-view';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useNavigation, useNavigationEvents } from 'react-navigation-hooks';
 
 import CardsGrid from './CardsGrid';
@@ -26,7 +26,24 @@ const CreateDeckScreen = (props) => {
   const navigation = useNavigation();
   const deckId = navigation.state.params.deckIdToEdit;
   const [mode, setMode] = React.useState('cards');
-  const query = useQuery(
+  const [deck, setDeck] = React.useState(null);
+
+  const [saveDeck] = useMutation(
+    gql`
+      mutation UpdateDeck($deckId: ID!, $deck: DeckInput!) {
+        updateDeck(deckId: $deckId, deck: $deck) {
+          deckId
+          title
+          cards {
+            cardId
+            title
+          }
+        }
+      }
+    `
+  );
+
+  const loadDeck = useQuery(
     gql`
       query Deck($deckId: ID!) {
         deck(deckId: $deckId) {
@@ -39,23 +56,41 @@ const CreateDeckScreen = (props) => {
         }
       }
     `,
-    { variables: { deckId } }
+    { variables: { deckId }, fetchPolicy: 'no-cache' }
   );
+
+  const _maybeSaveDeck = async () => {
+    if (deck.isChanged) {
+      const deckUpdateFragment = {
+        title: deck.title,
+      };
+      saveDeck({ variables: { deckId, deck: deckUpdateFragment } });
+      setDeck({ ...deck, isChanged: false });
+    }
+  };
+
   useNavigationEvents((event) => {
     if (event.type == 'didFocus') {
       if (lastFocusedTime) {
-        query.refetch();
+        loadDeck.refetch();
       }
       lastFocusedTime = Date.now();
+    } else if (event.type == 'willBlur') {
+      _maybeSaveDeck();
     }
   });
 
-  let deck;
-  if (!query.loading && !query.error && query.data) {
-    deck = query.data.deck;
+  if (!loadDeck.loading && !loadDeck.error && loadDeck.data && deck === null) {
+    setDeck(loadDeck.data.deck);
   }
 
-  const onChangeDeck = () => {}; // TODO: actually save deck
+  const onChangeDeck = (changes) => {
+    setDeck({
+      ...deck,
+      ...changes,
+      isChanged: true,
+    });
+  };
 
   // we use `dangerouslyGetParent()` because
   // CreateDeckScreen is presented inside its own switch navigator,
@@ -66,7 +101,10 @@ const CreateDeckScreen = (props) => {
         deck={deck}
         onPressBack={() => navigation.dangerouslyGetParent().goBack()}
         mode={mode}
-        onChangeMode={setMode}
+        onChangeMode={(mode) => {
+          _maybeSaveDeck();
+          return setMode(mode);
+        }}
       />
       <KeyboardAwareScrollView style={styles.scrollView} contentContainerStyle={{ flex: 1 }}>
         {mode === 'cards' ? (
