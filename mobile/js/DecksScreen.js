@@ -28,12 +28,22 @@ const styles = StyleSheet.create({
   },
   deckFeedItemContainer: {
     width: '100%',
+    marginBottom: 16,
+  },
+  deckFeedItemMeta: {
+    padding: 8,
+  },
+  deckFeedItemCreator: {
+    color: '#666',
+    fontWeight: '700',
+  },
+  deckFeedItemContent: {
+    width: '100%',
     borderColor: '#ccc',
     borderRadius: 6,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
     backgroundColor: '#f2f2f2',
     padding: 8,
   },
@@ -51,13 +61,18 @@ const DeckFeedItem = (props) => {
   const navigation = useNavigation();
   return (
     <View style={styles.deckFeedItemContainer}>
-      <TouchableOpacity
-        style={styles.deckFeedItemCard}
-        onPress={() => {
-          navigation.navigate('PlayCard', { deckId: props.deck.deckId });
-        }}>
-        <Text>{props.deck.title}</Text>
-      </TouchableOpacity>
+      <View style={styles.deckFeedItemMeta}>
+        <Text style={styles.deckFeedItemCreator}>{props.deck.creator.username}</Text>
+      </View>
+      <View style={styles.deckFeedItemContent}>
+        <TouchableOpacity
+          style={styles.deckFeedItemCard}
+          onPress={() => {
+            navigation.navigate('PlayCard', { deckId: props.deck.deckId });
+          }}>
+          <Text>{props.deck.title}</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -70,7 +85,10 @@ const DecksScreen = (props) => {
       allDecks {
         deckId
         title
-        creatorUserId
+        creator {
+          userId
+          username
+        }
         currentCard {
           cardId
         }
