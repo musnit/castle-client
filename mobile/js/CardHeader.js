@@ -38,6 +38,18 @@ const styles = StyleSheet.create({
   name: {
     color: '#888',
   },
+  deleteButton: {
+    marginTop: 16,
+    borderWidth: 1,
+    borderColor: '#c00',
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8,
+  },
+  deleteLabel: {
+    color: '#f00',
+  },
 });
 
 const ConfigureCard = (props) => {
@@ -49,6 +61,11 @@ const ConfigureCard = (props) => {
         value={props.card.title}
         onChangeText={(title) => props.onChange({ title })}
       />
+      {props.card.cardId && (
+        <TouchableOpacity style={styles.deleteButton} onPress={props.onDeleteCard}>
+          <Text style={styles.deleteLabel}>Delete Card</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -60,7 +77,9 @@ const CardHeader = (props) => {
     <View style={styles.container}>
       <StatusBar hidden={true} />
       <View style={styles.drawer}>
-        {expanded ? <ConfigureCard card={card} onChange={props.onChange} /> : null}
+        {expanded ? (
+          <ConfigureCard card={card} onChange={props.onChange} onDeleteCard={props.onDeleteCard} />
+        ) : null}
         <View style={[styles.cardTop, { height: expanded ? 12 : 54 }]} />
       </View>
       <View style={styles.fixedHeader}>

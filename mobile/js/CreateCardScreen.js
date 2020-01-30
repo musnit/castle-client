@@ -174,6 +174,17 @@ const getDeckById = async (deckId) => {
   return result.data.deck;
 };
 
+const deleteCard = async (cardId) => {
+  return Session.apolloClient.mutate({
+    mutation: gql`
+      mutation DeleteCard($cardId: ID!) {
+        deleteCard(cardId: $cardId)
+      }
+    `,
+    variables: { cardId },
+  });
+};
+
 const ActionButton = (props) => {
   const buttonProps = { ...props, children: undefined };
   return (
@@ -316,6 +327,16 @@ class CreateCardScreen extends React.Component {
     });
   };
 
+  _goBack = () =>
+    this.props.navigation.navigate('CreateDeck', { deckIdToEdit: this.state.deck.deckId });
+
+  _handleCardDelete = async () => {
+    if (this.state.card.cardId) {
+      await deleteCard(this.state.card.cardId);
+      this._goBack();
+    }
+  };
+
   _handleBlockChange = (block) => {
     return this.setState((state) => {
       const blocks = [...state.card.blocks];
@@ -368,11 +389,10 @@ class CreateCardScreen extends React.Component {
         <CardHeader
           card={card}
           expanded={isHeaderExpanded}
-          onPressBack={() =>
-            this.props.navigation.navigate('CreateDeck', { deckIdToEdit: deck.deckId })
-          }
+          onPressBack={this._goBack}
           onPressTitle={this._toggleHeaderExpanded}
           onChange={this._handleCardChange}
+          onDeleteCard={this._handleCardDelete}
         />
         <KeyboardAwareScrollView
           style={styles.scrollView}
