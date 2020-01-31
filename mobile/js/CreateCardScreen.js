@@ -24,8 +24,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexShrink: 1,
     backgroundColor: '#f2f2f2',
-    borderBottomLeftRadius: 6,
-    borderBottomRightRadius: 6,
+    borderRadius: 6,
   },
   scene: {
     position: 'absolute',

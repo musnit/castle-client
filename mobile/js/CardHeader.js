@@ -5,12 +5,12 @@ import FastImage from 'react-native-fast-image';
 import ConfigureInput from './ConfigureInput';
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    zIndex: 1, // we use negative margin to place the scene behind the header
+  },
   drawer: {},
   cardTop: {
-    borderTopLeftRadius: 6,
-    borderTopRightRadius: 6,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: 'transparent',
     flexShrink: 0,
   },
   fixedHeader: {
@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
   },
   name: {
     color: '#888',
+    padding: 4,
   },
   deleteButton: {
     marginTop: 16,
@@ -80,7 +81,7 @@ const CardHeader = (props) => {
         {expanded ? (
           <ConfigureCard card={card} onChange={props.onChange} onDeleteCard={props.onDeleteCard} />
         ) : null}
-        <View style={[styles.cardTop, { height: expanded ? 12 : 54 }]} />
+        <View style={[styles.cardTop, { marginBottom: expanded ? 12 : -54 }]} />
       </View>
       <View style={styles.fixedHeader}>
         <TouchableOpacity style={styles.back} onPress={props.onPressBack}>
@@ -93,7 +94,9 @@ const CardHeader = (props) => {
           />
         </TouchableOpacity>
         <TouchableOpacity style={styles.titleContainer} onPress={props.onPressTitle}>
-          <Text style={styles.name}>{title}</Text>
+          <Text style={[styles.name, { backgroundColor: expanded ? 'transparent' : '#f2f2f2' }]}>
+            {title}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
