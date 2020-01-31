@@ -5,8 +5,9 @@ import { useQuery } from '@apollo/react-hooks';
 import { useNavigation } from 'react-navigation-hooks';
 import SafeAreaView from 'react-native-safe-area-view';
 
-import CardHeader from './CardHeader';
 import CardBlocks from './CardBlocks';
+import CardHeader from './CardHeader';
+import CardScene from './CardScene';
 
 const styles = StyleSheet.create({
   container: {
@@ -21,14 +22,14 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 6,
   },
   scene: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 1,
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
   },
   description: {
+    flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     padding: 12,
   },
 });
@@ -56,6 +57,10 @@ const PlayCardScreen = (props) => {
           cards {
             cardId
             title
+            backgroundImage {
+              fileId
+              url
+            }
             blocks {
               cardBlockId
               cardBlockUpdateId
@@ -97,7 +102,7 @@ const PlayCardScreen = (props) => {
       <CardHeader card={card} onPressBack={() => navigation.navigate('HomeScreen')} />
       <ScrollView style={styles.scrollView} contentContainerStyle={{ flex: 1 }}>
         <TouchableWithoutFeedback onPress={_handlePressScene}>
-          <View style={styles.scene} />
+          <CardScene style={styles.scene} card={card} />
         </TouchableWithoutFeedback>
         <View style={styles.description}>
           <CardBlocks card={card} onSelectBlock={_handleSelectBlock} />

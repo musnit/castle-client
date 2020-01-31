@@ -12,6 +12,7 @@ import * as Utilities from './utilities';
 
 import CardBlocks from './CardBlocks';
 import CardHeader from './CardHeader';
+import CardScene from './CardScene';
 import EditBlock from './EditBlock';
 
 const styles = StyleSheet.create({
@@ -27,6 +28,11 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 6,
   },
   scene: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+  },
+  sceneActions: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -37,6 +43,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     padding: 8,
+    backgroundColor: '#f2f2f2',
   },
   buttonLabel: {
     textAlign: 'center',
@@ -59,6 +66,10 @@ const styles = StyleSheet.create({
 const CARD_FRAGMENT = `
   cardId
   title
+  backgroundImage {
+    fileId
+    url
+  }
   blocks {
     cardBlockId
     cardBlockUpdateId
@@ -405,6 +416,8 @@ class CreateCardScreen extends React.Component {
         ? card.blocks.find((block) => block.cardBlockId === blockIdToEdit)
         : EMPTY_BLOCK;
 
+    const chooseImageAction = card.backgroundImage ? 'Change Image' : 'Add Image';
+
     // SafeAreaView doesn't respond to statusbar being hidden right now
     // https://github.com/facebook/react-native/pull/20999
     return (
@@ -422,9 +435,10 @@ class CreateCardScreen extends React.Component {
           enableAutomaticScroll={false}
           contentContainerStyle={{ flex: 1 }}
           innerRef={(ref) => (this._scrollViewRef = ref)}>
+          <CardScene card={card} style={styles.scene} />
           <TouchableWithoutFeedback onPress={this._handlePressBackground}>
-            <View style={styles.scene}>
-              <ActionButton onPress={this._handleChooseImage}>Edit Background Image</ActionButton>
+            <View style={styles.sceneActions}>
+              <ActionButton onPress={this._handleChooseImage}>{chooseImageAction}</ActionButton>
             </View>
           </TouchableWithoutFeedback>
           <View style={styles.description}>
