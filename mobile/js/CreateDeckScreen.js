@@ -34,6 +34,9 @@ const CreateDeckScreen = (props) => {
           cards {
             cardId
             title
+            backgroundImage {
+              url
+            }
           }
         }
       }
@@ -57,6 +60,9 @@ const CreateDeckScreen = (props) => {
           cards {
             cardId
             title
+            backgroundImage {
+              url
+            }
           }
         }
       }

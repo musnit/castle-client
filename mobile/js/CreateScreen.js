@@ -7,6 +7,8 @@ import { useQuery } from '@apollo/react-hooks';
 import { NavigationActions } from 'react-navigation';
 import { useNavigation, useNavigationEvents } from 'react-navigation-hooks';
 
+import CardCell from './CardCell';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -34,22 +36,20 @@ const styles = StyleSheet.create({
     width: '33%',
     height: 192, // TODO: correct ratio
   },
-  cell: {
+  cellTitle: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#fff',
+  },
+  createCell: {
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 6,
-    backgroundColor: '#f2f2f2',
     width: '100%',
     height: '100%',
     alignItems: 'flex-start',
     justifyContent: 'flex-end',
     padding: 8,
-  },
-  cellTitle: {
-    fontSize: 10,
-    color: '#333',
-  },
-  createCell: {
     backgroundColor: '#bbb',
   },
 });
@@ -59,9 +59,7 @@ const EditDeckCell = (props) => {
   const title = deck && deck.title ? deck.title : 'Untitled Deck';
   return (
     <View style={styles.cellContainer}>
-      <TouchableOpacity style={styles.cell} onPress={onPress}>
-        <Text style={styles.cellTitle}>{title}</Text>
-      </TouchableOpacity>
+      <CardCell card={deck.initialCard} onPress={onPress} title={title} />
     </View>
   );
 };
@@ -69,7 +67,7 @@ const EditDeckCell = (props) => {
 const CreateDeckCell = (props) => {
   return (
     <View style={styles.cellContainer}>
-      <TouchableOpacity style={[styles.cell, styles.createCell]} onPress={props.onPress}>
+      <TouchableOpacity style={styles.createCell} onPress={props.onPress}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <FastImage
             style={{
@@ -79,7 +77,7 @@ const CreateDeckCell = (props) => {
             }}
             source={require('../assets/images/add.png')}
           />
-          <Text style={[styles.cellTitle, { fontWeight: '700', color: '#fff' }]}>Create Deck</Text>
+          <Text style={styles.cellTitle}>Create Deck</Text>
         </View>
       </TouchableOpacity>
     </View>
@@ -98,6 +96,10 @@ const CreateScreen = () => {
           title
           initialCard {
             cardId
+            title
+            backgroundImage {
+              url
+            }
           }
         }
       }
