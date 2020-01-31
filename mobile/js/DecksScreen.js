@@ -5,6 +5,7 @@ import SafeAreaView from 'react-native-safe-area-view';
 import { useQuery } from '@apollo/react-hooks';
 import { useNavigation, useNavigationEvents } from 'react-navigation-hooks';
 
+import CardCell from './CardCell';
 import FastImage from 'react-native-fast-image';
 import GameUrlInput from './GameUrlInput';
 import Viewport from './viewport';
@@ -49,23 +50,8 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   deckFeedItemCard: {
-    minHeight: 50 * vh,
+    height: 50 * vh,
     width: '56%',
-    borderRadius: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#fff',
-  },
-  deckFeedItemPreviewImage: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-    borderRadius: 6,
-  },
-  deckFeedItemTitle: {
-    backgroundColor: '#fff',
-    padding: 4,
   },
 });
 
@@ -77,19 +63,15 @@ const DeckFeedItem = ({ deck }) => {
         <Text style={styles.deckFeedItemCreator}>{deck.creator.username}</Text>
       </View>
       <View style={styles.deckFeedItemContent}>
-        <TouchableOpacity
-          style={styles.deckFeedItemCard}
-          onPress={() => {
-            navigation.navigate('PlayCard', { deckId: deck.deckId });
-          }}>
-          {deck.initialCard && deck.initialCard.backgroundImage && (
-            <FastImage
-              style={styles.deckFeedItemPreviewImage}
-              source={{ uri: deck.initialCard.backgroundImage.url }}
-            />
-          )}
-          <Text style={styles.deckFeedItemTitle}>{deck.title}</Text>
-        </TouchableOpacity>
+        <View style={styles.deckFeedItemCard}>
+          <CardCell
+            card={deck.initialCard}
+            title={deck.title}
+            onPress={() => {
+              navigation.navigate('PlayCard', { deckId: deck.deckId });
+            }}
+          />
+        </View>
       </View>
     </View>
   );
