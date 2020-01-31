@@ -1001,6 +1001,7 @@ const ToolFilePicker = ({ element }) => {
 
   const anchorRef = useRef(null);
 
+  // TODO: merge with Utilities.launchImagePicker(methodName, (result) => setValue(result.url))
   const launchImagePicker = (methodName) => {
     const options = { maxWidth: 1024, maxHeight: 1024, imageFileType: 'png' };
 

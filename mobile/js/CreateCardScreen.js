@@ -8,6 +8,7 @@ import uuid from 'uuid/v4';
 import { withNavigation, withNavigationFocus } from 'react-navigation';
 
 import * as Session from './Session';
+import * as Utilities from './utilities';
 
 import CardBlocks from './CardBlocks';
 import CardHeader from './CardHeader';
@@ -73,6 +74,7 @@ const saveDeck = async (card, deck) => {
   };
   const cardUpdateFragment = {
     title: card.title,
+    backgroundImageFileId: card.backgroundImage ? card.backgroundImage.fileId : undefined,
     blocks: card.blocks.map((block) => {
       return {
         type: block.type,
@@ -210,6 +212,13 @@ const EMPTY_BLOCK = {
   destination: null,
 };
 
+// NOTE (ben): this screen is currently not a function component
+// because of some of the cases where it needs to perform multiple
+// stateful things in sequence, and useEffect() was less intuitive for this.
+// the best example is _handlePublishAndGoToDestination, where we
+// publish a card (containing some temp uuid blocks), find the resulting block after
+// publish, then immediately navigate to a new card based on the block's destination.
+// this could be maybe be solved by moving the publish network call ownership into a HOC.
 class CreateCardScreen extends React.Component {
   state = {
     deck: EMPTY_DECK,
@@ -370,6 +379,20 @@ class CreateCardScreen extends React.Component {
     }
   };
 
+  _handleChooseImage = () => {
+    Utilities.launchImageLibrary((result) => {
+      if (!result || result.error) {
+        this._handleCardChange({
+          backgroundImage: null,
+        });
+      } else if (result.url) {
+        this._handleCardChange({
+          backgroundImage: result,
+        });
+      }
+    });
+  };
+
   _toggleHeaderExpanded = () =>
     this.setState((state) => {
       return { ...state, isHeaderExpanded: !state.isHeaderExpanded };
@@ -401,7 +424,7 @@ class CreateCardScreen extends React.Component {
           innerRef={(ref) => (this._scrollViewRef = ref)}>
           <TouchableWithoutFeedback onPress={this._handlePressBackground}>
             <View style={styles.scene}>
-              <ActionButton>Edit Scene</ActionButton>
+              <ActionButton onPress={this._handleChooseImage}>Edit Background Image</ActionButton>
             </View>
           </TouchableWithoutFeedback>
           <View style={styles.description}>
