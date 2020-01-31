@@ -5,6 +5,7 @@ import SafeAreaView from 'react-native-safe-area-view';
 import { useQuery } from '@apollo/react-hooks';
 import { useNavigation, useNavigationEvents } from 'react-navigation-hooks';
 
+import FastImage from 'react-native-fast-image';
 import GameUrlInput from './GameUrlInput';
 import Viewport from './viewport';
 
@@ -55,22 +56,39 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#fff',
   },
+  deckFeedItemPreviewImage: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+    borderRadius: 6,
+  },
+  deckFeedItemTitle: {
+    backgroundColor: '#fff',
+    padding: 4,
+  },
 });
 
-const DeckFeedItem = (props) => {
+const DeckFeedItem = ({ deck }) => {
   const navigation = useNavigation();
   return (
     <View style={styles.deckFeedItemContainer}>
       <View style={styles.deckFeedItemMeta}>
-        <Text style={styles.deckFeedItemCreator}>{props.deck.creator.username}</Text>
+        <Text style={styles.deckFeedItemCreator}>{deck.creator.username}</Text>
       </View>
       <View style={styles.deckFeedItemContent}>
         <TouchableOpacity
           style={styles.deckFeedItemCard}
           onPress={() => {
-            navigation.navigate('PlayCard', { deckId: props.deck.deckId });
+            navigation.navigate('PlayCard', { deckId: deck.deckId });
           }}>
-          <Text>{props.deck.title}</Text>
+          {deck.initialCard && deck.initialCard.backgroundImage && (
+            <FastImage
+              style={styles.deckFeedItemPreviewImage}
+              source={{ uri: deck.initialCard.backgroundImage.url }}
+            />
+          )}
+          <Text style={styles.deckFeedItemTitle}>{deck.title}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -89,8 +107,11 @@ const DecksScreen = (props) => {
           userId
           username
         }
-        currentCard {
+        initialCard {
           cardId
+          backgroundImage {
+            url
+          }
         }
       }
     }
