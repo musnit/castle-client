@@ -6,7 +6,7 @@ import SafeAreaView from 'react-native-safe-area-view';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useNavigation, useNavigationEvents } from 'react-navigation-hooks';
 
-import CardsGrid from './CardsGrid';
+import CardsSet from './CardsSet';
 import ConfigureDeck from './ConfigureDeck';
 import DeckHeader from './DeckHeader';
 
@@ -126,7 +126,15 @@ const CreateDeckScreen = (props) => {
       />
       <KeyboardAwareScrollView contentContainerStyle={styles.scrollView}>
         {mode === 'cards' ? (
-          <CardsGrid deck={deck} />
+          <CardsSet
+            deck={deck}
+            onPress={(card) =>
+              navigation.navigate('CreateCard', {
+                deckIdToEdit: deck.deckId,
+                cardIdToEdit: card.cardId,
+              })
+            }
+          />
         ) : (
           <ConfigureDeck deck={deck} onChange={_changeDeck} onDeleteDeck={_deleteDeck} />
         )}
