@@ -20,9 +20,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000',
   },
+  cardBody: {
+    // contains just the 16:9 card as a child
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   scrollView: {
-    flex: 1,
-    flexShrink: 1,
+    height: '100%', // 100% of containing cardBody
+    aspectRatio: 0.5625, // 16:9
     backgroundColor: '#f2f2f2',
     borderRadius: 6,
   },
@@ -454,36 +459,38 @@ class CreateCardScreen extends React.Component {
           onChange={this._handleCardChange}
           onDeleteCard={this._handleCardDelete}
         />
-        <KeyboardAwareScrollView
-          style={styles.scrollView}
-          enableAutomaticScroll={false}
-          contentContainerStyle={{ flex: 1 }}
-          innerRef={(ref) => (this._scrollViewRef = ref)}>
-          <CardScene card={card} style={styles.scene} />
-          <TouchableWithoutFeedback onPress={this._handlePressBackground}>
-            <View style={styles.sceneActions}>
-              <ActionButton onPress={this._handleChooseImage}>{chooseImageAction}</ActionButton>
+        <View style={styles.cardBody}>
+          <KeyboardAwareScrollView
+            style={styles.scrollView}
+            enableAutomaticScroll={false}
+            contentContainerStyle={{ flex: 1 }}
+            innerRef={(ref) => (this._scrollViewRef = ref)}>
+            <CardScene card={card} style={styles.scene} />
+            <TouchableWithoutFeedback onPress={this._handlePressBackground}>
+              <View style={styles.sceneActions}>
+                <ActionButton onPress={this._handleChooseImage}>{chooseImageAction}</ActionButton>
+              </View>
+            </TouchableWithoutFeedback>
+            <View style={styles.description}>
+              {isEditingBlock ? (
+                <EditBlock
+                  deck={deck}
+                  block={blockToEdit}
+                  onDismiss={this._handleDismissEditing}
+                  onTextInputFocus={this._handleBlockTextInputFocus}
+                  onChangeBlock={this._handleBlockChange}
+                  onGoToDestination={() => this._handlePublishAndGoToDestination(blockToEdit)}
+                />
+              ) : (
+                <CardBlocks card={card} onSelectBlock={this._handleEditBlock} isEditable />
+              )}
             </View>
-          </TouchableWithoutFeedback>
-          <View style={styles.description}>
-            {isEditingBlock ? (
-              <EditBlock
-                deck={deck}
-                block={blockToEdit}
-                onDismiss={this._handleDismissEditing}
-                onTextInputFocus={this._handleBlockTextInputFocus}
-                onChangeBlock={this._handleBlockChange}
-                onGoToDestination={() => this._handlePublishAndGoToDestination(blockToEdit)}
-              />
-            ) : (
-              <CardBlocks card={card} onSelectBlock={this._handleEditBlock} isEditable />
-            )}
-          </View>
-          <View style={styles.actions}>
-            <ActionButton onPress={() => this._handleEditBlock(null)}>Add Block</ActionButton>
-            <CTAButton onPress={this._handlePublish}>Save</CTAButton>
-          </View>
-        </KeyboardAwareScrollView>
+            <View style={styles.actions}>
+              <ActionButton onPress={() => this._handleEditBlock(null)}>Add Block</ActionButton>
+              <CTAButton onPress={this._handlePublish}>Save</CTAButton>
+            </View>
+          </KeyboardAwareScrollView>
+        </View>
       </SafeAreaView>
     );
   }

@@ -14,9 +14,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000',
   },
+  cardBody: {
+    // contains just the 16:9 card as a child
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   scrollView: {
-    flex: 1,
-    flexShrink: 1,
+    height: '100%', // 100% of containing cardBody
+    aspectRatio: 0.5625, // 16:9
     backgroundColor: '#f2f2f2',
     borderRadius: 6,
   },
@@ -99,14 +104,16 @@ const PlayCardScreen = (props) => {
   return (
     <SafeAreaView style={styles.container}>
       <CardHeader card={card} onPressBack={() => navigation.navigate('HomeScreen')} />
-      <ScrollView style={styles.scrollView} contentContainerStyle={{ flex: 1 }}>
-        <TouchableWithoutFeedback onPress={_handlePressScene}>
-          <CardScene style={styles.scene} card={card} />
-        </TouchableWithoutFeedback>
-        <View style={styles.description}>
-          <CardBlocks card={card} onSelectBlock={_handleSelectBlock} />
-        </View>
-      </ScrollView>
+      <View style={styles.cardBody}>
+        <ScrollView style={styles.scrollView} contentContainerStyle={{ flex: 1 }}>
+          <TouchableWithoutFeedback onPress={_handlePressScene}>
+            <CardScene style={styles.scene} card={card} />
+          </TouchableWithoutFeedback>
+          <View style={styles.description}>
+            <CardBlocks card={card} onSelectBlock={_handleSelectBlock} />
+          </View>
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
 };
