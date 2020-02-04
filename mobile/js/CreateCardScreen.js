@@ -14,6 +14,7 @@ import CardBlocks from './CardBlocks';
 import CardHeader from './CardHeader';
 import CardScene from './CardScene';
 import EditBlock from './EditBlock';
+import Viewport from './viewport';
 
 const styles = StyleSheet.create({
   container: {
@@ -26,7 +27,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   scrollView: {
-    height: '100%', // 100% of containing cardBody
     aspectRatio: 0.5625, // 16:9
     backgroundColor: '#f2f2f2',
     borderRadius: 6,
@@ -446,6 +446,7 @@ class CreateCardScreen extends React.Component {
         : EMPTY_BLOCK;
 
     const chooseImageAction = card.backgroundImage ? 'Change Image' : 'Add Image';
+    const containScrollViewStyles = Viewport.isUltraWide ? { width: '100%' } : { height: '100%' };
 
     // SafeAreaView doesn't respond to statusbar being hidden right now
     // https://github.com/facebook/react-native/pull/20999
@@ -461,7 +462,7 @@ class CreateCardScreen extends React.Component {
         />
         <View style={styles.cardBody}>
           <KeyboardAwareScrollView
-            style={styles.scrollView}
+            style={[styles.scrollView, containScrollViewStyles]}
             enableAutomaticScroll={false}
             contentContainerStyle={{ flex: 1 }}
             innerRef={(ref) => (this._scrollViewRef = ref)}>

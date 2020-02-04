@@ -10,5 +10,7 @@ const units = {
 
 units.vmin = Math.min(units.vw, units.vh);
 units.vmax = Math.max(units.vw, units.vh);
+units.aspectRatio = width / height;
+units.isUltraWide = units.aspectRatio < 0.5;
 
 export default units;

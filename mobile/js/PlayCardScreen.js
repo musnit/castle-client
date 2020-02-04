@@ -8,6 +8,7 @@ import SafeAreaView from 'react-native-safe-area-view';
 import CardBlocks from './CardBlocks';
 import CardHeader from './CardHeader';
 import CardScene from './CardScene';
+import Viewport from './viewport';
 
 const styles = StyleSheet.create({
   container: {
@@ -20,7 +21,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   scrollView: {
-    height: '100%', // 100% of containing cardBody
     aspectRatio: 0.5625, // 16:9
     backgroundColor: '#f2f2f2',
     borderRadius: 6,
@@ -101,11 +101,15 @@ const PlayCardScreen = (props) => {
     }
   };
 
+  const containScrollViewStyles = Viewport.isUltraWide ? { width: '100%' } : { height: '100%' };
+
   return (
     <SafeAreaView style={styles.container}>
       <CardHeader card={card} onPressBack={() => navigation.navigate('HomeScreen')} />
       <View style={styles.cardBody}>
-        <ScrollView style={styles.scrollView} contentContainerStyle={{ flex: 1 }}>
+        <ScrollView
+          style={[styles.scrollView, containScrollViewStyles]}
+          contentContainerStyle={{ flex: 1 }}>
           <TouchableWithoutFeedback onPress={_handlePressScene}>
             <CardScene style={styles.scene} card={card} />
           </TouchableWithoutFeedback>
