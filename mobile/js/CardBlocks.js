@@ -62,7 +62,10 @@ const CardBlock = (props) => {
     case 'text':
     default: {
       return (
-        <TouchableOpacity style={[styles.textBlock, props.style]} onPress={props.onSelect}>
+        <TouchableOpacity
+          style={[styles.textBlock, props.style]}
+          onPress={props.onSelect}
+          disabled={!props.isEditable}>
           <Text style={styles.textBlockDescription}>{block.title}</Text>
         </TouchableOpacity>
       );
@@ -85,6 +88,7 @@ const CardBlocks = (props) => {
               key={ii}
               block={block}
               style={styles}
+              isEditable={props.isEditable}
               onSelect={() => props.onSelectBlock(block.cardBlockId)}
             />
           );
