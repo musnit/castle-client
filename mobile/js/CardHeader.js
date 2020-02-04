@@ -3,6 +3,7 @@ import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-nativ
 import FastImage from 'react-native-fast-image';
 
 import ConfigureInput from './ConfigureInput';
+import Viewport from './viewport';
 
 const styles = StyleSheet.create({
   container: {
@@ -55,7 +56,7 @@ const styles = StyleSheet.create({
 
 const ConfigureCard = (props) => {
   return (
-    <View style={{ minHeight: 48, padding: 16, marginTop: 42, marginBottom: 16 }}>
+    <View style={{ minHeight: 45 * Viewport.vh, padding: 16, marginTop: 42, marginBottom: 16 }}>
       <ConfigureInput
         label="Short Name"
         placeholder="Choose a name for this card"
