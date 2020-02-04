@@ -455,6 +455,7 @@ class CreateCardScreen extends React.Component {
         <CardHeader
           card={card}
           expanded={isHeaderExpanded}
+          isEditable
           onPressBack={this._saveAndGoBack}
           onPressTitle={this._toggleHeaderExpanded}
           onChange={this._handleCardChange}

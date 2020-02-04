@@ -73,7 +73,7 @@ const ConfigureCard = (props) => {
 };
 
 const CardHeader = (props) => {
-  const { card, expanded } = props;
+  const { card, expanded, isEditable } = props;
   const title = card.title ? card.title : 'Untitled Card';
   return (
     <View style={styles.container}>
@@ -94,11 +94,13 @@ const CardHeader = (props) => {
             source={require('../assets/images/dismiss.png')}
           />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.titleContainer} onPress={props.onPressTitle}>
-          <Text style={[styles.name, { backgroundColor: expanded ? 'transparent' : '#f2f2f2' }]}>
-            {title}
-          </Text>
-        </TouchableOpacity>
+        {isEditable && (
+          <TouchableOpacity style={styles.titleContainer} onPress={props.onPressTitle}>
+            <Text style={[styles.name, { backgroundColor: expanded ? 'transparent' : '#f2f2f2' }]}>
+              {title}
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
