@@ -349,6 +349,15 @@ class CreateCardScreen extends React.Component {
   _goBack = () =>
     this.props.navigation.navigate('CreateDeck', { deckIdToEdit: this.state.deck.deckId });
 
+  _saveAndGoBack = async () => {
+    // don't block on network for more than 500ms
+    await Promise.race([
+      saveDeck(this.state.card, this.state.deck),
+      new Promise((resolve) => setTimeout(resolve, 500)),
+    ]);
+    return this._goBack();
+  };
+
   _handleCardDelete = async () => {
     if (this.state.card.cardId) {
       await deleteCard(this.state.card.cardId);
@@ -424,7 +433,7 @@ class CreateCardScreen extends React.Component {
         <CardHeader
           card={card}
           expanded={isHeaderExpanded}
-          onPressBack={this._goBack}
+          onPressBack={this._saveAndGoBack}
           onPressTitle={this._toggleHeaderExpanded}
           onChange={this._handleCardChange}
           onDeleteCard={this._handleCardDelete}
