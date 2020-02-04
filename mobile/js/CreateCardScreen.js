@@ -48,6 +48,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#888',
   },
+  cta: {
+    backgroundColor: '#000',
+  },
+  ctaLabel: {
+    color: '#fff',
+    fontWeight: '700',
+  },
   description: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -202,6 +209,15 @@ const ActionButton = (props) => {
   return (
     <TouchableOpacity style={styles.button} {...buttonProps}>
       <Text style={styles.buttonLabel}>{props.children}</Text>
+    </TouchableOpacity>
+  );
+};
+
+const CTAButton = (props) => {
+  const buttonProps = { ...props, children: undefined };
+  return (
+    <TouchableOpacity style={[styles.button, styles.cta]} {...buttonProps}>
+      <Text style={[styles.buttonLabel, styles.ctaLabel]}>{props.children}</Text>
     </TouchableOpacity>
   );
 };
@@ -465,7 +481,7 @@ class CreateCardScreen extends React.Component {
           </View>
           <View style={styles.actions}>
             <ActionButton onPress={() => this._handleEditBlock(null)}>Add Block</ActionButton>
-            <ActionButton onPress={this._handlePublish}>Publish</ActionButton>
+            <CTAButton onPress={this._handlePublish}>Save</CTAButton>
           </View>
         </KeyboardAwareScrollView>
       </SafeAreaView>
