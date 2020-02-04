@@ -26,7 +26,7 @@ import ProfileScreen from './ProfileScreen';
 let HomeNavigator;
 
 if (Constants.USE_CARDS_PROTOTYPE) {
-  HomeNavigator = createSwitchNavigator(
+  HomeNavigator = createStackNavigator(
     {
       HomeScreen: {
         screen: DecksScreen,
@@ -36,6 +36,8 @@ if (Constants.USE_CARDS_PROTOTYPE) {
       },
     },
     {
+      mode: 'modal',
+      headerMode: 'none',
       navigationOptions: ({ navigation }) => {
         return {
           tabBarVisible: navigation.state.index == 0,
