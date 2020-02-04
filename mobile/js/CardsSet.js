@@ -1,11 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import FastImage from 'react-native-fast-image';
 
 import CardCell from './CardCell';
 
 const styles = StyleSheet.create({
   gridContainer: {
-    marginTop: 16,
     paddingLeft: 8,
     flex: 1,
     flexDirection: 'row',
@@ -25,6 +25,22 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     color: '#fff',
+  },
+  settingsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+  },
+  sortLabel: {
+    color: '#ccc',
+    textTransform: 'uppercase',
+  },
+  displayTypePicker: {
+    flexDirection: 'row',
+  },
+  displayTypeButton: {
+    paddingLeft: 12,
   },
 });
 
@@ -60,11 +76,34 @@ const CardsGrid = ({ deck, onPress }) => {
 
 const CardsSet = (props) => {
   const [mode, setMode] = React.useState('grid');
-  if (mode === 'grid') {
-    return <CardsGrid {...props} />;
-  } else {
-    return <CardsList {...props} />;
-  }
+  return (
+    <View style={styles.container}>
+      <View style={styles.settingsRow}>
+        <Text style={styles.sortLabel}>Sort: Arbitrary</Text>
+        <View style={styles.displayTypePicker}>
+          <TouchableOpacity style={styles.displayTypeButton} onPress={() => setMode('grid')}>
+            <FastImage
+              style={{
+                width: 12,
+                aspectRatio: 1,
+              }}
+              source={require('../assets/images/layout-grid.png')}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.displayTypeButton} onPress={() => setMode('list')}>
+            <FastImage
+              style={{
+                width: 12,
+                aspectRatio: 1,
+              }}
+              source={require('../assets/images/layout-list.png')}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+      {mode === 'grid' ? <CardsGrid {...props} /> : <CardsList {...props} />}
+    </View>
+  );
 };
 
 export default CardsSet;
