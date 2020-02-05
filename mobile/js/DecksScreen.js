@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f2f2f2',
   },
   scrollView: {
-    padding: 12,
+    padding: 16,
   },
   urlInput: {
     width: '100%',
@@ -30,28 +30,12 @@ const styles = StyleSheet.create({
   },
   deckFeedItemContainer: {
     width: '100%',
+    alignItems: 'center',
     marginBottom: 16,
   },
-  deckFeedItemMeta: {
-    padding: 8,
-  },
-  deckFeedItemCreator: {
-    color: '#666',
-    fontWeight: '700',
-  },
-  deckFeedItemContent: {
-    width: '100%',
-    borderColor: '#ccc',
-    borderRadius: 6,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#f2f2f2',
-    padding: 8,
-  },
   deckFeedItemCard: {
-    height: 50 * vh,
-    width: '56%',
+    aspectRatio: 9/16,
+    width: '100%',
   },
 });
 
@@ -59,19 +43,14 @@ const DeckFeedItem = ({ deck }) => {
   const navigation = useNavigation();
   return (
     <View style={styles.deckFeedItemContainer}>
-      <View style={styles.deckFeedItemMeta}>
-        <Text style={styles.deckFeedItemCreator}>{deck.creator.username}</Text>
-      </View>
-      <View style={styles.deckFeedItemContent}>
-        <View style={styles.deckFeedItemCard}>
-          <CardCell
-            card={deck.initialCard}
-            title={deck.title}
-            onPress={() => {
-              navigation.navigate('PlayCard', { deckId: deck.deckId });
-            }}
-          />
-        </View>
+      <View style={styles.deckFeedItemCard}>
+        <CardCell
+          card={deck.initialCard}
+          title={deck.creator.username}
+          onPress={() => {
+            navigation.navigate('PlayCard', { deckId: deck.deckId });
+          }}
+        />
       </View>
     </View>
   );

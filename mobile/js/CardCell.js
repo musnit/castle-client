@@ -5,25 +5,36 @@ import FastImage from 'react-native-fast-image';
 
 const styles = StyleSheet.create({
   card: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 6,
-    backgroundColor: '#f2f2f2',
+    borderRadius: 8,
+    backgroundColor: '#8CA5CD',
     width: '100%',
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 2,
+    elevation: 1,
   },
   cardPreviewImage: {
     position: 'absolute',
     width: '100%',
     height: '100%',
     resizeMode: 'cover',
-    borderRadius: 6,
   },
   cardTitle: {
-    backgroundColor: '#f2f2f2',
-    padding: 4,
+    backgroundColor: '#fff',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    fontSize: 16,
+    borderRadius: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 2,
+    elevation: 1,
   },
 });
 
