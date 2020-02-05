@@ -1,12 +1,17 @@
 import React from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import * as Utilities from './utilities';
 
 import CardCell from './CardCell';
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollView: {},
   gridContainer: {
     paddingLeft: 8,
     flex: 1,
@@ -77,7 +82,13 @@ const SearchInput = (props) => {
         }}
         source={require('../assets/images/search.png')}
       />
-      <TextInput style={styles.input} placeholderTextColor="#999" {...props} />
+      <TextInput
+        style={styles.input}
+        placeholderTextColor="#999"
+        returnKeyType="done"
+        autoCapitalize="none"
+        {...props}
+      />
     </View>
   );
 };
@@ -168,11 +179,13 @@ const CardsSet = (props) => {
           </TouchableOpacity>
         </View>
       </View>
-      {state.mode === 'grid' ? (
-        <CardsGrid {...props} />
-      ) : (
-        <CardsList searchQuery={state.searchQuery} {...props} />
-      )}
+      <KeyboardAwareScrollView style={styles.scrollView} keyboardShouldPersistTaps="handled">
+        {state.mode === 'grid' ? (
+          <CardsGrid {...props} />
+        ) : (
+          <CardsList searchQuery={state.searchQuery} {...props} />
+        )}
+      </KeyboardAwareScrollView>
     </View>
   );
 };

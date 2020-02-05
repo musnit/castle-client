@@ -1,7 +1,6 @@
 import React from 'react';
 import gql from 'graphql-tag';
 import { View, StyleSheet, Text } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import SafeAreaView from 'react-native-safe-area-view';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useNavigation, useNavigationEvents } from 'react-navigation-hooks';
@@ -15,7 +14,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000',
   },
-  scrollView: {},
 });
 
 const CreateDeckScreen = (props) => {
@@ -124,21 +122,19 @@ const CreateDeckScreen = (props) => {
           return setMode(mode);
         }}
       />
-      <KeyboardAwareScrollView contentContainerStyle={styles.scrollView}>
-        {mode === 'cards' ? (
-          <CardsSet
-            deck={deck}
-            onPress={(card) =>
-              navigation.navigate('CreateCard', {
-                deckIdToEdit: deck.deckId,
-                cardIdToEdit: card.cardId,
-              })
-            }
-          />
-        ) : (
-          <ConfigureDeck deck={deck} onChange={_changeDeck} onDeleteDeck={_deleteDeck} />
-        )}
-      </KeyboardAwareScrollView>
+      {mode === 'cards' ? (
+        <CardsSet
+          deck={deck}
+          onPress={(card) =>
+            navigation.navigate('CreateCard', {
+              deckIdToEdit: deck.deckId,
+              cardIdToEdit: card.cardId,
+            })
+          }
+        />
+      ) : (
+        <ConfigureDeck deck={deck} onChange={_changeDeck} onDeleteDeck={_deleteDeck} />
+      )}
     </SafeAreaView>
   );
 };
