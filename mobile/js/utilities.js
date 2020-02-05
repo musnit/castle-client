@@ -60,3 +60,23 @@ export const launchImagePicker = (methodName, callback = () => {}) => {
 export const launchImageLibrary = (callback) => launchImagePicker('launchImageLibrary', callback);
 
 export const launchCamera = (callback) => launchImagePicker('launchCamera', callback);
+
+const stringAsSearchInvariant = (string) => string.toLowerCase().trim();
+
+export const cardMatchesSearchQuery = (card, searchQuery) => {
+  if (!card) return false;
+  if (!searchQuery) return true;
+
+  const query = stringAsSearchInvariant(searchQuery);
+  const title = card.title ? stringAsSearchInvariant(card.title) : '';
+
+  if (title.startsWith(query)) return true;
+
+  const components = title.split(/[\s\-]/);
+  for (let ii = 0; ii < components.length; ii++) {
+    if (components[ii].startsWith(query)) {
+      return true;
+    }
+  }
+  return false;
+};

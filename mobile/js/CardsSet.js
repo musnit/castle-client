@@ -2,6 +2,8 @@ import React from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
+import * as Utilities from './utilities';
+
 import CardCell from './CardCell';
 
 const styles = StyleSheet.create({
@@ -17,7 +19,10 @@ const styles = StyleSheet.create({
     width: '33%',
     height: 192, // TODO: correct ratio
   },
-  listContainer: {},
+  listContainer: {
+    borderTopWidth: 1,
+    borderColor: '#888',
+  },
   listItem: {
     borderBottomWidth: 1,
     borderBottomColor: '#888',
@@ -31,32 +36,47 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
-    borderBottomWidth: 1,
-    borderColor: '#888',
   },
   sortLabel: {
     color: '#ccc',
     textTransform: 'uppercase',
   },
-  displayTypePicker: {
+  layoutPicker: {
     flexDirection: 'row',
   },
-  displayTypeButton: {
-    paddingLeft: 12,
+  layoutButton: {
+    margin: 6,
   },
-  input: {
+  searchContainer: {
+    marginTop: 16,
+    marginHorizontal: 16,
     borderRadius: 3,
     borderWidth: 1,
     borderColor: '#888',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  input: {
     padding: 12,
+    paddingLeft: 40,
     color: '#fff',
+    width: '100%',
   },
 });
 
 const SearchInput = (props) => {
   const { label } = props;
   return (
-    <View style={{ paddingTop: 16, paddingHorizontal: 16 }}>
+    <View style={styles.searchContainer}>
+      <FastImage
+        style={{
+          width: 16,
+          aspectRatio: 1,
+          marginLeft: 12,
+          marginRight: -28,
+        }}
+        source={require('../assets/images/search.png')}
+      />
       <TextInput style={styles.input} placeholderTextColor="#999" {...props} />
     </View>
   );
@@ -73,7 +93,7 @@ const CardsList = ({ deck, onPress, searchQuery }) => {
   if (deck) {
     cards =
       searchQuery && searchQuery.length
-        ? deck.cards.filter((card) => card.title.startsWith(searchQuery))
+        ? deck.cards.filter((card) => Utilities.cardMatchesSearchQuery(card, searchQuery))
         : deck.cards;
   }
   return (
@@ -121,8 +141,11 @@ const CardsSet = (props) => {
       )}
       <View style={styles.settingsRow}>
         <Text style={styles.sortLabel}>Sort: Arbitrary</Text>
-        <View style={styles.displayTypePicker}>
-          <TouchableOpacity style={styles.displayTypeButton} onPress={() => setMode('grid')}>
+        <View style={styles.layoutPicker}>
+          <TouchableOpacity
+            style={styles.layoutButton}
+            onPress={() => setMode('grid')}
+            hitSlop={{ top: 2, left: 2, bottom: 2, right: 2 }}>
             <FastImage
               style={{
                 width: 12,
@@ -131,7 +154,10 @@ const CardsSet = (props) => {
               source={require('../assets/images/layout-grid.png')}
             />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.displayTypeButton} onPress={() => setMode('list')}>
+          <TouchableOpacity
+            style={styles.layoutButton}
+            onPress={() => setMode('list')}
+            hitSlop={{ top: 2, left: 2, bottom: 2, right: 2 }}>
             <FastImage
               style={{
                 width: 12,
