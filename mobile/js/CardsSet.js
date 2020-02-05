@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
 import CardCell from './CardCell';
@@ -31,6 +31,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
+    borderBottomWidth: 1,
+    borderColor: '#888',
   },
   sortLabel: {
     color: '#ccc',
@@ -42,7 +44,23 @@ const styles = StyleSheet.create({
   displayTypeButton: {
     paddingLeft: 12,
   },
+  input: {
+    borderRadius: 3,
+    borderWidth: 1,
+    borderColor: '#888',
+    padding: 12,
+    color: '#fff',
+  },
 });
+
+const SearchInput = (props) => {
+  const { label } = props;
+  return (
+    <View style={{ paddingTop: 16, paddingHorizontal: 16 }}>
+      <TextInput style={styles.input} placeholderTextColor="#999" {...props} />
+    </View>
+  );
+};
 
 const CardListItem = ({ card, onPress }) => (
   <TouchableOpacity style={styles.listItem} onPress={onPress}>
@@ -50,11 +68,18 @@ const CardListItem = ({ card, onPress }) => (
   </TouchableOpacity>
 );
 
-const CardsList = ({ deck, onPress }) => {
+const CardsList = ({ deck, onPress, searchQuery }) => {
+  let cards;
+  if (deck) {
+    cards =
+      searchQuery && searchQuery.length
+        ? deck.cards.filter((card) => card.title.startsWith(searchQuery))
+        : deck.cards;
+  }
   return (
     <View style={styles.listContainer}>
-      {deck &&
-        deck.cards.map((card) => (
+      {cards &&
+        cards.map((card) => (
           <CardListItem key={card.cardId} card={card} onPress={() => onPress(card)} />
         ))}
     </View>
@@ -75,9 +100,25 @@ const CardsGrid = ({ deck, onPress }) => {
 };
 
 const CardsSet = (props) => {
-  const [mode, setMode] = React.useState('grid');
+  const [state, setState] = React.useState({ mode: 'grid', searchQuery: '' });
+
+  const setMode = (mode) =>
+    setState({
+      mode,
+      searchQuery: '',
+    });
+
+  const setQuery = (searchQuery) =>
+    setState({
+      ...state,
+      searchQuery,
+    });
+
   return (
     <View style={styles.container}>
+      {state.mode === 'list' && (
+        <SearchInput placeholder="Search" value={state.searchQuery} onChangeText={setQuery} />
+      )}
       <View style={styles.settingsRow}>
         <Text style={styles.sortLabel}>Sort: Arbitrary</Text>
         <View style={styles.displayTypePicker}>
@@ -101,7 +142,11 @@ const CardsSet = (props) => {
           </TouchableOpacity>
         </View>
       </View>
-      {mode === 'grid' ? <CardsGrid {...props} /> : <CardsList {...props} />}
+      {state.mode === 'grid' ? (
+        <CardsGrid {...props} />
+      ) : (
+        <CardsList searchQuery={state.searchQuery} {...props} />
+      )}
     </View>
   );
 };
