@@ -465,6 +465,7 @@ class CreateCardScreen extends React.Component {
           <KeyboardAwareScrollView
             style={[styles.scrollView, containScrollViewStyles]}
             enableAutomaticScroll={false}
+            keyboardShouldPersistTaps="handled"
             contentContainerStyle={{ flex: 1 }}
             innerRef={(ref) => (this._scrollViewRef = ref)}>
             <CardScene card={card} style={styles.scene} />
