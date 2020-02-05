@@ -5,12 +5,11 @@ import { useActionSheet } from '@expo/react-native-action-sheet';
 import FastImage from 'react-native-fast-image';
 
 const styles = StyleSheet.create({
-  editDescriptionContainer: {
+  container: {
     backgroundColor: '#fff',
     borderRadius: 6,
     width: '100%',
     minHeight: 72,
-    paddingHorizontal: 12,
     paddingBottom: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -18,31 +17,32 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 1,
   },
-  editDescriptionRow: {
+  row: {
     flexDirection: 'row',
-    borderBottomColor: '#ccc',
-    borderBottomWidth: 1,
+    justifyContent: 'space-between',
     alignItems: 'center',
+    paddingHorizontal: 12,
+    borderBottomColor: '#444',
+    borderBottomWidth: 1,
+    paddingVertical: 8,
+  },
+  pickerRow: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    paddingHorizontal: 12,
   },
   editDescriptionField: {
     minHeight: 22,
     width: '100%',
     flexShrink: 1,
     color: '#000',
-    paddingTop: 12,
-    paddingBottom: 8,
-  },
-  choiceRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingTop: 8,
+    paddingTop: 4,
+    paddingBottom: 4,
   },
   label: {
     fontSize: 12,
     textTransform: 'uppercase',
-    marginBottom: 8,
-    marginTop: 12,
+    marginVertical: 12,
   },
   selectContainer: {
     borderRadius: 3,
@@ -57,10 +57,16 @@ const styles = StyleSheet.create({
 });
 
 const textTypeStyles = StyleSheet.create({
-  editDescriptionContainer: {
+  container: {
     backgroundColor: '#fff',
   },
-  editDescriptionRow: {},
+  row: {
+    borderBottomColor: '#e0e0e0',
+  },
+  choiceRow: {
+    borderBottomWidth: 0,
+    paddingBottom: 0,
+  },
   editDescriptionField: {
     color: '#000',
   },
@@ -76,14 +82,14 @@ const textTypeStyles = StyleSheet.create({
 });
 
 const choiceTypeStyles = StyleSheet.create({
-  editDescriptionContainer: {
+  container: {
     backgroundColor: '#000',
   },
-  editDescriptionRow: {},
+  row: {},
+  choiceRow: {},
   editDescriptionField: {
     color: '#fff',
     fontWeight: '700',
-    marginLeft: 6,
   },
   selectContainer: {
     borderColor: '#2b2b2b',
@@ -154,8 +160,8 @@ const EditBlock = (props) => {
       </TouchableOpacity>
     ) : null;
   return (
-    <View style={[styles.editDescriptionContainer, typeStyles.editDescriptionContainer]}>
-      <View style={styles.editDescriptionRow}>
+    <View style={[styles.container, typeStyles.container]}>
+      <View style={[styles.row, typeStyles.row]}>
         <TextInput
           style={[styles.editDescriptionField, typeStyles.editDescriptionField]}
           multiline
@@ -169,7 +175,7 @@ const EditBlock = (props) => {
         />
         {maybeBlockDestinationButton}
       </View>
-      <View style={styles.choiceRow}>
+      <View style={[styles.row, typeStyles.row, typeStyles.choiceRow]}>
         <Text style={[styles.label, typeStyles.label]}>Choice</Text>
         <Switch
           value={block.type == 'choice'}
@@ -179,14 +185,14 @@ const EditBlock = (props) => {
         />
       </View>
       {block.type == 'choice' ? (
-        <React.Fragment>
+        <View style={styles.pickerRow}>
           <Text style={[styles.label, typeStyles.label]}>Destination</Text>
           <DestinationPicker
             onPress={selectDestination}
             value={destination}
             styleSheet={typeStyles}
           />
-        </React.Fragment>
+        </View>
       ) : null}
     </View>
   );
