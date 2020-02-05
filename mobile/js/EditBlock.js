@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TouchableOpacity, StyleSheet, Text, TextInput, View } from 'react-native';
+import { TouchableOpacity, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 
 import FastImage from 'react-native-fast-image';
@@ -31,6 +31,12 @@ const styles = StyleSheet.create({
     color: '#000',
     paddingTop: 12,
     paddingBottom: 8,
+  },
+  choiceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingTop: 8,
   },
   label: {
     fontSize: 12,
@@ -90,38 +96,6 @@ const choiceTypeStyles = StyleSheet.create({
   },
 });
 
-const BLOCK_TYPES = [
-  {
-    name: 'Text',
-    type: 'text',
-  },
-  {
-    name: 'Choice',
-    type: 'choice',
-  },
-];
-
-const Dropdown = (props) => {
-  const { onPress, styleSheet, value } = props;
-  const valueToDisplay = value !== null ? value : '';
-  return (
-    <TouchableOpacity
-      style={[styles.selectContainer, styleSheet.selectContainer]}
-      onPress={onPress}>
-      <Text style={[styles.selection, styleSheet.selection]}>{valueToDisplay}</Text>
-      <View style={styles.select}>
-        <FastImage
-          style={{
-            width: 16,
-            aspectRatio: 1,
-          }}
-          source={require('../assets/images/arrow-button-down.png')}
-        />
-      </View>
-    </TouchableOpacity>
-  );
-};
-
 const DestinationPicker = (props) => {
   const { onPress, onPressArrow, styleSheet, value } = props;
   const valueToDisplay = value !== null ? value : '';
@@ -137,20 +111,6 @@ const DestinationPicker = (props) => {
 const EditBlock = (props) => {
   const { deck, block, onChangeBlock } = props;
   const { showActionSheetWithOptions } = useActionSheet();
-
-  const selectBlockType = () =>
-    showActionSheetWithOptions(
-      {
-        title: 'Block Type',
-        options: BLOCK_TYPES.map((type) => type.name).concat(['Cancel']),
-        cancelButtonIndex: 2,
-      },
-      (buttonIndex) => {
-        if (buttonIndex < BLOCK_TYPES.length) {
-          onChangeBlock({ ...block, type: BLOCK_TYPES[buttonIndex].type });
-        }
-      }
-    );
 
   const selectDestination = () => {
     if (!deck || !deck.cards) return false;
@@ -209,8 +169,15 @@ const EditBlock = (props) => {
         />
         {maybeBlockDestinationButton}
       </View>
-      <Text style={[styles.label, typeStyles.label]}>Block Type</Text>
-      <Dropdown onPress={selectBlockType} value={blockType} styleSheet={typeStyles} />
+      <View style={styles.choiceRow}>
+        <Text style={[styles.label, typeStyles.label]}>Choice</Text>
+        <Switch
+          value={block.type == 'choice'}
+          onValueChange={(enabled) =>
+            onChangeBlock({ ...block, type: enabled ? 'choice' : 'text' })
+          }
+        />
+      </View>
       {block.type == 'choice' ? (
         <React.Fragment>
           <Text style={[styles.label, typeStyles.label]}>Destination</Text>
