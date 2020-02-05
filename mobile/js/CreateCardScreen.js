@@ -478,13 +478,17 @@ class CreateCardScreen extends React.Component {
                 <EditBlock
                   deck={deck}
                   block={blockToEdit}
-                  onDismiss={this._handleDismissEditing}
                   onTextInputFocus={this._handleBlockTextInputFocus}
                   onChangeBlock={this._handleBlockChange}
                   onGoToDestination={() => this._handlePublishAndGoToDestination(blockToEdit)}
                 />
               ) : (
-                <CardBlocks card={card} onSelectBlock={this._handleEditBlock} isEditable />
+                <CardBlocks
+                  card={card}
+                  onSelectBlock={this._handleEditBlock}
+                  onSelectDestination={this._handlePublishAndGoToDestination}
+                  isEditable
+                />
               )}
             </View>
             <View style={styles.actions}>

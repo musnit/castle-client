@@ -10,7 +10,8 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     width: '100%',
     minHeight: 72,
-    padding: 12,
+    paddingHorizontal: 12,
+    paddingBottom: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
@@ -18,16 +19,17 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   editDescriptionRow: {
-    minHeight: 20,
     flexDirection: 'row',
     borderBottomColor: '#ccc',
     borderBottomWidth: 1,
+    alignItems: 'center',
   },
   editDescriptionField: {
+    minHeight: 22,
     width: '100%',
     flexShrink: 1,
     color: '#000',
-    paddingTop: 0,
+    paddingTop: 12,
     paddingBottom: 8,
   },
   label: {
@@ -45,7 +47,7 @@ const styles = StyleSheet.create({
   },
   selection: { width: '100%', flexShrink: 1 },
   select: { marginLeft: 4, flexShrink: 0 },
-  dismiss: { marginLeft: 4, flexShrink: 0 },
+  arrow: { marginLeft: 4, flexShrink: 0 },
 });
 
 const textTypeStyles = StyleSheet.create({
@@ -99,7 +101,7 @@ const BLOCK_TYPES = [
   },
 ];
 
-const Dropdown = props => {
+const Dropdown = (props) => {
   const { onPress, styleSheet, value } = props;
   const valueToDisplay = value !== null ? value : '';
   return (
@@ -120,7 +122,7 @@ const Dropdown = props => {
   );
 };
 
-const DestinationPicker = props => {
+const DestinationPicker = (props) => {
   const { onPress, onPressArrow, styleSheet, value } = props;
   const valueToDisplay = value !== null ? value : '';
   return (
@@ -128,21 +130,11 @@ const DestinationPicker = props => {
       style={[styles.selectContainer, styleSheet.selectContainer]}
       onPress={onPress}>
       <Text style={[styles.selection, styleSheet.selection]}>{valueToDisplay}</Text>
-      <TouchableOpacity style={styles.select} onPress={onPressArrow}>
-        <FastImage
-          style={{
-            width: 16,
-            aspectRatio: 1,
-            transform: [{ scaleX: -1 }],
-          }}
-          source={require('../assets/images/arrow-left.png')}
-        />
-      </TouchableOpacity>
     </TouchableOpacity>
   );
 };
 
-const EditBlock = props => {
+const EditBlock = (props) => {
   const { deck, block, onChangeBlock } = props;
   const { showActionSheetWithOptions } = useActionSheet();
 
@@ -150,10 +142,10 @@ const EditBlock = props => {
     showActionSheetWithOptions(
       {
         title: 'Block Type',
-        options: BLOCK_TYPES.map(type => type.name).concat(['Cancel']),
+        options: BLOCK_TYPES.map((type) => type.name).concat(['Cancel']),
         cancelButtonIndex: 2,
       },
-      buttonIndex => {
+      (buttonIndex) => {
         if (buttonIndex < BLOCK_TYPES.length) {
           onChangeBlock({ ...block, type: BLOCK_TYPES[buttonIndex].type });
         }
@@ -167,12 +159,12 @@ const EditBlock = props => {
       {
         title: 'Destination',
         options: deck.cards
-          .map(card => card.title)
+          .map((card) => card.title)
           .concat(['New Card'])
           .concat(['Cancel']),
         cancelButtonIndex: deck.cards.length + 1,
       },
-      buttonIndex => {
+      (buttonIndex) => {
         if (buttonIndex < deck.cards.length) {
           onChangeBlock({ ...block, destinationCardId: deck.cards[buttonIndex].cardId });
         } else if (buttonIndex == deck.cards.length) {
@@ -186,25 +178,24 @@ const EditBlock = props => {
   const destination = block.createDestinationCard
     ? 'New Card'
     : block.destinationCardId
-    ? deck.cards.find(card => card.cardId === block.destinationCardId).title
+    ? deck.cards.find((card) => card.cardId === block.destinationCardId).title
     : null;
   const typeStyles = block.type === 'choice' ? choiceTypeStyles : textTypeStyles;
-  const maybeBlockIcon =
+  const maybeBlockDestinationButton =
     block.type === 'choice' ? (
-      <FastImage
-        style={{
-          width: 12,
-          aspectRatio: 1,
-          marginTop: 2,
-          marginLeft: 2,
-        }}
-        source={require('../assets/images/add.png')}
-      />
+      <TouchableOpacity style={styles.arrow} onPress={props.onGoToDestination}>
+        <FastImage
+          style={{
+            width: 22,
+            aspectRatio: 1,
+          }}
+          source={require('../assets/images/arrow-circle-right.png')}
+        />
+      </TouchableOpacity>
     ) : null;
   return (
     <View style={[styles.editDescriptionContainer, typeStyles.editDescriptionContainer]}>
       <View style={styles.editDescriptionRow}>
-        {maybeBlockIcon}
         <TextInput
           style={[styles.editDescriptionField, typeStyles.editDescriptionField]}
           multiline
@@ -214,17 +205,9 @@ const EditBlock = props => {
           placeholderTextColor="#999"
           onFocus={props.onTextInputFocus}
           value={block.title}
-          onChangeText={text => onChangeBlock({ ...block, title: text })}
+          onChangeText={(text) => onChangeBlock({ ...block, title: text })}
         />
-        <TouchableOpacity style={styles.dismiss} onPress={props.onDismiss}>
-          <FastImage
-            style={{
-              width: 16,
-              aspectRatio: 1,
-            }}
-            source={require('../assets/images/dismiss.png')}
-          />
-        </TouchableOpacity>
+        {maybeBlockDestinationButton}
       </View>
       <Text style={[styles.label, typeStyles.label]}>Block Type</Text>
       <Dropdown onPress={selectBlockType} value={blockType} styleSheet={typeStyles} />
@@ -233,7 +216,6 @@ const EditBlock = props => {
           <Text style={[styles.label, typeStyles.label]}>Destination</Text>
           <DestinationPicker
             onPress={selectDestination}
-            onPressArrow={props.onGoToDestination}
             value={destination}
             styleSheet={typeStyles}
           />

@@ -22,7 +22,9 @@ const styles = StyleSheet.create({
   choiceBlockDescription: {
     color: '#fff',
     fontWeight: '700',
-    marginLeft: 8,
+    width: '100%',
+    flexShrink: 1,
+    marginRight: 8,
   },
   textBlock: {
     backgroundColor: '#fff',
@@ -48,14 +50,17 @@ const CardBlock = (props) => {
     case 'choice': {
       return (
         <TouchableOpacity style={[styles.choiceBlock, props.style]} onPress={props.onSelect}>
-          <FastImage
-            style={{
-              width: 12,
-              aspectRatio: 1,
-            }}
-            source={require('../assets/images/add.png')}
-          />
           <Text style={styles.choiceBlockDescription}>{block.title}</Text>
+          <TouchableOpacity disabled={!props.isEditable} onPress={props.onSelectDestination}>
+            <FastImage
+              style={{
+                width: 22,
+                aspectRatio: 1,
+                flexShrink: 0,
+              }}
+              source={require('../assets/images/arrow-circle-right.png')}
+            />
+          </TouchableOpacity>
         </TouchableOpacity>
       );
     }
@@ -90,6 +95,7 @@ const CardBlocks = (props) => {
               style={styles}
               isEditable={props.isEditable}
               onSelect={() => props.onSelectBlock(block.cardBlockId)}
+              onSelectDestination={() => props.onSelectDestination(block)}
             />
           );
         })}
