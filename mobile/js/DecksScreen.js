@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
   },
   deckFeedItemCard: {
     aspectRatio: 9/16,
-    width: '100%',
+    height: 75 * vh,
   },
 });
 
