@@ -9,7 +9,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
     borderRadius: 6,
     width: '100%',
-    padding: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
@@ -25,12 +26,15 @@ const styles = StyleSheet.create({
     width: '100%',
     flexShrink: 1,
     marginRight: 8,
+    fontSize: 16,
+    lineHeight: 22,
   },
   textBlock: {
     backgroundColor: '#fff',
     borderRadius: 6,
     width: '100%',
-    padding: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
@@ -40,6 +44,8 @@ const styles = StyleSheet.create({
   },
   textBlockDescription: {
     color: '#000',
+    fontSize: 16,
+    lineHeight: 22,
   },
 });
 
