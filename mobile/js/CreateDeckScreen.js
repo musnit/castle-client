@@ -69,7 +69,7 @@ const CreateDeckScreen = (props) => {
   );
 
   const _maybeSaveDeck = async () => {
-    if (deck.isChanged) {
+    if (deck && deck.isChanged) {
       const deckUpdateFragment = {
         title: deck.title,
       };
