@@ -1,6 +1,8 @@
 import React from 'react';
 import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 
+import * as Constants from './Constants';
+
 import AddBlockPlaceholder from './AddBlockPlaceholder';
 import FastImage from 'react-native-fast-image';
 
@@ -11,14 +13,10 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingVertical: 10,
     paddingHorizontal: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 2,
-    elevation: 1,
     marginBottom: 4,
     flexDirection: 'row',
     alignItems: 'center',
+    ...Constants.styles.dropShadow,
   },
   choiceBlockDescription: {
     color: '#fff',
@@ -35,12 +33,8 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingVertical: 10,
     paddingHorizontal: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 2,
-    elevation: 1,
     marginBottom: 4,
+    ...Constants.styles.dropShadow,
   },
   textBlockDescription: {
     color: '#000',
