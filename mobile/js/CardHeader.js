@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
@@ -72,6 +72,31 @@ const ConfigureCard = (props) => {
   );
 };
 
+const DismissIcon = () => {
+  return (
+    <Fragment>
+      <FastImage
+        style={{
+          width: 22,
+          aspectRatio: 1,
+        }}
+        tintColor='#fff'
+        source={require('../assets/images/dismiss.png')}
+      />
+      <FastImage
+        style={{
+          width: 22,
+          aspectRatio: 1,
+          marginTop: -20,
+          zIndex: -1,
+        }}
+        tintColor='#0008'
+        source={require('../assets/images/dismiss.png')}
+      />
+    </Fragment>
+  );
+}
+
 const CardHeader = (props) => {
   const { card, expanded, isEditable } = props;
   const title = card.title ? card.title : 'Untitled Card';
@@ -86,13 +111,7 @@ const CardHeader = (props) => {
       </View>
       <View style={styles.fixedHeader}>
         <TouchableOpacity style={styles.back} onPress={props.onPressBack}>
-          <FastImage
-            style={{
-              width: 22,
-              aspectRatio: 1,
-            }}
-            source={require('../assets/images/dismiss.png')}
-          />
+          <DismissIcon />
         </TouchableOpacity>
         {isEditable && (
           <TouchableOpacity style={styles.titleContainer} onPress={props.onPressTitle}>
