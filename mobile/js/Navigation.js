@@ -164,7 +164,20 @@ let TabOrder = ['Play', 'Profile'];
 if (Constants.USE_CARDS_PROTOTYPE) {
   AllTabs.Create = {
     screen: CreateNavigator,
-    navigationOptions: {},
+    navigationOptions: {
+      tabBarIcon: ({ focused, tintColor }) => {
+        return (
+          <Image
+            style={{
+              width: 28,
+              height: 28,
+              tintColor: tintColor,
+            }}
+            source={require('../assets/images/add-card.png')}
+          />
+        );
+      },
+    },
   };
   TabOrder = ['Play', 'Create', 'Profile'];
 }
