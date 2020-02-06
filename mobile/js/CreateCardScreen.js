@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
   sceneActions: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     flexShrink: 1,
   },
   button: {
