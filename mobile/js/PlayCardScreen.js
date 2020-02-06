@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     aspectRatio: 0.5625, // 16:9
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#8CA5CD',
     borderRadius: 6,
   },
   scene: {
