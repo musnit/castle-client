@@ -3,6 +3,8 @@ import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import FastImage from 'react-native-fast-image';
 
+import * as Constants from './Constants';
+
 const styles = StyleSheet.create({
   card: {
     borderRadius: 8,
@@ -25,16 +27,8 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   cardTitle: {
-    backgroundColor: '#fff',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    fontSize: 16,
-    borderRadius: 6,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 2,
-    elevation: 1,
+    ...Constants.styles.overlayButton,
+    ...Constants.styles.overlayButtonLabel,
   },
 });
 

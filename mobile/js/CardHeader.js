@@ -2,6 +2,8 @@ import React, { Fragment } from 'react';
 import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
+import * as Constants from './Constants';
+
 import ConfigureInput from './ConfigureInput';
 import Viewport from './viewport';
 
@@ -37,8 +39,8 @@ const styles = StyleSheet.create({
     zIndex: -1, // required to prevent negative margin from blocking back button
   },
   name: {
-    color: '#888',
-    padding: 4,
+    ...Constants.styles.overlayButton,
+    ...Constants.styles.overlayButtonLabel,
   },
   deleteButton: {
     marginTop: 16,
@@ -115,7 +117,7 @@ const CardHeader = (props) => {
         </TouchableOpacity>
         {isEditable && (
           <TouchableOpacity style={styles.titleContainer} onPress={props.onPressTitle}>
-            <Text style={[styles.name, { backgroundColor: expanded ? 'transparent' : '#f2f2f2' }]}>
+            <Text style={[styles.name, { backgroundColor: expanded ? 'transparent' : '#0006' }]}>
               {title}
             </Text>
           </TouchableOpacity>

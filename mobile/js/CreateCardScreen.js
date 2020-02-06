@@ -9,6 +9,7 @@ import { withNavigation, withNavigationFocus } from 'react-navigation';
 
 import * as Session from './Session';
 import * as Utilities from './utilities';
+import * as Constants from './Constants';
 
 import CardBlocks from './CardBlocks';
 import CardHeader from './CardHeader';
@@ -47,26 +48,10 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   button: {
-    borderRadius: 6,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    backgroundColor: '#fff',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 2,
-    elevation: 1,
+    ...Constants.styles.overlayButton,
   },
   buttonLabel: {
-    textAlign: 'center',
-    color: '#000',
-  },
-  cta: {
-    backgroundColor: '#000',
-  },
-  ctaLabel: {
-    color: '#fff',
-    fontWeight: '700',
+    ...Constants.styles.overlayButtonLabel,
   },
   description: {
     alignItems: 'center',
@@ -510,7 +495,7 @@ class CreateCardScreen extends React.Component {
             </View>
             <View style={styles.actions}>
               <ActionButton onPress={() => this._handleEditBlock(null)}>Add Block</ActionButton>
-              <CTAButton onPress={this._handlePublish}>Save</CTAButton>
+              <ActionButton onPress={this._handlePublish}>Save</ActionButton>
             </View>
           </KeyboardAwareScrollView>
         </View>

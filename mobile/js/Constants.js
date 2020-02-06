@@ -12,6 +12,19 @@ export const styles = {
     shadowRadius: 2,
     elevation: 1,
   },
+  overlayButton: {
+    borderRadius: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: '#0003',
+  },
+  overlayButtonLabel: {
+    color: '#fff',
+    textShadowColor: '#0006',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+    fontSize: 16,
+  },
 };
 
 export const colors = {
