@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Keyboard, StyleSheet, Text, View } from 'react-native';
 
 import BottomSheet from 'reanimated-bottom-sheet';
 import CardsSet from './CardsSet';
@@ -13,11 +13,11 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#000',
-    borderTopLeftRadius: 6,
-    borderTopRightRadius: 6,
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
     overflow: 'hidden',
     borderTopWidth: 1,
-    borderColor: '#444',
+    borderColor: '#666',
   },
   handleContainer: {
     alignItems: 'center',
@@ -39,8 +39,34 @@ const styles = StyleSheet.create({
   },
 });
 
-const CardDestinationPickerSheet = ({ deck, sheetRef, onSelectCard }) => {
-  const renderHeader = () => (
+class CardDestinationPickerSheet extends React.Component {
+  _sheetRef = React.createRef(null);
+
+  open = () => {
+    if (this._sheetRef.current) {
+      this._sheetRef.current.snapTo(0);
+    }
+  };
+
+  close = () => {
+    if (this._sheetRef.current) {
+      this._sheetRef.current.snapTo(1);
+    }
+  };
+
+  _onOpenStart = () => {
+    // needed in case some other text input was already showing the keyboard,
+    // which overlaps with the expanding drawer
+    Keyboard.dismiss();
+  };
+
+  _onCloseStart = () => {
+    // needed because closing the drawer
+    // doesn't necessarily unmount/unfocus the child text input
+    Keyboard.dismiss();
+  };
+
+  _renderHeader = () => (
     <View style={styles.header}>
       <View style={styles.handleContainer}>
         <View style={styles.handle} />
@@ -49,22 +75,28 @@ const CardDestinationPickerSheet = ({ deck, sheetRef, onSelectCard }) => {
     </View>
   );
 
-  const renderContent = () => (
-    <View style={styles.container}>
-      <CardsSet deck={deck} onPress={onSelectCard} />
-    </View>
-  );
+  _renderContent = () => {
+    const { deck, onSelectCard } = this.props;
+    return (
+      <View style={styles.container}>
+        <CardsSet deck={deck} onPress={onSelectCard} />
+      </View>
+    );
+  };
 
-  return (
-    <BottomSheet
-      ref={sheetRef}
-      borderRadius={6}
-      snapPoints={[DRAWER_EXPANDED_HEIGHT, 0]}
-      initialSnap={1}
-      renderHeader={renderHeader}
-      renderContent={renderContent}
-    />
-  );
-};
+  render() {
+    return (
+      <BottomSheet
+        ref={this._sheetRef}
+        snapPoints={[DRAWER_EXPANDED_HEIGHT, 0]}
+        initialSnap={1}
+        onCloseStart={this._onCloseStart}
+        onOpenStart={this._onOpenStart}
+        renderHeader={this._renderHeader}
+        renderContent={this._renderContent}
+      />
+    );
+  }
+}
 
 export default CardDestinationPickerSheet;

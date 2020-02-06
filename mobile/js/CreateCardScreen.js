@@ -348,9 +348,7 @@ class CreateCardScreen extends React.Component {
 
   _handleDismissDestinationPicker = () => {
     if (this._destinationPickerRef) {
-      // TODO: abstract as open/close
-      // and include yielding the keyboard when closing.
-      this._destinationPickerRef.current.snapTo(1);
+      this._destinationPickerRef.current.close();
     }
   };
 
@@ -388,7 +386,7 @@ class CreateCardScreen extends React.Component {
 
   _showDestinationPicker = () => {
     if (this._destinationPickerRef) {
-      this._destinationPickerRef.current.snapTo(0);
+      this._destinationPickerRef.current.open();
     }
   };
 
@@ -530,7 +528,7 @@ class CreateCardScreen extends React.Component {
         </SafeAreaView>
         <CardDestinationPickerSheet
           deck={deck}
-          sheetRef={this._destinationPickerRef}
+          ref={this._destinationPickerRef}
           onSelectCard={(card) => this._onPickDestinationCard(blockToEdit, card)}
         />
       </React.Fragment>
