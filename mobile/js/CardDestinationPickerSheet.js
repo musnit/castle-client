@@ -79,7 +79,7 @@ class CardDestinationPickerSheet extends React.Component {
     const { deck, onSelectCard } = this.props;
     return (
       <View style={styles.container}>
-        <CardsSet deck={deck} onPress={onSelectCard} />
+        <CardsSet deck={deck} onPress={onSelectCard} showNewCard />
       </View>
     );
   };

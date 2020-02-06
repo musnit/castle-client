@@ -36,6 +36,16 @@ const styles = StyleSheet.create({
   cardTitle: {
     color: '#fff',
   },
+  newCard: {
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#888',
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
   settingsRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -117,9 +127,20 @@ const CardsList = ({ deck, onPress, searchQuery }) => {
   );
 };
 
-const CardsGrid = ({ deck, onPress }) => {
+const NewCardCell = ({ onPress }) => (
+  <TouchableOpacity style={styles.newCard} onPress={onPress}>
+    <Text style={styles.cardTitle}>Add a card to this deck</Text>
+  </TouchableOpacity>
+);
+
+const CardsGrid = ({ deck, onPress, showNewCard }) => {
   return (
     <View style={styles.gridContainer}>
+      {showNewCard && (
+        <View style={styles.cellContainer} key="new">
+          <NewCardCell onPress={() => onPress({ cardId: null })} />
+        </View>
+      )}
       {deck &&
         deck.cards.map((card) => (
           <View style={styles.cellContainer} key={card.cardId}>
