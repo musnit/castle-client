@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { TouchableOpacity, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
-import { useActionSheet } from '@expo/react-native-action-sheet';
 
 import FastImage from 'react-native-fast-image';
 
@@ -102,43 +101,8 @@ const choiceTypeStyles = StyleSheet.create({
   },
 });
 
-const DestinationPicker = (props) => {
-  const { onPress, onPressArrow, styleSheet, value } = props;
-  const valueToDisplay = value !== null ? value : '';
-  return (
-    <TouchableOpacity
-      style={[styles.selectContainer, styleSheet.selectContainer]}
-      onPress={onPress}>
-      <Text style={[styles.selection, styleSheet.selection]}>{valueToDisplay}</Text>
-    </TouchableOpacity>
-  );
-};
-
 const EditBlock = (props) => {
   const { deck, block, onChangeBlock } = props;
-  const { showActionSheetWithOptions } = useActionSheet();
-
-  const selectDestination = () => {
-    if (!deck || !deck.cards) return false;
-
-    showActionSheetWithOptions(
-      {
-        title: 'Destination',
-        options: deck.cards
-          .map((card) => card.title)
-          .concat(['New Card'])
-          .concat(['Cancel']),
-        cancelButtonIndex: deck.cards.length + 1,
-      },
-      (buttonIndex) => {
-        if (buttonIndex < deck.cards.length) {
-          onChangeBlock({ ...block, destinationCardId: deck.cards[buttonIndex].cardId });
-        } else if (buttonIndex == deck.cards.length) {
-          onChangeBlock({ ...block, createDestinationCard: true });
-        }
-      }
-    );
-  };
 
   const blockType = block.type.charAt(0).toUpperCase() + block.type.slice(1);
   const destination = block.createDestinationCard
@@ -187,11 +151,11 @@ const EditBlock = (props) => {
       {block.type == 'choice' ? (
         <View style={styles.pickerRow}>
           <Text style={[styles.label, typeStyles.label]}>Destination</Text>
-          <DestinationPicker
-            onPress={selectDestination}
-            value={destination}
-            styleSheet={typeStyles}
-          />
+          <TouchableOpacity
+            style={[styles.selectContainer, typeStyles.selectContainer]}
+            onPress={props.onSelectDestination}>
+            <Text style={[styles.selection, typeStyles.selection]}>{destination}</Text>
+          </TouchableOpacity>
         </View>
       ) : null}
     </View>

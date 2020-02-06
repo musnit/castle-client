@@ -12,6 +12,7 @@ import * as Utilities from './utilities';
 import * as Constants from './Constants';
 
 import CardBlocks from './CardBlocks';
+import CardDestinationPickerSheet from './CardDestinationPickerSheet';
 import CardHeader from './CardHeader';
 import CardScene from './CardScene';
 import EditBlock from './EditBlock';
@@ -247,6 +248,8 @@ const IPHONEX_BOTTOM_SAFE_HEIGHT = 83 + 33;
 // publish, then immediately navigate to a new card based on the block's destination.
 // this could be maybe be solved by moving the publish network call ownership into a HOC.
 class CreateCardScreen extends React.Component {
+  _destinationPickerRef = React.createRef();
+
   state = {
     deck: EMPTY_DECK,
     card: EMPTY_CARD,
@@ -343,6 +346,14 @@ class CreateCardScreen extends React.Component {
     });
   };
 
+  _handleDismissDestinationPicker = () => {
+    if (this._destinationPickerRef) {
+      // TODO: abstract as open/close
+      // and include yielding the keyboard when closing.
+      this._destinationPickerRef.current.snapTo(1);
+    }
+  };
+
   _handleBlockTextInputFocus = () => {
     // we want to scroll to the very bottom of the block editor
     // when the main text input focuses
@@ -373,6 +384,21 @@ class CreateCardScreen extends React.Component {
       new Promise((resolve) => setTimeout(resolve, 500)),
     ]);
     return this._goBack();
+  };
+
+  _showDestinationPicker = () => {
+    if (this._destinationPickerRef) {
+      this._destinationPickerRef.current.snapTo(0);
+    }
+  };
+
+  _onPickDestinationCard = (block, card) => {
+    if (card) {
+      this._handleBlockChange({ ...block, destinationCardId: card.cardId });
+    } else {
+      this._handleBlockChange({ ...block, createDestinationCard: true });
+    }
+    this._handleDismissDestinationPicker();
   };
 
   _handleCardDelete = async () => {
@@ -451,55 +477,63 @@ class CreateCardScreen extends React.Component {
     // SafeAreaView doesn't respond to statusbar being hidden right now
     // https://github.com/facebook/react-native/pull/20999
     return (
-      <SafeAreaView style={styles.container}>
-        <CardHeader
-          card={card}
-          expanded={isHeaderExpanded}
-          isEditable
-          onPressBack={this._saveAndGoBack}
-          onPressTitle={this._toggleHeaderExpanded}
-          onChange={this._handleCardChange}
-          onDeleteCard={this._handleCardDelete}
-        />
-        <View style={styles.cardBody}>
-          <KeyboardAwareScrollView
-            extraScrollHeight={containScrollViewOffset}
-            style={[styles.scrollView, containScrollViewStyles]}
-            enableAutomaticScroll={false}
-            keyboardShouldPersistTaps="handled"
-            contentContainerStyle={[styles.scrollViewContentContainer, scrollViewSceneStyles]}
-            innerRef={(ref) => (this._scrollViewRef = ref)}>
-            <CardScene card={card} style={styles.scene} />
-            <TouchableWithoutFeedback onPress={this._handlePressBackground}>
-              <View style={styles.sceneActions}>
-                <ActionButton onPress={this._handleChooseImage}>{chooseImageAction}</ActionButton>
+      <React.Fragment>
+        <SafeAreaView style={styles.container}>
+          <CardHeader
+            card={card}
+            expanded={isHeaderExpanded}
+            isEditable
+            onPressBack={this._saveAndGoBack}
+            onPressTitle={this._toggleHeaderExpanded}
+            onChange={this._handleCardChange}
+            onDeleteCard={this._handleCardDelete}
+          />
+          <View style={styles.cardBody}>
+            <KeyboardAwareScrollView
+              extraScrollHeight={containScrollViewOffset}
+              style={[styles.scrollView, containScrollViewStyles]}
+              enableAutomaticScroll={false}
+              keyboardShouldPersistTaps="handled"
+              contentContainerStyle={[styles.scrollViewContentContainer, scrollViewSceneStyles]}
+              innerRef={(ref) => (this._scrollViewRef = ref)}>
+              <CardScene card={card} style={styles.scene} />
+              <TouchableWithoutFeedback onPress={this._handlePressBackground}>
+                <View style={styles.sceneActions}>
+                  <ActionButton onPress={this._handleChooseImage}>{chooseImageAction}</ActionButton>
+                </View>
+              </TouchableWithoutFeedback>
+              <View style={styles.description}>
+                {isEditingBlock ? (
+                  <EditBlock
+                    deck={deck}
+                    block={blockToEdit}
+                    onTextInputFocus={this._handleBlockTextInputFocus}
+                    onChangeBlock={this._handleBlockChange}
+                    onSelectDestination={this._showDestinationPicker}
+                    onGoToDestination={() => this._handlePublishAndGoToDestination(blockToEdit)}
+                  />
+                ) : (
+                  <CardBlocks
+                    card={card}
+                    onSelectBlock={this._handleEditBlock}
+                    onSelectDestination={this._handlePublishAndGoToDestination}
+                    isEditable
+                  />
+                )}
               </View>
-            </TouchableWithoutFeedback>
-            <View style={styles.description}>
-              {isEditingBlock ? (
-                <EditBlock
-                  deck={deck}
-                  block={blockToEdit}
-                  onTextInputFocus={this._handleBlockTextInputFocus}
-                  onChangeBlock={this._handleBlockChange}
-                  onGoToDestination={() => this._handlePublishAndGoToDestination(blockToEdit)}
-                />
-              ) : (
-                <CardBlocks
-                  card={card}
-                  onSelectBlock={this._handleEditBlock}
-                  onSelectDestination={this._handlePublishAndGoToDestination}
-                  isEditable
-                />
-              )}
-            </View>
-            <View style={styles.actions}>
-              <ActionButton onPress={() => this._handleEditBlock(null)}>Add Block</ActionButton>
-              <ActionButton onPress={this._handlePublish}>Save</ActionButton>
-            </View>
-          </KeyboardAwareScrollView>
-        </View>
-      </SafeAreaView>
+              <View style={styles.actions}>
+                <ActionButton onPress={() => this._handleEditBlock(null)}>Add Block</ActionButton>
+                <ActionButton onPress={this._handlePublish}>Save</ActionButton>
+              </View>
+            </KeyboardAwareScrollView>
+          </View>
+        </SafeAreaView>
+        <CardDestinationPickerSheet
+          deck={deck}
+          sheetRef={this._destinationPickerRef}
+          onSelectCard={(card) => this._onPickDestinationCard(blockToEdit, card)}
+        />
+      </React.Fragment>
     );
   }
 }
