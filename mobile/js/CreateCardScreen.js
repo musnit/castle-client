@@ -28,8 +28,12 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     aspectRatio: 0.5625, // 16:9
-    backgroundColor: '#f2f2f2',
     borderRadius: 6,
+  },
+  scrollViewContentContainer: {
+    flex: 1,
+    borderRadius: 6,
+    overflow: 'hidden',
   },
   scene: {
     position: 'absolute',
@@ -243,6 +247,9 @@ const EMPTY_BLOCK = {
   destination: null,
 };
 
+// height of safe area + tab bar on iPhone X family
+const IPHONEX_BOTTOM_SAFE_HEIGHT = 83 + 33;
+
 // NOTE (ben): this screen is currently not a function component
 // because of some of the cases where it needs to perform multiple
 // stateful things in sequence, and useEffect() was less intuitive for this.
@@ -447,6 +454,10 @@ class CreateCardScreen extends React.Component {
 
     const chooseImageAction = card.backgroundImage ? 'Change Image' : 'Add Image';
     const containScrollViewStyles = Viewport.isUltraWide ? { width: '100%' } : { height: '100%' };
+    const containScrollViewOffset = Viewport.isUltraWide ? -IPHONEX_BOTTOM_SAFE_HEIGHT : 0;
+    const scrollViewSceneStyles = card.backgroundImage
+      ? { backgroundColor: '#000' }
+      : { backgroundColor: '#f2f2f2' };
 
     // SafeAreaView doesn't respond to statusbar being hidden right now
     // https://github.com/facebook/react-native/pull/20999
@@ -463,10 +474,11 @@ class CreateCardScreen extends React.Component {
         />
         <View style={styles.cardBody}>
           <KeyboardAwareScrollView
+            extraScrollHeight={containScrollViewOffset}
             style={[styles.scrollView, containScrollViewStyles]}
             enableAutomaticScroll={false}
             keyboardShouldPersistTaps="handled"
-            contentContainerStyle={{ flex: 1 }}
+            contentContainerStyle={[styles.scrollViewContentContainer, scrollViewSceneStyles]}
             innerRef={(ref) => (this._scrollViewRef = ref)}>
             <CardScene card={card} style={styles.scene} />
             <TouchableWithoutFeedback onPress={this._handlePressBackground}>
