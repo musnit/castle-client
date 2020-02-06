@@ -48,14 +48,18 @@ const styles = StyleSheet.create({
   },
   button: {
     borderRadius: 6,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 8,
-    backgroundColor: '#f2f2f2',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 2,
+    elevation: 1,
   },
   buttonLabel: {
     textAlign: 'center',
-    color: '#888',
+    color: '#000',
   },
   cta: {
     backgroundColor: '#000',
