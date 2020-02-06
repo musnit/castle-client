@@ -12,8 +12,9 @@ export const styles = {
     shadowRadius: 2,
     elevation: 1,
   },
-  colors: {
-    // ... shared colors go here ...
-    // red: '#f00',
-  },
+};
+
+export const colors = {
+  // ... shared colors go here ...
+  // red: '#f00',
 };
