@@ -26,6 +26,7 @@ import { Base64 } from 'js-base64';
 import ImagePicker from 'react-native-image-picker';
 import { ReactNativeFile } from 'apollo-upload-client';
 import gql from 'graphql-tag';
+import SvgImage from 'react-native-remote-svg';
 
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -395,6 +396,41 @@ elementTypes['textInput'] = ToolTextInput;
 const ToolTextArea = ({ element }) => <ToolTextInput element={element} multiline />;
 elementTypes['textArea'] = ToolTextArea;
 
+const BASE_SVG_SIZE = 300.0;
+
+const SvgFit = ({ style, uri }) => {
+  // Need to render SVGs at a base size then scale down (or up)
+
+  const [size, setSize] = useState({ width: BASE_SVG_SIZE, height: BASE_SVG_SIZE });
+
+  const onLayout = ({
+    nativeEvent: {
+      layout: { width, height },
+    },
+  }) => setSize({ width, height });
+
+  const scale = Math.min((size.width || BASE_SVG_SIZE) / BASE_SVG_SIZE, (size.height || BASE_SVG_SIZE) / BASE_SVG_SIZE);
+
+  return (
+    <View style={{ ...style, justifyContent: 'center', alignItems: 'center' }} onLayout={onLayout}>
+      <View
+        style={{
+          width: BASE_SVG_SIZE,
+          height: BASE_SVG_SIZE,
+          transform: [{ scaleX: scale }, { scaleY: scale }],
+        }}>
+        <SvgImage
+          style={{
+            width: '100%',
+            height: '100%',
+          }}
+          source={{ uri }}
+        />
+      </View>
+    </View>
+  );
+};
+
 const ToolImage = ({ element, path, style }) => {
   const { transformAssetUri } = useContext(ToolsContext);
 
@@ -409,13 +445,12 @@ const ToolImage = ({ element, path, style }) => {
     uri = transformAssetUri(uri);
   }
 
-  return (
-    <FastImage
-      style={{ margin: 4, ...style, ...viewStyleProps(element.props) }}
-      source={{ uri }}
-      resizeMode={resizeMode}
-    />
-  );
+  style = { margin: 4, ...style, ...viewStyleProps(element.props) };
+
+  if (uri.endsWith('.svg')) {
+    return <SvgFit style={style} uri={uri} />;
+  }
+  return <FastImage style={style} source={{ uri }} resizeMode={resizeMode} />;
 };
 elementTypes['image'] = ToolImage;
 
