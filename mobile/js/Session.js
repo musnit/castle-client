@@ -6,6 +6,7 @@ import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemo
 import { onError } from 'apollo-link-error';
 import { ApolloLink, Observable } from 'apollo-link';
 import { createUploadLink } from 'apollo-upload-client';
+import { Image } from 'react-native';
 import gql from 'graphql-tag';
 
 let authToken = null;
@@ -198,7 +199,9 @@ export const resetPasswordAsync = async ({ username }) => {
 };
 
 export const prefetchCardsAsync = async ({ cardId }) => {
-  await apolloClient.query({
+  const {
+    data: { prefetchCards },
+  } = await apolloClient.query({
     query: gql`
       query PrefetchCards($cardId: ID!) {
         prefetchCards(cardId: $cardId) {
@@ -221,5 +224,11 @@ export const prefetchCardsAsync = async ({ cardId }) => {
       }
     `,
     variables: { cardId },
+  });
+
+  prefetchCards.forEach((card) => {
+    if (card.backgroundImage && card.backgroundImage.url) {
+      Image.prefetch(card.backgroundImage.url);
+    }
   });
 };
