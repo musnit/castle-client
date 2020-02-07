@@ -511,7 +511,8 @@ class CreateCardScreen extends React.Component {
                     block={blockToEdit}
                     onTextInputFocus={this._handleBlockTextInputFocus}
                     onChangeBlock={this._handleBlockChange}
-                    onSelectDestination={this._showDestinationPicker}
+                    onSelectPickDestination={this._showDestinationPicker}
+                    onSelectDestination={this._onPickDestinationCard}
                     onGoToDestination={() => this._handlePublishAndGoToDestination(blockToEdit)}
                   />
                 ) : (

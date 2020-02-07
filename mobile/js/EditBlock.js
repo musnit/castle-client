@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { TouchableOpacity, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
-
 import FastImage from 'react-native-fast-image';
+
+import CardDestinationPickerControl from './CardDestinationPickerControl';
 
 const styles = StyleSheet.create({
   container: {
@@ -28,7 +29,6 @@ const styles = StyleSheet.create({
   pickerRow: {
     flexDirection: 'column',
     alignItems: 'flex-start',
-    paddingHorizontal: 12,
   },
   editDescriptionField: {
     minHeight: 22,
@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     borderWidth: 1,
     padding: 8,
+    marginHorizontal: 12,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -150,12 +151,22 @@ const EditBlock = (props) => {
       </View>
       {block.type == 'choice' ? (
         <View style={styles.pickerRow}>
-          <Text style={[styles.label, typeStyles.label]}>Destination</Text>
-          <TouchableOpacity
-            style={[styles.selectContainer, typeStyles.selectContainer]}
-            onPress={props.onSelectDestination}>
-            <Text style={[styles.selection, typeStyles.selection]}>{destination}</Text>
-          </TouchableOpacity>
+          <Text style={[styles.label, typeStyles.label, { paddingHorizontal: 12 }]}>
+            Destination
+          </Text>
+          {destination ? (
+            <TouchableOpacity
+              style={[styles.selectContainer, typeStyles.selectContainer]}
+              onPress={props.onSelectPickDestination}>
+              <Text style={[styles.selection, typeStyles.selection]}>{destination}</Text>
+            </TouchableOpacity>
+          ) : (
+            <CardDestinationPickerControl
+              deck={deck}
+              onSelectCard={(card) => props.onSelectDestination(block, card)}
+              onSelectSearch={props.onSelectPickDestination}
+            />
+          )}
         </View>
       ) : null}
     </View>
