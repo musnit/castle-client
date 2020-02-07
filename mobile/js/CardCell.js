@@ -91,15 +91,21 @@ const PrivateIndicator = () => (
   </View>
 );
 
-const CardCell = ({ card, onPress, title, isInitialCard, isPrivate }) => (
-  <TouchableOpacity style={styles.card} onPress={onPress}>
-    {card.backgroundImage && (
-      <FastImage style={styles.cardPreviewImage} source={{ uri: card.backgroundImage.url }} />
-    )}
-    <Text style={styles.cardTitle}>{title ? title : card.title}</Text>
-    {isInitialCard && <InitialCardIndicator />}
-    {isPrivate && <PrivateIndicator />}
-  </TouchableOpacity>
-);
+const CardCell = ({ card, onPress, title, isInitialCard, isPrivate }) => {
+  let cardStyles = styles.card;
+  if (card.backgroundImage && card.backgroundImage.primaryColor) {
+    cardStyles = [styles.card, { backgroundColor: card.backgroundImage.primaryColor }];
+  }
+  return (
+    <TouchableOpacity style={cardStyles} onPress={onPress}>
+      {card.backgroundImage && (
+        <FastImage style={styles.cardPreviewImage} source={{ uri: card.backgroundImage.url }} />
+      )}
+      <Text style={styles.cardTitle}>{title ? title : card.title}</Text>
+      {isInitialCard && <InitialCardIndicator />}
+      {isPrivate && <PrivateIndicator />}
+    </TouchableOpacity>
+  );
+};
 
 export default CardCell;

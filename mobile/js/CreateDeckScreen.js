@@ -26,6 +26,7 @@ const DECK_FRAGMENT = `
     title
     backgroundImage {
       url
+      primaryColor
     }
   }
   initialCard { cardId }

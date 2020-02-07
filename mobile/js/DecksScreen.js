@@ -85,6 +85,7 @@ const DecksScreen = (props) => {
           backgroundImage {
             fileId
             url
+            primaryColor
           }
           blocks {
             id
