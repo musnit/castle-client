@@ -144,7 +144,13 @@ const CardsGrid = ({ deck, onPress, showNewCard }) => {
       {deck &&
         deck.cards.map((card) => (
           <View style={styles.cellContainer} key={card.cardId}>
-            <CardCell card={card} onPress={() => onPress(card)} />
+            <CardCell
+              card={card}
+              onPress={() => onPress(card)}
+              isInitialCard={
+                deck.cards.length > 1 && deck.initialCard && deck.initialCard.cardId === card.cardId
+              }
+            />
           </View>
         ))}
     </View>

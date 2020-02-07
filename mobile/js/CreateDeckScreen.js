@@ -16,6 +16,21 @@ const styles = StyleSheet.create({
   },
 });
 
+const DECK_FRAGMENT = `
+  id
+  deckId
+  title
+  cards {
+    id
+    cardId
+    title
+    backgroundImage {
+      url
+    }
+  }
+  initialCard { cardId }
+`;
+
 const CreateDeckScreen = (props) => {
   let lastFocusedTime;
   const navigation = useNavigation();
@@ -27,17 +42,7 @@ const CreateDeckScreen = (props) => {
     gql`
       mutation UpdateDeck($deckId: ID!, $deck: DeckInput!) {
         updateDeck(deckId: $deckId, deck: $deck) {
-          id
-          deckId
-          title
-          cards {
-            id
-            cardId
-            title
-            backgroundImage {
-              url
-            }
-          }
+          ${DECK_FRAGMENT}
         }
       }
     `
@@ -55,17 +60,7 @@ const CreateDeckScreen = (props) => {
     gql`
       query Deck($deckId: ID!) {
         deck(deckId: $deckId) {
-          id
-          deckId
-          title
-          cards {
-            id
-            cardId
-            title
-            backgroundImage {
-              url
-            }
-          }
+          ${DECK_FRAGMENT}
         }
       }
     `,
