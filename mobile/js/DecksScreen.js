@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   deckFeedItemCard: {
-    aspectRatio: 9/16,
+    aspectRatio: 9 / 16,
     height: 75 * vh,
   },
 });
@@ -48,7 +48,16 @@ const DeckFeedItem = ({ deck }) => {
           card={deck.initialCard}
           title={deck.creator.username}
           onPress={() => {
-            navigation.navigate('PlayCard', { deckId: deck.deckId });
+            if (deck.initialCard && deck.initialCard.cardId) {
+              navigation.navigate('PlayCard', {
+                deckId: deck.deckId,
+                cardId: deck.initialCard.cardId,
+              });
+            } else {
+              navigation.navigate('PlayCard', {
+                deckId: deck.deckId,
+              });
+            }
           }}
         />
       </View>
