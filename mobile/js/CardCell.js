@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import FastImage from 'react-native-fast-image';
 
@@ -55,6 +55,24 @@ const initialCardStyles = StyleSheet.create({
   },
 });
 
+const privateStyles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#fff',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  overlayImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'repeat',
+  },
+});
+
 const InitialCardIndicator = () => (
   <View style={initialCardStyles.container}>
     <View style={initialCardStyles.info}>
@@ -63,13 +81,24 @@ const InitialCardIndicator = () => (
   </View>
 );
 
-const CardCell = ({ card, onPress, title, isInitialCard }) => (
+// not using FastImage because resizeMode: 'repeat' doesn't work properly
+const PrivateIndicator = () => (
+  <View style={privateStyles.container}>
+    <Image
+      style={privateStyles.overlayImage}
+      source={require('../assets/images/facedown-overlay-tile.png')}
+    />
+  </View>
+);
+
+const CardCell = ({ card, onPress, title, isInitialCard, isPrivate }) => (
   <TouchableOpacity style={styles.card} onPress={onPress}>
     {card.backgroundImage && (
       <FastImage style={styles.cardPreviewImage} source={{ uri: card.backgroundImage.url }} />
     )}
     <Text style={styles.cardTitle}>{title ? title : card.title}</Text>
     {isInitialCard && <InitialCardIndicator />}
+    {isPrivate && <PrivateIndicator />}
   </TouchableOpacity>
 );
 
