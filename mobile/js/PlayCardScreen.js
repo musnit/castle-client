@@ -1,7 +1,7 @@
 import React from 'react';
 import gql from 'graphql-tag';
 import { TouchableWithoutFeedback, ScrollView, StyleSheet, View } from 'react-native';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useEffect } from '@apollo/react-hooks';
 import { useNavigation } from 'react-navigation-hooks';
 import SafeAreaView from 'react-native-safe-area-view';
 
@@ -9,6 +9,7 @@ import CardBlocks from './CardBlocks';
 import CardHeader from './CardHeader';
 import CardScene from './CardScene';
 import Viewport from './viewport';
+import * as Session from './Session';
 
 const styles = StyleSheet.create({
   container: {
@@ -43,7 +44,6 @@ const PlayCardScreen = (props) => {
 
   let deckId,
     cardId,
-    deck,
     card = {};
   if (navigation.state.params) {
     deckId = navigation.state.params.deckId;
@@ -52,13 +52,14 @@ const PlayCardScreen = (props) => {
   if (!deckId) {
     throw new Error(`Can't play a deck with no deckId`);
   }
-  const query = useQuery(
-    gql`
-      query GetDeckById($deckId: ID!) {
-        deck(deckId: $deckId) {
-          deckId
-          title
-          cards {
+
+  let query;
+  if (cardId) {
+    query = useQuery(
+      gql`
+        query GetCardById($cardId: ID!) {
+          card(cardId: $cardId) {
+            id
             cardId
             title
             backgroundImage {
@@ -66,6 +67,7 @@ const PlayCardScreen = (props) => {
               url
             }
             blocks {
+              id
               cardBlockId
               cardBlockUpdateId
               type
@@ -73,21 +75,55 @@ const PlayCardScreen = (props) => {
               destinationCardId
             }
           }
-          initialCard {
-            cardId
+        }
+      `,
+      {
+        variables: { cardId },
+      }
+    );
+
+    if (!query.loading && !query.error && query.data) {
+      card = query.data.card;
+    }
+  } else {
+    query = useQuery(
+      gql`
+        query GetDeckById($deckId: ID!) {
+          deck(deckId: $deckId) {
+            initialCard {
+              id
+              cardId
+              title
+              backgroundImage {
+                fileId
+                url
+              }
+              blocks {
+                id
+                cardBlockId
+                cardBlockUpdateId
+                type
+                title
+                destinationCardId
+              }
+            }
           }
         }
+      `,
+      {
+        variables: { deckId },
       }
-    `,
-    {
-      variables: { deckId },
-      fetchPolicy: 'no-cache',
+    );
+
+    if (!query.loading && !query.error && query.data) {
+      let deck = query.data.deck;
+      cardId = deck.initialCard.cardId;
+      card = deck.initialCard;
     }
-  );
-  if (!query.loading && !query.error && query.data) {
-    deck = query.data.deck;
-    cardId = cardId || deck.initialCard.cardId;
-    card = deck.cards.find((c) => c.cardId === cardId);
+  }
+
+  if (!query.loading && !query.error) {
+    Session.prefetchCardsAsync({ cardId });
   }
 
   const _handlePressScene = () => {
@@ -97,7 +133,7 @@ const PlayCardScreen = (props) => {
   const _handleSelectBlock = (blockId) => {
     const block = card.blocks.find((b) => b.cardBlockId === blockId);
     if (block.type === 'choice') {
-      navigation.navigate('PlayCard', { deckId: deck.deckId, cardId: block.destinationCardId });
+      navigation.navigate('PlayCard', { deckId, cardId: block.destinationCardId });
     }
   };
 

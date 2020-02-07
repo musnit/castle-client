@@ -27,10 +27,10 @@ export const apolloClient = new ApolloClient({
     }),
     new ApolloLink(
       (operation, forward) =>
-        new Observable(observer => {
+        new Observable((observer) => {
           let handle;
           Promise.resolve(operation)
-            .then(operation => {
+            .then((operation) => {
               const headers = {};
               headers['X-Platform'] = 'mobile';
               if (authToken) {
@@ -55,7 +55,13 @@ export const apolloClient = new ApolloClient({
       uri: 'https://api.castle.games/graphql',
     }),
   ]),
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    cacheRedirects: {
+      Query: {
+        card: (_, args, { getCacheKey }) => getCacheKey({ __typename: 'Card', id: args.cardId }),
+      },
+    },
+  }),
 });
 
 // Failed attempt at an Apollo cache...:
@@ -103,7 +109,7 @@ export const initAsync = async () => {
 
 export const isSignedIn = () => authToken !== null;
 
-const useNewAuthTokenAsync = async newAuthToken => {
+const useNewAuthTokenAsync = async (newAuthToken) => {
   apolloClient.resetStore();
   authToken = newAuthToken;
   if (newAuthToken) {
@@ -113,7 +119,7 @@ const useNewAuthTokenAsync = async newAuthToken => {
   }
 };
 
-const userIdForUsernameAsync = async username => {
+const userIdForUsernameAsync = async (username) => {
   const {
     data: {
       userForLoginInput: { userId },
@@ -188,5 +194,32 @@ export const resetPasswordAsync = async ({ username }) => {
       }
     `,
     variables: { userId },
+  });
+};
+
+export const prefetchCardsAsync = async ({ cardId }) => {
+  await apolloClient.query({
+    query: gql`
+      query PrefetchCards($cardId: ID!) {
+        prefetchCards(cardId: $cardId) {
+          id
+          cardId
+          title
+          backgroundImage {
+            fileId
+            url
+          }
+          blocks {
+            id
+            cardBlockId
+            cardBlockUpdateId
+            type
+            title
+            destinationCardId
+          }
+        }
+      }
+    `,
+    variables: { cardId },
   });
 };

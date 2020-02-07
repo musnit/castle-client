@@ -90,11 +90,14 @@ const CreateScreen = () => {
   const query = useQuery(gql`
     query Me {
       me {
+        id
         userId
         decks {
+          id
           deckId
           title
           initialCard {
+            id
             cardId
             title
             backgroundImage {

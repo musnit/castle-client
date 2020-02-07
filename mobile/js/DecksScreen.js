@@ -62,6 +62,7 @@ const DecksScreen = (props) => {
   const query = useQuery(gql`
     query {
       allDecks {
+        id
         deckId
         title
         creator {
@@ -69,9 +70,20 @@ const DecksScreen = (props) => {
           username
         }
         initialCard {
+          id
           cardId
+          title
           backgroundImage {
+            fileId
             url
+          }
+          blocks {
+            id
+            cardBlockId
+            cardBlockUpdateId
+            type
+            title
+            destinationCardId
           }
         }
       }

@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
 });
 
 const CARD_FRAGMENT = `
+  id
   cardId
   title
   backgroundImage {
@@ -76,6 +77,7 @@ const CARD_FRAGMENT = `
     url
   }
   blocks {
+    id
     cardBlockId
     cardBlockUpdateId
     type
@@ -148,6 +150,7 @@ const saveDeck = async (card, deck) => {
             deck: $deck,
             card: $card
           ) {
+            id
             deckId
             title
             cards {
@@ -178,6 +181,7 @@ const getDeckById = async (deckId) => {
     query: gql`
       query GetDeckById($deckId: ID!) {
         deck(deckId: $deckId) {
+          id
           deckId
           title
           cards {
