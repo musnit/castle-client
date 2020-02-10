@@ -355,13 +355,7 @@ class CreateCardScreen extends React.Component {
     }
   };
 
-  _handleBlockTextInputFocus = () => {
-    // we want to scroll to the very bottom of the block editor
-    // when the main text input focuses
-    if (this._scrollViewRef) {
-      this._scrollViewRef.props.scrollToEnd();
-    }
-  };
+  _handleBlockTextInputFocus = () => {};
 
   _handleCardChange = (changes) => {
     this.setState((state) => {
@@ -505,7 +499,6 @@ class CreateCardScreen extends React.Component {
             <KeyboardAwareScrollView
               extraScrollHeight={containScrollViewOffset}
               style={[styles.scrollView, containScrollViewStyles]}
-              enableAutomaticScroll={false}
               keyboardShouldPersistTaps="handled"
               contentContainerStyle={[styles.scrollViewContentContainer, scrollViewSceneStyles]}
               innerRef={(ref) => (this._scrollViewRef = ref)}>
