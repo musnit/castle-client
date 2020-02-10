@@ -11,6 +11,7 @@ const styles = StyleSheet.create({
     width: '100%',
     minHeight: 72,
     paddingBottom: 12,
+    marginBottom: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
@@ -103,7 +104,7 @@ const choiceTypeStyles = StyleSheet.create({
 });
 
 const EditBlock = (props) => {
-  const { deck, block, onChangeBlock } = props;
+  const { deck, blockToEdit: block, onChangeBlock } = props;
 
   const blockType = block.type.charAt(0).toUpperCase() + block.type.slice(1);
   const destination = block.createDestinationCard

@@ -15,7 +15,6 @@ import CardBlocks from './CardBlocks';
 import CardDestinationPickerSheet from './CardDestinationPickerSheet';
 import CardHeader from './CardHeader';
 import CardScene from './CardScene';
-import EditBlock from './EditBlock';
 import Viewport from './viewport';
 
 const styles = StyleSheet.create({
@@ -476,6 +475,18 @@ class CreateCardScreen extends React.Component {
       ? { backgroundColor: '#000' }
       : { backgroundColor: '#f2f2f2' };
 
+    const editBlockProps = isEditingBlock
+      ? {
+          deck,
+          blockToEdit,
+          onTextInputFocus: this._handleBlockTextInputFocus,
+          onChangeBlock: this._handleBlockChange,
+          onSelectPickDestination: this._showDestinationPicker,
+          onSelectDestination: this._onPickDestinationCard,
+          onGoToDestination: () => this._handlePublishAndGoToDestination(blockToEdit),
+        }
+      : null;
+
     // SafeAreaView doesn't respond to statusbar being hidden right now
     // https://github.com/facebook/react-native/pull/20999
     return (
@@ -505,24 +516,13 @@ class CreateCardScreen extends React.Component {
                 </View>
               </TouchableWithoutFeedback>
               <View style={styles.description}>
-                {isEditingBlock ? (
-                  <EditBlock
-                    deck={deck}
-                    block={blockToEdit}
-                    onTextInputFocus={this._handleBlockTextInputFocus}
-                    onChangeBlock={this._handleBlockChange}
-                    onSelectPickDestination={this._showDestinationPicker}
-                    onSelectDestination={this._onPickDestinationCard}
-                    onGoToDestination={() => this._handlePublishAndGoToDestination(blockToEdit)}
-                  />
-                ) : (
-                  <CardBlocks
-                    card={card}
-                    onSelectBlock={this._handleEditBlock}
-                    onSelectDestination={this._handlePublishAndGoToDestination}
-                    isEditable
-                  />
-                )}
+                <CardBlocks
+                  card={card}
+                  onSelectBlock={this._handleEditBlock}
+                  onSelectDestination={this._handlePublishAndGoToDestination}
+                  isEditable
+                  editBlockProps={editBlockProps}
+                />
               </View>
               <View style={styles.actions}>
                 <ActionButton onPress={() => this._handleEditBlock(null)}>Add Block</ActionButton>

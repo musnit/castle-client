@@ -4,6 +4,7 @@ import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import * as Constants from './Constants';
 
 import AddBlockPlaceholder from './AddBlockPlaceholder';
+import EditBlock from './EditBlock';
 import FastImage from 'react-native-fast-image';
 
 const styles = StyleSheet.create({
@@ -81,23 +82,30 @@ const CardBlock = (props) => {
 
 const CardBlocks = (props) => {
   const card = props.card || {};
+  const { editBlockProps } = props;
   if (card.blocks && card.blocks.length) {
     const orderedBlocks = card.blocks.sort((a, b) => a.type - b.type);
+    const blockIdToEdit =
+      editBlockProps && editBlockProps.blockToEdit ? editBlockProps.blockToEdit.cardBlockId : null;
     return (
       <React.Fragment>
         {orderedBlocks.map((block, ii) => {
           const prevBlockType = ii > 0 ? orderedBlocks[ii - 1].type : block.type;
           const styles = block.type !== prevBlockType ? { marginTop: 8 } : null;
-          return (
-            <CardBlock
-              key={ii}
-              block={block}
-              style={styles}
-              isEditable={props.isEditable}
-              onSelect={() => props.onSelectBlock(block.cardBlockId)}
-              onSelectDestination={() => props.onSelectDestination(block)}
-            />
-          );
+          if (blockIdToEdit && block.cardBlockId === blockIdToEdit) {
+            return <EditBlock key={ii} {...editBlockProps} />;
+          } else {
+            return (
+              <CardBlock
+                key={ii}
+                block={block}
+                style={styles}
+                isEditable={props.isEditable}
+                onSelect={() => props.onSelectBlock(block.cardBlockId)}
+                onSelectDestination={() => props.onSelectDestination(block)}
+              />
+            );
+          }
         })}
       </React.Fragment>
     );
