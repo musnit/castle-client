@@ -93,11 +93,11 @@ const CardBlocks = (props) => {
           const prevBlockType = ii > 0 ? orderedBlocks[ii - 1].type : block.type;
           const styles = block.type !== prevBlockType ? { marginTop: 8 } : null;
           if (blockIdToEdit && block.cardBlockId === blockIdToEdit) {
-            return <EditBlock key={ii} {...editBlockProps} />;
+            return <EditBlock key={`${block.cardBlockId}-${ii}`} {...editBlockProps} />;
           } else {
             return (
               <CardBlock
-                key={ii}
+                key={`${block.cardBlockId}-${ii}`}
                 block={block}
                 style={styles}
                 isEditable={props.isEditable}
