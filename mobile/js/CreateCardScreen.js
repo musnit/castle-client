@@ -3,6 +3,7 @@ import gql from 'graphql-tag';
 import { View, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import SafeAreaView from 'react-native-safe-area-view';
+import { connectActionSheet } from '@expo/react-native-action-sheet';
 
 import uuid from 'uuid/v4';
 import { withNavigation, withNavigationFocus } from 'react-navigation';
@@ -362,6 +363,7 @@ class CreateCardScreen extends React.Component {
         ...state,
         card: {
           ...state.card,
+          isChanged: true,
           ...changes,
         },
       };
@@ -378,6 +380,30 @@ class CreateCardScreen extends React.Component {
   _goToDeck = () => {
     // TODO: go to create root if there is no deck id
     this.props.navigation.navigate('CreateDeck', { deckIdToEdit: this.state.deck.deckId });
+  };
+
+  _maybeSaveAndGoToDeck = async () => {
+    const { showActionSheetWithOptions } = this.props;
+    if (this.state.card && this.state.card.isChanged) {
+      showActionSheetWithOptions(
+        {
+          title: 'Save changes?',
+          options: ['Save', 'Discard', 'Cancel'],
+          destructiveButtonIndex: 1,
+          cancelButtonIndex: 2,
+        },
+        (buttonIndex) => {
+          if (buttonIndex == 0) {
+            return this._saveAndGoToDeck();
+          } else if (buttonIndex == 1) {
+            return this._goToDeck();
+          }
+        }
+      );
+    } else {
+      // no changes
+      return this._goToDeck();
+    }
   };
 
   _saveAndGoToDeck = async () => {
@@ -430,6 +456,7 @@ class CreateCardScreen extends React.Component {
         blockIdToEdit,
         card: {
           ...state.card,
+          isChanged: true,
           blocks,
         },
       };
@@ -499,7 +526,7 @@ class CreateCardScreen extends React.Component {
             card={card}
             expanded={isHeaderExpanded}
             isEditable
-            onPressBack={this._saveAndGoToDeck}
+            onPressBack={this._maybeSaveAndGoToDeck}
             onPressTitle={this._toggleHeaderExpanded}
             onChange={this._handleCardChange}
             onDeleteCard={this._handleCardDelete}
@@ -543,4 +570,4 @@ class CreateCardScreen extends React.Component {
   }
 }
 
-export default withNavigationFocus(withNavigation(CreateCardScreen));
+export default connectActionSheet(withNavigationFocus(withNavigation(CreateCardScreen)));
