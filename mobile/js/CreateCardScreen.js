@@ -378,8 +378,17 @@ class CreateCardScreen extends React.Component {
   };
 
   _goToDeck = () => {
-    // TODO: go to create root if there is no deck id
-    this.props.navigation.navigate('CreateDeck', { deckIdToEdit: this.state.deck.deckId });
+    const { deck } = this.state;
+    if (deck && deck.deckId) {
+      // go to deck screen for this existing deck
+      this.props.navigation.navigate('CreateDeck', { deckIdToEdit: this.state.deck.deckId });
+    } else {
+      // there is no deck, go back to create index
+      const createNavigator = this.props.navigation.dangerouslyGetParent();
+      if (createNavigator) {
+        createNavigator.popToTop();
+      }
+    }
   };
 
   _maybeSaveAndGoToDeck = async () => {
