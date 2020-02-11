@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#888',
     width: '100%',
-    height: '100%',
+    aspectRatio: 0.5625,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
