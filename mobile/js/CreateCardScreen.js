@@ -480,6 +480,7 @@ class CreateCardScreen extends React.Component {
     const editBlockProps = isEditingBlock
       ? {
           deck,
+          isEditingBlock,
           blockToEdit,
           onTextInputFocus: this._handleBlockTextInputFocus,
           onChangeBlock: this._handleBlockChange,

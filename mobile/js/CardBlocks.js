@@ -107,6 +107,9 @@ const CardBlocks = (props) => {
             );
           }
         })}
+        {editBlockProps && editBlockProps.isEditingBlock && !blockIdToEdit ? (
+          <EditBlock {...editBlockProps} />
+        ) : null}
       </React.Fragment>
     );
   } else if (props.isEditable) {
