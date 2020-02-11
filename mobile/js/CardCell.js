@@ -6,11 +6,15 @@ import FastImage from 'react-native-fast-image';
 import * as Constants from './Constants';
 
 const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    alignItems: 'center',
+  },
   card: {
     borderRadius: 8,
     backgroundColor: '#8CA5CD',
     width: '100%',
-    height: '100%',
+    aspectRatio: 0.5625,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -97,14 +101,16 @@ const CardCell = ({ card, onPress, title, isInitialCard, isPrivate }) => {
     cardStyles = [styles.card, { backgroundColor: card.backgroundImage.primaryColor }];
   }
   return (
-    <TouchableOpacity style={cardStyles} onPress={onPress}>
-      {card.backgroundImage && (
-        <FastImage style={styles.cardPreviewImage} source={{ uri: card.backgroundImage.url }} />
-      )}
-      <Text style={styles.cardTitle}>{title ? title : card.title}</Text>
-      {isInitialCard && <InitialCardIndicator />}
-      {isPrivate && <PrivateIndicator />}
-    </TouchableOpacity>
+    <View style={styles.container}>
+      <TouchableOpacity style={cardStyles} onPress={onPress}>
+        {card.backgroundImage && (
+          <FastImage style={styles.cardPreviewImage} source={{ uri: card.backgroundImage.url }} />
+        )}
+        {title && <Text style={styles.cardTitle}>{title}</Text>}
+        {isInitialCard && <InitialCardIndicator />}
+        {isPrivate && <PrivateIndicator />}
+      </TouchableOpacity>
+    </View>
   );
 };
 

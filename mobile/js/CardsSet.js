@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
     paddingRight: 8,
     width: '33%',
-    height: 192, // TODO: correct ratio
+    alignItems: 'center',
   },
   listContainer: {
     borderTopWidth: 1,
@@ -34,7 +34,9 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   cardTitle: {
+    fontSize: 14,
     color: '#fff',
+    paddingVertical: 4,
   },
   newCard: {
     borderRadius: 8,
@@ -151,6 +153,7 @@ const CardsGrid = ({ deck, onPress, showNewCard }) => {
                 deck.cards.length > 1 && deck.initialCard && deck.initialCard.cardId === card.cardId
               }
             />
+            <Text style={styles.cardTitle}>{card.title}</Text>
           </View>
         ))}
     </View>
