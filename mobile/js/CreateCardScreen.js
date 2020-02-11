@@ -101,6 +101,7 @@ const saveDeck = async (card, deck) => {
         cardBlockUpdateId: block.cardBlockUpdateId,
       };
     }),
+    makeInitialCard: card.makeInitialCard || undefined,
   };
   if (deck.deckId && card.cardId) {
     // update existing card in deck
@@ -155,6 +156,7 @@ const saveDeck = async (card, deck) => {
             cards {
               ${CARD_FRAGMENT}
             }
+            initialCard { cardId }
           }
         }
       `,
@@ -186,6 +188,7 @@ const getDeckById = async (deckId) => {
           cards {
             ${CARD_FRAGMENT}
           }
+          initialCard { cardId }
         }
       }
     `,
@@ -296,6 +299,9 @@ class CreateCardScreen extends React.Component {
         try {
           deck = await getDeckById(params.deckIdToEdit);
           card = deck.cards.find((card) => card.cardId == params.cardIdToEdit);
+          if (card && deck.initialCard && deck.initialCard.cardId === card.cardId) {
+            card.makeInitialCard = true;
+          }
         } catch (_) {}
       }
       this._mounted && this.setState({ deck, card });

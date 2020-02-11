@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StatusBar, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
 import * as Constants from './Constants';
@@ -54,6 +54,23 @@ const styles = StyleSheet.create({
   deleteLabel: {
     color: '#f00',
   },
+  configureRow: {
+    marginTop: 8,
+    paddingVertical: 8,
+    flexDirection: 'row',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#444',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  configureLabel: {
+    fontSize: 12,
+    textTransform: 'uppercase',
+    marginBottom: 8,
+    marginTop: 8,
+    color: '#888',
+  },
 });
 
 const ConfigureCard = (props) => {
@@ -65,6 +82,16 @@ const ConfigureCard = (props) => {
         value={props.card.title}
         onChangeText={(title) => props.onChange({ title })}
       />
+      {props.card.cardId && (
+        <View style={styles.configureRow}>
+          <Text style={styles.configureLabel}>Use as top card</Text>
+          <Switch
+            ios_backgroundColor="#444"
+            value={!!props.card.makeInitialCard}
+            onValueChange={(makeInitialCard) => props.onChange({ makeInitialCard })}
+          />
+        </View>
+      )}
       {props.card.cardId && (
         <TouchableOpacity style={styles.deleteButton} onPress={props.onDeleteCard}>
           <Text style={styles.deleteLabel}>Delete Card</Text>
@@ -82,7 +109,7 @@ const DismissIcon = () => {
           width: 22,
           aspectRatio: 1,
         }}
-        tintColor='#fff'
+        tintColor="#fff"
         source={require('../assets/images/dismiss.png')}
       />
       <FastImage
@@ -92,12 +119,12 @@ const DismissIcon = () => {
           marginTop: -20,
           zIndex: -1,
         }}
-        tintColor='#0008'
+        tintColor="#0008"
         source={require('../assets/images/dismiss.png')}
       />
     </Fragment>
   );
-}
+};
 
 const CardHeader = (props) => {
   const { card, expanded, isEditable } = props;
