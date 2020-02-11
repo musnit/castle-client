@@ -377,11 +377,13 @@ class CreateCardScreen extends React.Component {
     return this.setState({ card, deck });
   };
 
-  _goToDeck = () => {
-    const { deck } = this.state;
-    if (deck && deck.deckId) {
+  _goToDeck = (deckId = null) => {
+    if (!deckId && this.state.deck) {
+      deckId = this.state.deck.deckId;
+    }
+    if (deckId) {
       // go to deck screen for this existing deck
-      this.props.navigation.navigate('CreateDeck', { deckIdToEdit: this.state.deck.deckId });
+      this.props.navigation.navigate('CreateDeck', { deckIdToEdit: deckId });
     } else {
       // there is no deck, go back to create index
       const createNavigator = this.props.navigation.dangerouslyGetParent();
@@ -416,12 +418,9 @@ class CreateCardScreen extends React.Component {
   };
 
   _saveAndGoToDeck = async () => {
-    // don't block on network for more than 500ms
-    await Promise.race([
-      saveDeck(this.state.card, this.state.deck),
-      new Promise((resolve) => setTimeout(resolve, 500)),
-    ]);
-    return this._goToDeck();
+    const { card, deck } = await saveDeck(this.state.card, this.state.deck);
+    if (!this._mounted) return;
+    return this._goToDeck(deck.deckId);
   };
 
   _showDestinationPicker = () => {
