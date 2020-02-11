@@ -249,7 +249,7 @@ const IPHONEX_BOTTOM_SAFE_HEIGHT = 83 + 33;
 // NOTE (ben): this screen is currently not a function component
 // because of some of the cases where it needs to perform multiple
 // stateful things in sequence, and useEffect() was less intuitive for this.
-// the best example is _handlePublishAndGoToDestination, where we
+// the best example is _saveAndGoToDestination, where we
 // publish a card (containing some temp uuid blocks), find the resulting block after
 // publish, then immediately navigate to a new card based on the block's destination.
 // this could be maybe be solved by moving the publish network call ownership into a HOC.
@@ -308,21 +308,14 @@ class CreateCardScreen extends React.Component {
     }
   };
 
-  _handlePublish = async () => {
-    await this._handleDismissEditing();
-    const { card, deck } = await saveDeck(this.state.card, this.state.deck);
-    if (!this._mounted) return;
-    return this.setState({ card, deck });
-  };
-
-  _handlePublishAndGoToDestination = async (blockToFollow) => {
+  _saveAndGoToDestination = async (blockToFollow) => {
     // flag this block so we can follow it after saving
     const cardBlockUpdateId = uuid();
     await this._handleBlockChange({
       ...blockToFollow,
       cardBlockUpdateId,
     });
-    await this._handlePublish();
+    await this._save();
     if (!this._mounted) return;
     const updatedBlock = this.state.card.blocks.find(
       (block) => block.cardBlockUpdateId === cardBlockUpdateId
@@ -375,16 +368,25 @@ class CreateCardScreen extends React.Component {
     });
   };
 
-  _goBack = () =>
-    this.props.navigation.navigate('CreateDeck', { deckIdToEdit: this.state.deck.deckId });
+  _save = async () => {
+    await this._handleDismissEditing();
+    const { card, deck } = await saveDeck(this.state.card, this.state.deck);
+    if (!this._mounted) return;
+    return this.setState({ card, deck });
+  };
 
-  _saveAndGoBack = async () => {
+  _goToDeck = () => {
+    // TODO: go to create root if there is no deck id
+    this.props.navigation.navigate('CreateDeck', { deckIdToEdit: this.state.deck.deckId });
+  };
+
+  _saveAndGoToDeck = async () => {
     // don't block on network for more than 500ms
     await Promise.race([
       saveDeck(this.state.card, this.state.deck),
       new Promise((resolve) => setTimeout(resolve, 500)),
     ]);
-    return this._goBack();
+    return this._goToDeck();
   };
 
   _showDestinationPicker = () => {
@@ -405,7 +407,7 @@ class CreateCardScreen extends React.Component {
   _handleCardDelete = async () => {
     if (this.state.card.cardId) {
       await deleteCard(this.state.card.cardId);
-      this._goBack();
+      this._goToDeck();
     }
   };
 
@@ -483,7 +485,7 @@ class CreateCardScreen extends React.Component {
           onChangeBlock: this._handleBlockChange,
           onSelectPickDestination: this._showDestinationPicker,
           onSelectDestination: this._onPickDestinationCard,
-          onGoToDestination: () => this._handlePublishAndGoToDestination(blockToEdit),
+          onGoToDestination: () => this._saveAndGoToDestination(blockToEdit),
         }
       : null;
 
@@ -496,7 +498,7 @@ class CreateCardScreen extends React.Component {
             card={card}
             expanded={isHeaderExpanded}
             isEditable
-            onPressBack={this._saveAndGoBack}
+            onPressBack={this._saveAndGoToDeck}
             onPressTitle={this._toggleHeaderExpanded}
             onChange={this._handleCardChange}
             onDeleteCard={this._handleCardDelete}
@@ -518,14 +520,14 @@ class CreateCardScreen extends React.Component {
                 <CardBlocks
                   card={card}
                   onSelectBlock={this._handleEditBlock}
-                  onSelectDestination={this._handlePublishAndGoToDestination}
+                  onSelectDestination={this._saveAndGoToDestination}
                   isEditable
                   editBlockProps={editBlockProps}
                 />
               </View>
               <View style={styles.actions}>
                 <ActionButton onPress={() => this._handleEditBlock(null)}>Add Block</ActionButton>
-                <ActionButton onPress={this._handlePublish}>Save</ActionButton>
+                <ActionButton onPress={this._saveAndGoToDeck}>Done</ActionButton>
               </View>
             </KeyboardAwareScrollView>
           </View>
