@@ -83,33 +83,36 @@ const CardBlock = (props) => {
 const CardBlocks = (props) => {
   const card = props.card || {};
   const { editBlockProps } = props;
+  const blockIdToEdit =
+    editBlockProps && editBlockProps.blockToEdit ? editBlockProps.blockToEdit.cardBlockId : null;
+  const isAddingBlock = editBlockProps && editBlockProps.isEditingBlock && !blockIdToEdit;
+  let orderedBlocks;
   if (card.blocks && card.blocks.length) {
-    const orderedBlocks = card.blocks.sort((a, b) => a.type - b.type);
-    const blockIdToEdit =
-      editBlockProps && editBlockProps.blockToEdit ? editBlockProps.blockToEdit.cardBlockId : null;
+    orderedBlocks = card.blocks.sort((a, b) => a.type - b.type);
+  }
+  if (orderedBlocks || isAddingBlock) {
     return (
       <React.Fragment>
-        {orderedBlocks.map((block, ii) => {
-          const prevBlockType = ii > 0 ? orderedBlocks[ii - 1].type : block.type;
-          const styles = block.type !== prevBlockType ? { marginTop: 8 } : null;
-          if (blockIdToEdit && block.cardBlockId === blockIdToEdit) {
-            return <EditBlock key={`${block.cardBlockId}-${ii}`} {...editBlockProps} />;
-          } else {
-            return (
-              <CardBlock
-                key={`${block.cardBlockId}-${ii}`}
-                block={block}
-                style={styles}
-                isEditable={props.isEditable}
-                onSelect={() => props.onSelectBlock(block.cardBlockId)}
-                onSelectDestination={() => props.onSelectDestination(block)}
-              />
-            );
-          }
-        })}
-        {editBlockProps && editBlockProps.isEditingBlock && !blockIdToEdit ? (
-          <EditBlock {...editBlockProps} />
-        ) : null}
+        {orderedBlocks &&
+          orderedBlocks.map((block, ii) => {
+            const prevBlockType = ii > 0 ? orderedBlocks[ii - 1].type : block.type;
+            const styles = block.type !== prevBlockType ? { marginTop: 8 } : null;
+            if (blockIdToEdit && block.cardBlockId === blockIdToEdit) {
+              return <EditBlock key={`${block.cardBlockId}-${ii}`} {...editBlockProps} />;
+            } else {
+              return (
+                <CardBlock
+                  key={`${block.cardBlockId}-${ii}`}
+                  block={block}
+                  style={styles}
+                  isEditable={props.isEditable}
+                  onSelect={() => props.onSelectBlock(block.cardBlockId)}
+                  onSelectDestination={() => props.onSelectDestination(block)}
+                />
+              );
+            }
+          })}
+        {isAddingBlock ? <EditBlock {...editBlockProps} /> : null}
       </React.Fragment>
     );
   } else if (props.isEditable) {
