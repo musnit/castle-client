@@ -10,7 +10,7 @@ import * as Session from './Session';
 import * as GameScreen from './GameScreen';
 import SafeAreaView from 'react-native-safe-area-view';
 
-const ProfilePhoto = props => {
+const ProfilePhoto = (props) => {
   const { loading: queryLoading, error: queryError, data: queryData } = useQuery(
     gql`
       query User($userId: ID!) {
@@ -77,7 +77,7 @@ const ProfileScreen = () => {
         flex: 1,
         backgroundColor: '#f2f2f2',
       }}>
-      {queryLoading ? null : (
+      {queryLoading || queryError ? null : (
         <Fragment>
           <SafeAreaView
             style={{
@@ -130,7 +130,7 @@ const ProfileScreen = () => {
               flexWrap: 'wrap',
               justifyContent: 'space-between',
             }}>
-            {queryData.me.gameItems.map(game => (
+            {queryData.me.gameItems.map((game) => (
               <View style={{ width: '50%', padding: 8 }} key={game.gameId}>
                 <GameCard game={game} />
               </View>
