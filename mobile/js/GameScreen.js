@@ -442,7 +442,7 @@ const useUserStatus = ({ game }) => {
 // Given a `gameId` or `gameUri`, run and display the game! The lifetime of this component must match the
 // lifetime of the game run -- it must be unmounted when the game is stopped and a new instance mounted
 // if a new game should be run (or even if the same game should be restarted).
-const GameView = ({
+export const GameView = ({
   gameId,
   gameUri,
   extras,
@@ -450,6 +450,9 @@ const GameView = ({
   onPressReload,
   logsVisible,
   setLogsVisible,
+  toolsVisible,
+  headerVisible,
+  onPressBack,
 }) => {
   const fetchGameHook = useFetchGame({ gameId, gameUri, extras });
   const game = fetchGameHook.fetchedGame;
@@ -497,7 +500,7 @@ const GameView = ({
 
   return (
     <View style={{ flex: 1 }}>
-      {!windowed && (
+      {headerVisible !== false && !windowed && (
         <GameHeader
           game={game}
           sessionId={sessionId}
@@ -505,6 +508,7 @@ const GameView = ({
           onPressNextInputsMode={onPressNextInputsMode}
           onPressSwitchActionKeyCode={onPressSwitchActionKeyCode}
           onPressToggleLogsVisible={onPressToggleLogsVisible}
+          onPressBack={onPressBack}
         />
       )}
 
@@ -516,7 +520,11 @@ const GameView = ({
           },
         }) => setLandscape(width > height)}>
         {game && eventsReady && initialDataHook.sent ? (
-          <Tools eventsReady={eventsReady} visible={!windowed} landscape={landscape} game={game}>
+          <Tools
+            eventsReady={eventsReady}
+            visible={toolsVisible !== false && !windowed}
+            landscape={landscape}
+            game={game}>
             <GhostView
               style={{ flex: 1 }}
               uri={game.entryPoint}

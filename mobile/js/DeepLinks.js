@@ -12,7 +12,7 @@ const navigateToRoute = ({ routeName, params }) => {
   }
 };
 
-export const navigateToUri = uri => {
+export const navigateToUri = (uri) => {
   if (!Session.isSignedIn()) {
     // If not signed in, go to the login screen and tell it to navigate to this URI after
     navigateToRoute({
@@ -42,12 +42,12 @@ const consumePendingUri = () => {
   }
 };
 
-export const addPendingUri = uri => {
+export const addPendingUri = (uri) => {
   pendingUri = uri;
   consumePendingUri();
 };
 
-export const setRootNavigatorRef = ref => {
+export const setRootNavigatorRef = (ref) => {
   rootNavigatorRef = ref;
   consumePendingUri();
 };
@@ -72,3 +72,13 @@ let DEV_URI = null;
 if (__DEV__ && DEV_URI) {
   addPendingUri(DEV_URI);
 }
+
+// For directly loading card creation screen
+//setTimeout(
+//  () =>
+//    navigateToRoute({
+//      routeName: 'CreateCard',
+//      params: { deckId: '21', cardId: '63' },
+//    }),
+//  500
+//);

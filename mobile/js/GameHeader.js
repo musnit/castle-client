@@ -53,12 +53,14 @@ const GameHeader = ({
   onPressNextInputsMode,
   onPressSwitchActionKeyCode,
   onPressToggleLogsVisible,
+  onPressBack,
 }) => {
   const [inviting, setInviting] = useState(false);
 
+      //<StatusBar backgroundColor="#000" barStyle="light-content" />
+
   return (
     <Fragment>
-      <StatusBar backgroundColor="#000" barStyle="light-content" />
       <View
         style={{
           width: '100%',
@@ -74,7 +76,11 @@ const GameHeader = ({
             paddingHorizontal: 16,
           }}
           onPress={() => {
-            MainSwitcher.switchTo('navigator');
+            if (onPressBack) {
+              onPressBack();
+            } else {
+              MainSwitcher.switchTo('navigator');
+            }
           }}>
           <Text style={{ color: '#bbb' }}>Back</Text>
         </TouchableOpacity>

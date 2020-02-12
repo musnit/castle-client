@@ -18,6 +18,8 @@ import CardHeader from './CardHeader';
 import CardScene from './CardScene';
 import Viewport from './viewport';
 
+import * as GhostEvents from './ghost/GhostEvents';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -210,10 +212,10 @@ const deleteCard = async (cardId) => {
   });
 };
 
-const ActionButton = (props) => {
+const ActionButton = ({ style, ...props }) => {
   const buttonProps = { ...props, children: undefined };
   return (
-    <TouchableOpacity style={styles.button} {...buttonProps}>
+    <TouchableOpacity style={[styles.button, style]} {...buttonProps}>
       <Text style={styles.buttonLabel}>{props.children}</Text>
     </TouchableOpacity>
   );
@@ -263,6 +265,7 @@ class CreateCardScreen extends React.Component {
     isEditingBlock: false,
     blockIdToEdit: null,
     isHeaderExpanded: false,
+    isEditingScene: false,
   };
 
   componentDidMount() {
@@ -517,13 +520,38 @@ class CreateCardScreen extends React.Component {
     });
   };
 
+  _handleEditScene = () => {
+    this.setState({
+      isEditingScene: true,
+    });
+    GhostEvents.sendAsync('SCENE_CREATOR_EDITING', {
+      isEditing: true,
+    });
+  };
+
+  _handleEndEditScene = () => {
+    this.setState({
+      isEditingScene: false,
+    });
+    GhostEvents.sendAsync('SCENE_CREATOR_EDITING', {
+      isEditing: false,
+    });
+  };
+
   _toggleHeaderExpanded = () =>
     this.setState((state) => {
       return { ...state, isHeaderExpanded: !state.isHeaderExpanded };
     });
 
   render() {
-    const { deck, card, isEditingBlock, blockIdToEdit, isHeaderExpanded } = this.state;
+    const {
+      deck,
+      card,
+      isEditingBlock,
+      blockIdToEdit,
+      isHeaderExpanded,
+      isEditingScene,
+    } = this.state;
     const blockToEdit =
       isEditingBlock && blockIdToEdit
         ? card.blocks.find((block) => block.cardBlockId === blockIdToEdit)
@@ -554,41 +582,65 @@ class CreateCardScreen extends React.Component {
     return (
       <React.Fragment>
         <SafeAreaView style={styles.container}>
-          <CardHeader
-            card={card}
-            expanded={isHeaderExpanded}
-            isEditable
-            onPressBack={this._maybeSaveAndGoToDeck}
-            onPressTitle={this._toggleHeaderExpanded}
-            onChange={this._handleCardChange}
-            onDeleteCard={this._handleCardDelete}
-          />
-          <View style={styles.cardBody}>
+          {!isEditingScene ? (
+            <CardHeader
+              card={card}
+              expanded={isHeaderExpanded}
+              isEditable
+              onPressBack={this._maybeSaveAndGoToDeck}
+              onPressTitle={this._toggleHeaderExpanded}
+              onChange={this._handleCardChange}
+              onDeleteCard={this._handleCardDelete}
+            />
+          ) : null}
+          <View style={[styles.cardBody, isEditingScene ? { flex: 1 } : {}]}>
             <KeyboardAwareScrollView
+              scrollEnabled={!isEditingScene}
+              nestedScrollEnabled
               extraScrollHeight={containScrollViewOffset}
-              style={[styles.scrollView, containScrollViewStyles]}
+              style={[
+                styles.scrollView,
+                containScrollViewStyles,
+                isEditingScene ? { flex: 1, aspectRatio: null, borderRadius: null } : {},
+              ]}
               keyboardShouldPersistTaps="handled"
               contentContainerStyle={[styles.scrollViewContentContainer, scrollViewSceneStyles]}
               innerRef={(ref) => (this._scrollViewRef = ref)}>
-              <CardScene card={card} style={styles.scene} />
-              <TouchableWithoutFeedback onPress={this._handlePressBackground}>
-                <View style={styles.sceneActions}>
-                  <ActionButton onPress={this._handleChooseImage}>{chooseImageAction}</ActionButton>
-                </View>
-              </TouchableWithoutFeedback>
-              <View style={styles.description}>
-                <CardBlocks
-                  card={card}
-                  onSelectBlock={this._handleEditBlock}
-                  onSelectDestination={this._saveAndGoToDestination}
-                  isEditable
-                  editBlockProps={editBlockProps}
-                />
-              </View>
-              <View style={styles.actions}>
-                <ActionButton onPress={() => this._handleEditBlock(null)}>Add Block</ActionButton>
-                <ActionButton onPress={this._saveAndGoToDeck}>Done</ActionButton>
-              </View>
+              <CardScene
+                style={styles.scene}
+                card={card}
+                isEditing={isEditingScene}
+                onEndEditing={this._handleEndEditScene}
+              />
+              {!isEditingScene ? (
+                <React.Fragment>
+                  <TouchableWithoutFeedback onPress={this._handlePressBackground}>
+                    <View style={styles.sceneActions}>
+                      <ActionButton onPress={this._handleChooseImage}>
+                        {chooseImageAction}
+                      </ActionButton>
+                      <ActionButton style={{ marginTop: 4 }} onPress={this._handleEditScene}>
+                        Edit Scene
+                      </ActionButton>
+                    </View>
+                  </TouchableWithoutFeedback>
+                  <View style={styles.description}>
+                    <CardBlocks
+                      card={card}
+                      onSelectBlock={this._handleEditBlock}
+                      onSelectDestination={this._saveAndGoToDestination}
+                      isEditable
+                      editBlockProps={editBlockProps}
+                    />
+                  </View>
+                  <View style={styles.actions}>
+                    <ActionButton onPress={() => this._handleEditBlock(null)}>
+                      Add Block
+                    </ActionButton>
+                    <ActionButton onPress={this._saveAndGoToDeck}>Done</ActionButton>
+                  </View>
+                </React.Fragment>
+              ) : null}
             </KeyboardAwareScrollView>
           </View>
         </SafeAreaView>
