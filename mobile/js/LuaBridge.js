@@ -24,7 +24,7 @@ export const LUA_USER_FRAGMENT = gql`
   }
 `;
 
-export const jsUserToLuaUser = async user =>
+export const jsUserToLuaUser = async (user) =>
   user
     ? {
         userId: user.userId,
@@ -75,7 +75,7 @@ const awaitingLocalStorageKey = (async () => {
   }
 })();
 
-const storageIdForGame = async game => {
+const storageIdForGame = async (game) => {
   if (game.storageId) {
     return game.storageId;
   } else if (game.isLocal) {
@@ -91,11 +91,11 @@ export const JS = {
   async sayHello({ name }) {
     if (name !== 'l') {
       console.log(`responding 'hello, ${name}' in 2 seconds...`);
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       return `js: hello, ${name}!`;
     } else {
       console.log(`throwing an error in 2 seconds...`);
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       throw new Error("js: 'l' not allowed!");
     }
   },
@@ -103,7 +103,7 @@ export const JS = {
   // System
 
   async alert({ title, message, okLabel, cancelLabel }, { game }) {
-    return await new Promise(resolve => {
+    return await new Promise((resolve) => {
       const cancelButton = {
         text: cancelLabel,
         style: 'cancel',
@@ -220,9 +220,46 @@ export const JS = {
       throw new Error(result.errors[0].message);
     }
   },
+
+  // GraphQL
+
+  async gqlQuery({ query, variables, fetchPolicy, errorPolicy, fetchResults }, { game }) {
+    const result = await Session.apolloClient.query({
+      query: gql(query),
+      variables,
+      fetchPolicy,
+      errorPolicy,
+      fetchResults,
+    });
+    return result;
+  },
+
+  async gqlMutate(
+    {
+      mutation,
+      variables,
+      fetchPolicy,
+      errorPolicy,
+      awaitRefetchQueries,
+      optimisticResponse,
+      refetchQueries,
+    },
+    { game }
+  ) {
+    const result = await Session.apolloClient.mutate({
+      mutation: gql(mutation),
+      variables,
+      fetchPolicy,
+      errorPolicy,
+      awaitRefetchQueries,
+      optimisticResponse,
+      refetchQueries,
+    });
+    return result;
+  },
 };
 
-const onJSCallRequest = context => async ({ id, methodName, arg }) => {
+const onJSCallRequest = (context) => async ({ id, methodName, arg }) => {
   const response = { id };
   try {
     const method = JS[methodName];
