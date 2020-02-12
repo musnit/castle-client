@@ -85,12 +85,11 @@ const CardBlocks = (props) => {
   const { editBlockProps } = props;
   const blockIdToEdit =
     editBlockProps && editBlockProps.blockToEdit ? editBlockProps.blockToEdit.cardBlockId : null;
-  const isAddingBlock = editBlockProps && editBlockProps.isEditingBlock && !blockIdToEdit;
   let orderedBlocks;
   if (card.blocks && card.blocks.length) {
     orderedBlocks = card.blocks.sort((a, b) => a.type - b.type);
   }
-  if (orderedBlocks || isAddingBlock) {
+  if (orderedBlocks) {
     return (
       <React.Fragment>
         {orderedBlocks &&
@@ -112,7 +111,6 @@ const CardBlocks = (props) => {
               );
             }
           })}
-        {isAddingBlock ? <EditBlock {...editBlockProps} /> : null}
       </React.Fragment>
     );
   } else if (props.isEditable) {

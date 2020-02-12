@@ -331,7 +331,29 @@ class CreateCardScreen extends React.Component {
     }
   };
 
-  _handleEditBlock = (blockIdToEdit) => this.setState({ isEditingBlock: true, blockIdToEdit });
+  _handleEditBlock = (blockIdToEdit) => {
+    if (!blockIdToEdit) {
+      // create a stub block with a new id.
+      // the block will get auto-deleted if the user blurs
+      // without typing anything into the empty block
+      blockIdToEdit = String(uuid());
+      this.setState((state) => {
+        const blocks = [...state.card.blocks];
+        blocks.push({ ...EMPTY_BLOCK, cardBlockId: blockIdToEdit });
+        return {
+          ...state,
+          blockIdToEdit,
+          isEditingBlock: true,
+          card: {
+            ...state.card,
+            blocks,
+          },
+        };
+      });
+    } else {
+      this.setState({ isEditingBlock: true, blockIdToEdit });
+    }
+  };
 
   _handleDismissEditing = () => {
     return this.setState((state) => {
@@ -456,8 +478,10 @@ class CreateCardScreen extends React.Component {
       if (existingIndex >= 0) {
         blocks[existingIndex] = block;
       } else {
-        blockIdToEdit = String(uuid());
-        blocks.push({ ...block, cardBlockId: blockIdToEdit });
+        // we don't want to auto-create the block here
+        // because the block id determines the key of the focused text input,
+        // and changing the focused text input causes keyboard thrash.
+        throw new Error(`Tried to change a nonexistent block`);
       }
       return {
         ...state,
