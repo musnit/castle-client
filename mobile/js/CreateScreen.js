@@ -56,10 +56,9 @@ const styles = StyleSheet.create({
 
 const EditDeckCell = (props) => {
   const { deck, onPress } = props;
-  const title = deck && deck.title ? deck.title : 'Untitled Deck';
   return (
     <View style={styles.cellContainer}>
-      <CardCell card={deck.initialCard} onPress={onPress} title={title} />
+      <CardCell card={deck.initialCard} onPress={onPress} isPrivate={!deck.isVisible} />
     </View>
   );
 };
@@ -96,6 +95,7 @@ const CreateScreen = () => {
           id
           deckId
           title
+          isVisible
           initialCard {
             id
             cardId
