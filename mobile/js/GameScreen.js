@@ -604,7 +604,7 @@ const GameScreen = ({ windowed = false }) => {
 
   // Use `key` to mount a new instance of `GameView` when the game changes
   const { gameId, gameUri, reloadCount, extras } = state;
-  return (
+  return gameId || gameUri ? (
     <GameView
       key={`$${reloadCount}-${gameId || gameUri}`}
       gameId={gameId}
@@ -615,7 +615,7 @@ const GameScreen = ({ windowed = false }) => {
       logsVisible={logsVisible}
       setLogsVisible={setLogsVisible}
     />
-  );
+  ) : null;
 };
 
 export default GameScreen;

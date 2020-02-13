@@ -78,6 +78,7 @@ const CARD_FRAGMENT = `
     fileId
     url
   }
+  sceneId
   blocks {
     id
     cardBlockId
@@ -520,7 +521,32 @@ class CreateCardScreen extends React.Component {
     });
   };
 
-  _handleEditScene = () => {
+  _handleEditScene = async () => {
+    // Add a new scene if we don't already have one
+    const { card } = this.state;
+    if (!card.sceneId) {
+      const result = await Session.apolloClient.mutate({
+        mutation: gql`
+          mutation CreateScene($data: Json!) {
+            createScene(data: $data) {
+              sceneId
+            }
+          }
+        `,
+        variables: {
+          data: {
+            empty: true,
+          },
+        },
+      });
+      sceneId = result.data && result.data.createScene && result.data.createScene.sceneId;
+      if (!sceneId) {
+        return;
+      }
+      this._handleCardChange({ sceneId });
+    }
+
+    // Set scene editing state and notify Lua
     this.setState({
       isEditingScene: true,
     });
@@ -530,6 +556,7 @@ class CreateCardScreen extends React.Component {
   };
 
   _handleEndEditScene = () => {
+    // Unset scene editing state and notify Lua
     this.setState({
       isEditingScene: false,
     });
@@ -558,6 +585,7 @@ class CreateCardScreen extends React.Component {
         : EMPTY_BLOCK;
 
     const chooseImageAction = card.backgroundImage ? 'Change Image' : 'Add Image';
+    const editSceneAction = card.sceneId ? 'Edit Scene' : 'Add Scene';
     const containScrollViewStyles = Viewport.isUltraWide ? { width: '100%' } : { height: '100%' };
     const containScrollViewOffset = Viewport.isUltraWide ? -IPHONEX_BOTTOM_SAFE_HEIGHT : 0;
     const scrollViewSceneStyles = card.backgroundImage
@@ -620,7 +648,7 @@ class CreateCardScreen extends React.Component {
                         {chooseImageAction}
                       </ActionButton>
                       <ActionButton style={{ marginTop: 4 }} onPress={this._handleEditScene}>
-                        Edit Scene
+                        {editSceneAction}
                       </ActionButton>
                     </View>
                   </TouchableWithoutFeedback>

@@ -14,6 +14,7 @@ import * as Session from './Session';
 
 export const LUA_USER_FRAGMENT = gql`
   fragment LuaUser on User {
+    id
     userId
     username
     name
@@ -43,6 +44,7 @@ export const jsPostToLuaPost = async ({ postId, creator, media }, { data }) => (
 
 export const LUA_GAME_FRAGMENT = gql`
   fragment LuaGame on Game {
+    id
     gameId
     owner {
       ...LuaUser

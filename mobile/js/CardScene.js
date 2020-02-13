@@ -13,10 +13,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const TESTING_SCENE_CREATOR_INTEGRATION = false;
-const USE_REMOTE_GAME = true;
+const USE_REMOTE_GAME = false;
 const GAME_ID = USE_REMOTE_GAME ? '1uzqao' : null;
-const GAME_URI = USE_REMOTE_GAME ? null : 'http://192.168.1.145:8080/project.castle';
+const GAME_URI = USE_REMOTE_GAME ? null : 'http://192.168.1.28:8080/project.castle';
 
 const CardScene = ({ card, style, isEditing, onEndEditing }) => {
   const [reloadCount, setReloadCount] = useState(0);
@@ -29,25 +28,27 @@ const CardScene = ({ card, style, isEditing, onEndEditing }) => {
 
   return (
     <View style={style}>
-      {TESTING_SCENE_CREATOR_INTEGRATION ? (
-        <GameView
-          key={`game-view-${reloadCount}`}
-          gameId={GAME_ID}
-          gameUri={GAME_URI}
-          extras={{}}
-          toolsVisible={isEditing}
-          headerVisible={isEditing}
-          onPressReload={onPressReload}
-          logsVisible={isEditing && logsVisible}
-          setLogsVisible={setLogsVisible}
-          onPressBack={onEndEditing}
-        />
-      ) : (
-        card &&
-        card.backgroundImage && (
+      {card &&
+        (card.sceneId ? (
+          <GameView
+            key={`game-view-${reloadCount}`}
+            gameId={GAME_ID}
+            gameUri={GAME_URI}
+            extras={{
+              initialParams: JSON.stringify({
+                sceneId: card.sceneId,
+              }),
+            }}
+            toolsVisible={isEditing}
+            headerVisible={isEditing}
+            onPressReload={onPressReload}
+            logsVisible={isEditing && logsVisible}
+            setLogsVisible={setLogsVisible}
+            onPressBack={onEndEditing}
+          />
+        ) : card.backgroundImage ? (
           <FastImage style={styles.backgroundImage} source={{ uri: card.backgroundImage.url }} />
-        )
-      )}
+        ) : null)}
     </View>
   );
 };
