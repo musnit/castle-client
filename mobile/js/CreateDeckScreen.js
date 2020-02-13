@@ -20,6 +20,7 @@ const DECK_FRAGMENT = `
   id
   deckId
   title
+  isVisible
   cards {
     id
     cardId
@@ -75,6 +76,7 @@ const CreateDeckScreen = (props) => {
     if (deck && deck.isChanged) {
       const deckUpdateFragment = {
         title: deck.title,
+        isVisible: deck.isVisible,
       };
       saveDeck({ variables: { deckId, deck: deckUpdateFragment } });
       setDeck({ ...deck, isChanged: false });
@@ -120,6 +122,7 @@ const CreateDeckScreen = (props) => {
         deck={deck}
         onPressBack={_goBack}
         mode={mode}
+        onChangeDeck={_changeDeck}
         onChangeMode={(mode) => {
           _maybeSaveDeck();
           return setMode(mode);
