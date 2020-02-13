@@ -17,7 +17,7 @@ const USE_REMOTE_GAME = false;
 const GAME_ID = USE_REMOTE_GAME ? '1uzqao' : null;
 const GAME_URI = USE_REMOTE_GAME ? null : 'http://192.168.1.28:8080/project.castle';
 
-const CardScene = ({ card, style, isEditing, onEndEditing }) => {
+const CardScene = ({ card, style, isEditing = false, onEndEditing }) => {
   const [reloadCount, setReloadCount] = useState(0);
   const onPressReload = async () => {
     await new Promise((resolve) => setTimeout(resolve, 40));
@@ -31,7 +31,7 @@ const CardScene = ({ card, style, isEditing, onEndEditing }) => {
       {card &&
         (card.scene ? (
           <GameView
-            key={`game-view-${reloadCount}`}
+            key={`game-view-${card.scene.sceneId}-${reloadCount}`}
             gameId={GAME_ID}
             gameUri={GAME_URI}
             extras={{

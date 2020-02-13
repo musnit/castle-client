@@ -66,6 +66,10 @@ const PlayCardScreen = (props) => {
               fileId
               url
             }
+            scene {
+              sceneId
+              data
+            }
             blocks {
               id
               cardBlockId
