@@ -78,7 +78,10 @@ const CARD_FRAGMENT = `
     fileId
     url
   }
-  sceneId
+  scene {
+    data
+    sceneId
+  }
   blocks {
     id
     cardBlockId
@@ -96,6 +99,7 @@ const saveDeck = async (card, deck) => {
   const cardUpdateFragment = {
     title: card.title,
     backgroundImageFileId: card.backgroundImage ? card.backgroundImage.fileId : undefined,
+    sceneId: card.scene ? card.scene.sceneId : undefined,
     blocks: card.blocks.map((block) => {
       return {
         type: block.type,
@@ -522,46 +526,43 @@ class CreateCardScreen extends React.Component {
   };
 
   _handleEditScene = async () => {
-    // Add a new scene if we don't already have one
-    const { card } = this.state;
-    if (!card.sceneId) {
-      const result = await Session.apolloClient.mutate({
-        mutation: gql`
-          mutation CreateScene($data: Json!) {
-            createScene(data: $data) {
-              sceneId
+    // Set scene editing state
+    this.setState({ isEditingScene: true }, async () => {
+      const { card } = this.state;
+      if (this.state.card.scene) {
+        // Already have a scene, just notify Lua
+        GhostEvents.sendAsync('SCENE_CREATOR_EDITING', {
+          isEditing: true,
+        });
+      } else {
+        // No scene, add one
+        const newSceneData = { empty: true };
+        const result = await Session.apolloClient.mutate({
+          mutation: gql`
+            mutation CreateScene($data: Json!) {
+              createScene(data: $data) {
+                sceneId
+              }
             }
-          }
-        `,
-        variables: {
-          data: {
-            empty: true,
+          `,
+          variables: {
+            data: newSceneData,
           },
-        },
-      });
-      sceneId = result.data && result.data.createScene && result.data.createScene.sceneId;
-      if (!sceneId) {
-        return;
+        });
+        sceneId = result.data && result.data.createScene && result.data.createScene.sceneId;
+        if (sceneId) {
+          this._handleCardChange({ scene: { sceneId, data: newSceneData } });
+        }
       }
-      this._handleCardChange({ sceneId });
-    }
-
-    // Set scene editing state and notify Lua
-    this.setState({
-      isEditingScene: true,
-    });
-    GhostEvents.sendAsync('SCENE_CREATOR_EDITING', {
-      isEditing: true,
     });
   };
 
   _handleEndEditScene = () => {
     // Unset scene editing state and notify Lua
-    this.setState({
-      isEditingScene: false,
-    });
-    GhostEvents.sendAsync('SCENE_CREATOR_EDITING', {
-      isEditing: false,
+    this.setState({ isEditingScene: false }, () => {
+      GhostEvents.sendAsync('SCENE_CREATOR_EDITING', {
+        isEditing: false,
+      });
     });
   };
 
@@ -585,7 +586,7 @@ class CreateCardScreen extends React.Component {
         : EMPTY_BLOCK;
 
     const chooseImageAction = card.backgroundImage ? 'Change Image' : 'Add Image';
-    const editSceneAction = card.sceneId ? 'Edit Scene' : 'Add Scene';
+    const editSceneAction = card.scene ? 'Edit Scene' : 'Add Scene';
     const containScrollViewStyles = Viewport.isUltraWide ? { width: '100%' } : { height: '100%' };
     const containScrollViewOffset = Viewport.isUltraWide ? -IPHONEX_BOTTOM_SAFE_HEIGHT : 0;
     const scrollViewSceneStyles = card.backgroundImage

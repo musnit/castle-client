@@ -29,14 +29,18 @@ const CardScene = ({ card, style, isEditing, onEndEditing }) => {
   return (
     <View style={style}>
       {card &&
-        (card.sceneId ? (
+        (card.scene ? (
           <GameView
             key={`game-view-${reloadCount}`}
             gameId={GAME_ID}
             gameUri={GAME_URI}
             extras={{
               initialParams: JSON.stringify({
-                sceneId: card.sceneId,
+                scene: {
+                  sceneId: card.scene.sceneId,
+                  data: card.scene.data,
+                },
+                isEditing,
               }),
             }}
             toolsVisible={isEditing}
