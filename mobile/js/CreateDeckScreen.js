@@ -29,7 +29,10 @@ const DECK_FRAGMENT = `
       primaryColor
     }
   }
-  initialCard { cardId }
+  initialCard {
+    id
+    cardId
+  }
 `;
 
 const CreateDeckScreen = (props) => {
