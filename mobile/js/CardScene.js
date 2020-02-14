@@ -37,10 +37,10 @@ const CardScene = ({ card, style, isEditing = false, onEndEditing, onScreenshot 
   const loadingOverlayOpacity = useRef(new Animated.Value(1)).current;
   const [loaded, setLoaded] = useState(false);
   const onLoaded = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await new Promise((resolve) => setTimeout(resolve, 120));
     Animated.timing(loadingOverlayOpacity, {
       toValue: 0,
-      duration: 200,
+      duration: 180,
       useNativeDriver: true,
     }).start(() => setLoaded(true));
   };
