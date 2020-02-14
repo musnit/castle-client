@@ -454,6 +454,7 @@ export const GameView = ({
   toolsVisible,
   headerVisible,
   onPressBack,
+  onScreenshot,
 }) => {
   const fetchGameHook = useFetchGame({ gameId, gameUri, extras });
   const game = fetchGameHook.fetchedGame;
@@ -474,6 +475,16 @@ export const GameView = ({
   useLuaMultiplayerClient({ eventsReady, game, sessionId, setSessionId });
 
   LuaBridge.useLuaBridge({ eventsReady, game });
+
+  GhostEvents.useListen({
+    eventsReady,
+    eventName: 'GHOST_SCREENSHOT',
+    handler: (params) => {
+      if (onScreenshot) {
+        onScreenshot(params);
+      }
+    },
+  });
 
   const [inputsMode, setInputsMode] = useState(
     extras.inputsMode !== undefined ? extras.inputsMode : 1

@@ -4,6 +4,7 @@ import { View, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback } fr
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import SafeAreaView from 'react-native-safe-area-view';
 import { connectActionSheet } from '@expo/react-native-action-sheet';
+import { ReactNativeFile } from 'apollo-upload-client';
 
 import uuid from 'uuid/v4';
 import { withNavigation, withNavigationFocus } from 'react-navigation';
@@ -555,6 +556,32 @@ class CreateCardScreen extends React.Component {
     });
   };
 
+  _handleSceneScreenshot = async ({ path }) => {
+    const result = await Session.apolloClient.mutate({
+      mutation: gql`
+        mutation UploadFile($file: Upload!) {
+          uploadFile(file: $file) {
+            fileId
+            url
+          }
+        }
+      `,
+      variables: {
+        file: new ReactNativeFile({
+          uri: 'file://' + path,
+          name: 'screenshot.png',
+          type: 'image/png',
+        }),
+      },
+      fetchPolicy: 'no-cache',
+    });
+    if (result && result.data && result.data.uploadFile) {
+      this._handleCardChange({
+        backgroundImage: result.data.uploadFile,
+      });
+    }
+  };
+
   _toggleHeaderExpanded = () =>
     this.setState((state) => {
       return { ...state, isHeaderExpanded: !state.isHeaderExpanded };
@@ -629,6 +656,7 @@ class CreateCardScreen extends React.Component {
                 card={card}
                 isEditing={isEditingScene}
                 onEndEditing={this._handleEndEditScene}
+                onScreenshot={this._handleSceneScreenshot}
               />
               {!isEditingScene ? (
                 <React.Fragment>

@@ -17,7 +17,7 @@ const USE_REMOTE_GAME = true;
 const GAME_ID = USE_REMOTE_GAME ? '1uzqao' : null;
 const GAME_URI = USE_REMOTE_GAME ? null : 'http://192.168.1.28:8080/project.castle';
 
-const CardScene = ({ card, style, isEditing = false, onEndEditing }) => {
+const CardScene = ({ card, style, isEditing = false, onEndEditing, onScreenshot }) => {
   const [reloadCount, setReloadCount] = useState(0);
   const onPressReload = async () => {
     await new Promise((resolve) => setTimeout(resolve, 40));
@@ -49,6 +49,7 @@ const CardScene = ({ card, style, isEditing = false, onEndEditing }) => {
             logsVisible={isEditing && logsVisible}
             setLogsVisible={setLogsVisible}
             onPressBack={onEndEditing}
+            onScreenshot={onScreenshot}
           />
         ) : card.backgroundImage ? (
           <FastImage style={styles.backgroundImage} source={{ uri: card.backgroundImage.url }} />
