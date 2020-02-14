@@ -6,6 +6,8 @@ import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useNavigation, useNavigationEvents } from 'react-navigation-hooks';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 
+import * as Session from './Session';
+
 import CardsSet from './CardsSet';
 import ConfigureDeck from './ConfigureDeck';
 import DeckHeader from './DeckHeader';
@@ -29,6 +31,18 @@ const DECK_FRAGMENT = `
     backgroundImage {
       url
       primaryColor
+    }
+    scene {
+      data
+      sceneId
+    }
+    blocks {
+      id
+      cardBlockId
+      cardBlockUpdateId
+      type
+      title
+      destinationCardId
     }
   }
   initialCard {
@@ -130,11 +144,11 @@ const CreateDeckScreen = (props) => {
     showActionSheetWithOptions(
       {
         title: 'Card Options',
-        options: ['Delete Card', 'Cancel'],
+        options: ['Delete Card', 'Use as Top Card', 'Cancel'],
         destructiveButtonIndex: 0,
-        cancelButtonIndex: 1,
+        cancelButtonIndex: 2,
       },
-      (buttonIndex) => {
+      async (buttonIndex) => {
         if (buttonIndex == 0) {
           const newCards = deck.cards.filter((c) => c.cardId !== card.cardId);
           deleteCard({ variables: { cardId: card.cardId } });
@@ -142,6 +156,12 @@ const CreateDeckScreen = (props) => {
             ...deck,
             cards: newCards,
           });
+        } else if (buttonIndex == 1) {
+          const { deck: updatedDeck } = await Session.saveDeck(
+            { ...card, makeInitialCard: true },
+            { ...deck, initialCard: { cardId: card.cardId, id: card.id } }
+          );
+          setDeck(updatedDeck);
         }
       }
     );

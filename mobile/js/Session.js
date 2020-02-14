@@ -279,7 +279,7 @@ export const saveDeck = async (card, deck) => {
       newCards = [...deck.cards];
     result.data.updateCard.forEach((updated) => {
       let existingIndex = deck.cards.findIndex((old) => old.cardId === updated.cardId);
-      if (existingIndex > 0) {
+      if (existingIndex >= 0) {
         newCards[existingIndex] = updated;
       } else {
         newCards.push(updated);
