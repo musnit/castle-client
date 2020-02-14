@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, View, Animated } from 'react-native';
 
 import FastImage from 'react-native-fast-image';
@@ -37,13 +37,20 @@ const CardScene = ({ card, style, isEditing = false, onEndEditing, onScreenshot 
   const loadingOverlayOpacity = useRef(new Animated.Value(1)).current;
   const [loaded, setLoaded] = useState(false);
   const onLoaded = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 120));
-    Animated.timing(loadingOverlayOpacity, {
-      toValue: 0,
-      duration: 180,
-      useNativeDriver: true,
-    }).start(() => setLoaded(true));
+    if (!loaded) {
+      await new Promise((resolve) => setTimeout(resolve, 120));
+      if (!loaded) {
+        Animated.timing(loadingOverlayOpacity, {
+          toValue: 0,
+          duration: 180,
+          useNativeDriver: true,
+        }).start(() => setLoaded(true));
+      }
+    }
   };
+  useEffect(() => {
+    setTimeout(onLoaded, 500);
+  }, []);
 
   return (
     <View style={style}>
