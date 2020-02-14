@@ -48,9 +48,7 @@ const CardScene = ({ card, style, isEditing = false, onEndEditing, onScreenshot 
       }
     }
   };
-  useEffect(() => {
-    setTimeout(onLoaded, 500);
-  }, []);
+  useEffect(() => setTimeout(onLoaded, 500), []);
 
   return (
     <View style={style}>
