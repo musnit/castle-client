@@ -71,156 +71,11 @@ const styles = StyleSheet.create({
   },
 });
 
-const CARD_FRAGMENT = `
-  id
-  cardId
-  title
-  backgroundImage {
-    fileId
-    url
-  }
-  scene {
-    data
-    sceneId
-  }
-  blocks {
-    id
-    cardBlockId
-    cardBlockUpdateId
-    type
-    title
-    destinationCardId
-  }
-`;
-
-const saveDeck = async (card, deck) => {
-  const deckUpdateFragment = {
-    title: deck.title,
-  };
-  const cardUpdateFragment = {
-    title: card.title,
-    backgroundImageFileId: card.backgroundImage ? card.backgroundImage.fileId : undefined,
-    sceneId: card.scene ? card.scene.sceneId : undefined,
-    blocks: card.blocks.map((block) => {
-      return {
-        type: block.type,
-        destinationCardId: block.destinationCardId,
-        title: block.title,
-        createDestinationCard: block.createDestinationCard,
-        cardBlockUpdateId: block.cardBlockUpdateId,
-      };
-    }),
-    makeInitialCard: card.makeInitialCard || undefined,
-  };
-  if (deck.deckId && card.cardId) {
-    // update existing card in deck
-    const result = await Session.apolloClient.mutate({
-      mutation: gql`
-        mutation UpdateCard($cardId: ID!, $card: CardInput!) {
-          updateCard(
-            cardId: $cardId,
-            card: $card
-          ) {
-            ${CARD_FRAGMENT}
-          }
-        }
-      `,
-      variables: { cardId: card.cardId, card: cardUpdateFragment },
-    });
-    let updatedCard,
-      newCards = [...deck.cards];
-    result.data.updateCard.forEach((updated) => {
-      let existingIndex = deck.cards.findIndex((old) => old.cardId === updated.cardId);
-      if (existingIndex > 0) {
-        newCards[existingIndex] = updated;
-      } else {
-        newCards.push(updated);
-      }
-      if (updated.cardId === card.cardId) {
-        updatedCard = updated;
-      }
-    });
-    return {
-      card: updatedCard,
-      deck: {
-        ...deck,
-        cards: newCards,
-      },
-    };
-  } else if (deck.deckId) {
-    // TODO: add a card to an existing deck
-  } else {
-    // no existing deckId or cardId, so create a new deck
-    // and add the card to it.
-    const result = await Session.apolloClient.mutate({
-      mutation: gql`
-        mutation CreateDeck($deck: DeckInput!, $card: CardInput!) {
-          createDeck(
-            deck: $deck,
-            card: $card
-          ) {
-            id
-            deckId
-            title
-            cards {
-              ${CARD_FRAGMENT}
-            }
-            initialCard { cardId }
-          }
-        }
-      `,
-      variables: { deck: deckUpdateFragment, card: cardUpdateFragment },
-    });
-    let newCard;
-    if (result.data.createDeck.cards.length > 1) {
-      // if the initial card contained references to other cards,
-      // we can get many cards back here. we care about the non-empty one
-      newCard = result.data.createDeck.cards.find((card) => card.blocks && card.blocks.length > 0);
-    } else {
-      newCard = result.data.createDeck.cards[0];
-    }
-    return {
-      card: newCard,
-      deck: result.data.createDeck,
-    };
-  }
-};
-
-const getDeckById = async (deckId) => {
-  const result = await Session.apolloClient.query({
-    query: gql`
-      query GetDeckById($deckId: ID!) {
-        deck(deckId: $deckId) {
-          id
-          deckId
-          title
-          cards {
-            ${CARD_FRAGMENT}
-          }
-          initialCard { cardId }
-        }
-      }
-    `,
-    variables: { deckId },
-    fetchPolicy: 'no-cache',
-  });
-  return result.data.deck;
-};
-
 const ActionButton = ({ style, ...props }) => {
   const buttonProps = { ...props, children: undefined };
   return (
     <TouchableOpacity style={[styles.button, style]} {...buttonProps}>
       <Text style={styles.buttonLabel}>{props.children}</Text>
-    </TouchableOpacity>
-  );
-};
-
-const CTAButton = (props) => {
-  const buttonProps = { ...props, children: undefined };
-  return (
-    <TouchableOpacity style={[styles.button, styles.cta]} {...buttonProps}>
-      <Text style={[styles.buttonLabel, styles.ctaLabel]}>{props.children}</Text>
     </TouchableOpacity>
   );
 };
@@ -296,7 +151,7 @@ class CreateCardScreen extends React.Component {
         card = EMPTY_CARD;
       if (params.deckIdToEdit) {
         try {
-          deck = await getDeckById(params.deckIdToEdit);
+          deck = await Session.getDeckById(params.deckIdToEdit);
           card = deck.cards.find((card) => card.cardId == params.cardIdToEdit);
           if (card && deck.initialCard && deck.initialCard.cardId === card.cardId) {
             card.makeInitialCard = true;
@@ -392,7 +247,7 @@ class CreateCardScreen extends React.Component {
 
   _save = async () => {
     await this._handleDismissEditing();
-    const { card, deck } = await saveDeck(this.state.card, this.state.deck);
+    const { card, deck } = await Session.saveDeck(this.state.card, this.state.deck);
     if (!this._mounted) return;
     return this.setState({ card, deck });
   };
@@ -438,7 +293,7 @@ class CreateCardScreen extends React.Component {
   };
 
   _saveAndGoToDeck = async () => {
-    const { card, deck } = await saveDeck(this.state.card, this.state.deck);
+    const { card, deck } = await Session.saveDeck(this.state.card, this.state.deck);
     if (!this._mounted) return;
     return this._goToDeck(deck.deckId);
   };

@@ -198,6 +198,28 @@ export const resetPasswordAsync = async ({ username }) => {
   });
 };
 
+const CARD_FRAGMENT = `
+  id
+  cardId
+  title
+  backgroundImage {
+    fileId
+    url
+  }
+  scene {
+    data
+    sceneId
+  }
+  blocks {
+    id
+    cardBlockId
+    cardBlockUpdateId
+    type
+    title
+    destinationCardId
+  }
+`;
+
 export const prefetchCardsAsync = async ({ cardId }) => {
   const {
     data: { prefetchCards },
@@ -205,21 +227,7 @@ export const prefetchCardsAsync = async ({ cardId }) => {
     query: gql`
       query PrefetchCards($cardId: ID!) {
         prefetchCards(cardId: $cardId) {
-          id
-          cardId
-          title
-          backgroundImage {
-            fileId
-            url
-          }
-          blocks {
-            id
-            cardBlockId
-            cardBlockUpdateId
-            type
-            title
-            destinationCardId
-          }
+          ${CARD_FRAGMENT}
         }
       }
     `,
@@ -231,4 +239,124 @@ export const prefetchCardsAsync = async ({ cardId }) => {
       Image.prefetch(card.backgroundImage.url);
     }
   });
+};
+
+export const saveDeck = async (card, deck) => {
+  const deckUpdateFragment = {
+    title: deck.title,
+  };
+  const cardUpdateFragment = {
+    title: card.title,
+    backgroundImageFileId: card.backgroundImage ? card.backgroundImage.fileId : undefined,
+    sceneId: card.scene ? card.scene.sceneId : undefined,
+    blocks: card.blocks.map((block) => {
+      return {
+        type: block.type,
+        destinationCardId: block.destinationCardId,
+        title: block.title,
+        createDestinationCard: block.createDestinationCard,
+        cardBlockUpdateId: block.cardBlockUpdateId,
+      };
+    }),
+    makeInitialCard: card.makeInitialCard || undefined,
+  };
+  if (deck.deckId && card.cardId) {
+    // update existing card in deck
+    const result = await apolloClient.mutate({
+      mutation: gql`
+        mutation UpdateCard($cardId: ID!, $card: CardInput!) {
+          updateCard(
+            cardId: $cardId,
+            card: $card
+          ) {
+            ${CARD_FRAGMENT}
+          }
+        }
+      `,
+      variables: { cardId: card.cardId, card: cardUpdateFragment },
+    });
+    let updatedCard,
+      newCards = [...deck.cards];
+    result.data.updateCard.forEach((updated) => {
+      let existingIndex = deck.cards.findIndex((old) => old.cardId === updated.cardId);
+      if (existingIndex > 0) {
+        newCards[existingIndex] = updated;
+      } else {
+        newCards.push(updated);
+      }
+      if (updated.cardId === card.cardId) {
+        updatedCard = updated;
+      }
+    });
+    return {
+      card: updatedCard,
+      deck: {
+        ...deck,
+        cards: newCards,
+      },
+    };
+  } else if (deck.deckId) {
+    // TODO: add a card to an existing deck
+  } else {
+    // no existing deckId or cardId, so create a new deck
+    // and add the card to it.
+    const result = await apolloClient.mutate({
+      mutation: gql`
+        mutation CreateDeck($deck: DeckInput!, $card: CardInput!) {
+          createDeck(
+            deck: $deck,
+            card: $card
+          ) {
+            id
+            deckId
+            title
+            cards {
+              ${CARD_FRAGMENT}
+            }
+            initialCard {
+              id
+              cardId
+            }
+          }
+        }
+      `,
+      variables: { deck: deckUpdateFragment, card: cardUpdateFragment },
+    });
+    let newCard;
+    if (result.data.createDeck.cards.length > 1) {
+      // if the initial card contained references to other cards,
+      // we can get many cards back here. we care about the non-empty one
+      newCard = result.data.createDeck.cards.find((card) => card.blocks && card.blocks.length > 0);
+    } else {
+      newCard = result.data.createDeck.cards[0];
+    }
+    return {
+      card: newCard,
+      deck: result.data.createDeck,
+    };
+  }
+};
+
+export const getDeckById = async (deckId) => {
+  const result = await apolloClient.query({
+    query: gql`
+      query GetDeckById($deckId: ID!) {
+        deck(deckId: $deckId) {
+          id
+          deckId
+          title
+          cards {
+            ${CARD_FRAGMENT}
+          }
+          initialCard {
+            id
+            cardId
+          }
+        }
+      }
+    `,
+    variables: { deckId },
+    fetchPolicy: 'no-cache',
+  });
+  return result.data.deck;
 };
