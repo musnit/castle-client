@@ -3,6 +3,7 @@ import { StatusBar, StyleSheet, Switch, Text, TouchableOpacity, View } from 'rea
 import FastImage from 'react-native-fast-image';
 
 import * as Constants from './Constants';
+import * as Utilities from './utilities';
 
 import ConfigureInput from './ConfigureInput';
 import Viewport from './viewport';
@@ -128,7 +129,7 @@ const DismissIcon = () => {
 
 const CardHeader = (props) => {
   const { card, expanded, isEditable } = props;
-  const title = card.title ? card.title : 'Untitled Card';
+  const title = Utilities.makeCardPreviewTitle(card);
   return (
     <View style={styles.container}>
       <StatusBar hidden={true} />

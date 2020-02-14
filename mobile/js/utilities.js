@@ -6,6 +6,25 @@ import * as Session from './Session';
 
 import * as Constants from './Constants';
 
+const CARD_TITLE_MAX_LEN = 28;
+
+export const makeCardPreviewTitle = (card) => {
+  if (!card.blocks || !card.blocks.length) {
+    return card.title ? card.title : 'Untitled Card';
+  }
+  const firstBlockContents = card.blocks[0].title.split(/[\s]/);
+  let title = '',
+    ii = 0;
+  while (title.length < CARD_TITLE_MAX_LEN && ii < firstBlockContents.length) {
+    title += firstBlockContents[ii] + ' ';
+    ii++;
+  }
+  if (title.length > CARD_TITLE_MAX_LEN) {
+    title = title.substring(0, CARD_TITLE_MAX_LEN - 3) + '...';
+  }
+  return title;
+};
+
 export const launchImagePicker = (methodName, callback = () => {}) => {
   const options = { maxWidth: 1024, maxHeight: 1024, imageFileType: 'png' };
 

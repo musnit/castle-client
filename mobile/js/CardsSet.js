@@ -117,7 +117,7 @@ const SearchInput = (props) => {
 
 const CardListItem = ({ card, onPress }) => (
   <TouchableOpacity style={styles.listItem} onPress={onPress}>
-    <Text style={styles.cardTitle}>{card.title}</Text>
+    <Text style={styles.cardTitle}>{Utilities.makeCardPreviewTitle(card)}</Text>
   </TouchableOpacity>
 );
 
@@ -163,7 +163,7 @@ const CardsGrid = ({ deck, onPress, onShowCardOptions, showNewCard }) => {
                 deck.cards.length > 1 && deck.initialCard && deck.initialCard.cardId === card.cardId
               }
             />
-            <Text style={styles.cardTitle}>{card.title}</Text>
+            <Text style={styles.cardTitle}>{Utilities.makeCardPreviewTitle(card)}</Text>
             {onShowCardOptions && (
               <TouchableOpacity style={styles.cardOptions} onPress={() => onShowCardOptions(card)}>
                 <Text style={styles.cardOptionsLabel}>...</Text>
