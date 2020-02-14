@@ -183,7 +183,7 @@ local function explicitRequire(path, opts)
     if preamble then response = preamble .. response end
 
     -- If this is the first fetch of the body, asynchronously pre-fetch resources it references
-    if firstFetch then
+    if firstFetch and not url:match('https?://api%.castle%.games') then
         for _, resource in pairs(parseResources(response)) do
             if not parsePrefetchVisited[childEnv][resource.path] then
                 parsePrefetchVisited[childEnv][resource.path] = true
