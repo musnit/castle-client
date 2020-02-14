@@ -327,6 +327,8 @@ function portalMeta:setupLove()
         ]]
         return love.thread.newThread(code)
     end
+
+    newLove.thread.originalNewThread = love.thread.newThread
 end
 
 -- Call `foo` in protected mode, calling `self:handleError` on an error if one
