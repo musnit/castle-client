@@ -120,7 +120,7 @@ local db = sqlite3.open(love.filesystem.getSaveDirectory() .. '/ghost_network.db
 
 -- Database with an initial cache to look in too -- for game data 'embedded' into the Castle client
 local seedDb
-if GHOST_NETWORK_SEED_PATH then
+if false and GHOST_NETWORK_SEED_PATH then
     seedDb = sqlite3.open(GHOST_NETWORK_SEED_PATH)
 end
 
@@ -297,6 +297,7 @@ do
         return url
     end
 end
+network.mapToCacheable = mapToCacheable
 
 -- Save a result to the persistent fetch cache, updating an existing entry if it exists
 local persistFetchResult
@@ -365,6 +366,7 @@ do
         return result
     end
 end
+network.findPersistedFetchResult = findPersistedFetchResult
 
 -- The cache of `network.fetch` responses
 local fetchEntries = { GET = {}, HEAD = {} }
