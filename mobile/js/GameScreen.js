@@ -243,7 +243,7 @@ const useInitialData = ({ game, dimensionsSettings, extras }) => {
 };
 
 // Keep track of Lua loading state
-const useLuaLoading = ({ eventsReady }) => {
+const useLuaLoading = ({ eventsReady, onLoaded }) => {
   // Maintain list of network requests Lua is making
   const [networkRequests, setNetworkRequests] = useState([]);
   GhostEvents.useListen({
@@ -271,7 +271,12 @@ const useLuaLoading = ({ eventsReady }) => {
   GhostEvents.useListen({
     eventsReady,
     eventName: 'CASTLE_GAME_LOADED',
-    handler: () => setLoaded(true),
+    handler: () => {
+      if (onLoaded) {
+        onLoaded();
+      }
+      setLoaded(true);
+    },
   });
 
   return { networkRequests, loaded };
@@ -455,6 +460,7 @@ export const GameView = ({
   headerVisible,
   onPressBack,
   onScreenshot,
+  onLoaded,
 }) => {
   const fetchGameHook = useFetchGame({ gameId, gameUri, extras });
   const game = fetchGameHook.fetchedGame;
@@ -468,7 +474,7 @@ export const GameView = ({
   const clearEventsHook = GhostEvents.useClear();
   const eventsReady = clearEventsHook.cleared;
 
-  const luaLoadingHook = useLuaLoading({ eventsReady });
+  const luaLoadingHook = useLuaLoading({ eventsReady, onLoaded });
 
   const [sessionId, setSessionId] = useState(extras.sessionId);
 

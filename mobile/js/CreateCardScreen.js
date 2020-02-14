@@ -652,6 +652,7 @@ class CreateCardScreen extends React.Component {
               contentContainerStyle={[styles.scrollViewContentContainer, scrollViewSceneStyles]}
               innerRef={(ref) => (this._scrollViewRef = ref)}>
               <CardScene
+                key={`card-scene-${card.scene && card.scene.sceneId}`}
                 style={styles.scene}
                 card={card}
                 isEditing={isEditingScene}

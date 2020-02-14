@@ -151,7 +151,11 @@ const PlayCardScreen = (props) => {
           style={[styles.scrollView, containScrollViewStyles]}
           contentContainerStyle={{ flex: 1 }}>
           <TouchableWithoutFeedback onPress={_handlePressScene}>
-            <CardScene style={styles.scene} card={card} />
+            <CardScene
+              key={`card-scene-${card.scene && card.scene.sceneId}`}
+              style={styles.scene}
+              card={card}
+            />
           </TouchableWithoutFeedback>
           <View style={styles.description}>
             <CardBlocks card={card} onSelectBlock={_handleSelectBlock} />
