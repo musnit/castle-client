@@ -9,7 +9,7 @@ import * as Constants from './Constants';
 const CARD_TITLE_MAX_LEN = 28;
 
 export const makeCardPreviewTitle = (card) => {
-  if (!card.blocks || !card.blocks.length) {
+  if (!card.blocks || !card.blocks.length || !card.blocks[0].title) {
     return card.title ? card.title : 'Untitled Card';
   }
   const firstBlockContents = card.blocks[0].title.split(/[\s]/);

@@ -7,6 +7,7 @@ import { useNavigation, useNavigationEvents } from 'react-navigation-hooks';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 
 import * as Session from './Session';
+import * as Utilities from './utilities';
 
 import CardsSet from './CardsSet';
 import ConfigureDeck from './ConfigureDeck';
@@ -143,28 +144,35 @@ const CreateDeckScreen = (props) => {
   const _showCardOptions = (card) => {
     showActionSheetWithOptions(
       {
-        title: 'Card Options',
-        options: ['Delete Card', 'Use as Top Card', 'Cancel'],
-        destructiveButtonIndex: 0,
+        title: Utilities.makeCardPreviewTitle(card),
+        options: ['Use as Top Card', 'Delete Card', 'Cancel'],
+        destructiveButtonIndex: 1,
         cancelButtonIndex: 2,
       },
       async (buttonIndex) => {
         if (buttonIndex == 0) {
+          const { deck: updatedDeck } = await Session.saveDeck(
+            { ...card, makeInitialCard: true },
+            { ...deck, initialCard: { cardId: card.cardId, id: card.id } }
+          );
+          setDeck(updatedDeck);
+        } else if (buttonIndex == 1) {
           const newCards = deck.cards.filter((c) => c.cardId !== card.cardId);
           deleteCard({ variables: { cardId: card.cardId } });
           setDeck({
             ...deck,
             cards: newCards,
           });
-        } else if (buttonIndex == 1) {
-          const { deck: updatedDeck } = await Session.saveDeck(
-            { ...card, makeInitialCard: true },
-            { ...deck, initialCard: { cardId: card.cardId, id: card.id } }
-          );
-          setDeck(updatedDeck);
         }
       }
     );
+  };
+
+  const _navigateToCreateCard = (card) => {
+    navigation.navigate('CreateCard', {
+      deckIdToEdit: deck.deckId,
+      cardIdToEdit: card.cardId,
+    });
   };
 
   return (
@@ -181,14 +189,10 @@ const CreateDeckScreen = (props) => {
       />
       {mode === 'cards' ? (
         <CardsSet
+          showNewCard
           deck={deck}
           onShowCardOptions={_showCardOptions}
-          onPress={(card) =>
-            navigation.navigate('CreateCard', {
-              deckIdToEdit: deck.deckId,
-              cardIdToEdit: card.cardId,
-            })
-          }
+          onPress={_navigateToCreateCard}
         />
       ) : (
         <ConfigureDeck deck={deck} onChange={_changeDeck} onDeleteDeck={_deleteDeck} />

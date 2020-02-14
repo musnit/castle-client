@@ -153,8 +153,13 @@ class CreateCardScreen extends React.Component {
         try {
           deck = await Session.getDeckById(params.deckIdToEdit);
           card = deck.cards.find((card) => card.cardId == params.cardIdToEdit);
-          if (card && deck.initialCard && deck.initialCard.cardId === card.cardId) {
-            card.makeInitialCard = true;
+          if (card) {
+            if (deck.initialCard && deck.initialCard.cardId === card.cardId) {
+              card.makeInitialCard = true;
+            }
+          } else {
+            // possible to specify a deck id but no card
+            card = EMPTY_CARD;
           }
         } catch (_) {}
       }

@@ -296,7 +296,24 @@ export const saveDeck = async (card, deck) => {
       },
     };
   } else if (deck.deckId) {
-    // TODO: add a card to an existing deck
+    // add a card to an existing deck
+    const result = await apolloClient.mutate({
+      mutation: gql`
+        mutation AddCard($deckId: ID!, $card: CardInput!) {
+          addCard(deckId: $deckId, card: $card) {
+            ${CARD_FRAGMENT}
+          }
+        }`,
+      variables: { deckId: deck.deckId, card: cardUpdateFragment },
+    });
+    let newCards = deck.cards.concat(result.data.updateCard);
+    return {
+      card: newCards[newCards.length - 1],
+      deck: {
+        ...deck,
+        cards: newCards,
+      },
+    };
   } else {
     // no existing deckId or cardId, so create a new deck
     // and add the card to it.

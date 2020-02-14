@@ -76,7 +76,7 @@ const CreateDeckCell = (props) => {
             }}
             source={require('../assets/images/add.png')}
           />
-          <Text style={styles.cellTitle}>Create Deck</Text>
+          <Text style={styles.cellTitle}>Create</Text>
         </View>
       </TouchableOpacity>
     </View>
