@@ -4,6 +4,8 @@ import FastImage from 'react-native-fast-image';
 
 const MAX_NUM_CARDS = 4;
 
+import * as Utilities from './utilities';
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
@@ -52,7 +54,7 @@ const CardDestinationPickerControl = ({ onSelectCard, onSelectSearch, deck }) =>
   items = items.concat(
     deck.cards.slice(0, MAX_NUM_CARDS).map((card) => {
       return {
-        title: card.title,
+        title: Utilities.makeCardPreviewTitle(card),
         onPress: () => onSelectCard(card),
       };
     })

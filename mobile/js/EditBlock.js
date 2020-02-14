@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { TouchableOpacity, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
+import * as Utilities from './utilities';
+
 import CardDestinationPickerControl from './CardDestinationPickerControl';
 
 const styles = StyleSheet.create({
@@ -111,7 +113,9 @@ const EditBlock = (props) => {
   const destination = block.createDestinationCard
     ? 'New Card'
     : block.destinationCardId
-    ? deck.cards.find((card) => card.cardId === block.destinationCardId).title
+    ? Utilities.makeCardPreviewTitle(
+        deck.cards.find((card) => card.cardId === block.destinationCardId)
+      )
     : null;
   const typeStyles = block.type === 'choice' ? choiceTypeStyles : textTypeStyles;
   const maybeBlockDestinationButton =

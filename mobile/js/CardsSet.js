@@ -47,6 +47,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
+    padding: 8,
+  },
+  newCardTitle: {
+    fontSize: 16,
+    color: '#ccc',
+    textAlign: 'center',
   },
   settingsRow: {
     flexDirection: 'row',
@@ -141,7 +147,7 @@ const CardsList = ({ deck, onPress, searchQuery }) => {
 
 const NewCardCell = ({ onPress }) => (
   <TouchableOpacity style={styles.newCard} onPress={onPress}>
-    <Text style={styles.cardTitle}>Add a card to this deck</Text>
+    <Text style={styles.newCardTitle}>Add a card to this deck</Text>
   </TouchableOpacity>
 );
 
