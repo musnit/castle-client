@@ -68,6 +68,7 @@ const useFetchGame = ({ gameId, gameUri, extras }) => {
         game(gameId: $gameId, url: $gameUri) {
           gameId
           entryPoint
+          hostedFiles
           metadata
           storageId
           ...LuaGame
