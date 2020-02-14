@@ -74,27 +74,27 @@ const styles = StyleSheet.create({
   },
 });
 
-const ConfigureCard = (props) => {
+const ConfigureCard = ({ card, onChange, onDeleteCard }) => {
   return (
     <View style={{ minHeight: 45 * Viewport.vh, padding: 16, marginTop: 42, marginBottom: 16 }}>
       <ConfigureInput
         label="Short Name"
         placeholder="Choose a name for this card"
-        value={props.card.title}
-        onChangeText={(title) => props.onChange({ title })}
+        value={card.title}
+        onChangeText={(title) => onChange({ title })}
       />
-      {props.card.cardId && (
+      {card.cardId && (
         <View style={styles.configureRow}>
           <Text style={styles.configureLabel}>Use as top card</Text>
           <Switch
             ios_backgroundColor="#444"
-            value={!!props.card.makeInitialCard}
-            onValueChange={(makeInitialCard) => props.onChange({ makeInitialCard })}
+            value={!!card.makeInitialCard}
+            onValueChange={(makeInitialCard) => onChange({ makeInitialCard })}
           />
         </View>
       )}
-      {props.card.cardId && (
-        <TouchableOpacity style={styles.deleteButton} onPress={props.onDeleteCard}>
+      {card.cardId && (
+        <TouchableOpacity style={styles.deleteButton} onPress={onDeleteCard}>
           <Text style={styles.deleteLabel}>Delete Card</Text>
         </TouchableOpacity>
       )}
