@@ -4,6 +4,7 @@ import { View, StyleSheet, Text } from 'react-native';
 import SafeAreaView from 'react-native-safe-area-view';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useNavigation, useNavigationEvents } from 'react-navigation-hooks';
+import { useActionSheet } from '@expo/react-native-action-sheet';
 
 import CardsSet from './CardsSet';
 import ConfigureDeck from './ConfigureDeck';
@@ -39,6 +40,7 @@ const DECK_FRAGMENT = `
 const CreateDeckScreen = (props) => {
   let lastFocusedTime;
   const navigation = useNavigation();
+  const { showActionSheetWithOptions } = useActionSheet();
   const deckId = navigation.state.params.deckIdToEdit;
   const [mode, setMode] = React.useState('cards');
   const [deck, setDeck] = React.useState(null);
@@ -57,6 +59,14 @@ const CreateDeckScreen = (props) => {
     gql`
       mutation DeleteDeck($deckId: ID!) {
         deleteDeck(deckId: $deckId)
+      }
+    `
+  );
+
+  const [deleteCard] = useMutation(
+    gql`
+      mutation DeleteCard($cardId: ID!) {
+        deleteCard(cardId: $cardId)
       }
     `
   );
@@ -116,6 +126,27 @@ const CreateDeckScreen = (props) => {
     });
   };
 
+  const _showCardOptions = (card) => {
+    showActionSheetWithOptions(
+      {
+        title: 'Card Options',
+        options: ['Delete Card', 'Cancel'],
+        destructiveButtonIndex: 0,
+        cancelButtonIndex: 1,
+      },
+      (buttonIndex) => {
+        if (buttonIndex == 0) {
+          const newCards = deck.cards.filter((c) => c.cardId !== card.cardId);
+          deleteCard({ variables: { cardId: card.cardId } });
+          setDeck({
+            ...deck,
+            cards: newCards,
+          });
+        }
+      }
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <DeckHeader
@@ -131,6 +162,7 @@ const CreateDeckScreen = (props) => {
       {mode === 'cards' ? (
         <CardsSet
           deck={deck}
+          onShowCardOptions={_showCardOptions}
           onPress={(card) =>
             navigation.navigate('CreateCard', {
               deckIdToEdit: deck.deckId,

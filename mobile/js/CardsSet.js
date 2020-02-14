@@ -79,6 +79,16 @@ const styles = StyleSheet.create({
     color: '#fff',
     width: '100%',
   },
+  cardOptions: {
+    padding: 4,
+    backgroundColor: '#444',
+    borderRadius: 2,
+  },
+  cardOptionsLabel: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: '700',
+  },
 });
 
 const SearchInput = (props) => {
@@ -135,7 +145,7 @@ const NewCardCell = ({ onPress }) => (
   </TouchableOpacity>
 );
 
-const CardsGrid = ({ deck, onPress, showNewCard }) => {
+const CardsGrid = ({ deck, onPress, onShowCardOptions, showNewCard }) => {
   return (
     <View style={styles.gridContainer}>
       {showNewCard && (
@@ -154,6 +164,11 @@ const CardsGrid = ({ deck, onPress, showNewCard }) => {
               }
             />
             <Text style={styles.cardTitle}>{card.title}</Text>
+            {onShowCardOptions && (
+              <TouchableOpacity style={styles.cardOptions} onPress={() => onShowCardOptions(card)}>
+                <Text style={styles.cardOptionsLabel}>...</Text>
+              </TouchableOpacity>
+            )}
           </View>
         ))}
     </View>

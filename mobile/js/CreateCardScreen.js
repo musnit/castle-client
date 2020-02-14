@@ -206,17 +206,6 @@ const getDeckById = async (deckId) => {
   return result.data.deck;
 };
 
-const deleteCard = async (cardId) => {
-  return Session.apolloClient.mutate({
-    mutation: gql`
-      mutation DeleteCard($cardId: ID!) {
-        deleteCard(cardId: $cardId)
-      }
-    `,
-    variables: { cardId },
-  });
-};
-
 const ActionButton = ({ style, ...props }) => {
   const buttonProps = { ...props, children: undefined };
   return (
@@ -470,7 +459,7 @@ class CreateCardScreen extends React.Component {
 
   _handleCardDelete = async () => {
     if (this.state.card.cardId) {
-      await deleteCard(this.state.card.cardId);
+      // TODO: remove await deleteCard(this.state.card.cardId);
       this._goToDeck();
     }
   };
