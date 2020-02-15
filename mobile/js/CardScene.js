@@ -34,13 +34,13 @@ const CardScene = ({ card, style, isEditing = false, onEndEditing, onScreenshot 
 
   const [logsVisible, setLogsVisible] = useState(false);
 
-  const loadingOverlayOpacity = useRef(new Animated.Value(1)).current;
+  const backgroundImageOverlayOpacity = useRef(new Animated.Value(1)).current;
   const [loaded, setLoaded] = useState(false);
   const onLoaded = async () => {
     if (!loaded) {
       await new Promise((resolve) => setTimeout(resolve, 200));
       if (!loaded) {
-        Animated.timing(loadingOverlayOpacity, {
+        Animated.timing(backgroundImageOverlayOpacity, {
           toValue: 0,
           duration: 200,
           useNativeDriver: true,
@@ -50,6 +50,19 @@ const CardScene = ({ card, style, isEditing = false, onEndEditing, onScreenshot 
   };
   useEffect(() => {
     setTimeout(onLoaded, 800);
+  }, []);
+
+  const whiteOverlayOpacity = useRef(new Animated.Value(1)).current;
+  useEffect(() => {
+    setTimeout(
+      () =>
+        Animated.timing(whiteOverlayOpacity, {
+          toValue: 0,
+          duration: 220,
+          useNativeDriver: false,
+        }).start(),
+      40
+    );
   }, []);
 
   return (
@@ -80,9 +93,18 @@ const CardScene = ({ card, style, isEditing = false, onEndEditing, onScreenshot 
               onLoaded={onLoaded}
             />
             {!loaded && card.backgroundImage ? (
-              <Animated.View style={[styles.overlayImage, { opacity: loadingOverlayOpacity }]}>
-                <FastImage style={{ flex: 1 }} source={{ uri: card.backgroundImage.url }} />
-              </Animated.View>
+              <React.Fragment>
+                <Animated.View
+                  style={[styles.overlayImage, { opacity: backgroundImageOverlayOpacity }]}>
+                  <FastImage style={{ flex: 1 }} source={{ uri: card.backgroundImage.url }} />
+                </Animated.View>
+                <Animated.View
+                  style={[
+                    styles.overlayImage,
+                    { backgroundColor: 'white', opacity: whiteOverlayOpacity },
+                  ]}
+                />
+              </React.Fragment>
             ) : null}
           </React.Fragment>
         ) : card.backgroundImage ? (
