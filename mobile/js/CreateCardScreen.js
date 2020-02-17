@@ -45,17 +45,29 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  sceneActions: {
+  sceneActionsContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-end',
     flexShrink: 1,
   },
+  sceneActions: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
   button: {
-    ...Constants.styles.overlayButton,
+    ...Constants.styles.plainButton,
+    ...Constants.styles.dropShadow,
   },
   buttonLabel: {
-    ...Constants.styles.overlayButtonLabel,
+    ...Constants.styles.plainButtonLabel,
+  },
+  primaryButton: {
+    ...Constants.styles.primaryButton,
+    ...Constants.styles.dropShadow,
+  },
+  primaryButtonLabel: {
+    ...Constants.styles.primaryButtonLabel,
   },
   description: {
     alignItems: 'center',
@@ -71,11 +83,20 @@ const styles = StyleSheet.create({
   },
 });
 
-const ActionButton = ({ style, ...props }) => {
+const PlainButton = ({ style, ...props }) => {
   const buttonProps = { ...props, children: undefined };
   return (
     <TouchableOpacity style={[styles.button, style]} {...buttonProps}>
       <Text style={styles.buttonLabel}>{props.children}</Text>
+    </TouchableOpacity>
+  );
+};
+
+const PrimaryButton = ({ style, ...props }) => {
+  const buttonProps = { ...props, children: undefined };
+  return (
+    <TouchableOpacity style={[styles.primaryButton, style]} {...buttonProps}>
+      <Text style={styles.primaryButtonLabel}>{props.children}</Text>
     </TouchableOpacity>
   );
 };
@@ -513,13 +534,15 @@ class CreateCardScreen extends React.Component {
               {!isEditingScene ? (
                 <React.Fragment>
                   <TouchableWithoutFeedback onPress={this._handlePressBackground}>
-                    <View style={styles.sceneActions}>
-                      <ActionButton onPress={this._handleChooseImage}>
-                        {chooseImageAction}
-                      </ActionButton>
-                      <ActionButton style={{ marginTop: 4 }} onPress={this._handleEditScene}>
-                        {editSceneAction}
-                      </ActionButton>
+                    <View style={styles.sceneActionsContainer}>
+                      <View style={styles.sceneActions}>
+                        <PlainButton onPress={this._handleChooseImage}>
+                          {chooseImageAction}
+                        </PlainButton>
+                        <PlainButton style={{ marginLeft: 8 }} onPress={this._handleEditScene}>
+                          {editSceneAction}
+                        </PlainButton>
+                      </View>
                     </View>
                   </TouchableWithoutFeedback>
                   <View style={styles.description}>
@@ -532,10 +555,10 @@ class CreateCardScreen extends React.Component {
                     />
                   </View>
                   <View style={styles.actions}>
-                    <ActionButton onPress={() => this._handleEditBlock(null)}>
+                    <PlainButton onPress={() => this._handleEditBlock(null)}>
                       Add Block
-                    </ActionButton>
-                    <ActionButton onPress={this._saveAndGoToDeck}>Done</ActionButton>
+                    </PlainButton>
+                    <PrimaryButton onPress={this._saveAndGoToDeck}>Done</PrimaryButton>
                   </View>
                 </React.Fragment>
               ) : null}
