@@ -49,12 +49,13 @@ const CardScene = ({ card, style, isEditing = false, onEndEditing, onScreenshot 
     }
   };
   useEffect(() => {
-    setTimeout(onLoaded, 800);
+    const timer = setTimeout(onLoaded, 800);
+    return () => clearTimeout(timer);
   }, []);
 
   const whiteOverlayOpacity = useRef(new Animated.Value(1)).current;
   useEffect(() => {
-    setTimeout(
+    const timer = setTimeout(
       () =>
         Animated.timing(whiteOverlayOpacity, {
           toValue: 0,
@@ -63,6 +64,7 @@ const CardScene = ({ card, style, isEditing = false, onEndEditing, onScreenshot 
         }).start(),
       40
     );
+    return () => clearTimeout(timer);
   }, []);
 
   return (

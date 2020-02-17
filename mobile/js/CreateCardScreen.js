@@ -318,13 +318,6 @@ class CreateCardScreen extends React.Component {
     this._handleDismissDestinationPicker();
   };
 
-  _handleCardDelete = async () => {
-    if (this.state.card.cardId) {
-      // TODO: remove await deleteCard(this.state.card.cardId);
-      this._goToDeck();
-    }
-  };
-
   _handleBlockChange = (block) => {
     return this.setState((state) => {
       const blocks = [...state.card.blocks];
@@ -494,7 +487,6 @@ class CreateCardScreen extends React.Component {
               onPressBack={this._maybeSaveAndGoToDeck}
               onPressTitle={this._toggleHeaderExpanded}
               onChange={this._handleCardChange}
-              onDeleteCard={this._handleCardDelete}
             />
           ) : null}
           <View style={[styles.cardBody, isEditingScene ? { flex: 1 } : {}]}>
