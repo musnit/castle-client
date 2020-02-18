@@ -6,12 +6,12 @@ android {
     // See https://code.google.com/p/android/issues/detail?id=52962
     // and http://stackoverflow.com/questions/27277433/why-does-gradle-build-my-module-in-release-mode-when-the-app-is-in-debug
     // defaultPublishConfig "debug"
-    compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
 
     defaultConfig {
-        compileSdkVersion 27
-        buildToolsVersion "27.0.3"
+        compileSdkVersion 28
+        buildToolsVersion "28.0.3"
         minSdkVersion 16
         externalNativeBuild {
             ndkBuild {
