@@ -1,6 +1,13 @@
 import React from 'react';
 import gql from 'graphql-tag';
-import { View, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  StatusBar,
+} from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import SafeAreaView from 'react-native-safe-area-view';
 import { connectActionSheet } from '@expo/react-native-action-sheet';
@@ -510,6 +517,9 @@ class CreateCardScreen extends React.Component {
               onChange={this._handleCardChange}
             />
           ) : null}
+          {Constants.Android && isEditingScene ? (
+            <StatusBar backgroundColor="#000" barStyle="light-content" />
+          ) : null}
           <View style={[styles.cardBody, isEditingScene ? { flex: 1 } : {}]}>
             <KeyboardAwareScrollView
               scrollEnabled={!isEditingScene}
@@ -518,7 +528,9 @@ class CreateCardScreen extends React.Component {
               style={[
                 styles.scrollView,
                 containScrollViewStyles,
-                Constants.iOS && isEditingScene ? { flex: 1, aspectRatio: null, borderRadius: null } : {},
+                Constants.iOS && isEditingScene
+                  ? { flex: 1, aspectRatio: null, borderRadius: null }
+                  : {},
               ]}
               keyboardShouldPersistTaps="handled"
               contentContainerStyle={[styles.scrollViewContentContainer, scrollViewSceneStyles]}
@@ -555,9 +567,7 @@ class CreateCardScreen extends React.Component {
                     />
                   </View>
                   <View style={styles.actions}>
-                    <PlainButton onPress={() => this._handleEditBlock(null)}>
-                      Add Block
-                    </PlainButton>
+                    <PlainButton onPress={() => this._handleEditBlock(null)}>Add Block</PlainButton>
                     <PrimaryButton onPress={this._saveAndGoToDeck}>Done</PrimaryButton>
                   </View>
                 </React.Fragment>
