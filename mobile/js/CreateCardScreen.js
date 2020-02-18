@@ -518,7 +518,7 @@ class CreateCardScreen extends React.Component {
               style={[
                 styles.scrollView,
                 containScrollViewStyles,
-                isEditingScene ? { flex: 1, aspectRatio: null, borderRadius: null } : {},
+                Constants.iOS && isEditingScene ? { flex: 1, aspectRatio: null, borderRadius: null } : {},
               ]}
               keyboardShouldPersistTaps="handled"
               contentContainerStyle={[styles.scrollViewContentContainer, scrollViewSceneStyles]}
