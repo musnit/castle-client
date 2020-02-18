@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { StyleSheet, View, Animated } from 'react-native';
+import { StyleSheet, View, Animated, TouchableWithoutFeedback } from 'react-native';
 
 import FastImage from 'react-native-fast-image';
 
@@ -11,13 +11,12 @@ const styles = StyleSheet.create({
     height: '100%',
     resizeMode: 'cover',
   },
-  overlayImage: {
+  overlay: {
     position: 'absolute',
     left: 0,
     top: 0,
     right: 0,
     bottom: 0,
-    resizeMode: 'cover',
   },
 });
 
@@ -94,15 +93,19 @@ const CardScene = ({ card, style, isEditing = false, onEndEditing, onScreenshot 
               onScreenshot={onScreenshot}
               onLoaded={onLoaded}
             />
+            {!isEditing ? (
+              <TouchableWithoutFeedback style={styles.overlay}>
+                <View style={[styles.overlay, { opacity: 0 }]} />
+              </TouchableWithoutFeedback>
+            ) : null}
             {!loaded && card.backgroundImage ? (
               <React.Fragment>
-                <Animated.View
-                  style={[styles.overlayImage, { opacity: backgroundImageOverlayOpacity }]}>
+                <Animated.View style={[styles.overlay, { opacity: backgroundImageOverlayOpacity }]}>
                   <FastImage style={{ flex: 1 }} source={{ uri: card.backgroundImage.url }} />
                 </Animated.View>
                 <Animated.View
                   style={[
-                    styles.overlayImage,
+                    styles.overlay,
                     { backgroundColor: 'white', opacity: whiteOverlayOpacity },
                   ]}
                 />
