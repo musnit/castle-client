@@ -1,10 +1,9 @@
+import { Animated, Easing } from 'react-native';
 import {
   StackViewTransitionConfigs,
   StackViewStyleInterpolator,
   HeaderStyleInterpolator,
 } from 'react-navigation-stack';
-
-const { transitionSpec: IOSTransitionSpec } = StackViewTransitionConfigs.SlideFromRightIOS;
 
 // TODO: delete
 function forInitial(props) {
@@ -56,8 +55,14 @@ function getSceneIndicesForInterpolationInputRange(props) {
   }
 }
 
+const CardTransitionSpec = {
+  duration: 350,
+  easing: Easing.bezier(0.2833, 0.99, 0.31833, 0.99),
+  timing: Animated.timing,
+};
+
 const CardTransition = {
-  transitionSpec: IOSTransitionSpec,
+  transitionSpec: CardTransitionSpec,
   // StackViewStyleInterpolator.forHorizontal,
   screenInterpolator: (props) => {
     const { layout, position, scene } = props;
@@ -71,6 +76,13 @@ const CardTransition = {
     const { first, last } = interpolate;
     const index = scene.index;
 
+    const width = layout.initWidth;
+    const translateX = position.interpolate({
+      inputRange: [first, index, last],
+      outputRange: [width * 0.3, 0, width * -0.3],
+      extrapolate: 'clamp',
+    });
+
     const scale = position.interpolate({
       inputRange: [first, index, last],
       outputRange: [0.95, 1, 0.95],
@@ -83,27 +95,15 @@ const CardTransition = {
       extrapolate: 'clamp',
     });
 
-    const shadowOpacity = props.shadowEnabled
-      ? position.interpolate({
-          inputRange: [first, index, last],
-          outputRange: [0, 0.7, 0],
-          extrapolate: 'clamp',
-        })
-      : null;
-
-    let overlayOpacity = props.cardOverlayEnabled
-      ? position.interpolate({
-          inputRange: [index, last - 0.5, last, last + 1e-5],
-          outputRange: [0, 0.07, 0.07, 0],
-          extrapolate: 'clamp',
-        })
-      : null;
+    const rotate = position.interpolate({
+      inputRange: [first, index, last],
+      outputRange: [-0.075, 0, 0],
+      extrapolate: 'clamp',
+    });
 
     return {
-      transform: [{ scale }],
+      transform: [{ translateX }, { scale }, { rotate }],
       opacity,
-      overlayOpacity,
-      shadowOpacity,
     };
   },
   headerStyleInterpolator: HeaderStyleInterpolator.forBackgroundWithFade,
