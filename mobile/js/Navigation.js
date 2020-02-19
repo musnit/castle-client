@@ -9,15 +9,17 @@ import { useNavigation } from 'react-navigation-hooks';
 import { Text, View, Image } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
-import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './AuthScreens';
 import * as Constants from './Constants';
+import * as DeepLinks from './DeepLinks';
+import * as Session from './Session';
+
+import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './AuthScreens';
+import CardTransition from './NavigationCardTransition';
 import CreateScreen from './CreateScreen';
 import CreateCardScreen from './CreateCardScreen';
 import CreateDeckScreen from './CreateDeckScreen';
 import DecksScreen from './DecksScreen';
-import * as DeepLinks from './DeepLinks';
 import HomeScreen from './HomeScreen';
-import * as Session from './Session';
 import PlayCardScreen from './PlayCardScreen';
 import ProfileScreen from './ProfileScreen';
 
@@ -26,7 +28,7 @@ import ProfileScreen from './ProfileScreen';
 let HomeNavigator;
 
 if (Constants.USE_CARDS_PROTOTYPE) {
-  HomeNavigator = createSwitchNavigator(
+  HomeNavigator = createStackNavigator(
     {
       HomeScreen: {
         screen: DecksScreen,
@@ -36,6 +38,8 @@ if (Constants.USE_CARDS_PROTOTYPE) {
       },
     },
     {
+      headerMode: 'none',
+      // for experimental card transition: transitionConfig: () => CardTransition,
       navigationOptions: ({ navigation }) => {
         return {
           tabBarVisible: navigation.state.index == 0,
