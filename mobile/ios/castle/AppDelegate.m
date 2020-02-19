@@ -12,6 +12,10 @@
 #import <React/RCTRootView.h>
 #import <React/RCTLinkingManager.h>
 
+#import <UMCore/UMModuleRegistry.h>
+#import <UMReactNativeAdapter/UMNativeModulesProxy.h>
+#import <UMReactNativeAdapter/UMModuleRegistryAdapter.h>
+
 #include <SDL.h>
 
 #include "RNBootSplash.h"
@@ -44,6 +48,7 @@ int SDL_main(int argc, char *argv[]) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
                                                    moduleName:@"Castle"
@@ -66,6 +71,14 @@ int SDL_main(int argc, char *argv[]) {
   SDL_iPhoneSetEventPump(SDL_FALSE);
 
   return YES;
+}
+
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
+{
+  NSArray<id<RCTBridgeModule>> *extraModules = [_moduleRegistryAdapter extraModulesForBridge:bridge];
+  // You can inject any extra modules that you would like here, more information at:
+  // https://facebook.github.io/react-native/docs/native-modules-ios.html#dependency-injection
+  return extraModules;
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
