@@ -4,9 +4,8 @@
 import React, { Fragment } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 // TODO: BEN import { createSwitchNavigator, createAppContainer } from 'react-navigation';
-import { createStackNavigator } from 'react-navigation-stack';
-import { createBottomTabNavigator } from 'react-navigation-tabs';
-import { useNavigation } from 'react-navigation-hooks';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/tabs';
 import { Text, View, Image } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
@@ -23,36 +22,33 @@ import HomeScreen from './HomeScreen';
 import PlayCardScreen from './PlayCardScreen';
 import ProfileScreen from './ProfileScreen';
 
+const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+
 // App UI layout
 
 let HomeNavigator;
 
 if (Constants.USE_CARDS_PROTOTYPE) {
-  HomeNavigator = createStackNavigator(
-    {
-      HomeScreen: {
-        screen: DecksScreen,
-      },
-      PlayCard: {
-        screen: PlayCardScreen,
-      },
-    },
-    {
-      headerMode: 'none',
-      transitionConfig: () => CardTransition,
-      navigationOptions: ({ navigation }) => {
+  // TODO: BEN
+  // headerMode: 'none',
+  // transitionConfig: () => CardTransition,
+  HomeNavigator = () => (
+    <Stack.Navigator
+      sceneOptions={({ navigation }) => {
         return {
           tabBarVisible: navigation.state.index == 0,
         };
-      },
-    }
+      }}>
+      <Stack.Screen name="HomeScreen" component={DecksScreen} />
+      <Stack.Screen name="PlayCard" component={PlayCardScreen} />
+    </Stack.Navigator>
   );
 } else {
-  HomeNavigator = createStackNavigator(
-    {
-      HomeScreen: {
-        screen: HomeScreen,
-        navigationOptions: {
+  // TODO: BEN
+  //    headerLayoutPreset: 'left',
+  // home HeaderTitle
+  /*
           headerTitle: (
             <View style={{ paddingHorizontal: 16, flexDirection: 'row', alignItems: 'flex-end' }}>
               <FastImage
@@ -69,6 +65,13 @@ if (Constants.USE_CARDS_PROTOTYPE) {
               </Text>
             </View>
           ),
+  */
+  HomeNavigator = () => (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="HomeScreen"
+        component={HomeScreen}
+        options={{
           headerStyle: {
             shadowColor: '#000',
             shadowOffset: {
@@ -79,175 +82,117 @@ if (Constants.USE_CARDS_PROTOTYPE) {
             shadowRadius: 1.41,
             elevation: 2,
           },
-        },
-      },
-    },
-    {
-      headerLayoutPreset: 'left',
-    }
+        }}
+      />
+    </Stack.Navigator>
   );
 }
 
-const CreateDeckNavigator = createSwitchNavigator({
-  CreateDeck: {
-    screen: CreateDeckScreen,
-  },
-  CreateCard: {
-    screen: CreateCardScreen,
-  },
-});
-
-const CreateNavigator = createStackNavigator(
-  {
-    Create: {
-      screen: CreateScreen,
-      navigationOptions: {
-        title: 'Create',
-      },
-    },
-    CreateDeck: {
-      screen: CreateDeckNavigator,
-    },
-  },
-  {
-    headerMode: 'none',
-    navigationOptions: ({ navigation }) => {
+// TODO: BEN
+// CreateDeckScreen was formerly CreateDeckNavigator,
+// a switch nav between deck and card
+const CreateNavigator = () => (
+  <Stack.Navigator
+    screenOptions={({ navigation }) => {
       return {
+        headerMode: 'none',
         tabBarVisible: navigation.state.index == 0,
       };
-    },
-  }
+    }}>
+    <Stack.Screen
+      name="Create"
+      component={CreateScreen}
+      options={{
+        title: 'Create',
+      }}
+    />
+    <Stack.Screen name="CreateDeck" component={CreateDeckScreen} />
+  </Stack.Navigator>
 );
 
-const ProfileNavigator = createSwitchNavigator({
-  ProfileScreen: {
-    screen: ProfileScreen,
-    navigationOptions: { title: 'Profile' },
-  },
-});
-
-const AllTabs = {
-  Play: {
-    screen: HomeNavigator,
-    navigationOptions: {
-      tabBarIcon: ({ focused, tintColor }) => {
-        return (
-          <Image
-            style={{
-              width: 28,
-              height: 28,
-              tintColor: tintColor,
-            }}
-            source={require('../assets/images/chess-figures.png')}
-          />
-        );
+const TabNavigator = () => (
+  <Tab.Navigator
+    tabBarOptions={{
+      activeTintColor: '#9955c8',
+      inactiveTintColor: '#aaa',
+      style: {
+        height: 60,
       },
-    },
-  },
-  Profile: {
-    screen: ProfileNavigator,
-    navigationOptions: {
-      tabBarIcon: ({ focused, tintColor }) => {
-        return (
-          <Image
-            style={{
-              width: 28,
-              height: 28,
-              tintColor: tintColor,
-            }}
-            source={require('../assets/images/single-neutral-shield.png')}
-          />
-        );
+      tabStyle: {
+        padding: 6,
       },
-    },
-  },
-};
-
-let TabOrder = ['Play', 'Profile'];
-
-if (Constants.USE_CARDS_PROTOTYPE) {
-  AllTabs.Create = {
-    screen: CreateNavigator,
-    navigationOptions: {
-      tabBarIcon: ({ focused, tintColor }) => {
-        return (
-          <Image
-            style={{
-              width: 28,
-              height: 28,
-              tintColor: tintColor,
-            }}
-            source={require('../assets/images/add-card.png')}
-          />
-        );
-      },
-    },
-  };
-  TabOrder = ['Play', 'Create', 'Profile'];
-}
-
-const TabNavigator = createBottomTabNavigator(AllTabs, {
-  order: TabOrder,
-  tabBarOptions: {
-    activeTintColor: '#9955c8',
-    inactiveTintColor: '#aaa',
-    style: {
-      height: 60,
-    },
-    tabStyle: {
-      padding: 6,
-    },
-  },
-});
-
-const AuthNavigator = createStackNavigator(
-  {
-    LoginScreen: {
-      screen: LoginScreen,
-    },
-    CreateAccountScreen: {
-      screen: CreateAccountScreen,
-    },
-    ForgotPasswordScreen: {
-      screen: ForgotPasswordScreen,
-    },
-  },
-  {
-    headerMode: 'none',
-  }
+    }}>
+    <Tab.Screen
+      name="Play"
+      component={HomeNavigator}
+      options={{
+        tabBarIcon: ({ focused, tintColor }) => {
+          return (
+            <Image
+              style={{
+                width: 28,
+                height: 28,
+                tintColor: tintColor,
+              }}
+              source={require('../assets/images/chess-figures.png')}
+            />
+          );
+        },
+      }}
+    />
+    {Constants.USE_CARDS_PROTOTYPE && (
+      <Tab.Screen
+        name="Create"
+        component={CreateNavigator}
+        options={{
+          tabBarIcon: ({ focused, tintColor }) => {
+            return (
+              <Image
+                style={{
+                  width: 28,
+                  height: 28,
+                  tintColor: tintColor,
+                }}
+                source={require('../assets/images/add-card.png')}
+              />
+            );
+          },
+        }}
+      />
+    )}
+    <Tab.Screen
+      name="Profile"
+      component={ProfileScreen}
+      options={{
+        tabBarIcon: ({ focused, tintColor }) => {
+          return (
+            <Image
+              style={{
+                width: 28,
+                height: 28,
+                tintColor: tintColor,
+              }}
+              source={require('../assets/images/single-neutral-shield.png')}
+            />
+          );
+        },
+      }}
+    />
+  </Tab.Navigator>
 );
 
-const InitialScreen = () => {
-  const { navigate } = useNavigation();
-
-  if (Session.isSignedIn()) {
-    navigate('HomeScreen');
-  } else {
-    navigate('LoginScreen');
-  }
-
-  return null;
-};
-
-const AppNavigator = createSwitchNavigator(
-  {
-    InitialScreen,
-    AuthNavigator,
-    TabNavigator,
-  },
-  {
-    initialRouteName: 'InitialScreen',
-  }
+const AuthNavigator = () => (
+  <Stack.Navigator screenOptions={{ headerMode: 'none' }}>
+    <Stack.Screen name="LoginScreen" component={LoginScreen} />
+    <Stack.Screen name="CreateAccountScreen" component={CreateAccountScreen} />
+    <Stack.Screen name="ForgotPasswordScreen" component={ForgotPasswordScreen} />
+  </Stack.Navigator>
 );
-
-// The root navigator -- wrapped so we can save the `ref` and set some props
-
-const RealRootNavigator = createAppContainer(AppNavigator);
 
 // TODO: reenable deep linking for react nav 5.x
 // ref={DeepLinks.setRootNavigatorRef} enableURLHandling={false}
 export const RootNavigator = () => (
   <NavigationContainer>
-    <AppNavigator />
+    {Session.isSignedIn() ? <TabNavigator /> : <AuthNavigator />}
   </NavigationContainer>
 );
