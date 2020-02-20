@@ -2,7 +2,8 @@
 // module so that the app's navigation flow is always clear.
 
 import React, { Fragment } from 'react';
-import { createSwitchNavigator, createAppContainer } from 'react-navigation';
+import { NavigationContainer } from '@react-navigation/native';
+// TODO: BEN import { createSwitchNavigator, createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { useNavigation } from 'react-navigation-hooks';
@@ -10,7 +11,6 @@ import { Text, View, Image } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
 import * as Constants from './Constants';
-import * as DeepLinks from './DeepLinks';
 import * as Session from './Session';
 
 import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './AuthScreens';
@@ -39,7 +39,7 @@ if (Constants.USE_CARDS_PROTOTYPE) {
     },
     {
       headerMode: 'none',
-      // for experimental card transition: transitionConfig: () => CardTransition,
+      transitionConfig: () => CardTransition,
       navigationOptions: ({ navigation }) => {
         return {
           tabBarVisible: navigation.state.index == 0,
@@ -244,6 +244,10 @@ const AppNavigator = createSwitchNavigator(
 
 const RealRootNavigator = createAppContainer(AppNavigator);
 
-export const RootNavigator = () => {
-  return <RealRootNavigator ref={DeepLinks.setRootNavigatorRef} enableURLHandling={false} />;
-};
+// TODO: reenable deep linking for react nav 5.x
+// ref={DeepLinks.setRootNavigatorRef} enableURLHandling={false}
+export const RootNavigator = () => (
+  <NavigationContainer>
+    <AppNavigator />
+  </NavigationContainer>
+);
