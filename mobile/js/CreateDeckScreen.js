@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 import { View, StyleSheet, Text } from 'react-native';
 import SafeAreaView from 'react-native-safe-area-view';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import { useNavigation, useNavigationEvents } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 
 import * as Session from './Session';
@@ -108,16 +108,15 @@ const CreateDeckScreen = (props) => {
     }
   };
 
-  useNavigationEvents((event) => {
-    if (event.type == 'didFocus') {
+  useFocusEffect(
+    React.useCallback(() => {
       if (lastFocusedTime) {
         loadDeck.refetch();
       }
       lastFocusedTime = Date.now();
-    } else if (event.type == 'willBlur') {
-      _maybeSaveDeck();
-    }
-  });
+      return () => _maybeSaveDeck(); // save on blur
+    })
+  );
 
   // we use `dangerouslyGetParent()` because
   // CreateDeckScreen is presented inside its own switch navigator,

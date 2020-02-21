@@ -4,7 +4,7 @@ import FastImage from 'react-native-fast-image';
 import gql from 'graphql-tag';
 import SafeAreaView from 'react-native-safe-area-view';
 import { useQuery } from '@apollo/react-hooks';
-import { CommonActions, useNavigation, useNavigationEvents } from '@react-navigation/native';
+import { CommonActions, useNavigation, useFocusEffect } from '@react-navigation/native';
 
 import CardCell from './CardCell';
 
@@ -107,15 +107,16 @@ const CreateScreen = () => {
       }
     }
   `);
-  useNavigationEvents((event) => {
-    if (event.type == 'didFocus') {
+
+  useFocusEffect(
+    React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
       if (lastFocusedTime) {
         query.refetch();
       }
       setLastFocusedTime(Date.now());
-    }
-  });
+    })
+  );
 
   let decks;
   if (!query.loading && !query.error && query.data) {
