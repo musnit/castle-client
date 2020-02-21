@@ -5,7 +5,7 @@ import React, { Fragment } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 // TODO: BEN import { createSwitchNavigator, createAppContainer } from 'react-navigation';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text, View, Image } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
@@ -13,7 +13,7 @@ import * as Constants from './Constants';
 import * as Session from './Session';
 
 import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './AuthScreens';
-import CardTransition from './NavigationCardTransition';
+// TODO: BEN import CardTransition from './NavigationCardTransition';
 import CreateScreen from './CreateScreen';
 import CreateCardScreen from './CreateCardScreen';
 import CreateDeckScreen from './CreateDeckScreen';

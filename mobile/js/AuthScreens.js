@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
 } from 'react-native';
-import { useNavigation, useNavigationParam } from 'react-navigation-hooks';
+import { useNavigation, useNavigationParam } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
 
 import * as Session from './Session';
@@ -47,7 +47,7 @@ const errorMessages = {
     'The password you entered is too short. Passwords must be at least five characters long.',
 };
 
-const Announcement = props => {
+const Announcement = (props) => {
   return (
     <View
       style={{
@@ -80,7 +80,7 @@ const Announcement = props => {
   );
 };
 
-const Button = props => {
+const Button = (props) => {
   return (
     <View
       style={{
@@ -151,7 +151,7 @@ const LoginForm = () => {
     <Fragment>
       {errors ? (
         <Fragment>
-          {errors.map(error => (
+          {errors.map((error) => (
             <Announcement body={errorMessages[error.extensions.code]} />
           ))}
         </Fragment>
@@ -173,7 +173,7 @@ const LoginForm = () => {
       <TextInput
         style={signingIn ? [textInputStyle, disabledTextInputStyle] : textInputStyle}
         autoCapitalize="none"
-        onChangeText={newUsername => setUsername(newUsername)}
+        onChangeText={(newUsername) => setUsername(newUsername)}
         placeholder="Email or username"
         editable={!signingIn}
         returnKeyType="next"
@@ -187,10 +187,10 @@ const LoginForm = () => {
         autoCapitalize="none"
         secureTextEntry
         textContentType="password"
-        onChangeText={newPassword => setPassword(newPassword)}
+        onChangeText={(newPassword) => setPassword(newPassword)}
         placeholder="Password"
         editable={!signingIn}
-        ref={input => {
+        ref={(input) => {
           this._password = input;
         }}
         returnKeyType="go"
@@ -246,7 +246,7 @@ const CreateAccountForm = () => {
   return (
     <Fragment>
       <Fragment>
-        {errors.map(error => (
+        {errors.map((error) => (
           <Announcement body={errorMessages[error.extensions.code]} />
         ))}
       </Fragment>
@@ -263,7 +263,7 @@ const CreateAccountForm = () => {
         style={creatingAccount ? [textInputStyle, disabledTextInputStyle] : textInputStyle}
         autoCapitalize="none"
         placeholder="Username"
-        onChangeText={newUsername => setUsername(newUsername)}
+        onChangeText={(newUsername) => setUsername(newUsername)}
         editable={!creatingAccount}
         returnKeyType="next"
         onSubmitEditing={() => {
@@ -274,10 +274,10 @@ const CreateAccountForm = () => {
       <TextInput
         style={creatingAccount ? [textInputStyle, disabledTextInputStyle] : textInputStyle}
         placeholder="Your name"
-        onChangeText={newName => setName(newName)}
+        onChangeText={(newName) => setName(newName)}
         editable={!creatingAccount}
         returnKeyType="next"
-        ref={input => {
+        ref={(input) => {
           this._name = input;
         }}
         onSubmitEditing={() => {
@@ -289,10 +289,10 @@ const CreateAccountForm = () => {
         style={creatingAccount ? [textInputStyle, disabledTextInputStyle] : textInputStyle}
         autoCapitalize="none"
         placeholder="Email address"
-        onChangeText={newEmail => setEmail(newEmail)}
+        onChangeText={(newEmail) => setEmail(newEmail)}
         editable={!creatingAccount}
         returnKeyType="next"
-        ref={input => {
+        ref={(input) => {
           this._email = input;
         }}
         onSubmitEditing={() => {
@@ -305,10 +305,10 @@ const CreateAccountForm = () => {
         secureTextEntry
         textContentType="password"
         placeholder="New password"
-        onChangeText={newPassword => setPassword(newPassword)}
+        onChangeText={(newPassword) => setPassword(newPassword)}
         editable={!creatingAccount}
         returnKeyType="go"
-        ref={input => {
+        ref={(input) => {
           this._password = input;
         }}
         onSubmitEditing={onPressCreateAccount}
@@ -355,7 +355,7 @@ const ForgotPasswordForm = () => {
     <Fragment>
       {errors ? (
         <Fragment>
-          {errors.map(error => (
+          {errors.map((error) => (
             <Announcement body={errorMessages[error.extensions.code]} />
           ))}
         </Fragment>
@@ -366,7 +366,7 @@ const ForgotPasswordForm = () => {
       <TextInput
         style={resettingPassword ? [textInputStyle, disabledTextInputStyle] : textInputStyle}
         autoCapitalize="none"
-        onChangeText={newUsername => setUsername(newUsername)}
+        onChangeText={(newUsername) => setUsername(newUsername)}
         placeholder="Email or username"
         editable={!resettingPassword}
         autoFocus={true}

@@ -4,8 +4,7 @@ import FastImage from 'react-native-fast-image';
 import gql from 'graphql-tag';
 import SafeAreaView from 'react-native-safe-area-view';
 import { useQuery } from '@apollo/react-hooks';
-import { NavigationActions } from 'react-navigation';
-import { useNavigation, useNavigationEvents } from 'react-navigation-hooks';
+import { CommonActions, useNavigation, useNavigationEvents } from '@react-navigation/native';
 
 import CardCell from './CardCell';
 
@@ -135,7 +134,7 @@ const CreateScreen = () => {
               navigation.push(
                 'CreateDeck',
                 {},
-                NavigationActions.navigate({ routeName: 'CreateCard' })
+                CommonActions.navigate({ routeName: 'CreateCard' })
               );
             }}
           />

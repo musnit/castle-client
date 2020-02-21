@@ -14,7 +14,7 @@ import { connectActionSheet } from '@expo/react-native-action-sheet';
 import { ReactNativeFile } from 'apollo-upload-client';
 
 import uuid from 'uuid/v4';
-import { withNavigation, withNavigationFocus } from 'react-navigation';
+import { withNavigation, withNavigationFocus } from '@react-navigation/compat';
 
 import * as Session from './Session';
 import * as Utilities from './utilities';
@@ -161,14 +161,10 @@ class CreateCardScreen extends React.Component {
 
   _update = async (prevProps, props) => {
     const prevDeckIdToEdit =
-      prevProps && prevProps.navigation.state.params
-        ? prevProps.navigation.state.params.deckIdToEdit
-        : undefined;
+      prevProps && prevProps.route.params ? prevProps.route.params.deckIdToEdit : undefined;
     const prevCardIdToEdit =
-      prevProps && prevProps.navigation.state.params
-        ? prevProps.navigation.state.params.cardIdToEdit
-        : undefined;
-    const params = props.navigation.state.params || {};
+      prevProps && prevProps.route.params ? prevProps.route.params.cardIdToEdit : undefined;
+    const params = props.route.params || {};
     if (
       !prevProps ||
       prevDeckIdToEdit !== params.deckIdToEdit ||

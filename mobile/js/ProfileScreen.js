@@ -3,7 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, Linking } from 'react-native'
 import FastImage from 'react-native-fast-image';
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import { useNavigation } from 'react-navigation-hooks';
+import { useNavigation } from '@react-navigation/native';
 
 import { GameCard, GAME_CARD_FRAGMENT } from './HomeScreen';
 import * as Session from './Session';

@@ -1,5 +1,5 @@
 import { Linking } from 'react-native';
-import { NavigationActions } from 'react-navigation';
+import { CommonActions } from '@react-navigation/native';
 
 import * as Session from './Session';
 import * as GameScreen from './GameScreen';

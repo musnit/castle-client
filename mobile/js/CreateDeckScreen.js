@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 import { View, StyleSheet, Text } from 'react-native';
 import SafeAreaView from 'react-native-safe-area-view';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import { useNavigation, useNavigationEvents } from 'react-navigation-hooks';
+import { useNavigation, useNavigationEvents } from '@react-navigation/native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 
 import * as Session from './Session';

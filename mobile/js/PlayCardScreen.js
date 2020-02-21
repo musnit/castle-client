@@ -2,7 +2,7 @@ import React from 'react';
 import gql from 'graphql-tag';
 import { TouchableWithoutFeedback, ScrollView, StyleSheet, View } from 'react-native';
 import { useQuery, useEffect } from '@apollo/react-hooks';
-import { useNavigation } from 'react-navigation-hooks';
+import { useNavigation } from '@react-navigation/native';
 import SafeAreaView from 'react-native-safe-area-view';
 
 import CardBlocks from './CardBlocks';

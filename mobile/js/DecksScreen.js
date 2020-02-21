@@ -3,7 +3,7 @@ import { View, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity } from 
 import gql from 'graphql-tag';
 import SafeAreaView from 'react-native-safe-area-view';
 import { useQuery } from '@apollo/react-hooks';
-import { useNavigation, useNavigationEvents } from 'react-navigation-hooks';
+import { useNavigation, useNavigationEvents } from '@react-navigation/native';
 
 import CardCell from './CardCell';
 import FastImage from 'react-native-fast-image';
