@@ -3,7 +3,6 @@
 
 import React, { Fragment } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-// TODO: BEN import { createSwitchNavigator, createAppContainer } from 'react-navigation';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text, View, Image } from 'react-native';
@@ -31,43 +30,35 @@ let HomeNavigator;
 
 if (Constants.USE_CARDS_PROTOTYPE) {
   // TODO: BEN
-  // headerMode: 'none',
   // transitionConfig: () => CardTransition,
   HomeNavigator = () => (
-    <Stack.Navigator
-      sceneOptions={({ navigation }) => {
-        return {
-          tabBarVisible: navigation.state.index == 0,
-        };
-      }}>
+    <Stack.Navigator headerMode="none">
       <Stack.Screen name="HomeScreen" component={DecksScreen} />
       <Stack.Screen name="PlayCard" component={PlayCardScreen} />
     </Stack.Navigator>
   );
 } else {
-  // TODO: BEN
-  //    headerLayoutPreset: 'left',
-  // home HeaderTitle
-  /*
-          headerTitle: (
-            <View style={{ paddingHorizontal: 16, flexDirection: 'row', alignItems: 'flex-end' }}>
-              <FastImage
-                style={{
-                  width: 30,
-                  aspectRatio: 1,
-                  marginBottom: 4,
-                  marginRight: 8,
-                }}
-                source={require('../assets/images/castle-classic-yellow.png')}
-              />
-              <Text style={{ fontSize: 24, letterSpacing: 0.5, fontFamily: 'RTAliasGrotesk-Bold' }}>
-                Castle
-              </Text>
-            </View>
-          ),
-  */
   HomeNavigator = () => (
-    <Stack.Navigator>
+    <Stack.Navigator
+      headerLayoutPreset="left"
+      options={{
+        headerTitle: (
+          <View style={{ paddingHorizontal: 16, flexDirection: 'row', alignItems: 'flex-end' }}>
+            <FastImage
+              style={{
+                width: 30,
+                aspectRatio: 1,
+                marginBottom: 4,
+                marginRight: 8,
+              }}
+              source={require('../assets/images/castle-classic-yellow.png')}
+            />
+            <Text style={{ fontSize: 24, letterSpacing: 0.5, fontFamily: 'RTAliasGrotesk-Bold' }}>
+              Castle
+            </Text>
+          </View>
+        ),
+      }}>
       <Stack.Screen
         name="HomeScreen"
         component={HomeScreen}
@@ -88,17 +79,8 @@ if (Constants.USE_CARDS_PROTOTYPE) {
   );
 }
 
-// TODO: BEN
-// CreateDeckScreen was formerly CreateDeckNavigator,
-// a switch nav between deck and card
 const CreateNavigator = () => (
-  <Stack.Navigator
-    screenOptions={({ navigation }) => {
-      return {
-        headerMode: 'none',
-        tabBarVisible: navigation.state.index == 0,
-      };
-    }}>
+  <Stack.Navigator headerMode="none">
     <Stack.Screen
       name="Create"
       component={CreateScreen}
@@ -107,6 +89,7 @@ const CreateNavigator = () => (
       }}
     />
     <Stack.Screen name="CreateDeck" component={CreateDeckScreen} />
+    <Stack.Screen name="CreateCard" component={CreateCardScreen} />
   </Stack.Navigator>
 );
 
@@ -125,38 +108,44 @@ const TabNavigator = () => (
     <Tab.Screen
       name="Play"
       component={HomeNavigator}
-      options={{
-        tabBarIcon: ({ focused, tintColor }) => {
-          return (
-            <Image
-              style={{
-                width: 28,
-                height: 28,
-                tintColor: tintColor,
-              }}
-              source={require('../assets/images/chess-figures.png')}
-            />
-          );
-        },
+      options={({ route }) => {
+        return {
+          tabBarVisible: !route.state || route.state.index == 0,
+          tabBarIcon: ({ focused, color }) => {
+            return (
+              <Image
+                style={{
+                  width: 28,
+                  height: 28,
+                  tintColor: color,
+                }}
+                source={require('../assets/images/chess-figures.png')}
+              />
+            );
+          },
+        };
       }}
     />
     {Constants.USE_CARDS_PROTOTYPE && (
       <Tab.Screen
         name="Create"
         component={CreateNavigator}
-        options={{
-          tabBarIcon: ({ focused, tintColor }) => {
-            return (
-              <Image
-                style={{
-                  width: 28,
-                  height: 28,
-                  tintColor: tintColor,
-                }}
-                source={require('../assets/images/add-card.png')}
-              />
-            );
-          },
+        options={({ route }) => {
+          return {
+            tabBarVisible: !route.state || route.state.index == 0,
+            tabBarIcon: ({ focused, color }) => {
+              return (
+                <Image
+                  style={{
+                    width: 28,
+                    height: 28,
+                    tintColor: color,
+                  }}
+                  source={require('../assets/images/add-card.png')}
+                />
+              );
+            },
+          };
         }}
       />
     )}
@@ -164,13 +153,13 @@ const TabNavigator = () => (
       name="Profile"
       component={ProfileScreen}
       options={{
-        tabBarIcon: ({ focused, tintColor }) => {
+        tabBarIcon: ({ focused, color }) => {
           return (
             <Image
               style={{
                 width: 28,
                 height: 28,
-                tintColor: tintColor,
+                tintColor: color,
               }}
               source={require('../assets/images/single-neutral-shield.png')}
             />
@@ -182,7 +171,7 @@ const TabNavigator = () => (
 );
 
 const AuthNavigator = () => (
-  <Stack.Navigator screenOptions={{ headerMode: 'none' }}>
+  <Stack.Navigator headerMode="none">
     <Stack.Screen name="LoginScreen" component={LoginScreen} />
     <Stack.Screen name="CreateAccountScreen" component={CreateAccountScreen} />
     <Stack.Screen name="ForgotPasswordScreen" component={ForgotPasswordScreen} />

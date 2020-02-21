@@ -56,7 +56,7 @@ const CreateDeckScreen = (props) => {
   let lastFocusedTime;
   const navigation = useNavigation();
   const { showActionSheetWithOptions } = useActionSheet();
-  const deckId = navigation.state.params.deckIdToEdit;
+  const deckId = props.route.params.deckIdToEdit;
   const [mode, setMode] = React.useState('cards');
   const [deck, setDeck] = React.useState(null);
 
@@ -115,13 +115,10 @@ const CreateDeckScreen = (props) => {
       }
       lastFocusedTime = Date.now();
       return () => _maybeSaveDeck(); // save on blur
-    })
+    }, [])
   );
 
-  // we use `dangerouslyGetParent()` because
-  // CreateDeckScreen is presented inside its own switch navigator,
-  // which is itself inside the higher-level stack navigator which brought us here.
-  const _goBack = () => navigation.dangerouslyGetParent().goBack();
+  const _goBack = () => navigation.goBack();
 
   const _deleteDeck = async () => {
     await deleteDeck({ variables: { deckId } });

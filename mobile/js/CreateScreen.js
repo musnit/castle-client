@@ -115,7 +115,7 @@ const CreateScreen = () => {
         query.refetch();
       }
       setLastFocusedTime(Date.now());
-    })
+    }, [])
   );
 
   let decks;
@@ -132,11 +132,7 @@ const CreateScreen = () => {
           <CreateDeckCell
             key="create"
             onPress={() => {
-              navigation.push(
-                'CreateDeck',
-                {},
-                CommonActions.navigate({ routeName: 'CreateCard' })
-              );
+              navigation.push('CreateDeck', {}, CommonActions.navigate({ name: 'CreateCard' }));
             }}
           />
           {decks &&

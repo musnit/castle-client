@@ -107,7 +107,7 @@ const DecksScreen = (props) => {
         query.refetch();
       }
       setLastFocusedTime(Date.now());
-    })
+    }, [])
   );
 
   let decks;

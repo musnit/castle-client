@@ -45,9 +45,9 @@ const PlayCardScreen = (props) => {
   let deckId,
     cardId,
     card = {};
-  if (navigation.state.params) {
-    deckId = navigation.state.params.deckId;
-    cardId = navigation.state.params.cardId;
+  if (props.route.params) {
+    deckId = props.route.params.deckId;
+    cardId = props.route.params.cardId;
   }
   if (!deckId) {
     throw new Error(`Can't play a deck with no deckId`);
