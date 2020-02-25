@@ -3,7 +3,7 @@ import { View, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity } from 
 import FastImage from 'react-native-fast-image';
 import gql from 'graphql-tag';
 import SafeAreaView from 'react-native-safe-area-view';
-import { useQuery } from '@apollo/react-hooks';
+import { useLazyQuery } from '@apollo/react-hooks';
 import { CommonActions, useNavigation, useFocusEffect } from '@react-navigation/native';
 
 import CardCell from './CardCell';
@@ -83,43 +83,42 @@ const CreateDeckCell = (props) => {
 };
 
 const CreateScreen = () => {
-  const [lastFocusedTime, setLastFocusedTime] = React.useState(null);
   const navigation = useNavigation();
-  const query = useQuery(gql`
-    query Me {
-      me {
-        id
-        userId
-        decks {
+  const [fetchDecks, query] = useLazyQuery(
+    gql`
+      query Me {
+        me {
           id
-          deckId
-          title
-          isVisible
-          initialCard {
+          userId
+          decks {
             id
-            cardId
+            deckId
             title
-            backgroundImage {
-              url
+            isVisible
+            initialCard {
+              id
+              cardId
+              title
+              backgroundImage {
+                url
+              }
             }
           }
         }
       }
-    }
-  `);
+    `,
+    { fetchPolicy: 'no-cache' }
+  );
 
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
-      if (lastFocusedTime) {
-        query.refetch();
-      }
-      setLastFocusedTime(Date.now());
+      fetchDecks();
     }, [])
   );
 
   let decks;
-  if (!query.loading && !query.error && query.data) {
+  if (query.called && !query.loading && !query.error && query.data) {
     decks = query.data.me.decks;
   }
 
@@ -132,7 +131,7 @@ const CreateScreen = () => {
           <CreateDeckCell
             key="create"
             onPress={() => {
-              navigation.push('CreateDeck', {}, CommonActions.navigate({ name: 'CreateCard' }));
+              navigation.push('CreateDeck');
             }}
           />
           {decks &&

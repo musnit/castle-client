@@ -205,7 +205,7 @@ class CreateCardScreen extends React.Component {
     );
     if (updatedBlock && updatedBlock.destinationCardId) {
       setTimeout(() => {
-        this.props.navigation.navigate('CreateCard', {
+        this.props.navigation.navigate('CreateDeck', {
           deckIdToEdit: this.state.deck.deckId,
           cardIdToEdit: updatedBlock.destinationCardId,
         });
@@ -287,13 +287,13 @@ class CreateCardScreen extends React.Component {
     }
     if (deckId) {
       // go to deck screen for this existing deck
-      this.props.navigation.navigate('CreateDeck', { deckIdToEdit: deckId });
+      this.props.navigation.navigate('CreateDeck', {
+        deckIdToEdit: deckId,
+        cardIdToEdit: undefined,
+      });
     } else {
       // there is no deck, go back to create index
-      const createNavigator = this.props.navigation.dangerouslyGetParent();
-      if (createNavigator) {
-        createNavigator.popToTop();
-      }
+      this.props.navigation.popToTop();
     }
   };
 

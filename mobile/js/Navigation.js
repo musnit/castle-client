@@ -14,8 +14,7 @@ import * as Session from './Session';
 import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './AuthScreens';
 // TODO: BEN import CardTransition from './NavigationCardTransition';
 import CreateScreen from './CreateScreen';
-import CreateCardScreen from './CreateCardScreen';
-import CreateDeckScreen from './CreateDeckScreen';
+import CreateDeckNavigator from './CreateDeckNavigator';
 import DecksScreen from './DecksScreen';
 import HomeScreen from './HomeScreen';
 import PlayCardScreen from './PlayCardScreen';
@@ -88,8 +87,7 @@ const CreateNavigator = () => (
         title: 'Create',
       }}
     />
-    <Stack.Screen name="CreateDeck" component={CreateDeckScreen} />
-    <Stack.Screen name="CreateCard" component={CreateCardScreen} />
+    <Stack.Screen name="CreateDeck" component={CreateDeckNavigator} />
   </Stack.Navigator>
 );
 

@@ -165,7 +165,7 @@ const CreateDeckScreen = (props) => {
   };
 
   const _navigateToCreateCard = (card) => {
-    navigation.navigate('CreateCard', {
+    navigation.navigate('CreateDeck', {
       deckIdToEdit: deck.deckId,
       cardIdToEdit: card.cardId,
     });
