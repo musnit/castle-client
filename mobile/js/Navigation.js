@@ -9,7 +9,7 @@ import { Text, View, Image } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
 import * as Constants from './Constants';
-import * as Session from './Session';
+import { useSession } from './Session';
 
 import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './AuthScreens';
 // TODO: BEN import CardTransition from './NavigationCardTransition';
@@ -178,8 +178,9 @@ const AuthNavigator = () => (
 
 // TODO: reenable deep linking for react nav 5.x
 // ref={DeepLinks.setRootNavigatorRef} enableURLHandling={false}
-export const RootNavigator = () => (
-  <NavigationContainer>
-    {Session.isSignedIn() ? <TabNavigator /> : <AuthNavigator />}
-  </NavigationContainer>
-);
+export const RootNavigator = () => {
+  const { isSignedIn } = useSession();
+  return (
+    <NavigationContainer>{isSignedIn ? <TabNavigator /> : <AuthNavigator />}</NavigationContainer>
+  );
+};

@@ -6,7 +6,7 @@ import gql from 'graphql-tag';
 import { useNavigation } from '@react-navigation/native';
 
 import { GameCard, GAME_CARD_FRAGMENT } from './HomeScreen';
-import * as Session from './Session';
+import { useSession } from './Session';
 import * as GameScreen from './GameScreen';
 import SafeAreaView from 'react-native-safe-area-view';
 
@@ -48,6 +48,7 @@ const ProfilePhoto = (props) => {
 
 const ProfileScreen = () => {
   const { navigate } = useNavigation();
+  const { signOutAsync } = useSession();
 
   const { loading: queryLoading, error: queryError, data: queryData } = useQuery(gql`
     query Me {
@@ -66,8 +67,7 @@ const ProfileScreen = () => {
   `);
 
   const onPressLogOut = async () => {
-    await Session.signOutAsync();
-    navigate('LoginScreen');
+    await signOutAsync();
     GameScreen.goToGame({});
   };
 

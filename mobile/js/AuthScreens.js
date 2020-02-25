@@ -9,10 +9,10 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
 } from 'react-native';
-import { useNavigation, useNavigationParam } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
 
-import * as Session from './Session';
+import Session, { useSession } from './Session';
 import { navigateToUri } from './DeepLinks';
 
 const textInputStyle = {
@@ -111,11 +111,15 @@ const Button = (props) => {
   );
 };
 
-const LoginForm = () => {
+const LoginForm = ({ route }) => {
   const { navigate } = useNavigation();
+  const { signInAsync } = useSession();
 
-  const uriAfter = useNavigationParam('uriAfter');
-  const resetPassword = useNavigationParam('resetPassword');
+  let uriAfter, resetPassword;
+  if (route && route.params) {
+    uriAfter = route.params.uriAfter;
+    resetPassword = route.params.resetPassword;
+  }
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -127,9 +131,8 @@ const LoginForm = () => {
     try {
       setSigningIn(true);
       setErrors([]);
-      await Session.signInAsync({ username, password });
+      await signInAsync({ username, password });
       setSigningIn(false);
-      navigate('HomeScreen');
       if (uriAfter) {
         navigateToUri(uriAfter);
       }
@@ -210,6 +213,7 @@ const LoginForm = () => {
 
 const CreateAccountForm = () => {
   const { navigate } = useNavigation();
+  const { signUpAsync } = useSession();
 
   const [username, setUsername] = useState('');
   const [name, setName] = useState('');
@@ -231,7 +235,7 @@ const CreateAccountForm = () => {
     try {
       setCreatingAccount(true);
       setErrors([]);
-      await Session.signUpAsync({ username, name, email, password });
+      await signUpAsync({ username, name, email, password });
       setCreatingAccount(false);
       navigate('HomeScreen');
       if (uriAfter) {

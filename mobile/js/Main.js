@@ -8,33 +8,12 @@ import DevMenu from '@terrysahaidak/react-native-devmenu';
 import * as Session from './Session';
 import MainSwitcher from './MainSwitcher';
 
-// Initialize a `Session`
-const useSession = () => {
-  const [initialized, setInitialized] = useState(false);
-
-  useEffect(() => {
-    let mounted = true;
-
-    (async () => {
-      await Session.initAsync();
-      if (mounted) {
-        setInitialized(true);
-      }
-    })();
-
-    return () => (mounted = false);
-  }, []);
-
-  return { initialized };
-};
-
 let bootSplashHidden = false;
 
 const Main = () => {
-  const sessionHook = useSession();
-
   // Session not yet initialized? Just show a loading screen...
-  if (!sessionHook.initialized) {
+  // TODO: BEN: restore
+  /* if (!sessionHook.initialized) {
     return (
       <View
         style={{
@@ -45,7 +24,7 @@ const Main = () => {
         }}
       />
     );
-  }
+  } */
 
   if (!bootSplashHidden) {
     setTimeout(() => BootSplash.hide({ duration: 150 }), 100);
@@ -56,11 +35,13 @@ const Main = () => {
     <View style={{ flex: 1 }}>
       <DevMenu numberOfTouches={4}>
         <StatusBar backgroundColor="white" barStyle="dark-content" />
-        <ApolloProvider client={Session.apolloClient}>
-          <ActionSheetProvider>
-            <MainSwitcher />
-          </ActionSheetProvider>
-        </ApolloProvider>
+        <Session.Provider>
+          <ApolloProvider client={Session.apolloClient}>
+            <ActionSheetProvider>
+              <MainSwitcher />
+            </ActionSheetProvider>
+          </ApolloProvider>
+        </Session.Provider>
       </DevMenu>
     </View>
   );
