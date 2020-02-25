@@ -11,9 +11,10 @@ import MainSwitcher from './MainSwitcher';
 let bootSplashHidden = false;
 
 const Main = () => {
+  const { initialized } = Session.useSession();
+
   // Session not yet initialized? Just show a loading screen...
-  // TODO: BEN: restore
-  /* if (!sessionHook.initialized) {
+  if (!initialized) {
     return (
       <View
         style={{
@@ -24,13 +25,16 @@ const Main = () => {
         }}
       />
     );
-  } */
+  }
 
   if (!bootSplashHidden) {
     setTimeout(() => BootSplash.hide({ duration: 150 }), 100);
     bootSplashHidden = true;
   }
+  return <MainSwitcher />;
+};
 
+const MainProvider = () => {
   return (
     <View style={{ flex: 1 }}>
       <DevMenu numberOfTouches={4}>
@@ -38,7 +42,7 @@ const Main = () => {
         <Session.Provider>
           <ApolloProvider client={Session.apolloClient}>
             <ActionSheetProvider>
-              <MainSwitcher />
+              <Main />
             </ActionSheetProvider>
           </ApolloProvider>
         </Session.Provider>
@@ -47,4 +51,4 @@ const Main = () => {
   );
 };
 
-export default Main;
+export default MainProvider;
