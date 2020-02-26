@@ -12,7 +12,6 @@ import * as Constants from './Constants';
 import { useSession } from './Session';
 
 import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './AuthScreens';
-// TODO: BEN import CardTransition from './NavigationCardTransition';
 import CreateScreen from './CreateScreen';
 import CreateDeckNavigator from './CreateDeckNavigator';
 import DecksScreen from './DecksScreen';
@@ -29,8 +28,6 @@ const Tab = createBottomTabNavigator();
 let HomeNavigator;
 
 if (Constants.USE_CARDS_PROTOTYPE) {
-  // TODO: BEN
-  // transitionConfig: () => CardTransition,
   HomeNavigator = () => (
     <Stack.Navigator headerMode="none">
       <Stack.Screen name="HomeScreen" component={DecksScreen} />
