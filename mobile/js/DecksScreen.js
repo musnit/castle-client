@@ -2,7 +2,7 @@ import React from 'react';
 import { View, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import gql from 'graphql-tag';
 import SafeAreaView from 'react-native-safe-area-view';
-import { useQuery } from '@apollo/react-hooks';
+import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 import CardCell from './CardCell';
@@ -11,6 +11,8 @@ import GameUrlInput from './GameUrlInput';
 import Viewport from './viewport';
 
 const { vw, vh } = Viewport;
+
+const REFETCH_FEED_INTERVAL_MS = 30 * 1000;
 
 const styles = StyleSheet.create({
   container: {
@@ -66,52 +68,55 @@ const DeckFeedItem = ({ deck }) => {
 };
 
 const DecksScreen = (props) => {
-  const [lastFocusedTime, setLastFocusedTime] = React.useState(null);
+  const [lastFetchedTime, setLastFetchedTime] = React.useState(null);
 
-  const query = useQuery(gql`
-    query {
-      allDecks {
-        id
-        deckId
-        title
-        creator {
-          userId
-          username
-        }
-        initialCard {
+  const [fetchDecks, query] = useLazyQuery(
+    gql`
+      query {
+        allDecks {
           id
-          cardId
+          deckId
           title
-          backgroundImage {
-            fileId
-            url
-            primaryColor
+          creator {
+            userId
+            username
           }
-          blocks {
+          initialCard {
             id
-            cardBlockId
-            cardBlockUpdateId
-            type
+            cardId
             title
-            destinationCardId
+            backgroundImage {
+              fileId
+              url
+              primaryColor
+            }
+            blocks {
+              id
+              cardBlockId
+              cardBlockUpdateId
+              type
+              title
+              destinationCardId
+            }
           }
         }
       }
-    }
-  `);
+    `,
+    { fetchPolicy: 'no-cache' }
+  );
 
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('dark-content'); // needed for tab navigator
-      if (lastFocusedTime) {
-        query.refetch();
+      if (!lastFetchedTime || Date.now() - lastFetchedTime > REFETCH_FEED_INTERVAL_MS) {
+        fetchDecks();
+        setLastFetchedTime(Date.now());
       }
-      setLastFocusedTime(Date.now());
-    }, [])
+    }, [lastFetchedTime])
   );
 
   let decks;
-  if (!query.loading && !query.error && query.data) {
+  if (query.called && !query.loading && !query.error && query.data) {
     decks = query.data.allDecks;
   }
 
