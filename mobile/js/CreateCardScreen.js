@@ -335,7 +335,11 @@ class CreateCardScreen extends React.Component {
 
   _onPickDestinationCard = (block, card) => {
     if (card && card.cardId && card.cardId !== Constants.CREATE_NEW_CARD_ID) {
-      this._handleBlockChange({ ...block, destinationCardId: card.cardId });
+      this._handleBlockChange({
+        ...block,
+        createDestinationCard: false,
+        destinationCardId: card.cardId,
+      });
     } else {
       this._handleBlockChange({ ...block, createDestinationCard: true });
     }
