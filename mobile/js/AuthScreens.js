@@ -132,7 +132,6 @@ const LoginForm = ({ route }) => {
       setSigningIn(true);
       setErrors([]);
       await signInAsync({ username, password });
-      setSigningIn(false);
       if (uriAfter) {
         navigateToUri(uriAfter);
       }

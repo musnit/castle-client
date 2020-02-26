@@ -16,6 +16,7 @@ import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './AuthSc
 import CreateScreen from './CreateScreen';
 import CreateDeckNavigator from './CreateDeckNavigator';
 import DecksScreen from './DecksScreen';
+import * as DeepLinks from './DeepLinks';
 import HomeScreen from './HomeScreen';
 import PlayCardScreen from './PlayCardScreen';
 import ProfileScreen from './ProfileScreen';
@@ -176,11 +177,11 @@ const AuthNavigator = () => (
   </Stack.Navigator>
 );
 
-// TODO: reenable deep linking for react nav 5.x
-// ref={DeepLinks.setRootNavigatorRef} enableURLHandling={false}
 export const RootNavigator = () => {
   const { isSignedIn } = useSession();
   return (
-    <NavigationContainer>{isSignedIn ? <TabNavigator /> : <AuthNavigator />}</NavigationContainer>
+    <NavigationContainer ref={DeepLinks.setNavigationRef}>
+      {isSignedIn ? <TabNavigator /> : <AuthNavigator />}
+    </NavigationContainer>
   );
 };

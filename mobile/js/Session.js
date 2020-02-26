@@ -112,6 +112,9 @@ export const Provider = (props) => {
 
 export const useSession = () => React.useContext(SessionContext);
 
+// for checking auth state outside of react component tree
+export const isSignedIn = () => gAuthToken !== null;
+
 // Based on https://www.apollographql.com/docs/react/migrating/boost-migration/
 export const apolloClient = new ApolloClient({
   link: ApolloLink.from([

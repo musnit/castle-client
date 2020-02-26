@@ -6,9 +6,9 @@ import * as GameScreen from './GameScreen';
 
 let rootNavigatorRef = null;
 
-const navigateToRoute = ({ routeName, params }) => {
+const navigateToRoute = ({ name, params }) => {
   if (rootNavigatorRef) {
-    rootNavigatorRef.dispatch(NavigationActions.navigate({ routeName, params }));
+    rootNavigatorRef.dispatch(CommonActions.navigate({ name, params }));
   }
 };
 
@@ -16,7 +16,7 @@ export const navigateToUri = (uri) => {
   if (!Session.isSignedIn()) {
     // If not signed in, go to the login screen and tell it to navigate to this URI after
     navigateToRoute({
-      routeName: 'LoginScreen',
+      name: 'LoginScreen',
       params: {
         uriAfter: uri,
       },
@@ -47,7 +47,7 @@ export const addPendingUri = (uri) => {
   consumePendingUri();
 };
 
-export const setRootNavigatorRef = (ref) => {
+export const setNavigationRef = (ref) => {
   rootNavigatorRef = ref;
   consumePendingUri();
 };
@@ -77,7 +77,7 @@ if (__DEV__ && DEV_URI) {
 //setTimeout(
 //  () =>
 //    navigateToRoute({
-//      routeName: 'CreateCard',
+//      name: 'CreateCard',
 //      params: { deckId: '21', cardId: '63' },
 //    }),
 //  500
