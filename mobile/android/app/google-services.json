@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "299950679084",
+    "firebase_url": "https://castle-android.firebaseio.com",
+    "project_id": "castle-android",
+    "storage_bucket": "castle-android.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:299950679084:android:3216c8113ec428904bdd89",
+        "android_client_info": {
+          "package_name": "games.castle"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "299950679084-r281kkdfj41fpvmcfbralbvb9hsou4hc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOOJzfFPLAD4velFtAY_7P5st_gE8w9W4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "299950679084-r281kkdfj41fpvmcfbralbvb9hsou4hc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

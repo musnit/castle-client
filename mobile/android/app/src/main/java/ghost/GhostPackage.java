@@ -12,7 +12,7 @@ import java.util.List;
 public class GhostPackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-    return Collections.<NativeModule>singletonList(new GhostChannelsModule(reactContext));
+    return Arrays.<NativeModule>asList(new GhostChannelsModule(reactContext), new GhostPushNotificationsModule(reactContext));
   }
 
   @Override

@@ -1,5 +1,8 @@
 // Maintains session state for the API server connection -- auth token and GraphQL client
 import React, { useEffect, useState } from 'react';
+
+import * as GhostPushNotifications from './ghost/GhostPushNotifications';
+
 import AsyncStorage from '@react-native-community/async-storage';
 import { ApolloClient } from 'apollo-client';
 import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
@@ -44,6 +47,8 @@ export const Provider = (props) => {
     apolloClient.resetStore();
     if (newAuthToken) {
       await AsyncStorage.setItem('AUTH_TOKEN', newAuthToken);
+
+      updatePushTokenAsync();
     } else {
       await AsyncStorage.removeItem('AUTH_TOKEN');
     }
@@ -52,6 +57,11 @@ export const Provider = (props) => {
       ...state,
       authToken: newAuthToken,
     });
+  };
+
+  const updatePushTokenAsync = async () => {
+    let token = await GhostPushNotifications.getTokenAsync();
+    console.log(token);
   };
 
   const signInAsync = async ({ username, password }) => {
