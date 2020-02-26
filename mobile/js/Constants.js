@@ -4,6 +4,8 @@ export const iOS = Platform.OS === 'ios';
 export const Android = Platform.OS === 'android';
 export const USE_CARDS_PROTOTYPE = true;
 
+export const CREATE_NEW_CARD_ID = -1;
+
 export const styles = {
   dropShadow: {
     shadowColor: '#000',
@@ -32,7 +34,7 @@ export const styles = {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
-  }
+  },
 };
 
 export const colors = {

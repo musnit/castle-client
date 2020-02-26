@@ -4,6 +4,7 @@ import FastImage from 'react-native-fast-image';
 
 const MAX_NUM_CARDS = 4;
 
+import * as Constants from './Constants';
 import * as Utilities from './utilities';
 
 const styles = StyleSheet.create({
@@ -43,7 +44,7 @@ const CardDestinationPickerControl = ({ onSelectCard, onSelectSearch, deck }) =>
   let items = [];
   items.push({
     title: 'New',
-    onPress: () => onSelectCard({ cardId: null }),
+    onPress: () => onSelectCard({ cardId: Constants.CREATE_NEW_CARD_ID }),
     image: require('../assets/images/add.png'),
   });
   items.push({

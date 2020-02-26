@@ -3,6 +3,7 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-nativ
 import FastImage from 'react-native-fast-image';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
+import * as Constants from './Constants';
 import * as Utilities from './utilities';
 
 import CardCell from './CardCell';
@@ -156,7 +157,7 @@ const CardsGrid = ({ deck, onPress, onShowCardOptions, showNewCard }) => {
     <View style={styles.gridContainer}>
       {showNewCard && (
         <View style={styles.cellContainer} key="new">
-          <NewCardCell onPress={() => onPress({ cardId: null })} />
+          <NewCardCell onPress={() => onPress({ cardId: Constants.CREATE_NEW_CARD_ID })} />
         </View>
       )}
       {deck &&

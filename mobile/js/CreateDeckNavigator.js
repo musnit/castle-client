@@ -1,6 +1,8 @@
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 
+import * as Constants from './Constants';
+
 import CreateDeckScreen from './CreateDeckScreen';
 import CreateCardScreen from './CreateCardScreen';
 
@@ -16,6 +18,9 @@ const CreateDeckNavigator = (props) => {
   if (deckId && !cardId) {
     return <CreateDeckScreen {...props} />;
   } else {
+    if (cardId === Constants.CREATE_NEW_CARD_ID) {
+      cardId = null;
+    }
     return <CreateCardScreen {...props} />;
   }
 };
