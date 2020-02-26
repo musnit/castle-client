@@ -56,12 +56,20 @@ class CardDestinationPickerSheet extends React.Component {
 
   open = () => {
     if (this._sheetRef.current) {
+      // hack: call twice
+      // https://github.com/osdnk/react-native-reanimated-bottom-sheet/issues/168
+      // https://github.com/osdnk/react-native-reanimated-bottom-sheet/issues/170
+      this._sheetRef.current.snapTo(0);
       this._sheetRef.current.snapTo(0);
     }
   };
 
   close = () => {
     if (this._sheetRef.current) {
+      // hack: call twice
+      // https://github.com/osdnk/react-native-reanimated-bottom-sheet/issues/168
+      // https://github.com/osdnk/react-native-reanimated-bottom-sheet/issues/170
+      this._sheetRef.current.snapTo(1);
       this._sheetRef.current.snapTo(1);
     }
   };
