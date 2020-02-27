@@ -97,12 +97,6 @@ const TabNavigator = () => (
     tabBarOptions={{
       activeTintColor: '#9955c8',
       inactiveTintColor: '#aaa',
-      style: {
-        height: 60,
-      },
-      tabStyle: {
-        padding: 6,
-      },
     }}>
     <Tab.Screen
       name="Play"
