@@ -95,8 +95,11 @@ const CreateNavigator = () => (
 const TabNavigator = () => (
   <Tab.Navigator
     tabBarOptions={{
-      activeTintColor: '#9955c8',
-      inactiveTintColor: '#aaa',
+      activeTintColor: '#fff',
+      inactiveTintColor: '#888',
+      style: {
+        backgroundColor: '#000',
+      }
     }}>
     <Tab.Screen
       name="Play"
