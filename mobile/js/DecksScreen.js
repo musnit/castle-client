@@ -14,6 +14,11 @@ const { vw, vh } = Viewport;
 
 const REFETCH_FEED_INTERVAL_MS = 30 * 1000;
 
+const DECK_FEED_ITEM_HEIGHT =
+  75 * vh + // height of card
+  16 + // margin below cell
+  1; // border of card
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -115,7 +120,10 @@ const DecksScreen = (props) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
-      <ScrollView contentContainerStyle={styles.scrollView}>
+      <ScrollView
+        contentContainerStyle={styles.scrollView}
+        snapToInterval={DECK_FEED_ITEM_HEIGHT}
+        decelerationRate="fast">
         <React.Fragment>
           {decks && decks.map((deck) => <DeckFeedItem key={deck.deckId} deck={deck} />)}
         </React.Fragment>
