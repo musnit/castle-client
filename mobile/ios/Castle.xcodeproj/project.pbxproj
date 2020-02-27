@@ -150,6 +150,7 @@
 		7A2BB3156AC1D98E2389E1CF /* libPods-CastleTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CastleTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8865F844F710B24790E91D03 /* Pods-Castle-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Castle-tvOS.release.xcconfig"; path = "Target Support Files/Pods-Castle-tvOS/Pods-Castle-tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		8C185AA70A18F1954FE6686B /* Pods-Castle-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Castle-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-Castle-tvOS/Pods-Castle-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
+		91395EAF24084E2D00ECBCF9 /* Castle.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Castle.entitlements; path = Castle/Castle.entitlements; sourceTree = "<group>"; };
 		A12CFEDF23CC30F600D721BC /* references.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = references.cpp; path = "../../ghost-extensions/tove2d/src/cpp/references.cpp"; sourceTree = "<group>"; };
 		A12CFEE023CC30F600D721BC /* warn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = warn.cpp; path = "../../ghost-extensions/tove2d/src/cpp/warn.cpp"; sourceTree = "<group>"; };
 		A12CFEE123CC30F600D721BC /* subpath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = subpath.cpp; path = "../../ghost-extensions/tove2d/src/cpp/subpath.cpp"; sourceTree = "<group>"; };
@@ -302,6 +303,7 @@
 		13B07FAE1A68108700A75B9A /* Castle */ = {
 			isa = PBXGroup;
 			children = (
+				91395EAF24084E2D00ECBCF9 /* Castle.entitlements */,
 				A1FA18C22365168600E2ACFE /* GhostInputZone.mm */,
 				A1CCBA18235518C7009F4DDD /* GhostView.m */,
 				A1CCBA1423551869009F4DDD /* GhostChannels.mm */,
@@ -1150,6 +1152,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CASTLE_DISPLAY_NAME = "Castle Debug";
 				CASTLE_URL_SCHEME = castled;
+				CODE_SIGN_ENTITLEMENTS = Castle/Castle.entitlements;
 				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = 48GFST92BB;
@@ -1175,6 +1178,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CASTLE_DISPLAY_NAME = Castle;
 				CASTLE_URL_SCHEME = castle;
+				CODE_SIGN_ENTITLEMENTS = Castle/Castle.entitlements;
 				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = 48GFST92BB;
