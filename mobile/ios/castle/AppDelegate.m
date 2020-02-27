@@ -70,6 +70,8 @@ int SDL_main(int argc, char *argv[]) {
   SDL_SetMainReady();
   SDL_iPhoneSetEventPump(SDL_FALSE);
 
+  [[UIApplication sharedApplication] registerForRemoteNotifications];
+
   return YES;
 }
 
@@ -136,6 +138,22 @@ int SDL_main(int argc, char *argv[]) {
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
   [self.sdlDelegate applicationDidBecomeActive:application];
+}
+
+// Handle remote notification registration.
+- (void)application:(UIApplication *)app
+        didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)devToken {
+    // Forward the token to your provider, using a custom method.
+    NSLog(@"token: %@", devToken);
+    //[self enableRemoteNotificationFeatures];
+    //[self forwardTokenToServer:devTokenBytes];
+}
+ 
+- (void)application:(UIApplication *)app
+        didFailToRegisterForRemoteNotificationsWithError:(NSError *)err {
+    // The token is not currently available.
+    NSLog(@"Remote notification support is unavailable due to error: %@", err);
+    //[self disableRemoteNotificationFeatures];
 }
 
 @end
