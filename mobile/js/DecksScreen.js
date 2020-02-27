@@ -102,7 +102,7 @@ const DecksScreen = (props) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      StatusBar.setBarStyle('dark-content'); // needed for tab navigator
+      StatusBar.setBarStyle('light-content'); // needed for tab navigator
       if (!lastFetchedTime || Date.now() - lastFetchedTime > REFETCH_FEED_INTERVAL_MS) {
         fetchDecks();
         setLastFetchedTime(Date.now());
@@ -117,7 +117,7 @@ const DecksScreen = (props) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="light-content" />
       <ScrollView contentContainerStyle={styles.scrollView}>
         <React.Fragment>
           <View style={styles.urlInput}>
