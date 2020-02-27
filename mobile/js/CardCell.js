@@ -102,7 +102,7 @@ const CardCell = ({ card, onPress, title, isInitialCard, isPrivate }) => {
   }
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={cardStyles} onPress={onPress}>
+      <TouchableOpacity style={cardStyles} activeOpacity={0.8} onPress={onPress}>
         {card.backgroundImage && (
           <FastImage style={styles.cardPreviewImage} source={{ uri: card.backgroundImage.url }} />
         )}
