@@ -115,10 +115,13 @@ const CreateDeckScreen = (props) => {
       }
       lastFocusedTime = Date.now();
       return () => _maybeSaveDeck(); // save on blur
-    }, [])
+    }, [deck])
   );
 
-  const _goBack = () => navigation.goBack();
+  const _goBack = async () => {
+    await _maybeSaveDeck();
+    navigation.goBack();
+  };
 
   const _deleteDeck = async () => {
     await deleteDeck({ variables: { deckId } });
