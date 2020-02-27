@@ -31,8 +31,9 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   cardTitle: {
-    ...Constants.styles.overlayButton,
-    ...Constants.styles.overlayButtonLabel,
+    ...Constants.styles.plainButton,
+    ...Constants.styles.plainButtonLabel,
+    ...Constants.styles.dropShadow,
   },
 });
 
@@ -106,7 +107,7 @@ const CardCell = ({ card, onPress, title, isInitialCard, isPrivate }) => {
         {card.backgroundImage && (
           <FastImage style={styles.cardPreviewImage} source={{ uri: card.backgroundImage.url }} />
         )}
-        {title && <Text style={styles.cardTitle}>{title}</Text>}
+        {title && <View style={styles.cardTitle}><Text>{title}</Text></View>}
         {isInitialCard && <InitialCardIndicator />}
         {isPrivate && <PrivateIndicator />}
       </TouchableOpacity>
