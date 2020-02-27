@@ -99,6 +99,7 @@ const TabNavigator = () => (
       inactiveTintColor: '#888',
       style: {
         backgroundColor: '#000',
+        borderTopWidth: 0,
       }
     }}>
     <Tab.Screen
