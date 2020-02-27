@@ -23,12 +23,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   urlInput: {
-    width: '100%',
-    paddingTop: 4,
-    paddingHorizontal: 12,
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    paddingBottom: 16,
   },
   deckFeedItemContainer: {
     width: '100%',
@@ -123,11 +118,11 @@ const DecksScreen = (props) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      <View style={styles.urlInput}>
-        <GameUrlInput />
-      </View>
       <ScrollView contentContainerStyle={styles.scrollView}>
         <React.Fragment>
+          <View style={styles.urlInput}>
+            <GameUrlInput />
+          </View>
           {decks && decks.map((deck) => <DeckFeedItem key={deck.deckId} deck={deck} />)}
         </React.Fragment>
       </ScrollView>
