@@ -22,9 +22,6 @@ const styles = StyleSheet.create({
   scrollView: {
     padding: 16,
   },
-  urlInput: {
-    paddingBottom: 16,
-  },
   deckFeedItemContainer: {
     width: '100%',
     alignItems: 'center',
@@ -120,9 +117,6 @@ const DecksScreen = (props) => {
       <StatusBar barStyle="light-content" />
       <ScrollView contentContainerStyle={styles.scrollView}>
         <React.Fragment>
-          <View style={styles.urlInput}>
-            <GameUrlInput />
-          </View>
           {decks && decks.map((deck) => <DeckFeedItem key={deck.deckId} deck={deck} />)}
         </React.Fragment>
       </ScrollView>
