@@ -17,7 +17,7 @@ const REFETCH_FEED_INTERVAL_MS = 30 * 1000;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#000',
   },
   scrollView: {
     padding: 16,
