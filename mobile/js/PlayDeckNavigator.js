@@ -4,8 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Transitioning } from 'react-native-reanimated';
 
 import CardTransition from './CardTransition';
-import CreateDeckScreen from './CreateDeckScreen';
-import CreateCardScreen from './CreateCardScreen';
+import PlayCardScreen from './PlayCardScreen';
 
 const styles = StyleSheet.create({
   container: {
@@ -14,16 +13,7 @@ const styles = StyleSheet.create({
   },
 });
 
-// switches between card creator and deck creator
-const CreateDeckContent = ({ deckId, cardId, ...props }) => {
-  if (deckId && !cardId) {
-    return <CreateDeckScreen {...props} />;
-  } else {
-    return <CreateCardScreen {...props} />;
-  }
-};
-
-const CreateDeckNavigator = (props) => {
+const PlayDeckNavigator = (props) => {
   const navigation = useNavigation();
   const transitionRef = React.useRef();
   const [counter, setCounter] = React.useState(1);
@@ -31,8 +21,8 @@ const CreateDeckNavigator = (props) => {
   let deckId, cardId;
   if (props.route && props.route.params) {
     const { params } = props.route;
-    deckId = params.deckIdToEdit;
-    cardId = params.cardIdToEdit;
+    deckId = params.deckId;
+    cardId = params.cardId;
   }
 
   React.useEffect(() => {
@@ -46,7 +36,7 @@ const CreateDeckNavigator = (props) => {
     <Transitioning.View ref={transitionRef} transition={CardTransition} style={styles.container}>
       {React.useMemo(
         () => (
-          <CreateDeckContent key={counter} deckId={deckId} cardId={cardId} {...props} />
+          <PlayCardScreen key={counter} {...props} />
         ),
         [counter]
       )}
@@ -54,4 +44,4 @@ const CreateDeckNavigator = (props) => {
   );
 };
 
-export default CreateDeckNavigator;
+export default PlayDeckNavigator;

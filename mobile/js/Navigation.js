@@ -17,7 +17,7 @@ import CreateDeckNavigator from './CreateDeckNavigator';
 import DecksScreen from './DecksScreen';
 import * as DeepLinks from './DeepLinks';
 import HomeScreen from './HomeScreen';
-import PlayCardScreen from './PlayCardScreen';
+import PlayDeckNavigator from './PlayDeckNavigator';
 import ProfileScreen from './ProfileScreen';
 
 const Stack = createStackNavigator();
@@ -31,7 +31,7 @@ if (Constants.USE_CARDS_PROTOTYPE) {
   HomeNavigator = () => (
     <Stack.Navigator headerMode="none">
       <Stack.Screen name="HomeScreen" component={DecksScreen} />
-      <Stack.Screen name="PlayCard" component={PlayCardScreen} />
+      <Stack.Screen name="PlayCard" component={PlayDeckNavigator} />
     </Stack.Navigator>
   );
 } else {
@@ -97,7 +97,7 @@ const TabNavigator = () => (
       style: {
         backgroundColor: '#000',
         borderTopWidth: 0,
-      }
+      },
     }}>
     <Tab.Screen
       name="Play"
