@@ -35,21 +35,26 @@ const CardScene = ({ card, style, isEditing = false, onEndEditing, onScreenshot 
 
   const backgroundImageOverlayOpacity = useRef(new Animated.Value(1)).current;
   const [loaded, setLoaded] = useState(false);
+  let mounted;
   const onLoaded = async () => {
     if (!loaded) {
       await new Promise((resolve) => setTimeout(resolve, 200));
-      if (!loaded) {
+      if (!loaded && mounted) {
         Animated.timing(backgroundImageOverlayOpacity, {
           toValue: 0,
           duration: 200,
           useNativeDriver: true,
-        }).start(() => setLoaded(true));
+        }).start(() => mounted && setLoaded(true));
       }
     }
   };
   useEffect(() => {
+    mounted = true;
     const timer = setTimeout(onLoaded, 800);
-    return () => clearTimeout(timer);
+    return () => {
+      mounted = false;
+      clearTimeout(timer);
+    };
   }, []);
 
   const whiteOverlayOpacity = useRef(new Animated.Value(1)).current;
