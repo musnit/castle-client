@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import gql from 'graphql-tag';
-import SafeAreaView from 'react-native-safe-area-view';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
@@ -100,7 +100,6 @@ const DecksScreen = (props) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      StatusBar.setBarStyle('light-content'); // needed for tab navigator
       if (!lastFetchedTime || Date.now() - lastFetchedTime > REFETCH_FEED_INTERVAL_MS) {
         fetchDecks();
         setLastFetchedTime(Date.now());

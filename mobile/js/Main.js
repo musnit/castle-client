@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, StatusBar } from 'react-native';
+import { View } from 'react-native';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { ApolloProvider } from '@apollo/react-hooks';
 import BootSplash from 'react-native-bootsplash';
 import DevMenu from '@terrysahaidak/react-native-devmenu';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import * as Session from './Session';
 import MainSwitcher from './MainSwitcher';
@@ -38,11 +39,12 @@ const MainProvider = () => {
   return (
     <View style={{ flex: 1 }}>
       <DevMenu numberOfTouches={4}>
-        <StatusBar backgroundColor="white" barStyle="dark-content" />
         <Session.Provider>
           <ApolloProvider client={Session.apolloClient}>
             <ActionSheetProvider>
-              <Main />
+              <SafeAreaProvider>
+                <Main />
+              </SafeAreaProvider>
             </ActionSheetProvider>
           </ApolloProvider>
         </Session.Provider>

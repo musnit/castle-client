@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Linking } from 'react-native';
+import { View, Text, ScrollView, StatusBar, TouchableOpacity, Linking } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
@@ -8,7 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { GameCard, GAME_CARD_FRAGMENT } from './HomeScreen';
 import { useSession } from './Session';
 import * as GameScreen from './GameScreen';
-import SafeAreaView from 'react-native-safe-area-view';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const ProfilePhoto = (props) => {
   const { loading: queryLoading, error: queryError, data: queryData } = useQuery(
@@ -77,6 +77,7 @@ const ProfileScreen = () => {
         flex: 1,
         backgroundColor: '#f2f2f2',
       }}>
+      <StatusBar style="dark-content" />
       {queryLoading || queryError ? null : (
         <Fragment>
           <SafeAreaView

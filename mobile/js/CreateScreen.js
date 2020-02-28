@@ -2,7 +2,7 @@ import React from 'react';
 import { View, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import gql from 'graphql-tag';
-import SafeAreaView from 'react-native-safe-area-view';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { CommonActions, useNavigation, useFocusEffect } from '@react-navigation/native';
 
@@ -112,7 +112,6 @@ const CreateScreen = () => {
 
   useFocusEffect(
     React.useCallback(() => {
-      StatusBar.setBarStyle('light-content'); // needed for tab navigator
       fetchDecks();
     }, [])
   );
