@@ -33,7 +33,6 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
     paddingRight: 8,
     width: '33%',
-    height: 192, // TODO: correct ratio
   },
   cellTitle: {
     fontSize: 10,
@@ -45,7 +44,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 6,
     width: '100%',
-    height: '100%',
+    aspectRatio: 9 / 16,
     alignItems: 'flex-start',
     justifyContent: 'flex-end',
     padding: 8,
