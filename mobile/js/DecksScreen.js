@@ -119,7 +119,7 @@ const DecksScreen = (props) => {
       <ScrollView
         contentContainerStyle={styles.scrollView}
         snapToInterval={DECK_FEED_ITEM_HEIGHT}
-        decelerationRate="fast">
+        decelerationRate={0.9}>
         <React.Fragment>
           {decks && decks.map((deck) => <DeckFeedItem key={deck.deckId} deck={deck} />)}
         </React.Fragment>
