@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import gql from 'graphql-tag';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
@@ -62,7 +62,7 @@ const DeckFeedItem = ({ deck }) => {
 
 const DecksScreen = (props) => {
   const [lastFetchedTime, setLastFetchedTime] = React.useState(null);
-
+  const insets = useSafeArea();
   const [fetchDecks, query] = useLazyQuery(
     gql`
       query {
@@ -114,7 +114,7 @@ const DecksScreen = (props) => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <StatusBar barStyle="light-content" />
       <ScrollView
         contentContainerStyle={styles.scrollView}
@@ -124,7 +124,7 @@ const DecksScreen = (props) => {
           {decks && decks.map((deck) => <DeckFeedItem key={deck.deckId} deck={deck} />)}
         </React.Fragment>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
