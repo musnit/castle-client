@@ -15,26 +15,22 @@ const { vw, vh } = Viewport;
 const REFETCH_FEED_INTERVAL_MS = 30 * 1000;
 
 const DECK_FEED_ITEM_HEIGHT =
-  75 * vh + // height of card
-  16 + // margin below cell
-  1; // border of card
+  (16 / 9) * 100 * vw + // height of card
+  32; // margin below cell
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
   },
-  scrollView: {
-    padding: 16,
-  },
   deckFeedItemContainer: {
     width: '100%',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 32,
   },
   deckFeedItemCard: {
     aspectRatio: 9 / 16,
-    height: 75 * vh,
+    width: '100%',
   },
 });
 
