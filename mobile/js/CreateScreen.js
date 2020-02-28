@@ -111,6 +111,7 @@ const CreateScreen = () => {
 
   useFocusEffect(
     React.useCallback(() => {
+      StatusBar.setBarStyle('light-content'); // needed for tab navigator
       fetchDecks();
     }, [])
   );
