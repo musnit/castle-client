@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import FastImage from 'react-native-fast-image';
 
 import CardCell from './CardCell';
@@ -113,7 +113,7 @@ const DeckHeader = (props) => {
       <StatusBar barStyle="light-content" />
       <View style={styles.navigationRow}>
         <TouchableOpacity style={styles.back} onPress={props.onPressBack}>
-          <Icon name="md-arrow-back" size={30} color="#888" />
+          <Icon name="arrow-back" size={30} color="#fff" />
         </TouchableOpacity>
       </View>
       <View style={styles.header}>
