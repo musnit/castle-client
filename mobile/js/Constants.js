@@ -9,13 +9,13 @@ export const CREATE_NEW_CARD_ID = -1;
 export const styles = {
   dropShadow: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.25,
     shadowRadius: 2,
-    elevation: 1,
+    elevation: 2,
   },
   textShadow: {
-    textShadowColor: '#0006',
+    textShadowColor: '#0004',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
   },
