@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import castleMetadata from 'castle-metadata';
 import url from 'url';
 import ip from 'ip';
-import ActionSheet from 'react-native-action-sheet';
+import { useActionSheet } from '@expo/react-native-action-sheet';
 
 import GhostView from './ghost/GhostView';
 import * as GhostEvents from './ghost/GhostEvents';
@@ -464,6 +464,7 @@ export const GameView = ({
 }) => {
   const fetchGameHook = useFetchGame({ gameId, gameUri, extras });
   const game = fetchGameHook.fetchedGame;
+  const { showActionSheetWithOptions } = useActionSheet();
 
   useUserStatus({ game });
 
@@ -503,7 +504,7 @@ export const GameView = ({
     extras.actionKeyCode !== undefined ? extras.actionKeyCode : GAME_INPUTS_ACTION_KEY_CODES[0]
   );
   const onPressSwitchActionKeyCode = () => {
-    ActionSheet.showActionSheetWithOptions({ options: GAME_INPUTS_ACTION_KEY_CODES }, (i) => {
+    showActionSheetWithOptions({ options: GAME_INPUTS_ACTION_KEY_CODES }, (i) => {
       if (typeof i === 'number') {
         setActionKeyCode(GAME_INPUTS_ACTION_KEY_CODES[i]);
       }

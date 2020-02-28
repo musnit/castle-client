@@ -13,9 +13,9 @@ import {
   KeyboardAvoidingView,
   LayoutAnimation,
 } from 'react-native';
+import { useActionSheet } from '@expo/react-native-action-sheet';
 import Slider from '@react-native-community/slider';
 import Markdown from 'react-native-markdown-renderer';
-import ActionSheet from 'react-native-action-sheet';
 import Popover from 'react-native-popover-view';
 import tinycolor from 'tinycolor2';
 import url from 'url';
@@ -409,7 +409,10 @@ const SvgFit = ({ style, uri }) => {
     },
   }) => setSize({ width, height });
 
-  const scale = Math.min((size.width || BASE_SVG_SIZE) / BASE_SVG_SIZE, (size.height || BASE_SVG_SIZE) / BASE_SVG_SIZE);
+  const scale = Math.min(
+    (size.width || BASE_SVG_SIZE) / BASE_SVG_SIZE,
+    (size.height || BASE_SVG_SIZE) / BASE_SVG_SIZE
+  );
 
   return (
     <View style={{ ...style, justifyContent: 'center', alignItems: 'center' }} onLayout={onLayout}>
@@ -948,6 +951,7 @@ elementTypes['toggle'] = ToolToggle;
 
 const ToolDropdown = ({ element }) => {
   const [value, setValue] = useValue({ element });
+  const { showActionSheetWithOptions } = useActionSheet();
 
   return (
     <Labelled element={element}>
@@ -963,7 +967,7 @@ const ToolDropdown = ({ element }) => {
         }}
         onPress={() => {
           const itemsArray = objectToArray(element.props.items);
-          ActionSheet.showActionSheetWithOptions(
+          showActionSheetWithOptions(
             { options: itemsArray.concat(['cancel']), cancelButtonIndex: itemsArray.length },
             (i) => {
               if (typeof i === 'number' && i >= 0 && i < itemsArray.length) {
