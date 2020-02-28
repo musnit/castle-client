@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { StatusBar, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import * as Constants from './Constants';
 import * as Utilities from './utilities';
@@ -102,31 +102,6 @@ const ConfigureCard = ({ card, onChange, onDeleteCard }) => {
   );
 };
 
-const DismissIcon = () => {
-  return (
-    <Fragment>
-      <FastImage
-        style={{
-          width: 22,
-          aspectRatio: 1,
-        }}
-        tintColor="#fff"
-        source={require('../assets/images/dismiss.png')}
-      />
-      <FastImage
-        style={{
-          width: 22,
-          aspectRatio: 1,
-          marginTop: -20,
-          zIndex: -1,
-        }}
-        tintColor="#0008"
-        source={require('../assets/images/dismiss.png')}
-      />
-    </Fragment>
-  );
-};
-
 const CardHeader = (props) => {
   const { card, expanded, isEditable } = props;
   const title = Utilities.makeCardPreviewTitle(card);
@@ -141,7 +116,7 @@ const CardHeader = (props) => {
       </View>
       <View style={styles.fixedHeader}>
         <TouchableOpacity style={styles.back} onPress={props.onPressBack}>
-          <DismissIcon />
+          <Icon name="close" size={32} color="#fff" style={Constants.styles.textShadow} />
         </TouchableOpacity>
         {isEditable && (
           <TouchableOpacity style={styles.titleContainer} onPress={props.onPressTitle}>

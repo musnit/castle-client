@@ -14,6 +14,11 @@ export const styles = {
     shadowRadius: 2,
     elevation: 1,
   },
+  textShadow: {
+    textShadowColor: '#0006',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+  },
   plainButton: {
     borderRadius: 6,
     paddingVertical: 8,
