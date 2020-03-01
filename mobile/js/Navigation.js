@@ -31,7 +31,16 @@ if (Constants.USE_CARDS_PROTOTYPE) {
   HomeNavigator = () => (
     <Stack.Navigator headerMode="none">
       <Stack.Screen name="HomeScreen" component={DecksScreen} />
-      <Stack.Screen name="PlayCard" component={PlayDeckNavigator} />
+      <Stack.Screen
+        name="PlayCard"
+        component={PlayDeckNavigator}
+        options={{
+          transitionSpec: {
+            open: { animation: 'timing', config: { duration: 120 } },
+            close: { animation: 'timing', config: { duration: 120 } },
+          },
+        }}
+      />
     </Stack.Navigator>
   );
 } else {

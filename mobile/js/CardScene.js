@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
 
 const USE_REMOTE_GAME = true;
 const GAME_ID = USE_REMOTE_GAME ? '1uzqao' : null;
-const GAME_URI = USE_REMOTE_GAME ? null : 'http://192.168.1.28:8080/project.castle';
+const GAME_URI = USE_REMOTE_GAME ? null : 'http://192.168.1.35:8080/project.castle';
 
 const CardScene = ({ card, style, isEditing = false, onEndEditing, onScreenshot }) => {
   const [reloadCount, setReloadCount] = useState(0);
@@ -39,11 +39,11 @@ const CardScene = ({ card, style, isEditing = false, onEndEditing, onScreenshot 
   let mounted;
   const onLoaded = async () => {
     if (!loaded) {
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      await new Promise((resolve) => setTimeout(resolve, 80));
       if (!loaded && mounted) {
         Animated.timing(backgroundImageOverlayOpacity, {
           toValue: 0,
-          duration: 200,
+          duration: 80,
           useNativeDriver: true,
         }).start(() => mounted && setLoaded(true));
       }
@@ -56,20 +56,6 @@ const CardScene = ({ card, style, isEditing = false, onEndEditing, onScreenshot 
       mounted = false;
       clearTimeout(timer);
     };
-  }, []);
-
-  const whiteOverlayOpacity = useRef(new Animated.Value(1)).current;
-  useEffect(() => {
-    const timer = setTimeout(
-      () =>
-        Animated.timing(whiteOverlayOpacity, {
-          toValue: 0,
-          duration: 220,
-          useNativeDriver: false,
-        }).start(),
-      40
-    );
-    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -110,12 +96,6 @@ const CardScene = ({ card, style, isEditing = false, onEndEditing, onScreenshot 
                 <Animated.View style={[styles.overlay, { opacity: backgroundImageOverlayOpacity }]}>
                   <FastImage style={{ flex: 1 }} source={{ uri: card.backgroundImage.url }} />
                 </Animated.View>
-                <Animated.View
-                  style={[
-                    styles.overlay,
-                    { backgroundColor: 'white', opacity: whiteOverlayOpacity },
-                  ]}
-                />
               </React.Fragment>
             ) : null}
           </React.Fragment>
