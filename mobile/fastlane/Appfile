@@ -1,0 +1,8 @@
+app_identifier "games.castle.castle"
+team_id "48GFST92BB"
+
+for_platform :ios do
+  for_lane :development do
+    app_identifier 'games.castle.castle-debug'
+  end
+end
