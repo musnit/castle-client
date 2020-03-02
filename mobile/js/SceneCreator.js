@@ -13,7 +13,7 @@ const SceneCreatorAction = (props) => {
       height: 44,
       alignItems: 'center',
       justifyContent: 'center',
-      margin: 6,
+      margin: 4,
     }}>
       <Icon name={props.name} size={24} color="#fff" style={Constants.styles.textShadow} solid />
     </View>
