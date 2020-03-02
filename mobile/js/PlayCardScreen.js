@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import gql from 'graphql-tag';
 import { TouchableWithoutFeedback, ScrollView, StyleSheet, View } from 'react-native';
 import { useQuery, useEffect } from '@apollo/react-hooks';
@@ -18,8 +18,11 @@ const styles = StyleSheet.create({
   },
   cardBody: {
     // contains just the 16:9 card as a child
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: 6,
+    overflow: 'hidden',
   },
   scrollView: {
     aspectRatio: 0.5625, // 16:9
@@ -45,7 +48,13 @@ const PlayCardScreen = (props) => {
   let deckId,
     cardId,
     card = {};
-  if (props.route.params) {
+  if (props.deckId) {
+    deckId = props.deckId;
+  }
+  if (props.cardId) {
+    cardId = props.cardId;
+  }
+  if (props.route && props.route.params) {
     deckId = props.route.params.deckId;
     cardId = props.route.params.cardId;
   }
@@ -134,35 +143,65 @@ const PlayCardScreen = (props) => {
     // TODO: go to scene for this card
   };
 
-  const _handleSelectBlock = (blockId) => {
+  const [currCard, setCurrCard] = useState(null);
+
+  const _handleSelectBlock = async (blockId) => {
     const block = card.blocks.find((b) => b.cardBlockId === blockId);
     if (block.type === 'choice') {
-      navigation.navigate('PlayCard', { deckId, cardId: block.destinationCardId });
+      const result = await Session.apolloClient.query({
+        query: gql`
+          query GetCardById($cardId: ID!) {
+            card(cardId: $cardId) {
+              id
+              cardId
+              title
+              backgroundImage {
+                fileId
+                url
+              }
+              scene {
+                sceneId
+                data
+              }
+              blocks {
+                id
+                cardBlockId
+                cardBlockUpdateId
+                type
+                title
+                destinationCardId
+              }
+            }
+          }
+        `,
+        variables: { cardId: block.destinationCardId },
+      });
+      if (result.data) {
+        setCurrCard(result.data.card);
+      }
     }
   };
 
   const containScrollViewStyles = Viewport.isUltraWide ? { width: '100%' } : { height: '100%' };
 
+  card = currCard || card;
+
   return (
-    <SafeAreaView style={styles.container}>
-      <CardHeader card={card} onPressBack={() => navigation.navigate('HomeScreen')} />
-      <View style={styles.cardBody}>
-        <ScrollView
-          style={[styles.scrollView, containScrollViewStyles]}
-          contentContainerStyle={{ flex: 1 }}>
-          <TouchableWithoutFeedback onPress={_handlePressScene}>
-            <CardScene
-              key={`card-scene-${card.scene && card.scene.sceneId}`}
-              style={styles.scene}
-              card={card}
-            />
-          </TouchableWithoutFeedback>
-          <View style={styles.description}>
-            <CardBlocks card={card} onSelectBlock={_handleSelectBlock} />
-          </View>
-        </ScrollView>
+    //<SafeAreaView style={styles.container}>
+    //<CardHeader card={card} onPressBack={() => navigation.navigate('HomeScreen')} />
+    <View key={card.cardId} style={styles.cardBody}>
+      <TouchableWithoutFeedback onPress={_handlePressScene}>
+        <CardScene
+          key={`card-${card.cardId}-${card.scene && card.scene.sceneId}`}
+          style={styles.scene}
+          card={card}
+        />
+      </TouchableWithoutFeedback>
+      <View style={styles.description}>
+        <CardBlocks card={card} onSelectBlock={_handleSelectBlock} />
       </View>
-    </SafeAreaView>
+    </View>
+    //</SafeAreaView>
   );
 };
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import gql from 'graphql-tag';
 import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
@@ -9,6 +9,7 @@ import CardCell from './CardCell';
 import FastImage from 'react-native-fast-image';
 import GameUrlInput from './GameUrlInput';
 import Viewport from './viewport';
+import PlayCardScreen from './PlayCardScreen';
 
 const { vw, vh } = Viewport;
 
@@ -34,27 +35,44 @@ const styles = StyleSheet.create({
   },
 });
 
-const DeckFeedItem = ({ deck }) => {
+const DeckFeedItem = ({ deck, focused }) => {
   const navigation = useNavigation();
+
+  const [ready, setReady] = useState(false);
+
+  const [lastFocused, setLastFocused] = useState(false);
+  if (!lastFocused && focused) {
+    setReady(false);
+    setTimeout(() => {
+      setReady(true);
+    }, 80);
+  }
+  if (lastFocused !== focused) {
+    setLastFocused(focused);
+  }
+
   return (
     <View style={styles.deckFeedItemContainer}>
       <View style={styles.deckFeedItemCard}>
         <CardCell
           card={deck.initialCard}
-          title={deck.creator.username}
-          onPress={() => {
-            if (deck.initialCard && deck.initialCard.cardId) {
-              navigation.navigate('PlayCard', {
-                deckId: deck.deckId,
-                cardId: deck.initialCard.cardId,
-              });
-            } else {
-              navigation.navigate('PlayCard', {
-                deckId: deck.deckId,
-              });
-            }
-          }}
+          onPress={() => {}}
         />
+        {focused && ready ? (
+          <View
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              right: 0,
+              bottom: 0,
+            }}>
+            <PlayCardScreen
+              deckId={deck.deckId}
+              cardId={deck.initialCard && deck.initialCard.cardId}
+            />
+          </View>
+        ) : null}
       </View>
     </View>
   );
@@ -113,16 +131,31 @@ const DecksScreen = (props) => {
     decks = query.data.allDecks;
   }
 
+  const [focusedIndex, setFocusedIndex] = useState(0);
+  const onScroll = ({
+    nativeEvent: {
+      contentOffset: { y },
+    },
+  }) => {
+    const newFocusedIndex = Math.floor(y / DECK_FEED_ITEM_HEIGHT + 0.5);
+    if (newFocusedIndex !== focusedIndex) {
+      setFocusedIndex(newFocusedIndex);
+    }
+  };
+
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <StatusBar barStyle="light-content" />
       <ScrollView
         contentContainerStyle={styles.scrollView}
         snapToInterval={DECK_FEED_ITEM_HEIGHT}
-        decelerationRate={0.9}>
-        <React.Fragment>
-          {decks && decks.map((deck) => <DeckFeedItem key={deck.deckId} deck={deck} />)}
-        </React.Fragment>
+        decelerationRate={0.9}
+        onScroll={onScroll}
+        scrollEventThrottle={300}>
+        {decks &&
+          decks.map((deck, i) => (
+            <DeckFeedItem key={deck.deckId} deck={deck} focused={focusedIndex == i} />
+          ))}
       </ScrollView>
     </View>
   );

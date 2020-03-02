@@ -39,11 +39,11 @@ const CardScene = ({ card, style, isEditing = false, onEndEditing, onScreenshot 
   let mounted;
   const onLoaded = async () => {
     if (!loaded) {
-      await new Promise((resolve) => setTimeout(resolve, 80));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       if (!loaded && mounted) {
         Animated.timing(backgroundImageOverlayOpacity, {
           toValue: 0,
-          duration: 80,
+          duration: 120,
           useNativeDriver: true,
         }).start(() => mounted && setLoaded(true));
       }
@@ -51,7 +51,7 @@ const CardScene = ({ card, style, isEditing = false, onEndEditing, onScreenshot 
   };
   useEffect(() => {
     mounted = true;
-    const timer = setTimeout(onLoaded, 800);
+    const timer = setTimeout(onLoaded, 1800);
     return () => {
       mounted = false;
       clearTimeout(timer);
