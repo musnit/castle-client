@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Transitioning } from 'react-native-reanimated';
@@ -9,34 +9,40 @@ import PlayCardScreen from './PlayCardScreen';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: 'transparent',
   },
 });
 
-const PlayDeckNavigator = (props) => {
-  const navigation = useNavigation();
+const PlayDeckNavigator = ({ deckId, cardId }) => {
+  const [currDeckId, setCurrDeckId] = useState(deckId);
+  const [currCardId, setCurrCardId] = useState(cardId);
+
+  const onSelectNewCard = ({ deckId, cardId }) => {
+    if (deckId) {
+      setCurrDeckId(deckId);
+    }
+    setCurrCardId(cardId);
+  };
+
   const transitionRef = React.useRef();
   const [counter, setCounter] = React.useState(1);
-
-  let deckId, cardId;
-  if (props.route && props.route.params) {
-    const { params } = props.route;
-    deckId = params.deckId;
-    cardId = params.cardId;
-  }
-
   React.useEffect(() => {
-    if (transitionRef.current) {
+    if (!(currDeckId === deckId && currCardId === cardId) && transitionRef.current) {
       transitionRef.current.animateNextTransition();
       setCounter(counter + 1);
     }
-  }, [deckId, cardId]);
+  }, [currDeckId, currCardId]);
 
   return (
     <Transitioning.View ref={transitionRef} transition={CardTransition} style={styles.container}>
       {React.useMemo(
         () => (
-          <PlayCardScreen key={counter} {...props} />
+          <PlayCardScreen
+            key={counter}
+            deckId={currDeckId}
+            cardId={currCardId}
+            onSelectNewCard={onSelectNewCard}
+          />
         ),
         [counter]
       )}

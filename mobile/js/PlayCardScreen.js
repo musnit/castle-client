@@ -2,7 +2,6 @@ import React from 'react';
 import gql from 'graphql-tag';
 import { TouchableWithoutFeedback, ScrollView, StyleSheet, View } from 'react-native';
 import { useQuery, useEffect } from '@apollo/react-hooks';
-import { useNavigation } from '@react-navigation/native';
 import SafeAreaView from 'react-native-safe-area-view';
 
 import CardBlocks from './CardBlocks';
@@ -14,17 +13,8 @@ import * as Session from './Session';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
-  },
-  cardBody: {
-    // contains just the 16:9 card as a child
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  scrollView: {
-    aspectRatio: 0.5625, // 16:9
-    backgroundColor: '#8CA5CD',
     borderRadius: 6,
+    overflow: 'hidden',
   },
   scene: {
     position: 'absolute',
@@ -39,20 +29,12 @@ const styles = StyleSheet.create({
   },
 });
 
-const PlayCardScreen = (props) => {
-  const navigation = useNavigation();
-
-  let deckId,
-    cardId,
-    card = {};
-  if (props.route.params) {
-    deckId = props.route.params.deckId;
-    cardId = props.route.params.cardId;
-  }
+const PlayCardScreen = ({ deckId, cardId, onSelectNewCard }) => {
   if (!deckId) {
     throw new Error(`Can't play a deck with no deckId`);
   }
 
+  let card;
   let query;
   if (cardId) {
     query = useQuery(
@@ -137,33 +119,24 @@ const PlayCardScreen = (props) => {
   const _handleSelectBlock = (blockId) => {
     const block = card.blocks.find((b) => b.cardBlockId === blockId);
     if (block.type === 'choice') {
-      navigation.navigate('PlayCard', { deckId, cardId: block.destinationCardId });
+      onSelectNewCard({ deckId, cardId: block.destinationCardId });
     }
   };
 
-  const containScrollViewStyles = Viewport.isUltraWide ? { width: '100%' } : { height: '100%' };
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <CardHeader card={card} onPressBack={() => navigation.navigate('HomeScreen')} />
-      <View style={styles.cardBody}>
-        <ScrollView
-          style={[styles.scrollView, containScrollViewStyles]}
-          contentContainerStyle={{ flex: 1 }}>
-          <TouchableWithoutFeedback onPress={_handlePressScene}>
-            <CardScene
-              key={`card-scene-${card.scene && card.scene.sceneId}`}
-              style={styles.scene}
-              card={card}
-            />
-          </TouchableWithoutFeedback>
-          <View style={styles.description}>
-            <CardBlocks card={card} onSelectBlock={_handleSelectBlock} />
-          </View>
-        </ScrollView>
+  return card ? (
+    <View style={styles.container}>
+      <TouchableWithoutFeedback onPress={_handlePressScene}>
+        <CardScene
+          key={`card-scene-${card.scene && card.scene.sceneId}`}
+          style={styles.scene}
+          card={card}
+        />
+      </TouchableWithoutFeedback>
+      <View style={styles.description}>
+        <CardBlocks card={card} onSelectBlock={_handleSelectBlock} />
       </View>
-    </SafeAreaView>
-  );
+    </View>
+  ) : null;
 };
 
 export default PlayCardScreen;
