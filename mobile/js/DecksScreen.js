@@ -58,10 +58,6 @@ const DeckFeedItem = React.memo(({ deck, focused }) => {
     };
   }, [focused]);
 
-  if (focused && ready) {
-    console.log('entering', deck.deckId);
-  }
-
   return (
     <View style={styles.deckFeedItemContainer}>
       <View style={styles.deckFeedItemCard}>
