@@ -3,7 +3,7 @@ import { View, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity } from 
 import gql from 'graphql-tag';
 import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
 import { useLazyQuery } from '@apollo/react-hooks';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 
 import CardCell from './CardCell';
 import FastImage from 'react-native-fast-image';
@@ -120,6 +120,8 @@ const DecksScreen = (props) => {
     { fetchPolicy: 'no-cache' }
   );
 
+  const isFocused = useIsFocused();
+
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
@@ -165,7 +167,7 @@ const DecksScreen = (props) => {
         scrollEventThrottle={80}>
         {decks &&
           decks.map((deck, i) => (
-            <DeckFeedItem key={deck.deckId} deck={deck} focused={focusedIndex == i} />
+            <DeckFeedItem key={deck.deckId} deck={deck} focused={isFocused && focusedIndex == i} />
           ))}
       </ScrollView>
     </View>
