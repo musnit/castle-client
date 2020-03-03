@@ -4,7 +4,7 @@ import { StyleSheet, View, Animated, TouchableWithoutFeedback } from 'react-nati
 import FastImage from 'react-native-fast-image';
 
 import { GameView } from './GameScreen';
-import { SceneCreator } from './SceneCreator';
+import SceneCreator from './SceneCreator';
 
 const styles = StyleSheet.create({
   backgroundImage: {
