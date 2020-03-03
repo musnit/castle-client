@@ -9,7 +9,6 @@ import PlayCardScreen from './PlayCardScreen';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'transparent',
   },
 });
 
@@ -34,7 +33,16 @@ const PlayDeckNavigator = ({ deckId, cardId }) => {
   }, [currDeckId, currCardId]);
 
   return (
-    <Transitioning.View ref={transitionRef} transition={CardTransition} style={styles.container}>
+    <Transitioning.View
+      ref={transitionRef}
+      transition={CardTransition}
+      style={[
+        styles.container,
+        {
+          // When at the first card, show the underlying deck preview
+          backgroundColor: counter === 1 ? 'transparent' : 'black',
+        },
+      ]}>
       {React.useMemo(
         () => (
           <PlayCardScreen
