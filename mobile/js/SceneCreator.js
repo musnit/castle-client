@@ -61,15 +61,15 @@ class SceneCreatorBlueprintsSheet extends React.Component {
 
   open = () => {
     if (this._sheetRef.current) {
-      this._sheetRef.current.snapTo(0);
-      this._sheetRef.current.snapTo(0);
+      this._sheetRef.current.snapTo(1);
+      this._sheetRef.current.snapTo(1);
     }
   };
 
   close = () => {
     if (this._sheetRef.current) {
-      this._sheetRef.current.snapTo(1);
-      this._sheetRef.current.snapTo(1);
+      this._sheetRef.current.snapTo(2);
+      this._sheetRef.current.snapTo(2);
     }
   };
 
@@ -93,7 +93,8 @@ class SceneCreatorBlueprintsSheet extends React.Component {
       <React.Fragment>
         <BottomSheet
           ref={this._sheetRef}
-          snapPoints = {[300, 52, 600]}
+          snapPoints = {[600, 300, 52]}
+          initialSnap = {1}
           renderHeader = {this._renderHeader}
           renderContent = {this._renderContent}
         />
@@ -153,15 +154,15 @@ class SceneCreatorInspectorSheet extends React.Component {
 
   open = () => {
     if (this._sheetRef.current) {
-      this._sheetRef.current.snapTo(0);
-      this._sheetRef.current.snapTo(0);
+      this._sheetRef.current.snapTo(1);
+      this._sheetRef.current.snapTo(1);
     }
   };
 
   close = () => {
     if (this._sheetRef.current) {
-      this._sheetRef.current.snapTo(1);
-      this._sheetRef.current.snapTo(1);
+      this._sheetRef.current.snapTo(2);
+      this._sheetRef.current.snapTo(2);
     }
   };
 
@@ -189,8 +190,8 @@ class SceneCreatorInspectorSheet extends React.Component {
       <React.Fragment>
         <BottomSheet
           ref={this._sheetRef}
-          snapPoints = {[400, 0, 600]}
-          initialSnap={1}
+          snapPoints = {[600, 400, 0]}
+          initialSnap={2}
           renderHeader = {this._renderHeader}
           renderContent = {this._renderContent}
         />
