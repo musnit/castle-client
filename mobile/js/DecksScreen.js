@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { View, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import gql from 'graphql-tag';
 import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
@@ -10,6 +10,7 @@ import FastImage from 'react-native-fast-image';
 import GameUrlInput from './GameUrlInput';
 import Viewport from './viewport';
 import PlayDeckNavigator from './PlayDeckNavigator';
+import { MainSwitcherContext } from './MainSwitcher';
 
 const { vw, vh } = Viewport;
 
@@ -122,6 +123,8 @@ const DecksScreen = (props) => {
 
   const isFocused = useIsFocused();
 
+  const { mode: mainSwitcherMode } = useContext(MainSwitcherContext); // Dealing with legacy game loading path
+
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
@@ -167,7 +170,11 @@ const DecksScreen = (props) => {
         scrollEventThrottle={80}>
         {decks &&
           decks.map((deck, i) => (
-            <DeckFeedItem key={deck.deckId} deck={deck} focused={isFocused && focusedIndex == i} />
+            <DeckFeedItem
+              key={deck.deckId}
+              deck={deck}
+              focused={mainSwitcherMode === 'navigator' && isFocused && focusedIndex == i}
+            />
           ))}
       </ScrollView>
     </View>
