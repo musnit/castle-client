@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 if [ ! -d "fastlane" ]
 then
    echo "Can't find fastlane directory, make sure to run this script from 'mobile'"
