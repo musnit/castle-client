@@ -1,19 +1,51 @@
-version: 2
 jobs:
-  build:
-    branches:
-      only:
-        - release/macos
-
+  build_release_macos:
     macos:
       xcode: "11.2.1"
-
     steps:
       - checkout
-
       - run:
           name: Build and Upload
           command: cd macosx && ./release.sh
-
       - store_artifacts:
           path: /tmp/castle-notarize-artifacts
+  build_beta_ios:
+    macos:
+      xcode: "11.2.1"
+    working_directory: /Users/distiller/project
+    environment:
+      FL_OUTPUT_DIR: output
+    shell: /bin/bash --login -o pipefail
+    steps:
+      - checkout
+      - restore_cache:
+          key: 1-gems-{{ checksum "mobile/Gemfile.lock" }}
+      - run:
+          name: bundle install
+          command: |
+              pushd mobile
+              bundle check || bundle install --path vendor/bundle
+              popd
+      - save_cache:
+          key: 1-gems-{{ checksum "mobile/Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+      - run:
+          name: Build and upload
+          command: cd mobile && ./tools/upload-beta-build.sh
+      - store_artifacts:
+          path: output
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build_release_macos:
+          filters:
+            branches:
+              only:
+                - release/macos
+      - build_beta_ios:
+          filters:
+            branches:
+              only:
+                - beta/ios
