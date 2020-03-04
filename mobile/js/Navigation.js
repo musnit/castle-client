@@ -23,6 +23,8 @@ import ProfileScreen from './ProfileScreen';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
+const ICON_SIZE = 24;
+
 // App UI layout
 
 let HomeNavigator;
@@ -102,10 +104,17 @@ const TabNavigator = () => (
   <Tab.Navigator
     tabBarOptions={{
       activeTintColor: '#fff',
-      inactiveTintColor: '#888',
+      inactiveTintColor: '#fffa',
       style: {
-        backgroundColor: '#000',
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: 45,
+        paddingTop: 5,
+        backgroundColor: '#0008',
         borderTopWidth: 0,
+        elevation: 0,
       },
     }}>
     <Tab.Screen
@@ -118,8 +127,8 @@ const TabNavigator = () => (
             return (
               <Image
                 style={{
-                  width: 28,
-                  height: 28,
+                  width: ICON_SIZE,
+                  height: ICON_SIZE,
                   tintColor: color,
                 }}
                 source={require('../assets/images/chess-figures.png')}
@@ -140,8 +149,8 @@ const TabNavigator = () => (
               return (
                 <Image
                   style={{
-                    width: 28,
-                    height: 28,
+                    width: ICON_SIZE,
+                    height: ICON_SIZE,
                     tintColor: color,
                   }}
                   source={require('../assets/images/add-card.png')}
@@ -160,8 +169,8 @@ const TabNavigator = () => (
           return (
             <Image
               style={{
-                width: 28,
-                height: 28,
+                width: ICON_SIZE,
+                height: ICON_SIZE,
                 tintColor: color,
               }}
               source={require('../assets/images/single-neutral-shield.png')}
