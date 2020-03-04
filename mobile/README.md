@@ -15,3 +15,11 @@
 - `npx react-native run-android`
 
 Once you have the app running, shake the device to open the React Native developer menu and select 'Enable Live Reload'. Then, you should be able to modify any of the files under 'js/' and save to trigger a reload of the app that picks up your changes!
+
+# Releases
+
+## iOS
+
+- Make sure `fastlane` is up to date: `bundle update fastlane` from this directory.
+- Run `./tools/upload-beta-build.sh` to upload a build to testflight. (You will need some credentials from our password store.)
+- Although we have a circleci config for fastlane, it doesn't work right now.
