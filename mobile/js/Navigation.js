@@ -110,8 +110,6 @@ const TabNavigator = () => (
         bottom: 0,
         left: 0,
         right: 0,
-        height: 45,
-        paddingTop: 5,
         backgroundColor: '#0008',
         borderTopWidth: 0,
         elevation: 0,
