@@ -73,6 +73,10 @@
 		A14FE3F42355CF2D003B7EA0 /* lpcap.c in Sources */ = {isa = PBXBuildFile; fileRef = A14FE3EB2355CF2D003B7EA0 /* lpcap.c */; };
 		A14FE3F72355D0C8003B7EA0 /* package.love in Resources */ = {isa = PBXBuildFile; fileRef = A14FE3F62355D0C8003B7EA0 /* package.love */; };
 		A18BF47E2395E0A300259291 /* ghost_network_seed.db in Resources */ = {isa = PBXBuildFile; fileRef = A18BF4762395E0A300259291 /* ghost_network_seed.db */; };
+		A1959DF42410A026000C61E0 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1959DEC2410A026000C61E0 /* CoreTelephony.framework */; };
+		A1959DF62410A032000C61E0 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1959DF52410A032000C61E0 /* WebKit.framework */; };
+		A1959DF82410A0CC000C61E0 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1959DF72410A0CC000C61E0 /* Accelerate.framework */; };
+		A1959DFA2410A197000C61E0 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1959DF92410A197000C61E0 /* SystemConfiguration.framework */; };
 		A1CCBA1623551869009F4DDD /* GhostChannels.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1CCBA1423551869009F4DDD /* GhostChannels.mm */; };
 		A1CCBA19235518C7009F4DDD /* GhostView.m in Sources */ = {isa = PBXBuildFile; fileRef = A1CCBA18235518C7009F4DDD /* GhostView.m */; };
 		A1FA18C32365168600E2ACFE /* GhostInputZone.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1FA18C22365168600E2ACFE /* GhostInputZone.mm */; };
@@ -221,6 +225,10 @@
 		A14FE3F52355D09D003B7EA0 /* package.love */ = {isa = PBXFileReference; lastKnownFileType = file; name = package.love; path = ../package.love; sourceTree = "<group>"; };
 		A14FE3F62355D0C8003B7EA0 /* package.love */ = {isa = PBXFileReference; lastKnownFileType = file; name = package.love; path = ../package.love; sourceTree = "<group>"; };
 		A18BF4762395E0A300259291 /* ghost_network_seed.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = ghost_network_seed.db; sourceTree = "<group>"; };
+		A1959DEC2410A026000C61E0 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		A1959DF52410A032000C61E0 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		A1959DF72410A0CC000C61E0 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		A1959DF92410A197000C61E0 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		A1CCBA1423551869009F4DDD /* GhostChannels.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GhostChannels.mm; sourceTree = "<group>"; };
 		A1CCBA18235518C7009F4DDD /* GhostView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GhostView.m; sourceTree = "<group>"; };
 		A1FA18C22365168600E2ACFE /* GhostInputZone.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GhostInputZone.mm; sourceTree = "<group>"; };
@@ -249,15 +257,19 @@
 				A14FE3AB2355CBE3003B7EA0 /* libbz2.tbd in Frameworks */,
 				A14FE3B52355CC39003B7EA0 /* QuartzCore.framework in Frameworks */,
 				A14FE3A32355CB93003B7EA0 /* CoreGraphics.framework in Frameworks */,
+				A1959DF42410A026000C61E0 /* CoreTelephony.framework in Frameworks */,
 				A14FE3A72355CBB6003B7EA0 /* libz.tbd in Frameworks */,
 				B75D12A12F9E5D8776A933D2 /* libPods-Castle.a in Frameworks */,
+				A1959DF62410A032000C61E0 /* WebKit.framework in Frameworks */,
 				A14FE3A52355CB9A003B7EA0 /* GameController.framework in Frameworks */,
 				A14FE3AF2355CC21003B7EA0 /* libcrypto.a in Frameworks */,
 				A14FE3A92355CBC8003B7EA0 /* libSDL2.a in Frameworks */,
 				A14FE3B32355CC32003B7EA0 /* OpenAL.framework in Frameworks */,
 				A14FE39F2355CB83003B7EA0 /* AudioToolbox.framework in Frameworks */,
 				A14FE3A12355CB8B003B7EA0 /* AVFoundation.framework in Frameworks */,
+				A1959DFA2410A197000C61E0 /* SystemConfiguration.framework in Frameworks */,
 				A14FE3B12355CC2B003B7EA0 /* Metal.framework in Frameworks */,
+				A1959DF82410A0CC000C61E0 /* Accelerate.framework in Frameworks */,
 				A14FE3B72355CD66003B7EA0 /* CoreMotion.framework in Frameworks */,
 				A14FE3A82355CBBE003B7EA0 /* liblove.a in Frameworks */,
 			);
@@ -319,6 +331,10 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A1959DF92410A197000C61E0 /* SystemConfiguration.framework */,
+				A1959DF72410A0CC000C61E0 /* Accelerate.framework */,
+				A1959DF52410A032000C61E0 /* WebKit.framework */,
+				A1959DEC2410A026000C61E0 /* CoreTelephony.framework */,
 				A14FE3F52355D09D003B7EA0 /* package.love */,
 				A14FE3B62355CD66003B7EA0 /* CoreMotion.framework */,
 				A14FE3B42355CC39003B7EA0 /* QuartzCore.framework */,
