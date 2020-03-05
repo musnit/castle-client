@@ -135,6 +135,7 @@ const DecksScreen = (props) => {
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
+      StatusBar.setTranslucent(true); // needed for tab navigator
       if (!lastFetchedTime || Date.now() - lastFetchedTime > REFETCH_FEED_INTERVAL_MS) {
         fetchDecks();
         setLastFetchedTime(Date.now());
@@ -168,7 +169,7 @@ const DecksScreen = (props) => {
 
   return (
     <View style={[styles.container, { paddingTop: paddingTop }]}>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" />
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
       <ScrollView
         contentContainerStyle={styles.scrollView}
         snapToInterval={DECK_FEED_ITEM_HEIGHT}
