@@ -160,7 +160,7 @@ const DecksScreen = (props) => {
   };
 
   return (
-    <View style={[styles.container]}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <StatusBar barStyle="light-content" />
       <ScrollView
         contentContainerStyle={styles.scrollView}
