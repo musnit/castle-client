@@ -6,6 +6,7 @@ import { useLazyQuery } from '@apollo/react-hooks';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 
 import CardCell from './CardCell';
+import * as Constants from './Constants';
 import FastImage from 'react-native-fast-image';
 import GameUrlInput from './GameUrlInput';
 import Viewport from './viewport';
@@ -135,7 +136,7 @@ const DecksScreen = (props) => {
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
-      StatusBar.setTranslucent(true); // needed for tab navigator
+      Constants.Android && StatusBar.setTranslucent(true); // needed for tab navigator
       if (!lastFetchedTime || Date.now() - lastFetchedTime > REFETCH_FEED_INTERVAL_MS) {
         fetchDecks();
         setLastFetchedTime(Date.now());
