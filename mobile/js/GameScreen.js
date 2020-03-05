@@ -205,12 +205,20 @@ const useInitialData = ({ game, dimensionsSettings, extras }) => {
   const me = isLoggedIn && !meLoading && meData && meData.me;
 
   useEffect(() => {
+    let mounted = true;
     if (!sending.current && game && dimensionsSettings && (!isLoggedIn || me)) {
       // Ready to send to Lua
       sending.current = true;
       (async () => {
+        if (!mounted) {
+          return;
+        }
+
         // Clear the channel just in case
         await GhostChannels.clearAsync('INITIAL_DATA');
+        if (!mounted) {
+          return;
+        }
 
         // Prepare the data
         const initialData = {
@@ -231,12 +239,19 @@ const useInitialData = ({ game, dimensionsSettings, extras }) => {
           initialParams: extras.initialParams ? extras.initialParams : undefined,
           // TODO(nikki): Add `initialPost`...
         };
+        if (!mounted) {
+          return;
+        }
 
         // Send it!
         await GhostChannels.pushAsync('INITIAL_DATA', JSON.stringify(initialData));
+        if (!mounted) {
+          return;
+        }
         setSent(true);
       })();
     }
+    return () => (mounted = false);
   }, [game, dimensionsSettings, isLoggedIn, me]);
 
   return { sent };
