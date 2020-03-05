@@ -5,18 +5,10 @@ import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
+import { GameCard, GAME_CARD_FRAGMENT } from './HomeScreen';
 import { useSession } from './Session';
-import CardCell from './CardCell';
 import * as GameScreen from './GameScreen';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-const PlayDeckCell = ({ deck, onPress }) => {
-  return (
-    <View style={{ paddingRight: 8, paddingBottom: 8, width: '33%' }}>
-      <CardCell card={deck.initialCard} onPress={onPress} />
-    </View>
-  );
-};
 
 const ProfilePhoto = (props) => {
   const { loading: queryLoading, error: queryError, data: queryData } = useQuery(
@@ -70,35 +62,20 @@ const ProfileScreen = () => {
         userId
         name
         username
-        websiteUrl
-        decks {
-          id
-          deckId
-          title
-          isVisible
-          initialCard {
-            id
-            cardId
-            title
-            backgroundImage {
-              url
-            }
-          }
+        gameItems {
+          gameId
+          ...GameCard
         }
+        websiteUrl
       }
     }
+    ${GAME_CARD_FRAGMENT}
   `);
 
   const onPressLogOut = async () => {
     await signOutAsync();
     GameScreen.goToGame({});
   };
-
-  let decks;
-  if (!queryLoading && !queryError && queryData) {
-    // TODO: generalize ProfileScreen to other users, stop using `me` for this query
-    decks = queryData.me.decks.filter((deck) => deck.isVisible);
-  }
 
   return (
     <View
@@ -158,15 +135,12 @@ const ProfileScreen = () => {
               display: 'flex',
               flexDirection: 'row',
               flexWrap: 'wrap',
+              justifyContent: 'space-between',
             }}>
-            {decks.map((deck) => (
-              <PlayDeckCell
-                key={deck.deckId}
-                deck={deck}
-                onPress={() =>
-                  navigate('PlayDeck', { deckId: deck.deckId, cardId: deck.initialCard.cardId })
-                }
-              />
+            {queryData.me.gameItems.map((game) => (
+              <View style={{ width: '50%', padding: 8 }} key={game.gameId}>
+                <GameCard game={game} />
+              </View>
             ))}
           </ScrollView>
         </Fragment>

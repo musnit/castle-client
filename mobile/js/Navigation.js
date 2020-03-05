@@ -19,6 +19,7 @@ import * as DeepLinks from './DeepLinks';
 import HomeScreen from './HomeScreen';
 import PlayDeckNavigator from './PlayDeckNavigator';
 import ProfileScreen from './ProfileScreen';
+import ProfileGamesScreen from './ProfileGamesScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -100,6 +101,13 @@ const CreateNavigator = () => (
   </Stack.Navigator>
 );
 
+const ProfileNavigator = () => (
+  <Stack.Navigator headerMode="none">
+    <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+    <Stack.Screen name="PlayDeck" component={PlayDeckNavigator} />
+  </Stack.Navigator>
+);
+
 const TabNavigator = () => (
   <Tab.Navigator
     tabBarOptions={{
@@ -161,7 +169,7 @@ const TabNavigator = () => (
     )}
     <Tab.Screen
       name="Profile"
-      component={ProfileScreen}
+      component={Constants.USE_CARDS_PROTOTYPE ? ProfileNavigator : ProfileGamesScreen}
       options={{
         tabBarIcon: ({ focused, color }) => {
           return (

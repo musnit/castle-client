@@ -12,7 +12,13 @@ const styles = StyleSheet.create({
   },
 });
 
-const PlayDeckNavigator = ({ deckId, cardId }) => {
+const PlayDeckNavigator = ({ deckId, cardId, route }) => {
+  const navigation = useNavigation();
+  if (!deckId && route.params) {
+    deckId = route.params.deckId;
+    cardId = route.params.cardId;
+  }
+
   const [currDeckId, setCurrDeckId] = useState(deckId);
   const [currCardId, setCurrCardId] = useState(cardId);
 

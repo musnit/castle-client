@@ -2,6 +2,7 @@ import React from 'react';
 import gql from 'graphql-tag';
 import { TouchableWithoutFeedback, ScrollView, StyleSheet, View } from 'react-native';
 import { useQuery, useEffect } from '@apollo/react-hooks';
+import { useNavigation } from '@react-navigation/native';
 import SafeAreaView from 'react-native-safe-area-view';
 
 import CardBlocks from './CardBlocks';
@@ -29,7 +30,13 @@ const styles = StyleSheet.create({
   },
 });
 
-const PlayCardScreen = ({ deckId, cardId, onSelectNewCard }) => {
+const PlayCardScreen = ({ deckId, cardId, onSelectNewCard, route }) => {
+  const navigation = useNavigation();
+  if (!deckId && route.params) {
+    deckId = route.params.deckId;
+    cardId = route.params.cardId;
+  }
+
   if (!deckId) {
     throw new Error(`Can't play a deck with no deckId`);
   }
