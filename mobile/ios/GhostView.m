@@ -58,7 +58,7 @@
   // Don't run Lua in Simulator
   return;
 #endif
-  
+
   // Create the virtual machine.
   lua_State *L = luaL_newstate();
   luaL_openlibs(L);
