@@ -16,9 +16,10 @@ const { vw, vh } = Viewport;
 
 const REFETCH_FEED_INTERVAL_MS = 30 * 1000;
 
+const DECK_FEED_ITEM_MARGIN = 16;
 const DECK_FEED_ITEM_HEIGHT =
   (16 / 9) * 100 * vw + // height of card
-  32; // margin below cell
+  DECK_FEED_ITEM_MARGIN; // margin below cell
 
 const styles = StyleSheet.create({
   container: {
@@ -28,7 +29,7 @@ const styles = StyleSheet.create({
   deckFeedItemContainer: {
     width: '100%',
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: DECK_FEED_ITEM_MARGIN,
   },
   deckFeedItemCard: {
     aspectRatio: 9 / 16,
@@ -85,7 +86,13 @@ const DeckFeedItem = React.memo(({ deck, focused }) => {
 
 const DecksScreen = (props) => {
   const [lastFetchedTime, setLastFetchedTime] = React.useState(null);
+
   const insets = useSafeArea();
+  let paddingTop = 0;
+  if (vh * 100 >= DECK_FEED_ITEM_HEIGHT - DECK_FEED_ITEM_MARGIN + insets.top) {
+    paddingTop = insets.top;
+  }
+
   const [fetchDecks, query] = useLazyQuery(
     gql`
       query {
@@ -160,8 +167,8 @@ const DecksScreen = (props) => {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      <StatusBar barStyle="light-content" />
+    <View style={[styles.container, { paddingTop: paddingTop }]}>
+      <StatusBar barStyle="light-content" backgroundColor="transparent" />
       <ScrollView
         contentContainerStyle={styles.scrollView}
         snapToInterval={DECK_FEED_ITEM_HEIGHT}
