@@ -33,8 +33,6 @@ const CardScene = ({
   onEndEditing,
   onScreenshot,
 }) => {
-  console.log('CardScene interactionEnabled', interactionEnabled);
-
   const [reloadCount, setReloadCount] = useState(0);
   const onPressReload = async () => {
     await new Promise((resolve) => setTimeout(resolve, 40));
