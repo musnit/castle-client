@@ -25,7 +25,8 @@ const styles = StyleSheet.create({
   sectionTitle: {
     color: '#fff',
     marginVertical: 8,
-    fontSize: 32,
+    fontSize: 22,
+    fontWeight: 'bold',
     width: '100%',
     textAlign: 'center',
   },
@@ -125,7 +126,7 @@ const CreateScreen = () => {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
       <ScrollView contentContainerStyle={styles.scrollView}>
-        <Text style={styles.sectionTitle}>My Decks</Text>
+        <Text style={styles.sectionTitle}>Your Cards</Text>
         <View style={styles.decks}>
           <CreateDeckCell
             key="create"
