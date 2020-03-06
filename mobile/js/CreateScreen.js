@@ -36,20 +36,20 @@ const styles = StyleSheet.create({
     width: '33%',
   },
   cellTitle: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: '#fff',
+    fontSize: 16,
+    color: '#ccc',
+    textAlign: 'center',
   },
   createCell: {
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 6,
+    borderColor: '#888',
     width: '100%',
-    aspectRatio: 9 / 16,
-    alignItems: 'flex-start',
-    justifyContent: 'flex-end',
+    aspectRatio: 0.5625,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
     padding: 8,
-    backgroundColor: '#bbb',
   },
 });
 
@@ -67,15 +67,7 @@ const CreateDeckCell = (props) => {
     <View style={styles.cellContainer}>
       <TouchableOpacity style={styles.createCell} onPress={props.onPress}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <FastImage
-            style={{
-              width: 8,
-              aspectRatio: 1,
-              marginRight: 4,
-            }}
-            source={require('../assets/images/add.png')}
-          />
-          <Text style={styles.cellTitle}>Create</Text>
+          <Text style={styles.cellTitle}>Create a new card</Text>
         </View>
       </TouchableOpacity>
     </View>
