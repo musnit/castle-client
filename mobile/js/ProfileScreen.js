@@ -67,6 +67,7 @@ const ProfileScreen = () => {
   const { loading: queryLoading, error: queryError, data: queryData } = useQuery(gql`
     query Me {
       me {
+        id
         userId
         name
         username
