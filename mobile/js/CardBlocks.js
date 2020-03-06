@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome5'
 
 import * as Constants from './Constants';
 
@@ -52,14 +53,7 @@ const CardBlock = (props) => {
       return (
         <TouchableOpacity style={[styles.choiceBlock, props.style]} onPress={props.onPress}>
           <Text style={styles.choiceBlockDescription}>{block.title}</Text>
-          <FastImage
-            style={{
-              width: 22,
-              aspectRatio: 1,
-              flexShrink: 0,
-            }}
-            source={require('../assets/images/arrow-circle-right.png')}
-          />
+          <Icon name={'hand-pointer'} size={20} color="#fff" style={Constants.styles.textShadow} solid />
         </TouchableOpacity>
       );
     }
@@ -68,14 +62,7 @@ const CardBlock = (props) => {
         <TouchableOpacity style={[styles.choiceBlock, props.style]} onPress={props.onSelect}>
           <Text style={styles.choiceBlockDescription}>{block.title}</Text>
           <TouchableOpacity disabled={!props.isEditable} onPress={props.onSelectDestination}>
-            <FastImage
-              style={{
-                width: 22,
-                aspectRatio: 1,
-                flexShrink: 0,
-              }}
-              source={require('../assets/images/arrow-circle-right.png')}
-            />
+            <Icon name={'chevron-circle-right'} size={20} color="#fff" style={Constants.styles.textShadow} solid />
           </TouchableOpacity>
         </TouchableOpacity>
       );
@@ -129,7 +116,7 @@ const CardBlocks = (props) => {
         <CardBlock
           block={{
             type: 'interact',
-            title: props.interactionEnabled ? 'Exit interaction' : 'Enter interaction',
+            title: props.interactionEnabled ? 'Stop touch interaction' : 'Enable touch interaction',
           }}
           onPress={props.onToggleInteraction}
         />
