@@ -198,7 +198,7 @@ export const resetPasswordAsync = async ({ username }) => {
   });
 };
 
-const CARD_FRAGMENT = `
+export const CARD_FRAGMENT = `
   id
   cardId
   title

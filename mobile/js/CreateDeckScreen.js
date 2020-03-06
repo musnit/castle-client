@@ -87,6 +87,15 @@ const CreateDeckScreen = (props) => {
     `
   );
 
+  const [duplicateCard] = useMutation(
+    gql`
+      mutation DuplicateCard($cardId: ID!) {
+        duplicateCard(cardId: $cardId) {
+          ${Session.CARD_FRAGMENT}
+        }
+      }`
+  );
+
   const loadDeck = useQuery(
     gql`
       query Deck($deckId: ID!) {
@@ -145,9 +154,9 @@ const CreateDeckScreen = (props) => {
     showActionSheetWithOptions(
       {
         title: Utilities.makeCardPreviewTitle(card),
-        options: ['Use as Top Card', 'Delete Card', 'Cancel'],
-        destructiveButtonIndex: 1,
-        cancelButtonIndex: 2,
+        options: ['Use as Top Card', 'Duplicate Card', 'Delete Card', 'Cancel'],
+        destructiveButtonIndex: 2,
+        cancelButtonIndex: 3,
       },
       async (buttonIndex) => {
         if (buttonIndex == 0) {
@@ -157,6 +166,12 @@ const CreateDeckScreen = (props) => {
           );
           setDeck(updatedDeck);
         } else if (buttonIndex == 1) {
+          const newCard = await duplicateCard({ variables: { cardId: card.cardId } });
+          setDeck({
+            ...deck,
+            cards: deck.cards.concat([newCard.data.duplicateCard]),
+          });
+        } else if (buttonIndex == 2) {
           const newCards = deck.cards.filter((c) => c.cardId !== card.cardId);
           deleteCard({ variables: { cardId: card.cardId } });
           setDeck({
