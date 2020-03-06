@@ -17,7 +17,7 @@ const { vw, vh } = Viewport;
 
 const REFETCH_FEED_INTERVAL_MS = 30 * 1000;
 
-const DECK_FEED_ITEM_MARGIN = 16;
+const DECK_FEED_ITEM_MARGIN = 128;
 const DECK_FEED_ITEM_HEIGHT =
   (16 / 9) * 100 * vw + // height of card
   DECK_FEED_ITEM_MARGIN; // margin below cell
