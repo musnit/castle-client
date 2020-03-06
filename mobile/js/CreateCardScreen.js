@@ -144,6 +144,7 @@ class CreateCardScreen extends React.Component {
     blockIdToEdit: null,
     isHeaderExpanded: false,
     isEditingScene: false,
+    interactionEnabled: false,
   };
 
   componentDidMount() {
@@ -226,6 +227,7 @@ class CreateCardScreen extends React.Component {
           ...state,
           blockIdToEdit,
           isEditingBlock: true,
+          interactionEnabled: false,
           card: {
             ...state.card,
             blocks,
@@ -468,6 +470,10 @@ class CreateCardScreen extends React.Component {
       return { ...state, isHeaderExpanded: !state.isHeaderExpanded };
     });
 
+  _toggleInteraction = () => {
+    this.setState({ interactionEnabled: !this.state.interactionEnabled });
+  };
+
   render() {
     const {
       deck,
@@ -476,6 +482,7 @@ class CreateCardScreen extends React.Component {
       blockIdToEdit,
       isHeaderExpanded,
       isEditingScene,
+      interactionEnabled,
     } = this.state;
     const blockToEdit =
       isEditingBlock && blockIdToEdit
@@ -522,7 +529,7 @@ class CreateCardScreen extends React.Component {
           ) : null}
           <View style={[styles.cardBody, isEditingScene ? { flex: 1 } : {}]}>
             <KeyboardAwareScrollView
-              scrollEnabled={!isEditingScene}
+              scrollEnabled={!isEditingScene || interactionEnabled}
               nestedScrollEnabled
               extraScrollHeight={containScrollViewOffset}
               style={[
@@ -536,6 +543,7 @@ class CreateCardScreen extends React.Component {
               contentContainerStyle={[styles.scrollViewContentContainer, scrollViewSceneStyles]}
               innerRef={(ref) => (this._scrollViewRef = ref)}>
               <CardScene
+                interactionEnabled={interactionEnabled}
                 key={`card-scene-${card.scene && card.scene.sceneId}`}
                 style={styles.scene}
                 card={card}
@@ -546,7 +554,7 @@ class CreateCardScreen extends React.Component {
               {!isEditingScene ? (
                 <React.Fragment>
                   <TouchableWithoutFeedback onPress={this._handlePressBackground}>
-                    <View style={styles.sceneActionsContainer}>
+                    <View pointerEvents={interactionEnabled ? 'none' : 'auto'} style={styles.sceneActionsContainer}>
                       <View style={styles.sceneActions}>
                         <PlainButton onPress={this._handleChooseImage}>
                           {chooseImageAction}
@@ -564,6 +572,8 @@ class CreateCardScreen extends React.Component {
                       onSelectDestination={this._saveAndGoToDestination}
                       isEditable
                       editBlockProps={editBlockProps}
+                      interactionEnabled={interactionEnabled}
+                      onToggleInteraction={this._toggleInteraction}
                     />
                   </View>
                   <View style={styles.actions}>
