@@ -202,6 +202,7 @@ const CARD_FRAGMENT = `
   id
   cardId
   title
+  updatedTime
   backgroundImage {
     fileId
     url

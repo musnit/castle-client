@@ -29,6 +29,7 @@ const DECK_FRAGMENT = `
     id
     cardId
     title
+    updatedTime
     backgroundImage {
       url
       primaryColor

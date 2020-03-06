@@ -128,13 +128,12 @@ const CardListItem = ({ card, onPress }) => (
   </TouchableOpacity>
 );
 
-const CardsList = ({ deck, onPress, searchQuery }) => {
-  let cards;
-  if (deck) {
+const CardsList = ({ cards, initialCard, onPress, searchQuery }) => {
+  if (cards) {
     cards =
       searchQuery && searchQuery.length
-        ? deck.cards.filter((card) => Utilities.cardMatchesSearchQuery(card, searchQuery))
-        : deck.cards;
+        ? cards.filter((card) => Utilities.cardMatchesSearchQuery(card, searchQuery))
+        : cards;
   }
   return (
     <View style={styles.listContainer}>
@@ -152,7 +151,7 @@ const NewCardCell = ({ onPress }) => (
   </TouchableOpacity>
 );
 
-const CardsGrid = ({ deck, onPress, onShowCardOptions, showNewCard }) => {
+const CardsGrid = ({ cards, initialCard, onPress, onShowCardOptions, showNewCard }) => {
   return (
     <View style={styles.gridContainer}>
       {showNewCard && (
@@ -160,15 +159,13 @@ const CardsGrid = ({ deck, onPress, onShowCardOptions, showNewCard }) => {
           <NewCardCell onPress={() => onPress({ cardId: Constants.CREATE_NEW_CARD_ID })} />
         </View>
       )}
-      {deck &&
-        deck.cards.map((card) => (
+      {cards &&
+        cards.map((card) => (
           <View style={styles.cellContainer} key={card.cardId}>
             <CardCell
               card={card}
               onPress={() => onPress(card)}
-              isInitialCard={
-                deck.cards.length > 1 && deck.initialCard && deck.initialCard.cardId === card.cardId
-              }
+              isInitialCard={cards.length > 1 && initialCard && initialCard.cardId === card.cardId}
             />
             <Text style={styles.cardTitle}>{Utilities.makeCardPreviewTitle(card)}</Text>
             {onShowCardOptions && (
@@ -182,8 +179,43 @@ const CardsGrid = ({ deck, onPress, onShowCardOptions, showNewCard }) => {
   );
 };
 
+const SortOrder = {
+  LAST_MODIFIED_DESC: 'last-modified-desc',
+  LAST_MODIFIED_ASC: 'last-modified-asc',
+};
+
+const SortOrderLabels = {
+  [SortOrder.LAST_MODIFIED_DESC]: 'Recently Modified',
+  [SortOrder.LAST_MODIFIED_ASC]: 'Least Recently Modified',
+};
+
+const sortCards = (cards, order) => {
+  if (!cards || !cards.length) {
+    return cards;
+  }
+  switch (order) {
+    case SortOrder.LAST_MODIFIED_ASC:
+      return cards.sort((a, b) => {
+        return Date.parse(a.updatedTime) - Date.parse(b.updatedTime);
+      });
+    case SortOrder.LAST_MODIFIED_DESC:
+    default:
+      return cards.sort((a, b) => {
+        return Date.parse(b.updatedTime) - Date.parse(a.updatedTime);
+      });
+  }
+};
+
 const CardsSet = (props) => {
   const [state, setState] = React.useState({ mode: 'grid', searchQuery: '' });
+  const [sortOrder, setSortOrder] = React.useState(SortOrder.LAST_MODIFIED_DESC);
+  const { deck } = props;
+
+  let cards, initialCard;
+  if (deck) {
+    cards = sortCards(deck.cards, sortOrder);
+    initialCard = deck.initialCard;
+  }
 
   const setMode = (mode) =>
     setState({
@@ -203,7 +235,7 @@ const CardsSet = (props) => {
         <SearchInput placeholder="Search" value={state.searchQuery} onChangeText={setQuery} />
       )}
       <View style={styles.settingsRow}>
-        <Text style={styles.sortLabel}>Sort: Arbitrary</Text>
+        <Text style={styles.sortLabel}>Sort: {SortOrderLabels[sortOrder]}</Text>
         <View style={styles.layoutPicker}>
           <TouchableOpacity
             style={styles.layoutButton}
@@ -233,9 +265,14 @@ const CardsSet = (props) => {
       </View>
       <KeyboardAwareScrollView style={styles.scrollView} keyboardShouldPersistTaps="handled">
         {state.mode === 'grid' ? (
-          <CardsGrid {...props} />
+          <CardsGrid cards={cards} initialCard={initialCard} {...props} />
         ) : (
-          <CardsList searchQuery={state.searchQuery} {...props} />
+          <CardsList
+            cards={cards}
+            initialCard={initialCard}
+            searchQuery={state.searchQuery}
+            {...props}
+          />
         )}
       </KeyboardAwareScrollView>
     </View>
