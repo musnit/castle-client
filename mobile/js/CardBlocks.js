@@ -48,6 +48,21 @@ const CardBlock = (props) => {
   const { block } = props;
   let blockStyles, textStyles;
   switch (block.type) {
+    case 'interact': {
+      return (
+        <TouchableOpacity style={[styles.choiceBlock, props.style]} onPress={props.onPress}>
+          <Text style={styles.choiceBlockDescription}>{block.title}</Text>
+          <FastImage
+            style={{
+              width: 22,
+              aspectRatio: 1,
+              flexShrink: 0,
+            }}
+            source={require('../assets/images/arrow-circle-right.png')}
+          />
+        </TouchableOpacity>
+      );
+    }
     case 'choice': {
       return (
         <TouchableOpacity style={[styles.choiceBlock, props.style]} onPress={props.onSelect}>
@@ -85,7 +100,7 @@ const CardBlocks = (props) => {
   const { editBlockProps } = props;
   const blockIdToEdit =
     editBlockProps && editBlockProps.blockToEdit ? editBlockProps.blockToEdit.cardBlockId : null;
-  let orderedBlocks;
+  let orderedBlocks = [];
   if (card.blocks && card.blocks.length) {
     orderedBlocks = card.blocks.sort((a, b) => a.type - b.type);
   }
@@ -111,6 +126,13 @@ const CardBlocks = (props) => {
               );
             }
           })}
+        <CardBlock
+          block={{
+            type: 'interact',
+            title: props.interactionEnabled ? 'Exit interaction' : 'Enter interaction',
+          }}
+          onPress={props.onToggleInteraction}
+        />
       </React.Fragment>
     );
   } else if (props.isEditable) {

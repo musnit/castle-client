@@ -30,7 +30,14 @@ const styles = StyleSheet.create({
   },
 });
 
-const PlayCardScreen = ({ deckId, cardId, onSelectNewCard, route }) => {
+const PlayCardScreen = ({
+  deckId,
+  cardId,
+  onSelectNewCard,
+  interactionEnabled,
+  onToggleInteraction,
+  route,
+}) => {
   const navigation = useNavigation();
   if (!deckId && route.params) {
     deckId = route.params.deckId;
@@ -119,10 +126,6 @@ const PlayCardScreen = ({ deckId, cardId, onSelectNewCard, route }) => {
     Session.prefetchCardsAsync({ cardId });
   }
 
-  const _handlePressScene = () => {
-    // TODO: go to scene for this card
-  };
-
   const _handleSelectBlock = (blockId) => {
     const block = card.blocks.find((b) => b.cardBlockId === blockId);
     if (block.type === 'choice') {
@@ -132,15 +135,19 @@ const PlayCardScreen = ({ deckId, cardId, onSelectNewCard, route }) => {
 
   return card ? (
     <View style={styles.container}>
-      <TouchableWithoutFeedback onPress={_handlePressScene}>
-        <CardScene
-          key={`card-scene-${card.scene && card.scene.sceneId}`}
-          style={styles.scene}
+      <CardScene
+        interactionEnabled={interactionEnabled}
+        key={`card-scene-${card.scene && card.scene.sceneId}`}
+        style={styles.scene}
+        card={card}
+      />
+      <View pointerEvents="box-none" style={styles.description}>
+        <CardBlocks
           card={card}
+          onSelectBlock={_handleSelectBlock}
+          interactionEnabled={interactionEnabled}
+          onToggleInteraction={onToggleInteraction}
         />
-      </TouchableWithoutFeedback>
-      <View style={styles.description}>
-        <CardBlocks card={card} onSelectBlock={_handleSelectBlock} />
       </View>
     </View>
   ) : null;

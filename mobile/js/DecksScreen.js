@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useCallback } from 'react';
 import { View, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import gql from 'graphql-tag';
 import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
@@ -38,52 +38,56 @@ const styles = StyleSheet.create({
   },
 });
 
-const DeckFeedItem = React.memo(({ deck, focused }) => {
-  // `setReady(true)` some time after `focused` becomes `true`
-  const [ready, setReady] = useState(false);
-  useEffect(() => {
-    let timeout;
-    let active = true;
-    if (focused) {
-      timeout = setTimeout(() => {
-        if (active) {
-          setReady(true);
-        }
-      }, 140);
-    } else {
-      setReady(false);
-    }
-    return () => {
-      active = false;
-      if (timeout) {
-        clearTimeout(timeout);
+const DeckFeedItem = React.memo(
+  ({ deck, focused, interactionEnabled, onToggleInteraction }) => {
+    // `setReady(true)` some time after `focused` becomes `true`
+    const [ready, setReady] = useState(false);
+    useEffect(() => {
+      let timeout;
+      let active = true;
+      if (focused) {
+        timeout = setTimeout(() => {
+          if (active) {
+            setReady(true);
+          }
+        }, 140);
+      } else {
+        setReady(false);
       }
-    };
-  }, [focused]);
+      return () => {
+        active = false;
+        if (timeout) {
+          clearTimeout(timeout);
+        }
+      };
+    }, [focused]);
 
-  return (
-    <View style={styles.deckFeedItemContainer}>
-      <View style={styles.deckFeedItemCard}>
-        <CardCell card={deck.initialCard} onPress={() => {}} />
-        {focused && ready ? (
-          <View
-            style={{
-              position: 'absolute',
-              left: 0,
-              top: 0,
-              right: 0,
-              bottom: 0,
-            }}>
-            <PlayDeckNavigator
-              deckId={deck.deckId}
-              cardId={deck.initialCard && deck.initialCard.cardId}
-            />
-          </View>
-        ) : null}
+    return (
+      <View style={styles.deckFeedItemContainer}>
+        <View style={styles.deckFeedItemCard}>
+          <CardCell card={deck.initialCard} onPress={() => {}} />
+          {focused && ready ? (
+            <View
+              style={{
+                position: 'absolute',
+                left: 0,
+                top: 0,
+                right: 0,
+                bottom: 0,
+              }}>
+              <PlayDeckNavigator
+                deckId={deck.deckId}
+                cardId={deck.initialCard && deck.initialCard.cardId}
+                interactionEnabled={interactionEnabled}
+                onToggleInteraction={onToggleInteraction}
+              />
+            </View>
+          ) : null}
+        </View>
       </View>
-    </View>
-  );
-});
+    );
+  }
+);
 
 const DecksScreen = (props) => {
   const [lastFetchedTime, setLastFetchedTime] = React.useState(null);
@@ -168,23 +172,34 @@ const DecksScreen = (props) => {
     }
   };
 
+  const [interactionEnabled, setInteractionEnabled] = useState(false);
+  const onToggleInteraction = () => {
+    setInteractionEnabled(!interactionEnabled);
+  };
+
   return (
     <View style={[styles.container, { paddingTop: paddingTop }]}>
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
       <ScrollView
+        scrollEnabled={!interactionEnabled}
         contentContainerStyle={styles.scrollView}
         snapToInterval={DECK_FEED_ITEM_HEIGHT}
         decelerationRate={0.9}
         onScroll={onScroll}
         scrollEventThrottle={80}>
         {decks &&
-          decks.map((deck, i) => (
-            <DeckFeedItem
-              key={deck.deckId}
-              deck={deck}
-              focused={mainSwitcherMode === 'navigator' && isFocused && focusedIndex == i}
-            />
-          ))}
+          decks.map((deck, i) => {
+            const focused = mainSwitcherMode === 'navigator' && isFocused && focusedIndex == i;
+            return (
+              <DeckFeedItem
+                key={deck.deckId}
+                deck={deck}
+                focused={focused}
+                interactionEnabled={focused && interactionEnabled}
+                onToggleInteraction={onToggleInteraction}
+              />
+            );
+          })}
       </ScrollView>
     </View>
   );

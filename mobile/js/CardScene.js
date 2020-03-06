@@ -25,7 +25,16 @@ const USE_REMOTE_GAME = true;
 const GAME_ID = USE_REMOTE_GAME ? '1uzqao' : null;
 const GAME_URI = USE_REMOTE_GAME ? null : 'http://192.168.1.35:8080/project.castle';
 
-const CardScene = ({ card, style, isEditing = false, onEndEditing, onScreenshot }) => {
+const CardScene = ({
+  card,
+  style,
+  interactionEnabled = true,
+  isEditing = false,
+  onEndEditing,
+  onScreenshot,
+}) => {
+  console.log('CardScene interactionEnabled', interactionEnabled);
+
   const [reloadCount, setReloadCount] = useState(0);
   const onPressReload = async () => {
     await new Promise((resolve) => setTimeout(resolve, 40));
@@ -86,7 +95,7 @@ const CardScene = ({ card, style, isEditing = false, onEndEditing, onScreenshot 
               onLoaded={onLoaded}
             />
             {/* <SceneCreator /> */}
-            {!isEditing ? (
+            {!interactionEnabled ? (
               <TouchableWithoutFeedback style={styles.overlay}>
                 <View style={[styles.overlay, { opacity: 0 }]} />
               </TouchableWithoutFeedback>
