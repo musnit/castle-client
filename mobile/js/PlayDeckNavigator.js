@@ -21,22 +21,25 @@ const PlayDeckNavigator = ({ deckId, cardId, interactionEnabled, onToggleInterac
 
   const [currDeckId, setCurrDeckId] = useState(deckId);
   const [currCardId, setCurrCardId] = useState(cardId);
+  const [hasSelectedNewCard, setHasSelectedNewCard] = useState(false);
 
   const onSelectNewCard = ({ deckId, cardId }) => {
     if (deckId) {
       setCurrDeckId(deckId);
     }
     setCurrCardId(cardId);
+    setHasSelectedNewCard(true);
   };
 
   const transitionRef = React.useRef();
   const [counter, setCounter] = React.useState(1);
   React.useEffect(() => {
-    if (!(currDeckId === deckId && currCardId === cardId) && transitionRef.current) {
+    const isInitial = !hasSelectedNewCard && currDeckId === deckId && currCardId === cardId;
+    if (!isInitial && transitionRef.current) {
       transitionRef.current.animateNextTransition();
       setCounter(counter + 1);
     }
-  }, [currDeckId, currCardId]);
+  }, [currDeckId, currCardId, hasSelectedNewCard]);
 
   return (
     <Transitioning.View
