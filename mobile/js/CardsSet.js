@@ -206,6 +206,8 @@ const sortCards = (cards, order) => {
   }
 };
 
+const SortOrderOptions = [SortOrder.LAST_MODIFIED_DESC, SortOrder.LAST_MODIFIED_ASC];
+
 const CardsSet = (props) => {
   const [state, setState] = React.useState({ mode: 'grid', searchQuery: '' });
   const [sortOrder, setSortOrder] = React.useState(SortOrder.LAST_MODIFIED_DESC);
@@ -229,13 +231,21 @@ const CardsSet = (props) => {
       searchQuery,
     });
 
+  const rotateSortOrder = () => {
+    const sortOrderIndex = SortOrderOptions.indexOf(sortOrder);
+    const newIndex = (sortOrderIndex + 1) % SortOrderOptions.length;
+    setSortOrder(SortOrderOptions[newIndex]);
+  };
+
   return (
     <View style={styles.container}>
       {state.mode === 'list' && (
         <SearchInput placeholder="Search" value={state.searchQuery} onChangeText={setQuery} />
       )}
       <View style={styles.settingsRow}>
-        <Text style={styles.sortLabel}>Sort: {SortOrderLabels[sortOrder]}</Text>
+        <TouchableOpacity onPress={rotateSortOrder}>
+          <Text style={styles.sortLabel}>Sort: {SortOrderLabels[sortOrder]}</Text>
+        </TouchableOpacity>
         <View style={styles.layoutPicker}>
           <TouchableOpacity
             style={styles.layoutButton}
