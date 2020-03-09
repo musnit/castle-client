@@ -55,24 +55,24 @@ import * as Session from './Session';
 //
 
 const Colors = {
-  background: '#121212',
-  text: 'white',
+  background: '#fff',
+  text: '#222',
 
   button: {
-    text: 'white',
-    default: '#323234',
-    selected: '#3700b3',
+    text: '#222',
+    default: '#eee',
+    selected: '#cde1ff',
   },
 
   textInput: {
-    text: 'white',
-    background: 'black',
-    border: '#323234',
+    text: '#222',
+    background: '#fff',
+    border: '#ccc',
   },
 
   popover: {
-    background: '#121212',
-    shadow: '#808080',
+    background: '#fff',
+    shadow: '#0002',
   },
 };
 
