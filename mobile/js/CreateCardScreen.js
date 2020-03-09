@@ -529,7 +529,7 @@ class CreateCardScreen extends React.Component {
           ) : null}
           <View style={[styles.cardBody, isEditingScene ? { flex: 1 } : {}]}>
             <KeyboardAwareScrollView
-              scrollEnabled={!isEditingScene || interactionEnabled}
+              scrollEnabled={!isEditingScene && !interactionEnabled}
               nestedScrollEnabled
               extraScrollHeight={containScrollViewOffset}
               style={[
