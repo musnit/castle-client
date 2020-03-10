@@ -42,17 +42,21 @@ public class GhostPushNotificationsModule extends ReactContextBaseJavaModule {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(CastleFirebaseMessagingService.NewFirebaseTokenEvent event) {
+        sendPushNotificationToken(event.token);
+    };
+
+    private void sendPushNotificationToken(String token) {
         WritableMap payload = Arguments.createMap();
         // Put data to map
-        payload.putString("token", event.token);
+        payload.putString("token", token);
         // Get EventEmitter from context and send event thanks to it
         getReactApplicationContext()
                 .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                 .emit("onNewPushNotificationToken", payload);
-    };
+    }
 
     @ReactMethod
-    void getToken(Promise promise) {
+    void requestToken(Promise promise) {
         FirebaseInstanceId.getInstance().getInstanceId()
                 .addOnCompleteListener((@NonNull Task<InstanceIdResult> task) -> {
                         if (!task.isSuccessful()) {
@@ -64,8 +68,15 @@ public class GhostPushNotificationsModule extends ReactContextBaseJavaModule {
                         String token = task.getResult().getToken();
 
 
-                        promise.resolve(token);
+                        sendPushNotificationToken(token);
+                        promise.resolve(null);
                     }
                 );
+    }
+
+
+    @ReactMethod
+    void getPlatform(Promise promise) {
+        promise.resolve("android");
     }
 }

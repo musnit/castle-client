@@ -19,6 +19,7 @@
 		4577F0FF47C73EA9A0ECC7F6 /* libPods-Castle-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BDA1BD867AE232F85BAD0D0B /* libPods-Castle-tvOS.a */; };
 		4917391D17F4BFD16B3A557B /* libPods-CastleTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A2BB3156AC1D98E2389E1CF /* libPods-CastleTests.a */; };
 		752DFF0FA2404564937762CE /* RTAliasGrotesk-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 0C7DDD807F684FD0A7E4CD7E /* RTAliasGrotesk-Bold.otf */; };
+		91395EB8240DE6A700ECBCF9 /* GhostPushNotifications.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91395EB7240DE6A700ECBCF9 /* GhostPushNotifications.mm */; };
 		A12CFEE723CC30F600D721BC /* references.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A12CFEDF23CC30F600D721BC /* references.cpp */; };
 		A12CFEE823CC30F600D721BC /* warn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A12CFEE023CC30F600D721BC /* warn.cpp */; };
 		A12CFEE923CC30F600D721BC /* subpath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A12CFEE123CC30F600D721BC /* subpath.cpp */; };
@@ -151,6 +152,8 @@
 		8865F844F710B24790E91D03 /* Pods-Castle-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Castle-tvOS.release.xcconfig"; path = "Target Support Files/Pods-Castle-tvOS/Pods-Castle-tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		8C185AA70A18F1954FE6686B /* Pods-Castle-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Castle-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-Castle-tvOS/Pods-Castle-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		91395EAF24084E2D00ECBCF9 /* Castle.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Castle.entitlements; path = Castle/Castle.entitlements; sourceTree = "<group>"; };
+		91395EB7240DE6A700ECBCF9 /* GhostPushNotifications.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = GhostPushNotifications.mm; sourceTree = "<group>"; };
+		91395EB924170C5900ECBCF9 /* GhostPushNotifications.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GhostPushNotifications.h; sourceTree = "<group>"; };
 		A12CFEDF23CC30F600D721BC /* references.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = references.cpp; path = "../../ghost-extensions/tove2d/src/cpp/references.cpp"; sourceTree = "<group>"; };
 		A12CFEE023CC30F600D721BC /* warn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = warn.cpp; path = "../../ghost-extensions/tove2d/src/cpp/warn.cpp"; sourceTree = "<group>"; };
 		A12CFEE123CC30F600D721BC /* subpath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = subpath.cpp; path = "../../ghost-extensions/tove2d/src/cpp/subpath.cpp"; sourceTree = "<group>"; };
@@ -314,6 +317,8 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				91395EB924170C5900ECBCF9 /* GhostPushNotifications.h */,
+				91395EB7240DE6A700ECBCF9 /* GhostPushNotifications.mm */,
 			);
 			name = Castle;
 			sourceTree = "<group>";
@@ -1019,6 +1024,7 @@
 				A14FE3E12355CEF0003B7EA0 /* config.c in Sources */,
 				A12CFF0623CC31AB00D721BC /* polypartition.cpp in Sources */,
 				A14FE3D12355CEC2003B7EA0 /* strbuf.c in Sources */,
+				91395EB8240DE6A700ECBCF9 /* GhostPushNotifications.mm in Sources */,
 				A12CFEEA23CC30F600D721BC /* graphics.cpp in Sources */,
 				A12CFEF023CC311300D721BC /* api.cpp in Sources */,
 				A12CFEEE23CC30F600D721BC /* path.cpp in Sources */,
@@ -1152,6 +1158,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CASTLE_DISPLAY_NAME = "Castle Debug";
 				CASTLE_URL_SCHEME = castled;
+				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = Castle/Castle.entitlements;
 				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = NO;
@@ -1178,6 +1185,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CASTLE_DISPLAY_NAME = Castle;
 				CASTLE_URL_SCHEME = castle;
+				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = Castle/Castle.entitlements;
 				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = NO;

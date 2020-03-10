@@ -20,6 +20,23 @@ const EMPTY_SESSION = {
 
 const SessionContext = React.createContext(EMPTY_SESSION);
 
+GhostPushNotifications.addTokenListener(async (token) => {
+  if (!gAuthToken) {
+    return;
+  }
+
+  let platform = await GhostPushNotifications.getPlatformAsync();
+
+  await apolloClient.mutate({
+    mutation: gql`
+      mutation UpdatePushToken($token: String!, $platform: String!) {
+        updatePushToken(token: $token, platform: $platform)
+      }
+    `,
+    variables: { token, platform },
+  });
+});
+
 export const Provider = (props) => {
   const [state, setState] = useState({ authToken: null, initialized: false });
 
@@ -45,23 +62,19 @@ export const Provider = (props) => {
 
   const useNewAuthTokenAsync = async (newAuthToken) => {
     apolloClient.resetStore();
+    gAuthToken = newAuthToken;
+
     if (newAuthToken) {
       await AsyncStorage.setItem('AUTH_TOKEN', newAuthToken);
 
-      updatePushTokenAsync();
+      await GhostPushNotifications.requestTokenAsync();
     } else {
       await AsyncStorage.removeItem('AUTH_TOKEN');
     }
-    gAuthToken = newAuthToken;
     return setState({
       ...state,
       authToken: newAuthToken,
     });
-  };
-
-  const updatePushTokenAsync = async () => {
-    let token = await GhostPushNotifications.getTokenAsync();
-    console.log(token);
   };
 
   const signInAsync = async ({ username, password }) => {
