@@ -482,23 +482,35 @@ const BaseButton = ({ element, selected, style, onPress }) => {
   const baseStyle = buttonStyle({ selected: selected || element.props.selected });
 
   const { paneName, inPopover } = useContext(ToolsContext);
-  const isSceneCreatorAction = paneName === 'sceneCreatorActions' && !inPopover;
+  const isSceneCreatorGlobalAction = paneName === 'sceneCreatorGlobalActions' && !inPopover;
+  const isSceneCreatorInspectorAction = paneName === 'sceneCreatorInspectorActions' && !inPopover;
 
   const hideLabel =
     element.props.hideLabel !== undefined
       ? element.props.hideLabel
-      : element.props.iconFill || isSceneCreatorAction;
+      : element.props.iconFill || isSceneCreatorGlobalAction || isSceneCreatorInspectorAction;
 
   return (
     <TouchableOpacity
       style={
-        isSceneCreatorAction
+        isSceneCreatorGlobalAction
           ? {
               width: 44,
               height: 44,
               alignItems: 'center',
               justifyContent: 'center',
               margin: 4,
+            }
+          : isSceneCreatorInspectorAction
+          ? {
+              width: 44,
+              height: 44,
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: 6,
+              backgroundColor: selected || element.props.selected ? Colors.button.selected : '#fff',
+              borderRadius: 1000,
+              ...Constants.styles.dropShadow,
             }
           : {
               ...baseStyle,
@@ -518,7 +530,7 @@ const BaseButton = ({ element, selected, style, onPress }) => {
       {element.props.iconFamily ? (
         React.createElement(iconFamilies[element.props.iconFamily], {
           name: element.props.icon,
-          ...(isSceneCreatorAction
+          ...(isSceneCreatorGlobalAction
             ? {
                 size: 24,
                 color: '#fff',
@@ -526,6 +538,13 @@ const BaseButton = ({ element, selected, style, onPress }) => {
                   ...Constants.styles.textShadow,
                   padding: 6,
                 },
+                solid: true,
+              }
+            : isSceneCreatorInspectorAction
+            ? {
+                size: 20,
+                color: '#000',
+                solid: true,
               }
             : {
                 size: 18,
@@ -1277,7 +1296,7 @@ elementTypes['scrollBox'] = ToolScrollBox;
 // Scene creator panels
 //
 
-const SceneCreatorBlueprints = React.memo(({ element, context }) => {
+const SceneCreatorBlueprintsPane = React.memo(({ element, context }) => {
   const bottomSheetRef = useRef(null);
 
   useEffect(() => {
@@ -1312,12 +1331,76 @@ const SceneCreatorBlueprints = React.memo(({ element, context }) => {
       initialSnap={element.props.open ? 1 : 2}
       renderHeader={renderHeader}
       renderContent={() => (
-        <View>
+        <View style={{ height: '100%' }}>
           <View
             style={{
               backgroundColor: '#fff',
               padding: 16,
-              height: Math.max(windowWidth, windowHeight),
+              height: '100%',
+            }}>
+            <ToolPane element={element} context={context} style={{ flex: 1 }} />
+          </View>
+        </View>
+      )}
+    />
+  );
+});
+
+const SceneCreatorInspectorPane = React.memo(({ element, context, actionsPane }) => {
+  const bottomSheetRef = useRef(null);
+
+  useEffect(() => {
+    if (bottomSheetRef.current) {
+      if (element.props.open === true) {
+        bottomSheetRef.current.snapTo(1);
+        bottomSheetRef.current.snapTo(1);
+      }
+      if (element.props.open === false) {
+        bottomSheetRef.current.snapTo(2);
+        bottomSheetRef.current.snapTo(2);
+      }
+    }
+  }, [element.props.open]);
+
+  const renderHeader = () => (
+    <React.Fragment>
+      {actionsPane && paneVisible(actionsPane) ? (
+        <ToolPane
+          element={actionsPane}
+          context={{ ...context, hideLabels: true, popoverPlacement: 'bottom' }}
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'center',
+            paddingHorizontal: 8,
+          }}
+        />
+      ) : null}
+      <View
+        style={{
+          backgroundColor: '#fff',
+          borderTopLeftRadius: 8,
+          borderTopRightRadius: 8,
+          padding: 16,
+          marginTop: 8,
+        }}>
+        <Text style={{ color: '#888', letterSpacing: 0.5, textAlign: 'center' }}>PROPERTIES</Text>
+      </View>
+    </React.Fragment>
+  );
+
+  return (
+    <BottomSheet
+      ref={bottomSheetRef}
+      snapPoints={[600, 400, 0]}
+      initialSnap={element.props.open ? 1 : 2}
+      renderHeader={renderHeader}
+      renderContent={() => (
+        <View style={{ height: '100%' }}>
+          <View
+            style={{
+              backgroundColor: '#fff',
+              padding: 16,
+              height: '100%',
             }}>
             <ToolPane element={element} context={context} style={{ flex: 1 }} />
           </View>
@@ -1471,7 +1554,7 @@ export default Tools = ({ eventsReady, visible, landscape, game, children }) => 
 
   // Render the container
   return (
-    <View style={{ flex: 1, flexDirection: landscape ? 'row' : 'column' }}>
+    <View style={{ flex: 1, flexDirection: landscape ? 'row' : 'column', overflow: 'hidden' }}>
       <View style={{ flex: 1 }}>
         {visible && root.panes && paneVisible(root.panes.toolbar) ? (
           <View
@@ -1531,9 +1614,9 @@ export default Tools = ({ eventsReady, visible, landscape, game, children }) => 
         </View>
       ) : null}
 
-      {visible && root.panes && paneVisible(root.panes.sceneCreatorActions) ? (
+      {visible && root.panes && paneVisible(root.panes.sceneCreatorGlobalActions) ? (
         <ToolPane
-          element={root.panes.sceneCreatorActions}
+          element={root.panes.sceneCreatorGlobalActions}
           context={{ ...context, hideLabels: true, popoverPlacement: 'bottom' }}
           style={{
             flexDirection: 'row',
@@ -1548,7 +1631,15 @@ export default Tools = ({ eventsReady, visible, landscape, game, children }) => 
       ) : null}
 
       {visible && root.panes && paneVisible(root.panes.sceneCreatorBlueprints) ? (
-        <SceneCreatorBlueprints element={root.panes.sceneCreatorBlueprints} context={context} />
+        <SceneCreatorBlueprintsPane element={root.panes.sceneCreatorBlueprints} context={context} />
+      ) : null}
+
+      {visible && root.panes && paneVisible(root.panes.sceneCreatorInspector) ? (
+        <SceneCreatorInspectorPane
+          element={root.panes.sceneCreatorInspector}
+          context={context}
+          actionsPane={visible && root.panes && root.panes.sceneCreatorInspectorActions}
+        />
       ) : null}
     </View>
   );
