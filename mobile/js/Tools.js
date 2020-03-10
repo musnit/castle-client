@@ -477,18 +477,33 @@ const iconFamilies = {
 const BaseButton = ({ element, selected, style, onPress }) => {
   const baseStyle = buttonStyle({ selected: selected || element.props.selected });
 
-  const hideLabel = element.props.hideLabel || element.props.iconFill;
+  const { paneName } = useContext(ToolsContext);
+
+  const hideLabel =
+    element.props.hideLabel !== undefined
+      ? element.props.hideLabel
+      : element.props.iconFill || paneName === 'sceneCreatorActions';
 
   return (
     <TouchableOpacity
-      style={{
-        ...baseStyle,
-        padding: element.props.iconFill ? 0 : baseStyle.padding,
-        margin: 4,
-        flexDirection: 'row',
-        ...style,
-        ...viewStyleProps(element.props),
-      }}
+      style={
+        paneName === 'sceneCreatorActions'
+          ? {
+              width: 44,
+              height: 44,
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: 4,
+            }
+          : {
+              ...baseStyle,
+              padding: element.props.iconFill ? 0 : baseStyle.padding,
+              margin: 4,
+              flexDirection: 'row',
+              ...style,
+              ...viewStyleProps(element.props),
+            }
+      }
       onPress={() => {
         sendEvent(element.pathId, { type: 'onClick' });
         if (onPress) {
@@ -498,14 +513,25 @@ const BaseButton = ({ element, selected, style, onPress }) => {
       {element.props.iconFamily ? (
         React.createElement(iconFamilies[element.props.iconFamily], {
           name: element.props.icon,
-          size: 18,
-          color: Colors.text,
-          style: {
-            margin: 0,
-            marginRight: !hideLabel ? 5 : 0,
-            height: 18,
-            textAlign: 'center',
-          },
+          ...(paneName === 'sceneCreatorActions'
+            ? {
+                size: 24,
+                color: '#fff',
+                style: {
+                  ...Constants.styles.textShadow,
+                  padding: 6,
+                },
+              }
+            : {
+                size: 18,
+                color: Colors.text,
+                style: {
+                  margin: 0,
+                  marginRight: !hideLabel ? 5 : 0,
+                  height: 18,
+                  textAlign: 'center',
+                },
+              }),
         })
       ) : element.props.icon ? (
         <ToolImage
@@ -1444,6 +1470,22 @@ export default Tools = ({ eventsReady, visible, landscape, game, children }) => 
             )}
           </KeyboardAwareWrapper>
         </View>
+      ) : null}
+
+      {visible && root.panes && paneVisible(root.panes.sceneCreatorActions) ? (
+        <ToolPane
+          element={root.panes.sceneCreatorActions}
+          context={{ ...context, hideLabels: true, popoverPlacement: 'bottom' }}
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            padding: 8,
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+          }}
+        />
       ) : null}
     </View>
   );
