@@ -477,17 +477,18 @@ const iconFamilies = {
 const BaseButton = ({ element, selected, style, onPress }) => {
   const baseStyle = buttonStyle({ selected: selected || element.props.selected });
 
-  const { paneName } = useContext(ToolsContext);
+  const { paneName, inPopover } = useContext(ToolsContext);
+  const isSceneCreatorAction = paneName === 'sceneCreatorActions' && !inPopover;
 
   const hideLabel =
     element.props.hideLabel !== undefined
       ? element.props.hideLabel
-      : element.props.iconFill || paneName === 'sceneCreatorActions';
+      : element.props.iconFill || isSceneCreatorAction;
 
   return (
     <TouchableOpacity
       style={
-        paneName === 'sceneCreatorActions'
+        isSceneCreatorAction
           ? {
               width: 44,
               height: 44,
@@ -513,7 +514,7 @@ const BaseButton = ({ element, selected, style, onPress }) => {
       {element.props.iconFamily ? (
         React.createElement(iconFamilies[element.props.iconFamily], {
           name: element.props.icon,
-          ...(paneName === 'sceneCreatorActions'
+          ...(isSceneCreatorAction
             ? {
                 size: 24,
                 color: '#fff',
@@ -588,7 +589,7 @@ const PopoverButton = ({ element }) => {
         fromView={anchorRef.current}
         isVisible={popoverVisible}
         onRequestClose={() => setPopoverVisible(false)}>
-        <ToolsContext.Provider value={{ ...context, hideLabels: false }}>
+        <ToolsContext.Provider value={{ ...context, inPopover: true, hideLabels: false }}>
           <View style={{ width: 300, padding: 6, ...element.props.popoverStyle }}>
             {renderChildren(element)}
           </View>
