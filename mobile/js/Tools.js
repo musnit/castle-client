@@ -1293,21 +1293,18 @@ elementTypes['scrollBox'] = ToolScrollBox;
 // Scene creator panels
 //
 
+// NOTE: `.snapTo(...)` is called twice in the below due to
+//       https://github.com/osdnk/react-native-reanimated-bottom-sheet/issues/168#issuecomment-581011816
+
 const SceneCreatorBlueprintsPane = React.memo(({ element, context }) => {
   const bottomSheetRef = useRef(null);
 
   useEffect(() => {
-    if (bottomSheetRef.current) {
-      if (element.props.open === true) {
-        bottomSheetRef.current.snapTo(1);
-        bottomSheetRef.current.snapTo(1);
-      }
-      if (element.props.open === false) {
-        bottomSheetRef.current.snapTo(2);
-        bottomSheetRef.current.snapTo(2);
-      }
+    if (element.props.snapCount && element.props.snapCount > 1) {
+      bottomSheetRef.current.snapTo(element.props.snapPoint);
+      bottomSheetRef.current.snapTo(element.props.snapPoint);
     }
-  }, [element.props.open]);
+  }, [element.props.snapCount]);
 
   const renderHeader = () => (
     <View
@@ -1324,8 +1321,8 @@ const SceneCreatorBlueprintsPane = React.memo(({ element, context }) => {
   return (
     <BottomSheet
       ref={bottomSheetRef}
-      snapPoints={[600, 300, 52]}
-      initialSnap={element.props.open ? 1 : 2}
+      snapPoints={[600, 300, 52, 0]}
+      initialSnap={element.props.snapPoint}
       renderHeader={renderHeader}
       renderContent={() => (
         <View style={{ height: '100%' }}>
@@ -1347,17 +1344,11 @@ const SceneCreatorInspectorPane = React.memo(({ element, context, actionsPane })
   const bottomSheetRef = useRef(null);
 
   useEffect(() => {
-    if (bottomSheetRef.current) {
-      if (element.props.open === true) {
-        bottomSheetRef.current.snapTo(1);
-        bottomSheetRef.current.snapTo(1);
-      }
-      if (element.props.open === false) {
-        bottomSheetRef.current.snapTo(2);
-        bottomSheetRef.current.snapTo(2);
-      }
+    if (element.props.snapCount && element.props.snapCount > 1) {
+      bottomSheetRef.current.snapTo(element.props.snapPoint);
+      bottomSheetRef.current.snapTo(element.props.snapPoint);
     }
-  }, [element.props.open]);
+  }, [element.props.snapCount]);
 
   const renderHeader = () => (
     <React.Fragment>
@@ -1388,7 +1379,7 @@ const SceneCreatorInspectorPane = React.memo(({ element, context, actionsPane })
     <BottomSheet
       ref={bottomSheetRef}
       snapPoints={[600, 400, 0]}
-      initialSnap={element.props.open ? 1 : 2}
+      initialSnap={element.props.snapPoint}
       renderHeader={renderHeader}
       renderContent={() => (
         <View style={{ height: '100%' }}>
