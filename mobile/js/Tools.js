@@ -12,6 +12,7 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   LayoutAnimation,
+  Dimensions,
 } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import Slider from '@react-native-community/slider';
@@ -27,6 +28,7 @@ import ImagePicker from 'react-native-image-picker';
 import { ReactNativeFile } from 'apollo-upload-client';
 import gql from 'graphql-tag';
 import SvgImage from 'react-native-remote-svg';
+import BottomSheet from 'reanimated-bottom-sheet';
 
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -49,6 +51,8 @@ import * as Constants from './Constants';
 import ColorPicker from './ColorPicker';
 import CodeMirrorBase64 from './CodeMirrorBase64';
 import * as Session from './Session';
+
+const { width: windowWidth, height: windowHeight } = Dimensions.get('window');
 
 //
 // Colors
@@ -1270,6 +1274,60 @@ const ToolScrollBox = ({ element }) => (
 elementTypes['scrollBox'] = ToolScrollBox;
 
 //
+// Scene creator panels
+//
+
+const SceneCreatorBlueprints = React.memo(({ element, context }) => {
+  const bottomSheetRef = useRef(null);
+
+  useEffect(() => {
+    if (bottomSheetRef.current) {
+      if (element.props.open === true) {
+        bottomSheetRef.current.snapTo(1);
+        bottomSheetRef.current.snapTo(1);
+      }
+      if (element.props.open === false) {
+        bottomSheetRef.current.snapTo(2);
+        bottomSheetRef.current.snapTo(2);
+      }
+    }
+  }, [element.props.open]);
+
+  const renderHeader = () => (
+    <View
+      style={{
+        backgroundColor: '#fff',
+        borderTopLeftRadius: 8,
+        borderTopRightRadius: 8,
+        padding: 16,
+      }}>
+      <Text style={{ color: '#888', letterSpacing: 0.5, textAlign: 'center' }}>BLUEPRINTS</Text>
+    </View>
+  );
+
+  return (
+    <BottomSheet
+      ref={bottomSheetRef}
+      snapPoints={[600, 300, 52]}
+      initialSnap={element.props.open ? 1 : 2}
+      renderHeader={renderHeader}
+      renderContent={() => (
+        <View>
+          <View
+            style={{
+              backgroundColor: '#fff',
+              padding: 16,
+              height: Math.max(windowWidth, windowHeight),
+            }}>
+            <ToolPane element={element} context={context} style={{ flex: 1 }} />
+          </View>
+        </View>
+      )}
+    />
+  );
+});
+
+//
 // Container
 //
 
@@ -1487,6 +1545,10 @@ export default Tools = ({ eventsReady, visible, landscape, game, children }) => 
             top: 0,
           }}
         />
+      ) : null}
+
+      {visible && root.panes && paneVisible(root.panes.sceneCreatorBlueprints) ? (
+        <SceneCreatorBlueprints element={root.panes.sceneCreatorBlueprints} context={context} />
       ) : null}
     </View>
   );
