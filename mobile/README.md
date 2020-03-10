@@ -23,3 +23,10 @@ Once you have the app running, shake the device to open the React Native develop
 - Make sure `fastlane` is up to date: `bundle update fastlane` from this directory.
 - Run `./tools/upload-beta-build.sh` to upload a build to testflight. (You will need some credentials from our password store.)
 - Although we have a circleci config for fastlane, it doesn't work right now.
+
+## Android
+
+- Make sure you have the minimum JDK and Android SDK versions given at the Android setup link earlier in this readme.
+- Find our Android release credentials in the `android-release` folder of our credential store and follow the readme there to install them.
+- From this directory, run `npx react-native run-android --variant=release`
+- Output apk lives under `android/app/build/outputs/apk/release`
