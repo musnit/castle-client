@@ -12,7 +12,6 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   LayoutAnimation,
-  Dimensions,
 } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import Slider from '@react-native-community/slider';
@@ -51,8 +50,6 @@ import * as Constants from './Constants';
 import ColorPicker from './ColorPicker';
 import CodeMirrorBase64 from './CodeMirrorBase64';
 import * as Session from './Session';
-
-const { width: windowWidth, height: windowHeight } = Dimensions.get('window');
 
 //
 // Colors
