@@ -19,6 +19,7 @@
 #include <SDL.h>
 
 #include "RNBootSplash.h"
+#include "GhostPushNotifications.h"
 
 #import "../../../ghost-extensions/SDL2-2.0.8/src/video/uikit/SDL_uikitappdelegate.h"
 
@@ -41,6 +42,7 @@ int SDL_main(int argc, char *argv[]) {
 @interface AppDelegate ()
 
 @property(nonatomic, strong) SDLUIKitDelegate *sdlDelegate;
+@property(nonatomic, strong) RCTBridge *rctBridge;
 
 @end
 
@@ -49,8 +51,8 @@ int SDL_main(int argc, char *argv[]) {
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
-  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
+  self.rctBridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:self.rctBridge
                                                    moduleName:@"Castle"
                                             initialProperties:nil];
 
@@ -70,7 +72,8 @@ int SDL_main(int argc, char *argv[]) {
   SDL_SetMainReady();
   SDL_iPhoneSetEventPump(SDL_FALSE);
 
-  [[UIApplication sharedApplication] registerForRemoteNotifications];
+  UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
+  center.delegate = self;
 
   return YES;
 }
@@ -143,17 +146,13 @@ int SDL_main(int argc, char *argv[]) {
 // Handle remote notification registration.
 - (void)application:(UIApplication *)app
         didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)devToken {
-    // Forward the token to your provider, using a custom method.
-    NSLog(@"token: %@", devToken);
-    //[self enableRemoteNotificationFeatures];
-    //[self forwardTokenToServer:devTokenBytes];
+  GhostPushNotifications *module = [self.rctBridge moduleForName:@"GhostPushNotifications"];
+  [module onNewPushNotificationToken:devToken];
 }
- 
+
 - (void)application:(UIApplication *)app
         didFailToRegisterForRemoteNotificationsWithError:(NSError *)err {
-    // The token is not currently available.
     NSLog(@"Remote notification support is unavailable due to error: %@", err);
-    //[self disableRemoteNotificationFeatures];
 }
 
 @end
