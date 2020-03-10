@@ -1382,9 +1382,8 @@ const SceneCreatorInspectorPane = React.memo(({ element, context, actionsPane })
           borderTopRightRadius: 8,
           padding: 16,
           marginTop: 8,
-        }}>
-        <Text style={{ color: '#888', letterSpacing: 0.5, textAlign: 'center' }}>PROPERTIES</Text>
-      </View>
+        }}
+      />
     </React.Fragment>
   );
 
