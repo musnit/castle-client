@@ -48,7 +48,6 @@ end
 local platform = love.system.getOS()
 if platform == 'iOS' or platform == 'Android' then -- Use channels on mobile
     local sendChannel = love.thread.getChannel('LUA_TO_JS_EVENTS')
-    sendChannel:clear()
     function jsEvents.send(name, params)
         sendChannel:push(cjson.encode({
             name = name,
