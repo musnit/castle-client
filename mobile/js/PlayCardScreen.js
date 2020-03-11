@@ -10,16 +10,7 @@ import CardHeader from './CardHeader';
 import CardScene from './CardScene';
 import Viewport from './viewport';
 import * as Session from './Session';
-
-const { vw, vh } = Viewport;
-
-// SUPER JANK: if the phone is *roughly* 16/9,
-// add bottom padding to the blocks equal to (a guess at) the height of the tab bar
-
-let blocksBottomPadding = 0;
-if (vh / vw - 0.01 <= 16 / 9) {
-  blocksBottomPadding = 48;
-}
+import { getTabBarHeight } from './TabBarComponent';
 
 const styles = StyleSheet.create({
   container: {
@@ -37,7 +28,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     padding: 12,
-    paddingBottom: 12 + blocksBottomPadding,
   },
 });
 
@@ -152,7 +142,9 @@ const PlayCardScreen = ({
         style={styles.scene}
         card={card}
       />
-      <View pointerEvents="box-none" style={styles.description}>
+      <View
+        pointerEvents="box-none"
+        style={[styles.description, { paddingBottom: 12 + getTabBarHeight() }]}>
         <CardBlocks
           card={card}
           onSelectBlock={_handleSelectBlock}

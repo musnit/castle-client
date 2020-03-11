@@ -14,7 +14,7 @@
     "@react-native-community/async-storage": "^1.6.2",
     "@react-native-community/masked-view": "^0.1.6",
     "@react-native-community/slider": "^2.0.5",
-    "@react-navigation/bottom-tabs": "^5.0.6",
+    "@react-navigation/bottom-tabs": "git+https://github.com/castle-games/react-navigation.git#react-navigation-bottom-tabs-v5.1.2-gitpkg",
     "@react-navigation/compat": "^5.0.6",
     "@react-navigation/native": "^5.0.6",
     "@react-navigation/stack": "^5.0.6",

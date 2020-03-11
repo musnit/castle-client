@@ -17,6 +17,7 @@ import CreateDeckNavigator from './CreateDeckNavigator';
 import DecksScreen from './DecksScreen';
 import * as DeepLinks from './DeepLinks';
 import HomeScreen from './HomeScreen';
+import { TabBarComponent } from './TabBarComponent';
 import PlayDeckNavigator from './PlayDeckNavigator';
 import ProfileScreen from './ProfileScreen';
 import ProfileGamesScreen from './ProfileGamesScreen';
@@ -96,6 +97,7 @@ const ProfileNavigator = () => (
 
 const TabNavigator = () => (
   <Tab.Navigator
+    tabBar={TabBarComponent}
     tabBarOptions={{
       activeTintColor: '#fff',
       inactiveTintColor: '#fffa',
