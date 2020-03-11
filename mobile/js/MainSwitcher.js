@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
 
 import { RootNavigator } from './Navigation';
 import GameScreen, { goToGame } from './GameScreen';
@@ -69,6 +69,7 @@ const MainSwitcher = () => {
               !gameRunning ? styles.hidden : mode === 'game' ? styles.fullscreen : styles.windowed
             }>
             <SafeAreaView style={{ flex: 1, backgroundColor: 'black' }}>
+              {mode === 'game' ? <StatusBar hidden={true} /> : null}
               <GameScreen windowed={mode !== 'game'} />
               {mode === 'navigator' && (
                 <View
