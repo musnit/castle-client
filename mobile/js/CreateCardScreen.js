@@ -524,9 +524,7 @@ class CreateCardScreen extends React.Component {
               onChange={this._handleCardChange}
             />
           ) : null}
-          {Constants.Android && isEditingScene ? (
-            <StatusBar backgroundColor="#000" barStyle="light-content" />
-          ) : null}
+          <StatusBar hidden={true} />
           <View style={[styles.cardBody, isEditingScene ? { flex: 1 } : {}]}>
             <KeyboardAwareScrollView
               scrollEnabled={!isEditingScene && !interactionEnabled}
@@ -554,7 +552,9 @@ class CreateCardScreen extends React.Component {
               {!isEditingScene ? (
                 <React.Fragment>
                   <TouchableWithoutFeedback onPress={this._handlePressBackground}>
-                    <View pointerEvents={interactionEnabled ? 'none' : 'auto'} style={styles.sceneActionsContainer}>
+                    <View
+                      pointerEvents={interactionEnabled ? 'none' : 'auto'}
+                      style={styles.sceneActionsContainer}>
                       <View style={styles.sceneActions}>
                         <PlainButton onPress={this._handleChooseImage}>
                           {chooseImageAction}

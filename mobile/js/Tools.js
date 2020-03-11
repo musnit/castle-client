@@ -1323,9 +1323,11 @@ const SceneCreatorBlueprintsPane = React.memo(({ element, context }) => {
       ref={bottomSheetRef}
       snapPoints={[600, 300, 52, 0]}
       initialSnap={element.props.snapPoint}
+      enabledInnerScrolling={false}
+      enabledContentTapInteraction={false}
       renderHeader={renderHeader}
       renderContent={() => (
-        <View style={{ height: '100%' }}>
+        <View style={{ height: 600 }}>
           <View
             style={{
               backgroundColor: '#fff',
@@ -1380,9 +1382,11 @@ const SceneCreatorInspectorPane = React.memo(({ element, context, actionsPane })
       ref={bottomSheetRef}
       snapPoints={[600, 400, 0]}
       initialSnap={element.props.snapPoint}
+      enabledInnerScrolling={false}
+      enabledContentTapInteraction={false}
       renderHeader={renderHeader}
       renderContent={() => (
-        <View style={{ height: '100%' }}>
+        <View style={{ height: 600 }}>
           <View
             style={{
               backgroundColor: '#fff',
@@ -1446,18 +1450,14 @@ const KeyboardAwareWrapper = ({ backgroundColor, children }) => {
     <View
       pointerEvents="box-none"
       style={{ position: 'absolute', left: 0, top: 0, right: 0, bottom: 0 }}>
-      {Constants.iOS ? (
         <KeyboardAvoidingView
           pointerEvents="box-none"
           style={{ flex: 1 }}
           behavior="padding"
-          enabled={Constants.iOS}
+          enabled
           keyboardVerticalOffset={keyboardVerticalOffset}>
           {children}
         </KeyboardAvoidingView>
-      ) : (
-        children
-      )}
     </View>
   );
 };
