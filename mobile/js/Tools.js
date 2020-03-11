@@ -1432,92 +1432,35 @@ const applyDiff = (t, diff) => {
   return u;
 };
 
-const KeyboardAwareWrapper = Constants.iOS
-  ? ({ landscape, backgroundColor, children }) => {
-      const containerRef = useRef(null);
+const KeyboardAwareWrapper = ({ backgroundColor, children }) => {
+  const containerRef = useRef(null);
 
-      const [keyboardVerticalOffset, setKeyboardVerticalOffset] = useState(0);
-      const updateKeyboardVerticalOffset = () => {
-        if (containerRef.current) {
-          containerRef.current.measureInWindow((x, y) => setKeyboardVerticalOffset(y));
-        }
-      };
-
-      const [keyboardHeight, setKeyboardHeight] = useState(0);
-      useEffect(() => {
-        if (!landscape) {
-          const onKeyboardDidShow = (e) => {
-            const { duration, easing, endCoordinates } = e;
-            if (keyboardHeight !== endCoordinates.height) {
-              if (duration && easing) {
-                LayoutAnimation.configureNext({
-                  duration: duration > 10 ? duration : 10,
-                  update: {
-                    duration: duration > 10 ? duration : 10,
-                    type: LayoutAnimation.Types[easing] || 'keyboard',
-                  },
-                });
-              }
-              setKeyboardHeight(endCoordinates.height);
-            }
-          };
-          const onKeyboardDidHide = () => {
-            LayoutAnimation.configureNext({
-              duration: 100,
-              update: {
-                duration: 100,
-                type: 'keyboard',
-              },
-            });
-            setKeyboardHeight(0);
-          };
-          if (Constants.iOS) {
-            Keyboard.addListener('keyboardWillChangeFrame', onKeyboardDidShow);
-          }
-          Keyboard.addListener('keyboardDidShow', onKeyboardDidShow);
-          Keyboard.addListener('keyboardWillHide', onKeyboardDidHide);
-          return () => {
-            if (Constants.iOS) {
-              Keyboard.removeListener('keyboardWillChangeFrame', onKeyboardDidShow);
-            }
-            Keyboard.removeListener('keyboardDidShow', onKeyboardDidShow);
-            Keyboard.removeListener('keyboardWillHide', onKeyboardDidHide);
-          };
-        }
-      }, [landscape]);
-
-      return (
-        <View style={{ flex: 1 }}>
-          <View
-            style={{
-              position: 'absolute',
-              top: !landscape ? -0.5 * keyboardHeight : 0,
-              left: 0,
-              bottom: 0,
-              right: 0,
-              backgroundColor,
-            }}
-            ref={(ref) => {
-              containerRef.current = ref;
-              updateKeyboardVerticalOffset();
-            }}
-            onLayout={({
-              nativeEvent: {
-                layout: { width, height },
-              },
-            }) => updateKeyboardVerticalOffset()}>
-            <KeyboardAvoidingView
-              style={{ flex: 1 }}
-              behavior="padding"
-              enabled={Constants.iOS && (landscape || keyboardHeight > 0)}
-              keyboardVerticalOffset={keyboardVerticalOffset}>
-              {children}
-            </KeyboardAvoidingView>
-          </View>
-        </View>
-      );
+  const [keyboardVerticalOffset, setKeyboardVerticalOffset] = useState(0);
+  const updateKeyboardVerticalOffset = () => {
+    if (containerRef.current) {
+      containerRef.current.measureInWindow((x, y) => setKeyboardVerticalOffset(y));
     }
-  : ({ backgroundColor, children }) => <View style={{ flex: 1, backgroundColor }}>{children}</View>;
+  };
+
+  return (
+    <View
+      pointerEvents="box-none"
+      style={{ position: 'absolute', left: 0, top: 0, right: 0, bottom: 0 }}>
+      {Constants.iOS ? (
+        <KeyboardAvoidingView
+          pointerEvents="box-none"
+          style={{ flex: 1 }}
+          behavior="padding"
+          enabled={Constants.iOS}
+          keyboardVerticalOffset={keyboardVerticalOffset}>
+          {children}
+        </KeyboardAvoidingView>
+      ) : (
+        children
+      )}
+    </View>
+  );
+};
 
 // Top-level tools container -- watches for Lua <-> JS tool events and renders the tools overlaid in its parent
 export default Tools = ({ eventsReady, visible, landscape, game, children }) => {
@@ -1617,17 +1560,24 @@ export default Tools = ({ eventsReady, visible, landscape, game, children }) => 
         />
       ) : null}
 
-      {visible && root.panes && paneVisible(root.panes.sceneCreatorBlueprints) ? (
-        <SceneCreatorBlueprintsPane element={root.panes.sceneCreatorBlueprints} context={context} />
-      ) : null}
+      <KeyboardAwareWrapper>
+        {visible && root.panes && paneVisible(root.panes.sceneCreatorBlueprints) ? (
+          <SceneCreatorBlueprintsPane
+            element={root.panes.sceneCreatorBlueprints}
+            context={context}
+          />
+        ) : null}
+      </KeyboardAwareWrapper>
 
-      {visible && root.panes && paneVisible(root.panes.sceneCreatorInspector) ? (
-        <SceneCreatorInspectorPane
-          element={root.panes.sceneCreatorInspector}
-          context={context}
-          actionsPane={visible && root.panes && root.panes.sceneCreatorInspectorActions}
-        />
-      ) : null}
+      <KeyboardAwareWrapper>
+        {visible && root.panes && paneVisible(root.panes.sceneCreatorInspector) ? (
+          <SceneCreatorInspectorPane
+            element={root.panes.sceneCreatorInspector}
+            context={context}
+            actionsPane={visible && root.panes && root.panes.sceneCreatorInspectorActions}
+          />
+        ) : null}
+      </KeyboardAwareWrapper>
     </View>
   );
 };
