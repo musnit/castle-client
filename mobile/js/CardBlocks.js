@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome5'
+import Icon from 'react-native-vector-icons/FontAwesome5';
 
 import * as Constants from './Constants';
 
@@ -53,7 +53,13 @@ const CardBlock = (props) => {
       return (
         <TouchableOpacity style={[styles.choiceBlock, props.style]} onPress={props.onPress}>
           <Text style={styles.choiceBlockDescription}>{block.title}</Text>
-          <Icon name={'hand-pointer'} size={20} color="#fff" style={Constants.styles.textShadow} solid />
+          <Icon
+            name={'hand-pointer'}
+            size={20}
+            color="#fff"
+            style={Constants.styles.textShadow}
+            solid
+          />
         </TouchableOpacity>
       );
     }
@@ -62,7 +68,13 @@ const CardBlock = (props) => {
         <TouchableOpacity style={[styles.choiceBlock, props.style]} onPress={props.onSelect}>
           <Text style={styles.choiceBlockDescription}>{block.title}</Text>
           <TouchableOpacity disabled={!props.isEditable} onPress={props.onSelectDestination}>
-            <Icon name={'chevron-circle-right'} size={20} color="#fff" style={Constants.styles.textShadow} solid />
+            <Icon
+              name={'chevron-circle-right'}
+              size={20}
+              color="#fff"
+              style={Constants.styles.textShadow}
+              solid
+            />
           </TouchableOpacity>
         </TouchableOpacity>
       );
@@ -113,13 +125,17 @@ const CardBlocks = (props) => {
               );
             }
           })}
-        <CardBlock
-          block={{
-            type: 'interact',
-            title: props.interactionEnabled ? 'Stop touch interaction' : 'Enable touch interaction',
-          }}
-          onPress={props.onToggleInteraction}
-        />
+        {card.scene && (
+          <CardBlock
+            block={{
+              type: 'interact',
+              title: props.interactionEnabled
+                ? 'Stop touch interaction'
+                : 'Enable touch interaction',
+            }}
+            onPress={props.onToggleInteraction}
+          />
+        )}
       </React.Fragment>
     );
   } else if (props.isEditable) {
