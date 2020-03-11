@@ -84,7 +84,7 @@ const CardScene = ({
                 }),
               }}
               toolsVisible={isEditing}
-              headerVisible={isEditing}
+              headerVisible={false}
               onPressReload={onPressReload}
               logsVisible={isEditing && logsVisible}
               setLogsVisible={setLogsVisible}

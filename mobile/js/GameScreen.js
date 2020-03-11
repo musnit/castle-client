@@ -508,6 +508,16 @@ export const GameView = ({
     },
   });
 
+  GhostEvents.useListen({
+    eventsReady,
+    eventName: 'GHOST_BACK',
+    handler: (params) => {
+      if (onPressBack) {
+        onPressBack();
+      }
+    },
+  });
+
   const [inputsMode, setInputsMode] = useState(
     extras.inputsMode !== undefined ? extras.inputsMode : 1
   );
