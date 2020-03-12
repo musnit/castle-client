@@ -4,22 +4,13 @@ import { TouchableWithoutFeedback, ScrollView, StyleSheet, View } from 'react-na
 import { useQuery, useEffect } from '@apollo/react-hooks';
 import { useNavigation } from '@react-navigation/native';
 import SafeAreaView from 'react-native-safe-area-view';
+import { useSafeArea } from 'react-native-safe-area-context';
 
 import CardBlocks from './CardBlocks';
 import CardHeader from './CardHeader';
 import CardScene from './CardScene';
 import Viewport from './viewport';
 import * as Session from './Session';
-
-const { vw, vh } = Viewport;
-
-// SUPER JANK: if the phone is *roughly* 16/9,
-// add bottom padding to the blocks equal to (a guess at) the height of the tab bar
-
-let blocksBottomPadding = 0;
-if (vh / vw - 0.01 <= 16 / 9) {
-  blocksBottomPadding = 48;
-}
 
 const styles = StyleSheet.create({
   container: {
@@ -37,7 +28,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     padding: 12,
-    paddingBottom: 12 + blocksBottomPadding,
   },
 });
 
@@ -144,6 +134,24 @@ const PlayCardScreen = ({
     }
   };
 
+  const { vw, vh } = Viewport;
+  const insets = useSafeArea();
+  const cardHeight = (16 / 9) * 100 * vw;
+  const tabBarHeight = 49;
+
+  let statusBarHeight = 0;
+  if (vh * 100 >= cardHeight + insets.top) {
+    statusBarHeight = insets.top;
+  }
+
+  const everythingHeight = statusBarHeight + cardHeight + tabBarHeight + insets.bottom;
+  const heightDifference = everythingHeight - (vh * 100) - statusBarHeight;
+
+  let blocksBottomPadding = 12;
+  if (heightDifference > 0) {
+    blocksBottomPadding = blocksBottomPadding + heightDifference;
+  }
+
   return card ? (
     <View style={styles.container}>
       <CardScene
@@ -152,7 +160,7 @@ const PlayCardScreen = ({
         style={styles.scene}
         card={card}
       />
-      <View pointerEvents="box-none" style={styles.description}>
+      <View pointerEvents="box-none" style={[styles.description, { paddingBottom: blocksBottomPadding }]}>
         <CardBlocks
           card={card}
           onSelectBlock={_handleSelectBlock}
