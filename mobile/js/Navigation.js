@@ -136,7 +136,7 @@ const TabNavigator = () => (
         component={CreateNavigator}
         options={({ route }) => {
           return {
-            tabBarVisible: !route.state || route.state.index == 0,
+            tabBarVisible: (!route.state || route.state.index == 0) && !route.params,
             tabBarIcon: ({ focused, color }) => {
               return (
                 <Image

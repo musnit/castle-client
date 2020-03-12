@@ -165,15 +165,19 @@ class CreateCardScreen extends React.Component {
       prevProps && prevProps.route.params ? prevProps.route.params.deckIdToEdit : undefined;
     const prevCardIdToEdit =
       prevProps && prevProps.route.params ? prevProps.route.params.cardIdToEdit : undefined;
+    const prevIsEditingScene =
+      prevProps && prevProps.route.params ? prevProps.route.params.isEditingScene : undefined;
     const params = props.route.params || {};
     if (
       !prevProps ||
       prevDeckIdToEdit !== params.deckIdToEdit ||
       prevCardIdToEdit !== params.cardIdToEdit ||
+      prevIsEditingScene !== params.isEditingScene ||
       (props.isFocused && !prevProps.isFocused)
     ) {
       let deck = EMPTY_DECK,
-        card = EMPTY_CARD;
+        card = EMPTY_CARD,
+        isEditingScene = !!params.isEditingScene;
       if (params.deckIdToEdit) {
         try {
           deck = await Session.getDeckById(params.deckIdToEdit);
@@ -188,7 +192,7 @@ class CreateCardScreen extends React.Component {
           }
         } catch (_) {}
       }
-      this._mounted && this.setState({ deck, card });
+      this._mounted && this.setState({ deck, card, isEditingScene });
     }
   };
 

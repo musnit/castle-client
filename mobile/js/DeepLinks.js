@@ -74,11 +74,20 @@ if (__DEV__ && DEV_URI) {
 }
 
 // For directly loading card creation screen
-//setTimeout(
-//  () =>
-//    navigateToRoute({
-//      name: 'CreateCard',
-//      params: { deckId: '21', cardId: '63' },
-//    }),
-//  500
-//);
+/* let isEditingScene = true;
+setTimeout(
+  () => {
+    if (rootNavigatorRef) {
+      rootNavigatorRef.dispatch(
+        CommonActions.navigate(
+          'Create',
+          {
+            screen: 'CreateDeck',
+            params: { deckIdToEdit: 1, cardIdToEdit: 137, isEditingScene },
+          }
+        )
+      );
+    }
+  },
+  500
+); */
