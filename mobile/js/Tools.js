@@ -1321,7 +1321,7 @@ const SceneCreatorBlueprintsPane = React.memo(({ element, context }) => {
   return (
     <BottomSheet
       ref={bottomSheetRef}
-      snapPoints={[600, 300, 52, 0]}
+      snapPoints={[600, 300, 52]}
       initialSnap={element.props.snapPoint}
       enabledInnerScrolling={false}
       enabledContentTapInteraction={false}
@@ -1380,7 +1380,7 @@ const SceneCreatorInspectorPane = React.memo(({ element, context, actionsPane })
   return (
     <BottomSheet
       ref={bottomSheetRef}
-      snapPoints={[600, 400, 0]}
+      snapPoints={[600, 400, 120]}
       initialSnap={element.props.snapPoint}
       enabledInnerScrolling={false}
       enabledContentTapInteraction={false}
