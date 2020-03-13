@@ -1358,7 +1358,7 @@ const SceneCreatorInspectorPane = React.memo(({ element, context, actionsPane })
       {actionsPane && paneVisible(actionsPane) ? (
         <ToolPane
           element={actionsPane}
-          context={{ ...context, hideLabels: true, popoverPlacement: 'bottom' }}
+          context={{ ...context, hideLabels: true, popoverPlacement: 'top' }}
           style={{
             flexDirection: 'row',
             justifyContent: 'center',
