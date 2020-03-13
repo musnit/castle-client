@@ -537,7 +537,7 @@ class CreateCardScreen extends React.Component {
               style={[
                 styles.scrollView,
                 containScrollViewStyles,
-                Constants.iOS && isEditingScene
+                Viewport.isUltraWide && isEditingScene
                   ? { flex: 1, aspectRatio: null, borderRadius: null }
                   : {},
               ]}
