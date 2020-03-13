@@ -1314,7 +1314,8 @@ const SceneCreatorBlueprintsPane = React.memo(({ element, context }) => {
         borderTopRightRadius: 8,
         padding: 16,
       }}>
-      <Text style={{ color: '#888', letterSpacing: 0.5, textAlign: 'center' }}>BLUEPRINTS</Text>
+      <View style={Constants.styles.paneHandle}></View>
+      <Text style={{ color: '#888', letterSpacing: 0.5, textAlign: 'center', paddingTop: 12 }}>BLUEPRINTS</Text>
     </View>
   );
 
@@ -1372,8 +1373,9 @@ const SceneCreatorInspectorPane = React.memo(({ element, context, actionsPane })
           borderTopRightRadius: 8,
           padding: 16,
           marginTop: 8,
-        }}
-      />
+        }}>
+        <View style={Constants.styles.paneHandle}></View>
+      </View>
     </React.Fragment>
   );
 

@@ -40,6 +40,13 @@ export const styles = {
     fontSize: 16,
     fontWeight: 'bold',
   },
+  paneHandle: {
+    width: 50,
+    alignSelf: 'center',
+    paddingTop: 4,
+    borderRadius: 4,
+    backgroundColor: '#ddd',
+  }
 };
 
 export const colors = {
