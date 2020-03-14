@@ -12,6 +12,7 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   LayoutAnimation,
+  Animated,
 } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import Slider from '@react-native-community/slider';
@@ -1296,16 +1297,61 @@ elementTypes['scrollBox'] = ToolScrollBox;
 // NOTE: `.snapTo(...)` is called twice in the below due to
 //       https://github.com/osdnk/react-native-reanimated-bottom-sheet/issues/168#issuecomment-581011816
 
+const SceneCreatorPane = React.memo(
+  ({ element, context, middleSnapPoint, bottomSnapPoint, renderHeader }) => {
+    const bottomSheetRef = useRef(null);
+
+    useEffect(() => {
+      if (element.props.snapCount && element.props.snapCount > 1) {
+        bottomSheetRef.current.snapTo(element.props.snapPoint);
+        bottomSheetRef.current.snapTo(element.props.snapPoint);
+      }
+    }, [element.props.snapCount]);
+
+    const top = useRef(new Animated.Value(element.props.visible ? 0 : 600)).current;
+    useEffect(() => {
+      Animated.timing(top, {
+        toValue: element.props.visible ? 0 : 600,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    }, [element.props.visible]);
+
+    const renderContent = () => (
+      <View style={{ height: 600 }}>
+        <View
+          style={{
+            backgroundColor: '#fff',
+            padding: 16,
+            height: '100%',
+          }}>
+          <ToolPane element={element} context={context} style={{ flex: 1 }} />
+        </View>
+      </View>
+    );
+
+    return (
+      <Animated.View
+        pointerEvents={element.props.visible ? 'box-none' : 'none'}
+        style={{
+          flex: 1,
+          transform: [{ translateY: top }],
+        }}>
+        <BottomSheet
+          ref={bottomSheetRef}
+          snapPoints={[600, middleSnapPoint, bottomSnapPoint]}
+          initialSnap={element.props.snapPoint}
+          enabledInnerScrolling={false}
+          enabledContentTapInteraction={false}
+          renderHeader={renderHeader}
+          renderContent={renderContent}
+        />
+      </Animated.View>
+    );
+  }
+);
+
 const SceneCreatorBlueprintsPane = React.memo(({ element, context }) => {
-  const bottomSheetRef = useRef(null);
-
-  useEffect(() => {
-    if (element.props.snapCount && element.props.snapCount > 1) {
-      bottomSheetRef.current.snapTo(element.props.snapPoint);
-      bottomSheetRef.current.snapTo(element.props.snapPoint);
-    }
-  }, [element.props.snapCount]);
-
   const renderHeader = () => (
     <View
       style={{
@@ -1320,44 +1366,31 @@ const SceneCreatorBlueprintsPane = React.memo(({ element, context }) => {
   );
 
   return (
-    <BottomSheet
-      ref={bottomSheetRef}
-      snapPoints={[600, 300, 52]}
-      initialSnap={element.props.snapPoint}
-      enabledInnerScrolling={false}
-      enabledContentTapInteraction={false}
+    <SceneCreatorPane
+      element={element}
+      context={context}
+      middleSnapPoint={300}
+      bottomSnapPoint={52}
       renderHeader={renderHeader}
-      renderContent={() => (
-        <View style={{ height: 600 }}>
-          <View
-            style={{
-              backgroundColor: '#fff',
-              padding: 16,
-              height: '100%',
-            }}>
-            <ToolPane element={element} context={context} style={{ flex: 1 }} />
-          </View>
-        </View>
-      )}
     />
   );
 });
 
 const SceneCreatorInspectorPane = React.memo(({ element, context, actionsPane }) => {
-  const bottomSheetRef = useRef(null);
-
+  // Do this so we can show last visible elements while animating out
+  const [lastVisibleElements, setLastVisibleElements] = useState({ element, actionsPane });
   useEffect(() => {
-    if (element.props.snapCount && element.props.snapCount > 1) {
-      bottomSheetRef.current.snapTo(element.props.snapPoint);
-      bottomSheetRef.current.snapTo(element.props.snapPoint);
+    if (element.props.visible) {
+      setLastVisibleElements({ element, actionsPane });
     }
-  }, [element.props.snapCount]);
+  }, [element, actionsPane]);
 
   const renderHeader = () => (
     <React.Fragment>
-      {actionsPane && paneVisible(actionsPane) ? (
+      {actionsPane ? (
         <ToolPane
-          element={actionsPane}
+          pointerEvents={element.props.visible ? 'auto' : 'none'}
+          element={element.props.visible ? actionsPane : lastVisibleElements.actionsPane}
           context={{ ...context, hideLabels: true, popoverPlacement: 'top' }}
           style={{
             flexDirection: 'row',
@@ -1380,25 +1413,19 @@ const SceneCreatorInspectorPane = React.memo(({ element, context, actionsPane })
   );
 
   return (
-    <BottomSheet
-      ref={bottomSheetRef}
-      snapPoints={[600, 400, 120]}
-      initialSnap={element.props.snapPoint}
-      enabledInnerScrolling={false}
-      enabledContentTapInteraction={false}
+    <SceneCreatorPane
+      element={
+        element.props.visible
+          ? element
+          : {
+              ...lastVisibleElements.element,
+              props: { ...lastVisibleElements.element.props, visible: false },
+            }
+      }
+      context={context}
+      middleSnapPoint={400}
+      bottomSnapPoint={92}
       renderHeader={renderHeader}
-      renderContent={() => (
-        <View style={{ height: 600 }}>
-          <View
-            style={{
-              backgroundColor: '#fff',
-              padding: 16,
-              height: '100%',
-            }}>
-            <ToolPane element={element} context={context} style={{ flex: 1 }} />
-          </View>
-        </View>
-      )}
     />
   );
 });
@@ -1452,14 +1479,14 @@ const KeyboardAwareWrapper = ({ backgroundColor, children }) => {
     <View
       pointerEvents="box-none"
       style={{ position: 'absolute', left: 0, top: 0, right: 0, bottom: 0 }}>
-        <KeyboardAvoidingView
-          pointerEvents="box-none"
-          style={{ flex: 1 }}
-          behavior="padding"
-          enabled
-          keyboardVerticalOffset={keyboardVerticalOffset}>
-          {children}
-        </KeyboardAvoidingView>
+      <KeyboardAvoidingView
+        pointerEvents="box-none"
+        style={{ flex: 1 }}
+        behavior="padding"
+        enabled
+        keyboardVerticalOffset={keyboardVerticalOffset}>
+        {children}
+      </KeyboardAvoidingView>
     </View>
   );
 };
@@ -1563,7 +1590,7 @@ export default Tools = ({ eventsReady, visible, landscape, game, children }) => 
       ) : null}
 
       <KeyboardAwareWrapper>
-        {visible && root.panes && paneVisible(root.panes.sceneCreatorBlueprints) ? (
+        {visible && root.panes && root.panes.sceneCreatorBlueprints ? (
           <SceneCreatorBlueprintsPane
             element={root.panes.sceneCreatorBlueprints}
             context={context}
@@ -1572,7 +1599,7 @@ export default Tools = ({ eventsReady, visible, landscape, game, children }) => 
       </KeyboardAwareWrapper>
 
       <KeyboardAwareWrapper>
-        {visible && root.panes && paneVisible(root.panes.sceneCreatorInspector) ? (
+        {visible && root.panes && root.panes.sceneCreatorInspector ? (
           <SceneCreatorInspectorPane
             element={root.panes.sceneCreatorInspector}
             context={context}
