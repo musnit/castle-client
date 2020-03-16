@@ -23,6 +23,7 @@ import * as Constants from './Constants';
 import CardBlocks from './CardBlocks';
 import CardDestinationPickerSheet from './CardDestinationPickerSheet';
 import CardHeader from './CardHeader';
+import CardFixedHeader from './CardFixedHeader';
 import CardScene from './CardScene';
 import Viewport from './viewport';
 
@@ -520,13 +521,7 @@ class CreateCardScreen extends React.Component {
       <React.Fragment>
         <SafeAreaView style={styles.container}>
           {!isEditingScene ? (
-            <CardHeader
-              card={card}
-              expanded={isHeaderExpanded}
-              onPressBack={this._maybeSaveAndGoToDeck}
-              onPressTitle={this._toggleHeaderExpanded}
-              onChange={this._handleCardChange}
-            />
+            <CardHeader card={card} expanded={isHeaderExpanded} onChange={this._handleCardChange} />
           ) : null}
           <StatusBar hidden={true} />
           <View style={[styles.cardBody, isEditingScene ? { flex: 1 } : {}]}>
@@ -588,6 +583,14 @@ class CreateCardScreen extends React.Component {
               ) : null}
             </KeyboardAwareScrollView>
           </View>
+          {!isEditingScene ? (
+            <CardFixedHeader
+              card={card}
+              expanded={isHeaderExpanded}
+              onPressBack={this._maybeSaveAndGoToDeck}
+              onPressTitle={this._toggleHeaderExpanded}
+            />
+          ) : null}
         </SafeAreaView>
         <CardDestinationPickerSheet
           deck={deck}
