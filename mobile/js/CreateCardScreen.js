@@ -166,6 +166,7 @@ const EMPTY_BLOCK = {
 
 // height of safe area + tab bar on iPhone X family
 const IPHONEX_BOTTOM_SAFE_HEIGHT = 83 + 33;
+const ANDROID_BOTTOM_KEYBOARD_OFFSET = 64;
 
 // NOTE (ben): this screen is currently not a function component
 // because of some of the cases where it needs to perform multiple
@@ -534,7 +535,12 @@ class CreateCardScreen extends React.Component {
         : EMPTY_BLOCK;
 
     const containScrollViewStyles = Viewport.isUltraWide ? { width: '100%' } : { height: '100%' };
-    const containScrollViewOffset = Viewport.isUltraWide ? -IPHONEX_BOTTOM_SAFE_HEIGHT : 0;
+    let containScrollViewOffset = 0;
+    if (Viewport.isUltraWide && Constants.iOS) {
+      containScrollViewOffset = -IPHONEX_BOTTOM_SAFE_HEIGHT;
+    } else if (Constants.Android) {
+      containScrollViewOffset = -ANDROID_BOTTOM_KEYBOARD_OFFSET;
+    }
     const scrollViewSceneStyles = card.backgroundImage
       ? { backgroundColor: '#000' }
       : { backgroundColor: '#f2f2f2' };
@@ -563,6 +569,7 @@ class CreateCardScreen extends React.Component {
           <StatusBar hidden={true} />
           <View style={[styles.cardBody, isEditingScene ? { flex: 1 } : {}]}>
             <KeyboardAwareScrollView
+              enableOnAndroid={true}
               scrollEnabled={!isEditingScene && !interactionEnabled}
               nestedScrollEnabled
               extraScrollHeight={containScrollViewOffset}
