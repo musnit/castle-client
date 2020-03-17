@@ -7,7 +7,6 @@ import SafeAreaView from 'react-native-safe-area-view';
 import { useSafeArea } from 'react-native-safe-area-context';
 
 import CardBlocks from './CardBlocks';
-import CardHeader from './CardHeader';
 import CardScene from './CardScene';
 import Viewport from './viewport';
 import * as Session from './Session';
@@ -145,7 +144,7 @@ const PlayCardScreen = ({
   }
 
   const everythingHeight = statusBarHeight + cardHeight + tabBarHeight + insets.bottom;
-  const heightDifference = everythingHeight - (vh * 100) - statusBarHeight;
+  const heightDifference = everythingHeight - vh * 100 - statusBarHeight;
 
   let blocksBottomPadding = 12;
   if (heightDifference > 0) {
@@ -160,7 +159,9 @@ const PlayCardScreen = ({
         style={styles.scene}
         card={card}
       />
-      <View pointerEvents="box-none" style={[styles.description, { paddingBottom: blocksBottomPadding }]}>
+      <View
+        pointerEvents="box-none"
+        style={[styles.description, { paddingBottom: blocksBottomPadding }]}>
         <CardBlocks
           card={card}
           onSelectBlock={_handleSelectBlock}

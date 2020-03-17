@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   primaryButtonLabel: {
     ...Constants.styles.primaryButtonLabel,
   },
-  description: {
+  blocksContainer: {
     alignItems: 'center',
     justifyContent: 'center',
     padding: 12,
@@ -106,6 +106,45 @@ const PrimaryButton = ({ style, ...props }) => {
     <TouchableOpacity style={[styles.primaryButton, style]} {...buttonProps}>
       <Text style={styles.primaryButtonLabel}>{props.children}</Text>
     </TouchableOpacity>
+  );
+};
+
+const CardForegroundActions = (props) => {
+  const { card, interactionEnabled, editBlockProps } = props;
+  const { onPressBackground, onChooseImage, onEditScene, onEditBlock } = props;
+  const { onPickDestination, onSave } = props;
+  const chooseImageAction = card.backgroundImage ? 'Change Image' : 'Add Image';
+  const editSceneAction = card.scene ? 'Edit Scene' : 'Add Scene';
+  return (
+    <React.Fragment>
+      <TouchableWithoutFeedback onPress={onPressBackground}>
+        <View
+          pointerEvents={interactionEnabled ? 'none' : 'auto'}
+          style={styles.sceneActionsContainer}>
+          <View style={styles.sceneActions}>
+            <PlainButton onPress={onChooseImage}>{chooseImageAction}</PlainButton>
+            <PlainButton style={{ marginLeft: 8 }} onPress={onEditScene}>
+              {editSceneAction}
+            </PlainButton>
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+      <View style={styles.blocksContainer}>
+        <CardBlocks
+          card={card}
+          onSelectBlock={onEditBlock}
+          onPickDestination={onPickDestination}
+          isEditable
+          editBlockProps={editBlockProps}
+          interactionEnabled={interactionEnabled}
+          onToggleInteraction={props.onToggleInteraction}
+        />
+      </View>
+      <View style={styles.actions}>
+        <PlainButton onPress={() => onEditBlock(null)}>Add Block</PlainButton>
+        <PrimaryButton onPress={onSave}>Done</PrimaryButton>
+      </View>
+    </React.Fragment>
   );
 };
 
@@ -494,8 +533,6 @@ class CreateCardScreen extends React.Component {
         ? card.blocks.find((block) => block.cardBlockId === blockIdToEdit)
         : EMPTY_BLOCK;
 
-    const chooseImageAction = card.backgroundImage ? 'Change Image' : 'Add Image';
-    const editSceneAction = card.scene ? 'Edit Scene' : 'Add Scene';
     const containScrollViewStyles = Viewport.isUltraWide ? { width: '100%' } : { height: '100%' };
     const containScrollViewOffset = Viewport.isUltraWide ? -IPHONEX_BOTTOM_SAFE_HEIGHT : 0;
     const scrollViewSceneStyles = card.backgroundImage
@@ -549,37 +586,17 @@ class CreateCardScreen extends React.Component {
                 onScreenshot={this._handleSceneScreenshot}
               />
               {!isEditingScene ? (
-                <React.Fragment>
-                  <TouchableWithoutFeedback onPress={this._handlePressBackground}>
-                    <View
-                      pointerEvents={interactionEnabled ? 'none' : 'auto'}
-                      style={styles.sceneActionsContainer}>
-                      <View style={styles.sceneActions}>
-                        <PlainButton onPress={this._handleChooseImage}>
-                          {chooseImageAction}
-                        </PlainButton>
-                        <PlainButton style={{ marginLeft: 8 }} onPress={this._handleEditScene}>
-                          {editSceneAction}
-                        </PlainButton>
-                      </View>
-                    </View>
-                  </TouchableWithoutFeedback>
-                  <View style={styles.description}>
-                    <CardBlocks
-                      card={card}
-                      onSelectBlock={this._handleEditBlock}
-                      onSelectDestination={this._saveAndGoToDestination}
-                      isEditable
-                      editBlockProps={editBlockProps}
-                      interactionEnabled={interactionEnabled}
-                      onToggleInteraction={this._toggleInteraction}
-                    />
-                  </View>
-                  <View style={styles.actions}>
-                    <PlainButton onPress={() => this._handleEditBlock(null)}>Add Block</PlainButton>
-                    <PrimaryButton onPress={this._saveAndGoToDeck}>Done</PrimaryButton>
-                  </View>
-                </React.Fragment>
+                <CardForegroundActions
+                  card={card}
+                  onPressBackground={this._handlePressBackground}
+                  onChooseImage={this._handleChooseImage}
+                  onEditScene={this._handleEditScene}
+                  onEditBlock={this._handleEditBlock}
+                  onPickDestination={this._saveAndGoToDestination}
+                  onSave={this._saveAndGoToDeck}
+                  onToggleInteraction={this._toggleInteraction}
+                  editBlockProps={editBlockProps}
+                />
               ) : null}
             </KeyboardAwareScrollView>
           </View>
