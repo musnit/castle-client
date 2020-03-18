@@ -475,6 +475,7 @@ export const GameView = ({
   headerVisible,
   onPressBack,
   onScreenshot,
+  onMessage,
   onLoaded,
 }) => {
   const fetchGameHook = useFetchGame({ gameId, gameUri, extras });
@@ -504,6 +505,16 @@ export const GameView = ({
     handler: (params) => {
       if (onScreenshot) {
         onScreenshot(params);
+      }
+    },
+  });
+
+  GhostEvents.useListen({
+    eventsReady,
+    eventName: 'GHOST_MESSAGE',
+    handler: (params) => {
+      if (onMessage) {
+        onMessage(params);
       }
     },
   });

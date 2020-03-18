@@ -32,6 +32,7 @@ const CardScene = ({
   isEditing = false,
   onEndEditing,
   onScreenshot,
+  onMessage,
 }) => {
   const [reloadCount, setReloadCount] = useState(0);
   const onPressReload = async () => {
@@ -90,6 +91,7 @@ const CardScene = ({
               setLogsVisible={setLogsVisible}
               onPressBack={onEndEditing}
               onScreenshot={onScreenshot}
+              onMessage={onMessage}
               onLoaded={onLoaded}
             />
             {/* <SceneCreator /> */}

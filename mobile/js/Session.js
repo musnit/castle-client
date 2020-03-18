@@ -266,6 +266,21 @@ export const prefetchCardsAsync = async ({ cardId }) => {
 };
 
 export const saveDeck = async (card, deck) => {
+  // Save scene changes
+  if (card.scene && card.scene.sceneId && card.changedSceneData) {
+    await apolloClient.mutate({
+      mutation: gql`
+        mutation UpdateScene($sceneId: ID!, $data: Json!) {
+          updateScene(sceneId: $sceneId, data: $data) {
+            sceneId
+          }
+        }
+      `,
+      variables: { sceneId: card.scene.sceneId, data: card.changedSceneData },
+    });
+  }
+
+  // Save deck and card
   const deckUpdateFragment = {
     title: deck.title,
   };

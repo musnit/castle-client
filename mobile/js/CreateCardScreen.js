@@ -510,6 +510,17 @@ class CreateCardScreen extends React.Component {
     }
   };
 
+  _handleSceneMessage = (message) => {
+    switch (message.messageType) {
+      case 'SAVE_SCENE': {
+        this._handleCardChange({
+          changedSceneData: message.data,
+        });
+        break;
+      }
+    }
+  };
+
   _toggleHeaderExpanded = () =>
     this.setState((state) => {
       return { ...state, isHeaderExpanded: !state.isHeaderExpanded };
@@ -591,6 +602,7 @@ class CreateCardScreen extends React.Component {
                 isEditing={isEditingScene}
                 onEndEditing={this._handleEndEditScene}
                 onScreenshot={this._handleSceneScreenshot}
+                onMessage={this._handleSceneMessage}
               />
               {!isEditingScene ? (
                 <CardForegroundActions
