@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useSafeArea } from 'react-native-safe-area-context';
 
 import * as Constants from './Constants';
 import * as Utilities from './utilities';
@@ -36,8 +37,9 @@ const styles = StyleSheet.create({
 
 const CardFixedHeader = ({ card, expanded, isEditable, onPressBack, onPressTitle }) => {
   const title = Utilities.makeCardPreviewTitle(card);
+  const insets = useSafeArea();
   return (
-    <View style={styles.fixedHeader}>
+    <View style={[styles.fixedHeader, { top: insets.top }]}>
       <TouchableOpacity style={styles.back} onPress={onPressBack}>
         <Icon name="close" size={32} color="#fff" style={Constants.styles.textShadow} />
       </TouchableOpacity>
