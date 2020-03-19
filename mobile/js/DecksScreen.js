@@ -74,9 +74,9 @@ const DeckFeedItem = React.memo(({ deck, focused, setInteracting, onPressPreview
   // stop capturing scroll gestures whenever we are interacting with the scene.
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: (evt, gestureState) => true,
-    onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
+    onStartShouldSetPanResponderCapture: (evt, gestureState) => false,
     onMoveShouldSetPanResponder: (evt, gestureState) => true,
-    onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
+    onMoveShouldSetPanResponderCapture: (evt, gestureState) => false,
     onPanResponderGrant: () => setInteracting(true),
     onPanResponderMove: () => {},
     onPanResponderRelease: () => setInteracting(false),
