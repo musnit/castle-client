@@ -9,6 +9,8 @@ import { useSafeArea } from 'react-native-safe-area-context';
 import CardBlocks from './CardBlocks';
 import CardScene from './CardScene';
 import Viewport from './viewport';
+
+import * as Constants from './Constants';
 import * as Session from './Session';
 
 const styles = StyleSheet.create({
@@ -135,7 +137,7 @@ const PlayCardScreen = ({
 
   const { vw, vh } = Viewport;
   const insets = useSafeArea();
-  const cardHeight = (16 / 9) * 100 * vw;
+  const cardHeight = (1 / Constants.CARD_RATIO) * 100 * vw;
   const tabBarHeight = 49;
 
   let statusBarHeight = 0;

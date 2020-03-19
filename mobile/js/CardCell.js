@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     backgroundColor: '#8CA5CD',
     width: '100%',
-    aspectRatio: 0.5625,
+    aspectRatio: Constants.CARD_RATIO,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -102,7 +102,11 @@ const CardCell = ({ card, onPress, title, isInitialCard, isPrivate }) => {
         {card.backgroundImage && (
           <FastImage style={styles.cardPreviewImage} source={{ uri: card.backgroundImage.url }} />
         )}
-        {title && <View style={styles.cardTitle}><Text>{title}</Text></View>}
+        {title && (
+          <View style={styles.cardTitle}>
+            <Text>{title}</Text>
+          </View>
+        )}
         {isInitialCard && <InitialCardIndicator />}
         {isPrivate && <PrivateIndicator />}
       </TouchableOpacity>

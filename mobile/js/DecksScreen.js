@@ -19,7 +19,7 @@ const REFETCH_FEED_INTERVAL_MS = 30 * 1000;
 
 const DECK_FEED_ITEM_MARGIN = 128;
 const DECK_FEED_ITEM_HEIGHT =
-  (16 / 9) * 100 * vw + // height of card
+  (1 / Constants.CARD_RATIO) * 100 * vw + // height of card
   DECK_FEED_ITEM_MARGIN; // margin below cell
 
 const styles = StyleSheet.create({
@@ -33,61 +33,59 @@ const styles = StyleSheet.create({
     marginBottom: DECK_FEED_ITEM_MARGIN,
   },
   deckFeedItemCard: {
-    aspectRatio: 9 / 16,
+    aspectRatio: Constants.CARD_RATIO,
     width: '100%',
   },
 });
 
-const DeckFeedItem = React.memo(
-  ({ deck, focused, interactionEnabled, onToggleInteraction }) => {
-    // `setReady(true)` some time after `focused` becomes `true`
-    const [ready, setReady] = useState(false);
-    useEffect(() => {
-      let timeout;
-      let active = true;
-      if (focused) {
-        timeout = setTimeout(() => {
-          if (active) {
-            setReady(true);
-          }
-        }, 140);
-      } else {
-        setReady(false);
-      }
-      return () => {
-        active = false;
-        if (timeout) {
-          clearTimeout(timeout);
+const DeckFeedItem = React.memo(({ deck, focused, interactionEnabled, onToggleInteraction }) => {
+  // `setReady(true)` some time after `focused` becomes `true`
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    let timeout;
+    let active = true;
+    if (focused) {
+      timeout = setTimeout(() => {
+        if (active) {
+          setReady(true);
         }
-      };
-    }, [focused]);
+      }, 140);
+    } else {
+      setReady(false);
+    }
+    return () => {
+      active = false;
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+    };
+  }, [focused]);
 
-    return (
-      <View style={styles.deckFeedItemContainer}>
-        <View style={styles.deckFeedItemCard}>
-          <CardCell card={deck.initialCard} onPress={() => {}} />
-          {focused && ready ? (
-            <View
-              style={{
-                position: 'absolute',
-                left: 0,
-                top: 0,
-                right: 0,
-                bottom: 0,
-              }}>
-              <PlayDeckNavigator
-                deckId={deck.deckId}
-                cardId={deck.initialCard && deck.initialCard.cardId}
-                interactionEnabled={interactionEnabled}
-                onToggleInteraction={onToggleInteraction}
-              />
-            </View>
-          ) : null}
-        </View>
+  return (
+    <View style={styles.deckFeedItemContainer}>
+      <View style={styles.deckFeedItemCard}>
+        <CardCell card={deck.initialCard} onPress={() => {}} />
+        {focused && ready ? (
+          <View
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              right: 0,
+              bottom: 0,
+            }}>
+            <PlayDeckNavigator
+              deckId={deck.deckId}
+              cardId={deck.initialCard && deck.initialCard.cardId}
+              interactionEnabled={interactionEnabled}
+              onToggleInteraction={onToggleInteraction}
+            />
+          </View>
+        ) : null}
       </View>
-    );
-  }
-);
+    </View>
+  );
+});
 
 const DecksScreen = (props) => {
   const [lastFetchedTime, setLastFetchedTime] = React.useState(null);

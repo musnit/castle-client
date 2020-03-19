@@ -8,6 +8,8 @@ import { CommonActions, useNavigation, useFocusEffect } from '@react-navigation/
 
 import CardCell from './CardCell';
 
+import * as Constants from './Constants';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -45,7 +47,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#888',
     width: '100%',
-    aspectRatio: 0.5625,
+    aspectRatio: Constants.CARD_RATIO,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',

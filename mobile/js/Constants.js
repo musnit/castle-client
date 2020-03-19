@@ -6,6 +6,8 @@ export const USE_CARDS_PROTOTYPE = true;
 
 export const CREATE_NEW_CARD_ID = -1;
 
+export const CARD_RATIO = 5 / 7;
+
 export const styles = {
   dropShadow: {
     shadowColor: '#000',
@@ -46,7 +48,7 @@ export const styles = {
     paddingTop: 4,
     borderRadius: 4,
     backgroundColor: '#ddd',
-  }
+  },
 };
 
 export const colors = {
