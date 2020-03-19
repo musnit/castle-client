@@ -116,7 +116,7 @@ const DecksScreen = (props) => {
     paddingTop = insets.top;
   }
 
-  const topSpacerHeight = (100 * vh - insets.top - DECK_FEED_ITEM_HEIGHT) / 2;
+  const topSpacerHeight = (100 * vh - insets.top - DECK_FEED_ITEM_HEIGHT) * 0.35;
 
   const [fetchDecks, query] = useLazyQuery(
     gql`
