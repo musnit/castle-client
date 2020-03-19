@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   topSpacer: {},
 });
 
-const DeckFeedItem = React.memo(({ deck, focused, setInteracting }) => {
+const DeckFeedItem = React.memo(({ deck, focused, setInteracting, onPressPreview }) => {
   // `setReady(true)` some time after `focused` becomes `true`
   const [ready, setReady] = useState(false);
   useEffect(() => {
@@ -85,7 +85,7 @@ const DeckFeedItem = React.memo(({ deck, focused, setInteracting }) => {
   return (
     <View style={styles.deckFeedItemContainer}>
       <View style={styles.deckFeedItemCard}>
-        <CardCell card={deck.initialCard} onPress={() => {}} />
+        <CardCell card={deck.initialCard} onPress={onPressPreview} />
         {focused && ready ? (
           <View
             {...panResponder.panHandlers}
@@ -173,8 +173,10 @@ const DecksScreen = (props) => {
     decks = query.data.allDecks;
   }
 
+  const scrollViewRef = React.useRef(null);
   const [interacting, setInteracting] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(0);
+  const [scrollToItemOffsets, setScrollToItemOffsets] = useState({ prev: 0, next: 0 });
   const onScroll = ({
     nativeEvent: {
       contentOffset: { y },
@@ -186,17 +188,31 @@ const DecksScreen = (props) => {
     const index = Math.floor(y / DECK_FEED_ITEM_HEIGHT + 0.5);
     if (index !== focusedIndex) {
       if (snapDist <= 0.02 * DECK_FEED_ITEM_HEIGHT) {
+        setScrollToItemOffsets({
+          prev: Math.max(0, y - snapDist - DECK_FEED_ITEM_HEIGHT),
+          next: y - snapDist + DECK_FEED_ITEM_HEIGHT,
+        });
         setFocusedIndex(index);
       } else {
+        setScrollToItemOffsets({ prev: 0, next: 0 });
         setFocusedIndex(null);
       }
     }
   };
 
+  const onPressNoop = () => {};
+  const onPressPrevious = React.useCallback(() => {
+    scrollViewRef.current.scrollTo({ y: scrollToItemOffsets.prev });
+  }, [scrollToItemOffsets, scrollViewRef.current]);
+  const onPressNext = React.useCallback(() => {
+    scrollViewRef.current.scrollTo({ y: scrollToItemOffsets.next });
+  }, [scrollToItemOffsets, scrollViewRef.current]);
+
   return (
     <View style={[styles.container, { paddingTop: paddingTop }]}>
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
       <ScrollView
+        ref={scrollViewRef}
         scrollEnabled={!interacting}
         contentContainerStyle={styles.scrollView}
         snapToInterval={DECK_FEED_ITEM_HEIGHT}
@@ -207,12 +223,19 @@ const DecksScreen = (props) => {
         {decks &&
           decks.map((deck, i) => {
             const focused = mainSwitcherMode === 'navigator' && isFocused && focusedIndex == i;
+            let onPressPreview = onPressNoop;
+            if (focusedIndex == i + 1) {
+              onPressPreview = onPressPrevious;
+            } else if (focusedIndex == i - 1) {
+              onPressPreview = onPressNext;
+            }
             return (
               <DeckFeedItem
                 key={deck.deckId}
                 deck={deck}
                 focused={focused}
                 setInteracting={setInteracting}
+                onPressPreview={onPressPreview}
               />
             );
           })}
