@@ -1,5 +1,13 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react';
-import { View, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import {
+  PanResponder,
+  View,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
 import gql from 'graphql-tag';
 import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
 import { useLazyQuery } from '@apollo/react-hooks';
@@ -41,54 +49,69 @@ const styles = StyleSheet.create({
   },
 });
 
-const DeckFeedItem = React.memo(({ deck, focused, interactionEnabled, onToggleInteraction }) => {
-  // `setReady(true)` some time after `focused` becomes `true`
-  const [ready, setReady] = useState(false);
-  useEffect(() => {
-    let timeout;
-    let active = true;
-    if (focused) {
-      timeout = setTimeout(() => {
-        if (active) {
-          setReady(true);
-        }
-      }, 140);
-    } else {
-      setReady(false);
-    }
-    return () => {
-      active = false;
-      if (timeout) {
-        clearTimeout(timeout);
+const DeckFeedItem = React.memo(
+  ({ deck, focused, interactionEnabled, onToggleInteraction, setInteracting }) => {
+    // `setReady(true)` some time after `focused` becomes `true`
+    const [ready, setReady] = useState(false);
+    useEffect(() => {
+      let timeout;
+      let active = true;
+      if (focused) {
+        timeout = setTimeout(() => {
+          if (active) {
+            setReady(true);
+          }
+        }, 140);
+      } else {
+        setReady(false);
       }
-    };
-  }, [focused]);
+      return () => {
+        active = false;
+        if (timeout) {
+          clearTimeout(timeout);
+        }
+      };
+    }, [focused]);
 
-  return (
-    <View style={styles.deckFeedItemContainer}>
-      <View style={styles.deckFeedItemCard}>
-        <CardCell card={deck.initialCard} onPress={() => {}} />
-        {focused && ready ? (
-          <View
-            style={{
-              position: 'absolute',
-              left: 0,
-              top: 0,
-              right: 0,
-              bottom: 0,
-            }}>
-            <PlayDeckNavigator
-              deckId={deck.deckId}
-              cardId={deck.initialCard && deck.initialCard.cardId}
-              interactionEnabled={interactionEnabled}
-              onToggleInteraction={onToggleInteraction}
-            />
-          </View>
-        ) : null}
+    // create a pan responder which tells the parent scrollview to
+    // stop capturing scroll gestures whenever we are interacting with the scene.
+    const panResponder = PanResponder.create({
+      onStartShouldSetPanResponder: (evt, gestureState) => true,
+      onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
+      onMoveShouldSetPanResponder: (evt, gestureState) => true,
+      onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
+      onPanResponderGrant: () => setInteracting(true),
+      onPanResponderMove: () => {},
+      onPanResponderRelease: () => setInteracting(false),
+    });
+
+    return (
+      <View style={styles.deckFeedItemContainer}>
+        <View style={styles.deckFeedItemCard}>
+          <CardCell card={deck.initialCard} onPress={() => {}} />
+          {focused && ready ? (
+            <View
+              {...panResponder.panHandlers}
+              style={{
+                position: 'absolute',
+                left: 0,
+                top: 0,
+                right: 0,
+                bottom: 0,
+              }}>
+              <PlayDeckNavigator
+                deckId={deck.deckId}
+                cardId={deck.initialCard && deck.initialCard.cardId}
+                interactionEnabled={interactionEnabled}
+                onToggleInteraction={onToggleInteraction}
+              />
+            </View>
+          ) : null}
+        </View>
       </View>
-    </View>
-  );
-});
+    );
+  }
+);
 
 const DecksScreen = (props) => {
   const [lastFetchedTime, setLastFetchedTime] = React.useState(null);
@@ -154,6 +177,7 @@ const DecksScreen = (props) => {
     decks = query.data.allDecks;
   }
 
+  const [interacting, setInteracting] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const onScroll = ({
     nativeEvent: {
@@ -173,16 +197,13 @@ const DecksScreen = (props) => {
     }
   };
 
-  const [interactionEnabled, setInteractionEnabled] = useState(false);
-  const onToggleInteraction = () => {
-    setInteractionEnabled(!interactionEnabled);
-  };
+  const interactionEnabled = true;
 
   return (
     <View style={[styles.container, { paddingTop: paddingTop }]}>
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
       <ScrollView
-        scrollEnabled={!interactionEnabled}
+        scrollEnabled={!interacting}
         contentContainerStyle={styles.scrollView}
         snapToInterval={DECK_FEED_ITEM_HEIGHT}
         decelerationRate={0.9}
@@ -198,7 +219,7 @@ const DecksScreen = (props) => {
                 deck={deck}
                 focused={focused}
                 interactionEnabled={focused && interactionEnabled}
-                onToggleInteraction={onToggleInteraction}
+                setInteracting={setInteracting}
               />
             );
           })}
