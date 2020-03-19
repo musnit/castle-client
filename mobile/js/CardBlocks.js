@@ -125,17 +125,6 @@ const CardBlocks = (props) => {
               );
             }
           })}
-        {card.scene && (
-          <CardBlock
-            block={{
-              type: 'interact',
-              title: props.interactionEnabled
-                ? 'Stop touch interaction'
-                : 'Enable touch interaction',
-            }}
-            onPress={props.onToggleInteraction}
-          />
-        )}
       </React.Fragment>
     );
   } else if (props.isEditable) {

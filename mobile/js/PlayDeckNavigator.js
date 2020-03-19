@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const PlayDeckNavigator = ({ deckId, cardId, interactionEnabled, onToggleInteraction, route }) => {
+const PlayDeckNavigator = ({ deckId, cardId, route }) => {
   const navigation = useNavigation();
   if (!deckId && route.params) {
     deckId = route.params.deckId;
@@ -59,11 +59,9 @@ const PlayDeckNavigator = ({ deckId, cardId, interactionEnabled, onToggleInterac
             deckId={currDeckId}
             cardId={currCardId}
             onSelectNewCard={onSelectNewCard}
-            interactionEnabled={interactionEnabled}
-            onToggleInteraction={onToggleInteraction}
           />
         ),
-        [counter, interactionEnabled, onToggleInteraction]
+        [counter]
       )}
     </Transitioning.View>
   );

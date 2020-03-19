@@ -47,69 +47,65 @@ const styles = StyleSheet.create({
   topSpacer: {},
 });
 
-const DeckFeedItem = React.memo(
-  ({ deck, focused, interactionEnabled, onToggleInteraction, setInteracting }) => {
-    // `setReady(true)` some time after `focused` becomes `true`
-    const [ready, setReady] = useState(false);
-    useEffect(() => {
-      let timeout;
-      let active = true;
-      if (focused) {
-        timeout = setTimeout(() => {
-          if (active) {
-            setReady(true);
-          }
-        }, 140);
-      } else {
-        setReady(false);
-      }
-      return () => {
-        active = false;
-        if (timeout) {
-          clearTimeout(timeout);
+const DeckFeedItem = React.memo(({ deck, focused, setInteracting }) => {
+  // `setReady(true)` some time after `focused` becomes `true`
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    let timeout;
+    let active = true;
+    if (focused) {
+      timeout = setTimeout(() => {
+        if (active) {
+          setReady(true);
         }
-      };
-    }, [focused]);
+      }, 140);
+    } else {
+      setReady(false);
+    }
+    return () => {
+      active = false;
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+    };
+  }, [focused]);
 
-    // create a pan responder which tells the parent scrollview to
-    // stop capturing scroll gestures whenever we are interacting with the scene.
-    const panResponder = PanResponder.create({
-      onStartShouldSetPanResponder: (evt, gestureState) => true,
-      onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
-      onMoveShouldSetPanResponder: (evt, gestureState) => true,
-      onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
-      onPanResponderGrant: () => setInteracting(true),
-      onPanResponderMove: () => {},
-      onPanResponderRelease: () => setInteracting(false),
-    });
+  // create a pan responder which tells the parent scrollview to
+  // stop capturing scroll gestures whenever we are interacting with the scene.
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: (evt, gestureState) => true,
+    onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
+    onMoveShouldSetPanResponder: (evt, gestureState) => true,
+    onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
+    onPanResponderGrant: () => setInteracting(true),
+    onPanResponderMove: () => {},
+    onPanResponderRelease: () => setInteracting(false),
+  });
 
-    return (
-      <View style={styles.deckFeedItemContainer}>
-        <View style={styles.deckFeedItemCard}>
-          <CardCell card={deck.initialCard} onPress={() => {}} />
-          {focused && ready ? (
-            <View
-              {...panResponder.panHandlers}
-              style={{
-                position: 'absolute',
-                left: 0,
-                top: 0,
-                right: 0,
-                bottom: 0,
-              }}>
-              <PlayDeckNavigator
-                deckId={deck.deckId}
-                cardId={deck.initialCard && deck.initialCard.cardId}
-                interactionEnabled={interactionEnabled}
-                onToggleInteraction={onToggleInteraction}
-              />
-            </View>
-          ) : null}
-        </View>
+  return (
+    <View style={styles.deckFeedItemContainer}>
+      <View style={styles.deckFeedItemCard}>
+        <CardCell card={deck.initialCard} onPress={() => {}} />
+        {focused && ready ? (
+          <View
+            {...panResponder.panHandlers}
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              right: 0,
+              bottom: 0,
+            }}>
+            <PlayDeckNavigator
+              deckId={deck.deckId}
+              cardId={deck.initialCard && deck.initialCard.cardId}
+            />
+          </View>
+        ) : null}
       </View>
-    );
-  }
-);
+    </View>
+  );
+});
 
 const DecksScreen = (props) => {
   const [lastFetchedTime, setLastFetchedTime] = React.useState(null);
@@ -197,8 +193,6 @@ const DecksScreen = (props) => {
     }
   };
 
-  const interactionEnabled = true;
-
   return (
     <View style={[styles.container, { paddingTop: paddingTop }]}>
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
@@ -218,7 +212,6 @@ const DecksScreen = (props) => {
                 key={deck.deckId}
                 deck={deck}
                 focused={focused}
-                interactionEnabled={focused && interactionEnabled}
                 setInteracting={setInteracting}
               />
             );
