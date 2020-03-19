@@ -17,7 +17,7 @@ const { vw, vh } = Viewport;
 
 const REFETCH_FEED_INTERVAL_MS = 30 * 1000;
 
-const DECK_FEED_ITEM_MARGIN = 128;
+const DECK_FEED_ITEM_MARGIN = 2;
 const DECK_FEED_ITEM_HEIGHT =
   (1 / Constants.CARD_RATIO) * 100 * vw + // height of card
   DECK_FEED_ITEM_MARGIN; // margin below cell
@@ -35,6 +35,9 @@ const styles = StyleSheet.create({
   deckFeedItemCard: {
     aspectRatio: Constants.CARD_RATIO,
     width: '100%',
+  },
+  topSpacer: {
+    height: (100 * vh - DECK_FEED_ITEM_HEIGHT) / 2,
   },
 });
 
@@ -185,6 +188,7 @@ const DecksScreen = (props) => {
         decelerationRate={0.9}
         onScroll={onScroll}
         scrollEventThrottle={80}>
+        <View style={styles.topSpacer} />
         {decks &&
           decks.map((deck, i) => {
             const focused = mainSwitcherMode === 'navigator' && isFocused && focusedIndex == i;
