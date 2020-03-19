@@ -176,7 +176,11 @@ const DecksScreen = (props) => {
   const scrollViewRef = React.useRef(null);
   const [interacting, setInteracting] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(0);
-  const [scrollToItemOffsets, setScrollToItemOffsets] = useState({ prev: 0, next: 0 });
+  const [draggingScrollView, setDraggingScrollView] = useState(false);
+  const [scrollToItemOffsets, setScrollToItemOffsets] = useState({
+    prev: 0,
+    next: DECK_FEED_ITEM_HEIGHT,
+  });
   const onScroll = ({
     nativeEvent: {
       contentOffset: { y },
@@ -186,15 +190,15 @@ const DecksScreen = (props) => {
       y - DECK_FEED_ITEM_HEIGHT * Math.floor(y / DECK_FEED_ITEM_HEIGHT + 0.5)
     );
     const index = Math.floor(y / DECK_FEED_ITEM_HEIGHT + 0.5);
-    if (index !== focusedIndex) {
+    if (index !== focusedIndex && !draggingScrollView) {
       if (snapDist <= 0.02 * DECK_FEED_ITEM_HEIGHT) {
         setScrollToItemOffsets({
-          prev: Math.max(0, y - snapDist - DECK_FEED_ITEM_HEIGHT),
-          next: y - snapDist + DECK_FEED_ITEM_HEIGHT,
+          prev: Math.max(0, y + snapDist - DECK_FEED_ITEM_HEIGHT),
+          next: y + snapDist + DECK_FEED_ITEM_HEIGHT,
         });
         setFocusedIndex(index);
       } else {
-        setScrollToItemOffsets({ prev: 0, next: 0 });
+        setScrollToItemOffsets({ prev: 0, next: DECK_FEED_ITEM_HEIGHT });
         setFocusedIndex(null);
       }
     }
@@ -218,6 +222,8 @@ const DecksScreen = (props) => {
         snapToInterval={DECK_FEED_ITEM_HEIGHT}
         decelerationRate={0.9}
         onScroll={onScroll}
+        onScrollBeginDrag={() => setDraggingScrollView(true)}
+        onScrollEndDrag={() => setDraggingScrollView(false)}
         scrollEventThrottle={80}>
         <View style={{ height: topSpacerHeight }} />
         {decks &&
