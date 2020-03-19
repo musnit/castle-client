@@ -44,9 +44,7 @@ const styles = StyleSheet.create({
     aspectRatio: Constants.CARD_RATIO,
     width: '100%',
   },
-  topSpacer: {
-    height: (100 * vh - DECK_FEED_ITEM_HEIGHT) / 2,
-  },
+  topSpacer: {},
 });
 
 const DeckFeedItem = React.memo(
@@ -121,6 +119,8 @@ const DecksScreen = (props) => {
   if (vh * 100 >= DECK_FEED_ITEM_HEIGHT - DECK_FEED_ITEM_MARGIN + insets.top) {
     paddingTop = insets.top;
   }
+
+  const topSpacerHeight = (100 * vh - insets.top - DECK_FEED_ITEM_HEIGHT) / 2;
 
   const [fetchDecks, query] = useLazyQuery(
     gql`
@@ -209,7 +209,7 @@ const DecksScreen = (props) => {
         decelerationRate={0.9}
         onScroll={onScroll}
         scrollEventThrottle={80}>
-        <View style={styles.topSpacer} />
+        <View style={{ height: topSpacerHeight }} />
         {decks &&
           decks.map((deck, i) => {
             const focused = mainSwitcherMode === 'navigator' && isFocused && focusedIndex == i;
