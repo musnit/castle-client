@@ -55,12 +55,10 @@ const DeckFeedItem = React.memo(({ deck, focused, setInteracting, onPressPreview
     let active = true;
     if (focused) {
       timeout = setTimeout(() => {
-        if (active) {
-          setReady(true);
-        }
+        active && setReady(true);
       }, 140);
     } else {
-      setReady(false);
+      active && setReady(false);
     }
     return () => {
       active = false;
@@ -207,9 +205,11 @@ const DecksScreen = (props) => {
 
   const onPressNoop = () => {};
   const onPressPrevious = React.useCallback(() => {
+    setFocusedIndex(null);
     scrollViewRef.current.scrollTo({ y: scrollToItemOffsets.prev });
   }, [scrollToItemOffsets, scrollViewRef.current]);
   const onPressNext = React.useCallback(() => {
+    setFocusedIndex(null);
     scrollViewRef.current.scrollTo({ y: scrollToItemOffsets.next });
   }, [scrollToItemOffsets, scrollViewRef.current]);
 
@@ -220,6 +220,7 @@ const DecksScreen = (props) => {
         ref={scrollViewRef}
         scrollEnabled={!interacting}
         contentContainerStyle={styles.scrollView}
+        disableScrollViewPanResponder={true}
         snapToInterval={DECK_FEED_ITEM_HEIGHT}
         decelerationRate={0.9}
         onScroll={onScroll}
