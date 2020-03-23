@@ -14,6 +14,7 @@ import { useSession } from './Session';
 import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './AuthScreens';
 import CreateScreen from './CreateScreen';
 import CreateDeckNavigator from './CreateDeckNavigator';
+import DecksFlipper from './DecksFlipper';
 import DecksScreen from './DecksScreen';
 import * as DeepLinks from './DeepLinks';
 import HomeScreen from './HomeScreen';
@@ -31,7 +32,7 @@ const ICON_SIZE = 24;
 let HomeNavigator;
 
 if (Constants.USE_CARDS_PROTOTYPE) {
-  HomeNavigator = DecksScreen;
+  HomeNavigator = DecksFlipper;
 } else {
   HomeNavigator = () => (
     <Stack.Navigator
