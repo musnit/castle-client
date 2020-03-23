@@ -201,6 +201,9 @@ local localHomeUrl = 'http://0.0.0.0:8032/main.lua' -- URL to local home to atte
 
 local main = {}
 
+local fileData = love.filesystem.newFileData('scene_creator.love')
+love.filesystem.mount(fileData, 'zip_mount', true)
+
 function main.load(arg)
     network.async(function()
         if GHOST_ROOT_URI then -- Global `GHOST_ROOT_URI` set by native code? Just use that.
@@ -213,6 +216,8 @@ function main.load(arg)
                 homeUrl = localHomeUrl
             end
         end
+
+        --homeUrl = 'zip://Client.lua'
 
         if love.graphics then
             -- Sleep a little to let screen dimensions settings synchronize, then create the default

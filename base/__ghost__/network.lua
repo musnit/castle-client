@@ -421,6 +421,20 @@ function network.fetch(url, method, skipCache)
     method = (method or 'GET'):upper()
     assert(method == 'GET' or method == 'HEAD', "`network.fetch` only supports 'GET' or 'HEAD'")
 
+    if url:match('^zip://') then
+        if method == 'GET' then
+            print('reading file' .. 'zip_mount/' .. url:gsub('^zip://', ''))
+            response, _ = love.filesystem.read('zip_mount/' .. url:gsub('^zip://', ''))
+        else
+            response = 1
+        end
+        httpCode = 200
+        headers = {}
+        status = '200 ok'
+
+        return response, httpCode, headers, status
+    end
+
     -- Find or create entry
     local entry = (not skipCache) and fetchEntries[method][url]
     if not entry then -- No entry yet
@@ -559,7 +573,7 @@ end
 
 -- Whether a given string represents an absolute URL
 function network.isAbsolute(url)
-    return url:match('^castle://') or url:match('^https?://') or url:match('^file://')
+    return url:match('^castle://') or url:match('^https?://') or url:match('^file://') or url:match('^zip://')
 end
 
 -- Resolve a relative url given a base url
