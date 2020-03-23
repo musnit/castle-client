@@ -203,6 +203,10 @@ local main = {}
 
 function main.load(arg)
     network.async(function()
+        local sceneCreatorResponse = network.fetch('https://api.castle.games/api/scene-creator')
+        local fileData = love.filesystem.newFileData(sceneCreatorResponse, 'scene_creator.love')
+        love.filesystem.mount(fileData, 'zip_mount', true)
+
         if GHOST_ROOT_URI then -- Global `GHOST_ROOT_URI` set by native code? Just use that.
             homeUrl = GHOST_ROOT_URI
         else -- Default to remote URI based on `remoteHomeVersion`, using local version if served
@@ -213,6 +217,8 @@ function main.load(arg)
                 homeUrl = localHomeUrl
             end
         end
+
+        homeUrl = 'zip://Client.lua'
 
         if love.graphics then
             -- Sleep a little to let screen dimensions settings synchronize, then create the default
