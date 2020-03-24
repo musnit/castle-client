@@ -15,7 +15,6 @@ import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './AuthSc
 import CreateScreen from './CreateScreen';
 import CreateDeckNavigator from './CreateDeckNavigator';
 import DecksFlipper from './DecksFlipper';
-import DecksScreen from './DecksScreen';
 import * as DeepLinks from './DeepLinks';
 import HomeScreen from './HomeScreen';
 import PlayDeckNavigator from './PlayDeckNavigator';

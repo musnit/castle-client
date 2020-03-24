@@ -7,6 +7,7 @@ import { useLazyQuery } from '@apollo/react-hooks';
 import { useFocusEffect } from '@react-navigation/native';
 
 import CardCell from './CardCell';
+import { MainSwitcherContext } from './MainSwitcher';
 import PlayDeckNavigator from './PlayDeckNavigator';
 import Viewport from './viewport';
 
@@ -54,13 +55,14 @@ const styles = StyleSheet.create({
 // renders the current focused deck in the feed
 // including the interactive scene.
 const CurrentDeckCell = ({ deck }) => {
+  const { mode: mainSwitcherMode } = React.useContext(MainSwitcherContext); // Dealing with legacy game loading path
   const [ready, setReady] = React.useState(false);
   React.useEffect(() => {
     let timeout;
     let active = true;
     if (deck) {
       timeout = setTimeout(() => {
-        active && setReady(true);
+        active && mainSwitcherMode === 'navigator' && setReady(true);
       }, 10);
     } else {
       active && setReady(false);
@@ -72,7 +74,7 @@ const CurrentDeckCell = ({ deck }) => {
         clearTimeout(timeout);
       }
     };
-  }, [deck]);
+  }, [deck, mainSwitcherMode]);
 
   return (
     <View style={styles.itemCard}>
@@ -156,49 +158,55 @@ const DecksFlipper = () => {
     (100 * vh - insets.top - DECK_FEED_ITEM_HEIGHT - tabBarHeight) * 0.5
   );
 
-  const [currentCardIndex, setCurrentCardIndex] = React.useState(1);
+  const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
 
   let translateY = new Animated.Value(0);
   let containerY = Animated.add(translateY, centerContentY - DECK_FEED_ITEM_HEIGHT);
   const onPanGestureEvent = Animated.event([{ nativeEvent: { translationY: translateY } }]);
 
-  const snapTo = (toValue, onFinished) => {
-    Animated.spring(translateY, { toValue, ...SPRING_CONFIG }).start(({ finished }) => {
-      if (finished) {
-        translateY.setValue(0);
-        onFinished && onFinished();
-      }
-    });
-  };
+  const snapTo = React.useCallback(
+    (toValue, onFinished) => {
+      Animated.spring(translateY, { toValue, ...SPRING_CONFIG }).start(({ finished }) => {
+        if (finished) {
+          translateY.setValue(0);
+          onFinished && onFinished();
+        }
+      });
+    },
+    [translateY]
+  );
 
-  const snapToNext = () => {
+  const snapToNext = React.useCallback(() => {
     if (decks && currentCardIndex < decks.length - 1) {
       snapTo(-DECK_FEED_ITEM_HEIGHT, () => setCurrentCardIndex(currentCardIndex + 1));
     } else {
       snapTo(0);
     }
-  };
+  }, [decks?.length, currentCardIndex, snapTo]);
 
-  const snapToPrevious = () => {
+  const snapToPrevious = React.useCallback(() => {
     if (currentCardIndex > 0) {
       snapTo(DECK_FEED_ITEM_HEIGHT, () => setCurrentCardIndex(currentCardIndex - 1));
     } else {
       snapTo(0);
     }
-  };
+  }, [decks?.length, currentCardIndex, snapTo]);
 
-  const onPanStateChange = (event) => {
-    if (event.nativeEvent.oldState === State.ACTIVE) {
-      const { translationY, velocityY } = event.nativeEvent;
-      if (translationY < -FLIP_MIN_TRANSLATE_Y || velocityY < -FLIP_MIN_VELOCITY_Y) {
-        snapToNext();
-      } else if (translationY > FLIP_MIN_TRANSLATE_Y || velocityY > FLIP_MIN_VELOCITY_Y) {
-        snapToPrevious();
-      } else {
-        snapTo(0);
+  const onPanStateChange = React.useCallback(
+    (event) => {
+      if (event.nativeEvent.oldState === State.ACTIVE) {
+        const { translationY, velocityY } = event.nativeEvent;
+        if (translationY < -FLIP_MIN_TRANSLATE_Y || velocityY < -FLIP_MIN_VELOCITY_Y) {
+          snapToNext();
+        } else if (translationY > FLIP_MIN_TRANSLATE_Y || velocityY > FLIP_MIN_VELOCITY_Y) {
+          snapToPrevious();
+        } else {
+          snapTo(0);
+        }
       }
-    }
-  };
+    },
+    [snapTo]
+  );
 
   const onTapPrevStateChange = (event) => {
     if (event.nativeEvent.state === State.END) {
@@ -213,8 +221,7 @@ const DecksFlipper = () => {
   };
 
   if (!decks) {
-    // TODO: something
-    return <View />;
+    return <View style={styles.container} />;
   }
 
   const currentDeck = decks[currentCardIndex];
