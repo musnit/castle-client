@@ -1,13 +1,19 @@
 import React from 'react';
-import { Animated, StyleSheet, Text, View } from 'react-native';
+import gql from 'graphql-tag';
+import { Animated, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
 import { PanGestureHandler, TapGestureHandler, State } from 'react-native-gesture-handler';
+import { useLazyQuery } from '@apollo/react-hooks';
+import { useFocusEffect } from '@react-navigation/native';
 
+import CardCell from './CardCell';
 import Viewport from './viewport';
 
 import * as Constants from './Constants';
 
 const { vw, vh } = Viewport;
+
+const REFETCH_FEED_INTERVAL_MS = 30 * 1000;
 
 const DECK_FEED_ITEM_MARGIN = 2;
 const DECK_FEED_ITEM_HEIGHT =
@@ -44,34 +50,59 @@ const styles = StyleSheet.create({
   },
 });
 
-const DUMMY_CARDS = [
-  {
-    color: '#00f',
-    text: 'Card A',
-  },
-  {
-    color: '#0f0',
-    text: 'Card B',
-  },
-  {
-    color: '#0ff',
-    text: 'Card C',
-  },
-  {
-    color: '#f00',
-    text: 'Card D',
-  },
-  {
-    color: '#f0f',
-    text: 'Card E',
-  },
-  {
-    color: '#ff0',
-    text: 'Card F',
-  },
-];
-
 const DecksFlipper = () => {
+  const [lastFetchedTime, setLastFetchedTime] = React.useState(null);
+  const [fetchDecks, query] = useLazyQuery(
+    gql`
+      query {
+        allDecks {
+          id
+          deckId
+          title
+          creator {
+            userId
+            username
+          }
+          initialCard {
+            id
+            cardId
+            title
+            backgroundImage {
+              fileId
+              url
+              primaryColor
+            }
+            blocks {
+              id
+              cardBlockId
+              cardBlockUpdateId
+              type
+              title
+              destinationCardId
+            }
+          }
+        }
+      }
+    `,
+    { fetchPolicy: 'no-cache' }
+  );
+
+  useFocusEffect(
+    React.useCallback(() => {
+      StatusBar.setBarStyle('light-content'); // needed for tab navigator
+      Constants.Android && StatusBar.setTranslucent(true); // needed for tab navigator
+      if (!lastFetchedTime || Date.now() - lastFetchedTime > REFETCH_FEED_INTERVAL_MS) {
+        fetchDecks();
+        setLastFetchedTime(Date.now());
+      }
+    }, [lastFetchedTime])
+  );
+
+  let decks;
+  if (query.called && !query.loading && !query.error && query.data) {
+    decks = query.data.allDecks;
+  }
+
   const insets = useSafeArea();
   const tabBarHeight = 49;
   const centerContentY = Math.max(
@@ -95,7 +126,7 @@ const DecksFlipper = () => {
   };
 
   const snapToNext = () => {
-    if (currentCardIndex < DUMMY_CARDS.length - 1) {
+    if (decks && currentCardIndex < decks.length - 1) {
       snapTo(-DECK_FEED_ITEM_HEIGHT, () => setCurrentCardIndex(currentCardIndex + 1));
     } else {
       snapTo(0);
@@ -135,10 +166,15 @@ const DecksFlipper = () => {
     }
   };
 
-  const card = DUMMY_CARDS[currentCardIndex];
-  const prevCard = currentCardIndex > 0 ? DUMMY_CARDS[currentCardIndex - 1] : null;
+  if (!decks) {
+    // TODO: something
+    return <View />;
+  }
+
+  const card = decks[currentCardIndex].initialCard;
+  const prevCard = currentCardIndex > 0 ? decks[currentCardIndex - 1].initialCard : null;
   const nextCard =
-    currentCardIndex < DUMMY_CARDS.length - 1 ? DUMMY_CARDS[currentCardIndex + 1] : null;
+    currentCardIndex < decks.length - 1 ? decks[currentCardIndex + 1].initialCard : null;
 
   return (
     <View style={styles.container}>
@@ -147,34 +183,22 @@ const DecksFlipper = () => {
           onGestureEvent={onPanGestureEvent}
           onHandlerStateChange={onPanStateChange}>
           <TapGestureHandler onHandlerStateChange={onTapPrevStateChange}>
-            <Animated.View
-              style={[
-                styles.itemContainer,
-                { backgroundColor: prevCard ? prevCard.color : '#000' },
-              ]}>
-              <View style={styles.itemCard}>
-                <Text>{prevCard && prevCard.text}</Text>
-              </View>
+            <Animated.View style={styles.itemContainer}>
+              <View style={styles.itemCard}>{prevCard && <CardCell card={prevCard} />}</View>
             </Animated.View>
           </TapGestureHandler>
         </PanGestureHandler>
-        <View style={[styles.itemContainer, { backgroundColor: card.color }]}>
+        <View style={styles.itemContainer}>
           <View style={styles.itemCard}>
-            <Text>{card.text}</Text>
+            <CardCell card={card} />
           </View>
         </View>
         <PanGestureHandler
           onGestureEvent={onPanGestureEvent}
           onHandlerStateChange={onPanStateChange}>
           <TapGestureHandler onHandlerStateChange={onTapNextStateChange}>
-            <Animated.View
-              style={[
-                styles.itemContainer,
-                { backgroundColor: nextCard ? nextCard.color : '#000' },
-              ]}>
-              <View style={styles.itemCard}>
-                <Text>{nextCard && nextCard.text}</Text>
-              </View>
+            <Animated.View style={styles.itemContainer}>
+              <View style={styles.itemCard}>{nextCard && <CardCell card={nextCard} />}</View>
             </Animated.View>
           </TapGestureHandler>
         </PanGestureHandler>
