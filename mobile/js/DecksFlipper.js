@@ -7,6 +7,7 @@ import { useLazyQuery } from '@apollo/react-hooks';
 import { useFocusEffect } from '@react-navigation/native';
 
 import CardCell from './CardCell';
+import PlayDeckNavigator from './PlayDeckNavigator';
 import Viewport from './viewport';
 
 import * as Constants from './Constants';
@@ -49,6 +50,51 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+// renders the current focused deck in the feed
+// including the interactive scene.
+const CurrentDeckCell = ({ deck }) => {
+  const [ready, setReady] = React.useState(false);
+  React.useEffect(() => {
+    let timeout;
+    let active = true;
+    if (deck) {
+      timeout = setTimeout(() => {
+        active && setReady(true);
+      }, 10);
+    } else {
+      active && setReady(false);
+    }
+    return () => {
+      setReady(false);
+      active = false;
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+    };
+  }, [deck]);
+
+  return (
+    <View style={styles.itemCard}>
+      <CardCell card={deck.initialCard} />
+      {ready ? (
+        <View
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            right: 0,
+            bottom: 0,
+          }}>
+          <PlayDeckNavigator
+            deckId={deck.deckId}
+            cardId={deck.initialCard && deck.initialCard.cardId}
+          />
+        </View>
+      ) : null}
+    </View>
+  );
+};
 
 const DecksFlipper = () => {
   const [lastFetchedTime, setLastFetchedTime] = React.useState(null);
@@ -171,7 +217,7 @@ const DecksFlipper = () => {
     return <View />;
   }
 
-  const card = decks[currentCardIndex].initialCard;
+  const currentDeck = decks[currentCardIndex];
   const prevCard = currentCardIndex > 0 ? decks[currentCardIndex - 1].initialCard : null;
   const nextCard =
     currentCardIndex < decks.length - 1 ? decks[currentCardIndex + 1].initialCard : null;
@@ -189,9 +235,7 @@ const DecksFlipper = () => {
           </TapGestureHandler>
         </PanGestureHandler>
         <View style={styles.itemContainer}>
-          <View style={styles.itemCard}>
-            <CardCell card={card} />
-          </View>
+          <CurrentDeckCell deck={currentDeck} />
         </View>
         <PanGestureHandler
           onGestureEvent={onPanGestureEvent}
