@@ -4,7 +4,7 @@ import { Animated, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
 import { PanGestureHandler, TapGestureHandler, State } from 'react-native-gesture-handler';
 import { useLazyQuery } from '@apollo/react-hooks';
-import { useFocusEffect } from '@react-navigation/native';
+import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 
 import CardCell from './CardCell';
 import { MainSwitcherContext } from './MainSwitcher';
@@ -56,13 +56,15 @@ const styles = StyleSheet.create({
 // including the interactive scene.
 const CurrentDeckCell = ({ deck }) => {
   const { mode: mainSwitcherMode } = React.useContext(MainSwitcherContext); // Dealing with legacy game loading path
+  const isFocused = useIsFocused();
+
   const [ready, setReady] = React.useState(false);
   React.useEffect(() => {
     let timeout;
     let active = true;
     if (deck) {
       timeout = setTimeout(() => {
-        active && mainSwitcherMode === 'navigator' && setReady(true);
+        active && mainSwitcherMode === 'navigator' && isFocused && setReady(true);
       }, 10);
     } else {
       active && setReady(false);
@@ -74,7 +76,7 @@ const CurrentDeckCell = ({ deck }) => {
         clearTimeout(timeout);
       }
     };
-  }, [deck, mainSwitcherMode]);
+  }, [deck, mainSwitcherMode, isFocused]);
 
   return (
     <View style={styles.itemCard}>
