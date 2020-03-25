@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  sceneActionsContainer: {
+  cardBackgroundContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-end',
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   },
   actions: {
     width: '100%',
-    paddingHorizontal: 12,
+    paddingHorizontal: 2,
     paddingTop: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -113,24 +113,17 @@ const PrimaryButton = ({ style, ...props }) => {
 };
 
 const CardForegroundActions = (props) => {
-  const { card, interactionEnabled, editBlockProps } = props;
-  const { onPressBackground, onChooseImage, onEditScene, onEditBlock } = props;
+  const { card, editBlockProps } = props;
+  const { onPressBackground, onEditBlock } = props;
   const { onPickDestination } = props;
   const chooseImageAction = card.backgroundImage ? 'Change Image' : 'Add Image';
-  const editSceneAction = card.scene ? 'Edit Scene' : 'Add Scene';
   return (
     <React.Fragment>
       <TouchableWithoutFeedback onPress={onPressBackground}>
         <View
-          pointerEvents={interactionEnabled ? 'none' : 'auto'}
-          style={styles.sceneActionsContainer}>
-          <View style={styles.sceneActions}>
-            <PlainButton onPress={onChooseImage}>{chooseImageAction}</PlainButton>
-            <PlainButton style={{ marginLeft: 8 }} onPress={onEditScene}>
-              {editSceneAction}
-            </PlainButton>
-          </View>
-        </View>
+          style={styles.cardBackgroundContainer}
+          pointerEvents={editBlockProps?.isEditingBlock ? 'auto' : 'none'}
+        />
       </TouchableWithoutFeedback>
       <View style={styles.blocksContainer}>
         <CardBlocks
@@ -139,22 +132,28 @@ const CardForegroundActions = (props) => {
           onPickDestination={onPickDestination}
           isEditable
           editBlockProps={editBlockProps}
-          interactionEnabled={interactionEnabled}
-          onToggleInteraction={props.onToggleInteraction}
         />
       </View>
     </React.Fragment>
   );
 };
 
-const CardBottomActions = ({ onEditBlock, onSave }) => (
-  <View style={styles.actions}>
-    <PlainButton onPress={() => onEditBlock(null)}>Add Block</PlainButton>
-    <PrimaryButton onPress={onSave} style={{ borderColor: '#fff', borderWidth: 1 }}>
-      Done
-    </PrimaryButton>
-  </View>
-);
+const CardBottomActions = ({ card, onEditScene, onEditBlock, onSave }) => {
+  const editSceneAction = card.scene ? 'Edit Scene' : 'Add Scene';
+  return (
+    <View style={styles.actions}>
+      <View style={{ flexDirection: 'row' }}>
+        <PlainButton onPress={() => onEditBlock(null)}>Add Block</PlainButton>
+        <PlainButton style={{ marginLeft: 8 }} onPress={onEditScene}>
+          {editSceneAction}
+        </PlainButton>
+      </View>
+      <PrimaryButton onPress={onSave} style={{ borderColor: '#fff', borderWidth: 1 }}>
+        Done
+      </PrimaryButton>
+    </View>
+  );
+};
 
 const CardTopSpacer = () => {
   // add margin top
@@ -200,7 +199,6 @@ class CreateCardScreen extends React.Component {
     blockIdToEdit: null,
     isHeaderExpanded: false,
     isEditingScene: false,
-    interactionEnabled: false,
   };
 
   componentDidMount() {
@@ -287,7 +285,6 @@ class CreateCardScreen extends React.Component {
           ...state,
           blockIdToEdit,
           isEditingBlock: true,
-          interactionEnabled: false,
           card: {
             ...state.card,
             blocks,
@@ -541,10 +538,6 @@ class CreateCardScreen extends React.Component {
       return { ...state, isHeaderExpanded: !state.isHeaderExpanded };
     });
 
-  _toggleInteraction = () => {
-    this.setState({ interactionEnabled: !this.state.interactionEnabled });
-  };
-
   render() {
     const {
       deck,
@@ -553,7 +546,6 @@ class CreateCardScreen extends React.Component {
       blockIdToEdit,
       isHeaderExpanded,
       isEditingScene,
-      interactionEnabled,
     } = this.state;
     const blockToEdit =
       isEditingBlock && blockIdToEdit
@@ -597,7 +589,7 @@ class CreateCardScreen extends React.Component {
             {!isEditingScene ? <CardTopSpacer /> : null}
             <KeyboardAwareScrollView
               enableOnAndroid={true}
-              scrollEnabled={!isEditingScene && !interactionEnabled}
+              scrollEnabled={isEditingBlock}
               nestedScrollEnabled
               extraScrollHeight={containScrollViewOffset}
               style={[
@@ -610,7 +602,7 @@ class CreateCardScreen extends React.Component {
               contentContainerStyle={[styles.scrollViewContentContainer, scrollViewSceneStyles]}
               innerRef={(ref) => (this._scrollViewRef = ref)}>
               <CardScene
-                interactionEnabled={interactionEnabled || isEditingScene}
+                interactionEnabled={true}
                 key={`card-scene-${card.scene && card.scene.sceneId}`}
                 style={styles.scene}
                 card={card}
@@ -624,16 +616,16 @@ class CreateCardScreen extends React.Component {
                   card={card}
                   onPressBackground={this._handlePressBackground}
                   onChooseImage={this._handleChooseImage}
-                  onEditScene={this._handleEditScene}
                   onEditBlock={this._handleEditBlock}
                   onPickDestination={this._saveAndGoToDestination}
-                  onToggleInteraction={this._toggleInteraction}
                   editBlockProps={editBlockProps}
                 />
               ) : null}
             </KeyboardAwareScrollView>
             {!isEditingScene ? (
               <CardBottomActions
+                card={card}
+                onEditScene={this._handleEditScene}
                 onEditBlock={this._handleEditBlock}
                 onSave={this._saveAndGoToDeck}
               />
