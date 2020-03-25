@@ -17,7 +17,7 @@ import CreateDeckNavigator from './CreateDeckNavigator';
 import DecksFlipper from './DecksFlipper';
 import * as DeepLinks from './DeepLinks';
 import HomeScreen from './HomeScreen';
-import PlayDeckNavigator from './PlayDeckNavigator';
+import PlayDeckScreen from './PlayDeckScreen';
 import ProfileScreen from './ProfileScreen';
 import ProfileGamesScreen from './ProfileGamesScreen';
 
@@ -90,7 +90,7 @@ const CreateNavigator = () => (
 const ProfileNavigator = () => (
   <Stack.Navigator headerMode="none">
     <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
-    <Stack.Screen name="PlayDeck" component={PlayDeckNavigator} />
+    <Stack.Screen name="PlayDeck" component={PlayDeckScreen} />
   </Stack.Navigator>
 );
 
