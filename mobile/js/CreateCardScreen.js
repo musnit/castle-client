@@ -159,7 +159,7 @@ const CardBottomActions = ({ onEditBlock, onSave }) => (
 const CardTopSpacer = () => {
   // add margin top
   const insets = useSafeArea();
-  const height = Math.max(48, (100 * Viewport.vh - insets.top - CARD_HEIGHT) * 0.5);
+  const height = Math.max(48, (100 * Viewport.vh - insets.top - CARD_HEIGHT) * 0.4);
   return <View style={{ height }} />;
 };
 
@@ -560,11 +560,12 @@ class CreateCardScreen extends React.Component {
         ? card.blocks.find((block) => block.cardBlockId === blockIdToEdit)
         : EMPTY_BLOCK;
 
-    let containScrollViewOffset = 0;
+    // estimated distance from the bottom of the scrollview to the bottom of the screen
+    let containScrollViewOffset = 48;
     if (Viewport.isUltraWide && Constants.iOS) {
-      containScrollViewOffset = -IPHONEX_BOTTOM_SAFE_HEIGHT;
+      containScrollViewOffset -= IPHONEX_BOTTOM_SAFE_HEIGHT;
     } else if (Constants.Android) {
-      containScrollViewOffset = -ANDROID_BOTTOM_KEYBOARD_OFFSET;
+      containScrollViewOffset -= ANDROID_BOTTOM_KEYBOARD_OFFSET;
     }
     const scrollViewSceneStyles = card.backgroundImage
       ? { backgroundColor: '#000' }
