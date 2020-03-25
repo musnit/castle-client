@@ -9,7 +9,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
 import { connectActionSheet } from '@expo/react-native-action-sheet';
 import { ReactNativeFile } from 'apollo-upload-client';
 
@@ -29,19 +29,22 @@ import Viewport from './viewport';
 
 import * as GhostEvents from './ghost/GhostEvents';
 
+const CARD_HEIGHT = (1 / Constants.CARD_RATIO) * 100 * Viewport.vw;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
   },
   cardBody: {
-    // contains just the 16:9 card as a child
+    // contains just the card as a child
     alignItems: 'center',
     justifyContent: 'center',
   },
   scrollView: {
-    aspectRatio: 0.5625, // 16:9
     borderRadius: 6,
+    aspectRatio: Constants.CARD_RATIO,
+    width: '100%',
   },
   scrollViewContentContainer: {
     flex: 1,
@@ -85,7 +88,7 @@ const styles = StyleSheet.create({
   actions: {
     width: '100%',
     paddingHorizontal: 12,
-    paddingBottom: 12,
+    paddingTop: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
@@ -112,7 +115,7 @@ const PrimaryButton = ({ style, ...props }) => {
 const CardForegroundActions = (props) => {
   const { card, interactionEnabled, editBlockProps } = props;
   const { onPressBackground, onChooseImage, onEditScene, onEditBlock } = props;
-  const { onPickDestination, onSave } = props;
+  const { onPickDestination } = props;
   const chooseImageAction = card.backgroundImage ? 'Change Image' : 'Add Image';
   const editSceneAction = card.scene ? 'Edit Scene' : 'Add Scene';
   return (
@@ -140,12 +143,24 @@ const CardForegroundActions = (props) => {
           onToggleInteraction={props.onToggleInteraction}
         />
       </View>
-      <View style={styles.actions}>
-        <PlainButton onPress={() => onEditBlock(null)}>Add Block</PlainButton>
-        <PrimaryButton onPress={onSave}>Done</PrimaryButton>
-      </View>
     </React.Fragment>
   );
+};
+
+const CardBottomActions = ({ onEditBlock, onSave }) => (
+  <View style={styles.actions}>
+    <PlainButton onPress={() => onEditBlock(null)}>Add Block</PlainButton>
+    <PrimaryButton onPress={onSave} style={{ borderColor: '#fff', borderWidth: 1 }}>
+      Done
+    </PrimaryButton>
+  </View>
+);
+
+const CardTopSpacer = () => {
+  // add margin top
+  const insets = useSafeArea();
+  const height = Math.max(48, (100 * Viewport.vh - insets.top - CARD_HEIGHT) * 0.5);
+  return <View style={{ height }} />;
 };
 
 const EMPTY_DECK = {
@@ -545,7 +560,6 @@ class CreateCardScreen extends React.Component {
         ? card.blocks.find((block) => block.cardBlockId === blockIdToEdit)
         : EMPTY_BLOCK;
 
-    const containScrollViewStyles = Viewport.isUltraWide ? { width: '100%' } : { height: '100%' };
     let containScrollViewOffset = 0;
     if (Viewport.isUltraWide && Constants.iOS) {
       containScrollViewOffset = -IPHONEX_BOTTOM_SAFE_HEIGHT;
@@ -579,6 +593,7 @@ class CreateCardScreen extends React.Component {
           ) : null}
           <StatusBar hidden={true} />
           <View style={[styles.cardBody, isEditingScene ? { flex: 1 } : {}]}>
+            {!isEditingScene ? <CardTopSpacer /> : null}
             <KeyboardAwareScrollView
               enableOnAndroid={true}
               scrollEnabled={!isEditingScene && !interactionEnabled}
@@ -586,7 +601,6 @@ class CreateCardScreen extends React.Component {
               extraScrollHeight={containScrollViewOffset}
               style={[
                 styles.scrollView,
-                containScrollViewStyles,
                 Viewport.isUltraWide && isEditingScene
                   ? { flex: 1, aspectRatio: null, borderRadius: null }
                   : {},
@@ -612,12 +626,17 @@ class CreateCardScreen extends React.Component {
                   onEditScene={this._handleEditScene}
                   onEditBlock={this._handleEditBlock}
                   onPickDestination={this._saveAndGoToDestination}
-                  onSave={this._saveAndGoToDeck}
                   onToggleInteraction={this._toggleInteraction}
                   editBlockProps={editBlockProps}
                 />
               ) : null}
             </KeyboardAwareScrollView>
+            {!isEditingScene ? (
+              <CardBottomActions
+                onEditBlock={this._handleEditBlock}
+                onSave={this._saveAndGoToDeck}
+              />
+            ) : null}
           </View>
           {!isEditingScene ? (
             <CardFixedHeader
