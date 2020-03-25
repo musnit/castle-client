@@ -577,7 +577,11 @@ const BaseButton = ({ element, selected, style, onPress }) => {
           }}
         />
       ) : null}
-      {!hideLabel ? <Text style={{ color: Colors.button.text }}>{element.props.label}</Text> : null}
+      {!hideLabel ? (
+        <Text style={{ color: Colors.button.text, ...element.props.textStyle }}>
+          {element.props.label}
+        </Text>
+      ) : null}
     </TouchableOpacity>
   );
 };
@@ -1361,7 +1365,9 @@ const SceneCreatorBlueprintsPane = React.memo(({ element, context }) => {
         padding: 16,
       }}>
       <View style={Constants.styles.paneHandle}></View>
-      <Text style={{ color: '#888', letterSpacing: 0.5, textAlign: 'center', paddingTop: 12 }}>BLUEPRINTS</Text>
+      <Text style={{ color: '#888', letterSpacing: 0.5, textAlign: 'center', paddingTop: 12 }}>
+        BLUEPRINTS
+      </Text>
     </View>
   );
 
