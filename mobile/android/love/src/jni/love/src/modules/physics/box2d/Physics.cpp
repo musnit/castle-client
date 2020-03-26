@@ -325,7 +325,8 @@ int Physics::getDistance(lua_State *L)
 
 void Physics::setMeter(float scale)
 {
-	if (scale < 1) throw love::Exception("Physics error: invalid meter");
+	// XXX(Castle): Remove this restriction...
+//	if (scale < 1) throw love::Exception("Physics error: invalid meter");
 	Physics::meter = scale;
 }
 
