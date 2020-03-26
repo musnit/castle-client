@@ -42,13 +42,16 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     marginBottom: DECK_FEED_ITEM_MARGIN,
-    borderRadius: 6,
   },
   itemCard: {
     aspectRatio: Constants.CARD_RATIO,
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: 6,
+  },
+  cardPlaceholder: {
+    backgroundColor: '#666',
   },
 });
 
@@ -231,6 +234,11 @@ const DecksFlipper = () => {
   const nextCard =
     currentCardIndex < decks.length - 1 ? decks[currentCardIndex + 1].initialCard : null;
 
+  // the edge of the 'next-next' card is shown briefly during the snap animation
+  // before the swap occurs.
+  const nextNextCard =
+    currentCardIndex < decks.length - 2 ? decks[currentCardIndex + 2].initialCard : null;
+
   return (
     <View style={styles.container}>
       <Animated.View style={{ transform: [{ translateY: containerY }] }}>
@@ -255,6 +263,13 @@ const DecksFlipper = () => {
             </Animated.View>
           </TapGestureHandler>
         </PanGestureHandler>
+        {nextNextCard && (
+          <View style={styles.itemContainer}>
+            <View style={styles.itemCard}>
+              <CardCell card={nextNextCard} />
+            </View>
+          </View>
+        )}
       </Animated.View>
     </View>
   );
