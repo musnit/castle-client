@@ -146,12 +146,15 @@ const DecksFlipper = () => {
     { fetchPolicy: 'no-cache' }
   );
 
+  const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
+
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
       Constants.Android && StatusBar.setTranslucent(true); // needed for tab navigator
       if (!lastFetchedTime || Date.now() - lastFetchedTime > REFETCH_FEED_INTERVAL_MS) {
         fetchDecks();
+        setCurrentCardIndex(0);
         setLastFetchedTime(Date.now());
       }
     }, [lastFetchedTime])
@@ -168,8 +171,6 @@ const DecksFlipper = () => {
     40,
     (100 * vh - insets.top - DECK_FEED_ITEM_HEIGHT - tabBarHeight) * 0.5
   );
-
-  const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
 
   let translateY = new Animated.Value(0);
   let containerY = Animated.add(translateY, centerContentY - DECK_FEED_ITEM_HEIGHT);
