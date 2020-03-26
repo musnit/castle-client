@@ -51,7 +51,13 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   cardPlaceholder: {
+    position: 'absolute',
+    top: -DECK_FEED_ITEM_HEIGHT - DECK_FEED_ITEM_MARGIN,
+    width: '100%',
+    height: DECK_FEED_ITEM_HEIGHT,
+    backgroundColor: '#ff0',
     backgroundColor: '#666',
+    borderRadius: 6,
   },
 });
 
@@ -242,6 +248,7 @@ const DecksFlipper = () => {
   return (
     <View style={styles.container}>
       <Animated.View style={{ transform: [{ translateY: containerY }] }}>
+        {currentCardIndex > 1 && <View style={styles.cardPlaceholder} />}
         <PanGestureHandler
           onGestureEvent={onPanGestureEvent}
           onHandlerStateChange={onPanStateChange}>
