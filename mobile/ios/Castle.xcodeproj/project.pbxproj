@@ -73,6 +73,7 @@
 		A14FE3F32355CF2D003B7EA0 /* lpprint.c in Sources */ = {isa = PBXBuildFile; fileRef = A14FE3EA2355CF2D003B7EA0 /* lpprint.c */; };
 		A14FE3F42355CF2D003B7EA0 /* lpcap.c in Sources */ = {isa = PBXBuildFile; fileRef = A14FE3EB2355CF2D003B7EA0 /* lpcap.c */; };
 		A14FE3F72355D0C8003B7EA0 /* package.love in Resources */ = {isa = PBXBuildFile; fileRef = A14FE3F62355D0C8003B7EA0 /* package.love */; };
+		A17F2C92242D8B7C00E545B6 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = A17F2C91242D8B7C00E545B6 /* Expo.plist */; };
 		A18BF47E2395E0A300259291 /* ghost_network_seed.db in Resources */ = {isa = PBXBuildFile; fileRef = A18BF4762395E0A300259291 /* ghost_network_seed.db */; };
 		A1959DF42410A026000C61E0 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1959DEC2410A026000C61E0 /* CoreTelephony.framework */; };
 		A1959DF62410A032000C61E0 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1959DF52410A032000C61E0 /* WebKit.framework */; };
@@ -228,6 +229,7 @@
 		A14FE3EF2355CF2D003B7EA0 /* lpcode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lpcode.h; path = "../../ghost-extensions/lpeg/lpcode.h"; sourceTree = "<group>"; };
 		A14FE3F52355D09D003B7EA0 /* package.love */ = {isa = PBXFileReference; lastKnownFileType = file; name = package.love; path = ../package.love; sourceTree = "<group>"; };
 		A14FE3F62355D0C8003B7EA0 /* package.love */ = {isa = PBXFileReference; lastKnownFileType = file; name = package.love; path = ../package.love; sourceTree = "<group>"; };
+		A17F2C91242D8B7C00E545B6 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Expo.plist; path = castle/Supporting/Expo.plist; sourceTree = "<group>"; };
 		A18BF4762395E0A300259291 /* ghost_network_seed.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = ghost_network_seed.db; sourceTree = "<group>"; };
 		A1959DEC2410A026000C61E0 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		A1959DF52410A032000C61E0 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
@@ -318,6 +320,7 @@
 		13B07FAE1A68108700A75B9A /* Castle */ = {
 			isa = PBXGroup;
 			children = (
+				A17F2C91242D8B7C00E545B6 /* Expo.plist */,
 				91395EAF24084E2D00ECBCF9 /* Castle.entitlements */,
 				A1FA18C22365168600E2ACFE /* GhostInputZone.mm */,
 				A1CCBA18235518C7009F4DDD /* GhostView.m */,
@@ -593,7 +596,7 @@
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
-				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
+				00DD1BFF1BD5951E006B06BC /* Bundle Expo assets */,
 				A14FE3872355C97F003B7EA0 /* Create temporary '.love' package */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				A14FE3882355C9B8003B7EA0 /* Remove temporary '.love' package */,
@@ -755,6 +758,7 @@
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				752DFF0FA2404564937762CE /* RTAliasGrotesk-Bold.otf in Resources */,
+				A17F2C92242D8B7C00E545B6 /* Expo.plist in Resources */,
 				CD0A84C8B8A44D86830CD6A6 /* RTAliasGrotesk-Regular.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -777,19 +781,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */ = {
+		00DD1BFF1BD5951E006B06BC /* Bundle Expo assets */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Bundle React Native code and images";
+			name = "Bundle Expo assets";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
+			shellScript = "../node_modules/expo-updates/bundle-expo-assets.sh\n";
 		};
 		115BE81859207BF23F8103BF /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;

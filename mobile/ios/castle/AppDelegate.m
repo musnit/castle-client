@@ -41,6 +41,7 @@ int SDL_main(int argc, char *argv[]) {
 
 @interface AppDelegate ()
 
+@property(nonatomic, strong) NSDictionary *launchOptions;
 @property(nonatomic, strong) SDLUIKitDelegate *sdlDelegate;
 @property(nonatomic, strong) RCTBridge *rctBridge;
 
@@ -50,21 +51,21 @@ int SDL_main(int argc, char *argv[]) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
-  self.rctBridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:self.rctBridge
-                                                   moduleName:@"Castle"
-                                            initialProperties:nil];
-
-  rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
-
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [UIViewController new];
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
-  
-  [RNBootSplash show:@"LaunchScreen" inView:rootView];
+
+#ifdef DEBUG
+  [self initializeReactNativeApp];
+#else
+  EXUpdatesAppController *controller = [EXUpdatesAppController sharedInstance];
+  controller.delegate = self;
+  [controller startAndShowLaunchScreen:self.window];
+#endif
+
+//  [RNBootSplash show:@"LaunchScreen" inView:rootView];
 
   // SDL
   self.sdlDelegate = [[SDLUIKitDelegate alloc] init];
@@ -76,6 +77,16 @@ int SDL_main(int argc, char *argv[]) {
   center.delegate = self;
 
   return YES;
+}
+
+- (RCTBridge *)initializeReactNativeApp
+{
+  self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
+  self.rctBridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:self.launchOptions];
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:self.rctBridge
+                                                   moduleName:@"Castle"
+                                            initialProperties:nil];
+  rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
 }
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
@@ -92,8 +103,14 @@ int SDL_main(int argc, char *argv[]) {
 //  return [NSURL URLWithString:@"http://192.168.1.15:8081/index.bundle?platform=ios&dev=true&minify=false"];
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
 #else
-  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+  return [[EXUpdatesAppController sharedInstance] launchAssetUrl];
 #endif
+}
+
+- (void)appController:(EXUpdatesAppController *)appController didStartWithSuccess:(BOOL)success
+{
+  [self initializeReactNativeApp];
+  appController.bridge = self.rctBridge;
 }
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url

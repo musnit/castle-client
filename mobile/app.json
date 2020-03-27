@@ -1,4 +1,16 @@
 {
   "name": "Castle",
-  "displayName": "Castle"
+  "displayName": "Castle",
+  "expo": {
+    "sdkVersion": "36.0.0",
+    "ios": {
+      "publishBundlePath": "ios/castle/Supporting/shell-app.bundle",
+      "publishManifestPath": "ios/castle/Supporting/shell-app-manifest.json"
+    },
+    "android": {
+      "publishBundlePath": "android/app/src/main/assets/shell-app.bundle",
+      "publishManifestPath": "android/app/src/main/assets/shell-app-manifest.json"
+    },
+    "assetBundlePatterns": ["assets/**/*"]
+  }
 }
