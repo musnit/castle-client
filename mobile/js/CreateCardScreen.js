@@ -581,23 +581,16 @@ class CreateCardScreen extends React.Component {
     return (
       <React.Fragment>
         <SafeAreaView style={styles.container}>
-          {!isEditingScene ? (
-            <CardHeader card={card} expanded={isHeaderExpanded} onChange={this._handleCardChange} />
-          ) : null}
+          <CardHeader card={card} expanded={isHeaderExpanded} onChange={this._handleCardChange} />
           <StatusBar hidden={true} />
-          <View style={[styles.cardBody, isEditingScene ? { flex: 1 } : {}]}>
-            {!isEditingScene ? <CardTopSpacer /> : null}
+          <View style={[styles.cardBody]}>
+            <CardTopSpacer />
             <KeyboardAwareScrollView
               enableOnAndroid={true}
               scrollEnabled={isEditingBlock}
               nestedScrollEnabled
               extraScrollHeight={containScrollViewOffset}
-              style={[
-                styles.scrollView,
-                Viewport.isUltraWide && isEditingScene
-                  ? { flex: 1, aspectRatio: null, borderRadius: null }
-                  : {},
-              ]}
+              style={styles.scrollView}
               keyboardShouldPersistTaps="handled"
               contentContainerStyle={[styles.scrollViewContentContainer, scrollViewSceneStyles]}
               innerRef={(ref) => (this._scrollViewRef = ref)}>
@@ -631,14 +624,12 @@ class CreateCardScreen extends React.Component {
               />
             ) : null}
           </View>
-          {!isEditingScene ? (
-            <CardFixedHeader
-              card={card}
-              expanded={isHeaderExpanded}
-              onPressBack={this._maybeSaveAndGoToDeck}
-              onPressTitle={this._toggleHeaderExpanded}
-            />
-          ) : null}
+          <CardFixedHeader
+            card={card}
+            expanded={isHeaderExpanded}
+            onPressBack={this._maybeSaveAndGoToDeck}
+            onPressTitle={this._toggleHeaderExpanded}
+          />
         </SafeAreaView>
         <CardDestinationPickerSheet
           deck={deck}
