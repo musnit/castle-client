@@ -23,6 +23,13 @@
 
 #import "../../../ghost-extensions/SDL2-2.0.8/src/video/uikit/SDL_uikitappdelegate.h"
 
+#if DEBUG
+#define LOAD_DEVELOPMENT_JS 1
+#else
+#define LOAD_DEVELOPMENT_JS 0
+#endif
+#define LOAD_DEVELOPMENT_JS 0
+
 @implementation SDLUIKitDelegate (Castle)
 
 // SDL defines its own `int main(...)` function:
@@ -53,7 +60,7 @@ int SDL_main(int argc, char *argv[]) {
 {
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
 
-#if DEBUG
+#if LOAD_DEVELOPMENT_JS
   [self initializeReactNativeApp];
 #else
   EXUpdatesAppController *controller = [EXUpdatesAppController sharedInstance];
@@ -99,7 +106,7 @@ int SDL_main(int argc, char *argv[]) {
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
-#if DEBUG
+#if LOAD_DEVELOPMENT_JS
 //  return [NSURL URLWithString:@"http://192.168.1.15:8081/index.bundle?platform=ios&dev=true&minify=false"];
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
 #else
