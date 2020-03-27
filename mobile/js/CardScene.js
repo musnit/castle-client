@@ -21,9 +21,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const USE_REMOTE_GAME = true;
+const USE_REMOTE_GAME = false;
 const GAME_ID = USE_REMOTE_GAME ? '1uzqao' : null;
-const GAME_URI = USE_REMOTE_GAME ? null : 'http://192.168.1.35:8080/project.castle';
+const GAME_URI = USE_REMOTE_GAME ? null : 'http://192.168.1.146:8080/project.castle';
 
 const CardScene = ({
   card,

@@ -68,6 +68,8 @@ local parsePrefetchVisited = setmetatable({}, {
 
 local LATEST_SHARE_LUA_URL = 'https://raw.githubusercontent.com/castle-games/share.lua/526e86aeaa49da90539a173ad665325cebc27f73/cs.lua'
 
+local globalPackageCache = {}
+
 local function explicitRequire(path, opts)
     -- 'share.lua'? Use the latest version...
     if path:match('^https?://raw%.githubusercontent%.com/castle%-games/share%.lua/.*/cs%.lua$') then
@@ -97,6 +99,8 @@ local function explicitRequire(path, opts)
 
     -- Cached?
     local found = package.loaded[path]
+    if found ~= nil then return found end
+    found = globalPackageCache[path]
     if found ~= nil then return found end
 
     local origPath = path
@@ -136,6 +140,7 @@ local function explicitRequire(path, opts)
 
     -- Already `require`d from final `url`?
     if package.loaded[url] then return package.loaded[url] end
+    if globalPackageCache[url] then return globalPackageCache[url] end
 
     -- Use the `parentEnv` by default for the new module, but if a new `childEnv` is given, make
     -- that the `parentEnv` for sub-`require`s by default
@@ -225,10 +230,19 @@ local function explicitRequire(path, opts)
     alias = alias:gsub('%.lua$', ''):gsub('%.*$', ''):gsub('^', '.')
 
     -- Run
+    --print('loading ' .. path)
     local result = chunk(alias)
 
     -- Save to cache
-    if saveCache ~= false then
+    if path == 'lib/tove' then
+        --print('SAVING LIB/TOVE')
+
+        if result ~= nil then
+            globalPackageCache[url] = result
+        elseif globalPackageCache[url] == nil then
+            globalPackageCache[url] = true
+        end
+    elseif saveCache ~= false then
         if result ~= nil then
             package.loaded[url] = result
         elseif package.loaded[url] == nil then

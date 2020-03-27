@@ -129,10 +129,9 @@ end
 castle.game = {}
 
 do
-    local decodedInitialParams
-
     function castle.game.getInitialParams()
         if decodedInitialParams then
+            print('sceneid ' .. decodedInitialParams.scene.sceneId)
             return decodedInitialParams
         end
         if CASTLE_INITIAL_DATA and CASTLE_INITIAL_DATA.initialParams then

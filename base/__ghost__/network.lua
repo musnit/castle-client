@@ -423,7 +423,7 @@ function network.fetch(url, method, skipCache)
 
     if url:match('^zip://') then
         if method == 'GET' then
-            print('reading file' .. 'zip_mount/' .. url:gsub('^zip://', ''))
+            --print('reading file' .. 'zip_mount/' .. url:gsub('^zip://', ''))
             response, _ = love.filesystem.read('zip_mount/' .. url:gsub('^zip://', ''))
         else
             response = 1

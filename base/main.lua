@@ -12,13 +12,26 @@ local isMobile = theOS == 'Android' or theOS == 'iOS'
 
 -- Consume initial data
 
+local initialDataChannel = love.thread.getChannel('INITIAL_DATA')
 do
-    local channel = love.thread.getChannel('INITIAL_DATA')
-    if channel:getCount() > 0 then
+    if initialDataChannel:getCount() > 0 then
         pcall(function()
-            CASTLE_INITIAL_DATA = cjson.decode(channel:pop())
+            CASTLE_INITIAL_DATA = cjson.decode(initialDataChannel:pop())
         end)
-        channel:clear()
+        initialDataChannel:clear()
+    end
+end
+
+
+local updateMobileInitialData
+if isMobile then
+    function updateMobileInitialData()
+        while initialDataChannel:getCount() > 0 do
+            pcall(function()
+                CASTLE_INITIAL_DATA = cjson.decode(initialDataChannel:pop())
+            end)
+            initialDataChannel:clear()
+        end
     end
 end
 
@@ -256,8 +269,27 @@ end
 
 ffi.cdef 'bool ghostGetBackgrounded();'
 
+local initTime = os.time()
+
 function main.update(dt)
+    local diffTime=os.difftime(os.time(),initTime)
+    if diffTime > 10 then
+        initTime = os.time()
+        print('yoooo')
+
+        network.async(function()
+            decodedInitialParams = {}
+            decodedInitialParams.scene = {}
+            decodedInitialParams.scene.sceneId = 225
+            decodedInitialParams.scene.data = cjson.decode('{"snapshot": {"actors": [{"bp": {"components": {"Body": {"x": 0, "y": 0, "angle": 0, "bullet": false, "bodyType": "dynamic", "fixtures": [{"x": 0, "y": 0, "radius": 0.5, "sensor": false, "density": 1, "friction": 0.20000000298023, "shapeType": "circle", "restitution": 0.80000001192093}], "massData": [0, 0, 0.78539818525314, 0], "gravityScale": 1, "fixedRotation": true, "linearDamping": 0, "angularDamping": 0, "linearVelocity": [0, 0], "angularVelocity": 0}, "Solid": {}, "Bouncy": {}, "Moving": {}, "Drawing": {"url": "assets/circle.svg", "wobble": false}, "Falling": {}, "CircleShape": {}}}, "actorId": "1:1", "parentEntryId": "0-3"}]}}')
+
+            home.globals.castle.onQuit()
+            home = root:newChild(homeUrl, { noConf = true })
+        end)
+    end
+
     if isMobile then
+        --updateMobileInitialData()
         updateMobileKeyboardEvents()
     end
 
