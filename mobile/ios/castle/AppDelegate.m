@@ -28,7 +28,6 @@
 #else
 #define LOAD_DEVELOPMENT_JS 0
 #endif
-#define LOAD_DEVELOPMENT_JS 0
 
 @implementation SDLUIKitDelegate (Castle)
 
