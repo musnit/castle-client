@@ -79,6 +79,8 @@
 		A1959DF62410A032000C61E0 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1959DF52410A032000C61E0 /* WebKit.framework */; };
 		A1959DF82410A0CC000C61E0 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1959DF72410A0CC000C61E0 /* Accelerate.framework */; };
 		A1959DFA2410A197000C61E0 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1959DF92410A197000C61E0 /* SystemConfiguration.framework */; };
+		A1CC6052242D93E1007BF3B9 /* shell-app.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A1CC6049242D93E0007BF3B9 /* shell-app.bundle */; };
+		A1CC6053242D93E1007BF3B9 /* shell-app-manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = A1CC6051242D93E0007BF3B9 /* shell-app-manifest.json */; };
 		A1CCBA1623551869009F4DDD /* GhostChannels.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1CCBA1423551869009F4DDD /* GhostChannels.mm */; };
 		A1CCBA19235518C7009F4DDD /* GhostView.m in Sources */ = {isa = PBXBuildFile; fileRef = A1CCBA18235518C7009F4DDD /* GhostView.m */; };
 		A1FA18C32365168600E2ACFE /* GhostInputZone.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1FA18C22365168600E2ACFE /* GhostInputZone.mm */; };
@@ -235,6 +237,8 @@
 		A1959DF52410A032000C61E0 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		A1959DF72410A0CC000C61E0 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		A1959DF92410A197000C61E0 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		A1CC6049242D93E0007BF3B9 /* shell-app.bundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "shell-app.bundle"; path = "castle/Supporting/shell-app.bundle"; sourceTree = "<group>"; };
+		A1CC6051242D93E0007BF3B9 /* shell-app-manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = "shell-app-manifest.json"; path = "castle/Supporting/shell-app-manifest.json"; sourceTree = "<group>"; };
 		A1CCBA1423551869009F4DDD /* GhostChannels.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GhostChannels.mm; sourceTree = "<group>"; };
 		A1CCBA18235518C7009F4DDD /* GhostView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GhostView.m; sourceTree = "<group>"; };
 		A1FA18C22365168600E2ACFE /* GhostInputZone.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GhostInputZone.mm; sourceTree = "<group>"; };
@@ -320,6 +324,8 @@
 		13B07FAE1A68108700A75B9A /* Castle */ = {
 			isa = PBXGroup;
 			children = (
+				A1CC6051242D93E0007BF3B9 /* shell-app-manifest.json */,
+				A1CC6049242D93E0007BF3B9 /* shell-app.bundle */,
 				A17F2C91242D8B7C00E545B6 /* Expo.plist */,
 				91395EAF24084E2D00ECBCF9 /* Castle.entitlements */,
 				A1FA18C22365168600E2ACFE /* GhostInputZone.mm */,
@@ -759,6 +765,8 @@
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				752DFF0FA2404564937762CE /* RTAliasGrotesk-Bold.otf in Resources */,
 				A17F2C92242D8B7C00E545B6 /* Expo.plist in Resources */,
+				A1CC6052242D93E1007BF3B9 /* shell-app.bundle in Resources */,
+				A1CC6053242D93E1007BF3B9 /* shell-app-manifest.json in Resources */,
 				CD0A84C8B8A44D86830CD6A6 /* RTAliasGrotesk-Regular.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

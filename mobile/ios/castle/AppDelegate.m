@@ -52,12 +52,8 @@ int SDL_main(int argc, char *argv[]) {
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  UIViewController *rootViewController = [UIViewController new];
-  rootViewController.view = rootView;
-  self.window.rootViewController = rootViewController;
-  [self.window makeKeyAndVisible];
 
-#ifdef DEBUG
+#if DEBUG
   [self initializeReactNativeApp];
 #else
   EXUpdatesAppController *controller = [EXUpdatesAppController sharedInstance];
@@ -79,13 +75,17 @@ int SDL_main(int argc, char *argv[]) {
   return YES;
 }
 
-- (RCTBridge *)initializeReactNativeApp
+- (void)initializeReactNativeApp
 {
   self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
   self.rctBridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:self.launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:self.rctBridge
                                                    moduleName:@"Castle"
                                             initialProperties:nil];
+  UIViewController *rootViewController = [UIViewController new];
+  rootViewController.view = rootView;
+  self.window.rootViewController = rootViewController;
+  [self.window makeKeyAndVisible];
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
 }
 
