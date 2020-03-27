@@ -31,9 +31,7 @@ public class GhostViewManager extends SimpleViewManager<ViewGroup> implements Li
   @Override
   protected ViewGroup createViewInstance(ThemedReactContext reactContext) {
     ensureGameActivityInitialized(reactContext);
-    gameActivity.resetNative();
-    gameActivity.startNative();
-    gameActivity.resume();
+    //gameActivity.resume();
     return gameActivity.getView();
   }
 
@@ -45,6 +43,9 @@ public class GhostViewManager extends SimpleViewManager<ViewGroup> implements Li
       gameActivity.handleIntent(new Intent(activity, GameActivity.class));
       GameActivity.setMetricsFromDisplay(activity.getWindowManager().getDefaultDisplay());
       gameActivity.loadLibraries();
+
+      //gameActivity.resetNative();
+      gameActivity.startNative();
     }
   }
 
@@ -53,7 +54,7 @@ public class GhostViewManager extends SimpleViewManager<ViewGroup> implements Li
     super.onDropViewInstance(view);
 
     if (gameActivity != null) {
-      gameActivity.resetNative();
+      //gameActivity.resetNative();
     }
   }
 

@@ -185,7 +185,7 @@ const computeDimensionsSettings = ({ metadata }) => {
 
 // Populate the 'INITIAL_DATA' channel that Lua reads for various initial settings (eg. the user
 // object, initial audio volume, initial post, ...)
-const useInitialData = ({ game, dimensionsSettings, extras }) => {
+const useInitialData = ({ game, dimensionsSettings, extras, scene }) => {
   const [sent, setSent] = useState(false);
   const sending = useRef(false);
 
@@ -245,6 +245,8 @@ const useInitialData = ({ game, dimensionsSettings, extras }) => {
 
         // Send it!
         await GhostChannels.pushAsync('INITIAL_DATA', JSON.stringify(initialData));
+        await GhostEvents.sendAsync('BASE_RELOAD', scene);
+
         if (!mounted) {
           return;
         }
@@ -467,6 +469,7 @@ export const GameView = ({
   gameId,
   gameUri,
   extras,
+  scene,
   windowed,
   onPressReload,
   logsVisible,
@@ -484,14 +487,14 @@ export const GameView = ({
 
   useUserStatus({ game });
 
-  const dimensionsSettings = game && computeDimensionsSettings({ metadata: game.metadata });
-
-  const initialDataHook = useInitialData({ game, dimensionsSettings, extras });
-
   const clearEventsHook = GhostEvents.useClear();
   const eventsReady = clearEventsHook.cleared;
 
+  const dimensionsSettings = game && computeDimensionsSettings({ metadata: game.metadata });
+
   const luaLoadingHook = useLuaLoading({ eventsReady, onLoaded });
+
+  const initialDataHook = useInitialData({ game, dimensionsSettings, extras, scene });
 
   const [sessionId, setSessionId] = useState(extras.sessionId);
 

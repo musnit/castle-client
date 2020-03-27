@@ -23,19 +23,6 @@ do
 end
 
 
-local updateMobileInitialData
-if isMobile then
-    function updateMobileInitialData()
-        while initialDataChannel:getCount() > 0 do
-            pcall(function()
-                CASTLE_INITIAL_DATA = cjson.decode(initialDataChannel:pop())
-            end)
-            initialDataChannel:clear()
-        end
-    end
-end
-
-
 -- Make a directory for temporary files
 
 CASTLE_TMP_DIR_NAME = 'tmp'
@@ -217,43 +204,10 @@ local main = {}
 local fileData = love.filesystem.newFileData('scene_creator.love')
 love.filesystem.mount(fileData, 'zip_mount', true)
 
-function main.load(arg)
-    network.async(function()
-        if GHOST_ROOT_URI then -- Global `GHOST_ROOT_URI` set by native code? Just use that.
-            homeUrl = GHOST_ROOT_URI
-        else -- Default to remote URI based on `remoteHomeVersion`, using local version if served
-            homeUrl = 'https://raw.githubusercontent.com/nikki93/ghost-home2/'
-                    .. remoteHomeVersion .. '/main.lua'
-            if theOS ~= 'Windows' -- Failed `0.0.0.0` requests hang on Windows...
-                    and network.exists(localHomeUrl) then
-                homeUrl = localHomeUrl
-            end
-        end
-
-        --homeUrl = 'zip://Client.lua'
-
-        if love.graphics then
-            -- Sleep a little to let screen dimensions settings synchronize, then create the default
-            -- font, so that it has the updated DPI
-            copas.sleep(0.08)
-            love.graphics.setFont(love.graphics.newFont(14))
-        end
-
-        home = root:newChild(homeUrl, { noConf = true })
-        jsEvents.send('CASTLE_GAME_LOADED', {})
-        io.flush()
-        network.onGameLoaded()
-        if initialFileDropped then
-            home:filedropped(initialFileDropped)
-            initialFileDropped = nil
-        end
-
-        if castle.system.isDesktop() then
-            ffi.cdef 'void ghostDoneLoading();'
-            C.ghostDoneLoading()
-        end
-    end)
+if GHOST_ROOT_URI then -- Global `GHOST_ROOT_URI` set by native code? Just use that.
+    homeUrl = GHOST_ROOT_URI
 end
+homeUrl = 'zip://Client.lua'
 
 local pendingPostOpens = {} -- Keep track of post open requests
 jsEvents.listen('CASTLE_POST_OPENED', function(postOpen)
@@ -269,27 +223,39 @@ end
 
 ffi.cdef 'bool ghostGetBackgrounded();'
 
-local initTime = os.time()
+local isFirstLoad = true
+
+jsEvents.listen('BASE_RELOAD', function(params)
+    print('in BASE_RELOAD')
+
+    network.async(function()
+        if isFirstLoad and love.graphics then
+            -- Sleep a little to let screen dimensions settings synchronize, then create the default
+            -- font, so that it has the updated DPI
+            copas.sleep(0.08)
+            love.graphics.setFont(love.graphics.newFont(14))
+
+            isFirstLoad = false
+        end
+
+        decodedInitialParams = {}
+        decodedInitialParams.scene = {}
+        decodedInitialParams.scene.sceneId = params.sceneId
+        decodedInitialParams.scene.data = cjson.decode(params.data)
+
+        if home ~= nil then
+            home.globals.castle.onQuit()
+        end
+        home = root:newChild(homeUrl, { noConf = true })
+
+        jsEvents.send('CASTLE_GAME_LOADED', {})
+        io.flush()
+        network.onGameLoaded()
+    end)
+end)
 
 function main.update(dt)
-    local diffTime=os.difftime(os.time(),initTime)
-    if diffTime > 10 then
-        initTime = os.time()
-        print('yoooo')
-
-        network.async(function()
-            decodedInitialParams = {}
-            decodedInitialParams.scene = {}
-            decodedInitialParams.scene.sceneId = 225
-            decodedInitialParams.scene.data = cjson.decode('{"snapshot": {"actors": [{"bp": {"components": {"Body": {"x": 0, "y": 0, "angle": 0, "bullet": false, "bodyType": "dynamic", "fixtures": [{"x": 0, "y": 0, "radius": 0.5, "sensor": false, "density": 1, "friction": 0.20000000298023, "shapeType": "circle", "restitution": 0.80000001192093}], "massData": [0, 0, 0.78539818525314, 0], "gravityScale": 1, "fixedRotation": true, "linearDamping": 0, "angularDamping": 0, "linearVelocity": [0, 0], "angularVelocity": 0}, "Solid": {}, "Bouncy": {}, "Moving": {}, "Drawing": {"url": "assets/circle.svg", "wobble": false}, "Falling": {}, "CircleShape": {}}}, "actorId": "1:1", "parentEntryId": "0-3"}]}}')
-
-            home.globals.castle.onQuit()
-            home = root:newChild(homeUrl, { noConf = true })
-        end)
-    end
-
     if isMobile then
-        --updateMobileInitialData()
         updateMobileKeyboardEvents()
     end
 

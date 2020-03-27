@@ -75,11 +75,15 @@ const CardScene = ({
               key={`game-view-${card.scene.sceneId}-${reloadCount}`}
               gameId={GAME_ID}
               gameUri={GAME_URI}
+              scene={{
+                sceneId: card.scene.sceneId,
+                data: JSON.stringify(card.scene.data),
+              }}
               extras={{
                 initialParams: JSON.stringify({
                   scene: {
                     sceneId: card.scene.sceneId,
-                    data: card.scene.data,
+                    data: JSON.stringify(card.scene.data),
                   },
                   isEditing,
                 }),
