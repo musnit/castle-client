@@ -1,9 +1,12 @@
 package games.castle;
 
+import expo.modules.updates.UpdatesController;
 import games.castle.generated.BasePackageList;
 
 import android.content.Context;
 import android.app.Application;
+
+import androidx.annotation.Nullable;
 
 import org.unimodules.adapters.react.ModuleRegistryAdapter;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
@@ -22,6 +25,8 @@ import ghost.GhostPackage;
 
 public class MainApplication extends Application implements ReactApplication {
   private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(new BasePackageList().getPackageList(), Arrays.<SingletonModule>asList());
+
+  private final boolean useDevelopmentJS = BuildConfig.DEBUG;
 
   private final ReactNativeHost mReactNativeHost =
       new ReactNativeHost(this) {
@@ -51,6 +56,25 @@ public class MainApplication extends Application implements ReactApplication {
         protected String getJSMainModuleName() {
           return "index";
         }
+
+        @Override
+        protected @Nullable
+        String getJSBundleFile() {
+          if (useDevelopmentJS) {
+            return super.getJSBundleFile();
+          } else {
+            return UpdatesController.getInstance().getLaunchAssetFile();
+          }
+        }
+
+        @Override
+        protected @Nullable String getBundleAssetName() {
+          if (useDevelopmentJS) {
+            return super.getBundleAssetName();
+          } else {
+            return UpdatesController.getInstance().getBundleAssetName();
+          }
+        }
       };
 
   @Override
@@ -62,6 +86,9 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
+    if (!useDevelopmentJS) {
+      UpdatesController.initialize(this);
+    }
     initializeFlipper(this); // Remove this line if you don't want Flipper enabled
   }
 
