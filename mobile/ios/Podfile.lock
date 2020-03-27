@@ -5,12 +5,33 @@ PODS:
   - EXConstants (8.0.0):
     - UMConstantsInterface
     - UMCore
+  - EXErrorRecovery (1.0.0):
+    - UMCore
   - EXFileSystem (8.0.0):
     - UMCore
     - UMFileSystemInterface
+  - EXFont (8.0.0):
+    - UMCore
+    - UMFontInterface
+  - EXKeepAwake (8.0.0):
+    - UMCore
+  - EXLinearGradient (8.0.0):
+    - UMCore
+  - EXLocation (8.0.0):
+    - UMCore
+    - UMPermissionsInterface
+    - UMTaskManagerInterface
   - EXPermissions (8.0.0):
     - UMCore
     - UMPermissionsInterface
+  - EXSQLite (8.0.0):
+    - UMCore
+    - UMFileSystemInterface
+  - EXUpdates (0.0.1-rc.2):
+    - React
+    - UMCore
+  - EXWebBrowser (8.0.0):
+    - UMCore
   - FBLazyVector (0.61.5)
   - FBReactNativeSpec (0.61.5):
     - Folly (= 2018.10.22.00)
@@ -289,8 +310,16 @@ DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXAppLoaderProvider (from `../node_modules/expo-app-loader-provider/ios`)
   - EXConstants (from `../node_modules/expo-constants/ios`)
+  - EXErrorRecovery (from `../node_modules/expo-error-recovery/ios`)
   - EXFileSystem (from `../node_modules/expo-file-system/ios`)
+  - EXFont (from `../node_modules/expo-font/ios`)
+  - EXKeepAwake (from `../node_modules/expo-keep-awake/ios`)
+  - EXLinearGradient (from `../node_modules/expo-linear-gradient/ios`)
+  - EXLocation (from `../node_modules/expo-location/ios`)
   - EXPermissions (from `../node_modules/expo-permissions/ios`)
+  - EXSQLite (from `../node_modules/expo-sqlite/ios`)
+  - EXUpdates (from `../node_modules/expo-updates/ios`)
+  - EXWebBrowser (from `../node_modules/expo-web-browser/ios`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/Libraries/FBReactNativeSpec`)
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
@@ -359,12 +388,36 @@ EXTERNAL SOURCES:
   EXConstants:
     :path: !ruby/object:Pathname
     path: "../node_modules/expo-constants/ios"
+  EXErrorRecovery:
+    :path: !ruby/object:Pathname
+    path: "../node_modules/expo-error-recovery/ios"
   EXFileSystem:
     :path: !ruby/object:Pathname
     path: "../node_modules/expo-file-system/ios"
+  EXFont:
+    :path: !ruby/object:Pathname
+    path: "../node_modules/expo-font/ios"
+  EXKeepAwake:
+    :path: !ruby/object:Pathname
+    path: "../node_modules/expo-keep-awake/ios"
+  EXLinearGradient:
+    :path: !ruby/object:Pathname
+    path: "../node_modules/expo-linear-gradient/ios"
+  EXLocation:
+    :path: !ruby/object:Pathname
+    path: "../node_modules/expo-location/ios"
   EXPermissions:
     :path: !ruby/object:Pathname
     path: "../node_modules/expo-permissions/ios"
+  EXSQLite:
+    :path: !ruby/object:Pathname
+    path: "../node_modules/expo-sqlite/ios"
+  EXUpdates:
+    :path: !ruby/object:Pathname
+    path: "../node_modules/expo-updates/ios"
+  EXWebBrowser:
+    :path: !ruby/object:Pathname
+    path: "../node_modules/expo-web-browser/ios"
   FBLazyVector:
     :path: "../node_modules/react-native/Libraries/FBLazyVector"
   FBReactNativeSpec:
@@ -479,8 +532,16 @@ SPEC CHECKSUMS:
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   EXAppLoaderProvider: f6aeb45ee81887811b34eee5c5f235a6111d58d0
   EXConstants: e287774d0d32634ddaef614f2e488c550c6deefc
+  EXErrorRecovery: 5e1d671b4ce87e47c6dfd7ffa858d8d730f24777
   EXFileSystem: fa8ecad925ad984681910a2273930f7255a0a9b5
+  EXFont: 5e3c087bc09461075a070457fa7c9df3c2bf17cf
+  EXKeepAwake: 5f96bd91d4d3be5ef12c59ef7efafeac0f50ad2f
+  EXLinearGradient: d5c7fa637f82566318261b7614d325b334ceed08
+  EXLocation: e994c186f94340caf1a9ace96b3458a72472553c
   EXPermissions: 3e58e0fbb2e9539ad1ef5617ff02c2356447421e
+  EXSQLite: 3297f74a9d36eb1eb1c2cd9b9037fe01170db15a
+  EXUpdates: 6bfca9f547732f94fc4b0df6a3f4e2ce3ecea71d
+  EXWebBrowser: 7e1b05d3f517e685267d51971a21f635f2e6bf06
   FBLazyVector: aaeaf388755e4f29cd74acbc9e3b8da6d807c37f
   FBReactNativeSpec: 118d0d177724c2d67f08a59136eb29ef5943ec75
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
@@ -535,4 +596,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 26439b1f575e2b7afa4766aba8c2da7a5d290586
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.9.1
