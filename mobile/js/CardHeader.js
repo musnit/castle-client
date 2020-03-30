@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
 
 const ConfigureCard = ({ card, onChange, onDeleteCard }) => {
   return (
-    <View style={{ minHeight: 45 * Viewport.vh, padding: 16, marginTop: 42, marginBottom: 16 }}>
+    <View style={{ minHeight: 40 * Viewport.vh, padding: 16, marginTop: 42, marginBottom: 16 }}>
       <ConfigureInput
         label="Short Name"
         placeholder="Choose a name for this card"

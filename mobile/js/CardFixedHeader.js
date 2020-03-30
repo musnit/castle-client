@@ -14,6 +14,8 @@ const styles = StyleSheet.create({
     top: 0,
     height: 54,
     flexDirection: 'row',
+    zIndex: 1,
+    elevation: 1,
   },
   back: {
     flexShrink: 0,
@@ -30,8 +32,7 @@ const styles = StyleSheet.create({
     zIndex: -1, // required to prevent negative margin from blocking back button
   },
   name: {
-    ...Constants.styles.overlayButton,
-    ...Constants.styles.overlayButtonLabel,
+    color: '#fff',
   },
 });
 
