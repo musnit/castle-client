@@ -151,34 +151,59 @@ const CreateDeckScreen = (props) => {
   };
 
   const _showCardOptions = (card) => {
-    showActionSheetWithOptions(
+    let destructiveButtonIndex = undefined;
+    let actions = [
       {
-        title: Utilities.makeCardPreviewTitle(card),
-        options: ['Use as Top Card', 'Duplicate Card', 'Delete Card', 'Cancel'],
-        destructiveButtonIndex: 2,
-        cancelButtonIndex: 3,
-      },
-      async (buttonIndex) => {
-        if (buttonIndex == 0) {
+        name: 'Use as Top Card',
+        action: async () => {
           const { deck: updatedDeck } = await Session.saveDeck(
             { ...card, makeInitialCard: true },
             { ...deck, initialCard: { cardId: card.cardId, id: card.id } }
           );
           setDeck(updatedDeck);
-        } else if (buttonIndex == 1) {
+        },
+      },
+      {
+        name: 'Duplicate Card',
+        action: async () => {
           const newCard = await duplicateCard({ variables: { cardId: card.cardId } });
           setDeck({
             ...deck,
             cards: deck.cards.concat([newCard.data.duplicateCard]),
           });
-        } else if (buttonIndex == 2) {
+        },
+      },
+    ];
+
+    if (card.cardId !== deck.initialCard.cardId) {
+      actions.push({
+        name: 'Delete Card',
+        action: () => {
           const newCards = deck.cards.filter((c) => c.cardId !== card.cardId);
           deleteCard({ variables: { cardId: card.cardId } });
           setDeck({
             ...deck,
             cards: newCards,
           });
-        }
+        },
+      });
+      destructiveButtonIndex = actions.length - 1;
+    }
+
+    actions.push({
+      name: 'Cancel',
+      action: () => {},
+    });
+
+    showActionSheetWithOptions(
+      {
+        title: Utilities.makeCardPreviewTitle(card),
+        options: actions.map((action) => action.name),
+        destructiveButtonIndex,
+        cancelButtonIndex: actions.length - 1,
+      },
+      async (buttonIndex) => {
+        actions[buttonIndex].action();
       }
     );
   };
