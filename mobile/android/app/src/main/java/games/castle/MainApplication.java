@@ -4,8 +4,6 @@ import games.castle.generated.BasePackageList;
 
 import android.content.Context;
 import android.app.Application;
-import android.content.res.AssetManager;
-import android.util.Log;
 
 import org.unimodules.adapters.react.ModuleRegistryAdapter;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
@@ -17,11 +15,6 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
@@ -71,51 +64,7 @@ public class MainApplication extends Application implements ReactApplication {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this); // Remove this line if you don't want Flipper enabled
-
-    copySceneCreatorAsset();
   }
-
-    private void copySceneCreatorAsset() {
-        AssetManager assetManager = getAssets();
-        InputStream in = null;
-        OutputStream out = null;
-        try {
-            in = assetManager.open("scene_creator.love");
-
-            File directory = new File(getFilesDir() + File.separator + "save" + File.separator + "Castle");
-            directory.mkdirs();
-
-            File outFile = new File(directory, "scene_creator.love");
-            out = new FileOutputStream(outFile);
-            copyFile(in, out);
-        } catch(IOException e) {
-            Log.e("tag", "Failed to copy asset file", e);
-        }
-        finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    // NOOP
-                }
-            }
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (IOException e) {
-                    // NOOP
-                }
-            }
-        }
-    }
-
-    private void copyFile(InputStream in, OutputStream out) throws IOException {
-        byte[] buffer = new byte[1024];
-        int read;
-        while((read = in.read(buffer)) != -1){
-            out.write(buffer, 0, read);
-        }
-    }
 
   /**
    * Loads Flipper in React Native templates.
