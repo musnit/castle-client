@@ -22,7 +22,7 @@ import ProfileScreen from './ProfileScreen';
 import ProfileGamesScreen from './ProfileGamesScreen';
 
 const Stack = createStackNavigator();
-const Tab = createSpaceNavigator();
+const Space = createSpaceNavigator();
 
 const ICON_SIZE = 24;
 
@@ -94,84 +94,15 @@ const ProfileNavigator = () => (
   </Stack.Navigator>
 );
 
-const TabNavigator = () => (
-  <Tab.Navigator
-    tabBarOptions={{
-      activeTintColor: '#fff',
-      inactiveTintColor: '#fffa',
-      style: {
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: '#0008',
-        borderTopWidth: 0,
-        elevation: 0,
-      },
-    }}>
-    <Tab.Screen
-      name="Play"
-      component={HomeNavigator}
-      options={({ route }) => {
-        return {
-          tabBarVisible: !route.state || route.state.index == 0,
-          tabBarIcon: ({ focused, color }) => {
-            return (
-              <Image
-                style={{
-                  width: ICON_SIZE,
-                  height: ICON_SIZE,
-                  tintColor: color,
-                }}
-                source={require('../assets/images/chess-figures.png')}
-              />
-            );
-          },
-        };
-      }}
-    />
-    {Constants.USE_CARDS_PROTOTYPE && (
-      <Tab.Screen
-        name="Create"
-        component={CreateNavigator}
-        options={({ route }) => {
-          return {
-            tabBarVisible: (!route.state || route.state.index == 0) && !route.params,
-            tabBarIcon: ({ focused, color }) => {
-              return (
-                <Image
-                  style={{
-                    width: ICON_SIZE,
-                    height: ICON_SIZE,
-                    tintColor: color,
-                  }}
-                  source={require('../assets/images/add-card.png')}
-                />
-              );
-            },
-          };
-        }}
-      />
-    )}
-    <Tab.Screen
+const SpaceNavigator = () => (
+  <Space.Navigator>
+    <Space.Screen name="Play" component={HomeNavigator} />
+    {Constants.USE_CARDS_PROTOTYPE && <Space.Screen name="Create" component={CreateNavigator} />}
+    <Space.Screen
       name="Profile"
       component={Constants.USE_CARDS_PROTOTYPE ? ProfileNavigator : ProfileGamesScreen}
-      options={{
-        tabBarIcon: ({ focused, color }) => {
-          return (
-            <Image
-              style={{
-                width: ICON_SIZE,
-                height: ICON_SIZE,
-                tintColor: color,
-              }}
-              source={require('../assets/images/single-neutral-shield.png')}
-            />
-          );
-        },
-      }}
     />
-  </Tab.Navigator>
+  </Space.Navigator>
 );
 
 const AuthNavigator = () => (
@@ -186,7 +117,7 @@ export const RootNavigator = () => {
   const { isSignedIn } = useSession();
   return (
     <NavigationContainer ref={DeepLinks.setNavigationRef}>
-      {isSignedIn ? <TabNavigator /> : <AuthNavigator />}
+      {isSignedIn ? <SpaceNavigator /> : <AuthNavigator />}
     </NavigationContainer>
   );
 };

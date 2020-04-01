@@ -295,7 +295,7 @@ const DecksFlipper = () => {
           </View>
         )}
       </Animated.View>
-      <CreateButton />
+      <CreateButton style={{ position: 'absolute', right: 32, bottom: 32 }} />
     </View>
   );
 };

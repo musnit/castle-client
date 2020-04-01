@@ -2,20 +2,26 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
+import FastImage from 'react-native-fast-image';
+
 const styles = StyleSheet.create({
   createButton: {
-    position: 'absolute',
-    backgroundColor: '#f00',
-    padding: 8,
-    right: 32,
-    bottom: 32,
+    backgroundColor: 'transparent',
+    padding: 4,
+  },
+  image: {
+    width: 48,
+    height: 48,
   },
 });
 
-const CreateButton = () => {
+const CreateButton = ({ style }) => {
   const navigation = useNavigation();
   return (
-    <TouchableOpacity style={styles.createButton} onPress={() => navigation.navigate('Create')}>
+    <TouchableOpacity
+      style={[styles.createButton, style]}
+      onPress={() => navigation.navigate('Create')}>
+      <FastImage style={styles.image} source={require('../assets/images/add-card.png')} />
       <Text>Create</Text>
     </TouchableOpacity>
   );
