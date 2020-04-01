@@ -1,3 +1,7 @@
+/**
+ NOTE: copied from @react-navigation/bottom-tabs v5.1.0
+ */
+
 import * as React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 

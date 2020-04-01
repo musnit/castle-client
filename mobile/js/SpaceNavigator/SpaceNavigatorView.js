@@ -1,11 +1,21 @@
 import * as React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { Animated, View, StyleSheet } from 'react-native';
 
 import { TabNavigationState, useTheme } from '@react-navigation/native';
 // eslint-disable-next-line import/no-unresolved
 import { ScreenContainer } from 'react-native-screens';
 
 import ResourceSavingScene from './ResourceSavingScene';
+import Viewport from '../viewport';
+
+const SPRING_CONFIG = {
+  stiffness: 1000,
+  damping: 500,
+  mass: 3,
+  overshootClamping: true,
+  restDisplacementThreshold: 0.01,
+  restSpeedThreshold: 0.01,
+};
 
 function SceneContent({ isFocused, children }) {
   const { colors } = useTheme();
@@ -20,7 +30,7 @@ function SceneContent({ isFocused, children }) {
   );
 }
 
-export default class BottomTabView extends React.Component {
+export default class SpaceNavigatorView extends React.Component {
   static defaultProps = {
     lazy: true,
   };
@@ -36,12 +46,29 @@ export default class BottomTabView extends React.Component {
 
   state = {
     loaded: [this.props.state.index],
+    prevIndex: this.props.state.index,
+    indexAnimated: new Animated.Value(this.props.state.index),
   };
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.state.index !== this.props.state.index) {
+      this.setState((state) => {
+        Animated.spring(state.indexAnimated, {
+          toValue: this.props.state.index,
+          ...SPRING_CONFIG,
+        }).start();
+        return {
+          prevIndex: prevProps.state.index,
+        };
+      });
+    }
+  }
 
   render() {
     const { state, descriptors, lazy } = this.props;
     const { routes } = state;
-    const { loaded } = this.state;
+    const { loaded, prevIndex, indexAnimated } = this.state;
+    const isAnimatingFromLeft = state.index < prevIndex;
 
     return (
       <View style={styles.container}>
@@ -50,8 +77,9 @@ export default class BottomTabView extends React.Component {
             const descriptor = descriptors[route.key];
             const { unmountOnBlur } = descriptor.options;
             const isFocused = state.index === index;
+            const isPrev = prevIndex === index;
 
-            if (unmountOnBlur && !isFocused) {
+            if (unmountOnBlur && !isFocused && !isPrev) {
               return null;
             }
 
@@ -60,12 +88,25 @@ export default class BottomTabView extends React.Component {
               return null;
             }
 
+            let outputRange;
+            if (isPrev) {
+              outputRange = isAnimatingFromLeft ? [0, 50 * Viewport.vw] : [0, -(50 * Viewport.vw)];
+            } else {
+              outputRange = isAnimatingFromLeft ? [-100 * Viewport.vw, 0] : [100 * Viewport.vw, 0];
+            }
+            let translateX = indexAnimated.interpolate({
+              inputRange: [prevIndex, state.index],
+              outputRange,
+            });
+
             return (
               <ResourceSavingScene
                 key={route.key}
                 style={StyleSheet.absoluteFill}
-                isVisible={isFocused}>
-                <SceneContent isFocused={isFocused}>{descriptor.render()}</SceneContent>
+                isVisible={isFocused || isPrev}>
+                <Animated.View style={{ flex: 1, transform: [{ translateX }] }}>
+                  <SceneContent isFocused={isFocused}>{descriptor.render()}</SceneContent>
+                </Animated.View>
               </ResourceSavingScene>
             );
           })}

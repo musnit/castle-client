@@ -95,13 +95,13 @@ const ProfileNavigator = () => (
 );
 
 const SpaceNavigator = () => (
-  <Space.Navigator>
-    <Space.Screen name="Play" component={HomeNavigator} />
-    {Constants.USE_CARDS_PROTOTYPE && <Space.Screen name="Create" component={CreateNavigator} />}
+  <Space.Navigator initialRouteName="Play">
     <Space.Screen
       name="Profile"
       component={Constants.USE_CARDS_PROTOTYPE ? ProfileNavigator : ProfileGamesScreen}
     />
+    <Space.Screen name="Play" component={HomeNavigator} />
+    {Constants.USE_CARDS_PROTOTYPE && <Space.Screen name="Create" component={CreateNavigator} />}
   </Space.Navigator>
 );
 
