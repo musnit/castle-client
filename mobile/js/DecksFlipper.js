@@ -7,6 +7,7 @@ import { useLazyQuery } from '@apollo/react-hooks';
 import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 
 import CardCell from './CardCell';
+import CreateButton from './CreateButton';
 import { MainSwitcherContext } from './MainSwitcher';
 import PlayDeckNavigator from './PlayDeckNavigator';
 import Viewport from './viewport';
@@ -294,6 +295,7 @@ const DecksFlipper = () => {
           </View>
         )}
       </Animated.View>
+      <CreateButton />
     </View>
   );
 };

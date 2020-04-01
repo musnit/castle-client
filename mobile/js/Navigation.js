@@ -4,7 +4,7 @@
 import React, { Fragment } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import createSpaceNavigator from './SpaceNavigator/createSpaceNavigator';
 import { Text, View, Image } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
@@ -22,7 +22,7 @@ import ProfileScreen from './ProfileScreen';
 import ProfileGamesScreen from './ProfileGamesScreen';
 
 const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator();
+const Tab = createSpaceNavigator();
 
 const ICON_SIZE = 24;
 
