@@ -89,20 +89,32 @@ export default class SpaceNavigatorView extends React.Component {
             }
 
             let outputRange;
+            let inputRange = [prevIndex, state.index];
             if (isPrev) {
               outputRange = isAnimatingFromLeft ? [0, 50 * Viewport.vw] : [0, -(50 * Viewport.vw)];
             } else {
               outputRange = isAnimatingFromLeft ? [-100 * Viewport.vw, 0] : [100 * Viewport.vw, 0];
             }
+            if (prevIndex > state.index) {
+              // because animated can't figure out how to interpolate a decreasing set of values
+              inputRange.reverse();
+              outputRange.reverse();
+            }
             let translateX = indexAnimated.interpolate({
-              inputRange: [prevIndex, state.index],
+              inputRange,
               outputRange,
             });
 
             return (
               <ResourceSavingScene
                 key={route.key}
-                style={StyleSheet.absoluteFill}
+                style={[
+                  StyleSheet.absoluteFill,
+                  {
+                    elevation: isFocused ? 1000 : null,
+                    zIndex: isFocused ? 1000 : null,
+                  },
+                ]}
                 isVisible={isFocused || isPrev}>
                 <Animated.View style={{ flex: 1, transform: [{ translateX }] }}>
                   <SceneContent isFocused={isFocused}>{descriptor.render()}</SceneContent>
