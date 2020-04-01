@@ -1,6 +1,15 @@
 import React, { Fragment } from 'react';
-import { View, Text, ScrollView, StatusBar, TouchableOpacity, Linking } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  TouchableOpacity,
+  Linking,
+} from 'react-native';
 import FastImage from 'react-native-fast-image';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -9,6 +18,20 @@ import { useSession } from './Session';
 import CardCell from './CardCell';
 import * as GameScreen from './GameScreen';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+const styles = StyleSheet.create({
+  header: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  back: {
+    flexShrink: 0,
+    width: 54,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
 
 const PlayDeckCell = ({ deck, onPress }) => {
   return (
@@ -125,6 +148,11 @@ const ProfileScreen = () => {
               shadowRadius: 1.41,
               elevation: 2,
             }}>
+            <View style={styles.header}>
+              <TouchableOpacity style={styles.back} onPress={() => navigate('Play')}>
+                <Icon name="close" size={32} color="#000" />
+              </TouchableOpacity>
+            </View>
             <View style={{ width: 96, paddingVertical: 16 }}>
               <ProfilePhoto userId={queryData.me.userId} />
             </View>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import gql from 'graphql-tag';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLazyQuery } from '@apollo/react-hooks';
@@ -14,6 +15,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
+  },
+  header: {
+    width: '100%',
+    flexDirection: 'row',
+  },
+  back: {
+    flexShrink: 0,
+    width: 54,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   scrollView: {
     padding: 16,
@@ -120,6 +131,11 @@ const CreateScreen = () => {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
       <ScrollView contentContainerStyle={styles.scrollView}>
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.back} onPress={() => navigation.navigate('Play')}>
+            <Icon name="close" size={32} color="#fff" style={Constants.styles.textShadow} />
+          </TouchableOpacity>
+        </View>
         <Text style={styles.sectionTitle}>Your Cards</Text>
         <View style={styles.decks}>
           <CreateDeckCell
