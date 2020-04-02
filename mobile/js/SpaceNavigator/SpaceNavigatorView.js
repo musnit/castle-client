@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Animated, View, StyleSheet } from 'react-native';
 
-import { TabNavigationState, useTheme } from '@react-navigation/native';
+import { useTheme } from '@react-navigation/native';
 // eslint-disable-next-line import/no-unresolved
 import { ScreenContainer } from 'react-native-screens';
 
@@ -17,6 +17,7 @@ const SPRING_CONFIG = {
   restSpeedThreshold: 0.01,
 };
 
+// NOTE: copied from @react-navigation/bottom-tabs v5.1.0
 function SceneContent({ isFocused, children }) {
   const { colors } = useTheme();
 
@@ -91,7 +92,7 @@ export default class SpaceNavigatorView extends React.Component {
             let outputRange;
             let inputRange = [prevIndex, state.index];
             if (isPrev) {
-              outputRange = isAnimatingFromLeft ? [0, 50 * Viewport.vw] : [0, -(50 * Viewport.vw)];
+              outputRange = isAnimatingFromLeft ? [0, 40 * Viewport.vw] : [0, -(40 * Viewport.vw)];
             } else {
               outputRange = isAnimatingFromLeft ? [-100 * Viewport.vw, 0] : [100 * Viewport.vw, 0];
             }

@@ -4,16 +4,14 @@ import {
   createNavigatorFactory,
   DefaultNavigatorOptions,
   TabRouter,
-  TabRouterOptions,
-  TabNavigationState,
 } from '@react-navigation/native';
-import {
-  BottomTabNavigationOptions,
-  BottomTabNavigationEventMap,
-} from '@react-navigation/bottom-tabs';
 
 import SpaceNavigatorView from './SpaceNavigatorView';
 
+/**
+ *  SpaceNavigator uses a TabRouter but does not show a tab bar.
+ *  It animates left and right depending on whether the route index increases or decreases.
+ */
 function SpaceNavigator({ initialRouteName, backBehavior, children, screenOptions, ...rest }) {
   const { state, descriptors, navigation } = useNavigationBuilder(TabRouter, {
     initialRouteName,
