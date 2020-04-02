@@ -60,6 +60,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#666',
     borderRadius: 6,
   },
+  cardOverlay: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#000',
+  },
 });
 
 // renders the current focused deck in the feed
@@ -108,6 +116,30 @@ const CurrentDeckCell = ({ deck }) => {
       ) : null}
     </View>
   );
+};
+
+const CardOverlay = ({ opacity }) => (
+  <Animated.View pointerEvents="none" style={[styles.cardOverlay, { opacity }]} />
+);
+
+/**
+ *  Cards other than the current card are faded to partial opacity
+ */
+const DARKENED_OVERLAY_OPACITY = 0.4;
+const getCardOpacities = (translateY) => {
+  const prev = translateY.interpolate({
+    inputRange: [0, DECK_FEED_ITEM_HEIGHT],
+    outputRange: [DARKENED_OVERLAY_OPACITY, 0],
+  });
+  const current = translateY.interpolate({
+    inputRange: [-DECK_FEED_ITEM_HEIGHT, 0, DECK_FEED_ITEM_HEIGHT],
+    outputRange: [DARKENED_OVERLAY_OPACITY, 0, DARKENED_OVERLAY_OPACITY],
+  });
+  const next = translateY.interpolate({
+    inputRange: [-DECK_FEED_ITEM_HEIGHT, 0],
+    outputRange: [0, DARKENED_OVERLAY_OPACITY],
+  });
+  return { prev, current, next };
 };
 
 const DecksFlipper = () => {
@@ -246,6 +278,8 @@ const DecksFlipper = () => {
   const nextNextCard =
     currentCardIndex < decks.length - 2 ? decks[currentCardIndex + 2].initialCard : null;
 
+  const opacity = getCardOpacities(translateY);
+
   return (
     <View style={styles.container}>
       <Animated.View style={{ transform: [{ translateY: containerY }] }}>
@@ -256,11 +290,13 @@ const DecksFlipper = () => {
           <TapGestureHandler onHandlerStateChange={onTapPrevStateChange}>
             <Animated.View style={styles.itemContainer}>
               <View style={styles.itemCard}>{prevCard && <CardCell card={prevCard} />}</View>
+              <CardOverlay opacity={opacity.prev} />
             </Animated.View>
           </TapGestureHandler>
         </PanGestureHandler>
         <View style={styles.itemContainer}>
           <CurrentDeckCell deck={currentDeck} />
+          <CardOverlay opacity={opacity.current} />
         </View>
         <PanGestureHandler
           onGestureEvent={onPanGestureEvent}
@@ -268,6 +304,7 @@ const DecksFlipper = () => {
           <TapGestureHandler onHandlerStateChange={onTapNextStateChange}>
             <Animated.View style={styles.itemContainer}>
               <View style={styles.itemCard}>{nextCard && <CardCell card={nextCard} />}</View>
+              <CardOverlay opacity={opacity.next} />
             </Animated.View>
           </TapGestureHandler>
         </PanGestureHandler>
@@ -275,6 +312,7 @@ const DecksFlipper = () => {
           <View style={styles.itemContainer}>
             <View style={styles.itemCard}>
               <CardCell card={nextNextCard} />
+              <CardOverlay opacity={DARKENED_OVERLAY_OPACITY} />
             </View>
           </View>
         )}
