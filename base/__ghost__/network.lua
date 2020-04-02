@@ -421,6 +421,8 @@ function network.fetch(url, method, skipCache)
     method = (method or 'GET'):upper()
     assert(method == 'GET' or method == 'HEAD', "`network.fetch` only supports 'GET' or 'HEAD'")
 
+    local response, httpCode, headers, status
+
     if url:match('^zip://') then
         if method == 'GET' then
             response, _ = love.filesystem.read('zip_mount/' .. url:gsub('^zip://', ''))
