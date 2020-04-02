@@ -3,40 +3,53 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeArea } from 'react-native-safe-area-context';
 
+import * as Constants from './Constants';
 import FastImage from 'react-native-fast-image';
 
 const styles = StyleSheet.create({
   createButton: {
     backgroundColor: 'transparent',
     padding: 4,
-  },
-  profileButton: {
-    backgroundColor: '#fff',
-    width: 32,
-    height: 32,
-    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  profileButton: {
+    backgroundColor: '#000',
+    width: 40,
+    height: 40,
+    borderRadius: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  createLabel: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+    paddingTop: 4,
+    ...Constants.styles.textShadow,
   },
 });
 
 const CreateButton = ({ style, onPress }) => (
   <TouchableOpacity style={[styles.createButton, style]} onPress={onPress}>
     <FastImage
+      tintColor="#ffffff"
       style={{
         width: 48,
         height: 48,
+        ...Constants.styles.dropShadow,
       }}
       source={require('../assets/images/add-card.png')}
     />
-    <Text>Create</Text>
+    <Text style={styles.createLabel}>Create</Text>
   </TouchableOpacity>
 );
 
 const ProfileButton = ({ style, onPress }) => (
   <TouchableOpacity style={[styles.profileButton, style]} onPress={onPress}>
     <FastImage
-      style={{ width: 24, height: 24 }}
+      tintColor="#ffffff"
+      style={{ width: 32, height: 32 }}
       source={require('../assets/images/single-neutral-shield.png')}
     />
   </TouchableOpacity>

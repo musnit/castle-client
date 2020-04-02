@@ -23,10 +23,6 @@ const DECK_FEED_ITEM_HEIGHT =
   (1 / Constants.CARD_RATIO) * 100 * vw + // height of card
   DECK_FEED_ITEM_MARGIN; // margin below cell
 
-// on small devices, ensure at least this amount of vertical space
-// is available to touch/drag the next item in the feed.
-const DECK_FEED_MIN_NEXT_TOUCH_AREA = 16;
-
 const FLIP_MIN_TRANSLATE_Y = DECK_FEED_ITEM_HEIGHT * 0.35;
 const FLIP_MIN_VELOCITY_Y = 72;
 
@@ -171,22 +167,10 @@ const DecksFlipper = () => {
   }
 
   const insets = useSafeArea();
-  const tabBarHeight = 49;
   let centerContentY = Math.max(
-    40,
-    (100 * vh - insets.top - DECK_FEED_ITEM_HEIGHT - tabBarHeight) * 0.5
+    64,
+    (100 * vh - insets.top - insets.bottom - DECK_FEED_ITEM_HEIGHT) * 0.5
   );
-
-  // move feed upward on small devices to ensure there's sufficient space
-  // to tap/drag the next feed item.
-  const nextContentY = centerContentY + DECK_FEED_ITEM_HEIGHT + DECK_FEED_ITEM_MARGIN;
-  const tabBarY = 100 * vh - insets.bottom - tabBarHeight;
-  if (tabBarY - nextContentY < DECK_FEED_MIN_NEXT_TOUCH_AREA) {
-    centerContentY = Math.max(
-      centerContentY - (DECK_FEED_MIN_NEXT_TOUCH_AREA - (tabBarY - nextContentY)),
-      insets.top
-    );
-  }
 
   let translateY = new Animated.Value(0);
   let containerY = Animated.add(translateY, centerContentY - DECK_FEED_ITEM_HEIGHT);
