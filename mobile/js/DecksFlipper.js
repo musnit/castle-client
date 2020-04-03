@@ -9,6 +9,7 @@ import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 import CardCell from './CardCell';
 import HomeOverlay from './HomeOverlay';
 import { MainSwitcherContext } from './MainSwitcher';
+import PlayDeckActions from './PlayDeckActions';
 import PlayDeckNavigator from './PlayDeckNavigator';
 import Viewport from './viewport';
 
@@ -112,6 +113,7 @@ const CurrentDeckCell = ({ deck }) => {
             deckId={deck.deckId}
             cardId={deck.initialCard && deck.initialCard.cardId}
           />
+          <PlayDeckActions deck={deck} />
         </View>
       ) : null}
     </View>
@@ -154,6 +156,9 @@ const DecksFlipper = () => {
           creator {
             userId
             username
+            photo {
+              url
+            }
           }
           initialCard {
             id

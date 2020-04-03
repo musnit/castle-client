@@ -8,16 +8,17 @@ import {
   TouchableOpacity,
   Linking,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-
 import { useSession } from './Session';
-import CardCell from './CardCell';
-import * as GameScreen from './GameScreen';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import CardCell from './CardCell';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import UserAvatar from './UserAvatar';
+
+import * as GameScreen from './GameScreen';
 
 const styles = StyleSheet.create({
   header: {
@@ -41,42 +42,6 @@ const PlayDeckCell = ({ deck, onPress }) => {
   );
 };
 
-const ProfilePhoto = (props) => {
-  const { loading: queryLoading, error: queryError, data: queryData } = useQuery(
-    gql`
-      query User($userId: ID!) {
-        user(userId: $userId) {
-          userId
-          photo {
-            fileId
-            url
-          }
-        }
-      }
-    `,
-    { variables: { userId: props.userId } }
-  );
-
-  return (
-    <View
-      style={{
-        backgroundColor: '#eee',
-        borderRadius: 1000000,
-        overflow: 'hidden',
-      }}>
-      {queryLoading ? null : (
-        <FastImage
-          style={{
-            width: '100%',
-            aspectRatio: 1,
-          }}
-          source={{ uri: queryData.user.photo.url }}
-        />
-      )}
-    </View>
-  );
-};
-
 const ProfileScreen = () => {
   const { navigate } = useNavigation();
   const { signOutAsync } = useSession();
@@ -95,6 +60,9 @@ const ProfileScreen = () => {
         name
         username
         websiteUrl
+        photo {
+          url
+        }
         decks {
           id
           deckId
@@ -154,7 +122,7 @@ const ProfileScreen = () => {
               </TouchableOpacity>
             </View>
             <View style={{ width: 96, paddingVertical: 16 }}>
-              <ProfilePhoto userId={queryData.me.userId} />
+              <UserAvatar url={queryData.me.photo?.url} />
             </View>
             <View style={{ alignItems: 'center' }}>
               <Text style={{ fontSize: 22, fontFamily: 'RTAliasGrotesk-Bold' }}>
