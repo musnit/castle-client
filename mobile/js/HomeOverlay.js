@@ -14,7 +14,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   profileButton: {
-    backgroundColor: '#000',
     width: 40,
     height: 40,
     borderRadius: 3,
@@ -48,9 +47,8 @@ const CreateButton = ({ style, onPress }) => (
 const ProfileButton = ({ style, onPress }) => (
   <TouchableOpacity style={[styles.profileButton, style]} onPress={onPress}>
     <FastImage
-      tintColor="#ffffff"
       style={{ width: 32, height: 32 }}
-      source={require('../assets/images/single-neutral-shield.png')}
+      source={require('../assets/images/feed-profile.png')}
     />
   </TouchableOpacity>
 );

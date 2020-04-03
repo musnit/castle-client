@@ -14,8 +14,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   avatar: {
-    width: 42,
-    height: 42,
+    width: 36,
+    height: 36,
   },
   username: {
     color: '#fff',

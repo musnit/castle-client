@@ -127,7 +127,7 @@ const CardOverlay = ({ opacity }) => (
 /**
  *  Cards other than the current card are faded to partial opacity
  */
-const DARKENED_OVERLAY_OPACITY = 0.4;
+const DARKENED_OVERLAY_OPACITY = 0.6;
 const getCardOpacities = (translateY) => {
   const prev = translateY.interpolate({
     inputRange: [0, DECK_FEED_ITEM_HEIGHT],
@@ -205,7 +205,7 @@ const DecksFlipper = () => {
 
   const insets = useSafeArea();
   let centerContentY = Math.max(
-    64,
+    insets.top + 64,
     (100 * vh - insets.top - insets.bottom - DECK_FEED_ITEM_HEIGHT) * 0.5
   );
 
