@@ -23,7 +23,7 @@ import * as Constants from './Constants';
 import CardBlocks from './CardBlocks';
 import CardDestinationPickerSheet from './CardDestinationPickerSheet';
 import CardHeader from './CardHeader';
-import CardFixedHeader from './CardFixedHeader';
+import { CardFixedHeader, CARD_FIXED_HEADER_HEIGHT } from './CardFixedHeader';
 import CardScene from './CardScene';
 import Viewport from './viewport';
 
@@ -155,10 +155,15 @@ const CardBottomActions = ({ card, onEditScene, onEditBlock, onSave }) => {
   );
 };
 
-const CardTopSpacer = () => {
+const CardTopSpacer = ({ isEditingScene }) => {
   // add margin top
   const insets = useSafeArea();
-  const height = Math.max(48, (100 * Viewport.vh - insets.top - CARD_HEIGHT) * 0.4);
+  const height = isEditingScene
+    ? CARD_FIXED_HEADER_HEIGHT
+    : Math.max(
+        CARD_FIXED_HEADER_HEIGHT,
+        (100 * Viewport.vh - insets.top - insets.bottom - CARD_HEIGHT) * 0.4
+      );
   return <View style={{ height }} />;
 };
 
@@ -588,7 +593,7 @@ class CreateCardScreen extends React.Component {
           <CardHeader card={card} expanded={isHeaderExpanded} onChange={this._handleCardChange} />
           <StatusBar hidden={true} />
           <View style={[styles.cardBody]}>
-            <CardTopSpacer />
+            <CardTopSpacer isEditingScene={isEditingScene} />
             <KeyboardAwareScrollView
               enableOnAndroid={true}
               scrollEnabled={isEditingBlock}

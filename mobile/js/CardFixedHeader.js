@@ -6,13 +6,14 @@ import { useSafeArea } from 'react-native-safe-area-context';
 import * as Constants from './Constants';
 import * as Utilities from './utilities';
 
+export const CARD_FIXED_HEADER_HEIGHT = 49;
+
 const styles = StyleSheet.create({
   fixedHeader: {
     width: '100%',
-    height: 54,
     position: 'absolute',
     top: 0,
-    height: 54,
+    height: CARD_FIXED_HEADER_HEIGHT,
     flexDirection: 'row',
     zIndex: 1,
     elevation: 1,
@@ -36,7 +37,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const CardFixedHeader = ({ card, expanded, isEditable, onPressBack, onPressTitle }) => {
+export const CardFixedHeader = ({ card, expanded, isEditable, onPressBack, onPressTitle }) => {
   const title = Utilities.makeCardPreviewTitle(card);
   const insets = useSafeArea();
   return (
@@ -54,5 +55,3 @@ const CardFixedHeader = ({ card, expanded, isEditable, onPressBack, onPressTitle
     </View>
   );
 };
-
-export default CardFixedHeader;
