@@ -588,7 +588,7 @@ class CreateCardScreen extends React.Component {
           <CardHeader card={card} expanded={isHeaderExpanded} onChange={this._handleCardChange} />
           <StatusBar hidden={true} />
           <View style={[styles.cardBody]}>
-            {!isEditingScene ? <CardTopSpacer /> : null}
+            <CardTopSpacer />
             <KeyboardAwareScrollView
               enableOnAndroid={true}
               scrollEnabled={isEditingBlock}
@@ -628,14 +628,12 @@ class CreateCardScreen extends React.Component {
               />
             ) : null}
           </View>
-          {!isEditingScene ? (
-            <CardFixedHeader
-              card={card}
-              expanded={isHeaderExpanded}
-              onPressBack={this._maybeSaveAndGoToDeck}
-              onPressTitle={this._toggleHeaderExpanded}
-            />
-          ) : null}
+          <CardFixedHeader
+            card={card}
+            expanded={isHeaderExpanded}
+            onPressBack={this._maybeSaveAndGoToDeck}
+            onPressTitle={this._toggleHeaderExpanded}
+          />
         </SafeAreaView>
         <CardDestinationPickerSheet
           deck={deck}
