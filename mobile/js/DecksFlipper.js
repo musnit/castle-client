@@ -113,9 +113,9 @@ const CurrentDeckCell = ({ deck }) => {
             deckId={deck.deckId}
             cardId={deck.initialCard && deck.initialCard.cardId}
           />
-          <PlayDeckActions deck={deck} />
         </View>
       ) : null}
+      <PlayDeckActions deck={deck} />
     </View>
   );
 };

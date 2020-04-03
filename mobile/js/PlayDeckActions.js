@@ -30,7 +30,7 @@ const PlayDeckActions = ({ deck }) => {
   const { creator } = deck;
   return (
     <React.Fragment>
-      <View style={styles.creator}>
+      <View style={styles.creator} pointerEvents="none">
         <View style={styles.avatar}>
           <UserAvatar url={creator.photo?.url} />
         </View>
