@@ -77,6 +77,7 @@ const CardScene = ({
               gameUri={GAME_URI}
               extras={{
                 initialParams: JSON.stringify({
+                  useSceneCreatorZip: true,
                   scene: {
                     sceneId: card.scene.sceneId,
                     data: card.scene.data,

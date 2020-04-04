@@ -193,6 +193,11 @@ end
 
 -- Top-level Love callbacks
 
+local initialParams = castle.game.getInitialParams()
+if initialParams and initialParams.useSceneCreatorZip then
+    CASTLE_USE_SCENE_CREATOR_ZIP = true
+end
+
 local initialFileDropped -- In case a `love.filedropped` occurred before home experience is loaded
 
 local homeUrl -- Populated later with the final home experience URL
@@ -203,9 +208,11 @@ local main = {}
 
 function main.load(arg)
     network.async(function()
-        local sceneCreatorResponse = network.fetch('https://api.castle.games/api/scene-creator')
-        local fileData = love.filesystem.newFileData(sceneCreatorResponse, 'scene_creator.love')
-        love.filesystem.mount(fileData, 'zip_mount', true)
+        if CASTLE_USE_SCENE_CREATOR_ZIP then
+            local sceneCreatorResponse = network.fetch('https://api.castle.games/api/scene-creator')
+            local fileData = love.filesystem.newFileData(sceneCreatorResponse, 'scene_creator.love')
+            love.filesystem.mount(fileData, 'zip_mount', true)
+        end
 
         if GHOST_ROOT_URI then -- Global `GHOST_ROOT_URI` set by native code? Just use that.
             homeUrl = GHOST_ROOT_URI
@@ -218,7 +225,9 @@ function main.load(arg)
             end
         end
 
-        homeUrl = 'zip://Client.lua'
+        if CASTLE_USE_SCENE_CREATOR_ZIP then
+            homeUrl = 'zip://Client.lua'
+        end
 
         if love.graphics then
             -- Sleep a little to let screen dimensions settings synchronize, then create the default
