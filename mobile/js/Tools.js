@@ -27,6 +27,7 @@ import { Base64 } from 'js-base64';
 import ImagePicker from 'react-native-image-picker';
 import { ReactNativeFile } from 'apollo-upload-client';
 import gql from 'graphql-tag';
+import { useSafeArea } from 'react-native-safe-area-context';
 import SvgImage from 'react-native-remote-svg';
 import BottomSheet from 'reanimated-bottom-sheet';
 
@@ -1304,6 +1305,7 @@ elementTypes['scrollBox'] = ToolScrollBox;
 const SceneCreatorPane = React.memo(
   ({ element, context, middleSnapPoint, bottomSnapPoint, renderHeader }) => {
     const bottomSheetRef = useRef(null);
+    const insets = useSafeArea();
 
     useEffect(() => {
       if (element.props.snapCount && element.props.snapCount > 1) {
@@ -1343,7 +1345,7 @@ const SceneCreatorPane = React.memo(
         }}>
         <BottomSheet
           ref={bottomSheetRef}
-          snapPoints={[600, middleSnapPoint, bottomSnapPoint]}
+          snapPoints={[600, middleSnapPoint, bottomSnapPoint + insets.bottom]}
           initialSnap={element.props.snapPoint}
           enabledInnerScrolling={false}
           enabledContentTapInteraction={false}
