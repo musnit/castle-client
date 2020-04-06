@@ -83,7 +83,11 @@ const CreateNavigator = () => (
         title: 'Create',
       }}
     />
-    <Stack.Screen name="CreateDeck" component={CreateDeckNavigator} />
+    <Stack.Screen
+      name="CreateDeck"
+      component={CreateDeckNavigator}
+      options={{ gestureEnabled: false }}
+    />
   </Stack.Navigator>
 );
 
