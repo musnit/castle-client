@@ -167,6 +167,7 @@ const DecksFlipper = () => {
             backgroundImage {
               fileId
               url
+              smallUrl
               primaryColor
             }
             blocks {

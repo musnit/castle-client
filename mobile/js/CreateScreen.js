@@ -106,6 +106,7 @@ const CreateScreen = () => {
               title
               backgroundImage {
                 url
+                smallUrl
               }
             }
           }

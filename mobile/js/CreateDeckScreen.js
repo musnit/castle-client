@@ -32,6 +32,7 @@ const DECK_FRAGMENT = `
     updatedTime
     backgroundImage {
       url
+      smallUrl
       primaryColor
     }
     scene {

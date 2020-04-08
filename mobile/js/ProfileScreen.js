@@ -74,6 +74,7 @@ const ProfileScreen = () => {
             title
             backgroundImage {
               url
+              smallUrl
             }
           }
         }

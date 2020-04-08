@@ -96,6 +96,11 @@ const CardCell = ({ card, onPress, title, isInitialCard, isPrivate }) => {
   if (card.backgroundImage && card.backgroundImage.primaryColor) {
     cardStyles = [styles.card, { backgroundColor: card.backgroundImage.primaryColor }];
   }
+  let uri;
+  if (card.backgroundImage) {
+    const { url, smallUrl } = card.backgroundImage;
+    uri = smallUrl ? smallUrl : url;
+  }
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -103,9 +108,7 @@ const CardCell = ({ card, onPress, title, isInitialCard, isPrivate }) => {
         activeOpacity={0.8}
         disabled={!onPress}
         onPress={onPress}>
-        {card.backgroundImage && (
-          <FastImage style={styles.cardPreviewImage} source={{ uri: card.backgroundImage.url }} />
-        )}
+        {card.backgroundImage && <FastImage style={styles.cardPreviewImage} source={{ uri }} />}
         {title && (
           <View style={styles.cardTitle}>
             <Text>{title}</Text>
