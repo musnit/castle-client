@@ -73,7 +73,6 @@
 		A14FE3F32355CF2D003B7EA0 /* lpprint.c in Sources */ = {isa = PBXBuildFile; fileRef = A14FE3EA2355CF2D003B7EA0 /* lpprint.c */; };
 		A14FE3F42355CF2D003B7EA0 /* lpcap.c in Sources */ = {isa = PBXBuildFile; fileRef = A14FE3EB2355CF2D003B7EA0 /* lpcap.c */; };
 		A14FE3F72355D0C8003B7EA0 /* package.love in Resources */ = {isa = PBXBuildFile; fileRef = A14FE3F62355D0C8003B7EA0 /* package.love */; };
-		A18BF47E2395E0A300259291 /* ghost_network_seed.db in Resources */ = {isa = PBXBuildFile; fileRef = A18BF4762395E0A300259291 /* ghost_network_seed.db */; };
 		A1959DF42410A026000C61E0 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1959DEC2410A026000C61E0 /* CoreTelephony.framework */; };
 		A1959DF62410A032000C61E0 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1959DF52410A032000C61E0 /* WebKit.framework */; };
 		A1959DF82410A0CC000C61E0 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1959DF72410A0CC000C61E0 /* Accelerate.framework */; };
@@ -228,7 +227,6 @@
 		A14FE3EF2355CF2D003B7EA0 /* lpcode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lpcode.h; path = "../../ghost-extensions/lpeg/lpcode.h"; sourceTree = "<group>"; };
 		A14FE3F52355D09D003B7EA0 /* package.love */ = {isa = PBXFileReference; lastKnownFileType = file; name = package.love; path = ../package.love; sourceTree = "<group>"; };
 		A14FE3F62355D0C8003B7EA0 /* package.love */ = {isa = PBXFileReference; lastKnownFileType = file; name = package.love; path = ../package.love; sourceTree = "<group>"; };
-		A18BF4762395E0A300259291 /* ghost_network_seed.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = ghost_network_seed.db; sourceTree = "<group>"; };
 		A1959DEC2410A026000C61E0 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		A1959DF52410A032000C61E0 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		A1959DF72410A0CC000C61E0 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
@@ -375,7 +373,6 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				A18BF4762395E0A300259291 /* ghost_network_seed.db */,
 				A14FE3F62355D0C8003B7EA0 /* package.love */,
 				A14FE3B92355CE21003B7EA0 /* ghost-extensions */,
 				A14FE3952355CA7B003B7EA0 /* liblove.xcodeproj */,
@@ -750,7 +747,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A18BF47E2395E0A300259291 /* ghost_network_seed.db in Resources */,
 				A14FE3F72355D0C8003B7EA0 /* package.love in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
