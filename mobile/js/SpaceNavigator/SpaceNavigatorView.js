@@ -56,6 +56,7 @@ export default class SpaceNavigatorView extends React.Component {
       this.setState((state) => {
         Animated.spring(state.indexAnimated, {
           toValue: this.props.state.index,
+          useNativeDriver: true,
           ...SPRING_CONFIG,
         }).start();
         return {
