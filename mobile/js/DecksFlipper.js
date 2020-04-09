@@ -43,6 +43,10 @@ const SPRING_CONFIG = {
   useNativeDriver: true,
 };
 
+// large opaque views are too slow to animate on android, so use pre-baked
+// dark images from the server instead
+const USE_PRERENDERED_OVERLAY = Constants.Android;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -128,9 +132,11 @@ const CurrentDeckCell = ({ deck }) => {
   );
 };
 
-const CardOverlay = ({ opacity }) => (
-  <Animated.View pointerEvents="none" style={[styles.cardOverlay, { opacity }]} />
-);
+const CardOverlay = ({ opacity }) => {
+  return USE_PRERENDERED_OVERLAY ? null : (
+    <Animated.View pointerEvents="none" style={[styles.cardOverlay, { opacity }]} />
+  );
+};
 
 /**
  *  Cards other than the current card are faded to partial opacity
@@ -173,9 +179,9 @@ const DecksFlipper = () => {
             cardId
             title
             backgroundImage {
-              fileId
               url
               smallUrl
+              overlayUrl
               primaryColor
             }
             blocks {
@@ -293,7 +299,9 @@ const DecksFlipper = () => {
           onHandlerStateChange={onPanStateChange}>
           <Animated.View style={styles.itemContainer}>
             <TouchableWithoutFeedback onPress={snapToPrevious}>
-              <View style={styles.itemCard}>{prevCard && <CardCell card={prevCard} />}</View>
+              <View style={styles.itemCard}>
+                {prevCard && <CardCell card={prevCard} useOverlay={USE_PRERENDERED_OVERLAY} />}
+              </View>
             </TouchableWithoutFeedback>
             <CardOverlay opacity={opacity.prev} />
           </Animated.View>
@@ -308,7 +316,9 @@ const DecksFlipper = () => {
           onHandlerStateChange={onPanStateChange}>
           <Animated.View style={styles.itemContainer}>
             <TouchableWithoutFeedback onPress={snapToNext}>
-              <View style={styles.itemCard}>{nextCard && <CardCell card={nextCard} />}</View>
+              <View style={styles.itemCard}>
+                {nextCard && <CardCell card={nextCard} useOverlay={USE_PRERENDERED_OVERLAY} />}
+              </View>
             </TouchableWithoutFeedback>
             <CardOverlay opacity={opacity.next} />
           </Animated.View>
@@ -316,7 +326,7 @@ const DecksFlipper = () => {
         {nextNextCard && (
           <View style={styles.itemContainer}>
             <View style={styles.itemCard}>
-              <CardCell card={nextNextCard} />
+              <CardCell card={nextNextCard} useOverlay={USE_PRERENDERED_OVERLAY} />
               <CardOverlay opacity={DARKENED_OVERLAY_OPACITY} />
             </View>
           </View>

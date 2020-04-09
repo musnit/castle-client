@@ -91,15 +91,21 @@ const PrivateIndicator = () => (
   </View>
 );
 
-const CardCell = ({ card, onPress, title, isInitialCard, isPrivate }) => {
+const CardCell = ({ card, onPress, title, useOverlay, isInitialCard, isPrivate }) => {
   let cardStyles = styles.card;
   if (card.backgroundImage && card.backgroundImage.primaryColor) {
     cardStyles = [styles.card, { backgroundColor: card.backgroundImage.primaryColor }];
   }
   let uri;
   if (card.backgroundImage) {
-    const { url, smallUrl } = card.backgroundImage;
-    uri = smallUrl ? smallUrl : url;
+    const { url, smallUrl, overlayUrl } = card.backgroundImage;
+    if (useOverlay && overlayUrl) {
+      uri = overlayUrl;
+    } else if (smallUrl) {
+      uri = smallUrl;
+    } else {
+      uri = url;
+    }
   }
   return (
     <View style={styles.container}>
