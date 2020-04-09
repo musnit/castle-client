@@ -1,8 +1,15 @@
 import React from 'react';
 import gql from 'graphql-tag';
-import { Animated, StatusBar, StyleSheet, Text, View } from 'react-native';
+import {
+  Animated,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
-import { PanGestureHandler, TapGestureHandler, State } from 'react-native-gesture-handler';
+import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 
@@ -33,6 +40,7 @@ const SPRING_CONFIG = {
   overshootClamping: true,
   restDisplacementThreshold: 1,
   restSpeedThreshold: 1,
+  useNativeDriver: true,
 };
 
 const styles = StyleSheet.create({
@@ -212,7 +220,9 @@ const DecksFlipper = () => {
 
   let translateY = new Animated.Value(0);
   let containerY = Animated.add(translateY, centerContentY - DECK_FEED_ITEM_HEIGHT);
-  const onPanGestureEvent = Animated.event([{ nativeEvent: { translationY: translateY } }]);
+  const onPanGestureEvent = Animated.event([{ nativeEvent: { translationY: translateY } }], {
+    useNativeDriver: true,
+  });
 
   const snapTo = React.useCallback(
     (toValue, onFinished) => {
@@ -258,18 +268,6 @@ const DecksFlipper = () => {
     [snapTo]
   );
 
-  const onTapPrevStateChange = (event) => {
-    if (event.nativeEvent.state === State.END) {
-      snapToPrevious();
-    }
-  };
-
-  const onTapNextStateChange = (event) => {
-    if (event.nativeEvent.state === State.END) {
-      snapToNext();
-    }
-  };
-
   if (!decks) {
     return <View style={styles.container} />;
   }
@@ -293,13 +291,14 @@ const DecksFlipper = () => {
         <PanGestureHandler
           onGestureEvent={onPanGestureEvent}
           onHandlerStateChange={onPanStateChange}>
-          <TapGestureHandler onHandlerStateChange={onTapPrevStateChange}>
-            <Animated.View style={styles.itemContainer}>
+          <Animated.View style={styles.itemContainer}>
+            <TouchableWithoutFeedback onPress={snapToPrevious}>
               <View style={styles.itemCard}>{prevCard && <CardCell card={prevCard} />}</View>
-              <CardOverlay opacity={opacity.prev} />
-            </Animated.View>
-          </TapGestureHandler>
+            </TouchableWithoutFeedback>
+            <CardOverlay opacity={opacity.prev} />
+          </Animated.View>
         </PanGestureHandler>
+
         <View style={styles.itemContainer}>
           <CurrentDeckCell deck={currentDeck} />
           <CardOverlay opacity={opacity.current} />
@@ -307,12 +306,12 @@ const DecksFlipper = () => {
         <PanGestureHandler
           onGestureEvent={onPanGestureEvent}
           onHandlerStateChange={onPanStateChange}>
-          <TapGestureHandler onHandlerStateChange={onTapNextStateChange}>
-            <Animated.View style={styles.itemContainer}>
+          <Animated.View style={styles.itemContainer}>
+            <TouchableWithoutFeedback onPress={snapToNext}>
               <View style={styles.itemCard}>{nextCard && <CardCell card={nextCard} />}</View>
-              <CardOverlay opacity={opacity.next} />
-            </Animated.View>
-          </TapGestureHandler>
+            </TouchableWithoutFeedback>
+            <CardOverlay opacity={opacity.next} />
+          </Animated.View>
         </PanGestureHandler>
         {nextNextCard && (
           <View style={styles.itemContainer}>
