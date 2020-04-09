@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 
 import FastImage from 'react-native-fast-image';
 
@@ -108,21 +108,22 @@ const CardCell = ({ card, onPress, title, useOverlay, isInitialCard, isPrivate }
     }
   }
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        style={cardStyles}
-        activeOpacity={0.8}
-        disabled={!onPress}
-        onPress={onPress}>
-        {card.backgroundImage && <FastImage style={styles.cardPreviewImage} source={{ uri }} />}
-        {title && (
-          <View style={styles.cardTitle}>
-            <Text>{title}</Text>
-          </View>
-        )}
-        {isInitialCard && <InitialCardIndicator />}
-        {isPrivate && <PrivateIndicator />}
-      </TouchableOpacity>
+    <View
+      style={styles.container}
+      renderToHardwareTextureAndroid={useOverlay}
+      shouldRasterizeIOS={useOverlay}>
+      <TouchableWithoutFeedback disabled={!onPress} onPress={onPress}>
+        <View style={cardStyles}>
+          {card.backgroundImage && <FastImage style={styles.cardPreviewImage} source={{ uri }} />}
+          {title && (
+            <View style={styles.cardTitle}>
+              <Text>{title}</Text>
+            </View>
+          )}
+          {isInitialCard && <InitialCardIndicator />}
+          {isPrivate && <PrivateIndicator />}
+        </View>
+      </TouchableWithoutFeedback>
     </View>
   );
 };
