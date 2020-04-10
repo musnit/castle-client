@@ -1474,15 +1474,6 @@ const applyDiff = (t, diff) => {
 };
 
 const KeyboardAwareWrapper = ({ backgroundColor, children }) => {
-  const containerRef = useRef(null);
-
-  const [keyboardVerticalOffset, setKeyboardVerticalOffset] = useState(0);
-  const updateKeyboardVerticalOffset = () => {
-    if (containerRef.current) {
-      containerRef.current.measureInWindow((x, y) => setKeyboardVerticalOffset(y));
-    }
-  };
-
   return (
     <View
       pointerEvents="box-none"
@@ -1490,9 +1481,8 @@ const KeyboardAwareWrapper = ({ backgroundColor, children }) => {
       <KeyboardAvoidingView
         pointerEvents="box-none"
         style={{ flex: 1 }}
-        behavior="padding"
-        enabled
-        keyboardVerticalOffset={keyboardVerticalOffset}>
+        behavior={Constants.iOS ? 'padding' : 'height'}
+        enabled>
         {children}
       </KeyboardAvoidingView>
     </View>
