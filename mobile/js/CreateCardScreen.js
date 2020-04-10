@@ -129,7 +129,7 @@ const CardForegroundActions = (props) => {
         <CardBlocks
           card={card}
           onSelectBlock={onEditBlock}
-          onPickDestination={onPickDestination}
+          onSelectDestination={onPickDestination}
           isEditable
           editBlockProps={editBlockProps}
         />
