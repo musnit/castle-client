@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import { BottomSheetTouchableWrapper } from './BottomSheetTouchableWrapper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import * as Constants from './Constants';
@@ -123,9 +124,9 @@ const SearchInput = (props) => {
 };
 
 const CardListItem = ({ card, onPress }) => (
-  <TouchableOpacity style={styles.listItem} onPress={onPress}>
+  <BottomSheetTouchableWrapper style={styles.listItem} onPress={onPress}>
     <Text style={styles.cardTitle}>{Utilities.makeCardPreviewTitle(card)}</Text>
-  </TouchableOpacity>
+  </BottomSheetTouchableWrapper>
 );
 
 const CardsList = ({ cards, initialCard, onPress, searchQuery }) => {
@@ -146,9 +147,9 @@ const CardsList = ({ cards, initialCard, onPress, searchQuery }) => {
 };
 
 const NewCardCell = ({ onPress }) => (
-  <TouchableOpacity style={styles.newCard} onPress={onPress}>
+  <BottomSheetTouchableWrapper style={styles.newCard} onPress={onPress}>
     <Text style={styles.newCardTitle}>Add a card to this deck</Text>
-  </TouchableOpacity>
+  </BottomSheetTouchableWrapper>
 );
 
 const CardsGrid = ({ cards, initialCard, onPress, onShowCardOptions, showNewCard }) => {
@@ -169,9 +170,11 @@ const CardsGrid = ({ cards, initialCard, onPress, onShowCardOptions, showNewCard
             />
             <Text style={styles.cardTitle}>{Utilities.makeCardPreviewTitle(card)}</Text>
             {onShowCardOptions && (
-              <TouchableOpacity style={styles.cardOptions} onPress={() => onShowCardOptions(card)}>
+              <BottomSheetTouchableWrapper
+                style={styles.cardOptions}
+                onPress={() => onShowCardOptions(card)}>
                 <Text style={styles.cardOptionsLabel}>...</Text>
-              </TouchableOpacity>
+              </BottomSheetTouchableWrapper>
             )}
           </View>
         ))}
@@ -243,11 +246,11 @@ const CardsSet = (props) => {
         <SearchInput placeholder="Search" value={state.searchQuery} onChangeText={setQuery} />
       )}
       <View style={styles.settingsRow}>
-        <TouchableOpacity onPress={rotateSortOrder}>
+        <BottomSheetTouchableWrapper onPress={rotateSortOrder}>
           <Text style={styles.sortLabel}>Sort: {SortOrderLabels[sortOrder]}</Text>
-        </TouchableOpacity>
+        </BottomSheetTouchableWrapper>
         <View style={styles.layoutPicker}>
-          <TouchableOpacity
+          <BottomSheetTouchableWrapper
             style={styles.layoutButton}
             onPress={() => setMode('grid')}
             hitSlop={{ top: 2, left: 2, bottom: 2, right: 2 }}>
@@ -258,8 +261,8 @@ const CardsSet = (props) => {
               }}
               source={require('../assets/images/layout-grid.png')}
             />
-          </TouchableOpacity>
-          <TouchableOpacity
+          </BottomSheetTouchableWrapper>
+          <BottomSheetTouchableWrapper
             style={styles.layoutButton}
             onPress={() => setMode('list')}
             hitSlop={{ top: 2, left: 2, bottom: 2, right: 2 }}>
@@ -270,7 +273,7 @@ const CardsSet = (props) => {
               }}
               source={require('../assets/images/layout-list.png')}
             />
-          </TouchableOpacity>
+          </BottomSheetTouchableWrapper>
         </View>
       </View>
       <KeyboardAwareScrollView style={styles.scrollView} keyboardShouldPersistTaps="handled">
