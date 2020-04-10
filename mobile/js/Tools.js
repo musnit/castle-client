@@ -57,7 +57,7 @@ import * as Session from './Session';
 // Colors
 //
 
-const Colors = {
+const lightColors = {
   background: '#fff',
   text: '#222',
 
@@ -78,6 +78,30 @@ const Colors = {
     shadow: '#0002',
   },
 };
+
+const darkColors = {
+  background: '#121212',
+  text: 'white',
+
+  button: {
+    text: 'white',
+    default: '#323234',
+    selected: '#3700b3',
+  },
+
+  textInput: {
+    text: 'white',
+    background: 'black',
+    border: '#323234',
+  },
+
+  popover: {
+    background: '#121212',
+    shadow: '#808080',
+  },
+};
+
+let Colors = lightColors;
 
 //
 // Infrastructure
@@ -1501,6 +1525,24 @@ export default Tools = ({ eventsReady, visible, landscape, game, children }) => 
     handler: (diffJson) => {
       const diff = JSON.parse(diffJson);
       setRoot((oldRoot) => applyDiff(oldRoot, diff));
+    },
+  });
+
+  // Light / dark colors
+  useEffect(() => {
+    Colors = lightColors;
+    setRoot(JSON.parse(JSON.stringify(root))); // Force re-render
+  }, []);
+  GhostEvents.useListen({
+    eventsReady,
+    eventName: 'CASTLE_TOOLS_COLORS',
+    handler: ({ isDark = false } = {}) => {
+      if (isDark) {
+        Colors = darkColors;
+      } else {
+        Colors = lightColors;
+      }
+      setRoot(JSON.parse(JSON.stringify(root))); // Force re-render
     },
   });
 
