@@ -1,6 +1,13 @@
 import React from 'react';
 import gql from 'graphql-tag';
-import { View, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import {
+  Keyboard,
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
 import { connectActionSheet } from '@expo/react-native-action-sheet';
@@ -17,6 +24,7 @@ import CardBlocks from './CardBlocks';
 import CardDestinationPickerSheet from './CardDestinationPickerSheet';
 import CardHeader from './CardHeader';
 import CardScene from './CardScene';
+import DeckVariables from './DeckVariables';
 import Viewport from './viewport';
 
 import * as GhostEvents from './ghost/GhostEvents';
@@ -182,7 +190,7 @@ class CreateCardScreen extends React.Component {
     card: EMPTY_CARD,
     isEditingBlock: false,
     blockIdToEdit: null,
-    // TODO: editor tab
+    selectedTab: 'card',
     isEditingScene: false,
   };
 
@@ -516,8 +524,10 @@ class CreateCardScreen extends React.Component {
     }
   };
 
+  _onSelectTab = (selectedTab) => this.setState({ selectedTab }, Keyboard.dismiss);
+
   render() {
-    const { deck, card, isEditingBlock, blockIdToEdit, isEditingScene } = this.state;
+    const { deck, card, isEditingBlock, blockIdToEdit, isEditingScene, selectedTab } = this.state;
     const blockToEdit =
       isEditingBlock && blockIdToEdit
         ? card.blocks.find((block) => block.cardBlockId === blockIdToEdit)
@@ -556,8 +566,18 @@ class CreateCardScreen extends React.Component {
     return (
       <React.Fragment>
         <SafeAreaView style={styles.container}>
-          <CardHeader card={card} onPressBack={this._maybeSaveAndGoToDeck} />
-          <View style={styles.cardBody}>
+          <CardHeader
+            card={card}
+            isEditable
+            mode={selectedTab}
+            onChangeMode={this._onSelectTab}
+            onPressBack={this._maybeSaveAndGoToDeck}
+          />
+          <View
+            style={[
+              styles.cardBody,
+              selectedTab === 'card' ? null : { position: 'absolute', left: -30000 },
+            ]}>
             <KeyboardAwareScrollView
               enableOnAndroid={true}
               scrollEnabled={isEditingBlock}
@@ -597,6 +617,7 @@ class CreateCardScreen extends React.Component {
               />
             ) : null}
           </View>
+          {selectedTab === 'variables' && <DeckVariables />}
         </SafeAreaView>
         <CardDestinationPickerSheet
           deck={deck}
