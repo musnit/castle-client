@@ -1,13 +1,6 @@
 import React from 'react';
 import gql from 'graphql-tag';
-import {
-  View,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  StatusBar,
-} from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
 import { connectActionSheet } from '@expo/react-native-action-sheet';
@@ -23,7 +16,6 @@ import * as Constants from './Constants';
 import CardBlocks from './CardBlocks';
 import CardDestinationPickerSheet from './CardDestinationPickerSheet';
 import CardHeader from './CardHeader';
-import { CardFixedHeader, CARD_FIXED_HEADER_HEIGHT } from './CardFixedHeader';
 import CardScene from './CardScene';
 import Viewport from './viewport';
 
@@ -155,18 +147,6 @@ const CardBottomActions = ({ card, onEditScene, onEditBlock, onSave }) => {
   );
 };
 
-const CardTopSpacer = ({ isEditingScene }) => {
-  // add margin top
-  const insets = useSafeArea();
-  const height = isEditingScene
-    ? CARD_FIXED_HEADER_HEIGHT
-    : Math.max(
-        CARD_FIXED_HEADER_HEIGHT,
-        (100 * Viewport.vh - insets.top - insets.bottom - CARD_HEIGHT) * 0.4
-      );
-  return <View style={{ height }} />;
-};
-
 const EMPTY_DECK = {
   title: '',
   cards: [],
@@ -202,7 +182,7 @@ class CreateCardScreen extends React.Component {
     card: EMPTY_CARD,
     isEditingBlock: false,
     blockIdToEdit: null,
-    isHeaderExpanded: false,
+    // TODO: editor tab
     isEditingScene: false,
   };
 
@@ -441,8 +421,6 @@ class CreateCardScreen extends React.Component {
   _handlePressBackground = () => {
     if (this.state.isEditingBlock) {
       this._handleDismissEditing();
-    } else if (this.state.isHeaderExpanded) {
-      this.setState({ isHeaderExpanded: false });
     }
   };
 
@@ -538,20 +516,8 @@ class CreateCardScreen extends React.Component {
     }
   };
 
-  _toggleHeaderExpanded = () =>
-    this.setState((state) => {
-      return { ...state, isHeaderExpanded: !state.isHeaderExpanded };
-    });
-
   render() {
-    const {
-      deck,
-      card,
-      isEditingBlock,
-      blockIdToEdit,
-      isHeaderExpanded,
-      isEditingScene,
-    } = this.state;
+    const { deck, card, isEditingBlock, blockIdToEdit, isEditingScene } = this.state;
     const blockToEdit =
       isEditingBlock && blockIdToEdit
         ? card.blocks.find((block) => block.cardBlockId === blockIdToEdit)
@@ -590,10 +556,8 @@ class CreateCardScreen extends React.Component {
     return (
       <React.Fragment>
         <SafeAreaView style={styles.container}>
-          <CardHeader card={card} expanded={isHeaderExpanded} onChange={this._handleCardChange} />
-          <StatusBar hidden={true} />
-          <View style={[styles.cardBody]}>
-            <CardTopSpacer isEditingScene={isEditingScene} />
+          <CardHeader card={card} onPressBack={this._maybeSaveAndGoToDeck} />
+          <View style={styles.cardBody}>
             <KeyboardAwareScrollView
               enableOnAndroid={true}
               scrollEnabled={isEditingBlock}
@@ -633,12 +597,6 @@ class CreateCardScreen extends React.Component {
               />
             ) : null}
           </View>
-          <CardFixedHeader
-            card={card}
-            expanded={isHeaderExpanded}
-            onPressBack={this._maybeSaveAndGoToDeck}
-            onPressTitle={this._toggleHeaderExpanded}
-          />
         </SafeAreaView>
         <CardDestinationPickerSheet
           deck={deck}
