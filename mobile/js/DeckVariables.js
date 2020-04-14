@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useActionSheet } from '@expo/react-native-action-sheet';
 
 import * as Constants from './Constants';
 
@@ -21,7 +22,7 @@ const styles = StyleSheet.create({
   variableInputContainer: {
     borderTopWidth: 1,
     borderColor: '#888',
-    padding: 12,
+    paddingVertical: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
@@ -71,9 +72,21 @@ const styles = StyleSheet.create({
   },
 });
 
-const VariableInput = ({ name, type, onChange, ...props }) => {
+const EMPTY_VARIABLE = {
+  name: '',
+  type: 'number',
+  value: 0,
+};
+
+const maybeParseInt = (value) => {
+  const result = parseInt(value);
+  return isNaN(result) ? 0 : result;
+};
+
+const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) => {
   const nameInputProps = {
     ...props,
+    autoFocus,
     value: name,
   };
   const valueInputProps = {
@@ -101,28 +114,62 @@ const VariableInput = ({ name, type, onChange, ...props }) => {
         autoCompleteType="off"
         autoCorrect={false}
         keyboardType="number-pad"
-        onChangeText={(value) => onChange({ value })}
+        onChangeText={(value) => onChange({ value: maybeParseInt(value) })}
         {...valueInputProps}
       />
       <View style={{ width: '4%' }}>
-        <Text style={{ color: '#fff' }}>X</Text>
+        <TouchableOpacity onPress={onDelete}>
+          <Text style={{ color: '#fff' }}>X</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
 };
 
 const DeckVariables = ({ card, onChange }) => {
-  const onChangeVariable = (changes, index) =>
-    onChange({
-      variables: card.variables.map((variable, ii) =>
-        ii == index ? { ...variable, ...changes } : variable
+  const { showActionSheetWithOptions } = useActionSheet();
+
+  const onChangeVariable = React.useCallback(
+    (changes, index) =>
+      onChange({
+        variables: card.variables.map((variable, ii) =>
+          ii == index ? { ...variable, ...changes } : variable
+        ),
+      }),
+    [card.variables, onChange]
+  );
+  const addVariable = React.useCallback(
+    () =>
+      onChange({
+        variables: [{ ...EMPTY_VARIABLE }].concat(card.variables),
+      }),
+    [card.variables, onChange]
+  );
+  const deleteVariable = React.useCallback(
+    (index) =>
+      showActionSheetWithOptions(
+        {
+          title: `Delete variable "${card.variables[index].name}"?`,
+          options: ['Delete', 'Cancel'],
+          destructiveButtonIndex: 0,
+          cancelButtonIndex: 1,
+        },
+        async (buttonIndex) => {
+          if (buttonIndex === 0) {
+            onChange({
+              variables: card.variables.filter((variable, ii) => ii !== index),
+            });
+          }
+        }
       ),
-    });
+    [card.variables, onChange]
+  );
+
   return (
     <View style={styles.container}>
       <Text style={styles.headingLabel}>Variables</Text>
       <View style={styles.actions}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={addVariable}>
           <Text style={styles.buttonLabel}>Add new variable</Text>
         </TouchableOpacity>
       </View>
@@ -134,8 +181,10 @@ const DeckVariables = ({ card, onChange }) => {
       {card.variables &&
         card.variables.map((variable, ii) => (
           <VariableInput
-            key={ii}
+            key={`var-${ii}`}
+            autoFocus={ii === 0 && variable.name.length === 0}
             onChange={(changes) => onChangeVariable(changes, ii)}
+            onDelete={() => deleteVariable(ii)}
             {...variable}
           />
         ))}
