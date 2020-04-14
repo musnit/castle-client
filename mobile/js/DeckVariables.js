@@ -1,5 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+
+import * as Constants from './Constants';
 
 const styles = StyleSheet.create({
   container: {
@@ -60,28 +62,25 @@ const styles = StyleSheet.create({
     marginTop: 8,
     color: '#888',
   },
+  actions: {
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  button: {
+    ...Constants.styles.plainButton,
+  },
+  buttonLabel: {
+    paddingHorizontal: 8,
+    ...Constants.styles.plainButtonLabel,
+  },
 });
 
-const DUMMY_VARIABLES = [
-  {
-    name: 'score',
-    type: 'number',
-    value: 5,
-  },
-  {
-    name: 'health',
-    type: 'number',
-    value: 100,
-  },
-  {
-    name: 'money',
-    type: 'number',
-    value: 475,
-  },
-];
-
-const VariableInput = ({ name, type, ...props }) => {
-  const textInputProps = {
+const VariableInput = ({ name, type, onChange, ...props }) => {
+  const nameInputProps = {
+    ...props,
+    value: name,
+  };
+  const valueInputProps = {
     ...props,
     value: props.value?.toString(),
   };
@@ -89,30 +88,60 @@ const VariableInput = ({ name, type, ...props }) => {
     <View style={styles.variableInputContainer}>
       <View style={{ flexDirection: 'row', width: '33%' }}>
         <Text style={styles.variablePrefix}>$</Text>
-        <Text style={styles.variableName}>{name}</Text>
+        <TextInput
+          style={styles.input}
+          placeholderTextColor="#666"
+          autoCapitalize="none"
+          autoCompleteType="off"
+          autoCorrect={false}
+          onChangeText={(name) => onChange({ name })}
+          {...nameInputProps}
+        />
       </View>
       <Text style={[styles.variableType, { width: '33%' }]}>{type}</Text>
       <TextInput
         style={[styles.input, { width: '33%' }]}
         placeholderTextColor="#666"
-        {...textInputProps}
+        autoCompleteType="off"
+        autoCorrect={false}
+        keyboardType="number-pad"
+        onChangeText={(value) => onChange({ value })}
+        {...valueInputProps}
       />
     </View>
   );
 };
 
-const DeckVariables = () => (
-  <View style={styles.container}>
-    <Text style={styles.headingLabel}>Variables</Text>
-    <View style={styles.labels}>
-      <Text style={[styles.label, { textAlign: 'left' }]}>Name</Text>
-      <Text style={[styles.label, { textAlign: 'center' }]}>Type</Text>
-      <Text style={[styles.label, { textAlign: 'right' }]}>Initial Value</Text>
+const DeckVariables = ({ card, onChange }) => {
+  const onChangeVariable = (changes, index) =>
+    onChange({
+      variables: card.variables.map((variable, ii) =>
+        ii == index ? { ...variable, ...changes } : variable
+      ),
+    });
+  return (
+    <View style={styles.container}>
+      <Text style={styles.headingLabel}>Variables</Text>
+      <View style={styles.actions}>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonLabel}>Add new variable</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.labels}>
+        <Text style={[styles.label, { textAlign: 'left' }]}>Name</Text>
+        <Text style={[styles.label, { textAlign: 'center' }]}>Type</Text>
+        <Text style={[styles.label, { textAlign: 'right' }]}>Initial Value</Text>
+      </View>
+      {card.variables &&
+        card.variables.map((variable, ii) => (
+          <VariableInput
+            key={ii}
+            onChange={(changes) => onChangeVariable(changes, ii)}
+            {...variable}
+          />
+        ))}
     </View>
-    {DUMMY_VARIABLES.map((variable, ii) => (
-      <VariableInput key={ii} {...variable} />
-    ))}
-  </View>
-);
+  );
+};
 
 export default DeckVariables;

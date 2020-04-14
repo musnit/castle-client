@@ -171,6 +171,24 @@ const EMPTY_BLOCK = {
   destination: null,
 };
 
+const DUMMY_VARIABLES = [
+  {
+    name: 'score',
+    type: 'number',
+    value: 5,
+  },
+  {
+    name: 'health',
+    type: 'number',
+    value: 100,
+  },
+  {
+    name: 'money',
+    type: 'number',
+    value: 475,
+  },
+];
+
 // height of safe area + tab bar on iPhone X family
 const IPHONEX_BOTTOM_SAFE_HEIGHT = 83 + 33;
 const ANDROID_BOTTOM_KEYBOARD_OFFSET = 64;
@@ -238,6 +256,8 @@ class CreateCardScreen extends React.Component {
             card = EMPTY_CARD;
           }
         } catch (_) {}
+        // TODO: real data
+        card.variables = DUMMY_VARIABLES;
       }
       this._mounted && this.setState({ deck, card, isEditingScene });
     }
@@ -617,7 +637,9 @@ class CreateCardScreen extends React.Component {
               />
             ) : null}
           </View>
-          {selectedTab === 'variables' && <DeckVariables />}
+          {selectedTab === 'variables' && (
+            <DeckVariables deck={deck} card={card} onChange={this._handleCardChange} />
+          )}
         </SafeAreaView>
         <CardDestinationPickerSheet
           deck={deck}
