@@ -19,13 +19,11 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   variableInputContainer: {
-    borderRadius: 3,
-    borderWidth: 1,
+    borderTopWidth: 1,
     borderColor: '#888',
-    padding: 8,
+    padding: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 16,
   },
   variablePrefix: {
     color: '#666',
@@ -36,7 +34,6 @@ const styles = StyleSheet.create({
   variableType: {
     color: '#666',
     fontSize: 16,
-    textAlign: 'center',
   },
   variableName: {
     color: '#fff',
@@ -47,7 +44,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '700',
-    textAlign: 'right',
   },
   labels: {
     flexDirection: 'row',
@@ -86,7 +82,7 @@ const VariableInput = ({ name, type, onChange, ...props }) => {
   };
   return (
     <View style={styles.variableInputContainer}>
-      <View style={{ flexDirection: 'row', width: '33%' }}>
+      <View style={{ flexDirection: 'row', width: '32%' }}>
         <Text style={styles.variablePrefix}>$</Text>
         <TextInput
           style={styles.input}
@@ -98,9 +94,9 @@ const VariableInput = ({ name, type, onChange, ...props }) => {
           {...nameInputProps}
         />
       </View>
-      <Text style={[styles.variableType, { width: '33%' }]}>{type}</Text>
+      <Text style={[styles.variableType, { width: '32%' }]}>{type}</Text>
       <TextInput
-        style={[styles.input, { width: '33%' }]}
+        style={[styles.input, { width: '32%' }]}
         placeholderTextColor="#666"
         autoCompleteType="off"
         autoCorrect={false}
@@ -108,6 +104,9 @@ const VariableInput = ({ name, type, onChange, ...props }) => {
         onChangeText={(value) => onChange({ value })}
         {...valueInputProps}
       />
+      <View style={{ width: '4%' }}>
+        <Text style={{ color: '#fff' }}>X</Text>
+      </View>
     </View>
   );
 };
@@ -128,9 +127,9 @@ const DeckVariables = ({ card, onChange }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.labels}>
-        <Text style={[styles.label, { textAlign: 'left' }]}>Name</Text>
-        <Text style={[styles.label, { textAlign: 'center' }]}>Type</Text>
-        <Text style={[styles.label, { textAlign: 'right' }]}>Initial Value</Text>
+        <Text style={[styles.label, { width: '32%' }]}>Name</Text>
+        <Text style={[styles.label, { width: '32%' }]}>Type</Text>
+        <Text style={[styles.label, { width: '36%' }]}>Initial Value</Text>
       </View>
       {card.variables &&
         card.variables.map((variable, ii) => (
