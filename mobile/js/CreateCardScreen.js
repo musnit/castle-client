@@ -490,30 +490,14 @@ class CreateCardScreen extends React.Component {
       },
       async () => {
         const { card } = this.state;
-        if (this.state.card.scene) {
+        if (card.scene) {
           // Already have a scene, just notify Lua
           GhostEvents.sendAsync('SCENE_CREATOR_EDITING', {
             isEditing: true,
           });
         } else {
           // No scene, add one
-          const newSceneData = { empty: true };
-          const result = await Session.apolloClient.mutate({
-            mutation: gql`
-              mutation CreateScene($data: Json!) {
-                createScene(data: $data) {
-                  sceneId
-                }
-              }
-            `,
-            variables: {
-              data: newSceneData,
-            },
-          });
-          sceneId = result.data && result.data.createScene && result.data.createScene.sceneId;
-          if (sceneId) {
-            this._handleCardChange({ scene: { sceneId, data: newSceneData } });
-          }
+          this._handleCardChange({ scene: { sceneId: card.cardId, data: { empty: true } } });
         }
       }
     );

@@ -266,21 +266,23 @@ export const prefetchCardsAsync = async ({ cardId }) => {
   });
 };
 
-export const saveDeck = async (card, deck, variables) => {
+async function updateScene(cardId, card) {
   // Save scene changes
-  if (card.scene && card.scene.sceneId && card.changedSceneData) {
+  if (card.scene && card.changedSceneData) {
     await apolloClient.mutate({
       mutation: gql`
-        mutation UpdateScene($sceneId: ID!, $data: Json!) {
-          updateScene(sceneId: $sceneId, data: $data) {
+        mutation UpdateScene($cardId: ID, $data: Json!) {
+          updateScene(cardId: $cardId, data: $data) {
             sceneId
           }
         }
       `,
-      variables: { sceneId: card.scene.sceneId, data: card.changedSceneData },
+      variables: { cardId, data: card.changedSceneData },
     });
   }
+}
 
+export const saveDeck = async (card, deck, variables) => {
   // Save deck and card
   const deckUpdateFragment = {
     title: deck.title,
@@ -288,7 +290,7 @@ export const saveDeck = async (card, deck, variables) => {
   const cardUpdateFragment = {
     title: card.title,
     backgroundImageFileId: card.backgroundImage ? card.backgroundImage.fileId : undefined,
-    sceneId: card.scene ? card.scene.sceneId : undefined,
+    sceneId: undefined,
     blocks: card.blocks.map((block) => {
       return {
         type: block.type,
@@ -358,6 +360,9 @@ export const saveDeck = async (card, deck, variables) => {
         updatedCard = updated;
       }
     });
+
+    await updateScene(updatedCard.cardId, card);
+
     return {
       card: updatedCard,
       deck: {
@@ -376,7 +381,10 @@ export const saveDeck = async (card, deck, variables) => {
         }`,
       variables: { deckId: deck.deckId, card: cardUpdateFragment },
     });
-    let newCards = deck.cards.concat(result.data.updateCard);
+    let newCards = deck.cards.concat(result.data.addCard);
+
+    await updateScene(newCards[newCards.length - 1].cardId, card);
+
     return {
       card: newCards[newCards.length - 1],
       deck: {
@@ -418,6 +426,9 @@ export const saveDeck = async (card, deck, variables) => {
     } else {
       newCard = result.data.createDeck.cards[0];
     }
+
+    await updateScene(newCard.cardId, card);
+
     return {
       card: newCard,
       deck: result.data.createDeck,
