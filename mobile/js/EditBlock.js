@@ -4,6 +4,7 @@ import FastImage from 'react-native-fast-image';
 
 import * as Utilities from './utilities';
 
+import BlockPreconditionPickerControl from './BlockPreconditionPickerControl';
 import CardDestinationPickerControl from './CardDestinationPickerControl';
 
 const styles = StyleSheet.create({
@@ -146,6 +147,15 @@ const EditBlock = (props) => {
         />
         {maybeBlockDestinationButton}
       </View>
+      {/* <View style={[styles.row, styles.pickerRow, typeStyles.row]}>
+        <Text style={[styles.label, typeStyles.label]}>
+          Requirement
+        </Text>
+        <BlockPreconditionPickerControl
+          deck={deck}
+          block={block}
+        />
+      </View> */}
       <View style={[styles.row, typeStyles.row, typeStyles.choiceRow]}>
         <Text style={[styles.label, typeStyles.label]}>Choice</Text>
         <Switch
