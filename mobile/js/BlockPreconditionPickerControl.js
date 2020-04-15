@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 
 import * as Constants from './Constants';
@@ -47,11 +47,32 @@ const styles = StyleSheet.create({
   },
 });
 
+const DUMMY_CONDITION = {
+  variable: 'score',
+  operator: 'equals',
+  comparator: 5,
+};
+
 const DropdownCaret = () => (
   <AntIcon name="caretdown" size={12} color="#fff" style={styles.caret} />
 );
 
-const BlockPreconditionPickerControl = ({ deck, block }) => {
+const BlockPreconditionPickerControl = ({ deck, block, onChangeBlock }) => {
+  const condition = block.condition || DUMMY_CONDITION;
+  const onChangeComparator = React.useCallback(
+    (textValue) => {
+      let val = parseInt(textValue);
+      val = isNaN(val) ? 0 : val;
+      return onChangeBlock({
+        ...block,
+        condition: {
+          ...condition,
+          comparator: val,
+        },
+      });
+    },
+    [condition, onChangeBlock]
+  );
   return (
     <View style={styles.container}>
       <View style={styles.conditionCell}>
@@ -60,16 +81,23 @@ const BlockPreconditionPickerControl = ({ deck, block }) => {
       <View style={styles.componentCell}>
         <Text style={styles.variablePrefix}>$</Text>
         <Text numberOfLines={1} ellipsizeMode="tail" style={styles.componentLabel}>
-          score
+          {condition.variable}
         </Text>
         <DropdownCaret />
       </View>
       <View style={styles.componentCell}>
-        <Text style={styles.componentLabel}>equals</Text>
+        <Text style={styles.componentLabel}>{condition.operator}</Text>
         <DropdownCaret />
       </View>
       <View style={styles.componentCell}>
-        <Text style={styles.componentLabel}>5</Text>
+        <TextInput
+          style={styles.componentLabel}
+          value={condition.comparator?.toString()}
+          autoCompleteType="off"
+          autoCorrect={false}
+          keyboardType="number-pad"
+          onChangeText={onChangeComparator}
+        />
       </View>
     </View>
   );

@@ -147,15 +147,12 @@ const EditBlock = (props) => {
         />
         {maybeBlockDestinationButton}
       </View>
-      {/* <View style={[styles.row, styles.pickerRow, typeStyles.row]}>
-        <Text style={[styles.label, typeStyles.label]}>
-          Requirement
-        </Text>
-        <BlockPreconditionPickerControl
-          deck={deck}
-          block={block}
-        />
-      </View> */}
+      {false && block.type == 'choice' && (
+        <View style={[styles.row, styles.pickerRow, typeStyles.row]}>
+          <Text style={[styles.label, typeStyles.label]}>Requirement</Text>
+          <BlockPreconditionPickerControl deck={deck} block={block} onChangeBlock={onChangeBlock} />
+        </View>
+      )}
       <View style={[styles.row, typeStyles.row, typeStyles.choiceRow]}>
         <Text style={[styles.label, typeStyles.label]}>Choice</Text>
         <Switch
