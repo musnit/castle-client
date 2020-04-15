@@ -480,14 +480,15 @@ class CreateCardScreen extends React.Component {
         const newSceneData = { empty: true };
         const result = await Session.apolloClient.mutate({
           mutation: gql`
-            mutation CreateScene($data: Json!) {
-              createScene(data: $data) {
+            mutation CreateScene($data: Json!, $cardId: ID) {
+              createScene(data: $data, cardId: $cardId) {
                 sceneId
               }
             }
           `,
           variables: {
             data: newSceneData,
+            cardId: this.state.card.cardId,
           },
         });
         sceneId = result.data && result.data.createScene && result.data.createScene.sceneId;
