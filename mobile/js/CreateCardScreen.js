@@ -257,6 +257,7 @@ class CreateCardScreen extends React.Component {
           }
         } catch (_) {}
         // TODO: real data
+        deck.variables = DUMMY_VARIABLES;
         card.variables = DUMMY_VARIABLES;
       }
       this._mounted && this.setState({ deck, card, isEditingScene });

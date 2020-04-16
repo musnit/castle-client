@@ -1,12 +1,14 @@
 import React from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import AntIcon from 'react-native-vector-icons/AntDesign';
+import { useActionSheet } from '@expo/react-native-action-sheet';
 
 import * as Constants from './Constants';
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     paddingTop: 4,
     paddingBottom: 12,
   },
@@ -23,6 +25,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 6,
     marginRight: 8,
+    marginBottom: 4,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -53,42 +56,85 @@ const DUMMY_CONDITION = {
   comparator: 5,
 };
 
+const DUMMY_OPERATORS = ['equals', 'does not equal', 'is less than', 'is greater than'];
+
 const DropdownCaret = () => (
   <AntIcon name="caretdown" size={12} color="#fff" style={styles.caret} />
 );
 
 const BlockPreconditionPickerControl = ({ deck, block, onChangeBlock }) => {
+  const { showActionSheetWithOptions } = useActionSheet();
   const condition = block.condition || DUMMY_CONDITION;
+  const onChangeCondition = React.useCallback(
+    (changes) =>
+      onChangeBlock({
+        ...block,
+        condition: {
+          ...condition,
+          ...changes,
+        },
+      }),
+    [condition, onChangeBlock]
+  );
   const onChangeComparator = React.useCallback(
     (textValue) => {
       let val = parseInt(textValue);
       val = isNaN(val) ? 0 : val;
-      return onChangeBlock({
-        ...block,
-        condition: {
-          ...condition,
-          comparator: val,
-        },
+      return onChangeCondition({
+        comparator: val,
       });
     },
-    [condition, onChangeBlock]
+    [condition, onChangeCondition]
+  );
+  const onChangeVariable = React.useCallback(
+    // TODO: what if this deck has no variables?
+    (variable) =>
+      showActionSheetWithOptions(
+        {
+          title: 'Choose a variable',
+          options: deck.variables.map((variable) => variable.name).concat(['Cancel']),
+          cancelButtonIndex: deck.variables.length,
+        },
+        async (buttonIndex) => {
+          if (buttonIndex !== deck.variables.length) {
+            onChangeCondition({ variable: deck.variables[buttonIndex].name });
+          }
+        }
+      ),
+    [deck.variables, onChangeCondition]
+  );
+  const onChangeOperator = React.useCallback(
+    (operator) =>
+      showActionSheetWithOptions(
+        {
+          title: 'Choose how to compare the variable',
+          options: DUMMY_OPERATORS.concat(['Cancel']),
+          cancelButtonIndex: DUMMY_OPERATORS.length,
+        },
+        async (buttonIndex) => {
+          if (buttonIndex !== DUMMY_OPERATORS.length) {
+            onChangeCondition({ operator: DUMMY_OPERATORS[buttonIndex] });
+          }
+        }
+      ),
+    [onChangeCondition]
   );
   return (
     <View style={styles.container}>
       <View style={styles.conditionCell}>
         <Text style={styles.componentLabel}>If</Text>
       </View>
-      <View style={styles.componentCell}>
+      <TouchableOpacity style={styles.componentCell} onPress={onChangeVariable}>
         <Text style={styles.variablePrefix}>$</Text>
         <Text numberOfLines={1} ellipsizeMode="tail" style={styles.componentLabel}>
           {condition.variable}
         </Text>
         <DropdownCaret />
-      </View>
-      <View style={styles.componentCell}>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.componentCell} onPress={onChangeOperator}>
         <Text style={styles.componentLabel}>{condition.operator}</Text>
         <DropdownCaret />
-      </View>
+      </TouchableOpacity>
       <View style={styles.componentCell}>
         <TextInput
           style={styles.componentLabel}
