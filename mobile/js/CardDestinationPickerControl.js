@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import Ionicon from 'react-native-vector-icons/Ionicons';
 
 const MAX_NUM_CARDS = 4;
 
@@ -16,25 +16,24 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#444',
     borderRadius: 2,
-    padding: 12,
+    paddingVertical: 4,
+    paddingHorizontal: 6,
     marginRight: 8,
+    marginBottom: 4,
     flexDirection: 'row',
     alignItems: 'center',
   },
   label: {
     color: '#fff',
+    fontSize: 16,
   },
-  image: {
-    width: 14,
-    aspectRatio: 1,
-    marginRight: 8,
-  },
+  icon: { marginRight: 4, marginTop: 1 },
 });
 
-const CardPickerCell = ({ title, image, onPress }) => {
+const CardPickerCell = ({ title, icon, onPress }) => {
   return (
     <TouchableOpacity style={styles.cell} onPress={onPress}>
-      {image ? <FastImage style={styles.image} source={image} /> : null}
+      {icon ? <Ionicon name={icon} size={18} color="#fff" style={styles.icon} /> : null}
       <Text style={styles.label}>{title}</Text>
     </TouchableOpacity>
   );
@@ -45,12 +44,12 @@ const CardDestinationPickerControl = ({ onSelectCard, onSelectSearch, deck }) =>
   items.push({
     title: 'New',
     onPress: () => onSelectCard({ cardId: Constants.CREATE_NEW_CARD_ID }),
-    image: require('../assets/images/add.png'),
+    icon: 'md-add',
   });
   items.push({
     title: 'Search',
     onPress: onSelectSearch,
-    image: require('../assets/images/search.png'),
+    icon: 'md-search',
   });
   items = items.concat(
     deck.cards.slice(0, MAX_NUM_CARDS).map((card) => {
