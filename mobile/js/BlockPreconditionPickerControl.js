@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import AntIcon from 'react-native-vector-icons/AntDesign';
+import Ionicon from 'react-native-vector-icons/Ionicons';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 
 import * as Constants from './Constants';
@@ -48,12 +49,17 @@ const styles = StyleSheet.create({
     paddingLeft: 6,
     paddingTop: 2,
   },
+  addLabel: {
+    color: '#fff',
+    fontSize: 16,
+    textAlign: 'center',
+  },
 });
 
 const DUMMY_CONDITION = {
   variable: 'score',
   operator: 'equals',
-  comparator: 5,
+  operand: 5,
 };
 
 const DUMMY_OPERATORS = ['equals', 'does not equal', 'is less than', 'is greater than'];
@@ -64,7 +70,7 @@ const DropdownCaret = () => (
 
 const BlockPreconditionPickerControl = ({ deck, block, onChangeBlock }) => {
   const { showActionSheetWithOptions } = useActionSheet();
-  const condition = block.condition || DUMMY_CONDITION;
+  const condition = block.condition;
   const onChangeCondition = React.useCallback(
     (changes) =>
       onChangeBlock({
@@ -76,12 +82,12 @@ const BlockPreconditionPickerControl = ({ deck, block, onChangeBlock }) => {
       }),
     [condition, onChangeBlock]
   );
-  const onChangeComparator = React.useCallback(
+  const onChangeOperand = React.useCallback(
     (textValue) => {
       let val = parseInt(textValue);
       val = isNaN(val) ? 0 : val;
       return onChangeCondition({
-        comparator: val,
+        operand: val,
       });
     },
     [condition, onChangeCondition]
@@ -119,34 +125,47 @@ const BlockPreconditionPickerControl = ({ deck, block, onChangeBlock }) => {
       ),
     [onChangeCondition]
   );
-  return (
-    <View style={styles.container}>
-      <View style={styles.conditionCell}>
-        <Text style={styles.componentLabel}>If</Text>
+  if (condition) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.conditionCell}>
+          <Text style={styles.componentLabel}>If</Text>
+        </View>
+        <TouchableOpacity style={styles.componentCell} onPress={onChangeVariable}>
+          <Text style={styles.variablePrefix}>$</Text>
+          <Text numberOfLines={1} ellipsizeMode="tail" style={styles.componentLabel}>
+            {condition.variable}
+          </Text>
+          <DropdownCaret />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.componentCell} onPress={onChangeOperator}>
+          <Text style={styles.componentLabel}>{condition.operator}</Text>
+          <DropdownCaret />
+        </TouchableOpacity>
+        <View style={styles.componentCell}>
+          <TextInput
+            style={styles.componentLabel}
+            value={condition.operand?.toString()}
+            autoCompleteType="off"
+            autoCorrect={false}
+            keyboardType="number-pad"
+            onChangeText={onChangeOperand}
+          />
+        </View>
       </View>
-      <TouchableOpacity style={styles.componentCell} onPress={onChangeVariable}>
-        <Text style={styles.variablePrefix}>$</Text>
-        <Text numberOfLines={1} ellipsizeMode="tail" style={styles.componentLabel}>
-          {condition.variable}
-        </Text>
-        <DropdownCaret />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.componentCell} onPress={onChangeOperator}>
-        <Text style={styles.componentLabel}>{condition.operator}</Text>
-        <DropdownCaret />
-      </TouchableOpacity>
-      <View style={styles.componentCell}>
-        <TextInput
-          style={styles.componentLabel}
-          value={condition.comparator?.toString()}
-          autoCompleteType="off"
-          autoCorrect={false}
-          keyboardType="number-pad"
-          onChangeText={onChangeComparator}
-        />
+    );
+  } else {
+    return (
+      <View style={styles.container}>
+        <TouchableOpacity
+          style={styles.componentCell}
+          onPress={() => onChangeCondition(DUMMY_CONDITION)}>
+          <Ionicon name="md-add" size={18} color="#fff" style={{ marginRight: 4, marginTop: 1 }} />
+          <Text style={styles.addLabel}>Add requirement</Text>
+        </TouchableOpacity>
       </View>
-    </View>
-  );
+    );
+  }
 };
 
 export default BlockPreconditionPickerControl;
