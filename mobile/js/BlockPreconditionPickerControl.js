@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
   },
+  deleteButton: { alignItems: 'center', justifyContent: 'center', padding: 4 },
 });
 
 const EMPTY_CONDITION = {
@@ -84,6 +85,17 @@ const BlockPreconditionPickerControl = ({ deck, block, onChangeBlock }) => {
         },
       }),
     [condition, onChangeBlock]
+  );
+  const onDeleteCondition = React.useCallback(
+    () =>
+      onChangeBlock({
+        ...block,
+        metadata: {
+          ...block.metadata,
+          condition: undefined,
+        },
+      }),
+    [onChangeCondition]
   );
   const onChangeOperand = React.useCallback(
     (textValue) => {
@@ -156,6 +168,9 @@ const BlockPreconditionPickerControl = ({ deck, block, onChangeBlock }) => {
             onChangeText={onChangeOperand}
           />
         </View>
+        <TouchableOpacity style={styles.deleteButton} onPress={onDeleteCondition}>
+          <Ionicon name="md-trash" size={24} color="#bbb" />
+        </TouchableOpacity>
       </View>
     );
   } else if (deck.variables?.length) {
