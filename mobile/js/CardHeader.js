@@ -35,11 +35,11 @@ const styles = StyleSheet.create({
 
 const MODE_ITEMS = [
   {
-    name: 'Card',
+    icon: 'shape',
     value: 'card',
   },
   {
-    name: 'Variables',
+    icon: 'variable',
     value: 'variables',
   },
 ];

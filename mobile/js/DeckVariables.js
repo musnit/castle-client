@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
+import Ionicon from 'react-native-vector-icons/Ionicons';
 
 import * as Constants from './Constants';
 
@@ -120,7 +121,7 @@ const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) 
       />
       <View style={{ width: '4%' }}>
         <TouchableOpacity onPress={onDelete}>
-          <Text style={{ color: '#fff' }}>X</Text>
+          <Ionicon name="md-trash" size={24} color="#bbb" />
         </TouchableOpacity>
       </View>
     </View>

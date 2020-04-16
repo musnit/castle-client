@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const styles = StyleSheet.create({
   container: {
@@ -32,9 +33,13 @@ const SegmentedNavigation = (props) => {
           key={item.value}
           style={[styles.item, item === selectedItem ? styles.selectedItem : null]}
           onPress={() => onSelectItem(item)}>
-          <Text style={[styles.name, item === selectedItem ? styles.selectedName : null]}>
-            {item.name}
-          </Text>
+          {item.icon ? (
+            <MCIcon name={item.icon} size={24} color={item === selectedItem ? '#fff' : '#ccc'} />
+          ) : (
+            <Text style={[styles.name, item === selectedItem ? styles.selectedName : null]}>
+              {item.name}
+            </Text>
+          )}
         </TouchableOpacity>
       ))}
     </View>
