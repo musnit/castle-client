@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
 });
 
 const EMPTY_VARIABLE = {
+  id: 0,
   name: '',
   type: 'number',
   value: 0,
@@ -91,7 +92,7 @@ const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) 
   };
   const valueInputProps = {
     ...props,
-    value: props.value?.toString(),
+    value: props.initialValue?.toString(),
   };
   return (
     <View style={styles.variableInputContainer}>
@@ -114,7 +115,7 @@ const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) 
         autoCompleteType="off"
         autoCorrect={false}
         keyboardType="number-pad"
-        onChangeText={(value) => onChange({ value: maybeParseInt(value) })}
+        onChangeText={(value) => onChange({ initialValue: maybeParseInt(value) })}
         {...valueInputProps}
       />
       <View style={{ width: '4%' }}>
@@ -181,7 +182,7 @@ const DeckVariables = ({ card, onChange }) => {
       {card.variables &&
         card.variables.map((variable, ii) => (
           <VariableInput
-            key={`var-${ii}`}
+            key={`var-${ii}-${variable.id}`}
             autoFocus={ii === 0 && variable.name.length === 0}
             onChange={(changes) => onChangeVariable(changes, ii)}
             onDelete={() => deleteVariable(ii)}

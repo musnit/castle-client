@@ -57,9 +57,9 @@ const styles = StyleSheet.create({
 });
 
 const DUMMY_CONDITION = {
-  variable: 'score',
+  variableId: 0,
   operator: 'equals',
-  operand: 5,
+  operand: 0,
 };
 
 const DUMMY_OPERATORS = ['equals', 'does not equal', 'is less than', 'is greater than'];
@@ -70,14 +70,17 @@ const DropdownCaret = () => (
 
 const BlockPreconditionPickerControl = ({ deck, block, onChangeBlock }) => {
   const { showActionSheetWithOptions } = useActionSheet();
-  const condition = block.condition;
+  const condition = block.metadata?.condition;
   const onChangeCondition = React.useCallback(
     (changes) =>
       onChangeBlock({
         ...block,
-        condition: {
-          ...condition,
-          ...changes,
+        metadata: {
+          ...block.metadata,
+          condition: {
+            ...condition,
+            ...changes,
+          },
         },
       }),
     [condition, onChangeBlock]
@@ -103,7 +106,7 @@ const BlockPreconditionPickerControl = ({ deck, block, onChangeBlock }) => {
         },
         async (buttonIndex) => {
           if (buttonIndex !== deck.variables.length) {
-            onChangeCondition({ variable: deck.variables[buttonIndex].name });
+            onChangeCondition({ variableId: deck.variables[buttonIndex].id });
           }
         }
       ),
@@ -125,7 +128,9 @@ const BlockPreconditionPickerControl = ({ deck, block, onChangeBlock }) => {
       ),
     [onChangeCondition]
   );
-  if (condition) {
+  const referencedVar =
+    condition && deck.variables ? deck.variables.find((v) => v.id === condition.variableId) : null;
+  if (condition && referencedVar) {
     return (
       <View style={styles.container}>
         <View style={styles.conditionCell}>
@@ -134,7 +139,7 @@ const BlockPreconditionPickerControl = ({ deck, block, onChangeBlock }) => {
         <TouchableOpacity style={styles.componentCell} onPress={onChangeVariable}>
           <Text style={styles.variablePrefix}>$</Text>
           <Text numberOfLines={1} ellipsizeMode="tail" style={styles.componentLabel}>
-            {condition.variable}
+            {referencedVar.name}
           </Text>
           <DropdownCaret />
         </TouchableOpacity>
@@ -154,17 +159,20 @@ const BlockPreconditionPickerControl = ({ deck, block, onChangeBlock }) => {
         </View>
       </View>
     );
-  } else {
+  } else if (deck.variables?.length) {
+    const variableId = deck.variables[0].id;
     return (
       <View style={styles.container}>
         <TouchableOpacity
           style={styles.componentCell}
-          onPress={() => onChangeCondition(DUMMY_CONDITION)}>
+          onPress={() => onChangeCondition({ ...DUMMY_CONDITION, variableId })}>
           <Ionicon name="md-add" size={18} color="#fff" style={{ marginRight: 4, marginTop: 1 }} />
           <Text style={styles.addLabel}>Add requirement</Text>
         </TouchableOpacity>
       </View>
     );
+  } else {
+    return null;
   }
 };
 

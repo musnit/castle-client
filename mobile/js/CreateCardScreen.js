@@ -173,19 +173,22 @@ const EMPTY_BLOCK = {
 
 const DUMMY_VARIABLES = [
   {
+    id: 1,
     name: 'score',
     type: 'number',
-    value: 5,
+    initialValue: 5,
   },
   {
+    id: 2,
     name: 'health',
     type: 'number',
-    value: 100,
+    initialValue: 100,
   },
   {
+    id: 3,
     name: 'money',
     type: 'number',
-    value: 475,
+    initialValue: 475,
   },
 ];
 

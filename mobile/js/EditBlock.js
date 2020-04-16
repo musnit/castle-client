@@ -147,7 +147,7 @@ const EditBlock = (props) => {
         />
         {maybeBlockDestinationButton}
       </View>
-      {false && block.type == 'choice' && (
+      {block.type == 'choice' && deck.variables?.length && (
         <View style={[styles.row, styles.pickerRow, typeStyles.row]}>
           <Text style={[styles.label, typeStyles.label]}>Requirement</Text>
           <BlockPreconditionPickerControl deck={deck} block={block} onChangeBlock={onChangeBlock} />
