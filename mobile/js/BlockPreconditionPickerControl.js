@@ -56,13 +56,13 @@ const styles = StyleSheet.create({
   },
 });
 
-const DUMMY_CONDITION = {
+const EMPTY_CONDITION = {
   variableId: 0,
   operator: 'equals',
   operand: 0,
 };
 
-const DUMMY_OPERATORS = ['equals', 'does not equal', 'is less than', 'is greater than'];
+const OPERATORS = ['equals', 'does not equal', 'is less than', 'is greater than'];
 
 const DropdownCaret = () => (
   <AntIcon name="caretdown" size={12} color="#fff" style={styles.caret} />
@@ -95,9 +95,8 @@ const BlockPreconditionPickerControl = ({ deck, block, onChangeBlock }) => {
     },
     [condition, onChangeCondition]
   );
-  const onChangeVariable = React.useCallback(
-    // TODO: what if this deck has no variables?
-    (variable) =>
+  const onChangeVariable = React.useCallback(() => {
+    if (deck.variables) {
       showActionSheetWithOptions(
         {
           title: 'Choose a variable',
@@ -109,20 +108,20 @@ const BlockPreconditionPickerControl = ({ deck, block, onChangeBlock }) => {
             onChangeCondition({ variableId: deck.variables[buttonIndex].id });
           }
         }
-      ),
-    [deck.variables, onChangeCondition]
-  );
+      );
+    }
+  }, [deck.variables, onChangeCondition]);
   const onChangeOperator = React.useCallback(
-    (operator) =>
+    () =>
       showActionSheetWithOptions(
         {
           title: 'Choose how to compare the variable',
-          options: DUMMY_OPERATORS.concat(['Cancel']),
-          cancelButtonIndex: DUMMY_OPERATORS.length,
+          options: OPERATORS.concat(['Cancel']),
+          cancelButtonIndex: OPERATORS.length,
         },
         async (buttonIndex) => {
-          if (buttonIndex !== DUMMY_OPERATORS.length) {
-            onChangeCondition({ operator: DUMMY_OPERATORS[buttonIndex] });
+          if (buttonIndex !== OPERATORS.length) {
+            onChangeCondition({ operator: OPERATORS[buttonIndex] });
           }
         }
       ),
@@ -165,7 +164,7 @@ const BlockPreconditionPickerControl = ({ deck, block, onChangeBlock }) => {
       <View style={styles.container}>
         <TouchableOpacity
           style={styles.componentCell}
-          onPress={() => onChangeCondition({ ...DUMMY_CONDITION, variableId })}>
+          onPress={() => onChangeCondition({ ...EMPTY_CONDITION, variableId })}>
           <Ionicon name="md-add" size={18} color="#fff" style={{ marginRight: 4, marginTop: 1 }} />
           <Text style={styles.addLabel}>Add requirement</Text>
         </TouchableOpacity>
