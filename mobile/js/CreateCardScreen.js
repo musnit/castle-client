@@ -193,6 +193,7 @@ class CreateCardScreen extends React.Component {
     blockIdToEdit: null,
     selectedTab: 'card',
     isEditingScene: false,
+    deckState: { variables: [] },
   };
 
   componentDidMount() {
@@ -318,7 +319,7 @@ class CreateCardScreen extends React.Component {
 
   _handleBlockTextInputFocus = () => {};
 
-  _handleCardChange = (changes) => {
+  _handleCardChange = (changes) =>
     this.setState((state) => {
       return {
         ...state,
@@ -326,6 +327,20 @@ class CreateCardScreen extends React.Component {
           ...state.card,
           isChanged: true,
           ...changes,
+        },
+      };
+    });
+
+  _handleVariablesChange = (changes) => {
+    this._handleCardChange({
+      variables: changes,
+    });
+    // update deck variables state passed to scene
+    this.setState((state) => {
+      return {
+        ...state,
+        deckState: {
+          variables: changes,
         },
       };
     });
@@ -461,34 +476,43 @@ class CreateCardScreen extends React.Component {
 
   _handleEditScene = async () => {
     // Set scene editing state
-    this.setState({ isEditingScene: true }, async () => {
-      const { card } = this.state;
-      if (this.state.card.scene) {
-        // Already have a scene, just notify Lua
-        GhostEvents.sendAsync('SCENE_CREATOR_EDITING', {
-          isEditing: true,
-        });
-      } else {
-        // No scene, add one
-        const newSceneData = { empty: true };
-        const result = await Session.apolloClient.mutate({
-          mutation: gql`
-            mutation CreateScene($data: Json!) {
-              createScene(data: $data) {
-                sceneId
+    this.setState(
+      {
+        isEditingScene: true,
+        deckState: {
+          // reset deck state every time we enter the scene
+          variables: [...this.state.card.variables],
+        },
+      },
+      async () => {
+        const { card } = this.state;
+        if (this.state.card.scene) {
+          // Already have a scene, just notify Lua
+          GhostEvents.sendAsync('SCENE_CREATOR_EDITING', {
+            isEditing: true,
+          });
+        } else {
+          // No scene, add one
+          const newSceneData = { empty: true };
+          const result = await Session.apolloClient.mutate({
+            mutation: gql`
+              mutation CreateScene($data: Json!) {
+                createScene(data: $data) {
+                  sceneId
+                }
               }
-            }
-          `,
-          variables: {
-            data: newSceneData,
-          },
-        });
-        sceneId = result.data && result.data.createScene && result.data.createScene.sceneId;
-        if (sceneId) {
-          this._handleCardChange({ scene: { sceneId, data: newSceneData } });
+            `,
+            variables: {
+              data: newSceneData,
+            },
+          });
+          sceneId = result.data && result.data.createScene && result.data.createScene.sceneId;
+          if (sceneId) {
+            this._handleCardChange({ scene: { sceneId, data: newSceneData } });
+          }
         }
       }
-    });
+    );
   };
 
   _handleEndEditScene = () => {
@@ -531,6 +555,15 @@ class CreateCardScreen extends React.Component {
       case 'SAVE_SCENE': {
         this._handleCardChange({
           changedSceneData: message.data,
+        });
+        break;
+      }
+      case 'CHANGE_DECK_STATE': {
+        this.setState({
+          deckState: {
+            ...this.state.deckState,
+            ...message.data,
+          },
         });
         break;
       }
@@ -606,6 +639,7 @@ class CreateCardScreen extends React.Component {
                 style={styles.scene}
                 card={card}
                 isEditing={isEditingScene}
+                deckState={this.state.deckState}
                 onEndEditing={this._handleEndEditScene}
                 onScreenshot={this._handleSceneScreenshot}
                 onMessage={this._handleSceneMessage}
@@ -631,7 +665,7 @@ class CreateCardScreen extends React.Component {
             ) : null}
           </View>
           {selectedTab === 'variables' && (
-            <DeckVariables variables={card.variables} onChange={this._handleCardChange} />
+            <DeckVariables variables={card.variables} onChange={this._handleVariablesChange} />
           )}
         </SafeAreaView>
         <CardDestinationPickerSheet

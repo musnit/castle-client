@@ -137,6 +137,15 @@ const PlayCardScreen = ({
     }
   };
 
+  const _handleSceneMessage = (message) => {
+    switch (message.messageType) {
+      case 'CHANGE_DECK_STATE': {
+        onChangeDeckState(message.data);
+        break;
+      }
+    }
+  };
+
   const { vw, vh } = Viewport;
   const insets = useSafeArea();
   const cardHeight = (1 / Constants.CARD_RATIO) * 100 * vw;
@@ -163,7 +172,7 @@ const PlayCardScreen = ({
         style={styles.scene}
         card={card}
         deckState={deckState}
-        onChangeDeckState={onChangeDeckState}
+        onMessage={_handleSceneMessage}
       />
       <View
         pointerEvents="box-none"

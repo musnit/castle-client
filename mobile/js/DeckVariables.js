@@ -134,18 +134,13 @@ const DeckVariables = ({ variables, onChange }) => {
 
   const onChangeVariable = React.useCallback(
     (changes, index) =>
-      onChange({
-        variables: variables.map((variable, ii) =>
-          ii == index ? { ...variable, ...changes } : variable
-        ),
-      }),
+      onChange(
+        variables.map((variable, ii) => (ii == index ? { ...variable, ...changes } : variable))
+      ),
     [variables, onChange]
   );
   const addVariable = React.useCallback(
-    () =>
-      onChange({
-        variables: [{ ...EMPTY_VARIABLE, id: uuid() }].concat(variables),
-      }),
+    () => onChange([{ ...EMPTY_VARIABLE, id: uuid() }].concat(variables)),
     [variables, onChange]
   );
   const deleteVariable = React.useCallback(
