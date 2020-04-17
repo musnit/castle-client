@@ -124,6 +124,7 @@ const CurrentDeckCell = ({ deck }) => {
           <PlayDeckNavigator
             deckId={deck.deckId}
             cardId={deck.initialCard && deck.initialCard.cardId}
+            initialDeckState={{ variables: deck.variables }}
           />
         </View>
       ) : null}

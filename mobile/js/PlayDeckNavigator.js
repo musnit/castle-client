@@ -12,21 +12,28 @@ const styles = StyleSheet.create({
   },
 });
 
-const PlayDeckNavigator = ({ deckId, cardId, route }) => {
+const EMPTY_PLAY_DECK_STATE = {
+  variables: [],
+};
+
+const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, route }) => {
   const navigation = useNavigation();
   if (!deckId && route.params) {
     deckId = route.params.deckId;
-    cardId = route.params.cardId;
+    initialCardId = route.params.initialCardId;
+    initialDeckState = route.params.initialDeckState;
   }
 
-  const [currDeckId, setCurrDeckId] = useState(deckId);
-  const [currCardId, setCurrCardId] = useState(cardId);
+  const [currCardId, setCurrCardId] = useState(initialCardId);
   const [hasSelectedNewCard, setHasSelectedNewCard] = useState(false);
+  const [playDeckState, changePlayDeckState] = React.useReducer((state, changes) => {
+    return {
+      ...state,
+      ...changes,
+    };
+  }, initialDeckState || EMPTY_PLAY_DECK_STATE);
 
-  const onSelectNewCard = ({ deckId, cardId }) => {
-    if (deckId) {
-      setCurrDeckId(deckId);
-    }
+  const onSelectNewCard = ({ cardId }) => {
     setCurrCardId(cardId);
     setHasSelectedNewCard(true);
   };
@@ -34,12 +41,12 @@ const PlayDeckNavigator = ({ deckId, cardId, route }) => {
   const transitionRef = React.useRef();
   const [counter, setCounter] = React.useState(1);
   React.useEffect(() => {
-    const isInitial = !hasSelectedNewCard && currDeckId === deckId && currCardId === cardId;
+    const isInitial = !hasSelectedNewCard && currCardId === initialCardId;
     if (!isInitial && transitionRef.current) {
       transitionRef.current.animateNextTransition();
       setCounter(counter + 1);
     }
-  }, [currDeckId, currCardId, hasSelectedNewCard]);
+  }, [currCardId, hasSelectedNewCard]);
 
   return (
     <Transitioning.View
@@ -56,12 +63,14 @@ const PlayDeckNavigator = ({ deckId, cardId, route }) => {
         () => (
           <PlayCardScreen
             key={counter}
-            deckId={currDeckId}
+            deckId={deckId}
             cardId={currCardId}
             onSelectNewCard={onSelectNewCard}
+            deckState={playDeckState}
+            onChangeDeckState={changePlayDeckState}
           />
         ),
-        [counter]
+        [counter, playDeckState]
       )}
     </Transitioning.View>
   );

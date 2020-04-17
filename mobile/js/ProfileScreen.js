@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
 const PlayDeckCell = ({ deck, onPress }) => {
   return (
     <View style={{ paddingRight: 8, paddingBottom: 8, width: '33%' }}>
-      <CardCell card={deck.initialCard} onPress={onPress} />
+      <CardCell card={deck.initialCard} onPress={onPress} isPrivate={!deck.isVisible} />
     </View>
   );
 };
@@ -91,7 +91,7 @@ const ProfileScreen = () => {
   let decks;
   if (!queryLoading && !queryError && queryData) {
     // TODO: generalize ProfileScreen to other users, stop using `me` for this query
-    decks = queryData.me.decks.filter((deck) => deck.isVisible);
+    decks = queryData.me.decks;
   }
 
   return (
@@ -163,7 +163,11 @@ const ProfileScreen = () => {
                 key={deck.deckId}
                 deck={deck}
                 onPress={() =>
-                  navigate('PlayDeck', { deckId: deck.deckId, cardId: deck.initialCard.cardId })
+                  navigate('PlayDeck', {
+                    deckId: deck.deckId,
+                    cardId: deck.initialCard.cardId,
+                    initialDeckState: { variables: deck.variables },
+                  })
                 }
               />
             ))}

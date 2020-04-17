@@ -32,7 +32,14 @@ const styles = StyleSheet.create({
   },
 });
 
-const PlayCardScreen = ({ deckId, cardId, onSelectNewCard, route }) => {
+const PlayCardScreen = ({
+  deckId,
+  cardId,
+  onSelectNewCard,
+  deckState,
+  onChangeDeckState,
+  route,
+}) => {
   const navigation = useNavigation();
   if (!deckId && route.params) {
     deckId = route.params.deckId;
@@ -126,7 +133,7 @@ const PlayCardScreen = ({ deckId, cardId, onSelectNewCard, route }) => {
   const _handleSelectBlock = (blockId) => {
     const block = card.blocks.find((b) => b.cardBlockId === blockId);
     if (block.type === 'choice') {
-      onSelectNewCard({ deckId, cardId: block.destinationCardId });
+      onSelectNewCard({ cardId: block.destinationCardId });
     }
   };
 
@@ -155,11 +162,13 @@ const PlayCardScreen = ({ deckId, cardId, onSelectNewCard, route }) => {
         key={`card-scene-${card.scene && card.scene.sceneId}`}
         style={styles.scene}
         card={card}
+        deckState={deckState}
+        onChangeDeckState={onChangeDeckState}
       />
       <View
         pointerEvents="box-none"
         style={[styles.description, { paddingBottom: blocksBottomPadding }]}>
-        <CardBlocks card={card} onSelectBlock={_handleSelectBlock} />
+        <CardBlocks card={card} onSelectBlock={_handleSelectBlock} deckState={deckState} />
       </View>
     </View>
   ) : null;
