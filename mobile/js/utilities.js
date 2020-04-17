@@ -99,3 +99,16 @@ export const cardMatchesSearchQuery = (card, searchQuery) => {
   }
   return false;
 };
+
+export const makeInitialDeckState = (deck) => {
+  return {
+    variables: deck.variables
+      ? deck.variables.map((variable) => {
+          return {
+            ...variable,
+            value: variable.initialValue,
+          };
+        })
+      : [],
+  };
+};

@@ -78,7 +78,7 @@ const EMPTY_VARIABLE = {
   id: 0,
   name: '',
   type: 'number',
-  value: 0,
+  initialValue: 0,
 };
 
 const maybeParseInt = (value) => {

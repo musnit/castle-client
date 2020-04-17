@@ -479,10 +479,8 @@ class CreateCardScreen extends React.Component {
     this.setState(
       {
         isEditingScene: true,
-        deckState: {
-          // reset deck state every time we enter the scene
-          variables: [...this.state.card.variables],
-        },
+        // reset deck state every time we enter the scene
+        deckState: Utilities.makeInitialDeckState(this.state.card),
       },
       async () => {
         const { card } = this.state;

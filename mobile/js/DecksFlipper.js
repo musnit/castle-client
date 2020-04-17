@@ -21,6 +21,7 @@ import PlayDeckNavigator from './PlayDeckNavigator';
 import Viewport from './viewport';
 
 import * as Constants from './Constants';
+import * as Utilities from './utilities';
 
 const { vw, vh } = Viewport;
 
@@ -124,7 +125,7 @@ const CurrentDeckCell = ({ deck }) => {
           <PlayDeckNavigator
             deckId={deck.deckId}
             cardId={deck.initialCard && deck.initialCard.cardId}
-            initialDeckState={{ variables: deck.variables }}
+            initialDeckState={Utilities.makeInitialDeckState(deck)}
           />
         </View>
       ) : null}

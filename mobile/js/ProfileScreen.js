@@ -19,6 +19,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import UserAvatar from './UserAvatar';
 
 import * as GameScreen from './GameScreen';
+import * as Utilities from './utilities';
 
 const styles = StyleSheet.create({
   header: {
@@ -166,7 +167,7 @@ const ProfileScreen = () => {
                   navigate('PlayDeck', {
                     deckId: deck.deckId,
                     cardId: deck.initialCard.cardId,
-                    initialDeckState: { variables: deck.variables },
+                    initialDeckState: Utilities.makeInitialDeckState(deck),
                   })
                 }
               />

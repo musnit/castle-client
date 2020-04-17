@@ -45,9 +45,41 @@ const styles = StyleSheet.create({
   },
 });
 
+const blockMeetsPrecondition = (block, deckState) => {
+  if (!block?.metadata?.condition || !deckState?.variables) {
+    return true;
+  }
+  const { variableId, operator, operand } = block.metadata.condition;
+  const variable = deckState.variables.find((variable) => variable.id === variableId);
+  if (!variable) {
+    return true;
+  }
+  const { value } = variable;
+  // console.log(`evaluate block precondition: ${value}, ${operator}, ${operand}`);
+  switch (operator) {
+    case 'equals': {
+      return value == operand;
+    }
+    case 'does not equal': {
+      return value != operand;
+    }
+    case 'is less than': {
+      return value < operand;
+    }
+    case 'is greater than': {
+      return value > operand;
+    }
+    default:
+      return true;
+  }
+};
+
 const CardBlock = (props) => {
-  const { block } = props;
+  const { block, deckState } = props;
   let blockStyles, textStyles;
+  if (!blockMeetsPrecondition(block, deckState)) {
+    return null;
+  }
   switch (block.type) {
     case 'interact': {
       return (
@@ -118,6 +150,7 @@ const CardBlocks = (props) => {
                   key={`${block.cardBlockId}-${ii}`}
                   block={block}
                   style={styles}
+                  deckState={props.deckState}
                   isEditable={props.isEditable}
                   onSelect={() => props.onSelectBlock(block.cardBlockId)}
                   onSelectDestination={() => props.onSelectDestination(block)}
