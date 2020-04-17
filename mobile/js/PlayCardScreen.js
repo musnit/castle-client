@@ -68,6 +68,7 @@ const PlayCardScreen = ({ deckId, cardId, onSelectNewCard, route }) => {
               type
               title
               destinationCardId
+              metadata
             }
           }
         }
@@ -100,6 +101,7 @@ const PlayCardScreen = ({ deckId, cardId, onSelectNewCard, route }) => {
                 type
                 title
                 destinationCardId
+                metadata
               }
             }
           }

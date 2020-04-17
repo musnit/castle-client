@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
 });
 
 const EMPTY_CONDITION = {
-  variableId: 0,
+  variableId: '0',
   operator: 'equals',
   operand: 0,
 };

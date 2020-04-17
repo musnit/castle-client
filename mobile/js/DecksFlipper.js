@@ -193,6 +193,7 @@ const DecksFlipper = () => {
               destinationCardId
             }
           }
+          variables
         }
       }
     `,

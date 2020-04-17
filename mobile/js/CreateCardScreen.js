@@ -158,6 +158,7 @@ const CardBottomActions = ({ card, onEditScene, onEditBlock, onSave }) => {
 const EMPTY_DECK = {
   title: '',
   cards: [],
+  variables: [],
 };
 
 const EMPTY_CARD = {
@@ -170,27 +171,6 @@ const EMPTY_BLOCK = {
   type: 'text',
   destination: null,
 };
-
-const DUMMY_VARIABLES = [
-  {
-    id: 1,
-    name: 'score',
-    type: 'number',
-    initialValue: 5,
-  },
-  {
-    id: 2,
-    name: 'health',
-    type: 'number',
-    initialValue: 100,
-  },
-  {
-    id: 3,
-    name: 'money',
-    type: 'number',
-    initialValue: 475,
-  },
-];
 
 // height of safe area + tab bar on iPhone X family
 const IPHONEX_BOTTOM_SAFE_HEIGHT = 83 + 33;
@@ -259,9 +239,10 @@ class CreateCardScreen extends React.Component {
             card = EMPTY_CARD;
           }
         } catch (_) {}
-        // TODO: real data
-        deck.variables = DUMMY_VARIABLES;
-        card.variables = DUMMY_VARIABLES;
+        // kludge: this allows us to check the screen's dirty state based on
+        // the card onChange callback everywhere (even when you modify variables, a
+        // property of the deck)
+        card.variables = deck.variables;
       }
       this._mounted && this.setState({ deck, card, isEditingScene });
     }
@@ -352,7 +333,11 @@ class CreateCardScreen extends React.Component {
 
   _save = async () => {
     await this._handleDismissEditing();
-    const { card, deck } = await Session.saveDeck(this.state.card, this.state.deck);
+    const { card, deck } = await Session.saveDeck(
+      this.state.card,
+      this.state.deck,
+      this.state.card.variables
+    );
     if (!this._mounted) return;
     return this.setState({ card, deck });
   };
@@ -398,7 +383,11 @@ class CreateCardScreen extends React.Component {
   };
 
   _saveAndGoToDeck = async () => {
-    const { card, deck } = await Session.saveDeck(this.state.card, this.state.deck);
+    const { card, deck } = await Session.saveDeck(
+      this.state.card,
+      this.state.deck,
+      this.state.card.variables
+    );
     if (!this._mounted) return;
     return this._goToDeck(deck.deckId);
   };
@@ -642,7 +631,7 @@ class CreateCardScreen extends React.Component {
             ) : null}
           </View>
           {selectedTab === 'variables' && (
-            <DeckVariables deck={deck} card={card} onChange={this._handleCardChange} />
+            <DeckVariables variables={card.variables} onChange={this._handleCardChange} />
           )}
         </SafeAreaView>
         <CardDestinationPickerSheet

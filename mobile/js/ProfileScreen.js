@@ -77,6 +77,7 @@ const ProfileScreen = () => {
               smallUrl
             }
           }
+          variables
         }
       }
     }

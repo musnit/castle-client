@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import Ionicon from 'react-native-vector-icons/Ionicons';
+import uuid from 'uuid/v4';
 
 import * as Constants from './Constants';
 
@@ -128,30 +129,30 @@ const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) 
   );
 };
 
-const DeckVariables = ({ card, onChange }) => {
+const DeckVariables = ({ variables, onChange }) => {
   const { showActionSheetWithOptions } = useActionSheet();
 
   const onChangeVariable = React.useCallback(
     (changes, index) =>
       onChange({
-        variables: card.variables.map((variable, ii) =>
+        variables: variables.map((variable, ii) =>
           ii == index ? { ...variable, ...changes } : variable
         ),
       }),
-    [card.variables, onChange]
+    [variables, onChange]
   );
   const addVariable = React.useCallback(
     () =>
       onChange({
-        variables: [{ ...EMPTY_VARIABLE }].concat(card.variables),
+        variables: [{ ...EMPTY_VARIABLE, id: uuid() }].concat(variables),
       }),
-    [card.variables, onChange]
+    [variables, onChange]
   );
   const deleteVariable = React.useCallback(
     (index) =>
       showActionSheetWithOptions(
         {
-          title: `Delete variable "${card.variables[index].name}"?`,
+          title: `Delete variable "${variables[index].name}"?`,
           options: ['Delete', 'Cancel'],
           destructiveButtonIndex: 0,
           cancelButtonIndex: 1,
@@ -159,12 +160,12 @@ const DeckVariables = ({ card, onChange }) => {
         async (buttonIndex) => {
           if (buttonIndex === 0) {
             onChange({
-              variables: card.variables.filter((variable, ii) => ii !== index),
+              variables: variables.filter((variable, ii) => ii !== index),
             });
           }
         }
       ),
-    [card.variables, onChange]
+    [variables, onChange]
   );
 
   return (
@@ -180,8 +181,8 @@ const DeckVariables = ({ card, onChange }) => {
         <Text style={[styles.label, { width: '32%' }]}>Type</Text>
         <Text style={[styles.label, { width: '36%' }]}>Initial Value</Text>
       </View>
-      {card.variables &&
-        card.variables.map((variable, ii) => (
+      {variables &&
+        variables.map((variable, ii) => (
           <VariableInput
             key={`var-${ii}-${variable.id}`}
             autoFocus={ii === 0 && variable.name.length === 0}

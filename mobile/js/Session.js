@@ -241,6 +241,7 @@ export const CARD_FRAGMENT = `
     type
     title
     destinationCardId
+    metadata
   }
 `;
 
@@ -265,7 +266,7 @@ export const prefetchCardsAsync = async ({ cardId }) => {
   });
 };
 
-export const saveDeck = async (card, deck) => {
+export const saveDeck = async (card, deck, variables) => {
   // Save scene changes
   if (card.scene && card.scene.sceneId && card.changedSceneData) {
     await apolloClient.mutate({
@@ -295,10 +296,40 @@ export const saveDeck = async (card, deck) => {
         title: block.title,
         createDestinationCard: block.createDestinationCard,
         cardBlockUpdateId: block.cardBlockUpdateId,
+        metadata: block.metadata,
       };
     }),
     makeInitialCard: card.makeInitialCard || undefined,
   };
+  if (variables) {
+    deckUpdateFragment.variables = variables;
+  }
+
+  if (deck.deckId && deckUpdateFragment.variables) {
+    // update deck
+    const result = await apolloClient.mutate({
+      mutation: gql`
+        mutation UpdateDeck($deckId: ID!, $deck: DeckInput!) {
+          updateDeck(deckId: $deckId, deck: $deck) {
+            id
+            deckId
+            title
+            cards {
+              ${CARD_FRAGMENT}
+            }
+            initialCard {
+              id
+              cardId
+            }
+            variables
+          }
+        }
+      `,
+      variables: { deckId: deck.deckId, deck: deckUpdateFragment },
+    });
+    deck = result.data.updateDeck;
+  }
+
   if (deck.deckId && card.cardId) {
     // update existing card in deck
     const result = await apolloClient.mutate({
@@ -373,6 +404,7 @@ export const saveDeck = async (card, deck) => {
               id
               cardId
             }
+            variables
           }
         }
       `,
@@ -408,6 +440,7 @@ export const getDeckById = async (deckId) => {
             id
             cardId
           }
+          variables
         }
       }
     `,
