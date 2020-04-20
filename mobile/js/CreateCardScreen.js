@@ -194,6 +194,7 @@ class CreateCardScreen extends React.Component {
     selectedTab: 'card',
     isEditingScene: false,
     deckState: { variables: [] },
+    renderBottomSheet: false,
   };
 
   componentDidMount() {
@@ -408,9 +409,12 @@ class CreateCardScreen extends React.Component {
   };
 
   _showDestinationPicker = () => {
-    if (this._destinationPickerRef) {
-      this._destinationPickerRef.current.open();
-    }
+    // lazy render bottom sheet after the first time it's needed
+    this.setState({ renderBottomSheet: true }, () => {
+      if (this._destinationPickerRef) {
+        this._destinationPickerRef.current.open();
+      }
+    });
   };
 
   _onPickDestinationCard = (block, card) => {
@@ -666,11 +670,13 @@ class CreateCardScreen extends React.Component {
             <DeckVariables variables={card.variables} onChange={this._handleVariablesChange} />
           )}
         </SafeAreaView>
-        <CardDestinationPickerSheet
-          deck={deck}
-          ref={this._destinationPickerRef}
-          onSelectCard={(card) => this._onPickDestinationCard(blockToEdit, card)}
-        />
+        {this.state.renderBottomSheet && (
+          <CardDestinationPickerSheet
+            deck={deck}
+            ref={this._destinationPickerRef}
+            onSelectCard={(card) => this._onPickDestinationCard(blockToEdit, card)}
+          />
+        )}
       </React.Fragment>
     );
   }
