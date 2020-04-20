@@ -14,8 +14,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   profileButton: {
-    width: 40,
-    height: 40,
+    padding: 4,
     borderRadius: 3,
     alignItems: 'center',
     justifyContent: 'center',
@@ -47,9 +46,10 @@ const CreateButton = ({ style, onPress }) => (
 const ProfileButton = ({ style, onPress }) => (
   <TouchableOpacity style={[styles.profileButton, style]} onPress={onPress}>
     <FastImage
-      style={{ width: 32, height: 32 }}
+      style={{ width: 48, height: 48 }}
       source={require('../assets/images/feed-profile.png')}
     />
+    <Text style={styles.createLabel}>Profile</Text>
   </TouchableOpacity>
 );
 
@@ -59,7 +59,7 @@ const HomeOverlay = () => {
   return (
     <React.Fragment>
       <ProfileButton
-        style={{ position: 'absolute', left: 16, top: insets.top + 16 }}
+        style={{ position: 'absolute', left: 16, bottom: insets.bottom + 16 }}
         onPress={() => navigation.navigate('Profile')}
       />
       <CreateButton

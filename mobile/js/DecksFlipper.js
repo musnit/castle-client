@@ -27,7 +27,7 @@ const { vw, vh } = Viewport;
 
 const REFETCH_FEED_INTERVAL_MS = 30 * 1000;
 
-const DECK_FEED_ITEM_MARGIN = 2;
+const DECK_FEED_ITEM_MARGIN = 64;
 const DECK_FEED_ITEM_HEIGHT =
   (1 / Constants.CARD_RATIO) * 100 * vw + // height of card
   DECK_FEED_ITEM_MARGIN; // margin below cell
@@ -222,10 +222,7 @@ const DecksFlipper = () => {
   }
 
   const insets = useSafeArea();
-  let centerContentY = Math.max(
-    insets.top + 64,
-    (100 * vh - insets.top - insets.bottom - DECK_FEED_ITEM_HEIGHT) * 0.5
-  );
+  let centerContentY = insets.top;
 
   let translateY = new Animated.Value(0);
   let containerY = Animated.add(translateY, centerContentY - DECK_FEED_ITEM_HEIGHT);
@@ -296,20 +293,12 @@ const DecksFlipper = () => {
   return (
     <View style={styles.container}>
       <Animated.View style={{ transform: [{ translateY: containerY }] }}>
-        {currentCardIndex > 1 && <View style={styles.cardPlaceholder} />}
-        <PanGestureHandler
-          onGestureEvent={onPanGestureEvent}
-          onHandlerStateChange={onPanStateChange}>
-          <Animated.View style={styles.itemContainer}>
-            <TouchableWithoutFeedback onPress={snapToPrevious}>
-              <View style={styles.itemCard}>
-                {prevCard && <CardCell card={prevCard} useOverlay={USE_PRERENDERED_OVERLAY} />}
-              </View>
-            </TouchableWithoutFeedback>
-            <CardOverlay opacity={opacity.prev} />
-          </Animated.View>
-        </PanGestureHandler>
-
+        <View style={styles.itemContainer}>
+          <View style={styles.itemCard}>
+            {prevCard && <CardCell card={prevCard} useOverlay={USE_PRERENDERED_OVERLAY} />}
+          </View>
+          <CardOverlay opacity={opacity.prev} />
+        </View>
         <View style={styles.itemContainer}>
           <CurrentDeckCell deck={currentDeck} />
           <CardOverlay opacity={opacity.current} />
