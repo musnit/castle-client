@@ -50,17 +50,32 @@ const styles = StyleSheet.create({
 class CardDestinationPickerSheet extends React.Component {
   _sheetRef = React.createRef(null);
   state = {
+    isRendering: false,
     isOpen: false,
     overlayOpacity: new Animated.Value(0),
   };
 
   open = () => {
-    if (this._sheetRef.current) {
+    const { isRendering } = this.state;
+    const onReadyToOpen = () => {
       // hack: call twice
       // https://github.com/osdnk/react-native-reanimated-bottom-sheet/issues/168
       // https://github.com/osdnk/react-native-reanimated-bottom-sheet/issues/170
       this._sheetRef.current.snapTo(0);
       this._sheetRef.current.snapTo(0);
+    };
+    if (isRendering) {
+      onReadyToOpen();
+    } else {
+      // lazy render because of
+      // https://github.com/osdnk/react-native-reanimated-bottom-sheet/issues/191
+      this.setState({ isRendering: true }, () => {
+        setTimeout(() => {
+          if (this._sheetRef.current) {
+            onReadyToOpen();
+          }
+        }, 5);
+      });
     }
   };
 
@@ -118,7 +133,7 @@ class CardDestinationPickerSheet extends React.Component {
   };
 
   render() {
-    const { isOpen, overlayOpacity } = this.state;
+    const { isOpen, isRendering, overlayOpacity } = this.state;
     return (
       <React.Fragment>
         {isOpen && (
@@ -126,16 +141,18 @@ class CardDestinationPickerSheet extends React.Component {
             <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]} />
           </TouchableWithoutFeedback>
         )}
-        <BottomSheet
-          ref={this._sheetRef}
-          snapPoints={[DRAWER_EXPANDED_HEIGHT, 0]}
-          initialSnap={1}
-          onCloseStart={this._onCloseStart}
-          onCloseEnd={this._onCloseEnd}
-          onOpenStart={this._onOpenStart}
-          renderHeader={this._renderHeader}
-          renderContent={this._renderContent}
-        />
+        {isRendering && (
+          <BottomSheet
+            ref={this._sheetRef}
+            snapPoints={[DRAWER_EXPANDED_HEIGHT, 0]}
+            initialSnap={1}
+            onCloseStart={this._onCloseStart}
+            onCloseEnd={this._onCloseEnd}
+            onOpenStart={this._onOpenStart}
+            renderHeader={this._renderHeader}
+            renderContent={this._renderContent}
+          />
+        )}
       </React.Fragment>
     );
   }
