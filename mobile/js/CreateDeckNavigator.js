@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { InteractionManager, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Transitioning } from 'react-native-reanimated';
 
@@ -36,10 +36,15 @@ const CreateDeckNavigator = (props) => {
   }
 
   React.useEffect(() => {
-    if (transitionRef.current) {
-      transitionRef.current.animateNextTransition();
-      setCounter(counter + 1);
-    }
+    const promise = InteractionManager.runAfterInteractions(() => {
+      if (transitionRef.current) {
+        transitionRef.current.animateNextTransition();
+        setCounter(counter + 1);
+      }
+    });
+    return () => {
+      promise.cancel();
+    };
   }, [deckId, cardId]);
 
   return (

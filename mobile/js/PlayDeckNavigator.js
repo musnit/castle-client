@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { InteractionManager, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Transitioning } from 'react-native-reanimated';
 
@@ -41,11 +41,14 @@ const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, route }) =
   const transitionRef = React.useRef();
   const [counter, setCounter] = React.useState(1);
   React.useEffect(() => {
-    const isInitial = !hasSelectedNewCard && currCardId === initialCardId;
-    if (!isInitial && transitionRef.current) {
-      transitionRef.current.animateNextTransition();
-      setCounter(counter + 1);
-    }
+    const promise = InteractionManager.runAfterInteractions(() => {
+      const isInitial = !hasSelectedNewCard && currCardId === initialCardId;
+      if (!isInitial && transitionRef.current) {
+        transitionRef.current.animateNextTransition();
+        setCounter(counter + 1);
+      }
+    });
+    return () => promise.cancel();
   }, [currCardId, hasSelectedNewCard]);
 
   return (
