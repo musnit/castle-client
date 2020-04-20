@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeArea } from 'react-native-safe-area-context';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 import * as Constants from './Constants';
 import FastImage from 'react-native-fast-image';
@@ -45,10 +46,7 @@ const CreateButton = ({ style, onPress }) => (
 
 const ProfileButton = ({ style, onPress }) => (
   <TouchableOpacity style={[styles.profileButton, style]} onPress={onPress}>
-    <FastImage
-      style={{ width: 48, height: 48 }}
-      source={require('../assets/images/feed-profile.png')}
-    />
+    <FontAwesome5 name="user-circle" size={48} solid color="#fff" />
     <Text style={styles.createLabel}>Profile</Text>
   </TouchableOpacity>
 );
