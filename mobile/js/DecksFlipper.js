@@ -124,7 +124,7 @@ const CurrentDeckCell = ({ deck }) => {
           }}>
           <PlayDeckNavigator
             deckId={deck.deckId}
-            cardId={deck.initialCard && deck.initialCard.cardId}
+            initialCardId={deck.initialCard && deck.initialCard.cardId}
             initialDeckState={Utilities.makeInitialDeckState(deck)}
           />
         </View>
