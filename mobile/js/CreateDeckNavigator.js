@@ -38,7 +38,7 @@ const CreateDeckNavigator = (props) => {
   React.useEffect(() => {
     const promise = InteractionManager.runAfterInteractions(() => {
       if (transitionRef.current) {
-        transitionRef.current.animateNextTransition();
+        counter > 1 && transitionRef.current.animateNextTransition();
         setCounter(counter + 1);
       }
     });
