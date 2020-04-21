@@ -245,7 +245,13 @@ class CreateCardScreen extends React.Component {
         // property of the deck)
         card.variables = deck.variables;
       }
-      this._mounted && this.setState({ deck, card, isEditingScene });
+      this._mounted &&
+        this.setState({
+          deck,
+          card,
+          isEditingScene,
+          deckState: Utilities.makeInitialDeckState(card),
+        });
     }
   };
 
