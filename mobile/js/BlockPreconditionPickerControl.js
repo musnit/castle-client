@@ -69,7 +69,7 @@ const DropdownCaret = () => (
   <AntIcon name="caretdown" size={12} color="#fff" style={styles.caret} />
 );
 
-const BlockPreconditionPickerControl = ({ deck, block, onChangeBlock }) => {
+const BlockPreconditionPickerControl = ({ variables, block, onChangeBlock }) => {
   const { showActionSheetWithOptions } = useActionSheet();
   const condition = block.metadata?.condition;
   const onChangeCondition = React.useCallback(
@@ -108,21 +108,21 @@ const BlockPreconditionPickerControl = ({ deck, block, onChangeBlock }) => {
     [condition, onChangeCondition]
   );
   const onChangeVariable = React.useCallback(() => {
-    if (deck.variables) {
+    if (variables) {
       showActionSheetWithOptions(
         {
           title: 'Choose a variable',
-          options: deck.variables.map((variable) => variable.name).concat(['Cancel']),
-          cancelButtonIndex: deck.variables.length,
+          options: variables.map((variable) => variable.name).concat(['Cancel']),
+          cancelButtonIndex: variables.length,
         },
         async (buttonIndex) => {
-          if (buttonIndex !== deck.variables.length) {
-            onChangeCondition({ variableId: deck.variables[buttonIndex].id });
+          if (buttonIndex !== variables.length) {
+            onChangeCondition({ variableId: variables[buttonIndex].id });
           }
         }
       );
     }
-  }, [deck.variables, onChangeCondition]);
+  }, [variables, onChangeCondition]);
   const onChangeOperator = React.useCallback(
     () =>
       showActionSheetWithOptions(
@@ -140,7 +140,7 @@ const BlockPreconditionPickerControl = ({ deck, block, onChangeBlock }) => {
     [onChangeCondition]
   );
   const referencedVar =
-    condition && deck.variables ? deck.variables.find((v) => v.id === condition.variableId) : null;
+    condition && variables ? variables.find((v) => v.id === condition.variableId) : null;
   if (condition && referencedVar) {
     return (
       <View style={styles.container}>
@@ -173,8 +173,8 @@ const BlockPreconditionPickerControl = ({ deck, block, onChangeBlock }) => {
         </TouchableOpacity>
       </View>
     );
-  } else if (deck.variables?.length) {
-    const variableId = deck.variables[0].id;
+  } else if (variables?.length) {
+    const variableId = variables[0].id;
     return (
       <View style={styles.container}>
         <TouchableOpacity

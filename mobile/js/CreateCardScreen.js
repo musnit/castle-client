@@ -603,6 +603,7 @@ class CreateCardScreen extends React.Component {
           deck,
           isEditingBlock,
           blockToEdit,
+          variables: card.variables,
           onTextInputFocus: this._handleBlockTextInputFocus,
           onChangeBlock: this._handleBlockChange,
           onSelectPickDestination: this._showDestinationPicker,

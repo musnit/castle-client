@@ -108,7 +108,7 @@ const choiceTypeStyles = StyleSheet.create({
 });
 
 const EditBlock = (props) => {
-  const { deck, blockToEdit: block, onChangeBlock } = props;
+  const { deck, variables, blockToEdit: block, onChangeBlock } = props;
 
   const blockType = block.type.charAt(0).toUpperCase() + block.type.slice(1);
   const destination = block.createDestinationCard
@@ -147,12 +147,16 @@ const EditBlock = (props) => {
         />
         {maybeBlockDestinationButton}
       </View>
-      {block.type == 'choice' && deck.variables?.length && (
+      {block.type == 'choice' && variables?.length ? (
         <View style={[styles.row, styles.pickerRow, typeStyles.row]}>
           <Text style={[styles.label, typeStyles.label]}>Requirement</Text>
-          <BlockPreconditionPickerControl deck={deck} block={block} onChangeBlock={onChangeBlock} />
+          <BlockPreconditionPickerControl
+            variables={variables}
+            block={block}
+            onChangeBlock={onChangeBlock}
+          />
         </View>
-      )}
+      ) : null}
       <View style={[styles.row, typeStyles.row, typeStyles.choiceRow]}>
         <Text style={[styles.label, typeStyles.label]}>Choice</Text>
         <Switch
