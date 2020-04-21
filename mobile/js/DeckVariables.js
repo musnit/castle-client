@@ -79,6 +79,7 @@ const EMPTY_VARIABLE = {
   name: '',
   type: 'number',
   initialValue: 0,
+  value: 0,
 };
 
 const maybeParseInt = (value) => {
@@ -154,9 +155,7 @@ const DeckVariables = ({ variables, onChange }) => {
         },
         async (buttonIndex) => {
           if (buttonIndex === 0) {
-            onChange({
-              variables: variables.filter((variable, ii) => ii !== index),
-            });
+            onChange(variables.filter((variable, ii) => ii !== index));
           }
         }
       ),
