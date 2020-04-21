@@ -110,6 +110,10 @@ const PlayCardScreen = ({
                 destinationCardId
                 metadata
               }
+              scene {
+                data
+                sceneId
+              }
             }
           }
         }
