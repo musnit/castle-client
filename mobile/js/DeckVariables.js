@@ -140,10 +140,10 @@ const DeckVariables = ({ variables, onChange }) => {
       ),
     [variables, onChange]
   );
-  const addVariable = React.useCallback(
-    () => onChange([{ ...EMPTY_VARIABLE, id: uuid() }].concat(variables)),
-    [variables, onChange]
-  );
+  const addVariable = React.useCallback(() => {
+    const existing = variables && variables.length ? variables : [];
+    return onChange([{ ...EMPTY_VARIABLE, id: uuid() }].concat(existing));
+  }, [variables, onChange]);
   const deleteVariable = React.useCallback(
     (index) =>
       showActionSheetWithOptions(
