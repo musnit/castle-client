@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
 
 const USE_REMOTE_GAME = true;
 const GAME_ID = USE_REMOTE_GAME ? '1uzqao' : null;
-const GAME_URI = USE_REMOTE_GAME ? null : 'http://192.168.1.35:8080/project.castle';
+const GAME_URI = USE_REMOTE_GAME ? null : 'http://192.168.1.146:8080/project.castle';
 
 const CardScene = ({
   card,
@@ -33,6 +33,7 @@ const CardScene = ({
   onEndEditing,
   onScreenshot,
   onMessage,
+  deckState,
 }) => {
   const [reloadCount, setReloadCount] = useState(0);
   const onPressReload = async () => {
@@ -81,6 +82,7 @@ const CardScene = ({
                   scene: {
                     sceneId: card.scene.sceneId,
                     data: card.scene.data,
+                    deckState,
                   },
                   isEditing,
                 }),
@@ -94,6 +96,7 @@ const CardScene = ({
               onScreenshot={onScreenshot}
               onMessage={onMessage}
               onLoaded={onLoaded}
+              deckState={deckState}
             />
             {/* <SceneCreator /> */}
             {!interactionEnabled ? (

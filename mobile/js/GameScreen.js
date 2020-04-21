@@ -460,6 +460,14 @@ const useUserStatus = ({ game }) => {
   }, [game]);
 };
 
+const useDeckState = ({ deckState }) => {
+  useEffect(() => {
+    GhostEvents.sendAsync('UPDATE_DECK_STATE', {
+      deckState,
+    });
+  }, [deckState]);
+};
+
 // Given a `gameId` or `gameUri`, run and display the game! The lifetime of this component must match the
 // lifetime of the game run -- it must be unmounted when the game is stopped and a new instance mounted
 // if a new game should be run (or even if the same game should be restarted).
@@ -477,12 +485,15 @@ export const GameView = ({
   onScreenshot,
   onMessage,
   onLoaded,
+  deckState,
 }) => {
   const fetchGameHook = useFetchGame({ gameId, gameUri, extras });
   const game = fetchGameHook.fetchedGame;
   const { showActionSheetWithOptions } = useActionSheet();
 
   useUserStatus({ game });
+
+  useDeckState({ deckState });
 
   const dimensionsSettings = game && computeDimensionsSettings({ metadata: game.metadata });
 
