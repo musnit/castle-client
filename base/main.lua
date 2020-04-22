@@ -8,20 +8,6 @@ math.randomseed(10000 * require("socket").gettime())
 local theOS = love.system.getOS()
 local isMobile = theOS == "Android" or theOS == "iOS"
 
--- Consume initial data
-
-do
-    local channel = love.thread.getChannel("INITIAL_DATA")
-    if channel:getCount() > 0 then
-        pcall(
-            function()
-                CASTLE_INITIAL_DATA = cjson.decode(channel:pop())
-            end
-        )
-        channel:clear()
-    end
-end
-
 -- Make a directory for temporary files
 
 CASTLE_TMP_DIR_NAME = "tmp"
@@ -187,45 +173,22 @@ end
 
 local initialFileDropped  -- In case a `love.filedropped` occurred before home experience is loaded
 
-local homeUrl  -- Populated later with the final home experience URL
+local homeUrl = nil -- Populated later with the final home experience URL
 
 local main = {}
 
-function main.load(arg)
-    network.async(
-        function()
-            if GHOST_ROOT_URI and string.len(GHOST_ROOT_URI) > 0 then
-                homeUrl = GHOST_ROOT_URI
-            else
-                local sceneCreatorResponse = network.fetch("https://api.castle.games/api/scene-creator")
-                local fileData = love.filesystem.newFileData(sceneCreatorResponse, "scene_creator.love")
-                love.filesystem.mount(fileData, "zip_mount", true)
-                homeUrl = "zip://Client.lua"
-            end
-
-            if love.graphics then
-                -- Sleep a little to let screen dimensions settings synchronize, then create the default
-                -- font, so that it has the updated DPI
-                copas.sleep(0.08)
-                love.graphics.setFont(love.graphics.newFont(14))
-            end
-
-            home = root:newChild(homeUrl, {noConf = true})
-            jsEvents.send("CASTLE_GAME_LOADED", {})
-            io.flush()
-            network.onGameLoaded()
-            if initialFileDropped then
-                home:filedropped(initialFileDropped)
-                initialFileDropped = nil
-            end
-
-            if castle.system.isDesktop() then
-                ffi.cdef "void ghostDoneLoading();"
-                C.ghostDoneLoading()
-            end
+network.async(
+    function()
+        if GHOST_ROOT_URI and string.len(GHOST_ROOT_URI) > 0 then
+            homeUrl = GHOST_ROOT_URI
+        else
+            local sceneCreatorResponse = network.fetch("https://api.castle.games/api/scene-creator")
+            local fileData = love.filesystem.newFileData(sceneCreatorResponse, "scene_creator.love")
+            love.filesystem.mount(fileData, "zip_mount", true)
+            homeUrl = "zip://Client.lua"
         end
-    )
-end
+    end
+)
 
 local pendingPostOpens = {} -- Keep track of post open requests
 jsEvents.listen(
@@ -243,6 +206,44 @@ function main.joystickadded(joystick)
 end
 
 ffi.cdef "bool ghostGetBackgrounded();"
+
+local isFirstLoad = true
+
+jsEvents.listen(
+    "BASE_RELOAD",
+    function(params)
+        network.async(
+            function()
+                if isFirstLoad and love.graphics then
+                    -- Sleep a little to let screen dimensions settings synchronize, then create the default
+                    -- font, so that it has the updated DPI
+                    copas.sleep(0.08)
+                    love.graphics.setFont(love.graphics.newFont(14))
+
+                    isFirstLoad = false
+                end
+
+                CASTLE_INITIAL_DATA = params
+                decodedInitialParams = cjson.decode(params.initialParams)
+
+                if home ~= nil then
+                    home.globals.castle.onQuit()
+                end
+
+                -- make sure to wait until scene creator is downloaded
+                while homeUrl == nil do
+                    copas.sleep(0.08)
+                end
+
+                home = root:newChild(homeUrl, {noConf = true})
+
+                jsEvents.send("CASTLE_GAME_LOADED", {})
+                io.flush()
+                network.onGameLoaded()
+            end
+        )
+    end
+)
 
 function main.update(dt)
     if isMobile then

@@ -101,7 +101,6 @@ const useInitialData = ({ dimensionsSettings, extras }) => {
         }
 
         // Clear the channel just in case
-        await GhostChannels.clearAsync('INITIAL_DATA');
         if (!mounted) {
           return;
         }
@@ -126,7 +125,7 @@ const useInitialData = ({ dimensionsSettings, extras }) => {
         }
 
         // Send it!
-        await GhostChannels.pushAsync('INITIAL_DATA', JSON.stringify(initialData));
+        await sendAsync('BASE_RELOAD', initialData);
         if (!mounted) {
           return;
         }

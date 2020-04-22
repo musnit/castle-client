@@ -74,7 +74,7 @@ int SDL_main(int argc, char *argv[]) {
   SDL_iPhoneSetEventPump(SDL_FALSE);
 
   // GhostView
-  //[GhostView sharedGhostView];
+  [GhostView sharedGhostView];
 
   UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
   center.delegate = self;
