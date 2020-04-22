@@ -60,7 +60,7 @@ const useDimensions = ({ settings }) => {
   return { screenScaling, applyScreenScaling, width, height, onLayoutContainer };
 };
 
-const GhostView = ({ style, uri, dimensionsSettings }) => {
+const GhostView = ({ style, dimensionsSettings }) => {
   const dimensionsHook = useDimensions({ settings: dimensionsSettings });
 
   return (
@@ -82,7 +82,6 @@ const GhostView = ({ style, uri, dimensionsSettings }) => {
           }}>
           <NativeGhostView
             style={{ width: '100%', height: '100%' }}
-            uri={uri}
             screenScaling={dimensionsHook.screenScaling}
             applyScreenScaling={dimensionsHook.applyScreenScaling}
           />

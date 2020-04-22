@@ -21,10 +21,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const USE_REMOTE_GAME = true;
-const GAME_ID = USE_REMOTE_GAME ? '1uzqao' : null;
-const GAME_URI = USE_REMOTE_GAME ? null : 'http://192.168.1.146:8080/project.castle';
-
 const CardScene = ({
   card,
   style,
@@ -74,11 +70,8 @@ const CardScene = ({
           <React.Fragment>
             <GameView
               key={`game-view-${card.scene.sceneId}-${reloadCount}`}
-              gameId={GAME_ID}
-              gameUri={GAME_URI}
               extras={{
                 initialParams: JSON.stringify({
-                  useSceneCreatorZip: true,
                   scene: {
                     sceneId: card.scene.sceneId,
                     data: card.scene.data,
