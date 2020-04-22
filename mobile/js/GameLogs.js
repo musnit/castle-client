@@ -4,7 +4,7 @@ import debounce from 'lodash.debounce';
 import throttle from 'lodash.throttle';
 
 import * as Constants from './Constants';
-import * as GhostEvents from './ghost/GhostEvents';
+import { useListen } from './ghost/GhostEvents';
 
 const styles = StyleSheet.create({
   logItem: {
@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const LogItem = props => {
+const LogItem = (props) => {
   let logStyles = [styles.logItem];
   if (props.type == 'ERROR') logStyles.push(styles.logItemError);
   if (props.type == 'SYSTEM') logStyles.push(styles.logItemSystem);
@@ -37,12 +37,12 @@ let nextId = 0;
 
 const logs = [];
 
-export default GameLogs = ({ eventsReady, visible }) => {
+export default GameLogs = ({ visible }) => {
   const flatListRef = useRef(null);
 
   const [refreshCount, setRefreshCount] = useState(0);
   const refresh = useMemo(() => {
-    const f = () => setRefreshCount(refreshCount => refreshCount + 1);
+    const f = () => setRefreshCount((refreshCount) => refreshCount + 1);
     const t = throttle(f, 250);
     const d = debounce(f, 100);
     return () => {
@@ -51,20 +51,18 @@ export default GameLogs = ({ eventsReady, visible }) => {
     };
   }, []);
 
-  const pushLog = log => {
+  const pushLog = (log) => {
     logs.unshift({ ...log, id: (nextId++).toString() });
     logs.length = Math.min(logs.length, 100);
     refresh();
   };
 
-  GhostEvents.useListen({
-    eventsReady,
+  useListen({
     eventName: 'GHOST_PRINT',
-    handler: params => pushLog({ type: 'PRINT', body: params.join(' ') }),
+    handler: (params) => pushLog({ type: 'PRINT', body: params.join(' ') }),
   });
 
-  GhostEvents.useListen({
-    eventsReady,
+  useListen({
     eventName: 'GHOST_ERROR',
     handler: ({ error, stacktrace }) => pushLog({ type: 'ERROR', body: error }),
   });

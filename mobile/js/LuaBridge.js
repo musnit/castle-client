@@ -4,7 +4,7 @@ import uuid from 'uuid';
 import md5 from 'md5';
 import { Alert } from 'react-native';
 
-import * as GhostEvents from './ghost/GhostEvents';
+import { sendAsync, useListen } from './ghost/GhostEvents';
 import * as GameScreen from './GameScreen';
 import * as Session from './Session';
 
@@ -271,12 +271,11 @@ const onJSCallRequest = (context) => async ({ id, methodName, arg }) => {
   } catch (e) {
     response.error = e.toString();
   }
-  GhostEvents.sendAsync('JS_CALL_RESPONSE', response);
+  sendAsync('JS_CALL_RESPONSE', response);
 };
 
-export const useLuaBridge = ({ eventsReady, game }) => {
-  GhostEvents.useListen({
-    eventsReady,
+export const useLuaBridge = ({ game }) => {
+  useListen({
     eventName: 'JS_CALL_REQUEST',
     handler: onJSCallRequest({ game }),
   });

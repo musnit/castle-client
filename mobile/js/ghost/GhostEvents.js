@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import * as GhostChannels from './GhostChannels';
 
@@ -7,12 +7,12 @@ const listenerLists = {}; // `eventName` -> `listenerId` -> `handler`
 let nextListenerId = 1;
 
 const checkEvents = async () => {
-  (await GhostChannels.popAllAsync('LUA_TO_JS_EVENTS')).forEach(eventJson => {
+  (await GhostChannels.popAllAsync('LUA_TO_JS_EVENTS')).forEach((eventJson) => {
     const { name, params } = JSON.parse(eventJson);
 
     const listenerList = listenerLists[name];
     if (listenerList) {
-      Object.values(listenerList).forEach(handler => handler(params));
+      Object.values(listenerList).forEach((handler) => handler(params));
     }
   });
   requestAnimationFrame(checkEvents);
@@ -40,32 +40,48 @@ export const sendAsync = async (name, params) => {
   await GhostChannels.pushAsync('JS_EVENTS', JSON.stringify({ name, params }));
 };
 
+// Clear Lua <-> JS events channels for a new game
 export const clearAsync = async () => {
   await GhostChannels.clearAsync('JS_EVENTS');
   await GhostChannels.clearAsync('LUA_JS_EVENTS');
 };
 
-// Clear Lua <-> JS events channels for a new game
-export const useClear = () => {
-  const [cleared, setCleared] = useState(false);
+const GhostEventsContext = React.createContext({});
 
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      await clearAsync();
-      if (mounted) {
-        setCleared(true);
-      }
-    })();
-    return () => (mounted = false);
-  }, []);
+export const Provider = (props) => {
+  const [state, setState] = useState({
+    eventsId: null,
+    eventsReady: false,
+  });
 
-  return { cleared };
+  const gameDidMount = async (eventsId) => {
+    await clearAsync();
+    setState({
+      eventsId,
+      eventsReady: true,
+    });
+  };
+
+  const gameDidUnmount = (eventsId) => {
+    setState({
+      eventsReady: false,
+    });
+  };
+
+  const value = {
+    ...state,
+    gameDidMount,
+    gameDidUnmount,
+  };
+
+  return <GhostEventsContext.Provider value={value}>{props.children}</GhostEventsContext.Provider>;
 };
 
-// Listen for an event while respecting component lifecycle
-export const useListen = ({ eventsReady, eventName, handler }) => {
+export const useGhostEvents = () => React.useContext(GhostEventsContext);
+
+export const useListen = ({ eventName, handler }) => {
   const savedHandler = useRef();
+  const { eventsReady } = useGhostEvents();
 
   useEffect(() => {
     savedHandler.current = handler;
@@ -74,7 +90,7 @@ export const useListen = ({ eventsReady, eventName, handler }) => {
   useEffect(() => {
     if (eventsReady) {
       let mounted = true;
-      const handle = listen(eventName, params => {
+      const handle = listen(eventName, (params) => {
         if (mounted) {
           savedHandler.current(params);
         }
@@ -84,5 +100,5 @@ export const useListen = ({ eventsReady, eventName, handler }) => {
         handle.remove();
       };
     }
-  }, [eventsReady, eventName]);
+  }, [eventsReady]);
 };

@@ -8,7 +8,7 @@ import ip from 'ip';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 
 import GhostView from './ghost/GhostView';
-import * as GhostEvents from './ghost/GhostEvents';
+import { sendAsync, useGhostEvents, useListen } from './ghost/GhostEvents';
 import * as MainSwitcher from './MainSwitcher';
 import * as LuaBridge from './LuaBridge';
 import * as Session from './Session';
@@ -258,11 +258,10 @@ const useInitialData = ({ game, dimensionsSettings, extras }) => {
 };
 
 // Keep track of Lua loading state
-const useLuaLoading = ({ eventsReady, onLoaded }) => {
+const useLuaLoading = ({ onLoaded }) => {
   // Maintain list of network requests Lua is making
   const [networkRequests, setNetworkRequests] = useState([]);
-  GhostEvents.useListen({
-    eventsReady,
+  useListen({
     eventName: 'GHOST_NETWORK_REQUEST',
     handler: async ({ type, id, url, method }) => {
       if (type === 'start') {
@@ -283,8 +282,7 @@ const useLuaLoading = ({ eventsReady, onLoaded }) => {
 
   // Maintain whether Lua finished loading (`love.load` is done)
   const [loaded, setLoaded] = useState(false);
-  GhostEvents.useListen({
-    eventsReady,
+  useListen({
     eventName: 'CASTLE_GAME_LOADED',
     handler: () => {
       if (onLoaded) {
@@ -298,9 +296,8 @@ const useLuaLoading = ({ eventsReady, onLoaded }) => {
 };
 
 // Connect the game to the multiplayer session we're supposed to be in when it asks
-const useLuaMultiplayerClient = ({ eventsReady, game, sessionId, setSessionId }) => {
-  GhostEvents.useListen({
-    eventsReady,
+const useLuaMultiplayerClient = ({ game, sessionId, setSessionId }) => {
+  useListen({
     eventName: 'CASTLE_CONNECT_MULTIPLAYER_CLIENT_REQUEST',
     handler: async ({ mediaUrl }) => {
       let connectionParams;
@@ -355,7 +352,7 @@ const useLuaMultiplayerClient = ({ eventsReady, game, sessionId, setSessionId })
           isNewSession,
           sessionToken,
         } = result.data.joinMultiplayerSession;
-        GhostEvents.sendAsync('CASTLE_CONNECT_MULTIPLAYER_CLIENT_RESPONSE', {
+        sendAsync('CASTLE_CONNECT_MULTIPLAYER_CLIENT_RESPONSE', {
           address,
           sessionToken,
         });
@@ -462,7 +459,7 @@ const useUserStatus = ({ game }) => {
 
 const useDeckState = ({ deckState }) => {
   useEffect(() => {
-    GhostEvents.sendAsync('UPDATE_DECK_STATE', {
+    sendAsync('UPDATE_DECK_STATE', {
       deckState,
     });
   }, [deckState]);
@@ -499,19 +496,23 @@ export const GameView = ({
 
   const initialDataHook = useInitialData({ game, dimensionsSettings, extras });
 
-  const clearEventsHook = GhostEvents.useClear();
-  const eventsReady = clearEventsHook.cleared;
+  const { gameDidMount, gameDidUnmount, eventsReady } = useGhostEvents();
 
-  const luaLoadingHook = useLuaLoading({ eventsReady, onLoaded });
+  useEffect(() => {
+    const id = Math.floor(Math.random() * Math.floor(1000));
+    gameDidMount(id);
+    return () => gameDidUnmount(id);
+  }, []);
+
+  const luaLoadingHook = useLuaLoading({ onLoaded });
 
   const [sessionId, setSessionId] = useState(extras.sessionId);
 
-  useLuaMultiplayerClient({ eventsReady, game, sessionId, setSessionId });
+  useLuaMultiplayerClient({ game, sessionId, setSessionId });
 
-  LuaBridge.useLuaBridge({ eventsReady, game });
+  LuaBridge.useLuaBridge({ game });
 
-  GhostEvents.useListen({
-    eventsReady,
+  useListen({
     eventName: 'GHOST_SCREENSHOT',
     handler: (params) => {
       if (onScreenshot) {
@@ -520,8 +521,7 @@ export const GameView = ({
     },
   });
 
-  GhostEvents.useListen({
-    eventsReady,
+  useListen({
     eventName: 'GHOST_MESSAGE',
     handler: (params) => {
       if (onMessage) {
@@ -530,8 +530,7 @@ export const GameView = ({
     },
   });
 
-  GhostEvents.useListen({
-    eventsReady,
+  useListen({
     eventName: 'GHOST_BACK',
     handler: (params) => {
       if (onPressBack) {
@@ -586,11 +585,7 @@ export const GameView = ({
           },
         }) => setLandscape(width > height)}>
         {game && eventsReady && initialDataHook.sent ? (
-          <Tools
-            eventsReady={eventsReady}
-            visible={toolsVisible !== false && !windowed}
-            landscape={landscape}
-            game={game}>
+          <Tools visible={toolsVisible !== false && !windowed} landscape={landscape} game={game}>
             <GhostView
               style={{ flex: 1 }}
               uri={game.entryPoint}
@@ -607,7 +602,7 @@ export const GameView = ({
             extras={extras}
           />
         ) : null}
-        <GameLogs eventsReady={eventsReady} visible={!windowed && logsVisible} />
+        <GameLogs visible={!windowed && logsVisible} />
       </View>
     </View>
   );

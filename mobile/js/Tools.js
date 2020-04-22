@@ -46,7 +46,7 @@ import Octicons from 'react-native-vector-icons/Octicons';
 import Zocial from 'react-native-vector-icons/Zocial';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
-import * as GhostEvents from './ghost/GhostEvents';
+import { sendAsync, useListen } from './ghost/GhostEvents';
 import { ScrollView } from 'react-native-gesture-handler';
 import * as Constants from './Constants';
 import ColorPicker from './ColorPicker';
@@ -130,7 +130,7 @@ const objectToArray = (input) => {
 let nextEventId = 1;
 const sendEvent = (pathId, event) => {
   const eventId = nextEventId++;
-  GhostEvents.sendAsync('CASTLE_TOOL_EVENT', { pathId, event: { ...event, eventId } });
+  sendAsync('CASTLE_TOOL_EVENT', { pathId, event: { ...event, eventId } });
   return eventId;
 };
 
@@ -1514,13 +1514,12 @@ const KeyboardAwareWrapper = ({ backgroundColor, children }) => {
 };
 
 // Top-level tools container -- watches for Lua <-> JS tool events and renders the tools overlaid in its parent
-export default Tools = ({ eventsReady, visible, landscape, game, children }) => {
+export default Tools = ({ visible, landscape, game, children }) => {
   // Maintain tools state
   const [root, setRoot] = useState({});
 
   // Listen for updates
-  GhostEvents.useListen({
-    eventsReady,
+  useListen({
     eventName: 'CASTLE_TOOLS_UPDATE',
     handler: (diffJson) => {
       const diff = JSON.parse(diffJson);
@@ -1533,8 +1532,7 @@ export default Tools = ({ eventsReady, visible, landscape, game, children }) => 
     Colors = lightColors;
     setRoot(JSON.parse(JSON.stringify(root))); // Force re-render
   }, []);
-  GhostEvents.useListen({
-    eventsReady,
+  useListen({
     eventName: 'CASTLE_TOOLS_COLORS',
     handler: ({ isDark = false } = {}) => {
       if (isDark) {
