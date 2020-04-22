@@ -20,6 +20,7 @@
 
 #include "RNBootSplash.h"
 #include "GhostPushNotifications.h"
+#include "GhostView.h"
 
 #import "../../../ghost-extensions/SDL2-2.0.8/src/video/uikit/SDL_uikitappdelegate.h"
 
@@ -71,6 +72,9 @@ int SDL_main(int argc, char *argv[]) {
   [self.sdlDelegate hideLaunchScreen];
   SDL_SetMainReady();
   SDL_iPhoneSetEventPump(SDL_FALSE);
+
+  // GhostView
+  //[GhostView sharedGhostView];
 
   UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
   center.delegate = self;

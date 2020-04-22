@@ -154,6 +154,7 @@
 		7A2BB3156AC1D98E2389E1CF /* libPods-CastleTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CastleTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8865F844F710B24790E91D03 /* Pods-Castle-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Castle-tvOS.release.xcconfig"; path = "Target Support Files/Pods-Castle-tvOS/Pods-Castle-tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		8C185AA70A18F1954FE6686B /* Pods-Castle-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Castle-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-Castle-tvOS/Pods-Castle-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
+		913618972450F12800E9BD15 /* GhostView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GhostView.h; sourceTree = "<group>"; };
 		91395EAF24084E2D00ECBCF9 /* Castle.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Castle.entitlements; path = Castle/Castle.entitlements; sourceTree = "<group>"; };
 		91395EB7240DE6A700ECBCF9 /* GhostPushNotifications.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = GhostPushNotifications.mm; sourceTree = "<group>"; };
 		91395EB924170C5900ECBCF9 /* GhostPushNotifications.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GhostPushNotifications.h; sourceTree = "<group>"; };
@@ -318,6 +319,7 @@
 			children = (
 				91395EAF24084E2D00ECBCF9 /* Castle.entitlements */,
 				A1FA18C22365168600E2ACFE /* GhostInputZone.mm */,
+				913618972450F12800E9BD15 /* GhostView.h */,
 				A1CCBA18235518C7009F4DDD /* GhostView.m */,
 				A1CCBA1423551869009F4DDD /* GhostChannels.mm */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,

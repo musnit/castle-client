@@ -1,36 +1,34 @@
-local ffi = require 'ffi'
+local ffi = require "ffi"
 local C = ffi.C
-local cjson = require 'cjson'
-local copas = require 'copas'
+local cjson = require "cjson"
+local copas = require "copas"
 
-
-math.randomseed(10000 * require('socket').gettime())
+math.randomseed(10000 * require("socket").gettime())
 
 local theOS = love.system.getOS()
-local isMobile = theOS == 'Android' or theOS == 'iOS'
-
+local isMobile = theOS == "Android" or theOS == "iOS"
 
 -- Consume initial data
 
 do
-    local channel = love.thread.getChannel('INITIAL_DATA')
+    local channel = love.thread.getChannel("INITIAL_DATA")
     if channel:getCount() > 0 then
-        pcall(function()
-            CASTLE_INITIAL_DATA = cjson.decode(channel:pop())
-        end)
+        pcall(
+            function()
+                CASTLE_INITIAL_DATA = cjson.decode(channel:pop())
+            end
+        )
         channel:clear()
     end
 end
 
-
 -- Make a directory for temporary files
 
-CASTLE_TMP_DIR_NAME = 'tmp'
+CASTLE_TMP_DIR_NAME = "tmp"
 love.filesystem.createDirectory(CASTLE_TMP_DIR_NAME)
 for _, filename in pairs(love.filesystem.getDirectoryItems(CASTLE_TMP_DIR_NAME)) do
-    love.filesystem.remove(CASTLE_TMP_DIR_NAME .. '/' .. filename)
+    love.filesystem.remove(CASTLE_TMP_DIR_NAME .. "/" .. filename)
 end
-
 
 -- We need to maintain modifier key state ourselves because if SDL is quit when a modifier is held down,
 -- it keeps thinking the key is held down when SDL is next initialized even if the key was released in
@@ -44,7 +42,7 @@ CASTLE_MODIFIER_KEYS = {
     ralt = false,
     lalt = false,
     rgui = false,
-    lgui = false,
+    lgui = false
 }
 
 local originalLoveKeyboardIsDown = love.keyboard.isDown
@@ -59,36 +57,34 @@ do
     end
 end
 
-
 -- Built-in libraries
 
-network = require '__ghost__.network'
-require = require '__ghost__.require'
-castle = require '__ghost__.castle'
-local root = require '__ghost__.portal'
-local jsEvents = require '__ghost__.jsEvents'
-
+network = require "__ghost__.network"
+require = require "__ghost__.require"
+castle = require "__ghost__.castle"
+local root = require "__ghost__.portal"
+local jsEvents = require "__ghost__.jsEvents"
 
 -- Forward `print` and errors to JS, write them to '.log' files on desktop
 
 local updateLogs
 do
-    local ERRORS_FILE_NAME, PRINTS_FILE_NAME = 'castle_errors.log', 'castle_prints.log'
+    local ERRORS_FILE_NAME, PRINTS_FILE_NAME = "castle_errors.log", "castle_prints.log"
 
     if castle.system.isDesktop() then
-        love.filesystem.write(ERRORS_FILE_NAME, '')
-        love.filesystem.write(PRINTS_FILE_NAME, '')
+        love.filesystem.write(ERRORS_FILE_NAME, "")
+        love.filesystem.write(PRINTS_FILE_NAME, "")
     end
 
     local collectedPrints = {} -- Stash prints and flush them to the '.log' file once in a while
     local oldPrint = print -- Save original print function to call later
     function print(...)
         oldPrint(...)
-        local array = { ... }
+        local array = {...}
         if castle.system.isRemoteServer() then
-            love.thread.getChannel('PRINT'):push(cjson.encode(array))
+            love.thread.getChannel("PRINT"):push(cjson.encode(array))
         else
-            jsEvents.send('GHOST_PRINT', array)
+            jsEvents.send("GHOST_PRINT", array)
         end
         if castle.system.isDesktop() then
             collectedPrints[#collectedPrints + 1] = cjson.encode(array)
@@ -103,14 +99,14 @@ do
             stack = stack:gsub(pattern, filename)
         end
         oldPrint(stack)
-        local obj = { error = err, stacktrace = stack }
+        local obj = {error = err, stacktrace = stack}
         if castle.system.isRemoteServer() then
-            love.thread.getChannel('ERROR'):push(cjson.encode(obj))
+            love.thread.getChannel("ERROR"):push(cjson.encode(obj))
         else
-            jsEvents.send('GHOST_ERROR', obj)
+            jsEvents.send("GHOST_ERROR", obj)
         end
         if castle.system.isDesktop() then
-            love.filesystem.append(ERRORS_FILE_NAME, cjson.encode(obj) .. '\n')
+            love.filesystem.append(ERRORS_FILE_NAME, cjson.encode(obj) .. "\n")
         end
     end
 
@@ -126,8 +122,7 @@ do
             if isQuitting or not lastPrintDumpTime or now - lastPrintDumpTime > 0.5 then
                 lastPrintDumpTime = now
                 if #collectedPrints > 0 then
-                    love.filesystem.append(PRINTS_FILE_NAME,
-                        table.concat(collectedPrints, '\n') .. '\n')
+                    love.filesystem.append(PRINTS_FILE_NAME, table.concat(collectedPrints, "\n") .. "\n")
                     collectedPrints = {}
                 end
             end
@@ -135,16 +130,14 @@ do
     end
 end
 
-
 -- Forward declarations...
 
-local home -- Portal to the home experience
-
+local home  -- Portal to the home experience
 
 -- Mobile keyboard event handling
 
-local mobileKeyDownChannel = love.thread.getChannel('GHOST_KEY_DOWN')
-local mobileKeyUpChannel = love.thread.getChannel('GHOST_KEY_UP')
+local mobileKeyDownChannel = love.thread.getChannel("GHOST_KEY_DOWN")
+local mobileKeyUpChannel = love.thread.getChannel("GHOST_KEY_UP")
 
 local updateMobileKeyboardEvents
 if isMobile then
@@ -157,7 +150,7 @@ if isMobile then
         -- Handle presses before releases to prevent release + press events for the same key within the same frame
         while mobileKeyDownChannel:getCount() > 0 do
             local ks = mobileKeyDownChannel:pop()
-            for k in ks:gmatch('[^_]+') do
+            for k in ks:gmatch("[^_]+") do
                 if keyDownCount[k] == nil then
                     -- First touch? Send pressed event.
                     keyDownCount[k] = 1
@@ -171,7 +164,7 @@ if isMobile then
         end
         while mobileKeyUpChannel:getCount() > 0 do
             local ks = mobileKeyUpChannel:pop()
-            for k in ks:gmatch('[^_]+') do
+            for k in ks:gmatch("[^_]+") do
                 if keyDownCount[k] == 1 then
                     -- Last release? Send released event.
                     keyDownCount[k] = nil
@@ -190,72 +183,57 @@ if isMobile then
     end
 end
 
-
 -- Top-level Love callbacks
 
-local initialParams = castle.game.getInitialParams()
-if initialParams and initialParams.useSceneCreatorZip then
-    CASTLE_USE_SCENE_CREATOR_ZIP = true
-end
+local initialFileDropped  -- In case a `love.filedropped` occurred before home experience is loaded
 
-local initialFileDropped -- In case a `love.filedropped` occurred before home experience is loaded
-
-local homeUrl -- Populated later with the final home experience URL
-local remoteHomeVersion = 'e0909a90e9d04a895531cd1013bdb39c9b18cdc4' -- Git specifier of remote home
-local localHomeUrl = 'http://0.0.0.0:8032/main.lua' -- URL to local home to attempt
+local homeUrl  -- Populated later with the final home experience URL
 
 local main = {}
 
 function main.load(arg)
-    network.async(function()
-        if CASTLE_USE_SCENE_CREATOR_ZIP then
-            local sceneCreatorResponse = network.fetch('https://api.castle.games/api/scene-creator')
-            local fileData = love.filesystem.newFileData(sceneCreatorResponse, 'scene_creator.love')
-            love.filesystem.mount(fileData, 'zip_mount', true)
-        end
+    network.async(
+        function()
+            if GHOST_ROOT_URI and string.len(GHOST_ROOT_URI) > 0 then
+                homeUrl = GHOST_ROOT_URI
+            else
+                local sceneCreatorResponse = network.fetch("https://api.castle.games/api/scene-creator")
+                local fileData = love.filesystem.newFileData(sceneCreatorResponse, "scene_creator.love")
+                love.filesystem.mount(fileData, "zip_mount", true)
+                homeUrl = "zip://Client.lua"
+            end
 
-        if GHOST_ROOT_URI then -- Global `GHOST_ROOT_URI` set by native code? Just use that.
-            homeUrl = GHOST_ROOT_URI
-        else -- Default to remote URI based on `remoteHomeVersion`, using local version if served
-            homeUrl = 'https://raw.githubusercontent.com/nikki93/ghost-home2/'
-                    .. remoteHomeVersion .. '/main.lua'
-            if theOS ~= 'Windows' -- Failed `0.0.0.0` requests hang on Windows...
-                    and network.exists(localHomeUrl) then
-                homeUrl = localHomeUrl
+            if love.graphics then
+                -- Sleep a little to let screen dimensions settings synchronize, then create the default
+                -- font, so that it has the updated DPI
+                copas.sleep(0.08)
+                love.graphics.setFont(love.graphics.newFont(14))
+            end
+
+            home = root:newChild(homeUrl, {noConf = true})
+            jsEvents.send("CASTLE_GAME_LOADED", {})
+            io.flush()
+            network.onGameLoaded()
+            if initialFileDropped then
+                home:filedropped(initialFileDropped)
+                initialFileDropped = nil
+            end
+
+            if castle.system.isDesktop() then
+                ffi.cdef "void ghostDoneLoading();"
+                C.ghostDoneLoading()
             end
         end
-
-        if CASTLE_USE_SCENE_CREATOR_ZIP then
-            homeUrl = 'zip://Client.lua'
-        end
-
-        if love.graphics then
-            -- Sleep a little to let screen dimensions settings synchronize, then create the default
-            -- font, so that it has the updated DPI
-            copas.sleep(0.08)
-            love.graphics.setFont(love.graphics.newFont(14))
-        end
-
-        home = root:newChild(homeUrl, { noConf = true })
-        jsEvents.send('CASTLE_GAME_LOADED', {})
-        io.flush()
-        network.onGameLoaded()
-        if initialFileDropped then
-            home:filedropped(initialFileDropped)
-            initialFileDropped = nil
-        end
-
-        if castle.system.isDesktop() then
-            ffi.cdef 'void ghostDoneLoading();'
-            C.ghostDoneLoading()
-        end
-    end)
+    )
 end
 
 local pendingPostOpens = {} -- Keep track of post open requests
-jsEvents.listen('CASTLE_POST_OPENED', function(postOpen)
-    table.insert(pendingPostOpens, postOpen)
-end)
+jsEvents.listen(
+    "CASTLE_POST_OPENED",
+    function(postOpen)
+        table.insert(pendingPostOpens, postOpen)
+    end
+)
 
 local pendingJoystickAdds = {} -- Keep track of joystick opens before `home` is ready
 function main.joystickadded(joystick)
@@ -264,7 +242,7 @@ function main.joystickadded(joystick)
     end
 end
 
-ffi.cdef 'bool ghostGetBackgrounded();'
+ffi.cdef "bool ghostGetBackgrounded();"
 
 function main.update(dt)
     if isMobile then
@@ -315,14 +293,14 @@ function main.update(dt)
 end
 
 function main.draw(...)
-    love.graphics.push('all')
+    love.graphics.push("all")
     if home then
         home:draw(...)
     end
     love.graphics.pop()
 end
 
-ffi.cdef 'bool ghostFocusChat();'
+ffi.cdef "bool ghostFocusChat();"
 
 function main.keypressed(key, ...)
     if CASTLE_MODIFIER_KEYS[key] ~= nil then
@@ -334,20 +312,26 @@ function main.keypressed(key, ...)
 
     -- Intercept system hotkeys
     if castle.system.isDesktop() then
-        if (key == 'escape') or ((ctrl or gui or shift) and (key == 'j' or key == 'r' or key == 'f' or key == 'w' or key == 's')) then
-            jsEvents.send('CASTLE_SYSTEM_KEY_PRESSED', {
-                ctrlKey = ctrl,
-                altKey = false,
-                metaKey = gui,
-                shiftKey = shift,
-                key = key,
-            })
+        if
+            (key == "escape") or
+                ((ctrl or gui or shift) and (key == "j" or key == "r" or key == "f" or key == "w" or key == "s"))
+         then
+            jsEvents.send(
+                "CASTLE_SYSTEM_KEY_PRESSED",
+                {
+                    ctrlKey = ctrl,
+                    altKey = false,
+                    metaKey = gui,
+                    shiftKey = shift,
+                    key = key
+                }
+            )
             return
         end
     end
 
     -- Chat focus
-    if ctrl and key == 'g' then
+    if ctrl and key == "g" then
         C.ghostFocusChat()
     end
 
@@ -385,8 +369,8 @@ function main.filedropped(file)
 end
 
 function main.mousepressed(...)
-    love.thread.getChannel('FOCUS_ME'):clear()
-    love.thread.getChannel('FOCUS_ME'):push('PLEASE')
+    love.thread.getChannel("FOCUS_ME"):clear()
+    love.thread.getChannel("FOCUS_ME"):push("PLEASE")
     if home then
         home:mousepressed(...)
     end
@@ -424,37 +408,39 @@ function castle.uiupdate()
     end
 end
 
-for k in pairs({
-    load = true,
-    quit = true,
-    update = true,
-    draw = true,
-    keypressed = true,
-    keyreleased = true,
-    mousefocus = true,
-    mousemoved = true,
-    mousepressed = true,
-    mousereleased = true,
-    resize = true,
-    textedited = true,
-    textinput = true,
-    touchmoved = true,
-    touchpressed = true,
-    touchreleased = true,
-    wheelmoved = true,
-    gamepadaxis = true,
-    gamepadpressed = true,
-    gamepadreleased = true,
-    joystickadded = true,
-    joystickaxis = true,
-    joystickhat = true,
-    joystickpressed = true,
-    joystickreleased = true,
-    joystickremoved = true,
-    focus = true,
-    filedropped = true,
-    visible = true,
-}) do
+for k in pairs(
+    {
+        load = true,
+        quit = true,
+        update = true,
+        draw = true,
+        keypressed = true,
+        keyreleased = true,
+        mousefocus = true,
+        mousemoved = true,
+        mousepressed = true,
+        mousereleased = true,
+        resize = true,
+        textedited = true,
+        textinput = true,
+        touchmoved = true,
+        touchpressed = true,
+        touchreleased = true,
+        wheelmoved = true,
+        gamepadaxis = true,
+        gamepadpressed = true,
+        gamepadreleased = true,
+        joystickadded = true,
+        joystickaxis = true,
+        joystickhat = true,
+        joystickpressed = true,
+        joystickreleased = true,
+        joystickremoved = true,
+        focus = true,
+        filedropped = true,
+        visible = true
+    }
+) do
     love[k] = function(...)
         if main[k] then
             main[k](...)
@@ -468,10 +454,14 @@ end
 
 -- Based on default in https://love2d.org/wiki/love.run with Ghost adjustments
 function love.run()
-    if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
+    if love.load then
+        love.load(love.arg.parseGameArguments(arg), arg)
+    end
 
     -- We don't want the first frame's dt to include time taken by love.load.
-    if love.timer then love.timer.step() end
+    if love.timer then
+        love.timer.step()
+    end
 
     local dt = 0
 
@@ -483,18 +473,20 @@ function love.run()
         -- Process events.
         if love.event then
             love.event.pump()
-            for name, a,b,c,d,e,f in love.event.poll() do
+            for name, a, b, c, d, e, f in love.event.poll() do
                 if name == "quit" then
                     if not love.quit or not love.quit() then
                         return a or 0
                     end
                 end
-                love.handlers[name](a,b,c,d,e,f)
+                love.handlers[name](a, b, c, d, e, f)
             end
         end
 
         -- Update dt, as we'll be passing it to update
-        if love.timer then dt = love.timer.step() end
+        if love.timer then
+            dt = love.timer.step()
+        end
 
         --- XXX(Ghost): 60 Hz throttling when headless
         if not (love.graphics and love.graphics.isActive()) then
@@ -515,17 +507,23 @@ function love.run()
         lastLoopStartTime = love.timer.getTime()
 
         -- Call update and draw
-        if love.update then love.update(dt) end -- will pass 0 if love.timer is disabled
+        if love.update then
+            love.update(dt)
+        end -- will pass 0 if love.timer is disabled
 
         if love.graphics and love.graphics.isActive() then
             love.graphics.origin()
             love.graphics.clear(love.graphics.getBackgroundColor())
 
-            if love.draw then love.draw() end
+            if love.draw then
+                love.draw()
+            end
 
             love.graphics.present()
         end
 
-        if love.timer then love.timer.sleep(0.001) end
+        if love.timer then
+            love.timer.sleep(0.001)
+        end
     end
 end

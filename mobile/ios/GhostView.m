@@ -1,32 +1,32 @@
 // Wrapped by 'GhostView.js'.
 
-#import <AVFoundation/AVFoundation.h>
-
-#import <React/RCTView.h>
-#import <React/RCTViewManager.h>
-
-#include <lauxlib.h>
-#include <lua.h>
-#include <lualib.h>
-
-#include <SDL.h>
-
-#include "modules/love/love.h"
+#include "GhostView.h"
 
 //
 // GhostView
 //
 
-@interface GhostView : RCTView
-
-@property(nonatomic, assign) lua_State *luaState;
-@property(nonatomic, assign) int loveBootStackPos;
-
-@property(nonatomic, strong) CADisplayLink *displayLink;
-
-@end
+#define SCENE_CREATOR_USE_PROD_SCENE_CREATOR false
+#define SCENE_CREATOR_DEV_URI @"http://192.168.1.146:8080/Client.lua"
 
 @implementation GhostView
+
++ (instancetype)sharedGhostView {
+  static GhostView *sharedGhostView = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+      sharedGhostView = [[self alloc] init];
+
+      dispatch_async(dispatch_get_main_queue(), ^{
+        if (!sharedGhostView.luaState) {
+          [sharedGhostView bootLoveWithUri:SCENE_CREATOR_USE_PROD_SCENE_CREATOR ? @"" : SCENE_CREATOR_DEV_URI];
+        } else {
+          RCTLog(@"`GhostView`: already booted, ignoring new `uri`");
+        }
+      });
+  });
+  return sharedGhostView;
+}
 
 - (instancetype)init {
   if (self = [super init]) {
@@ -167,13 +167,6 @@
 }
 
 - (void)setUri:(NSString *)uri {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    if (!self.luaState) {
-      [self bootLoveWithUri:uri];
-    } else {
-      RCTLog(@"`GhostView`: already booted, ignoring new `uri`");
-    }
-  });
 }
 
 extern double ghostScreenScaling;
@@ -208,25 +201,6 @@ extern bool ghostApplyScreenScaling;
   [viewController.view removeFromSuperview];
 }
 
-- (void)removeFromSuperview {
-  if (self.displayLink) {
-    [self.displayLink invalidate];
-    self.displayLink = nil;
-  }
-
-  if (self.luaState) {
-    // Send a 'quit' event and step once more hoping it quits cleanly, then just
-    // kill it if still alive
-    SDL_Event quitEvent;
-    quitEvent.type = SDL_QUIT;
-    SDL_PushEvent(&quitEvent);
-    [self stepLove];
-    [self closeLua];
-  }
-
-  [super removeFromSuperview];
-}
-
 @end
 
 //
@@ -243,7 +217,7 @@ RCT_EXPORT_MODULE()
 @synthesize bridge = _bridge;
 
 - (UIView *)view {
-  return [[GhostView alloc] init];
+  return [GhostView sharedGhostView];
 }
 
 - (dispatch_queue_t)methodQueue {
