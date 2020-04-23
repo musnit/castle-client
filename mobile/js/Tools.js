@@ -1514,7 +1514,7 @@ const KeyboardAwareWrapper = ({ backgroundColor, children }) => {
 };
 
 // Top-level tools container -- watches for Lua <-> JS tool events and renders the tools overlaid in its parent
-export default Tools = ({ visible, landscape, children }) => {
+export default Tools = ({ entryPoint, visible, landscape, children }) => {
   // Maintain tools state
   const [root, setRoot] = useState({});
 
@@ -1546,7 +1546,7 @@ export default Tools = ({ visible, landscape, children }) => {
 
   // Construct context
   const context = {
-    transformAssetUri: (uri) => uri, //url.resolve(game.entryPoint, uri) || uri,
+    transformAssetUri: (uri) => url.resolve(entryPoint, uri) || uri,
   };
 
   // Render the container

@@ -252,6 +252,7 @@ export const GameView = ({
 
   const [landscape, setLandscape] = useState(false);
 
+  // TODO: entryPoint should actually reflect native entry point
   return (
     <View style={{ flex: 1 }}>
       <View
@@ -262,7 +263,10 @@ export const GameView = ({
           },
         }) => setLandscape(width > height)}>
         {eventsReady && initialDataHook.sent ? (
-          <Tools visible={toolsVisible !== false && !windowed} landscape={landscape}>
+          <Tools
+            entryPoint={'https://raw.githubusercontent.com/nikki93/scene-creator/master/Client.lua'}
+            visible={toolsVisible !== false && !windowed}
+            landscape={landscape}>
             <GhostView style={{ flex: 1 }} dimensionsSettings={dimensionsSettings} />
           </Tools>
         ) : null}

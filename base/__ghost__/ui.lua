@@ -1,15 +1,12 @@
-local cjson = (require 'cjson').new()
+local cjson = (require "cjson").new()
 cjson.encode_sparse_array(true, 1, 0)
 
-local state = require '__ghost__.state'
-local jsEvents = require '__ghost__.jsEvents'
-
+local state = require "__ghost__.state"
+local jsEvents = require "__ghost__.jsEvents"
 
 local ui = {}
 
-
 local UI_UPDATE_FREQUENCY = 20
-
 
 --
 -- Top-level data structures
@@ -23,23 +20,26 @@ root:__autoSync(true)
 -- Create a space for panes and create the default pane
 root.panes = {}
 root.panes.DEFAULT = {
-    type = 'pane',
+    type = "pane",
     props = {
-        name = 'DEFAULT',
-        visible = true,
-    },
+        name = "DEFAULT",
+        visible = true
+    }
 }
 
 -- A weak-keyed store for private (not sent to JS) data per UI element
-local store = setmetatable({}, {
-    __mode = 'k',
-    __index = function(t, k)
-        local v = {}
-        t[k] = v
-        return v
-    end,
-})
-
+local store =
+    setmetatable(
+    {},
+    {
+        __mode = "k",
+        __index = function(t, k)
+            local v = {}
+            t[k] = v
+            return v
+        end
+    }
+)
 
 --
 -- Events
@@ -47,13 +47,15 @@ local store = setmetatable({}, {
 
 -- Listen for and collect JS->Lua UI events per element
 local pendingEvents = {}
-jsEvents.listen('CASTLE_TOOL_EVENT', function(params)
-    if not pendingEvents[params.pathId] then
-        pendingEvents[params.pathId] = {}
+jsEvents.listen(
+    "CASTLE_TOOL_EVENT",
+    function(params)
+        if not pendingEvents[params.pathId] then
+            pendingEvents[params.pathId] = {}
+        end
+        table.insert(pendingEvents[params.pathId], params.event)
     end
-    table.insert(pendingEvents[params.pathId], params.event)
-end)
-
+)
 
 --
 -- Element construction and stack management
@@ -64,7 +66,7 @@ local function hash(s)
     if #s <= 22 then
         return s
     end
-    return love.data.encode('string', 'base64', love.data.hash('md5', s))
+    return love.data.encode("string", "base64", love.data.hash("md5", s))
 end
 
 -- Because we want the API to function by nesting UI calls for describing an element tree, we always
@@ -76,23 +78,26 @@ local stack = {}
 -- Push an element onto the stack to allow it to function as a parent
 local function push(element, id)
     local top = stack[#stack]
-    table.insert(stack, {
-        element = element,
-        newChildren = { lastId = nil, count = 0 },
-        pathId = hash((top and top.pathId or '') .. id)
-    })
+    table.insert(
+        stack,
+        {
+            element = element,
+            newChildren = {lastId = nil, count = 0},
+            pathId = hash((top and top.pathId or "") .. id)
+        }
+    )
 end
 
 -- Create a new element and add it as a child of the current element on the top of the stack
 local function addChild(typ, id, props, needsPathId)
-    assert(type(props) == 'table' or type(props) == 'nil', '`props` must be a table or `nil`')
+    assert(type(props) == "table" or type(props) == "nil", "`props` must be a table or `nil`")
 
     local top = stack[#stack]
     top.newChildren.count = top.newChildren.count + 1
 
     -- Canonicalize id, dedup'ing if exists in new
     id = (props and props.id) or id
-    id = hash(typ .. (((type(id) == 'string' and id) or (type(id) == 'number' and tostring(id))) or ''))
+    id = hash(typ .. (((type(id) == "string" and id) or (type(id) == "number" and tostring(id))) or ""))
     if top.newChildren[id] then
         id = hash(id .. top.newChildren.count)
     end
@@ -137,7 +142,7 @@ end
 -- error-tolerant -- if `inner` throws an error, the pop still occurs then the error is resurfaced
 -- after. Passes `...` to `inner`.
 local function enter(element, id, inner, ...)
-    assert(type(inner) == 'function', '`inner` should be a function')
+    assert(type(inner) == "function", "`inner` should be a function")
     push(element, id)
     local succeeded, err = pcall(inner, ...)
     pop()
@@ -146,25 +151,33 @@ local function enter(element, id, inner, ...)
     end
 end
 
-
 --
 -- Update cycle
 --
 
 -- Listen for JS asking us to send an exact diff next time
 local needsSync = false
-jsEvents.listen('CASTLE_TOOLS_NEEDS_SYNC', function()
-    needsSync = true
-end)
+jsEvents.listen(
+    "CASTLE_TOOLS_NEEDS_SYNC",
+    function()
+        needsSync = true
+    end
+)
 
 -- The top-level UI update -- call user's `castle.uiupdate` then send a diff of UI state to JS
 local lastUpdateTime
+
+function resetUI()
+    lastUpdateTime = nil
+    needsSync = true
+end
+
 function ui.update()
     local time = love.timer.getTime()
     if not lastUpdateTime or time - lastUpdateTime > 1 / UI_UPDATE_FREQUENCY then
         lastUpdateTime = time
 
-        push(root.panes.DEFAULT, 'DEFAULT')
+        push(root.panes.DEFAULT, "DEFAULT")
         if castle and castle.uiupdate then
             castle.uiupdate()
         end
@@ -174,16 +187,15 @@ function ui.update()
         local diff = root:__diff(0, needsSync) -- Exact diff if `needsSync`
         if diff ~= nil then
             local diffJson = cjson.encode(diff)
-            jsEvents.send('CASTLE_TOOLS_UPDATE', diffJson)
-            -- print('update: ' .. diffJson)
-            -- print('update size: ' .. #diffJson)
-            -- io.flush()
+            jsEvents.send("CASTLE_TOOLS_UPDATE", diffJson)
+        -- print('update: ' .. diffJson)
+        -- print('update size: ' .. #diffJson)
+        -- io.flush()
         end
         root:__flush()
         needsSync = false
     end
 end
-
 
 --
 -- Utilities
@@ -219,58 +231,56 @@ local function without(t, w, ...)
     return without(r, ...)
 end
 
-
 --
 -- Panes
 --
 
 function ui.setVisible(...)
     local name, visible
-    local nArgs = select('#', ...)
+    local nArgs = select("#", ...)
     if nArgs == 2 then
         name, visible = ...
     elseif nArgs == 1 then
-        name, visible = 'DEFAULT', ...
+        name, visible = "DEFAULT", ...
     else
-        error('`ui.setVisible` takes 1 or 2 arguments')
+        error("`ui.setVisible` takes 1 or 2 arguments")
     end
     assert(root.panes[name], "no pane named '" .. name .. "'").props.visible = visible
 end
 
 function ui.getVisible(name)
-    name = name or 'DEFAULT'
+    name = name or "DEFAULT"
     return assert(root.panes[name], "no pane named '" .. name .. "'").props.visible
 end
 
 function ui.pane(...)
     local name, props, inner
-    local nArgs = select('#', ...)
+    local nArgs = select("#", ...)
     if nArgs == 2 then
         name, inner = ...
     elseif nArgs == 3 then
         name, props, inner = ...
     else
-        error('`ui.pane` takes 2 or 3 arguments')
+        error("`ui.pane` takes 2 or 3 arguments")
     end
 
-    if name == 'default' then -- Canonicalize 'default'
-        name = 'DEFAULT'
+    if name == "default" then -- Canonicalize 'default'
+        name = "DEFAULT"
     end
 
     local c = root.panes[name]
     if c == nil then
-        root.panes[name] = { type = 'pane' }
+        root.panes[name] = {type = "pane"}
         c = root.panes[name]
     end
-    c.props = merge({ name = name, visible = true }, props)
+    c.props = merge({name = name, visible = true}, props)
 
-    if name == 'DEFAULT' then -- We're already in 'DEFAULT' to begin with
+    if name == "DEFAULT" then -- We're already in 'DEFAULT' to begin with
         inner()
     else
         enter(c, name, inner)
     end
 end
-
 
 --
 -- Components
@@ -278,41 +288,46 @@ end
 
 function ui.box(...)
     local id, props, inner
-    local nArgs = select('#', ...)
+    local nArgs = select("#", ...)
     if nArgs == 2 then
         id, inner = ...
     elseif nArgs == 3 then
         id, props, inner = ...
     end
-    assert(type(id) == 'string', '`ui.box` needs a string `id`')
+    assert(type(id) == "string", "`ui.box` needs a string `id`")
 
-    local c, newId = addChild('box', id, props or {}, true)
+    local c, newId = addChild("box", id, props or {}, true)
     enter(c, newId, inner)
 end
 
 function ui.button(label, props)
-    assert(type(label) == 'string', '`ui.button` needs a string `label`')
+    assert(type(label) == "string", "`ui.button` needs a string `label`")
 
-    local newProps = without(merge({ label = label }, props), 'onClick', 'popover')
+    local newProps = without(merge({label = label}, props), "onClick", "popover")
 
     if props and props.popover then
         newProps.enablePopover = true
     end
 
-    local c, newId = addChild('button', label, newProps, true)
+    local c, newId = addChild("button", label, newProps, true)
 
     if props and props.popover then
         c.closePopover = false
-        enter(c, newId, props.popover, function()
-            c.closePopover = true
-        end)
+        enter(
+            c,
+            newId,
+            props.popover,
+            function()
+                c.closePopover = true
+            end
+        )
     end
 
     local clicked = false
     local es = pendingEvents[c.pathId]
     if es then
         for _, e in ipairs(es) do
-            if e.type == 'onClick' then
+            if e.type == "onClick" then
                 if props and props.onClick then
                     props.onClick()
                 end
@@ -324,16 +339,16 @@ function ui.button(label, props)
 end
 
 function ui.checkbox(label, checked, props)
-    assert(type(label) == 'string', '`ui.checkbox` needs a string `label`')
-    assert(type(checked) == 'boolean', '`ui.checkbox` needs a boolean `checked`')
+    assert(type(label) == "string", "`ui.checkbox` needs a string `label`")
+    assert(type(checked) == "boolean", "`ui.checkbox` needs a boolean `checked`")
 
-    local c = addChild('checkbox', label, without(merge({ label = label, checked = checked }, props), 'onChange'), true)
+    local c = addChild("checkbox", label, without(merge({label = label, checked = checked}, props), "onChange"), true)
 
     local newChecked = checked
     local es = pendingEvents[c.pathId]
     if es then
         for _, e in ipairs(es) do
-            if e.type == 'onChange' then
+            if e.type == "onChange" then
                 if props and props.onChange then
                     local r = props.onChange(e.checked)
                     if r ~= nil then
@@ -351,36 +366,38 @@ function ui.checkbox(label, checked, props)
 end
 
 function ui.codeEditor(label, value, props)
-    assert(type(label) == 'string', '`ui.codeEditor` needs a string `label`')
-    assert(type(value) == 'string', '`ui.codeEditor` needs a string `value`')
+    assert(type(label) == "string", "`ui.codeEditor` needs a string `label`")
+    assert(type(value) == "string", "`ui.codeEditor` needs a string `value`")
 
-    local newProps = without(merge({ label = label, value = value }, props), 'onChange', 'onChangeCursorPosition')
+    local newProps = without(merge({label = label, value = value}, props), "onChange", "onChangeCursorPosition")
 
     if props and props.onChangeCursorPosition then
         newProps.enableOnChangeCursorPosition = true
     end
 
-    local c = addChild('codeEditor', label, newProps, true)
+    local c = addChild("codeEditor", label, newProps, true)
 
     local newValue = value
     local es = pendingEvents[c.pathId]
     if es then
         for _, e in ipairs(es) do
-            if e.type == 'onChange' then
+            if e.type == "onChange" then
                 if props and props.onChange then
                     newValue = props.onChange(e.value) or e.value
                 else
                     newValue = e.value
                 end
             end
-            if e.type == 'onChangeCursorPosition' then
+            if e.type == "onChangeCursorPosition" then
                 if props and props.onChangeCursorPosition then
-                    props.onChangeCursorPosition({
-                        line = e.line,
-                        column = e.column,
-                        offset = e.offset,
-                        word = e.word,
-                    })
+                    props.onChangeCursorPosition(
+                        {
+                            line = e.line,
+                            column = e.column,
+                            offset = e.offset,
+                            word = e.word
+                        }
+                    )
                 end
             end
         end
@@ -389,21 +406,21 @@ function ui.codeEditor(label, value, props)
 end
 
 function ui.colorPicker(label, r, g, b, a, props)
-    assert(type(label) == 'string', '`ui.colorPicker` needs a string `label`')
-    assert(type(r) == 'number', '`ui.colorPicker` needs a number `r`')
-    assert(type(g) == 'number', '`ui.colorPicker` needs a number `g`')
-    assert(type(b) == 'number', '`ui.colorPicker` needs a number `b`')
-    assert(type(a) == 'number', '`ui.colorPicker` needs a number `a`')
+    assert(type(label) == "string", "`ui.colorPicker` needs a string `label`")
+    assert(type(r) == "number", "`ui.colorPicker` needs a number `r`")
+    assert(type(g) == "number", "`ui.colorPicker` needs a number `g`")
+    assert(type(b) == "number", "`ui.colorPicker` needs a number `b`")
+    assert(type(a) == "number", "`ui.colorPicker` needs a number `a`")
 
-    local value = { r = r, g = g, b = b, a = a }
+    local value = {r = r, g = g, b = b, a = a}
 
-    local c = addChild('colorPicker', label, without(merge({ label = label, value = value }, props), 'onChange'), true)
+    local c = addChild("colorPicker", label, without(merge({label = label, value = value}, props), "onChange"), true)
 
     local newValue = value
     local es = pendingEvents[c.pathId]
     if es then
         for _, e in ipairs(es) do
-            if e.type == 'onChange' then
+            if e.type == "onChange" then
                 if props and props.onChange then
                     newValue = props.onChange(e.value) or e.value
                 else
@@ -416,22 +433,28 @@ function ui.colorPicker(label, r, g, b, a, props)
 end
 
 function ui.dropdown(label, value, items, props)
-    assert(type(label) == 'string', '`ui.dropdown` needs a string `label`')
-    assert(type(value) == 'string' or type(value) == 'nil', '`ui.dropdown` needs a string or nil `value`')
-    assert(type(items) == 'table', '`ui.dropdown` needs a table `items`')
+    assert(type(label) == "string", "`ui.dropdown` needs a string `label`")
+    assert(type(value) == "string" or type(value) == "nil", "`ui.dropdown` needs a string or nil `value`")
+    assert(type(items) == "table", "`ui.dropdown` needs a table `items`")
 
     local convertedItems = {}
     for k, v in pairs(items) do
         convertedItems[tostring(k)] = v
     end
 
-    local c = addChild('dropdown', label, without(merge({ label = label, value = value, items = convertedItems }, props), 'onChange'), true)
+    local c =
+        addChild(
+        "dropdown",
+        label,
+        without(merge({label = label, value = value, items = convertedItems}, props), "onChange"),
+        true
+    )
 
     local newValue = value
     local es = pendingEvents[c.pathId]
     if es then
         for _, e in ipairs(es) do
-            if e.type == 'onChange' then
+            if e.type == "onChange" then
                 if props and props.onChange then
                     newValue = props.onChange(e.value) or e.value
                 else
@@ -444,16 +467,16 @@ function ui.dropdown(label, value, items, props)
 end
 
 function ui.filePicker(label, value, props)
-    assert(type(label) == 'string', '`ui.filePicker` needs a string `label`')
-    assert(type(value) == 'string' or type(value) == 'nil', '`ui.filePicker` needs a string or nil `value`')
+    assert(type(label) == "string", "`ui.filePicker` needs a string `label`")
+    assert(type(value) == "string" or type(value) == "nil", "`ui.filePicker` needs a string or nil `value`")
 
-    local c = addChild('filePicker', label, without(merge({ label = label, value = value }, props), 'onChange'), true)
+    local c = addChild("filePicker", label, without(merge({label = label, value = value}, props), "onChange"), true)
 
     local newValue = value
     local es = pendingEvents[c.pathId]
     if es then
         for _, e in ipairs(es) do
-            if e.type == 'onChange' then
+            if e.type == "onChange" then
                 if props and props.onChange then
                     newValue = props.onChange(e.value) or e.value
                 else
@@ -466,26 +489,26 @@ function ui.filePicker(label, value, props)
 end
 
 function ui.image(path, props)
-    assert(type(path) == 'string', '`ui.image` needs a string `path`')
-    addChild('image', path, merge({ path = path }, props), false)
+    assert(type(path) == "string", "`ui.image` needs a string `path`")
+    addChild("image", path, merge({path = path}, props), false)
 end
 
 function ui.markdown(source, props)
-    assert(type(source) == 'string', '`ui.markdown` needs a string `source`')
-    addChild('markdown', source, merge({ source = source }, props), false)
+    assert(type(source) == "string", "`ui.markdown` needs a string `source`")
+    addChild("markdown", source, merge({source = source}, props), false)
 end
 
 function ui.numberInput(label, value, props)
-    assert(type(label) == 'string', '`ui.numberInput` needs a string `label`')
-    assert(type(value) == 'number', '`ui.numberInput` needs a number `value`')
+    assert(type(label) == "string", "`ui.numberInput` needs a string `label`")
+    assert(type(value) == "number", "`ui.numberInput` needs a number `value`")
 
-    local c = addChild('numberInput', label, without(merge({ label = label, value = value }, props), 'onChange'), true)
+    local c = addChild("numberInput", label, without(merge({label = label, value = value}, props), "onChange"), true)
 
     local newValue = value
     local es = pendingEvents[c.pathId]
     if es then
         for _, e in ipairs(es) do
-            if e.type == 'onChange' then
+            if e.type == "onChange" then
                 if props and props.onChange then
                     newValue = props.onChange(e.value) or e.value
                 else
@@ -495,29 +518,35 @@ function ui.numberInput(label, value, props)
         end
     end
 
-    if type(newValue) ~= 'number' then
+    if type(newValue) ~= "number" then
         newValue = (props and props.min) or 0
     end
     return newValue
 end
 
 function ui.radioButtonGroup(label, value, items, props)
-    assert(type(label) == 'string', '`ui.radioButtonGroup` needs a string `label`')
-    assert(type(value) == 'string', '`ui.radioButtonGroup` needs a string `value`')
-    assert(type(items) == 'table', '`ui.radioButtonGroup` needs a table `items`')
+    assert(type(label) == "string", "`ui.radioButtonGroup` needs a string `label`")
+    assert(type(value) == "string", "`ui.radioButtonGroup` needs a string `value`")
+    assert(type(items) == "table", "`ui.radioButtonGroup` needs a table `items`")
 
     local convertedItems = {}
     for k, v in pairs(items) do
         convertedItems[tostring(k)] = v
     end
 
-    local c = addChild('radioButtonGroup', label, without(merge({ label = label, value = value, items = convertedItems }, props), 'onChange'), true)
+    local c =
+        addChild(
+        "radioButtonGroup",
+        label,
+        without(merge({label = label, value = value, items = convertedItems}, props), "onChange"),
+        true
+    )
 
     local newValue = value
     local es = pendingEvents[c.pathId]
     if es then
         for _, e in ipairs(es) do
-            if e.type == 'onChange' then
+            if e.type == "onChange" then
                 if props and props.onChange then
                     newValue = props.onChange(e.value) or e.value
                 else
@@ -531,15 +560,15 @@ end
 
 function ui.section(...)
     local label, props, inner
-    local nArgs = select('#', ...)
+    local nArgs = select("#", ...)
     if nArgs == 2 then
         label, inner = ...
     elseif nArgs == 3 then
         label, props, inner = ...
     end
-    assert(type(label) == 'string', '`ui.section` needs a string `label`')
+    assert(type(label) == "string", "`ui.section` needs a string `label`")
 
-    local c, newId = addChild('section', label, without(merge({ label = label }, props), 'header'), true)
+    local c, newId = addChild("section", label, without(merge({label = label}, props), "header"), true)
 
     local open = store[c].open
     if c.props.open ~= nil then
@@ -552,11 +581,15 @@ function ui.section(...)
     c.open = open
     if open then
         if props and props.header then
-            enter(c, newId, function()
-                local headerC, headerNewId = addChild('sectionHeader', 'sectionHeader', {}, true)
-                enter(headerC, headerNewId, props.header)
-                inner()
-            end)
+            enter(
+                c,
+                newId,
+                function()
+                    local headerC, headerNewId = addChild("sectionHeader", "sectionHeader", {}, true)
+                    enter(headerC, headerNewId, props.header)
+                    inner()
+                end
+            )
         else
             enter(c, newId, inner)
         end
@@ -565,7 +598,7 @@ function ui.section(...)
     local es = pendingEvents[c.pathId]
     if es then
         for _, e in ipairs(es) do
-            if e.type == 'onChange' then
+            if e.type == "onChange" then
                 open = e.open
             end
         end
@@ -576,31 +609,37 @@ end
 
 function ui.scrollBox(...)
     local id, props, inner
-    local nArgs = select('#', ...)
+    local nArgs = select("#", ...)
     if nArgs == 2 then
         id, inner = ...
     elseif nArgs == 3 then
         id, props, inner = ...
     end
-    assert(type(id) == 'string', '`ui.scrollBox` needs a string `id`')
+    assert(type(id) == "string", "`ui.scrollBox` needs a string `id`")
 
-    local c, newId = addChild('scrollBox', id, props or {}, true)
+    local c, newId = addChild("scrollBox", id, props or {}, true)
     enter(c, newId, inner)
 end
 
 function ui.slider(label, value, min, max, props)
-    assert(type(label) == 'string', '`ui.slider` needs a string `label`')
-    assert(type(value) == 'number', '`ui.slider` needs a number `value`')
-    assert(type(min) == 'number', '`ui.slider` needs a number `min`')
-    assert(type(max) == 'number', '`ui.slider` needs a number `max`')
+    assert(type(label) == "string", "`ui.slider` needs a string `label`")
+    assert(type(value) == "number", "`ui.slider` needs a number `value`")
+    assert(type(min) == "number", "`ui.slider` needs a number `min`")
+    assert(type(max) == "number", "`ui.slider` needs a number `max`")
 
-    local c = addChild('slider', label, without(merge({ label = label, value = value, min = min, max = max }, props), 'onChange'), true)
+    local c =
+        addChild(
+        "slider",
+        label,
+        without(merge({label = label, value = value, min = min, max = max}, props), "onChange"),
+        true
+    )
 
     local newValue = value
     local es = pendingEvents[c.pathId]
     if es then
         for _, e in ipairs(es) do
-            if e.type == 'onChange' then
+            if e.type == "onChange" then
                 if props and props.onChange then
                     newValue = props.onChange(e.value) or e.value
                 else
@@ -614,21 +653,21 @@ end
 
 function ui.tab(...)
     local label, props, inner
-    local nArgs = select('#', ...)
+    local nArgs = select("#", ...)
     if nArgs == 2 then
         label, inner = ...
     elseif nArgs == 3 then
         label, props, inner = ...
     end
-    assert(type(label) == 'string', '`ui.tab` needs a string `label`')
+    assert(type(label) == "string", "`ui.tab` needs a string `label`")
 
-    local c, newId = addChild('tab', label, merge({ label = label }, props), true)
+    local c, newId = addChild("tab", label, merge({label = label}, props), true)
 
     local active = store[c].active == true
     local es = pendingEvents[c.pathId]
     if es then
         for _, e in ipairs(es) do
-            if e.type == 'onActive' then
+            if e.type == "onActive" then
                 active = e.value
             end
         end
@@ -642,29 +681,29 @@ end
 
 function ui.tabs(...)
     local id, props, inner
-    local nArgs = select('#', ...)
+    local nArgs = select("#", ...)
     if nArgs == 2 then
         id, inner = ...
     elseif nArgs == 3 then
         id, props, inner = ...
     end
-    assert(type(id) == 'string', '`ui.tabs` needs a string `id`')
+    assert(type(id) == "string", "`ui.tabs` needs a string `id`")
 
-    local c, newId = addChild('tabs', id, props or {}, true)
+    local c, newId = addChild("tabs", id, props or {}, true)
     enter(c, newId, inner)
 end
 
 function ui.textArea(label, value, props)
-    assert(type(label) == 'string', '`ui.textArea` needs a string `label`')
-    assert(type(value) == 'string', '`ui.textArea` needs a string `value`')
+    assert(type(label) == "string", "`ui.textArea` needs a string `label`")
+    assert(type(value) == "string", "`ui.textArea` needs a string `value`")
 
-    local c = addChild('textArea', label, without(merge({ label = label, value = value }, props), 'onChange'), true)
+    local c = addChild("textArea", label, without(merge({label = label, value = value}, props), "onChange"), true)
 
     local newValue = value
     local es = pendingEvents[c.pathId]
     if es then
         for _, e in ipairs(es) do
-            if e.type == 'onChange' then
+            if e.type == "onChange" then
                 if props and props.onChange then
                     newValue = props.onChange(e.value) or e.value
                 else
@@ -677,16 +716,16 @@ function ui.textArea(label, value, props)
 end
 
 function ui.textInput(label, value, props)
-    assert(type(label) == 'string', '`ui.textInput` needs a string `label`')
-    assert(type(value) == 'string', '`ui.textInput` needs a string `value`')
+    assert(type(label) == "string", "`ui.textInput` needs a string `label`")
+    assert(type(value) == "string", "`ui.textInput` needs a string `value`")
 
-    local c = addChild('textInput', label, without(merge({ label = label, value = value }, props), 'onChange'), true)
+    local c = addChild("textInput", label, without(merge({label = label, value = value}, props), "onChange"), true)
 
     local newValue = value
     local es = pendingEvents[c.pathId]
     if es then
         for _, e in ipairs(es) do
-            if e.type == 'onChange' then
+            if e.type == "onChange" then
                 if props and props.onChange then
                     newValue = props.onChange(e.value) or e.value
                 else
@@ -699,17 +738,23 @@ function ui.textInput(label, value, props)
 end
 
 function ui.toggle(labelA, labelB, toggled, props)
-    assert(type(labelA) == 'string', '`ui.toggle` needs a string `labelA`')
-    assert(type(labelB) == 'string', '`ui.toggle` needs a string `labelB`')
-    assert(type(toggled) == 'boolean', '`ui.toggle` needs a boolean `toggled`')
+    assert(type(labelA) == "string", "`ui.toggle` needs a string `labelA`")
+    assert(type(labelB) == "string", "`ui.toggle` needs a string `labelB`")
+    assert(type(toggled) == "boolean", "`ui.toggle` needs a boolean `toggled`")
 
-    local c = addChild('toggle', labelA .. labelB, without(merge({ labelA = labelA, labelB = labelB, toggled = toggled }, props), 'onToggle'), true)
+    local c =
+        addChild(
+        "toggle",
+        labelA .. labelB,
+        without(merge({labelA = labelA, labelB = labelB, toggled = toggled}, props), "onToggle"),
+        true
+    )
 
     local newToggled = toggled
     local es = pendingEvents[c.pathId]
     if es then
         for _, e in ipairs(es) do
-            if e.type == 'onToggle' then
+            if e.type == "onToggle" then
                 if props and props.onToggle then
                     local r = props.onToggle(e.toggled)
                     if r ~= nil then
@@ -725,6 +770,5 @@ function ui.toggle(labelA, labelB, toggled, props)
     end
     return newToggled
 end
-
 
 return ui

@@ -239,6 +239,7 @@ jsEvents.listen(
 
                 jsEvents.send("CASTLE_GAME_LOADED", {})
                 io.flush()
+                resetUI()
                 network.onGameLoaded()
             end
         )
