@@ -13,11 +13,11 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 
 import org.love2d.android.GameActivity;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import games.castle.MainActivity;
+
 public class GhostViewManager extends SimpleViewManager<ViewGroup> implements LifecycleEventListener {
-  private GameActivity gameActivity;
 
   GhostViewManager(ReactApplicationContext reactContext) {
     reactContext.addLifecycleEventListener(this);
@@ -30,36 +30,11 @@ public class GhostViewManager extends SimpleViewManager<ViewGroup> implements Li
 
   @Override
   protected ViewGroup createViewInstance(ThemedReactContext reactContext) {
-    ensureGameActivityInitialized(reactContext);
-    gameActivity.resetNative();
-    gameActivity.startNative();
-    gameActivity.resume();
-    return gameActivity.getView();
-  }
-
-  private void ensureGameActivityInitialized(ThemedReactContext reactContext) {
-    if (gameActivity == null) {
-      Activity activity = reactContext.getCurrentActivity();
-      gameActivity = new GameActivity();
-      gameActivity.setContexts(activity, reactContext.getApplicationContext());
-      gameActivity.handleIntent(new Intent(activity, GameActivity.class));
-      GameActivity.setMetricsFromDisplay(activity.getWindowManager().getDefaultDisplay());
-      gameActivity.loadLibraries();
-    }
-  }
-
-  @Override
-  public void onDropViewInstance(@Nonnull ViewGroup view) {
-    super.onDropViewInstance(view);
-
-    if (gameActivity != null) {
-      gameActivity.resetNative();
-    }
+    return MainActivity.gameLayout;
   }
 
   @ReactProp(name = "uri")
   public void setUri(ViewGroup view, @Nullable String uri) {
-    GameActivity.ghostRootUri = uri;
   }
 
   @ReactProp(name = "screenScaling")
