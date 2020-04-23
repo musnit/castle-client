@@ -215,7 +215,6 @@ jsEvents.listen(
         network.async(
             function()
                 if home ~= nil then
-                    home.globals.castle.onQuit()
                     home = nil
                     collectgarbage("collect")
                 end
@@ -242,7 +241,6 @@ jsEvents.listen(
                 decodedInitialParams = cjson.decode(params.initialParams)
 
                 if home ~= nil then
-                    home.globals.castle.onQuit()
                     home = nil
                     collectgarbage("collect")
                 end
