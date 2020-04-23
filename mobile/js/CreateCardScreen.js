@@ -12,6 +12,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
 import { connectActionSheet } from '@expo/react-native-action-sheet';
 import { ReactNativeFile } from 'apollo-upload-client';
+import { useGhostEvents } from './ghost/GhostEvents';
 
 import uuid from 'uuid/v4';
 import { withNavigation, withNavigationFocus } from '@react-navigation/compat';
@@ -93,6 +94,20 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 });
+
+const SceneCreatorTools = ({ isEditingScene }) => {
+  const { eventsReady } = useGhostEvents();
+  if (eventsReady) {
+    return (
+      <Tools
+        entryPoint={'https://raw.githubusercontent.com/nikki93/scene-creator/master/Client.lua'}
+        visible={isEditingScene}
+        landscape={false}
+      />
+    );
+  }
+  return null;
+};
 
 const PlainButton = ({ style, ...props }) => {
   const buttonProps = { ...props, children: undefined };
@@ -668,6 +683,7 @@ class CreateCardScreen extends React.Component {
             <DeckVariables variables={card.variables} onChange={this._handleVariablesChange} />
           )}
         </SafeAreaView>
+        <SceneCreatorTools isEditingScene={isEditingScene} />
         <CardDestinationPickerSheet
           deck={deck}
           ref={this._destinationPickerRef}

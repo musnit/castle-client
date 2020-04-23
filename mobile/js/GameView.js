@@ -244,12 +244,7 @@ const GameView = ({
           },
         }) => setLandscape(width > height)}>
         {eventsReady && initialDataHook.sent ? (
-          <Tools
-            entryPoint={'https://raw.githubusercontent.com/nikki93/scene-creator/master/Client.lua'}
-            visible={toolsVisible !== false && !windowed}
-            landscape={landscape}>
-            <GhostView style={{ flex: 1 }} dimensionsSettings={dimensionsSettings} />
-          </Tools>
+          <GhostView style={{ flex: 1 }} dimensionsSettings={dimensionsSettings} />
         ) : null}
         {!luaLoadingHook.loaded ? (
           <GameLoading

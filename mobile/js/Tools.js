@@ -320,11 +320,14 @@ const paneVisible = (element) =>
 
 // Render a pane with default values for the context. Each pane tends to have its own styling, so also takes
 // a `style` prop.
-const ToolPane = React.memo(({ element, style, context }) => (
-  <ToolsContext.Provider value={{ ...context, paneName: element.props.name }}>
-    <View style={[style, viewStyleProps(element.props)]}>{renderChildren(element)}</View>
-  </ToolsContext.Provider>
-));
+const ToolPane = React.memo(({ element, style, context }) => {
+  if (!element || !element.props) return null;
+  return (
+    <ToolsContext.Provider value={{ ...context, paneName: element.props.name }}>
+      <View style={[style, viewStyleProps(element.props)]}>{renderChildren(element)}</View>
+    </ToolsContext.Provider>
+  );
+});
 
 // Render a label along with a control
 const Labelled = ({ element, label, style, children }) => {
@@ -1355,7 +1358,13 @@ const SceneCreatorPane = React.memo(
             padding: 16,
             height: '100%',
           }}>
-          <ToolPane element={element} context={context} style={{ flex: 1 }} />
+          <ToolPane
+            element={element}
+            context={context}
+            style={{
+              flex: 1,
+            }}
+          />
         </View>
       </View>
     );
@@ -1369,7 +1378,7 @@ const SceneCreatorPane = React.memo(
         }}>
         <BottomSheet
           ref={bottomSheetRef}
-          snapPoints={[600, middleSnapPoint, bottomSnapPoint + insets.bottom]}
+          snapPoints={[500, middleSnapPoint, bottomSnapPoint + insets.bottom]}
           initialSnap={element.props.snapPoint}
           enabledInnerScrolling={false}
           enabledContentTapInteraction={false}
@@ -1427,7 +1436,7 @@ const SceneCreatorInspectorPane = React.memo(({ element, context, actionsPane })
           style={{
             flexDirection: 'row',
             justifyContent: 'center',
-            paddingHorizontal: 8,
+            padding: 8,
           }}
         />
       ) : null}
@@ -1549,71 +1558,16 @@ export default Tools = ({ entryPoint, visible, landscape, children }) => {
     transformAssetUri: (uri) => url.resolve(entryPoint, uri) || uri,
   };
 
-  // Render the container
-  return (
-    <View style={{ flex: 1, flexDirection: landscape ? 'row' : 'column', overflow: 'hidden' }}>
-      <View style={{ flex: 1 }}>
-        {visible && root.panes && paneVisible(root.panes.toolbar) ? (
-          <View
-            style={{
-              backgroundColor: Colors.background,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            {root.panes.toolbar.props.customLayout ? (
-              <ToolPane
-                element={root.panes.toolbar}
-                context={{ ...context, hideLabels: true, popoverPlacement: 'bottom' }}
-                style={{ alignSelf: 'stretch' }}
-              />
-            ) : (
-              <ScrollView horizontal={true} alwaysBounceHorizontal={false}>
-                <ToolPane
-                  element={root.panes.toolbar}
-                  context={{ ...context, hideLabels: true, popoverPlacement: 'bottom' }}
-                  style={{
-                    paddingHorizontal: 6,
-                    paddingVertical: 4,
-                    maxHeight: 72,
-                    flexDirection: 'row',
-                  }}
-                />
-              </ScrollView>
-            )}
-          </View>
-        ) : null}
+  if (!visible) return null;
 
-        <View style={{ flex: 1 }}>{children}</View>
-      </View>
-
-      {visible && root.panes && paneVisible(root.panes.DEFAULT) ? (
-        <View
-          style={{
-            flex: 0.75,
-            maxWidth: landscape ? 600 : null,
-            backgroundColor: root.panes.DEFAULT.props.backgroundColor || Colors.background,
-          }}>
-          <KeyboardAwareWrapper
-            landscape={landscape}
-            backgroundColor={root.panes.DEFAULT.props.backgroundColor || Colors.background}>
-            {root.panes.DEFAULT.props.customLayout ? (
-              <ToolPane element={root.panes.DEFAULT} context={context} style={{ flex: 1 }} />
-            ) : (
-              <ScrollView style={{ flex: 1 }}>
-                <ToolPane
-                  element={root.panes.DEFAULT}
-                  context={context}
-                  style={{ padding: 6, backgroundColor: Colors.background }}
-                />
-              </ScrollView>
-            )}
-          </KeyboardAwareWrapper>
-        </View>
-      ) : null}
-
-      {visible && root.panes && paneVisible(root.panes.sceneCreatorGlobalActions) ? (
+  // TODO: BEN: clean up
+  const panes = {
+    sceneCreatorGlobalActions: {
+      visible: paneVisible,
+      render: ({ key, element }) => (
         <ToolPane
-          element={root.panes.sceneCreatorGlobalActions}
+          key={key}
+          element={element}
           context={{ ...context, hideLabels: true, popoverPlacement: 'bottom' }}
           style={{
             flexDirection: 'row',
@@ -1622,29 +1576,98 @@ export default Tools = ({ entryPoint, visible, landscape, children }) => {
             position: 'absolute',
             left: 0,
             right: 0,
-            top: 0,
+            top: 48,
           }}
         />
-      ) : null}
-
-      <KeyboardAwareWrapper>
-        {visible && root.panes && root.panes.sceneCreatorBlueprints ? (
-          <SceneCreatorBlueprintsPane
-            element={root.panes.sceneCreatorBlueprints}
-            context={context}
-          />
-        ) : null}
-      </KeyboardAwareWrapper>
-
-      <KeyboardAwareWrapper>
-        {visible && root.panes && root.panes.sceneCreatorInspector ? (
+      ),
+    },
+    sceneCreatorBlueprints: {
+      visible: (element) => !!element,
+      render: ({ key, element }) => (
+        <KeyboardAwareWrapper key={key}>
+          <SceneCreatorBlueprintsPane element={element} context={context} />
+        </KeyboardAwareWrapper>
+      ),
+    },
+    DEFAULT: {
+      visible: paneVisible,
+      render: ({ key, element }) => (
+        <KeyboardAwareWrapper
+          landscape={landscape}
+          key={key}
+          backgroundColor={element.props.backgroundColor || Colors.background}>
+          {element.props.customLayout ? (
+            <ToolPane element={element} context={context} style={{ flex: 1 }} />
+          ) : (
+            <ScrollView style={{ flex: 1 }}>
+              <ToolPane
+                element={element}
+                context={context}
+                style={{ padding: 6, backgroundColor: Colors.background }}
+              />
+            </ScrollView>
+          )}
+        </KeyboardAwareWrapper>
+      ),
+    },
+    toolbar: {
+      visible: paneVisible,
+      render: ({ key, element }) => (
+        <View
+          style={{
+            backgroundColor: Colors.background,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          {element.props.customLayout ? (
+            <ToolPane
+              element={element}
+              context={{ ...context, hideLabels: true, popoverPlacement: 'bottom' }}
+              style={{ alignSelf: 'stretch' }}
+            />
+          ) : (
+            <ScrollView horizontal={true} alwaysBounceHorizontal={false}>
+              <ToolPane
+                element={element}
+                context={{ ...context, hideLabels: true, popoverPlacement: 'bottom' }}
+                style={{
+                  paddingHorizontal: 6,
+                  paddingVertical: 4,
+                  maxHeight: 72,
+                  flexDirection: 'row',
+                }}
+              />
+            </ScrollView>
+          )}
+        </View>
+      ),
+    },
+    sceneCreatorInspector: {
+      visible: (element) => !!element,
+      render: ({ key, element }) => (
+        <KeyboardAwareWrapper key={key}>
           <SceneCreatorInspectorPane
-            element={root.panes.sceneCreatorInspector}
+            element={element}
             context={context}
-            actionsPane={visible && root.panes && root.panes.sceneCreatorInspectorActions}
+            actionsPane={root.panes.sceneCreatorInspectorActions}
           />
-        ) : null}
-      </KeyboardAwareWrapper>
-    </View>
+        </KeyboardAwareWrapper>
+      ),
+    },
+  };
+
+  return (
+    <React.Fragment>
+      {Object.keys(panes).map((key, ii) => {
+        const { visible, render } = panes[key];
+        if (root.panes && visible(root.panes[key])) {
+          return render({
+            key,
+            element: root.panes[key],
+          });
+        }
+        return null;
+      })}
+    </React.Fragment>
   );
 };
