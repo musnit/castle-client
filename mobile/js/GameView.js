@@ -74,24 +74,9 @@ const useInitialData = ({ eventsReady, dimensionsSettings, extras }) => {
   const [sent, setSent] = useState(false);
   const sending = useRef(false);
 
-  // Fetch `me`
-  const isLoggedIn = Session.isSignedIn();
-  const [callMe, { loading: meLoading, called: meCalled, data: meData }] = useLazyQuery(gql`
-    query Me {
-      me {
-        ...LuaUser
-      }
-    }
-    ${LuaBridge.LUA_USER_FRAGMENT}
-  `);
-  if (isLoggedIn && !meCalled) {
-    callMe();
-  }
-  const me = isLoggedIn && !meLoading && meData && meData.me;
-
   useEffect(() => {
     let mounted = true;
-    if (eventsReady && !sending.current && dimensionsSettings && (!isLoggedIn || me)) {
+    if (eventsReady && !sending.current && dimensionsSettings) {
       // Ready to send to Lua
       sending.current = true;
       (async () => {
@@ -111,10 +96,7 @@ const useInitialData = ({ eventsReady, dimensionsSettings, extras }) => {
             height: dimensionsSettings.height,
           },
           audio: { volume: 1 },
-          user: {
-            isLoggedIn,
-            me: await LuaBridge.jsUserToLuaUser(me),
-          },
+          user: {},
           initialParams: extras.initialParams ? extras.initialParams : undefined,
           // TODO(nikki): Add `initialPost`...
         };
@@ -132,7 +114,7 @@ const useInitialData = ({ eventsReady, dimensionsSettings, extras }) => {
       })();
     }
     return () => (mounted = false);
-  }, [eventsReady, dimensionsSettings, isLoggedIn, me]);
+  }, [eventsReady, dimensionsSettings]);
 
   return { sent };
 };
