@@ -8,7 +8,6 @@ import createSpaceNavigator from './SpaceNavigator/createSpaceNavigator';
 import { Text, View, Image } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
-import * as Constants from './Constants';
 import { useSession } from './Session';
 
 import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './AuthScreens';
@@ -16,10 +15,8 @@ import CreateScreen from './CreateScreen';
 import CreateDeckNavigator from './CreateDeckNavigator';
 import DecksFlipper from './DecksFlipper';
 import * as DeepLinks from './DeepLinks';
-import HomeScreen from './HomeScreen';
 import PlayDeckScreen from './PlayDeckScreen';
 import ProfileScreen from './ProfileScreen';
-import ProfileGamesScreen from './ProfileGamesScreen';
 
 const Stack = createStackNavigator();
 const Space = createSpaceNavigator();
@@ -27,52 +24,6 @@ const Space = createSpaceNavigator();
 const ICON_SIZE = 24;
 
 // App UI layout
-
-let HomeNavigator;
-
-if (Constants.USE_CARDS_PROTOTYPE) {
-  HomeNavigator = DecksFlipper;
-} else {
-  HomeNavigator = () => (
-    <Stack.Navigator
-      headerLayoutPreset="left"
-      options={{
-        headerTitle: (
-          <View style={{ paddingHorizontal: 16, flexDirection: 'row', alignItems: 'flex-end' }}>
-            <FastImage
-              style={{
-                width: 30,
-                aspectRatio: 1,
-                marginBottom: 4,
-                marginRight: 8,
-              }}
-              source={require('../assets/images/castle-classic-yellow.png')}
-            />
-            <Text style={{ fontSize: 24, letterSpacing: 0.5, fontFamily: 'RTAliasGrotesk-Bold' }}>
-              Castle
-            </Text>
-          </View>
-        ),
-      }}>
-      <Stack.Screen
-        name="HomeScreen"
-        component={HomeScreen}
-        options={{
-          headerStyle: {
-            shadowColor: '#000',
-            shadowOffset: {
-              width: 0,
-              height: 1,
-            },
-            shadowOpacity: 0.2,
-            shadowRadius: 1.41,
-            elevation: 2,
-          },
-        }}
-      />
-    </Stack.Navigator>
-  );
-}
 
 const CreateNavigator = () => (
   <Stack.Navigator headerMode="none">
@@ -100,12 +51,9 @@ const ProfileNavigator = () => (
 
 const SpaceNavigator = () => (
   <Space.Navigator initialRouteName="Play">
-    <Space.Screen
-      name="Profile"
-      component={Constants.USE_CARDS_PROTOTYPE ? ProfileNavigator : ProfileGamesScreen}
-    />
-    <Space.Screen name="Play" component={HomeNavigator} />
-    {Constants.USE_CARDS_PROTOTYPE && <Space.Screen name="Create" component={CreateNavigator} />}
+    <Space.Screen name="Profile" component={ProfileNavigator} />
+    <Space.Screen name="Play" component={DecksFlipper} />
+    <Space.Screen name="Create" component={CreateNavigator} />
   </Space.Navigator>
 );
 
