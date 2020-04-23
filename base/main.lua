@@ -210,6 +210,21 @@ ffi.cdef "bool ghostGetBackgrounded();"
 local isFirstLoad = true
 
 jsEvents.listen(
+    "CLEAR_SCENE",
+    function(params)
+        network.async(
+            function()
+                if home ~= nil then
+                    home.globals.castle.onQuit()
+                    home = nil
+                    collectgarbage("collect")
+                end
+            end
+        )
+    end
+)
+
+jsEvents.listen(
     "BASE_RELOAD",
     function(params)
         network.async(
@@ -228,6 +243,8 @@ jsEvents.listen(
 
                 if home ~= nil then
                     home.globals.castle.onQuit()
+                    home = nil
+                    collectgarbage("collect")
                 end
 
                 -- make sure to wait until scene creator is downloaded

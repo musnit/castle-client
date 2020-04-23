@@ -497,7 +497,9 @@ class CreateCardScreen extends React.Component {
           });
         } else {
           // No scene, add one
-          this._handleCardChange({ scene: { sceneId: card.cardId, data: { empty: true } } });
+          this._handleCardChange({
+            scene: { sceneId: card.cardId + 1000000, data: { empty: true } },
+          });
         }
       }
     );
@@ -541,9 +543,18 @@ class CreateCardScreen extends React.Component {
   _handleSceneMessage = (message) => {
     switch (message.messageType) {
       case 'SAVE_SCENE': {
-        this._handleCardChange({
-          changedSceneData: message.data,
-        });
+        /*console.log(
+          'SAVE_SCENE sceneid: ' +
+            message.sceneId +
+            '   data length: ' +
+            JSON.stringify(message.data).length
+        );*/
+
+        if (this.state.card.scene && message.sceneId == this.state.card.scene.sceneId) {
+          this._handleCardChange({
+            changedSceneData: message.data,
+          });
+        }
         break;
       }
       case 'CHANGE_DECK_STATE': {

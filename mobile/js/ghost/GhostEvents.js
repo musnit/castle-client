@@ -63,6 +63,7 @@ export const Provider = (props) => {
   };
 
   const gameDidUnmount = (eventsId) => {
+    sendAsync('CLEAR_SCENE');
     setState({
       eventsReady: false,
     });
