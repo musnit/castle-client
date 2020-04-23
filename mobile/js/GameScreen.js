@@ -71,7 +71,7 @@ const computeDimensionsSettings = ({ metadata }) => {
 
 // Populate the 'INITIAL_DATA' channel that Lua reads for various initial settings (eg. the user
 // object, initial audio volume, initial post, ...)
-const useInitialData = ({ dimensionsSettings, extras }) => {
+const useInitialData = ({ eventsReady, dimensionsSettings, extras }) => {
   const [sent, setSent] = useState(false);
   const sending = useRef(false);
 
@@ -92,7 +92,7 @@ const useInitialData = ({ dimensionsSettings, extras }) => {
 
   useEffect(() => {
     let mounted = true;
-    if (!sending.current && dimensionsSettings && (!isLoggedIn || me)) {
+    if (eventsReady && !sending.current && dimensionsSettings && (!isLoggedIn || me)) {
       // Ready to send to Lua
       sending.current = true;
       (async () => {
@@ -133,7 +133,7 @@ const useInitialData = ({ dimensionsSettings, extras }) => {
       })();
     }
     return () => (mounted = false);
-  }, [dimensionsSettings, isLoggedIn, me]);
+  }, [eventsReady, dimensionsSettings, isLoggedIn, me]);
 
   return { sent };
 };
@@ -208,9 +208,9 @@ export const GameView = ({
     },
   });
 
-  const initialDataHook = useInitialData({ dimensionsSettings, extras });
-
   const { gameDidMount, gameDidUnmount, eventsReady } = useGhostEvents();
+
+  const initialDataHook = useInitialData({ eventsReady, dimensionsSettings, extras });
 
   useEffect(() => {
     const id = Math.floor(Math.random() * Math.floor(1000));
