@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
 });
 
 const SceneCreatorDefaultPane = ({ context, element }) => (
-  <KeyboardAwareWrapper backgroundColor={element.props.backgroundColor || Colors.background}>
+  <SceneCreatorKeyboardWrapper backgroundColor={element.props.backgroundColor || Colors.background}>
     {element.props.customLayout ? (
       <ToolPane element={element} context={context} style={{ flex: 1 }} />
     ) : (
@@ -35,7 +35,7 @@ const SceneCreatorDefaultPane = ({ context, element }) => (
         />
       </ScrollView>
     )}
-  </KeyboardAwareWrapper>
+  </SceneCreatorKeyboardWrapper>
 );
 
 const SceneCreatorToolbar = ({ context, element }) => (
