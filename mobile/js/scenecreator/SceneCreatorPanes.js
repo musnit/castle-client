@@ -7,7 +7,10 @@ import { ScrollView } from 'react-native-gesture-handler';
 import * as Constants from '../Constants';
 import * as SceneCreatorConstants from './SceneCreatorConstants';
 
-import { ToolPane, SceneCreatorBlueprintsPane, SceneCreatorInspectorPane } from '../Tools';
+import { ToolPane } from '../Tools';
+
+import SceneCreatorBlueprintsPane from './SceneCreatorBlueprintsPane';
+import SceneCreatorInspectorPane from './SceneCreatorInspectorPane';
 
 let Colors = SceneCreatorConstants.Colors;
 

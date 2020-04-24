@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext, Fragment, useEffect } from 'react';
+import React, { useState, useRef, useContext, Fragment } from 'react';
 import {
   View,
   Text,
@@ -10,8 +10,6 @@ import {
   Alert,
   StyleSheet,
   Keyboard,
-  LayoutAnimation,
-  Animated,
 } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import Slider from '@react-native-community/slider';
@@ -25,9 +23,7 @@ import { Base64 } from 'js-base64';
 import ImagePicker from 'react-native-image-picker';
 import { ReactNativeFile } from 'apollo-upload-client';
 import gql from 'graphql-tag';
-import { useSafeArea } from 'react-native-safe-area-context';
 import SvgImage from 'react-native-remote-svg';
-import BottomSheet from 'reanimated-bottom-sheet';
 
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -1264,152 +1260,3 @@ const ToolScrollBox = ({ element }) => (
   </ScrollView>
 );
 elementTypes['scrollBox'] = ToolScrollBox;
-
-//
-// Scene creator panels
-//
-
-// NOTE: `.snapTo(...)` is called twice in the below due to
-//       https://github.com/osdnk/react-native-reanimated-bottom-sheet/issues/168#issuecomment-581011816
-
-const SceneCreatorPane = React.memo(
-  ({ element, context, middleSnapPoint, bottomSnapPoint, renderHeader }) => {
-    const bottomSheetRef = useRef(null);
-    const insets = useSafeArea();
-
-    useEffect(() => {
-      if (element.props.snapCount && element.props.snapCount > 1) {
-        bottomSheetRef.current.snapTo(element.props.snapPoint);
-        bottomSheetRef.current.snapTo(element.props.snapPoint);
-      }
-    }, [element.props.snapCount]);
-
-    const top = useRef(new Animated.Value(element.props.visible ? 0 : 600)).current;
-    useEffect(() => {
-      Animated.timing(top, {
-        toValue: element.props.visible ? 0 : 600,
-        duration: 200,
-        useNativeDriver: true,
-      }).start();
-    }, [element.props.visible]);
-
-    const renderContent = () => (
-      <View style={{ height: 600 }}>
-        <View
-          style={{
-            backgroundColor: '#fff',
-            padding: 16,
-            height: '100%',
-          }}>
-          <ToolPane
-            element={element}
-            context={context}
-            style={{
-              flex: 1,
-            }}
-          />
-        </View>
-      </View>
-    );
-
-    return (
-      <Animated.View
-        pointerEvents={element.props.visible ? 'box-none' : 'none'}
-        style={{
-          flex: 1,
-          transform: [{ translateY: top }],
-        }}>
-        <BottomSheet
-          ref={bottomSheetRef}
-          snapPoints={[500, middleSnapPoint, bottomSnapPoint + insets.bottom]}
-          initialSnap={element.props.snapPoint}
-          enabledInnerScrolling={false}
-          enabledContentTapInteraction={false}
-          renderHeader={renderHeader}
-          renderContent={renderContent}
-        />
-      </Animated.View>
-    );
-  }
-);
-
-export const SceneCreatorBlueprintsPane = React.memo(({ element, context }) => {
-  const renderHeader = () => (
-    <View
-      style={{
-        backgroundColor: '#fff',
-        borderTopLeftRadius: 8,
-        borderTopRightRadius: 8,
-        padding: 16,
-      }}>
-      <View style={Constants.styles.paneHandle}></View>
-      <Text style={{ color: '#888', letterSpacing: 0.5, textAlign: 'center', paddingTop: 12 }}>
-        BLUEPRINTS
-      </Text>
-    </View>
-  );
-
-  return (
-    <SceneCreatorPane
-      element={element}
-      context={context}
-      middleSnapPoint={300}
-      bottomSnapPoint={52}
-      renderHeader={renderHeader}
-    />
-  );
-});
-
-export const SceneCreatorInspectorPane = React.memo(({ element, context, actionsPane }) => {
-  // Do this so we can show last visible elements while animating out
-  const [lastVisibleElements, setLastVisibleElements] = useState({ element, actionsPane });
-  useEffect(() => {
-    if (element.props.visible) {
-      setLastVisibleElements({ element, actionsPane });
-    }
-  }, [element, actionsPane]);
-
-  const renderHeader = () => (
-    <React.Fragment>
-      {actionsPane ? (
-        <ToolPane
-          pointerEvents={element.props.visible ? 'auto' : 'none'}
-          element={element.props.visible ? actionsPane : lastVisibleElements.actionsPane}
-          context={{ ...context, hideLabels: true, popoverPlacement: 'top' }}
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            padding: 8,
-          }}
-        />
-      ) : null}
-      <View
-        style={{
-          backgroundColor: '#fff',
-          borderTopLeftRadius: 8,
-          borderTopRightRadius: 8,
-          padding: 16,
-          marginTop: 8,
-        }}>
-        <View style={Constants.styles.paneHandle}></View>
-      </View>
-    </React.Fragment>
-  );
-
-  return (
-    <SceneCreatorPane
-      element={
-        element.props.visible
-          ? element
-          : {
-              ...lastVisibleElements.element,
-              props: { ...lastVisibleElements.element.props, visible: false },
-            }
-      }
-      context={context}
-      middleSnapPoint={400}
-      bottomSnapPoint={92}
-      renderHeader={renderHeader}
-    />
-  );
-});
