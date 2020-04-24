@@ -237,6 +237,7 @@ const DecksFlipper = () => {
       Animated.spring(translateY, { toValue, ...SPRING_CONFIG }).start(({ finished }) => {
         if (finished) {
           translateY.setValue(0);
+          setPaused(false);
           onFinished && onFinished();
         }
       });
@@ -272,18 +273,9 @@ const DecksFlipper = () => {
           snapTo(0);
         }
       }
-
-      // TODO: uncommenting this breaks snapping to the prev/next card after dragging and releasing
-      /*
       if (event.nativeEvent.state === State.BEGAN) {
         setPaused(true);
-      } else if (
-        event.nativeEvent.state === State.FAILED ||
-        event.nativeEvent.state === State.CANCELLED ||
-        event.nativeEvent.state === State.END
-      ) {
-        setPaused(false);
-      }*/
+      }
     },
     [snapTo]
   );
