@@ -29,6 +29,7 @@ const CardScene = ({
   onScreenshot,
   onMessage,
   deckState,
+  paused = false,
 }) => {
   const [reloadCount, setReloadCount] = useState(0);
   const onPressReload = async () => {
@@ -81,6 +82,7 @@ const CardScene = ({
                 onMessage={onMessage}
                 onLoaded={onLoaded}
                 deckState={deckState}
+                paused={paused}
               />
             )}
             {!interactionEnabled ? (

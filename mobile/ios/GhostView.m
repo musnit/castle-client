@@ -148,6 +148,10 @@
 }
 
 - (void)stepLove {
+  if (ghostPaused) {
+    return;
+  }
+
   if (self.luaState) {
     // Call the coroutine at the top of the stack
     lua_State *L = self.luaState;
@@ -178,6 +182,11 @@ extern bool ghostApplyScreenScaling;
 
 - (void)setApplyScreenScaling:(BOOL)applyScreenScaling {
   ghostApplyScreenScaling = applyScreenScaling;
+}
+
+bool ghostPaused;
+- (void)setPaused:(BOOL)paused {
+  ghostPaused = paused;
 }
 
 - (void)sdlViewAddNotificationReceived:(NSNotification *)notification {
@@ -227,5 +236,6 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_VIEW_PROPERTY(uri, NSString);
 RCT_EXPORT_VIEW_PROPERTY(screenScaling, double);
 RCT_EXPORT_VIEW_PROPERTY(applyScreenScaling, BOOL);
+RCT_EXPORT_VIEW_PROPERTY(paused, BOOL);
 
 @end

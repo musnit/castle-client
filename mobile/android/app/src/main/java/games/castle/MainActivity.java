@@ -20,7 +20,7 @@ public class MainActivity extends ReactActivity {
     private static final String SCENE_CREATOR_DEV_URI = "http://192.168.1.146:8080/Client.lua";
 
 
-    private static GameActivity gameActivity;
+    public static GameActivity gameActivity;
     public static FrameLayout gameLayout;
 
     @Override

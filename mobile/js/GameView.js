@@ -180,6 +180,7 @@ const GameView = ({
   onMessage,
   onLoaded,
   deckState,
+  paused,
 }) => {
   useDeckState({ deckState });
 
@@ -249,7 +250,7 @@ const GameView = ({
           },
         }) => setLandscape(width > height)}>
         {eventsReady && initialDataHook.sent ? (
-          <GhostView style={{ flex: 1 }} dimensionsSettings={dimensionsSettings} />
+          <GhostView style={{ flex: 1 }} dimensionsSettings={dimensionsSettings} paused={paused} />
         ) : null}
         {!luaLoadingHook.loaded ? (
           <GameLoading

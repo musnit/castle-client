@@ -49,6 +49,22 @@ public class GameActivity extends SDLActivity {
     private static boolean immersiveActive = false;
     private static boolean mustCacheArchive = false;
 
+
+    private boolean pausedState = false;
+    public void setPaused(boolean paused) {
+        if (paused == pausedState ){
+            return;
+        }
+
+        pausedState = paused;
+
+        NativeState newNativeState = paused? NativeState.PAUSED : NativeState.RESUMED;
+        if (mNextNativeState != newNativeState) {
+            mNextNativeState = newNativeState;
+            SDLActivity.handleNativeState();
+        }
+    }
+
     @Override
     protected String[] getLibraries() {
         return new String[]{

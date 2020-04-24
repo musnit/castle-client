@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
 
 // renders the current focused deck in the feed
 // including the interactive scene.
-const CurrentDeckCell = ({ deck }) => {
+const CurrentDeckCell = ({ deck, paused }) => {
   const { mode: mainSwitcherMode } = React.useContext(MainSwitcherContext); // Dealing with legacy game loading path
   const isFocused = useIsFocused();
 
@@ -126,6 +126,7 @@ const CurrentDeckCell = ({ deck }) => {
             deckId={deck.deckId}
             initialCardId={deck.initialCard && deck.initialCard.cardId}
             initialDeckState={Utilities.makeInitialDeckState(deck)}
+            paused={paused}
           />
         </View>
       ) : null}
@@ -203,6 +204,7 @@ const DecksFlipper = () => {
   );
 
   const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
+  const [paused, setPaused] = React.useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -270,6 +272,18 @@ const DecksFlipper = () => {
           snapTo(0);
         }
       }
+
+      // TODO: uncommenting this breaks snapping to the prev/next card after dragging and releasing
+      /*
+      if (event.nativeEvent.state === State.BEGAN) {
+        setPaused(true);
+      } else if (
+        event.nativeEvent.state === State.FAILED ||
+        event.nativeEvent.state === State.CANCELLED ||
+        event.nativeEvent.state === State.END
+      ) {
+        setPaused(false);
+      }*/
     },
     [snapTo]
   );
@@ -300,7 +314,7 @@ const DecksFlipper = () => {
           <CardOverlay opacity={opacity.prev} />
         </View>
         <View style={styles.itemContainer}>
-          <CurrentDeckCell deck={currentDeck} />
+          <CurrentDeckCell deck={currentDeck} paused={paused} />
           <CardOverlay opacity={opacity.current} />
         </View>
         <PanGestureHandler

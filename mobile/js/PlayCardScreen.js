@@ -39,6 +39,7 @@ const PlayCardScreen = ({
   deckState,
   onChangeDeckState,
   route,
+  paused,
 }) => {
   const navigation = useNavigation();
   if (!deckId && route.params) {
@@ -177,6 +178,7 @@ const PlayCardScreen = ({
         card={card}
         deckState={deckState}
         onMessage={_handleSceneMessage}
+        paused={paused}
       />
       <View
         pointerEvents="box-none"

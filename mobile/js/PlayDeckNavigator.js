@@ -16,7 +16,7 @@ const EMPTY_PLAY_DECK_STATE = {
   variables: [],
 };
 
-const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, route }) => {
+const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, route, paused }) => {
   const navigation = useNavigation();
   if (!deckId && route.params) {
     deckId = route.params.deckId;
@@ -71,9 +71,10 @@ const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, route }) =
             onSelectNewCard={onSelectNewCard}
             deckState={playDeckState}
             onChangeDeckState={changePlayDeckState}
+            paused={paused}
           />
         ),
-        [counter, playDeckState]
+        [counter, playDeckState, paused]
       )}
     </Transitioning.View>
   );
