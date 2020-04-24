@@ -145,7 +145,7 @@ const useLuaLoading = ({ onLoaded }) => {
   // Maintain whether Lua finished loading (`love.load` is done)
   const [loaded, setLoaded] = useState(false);
   useListen({
-    eventName: 'CASTLE_GAME_LOADED',
+    eventName: 'SCENE_CREATOR_GAME_LOADED',
     handler: () => {
       if (onLoaded) {
         onLoaded();
