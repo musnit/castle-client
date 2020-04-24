@@ -208,7 +208,12 @@ const GameView = ({
     eventName: 'GHOST_SCREENSHOT',
     handler: (params) => {
       if (onScreenshot) {
-        onScreenshot(params);
+        // sometimes getting a "missing request token for request" error
+        // on ios when trying to read the screenshot.png file
+        // without this delay
+        setTimeout(() => {
+          onScreenshot(params);
+        }, 300);
       }
     },
   });
