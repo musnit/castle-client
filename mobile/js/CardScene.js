@@ -52,7 +52,7 @@ const CardScene = ({
   useEffect(() => {
     setTimeout(() => {
       setShouldDisplay(true);
-    }, 10);
+    }, 300);
   }, []);
 
   return (
