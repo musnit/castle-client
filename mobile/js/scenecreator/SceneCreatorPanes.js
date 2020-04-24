@@ -6,6 +6,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import * as SceneCreatorConstants from './SceneCreatorConstants';
 
 import { ToolPane } from '../Tools';
+import { paneVisible } from './SceneCreatorUtilities';
 
 import SceneCreatorBlueprintsPane from './SceneCreatorBlueprintsPane';
 import SceneCreatorInspectorPane from './SceneCreatorInspectorPane';
@@ -14,29 +15,12 @@ import SceneCreatorKeyboardWrapper from './SceneCreatorKeyboardWrapper';
 let Colors = SceneCreatorConstants.Colors;
 
 const styles = StyleSheet.create({
-  globalActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 8,
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 48,
-  },
   toolbar: {
     backgroundColor: Colors.background,
     justifyContent: 'center',
     alignItems: 'center',
   },
 });
-
-const SceneCreatorGlobalActions = ({ context, element }) => (
-  <ToolPane
-    element={element}
-    context={{ ...context, hideLabels: true, popoverPlacement: 'bottom' }}
-    style={styles.globalActions}
-  />
-);
 
 const SceneCreatorDefaultPane = ({ context, element }) => (
   <KeyboardAwareWrapper backgroundColor={element.props.backgroundColor || Colors.background}>
@@ -79,23 +63,11 @@ const SceneCreatorToolbar = ({ context, element }) => (
   </View>
 );
 
-// Whether a pane should be rendered
-const paneVisible = (element) =>
-  element &&
-  element.props &&
-  element.props.visible &&
-  element.children &&
-  element.children.count > 0;
-
 /**
  *  List of panes we expect from lua.
  *  Render <Component /> containing root.panes[key].
  */
 const panes = [
-  {
-    key: 'sceneCreatorGlobalActions',
-    Component: SceneCreatorGlobalActions,
-  },
   {
     key: 'sceneCreatorBlueprints',
     visible: (element) => !!element,

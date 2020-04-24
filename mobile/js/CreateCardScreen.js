@@ -27,6 +27,7 @@ import CardDestinationPickerSheet from './CardDestinationPickerSheet';
 import CardHeader from './CardHeader';
 import CardScene from './CardScene';
 import DeckVariables from './DeckVariables';
+import SceneCreatorForegroundActions from './scenecreator/SceneCreatorForegroundActions';
 import SceneCreatorPanes from './scenecreator/SceneCreatorPanes';
 import Viewport from './viewport';
 
@@ -117,28 +118,33 @@ const PrimaryButton = ({ style, ...props }) => {
 
 const CardForegroundActions = (props) => {
   const { card, editBlockProps } = props;
-  const { onPressBackground, onEditBlock } = props;
-  const { onPickDestination } = props;
-  const chooseImageAction = card.backgroundImage ? 'Change Image' : 'Add Image';
-  return (
-    <React.Fragment>
-      <TouchableWithoutFeedback onPress={onPressBackground}>
-        <View
-          style={styles.cardBackgroundContainer}
-          pointerEvents={editBlockProps?.isEditingBlock ? 'auto' : 'none'}
-        />
-      </TouchableWithoutFeedback>
-      <View style={styles.blocksContainer}>
-        <CardBlocks
-          card={card}
-          onSelectBlock={onEditBlock}
-          onSelectDestination={onPickDestination}
-          isEditable
-          editBlockProps={editBlockProps}
-        />
-      </View>
-    </React.Fragment>
-  );
+  const { onPressBackground, onEditBlock, onPickDestination } = props;
+  const { isEditingScene } = props;
+  if (isEditingScene) {
+    // scene creator back, play, undo
+    return <SceneCreatorForegroundActions />;
+  } else {
+    // card blocks and background
+    return (
+      <React.Fragment>
+        <TouchableWithoutFeedback onPress={onPressBackground}>
+          <View
+            style={styles.cardBackgroundContainer}
+            pointerEvents={editBlockProps?.isEditingBlock ? 'auto' : 'none'}
+          />
+        </TouchableWithoutFeedback>
+        <View style={styles.blocksContainer}>
+          <CardBlocks
+            card={card}
+            onSelectBlock={onEditBlock}
+            onSelectDestination={onPickDestination}
+            isEditable
+            editBlockProps={editBlockProps}
+          />
+        </View>
+      </React.Fragment>
+    );
+  }
 };
 
 const CardBottomActions = ({ card, onEditScene, onEditBlock, onSave }) => {
@@ -469,20 +475,6 @@ class CreateCardScreen extends React.Component {
     }
   };
 
-  _handleChooseImage = () => {
-    Utilities.launchImageLibrary((result) => {
-      if (!result || result.error) {
-        this._handleCardChange({
-          backgroundImage: null,
-        });
-      } else if (result.url) {
-        this._handleCardChange({
-          backgroundImage: result,
-        });
-      }
-    });
-  };
-
   _handleEditScene = async () => {
     // Set scene editing state
     this.setState(
@@ -644,16 +636,14 @@ class CreateCardScreen extends React.Component {
                 onScreenshot={this._handleSceneScreenshot}
                 onMessage={this._handleSceneMessage}
               />
-              {!isEditingScene ? (
-                <CardForegroundActions
-                  card={card}
-                  onPressBackground={this._handlePressBackground}
-                  onChooseImage={this._handleChooseImage}
-                  onEditBlock={this._handleEditBlock}
-                  onPickDestination={this._saveAndGoToDestination}
-                  editBlockProps={editBlockProps}
-                />
-              ) : null}
+              <CardForegroundActions
+                card={card}
+                isEditingScene={isEditingScene}
+                onPressBackground={this._handlePressBackground}
+                onEditBlock={this._handleEditBlock}
+                onPickDestination={this._saveAndGoToDestination}
+                editBlockProps={editBlockProps}
+              />
             </KeyboardAwareScrollView>
             {!isEditingScene ? (
               <CardBottomActions
