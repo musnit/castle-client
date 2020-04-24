@@ -38,29 +38,10 @@ const CardScene = ({
 
   const [logsVisible, setLogsVisible] = useState(false);
 
-  const backgroundImageOverlayOpacity = useRef(new Animated.Value(1)).current;
   const [loaded, setLoaded] = useState(false);
-  let mounted;
   const onLoaded = async () => {
-    if (!loaded) {
-      await new Promise((resolve) => setTimeout(resolve, 120));
-      if (!loaded && mounted) {
-        Animated.timing(backgroundImageOverlayOpacity, {
-          toValue: 0,
-          duration: 120,
-          useNativeDriver: true,
-        }).start(() => mounted && setLoaded(true));
-      }
-    }
+    setLoaded(true);
   };
-  useEffect(() => {
-    mounted = true;
-    const timer = setTimeout(onLoaded, 1800);
-    return () => {
-      mounted = false;
-      clearTimeout(timer);
-    };
-  }, []);
 
   // TODO: this is necessary because PlayDeckNavigator renders two CardScenes when transitioning
   // to the next card from a choice block. Only one native GhostView can be on the screen at once
@@ -109,7 +90,7 @@ const CardScene = ({
             ) : null}
             {!loaded && card.backgroundImage ? (
               <React.Fragment>
-                <Animated.View style={[styles.overlay, { opacity: backgroundImageOverlayOpacity }]}>
+                <Animated.View style={styles.overlay}>
                   <FastImage style={{ flex: 1 }} source={{ uri: card.backgroundImage.url }} />
                 </Animated.View>
               </React.Fragment>
