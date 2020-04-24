@@ -27,6 +27,7 @@ import CardDestinationPickerSheet from './CardDestinationPickerSheet';
 import CardHeader from './CardHeader';
 import CardScene from './CardScene';
 import DeckVariables from './DeckVariables';
+import SceneCreatorPanes from './scenecreator/SceneCreatorPanes';
 import Viewport from './viewport';
 
 import * as GhostEvents from './ghost/GhostEvents';
@@ -100,7 +101,7 @@ const SceneCreatorTools = ({ isEditingScene }) => {
   const { eventsReady } = useGhostEvents();
   if (eventsReady) {
     return (
-      <Tools
+      <SceneCreatorPanes
         entryPoint={'https://raw.githubusercontent.com/nikki93/scene-creator/master/Client.lua'}
         visible={isEditingScene}
         landscape={false}
