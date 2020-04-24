@@ -1,4 +1,5 @@
 import React from 'react';
+import url from 'url';
 import { useListen } from './GhostEvents';
 
 /**
@@ -13,6 +14,8 @@ const GhostUIContext = React.createContext({
   root: {},
   setRoot: (root) => {},
 });
+
+const ENTRYPOINT = 'https://raw.githubusercontent.com/nikki93/scene-creator/master/Client.lua';
 
 // We get state diffs from Lua. This function applies those diffs to
 // a previous state to produce the new state.
@@ -60,11 +63,13 @@ export const Provider = (props) => {
   });
 
   const forceRender = React.useCallback(() => setRoot(JSON.parse(JSON.stringify(root))), [root]);
+  const transformAssetUri = (uri) => url.resolve(ENTRYPOINT, uri) || uri;
 
   const value = {
     root,
     setRoot,
     forceRender,
+    transformAssetUri,
   };
 
   return <GhostUIContext.Provider value={value}>{props.children}</GhostUIContext.Provider>;

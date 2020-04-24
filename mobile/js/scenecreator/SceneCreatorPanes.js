@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import url from 'url';
 import { useGhostUI } from '../ghost/GhostUI';
 import { ScrollView } from 'react-native-gesture-handler';
 
@@ -118,11 +117,11 @@ const panes = [
 ];
 
 export default SceneCreatorPanes = ({ entryPoint, visible, landscape }) => {
-  const { root } = useGhostUI();
+  const { root, transformAssetUri } = useGhostUI();
 
   // Construct context
   const context = {
-    transformAssetUri: (uri) => url.resolve(entryPoint, uri) || uri,
+    transformAssetUri,
   };
 
   if (!visible) return null;

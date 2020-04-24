@@ -97,20 +97,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const SceneCreatorTools = ({ isEditingScene }) => {
-  const { eventsReady } = useGhostEvents();
-  if (eventsReady) {
-    return (
-      <SceneCreatorPanes
-        entryPoint={'https://raw.githubusercontent.com/nikki93/scene-creator/master/Client.lua'}
-        visible={isEditingScene}
-        landscape={false}
-      />
-    );
-  }
-  return null;
-};
-
 const PlainButton = ({ style, ...props }) => {
   const buttonProps = { ...props, children: undefined };
   return (
@@ -682,7 +668,7 @@ class CreateCardScreen extends React.Component {
             <DeckVariables variables={card.variables} onChange={this._handleVariablesChange} />
           )}
         </SafeAreaView>
-        <SceneCreatorTools isEditingScene={isEditingScene} />
+        <SceneCreatorPanes visible={isEditingScene} landscape={false} />
         <CardDestinationPickerSheet
           deck={deck}
           ref={this._destinationPickerRef}
