@@ -3,9 +3,10 @@ import { Text, View } from 'react-native';
 
 import * as Constants from '../Constants';
 
+import SceneCreatorKeyboardWrapper from './SceneCreatorKeyboardWrapper';
 import SceneCreatorPane from './SceneCreatorPane';
 
-export default SceneCreatorBlueprintsPane = React.memo(({ element, context }) => {
+export default SceneCreatorBlueprintsPane = ({ element, context }) => {
   const renderHeader = () => (
     <View
       style={{
@@ -22,12 +23,14 @@ export default SceneCreatorBlueprintsPane = React.memo(({ element, context }) =>
   );
 
   return (
-    <SceneCreatorPane
-      element={element}
-      context={context}
-      middleSnapPoint={300}
-      bottomSnapPoint={52}
-      renderHeader={renderHeader}
-    />
+    <SceneCreatorKeyboardWrapper>
+      <SceneCreatorPane
+        element={element}
+        context={context}
+        middleSnapPoint={300}
+        bottomSnapPoint={52}
+        renderHeader={renderHeader}
+      />
+    </SceneCreatorKeyboardWrapper>
   );
-});
+};
