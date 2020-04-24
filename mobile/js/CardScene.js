@@ -4,7 +4,6 @@ import { StyleSheet, View, Animated, TouchableWithoutFeedback } from 'react-nati
 import FastImage from 'react-native-fast-image';
 
 import GameView from './GameView';
-import SceneCreator from './SceneCreator';
 
 const styles = StyleSheet.create({
   backgroundImage: {
@@ -103,7 +102,6 @@ const CardScene = ({
                 deckState={deckState}
               />
             )}
-            {/* <SceneCreator /> */}
             {!interactionEnabled ? (
               <TouchableWithoutFeedback style={styles.overlay}>
                 <View style={[styles.overlay, { opacity: 0 }]} />
