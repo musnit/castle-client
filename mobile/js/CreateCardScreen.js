@@ -13,6 +13,7 @@ import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
 import { connectActionSheet } from '@expo/react-native-action-sheet';
 import { ReactNativeFile } from 'apollo-upload-client';
 import { useGhostEvents } from './ghost/GhostEvents';
+import * as GhostUI from './ghost/GhostUI';
 
 import uuid from 'uuid/v4';
 import { withNavigation, withNavigationFocus } from '@react-navigation/compat';
@@ -622,7 +623,7 @@ class CreateCardScreen extends React.Component {
     // SafeAreaView doesn't respond to statusbar being hidden right now
     // https://github.com/facebook/react-native/pull/20999
     return (
-      <React.Fragment>
+      <GhostUI.Provider>
         <SafeAreaView style={styles.container}>
           <CardHeader
             card={card}
@@ -686,7 +687,7 @@ class CreateCardScreen extends React.Component {
           ref={this._destinationPickerRef}
           onSelectCard={(card) => this._onPickDestinationCard(blockToEdit, card)}
         />
-      </React.Fragment>
+      </GhostUI.Provider>
     );
   }
 }

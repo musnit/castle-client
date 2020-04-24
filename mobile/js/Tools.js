@@ -47,6 +47,7 @@ import Zocial from 'react-native-vector-icons/Zocial';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
 import { sendAsync, useListen } from './ghost/GhostEvents';
+import { useGhostUI, useGhostThemeListener } from './ghost/GhostUI';
 import { ScrollView } from 'react-native-gesture-handler';
 import * as Constants from './Constants';
 import ColorPicker from './ColorPicker';
@@ -1475,37 +1476,6 @@ const SceneCreatorInspectorPane = React.memo(({ element, context, actionsPane })
 // Container
 //
 
-// We get state diffs from Lua. This function applies those diffs to a previous state to produce the new state.
-const applyDiff = (t, diff) => {
-  if (diff == null) {
-    return t;
-  }
-
-  // If it's an exact diff just return it
-  if (diff.__exact) {
-    delete diff.__exact;
-    return diff;
-  }
-
-  // Copy untouched keys, then apply diffs to touched keys
-  t = typeof t === 'object' ? t : {};
-  const u = {};
-  for (let k in t) {
-    if (!(k in diff)) {
-      u[k] = t[k];
-    }
-  }
-  for (let k in diff) {
-    const v = diff[k];
-    if (typeof v === 'object') {
-      u[k] = applyDiff(t[k], v);
-    } else if (v !== '__NIL') {
-      u[k] = v;
-    }
-  }
-  return u;
-};
-
 const KeyboardAwareWrapper = ({ backgroundColor, children }) => {
   return (
     <View
@@ -1522,36 +1492,12 @@ const KeyboardAwareWrapper = ({ backgroundColor, children }) => {
   );
 };
 
-// Top-level tools container -- watches for Lua <-> JS tool events and renders the tools overlaid in its parent
 export default Tools = ({ entryPoint, visible, landscape, children }) => {
-  // Maintain tools state
-  const [root, setRoot] = useState({});
-
-  // Listen for updates
-  useListen({
-    eventName: 'CASTLE_TOOLS_UPDATE',
-    handler: (diffJson) => {
-      const diff = JSON.parse(diffJson);
-      setRoot((oldRoot) => applyDiff(oldRoot, diff));
-    },
+  useGhostThemeListener({
+    setLightColors: () => (Colors = lightColors),
+    setDarkColors: () => (Colors = darkColors),
   });
-
-  // Light / dark colors
-  useEffect(() => {
-    Colors = lightColors;
-    setRoot(JSON.parse(JSON.stringify(root))); // Force re-render
-  }, []);
-  useListen({
-    eventName: 'CASTLE_TOOLS_COLORS',
-    handler: ({ isDark = false } = {}) => {
-      if (isDark) {
-        Colors = darkColors;
-      } else {
-        Colors = lightColors;
-      }
-      setRoot(JSON.parse(JSON.stringify(root))); // Force re-render
-    },
-  });
+  const { root } = useGhostUI();
 
   // Construct context
   const context = {
