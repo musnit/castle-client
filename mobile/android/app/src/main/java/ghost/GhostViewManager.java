@@ -1,9 +1,8 @@
 package ghost;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.util.Log;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -30,6 +29,10 @@ public class GhostViewManager extends SimpleViewManager<ViewGroup> implements Li
 
   @Override
   protected ViewGroup createViewInstance(ThemedReactContext reactContext) {
+    if (MainActivity.gameLayout.getParent() != null) {
+      return new FrameLayout(reactContext);
+    }
+
     return MainActivity.gameLayout;
   }
 
