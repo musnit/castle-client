@@ -226,40 +226,47 @@ const DecksFlipper = () => {
   const insets = useSafeArea();
   let centerContentY = insets.top;
 
-  let translateY = new Animated.Value(0);
+  let translateY = React.useRef(new Animated.Value(0)).current;
   let containerY = Animated.add(translateY, centerContentY - DECK_FEED_ITEM_HEIGHT);
   const onPanGestureEvent = Animated.event([{ nativeEvent: { translationY: translateY } }], {
     useNativeDriver: true,
   });
 
+  React.useEffect(() => {
+    translateY.setValue(0);
+  }, [currentCardIndex]);
+
   const snapTo = React.useCallback(
-    (toValue, onFinished) => {
+    (toValue, futureCardIndex = null) => {
       Animated.spring(translateY, { toValue, ...SPRING_CONFIG }).start(({ finished }) => {
         if (finished) {
-          translateY.setValue(0);
           setPaused(false);
-          onFinished && onFinished();
+          if (futureCardIndex !== null) {
+            setCurrentCardIndex(futureCardIndex);
+          } else {
+            translateY.setValue(0);
+          }
         }
       });
     },
-    [translateY]
+    [translateY, currentCardIndex]
   );
 
   const snapToNext = React.useCallback(() => {
     if (decks && currentCardIndex < decks.length - 1) {
-      snapTo(-DECK_FEED_ITEM_HEIGHT, () => setCurrentCardIndex(currentCardIndex + 1));
+      snapTo(-DECK_FEED_ITEM_HEIGHT, currentCardIndex + 1);
     } else {
       snapTo(0);
     }
-  }, [decks?.length, currentCardIndex, snapTo]);
+  }, [decks, currentCardIndex, snapTo]);
 
   const snapToPrevious = React.useCallback(() => {
     if (currentCardIndex > 0) {
-      snapTo(DECK_FEED_ITEM_HEIGHT, () => setCurrentCardIndex(currentCardIndex - 1));
+      snapTo(DECK_FEED_ITEM_HEIGHT, currentCardIndex - 1);
     } else {
       snapTo(0);
     }
-  }, [decks?.length, currentCardIndex, snapTo]);
+  }, [currentCardIndex, snapTo]);
 
   const onPanStateChange = React.useCallback(
     (event) => {
@@ -277,7 +284,7 @@ const DecksFlipper = () => {
         setPaused(true);
       }
     },
-    [snapTo]
+    [snapTo, snapToNext, snapToPrevious]
   );
 
   if (!decks) {
