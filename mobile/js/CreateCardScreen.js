@@ -603,9 +603,6 @@ class CreateCardScreen extends React.Component {
 
     const scrollViewSceneStyles = {
       backgroundColor: card.backgroundImage ? '#000' : '#f2f2f2',
-      flex: isEditingScene ? null : 1,
-      height: isEditingScene ? '100%' : null,
-      paddingBottom: isEditingScene ? containScrollViewOffset : null,
     };
 
     const editBlockProps = isEditingBlock
@@ -644,7 +641,7 @@ class CreateCardScreen extends React.Component {
               scrollEnabled={isEditingBlock}
               nestedScrollEnabled
               extraScrollHeight={containScrollViewOffset}
-              style={[styles.scrollView, isEditingScene ? { aspectRatio: null } : null]}
+              style={styles.scrollView}
               keyboardShouldPersistTaps="handled"
               contentContainerStyle={[styles.scrollViewContentContainer, scrollViewSceneStyles]}
               innerRef={(ref) => (this._scrollViewRef = ref)}>
