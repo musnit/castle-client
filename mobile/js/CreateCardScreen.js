@@ -658,7 +658,10 @@ class CreateCardScreen extends React.Component {
             <DeckVariables variables={card.variables} onChange={this._handleVariablesChange} />
           )}
         </SafeAreaView>
-        <SceneCreatorPanes visible={isEditingScene} landscape={false} />
+        <SceneCreatorPanes
+          visible={isEditingScene && selectedTab !== 'variables'}
+          landscape={false}
+        />
         <CardDestinationPickerSheet
           deck={deck}
           ref={this._destinationPickerRef}
