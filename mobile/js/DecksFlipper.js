@@ -22,6 +22,7 @@ import Viewport from './viewport';
 
 import * as Constants from './Constants';
 import * as Utilities from './utilities';
+import * as GhostChannels from './ghost/GhostChannels';
 
 const { vw, vh } = Viewport;
 
@@ -240,6 +241,8 @@ const DecksFlipper = () => {
     (toValue, futureCardIndex = null) => {
       Animated.spring(translateY, { toValue, ...SPRING_CONFIG }).start(({ finished }) => {
         if (finished) {
+          GhostChannels.freezeScreenAsync();
+
           setPaused(false);
           if (futureCardIndex !== null) {
             setCurrentCardIndex(futureCardIndex);

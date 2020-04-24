@@ -82,6 +82,27 @@ int SDL_main(int argc, char *argv[]) {
   return YES;
 }
 
+- (void)freezeScreen
+{
+  UIGraphicsBeginImageContextWithOptions([[UIScreen mainScreen] bounds].size, YES, 0);
+
+  UIView * rootView = self.window.rootViewController.view;
+
+  [rootView drawViewHierarchyInRect:rootView.bounds afterScreenUpdates:NO];
+
+  UIImage *renderedImage = UIGraphicsGetImageFromCurrentImageContext();
+  UIImageView *imageView = [[UIImageView alloc] initWithImage:renderedImage];
+  imageView.frame = rootView.bounds;
+
+  [rootView addSubview:imageView];
+
+  UIGraphicsEndImageContext();
+
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
+    [imageView removeFromSuperview];
+  });
+}
+
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
   NSArray<id<RCTBridgeModule>> *extraModules = [_moduleRegistryAdapter extraModulesForBridge:bridge];

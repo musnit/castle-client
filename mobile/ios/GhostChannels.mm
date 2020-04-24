@@ -9,6 +9,7 @@ extern "C" {
 }
 
 #include "modules/thread/Channel.h"
+#include "AppDelegate.h"
 
 @interface GhostChannels : NSObject <RCTBridgeModule>
 
@@ -66,6 +67,17 @@ RCT_EXPORT_MODULE()
 //
 // Methods
 //
+
+
+RCT_EXPORT_METHOD(freezeScreenAsync
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  dispatch_async(dispatch_get_main_queue(), ^{
+      AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+      [appDelegate freezeScreen];
+      resolve(nil);
+  });
+}
 
 RCT_EXPORT_METHOD(clearAsync
                   : (NSString *)name

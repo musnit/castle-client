@@ -8,8 +8,12 @@
 
 import { NativeModules } from 'react-native';
 
+export const freezeScreenAsync = () => {
+  return NativeModules.GhostChannels.freezeScreenAsync();
+};
+
 // Clears all the messages in the Channel queue.
-export const clearAsync = name => {
+export const clearAsync = (name) => {
   return NativeModules.GhostChannels.clearAsync(name);
 };
 
@@ -20,7 +24,7 @@ export const demandAsync = (name, options = {}) => {
 };
 
 // Retrieves the number of messages in the Channel queue.
-export const getCountAsync = name => {
+export const getCountAsync = (name) => {
   return NativeModules.GhostChannels.getCountAsync(name);
 };
 
@@ -32,13 +36,13 @@ export const hasReadAsync = (name, id) => {
 
 // Receive a message from a thread Channel, but leave it in the queue. `undefined` if there's
 // no message in the queue.
-export const peekAsync = name => {
+export const peekAsync = (name) => {
   return NativeModules.GhostChannels.peekAsync(name);
 };
 
 // Retrieve the value of a Channel message and remove it from the queue. `undefined` if there's no
 // message in the queue.
-export const popAsync = name => {
+export const popAsync = (name) => {
   return NativeModules.GhostChannels.popAsync(name);
 };
 
@@ -46,7 +50,7 @@ export const popAsync = name => {
 // pushed messages if the Channel is also being popped from on other threads. May loop infinitely if
 // values are being simultaneously being added to the Channel as fast or faster than they are being
 // popped.
-export const popAllAsync = name => {
+export const popAllAsync = (name) => {
   return NativeModules.GhostChannels.popAllAsync(name);
 };
 

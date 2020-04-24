@@ -15,4 +15,6 @@
 @property (nonatomic, strong) UMModuleRegistryAdapter *moduleRegistryAdapter;
 @property (nonatomic, strong) UIWindow *window;
 
+- (void)freezeScreen;
+
 @end

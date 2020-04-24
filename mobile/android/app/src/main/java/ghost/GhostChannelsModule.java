@@ -21,6 +21,11 @@ public class GhostChannelsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  void freezeScreenAsync(Promise promise) {
+    promise.resolve(null);
+  }
+
+  @ReactMethod
   void clearAsync(String name, Promise promise) {
     Channels.nativeClear(name);
     promise.resolve(null);
