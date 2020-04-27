@@ -1,12 +1,12 @@
 -- Manage loading, lifetime management and event forwarding for entries
 
-local jsEvents = require '__ghost__.jsEvents'
+local jsEvents = require "__ghost__.jsEvents"
 
 local theOS = love.system.getOS()
-local isMobile = theOS == 'Android' or theOS == 'iOS'
+local isMobile = theOS == "Android" or theOS == "iOS"
 
 -- C FFI definitions that are used on desktop
-local ffi = require 'ffi'
+local ffi = require "ffi"
 local C = ffi.C
 ffi.cdef [[
 float ghostGetWidth();
@@ -52,7 +52,7 @@ local loveCallbacks = {
     joystickhat = true,
     joystickpressed = true,
     joystickreleased = true,
-    joystickremoved = true,
+    joystickremoved = true
 }
 
 -- Maintaining outer master volume / listening for requests to change it
@@ -61,16 +61,19 @@ local function setCastleVolume(volume)
     outerVolume = volume
     love.audio.setVolume(outerVolume * innerVolume)
 end
-jsEvents.listen('CASTLE_SET_VOLUME', setCastleVolume)
+jsEvents.permanentListen("CASTLE_SET_VOLUME", setCastleVolume)
 if CASTLE_INITIAL_DATA and CASTLE_INITIAL_DATA.audio and CASTLE_INITIAL_DATA.audio.volume then
     setCastleVolume(CASTLE_INITIAL_DATA.audio.volume)
 end
 
 -- Keep track of constant dimensions if set
-local constantWidth, constantHeight = 0, 0
-jsEvents.listen('CASTLE_SET_DIMENSIONS', function(params)
-    constantWidth, constantHeight = params.width, params.height
-end)
+local constantWidth, constantHeight = 800, 0
+jsEvents.permanentListen(
+    "CASTLE_SET_DIMENSIONS",
+    function(params)
+        constantWidth, constantHeight = params.width, params.height
+    end
+)
 
 -- Metatable of portal instances
 local portalMeta = {}
@@ -90,8 +93,8 @@ function portalMeta:setupLove()
 
     -- Make all sub-libraries new tables that inherit from the originals
     for k, v in pairs(love) do
-        if type(v) == 'table' then
-            newLove[k] = setmetatable({}, { __index = love[k] })
+        if type(v) == "table" then
+            newLove[k] = setmetatable({}, {__index = love[k]})
         end
     end
 
@@ -111,25 +114,41 @@ function portalMeta:setupLove()
     end
 
     if newLove.window then -- Unavailable in non-main thread
-        function newLove.window.close() end
-        function newLove.window.maximize() end
-        function newLove.window.minimize() end
-        function newLove.window.requestAttention() end
-        function newLove.window.restore() end
-        function newLove.window.setDisplaySleepEnabled() end
-        function newLove.window.setFullscreen() return true end
-        function newLove.window.setIcon() return true end
-        function newLove.window.setMode() return true end
-        function newLove.window.setPosition() end
-        function newLove.window.setTitle() end
+        function newLove.window.close()
+        end
+        function newLove.window.maximize()
+        end
+        function newLove.window.minimize()
+        end
+        function newLove.window.requestAttention()
+        end
+        function newLove.window.restore()
+        end
+        function newLove.window.setDisplaySleepEnabled()
+        end
+        function newLove.window.setFullscreen()
+            return true
+        end
+        function newLove.window.setIcon()
+            return true
+        end
+        function newLove.window.setMode()
+            return true
+        end
+        function newLove.window.setPosition()
+        end
+        function newLove.window.setTitle()
+        end
         function newLove.window.showMessageBox(...)
-            if select('#', ...) <= 4 then
+            if select("#", ...) <= 4 then
                 return true
             else
                 return 0
             end
         end
-        function newLove.window.updateMode() return true end
+        function newLove.window.updateMode()
+            return true
+        end
 
         function newLove.window.getMode()
             local w, h, flags = love.window.getMode()
@@ -147,7 +166,7 @@ function portalMeta:setupLove()
 
     function newLove.filesystem.load(path)
         return function()
-            return self.globals.require(path, { saveCache = false })
+            return self.globals.require(path, {saveCache = false})
         end
     end
 
@@ -187,10 +206,12 @@ function portalMeta:setupLove()
         end
 
         function newLove.graphics.newFont(...)
-            local nArgs = select('#', ...)
-            if nArgs == 0 then return love.graphics.newFont() end
+            local nArgs = select("#", ...)
+            if nArgs == 0 then
+                return love.graphics.newFont()
+            end
             local path = select(1, ...)
-            if type(path) == 'string' then
+            if type(path) == "string" then
                 return love.graphics.newFont(love.font.newRasterizer(fetchFileData(path), select(2, ...)))
             elseif nArgs == 1 then -- Need to do it this way for some reason...
                 return love.graphics.newFont(path)
@@ -204,7 +225,7 @@ function portalMeta:setupLove()
         end
 
         function newLove.graphics.newImage(path, ...)
-            if type(path) == 'string' then
+            if type(path) == "string" then
                 return love.graphics.newImage(love.image.newImageData(fetchFileData(path)))
             else
                 return love.graphics.newImage(path, ...)
@@ -212,7 +233,7 @@ function portalMeta:setupLove()
         end
 
         function newLove.graphics.newCubeImage(path, ...)
-            if type(path) == 'string' then
+            if type(path) == "string" then
                 return love.graphics.newCubeImage(love.image.newImageData(fetchFileData(path)))
             else
                 return love.graphics.newCubeImage(path, ...)
@@ -220,7 +241,7 @@ function portalMeta:setupLove()
         end
 
         function newLove.graphics.newImageFont(path, ...)
-            if type(path) == 'string' then
+            if type(path) == "string" then
                 return love.graphics.newImageFont(love.image.newImageData(fetchFileData(path)), ...)
             else
                 return love.graphics.newImageFont(path, ...)
@@ -233,9 +254,9 @@ function portalMeta:setupLove()
                     error(message, 3)
                 end
             end
-            if select('#', ...) == 1 then
+            if select("#", ...) == 1 then
                 local code = ...
-                if not code:match('\n') then
+                if not code:match("\n") then
                     code = fetchFileData(code)
                 end
                 local shader = love.graphics.newShader(code)
@@ -243,10 +264,10 @@ function portalMeta:setupLove()
                 return shader
             else
                 local pixelCode, vertexCode = ...
-                if not pixelCode:match('\n') then
+                if not pixelCode:match("\n") then
                     pixelCode = fetchFileData(pixelCode)
                 end
-                if not vertexCode:match('\n') then
+                if not vertexCode:match("\n") then
                     vertexCode = fetchFileData(vertexCode)
                 end
                 local shader = love.graphics.newShader(pixelCode, vertexCode)
@@ -257,7 +278,7 @@ function portalMeta:setupLove()
     end
 
     function newLove.image.newImageData(path, ...)
-        if type(path) == 'string' then
+        if type(path) == "string" then
             return love.image.newImageData(fetchFileData(path))
         else
             return love.image.newImageData(path, ...)
@@ -266,7 +287,7 @@ function portalMeta:setupLove()
 
     if newLove.audio then
         function newLove.audio.newSource(path, ...)
-            if type(path) == 'string' then
+            if type(path) == "string" then
                 return love.audio.newSource(fetchFileData(path), ...)
             else
                 return love.audio.newSource(path, ...)
@@ -285,7 +306,7 @@ function portalMeta:setupLove()
 
     if newLove.sound then
         function newLove.sound.newSoundData(path, ...)
-            if type(path) == 'string' then
+            if type(path) == "string" then
                 return love.sound.newSoundData(fetchFileData(path), ...)
             else
                 return love.sound.newSoundData(path, ...)
@@ -296,7 +317,7 @@ function portalMeta:setupLove()
     function newLove.thread.newThread(s)
         -- See https://github.com/love2d-community/love-api/blob/ca6cae9b4fa21a450f28f52e18dd949693b20862/modules/thread/Thread.lua#L90
         local code
-        if #s >= 1024 or s:find('\n') then
+        if #s >= 1024 or s:find("\n") then
             code = s
         else
             code = fetchAsset(s)
@@ -304,15 +325,18 @@ function portalMeta:setupLove()
 
         -- Wrap with our bootstrapping, also explicitly load `love.` modules we wrap since those
         -- aren't automatically loaded in a new thread
-        local pathLit = ('%q'):format(self.basePath):gsub('\010', 'n'):gsub('\026', '\\026')
-        code = [[
+        local pathLit = ("%q"):format(self.basePath):gsub("\010", "n"):gsub("\026", "\\026")
+        code =
+            [[
             require 'love.audio'
             require 'love.filesystem'
             require 'love.image'
             require 'love.timer'
 
             network = require '__ghost__.network'
-            REQUIRE_BASE_PATH = ]] .. pathLit .. [[
+            REQUIRE_BASE_PATH = ]] ..
+            pathLit ..
+                [[
             require = require '__ghost__.require'
             castle = require '__ghost__.castle'
 
@@ -322,7 +346,8 @@ function portalMeta:setupLove()
             love = root.globals.love
 
             copas = require 'copas'
-            copas.addthread(function(...) ]] .. code .. [[ end, ...)
+            copas.addthread(function(...) ]] ..
+                    code .. [[ end, ...)
             copas.loop()
         ]]
         return love.thread.newThread(code)
@@ -335,7 +360,13 @@ end
 -- occurs. If the call to `foo` succeeded, returns `true` followed by its return
 -- values. If an error occured, returns `false` and the error message.
 function portalMeta:safeCall(foo, ...)
-    return xpcall(foo, function(err) self:handleError(err) end, ...)
+    return xpcall(
+        foo,
+        function(err)
+            self:handleError(err)
+        end,
+        ...
+    )
 end
 
 -- Handle an error `err` occurring in the context of this portal. Calls
@@ -350,23 +381,27 @@ function portalMeta:handleError(err)
         while boundary and not boundary.onError do
             boundary = boundary.parent
         end
-        if not boundary then error(err, 0) end
+        if not boundary then
+            error(err, 0)
+        end
 
         -- Protect call to error handler, move upward if it failed
         succeeded, err = pcall(boundary.onError, err, self, stack)
-        if not succeeded then boundary = boundary.parent end
+        if not succeeded then
+            boundary = boundary.parent
+        end
     until succeeded
 end
 
 -- Create a basic unpopulated portal instance
 local function createInstance()
-    return setmetatable({}, { __index = portalMeta })
+    return setmetatable({}, {__index = portalMeta})
 end
 
 -- Load a portal to given `require`-able `path`
 function portalMeta:newChild(path, args)
     -- Convert backslashes to slashes (mostly relevant for Windows 'file://' URLs)
-    path = path:gsub('\\', '/')
+    path = path:gsub("\\", "/")
 
     -- Create the portal instance
     local child = createInstance()
@@ -379,24 +414,24 @@ function portalMeta:newChild(path, args)
 
     -- Figure out base path
     if network.isAbsolute(path) then
-        child.basePath = path:gsub('(.*)/(.*)', '%1')
+        child.basePath = path:gsub("(.*)/(.*)", "%1")
     else
         child.basePath = self.basePath
     end
 
     -- Create a new globals table `__index`ing to the base one
-    child.globals = setmetatable({}, { __index = GG })
+    child.globals = setmetatable({}, {__index = GG})
     child.globals.portal = child
 
     -- Make a copy of the `package` table that resets the loaded modules
-    child.globals.package = setmetatable({}, { __index = package })
+    child.globals.package = setmetatable({}, {__index = package})
     child.globals.package.loaded = {}
 
     -- Set up the `love` global
     child:setupLove()
 
     -- Set up the `castle` global
-    child.globals.castle = setmetatable({}, { __index = castle })
+    child.globals.castle = setmetatable({}, {__index = castle})
 
     -- Copy in `extraGlobals` if given
     if child.args.extraGlobals then
@@ -406,32 +441,40 @@ function portalMeta:newChild(path, args)
     end
 
     -- `require` it!
-    local succeeded, err = child:safeCall(function()
-        self.globals.require(path, {
-            parentEnv = self.globals,
-            childEnv = child.globals,
-            childEnvReadonly = true,
-            saveCache = false, -- Always reload portals
-            -- Add a preamble that loads 'conf.lua' often present alongside 'main.lua':
-            -- https://love2d.org/wiki/Config_Files
-            -- The associated `love.conf(...)` is ignored, but 'conf.lua' may have some other side
-            -- effects that matter (eg., setting some global variables).
-            preamble = child.args.noConf and '' or [[
+    local succeeded, err =
+        child:safeCall(
+        function()
+            self.globals.require(
+                path,
+                {
+                    parentEnv = self.globals,
+                    childEnv = child.globals,
+                    childEnvReadonly = true,
+                    saveCache = false, -- Always reload portals
+                    -- Add a preamble that loads 'conf.lua' often present alongside 'main.lua':
+                    -- https://love2d.org/wiki/Config_Files
+                    -- The associated `love.conf(...)` is ignored, but 'conf.lua' may have some other side
+                    -- effects that matter (eg., setting some global variables).
+                    preamble = child.args.noConf and "" or [[
                 pcall(require, 'conf')
-            ]],
-        })
-    end)
+            ]]
+                }
+            )
+        end
+    )
     if err then
         print(err)
     end
-    if not succeeded then return nil, err end
+    if not succeeded then
+        return nil, err
+    end
 
     -- Call `love.load` callback and set as loaded.
     -- This has to happen after `castle.startClient` otherwise the client will miss the `love.load` event.
     -- This must also be called on a network coroutine (such as using `network.async`).
     local function loadLove()
         if child.globals.love.load then
-            child.globals.love.load({ child.basePath })
+            child.globals.love.load({child.basePath})
         end
         child.loaded = true
     end
@@ -441,12 +484,17 @@ function portalMeta:newChild(path, args)
         child.globals.castle.startServer(GHOST_PORT)
     end
     if not CASTLE_SERVER and child.globals.castle.startClient then
-        castle.multiplayer.connectClient(path, function(address, sessionToken)
-            child.globals.castle.startClient(address, sessionToken)
-            network.async(function()
-                loadLove()
-            end)
-        end)
+        castle.multiplayer.connectClient(
+            path,
+            function(address, sessionToken)
+                child.globals.castle.startClient(address, sessionToken)
+                network.async(
+                    function()
+                        loadLove()
+                    end
+                )
+            end
+        )
     else
         loadLove()
     end
@@ -457,23 +505,32 @@ end
 -- Add all of the callbacks as methods
 for cbName in pairs(loveCallbacks) do
     portalMeta[cbName] = function(self, ...)
-        if not self.loaded then return end
+        if not self.loaded then
+            return
+        end
         local found = self.globals.love[cbName]
-        if found then self:safeCall(found, ...) end
+        if found then
+            self:safeCall(found, ...)
+        end
     end
 end
 
 -- Override the `draw` method to scope graphics state changes to the portal
 function portalMeta:draw()
-    if not self.loaded then return end
+    if not self.loaded then
+        return
+    end
     local initialStackDepth = love.graphics.getStackDepth()
-    local succ, err = pcall(function()
-        love.graphics.push('all')
-        if self.globals.love.draw then
-            self:safeCall(self.globals.love.draw)
+    local succ, err =
+        pcall(
+        function()
+            love.graphics.push("all")
+            if self.globals.love.draw then
+                self:safeCall(self.globals.love.draw)
+            end
+            love.graphics.pop()
         end
-        love.graphics.pop()
-    end)
+    )
     while love.graphics.getStackDepth() > initialStackDepth do
         love.graphics.pop()
     end
@@ -484,7 +541,7 @@ end
 
 -- Return a root portal instance
 local root = createInstance()
-root.globals = setmetatable({}, { __index = GG })
+root.globals = setmetatable({}, {__index = GG})
 root.loaded = true
-root.path = 'root'
+root.path = "root"
 return root

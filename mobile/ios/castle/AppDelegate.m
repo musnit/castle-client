@@ -84,9 +84,9 @@ int SDL_main(int argc, char *argv[]) {
 
 - (void)freezeScreen
 {
-  UIGraphicsBeginImageContextWithOptions([[UIScreen mainScreen] bounds].size, YES, 0);
-
   UIView * rootView = self.window.rootViewController.view;
+
+  UIGraphicsBeginImageContextWithOptions(rootView.bounds.size, YES, 0);
 
   [rootView drawViewHierarchyInRect:rootView.bounds afterScreenUpdates:NO];
 

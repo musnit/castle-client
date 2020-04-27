@@ -431,7 +431,7 @@ end
 castle.multiplayer = {}
 
 function castle.multiplayer.connectClient(mediaUrl, callback)
-    jsEvents.listen(
+    jsEvents.permanentListen(
         "CASTLE_CONNECT_MULTIPLAYER_CLIENT_RESPONSE",
         function(params)
             callback(params.address, params.sessionToken)

@@ -47,7 +47,7 @@ local store =
 
 -- Listen for and collect JS->Lua UI events per element
 local pendingEvents = {}
-jsEvents.listen(
+jsEvents.permanentListen(
     "CASTLE_TOOL_EVENT",
     function(params)
         if not pendingEvents[params.pathId] then
@@ -157,7 +157,7 @@ end
 
 -- Listen for JS asking us to send an exact diff next time
 local needsSync = false
-jsEvents.listen(
+jsEvents.permanentListen(
     "CASTLE_TOOLS_NEEDS_SYNC",
     function()
         needsSync = true

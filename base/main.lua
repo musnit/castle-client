@@ -5,6 +5,8 @@ local copas = require "copas"
 
 math.randomseed(10000 * require("socket").gettime())
 
+GHOST_NETWORK_REQUEST_EVENT_ENABLED = false
+
 local theOS = love.system.getOS()
 local isMobile = theOS == "Android" or theOS == "iOS"
 
@@ -191,7 +193,7 @@ network.async(
 )
 
 local pendingPostOpens = {} -- Keep track of post open requests
-jsEvents.listen(
+jsEvents.permanentListen(
     "CASTLE_POST_OPENED",
     function(postOpen)
         table.insert(pendingPostOpens, postOpen)
@@ -209,7 +211,7 @@ ffi.cdef "bool ghostGetBackgrounded();"
 
 local isFirstLoad = true
 
-jsEvents.listen(
+jsEvents.permanentListen(
     "CLEAR_SCENE",
     function(params)
         network.async(
@@ -223,7 +225,7 @@ jsEvents.listen(
     end
 )
 
-jsEvents.listen(
+jsEvents.permanentListen(
     "BASE_RELOAD",
     function(params)
         network.async(
@@ -244,6 +246,8 @@ jsEvents.listen(
                     home = nil
                     collectgarbage("collect")
                 end
+
+                jsEvents.clearListeners()
 
                 -- make sure to wait until scene creator is downloaded
                 while homeUrl == nil do
