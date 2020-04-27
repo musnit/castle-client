@@ -58,9 +58,7 @@ class CardDestinationPickerSheet extends React.Component {
   open = () => {
     const { isRendering } = this.state;
     const onReadyToOpen = () => {
-      // hack: call twice
-      // https://github.com/osdnk/react-native-reanimated-bottom-sheet/issues/168
-      // https://github.com/osdnk/react-native-reanimated-bottom-sheet/issues/170
+      // hack: onOpenStart() only fires if this is called twice
       this._sheetRef.current.snapTo(0);
       this._sheetRef.current.snapTo(0);
     };
@@ -81,10 +79,6 @@ class CardDestinationPickerSheet extends React.Component {
 
   close = () => {
     if (this._sheetRef.current) {
-      // hack: call twice
-      // https://github.com/osdnk/react-native-reanimated-bottom-sheet/issues/168
-      // https://github.com/osdnk/react-native-reanimated-bottom-sheet/issues/170
-      this._sheetRef.current.snapTo(1);
       this._sheetRef.current.snapTo(1);
     }
   };
