@@ -417,6 +417,10 @@ end
 -- Fetch a resource with default caching semantics. If `skipCache` is true, skip looking in the
 -- persistent cache (still saves it to the cache after).
 function network.fetch(url, method, skipCache)
+    if RELOAD_SCENE_CREATOR then
+        skipCache = true
+    end
+
     -- Ensure we're in a network coroutine
     ensureCoro(url)
 

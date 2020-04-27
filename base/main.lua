@@ -178,10 +178,16 @@ local initialFileDropped  -- In case a `love.filedropped` occurred before home e
 local homeUrl = nil -- Populated later with the final home experience URL
 
 local main = {}
+RELOAD_SCENE_CREATOR = false
 
 network.async(
     function()
         if GHOST_ROOT_URI and string.len(GHOST_ROOT_URI) > 0 then
+            if string.sub(GHOST_ROOT_URI, 1, string.len("reload+")) == "reload+" then
+                RELOAD_SCENE_CREATOR = true
+                GHOST_ROOT_URI = string.sub(GHOST_ROOT_URI, string.len("reload+") + 1)
+            end
+
             homeUrl = GHOST_ROOT_URI
         else
             local sceneCreatorResponse = network.fetch("https://api.castle.games/api/scene-creator")
