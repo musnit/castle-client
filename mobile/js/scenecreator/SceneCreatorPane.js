@@ -5,9 +5,6 @@ import { useSafeArea } from 'react-native-safe-area-context';
 
 import { ToolPane } from '../Tools';
 
-// NOTE: `.snapTo(...)` is called twice in the below due to
-// https://github.com/osdnk/react-native-reanimated-bottom-sheet/issues/168#issuecomment-581011816
-
 export default SceneCreatorPane = React.memo(
   ({ element, context, middleSnapPoint, bottomSnapPoint, renderHeader }) => {
     const bottomSheetRef = useRef(null);
@@ -15,7 +12,6 @@ export default SceneCreatorPane = React.memo(
 
     useEffect(() => {
       if (element.props.snapCount && element.props.snapCount > 1) {
-        bottomSheetRef.current.snapTo(element.props.snapPoint);
         bottomSheetRef.current.snapTo(element.props.snapPoint);
       }
     }, [element.props.snapCount]);
