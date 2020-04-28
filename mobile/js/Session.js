@@ -13,6 +13,7 @@ import { Image } from 'react-native';
 import gql from 'graphql-tag';
 
 let gAuthToken;
+const TEST_AUTH_TOKEN = null;
 
 const EMPTY_SESSION = {
   authToken: null,
@@ -45,12 +46,16 @@ export const Provider = (props) => {
 
     (async () => {
       if (!state.initialized) {
-        const authToken = await AsyncStorage.getItem('AUTH_TOKEN');
-        gAuthToken = authToken;
+        if (TEST_AUTH_TOKEN) {
+          gAuthToken = TEST_AUTH_TOKEN;
+        } else {
+          gAuthToken = await AsyncStorage.getItem('AUTH_TOKEN');
+        }
+
         if (mounted) {
           setState({
             ...state,
-            authToken,
+            authToken: gAuthToken,
             initialized: true,
           });
         }
@@ -61,19 +66,22 @@ export const Provider = (props) => {
   }, []);
 
   const useNewAuthTokenAsync = async (newAuthToken) => {
-    apolloClient.resetStore();
-    gAuthToken = newAuthToken;
+    if (!TEST_AUTH_TOKEN) {
+      apolloClient.resetStore();
+      gAuthToken = newAuthToken;
 
-    if (newAuthToken) {
-      await AsyncStorage.setItem('AUTH_TOKEN', newAuthToken);
+      if (newAuthToken) {
+        await AsyncStorage.setItem('AUTH_TOKEN', newAuthToken);
 
-      await GhostPushNotifications.requestTokenAsync();
-    } else {
-      await AsyncStorage.removeItem('AUTH_TOKEN');
+        await GhostPushNotifications.requestTokenAsync();
+      } else {
+        await AsyncStorage.removeItem('AUTH_TOKEN');
+      }
     }
+
     return setState({
       ...state,
-      authToken: newAuthToken,
+      authToken: gAuthToken,
     });
   };
 
