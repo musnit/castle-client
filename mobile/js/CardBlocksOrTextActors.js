@@ -12,7 +12,7 @@ import * as Constants from './Constants';
  *  TODO: we can remove this component once we have migrated to text actors.
  */
 
-const USE_TEXT_ACTORS = true;
+const USE_TEXT_ACTORS = false;
 const TEXT_ACTORS_PANE = 'sceneCreatorTextActors';
 
 const styles = StyleSheet.create({
@@ -30,10 +30,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 22,
   },
+  selected: {
+    borderWidth: 1,
+    borderColor: '#0f0',
+  },
 });
 
 const TextActors = () => {
   const { root } = useGhostUI();
+  const [orderedActors, setOrderedActors] = React.useState([]);
 
   let textActors;
   if (root && root.panes) {
@@ -42,6 +47,18 @@ const TextActors = () => {
       textActors = data.textActors;
     }
   }
+
+  React.useEffect(() => {
+    if (textActors) {
+      setOrderedActors(
+        Object.keys(textActors)
+          .map((actorId) => textActors[actorId])
+          .sort((a, b) => a.actor.drawOrder - b.actor.drawOrder)
+      );
+    } else {
+      setOrderedActors([]);
+    }
+  }, [textActors]);
 
   const selectActor = React.useCallback(
     (actorId) => {
@@ -54,18 +71,17 @@ const TextActors = () => {
 
   return (
     <React.Fragment>
-      {textActors &&
-        Object.keys(textActors).map((actorId) => {
-          const actor = textActors[actorId];
-          return (
-            <TouchableOpacity
-              key={`text-${actorId}`}
-              style={styles.textBlock}
-              onPress={() => selectActor(actorId)}>
-              <Text style={styles.textBlockDescription}>{actor.content}</Text>
-            </TouchableOpacity>
-          );
-        })}
+      {orderedActors.map((actor) => {
+        const { actorId } = actor.actor;
+        return (
+          <TouchableOpacity
+            key={`text-${actorId}`}
+            style={[styles.textBlock, actor.isSelected ? styles.selected : null]}
+            onPress={() => selectActor(actorId)}>
+            <Text style={styles.textBlockDescription}>{actor.content}</Text>
+          </TouchableOpacity>
+        );
+      })}
     </React.Fragment>
   );
 };
