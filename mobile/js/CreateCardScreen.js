@@ -22,7 +22,7 @@ import * as Session from './Session';
 import * as Utilities from './utilities';
 import * as Constants from './Constants';
 
-import CardBlocks from './CardBlocks';
+import CardBlocks from './CardBlocksOrTextActors';
 import CardDestinationPickerSheet from './CardDestinationPickerSheet';
 import CardHeader from './CardHeader';
 import CardScene from './CardScene';
