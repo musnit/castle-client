@@ -498,6 +498,11 @@ function ui.markdown(source, props)
     addChild("markdown", source, merge({source = source}, props), false)
 end
 
+function ui.data(data, props)
+   assert(type(data) == "table", "`ui.data` needs a table `data`")
+   addChild("data", data, merge({ data = data }, props), false)
+end
+
 function ui.numberInput(label, value, props)
     assert(type(label) == "string", "`ui.numberInput` needs a string `label`")
     assert(type(value) == "number", "`ui.numberInput` needs a number `value`")
