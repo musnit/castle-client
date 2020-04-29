@@ -1,9 +1,11 @@
 import React from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 import { useGhostUI } from './ghost/GhostUI';
 import { getPaneData } from './Tools';
 
 import LegacyCardBlocks from './CardBlocks';
+
+import * as Constants from './Constants';
 
 /**
  *  TODO: we can remove this component once we have migrated to text actors.
@@ -11,6 +13,23 @@ import LegacyCardBlocks from './CardBlocks';
 
 const USE_TEXT_ACTORS = false;
 const TEXT_ACTORS_PANE = 'sceneCreatorTextActors';
+
+const styles = StyleSheet.create({
+  textBlock: {
+    backgroundColor: '#fff',
+    borderRadius: 6,
+    width: '100%',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    marginBottom: 4,
+    ...Constants.styles.dropShadow,
+  },
+  textBlockDescription: {
+    color: '#000',
+    fontSize: 16,
+    lineHeight: 22,
+  },
+});
 
 const TextActors = () => {
   const { root } = useGhostUI();
@@ -24,11 +43,17 @@ const TextActors = () => {
   }
 
   return (
-    <View style={{ width: '100%', minHeight: 128, marginBottom: 8, backgroundColor: '#0f0' }}>
-      <ScrollView style={{ flex: 1 }}>
-        <Text>{JSON.stringify(textActors, null, 2)}</Text>
-      </ScrollView>
-    </View>
+    <React.Fragment>
+      {textActors &&
+        Object.keys(textActors).map((actorId) => {
+          const actor = textActors[actorId];
+          return (
+            <TouchableOpacity style={styles.textBlock}>
+              <Text style={styles.textBlockDescription}>{actor.content}</Text>
+            </TouchableOpacity>
+          );
+        })}
+    </React.Fragment>
   );
 };
 
