@@ -2,6 +2,7 @@ import React from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 import { useGhostUI } from './ghost/GhostUI';
 import { getPaneData } from './Tools';
+import { sendAsync } from './ghost/GhostEvents';
 
 import LegacyCardBlocks from './CardBlocks';
 
@@ -11,7 +12,7 @@ import * as Constants from './Constants';
  *  TODO: we can remove this component once we have migrated to text actors.
  */
 
-const USE_TEXT_ACTORS = false;
+const USE_TEXT_ACTORS = true;
 const TEXT_ACTORS_PANE = 'sceneCreatorTextActors';
 
 const styles = StyleSheet.create({
@@ -42,13 +43,25 @@ const TextActors = () => {
     }
   }
 
+  const selectActor = React.useCallback(
+    (actorId) => {
+      sendAsync('SELECT_ACTOR', {
+        actorId,
+      });
+    },
+    [sendAsync]
+  );
+
   return (
     <React.Fragment>
       {textActors &&
         Object.keys(textActors).map((actorId) => {
           const actor = textActors[actorId];
           return (
-            <TouchableOpacity style={styles.textBlock}>
+            <TouchableOpacity
+              key={`text-${actorId}`}
+              style={styles.textBlock}
+              onPress={() => selectActor(actorId)}>
               <Text style={styles.textBlockDescription}>{actor.content}</Text>
             </TouchableOpacity>
           );
