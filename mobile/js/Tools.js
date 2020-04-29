@@ -841,6 +841,24 @@ const ToolSection = ({ element }) => {
 };
 elementTypes['section'] = ToolSection;
 
+const ToolData = ({ element }) => (
+  <View>
+    <Text>{JSON.stringify(element.props.data, null, 2)}</Text>
+  </View>
+);
+elementTypes['data'] = ToolData;
+
+export const getPaneData = (element) => {
+  if (element) {
+    let data;
+    const dataChild = element.children['data'];
+    if (dataChild) {
+      return dataChild.props.data;
+    }
+  }
+  return null;
+};
+
 const markdownStyles = StyleSheet.create({
   codeBlock: { borderColor: '#CCCCCC', backgroundColor: '#f5f5f5' },
   codeInline: { borderColor: '#CCCCCC', backgroundColor: '#f5f5f5' },
