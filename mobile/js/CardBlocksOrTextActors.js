@@ -15,6 +15,26 @@ import * as Constants from './Constants';
 const TEXT_ACTORS_PANE = 'sceneCreatorTextActors';
 
 const styles = StyleSheet.create({
+  choiceBlock: {
+    backgroundColor: '#000',
+    borderRadius: 6,
+    width: '100%',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    marginBottom: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    ...Constants.styles.dropShadow,
+  },
+  choiceBlockDescription: {
+    color: '#fff',
+    fontWeight: '700',
+    width: '100%',
+    flexShrink: 1,
+    marginRight: 8,
+    fontSize: 16,
+    lineHeight: 22,
+  },
   textBlock: {
     backgroundColor: '#fff',
     borderRadius: 6,
@@ -35,7 +55,29 @@ const styles = StyleSheet.create({
   },
 });
 
-const TextActors = () => {
+const TextActor = (props) => {
+  const { actor } = props;
+  if (actor.hasTapTrigger) {
+    return (
+      <TouchableOpacity
+        style={[styles.choiceBlock, actor.isSelected ? styles.selected : null, props.style]}
+        onPress={props.onSelect}>
+        <Text style={styles.choiceBlockDescription}>{actor.content}</Text>
+      </TouchableOpacity>
+    );
+  } else {
+    return (
+      <TouchableOpacity
+        style={[styles.textBlock, actor.isSelected ? styles.selected : null, props.style]}
+        onPress={props.onSelect}
+        disabled={!props.isEditable}>
+        <Text style={styles.textBlockDescription}>{actor.content}</Text>
+      </TouchableOpacity>
+    );
+  }
+};
+
+const TextActors = (props) => {
   const { root } = useGhostUI();
   const [orderedActors, setOrderedActors] = React.useState([]);
 
@@ -52,7 +94,12 @@ const TextActors = () => {
       setOrderedActors(
         Object.keys(textActors)
           .map((actorId) => textActors[actorId])
-          .sort((a, b) => a.actor.drawOrder - b.actor.drawOrder)
+          .sort((a, b) => {
+            if (a.hasTapTrigger !== b.hasTapTrigger) {
+              return a.hasTapTrigger - b.hasTapTrigger;
+            }
+            return a.actor.drawOrder - b.actor.drawOrder;
+          })
       );
     } else {
       setOrderedActors([]);
@@ -70,15 +117,19 @@ const TextActors = () => {
 
   return (
     <React.Fragment>
-      {orderedActors.map((actor) => {
+      {orderedActors.map((actor, ii) => {
         const { actorId } = actor.actor;
+        const prevActorHasTrigger =
+          ii > 0 ? orderedActors[ii - 1].hasTapTrigger : actor.hasTapTrigger;
+        const styles = actor.hasTapTrigger !== prevActorHasTrigger ? { marginTop: 8 } : null;
         return (
-          <TouchableOpacity
+          <TextActor
             key={`text-${actorId}`}
-            style={[styles.textBlock, actor.isSelected ? styles.selected : null]}
-            onPress={() => selectActor(actorId)}>
-            <Text style={styles.textBlockDescription}>{actor.content}</Text>
-          </TouchableOpacity>
+            actor={actor}
+            style={styles}
+            isEditable={props.isEditable}
+            onSelect={() => selectActor(actorId)}
+          />
         );
       })}
     </React.Fragment>
@@ -89,5 +140,5 @@ export default (props) => {
   if (!Constants.USE_TEXT_ACTORS) {
     return <LegacyCardBlocks {...props} />;
   }
-  return <TextActors />;
+  return <TextActors {...props} />;
 };
