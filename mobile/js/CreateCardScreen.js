@@ -120,9 +120,28 @@ const CardForegroundActions = (props) => {
   const { card, editBlockProps } = props;
   const { onPressBackground, onEditBlock, onPickDestination } = props;
   const { isEditingScene } = props;
+  const blocks = (
+    <CardBlocks
+      card={card}
+      onSelectBlock={onEditBlock}
+      onSelectDestination={onPickDestination}
+      isEditable
+      editBlockProps={editBlockProps}
+    />
+  );
   if (isEditingScene) {
     // scene creator back, play, undo
-    return <SceneCreatorForegroundActions />;
+    if (Constants.USE_TEXT_ACTORS) {
+      // TODO: proper styling
+      return (
+        <React.Fragment>
+          <SceneCreatorForegroundActions />
+          <View style={{ marginTop: 64 }}>{blocks}</View>
+        </React.Fragment>
+      );
+    } else {
+      return <SceneCreatorForegroundActions />;
+    }
   } else {
     // card blocks and background
     return (
@@ -133,15 +152,7 @@ const CardForegroundActions = (props) => {
             pointerEvents={editBlockProps?.isEditingBlock ? 'auto' : 'none'}
           />
         </TouchableWithoutFeedback>
-        <View style={styles.blocksContainer}>
-          <CardBlocks
-            card={card}
-            onSelectBlock={onEditBlock}
-            onSelectDestination={onPickDestination}
-            isEditable
-            editBlockProps={editBlockProps}
-          />
-        </View>
+        <View style={styles.blocksContainer}>{blocks}</View>
       </React.Fragment>
     );
   }

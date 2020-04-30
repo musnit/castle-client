@@ -12,7 +12,6 @@ import * as Constants from './Constants';
  *  TODO: we can remove this component once we have migrated to text actors.
  */
 
-const USE_TEXT_ACTORS = false;
 const TEXT_ACTORS_PANE = 'sceneCreatorTextActors';
 
 const styles = StyleSheet.create({
@@ -87,7 +86,7 @@ const TextActors = () => {
 };
 
 export default (props) => {
-  if (!USE_TEXT_ACTORS) {
+  if (!Constants.USE_TEXT_ACTORS) {
     return <LegacyCardBlocks {...props} />;
   }
   return <TextActors />;
