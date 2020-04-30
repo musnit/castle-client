@@ -50,6 +50,17 @@ end
 
 local receiveChannel = love.thread.getChannel("JS_EVENTS")
 
+function jsEvents.DEBUG_SEND_LUA_EVENT(name, params)
+    receiveChannel:push(
+        cjson.encode(
+            {
+                name = name,
+                params = params
+            }
+        )
+    )
+end
+
 function jsEvents.update()
     local eventJson
     while true do
