@@ -3,8 +3,6 @@ import { Platform } from 'react-native';
 export const iOS = Platform.OS === 'ios';
 export const Android = Platform.OS === 'android';
 
-export const CREATE_NEW_CARD_ID = -1;
-
 export const CARD_RATIO = 5 / 7;
 
 export const USE_TEXT_ACTORS = false;

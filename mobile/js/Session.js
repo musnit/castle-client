@@ -246,7 +246,6 @@ export const CARD_FRAGMENT = `
   blocks {
     id
     cardBlockId
-    cardBlockUpdateId
     type
     title
     destinationCardId
@@ -317,7 +316,6 @@ export const saveDeck = async (card, deck, variables) => {
         type: block.type,
         destinationCardId: block.destinationCardId,
         title: block.title,
-        cardBlockUpdateId: block.cardBlockUpdateId,
         metadata: block.metadata,
       };
     }),

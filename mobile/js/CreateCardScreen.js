@@ -296,18 +296,15 @@ class CreateCardScreen extends React.Component {
   };
 
   _saveAndGoToDestination = async (blockToFollow) => {
-    // flag this block so we can follow it after saving
-    const cardBlockUpdateId = uuid();
     await this._handleBlockChange({
       ...blockToFollow,
-      cardBlockUpdateId,
     });
     await this._save();
     if (!this._mounted) return;
     const updatedBlock = this.state.card.blocks.find(
-      (block) => block.cardBlockUpdateId === cardBlockUpdateId
+      (block) => block.destinationCardId === blockToFollow.destinationCardId
     );
-    if (updatedBlock && updatedBlock.destinationCardId) {
+    if (updatedBlock) {
       setTimeout(() => {
         this.props.navigation.navigate('CreateDeck', {
           deckIdToEdit: this.state.deck.deckId,
@@ -460,14 +457,11 @@ class CreateCardScreen extends React.Component {
   };
 
   _onPickDestinationCard = (block, card) => {
-    if (card && card.cardId && card.cardId !== Constants.CREATE_NEW_CARD_ID) {
+    if (card && card.cardId) {
       this._handleBlockChange({
         ...block,
-        // TODO: remove createDestinationCard: false,
         destinationCardId: card.cardId,
       });
-    } else {
-      this._handleBlockChange({ ...block /* TODO: remove createDestinationCard: true */ });
     }
     this._handleDismissDestinationPicker();
   };

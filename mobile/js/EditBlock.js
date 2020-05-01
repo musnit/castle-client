@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TouchableOpacity, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
+import * as LocalId from './local-id';
 import * as Utilities from './utilities';
 
 import BlockPreconditionPickerControl from './BlockPreconditionPickerControl';
@@ -111,13 +112,14 @@ const EditBlock = (props) => {
   const { deck, variables, blockToEdit: block, onChangeBlock } = props;
 
   const blockType = block.type.charAt(0).toUpperCase() + block.type.slice(1);
-  const destination = block.createDestinationCard
-    ? 'New Card'
-    : block.destinationCardId
-    ? Utilities.makeCardPreviewTitle(
-        deck.cards.find((card) => card.cardId === block.destinationCardId)
-      )
-    : null;
+  let destination = null;
+  if (block.destinationCardId) {
+    destination = LocalId.isLocalId(block.destinationCardId)
+      ? 'New'
+      : Utilities.makeCardPreviewTitle(
+          deck.cards.find((card) => card.cardId === block.destinationCardId)
+        );
+  }
   const typeStyles = block.type === 'choice' ? choiceTypeStyles : textTypeStyles;
   const maybeBlockDestinationButton =
     block.type === 'choice' ? (

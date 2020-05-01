@@ -4,7 +4,7 @@ import Ionicon from 'react-native-vector-icons/Ionicons';
 
 const MAX_NUM_CARDS = 4;
 
-import * as Constants from './Constants';
+import * as LocalId from './local-id';
 import * as Utilities from './utilities';
 
 const styles = StyleSheet.create({
@@ -43,7 +43,7 @@ const CardDestinationPickerControl = ({ onSelectCard, onSelectSearch, deck }) =>
   let items = [];
   items.push({
     title: 'New',
-    onPress: () => onSelectCard({ cardId: Constants.CREATE_NEW_CARD_ID }),
+    onPress: () => onSelectCard({ cardId: LocalId.makeId() }),
     icon: 'md-add',
   });
   items.push({
