@@ -54,3 +54,12 @@ export const colors = {
   // ... shared colors go here ...
   // red: '#f00',
 };
+
+export const EMPTY_CARD = {
+  title: '',
+  blocks: [],
+  scene: {
+    sceneId: Math.floor(Math.random() * 100000),
+    data: { empty: true },
+  },
+};

@@ -10,6 +10,7 @@ import { createUploadLink } from 'apollo-upload-client';
 import { Image } from 'react-native';
 import gql from 'graphql-tag';
 
+import * as Constants from './Constants';
 import * as GhostPushNotifications from './ghost/GhostPushNotifications';
 import * as LocalId from './local-id';
 
@@ -362,6 +363,33 @@ export const saveDeck = async (card, deck, variables) => {
   }
   if (LocalId.isLocalId(deck.deckId)) {
     LocalId.setIdIsSaved(deck.deckId);
+  }
+
+  // if any block has a LocalId destination, save a blank card there
+  for (let ii = 0; ii < card.blocks.length; ii++) {
+    const block = card.blocks[ii];
+    if (block.type === 'choice' && LocalId.isLocalId(block.destinationCardId)) {
+      const result = await apolloClient.mutate({
+        mutation: gql`
+        mutation UpdateDeckAndCard($deck: DeckInput!, $card: CardInput!) {
+          updateCardAndDeckV2(
+            deck: $deck,
+            card: $card,
+          ) {
+            card {
+              ${CARD_FRAGMENT}
+            }
+          }
+        }
+      `,
+        variables: {
+          deck: { deckId: deck.deckId },
+          card: { cardId: block.destinationCardId, blocks: [] },
+        },
+      });
+      newCards.push(result.data.updateCardAndDeckV2.card);
+      LocalId.setIdIsSaved(block.destinationCardId);
+    }
   }
 
   return {

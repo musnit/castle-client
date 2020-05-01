@@ -182,15 +182,6 @@ const EMPTY_DECK = {
   variables: [],
 };
 
-const EMPTY_CARD = {
-  title: '',
-  blocks: [],
-  scene: {
-    sceneId: Math.floor(Math.random() * 100000),
-    data: { empty: true },
-  },
-};
-
 const EMPTY_BLOCK = {
   title: null,
   type: 'text',
@@ -213,7 +204,7 @@ class CreateCardScreen extends React.Component {
 
   state = {
     deck: EMPTY_DECK,
-    card: EMPTY_CARD,
+    card: Constants.EMPTY_CARD,
     isEditingBlock: false,
     blockIdToEdit: null,
     selectedTab: 'card',
@@ -258,7 +249,7 @@ class CreateCardScreen extends React.Component {
         deckId: params.deckIdToEdit,
       };
       let card = {
-        ...EMPTY_CARD,
+        ...Constants.EMPTY_CARD,
         cardId: params.cardIdToEdit,
       };
       let isEditingScene = !!params.isEditingScene;
@@ -446,6 +437,7 @@ class CreateCardScreen extends React.Component {
       this.state.deck,
       this.state.card.variables
     );
+
     if (!this._mounted) return;
     return this._goToDeck(deck.deckId);
   };
