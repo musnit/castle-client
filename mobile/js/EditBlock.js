@@ -114,11 +114,18 @@ const EditBlock = (props) => {
   const blockType = block.type.charAt(0).toUpperCase() + block.type.slice(1);
   let destination = null;
   if (block.destinationCardId) {
-    destination = LocalId.isLocalId(block.destinationCardId)
-      ? 'New'
-      : Utilities.makeCardPreviewTitle(
-          deck.cards.find((card) => card.cardId === block.destinationCardId)
-        );
+    if (LocalId.isLocalId(block.destinationCardId)) {
+      destination = 'New';
+    } else {
+      const existing = deck.cards.find((card) => card.cardId === block.destinationCardId);
+      if (existing) {
+        destination = Utilities.makeCardPreviewTitle(existing);
+      } else {
+        // assume 'new', this can happen if the current card was saved but the dest
+        // card was never saved
+        destination = 'New';
+      }
+    }
   }
   const typeStyles = block.type === 'choice' ? choiceTypeStyles : textTypeStyles;
   const maybeBlockDestinationButton =
