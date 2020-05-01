@@ -100,6 +100,7 @@ const TextActors = (props) => {
             }
             return a.actor.drawOrder - b.actor.drawOrder;
           })
+          .filter((actor) => actor.visible)
       );
     } else {
       setOrderedActors([]);
