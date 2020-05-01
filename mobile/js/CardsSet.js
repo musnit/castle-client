@@ -5,6 +5,7 @@ import { BottomSheetTouchableWrapper } from './BottomSheetTouchableWrapper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import * as Constants from './Constants';
+import * as LocalId from './local-id';
 import * as Utilities from './utilities';
 
 import CardCell from './CardCell';
@@ -157,7 +158,7 @@ const CardsGrid = ({ cards, initialCard, onPress, onShowCardOptions, showNewCard
     <View style={styles.gridContainer}>
       {showNewCard && (
         <View style={styles.cellContainer} key="new">
-          <NewCardCell onPress={() => onPress({ cardId: Constants.CREATE_NEW_CARD_ID })} />
+          <NewCardCell onPress={() => onPress({ cardId: LocalId.makeId() })} />
         </View>
       )}
       {cards &&

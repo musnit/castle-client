@@ -10,6 +10,7 @@ import { CommonActions, useNavigation, useFocusEffect } from '@react-navigation/
 import CardCell from './CardCell';
 
 import * as Constants from './Constants';
+import * as LocalId from './local-id';
 
 const styles = StyleSheet.create({
   container: {
@@ -142,7 +143,10 @@ const CreateScreen = () => {
           <CreateDeckCell
             key="create"
             onPress={() => {
-              navigation.push('CreateDeck');
+              navigation.push('CreateDeck', {
+                deckIdToEdit: LocalId.makeId(),
+                cardIdToEdit: LocalId.makeId(),
+              });
             }}
           />
           {decks &&

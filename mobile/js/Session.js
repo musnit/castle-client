@@ -1,8 +1,6 @@
 // Maintains session state for the API server connection -- auth token and GraphQL client
 import React, { useEffect, useState } from 'react';
 
-import * as GhostPushNotifications from './ghost/GhostPushNotifications';
-
 import AsyncStorage from '@react-native-community/async-storage';
 import { ApolloClient } from 'apollo-client';
 import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
@@ -11,6 +9,9 @@ import { ApolloLink, Observable } from 'apollo-link';
 import { createUploadLink } from 'apollo-upload-client';
 import { Image } from 'react-native';
 import gql from 'graphql-tag';
+
+import * as GhostPushNotifications from './ghost/GhostPushNotifications';
+import * as LocalId from './local-id';
 
 let gAuthToken;
 const TEST_AUTH_TOKEN = null;
@@ -253,6 +254,17 @@ export const CARD_FRAGMENT = `
   }
 `;
 
+const DECK_FRAGMENT = `
+  id
+  deckId
+  title
+  initialCard {
+    id
+    cardId
+  }
+  variables
+`;
+
 export const prefetchCardsAsync = async ({ cardId }) => {
   const {
     data: { prefetchCards },
@@ -291,11 +303,12 @@ async function updateScene(cardId, card) {
 }
 
 export const saveDeck = async (card, deck, variables) => {
-  // Save deck and card
   const deckUpdateFragment = {
+    deckId: deck.deckId,
     title: deck.title,
   };
   const cardUpdateFragment = {
+    cardId: card.cardId,
     title: card.title,
     backgroundImageFileId: card.backgroundImage ? card.backgroundImage.fileId : undefined,
     sceneId: undefined,
@@ -304,7 +317,6 @@ export const saveDeck = async (card, deck, variables) => {
         type: block.type,
         destinationCardId: block.destinationCardId,
         title: block.title,
-        createDestinationCard: block.createDestinationCard,
         cardBlockUpdateId: block.cardBlockUpdateId,
         metadata: block.metadata,
       };
@@ -315,133 +327,52 @@ export const saveDeck = async (card, deck, variables) => {
     deckUpdateFragment.variables = variables;
   }
 
-  if (deck.deckId && deckUpdateFragment.variables) {
-    // update deck
-    const result = await apolloClient.mutate({
-      mutation: gql`
-        mutation UpdateDeck($deckId: ID!, $deck: DeckInput!) {
-          updateDeck(deckId: $deckId, deck: $deck) {
-            id
-            deckId
-            title
-            cards {
-              ${CARD_FRAGMENT}
-            }
-            initialCard {
-              id
-              cardId
-            }
-            variables
-          }
-        }
-      `,
-      variables: { deckId: deck.deckId, deck: deckUpdateFragment },
-    });
-    deck = result.data.updateDeck;
-  }
-
-  if (deck.deckId && card.cardId) {
-    // update existing card in deck
-    const result = await apolloClient.mutate({
-      mutation: gql`
-        mutation UpdateCard($cardId: ID!, $card: CardInput!) {
-          updateCard(
-            cardId: $cardId,
-            card: $card
-          ) {
-            ${CARD_FRAGMENT}
-          }
-        }
-      `,
-      variables: { cardId: card.cardId, card: cardUpdateFragment },
-    });
-    let updatedCard,
-      newCards = [...deck.cards];
-    result.data.updateCard.forEach((updated) => {
-      let existingIndex = deck.cards.findIndex((old) => old.cardId === updated.cardId);
-      if (existingIndex >= 0) {
-        newCards[existingIndex] = updated;
-      } else {
-        newCards.push(updated);
-      }
-      if (updated.cardId === card.cardId) {
-        updatedCard = updated;
-      }
-    });
-
-    await updateScene(updatedCard.cardId, card);
-
-    return {
-      card: updatedCard,
-      deck: {
-        ...deck,
-        cards: newCards,
-      },
-    };
-  } else if (deck.deckId) {
-    // add a card to an existing deck
-    const result = await apolloClient.mutate({
-      mutation: gql`
-        mutation AddCard($deckId: ID!, $card: CardInput!) {
-          addCard(deckId: $deckId, card: $card) {
-            ${CARD_FRAGMENT}
-          }
-        }`,
-      variables: { deckId: deck.deckId, card: cardUpdateFragment },
-    });
-    let newCards = deck.cards.concat(result.data.addCard);
-
-    await updateScene(newCards[newCards.length - 1].cardId, card);
-
-    return {
-      card: newCards[newCards.length - 1],
-      deck: {
-        ...deck,
-        cards: newCards,
-      },
-    };
-  } else {
-    // no existing deckId or cardId, so create a new deck
-    // and add the card to it.
-    const result = await apolloClient.mutate({
-      mutation: gql`
-        mutation CreateDeck($deck: DeckInput!, $card: CardInput!) {
-          createDeck(
+  const result = await apolloClient.mutate({
+    mutation: gql`
+        mutation UpdateDeckAndCard($deck: DeckInput!, $card: CardInput!) {
+          updateCardAndDeckV2(
             deck: $deck,
-            card: $card
+            card: $card,
           ) {
-            id
-            deckId
-            title
-            cards {
+            deck {
+              ${DECK_FRAGMENT}
+            }
+            card {
               ${CARD_FRAGMENT}
             }
-            initialCard {
-              id
-              cardId
-            }
-            variables
           }
         }
       `,
-      variables: { deck: deckUpdateFragment, card: cardUpdateFragment },
-    });
-    let newCard;
-    if (result.data.createDeck.cards.length > 1) {
-      // if the initial card contained references to other cards,
-      // we can get many cards back here. we care about the non-empty one
-      newCard = result.data.createDeck.cards.find((card) => card.blocks && card.blocks.length > 0);
-    } else {
-      newCard = result.data.createDeck.cards[0];
-    }
+    variables: { deck: deckUpdateFragment, card: cardUpdateFragment },
+  });
 
-    await updateScene(newCard.cardId, card);
+  let updatedCard = result.data.updateCardAndDeckV2.card;
+  let newCards = [...deck.cards];
 
-    return {
-      card: newCard,
-      deck: result.data.createDeck,
-    };
+  let existingIndex = deck.cards.findIndex((old) => old.cardId === updatedCard.cardId);
+  if (existingIndex >= 0) {
+    newCards[existingIndex] = updatedCard;
+  } else {
+    newCards.push(updatedCard);
   }
+
+  await updateScene(updatedCard.cardId, card);
+
+  // mark any local ids as nonlocal
+  if (LocalId.isLocalId(card.cardId)) {
+    LocalId.setIdIsSaved(card.cardId);
+  }
+  if (LocalId.isLocalId(deck.deckId)) {
+    LocalId.setIdIsSaved(deck.deckId);
+  }
+
+  return {
+    card: updatedCard,
+    deck: {
+      ...result.data.updateCardAndDeckV2.deck,
+      cards: newCards,
+    },
+  };
 };
 
 export const getDeckById = async (deckId) => {
@@ -449,17 +380,10 @@ export const getDeckById = async (deckId) => {
     query: gql`
       query GetDeckById($deckId: ID!) {
         deck(deckId: $deckId) {
-          id
-          deckId
-          title
+          ${DECK_FRAGMENT}
           cards {
             ${CARD_FRAGMENT}
           }
-          initialCard {
-            id
-            cardId
-          }
-          variables
         }
       }
     `,

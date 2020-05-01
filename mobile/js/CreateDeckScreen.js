@@ -6,6 +6,7 @@ import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 
+import * as LocalId from './local-id';
 import * as Session from './Session';
 import * as Utilities from './utilities';
 
@@ -62,10 +63,14 @@ const CreateDeckScreen = (props) => {
   const [mode, setMode] = React.useState('cards');
   const [deck, setDeck] = React.useState(null);
 
+  if (!deckId || LocalId.isLocalId(deckId)) {
+    throw new Error(`CreateDeckScreen requires an existing deck id`);
+  }
+
   const [saveDeck] = useMutation(
     gql`
-      mutation UpdateDeck($deckId: ID!, $deck: DeckInput!) {
-        updateDeck(deckId: $deckId, deck: $deck) {
+      mutation UpdateDeck($deck: DeckInput!) {
+        updateDeckV2(deck: $deck) {
           ${DECK_FRAGMENT}
         }
       }
@@ -111,10 +116,11 @@ const CreateDeckScreen = (props) => {
   const _maybeSaveDeck = async () => {
     if (deck && deck.isChanged) {
       const deckUpdateFragment = {
+        deckId,
         title: deck.title,
         isVisible: deck.isVisible,
       };
-      saveDeck({ variables: { deckId, deck: deckUpdateFragment } });
+      saveDeck({ variables: { deck: deckUpdateFragment } });
       setDeck({ ...deck, isChanged: false });
     }
   };

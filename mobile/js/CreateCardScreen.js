@@ -18,9 +18,10 @@ import * as GhostUI from './ghost/GhostUI';
 import uuid from 'uuid/v4';
 import { withNavigation, withNavigationFocus } from '@react-navigation/compat';
 
+import * as Constants from './Constants';
+import * as LocalId from './local-id';
 import * as Session from './Session';
 import * as Utilities from './utilities';
-import * as Constants from './Constants';
 
 import CardBlocks from './CardBlocksOrTextActors';
 import CardDestinationPickerSheet from './CardDestinationPickerSheet';
@@ -248,27 +249,42 @@ class CreateCardScreen extends React.Component {
       prevIsEditingScene !== params.isEditingScene ||
       (props.isFocused && !prevProps.isFocused)
     ) {
-      let deck = EMPTY_DECK,
-        card = EMPTY_CARD,
-        isEditingScene = !!params.isEditingScene;
-      if (params.deckIdToEdit) {
+      if (!params.deckIdToEdit || !params.cardIdToEdit) {
+        throw new Error(`CreateCardScreen requires a deck id and card id`);
+      }
+
+      let deck = {
+        ...EMPTY_DECK,
+        deckId: params.deckIdToEdit,
+      };
+      let card = {
+        ...EMPTY_CARD,
+        cardId: params.cardIdToEdit,
+      };
+      let isEditingScene = !!params.isEditingScene;
+
+      if (!LocalId.isLocalId(params.deckIdToEdit)) {
         try {
           deck = await Session.getDeckById(params.deckIdToEdit);
-          card = deck.cards.find((card) => card.cardId == params.cardIdToEdit);
-          if (card) {
+          if (!LocalId.isLocalId(params.cardIdToEdit)) {
+            card = deck.cards.find((card) => card.cardId == params.cardIdToEdit);
             if (deck.initialCard && deck.initialCard.cardId === card.cardId) {
               card.makeInitialCard = true;
             }
-          } else {
-            // possible to specify a deck id but no card
-            card = EMPTY_CARD;
           }
-        } catch (_) {}
-        // kludge: this allows us to check the screen's dirty state based on
-        // the card onChange callback everywhere (even when you modify variables, a
-        // property of the deck)
-        card.variables = deck.variables;
+        } catch (e) {
+          // don't suppress this error: if the provided id was an existing card id,
+          // but the network requests failed, we would risk overriding the existing card
+          // with a blank card unless we stop here.
+          throw new Error(`Unable to fetch existing deck or card: ${e}`);
+        }
       }
+
+      // kludge: this allows us to check the screen's dirty state based on
+      // the card onChange callback everywhere (even when you modify variables, a
+      // property of the deck)
+      card.variables = deck.variables;
+
       this._mounted &&
         this.setState({
           deck,
@@ -391,7 +407,7 @@ class CreateCardScreen extends React.Component {
     if (!deckId && this.state.deck) {
       deckId = this.state.deck.deckId;
     }
-    if (deckId) {
+    if (!LocalId.isLocalId(deckId)) {
       // go to deck screen for this existing deck
       this.props.navigation.navigate('CreateDeck', {
         deckIdToEdit: deckId,
@@ -447,11 +463,11 @@ class CreateCardScreen extends React.Component {
     if (card && card.cardId && card.cardId !== Constants.CREATE_NEW_CARD_ID) {
       this._handleBlockChange({
         ...block,
-        createDestinationCard: false,
+        // TODO: remove createDestinationCard: false,
         destinationCardId: card.cardId,
       });
     } else {
-      this._handleBlockChange({ ...block, createDestinationCard: true });
+      this._handleBlockChange({ ...block /* TODO: remove createDestinationCard: true */ });
     }
     this._handleDismissDestinationPicker();
   };
