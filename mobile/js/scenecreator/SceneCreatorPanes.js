@@ -1,7 +1,9 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useGhostUI } from '../ghost/GhostUI';
+import { useListen } from '../ghost/GhostEvents';
 import { ScrollView } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
 
 import * as SceneCreatorConstants from './SceneCreatorConstants';
 
@@ -114,6 +116,19 @@ export default SceneCreatorPanes = ({ deck, entryPoint, visible, landscape }) =>
   const { root, transformAssetUri } = useGhostUI();
   const destinationPickerRef = React.useRef();
   const onPickDestinationCardCallback = React.useRef();
+
+  // TODO: move navigation up into the main card/deck creator
+  const navigation = useNavigation();
+  useListen({
+    eventName: 'NAVIGATE_TO_CARD',
+    handler: ({ card }) => {
+      console.log(`navigate to card: ${card.cardId}`);
+      /* navigation.navigate('CreateDeck', {
+        deckIdToEdit: this.state.deck.deckId,
+        cardIdToEdit: updatedBlock.destinationCardId,
+      }); */
+    },
+  });
 
   const dismissDestinationPicker = React.useCallback(() => {
     if (destinationPickerRef.current) {
