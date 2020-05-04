@@ -80,6 +80,7 @@ class CardDestinationPickerSheet extends React.Component {
   close = () => {
     if (this._sheetRef.current) {
       this._sheetRef.current.snapTo(1);
+      this._sheetRef.current.snapTo(1);
     }
   };
 

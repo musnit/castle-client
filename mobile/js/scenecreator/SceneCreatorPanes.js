@@ -132,14 +132,20 @@ export default SceneCreatorPanes = ({ deck, entryPoint, visible, landscape }) =>
     [destinationPickerRef.current]
   );
 
-  const onPickDestinationCard = (card) => {
-    if (card && card.cardId) {
-      if (onPickDestinationCardCallback.current) {
-        onPickDestinationCardCallback.current(card.cardId);
+  const onPickDestinationCard = React.useCallback(
+    (card) => {
+      if (card && card.cardId) {
+        if (onPickDestinationCardCallback.current) {
+          onPickDestinationCardCallback.current({
+            cardId: card.cardId,
+            title: card.title,
+          });
+        }
       }
-    }
-    dismissDestinationPicker();
-  };
+      dismissDestinationPicker();
+    },
+    [onPickDestinationCardCallback.current, dismissDestinationPicker]
+  );
 
   // Construct context
   const context = {
