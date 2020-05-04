@@ -5,9 +5,11 @@ import { ScrollView } from 'react-native-gesture-handler';
 
 import * as SceneCreatorConstants from './SceneCreatorConstants';
 
-import { ToolPane } from '../Tools';
+import { registerElement, ToolPane } from '../Tools';
 import { paneVisible } from './SceneCreatorUtilities';
 
+import CardDestinationPickerSheet from '../CardDestinationPickerSheet';
+import CardPickerTool from './CardPickerTool';
 import SceneCreatorBlueprintsPane from './SceneCreatorBlueprintsPane';
 import SceneCreatorInspectorPane from './SceneCreatorInspectorPane';
 import SceneCreatorKeyboardWrapper from './SceneCreatorKeyboardWrapper';
@@ -103,12 +105,46 @@ const panes = [
   },
 ];
 
-export default SceneCreatorPanes = ({ entryPoint, visible, landscape }) => {
+/**
+ *  Tool extensions for scene creator
+ */
+registerElement('cardPicker', CardPickerTool);
+
+export default SceneCreatorPanes = ({ deck, entryPoint, visible, landscape }) => {
   const { root, transformAssetUri } = useGhostUI();
+  const destinationPickerRef = React.useRef();
+  const onPickDestinationCardCallback = React.useRef();
+
+  const dismissDestinationPicker = React.useCallback(() => {
+    if (destinationPickerRef.current) {
+      destinationPickerRef.current.close();
+    }
+    onPickDestinationCardCallback.current = null;
+  }, [destinationPickerRef.current]);
+
+  const showDestinationPicker = React.useCallback(
+    (callback) => {
+      if (destinationPickerRef.current) {
+        destinationPickerRef.current.open();
+        onPickDestinationCardCallback.current = callback;
+      }
+    },
+    [destinationPickerRef.current]
+  );
+
+  const onPickDestinationCard = (card) => {
+    if (card && card.cardId) {
+      if (onPickDestinationCardCallback.current) {
+        onPickDestinationCardCallback.current(card.cardId);
+      }
+    }
+    dismissDestinationPicker();
+  };
 
   // Construct context
   const context = {
     transformAssetUri,
+    showDestinationPicker,
   };
 
   if (!visible) return null;
@@ -122,6 +158,11 @@ export default SceneCreatorPanes = ({ entryPoint, visible, landscape }) => {
         }
         return null;
       })}
+      <CardDestinationPickerSheet
+        deck={deck}
+        ref={destinationPickerRef}
+        onSelectCard={onPickDestinationCard}
+      />
     </React.Fragment>
   );
 };

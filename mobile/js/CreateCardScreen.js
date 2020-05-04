@@ -24,7 +24,6 @@ import * as Session from './Session';
 import * as Utilities from './utilities';
 
 import CardBlocks from './CardBlocksOrTextActors';
-import CardDestinationPickerSheet from './CardDestinationPickerSheet';
 import CardHeader from './CardHeader';
 import CardScene from './CardScene';
 import DeckVariables from './DeckVariables';
@@ -200,8 +199,6 @@ const ANDROID_BOTTOM_KEYBOARD_OFFSET = 64;
 // publish, then immediately navigate to a new card based on the block's destination.
 // this could be maybe be solved by moving the publish network call ownership into a HOC.
 class CreateCardScreen extends React.Component {
-  _destinationPickerRef = React.createRef();
-
   state = {
     deck: EMPTY_DECK,
     card: Constants.EMPTY_CARD,
@@ -345,12 +342,6 @@ class CreateCardScreen extends React.Component {
     });
   };
 
-  _handleDismissDestinationPicker = () => {
-    if (this._destinationPickerRef) {
-      this._destinationPickerRef.current.close();
-    }
-  };
-
   _handleBlockTextInputFocus = () => {};
 
   _handleCardChange = (changes) =>
@@ -440,22 +431,6 @@ class CreateCardScreen extends React.Component {
 
     if (!this._mounted) return;
     return this._goToDeck(deck.deckId);
-  };
-
-  _showDestinationPicker = () => {
-    if (this._destinationPickerRef) {
-      this._destinationPickerRef.current.open();
-    }
-  };
-
-  _onPickDestinationCard = (block, card) => {
-    if (card && card.cardId) {
-      this._handleBlockChange({
-        ...block,
-        destinationCardId: card.cardId,
-      });
-    }
-    this._handleDismissDestinationPicker();
   };
 
   _handleBlockChange = (block) => {
@@ -610,7 +585,7 @@ class CreateCardScreen extends React.Component {
           variables: card.variables,
           onTextInputFocus: this._handleBlockTextInputFocus,
           onChangeBlock: this._handleBlockChange,
-          onSelectPickDestination: this._showDestinationPicker,
+          onSelectPickDestination: () => {}, // TODO: BEN: remove
           onSelectDestination: this._onPickDestinationCard,
           onGoToDestination: () => this._saveAndGoToDestination(blockToEdit),
         }
@@ -676,13 +651,9 @@ class CreateCardScreen extends React.Component {
           )}
         </SafeAreaView>
         <SceneCreatorPanes
+          deck={deck}
           visible={isEditingScene && selectedTab !== 'variables'}
           landscape={false}
-        />
-        <CardDestinationPickerSheet
-          deck={deck}
-          ref={this._destinationPickerRef}
-          onSelectCard={(card) => this._onPickDestinationCard(blockToEdit, card)}
         />
       </GhostUI.Provider>
     );

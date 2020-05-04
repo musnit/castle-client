@@ -84,13 +84,17 @@ const sendEvent = (pathId, event) => {
 // Map of element type name (as Lua will refer to an element type by) -> component class
 const elementTypes = {};
 
+export const registerElement = (type, component) => {
+  elementTypes[type] = component;
+};
+
 // Abstract component that reads `element.type` and uses that to instantiate a concrete component
 const Tool = React.memo(({ element }) => {
   const ElemType = elementTypes[element.type];
   if (!ElemType) {
     return (
       <View style={{ backgroundColor: '#f5dccb', margin: 4, padding: 8, borderRadius: 6 }}>
-        <Text style={{ color: '#85000b' }}>{`\`ui.${element.type}\` not implemented`}</Text>
+        <Text style={{ color: '#85000b' }}>{`\`ui.${element.type}\` not registered`}</Text>
       </View>
     );
   }
@@ -98,7 +102,7 @@ const Tool = React.memo(({ element }) => {
 });
 
 // Context for common data across all tools
-const ToolsContext = React.createContext({
+export const ToolsContext = React.createContext({
   transformAssetUri: (uri) => uri,
   paneName: 'DEFAULT',
   hideLabels: false,
@@ -133,7 +137,7 @@ const renderChildren = (element) =>
 // Maintain state for a `value` / `onChange` combination. Returns the current value and a setter for the new value
 // that can be invoked in a JS change event (which will then propagate the new value back to Lua). The default prop
 // and event names are 'value' and 'onChange' respectively but other ones can be provided.
-const useValue = ({ element, propName = 'value', eventName = 'onChange', onNewValue }) => {
+export const useValue = ({ element, propName = 'value', eventName = 'onChange', onNewValue }) => {
   const [lastSentEventId, setLastSentEventId] = useState(null);
   const [value, setValue] = useState(null);
 
@@ -269,7 +273,7 @@ export const ToolPane = React.memo(({ element, style, context }) => {
 });
 
 // Render a label along with a control
-const Labelled = ({ element, label, style, children }) => {
+export const Labelled = ({ element, label, style, children }) => {
   const { hideLabels } = useContext(ToolsContext);
 
   return (
