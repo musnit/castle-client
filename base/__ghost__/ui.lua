@@ -784,4 +784,37 @@ function ui.toggle(labelA, labelB, toggled, props)
     return newToggled
 end
 
+-- scene-creator-specific ui elements
+
+function ui.cardPicker(label, card, props)
+   assert(type(label) == "string", "`ui.cardPicker` needs a string `label`")
+   assert(type(card) == "table" or type(card) == "nil", "`ui.cardPicker` needs a table or nil `card`")
+   if card ~= nil then
+      assert(type(card.cardId) == "string", "`ui.cardPicker` property `card` needs a string `cardId`")
+   end
+
+    local c =
+        addChild(
+        "cardPicker",
+        label,
+        without(merge({label = label, card = card}, props), "onChange"),
+        true
+    )
+
+    local newCard = card
+    local es = pendingEvents[c.pathId]
+    if es then
+        for _, e in ipairs(es) do
+            if e.type == "onChange" then
+                if props and props.onChange then
+                    newCard = props.onChange(e.card) or e.card
+                else
+                    newCard = e.card
+                end
+            end
+        end
+    end
+    return newCard
+end
+
 return ui
