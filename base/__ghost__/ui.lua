@@ -500,7 +500,15 @@ end
 
 function ui.data(data, props)
    assert(type(data) == "table", "`ui.data` needs a table `data`")
-   addChild("data", data, merge({ data = data }, props), false)
+   local c = addChild("data", data, without(merge({ data = data }, props), "actions"), true)
+   local es = pendingEvents[c.pathId]
+   if es then
+        for _, e in ipairs(es) do
+           if props and props.actions and props.actions[e.type] and type(props.actions[e.type]) == "function" then
+              props.actions[e.type]()
+           end
+        end
+   end
 end
 
 function ui.numberInput(label, value, props)
