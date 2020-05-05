@@ -2,13 +2,8 @@ import React from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 import { useGhostUI } from './ghost/GhostUI';
 import { getPaneData } from './Tools';
-import { sendAsync } from './ghost/GhostEvents';
 
 import * as Constants from './Constants';
-
-/**
- *  TODO: we can remove this component once we have migrated to text actors.
- */
 
 const TEXT_ACTORS_PANE = 'sceneCreatorTextActors';
 
@@ -105,15 +100,6 @@ export default TextActors = (props) => {
     }
   }, [textActors]);
 
-  const selectActor = React.useCallback(
-    (actorId) => {
-      sendAsync('SELECT_ACTOR', {
-        actorId,
-      });
-    },
-    [sendAsync]
-  );
-
   return (
     <React.Fragment>
       {orderedActors.map((actor, ii) => {
@@ -127,7 +113,7 @@ export default TextActors = (props) => {
             actor={actor}
             style={styles}
             isEditable={props.isEditable}
-            onSelect={() => selectActor(actorId)}
+            onSelect={() => props.onSelect(actorId)}
           />
         );
       })}

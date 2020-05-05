@@ -83,11 +83,6 @@ const styles = StyleSheet.create({
   primaryButtonLabel: {
     ...Constants.styles.primaryButtonLabel,
   },
-  blocksContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 12,
-  },
   actions: {
     width: '100%',
     paddingHorizontal: 2,
@@ -156,8 +151,6 @@ class CreateCardScreen extends React.Component {
   state = {
     deck: EMPTY_DECK,
     card: Constants.EMPTY_CARD,
-    isEditingBlock: false,
-    blockIdToEdit: null,
     selectedTab: 'card',
     deckState: { variables: [] },
   };
@@ -239,66 +232,20 @@ class CreateCardScreen extends React.Component {
     }
   };
 
-  _saveAndGoToDestination = async (blockToFollow) => {
-    await this._handleBlockChange({
-      ...blockToFollow,
-    });
+  // TODO: take a text actor here
+  _saveAndGoToDestination = async (actorToFollow) => {
     await this._save();
     if (!this._mounted) return;
-    const updatedBlock = this.state.card.blocks.find(
-      (block) => block.destinationCardId === blockToFollow.destinationCardId
-    );
-    if (updatedBlock) {
+    let updatedTextActor;
+    if (updatedTextActor) {
       setTimeout(() => {
         this.props.navigation.navigate('CreateDeck', {
           deckIdToEdit: this.state.deck.deckId,
-          cardIdToEdit: updatedBlock.destinationCardId,
+          cardIdToEdit: updatedTextActor.destinationCardId,
         });
       }, 100);
     }
   };
-
-  _handleEditBlock = (blockIdToEdit) => {
-    if (!blockIdToEdit) {
-      // create a stub block with a new id.
-      // the block will get auto-deleted if the user blurs
-      // without typing anything into the empty block
-      blockIdToEdit = String(uuid());
-      this.setState((state) => {
-        const blocks = [...state.card.blocks];
-        blocks.push({ ...EMPTY_BLOCK, cardBlockId: blockIdToEdit });
-        return {
-          ...state,
-          blockIdToEdit,
-          isEditingBlock: true,
-          card: {
-            ...state.card,
-            blocks,
-          },
-        };
-      });
-    } else {
-      this.setState({ isEditingBlock: true, blockIdToEdit });
-    }
-  };
-
-  _handleDismissEditing = () => {
-    return this.setState((state) => {
-      // making a block empty is the same as deleting it
-      const blocks = state.card.blocks.filter((block) => block.title && block.title.length > 0);
-      return {
-        ...state,
-        isEditingBlock: false,
-        blockToEdit: null,
-        card: {
-          ...state.card,
-          blocks,
-        },
-      };
-    });
-  };
-
-  _handleBlockTextInputFocus = () => {};
 
   _handleCardChange = (changes) =>
     this.setState((state) => {
@@ -389,34 +336,6 @@ class CreateCardScreen extends React.Component {
     return this._goToDeck(deck.deckId);
   };
 
-  _handleBlockChange = (block) => {
-    return this.setState((state) => {
-      const blocks = [...state.card.blocks];
-      let existingIndex = -1;
-      let blockIdToEdit = state.blockIdToEdit;
-      if (block.cardBlockId) {
-        existingIndex = blocks.findIndex((existing) => existing.cardBlockId === block.cardBlockId);
-      }
-      if (existingIndex >= 0) {
-        blocks[existingIndex] = block;
-      } else {
-        // we don't want to auto-create the block here
-        // because the block id determines the key of the focused text input,
-        // and changing the focused text input causes keyboard thrash.
-        throw new Error(`Tried to change a nonexistent block`);
-      }
-      return {
-        ...state,
-        blockIdToEdit,
-        card: {
-          ...state.card,
-          isChanged: true,
-          blocks,
-        },
-      };
-    });
-  };
-
   _handleSceneScreenshot = async ({ path }) => {
     const result = await Session.apolloClient.mutate({
       mutation: gql`
@@ -472,14 +391,16 @@ class CreateCardScreen extends React.Component {
     }
   };
 
+  _handleSelectActor = (actorId) => {
+    GhostEvents.sendAsync('SELECT_ACTOR', {
+      actorId,
+    });
+  };
+
   _onSelectTab = (selectedTab) => this.setState({ selectedTab }, Keyboard.dismiss);
 
   render() {
-    const { deck, card, isEditingBlock, blockIdToEdit, selectedTab } = this.state;
-    const blockToEdit =
-      isEditingBlock && blockIdToEdit
-        ? card.blocks.find((block) => block.cardBlockId === blockIdToEdit)
-        : EMPTY_BLOCK;
+    const { deck, card, selectedTab } = this.state;
 
     // estimated distance from the bottom of the scrollview to the bottom of the screen
     let containScrollViewOffset = 48;
@@ -493,22 +414,10 @@ class CreateCardScreen extends React.Component {
       backgroundColor: card.backgroundImage ? '#000' : '#f2f2f2',
     };
 
-    const editBlockProps = isEditingBlock
-      ? {
-          deck,
-          isEditingBlock,
-          blockToEdit,
-          variables: card.variables,
-          onTextInputFocus: this._handleBlockTextInputFocus,
-          onChangeBlock: this._handleBlockChange,
-          onSelectPickDestination: () => {}, // TODO: BEN: remove
-          onSelectDestination: this._onPickDestinationCard,
-          onGoToDestination: () => this._saveAndGoToDestination(blockToEdit),
-        }
-      : null;
-
     // SafeAreaView doesn't respond to statusbar being hidden right now
     // https://github.com/facebook/react-native/pull/20999
+
+    // TODO: BEN: make ScrollView move text actors when sc bottom drawers or keyboard are open
     return (
       <GhostUI.Provider>
         <SafeAreaView style={styles.container}>
@@ -526,7 +435,7 @@ class CreateCardScreen extends React.Component {
             ]}>
             <KeyboardAwareScrollView
               enableOnAndroid={true}
-              scrollEnabled={isEditingBlock}
+              scrollEnabled={false}
               nestedScrollEnabled
               extraScrollHeight={containScrollViewOffset}
               style={styles.scrollView}
@@ -548,19 +457,13 @@ class CreateCardScreen extends React.Component {
               <View style={{ marginTop: 64 }}>
                 <CardBlocks
                   card={card}
-                  onSelectBlock={this._handleEditBlock}
+                  onSelect={this._handleSelectActor}
                   onSelectDestination={this._saveAndGoToDestination}
                   isEditable
-                  editBlockProps={editBlockProps}
                 />
               </View>
             </KeyboardAwareScrollView>
-            <CardBottomActions
-              card={card}
-              onEditScene={this._handleEditScene}
-              onEditBlock={this._handleEditBlock}
-              onSave={this._saveAndGoToDeck}
-            />
+            <CardBottomActions card={card} onSave={this._saveAndGoToDeck} />
           </View>
           {selectedTab === 'variables' && (
             <DeckVariables variables={card.variables} onChange={this._handleVariablesChange} />
