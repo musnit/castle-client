@@ -863,6 +863,11 @@ export const getPaneData = (element) => {
   return null;
 };
 
+export const sendDataPaneAction = (paneElement, action) => {
+  const dataChildPathId = paneElement.children['data'].pathId;
+  return sendEvent(dataChildPathId, { type: action });
+};
+
 const markdownStyles = StyleSheet.create({
   codeBlock: { borderColor: '#CCCCCC', backgroundColor: '#f5f5f5' },
   codeInline: { borderColor: '#CCCCCC', backgroundColor: '#f5f5f5' },
