@@ -23,7 +23,7 @@ import * as LocalId from './local-id';
 import * as Session from './Session';
 import * as Utilities from './utilities';
 
-import CardBlocks from './CardBlocksOrTextActors';
+import CardBlocks from './CardBlocks';
 import CardHeader from './CardHeader';
 import CardScene from './CardScene';
 import DeckVariables from './DeckVariables';
@@ -131,17 +131,13 @@ const CardForegroundActions = (props) => {
   );
   if (isEditingScene) {
     // scene creator back, play, undo
-    if (Constants.USE_TEXT_ACTORS) {
-      // TODO: proper styling
-      return (
-        <React.Fragment>
-          <SceneCreatorForegroundActions />
-          <View style={{ marginTop: 64 }}>{blocks}</View>
-        </React.Fragment>
-      );
-    } else {
-      return <SceneCreatorForegroundActions />;
-    }
+    // TODO: proper styling
+    return (
+      <React.Fragment>
+        <SceneCreatorForegroundActions />
+        <View style={{ marginTop: 64 }}>{blocks}</View>
+      </React.Fragment>
+    );
   } else {
     // card blocks and background
     return (

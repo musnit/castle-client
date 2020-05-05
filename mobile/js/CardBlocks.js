@@ -1,12 +1,16 @@
 import React from 'react';
-import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome5';
+import { ScrollView, StyleSheet, TouchableOpacity, Text, View } from 'react-native';
+import { useGhostUI } from './ghost/GhostUI';
+import { getPaneData } from './Tools';
+import { sendAsync } from './ghost/GhostEvents';
 
 import * as Constants from './Constants';
 
-import AddBlockPlaceholder from './AddBlockPlaceholder';
-import EditBlock from './EditBlock';
-import FastImage from 'react-native-fast-image';
+/**
+ *  TODO: we can remove this component once we have migrated to text actors.
+ */
+
+const TEXT_ACTORS_PANE = 'sceneCreatorTextActors';
 
 const styles = StyleSheet.create({
   choiceBlock: {
@@ -43,128 +47,90 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 22,
   },
+  selected: {
+    borderWidth: 1,
+    borderColor: '#0f0',
+  },
 });
 
-const blockMeetsPrecondition = (block, deckState) => {
-  if (!block?.metadata?.condition || !deckState?.variables) {
-    return true;
-  }
-  const { variableId, operator, operand } = block.metadata.condition;
-  const variable = deckState.variables.find((variable) => variable.id === variableId);
-  if (!variable) {
-    return true;
-  }
-  const { value } = variable;
-  // console.log(`evaluate block precondition: ${value}, ${operator}, ${operand}`);
-  switch (operator) {
-    case 'equals': {
-      return value == operand;
-    }
-    case 'does not equal': {
-      return value != operand;
-    }
-    case 'is less than': {
-      return value < operand;
-    }
-    case 'is greater than': {
-      return value > operand;
-    }
-    default:
-      return true;
-  }
-};
-
-const CardBlock = (props) => {
-  const { block, deckState } = props;
-  let blockStyles, textStyles;
-  if (!blockMeetsPrecondition(block, deckState)) {
-    return null;
-  }
-  switch (block.type) {
-    case 'interact': {
-      return (
-        <TouchableOpacity style={[styles.choiceBlock, props.style]} onPress={props.onPress}>
-          <Text style={styles.choiceBlockDescription}>{block.title}</Text>
-          <Icon
-            name={'hand-pointer'}
-            size={20}
-            color="#fff"
-            style={Constants.styles.textShadow}
-            solid
-          />
-        </TouchableOpacity>
-      );
-    }
-    case 'choice': {
-      return (
-        <TouchableOpacity style={[styles.choiceBlock, props.style]} onPress={props.onSelect}>
-          <Text style={styles.choiceBlockDescription}>{block.title}</Text>
-          <TouchableOpacity disabled={!props.isEditable} onPress={props.onSelectDestination}>
-            <Icon
-              name={'chevron-circle-right'}
-              size={20}
-              color="#fff"
-              style={Constants.styles.textShadow}
-              solid
-            />
-          </TouchableOpacity>
-        </TouchableOpacity>
-      );
-    }
-    case 'text':
-    default: {
-      return (
-        <TouchableOpacity
-          style={[styles.textBlock, props.style]}
-          onPress={props.onSelect}
-          disabled={!props.isEditable}>
-          <Text style={styles.textBlockDescription}>{block.title}</Text>
-        </TouchableOpacity>
-      );
-      break;
-    }
-  }
-};
-
-const CardBlocks = (props) => {
-  const card = props.card || {};
-  const { editBlockProps } = props;
-  const blockIdToEdit =
-    editBlockProps && editBlockProps.blockToEdit ? editBlockProps.blockToEdit.cardBlockId : null;
-  let orderedBlocks = [];
-  if (card.blocks && card.blocks.length) {
-    orderedBlocks = card.blocks.sort((a, b) => a.type - b.type);
-  }
-  if (orderedBlocks) {
+const TextActor = (props) => {
+  const { actor } = props;
+  if (actor.hasTapTrigger) {
     return (
-      <React.Fragment>
-        {orderedBlocks &&
-          orderedBlocks.map((block, ii) => {
-            const prevBlockType = ii > 0 ? orderedBlocks[ii - 1].type : block.type;
-            const styles = block.type !== prevBlockType ? { marginTop: 8 } : null;
-            if (blockIdToEdit && block.cardBlockId === blockIdToEdit) {
-              return <EditBlock key={`${block.cardBlockId}-${ii}`} {...editBlockProps} />;
-            } else {
-              return (
-                <CardBlock
-                  key={`${block.cardBlockId}-${ii}`}
-                  block={block}
-                  style={styles}
-                  deckState={props.deckState}
-                  isEditable={props.isEditable}
-                  onSelect={() => props.onSelectBlock(block.cardBlockId)}
-                  onSelectDestination={() => props.onSelectDestination(block)}
-                />
-              );
-            }
-          })}
-      </React.Fragment>
+      <TouchableOpacity
+        style={[styles.choiceBlock, actor.isSelected ? styles.selected : null, props.style]}
+        onPress={props.onSelect}>
+        <Text style={styles.choiceBlockDescription}>{actor.content}</Text>
+      </TouchableOpacity>
     );
-  } else if (props.isEditable) {
-    return <AddBlockPlaceholder onPress={() => props.onSelectBlock(null)} />;
   } else {
-    return null;
+    return (
+      <TouchableOpacity
+        style={[styles.textBlock, actor.isSelected ? styles.selected : null, props.style]}
+        onPress={props.onSelect}
+        disabled={!props.isEditable}>
+        <Text style={styles.textBlockDescription}>{actor.content}</Text>
+      </TouchableOpacity>
+    );
   }
 };
 
-export default CardBlocks;
+export default TextActors = (props) => {
+  const { root } = useGhostUI();
+  const [orderedActors, setOrderedActors] = React.useState([]);
+
+  let textActors;
+  if (root && root.panes) {
+    const data = getPaneData(root.panes[TEXT_ACTORS_PANE]);
+    if (data) {
+      textActors = data.textActors;
+    }
+  }
+
+  React.useEffect(() => {
+    if (textActors) {
+      setOrderedActors(
+        Object.keys(textActors)
+          .map((actorId) => textActors[actorId])
+          .sort((a, b) => {
+            if (a.hasTapTrigger !== b.hasTapTrigger) {
+              return a.hasTapTrigger - b.hasTapTrigger;
+            }
+            return a.actor.drawOrder - b.actor.drawOrder;
+          })
+          .filter((actor) => actor.visible)
+      );
+    } else {
+      setOrderedActors([]);
+    }
+  }, [textActors]);
+
+  const selectActor = React.useCallback(
+    (actorId) => {
+      sendAsync('SELECT_ACTOR', {
+        actorId,
+      });
+    },
+    [sendAsync]
+  );
+
+  return (
+    <React.Fragment>
+      {orderedActors.map((actor, ii) => {
+        const { actorId } = actor.actor;
+        const prevActorHasTrigger =
+          ii > 0 ? orderedActors[ii - 1].hasTapTrigger : actor.hasTapTrigger;
+        const styles = actor.hasTapTrigger !== prevActorHasTrigger ? { marginTop: 8 } : null;
+        return (
+          <TextActor
+            key={`text-${actorId}`}
+            actor={actor}
+            style={styles}
+            isEditable={props.isEditable}
+            onSelect={() => selectActor(actorId)}
+          />
+        );
+      })}
+    </React.Fragment>
+  );
+};

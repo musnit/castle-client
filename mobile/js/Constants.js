@@ -5,8 +5,6 @@ export const Android = Platform.OS === 'android';
 
 export const CARD_RATIO = 5 / 7;
 
-export const USE_TEXT_ACTORS = false;
-
 export const styles = {
   dropShadow: {
     shadowColor: '#000',
