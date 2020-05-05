@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import SafeAreaView from 'react-native-safe-area-view';
 import { useSafeArea } from 'react-native-safe-area-context';
 
-import CardBlocks from './CardBlocks';
+import CardText from './CardText';
 import CardScene from './CardScene';
 import Viewport from './viewport';
 
@@ -180,11 +180,12 @@ const PlayCardScreen = ({
         onMessage={_handleSceneMessage}
         paused={paused}
       />
+      {/* TODO: migrate to text actors
       <View
         pointerEvents="box-none"
         style={[styles.description, { paddingBottom: blocksBottomPadding }]}>
-        <CardBlocks card={card} onSelectBlock={_handleSelectBlock} deckState={deckState} />
-      </View>
+        <CardText card={card} onSelectBlock={_handleSelectBlock} deckState={deckState} />
+      </View> */}
     </View>
   ) : null;
 };

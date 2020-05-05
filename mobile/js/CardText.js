@@ -1,11 +1,7 @@
 import React from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, Text, View } from 'react-native';
-import { useGhostUI } from './ghost/GhostUI';
-import { getPaneData } from './Tools';
 
 import * as Constants from './Constants';
-
-const TEXT_ACTORS_PANE = 'sceneCreatorTextActors';
 
 const styles = StyleSheet.create({
   choiceBlock: {
@@ -70,35 +66,21 @@ const TextActor = (props) => {
   }
 };
 
-export default TextActors = (props) => {
-  const { root } = useGhostUI();
-  const [orderedActors, setOrderedActors] = React.useState([]);
+export default CardText = (props) => {
+  const { textActors } = props;
+  let orderedActors = [];
 
-  let textActors;
-  if (root && root.panes) {
-    const data = getPaneData(root.panes[TEXT_ACTORS_PANE]);
-    if (data) {
-      textActors = data.textActors;
-    }
+  if (textActors) {
+    orderedActors = Object.keys(textActors)
+      .map((actorId) => textActors[actorId])
+      .sort((a, b) => {
+        if (a.hasTapTrigger !== b.hasTapTrigger) {
+          return a.hasTapTrigger - b.hasTapTrigger;
+        }
+        return a.actor.drawOrder - b.actor.drawOrder;
+      })
+      .filter((actor) => actor.visible);
   }
-
-  React.useEffect(() => {
-    if (textActors) {
-      setOrderedActors(
-        Object.keys(textActors)
-          .map((actorId) => textActors[actorId])
-          .sort((a, b) => {
-            if (a.hasTapTrigger !== b.hasTapTrigger) {
-              return a.hasTapTrigger - b.hasTapTrigger;
-            }
-            return a.actor.drawOrder - b.actor.drawOrder;
-          })
-          .filter((actor) => actor.visible)
-      );
-    } else {
-      setOrderedActors([]);
-    }
-  }, [textActors]);
 
   return (
     <React.Fragment>

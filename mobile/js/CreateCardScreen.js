@@ -22,7 +22,7 @@ import * as LocalId from './local-id';
 import * as Session from './Session';
 import * as Utilities from './utilities';
 
-import CardBlocks from './CardBlocks';
+import CardText from './CardText';
 import CardHeader from './CardHeader';
 import CardScene from './CardScene';
 import DeckVariables from './DeckVariables';
@@ -32,7 +32,11 @@ import Viewport from './viewport';
 
 import * as GhostEvents from './ghost/GhostEvents';
 
+import { useGhostUI } from './ghost/GhostUI';
+import { getPaneData } from './Tools';
+
 const CARD_HEIGHT = (1 / Constants.CARD_RATIO) * 100 * Viewport.vw;
+const TEXT_ACTORS_PANE = 'sceneCreatorTextActors';
 
 const styles = StyleSheet.create({
   container: {
@@ -120,6 +124,24 @@ const CardBottomActions = ({ card, onEditScene, onEditBlock, onSave }) => {
       <PrimaryButton onPress={onSave} style={{ borderColor: '#fff', borderWidth: 1 }}>
         Done
       </PrimaryButton>
+    </View>
+  );
+};
+
+const CardTextPane = (props) => {
+  const { root } = useGhostUI();
+
+  let textActors;
+  if (root && root.panes) {
+    const data = getPaneData(root.panes[TEXT_ACTORS_PANE]);
+    if (data) {
+      textActors = data.textActors;
+    }
+  }
+
+  return (
+    <View style={{ marginTop: 64 }}>
+      <CardText textActors={textActors} {...props} />
     </View>
   );
 };
@@ -454,14 +476,12 @@ class CreateCardScreen extends React.Component {
                 onMessage={this._handleSceneMessage}
               />
               <SceneCreatorForegroundActions />
-              <View style={{ marginTop: 64 }}>
-                <CardBlocks
-                  card={card}
-                  onSelect={this._handleSelectActor}
-                  onSelectDestination={this._saveAndGoToDestination}
-                  isEditable
-                />
-              </View>
+              <CardTextPane
+                card={card}
+                onSelect={this._handleSelectActor}
+                onSelectDestination={this._saveAndGoToDestination}
+                isEditable
+              />
             </KeyboardAwareScrollView>
             <CardBottomActions card={card} onSave={this._saveAndGoToDeck} />
           </View>
