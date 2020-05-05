@@ -12,7 +12,6 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
 import { connectActionSheet } from '@expo/react-native-action-sheet';
 import { ReactNativeFile } from 'apollo-upload-client';
-import { useGhostEvents } from './ghost/GhostEvents';
 import * as GhostUI from './ghost/GhostUI';
 
 import uuid from 'uuid/v4';
@@ -116,53 +115,12 @@ const PrimaryButton = ({ style, ...props }) => {
   );
 };
 
-const CardForegroundActions = (props) => {
-  const { card, editBlockProps } = props;
-  const { onPressBackground, onEditBlock, onPickDestination } = props;
-  const { isEditingScene } = props;
-  const blocks = (
-    <CardBlocks
-      card={card}
-      onSelectBlock={onEditBlock}
-      onSelectDestination={onPickDestination}
-      isEditable
-      editBlockProps={editBlockProps}
-    />
-  );
-  if (isEditingScene) {
-    // scene creator back, play, undo
-    // TODO: proper styling
-    return (
-      <React.Fragment>
-        <SceneCreatorForegroundActions />
-        <View style={{ marginTop: 64 }}>{blocks}</View>
-      </React.Fragment>
-    );
-  } else {
-    // card blocks and background
-    return (
-      <React.Fragment>
-        <TouchableWithoutFeedback onPress={onPressBackground}>
-          <View
-            style={styles.cardBackgroundContainer}
-            pointerEvents={editBlockProps?.isEditingBlock ? 'auto' : 'none'}
-          />
-        </TouchableWithoutFeedback>
-        <View style={styles.blocksContainer}>{blocks}</View>
-      </React.Fragment>
-    );
-  }
-};
-
 const CardBottomActions = ({ card, onEditScene, onEditBlock, onSave }) => {
   const editSceneAction = card.scene ? 'Edit Scene' : 'Add Scene';
   return (
     <View style={styles.actions}>
       <View style={{ flexDirection: 'row' }}>
-        <PlainButton onPress={() => onEditBlock(null)}>Add Block</PlainButton>
-        <PlainButton style={{ marginLeft: 8 }} onPress={onEditScene}>
-          {editSceneAction}
-        </PlainButton>
+        {/* TODO: BEN <PlainButton onPress={() => onEditBlock(null)}>Add Block</PlainButton> */}
       </View>
       <PrimaryButton onPress={onSave} style={{ borderColor: '#fff', borderWidth: 1 }}>
         Done
@@ -201,7 +159,6 @@ class CreateCardScreen extends React.Component {
     isEditingBlock: false,
     blockIdToEdit: null,
     selectedTab: 'card',
-    isEditingScene: false,
     deckState: { variables: [] },
   };
 
@@ -223,14 +180,11 @@ class CreateCardScreen extends React.Component {
       prevProps && prevProps.route.params ? prevProps.route.params.deckIdToEdit : undefined;
     const prevCardIdToEdit =
       prevProps && prevProps.route.params ? prevProps.route.params.cardIdToEdit : undefined;
-    const prevIsEditingScene =
-      prevProps && prevProps.route.params ? prevProps.route.params.isEditingScene : undefined;
     const params = props.route.params || {};
     if (
       !prevProps ||
       prevDeckIdToEdit !== params.deckIdToEdit ||
       prevCardIdToEdit !== params.cardIdToEdit ||
-      prevIsEditingScene !== params.isEditingScene ||
       (props.isFocused && !prevProps.isFocused)
     ) {
       if (!params.deckIdToEdit || !params.cardIdToEdit) {
@@ -245,7 +199,6 @@ class CreateCardScreen extends React.Component {
         ...Constants.EMPTY_CARD,
         cardId: params.cardIdToEdit,
       };
-      let isEditingScene = !!params.isEditingScene;
 
       if (!LocalId.isLocalId(params.deckIdToEdit)) {
         try {
@@ -270,12 +223,19 @@ class CreateCardScreen extends React.Component {
       card.variables = deck.variables;
 
       this._mounted &&
-        this.setState({
-          deck,
-          card,
-          isEditingScene,
-          deckState: Utilities.makeInitialDeckState(card),
-        });
+        this.setState(
+          {
+            deck,
+            card,
+            deckState: Utilities.makeInitialDeckState(card),
+          },
+          async () => {
+            const { card } = this.state;
+            GhostEvents.sendAsync('SCENE_CREATOR_EDITING', {
+              isEditing: true,
+            });
+          }
+        );
     }
   };
 
@@ -457,46 +417,6 @@ class CreateCardScreen extends React.Component {
     });
   };
 
-  _handlePressBackground = () => {
-    if (this.state.isEditingBlock) {
-      this._handleDismissEditing();
-    }
-  };
-
-  _handleEditScene = async () => {
-    // Set scene editing state
-    this.setState(
-      {
-        isEditingScene: true,
-        // reset deck state every time we enter the scene
-        deckState: Utilities.makeInitialDeckState(this.state.card),
-      },
-      async () => {
-        const { card } = this.state;
-        if (card.scene) {
-          // Already have a scene, just notify Lua
-          GhostEvents.sendAsync('SCENE_CREATOR_EDITING', {
-            isEditing: true,
-          });
-        } else {
-          // No scene, add one
-          this._handleCardChange({
-            scene: { sceneId: card.cardId + 1000000, data: { empty: true } },
-          });
-        }
-      }
-    );
-  };
-
-  _handleEndEditScene = () => {
-    // Unset scene editing state and notify Lua
-    this.setState({ isEditingScene: false }, () => {
-      GhostEvents.sendAsync('SCENE_CREATOR_EDITING', {
-        isEditing: false,
-      });
-    });
-  };
-
   _handleSceneScreenshot = async ({ path }) => {
     const result = await Session.apolloClient.mutate({
       mutation: gql`
@@ -555,7 +475,7 @@ class CreateCardScreen extends React.Component {
   _onSelectTab = (selectedTab) => this.setState({ selectedTab }, Keyboard.dismiss);
 
   render() {
-    const { deck, card, isEditingBlock, blockIdToEdit, isEditingScene, selectedTab } = this.state;
+    const { deck, card, isEditingBlock, blockIdToEdit, selectedTab } = this.state;
     const blockToEdit =
       isEditingBlock && blockIdToEdit
         ? card.blocks.find((block) => block.cardBlockId === blockIdToEdit)
@@ -618,39 +538,35 @@ class CreateCardScreen extends React.Component {
                 key={`card-scene-${card.scene && card.scene.sceneId}`}
                 style={styles.scene}
                 card={card}
-                isEditing={isEditingScene}
+                isEditing={true}
                 deckState={this.state.deckState}
                 onEndEditing={this._handleEndEditScene}
                 onScreenshot={this._handleSceneScreenshot}
                 onMessage={this._handleSceneMessage}
               />
-              <CardForegroundActions
-                card={card}
-                isEditingScene={isEditingScene}
-                onPressBackground={this._handlePressBackground}
-                onEditBlock={this._handleEditBlock}
-                onPickDestination={this._saveAndGoToDestination}
-                editBlockProps={editBlockProps}
-              />
+              <SceneCreatorForegroundActions />
+              <View style={{ marginTop: 64 }}>
+                <CardBlocks
+                  card={card}
+                  onSelectBlock={this._handleEditBlock}
+                  onSelectDestination={this._saveAndGoToDestination}
+                  isEditable
+                  editBlockProps={editBlockProps}
+                />
+              </View>
             </KeyboardAwareScrollView>
-            {!isEditingScene ? (
-              <CardBottomActions
-                card={card}
-                onEditScene={this._handleEditScene}
-                onEditBlock={this._handleEditBlock}
-                onSave={this._saveAndGoToDeck}
-              />
-            ) : null}
+            <CardBottomActions
+              card={card}
+              onEditScene={this._handleEditScene}
+              onEditBlock={this._handleEditBlock}
+              onSave={this._saveAndGoToDeck}
+            />
           </View>
           {selectedTab === 'variables' && (
             <DeckVariables variables={card.variables} onChange={this._handleVariablesChange} />
           )}
         </SafeAreaView>
-        <SceneCreatorPanes
-          deck={deck}
-          visible={isEditingScene && selectedTab !== 'variables'}
-          landscape={false}
-        />
+        <SceneCreatorPanes deck={deck} visible={selectedTab !== 'variables'} landscape={false} />
       </GhostUI.Provider>
     );
   }
