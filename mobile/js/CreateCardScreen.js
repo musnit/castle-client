@@ -26,7 +26,6 @@ import CardText from './CardText';
 import CardHeader from './CardHeader';
 import CardScene from './CardScene';
 import DeckVariables from './DeckVariables';
-import SceneCreatorForegroundActions from './scenecreator/SceneCreatorForegroundActions';
 import SceneCreatorPanes from './scenecreator/SceneCreatorPanes';
 import Viewport from './viewport';
 
@@ -486,7 +485,6 @@ const CreateCardScreen = ({
               onScreenshot={onSceneScreenshot}
               onMessage={onSceneMessage}
             />
-            <SceneCreatorForegroundActions />
             <CardTextPane
               card={card}
               onSelect={selectActor}
