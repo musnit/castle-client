@@ -25,7 +25,6 @@ const CardScene = ({
   style,
   interactionEnabled = true,
   isEditing = false,
-  onEndEditing,
   onScreenshot,
   onMessage,
   deckState,
@@ -77,7 +76,6 @@ const CardScene = ({
                 onPressReload={onPressReload}
                 logsVisible={isEditing && logsVisible}
                 setLogsVisible={setLogsVisible}
-                onPressBack={onEndEditing}
                 onScreenshot={onScreenshot}
                 onMessage={onMessage}
                 onLoaded={onLoaded}

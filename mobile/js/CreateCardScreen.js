@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
-import { connectActionSheet } from '@expo/react-native-action-sheet';
+import { useActionSheet } from '@expo/react-native-action-sheet';
 import { ReactNativeFile } from 'apollo-upload-client';
 import * as GhostUI from './ghost/GhostUI';
 
@@ -162,18 +162,10 @@ const EMPTY_BLOCK = {
 const IPHONEX_BOTTOM_SAFE_HEIGHT = 83 + 33;
 const ANDROID_BOTTOM_KEYBOARD_OFFSET = 64;
 
-// NOTE (ben): this screen is currently not a function component
-// because of some of the cases where it needs to perform multiple
-// stateful things in sequence, and useEffect() was less intuitive for this.
-// the best example is _saveAndGoToDestination, where we
-// publish a card (containing some temp uuid blocks), find the resulting block after
-// publish, then immediately navigate to a new card based on the block's destination.
-// this could be maybe be solved by moving the publish network call ownership into a HOC.
-class CreateCardScreen extends React.Component {
+class CreateCardScreenDataProvider extends React.Component {
   state = {
     deck: EMPTY_DECK,
     card: Constants.EMPTY_CARD,
-    selectedTab: 'card',
     deckState: { variables: [] },
   };
 
@@ -297,7 +289,6 @@ class CreateCardScreen extends React.Component {
   };
 
   _save = async () => {
-    await this._handleDismissEditing();
     const { card, deck } = await Session.saveDeck(
       this.state.card,
       this.state.deck,
@@ -320,30 +311,6 @@ class CreateCardScreen extends React.Component {
     } else {
       // there is no deck, go back to create index
       this.props.navigation.popToTop();
-    }
-  };
-
-  _maybeSaveAndGoToDeck = async () => {
-    const { showActionSheetWithOptions } = this.props;
-    if (this.state.card && this.state.card.isChanged) {
-      showActionSheetWithOptions(
-        {
-          title: 'Save changes?',
-          options: ['Save', 'Discard', 'Cancel'],
-          destructiveButtonIndex: 1,
-          cancelButtonIndex: 2,
-        },
-        (buttonIndex) => {
-          if (buttonIndex == 0) {
-            return this._saveAndGoToDeck();
-          } else if (buttonIndex == 1) {
-            return this._goToDeck();
-          }
-        }
-      );
-    } else {
-      // no changes
-      return this._goToDeck();
     }
   };
 
@@ -377,7 +344,7 @@ class CreateCardScreen extends React.Component {
       },
       fetchPolicy: 'no-cache',
     });
-    if (result && result.data && result.data.uploadFile) {
+    if (this._mounted && result && result.data && result.data.uploadFile) {
       this._handleCardChange({
         backgroundImage: result.data.uploadFile,
       });
@@ -387,13 +354,6 @@ class CreateCardScreen extends React.Component {
   _handleSceneMessage = (message) => {
     switch (message.messageType) {
       case 'SAVE_SCENE': {
-        /*console.log(
-          'SAVE_SCENE sceneid: ' +
-            message.sceneId +
-            '   data length: ' +
-            JSON.stringify(message.data).length
-        );*/
-
         if (this.state.card.scene && message.sceneId == this.state.card.scene.sceneId) {
           this._handleCardChange({
             changedSceneData: message.data,
@@ -413,86 +373,136 @@ class CreateCardScreen extends React.Component {
     }
   };
 
-  _handleSelectActor = (actorId) => {
-    GhostEvents.sendAsync('SELECT_ACTOR', {
-      actorId,
-    });
-  };
-
-  _onSelectTab = (selectedTab) => this.setState({ selectedTab }, Keyboard.dismiss);
-
   render() {
-    const { deck, card, selectedTab } = this.state;
-
-    // estimated distance from the bottom of the scrollview to the bottom of the screen
-    let containScrollViewOffset = 48;
-    if (Viewport.isUltraWide && Constants.iOS) {
-      containScrollViewOffset -= IPHONEX_BOTTOM_SAFE_HEIGHT;
-    } else if (Constants.Android) {
-      containScrollViewOffset -= ANDROID_BOTTOM_KEYBOARD_OFFSET;
-    }
-
-    const scrollViewSceneStyles = {
-      backgroundColor: card.backgroundImage ? '#000' : '#f2f2f2',
-    };
-
-    // SafeAreaView doesn't respond to statusbar being hidden right now
-    // https://github.com/facebook/react-native/pull/20999
-
-    // TODO: BEN: make ScrollView move text actors when sc bottom drawers or keyboard are open
+    const { deck, card } = this.state;
     return (
       <GhostUI.Provider>
-        <SafeAreaView style={styles.container}>
-          <CardHeader
-            card={card}
-            isEditable
-            mode={selectedTab}
-            onChangeMode={this._onSelectTab}
-            onPressBack={this._maybeSaveAndGoToDeck}
-          />
-          <View
-            style={[
-              styles.cardBody,
-              selectedTab === 'card' ? null : { position: 'absolute', left: -30000 },
-            ]}>
-            <KeyboardAwareScrollView
-              enableOnAndroid={true}
-              scrollEnabled={false}
-              nestedScrollEnabled
-              extraScrollHeight={containScrollViewOffset}
-              style={styles.scrollView}
-              keyboardShouldPersistTaps="handled"
-              contentContainerStyle={[styles.scrollViewContentContainer, scrollViewSceneStyles]}
-              innerRef={(ref) => (this._scrollViewRef = ref)}>
-              <CardScene
-                interactionEnabled={true}
-                key={`card-scene-${card.scene && card.scene.sceneId}`}
-                style={styles.scene}
-                card={card}
-                isEditing={true}
-                deckState={this.state.deckState}
-                onEndEditing={this._handleEndEditScene}
-                onScreenshot={this._handleSceneScreenshot}
-                onMessage={this._handleSceneMessage}
-              />
-              <SceneCreatorForegroundActions />
-              <CardTextPane
-                card={card}
-                onSelect={this._handleSelectActor}
-                onSelectDestination={this._saveAndGoToDestination}
-                isEditable
-              />
-            </KeyboardAwareScrollView>
-            <CardBottomActions card={card} onSave={this._saveAndGoToDeck} />
-          </View>
-          {selectedTab === 'variables' && (
-            <DeckVariables variables={card.variables} onChange={this._handleVariablesChange} />
-          )}
-        </SafeAreaView>
-        <SceneCreatorPanes deck={deck} visible={selectedTab !== 'variables'} landscape={false} />
+        <CreateCardScreen
+          deck={deck}
+          card={card}
+          goToDeck={this._goToDeck}
+          saveAndGoToDeck={this._saveAndGoToDeck}
+          saveAndGoToDestination={this._saveAndGoToDestination}
+          onVariablesChange={this._handleVariablesChange}
+          onSceneMessage={this._handleSceneMessage}
+          onSceneScreenshot={this._handleSceneScreenshot}
+        />
       </GhostUI.Provider>
     );
   }
 }
 
-export default connectActionSheet(withNavigationFocus(withNavigation(CreateCardScreen)));
+const CreateCardScreen = ({
+  card,
+  deck,
+  deckState,
+  goToDeck,
+  saveAndGoToDeck,
+  saveAndGoToDestination,
+  onVariablesChange,
+  onSceneMessage,
+  onSceneScreenshot,
+}) => {
+  const { showActionSheetWithOptions } = useActionSheet();
+
+  const [selectedTab, setSelectedTab] = React.useState('card');
+  React.useEffect(Keyboard.dismiss, [selectedTab]);
+
+  const selectActor = React.useCallback((actorId) => {
+    GhostEvents.sendAsync('SELECT_ACTOR', {
+      actorId,
+    });
+  }, []);
+
+  const maybeSaveAndGoToDeck = React.useCallback(async () => {
+    if (card?.isChanged) {
+      showActionSheetWithOptions(
+        {
+          title: 'Save changes?',
+          options: ['Save', 'Discard', 'Cancel'],
+          destructiveButtonIndex: 1,
+          cancelButtonIndex: 2,
+        },
+        (buttonIndex) => {
+          if (buttonIndex == 0) {
+            return saveAndGoToDeck();
+          } else if (buttonIndex == 1) {
+            return goToDeck();
+          }
+        }
+      );
+    } else {
+      // no changes
+      return goToDeck();
+    }
+  }, [card?.isChanged, saveAndGoToDeck, goToDeck]);
+
+  // estimated distance from the bottom of the scrollview to the bottom of the screen
+  let containScrollViewOffset = 48;
+  if (Viewport.isUltraWide && Constants.iOS) {
+    containScrollViewOffset -= IPHONEX_BOTTOM_SAFE_HEIGHT;
+  } else if (Constants.Android) {
+    containScrollViewOffset -= ANDROID_BOTTOM_KEYBOARD_OFFSET;
+  }
+
+  const scrollViewSceneStyles = {
+    backgroundColor: card.backgroundImage ? '#000' : '#f2f2f2',
+  };
+
+  // SafeAreaView doesn't respond to statusbar being hidden right now
+  // https://github.com/facebook/react-native/pull/20999
+
+  // TODO: BEN: make ScrollView move text actors when sc bottom drawers or keyboard are open
+  return (
+    <React.Fragment>
+      <SafeAreaView style={styles.container}>
+        <CardHeader
+          card={card}
+          isEditable
+          mode={selectedTab}
+          onChangeMode={setSelectedTab}
+          onPressBack={maybeSaveAndGoToDeck}
+        />
+        <View
+          style={[
+            styles.cardBody,
+            selectedTab === 'card' ? null : { position: 'absolute', left: -30000 },
+          ]}>
+          <KeyboardAwareScrollView
+            enableOnAndroid={true}
+            scrollEnabled={false}
+            nestedScrollEnabled
+            extraScrollHeight={containScrollViewOffset}
+            style={styles.scrollView}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={[styles.scrollViewContentContainer, scrollViewSceneStyles]}>
+            <CardScene
+              interactionEnabled={true}
+              key={`card-scene-${card.scene && card.scene.sceneId}`}
+              style={styles.scene}
+              card={card}
+              isEditing={true}
+              deckState={deckState}
+              onScreenshot={onSceneScreenshot}
+              onMessage={onSceneMessage}
+            />
+            <SceneCreatorForegroundActions />
+            <CardTextPane
+              card={card}
+              onSelect={selectActor}
+              onSelectDestination={saveAndGoToDestination}
+              isEditable
+            />
+          </KeyboardAwareScrollView>
+          <CardBottomActions card={card} onSave={saveAndGoToDeck} />
+        </View>
+        {selectedTab === 'variables' && (
+          <DeckVariables variables={card.variables} onChange={onVariablesChange} />
+        )}
+      </SafeAreaView>
+      <SceneCreatorPanes deck={deck} visible={selectedTab !== 'variables'} landscape={false} />
+    </React.Fragment>
+  );
+};
+
+export default withNavigationFocus(withNavigation(CreateCardScreenDataProvider));
