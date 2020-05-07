@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { ReactNativeFile } from 'apollo-upload-client';
@@ -47,14 +46,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  scrollView: {
+  card: {
     borderRadius: 6,
     aspectRatio: Constants.CARD_RATIO,
     width: '100%',
-  },
-  scrollViewContentContainer: {
-    flex: 1,
-    borderRadius: 6,
     overflow: 'hidden',
   },
   scene: {
@@ -62,15 +57,8 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  cardBackgroundContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    flexShrink: 1,
-  },
-  sceneActions: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+  textActorsContainer: {
+    marginVertical: 8,
   },
   primaryButton: {
     ...Constants.styles.primaryButton,
@@ -106,39 +94,11 @@ const CardBottomActions = ({ card, onAdd, onSave }) => {
   );
 };
 
-const CardTextPane = (props) => {
-  const { root } = useGhostUI();
-
-  let textActors;
-  if (root && root.panes) {
-    const data = getPaneData(root.panes[TEXT_ACTORS_PANE]);
-    if (data) {
-      textActors = data.textActors;
-    }
-  }
-
-  return (
-    <View style={{ marginTop: 64 }}>
-      <CardText textActors={textActors} {...props} />
-    </View>
-  );
-};
-
 const EMPTY_DECK = {
   title: '',
   cards: [],
   variables: [],
 };
-
-const EMPTY_BLOCK = {
-  title: null,
-  type: 'text',
-  destination: null,
-};
-
-// height of safe area + tab bar on iPhone X family
-const IPHONEX_BOTTOM_SAFE_HEIGHT = 83 + 33;
-const ANDROID_BOTTOM_KEYBOARD_OFFSET = 64;
 
 class CreateCardScreenDataProvider extends React.Component {
   state = {
@@ -382,7 +342,7 @@ const CreateCardScreen = ({
   onSceneScreenshot,
 }) => {
   const { showActionSheetWithOptions } = useActionSheet();
-  const { globalActions, sendGlobalAction } = useGhostUI();
+  const { root, globalActions, sendGlobalAction } = useGhostUI();
 
   const [selectedTab, setSelectedTab] = React.useState('card');
   React.useEffect(Keyboard.dismiss, [selectedTab]);
@@ -401,6 +361,15 @@ const CreateCardScreen = ({
       actorId,
     });
   }, []);
+
+  let textActors, isTextActorSelected;
+  if (root && root.panes) {
+    const data = getPaneData(root.panes[TEXT_ACTORS_PANE]);
+    if (data) {
+      textActors = data.textActors;
+      isTextActorSelected = Object.entries(textActors).some(([_, actor]) => actor.isSelected);
+    }
+  }
 
   const maybeSaveAndGoToDeck = React.useCallback(async () => {
     if (card?.isChanged) {
@@ -425,22 +394,13 @@ const CreateCardScreen = ({
     }
   }, [card?.isChanged, saveAndGoToDeck, goToDeck]);
 
-  // estimated distance from the bottom of the scrollview to the bottom of the screen
-  let containScrollViewOffset = 48;
-  if (Viewport.isUltraWide && Constants.iOS) {
-    containScrollViewOffset -= IPHONEX_BOTTOM_SAFE_HEIGHT;
-  } else if (Constants.Android) {
-    containScrollViewOffset -= ANDROID_BOTTOM_KEYBOARD_OFFSET;
-  }
-
-  const scrollViewSceneStyles = {
+  const cardBackgroundStyles = {
     backgroundColor: card.backgroundImage ? '#000' : '#f2f2f2',
+    justifyContent: isTextActorSelected ? 'flex-start' : 'flex-end',
   };
 
   // SafeAreaView doesn't respond to statusbar being hidden right now
   // https://github.com/facebook/react-native/pull/20999
-
-  // TODO: BEN: make ScrollView move text actors when sc bottom drawers or keyboard are open
   return (
     <React.Fragment>
       <SafeAreaView style={styles.container}>
@@ -456,14 +416,7 @@ const CreateCardScreen = ({
             styles.cardBody,
             selectedTab === 'card' ? null : { position: 'absolute', left: -30000 },
           ]}>
-          <KeyboardAwareScrollView
-            enableOnAndroid={true}
-            scrollEnabled={false}
-            nestedScrollEnabled
-            extraScrollHeight={containScrollViewOffset}
-            style={styles.scrollView}
-            keyboardShouldPersistTaps="handled"
-            contentContainerStyle={[styles.scrollViewContentContainer, scrollViewSceneStyles]}>
+          <View style={[styles.card, cardBackgroundStyles]}>
             <CardScene
               interactionEnabled={true}
               key={`card-scene-${card.scene && card.scene.sceneId}`}
@@ -474,13 +427,16 @@ const CreateCardScreen = ({
               onScreenshot={onSceneScreenshot}
               onMessage={onSceneMessage}
             />
-            <CardTextPane
-              card={card}
-              onSelect={selectActor}
-              onSelectDestination={saveAndGoToDestination}
-              isEditable
-            />
-          </KeyboardAwareScrollView>
+            <View style={styles.textActorsContainer}>
+              <CardText
+                textActors={textActors}
+                card={card}
+                onSelect={selectActor}
+                onSelectDestination={saveAndGoToDestination}
+                isEditable
+              />
+            </View>
+          </View>
           <CardBottomActions
             card={card}
             onAdd={() => setAddingBlueprint(true)}
