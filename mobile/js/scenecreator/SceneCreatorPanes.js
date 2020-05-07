@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 
 import * as SceneCreatorConstants from './SceneCreatorConstants';
 
-import { registerElement, getPaneData, ToolPane } from '../Tools';
+import { registerElement, ToolPane } from '../Tools';
 import { paneVisible } from './SceneCreatorUtilities';
 
 import CardDestinationPickerSheet from '../CardDestinationPickerSheet';
@@ -25,8 +25,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-
-const GLOBAL_ACTIONS_PANE_KEY = 'sceneCreatorGlobalActions';
 
 const SceneCreatorDefaultPane = ({ context, element }) => (
   <SceneCreatorKeyboardWrapper backgroundColor={element.props.backgroundColor || Colors.background}>
@@ -121,7 +119,7 @@ export default SceneCreatorPanes = ({
   entryPoint,
   visible,
   addingBlueprint,
-  onSelectElement,
+  hasSelection,
 }) => {
   const { root, transformAssetUri } = useGhostUI();
   const destinationPickerRef = React.useRef();
@@ -172,26 +170,18 @@ export default SceneCreatorPanes = ({
     [onPickDestinationCardCallback.current, dismissDestinationPicker]
   );
 
+  if (!visible || !root.panes) return null;
+
   // Construct context
   const context = {
     transformAssetUri,
     showDestinationPicker,
   };
 
-  const globalActionsData = root.panes ? getPaneData(root.panes[GLOBAL_ACTIONS_PANE_KEY]) : null;
-  const hasSelection = globalActionsData?.hasSelection;
   let visibleProps = {
     addingBlueprint,
     hasSelection,
   };
-
-  React.useEffect(() => {
-    if (hasSelection) {
-      onSelectElement();
-    }
-  }, [hasSelection]);
-
-  if (!visible || !root.panes) return null;
 
   return (
     <React.Fragment>

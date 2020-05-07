@@ -1,6 +1,8 @@
 import React from 'react';
 import url from 'url';
 import { useListen } from './GhostEvents';
+import { paneVisible } from '../scenecreator/SceneCreatorUtilities';
+import { getPaneData, sendDataPaneAction } from '../Tools';
 
 /**
  *  GhostUI manages the state of the castle tool ui "DOM".
@@ -16,6 +18,7 @@ const GhostUIContext = React.createContext({
 });
 
 const ENTRYPOINT = 'https://raw.githubusercontent.com/nikki93/scene-creator/master/Client.lua';
+const GLOBAL_ACTIONS_PANE_KEY = 'sceneCreatorGlobalActions';
 
 // We get state diffs from Lua. This function applies those diffs to
 // a previous state to produce the new state.
@@ -65,9 +68,19 @@ export const Provider = (props) => {
   const forceRender = React.useCallback(() => setRoot(JSON.parse(JSON.stringify(root))), [root]);
   const transformAssetUri = (uri) => url.resolve(ENTRYPOINT, uri) || uri;
 
+  // scene creator global actions pane
+  let globalActions, sendGlobalAction;
+  if (root.panes && paneVisible(root.panes[GLOBAL_ACTIONS_PANE_KEY])) {
+    const pane = root.panes[GLOBAL_ACTIONS_PANE_KEY];
+    sendGlobalAction = (action) => sendDataPaneAction(pane, action);
+    globalActions = getPaneData(pane);
+  }
+
   const value = {
     root,
     setRoot,
+    globalActions,
+    sendGlobalAction,
     forceRender,
     transformAssetUri,
   };

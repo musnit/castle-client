@@ -5,12 +5,7 @@ import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SLIcon from 'react-native-vector-icons/SimpleLineIcons';
 import { useGhostUI } from './ghost/GhostUI';
 
-import { paneVisible } from './scenecreator/SceneCreatorUtilities';
-import { getPaneData, sendDataPaneAction } from './Tools';
-
 import * as Constants from './Constants';
-
-const PANE_KEY = 'sceneCreatorGlobalActions';
 
 const styles = StyleSheet.create({
   container: {
@@ -43,18 +38,17 @@ const styles = StyleSheet.create({
 });
 
 const CardHeader = ({ card, isEditable, onPressBack, mode, onChangeMode }) => {
-  const { root } = useGhostUI();
+  const { globalActions, sendGlobalAction } = useGhostUI();
   let playPauseButton, undoButton, redoButton;
-  if (root.panes && paneVisible(root.panes[PANE_KEY])) {
-    const pane = root.panes[PANE_KEY];
-    const data = getPaneData(pane);
+  if (globalActions) {
+    const data = globalActions;
 
     playPauseButton = data.performing ? (
-      <TouchableOpacity style={styles.action} onPress={() => sendDataPaneAction(pane, 'onRewind')}>
+      <TouchableOpacity style={styles.action} onPress={() => sendGlobalAction('onRewind')}>
         <SLIcon name="control-start" size={22} color="#fff" />
       </TouchableOpacity>
     ) : (
-      <TouchableOpacity style={styles.action} onPress={() => sendDataPaneAction(pane, 'onPlay')}>
+      <TouchableOpacity style={styles.action} onPress={() => sendGlobalAction('onPlay')}>
         <SLIcon name="control-play" size={22} color="#fff" />
       </TouchableOpacity>
     );
@@ -63,7 +57,7 @@ const CardHeader = ({ card, isEditable, onPressBack, mode, onChangeMode }) => {
       <TouchableOpacity
         style={styles.action}
         disabled={!data.actionsAvailable.onUndo}
-        onPress={() => sendDataPaneAction(pane, 'onUndo')}>
+        onPress={() => sendGlobalAction('onUndo')}>
         <MCIcon
           name="undo-variant"
           size={26}
@@ -76,7 +70,7 @@ const CardHeader = ({ card, isEditable, onPressBack, mode, onChangeMode }) => {
       <TouchableOpacity
         style={styles.action}
         disabled={!data.actionsAvailable.onRedo}
-        onPress={() => sendDataPaneAction(pane, 'onRedo')}>
+        onPress={() => sendGlobalAction('onRedo')}>
         <MCIcon
           name="redo-variant"
           size={26}

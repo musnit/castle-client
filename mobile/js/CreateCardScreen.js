@@ -382,11 +382,19 @@ const CreateCardScreen = ({
   onSceneScreenshot,
 }) => {
   const { showActionSheetWithOptions } = useActionSheet();
+  const { globalActions, sendGlobalAction } = useGhostUI();
 
   const [selectedTab, setSelectedTab] = React.useState('card');
   React.useEffect(Keyboard.dismiss, [selectedTab]);
 
   const [addingBlueprint, setAddingBlueprint] = React.useState(false);
+
+  const hasSelection = globalActions?.hasSelection;
+  React.useEffect(() => {
+    if (hasSelection) {
+      setAddingBlueprint(false);
+    }
+  }, [hasSelection]);
 
   const selectActor = React.useCallback((actorId) => {
     GhostEvents.sendAsync('SELECT_ACTOR', {
@@ -485,9 +493,9 @@ const CreateCardScreen = ({
       </SafeAreaView>
       <SceneCreatorPanes
         deck={deck}
-        visible={selectedTab !== 'variables'}
+        visible={selectedTab !== 'variables' && !globalActions?.performing}
+        hasSelection={hasSelection}
         addingBlueprint={addingBlueprint}
-        onSelectElement={() => setAddingBlueprint(false)}
       />
     </React.Fragment>
   );
