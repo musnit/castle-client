@@ -4,7 +4,11 @@ import { TouchableWithoutFeedback, ScrollView, StyleSheet, View } from 'react-na
 import { useQuery, useEffect } from '@apollo/react-hooks';
 import { useNavigation } from '@react-navigation/native';
 import SafeAreaView from 'react-native-safe-area-view';
+import { getPaneData } from './Tools';
 import { useSafeArea } from 'react-native-safe-area-context';
+
+import * as GhostUI from './ghost/GhostUI';
+import * as GhostEvents from './ghost/GhostEvents';
 
 import CardText from './CardText';
 import CardScene from './CardScene';
@@ -32,15 +36,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const PlayCardScreen = ({
-  deckId,
-  cardId,
-  onSelectNewCard,
-  deckState,
-  onChangeDeckState,
-  route,
-  paused,
-}) => {
+const PlayCardScreenDataProvider = ({ deckId, cardId, route, ...props }) => {
   const navigation = useNavigation();
   if (!deckId && route.params) {
     deckId = route.params.deckId;
@@ -69,15 +65,6 @@ const PlayCardScreen = ({
               sceneId
               data
             }
-            blocks {
-              id
-              cardBlockId
-              cardBlockUpdateId
-              type
-              title
-              destinationCardId
-              metadata
-            }
           }
         }
       `,
@@ -101,15 +88,6 @@ const PlayCardScreen = ({
               backgroundImage {
                 fileId
                 url
-              }
-              blocks {
-                id
-                cardBlockId
-                cardBlockUpdateId
-                type
-                title
-                destinationCardId
-                metadata
               }
               scene {
                 data
@@ -135,12 +113,25 @@ const PlayCardScreen = ({
     Session.prefetchCardsAsync({ cardId });
   }
 
-  const _handleSelectBlock = (blockId) => {
-    const block = card.blocks.find((b) => b.cardBlockId === blockId);
-    if (block.type === 'choice') {
-      onSelectNewCard({ cardId: block.destinationCardId });
+  return (
+    <GhostUI.Provider>
+      <PlayCardScreen card={card} {...props} />
+    </GhostUI.Provider>
+  );
+};
+
+const TEXT_ACTORS_PANE = 'sceneCreatorTextActors';
+
+const PlayCardScreen = ({ card, onSelectNewCard, deckState, onChangeDeckState, paused }) => {
+  const { root } = GhostUI.useGhostUI();
+
+  let textActors;
+  if (root && root.panes) {
+    const data = getPaneData(root.panes[TEXT_ACTORS_PANE]);
+    if (data) {
+      textActors = data.textActors;
     }
-  };
+  }
 
   const _handleSceneMessage = (message) => {
     switch (message.messageType) {
@@ -150,6 +141,19 @@ const PlayCardScreen = ({
       }
     }
   };
+
+  const selectActor = React.useCallback((actorId) => {
+    GhostEvents.sendAsync('SELECT_ACTOR', {
+      actorId,
+    });
+  }, []);
+
+  GhostEvents.useListen({
+    eventName: 'NAVIGATE_TO_CARD',
+    handler: ({ card }) => {
+      onSelectNewCard(card);
+    },
+  });
 
   const { vw, vh } = Viewport;
   const insets = useSafeArea();
@@ -180,14 +184,18 @@ const PlayCardScreen = ({
         onMessage={_handleSceneMessage}
         paused={paused}
       />
-      {/* TODO: migrate to text actors
       <View
         pointerEvents="box-none"
         style={[styles.description, { paddingBottom: blocksBottomPadding }]}>
-        <CardText card={card} onSelectBlock={_handleSelectBlock} deckState={deckState} />
-      </View> */}
+        <CardText
+          card={card}
+          textActors={textActors}
+          onSelect={selectActor}
+          deckState={deckState}
+        />
+      </View>
     </View>
   ) : null;
 };
 
-export default PlayCardScreen;
+export default PlayCardScreenDataProvider;
