@@ -14,6 +14,7 @@ import { ReactNativeFile } from 'apollo-upload-client';
 import * as GhostUI from './ghost/GhostUI';
 
 import uuid from 'uuid/v4';
+import { useNavigation } from '@react-navigation/native';
 import { withNavigation, withNavigationFocus } from '@react-navigation/compat';
 
 import * as Constants from './Constants';
@@ -370,6 +371,18 @@ const CreateCardScreen = ({
       isTextActorSelected = Object.entries(textActors).some(([_, actor]) => actor.isSelected);
     }
   }
+
+  const navigation = useNavigation();
+  GhostEvents.useListen({
+    eventName: 'NAVIGATE_TO_CARD',
+    handler: ({ card }) => {
+      console.log(`navigate to card: ${card.cardId}`);
+      /* navigation.navigate('CreateDeck', {
+        deckIdToEdit: this.state.deck.deckId,
+        cardIdToEdit: updatedBlock.destinationCardId,
+      }); */
+    },
+  });
 
   const maybeSaveAndGoToDeck = React.useCallback(async () => {
     if (card?.isChanged) {
