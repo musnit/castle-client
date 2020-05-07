@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 
 import * as SceneCreatorConstants from './SceneCreatorConstants';
 
-import { registerElement, ToolPane } from '../Tools';
+import { registerElement, getPaneData, ToolPane } from '../Tools';
 import { paneVisible } from './SceneCreatorUtilities';
 
 import CardDestinationPickerSheet from '../CardDestinationPickerSheet';
@@ -25,6 +25,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
+const GLOBAL_ACTIONS_PANE_KEY = 'sceneCreatorGlobalActions';
 
 const SceneCreatorDefaultPane = ({ context, element }) => (
   <SceneCreatorKeyboardWrapper backgroundColor={element.props.backgroundColor || Colors.background}>
@@ -89,7 +91,8 @@ const SceneCreatorTextActorsTest = ({ context, element }) => {
 const panes = [
   {
     key: 'sceneCreatorBlueprints',
-    visible: (element) => !!element,
+    shouldRender: (element) => !!element,
+    visible: (props) => props.addingBlueprint,
     Component: SceneCreatorBlueprintsPane,
   },
   {
@@ -102,7 +105,8 @@ const panes = [
   },
   {
     key: 'sceneCreatorInspector',
-    visible: (element) => !!element,
+    shouldRender: (element) => !!element,
+    visible: (props) => props.hasSelection,
     Component: SceneCreatorInspectorPane,
   },
 ];
@@ -112,7 +116,13 @@ const panes = [
  */
 registerElement('cardPicker', CardPickerTool);
 
-export default SceneCreatorPanes = ({ deck, entryPoint, visible, landscape }) => {
+export default SceneCreatorPanes = ({
+  deck,
+  entryPoint,
+  visible,
+  addingBlueprint,
+  onSelectElement,
+}) => {
   const { root, transformAssetUri } = useGhostUI();
   const destinationPickerRef = React.useRef();
   const onPickDestinationCardCallback = React.useRef();
@@ -168,14 +178,34 @@ export default SceneCreatorPanes = ({ deck, entryPoint, visible, landscape }) =>
     showDestinationPicker,
   };
 
-  if (!visible) return null;
+  const globalActionsData = root.panes ? getPaneData(root.panes[GLOBAL_ACTIONS_PANE_KEY]) : null;
+  const hasSelection = globalActionsData?.hasSelection;
+  let visibleProps = {
+    addingBlueprint,
+    hasSelection,
+  };
+
+  React.useEffect(() => {
+    if (hasSelection) {
+      onSelectElement();
+    }
+  }, [hasSelection]);
+
+  if (!visible || !root.panes) return null;
 
   return (
     <React.Fragment>
       {panes.map((pane, ii) => {
-        const { key, visible = paneVisible, Component } = pane;
-        if (root.panes && visible(root.panes[key])) {
-          return <Component key={key} element={root.panes[key]} context={context} />;
+        const { key, shouldRender = paneVisible, visible = () => false, Component } = pane;
+        if (shouldRender(root.panes[key])) {
+          return (
+            <Component
+              key={key}
+              visible={visible(visibleProps)}
+              element={root.panes[key]}
+              context={context}
+            />
+          );
         }
         return null;
       })}

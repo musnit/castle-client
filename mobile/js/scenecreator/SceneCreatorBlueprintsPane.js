@@ -6,7 +6,7 @@ import * as Constants from '../Constants';
 import SceneCreatorKeyboardWrapper from './SceneCreatorKeyboardWrapper';
 import SceneCreatorPane from './SceneCreatorPane';
 
-export default SceneCreatorBlueprintsPane = ({ element, context }) => {
+export default SceneCreatorBlueprintsPane = ({ element, visible, context }) => {
   const renderHeader = () => (
     <View
       style={{
@@ -25,6 +25,7 @@ export default SceneCreatorBlueprintsPane = ({ element, context }) => {
   return (
     <SceneCreatorKeyboardWrapper>
       <SceneCreatorPane
+        visible={visible}
         element={element}
         context={context}
         middleSnapPoint={300}

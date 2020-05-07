@@ -6,7 +6,7 @@ import { useSafeArea } from 'react-native-safe-area-context';
 import { ToolPane } from '../Tools';
 
 export default SceneCreatorPane = React.memo(
-  ({ element, context, middleSnapPoint, bottomSnapPoint, renderHeader }) => {
+  ({ element, visible, context, middleSnapPoint, bottomSnapPoint, renderHeader }) => {
     const bottomSheetRef = useRef(null);
     const insets = useSafeArea();
 
@@ -16,14 +16,14 @@ export default SceneCreatorPane = React.memo(
       }
     }, [element.props.snapCount]);
 
-    const top = useRef(new Animated.Value(element.props.visible ? 0 : 600)).current;
+    const top = useRef(new Animated.Value(visible ? 0 : 600)).current;
     useEffect(() => {
       Animated.timing(top, {
-        toValue: element.props.visible ? 0 : 600,
+        toValue: visible ? 0 : 600,
         duration: 200,
         useNativeDriver: true,
       }).start();
-    }, [element.props.visible]);
+    }, [visible]);
 
     const renderContent = () => (
       <View style={{ height: 600 }}>
@@ -46,7 +46,7 @@ export default SceneCreatorPane = React.memo(
 
     return (
       <Animated.View
-        pointerEvents={element.props.visible ? 'box-none' : 'none'}
+        pointerEvents={visible ? 'box-none' : 'none'}
         style={{
           flex: 1,
           transform: [{ translateY: top }],

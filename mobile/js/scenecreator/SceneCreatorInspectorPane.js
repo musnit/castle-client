@@ -8,24 +8,24 @@ import SceneCreatorKeyboardWrapper from './SceneCreatorKeyboardWrapper';
 import SceneCreatorPane from './SceneCreatorPane';
 import { ToolPane } from '../Tools';
 
-export default SceneCreatorInspectorPane = ({ element, context }) => {
+export default SceneCreatorInspectorPane = ({ element, visible, context }) => {
   const { root } = useGhostUI();
   const actionsPane = root.panes.sceneCreatorInspectorActions;
 
   // Do this so we can show last visible elements while animating out
   const [lastVisibleElements, setLastVisibleElements] = useState({ element, actionsPane });
   useEffect(() => {
-    if (element.props.visible) {
+    if (visible) {
       setLastVisibleElements({ element, actionsPane });
     }
-  }, [element, actionsPane]);
+  }, [visible, element, actionsPane]);
 
   const renderHeader = () => (
     <React.Fragment>
       {actionsPane ? (
         <ToolPane
-          pointerEvents={element.props.visible ? 'auto' : 'none'}
-          element={element.props.visible ? actionsPane : lastVisibleElements.actionsPane}
+          pointerEvents={visible ? 'auto' : 'none'}
+          element={visible ? actionsPane : lastVisibleElements.actionsPane}
           context={{ ...context, hideLabels: true, popoverPlacement: 'top' }}
           style={{
             flexDirection: 'row',
@@ -50,12 +50,13 @@ export default SceneCreatorInspectorPane = ({ element, context }) => {
   return (
     <SceneCreatorKeyboardWrapper>
       <SceneCreatorPane
+        visible={visible}
         element={
-          element.props.visible
+          visible
             ? element
             : {
                 ...lastVisibleElements.element,
-                props: { ...lastVisibleElements.element.props, visible: false },
+                props: { ...lastVisibleElements.element.props },
               }
         }
         context={context}

@@ -32,12 +32,11 @@ export const styles = {
     borderRadius: 6,
     paddingVertical: 8,
     paddingHorizontal: 12,
-    backgroundColor: '#000',
+    backgroundColor: '#fff',
   },
   primaryButtonLabel: {
-    color: '#fff',
+    color: '#000',
     fontSize: 16,
-    fontWeight: 'bold',
   },
   paneHandle: {
     width: 50,

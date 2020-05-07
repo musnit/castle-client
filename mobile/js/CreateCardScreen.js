@@ -72,13 +72,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
   },
-  button: {
-    ...Constants.styles.plainButton,
-    ...Constants.styles.dropShadow,
-  },
-  buttonLabel: {
-    ...Constants.styles.plainButtonLabel,
-  },
   primaryButton: {
     ...Constants.styles.primaryButton,
     ...Constants.styles.dropShadow,
@@ -88,21 +81,12 @@ const styles = StyleSheet.create({
   },
   actions: {
     width: '100%',
-    paddingHorizontal: 2,
+    paddingHorizontal: 8,
     paddingTop: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
 });
-
-const PlainButton = ({ style, ...props }) => {
-  const buttonProps = { ...props, children: undefined };
-  return (
-    <TouchableOpacity style={[styles.button, style]} {...buttonProps}>
-      <Text style={styles.buttonLabel}>{props.children}</Text>
-    </TouchableOpacity>
-  );
-};
 
 const PrimaryButton = ({ style, ...props }) => {
   const buttonProps = { ...props, children: undefined };
@@ -113,16 +97,11 @@ const PrimaryButton = ({ style, ...props }) => {
   );
 };
 
-const CardBottomActions = ({ card, onEditScene, onEditBlock, onSave }) => {
-  const editSceneAction = card.scene ? 'Edit Scene' : 'Add Scene';
+const CardBottomActions = ({ card, onAdd, onSave }) => {
   return (
     <View style={styles.actions}>
-      <View style={{ flexDirection: 'row' }}>
-        {/* TODO: BEN <PlainButton onPress={() => onEditBlock(null)}>Add Block</PlainButton> */}
-      </View>
-      <PrimaryButton onPress={onSave} style={{ borderColor: '#fff', borderWidth: 1 }}>
-        Done
-      </PrimaryButton>
+      <PrimaryButton onPress={onAdd}>Add</PrimaryButton>
+      <PrimaryButton onPress={onSave}>Done</PrimaryButton>
     </View>
   );
 };
@@ -407,6 +386,8 @@ const CreateCardScreen = ({
   const [selectedTab, setSelectedTab] = React.useState('card');
   React.useEffect(Keyboard.dismiss, [selectedTab]);
 
+  const [addingBlueprint, setAddingBlueprint] = React.useState(false);
+
   const selectActor = React.useCallback((actorId) => {
     GhostEvents.sendAsync('SELECT_ACTOR', {
       actorId,
@@ -492,13 +473,22 @@ const CreateCardScreen = ({
               isEditable
             />
           </KeyboardAwareScrollView>
-          <CardBottomActions card={card} onSave={saveAndGoToDeck} />
+          <CardBottomActions
+            card={card}
+            onAdd={() => setAddingBlueprint(true)}
+            onSave={saveAndGoToDeck}
+          />
         </View>
         {selectedTab === 'variables' && (
           <DeckVariables variables={card.variables} onChange={onVariablesChange} />
         )}
       </SafeAreaView>
-      <SceneCreatorPanes deck={deck} visible={selectedTab !== 'variables'} landscape={false} />
+      <SceneCreatorPanes
+        deck={deck}
+        visible={selectedTab !== 'variables'}
+        addingBlueprint={addingBlueprint}
+        onSelectElement={() => setAddingBlueprint(false)}
+      />
     </React.Fragment>
   );
 };
