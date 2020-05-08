@@ -1,3 +1,5 @@
+SCENE_CREATOR_API_VERSION = 1
+
 local ffi = require "ffi"
 local C = ffi.C
 local cjson = require "cjson"
@@ -190,7 +192,8 @@ network.async(
 
             homeUrl = GHOST_ROOT_URI
         else
-            local sceneCreatorResponse = network.fetch("https://api.castle.games/api/scene-creator")
+            local sceneCreatorResponse =
+                network.fetch("https://api.castle.games/api/scene-creator?apiVersion=" .. SCENE_CREATOR_API_VERSION)
             local fileData = love.filesystem.newFileData(sceneCreatorResponse, "scene_creator.love")
             love.filesystem.mount(fileData, "zip_mount", true)
             homeUrl = "zip://Client.lua"
