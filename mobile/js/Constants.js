@@ -30,8 +30,7 @@ export const styles = {
   },
   primaryButton: {
     borderRadius: 6,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    padding: 4,
     backgroundColor: '#fff',
   },
   primaryButtonLabel: {

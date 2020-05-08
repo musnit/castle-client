@@ -26,6 +26,7 @@ import CardText from './CardText';
 import CardHeader from './CardHeader';
 import CardScene from './CardScene';
 import DeckVariables from './DeckVariables';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import SceneCreatorPanes from './scenecreator/SceneCreatorPanes';
 import Viewport from './viewport';
 
@@ -59,11 +60,14 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   textActorsContainer: {
-    marginVertical: 8,
+    margin: 8,
   },
   primaryButton: {
     ...Constants.styles.primaryButton,
     ...Constants.styles.dropShadow,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   primaryButtonLabel: {
     ...Constants.styles.primaryButtonLabel,
@@ -77,20 +81,17 @@ const styles = StyleSheet.create({
   },
 });
 
-const PrimaryButton = ({ style, ...props }) => {
-  const buttonProps = { ...props, children: undefined };
-  return (
-    <TouchableOpacity style={[styles.primaryButton, style]} {...buttonProps}>
-      <Text style={styles.primaryButtonLabel}>{props.children}</Text>
-    </TouchableOpacity>
-  );
-};
-
 const CardBottomActions = ({ card, onAdd, onSave }) => {
   return (
     <View style={styles.actions}>
-      <PrimaryButton onPress={onAdd}>Add</PrimaryButton>
-      <PrimaryButton onPress={onSave}>Done</PrimaryButton>
+      <TouchableOpacity style={styles.primaryButton} onPress={onAdd}>
+        <Icon name="add" size={28} color="#000" />
+        <Text style={[styles.primaryButtonLabel, { paddingRight: 6 }]}>Add</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.primaryButton} onPress={onSave}>
+        <Text style={[styles.primaryButtonLabel, { paddingLeft: 6 }]}>Done</Text>
+        <Icon name="chevron-right" size={30} color="#000" style={{ margin: -2 }} />
+      </TouchableOpacity>
     </View>
   );
 };
