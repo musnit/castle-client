@@ -14,7 +14,6 @@ import { ReactNativeFile } from 'apollo-upload-client';
 import * as GhostUI from './ghost/GhostUI';
 
 import uuid from 'uuid/v4';
-import { useNavigation } from '@react-navigation/native';
 import { withNavigation, withNavigationFocus } from '@react-navigation/compat';
 
 import * as Constants from './Constants';
@@ -186,21 +185,6 @@ class CreateCardScreenDataProvider extends React.Component {
     }
   };
 
-  // TODO: take a text actor here
-  _saveAndGoToDestination = async (actorToFollow) => {
-    await this._save();
-    if (!this._mounted) return;
-    let updatedTextActor;
-    if (updatedTextActor) {
-      setTimeout(() => {
-        this.props.navigation.navigate('CreateDeck', {
-          deckIdToEdit: this.state.deck.deckId,
-          cardIdToEdit: updatedTextActor.destinationCardId,
-        });
-      }, 100);
-    }
-  };
-
   _handleCardChange = (changes) =>
     this.setState((state) => {
       return {
@@ -265,6 +249,21 @@ class CreateCardScreenDataProvider extends React.Component {
     return this._goToDeck(deck.deckId);
   };
 
+  _goToCard = (nextCard) => {
+    setTimeout(() => {
+      this.props.navigation.navigate('CreateDeck', {
+        deckIdToEdit: this.state.deck.deckId,
+        cardIdToEdit: nextCard.cardId,
+      });
+    }, 100);
+  };
+
+  _saveAndGoToCard = async (nextCard) => {
+    await this._save();
+    if (!this._mounted) return;
+    this._goToCard(nextCard);
+  };
+
   _handleSceneScreenshot = async ({ path }) => {
     const result = await Session.apolloClient.mutate({
       mutation: gql`
@@ -321,8 +320,9 @@ class CreateCardScreenDataProvider extends React.Component {
           deck={deck}
           card={card}
           goToDeck={this._goToDeck}
+          goToCard={this._goToCard}
           saveAndGoToDeck={this._saveAndGoToDeck}
-          saveAndGoToDestination={this._saveAndGoToDestination}
+          saveAndGoToCard={this._saveAndGoToCard}
           onVariablesChange={this._handleVariablesChange}
           onSceneMessage={this._handleSceneMessage}
           onSceneScreenshot={this._handleSceneScreenshot}
@@ -337,8 +337,9 @@ const CreateCardScreen = ({
   deck,
   deckState,
   goToDeck,
+  goToCard,
   saveAndGoToDeck,
-  saveAndGoToDestination,
+  saveAndGoToCard,
   onVariablesChange,
   onSceneMessage,
   onSceneScreenshot,
@@ -373,18 +374,6 @@ const CreateCardScreen = ({
     }
   }
 
-  const navigation = useNavigation();
-  GhostEvents.useListen({
-    eventName: 'NAVIGATE_TO_CARD',
-    handler: ({ card }) => {
-      console.log(`navigate to card: ${card.cardId}`);
-      /* navigation.navigate('CreateDeck', {
-        deckIdToEdit: this.state.deck.deckId,
-        cardIdToEdit: updatedBlock.destinationCardId,
-      }); */
-    },
-  });
-
   const maybeSaveAndGoToDeck = React.useCallback(async () => {
     if (card?.isChanged) {
       showActionSheetWithOptions(
@@ -407,6 +396,35 @@ const CreateCardScreen = ({
       return goToDeck();
     }
   }, [card?.isChanged, saveAndGoToDeck, goToDeck]);
+
+  const maybeSaveAndGoToCard = React.useCallback(
+    async (nextCard) => {
+      if (card?.isChanged) {
+        const title = nextCard.title ? nextCard.title : nextCard.cardId;
+        showActionSheetWithOptions(
+          {
+            title: `Save changes and go to '${title}?'`,
+            options: ['Save and go', 'Cancel'],
+            cancelButtonIndex: 1,
+          },
+          (buttonIndex) => {
+            if (buttonIndex == 0) {
+              return saveAndGoToCard(nextCard);
+            }
+          }
+        );
+      } else {
+        // no changes
+        return goToCard(nextCard);
+      }
+    },
+    [card?.isChanged, saveAndGoToCard, goToCard]
+  );
+
+  GhostEvents.useListen({
+    eventName: 'NAVIGATE_TO_CARD',
+    handler: ({ card }) => maybeSaveAndGoToCard(card),
+  });
 
   const cardBackgroundStyles = {
     backgroundColor: card.backgroundImage ? '#000' : '#f2f2f2',
@@ -442,13 +460,7 @@ const CreateCardScreen = ({
               onMessage={onSceneMessage}
             />
             <View style={styles.textActorsContainer}>
-              <CardText
-                textActors={textActors}
-                card={card}
-                onSelect={selectActor}
-                onSelectDestination={saveAndGoToDestination}
-                isEditable
-              />
+              <CardText textActors={textActors} card={card} onSelect={selectActor} isEditable />
             </View>
           </View>
           <CardBottomActions
