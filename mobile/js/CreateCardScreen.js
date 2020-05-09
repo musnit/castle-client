@@ -293,11 +293,9 @@ class CreateCardScreenDataProvider extends React.Component {
   _handleSceneMessage = (message) => {
     switch (message.messageType) {
       case 'SAVE_SCENE': {
-        if (this.state.card.scene && message.sceneId == this.state.card.scene.sceneId) {
-          this._handleCardChange({
-            changedSceneData: message.data,
-          });
-        }
+        this._handleCardChange({
+          changedSceneData: message.data,
+        });
         break;
       }
       case 'CHANGE_DECK_STATE': {
