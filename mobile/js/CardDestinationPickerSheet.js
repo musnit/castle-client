@@ -1,7 +1,7 @@
 import React from 'react';
 import { Animated, Keyboard, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 
-import BottomSheet from 'reanimated-bottom-sheet';
+import { BottomSheet } from './BottomSheet';
 import CardsSet from './CardsSet';
 
 const DRAWER_EXPANDED_HEIGHT = 500;
@@ -11,15 +11,18 @@ const BG_ANIMATION_DURATION_OUT_MS = 150;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#000',
-    height: DRAWER_EXPANDED_HEIGHT - 16 - 24,
-  },
-  header: {
-    backgroundColor: '#000',
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
     overflow: 'hidden',
     borderTopWidth: 1,
     borderColor: '#666',
+  },
+  content: {
+    backgroundColor: '#000',
+    height: DRAWER_EXPANDED_HEIGHT - 16 - 24,
+  },
+  header: {
+    backgroundColor: '#000',
   },
   handleContainer: {
     alignItems: 'center',
@@ -50,41 +53,11 @@ const styles = StyleSheet.create({
 class CardDestinationPickerSheet extends React.Component {
   _sheetRef = React.createRef(null);
   state = {
-    isRendering: false,
     isOpen: false,
     overlayOpacity: new Animated.Value(0),
   };
 
   open = () => {
-    const { isRendering } = this.state;
-    const onReadyToOpen = () => {
-      // hack: onOpenStart() only fires if this is called twice
-      this._sheetRef.current.snapTo(0);
-      this._sheetRef.current.snapTo(0);
-    };
-    if (isRendering) {
-      onReadyToOpen();
-    } else {
-      // lazy render because of
-      // https://github.com/osdnk/react-native-reanimated-bottom-sheet/issues/191
-      this.setState({ isRendering: true }, () => {
-        setTimeout(() => {
-          if (this._sheetRef.current) {
-            onReadyToOpen();
-          }
-        }, 5);
-      });
-    }
-  };
-
-  close = () => {
-    if (this._sheetRef.current) {
-      this._sheetRef.current.snapTo(1);
-      this._sheetRef.current.snapTo(1);
-    }
-  };
-
-  _onOpenStart = () => {
     // needed in case some other text input was already showing the keyboard,
     // which overlaps with the expanding drawer
     Keyboard.dismiss();
@@ -95,18 +68,15 @@ class CardDestinationPickerSheet extends React.Component {
     }).start();
   };
 
-  _onCloseStart = () => {
+  close = () => {
     // needed because closing the drawer
     // doesn't necessarily unmount/unfocus the child text input
     Keyboard.dismiss();
+    this.setState({ isOpen: false });
     Animated.timing(this.state.overlayOpacity, {
       toValue: 0,
       duration: BG_ANIMATION_DURATION_OUT_MS,
     }).start();
-  };
-
-  _onCloseEnd = () => {
-    this.setState({ isOpen: false });
   };
 
   _renderHeader = () => (
@@ -121,14 +91,14 @@ class CardDestinationPickerSheet extends React.Component {
   _renderContent = () => {
     const { deck, onSelectCard } = this.props;
     return (
-      <View style={styles.container}>
+      <View style={styles.content}>
         <CardsSet deck={deck} onPress={onSelectCard} showNewCard />
       </View>
     );
   };
 
   render() {
-    const { isOpen, isRendering, overlayOpacity } = this.state;
+    const { isOpen, overlayOpacity } = this.state;
     return (
       <React.Fragment>
         {isOpen && (
@@ -136,18 +106,13 @@ class CardDestinationPickerSheet extends React.Component {
             <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]} />
           </TouchableWithoutFeedback>
         )}
-        {isRendering && (
-          <BottomSheet
-            ref={this._sheetRef}
-            snapPoints={[DRAWER_EXPANDED_HEIGHT, 0]}
-            initialSnap={1}
-            onCloseStart={this._onCloseStart}
-            onCloseEnd={this._onCloseEnd}
-            onOpenStart={this._onOpenStart}
-            renderHeader={this._renderHeader}
-            renderContent={this._renderContent}
-          />
-        )}
+        <BottomSheet
+          snapPoints={[DRAWER_EXPANDED_HEIGHT]}
+          isOpen={isOpen}
+          style={styles.container}
+          renderHeader={this._renderHeader}
+          renderContent={this._renderContent}
+        />
       </React.Fragment>
     );
   }

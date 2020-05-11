@@ -21,33 +21,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: '100%',
-    backgroundColor: '#fff',
-  },
-  header: {
-    height: 48,
-    width: '100%',
-    backgroundColor: '#0f0',
   },
   content: {
     flex: 1,
   },
-  testContentItem: {
-    height: 64,
-    marginBottom: 8,
-    backgroundColor: '#f00',
-  },
 });
-
-const TestContent = () => {
-  return (
-    <React.Fragment>
-      <View style={styles.testContentItem} />
-      <View style={styles.testContentItem} />
-      <View style={styles.testContentItem} />
-      <View style={styles.testContentItem} />
-    </React.Fragment>
-  );
-};
 
 /**
  *  @prop isOpen whether the bottom sheet is open (and therefore visible)
@@ -58,9 +36,12 @@ export const BottomSheet = ({
   isOpen = false,
   snapPoints = [32, 256],
   initialSnap = 0,
+  renderHeader = () => null,
+  renderContent = () => null,
   onClose,
   onCloseEnd,
   onOpenEnd,
+  style = {},
 }) => {
   // translation from bottom of the screen
   let snapY = React.useRef(new Animated.Value(SCREEN_HEIGHT)).current;
@@ -72,14 +53,20 @@ export const BottomSheet = ({
 
   const snapTo = React.useCallback(
     (toValue, onFinished) => {
-      setContainerHeight(Viewport.vh * 100 - toValue);
+      const newContainerHeight = SCREEN_HEIGHT - toValue;
+      if (containerHeight < newContainerHeight) {
+        setContainerHeight(newContainerHeight);
+      }
       Animated.spring(snapY, { toValue, ...SPRING_CONFIG }).start(({ finished }) => {
-        if (finished && onFinished) {
-          onFinished();
+        if (finished) {
+          onFinished && onFinished();
+          if (containerHeight > newContainerHeight) {
+            setContainerHeight(newContainerHeight);
+          }
         }
       });
     },
-    [snapY]
+    [snapY, containerHeight]
   );
 
   const snapToClosest = React.useCallback(
@@ -130,19 +117,15 @@ TODO: compute startIndex
   );
 
   return (
-    <Animated.View style={[styles.container, { transform: [{ translateY: snapY }] }]}>
+    <Animated.View style={[styles.container, { transform: [{ translateY: snapY }] }, style]}>
       {/* inner view constrains the height of the scrollview to the bottom of the screen. */}
       <View style={{ height: containerHeight }}>
         <PanGestureHandler
           onGestureEvent={onPanGestureEvent}
           onHandlerStateChange={onPanStateChange}>
-          <Animated.View>
-            <View style={styles.header} />
-          </Animated.View>
+          <Animated.View>{renderHeader()}</Animated.View>
         </PanGestureHandler>
-        <ScrollView style={styles.content}>
-          <TestContent />
-        </ScrollView>
+        <ScrollView style={styles.content}>{renderContent()}</ScrollView>
       </View>
     </Animated.View>
   );
