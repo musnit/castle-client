@@ -311,12 +311,13 @@ class CreateCardScreenDataProvider extends React.Component {
   };
 
   render() {
-    const { deck, card } = this.state;
+    const { deck, card, deckState } = this.state;
     return (
       <GhostUI.Provider>
         <CreateCardScreen
           deck={deck}
           card={card}
+          deckState={deckState}
           goToDeck={this._goToDeck}
           goToCard={this._goToCard}
           saveAndGoToDeck={this._saveAndGoToDeck}
