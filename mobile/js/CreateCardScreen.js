@@ -80,7 +80,10 @@ const styles = StyleSheet.create({
   },
 });
 
-const CardBottomActions = ({ card, onAdd, onSave }) => {
+const CardBottomActions = ({ card, onAdd, onSave, isPlayingScene }) => {
+  if (isPlayingScene) {
+    return null;
+  }
   return (
     <View style={styles.actions}>
       <TouchableOpacity style={styles.primaryButton} onPress={onAdd}>
@@ -466,6 +469,7 @@ const CreateCardScreen = ({
             card={card}
             onAdd={() => setAddingBlueprint(true)}
             onSave={saveAndGoToDeck}
+            isPlayingScene={globalActions?.performing}
           />
         </View>
         {selectedTab === 'variables' && (
