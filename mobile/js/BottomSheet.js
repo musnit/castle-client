@@ -99,7 +99,7 @@ TODO: compute startIndex
     } else {
       snapTo(SCREEN_HEIGHT, onCloseEnd);
     }
-  }, [isOpen, snapTo, onOpenEnd, onCloseEnd]);
+  }, [isOpen, onOpenEnd, onCloseEnd]);
 
   const onPanStateChange = React.useCallback(
     (event) => {
