@@ -64,21 +64,6 @@ const SceneCreatorToolbar = ({ context, element }) => (
   </View>
 );
 
-// TODO: only used for testing text actors data, can remove
-const SceneCreatorTextActorsTest = ({ context, element }) => {
-  return (
-    <View style={{ position: 'absolute', width: '100%', top: 48, height: 128 }}>
-      <ScrollView style={{ flex: 1 }}>
-        <ToolPane
-          element={element}
-          context={context}
-          style={{ padding: 6, backgroundColor: '#f00' }}
-        />
-      </ScrollView>
-    </View>
-  );
-};
-
 /**
  *  List of panes we expect from lua.
  *  Render <Component /> containing root.panes[key].

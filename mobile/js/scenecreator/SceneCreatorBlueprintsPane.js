@@ -26,8 +26,6 @@ export default SceneCreatorBlueprintsPane = ({ element, visible, context }) => {
       visible={visible}
       element={element}
       context={context}
-      middleSnapPoint={300}
-      bottomSnapPoint={52}
       renderHeader={renderHeader}
     />
   );

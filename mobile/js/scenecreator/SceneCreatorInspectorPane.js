@@ -46,8 +46,6 @@ export default SceneCreatorInspectorPane = ({ element, visible, context }) => {
             }
       }
       context={context}
-      middleSnapPoint={400}
-      bottomSnapPoint={92}
       renderHeader={renderHeader}
     />
   );

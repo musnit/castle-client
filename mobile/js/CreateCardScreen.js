@@ -22,7 +22,6 @@ import * as Session from './Session';
 import * as Utilities from './utilities';
 
 import CardText from './CardText';
-import CardHeader from './CardHeader';
 import CardScene from './CardScene';
 import DeckVariables from './DeckVariables';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -31,6 +30,7 @@ import Viewport from './viewport';
 
 import * as GhostEvents from './ghost/GhostEvents';
 
+import { CardHeader } from './CardHeader';
 import { useGhostUI } from './ghost/GhostUI';
 import { getPaneData } from './Tools';
 

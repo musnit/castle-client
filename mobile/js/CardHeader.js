@@ -7,10 +7,12 @@ import { useGhostUI } from './ghost/GhostUI';
 
 import * as Constants from './Constants';
 
+export const CARD_HEADER_HEIGHT = 54;
+
 const styles = StyleSheet.create({
   container: {
     zIndex: 1, // we use negative margin to place the scene behind the header
-    height: 54,
+    height: CARD_HEADER_HEIGHT,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -37,7 +39,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const CardHeader = ({ card, isEditable, onPressBack, mode, onChangeMode }) => {
+export const CardHeader = ({ card, isEditable, onPressBack, mode, onChangeMode }) => {
   const { globalActions, sendGlobalAction } = useGhostUI();
   let playPauseButton, undoButton, redoButton;
   if (globalActions) {
@@ -98,5 +100,3 @@ const CardHeader = ({ card, isEditable, onPressBack, mode, onChangeMode }) => {
     </View>
   );
 };
-
-export default CardHeader;
