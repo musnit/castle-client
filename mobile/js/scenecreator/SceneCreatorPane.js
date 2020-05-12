@@ -20,7 +20,7 @@ export default SceneCreatorPane = React.memo(
         renderHeader={renderHeader}
         renderContent={renderContent}
         isOpen={visible}
-        style={{ backgroundColor: '#fff' }}
+        style={{ backgroundColor: '#fff', borderTopLeftRadius: 8, borderTopRightRadius: 8 }}
       />
     );
   }

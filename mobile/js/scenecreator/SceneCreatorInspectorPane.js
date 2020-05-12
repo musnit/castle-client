@@ -19,32 +19,20 @@ export default SceneCreatorInspectorPane = ({ element, visible, context }) => {
     }
   }, [visible, element, actionsPane]);
 
-  const renderHeader = () => (
-    <React.Fragment>
-      {actionsPane ? (
-        <ToolPane
-          pointerEvents={visible ? 'auto' : 'none'}
-          element={visible ? actionsPane : lastVisibleElements.actionsPane}
-          context={{ ...context, hideLabels: true, popoverPlacement: 'top' }}
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            padding: 8,
-          }}
-        />
-      ) : null}
-      <View
+  const renderHeader = () => {
+    return actionsPane ? (
+      <ToolPane
+        pointerEvents={visible ? 'auto' : 'none'}
+        element={visible ? actionsPane : lastVisibleElements.actionsPane}
+        context={{ ...context, hideLabels: true, popoverPlacement: 'top' }}
         style={{
-          backgroundColor: '#fff',
-          borderTopLeftRadius: 8,
-          borderTopRightRadius: 8,
-          padding: 16,
-          marginTop: 8,
-        }}>
-        <View style={Constants.styles.paneHandle}></View>
-      </View>
-    </React.Fragment>
-  );
+          flexDirection: 'row',
+          justifyContent: 'center',
+          padding: 8,
+        }}
+      />
+    ) : null;
+  };
 
   return (
     <SceneCreatorPane

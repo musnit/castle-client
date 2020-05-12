@@ -451,26 +451,17 @@ const BaseButton = ({ element, selected, style, onPress }) => {
   const baseStyle = buttonStyle({ selected: selected || element.props.selected });
 
   const { paneName, inPopover } = useContext(ToolsContext);
-  const isSceneCreatorGlobalAction = paneName === 'sceneCreatorGlobalActions' && !inPopover;
   const isSceneCreatorInspectorAction = paneName === 'sceneCreatorInspectorActions' && !inPopover;
 
   const hideLabel =
     element.props.hideLabel !== undefined
       ? element.props.hideLabel
-      : element.props.iconFill || isSceneCreatorGlobalAction || isSceneCreatorInspectorAction;
+      : element.props.iconFill || isSceneCreatorInspectorAction;
 
   return (
     <TouchableOpacity
       style={
-        isSceneCreatorGlobalAction
-          ? {
-              width: 44,
-              height: 44,
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: 4,
-            }
-          : isSceneCreatorInspectorAction
+        isSceneCreatorInspectorAction
           ? {
               width: 44,
               height: 44,
@@ -479,7 +470,6 @@ const BaseButton = ({ element, selected, style, onPress }) => {
               margin: 6,
               backgroundColor: selected || element.props.selected ? Colors.button.selected : '#fff',
               borderRadius: 1000,
-              ...Constants.styles.dropShadow,
             }
           : {
               ...baseStyle,
@@ -499,17 +489,7 @@ const BaseButton = ({ element, selected, style, onPress }) => {
       {element.props.iconFamily ? (
         React.createElement(iconFamilies[element.props.iconFamily], {
           name: element.props.icon,
-          ...(isSceneCreatorGlobalAction
-            ? {
-                size: 24,
-                color: '#fff',
-                style: {
-                  ...Constants.styles.textShadow,
-                  padding: 6,
-                },
-                solid: true,
-              }
-            : isSceneCreatorInspectorAction
+          ...(isSceneCreatorInspectorAction
             ? {
                 size: 20,
                 color: '#000',

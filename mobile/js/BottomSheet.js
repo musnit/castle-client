@@ -98,6 +98,7 @@ TODO: compute startIndex
     if (isOpen) {
       snapTo(SCREEN_HEIGHT - snapPoints[initialSnap], onOpenEnd);
     } else {
+      snapY.flattenOffset();
       snapTo(SCREEN_HEIGHT, onCloseEnd);
     }
   }, [isOpen, onOpenEnd, onCloseEnd]);
