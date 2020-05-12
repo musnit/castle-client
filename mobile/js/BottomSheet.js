@@ -14,8 +14,9 @@ const SPRING_CONFIG = {
   useNativeDriver: true,
 };
 
-const SNAP_VELOCITY = 72;
 const SCREEN_HEIGHT = Viewport.vh * 100;
+const SWIPE_MIN_VELOCITY = 128;
+const SWIPE_MIN_DISTANCE = 64;
 
 const styles = StyleSheet.create({
   container: {
@@ -53,12 +54,12 @@ export const BottomSheet = ({
   });
 
   const snapTo = React.useCallback(
-    (toValue, onFinished) => {
+    (toValue, velocity = 0, onFinished) => {
       const newContainerHeight = SCREEN_HEIGHT - toValue;
       if (containerHeight < newContainerHeight) {
         setContainerHeight(newContainerHeight);
       }
-      Animated.spring(snapY, { toValue, ...SPRING_CONFIG }).start(({ finished }) => {
+      Animated.spring(snapY, { toValue, velocity, ...SPRING_CONFIG }).start(({ finished }) => {
         if (finished) {
           onFinished && onFinished();
           if (containerHeight > newContainerHeight) {
@@ -81,25 +82,27 @@ export const BottomSheet = ({
           minIndex = ii;
         }
       }
-      /*
-TODO: compute startIndex
-      if (minIndex == startIndex && velocity < -SNAP_VELOCITY && minIndex > 0) {
-        minIndex -= 1;
-      } else if (minIndex == startIndex && velocity > SNAP_VELOCITY && minIndex < snapPoints.length - 1) {
+      const signDist = y - (SCREEN_HEIGHT - snapPoints[minIndex]);
+      if (
+        signDist < -SWIPE_MIN_DISTANCE &&
+        velocity < -SWIPE_MIN_VELOCITY &&
+        minIndex < snapPoints.length - 1
+      ) {
         minIndex += 1;
+      } else if (signDist > SWIPE_MIN_DISTANCE && velocity > SWIPE_MIN_VELOCITY && minIndex > 0) {
+        minIndex -= 1;
       }
-*/
-      return snapTo(SCREEN_HEIGHT - snapPoints[minIndex]);
+      return snapTo(SCREEN_HEIGHT - snapPoints[minIndex], velocity);
     },
     [snapTo, snapPoints]
   );
 
   React.useEffect(() => {
     if (isOpen) {
-      snapTo(SCREEN_HEIGHT - snapPoints[initialSnap], onOpenEnd);
+      snapTo(SCREEN_HEIGHT - snapPoints[initialSnap], 0, onOpenEnd);
     } else {
       snapY.flattenOffset();
-      snapTo(SCREEN_HEIGHT, onCloseEnd);
+      snapTo(SCREEN_HEIGHT, 0, onCloseEnd);
     }
   }, [isOpen, onOpenEnd, onCloseEnd]);
 

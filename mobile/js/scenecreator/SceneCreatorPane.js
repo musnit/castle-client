@@ -15,7 +15,7 @@ export default SceneCreatorPane = React.memo(
     const insets = useSafeArea();
 
     const renderContent = () => (
-      <ToolPane element={element} context={context} style={{ margin: 16 }} />
+      <ToolPane element={element} context={context} style={{ marginTop: 16 }} />
     );
 
     const snapPoints = [
