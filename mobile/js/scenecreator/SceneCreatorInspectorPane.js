@@ -4,7 +4,6 @@ import { useGhostUI } from '../ghost/GhostUI';
 
 import * as Constants from '../Constants';
 
-import SceneCreatorKeyboardWrapper from './SceneCreatorKeyboardWrapper';
 import SceneCreatorPane from './SceneCreatorPane';
 import { ToolPane } from '../Tools';
 
@@ -48,22 +47,20 @@ export default SceneCreatorInspectorPane = ({ element, visible, context }) => {
   );
 
   return (
-    <SceneCreatorKeyboardWrapper>
-      <SceneCreatorPane
-        visible={visible}
-        element={
-          visible
-            ? element
-            : {
-                ...lastVisibleElements.element,
-                props: { ...lastVisibleElements.element.props },
-              }
-        }
-        context={context}
-        middleSnapPoint={400}
-        bottomSnapPoint={92}
-        renderHeader={renderHeader}
-      />
-    </SceneCreatorKeyboardWrapper>
+    <SceneCreatorPane
+      visible={visible}
+      element={
+        visible
+          ? element
+          : {
+              ...lastVisibleElements.element,
+              props: { ...lastVisibleElements.element.props },
+            }
+      }
+      context={context}
+      middleSnapPoint={400}
+      bottomSnapPoint={92}
+      renderHeader={renderHeader}
+    />
   );
 };

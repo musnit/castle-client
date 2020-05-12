@@ -12,7 +12,6 @@ import CardDestinationPickerSheet from '../CardDestinationPickerSheet';
 import CardPickerTool from './CardPickerTool';
 import SceneCreatorBlueprintsPane from './SceneCreatorBlueprintsPane';
 import SceneCreatorInspectorPane from './SceneCreatorInspectorPane';
-import SceneCreatorKeyboardWrapper from './SceneCreatorKeyboardWrapper';
 
 let Colors = SceneCreatorConstants.Colors;
 
@@ -25,7 +24,7 @@ const styles = StyleSheet.create({
 });
 
 const SceneCreatorDefaultPane = ({ context, element }) => (
-  <SceneCreatorKeyboardWrapper backgroundColor={element.props.backgroundColor || Colors.background}>
+  <View style={{ backgroundColor: element.props.backgroundColor || Colors.background }}>
     {element.props.customLayout ? (
       <ToolPane element={element} context={context} style={{ flex: 1 }} />
     ) : (
@@ -37,7 +36,7 @@ const SceneCreatorDefaultPane = ({ context, element }) => (
         />
       </ScrollView>
     )}
-  </SceneCreatorKeyboardWrapper>
+  </View>
 );
 
 const SceneCreatorToolbar = ({ context, element }) => (

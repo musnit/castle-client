@@ -1,6 +1,7 @@
 import React from 'react';
-import { Animated, ScrollView, StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet, View } from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import Viewport from './viewport';
 
@@ -125,7 +126,12 @@ TODO: compute startIndex
           onHandlerStateChange={onPanStateChange}>
           <Animated.View>{renderHeader()}</Animated.View>
         </PanGestureHandler>
-        <ScrollView style={styles.content}>{renderContent()}</ScrollView>
+        <KeyboardAwareScrollView
+          style={styles.content}
+          enableOnAndroid={true}
+          keyboardShouldPersistTaps="handled">
+          {renderContent()}
+        </KeyboardAwareScrollView>
       </View>
     </Animated.View>
   );

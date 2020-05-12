@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { View } from 'react-native';
 import { BottomSheet } from '../BottomSheet';
 import { useSafeArea } from 'react-native-safe-area-context';

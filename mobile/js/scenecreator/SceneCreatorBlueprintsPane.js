@@ -3,7 +3,6 @@ import { Text, View } from 'react-native';
 
 import * as Constants from '../Constants';
 
-import SceneCreatorKeyboardWrapper from './SceneCreatorKeyboardWrapper';
 import SceneCreatorPane from './SceneCreatorPane';
 
 export default SceneCreatorBlueprintsPane = ({ element, visible, context }) => {
@@ -23,15 +22,13 @@ export default SceneCreatorBlueprintsPane = ({ element, visible, context }) => {
   );
 
   return (
-    <SceneCreatorKeyboardWrapper>
-      <SceneCreatorPane
-        visible={visible}
-        element={element}
-        context={context}
-        middleSnapPoint={300}
-        bottomSnapPoint={52}
-        renderHeader={renderHeader}
-      />
-    </SceneCreatorKeyboardWrapper>
+    <SceneCreatorPane
+      visible={visible}
+      element={element}
+      context={context}
+      middleSnapPoint={300}
+      bottomSnapPoint={52}
+      renderHeader={renderHeader}
+    />
   );
 };
