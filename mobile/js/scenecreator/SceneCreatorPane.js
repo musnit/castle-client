@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Keyboard, View } from 'react-native';
 import { BottomSheet } from '../BottomSheet';
 import { useSafeArea } from 'react-native-safe-area-context';
 
@@ -31,6 +31,8 @@ export default SceneCreatorPane = React.memo(
         renderHeader={renderHeader}
         renderContent={renderContent}
         isOpen={visible}
+        onOpenEnd={Keyboard.dismiss}
+        onCloseEnd={Keyboard.dismiss}
         style={{ backgroundColor: '#fff', borderTopLeftRadius: 8, borderTopRightRadius: 8 }}
       />
     );
