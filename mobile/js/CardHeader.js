@@ -41,9 +41,10 @@ const styles = StyleSheet.create({
 
 export const CardHeader = ({ card, isEditable, onPressBack, mode, onChangeMode }) => {
   const { globalActions, sendGlobalAction } = useGhostUI();
-  let playPauseButton, undoButton, redoButton;
+  let playPauseButton, undoButton, redoButton, isPlaying;
   if (globalActions) {
     const data = globalActions;
+    isPlaying = data.performing;
 
     playPauseButton = data.performing ? (
       <TouchableOpacity style={styles.action} onPress={() => sendGlobalAction('onRewind')}>
@@ -93,8 +94,9 @@ export const CardHeader = ({ card, isEditable, onPressBack, mode, onChangeMode }
         {redoButton}
         <TouchableOpacity
           style={styles.action}
+          disabled={isPlaying}
           onPress={() => onChangeMode(mode === 'variables' ? 'card' : 'variables')}>
-          <MCIcon name="variable" size={26} color="#fff" />
+          <MCIcon name="variable" size={26} color={isPlaying ? '#666' : '#fff'} />
         </TouchableOpacity>
       </View>
     </View>

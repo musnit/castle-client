@@ -475,7 +475,7 @@ const CreateCardScreen = ({
         variables={card.variables}
         onChange={onVariablesChange}
         snapPoints={[FULL_SHEET_HEIGHT]}
-        isOpen={selectedTab === 'variables'}
+        isOpen={selectedTab === 'variables' && !globalActions?.performing}
         onClose={() => setSelectedTab('card')}
       />
       <SceneCreatorPanes
