@@ -145,6 +145,7 @@ export default SceneCreatorPanes = ({
   const context = {
     transformAssetUri,
     showDestinationPicker,
+    deck,
   };
 
   let visibleProps = {

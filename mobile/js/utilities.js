@@ -3,16 +3,50 @@ import gql from 'graphql-tag';
 import ImagePicker from 'react-native-image-picker';
 import { ReactNativeFile } from 'apollo-upload-client';
 import * as Session from './Session';
+import * as LocalId from './local-id';
 
 import * as Constants from './Constants';
 
 const CARD_TITLE_MAX_LEN = 28;
 
-export const makeCardPreviewTitle = (card) => {
-  if (!card.blocks || !card.blocks.length || !card.blocks[0].title) {
-    return card.title ? card.title : 'Untitled Card';
+export const getTextActorsContent = (sceneData) => {
+  const actors = sceneData.snapshot?.actors;
+  let contents = [];
+  if (actors) {
+    for (let ii = 0; ii < actors.length; ii++) {
+      const actor = actors[ii];
+      const components = actor?.bp?.components;
+      if (components && components.Text && components.Text.content) {
+        contents.push(components.Text.content);
+      }
+    }
   }
-  const firstBlockContents = card.blocks[0].title.split(/[\s]/);
+  return contents;
+};
+
+export const makeCardPreviewTitle = (card, deck) => {
+  if (!card || !card.cardId) {
+    return 'Nonexistent card';
+  }
+  if (LocalId.isLocalId(card.cardId)) {
+    return 'New card';
+  }
+  if ((!card.scene || !card.scene.data) && deck.cards) {
+    // card is partial. look up full card in deck, if available
+    let cardToPreview = deck.cards.find((other) => other.cardId === card.cardId);
+    if (cardToPreview) {
+      card = cardToPreview;
+    }
+  }
+  if (!card.scene || !card.scene.data) {
+    return card.title ? card.title : 'Untitled card';
+  }
+  const textContents = getTextActorsContent(card.scene.data);
+  if (!textContents || !textContents.length) {
+    return card.title ? card.title : 'Untitled card';
+  }
+  let text = textContents[0];
+  const firstBlockContents = text.split(/[\s]/);
   let title = '',
     ii = 0;
   while (title.length < CARD_TITLE_MAX_LEN && ii < firstBlockContents.length) {

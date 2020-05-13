@@ -402,7 +402,7 @@ const CreateCardScreen = ({
   const maybeSaveAndGoToCard = React.useCallback(
     async (nextCard) => {
       if (card?.isChanged) {
-        const title = nextCard.title ? nextCard.title : nextCard.cardId;
+        const title = Utilities.makeCardPreviewTitle(nextCard, deck);
         showActionSheetWithOptions(
           {
             title: `Save changes and go to '${title}?'`,

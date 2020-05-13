@@ -4,6 +4,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Labelled, ToolsContext, useValue } from '../Tools';
 
 import * as SceneCreatorConstants from './SceneCreatorConstants';
+import * as Utilities from '../utilities';
 
 let Colors = SceneCreatorConstants.Colors;
 
@@ -25,7 +26,7 @@ const styles = StyleSheet.create({
 
 const CardPickerTool = ({ element }) => {
   const [card, setCard] = useValue({ element, propName: 'card' });
-  const { showDestinationPicker } = React.useContext(ToolsContext);
+  const { deck, showDestinationPicker } = React.useContext(ToolsContext);
 
   return (
     <Labelled element={element}>
@@ -34,7 +35,9 @@ const CardPickerTool = ({ element }) => {
         onPress={() => {
           showDestinationPicker((card) => setCard(card));
         }}>
-        <Text style={{ color: Colors.textInput.text }}>{card ? card.title : 'Choose card...'}</Text>
+        <Text style={{ color: Colors.textInput.text }}>
+          {card ? Utilities.makeCardPreviewTitle(card, deck) : 'Choose card...'}
+        </Text>
         <MaterialIcons name="keyboard-arrow-down" size={16} color={Colors.text} />
       </TouchableOpacity>
     </Labelled>
