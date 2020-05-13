@@ -40,14 +40,6 @@ const DECK_FRAGMENT = `
       data
       sceneId
     }
-    blocks {
-      id
-      cardBlockId
-      cardBlockUpdateId
-      type
-      title
-      destinationCardId
-    }
   }
   initialCard {
     id

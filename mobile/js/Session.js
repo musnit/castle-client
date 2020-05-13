@@ -244,14 +244,6 @@ export const CARD_FRAGMENT = `
     data
     sceneId
   }
-  blocks {
-    id
-    cardBlockId
-    type
-    title
-    destinationCardId
-    metadata
-  }
 `;
 
 const DECK_FRAGMENT = `
@@ -363,14 +355,16 @@ export const saveDeck = async (card, deck, variables) => {
     title: card.title,
     backgroundImageFileId: card.backgroundImage ? card.backgroundImage.fileId : undefined,
     sceneId: undefined,
-    blocks: card.blocks.map((block) => {
-      return {
-        type: block.type,
-        destinationCardId: block.destinationCardId,
-        title: block.title,
-        metadata: block.metadata,
-      };
-    }),
+    blocks: card.blocks
+      ? card.blocks.map((block) => {
+          return {
+            type: block.type,
+            destinationCardId: block.destinationCardId,
+            title: block.title,
+            metadata: block.metadata,
+          };
+        })
+      : [],
     makeInitialCard: card.makeInitialCard || undefined,
   };
   if (variables) {
