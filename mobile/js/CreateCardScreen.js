@@ -30,12 +30,14 @@ import Viewport from './viewport';
 
 import * as GhostEvents from './ghost/GhostEvents';
 
-import { CardHeader } from './CardHeader';
+import { CardHeader, CARD_HEADER_HEIGHT } from './CardHeader';
 import { useGhostUI } from './ghost/GhostUI';
 import { getPaneData } from './Tools';
 
 const CARD_HEIGHT = (1 / Constants.CARD_RATIO) * 100 * Viewport.vw;
 const TEXT_ACTORS_PANE = 'sceneCreatorTextActors';
+
+const FULL_SHEET_HEIGHT = 100 * Viewport.vh - CARD_HEADER_HEIGHT;
 
 const styles = StyleSheet.create({
   container: {
@@ -445,11 +447,7 @@ const CreateCardScreen = ({
           onChangeMode={setSelectedTab}
           onPressBack={maybeSaveAndGoToDeck}
         />
-        <View
-          style={[
-            styles.cardBody,
-            selectedTab === 'card' ? null : { position: 'absolute', left: -30000 },
-          ]}>
+        <View style={styles.cardBody}>
           <View style={[styles.card, cardBackgroundStyles]}>
             <CardScene
               interactionEnabled={true}
@@ -472,10 +470,14 @@ const CreateCardScreen = ({
             isPlayingScene={globalActions?.performing}
           />
         </View>
-        {selectedTab === 'variables' && (
-          <DeckVariables variables={card.variables} onChange={onVariablesChange} />
-        )}
       </SafeAreaView>
+      <DeckVariables
+        variables={card.variables}
+        onChange={onVariablesChange}
+        snapPoints={[FULL_SHEET_HEIGHT]}
+        isOpen={selectedTab === 'variables'}
+        onClose={() => setSelectedTab('card')}
+      />
       <SceneCreatorPanes
         deck={deck}
         visible={selectedTab !== 'variables' && !globalActions?.performing}

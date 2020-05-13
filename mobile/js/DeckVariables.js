@@ -1,20 +1,45 @@
 import React from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import uuid from 'uuid/v4';
+
+import { BottomSheet } from './BottomSheet';
 
 import * as Constants from './Constants';
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    borderTopWidth: 1,
-    borderColor: '#666',
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 6,
+    borderTopRightRadius: 6,
+  },
+  header: {
+    flexDirection: 'row',
+  },
+  content: {
     paddingHorizontal: 16,
   },
+  back: {
+    flexShrink: 0,
+    width: 54,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+  },
+  headingContainer: {
+    width: '100%',
+    height: '100%',
+    flexShrink: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: -54, // required to center properly with back button
+    zIndex: -1, // required to prevent negative margin from blocking back button
+  },
   headingLabel: {
-    color: '#fff',
+    color: '#000',
     fontWeight: '700',
     fontSize: 16,
     width: '100%',
@@ -23,28 +48,28 @@ const styles = StyleSheet.create({
   },
   variableInputContainer: {
     borderTopWidth: 1,
-    borderColor: '#888',
+    borderColor: '#ccc',
     paddingVertical: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   variablePrefix: {
-    color: '#666',
+    color: '#bbb',
     fontSize: 18,
     fontWeight: '700',
     paddingRight: 4,
   },
   variableType: {
-    color: '#666',
+    color: '#bbb',
     fontSize: 16,
   },
   variableName: {
-    color: '#fff',
+    color: '#000',
     fontSize: 16,
     fontWeight: '700',
   },
   input: {
-    color: '#fff',
+    color: '#000',
     fontSize: 16,
     fontWeight: '700',
   },
@@ -67,10 +92,12 @@ const styles = StyleSheet.create({
   },
   button: {
     ...Constants.styles.plainButton,
+    backgroundColor: '#000',
   },
   buttonLabel: {
     paddingHorizontal: 8,
     ...Constants.styles.plainButtonLabel,
+    color: '#fff',
   },
 });
 
@@ -123,14 +150,14 @@ const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) 
       />
       <View style={{ width: '4%' }}>
         <TouchableOpacity onPress={onDelete}>
-          <Ionicon name="md-trash" size={24} color="#bbb" />
+          <Ionicon name="md-trash" size={24} color="#999" />
         </TouchableOpacity>
       </View>
     </View>
   );
 };
 
-const DeckVariables = ({ variables, onChange }) => {
+const DeckVariablesContent = ({ variables, onChange }) => {
   const { showActionSheetWithOptions } = useActionSheet();
 
   const onChangeVariable = React.useCallback(
@@ -163,8 +190,7 @@ const DeckVariables = ({ variables, onChange }) => {
   );
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.headingLabel}>Variables</Text>
+    <View style={styles.content}>
       <View style={styles.actions}>
         <TouchableOpacity style={styles.button} onPress={addVariable}>
           <Text style={styles.buttonLabel}>Add new variable</Text>
@@ -186,6 +212,30 @@ const DeckVariables = ({ variables, onChange }) => {
           />
         ))}
     </View>
+  );
+};
+
+const DeckVariables = ({ variables, onChange, onClose, ...props }) => {
+  const renderContent = () => <DeckVariablesContent variables={variables} onChange={onChange} />;
+
+  const renderHeader = () => (
+    <View style={styles.header}>
+      <TouchableOpacity style={styles.back} onPress={onClose}>
+        <Icon name="close" size={32} color="#000" />
+      </TouchableOpacity>
+      <View style={styles.headingContainer}>
+        <Text style={styles.headingLabel}>Variables</Text>
+      </View>
+    </View>
+  );
+
+  return (
+    <BottomSheet
+      renderContent={renderContent}
+      renderHeader={renderHeader}
+      style={styles.container}
+      {...props}
+    />
   );
 };
 
