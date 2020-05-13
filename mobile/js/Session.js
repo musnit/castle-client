@@ -302,6 +302,57 @@ async function updateScene(cardId, card) {
   }
 }
 
+async function createNewDestinationCards(deckId, sceneData) {
+  // if any 'send player to card' rule has a LocalId destination, save a blank card there
+  let actors, data;
+  try {
+    if (deckId && sceneData) {
+      data = JSON.parse(sceneData);
+      actors = data.snapshot?.actors;
+    }
+  } catch (_) {}
+
+  let cardsCreated = [];
+  if (actors) {
+    for (let ii = 0; ii < actors.length; ii++) {
+      const actor = actors[ii];
+      const components = actor?.bp?.components;
+      if (components && components.Text && components.Rules && components.Rules.rules) {
+        for (let jj = 0; jj < components.Rules.rules.length; jj++) {
+          const rule = components.Rules.rules[jj];
+          if (rule.trigger?.name === 'tap' && rule.response?.name === 'send player to card') {
+            const cardId = rule.response.params?.card?.cardId;
+            if (cardId && LocalId.isLocalId(cardId)) {
+              const result = await apolloClient.mutate({
+                mutation: gql`
+                  mutation UpdateDeckAndCard($deck: DeckInput!, $card: CardInput!) {
+                    updateCardAndDeckV2(
+                      deck: $deck,
+                      card: $card,
+                    ) {
+                      card {
+                        ${CARD_FRAGMENT}
+                      }
+                    }
+                  }
+                `,
+                variables: {
+                  deck: { deckId },
+                  card: { cardId: cardId, blocks: [] },
+                },
+              });
+              const cardCreated = result.data.updateCardAndDeckV2.card;
+              cardsCreated.push(cardCreated);
+              LocalId.setIdIsSaved(cardId);
+            }
+          }
+        }
+      }
+    }
+  }
+  return cardsCreated;
+}
+
 export const saveDeck = async (card, deck, variables) => {
   const deckUpdateFragment = {
     deckId: deck.deckId,
@@ -365,31 +416,10 @@ export const saveDeck = async (card, deck, variables) => {
     LocalId.setIdIsSaved(deck.deckId);
   }
 
-  // if any block has a LocalId destination, save a blank card there
-  for (let ii = 0; ii < card.blocks.length; ii++) {
-    const block = card.blocks[ii];
-    if (block.type === 'choice' && LocalId.isLocalId(block.destinationCardId)) {
-      const result = await apolloClient.mutate({
-        mutation: gql`
-        mutation UpdateDeckAndCard($deck: DeckInput!, $card: CardInput!) {
-          updateCardAndDeckV2(
-            deck: $deck,
-            card: $card,
-          ) {
-            card {
-              ${CARD_FRAGMENT}
-            }
-          }
-        }
-      `,
-        variables: {
-          deck: { deckId: deck.deckId },
-          card: { cardId: block.destinationCardId, blocks: [] },
-        },
-      });
-      newCards.push(result.data.updateCardAndDeckV2.card);
-      LocalId.setIdIsSaved(block.destinationCardId);
-    }
+  // create any destination cards marked as 'new' which are referenced by this card
+  const cardsCreated = await createNewDestinationCards(deck.deckId, card.changedSceneData);
+  if (cardsCreated) {
+    newCards = newCards.concat(cardsCreated);
   }
 
   return {
