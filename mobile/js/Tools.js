@@ -467,7 +467,8 @@ const BaseButton = ({ element, selected, style, onPress }) => {
               height: 44,
               alignItems: 'center',
               justifyContent: 'center',
-              margin: 6,
+              marginHorizontal: 4,
+              marginTop: 4,
               backgroundColor: selected || element.props.selected ? Colors.button.selected : '#fff',
               borderRadius: 1000,
             }

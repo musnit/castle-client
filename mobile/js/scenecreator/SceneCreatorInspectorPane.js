@@ -28,7 +28,8 @@ export default SceneCreatorInspectorPane = ({ element, visible, context }) => {
         style={{
           flexDirection: 'row',
           justifyContent: 'center',
-          padding: 8,
+          paddingHorizontal: 8,
+          paddingVertical: 4,
         }}
       />
     ) : null;
