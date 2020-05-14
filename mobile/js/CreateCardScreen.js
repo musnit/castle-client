@@ -373,6 +373,7 @@ const CreateCardScreen = ({
 
   const [addingBlueprint, setAddingBlueprint] = React.useState(false);
 
+  const isPlaying = globalActions?.performing;
   const hasSelection = globalActions?.hasSelection;
   React.useEffect(() => {
     if (hasSelection) {
@@ -391,7 +392,8 @@ const CreateCardScreen = ({
     const data = getPaneData(root.panes[TEXT_ACTORS_PANE]);
     if (data) {
       textActors = data.textActors;
-      isTextActorSelected = Object.entries(textActors).some(([_, actor]) => actor.isSelected);
+      isTextActorSelected =
+        !isPlaying && Object.entries(textActors).some(([_, actor]) => actor.isSelected);
     }
   }
 
@@ -485,14 +487,19 @@ const CreateCardScreen = ({
               onMessage={onSceneMessage}
             />
             <View style={styles.textActorsContainer}>
-              <CardText textActors={textActors} card={card} onSelect={selectActor} isEditable />
+              <CardText
+                textActors={textActors}
+                card={card}
+                onSelect={selectActor}
+                isEditable={!isPlaying}
+              />
             </View>
           </View>
           <CardBottomActions
             card={card}
             onAdd={() => setAddingBlueprint(true)}
             onSave={saveAndGoToDeck}
-            isPlayingScene={globalActions?.performing}
+            isPlayingScene={isPlaying}
           />
         </View>
       </SafeAreaView>
@@ -502,12 +509,12 @@ const CreateCardScreen = ({
         onChange={onVariablesChange}
         onSelectBackupData={onSelectBackupData}
         snapPoints={[FULL_SHEET_HEIGHT]}
-        isOpen={selectedTab === 'variables' && !globalActions?.performing}
+        isOpen={selectedTab === 'variables' && !isPlaying}
         onClose={() => setSelectedTab('card')}
       />
       <SceneCreatorPanes
         deck={deck}
-        visible={selectedTab !== 'variables' && !globalActions?.performing}
+        visible={selectedTab !== 'variables' && !isPlaying}
         hasSelection={hasSelection}
         addingBlueprint={addingBlueprint}
       />

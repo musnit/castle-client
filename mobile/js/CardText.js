@@ -49,7 +49,11 @@ const TextActor = (props) => {
   if (actor.hasTapTrigger) {
     return (
       <TouchableOpacity
-        style={[styles.choiceBlock, actor.isSelected ? styles.selected : null, props.style]}
+        style={[
+          styles.choiceBlock,
+          actor.isSelected && props.isEditable ? styles.selected : null,
+          props.style,
+        ]}
         onPress={props.onSelect}>
         <Text style={styles.choiceBlockDescription}>{actor.content}</Text>
       </TouchableOpacity>
@@ -57,7 +61,11 @@ const TextActor = (props) => {
   } else {
     return (
       <TouchableOpacity
-        style={[styles.textBlock, actor.isSelected ? styles.selected : null, props.style]}
+        style={[
+          styles.textBlock,
+          actor.isSelected && props.isEditable ? styles.selected : null,
+          props.style,
+        ]}
         onPress={props.onSelect}
         disabled={!props.isEditable}>
         <Text style={styles.textBlockDescription}>{actor.content}</Text>
