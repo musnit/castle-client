@@ -321,12 +321,8 @@ class CreateCardScreenDataProvider extends React.Component {
 
   _handleSceneRevertData = (data) => {
     // data is a JS object with a `snapshot` key at the top level
-    this._handleCardChange({
-      scene: {
-        ...this.state.card.scene,
-        data,
-      },
-      changedSceneData: JSON.stringify(data),
+    GhostEvents.sendAsync('LOAD_SNAPSHOT', {
+      data,
     });
   };
 
