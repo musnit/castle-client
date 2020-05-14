@@ -6,6 +6,8 @@ import { useActionSheet } from '@expo/react-native-action-sheet';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import uuid from 'uuid/v4';
 
+import * as Session from '../Session';
+
 const styles = StyleSheet.create({
   content: {
     padding: 16,
@@ -44,7 +46,24 @@ const formatDate = (dateString) => {
   return dateFormatter.format(new Date(dateString));
 };
 
-const SceneBackups = ({ cardId, onSelectBackup }) => {
+const getBackupData = async (cardId, version) => {
+  const result = await Session.apolloClient.query({
+    query: gql`
+      query SceneBackup($cardId: ID!, $version: Int!) {
+        sceneBackup(cardId: $cardId, version: $version) {
+          data
+        }
+      }
+    `,
+    variables: { cardId, version },
+  });
+  if (result && result.data) {
+    return result.data.sceneBackup.data;
+  }
+  return null;
+};
+
+const SceneBackups = ({ cardId, onSelectSceneData }) => {
   const { showActionSheetWithOptions } = useActionSheet();
   let backups;
 
@@ -78,11 +97,16 @@ const SceneBackups = ({ cardId, onSelectBackup }) => {
         },
         async (buttonIndex) => {
           if (buttonIndex === 0) {
-            onSelectBackup(backups[index]);
+            const data = await getBackupData(cardId, backups[index].version);
+            if (data) {
+              onSelectSceneData(data);
+            } else {
+              console.warn(`Failed to fetch backup scene data`);
+            }
           }
         }
       ),
-    [backups, onSelectBackup]
+    [backups, onSelectSceneData]
   );
 
   return (

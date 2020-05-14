@@ -315,6 +315,17 @@ class CreateCardScreenDataProvider extends React.Component {
     }
   };
 
+  _handleSceneRevertData = (data) => {
+    // data is a JS object with a `snapshot` key at the top level
+    this._handleCardChange({
+      scene: {
+        ...this.state.card.scene,
+        data,
+      },
+      changedSceneData: JSON.stringify(data),
+    });
+  };
+
   render() {
     const { deck, card, deckState } = this.state;
     return (
@@ -329,6 +340,7 @@ class CreateCardScreenDataProvider extends React.Component {
           saveAndGoToCard={this._saveAndGoToCard}
           onVariablesChange={this._handleVariablesChange}
           onSceneMessage={this._handleSceneMessage}
+          onSceneRevertData={this._handleSceneRevertData}
           onSceneScreenshot={this._handleSceneScreenshot}
         />
       </GhostUI.Provider>
@@ -347,6 +359,7 @@ const CreateCardScreen = ({
   onVariablesChange,
   onSceneMessage,
   onSceneScreenshot,
+  onSceneRevertData,
 }) => {
   const { showActionSheetWithOptions } = useActionSheet();
   const { root, globalActions, sendGlobalAction } = useGhostUI();
@@ -425,6 +438,14 @@ const CreateCardScreen = ({
     [card?.isChanged, saveAndGoToCard, goToCard]
   );
 
+  const onSelectBackupData = React.useCallback(
+    (data) => {
+      setSelectedTab('card');
+      onSceneRevertData(data);
+    },
+    [onSceneRevertData, setSelectedTab]
+  );
+
   GhostEvents.useListen({
     eventName: 'NAVIGATE_TO_CARD',
     handler: ({ card }) => maybeSaveAndGoToCard(card),
@@ -475,6 +496,7 @@ const CreateCardScreen = ({
         cardId={card.cardId}
         variables={card.variables}
         onChange={onVariablesChange}
+        onSelectBackupData={onSelectBackupData}
         snapPoints={[FULL_SHEET_HEIGHT]}
         isOpen={selectedTab === 'variables' && !globalActions?.performing}
         onClose={() => setSelectedTab('card')}

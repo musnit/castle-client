@@ -59,14 +59,14 @@ const TAB_ITEMS = [
   },
 ];
 
-const CardToolsSheet = ({ cardId, variables, onChange, onClose, ...props }) => {
+const CardToolsSheet = ({ cardId, variables, onChange, onClose, onSelectBackupData, ...props }) => {
   const [mode, setMode] = React.useState('variables');
 
   // TODO: memo
   const renderContent =
     mode === 'variables'
       ? () => <DeckVariables variables={variables} onChange={onChange} />
-      : () => <SceneBackups cardId={cardId} onSelectBackup={() => {}} />;
+      : () => <SceneBackups cardId={cardId} onSelectSceneData={onSelectBackupData} />;
 
   const renderHeader = () => (
     <View style={styles.header}>
