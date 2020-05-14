@@ -58,4 +58,5 @@ export const EMPTY_CARD = {
     sceneId: Math.floor(Math.random() * 100000),
     data: { empty: true },
   },
+  changedSceneData: { empty: true },
 };

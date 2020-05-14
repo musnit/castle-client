@@ -278,22 +278,6 @@ export const prefetchCardsAsync = async ({ cardId }) => {
   });
 };
 
-async function updateScene(cardId, card) {
-  // Save scene changes
-  if (card.scene && card.changedSceneData) {
-    await apolloClient.mutate({
-      mutation: gql`
-        mutation UpdateScene($cardId: ID, $data: Json!) {
-          updateScene(cardId: $cardId, data: $data) {
-            sceneId
-          }
-        }
-      `,
-      variables: { cardId, data: card.changedSceneData },
-    });
-  }
-}
-
 async function createNewDestinationCards(deckId, sceneData) {
   // if any 'send player to card' rule has a LocalId destination, save a blank card there
   let actors, data;
@@ -354,7 +338,7 @@ export const saveDeck = async (card, deck, variables) => {
     cardId: card.cardId,
     title: card.title,
     backgroundImageFileId: card.backgroundImage ? card.backgroundImage.fileId : undefined,
-    sceneId: undefined,
+    sceneData: card.changedSceneData,
     blocks: card.blocks
       ? card.blocks.map((block) => {
           return {
@@ -399,8 +383,6 @@ export const saveDeck = async (card, deck, variables) => {
   } else {
     newCards.push(updatedCard);
   }
-
-  await updateScene(updatedCard.cardId, card);
 
   // mark any local ids as nonlocal
   if (LocalId.isLocalId(card.cardId)) {
