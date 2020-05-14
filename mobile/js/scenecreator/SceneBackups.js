@@ -6,6 +6,7 @@ import { useActionSheet } from '@expo/react-native-action-sheet';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import uuid from 'uuid/v4';
 
+import * as Constants from '../Constants';
 import * as Session from '../Session';
 
 const styles = StyleSheet.create({
@@ -33,18 +34,26 @@ const styles = StyleSheet.create({
   },
 });
 
-const dateFormatter = new Intl.DateTimeFormat('en-US', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-  hour: 'numeric',
-  minute: 'numeric',
-  second: 'numeric',
-});
+let formatDate;
 
-const formatDate = (dateString) => {
-  return dateFormatter.format(new Date(dateString));
-};
+if (Constants.iOS) {
+  const dateFormatter = new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+  });
+
+  formatDate = (dateString) => {
+    return dateFormatter.format(new Date(dateString));
+  };
+} else {
+  formatDate = (dateString) => {
+    return new Date(dateString).toLocaleString();
+  };
+}
 
 const getBackupData = async (cardId, version) => {
   const result = await Session.apolloClient.query({
