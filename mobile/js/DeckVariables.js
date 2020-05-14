@@ -1,50 +1,14 @@
 import React from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import uuid from 'uuid/v4';
-
-import { BottomSheet } from './BottomSheet';
 
 import * as Constants from './Constants';
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 6,
-    borderTopRightRadius: 6,
-  },
-  header: {
-    flexDirection: 'row',
-  },
   content: {
-    paddingHorizontal: 16,
-  },
-  back: {
-    flexShrink: 0,
-    width: 54,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 4,
-  },
-  headingContainer: {
-    width: '100%',
-    height: '100%',
-    flexShrink: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: -54, // required to center properly with back button
-    zIndex: -1, // required to prevent negative margin from blocking back button
-  },
-  headingLabel: {
-    color: '#000',
-    fontWeight: '700',
-    fontSize: 16,
-    width: '100%',
-    textAlign: 'center',
-    paddingVertical: 16,
+    padding: 16,
   },
   variableInputContainer: {
     borderTopWidth: 1,
@@ -157,7 +121,7 @@ const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) 
   );
 };
 
-const DeckVariablesContent = ({ variables, onChange }) => {
+const DeckVariables = ({ variables, onChange }) => {
   const { showActionSheetWithOptions } = useActionSheet();
 
   const onChangeVariable = React.useCallback(
@@ -212,30 +176,6 @@ const DeckVariablesContent = ({ variables, onChange }) => {
           />
         ))}
     </View>
-  );
-};
-
-const DeckVariables = ({ variables, onChange, onClose, ...props }) => {
-  const renderContent = () => <DeckVariablesContent variables={variables} onChange={onChange} />;
-
-  const renderHeader = () => (
-    <View style={styles.header}>
-      <TouchableOpacity style={styles.back} onPress={onClose}>
-        <Icon name="close" size={32} color="#000" />
-      </TouchableOpacity>
-      <View style={styles.headingContainer}>
-        <Text style={styles.headingLabel}>Variables</Text>
-      </View>
-    </View>
-  );
-
-  return (
-    <BottomSheet
-      renderContent={renderContent}
-      renderHeader={renderHeader}
-      style={styles.container}
-      {...props}
-    />
   );
 };
 

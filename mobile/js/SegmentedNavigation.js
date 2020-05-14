@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const styles = StyleSheet.create({
+const darkBackgroundStyles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -24,8 +24,32 @@ const styles = StyleSheet.create({
   },
 });
 
+const lightBackgroundStyles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  item: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  selectedItem: {
+    borderBottomWidth: 2,
+    borderColor: '#000',
+  },
+  name: {
+    color: '#888',
+  },
+  selectedName: {
+    color: '#000',
+  },
+});
+
 const SegmentedNavigation = (props) => {
-  const { items, selectedItem, onSelectItem } = props;
+  const { items, selectedItem, onSelectItem, isLightBackground } = props;
+  const styles = isLightBackground ? lightBackgroundStyles : darkBackgroundStyles;
+
   return (
     <View style={styles.container}>
       {items.map((item) => (

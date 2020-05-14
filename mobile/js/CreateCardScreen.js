@@ -22,8 +22,8 @@ import * as Session from './Session';
 import * as Utilities from './utilities';
 
 import CardText from './CardText';
+import CardToolsSheet from './scenecreator/CardToolsSheet';
 import CardScene from './CardScene';
-import DeckVariables from './DeckVariables';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import SceneCreatorPanes from './scenecreator/SceneCreatorPanes';
 import Viewport from './viewport';
@@ -471,7 +471,7 @@ const CreateCardScreen = ({
           />
         </View>
       </SafeAreaView>
-      <DeckVariables
+      <CardToolsSheet
         variables={card.variables}
         onChange={onVariablesChange}
         snapPoints={[FULL_SHEET_HEIGHT]}
