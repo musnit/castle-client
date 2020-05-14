@@ -173,6 +173,10 @@ class CreateCardScreenDataProvider extends React.Component {
       // property of the deck)
       card.variables = deck.variables;
 
+      if (!card.scene) {
+        card.scene = Constants.EMPTY_CARD.scene;
+      }
+
       this._mounted &&
         this.setState(
           {
