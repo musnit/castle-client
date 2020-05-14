@@ -121,6 +121,8 @@ export const BottomSheet = ({
     [snapToClosest]
   );
 
+  const headerHeight = 48; // TODO: use as prop
+
   return (
     <Animated.View style={[styles.container, { transform: [{ translateY: snapY }] }, style]}>
       {/* inner view constrains the height of the scrollview to the bottom of the screen. */}
@@ -133,6 +135,7 @@ export const BottomSheet = ({
         <KeyboardAwareScrollView
           style={styles.content}
           enableOnAndroid={true}
+          extraHeight={containerHeight - headerHeight}
           keyboardShouldPersistTaps="handled">
           {renderContent()}
         </KeyboardAwareScrollView>

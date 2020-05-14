@@ -20,7 +20,7 @@ export default SceneCreatorPane = React.memo(
 
     const snapPoints = [
       (headerHeight ? headerHeight : 64) + insets.bottom,
-      SCREEN_HEIGHT * 0.5,
+      SCREEN_HEIGHT * 0.6,
       SCREEN_HEIGHT - CARD_HEADER_HEIGHT,
     ];
 
