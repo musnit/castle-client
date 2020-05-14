@@ -329,7 +329,7 @@ async function createNewDestinationCards(deckId, sceneData) {
   return cardsCreated;
 }
 
-export const saveDeck = async (card, deck, variables) => {
+export const saveDeck = async (card, deck, variables, isAutosave = false) => {
   const deckUpdateFragment = {
     deckId: deck.deckId,
     title: deck.title,
@@ -357,10 +357,11 @@ export const saveDeck = async (card, deck, variables) => {
 
   const result = await apolloClient.mutate({
     mutation: gql`
-        mutation UpdateDeckAndCard($deck: DeckInput!, $card: CardInput!) {
+        mutation UpdateDeckAndCard($deck: DeckInput!, $card: CardInput!, $isAutosave: Boolean) {
           updateCardAndDeckV2(
             deck: $deck,
             card: $card,
+            isAutosave: $isAutosave,
           ) {
             deck {
               ${DECK_FRAGMENT}
@@ -371,7 +372,7 @@ export const saveDeck = async (card, deck, variables) => {
           }
         }
       `,
-    variables: { deck: deckUpdateFragment, card: cardUpdateFragment },
+    variables: { deck: deckUpdateFragment, card: cardUpdateFragment, isAutosave },
   });
 
   let updatedCard = result.data.updateCardAndDeckV2.card;

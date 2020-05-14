@@ -221,6 +221,9 @@ class CreateCardScreenDataProvider extends React.Component {
     });
   };
 
+  _saveBackup = () =>
+    Session.saveDeck(this.state.card, this.state.deck, this.state.card.variables, true);
+
   _save = async () => {
     const { card, deck } = await Session.saveDeck(
       this.state.card,
@@ -302,6 +305,7 @@ class CreateCardScreenDataProvider extends React.Component {
   _handleSceneMessage = (message) => {
     switch (message.messageType) {
       case 'SAVE_SCENE': {
+        this._saveBackup();
         this._handleCardChange({
           changedSceneData: message.data,
         });
