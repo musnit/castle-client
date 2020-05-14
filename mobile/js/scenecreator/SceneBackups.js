@@ -1,4 +1,6 @@
 import React from 'react';
+import gql from 'graphql-tag';
+import { useQuery } from '@apollo/react-hooks';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -29,27 +31,42 @@ const styles = StyleSheet.create({
   },
 });
 
-const DUMMY_BACKUPS = [
-  {
-    version: 420,
-    isAutosave: true,
-    createdTime: '2020-05-13 14:24:43.000',
-  },
-  {
-    version: 421,
-    isAutosave: true,
-    createdTime: '2020-05-13 14:24:43.000',
-  },
-  {
-    version: 422,
-    isAutosave: true,
-    createdTime: '2020-05-13 14:24:43.000',
-  },
-];
+const dateFormatter = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  hour: 'numeric',
+  minute: 'numeric',
+  second: 'numeric',
+});
 
-const SceneBackups = ({ onSelectBackup }) => {
+const formatDate = (dateString) => {
+  return dateFormatter.format(new Date(dateString));
+};
+
+const SceneBackups = ({ cardId, onSelectBackup }) => {
   const { showActionSheetWithOptions } = useActionSheet();
-  let backups = DUMMY_BACKUPS;
+  let backups;
+
+  const queryBackups = useQuery(
+    gql`
+      query CardBackups($cardId: ID!) {
+        card(cardId: $cardId) {
+          id
+          sceneBackups {
+            version
+            isAutosave
+            createdTime
+          }
+        }
+      }
+    `,
+    { variables: { cardId }, fetchPolicy: 'no-cache' }
+  );
+
+  if (!queryBackups.loading && !queryBackups.error && queryBackups.data) {
+    backups = queryBackups.data.card.sceneBackups;
+  }
 
   const maybeSelectBackup = React.useCallback(
     (index) =>
@@ -77,7 +94,7 @@ const SceneBackups = ({ onSelectBackup }) => {
       {backups &&
         backups.map((backup, ii) => (
           <View style={styles.backupContainer} key={`backup-${ii}-${backup.version}`}>
-            <Text style={styles.backupLabel}>{backup.createdTime}</Text>
+            <Text style={styles.backupLabel}>{formatDate(backup.createdTime)}</Text>
             <TouchableOpacity
               onPress={() => maybeSelectBackup(ii)}
               style={{ paddingHorizontal: 8 }}>

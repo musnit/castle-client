@@ -472,6 +472,7 @@ const CreateCardScreen = ({
         </View>
       </SafeAreaView>
       <CardToolsSheet
+        cardId={card.cardId}
         variables={card.variables}
         onChange={onVariablesChange}
         snapPoints={[FULL_SHEET_HEIGHT]}
