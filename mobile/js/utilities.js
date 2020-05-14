@@ -31,7 +31,7 @@ export const makeCardPreviewTitle = (card, deck) => {
   if (LocalId.isLocalId(card.cardId)) {
     return 'New card';
   }
-  if ((!card.scene || !card.scene.data) && deck.cards) {
+  if ((!card.scene || !card.scene.data) && deck && deck.cards) {
     // card is partial. look up full card in deck, if available
     let cardToPreview = deck.cards.find((other) => other.cardId === card.cardId);
     if (cardToPreview) {
