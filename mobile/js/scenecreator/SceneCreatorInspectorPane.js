@@ -48,6 +48,7 @@ export default SceneCreatorInspectorPane = ({ element, visible, context }) => {
       }
       context={context}
       renderHeader={renderHeader}
+      persistLastSnapWhenOpened
     />
   );
 };

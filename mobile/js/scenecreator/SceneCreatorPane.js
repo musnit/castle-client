@@ -11,7 +11,7 @@ import Viewport from '../viewport';
 const SCREEN_HEIGHT = 100 * Viewport.vh;
 
 export default SceneCreatorPane = React.memo(
-  ({ element, visible, context, renderHeader, headerHeight }) => {
+  ({ element, visible, context, renderHeader, headerHeight, ...props }) => {
     const insets = useSafeArea();
 
     const renderContent = () => (
@@ -34,6 +34,7 @@ export default SceneCreatorPane = React.memo(
         onOpenEnd={Keyboard.dismiss}
         onCloseEnd={Keyboard.dismiss}
         style={{ backgroundColor: '#fff', borderTopLeftRadius: 8, borderTopRightRadius: 8 }}
+        {...props}
       />
     );
   }

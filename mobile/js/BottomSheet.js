@@ -41,6 +41,7 @@ export const BottomSheet = ({
   isOpen = false,
   snapPoints = [32, 256],
   initialSnap = 0,
+  persistLastSnapWhenOpened = false,
   renderHeader = () => null,
   renderContent = () => null,
   onClose,
@@ -49,6 +50,7 @@ export const BottomSheet = ({
   style = {},
 }) => {
   const insets = useSafeArea();
+  let lastSnap = React.useRef(initialSnap);
 
   // translation from bottom of the screen
   let snapY = React.useRef(new Animated.Value(SCREEN_HEIGHT)).current;
@@ -97,14 +99,17 @@ export const BottomSheet = ({
       } else if (signDist > SWIPE_MIN_DISTANCE && velocity > SWIPE_MIN_VELOCITY && minIndex > 0) {
         minIndex -= 1;
       }
+      if (persistLastSnapWhenOpened) {
+        lastSnap.current = minIndex;
+      }
       return snapTo(SCREEN_HEIGHT - snapPoints[minIndex], velocity);
     },
-    [snapTo, snapPoints]
+    [snapTo, snapPoints, persistLastSnapWhenOpened]
   );
 
   React.useEffect(() => {
     if (isOpen) {
-      snapTo(SCREEN_HEIGHT - snapPoints[initialSnap], 0, onOpenEnd);
+      snapTo(SCREEN_HEIGHT - snapPoints[lastSnap.current], 0, onOpenEnd);
     } else {
       snapY.flattenOffset();
       snapTo(SCREEN_HEIGHT, 0, onCloseEnd);
