@@ -296,30 +296,36 @@ async function createNewDestinationCards(deckId, sceneData) {
       if (components && components.Text && components.Rules && components.Rules.rules) {
         for (let jj = 0; jj < components.Rules.rules.length; jj++) {
           const rule = components.Rules.rules[jj];
-          if (rule.trigger?.name === 'tap' && rule.response?.name === 'send player to card') {
-            const cardId = rule.response.params?.card?.cardId;
-            if (cardId && LocalId.isLocalId(cardId)) {
-              const result = await apolloClient.mutate({
-                mutation: gql`
-                  mutation UpdateDeckAndCard($deck: DeckInput!, $card: CardInput!) {
-                    updateCardAndDeckV2(
-                      deck: $deck,
-                      card: $card,
-                    ) {
-                      card {
-                        ${CARD_FRAGMENT}
+          if (rule.trigger?.name === 'tap') {
+            let response = rule.response;
+            while (response && response.params) {
+              if (response.name === 'send player to card') {
+                const cardId = response.params.card?.cardId;
+                if (cardId && LocalId.isLocalId(cardId)) {
+                  const result = await apolloClient.mutate({
+                    mutation: gql`
+                      mutation UpdateDeckAndCard($deck: DeckInput!, $card: CardInput!) {
+                        updateCardAndDeckV2(
+                          deck: $deck,
+                          card: $card,
+                        ) {
+                          card {
+                            ${CARD_FRAGMENT}
+                          }
+                        }
                       }
-                    }
-                  }
-                `,
-                variables: {
-                  deck: { deckId },
-                  card: { cardId: cardId, blocks: [] },
-                },
-              });
-              const cardCreated = result.data.updateCardAndDeckV2.card;
-              cardsCreated.push(cardCreated);
-              LocalId.setIdIsSaved(cardId);
+                    `,
+                    variables: {
+                      deck: { deckId },
+                      card: { cardId: cardId, blocks: [] },
+                    },
+                  });
+                  const cardCreated = result.data.updateCardAndDeckV2.card;
+                  cardsCreated.push(cardCreated);
+                  LocalId.setIdIsSaved(cardId);
+                }
+              }
+              response = response.params.nextResponse;
             }
           }
         }
