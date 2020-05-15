@@ -84,8 +84,8 @@ const styles = StyleSheet.create({
   },
 });
 
-const CardBottomActions = ({ card, onAdd, onSave, isPlayingScene }) => {
-  if (isPlayingScene) {
+const CardBottomActions = ({ card, onAdd, onSave, isPlayingScene, isSceneLoaded }) => {
+  if (isPlayingScene || !isSceneLoaded) {
     return null;
   }
   return (
@@ -380,6 +380,7 @@ const CreateCardScreen = ({
 
   const [addingBlueprint, setAddingBlueprint] = React.useState(false);
 
+  const isSceneLoaded = !!globalActions;
   const isPlaying = globalActions?.performing;
   const hasSelection = globalActions?.hasSelection;
   React.useEffect(() => {
@@ -506,6 +507,7 @@ const CreateCardScreen = ({
             card={card}
             onAdd={() => setAddingBlueprint(true)}
             onSave={saveAndGoToDeck}
+            isSceneLoaded={isSceneLoaded}
             isPlayingScene={isPlaying}
           />
         </View>
