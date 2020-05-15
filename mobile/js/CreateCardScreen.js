@@ -39,6 +39,8 @@ const TEXT_ACTORS_PANE = 'sceneCreatorTextActors';
 
 const FULL_SHEET_HEIGHT = 100 * Viewport.vh - CARD_HEADER_HEIGHT;
 
+const AUTOBACKUP_INTERVAL_MS = 2 * 60 * 1000;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -123,6 +125,10 @@ class CreateCardScreenDataProvider extends React.Component {
   }
 
   componentWillUnmount() {
+    if (this._backupInterval) {
+      clearInterval(this._backupInterval);
+      this._backupInterval = null;
+    }
     this._mounted = false;
   }
 
@@ -177,7 +183,7 @@ class CreateCardScreenDataProvider extends React.Component {
         card.scene = Constants.EMPTY_CARD.scene;
       }
 
-      this._mounted &&
+      if (this._mounted) {
         this.setState(
           {
             deck,
@@ -191,6 +197,8 @@ class CreateCardScreenDataProvider extends React.Component {
             });
           }
         );
+        this._backupInterval = setInterval(this._saveBackup, AUTOBACKUP_INTERVAL_MS);
+      }
     }
   };
 
@@ -304,8 +312,7 @@ class CreateCardScreenDataProvider extends React.Component {
 
   _handleSceneMessage = (message) => {
     switch (message.messageType) {
-      case 'SAVE_SCENE': {
-        this._saveBackup();
+      case 'UPDATE_SCENE': {
         this._handleCardChange({
           changedSceneData: message.data,
         });
