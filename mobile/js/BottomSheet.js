@@ -2,8 +2,11 @@ import React from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useSafeArea } from 'react-native-safe-area-context';
 
 import Viewport from './viewport';
+
+import * as Constants from './Constants';
 
 const SPRING_CONFIG = {
   tension: 150,
@@ -45,6 +48,8 @@ export const BottomSheet = ({
   onOpenEnd,
   style = {},
 }) => {
+  const insets = useSafeArea();
+
   // translation from bottom of the screen
   let snapY = React.useRef(new Animated.Value(SCREEN_HEIGHT)).current;
   const [containerHeight, setContainerHeight] = React.useState(0);
@@ -135,7 +140,8 @@ export const BottomSheet = ({
         <KeyboardAwareScrollView
           style={styles.content}
           enableOnAndroid={true}
-          extraHeight={containerHeight - headerHeight}
+          extraHeight={Constants.iOS ? containerHeight - headerHeight : 0}
+          extraScrollHeight={Constants.Android ? insets.bottom : 0}
           keyboardShouldPersistTaps="handled">
           {renderContent()}
         </KeyboardAwareScrollView>
