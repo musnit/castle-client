@@ -338,7 +338,7 @@ export const saveDeck = async (card, deck, variables, isAutosave = false) => {
     cardId: card.cardId,
     title: card.title,
     backgroundImageFileId: card.backgroundImage ? card.backgroundImage.fileId : undefined,
-    sceneData: card.changedSceneData,
+    sceneData: card.changedSceneData ? card.changedSceneData : card.scene.data,
     blocks: card.blocks
       ? card.blocks.map((block) => {
           return {
