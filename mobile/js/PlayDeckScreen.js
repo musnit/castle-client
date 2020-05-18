@@ -1,5 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { useListen } from './ghost/GhostEvents';
 
 import PlayDeckNavigator from './PlayDeckNavigator';
 
@@ -19,12 +21,24 @@ const styles = StyleSheet.create({
   },
 });
 
-const PlayDeckScreen = (props) => (
-  <View style={styles.container}>
-    <View style={styles.deck}>
-      <PlayDeckNavigator {...props} />
+const PlayDeckScreen = (props) => {
+  const { popToTop } = useNavigation();
+  if (Constants.Android) {
+    // after the game loads, it listens for keyboard events and
+    // causes react native's back button event to fail
+    useListen({
+      eventName: 'CASTLE_SYSTEM_BACK_BUTTON',
+      handler: popToTop,
+    });
+  }
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.deck}>
+        <PlayDeckNavigator {...props} />
+      </View>
     </View>
-  </View>
-);
+  );
+};
 
 export default PlayDeckScreen;
