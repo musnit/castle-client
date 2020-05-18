@@ -1,17 +1,5 @@
 import React, { useState, useRef } from 'react';
 
-import * as MainSwitcher from './MainSwitcher';
-
-// Navigate to a game given its `gameId` or `gameUri`. `focus` is whether to shift focus to the game view.
-//
-// `extras` carries extra parameters to the game:
-//   `referrerGame`: Game that navigated to this game through `castle.game.load`, if any
-//   `initialParams`: `params` parameter passed to `castle.game.load` while navigating to this game, if any
-//   `sessionId`: Session ID for the multiplayer session, if any
-//
-// This function is actually set below when `GameScreen` is mounted.
-export let goToGame = ({ gameId, gameUri, focus, extras }) => {};
-
 // Top-level component which stores the `gameId` or  `gameUri` state. This component is mounted for the
 // entire lifetime of the app and mounts fresh `GameView` instances for each game run.
 const GameScreen = ({ windowed = false }) => {
@@ -22,28 +10,6 @@ const GameScreen = ({ windowed = false }) => {
     reloadCount: 0,
     extras: {},
   });
-
-  goToGame = async ({ gameId: newGameId, gameUri: newGameUri, focus = true, extras = {} }) => {
-    // Use a bit of a delay so we don't set state within `GameView` handlers
-    await new Promise((resolve) => setTimeout(resolve, 40));
-
-    if (newGameId || newGameUri) {
-      MainSwitcher.setGameRunning(true);
-      if (focus) {
-        MainSwitcher.switchTo('game');
-      }
-    } else {
-      MainSwitcher.switchTo('navigator');
-      MainSwitcher.setGameRunning(false);
-    }
-
-    setState({
-      ...state,
-      gameId: newGameId ? newGameId : null,
-      gameUri: newGameId ? null : newGameUri,
-      extras,
-    });
-  };
 
   const onPressReload = async () => {
     // Use a bit of a delay so we don't set state within `GameView` handlers

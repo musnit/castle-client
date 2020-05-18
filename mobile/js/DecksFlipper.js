@@ -15,7 +15,6 @@ import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 
 import CardCell from './CardCell';
 import HomeOverlay from './HomeOverlay';
-import { MainSwitcherContext } from './MainSwitcher';
 import PlayDeckActions from './PlayDeckActions';
 import PlayDeckNavigator from './PlayDeckNavigator';
 import Viewport from './viewport';
@@ -88,7 +87,6 @@ const styles = StyleSheet.create({
 // renders the current focused deck in the feed
 // including the interactive scene.
 const CurrentDeckCell = ({ deck, paused }) => {
-  const { mode: mainSwitcherMode } = React.useContext(MainSwitcherContext); // Dealing with legacy game loading path
   const isFocused = useIsFocused();
 
   const [ready, setReady] = React.useState(false);
@@ -97,7 +95,7 @@ const CurrentDeckCell = ({ deck, paused }) => {
     let active = true;
     if (deck) {
       timeout = setTimeout(() => {
-        active && mainSwitcherMode === 'navigator' && isFocused && setReady(true);
+        active && isFocused && setReady(true);
       }, 10);
     } else {
       active && setReady(false);
@@ -109,7 +107,7 @@ const CurrentDeckCell = ({ deck, paused }) => {
         clearTimeout(timeout);
       }
     };
-  }, [deck, mainSwitcherMode, isFocused]);
+  }, [deck, isFocused]);
 
   return (
     <View style={styles.itemCard}>
