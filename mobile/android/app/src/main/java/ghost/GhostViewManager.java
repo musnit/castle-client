@@ -29,11 +29,7 @@ public class GhostViewManager extends SimpleViewManager<ViewGroup> implements Li
 
   @Override
   protected ViewGroup createViewInstance(ThemedReactContext reactContext) {
-    if (MainActivity.gameLayout.getParent() != null) {
-      return new FrameLayout(reactContext);
-    }
-
-    return MainActivity.gameLayout;
+    return MainActivity.recreateGameLayout(reactContext);
   }
 
   @ReactProp(name = "uri")
@@ -77,6 +73,6 @@ public class GhostViewManager extends SimpleViewManager<ViewGroup> implements Li
 
   @Override
   public void onHostDestroy() {
-
+    Log.v("GHOST", "onHostDestroy()");
   }
 }

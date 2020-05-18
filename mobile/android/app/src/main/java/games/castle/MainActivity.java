@@ -1,10 +1,12 @@
 package games.castle;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.facebook.react.ReactActivity;
@@ -23,6 +25,21 @@ public class MainActivity extends ReactActivity {
     public static GameActivity gameActivity;
     public static FrameLayout gameLayout;
 
+    public static ViewGroup recreateGameLayout(Context context) {
+        if (gameLayout != null) {
+            gameLayout.removeView(gameActivity.getView());
+        }
+
+        gameActivity.resetNative();
+        gameActivity.startNative();
+        gameActivity.resume();
+
+        gameLayout = new FrameLayout(context);
+        gameLayout.addView(gameActivity.getView());
+
+        return gameLayout;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,12 +50,6 @@ public class MainActivity extends ReactActivity {
         gameActivity.handleIntent(new Intent(this, GameActivity.class));
         GameActivity.setMetricsFromDisplay(getWindowManager().getDefaultDisplay());
         gameActivity.loadLibraries();
-        gameActivity.resetNative();
-        gameActivity.startNative();
-        gameActivity.resume();
-
-        gameLayout = new FrameLayout(this);
-        gameLayout.addView(gameActivity.getView());
     }
 
     // Name of main component for React Native
