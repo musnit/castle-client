@@ -15,7 +15,7 @@ import SpaceNavigatorView from './SpaceNavigatorView';
 function SpaceNavigator({ initialRouteName, backBehavior, children, screenOptions, ...rest }) {
   const { state, descriptors, navigation } = useNavigationBuilder(TabRouter, {
     initialRouteName,
-    backBehavior,
+    backBehavior: 'none',
     children,
     screenOptions,
   });
