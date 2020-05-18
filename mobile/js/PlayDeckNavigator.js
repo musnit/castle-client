@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { InteractionManager, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { Transitioning } from 'react-native-reanimated';
 
 import CardTransition from './CardTransition';
@@ -17,7 +16,6 @@ const EMPTY_PLAY_DECK_STATE = {
 };
 
 const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, route, paused }) => {
-  const navigation = useNavigation();
   if (!deckId && route.params) {
     deckId = route.params.deckId;
     initialCardId = route.params.initialCardId;

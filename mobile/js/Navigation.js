@@ -43,7 +43,7 @@ const CreateNavigator = () => (
 );
 
 const ProfileNavigator = () => (
-  <Stack.Navigator headerMode="none">
+  <Stack.Navigator headerMode="none" initialRouteName="ProfileScreen">
     <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
     <Stack.Screen name="PlayDeck" component={PlayDeckScreen} />
   </Stack.Navigator>
