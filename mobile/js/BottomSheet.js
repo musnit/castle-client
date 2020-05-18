@@ -3,6 +3,7 @@ import { Animated, StyleSheet, View } from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useSafeArea } from 'react-native-safe-area-context';
+import { useKeyboard } from './utilities';
 
 import Viewport from './viewport';
 
@@ -51,6 +52,7 @@ export const BottomSheet = ({
 }) => {
   const insets = useSafeArea();
   let lastSnap = React.useRef(initialSnap);
+  const [keyboardState] = useKeyboard();
 
   // translation from bottom of the screen
   let snapY = React.useRef(new Animated.Value(SCREEN_HEIGHT)).current;
@@ -132,6 +134,12 @@ export const BottomSheet = ({
   );
 
   const headerHeight = 48; // TODO: use as prop
+
+  React.useEffect(() => {
+    if (isOpen && keyboardState.visible && containerHeight < keyboardState.height + headerHeight) {
+      snapToClosest(SCREEN_HEIGHT - containerHeight - keyboardState.height - headerHeight, 0);
+    }
+  }, [keyboardState, isOpen, snapToClosest]);
 
   return (
     <Animated.View style={[styles.container, { transform: [{ translateY: snapY }] }, style]}>

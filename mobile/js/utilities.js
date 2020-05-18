@@ -1,4 +1,5 @@
 import React from 'react';
+import { Keyboard } from 'react-native';
 import gql from 'graphql-tag';
 import ImagePicker from 'react-native-image-picker';
 import { ReactNativeFile } from 'apollo-upload-client';
@@ -145,4 +146,44 @@ export const makeInitialDeckState = (deck) => {
         })
       : [],
   };
+};
+
+export const useKeyboard = (config = {}) => {
+  const [keyboardState, setKeyboardState] = React.useState({ visible: false, height: 0 });
+
+  function dismiss() {
+    Keyboard.dismiss();
+    setKeyboardState((state) => {
+      return {
+        ...state,
+        visible: false,
+      };
+    });
+  }
+
+  React.useEffect(() => {
+    function onKeyboardShow(e) {
+      setKeyboardState({
+        visible: true,
+        height: e.endCoordinates.height,
+      });
+    }
+
+    function onKeyboardHide(e) {
+      setKeyboardState({
+        visible: false,
+        height: e.endCoordinates.height,
+      });
+    }
+
+    Keyboard.addListener('keyboardDidShow', onKeyboardShow);
+    Keyboard.addListener('keyboardDidHide', onKeyboardHide);
+
+    return () => {
+      Keyboard.removeListener('keyboardDidShow', onKeyboardShow);
+      Keyboard.removeListener('keyboardDidHide', onKeyboardHide);
+    };
+  }, []);
+
+  return [keyboardState, dismiss];
 };
