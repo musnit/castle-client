@@ -144,7 +144,8 @@ export const BottomSheet = ({
   return (
     <Animated.View style={[styles.container, { transform: [{ translateY: snapY }] }, style]}>
       {/* inner view constrains the height of the scrollview to the bottom of the screen. */}
-      <View style={{ height: containerHeight }}>
+      {/* containerHeight < 1 causes layout bugs on Android. */}
+      <View style={{ height: Math.max(1, containerHeight) }}>
         <PanGestureHandler
           onGestureEvent={onPanGestureEvent}
           onHandlerStateChange={onPanStateChange}>
