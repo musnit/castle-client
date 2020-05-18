@@ -181,6 +181,7 @@ local homeUrl = nil -- Populated later with the final home experience URL
 
 local main = {}
 RELOAD_SCENE_CREATOR = false
+RELOAD_SCENE_CREATOR_ONCE = false
 
 network.async(
     function()
@@ -188,6 +189,8 @@ network.async(
             if string.sub(GHOST_ROOT_URI, 1, string.len("reload+")) == "reload+" then
                 RELOAD_SCENE_CREATOR = true
                 GHOST_ROOT_URI = string.sub(GHOST_ROOT_URI, string.len("reload+") + 1)
+            else
+                RELOAD_SCENE_CREATOR_ONCE = true
             end
 
             homeUrl = GHOST_ROOT_URI
@@ -223,6 +226,7 @@ local isFirstLoad = true
 jsEvents.permanentListen(
     "CLEAR_SCENE",
     function(params)
+        print("CLEAR_SCENE")
         network.async(
             function()
                 if home ~= nil then
@@ -237,6 +241,7 @@ jsEvents.permanentListen(
 jsEvents.permanentListen(
     "BASE_RELOAD",
     function(params)
+        print("BASE_RELOAD")
         network.async(
             function()
                 if isFirstLoad and love.graphics then
@@ -356,6 +361,11 @@ function main.keypressed(key, ...)
                     key = key
                 }
             )
+            return
+        end
+    else
+        if key == "escape" then
+            jsEvents.send("CASTLE_SYSTEM_BACK_BUTTON")
             return
         end
     end
