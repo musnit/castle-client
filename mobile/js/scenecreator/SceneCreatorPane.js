@@ -8,10 +8,13 @@ import { ToolPane } from '../Tools';
 
 import Viewport from '../viewport';
 
+import * as Constants from '../Constants';
+
 const SCREEN_HEIGHT = 100 * Viewport.vh;
+const CARD_HEIGHT = (1 / Constants.CARD_RATIO) * 100 * Viewport.vw;
 
 export default SceneCreatorPane = React.memo(
-  ({ element, visible, context, renderHeader, headerHeight, ...props }) => {
+  ({ element, visible, context, renderHeader, headerHeight = 64, ...props }) => {
     const insets = useSafeArea();
 
     const renderContent = () => (
@@ -19,9 +22,17 @@ export default SceneCreatorPane = React.memo(
     );
 
     const snapPoints = [
-      (headerHeight ? headerHeight : 64) + insets.bottom,
+      // bottom snap is the bottom edge of the card,
+      // unless that would be too small and then it's the header height of the panel
+      Math.max(
+        SCREEN_HEIGHT - (insets.top + CARD_HEADER_HEIGHT + CARD_HEIGHT),
+        headerHeight + insets.bottom
+      ),
+
       SCREEN_HEIGHT * 0.6,
-      SCREEN_HEIGHT - CARD_HEADER_HEIGHT,
+
+      // top snap is flush with the bottom of the card header (play/undo)
+      SCREEN_HEIGHT - (CARD_HEADER_HEIGHT + insets.top),
     ];
 
     return (
