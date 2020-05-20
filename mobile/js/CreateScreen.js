@@ -108,6 +108,7 @@ const CreateScreen = () => {
               backgroundImage {
                 url
                 smallUrl
+                privateCardUrl
               }
             }
           }

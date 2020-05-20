@@ -183,6 +183,7 @@ const DecksFlipper = () => {
             backgroundImage {
               url
               smallUrl
+              privateCardUrl
               overlayUrl
               primaryColor
             }

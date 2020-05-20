@@ -76,6 +76,7 @@ const ProfileScreen = () => {
             backgroundImage {
               url
               smallUrl
+              privateCardUrl
             }
           }
           variables

@@ -55,39 +55,11 @@ const initialCardStyles = StyleSheet.create({
   },
 });
 
-const privateStyles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: '#fff',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  overlayImage: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'repeat',
-  },
-});
-
 const InitialCardIndicator = () => (
   <View style={initialCardStyles.container}>
     <View style={initialCardStyles.info}>
       <Text style={initialCardStyles.label}>Top Card</Text>
     </View>
-  </View>
-);
-
-// not using FastImage because resizeMode: 'repeat' doesn't work properly
-const PrivateIndicator = () => (
-  <View style={privateStyles.container}>
-    <Image
-      style={privateStyles.overlayImage}
-      source={require('../assets/images/facedown-overlay-tile.png')}
-    />
   </View>
 );
 
@@ -98,9 +70,11 @@ const CardCell = ({ card, onPress, title, useOverlay, isInitialCard, isPrivate }
   }
   let uri;
   if (card.backgroundImage) {
-    const { url, smallUrl, overlayUrl } = card.backgroundImage;
+    const { url, smallUrl, overlayUrl, privateCardUrl } = card.backgroundImage;
     if (useOverlay && overlayUrl) {
       uri = overlayUrl;
+    } else if (isPrivate && privateCardUrl) {
+      uri = privateCardUrl;
     } else if (smallUrl) {
       uri = smallUrl;
     } else {
@@ -121,7 +95,6 @@ const CardCell = ({ card, onPress, title, useOverlay, isInitialCard, isPrivate }
             </View>
           )}
           {isInitialCard && <InitialCardIndicator />}
-          {isPrivate && <PrivateIndicator />}
         </View>
       </TouchableWithoutFeedback>
     </View>
