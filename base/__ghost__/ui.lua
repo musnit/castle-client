@@ -505,7 +505,7 @@ function ui.data(data, props)
    if es then
         for _, e in ipairs(es) do
            if props and props.actions and props.actions[e.type] and type(props.actions[e.type]) == "function" then
-              props.actions[e.type]()
+              props.actions[e.type](e.value)
            end
         end
    end
