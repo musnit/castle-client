@@ -451,36 +451,20 @@ const BaseButton = ({ element, selected, style, onPress }) => {
   const baseStyle = buttonStyle({ selected: selected || element.props.selected });
 
   const { paneName, inPopover } = useContext(ToolsContext);
-  const isSceneCreatorInspectorAction = paneName === 'sceneCreatorInspectorActions' && !inPopover;
 
   const hideLabel =
-    element.props.hideLabel !== undefined
-      ? element.props.hideLabel
-      : element.props.iconFill || isSceneCreatorInspectorAction;
+    element.props.hideLabel !== undefined ? element.props.hideLabel : element.props.iconFill;
 
   return (
     <TouchableOpacity
-      style={
-        isSceneCreatorInspectorAction
-          ? {
-              width: 44,
-              height: 44,
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginHorizontal: 4,
-              marginTop: 4,
-              backgroundColor: selected || element.props.selected ? Colors.button.selected : '#fff',
-              borderRadius: 1000,
-            }
-          : {
-              ...baseStyle,
-              padding: element.props.iconFill ? 0 : baseStyle.padding,
-              margin: 4,
-              flexDirection: 'row',
-              ...style,
-              ...viewStyleProps(element.props),
-            }
-      }
+      style={{
+        ...baseStyle,
+        padding: element.props.iconFill ? 0 : baseStyle.padding,
+        margin: 4,
+        flexDirection: 'row',
+        ...style,
+        ...viewStyleProps(element.props),
+      }}
       onPress={() => {
         sendEvent(element.pathId, { type: 'onClick' });
         if (onPress) {
@@ -490,22 +474,16 @@ const BaseButton = ({ element, selected, style, onPress }) => {
       {element.props.iconFamily ? (
         React.createElement(iconFamilies[element.props.iconFamily], {
           name: element.props.icon,
-          ...(isSceneCreatorInspectorAction
-            ? {
-                size: 20,
-                color: '#000',
-                solid: true,
-              }
-            : {
-                size: 18,
-                color: Colors.text,
-                style: {
-                  margin: 0,
-                  marginRight: !hideLabel ? 5 : 0,
-                  height: 18,
-                  textAlign: 'center',
-                },
-              }),
+          ...{
+            size: 18,
+            color: Colors.text,
+            style: {
+              margin: 0,
+              marginRight: !hideLabel ? 5 : 0,
+              height: 18,
+              textAlign: 'center',
+            },
+          },
         })
       ) : element.props.icon ? (
         <ToolImage
@@ -844,9 +822,9 @@ export const getPaneData = (element) => {
   return null;
 };
 
-export const sendDataPaneAction = (paneElement, action) => {
+export const sendDataPaneAction = (paneElement, action, value) => {
   const dataChildPathId = paneElement.children['data'].pathId;
-  return sendEvent(dataChildPathId, { type: action });
+  return sendEvent(dataChildPathId, { type: action, value });
 };
 
 const markdownStyles = StyleSheet.create({
