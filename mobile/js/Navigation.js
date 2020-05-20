@@ -17,6 +17,7 @@ import DecksFlipper from './DecksFlipper';
 import * as DeepLinks from './DeepLinks';
 import PlayDeckScreen from './PlayDeckScreen';
 import ProfileScreen from './ProfileScreen';
+import * as GhostChannels from './ghost/GhostChannels';
 
 const Stack = createStackNavigator();
 const Space = createSpaceNavigator();
@@ -65,10 +66,14 @@ const AuthNavigator = () => (
   </Stack.Navigator>
 );
 
+function onNavigationStateChange(state) {
+  GhostChannels.globalPause();
+}
+
 export const RootNavigator = () => {
   const { isSignedIn } = useSession();
   return (
-    <NavigationContainer ref={DeepLinks.setNavigationRef}>
+    <NavigationContainer ref={DeepLinks.setNavigationRef} onStateChange={onNavigationStateChange}>
       {isSignedIn ? <SpaceNavigator /> : <AuthNavigator />}
     </NavigationContainer>
   );

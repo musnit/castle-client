@@ -22,6 +22,7 @@
 @property(nonatomic, strong) CADisplayLink *displayLink;
 
 + (instancetype)sharedGhostView;
+- (void)setPaused:(BOOL)paused;
 
 @end
 

@@ -10,6 +10,8 @@ import com.facebook.react.bridge.WritableArray;
 
 import org.love2d.android.Channels;
 
+import games.castle.MainActivity;
+
 public class GhostChannelsModule extends ReactContextBaseJavaModule {
   GhostChannelsModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -84,6 +86,13 @@ public class GhostChannelsModule extends ReactContextBaseJavaModule {
       promise.resolve(Channels.nativeSupply(name, value, options.getDouble("timeout")));
     } else {
       promise.resolve(Channels.nativeSupply(name, value, -1));
+    }
+  }
+
+  @ReactMethod
+  void globalPause() {
+    if (MainActivity.gameActivity != null) {
+      MainActivity.gameActivity.setPaused(true);
     }
   }
 

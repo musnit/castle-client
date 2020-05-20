@@ -66,6 +66,10 @@ export const supplyAsync = (name, value, options = {}) => {
   return NativeModules.GhostChannels.supplyAsync(name, value, options);
 };
 
+export const globalPause = () => {
+  return NativeModules.GhostChannels.globalPause();
+};
+
 // Call `handler` when a message arrives at a Channel. `handler` is called with the message as the
 // only parameter. Call `.remove()` on the returned value to unsubscribe.
 export const on = (name, handler) => {

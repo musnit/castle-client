@@ -10,6 +10,7 @@ extern "C" {
 
 #include "modules/thread/Channel.h"
 #include "AppDelegate.h"
+#include "GhostView.h"
 
 @interface GhostChannels : NSObject <RCTBridgeModule>
 
@@ -206,6 +207,13 @@ RCT_EXPORT_METHOD(supplyAsync
     result = channel->supply(var);
   }
   resolve(@(result));
+}
+
+RCT_EXPORT_METHOD(globalPause
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  [[GhostView sharedGhostView] setPaused:false];
+  resolve(nil);
 }
 
 @end

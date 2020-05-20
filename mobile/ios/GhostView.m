@@ -175,6 +175,7 @@
 
 extern double ghostScreenScaling;
 extern bool ghostApplyScreenScaling;
+bool ghostPaused;
 
 - (void)setScreenScaling:(double)screenScaling {
   ghostScreenScaling = screenScaling;
@@ -184,7 +185,6 @@ extern bool ghostApplyScreenScaling;
   ghostApplyScreenScaling = applyScreenScaling;
 }
 
-bool ghostPaused;
 - (void)setPaused:(BOOL)paused {
   ghostPaused = paused;
 }
