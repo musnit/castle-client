@@ -40,7 +40,7 @@ const InspectorActions = ({ pane, visible }) => {
 
   if (data) {
     let drawButton;
-    if (data.applicableTools) {
+    if (Array.isArray(data.applicableTools)) {
       const drawBehavior = data.applicableTools.find((behavior) => behavior.name === 'Draw');
       const grabBehavior = data.applicableTools.find((behavior) => behavior.name === 'Grab');
       if (drawBehavior) {
