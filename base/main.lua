@@ -5,6 +5,29 @@ local C = ffi.C
 local cjson = require "cjson"
 local copas = require "copas"
 
+GRID_SHADER =
+        love.graphics.newShader(
+        [[
+        uniform float gridSize;
+        uniform float dotRadius;
+        uniform vec2 offset;
+        vec4 effect(vec4 color, Image tex, vec2 texCoords, vec2 screenCoords)
+        {
+            vec2 f = mod(screenCoords + offset + dotRadius, gridSize);
+            float l = length(f - dotRadius);
+            float s = 1.0 - smoothstep(dotRadius - 1.0, dotRadius + 1.0, l);
+            return vec4(color.rgb, s * color.a);
+        }
+    ]],
+        [[
+        vec4 position(mat4 transformProjection, vec4 vertexPosition)
+        {
+            return transformProjection * vertexPosition;
+        }
+    ]]
+    )
+
+
 math.randomseed(10000 * require("socket").gettime())
 
 GHOST_NETWORK_REQUEST_EVENT_ENABLED = false
