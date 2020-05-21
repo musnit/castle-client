@@ -75,6 +75,9 @@ const TextActor = (props) => {
 };
 
 export default CardText = (props) => {
+  if (!props.visible) {
+    return null;
+  }
   const { textActors } = props;
   let orderedActors = [];
 

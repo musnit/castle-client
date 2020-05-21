@@ -24,6 +24,8 @@ import * as Utilities from './utilities';
 import CardText from './CardText';
 import CardToolsSheet from './scenecreator/CardToolsSheet';
 import CardScene from './CardScene';
+import CreateCardSettingsSheet from './scenecreator/CreateCardSettingsSheet';
+import Entypo from 'react-native-vector-icons/Entypo';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import SceneCreatorPanes from './scenecreator/SceneCreatorPanes';
 import Viewport from './viewport';
@@ -75,6 +77,16 @@ const styles = StyleSheet.create({
   primaryButtonLabel: {
     ...Constants.styles.primaryButtonLabel,
   },
+  secondaryButton: {
+    backgroundColor: '#000',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  secondaryButtonLabel: {
+    color: '#fff',
+    fontSize: 16,
+  },
   actions: {
     width: '100%',
     paddingHorizontal: 8,
@@ -84,7 +96,14 @@ const styles = StyleSheet.create({
   },
 });
 
-const CardBottomActions = ({ card, onAdd, onSave, isPlayingScene, isSceneLoaded }) => {
+const CardBottomActions = ({
+  card,
+  onAdd,
+  onOpenLayout,
+  onSave,
+  isPlayingScene,
+  isSceneLoaded,
+}) => {
   if (isPlayingScene || !isSceneLoaded) {
     return null;
   }
@@ -93,6 +112,10 @@ const CardBottomActions = ({ card, onAdd, onSave, isPlayingScene, isSceneLoaded 
       <TouchableOpacity style={styles.primaryButton} onPress={onAdd}>
         <Icon name="add" size={28} color="#000" />
         <Text style={[styles.primaryButtonLabel, { paddingRight: 6 }]}>Add</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.secondaryButton} onPress={onOpenLayout}>
+        <Entypo name="grid" size={20} color="#fff" style={{ marginTop: 2, marginRight: 2 }} />
+        <Text style={[styles.secondaryButtonLabel, { paddingRight: 6 }]}>Layout</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.primaryButton} onPress={onSave}>
         <Text style={[styles.primaryButtonLabel, { paddingLeft: 6 }]}>Done</Text>
@@ -379,6 +402,7 @@ const CreateCardScreen = ({
   React.useEffect(Keyboard.dismiss, [selectedTab]);
 
   const [addingBlueprint, setAddingBlueprint] = React.useState(false);
+  const [isShowingTextActors, setShowingTextActors] = React.useState(true);
 
   const isSceneLoaded = !!globalActions;
   const isPlaying = globalActions?.performing;
@@ -496,6 +520,7 @@ const CreateCardScreen = ({
             />
             <View style={styles.textActorsContainer}>
               <CardText
+                visible={isShowingTextActors}
                 textActors={textActors}
                 card={card}
                 onSelect={selectActor}
@@ -506,6 +531,7 @@ const CreateCardScreen = ({
           <CardBottomActions
             card={card}
             onAdd={() => setAddingBlueprint(true)}
+            onOpenLayout={() => setSelectedTab('layout')}
             onSave={saveAndGoToDeck}
             isSceneLoaded={isSceneLoaded}
             isPlayingScene={isPlaying}
@@ -521,9 +547,16 @@ const CreateCardScreen = ({
         isOpen={selectedTab === 'variables' && !isPlaying}
         onClose={() => setSelectedTab('card')}
       />
+      <CreateCardSettingsSheet
+        isShowingTextActors={isShowingTextActors}
+        onShowTextActors={setShowingTextActors}
+        snapPoints={[FULL_SHEET_HEIGHT * 0.6]}
+        isOpen={selectedTab === 'layout' && !isPlaying}
+        onClose={() => setSelectedTab('card')}
+      />
       <SceneCreatorPanes
         deck={deck}
-        visible={selectedTab !== 'variables' && !isPlaying}
+        visible={selectedTab === 'card' && !isPlaying}
         hasSelection={hasSelection}
         addingBlueprint={addingBlueprint}
       />
