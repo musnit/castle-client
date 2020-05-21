@@ -1,8 +1,12 @@
 import React from 'react';
 import { StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { useGhostUI } from '../ghost/GhostUI';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { BottomSheet } from '../BottomSheet';
+import { ToolPane } from '../Tools';
+
+const SETTINGS_PANE_KEY = 'sceneCreatorSettings';
 
 const styles = StyleSheet.create({
   container: {
@@ -50,6 +54,13 @@ const styles = StyleSheet.create({
 });
 
 const CreateCardSettings = ({ isShowingTextActors, onShowTextActors }) => {
+  const { root } = useGhostUI();
+
+  let settingsPane;
+  if (root && root.panes && root.panes[SETTINGS_PANE_KEY]) {
+    settingsPane = <ToolPane element={root.panes[SETTINGS_PANE_KEY]} style={{ padding: 8 }} />;
+  }
+
   return (
     <View>
       <View style={styles.settingsRow}>
@@ -60,6 +71,7 @@ const CreateCardSettings = ({ isShowingTextActors, onShowTextActors }) => {
         />
         <Text>Show text actors</Text>
       </View>
+      {settingsPane}
     </View>
   );
 };
