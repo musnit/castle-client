@@ -14,7 +14,6 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 8,
     paddingVertical: 4,
   },
   actions: {
@@ -27,8 +26,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginHorizontal: 4,
     marginTop: 4,
-    // backgroundColor: selected || element.props.selected ? Colors.button.selected : '#fff',
     borderRadius: 1000,
+  },
+  closeButton: {
+    flexShrink: 0,
+    width: 54,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
   },
 });
 
@@ -87,16 +92,18 @@ const InspectorActions = ({ pane, visible }) => {
             isDrawSelected ? grabBehavior.behaviorId : drawBehavior.behaviorId
           );
         drawButton = (
-          <TouchableOpacity style={styles.actionButton} onPress={onPress}>
-            <Icon name="edit" size={22} color="#000" />
+          <TouchableOpacity
+            style={[styles.actionButton, { backgroundColor: isDrawSelected ? '#000' : '#fff' }]}
+            onPress={onPress}>
+            <Icon name="edit" size={22} color={isDrawSelected ? '#fff' : '#000'} />
           </TouchableOpacity>
         );
       }
     }
     return (
       <View pointerEvents={visible ? 'auto' : 'none'} style={styles.header}>
-        <TouchableOpacity style={styles.actionButton} onPress={() => sendAction('closeInspector')}>
-          <Icon name="close" size={22} color="#000" />
+        <TouchableOpacity style={styles.closeButton} onPress={() => sendAction('closeInspector')}>
+          <Icon name="close" size={32} color="#000" />
         </TouchableOpacity>
         <View style={styles.actions}>
           {drawButton}
