@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useGhostUI } from '../ghost/GhostUI';
+import { useActionSheet } from '@expo/react-native-action-sheet';
 import { getPaneData, sendDataPaneAction } from '../Tools';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -32,11 +33,46 @@ const styles = StyleSheet.create({
 });
 
 const InspectorActions = ({ pane, visible }) => {
+  const { showActionSheetWithOptions } = useActionSheet();
+
   let data, sendAction;
   if (pane) {
     sendAction = (action, value) => sendDataPaneAction(pane, action, value);
     data = getPaneData(pane);
   }
+
+  const changeSelectionOrder = React.useCallback(() => {
+    const options = [
+      {
+        name: 'Move Forward',
+        action: () => sendAction('moveSelectionForward'),
+      },
+      {
+        name: 'Move Backward',
+        action: () => sendAction('moveSelectionBackward'),
+      },
+      {
+        name: 'Move to Front',
+        action: () => sendAction('moveSelectionToFront'),
+      },
+      {
+        name: 'Move to Back',
+        action: () => sendAction('moveSelectionToBack'),
+      },
+    ];
+    showActionSheetWithOptions(
+      {
+        title: 'Change order',
+        options: options.map((option) => option.name).concat(['Cancel']),
+        cancelButtonIndex: options.length,
+      },
+      (buttonIndex) => {
+        if (buttonIndex < options.length) {
+          return options[buttonIndex].action();
+        }
+      }
+    );
+  }, [sendAction]);
 
   if (data) {
     let drawButton;
@@ -64,7 +100,7 @@ const InspectorActions = ({ pane, visible }) => {
         </TouchableOpacity>
         <View style={styles.actions}>
           {drawButton}
-          <TouchableOpacity style={styles.actionButton}>
+          <TouchableOpacity style={styles.actionButton} onPress={changeSelectionOrder}>
             <Icon name="layers" size={22} color="#000" />
           </TouchableOpacity>
           <TouchableOpacity
