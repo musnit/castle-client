@@ -55,7 +55,6 @@ export const Provider = (props) => {
   });
 
   const gameDidMount = async (eventsId) => {
-    await clearAsync();
     setState({
       eventsId,
       eventsReady: true,

@@ -70,51 +70,25 @@ const computeDimensionsSettings = ({ metadata }) => {
 
 // Populate the 'INITIAL_DATA' channel that Lua reads for various initial settings (eg. the user
 // object, initial audio volume, initial post, ...)
-const useInitialData = ({ eventsReady, dimensionsSettings, extras }) => {
+const useInitialData = ({ extras }) => {
   const [sent, setSent] = useState(false);
-  const sending = useRef(false);
 
   useEffect(() => {
-    let mounted = true;
-    if (eventsReady && !sending.current && dimensionsSettings) {
-      // Ready to send to Lua
-      sending.current = true;
-      (async () => {
-        if (!mounted) {
-          return;
-        }
+    // Prepare the data
+    const initialData = {
+      /*graphics: {
+          width: dimensionsSettings.width,
+          height: dimensionsSettings.height,
+        },*/
+      audio: { volume: 1 },
+      user: {},
+      initialParams: extras.initialParams ? extras.initialParams : undefined,
+      // TODO(nikki): Add `initialPost`...
+    };
 
-        // Clear the channel just in case
-        if (!mounted) {
-          return;
-        }
-
-        // Prepare the data
-        const initialData = {
-          graphics: {
-            width: dimensionsSettings.width,
-            height: dimensionsSettings.height,
-          },
-          audio: { volume: 1 },
-          user: {},
-          initialParams: extras.initialParams ? extras.initialParams : undefined,
-          // TODO(nikki): Add `initialPost`...
-        };
-
-        if (!mounted) {
-          return;
-        }
-
-        // Send it!
-        await sendAsync('BASE_RELOAD', initialData);
-        if (!mounted) {
-          return;
-        }
-        setSent(true);
-      })();
-    }
-    return () => (mounted = false);
-  }, [eventsReady, dimensionsSettings]);
+    sendAsync('BASE_RELOAD', initialData);
+    setSent(true);
+  }, []);
 
   return { sent };
 };
@@ -192,7 +166,7 @@ const GameView = ({
 
   const { gameDidMount, gameDidUnmount, eventsReady } = useGhostEvents();
 
-  const initialDataHook = useInitialData({ eventsReady, dimensionsSettings, extras });
+  const initialDataHook = useInitialData({ eventsReady, extras });
 
   useEffect(() => {
     const id = Math.floor(Math.random() * Math.floor(1000));
