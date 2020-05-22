@@ -186,6 +186,7 @@ const PlayCardScreen = ({ card, onSelectNewCard, deckState, onChangeDeckState, p
         pointerEvents="box-none"
         style={[styles.description, { paddingBottom: blocksBottomPadding }]}>
         <CardText
+          visible
           card={card}
           textActors={textActors}
           onSelect={selectActor}
