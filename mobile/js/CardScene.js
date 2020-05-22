@@ -46,7 +46,7 @@ const CardScene = ({
   return (
     <View style={style}>
       {card &&
-        (card.scene ? (
+        (card.scene && card.cardId ? (
           <React.Fragment>
             <GameView
               key={`game-view-${card.cardId}-${reloadCount}`}
