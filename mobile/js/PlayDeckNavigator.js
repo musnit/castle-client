@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  prevCard: {
+  card: {
     position: 'absolute',
     width: '100%',
     height: '100%',
@@ -49,7 +49,7 @@ const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, route, pau
           backgroundColor: !hasSelectedNewCard ? 'transparent' : 'black',
         },
       ]}>
-      <CardTransition deckId={deckId} cardId={cardId} style={styles.prevCard}>
+      <CardTransition deckId={deckId} cardId={cardId} style={styles.card}>
         <PlayCardScreen
           deckId={deckId}
           cardId={cardId}

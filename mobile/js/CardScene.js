@@ -43,46 +43,33 @@ const CardScene = ({
     setLoaded(true);
   };
 
-  // TODO: this is necessary because PlayDeckNavigator renders two CardScenes when transitioning
-  // to the next card from a choice block. Only one native GhostView can be on the screen at once
-  // so this delay prevents that from happening. it would be better if PlayDeckNavigator passed
-  // in a prop once the old CardScene is gone
-  const [shouldDisplay, setShouldDisplay] = useState(false);
-  useEffect(() => {
-    setTimeout(() => {
-      setShouldDisplay(true);
-    }, 300);
-  }, []);
-
   return (
     <View style={style}>
       {card &&
         (card.scene ? (
           <React.Fragment>
-            {shouldDisplay && (
-              <GameView
-                key={`game-view-${card.cardId}-${reloadCount}`}
-                extras={{
-                  initialParams: JSON.stringify({
-                    scene: {
-                      sceneId: card.scene.sceneId,
-                      data: card.scene.data,
-                      deckState,
-                    },
-                    isEditing,
-                  }),
-                }}
-                headerVisible={false}
-                onPressReload={onPressReload}
-                logsVisible={isEditing && logsVisible}
-                setLogsVisible={setLogsVisible}
-                onScreenshot={onScreenshot}
-                onMessage={onMessage}
-                onLoaded={onLoaded}
-                deckState={deckState}
-                paused={paused}
-              />
-            )}
+            <GameView
+              key={`game-view-${card.cardId}-${reloadCount}`}
+              extras={{
+                initialParams: JSON.stringify({
+                  scene: {
+                    sceneId: card.scene.sceneId,
+                    data: card.scene.data,
+                    deckState,
+                  },
+                  isEditing,
+                }),
+              }}
+              headerVisible={false}
+              onPressReload={onPressReload}
+              logsVisible={isEditing && logsVisible}
+              setLogsVisible={setLogsVisible}
+              onScreenshot={onScreenshot}
+              onMessage={onMessage}
+              onLoaded={onLoaded}
+              deckState={deckState}
+              paused={paused}
+            />
             {!interactionEnabled ? (
               <TouchableWithoutFeedback style={styles.overlay}>
                 <View style={[styles.overlay, { opacity: 0 }]} />

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Animated, InteractionManager, StyleSheet, View } from 'react-native';
+import { Animated, Easing, InteractionManager, StyleSheet, View } from 'react-native';
 import gql from 'graphql-tag';
 
 import * as Session from './Session';
@@ -7,7 +7,8 @@ import * as Session from './Session';
 import FastImage from 'react-native-fast-image';
 
 const TRANSITION_CONFIG = {
-  duration: 300,
+  duration: 250,
+  easing: Easing.out(Easing.ease),
   isInteraction: true,
   useNativeDriver: true,
 };
@@ -69,7 +70,7 @@ export default class CardTransition extends React.Component {
       backgroundImageUrl: null,
     },
     transitioning: false,
-    opacity: new Animated.Value(0),
+    transition: new Animated.Value(1),
   };
 
   componentDidMount = () => {
@@ -102,9 +103,9 @@ export default class CardTransition extends React.Component {
 
   _maybeBeginTransition = async () => {
     if (this.state.transitioning) {
-      const { opacity } = this.state;
-      opacity.setValue(1);
-      Animated.timing(opacity, { toValue: 0, ...TRANSITION_CONFIG }).start(({ finished }) => {
+      const { transition } = this.state;
+      transition.setValue(0);
+      Animated.timing(transition, { toValue: 1, ...TRANSITION_CONFIG }).start(({ finished }) => {
         if (finished) {
           this.setState({ transitioning: false });
         }
@@ -114,13 +115,26 @@ export default class CardTransition extends React.Component {
 
   render() {
     const { style, children } = this.props;
-    const { prevCard, transitioning, opacity } = this.state;
-    const inOpacity = Animated.subtract(1, opacity);
+    const { prevCard, transitioning, transition } = this.state;
+    const inOpacity = transition;
+    const inScale = transition.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0.95, 1],
+    });
+    const outOpacity = Animated.subtract(1, transition);
+    const outScale = transition.interpolate({
+      inputRange: [0, 1],
+      outputRange: [1, 1.05],
+    });
     return (
       <React.Fragment>
-        <Animated.View style={{ flex: 1, opacity: inOpacity }}>{children}</Animated.View>
+        <Animated.View style={{ flex: 1, opacity: inOpacity, transform: [{ scale: inScale }] }}>
+          {children}
+        </Animated.View>
         {prevCard.backgroundImageUrl !== null && transitioning ? (
-          <Animated.View pointerEvents="none" style={[style, { opacity }]}>
+          <Animated.View
+            pointerEvents="none"
+            style={[style, { opacity: outOpacity, transform: [{ scale: outScale }] }]}>
             <FastImage
               style={styles.backgroundImage}
               source={{ uri: prevCard.backgroundImageUrl }}
