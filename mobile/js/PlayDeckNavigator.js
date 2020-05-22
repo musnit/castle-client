@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { InteractionManager, StyleSheet } from 'react-native';
-import { Transitioning } from 'react-native-reanimated';
+import { StyleSheet, View } from 'react-native';
 
 import CardTransition from './CardTransition';
 import PlayCardScreen from './PlayCardScreen';
@@ -8,6 +7,11 @@ import PlayCardScreen from './PlayCardScreen';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  prevCard: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
   },
 });
 
@@ -22,8 +26,7 @@ const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, route, pau
     initialDeckState = route.params.initialDeckState;
   }
 
-  const [currCardId, setCurrCardId] = useState(initialCardId);
-  const [hasSelectedNewCard, setHasSelectedNewCard] = useState(false);
+  const [cardId, setCardId] = useState(initialCardId);
   const [playDeckState, changePlayDeckState] = React.useReducer((state, changes) => {
     return {
       ...state,
@@ -32,49 +35,21 @@ const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, route, pau
   }, initialDeckState || EMPTY_PLAY_DECK_STATE);
 
   const onSelectNewCard = ({ cardId }) => {
-    setCurrCardId(cardId);
-    setHasSelectedNewCard(true);
+    setCardId(cardId);
   };
 
-  const transitionRef = React.useRef();
-  const [counter, setCounter] = React.useState(1);
-  React.useEffect(() => {
-    const promise = InteractionManager.runAfterInteractions(() => {
-      const isInitial = !hasSelectedNewCard && currCardId === initialCardId;
-      if (!isInitial && transitionRef.current) {
-        transitionRef.current.animateNextTransition();
-        setCounter(counter + 1);
-      }
-    });
-    return () => promise.cancel();
-  }, [currCardId, hasSelectedNewCard]);
-
   return (
-    <Transitioning.View
-      ref={transitionRef}
-      transition={CardTransition}
-      style={[
-        styles.container,
-        {
-          // When at the first card, show the underlying deck preview
-          backgroundColor: counter === 1 ? 'transparent' : 'black',
-        },
-      ]}>
-      {React.useMemo(
-        () => (
-          <PlayCardScreen
-            key={counter}
-            deckId={deckId}
-            cardId={currCardId}
-            onSelectNewCard={onSelectNewCard}
-            deckState={playDeckState}
-            onChangeDeckState={changePlayDeckState}
-            paused={paused}
-          />
-        ),
-        [counter, playDeckState, paused]
-      )}
-    </Transitioning.View>
+    <View style={styles.container}>
+      <PlayCardScreen
+        deckId={deckId}
+        cardId={cardId}
+        onSelectNewCard={onSelectNewCard}
+        deckState={playDeckState}
+        onChangeDeckState={changePlayDeckState}
+        paused={paused}
+      />
+      <CardTransition deckId={deckId} cardId={cardId} style={styles.prevCard} />
+    </View>
   );
 };
 
