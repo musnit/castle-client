@@ -49,7 +49,7 @@ const CardScene = ({
       setShouldDisplay(true);
     }, 100);
     return () => clearTimeout(timeout);
-  }, [card.cardId]);
+  }, [card?.cardId]);
 
   return (
     <View style={style}>
