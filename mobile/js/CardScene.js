@@ -43,33 +43,43 @@ const CardScene = ({
     setLoaded(true);
   };
 
+  const [shouldDisplay, setShouldDisplay] = useState(false);
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setShouldDisplay(true);
+    }, 100);
+    return () => clearTimeout(timeout);
+  }, [card.cardId]);
+
   return (
     <View style={style}>
       {card &&
         (card.scene && card.cardId ? (
           <React.Fragment>
-            <GameView
-              key={`game-view-${card.cardId}-${reloadCount}`}
-              extras={{
-                initialParams: JSON.stringify({
-                  scene: {
-                    sceneId: card.scene.sceneId,
-                    data: card.scene.data,
-                    deckState,
-                  },
-                  isEditing,
-                }),
-              }}
-              headerVisible={false}
-              onPressReload={onPressReload}
-              logsVisible={isEditing && logsVisible}
-              setLogsVisible={setLogsVisible}
-              onScreenshot={onScreenshot}
-              onMessage={onMessage}
-              onLoaded={onLoaded}
-              deckState={deckState}
-              paused={paused}
-            />
+            {shouldDisplay && (
+              <GameView
+                key={`game-view-${card.cardId}-${reloadCount}`}
+                extras={{
+                  initialParams: JSON.stringify({
+                    scene: {
+                      sceneId: card.scene.sceneId,
+                      data: card.scene.data,
+                      deckState,
+                    },
+                    isEditing,
+                  }),
+                }}
+                headerVisible={false}
+                onPressReload={onPressReload}
+                logsVisible={isEditing && logsVisible}
+                setLogsVisible={setLogsVisible}
+                onScreenshot={onScreenshot}
+                onMessage={onMessage}
+                onLoaded={onLoaded}
+                deckState={deckState}
+                paused={paused}
+              />
+            )}
             {!interactionEnabled ? (
               <TouchableWithoutFeedback style={styles.overlay}>
                 <View style={[styles.overlay, { opacity: 0 }]} />
