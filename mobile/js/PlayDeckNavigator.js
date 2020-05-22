@@ -27,6 +27,7 @@ const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, route, pau
   }
 
   const [cardId, setCardId] = useState(initialCardId);
+  const [hasSelectedNewCard, setHasSelectedNewCard] = useState(false);
   const [playDeckState, changePlayDeckState] = React.useReducer((state, changes) => {
     return {
       ...state,
@@ -35,20 +36,29 @@ const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, route, pau
   }, initialDeckState || EMPTY_PLAY_DECK_STATE);
 
   const onSelectNewCard = ({ cardId }) => {
+    setHasSelectedNewCard(true);
     setCardId(cardId);
   };
 
   return (
-    <View style={styles.container}>
-      <PlayCardScreen
-        deckId={deckId}
-        cardId={cardId}
-        onSelectNewCard={onSelectNewCard}
-        deckState={playDeckState}
-        onChangeDeckState={changePlayDeckState}
-        paused={paused}
-      />
-      <CardTransition deckId={deckId} cardId={cardId} style={styles.prevCard} />
+    <View
+      style={[
+        styles.container,
+        {
+          // When at the first card, show the underlying deck preview
+          backgroundColor: !hasSelectedNewCard ? 'transparent' : 'black',
+        },
+      ]}>
+      <CardTransition deckId={deckId} cardId={cardId} style={styles.prevCard}>
+        <PlayCardScreen
+          deckId={deckId}
+          cardId={cardId}
+          onSelectNewCard={onSelectNewCard}
+          deckState={playDeckState}
+          onChangeDeckState={changePlayDeckState}
+          paused={paused}
+        />
+      </CardTransition>
     </View>
   );
 };

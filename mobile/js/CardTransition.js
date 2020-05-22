@@ -69,7 +69,7 @@ export default class CardTransition extends React.Component {
       backgroundImageUrl: null,
     },
     transitioning: false,
-    opacity: new Animated.Value(1),
+    opacity: new Animated.Value(0),
   };
 
   componentDidMount = () => {
@@ -103,24 +103,31 @@ export default class CardTransition extends React.Component {
   _maybeBeginTransition = async () => {
     if (this.state.transitioning) {
       const { opacity } = this.state;
+      opacity.setValue(1);
       Animated.timing(opacity, { toValue: 0, ...TRANSITION_CONFIG }).start(({ finished }) => {
         if (finished) {
-          this.setState({ transitioning: false }, () => opacity.setValue(1));
+          this.setState({ transitioning: false });
         }
       });
     }
   };
 
   render() {
-    const { style } = this.props;
+    const { style, children } = this.props;
     const { prevCard, transitioning, opacity } = this.state;
-    if (prevCard.backgroundImageUrl !== null && transitioning) {
-      return (
-        <Animated.View pointerEvents="none" style={[style, { opacity }]}>
-          <FastImage style={styles.backgroundImage} source={{ uri: prevCard.backgroundImageUrl }} />
-        </Animated.View>
-      );
-    }
-    return null;
+    const inOpacity = Animated.subtract(1, opacity);
+    return (
+      <React.Fragment>
+        <Animated.View style={{ flex: 1, opacity: inOpacity }}>{children}</Animated.View>
+        {prevCard.backgroundImageUrl !== null && transitioning ? (
+          <Animated.View pointerEvents="none" style={[style, { opacity }]}>
+            <FastImage
+              style={styles.backgroundImage}
+              source={{ uri: prevCard.backgroundImageUrl }}
+            />
+          </Animated.View>
+        ) : null}
+      </React.Fragment>
+    );
   }
 }
