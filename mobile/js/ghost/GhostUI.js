@@ -63,6 +63,7 @@ export const Provider = (props) => {
       const diff = JSON.parse(diffJson);
       setRoot((oldRoot) => applyDiff(oldRoot, diff));
     },
+    onRemove: () => setRoot({}),
   });
 
   const forceRender = React.useCallback(() => setRoot(JSON.parse(JSON.stringify(root))), [root]);

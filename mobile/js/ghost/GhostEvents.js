@@ -79,7 +79,7 @@ export const Provider = (props) => {
 
 export const useGhostEvents = () => React.useContext(GhostEventsContext);
 
-export const useListen = ({ eventName, handler }) => {
+export const useListen = ({ eventName, handler, onRemove }) => {
   const savedHandler = useRef();
   const { eventsReady } = useGhostEvents();
 
@@ -97,6 +97,9 @@ export const useListen = ({ eventName, handler }) => {
       });
       return () => {
         mounted = false;
+        if (onRemove) {
+          onRemove();
+        }
         handle.remove();
       };
     }
