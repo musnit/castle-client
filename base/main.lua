@@ -250,14 +250,10 @@ jsEvents.permanentListen(
     "CLEAR_SCENE",
     function(params)
         print("CLEAR_SCENE")
-        network.async(
-            function()
-                if home ~= nil then
-                    home = nil
-                    collectgarbage("collect")
-                end
-            end
-        )
+        home = nil
+        collectgarbage("collect")
+
+        resetUI()
     end
 )
 

@@ -14,18 +14,24 @@ local UI_UPDATE_FREQUENCY = 20
 
 -- The diff'ing state store -- we collect a description of the current UI state here then
 -- send diffs to JS
-local root = state.new()
-root:__autoSync(true)
+local root
 
--- Create a space for panes and create the default pane
-root.panes = {}
-root.panes.DEFAULT = {
-    type = "pane",
-    props = {
-        name = "DEFAULT",
-        visible = true
+function resetRoot()
+    root = state.new()
+    root:__autoSync(true)
+
+    -- Create a space for panes and create the default pane
+    root.panes = {}
+    root.panes.DEFAULT = {
+        type = "pane",
+        props = {
+            name = "DEFAULT",
+            visible = true
+        }
     }
-}
+end
+
+resetRoot()
 
 -- A weak-keyed store for private (not sent to JS) data per UI element
 local store =
@@ -170,6 +176,7 @@ local lastUpdateTime
 function resetUI()
     lastUpdateTime = nil
     needsSync = true
+    resetRoot()
 end
 
 function ui.update()
