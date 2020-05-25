@@ -85,10 +85,10 @@ export default CardText = (props) => {
     orderedActors = Object.keys(textActors)
       .map((actorId) => textActors[actorId])
       .sort((a, b) => {
-        if (a.hasTapTrigger !== b.hasTapTrigger) {
-          return a.hasTapTrigger - b.hasTapTrigger;
+        if (a.order === b.order) {
+          return a.content.localeCompare(b.content, 'en', { sensitivity: 'base' });
         }
-        return a.actor.drawOrder - b.actor.drawOrder;
+        return a.order - b.order;
       })
       .filter((actor) => actor.visible);
   }
