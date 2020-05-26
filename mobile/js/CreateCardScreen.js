@@ -559,6 +559,7 @@ const CreateCardScreen = ({
         visible={selectedTab === 'card' && !isPlaying}
         hasSelection={hasSelection}
         addingBlueprint={addingBlueprint}
+        isTextActorSelected={isTextActorSelected}
       />
     </React.Fragment>
   );

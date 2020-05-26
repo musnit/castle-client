@@ -37,17 +37,28 @@ const styles = StyleSheet.create({
   },
 });
 
-const InspectorActions = ({ pane, visible }) => {
-  const { showActionSheetWithOptions } = useActionSheet();
-
-  let data, sendAction;
-  if (pane) {
-    sendAction = (action, value) => sendDataPaneAction(pane, action, value);
-    data = getPaneData(pane);
-  }
-
-  const changeSelectionOrder = React.useCallback(() => {
-    const options = [
+const makeChangeOrderOptions = ({ isTextActorSelected, sendAction }) => {
+  if (isTextActorSelected) {
+    return [
+      {
+        name: 'Move Down',
+        action: () => sendAction('moveSelectionForward'),
+      },
+      {
+        name: 'Move Up',
+        action: () => sendAction('moveSelectionBackward'),
+      },
+      {
+        name: 'Move to Bottom',
+        action: () => sendAction('moveSelectionToFront'),
+      },
+      {
+        name: 'Move to Top',
+        action: () => sendAction('moveSelectionToBack'),
+      },
+    ];
+  } else {
+    return [
       {
         name: 'Move Forward',
         action: () => sendAction('moveSelectionForward'),
@@ -65,6 +76,20 @@ const InspectorActions = ({ pane, visible }) => {
         action: () => sendAction('moveSelectionToBack'),
       },
     ];
+  }
+};
+
+const InspectorActions = ({ pane, visible, isTextActorSelected }) => {
+  const { showActionSheetWithOptions } = useActionSheet();
+
+  let data, sendAction;
+  if (pane) {
+    sendAction = (action, value) => sendDataPaneAction(pane, action, value);
+    data = getPaneData(pane);
+  }
+
+  const changeSelectionOrder = React.useCallback(() => {
+    const options = makeChangeOrderOptions({ isTextActorSelected, sendAction });
     showActionSheetWithOptions(
       {
         title: 'Change order',
@@ -127,7 +152,7 @@ const InspectorActions = ({ pane, visible }) => {
   return null;
 };
 
-export default SceneCreatorInspectorPane = ({ element, visible, context }) => {
+export default SceneCreatorInspectorPane = ({ element, visible, isTextActorSelected, context }) => {
   const { root } = useGhostUI();
   const actionsPane = root.panes.sceneCreatorInspectorActions;
 
@@ -142,6 +167,7 @@ export default SceneCreatorInspectorPane = ({ element, visible, context }) => {
   const renderHeader = () => (
     <InspectorActions
       visible={visible}
+      isTextActorSelected={isTextActorSelected}
       pane={visible ? actionsPane : lastVisibleElements.actionsPane}
     />
   );

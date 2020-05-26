@@ -102,6 +102,7 @@ export default SceneCreatorPanes = ({
   visible,
   addingBlueprint,
   hasSelection,
+  ...props
 }) => {
   const { root, transformAssetUri } = useGhostUI();
   const destinationPickerRef = React.useRef();
@@ -164,6 +165,7 @@ export default SceneCreatorPanes = ({
               visible={visible(visibleProps)}
               element={root.panes[key]}
               context={context}
+              {...props}
             />
           );
         }
