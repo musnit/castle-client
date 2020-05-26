@@ -172,7 +172,7 @@ Path::Path() :
 	nsvg.strokeDashOffset = 0.0;
 	nsvg.strokeDashCount = 0;
 	nsvg.strokeLineJoin = NSVG_JOIN_MITER;
-	nsvg.strokeLineCap = NSVG_CAP_BUTT;
+	nsvg.strokeLineCap = NSVG_CAP_ROUND;
 	nsvg.miterLimit = 4;
 	nsvg.fillRule = NSVG_FILLRULE_NONZERO;
 	for (int i = 0; i < NSVG_PAINTORDER_COUNT; i++) {

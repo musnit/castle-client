@@ -233,7 +233,7 @@ void Graphics::initialize(float width, float height) {
 	strokeWidth = 3.0;
 	strokeDashOffset = 0.0;
 	strokeLineJoin = NSVG_JOIN_MITER;
-	strokeLineCap = NSVG_CAP_BUTT;
+	strokeLineCap = NSVG_CAP_ROUND;
 	miterLimit = 4;
 	fillRule = NSVG_FILLRULE_NONZERO;
 
