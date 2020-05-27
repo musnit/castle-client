@@ -106,6 +106,7 @@ const InspectorActions = ({ pane, visible, isTextActorSelected }) => {
 
   if (data) {
     let drawButton;
+    let scaleRotateButton;
     if (Array.isArray(data.applicableTools)) {
       const drawBehavior = data.applicableTools.find((behavior) => behavior.name === 'Draw');
       const grabBehavior = data.applicableTools.find((behavior) => behavior.name === 'Grab');
