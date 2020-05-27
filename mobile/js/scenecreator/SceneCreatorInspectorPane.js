@@ -109,6 +109,10 @@ const InspectorActions = ({ pane, visible, isTextActorSelected }) => {
     if (Array.isArray(data.applicableTools)) {
       const drawBehavior = data.applicableTools.find((behavior) => behavior.name === 'Draw');
       const grabBehavior = data.applicableTools.find((behavior) => behavior.name === 'Grab');
+      const scaleRotateBehavior = data.applicableTools.find(
+        (behavior) => behavior.name === 'ScaleRotate'
+      );
+
       if (drawBehavior) {
         const isDrawSelected = data.activeToolBehaviorId === drawBehavior.behaviorId;
         const onPress = () =>
@@ -124,6 +128,25 @@ const InspectorActions = ({ pane, visible, isTextActorSelected }) => {
           </TouchableOpacity>
         );
       }
+
+      if (scaleRotateBehavior) {
+        const isScaleRotatedSelected = data.activeToolBehaviorId === scaleRotateBehavior.behaviorId;
+        const onPress = () =>
+          sendAction(
+            'setActiveTool',
+            isScaleRotatedSelected ? grabBehavior.behaviorId : scaleRotateBehavior.behaviorId
+          );
+        scaleRotateButton = (
+          <TouchableOpacity
+            style={[
+              styles.actionButton,
+              { backgroundColor: isScaleRotatedSelected ? '#000' : '#fff' },
+            ]}
+            onPress={onPress}>
+            <Icon name="crop-rotate" size={22} color={isScaleRotatedSelected ? '#fff' : '#000'} />
+          </TouchableOpacity>
+        );
+      }
     }
     return (
       <View pointerEvents={visible ? 'auto' : 'none'} style={styles.header}>
@@ -132,6 +155,7 @@ const InspectorActions = ({ pane, visible, isTextActorSelected }) => {
         </TouchableOpacity>
         <View style={styles.actions}>
           {drawButton}
+          {scaleRotateButton}
           <TouchableOpacity style={styles.actionButton} onPress={changeSelectionOrder}>
             <Icon name="layers" size={22} color="#000" />
           </TouchableOpacity>
