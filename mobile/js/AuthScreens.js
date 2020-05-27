@@ -15,10 +15,14 @@ import FastImage from 'react-native-fast-image';
 import Session, { useSession } from './Session';
 import { navigateToUri } from './DeepLinks';
 
+import * as Constants from './Constants';
+
 const textInputStyle = {
-  color: '#000',
-  backgroundColor: '#fff',
+  color: Constants.colors.white,
+  backgroundColor: Constants.colors.black,
   width: '100%',
+  borderWidth: 1,
+  borderColor: Constants.colors.white,
   borderRadius: 4,
   paddingVertical: 8,
   paddingHorizontal: 12,
@@ -26,7 +30,8 @@ const textInputStyle = {
 };
 
 const disabledTextInputStyle = {
-  backgroundColor: '#ddd',
+  color: Constants.colors.grayText,
+  borderColor: Constants.colors.grayText,
 };
 
 const errorMessages = {
@@ -53,7 +58,7 @@ const Announcement = (props) => {
       style={{
         padding: 16,
         paddingTop: 12,
-        backgroundColor: '#000',
+        backgroundColor: Constants.colors.white,
         borderRadius: 4,
         marginBottom: 16,
         flexDirection: 'column',
@@ -62,7 +67,7 @@ const Announcement = (props) => {
         <Text
           style={{
             fontWeight: 'bold',
-            color: '#fff',
+            color: Constants.colors.black,
             fontSize: 16,
             marginBottom: 4,
           }}>
@@ -71,7 +76,7 @@ const Announcement = (props) => {
       ) : null}
       <Text
         style={{
-          color: '#fff',
+          color: Constants.colors.black,
           lineHeight: 20,
         }}>
         {props.body}
@@ -84,7 +89,7 @@ const Button = (props) => {
   return (
     <View
       style={{
-        backgroundColor: '#9955c8',
+        backgroundColor: '#fff',
         borderRadius: 4,
         paddingVertical: 8,
         paddingHorizontal: 16,
@@ -92,11 +97,11 @@ const Button = (props) => {
         alignItems: 'center',
         overflow: 'hidden',
       }}>
-      <Text style={{ color: '#fff', fontWeight: 'bold' }}>{props.text}</Text>
+      <Text style={{ color: '#000', fontWeight: 'bold' }}>{props.text}</Text>
       {props.spinner ? (
         <View
           style={{
-            backgroundColor: '#9955c8',
+            backgroundColor: '#fff',
             position: 'absolute',
             top: 0,
             bottom: 0,
@@ -104,7 +109,7 @@ const Button = (props) => {
             right: 0,
             justifyContent: 'center',
           }}>
-          <ActivityIndicator size="small" color="#fff" />
+          <ActivityIndicator size="small" color="#000" />
         </View>
       ) : null}
     </View>
@@ -166,9 +171,9 @@ const LoginForm = ({ route }) => {
       ) : null}
       <View style={{ width: '100%', alignItems: 'center', paddingBottom: 16 }}>
         <TouchableOpacity onPress={onPressSignUp}>
-          <Text>
+          <Text style={{ color: Constants.colors.grayText }}>
             Don't have an account?&nbsp;
-            <Text style={{ fontWeight: 'bold' }}>Sign up</Text>
+            <Text style={{ fontWeight: 'bold', color: Constants.colors.white }}>Sign up</Text>
           </Text>
         </TouchableOpacity>
       </View>
@@ -177,6 +182,7 @@ const LoginForm = ({ route }) => {
         autoCapitalize="none"
         onChangeText={(newUsername) => setUsername(newUsername)}
         placeholder="Email or username"
+        placeholderTextColor={Constants.colors.white}
         editable={!signingIn}
         returnKeyType="next"
         onSubmitEditing={() => {
@@ -191,6 +197,7 @@ const LoginForm = ({ route }) => {
         textContentType="password"
         onChangeText={(newPassword) => setPassword(newPassword)}
         placeholder="Password"
+        placeholderTextColor={Constants.colors.white}
         editable={!signingIn}
         ref={(input) => {
           this._password = input;
@@ -201,7 +208,7 @@ const LoginForm = ({ route }) => {
       <TouchableOpacity
         style={{ paddingTop: 8, paddingBottom: 16 }}
         onPress={onPressForgotPassword}>
-        <Text>Forgot password?</Text>
+        <Text style={{ color: Constants.colors.grayText }}>Forgot password?</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={onPressSignIn}>
         <Button text="Log In" spinner={signingIn} />
@@ -254,11 +261,11 @@ const CreateAccountForm = () => {
         ))}
       </Fragment>
       <View style={{ paddingBottom: 16, alignItems: 'center' }}>
-        <Text style={{ fontSize: 20 }}>Create a new account</Text>
+        <Text style={{ fontSize: 20, color: Constants.colors.white }}>Create a new account</Text>
         <TouchableOpacity onPress={onPressLogin}>
-          <Text style={{ marginTop: 16 }}>
+          <Text style={{ marginTop: 16, color: Constants.colors.grayText }}>
             Already have an account?&nbsp;
-            <Text style={{ fontWeight: 'bold' }}>Log in</Text>
+            <Text style={{ fontWeight: 'bold', color: Constants.colors.white }}>Log in</Text>
           </Text>
         </TouchableOpacity>
       </View>
@@ -266,6 +273,7 @@ const CreateAccountForm = () => {
         style={creatingAccount ? [textInputStyle, disabledTextInputStyle] : textInputStyle}
         autoCapitalize="none"
         placeholder="Username"
+        placeholderTextColor={Constants.colors.white}
         onChangeText={(newUsername) => setUsername(newUsername)}
         editable={!creatingAccount}
         returnKeyType="next"
@@ -277,6 +285,7 @@ const CreateAccountForm = () => {
       <TextInput
         style={creatingAccount ? [textInputStyle, disabledTextInputStyle] : textInputStyle}
         placeholder="Your name"
+        placeholderTextColor={Constants.colors.white}
         onChangeText={(newName) => setName(newName)}
         editable={!creatingAccount}
         returnKeyType="next"
@@ -292,6 +301,7 @@ const CreateAccountForm = () => {
         style={creatingAccount ? [textInputStyle, disabledTextInputStyle] : textInputStyle}
         autoCapitalize="none"
         placeholder="Email address"
+        placeholderTextColor={Constants.colors.white}
         onChangeText={(newEmail) => setEmail(newEmail)}
         editable={!creatingAccount}
         returnKeyType="next"
@@ -308,6 +318,7 @@ const CreateAccountForm = () => {
         secureTextEntry
         textContentType="password"
         placeholder="New password"
+        placeholderTextColor={Constants.colors.white}
         onChangeText={(newPassword) => setPassword(newPassword)}
         editable={!creatingAccount}
         returnKeyType="go"
@@ -318,7 +329,7 @@ const CreateAccountForm = () => {
       />
       <View style={{ paddingTop: 8, paddingBottom: 16 }}>
         <TouchableOpacity onPress={onPressPrivacyPolicy}>
-          <Text style={{ lineHeight: 20 }}>
+          <Text style={{ lineHeight: 20, color: Constants.colors.grayText }}>
             By clicking "Create Account," you are agreeing to Castle's&nbsp;
             <Text style={{ fontWeight: 'bold' }}>privacy policy</Text>.
           </Text>
@@ -364,13 +375,14 @@ const ForgotPasswordForm = () => {
         </Fragment>
       ) : null}
       <View style={{ paddingBottom: 16 }}>
-        <Text style={{ fontSize: 20 }}>Forgot your password?</Text>
+        <Text style={{ fontSize: 20, color: Constants.colors.white }}>Forgot your password?</Text>
       </View>
       <TextInput
         style={resettingPassword ? [textInputStyle, disabledTextInputStyle] : textInputStyle}
         autoCapitalize="none"
         onChangeText={(newUsername) => setUsername(newUsername)}
         placeholder="Email or username"
+        placeholderTextColor={Constants.colors.white}
         editable={!resettingPassword}
         autoFocus={true}
         returnKeyType="go"
@@ -389,12 +401,12 @@ const WithHeader = ({ children }) => (
     enabled
     style={{
       flex: 1,
-      backgroundColor: '#ffe00e',
+      backgroundColor: Constants.colors.black,
       alignItems: 'center',
       justifyContent: 'center',
       padding: 16,
     }}>
-    <StatusBar backgroundColor="#ffe00e" barStyle="dark-content" />
+    <StatusBar backgroundColor="#000" barStyle="light-content" />
     <View
       style={{
         alignItems: 'center',
@@ -406,17 +418,18 @@ const WithHeader = ({ children }) => (
           aspectRatio: 1,
           marginBottom: 16,
         }}
-        source={require('../assets/images/castle-classic-white.png')}
+        source={require('../assets/images/castle-portal-white.png')}
       />
-      <Text
+      <FastImage
         style={{
-          fontSize: 28,
-          fontFamily: 'RTAliasGrotesk-Bold',
-        }}>
-        Castle
-      </Text>
+          width: 100,
+          height: 34,
+          marginBottom: 16,
+        }}
+        source={require('../assets/images/wordmark-white.png')}
+      />
     </View>
-    <View style={{ width: '100%', alignItems: 'center', paddingBottom: 64 }}>{children}</View>
+    <View style={{ width: '100%', alignItems: 'center' }}>{children}</View>
   </KeyboardAvoidingView>
 );
 

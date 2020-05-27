@@ -47,8 +47,9 @@ export const styles = {
 };
 
 export const colors = {
-  // ... shared colors go here ...
-  // red: '#f00',
+  black: '#000',
+  grayText: '#888',
+  white: '#fff',
 };
 
 export const EMPTY_CARD = {
