@@ -27,6 +27,7 @@ const textInputStyle = {
   paddingVertical: 8,
   paddingHorizontal: 12,
   marginVertical: 8,
+  fontSize: 16,
 };
 
 const disabledTextInputStyle = {
@@ -91,13 +92,13 @@ const Button = (props) => {
       style={{
         backgroundColor: '#fff',
         borderRadius: 4,
-        paddingVertical: 8,
-        paddingHorizontal: 16,
+        paddingVertical: 6,
+        paddingHorizontal: 9,
         margin: 8,
         alignItems: 'center',
         overflow: 'hidden',
       }}>
-      <Text style={{ color: '#000', fontWeight: 'bold' }}>{props.text}</Text>
+      <Text style={{ color: '#000', fontWeight: 'bold', fontSize: 16 }}>{props.text}</Text>
       {props.spinner ? (
         <View
           style={{
@@ -171,7 +172,7 @@ const LoginForm = ({ route }) => {
       ) : null}
       <View style={{ width: '100%', alignItems: 'center', paddingBottom: 16 }}>
         <TouchableOpacity onPress={onPressSignUp}>
-          <Text style={{ color: Constants.colors.grayText }}>
+          <Text style={{ color: Constants.colors.grayText, fontSize: 16 }}>
             Don't have an account?&nbsp;
             <Text style={{ fontWeight: 'bold', color: Constants.colors.white }}>Sign up</Text>
           </Text>
@@ -208,7 +209,7 @@ const LoginForm = ({ route }) => {
       <TouchableOpacity
         style={{ paddingTop: 8, paddingBottom: 16 }}
         onPress={onPressForgotPassword}>
-        <Text style={{ color: Constants.colors.grayText }}>Forgot password?</Text>
+        <Text style={{ color: Constants.colors.grayText, fontSize: 16 }}>Forgot password?</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={onPressSignIn}>
         <Button text="Log In" spinner={signingIn} />
@@ -263,7 +264,7 @@ const CreateAccountForm = () => {
       <View style={{ paddingBottom: 16, alignItems: 'center' }}>
         <Text style={{ fontSize: 20, color: Constants.colors.white }}>Create a new account</Text>
         <TouchableOpacity onPress={onPressLogin}>
-          <Text style={{ marginTop: 16, color: Constants.colors.grayText }}>
+          <Text style={{ marginTop: 16, color: Constants.colors.grayText, fontSize: 16 }}>
             Already have an account?&nbsp;
             <Text style={{ fontWeight: 'bold', color: Constants.colors.white }}>Log in</Text>
           </Text>
@@ -329,7 +330,7 @@ const CreateAccountForm = () => {
       />
       <View style={{ paddingTop: 8, paddingBottom: 16 }}>
         <TouchableOpacity onPress={onPressPrivacyPolicy}>
-          <Text style={{ lineHeight: 20, color: Constants.colors.grayText }}>
+          <Text style={{ lineHeight: 24, color: Constants.colors.grayText, fontSize: 16 }}>
             By clicking "Create Account," you are agreeing to Castle's&nbsp;
             <Text style={{ fontWeight: 'bold' }}>privacy policy</Text>.
           </Text>
