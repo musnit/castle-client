@@ -6,7 +6,7 @@ local jsEvents = require "__ghost__.jsEvents"
 
 local ui = {}
 
-local UI_UPDATE_FREQUENCY = 20
+local UI_UPDATE_FREQUENCY = 2
 
 --
 -- Top-level data structures
@@ -188,8 +188,6 @@ function ui.update()
 
     local time = love.timer.getTime()
     if not lastUpdateTime or time - lastUpdateTime > 1 / UI_UPDATE_FREQUENCY then
-        lastUpdateTime = time
-
         push(root.panes.DEFAULT, "DEFAULT")
         if castle and castle.uiupdate then
             castle.uiupdate()
@@ -201,6 +199,8 @@ function ui.update()
         if diff ~= nil then
             local diffJson = cjson.encode(diff)
             jsEvents.send("CASTLE_TOOLS_UPDATE", diffJson)
+
+            lastUpdateTime = time
         -- print('update: ' .. diffJson)
         -- print('update size: ' .. #diffJson)
         -- io.flush()
