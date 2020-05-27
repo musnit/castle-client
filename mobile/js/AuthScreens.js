@@ -94,7 +94,6 @@ const Button = (props) => {
         borderRadius: 4,
         paddingVertical: 6,
         paddingHorizontal: 9,
-        margin: 8,
         alignItems: 'center',
         overflow: 'hidden',
       }}>
@@ -206,14 +205,21 @@ const LoginForm = ({ route }) => {
         returnKeyType="go"
         onSubmitEditing={onPressSignIn}
       />
-      <TouchableOpacity
-        style={{ paddingTop: 8, paddingBottom: 16 }}
-        onPress={onPressForgotPassword}>
-        <Text style={{ color: Constants.colors.grayText, fontSize: 16 }}>Forgot password?</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={onPressSignIn}>
-        <Button text="Log In" spinner={signingIn} />
-      </TouchableOpacity>
+      <View style={{
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingVertical: 8,
+      }}>
+        <TouchableOpacity
+          style={{ paddingTop: 8, paddingBottom: 16 }}
+          onPress={onPressForgotPassword}>
+          <Text style={{ color: Constants.colors.grayText, fontSize: 16 }}>Forgot password?</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onPressSignIn}>
+          <Button text="Log In" spinner={signingIn} />
+        </TouchableOpacity>
+      </View>
     </Fragment>
   );
 };
@@ -328,9 +334,9 @@ const CreateAccountForm = () => {
         }}
         onSubmitEditing={onPressCreateAccount}
       />
-      <View style={{ paddingTop: 8, paddingBottom: 16 }}>
+      <View style={{ paddingTop: 8, paddingBottom: 24 }}>
         <TouchableOpacity onPress={onPressPrivacyPolicy}>
-          <Text style={{ lineHeight: 24, color: Constants.colors.grayText, fontSize: 16 }}>
+          <Text style={{ lineHeight: 20, color: Constants.colors.grayText, fontSize: 13 }}>
             By clicking "Create Account," you are agreeing to Castle's&nbsp;
             <Text style={{ fontWeight: 'bold' }}>privacy policy</Text>.
           </Text>
@@ -389,9 +395,13 @@ const ForgotPasswordForm = () => {
         returnKeyType="go"
         onSubmitEditing={onPressResetPassword}
       />
-      <TouchableOpacity onPress={onPressResetPassword}>
-        <Button text="Reset Password" spinner={resettingPassword} />
-      </TouchableOpacity>
+      <View style={{
+        paddingVertical: 8,
+      }}>
+        <TouchableOpacity onPress={onPressResetPassword}>
+          <Button text="Reset Password" spinner={resettingPassword} />
+        </TouchableOpacity>
+      </View>
     </Fragment>
   );
 };
