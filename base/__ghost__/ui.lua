@@ -6,7 +6,7 @@ local jsEvents = require "__ghost__.jsEvents"
 
 local ui = {}
 
-local UI_UPDATE_FREQUENCY = 20
+local UI_UPDATE_FREQUENCY = 4
 
 --
 -- Top-level data structures
