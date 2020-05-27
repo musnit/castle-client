@@ -6,7 +6,7 @@ local jsEvents = require "__ghost__.jsEvents"
 
 local ui = {}
 
-local UI_UPDATE_FREQUENCY = 15
+local UI_UPDATE_FREQUENCY = 20
 
 --
 -- Top-level data structures
@@ -172,14 +172,20 @@ jsEvents.permanentListen(
 
 -- The top-level UI update -- call user's `castle.uiupdate` then send a diff of UI state to JS
 local lastUpdateTime
+local updatesPaused
 
 function resetUI()
     lastUpdateTime = nil
+    updatesPaused = false
     needsSync = true
     resetRoot()
 end
 
 function ui.update()
+    if updatesPaused then
+        return
+    end
+
     local time = love.timer.getTime()
     if not lastUpdateTime or time - lastUpdateTime > 1 / UI_UPDATE_FREQUENCY then
         lastUpdateTime = time
@@ -292,6 +298,10 @@ end
 --
 -- Components
 --
+
+function ui.setUpdatesPaused(value)
+    updatesPaused = value
+end
 
 function ui.box(...)
     local id, props, inner
