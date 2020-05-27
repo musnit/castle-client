@@ -82,8 +82,11 @@ export default class CardTransition extends React.Component {
   };
 
   _update = async (prevProps) => {
-    const { deckId, cardId } = this.props;
-    if (!prevProps || (deckId !== prevProps.deckId || cardId !== prevProps.cardId)) {
+    const { deckId, cardId, counter } = this.props;
+    if (
+      !prevProps ||
+      (deckId !== prevProps.deckId || cardId !== prevProps.cardId || counter !== prevProps.counter)
+    ) {
       this.setState(
         {
           prevCard: {
