@@ -489,6 +489,15 @@ const CreateCardScreen = ({
     handler: ({ card }) => maybeSaveAndGoToCard(card),
   });
 
+  if (Constants.Android) {
+    // after the game loads, it listens for keyboard events and
+    // causes react native's back button event to fail
+    GhostEvents.useListen({
+      eventName: 'CASTLE_SYSTEM_BACK_BUTTON',
+      handler: maybeSaveAndGoToDeck,
+    });
+  }
+
   const cardBackgroundStyles = {
     backgroundColor: card.backgroundImage ? '#000' : '#f2f2f2',
     justifyContent: isTextActorSelected ? 'flex-start' : 'flex-end',
