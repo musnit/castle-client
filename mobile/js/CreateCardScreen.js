@@ -136,6 +136,7 @@ class CreateCardScreenDataProvider extends React.Component {
     deck: EMPTY_DECK,
     card: Constants.EMPTY_CARD,
     deckState: { variables: [] },
+    loading: false,
   };
 
   componentDidMount() {
@@ -256,13 +257,14 @@ class CreateCardScreenDataProvider extends React.Component {
     Session.saveDeck(this.state.card, this.state.deck, this.state.card.variables, true);
 
   _save = async () => {
+    await this.setState({ loading: true });
     const { card, deck } = await Session.saveDeck(
       this.state.card,
       this.state.deck,
       this.state.card.variables
     );
     if (!this._mounted) return;
-    return this.setState({ card, deck });
+    return this.setState({ card, deck, loading: false });
   };
 
   _goToDeck = (deckId = null) => {
@@ -282,6 +284,7 @@ class CreateCardScreenDataProvider extends React.Component {
   };
 
   _saveAndGoToDeck = async () => {
+    await this.setState({ loading: true });
     const { card, deck } = await Session.saveDeck(
       this.state.card,
       this.state.deck,
@@ -289,6 +292,7 @@ class CreateCardScreenDataProvider extends React.Component {
     );
 
     if (!this._mounted) return;
+    this.setState({ loading: false });
     return this._goToDeck(deck.deckId);
   };
 
@@ -361,12 +365,13 @@ class CreateCardScreenDataProvider extends React.Component {
   };
 
   render() {
-    const { deck, card, deckState } = this.state;
+    const { deck, card, deckState, loading } = this.state;
     return (
       <GhostUI.Provider>
         <CreateCardScreen
           deck={deck}
           card={card}
+          loading={loading}
           deckState={deckState}
           goToDeck={this._goToDeck}
           goToCard={this._goToCard}
@@ -385,6 +390,7 @@ class CreateCardScreenDataProvider extends React.Component {
 const CreateCardScreen = ({
   card,
   deck,
+  loading,
   deckState,
   goToDeck,
   goToCard,
@@ -529,6 +535,7 @@ const CreateCardScreen = ({
             />
             <View style={styles.textActorsContainer}>
               <CardText
+                disabled={loading}
                 visible={isShowingTextActors}
                 textActors={textActors}
                 card={card}

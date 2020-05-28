@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
 });
 
 const TextActor = (props) => {
-  const { actor } = props;
+  const { actor, disabled } = props;
   if (actor.hasTapTrigger) {
     return (
       <TouchableOpacity
@@ -54,6 +54,7 @@ const TextActor = (props) => {
           actor.isSelected && props.isEditable ? styles.selected : null,
           props.style,
         ]}
+        disabled={disabled}
         onPress={props.onSelect}>
         <Text style={styles.choiceBlockDescription}>{actor.content}</Text>
       </TouchableOpacity>
@@ -67,7 +68,7 @@ const TextActor = (props) => {
           props.style,
         ]}
         onPress={props.onSelect}
-        disabled={!props.isEditable}>
+        disabled={!props.isEditable || disabled}>
         <Text style={styles.textBlockDescription}>{actor.content}</Text>
       </TouchableOpacity>
     );
@@ -78,7 +79,7 @@ export default CardText = (props) => {
   if (!props.visible) {
     return null;
   }
-  const { textActors } = props;
+  const { textActors, disabled = false } = props;
   let orderedActors = [];
 
   if (textActors) {
@@ -106,6 +107,7 @@ export default CardText = (props) => {
             actor={actor}
             style={styles}
             isEditable={props.isEditable}
+            disabled={disabled}
             onSelect={() => props.onSelect(actorId)}
           />
         );
