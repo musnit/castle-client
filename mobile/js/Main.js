@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { ApolloProvider } from '@apollo/react-hooks';
 import { RootNavigator } from './Navigation';
@@ -8,12 +8,21 @@ import DevMenu from '@terrysahaidak/react-native-devmenu';
 import * as GhostEvents from './ghost/GhostEvents';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import * as Constants from './Constants';
 import * as Session from './Session';
+import { androidTextCutoffKludge } from './utilities';
 
 let bootSplashHidden = false;
 
 const Main = () => {
   const { initialized } = Session.useSession();
+
+  if (Constants.Android) {
+    React.useEffect(() => {
+      // https://github.com/facebook/react-native/issues/15114
+      androidTextCutoffKludge();
+    }, [Text]);
+  }
 
   // Session not yet initialized? Just show a loading screen...
   if (!initialized) {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Keyboard } from 'react-native';
+import { Keyboard, Text } from 'react-native';
 import gql from 'graphql-tag';
 import ImagePicker from 'react-native-image-picker';
 import { ReactNativeFile } from 'apollo-upload-client';
@@ -186,4 +186,17 @@ export const useKeyboard = (config = {}) => {
   }, []);
 
   return [keyboardState, dismiss];
+};
+
+// https://github.com/facebook/react-native/issues/15114#issuecomment-360029841
+export const androidTextCutoffKludge = () => {
+  if (Text.prototype) {
+    const oldRender = Text.prototype.render;
+    Text.prototype.render = function render(...args) {
+      const origin = oldRender.call(this, ...args);
+      return React.cloneElement(origin, {
+        textBreakStrategy: 'simple',
+      });
+    };
+  }
 };
