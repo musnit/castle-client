@@ -11,7 +11,7 @@ import * as Constants from './Constants';
 const styles = StyleSheet.create({
   container: {
     borderBottomWidth: 1,
-    borderColor: '#888',
+    borderColor: '#555',
   },
   navigationRow: {
     width: '100%',
@@ -26,27 +26,23 @@ const styles = StyleSheet.create({
   },
   header: {
     padding: 8,
-    paddingBottom: 16,
+    paddingBottom: 24,
     flexDirection: 'row',
-  },
-  title: {
-    color: '#fff',
-    fontSize: 32,
+    justifyContent: 'center',
   },
   topCardPreview: {
-    maxWidth: '25%',
-    flexShrink: 0,
-    marginRight: 16,
+    maxWidth: '20%',
+    marginRight: 24,
   },
   instructions: {
-    width: '100%',
-    flexShrink: 1,
+    paddingTop: 16,
     alignItems: 'flex-start',
   },
   instructionsLabel: {
     color: '#fff',
-    marginBottom: 12,
+    marginBottom: 16,
     fontSize: 16,
+    lineHeight: 24,
   },
 });
 
@@ -66,8 +62,6 @@ const DeckVisibleControl = ({ deck, onToggleVisible }) => {
   const initialCard = deck.cards.find((c) => c.cardId === deck.initialCard.cardId);
   if (!initialCard) return null;
 
-  const cardLabel = deck.cards.length > 1 ? 'The top card on this deck' : 'This card';
-
   return (
     <React.Fragment>
       <View style={styles.topCardPreview}>
@@ -77,23 +71,22 @@ const DeckVisibleControl = ({ deck, onToggleVisible }) => {
         {deck.isVisible ? (
           <React.Fragment>
             <Text style={styles.instructionsLabel}>
-              {cardLabel} is <Text style={{ fontWeight: '700' }}>face up</Text>, meaning it's
-              visible to others.
+              This deck is <Text style={{ fontWeight: '700' }}>public</Text>.
             </Text>
-            <Text style={styles.instructionsLabel}>Flip it over to make it private.</Text>
+            <TouchableOpacity style={Constants.styles.primaryButton} onPress={onToggleVisible}>
+              <Text style={Constants.styles.primaryButtonLabel}>Make Private</Text>
+            </TouchableOpacity>
           </React.Fragment>
         ) : (
           <React.Fragment>
             <Text style={styles.instructionsLabel}>
-              {cardLabel} is <Text style={{ fontWeight: '700' }}>face down</Text>, meaning only you
-              can view it.
+            This deck is <Text style={{ fontWeight: '700' }}>private</Text>.
             </Text>
-            <Text style={styles.instructionsLabel}>Flip it over to make it public.</Text>
+            <TouchableOpacity style={Constants.styles.primaryButton} onPress={onToggleVisible}>
+              <Text style={Constants.styles.primaryButtonLabel}>Make Public</Text>
+            </TouchableOpacity>
           </React.Fragment>
         )}
-        <TouchableOpacity style={Constants.styles.primaryButton} onPress={onToggleVisible}>
-          <Text style={Constants.styles.primaryButtonLabel}>Flip Over</Text>
-        </TouchableOpacity>
       </View>
     </React.Fragment>
   );
