@@ -2,6 +2,7 @@ import React from 'react';
 import gql from 'graphql-tag';
 import { TouchableWithoutFeedback, ScrollView, StyleSheet, View } from 'react-native';
 import { useQuery, useEffect } from '@apollo/react-hooks';
+import { useNavigation } from '@react-navigation/native';
 import SafeAreaView from 'react-native-safe-area-view';
 import { getPaneData } from './Tools';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -36,7 +37,8 @@ const styles = StyleSheet.create({
 });
 
 const PlayCardScreenDataProvider = ({ deckId, cardId, route, ...props }) => {
-  if (!deckId && route.params) {
+  const navigation = useNavigation(); // we use props.route
+  if (!deckId && route?.params) {
     deckId = route.params.deckId;
     cardId = route.params.cardId;
   }

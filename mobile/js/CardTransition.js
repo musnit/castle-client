@@ -5,6 +5,7 @@ import gql from 'graphql-tag';
 import * as Session from './Session';
 
 import FastImage from 'react-native-fast-image';
+import PlayCardScreen from './PlayCardScreen';
 
 const TRANSITION_CONFIG = {
   duration: 250,
@@ -19,6 +20,7 @@ const styles = StyleSheet.create({
     height: '100%',
     resizeMode: 'cover',
   },
+  nextCard: {},
 });
 
 const getBackgroundImageUrl = async (deckId, cardId) => {
@@ -62,15 +64,21 @@ const getBackgroundImageUrl = async (deckId, cardId) => {
   }
 };
 
+const _makeCardProps = (props) => {
+  const cardProps = { ...props };
+  delete cardProps.style;
+  return cardProps;
+};
+
 export default class CardTransition extends React.Component {
-  _nextBackgroundImageUrl = null;
   state = {
-    prevCard: {
+    currentCardProps: _makeCardProps(this.props),
+    nextCard: {
       cardId: null,
       backgroundImageUrl: null,
     },
     transitioning: false,
-    transition: new Animated.Value(1),
+    transition: new Animated.Value(0),
   };
 
   componentDidMount = () => {
@@ -89,36 +97,55 @@ export default class CardTransition extends React.Component {
     ) {
       this.setState(
         {
-          prevCard: {
-            cardId: prevProps ? prevProps.cardId : null,
-            backgroundImageUrl: this._nextBackgroundImageUrl,
+          nextCard: {
+            cardId,
+            backgroundImageUrl: null,
           },
           transitioning: prevProps && prevProps.cardId !== null,
         },
         this._maybeBeginTransition
       );
-      (async () => {
-        const backgroundImageUrl = await getBackgroundImageUrl(deckId, cardId);
-        this._nextBackgroundImageUrl = backgroundImageUrl;
-      })();
     }
   };
 
   _maybeBeginTransition = async () => {
     if (this.state.transitioning) {
+      (async () => {
+        const backgroundImageUrl = await getBackgroundImageUrl(
+          this.props.deckId,
+          this.props.cardId
+        );
+        this.setState((state) => {
+          return {
+            ...state,
+            nextCard: {
+              ...state.nextCard,
+              backgroundImageUrl,
+            },
+          };
+        });
+      })();
+
       const { transition } = this.state;
-      transition.setValue(0);
       Animated.timing(transition, { toValue: 1, ...TRANSITION_CONFIG }).start(({ finished }) => {
         if (finished) {
-          this.setState({ transitioning: false });
+          this.setState({
+            transitioning: false,
+            currentCardProps: _makeCardProps(this.props),
+          });
+          transition.setValue(0);
         }
+      });
+    } else {
+      // if not transitioning, immediately adopt next card
+      this.setState({
+        currentCardProps: _makeCardProps(this.props),
       });
     }
   };
 
   render() {
-    const { style, children } = this.props;
-    const { prevCard, transitioning, transition } = this.state;
+    const { currentCardProps, nextCard, transitioning, transition } = this.state;
     const inOpacity = transition;
     const inScale = transition.interpolate({
       inputRange: [0, 1],
@@ -131,19 +158,23 @@ export default class CardTransition extends React.Component {
     });
     return (
       <React.Fragment>
-        <Animated.View style={{ flex: 1, opacity: inOpacity, transform: [{ scale: inScale }] }}>
-          {children}
-        </Animated.View>
-        {prevCard.backgroundImageUrl !== null && transitioning ? (
+        {nextCard.backgroundImageUrl !== null && transitioning ? (
           <Animated.View
             pointerEvents="none"
-            style={[style, { opacity: outOpacity, transform: [{ scale: outScale }] }]}>
+            style={[styles.nextCard, { opacity: inOpacity, transform: [{ scale: inScale }] }]}>
             <FastImage
+              key={`image-${nextCard.cardId}`}
               style={styles.backgroundImage}
-              source={{ uri: prevCard.backgroundImageUrl }}
+              source={{ uri: nextCard.backgroundImageUrl }}
             />
           </Animated.View>
         ) : null}
+        <Animated.View style={{ flex: 1, opacity: outOpacity, transform: [{ scale: outScale }] }}>
+          <PlayCardScreen
+            key={`card-${currentCardProps.cardId}-${currentCardProps.counter}`}
+            {...currentCardProps}
+          />
+        </Animated.View>
       </React.Fragment>
     );
   }

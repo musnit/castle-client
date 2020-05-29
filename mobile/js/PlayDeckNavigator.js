@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import { StyleSheet, View } from 'react-native';
 
 import CardTransition from './CardTransition';
-import PlayCardScreen from './PlayCardScreen';
 
 const styles = StyleSheet.create({
   container: {
@@ -20,14 +20,17 @@ const EMPTY_PLAY_DECK_STATE = {
 };
 
 const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, route, paused }) => {
+  const navigation = useNavigation(); // we use props.route
   if (!deckId && route.params) {
     deckId = route.params.deckId;
     initialCardId = route.params.initialCardId;
     initialDeckState = route.params.initialDeckState;
   }
 
-  const [cardId, setCardId] = useState(initialCardId);
-  const [numCardsViewed, setNumCardsViewed] = useState(1);
+  const [cardState, setCardState] = useState({
+    cardId: initialCardId,
+    numCardsViewed: 1,
+  });
   const [playDeckState, changePlayDeckState] = React.useReducer((state, changes) => {
     return {
       ...state,
@@ -37,10 +40,12 @@ const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, route, pau
 
   const onSelectNewCard = React.useCallback(
     ({ cardId }) => {
-      setNumCardsViewed(numCardsViewed + 1);
-      setCardId(cardId);
+      setCardState({
+        cardId,
+        numCardsViewed: cardState.numCardsViewed + 1,
+      });
     },
-    [numCardsViewed]
+    [cardState.numCardsViewed]
   );
 
   return (
@@ -49,20 +54,19 @@ const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, route, pau
         styles.container,
         {
           // When at the first card, show the underlying deck preview
-          backgroundColor: numCardsViewed < 2 ? 'transparent' : 'black',
+          backgroundColor: cardState.numCardsViewed < 2 ? 'transparent' : 'black',
         },
       ]}>
-      <CardTransition deckId={deckId} cardId={cardId} counter={numCardsViewed} style={styles.card}>
-        <PlayCardScreen
-          key={`card-${cardId}-${numCardsViewed}`}
-          deckId={deckId}
-          cardId={cardId}
-          onSelectNewCard={onSelectNewCard}
-          deckState={playDeckState}
-          onChangeDeckState={changePlayDeckState}
-          paused={paused}
-        />
-      </CardTransition>
+      <CardTransition
+        deckId={deckId}
+        cardId={cardState.cardId}
+        counter={cardState.numCardsViewed}
+        style={styles.card}
+        onSelectNewCard={onSelectNewCard}
+        deckState={playDeckState}
+        onChangeDeckState={changePlayDeckState}
+        paused={paused}
+      />
     </View>
   );
 };
