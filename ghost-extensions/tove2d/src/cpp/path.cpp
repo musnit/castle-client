@@ -749,13 +749,20 @@ bool Path::isInside(float x, float y) {
 	}
 }
 
-void Path::intersect(float x1, float y1, float x2, float y2) const {
+path_intersect_result Path::intersect(float x1, float y1, float x2, float y2) const {
 	RuntimeRay ray(x1, y1, x2, y2);
 	Intersecter intersecter;
 	for (const auto &t : subpaths) {
 		t->intersect(ray, intersecter);
 	}
-	// return intersecter.get()
+	std::vector<float> result = intersecter.get();
+	float* float_array = (float *) malloc(sizeof(float) * result.size());
+
+	for(int i=0; i < result.size(); i++){
+		float_array[i] = result[i];
+	}
+
+	return {float_array, (int) result.size()};
 }
 
 void Path::refine(int factor) {

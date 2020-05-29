@@ -769,6 +769,10 @@ void GraphicsAddPath(ToveGraphicsRef shape, TovePathRef path) {
 	deref(shape)->addPath(deref(path));
 }
 
+path_intersect_result PathGetIntersection(TovePathRef path, float x1, float y1, float x2, float y2) {
+	return deref(path)->intersect(x1, y1, x2, y2);
+}
+
 int GraphicsGetNumPaths(ToveGraphicsRef shape) {
 	return deref(shape)->getNumPaths();
 }
