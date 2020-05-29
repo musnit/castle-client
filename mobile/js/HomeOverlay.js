@@ -2,7 +2,6 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeArea } from 'react-native-safe-area-context';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 import * as Constants from './Constants';
 import FastImage from 'react-native-fast-image';
@@ -20,7 +19,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  createLabel: {
+  buttonlabel: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '700',
@@ -34,20 +33,28 @@ const CreateButton = ({ style, onPress }) => (
     <FastImage
       tintColor="#ffffff"
       style={{
-        width: 48,
-        height: 48,
+        width: 36,
+        height: 36,
         ...Constants.styles.dropShadow,
       }}
-      source={require('../assets/images/add-card.png')}
+      source={require('../assets/images/HomeOverlay-create.png')}
     />
-    <Text style={styles.createLabel}>Create</Text>
+    <Text style={styles.buttonlabel}>Create</Text>
   </TouchableOpacity>
 );
 
 const ProfileButton = ({ style, onPress }) => (
   <TouchableOpacity style={[styles.profileButton, style]} onPress={onPress}>
-    <FontAwesome5 name="user-circle" size={48} solid color="#fff" />
-    <Text style={styles.createLabel}>Profile</Text>
+    <FastImage
+      tintColor="#ffffff"
+      style={{
+        width: 36,
+        height: 36,
+        ...Constants.styles.dropShadow,
+      }}
+      source={require('../assets/images/HomeOverlay-profile.png')}
+    />
+    <Text style={styles.buttonlabel}>Profile</Text>
   </TouchableOpacity>
 );
 
