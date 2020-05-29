@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     zIndex: -1, // required to prevent negative margin from blocking back button
   },
   action: {
-    paddingHorizontal: 4,
+    paddingHorizontal: 8,
   },
 });
 
