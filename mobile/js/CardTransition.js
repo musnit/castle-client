@@ -2,6 +2,7 @@ import React from 'react';
 import { Animated, Easing, InteractionManager, StyleSheet, View } from 'react-native';
 import gql from 'graphql-tag';
 
+import * as Constants from './Constants';
 import * as Session from './Session';
 
 import FastImage from 'react-native-fast-image';
@@ -20,7 +21,10 @@ const styles = StyleSheet.create({
     height: '100%',
     resizeMode: 'cover',
   },
-  nextCard: {},
+  nextCard: {
+    borderRadius: Constants.CARD_BORDER_RADIUS,
+    overflow: 'hidden',
+  },
 });
 
 const getBackgroundImageUrl = async (deckId, cardId) => {
