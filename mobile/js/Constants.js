@@ -32,7 +32,7 @@ export const styles = {
   primaryButton: {
     borderRadius: 6,
     paddingTop: 4,
-    paddingBottom: 6,
+    paddingBottom: 5,
     paddingHorizontal: 12,
     backgroundColor: '#fff',
     flexDirection: 'row',
