@@ -7,7 +7,7 @@ import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemo
 import { onError } from 'apollo-link-error';
 import { ApolloLink, Observable } from 'apollo-link';
 import { createUploadLink } from 'apollo-upload-client';
-import { Image } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import gql from 'graphql-tag';
 
 import * as Constants from './Constants';
@@ -273,7 +273,7 @@ export const prefetchCardsAsync = async ({ cardId }) => {
 
   prefetchCards.forEach((card) => {
     if (card.backgroundImage && card.backgroundImage.url) {
-      Image.prefetch(card.backgroundImage.url);
+      FastImage.preload([{ uri: card.backgroundImage.url }]);
     }
   });
 };
