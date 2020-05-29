@@ -773,6 +773,10 @@ path_intersect_result PathGetIntersection(TovePathRef path, float x1, float y1, 
 	return deref(path)->intersect(x1, y1, x2, y2);
 }
 
+void ReleaseFloatArray(float * array) {
+	free(array);
+}
+
 int GraphicsGetNumPaths(ToveGraphicsRef shape) {
 	return deref(shape)->getNumPaths();
 }
