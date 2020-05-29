@@ -10,6 +10,11 @@ typedef enum {
 	TOVE_REPORT_FATAL
 } ToveReportLevel;
 
+typedef struct {
+    float* numbers;
+    int len;
+} path_intersect_result;
+
 typedef void (*ToveReportFunction)(
 	const char *s, ToveReportLevel level);
 

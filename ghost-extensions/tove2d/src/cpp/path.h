@@ -159,7 +159,7 @@ public:
 	void setOrientation(ToveOrientation orientation);
 
 	bool isInside(float x, float y);
-	void intersect(float x1, float y1, float x2, float y2) const;
+	path_intersect_result intersect(float x1, float y1, float x2, float y2) const;
 
 public:
 	inline void setNext(const PathRef &path) {

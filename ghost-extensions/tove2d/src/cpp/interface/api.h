@@ -1,3 +1,5 @@
+EXPORT path_intersect_result PathGetIntersection(TovePathRef path, float x1, float y1, float x2, float y2);
+
 EXPORT const char *GetVersion();
 EXPORT void SetReportFunction(ToveReportFunction f);
 EXPORT void SetReportLevel(ToveReportLevel l);

@@ -102,6 +102,7 @@ protected:
         return 0;
     }
 
+public:
     const std::vector<float> &get() const {
         return hits;
     };
