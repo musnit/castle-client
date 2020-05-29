@@ -548,7 +548,7 @@ const CreateCardScreen = ({
             <View style={styles.textActorsContainer}>
               <CardText
                 disabled={loading}
-                visible={isShowingTextActors}
+                visible={isShowingTextActors || isPlaying}
                 textActors={textActors}
                 card={card}
                 onSelect={selectActor}
