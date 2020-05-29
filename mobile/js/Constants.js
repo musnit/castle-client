@@ -4,6 +4,7 @@ export const iOS = Platform.OS === 'ios';
 export const Android = Platform.OS === 'android';
 
 export const CARD_RATIO = 5 / 7;
+export const CARD_BORDER_RADIUS = 12;
 
 export const styles = {
   dropShadow: {

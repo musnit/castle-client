@@ -44,7 +44,7 @@ export default SceneCreatorPane = React.memo(
         isOpen={visible}
         onOpenEnd={Keyboard.dismiss}
         onCloseEnd={Keyboard.dismiss}
-        style={{ backgroundColor: '#fff', borderTopLeftRadius: 8, borderTopRightRadius: 8 }}
+        style={{ backgroundColor: '#fff', borderTopLeftRadius: Constants.CARD_BORDER_RADIUS, borderTopRightRadius: Constants.CARD_BORDER_RADIUS }}
         {...props}
       />
     );

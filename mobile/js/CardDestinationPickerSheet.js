@@ -4,6 +4,8 @@ import { Animated, Keyboard, StyleSheet, Text, TouchableWithoutFeedback, View } 
 import { BottomSheet } from './BottomSheet';
 import CardsSet from './CardsSet';
 
+import * as Constants from './Constants';
+
 const DRAWER_EXPANDED_HEIGHT = 500;
 const BG_ANIMATION_DURATION_IN_MS = 200;
 const BG_ANIMATION_DURATION_OUT_MS = 150;
@@ -11,8 +13,8 @@ const BG_ANIMATION_DURATION_OUT_MS = 150;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#000',
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
+    borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,
+    borderTopRightRadius: Constants.CARD_BORDER_RADIUS,
     overflow: 'hidden',
     borderTopWidth: 1,
     borderColor: '#666',

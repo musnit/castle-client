@@ -10,8 +10,8 @@ export default SceneCreatorBlueprintsPane = ({ element, visible, context }) => {
     <View
       style={{
         backgroundColor: '#fff',
-        borderTopLeftRadius: 8,
-        borderTopRightRadius: 8,
+        borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,
+        borderTopRightRadius: Constants.CARD_BORDER_RADIUS,
         padding: 16,
       }}>
       <View style={Constants.styles.paneHandle}></View>

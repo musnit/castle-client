@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   card: {
-    borderRadius: 6,
+    borderRadius: Constants.CARD_BORDER_RADIUS,
     aspectRatio: Constants.CARD_RATIO,
     width: '100%',
     overflow: 'hidden',

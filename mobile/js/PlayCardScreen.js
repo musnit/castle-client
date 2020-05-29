@@ -19,7 +19,7 @@ import * as Session from './Session';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    borderRadius: 6,
+    borderRadius: Constants.CARD_BORDER_RADIUS,
     overflow: 'hidden',
   },
   scene: {

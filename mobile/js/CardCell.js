@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   card: {
-    borderRadius: 6,
+    borderRadius: Constants.CARD_BORDER_RADIUS,
     backgroundColor: '#8CA5CD',
     width: '100%',
     aspectRatio: Constants.CARD_RATIO,
