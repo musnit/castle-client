@@ -1,5 +1,5 @@
 import React from 'react';
-import { Animated, Easing, InteractionManager, StyleSheet, View } from 'react-native';
+import { Animated, Easing, InteractionManager, Platform, StyleSheet, View } from 'react-native';
 import gql from 'graphql-tag';
 
 import * as Constants from './Constants';
@@ -74,7 +74,7 @@ const _makeCardProps = (props) => {
   return cardProps;
 };
 
-export default class CardTransition extends React.Component {
+class CardTransition extends React.Component {
   state = {
     currentCardProps: _makeCardProps(this.props),
     nextCard: {
@@ -183,3 +183,8 @@ export default class CardTransition extends React.Component {
     );
   }
 }
+
+export default Platform.select({
+  ios: CardTransition,
+  android: PlayCardScreen,
+});
