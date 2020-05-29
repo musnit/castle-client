@@ -2,6 +2,8 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import * as Constants from './Constants';
+
 const darkBackgroundStyles = StyleSheet.create({
   container: {
     flexDirection: 'row',
@@ -13,14 +15,16 @@ const darkBackgroundStyles = StyleSheet.create({
     paddingVertical: 8,
   },
   selectedItem: {
-    borderBottomWidth: 2,
-    borderColor: '#fff',
+    borderBottomWidth: 3,
+    borderColor: Constants.colors.white,
   },
   name: {
-    color: '#ccc',
+    color: Constants.colors.grayText,
+    fontSize: 16,
   },
   selectedName: {
-    color: '#fff',
+    color: Constants.colors.white,
+    fontWeight: 'bold',
   },
 });
 
