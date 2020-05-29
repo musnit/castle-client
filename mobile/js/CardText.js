@@ -98,14 +98,10 @@ export default CardText = (props) => {
     <React.Fragment>
       {orderedActors.map((actor, ii) => {
         const { actorId } = actor.actor;
-        const prevActorHasTrigger =
-          ii > 0 ? orderedActors[ii - 1].hasTapTrigger : actor.hasTapTrigger;
-        const styles = actor.hasTapTrigger !== prevActorHasTrigger ? { marginTop: 8 } : null;
         return (
           <TextActor
             key={`text-${actorId}`}
             actor={actor}
-            style={styles}
             isEditable={props.isEditable}
             disabled={disabled}
             onSelect={() => props.onSelect(actorId)}
