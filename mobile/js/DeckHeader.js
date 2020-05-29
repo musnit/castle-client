@@ -6,6 +6,8 @@ import FastImage from 'react-native-fast-image';
 import CardCell from './CardCell';
 import SegmentedNavigation from './SegmentedNavigation';
 
+import * as Constants from './Constants';
+
 const styles = StyleSheet.create({
   container: {
     borderBottomWidth: 1,
@@ -45,15 +47,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginBottom: 12,
     fontSize: 16,
-  },
-  setVisibleButton: {
-    backgroundColor: '#fff',
-    borderRadius: 6,
-    padding: 12,
-  },
-  setVisibleLabel: {
-    fontWeight: '700',
-    color: '#000',
   },
 });
 
@@ -98,8 +91,8 @@ const DeckVisibleControl = ({ deck, onToggleVisible }) => {
             <Text style={styles.instructionsLabel}>Flip it over to make it public.</Text>
           </React.Fragment>
         )}
-        <TouchableOpacity style={styles.setVisibleButton} onPress={onToggleVisible}>
-          <Text style={styles.setVisibleLabel}>Flip Over</Text>
+        <TouchableOpacity style={Constants.styles.primaryButton} onPress={onToggleVisible}>
+          <Text style={Constants.styles.primaryButtonLabel}>Flip Over</Text>
         </TouchableOpacity>
       </View>
     </React.Fragment>

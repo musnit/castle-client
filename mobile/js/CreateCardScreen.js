@@ -27,6 +27,7 @@ import CardScene from './CardScene';
 import CreateCardSettingsSheet from './scenecreator/CreateCardSettingsSheet';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SceneCreatorPanes from './scenecreator/SceneCreatorPanes';
 import Viewport from './viewport';
 
@@ -67,26 +68,6 @@ const styles = StyleSheet.create({
   textActorsContainer: {
     margin: 8,
   },
-  primaryButton: {
-    ...Constants.styles.primaryButton,
-    ...Constants.styles.dropShadow,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  primaryButtonLabel: {
-    ...Constants.styles.primaryButtonLabel,
-  },
-  secondaryButton: {
-    backgroundColor: '#000',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  secondaryButtonLabel: {
-    color: '#fff',
-    fontSize: 16,
-  },
   actions: {
     width: '100%',
     paddingHorizontal: 8,
@@ -109,17 +90,17 @@ const CardBottomActions = ({
   }
   return (
     <View style={styles.actions}>
-      <TouchableOpacity style={styles.primaryButton} onPress={onAdd}>
-        <Icon name="add" size={28} color="#000" />
-        <Text style={[styles.primaryButtonLabel, { paddingRight: 6 }]}>Add</Text>
+      <TouchableOpacity style={Constants.styles.primaryButton} onPress={onAdd}>
+        <MCIcon name="shape-polygon-plus" size={22} color="#000" style={Constants.styles.primaryButtonIconLeft} />
+        <Text style={Constants.styles.primaryButtonLabel}>Add</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.secondaryButton} onPress={onOpenLayout}>
-        <Entypo name="grid" size={20} color="#fff" style={{ marginTop: 2, marginRight: 2 }} />
-        <Text style={[styles.secondaryButtonLabel, { paddingRight: 6 }]}>Layout</Text>
+      <TouchableOpacity style={Constants.styles.secondaryButton} onPress={onOpenLayout}>
+        <Icon name="grid-on" size={22} color="#fff" style={Constants.styles.secondaryButtonIconLeft} />
+        <Text style={Constants.styles.secondaryButtonLabel}>Layout</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.primaryButton} onPress={onSave}>
-        <Text style={[styles.primaryButtonLabel, { paddingLeft: 6 }]}>Done</Text>
-        <Icon name="chevron-right" size={30} color="#000" style={{ margin: -2 }} />
+      <TouchableOpacity style={Constants.styles.primaryButton} onPress={onSave}>
+        <Text style={Constants.styles.primaryButtonLabel}>Done</Text>
+        <MCIcon name="arrow-right" size={22} color="#000" style={Constants.styles.primaryButtonIconRight} />
       </TouchableOpacity>
     </View>
   );
