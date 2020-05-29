@@ -81,7 +81,7 @@ const CreateDeckCell = (props) => {
     <View style={styles.cellContainer}>
       <TouchableOpacity style={styles.createCell} onPress={props.onPress}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Text style={styles.cellTitle}>Create a new card</Text>
+          <Text style={styles.cellTitle}>Create a new deck</Text>
         </View>
       </TouchableOpacity>
     </View>
@@ -139,7 +139,7 @@ const CreateScreen = () => {
             <Icon name="close" size={32} color="#fff" style={Constants.styles.textShadow} />
           </TouchableOpacity>
         </View>
-        <Text style={styles.sectionTitle}>Your Cards</Text>
+        <Text style={styles.sectionTitle}>Your Decks</Text>
         <View style={styles.decks}>
           <CreateDeckCell
             key="create"
