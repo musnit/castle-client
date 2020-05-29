@@ -364,6 +364,14 @@ class CreateCardScreenDataProvider extends React.Component {
     });
   };
 
+  _resetDeckState = () =>
+    this.setState((state) => {
+      return {
+        ...state,
+        deckState: Utilities.makeInitialDeckState(state.card),
+      };
+    });
+
   render() {
     const { deck, card, deckState, loading } = this.state;
     return (
@@ -373,6 +381,7 @@ class CreateCardScreenDataProvider extends React.Component {
           card={card}
           loading={loading}
           deckState={deckState}
+          resetDeckState={this._resetDeckState}
           goToDeck={this._goToDeck}
           goToCard={this._goToCard}
           saveAndGoToDeck={this._saveAndGoToDeck}
@@ -392,6 +401,7 @@ const CreateCardScreen = ({
   deck,
   loading,
   deckState,
+  resetDeckState,
   goToDeck,
   goToCard,
   saveAndGoToDeck,
@@ -418,6 +428,8 @@ const CreateCardScreen = ({
       setAddingBlueprint(false);
     }
   }, [hasSelection]);
+
+  React.useEffect(resetDeckState, [isPlaying]);
 
   const selectActor = React.useCallback((actorId) => {
     GhostEvents.sendAsync('SELECT_ACTOR', {
