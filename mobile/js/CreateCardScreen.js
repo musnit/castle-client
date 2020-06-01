@@ -3,6 +3,7 @@ import gql from 'graphql-tag';
 import {
   Keyboard,
   View,
+  PixelRatio,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -40,7 +41,7 @@ import { getPaneData } from './Tools';
 const CARD_HEIGHT = (1 / Constants.CARD_RATIO) * 100 * Viewport.vw;
 const TEXT_ACTORS_PANE = 'sceneCreatorTextActors';
 
-const CARD_BOTTOM_MIN_HEIGHT = 48;
+const CARD_BOTTOM_MIN_HEIGHT = 64 / PixelRatio.get();
 const FULL_SHEET_HEIGHT = 100 * Viewport.vh - CARD_HEADER_HEIGHT;
 const MAX_AVAILABLE_CARD_HEIGHT = 100 * Viewport.vh - CARD_HEADER_HEIGHT - CARD_BOTTOM_MIN_HEIGHT;
 
@@ -76,6 +77,7 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'flex-start',
     minHeight: CARD_BOTTOM_MIN_HEIGHT,
   },
 });
