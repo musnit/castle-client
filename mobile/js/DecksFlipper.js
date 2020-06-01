@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
 });
 
 const makeCardAspectFitStyles = () => {
-  if (Viewport.isUltraWide) {
+  if (Viewport.isCardWide) {
     return styles.itemContainer;
   }
   return [
