@@ -27,9 +27,15 @@ const { vw, vh } = Viewport;
 
 const REFETCH_FEED_INTERVAL_MS = 30 * 1000;
 
+// if the screen is too stubby, add horizontal padding to the feed
+// such that the aspect-fit cards are 87% of the screen height
+const STUBBY_SCREEN_ITEM_HORIZ_PADDING = Viewport.isCardWide
+  ? 0
+  : (87 * vh * Constants.CARD_RATIO - 100 * vw) / -2;
+
 const DECK_FEED_ITEM_MARGIN = 64;
 const DECK_FEED_ITEM_HEIGHT =
-  (1 / Constants.CARD_RATIO) * 100 * vw + // height of card
+  (1 / Constants.CARD_RATIO) * (100 * vw - STUBBY_SCREEN_ITEM_HORIZ_PADDING * 2) + // height of card
   DECK_FEED_ITEM_MARGIN; // margin below cell
 
 const FLIP_MIN_TRANSLATE_Y = DECK_FEED_ITEM_HEIGHT * 0.35;
@@ -83,6 +89,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
   },
 });
+
+const makeCardAspectFitStyles = () => {
+  if (Viewport.isUltraWide) {
+    return styles.itemContainer;
+  }
+  return [
+    styles.itemContainer,
+    {
+      paddingHorizontal: STUBBY_SCREEN_ITEM_HORIZ_PADDING,
+    },
+  ];
+};
+
+const cardAspectFitStyles = makeCardAspectFitStyles();
 
 // renders the current focused deck in the feed
 // including the interactive scene.
@@ -308,20 +328,20 @@ const DecksFlipper = () => {
   return (
     <View style={styles.container}>
       <Animated.View style={{ transform: [{ translateY: containerY }] }}>
-        <View style={styles.itemContainer}>
+        <View style={cardAspectFitStyles}>
           <View style={styles.itemCard}>
             {prevCard && <CardCell card={prevCard} useOverlay={USE_PRERENDERED_OVERLAY} />}
           </View>
           <CardOverlay opacity={opacity.prev} />
         </View>
-        <View style={styles.itemContainer}>
+        <View style={cardAspectFitStyles}>
           <CurrentDeckCell deck={currentDeck} paused={paused} />
           <CardOverlay opacity={opacity.current} />
         </View>
         <PanGestureHandler
           onGestureEvent={onPanGestureEvent}
           onHandlerStateChange={onPanStateChange}>
-          <Animated.View style={styles.itemContainer}>
+          <Animated.View style={cardAspectFitStyles}>
             <TouchableWithoutFeedback onPress={snapToNext}>
               <View style={styles.itemCard}>
                 {nextCard && <CardCell card={nextCard} useOverlay={USE_PRERENDERED_OVERLAY} />}
@@ -331,7 +351,7 @@ const DecksFlipper = () => {
           </Animated.View>
         </PanGestureHandler>
         {nextNextCard && (
-          <View style={styles.itemContainer}>
+          <View style={cardAspectFitStyles}>
             <View style={styles.itemCard}>
               <CardCell card={nextNextCard} useOverlay={USE_PRERENDERED_OVERLAY} />
               <CardOverlay opacity={DARKENED_OVERLAY_OPACITY} />
