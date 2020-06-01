@@ -40,7 +40,9 @@ import { getPaneData } from './Tools';
 const CARD_HEIGHT = (1 / Constants.CARD_RATIO) * 100 * Viewport.vw;
 const TEXT_ACTORS_PANE = 'sceneCreatorTextActors';
 
+const CARD_BOTTOM_MIN_HEIGHT = 64;
 const FULL_SHEET_HEIGHT = 100 * Viewport.vh - CARD_HEADER_HEIGHT;
+const MAX_AVAILABLE_CARD_HEIGHT = 100 * Viewport.vh - CARD_HEADER_HEIGHT - CARD_BOTTOM_MIN_HEIGHT;
 
 const AUTOBACKUP_INTERVAL_MS = 2 * 60 * 1000;
 
@@ -74,6 +76,7 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    minHeight: 48,
   },
 });
 
@@ -91,16 +94,31 @@ const CardBottomActions = ({
   return (
     <View style={styles.actions}>
       <TouchableOpacity style={Constants.styles.primaryButton} onPress={onAdd}>
-        <MCIcon name="shape-polygon-plus" size={22} color="#000" style={Constants.styles.primaryButtonIconLeft} />
+        <MCIcon
+          name="shape-polygon-plus"
+          size={22}
+          color="#000"
+          style={Constants.styles.primaryButtonIconLeft}
+        />
         <Text style={Constants.styles.primaryButtonLabel}>Add</Text>
       </TouchableOpacity>
       <TouchableOpacity style={Constants.styles.secondaryButton} onPress={onOpenLayout}>
-        <Icon name="grid-on" size={22} color="#fff" style={Constants.styles.secondaryButtonIconLeft} />
+        <Icon
+          name="grid-on"
+          size={22}
+          color="#fff"
+          style={Constants.styles.secondaryButtonIconLeft}
+        />
         <Text style={Constants.styles.secondaryButtonLabel}>Layout</Text>
       </TouchableOpacity>
       <TouchableOpacity style={Constants.styles.primaryButton} onPress={onSave}>
         <Text style={Constants.styles.primaryButtonLabel}>Done</Text>
-        <MCIcon name="arrow-right" size={22} color="#000" style={Constants.styles.primaryButtonIconRight} />
+        <MCIcon
+          name="arrow-right"
+          size={22}
+          color="#000"
+          style={Constants.styles.primaryButtonIconRight}
+        />
       </TouchableOpacity>
     </View>
   );
@@ -502,6 +520,10 @@ const CreateCardScreen = ({
     justifyContent: isTextActorSelected ? 'flex-start' : 'flex-end',
   };
 
+  const cardFitStyles = Viewport.isCardWide
+    ? null
+    : { width: undefined, height: MAX_AVAILABLE_CARD_HEIGHT };
+
   // SafeAreaView doesn't respond to statusbar being hidden right now
   // https://github.com/facebook/react-native/pull/20999
   return (
@@ -515,7 +537,7 @@ const CreateCardScreen = ({
           onPressBack={maybeSaveAndGoToDeck}
         />
         <View style={styles.cardBody}>
-          <View style={[styles.card, cardBackgroundStyles]}>
+          <View style={[styles.card, cardBackgroundStyles, cardFitStyles]}>
             <CardScene
               interactionEnabled={true}
               key={`card-scene-${card.scene && card.scene.sceneId}`}
