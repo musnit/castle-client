@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
 
 let formatDate;
 
-if (Constants.iOS) {
+if (Constants.iOS && typeof Intl !== 'undefined') {
   const dateFormatter = new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
     month: 'long',
