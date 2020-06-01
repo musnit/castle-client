@@ -18,7 +18,6 @@ import CardCell from './CardCell';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import UserAvatar from './UserAvatar';
 
-import * as GameScreen from './GameScreen';
 import * as Utilities from './utilities';
 
 const styles = StyleSheet.create({
@@ -85,11 +84,6 @@ const ProfileScreen = () => {
     }
   `);
 
-  const onPressLogOut = async () => {
-    await signOutAsync();
-    GameScreen.goToGame({});
-  };
-
   let decks;
   if (!queryLoading && !queryError && queryData) {
     // TODO: generalize ProfileScreen to other users, stop using `me` for this query
@@ -147,7 +141,7 @@ const ProfileScreen = () => {
                     <Text>{queryData.me.websiteUrl}</Text>
                   </TouchableOpacity>
                 ) : null}
-                <TouchableOpacity onPress={onPressLogOut}>
+                <TouchableOpacity onPress={signOutAsync}>
                   <Text style={{ color: '#aaa' }}>Log Out</Text>
                 </TouchableOpacity>
               </View>
