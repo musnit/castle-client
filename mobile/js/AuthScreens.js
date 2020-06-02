@@ -241,7 +241,7 @@ const CreateAccountForm = () => {
   };
 
   const onPressPrivacyPolicy = () => {
-    Linking.openURL('https://castle.games/legal/privacy');
+    Linking.openURL('https://castle.games/privacy_policy');
   };
 
   const onPressCreateAccount = async () => {
