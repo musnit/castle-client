@@ -16,10 +16,12 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   variablePrefix: {
     color: '#bbb',
-    fontSize: 18,
+    fontSize: 16,
+    lineHeight: 20,
     fontWeight: '700',
     paddingRight: 4,
     flexGrow: 0,
@@ -27,6 +29,7 @@ const styles = StyleSheet.create({
   variableType: {
     color: '#bbb',
     fontSize: 16,
+    lineHeight: 20,
   },
   variableName: {
     flexGrow: 1,
@@ -34,6 +37,7 @@ const styles = StyleSheet.create({
   input: {
     color: '#000',
     fontSize: 16,
+    lineHeight: 20,
     fontWeight: '700',
   },
   labels: {
