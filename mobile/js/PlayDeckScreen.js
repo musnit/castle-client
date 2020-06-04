@@ -6,7 +6,7 @@ import { useListen } from './ghost/GhostEvents';
 import PlayDeckNavigator from './PlayDeckNavigator';
 
 import * as Constants from './Constants';
-import * as Viewport from './viewport';
+import Viewport from './viewport';
 
 const styles = StyleSheet.create({
   container: {
@@ -33,6 +33,7 @@ const PlayDeckScreen = (props) => {
     });
   }
 
+  console.log(`play deck: is card wide? ${Viewport.isCardWide}`);
   const deckStyles = Viewport.isCardWide
     ? styles.deck
     : [styles.deck, { width: undefined, height: '100%' }];
