@@ -21,7 +21,7 @@ export default SceneCreatorPane = React.memo(
       <ToolPane element={element} context={context} style={{ marginTop: 16 }} />
     );
 
-    let middleSnapPoint = SCREEN_HEIGHT * 0.6;
+    let middleSnapPoint = SCREEN_HEIGHT * 0.4;
     if (element.props && element.props.contentHeight) {
       middleSnapPoint = element.props.contentHeight;
     }
