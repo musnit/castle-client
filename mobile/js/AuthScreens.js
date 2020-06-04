@@ -429,7 +429,7 @@ const WithHeader = ({ children }) => (
           aspectRatio: 1,
           marginBottom: 16,
         }}
-        source={require('../assets/images/castle-portal-white.png')}
+        source={require('../assets/images/castle-portal-white-empty.png')}
       />
       <FastImage
         style={{
