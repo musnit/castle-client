@@ -22,15 +22,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     paddingRight: 4,
+    flexGrow: 0,
   },
   variableType: {
     color: '#bbb',
     fontSize: 16,
   },
   variableName: {
-    color: '#000',
-    fontSize: 16,
-    fontWeight: '700',
+    flexGrow: 1,
   },
   input: {
     color: '#000',
@@ -93,7 +92,7 @@ const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) 
       <View style={{ flexDirection: 'row', width: '32%' }}>
         <Text style={styles.variablePrefix}>$</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, styles.variableName]}
           placeholderTextColor="#666"
           autoCapitalize="none"
           autoCompleteType="off"
