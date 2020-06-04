@@ -33,7 +33,6 @@ const PlayDeckScreen = (props) => {
     });
   }
 
-  console.log(`play deck: is card wide? ${Viewport.isCardWide}`);
   const deckStyles = Viewport.isCardWide
     ? styles.deck
     : [styles.deck, { width: undefined, height: '100%' }];
