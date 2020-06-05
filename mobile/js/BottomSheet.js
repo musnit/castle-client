@@ -116,7 +116,7 @@ export const BottomSheet = ({
       snapY.flattenOffset();
       snapTo(SCREEN_HEIGHT, 0, onCloseEnd);
     }
-  }, [isOpen, snapPoints, onOpenEnd, onCloseEnd]);
+  }, [isOpen, snapPoints[lastSnap.current], onOpenEnd, onCloseEnd]);
 
   const onPanStateChange = React.useCallback(
     (event) => {
