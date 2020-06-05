@@ -21,10 +21,7 @@ export default SceneCreatorPane = React.memo(
       <ToolPane element={element} context={context} style={{ marginTop: 16 }} />
     );
 
-    let middleSnapPoint = SCREEN_HEIGHT * 0.4;
-    if (element.props && element.props.contentHeight) {
-      middleSnapPoint = element.props.contentHeight;
-    }
+    const middleSnapPoint = element.props?.contentHeight ?? SCREEN_HEIGHT * 0.4;
 
     const snapPoints = [
       // bottom snap is the bottom edge of the card,
@@ -34,7 +31,10 @@ export default SceneCreatorPane = React.memo(
         headerHeight + insets.bottom
       ),
 
-      middleSnapPoint,
+      Math.max(
+        middleSnapPoint,
+        380 // middle snap should sit above the keyboard on small screens
+      ),
 
       // top snap is flush with the bottom of the card header (play/undo)
       SCREEN_HEIGHT - (CARD_HEADER_HEIGHT + insets.top),
