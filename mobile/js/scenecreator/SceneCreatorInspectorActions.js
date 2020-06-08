@@ -103,6 +103,7 @@ export const SceneCreatorInspectorActions = ({ pane, visible, isTextActorSelecte
 
   if (data) {
     let drawButton, scaleRotateButton, tabNavigation;
+    let isDrawSelected = false;
     if (Array.isArray(data.applicableTools)) {
       const drawBehavior = data.applicableTools.find((behavior) => behavior.name === 'Draw');
       const grabBehavior = data.applicableTools.find((behavior) => behavior.name === 'Grab');
@@ -111,7 +112,7 @@ export const SceneCreatorInspectorActions = ({ pane, visible, isTextActorSelecte
       );
 
       if (drawBehavior) {
-        const isDrawSelected = data.activeToolBehaviorId === drawBehavior.behaviorId;
+        isDrawSelected = data.activeToolBehaviorId === drawBehavior.behaviorId;
         const onPress = () =>
           sendAction(
             'setActiveTool',
@@ -146,13 +147,18 @@ export const SceneCreatorInspectorActions = ({ pane, visible, isTextActorSelecte
       }
     }
 
-    if (Array.isArray(data.inspectorTabs)) {
-      const items = data.inspectorTabs.map((tab) => {
-        return {
-          name: tab.charAt(0).toUpperCase() + tab.slice(1),
-          value: tab,
-        };
-      });
+    if (Array.isArray(data.inspectorTabs) && !isDrawSelected) {
+      const items = data.inspectorTabs
+        .filter((tab) => {
+          // hide 'Movement' for text actors
+          return !(isTextActorSelected && tab === 'movement');
+        })
+        .map((tab) => {
+          return {
+            name: tab.charAt(0).toUpperCase() + tab.slice(1),
+            value: tab,
+          };
+        });
       tabNavigation = (
         <SegmentedNavigation
           items={items}
