@@ -131,7 +131,7 @@ const CurrentDeckCell = ({ deck, paused }) => {
 
   return (
     <View style={styles.itemCard}>
-      <CardCell card={deck.initialCard} />
+      <CardCell card={deck.initialCard} isFullSize={true} />
       {ready ? (
         <View
           style={{

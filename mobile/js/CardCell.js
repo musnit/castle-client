@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   card: {
-    borderRadius: Constants.CARD_BORDER_RADIUS,
+    borderRadius: Constants.CARD_SMALL_BORDER_RADIUS,
     backgroundColor: '#8CA5CD',
     width: '100%',
     aspectRatio: Constants.CARD_RATIO,
@@ -63,10 +63,13 @@ const InitialCardIndicator = () => (
   </View>
 );
 
-const CardCell = ({ card, onPress, title, useOverlay, isInitialCard, isPrivate }) => {
+const CardCell = ({ card, onPress, title, useOverlay, isInitialCard, isPrivate, isFullSize }) => {
   let cardStyles = styles.card;
   if (card.backgroundImage && card.backgroundImage.primaryColor) {
     cardStyles = [styles.card, { backgroundColor: card.backgroundImage.primaryColor }];
+  }
+  if (isFullSize) {
+    cardStyles += { borderRadius: Constants.CARD_BORDER_RADIUS };
   }
   let uri;
   if (card.backgroundImage) {
