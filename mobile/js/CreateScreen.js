@@ -51,13 +51,13 @@ const styles = StyleSheet.create({
   },
   cellTitle: {
     fontSize: 16,
-    color: '#ccc',
+    color: Constants.colors.white,
     textAlign: 'center',
   },
   createCell: {
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#888',
+    borderColor: Constants.colors.white,
     width: '100%',
     aspectRatio: Constants.CARD_RATIO,
     alignItems: 'center',
