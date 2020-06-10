@@ -151,7 +151,7 @@ export const SceneCreatorInspectorActions = ({ pane, visible, isTextActorSelecte
       }
     }
 
-    if (Array.isArray(data.inspectorTabs) && !isDrawSelected) {
+    /* TODO: BEN if (Array.isArray(data.inspectorTabs) && !isDrawSelected) {
       const items = data.inspectorTabs
         .filter((tab) => {
           // hide 'Movement' for text actors
@@ -171,7 +171,7 @@ export const SceneCreatorInspectorActions = ({ pane, visible, isTextActorSelecte
           isLightBackground
         />
       );
-    }
+    } */
     return (
       <View pointerEvents={visible ? 'auto' : 'none'}>
         <View style={styles.header}>
