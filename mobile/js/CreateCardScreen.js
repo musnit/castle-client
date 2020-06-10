@@ -69,7 +69,8 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   textActorsContainer: {
-    margin: 8,
+    paddingHorizontal: 16,
+    paddingBottom: 8,
   },
   actions: {
     width: '100%',
