@@ -18,7 +18,7 @@ export default SceneCreatorPane = React.memo(
     const insets = useSafeArea();
 
     const renderContent = () => (
-      <ToolPane element={element} context={context} style={{ marginTop: 16 }} />
+      <ToolPane element={element} context={context} style={{ marginTop: 16, padding: 12, }} />
     );
 
     const middleSnapPoint = element.props?.contentHeight ?? SCREEN_HEIGHT * 0.4;
