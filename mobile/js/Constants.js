@@ -89,6 +89,7 @@ export const styles = {
 export const colors = {
   black: '#000',
   grayText: '#888',
+  grayOnWhiteBorder: '#ccc',
   white: '#fff',
 };
 

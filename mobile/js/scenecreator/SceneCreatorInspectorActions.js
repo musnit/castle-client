@@ -5,6 +5,7 @@ import { useActionSheet } from '@expo/react-native-action-sheet';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import SegmentedNavigation from '../SegmentedNavigation';
+import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
   header: {
@@ -31,7 +32,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 4,
   },
-  navigation: {},
+  navigation: {
+    borderBottomWidth: 1,
+    borderBottomColor: Constants.colors.grayOnWhiteBorder,
+  },
 });
 
 const makeChangeOrderOptions = ({ isTextActorSelected, sendAction }) => {
