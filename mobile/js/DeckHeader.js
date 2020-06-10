@@ -11,7 +11,7 @@ import * as Constants from './Constants';
 const styles = StyleSheet.create({
   container: {
     borderBottomWidth: 1,
-    borderColor: '#555',
+    borderColor: Constants.colors.grayOnBlackBorder,
   },
   navigationRow: {
     width: '100%',
