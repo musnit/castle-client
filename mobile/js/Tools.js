@@ -279,7 +279,7 @@ export const Labelled = ({ element, label, style, children }) => {
   return (
     <View style={{ margin: 4, ...style }}>
       {!(element.props.hideLabel || hideLabels) ? (
-        <Text style={{ color: Colors.text, fontWeight: boldWeight2, marginBottom: 4 }}>
+        <Text style={{ color: Colors.text, marginBottom: 4 }}>
           {label !== undefined && label !== null ? label : element.props.label}
         </Text>
       ) : null}
@@ -830,14 +830,16 @@ export const sendDataPaneAction = (paneElement, action, value) => {
 const markdownStyles = StyleSheet.create({
   codeBlock: { borderColor: '#CCCCCC', backgroundColor: '#f5f5f5' },
   codeInline: { borderColor: '#CCCCCC', backgroundColor: '#f5f5f5' },
-  del: { backgroundColor: '#000000' },
-  hr: { backgroundColor: '#000000' },
+  del: { backgroundColor: Constants.colors.black },
+  hr: { backgroundColor: Constants.colors.black },
   blockquote: { backgroundColor: '#CCCCCC' },
-  table: { borderColor: '#000000' },
-  tableRow: { borderColor: '#000000' },
-  text: { color: Colors.text },
-  blocklink: { borderColor: '#000000' },
-  u: { borderColor: '#000000' },
+  table: { borderColor: Constants.colors.black },
+  tableRow: { borderColor: Constants.colors.black },
+  text: { color: Constants.colors.black },
+  heading2: { fontSize: 16, fontWeight: 'bold' },
+  blocklink: { borderColor: Constants.colors.black },
+  u: { borderColor: Constants.colors.black },
+  strong: { fontWeight: 'normal' },
 });
 
 const ToolMarkdown = ({ element }) => {
