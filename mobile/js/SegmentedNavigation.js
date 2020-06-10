@@ -11,16 +11,17 @@ const darkBackgroundStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   item: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     paddingVertical: 8,
   },
   selectedItem: {
+    paddingBottom: 5,
     borderBottomWidth: 3,
     borderColor: Constants.colors.white,
   },
   name: {
-    color: Constants.colors.grayText,
     fontSize: 16,
+    color: Constants.colors.grayText,
   },
   selectedName: {
     color: Constants.colors.white,
@@ -35,18 +36,21 @@ const lightBackgroundStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   item: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     paddingVertical: 8,
   },
   selectedItem: {
-    borderBottomWidth: 2,
-    borderColor: '#000',
+    paddingBottom: 5,
+    borderBottomWidth: 3,
+    borderColor: Constants.colors.black,
   },
   name: {
-    color: '#888',
+    fontSize: 16,
+    color: Constants.colors.grayText,
   },
   selectedName: {
-    color: '#000',
+    color: Constants.colors.black,
+    fontWeight: 'bold',
   },
 });
 
