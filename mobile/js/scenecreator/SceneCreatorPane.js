@@ -14,14 +14,15 @@ const SCREEN_HEIGHT = 100 * Viewport.vh;
 const CARD_HEIGHT = (1 / Constants.CARD_RATIO) * 100 * Viewport.vw;
 
 export default SceneCreatorPane = React.memo(
-  ({ element, visible, context, renderHeader, headerHeight = 64, ...props }) => {
+  ({ element, visible, context, renderHeader, renderContent, headerHeight = 64, ...props }) => {
     const insets = useSafeArea();
 
-    const renderContent = () => (
-      <ToolPane element={element} context={context} />
-    );
+    if (!renderContent) {
+      console.log(`no content: ${JSON.stringify(renderContent, null, 2)}`);
+      renderContent = () => <ToolPane element={element} context={context} />;
+    }
 
-    const middleSnapPoint = element.props?.contentHeight ?? SCREEN_HEIGHT * 0.4;
+    const middleSnapPoint = element?.props?.contentHeight ?? SCREEN_HEIGHT * 0.4;
 
     const snapPoints = [
       // bottom snap is the bottom edge of the card,

@@ -5,6 +5,7 @@ import { useActionSheet } from '@expo/react-native-action-sheet';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import SegmentedNavigation from '../SegmentedNavigation';
+
 import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
@@ -80,7 +81,14 @@ const makeChangeOrderOptions = ({ isTextActorSelected, sendAction }) => {
   }
 };
 
-export const SceneCreatorInspectorActions = ({ pane, visible, isTextActorSelected }) => {
+export const SceneCreatorInspectorActions = ({
+  pane,
+  visible,
+  isTextActorSelected,
+  tabItems,
+  selectedTab,
+  setSelectedTab,
+}) => {
   const { showActionSheetWithOptions } = useActionSheet();
 
   let data, sendAction;
@@ -106,7 +114,7 @@ export const SceneCreatorInspectorActions = ({ pane, visible, isTextActorSelecte
   }, [sendAction]);
 
   if (data) {
-    let drawButton, scaleRotateButton, tabNavigation;
+    let drawButton, scaleRotateButton;
     let isDrawSelected = false;
     if (Array.isArray(data.applicableTools)) {
       const drawBehavior = data.applicableTools.find((behavior) => behavior.name === 'Draw');
@@ -151,27 +159,6 @@ export const SceneCreatorInspectorActions = ({ pane, visible, isTextActorSelecte
       }
     }
 
-    /* TODO: BEN if (Array.isArray(data.inspectorTabs) && !isDrawSelected) {
-      const items = data.inspectorTabs
-        .filter((tab) => {
-          // hide 'Movement' for text actors
-          return !(isTextActorSelected && tab === 'movement');
-        })
-        .map((tab) => {
-          return {
-            name: tab.charAt(0).toUpperCase() + tab.slice(1),
-            value: tab,
-          };
-        });
-      tabNavigation = (
-        <SegmentedNavigation
-          items={items}
-          selectedItem={items.find((i) => i.value === data.selectedInspectorTab)}
-          onSelectItem={(item) => sendAction('setSelectedInspectorTab', item.value)}
-          isLightBackground
-        />
-      );
-    } */
     return (
       <View pointerEvents={visible ? 'auto' : 'none'}>
         <View style={styles.header}>
@@ -196,7 +183,15 @@ export const SceneCreatorInspectorActions = ({ pane, visible, isTextActorSelecte
             </TouchableOpacity>
           </View>
         </View>
-        <View style={styles.navigation}>{tabNavigation}</View>
+        <View style={styles.navigation}>
+          <SegmentedNavigation
+            style={styles.navigation}
+            items={tabItems}
+            selectedItem={tabItems.find((i) => i.value === selectedTab)}
+            onSelectItem={(item) => setSelectedTab(item.value)}
+            isLightBackground
+          />
+        </View>
       </View>
     );
   }
