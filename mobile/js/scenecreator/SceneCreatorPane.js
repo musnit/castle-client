@@ -18,7 +18,6 @@ export default SceneCreatorPane = React.memo(
     const insets = useSafeArea();
 
     if (!renderContent) {
-      console.log(`no content: ${JSON.stringify(renderContent, null, 2)}`);
       renderContent = () => <ToolPane element={element} context={context} />;
     }
 

@@ -822,8 +822,8 @@ export const getPaneData = (element) => {
   return null;
 };
 
-export const sendDataPaneAction = (paneElement, action, value) => {
-  const dataChildPathId = paneElement.children['data'].pathId;
+export const sendDataPaneAction = (paneElement, action, value, childId) => {
+  const dataChildPathId = paneElement.children[childId ?? 'data'].pathId;
   return sendEvent(dataChildPathId, { type: action, value });
 };
 
