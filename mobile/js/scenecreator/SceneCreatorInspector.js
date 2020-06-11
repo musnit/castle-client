@@ -2,8 +2,18 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import * as Constants from '../Constants';
+import * as Inspector from './inspector/InspectorComponents';
 
 const styles = StyleSheet.create({});
+
+const GeneralTab = ({ behaviors, isTextActorSelected }) => {
+  return (
+    <React.Fragment>
+      <Inspector.Tags tags={behaviors.Tags} />
+      <Inspector.Layout body={behaviors.Body} />
+    </React.Fragment>
+  );
+};
 
 export const SceneCreatorInspector = ({ element, isTextActorSelected, selectedTab }) => {
   let behaviors = {};
@@ -16,5 +26,23 @@ export const SceneCreatorInspector = ({ element, isTextActorSelected, selectedTa
     });
   }
 
-  return <View></View>;
+  let tabContents;
+  switch (selectedTab) {
+    case 'rules': {
+      // TODO
+      tabContents = <View />;
+      break;
+    }
+    case 'movement': {
+      // TODO
+      tabContents = <View />;
+      break;
+    }
+    case 'general':
+    default: {
+      tabContents = <GeneralTab behaviors={behaviors} isTextActorSelected={isTextActorSelected} />;
+    }
+  }
+
+  return tabContents;
 };
