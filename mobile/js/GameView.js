@@ -12,6 +12,7 @@ import Tools from './Tools';
 import * as GhostChannels from './ghost/GhostChannels';
 import * as LuaBridge from './LuaBridge';
 import * as Session from './Session';
+import * as Sentry from '@sentry/react-native';
 
 // Read dimensions settings into the `{ width, height, upscaling, downscaling }` format for `GhostView`
 const computeDimensionsSettings = ({ metadata }) => {
@@ -207,6 +208,15 @@ const GameView = ({
     handler: (params) => {
       if (onPressBack) {
         onPressBack();
+      }
+    },
+  });
+
+  useListen({
+    eventName: 'GHOST_ERROR',
+    handler: ({ error, stacktrace }) => {
+      if (!__DEV__) {
+        Sentry.captureMessage(`lua error: ${error}\n${stacktrace}`);
       }
     },
   });
