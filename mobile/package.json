@@ -18,6 +18,7 @@
     "@react-navigation/compat": "^5.0.6",
     "@react-navigation/native": "^5.0.6",
     "@react-navigation/stack": "^5.0.6",
+    "@sentry/react-native": "^1.4.5",
     "@terrysahaidak/react-native-devmenu": "^3.0.0",
     "apollo-cache-inmemory": "^1.6.3",
     "apollo-client": "^2.6.4",
