@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, TextInput, Text, View } from 'react-native';
-import { useOptimisticBehaviorValue } from './InspectorUtilities';
+import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 
 const styles = StyleSheet.create({
   container: {

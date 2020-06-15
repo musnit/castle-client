@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { sendDataPaneAction } from '../Tools';
 
 import * as Constants from '../Constants';
-import * as Inspector from './inspector/InspectorComponents';
+import * as Inspector from './inspector/behaviors/InspectorBehaviors';
 
 const styles = StyleSheet.create({});
 
