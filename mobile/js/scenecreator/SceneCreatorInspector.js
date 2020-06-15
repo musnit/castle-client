@@ -29,6 +29,7 @@ export const SceneCreatorInspector = ({ element, isTextActorSelected, selectedTa
       if (child.type === 'data') {
         const data = child.props.data;
         behaviors[data.name] = data;
+        behaviors[data.name].lastReportedEventId = child.lastReportedEventId;
         sendActions[data.name] = (action, value) => sendDataPaneAction(element, action, value, key);
       }
     });

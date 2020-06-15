@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, TextInput, Text, View } from 'react-native';
+import { useOptimisticBehaviorValue } from './InspectorUtilities';
 
 const styles = StyleSheet.create({
   container: {
@@ -18,25 +19,30 @@ const styles = StyleSheet.create({
 });
 
 export default InspectorTags = ({ tags, sendAction }) => {
-  const value = tags.properties.tagsString;
+  const [value, setValueAndSendAction] = useOptimisticBehaviorValue({
+    behavior: tags,
+    propName: 'tagsString',
+    sendAction,
+  });
+
   const onChange = React.useCallback(
     (tagsString) => {
       if (tags.isActive) {
         if (tagsString && tagsString.length) {
           // change property if nonempty
-          sendAction('set:tagsString', tagsString);
+          setValueAndSendAction('set:tagsString', tagsString);
         } else {
           // or remove tags if empty
-          sendAction('remove');
+          setValueAndSendAction('remove', null);
         }
       } else {
         if (tagsString && tagsString.length) {
           // add tags if nonempty
-          sendAction('add', { tagsString });
+          setValueAndSendAction('add', tagsString, { tagsString });
         }
       }
     },
-    [tags.isActive, sendAction]
+    [tags.isActive, sendAction, setValueAndSendAction]
   );
 
   return (
