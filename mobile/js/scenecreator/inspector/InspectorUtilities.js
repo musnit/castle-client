@@ -11,7 +11,7 @@ import * as React from 'react';
  *  @param sendAction a method to send actions (i.e. set prop, remove behavior) to this behavior
  *         in lua.
  */
-export const useOptimisticBehaviorValue = ({ behavior, propName, sendAction }) => {
+export const useOptimisticBehaviorValue = ({ behavior, propName, sendAction, onNativeUpdate }) => {
   const [value, setValue] = React.useState(null);
   const [lastSentEventId, setLastSentEventId] = React.useState(null);
 
@@ -19,6 +19,9 @@ export const useOptimisticBehaviorValue = ({ behavior, propName, sendAction }) =
   if (behavior && value !== luaValue) {
     if (!behavior.lastReportedEventId || behavior.lastReportedEventId === lastSentEventId) {
       setValue(luaValue);
+      if (onNativeUpdate) {
+        onNativeUpdate(luaValue);
+      }
     }
   }
 
