@@ -1,14 +1,17 @@
 import * as React from 'react';
-import { StyleSheet, TextInput, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
+import { InspectorTextInput } from '../components/InspectorTextInput';
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 8,
+    borderTopWidth: 1,
+    borderColor: '#ccc',
+    padding: 16,
   },
   label: {
     fontWeight: 'bold',
-    paddingBottom: 8,
+    paddingBottom: 16,
   },
   properties: {
     flexDirection: 'row',
@@ -61,7 +64,7 @@ const LayoutInput = ({ body, propName, label, sendAction }) => {
   return (
     <View style={styles.inputContainer}>
       <Text style={styles.inputLabel}>{label}</Text>
-      <TextInput style={styles.input} value={numberToText(value)} onChangeText={onChange} />
+      <InspectorTextInput value={numberToText(value)} onChangeText={onChange} />
     </View>
   );
 };

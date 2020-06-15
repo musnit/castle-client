@@ -1,20 +1,15 @@
 import * as React from 'react';
-import { StyleSheet, TextInput, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
+import { InspectorTextInput } from '../components/InspectorTextInput';
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 8,
+    padding: 16,
   },
   label: {
     fontWeight: 'bold',
-    paddingBottom: 8,
-  },
-  input: {
-    borderWidth: 1,
-    color: '#000',
-    borderColor: '#333',
-    padding: 8,
+    paddingBottom: 16,
   },
 });
 
@@ -48,7 +43,7 @@ export default InspectorTags = ({ tags, sendAction }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Tags</Text>
-      <TextInput style={styles.input} value={value} onChangeText={onChange} />
+      <InspectorTextInput value={value} onChangeText={onChange} />
     </View>
   );
 };
