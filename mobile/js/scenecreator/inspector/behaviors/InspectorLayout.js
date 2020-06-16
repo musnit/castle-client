@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
-import { InspectorTextInput } from '../components/InspectorTextInput';
+import { InspectorNumberInput } from '../components/InspectorNumberInput';
 
 const styles = StyleSheet.create({
   container: {
@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   inputContainer: {
-    width: '40%',
+    width: '50%',
     paddingRight: 8,
     paddingBottom: 8,
   },
@@ -33,18 +33,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const textToNumber = (text) => {
-  const parsed = parseFloat(text);
-  return Number.isNaN(parsed) ? 0 : parsed;
-};
-
-const numberToText = (number) => {
-  if (typeof number !== 'number') {
-    return '0';
-  }
-  return parseFloat(number.toFixed(3)).toString();
-};
-
 const LayoutInput = ({ body, propName, label, sendAction }) => {
   const [value, sendValue] = useOptimisticBehaviorValue({
     behavior: body,
@@ -55,7 +43,7 @@ const LayoutInput = ({ body, propName, label, sendAction }) => {
   const onChange = React.useCallback(
     (value) => {
       if (body.isActive) {
-        sendValue(`set:${propName}`, textToNumber(value));
+        sendValue(`set:${propName}`, value);
       }
     },
     [body.isActive, sendValue]
@@ -64,7 +52,11 @@ const LayoutInput = ({ body, propName, label, sendAction }) => {
   return (
     <View style={styles.inputContainer}>
       <Text style={styles.inputLabel}>{label}</Text>
-      <InspectorTextInput value={numberToText(value)} onChangeText={onChange} />
+      <InspectorNumberInput
+        value={value}
+        onChange={onChange}
+        {...body.propertySpecs[propName].props}
+      />
     </View>
   );
 };
