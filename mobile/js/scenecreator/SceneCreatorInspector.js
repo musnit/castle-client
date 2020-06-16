@@ -12,12 +12,21 @@ const GeneralTab = ({ behaviors, sendActions, isTextActorSelected }) => {
   if (!behaviors) {
     return <View />;
   }
-  return (
-    <React.Fragment>
-      <Inspector.Tags tags={behaviors.Tags} sendAction={sendActions.Tags} />
-      <Inspector.Layout body={behaviors.Body} sendAction={sendActions.Body} />
-    </React.Fragment>
-  );
+  if (isTextActorSelected) {
+    return (
+      <React.Fragment>
+        <Inspector.TextContent text={behaviors.Text} sendAction={sendActions.Text} />
+        <Inspector.TextLayout text={behaviors.Text} sendAction={sendActions.Text} />
+      </React.Fragment>
+    );
+  } else {
+    return (
+      <React.Fragment>
+        <Inspector.Tags tags={behaviors.Tags} sendAction={sendActions.Tags} />
+        <Inspector.Layout body={behaviors.Body} sendAction={sendActions.Body} />
+      </React.Fragment>
+    );
+  }
 };
 
 export const SceneCreatorInspector = ({ element, isTextActorSelected, selectedTab }) => {
