@@ -22,6 +22,11 @@ const GeneralTab = ({ behaviors, sendActions, isTextActorSelected }) => {
   } else {
     return (
       <React.Fragment>
+        <Inspector.Drawing
+          drawing={behaviors.Drawing}
+          drawing2={behaviors.Drawing2}
+          sendAction={sendActions.Drawing}
+        />
         <Inspector.Tags tags={behaviors.Tags} sendAction={sendActions.Tags} />
         <Inspector.Layout body={behaviors.Body} sendAction={sendActions.Body} />
       </React.Fragment>
