@@ -12,6 +12,7 @@ import CardDestinationPickerSheet from '../CardDestinationPickerSheet';
 import CardPickerTool from './CardPickerTool';
 import SceneCreatorBlueprintsPane from './SceneCreatorBlueprintsPane';
 import SceneCreatorInspectorPane from './SceneCreatorInspectorPane';
+import SceneCreatorDrawingPane from './SceneCreatorDrawingPane';
 
 let Colors = SceneCreatorConstants.Colors;
 
@@ -84,9 +85,15 @@ const panes = [
     Component: SceneCreatorToolbar,
   },
   {
+    key: 'sceneCreatorTool',
+    shouldRender: (element) => !!element,
+    visible: (props) => props.isDrawing,
+    Component: SceneCreatorDrawingPane,
+  },
+  {
     key: 'sceneCreatorInspector',
     shouldRender: (element) => !!element,
-    visible: (props) => props.hasSelection,
+    visible: (props) => props.hasSelection && !props.isDrawing,
     Component: SceneCreatorInspectorPane,
   },
 ];
@@ -102,6 +109,7 @@ export default SceneCreatorPanes = ({
   visible,
   addingBlueprint,
   hasSelection,
+  isDrawing,
   ...props
 }) => {
   const { root, transformAssetUri } = useGhostUI();
@@ -152,6 +160,7 @@ export default SceneCreatorPanes = ({
   let visibleProps = {
     addingBlueprint,
     hasSelection,
+    isDrawing,
   };
 
   return (

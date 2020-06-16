@@ -425,11 +425,21 @@ const CreateCardScreen = ({
   const isSceneLoaded = !!globalActions;
   const isPlaying = globalActions?.performing;
   const hasSelection = globalActions?.hasSelection;
+
+  // lua's behaviors can be "tools" which have their own UI (right now, the only example is drawing)
+  let isDrawing;
+  if (globalActions?.activeToolBehaviorId) {
+    const activeToolBehavior = globalActions.tools.find(
+      (behavior) => behavior.behaviorId === globalActions.activeToolBehaviorId
+    );
+    isDrawing = activeToolBehavior && activeToolBehavior.hasUi;
+  }
+
   React.useEffect(() => {
-    if (hasSelection) {
+    if (hasSelection || isDrawing) {
       setAddingBlueprint(false);
     }
-  }, [hasSelection]);
+  }, [hasSelection, isDrawing]);
 
   React.useEffect(resetDeckState, [isPlaying]);
 
@@ -593,6 +603,7 @@ const CreateCardScreen = ({
         visible={selectedTab === 'card' && !isPlaying}
         hasSelection={hasSelection}
         addingBlueprint={addingBlueprint}
+        isDrawing={isDrawing}
         isTextActorSelected={isTextActorSelected}
       />
     </React.Fragment>
