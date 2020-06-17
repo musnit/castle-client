@@ -38,6 +38,17 @@ const GeneralTab = ({ behaviors, sendActions, isTextActorSelected }) => {
   }
 };
 
+const MovementTab = ({ behaviors, sendActions }) => {
+  if (!behaviors) {
+    return <View />;
+  }
+  return (
+    <React.Fragment>
+      <Inspector.Motion moving={behaviors.Moving} sendAction={sendActions.Moving} />
+    </React.Fragment>
+  );
+};
+
 export const SceneCreatorInspector = ({ element, isTextActorSelected, selectedTab }) => {
   let behaviors, sendActions;
   if (element.children.count) {
@@ -61,8 +72,7 @@ export const SceneCreatorInspector = ({ element, isTextActorSelected, selectedTa
       break;
     }
     case 'movement': {
-      // TODO
-      tabContents = <View />;
+      tabContents = <MovementTab sendActions={sendActions} behaviors={behaviors} />;
       break;
     }
     case 'general':
