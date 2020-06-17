@@ -33,20 +33,20 @@ const styles = StyleSheet.create({
   },
 });
 
-const LayoutInput = ({ body, propName, label, sendAction }) => {
+const LayoutInput = ({ behavior, propName, label, sendAction }) => {
   const [value, sendValue] = useOptimisticBehaviorValue({
-    behavior: body,
+    behavior,
     propName,
     sendAction,
   });
 
   const onChange = React.useCallback(
     (value) => {
-      if (body.isActive) {
+      if (behavior.isActive) {
         sendValue(`set:${propName}`, value);
       }
     },
-    [body.isActive, sendValue]
+    [behavior.isActive, sendValue]
   );
 
   return (
@@ -55,22 +55,58 @@ const LayoutInput = ({ body, propName, label, sendAction }) => {
       <InspectorNumberInput
         value={value}
         onChange={onChange}
-        {...body.propertySpecs[propName].props}
+        {...behavior.propertySpecs[propName].props}
       />
     </View>
   );
 };
 
-export default InspectorLayout = ({ body, sendAction }) => {
+export default InspectorLayout = ({ body, circleShape, sendActions }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Layout</Text>
       <View style={styles.properties}>
-        <LayoutInput body={body} propName="width" label="Width" sendAction={sendAction} />
-        <LayoutInput body={body} propName="height" label="Height" sendAction={sendAction} />
-        <LayoutInput body={body} propName="x" label="X Position" sendAction={sendAction} />
-        <LayoutInput body={body} propName="y" label="Y Position" sendAction={sendAction} />
-        <LayoutInput body={body} propName="angle" label="Rotation" sendAction={sendAction} />
+        {circleShape?.isActive ? (
+          <LayoutInput
+            behavior={circleShape}
+            propName="radius"
+            label="Radius"
+            sendAction={sendActions.CircleShape}
+          />
+        ) : (
+          <React.Fragment>
+            <LayoutInput
+              behavior={body}
+              propName="width"
+              label="Width"
+              sendAction={sendActions.Body}
+            />
+            <LayoutInput
+              behavior={body}
+              propName="height"
+              label="Height"
+              sendAction={sendActions.Body}
+            />
+          </React.Fragment>
+        )}
+        <LayoutInput
+          behavior={body}
+          propName="x"
+          label="X Position"
+          sendAction={sendActions.Body}
+        />
+        <LayoutInput
+          behavior={body}
+          propName="y"
+          label="Y Position"
+          sendAction={sendActions.Body}
+        />
+        <LayoutInput
+          behavior={body}
+          propName="angle"
+          label="Rotation"
+          sendAction={sendActions.Body}
+        />
       </View>
     </View>
   );

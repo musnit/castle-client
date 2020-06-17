@@ -28,7 +28,11 @@ const GeneralTab = ({ behaviors, sendActions, isTextActorSelected }) => {
           sendAction={sendActions.Drawing}
         />
         <Inspector.Tags tags={behaviors.Tags} sendAction={sendActions.Tags} />
-        <Inspector.Layout body={behaviors.Body} sendAction={sendActions.Body} />
+        <Inspector.Layout
+          body={behaviors.Body}
+          circleShape={behaviors.CircleShape}
+          sendActions={sendActions}
+        />
       </React.Fragment>
     );
   }
