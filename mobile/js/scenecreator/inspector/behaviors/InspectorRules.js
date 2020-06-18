@@ -11,17 +11,23 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingBottom: 16,
   },
+  rule: {
+    marginBottom: 16,
+  },
   ruleName: {
-    marginVertical: 8,
+    marginBottom: 8,
   },
   response: {
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    paddingBottom: 8,
+  },
+  nextResponse: {
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
   },
   insetContainer: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingLeft: 16,
     borderTopWidth: 1,
     borderLeftWidth: 1,
     borderTopLeftRadius: 6,
@@ -61,7 +67,7 @@ const InspectorTrigger = ({ trigger }) => {
   }
 };
 
-const InspectorResponse = ({ response }) => {
+const InspectorResponse = ({ response, order = 0 }) => {
   if (!response) {
     return null;
   }
@@ -73,7 +79,8 @@ const InspectorResponse = ({ response }) => {
       responseContents = (
         <React.Fragment>
           <Text style={styles.ruleName}>
-            If {response.params.condition?.name} {JSON.stringify(response.params.condition?.params)}
+            If: {response.params.condition?.name}{' '}
+            {JSON.stringify(response.params.condition?.params)}
           </Text>
           <View style={styles.insetContainer}>
             <InspectorResponse response={response.params.then} />
@@ -118,8 +125,10 @@ const InspectorResponse = ({ response }) => {
 
   return (
     <React.Fragment>
-      <View style={styles.response}>{responseContents}</View>
-      <InspectorResponse response={response.params.nextResponse} />
+      <View style={[styles.response, order > 0 ? styles.nextResponse : null]}>
+        {responseContents}
+      </View>
+      <InspectorResponse response={response.params.nextResponse} order={order + 1} />
     </React.Fragment>
   );
 };
@@ -128,7 +137,7 @@ const InspectorRule = ({ rule }) => {
   // trigger: params, name, behaviorId
   // response: params, name, behaviorId
   return (
-    <View>
+    <View style={styles.rule}>
       <InspectorTrigger trigger={rule.trigger} />
       <View style={styles.insetContainer}>
         <InspectorResponse response={rule.response} />
