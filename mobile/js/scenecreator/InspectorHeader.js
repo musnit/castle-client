@@ -81,7 +81,7 @@ const makeChangeOrderOptions = ({ isTextActorSelected, sendAction }) => {
   }
 };
 
-export const SceneCreatorInspectorActions = ({
+export const InspectorHeader = ({
   pane,
   isOpen,
   isTextActorSelected,

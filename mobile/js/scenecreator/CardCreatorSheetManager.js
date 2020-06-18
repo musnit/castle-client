@@ -2,11 +2,11 @@ import * as React from 'react';
 import { View } from 'react-native';
 import { useGhostUI } from '../ghost/GhostUI';
 
+import ActiveToolSheet from './ActiveToolSheet';
+import BlueprintsSheet from './BlueprintsSheet';
 import CardToolsSheet from './CardToolsSheet';
 import CreateCardSettingsSheet from './CreateCardSettingsSheet';
-import SceneCreatorBlueprintsPane from './SceneCreatorBlueprintsPane';
-import SceneCreatorInspectorPane from './SceneCreatorInspectorPane';
-import SceneCreatorDrawingPane from './SceneCreatorDrawingPane';
+import InspectorSheet from './InspectorSheet';
 
 import Viewport from '../viewport';
 
@@ -20,17 +20,17 @@ const SHEETS = [
   {
     key: 'sceneCreatorBlueprints',
     isGhostPane: true,
-    Component: SceneCreatorBlueprintsPane,
+    Component: BlueprintsSheet,
   },
   {
     key: 'sceneCreatorTool',
     isGhostPane: true,
-    Component: SceneCreatorDrawingPane,
+    Component: ActiveToolSheet,
   },
   {
     key: 'sceneCreatorInspector',
     isGhostPane: true,
-    Component: SceneCreatorInspectorPane,
+    Component: InspectorSheet,
   },
   {
     key: 'variables',

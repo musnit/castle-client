@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useGhostUI } from '../ghost/GhostUI';
-import { SceneCreatorInspectorActions } from './SceneCreatorInspectorActions';
-import { SceneCreatorInspector } from './SceneCreatorInspector';
+import { InspectorHeader } from './InspectorHeader';
+import { InspectorTabs } from './InspectorTabs';
 
 import * as Constants from '../Constants';
 
-import SceneCreatorPane from './SceneCreatorPane';
+import CardCreatorBottomSheet from './CardCreatorBottomSheet';
 
 const TAB_ITEMS = [
   {
@@ -22,7 +22,7 @@ const TAB_ITEMS = [
   },
 ];
 
-export default SceneCreatorInspectorPane = ({ element, isOpen, context }) => {
+export default InspectorSheet = ({ element, isOpen, context }) => {
   const { root } = useGhostUI();
   const actionsPane = root.panes.sceneCreatorInspectorActions;
   const { isTextActorSelected } = context;
@@ -42,7 +42,7 @@ export default SceneCreatorInspectorPane = ({ element, isOpen, context }) => {
   });
 
   const renderHeader = () => (
-    <SceneCreatorInspectorActions
+    <InspectorHeader
       isOpen={isOpen}
       isTextActorSelected={isTextActorSelected}
       tabItems={tabItems}
@@ -53,7 +53,7 @@ export default SceneCreatorInspectorPane = ({ element, isOpen, context }) => {
   );
 
   const renderContent = () => (
-    <SceneCreatorInspector
+    <InspectorTabs
       selectedTab={selectedTab}
       isTextActorSelected={isTextActorSelected}
       element={
@@ -68,7 +68,7 @@ export default SceneCreatorInspectorPane = ({ element, isOpen, context }) => {
   );
 
   return (
-    <SceneCreatorPane
+    <CardCreatorBottomSheet
       isOpen={isOpen}
       context={context}
       renderHeader={renderHeader}

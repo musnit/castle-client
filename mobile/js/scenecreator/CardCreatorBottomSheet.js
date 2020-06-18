@@ -13,11 +13,12 @@ import * as Constants from '../Constants';
 const SCREEN_HEIGHT = 100 * Viewport.vh;
 const CARD_HEIGHT = (1 / Constants.CARD_RATIO) * 100 * Viewport.vw;
 
-export default SceneCreatorPane = React.memo(
+export default CardCreatorBottomSheet = React.memo(
   ({ element, isOpen, context, renderHeader, renderContent, headerHeight = 64, ...props }) => {
     const insets = useSafeArea();
 
     if (!renderContent) {
+      // TODO: gradually eliminate this case
       renderContent = () => <ToolPane element={element} context={context} />;
     }
 

@@ -3,9 +3,9 @@ import { Text, View } from 'react-native';
 
 import * as Constants from '../Constants';
 
-import SceneCreatorPane from './SceneCreatorPane';
+import CardCreatorBottomSheet from './CardCreatorBottomSheet';
 
-export default SceneCreatorBlueprintsPane = ({ element, isOpen, context }) => {
+export default BlueprintsSheet = ({ element, isOpen, context }) => {
   const renderHeader = () => (
     <View
       style={{
@@ -22,7 +22,7 @@ export default SceneCreatorBlueprintsPane = ({ element, isOpen, context }) => {
   );
 
   return (
-    <SceneCreatorPane
+    <CardCreatorBottomSheet
       isOpen={isOpen}
       element={element}
       context={context}

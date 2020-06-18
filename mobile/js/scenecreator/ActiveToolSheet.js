@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import * as Constants from '../Constants';
 
-import SceneCreatorPane from './SceneCreatorPane';
+import CardCreatorBottomSheet from './CardCreatorBottomSheet';
 
 const styles = StyleSheet.create({
   closeButton: {
@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
 // scene creator behaviors can be "tools" which have their own UI.
 // right now the only example is drawing.
 
-export default SceneCreatorDrawingPane = ({ element, isOpen, context }) => {
+export default ActiveToolSheet = ({ element, isOpen, context }) => {
   // TODO: once drawing is a data pane, we don't have to subscribe to
   // the root UI here and can just use actions available on `element`
   const { sendGlobalAction } = useGhostUI();
@@ -43,7 +43,7 @@ export default SceneCreatorDrawingPane = ({ element, isOpen, context }) => {
   );
 
   return (
-    <SceneCreatorPane
+    <CardCreatorBottomSheet
       isOpen={isOpen}
       element={element}
       context={context}

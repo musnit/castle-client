@@ -43,7 +43,7 @@ const MovementTab = ({ behaviors, sendActions }) => {
   );
 };
 
-export const SceneCreatorInspector = ({ element, isTextActorSelected, selectedTab }) => {
+export const InspectorTabs = ({ element, isTextActorSelected, selectedTab }) => {
   let behaviors, sendActions;
   if (element.children.count) {
     behaviors = {};
