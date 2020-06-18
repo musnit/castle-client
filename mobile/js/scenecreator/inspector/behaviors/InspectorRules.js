@@ -29,6 +29,34 @@ const styles = StyleSheet.create({
   },
 });
 
+const InspectorTrigger = ({ trigger }) => {
+  if (!trigger) {
+    return null;
+  }
+  // TODO: implement components to handle different trigger UIs here.
+  switch (trigger.name) {
+    case 'collide': {
+      if (trigger.params.tag) {
+        return (
+          <Text style={styles.ruleName}>When this collides with tag: {trigger.params.tag}</Text>
+        );
+      } else {
+        return <Text style={styles.ruleName}>When this collides with anything</Text>;
+      }
+    }
+    case 'variable reaches value': {
+      return (
+        <Text style={styles.ruleName}>
+          When variable {trigger.params.variableId} is {trigger.params.comparison}:{' '}
+          {trigger.params.value}
+        </Text>
+      );
+    }
+    default:
+      return <Text style={styles.ruleName}>When: {trigger.name}</Text>;
+  }
+};
+
 const InspectorResponse = ({ response }) => {
   if (!response) {
     return null;
@@ -51,7 +79,7 @@ const InspectorRule = ({ rule }) => {
   // response: params, name, behaviorId
   return (
     <View>
-      <Text style={styles.ruleName}>When: {rule.trigger?.name}</Text>
+      <InspectorTrigger trigger={rule.trigger} />
       <View style={styles.insetContainer}>
         <InspectorResponse response={rule.response} />
       </View>
@@ -64,7 +92,7 @@ export default InspectorRules = ({ rules, sendAction }) => {
     <View style={styles.container}>
       <Text style={styles.label}>Rules (read only)</Text>
       <React.Fragment>
-        {rules.isActive
+        {rules.isActive && rules.properties.rules
           ? rules.properties.rules.map((rule, ii) => (
               <InspectorRule key={`rule-${ii}`} rule={rule} />
             ))
