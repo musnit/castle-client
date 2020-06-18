@@ -9,9 +9,6 @@ import * as Inspector from './inspector/behaviors/InspectorBehaviors';
 const styles = StyleSheet.create({});
 
 const GeneralTab = ({ behaviors, sendActions, isTextActorSelected }) => {
-  if (!behaviors) {
-    return <View />;
-  }
   if (isTextActorSelected) {
     return (
       <React.Fragment>
@@ -39,9 +36,6 @@ const GeneralTab = ({ behaviors, sendActions, isTextActorSelected }) => {
 };
 
 const MovementTab = ({ behaviors, sendActions }) => {
-  if (!behaviors) {
-    return <View />;
-  }
   return (
     <React.Fragment>
       <Inspector.Motion moving={behaviors.Moving} sendAction={sendActions.Moving} />
@@ -64,11 +58,14 @@ export const SceneCreatorInspector = ({ element, isTextActorSelected, selectedTa
     });
   }
 
+  if (!behaviors) {
+    return <View />;
+  }
+
   let tabContents;
   switch (selectedTab) {
     case 'rules': {
-      // TODO
-      tabContents = <View />;
+      tabContents = <InspectorRules rules={behaviors.Rules} sendAction={sendActions.Rules} />;
       break;
     }
     case 'movement': {
