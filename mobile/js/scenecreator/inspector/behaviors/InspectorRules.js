@@ -53,7 +53,11 @@ const InspectorTrigger = ({ trigger }) => {
       );
     }
     default:
-      return <Text style={styles.ruleName}>When: {trigger.name}</Text>;
+      return (
+        <Text style={styles.ruleName}>
+          When: {trigger.name}, params: {JSON.stringify(trigger.params, null, 2)}
+        </Text>
+      );
   }
 };
 
@@ -61,14 +65,60 @@ const InspectorResponse = ({ response }) => {
   if (!response) {
     return null;
   }
-  let paramsToRender = { ...response.params };
-  delete paramsToRender.nextResponse;
+
+  let responseContents;
+  // TODO: implement components to handle different response UIs here.
+  switch (response.name) {
+    case 'if': {
+      responseContents = (
+        <React.Fragment>
+          <Text style={styles.ruleName}>
+            If {response.params.condition?.name} {JSON.stringify(response.params.condition?.params)}
+          </Text>
+          <View style={styles.insetContainer}>
+            <InspectorResponse response={response.params.then} />
+          </View>
+        </React.Fragment>
+      );
+      break;
+    }
+    case 'repeat': {
+      responseContents = (
+        <React.Fragment>
+          <Text style={styles.ruleName}>Repeat {response.params?.count ?? 0} times</Text>
+          <View style={styles.insetContainer}>
+            <InspectorResponse response={response.params.body} />
+          </View>
+        </React.Fragment>
+      );
+      break;
+    }
+    case 'act on other': {
+      responseContents = (
+        <React.Fragment>
+          <Text style={styles.ruleName}>Act on other</Text>
+          <View style={styles.insetContainer}>
+            <InspectorResponse response={response.params.body} />
+          </View>
+        </React.Fragment>
+      );
+      break;
+    }
+    default: {
+      let paramsToRender = { ...response.params };
+      delete paramsToRender.nextResponse;
+      responseContents = (
+        <Text>
+          {response.name}: {JSON.stringify(paramsToRender, null, 2)}
+        </Text>
+      );
+      break;
+    }
+  }
+
   return (
     <React.Fragment>
-      <View style={styles.response}>
-        <Text>{response.name}</Text>
-        <Text>{JSON.stringify(paramsToRender, null, 2)}</Text>
-      </View>
+      <View style={styles.response}>{responseContents}</View>
       <InspectorResponse response={response.params.nextResponse} />
     </React.Fragment>
   );
@@ -92,7 +142,7 @@ export default InspectorRules = ({ rules, sendAction }) => {
     <View style={styles.container}>
       <Text style={styles.label}>Rules (read only)</Text>
       <React.Fragment>
-        {rules.isActive && rules.properties.rules
+        {rules.isActive && Array.isArray(rules.properties.rules)
           ? rules.properties.rules.map((rule, ii) => (
               <InspectorRule key={`rule-${ii}`} rule={rule} />
             ))
