@@ -23,17 +23,15 @@ import * as Session from './Session';
 import * as Utilities from './utilities';
 
 import CardText from './CardText';
-import CardToolsSheet from './scenecreator/CardToolsSheet';
 import CardScene from './CardScene';
-import CreateCardSettingsSheet from './scenecreator/CreateCardSettingsSheet';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import SceneCreatorPanes from './scenecreator/SceneCreatorPanes';
 import Viewport from './viewport';
 
 import * as GhostEvents from './ghost/GhostEvents';
 
+import { CardCreatorSheetManager } from './scenecreator/CardCreatorSheetManager';
 import { CardHeader, CARD_HEADER_HEIGHT } from './CardHeader';
 import { useGhostUI } from './ghost/GhostUI';
 import { getPaneData } from './Tools';
@@ -42,7 +40,7 @@ const CARD_HEIGHT = (1 / Constants.CARD_RATIO) * 100 * Viewport.vw;
 const TEXT_ACTORS_PANE = 'sceneCreatorTextActors';
 
 const CARD_BOTTOM_MIN_HEIGHT = 64 / PixelRatio.get();
-const FULL_SHEET_HEIGHT = 100 * Viewport.vh - CARD_HEADER_HEIGHT;
+
 const MAX_AVAILABLE_CARD_HEIGHT = 100 * Viewport.vh - CARD_HEADER_HEIGHT - CARD_BOTTOM_MIN_HEIGHT;
 
 const AUTOBACKUP_INTERVAL_MS = 2 * 60 * 1000;
@@ -416,10 +414,9 @@ const CreateCardScreen = ({
   const { showActionSheetWithOptions } = useActionSheet();
   const { root, globalActions, sendGlobalAction } = useGhostUI();
 
-  const [selectedTab, setSelectedTab] = React.useState('card');
-  React.useEffect(Keyboard.dismiss, [selectedTab]);
+  const [activeSheet, setActiveSheet] = React.useState(null);
+  React.useEffect(Keyboard.dismiss, [activeSheet]);
 
-  const [addingBlueprint, setAddingBlueprint] = React.useState(false);
   const [isShowingTextActors, setShowingTextActors] = React.useState(true);
 
   const isSceneLoaded = !!globalActions;
@@ -427,19 +424,25 @@ const CreateCardScreen = ({
   const hasSelection = globalActions?.hasSelection;
 
   // lua's behaviors can be "tools" which have their own UI (right now, the only example is drawing)
-  let isDrawing;
-  if (globalActions?.activeToolBehaviorId) {
-    const activeToolBehavior = globalActions.tools.find(
-      (behavior) => behavior.behaviorId === globalActions.activeToolBehaviorId
-    );
-    isDrawing = activeToolBehavior && activeToolBehavior.hasUi;
-  }
+  React.useEffect(() => {
+    if (globalActions?.activeToolBehaviorId) {
+      const activeToolBehavior = globalActions.tools.find(
+        (behavior) => behavior.behaviorId === globalActions.activeToolBehaviorId
+      );
+      if (activeToolBehavior && activeToolBehavior.hasUi) {
+        setActiveSheet('sceneCreatorTool');
+      } else {
+        setActiveSheet(null);
+      }
+    }
+  }, [globalActions?.activeToolBehaviorId]);
 
   React.useEffect(() => {
-    if (hasSelection || isDrawing) {
-      setAddingBlueprint(false);
+    if (hasSelection) {
+      // when going from no selection to selection, close any other sheets
+      setActiveSheet(null);
     }
-  }, [hasSelection, isDrawing]);
+  }, [hasSelection]);
 
   React.useEffect(resetDeckState, [isPlaying]);
 
@@ -508,10 +511,10 @@ const CreateCardScreen = ({
 
   const onSelectBackupData = React.useCallback(
     (data) => {
-      setSelectedTab('card');
+      setActiveSheet(null);
       onSceneRevertData(data);
     },
-    [onSceneRevertData, setSelectedTab]
+    [onSceneRevertData, setActiveSheet]
   );
 
   GhostEvents.useListen({
@@ -537,6 +540,17 @@ const CreateCardScreen = ({
     ? null
     : { width: undefined, height: MAX_AVAILABLE_CARD_HEIGHT };
 
+  const sheetContext = {
+    deck,
+    card,
+    isTextActorSelected,
+    onSelectBackupData,
+    isShowingTextActors,
+    setShowingTextActors,
+    variables: card.variables,
+    onVariablesChange,
+  };
+
   // SafeAreaView doesn't respond to statusbar being hidden right now
   // https://github.com/facebook/react-native/pull/20999
   return (
@@ -545,8 +559,8 @@ const CreateCardScreen = ({
         <CardHeader
           card={card}
           isEditable
-          mode={selectedTab}
-          onChangeMode={setSelectedTab}
+          mode={activeSheet}
+          onChangeMode={setActiveSheet}
           onPressBack={maybeSaveAndGoToDeck}
         />
         <View style={styles.cardBody}>
@@ -574,37 +588,20 @@ const CreateCardScreen = ({
           </View>
           <CardBottomActions
             card={card}
-            onAdd={() => setAddingBlueprint(true)}
-            onOpenLayout={() => setSelectedTab('layout')}
+            onAdd={() => setActiveSheet('sceneCreatorBlueprints')}
+            onOpenLayout={() => setActiveSheet('layout')}
             onSave={saveAndGoToDeck}
             isSceneLoaded={isSceneLoaded}
             isPlayingScene={isPlaying}
           />
         </View>
       </SafeAreaView>
-      <CardToolsSheet
-        cardId={card.cardId}
-        variables={card.variables}
-        onChange={onVariablesChange}
-        onSelectBackupData={onSelectBackupData}
-        snapPoints={[FULL_SHEET_HEIGHT]}
-        isOpen={selectedTab === 'variables' && !isPlaying}
-        onClose={() => setSelectedTab('card')}
-      />
-      <CreateCardSettingsSheet
-        isShowingTextActors={isShowingTextActors}
-        onShowTextActors={setShowingTextActors}
-        snapPoints={[FULL_SHEET_HEIGHT * 0.6]}
-        isOpen={selectedTab === 'layout' && !isPlaying}
-        onClose={() => setSelectedTab('card')}
-      />
-      <SceneCreatorPanes
-        deck={deck}
-        visible={selectedTab === 'card' && !isPlaying}
+      <CardCreatorSheetManager
+        activeSheet={activeSheet}
+        setActiveSheet={setActiveSheet}
+        isPlaying={isPlaying}
         hasSelection={hasSelection}
-        addingBlueprint={addingBlueprint}
-        isDrawing={isDrawing}
-        isTextActorSelected={isTextActorSelected}
+        context={sheetContext}
       />
     </React.Fragment>
   );

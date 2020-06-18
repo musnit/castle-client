@@ -59,7 +59,10 @@ const TAB_ITEMS = [
   },
 ];
 
-const CardToolsSheet = ({ cardId, variables, onChange, onClose, onSelectBackupData, ...props }) => {
+const CardToolsSheet = ({ onClose, context, ...props }) => {
+  const { card, variables, onVariablesChange: onChange, onSelectBackupData } = context;
+  const cardId = card?.cardId;
+
   const [mode, setMode] = React.useState('variables');
 
   // TODO: memo

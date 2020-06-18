@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
 // scene creator behaviors can be "tools" which have their own UI.
 // right now the only example is drawing.
 
-export default SceneCreatorDrawingPane = ({ element, visible, context }) => {
+export default SceneCreatorDrawingPane = ({ element, isOpen, context }) => {
   // TODO: once drawing is a data pane, we don't have to subscribe to
   // the root UI here and can just use actions available on `element`
   const { sendGlobalAction } = useGhostUI();
@@ -44,7 +44,7 @@ export default SceneCreatorDrawingPane = ({ element, visible, context }) => {
 
   return (
     <SceneCreatorPane
-      visible={visible}
+      isOpen={isOpen}
       element={element}
       context={context}
       renderHeader={renderHeader}

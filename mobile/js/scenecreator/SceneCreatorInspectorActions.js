@@ -83,7 +83,7 @@ const makeChangeOrderOptions = ({ isTextActorSelected, sendAction }) => {
 
 export const SceneCreatorInspectorActions = ({
   pane,
-  visible,
+  isOpen,
   isTextActorSelected,
   tabItems,
   selectedTab,
@@ -160,7 +160,7 @@ export const SceneCreatorInspectorActions = ({
     }
 
     return (
-      <View pointerEvents={visible ? 'auto' : 'none'}>
+      <View pointerEvents={isOpen ? 'auto' : 'none'}>
         <View style={styles.header}>
           <TouchableOpacity style={styles.closeButton} onPress={() => sendAction('closeInspector')}>
             <Icon name="close" size={32} color="#000" />

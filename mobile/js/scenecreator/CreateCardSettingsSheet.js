@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const CreateCardSettings = ({ isShowingTextActors, onShowTextActors }) => {
+const CreateCardSettings = ({ isShowingTextActors, setShowingTextActors }) => {
   const { root } = useGhostUI();
 
   let settingsPane;
@@ -66,7 +66,7 @@ const CreateCardSettings = ({ isShowingTextActors, onShowTextActors }) => {
       <View style={styles.settingsRow}>
         <Switch
           value={isShowingTextActors}
-          onValueChange={onShowTextActors}
+          onValueChange={setShowingTextActors}
           style={{ marginRight: 8 }}
         />
         <Text>Show text actors</Text>
@@ -76,11 +76,12 @@ const CreateCardSettings = ({ isShowingTextActors, onShowTextActors }) => {
   );
 };
 
-const CreateCardSettingsSheet = ({ onClose, isShowingTextActors, onShowTextActors, ...props }) => {
+const CreateCardSettingsSheet = ({ onClose, context, ...props }) => {
+  const { isShowingTextActors, setShowingTextActors } = context;
   const renderContent = () => (
     <CreateCardSettings
       isShowingTextActors={isShowingTextActors}
-      onShowTextActors={onShowTextActors}
+      setShowingTextActors={setShowingTextActors}
     />
   );
 

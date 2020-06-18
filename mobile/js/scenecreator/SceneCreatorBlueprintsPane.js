@@ -5,7 +5,7 @@ import * as Constants from '../Constants';
 
 import SceneCreatorPane from './SceneCreatorPane';
 
-export default SceneCreatorBlueprintsPane = ({ element, visible, context }) => {
+export default SceneCreatorBlueprintsPane = ({ element, isOpen, context }) => {
   const renderHeader = () => (
     <View
       style={{
@@ -23,7 +23,7 @@ export default SceneCreatorBlueprintsPane = ({ element, visible, context }) => {
 
   return (
     <SceneCreatorPane
-      visible={visible}
+      isOpen={isOpen}
       element={element}
       context={context}
       renderHeader={renderHeader}

@@ -22,17 +22,18 @@ const TAB_ITEMS = [
   },
 ];
 
-export default SceneCreatorInspectorPane = ({ element, visible, isTextActorSelected, context }) => {
+export default SceneCreatorInspectorPane = ({ element, isOpen, context }) => {
   const { root } = useGhostUI();
   const actionsPane = root.panes.sceneCreatorInspectorActions;
+  const { isTextActorSelected } = context;
 
   // Do this so we can show last visible elements while animating out
   const [lastVisibleElements, setLastVisibleElements] = useState({ element, actionsPane });
   useEffect(() => {
-    if (visible) {
+    if (isOpen) {
       setLastVisibleElements({ element, actionsPane });
     }
-  }, [visible, element, actionsPane]);
+  }, [isOpen, element, actionsPane]);
 
   const [selectedTab, setSelectedTab] = React.useState(TAB_ITEMS[0].value);
   const tabItems = TAB_ITEMS.filter((tab) => {
@@ -42,12 +43,12 @@ export default SceneCreatorInspectorPane = ({ element, visible, isTextActorSelec
 
   const renderHeader = () => (
     <SceneCreatorInspectorActions
-      visible={visible}
+      isOpen={isOpen}
       isTextActorSelected={isTextActorSelected}
       tabItems={tabItems}
       selectedTab={selectedTab}
       setSelectedTab={setSelectedTab}
-      pane={visible ? actionsPane : lastVisibleElements.actionsPane}
+      pane={isOpen ? actionsPane : lastVisibleElements.actionsPane}
     />
   );
 
@@ -56,7 +57,7 @@ export default SceneCreatorInspectorPane = ({ element, visible, isTextActorSelec
       selectedTab={selectedTab}
       isTextActorSelected={isTextActorSelected}
       element={
-        visible
+        isOpen
           ? element
           : {
               ...lastVisibleElements.element,
@@ -68,7 +69,7 @@ export default SceneCreatorInspectorPane = ({ element, visible, isTextActorSelec
 
   return (
     <SceneCreatorPane
-      visible={visible}
+      isOpen={isOpen}
       context={context}
       renderHeader={renderHeader}
       renderContent={renderContent}

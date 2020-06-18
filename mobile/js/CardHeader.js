@@ -95,7 +95,7 @@ export const CardHeader = ({ card, isEditable, onPressBack, mode, onChangeMode }
         <TouchableOpacity
           style={styles.action}
           disabled={isPlaying}
-          onPress={() => onChangeMode(mode === 'variables' ? 'card' : 'variables')}>
+          onPress={() => onChangeMode(mode === 'variables' ? null : 'variables')}>
           <MCIcon name="variable" size={26} color={isPlaying ? '#666' : '#fff'} />
         </TouchableOpacity>
       </View>

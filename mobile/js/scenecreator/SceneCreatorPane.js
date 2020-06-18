@@ -14,7 +14,7 @@ const SCREEN_HEIGHT = 100 * Viewport.vh;
 const CARD_HEIGHT = (1 / Constants.CARD_RATIO) * 100 * Viewport.vw;
 
 export default SceneCreatorPane = React.memo(
-  ({ element, visible, context, renderHeader, renderContent, headerHeight = 64, ...props }) => {
+  ({ element, isOpen, context, renderHeader, renderContent, headerHeight = 64, ...props }) => {
     const insets = useSafeArea();
 
     if (!renderContent) {
@@ -46,7 +46,7 @@ export default SceneCreatorPane = React.memo(
         initialSnap={1}
         renderHeader={renderHeader}
         renderContent={renderContent}
-        isOpen={visible}
+        isOpen={isOpen}
         onOpenEnd={Keyboard.dismiss}
         onCloseEnd={Keyboard.dismiss}
         style={{
