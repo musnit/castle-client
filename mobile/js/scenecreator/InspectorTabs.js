@@ -36,9 +36,15 @@ const GeneralTab = ({ behaviors, sendActions, isTextActorSelected }) => {
 };
 
 const MovementTab = ({ behaviors, sendActions }) => {
+  const movementBehaviors = ['Bouncy', 'Friction', 'Falling', 'SpeedLimit', 'Slowdown'];
   return (
     <React.Fragment>
       <Inspector.Motion moving={behaviors.Moving} sendAction={sendActions.Moving} />
+      {movementBehaviors
+        .filter((name) => behaviors[name].isActive)
+        .map((name) => (
+          <Inspector.Behavior behavior={behaviors[name]} sendAction={sendActions[name]} />
+        ))}
     </React.Fragment>
   );
 };

@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useOptimisticBehaviorValue } from '../InspectorUtilities';
-import { InspectorNumberInput } from '../components/InspectorNumberInput';
+import { BehaviorPropertyInputRow } from '../components/BehaviorPropertyInputRow';
 
 const styles = StyleSheet.create({
   container: {
@@ -14,12 +13,6 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   properties: {},
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingBottom: 8,
-  },
-  inputLabel: {},
   segmentedControl: {
     flexDirection: 'row',
     borderRadius: 3,
@@ -59,39 +52,6 @@ const styles = StyleSheet.create({
     color: '#000',
   },
 });
-
-// TODO: probably abstract this input row container into a reusable component
-const RowInput = ({ behavior, propName, label, sendAction }) => {
-  const [value, sendValue] = useOptimisticBehaviorValue({
-    behavior,
-    propName,
-    sendAction,
-  });
-
-  const onChange = React.useCallback(
-    (value) => {
-      if (behavior.isActive) {
-        sendValue(`set:${propName}`, value);
-      }
-    },
-    [behavior.isActive, sendValue]
-  );
-
-  return (
-    <View style={styles.inputContainer}>
-      <View style={{ width: '50%' }}>
-        <Text style={styles.inputLabel}>{label}</Text>
-      </View>
-      <View style={{ width: '50%' }}>
-        <InspectorNumberInput
-          value={value}
-          onChange={onChange}
-          {...behavior.propertySpecs[propName].props}
-        />
-      </View>
-    </View>
-  );
-};
 
 const BodyTypeControl = ({ moving, sendAction }) => {
   const items = [
@@ -159,8 +119,18 @@ export default InspectorMotion = ({ moving, sendAction }) => {
       <BodyTypeControl moving={moving} sendAction={sendAction} />
       {moving.isActive ? (
         <View style={styles.properties}>
-          <RowInput behavior={moving} propName="vx" label="X Velocity" sendAction={sendAction} />
-          <RowInput behavior={moving} propName="vy" label="Y Velocity" sendAction={sendAction} />
+          <BehaviorPropertyInputRow
+            behavior={moving}
+            propName="vx"
+            label="X Velocity"
+            sendAction={sendAction}
+          />
+          <BehaviorPropertyInputRow
+            behavior={moving}
+            propName="vy"
+            label="Y Velocity"
+            sendAction={sendAction}
+          />
         </View>
       ) : null}
     </View>
