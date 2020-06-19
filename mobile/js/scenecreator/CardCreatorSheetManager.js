@@ -13,23 +13,17 @@ import Viewport from '../viewport';
 import { CARD_HEADER_HEIGHT } from '../CardHeader';
 const FULL_SHEET_HEIGHT = 100 * Viewport.vh - CARD_HEADER_HEIGHT;
 
-// some sheets are provided by Ghost ToolUI elements.
-// these are marked with `isGhostPane: true`.
-// TODO: convert remaining sheets to data panes with React UI.
 const SHEETS = [
   {
     key: 'sceneCreatorBlueprints',
-    isGhostPane: true,
     Component: BlueprintsSheet,
   },
   {
     key: 'sceneCreatorTool',
-    isGhostPane: true,
     Component: ActiveToolSheet,
   },
   {
     key: 'sceneCreatorInspector',
-    isGhostPane: true,
     Component: InspectorSheet,
   },
   {
@@ -62,7 +56,7 @@ export const CardCreatorSheetManager = ({
   return (
     <React.Fragment>
       {SHEETS.map((sheet, ii) => {
-        const { key, Component, isGhostPane } = sheet;
+        const { key, Component, snapPoints } = sheet;
         let isOpen = false;
 
         // all sheets are closed when playing
@@ -75,21 +69,18 @@ export const CardCreatorSheetManager = ({
           }
         }
 
+        // some sheets are provided by Ghost ToolUI elements.
+        const ghostPaneElement = root?.panes ? root.panes[key] : null;
+
         const sheetProps = {
           context,
           isOpen,
+          snapPoints,
           onClose: onCloseSheet,
+          element: ghostPaneElement,
         };
-        if (isGhostPane) {
-          const element = root?.panes ? root.panes[key] : null;
-          if (element) {
-            return <Component key={key} element={root.panes[key]} {...sheetProps} />;
-          }
-        } else {
-          const { snapPoints } = sheet;
-          return <Component key={key} snapPoints={snapPoints} {...sheetProps} />;
-        }
-        return null;
+
+        return <Component key={key} {...sheetProps} />;
       })}
     </React.Fragment>
   );

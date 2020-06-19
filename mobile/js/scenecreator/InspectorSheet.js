@@ -24,6 +24,8 @@ const TAB_ITEMS = [
 
 export default InspectorSheet = ({ element, isOpen, context }) => {
   const { root } = useGhostUI();
+  if (!root || !root.panes) return null;
+
   const actionsPane = root.panes.sceneCreatorInspectorActions;
   const { isTextActorSelected } = context;
 
