@@ -41,7 +41,7 @@ const MovementTab = ({ behaviors, sendActions }) => {
     <React.Fragment>
       <Inspector.Motion moving={behaviors.Moving} sendAction={sendActions.Moving} />
       {movementBehaviors
-        .filter((name) => behaviors[name].isActive)
+        .filter((name) => behaviors[name]?.isActive)
         .map((name) => (
           <Inspector.Behavior
             key={`behavior-${name}`}

@@ -17,8 +17,9 @@ export default InspectorGenericBehavior = ({ behavior, sendAction, properties })
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{behavior.name}</Text>
-      {properties.map((propName) => (
+      {properties.map((propName, ii) => (
         <BehaviorPropertyInputRow
+          key={`${behavior.name}-property-${ii}`}
           behavior={behavior}
           propName={propName}
           label={propName}

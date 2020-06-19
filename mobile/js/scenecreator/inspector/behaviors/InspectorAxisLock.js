@@ -19,20 +19,25 @@ export default InspectorAxisLock = ({ body, sliding, sendActions }) => {
     propName: 'direction',
     sendAction: sendActions.Sliding,
   });
-  // TODO: add fixedRotation from body
-  /* const [fixedRotation, sendFixedRotation] = useOptimisticBehaviorValue({
+  const [fixedRotation, sendFixedRotation] = useOptimisticBehaviorValue({
     body,
     propName: 'fixedRotation',
     sendAction: sendActions.Body,
-    }); */
+  });
 
-  // TODO: support 'both' (in this case just doesn't create a joint in lua, but preserves sliding behavior)
-  const isHorizChecked = slidingDirection === 'horizontal';
-  const isVertChecked = slidingDirection === 'vertical';
-  const onChangeHoriz = (value) =>
-    sendSlidingDirection('set:direction', value ? 'horizontal' : 'vertical');
-  const onChangeVert = (value) =>
-    sendSlidingDirection('set:direction', value ? 'vertical' : 'horizontal');
+  // TODO: support no movement except rotation
+  const composeSlidingDirection = (horiz, vert) => {
+    if (horiz === vert) {
+      sendSlidingDirection('set:direction', 'both');
+    } else {
+      sendSlidingDirection('set:direction', horiz ? 'horizontal' : 'vertical');
+    }
+  };
+
+  const isHorizChecked = slidingDirection !== 'vertical';
+  const isVertChecked = slidingDirection !== 'horizontal';
+  const onChangeHoriz = (value) => composeSlidingDirection(value, isVertChecked);
+  const onChangeVert = (value) => composeSlidingDirection(isHorizChecked, value);
 
   return (
     <View style={styles.container}>
@@ -43,6 +48,11 @@ export default InspectorAxisLock = ({ body, sliding, sendActions }) => {
         label="Moves horizontally"
       />
       <InspectorCheckbox value={isVertChecked} onChange={onChangeVert} label="Moves vertically" />
+      <InspectorCheckbox
+        value={!fixedRotation}
+        onChange={(value) => sendFixedRotation('set:fixedRotation', !value)}
+        label="Rotates"
+      />
     </View>
   );
 };
