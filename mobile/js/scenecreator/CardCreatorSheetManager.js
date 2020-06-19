@@ -75,24 +75,19 @@ export const CardCreatorSheetManager = ({
           }
         }
 
+        const sheetProps = {
+          context,
+          isOpen,
+          onClose: onCloseSheet,
+        };
         if (isGhostPane) {
           const element = root?.panes ? root.panes[key] : null;
           if (element) {
-            return (
-              <Component key={key} context={context} isOpen={isOpen} element={root.panes[key]} />
-            );
+            return <Component key={key} element={root.panes[key]} {...sheetProps} />;
           }
         } else {
           const { snapPoints } = sheet;
-          return (
-            <Component
-              key={key}
-              context={context}
-              isOpen={isOpen}
-              onClose={onCloseSheet}
-              snapPoints={snapPoints}
-            />
-          );
+          return <Component key={key} snapPoints={snapPoints} {...sheetProps} />;
         }
         return null;
       })}
