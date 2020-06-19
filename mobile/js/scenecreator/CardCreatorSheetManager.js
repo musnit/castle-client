@@ -13,7 +13,7 @@ import Viewport from '../viewport';
 import { CARD_HEADER_HEIGHT } from '../CardHeader';
 const FULL_SHEET_HEIGHT = 100 * Viewport.vh - CARD_HEADER_HEIGHT;
 
-const SHEETS = [
+const ROOT_SHEETS = [
   {
     key: 'sceneCreatorBlueprints',
     Component: BlueprintsSheet,
@@ -38,6 +38,33 @@ const SHEETS = [
   },
 ];
 
+// root sheets can have a stack of child sheets
+const sheetStackReducer = (prevStacks, action) => {
+  let result = { ...prevStacks };
+  switch (action.type) {
+    case 'push': {
+      const { key, sheet } = action;
+      if (!result[key]) {
+        result[key] = [ROOT_SHEETS.find((sheet) => sheet.key === key)];
+      }
+      result[key] = result[key].concat([sheet]);
+      break;
+    }
+    case 'pop': {
+      const { key } = action;
+      if (!result[key] || result[key].length < 2) {
+        throw new Error(`Tried to pop root sheet or nonexistent sheet`);
+      }
+      // TODO: animate out
+      result[key] = result[key].slice(0, -1);
+      break;
+    }
+    default:
+      throw new Error(`Unrecognized sheet stack action: ${action.type}`);
+  }
+  return result;
+};
+
 export const CardCreatorSheetManager = ({
   context,
   isPlaying,
@@ -52,11 +79,13 @@ export const CardCreatorSheetManager = ({
     transformAssetUri,
   };
 
-  const onCloseSheet = () => setActiveSheet(null);
+  const [sheetStacks, updateSheetStacks] = React.useReducer(sheetStackReducer, {});
+  const closeRootSheet = () => setActiveSheet(null);
+
   return (
     <React.Fragment>
-      {SHEETS.map((sheet, ii) => {
-        const { key, Component, snapPoints } = sheet;
+      {ROOT_SHEETS.map((sheet, ii) => {
+        const { key } = sheet;
         let isOpen = false;
 
         // all sheets are closed when playing
@@ -69,18 +98,28 @@ export const CardCreatorSheetManager = ({
           }
         }
 
-        // some sheets are provided by Ghost ToolUI elements.
-        const ghostPaneElement = root?.panes ? root.panes[key] : null;
+        const stack = sheetStacks[key] ?? [sheet];
+        const addChildSheet = (sheet) => updateSheetStacks({ type: 'push', key, sheet });
+        const closeChildSheet = () => updateSheetStacks({ type: 'pop', key });
 
-        const sheetProps = {
-          context,
-          isOpen,
-          snapPoints,
-          onClose: onCloseSheet,
-          element: ghostPaneElement,
-        };
+        return stack.map((sheet, stackIndex) => {
+          const { key, Component, snapPoints } = sheet;
+          const closeLastSheet = stackIndex == 0 ? closeRootSheet : closeChildSheet;
 
-        return <Component key={key} {...sheetProps} />;
+          // some sheets are provided by Ghost ToolUI elements.
+          const ghostPaneElement = root?.panes ? root.panes[key] : null;
+
+          const sheetProps = {
+            context,
+            isOpen,
+            snapPoints,
+            addChildSheet,
+            onClose: closeLastSheet,
+            element: ghostPaneElement,
+          };
+
+          return <Component key={key} {...sheetProps} />;
+        });
       })}
     </React.Fragment>
   );
