@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
-import { InspectorNumberInput } from '../components/InspectorNumberInput';
+import { InspectorCheckbox } from './InspectorCheckbox';
+import { InspectorNumberInput } from './InspectorNumberInput';
 
 const styles = StyleSheet.create({
   inputContainer: {
@@ -34,14 +35,26 @@ export const BehaviorPropertyInputRow = ({ behavior, propName, label, sendAction
     [behavior.isActive, sendValue]
   );
 
+  let input;
+  switch (propertySpec.method) {
+    case 'numberInput':
+      input = <InspectorNumberInput value={value} onChange={onChange} {...propertySpec.props} />;
+      break;
+    case 'toggle':
+      input = <InspectorCheckbox value={value} onChange={onChange} {...propertySpec.props} />;
+      break;
+    default:
+      throw new Error(
+        `Input type ${propertySpec.method} is not supported in BehaviorPropertyInputRow`
+      );
+  }
+
   return (
     <View style={styles.inputContainer}>
       <View style={{ width: '50%' }}>
         <Text style={styles.inputLabel}>{label}</Text>
       </View>
-      <View style={{ width: '50%' }}>
-        <InspectorNumberInput value={value} onChange={onChange} {...propertySpec.props} />
-      </View>
+      <View style={{ width: '50%' }}>{input}</View>
     </View>
   );
 };

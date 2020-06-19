@@ -1,3 +1,4 @@
+export { default as AxisLock } from './InspectorAxisLock';
 export { default as Behavior } from './InspectorGenericBehavior';
 export { default as Drawing } from './InspectorDrawing';
 export { default as Layout } from './InspectorLayout';

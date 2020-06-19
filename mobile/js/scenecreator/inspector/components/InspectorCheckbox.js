@@ -6,16 +6,21 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
   },
   box: {
-    backgroundColor: '#000',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderBottomWidth: 2,
+    borderColor: '#000',
     borderRadius: 3,
     width: 24,
     height: 24,
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
-    marginRight: 16,
+    marginLeft: 16,
   },
   label: {},
 });
@@ -24,12 +29,12 @@ export const InspectorCheckbox = ({ value, label, onChange, style, ...props }) =
   const onPress = React.useCallback(() => onChange(!value), [value, onChange]);
   return (
     <View style={[styles.container, style]} {...props}>
+      <Text style={styles.label}>{label}</Text>
       <TouchableWithoutFeedback onPress={onPress}>
         <View style={styles.box}>
-          {value && <FontAwesome name="check" size={14} color="#fff" />}
+          {value && <FontAwesome name="check" size={14} color="#000" />}
         </View>
       </TouchableWithoutFeedback>
-      <Text style={styles.label}>{label}</Text>
     </View>
   );
 };

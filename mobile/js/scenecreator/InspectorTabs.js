@@ -43,8 +43,19 @@ const MovementTab = ({ behaviors, sendActions }) => {
       {movementBehaviors
         .filter((name) => behaviors[name].isActive)
         .map((name) => (
-          <Inspector.Behavior behavior={behaviors[name]} sendAction={sendActions[name]} />
+          <Inspector.Behavior
+            key={`behavior-${name}`}
+            behavior={behaviors[name]}
+            sendAction={sendActions[name]}
+          />
         ))}
+      {behaviors.Sliding.isActive ? (
+        <Inspector.AxisLock
+          sliding={behaviors.Sliding}
+          body={behaviors.Body}
+          sendActions={sendActions}
+        />
+      ) : null}
     </React.Fragment>
   );
 };
