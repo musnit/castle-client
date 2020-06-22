@@ -22,7 +22,7 @@ const TAB_ITEMS = [
   },
 ];
 
-export default InspectorSheet = ({ element, isOpen, context }) => {
+export default InspectorSheet = ({ element, isOpen, context, addChildSheet }) => {
   const { root } = useGhostUI();
   if (!root || !root.panes) return null;
 
@@ -56,6 +56,7 @@ export default InspectorSheet = ({ element, isOpen, context }) => {
 
   const renderContent = () => (
     <InspectorTabs
+      addChildSheet={addChildSheet}
       selectedTab={selectedTab}
       isTextActorSelected={isTextActorSelected}
       element={

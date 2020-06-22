@@ -103,16 +103,16 @@ export const CardCreatorSheetManager = ({
         const closeChildSheet = () => updateSheetStacks({ type: 'pop', key });
 
         return stack.map((sheet, stackIndex) => {
-          const { key, Component, snapPoints } = sheet;
+          let { key, Component, ...sheetProps } = sheet;
           const closeLastSheet = stackIndex == 0 ? closeRootSheet : closeChildSheet;
 
           // some sheets are provided by Ghost ToolUI elements.
           const ghostPaneElement = root?.panes ? root.panes[key] : null;
 
-          const sheetProps = {
+          sheetProps = {
+            ...sheetProps,
             context,
             isOpen,
-            snapPoints,
             addChildSheet,
             onClose: closeLastSheet,
             element: ghostPaneElement,

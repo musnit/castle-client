@@ -1,12 +1,29 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { sendDataPaneAction } from '../Tools';
+
+import AddBehaviorSheet from './AddBehaviorSheet';
 
 import * as Constants from '../Constants';
 import * as Inspector from './inspector/behaviors/InspectorBehaviors';
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  actionsContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+  },
+  addButton: {
+    borderWidth: 1,
+    borderBottomWidth: 2,
+    borderColor: '#000',
+    borderRadius: 3,
+    padding: 8,
+  },
+  addLabel: {
+    fontWeight: 'bold',
+  },
+});
 
 const GeneralTab = ({ behaviors, sendActions, isTextActorSelected }) => {
   if (isTextActorSelected) {
@@ -35,10 +52,23 @@ const GeneralTab = ({ behaviors, sendActions, isTextActorSelected }) => {
   }
 };
 
-const MovementTab = ({ behaviors, sendActions }) => {
+const MovementTab = ({ behaviors, sendActions, addChildSheet }) => {
   const movementBehaviors = ['Bouncy', 'Friction', 'Falling', 'SpeedLimit', 'Slowdown'];
   return (
     <React.Fragment>
+      <View style={styles.actionsContainer}>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() =>
+            addChildSheet({
+              key: 'addBehavior',
+              Component: AddBehaviorSheet,
+              behaviors,
+            })
+          }>
+          <Text style={styles.addLabel}>Add a behavior</Text>
+        </TouchableOpacity>
+      </View>
       <Inspector.Motion moving={behaviors.Moving} sendAction={sendActions.Moving} />
       {movementBehaviors
         .filter((name) => behaviors[name]?.isActive)
@@ -60,7 +90,7 @@ const MovementTab = ({ behaviors, sendActions }) => {
   );
 };
 
-export const InspectorTabs = ({ element, isTextActorSelected, selectedTab }) => {
+export const InspectorTabs = ({ element, isTextActorSelected, selectedTab, addChildSheet }) => {
   let behaviors, sendActions;
   if (element.children.count) {
     behaviors = {};
@@ -86,7 +116,13 @@ export const InspectorTabs = ({ element, isTextActorSelected, selectedTab }) => 
       break;
     }
     case 'movement': {
-      tabContents = <MovementTab sendActions={sendActions} behaviors={behaviors} />;
+      tabContents = (
+        <MovementTab
+          sendActions={sendActions}
+          behaviors={behaviors}
+          addChildSheet={addChildSheet}
+        />
+      );
       break;
     }
     case 'general':
