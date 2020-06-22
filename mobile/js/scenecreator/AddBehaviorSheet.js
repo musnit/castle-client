@@ -40,7 +40,7 @@ const BEHAVIOR_GROUPS = [
   },
 ];
 
-const AddBehavior = ({ behavior }) => {
+const AddBehavior = ({ behavior, onAdd }) => {
   if (!behavior || behavior.isActive) {
     // already added
     return null;
@@ -48,13 +48,17 @@ const AddBehavior = ({ behavior }) => {
 
   // TODO: disable/enable based on body constraints
   return (
-    <TouchableOpacity style={styles.addButton}>
+    <TouchableOpacity style={styles.addButton} onPress={onAdd}>
       <Text>{behavior.name}</Text>
     </TouchableOpacity>
   );
 };
 
-export default AddBehaviorSheet = ({ isOpen, onClose, context, behaviors }) => {
+export default AddBehaviorSheet = ({ isOpen, onClose, context, behaviors, addBehavior }) => {
+  const onPressAdd = (key) => {
+    addBehavior(key);
+    onClose();
+  };
   const renderHeader = () => <BottomSheetHeader title="Add a behavior" onClose={onClose} />;
   const renderContent = () => (
     <View style={styles.container}>
@@ -62,7 +66,11 @@ export default AddBehaviorSheet = ({ isOpen, onClose, context, behaviors }) => {
         <View key={`group-${ii}`} style={styles.group}>
           <Text style={styles.groupLabel}>{group.label}</Text>
           {group.behaviors.map((key, jj) => (
-            <AddBehavior key={`add-behavior-${key}`} behavior={behaviors[key]} />
+            <AddBehavior
+              key={`add-behavior-${key}`}
+              behavior={behaviors[key]}
+              onAdd={() => onPressAdd(key)}
+            />
           ))}
         </View>
       ))}

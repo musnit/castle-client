@@ -53,7 +53,16 @@ const GeneralTab = ({ behaviors, sendActions, isTextActorSelected }) => {
 };
 
 const MovementTab = ({ behaviors, sendActions, addChildSheet }) => {
-  const movementBehaviors = ['Bouncy', 'Friction', 'Falling', 'SpeedLimit', 'Slowdown'];
+  const movementBehaviors = [
+    'Bouncy',
+    'Friction',
+    'Falling',
+    'SpeedLimit',
+    'Slowdown',
+    'Drag',
+    'Sling',
+  ];
+
   return (
     <React.Fragment>
       <View style={styles.actionsContainer}>
@@ -64,6 +73,7 @@ const MovementTab = ({ behaviors, sendActions, addChildSheet }) => {
               key: 'addBehavior',
               Component: AddBehaviorSheet,
               behaviors,
+              addBehavior: (key) => sendActions[key]('add'),
             })
           }>
           <Text style={styles.addLabel}>Add a behavior</Text>
