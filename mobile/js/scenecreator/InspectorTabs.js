@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { sendDataPaneAction } from '../Tools';
 
+import * as InspectorUtilities from './inspector/InspectorUtilities';
 import AddBehaviorSheet from './AddBehaviorSheet';
 
 import * as Constants from '../Constants';
@@ -53,22 +54,20 @@ const GeneralTab = ({ behaviors, sendActions, isTextActorSelected }) => {
 };
 
 const MovementTab = ({ behaviors, sendActions, addChildSheet }) => {
-  // TODO: better representation of body/moving dependencies
-  let movementBehaviors;
-  if (behaviors.Moving.isActive) {
-    movementBehaviors = [
+  let movementBehaviors = InspectorUtilities.filterAvailableBehaviors({
+    allBehaviors: behaviors,
+    possibleBehaviors: [
       'Solid',
       'Bouncy',
       'Friction',
+      'Sliding',
       'Falling',
       'SpeedLimit',
       'Slowdown',
       'Drag',
       'Sling',
-    ];
-  } else if (behaviors.RotatingMotion.isActive) {
-    movementBehaviors = ['Solid', 'Bouncy'];
-  }
+    ],
+  });
 
   return (
     <React.Fragment>
@@ -94,16 +93,16 @@ const MovementTab = ({ behaviors, sendActions, addChildSheet }) => {
       {movementBehaviors &&
         movementBehaviors
           .filter((name) => behaviors[name]?.isActive)
-          .map((name) => (
-            <Inspector.Behavior
-              key={`behavior-${name}`}
-              behavior={behaviors[name]}
-              sendAction={sendActions[name]}
-            />
-          ))}
-      {behaviors.Sliding.isActive ? (
-        <Inspector.Sliding sliding={behaviors.Sliding} sendActions={sendActions} />
-      ) : null}
+          .map((name) => {
+            let Component = Inspector[name] ?? Inspector.Behavior;
+            return (
+              <Component
+                key={`behavior-${name}`}
+                behavior={behaviors[name]}
+                sendAction={sendActions[name]}
+              />
+            );
+          })}
     </React.Fragment>
   );
 };

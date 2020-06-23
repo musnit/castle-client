@@ -1,5 +1,25 @@
 import * as React from 'react';
 
+export const filterAvailableBehaviors = ({ allBehaviors, possibleBehaviors }) => {
+  let results = [];
+  possibleBehaviors.forEach((possible) => {
+    let available = true;
+    if (allBehaviors[possible]?.dependencies) {
+      for (let ii = 0; ii < allBehaviors[possible].dependencies.length; ii++) {
+        const dep = allBehaviors[possible].dependencies[ii].name;
+        if (!allBehaviors[dep]?.isActive) {
+          available = false;
+          break;
+        }
+      }
+    }
+    if (available) {
+      results.push(possible);
+    }
+  });
+  return results;
+};
+
 /**
  *  Wrapper for an optimistic property on an inspector behavior.
  *  We need to send all changes across the bridge to lua, but we don't want to wait for them

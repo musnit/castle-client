@@ -13,16 +13,16 @@ const styles = StyleSheet.create({
   },
 });
 
-export default InspectorSliding = ({ sliding, sendActions }) => {
+export default InspectorSliding = ({ behavior, sendAction }) => {
   const [slidingDirection, sendSlidingDirection] = useOptimisticBehaviorValue({
-    behavior: sliding,
+    behavior,
     propName: 'direction',
-    sendAction: sendActions.Sliding,
+    sendAction,
   });
   const [isRotationAllowed, sendIsRotationAllowed] = useOptimisticBehaviorValue({
-    behavior: sliding,
+    behavior,
     propName: 'isRotationAllowed',
-    sendAction: sendActions.Sliding,
+    sendAction,
   });
 
   // TODO: support no movement except rotation
