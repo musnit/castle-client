@@ -90,11 +90,7 @@ const MovementTab = ({ behaviors, sendActions, addChildSheet }) => {
           />
         ))}
       {behaviors.Sliding.isActive ? (
-        <Inspector.AxisLock
-          sliding={behaviors.Sliding}
-          body={behaviors.Body}
-          sendActions={sendActions}
-        />
+        <Inspector.Sliding sliding={behaviors.Sliding} sendActions={sendActions} />
       ) : null}
     </React.Fragment>
   );

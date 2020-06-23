@@ -13,16 +13,16 @@ const styles = StyleSheet.create({
   },
 });
 
-export default InspectorAxisLock = ({ body, sliding, sendActions }) => {
+export default InspectorSliding = ({ sliding, sendActions }) => {
   const [slidingDirection, sendSlidingDirection] = useOptimisticBehaviorValue({
-    sliding,
+    behavior: sliding,
     propName: 'direction',
     sendAction: sendActions.Sliding,
   });
-  const [fixedRotation, sendFixedRotation] = useOptimisticBehaviorValue({
-    body,
-    propName: 'fixedRotation',
-    sendAction: sendActions.Body,
+  const [isRotationAllowed, sendIsRotationAllowed] = useOptimisticBehaviorValue({
+    behavior: sliding,
+    propName: 'isRotationAllowed',
+    sendAction: sendActions.Sliding,
   });
 
   // TODO: support no movement except rotation
@@ -49,8 +49,8 @@ export default InspectorAxisLock = ({ body, sliding, sendActions }) => {
       />
       <InspectorCheckbox value={isVertChecked} onChange={onChangeVert} label="Moves vertically" />
       <InspectorCheckbox
-        value={!fixedRotation}
-        onChange={(value) => sendFixedRotation('set:fixedRotation', !value)}
+        value={isRotationAllowed}
+        onChange={(value) => sendIsRotationAllowed('set:isRotationAllowed', value)}
         label="Rotates"
       />
     </View>
