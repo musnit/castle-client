@@ -53,15 +53,22 @@ const GeneralTab = ({ behaviors, sendActions, isTextActorSelected }) => {
 };
 
 const MovementTab = ({ behaviors, sendActions, addChildSheet }) => {
-  const movementBehaviors = [
-    'Bouncy',
-    'Friction',
-    'Falling',
-    'SpeedLimit',
-    'Slowdown',
-    'Drag',
-    'Sling',
-  ];
+  // TODO: better representation of body/moving dependencies
+  let movementBehaviors;
+  if (behaviors.Moving.isActive) {
+    movementBehaviors = [
+      'Solid',
+      'Bouncy',
+      'Friction',
+      'Falling',
+      'SpeedLimit',
+      'Slowdown',
+      'Drag',
+      'Sling',
+    ];
+  } else if (behaviors.RotatingMotion.isActive) {
+    movementBehaviors = ['Solid', 'Bouncy'];
+  }
 
   return (
     <React.Fragment>
@@ -79,16 +86,21 @@ const MovementTab = ({ behaviors, sendActions, addChildSheet }) => {
           <Text style={styles.addLabel}>Add a behavior</Text>
         </TouchableOpacity>
       </View>
-      <Inspector.Motion moving={behaviors.Moving} sendAction={sendActions.Moving} />
-      {movementBehaviors
-        .filter((name) => behaviors[name]?.isActive)
-        .map((name) => (
-          <Inspector.Behavior
-            key={`behavior-${name}`}
-            behavior={behaviors[name]}
-            sendAction={sendActions[name]}
-          />
-        ))}
+      <Inspector.Motion
+        moving={behaviors.Moving}
+        rotatingMotion={behaviors.RotatingMotion}
+        sendActions={sendActions}
+      />
+      {movementBehaviors &&
+        movementBehaviors
+          .filter((name) => behaviors[name]?.isActive)
+          .map((name) => (
+            <Inspector.Behavior
+              key={`behavior-${name}`}
+              behavior={behaviors[name]}
+              sendAction={sendActions[name]}
+            />
+          ))}
       {behaviors.Sliding.isActive ? (
         <Inspector.Sliding sliding={behaviors.Sliding} sendActions={sendActions} />
       ) : null}

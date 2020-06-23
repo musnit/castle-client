@@ -27,10 +27,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   segmentedControlItem: {
-    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 16,
+    padding: 8,
+    borderColor: '#000',
   },
   segmentedControlItemSelected: {
     backgroundColor: '#000',
@@ -41,10 +41,9 @@ const styles = StyleSheet.create({
   segmentedControlLabelSelected: {
     color: '#fff',
   },
-  segmentedControlLabel: { flexGrow: 1, alignItems: 'center', justifyContent: 'center' },
+  segmentedControlLabel: { alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
   segmentedControlLabelText: {
     fontSize: 12,
-    marginHorizontal: 8,
     textAlign: 'center',
     color: '#666',
   },
@@ -53,21 +52,44 @@ const styles = StyleSheet.create({
   },
 });
 
-const BodyTypeControl = ({ moving, sendAction }) => {
+const BodyTypeControl = ({ moving, rotatingMotion, sendActions }) => {
+  const sendDynamicAction = sendActions.Moving;
+  const sendKinematicAction = sendActions.RotatingMotion;
   const items = [
     {
       name: 'None',
       label: 'Does not move',
-      onSelect: () => sendAction('remove'),
+      onSelect: () => {
+        if (moving.isActive) {
+          sendDynamicAction('remove');
+        } else if (rotatingMotion.isActive) {
+          sendKinematicAction('remove');
+        }
+      },
+    },
+    {
+      name: 'Fixed',
+      label: 'Moves at a constant rate',
+      onSelect: () => {
+        if (moving.isActive) {
+          sendDynamicAction('remove');
+        }
+        sendKinematicAction('add');
+      },
     },
     {
       name: 'Dynamic',
       label: 'Moved by other forces',
-      onSelect: () => sendAction('add'),
+      onSelect: () => {
+        if (rotatingMotion.isActive) {
+          sendKinematicAction('remove');
+        }
+        sendDynamicAction('add');
+      },
     },
   ];
 
-  const selectedItemIndex = moving.isActive ? 1 : 0;
+  const selectedItemIndex = moving.isActive ? 2 : rotatingMotion.isActive ? 1 : 0;
   const onChange = (index) => {
     if (index !== selectedItemIndex) {
       items[index].onSelect();
@@ -84,6 +106,8 @@ const BodyTypeControl = ({ moving, sendAction }) => {
             style={[
               styles.segmentedControlItem,
               ii === selectedItemIndex ? styles.segmentedControlItemSelected : null,
+              { width: `${(1 / items.length) * 100}%` },
+              ii > 0 ? { borderLeftWidth: 1 } : null,
             ]}>
             <Text
               style={[
@@ -97,7 +121,9 @@ const BodyTypeControl = ({ moving, sendAction }) => {
       </View>
       <View style={styles.segmentedControlLabels}>
         {items.map((item, ii) => (
-          <View key={`label-${ii}`} style={styles.segmentedControlLabel}>
+          <View
+            key={`label-${ii}`}
+            style={[styles.segmentedControlLabel, { width: `${(1 / items.length) * 100}%` }]}>
             <Text
               style={[
                 styles.segmentedControlLabelText,
@@ -112,24 +138,43 @@ const BodyTypeControl = ({ moving, sendAction }) => {
   );
 };
 
-export default InspectorMotion = ({ moving, sendAction }) => {
+export default InspectorMotion = ({ moving, rotatingMotion, sendActions }) => {
+  let activeBehavior, activeBehaviorSendAction;
+  let rotationPropertyName;
+  if (moving.isActive) {
+    // dynamic body
+    activeBehavior = moving;
+    activeBehaviorSendAction = sendActions.Moving;
+    rotationPropertyName = 'angularVelocity';
+  } else if (rotatingMotion.isActive) {
+    // kinematic body
+    activeBehavior = rotatingMotion;
+    activeBehaviorSendAction = sendActions.RotatingMotion;
+    rotationPropertyName = 'rotationsPerSecond';
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Motion</Text>
-      <BodyTypeControl moving={moving} sendAction={sendAction} />
-      {moving.isActive ? (
+      <BodyTypeControl moving={moving} rotatingMotion={rotatingMotion} sendActions={sendActions} />
+      {activeBehavior ? (
         <View style={styles.properties}>
           <BehaviorPropertyInputRow
-            behavior={moving}
+            behavior={activeBehavior}
             propName="vx"
             label="X Velocity"
-            sendAction={sendAction}
+            sendAction={activeBehaviorSendAction}
           />
           <BehaviorPropertyInputRow
-            behavior={moving}
+            behavior={activeBehavior}
             propName="vy"
             label="Y Velocity"
-            sendAction={sendAction}
+            sendAction={activeBehaviorSendAction}
+          />
+          <BehaviorPropertyInputRow
+            behavior={activeBehavior}
+            propName={rotationPropertyName}
+            label="Rotational velocity"
+            sendAction={activeBehaviorSendAction}
           />
         </View>
       ) : null}
