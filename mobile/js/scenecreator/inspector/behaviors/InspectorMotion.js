@@ -166,13 +166,13 @@ export default InspectorMotion = ({ moving, rotatingMotion, sendActions }) => {
             <BehaviorPropertyInputRow
               behavior={activeBehavior}
               propName="vx"
-              label="X Velocity"
+              label="X velocity"
               sendAction={activeBehaviorSendAction}
             />
             <BehaviorPropertyInputRow
               behavior={activeBehavior}
               propName="vy"
-              label="Y Velocity"
+              label="Y velocity"
               sendAction={activeBehaviorSendAction}
             />
             <BehaviorPropertyInputRow
