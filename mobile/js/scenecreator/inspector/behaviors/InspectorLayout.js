@@ -8,6 +8,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: '#ccc',
     padding: 16,
+    paddingRight: 0,
   },
   label: {
     fontWeight: 'bold',
@@ -19,8 +20,8 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     width: '50%',
-    paddingRight: 8,
-    paddingBottom: 8,
+    paddingRight: 16,
+    paddingBottom: 16,
   },
   inputLabel: {
     paddingBottom: 4,
