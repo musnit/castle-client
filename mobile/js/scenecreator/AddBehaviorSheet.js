@@ -65,7 +65,7 @@ const AddBehavior = ({ behavior, onAdd, disabled }) => {
       onPress={onAdd}
       disabled={disabled}>
       <Text style={[styles.addButtonLabel, disabled ? styles.addButtonLabelDisabled : null]}>
-        {behavior.name}
+        {behavior.displayName}
       </Text>
     </TouchableOpacity>
   );

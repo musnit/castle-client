@@ -13,6 +13,7 @@ const styles = StyleSheet.create({
   },
   properties: {
     padding: 16,
+    paddingBottom: 8,
   },
 });
 
@@ -20,7 +21,7 @@ export default InspectorGenericBehavior = ({ behavior, sendAction, properties })
   properties = properties ?? Object.keys(behavior.propertySpecs);
   return (
     <View style={styles.container}>
-      <BehaviorHeader name={behavior.name} onRemove={() => sendAction('remove')} />
+      <BehaviorHeader name={behavior.displayName} onRemove={() => sendAction('remove')} />
       {properties?.length ? (
         <View style={styles.properties}>
           {properties.map((propName, ii) => (
@@ -28,7 +29,7 @@ export default InspectorGenericBehavior = ({ behavior, sendAction, properties })
               key={`${behavior.name}-property-${ii}`}
               behavior={behavior}
               propName={propName}
-              label={propName}
+              label={behavior.propertySpecs[propName].label}
               sendAction={sendAction}
             />
           ))}
