@@ -4,11 +4,12 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    padding: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   name: {
     fontWeight: 'bold',

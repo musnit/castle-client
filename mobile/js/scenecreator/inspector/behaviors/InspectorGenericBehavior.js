@@ -3,17 +3,20 @@ import { StyleSheet, Text, View } from 'react-native';
 import { BehaviorPropertyInputRow } from '../components/BehaviorPropertyInputRow';
 import { BehaviorHeader } from '../components/BehaviorHeader';
 
+import * as Constants from '../../../Constants';
+
 const styles = StyleSheet.create({
   container: {
-    margin: 16,
+    marginHorizontal: 16,
+    marginVertical: 8,
     borderWidth: 1,
     borderBottomWidth: 2,
-    borderRadius: 3,
-    borderColor: '#000',
+    borderRadius: 6,
+    borderColor: Constants.colors.black,
   },
   properties: {
-    padding: 16,
-    paddingBottom: 8,
+    padding: 12,
+    paddingBottom: 0,
   },
 });
 

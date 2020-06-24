@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingBottom: 8,
+    paddingBottom: 12,
   },
   inputLabel: {},
 });
