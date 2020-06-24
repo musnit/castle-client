@@ -2,12 +2,9 @@ import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BehaviorPropertyInputRow } from '../components/BehaviorPropertyInputRow';
 
+import * as SceneCreatorConstants from '../../SceneCreatorConstants';
+
 const styles = StyleSheet.create({
-  container: {
-    borderTopWidth: 1,
-    borderColor: '#ccc',
-    padding: 16,
-  },
   label: {
     fontWeight: 'bold',
     fontSize: 16,
@@ -157,32 +154,36 @@ export default InspectorMotion = ({ moving, rotatingMotion, sendActions }) => {
     rotationPropertyDisplayValue = (value) => value * 360;
   }
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>Motion</Text>
-      <BodyTypeControl moving={moving} rotatingMotion={rotatingMotion} sendActions={sendActions} />
-      {activeBehavior ? (
-        <View style={styles.properties}>
-          <BehaviorPropertyInputRow
-            behavior={activeBehavior}
-            propName="vx"
-            label="X Velocity"
-            sendAction={activeBehaviorSendAction}
-          />
-          <BehaviorPropertyInputRow
-            behavior={activeBehavior}
-            propName="vy"
-            label="Y Velocity"
-            sendAction={activeBehaviorSendAction}
-          />
-          <BehaviorPropertyInputRow
-            behavior={activeBehavior}
-            propName={rotationPropertyName}
-            label="Rotational velocity"
-            sendAction={activeBehaviorSendAction}
-            displayValue={rotationPropertyDisplayValue}
-          />
-        </View>
-      ) : null}
+    <View style={SceneCreatorConstants.styles.behaviorContainer}>
+      <Text style={SceneCreatorConstants.styles.behaviorHeader}>
+        <Text style={SceneCreatorConstants.styles.behaviorHeaderName}>Motion</Text>
+      </Text>
+      <View style={SceneCreatorConstants.styles.behaviorProperties}>
+        <BodyTypeControl moving={moving} rotatingMotion={rotatingMotion} sendActions={sendActions} />
+        {activeBehavior ? (
+          <React.Fragment>
+            <BehaviorPropertyInputRow
+              behavior={activeBehavior}
+              propName="vx"
+              label="X Velocity"
+              sendAction={activeBehaviorSendAction}
+            />
+            <BehaviorPropertyInputRow
+              behavior={activeBehavior}
+              propName="vy"
+              label="Y Velocity"
+              sendAction={activeBehaviorSendAction}
+            />
+            <BehaviorPropertyInputRow
+              behavior={activeBehavior}
+              propName={rotationPropertyName}
+              label="Rotational velocity"
+              sendAction={activeBehaviorSendAction}
+              displayValue={rotationPropertyDisplayValue}
+            />
+          </React.Fragment>
+        ) : null}
+      </View>
     </View>
   );
 };

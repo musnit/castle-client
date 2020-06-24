@@ -31,8 +31,23 @@ export const styles = {
     borderRadius: 6,
     borderColor: Constants.colors.black,
   },
+  behaviorHeader: {
+    padding: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  behaviorHeaderName: {
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  behaviorHeaderRemoveButton: {
+    marginLeft: 8,
+  },
   behaviorProperties: {
     padding: 12,
     paddingBottom: 0,
+    borderTopWidth: 1,
+    borderTopColor: '#ccc',
   }
 }
