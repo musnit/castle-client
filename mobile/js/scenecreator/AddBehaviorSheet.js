@@ -3,6 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import BottomSheetHeader from './BottomSheetHeader';
 import CardCreatorBottomSheet from './CardCreatorBottomSheet';
 import * as Inspector from './inspector/behaviors/InspectorBehaviors';
+import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
   container: {},
@@ -14,7 +15,7 @@ const styles = StyleSheet.create({
   },
   emptyStateLabel: {
     fontSize: 16,
-    color: '#999',
+    color: Constants.colors.grayText,
   },
   group: {
     padding: 16,
@@ -31,29 +32,29 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   groupLabelDisabled: {
-    color: '#999',
+    color: Constants.colors.grayText,
   },
   addButton: {
     borderWidth: 1,
     borderBottomWidth: 2,
-    borderColor: '#000',
+    borderColor: Constants.colors.black,
     borderRadius: 6,
     padding: 12,
     marginBottom: 16,
   },
   addButtonDisabled: {
-    borderColor: '#999',
+    borderColor: Constants.colors.grayText,
     borderBottomWidth: 1,
   },
   addButtonLabel: {
     fontSize: 16,
   },
   addButtonLabelDisabled: {
-    color: '#999',
+    color: Constants.colors.grayText,
   },
   groupDisabledExplanation: {
     marginLeft: 8,
-    color: '#999',
+    color: Constants.colors.grayText,
   },
 });
 
