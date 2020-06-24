@@ -5,7 +5,7 @@ import { sendDataPaneAction } from '../Tools';
 import * as InspectorUtilities from './inspector/InspectorUtilities';
 import AddBehaviorSheet from './AddBehaviorSheet';
 
-import * as Constants from '../Constants';
+import * as SceneCreatorConstants from './SceneCreatorConstants';
 import * as Inspector from './inspector/behaviors/InspectorBehaviors';
 
 const styles = StyleSheet.create({
@@ -13,16 +13,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 16,
-  },
-  addButton: {
-    borderWidth: 1,
-    borderBottomWidth: 2,
-    borderColor: '#000',
-    borderRadius: 3,
-    padding: 8,
-  },
-  addLabel: {
-    fontWeight: 'bold',
   },
 });
 
@@ -66,7 +56,7 @@ const MovementTab = ({ behaviors, sendActions, addChildSheet }) => {
     <React.Fragment>
       <View style={styles.actionsContainer}>
         <TouchableOpacity
-          style={styles.addButton}
+          style={SceneCreatorConstants.styles.button}
           onPress={() =>
             addChildSheet({
               key: 'addBehavior',
@@ -75,7 +65,7 @@ const MovementTab = ({ behaviors, sendActions, addChildSheet }) => {
               addBehavior: (key) => sendActions[key]('add'),
             })
           }>
-          <Text style={styles.addLabel}>Add a behavior</Text>
+          <Text style={SceneCreatorConstants.styles.buttonLabel}>Add a behavior</Text>
         </TouchableOpacity>
       </View>
       <Inspector.Motion

@@ -23,6 +23,18 @@ export const Colors = {
 };
 
 export const styles = {
+  button: {
+    borderWidth: 1,
+    borderBottomWidth: 2,
+    borderColor: '#000',
+    borderRadius: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+  },
+  buttonLabel: {
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
   behaviorContainer: {
     marginHorizontal: 16,
     marginVertical: 8,
