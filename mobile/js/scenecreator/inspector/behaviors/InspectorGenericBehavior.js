@@ -20,7 +20,7 @@ export default InspectorGenericBehavior = ({ behavior, sendAction, properties })
   properties = properties ?? Object.keys(behavior.propertySpecs);
   return (
     <View style={styles.container}>
-      <BehaviorHeader name={behavior.name} />
+      <BehaviorHeader name={behavior.name} onRemove={() => sendAction('remove')} />
       {properties?.length ? (
         <View style={styles.properties}>
           {properties.map((propName, ii) => (
