@@ -2,6 +2,7 @@ import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BehaviorPropertyInputRow } from '../components/BehaviorPropertyInputRow';
 
+import * as Constants from '../../../Constants';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
 const styles = StyleSheet.create({
@@ -14,7 +15,7 @@ const styles = StyleSheet.create({
   segmentedControl: {
     flexDirection: 'row',
     borderRadius: 4,
-    borderColor: '#000',
+    borderColor: Constants.colors.black,
     borderWidth: 1,
     borderBottomWidth: 2,
     marginBottom: 8,
@@ -28,24 +29,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 4,
-    borderColor: '#000',
+    borderColor: Constants.colors.black,
     fontSize: 16,
   },
   segmentedControlItemSelected: {
-    backgroundColor: '#000',
+    backgroundColor: Constants.colors.black,
   },
   segmentedControlLabelSelected: {
-    color: '#fff',
+    color: Constants.colors.white,
     fontWeight: 'bold',
   },
   segmentedControlLabel: { alignItems: 'center', justifyContent: 'flex-start', paddingHorizontal: 8 },
   segmentedControlLabelText: {
     fontSize: 12,
     textAlign: 'center',
-    color: '#666',
+    color: Constants.colors.grayText,
   },
   segmentedControlLabelTextSelected: {
-    color: '#000',
+    color: Constants.colors.black,
   },
 });
 
