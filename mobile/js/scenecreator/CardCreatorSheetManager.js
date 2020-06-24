@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View } from 'react-native';
+import { Animated, TouchableWithoutFeedback, View } from 'react-native';
 import { useGhostUI } from '../ghost/GhostUI';
 
 import ActiveToolSheet from './ActiveToolSheet';
@@ -65,6 +65,26 @@ const sheetStackReducer = (prevStacks, action) => {
   return result;
 };
 
+const SheetBackgroundOverlay = ({ onPress }) => {
+  const opacity = React.useRef(new Animated.Value(0)).current;
+  React.useEffect(() => {
+    Animated.timing(opacity, { toValue: 0.75, duration: 250, useNativeDriver: true }).start();
+  }, []);
+  return (
+    <TouchableWithoutFeedback onPress={onPress}>
+      <Animated.View
+        style={{
+          position: 'absolute',
+          width: '100%',
+          height: '100%',
+          backgroundColor: '#fff',
+          opacity,
+        }}
+      />
+    </TouchableWithoutFeedback>
+  );
+};
+
 export const CardCreatorSheetManager = ({
   context,
   isPlaying,
@@ -105,6 +125,8 @@ export const CardCreatorSheetManager = ({
         return stack.map((sheet, stackIndex) => {
           let { key, Component, ...sheetProps } = sheet;
           const closeLastSheet = stackIndex == 0 ? closeRootSheet : closeChildSheet;
+          const maybeOverlay =
+            stackIndex == 0 ? null : <SheetBackgroundOverlay onPress={closeLastSheet} />;
 
           // some sheets are provided by Ghost ToolUI elements.
           const ghostPaneElement = root?.panes ? root.panes[key] : null;
@@ -118,7 +140,12 @@ export const CardCreatorSheetManager = ({
             element: ghostPaneElement,
           };
 
-          return <Component key={key} {...sheetProps} />;
+          return (
+            <React.Fragment>
+              {maybeOverlay}
+              <Component key={key} {...sheetProps} />
+            </React.Fragment>
+          );
         });
       })}
     </React.Fragment>
