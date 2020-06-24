@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: 12,
   },
   box: {
     backgroundColor: '#fff',
@@ -22,7 +22,9 @@ const styles = StyleSheet.create({
     flexShrink: 0,
     marginLeft: 16,
   },
-  label: {},
+  label: {
+    fontSize: 16,
+  },
 });
 
 export const InspectorCheckbox = ({ value, label, onChange, style, ...props }) => {
