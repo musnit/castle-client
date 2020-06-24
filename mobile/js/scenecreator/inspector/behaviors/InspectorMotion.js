@@ -10,16 +10,17 @@ const styles = StyleSheet.create({
   },
   label: {
     fontWeight: 'bold',
+    fontSize: 16,
     paddingBottom: 16,
   },
   properties: {},
   segmentedControl: {
     flexDirection: 'row',
-    borderRadius: 3,
+    borderRadius: 4,
     borderColor: '#000',
     borderWidth: 1,
     borderBottomWidth: 2,
-    marginBottom: 16,
+    marginBottom: 8,
   },
   segmentedControlLabels: {
     flexDirection: 'row',
@@ -29,19 +30,18 @@ const styles = StyleSheet.create({
   segmentedControlItem: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 8,
+    padding: 4,
     borderColor: '#000',
+    fontSize: 16,
   },
   segmentedControlItemSelected: {
     backgroundColor: '#000',
   },
-  segmentedControlLabel: {
-    color: '#000',
-  },
   segmentedControlLabelSelected: {
     color: '#fff',
+    fontWeight: 'bold',
   },
-  segmentedControlLabel: { alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
+  segmentedControlLabel: { alignItems: 'center', justifyContent: 'flex-start', paddingHorizontal: 8 },
   segmentedControlLabelText: {
     fontSize: 12,
     textAlign: 'center',
@@ -111,7 +111,7 @@ const BodyTypeControl = ({ moving, rotatingMotion, sendActions }) => {
             ]}>
             <Text
               style={[
-                styles.segmentedControlLabel,
+                styles.segmentedControlItem,
                 ii === selectedItemIndex ? styles.segmentedControlLabelSelected : null,
               ]}>
               {item.name}

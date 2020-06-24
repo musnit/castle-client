@@ -10,7 +10,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: 12,
   },
-  inputLabel: {},
+  inputLabel: {
+    fontSize: 16,
+  },
 });
 
 export const BehaviorPropertyInputRow = ({
