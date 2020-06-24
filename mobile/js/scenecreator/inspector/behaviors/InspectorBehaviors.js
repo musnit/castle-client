@@ -17,7 +17,7 @@ export const MotionBehaviors = [
   {
     label: 'Physics',
     dependencies: ['Body', 'Moving'],
-    behaviors: ['Falling', 'SpeedLimit', 'Slowdown'],
+    behaviors: ['Sliding', 'Falling', 'SpeedLimit', 'Slowdown'],
   },
   {
     label: 'Controls',
