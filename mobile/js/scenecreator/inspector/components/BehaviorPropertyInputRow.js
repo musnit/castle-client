@@ -13,7 +13,16 @@ const styles = StyleSheet.create({
   inputLabel: {},
 });
 
-export const BehaviorPropertyInputRow = ({ behavior, propName, label, sendAction }) => {
+export const BehaviorPropertyInputRow = ({
+  behavior,
+  propName,
+  label,
+  sendAction,
+  displayValue,
+}) => {
+  // optional method to transform the value shown
+  displayValue = displayValue ?? ((value) => value);
+
   const propertySpec = behavior.propertySpecs[propName];
   if (propertySpec?.method !== 'numberInput') {
     // TODO: support toggle in addition to numberInput
@@ -38,10 +47,22 @@ export const BehaviorPropertyInputRow = ({ behavior, propName, label, sendAction
   let input;
   switch (propertySpec.method) {
     case 'numberInput':
-      input = <InspectorNumberInput value={value} onChange={onChange} {...propertySpec.props} />;
+      input = (
+        <InspectorNumberInput
+          value={displayValue(value)}
+          onChange={onChange}
+          {...propertySpec.props}
+        />
+      );
       break;
     case 'toggle':
-      input = <InspectorCheckbox value={value} onChange={onChange} {...propertySpec.props} />;
+      input = (
+        <InspectorCheckbox
+          value={displayValue(value)}
+          onChange={onChange}
+          {...propertySpec.props}
+        />
+      );
       break;
     default:
       throw new Error(

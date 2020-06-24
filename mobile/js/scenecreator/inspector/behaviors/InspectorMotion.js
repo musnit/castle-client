@@ -140,7 +140,7 @@ const BodyTypeControl = ({ moving, rotatingMotion, sendActions }) => {
 
 export default InspectorMotion = ({ moving, rotatingMotion, sendActions }) => {
   let activeBehavior, activeBehaviorSendAction;
-  let rotationPropertyName;
+  let rotationPropertyName, rotationPropertyDisplayValue;
   if (moving.isActive) {
     // dynamic body
     activeBehavior = moving;
@@ -149,8 +149,12 @@ export default InspectorMotion = ({ moving, rotatingMotion, sendActions }) => {
   } else if (rotatingMotion.isActive) {
     // kinematic body
     activeBehavior = rotatingMotion;
-    activeBehaviorSendAction = sendActions.RotatingMotion;
+
+    // need to reconcile units because lua's rotating motion is expressed in full rotations
+    // per second, while moving is expressed in degrees
+    activeBehaviorSendAction = (action, value) => sendActions.RotatingMotion(action, value / 360);
     rotationPropertyName = 'rotationsPerSecond';
+    rotationPropertyDisplayValue = (value) => value * 360;
   }
   return (
     <View style={styles.container}>
@@ -175,6 +179,7 @@ export default InspectorMotion = ({ moving, rotatingMotion, sendActions }) => {
             propName={rotationPropertyName}
             label="Rotational velocity"
             sendAction={activeBehaviorSendAction}
+            displayValue={rotationPropertyDisplayValue}
           />
         </View>
       ) : null}
