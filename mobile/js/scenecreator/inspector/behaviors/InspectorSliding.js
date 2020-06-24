@@ -3,20 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { BehaviorHeader } from '../components/BehaviorHeader';
 import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
-
-const styles = StyleSheet.create({
-  container: {
-    margin: 16,
-    borderWidth: 1,
-    borderBottomWidth: 2,
-    borderRadius: 3,
-    borderColor: '#000',
-  },
-  properties: {
-    padding: 16,
-    paddingBottom: 8,
-  },
-});
+import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
 export default InspectorSliding = ({ behavior, sendAction }) => {
   const [slidingDirection, sendSlidingDirection] = useOptimisticBehaviorValue({
@@ -45,9 +32,9 @@ export default InspectorSliding = ({ behavior, sendAction }) => {
   const onChangeVert = (value) => composeSlidingDirection(isHorizChecked, value);
 
   return (
-    <View style={styles.container}>
+    <View style={SceneCreatorConstants.styles.behaviorContainer}>
       <BehaviorHeader name="Axis Lock" onRemove={() => sendAction('remove')} />
-      <View style={styles.properties}>
+      <View style={SceneCreatorConstants.styles.behaviorProperties}>
         <InspectorCheckbox
           value={isHorizChecked}
           onChange={onChangeHoriz}
