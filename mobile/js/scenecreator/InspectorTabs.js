@@ -56,17 +56,10 @@ const GeneralTab = ({ behaviors, sendActions, isTextActorSelected }) => {
 const MovementTab = ({ behaviors, sendActions, addChildSheet }) => {
   let movementBehaviors = InspectorUtilities.filterAvailableBehaviors({
     allBehaviors: behaviors,
-    possibleBehaviors: [
-      'Solid',
-      'Bouncy',
-      'Friction',
-      'Sliding',
-      'Falling',
-      'SpeedLimit',
-      'Slowdown',
-      'Drag',
-      'Sling',
-    ],
+    possibleBehaviors: Inspector.MotionBehaviors.reduce(
+      (behaviors, group) => behaviors.concat(group.behaviors),
+      []
+    ),
   });
 
   return (

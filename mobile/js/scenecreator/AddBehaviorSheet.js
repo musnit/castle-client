@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import BottomSheetHeader from './BottomSheetHeader';
 import CardCreatorBottomSheet from './CardCreatorBottomSheet';
+import * as Inspector from './inspector/behaviors/InspectorBehaviors';
 
 const styles = StyleSheet.create({
   container: {},
@@ -10,9 +11,16 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
+  groupHeading: {
+    flexDirection: 'row',
+  },
+  groupDisabled: {},
   groupLabel: {
     fontWeight: 'bold',
     marginBottom: 16,
+  },
+  groupLabelDisabled: {
+    color: '#999',
   },
   addButton: {
     borderWidth: 1,
@@ -22,34 +30,33 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
   },
+  addButtonDisabled: {
+    borderColor: '#999',
+  },
+  addButtonLabel: {},
+  addButtonLabelDisabled: {
+    color: '#999',
+  },
+  groupDisabledExplanation: {
+    marginLeft: 8,
+    color: '#999',
+  },
 });
 
-const BEHAVIOR_GROUPS = [
-  {
-    label: 'Collisions',
-    behaviors: ['Solid', 'Bouncy', 'Friction'],
-  },
-  {
-    // TODO: map to components, not behaviors, so that we can reference AxisLock component
-    label: 'Physics',
-    behaviors: ['Falling', 'SpeedLimit', 'Slowdown'],
-  },
-  {
-    label: 'Controls',
-    behaviors: ['Drag', 'Sling'],
-  },
-];
-
-const AddBehavior = ({ behavior, onAdd }) => {
+const AddBehavior = ({ behavior, onAdd, disabled }) => {
   if (!behavior || behavior.isActive) {
     // already added
     return null;
   }
 
-  // TODO: disable/enable based on body constraints
   return (
-    <TouchableOpacity style={styles.addButton} onPress={onAdd}>
-      <Text>{behavior.name}</Text>
+    <TouchableOpacity
+      style={[styles.addButton, disabled ? styles.addButtonDisabled : null]}
+      onPress={onAdd}
+      disabled={disabled}>
+      <Text style={[styles.addButtonLabel, disabled ? styles.addButtonLabelDisabled : null]}>
+        {behavior.name}
+      </Text>
     </TouchableOpacity>
   );
 };
@@ -62,18 +69,33 @@ export default AddBehaviorSheet = ({ isOpen, onClose, context, behaviors, addBeh
   const renderHeader = () => <BottomSheetHeader title="Add a behavior" onClose={onClose} />;
   const renderContent = () => (
     <View style={styles.container}>
-      {BEHAVIOR_GROUPS.map((group, ii) => (
-        <View key={`group-${ii}`} style={styles.group}>
-          <Text style={styles.groupLabel}>{group.label}</Text>
-          {group.behaviors.map((key, jj) => (
-            <AddBehavior
-              key={`add-behavior-${key}`}
-              behavior={behaviors[key]}
-              onAdd={() => onPressAdd(key)}
-            />
-          ))}
-        </View>
-      ))}
+      {Inspector.MotionBehaviors.map((group, ii) => {
+        let isGroupEnabled = true;
+        if (group.dependencies.indexOf('Moving') !== -1 && !behaviors.Moving.isActive) {
+          // TODO: someday we may want a more general dependency check here
+          isGroupEnabled = false;
+        }
+        return (
+          <View key={`group-${ii}`} style={styles.group}>
+            <View style={styles.groupHeading}>
+              <Text style={[styles.groupLabel, !isGroupEnabled ? styles.groupLabelDisabled : null]}>
+                {group.label}
+              </Text>
+              {!isGroupEnabled ? (
+                <Text style={styles.groupDisabledExplanation}>&ndash; requires dynamic motion</Text>
+              ) : null}
+            </View>
+            {group.behaviors.map((key, jj) => (
+              <AddBehavior
+                key={`add-behavior-${key}`}
+                behavior={behaviors[key]}
+                onAdd={() => onPressAdd(key)}
+                disabled={!isGroupEnabled}
+              />
+            ))}
+          </View>
+        );
+      })}
     </View>
   );
 
