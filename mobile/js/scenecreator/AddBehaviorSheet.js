@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
   groupDisabled: {},
   groupLabel: {
     fontWeight: 'bold',
+    fontSize: 16,
     marginBottom: 16,
   },
   groupLabelDisabled: {
@@ -36,14 +37,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderBottomWidth: 2,
     borderColor: '#000',
-    borderRadius: 3,
-    padding: 16,
+    borderRadius: 6,
+    padding: 12,
     marginBottom: 16,
   },
   addButtonDisabled: {
     borderColor: '#999',
   },
-  addButtonLabel: {},
+  addButtonLabel: {
+    fontSize: 16,
+  },
   addButtonLabelDisabled: {
     color: '#999',
   },
