@@ -43,6 +43,7 @@ const styles = StyleSheet.create({
   },
   addButtonDisabled: {
     borderColor: '#999',
+    borderBottomWidth: 1,
   },
   addButtonLabel: {
     fontSize: 16,
