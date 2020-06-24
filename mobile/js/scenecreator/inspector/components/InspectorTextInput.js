@@ -5,10 +5,12 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderTopWidth: 2,
-    borderRadius: 3,
+    borderRadius: 4,
     color: '#000',
     borderColor: '#333',
-    padding: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    fontSize: 16,
   },
 });
 

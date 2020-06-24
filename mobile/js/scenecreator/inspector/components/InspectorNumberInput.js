@@ -6,28 +6,22 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   input: {
     width: '100%',
     flexShrink: 1,
   },
   button: {
-    width: 32,
+    width: 28,
+    aspectRatio: 1,
     borderWidth: 1,
     borderBottomWidth: 2,
     borderColor: '#000',
-    flexShrink: 0,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  minusButton: {
-    borderTopLeftRadius: 3,
-    borderBottomLeftRadius: 3,
     marginLeft: 8,
-  },
-  plusButton: {
-    borderTopRightRadius: 3,
-    borderBottomRightRadius: 3,
+    borderRadius: 100,
   },
 });
 
@@ -86,10 +80,10 @@ export const InspectorNumberInput = ({ value, label, onChange, ...props }) => {
     <View style={styles.container}>
       <InspectorTextInput style={styles.input} value={text} onChangeText={onChangeText} />
       <TouchableOpacity style={[styles.button, styles.minusButton]} onPress={onMinus}>
-        <FontAwesome name="minus" size={12} color="#000" />
+        <FontAwesome name="minus" size={14} color="#000" />
       </TouchableOpacity>
       <TouchableOpacity style={[styles.button, styles.plusButton]} onPress={onPlus}>
-        <FontAwesome name="plus" size={12} color="#000" />
+        <FontAwesome name="plus" size={14} color="#000" />
       </TouchableOpacity>
     </View>
   );
