@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     color: Constants.colors.grayText,
   },
   groupDisabledExplanation: {
-    marginLeft: 8,
+    fontSize: 16,
     color: Constants.colors.grayText,
   },
 });
@@ -119,7 +119,7 @@ export default AddBehaviorSheet = ({ isOpen, onClose, context, behaviors, addBeh
                   </Text>
                   {!isGroupEnabled ? (
                     <Text style={styles.groupDisabledExplanation}>
-                      &ndash; requires dynamic motion
+                      &nbsp;&ndash; requires dynamic motion
                     </Text>
                   ) : null}
                 </View>
