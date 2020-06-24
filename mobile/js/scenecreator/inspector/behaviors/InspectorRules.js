@@ -1,11 +1,28 @@
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 import { InspectorCheckbox } from '../components/InspectorCheckbox';
+import { useGhostUI } from '../../../ghost/GhostUI';
+import { sendDataPaneAction } from '../../../Tools';
 
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+  },
+  actionsContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingBottom: 16,
+  },
+  addButton: {
+    borderWidth: 1,
+    borderBottomWidth: 2,
+    borderColor: '#000',
+    borderRadius: 3,
+    padding: 8,
+  },
+  addLabel: {
+    fontWeight: 'bold',
   },
   label: {
     fontWeight: 'bold',
@@ -128,7 +145,7 @@ const InspectorResponse = ({ response, order = 0 }) => {
       <View style={[styles.response, order > 0 ? styles.nextResponse : null]}>
         {responseContents}
       </View>
-      <InspectorResponse response={response.params.nextResponse} order={order + 1} />
+      <InspectorResponse response={response.params?.nextResponse} order={order + 1} />
     </React.Fragment>
   );
 };
@@ -147,15 +164,44 @@ const InspectorRule = ({ rule }) => {
 };
 
 export default InspectorRules = ({ rules, sendAction }) => {
+  // TODO: would be nice not to subscribe here
+  const { root } = useGhostUI();
+  const element = root?.panes ? root.panes['sceneCreatorRules'] : null;
+
+  let rulesData, sendRuleAction;
+  if (element.children.count) {
+    Object.entries(element.children).forEach(([key, child]) => {
+      if (child.type === 'data') {
+        const data = child.props.data;
+        if (data.name === 'Rules') {
+          rulesData = data;
+        }
+        sendRuleAction = (action, value) => sendDataPaneAction(element, action, value, key);
+      }
+    });
+  }
+
+  let rulesItems = [];
+  if (rulesData) {
+    if (Array.isArray(rulesData.rules)) {
+      rulesItems = rulesData.rules;
+    } else {
+      rulesItems = Object.entries(rulesData.rules).map(([_, rule]) => rule);
+    }
+  }
+
   return (
     <View style={styles.container}>
+      <View style={styles.actionsContainer}>
+        <TouchableOpacity style={styles.addButton} onPress={() => sendRuleAction('add')}>
+          <Text style={styles.addLabel}>Add new rule</Text>
+        </TouchableOpacity>
+      </View>
       <Text style={styles.label}>Rules (read only)</Text>
       <React.Fragment>
-        {rules.isActive && Array.isArray(rules.properties.rules)
-          ? rules.properties.rules.map((rule, ii) => (
-              <InspectorRule key={`rule-${ii}`} rule={rule} />
-            ))
-          : null}
+        {rulesItems.map((rule, ii) => (
+          <InspectorRule key={`rule-${ii}`} rule={rule} />
+        ))}
       </React.Fragment>
     </View>
   );
