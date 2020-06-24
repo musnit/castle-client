@@ -13,6 +13,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingBottom: 16,
   },
+  sublabel: {
+    fontWeight: 'normal',
+  },
 });
 
 export default InspectorTags = ({ tags, sendAction }) => {
@@ -44,7 +47,7 @@ export default InspectorTags = ({ tags, sendAction }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Tags</Text>
+      <Text style={styles.label}>Tags <Text style={styles.sublabel}>(separated by spaces)</Text></Text>
       <InspectorTextInput value={value} onChangeText={onChange} />
     </View>
   );
