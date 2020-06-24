@@ -12,6 +12,7 @@ const styles = StyleSheet.create({
   label: {
     fontWeight: 'bold',
     paddingBottom: 16,
+    fontSize: 16,
   },
   sublabel: {
     fontWeight: 'normal',

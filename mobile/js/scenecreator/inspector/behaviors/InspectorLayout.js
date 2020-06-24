@@ -13,6 +13,7 @@ const styles = StyleSheet.create({
   label: {
     fontWeight: 'bold',
     paddingBottom: 16,
+    fontSize: 16,
   },
   properties: {
     flexDirection: 'row',
@@ -25,12 +26,7 @@ const styles = StyleSheet.create({
   },
   inputLabel: {
     paddingBottom: 4,
-  },
-  input: {
-    borderWidth: 1,
-    color: '#000',
-    borderColor: '#333',
-    padding: 8,
+    fontSize: 16,
   },
 });
 
