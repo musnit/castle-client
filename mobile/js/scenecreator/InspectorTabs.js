@@ -2,11 +2,14 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { sendDataPaneAction } from '../Tools';
 
-import * as InspectorUtilities from './inspector/InspectorUtilities';
+const LEGACY_RULES_UI = true;
+
 import AddBehaviorSheet from './AddBehaviorSheet';
+import InspectorLegacyRules from './inspector/behaviors/InspectorLegacyRules';
 
 import * as SceneCreatorConstants from './SceneCreatorConstants';
 import * as Inspector from './inspector/behaviors/InspectorBehaviors';
+import * as InspectorUtilities from './inspector/InspectorUtilities';
 
 const styles = StyleSheet.create({
   actionsContainer: {
@@ -112,7 +115,9 @@ export const InspectorTabs = ({ element, isTextActorSelected, selectedTab, addCh
   let tabContents;
   switch (selectedTab) {
     case 'rules': {
-      tabContents = (
+      tabContents = LEGACY_RULES_UI ? (
+        <InspectorLegacyRules rules={behaviors.Rules} sendAction={sendActions.Rules} />
+      ) : (
         <InspectorRules
           behaviors={behaviors}
           sendAction={sendActions.Rules}
