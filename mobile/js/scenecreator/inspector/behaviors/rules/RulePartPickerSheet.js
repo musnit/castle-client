@@ -19,9 +19,10 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   addButton: {
-    borderBottomWidth: 1,
+    borderTopWidth: 1,
     borderColor: '#ccc',
-    marginBottom: 8,
+    marginTop: 8,
+    paddingTop: 8,
   },
   addButtonLabel: {
     fontSize: 16,
@@ -29,35 +30,41 @@ const styles = StyleSheet.create({
   },
 });
 
-const AddPart = ({ isLast, entry, onAdd }) => {
+const AddPart = ({ isFirst, entry, onAdd }) => {
   return (
-    <TouchableOpacity style={isLast ? null : styles.addButton} onPress={onAdd}>
+    <TouchableOpacity style={isFirst ? null : styles.addButton} onPress={onAdd}>
       <Text style={styles.addButtonLabel}>{entry.name}</Text>
     </TouchableOpacity>
   );
 };
 
-export default RulePartPickerSheet = ({ isOpen, onClose, context, entries }) => {
+export default RulePartPickerSheet = ({ behaviors, isOpen, onClose, context, entries }) => {
   const onPressAdd = (key) => {
     onClose();
   };
   const renderHeader = () => <BottomSheetHeader title="Select trigger" onClose={onClose} />;
 
+  // filter by actor's behaviors, and hide empty sections
+  let isCategoryVisible = {};
+  Object.entries(entries).forEach(([category, contents]) => {
+    isCategoryVisible[category] = contents.some((entry) => behaviors[entry.behaviorName]?.isActive);
+  });
+
   const renderContent = () => (
     <View style={styles.container}>
       {entries
-        ? Object.entries(entries).map(([category, contents]) => (
-            <View key={`rule-category-${category}`} style={styles.category}>
-              <Text style={styles.categoryLabel}>{category}</Text>
-              {contents.map((entry, ii) => (
-                <AddPart
-                  key={`rule-entry-${ii}`}
-                  entry={entry}
-                  isLast={ii == contents.length - 1}
-                />
-              ))}
-            </View>
-          ))
+        ? Object.entries(entries).map(([category, contents]) =>
+            isCategoryVisible[category] ? (
+              <View key={`rule-category-${category}`} style={styles.category}>
+                <Text style={styles.categoryLabel}>{category}</Text>
+                {contents.map((entry, ii) =>
+                  behaviors[entry.behaviorName]?.isActive ? (
+                    <AddPart key={`rule-entry-${ii}`} entry={entry} isFirst={ii == 0} />
+                  ) : null
+                )}
+              </View>
+            ) : null
+          )
         : null}
     </View>
   );

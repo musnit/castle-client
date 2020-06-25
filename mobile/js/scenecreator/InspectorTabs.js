@@ -114,7 +114,7 @@ export const InspectorTabs = ({ element, isTextActorSelected, selectedTab, addCh
     case 'rules': {
       tabContents = (
         <InspectorRules
-          rules={behaviors.Rules}
+          behaviors={behaviors}
           sendAction={sendActions.Rules}
           addChildSheet={addChildSheet}
         />

@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const InspectorTrigger = ({ trigger, addChildSheet, triggers }) => {
+const InspectorTrigger = ({ trigger, behaviors, addChildSheet, triggers }) => {
   if (!trigger) {
     return null;
   }
@@ -63,6 +63,7 @@ const InspectorTrigger = ({ trigger, addChildSheet, triggers }) => {
     addChildSheet({
       key: 'rulePartPicker',
       Component: RulePartPickerSheet,
+      behaviors,
       entries: triggers,
     });
 
@@ -159,12 +160,17 @@ const InspectorResponse = ({ response, order = 0 }) => {
   );
 };
 
-const InspectorRule = ({ rule, addChildSheet, triggers, responses }) => {
+const InspectorRule = ({ rule, behaviors, triggers, responses, addChildSheet }) => {
   // trigger: params, name, behaviorId
   // response: params, name, behaviorId
   return (
     <View style={styles.rule}>
-      <InspectorTrigger trigger={rule.trigger} addChildSheet={addChildSheet} triggers={triggers} />
+      <InspectorTrigger
+        trigger={rule.trigger}
+        behaviors={behaviors}
+        addChildSheet={addChildSheet}
+        triggers={triggers}
+      />
       <View style={styles.insetContainer}>
         <InspectorResponse response={rule.response} />
       </View>
@@ -172,7 +178,9 @@ const InspectorRule = ({ rule, addChildSheet, triggers, responses }) => {
   );
 };
 
-export default InspectorRules = ({ rules, sendAction, addChildSheet }) => {
+export default InspectorRules = ({ behaviors, sendAction, addChildSheet }) => {
+  const rules = behaviors.Rules;
+
   // TODO: would be nice not to subscribe here
   const { root } = useGhostUI();
   const element = root?.panes ? root.panes['sceneCreatorRules'] : null;
@@ -212,6 +220,7 @@ export default InspectorRules = ({ rules, sendAction, addChildSheet }) => {
           <InspectorRule
             key={`rule-${ii}`}
             rule={rule}
+            behaviors={behaviors}
             addChildSheet={addChildSheet}
             triggers={rulesData.triggers}
             responses={rulesData.responses}
