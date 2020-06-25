@@ -6,6 +6,7 @@ const LEGACY_RULES_UI = true;
 
 import AddBehaviorSheet from './AddBehaviorSheet';
 import InspectorLegacyRules from './inspector/behaviors/InspectorLegacyRules';
+import SaveBlueprintSheet from './SaveBlueprintSheet';
 
 import * as SceneCreatorConstants from './SceneCreatorConstants';
 import * as Inspector from './inspector/behaviors/InspectorBehaviors';
@@ -19,7 +20,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const GeneralTab = ({ behaviors, sendActions, isTextActorSelected }) => {
+const GeneralTab = ({ behaviors, sendActions, isTextActorSelected, addChildSheet }) => {
   if (isTextActorSelected) {
     return (
       <React.Fragment>
@@ -41,6 +42,18 @@ const GeneralTab = ({ behaviors, sendActions, isTextActorSelected }) => {
           circleShape={behaviors.CircleShape}
           sendActions={sendActions}
         />
+        <View style={styles.actionsContainer}>
+          <TouchableOpacity
+            style={SceneCreatorConstants.styles.button}
+            onPress={() =>
+              addChildSheet({
+                key: 'saveBlueprint',
+                Component: SaveBlueprintSheet,
+              })
+            }>
+            <Text style={SceneCreatorConstants.styles.buttonLabel}>Save blueprint</Text>
+          </TouchableOpacity>
+        </View>
       </React.Fragment>
     );
   }
@@ -147,6 +160,7 @@ export const InspectorTabs = ({ element, isTextActorSelected, selectedTab, addCh
           sendActions={sendActions}
           behaviors={behaviors}
           isTextActorSelected={isTextActorSelected}
+          addChildSheet={addChildSheet}
         />
       );
     }
