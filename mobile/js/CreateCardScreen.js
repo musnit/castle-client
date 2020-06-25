@@ -588,7 +588,7 @@ const CreateCardScreen = ({
           </View>
           <CardBottomActions
             card={card}
-            onAdd={() => setActiveSheet('sceneCreatorBlueprints')}
+            onAdd={() => setActiveSheet('sceneCreatorLegacyBlueprints')}
             onOpenLayout={() => setActiveSheet('layout')}
             onSave={saveAndGoToDeck}
             isSceneLoaded={isSceneLoaded}
