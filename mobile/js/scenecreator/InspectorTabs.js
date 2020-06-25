@@ -18,6 +18,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 16,
   },
+  blueprintContainer: {
+    padding: 16,
+    alignItems: 'flex-start',
+    borderTopWidth: 1,
+    borderTopColor: '#ccc',
+  },
 });
 
 const GeneralTab = ({ behaviors, sendActions, isTextActorSelected, addChildSheet }) => {
@@ -42,7 +48,7 @@ const GeneralTab = ({ behaviors, sendActions, isTextActorSelected, addChildSheet
           circleShape={behaviors.CircleShape}
           sendActions={sendActions}
         />
-        <View style={styles.actionsContainer}>
+        <View style={styles.blueprintContainer}>
           <TouchableOpacity
             style={SceneCreatorConstants.styles.button}
             onPress={() =>
