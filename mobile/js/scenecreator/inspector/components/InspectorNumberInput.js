@@ -69,12 +69,12 @@ export const InspectorNumberInput = ({ value, label, onChange, ...props }) => {
     const newValue = validate(value - step);
     setText(numberToText(newValue));
     onChange(newValue);
-  }, [onChange]);
+  }, [value, step, onChange]);
   const onPlus = React.useCallback(() => {
     const newValue = validate(value + step);
     setText(numberToText(newValue));
     onChange(newValue);
-  }, [onChange]);
+  }, [value, step, onChange]);
 
   return (
     <View style={styles.container}>

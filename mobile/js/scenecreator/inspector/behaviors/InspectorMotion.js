@@ -39,7 +39,11 @@ const styles = StyleSheet.create({
     color: Constants.colors.white,
     fontWeight: 'bold',
   },
-  segmentedControlLabel: { alignItems: 'center', justifyContent: 'flex-start', paddingHorizontal: 8 },
+  segmentedControlLabel: {
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingHorizontal: 8,
+  },
   segmentedControlLabelText: {
     fontSize: 12,
     textAlign: 'center',
@@ -138,11 +142,12 @@ const BodyTypeControl = ({ moving, rotatingMotion, sendActions }) => {
 
 export default InspectorMotion = ({ moving, rotatingMotion, sendActions }) => {
   let activeBehavior, activeBehaviorSendAction;
-  let rotationPropertyName, rotationPropertyDisplayValue;
+  let rotationPropertyName, rotatingPropSendAction, rotationPropertyDisplayValue;
   if (moving.isActive) {
     // dynamic body
     activeBehavior = moving;
     activeBehaviorSendAction = sendActions.Moving;
+    rotatingPropSendAction = activeBehaviorSendAction;
     rotationPropertyName = 'angularVelocity';
   } else if (rotatingMotion.isActive) {
     // kinematic body
@@ -150,7 +155,8 @@ export default InspectorMotion = ({ moving, rotatingMotion, sendActions }) => {
 
     // need to reconcile units because lua's rotating motion is expressed in full rotations
     // per second, while moving is expressed in degrees
-    activeBehaviorSendAction = (action, value) => sendActions.RotatingMotion(action, value / 360);
+    rotatingPropSendAction = (action, value) => sendActions.RotatingMotion(action, value / 360);
+    activeBehaviorSendAction = sendActions.RotatingMotion;
     rotationPropertyName = 'rotationsPerSecond';
     rotationPropertyDisplayValue = (value) => value * 360;
   }
@@ -160,7 +166,11 @@ export default InspectorMotion = ({ moving, rotatingMotion, sendActions }) => {
         <Text style={SceneCreatorConstants.styles.behaviorHeaderName}>Motion</Text>
       </Text>
       <View style={SceneCreatorConstants.styles.behaviorProperties}>
-        <BodyTypeControl moving={moving} rotatingMotion={rotatingMotion} sendActions={sendActions} />
+        <BodyTypeControl
+          moving={moving}
+          rotatingMotion={rotatingMotion}
+          sendActions={sendActions}
+        />
         {activeBehavior ? (
           <React.Fragment>
             <BehaviorPropertyInputRow
@@ -179,7 +189,7 @@ export default InspectorMotion = ({ moving, rotatingMotion, sendActions }) => {
               behavior={activeBehavior}
               propName={rotationPropertyName}
               label="Rotational velocity"
-              sendAction={activeBehaviorSendAction}
+              sendAction={rotatingPropSendAction}
               displayValue={rotationPropertyDisplayValue}
             />
           </React.Fragment>
