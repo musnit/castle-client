@@ -38,9 +38,15 @@ export default InspectorSheet = ({ element, isOpen, context, addChildSheet }) =>
   }, [isOpen, element, actionsPane]);
 
   const [selectedTab, setSelectedTab] = React.useState(TAB_ITEMS[0].value);
+
+  useEffect(() => {
+    // reset selected tab
+    setSelectedTab(TAB_ITEMS[0].value);
+  }, [isTextActorSelected]);
+
   const tabItems = TAB_ITEMS.filter((tab) => {
     // hide 'Movement' for text actors
-    return !(isTextActorSelected && tab === 'movement');
+    return !(isTextActorSelected && tab.value === 'movement');
   });
 
   const renderHeader = () => (
