@@ -116,7 +116,11 @@ export const InspectorTabs = ({ element, isTextActorSelected, selectedTab, addCh
   switch (selectedTab) {
     case 'rules': {
       tabContents = LEGACY_RULES_UI ? (
-        <InspectorLegacyRules rules={behaviors.Rules} sendAction={sendActions.Rules} />
+        <InspectorLegacyRules
+          rules={behaviors.Rules}
+          sendAction={sendActions.Rules}
+          addChildSheet={addChildSheet}
+        />
       ) : (
         <InspectorRules
           behaviors={behaviors}

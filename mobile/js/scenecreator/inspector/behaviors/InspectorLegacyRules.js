@@ -1,7 +1,12 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useGhostUI } from '../../../ghost/GhostUI';
-import { ToolPane } from '../../../Tools';
+import { registerElement, ToolPane } from '../../../Tools';
+
+import CardDestinationPickerSheet from '../../CardDestinationPickerSheet';
+import CardPickerTool from '../components/CardPickerTool';
+
+registerElement('cardPicker', CardPickerTool);
 
 const styles = StyleSheet.create({
   addButton: {
@@ -19,7 +24,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default InspectorLegacyRules = ({ rules, sendAction }) => {
+export default InspectorLegacyRules = ({ rules, sendAction, addChildSheet }) => {
   if (!rules.isActive) {
     return (
       <TouchableOpacity style={styles.addButton} onPress={() => sendAction('add')}>
@@ -30,6 +35,17 @@ export default InspectorLegacyRules = ({ rules, sendAction }) => {
   const { root } = useGhostUI();
   const element = root?.panes ? root.panes['sceneCreatorRules'] : null;
 
+  const showDestinationPicker = (callback) =>
+    addChildSheet({
+      key: 'destinationPicker',
+      Component: CardDestinationPickerSheet,
+      onSelectCard: (card) =>
+        callback({
+          cardId: card.cardId,
+          title: card.title,
+        }),
+    });
+
   if (!element) return null;
-  return <ToolPane element={element} context={{}} />;
+  return <ToolPane element={element} context={{ showDestinationPicker }} />;
 };

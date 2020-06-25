@@ -1,10 +1,10 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, Text } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { Labelled, ToolsContext, useValue } from '../Tools';
+import { Labelled, ToolsContext, useValue } from '../../../Tools';
 
-import * as SceneCreatorConstants from './SceneCreatorConstants';
-import * as Utilities from '../utilities';
+import * as SceneCreatorConstants from '../../SceneCreatorConstants';
+import * as Utilities from '../../../utilities';
 
 let Colors = SceneCreatorConstants.Colors;
 
