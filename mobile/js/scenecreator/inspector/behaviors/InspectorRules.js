@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const InspectorTrigger = ({ trigger, behaviors, addChildSheet, triggers }) => {
+const InspectorTrigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeTrigger }) => {
   if (!trigger) {
     return null;
   }
@@ -65,6 +65,7 @@ const InspectorTrigger = ({ trigger, behaviors, addChildSheet, triggers }) => {
       Component: RulePartPickerSheet,
       behaviors,
       entries: triggers,
+      onSelectEntry: onChangeTrigger,
     });
 
   let label;
@@ -160,9 +161,20 @@ const InspectorResponse = ({ response, order = 0 }) => {
   );
 };
 
-const InspectorRule = ({ rule, behaviors, triggers, responses, addChildSheet }) => {
-  // trigger: params, name, behaviorId
-  // response: params, name, behaviorId
+const InspectorRule = ({ rule, behaviors, triggers, responses, addChildSheet, onChangeRule }) => {
+  const onChangeTrigger = React.useCallback(
+    (entry) =>
+      onChangeRule({
+        ...rule,
+        trigger: {
+          name: entry.name,
+          behaviorId: entry.behaviorId,
+          params: entry.initialParams,
+        },
+      }),
+    [onChangeRule]
+  );
+
   return (
     <View style={styles.rule}>
       <InspectorTrigger
@@ -170,6 +182,7 @@ const InspectorRule = ({ rule, behaviors, triggers, responses, addChildSheet }) 
         behaviors={behaviors}
         addChildSheet={addChildSheet}
         triggers={triggers}
+        onChangeTrigger={onChangeTrigger}
       />
       <View style={styles.insetContainer}>
         <InspectorResponse response={rule.response} />
@@ -200,12 +213,23 @@ export default InspectorRules = ({ behaviors, sendAction, addChildSheet }) => {
 
   let rulesItems = [];
   if (rulesData) {
+    // there's an issue with the lua bridge applying a diff to arrays
+    // where we can either get an array here, or we can get an object with keys
+    // like "0", "2", ...
     if (Array.isArray(rulesData.rules)) {
       rulesItems = rulesData.rules;
     } else {
-      rulesItems = Object.entries(rulesData.rules).map(([_, rule]) => rule);
+      rulesItems = Object.entries(rulesData.rules)
+        .map(([index, rule]) => ({ ...rule, index }))
+        .sort((a, b) => parseInt(b.index, 10) < parseInt(a.index, 10));
     }
   }
+
+  const onChangeRule = (index, newRule) => {
+    // TODO: close the loop here
+    // rulesItems[index] = newRule;
+    // sendRuleAction('change', rulesItems);
+  };
 
   return (
     <View style={styles.container}>
@@ -218,8 +242,9 @@ export default InspectorRules = ({ behaviors, sendAction, addChildSheet }) => {
       <React.Fragment>
         {rulesItems.map((rule, ii) => (
           <InspectorRule
-            key={`rule-${ii}`}
+            key={`rule-${rule.trigger?.name}-${rule.response?.name}-${ii}`}
             rule={rule}
+            onChangeRule={(rule) => onChangeRule(ii, rule)}
             behaviors={behaviors}
             addChildSheet={addChildSheet}
             triggers={rulesData.triggers}

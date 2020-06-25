@@ -32,14 +32,22 @@ const styles = StyleSheet.create({
 
 const AddPart = ({ isFirst, entry, onAdd }) => {
   return (
-    <TouchableOpacity style={isFirst ? null : styles.addButton} onPress={onAdd}>
+    <TouchableOpacity style={isFirst ? null : styles.addButton} onPress={() => onAdd(entry)}>
       <Text style={styles.addButtonLabel}>{entry.name}</Text>
     </TouchableOpacity>
   );
 };
 
-export default RulePartPickerSheet = ({ behaviors, isOpen, onClose, context, entries }) => {
-  const onPressAdd = (key) => {
+export default RulePartPickerSheet = ({
+  behaviors,
+  isOpen,
+  onClose,
+  context,
+  entries,
+  onSelectEntry,
+}) => {
+  const onPressAdd = (entry) => {
+    onSelectEntry(entry);
     onClose();
   };
   const renderHeader = () => <BottomSheetHeader title="Select trigger" onClose={onClose} />;
@@ -59,7 +67,12 @@ export default RulePartPickerSheet = ({ behaviors, isOpen, onClose, context, ent
                 <Text style={styles.categoryLabel}>{category}</Text>
                 {contents.map((entry, ii) =>
                   behaviors[entry.behaviorName]?.isActive ? (
-                    <AddPart key={`rule-entry-${ii}`} entry={entry} isFirst={ii == 0} />
+                    <AddPart
+                      key={`rule-entry-${ii}`}
+                      entry={entry}
+                      isFirst={ii == 0}
+                      onAdd={onPressAdd}
+                    />
                   ) : null
                 )}
               </View>
