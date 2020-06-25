@@ -112,7 +112,13 @@ export const InspectorTabs = ({ element, isTextActorSelected, selectedTab, addCh
   let tabContents;
   switch (selectedTab) {
     case 'rules': {
-      tabContents = <InspectorRules rules={behaviors.Rules} sendAction={sendActions.Rules} />;
+      tabContents = (
+        <InspectorRules
+          rules={behaviors.Rules}
+          sendAction={sendActions.Rules}
+          addChildSheet={addChildSheet}
+        />
+      );
       break;
     }
     case 'movement': {

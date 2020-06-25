@@ -5,6 +5,8 @@ import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import { useGhostUI } from '../../../ghost/GhostUI';
 import { sendDataPaneAction } from '../../../Tools';
 
+import RulePartPickerSheet from './rules/RulePartPickerSheet';
+
 const styles = StyleSheet.create({
   container: {
     padding: 16,
@@ -52,36 +54,43 @@ const styles = StyleSheet.create({
   },
 });
 
-const InspectorTrigger = ({ trigger }) => {
+const InspectorTrigger = ({ trigger, addChildSheet, triggers }) => {
   if (!trigger) {
     return null;
   }
+
+  const onPickTrigger = () =>
+    addChildSheet({
+      key: 'rulePartPicker',
+      Component: RulePartPickerSheet,
+      entries: triggers,
+    });
+
+  let label;
   // TODO: implement components to handle different trigger UIs here.
   switch (trigger.name) {
-    case 'collide': {
-      if (trigger.params.tag) {
-        return (
-          <Text style={styles.ruleName}>When this collides with tag: {trigger.params.tag}</Text>
-        );
-      } else {
-        return <Text style={styles.ruleName}>When this collides with anything</Text>;
+    case 'collide':
+      {
+        if (trigger.params.tag) {
+          label = `When this collides with tag: ${trigger.params.tag}`;
+        } else {
+          label = `When this collides`;
+        }
       }
-    }
+      break;
     case 'variable reaches value': {
-      return (
-        <Text style={styles.ruleName}>
-          When variable {trigger.params.variableId} is {trigger.params.comparison}:{' '}
-          {trigger.params.value}
-        </Text>
-      );
+      label = `When variable ${trigger.params.variableId} is ${trigger.params.comparison}: ${trigger.params.value}`;
+      break;
     }
     default:
-      return (
-        <Text style={styles.ruleName}>
-          When: {trigger.name}, params: {JSON.stringify(trigger.params, null, 2)}
-        </Text>
-      );
+      label = `When: ${trigger.name}, params: ${JSON.stringify(trigger.params, null, 2)}`;
   }
+
+  return (
+    <TouchableOpacity onPress={onPickTrigger}>
+      <Text style={styles.ruleName}>{label}</Text>
+    </TouchableOpacity>
+  );
 };
 
 const InspectorResponse = ({ response, order = 0 }) => {
@@ -150,12 +159,12 @@ const InspectorResponse = ({ response, order = 0 }) => {
   );
 };
 
-const InspectorRule = ({ rule }) => {
+const InspectorRule = ({ rule, addChildSheet, triggers, responses }) => {
   // trigger: params, name, behaviorId
   // response: params, name, behaviorId
   return (
     <View style={styles.rule}>
-      <InspectorTrigger trigger={rule.trigger} />
+      <InspectorTrigger trigger={rule.trigger} addChildSheet={addChildSheet} triggers={triggers} />
       <View style={styles.insetContainer}>
         <InspectorResponse response={rule.response} />
       </View>
@@ -163,7 +172,7 @@ const InspectorRule = ({ rule }) => {
   );
 };
 
-export default InspectorRules = ({ rules, sendAction }) => {
+export default InspectorRules = ({ rules, sendAction, addChildSheet }) => {
   // TODO: would be nice not to subscribe here
   const { root } = useGhostUI();
   const element = root?.panes ? root.panes['sceneCreatorRules'] : null;
@@ -200,7 +209,13 @@ export default InspectorRules = ({ rules, sendAction }) => {
       <Text style={styles.label}>Rules (read only)</Text>
       <React.Fragment>
         {rulesItems.map((rule, ii) => (
-          <InspectorRule key={`rule-${ii}`} rule={rule} />
+          <InspectorRule
+            key={`rule-${ii}`}
+            rule={rule}
+            addChildSheet={addChildSheet}
+            triggers={rulesData.triggers}
+            responses={rulesData.responses}
+          />
         ))}
       </React.Fragment>
     </View>
