@@ -5,6 +5,7 @@ import { registerElement, ToolPane } from '../../../Tools';
 
 import CardDestinationPickerSheet from '../../CardDestinationPickerSheet';
 import CardPickerTool from '../components/CardPickerTool';
+import { Behavior } from './InspectorBehaviors';
 
 registerElement('cardPicker', CardPickerTool);
 
@@ -15,7 +16,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     borderColor: '#000',
     padding: 8,
-    margin: 16,
+    margin: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -24,7 +25,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default InspectorLegacyRules = ({ rules, sendAction, addChildSheet }) => {
+const LegacyRules = ({ rules, sendAction, addChildSheet }) => {
   if (!rules.isActive) {
     return (
       <TouchableOpacity style={styles.addButton} onPress={() => sendAction('add')}>
@@ -48,4 +49,18 @@ export default InspectorLegacyRules = ({ rules, sendAction, addChildSheet }) => 
 
   if (!element) return null;
   return <ToolPane element={element} context={{ showDestinationPicker }} />;
+};
+
+export default InspectorLegacyRules = ({ counter, rules, sendActions, addChildSheet }) => {
+  return (
+    <React.Fragment>
+      {!counter.isActive ? (
+        <TouchableOpacity style={styles.addButton} onPress={() => sendActions.Counter('add')}>
+          <Text style={styles.addLabel}>Enable counter</Text>
+        </TouchableOpacity>
+      ) : null}
+      <LegacyRules rules={rules} sendAction={sendActions.Rules} addChildSheet={addChildSheet} />
+      {counter.isActive ? <Behavior behavior={counter} sendAction={sendActions.Counter} /> : null}
+    </React.Fragment>
+  );
 };
