@@ -5,7 +5,7 @@ import { registerElement, ToolPane } from '../../../Tools';
 
 import CardDestinationPickerSheet from '../../CardDestinationPickerSheet';
 import CardPickerTool from '../components/CardPickerTool';
-import { Behavior } from './InspectorBehaviors';
+import { Counter } from './InspectorBehaviors';
 
 registerElement('cardPicker', CardPickerTool);
 
@@ -60,7 +60,7 @@ export default InspectorLegacyRules = ({ counter, rules, sendActions, addChildSh
         </TouchableOpacity>
       ) : null}
       <LegacyRules rules={rules} sendAction={sendActions.Rules} addChildSheet={addChildSheet} />
-      {counter.isActive ? <Behavior behavior={counter} sendAction={sendActions.Counter} /> : null}
+      {counter.isActive ? <Counter counter={counter} sendAction={sendActions.Counter} /> : null}
     </React.Fragment>
   );
 };

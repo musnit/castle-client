@@ -1,4 +1,5 @@
 export { default as Behavior } from './InspectorGenericBehavior';
+export { default as Counter } from './InspectorCounter';
 export { default as Drawing } from './InspectorDrawing';
 export { default as Layout } from './InspectorLayout';
 export { default as Motion } from './InspectorMotion';

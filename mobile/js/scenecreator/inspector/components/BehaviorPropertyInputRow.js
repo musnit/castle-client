@@ -21,16 +21,12 @@ export const BehaviorPropertyInputRow = ({
   label,
   sendAction,
   displayValue,
+  ...props
 }) => {
   // optional method to transform the value shown
   displayValue = displayValue ?? ((value) => value);
 
   const propertySpec = behavior.propertySpecs[propName];
-  if (propertySpec?.method !== 'numberInput') {
-    // TODO: support toggle in addition to numberInput
-    return null;
-  }
-
   const [value, sendValue] = useOptimisticBehaviorValue({
     behavior,
     propName,
@@ -54,6 +50,7 @@ export const BehaviorPropertyInputRow = ({
           value={displayValue(value)}
           onChange={onChange}
           {...propertySpec.props}
+          {...props}
         />
       );
       break;
@@ -63,6 +60,7 @@ export const BehaviorPropertyInputRow = ({
           value={displayValue(value)}
           onChange={onChange}
           {...propertySpec.props}
+          {...props}
         />
       );
       break;
