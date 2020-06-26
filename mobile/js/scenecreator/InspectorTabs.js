@@ -24,6 +24,11 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#ccc',
   },
+  blueprintTitle: {
+    fontWeight: 'bold',
+    paddingBottom: 16,
+    fontSize: 16,
+  },
 });
 
 const GeneralTab = ({ behaviors, sendActions, isTextActorSelected, addChildSheet }) => {
@@ -49,6 +54,7 @@ const GeneralTab = ({ behaviors, sendActions, isTextActorSelected, addChildSheet
           sendActions={sendActions}
         />
         <View style={styles.blueprintContainer}>
+          <Text style={styles.blueprintTitle}>Blueprint</Text>
           <TouchableOpacity
             style={SceneCreatorConstants.styles.button}
             onPress={() =>

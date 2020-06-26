@@ -26,6 +26,10 @@ const styles = StyleSheet.create({
   },
   actions: {
     paddingVertical: 8,
+    alignItems: 'flex-start',
+  },
+  button: {
+    marginVertical: 8,
   },
 });
 
@@ -88,7 +92,7 @@ const SaveBlueprintForm = ({
       <View style={styles.actions}>
         {isExisting ? (
           <TouchableOpacity
-            style={SceneCreatorConstants.styles.button}
+            style={[SceneCreatorConstants.styles.button, styles.button]}
             disabled={!!validationError}
             onPress={() => {
               sendAction('updateBlueprint', blueprintToSave);
@@ -98,7 +102,7 @@ const SaveBlueprintForm = ({
           </TouchableOpacity>
         ) : null}
         <TouchableOpacity
-          style={SceneCreatorConstants.styles.button}
+          style={[SceneCreatorConstants.styles.button, styles.button]}
           disabled={!!validationError}
           onPress={() => {
             sendAction('addBlueprint', blueprintToSave);
