@@ -2,6 +2,7 @@ import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import FastImage from 'react-native-fast-image';
 
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
@@ -33,7 +34,21 @@ const styles = StyleSheet.create({
   imagePreview: {
     width: 96,
     height: 96,
-    marginRight: 8,
+    marginRight: 16,
+  },
+  removeButton: {
+    position: 'absolute',
+    top: -6,
+    right: 4,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderBottomWidth: 2,
+    borderColor: '#000',
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
@@ -69,13 +84,22 @@ export default InspectorImage = ({ image, sendAction }) => {
     [image?.isActive, sendUrl, sendCropEnabled]
   );
 
+  const onRemove = () => sendUrl('remove');
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>
         Image <Text style={styles.sublabel}>(legacy)</Text>
       </Text>
       <View style={styles.content}>
-        {image?.isActive ? <FastImage style={styles.imagePreview} source={{ uri: url }} /> : null}
+        {image?.isActive ? (
+          <View>
+            <FastImage style={styles.imagePreview} source={{ uri: url }} />
+            <TouchableOpacity style={styles.removeButton} onPress={onRemove}>
+              <Icon name="close" color="#000" size={18} />
+            </TouchableOpacity>
+          </View>
+        ) : null}
         <View style={styles.actions}>
           <Text>Add from</Text>
           <TouchableOpacity
