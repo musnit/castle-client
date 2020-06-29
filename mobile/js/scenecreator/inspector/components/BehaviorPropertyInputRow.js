@@ -27,10 +27,12 @@ export const BehaviorPropertyInputRow = ({
   displayValue = displayValue ?? ((value) => value);
 
   const propertySpec = behavior.propertySpecs[propName];
+  const [lastNativeUpdate, setLastNativeUpdate] = React.useState(1);
   const [value, sendValue] = useOptimisticBehaviorValue({
     behavior,
     propName,
     sendAction,
+    onNativeUpdate: () => setLastNativeUpdate(lastNativeUpdate + 1),
   });
 
   const onChange = React.useCallback(
@@ -47,6 +49,7 @@ export const BehaviorPropertyInputRow = ({
     case 'numberInput':
       input = (
         <InspectorNumberInput
+          lastNativeUpdate={lastNativeUpdate}
           value={displayValue(value)}
           onChange={onChange}
           {...propertySpec.props}
@@ -57,6 +60,7 @@ export const BehaviorPropertyInputRow = ({
     case 'toggle':
       input = (
         <InspectorCheckbox
+          lastNativeUpdate={lastNativeUpdate}
           value={displayValue(value)}
           onChange={onChange}
           {...propertySpec.props}

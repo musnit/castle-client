@@ -37,7 +37,7 @@ const numberToText = (number, decimalDigits = 3) => {
   return parseFloat(number.toFixed(decimalDigits)).toString();
 };
 
-export const InspectorNumberInput = ({ value, label, onChange, ...props }) => {
+export const InspectorNumberInput = ({ value, lastNativeUpdate, label, onChange, ...props }) => {
   // Maintain `text` separately from `value` to allow incomplete text such as '' or '3.'
   const [text, setText] = React.useState(numberToText(value));
 
@@ -75,6 +75,9 @@ export const InspectorNumberInput = ({ value, label, onChange, ...props }) => {
     setText(numberToText(newValue));
     onChange(newValue);
   }, [value, step, onChange]);
+
+  // refresh displayed text if we got a new value from lua
+  React.useEffect(() => setText(numberToText(value)), [lastNativeUpdate]);
 
   return (
     <View style={styles.container}>
