@@ -2,6 +2,7 @@ import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 import { InspectorNumberInput } from '../components/InspectorNumberInput';
+import { InspectorCheckbox } from '../components/InspectorCheckbox';
 
 const styles = StyleSheet.create({
   container: {
@@ -59,9 +60,26 @@ const LayoutInput = ({ behavior, propName, label, sendAction }) => {
 };
 
 export default InspectorLayout = ({ body, circleShape, sendActions }) => {
+  const onChangeCircleShape = React.useCallback(
+    (value) => {
+      if (value) {
+        return sendActions.CircleShape('add');
+      } else {
+        return sendActions.CircleShape('remove');
+      }
+    },
+    [sendActions.circleShape]
+  );
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Layout</Text>
+      <InspectorCheckbox
+        label="Use circular shape"
+        value={circleShape?.isActive}
+        onChange={onChangeCircleShape}
+        style={{ marginRight: 16 }}
+      />
       <View style={styles.properties}>
         {circleShape?.isActive ? (
           <LayoutInput
