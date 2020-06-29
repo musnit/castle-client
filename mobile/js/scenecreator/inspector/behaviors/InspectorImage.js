@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -36,6 +36,11 @@ const styles = StyleSheet.create({
     height: 96,
     marginRight: 16,
   },
+  loading: {
+    backgroundColor: '#ccc',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   removeButton: {
     position: 'absolute',
     top: -6,
@@ -52,6 +57,26 @@ const styles = StyleSheet.create({
   },
 });
 
+const ImagePreview = ({ isActive, url, isLoading, onRemove }) => {
+  if (isLoading) {
+    return (
+      <View style={[styles.imagePreview, styles.loading]}>
+        <ActivityIndicator color="#fff" />
+      </View>
+    );
+  } else if (isActive) {
+    return (
+      <View>
+        <FastImage style={styles.imagePreview} source={{ uri: url }} />
+        <TouchableOpacity style={styles.removeButton} onPress={onRemove}>
+          <Icon name="close" color="#000" size={18} />
+        </TouchableOpacity>
+      </View>
+    );
+  }
+  return null;
+};
+
 export default InspectorImage = ({ image, sendAction }) => {
   const [url, sendUrl] = useOptimisticBehaviorValue({
     behavior: image,
@@ -64,19 +89,22 @@ export default InspectorImage = ({ image, sendAction }) => {
     sendAction,
   });
 
-  // TODO: remove image
+  const [loading, setLoading] = React.useState(false);
+
   const onChangeImage = React.useCallback(
     (result) => {
-      // TODO: result.error
-      // TODO: result.uri (file:// ...)
-      // result.fileId, url
-      if (result.fileId && result.url) {
+      if (result.error) {
+        setLoading(false);
+      } else if (result.uri) {
+        // while uploading:
+        // local url like file:// ...
+        setLoading(true);
+      } else if (result.fileId && result.url) {
+        setLoading(false);
         if (image.isActive) {
-          console.log(`update image url`);
           sendUrl('set:url', result.url);
           sendCropEnabled('set:cropEnabled', false);
         } else {
-          console.log(`add image behavior`);
           sendUrl('add', result.url, { url: result.url, cropEnabled: false });
         }
       }
@@ -92,14 +120,12 @@ export default InspectorImage = ({ image, sendAction }) => {
         Image <Text style={styles.sublabel}>(legacy)</Text>
       </Text>
       <View style={styles.content}>
-        {image?.isActive ? (
-          <View>
-            <FastImage style={styles.imagePreview} source={{ uri: url }} />
-            <TouchableOpacity style={styles.removeButton} onPress={onRemove}>
-              <Icon name="close" color="#000" size={18} />
-            </TouchableOpacity>
-          </View>
-        ) : null}
+        <ImagePreview
+          isActive={image?.isActive}
+          url={url}
+          isLoading={loading}
+          onRemove={onRemove}
+        />
         <View style={styles.actions}>
           <Text>Add from</Text>
           <TouchableOpacity
