@@ -53,6 +53,7 @@ const GeneralTab = ({ behaviors, sendActions, isTextActorSelected, addChildSheet
           circleShape={behaviors.CircleShape}
           sendActions={sendActions}
         />
+        <Inspector.Image image={behaviors.Image} sendAction={sendActions.Image} />
         <View style={styles.blueprintContainer}>
           <Text style={styles.blueprintTitle}>Blueprint</Text>
           <TouchableOpacity
