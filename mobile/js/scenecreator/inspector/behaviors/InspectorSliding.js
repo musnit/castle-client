@@ -17,17 +17,20 @@ export default InspectorSliding = ({ behavior, sendAction }) => {
     sendAction,
   });
 
-  // TODO: support no movement except rotation
   const composeSlidingDirection = (horiz, vert) => {
     if (horiz === vert) {
-      sendSlidingDirection('set:direction', 'both');
+      if (horiz) {
+        sendSlidingDirection('set:direction', 'both');
+      } else {
+        sendSlidingDirection('set:direction', 'none');
+      }
     } else {
       sendSlidingDirection('set:direction', horiz ? 'horizontal' : 'vertical');
     }
   };
 
-  const isHorizChecked = slidingDirection !== 'vertical';
-  const isVertChecked = slidingDirection !== 'horizontal';
+  const isHorizChecked = slidingDirection === 'horizontal' || slidingDirection === 'both';
+  const isVertChecked = slidingDirection === 'vertical' || slidingDirection === 'both';
   const onChangeHoriz = (value) => composeSlidingDirection(value, isVertChecked);
   const onChangeVert = (value) => composeSlidingDirection(isHorizChecked, value);
 
