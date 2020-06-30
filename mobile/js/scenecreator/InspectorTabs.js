@@ -42,16 +42,16 @@ const GeneralTab = ({ behaviors, sendActions, isTextActorSelected, addChildSheet
   } else {
     return (
       <React.Fragment>
-        <Inspector.Drawing
-          drawing={behaviors.Drawing}
-          drawing2={behaviors.Drawing2}
-          sendAction={sendActions.Drawing}
-        />
         <Inspector.Tags tags={behaviors.Tags} sendAction={sendActions.Tags} />
         <Inspector.Layout
           body={behaviors.Body}
           circleShape={behaviors.CircleShape}
           sendActions={sendActions}
+        />
+        <Inspector.Drawing
+          drawing={behaviors.Drawing}
+          drawing2={behaviors.Drawing2}
+          sendAction={sendActions.Drawing}
         />
         <Inspector.Image image={behaviors.Image} sendAction={sendActions.Image} />
         <View style={styles.blueprintContainer}>

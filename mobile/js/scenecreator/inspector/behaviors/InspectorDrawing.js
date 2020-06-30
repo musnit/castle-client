@@ -5,6 +5,8 @@ import { InspectorCheckbox } from '../components/InspectorCheckbox';
 
 const styles = StyleSheet.create({
   container: {
+    borderTopWidth: 1,
+    borderColor: '#ccc',
     padding: 16,
   },
   label: {
@@ -35,7 +37,7 @@ export default InspectorDrawing = ({ drawing, drawing2, sendAction }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Artwork (legacy)</Text>
+      <Text style={styles.label}>Drawing</Text>
       <InspectorCheckbox value={wobble} onChange={onChangeWobble} label="Wobble" />
     </View>
   );

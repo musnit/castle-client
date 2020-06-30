@@ -5,8 +5,6 @@ import { InspectorTextInput } from '../components/InspectorTextInput';
 
 const styles = StyleSheet.create({
   container: {
-    borderTopWidth: 1,
-    borderColor: '#ccc',
     padding: 16,
   },
   label: {
@@ -48,7 +46,9 @@ export default InspectorTags = ({ tags, sendAction }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Tags <Text style={styles.sublabel}>(separated by spaces)</Text></Text>
+      <Text style={styles.label}>
+        Tags <Text style={styles.sublabel}>(separated by spaces)</Text>
+      </Text>
       <InspectorTextInput value={value} onChangeText={onChange} />
     </View>
   );
