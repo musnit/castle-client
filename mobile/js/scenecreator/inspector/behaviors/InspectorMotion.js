@@ -74,9 +74,10 @@ const BodyTypeControl = ({ moving, rotatingMotion, sendActions }) => {
       label: 'Moves at a constant rate',
       onSelect: () => {
         if (moving.isActive) {
-          sendDynamicAction('remove');
+          sendDynamicAction('swap', { name: 'RotatingMotion' });
+        } else {
+          sendKinematicAction('add');
         }
-        sendKinematicAction('add');
       },
     },
     {
@@ -84,9 +85,10 @@ const BodyTypeControl = ({ moving, rotatingMotion, sendActions }) => {
       label: 'Moved by other forces',
       onSelect: () => {
         if (rotatingMotion.isActive) {
-          sendKinematicAction('remove');
+          sendKinematicAction('swap', { name: 'Moving' });
+        } else {
+          sendDynamicAction('add');
         }
-        sendDynamicAction('add');
       },
     },
   ];
