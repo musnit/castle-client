@@ -33,7 +33,7 @@ const LegacyRules = ({ rules, sendAction, addChildSheet }) => {
       </TouchableOpacity>
     );
   }
-  const { root } = useGhostUI();
+  const { root, transformAssetUri } = useGhostUI();
   const element = root?.panes ? root.panes['sceneCreatorRules'] : null;
 
   const showDestinationPicker = (callback) =>
@@ -48,7 +48,7 @@ const LegacyRules = ({ rules, sendAction, addChildSheet }) => {
     });
 
   if (!element) return null;
-  return <ToolPane element={element} context={{ showDestinationPicker }} />;
+  return <ToolPane element={element} context={{ showDestinationPicker, transformAssetUri }} />;
 };
 
 export default InspectorLegacyRules = ({ counter, rules, sendActions, addChildSheet }) => {
