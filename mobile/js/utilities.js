@@ -68,6 +68,30 @@ export const makeCardPreviewTitle = (card, deck) => {
   return title;
 };
 
+// make preview titles for all cards in the deck, and try to de-dup
+// identical card titles
+export const makeCardPreviewTitles = (deck) => {
+  let titles = {};
+  let uniqueTitles = {};
+  const sortedCards = deck.cards.sort((a, b) => a.cardId.localeCompare(b.cardId));
+  for (let ii = 0; ii < sortedCards.length; ii++) {
+    // visit cards in deterministic order
+    const card = sortedCards[ii];
+    let title = makeCardPreviewTitle(card);
+    if (uniqueTitles[title]) {
+      // weak de-dup: just prepend part of the card id
+      const idFragment = card.cardId.substring(0, 3);
+      title = `${idFragment}-${title}`;
+      if (title.length > CARD_TITLE_MAX_LEN) {
+        title = title.substring(0, CARD_TITLE_MAX_LEN - 3) + '...';
+      }
+    }
+    uniqueTitles[title] = true;
+    titles[card.cardId] = title;
+  }
+  return titles;
+};
+
 export const launchImagePicker = (methodName, callback = () => {}) => {
   const options = { maxWidth: 1024, maxHeight: 1024, imageFileType: 'png' };
 

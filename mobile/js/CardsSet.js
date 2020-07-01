@@ -123,13 +123,13 @@ const SearchInput = (props) => {
   );
 };
 
-const CardListItem = ({ card, onPress }) => (
+const CardListItem = ({ card, title, onPress }) => (
   <TouchableOpacity style={styles.listItem} onPress={onPress}>
-    <Text style={styles.cardTitle}>{Utilities.makeCardPreviewTitle(card)}</Text>
+    <Text style={styles.cardTitle}>{title}</Text>
   </TouchableOpacity>
 );
 
-const CardsList = ({ cards, initialCard, onPress, searchQuery }) => {
+const CardsList = ({ cards, titles, initialCard, onPress, searchQuery }) => {
   if (cards) {
     cards =
       searchQuery && searchQuery.length
@@ -140,7 +140,12 @@ const CardsList = ({ cards, initialCard, onPress, searchQuery }) => {
     <View style={styles.listContainer}>
       {cards &&
         cards.map((card) => (
-          <CardListItem key={card.cardId} card={card} onPress={() => onPress(card)} />
+          <CardListItem
+            key={card.cardId}
+            card={card}
+            title={titles ? titles[card.cardId] : Utilities.makeCardPreviewTitle(card)}
+            onPress={() => onPress(card)}
+          />
         ))}
     </View>
   );
@@ -152,7 +157,7 @@ const NewCardCell = ({ onPress }) => (
   </TouchableOpacity>
 );
 
-const CardsGrid = ({ cards, initialCard, onPress, onShowCardOptions, showNewCard }) => {
+const CardsGrid = ({ cards, titles, initialCard, onPress, onShowCardOptions, showNewCard }) => {
   return (
     <View style={styles.gridContainer}>
       {showNewCard && (
@@ -168,7 +173,9 @@ const CardsGrid = ({ cards, initialCard, onPress, onShowCardOptions, showNewCard
               onPress={() => onPress(card)}
               isInitialCard={cards.length > 1 && initialCard && initialCard.cardId === card.cardId}
             />
-            <Text style={styles.cardTitle}>{Utilities.makeCardPreviewTitle(card)}</Text>
+            <Text style={styles.cardTitle}>
+              {titles ? titles[card.cardId] : Utilities.makeCardPreviewTitle(card)}
+            </Text>
             {onShowCardOptions && (
               <TouchableOpacity style={styles.cardOptions} onPress={() => onShowCardOptions(card)}>
                 <Text style={styles.cardOptionsLabel}>...</Text>
@@ -214,10 +221,11 @@ const CardsSet = (props) => {
   const [sortOrder, setSortOrder] = React.useState(SortOrder.LAST_MODIFIED_DESC);
   const { deck } = props;
 
-  let cards, initialCard;
+  let cards, initialCard, titles;
   if (deck) {
     cards = sortCards(deck.cards, sortOrder);
     initialCard = deck.initialCard;
+    titles = Utilities.makeCardPreviewTitles(deck);
   }
 
   const setMode = (mode) =>
@@ -276,10 +284,11 @@ const CardsSet = (props) => {
       </View>
       <KeyboardAwareScrollView style={styles.scrollView} keyboardShouldPersistTaps="handled">
         {state.mode === 'grid' ? (
-          <CardsGrid cards={cards} initialCard={initialCard} {...props} />
+          <CardsGrid cards={cards} titles={titles} initialCard={initialCard} {...props} />
         ) : (
           <CardsList
             cards={cards}
+            titles={titles}
             initialCard={initialCard}
             searchQuery={state.searchQuery}
             {...props}
