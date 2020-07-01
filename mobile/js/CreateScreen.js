@@ -101,6 +101,7 @@ const CreateScreen = () => {
             deckId
             title
             isVisible
+            lastModified
             initialCard {
               id
               cardId
@@ -128,6 +129,9 @@ const CreateScreen = () => {
   let decks;
   if (query.called && !query.loading && !query.error && query.data) {
     decks = query.data.me.decks;
+    if (decks && decks.length) {
+      decks = decks.sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified));
+    }
   }
 
   return (
