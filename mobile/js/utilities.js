@@ -18,10 +18,18 @@ export const getTextActorsContent = (sceneData) => {
       const actor = actors[ii];
       const components = actor?.bp?.components;
       if (components && components.Text && components.Text.content) {
-        contents.push(components.Text.content);
+        contents.push(components.Text);
       }
     }
   }
+  contents = contents
+    .sort((a, b) => {
+      if (a.order === b.order) {
+        return a.content.localeCompare(b.content, 'en', { sensitivity: 'base' });
+      }
+      return a.order - b.order;
+    })
+    .map((actor) => actor.content);
   return contents;
 };
 
