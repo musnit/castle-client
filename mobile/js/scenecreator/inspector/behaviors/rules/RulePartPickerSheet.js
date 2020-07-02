@@ -45,12 +45,13 @@ export default RulePartPickerSheet = ({
   context,
   entries,
   onSelectEntry,
+  title,
 }) => {
   const onPressAdd = (entry) => {
     onSelectEntry(entry);
     onClose();
   };
-  const renderHeader = () => <BottomSheetHeader title="Select trigger" onClose={onClose} />;
+  const renderHeader = () => <BottomSheetHeader title={title} onClose={onClose} />;
 
   // filter by actor's behaviors, and hide empty sections
   let isCategoryVisible = {};

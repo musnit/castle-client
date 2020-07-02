@@ -66,6 +66,7 @@ const InspectorTrigger = ({ trigger, behaviors, addChildSheet, triggers, onChang
       behaviors,
       entries: triggers,
       onSelectEntry: onChangeTrigger,
+      title: 'Select trigger',
     });
 
   let label;
@@ -95,10 +96,21 @@ const InspectorTrigger = ({ trigger, behaviors, addChildSheet, triggers, onChang
   );
 };
 
-const InspectorResponse = ({ response, order = 0 }) => {
+const InspectorResponse = ({ response, order = 0, ...props }) => {
   if (!response) {
     return null;
   }
+  const { addChildSheet, behaviors, responses, onChangeResponse } = props;
+
+  const onPickResponse = () =>
+    addChildSheet({
+      key: 'rulePartPicker',
+      Component: RulePartPickerSheet,
+      behaviors,
+      entries: responses,
+      onSelectEntry: onChangeResponse,
+      title: 'Select response',
+    });
 
   let responseContents;
   // TODO: implement components to handle different response UIs here.
@@ -111,7 +123,7 @@ const InspectorResponse = ({ response, order = 0 }) => {
             {JSON.stringify(response.params.condition?.params)}
           </Text>
           <View style={styles.insetContainer}>
-            <InspectorResponse response={response.params.then} />
+            <InspectorResponse response={response.params.then ?? {}} {...props} />
           </View>
         </React.Fragment>
       );
@@ -122,7 +134,7 @@ const InspectorResponse = ({ response, order = 0 }) => {
         <React.Fragment>
           <Text style={styles.ruleName}>Repeat {response.params?.count ?? 0} times</Text>
           <View style={styles.insetContainer}>
-            <InspectorResponse response={response.params.body} />
+            <InspectorResponse response={response.params.body ?? {}} {...props} />
           </View>
         </React.Fragment>
       );
@@ -133,7 +145,7 @@ const InspectorResponse = ({ response, order = 0 }) => {
         <React.Fragment>
           <Text style={styles.ruleName}>Act on other</Text>
           <View style={styles.insetContainer}>
-            <InspectorResponse response={response.params.body} />
+            <InspectorResponse response={response.params.body ?? {}} {...props} />
           </View>
         </React.Fragment>
       );
@@ -143,9 +155,11 @@ const InspectorResponse = ({ response, order = 0 }) => {
       let paramsToRender = { ...response.params };
       delete paramsToRender.nextResponse;
       responseContents = (
-        <Text>
-          {response.name}: {JSON.stringify(paramsToRender, null, 2)}
-        </Text>
+        <TouchableOpacity onPress={onPickResponse}>
+          <Text>
+            {response.name}: {JSON.stringify(paramsToRender, null, 2)}
+          </Text>
+        </TouchableOpacity>
       );
       break;
     }
@@ -156,7 +170,7 @@ const InspectorResponse = ({ response, order = 0 }) => {
       <View style={[styles.response, order > 0 ? styles.nextResponse : null]}>
         {responseContents}
       </View>
-      <InspectorResponse response={response.params?.nextResponse} order={order + 1} />
+      <InspectorResponse response={response.params?.nextResponse} order={order + 1} {...props} />
     </React.Fragment>
   );
 };
@@ -176,6 +190,20 @@ const InspectorRule = ({ rule, behaviors, triggers, responses, addChildSheet, on
     [onChangeRule]
   );
 
+  const onChangeResponse = React.useCallback(
+    (entry) => {
+      return onChangeRule({
+        ...rule,
+        response: {
+          name: entry.name,
+          behaviorId: entry.behaviorId,
+          params: entry.initialParams ?? {},
+        },
+      });
+    },
+    [onChangeRule]
+  );
+
   return (
     <View style={styles.rule}>
       <InspectorTrigger
@@ -186,7 +214,13 @@ const InspectorRule = ({ rule, behaviors, triggers, responses, addChildSheet, on
         onChangeTrigger={onChangeTrigger}
       />
       <View style={styles.insetContainer}>
-        <InspectorResponse response={rule.response} />
+        <InspectorResponse
+          response={rule.response}
+          behaviors={behaviors}
+          addChildSheet={addChildSheet}
+          responses={responses}
+          onChangeResponse={onChangeResponse}
+        />
       </View>
     </View>
   );
