@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { sendDataPaneAction } from '../Tools';
 
-const LEGACY_RULES_UI = true;
+const LEGACY_RULES_UI = false;
 
 import AddBehaviorSheet from './AddBehaviorSheet';
 import InspectorLegacyRules from './inspector/behaviors/InspectorLegacyRules';
@@ -149,7 +149,7 @@ export const InspectorTabs = ({ element, isTextActorSelected, selectedTab, addCh
           addChildSheet={addChildSheet}
         />
       ) : (
-        <InspectorRules
+        <Inspector.Rules
           behaviors={behaviors}
           sendAction={sendActions.Rules}
           addChildSheet={addChildSheet}

@@ -163,15 +163,16 @@ const InspectorResponse = ({ response, order = 0 }) => {
 
 const InspectorRule = ({ rule, behaviors, triggers, responses, addChildSheet, onChangeRule }) => {
   const onChangeTrigger = React.useCallback(
-    (entry) =>
-      onChangeRule({
+    (entry) => {
+      return onChangeRule({
         ...rule,
         trigger: {
           name: entry.name,
           behaviorId: entry.behaviorId,
-          params: entry.initialParams,
+          params: entry.initialParams ?? {},
         },
-      }),
+      });
+    },
     [onChangeRule]
   );
 
@@ -217,7 +218,7 @@ export default InspectorRules = ({ behaviors, sendAction, addChildSheet }) => {
     // where we can either get an array here, or we can get an object with keys
     // like "0", "2", ...
     if (Array.isArray(rulesData.rules)) {
-      rulesItems = rulesData.rules;
+      rulesItems = rulesData.rules.map((rule, ii) => ({ ...rule, index: ii + 1 }));
     } else {
       rulesItems = Object.entries(rulesData.rules)
         .map(([index, rule]) => ({ ...rule, index }))
@@ -225,11 +226,15 @@ export default InspectorRules = ({ behaviors, sendAction, addChildSheet }) => {
     }
   }
 
-  const onChangeRule = (index, newRule) => {
-    // TODO: close the loop here
-    // rulesItems[index] = newRule;
-    // sendRuleAction('change', rulesItems);
-  };
+  const onChangeRule = React.useCallback(
+    (newRule) => {
+      const newRules = rulesItems.map((oldRule) => {
+        return oldRule.index === newRule.index ? newRule : oldRule;
+      });
+      sendRuleAction('change', newRules);
+    },
+    [rulesItems, sendRuleAction]
+  );
 
   return (
     <View style={styles.container}>
@@ -244,7 +249,7 @@ export default InspectorRules = ({ behaviors, sendAction, addChildSheet }) => {
           <InspectorRule
             key={`rule-${rule.trigger?.name}-${rule.response?.name}-${ii}`}
             rule={rule}
-            onChangeRule={(rule) => onChangeRule(ii, rule)}
+            onChangeRule={onChangeRule}
             behaviors={behaviors}
             addChildSheet={addChildSheet}
             triggers={rulesData.triggers}
