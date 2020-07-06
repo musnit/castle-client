@@ -134,11 +134,10 @@ export default InspectorRules = ({ behaviors, sendAction, addChildSheet }) => {
 
   let rulesItems = [];
   if (rulesData) {
-    // there's an issue with the lua bridge applying a diff to arrays
-    // where we can either get an array here, or we can get an object with keys
-    // like "0", "2", ...
+    // there's an issue with the lua bridge applying a diff to arrays,
+    // make sure we don't have one here
     if (Array.isArray(rulesData.rules)) {
-      rulesItems = rulesData.rules.map((rule, ii) => ({ ...rule, index: ii + 1 }));
+      throw new Error(`Expecting a dictionary of Rules, got an array.`);
     } else {
       rulesItems = Object.entries(rulesData.rules)
         .map(([index, rule]) => ({ ...rule, index }))
