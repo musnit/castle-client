@@ -33,7 +33,7 @@ const _entryToResponse = (entry) => ({
   params: entry.initialParams ?? {},
 });
 
-const If = ({ response, onChangeResponse, ...props }) => {
+const If = ({ response, onChangeResponse, onPickResponse, ...props }) => {
   const { addChildSheet, behaviors, conditions } = props;
 
   const onChangeCondition = (condition) =>
@@ -66,11 +66,20 @@ const If = ({ response, onChangeResponse, ...props }) => {
 
   return (
     <React.Fragment>
-      <TouchableOpacity onPress={onPickCondition}>
-        <Text style={styles.ruleName}>
-          If: {response.params.condition?.name} {JSON.stringify(response.params.condition?.params)}
-        </Text>
-      </TouchableOpacity>
+      <View style={{ flexDirection: 'row' }}>
+        <TouchableOpacity onPress={onPickResponse} style={{ marginRight: 8 }}>
+          <Text style={styles.ruleName}>If:</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onPickCondition}>
+          <Text style={styles.ruleName}>
+            {response.params.condition?.name
+              ? `${response.params.condition?.name} ${JSON.stringify(
+                  response.params.condition?.params
+                )}`
+              : '<select condition>'}
+          </Text>
+        </TouchableOpacity>
+      </View>
       <View style={styles.insetContainer}>
         <Response response={response.params.then} onChangeResponse={onChangeThen} {...props} />
       </View>
@@ -78,7 +87,7 @@ const If = ({ response, onChangeResponse, ...props }) => {
   );
 };
 
-const Repeat = ({ response, onChangeResponse, ...props }) => {
+const Repeat = ({ response, onChangeResponse, onPickResponse, ...props }) => {
   const onChangeBody = (body) =>
     onChangeResponse({
       ...response,
@@ -89,7 +98,9 @@ const Repeat = ({ response, onChangeResponse, ...props }) => {
     });
   return (
     <React.Fragment>
-      <Text style={styles.ruleName}>Repeat {response.params?.count ?? 0} times</Text>
+      <TouchableOpacity onPress={onPickResponse}>
+        <Text style={styles.ruleName}>Repeat {response.params?.count ?? 0} times</Text>
+      </TouchableOpacity>
       <View style={styles.insetContainer}>
         <Response response={response.params.body} onChangeResponse={onChangeBody} {...props} />
       </View>
@@ -97,7 +108,7 @@ const Repeat = ({ response, onChangeResponse, ...props }) => {
   );
 };
 
-const ActOnOther = ({ response, onChangeResponse, ...props }) => {
+const ActOnOther = ({ response, onChangeResponse, onPickResponse, ...props }) => {
   const onChangeBody = (body) =>
     onChangeResponse({
       ...response,
@@ -108,7 +119,9 @@ const ActOnOther = ({ response, onChangeResponse, ...props }) => {
     });
   return (
     <React.Fragment>
-      <Text style={styles.ruleName}>Act on other</Text>
+      <TouchableOpacity onPress={onPickResponse}>
+        <Text style={styles.ruleName}>Act on other</Text>
+      </TouchableOpacity>
       <View style={styles.insetContainer}>
         <Response response={response.params.body} onChangeResponse={onChangeBody} {...props} />
       </View>
@@ -123,9 +136,6 @@ const RESPONSE_COMPONENTS = {
 };
 
 export const Response = ({ response, onChangeResponse, order = 0, ...props }) => {
-  if (!response) {
-    return null;
-  }
   const { addChildSheet, behaviors, responses, conditions } = props;
 
   const onPickResponse = () =>
@@ -138,11 +148,24 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
       title: 'Select response',
     });
 
+  if (!response || response.name === 'none') {
+    return (
+      <TouchableOpacity onPress={onPickResponse}>
+        <Text>{order === 0 ? '<select response>' : '<add response>'}</Text>
+      </TouchableOpacity>
+    );
+  }
+
   let responseContents;
   if (RESPONSE_COMPONENTS[response.name]) {
     const ResponseComponent = RESPONSE_COMPONENTS[response.name];
     responseContents = (
-      <ResponseComponent response={response} onChangeResponse={onChangeResponse} {...props} />
+      <ResponseComponent
+        response={response}
+        onChangeResponse={onChangeResponse}
+        onPickResponse={onPickResponse}
+        {...props}
+      />
     );
   } else {
     let paramsToRender = { ...response.params };
