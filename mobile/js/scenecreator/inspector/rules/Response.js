@@ -54,6 +54,15 @@ const If = ({ response, onChangeResponse, onPickResponse, ...props }) => {
       },
     });
 
+  const onChangeElse = (elseResponse) =>
+    onChangeResponse({
+      ...response,
+      params: {
+        ...response.params,
+        else: elseResponse,
+      },
+    });
+
   const onPickCondition = () =>
     addChildSheet({
       key: 'rulePartPicker',
@@ -82,6 +91,30 @@ const If = ({ response, onChangeResponse, onPickResponse, ...props }) => {
       </View>
       <View style={styles.insetContainer}>
         <Response response={response.params.then} onChangeResponse={onChangeThen} {...props} />
+      </View>
+      <Else response={response.params.else} onChangeResponse={onChangeElse} {...props} />
+    </React.Fragment>
+  );
+};
+
+const Else = ({ response, onChangeResponse, ...props }) => {
+  if (!response) {
+    return (
+      <TouchableOpacity onPress={() => onChangeResponse({ name: 'none' })}>
+        <Text>{`<use 'else' branch>`}</Text>
+      </TouchableOpacity>
+    );
+  }
+  return (
+    <React.Fragment>
+      <TouchableOpacity
+        onPress={() => {
+          /* TODO: delete else */
+        }}>
+        <Text style={styles.ruleName}>Else:</Text>
+      </TouchableOpacity>
+      <View style={styles.insetContainer}>
+        <Response response={response} onChangeResponse={onChangeResponse} {...props} />
       </View>
     </React.Fragment>
   );
