@@ -97,7 +97,15 @@ const InspectorTrigger = ({ trigger, behaviors, addChildSheet, triggers, onChang
   );
 };
 
-const InspectorRule = ({ rule, behaviors, triggers, responses, addChildSheet, onChangeRule }) => {
+const InspectorRule = ({
+  rule,
+  behaviors,
+  triggers,
+  responses,
+  conditions,
+  addChildSheet,
+  onChangeRule,
+}) => {
   const onChangeTrigger = React.useCallback(
     (entry) => {
       return onChangeRule({
@@ -137,6 +145,7 @@ const InspectorRule = ({ rule, behaviors, triggers, responses, addChildSheet, on
           behaviors={behaviors}
           addChildSheet={addChildSheet}
           responses={responses}
+          conditions={conditions}
           onChangeResponse={onChangeResponse}
         />
       </View>
@@ -206,6 +215,7 @@ export default InspectorRules = ({ behaviors, sendAction, addChildSheet }) => {
             addChildSheet={addChildSheet}
             triggers={rulesData.triggers}
             responses={rulesData.responses}
+            conditions={rulesData.conditions}
           />
         ))}
       </React.Fragment>

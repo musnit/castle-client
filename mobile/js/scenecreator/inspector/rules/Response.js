@@ -34,6 +34,17 @@ const _entryToResponse = (entry) => ({
 });
 
 const If = ({ response, onChangeResponse, ...props }) => {
+  const { addChildSheet, behaviors, conditions } = props;
+
+  const onChangeCondition = (condition) =>
+    onChangeResponse({
+      ...response,
+      params: {
+        ...response.params,
+        condition,
+      },
+    });
+
   const onChangeThen = (then) =>
     onChangeResponse({
       ...response,
@@ -42,11 +53,24 @@ const If = ({ response, onChangeResponse, ...props }) => {
         then,
       },
     });
+
+  const onPickCondition = () =>
+    addChildSheet({
+      key: 'rulePartPicker',
+      Component: RulePartPickerSheet,
+      behaviors,
+      entries: conditions,
+      onSelectEntry: (entry) => onChangeCondition(_entryToResponse(entry)),
+      title: 'Select condition',
+    });
+
   return (
     <React.Fragment>
-      <Text style={styles.ruleName}>
-        If: {response.params.condition?.name} {JSON.stringify(response.params.condition?.params)}
-      </Text>
+      <TouchableOpacity onPress={onPickCondition}>
+        <Text style={styles.ruleName}>
+          If: {response.params.condition?.name} {JSON.stringify(response.params.condition?.params)}
+        </Text>
+      </TouchableOpacity>
       <View style={styles.insetContainer}>
         <Response response={response.params.then} onChangeResponse={onChangeThen} {...props} />
       </View>
@@ -102,7 +126,7 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
   if (!response) {
     return null;
   }
-  const { addChildSheet, behaviors, responses } = props;
+  const { addChildSheet, behaviors, responses, conditions } = props;
 
   const onPickResponse = () =>
     addChildSheet({
