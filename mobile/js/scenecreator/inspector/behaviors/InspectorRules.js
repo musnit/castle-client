@@ -54,6 +54,12 @@ const styles = StyleSheet.create({
   },
 });
 
+const _entryToResponse = (entry) => ({
+  name: entry.name,
+  behaviorId: entry.behaviorId,
+  params: entry.initialParams ?? {},
+});
+
 const InspectorTrigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeTrigger }) => {
   if (!trigger) {
     return null;
@@ -96,11 +102,11 @@ const InspectorTrigger = ({ trigger, behaviors, addChildSheet, triggers, onChang
   );
 };
 
-const InspectorResponse = ({ response, order = 0, ...props }) => {
+const InspectorResponse = ({ response, onChangeResponse, order = 0, ...props }) => {
   if (!response) {
     return null;
   }
-  const { addChildSheet, behaviors, responses, onChangeResponse } = props;
+  const { addChildSheet, behaviors, responses } = props;
 
   const onPickResponse = () =>
     addChildSheet({
@@ -108,7 +114,7 @@ const InspectorResponse = ({ response, order = 0, ...props }) => {
       Component: RulePartPickerSheet,
       behaviors,
       entries: responses,
-      onSelectEntry: onChangeResponse,
+      onSelectEntry: (entry) => onChangeResponse(_entryToResponse(entry)),
       title: 'Select response',
     });
 
@@ -116,6 +122,14 @@ const InspectorResponse = ({ response, order = 0, ...props }) => {
   // TODO: implement components to handle different response UIs here.
   switch (response.name) {
     case 'if': {
+      const onChangeThen = (then) =>
+        onChangeResponse({
+          ...response,
+          params: {
+            ...response.params,
+            then,
+          },
+        });
       responseContents = (
         <React.Fragment>
           <Text style={styles.ruleName}>
@@ -123,29 +137,57 @@ const InspectorResponse = ({ response, order = 0, ...props }) => {
             {JSON.stringify(response.params.condition?.params)}
           </Text>
           <View style={styles.insetContainer}>
-            <InspectorResponse response={response.params.then ?? {}} {...props} />
+            <InspectorResponse
+              response={response.params.then}
+              onChangeResponse={onChangeThen}
+              {...props}
+            />
           </View>
         </React.Fragment>
       );
       break;
     }
     case 'repeat': {
+      const onChangeBody = (body) =>
+        onChangeResponse({
+          ...response,
+          params: {
+            ...response.params,
+            body,
+          },
+        });
       responseContents = (
         <React.Fragment>
           <Text style={styles.ruleName}>Repeat {response.params?.count ?? 0} times</Text>
           <View style={styles.insetContainer}>
-            <InspectorResponse response={response.params.body ?? {}} {...props} />
+            <InspectorResponse
+              response={response.params.body}
+              onChangeResponse={onChangeBody}
+              {...props}
+            />
           </View>
         </React.Fragment>
       );
       break;
     }
     case 'act on other': {
+      const onChangeBody = (body) =>
+        onChangeResponse({
+          ...response,
+          params: {
+            ...response.params,
+            body,
+          },
+        });
       responseContents = (
         <React.Fragment>
           <Text style={styles.ruleName}>Act on other</Text>
           <View style={styles.insetContainer}>
-            <InspectorResponse response={response.params.body ?? {}} {...props} />
+            <InspectorResponse
+              response={response.params.body}
+              onChangeResponse={onChangeBody}
+              {...props}
+            />
           </View>
         </React.Fragment>
       );
@@ -165,12 +207,26 @@ const InspectorResponse = ({ response, order = 0, ...props }) => {
     }
   }
 
+  const onChangeNextResponse = (nextResponse) =>
+    onChangeResponse({
+      ...response,
+      params: {
+        ...response.params,
+        nextResponse,
+      },
+    });
+
   return (
     <React.Fragment>
       <View style={[styles.response, order > 0 ? styles.nextResponse : null]}>
         {responseContents}
       </View>
-      <InspectorResponse response={response.params?.nextResponse} order={order + 1} {...props} />
+      <InspectorResponse
+        response={response.params?.nextResponse}
+        onChangeResponse={onChangeNextResponse}
+        order={order + 1}
+        {...props}
+      />
     </React.Fragment>
   );
 };
@@ -191,14 +247,10 @@ const InspectorRule = ({ rule, behaviors, triggers, responses, addChildSheet, on
   );
 
   const onChangeResponse = React.useCallback(
-    (entry) => {
+    (response) => {
       return onChangeRule({
         ...rule,
-        response: {
-          name: entry.name,
-          behaviorId: entry.behaviorId,
-          params: entry.initialParams ?? {},
-        },
+        response,
       });
     },
     [onChangeRule]
