@@ -4,8 +4,9 @@ import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import { useGhostUI } from '../../../ghost/GhostUI';
 import { sendDataPaneAction } from '../../../Tools';
+import { Response as InspectorResponse } from '../rules/Response';
 
-import RulePartPickerSheet from './rules/RulePartPickerSheet';
+import RulePartPickerSheet from '../rules/RulePartPickerSheet';
 
 const styles = StyleSheet.create({
   container: {
@@ -54,12 +55,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const _entryToResponse = (entry) => ({
-  name: entry.name,
-  behaviorId: entry.behaviorId,
-  params: entry.initialParams ?? {},
-});
-
 const InspectorTrigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeTrigger }) => {
   if (!trigger) {
     return null;
@@ -99,135 +94,6 @@ const InspectorTrigger = ({ trigger, behaviors, addChildSheet, triggers, onChang
     <TouchableOpacity onPress={onPickTrigger}>
       <Text style={styles.ruleName}>{label}</Text>
     </TouchableOpacity>
-  );
-};
-
-const InspectorResponse = ({ response, onChangeResponse, order = 0, ...props }) => {
-  if (!response) {
-    return null;
-  }
-  const { addChildSheet, behaviors, responses } = props;
-
-  const onPickResponse = () =>
-    addChildSheet({
-      key: 'rulePartPicker',
-      Component: RulePartPickerSheet,
-      behaviors,
-      entries: responses,
-      onSelectEntry: (entry) => onChangeResponse(_entryToResponse(entry)),
-      title: 'Select response',
-    });
-
-  let responseContents;
-  // TODO: implement components to handle different response UIs here.
-  switch (response.name) {
-    case 'if': {
-      const onChangeThen = (then) =>
-        onChangeResponse({
-          ...response,
-          params: {
-            ...response.params,
-            then,
-          },
-        });
-      responseContents = (
-        <React.Fragment>
-          <Text style={styles.ruleName}>
-            If: {response.params.condition?.name}{' '}
-            {JSON.stringify(response.params.condition?.params)}
-          </Text>
-          <View style={styles.insetContainer}>
-            <InspectorResponse
-              response={response.params.then}
-              onChangeResponse={onChangeThen}
-              {...props}
-            />
-          </View>
-        </React.Fragment>
-      );
-      break;
-    }
-    case 'repeat': {
-      const onChangeBody = (body) =>
-        onChangeResponse({
-          ...response,
-          params: {
-            ...response.params,
-            body,
-          },
-        });
-      responseContents = (
-        <React.Fragment>
-          <Text style={styles.ruleName}>Repeat {response.params?.count ?? 0} times</Text>
-          <View style={styles.insetContainer}>
-            <InspectorResponse
-              response={response.params.body}
-              onChangeResponse={onChangeBody}
-              {...props}
-            />
-          </View>
-        </React.Fragment>
-      );
-      break;
-    }
-    case 'act on other': {
-      const onChangeBody = (body) =>
-        onChangeResponse({
-          ...response,
-          params: {
-            ...response.params,
-            body,
-          },
-        });
-      responseContents = (
-        <React.Fragment>
-          <Text style={styles.ruleName}>Act on other</Text>
-          <View style={styles.insetContainer}>
-            <InspectorResponse
-              response={response.params.body}
-              onChangeResponse={onChangeBody}
-              {...props}
-            />
-          </View>
-        </React.Fragment>
-      );
-      break;
-    }
-    default: {
-      let paramsToRender = { ...response.params };
-      delete paramsToRender.nextResponse;
-      responseContents = (
-        <TouchableOpacity onPress={onPickResponse}>
-          <Text>
-            {response.name}: {JSON.stringify(paramsToRender, null, 2)}
-          </Text>
-        </TouchableOpacity>
-      );
-      break;
-    }
-  }
-
-  const onChangeNextResponse = (nextResponse) =>
-    onChangeResponse({
-      ...response,
-      params: {
-        ...response.params,
-        nextResponse,
-      },
-    });
-
-  return (
-    <React.Fragment>
-      <View style={[styles.response, order > 0 ? styles.nextResponse : null]}>
-        {responseContents}
-      </View>
-      <InspectorResponse
-        response={response.params?.nextResponse}
-        onChangeResponse={onChangeNextResponse}
-        order={order + 1}
-        {...props}
-      />
-    </React.Fragment>
   );
 };
 
