@@ -5,6 +5,7 @@ import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import { useGhostUI } from '../../../ghost/GhostUI';
 import { sendDataPaneAction } from '../../../Tools';
 import { Response as InspectorResponse } from '../rules/Response';
+import { Trigger as InspectorTrigger } from '../rules/Trigger';
 
 import RulePartPickerSheet from '../rules/RulePartPickerSheet';
 
@@ -54,48 +55,6 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
   },
 });
-
-const InspectorTrigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeTrigger }) => {
-  if (!trigger) {
-    return null;
-  }
-
-  const onPickTrigger = () =>
-    addChildSheet({
-      key: 'rulePartPicker',
-      Component: RulePartPickerSheet,
-      behaviors,
-      entries: triggers,
-      onSelectEntry: onChangeTrigger,
-      title: 'Select trigger',
-    });
-
-  let label;
-  // TODO: implement components to handle different trigger UIs here.
-  switch (trigger.name) {
-    case 'collide':
-      {
-        if (trigger.params.tag) {
-          label = `When this collides with tag: ${trigger.params.tag}`;
-        } else {
-          label = `When this collides`;
-        }
-      }
-      break;
-    case 'variable reaches value': {
-      label = `When variable ${trigger.params.variableId} is ${trigger.params.comparison}: ${trigger.params.value}`;
-      break;
-    }
-    default:
-      label = `When: ${trigger.name}, params: ${JSON.stringify(trigger.params, null, 2)}`;
-  }
-
-  return (
-    <TouchableOpacity onPress={onPickTrigger}>
-      <Text style={styles.ruleName}>{label}</Text>
-    </TouchableOpacity>
-  );
-};
 
 const InspectorRule = ({
   rule,
