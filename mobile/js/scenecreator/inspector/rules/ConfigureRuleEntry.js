@@ -2,9 +2,9 @@ import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const styles = StyleSheet.create({
-  text: {},
   cell: {
     marginRight: 8,
+    marginBottom: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -16,11 +16,28 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderColor: '#000',
   },
+  text: {},
+  selectText: {
+    fontWeight: 'bold',
+  },
 });
 
-export const ConfigureRuleEntry = ({ cells, onPickEntry }) => {
+export const ConfigureRuleEntry = ({ cells, onPickEntry, onStructureEntry }) => {
+  let maybeStructureCell;
+  // auto-prepend 'when' or other structural cell if applicable
+  if (onStructureEntry) {
+    maybeStructureCell = (
+      <TouchableOpacity
+        key="entry-structure"
+        style={[styles.cell, styles.select]}
+        onPress={onStructureEntry}>
+        <Text style={styles.selectText}>When</Text>
+      </TouchableOpacity>
+    );
+  }
   return (
     <React.Fragment>
+      {maybeStructureCell}
       {cells.map((cell, ii) => {
         const key = `entry-cell-${ii}`;
         switch (cell.type) {
@@ -37,7 +54,7 @@ export const ConfigureRuleEntry = ({ cells, onPickEntry }) => {
                 key={key}
                 style={[styles.cell, styles.select]}
                 onPress={onPickEntry}>
-                <Text style={styles.ruleName}>{cell.label}</Text>
+                <Text style={styles.selectText}>{cell.label}</Text>
               </TouchableOpacity>
             );
           }
@@ -45,7 +62,7 @@ export const ConfigureRuleEntry = ({ cells, onPickEntry }) => {
             // TODO: open sheet when pressed
             return (
               <TouchableOpacity key={key} style={[styles.cell, styles.select]} onPress={() => {}}>
-                <Text style={styles.ruleName}>{cell.label}</Text>
+                <Text style={styles.selectText}>{cell.label}</Text>
               </TouchableOpacity>
             );
           }

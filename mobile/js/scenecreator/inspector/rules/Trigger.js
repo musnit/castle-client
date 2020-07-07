@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
 });
 
 export const Trigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeTrigger }) => {
-  const onModifyTrigger = () => {
+  const onStructureTrigger = () => {
     // TODO: up, down, wrap, before, replace, remove
   };
 
@@ -43,10 +43,11 @@ export const Trigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeT
 
   return (
     <View style={styles.triggerCells}>
-      <TouchableOpacity onPress={onModifyTrigger} style={{ marginRight: 8 }}>
-        <Text>When:</Text>
-      </TouchableOpacity>
-      <ConfigureRuleEntry cells={cells} onPickEntry={onPickTrigger} />
+      <ConfigureRuleEntry
+        cells={cells}
+        onPickEntry={onPickTrigger}
+        onStructureEntry={onStructureTrigger}
+      />
     </View>
   );
 };

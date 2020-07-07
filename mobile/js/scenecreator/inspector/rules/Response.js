@@ -11,6 +11,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   insetContainer: {
+    marginTop: 8,
     paddingTop: 16,
     paddingLeft: 16,
     borderTopWidth: 1,
@@ -97,6 +98,7 @@ const If = ({ response, onChangeResponse, onPickResponse, children, ...props }) 
 };
 
 const Else = ({ response, onChangeResponse, ...props }) => {
+  // TODO: style this component
   if (!response) {
     return (
       <TouchableOpacity onPress={() => onChangeResponse({ name: 'none' })}>

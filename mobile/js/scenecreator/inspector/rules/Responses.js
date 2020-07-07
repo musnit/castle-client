@@ -62,7 +62,7 @@ const CoinFlip = ({ response }) => {
   return [
     {
       type: 'selectEntry',
-      label: 'A coin flip',
+      label: 'a coin flip',
     },
     {
       type: 'text',

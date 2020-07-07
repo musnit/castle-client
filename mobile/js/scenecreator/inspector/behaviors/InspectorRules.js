@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
     borderTopColor: '#eee',
   },
   insetContainer: {
+    marginTop: 8,
     paddingTop: 16,
     paddingLeft: 16,
     borderTopWidth: 1,
@@ -162,7 +163,7 @@ export default InspectorRules = ({ behaviors, sendAction, addChildSheet }) => {
           <Text style={styles.addLabel}>Add new rule</Text>
         </TouchableOpacity>
       </View>
-      <Text style={styles.label}>Rules (read only)</Text>
+      <Text style={styles.label}>Rules</Text>
       <React.Fragment>
         {rulesItems.map((rule, ii) => (
           <InspectorRule
