@@ -35,6 +35,7 @@ const Collide = ({ trigger }) => {
       type: 'selectParamSheet',
       label: hasTag ? trigger.params.tag : 'any actor',
       paramName: 'tag',
+      paramValue: trigger.params.tag,
     },
   ];
 };

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ConfigureRuleEntry } from './ConfigureRuleEntry';
+import { getEntryByName } from '../InspectorUtilities';
 import { Responses } from './Responses';
 
 import RulePartPickerSheet from './RulePartPickerSheet';
@@ -85,8 +86,10 @@ const If = ({ response, onChangeResponse, onPickResponse, children, ...props }) 
       <View style={styles.responseCells}>
         {children}
         <ConfigureRuleEntry
+          entry={getEntryByName(response.params.condition?.name, conditions)}
           cells={makeResponseCells({ response: response.params.condition })}
           onPickEntry={onPickCondition}
+          addChildSheet={addChildSheet}
         />
       </View>
       <View style={styles.insetContainer}>
@@ -193,7 +196,12 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
   let cells = makeResponseCells({ response, order });
   responseContents = (
     <View style={styles.responseCells}>
-      <ConfigureRuleEntry cells={cells} onPickEntry={onPickResponse} />
+      <ConfigureRuleEntry
+        entry={getEntryByName(response?.name, responses)}
+        cells={cells}
+        onPickEntry={onPickResponse}
+        addChildSheet={addChildSheet}
+      />
     </View>
   );
 

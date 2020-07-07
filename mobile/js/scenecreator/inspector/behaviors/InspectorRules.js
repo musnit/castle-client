@@ -67,14 +67,10 @@ const InspectorRule = ({
   onChangeRule,
 }) => {
   const onChangeTrigger = React.useCallback(
-    (entry) => {
+    (trigger) => {
       return onChangeRule({
         ...rule,
-        trigger: {
-          name: entry.name,
-          behaviorId: entry.behaviorId,
-          params: entry.initialParams ?? {},
-        },
+        trigger,
       });
     },
     [onChangeRule]

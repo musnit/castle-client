@@ -71,6 +71,7 @@ const CoinFlip = ({ response }) => {
     {
       type: 'selectParamSheet',
       paramName: 'probability',
+      paramValue: response.params.probability,
       label: response.params.probability,
     },
   ];
@@ -91,6 +92,7 @@ const SetVelocity = ({ response }) => {
       type: 'selectParamSheet',
       label: `x: ${response.params.vx ?? 0}`,
       paramName: 'vx',
+      paramValue: response.params.vx,
     },
     {
       type: 'text',
@@ -100,6 +102,7 @@ const SetVelocity = ({ response }) => {
       type: 'selectParamSheet',
       label: `y: ${response.params.vy ?? 0}`,
       paramName: 'vy',
+      paramValue: response.params.vy,
     },
   ];
 };

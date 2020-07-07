@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import RuleParamInputSheet from './RuleParamInputSheet';
+
 const styles = StyleSheet.create({
   cell: {
     marginRight: 8,
@@ -22,7 +24,25 @@ const styles = StyleSheet.create({
   },
 });
 
-export const ConfigureRuleEntry = ({ cells, onPickEntry, onStructureEntry }) => {
+export const ConfigureRuleEntry = ({
+  entry,
+  cells,
+  onPickEntry,
+  onStructureEntry,
+  onChangeParam,
+  addChildSheet,
+}) => {
+  const showEditParamSheet = (paramName, initialValue) =>
+    addChildSheet({
+      key: 'ruleParamInput',
+      Component: RuleParamInputSheet,
+      title: `Edit ${paramName}`,
+      entry,
+      paramName,
+      initialValue,
+      onChangeParam,
+    });
+
   let maybeStructureCell;
   // auto-prepend 'when' or other structural cell if applicable
   if (onStructureEntry) {
@@ -59,9 +79,11 @@ export const ConfigureRuleEntry = ({ cells, onPickEntry, onStructureEntry }) => 
             );
           }
           case 'selectParamSheet': {
-            // TODO: open sheet when pressed
             return (
-              <TouchableOpacity key={key} style={[styles.cell, styles.select]} onPress={() => {}}>
+              <TouchableOpacity
+                key={key}
+                style={[styles.cell, styles.select]}
+                onPress={() => showEditParamSheet(cell.paramName, cell.paramValue)}>
                 <Text style={styles.selectText}>{cell.label}</Text>
               </TouchableOpacity>
             );

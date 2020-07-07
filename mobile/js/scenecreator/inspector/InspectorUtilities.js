@@ -1,5 +1,21 @@
 import * as React from 'react';
 
+// entries are triggers, responses, or conditions.
+// they are grouped into categories when sent over from lua.
+export const getEntryByName = (entryName, entries) => {
+  if (!entryName || !entries) return null;
+
+  const categories = Object.keys(entries);
+  for (let cc = 0; cc < categories.length; cc++) {
+    const category = entries[categories[cc]];
+    for (let ee = 0; ee < category.length; ee++) {
+      const entry = category[ee];
+      if (entry.name === entryName) return entry;
+    }
+  }
+  return null;
+};
+
 export const filterAvailableBehaviors = ({ allBehaviors, possibleBehaviors }) => {
   let results = [];
   possibleBehaviors.forEach((possible) => {
@@ -37,7 +53,11 @@ export const useOptimisticBehaviorValue = ({ behavior, propName, sendAction, onN
 
   const luaValue = behavior?.properties[propName];
   if (behavior && value !== luaValue) {
-    if (!behavior.lastReportedEventId || lastSentEventId === null || behavior.lastReportedEventId === lastSentEventId) {
+    if (
+      !behavior.lastReportedEventId ||
+      lastSentEventId === null ||
+      behavior.lastReportedEventId === lastSentEventId
+    ) {
       setValue(luaValue);
       if (onNativeUpdate) {
         onNativeUpdate(luaValue);

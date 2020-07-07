@@ -4,6 +4,7 @@ import { ConfigureRuleEntry } from './ConfigureRuleEntry';
 
 import RulePartPickerSheet from './RulePartPickerSheet';
 
+import { getEntryByName } from '../InspectorUtilities';
 import { Triggers } from './Triggers';
 
 const styles = StyleSheet.create({
@@ -17,6 +18,12 @@ const styles = StyleSheet.create({
   },
 });
 
+const _entryToTrigger = (entry) => ({
+  name: entry.name,
+  behaviorId: entry.behaviorId,
+  params: entry.initialParams ?? {},
+});
+
 export const Trigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeTrigger }) => {
   const onStructureTrigger = () => {
     // TODO: up, down, wrap, before, replace, remove
@@ -28,8 +35,17 @@ export const Trigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeT
       Component: RulePartPickerSheet,
       behaviors,
       entries: triggers,
-      onSelectEntry: onChangeTrigger,
+      onSelectEntry: (entry) => onChangeTrigger(_entryToTrigger(entry)),
       title: 'Select trigger',
+    });
+
+  const onChangeParam = (paramName, value) =>
+    onChangeTrigger({
+      ...trigger,
+      params: {
+        ...trigger.params,
+        [paramName]: value,
+      },
     });
 
   let cells;
@@ -44,9 +60,12 @@ export const Trigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeT
   return (
     <View style={styles.triggerCells}>
       <ConfigureRuleEntry
+        entry={getEntryByName(trigger.name, triggers)}
         cells={cells}
         onPickEntry={onPickTrigger}
         onStructureEntry={onStructureTrigger}
+        onChangeParam={onChangeParam}
+        addChildSheet={addChildSheet}
       />
     </View>
   );
