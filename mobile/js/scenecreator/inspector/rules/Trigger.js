@@ -1,12 +1,19 @@
 import * as React from 'react';
 import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
+import { ConfigureRuleEntry } from './ConfigureRuleEntry';
 
 import RulePartPickerSheet from './RulePartPickerSheet';
+
+import { Triggers } from './Triggers';
 
 const styles = StyleSheet.create({
   // TODO: merge shared styles
   ruleName: {
     marginBottom: 8,
+  },
+  triggerCells: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
 });
 
@@ -25,38 +32,21 @@ export const Trigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeT
       title: 'Select trigger',
     });
 
-  let label;
+  let cells;
   if (!trigger || trigger.name === 'none') {
-    label = '<select trigger>';
+    cells = Triggers.empty();
+  } else if (Triggers[trigger.name]) {
+    cells = Triggers[trigger.name]({ trigger });
   } else {
-    // TODO: implement components to handle different trigger UIs here.
-    switch (trigger.name) {
-      case 'collide':
-        {
-          if (trigger.params.tag) {
-            label = `this collides with tag: ${trigger.params.tag}`;
-          } else {
-            label = `this collides`;
-          }
-        }
-        break;
-      case 'variable reaches value': {
-        label = `variable ${trigger.params.variableId} is ${trigger.params.comparison}: ${trigger.params.value}`;
-        break;
-      }
-      default:
-        label = `${trigger.name}, params: ${JSON.stringify(trigger.params, null, 2)}`;
-    }
+    cells = Triggers.default({ trigger });
   }
 
   return (
-    <View style={{ flexDirection: 'row' }}>
+    <View style={styles.triggerCells}>
       <TouchableOpacity onPress={onModifyTrigger} style={{ marginRight: 8 }}>
         <Text>When:</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={onPickTrigger}>
-        <Text style={styles.ruleName}>{label}</Text>
-      </TouchableOpacity>
+      <ConfigureRuleEntry cells={cells} onPickEntry={onPickTrigger} />
     </View>
   );
 };

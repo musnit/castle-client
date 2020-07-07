@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
 const AddPart = ({ isFirst, entry, onAdd }) => {
   return (
     <TouchableOpacity style={isFirst ? null : styles.addButton} onPress={() => onAdd(entry)}>
-      <Text style={styles.addButtonLabel}>{entry.name}</Text>
+      <Text style={styles.addButtonLabel}>{entry.description ?? entry.name}</Text>
     </TouchableOpacity>
   );
 };
