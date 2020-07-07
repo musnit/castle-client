@@ -126,7 +126,7 @@ const Else = ({ response, onChangeResponse, ...props }) => {
   );
 };
 
-const Repeat = ({ response, onChangeResponse, onPickResponse, ...props }) => {
+const Repeat = ({ response, onChangeResponse, onPickResponse, children, ...props }) => {
   const onChangeBody = (body) =>
     onChangeResponse({
       ...response,
@@ -137,9 +137,7 @@ const Repeat = ({ response, onChangeResponse, onPickResponse, ...props }) => {
     });
   return (
     <React.Fragment>
-      <View style={styles.responseCells}>
-        <ConfigureRuleEntry cells={Responses.repeat({ response })} onPickEntry={onPickResponse} />
-      </View>
+      {children}
       <View style={styles.insetContainer}>
         <Response response={response.params.body} onChangeResponse={onChangeBody} {...props} />
       </View>
@@ -147,7 +145,7 @@ const Repeat = ({ response, onChangeResponse, onPickResponse, ...props }) => {
   );
 };
 
-const ActOnOther = ({ response, onChangeResponse, onPickResponse, ...props }) => {
+const ActOnOther = ({ response, onChangeResponse, onPickResponse, children, ...props }) => {
   const onChangeBody = (body) =>
     onChangeResponse({
       ...response,
@@ -158,9 +156,7 @@ const ActOnOther = ({ response, onChangeResponse, onPickResponse, ...props }) =>
     });
   return (
     <React.Fragment>
-      <TouchableOpacity onPress={onPickResponse}>
-        <Text style={styles.ruleName}>Act on other</Text>
-      </TouchableOpacity>
+      {children}
       <View style={styles.insetContainer}>
         <Response response={response.params.body} onChangeResponse={onChangeBody} {...props} />
       </View>
@@ -187,7 +183,23 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
       title: 'Select response',
     });
 
+  // render the cells to configure this response
   let responseContents;
+  let cells;
+  if (!response || response.name === 'none') {
+    cells = Responses.empty({ order });
+  } else if (Responses[response.name]) {
+    cells = Responses[response.name]({ response, order });
+  } else {
+    cells = Responses.default({ response, order });
+  }
+  responseContents = (
+    <View style={styles.responseCells}>
+      <ConfigureRuleEntry cells={cells} onPickEntry={onPickResponse} />
+    </View>
+  );
+
+  // if applicable, render a wrapper component around the cells
   if (response && RESPONSE_COMPONENTS[response.name]) {
     const ResponseComponent = RESPONSE_COMPONENTS[response.name];
     responseContents = (
@@ -196,22 +208,9 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
           response={response}
           onChangeResponse={onChangeResponse}
           onPickResponse={onPickResponse}
-          {...props}
-        />
-      </View>
-    );
-  } else {
-    let cells;
-    if (!response || response.name === 'none') {
-      cells = Responses.empty({ order });
-    } else if (Responses[response.name]) {
-      cells = Responses[response.name]({ response, order });
-    } else {
-      cells = Responses.default({ response, order });
-    }
-    responseContents = (
-      <View style={styles.responseCells}>
-        <ConfigureRuleEntry cells={cells} onPickEntry={onPickResponse} />
+          {...props}>
+          {responseContents}
+        </ResponseComponent>
       </View>
     );
   }

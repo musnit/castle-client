@@ -23,6 +23,15 @@ const Default = ({ response }) => {
   ];
 };
 
+const ActOnOther = () => {
+  return [
+    {
+      type: 'selectEntry',
+      label: 'Act on other',
+    },
+  ];
+};
+
 const Repeat = ({ response }) => {
   return [
     {
@@ -69,6 +78,7 @@ const SetVelocity = ({ response }) => {
 };
 
 export const Responses = {
+  ['act on other']: ActOnOther,
   ['set velocity']: SetVelocity,
   repeat: Repeat,
   empty: Empty,
