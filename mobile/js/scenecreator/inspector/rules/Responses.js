@@ -23,6 +23,15 @@ const Default = ({ response }) => {
   ];
 };
 
+const If = () => {
+  return [
+    {
+      type: 'selectEntry',
+      label: 'If',
+    },
+  ];
+};
+
 const ActOnOther = () => {
   return [
     {
@@ -45,6 +54,24 @@ const Repeat = ({ response }) => {
     {
       type: 'text',
       label: 'times',
+    },
+  ];
+};
+
+const CoinFlip = ({ response }) => {
+  return [
+    {
+      type: 'selectEntry',
+      label: 'A coin flip',
+    },
+    {
+      type: 'text',
+      label: 'shows heads with probability',
+    },
+    {
+      type: 'selectParamSheet',
+      paramName: 'probability',
+      label: response.params.probability,
     },
   ];
 };
@@ -79,8 +106,10 @@ const SetVelocity = ({ response }) => {
 
 export const Responses = {
   ['act on other']: ActOnOther,
-  ['set velocity']: SetVelocity,
+  if: If,
   repeat: Repeat,
+  ['coin flip']: CoinFlip,
+  ['set velocity']: SetVelocity,
   empty: Empty,
   default: Default,
 };

@@ -39,7 +39,7 @@ const _entryToResponse = (entry) => ({
   params: entry.initialParams ?? {},
 });
 
-const If = ({ response, onChangeResponse, onPickResponse, ...props }) => {
+const If = ({ response, onChangeResponse, onPickResponse, children, ...props }) => {
   const { addChildSheet, behaviors, conditions } = props;
 
   const onChangeCondition = (condition) =>
@@ -81,19 +81,12 @@ const If = ({ response, onChangeResponse, onPickResponse, ...props }) => {
 
   return (
     <React.Fragment>
-      <View style={{ flexDirection: 'row' }}>
-        <TouchableOpacity onPress={onPickResponse} style={{ marginRight: 8 }}>
-          <Text style={styles.ruleName}>If:</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onPickCondition}>
-          <Text style={styles.ruleName}>
-            {response.params.condition?.name
-              ? `${response.params.condition?.name} ${JSON.stringify(
-                  response.params.condition?.params
-                )}`
-              : '<select condition>'}
-          </Text>
-        </TouchableOpacity>
+      <View style={styles.responseCells}>
+        {children}
+        <ConfigureRuleEntry
+          cells={makeResponseCells({ response: response.params.condition })}
+          onPickEntry={onPickCondition}
+        />
       </View>
       <View style={styles.insetContainer}>
         <Response response={response.params.then} onChangeResponse={onChangeThen} {...props} />
@@ -170,6 +163,16 @@ const RESPONSE_COMPONENTS = {
   ['act on other']: ActOnOther,
 };
 
+const makeResponseCells = ({ response, order }) => {
+  if (!response || response.name === 'none') {
+    return Responses.empty({ order });
+  } else if (Responses[response.name]) {
+    return Responses[response.name]({ response, order });
+  } else {
+    return Responses.default({ response, order });
+  }
+};
+
 export const Response = ({ response, onChangeResponse, order = 0, ...props }) => {
   const { addChildSheet, behaviors, responses, conditions } = props;
 
@@ -185,14 +188,7 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
 
   // render the cells to configure this response
   let responseContents;
-  let cells;
-  if (!response || response.name === 'none') {
-    cells = Responses.empty({ order });
-  } else if (Responses[response.name]) {
-    cells = Responses[response.name]({ response, order });
-  } else {
-    cells = Responses.default({ response, order });
-  }
+  let cells = makeResponseCells({ response, order });
   responseContents = (
     <View style={styles.responseCells}>
       <ConfigureRuleEntry cells={cells} onPickEntry={onPickResponse} />
