@@ -81,6 +81,18 @@ const If = ({ response, onChangeResponse, onPickResponse, children, ...props }) 
       title: 'Select condition',
     });
 
+  const onChangeParam = (paramName, value) =>
+    onChangeResponse({
+      ...response,
+      params: {
+        ...response.params,
+        condition: {
+          ...response.params.condition.params,
+          [paramName]: value,
+        },
+      },
+    });
+
   return (
     <React.Fragment>
       <View style={styles.responseCells}>
@@ -89,6 +101,7 @@ const If = ({ response, onChangeResponse, onPickResponse, children, ...props }) 
           entry={getEntryByName(response.params.condition?.name, conditions)}
           cells={makeResponseCells({ response: response.params.condition })}
           onPickEntry={onPickCondition}
+          onChangeParam={onChangeParam}
           addChildSheet={addChildSheet}
         />
       </View>
@@ -191,6 +204,15 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
       title: 'Select response',
     });
 
+  const onChangeParam = (paramName, value) =>
+    onChangeResponse({
+      ...response,
+      params: {
+        ...response.params,
+        [paramName]: value,
+      },
+    });
+
   // render the cells to configure this response
   let responseContents;
   let cells = makeResponseCells({ response, order });
@@ -200,6 +222,7 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
         entry={getEntryByName(response?.name, responses)}
         cells={cells}
         onPickEntry={onPickResponse}
+        onChangeParam={onChangeParam}
         addChildSheet={addChildSheet}
       />
     </View>

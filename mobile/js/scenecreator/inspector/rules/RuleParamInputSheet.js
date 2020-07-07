@@ -39,7 +39,9 @@ export default RuleParamInputSheet = ({
     paramSpec = EMPTY_PARAMSPEC;
   }
 
-  let [value, setValue] = React.useState(initialValue);
+  let [value, setValue] = React.useState(
+    initialValue === undefined ? paramSpec.initialValue : initialValue
+  );
 
   const renderContent = () => (
     <View style={styles.container}>
