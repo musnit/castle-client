@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ConfigureRuleEntry } from './ConfigureRuleEntry';
+import { Responses } from './Responses';
 
 import RulePartPickerSheet from './RulePartPickerSheet';
 
@@ -24,6 +26,10 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     borderTopWidth: 1,
     borderTopColor: '#eee',
+  },
+  responseCells: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
 });
 
@@ -131,9 +137,9 @@ const Repeat = ({ response, onChangeResponse, onPickResponse, ...props }) => {
     });
   return (
     <React.Fragment>
-      <TouchableOpacity onPress={onPickResponse}>
-        <Text style={styles.ruleName}>Repeat {response.params?.count ?? 0} times</Text>
-      </TouchableOpacity>
+      <View style={styles.responseCells}>
+        <ConfigureRuleEntry cells={Responses.repeat({ response })} onPickEntry={onPickResponse} />
+      </View>
       <View style={styles.insetContainer}>
         <Response response={response.params.body} onChangeResponse={onChangeBody} {...props} />
       </View>
@@ -181,34 +187,32 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
       title: 'Select response',
     });
 
-  if (!response || response.name === 'none') {
-    return (
-      <TouchableOpacity onPress={onPickResponse}>
-        <Text>{order === 0 ? '<select response>' : '<add response>'}</Text>
-      </TouchableOpacity>
-    );
-  }
-
   let responseContents;
-  if (RESPONSE_COMPONENTS[response.name]) {
+  if (response && RESPONSE_COMPONENTS[response.name]) {
     const ResponseComponent = RESPONSE_COMPONENTS[response.name];
     responseContents = (
-      <ResponseComponent
-        response={response}
-        onChangeResponse={onChangeResponse}
-        onPickResponse={onPickResponse}
-        {...props}
-      />
+      <View style={[styles.response, order > 0 ? styles.nextResponse : null]}>
+        <ResponseComponent
+          response={response}
+          onChangeResponse={onChangeResponse}
+          onPickResponse={onPickResponse}
+          {...props}
+        />
+      </View>
     );
   } else {
-    let paramsToRender = { ...response.params };
-    delete paramsToRender.nextResponse;
+    let cells;
+    if (!response || response.name === 'none') {
+      cells = Responses.empty({ order });
+    } else if (Responses[response.name]) {
+      cells = Responses[response.name]({ response, order });
+    } else {
+      cells = Responses.default({ response, order });
+    }
     responseContents = (
-      <TouchableOpacity onPress={onPickResponse}>
-        <Text>
-          {response.name}: {JSON.stringify(paramsToRender, null, 2)}
-        </Text>
-      </TouchableOpacity>
+      <View style={styles.responseCells}>
+        <ConfigureRuleEntry cells={cells} onPickEntry={onPickResponse} />
+      </View>
     );
   }
 
@@ -223,15 +227,15 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
 
   return (
     <React.Fragment>
-      <View style={[styles.response, order > 0 ? styles.nextResponse : null]}>
-        {responseContents}
-      </View>
-      <Response
-        response={response.params?.nextResponse}
-        onChangeResponse={onChangeNextResponse}
-        order={order + 1}
-        {...props}
-      />
+      {responseContents}
+      {response && (
+        <Response
+          response={response.params?.nextResponse}
+          onChangeResponse={onChangeNextResponse}
+          order={order + 1}
+          {...props}
+        />
+      )}
     </React.Fragment>
   );
 };
