@@ -50,7 +50,6 @@ const removeResponse = (response) => {
 
 // move myself up:
 // grandparent's child is myself, my child is my former parent, parent's child is my nextResponse
-// TODO:
 
 // move myself down:
 // change myself to nextResponse, and change nextResponse to myself
@@ -73,18 +72,27 @@ const moveResponseDown = (response) => {
   };
 };
 
-// replace myself: open a sheet, then change myself into sheet's result
-
-// insert before: open a sheet, change myself into sheet's result and change nextResponse to myself
+// insert before: change myself into newResponse and change nextResponse to myself
+const insertBefore = (response, newResponse) => {
+  return {
+    ...newResponse,
+    params: {
+      ...newResponse.params,
+      nextResponse: response,
+    },
+  };
+};
 
 const makeResponseActions = (response, onChangeResponse) => {
   return {
     remove: () => onChangeResponse(removeResponse(response)),
     moveDown: () => onChangeResponse(moveResponseDown(response)),
+    replace: (newResponse) => onChangeResponse(newResponse),
+    insertBefore: (newResponse) => onChangeResponse(insertBefore(response, newResponse)),
   };
 };
 
-const If = ({ response, onChangeResponse, onPickResponse, children, ...props }) => {
+const If = ({ response, onChangeResponse, children, ...props }) => {
   const { addChildSheet, behaviors, conditions } = props;
 
   const onChangeCondition = (condition) =>
@@ -114,13 +122,13 @@ const If = ({ response, onChangeResponse, onPickResponse, children, ...props }) 
       },
     });
 
-  const onPickCondition = () =>
+  const onPickCondition = (handler) =>
     addChildSheet({
       key: 'rulePartPicker',
       Component: RulePartPickerSheet,
       behaviors,
       entries: conditions,
-      onSelectEntry: (entry) => onChangeCondition(_entryToResponse(entry)),
+      onSelectEntry: (entry) => handler(_entryToResponse(entry)),
       title: 'Select condition',
     });
 
@@ -136,6 +144,8 @@ const If = ({ response, onChangeResponse, onPickResponse, children, ...props }) 
       },
     });
 
+  // TODO: onShowResponseOptions for condition
+
   return (
     <React.Fragment>
       <View style={styles.responseCells}>
@@ -143,7 +153,8 @@ const If = ({ response, onChangeResponse, onPickResponse, children, ...props }) 
         <ConfigureRuleEntry
           entry={getEntryByName(response.params.condition?.name, conditions)}
           cells={makeResponseCells({ response: response.params.condition })}
-          onPickEntry={onPickCondition}
+          onChangeEntry={onChangeCondition}
+          onShowPicker={onPickCondition}
           onChangeParams={onChangeParams}
           addChildSheet={addChildSheet}
         />
@@ -180,7 +191,7 @@ const Else = ({ response, onChangeResponse, ...props }) => {
   );
 };
 
-const Repeat = ({ response, onChangeResponse, onPickResponse, children, ...props }) => {
+const Repeat = ({ response, onChangeResponse, children, ...props }) => {
   const onChangeBody = (body) =>
     onChangeResponse({
       ...response,
@@ -199,7 +210,7 @@ const Repeat = ({ response, onChangeResponse, onPickResponse, children, ...props
   );
 };
 
-const ActOnOther = ({ response, onChangeResponse, onPickResponse, children, ...props }) => {
+const ActOnOther = ({ response, onChangeResponse, children, ...props }) => {
   const onChangeBody = (body) =>
     onChangeResponse({
       ...response,
@@ -238,13 +249,13 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
   const { addChildSheet, behaviors, responses, conditions } = props;
   const entry = getEntryByName(response?.name, responses);
 
-  const onPickResponse = () =>
+  const onShowResponsePicker = (handler) =>
     addChildSheet({
       key: 'rulePartPicker',
       Component: RulePartPickerSheet,
       behaviors,
       entries: responses,
-      onSelectEntry: (entry) => onChangeResponse(_entryToResponse(entry)),
+      onSelectEntry: (entry) => handler(_entryToResponse(entry)),
       title: 'Select response',
     });
 
@@ -261,6 +272,7 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
     addChildSheet({
       key: 'ruleOptions',
       Component: RuleOptionsSheet,
+      onShowPicker: onShowResponsePicker,
       actions: makeResponseActions(response, onChangeResponse),
       entry,
     });
@@ -273,7 +285,8 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
       <ConfigureRuleEntry
         entry={entry}
         cells={cells}
-        onPickEntry={onPickResponse}
+        onChangeEntry={onChangeResponse}
+        onShowPicker={onShowResponsePicker}
         onShowOptions={onShowResponseOptions}
         onChangeParams={onChangeParams}
         addChildSheet={addChildSheet}
@@ -286,11 +299,7 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
     const ResponseComponent = RESPONSE_COMPONENTS[response.name];
     responseContents = (
       <View style={[styles.response, order > 0 ? styles.nextResponse : null]}>
-        <ResponseComponent
-          response={response}
-          onChangeResponse={onChangeResponse}
-          onPickResponse={onPickResponse}
-          {...props}>
+        <ResponseComponent response={response} onChangeResponse={onChangeResponse} {...props}>
           {responseContents}
         </ResponseComponent>
       </View>

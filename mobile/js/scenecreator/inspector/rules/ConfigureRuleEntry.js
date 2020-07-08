@@ -27,8 +27,9 @@ const styles = StyleSheet.create({
 export const ConfigureRuleEntry = ({
   entry,
   cells,
-  onPickEntry,
+  onChangeEntry,
   onStructureEntry,
+  onShowPicker,
   onShowOptions,
   onChangeParams,
   addChildSheet,
@@ -74,7 +75,7 @@ export const ConfigureRuleEntry = ({
               <TouchableOpacity
                 key={key}
                 style={[styles.cell, styles.select]}
-                onPress={onPickEntry}>
+                onPress={() => onShowPicker(onChangeEntry)}>
                 <Text style={styles.selectText}>{cell.label}</Text>
               </TouchableOpacity>
             );

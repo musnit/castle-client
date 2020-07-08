@@ -27,6 +27,7 @@ export default RuleOptionsSheet = ({
   title = 'Edit Response',
   entry,
   actions,
+  onShowPicker,
   isOpen,
   onClose,
   context,
@@ -35,32 +36,41 @@ export default RuleOptionsSheet = ({
     {
       name: 'Insert response before',
       shouldDisplay: () => true,
-      action: () => {},
-    },
-    {
-      name: 'Move up in order',
-      shouldDisplay: () => true,
-      action: () => {},
+      action: () =>
+        onShowPicker((result) => {
+          actions.insertBefore(result);
+          onClose();
+        }),
     },
     {
       name: 'Move down in order',
       shouldDisplay: () => true,
-      action: actions.moveDown,
+      action: () => {
+        actions.moveDown();
+        onClose();
+      },
     },
-    {
+    /* {
       name: 'Wrap in condition',
       shouldDisplay: () => true,
       action: () => {},
-    },
+    }, */
     {
       name: 'Replace',
       shouldDisplay: () => true,
-      action: () => {},
+      action: () =>
+        onShowPicker((result) => {
+          actions.replace(result);
+          onClose();
+        }),
     },
     {
       name: 'Remove',
       shouldDisplay: () => true,
-      action: actions.remove,
+      action: () => {
+        actions.remove();
+        onClose();
+      },
     },
   ];
 
@@ -82,11 +92,7 @@ export default RuleOptionsSheet = ({
                   styles.actionContainer,
                   ii > 0 ? { borderTopWidth: 1, borderColor: '#ccc' } : null,
                 ]}>
-                <TouchableOpacity
-                  onPress={() => {
-                    item.action();
-                    onClose();
-                  }}>
+                <TouchableOpacity onPress={item.action}>
                   <Text>{item.name}</Text>
                 </TouchableOpacity>
               </View>
