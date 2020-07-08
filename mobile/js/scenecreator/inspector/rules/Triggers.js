@@ -1,3 +1,5 @@
+import { getVariableName } from '../../SceneCreatorUtilities';
+
 const withWhen = (tokens) => {
   tokens.unshift({
     type: 'text',
@@ -88,12 +90,71 @@ const Collide = ({ trigger }) => {
   ]);
 };
 
+const VariableReachesValue = ({ trigger, context }) => {
+  if (trigger.params) {
+    return withWhen([
+      {
+        type: 'selectEntry',
+        label: 'variable',
+      },
+      {
+        type: 'selectParamSheet',
+        label: getVariableName(trigger.params.variableId, context.variables),
+        paramName: 'variableId',
+        paramValue: trigger.params.variableId,
+      },
+      {
+        type: 'selectParamSheet',
+        paramName: 'comparison',
+        paramValue: trigger.params.comparison,
+        label: trigger.params.comparison,
+      },
+      {
+        type: 'selectParamSheet',
+        paramName: 'value',
+        paramValue: trigger.params.value,
+        label: trigger.params.value,
+      },
+    ]);
+  } else {
+    return withWhen([
+      {
+        type: 'selectEntry',
+        label: 'variable reaches value:',
+      },
+      {
+        type: 'selectParamSheet',
+        label: getVariableName(trigger.params.variableId, context.variables),
+        paramName: 'variableId',
+        paramValue: trigger.params.variableId,
+      },
+    ]);
+  }
+};
+
+const VariableChanges = ({ trigger, context }) => {
+  return withWhen([
+    {
+      type: 'selectEntry',
+      label: 'variable changes:',
+    },
+    {
+      type: 'selectParamSheet',
+      label: getVariableName(trigger.params.variableId, context.variables),
+      paramName: 'variableId',
+      paramValue: trigger.params.variableId,
+    },
+  ]);
+};
+
 export const Triggers = {
   collide: Collide,
   tap: Tap,
   press: Press,
   create: Create,
   destroy: Destroy,
+  ['variable reaches value']: VariableReachesValue,
+  ['variable changes']: VariableChanges,
   default: Default,
   empty: Empty,
 };

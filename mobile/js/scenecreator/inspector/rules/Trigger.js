@@ -24,7 +24,14 @@ const _entryToTrigger = (entry) => ({
   params: entry.initialParams ?? {},
 });
 
-export const Trigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeTrigger }) => {
+export const Trigger = ({
+  trigger,
+  behaviors,
+  context,
+  addChildSheet,
+  triggers,
+  onChangeTrigger,
+}) => {
   const onShowTriggerPicker = () =>
     addChildSheet({
       key: 'rulePartPicker',
@@ -48,7 +55,7 @@ export const Trigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeT
   if (!trigger || trigger.name === 'none') {
     cells = Triggers.empty();
   } else if (Triggers[trigger.name]) {
-    cells = Triggers[trigger.name]({ trigger });
+    cells = Triggers[trigger.name]({ trigger, context });
   } else {
     cells = Triggers.default({ trigger });
   }

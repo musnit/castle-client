@@ -167,6 +167,56 @@ const RestartScene = () => {
   ];
 };
 
+const SetVariable = ({ response, context }) => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Set variable',
+    },
+    {
+      type: 'selectParamSheet',
+      label: getVariableName(response.params?.variableId, context.variables),
+      paramName: 'variableId',
+      paramValue: response.params?.variableId,
+    },
+    {
+      type: 'text',
+      label: 'to',
+    },
+    {
+      type: 'selectParamSheet',
+      label: response.params?.setToValue ?? 0,
+      paramName: 'setToValue',
+      paramValue: response.params?.setToValue ?? 0,
+    },
+  ];
+};
+
+const ChangeVariable = ({ response, context }) => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Adjust variable',
+    },
+    {
+      type: 'selectParamSheet',
+      label: getVariableName(response.params?.variableId, context.variables),
+      paramName: 'variableId',
+      paramValue: response.params?.variableId,
+    },
+    {
+      type: 'text',
+      label: 'by',
+    },
+    {
+      type: 'selectParamSheet',
+      label: response.params?.changeBy ?? 0,
+      paramName: 'changeBy',
+      paramValue: response.params?.changeBy ?? 0,
+    },
+  ];
+};
+
 const SetVelocity = ({ response }) => {
   return [
     {
@@ -198,6 +248,8 @@ export const Responses = {
   ['coin flip']: CoinFlip,
   ['is colliding']: IsColliding,
   ['variable meets condition']: VariableMeetsCondition,
+  ['set variable']: SetVariable,
+  ['change variable']: ChangeVariable,
   ['set velocity']: SetVelocity,
   ['restart scene']: RestartScene,
   destroy: Destroy,
