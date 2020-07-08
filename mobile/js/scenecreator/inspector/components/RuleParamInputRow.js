@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { InspectorCheckbox } from './InspectorCheckbox';
+import { InspectorDropdown } from './InspectorDropdown';
 import { InspectorNumberInput } from './InspectorNumberInput';
 import { InspectorTextInput } from './InspectorTextInput';
 
@@ -31,6 +32,11 @@ export const RuleParamInputRow = ({ label, paramSpec, value, setValue, ...props 
     case 'textInput':
       input = (
         <InspectorTextInput value={value} onChangeText={setValue} {...paramSpec.props} {...props} />
+      );
+      break;
+    case 'dropdown':
+      input = (
+        <InspectorDropdown value={value} onChange={setValue} {...paramSpec.props} {...props} />
       );
       break;
     default:

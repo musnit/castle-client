@@ -89,8 +89,11 @@ const If = ({ response, onChangeResponse, children, order, ...props }) => {
       params: {
         ...response.params,
         condition: {
-          ...response.params.condition.params,
-          ...params,
+          ...response.params.condition,
+          params: {
+            ...response.params.condition.params,
+            ...params,
+          },
         },
       },
     });

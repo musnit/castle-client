@@ -124,7 +124,9 @@ const VariableMeetsCondition = ({ response }) => {
         label: response.params.variableId,
       },
       {
-        type: 'text',
+        type: 'selectParamSheet',
+        paramName: 'comparison',
+        paramValue: response.params.comparison,
         label: response.params.comparison,
       },
       {

@@ -55,7 +55,7 @@ let Colors = SceneCreatorConstants.Colors;
 //
 
 // Lua CJSON encodes sparse arrays as objects with stringified keys, use this to convert back
-const objectToArray = (input) => {
+export const objectToArray = (input) => {
   if (Array.isArray(input)) {
     return input;
   }
