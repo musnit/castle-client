@@ -50,11 +50,14 @@ export default RuleOptionsSheet = ({
         onClose();
       },
     },
-    /* {
+    {
       name: 'Wrap in condition',
       shouldDisplay: () => true,
-      action: () => {},
-    }, */
+      action: () => {
+        actions.wrapInCondition();
+        onClose();
+      },
+    },
     {
       name: 'Replace',
       shouldDisplay: () => true,

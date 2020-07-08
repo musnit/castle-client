@@ -83,12 +83,25 @@ const insertBefore = (response, newResponse) => {
   };
 };
 
+// wrap in condition: change myself into 'if' and change params.then to myself
+// TODO: stop hardcoding behavior id
+const wrapInCondition = (response) => {
+  return {
+    name: 'if',
+    behaviorId: 16,
+    params: {
+      then: { ...response },
+    },
+  };
+};
+
 const makeResponseActions = (response, onChangeResponse) => {
   return {
     remove: () => onChangeResponse(removeResponse(response)),
     moveDown: () => onChangeResponse(moveResponseDown(response)),
     replace: (newResponse) => onChangeResponse(newResponse),
     insertBefore: (newResponse) => onChangeResponse(insertBefore(response, newResponse)),
+    wrapInCondition: () => onChangeResponse(wrapInCondition(response)),
   };
 };
 
