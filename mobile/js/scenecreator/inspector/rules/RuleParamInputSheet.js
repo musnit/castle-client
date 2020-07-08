@@ -59,12 +59,12 @@ export default RuleParamInputSheet = ({
     </View>
   );
 
-  const onFinished = React.useCallback(() => {
+  const onDone = React.useCallback(() => {
     onChangeParam(paramName, value);
     onClose();
   }, [onChangeParam, onClose, paramName, value]);
 
-  const renderHeader = () => <BottomSheetHeader title={title} onClose={onFinished} />;
+  const renderHeader = () => <BottomSheetHeader title={title} onClose={onClose} onDone={onDone} />;
 
   return (
     <CardCreatorBottomSheet
