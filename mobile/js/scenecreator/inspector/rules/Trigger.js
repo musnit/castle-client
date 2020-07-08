@@ -40,7 +40,7 @@ export const Trigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeT
       ...trigger,
       params: {
         ...trigger.params,
-        params,
+        ...params,
       },
     });
 
