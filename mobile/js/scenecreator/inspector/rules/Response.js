@@ -81,14 +81,14 @@ const If = ({ response, onChangeResponse, onPickResponse, children, ...props }) 
       title: 'Select condition',
     });
 
-  const onChangeParam = (paramName, value) =>
+  const onChangeParams = (params) =>
     onChangeResponse({
       ...response,
       params: {
         ...response.params,
         condition: {
           ...response.params.condition.params,
-          [paramName]: value,
+          ...params,
         },
       },
     });
@@ -101,7 +101,7 @@ const If = ({ response, onChangeResponse, onPickResponse, children, ...props }) 
           entry={getEntryByName(response.params.condition?.name, conditions)}
           cells={makeResponseCells({ response: response.params.condition })}
           onPickEntry={onPickCondition}
-          onChangeParam={onChangeParam}
+          onChangeParams={onChangeParams}
           addChildSheet={addChildSheet}
         />
       </View>
@@ -204,12 +204,12 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
       title: 'Select response',
     });
 
-  const onChangeParam = (paramName, value) =>
+  const onChangeParams = (params) =>
     onChangeResponse({
       ...response,
       params: {
         ...response.params,
-        [paramName]: value,
+        ...params,
       },
     });
 
@@ -222,7 +222,7 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
         entry={getEntryByName(response?.name, responses)}
         cells={cells}
         onPickEntry={onPickResponse}
-        onChangeParam={onChangeParam}
+        onChangeParams={onChangeParams}
         addChildSheet={addChildSheet}
       />
     </View>

@@ -88,21 +88,14 @@ const SetVelocity = ({ response }) => {
       label: 'to',
     },
     {
-      // TODO: multi-param sheet for x and y together
       type: 'selectParamSheet',
-      label: `x: ${response.params.x ?? 0}`,
-      paramName: 'x',
-      paramValue: response.params.x,
-    },
-    {
-      type: 'text',
-      label: ',',
-    },
-    {
-      type: 'selectParamSheet',
-      label: `y: ${response.params.y ?? 0}`,
-      paramName: 'y',
-      paramValue: response.params.y,
+      label: `x: ${response.params.x ?? 0}, y: ${response.params.y ?? 0}`,
+      title: 'Set Velocity',
+      paramNames: ['x', 'y'],
+      paramValues: {
+        x: response.params.x,
+        y: response.params.y,
+      },
     },
   ];
 };

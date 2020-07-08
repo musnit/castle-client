@@ -25,22 +25,32 @@ const EMPTY_PARAMSPEC = {
 export default RuleParamInputSheet = ({
   title,
   entry,
-  paramName,
-  initialValue,
-  onChangeParam,
+  onChangeParams,
+  paramNames,
+  initialValues,
   isOpen,
   onClose,
   context,
 }) => {
-  let paramSpec;
-  if (paramName && entry.paramSpecs && entry.paramSpecs[paramName]) {
-    paramSpec = entry.paramSpecs[paramName];
-  } else {
-    paramSpec = EMPTY_PARAMSPEC;
-  }
+  const findParamSpec = (paramName) => {
+    if (paramName && entry.paramSpecs && entry.paramSpecs[paramName]) {
+      return entry.paramSpecs[paramName];
+    } else {
+      return EMPTY_PARAMSPEC;
+    }
+  };
 
-  let [value, setValue] = React.useState(
-    initialValue === undefined ? paramSpec.initialValue : initialValue
+  const [values, changeValues] = React.useReducer(
+    (state, action) => ({
+      ...state,
+      [action.paramName]: action.value,
+    }),
+    paramNames.reduce((values, paramName) => {
+      let initialValue = initialValues[paramName];
+      let paramSpec = findParamSpec(paramName);
+      values[paramName] = initialValue === undefined ? paramSpec.initialValue : initialValue;
+      return values;
+    }, {})
   );
 
   const renderContent = () => (
@@ -48,21 +58,23 @@ export default RuleParamInputSheet = ({
       <View style={styles.description}>
         <Text>{entry.description}</Text>
       </View>
-      <View style={styles.inputs}>
-        <RuleParamInputRow
-          label={paramName}
-          paramSpec={paramSpec}
-          value={value}
-          setValue={setValue}
-        />
-      </View>
+      {paramNames.map((paramName, ii) => (
+        <View key={`param-${ii}`} style={styles.inputs}>
+          <RuleParamInputRow
+            label={paramName}
+            paramSpec={findParamSpec(paramName)}
+            value={values[paramName]}
+            setValue={(value) => changeValues({ paramName, value })}
+          />
+        </View>
+      ))}
     </View>
   );
 
   const onDone = React.useCallback(() => {
-    onChangeParam(paramName, value);
+    onChangeParams(values);
     onClose();
-  }, [onChangeParam, onClose, paramName, value]);
+  }, [onChangeParams, onClose, paramNames, values]);
 
   const renderHeader = () => <BottomSheetHeader title={title} onClose={onClose} onDone={onDone} />;
 

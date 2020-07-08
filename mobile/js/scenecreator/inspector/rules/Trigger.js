@@ -39,12 +39,12 @@ export const Trigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeT
       title: 'Select trigger',
     });
 
-  const onChangeParam = (paramName, value) =>
+  const onChangeParams = (params) =>
     onChangeTrigger({
       ...trigger,
       params: {
         ...trigger.params,
-        [paramName]: value,
+        params,
       },
     });
 
@@ -64,7 +64,7 @@ export const Trigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeT
         cells={cells}
         onPickEntry={onPickTrigger}
         onStructureEntry={onStructureTrigger}
-        onChangeParam={onChangeParam}
+        onChangeParams={onChangeParams}
         addChildSheet={addChildSheet}
       />
     </View>

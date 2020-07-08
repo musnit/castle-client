@@ -29,18 +29,18 @@ export const ConfigureRuleEntry = ({
   cells,
   onPickEntry,
   onStructureEntry,
-  onChangeParam,
+  onChangeParams,
   addChildSheet,
 }) => {
-  const showEditParamSheet = (paramName, initialValue) =>
+  const showEditParamSheet = (paramNames, initialValues, title) =>
     addChildSheet({
       key: 'ruleParamInput',
       Component: RuleParamInputSheet,
-      title: `Edit ${paramName}`,
+      title: title ?? `Edit ${paramNames[0]}`,
       entry,
-      paramName,
-      initialValue,
-      onChangeParam,
+      paramNames,
+      initialValues,
+      onChangeParams,
     });
 
   let maybeStructureCell;
@@ -83,7 +83,17 @@ export const ConfigureRuleEntry = ({
               <TouchableOpacity
                 key={key}
                 style={[styles.cell, styles.select]}
-                onPress={() => showEditParamSheet(cell.paramName, cell.paramValue)}>
+                onPress={() => {
+                  if (cell.paramNames) {
+                    showEditParamSheet(cell.paramNames, cell.paramValues, cell.title);
+                  } else {
+                    showEditParamSheet(
+                      [cell.paramName],
+                      { [cell.paramName]: cell.paramValue },
+                      cell.title
+                    );
+                  }
+                }}>
                 <Text style={styles.selectText}>{cell.label}</Text>
               </TouchableOpacity>
             );
