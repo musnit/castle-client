@@ -62,6 +62,7 @@ export default RuleParamInputSheet = ({
         <View key={`param-${ii}`} style={styles.inputs}>
           <RuleParamInputRow
             label={paramName}
+            context={context}
             paramSpec={findParamSpec(paramName)}
             value={values[paramName]}
             setValue={(value) => changeValues({ paramName, value })}

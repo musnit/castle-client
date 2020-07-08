@@ -27,25 +27,33 @@ const styles = StyleSheet.create({
   },
 });
 
-export const InspectorDropdown = ({ value, label, onChange, style, ...props }) => {
+export const InspectorVariablePicker = ({ value, label, onChange, style, context, ...props }) => {
   const { showActionSheetWithOptions } = useActionSheet();
+  const items = context.variables || [];
   const onPress = React.useCallback(() => {
-    const items = objectToArray(props?.items ?? []);
     showActionSheetWithOptions(
-      { options: items.concat(['Cancel']), cancelButtonIndex: items.length },
+      {
+        options: items.map((item) => item.name).concat(['Cancel']),
+        cancelButtonIndex: items.length,
+      },
       (i) => {
         if (typeof i === 'number' && i >= 0 && i < items.length) {
-          onChange(items[i]);
+          onChange(items[i].id);
         }
       }
     );
-  }, [showActionSheetWithOptions, props?.items, onChange]);
+  }, [showActionSheetWithOptions, onChange]);
 
+  let valueLabel = '(none)';
+  if (value && value !== 'none') {
+    const selected = items.find((item) => item.id === value);
+    valueLabel = selected ? selected.name : value;
+  }
   return (
     <View style={[styles.container, style]} {...props}>
       <Text style={styles.label}>{label}</Text>
       <TouchableOpacity onPress={onPress} style={styles.box}>
-        <Text>{value}</Text>
+        <Text>{valueLabel}</Text>
       </TouchableOpacity>
     </View>
   );

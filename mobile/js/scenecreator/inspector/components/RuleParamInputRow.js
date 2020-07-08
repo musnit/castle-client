@@ -4,6 +4,7 @@ import { InspectorCheckbox } from './InspectorCheckbox';
 import { InspectorDropdown } from './InspectorDropdown';
 import { InspectorNumberInput } from './InspectorNumberInput';
 import { InspectorTextInput } from './InspectorTextInput';
+import { InspectorVariablePicker } from './InspectorVariablePicker';
 
 const styles = StyleSheet.create({
   inputContainer: {
@@ -35,9 +36,20 @@ export const RuleParamInputRow = ({ label, paramSpec, value, setValue, ...props 
       );
       break;
     case 'dropdown':
-      input = (
-        <InspectorDropdown value={value} onChange={setValue} {...paramSpec.props} {...props} />
-      );
+      if (paramSpec.props?.showVariablesItems) {
+        input = (
+          <InspectorVariablePicker
+            value={value}
+            onChange={setValue}
+            {...paramSpec.props}
+            {...props}
+          />
+        );
+      } else {
+        input = (
+          <InspectorDropdown value={value} onChange={setValue} {...paramSpec.props} {...props} />
+        );
+      }
       break;
     default:
       throw new Error(`Input type ${paramSpec.method} is not supported in RuleParamInputRow`);

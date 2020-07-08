@@ -120,8 +120,10 @@ const VariableMeetsCondition = ({ response }) => {
         label: 'a variable meets a condition:',
       },
       {
-        type: 'text',
+        type: 'selectParamSheet',
         label: response.params.variableId,
+        paramName: 'variableId',
+        paramValue: response.params.variableId,
       },
       {
         type: 'selectParamSheet',
