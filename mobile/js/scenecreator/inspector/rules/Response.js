@@ -42,6 +42,48 @@ const _entryToResponse = (entry) => ({
   params: entry.initialParams ?? {},
 });
 
+// delete myself:
+// change myself to self.params.nextResponse
+const removeResponse = (response) => {
+  return response.params?.nextResponse;
+};
+
+// move myself up:
+// grandparent's child is myself, my child is my former parent, parent's child is my nextResponse
+// TODO:
+
+// move myself down:
+// change myself to nextResponse, and change nextResponse to myself
+const moveResponseDown = (response) => {
+  const child = response.params?.nextResponse;
+  if (!child) return response;
+
+  return {
+    ...child,
+    params: {
+      ...child.params,
+      nextResponse: {
+        ...response,
+        params: {
+          ...response.params,
+          nextResponse: child.params?.nextResponse,
+        },
+      },
+    },
+  };
+};
+
+// replace myself: open a sheet, then change myself into sheet's result
+
+// insert before: open a sheet, change myself into sheet's result and change nextResponse to myself
+
+const makeResponseActions = (response, onChangeResponse) => {
+  return {
+    remove: () => onChangeResponse(removeResponse(response)),
+    moveDown: () => onChangeResponse(moveResponseDown(response)),
+  };
+};
+
 const If = ({ response, onChangeResponse, onPickResponse, children, ...props }) => {
   const { addChildSheet, behaviors, conditions } = props;
 
@@ -219,6 +261,7 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
     addChildSheet({
       key: 'ruleOptions',
       Component: RuleOptionsSheet,
+      actions: makeResponseActions(response, onChangeResponse),
       entry,
     });
 
@@ -230,7 +273,8 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
       <ConfigureRuleEntry
         entry={entry}
         cells={cells}
-        onPickEntry={onShowResponseOptions}
+        onPickEntry={onPickResponse}
+        onShowOptions={onShowResponseOptions}
         onChangeParams={onChangeParams}
         addChildSheet={addChildSheet}
       />

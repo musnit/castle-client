@@ -26,11 +26,12 @@ const styles = StyleSheet.create({
 export default RuleOptionsSheet = ({
   title = 'Edit Response',
   entry,
+  actions,
   isOpen,
   onClose,
   context,
 }) => {
-  const actions = [
+  const items = [
     {
       name: 'Insert response before',
       shouldDisplay: () => true,
@@ -44,7 +45,7 @@ export default RuleOptionsSheet = ({
     {
       name: 'Move down in order',
       shouldDisplay: () => true,
-      action: () => {},
+      action: actions.moveDown,
     },
     {
       name: 'Wrap in condition',
@@ -59,7 +60,7 @@ export default RuleOptionsSheet = ({
     {
       name: 'Remove',
       shouldDisplay: () => true,
-      action: () => {},
+      action: actions.remove,
     },
   ];
 
@@ -72,8 +73,8 @@ export default RuleOptionsSheet = ({
         </View>
       )}
       <View style={styles.actions}>
-        {actions.map((action, ii) => {
-          if (action.shouldDisplay()) {
+        {items.map((item, ii) => {
+          if (item.shouldDisplay()) {
             return (
               <View
                 key={`action-${ii}`}
@@ -81,8 +82,12 @@ export default RuleOptionsSheet = ({
                   styles.actionContainer,
                   ii > 0 ? { borderTopWidth: 1, borderColor: '#ccc' } : null,
                 ]}>
-                <TouchableOpacity onPress={action.action}>
-                  <Text>{action.name}</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    item.action();
+                    onClose();
+                  }}>
+                  <Text>{item.name}</Text>
                 </TouchableOpacity>
               </View>
             );

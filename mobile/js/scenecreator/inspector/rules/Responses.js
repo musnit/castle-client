@@ -13,7 +13,7 @@ const Default = ({ response }) => {
 
   return [
     {
-      type: 'selectEntry',
+      type: 'showEntryOptions',
       label: response.name,
     },
     {
@@ -26,7 +26,7 @@ const Default = ({ response }) => {
 const If = () => {
   return [
     {
-      type: 'selectEntry',
+      type: 'showEntryOptions',
       label: 'If',
     },
   ];
@@ -35,7 +35,7 @@ const If = () => {
 const ActOnOther = () => {
   return [
     {
-      type: 'selectEntry',
+      type: 'showEntryOptions',
       label: 'Act on other',
     },
   ];
@@ -61,7 +61,7 @@ const Repeat = ({ response }) => {
 const CoinFlip = ({ response }) => {
   return [
     {
-      type: 'selectEntry',
+      type: 'showEntryOptions',
       label: 'a coin flip',
     },
     {
@@ -80,7 +80,7 @@ const CoinFlip = ({ response }) => {
 const SetVelocity = ({ response }) => {
   return [
     {
-      type: 'selectEntry',
+      type: 'showEntryOptions',
       label: 'Set velocity',
     },
     {

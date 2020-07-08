@@ -29,6 +29,7 @@ export const ConfigureRuleEntry = ({
   cells,
   onPickEntry,
   onStructureEntry,
+  onShowOptions,
   onChangeParams,
   addChildSheet,
 }) => {
@@ -74,6 +75,16 @@ export const ConfigureRuleEntry = ({
                 key={key}
                 style={[styles.cell, styles.select]}
                 onPress={onPickEntry}>
+                <Text style={styles.selectText}>{cell.label}</Text>
+              </TouchableOpacity>
+            );
+          }
+          case 'showEntryOptions': {
+            return (
+              <TouchableOpacity
+                key={key}
+                style={[styles.cell, styles.select]}
+                onPress={onShowOptions}>
                 <Text style={styles.selectText}>{cell.label}</Text>
               </TouchableOpacity>
             );
