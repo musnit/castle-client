@@ -86,7 +86,7 @@ const Wait = ({ response }) => {
 const CoinFlip = ({ response }) => {
   return [
     {
-      type: 'showEntryOptions',
+      type: 'selectEntry',
       label: 'a coin flip',
     },
     {
@@ -100,6 +100,48 @@ const CoinFlip = ({ response }) => {
       label: response.params.probability,
     },
   ];
+};
+
+const IsColliding = () => {
+  return [
+    {
+      type: 'selectEntry',
+      label: 'this is colliding',
+    },
+  ];
+};
+
+const VariableMeetsCondition = ({ response }) => {
+  // TODO: be able to select variables
+  if (response.params) {
+    return [
+      {
+        type: 'selectEntry',
+        label: 'a variable meets a condition:',
+      },
+      {
+        type: 'text',
+        label: response.params.variableId,
+      },
+      {
+        type: 'text',
+        label: response.params.comparison,
+      },
+      {
+        type: 'selectParamSheet',
+        paramName: 'value',
+        paramValue: response.params.value,
+        label: response.params.value,
+      },
+    ];
+  } else {
+    return [
+      {
+        type: 'selectEntry',
+        label: 'a variable meets a condition',
+      },
+    ];
+  }
 };
 
 const Destroy = () => {
@@ -149,6 +191,8 @@ export const Responses = {
   repeat: Repeat,
   wait: Wait,
   ['coin flip']: CoinFlip,
+  ['is colliding']: IsColliding,
+  ['variable meets condition']: VariableMeetsCondition,
   ['set velocity']: SetVelocity,
   ['restart scene']: RestartScene,
   destroy: Destroy,
