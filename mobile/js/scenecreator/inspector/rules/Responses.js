@@ -158,6 +158,24 @@ const Destroy = () => {
   ];
 };
 
+const Show = () => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'show this text',
+    },
+  ];
+};
+
+const Hide = () => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'hide this text',
+    },
+  ];
+};
+
 const RestartScene = () => {
   return [
     {
@@ -253,6 +271,8 @@ export const Responses = {
   ['set velocity']: SetVelocity,
   ['restart scene']: RestartScene,
   destroy: Destroy,
+  show: Show,
+  hide: Hide,
   empty: Empty,
   default: Default,
 };
