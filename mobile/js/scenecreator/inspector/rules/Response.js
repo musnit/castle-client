@@ -4,6 +4,7 @@ import { ConfigureRuleEntry } from './ConfigureRuleEntry';
 import { getEntryByName } from '../InspectorUtilities';
 import { Responses } from './Responses';
 
+import RuleOptionsSheet from './RuleOptionsSheet';
 import RulePartPickerSheet from './RulePartPickerSheet';
 
 const styles = StyleSheet.create({
@@ -193,6 +194,7 @@ const makeResponseCells = ({ response, order }) => {
 
 export const Response = ({ response, onChangeResponse, order = 0, ...props }) => {
   const { addChildSheet, behaviors, responses, conditions } = props;
+  const entry = getEntryByName(response?.name, responses);
 
   const onPickResponse = () =>
     addChildSheet({
@@ -213,15 +215,22 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
       },
     });
 
+  const onShowResponseOptions = () =>
+    addChildSheet({
+      key: 'ruleOptions',
+      Component: RuleOptionsSheet,
+      entry,
+    });
+
   // render the cells to configure this response
   let responseContents;
   let cells = makeResponseCells({ response, order });
   responseContents = (
     <View style={styles.responseCells}>
       <ConfigureRuleEntry
-        entry={getEntryByName(response?.name, responses)}
+        entry={entry}
         cells={cells}
-        onPickEntry={onPickResponse}
+        onPickEntry={onShowResponseOptions}
         onChangeParams={onChangeParams}
         addChildSheet={addChildSheet}
       />
