@@ -119,7 +119,13 @@ const MovementTab = ({ behaviors, sendActions, addChildSheet }) => {
   );
 };
 
-export const InspectorTabs = ({ element, isTextActorSelected, selectedTab, addChildSheet }) => {
+export const InspectorTabs = ({
+  element,
+  context,
+  isTextActorSelected,
+  selectedTab,
+  addChildSheet,
+}) => {
   let behaviors, sendActions;
   if (element.children.count) {
     behaviors = {};
@@ -153,6 +159,7 @@ export const InspectorTabs = ({ element, isTextActorSelected, selectedTab, addCh
           behaviors={behaviors}
           sendAction={sendActions.Rules}
           addChildSheet={addChildSheet}
+          context={context}
         />
       );
       break;

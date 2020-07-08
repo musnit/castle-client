@@ -62,6 +62,7 @@ export default InspectorSheet = ({ element, isOpen, context, addChildSheet }) =>
 
   const renderContent = () => (
     <InspectorTabs
+      context={context}
       addChildSheet={addChildSheet}
       selectedTab={selectedTab}
       isTextActorSelected={isTextActorSelected}

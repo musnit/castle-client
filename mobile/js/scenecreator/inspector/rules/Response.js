@@ -44,7 +44,7 @@ const _entryToResponse = (entry) => ({
 });
 
 const If = ({ response, onChangeResponse, children, order, ...props }) => {
-  const { addChildSheet, behaviors, conditions } = props;
+  const { addChildSheet, behaviors, conditions, context } = props;
 
   const onChangeCondition = (condition) =>
     onChangeResponse({
@@ -104,7 +104,7 @@ const If = ({ response, onChangeResponse, children, order, ...props }) => {
         {children}
         <ConfigureRuleEntry
           entry={getEntryByName(response.params.condition?.name, conditions)}
-          cells={makeResponseCells({ response: response.params.condition })}
+          cells={makeResponseCells({ response: response.params.condition, context })}
           onChangeEntry={onChangeCondition}
           onShowPicker={onPickCondition}
           onChangeParams={onChangeParams}
@@ -187,18 +187,18 @@ const RESPONSE_COMPONENTS = {
   ['act on other']: ActOnOther,
 };
 
-const makeResponseCells = ({ response, order }) => {
+const makeResponseCells = ({ response, order, context }) => {
   if (!response || response.name === 'none') {
     return Responses.empty({ order });
   } else if (Responses[response.name]) {
-    return Responses[response.name]({ response, order });
+    return Responses[response.name]({ response, order, context });
   } else {
-    return Responses.default({ response, order });
+    return Responses.default({ response, order, context });
   }
 };
 
 export const Response = ({ response, onChangeResponse, order = 0, ...props }) => {
-  const { addChildSheet, behaviors, responses, conditions } = props;
+  const { context, addChildSheet, behaviors, responses, conditions } = props;
   const entry = getEntryByName(response?.name, responses);
 
   const onShowResponsePicker = (handler) =>
@@ -231,7 +231,7 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
 
   // render the cells to configure this response
   let responseContents;
-  let cells = makeResponseCells({ response, order });
+  let cells = makeResponseCells({ response, order, context });
   responseContents = (
     <View style={styles.responseCells}>
       <ConfigureRuleEntry

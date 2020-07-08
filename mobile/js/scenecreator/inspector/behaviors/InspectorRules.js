@@ -63,6 +63,7 @@ const InspectorRule = ({
   triggers,
   responses,
   conditions,
+  context,
   addChildSheet,
   onChangeRule,
 }) => {
@@ -91,6 +92,7 @@ const InspectorRule = ({
       <InspectorTrigger
         trigger={rule.trigger}
         behaviors={behaviors}
+        context={context}
         addChildSheet={addChildSheet}
         triggers={triggers}
         onChangeTrigger={onChangeTrigger}
@@ -99,6 +101,7 @@ const InspectorRule = ({
         <InspectorResponse
           response={rule.response}
           behaviors={behaviors}
+          context={context}
           addChildSheet={addChildSheet}
           responses={responses}
           conditions={conditions}
@@ -109,7 +112,7 @@ const InspectorRule = ({
   );
 };
 
-export default InspectorRules = ({ behaviors, sendAction, addChildSheet }) => {
+export default InspectorRules = ({ behaviors, sendAction, context, addChildSheet }) => {
   const rules = behaviors.Rules;
 
   // TODO: would be nice not to subscribe here
@@ -167,6 +170,7 @@ export default InspectorRules = ({ behaviors, sendAction, addChildSheet }) => {
             rule={rule}
             onChangeRule={onChangeRule}
             behaviors={behaviors}
+            context={context}
             addChildSheet={addChildSheet}
             triggers={rulesData.triggers}
             responses={rulesData.responses}

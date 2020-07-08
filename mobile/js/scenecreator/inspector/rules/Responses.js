@@ -1,3 +1,5 @@
+import { getVariableName } from '../../SceneCreatorUtilities';
+
 const Empty = ({ order }) => {
   return [
     {
@@ -111,8 +113,7 @@ const IsColliding = () => {
   ];
 };
 
-const VariableMeetsCondition = ({ response }) => {
-  // TODO: be able to select variables
+const VariableMeetsCondition = ({ response, context }) => {
   if (response.params) {
     return [
       {
@@ -121,7 +122,7 @@ const VariableMeetsCondition = ({ response }) => {
       },
       {
         type: 'selectParamSheet',
-        label: response.params.variableId,
+        label: getVariableName(response.params.variableId, context.variables),
         paramName: 'variableId',
         paramValue: response.params.variableId,
       },
