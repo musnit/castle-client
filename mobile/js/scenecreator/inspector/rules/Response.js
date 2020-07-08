@@ -2,6 +2,7 @@ import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ConfigureRuleEntry } from './ConfigureRuleEntry';
 import { getEntryByName } from '../InspectorUtilities';
+import { makeResponseActions } from './ResponseActions';
 import { Responses } from './Responses';
 
 import RuleOptionsSheet from './RuleOptionsSheet';
@@ -42,70 +43,7 @@ const _entryToResponse = (entry) => ({
   params: entry.initialParams ?? {},
 });
 
-// delete myself:
-// change myself to self.params.nextResponse
-const removeResponse = (response) => {
-  return response.params?.nextResponse;
-};
-
-// move myself up:
-// grandparent's child is myself, my child is my former parent, parent's child is my nextResponse
-
-// move myself down:
-// change myself to nextResponse, and change nextResponse to myself
-const moveResponseDown = (response) => {
-  const child = response.params?.nextResponse;
-  if (!child) return response;
-
-  return {
-    ...child,
-    params: {
-      ...child.params,
-      nextResponse: {
-        ...response,
-        params: {
-          ...response.params,
-          nextResponse: child.params?.nextResponse,
-        },
-      },
-    },
-  };
-};
-
-// insert before: change myself into newResponse and change nextResponse to myself
-const insertBefore = (response, newResponse) => {
-  return {
-    ...newResponse,
-    params: {
-      ...newResponse.params,
-      nextResponse: response,
-    },
-  };
-};
-
-// wrap in condition: change myself into 'if' and change params.then to myself
-// TODO: stop hardcoding behavior id
-const wrapInCondition = (response) => {
-  return {
-    name: 'if',
-    behaviorId: 16,
-    params: {
-      then: { ...response },
-    },
-  };
-};
-
-const makeResponseActions = (response, onChangeResponse) => {
-  return {
-    remove: () => onChangeResponse(removeResponse(response)),
-    moveDown: () => onChangeResponse(moveResponseDown(response)),
-    replace: (newResponse) => onChangeResponse(newResponse),
-    insertBefore: (newResponse) => onChangeResponse(insertBefore(response, newResponse)),
-    wrapInCondition: () => onChangeResponse(wrapInCondition(response)),
-  };
-};
-
-const If = ({ response, onChangeResponse, children, ...props }) => {
+const If = ({ response, onChangeResponse, children, order, ...props }) => {
   const { addChildSheet, behaviors, conditions } = props;
 
   const onChangeCondition = (condition) =>
@@ -156,8 +94,6 @@ const If = ({ response, onChangeResponse, children, ...props }) => {
         },
       },
     });
-
-  // TODO: onShowResponseOptions for condition
 
   return (
     <React.Fragment>

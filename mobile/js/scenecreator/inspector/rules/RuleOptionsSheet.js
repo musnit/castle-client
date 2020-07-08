@@ -44,7 +44,7 @@ export default RuleOptionsSheet = ({
     },
     {
       name: 'Move down in order',
-      shouldDisplay: () => true,
+      shouldDisplay: () => !!actions.moveDown,
       action: () => {
         actions.moveDown();
         onClose();

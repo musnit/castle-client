@@ -25,11 +25,7 @@ const _entryToTrigger = (entry) => ({
 });
 
 export const Trigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeTrigger }) => {
-  const onStructureTrigger = () => {
-    // TODO: up, down, wrap, before, replace, remove
-  };
-
-  const onPickTrigger = () =>
+  const onShowTriggerPicker = () =>
     addChildSheet({
       key: 'rulePartPicker',
       Component: RulePartPickerSheet,
@@ -62,8 +58,8 @@ export const Trigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeT
       <ConfigureRuleEntry
         entry={getEntryByName(trigger.name, triggers)}
         cells={cells}
-        onPickEntry={onPickTrigger}
-        onStructureEntry={onStructureTrigger}
+        onChangeEntry={onChangeTrigger}
+        onShowPicker={onShowTriggerPicker}
         onChangeParams={onChangeParams}
         addChildSheet={addChildSheet}
       />

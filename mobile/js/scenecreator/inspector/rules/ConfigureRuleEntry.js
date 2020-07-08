@@ -28,9 +28,8 @@ export const ConfigureRuleEntry = ({
   entry,
   cells,
   onChangeEntry,
-  onStructureEntry,
   onShowPicker,
-  onShowOptions,
+  onShowOptions = () => {},
   onChangeParams,
   addChildSheet,
 }) => {
@@ -45,21 +44,8 @@ export const ConfigureRuleEntry = ({
       onChangeParams,
     });
 
-  let maybeStructureCell;
-  // auto-prepend 'when' or other structural cell if applicable
-  if (onStructureEntry) {
-    maybeStructureCell = (
-      <TouchableOpacity
-        key="entry-structure"
-        style={[styles.cell, styles.select]}
-        onPress={onStructureEntry}>
-        <Text style={styles.selectText}>When</Text>
-      </TouchableOpacity>
-    );
-  }
   return (
     <React.Fragment>
-      {maybeStructureCell}
       {cells.map((cell, ii) => {
         const key = `entry-cell-${ii}`;
         switch (cell.type) {

@@ -1,14 +1,22 @@
+const withWhen = (tokens) => {
+  tokens.unshift({
+    type: 'text',
+    label: 'When',
+  });
+  return tokens;
+};
+
 const Empty = () => {
-  return [
+  return withWhen([
     {
       type: 'selectEntry',
       label: 'select trigger',
     },
-  ];
+  ]);
 };
 
 const Default = ({ trigger }) => {
-  return [
+  return withWhen([
     {
       type: 'selectEntry',
       label: trigger.name,
@@ -17,12 +25,12 @@ const Default = ({ trigger }) => {
       type: 'text',
       label: `params: ${JSON.stringify(trigger.params, null, 2)}`,
     },
-  ];
+  ]);
 };
 
 const Collide = ({ trigger }) => {
   const hasTag = trigger.params.tag && trigger.params.tag.length;
-  return [
+  return withWhen([
     {
       type: 'selectEntry',
       label: 'this collides',
@@ -37,7 +45,7 @@ const Collide = ({ trigger }) => {
       paramName: 'tag',
       paramValue: trigger.params.tag,
     },
-  ];
+  ]);
 };
 
 export const Triggers = {
