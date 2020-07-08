@@ -49,11 +49,36 @@ const Repeat = ({ response }) => {
     },
     {
       type: 'selectParamSheet',
+      paramName: 'count',
+      paramValue: response.params?.count,
       label: response.params?.count ?? 0,
     },
     {
       type: 'text',
       label: 'times',
+    },
+  ];
+};
+
+const Wait = ({ response }) => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Wait',
+    },
+    {
+      type: 'text',
+      label: 'for',
+    },
+    {
+      type: 'selectParamSheet',
+      paramName: 'duration',
+      paramValue: response.params?.duration,
+      label: response.params?.duration ?? 0,
+    },
+    {
+      type: 'text',
+      label: response.params?.duration === 1 ? 'second' : 'seconds',
     },
   ];
 };
@@ -73,6 +98,24 @@ const CoinFlip = ({ response }) => {
       paramName: 'probability',
       paramValue: response.params.probability,
       label: response.params.probability,
+    },
+  ];
+};
+
+const Destroy = () => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'destroy this actor',
+    },
+  ];
+};
+
+const RestartScene = () => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'restart this card',
     },
   ];
 };
@@ -104,8 +147,11 @@ export const Responses = {
   ['act on other']: ActOnOther,
   if: If,
   repeat: Repeat,
+  wait: Wait,
   ['coin flip']: CoinFlip,
   ['set velocity']: SetVelocity,
+  ['restart scene']: RestartScene,
+  destroy: Destroy,
   empty: Empty,
   default: Default,
 };
