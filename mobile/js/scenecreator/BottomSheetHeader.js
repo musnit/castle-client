@@ -2,6 +2,8 @@ import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
+import * as SceneCreatorConstants from './SceneCreatorConstants';
+
 const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
@@ -9,29 +11,26 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingVertical: 16,
   },
   back: {
     flexShrink: 0,
-    width: 54,
-    alignItems: 'center',
+    width: 60,
+    alignItems: 'flex-start',
     justifyContent: 'center',
-    paddingHorizontal: 4,
+    paddingLeft: 12,
   },
   done: {
+    ...SceneCreatorConstants.styles.button,
     flexShrink: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 4,
-    paddingVertical: 8,
-    marginRight: 8,
-    borderWidth: 1,
-    borderBottomWidth: 2,
-    borderRadius: 3,
-    borderColor: '#000',
-    width: 54,
+    marginRight: 16,
+    width: 60,
   },
   doneText: {
     fontWeight: 'bold',
+    fontSize: 16,
   },
   headingContainer: {
     width: '100%',
@@ -51,7 +50,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     width: '100%',
     textAlign: 'center',
-    paddingVertical: 16,
   },
 });
 
