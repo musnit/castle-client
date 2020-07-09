@@ -12,14 +12,18 @@ const styles = StyleSheet.create({
   },
   select: {
     marginRight: 8,
-    padding: 4,
-    borderRadius: 3,
+    padding: 8,
+    paddingVertical: 5,
+    borderRadius: 4,
     borderWidth: 1,
     borderBottomWidth: 2,
     borderColor: '#000',
   },
-  text: {},
+  text: {
+    fontSize: 16,
+  },
   selectText: {
+    fontSize: 16,
     fontWeight: 'bold',
   },
 });
