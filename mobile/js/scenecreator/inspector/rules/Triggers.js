@@ -147,6 +147,36 @@ const VariableChanges = ({ trigger, context }) => {
   ]);
 };
 
+const CounterReachesValue = ({ trigger }) => {
+  return withWhen([
+    {
+      type: 'selectEntry',
+      label: `this actor's counter`,
+    },
+    {
+      type: 'selectParamSheet',
+      paramName: 'comparison',
+      paramValue: trigger.params?.comparison ?? 'equal',
+      label: trigger.params?.comparison ?? 'equal',
+    },
+    {
+      type: 'selectParamSheet',
+      paramName: 'value',
+      paramValue: trigger.params?.value ?? 0,
+      label: trigger.params?.value ?? 0,
+    },
+  ]);
+};
+
+const CounterChanges = ({ trigger }) => {
+  return withWhen([
+    {
+      type: 'selectEntry',
+      label: `this actor's counter changes`,
+    },
+  ]);
+};
+
 export const Triggers = {
   collide: Collide,
   tap: Tap,
@@ -155,6 +185,8 @@ export const Triggers = {
   destroy: Destroy,
   ['variable reaches value']: VariableReachesValue,
   ['variable changes']: VariableChanges,
+  ['counter reaches value']: CounterReachesValue,
+  ['counter changes']: CounterChanges,
   default: Default,
   empty: Empty,
 };

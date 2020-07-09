@@ -185,6 +185,27 @@ const VariableMeetsCondition = ({ response, context }) => {
   }
 };
 
+const CounterMeetsCondition = ({ response }) => {
+  return [
+    {
+      type: 'selectEntry',
+      label: `the actor's counter`,
+    },
+    {
+      type: 'selectParamSheet',
+      paramName: 'comparison',
+      paramValue: response.params?.comparison ?? 'equal',
+      label: response.params?.comparison ?? 'equal',
+    },
+    {
+      type: 'selectParamSheet',
+      paramName: 'value',
+      paramValue: response.params?.value ?? 0,
+      label: response.params?.value ?? 0,
+    },
+  ];
+};
+
 const Destroy = () => {
   return [
     {
@@ -271,6 +292,44 @@ const ChangeVariable = ({ response, context }) => {
   ];
 };
 
+const SetCounter = ({ response }) => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: `Set the actor's counter`,
+    },
+    {
+      type: 'text',
+      label: 'to',
+    },
+    {
+      type: 'selectParamSheet',
+      label: response.params?.setToValue ?? 0,
+      paramName: 'setToValue',
+      paramValue: response.params?.setToValue ?? 0,
+    },
+  ];
+};
+
+const ChangeCounter = ({ response }) => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: `Adjust the actor's counter`,
+    },
+    {
+      type: 'text',
+      label: 'by',
+    },
+    {
+      type: 'selectParamSheet',
+      label: response.params?.changeBy ?? 0,
+      paramName: 'changeBy',
+      paramValue: response.params?.changeBy ?? 0,
+    },
+  ];
+};
+
 const SetVelocity = ({ response }) => {
   return [
     {
@@ -322,8 +381,11 @@ export const Responses = {
   ['coin flip']: CoinFlip,
   ['is colliding']: IsColliding,
   ['variable meets condition']: VariableMeetsCondition,
+  ['counter meets condition']: CounterMeetsCondition,
   ['set variable']: SetVariable,
   ['change variable']: ChangeVariable,
+  ['set counter']: SetCounter,
+  ['change counter']: ChangeCounter,
   ['set velocity']: SetVelocity,
   ['send player to card']: SendPlayerToCard,
   ['restart scene']: RestartScene,
