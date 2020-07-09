@@ -198,7 +198,7 @@ const makeResponseCells = ({ response, order, context }) => {
 };
 
 export const Response = ({ response, onChangeResponse, order = 0, ...props }) => {
-  const { context, addChildSheet, behaviors, responses, conditions } = props;
+  const { context, addChildSheet, behaviors, responses, conditions, triggerFilter } = props;
   const entry = getEntryByName(response?.name, responses);
 
   const onShowResponsePicker = (handler) =>
@@ -207,6 +207,7 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
       Component: RulePartPickerSheet,
       behaviors,
       entries: responses,
+      triggerFilter,
       onSelectEntry: (entry) => handler(_entryToResponse(entry)),
       title: 'Select response',
     });

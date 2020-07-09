@@ -45,6 +45,7 @@ export default RulePartPickerSheet = ({
   onClose,
   context,
   entries,
+  triggerFilter,
   onSelectEntry,
   title,
 }) => {
@@ -54,10 +55,18 @@ export default RulePartPickerSheet = ({
   };
   const renderHeader = () => <BottomSheetHeader title={title} onClose={onClose} />;
 
-  // filter by actor's behaviors, and hide empty sections
+  // filter by actor's behaviors, and by trigger if applicable
+  const isEntryVisible = (entry) => {
+    return (
+      behaviors[entry.behaviorName]?.isActive &&
+      (!entry.triggerFilter || entry.triggerFilter[triggerFilter])
+    );
+  };
+
+  // hide empty sections
   let isCategoryVisible = {};
   Object.entries(entries).forEach(([category, contents]) => {
-    isCategoryVisible[category] = contents.some((entry) => behaviors[entry.behaviorName]?.isActive);
+    isCategoryVisible[category] = contents.some((entry) => isEntryVisible(entry));
   });
 
   const renderContent = () => (
@@ -68,7 +77,7 @@ export default RulePartPickerSheet = ({
               <View key={`rule-category-${category}`} style={styles.category}>
                 <Text style={styles.categoryLabel}>{category}</Text>
                 {contents.map((entry, ii) =>
-                  behaviors[entry.behaviorName]?.isActive ? (
+                  isEntryVisible(entry) ? (
                     <AddPart
                       key={`rule-entry-${ii}`}
                       entry={entry}

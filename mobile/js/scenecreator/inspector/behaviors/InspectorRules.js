@@ -91,6 +91,7 @@ const InspectorRule = ({
       <View style={styles.insetContainer}>
         <InspectorResponse
           response={rule.response}
+          triggerFilter={rule.trigger?.name}
           behaviors={behaviors}
           context={context}
           addChildSheet={addChildSheet}
