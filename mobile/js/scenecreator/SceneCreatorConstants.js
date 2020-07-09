@@ -61,5 +61,14 @@ export const styles = {
     paddingBottom: 0,
     borderTopWidth: 1,
     borderTopColor: '#ccc',
-  }
+  },
+  insetContainer: {
+    marginTop: 16,
+    paddingTop: 7,
+    paddingLeft: 16,
+    borderTopWidth: 1,
+    borderLeftWidth: 1,
+    borderTopLeftRadius: 6,
+    borderColor: '#ccc',
+  },
 }

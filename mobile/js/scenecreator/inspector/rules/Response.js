@@ -14,21 +14,10 @@ const styles = StyleSheet.create({
   ruleName: {
     marginBottom: 8,
   },
-  insetContainer: {
-    marginTop: 8,
-    paddingTop: 16,
-    paddingLeft: 16,
-    borderTopWidth: 1,
-    borderLeftWidth: 1,
-    borderTopLeftRadius: 6,
-    borderColor: '#ccc',
-  },
-
-  response: {
-    paddingBottom: 8,
-  },
+  response: {},
   nextResponse: {
-    paddingTop: 8,
+    marginTop: 16,
+    paddingTop: 7,
     borderTopWidth: 1,
     borderTopColor: '#eee',
   },
@@ -113,7 +102,7 @@ const If = ({ response, onChangeResponse, children, order, ...props }) => {
             addChildSheet={addChildSheet}
           />
         </View>
-        <View style={styles.insetContainer}>
+        <View style={SceneCreatorConstants.styles.insetContainer}>
           <Response response={response.params.then} onChangeResponse={onChangeThen} {...props} />
           <Else response={response.params.else} onChangeResponse={onChangeElse} {...props} />
         </View>
@@ -141,7 +130,7 @@ const Else = ({ response, onChangeResponse, ...props }) => {
         }}>
         <Text style={styles.ruleName}>Else:</Text>
       </TouchableOpacity>
-      <View style={styles.insetContainer}>
+      <View style={SceneCreatorConstants.styles.insetContainer}>
         <Response response={response} onChangeResponse={onChangeResponse} {...props} />
       </View>
     </React.Fragment>
@@ -160,7 +149,7 @@ const Repeat = ({ response, onChangeResponse, children, ...props }) => {
   return (
     <React.Fragment>
       {children}
-      <View style={styles.insetContainer}>
+      <View style={SceneCreatorConstants.styles.insetContainer}>
         <Response response={response.params.body} onChangeResponse={onChangeBody} {...props} />
       </View>
     </React.Fragment>
@@ -179,7 +168,7 @@ const ActOn = ({ response, onChangeResponse, children, ...props }) => {
   return (
     <React.Fragment>
       {children}
-      <View style={styles.insetContainer}>
+      <View style={SceneCreatorConstants.styles.insetContainer}>
         <Response response={response.params.body} onChangeResponse={onChangeBody} {...props} />
       </View>
     </React.Fragment>

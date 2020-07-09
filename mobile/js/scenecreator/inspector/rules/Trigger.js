@@ -9,9 +9,6 @@ import { Triggers } from './Triggers';
 
 const styles = StyleSheet.create({
   // TODO: merge shared styles
-  ruleName: {
-    marginBottom: 8,
-  },
   triggerCells: {
     flexDirection: 'row',
     flexWrap: 'wrap',

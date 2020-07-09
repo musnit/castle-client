@@ -8,7 +8,7 @@ import RuleParamInputSheet from './RuleParamInputSheet';
 const styles = StyleSheet.create({
   cell: {
     marginRight: 8,
-    marginBottom: 8,
+    marginTop: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },

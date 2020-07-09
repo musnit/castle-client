@@ -21,32 +21,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingBottom: 16,
   },
-  label: {
-    fontWeight: 'bold',
-    paddingBottom: 16,
-  },
   rule: {
     marginBottom: 16,
-  },
-  ruleName: {
-    marginBottom: 8,
-  },
-  response: {
-    paddingBottom: 8,
-  },
-  nextResponse: {
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-  },
-  insetContainer: {
-    marginTop: 8,
-    paddingTop: 16,
-    paddingLeft: 16,
-    borderTopWidth: 1,
-    borderLeftWidth: 1,
-    borderTopLeftRadius: 6,
-    borderColor: '#ccc',
   },
 });
 
@@ -90,7 +66,7 @@ const InspectorRule = ({
         triggers={triggers}
         onChangeTrigger={onChangeTrigger}
       />
-      <View style={styles.insetContainer}>
+      <View style={SceneCreatorConstants.styles.insetContainer}>
         <InspectorResponse
           response={rule.response}
           triggerFilter={rule.trigger?.name}
