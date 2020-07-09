@@ -379,6 +379,69 @@ const SetVelocity = ({ response }) => {
   ];
 };
 
+const AddVelocity = ({ response }) => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Adjust velocity',
+    },
+    {
+      type: 'text',
+      label: 'by',
+    },
+    {
+      type: 'selectParamSheet',
+      label: `x: ${response.params.x ?? 0}, y: ${response.params.y ?? 0}`,
+      title: 'Set Velocity',
+      paramNames: ['x', 'y'],
+      paramValues: {
+        x: response.params.x,
+        y: response.params.y,
+      },
+    },
+  ];
+};
+
+const SetRotationSpeed = ({ response }) => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Set rotation speed',
+    },
+    {
+      type: 'text',
+      label: 'to',
+    },
+    {
+      type: 'selectParamSheet',
+      label: response.params?.speed,
+      title: 'Set rotation speed',
+      paramName: 'speed',
+      paramValue: response.params?.speed ?? 0,
+    },
+  ];
+};
+
+const AddRotationSpeed = ({ response }) => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Adjust rotation speed',
+    },
+    {
+      type: 'text',
+      label: 'by',
+    },
+    {
+      type: 'selectParamSheet',
+      label: response.params?.speed,
+      title: 'Set rotation speed',
+      paramName: 'speed',
+      paramValue: response.params?.speed ?? 0,
+    },
+  ];
+};
+
 const SendPlayerToCard = ({ response, context }) => {
   let cardTitle;
   if (context && context.deck && response.params?.card?.cardId) {
@@ -413,6 +476,9 @@ export const Responses = {
   ['set counter']: SetCounter,
   ['change counter']: ChangeCounter,
   ['set velocity']: SetVelocity,
+  ['add velocity']: AddVelocity,
+  ['set rotation speed']: SetRotationSpeed,
+  ['add rotation speed']: AddRotationSpeed,
   ['send player to card']: SendPlayerToCard,
   ['restart scene']: RestartScene,
   create: Create,
