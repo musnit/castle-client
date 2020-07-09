@@ -17,6 +17,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
     marginBottom: 16,
+    textTransform: 'capitalize',
   },
   addButton: {
     borderTopWidth: 1,
