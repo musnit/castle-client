@@ -1,4 +1,5 @@
 import { getVariableName } from '../../SceneCreatorUtilities';
+import { makeCardPreviewTitle } from '../../../utilities';
 
 const Empty = ({ order }) => {
   return [
@@ -293,6 +294,25 @@ const SetVelocity = ({ response }) => {
   ];
 };
 
+const SendPlayerToCard = ({ response, context }) => {
+  let cardTitle;
+  if (context && context.deck && response.params?.card?.cardId) {
+    cardTitle = makeCardPreviewTitle(response.params.card, context.deck);
+  } else {
+    cardTitle = '(choose card)';
+  }
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Send player to card:',
+    },
+    {
+      type: 'selectCardSheet',
+      label: cardTitle,
+    },
+  ];
+};
+
 export const Responses = {
   ['act on']: ActOn,
   ['act on other']: ActOnOther,
@@ -305,6 +325,7 @@ export const Responses = {
   ['set variable']: SetVariable,
   ['change variable']: ChangeVariable,
   ['set velocity']: SetVelocity,
+  ['send player to card']: SendPlayerToCard,
   ['restart scene']: RestartScene,
   destroy: Destroy,
   show: Show,

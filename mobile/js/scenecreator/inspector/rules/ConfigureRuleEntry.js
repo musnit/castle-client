@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import CardDestinationPickerSheet from '../../CardDestinationPickerSheet';
 import RuleParamInputSheet from './RuleParamInputSheet';
 
 const styles = StyleSheet.create({
@@ -46,6 +47,19 @@ export const ConfigureRuleEntry = ({
       paramNames,
       initialValues,
       onChangeParams,
+    });
+
+  const showCardPicker = () =>
+    addChildSheet({
+      key: 'destinationPicker',
+      Component: CardDestinationPickerSheet,
+      onSelectCard: (card) =>
+        onChangeParams({
+          card: {
+            cardId: card.cardId,
+            title: card.title,
+          },
+        }),
     });
 
   return (
@@ -96,6 +110,16 @@ export const ConfigureRuleEntry = ({
                     );
                   }
                 }}>
+                <Text style={styles.selectText}>{cell.label}</Text>
+              </TouchableOpacity>
+            );
+          }
+          case 'selectCardSheet': {
+            return (
+              <TouchableOpacity
+                key={key}
+                style={[styles.cell, styles.select]}
+                onPress={showCardPicker}>
                 <Text style={styles.selectText}>{cell.label}</Text>
               </TouchableOpacity>
             );
