@@ -12,7 +12,7 @@ import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 const styles = StyleSheet.create({
   // TODO: merge shared styles
   ruleName: {
-    marginBottom: 8,
+    fontSize: 16,
   },
   response: {},
   nextResponse: {
@@ -104,6 +104,8 @@ const If = ({ response, onChangeResponse, children, order, ...props }) => {
         </View>
         <View style={SceneCreatorConstants.styles.insetContainer}>
           <Response response={response.params.then} onChangeResponse={onChangeThen} {...props} />
+        </View>
+        <View style={{ paddingTop: 16 }}>
           <Else response={response.params.else} onChangeResponse={onChangeElse} {...props} />
         </View>
       </View>
