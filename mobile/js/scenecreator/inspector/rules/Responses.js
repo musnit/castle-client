@@ -5,7 +5,7 @@ const Empty = ({ order }) => {
   return [
     {
       type: 'selectEntry',
-      label: order === 0 ? 'select response' : 'add response',
+      label: order === 0 ? 'Select response' : 'Add response',
     },
   ];
 };

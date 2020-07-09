@@ -12,7 +12,7 @@ const Empty = () => {
   return withWhen([
     {
       type: 'selectEntry',
-      label: 'select trigger',
+      label: 'Select trigger',
     },
   ]);
 };
