@@ -229,18 +229,16 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
   let responseContents;
   let cells = makeResponseCells({ response, order, context });
   responseContents = (
-    <View style={[styles.response, order > 0 ? styles.nextResponse : null]}>
-      <View style={styles.responseCells}>
-        <ConfigureRuleEntry
-          entry={entry}
-          cells={cells}
-          onChangeEntry={onChangeResponse}
-          onShowPicker={onShowResponsePicker}
-          onShowOptions={onShowResponseOptions}
-          onChangeParams={onChangeParams}
-          addChildSheet={addChildSheet}
-        />
-      </View>
+    <View style={styles.responseCells}>
+      <ConfigureRuleEntry
+        entry={entry}
+        cells={cells}
+        onChangeEntry={onChangeResponse}
+        onShowPicker={onShowResponsePicker}
+        onShowOptions={onShowResponseOptions}
+        onChangeParams={onChangeParams}
+        addChildSheet={addChildSheet}
+      />
     </View>
   );
 
@@ -248,9 +246,15 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
   if (response && RESPONSE_COMPONENTS[response.name]) {
     const ResponseComponent = RESPONSE_COMPONENTS[response.name];
     responseContents = (
-      <ResponseComponent response={response} onChangeResponse={onChangeResponse} {...props}>
+      <ResponseComponent response={response} onChangeResponse={onChangeResponse} order={order} {...props}>
         {responseContents}
       </ResponseComponent>
+    );
+  } else {
+    responseContents = (
+      <View style={[styles.response, order > 0 ? styles.nextResponse : null]}>
+        {responseContents}
+      </View>
     );
   }
 
