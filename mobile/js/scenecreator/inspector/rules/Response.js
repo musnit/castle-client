@@ -101,20 +101,22 @@ const If = ({ response, onChangeResponse, children, order, ...props }) => {
 
   return (
     <React.Fragment>
-      <View style={styles.responseCells}>
-        {children}
-        <ConfigureRuleEntry
-          entry={getEntryByName(response.params.condition?.name, conditions)}
-          cells={makeResponseCells({ response: response.params.condition, context })}
-          onChangeEntry={onChangeCondition}
-          onShowPicker={onPickCondition}
-          onChangeParams={onChangeParams}
-          addChildSheet={addChildSheet}
-        />
-      </View>
-      <View style={styles.insetContainer}>
-        <Response response={response.params.then} onChangeResponse={onChangeThen} {...props} />
-        <Else response={response.params.else} onChangeResponse={onChangeElse} {...props} />
+      <View style={[styles.response, order > 0 ? styles.nextResponse : null]}>
+        <View style={styles.responseCells}>
+          {children}
+          <ConfigureRuleEntry
+            entry={getEntryByName(response.params.condition?.name, conditions)}
+            cells={makeResponseCells({ response: response.params.condition, context })}
+            onChangeEntry={onChangeCondition}
+            onShowPicker={onPickCondition}
+            onChangeParams={onChangeParams}
+            addChildSheet={addChildSheet}
+          />
+        </View>
+        <View style={styles.insetContainer}>
+          <Response response={response.params.then} onChangeResponse={onChangeThen} {...props} />
+          <Else response={response.params.else} onChangeResponse={onChangeElse} {...props} />
+        </View>
       </View>
     </React.Fragment>
   );
@@ -238,16 +240,18 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
   let responseContents;
   let cells = makeResponseCells({ response, order, context });
   responseContents = (
-    <View style={styles.responseCells}>
-      <ConfigureRuleEntry
-        entry={entry}
-        cells={cells}
-        onChangeEntry={onChangeResponse}
-        onShowPicker={onShowResponsePicker}
-        onShowOptions={onShowResponseOptions}
-        onChangeParams={onChangeParams}
-        addChildSheet={addChildSheet}
-      />
+    <View style={[styles.response, order > 0 ? styles.nextResponse : null]}>
+      <View style={styles.responseCells}>
+        <ConfigureRuleEntry
+          entry={entry}
+          cells={cells}
+          onChangeEntry={onChangeResponse}
+          onShowPicker={onShowResponsePicker}
+          onShowOptions={onShowResponseOptions}
+          onChangeParams={onChangeParams}
+          addChildSheet={addChildSheet}
+        />
+      </View>
     </View>
   );
 
@@ -255,11 +259,9 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
   if (response && RESPONSE_COMPONENTS[response.name]) {
     const ResponseComponent = RESPONSE_COMPONENTS[response.name];
     responseContents = (
-      <View style={[styles.response, order > 0 ? styles.nextResponse : null]}>
-        <ResponseComponent response={response} onChangeResponse={onChangeResponse} {...props}>
-          {responseContents}
-        </ResponseComponent>
-      </View>
+      <ResponseComponent response={response} onChangeResponse={onChangeResponse} {...props}>
+        {responseContents}
+      </ResponseComponent>
     );
   }
 
