@@ -157,7 +157,7 @@ export const InspectorTabs = ({
       ) : (
         <Inspector.Rules
           behaviors={behaviors}
-          sendAction={sendActions.Rules}
+          sendActions={sendActions}
           addChildSheet={addChildSheet}
           context={context}
         />

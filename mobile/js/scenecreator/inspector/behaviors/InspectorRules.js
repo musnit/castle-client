@@ -4,6 +4,7 @@ import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import { useGhostUI } from '../../../ghost/GhostUI';
 import { sendDataPaneAction } from '../../../Tools';
+import { Counter } from './InspectorBehaviors';
 import { Response as InspectorResponse } from '../rules/Response';
 import { Trigger as InspectorTrigger } from '../rules/Trigger';
 
@@ -15,6 +16,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   actionsContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingBottom: 16,
@@ -104,8 +106,9 @@ const InspectorRule = ({
   );
 };
 
-export default InspectorRules = ({ behaviors, sendAction, context, addChildSheet }) => {
+export default InspectorRules = ({ behaviors, sendActions, context, addChildSheet }) => {
   const rules = behaviors.Rules;
+  const counter = behaviors.Counter;
 
   // TODO: would be nice not to subscribe here
   const { root } = useGhostUI();
@@ -150,9 +153,18 @@ export default InspectorRules = ({ behaviors, sendAction, context, addChildSheet
   return (
     <View style={styles.container}>
       <View style={styles.actionsContainer}>
-        <TouchableOpacity style={SceneCreatorConstants.styles.button} onPress={() => sendRuleAction('add')}>
+        <TouchableOpacity
+          style={SceneCreatorConstants.styles.button}
+          onPress={() => sendRuleAction('add')}>
           <Text style={SceneCreatorConstants.styles.buttonLabel}>Add new rule</Text>
         </TouchableOpacity>
+        {!counter.isActive ? (
+          <TouchableOpacity
+            style={[SceneCreatorConstants.styles.button, { marginLeft: 16 }]}
+            onPress={() => sendActions.Counter('add')}>
+            <Text style={SceneCreatorConstants.styles.buttonLabel}>Enable counter</Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
       <React.Fragment>
         {rulesItems.map((rule, ii) => (
@@ -169,6 +181,7 @@ export default InspectorRules = ({ behaviors, sendAction, context, addChildSheet
           />
         ))}
       </React.Fragment>
+      {counter?.isActive ? <Counter counter={counter} sendAction={sendActions.Counter} /> : null}
     </View>
   );
 };
