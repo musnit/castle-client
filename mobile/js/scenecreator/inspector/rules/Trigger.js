@@ -8,12 +8,13 @@ import { getEntryByName } from '../InspectorUtilities';
 import { Triggers } from './Triggers';
 
 const styles = StyleSheet.create({
-  // TODO: merge shared styles
   triggerCells: {
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
 });
+
+const TRIGGER_CATEGORY_ORDER = ['general', 'controls', 'state'];
 
 const _entryToTrigger = (entry) => ({
   name: entry.name,
@@ -37,6 +38,7 @@ export const Trigger = ({
       entries: triggers,
       onSelectEntry: (entry) => onChangeTrigger(_entryToTrigger(entry)),
       title: 'Select trigger',
+      categoryOrder: TRIGGER_CATEGORY_ORDER,
     });
 
   const onChangeParams = (params) =>

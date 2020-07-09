@@ -10,7 +10,6 @@ import RulePartPickerSheet from './RulePartPickerSheet';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
 const styles = StyleSheet.create({
-  // TODO: merge shared styles
   ruleName: {
     fontSize: 16,
   },
@@ -26,6 +25,9 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
 });
+
+const RESPONSE_CATEGORY_ORDER = ['general', 'interaction', 'logic', 'state', 'visible'];
+const CONDITION_CATEGORY_ORDER = ['state', 'collision', 'random'];
 
 const _entryToResponse = (entry) => ({
   name: entry.name,
@@ -71,6 +73,7 @@ const If = ({ response, onChangeResponse, children, order, ...props }) => {
       entries: conditions,
       onSelectEntry: (entry) => handler(_entryToResponse(entry)),
       title: 'Select condition',
+      categoryOrder: CONDITION_CATEGORY_ORDER,
     });
 
   const onChangeParams = (params) =>
@@ -209,6 +212,7 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
       triggerFilter,
       onSelectEntry: (entry) => handler(_entryToResponse(entry)),
       title: 'Select response',
+      categoryOrder: RESPONSE_CATEGORY_ORDER,
     });
 
   const onChangeParams = (params) =>

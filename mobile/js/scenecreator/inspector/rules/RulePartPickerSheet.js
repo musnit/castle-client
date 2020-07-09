@@ -48,6 +48,7 @@ export default RulePartPickerSheet = ({
   triggerFilter,
   onSelectEntry,
   title,
+  categoryOrder = null,
 }) => {
   const onPressAdd = (entry) => {
     onSelectEntry(entry);
@@ -69,11 +70,15 @@ export default RulePartPickerSheet = ({
     isCategoryVisible[category] = contents.some((entry) => isEntryVisible(entry));
   });
 
+  if (!categoryOrder && entries) {
+    categoryOrder = Object.keys(entries);
+  }
   const renderContent = () => (
     <View style={styles.container}>
       {entries
-        ? Object.entries(entries).map(([category, contents]) =>
-            isCategoryVisible[category] ? (
+        ? categoryOrder.map((category) => {
+            const contents = entries[category];
+            return isCategoryVisible[category] ? (
               <View key={`rule-category-${category}`} style={styles.category}>
                 <Text style={styles.categoryLabel}>{category}</Text>
                 {contents.map((entry, ii) =>
@@ -87,8 +92,8 @@ export default RulePartPickerSheet = ({
                   ) : null
                 )}
               </View>
-            ) : null
-          )
+            ) : null;
+          })
         : null}
     </View>
   );
