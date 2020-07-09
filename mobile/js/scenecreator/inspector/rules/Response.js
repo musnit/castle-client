@@ -7,6 +7,7 @@ import { Responses } from './Responses';
 
 import RuleOptionsSheet from './RuleOptionsSheet';
 import RulePartPickerSheet from './RulePartPickerSheet';
+import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
 const styles = StyleSheet.create({
   // TODO: merge shared styles
@@ -113,8 +114,8 @@ const If = ({ response, onChangeResponse, children, order, ...props }) => {
       </View>
       <View style={styles.insetContainer}>
         <Response response={response.params.then} onChangeResponse={onChangeThen} {...props} />
+        <Else response={response.params.else} onChangeResponse={onChangeElse} {...props} />
       </View>
-      <Else response={response.params.else} onChangeResponse={onChangeElse} {...props} />
     </React.Fragment>
   );
 };
@@ -123,9 +124,11 @@ const Else = ({ response, onChangeResponse, ...props }) => {
   // TODO: style this component
   if (!response) {
     return (
-      <TouchableOpacity onPress={() => onChangeResponse({ name: 'none' })}>
-        <Text>{`<use 'else' branch>`}</Text>
-      </TouchableOpacity>
+      <View style={{ flexDirection: 'row' }}>
+        <TouchableOpacity style={SceneCreatorConstants.styles.button} onPress={() => onChangeResponse({ name: 'none' })}>
+          <Text style={SceneCreatorConstants.styles.buttonLabel}>Add else</Text>
+        </TouchableOpacity>
+      </View>
     );
   }
   return (
