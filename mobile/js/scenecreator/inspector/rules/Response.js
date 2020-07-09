@@ -116,7 +116,9 @@ const Else = ({ response, onChangeResponse, ...props }) => {
   if (!response) {
     return (
       <View style={{ flexDirection: 'row' }}>
-        <TouchableOpacity style={SceneCreatorConstants.styles.button} onPress={() => onChangeResponse({ name: 'none' })}>
+        <TouchableOpacity
+          style={SceneCreatorConstants.styles.button}
+          onPress={() => onChangeResponse({ name: 'none' })}>
           <Text style={SceneCreatorConstants.styles.buttonLabel}>Add else</Text>
         </TouchableOpacity>
       </View>
@@ -246,7 +248,11 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
   if (response && RESPONSE_COMPONENTS[response.name]) {
     const ResponseComponent = RESPONSE_COMPONENTS[response.name];
     responseContents = (
-      <ResponseComponent response={response} onChangeResponse={onChangeResponse} order={order} {...props}>
+      <ResponseComponent
+        response={response}
+        onChangeResponse={onChangeResponse}
+        order={order}
+        {...props}>
         {responseContents}
       </ResponseComponent>
     );
@@ -267,10 +273,11 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
       },
     });
 
+  const hideNextResponse = !response || (response.name === 'none' && !response.params);
   return (
     <React.Fragment>
       {responseContents}
-      {response && (
+      {!hideNextResponse && (
         <Response
           response={response.params?.nextResponse}
           onChangeResponse={onChangeNextResponse}
