@@ -15,7 +15,7 @@ const FULL_SHEET_HEIGHT = 100 * Viewport.vh - CARD_HEADER_HEIGHT;
 
 const ROOT_SHEETS = [
   {
-    key: 'sceneCreatorLegacyBlueprints',
+    key: 'sceneCreatorBlueprints',
     Component: BlueprintsSheet,
   },
   {

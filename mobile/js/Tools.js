@@ -407,15 +407,18 @@ const SvgFit = ({ style, uri }) => {
   );
 };
 
-const ToolImage = ({ element, path, style }) => {
-  const { transformAssetUri } = useContext(ToolsContext);
+export const ToolImage = ({ element, path, style, context }) => {
+  let { transformAssetUri } = useContext(ToolsContext);
+  if (context) {
+    transformAssetUri = context.transformAssetUri;
+  }
 
   let resizeMode = FastImage.resizeMode.contain;
-  if (element.props.resizeMode) {
+  if (element.props?.resizeMode) {
     resizeMode = FastImage.resizeMode[element.props.resizeMode] || resizeMode;
   }
 
-  let uri = path || element.props.path || '';
+  let uri = path || element.props?.path || '';
 
   if (!uri.startsWith('file://')) {
     uri = transformAssetUri(uri);
