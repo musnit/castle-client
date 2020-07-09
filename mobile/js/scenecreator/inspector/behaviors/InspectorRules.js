@@ -8,6 +8,7 @@ import { Response as InspectorResponse } from '../rules/Response';
 import { Trigger as InspectorTrigger } from '../rules/Trigger';
 
 import RulePartPickerSheet from '../rules/RulePartPickerSheet';
+import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
 const styles = StyleSheet.create({
   container: {
@@ -17,16 +18,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingBottom: 16,
-  },
-  addButton: {
-    borderWidth: 1,
-    borderBottomWidth: 2,
-    borderColor: '#000',
-    borderRadius: 3,
-    padding: 8,
-  },
-  addLabel: {
-    fontWeight: 'bold',
   },
   label: {
     fontWeight: 'bold',
@@ -158,11 +149,10 @@ export default InspectorRules = ({ behaviors, sendAction, context, addChildSheet
   return (
     <View style={styles.container}>
       <View style={styles.actionsContainer}>
-        <TouchableOpacity style={styles.addButton} onPress={() => sendRuleAction('add')}>
-          <Text style={styles.addLabel}>Add new rule</Text>
+        <TouchableOpacity style={SceneCreatorConstants.styles.button} onPress={() => sendRuleAction('add')}>
+          <Text style={SceneCreatorConstants.styles.buttonLabel}>Add new rule</Text>
         </TouchableOpacity>
       </View>
-      <Text style={styles.label}>Rules</Text>
       <React.Fragment>
         {rulesItems.map((rule, ii) => (
           <InspectorRule
