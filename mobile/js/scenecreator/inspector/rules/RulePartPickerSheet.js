@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: '#ccc',
     marginTop: 8,
-    paddingTop: 8,
+    paddingTop: 16,
   },
   addButtonLabel: {
     fontSize: 16,
