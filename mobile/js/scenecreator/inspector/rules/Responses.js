@@ -206,7 +206,14 @@ const CounterMeetsCondition = ({ response }) => {
   ];
 };
 
-const Create = ({ response }) => {
+const Create = ({ response, context }) => {
+  let blueprintName;
+  if (context?.library && response.params?.entryId) {
+    const blueprint = context.library[response.params.entryId];
+    if (blueprint) {
+      blueprintName = blueprint.title;
+    }
+  }
   return [
     {
       type: 'selectEntry',
@@ -214,7 +221,7 @@ const Create = ({ response }) => {
     },
     {
       type: 'selectBlueprintSheet',
-      label: response.params?.entryId ?? '(choose blueprint)', // TODO: entry title
+      label: blueprintName ?? '(choose blueprint)',
     },
     {
       type: 'text',

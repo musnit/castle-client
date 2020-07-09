@@ -85,6 +85,23 @@ const SheetBackgroundOverlay = ({ onPress }) => {
   );
 };
 
+// TODO: find a cleaner way to get these
+const getLibraryEntries = (root) => {
+  const element = root?.panes ? root.panes['sceneCreatorBlueprints'] : null;
+  if (!element) return null;
+
+  let blueprintsData;
+  if (element.children.count) {
+    Object.entries(element.children).forEach(([key, child]) => {
+      if (child.type === 'data') {
+        blueprintsData = child.props.data;
+      }
+    });
+  }
+
+  return blueprintsData?.library;
+};
+
 export const CardCreatorSheetManager = ({
   context,
   isPlaying,
@@ -96,6 +113,7 @@ export const CardCreatorSheetManager = ({
 
   context = {
     ...context,
+    library: getLibraryEntries(root), // TODO: clean up this whole context situation
     transformAssetUri,
   };
 
