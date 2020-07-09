@@ -4,16 +4,23 @@ import { RuleParamInputRow } from '../components/RuleParamInputRow';
 
 import BottomSheetHeader from '../../BottomSheetHeader';
 import CardCreatorBottomSheet from '../../CardCreatorBottomSheet';
+import * as Constants from '../../../Constants';
+import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
 const styles = StyleSheet.create({
-  container: {},
-  description: {
-    borderBottomWidth: 1,
-    borderColor: '#ccc',
+  container: {
     padding: 16,
   },
+  description: {
+    paddingBottom: 16,
+  },
+  descriptionText: {
+    fontSize: 16,
+  },
   inputs: {
-    padding: 16,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderColor: Constants.colors.grayOnWhiteBorder,
   },
 });
 
@@ -56,7 +63,7 @@ export default RuleParamInputSheet = ({
   const renderContent = () => (
     <View style={styles.container}>
       <View style={styles.description}>
-        <Text>{entry.description}</Text>
+        <Text style={styles.descriptionText}>{entry.description}</Text>
       </View>
       {paramNames.map((paramName, ii) => (
         <View key={`param-${ii}`} style={styles.inputs}>
