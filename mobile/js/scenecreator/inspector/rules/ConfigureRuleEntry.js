@@ -4,6 +4,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import BlueprintsSheet from '../../BlueprintsSheet';
 import CardDestinationPickerSheet from '../../CardDestinationPickerSheet';
 import RuleParamInputSheet from './RuleParamInputSheet';
+import * as Constants from '../../../Constants';
 
 const styles = StyleSheet.create({
   cell: {
@@ -21,6 +22,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderColor: '#000',
   },
+  placeholder: {
+    borderColor: '#aaa',
+    borderBottomWidth: 1,
+  },
   text: {
     fontSize: 16,
   },
@@ -28,6 +33,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  placeholderText: {
+    fontSize: 16,
+    color: Constants.colors.grayText,
+  }
 });
 
 export const ConfigureRuleEntry = ({
@@ -87,9 +96,9 @@ export const ConfigureRuleEntry = ({
             return (
               <TouchableOpacity
                 key={key}
-                style={[styles.cell, styles.select]}
+                style={[styles.cell, styles.select, styles.placeholder]}
                 onPress={() => onShowPicker(onChangeEntry)}>
-                <Text style={styles.selectText}>{cell.label}</Text>
+                <Text style={[styles.placeholderText]}>{cell.label}</Text>
               </TouchableOpacity>
             );
           }
