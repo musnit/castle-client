@@ -43,6 +43,41 @@ const ActOnOther = () => {
   ];
 };
 
+const ActOn = ({ response }) => {
+  const hasTag = response.params.tag && response.params.tag.length;
+  if (hasTag) {
+    return [
+      {
+        type: 'showEntryOptions',
+        label: 'Act on',
+      },
+      {
+        type: 'text',
+        label: 'actors with tag',
+      },
+      {
+        type: 'selectParamSheet',
+        label: response.params.tag,
+        paramName: 'tag',
+        paramValue: response.params.tag,
+      },
+    ];
+  } else {
+    return [
+      {
+        type: 'showEntryOptions',
+        label: 'Act on',
+      },
+      {
+        type: 'selectParamSheet',
+        label: 'no other actors',
+        paramName: 'tag',
+        paramValue: '',
+      },
+    ];
+  }
+};
+
 const Repeat = ({ response }) => {
   return [
     {
@@ -259,6 +294,7 @@ const SetVelocity = ({ response }) => {
 };
 
 export const Responses = {
+  ['act on']: ActOn,
   ['act on other']: ActOnOther,
   if: If,
   repeat: Repeat,

@@ -162,7 +162,7 @@ const Repeat = ({ response, onChangeResponse, children, ...props }) => {
   );
 };
 
-const ActOnOther = ({ response, onChangeResponse, children, ...props }) => {
+const ActOn = ({ response, onChangeResponse, children, ...props }) => {
   const onChangeBody = (body) =>
     onChangeResponse({
       ...response,
@@ -184,7 +184,8 @@ const ActOnOther = ({ response, onChangeResponse, children, ...props }) => {
 const RESPONSE_COMPONENTS = {
   if: If,
   repeat: Repeat,
-  ['act on other']: ActOnOther,
+  ['act on other']: ActOn,
+  ['act on']: ActOn,
 };
 
 const makeResponseCells = ({ response, order, context }) => {
