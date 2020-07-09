@@ -13,3 +13,12 @@ export const getVariableName = (variableId, variables) => {
   }
   return variableName;
 };
+
+const READABLE_OPERATORS = {
+  equal: 'equals',
+  'greater or equal': 'is greater than or equal to',
+  'less or equal': 'is less than or equal to',
+};
+export const readableOperator = (o) => {
+  return READABLE_OPERATORS[o] ?? o;
+};

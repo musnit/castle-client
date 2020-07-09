@@ -1,4 +1,4 @@
-import { getVariableName } from '../../SceneCreatorUtilities';
+import { getVariableName, readableOperator } from '../../SceneCreatorUtilities';
 
 const withWhen = (tokens) => {
   tokens.unshift({
@@ -107,7 +107,7 @@ const VariableReachesValue = ({ trigger, context }) => {
         type: 'selectParamSheet',
         paramName: 'comparison',
         paramValue: trigger.params.comparison,
-        label: trigger.params.comparison,
+        label: readableOperator(trigger.params.comparison),
       },
       {
         type: 'selectParamSheet',
@@ -157,7 +157,7 @@ const CounterReachesValue = ({ trigger }) => {
       type: 'selectParamSheet',
       paramName: 'comparison',
       paramValue: trigger.params?.comparison ?? 'equal',
-      label: trigger.params?.comparison ?? 'equal',
+      label: readableOperator(trigger.params?.comparison ?? 'equal'),
     },
     {
       type: 'selectParamSheet',

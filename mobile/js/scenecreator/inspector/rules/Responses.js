@@ -1,4 +1,4 @@
-import { getVariableName } from '../../SceneCreatorUtilities';
+import { getVariableName, readableOperator } from '../../SceneCreatorUtilities';
 import { makeCardPreviewTitle } from '../../../utilities';
 
 const Empty = ({ order }) => {
@@ -166,7 +166,7 @@ const VariableMeetsCondition = ({ response, context }) => {
         type: 'selectParamSheet',
         paramName: 'comparison',
         paramValue: response.params.comparison,
-        label: response.params.comparison,
+        label: readableOperator(response.params.comparison),
       },
       {
         type: 'selectParamSheet',
@@ -195,7 +195,7 @@ const CounterMeetsCondition = ({ response }) => {
       type: 'selectParamSheet',
       paramName: 'comparison',
       paramValue: response.params?.comparison ?? 'equal',
-      label: response.params?.comparison ?? 'equal',
+      label: readableOperator(response.params?.comparison ?? 'equal'),
     },
     {
       type: 'selectParamSheet',
