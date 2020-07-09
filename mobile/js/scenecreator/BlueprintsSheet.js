@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { sendDataPaneAction, ToolImage } from '../Tools';
+import { useGhostUI } from '../ghost/GhostUI';
 
 import BottomSheetHeader from './BottomSheetHeader';
 import CardCreatorBottomSheet from './CardCreatorBottomSheet';
@@ -58,9 +59,20 @@ const BlueprintItem = ({ entry, context, onPress }) => (
   </TouchableOpacity>
 );
 
-export default BlueprintsSheet = ({ element, isOpen, onClose, onSelectBlueprint, context }) => {
+export default BlueprintsSheet = ({
+  element,
+  isOpen,
+  onClose,
+  title,
+  onSelectBlueprint,
+  context,
+}) => {
+  const { root } = useGhostUI();
   if (!element) {
-    return null;
+    // TODO: BEN: to prevent needless subscription here,
+    // split BlueprintsSheet from AddBlueprintSheet and then grab element if it doesn't exist
+    element = root?.panes ? root.panes['sceneCreatorBlueprints'] : null;
+    if (!element) return null;
   }
 
   let blueprintsData, sendAction;
@@ -78,7 +90,7 @@ export default BlueprintsSheet = ({ element, isOpen, onClose, onSelectBlueprint,
     onSelectBlueprint = (entryId) => sendAction('addBlueprintToScene', entryId);
   }
 
-  const renderHeader = () => <BottomSheetHeader title="Blueprints" onClose={onClose} />;
+  const renderHeader = () => <BottomSheetHeader title={title ?? 'Blueprints'} onClose={onClose} />;
 
   const renderContent = () => (
     <View style={styles.container}>

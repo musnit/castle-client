@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import BlueprintsSheet from '../../BlueprintsSheet';
 import CardDestinationPickerSheet from '../../CardDestinationPickerSheet';
 import RuleParamInputSheet from './RuleParamInputSheet';
 
@@ -62,6 +63,14 @@ export const ConfigureRuleEntry = ({
         }),
     });
 
+  const showBlueprintPicker = () =>
+    addChildSheet({
+      key: 'ruleBlueprintPicker',
+      Component: BlueprintsSheet,
+      title: 'Choose blueprint',
+      onSelectBlueprint: (entryId) => onChangeParams({ entryId }),
+    });
+
   return (
     <React.Fragment>
       {cells.map((cell, ii) => {
@@ -120,6 +129,16 @@ export const ConfigureRuleEntry = ({
                 key={key}
                 style={[styles.cell, styles.select]}
                 onPress={showCardPicker}>
+                <Text style={styles.selectText}>{cell.label}</Text>
+              </TouchableOpacity>
+            );
+          }
+          case 'selectBlueprintSheet': {
+            return (
+              <TouchableOpacity
+                key={key}
+                style={[styles.cell, styles.select]}
+                onPress={showBlueprintPicker}>
                 <Text style={styles.selectText}>{cell.label}</Text>
               </TouchableOpacity>
             );

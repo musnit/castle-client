@@ -206,6 +206,32 @@ const CounterMeetsCondition = ({ response }) => {
   ];
 };
 
+const Create = ({ response }) => {
+  return [
+    {
+      type: 'selectEntry',
+      label: 'Create',
+    },
+    {
+      type: 'selectBlueprintSheet',
+      label: response.params?.entryId ?? '(choose blueprint)', // TODO: entry title
+    },
+    {
+      type: 'text',
+      label: 'at relative position',
+    },
+    {
+      type: 'selectParamSheet',
+      paramNames: ['xOffset', 'yOffset'],
+      paramValues: {
+        xOffset: response.params?.xOffset ?? 0,
+        yOffset: response.params?.yOffset ?? 0,
+      },
+      label: `x: ${response.params?.xOffset ?? 0}, y: ${response.params?.yOffset ?? 0}`,
+    },
+  ];
+};
+
 const Destroy = () => {
   return [
     {
@@ -389,6 +415,7 @@ export const Responses = {
   ['set velocity']: SetVelocity,
   ['send player to card']: SendPlayerToCard,
   ['restart scene']: RestartScene,
+  create: Create,
   destroy: Destroy,
   show: Show,
   hide: Hide,
