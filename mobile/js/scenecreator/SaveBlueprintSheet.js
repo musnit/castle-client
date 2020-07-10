@@ -7,18 +7,21 @@ import BottomSheetHeader from './BottomSheetHeader';
 import CardCreatorBottomSheet from './CardCreatorBottomSheet';
 
 import * as SceneCreatorConstants from './SceneCreatorConstants';
+import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
   form: {
     padding: 16,
   },
   label: {
+    fontSize: 16,
     marginVertical: 8,
   },
   input: {
+    fontSize: 16,
     borderWidth: 1,
     borderTopWidth: 2,
-    borderRadius: 3,
+    borderRadius: 4,
     borderColor: '#000',
     padding: 8,
     marginBottom: 8,
@@ -31,6 +34,17 @@ const styles = StyleSheet.create({
   button: {
     marginVertical: 8,
   },
+  error: {
+    backgroundColor: Constants.colors.black,
+    borderRadius: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    marginTop: 8,
+  },
+  errorText: {
+    fontSize: 16,
+    color: Constants.colors.white,
+  }
 });
 
 const SaveBlueprintForm = ({
@@ -67,9 +81,7 @@ const SaveBlueprintForm = ({
   if (!blueprintToSave.title || !blueprintToSave.title.length) {
     validationError = 'The blueprint requires a title.';
   }
-  if (!blueprintToSave.description || !blueprintToSave.description.length) {
-    validationError = 'The blueprint requires a description.';
-  }
+
   Object.entries(library).forEach(([entryId, entry]) => {
     if (
       entry.entryType === 'actorBlueprint' &&
@@ -88,7 +100,7 @@ const SaveBlueprintForm = ({
       <Text style={styles.label}>Description</Text>
       <TextInput value={description} onChangeText={setDescription} style={styles.input} />
       {isExisting ? <Text>{usedByLabel}</Text> : null}
-      {validationError ? <Text>{validationError}</Text> : null}
+      {validationError ? <View style={styles.error}><Text style={styles.errorText}>{validationError}</Text></View> : null}
       <View style={styles.actions}>
         {isExisting ? (
           <TouchableOpacity
