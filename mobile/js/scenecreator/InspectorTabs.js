@@ -2,10 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { sendDataPaneAction } from '../Tools';
 
-const LEGACY_RULES_UI = false;
-
 import AddBehaviorSheet from './AddBehaviorSheet';
-import InspectorLegacyRules from './inspector/behaviors/InspectorLegacyRules';
 import SaveBlueprintSheet from './SaveBlueprintSheet';
 
 import * as SceneCreatorConstants from './SceneCreatorConstants';
@@ -147,14 +144,7 @@ export const InspectorTabs = ({
   let tabContents;
   switch (selectedTab) {
     case 'rules': {
-      tabContents = LEGACY_RULES_UI ? (
-        <InspectorLegacyRules
-          rules={behaviors.Rules}
-          counter={behaviors.Counter}
-          sendActions={sendActions}
-          addChildSheet={addChildSheet}
-        />
-      ) : (
+      tabContents = (
         <Inspector.Rules
           behaviors={behaviors}
           sendActions={sendActions}
