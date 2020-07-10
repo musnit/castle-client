@@ -1,11 +1,17 @@
 import { getVariableName, readableOperator } from '../../SceneCreatorUtilities';
 import { makeCardPreviewTitle } from '../../../utilities';
 
-const Empty = ({ order }) => {
+const Empty = ({ order, isCondition }) => {
+  let label;
+  if (isCondition) {
+    label = 'Select condition';
+  } else {
+    label = order === 0 ? 'Select response' : 'Add response';
+  }
   return [
     {
       type: 'selectEntryPlaceholder',
-      label: order === 0 ? 'Select response' : 'Add response',
+      label,
     },
   ];
 };

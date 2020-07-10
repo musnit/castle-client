@@ -27,7 +27,14 @@ const styles = StyleSheet.create({
   },
 });
 
-const RESPONSE_CATEGORY_ORDER = ['general', 'interaction', 'logic', 'state', 'visible', 'Dynamic Motion'];
+const RESPONSE_CATEGORY_ORDER = [
+  'general',
+  'interaction',
+  'logic',
+  'state',
+  'visible',
+  'Dynamic Motion',
+];
 const CONDITION_CATEGORY_ORDER = ['state', 'collision', 'random'];
 
 const _entryToResponse = (entry) => ({
@@ -110,7 +117,11 @@ const If = ({ response, onChangeResponse, children, order, ...props }) => {
           {children}
           <ConfigureRuleEntry
             entry={getEntryByName(response.params.condition?.name, conditions)}
-            cells={makeResponseCells({ response: response.params.condition, context })}
+            cells={makeResponseCells({
+              response: response.params.condition,
+              context,
+              isCondition: true,
+            })}
             onChangeEntry={onChangeCondition}
             onShowPicker={onPickCondition}
             onChangeParams={onChangeParams}
@@ -216,13 +227,14 @@ const RESPONSE_COMPONENTS = {
   ['act on']: ActOn,
 };
 
-const makeResponseCells = ({ response, order, context }) => {
+const makeResponseCells = (props) => {
+  const { response } = props;
   if (!response || response.name === 'none') {
-    return Responses.empty({ order });
+    return Responses.empty(props);
   } else if (Responses[response.name]) {
-    return Responses[response.name]({ response, order, context });
+    return Responses[response.name](props);
   } else {
-    return Responses.default({ response, order, context });
+    return Responses.default(props);
   }
 };
 
