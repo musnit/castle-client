@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import BottomSheetHeader from '../../BottomSheetHeader';
 import CardCreatorBottomSheet from '../../CardCreatorBottomSheet';
@@ -8,7 +9,7 @@ const styles = StyleSheet.create({
   container: {},
   name: {
     fontWeight: 'bold',
-    marginBottom: 8,
+    fontSize: 16,
   },
   description: {
     padding: 16,
@@ -19,7 +20,18 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   actionContainer: {
-    padding: 16,
+    padding: 12,
+    paddingLeft: 0,
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  icon: {
+    marginRight: 12,
+  },
+  actionLabel: {
+    fontSize: 16,
   },
 });
 
@@ -35,6 +47,7 @@ export default RuleOptionsSheet = ({
   const items = [
     {
       name: 'Insert response before',
+      icon: 'table-row-plus-before',
       shouldDisplay: () => true,
       action: () =>
         onShowPicker((result) => {
@@ -44,6 +57,7 @@ export default RuleOptionsSheet = ({
     },
     {
       name: 'Move down in order',
+      icon: 'arrow-down',
       shouldDisplay: () => !!actions.moveDown,
       action: () => {
         actions.moveDown();
@@ -52,6 +66,7 @@ export default RuleOptionsSheet = ({
     },
     {
       name: 'Wrap in condition',
+      icon: 'code-braces',
       shouldDisplay: () => true,
       action: () => {
         actions.wrapInCondition();
@@ -60,6 +75,7 @@ export default RuleOptionsSheet = ({
     },
     {
       name: 'Replace',
+      icon: 'swap-horizontal',
       shouldDisplay: () => true,
       action: () =>
         onShowPicker((result) => {
@@ -69,6 +85,7 @@ export default RuleOptionsSheet = ({
     },
     {
       name: 'Remove',
+      icon: 'trash-can',
       shouldDisplay: () => true,
       action: () => {
         actions.remove();
@@ -81,8 +98,7 @@ export default RuleOptionsSheet = ({
     <View style={styles.container}>
       {entry && (
         <View style={styles.description}>
-          <Text style={styles.name}>"{entry.name}" response</Text>
-          <Text>{entry.description}</Text>
+          <Text style={styles.name}>{entry.description}</Text>
         </View>
       )}
       <View style={styles.actions}>
@@ -95,8 +111,9 @@ export default RuleOptionsSheet = ({
                   styles.actionContainer,
                   ii > 0 ? { borderTopWidth: 1, borderColor: '#ccc' } : null,
                 ]}>
-                <TouchableOpacity onPress={item.action}>
-                  <Text>{item.name}</Text>
+                <TouchableOpacity onPress={item.action} style={styles.actionButton}>
+                  <MCIcon name={item.icon} color="#000" size={24} style={styles.icon} />
+                  <Text style={styles.actionLabel}>{item.name}</Text>
                 </TouchableOpacity>
               </View>
             );
