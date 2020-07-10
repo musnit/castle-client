@@ -91,6 +91,10 @@ const Collide = ({ trigger }) => {
 };
 
 const VariableReachesValue = ({ trigger, context }) => {
+  const changeAllParams = {
+    paramNames: ['variableId', 'comparison', 'value'],
+    paramValues: { ...trigger.params },
+  };
   if (trigger.params) {
     return withWhen([
       {
@@ -100,20 +104,17 @@ const VariableReachesValue = ({ trigger, context }) => {
       {
         type: 'selectParamSheet',
         label: getVariableName(trigger.params.variableId, context.variables),
-        paramName: 'variableId',
-        paramValue: trigger.params.variableId,
+        ...changeAllParams,
       },
       {
         type: 'selectParamSheet',
-        paramName: 'comparison',
-        paramValue: trigger.params.comparison,
         label: readableOperator(trigger.params.comparison),
+        ...changeAllParams,
       },
       {
         type: 'selectParamSheet',
-        paramName: 'value',
-        paramValue: trigger.params.value,
         label: trigger.params.value,
+        ...changeAllParams,
       },
     ]);
   } else {
@@ -124,9 +125,8 @@ const VariableReachesValue = ({ trigger, context }) => {
       },
       {
         type: 'selectParamSheet',
-        label: getVariableName(trigger.params.variableId, context.variables),
-        paramName: 'variableId',
-        paramValue: trigger.params.variableId,
+        label: '(choose variable)',
+        ...changeAllParams,
       },
     ]);
   }

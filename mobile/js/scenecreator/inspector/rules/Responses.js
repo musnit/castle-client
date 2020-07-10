@@ -150,6 +150,10 @@ const IsColliding = () => {
 };
 
 const VariableMeetsCondition = ({ response, context }) => {
+  const changeAllParams = {
+    paramNames: ['variableId', 'comparison', 'value'],
+    paramValues: { ...response.params },
+  };
   if (response.params) {
     return [
       {
@@ -159,20 +163,17 @@ const VariableMeetsCondition = ({ response, context }) => {
       {
         type: 'selectParamSheet',
         label: getVariableName(response.params.variableId, context.variables),
-        paramName: 'variableId',
-        paramValue: response.params.variableId,
+        ...changeAllParams,
       },
       {
         type: 'selectParamSheet',
-        paramName: 'comparison',
-        paramValue: response.params.comparison,
         label: readableOperator(response.params.comparison),
+        ...changeAllParams,
       },
       {
         type: 'selectParamSheet',
-        paramName: 'value',
-        paramValue: response.params.value,
         label: response.params.value,
+        ...changeAllParams,
       },
     ];
   } else {
@@ -180,6 +181,11 @@ const VariableMeetsCondition = ({ response, context }) => {
       {
         type: 'selectEntry',
         label: 'a variable meets a condition',
+      },
+      {
+        type: 'selectParamSheet',
+        label: '(choose variable)',
+        ...changeAllParams,
       },
     ];
   }
@@ -276,6 +282,12 @@ const RestartScene = () => {
 };
 
 const SetVariable = ({ response, context }) => {
+  const changeAllParams = {
+    paramNames: ['variableId', 'setToValue'],
+    paramValues: {
+      ...response.params,
+    },
+  };
   return [
     {
       type: 'showEntryOptions',
@@ -284,8 +296,7 @@ const SetVariable = ({ response, context }) => {
     {
       type: 'selectParamSheet',
       label: getVariableName(response.params?.variableId, context.variables),
-      paramName: 'variableId',
-      paramValue: response.params?.variableId,
+      ...changeAllParams,
     },
     {
       type: 'text',
@@ -294,13 +305,18 @@ const SetVariable = ({ response, context }) => {
     {
       type: 'selectParamSheet',
       label: response.params?.setToValue ?? 0,
-      paramName: 'setToValue',
-      paramValue: response.params?.setToValue ?? 0,
+      ...changeAllParams,
     },
   ];
 };
 
 const ChangeVariable = ({ response, context }) => {
+  const changeAllParams = {
+    paramNames: ['variableId', 'changeBy'],
+    paramValues: {
+      ...response.params,
+    },
+  };
   return [
     {
       type: 'showEntryOptions',
@@ -309,8 +325,7 @@ const ChangeVariable = ({ response, context }) => {
     {
       type: 'selectParamSheet',
       label: getVariableName(response.params?.variableId, context.variables),
-      paramName: 'variableId',
-      paramValue: response.params?.variableId,
+      ...changeAllParams,
     },
     {
       type: 'text',
@@ -319,8 +334,7 @@ const ChangeVariable = ({ response, context }) => {
     {
       type: 'selectParamSheet',
       label: response.params?.changeBy ?? 0,
-      paramName: 'changeBy',
-      paramValue: response.params?.changeBy ?? 0,
+      ...changeAllParams,
     },
   ];
 };
