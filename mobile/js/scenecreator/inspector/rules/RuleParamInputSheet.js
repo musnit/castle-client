@@ -84,6 +84,15 @@ export default RuleParamInputSheet = ({
     onClose();
   }, [onChangeParams, onClose, paramNames, values]);
 
+  if (!title) {
+    let firstParamName = paramNames[0];
+    let paramSpec = findParamSpec(paramNames[0]);
+    if (paramSpec && paramSpec.label) {
+      firstParamName = paramSpec.label;
+    }
+    title = `Edit ${firstParamName}`;
+  }
+
   const renderHeader = () => <BottomSheetHeader title={title} onClose={onClose} onDone={onDone} />;
 
   return (

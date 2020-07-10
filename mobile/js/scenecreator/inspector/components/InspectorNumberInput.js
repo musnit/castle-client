@@ -37,7 +37,7 @@ const numberToText = (number, decimalDigits = 3) => {
   return parseFloat(number.toFixed(decimalDigits)).toString();
 };
 
-export const InspectorNumberInput = ({ value, lastNativeUpdate, label, onChange, ...props }) => {
+export const InspectorNumberInput = ({ value, lastNativeUpdate, onChange, ...props }) => {
   // Maintain `text` separately from `value` to allow incomplete text such as '' or '3.'
   const [text, setText] = React.useState(numberToText(value));
 

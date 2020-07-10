@@ -22,12 +22,9 @@ const styles = StyleSheet.create({
     flexShrink: 0,
     marginLeft: 16,
   },
-  label: {
-    fontSize: 16,
-  },
 });
 
-export const InspectorDropdown = ({ value, label, onChange, style, ...props }) => {
+export const InspectorDropdown = ({ value, onChange, style, ...props }) => {
   const { showActionSheetWithOptions } = useActionSheet();
   const onPress = React.useCallback(() => {
     const items = objectToArray(props?.items ?? []);
@@ -43,7 +40,6 @@ export const InspectorDropdown = ({ value, label, onChange, style, ...props }) =
 
   return (
     <View style={[styles.container, style]} {...props}>
-      <Text style={styles.label}>{label}</Text>
       <TouchableOpacity onPress={onPress} style={styles.box}>
         <Text>{value}</Text>
       </TouchableOpacity>

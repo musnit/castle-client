@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   placeholderText: {
     fontSize: 16,
     color: Constants.colors.grayText,
-  }
+  },
 });
 
 export const ConfigureRuleEntry = ({
@@ -52,7 +52,7 @@ export const ConfigureRuleEntry = ({
     addChildSheet({
       key: 'ruleParamInput',
       Component: RuleParamInputSheet,
-      title: title ?? `Edit ${paramNames[0]}`,
+      title,
       entry,
       paramNames,
       initialValues,

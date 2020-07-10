@@ -58,7 +58,7 @@ export const RuleParamInputRow = ({ label, paramSpec, value, setValue, ...props 
   return (
     <View style={styles.inputContainer}>
       <View style={{ width: '50%' }}>
-        <Text style={styles.inputLabel}>{label}</Text>
+        <Text style={styles.inputLabel}>{paramSpec?.label ?? label}</Text>
       </View>
       <View style={{ width: '50%' }}>{input}</View>
     </View>
