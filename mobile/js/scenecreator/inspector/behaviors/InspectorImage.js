@@ -31,6 +31,9 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
+  actionsText: {
+    fontSize: 16,
+  },
   imagePreview: {
     width: 96,
     height: 96,
@@ -127,7 +130,7 @@ export default InspectorImage = ({ image, sendAction }) => {
           onRemove={onRemove}
         />
         <View style={styles.actions}>
-          <Text>Add from</Text>
+          <Text style={styles.actionsText}>Add from</Text>
           <TouchableOpacity
             style={[SceneCreatorConstants.styles.button, { marginLeft: 8 }]}
             onPress={() => Utilities.launchImageLibrary(onChangeImage)}>

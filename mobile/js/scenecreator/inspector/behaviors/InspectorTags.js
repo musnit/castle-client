@@ -6,6 +6,8 @@ import { InspectorTextInput } from '../components/InspectorTextInput';
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#ccc',
   },
   label: {
     fontWeight: 'bold',

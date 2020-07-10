@@ -5,11 +5,14 @@ import { InspectorTextInput } from '../components/InspectorTextInput';
 
 const styles = StyleSheet.create({
   container: {
+    borderTopWidth: 1,
+    borderColor: '#ccc',
     padding: 16,
   },
   label: {
     fontWeight: 'bold',
     paddingBottom: 16,
+    fontSize: 16,
   },
 });
 

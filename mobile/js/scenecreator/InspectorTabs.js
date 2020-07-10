@@ -18,8 +18,6 @@ const styles = StyleSheet.create({
   blueprintContainer: {
     padding: 16,
     alignItems: 'flex-start',
-    borderTopWidth: 1,
-    borderTopColor: '#ccc',
   },
   blueprintTitle: {
     fontWeight: 'bold',
@@ -29,44 +27,47 @@ const styles = StyleSheet.create({
 });
 
 const GeneralTab = ({ behaviors, sendActions, isTextActorSelected, addChildSheet }) => {
-  if (isTextActorSelected) {
-    return (
-      <React.Fragment>
-        <Inspector.TextContent text={behaviors.Text} sendAction={sendActions.Text} />
-        <Inspector.TextLayout text={behaviors.Text} sendAction={sendActions.Text} />
-      </React.Fragment>
-    );
-  } else {
-    return (
-      <React.Fragment>
-        <Inspector.Tags tags={behaviors.Tags} sendAction={sendActions.Tags} />
+  return (
+    <React.Fragment>
+      <View style={styles.blueprintContainer}>
+        <Text style={styles.blueprintTitle}>Blueprint</Text>
+        <TouchableOpacity
+          style={SceneCreatorConstants.styles.button}
+          onPress={() =>
+            addChildSheet({
+              key: 'saveBlueprint',
+              Component: SaveBlueprintSheet,
+            })
+          }>
+          <Text style={SceneCreatorConstants.styles.buttonLabel}>Save blueprint</Text>
+        </TouchableOpacity>
+      </View>
+      {isTextActorSelected && (
+        <React.Fragment>
+          <Inspector.TextContent text={behaviors.Text} sendAction={sendActions.Text} />
+          <Inspector.TextLayout text={behaviors.Text} sendAction={sendActions.Text} />
+        </React.Fragment>
+      )}
+      {!isTextActorSelected && (
+        <React.Fragment>
+          <Inspector.Drawing
+            drawing={behaviors.Drawing}
+            drawing2={behaviors.Drawing2}
+            sendAction={sendActions.Drawing}
+          />
+          <Inspector.Image image={behaviors.Image} sendAction={sendActions.Image} />
+        </React.Fragment>
+      )}
+      <Inspector.Tags tags={behaviors.Tags} sendAction={sendActions.Tags} />
+      {!isTextActorSelected && (
         <Inspector.Layout
           body={behaviors.Body}
           circleShape={behaviors.CircleShape}
           sendActions={sendActions}
         />
-        <Inspector.Drawing
-          drawing={behaviors.Drawing}
-          drawing2={behaviors.Drawing2}
-          sendAction={sendActions.Drawing}
-        />
-        <Inspector.Image image={behaviors.Image} sendAction={sendActions.Image} />
-        <View style={styles.blueprintContainer}>
-          <Text style={styles.blueprintTitle}>Blueprint</Text>
-          <TouchableOpacity
-            style={SceneCreatorConstants.styles.button}
-            onPress={() =>
-              addChildSheet({
-                key: 'saveBlueprint',
-                Component: SaveBlueprintSheet,
-              })
-            }>
-            <Text style={SceneCreatorConstants.styles.buttonLabel}>Save blueprint</Text>
-          </TouchableOpacity>
-        </View>
-      </React.Fragment>
-    );
-  }
+      )}
+    </React.Fragment>
+  );
 };
 
 const MovementTab = ({ behaviors, sendActions, addChildSheet }) => {
