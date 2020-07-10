@@ -96,9 +96,9 @@ export const ConfigureRuleEntry = ({
             return (
               <TouchableOpacity
                 key={key}
-                style={[styles.cell, styles.select, styles.placeholder]}
+                style={[styles.cell, styles.select]}
                 onPress={() => onShowPicker(onChangeEntry)}>
-                <Text style={[styles.placeholderText]}>{cell.label}</Text>
+                <Text style={[styles.selectText]}>{cell.label}</Text>
               </TouchableOpacity>
             );
           }
