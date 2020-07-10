@@ -144,7 +144,7 @@ const Else = ({ response, onChangeResponse, ...props }) => {
   );
 };
 
-const Repeat = ({ response, onChangeResponse, children, ...props }) => {
+const Repeat = ({ response, onChangeResponse, children, order, ...props }) => {
   const onChangeBody = (body) =>
     onChangeResponse({
       ...response,
@@ -154,16 +154,18 @@ const Repeat = ({ response, onChangeResponse, children, ...props }) => {
       },
     });
   return (
-    <React.Fragment>
-      {children}
+    <View style={[styles.response, order > 0 ? styles.nextResponse : null]}>
+      <View style={styles.responseCells}>
+        {children}
+      </View>
       <View style={SceneCreatorConstants.styles.insetContainer}>
         <Response response={response.params.body} onChangeResponse={onChangeBody} {...props} />
       </View>
-    </React.Fragment>
+    </View>
   );
 };
 
-const ActOn = ({ response, onChangeResponse, children, ...props }) => {
+const ActOn = ({ response, onChangeResponse, children, order, ...props }) => {
   const onChangeBody = (body) =>
     onChangeResponse({
       ...response,
@@ -173,12 +175,14 @@ const ActOn = ({ response, onChangeResponse, children, ...props }) => {
       },
     });
   return (
-    <React.Fragment>
-      {children}
+    <View style={[styles.response, order > 0 ? styles.nextResponse : null]}>
+      <View style={styles.responseCells}>
+        {children}
+      </View>
       <View style={SceneCreatorConstants.styles.insetContainer}>
         <Response response={response.params.body} onChangeResponse={onChangeBody} {...props} />
       </View>
-    </React.Fragment>
+    </View>
   );
 };
 
