@@ -52,6 +52,15 @@ const Press = () => {
   ];
 };
 
+const Sling = () => {
+  return withWhen([
+    {
+      type: 'selectEntry',
+      label: 'this is slung',
+    },
+  ]);
+};
+
 const Create = () => {
   return withWhen([
     {
@@ -181,6 +190,7 @@ export const Triggers = {
   collide: Collide,
   tap: Tap,
   press: Press,
+  sling: Sling,
   create: Create,
   destroy: Destroy,
   ['variable reaches value']: VariableReachesValue,
