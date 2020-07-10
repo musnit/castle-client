@@ -11,7 +11,7 @@ const withWhen = (tokens) => {
 const Empty = () => {
   return withWhen([
     {
-      type: 'selectEntry',
+      type: 'selectEntryPlaceholder',
       label: 'Select trigger',
     },
   ]);

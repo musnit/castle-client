@@ -4,7 +4,7 @@ import { makeCardPreviewTitle } from '../../../utilities';
 const Empty = ({ order }) => {
   return [
     {
-      type: 'selectEntry',
+      type: 'selectEntryPlaceholder',
       label: order === 0 ? 'Select response' : 'Add response',
     },
   ];
