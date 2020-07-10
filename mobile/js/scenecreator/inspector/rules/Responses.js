@@ -249,7 +249,7 @@ const Destroy = () => {
   return [
     {
       type: 'showEntryOptions',
-      label: 'destroy this actor',
+      label: 'Destroy this actor',
     },
   ];
 };
@@ -258,7 +258,7 @@ const Show = () => {
   return [
     {
       type: 'showEntryOptions',
-      label: 'show this text',
+      label: 'Show this text',
     },
   ];
 };
@@ -267,7 +267,7 @@ const Hide = () => {
   return [
     {
       type: 'showEntryOptions',
-      label: 'hide this text',
+      label: 'Hide this text',
     },
   ];
 };
@@ -276,7 +276,7 @@ const RestartScene = () => {
   return [
     {
       type: 'showEntryOptions',
-      label: 'restart this card',
+      label: 'Restart this card',
     },
   ];
 };
