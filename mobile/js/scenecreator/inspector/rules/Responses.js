@@ -76,8 +76,8 @@ const ActOn = ({ response }) => {
         label: 'Act on',
       },
       {
-        type: 'selectParamSheet',
-        label: 'no other actors',
+        type: 'selectParamSheetPlaceholder',
+        label: 'Select tag',
         paramName: 'tag',
         paramValue: '',
       },

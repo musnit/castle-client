@@ -142,6 +142,26 @@ export const ConfigureRuleEntry = ({
               </TouchableOpacity>
             );
           }
+          case 'selectParamSheetPlaceholder': {
+            return (
+              <TouchableOpacity
+                key={key}
+                style={[styles.cell, styles.select, styles.placeholder]}
+                onPress={() => {
+                  if (cell.paramNames) {
+                    showEditParamSheet(cell.paramNames, cell.paramValues, cell.title);
+                  } else {
+                    showEditParamSheet(
+                      [cell.paramName],
+                      { [cell.paramName]: cell.paramValue },
+                      cell.title
+                    );
+                  }
+                }}>
+                <Text style={styles.placeholderText}>{cell.label}</Text>
+              </TouchableOpacity>
+            );
+          }
           case 'selectCardSheet': {
             return (
               <TouchableOpacity
