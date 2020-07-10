@@ -216,7 +216,7 @@ const Create = ({ response, context }) => {
   }
   return [
     {
-      type: 'selectEntry',
+      type: 'showEntryOptions',
       label: 'Create',
     },
     {
