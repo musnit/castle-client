@@ -127,37 +127,39 @@ export default InspectorRules = ({ behaviors, sendActions, context, addChildShee
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.actionsContainer}>
-        <TouchableOpacity
-          style={SceneCreatorConstants.styles.button}
-          onPress={() => sendRuleAction('add')}>
-          <Text style={SceneCreatorConstants.styles.buttonLabel}>Add new rule</Text>
-        </TouchableOpacity>
-        {!counter.isActive ? (
+    <React.Fragment>
+      <View style={styles.container}>
+        <View style={styles.actionsContainer}>
           <TouchableOpacity
-            style={[SceneCreatorConstants.styles.button, { marginLeft: 16 }]}
-            onPress={() => sendActions.Counter('add')}>
-            <Text style={SceneCreatorConstants.styles.buttonLabel}>Enable counter</Text>
+            style={SceneCreatorConstants.styles.button}
+            onPress={() => sendRuleAction('add')}>
+            <Text style={SceneCreatorConstants.styles.buttonLabel}>Add new rule</Text>
           </TouchableOpacity>
-        ) : null}
+          {!counter.isActive ? (
+            <TouchableOpacity
+              style={[SceneCreatorConstants.styles.button, { marginLeft: 16 }]}
+              onPress={() => sendActions.Counter('add')}>
+              <Text style={SceneCreatorConstants.styles.buttonLabel}>Enable counter</Text>
+            </TouchableOpacity>
+          ) : null}
+        </View>
+        <React.Fragment>
+          {rulesItems.map((rule, ii) => (
+            <InspectorRule
+              key={`rule-${rule.trigger?.name}-${rule.response?.name}-${ii}`}
+              rule={rule}
+              onChangeRule={onChangeRule}
+              behaviors={behaviors}
+              context={context}
+              addChildSheet={addChildSheet}
+              triggers={rulesData.triggers}
+              responses={rulesData.responses}
+              conditions={rulesData.conditions}
+            />
+          ))}
+        </React.Fragment>
       </View>
-      <React.Fragment>
-        {rulesItems.map((rule, ii) => (
-          <InspectorRule
-            key={`rule-${rule.trigger?.name}-${rule.response?.name}-${ii}`}
-            rule={rule}
-            onChangeRule={onChangeRule}
-            behaviors={behaviors}
-            context={context}
-            addChildSheet={addChildSheet}
-            triggers={rulesData.triggers}
-            responses={rulesData.responses}
-            conditions={rulesData.conditions}
-          />
-        ))}
-      </React.Fragment>
       {counter?.isActive ? <Counter counter={counter} sendAction={sendActions.Counter} /> : null}
-    </View>
+    </React.Fragment>
   );
 };
