@@ -4,6 +4,7 @@ import { ConfigureRuleEntry } from './ConfigureRuleEntry';
 import { getEntryByName } from '../InspectorUtilities';
 import { makeResponseActions } from './ResponseActions';
 import { Responses } from './Responses';
+import { useActionSheet } from '@expo/react-native-action-sheet';
 
 import RuleOptionsSheet from './RuleOptionsSheet';
 import RulePartPickerSheet from './RulePartPickerSheet';
@@ -65,6 +66,17 @@ const If = ({ response, onChangeResponse, children, order, ...props }) => {
       },
     });
 
+  const onRemoveElse = () => {
+    const newParams = { ...response.params };
+    delete newParams.else;
+    onChangeResponse({
+      ...response,
+      params: {
+        ...newParams,
+      },
+    });
+  };
+
   const onPickCondition = (handler) =>
     addChildSheet({
       key: 'rulePartPicker',
@@ -109,18 +121,34 @@ const If = ({ response, onChangeResponse, children, order, ...props }) => {
           <Response response={response.params.then} onChangeResponse={onChangeThen} {...props} />
         </View>
         <View style={{ paddingTop: 16 }}>
-          <Else response={response.params.else} onChangeResponse={onChangeElse} {...props} />
+          <Else
+            response={response.params.else}
+            onChangeResponse={onChangeElse}
+            onRemoveElse={onRemoveElse}
+            {...props}
+          />
         </View>
       </View>
     </React.Fragment>
   );
 };
 
-const Else = ({ response, onChangeResponse, ...props }) => {
-  // TODO: style this component
+const Else = ({ response, onChangeResponse, onRemoveElse, ...props }) => {
+  // TODO: a real sheet here?
+  const { showActionSheetWithOptions } = useActionSheet();
+  const maybeRemoveElse = () =>
+    showActionSheetWithOptions(
+      { options: [`Remove 'else'`, 'Cancel'], destructiveButtonIndex: 0, cancelButtonIndex: 1 },
+      (index) => {
+        if (index === 0) {
+          onRemoveElse();
+        }
+      }
+    );
+
   if (!response) {
     return (
-      <View style={{ flexDirection: 'row' }}>
+      <View style={styles.responseCells}>
         <TouchableOpacity
           style={SceneCreatorConstants.styles.button}
           onPress={() => onChangeResponse({ name: 'none' })}>
@@ -131,12 +159,11 @@ const Else = ({ response, onChangeResponse, ...props }) => {
   }
   return (
     <React.Fragment>
-      <TouchableOpacity
-        onPress={() => {
-          /* TODO: delete else */
-        }}>
-        <Text style={styles.ruleName}>Else:</Text>
-      </TouchableOpacity>
+      <View style={styles.responseCells}>
+        <TouchableOpacity style={SceneCreatorConstants.styles.button} onPress={maybeRemoveElse}>
+          <Text style={SceneCreatorConstants.styles.buttonLabel}>Else</Text>
+        </TouchableOpacity>
+      </View>
       <View style={SceneCreatorConstants.styles.insetContainer}>
         <Response response={response} onChangeResponse={onChangeResponse} {...props} />
       </View>
@@ -155,9 +182,7 @@ const Repeat = ({ response, onChangeResponse, children, order, ...props }) => {
     });
   return (
     <View style={[styles.response, order > 0 ? styles.nextResponse : null]}>
-      <View style={styles.responseCells}>
-        {children}
-      </View>
+      <View style={styles.responseCells}>{children}</View>
       <View style={SceneCreatorConstants.styles.insetContainer}>
         <Response response={response.params.body} onChangeResponse={onChangeBody} {...props} />
       </View>
@@ -176,9 +201,7 @@ const ActOn = ({ response, onChangeResponse, children, order, ...props }) => {
     });
   return (
     <View style={[styles.response, order > 0 ? styles.nextResponse : null]}>
-      <View style={styles.responseCells}>
-        {children}
-      </View>
+      <View style={styles.responseCells}>{children}</View>
       <View style={SceneCreatorConstants.styles.insetContainer}>
         <Response response={response.params.body} onChangeResponse={onChangeBody} {...props} />
       </View>
