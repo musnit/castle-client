@@ -15,12 +15,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderBottomWidth: 2,
     borderColor: '#000',
-    borderRadius: 3,
-    padding: 4,
+    borderRadius: 4,
+    padding: 8,
+    paddingVertical: 5,
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
-    marginLeft: 16,
   },
 });
 

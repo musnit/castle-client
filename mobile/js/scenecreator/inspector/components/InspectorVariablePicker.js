@@ -7,7 +7,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     marginBottom: 12,
   },
   box: {
@@ -15,12 +14,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderBottomWidth: 2,
     borderColor: '#000',
-    borderRadius: 3,
-    padding: 4,
+    borderRadius: 4,
+    padding: 8,
+    paddingVertical: 5,
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
-    marginLeft: 16,
   },
   label: {
     fontSize: 16,
