@@ -10,19 +10,22 @@ import { Trigger as InspectorTrigger } from '../rules/Trigger';
 
 import RulePartPickerSheet from '../rules/RulePartPickerSheet';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
+import * as Constants from '../../../Constants';
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-  },
+  container: {},
   actionsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingBottom: 16,
+    paddingVertical: 16,
   },
   rule: {
-    marginBottom: 16,
+    paddingTop: 12,
+    paddingHorizontal: 16,
+    marginBottom: 24,
+    borderColor: Constants.colors.grayOnWhiteBorder,
+    borderTopWidth: 1,
   },
 });
 
