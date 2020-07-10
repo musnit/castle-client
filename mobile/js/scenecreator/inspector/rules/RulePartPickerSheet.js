@@ -77,16 +77,17 @@ export default RulePartPickerSheet = ({
     <View style={styles.container}>
       {entries
         ? categoryOrder.map((category) => {
-            const contents = entries[category];
+          const contents = entries[category];
+          let index = 0;
             return isCategoryVisible[category] ? (
               <View key={`rule-category-${category}`} style={styles.category}>
                 <Text style={styles.categoryLabel}>{category}</Text>
-                {contents.map((entry, ii) =>
+                {contents.map((entry) =>
                   isEntryVisible(entry) ? (
                     <AddPart
-                      key={`rule-entry-${ii}`}
+                      key={`rule-entry-${index}`}
                       entry={entry}
-                      isFirst={ii == 0}
+                      isFirst={index++ == 0}
                       onAdd={onPressAdd}
                     />
                   ) : null
