@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
   },
   textActorsContainer: {
     paddingHorizontal: 16,
+    paddingTop: 16,
     paddingBottom: 8,
   },
   actions: {
