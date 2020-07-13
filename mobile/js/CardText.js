@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
     fontSize: 16,
     lineHeight: 22,
+    minHeight: 22,
   },
   textBlock: {
     backgroundColor: '#fff',
@@ -37,6 +38,7 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 16,
     lineHeight: 22,
+    minHeight: 22,
   },
   selected: {
     borderWidth: 1,
