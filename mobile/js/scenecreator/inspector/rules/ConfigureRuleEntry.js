@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import BlueprintsSheet from '../../BlueprintsSheet';
+import { RuleBlueprintsSheet } from '../../BlueprintsSheet';
 import CardDestinationPickerSheet from '../../CardDestinationPickerSheet';
 import RuleParamInputSheet from './RuleParamInputSheet';
 import * as Constants from '../../../Constants';
@@ -75,7 +75,7 @@ export const ConfigureRuleEntry = ({
   const showBlueprintPicker = () =>
     addChildSheet({
       key: 'ruleBlueprintPicker',
-      Component: BlueprintsSheet,
+      Component: RuleBlueprintsSheet,
       title: 'Choose blueprint',
       onSelectBlueprint: (entryId) => onChangeParams({ entryId }),
     });

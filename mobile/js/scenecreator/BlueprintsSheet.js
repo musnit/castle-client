@@ -66,13 +66,9 @@ const BlueprintItem = ({ entry, onPress }) => {
   );
 };
 
-export default BlueprintsSheet = ({ element, isOpen, onClose, title, onSelectBlueprint }) => {
-  const { root } = useGhostUI();
+export const BlueprintsSheet = ({ element, isOpen, onClose, title, onSelectBlueprint }) => {
   if (!element) {
-    // TODO: BEN: to prevent needless subscription here,
-    // split BlueprintsSheet from AddBlueprintSheet and then grab element if it doesn't exist
-    element = root?.panes ? root.panes['sceneCreatorBlueprints'] : null;
-    if (!element) return null;
+    return null;
   }
 
   let blueprintsData, sendAction;
@@ -118,4 +114,11 @@ export default BlueprintsSheet = ({ element, isOpen, onClose, title, onSelectBlu
       renderContent={renderContent}
     />
   );
+};
+
+// needed when the blueprints sheet is used outside of the CardCreatorSheetManager root sheets
+export const RuleBlueprintsSheet = (props) => {
+  const { root } = useGhostUI();
+  const element = root?.panes ? root.panes['sceneCreatorBlueprints'] : null;
+  return <BlueprintsSheet {...props} element={element} />;
 };

@@ -4,7 +4,7 @@ import { useCardCreator } from './CreateCardContext';
 import { useGhostUI } from '../ghost/GhostUI';
 
 import ActiveToolSheet from './ActiveToolSheet';
-import BlueprintsSheet from './BlueprintsSheet';
+import { BlueprintsSheet } from './BlueprintsSheet';
 import CardToolsSheet from './CardToolsSheet';
 import CreateCardSettingsSheet from './CreateCardSettingsSheet';
 import InspectorSheet from './InspectorSheet';
