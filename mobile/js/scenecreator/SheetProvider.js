@@ -86,7 +86,7 @@ const SheetBackgroundOverlay = ({ onPress }) => {
   );
 };
 
-export const CardCreatorSheetManager = ({ activeSheet, setActiveSheet }) => {
+export const SheetProvider = ({ activeSheet, setActiveSheet }) => {
   const { root, transformAssetUri } = useGhostUI();
   const { isPlaying, hasSelection } = useCardCreator();
 

@@ -32,8 +32,8 @@ import Viewport from './viewport';
 import * as GhostEvents from './ghost/GhostEvents';
 
 import { CreateCardContext } from './scenecreator/CreateCardContext';
-import { CardCreatorSheetManager } from './scenecreator/CardCreatorSheetManager';
 import { CardHeader, CARD_HEADER_HEIGHT } from './CardHeader';
+import { SheetProvider } from './scenecreator/SheetProvider';
 import { useGhostUI } from './ghost/GhostUI';
 import { getPaneData } from './Tools';
 
@@ -619,7 +619,7 @@ const CreateCardScreen = ({
           />
         </View>
       </SafeAreaView>
-      <CardCreatorSheetManager activeSheet={activeSheet} setActiveSheet={setActiveSheet} />
+      <SheetProvider activeSheet={activeSheet} setActiveSheet={setActiveSheet} />
     </CreateCardContext.Provider>
   );
 };
