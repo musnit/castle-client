@@ -33,6 +33,7 @@ import * as GhostEvents from './ghost/GhostEvents';
 
 import { CreateCardContext } from './scenecreator/CreateCardContext';
 import { CardHeader, CARD_HEADER_HEIGHT } from './CardHeader';
+import { PopoverProvider } from './scenecreator/PopoverProvider';
 import { SheetProvider } from './scenecreator/SheetProvider';
 import { useGhostUI } from './ghost/GhostUI';
 import { getPaneData } from './Tools';
@@ -619,7 +620,9 @@ const CreateCardScreen = ({
           />
         </View>
       </SafeAreaView>
-      <SheetProvider activeSheet={activeSheet} setActiveSheet={setActiveSheet} />
+      <PopoverProvider>
+        <SheetProvider activeSheet={activeSheet} setActiveSheet={setActiveSheet} />
+      </PopoverProvider>
     </CreateCardContext.Provider>
   );
 };
