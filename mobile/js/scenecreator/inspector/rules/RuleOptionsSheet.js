@@ -42,7 +42,6 @@ export default RuleOptionsSheet = ({
   onShowPicker,
   isOpen,
   onClose,
-  context,
 }) => {
   const items = [
     {
@@ -129,7 +128,6 @@ export default RuleOptionsSheet = ({
   return (
     <CardCreatorBottomSheet
       isOpen={isOpen}
-      context={context}
       renderHeader={renderHeader}
       renderContent={renderContent}
     />

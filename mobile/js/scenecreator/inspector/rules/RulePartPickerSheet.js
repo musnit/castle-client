@@ -43,7 +43,6 @@ export default RulePartPickerSheet = ({
   behaviors,
   isOpen,
   onClose,
-  context,
   entries,
   triggerFilter,
   onSelectEntry,
@@ -77,8 +76,8 @@ export default RulePartPickerSheet = ({
     <View style={styles.container}>
       {entries
         ? categoryOrder.map((category) => {
-          const contents = entries[category];
-          let index = 0;
+            const contents = entries[category];
+            let index = 0;
             return isCategoryVisible[category] ? (
               <View key={`rule-category-${category}`} style={styles.category}>
                 <Text style={styles.categoryLabel}>{category}</Text>
@@ -102,7 +101,6 @@ export default RulePartPickerSheet = ({
   return (
     <CardCreatorBottomSheet
       isOpen={isOpen}
-      context={context}
       renderHeader={renderHeader}
       renderContent={renderContent}
     />

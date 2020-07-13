@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RuleParamInputRow } from '../components/RuleParamInputRow';
+import { useCardCreator } from '../../CreateCardContext';
 
 import BottomSheetHeader from '../../BottomSheetHeader';
 import CardCreatorBottomSheet from '../../CardCreatorBottomSheet';
@@ -37,8 +38,8 @@ export default RuleParamInputSheet = ({
   initialValues,
   isOpen,
   onClose,
-  context,
 }) => {
+  const context = useCardCreator();
   const findParamSpec = (paramName) => {
     if (paramName && entry.paramSpecs && entry.paramSpecs[paramName]) {
       return entry.paramSpecs[paramName];
@@ -98,7 +99,6 @@ export default RuleParamInputSheet = ({
   return (
     <CardCreatorBottomSheet
       isOpen={isOpen}
-      context={context}
       renderHeader={renderHeader}
       renderContent={renderContent}
     />
