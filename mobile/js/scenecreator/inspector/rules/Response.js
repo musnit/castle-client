@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useCardCreator } from '../../CreateCardContext';
 import { ConfigureRuleEntry } from './ConfigureRuleEntry';
 import { getEntryByName } from '../InspectorUtilities';
 import { makeResponseActions } from './ResponseActions';
@@ -238,7 +239,7 @@ const makeResponseCells = (props) => {
   }
 };
 
-export const Response = ({ response, onChangeResponse, order = 0, ...props }) => {
+const Response = ({ response, onChangeResponse, order = 0, ...props }) => {
   const { context, addChildSheet, behaviors, responses, conditions, triggerFilter } = props;
   const entry = getEntryByName(response?.name, responses);
 
@@ -333,3 +334,11 @@ export const Response = ({ response, onChangeResponse, order = 0, ...props }) =>
     </React.Fragment>
   );
 };
+
+const ResponseWithContext = (props) => {
+  // we'll be using <Response /> recursively, so only subscribe once at the top
+  const context = useCardCreator();
+  return <Response context={context} {...props} />;
+};
+
+export { ResponseWithContext as Response };

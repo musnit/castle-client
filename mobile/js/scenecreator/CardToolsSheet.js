@@ -3,6 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { BottomSheet } from '../BottomSheet';
+import { useCardCreator } from './CreateCardContext';
 
 import DeckVariables from '../DeckVariables';
 import SceneBackups from './SceneBackups';
@@ -59,8 +60,8 @@ const TAB_ITEMS = [
   },
 ];
 
-const CardToolsSheet = ({ onClose, context, ...props }) => {
-  const { card, variables, onVariablesChange: onChange, onSelectBackupData } = context;
+const CardToolsSheet = ({ onClose, ...props }) => {
+  const { card, variables, onVariablesChange: onChange, onSelectBackupData } = useCardCreator();
   const cardId = card?.cardId;
 
   const [mode, setMode] = React.useState('variables');

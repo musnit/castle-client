@@ -2,7 +2,6 @@ import React from 'react';
 import { Keyboard, View } from 'react-native';
 import { BottomSheet } from '../BottomSheet';
 import { useSafeArea } from 'react-native-safe-area-context';
-
 import { CARD_HEADER_HEIGHT } from '../CardHeader';
 import { ToolPane } from '../Tools';
 
@@ -14,12 +13,12 @@ const SCREEN_HEIGHT = 100 * Viewport.vh;
 const CARD_HEIGHT = (1 / Constants.CARD_RATIO) * 100 * Viewport.vw;
 
 export default CardCreatorBottomSheet = React.memo(
-  ({ element, isOpen, context, renderHeader, renderContent, headerHeight = 64, ...props }) => {
+  ({ element, isOpen, renderHeader, renderContent, headerHeight = 64, ...props }) => {
     const insets = useSafeArea();
 
     if (!renderContent) {
       // TODO: gradually eliminate this case
-      renderContent = () => <ToolPane element={element} context={context} />;
+      renderContent = () => <ToolPane element={element} />;
     }
 
     const middleSnapPoint = element?.props?.contentHeight ?? SCREEN_HEIGHT * 0.4;

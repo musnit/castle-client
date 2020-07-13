@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useCardCreator } from './CreateCardContext';
 import { sendDataPaneAction } from '../Tools';
 
 import AddBehaviorSheet from './AddBehaviorSheet';
@@ -26,7 +27,8 @@ const styles = StyleSheet.create({
   },
 });
 
-const GeneralTab = ({ behaviors, sendActions, isTextActorSelected, addChildSheet }) => {
+const GeneralTab = ({ behaviors, sendActions, addChildSheet }) => {
+  const { isTextActorSelected } = useCardCreator();
   return (
     <React.Fragment>
       <View style={styles.blueprintContainer}>
@@ -117,13 +119,7 @@ const MovementTab = ({ behaviors, sendActions, addChildSheet }) => {
   );
 };
 
-export const InspectorTabs = ({
-  element,
-  context,
-  isTextActorSelected,
-  selectedTab,
-  addChildSheet,
-}) => {
+export const InspectorTabs = ({ element, selectedTab, addChildSheet }) => {
   let behaviors, sendActions;
   if (element.children.count) {
     behaviors = {};
@@ -150,7 +146,6 @@ export const InspectorTabs = ({
           behaviors={behaviors}
           sendActions={sendActions}
           addChildSheet={addChildSheet}
-          context={context}
         />
       );
       break;
@@ -168,12 +163,7 @@ export const InspectorTabs = ({
     case 'general':
     default: {
       tabContents = (
-        <GeneralTab
-          sendActions={sendActions}
-          behaviors={behaviors}
-          isTextActorSelected={isTextActorSelected}
-          addChildSheet={addChildSheet}
-        />
+        <GeneralTab sendActions={sendActions} behaviors={behaviors} addChildSheet={addChildSheet} />
       );
     }
   }

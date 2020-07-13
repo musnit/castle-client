@@ -35,7 +35,6 @@ const InspectorRule = ({
   triggers,
   responses,
   conditions,
-  context,
   addChildSheet,
   onChangeRule,
 }) => {
@@ -64,7 +63,6 @@ const InspectorRule = ({
       <InspectorTrigger
         trigger={rule.trigger}
         behaviors={behaviors}
-        context={context}
         addChildSheet={addChildSheet}
         triggers={triggers}
         onChangeTrigger={onChangeTrigger}
@@ -74,7 +72,6 @@ const InspectorRule = ({
           response={rule.response}
           triggerFilter={rule.trigger?.name}
           behaviors={behaviors}
-          context={context}
           addChildSheet={addChildSheet}
           responses={responses}
           conditions={conditions}
@@ -85,7 +82,7 @@ const InspectorRule = ({
   );
 };
 
-export default InspectorRules = ({ behaviors, sendActions, context, addChildSheet }) => {
+export default InspectorRules = ({ behaviors, sendActions, addChildSheet }) => {
   const rules = behaviors.Rules;
   const counter = behaviors.Counter;
 
@@ -94,7 +91,7 @@ export default InspectorRules = ({ behaviors, sendActions, context, addChildShee
   const element = root?.panes ? root.panes['sceneCreatorRules'] : null;
 
   let rulesData, sendRuleAction;
-  if (element.children.count) {
+  if (element?.children.count) {
     Object.entries(element.children).forEach(([key, child]) => {
       if (child.type === 'data') {
         const data = child.props.data;
@@ -153,7 +150,6 @@ export default InspectorRules = ({ behaviors, sendActions, context, addChildShee
               rule={rule}
               onChangeRule={onChangeRule}
               behaviors={behaviors}
-              context={context}
               addChildSheet={addChildSheet}
               triggers={rulesData.triggers}
               responses={rulesData.responses}

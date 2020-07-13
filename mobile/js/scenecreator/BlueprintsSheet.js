@@ -1,7 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
 import { sendDataPaneAction, ToolImage } from '../Tools';
 import { useGhostUI } from '../ghost/GhostUI';
+import { useCardCreator } from './CreateCardContext';
 
 import BottomSheetHeader from './BottomSheetHeader';
 import CardCreatorBottomSheet from './CardCreatorBottomSheet';
@@ -40,33 +42,31 @@ const styles = StyleSheet.create({
   },
 });
 
-const BlueprintItem = ({ entry, context, onPress }) => (
-  <TouchableOpacity style={styles.itemContainer} onPress={onPress}>
-    <View style={styles.preview}>
-      {entry.actorBlueprint?.components?.Drawing?.url ? (
-        <ToolImage
-          element={{}}
-          path={entry.actorBlueprint?.components.Drawing.url}
-          context={context}
-          style={styles.image}
-        />
-      ) : null}
-    </View>
-    <View style={{ flexShrink: 1 }}>
-      <Text style={styles.title}>{entry.title}</Text>
-      <Text>{entry.description}</Text>
-    </View>
-  </TouchableOpacity>
-);
+const BlueprintItem = ({ entry, onPress }) => {
+  // TODO: needed for transformAssetUri in ToolImage
+  const context = useCardCreator();
 
-export default BlueprintsSheet = ({
-  element,
-  isOpen,
-  onClose,
-  title,
-  onSelectBlueprint,
-  context,
-}) => {
+  return (
+    <TouchableOpacity style={styles.itemContainer} onPress={onPress}>
+      <View style={styles.preview}>
+        {entry.actorBlueprint?.components?.Drawing?.url ? (
+          <ToolImage
+            element={{}}
+            path={entry.actorBlueprint?.components.Drawing.url}
+            context={context}
+            style={styles.image}
+          />
+        ) : null}
+      </View>
+      <View style={{ flexShrink: 1 }}>
+        <Text style={styles.title}>{entry.title}</Text>
+        <Text>{entry.description}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+export default BlueprintsSheet = ({ element, isOpen, onClose, title, onSelectBlueprint }) => {
   const { root } = useGhostUI();
   if (!element) {
     // TODO: BEN: to prevent needless subscription here,
@@ -100,7 +100,6 @@ export default BlueprintsSheet = ({
             <BlueprintItem
               key={`blueprint-item-${ii}`}
               entry={entry}
-              context={context}
               onPress={() => {
                 onSelectBlueprint(entry.entryId);
                 onClose();
@@ -115,7 +114,6 @@ export default BlueprintsSheet = ({
   return (
     <CardCreatorBottomSheet
       isOpen={isOpen}
-      context={context}
       renderHeader={renderHeader}
       renderContent={renderContent}
     />

@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { useCardCreator } from './CreateCardContext';
 import { useGhostUI } from '../ghost/GhostUI';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -48,8 +49,8 @@ const CreateCardSettings = ({ isShowingTextActors, setShowingTextActors }) => {
   );
 };
 
-const CreateCardSettingsSheet = ({ onClose, context, ...props }) => {
-  const { isShowingTextActors, setShowingTextActors } = context;
+const CreateCardSettingsSheet = ({ onClose, ...props }) => {
+  const { isShowingTextActors, setShowingTextActors } = useCardCreator();
 
   const renderHeader = () => <BottomSheetHeader title="Layout" onClose={onClose} />;
   const renderContent = () => (

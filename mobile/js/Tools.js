@@ -40,6 +40,7 @@ import Octicons from 'react-native-vector-icons/Octicons';
 import Zocial from 'react-native-vector-icons/Zocial';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
+import { useCardCreator } from './scenecreator/CreateCardContext';
 import { sendAsync, useListen } from './ghost/GhostEvents';
 import { ScrollView } from 'react-native-gesture-handler';
 import * as Constants from './Constants';
@@ -263,8 +264,9 @@ const viewStyleProps = (p) => {
 
 // Render a pane with default values for the context. Each pane tends to have its own styling, so also takes
 // a `style` prop.
-export const ToolPane = React.memo(({ element, style, context }) => {
+export const ToolPane = React.memo(({ element, style }) => {
   if (!element || !element.props) return null;
+  const context = useCardCreator();
   return (
     <ToolsContext.Provider value={{ ...context, paneName: element.props.name }}>
       <View style={[style, viewStyleProps(element.props)]}>{renderChildren(element)}</View>

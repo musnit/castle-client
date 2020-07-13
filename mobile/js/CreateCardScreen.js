@@ -31,6 +31,7 @@ import Viewport from './viewport';
 
 import * as GhostEvents from './ghost/GhostEvents';
 
+import { CreateCardContext } from './scenecreator/CreateCardContext';
 import { CardCreatorSheetManager } from './scenecreator/CardCreatorSheetManager';
 import { CardHeader, CARD_HEADER_HEIGHT } from './CardHeader';
 import { useGhostUI } from './ghost/GhostUI';
@@ -129,6 +130,23 @@ const EMPTY_DECK = {
   title: '',
   cards: [],
   variables: [],
+};
+
+// TODO: find a cleaner way to get these
+const getLibraryEntries = (root) => {
+  const element = root?.panes ? root.panes['sceneCreatorBlueprints'] : null;
+  if (!element) return null;
+
+  let blueprintsData;
+  if (element.children.count) {
+    Object.entries(element.children).forEach(([key, child]) => {
+      if (child.type === 'data') {
+        blueprintsData = child.props.data;
+      }
+    });
+  }
+
+  return blueprintsData?.library;
 };
 
 class CreateCardScreenDataProvider extends React.Component {
@@ -412,7 +430,7 @@ const CreateCardScreen = ({
   onSceneRevertData,
 }) => {
   const { showActionSheetWithOptions } = useActionSheet();
-  const { root, globalActions, sendGlobalAction } = useGhostUI();
+  const { root, globalActions, sendGlobalAction, transformAssetUri } = useGhostUI();
 
   const [activeSheet, setActiveSheet] = React.useState(null);
   React.useEffect(Keyboard.dismiss, [activeSheet]);
@@ -540,10 +558,14 @@ const CreateCardScreen = ({
     ? null
     : { width: undefined, height: MAX_AVAILABLE_CARD_HEIGHT };
 
-  const sheetContext = {
+  const contextValue = {
     deck,
     card,
+    isPlaying,
+    hasSelection,
     isTextActorSelected,
+    library: getLibraryEntries(root),
+    transformAssetUri,
     onSelectBackupData,
     isShowingTextActors,
     setShowingTextActors,
@@ -554,7 +576,7 @@ const CreateCardScreen = ({
   // SafeAreaView doesn't respond to statusbar being hidden right now
   // https://github.com/facebook/react-native/pull/20999
   return (
-    <React.Fragment>
+    <CreateCardContext.Provider value={contextValue}>
       <SafeAreaView style={styles.container}>
         <CardHeader
           card={card}
@@ -596,14 +618,8 @@ const CreateCardScreen = ({
           />
         </View>
       </SafeAreaView>
-      <CardCreatorSheetManager
-        activeSheet={activeSheet}
-        setActiveSheet={setActiveSheet}
-        isPlaying={isPlaying}
-        hasSelection={hasSelection}
-        context={sheetContext}
-      />
-    </React.Fragment>
+      <CardCreatorSheetManager activeSheet={activeSheet} setActiveSheet={setActiveSheet} />
+    </CreateCardContext.Provider>
   );
 };
 

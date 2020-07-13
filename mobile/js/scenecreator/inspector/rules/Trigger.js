@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
+import { useCardCreator } from '../../CreateCardContext';
 import { ConfigureRuleEntry } from './ConfigureRuleEntry';
 
 import RulePartPickerSheet from './RulePartPickerSheet';
@@ -22,14 +23,9 @@ const _entryToTrigger = (entry) => ({
   params: entry.initialParams ?? {},
 });
 
-export const Trigger = ({
-  trigger,
-  behaviors,
-  context,
-  addChildSheet,
-  triggers,
-  onChangeTrigger,
-}) => {
+export const Trigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeTrigger }) => {
+  const context = useCardCreator();
+
   const onShowTriggerPicker = () =>
     addChildSheet({
       key: 'rulePartPicker',

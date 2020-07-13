@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useCardCreator } from './CreateCardContext';
 import { useGhostUI } from '../ghost/GhostUI';
 import { InspectorHeader } from './InspectorHeader';
 import { InspectorTabs } from './InspectorTabs';
@@ -22,12 +23,12 @@ const TAB_ITEMS = [
   },
 ];
 
-export default InspectorSheet = ({ element, isOpen, context, addChildSheet }) => {
+export default InspectorSheet = ({ element, isOpen, addChildSheet }) => {
   const { root } = useGhostUI();
   if (!root || !root.panes || !element) return null;
 
   const actionsPane = root.panes.sceneCreatorInspectorActions;
-  const { isTextActorSelected } = context;
+  const { isTextActorSelected } = useCardCreator();
 
   // Do this so we can show last visible elements while animating out
   const [lastVisibleElements, setLastVisibleElements] = useState({ element, actionsPane });
@@ -62,10 +63,8 @@ export default InspectorSheet = ({ element, isOpen, context, addChildSheet }) =>
 
   const renderContent = () => (
     <InspectorTabs
-      context={context}
       addChildSheet={addChildSheet}
       selectedTab={selectedTab}
-      isTextActorSelected={isTextActorSelected}
       element={
         isOpen
           ? element
@@ -80,7 +79,6 @@ export default InspectorSheet = ({ element, isOpen, context, addChildSheet }) =>
   return (
     <CardCreatorBottomSheet
       isOpen={isOpen}
-      context={context}
       renderHeader={renderHeader}
       renderContent={renderContent}
       persistLastSnapWhenOpened
