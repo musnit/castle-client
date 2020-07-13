@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Viewport from '../viewport';
+import FastImage from 'react-native-fast-image';
 
 const { vw, vh } = Viewport;
 
@@ -33,6 +34,13 @@ const styles = StyleSheet.create({
   empty: {
     padding: 16,
   },
+  carat: {
+    position: 'absolute',
+    width: 25,
+    height: 16,
+    marginLeft: -12.5,
+    marginTop: -4,
+  },
 });
 
 const PopoverContext = React.createContext({});
@@ -53,22 +61,36 @@ const EMPTY_POPOVER = {
   Component: PopoverEmptyContents,
 };
 
+const Carat = ({ style }) => (
+  <View style={[styles.carat, style]}>
+    <FastImage
+      style={{ width: 25, height: 16 }}
+      source={require('../../assets/images/popover-carat.png')}
+    />
+  </View>
+);
+
 const Popover = () => {
   const { currentPopover, closePopover } = usePopover();
   let { x, y, width, height, Component, measureRef, visible, ...props } = currentPopover;
 
-  let [position, setPosition] = React.useState({ left: undefined, top: undefined });
+  let [position, setPosition] = React.useState({});
   React.useEffect(() => {
     if (measureRef) {
       measureRef.measure((x, y, anchorWidth, anchorHeight, anchorLeft, anchorTop) => {
+        // horizontally center the popover above the calling element
         let popoverLeft = anchorLeft + anchorWidth * 0.5 - width * 0.5;
         let popoverTop = anchorTop - height - POPOVER_MARGIN;
+        let caratLeft = width * 0.5;
+        let caratTop = height;
 
         // constrain to screen
         // TODO: flip orientation instead of moving
         if (popoverLeft < POPOVER_MARGIN) {
+          caratLeft += popoverLeft - POPOVER_MARGIN;
           popoverLeft = POPOVER_MARGIN;
-        } else if (popoverLeft + width > vw * 100) {
+        } else if (popoverLeft > vw * 100 - width - POPOVER_MARGIN) {
+          caratLeft += popoverLeft - vw * 100 - width - POPOVER_MARGIN;
           popoverLeft = vw * 100 - width - POPOVER_MARGIN;
         }
         if (popoverTop < POPOVER_MARGIN) {
@@ -77,10 +99,15 @@ const Popover = () => {
           popoverTop = vh * 100 - height - POPOVER_MARGIN;
         }
 
-        setPosition({ left: popoverLeft, top: popoverTop });
+        setPosition({
+          left: popoverLeft,
+          top: popoverTop,
+          caratLeft,
+          caratTop,
+        });
       });
     } else if (x !== undefined && y !== undefined) {
-      setPosition({ left: x, top: y });
+      setPosition({ left: x, top: y, caratLeft: width * 0.5, caratTop: height });
     }
   }, [measureRef, x, y]);
 
@@ -94,6 +121,7 @@ const Popover = () => {
       </TouchableWithoutFeedback>
       <View style={[styles.popover, { left: position.left, top: position.top, width, height }]}>
         <Component {...props} />
+        <Carat style={{ left: position.caratLeft, top: position.caratTop }} />
       </View>
     </React.Fragment>
   );
