@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
   },
   blueprintContainer: {
     padding: 16,
-    alignItems: 'flex-start',
+    alignItems: 'center',
   },
   blueprintTitle: {
     fontWeight: 'bold',
@@ -32,7 +32,6 @@ const GeneralTab = ({ behaviors, sendActions, addChildSheet }) => {
   return (
     <React.Fragment>
       <View style={styles.blueprintContainer}>
-        <Text style={styles.blueprintTitle}>Blueprint</Text>
         <TouchableOpacity
           style={SceneCreatorConstants.styles.button}
           onPress={() =>
