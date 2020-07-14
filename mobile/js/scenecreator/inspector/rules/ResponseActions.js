@@ -1,7 +1,26 @@
-// delete myself:
-// change myself to self.params.nextResponse
+// delete myself
 const removeResponse = (response) => {
+  if (response.params?.then) {
+    // this is an 'if'
+    return unrollNestedResponse(response, 'then');
+  } else if (response.params?.body) {
+    // this is 'act on' or 'repeat'
+    return unrollNestedResponse(response, 'body');
+  }
+  // change myself to self.params.nextResponse
   return response.params?.nextResponse;
+};
+
+const unrollNestedResponse = (response, paramName) => {
+  let tailResponse = response.params[paramName];
+  while (tailResponse.params?.nextResponse) {
+    tailResponse = tailResponse.params?.nextResponse;
+  }
+  tailResponse.params = {
+    ...tailResponse.params,
+    nextResponse: response.params?.nextResponse,
+  };
+  return response.params[paramName];
 };
 
 // TODO: move myself up:
