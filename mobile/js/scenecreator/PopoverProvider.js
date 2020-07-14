@@ -66,54 +66,69 @@ const EMPTY_POPOVER = {
   Component: PopoverEmptyContents,
 };
 
-const Carat = ({ style }) => (
-  <View style={[styles.carat, style]}>
-    <FastImage
-      style={{ width: 25, height: 16 }}
-      source={require('../../assets/images/popover-carat.png')}
-    />
-  </View>
-);
+const Carat = ({ style, invertY }) => {
+  const imageStyles = { width: 25, height: 16 };
+  if (invertY) {
+    // TODO: just sub in a different image here with correct border radius on the carat
+    // and delete this transform
+    imageStyles.transform = [{ scaleY: -1 }, { translateY: POPOVER_MARGIN - 5 }];
+  }
+  return (
+    <View style={[styles.carat, style]}>
+      <FastImage style={imageStyles} source={require('../../assets/images/popover-carat.png')} />
+    </View>
+  );
+};
+
+const measurePopover = ({ anchorTop, anchorLeft, anchorWidth, anchorHeight, width, height }) => {
+  // horizontally center the popover above the calling element
+  let popoverLeft = anchorLeft + anchorWidth * 0.5 - width * 0.5;
+  let popoverTop = anchorTop - height - POPOVER_MARGIN;
+  let caratLeft = width * 0.5;
+  let caratTop = height;
+  let invertCaratY = false;
+
+  // constrain to screen
+  if (popoverLeft < POPOVER_MARGIN) {
+    caratLeft += popoverLeft - POPOVER_MARGIN;
+    popoverLeft = POPOVER_MARGIN;
+  } else if (popoverLeft > vw * 100 - width - POPOVER_MARGIN) {
+    caratLeft += popoverLeft - vw * 100 - width - POPOVER_MARGIN;
+    popoverLeft = vw * 100 - width - POPOVER_MARGIN;
+  }
+  if (popoverTop < POPOVER_MARGIN) {
+    // if we extend above the top of the screen, reverse orientation
+    popoverTop = anchorTop + anchorHeight + POPOVER_MARGIN;
+    caratTop = 0;
+    invertCaratY = true;
+  } else if (popoverTop + height > vh * 100) {
+    popoverTop = vh * 100 - height - POPOVER_MARGIN;
+  }
+  return { left: popoverLeft, top: popoverTop, caratLeft, caratTop, invertCaratY };
+};
 
 const Popover = () => {
   const { currentPopover, closePopover } = usePopover();
   let { x, y, width, height, Component, measureRef, visible, ...props } = currentPopover;
   const opacity = React.useRef(new Animated.Value(0)).current;
 
-  let [position, setPosition] = React.useState({});
+  let [measurements, setMeasurements] = React.useState({});
   React.useEffect(() => {
     if (measureRef) {
       measureRef.measure((x, y, anchorWidth, anchorHeight, anchorLeft, anchorTop) => {
-        // horizontally center the popover above the calling element
-        let popoverLeft = anchorLeft + anchorWidth * 0.5 - width * 0.5;
-        let popoverTop = anchorTop - height - POPOVER_MARGIN;
-        let caratLeft = width * 0.5;
-        let caratTop = height;
-
-        // constrain to screen
-        // TODO: flip orientation instead of moving
-        if (popoverLeft < POPOVER_MARGIN) {
-          caratLeft += popoverLeft - POPOVER_MARGIN;
-          popoverLeft = POPOVER_MARGIN;
-        } else if (popoverLeft > vw * 100 - width - POPOVER_MARGIN) {
-          caratLeft += popoverLeft - vw * 100 - width - POPOVER_MARGIN;
-          popoverLeft = vw * 100 - width - POPOVER_MARGIN;
-        }
-        if (popoverTop < POPOVER_MARGIN) {
-          popoverTop = POPOVER_MARGIN;
-        } else if (popoverTop + height > vh * 100) {
-          popoverTop = vh * 100 - height - POPOVER_MARGIN;
-        }
-
-        setPosition({
-          left: popoverLeft,
-          top: popoverTop,
-          caratLeft,
-          caratTop,
-        });
+        setMeasurements(
+          measurePopover({
+            anchorLeft,
+            anchorTop,
+            anchorWidth,
+            anchorHeight,
+            width,
+            height,
+          })
+        );
       });
     } else if (x !== undefined && y !== undefined) {
-      setPosition({ left: x, top: y, caratLeft: width * 0.5, caratTop: height });
+      setMeasurements({ left: x, top: y, caratLeft: width * 0.5, caratTop: height });
     }
   }, [measureRef, x, y]);
 
@@ -123,7 +138,7 @@ const Popover = () => {
     }
   }, [visible]);
 
-  if (!visible || position.left === undefined || position.top === undefined) {
+  if (!visible || measurements.left === undefined || measurements.top === undefined) {
     return null;
   }
 
@@ -135,10 +150,13 @@ const Popover = () => {
       <Animated.View
         style={[
           styles.popover,
-          { left: position.left, top: position.top, width, height, opacity },
+          { left: measurements.left, top: measurements.top, width, height, opacity },
         ]}>
         <Component closePopover={closePopover} {...props} />
-        <Carat style={{ left: position.caratLeft, top: position.caratTop }} />
+        <Carat
+          style={{ left: measurements.caratLeft, top: measurements.caratTop }}
+          invertY={measurements.invertCaratY}
+        />
       </Animated.View>
     </React.Fragment>
   );
