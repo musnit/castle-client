@@ -2,7 +2,7 @@ import { getVariableName, readableOperator } from '../../SceneCreatorUtilities';
 
 const withWhen = (tokens) => {
   tokens.unshift({
-    type: 'text',
+    type: 'showEntryOptions',
     label: 'When',
   });
   return tokens;
@@ -42,7 +42,7 @@ const Tap = () => {
 const Press = () => {
   return [
     {
-      type: 'text',
+      type: 'showEntryOptions',
       label: 'While',
     },
     {

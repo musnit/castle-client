@@ -37,6 +37,7 @@ const InspectorRule = ({
   conditions,
   addChildSheet,
   onChangeRule,
+  onRemoveRule,
 }) => {
   const onChangeTrigger = React.useCallback(
     (trigger) => {
@@ -66,6 +67,7 @@ const InspectorRule = ({
         addChildSheet={addChildSheet}
         triggers={triggers}
         onChangeTrigger={onChangeTrigger}
+        onRemoveRule={onRemoveRule}
       />
       <View style={SceneCreatorConstants.styles.insetContainer}>
         <InspectorResponse
@@ -126,6 +128,14 @@ export default InspectorRules = ({ behaviors, sendActions, addChildSheet }) => {
     [rulesItems, sendRuleAction]
   );
 
+  const onRemoveRule = React.useCallback(
+    (rule) => {
+      const newRules = rulesItems.filter((oldRule) => oldRule.index !== rule.index);
+      sendRuleAction('change', newRules);
+    },
+    [rulesItems, sendRuleAction]
+  );
+
   return (
     <React.Fragment>
       <View style={styles.container}>
@@ -149,6 +159,7 @@ export default InspectorRules = ({ behaviors, sendActions, addChildSheet }) => {
               key={`rule-${rule.trigger?.name}-${rule.response?.name}-${ii}`}
               rule={rule}
               onChangeRule={onChangeRule}
+              onRemoveRule={() => onRemoveRule(rule)}
               behaviors={behaviors}
               addChildSheet={addChildSheet}
               triggers={rulesData.triggers}

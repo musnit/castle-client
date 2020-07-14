@@ -3,6 +3,7 @@ import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 import { useCardCreator } from '../../CreateCardContext';
 import { ConfigureRuleEntry } from './ConfigureRuleEntry';
 
+import RuleOptionsSheet from './RuleOptionsSheet';
 import RulePartPickerSheet from './RulePartPickerSheet';
 
 import { getEntryByName } from '../InspectorUtilities';
@@ -23,7 +24,14 @@ const _entryToTrigger = (entry) => ({
   params: entry.initialParams ?? {},
 });
 
-export const Trigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeTrigger }) => {
+export const Trigger = ({
+  trigger,
+  behaviors,
+  addChildSheet,
+  triggers,
+  onChangeTrigger,
+  onRemoveRule,
+}) => {
   const context = useCardCreator();
 
   const onShowTriggerPicker = React.useCallback(
@@ -38,6 +46,19 @@ export const Trigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeT
         categoryOrder: TRIGGER_CATEGORY_ORDER,
       }),
     [addChildSheet, behaviors, triggers, onChangeTrigger]
+  );
+
+  const onShowRuleOptions = React.useCallback(
+    () =>
+      addChildSheet({
+        key: 'ruleOptions',
+        Component: RuleOptionsSheet,
+        actions: {
+          remove: onRemoveRule,
+        },
+        type: 'rule',
+      }),
+    [addChildSheet, onRemoveRule]
   );
 
   const onChangeParams = React.useCallback(
@@ -70,6 +91,7 @@ export const Trigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeT
         onShowPicker={onShowTriggerPicker}
         onChangeParams={onChangeParams}
         addChildSheet={addChildSheet}
+        onShowOptions={onShowRuleOptions}
       />
     </View>
   );

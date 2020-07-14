@@ -36,62 +36,77 @@ const styles = StyleSheet.create({
 });
 
 export default RuleOptionsSheet = ({
-  title = 'Edit Response',
+  type = 'response',
   entry,
   actions,
   onShowPicker,
   isOpen,
   onClose,
 }) => {
-  const items = [
-    {
-      name: 'Insert response before',
-      icon: 'table-row-plus-before',
-      shouldDisplay: () => true,
-      action: () =>
-        onShowPicker((result) => {
-          actions.insertBefore(result);
+  let items;
+  if (type === 'rule') {
+    items = [
+      {
+        name: 'Remove',
+        icon: 'trash-can',
+        shouldDisplay: () => true,
+        action: () => {
+          actions.remove();
           onClose();
-        }),
-    },
-    {
-      name: 'Move down in order',
-      icon: 'arrow-down',
-      shouldDisplay: () => !!actions.moveDown,
-      action: () => {
-        actions.moveDown();
-        onClose();
+        },
       },
-    },
-    {
-      name: 'Wrap in condition',
-      icon: 'code-braces',
-      shouldDisplay: () => true,
-      action: () => {
-        actions.wrapInCondition();
-        onClose();
+    ];
+  } else if (type === 'response') {
+    items = [
+      {
+        name: 'Insert response before',
+        icon: 'table-row-plus-before',
+        shouldDisplay: () => true,
+        action: () =>
+          onShowPicker((result) => {
+            actions.insertBefore(result);
+            onClose();
+          }),
       },
-    },
-    {
-      name: 'Replace',
-      icon: 'swap-horizontal',
-      shouldDisplay: () => true,
-      action: () =>
-        onShowPicker((result) => {
-          actions.replace(result);
+      {
+        name: 'Move down in order',
+        icon: 'arrow-down',
+        shouldDisplay: () => !!actions.moveDown,
+        action: () => {
+          actions.moveDown();
           onClose();
-        }),
-    },
-    {
-      name: 'Remove',
-      icon: 'trash-can',
-      shouldDisplay: () => true,
-      action: () => {
-        actions.remove();
-        onClose();
+        },
       },
-    },
-  ];
+      {
+        name: 'Wrap in condition',
+        icon: 'code-braces',
+        shouldDisplay: () => true,
+        action: () => {
+          actions.wrapInCondition();
+          onClose();
+        },
+      },
+      {
+        name: 'Replace',
+        icon: 'swap-horizontal',
+        shouldDisplay: () => true,
+        action: () =>
+          onShowPicker((result) => {
+            actions.replace(result);
+            onClose();
+          }),
+      },
+      {
+        name: 'Remove',
+        icon: 'trash-can',
+        shouldDisplay: () => true,
+        action: () => {
+          actions.remove();
+          onClose();
+        },
+      },
+    ];
+  }
 
   const renderContent = () => (
     <View style={styles.container}>
@@ -123,6 +138,7 @@ export default RuleOptionsSheet = ({
     </View>
   );
 
+  const title = type === 'response' ? 'Edit Response' : 'Edit Rule';
   const renderHeader = () => <BottomSheetHeader title={title} onClose={onClose} />;
 
   return (
