@@ -54,8 +54,6 @@ const PopoverEmptyContents = () => (
 
 const POPOVER_MARGIN = 16;
 const EMPTY_POPOVER = {
-  x: 0,
-  y: 0,
   width: 200,
   height: 100,
   Component: PopoverEmptyContents,
