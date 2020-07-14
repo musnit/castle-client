@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useActionSheet } from '@expo/react-native-action-sheet';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { objectToArray } from '../../../Tools';
+import { PopoverButton } from '../../PopoverProvider';
 
 const styles = StyleSheet.create({
   container: {
@@ -22,27 +22,52 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexShrink: 0,
   },
+  item: {
+    borderBottomWidth: 1,
+    borderColor: '#ccc',
+    padding: 16,
+  },
 });
 
-export const InspectorDropdown = ({ value, onChange, style, ...props }) => {
-  const { showActionSheetWithOptions } = useActionSheet();
-  const onPress = React.useCallback(() => {
-    const items = objectToArray(props?.items ?? []);
-    showActionSheetWithOptions(
-      { options: items.concat(['Cancel']), cancelButtonIndex: items.length },
-      (i) => {
-        if (typeof i === 'number' && i >= 0 && i < items.length) {
-          onChange(items[i]);
-        }
-      }
-    );
-  }, [showActionSheetWithOptions, props?.items, onChange]);
+export const DropdownItemsList = ({ items, selectedItem, onSelectItem, closePopover }) => {
+  return (
+    <ScrollView>
+      {items &&
+        items.map((item, ii) => (
+          <TouchableOpacity
+            key={`item-${ii}`}
+            style={styles.item}
+            onPress={() => {
+              onSelectItem(item);
+              closePopover();
+            }}>
+            <Text style={item === selectedItem ? { fontWeight: 'bold' } : null}>{item.name}</Text>
+          </TouchableOpacity>
+        ))}
+    </ScrollView>
+  );
+};
 
+export const InspectorDropdown = ({ value, onChange, style, ...props }) => {
+  const items = objectToArray(props?.items ?? []).map((item) => ({ id: item, name: item }));
+  let selectedItem;
+  if (value && value !== 'none') {
+    selectedItem = items.find((item) => item.id === value);
+  }
+  const popover = {
+    Component: DropdownItemsList,
+    items,
+    selectedItem,
+    height: 192,
+    onSelectItem: (item) => onChange(item.id),
+  };
+
+  const valueLabel = selectedItem ? selectedItem.name : '(none)';
   return (
     <View style={[styles.container, style]} {...props}>
-      <TouchableOpacity onPress={onPress} style={styles.box}>
-        <Text>{value}</Text>
-      </TouchableOpacity>
+      <PopoverButton style={styles.box} popover={popover}>
+        <Text>{valueLabel}</Text>
+      </PopoverButton>
     </View>
   );
 };

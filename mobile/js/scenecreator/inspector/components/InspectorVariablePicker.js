@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useActionSheet } from '@expo/react-native-action-sheet';
 import { objectToArray } from '../../../Tools';
+import { PopoverButton } from '../../PopoverProvider';
+import { DropdownItemsList } from './InspectorDropdown';
 
 const styles = StyleSheet.create({
   container: {
@@ -27,33 +28,27 @@ const styles = StyleSheet.create({
 });
 
 export const InspectorVariablePicker = ({ value, label, onChange, style, context, ...props }) => {
-  const { showActionSheetWithOptions } = useActionSheet();
   const items = context.variables || [];
-  const onPress = React.useCallback(() => {
-    showActionSheetWithOptions(
-      {
-        options: items.map((item) => item.name).concat(['Cancel']),
-        cancelButtonIndex: items.length,
-      },
-      (i) => {
-        if (typeof i === 'number' && i >= 0 && i < items.length) {
-          onChange(items[i].id);
-        }
-      }
-    );
-  }, [showActionSheetWithOptions, onChange]);
-
-  let valueLabel = '(none)';
+  let selectedItem;
   if (value && value !== 'none') {
-    const selected = items.find((item) => item.id === value);
-    valueLabel = selected ? selected.name : value;
+    selectedItem = items.find((item) => item.id === value);
   }
+  const popover = {
+    Component: DropdownItemsList,
+    items,
+    selectedItem,
+    height: 192,
+    onSelectItem: (item) => onChange(item.id),
+  };
+
+  let valueLabel = selectedItem ? selectedItem.name : '(none)';
+
   return (
     <View style={[styles.container, style]} {...props}>
       <Text style={styles.label}>{label}</Text>
-      <TouchableOpacity onPress={onPress} style={styles.box}>
+      <PopoverButton style={styles.box} popover={popover}>
         <Text>{valueLabel}</Text>
-      </TouchableOpacity>
+      </PopoverButton>
     </View>
   );
 };

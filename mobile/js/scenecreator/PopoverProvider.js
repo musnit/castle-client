@@ -120,7 +120,7 @@ const Popover = () => {
         <View style={styles.boundary} />
       </TouchableWithoutFeedback>
       <View style={[styles.popover, { left: position.left, top: position.top, width, height }]}>
-        <Component {...props} />
+        <Component closePopover={closePopover} {...props} />
         <Carat style={{ left: position.caratLeft, top: position.caratTop }} />
       </View>
     </React.Fragment>
