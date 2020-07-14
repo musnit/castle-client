@@ -58,7 +58,7 @@ export default RulePartPickerSheet = ({
   // filter by actor's behaviors, and by trigger if applicable
   const isEntryVisible = (entry) => {
     return (
-      behaviors[entry.behaviorName]?.isActive &&
+      (!behaviors || behaviors[entry.behaviorName]?.isActive) &&
       (!entry.triggerFilter || entry.triggerFilter[triggerFilter])
     );
   };

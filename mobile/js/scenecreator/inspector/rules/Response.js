@@ -239,7 +239,12 @@ const ActOn = ({ response, onChangeResponse, children, order, ...props }) => {
     <View style={[styles.response, order > 0 ? styles.nextResponse : null]}>
       <View style={styles.responseCells}>{children}</View>
       <View style={SceneCreatorConstants.styles.insetContainer}>
-        <Response response={response.params.body} onChangeResponse={onChangeBody} {...props} />
+        <Response
+          response={response.params.body}
+          onChangeResponse={onChangeBody}
+          useAllBehaviors
+          {...props}
+        />
       </View>
     </View>
   );
@@ -272,7 +277,7 @@ const Response = ({ response, onChangeResponse, order = 0, ...props }) => {
       addChildSheet({
         key: 'rulePartPicker',
         Component: RulePartPickerSheet,
-        behaviors,
+        behaviors: props.useAllBehaviors ? null : behaviors,
         entries: responses,
         triggerFilter,
         onSelectEntry: (entry) => handler(_entryToResponse(entry)),
