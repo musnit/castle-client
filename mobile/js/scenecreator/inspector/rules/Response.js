@@ -47,34 +47,43 @@ const _entryToResponse = (entry) => ({
 const If = ({ response, onChangeResponse, children, order, ...props }) => {
   const { addChildSheet, behaviors, conditions, context } = props;
 
-  const onChangeCondition = (condition) =>
-    onChangeResponse({
-      ...response,
-      params: {
-        ...response.params,
-        condition,
-      },
-    });
+  const onChangeCondition = React.useCallback(
+    (condition) =>
+      onChangeResponse({
+        ...response,
+        params: {
+          ...response.params,
+          condition,
+        },
+      }),
+    [response, onChangeResponse]
+  );
 
-  const onChangeThen = (then) =>
-    onChangeResponse({
-      ...response,
-      params: {
-        ...response.params,
-        then,
-      },
-    });
+  const onChangeThen = React.useCallback(
+    (then) =>
+      onChangeResponse({
+        ...response,
+        params: {
+          ...response.params,
+          then,
+        },
+      }),
+    [response, onChangeResponse]
+  );
 
-  const onChangeElse = (elseResponse) =>
-    onChangeResponse({
-      ...response,
-      params: {
-        ...response.params,
-        else: elseResponse,
-      },
-    });
+  const onChangeElse = React.useCallback(
+    (elseResponse) =>
+      onChangeResponse({
+        ...response,
+        params: {
+          ...response.params,
+          else: elseResponse,
+        },
+      }),
+    [response, onChangeResponse]
+  );
 
-  const onRemoveElse = () => {
+  const onRemoveElse = React.useCallback(() => {
     const newParams = { ...response.params };
     delete newParams.else;
     onChangeResponse({
@@ -83,33 +92,39 @@ const If = ({ response, onChangeResponse, children, order, ...props }) => {
         ...newParams,
       },
     });
-  };
+  }, [response, onChangeResponse]);
 
-  const onPickCondition = (handler) =>
-    addChildSheet({
-      key: 'rulePartPicker',
-      Component: RulePartPickerSheet,
-      behaviors,
-      entries: conditions,
-      onSelectEntry: (entry) => handler(_entryToResponse(entry)),
-      title: 'Select condition',
-      categoryOrder: CONDITION_CATEGORY_ORDER,
-    });
+  const onPickCondition = React.useCallback(
+    (handler) =>
+      addChildSheet({
+        key: 'rulePartPicker',
+        Component: RulePartPickerSheet,
+        behaviors,
+        entries: conditions,
+        onSelectEntry: (entry) => handler(_entryToResponse(entry)),
+        title: 'Select condition',
+        categoryOrder: CONDITION_CATEGORY_ORDER,
+      }),
+    [behaviors, conditions, addChildSheet]
+  );
 
-  const onChangeParams = (params) =>
-    onChangeResponse({
-      ...response,
-      params: {
-        ...response.params,
-        condition: {
-          ...response.params.condition,
-          params: {
-            ...response.params.condition.params,
-            ...params,
+  const onChangeParams = React.useCallback(
+    (params) =>
+      onChangeResponse({
+        ...response,
+        params: {
+          ...response.params,
+          condition: {
+            ...response.params.condition,
+            params: {
+              ...response.params.condition.params,
+              ...params,
+            },
           },
         },
-      },
-    });
+      }),
+    [response, onChangeResponse]
+  );
 
   return (
     <React.Fragment>
@@ -148,15 +163,18 @@ const If = ({ response, onChangeResponse, children, order, ...props }) => {
 const Else = ({ response, onChangeResponse, onRemoveElse, ...props }) => {
   // TODO: a real sheet here?
   const { showActionSheetWithOptions } = useActionSheet();
-  const maybeRemoveElse = () =>
-    showActionSheetWithOptions(
-      { options: [`Remove 'else'`, 'Cancel'], destructiveButtonIndex: 0, cancelButtonIndex: 1 },
-      (index) => {
-        if (index === 0) {
-          onRemoveElse();
+  const maybeRemoveElse = React.useCallback(
+    () =>
+      showActionSheetWithOptions(
+        { options: [`Remove 'else'`, 'Cancel'], destructiveButtonIndex: 0, cancelButtonIndex: 1 },
+        (index) => {
+          if (index === 0) {
+            onRemoveElse();
+          }
         }
-      }
-    );
+      ),
+    [showActionSheetWithOptions, onRemoveElse]
+  );
 
   if (!response) {
     return (
@@ -184,14 +202,17 @@ const Else = ({ response, onChangeResponse, onRemoveElse, ...props }) => {
 };
 
 const Repeat = ({ response, onChangeResponse, children, order, ...props }) => {
-  const onChangeBody = (body) =>
-    onChangeResponse({
-      ...response,
-      params: {
-        ...response.params,
-        body,
-      },
-    });
+  const onChangeBody = React.useCallback(
+    (body) =>
+      onChangeResponse({
+        ...response,
+        params: {
+          ...response.params,
+          body,
+        },
+      }),
+    [response, onChangeResponse]
+  );
   return (
     <View style={[styles.response, order > 0 ? styles.nextResponse : null]}>
       <View style={styles.responseCells}>{children}</View>
@@ -203,14 +224,17 @@ const Repeat = ({ response, onChangeResponse, children, order, ...props }) => {
 };
 
 const ActOn = ({ response, onChangeResponse, children, order, ...props }) => {
-  const onChangeBody = (body) =>
-    onChangeResponse({
-      ...response,
-      params: {
-        ...response.params,
-        body,
-      },
-    });
+  const onChangeBody = React.useCallback(
+    (body) =>
+      onChangeResponse({
+        ...response,
+        params: {
+          ...response.params,
+          body,
+        },
+      }),
+    [response, onChangeResponse]
+  );
   return (
     <View style={[styles.response, order > 0 ? styles.nextResponse : null]}>
       <View style={styles.responseCells}>{children}</View>
@@ -243,35 +267,44 @@ const Response = ({ response, onChangeResponse, order = 0, ...props }) => {
   const { context, addChildSheet, behaviors, responses, conditions, triggerFilter } = props;
   const entry = getEntryByName(response?.name, responses);
 
-  const onShowResponsePicker = (handler) =>
-    addChildSheet({
-      key: 'rulePartPicker',
-      Component: RulePartPickerSheet,
-      behaviors,
-      entries: responses,
-      triggerFilter,
-      onSelectEntry: (entry) => handler(_entryToResponse(entry)),
-      title: 'Select response',
-      categoryOrder: RESPONSE_CATEGORY_ORDER,
-    });
+  const onShowResponsePicker = React.useCallback(
+    (handler) =>
+      addChildSheet({
+        key: 'rulePartPicker',
+        Component: RulePartPickerSheet,
+        behaviors,
+        entries: responses,
+        triggerFilter,
+        onSelectEntry: (entry) => handler(_entryToResponse(entry)),
+        title: 'Select response',
+        categoryOrder: RESPONSE_CATEGORY_ORDER,
+      }),
+    [addChildSheet, behaviors, response, responses, triggerFilter]
+  );
 
-  const onChangeParams = (params) =>
-    onChangeResponse({
-      ...response,
-      params: {
-        ...response.params,
-        ...params,
-      },
-    });
+  const onChangeParams = React.useCallback(
+    (params) =>
+      onChangeResponse({
+        ...response,
+        params: {
+          ...response.params,
+          ...params,
+        },
+      }),
+    [response, onChangeResponse]
+  );
 
-  const onShowResponseOptions = () =>
-    addChildSheet({
-      key: 'ruleOptions',
-      Component: RuleOptionsSheet,
-      onShowPicker: onShowResponsePicker,
-      actions: makeResponseActions(response, onChangeResponse),
-      entry,
-    });
+  const onShowResponseOptions = React.useCallback(
+    () =>
+      addChildSheet({
+        key: 'ruleOptions',
+        Component: RuleOptionsSheet,
+        onShowPicker: onShowResponsePicker,
+        actions: makeResponseActions(response, onChangeResponse),
+        entry,
+      }),
+    [addChildSheet, onShowResponsePicker, response, onChangeResponse]
+  );
 
   // render the cells to configure this response
   let responseContents;
@@ -310,14 +343,17 @@ const Response = ({ response, onChangeResponse, order = 0, ...props }) => {
     );
   }
 
-  const onChangeNextResponse = (nextResponse) =>
-    onChangeResponse({
-      ...response,
-      params: {
-        ...response.params,
-        nextResponse,
-      },
-    });
+  const onChangeNextResponse = React.useCallback(
+    (nextResponse) =>
+      onChangeResponse({
+        ...response,
+        params: {
+          ...response.params,
+          nextResponse,
+        },
+      }),
+    [response, onChangeResponse]
+  );
 
   const hideNextResponse = !response || (response.name === 'none' && !response.params);
   return (

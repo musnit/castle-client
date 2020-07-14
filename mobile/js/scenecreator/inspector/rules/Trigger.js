@@ -26,25 +26,31 @@ const _entryToTrigger = (entry) => ({
 export const Trigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeTrigger }) => {
   const context = useCardCreator();
 
-  const onShowTriggerPicker = () =>
-    addChildSheet({
-      key: 'rulePartPicker',
-      Component: RulePartPickerSheet,
-      behaviors,
-      entries: triggers,
-      onSelectEntry: (entry) => onChangeTrigger(_entryToTrigger(entry)),
-      title: 'Select trigger',
-      categoryOrder: TRIGGER_CATEGORY_ORDER,
-    });
+  const onShowTriggerPicker = React.useCallback(
+    () =>
+      addChildSheet({
+        key: 'rulePartPicker',
+        Component: RulePartPickerSheet,
+        behaviors,
+        entries: triggers,
+        onSelectEntry: (entry) => onChangeTrigger(_entryToTrigger(entry)),
+        title: 'Select trigger',
+        categoryOrder: TRIGGER_CATEGORY_ORDER,
+      }),
+    [addChildSheet, behaviors, triggers, onChangeTrigger]
+  );
 
-  const onChangeParams = (params) =>
-    onChangeTrigger({
-      ...trigger,
-      params: {
-        ...trigger.params,
-        ...params,
-      },
-    });
+  const onChangeParams = React.useCallback(
+    (params) =>
+      onChangeTrigger({
+        ...trigger,
+        params: {
+          ...trigger.params,
+          ...params,
+        },
+      }),
+    [trigger, onChangeTrigger]
+  );
 
   let cells;
   if (!trigger || trigger.name === 'none') {
