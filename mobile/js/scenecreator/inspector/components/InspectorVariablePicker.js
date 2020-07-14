@@ -22,6 +22,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexShrink: 0,
   },
+  activeBox: {
+    borderBottomWidth: 1,
+    marginBottom: 1,
+    borderStyle: 'dashed',
+  },
   label: {
     fontSize: 16,
   },
@@ -46,7 +51,10 @@ export const InspectorVariablePicker = ({ value, label, onChange, style, context
   return (
     <View style={[styles.container, style]} {...props}>
       <Text style={styles.label}>{label}</Text>
-      <PopoverButton style={styles.box} popover={popover}>
+      <PopoverButton
+        style={styles.box}
+        activeStyle={[styles.box, styles.activeBox]}
+        popover={popover}>
         <Text>{valueLabel}</Text>
       </PopoverButton>
     </View>

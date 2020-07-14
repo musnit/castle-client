@@ -22,6 +22,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexShrink: 0,
   },
+  activeBox: {
+    borderBottomWidth: 1,
+    marginBottom: 1,
+    borderStyle: 'dashed',
+  },
   item: {
     borderBottomWidth: 1,
     borderColor: '#ccc',
@@ -65,7 +70,10 @@ export const InspectorDropdown = ({ value, onChange, style, ...props }) => {
   const valueLabel = selectedItem ? selectedItem.name : '(none)';
   return (
     <View style={[styles.container, style]} {...props}>
-      <PopoverButton style={styles.box} popover={popover}>
+      <PopoverButton
+        style={styles.box}
+        activeStyle={[styles.box, styles.activeBox]}
+        popover={popover}>
         <Text>{valueLabel}</Text>
       </PopoverButton>
     </View>
