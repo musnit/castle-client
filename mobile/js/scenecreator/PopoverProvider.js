@@ -1,5 +1,12 @@
 import * as React from 'react';
-import { StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import {
+  Animated,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import Viewport from '../viewport';
 import FastImage from 'react-native-fast-image';
 
@@ -71,6 +78,7 @@ const Carat = ({ style }) => (
 const Popover = () => {
   const { currentPopover, closePopover } = usePopover();
   let { x, y, width, height, Component, measureRef, visible, ...props } = currentPopover;
+  const opacity = React.useRef(new Animated.Value(0)).current;
 
   let [position, setPosition] = React.useState({});
   React.useEffect(() => {
@@ -109,18 +117,29 @@ const Popover = () => {
     }
   }, [measureRef, x, y]);
 
+  React.useEffect(() => {
+    if (visible) {
+      Animated.timing(opacity, { toValue: 1, duration: 250, useNativeDriver: true }).start();
+    }
+  }, [visible]);
+
   if (!visible || position.left === undefined || position.top === undefined) {
     return null;
   }
+
   return (
     <React.Fragment>
       <TouchableWithoutFeedback onPress={closePopover}>
         <View style={styles.boundary} />
       </TouchableWithoutFeedback>
-      <View style={[styles.popover, { left: position.left, top: position.top, width, height }]}>
+      <Animated.View
+        style={[
+          styles.popover,
+          { left: position.left, top: position.top, width, height, opacity },
+        ]}>
         <Component closePopover={closePopover} {...props} />
         <Carat style={{ left: position.caratLeft, top: position.caratTop }} />
-      </View>
+      </Animated.View>
     </React.Fragment>
   );
 };
