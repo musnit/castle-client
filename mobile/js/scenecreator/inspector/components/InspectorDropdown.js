@@ -3,6 +3,8 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 import { objectToArray } from '../../../Tools';
 import { PopoverButton } from '../../PopoverProvider';
 
+import Icon from 'react-native-vector-icons/MaterialIcons';
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
@@ -31,6 +33,16 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: '#ccc',
     padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  itemIcon: {
+    width: 16,
+    alignItems: 'center',
+    marginRight: 8,
+  },
+  selectedItemText: {
+    fontWeight: 'bold',
   },
 });
 
@@ -46,7 +58,10 @@ export const DropdownItemsList = ({ items, selectedItem, onSelectItem, closePopo
               onSelectItem(item);
               closePopover();
             }}>
-            <Text style={item === selectedItem ? { fontWeight: 'bold' } : null}>{item.name}</Text>
+            <View style={styles.itemIcon}>
+              {item === selectedItem ? <Icon name="check" size={18} color="#000" /> : null}
+            </View>
+            <Text style={item === selectedItem ? styles.selectedItemText : null}>{item.name}</Text>
           </TouchableOpacity>
         ))}
     </ScrollView>
