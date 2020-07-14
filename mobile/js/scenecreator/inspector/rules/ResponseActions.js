@@ -2,25 +2,36 @@
 const removeResponse = (response) => {
   if (response.params?.then) {
     // this is an 'if'
-    return unrollNestedResponse(response, 'then');
+    return flattenNestedResponse(response, ['then', 'else']);
   } else if (response.params?.body) {
     // this is 'act on' or 'repeat'
-    return unrollNestedResponse(response, 'body');
+    return flattenNestedResponse(response, ['body']);
   }
   // change myself to self.params.nextResponse
   return response.params?.nextResponse;
 };
 
-const unrollNestedResponse = (response, paramName) => {
-  let tailResponse = response.params[paramName];
-  while (tailResponse.params?.nextResponse) {
-    tailResponse = tailResponse.params?.nextResponse;
+const flattenNestedResponse = (response, paramNames) => {
+  for (let ii = 0; ii < paramNames.length; ii++) {
+    const paramName = paramNames[ii];
+    let tailResponse = response.params[paramName];
+    while (tailResponse.params?.nextResponse) {
+      tailResponse = tailResponse.params?.nextResponse;
+    }
+    let nextResponse;
+    if (ii < paramNames.length - 1) {
+      nextResponse = response.params[paramNames[ii + 1]];
+    }
+    if (!nextResponse) {
+      nextResponse = response.params.nextResponse;
+      ii = paramNames.length;
+    }
+    tailResponse.params = {
+      ...tailResponse.params,
+      nextResponse,
+    };
   }
-  tailResponse.params = {
-    ...tailResponse.params,
-    nextResponse: response.params?.nextResponse,
-  };
-  return response.params[paramName];
+  return response.params[paramNames[0]];
 };
 
 // TODO: move myself up:
