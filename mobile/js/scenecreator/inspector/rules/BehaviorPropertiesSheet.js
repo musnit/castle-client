@@ -44,16 +44,13 @@ export const BehaviorPropertiesSheet = ({
   onSelectBehaviorProperty,
   isOpen,
   onClose,
+  isPropertyVisible = (propertySpec) => true,
 }) => {
   const onSelect = (behaviorName, propertyName) => {
     onSelectBehaviorProperty(behaviorName, propertyName);
     onClose();
   };
   const renderHeader = () => <BottomSheetHeader title="Select property" onClose={onClose} />;
-
-  const isPropertyVisible = (propertySpec) => {
-    return propertySpec?.rules?.set === true;
-  };
 
   // hide empty behaviors
   let isBehaviorVisible = {};

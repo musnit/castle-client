@@ -296,6 +296,7 @@ const SetBehavior = ({ response }) => {
     {
       type: 'selectBehaviorPropertySheet',
       label: response.params?.name ?? 'behavior',
+      isPropertyVisible: (spec) => spec?.rules?.set === true,
     },
     {
       type: 'text',
@@ -312,6 +313,36 @@ const SetBehavior = ({ response }) => {
       label: response.params?.setToValue ?? 0,
       paramName: 'setToValue',
       paramValue: response.params?.setToValue,
+    },
+  ];
+};
+
+const ChangeBehavior = ({ response }) => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Adjust',
+    },
+    {
+      type: 'selectBehaviorPropertySheet',
+      label: response.params?.name ?? 'behavior',
+      isPropertyVisible: (spec) => spec?.method === 'numberInput' && spec?.rules?.set === true,
+    },
+    {
+      type: 'text',
+      label: response.params?.propertyName
+        ? `property '${response.params.propertyName}'`
+        : 'property',
+    },
+    {
+      type: 'text',
+      label: 'by',
+    },
+    {
+      type: 'selectParamSheet',
+      label: response.params?.changeBy ?? 0,
+      paramName: 'changeBy',
+      paramValue: response.params?.changeBy,
     },
   ];
 };
@@ -528,6 +559,7 @@ export const Responses = {
   ['variable meets condition']: VariableMeetsCondition,
   ['counter meets condition']: CounterMeetsCondition,
   ['set behavior property']: SetBehavior,
+  ['change behavior property']: ChangeBehavior,
   ['set variable']: SetVariable,
   ['change variable']: ChangeVariable,
   ['set counter']: SetCounter,

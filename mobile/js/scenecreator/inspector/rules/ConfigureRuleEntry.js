@@ -90,11 +90,12 @@ export const ConfigureRuleEntry = ({
       onSelectBlueprint: (entryId) => onChangeParams({ entryId }),
     });
 
-  const showBehaviorPropertyPicker = () =>
+  const showBehaviorPropertyPicker = (cell) =>
     addChildSheet({
       key: 'behaviorPropertyPicker',
       Component: BehaviorPropertiesSheet,
       behaviors,
+      isPropertyVisible: cell.isPropertyVisible,
       onSelectBehaviorProperty: (name, propertyName) => onChangeParams({ name, propertyName }),
     });
 
