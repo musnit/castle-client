@@ -287,7 +287,15 @@ const RestartScene = () => {
   ];
 };
 
-const SetBehavior = ({ response }) => {
+const SetBehavior = ({ response, context }) => {
+  let behaviorName, propertyName;
+  if (response.params?.name) {
+    const behavior = context.behaviors[response.params.name];
+    behaviorName = behavior.displayName;
+    if (response.params?.propertyName) {
+      propertyName = behavior.propertySpecs[response.params.propertyName].label;
+    }
+  }
   return [
     {
       type: 'showEntryOptions',
@@ -295,14 +303,12 @@ const SetBehavior = ({ response }) => {
     },
     {
       type: 'selectBehaviorPropertySheet',
-      label: response.params?.name ?? 'behavior',
+      label: behaviorName ?? 'behavior',
       isPropertyVisible: (spec) => spec?.rules?.set === true,
     },
     {
       type: 'text',
-      label: response.params?.propertyName
-        ? `property '${response.params.propertyName}'`
-        : 'property',
+      label: propertyName ? `property '${propertyName}'` : 'property',
     },
     {
       type: 'text',
@@ -317,7 +323,15 @@ const SetBehavior = ({ response }) => {
   ];
 };
 
-const ChangeBehavior = ({ response }) => {
+const ChangeBehavior = ({ response, context }) => {
+  let behaviorName, propertyName;
+  if (response.params?.name) {
+    const behavior = context.behaviors[response.params.name];
+    behaviorName = behavior.displayName;
+    if (response.params?.propertyName) {
+      propertyName = behavior.propertySpecs[response.params.propertyName].label;
+    }
+  }
   return [
     {
       type: 'showEntryOptions',
@@ -325,14 +339,12 @@ const ChangeBehavior = ({ response }) => {
     },
     {
       type: 'selectBehaviorPropertySheet',
-      label: response.params?.name ?? 'behavior',
+      label: behaviorName ?? 'behavior',
       isPropertyVisible: (spec) => spec?.method === 'numberInput' && spec?.rules?.set === true,
     },
     {
       type: 'text',
-      label: response.params?.propertyName
-        ? `property '${response.params.propertyName}'`
-        : 'property',
+      label: propertyName ? `property '${propertyName}'` : 'property',
     },
     {
       type: 'text',
