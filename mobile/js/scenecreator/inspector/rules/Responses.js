@@ -287,6 +287,35 @@ const RestartScene = () => {
   ];
 };
 
+const SetBehavior = ({ response }) => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Set',
+    },
+    {
+      type: 'selectBehaviorPropertySheet',
+      label: response.params?.name ?? 'behavior',
+    },
+    {
+      type: 'text',
+      label: response.params?.propertyName
+        ? `property '${response.params.propertyName}'`
+        : 'property',
+    },
+    {
+      type: 'text',
+      label: 'to',
+    },
+    {
+      type: 'selectParamSheet',
+      label: response.params?.setToValue ?? 0,
+      paramName: 'setToValue',
+      paramValue: response.params?.setToValue,
+    },
+  ];
+};
+
 const SetVariable = ({ response, context }) => {
   const changeAllParams = {
     paramNames: ['variableId', 'setToValue'],
@@ -498,6 +527,7 @@ export const Responses = {
   ['is colliding']: IsColliding,
   ['variable meets condition']: VariableMeetsCondition,
   ['counter meets condition']: CounterMeetsCondition,
+  ['set behavior property']: SetBehavior,
   ['set variable']: SetVariable,
   ['change variable']: ChangeVariable,
   ['set counter']: SetCounter,
