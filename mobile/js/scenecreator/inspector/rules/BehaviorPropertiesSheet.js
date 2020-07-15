@@ -51,24 +51,38 @@ export const BehaviorPropertiesSheet = ({
   };
   const renderHeader = () => <BottomSheetHeader title="Select property" onClose={onClose} />;
 
+  const isPropertyVisible = (propertySpec) => {
+    return propertySpec?.rules?.set === true;
+  };
+
+  // hide empty behaviors
+  let isBehaviorVisible = {};
+  Object.entries(behaviors).forEach(([behaviorName, behavior]) => {
+    const properties = Object.keys(behavior.propertySpecs);
+    isBehaviorVisible[behaviorName] =
+      behavior.isActive &&
+      properties.some((name) => isPropertyVisible(behavior.propertySpecs[name]));
+  });
+
   const renderContent = () => (
     <View style={styles.container}>
       {behaviors
         ? Object.entries(behaviors).map(([behaviorName, behavior]) => {
             const properties = Object.keys(behavior.propertySpecs);
-            return behavior.isActive ? (
+            let index = 0;
+            return isBehaviorVisible[behaviorName] ? (
               <View key={`behavior-${behavior.name}`} style={styles.category}>
                 <Text style={styles.categoryLabel}>{behavior.displayName}</Text>
                 {properties.map((propertyName, ii) => {
                   const property = behavior.propertySpecs[propertyName];
-                  return (
+                  return isPropertyVisible(property) ? (
                     <Property
                       key={`behavior-property-${ii}`}
                       name={property.label}
-                      isFirst={ii == 0}
+                      isFirst={index++ == 0}
                       onSelect={() => onSelect(behavior.name, propertyName)}
                     />
-                  );
+                  ) : null;
                 })}
               </View>
             ) : null;
