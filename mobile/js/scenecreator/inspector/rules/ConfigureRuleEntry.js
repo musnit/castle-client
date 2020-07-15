@@ -59,6 +59,14 @@ export const ConfigureRuleEntry = ({
       onChangeParams,
     });
 
+  const showEditParamSheetForCell = (cell) => {
+    if (cell.paramNames) {
+      showEditParamSheet(cell.paramNames, cell.paramValues, cell.title);
+    } else {
+      showEditParamSheet([cell.paramName], { [cell.paramName]: cell.paramValue }, cell.title);
+    }
+  };
+
   const showCardPicker = () =>
     addChildSheet({
       key: 'destinationPicker',
@@ -80,6 +88,16 @@ export const ConfigureRuleEntry = ({
       onSelectBlueprint: (entryId) => onChangeParams({ entryId }),
     });
 
+  const onPressCell = {
+    selectEntry: () => onShowPicker(onChangeEntry),
+    selectEntryPlaceholder: () => onShowPicker(onChangeEntry),
+    showEntryOptions: onShowOptions,
+    selectParamSheet: showEditParamSheetForCell,
+    selectParamSheetPlaceholder: showEditParamSheetForCell,
+    selectCardSheet: showCardPicker,
+    selectBlueprintSheet: showBlueprintPicker,
+  };
+
   return (
     <React.Fragment>
       {cells.map((cell, ii) => {
@@ -92,93 +110,28 @@ export const ConfigureRuleEntry = ({
               </View>
             );
           }
-          case 'selectEntry': {
-            return (
-              <TouchableOpacity
-                key={key}
-                style={[styles.cell, styles.select]}
-                onPress={() => onShowPicker(onChangeEntry)}>
-                <Text style={[styles.selectText]}>{cell.label}</Text>
-              </TouchableOpacity>
-            );
-          }
-          case 'selectEntryPlaceholder': {
-            return (
-              <TouchableOpacity
-                key={key}
-                style={[styles.cell, styles.select, styles.placeholder]}
-                onPress={() => onShowPicker(onChangeEntry)}>
-                <Text style={[styles.placeholderText]}>{cell.label}</Text>
-              </TouchableOpacity>
-            );
-          }
-          case 'showEntryOptions': {
-            return (
-              <TouchableOpacity
-                key={key}
-                style={[styles.cell, styles.select]}
-                onPress={onShowOptions}>
-                <Text style={styles.selectText}>{cell.label}</Text>
-              </TouchableOpacity>
-            );
-          }
-          case 'selectParamSheet': {
-            return (
-              <TouchableOpacity
-                key={key}
-                style={[styles.cell, styles.select]}
-                onPress={() => {
-                  if (cell.paramNames) {
-                    showEditParamSheet(cell.paramNames, cell.paramValues, cell.title);
-                  } else {
-                    showEditParamSheet(
-                      [cell.paramName],
-                      { [cell.paramName]: cell.paramValue },
-                      cell.title
-                    );
-                  }
-                }}>
-                <Text style={styles.selectText}>{cell.label}</Text>
-              </TouchableOpacity>
-            );
-          }
-          case 'selectParamSheetPlaceholder': {
-            return (
-              <TouchableOpacity
-                key={key}
-                style={[styles.cell, styles.select, styles.placeholder]}
-                onPress={() => {
-                  if (cell.paramNames) {
-                    showEditParamSheet(cell.paramNames, cell.paramValues, cell.title);
-                  } else {
-                    showEditParamSheet(
-                      [cell.paramName],
-                      { [cell.paramName]: cell.paramValue },
-                      cell.title
-                    );
-                  }
-                }}>
-                <Text style={styles.placeholderText}>{cell.label}</Text>
-              </TouchableOpacity>
-            );
-          }
-          case 'selectCardSheet': {
-            return (
-              <TouchableOpacity
-                key={key}
-                style={[styles.cell, styles.select]}
-                onPress={showCardPicker}>
-                <Text style={styles.selectText}>{cell.label}</Text>
-              </TouchableOpacity>
-            );
-          }
+          case 'selectEntry':
+          case 'showEntryOptions':
+          case 'selectParamSheet':
+          case 'selectCardSheet':
           case 'selectBlueprintSheet': {
             return (
               <TouchableOpacity
                 key={key}
                 style={[styles.cell, styles.select]}
-                onPress={showBlueprintPicker}>
-                <Text style={styles.selectText}>{cell.label}</Text>
+                onPress={() => onPressCell[cell.type](cell)}>
+                <Text style={[styles.selectText]}>{cell.label}</Text>
+              </TouchableOpacity>
+            );
+          }
+          case 'selectEntryPlaceholder':
+          case 'selectParamSheetPlaceholder': {
+            return (
+              <TouchableOpacity
+                key={key}
+                style={[styles.cell, styles.select, styles.placeholder]}
+                onPress={() => onPressCell[cell.type](cell)}>
+                <Text style={[styles.placeholderText]}>{cell.label}</Text>
               </TouchableOpacity>
             );
           }
