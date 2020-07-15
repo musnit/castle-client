@@ -36,10 +36,9 @@ import { CardHeader, CARD_HEADER_HEIGHT } from './CardHeader';
 import { PopoverProvider } from './scenecreator/PopoverProvider';
 import { SheetProvider } from './scenecreator/SheetProvider';
 import { useGhostUI } from './ghost/GhostUI';
-import { getPaneData } from './Tools';
+import { getInspectorBehaviors, getTextActorsData } from './scenecreator/SceneCreatorUtilities';
 
 const CARD_HEIGHT = (1 / Constants.CARD_RATIO) * 100 * Viewport.vw;
-const TEXT_ACTORS_PANE = 'sceneCreatorTextActors';
 
 const CARD_BOTTOM_MIN_HEIGHT = 64 / PixelRatio.get();
 
@@ -441,7 +440,10 @@ const CreateCardScreen = ({
 
   const isSceneLoaded = !!globalActions;
   const isPlaying = globalActions?.performing;
-  const hasSelection = globalActions?.hasSelection;
+  const selectedActorId = globalActions?.selectedActorId;
+  const hasSelection = selectedActorId !== undefined;
+  const { behaviors, behaviorActions } = getInspectorBehaviors(root);
+  const { textActors, isTextActorSelected } = getTextActorsData(root, isPlaying);
 
   // lua's behaviors can be "tools" which have their own UI (right now, the only example is drawing)
   React.useEffect(() => {
@@ -471,16 +473,6 @@ const CreateCardScreen = ({
       actorId,
     });
   }, []);
-
-  let textActors, isTextActorSelected;
-  if (root && root.panes) {
-    const data = getPaneData(root.panes[TEXT_ACTORS_PANE]);
-    if (data) {
-      textActors = data.textActors;
-      isTextActorSelected =
-        !isPlaying && Object.entries(textActors).some(([_, actor]) => actor.isSelected);
-    }
-  }
 
   const maybeSaveAndGoToDeck = React.useCallback(async () => {
     if (card?.isChanged) {
@@ -564,8 +556,11 @@ const CreateCardScreen = ({
     deck,
     card,
     isPlaying,
+    selectedActorId,
     hasSelection,
     isTextActorSelected,
+    behaviors,
+    behaviorActions,
     library: getLibraryEntries(root),
     transformAssetUri,
     onSelectBackupData,

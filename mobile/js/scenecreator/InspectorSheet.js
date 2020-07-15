@@ -30,14 +30,6 @@ export default InspectorSheet = ({ element, isOpen, addChildSheet }) => {
   const actionsPane = root.panes.sceneCreatorInspectorActions;
   const { isTextActorSelected } = useCardCreator();
 
-  // Do this so we can show last visible elements while animating out
-  const [lastVisibleElements, setLastVisibleElements] = useState({ element, actionsPane });
-  useEffect(() => {
-    if (isOpen) {
-      setLastVisibleElements({ element, actionsPane });
-    }
-  }, [isOpen, element, actionsPane]);
-
   const [selectedTab, setSelectedTab] = React.useState(TAB_ITEMS[0].value);
 
   useEffect(() => {
@@ -57,23 +49,12 @@ export default InspectorSheet = ({ element, isOpen, addChildSheet }) => {
       tabItems={tabItems}
       selectedTab={selectedTab}
       setSelectedTab={setSelectedTab}
-      pane={isOpen ? actionsPane : lastVisibleElements.actionsPane}
+      pane={actionsPane}
     />
   );
 
   const renderContent = () => (
-    <InspectorTabs
-      addChildSheet={addChildSheet}
-      selectedTab={selectedTab}
-      element={
-        isOpen
-          ? element
-          : {
-              ...lastVisibleElements.element,
-              props: { ...lastVisibleElements.element.props },
-            }
-      }
-    />
+    <InspectorTabs addChildSheet={addChildSheet} selectedTab={selectedTab} element={element} />
   );
 
   return (

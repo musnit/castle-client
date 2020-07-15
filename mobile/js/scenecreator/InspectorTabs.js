@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useCardCreator } from './CreateCardContext';
-import { sendDataPaneAction } from '../Tools';
 
 import AddBehaviorSheet from './AddBehaviorSheet';
 import SaveBlueprintSheet from './SaveBlueprintSheet';
@@ -118,20 +117,8 @@ const MovementTab = ({ behaviors, sendActions, addChildSheet }) => {
   );
 };
 
-export const InspectorTabs = ({ element, selectedTab, addChildSheet }) => {
-  let behaviors, sendActions;
-  if (element.children.count) {
-    behaviors = {};
-    sendActions = {};
-    Object.entries(element.children).forEach(([key, child]) => {
-      if (child.type === 'data') {
-        const data = child.props.data;
-        behaviors[data.name] = data;
-        behaviors[data.name].lastReportedEventId = child.lastReportedEventId;
-        sendActions[data.name] = (action, value) => sendDataPaneAction(element, action, value, key);
-      }
-    });
-  }
+export const InspectorTabs = ({ selectedTab, addChildSheet }) => {
+  const { behaviors, behaviorActions: sendActions } = useCardCreator();
 
   if (!behaviors) {
     return <View />;
