@@ -3,6 +3,17 @@ import { StyleSheet, View } from 'react-native';
 import { RuleParamInputRow } from '../components/RuleParamInputRow';
 import { useCardCreator } from '../../CreateCardContext';
 
+const styles = StyleSheet.create({
+  inputRow: {
+    marginTop: 16,
+    borderWidth: 1,
+    borderBottomWidth: 2,
+    borderColor: '#000',
+    borderRadius: 6,
+    padding: 12,
+  },
+});
+
 export const BehaviorPropertyRule = ({ response, onChangeResponse, children }) => {
   const { behaviors, behaviorActions } = useCardCreator();
 
@@ -33,7 +44,7 @@ export const BehaviorPropertyRule = ({ response, onChangeResponse, children }) =
         paramSpec={propertySpec}
         value={response.params[valueProp]}
         setValue={onChange}
-        style={{ marginTop: 8 }}
+        style={styles.inputRow}
       />
     </View>
   );
