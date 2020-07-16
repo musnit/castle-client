@@ -129,34 +129,32 @@ const If = ({ response, onChangeResponse, children, order, ...props }) => {
 
   return (
     <React.Fragment>
-      <View style={[styles.response, order > 0 ? styles.nextResponse : null]}>
-        <View style={styles.responseCells}>
-          {children}
-          <ConfigureRuleEntry
-            entry={getEntryByName(response.params.condition?.name, conditions)}
-            cells={makeResponseCells({
-              response: response.params.condition,
-              context,
-              isCondition: true,
-            })}
-            behaviors={behaviors}
-            onChangeEntry={onChangeCondition}
-            onShowPicker={onPickCondition}
-            onChangeParams={onChangeParams}
-            addChildSheet={addChildSheet}
-          />
-        </View>
-        <View style={SceneCreatorConstants.styles.insetContainer}>
-          <Response response={response.params.then} onChangeResponse={onChangeThen} {...props} />
-        </View>
-        <View style={{ paddingTop: 16 }}>
-          <Else
-            response={response.params.else}
-            onChangeResponse={onChangeElse}
-            onRemoveElse={onRemoveElse}
-            {...props}
-          />
-        </View>
+      <View style={styles.responseCells}>
+        {children}
+        <ConfigureRuleEntry
+          entry={getEntryByName(response.params.condition?.name, conditions)}
+          cells={makeResponseCells({
+            response: response.params.condition,
+            context,
+            isCondition: true,
+          })}
+          behaviors={behaviors}
+          onChangeEntry={onChangeCondition}
+          onShowPicker={onPickCondition}
+          onChangeParams={onChangeParams}
+          addChildSheet={addChildSheet}
+        />
+      </View>
+      <View style={SceneCreatorConstants.styles.insetContainer}>
+        <Response response={response.params.then} onChangeResponse={onChangeThen} {...props} />
+      </View>
+      <View style={{ paddingTop: 16 }}>
+        <Else
+          response={response.params.else}
+          onChangeResponse={onChangeElse}
+          onRemoveElse={onRemoveElse}
+          {...props}
+        />
       </View>
     </React.Fragment>
   );
@@ -216,12 +214,12 @@ const Repeat = ({ response, onChangeResponse, children, order, ...props }) => {
     [response, onChangeResponse]
   );
   return (
-    <View style={[styles.response, order > 0 ? styles.nextResponse : null]}>
+    <React.Fragment>
       <View style={styles.responseCells}>{children}</View>
       <View style={SceneCreatorConstants.styles.insetContainer}>
         <Response response={response.params.body} onChangeResponse={onChangeBody} {...props} />
       </View>
-    </View>
+    </React.Fragment>
   );
 };
 
@@ -238,7 +236,7 @@ const ActOn = ({ response, onChangeResponse, children, order, ...props }) => {
     [response, onChangeResponse]
   );
   return (
-    <View style={[styles.response, order > 0 ? styles.nextResponse : null]}>
+    <React.Fragment>
       <View style={styles.responseCells}>{children}</View>
       <View style={SceneCreatorConstants.styles.insetContainer}>
         <Response
@@ -248,7 +246,7 @@ const ActOn = ({ response, onChangeResponse, children, order, ...props }) => {
           {...props}
         />
       </View>
-    </View>
+    </React.Fragment>
   );
 };
 
@@ -345,13 +343,12 @@ const Response = ({ response, onChangeResponse, order = 0, ...props }) => {
         {responseContents}
       </ResponseComponent>
     );
-  } else {
-    responseContents = (
-      <View style={[styles.response, order > 0 ? styles.nextResponse : null]}>
-        {responseContents}
-      </View>
-    );
   }
+  responseContents = (
+    <View style={[styles.response, order > 0 ? styles.nextResponse : null]}>
+      {responseContents}
+    </View>
+  );
 
   const onChangeNextResponse = React.useCallback(
     (nextResponse) =>
