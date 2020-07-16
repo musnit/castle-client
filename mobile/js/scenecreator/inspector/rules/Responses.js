@@ -288,13 +288,10 @@ const RestartScene = () => {
 };
 
 const SetBehavior = ({ response, context }) => {
-  let behaviorName, propertyName;
+  let behaviorName;
   if (response.params?.name) {
     const behavior = context.behaviors[response.params.name];
     behaviorName = behavior.displayName;
-    if (response.params?.propertyName) {
-      propertyName = behavior.propertySpecs[response.params.propertyName].label;
-    }
   }
   return [
     {
@@ -308,29 +305,16 @@ const SetBehavior = ({ response, context }) => {
     },
     {
       type: 'text',
-      label: propertyName ? `property '${propertyName}'` : 'property',
-    },
-    {
-      type: 'text',
-      label: 'to',
-    },
-    {
-      type: 'selectParamSheet',
-      label: response.params?.setToValue ?? 0,
-      paramName: 'setToValue',
-      paramValue: response.params?.setToValue,
+      label: 'property',
     },
   ];
 };
 
 const ChangeBehavior = ({ response, context }) => {
-  let behaviorName, propertyName;
+  let behaviorName;
   if (response.params?.name) {
     const behavior = context.behaviors[response.params.name];
     behaviorName = behavior.displayName;
-    if (response.params?.propertyName) {
-      propertyName = behavior.propertySpecs[response.params.propertyName].label;
-    }
   }
   return [
     {
@@ -344,17 +328,7 @@ const ChangeBehavior = ({ response, context }) => {
     },
     {
       type: 'text',
-      label: propertyName ? `property '${propertyName}'` : 'property',
-    },
-    {
-      type: 'text',
-      label: 'by',
-    },
-    {
-      type: 'selectParamSheet',
-      label: response.params?.changeBy ?? 0,
-      paramName: 'changeBy',
-      paramValue: response.params?.changeBy,
+      label: 'property',
     },
   ];
 };

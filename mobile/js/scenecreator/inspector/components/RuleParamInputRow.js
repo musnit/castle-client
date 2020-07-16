@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const RuleParamInputRow = ({ label, paramSpec, value, setValue, ...props }) => {
+export const RuleParamInputRow = ({ label, paramSpec, value, setValue, style, ...props }) => {
   let input;
   switch (paramSpec.method) {
     case 'numberInput':
@@ -56,7 +56,7 @@ export const RuleParamInputRow = ({ label, paramSpec, value, setValue, ...props 
   }
 
   return (
-    <View style={styles.inputContainer}>
+    <View style={[styles.inputContainer, style]}>
       <View style={{ width: '50%' }}>
         <Text style={styles.inputLabel}>{paramSpec?.label ?? label}</Text>
       </View>

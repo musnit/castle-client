@@ -21,6 +21,7 @@ export const BehaviorPropertyInputRow = ({
   label,
   sendAction,
   displayValue,
+  style,
   ...props
 }) => {
   // optional method to transform the value shown
@@ -75,7 +76,7 @@ export const BehaviorPropertyInputRow = ({
   }
 
   return (
-    <View style={styles.inputContainer}>
+    <View style={[styles.inputContainer, style]}>
       <View style={{ width: '50%' }}>
         <Text style={styles.inputLabel}>{label}</Text>
       </View>

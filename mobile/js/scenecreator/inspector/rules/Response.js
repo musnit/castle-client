@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useCardCreator } from '../../CreateCardContext';
+import { BehaviorPropertyRule } from './BehaviorPropertyRule';
 import { ConfigureRuleEntry } from './ConfigureRuleEntry';
 import { getEntryByName } from '../InspectorUtilities';
 import { makeResponseActions } from './ResponseActions';
@@ -256,6 +257,8 @@ const RESPONSE_COMPONENTS = {
   repeat: Repeat,
   ['act on other']: ActOn,
   ['act on']: ActOn,
+  ['set behavior property']: BehaviorPropertyRule,
+  ['change behavior property']: BehaviorPropertyRule,
 };
 
 const makeResponseCells = (props) => {
