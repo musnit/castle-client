@@ -534,6 +534,36 @@ const SendPlayerToCard = ({ response, context }) => {
   ];
 };
 
+const AddTag = ({ response }) => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Add tag',
+    },
+    {
+      type: response.params?.tag ? 'selectParamSheet' : 'selectParamSheetPlaceholder',
+      label: response.params?.tag ?? 'Select tag',
+      paramName: 'tag',
+      paramValue: response.params?.tag ?? '',
+    },
+  ];
+};
+
+const RemoveTag = ({ response }) => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Remove tag',
+    },
+    {
+      type: response.params?.tag ? 'selectParamSheet' : 'selectParamSheetPlaceholder',
+      label: response.params?.tag ?? 'Select tag',
+      paramName: 'tag',
+      paramValue: response.params?.tag ?? '',
+    },
+  ];
+};
+
 export const Responses = {
   ['act on']: ActOn,
   ['act on other']: ActOnOther,
@@ -556,6 +586,8 @@ export const Responses = {
   ['add rotation speed']: AddRotationSpeed,
   ['send player to card']: SendPlayerToCard,
   ['restart scene']: RestartScene,
+  ['add tag']: AddTag,
+  ['remove tag']: RemoveTag,
   create: Create,
   destroy: Destroy,
   show: Show,
