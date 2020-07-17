@@ -38,6 +38,9 @@ export const BehaviorPropertyRule = ({ response, onChangeResponse, children }) =
     });
   };
 
+  const [lastNativeUpdate, setLastNativeUpdate] = React.useState(0);
+  React.useEffect(() => setLastNativeUpdate(lastNativeUpdate + 1), [response?.params?.value]);
+
   return (
     <View>
       {children}
@@ -47,6 +50,7 @@ export const BehaviorPropertyRule = ({ response, onChangeResponse, children }) =
         value={response.params.value}
         setValue={onChange}
         style={styles.inputRow}
+        lastNativeUpdate={lastNativeUpdate}
       />
     </View>
   );

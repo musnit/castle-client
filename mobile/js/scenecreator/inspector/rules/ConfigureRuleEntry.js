@@ -97,7 +97,7 @@ export const ConfigureRuleEntry = ({
       behaviors,
       isPropertyVisible: cell.isPropertyVisible,
       onSelectBehaviorProperty: (behaviorId, propertyName) =>
-        onChangeParams({ behaviorId, propertyName }),
+        onChangeParams({ behaviorId, propertyName, value: 0 }),
     });
 
   const onPressCell = {
