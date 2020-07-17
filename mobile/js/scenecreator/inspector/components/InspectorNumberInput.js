@@ -45,10 +45,10 @@ export const InspectorNumberInput = ({ value, lastNativeUpdate, onChange, ...pro
     (value) => {
       let result = value;
       if (props) {
-        if (props.min && value < props.min) {
+        if (props.min !== undefined && value < props.min) {
           result = props.min;
         }
-        if (props.max && value > props.max) {
+        if (props.max !== undefined && value > props.max) {
           result = props.max;
         }
       }
@@ -82,10 +82,16 @@ export const InspectorNumberInput = ({ value, lastNativeUpdate, onChange, ...pro
   return (
     <View style={styles.container}>
       <InspectorTextInput style={styles.input} value={text} onChangeText={onChangeText} />
-      <TouchableOpacity style={[styles.button, styles.minusButton]} onPress={onMinus} hitSlop={{top: 8, bottom: 8, left: 8, right: 8}}>
+      <TouchableOpacity
+        style={[styles.button, styles.minusButton]}
+        onPress={onMinus}
+        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
         <FontAwesome name="minus" size={14} color="#000" />
       </TouchableOpacity>
-      <TouchableOpacity style={[styles.button, styles.plusButton]} onPress={onPlus} hitSlop={{top: 8, bottom: 8, left: 8, right: 8}}>
+      <TouchableOpacity
+        style={[styles.button, styles.plusButton]}
+        onPress={onPlus}
+        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
         <FontAwesome name="plus" size={14} color="#000" />
       </TouchableOpacity>
     </View>
