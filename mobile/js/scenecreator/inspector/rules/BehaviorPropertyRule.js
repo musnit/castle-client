@@ -27,14 +27,13 @@ export const BehaviorPropertyRule = ({ response, onChangeResponse, children }) =
   }
 
   const propertySpec = behavior.propertySpecs[propertyName];
-  const valueProp = response.name === 'change behavior property' ? 'changeBy' : 'setToValue';
 
   const onChange = (value) => {
     onChangeResponse({
       ...response,
       params: {
         ...response.params,
-        [valueProp]: value,
+        value,
       },
     });
   };
@@ -45,7 +44,7 @@ export const BehaviorPropertyRule = ({ response, onChangeResponse, children }) =
       <RuleParamInputRow
         label={propertySpec.label}
         paramSpec={propertySpec}
-        value={response.params[valueProp]}
+        value={response.params.value}
         setValue={onChange}
         style={styles.inputRow}
       />
