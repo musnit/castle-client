@@ -17,5 +17,15 @@ const styles = StyleSheet.create({
 });
 
 export const InspectorTextInput = ({ style, ...props }) => {
-  return <TextInput style={[styles.input, style]} placeholderTextColor={Constants.colors.grayText} {...props} />;
+  let value = props.value;
+  if (value && typeof value !== 'string') {
+    value = '';
+  }
+  return (
+    <TextInput
+      style={[styles.input, style]}
+      placeholderTextColor={Constants.colors.grayText}
+      {...props}
+    />
+  );
 };

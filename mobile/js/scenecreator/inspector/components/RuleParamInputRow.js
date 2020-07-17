@@ -31,8 +31,15 @@ export const RuleParamInputRow = ({ label, paramSpec, value, setValue, style, ..
       );
       break;
     case 'textInput':
+    case 'textArea':
       input = (
-        <InspectorTextInput value={value} onChangeText={setValue} {...paramSpec.props} {...props} />
+        <InspectorTextInput
+          value={value}
+          onChangeText={setValue}
+          multiline={paramSpec.method === 'textArea'}
+          {...paramSpec.props}
+          {...props}
+        />
       );
       break;
     case 'dropdown':

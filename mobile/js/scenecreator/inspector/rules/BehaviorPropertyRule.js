@@ -16,6 +16,8 @@ const styles = StyleSheet.create({
 
 export const BehaviorPropertyRule = ({ response, onChangeResponse, children }) => {
   const { behaviors, behaviorActions } = useCardCreator();
+  const [lastNativeUpdate, setLastNativeUpdate] = React.useState(0);
+  React.useEffect(() => setLastNativeUpdate(lastNativeUpdate + 1), [response?.params?.value]);
 
   const { behaviorId, propertyName } = response.params;
   let behavior;
@@ -49,9 +51,6 @@ export const BehaviorPropertyRule = ({ response, onChangeResponse, children }) =
       },
     });
   };
-
-  const [lastNativeUpdate, setLastNativeUpdate] = React.useState(0);
-  React.useEffect(() => setLastNativeUpdate(lastNativeUpdate + 1), [response?.params?.value]);
 
   return (
     <View>
