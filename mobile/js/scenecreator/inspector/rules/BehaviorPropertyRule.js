@@ -26,7 +26,19 @@ export const BehaviorPropertyRule = ({ response, onChangeResponse, children }) =
     return children;
   }
 
-  const propertySpec = behavior.propertySpecs[propertyName];
+  let propertySpec = behavior.propertySpecs[propertyName];
+
+  // don't enforce absolute min/max when choosing a relative value
+  if (response.name === 'change behavior property' && propertySpec.props) {
+    propertySpec = {
+      ...propertySpec,
+      props: {
+        ...propertySpec.props,
+        min: undefined,
+        max: undefined,
+      },
+    };
+  }
 
   const onChange = (value) => {
     onChangeResponse({
