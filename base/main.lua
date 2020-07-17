@@ -1,4 +1,4 @@
-SCENE_CREATOR_API_VERSION = 7
+SCENE_CREATOR_API_VERSION = 8
 
 local ffi = require "ffi"
 local C = ffi.C
