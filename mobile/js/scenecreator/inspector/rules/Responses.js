@@ -582,6 +582,36 @@ const RemoveTag = ({ response }) => {
   ];
 };
 
+const MoveTowardActor = ({ response }) => {
+  const hasTag = response.params?.tag && response.params?.tag.length;
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Move toward',
+    },
+    {
+      type: 'text',
+      label: hasTag ? 'the closest actor with tag' : 'the closest actor with',
+    },
+    {
+      type: 'selectParamSheet',
+      label: hasTag ? response.params.tag : 'any tag',
+      paramName: 'tag',
+      paramValue: response.params?.tag,
+    },
+    {
+      type: 'text',
+      label: 'at speed',
+    },
+    {
+      type: 'selectParamSheet',
+      label: response.params?.speed ?? 0,
+      paramName: 'speed',
+      paramValue: response.params?.speed,
+    },
+  ];
+};
+
 export const Responses = {
   ['act on']: ActOn,
   ['act on other']: ActOnOther,
@@ -606,6 +636,7 @@ export const Responses = {
   ['restart scene']: RestartScene,
   ['add tag']: AddTag,
   ['remove tag']: RemoveTag,
+  ['move toward actor']: MoveTowardActor,
   create: Create,
   destroy: Destroy,
   show: Show,
