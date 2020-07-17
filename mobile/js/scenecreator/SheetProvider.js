@@ -131,9 +131,9 @@ export const SheetProvider = ({ activeSheet, setActiveSheet }) => {
           };
 
           return (
-            <React.Fragment>
+            <React.Fragment key={key}>
               {maybeOverlay}
-              <Component key={key} {...sheetProps} />
+              <Component {...sheetProps} />
             </React.Fragment>
           );
         });
