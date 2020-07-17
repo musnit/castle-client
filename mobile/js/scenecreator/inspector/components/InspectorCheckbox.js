@@ -7,7 +7,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 12,
   },
   box: {
     backgroundColor: '#fff',
@@ -34,7 +33,7 @@ export const InspectorCheckbox = ({ value, label, onChange, style, ...props }) =
       <Text style={styles.label}>{label}</Text>
       <TouchableWithoutFeedback onPress={onPress}>
         <View style={styles.box}>
-          {value && <FontAwesome name="check" size={18} color="#000" />}
+          {value ? <FontAwesome name="check" size={18} color="#000" /> : null}
         </View>
       </TouchableWithoutFeedback>
     </View>

@@ -42,12 +42,19 @@ export default InspectorSliding = ({ behavior, sendAction }) => {
           value={isHorizChecked}
           onChange={onChangeHoriz}
           label="Moves horizontally"
+          style={{ marginBottom: 12 }}
         />
-        <InspectorCheckbox value={isVertChecked} onChange={onChangeVert} label="Moves vertically" />
+        <InspectorCheckbox
+          value={isVertChecked}
+          onChange={onChangeVert}
+          label="Moves vertically"
+          style={{ marginBottom: 12 }}
+        />
         <InspectorCheckbox
           value={isRotationAllowed}
           onChange={(value) => sendIsRotationAllowed('set:isRotationAllowed', value)}
           label="Rotates"
+          style={{ marginBottom: 12 }}
         />
       </View>
     </View>

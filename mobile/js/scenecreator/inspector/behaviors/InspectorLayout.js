@@ -78,7 +78,7 @@ export default InspectorLayout = ({ body, circleShape, sendActions }) => {
         label="Use circular shape"
         value={circleShape?.isActive}
         onChange={onChangeCircleShape}
-        style={{ marginRight: 16 }}
+        style={{ marginRight: 16, marginBottom: 12 }}
       />
       <View style={styles.properties}>
         {circleShape?.isActive ? (
