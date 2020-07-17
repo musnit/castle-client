@@ -543,10 +543,15 @@ const SendPlayerToCard = ({ response, context }) => {
 };
 
 const AddTag = ({ response }) => {
+  let plural = true;
+  if (response.params?.tag) {
+    const tags = response.params.tag.split(' ');
+    plural = !(tags && tags.length == 1);
+  }
   return [
     {
       type: 'showEntryOptions',
-      label: 'Add tag',
+      label: plural ? 'Add tags' : 'Add tag',
     },
     {
       type: response.params?.tag ? 'selectParamSheet' : 'selectParamSheetPlaceholder',
@@ -558,10 +563,15 @@ const AddTag = ({ response }) => {
 };
 
 const RemoveTag = ({ response }) => {
+  let plural = true;
+  if (response.params?.tag) {
+    const tags = response.params.tag.split(' ');
+    plural = !(tags && tags.length == 1);
+  }
   return [
     {
       type: 'showEntryOptions',
-      label: 'Remove tag',
+      label: plural ? 'Remove tags' : 'Remove tag',
     },
     {
       type: response.params?.tag ? 'selectParamSheet' : 'selectParamSheetPlaceholder',
