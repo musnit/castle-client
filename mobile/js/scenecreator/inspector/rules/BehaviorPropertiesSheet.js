@@ -46,8 +46,8 @@ export const BehaviorPropertiesSheet = ({
   onClose,
   isPropertyVisible = (propertySpec) => true,
 }) => {
-  const onSelect = (behaviorName, propertyName) => {
-    onSelectBehaviorProperty(behaviorName, propertyName);
+  const onSelect = (behaviorId, propertyName) => {
+    onSelectBehaviorProperty(behaviorId, propertyName);
     onClose();
   };
   const renderHeader = () => <BottomSheetHeader title="Select property" onClose={onClose} />;
@@ -77,7 +77,7 @@ export const BehaviorPropertiesSheet = ({
                       key={`behavior-property-${ii}`}
                       name={property.label}
                       isFirst={index++ == 0}
-                      onSelect={() => onSelect(behavior.name, propertyName)}
+                      onSelect={() => onSelect(behavior.behaviorId, propertyName)}
                     />
                   ) : null;
                 })}

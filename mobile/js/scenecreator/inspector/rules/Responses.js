@@ -289,9 +289,13 @@ const RestartScene = () => {
 
 const SetBehavior = ({ response, context }) => {
   let behaviorName;
-  if (response.params?.name) {
-    const behavior = context.behaviors[response.params.name];
-    behaviorName = behavior.displayName;
+  if (response.params?.behaviorId) {
+    const entry = Object.entries(context.behaviors).find(
+      ([_, b]) => b.behaviorId === response.params.behaviorId
+    );
+    if (entry) {
+      behaviorName = entry[1].displayName;
+    }
   }
   return [
     {
@@ -312,9 +316,13 @@ const SetBehavior = ({ response, context }) => {
 
 const ChangeBehavior = ({ response, context }) => {
   let behaviorName;
-  if (response.params?.name) {
-    const behavior = context.behaviors[response.params.name];
-    behaviorName = behavior.displayName;
+  if (response.params?.behaviorId) {
+    const entry = Object.entries(context.behaviors).find(
+      ([_, b]) => b.behaviorId === response.params.behaviorId
+    );
+    if (entry) {
+      behaviorName = entry[1].displayName;
+    }
   }
   return [
     {

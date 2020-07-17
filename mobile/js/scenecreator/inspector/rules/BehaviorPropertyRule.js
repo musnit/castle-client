@@ -17,9 +17,12 @@ const styles = StyleSheet.create({
 export const BehaviorPropertyRule = ({ response, onChangeResponse, children }) => {
   const { behaviors, behaviorActions } = useCardCreator();
 
-  const { name, propertyName } = response.params;
-  const behavior = behaviors[name];
-  if (!behavior) {
+  const { behaviorId, propertyName } = response.params;
+  let behavior;
+  const behaviorEntry = Object.entries(behaviors).find(([_, b]) => b.behaviorId === behaviorId);
+  if (behaviorEntry) {
+    behavior = behaviorEntry[1];
+  } else {
     return children;
   }
 
