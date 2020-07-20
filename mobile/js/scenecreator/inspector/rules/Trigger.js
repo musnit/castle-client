@@ -21,7 +21,12 @@ const TRIGGER_CATEGORY_ORDER = ['general', 'controls', 'state'];
 const _entryToTrigger = (entry) => ({
   name: entry.name,
   behaviorId: entry.behaviorId,
-  params: entry.initialParams ?? {},
+  params: entry.paramSpecs
+    ? Object.entries(entry.paramSpecs).reduce((params, [key, spec]) => {
+        params[key] = spec.initialValue;
+        return params;
+      }, {})
+    : {},
 });
 
 export const Trigger = ({
