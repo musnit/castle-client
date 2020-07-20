@@ -60,7 +60,7 @@ export default RulePartPickerSheet = ({
     return (
       (!behaviors || behaviors[entry.behaviorName]?.isActive) &&
       (!entry.triggerFilter || entry.triggerFilter[triggerFilter]) &&
-      !(behaviors.Text.isActive && entry.name === 'change behavior property')
+      !(behaviors?.Text.isActive && entry.name === 'change behavior property')
     );
   };
 
