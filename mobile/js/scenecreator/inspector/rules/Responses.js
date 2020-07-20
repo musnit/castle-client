@@ -612,6 +612,15 @@ const MoveTowardActor = ({ response }) => {
   ];
 };
 
+const FaceDirectionOfMotion = () => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Face direction of motion',
+    },
+  ];
+};
+
 export const Responses = {
   ['act on']: ActOn,
   ['act on other']: ActOnOther,
@@ -637,6 +646,7 @@ export const Responses = {
   ['add tag']: AddTag,
   ['remove tag']: RemoveTag,
   ['move toward actor']: MoveTowardActor,
+  ['face direction of motion']: FaceDirectionOfMotion,
   create: Create,
   destroy: Destroy,
   show: Show,
