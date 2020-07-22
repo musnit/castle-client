@@ -36,7 +36,7 @@ export default InspectorSliding = ({ behavior, sendAction }) => {
 
   return (
     <View style={SceneCreatorConstants.styles.behaviorContainer}>
-      <BehaviorHeader name="Axis Lock" onRemove={() => sendAction('remove')} />
+      <BehaviorHeader name="Axis Lock" behavior={behavior} sendAction={sendAction} />
       <View style={SceneCreatorConstants.styles.behaviorProperties}>
         <InspectorCheckbox
           value={isHorizChecked}

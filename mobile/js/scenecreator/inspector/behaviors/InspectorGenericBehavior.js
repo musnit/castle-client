@@ -9,7 +9,7 @@ export default InspectorGenericBehavior = ({ behavior, sendAction, properties })
   properties = properties ?? Object.keys(behavior.propertySpecs);
   return (
     <View style={SceneCreatorConstants.styles.behaviorContainer}>
-      <BehaviorHeader name={behavior.displayName} onRemove={() => sendAction('remove')} />
+      <BehaviorHeader behavior={behavior} sendAction={sendAction} />
       {properties?.length ? (
         <View style={SceneCreatorConstants.styles.behaviorProperties}>
           {properties.map((propName, ii) => (

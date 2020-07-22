@@ -8,7 +8,7 @@ import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 export default InspectorCounter = ({ counter, sendAction }) => {
   return (
     <View style={SceneCreatorConstants.styles.behaviorContainer}>
-      <BehaviorHeader name="Counter" onRemove={() => sendAction('remove')} />
+      <BehaviorHeader name="Counter" behavior={counter} sendAction={sendAction} />
       <View style={SceneCreatorConstants.styles.behaviorProperties}>
         <BehaviorPropertyInputRow
           behavior={counter}
