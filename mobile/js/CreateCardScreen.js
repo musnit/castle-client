@@ -33,16 +33,27 @@ import * as GhostEvents from './ghost/GhostEvents';
 
 import { CreateCardContext } from './scenecreator/CreateCardContext';
 import { CardHeader, CARD_HEADER_HEIGHT } from './CardHeader';
+import {
+  DrawingCardHeader,
+  DRAWING_CARD_HEADER_HEIGHT,
+} from './scenecreator/drawing/DrawingCardHeader';
+import { DrawingCardBottomActions } from './scenecreator/drawing/DrawingCardBottomActions';
 import { PopoverProvider } from './scenecreator/PopoverProvider';
 import { SheetProvider } from './scenecreator/SheetProvider';
 import { useGhostUI } from './ghost/GhostUI';
-import { getInspectorBehaviors, getTextActorsData } from './scenecreator/SceneCreatorUtilities';
+import {
+  getInspectorBehaviors,
+  getTextActorsData,
+  getActiveTool,
+} from './scenecreator/SceneCreatorUtilities';
 
 const CARD_HEIGHT = (1 / Constants.CARD_RATIO) * 100 * Viewport.vw;
 
 const CARD_BOTTOM_MIN_HEIGHT = 64 / PixelRatio.get();
 
 const MAX_AVAILABLE_CARD_HEIGHT = 100 * Viewport.vh - CARD_HEADER_HEIGHT - CARD_BOTTOM_MIN_HEIGHT;
+const DRAWING_MAX_AVAILABLE_CARD_HEIGHT =
+  100 * Viewport.vh - DRAWING_CARD_HEADER_HEIGHT - CARD_BOTTOM_MIN_HEIGHT;
 
 const AUTOBACKUP_INTERVAL_MS = 2 * 60 * 1000;
 
@@ -437,24 +448,26 @@ const CreateCardScreen = ({
   React.useEffect(Keyboard.dismiss, [activeSheet]);
 
   const [isShowingTextActors, setShowingTextActors] = React.useState(true);
+  const [isShowingDraw, setIsShowingDraw] = React.useState(false);
 
   const isSceneLoaded = !!globalActions;
   const isPlaying = globalActions?.performing;
   const selectedActorId = globalActions?.selectedActorId;
   const hasSelection = selectedActorId !== undefined;
   const { behaviors, behaviorActions } = getInspectorBehaviors(root);
+  const { activeToolData, activeToolAction } = getActiveTool(root);
   const { textActors, isTextActorSelected } = getTextActorsData(root, isPlaying);
 
-  // lua's behaviors can be "tools" which have their own UI (right now, the only example is drawing)
+  // lua's behaviors can be "tools"
   React.useEffect(() => {
     if (globalActions?.activeToolBehaviorId) {
       const activeToolBehavior = globalActions.tools.find(
         (behavior) => behavior.behaviorId === globalActions.activeToolBehaviorId
       );
-      if (activeToolBehavior && activeToolBehavior.hasUi) {
-        setActiveSheet('sceneCreatorTool');
+      if (activeToolBehavior && activeToolBehavior.name == 'Draw') {
+        setIsShowingDraw(true);
       } else {
-        setActiveSheet(null);
+        setIsShowingDraw(false);
       }
     }
   }, [globalActions?.activeToolBehaviorId]);
@@ -552,6 +565,10 @@ const CreateCardScreen = ({
     ? null
     : { width: undefined, height: MAX_AVAILABLE_CARD_HEIGHT };
 
+  const drawingCardFitStyles = Viewport.isCardWide
+    ? null
+    : { width: undefined, height: DRAWING_MAX_AVAILABLE_CARD_HEIGHT };
+
   const contextValue = {
     deck,
     card,
@@ -568,6 +585,8 @@ const CreateCardScreen = ({
     setShowingTextActors,
     variables: card.variables,
     onVariablesChange,
+    activeToolData,
+    activeToolAction,
   };
 
   // SafeAreaView doesn't respond to statusbar being hidden right now
@@ -575,15 +594,24 @@ const CreateCardScreen = ({
   return (
     <CreateCardContext.Provider value={contextValue}>
       <SafeAreaView style={styles.container}>
-        <CardHeader
-          card={card}
-          isEditable
-          mode={activeSheet}
-          onChangeMode={setActiveSheet}
-          onPressBack={maybeSaveAndGoToDeck}
-        />
+        {isShowingDraw ? (
+          <DrawingCardHeader onPressBack={() => sendGlobalAction('resetActiveTool')} />
+        ) : (
+          <CardHeader
+            card={card}
+            isEditable
+            mode={activeSheet}
+            onChangeMode={setActiveSheet}
+            onPressBack={maybeSaveAndGoToDeck}
+          />
+        )}
         <View style={styles.cardBody}>
-          <View style={[styles.card, cardBackgroundStyles, cardFitStyles]}>
+          <View
+            style={[
+              styles.card,
+              cardBackgroundStyles,
+              isShowingDraw ? drawingCardFitStyles : cardFitStyles,
+            ]}>
             <CardScene
               interactionEnabled={true}
               key={`card-scene-${card.scene && card.scene.sceneId}`}
@@ -605,18 +633,28 @@ const CreateCardScreen = ({
               />
             </View>
           </View>
-          <CardBottomActions
-            card={card}
-            onAdd={() => setActiveSheet('sceneCreatorBlueprints')}
-            onOpenLayout={() => setActiveSheet('layout')}
-            onSave={saveAndGoToDeck}
-            isSceneLoaded={isSceneLoaded}
-            isPlayingScene={isPlaying}
-          />
+          {isShowingDraw ? (
+            <PopoverProvider>
+              <DrawingCardBottomActions />
+            </PopoverProvider>
+          ) : (
+            <CardBottomActions
+              card={card}
+              onAdd={() => setActiveSheet('sceneCreatorBlueprints')}
+              onOpenLayout={() => setActiveSheet('layout')}
+              onSave={saveAndGoToDeck}
+              isSceneLoaded={isSceneLoaded}
+              isPlayingScene={isPlaying}
+            />
+          )}
         </View>
       </SafeAreaView>
       <PopoverProvider>
-        <SheetProvider activeSheet={activeSheet} setActiveSheet={setActiveSheet} />
+        <SheetProvider
+          activeSheet={activeSheet}
+          setActiveSheet={setActiveSheet}
+          isShowingDraw={isShowingDraw}
+        />
       </PopoverProvider>
     </CreateCardContext.Provider>
   );

@@ -86,7 +86,7 @@ const SheetBackgroundOverlay = ({ onPress }) => {
   );
 };
 
-export const SheetProvider = ({ activeSheet, setActiveSheet }) => {
+export const SheetProvider = ({ activeSheet, setActiveSheet, isShowingDraw }) => {
   const { root, transformAssetUri } = useGhostUI();
   const { isPlaying, hasSelection } = useCardCreator();
 
@@ -107,6 +107,10 @@ export const SheetProvider = ({ activeSheet, setActiveSheet }) => {
             // if no sheets are open, but an actor is selected, fall back to inspector
             isOpen = hasSelection && key === 'sceneCreatorInspector';
           }
+        }
+
+        if (isShowingDraw) {
+          isOpen = false;
         }
 
         const stack = sheetStacks[key] ?? [sheet];

@@ -48,6 +48,36 @@ export const getInspectorBehaviors = (root) => {
   };
 };
 
+export const getActiveTool = (root) => {
+  if (!root || !root.panes || !root.panes['sceneCreatorTool']) {
+    return { activeToolData: null, activeToolAction: null };
+  }
+  const element = root.panes['sceneCreatorTool'];
+
+  if (element.children.count) {
+    let result = null;
+    Object.entries(element.children).forEach(([key, child]) => {
+      if (child.type === 'data') {
+        const data = child.props.data;
+
+        result = {
+          activeToolData: {
+            ...data,
+            lastReportedEventId: child.lastReportedEventId,
+          },
+          activeToolAction: (action, value) => sendDataPaneAction(element, action, value, key),
+        };
+      }
+    });
+
+    if (result) {
+      return result;
+    }
+  }
+
+  return { activeToolData: null, activeToolActions: null };
+};
+
 export const getTextActorsData = (root, isPlaying) => {
   let textActors, isTextActorSelected;
   if (root && root.panes) {
