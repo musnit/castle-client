@@ -104,6 +104,12 @@ const measurePopover = ({ anchorTop, anchorLeft, anchorWidth, anchorHeight, widt
   } else if (popoverTop + height > vh * 100) {
     popoverTop = vh * 100 - height - POPOVER_MARGIN;
   }
+  if (caratLeft < POPOVER_MARGIN + 3) {
+    caratLeft = POPOVER_MARGIN + 3;
+  }
+  if (caratLeft + 25 > vw * 100 - POPOVER_MARGIN - 3) {
+    caratLeft = vw * 100 - POPOVER_MARGIN - 3 - 25;
+  }
   return { left: popoverLeft, top: popoverTop, caratLeft, caratTop, invertCaratY };
 };
 

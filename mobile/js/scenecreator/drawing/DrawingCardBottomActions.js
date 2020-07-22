@@ -1,10 +1,10 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { PixelRatio, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useCardCreator } from '../../scenecreator/CreateCardContext';
 import ColorPicker from '../../scenecreator/inspector/components/ColorPicker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-const DRAWING_CARD_FOOTER_HEIGHT = 80;
+export const DRAWING_CARD_FOOTER_HEIGHT = 80;
 
 const styles = StyleSheet.create({
   container: {
@@ -12,11 +12,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-
-    height: DRAWING_CARD_FOOTER_HEIGHT,
-
-    position: 'absolute',
-    bottom: 0,
+    minHeight: DRAWING_CARD_FOOTER_HEIGHT,
   },
 
   colorPicker: {

@@ -37,7 +37,7 @@ import {
   DrawingCardHeader,
   DRAWING_CARD_HEADER_HEIGHT,
 } from './scenecreator/drawing/DrawingCardHeader';
-import { DrawingCardBottomActions } from './scenecreator/drawing/DrawingCardBottomActions';
+import { DrawingCardBottomActions, DRAWING_CARD_FOOTER_HEIGHT } from './scenecreator/drawing/DrawingCardBottomActions';
 import { PopoverProvider } from './scenecreator/PopoverProvider';
 import { SheetProvider } from './scenecreator/SheetProvider';
 import { useGhostUI } from './ghost/GhostUI';
@@ -53,7 +53,7 @@ const CARD_BOTTOM_MIN_HEIGHT = 64 / PixelRatio.get();
 
 const MAX_AVAILABLE_CARD_HEIGHT = 100 * Viewport.vh - CARD_HEADER_HEIGHT - CARD_BOTTOM_MIN_HEIGHT;
 const DRAWING_MAX_AVAILABLE_CARD_HEIGHT =
-  100 * Viewport.vh - DRAWING_CARD_HEADER_HEIGHT - CARD_BOTTOM_MIN_HEIGHT;
+  100 * Viewport.vh - DRAWING_CARD_HEADER_HEIGHT - DRAWING_CARD_FOOTER_HEIGHT;
 
 const AUTOBACKUP_INTERVAL_MS = 2 * 60 * 1000;
 
@@ -565,9 +565,7 @@ const CreateCardScreen = ({
     ? null
     : { width: undefined, height: MAX_AVAILABLE_CARD_HEIGHT };
 
-  const drawingCardFitStyles = Viewport.isCardWide
-    ? null
-    : { width: undefined, height: DRAWING_MAX_AVAILABLE_CARD_HEIGHT };
+  const drawingCardFitStyles = Viewport.isCardWide ? { width: undefined, height: DRAWING_MAX_AVAILABLE_CARD_HEIGHT } : null;
 
   const contextValue = {
     deck,
@@ -593,6 +591,7 @@ const CreateCardScreen = ({
   // https://github.com/facebook/react-native/pull/20999
   return (
     <CreateCardContext.Provider value={contextValue}>
+      <PopoverProvider>
       <SafeAreaView style={styles.container}>
         {isShowingDraw ? (
           <DrawingCardHeader onPressBack={() => sendGlobalAction('resetActiveTool')} />
@@ -634,9 +633,7 @@ const CreateCardScreen = ({
             </View>
           </View>
           {isShowingDraw ? (
-            <PopoverProvider>
               <DrawingCardBottomActions />
-            </PopoverProvider>
           ) : (
             <CardBottomActions
               card={card}
@@ -649,7 +646,6 @@ const CreateCardScreen = ({
           )}
         </View>
       </SafeAreaView>
-      <PopoverProvider>
         <SheetProvider
           activeSheet={activeSheet}
           setActiveSheet={setActiveSheet}

@@ -53,7 +53,7 @@ const NewColorPicker = ({ value, setValue }) => {
     Component: ColorPickerPopover,
     valueStr,
     setValueFromStr,
-    height: 400,
+    height: 256,
   };
 
   return (
