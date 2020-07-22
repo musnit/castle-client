@@ -2,7 +2,7 @@ import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { RuleBlueprintsSheet } from '../../BlueprintsSheet';
-import { BehaviorPropertiesSheet } from './BehaviorPropertiesSheet';
+import { SelectBehaviorPropertySheet } from '../components/SelectBehaviorPropertySheet';
 import { SelectBehaviorSheet } from '../components/SelectBehaviorSheet';
 import CardDestinationPickerSheet from '../../CardDestinationPickerSheet';
 import RuleParamInputSheet from './RuleParamInputSheet';
@@ -103,7 +103,7 @@ export const ConfigureRuleEntry = ({
   const showBehaviorPropertyPicker = (cell) =>
     addChildSheet({
       key: 'behaviorPropertyPicker',
-      Component: BehaviorPropertiesSheet,
+      Component: SelectBehaviorPropertySheet,
       behaviors,
       isPropertyVisible: cell.isPropertyVisible,
       onSelectBehaviorProperty: (behaviorId, propertyName) =>

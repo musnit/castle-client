@@ -39,7 +39,7 @@ const Property = ({ isFirst, name, onSelect }) => {
   );
 };
 
-export const BehaviorPropertiesSheet = ({
+export const SelectBehaviorPropertySheet = ({
   behaviors,
   onSelectBehaviorProperty,
   isOpen,

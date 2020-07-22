@@ -1,13 +1,13 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useCardCreator } from './CreateCardContext';
+import { useCardCreator } from '../CreateCardContext';
 
-import AddBehaviorSheet from './AddBehaviorSheet';
-import SaveBlueprintSheet from './SaveBlueprintSheet';
+import { AddBehaviorSheet } from './components/AddBehaviorSheet';
+import SaveBlueprintSheet from '../SaveBlueprintSheet';
 
-import * as SceneCreatorConstants from './SceneCreatorConstants';
-import * as Inspector from './inspector/behaviors/InspectorBehaviors';
-import * as InspectorUtilities from './inspector/InspectorUtilities';
+import * as SceneCreatorConstants from '../SceneCreatorConstants';
+import * as Inspector from './behaviors/InspectorBehaviors';
+import * as InspectorUtilities from './InspectorUtilities';
 
 const styles = StyleSheet.create({
   actionsContainer: {

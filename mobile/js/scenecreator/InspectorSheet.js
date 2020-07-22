@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useCardCreator } from './CreateCardContext';
 import { useGhostUI } from '../ghost/GhostUI';
-import { InspectorHeader } from './InspectorHeader';
-import { InspectorTabs } from './InspectorTabs';
+import { InspectorHeader } from './inspector/InspectorHeader';
+import { InspectorTabs } from './inspector/InspectorTabs';
 
 import * as Constants from '../Constants';
 

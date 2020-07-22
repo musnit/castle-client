@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import BottomSheetHeader from './BottomSheetHeader';
-import CardCreatorBottomSheet from './CardCreatorBottomSheet';
-import * as Inspector from './inspector/behaviors/InspectorBehaviors';
-import * as Constants from '../Constants';
+import BottomSheetHeader from '../../BottomSheetHeader';
+import CardCreatorBottomSheet from '../../CardCreatorBottomSheet';
+import * as Inspector from '../behaviors/InspectorBehaviors';
+import * as Constants from '../../../Constants';
 
 const styles = StyleSheet.create({
   container: {},
@@ -82,7 +82,7 @@ const EmptyState = () => (
   </View>
 );
 
-export default AddBehaviorSheet = ({ isOpen, onClose, context, behaviors, addBehavior }) => {
+export const AddBehaviorSheet = ({ isOpen, onClose, context, behaviors, addBehavior }) => {
   const onPressAdd = (key) => {
     addBehavior(key);
     onClose();
