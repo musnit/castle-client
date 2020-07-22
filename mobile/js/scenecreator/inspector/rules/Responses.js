@@ -341,6 +341,52 @@ const ChangeBehavior = ({ response, context }) => {
   ];
 };
 
+const EnableBehavior = ({ response, context }) => {
+  let behaviorName;
+  if (response.params?.behaviorId) {
+    const entry = Object.entries(context.behaviors).find(
+      ([_, b]) => b.behaviorId === response.params.behaviorId
+    );
+    if (entry) {
+      behaviorName = entry[1].displayName;
+    }
+  }
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Enable behavior',
+    },
+    {
+      type: 'selectBehaviorSheet',
+      label: behaviorName ?? '(choose behavior)',
+      filterBehavior: (behavior) => behavior.isActive && behavior.allowsDisableWithoutRemoval,
+    },
+  ];
+};
+
+const DisableBehavior = ({ response, context }) => {
+  let behaviorName;
+  if (response.params?.behaviorId) {
+    const entry = Object.entries(context.behaviors).find(
+      ([_, b]) => b.behaviorId === response.params.behaviorId
+    );
+    if (entry) {
+      behaviorName = entry[1].displayName;
+    }
+  }
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Disable behavior',
+    },
+    {
+      type: 'selectBehaviorSheet',
+      label: behaviorName ?? '(choose behavior)',
+      filterBehavior: (behavior) => behavior.isActive && behavior.allowsDisableWithoutRemoval,
+    },
+  ];
+};
+
 const SetVariable = ({ response, context }) => {
   const changeAllParams = {
     paramNames: ['variableId', 'setToValue'],
@@ -633,6 +679,8 @@ export const Responses = {
   ['counter meets condition']: CounterMeetsCondition,
   ['set behavior property']: SetBehavior,
   ['change behavior property']: ChangeBehavior,
+  ['enable behavior']: EnableBehavior,
+  ['disable behavior']: DisableBehavior,
   ['set variable']: SetVariable,
   ['change variable']: ChangeVariable,
   ['set counter']: SetCounter,

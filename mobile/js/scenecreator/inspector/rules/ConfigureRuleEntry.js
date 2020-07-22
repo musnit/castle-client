@@ -3,6 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { RuleBlueprintsSheet } from '../../BlueprintsSheet';
 import { BehaviorPropertiesSheet } from './BehaviorPropertiesSheet';
+import { SelectBehaviorSheet } from '../components/SelectBehaviorSheet';
 import CardDestinationPickerSheet from '../../CardDestinationPickerSheet';
 import RuleParamInputSheet from './RuleParamInputSheet';
 import * as Constants from '../../../Constants';
@@ -90,6 +91,15 @@ export const ConfigureRuleEntry = ({
       onSelectBlueprint: (entryId) => onChangeParams({ entryId }),
     });
 
+  const showBehaviorPicker = (cell) =>
+    addChildSheet({
+      key: 'behaviorPicker',
+      Component: SelectBehaviorSheet,
+      behaviors,
+      filterBehavior: cell.filterBehavior,
+      onSelectBehavior: (behavior) => onChangeParams({ behaviorId: behavior.behaviorId }),
+    });
+
   const showBehaviorPropertyPicker = (cell) =>
     addChildSheet({
       key: 'behaviorPropertyPicker',
@@ -109,6 +119,7 @@ export const ConfigureRuleEntry = ({
     selectCardSheet: showCardPicker,
     selectBlueprintSheet: showBlueprintPicker,
     selectBehaviorPropertySheet: showBehaviorPropertyPicker,
+    selectBehaviorSheet: showBehaviorPicker,
   };
 
   return (
@@ -128,7 +139,8 @@ export const ConfigureRuleEntry = ({
           case 'selectParamSheet':
           case 'selectCardSheet':
           case 'selectBlueprintSheet':
-          case 'selectBehaviorPropertySheet': {
+          case 'selectBehaviorPropertySheet':
+          case 'selectBehaviorSheet': {
             return (
               <TouchableOpacity
                 key={key}
