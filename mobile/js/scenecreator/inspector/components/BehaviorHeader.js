@@ -23,7 +23,12 @@ export const BehaviorHeader = ({ name, behavior, sendAction }) => {
   if (behavior.allowsDisableWithoutRemoval) {
     const onChangeSwitch = (value) => sendAction(value ? 'enable' : 'disable');
     disableBehaviorSwitch = (
-      <Switch style={styles.switch} value={!behavior.isDisabled} onValueChange={onChangeSwitch} />
+      <Switch
+        style={styles.switch}
+        value={!behavior.isDisabled}
+        onValueChange={onChangeSwitch}
+        trackColor={{ false: '#fff', true: '#000' }}
+      />
     );
   }
 
