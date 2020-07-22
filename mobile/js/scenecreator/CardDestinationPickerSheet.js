@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 
 import { BottomSheet } from '../BottomSheet';
+import { useCardCreator } from './CreateCardContext';
 import BottomSheetHeader from './BottomSheetHeader';
 import CardsSet from '../CardsSet';
 
@@ -24,8 +25,8 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CardDestinationPickerSheet = ({ deck, onSelectCard, isOpen, onClose, context }) => {
-  let deckToRender = deck ?? context?.deck;
+export default CardDestinationPickerSheet = ({ onSelectCard, isOpen, onClose }) => {
+  const { deck } = useCardCreator();
 
   const selectAndClose = (card) => {
     onSelectCard(card);
@@ -37,7 +38,7 @@ export default CardDestinationPickerSheet = ({ deck, onSelectCard, isOpen, onClo
   const renderContent = () => {
     return (
       <View style={styles.content}>
-        <CardsSet deck={deckToRender} onPress={selectAndClose} showNewCard />
+        <CardsSet deck={deck} onPress={selectAndClose} showNewCard />
       </View>
     );
   };
