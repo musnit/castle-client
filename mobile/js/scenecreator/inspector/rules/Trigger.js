@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const TRIGGER_CATEGORY_ORDER = ['general', 'controls', 'state'];
+const TRIGGER_CATEGORY_ORDER = ['general', 'controls', 'state', 'motion'];
 
 const _entryToTrigger = (entry) => ({
   name: entry.name,

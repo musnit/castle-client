@@ -186,6 +186,24 @@ const CounterChanges = ({ trigger }) => {
   ]);
 };
 
+const VelocityChanges = () => {
+  return withWhen([
+    {
+      type: 'selectEntry',
+      label: 'x or y velocity changes',
+    },
+  ]);
+};
+
+const StopsMoving = () => {
+  return withWhen([
+    {
+      type: 'selectEntry',
+      label: 'this stops moving',
+    },
+  ]);
+};
+
 export const Triggers = {
   collide: Collide,
   tap: Tap,
@@ -197,6 +215,8 @@ export const Triggers = {
   ['variable changes']: VariableChanges,
   ['counter reaches value']: CounterReachesValue,
   ['counter changes']: CounterChanges,
+  ['velocity changes']: VelocityChanges,
+  ['stops moving']: StopsMoving,
   default: Default,
   empty: Empty,
 };
