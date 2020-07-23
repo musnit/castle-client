@@ -359,7 +359,7 @@ const EnableBehavior = ({ response, context }) => {
     {
       type: 'selectBehaviorSheet',
       label: behaviorName ?? '(choose behavior)',
-      filterBehavior: (behavior) => behavior.isActive && behavior.allowsDisableWithoutRemoval,
+      isBehaviorVisible: (behavior) => behavior.allowsDisableWithoutRemoval,
     },
   ];
 };
@@ -382,7 +382,7 @@ const DisableBehavior = ({ response, context }) => {
     {
       type: 'selectBehaviorSheet',
       label: behaviorName ?? '(choose behavior)',
-      filterBehavior: (behavior) => behavior.isActive && behavior.allowsDisableWithoutRemoval,
+      isBehaviorVisible: (behavior) => behavior.allowsDisableWithoutRemoval,
     },
   ];
 };

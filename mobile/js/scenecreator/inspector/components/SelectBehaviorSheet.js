@@ -63,14 +63,13 @@ const EmptyState = () => (
 export const SelectBehaviorSheet = ({
   isOpen,
   onClose,
-  context,
   behaviors,
-  filterBehavior,
+  useAllBehaviors = false,
+  isBehaviorVisible = (behavior) => true,
   onSelectBehavior,
 }) => {
-  if (!filterBehavior) {
-    filterBehavior = (behavior) => behaviors[behavior].isActive;
-  }
+  const filterBehavior = (behavior) =>
+    (useAllBehaviors || behavior.isActive) && isBehaviorVisible(behavior);
   const onPressAdd = (key) => {
     onSelectBehavior(behaviors[key]);
     onClose();
@@ -119,7 +118,6 @@ export const SelectBehaviorSheet = ({
   return (
     <CardCreatorBottomSheet
       isOpen={isOpen}
-      context={context}
       renderHeader={renderHeader}
       renderContent={renderContent}
     />

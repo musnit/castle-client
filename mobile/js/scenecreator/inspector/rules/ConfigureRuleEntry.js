@@ -45,6 +45,7 @@ export const ConfigureRuleEntry = ({
   entry,
   cells,
   behaviors,
+  useAllBehaviors, // true if we should not filter rule options by the actor's behaviors
   onChangeEntry,
   onShowPicker,
   onShowOptions = () => {},
@@ -96,7 +97,8 @@ export const ConfigureRuleEntry = ({
       key: 'behaviorPicker',
       Component: SelectBehaviorSheet,
       behaviors,
-      filterBehavior: cell.filterBehavior,
+      useAllBehaviors,
+      isBehaviorVisible: cell.isBehaviorVisible,
       onSelectBehavior: (behavior) => onChangeParams({ behaviorId: behavior.behaviorId }),
     });
 
@@ -105,6 +107,7 @@ export const ConfigureRuleEntry = ({
       key: 'behaviorPropertyPicker',
       Component: SelectBehaviorPropertySheet,
       behaviors,
+      useAllBehaviors,
       isPropertyVisible: cell.isPropertyVisible,
       onSelectBehaviorProperty: (behaviorId, propertyName) =>
         onChangeParams({ behaviorId, propertyName, value: 0 }),

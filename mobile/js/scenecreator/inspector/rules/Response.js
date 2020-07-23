@@ -137,6 +137,7 @@ const If = ({ response, onChangeResponse, children, order, ...props }) => {
             isCondition: true,
           })}
           behaviors={behaviors}
+          useAllBehaviors={props.useAllBehaviors}
           onChangeEntry={onChangeCondition}
           onShowPicker={onPickCondition}
           onChangeParams={onChangeParams}
@@ -319,6 +320,7 @@ const Response = ({ response, onChangeResponse, order = 0, ...props }) => {
       <ConfigureRuleEntry
         entry={entry}
         cells={cells}
+        useAllBehaviors={props.useAllBehaviors}
         behaviors={behaviors}
         onChangeEntry={onChangeResponse}
         onShowPicker={onShowResponsePicker}

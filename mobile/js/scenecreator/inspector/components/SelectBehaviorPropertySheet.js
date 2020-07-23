@@ -41,6 +41,7 @@ const Property = ({ isFirst, name, onSelect }) => {
 
 export const SelectBehaviorPropertySheet = ({
   behaviors,
+  useAllBehaviors = false,
   onSelectBehaviorProperty,
   isOpen,
   onClose,
@@ -57,7 +58,7 @@ export const SelectBehaviorPropertySheet = ({
   Object.entries(behaviors).forEach(([behaviorName, behavior]) => {
     const properties = Object.keys(behavior.propertySpecs);
     isBehaviorVisible[behaviorName] =
-      behavior.isActive &&
+      (useAllBehaviors || behavior.isActive) &&
       properties.some((name) => isPropertyVisible(behavior.propertySpecs[name]));
   });
 
