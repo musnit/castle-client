@@ -29,7 +29,15 @@ const styles = StyleSheet.create({
   },
 });
 
-const RESPONSE_CATEGORY_ORDER = ['general', 'interaction', 'logic', 'state', 'visible', 'motion'];
+const RESPONSE_CATEGORY_ORDER = [
+  'general',
+  'behavior',
+  'interaction',
+  'logic',
+  'state',
+  'visible',
+  'motion',
+];
 const CONDITION_CATEGORY_ORDER = ['state', 'collision', 'random'];
 
 const _entryToResponse = (entry) => ({
