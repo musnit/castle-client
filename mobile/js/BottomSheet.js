@@ -158,6 +158,7 @@ export const BottomSheet = ({
           extraScrollHeight={Constants.Android ? insets.bottom : 0}
           keyboardShouldPersistTaps="handled">
           {renderContent()}
+          <View style={{paddingBottom: insets.bottom}}></View>
         </KeyboardAwareScrollView>
       </View>
     </Animated.View>
