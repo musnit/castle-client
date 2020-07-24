@@ -37,7 +37,10 @@ import {
   DrawingCardHeader,
   DRAWING_CARD_HEADER_HEIGHT,
 } from './scenecreator/drawing/DrawingCardHeader';
-import { DrawingCardBottomActions, DRAWING_CARD_FOOTER_HEIGHT } from './scenecreator/drawing/DrawingCardBottomActions';
+import {
+  DrawingCardBottomActions,
+  DRAWING_CARD_FOOTER_HEIGHT,
+} from './scenecreator/drawing/DrawingCardBottomActions';
 import { PopoverProvider } from './scenecreator/PopoverProvider';
 import { SheetProvider } from './scenecreator/SheetProvider';
 import { useGhostUI } from './ghost/GhostUI';
@@ -464,9 +467,15 @@ const CreateCardScreen = ({
       const activeToolBehavior = globalActions.tools.find(
         (behavior) => behavior.behaviorId === globalActions.activeToolBehaviorId
       );
-      if (activeToolBehavior && activeToolBehavior.name == 'Draw2') {
+      if (activeToolBehavior && activeToolBehavior.hasUi) {
+        // legacy: old draw tool
+        setActiveSheet('sceneCreatorTool');
+      } else if (activeToolBehavior && activeToolBehavior.name == 'Draw2') {
+        // new draw tool
         setIsShowingDraw(true);
       } else {
+        // close old draw tool and new draw tool
+        setActiveSheet(null);
         setIsShowingDraw(false);
       }
     }
@@ -563,13 +572,17 @@ const CreateCardScreen = ({
 
   let cardFitStyles = null;
   if (isShowingDraw) {
-    if (Viewport.vw * 100 / DRAWING_MAX_AVAILABLE_CARD_HEIGHT > .91) {
-      cardFitStyles = { aspectRatio: .91, width: undefined, height: DRAWING_MAX_AVAILABLE_CARD_HEIGHT };
+    if ((Viewport.vw * 100) / DRAWING_MAX_AVAILABLE_CARD_HEIGHT > 0.91) {
+      cardFitStyles = {
+        aspectRatio: 0.91,
+        width: undefined,
+        height: DRAWING_MAX_AVAILABLE_CARD_HEIGHT,
+      };
     } else {
-      cardFitStyles = { aspectRatio: .91 };
+      cardFitStyles = { aspectRatio: 0.91 };
     }
   } else {
-    if (Viewport.vw * 100 / MAX_AVAILABLE_CARD_HEIGHT > Constants.CARD_RATIO) {
+    if ((Viewport.vw * 100) / MAX_AVAILABLE_CARD_HEIGHT > Constants.CARD_RATIO) {
       cardFitStyles = { width: undefined, height: MAX_AVAILABLE_CARD_HEIGHT };
     }
   }
@@ -603,21 +616,16 @@ const CreateCardScreen = ({
           {isShowingDraw ? (
             <DrawingCardHeader onPressBack={() => sendGlobalAction('resetActiveTool')} />
           ) : (
-              <CardHeader
-                card={card}
-                isEditable
-                mode={activeSheet}
-                onChangeMode={setActiveSheet}
-                onPressBack={maybeSaveAndGoToDeck}
-              />
-            )}
+            <CardHeader
+              card={card}
+              isEditable
+              mode={activeSheet}
+              onChangeMode={setActiveSheet}
+              onPressBack={maybeSaveAndGoToDeck}
+            />
+          )}
           <View style={styles.cardBody}>
-            <View
-              style={[
-                styles.card,
-                cardBackgroundStyles,
-                cardFitStyles,
-              ]}>
+            <View style={[styles.card, cardBackgroundStyles, cardFitStyles]}>
               <CardScene
                 interactionEnabled={true}
                 key={`card-scene-${card.scene && card.scene.sceneId}`}
@@ -642,15 +650,15 @@ const CreateCardScreen = ({
             {isShowingDraw ? (
               <DrawingCardBottomActions />
             ) : (
-                <CardBottomActions
-                  card={card}
-                  onAdd={() => setActiveSheet('sceneCreatorBlueprints')}
-                  onOpenLayout={() => setActiveSheet('layout')}
-                  onSave={saveAndGoToDeck}
-                  isSceneLoaded={isSceneLoaded}
-                  isPlayingScene={isPlaying}
-                />
-              )}
+              <CardBottomActions
+                card={card}
+                onAdd={() => setActiveSheet('sceneCreatorBlueprints')}
+                onOpenLayout={() => setActiveSheet('layout')}
+                onSave={saveAndGoToDeck}
+                isSceneLoaded={isSceneLoaded}
+                isPlayingScene={isPlaying}
+              />
+            )}
           </View>
         </SafeAreaView>
         <SheetProvider
