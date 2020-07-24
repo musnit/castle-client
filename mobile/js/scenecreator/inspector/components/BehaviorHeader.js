@@ -27,7 +27,7 @@ export const BehaviorHeader = ({ name, behavior, sendAction }) => {
         style={styles.switch}
         value={!behavior.isDisabled}
         onValueChange={onChangeSwitch}
-        trackColor={{ false: '#fff', true: '#000' }}
+        trackColor={{ true: '#000' }}
       />
     );
   }
