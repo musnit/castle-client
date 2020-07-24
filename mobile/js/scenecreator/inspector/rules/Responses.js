@@ -387,6 +387,21 @@ const DisableBehavior = ({ response, context }) => {
   ];
 };
 
+const ResetVariable = ({ response, context }) => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Reset variable',
+    },
+    {
+      type: 'selectParamSheet',
+      label: getVariableName(response.params?.variableId, context.variables),
+      paramName: 'variableId',
+      paramValue: response.params?.variableId,
+    },
+  ];
+};
+
 const SetVariable = ({ response, context }) => {
   const changeAllParams = {
     paramNames: ['variableId', 'setToValue'],
@@ -595,6 +610,7 @@ export const Responses = {
   ['change behavior property']: ChangeBehavior,
   ['enable behavior']: EnableBehavior,
   ['disable behavior']: DisableBehavior,
+  ['reset variable']: ResetVariable,
   ['set variable']: SetVariable,
   ['change variable']: ChangeVariable,
   ['set counter']: SetCounter,
