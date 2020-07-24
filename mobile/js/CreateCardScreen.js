@@ -49,7 +49,7 @@ import {
 
 const CARD_HEIGHT = (1 / Constants.CARD_RATIO) * 100 * Viewport.vw;
 
-const CARD_BOTTOM_MIN_HEIGHT = 64 / PixelRatio.get();
+const CARD_BOTTOM_MIN_HEIGHT = 64;
 
 const MAX_AVAILABLE_CARD_HEIGHT = 100 * Viewport.vh - CARD_HEADER_HEIGHT - CARD_BOTTOM_MIN_HEIGHT;
 const DRAWING_MAX_AVAILABLE_CARD_HEIGHT =
