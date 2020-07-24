@@ -599,60 +599,60 @@ const CreateCardScreen = ({
   return (
     <CreateCardContext.Provider value={contextValue}>
       <PopoverProvider>
-      <SafeAreaView style={styles.container}>
-        {isShowingDraw ? (
-          <DrawingCardHeader onPressBack={() => sendGlobalAction('resetActiveTool')} />
-        ) : (
-          <CardHeader
-            card={card}
-            isEditable
-            mode={activeSheet}
-            onChangeMode={setActiveSheet}
-            onPressBack={maybeSaveAndGoToDeck}
-          />
-        )}
-        <View style={styles.cardBody}>
-          <View
-            style={[
-              styles.card,
-              cardBackgroundStyles,
-              cardFitStyles,
-            ]}>
-            <CardScene
-              interactionEnabled={true}
-              key={`card-scene-${card.scene && card.scene.sceneId}`}
-              style={styles.scene}
-              card={card}
-              isEditing={true}
-              deckState={deckState}
-              onScreenshot={onSceneScreenshot}
-              onMessage={onSceneMessage}
-            />
-            <View style={styles.textActorsContainer}>
-              <CardText
-                disabled={loading}
-                visible={isShowingTextActors || isPlaying}
-                textActors={textActors}
-                card={card}
-                onSelect={selectActor}
-                isEditable={!isPlaying}
-              />
-            </View>
-          </View>
+        <SafeAreaView style={styles.container}>
           {isShowingDraw ? (
-              <DrawingCardBottomActions />
+            <DrawingCardHeader onPressBack={() => sendGlobalAction('resetActiveTool')} />
           ) : (
-            <CardBottomActions
-              card={card}
-              onAdd={() => setActiveSheet('sceneCreatorBlueprints')}
-              onOpenLayout={() => setActiveSheet('layout')}
-              onSave={saveAndGoToDeck}
-              isSceneLoaded={isSceneLoaded}
-              isPlayingScene={isPlaying}
-            />
-          )}
-        </View>
-      </SafeAreaView>
+              <CardHeader
+                card={card}
+                isEditable
+                mode={activeSheet}
+                onChangeMode={setActiveSheet}
+                onPressBack={maybeSaveAndGoToDeck}
+              />
+            )}
+          <View style={styles.cardBody}>
+            <View
+              style={[
+                styles.card,
+                cardBackgroundStyles,
+                cardFitStyles,
+              ]}>
+              <CardScene
+                interactionEnabled={true}
+                key={`card-scene-${card.scene && card.scene.sceneId}`}
+                style={styles.scene}
+                card={card}
+                isEditing={true}
+                deckState={deckState}
+                onScreenshot={onSceneScreenshot}
+                onMessage={onSceneMessage}
+              />
+              <View style={styles.textActorsContainer}>
+                <CardText
+                  disabled={loading}
+                  visible={(isShowingTextActors || isPlaying) && !isShowingDraw}
+                  textActors={textActors}
+                  card={card}
+                  onSelect={selectActor}
+                  isEditable={!isPlaying}
+                />
+              </View>
+            </View>
+            {isShowingDraw ? (
+              <DrawingCardBottomActions />
+            ) : (
+                <CardBottomActions
+                  card={card}
+                  onAdd={() => setActiveSheet('sceneCreatorBlueprints')}
+                  onOpenLayout={() => setActiveSheet('layout')}
+                  onSave={saveAndGoToDeck}
+                  isSceneLoaded={isSceneLoaded}
+                  isPlayingScene={isPlaying}
+                />
+              )}
+          </View>
+        </SafeAreaView>
         <SheetProvider
           activeSheet={activeSheet}
           setActiveSheet={setActiveSheet}
