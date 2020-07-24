@@ -561,11 +561,18 @@ const CreateCardScreen = ({
     justifyContent: isTextActorSelected ? 'flex-start' : 'flex-end',
   };
 
-  const cardFitStyles = Viewport.isCardWide
-    ? null
-    : { width: undefined, height: MAX_AVAILABLE_CARD_HEIGHT };
-
-  const drawingCardFitStyles = Viewport.isCardWide ? { width: undefined, height: DRAWING_MAX_AVAILABLE_CARD_HEIGHT } : null;
+  let cardFitStyles = null;
+  if (isShowingDraw) {
+    if (Viewport.vw * 100 / DRAWING_MAX_AVAILABLE_CARD_HEIGHT > .91) {
+      cardFitStyles = { aspectRatio: .91, width: undefined, height: DRAWING_MAX_AVAILABLE_CARD_HEIGHT };
+    } else {
+      cardFitStyles = { aspectRatio: .91 };
+    }
+  } else {
+    if (Viewport.vw * 100 / MAX_AVAILABLE_CARD_HEIGHT > Constants.CARD_RATIO) {
+      cardFitStyles = { width: undefined, height: MAX_AVAILABLE_CARD_HEIGHT };
+    }
+  }
 
   const contextValue = {
     deck,
@@ -609,7 +616,7 @@ const CreateCardScreen = ({
             style={[
               styles.card,
               cardBackgroundStyles,
-              isShowingDraw ? drawingCardFitStyles : cardFitStyles,
+              cardFitStyles,
             ]}>
             <CardScene
               interactionEnabled={true}
