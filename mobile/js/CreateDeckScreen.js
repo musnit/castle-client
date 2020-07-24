@@ -150,6 +150,29 @@ const CreateDeckScreen = (props) => {
     });
   };
 
+  const maybeDeleteCard = React.useCallback(
+    (cardId) => {
+      showActionSheetWithOptions(
+        {
+          title: 'Delete card?',
+          options: ['Delete Card', 'Cancel'],
+          destructiveButtonIndex: 0,
+        },
+        (index) => {
+          if (index === 0) {
+            const newCards = deck.cards.filter((c) => c.cardId !== cardId);
+            deleteCard({ variables: { cardId } });
+            setDeck({
+              ...deck,
+              cards: newCards,
+            });
+          }
+        }
+      );
+    },
+    [deleteCard, deck?.cards, setDeck, showActionSheetWithOptions]
+  );
+
   const _showCardOptions = (card) => {
     let destructiveButtonIndex = undefined;
     let actions = [
@@ -178,14 +201,7 @@ const CreateDeckScreen = (props) => {
     if (card.cardId !== deck.initialCard.cardId) {
       actions.push({
         name: 'Delete Card',
-        action: () => {
-          const newCards = deck.cards.filter((c) => c.cardId !== card.cardId);
-          deleteCard({ variables: { cardId: card.cardId } });
-          setDeck({
-            ...deck,
-            cards: newCards,
-          });
-        },
+        action: () => maybeDeleteCard(card.cardId),
       });
       destructiveButtonIndex = actions.length - 1;
     }
