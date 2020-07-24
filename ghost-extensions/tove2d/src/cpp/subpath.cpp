@@ -23,7 +23,7 @@ inline float length(float x, float y) {
 
 float *Subpath::addPoints(int n, bool allowClosedEdit) {
 	if (!allowClosedEdit && isClosed()) {
-		tove::report::warn("editing closed trajectory.");
+		// tove::report::warn("editing closed trajectory.");
 	}
 	const int cpts = nextpow2(nsvg.npts + n);
 	nsvg.pts = static_cast<float*>(

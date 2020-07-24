@@ -116,10 +116,16 @@ export const InspectorHeader = ({
   if (data) {
     let drawButton, scaleRotateButton;
     let isDrawSelected = false;
-    if (Array.isArray(data.applicableTools)) {
-      const drawBehavior = data.applicableTools.find((behavior) => behavior.name === 'Draw');
-      const grabBehavior = data.applicableTools.find((behavior) => behavior.name === 'Grab');
-      const scaleRotateBehavior = data.applicableTools.find(
+    if (data.applicableTools) {
+      const applicableToolsArray = [];
+      Object.values(data.applicableTools).forEach((value) => {
+        applicableToolsArray.push(value);
+      });
+
+      const drawBehavior = applicableToolsArray.find((behavior) => behavior.name === 'Draw');
+      const draw2Behavior = applicableToolsArray.find((behavior) => behavior.name === 'Draw2');
+      const grabBehavior = applicableToolsArray.find((behavior) => behavior.name === 'Grab');
+      const scaleRotateBehavior = applicableToolsArray.find(
         (behavior) => behavior.name === 'ScaleRotate'
       );
 
@@ -129,6 +135,22 @@ export const InspectorHeader = ({
           sendAction(
             'setActiveTool',
             isDrawSelected ? grabBehavior.behaviorId : drawBehavior.behaviorId
+          );
+        drawButton = (
+          <TouchableOpacity
+            style={[styles.actionButton, { backgroundColor: isDrawSelected ? '#000' : '#fff' }]}
+            onPress={onPress}>
+            <Icon name="edit" size={22} color={isDrawSelected ? '#fff' : '#000'} />
+          </TouchableOpacity>
+        );
+      }
+
+      if (draw2Behavior) {
+        isDrawSelected = data.activeToolBehaviorId === draw2Behavior.behaviorId;
+        const onPress = () =>
+          sendAction(
+            'setActiveTool',
+            isDrawSelected ? grabBehavior.behaviorId : draw2Behavior.behaviorId
           );
         drawButton = (
           <TouchableOpacity

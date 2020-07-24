@@ -464,7 +464,7 @@ const CreateCardScreen = ({
       const activeToolBehavior = globalActions.tools.find(
         (behavior) => behavior.behaviorId === globalActions.activeToolBehaviorId
       );
-      if (activeToolBehavior && activeToolBehavior.name == 'Draw') {
+      if (activeToolBehavior && activeToolBehavior.name == 'Draw2') {
         setIsShowingDraw(true);
       } else {
         setIsShowingDraw(false);
