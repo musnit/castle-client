@@ -22,7 +22,7 @@ import * as GhostChannels from './ghost/GhostChannels';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const ICON_SIZE = 24;
+const ICON_SIZE = 32;
 
 // App UI layout
 
@@ -62,18 +62,30 @@ const TabNavigator = () => (
     initialRouteName="Browse"
     tabBarOptions={{
       activeTintColor: '#fff',
-      inactiveTintColor: '#fff',
+      inactiveTintColor: '#888',
       style: {
-        borderColor: '#555',
+        borderTopColor: '#888',
         backgroundColor: '#000',
-        elevation: 0,
       },
+      showLabel: false,
     }}>
     <Tab.Screen
       name="Browse"
       component={BrowseNavigator}
       options={({ route }) => ({
         tabBarVisible: !route.state || route.state.index == 0,
+        tabBarIcon: ({ focused, color }) => {
+          return (
+            <Image
+              style={{
+                width: 26,
+                height: 26,
+                tintColor: color,
+              }}
+              source={require('../assets/images/castle-three-tiny.png')}
+            />
+          );
+        },
       })}
     />
     <Tab.Screen
@@ -81,6 +93,18 @@ const TabNavigator = () => (
       component={CreateNavigator}
       options={({ route }) => ({
         tabBarVisible: !route.state || route.state.index == 0,
+        tabBarIcon: ({ focused, color }) => {
+          return (
+            <Image
+              style={{
+                width: ICON_SIZE,
+                height: ICON_SIZE,
+                tintColor: color,
+              }}
+              source={require('../assets/images/HomeOverlay-create.png')}
+            />
+          );
+        },
       })}
     />
     <Tab.Screen
@@ -88,6 +112,18 @@ const TabNavigator = () => (
       component={ProfileNavigator}
       options={({ route }) => ({
         tabBarVisible: !route.state || route.state.index == 0,
+        tabBarIcon: ({ focused, color }) => {
+          return (
+            <Image
+              style={{
+                width: ICON_SIZE,
+                height: ICON_SIZE,
+                tintColor: color,
+              }}
+              source={require('../assets/images/HomeOverlay-profile.png')}
+            />
+          );
+        },
       })}
     />
   </Tab.Navigator>
