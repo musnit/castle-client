@@ -13,9 +13,9 @@ import { useSession } from './Session';
 import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './AuthScreens';
 import { CreateScreen } from './create/CreateScreen';
 import { CreateDeckNavigator } from './create/CreateDeckNavigator';
+import { PlayDeckScreen } from './play/PlayDeckScreen';
 import { HomeScreen } from './home/HomeScreen';
 import * as DeepLinks from './DeepLinks';
-import PlayDeckScreen from './PlayDeckScreen';
 import { ProfileScreen } from './profile/ProfileScreen';
 import * as GhostChannels from './ghost/GhostChannels';
 

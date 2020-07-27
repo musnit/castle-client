@@ -4,18 +4,18 @@ import { TouchableWithoutFeedback, ScrollView, StyleSheet, View } from 'react-na
 import { useQuery, useEffect } from '@apollo/react-hooks';
 import { useNavigation } from '@react-navigation/native';
 import SafeAreaView from 'react-native-safe-area-view';
-import { getPaneData } from './Tools';
+import { getPaneData } from '../Tools';
 import { useSafeArea } from 'react-native-safe-area-context';
 
-import * as GhostUI from './ghost/GhostUI';
-import * as GhostEvents from './ghost/GhostEvents';
+import * as GhostUI from '../ghost/GhostUI';
+import * as GhostEvents from '../ghost/GhostEvents';
 
-import CardText from './CardText';
-import CardScene from './CardScene';
-import Viewport from './viewport';
+import CardText from '../CardText';
+import CardScene from '../CardScene';
+import Viewport from '../viewport';
 
-import * as Constants from './Constants';
-import * as Session from './Session';
+import * as Constants from '../Constants';
+import * as Session from '../Session';
 
 const styles = StyleSheet.create({
   container: {

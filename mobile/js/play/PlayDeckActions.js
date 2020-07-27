@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
-import { UserAvatar } from './components/UserAvatar';
+import { UserAvatar } from '../components/UserAvatar';
 
-import * as Constants from './Constants';
+import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
   creator: {
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const PlayDeckActions = ({ deck }) => {
+export const PlayDeckActions = ({ deck }) => {
   const { creator } = deck;
   return (
     <React.Fragment>
@@ -38,5 +38,3 @@ const PlayDeckActions = ({ deck }) => {
     </React.Fragment>
   );
 };
-
-export default PlayDeckActions;

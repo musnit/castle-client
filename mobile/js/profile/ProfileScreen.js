@@ -17,7 +17,6 @@ import { useSession } from '../Session';
 import { UserAvatar } from '../components/UserAvatar';
 
 import * as Constants from '../Constants';
-import * as Utilities from '../utilities';
 
 const styles = StyleSheet.create({
   container: {
@@ -135,9 +134,7 @@ export const ProfileScreen = () => {
                 deck={deck}
                 onPress={() =>
                   navigate('PlayDeck', {
-                    deckId: deck.deckId,
-                    cardId: deck.initialCard.cardId,
-                    initialDeckState: Utilities.makeInitialDeckState(deck),
+                    decks,
                   })
                 }
               />

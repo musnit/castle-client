@@ -19,7 +19,7 @@ const EMPTY_PLAY_DECK_STATE = {
   variables: [],
 };
 
-const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, route, paused }) => {
+export const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, route, paused }) => {
   const navigation = useNavigation(); // we use props.route
   if (!deckId && route.params) {
     deckId = route.params.deckId;
@@ -70,5 +70,3 @@ const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, route, pau
     </View>
   );
 };
-
-export default PlayDeckNavigator;

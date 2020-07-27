@@ -130,9 +130,8 @@ export const HomeScreen = () => {
                   card={deck.initialCard}
                   onPress={() =>
                     navigate('PlayDeck', {
-                      deckId: deck.deckId,
-                      cardId: deck.initialCard.cardId,
-                      initialDeckState: Utilities.makeInitialDeckState(deck),
+                      decks,
+                      title: 'Newest',
                     })
                   }
                 />

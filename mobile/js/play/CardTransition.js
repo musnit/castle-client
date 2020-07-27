@@ -2,8 +2,8 @@ import React from 'react';
 import { Animated, Easing, InteractionManager, Platform, StyleSheet, View } from 'react-native';
 import gql from 'graphql-tag';
 
-import * as Constants from './Constants';
-import * as Session from './Session';
+import * as Constants from '../Constants';
+import * as Session from '../Session';
 
 import FastImage from 'react-native-fast-image';
 import PlayCardScreen from './PlayCardScreen';
