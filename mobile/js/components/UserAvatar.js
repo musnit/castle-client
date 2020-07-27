@@ -3,7 +3,7 @@ import { View } from 'react-native';
 
 import FastImage from 'react-native-fast-image';
 
-const UserAvatar = ({ url }) => (
+export const UserAvatar = ({ url }) => (
   <View
     style={{
       backgroundColor: '#eee',
@@ -19,5 +19,3 @@ const UserAvatar = ({ url }) => (
     />
   </View>
 );
-
-export default UserAvatar;

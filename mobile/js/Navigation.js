@@ -16,7 +16,7 @@ import { CreateDeckNavigator } from './create/CreateDeckNavigator';
 import { HomeScreen } from './home/HomeScreen';
 import * as DeepLinks from './DeepLinks';
 import PlayDeckScreen from './PlayDeckScreen';
-import ProfileScreen from './ProfileScreen';
+import { ProfileScreen } from './profile/ProfileScreen';
 import * as GhostChannels from './ghost/GhostChannels';
 
 const Stack = createStackNavigator();

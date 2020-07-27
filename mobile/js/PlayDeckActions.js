@@ -1,9 +1,8 @@
 import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
+import { UserAvatar } from './components/UserAvatar';
 
 import * as Constants from './Constants';
-
-import UserAvatar from './UserAvatar';
 
 const styles = StyleSheet.create({
   creator: {

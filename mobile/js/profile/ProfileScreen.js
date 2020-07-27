@@ -8,46 +8,58 @@ import {
   TouchableOpacity,
   Linking,
 } from 'react-native';
-import { CardCell } from './components/CardCell';
-import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { useSession } from './Session';
+import { CardCell } from '../components/CardCell';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useQuery } from '@apollo/react-hooks';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useSession } from '../Session';
+import { UserAvatar } from '../components/UserAvatar';
 
-import UserAvatar from './UserAvatar';
-
-import * as Utilities from './utilities';
+import * as Constants from '../Constants';
+import * as Utilities from '../utilities';
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
   header: {
     width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-  },
-  back: {
-    flexShrink: 0,
-    width: 54,
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingBottom: 24,
+  },
+  username: { marginTop: 4, fontSize: 18, color: Constants.colors.white, fontWeight: 'bold' },
+  profileItems: { marginTop: 16, flexDirection: 'row' },
+  scrollView: {
+    paddingTop: 16,
+    paddingLeft: 16,
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  deckItem: {
+    paddingRight: 16,
+    paddingBottom: 16,
+    width: '33%',
   },
 });
 
 const PlayDeckCell = ({ deck, onPress }) => {
   return (
-    <View style={{ paddingRight: 8, paddingBottom: 8, width: '33%' }}>
+    <View style={styles.deckItem}>
       <CardCell card={deck.initialCard} onPress={onPress} isPrivate={!deck.isVisible} />
     </View>
   );
 };
 
-const ProfileScreen = () => {
+export const ProfileScreen = () => {
   const { navigate } = useNavigation();
   const { signOutAsync } = useSession();
 
   useFocusEffect(
     React.useCallback(() => {
-      StatusBar.setBarStyle('dark-content'); // needed for tab navigator
+      StatusBar.setBarStyle('light-content'); // needed for tab navigator
     }, [])
   );
 
@@ -90,49 +102,24 @@ const ProfileScreen = () => {
   }
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: '#f2f2f2',
-      }}>
-      <StatusBar barStyle="dark-content" />
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" />
       {queryLoading || queryError ? null : (
         <Fragment>
-          <SafeAreaView
-            style={{
-              width: '100%',
-              alignItems: 'center',
-              paddingBottom: 24,
-              backgroundColor: '#fff',
-              shadowColor: '#000',
-              shadowOffset: {
-                width: 0,
-                height: 1,
-              },
-              shadowOpacity: 0.2,
-              shadowRadius: 1.41,
-              elevation: 2,
-            }}>
+          <SafeAreaView style={styles.header}>
             <View style={{ width: 96, paddingVertical: 16 }}>
               <UserAvatar url={queryData.me.photo?.url} />
             </View>
             <View style={{ alignItems: 'center' }}>
-              <Text style={{ fontSize: 22, fontFamily: 'RTAliasGrotesk-Bold' }}>
-                {queryData.me.name}
-              </Text>
-              <Text style={{ marginTop: 4, fontSize: 18, fontFamily: 'RTAliasGrotesk-Regular' }}>
-                @{queryData.me.username}
-              </Text>
-              <View style={{ marginTop: 16, flexDirection: 'row' }}>
+              <Text style={styles.username}>@{queryData.me.username}</Text>
+              <View style={styles.profileItems}>
                 {queryData.me.websiteUrl ? (
                   <TouchableOpacity
-                    style={{
-                      marginRight: 16,
-                    }}
+                    style={{ marginRight: 16 }}
                     onPress={() => {
                       Linking.openURL(queryData.me.websiteUrl);
                     }}>
-                    <Text>{queryData.me.websiteUrl}</Text>
+                    <Text style={{ color: '#fff' }}>{queryData.me.websiteUrl}</Text>
                   </TouchableOpacity>
                 ) : null}
                 <TouchableOpacity onPress={signOutAsync}>
@@ -141,13 +128,7 @@ const ProfileScreen = () => {
               </View>
             </View>
           </SafeAreaView>
-          <ScrollView
-            contentContainerStyle={{
-              padding: 8,
-              display: 'flex',
-              flexDirection: 'row',
-              flexWrap: 'wrap',
-            }}>
+          <ScrollView contentContainerStyle={styles.scrollView}>
             {decks.map((deck) => (
               <PlayDeckCell
                 key={deck.deckId}
@@ -167,5 +148,3 @@ const ProfileScreen = () => {
     </View>
   );
 };
-
-export default ProfileScreen;
