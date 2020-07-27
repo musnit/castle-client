@@ -77,6 +77,13 @@ export const ProfileScreen = () => {
           id
           deckId
           title
+          creator {
+            userId
+            username
+            photo {
+              url
+            }
+          }
           isVisible
           initialCard {
             id
@@ -128,13 +135,15 @@ export const ProfileScreen = () => {
             </View>
           </SafeAreaView>
           <ScrollView contentContainerStyle={styles.scrollView}>
-            {decks.map((deck) => (
+            {decks.map((deck, ii) => (
               <PlayDeckCell
                 key={deck.deckId}
                 deck={deck}
                 onPress={() =>
                   navigate('PlayDeck', {
                     decks,
+                    initialDeckIndex: ii,
+                    title: `@${queryData.me.username}`,
                   })
                 }
               />

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatusBar, StyleSheet, Text, View } from 'react-native';
+import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
 import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 
@@ -9,6 +9,7 @@ import { PlayDeckNavigator } from './PlayDeckNavigator';
 import { useNavigation } from '@react-navigation/native';
 import { useListen } from '../ghost/GhostEvents';
 
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Viewport from '../viewport';
 
 import * as Constants from '../Constants';
@@ -55,6 +56,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Constants.colors.white,
     fontWeight: 'bold',
+  },
+  navControlButton: {
+    width: 48,
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
@@ -115,14 +122,15 @@ const CurrentDeckCell = ({ deck, paused }) => {
   );
 };
 
-export const PlayDeckScreen = ({ decks, title, route }) => {
-  const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
-  const [paused, setPaused] = React.useState(false);
-
+export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) => {
   if (!decks && route?.params) {
     decks = route.params.decks;
     title = route.params.title;
+    initialDeckIndex = route.params.initialDeckIndex ?? 0;
   }
+
+  const [deckIndex, setDeckIndex] = React.useState(initialDeckIndex);
+  const [paused, setPaused] = React.useState(false);
 
   const { popToTop } = useNavigation();
   if (Constants.Android) {
@@ -140,19 +148,36 @@ export const PlayDeckScreen = ({ decks, title, route }) => {
     }, [])
   );
 
+  const currentDeck = decks[deckIndex];
+  const prevDeck = deckIndex > 0 ? decks[deckIndex - 1] : null;
+  const nextDeck = deckIndex < decks.length - 1 ? decks[deckIndex + 1] : null;
+
+  const onPressPrevious = React.useCallback(() => {
+    if (deckIndex > 0) {
+      setDeckIndex(deckIndex - 1);
+    }
+  }, [deckIndex]);
+
+  const onPressNext = React.useCallback(() => {
+    if (deckIndex < decks.length - 1) {
+      setDeckIndex(deckIndex + 1);
+    }
+  }, [deckIndex]);
+
   if (!decks) {
     return <View style={styles.container} />;
   }
 
-  const currentDeck = decks[currentCardIndex];
-  const prevCard = currentCardIndex > 0 ? decks[currentCardIndex - 1].initialCard : null;
-  const nextCard =
-    currentCardIndex < decks.length - 1 ? decks[currentCardIndex + 1].initialCard : null;
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
+        <TouchableOpacity onPress={onPressPrevious} style={styles.navControlButton}>
+          <Icon name="skip-previous" color={prevDeck ? '#fff' : '#666'} size={22} />
+        </TouchableOpacity>
         <Text style={styles.title}>{title}</Text>
+        <TouchableOpacity onPress={onPressNext} style={styles.navControlButton}>
+          <Icon name="skip-next" color={nextDeck ? '#fff' : '#666'} size={22} />
+        </TouchableOpacity>
       </View>
       <View style={cardAspectFitStyles}>
         <CurrentDeckCell deck={currentDeck} paused={paused} />

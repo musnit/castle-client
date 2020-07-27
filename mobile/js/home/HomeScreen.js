@@ -78,14 +78,6 @@ export const HomeScreen = () => {
               overlayUrl
               primaryColor
             }
-            blocks {
-              id
-              cardBlockId
-              cardBlockUpdateId
-              type
-              title
-              destinationCardId
-            }
           }
           variables
         }
@@ -131,6 +123,7 @@ export const HomeScreen = () => {
                   onPress={() =>
                     navigate('PlayDeck', {
                       decks,
+                      initialDeckIndex: ii,
                       title: 'Newest',
                     })
                   }
