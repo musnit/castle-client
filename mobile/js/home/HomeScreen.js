@@ -4,14 +4,21 @@ import { CardCell } from '../components/CardCell';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SegmentedNavigation } from '../components/SegmentedNavigation';
 import { useLazyQuery } from '@apollo/react-hooks';
-import { useIsFocused, useFocusEffect } from '@react-navigation/native';
+import {
+  useNavigation,
+  useIsFocused,
+  useFocusEffect,
+  useScrollToTop,
+} from '@react-navigation/native';
 import gql from 'graphql-tag';
 
 import * as Constants from '../Constants';
+import * as Utilities from '../utilities';
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#000',
+    flex: 1,
   },
   header: {
     alignItems: 'center',
@@ -44,6 +51,7 @@ const MODE_ITEMS = [
 ];
 
 export const HomeScreen = () => {
+  const { navigate } = useNavigation();
   const [lastFetchedTime, setLastFetchedTime] = React.useState(null);
   const [fetchDecks, query] = useLazyQuery(
     gql`
@@ -102,6 +110,9 @@ export const HomeScreen = () => {
     decks = query.data.allDecks;
   }
 
+  const scrollViewRef = React.useRef(null);
+  useScrollToTop(scrollViewRef);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -111,11 +122,20 @@ export const HomeScreen = () => {
           onSelectItem={() => {}}
         />
       </View>
-      <ScrollView contentContainerStyle={styles.scrollView}>
+      <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollView}>
         {decks
           ? decks.map((deck, ii) => (
               <View key={`deck-${deck.deckId}`} style={styles.deckCell}>
-                <CardCell card={deck.initialCard} onPress={() => {}} />
+                <CardCell
+                  card={deck.initialCard}
+                  onPress={() =>
+                    navigate('PlayDeck', {
+                      deckId: deck.deckId,
+                      cardId: deck.initialCard.cardId,
+                      initialDeckState: Utilities.makeInitialDeckState(deck),
+                    })
+                  }
+                />
               </View>
             ))
           : null}

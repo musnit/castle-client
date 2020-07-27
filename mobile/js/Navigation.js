@@ -3,8 +3,8 @@
 
 import React, { Fragment } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import createSpaceNavigator from './SpaceNavigator/createSpaceNavigator';
 import { Text, View, Image } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
@@ -13,18 +13,25 @@ import { useSession } from './Session';
 import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './AuthScreens';
 import CreateScreen from './CreateScreen';
 import CreateDeckNavigator from './CreateDeckNavigator';
-import DecksFlipper from './DecksFlipper';
+import { HomeScreen } from './home/HomeScreen';
 import * as DeepLinks from './DeepLinks';
 import PlayDeckScreen from './PlayDeckScreen';
 import ProfileScreen from './ProfileScreen';
 import * as GhostChannels from './ghost/GhostChannels';
 
 const Stack = createStackNavigator();
-const Space = createSpaceNavigator();
+const Tab = createBottomTabNavigator();
 
 const ICON_SIZE = 24;
 
 // App UI layout
+
+const BrowseNavigator = () => (
+  <Stack.Navigator headerMode="none" initialRouteName="HomeScreen">
+    <Stack.Screen name="HomeScreen" component={HomeScreen} />
+    <Stack.Screen name="PlayDeck" component={PlayDeckScreen} />
+  </Stack.Navigator>
+);
 
 const CreateNavigator = () => (
   <Stack.Navigator headerMode="none">
@@ -50,12 +57,39 @@ const ProfileNavigator = () => (
   </Stack.Navigator>
 );
 
-const SpaceNavigator = () => (
-  <Space.Navigator initialRouteName="Play">
-    <Space.Screen name="Profile" component={ProfileNavigator} />
-    <Space.Screen name="Play" component={DecksFlipper} />
-    <Space.Screen name="Create" component={CreateNavigator} />
-  </Space.Navigator>
+const TabNavigator = () => (
+  <Tab.Navigator
+    initialRouteName="Browse"
+    tabBarOptions={{
+      activeTintColor: '#fff',
+      inactiveTintColor: '#fff',
+      style: {
+        backgroundColor: '#000',
+        elevation: 0,
+      },
+    }}>
+    <Tab.Screen
+      name="Browse"
+      component={BrowseNavigator}
+      options={({ route }) => ({
+        tabBarVisible: !route.state || route.state.index == 0,
+      })}
+    />
+    <Tab.Screen
+      name="Create"
+      component={CreateNavigator}
+      options={({ route }) => ({
+        tabBarVisible: !route.state || route.state.index == 0,
+      })}
+    />
+    <Tab.Screen
+      name="Profile"
+      component={ProfileNavigator}
+      options={({ route }) => ({
+        tabBarVisible: !route.state || route.state.index == 0,
+      })}
+    />
+  </Tab.Navigator>
 );
 
 const AuthNavigator = () => (
@@ -74,7 +108,7 @@ export const RootNavigator = () => {
   const { isSignedIn } = useSession();
   return (
     <NavigationContainer ref={DeepLinks.setNavigationRef} onStateChange={onNavigationStateChange}>
-      {isSignedIn ? <SpaceNavigator /> : <AuthNavigator />}
+      {isSignedIn ? <TabNavigator /> : <AuthNavigator />}
     </NavigationContainer>
   );
 };
