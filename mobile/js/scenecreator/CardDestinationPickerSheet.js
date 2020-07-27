@@ -2,9 +2,9 @@ import React from 'react';
 import { StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 
 import { BottomSheet } from '../BottomSheet';
+import { CardsSet } from '../components/CardsSet';
 import { useCardCreator } from './CreateCardContext';
 import BottomSheetHeader from './BottomSheetHeader';
-import CardsSet from '../CardsSet';
 
 import * as Constants from '../Constants';
 

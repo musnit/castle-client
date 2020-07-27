@@ -1,6 +1,7 @@
 import React from 'react';
 import gql from 'graphql-tag';
 import { View, StyleSheet, Text } from 'react-native';
+import { CardsSet } from './components/CardsSet';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -10,7 +11,6 @@ import * as LocalId from './local-id';
 import * as Session from './Session';
 import * as Utilities from './utilities';
 
-import CardsSet from './CardsSet';
 import ConfigureDeck from './ConfigureDeck';
 import DeckHeader from './DeckHeader';
 

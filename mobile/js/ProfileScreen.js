@@ -8,13 +8,13 @@ import {
   TouchableOpacity,
   Linking,
 } from 'react-native';
+import { CardCell } from './components/CardCell';
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useSession } from './Session';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import CardCell from './CardCell';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import UserAvatar from './UserAvatar';
 

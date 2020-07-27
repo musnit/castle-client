@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import * as Constants from './Constants';
+import * as Constants from '../Constants';
 
 const darkBackgroundStyles = StyleSheet.create({
   container: {
@@ -54,7 +54,7 @@ const lightBackgroundStyles = StyleSheet.create({
   },
 });
 
-const SegmentedNavigation = (props) => {
+export const SegmentedNavigation = (props) => {
   const { items, selectedItem, onSelectItem, isLightBackground } = props;
   const styles = isLightBackground ? lightBackgroundStyles : darkBackgroundStyles;
 
@@ -77,5 +77,3 @@ const SegmentedNavigation = (props) => {
     </View>
   );
 };
-
-export default SegmentedNavigation;

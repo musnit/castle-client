@@ -1,13 +1,12 @@
 import React from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { CardCell } from './CardCell';
 import FastImage from 'react-native-fast-image';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import * as Constants from './Constants';
-import * as LocalId from './local-id';
-import * as Utilities from './utilities';
-
-import CardCell from './CardCell';
+import * as Constants from '../Constants';
+import * as LocalId from '../local-id';
+import * as Utilities from '../utilities';
 
 const styles = StyleSheet.create({
   container: {
@@ -110,7 +109,7 @@ const SearchInput = (props) => {
           marginLeft: 12,
           marginRight: -28,
         }}
-        source={require('../assets/images/search.png')}
+        source={require('../../assets/images/search.png')}
       />
       <TextInput
         style={styles.input}
@@ -216,7 +215,7 @@ const sortCards = (cards, order) => {
 
 const SortOrderOptions = [SortOrder.LAST_MODIFIED_DESC, SortOrder.LAST_MODIFIED_ASC];
 
-const CardsSet = (props) => {
+export const CardsSet = (props) => {
   const [state, setState] = React.useState({ mode: 'grid', searchQuery: '' });
   const [sortOrder, setSortOrder] = React.useState(SortOrder.LAST_MODIFIED_DESC);
   const { deck } = props;
@@ -265,7 +264,7 @@ const CardsSet = (props) => {
                 width: 12,
                 aspectRatio: 1,
               }}
-              source={require('../assets/images/layout-grid.png')}
+              source={require('../../assets/images/layout-grid.png')}
             />
           </TouchableOpacity>
           <TouchableOpacity
@@ -277,7 +276,7 @@ const CardsSet = (props) => {
                 width: 12,
                 aspectRatio: 1,
               }}
-              source={require('../assets/images/layout-list.png')}
+              source={require('../../assets/images/layout-list.png')}
             />
           </TouchableOpacity>
         </View>
@@ -298,5 +297,3 @@ const CardsSet = (props) => {
     </View>
   );
 };
-
-export default CardsSet;

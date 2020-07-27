@@ -3,7 +3,7 @@ import { Image, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-n
 
 import FastImage from 'react-native-fast-image';
 
-import * as Constants from './Constants';
+import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
   container: {
@@ -63,7 +63,15 @@ const InitialCardIndicator = () => (
   </View>
 );
 
-const CardCell = ({ card, onPress, title, useOverlay, isInitialCard, isPrivate, isFullSize }) => {
+export const CardCell = ({
+  card,
+  onPress,
+  title,
+  useOverlay,
+  isInitialCard,
+  isPrivate,
+  isFullSize,
+}) => {
   let cardStyles = styles.card;
   if (card.backgroundImage && card.backgroundImage.primaryColor) {
     cardStyles = [styles.card, { backgroundColor: card.backgroundImage.primaryColor }];
@@ -103,5 +111,3 @@ const CardCell = ({ card, onPress, title, useOverlay, isInitialCard, isPrivate, 
     </View>
   );
 };
-
-export default CardCell;

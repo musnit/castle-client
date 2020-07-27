@@ -1,10 +1,9 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { getPaneData, sendDataPaneAction } from '../../Tools';
+import { SegmentedNavigation } from '../../components/SegmentedNavigation';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-
-import SegmentedNavigation from '../../SegmentedNavigation';
 
 import * as Constants from '../../Constants';
 

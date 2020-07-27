@@ -1,13 +1,12 @@
 import React from 'react';
 import { View, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { CardCell } from './components/CardCell';
 import FastImage from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import gql from 'graphql-tag';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { CommonActions, useNavigation, useFocusEffect } from '@react-navigation/native';
-
-import CardCell from './CardCell';
 
 import * as Constants from './Constants';
 import * as LocalId from './local-id';

@@ -1,10 +1,9 @@
 import React from 'react';
 import { View, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { CardCell } from './components/CardCell';
+import { SegmentedNavigation } from './components/SegmentedNavigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import FastImage from 'react-native-fast-image';
-
-import CardCell from './CardCell';
-import SegmentedNavigation from './SegmentedNavigation';
 
 import * as Constants from './Constants';
 
@@ -80,7 +79,7 @@ const DeckVisibleControl = ({ deck, onToggleVisible }) => {
         ) : (
           <React.Fragment>
             <Text style={styles.instructionsLabel}>
-            This deck is <Text style={{ fontWeight: '700' }}>private</Text>.
+              This deck is <Text style={{ fontWeight: '700' }}>private</Text>.
             </Text>
             <TouchableOpacity style={Constants.styles.primaryButton} onPress={onToggleVisible}>
               <Text style={Constants.styles.primaryButtonLabel}>Make Public</Text>
