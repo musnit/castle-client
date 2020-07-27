@@ -1,18 +1,17 @@
 import React from 'react';
 import gql from 'graphql-tag';
 import { View, StyleSheet, Text } from 'react-native';
-import { CardsSet } from './components/CardsSet';
+import { CardsSet } from '../components/CardsSet';
+import { ConfigureDeck } from './ConfigureDeck';
+import { DeckHeader } from './DeckHeader';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 
-import * as LocalId from './local-id';
-import * as Session from './Session';
-import * as Utilities from './utilities';
-
-import ConfigureDeck from './ConfigureDeck';
-import DeckHeader from './DeckHeader';
+import * as LocalId from '../local-id';
+import * as Session from '../Session';
+import * as Utilities from '../utilities';
 
 const styles = StyleSheet.create({
   container: {
@@ -48,7 +47,7 @@ const DECK_FRAGMENT = `
   }
 `;
 
-const CreateDeckScreen = (props) => {
+export const CreateDeckScreen = (props) => {
   let lastFocusedTime;
   const navigation = useNavigation();
   const { showActionSheetWithOptions } = useActionSheet();
@@ -256,5 +255,3 @@ const CreateDeckScreen = (props) => {
     </SafeAreaView>
   );
 };
-
-export default CreateDeckScreen;

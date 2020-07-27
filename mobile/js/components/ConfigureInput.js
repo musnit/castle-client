@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const ConfigureInput = (props) => {
+export const ConfigureInput = (props) => {
   const { label } = props;
   return (
     <View>
@@ -27,5 +27,3 @@ const ConfigureInput = (props) => {
     </View>
   );
 };
-
-export default ConfigureInput;

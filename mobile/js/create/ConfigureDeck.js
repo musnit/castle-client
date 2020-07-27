@@ -1,8 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet, Text, View } from 'react-native';
+import { ConfigureInput } from '../components/ConfigureInput';
 import { useActionSheet } from '@expo/react-native-action-sheet';
-
-import ConfigureInput from './ConfigureInput';
 
 const styles = StyleSheet.create({
   container: {
@@ -22,7 +21,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const ConfigureDeck = ({ deck, onChange, onDeleteDeck }) => {
+export const ConfigureDeck = ({ deck, onChange, onDeleteDeck }) => {
   const { showActionSheetWithOptions } = useActionSheet();
   const maybeDeleteDeck = React.useCallback(() => {
     showActionSheetWithOptions(
@@ -52,5 +51,3 @@ const ConfigureDeck = ({ deck, onChange, onDeleteDeck }) => {
     </View>
   );
 };
-
-export default ConfigureDeck;

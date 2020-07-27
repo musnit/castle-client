@@ -11,8 +11,8 @@ import FastImage from 'react-native-fast-image';
 import { useSession } from './Session';
 
 import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './AuthScreens';
-import CreateScreen from './CreateScreen';
-import CreateDeckNavigator from './CreateDeckNavigator';
+import { CreateScreen } from './create/CreateScreen';
+import { CreateDeckNavigator } from './create/CreateDeckNavigator';
 import { HomeScreen } from './home/HomeScreen';
 import * as DeepLinks from './DeepLinks';
 import PlayDeckScreen from './PlayDeckScreen';

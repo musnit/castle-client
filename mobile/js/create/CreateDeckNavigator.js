@@ -1,10 +1,10 @@
 import React from 'react';
 import { InteractionManager, StyleSheet } from 'react-native';
+import { CreateDeckScreen } from './CreateDeckScreen';
 import { useNavigation } from '@react-navigation/native';
 import { Transitioning } from 'react-native-reanimated';
 
-import CreateDeckScreen from './CreateDeckScreen';
-import CreateCardScreen from './CreateCardScreen';
+import CreateCardScreen from '../CreateCardScreen';
 
 const styles = StyleSheet.create({
   container: {
@@ -22,7 +22,7 @@ const CreateDeckContent = ({ deckId, cardId, ...props }) => {
   }
 };
 
-const CreateDeckNavigator = (props) => {
+export const CreateDeckNavigator = (props) => {
   const navigation = useNavigation();
 
   let deckId, cardId;
@@ -34,5 +34,3 @@ const CreateDeckNavigator = (props) => {
 
   return <CreateDeckContent deckId={deckId} cardId={cardId} {...props} />;
 };
-
-export default CreateDeckNavigator;

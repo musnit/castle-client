@@ -1,14 +1,14 @@
 import React from 'react';
 import { View, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import { CardCell } from './components/CardCell';
+import { CardCell } from '../components/CardCell';
 import FastImage from 'react-native-fast-image';
 import gql from 'graphql-tag';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { CommonActions, useNavigation, useFocusEffect } from '@react-navigation/native';
 
-import * as Constants from './Constants';
-import * as LocalId from './local-id';
+import * as Constants from '../Constants';
+import * as LocalId from '../local-id';
 
 const styles = StyleSheet.create({
   container: {
@@ -22,12 +22,10 @@ const styles = StyleSheet.create({
     borderColor: '#555',
     paddingTop: 16,
   },
-  scrollView: {
-    padding: 16,
-  },
+  scrollView: {},
   decks: {
-    marginTop: 16,
-    paddingLeft: 8,
+    paddingTop: 16,
+    paddingLeft: 16,
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
@@ -38,8 +36,8 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   cellContainer: {
-    paddingBottom: 8,
-    paddingRight: 8,
+    paddingBottom: 16,
+    paddingRight: 16,
     width: '33%',
   },
   cellTitle: {
@@ -81,7 +79,7 @@ const CreateDeckCell = (props) => {
   );
 };
 
-const CreateScreen = () => {
+export const CreateScreen = () => {
   const navigation = useNavigation();
   const [fetchDecks, query] = useLazyQuery(
     gql`
@@ -161,5 +159,3 @@ const CreateScreen = () => {
     </SafeAreaView>
   );
 };
-
-export default CreateScreen;

@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import { CardCell } from './components/CardCell';
-import { SegmentedNavigation } from './components/SegmentedNavigation';
+import { CardCell } from '../components/CardCell';
+import { SegmentedNavigation } from '../components/SegmentedNavigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import FastImage from 'react-native-fast-image';
 
-import * as Constants from './Constants';
+import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
   container: {
@@ -91,7 +91,7 @@ const DeckVisibleControl = ({ deck, onToggleVisible }) => {
   );
 };
 
-const DeckHeader = (props) => {
+export const DeckHeader = (props) => {
   const { deck } = props;
   return (
     <View style={styles.container}>
@@ -115,5 +115,3 @@ const DeckHeader = (props) => {
     </View>
   );
 };
-
-export default DeckHeader;
