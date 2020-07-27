@@ -15,7 +15,6 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useSession } from './Session';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import UserAvatar from './UserAvatar';
 
 import * as Utilities from './utilities';
@@ -114,11 +113,6 @@ const ProfileScreen = () => {
               shadowRadius: 1.41,
               elevation: 2,
             }}>
-            <View style={styles.header}>
-              <TouchableOpacity style={styles.back} onPress={() => navigate('Play')}>
-                <Icon name="close" size={32} color="#000" />
-              </TouchableOpacity>
-            </View>
             <View style={{ width: 96, paddingVertical: 16 }}>
               <UserAvatar url={queryData.me.photo?.url} />
             </View>

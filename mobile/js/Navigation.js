@@ -64,6 +64,7 @@ const TabNavigator = () => (
       activeTintColor: '#fff',
       inactiveTintColor: '#fff',
       style: {
+        borderColor: '#555',
         backgroundColor: '#000',
         elevation: 0,
       },

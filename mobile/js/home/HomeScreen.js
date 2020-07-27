@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderBottomWidth: 1,
-    borderColor: '#666',
+    borderColor: '#555',
     paddingTop: 16,
   },
   scrollView: {

@@ -2,7 +2,6 @@ import React from 'react';
 import { View, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { CardCell } from './components/CardCell';
 import FastImage from 'react-native-fast-image';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import gql from 'graphql-tag';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLazyQuery } from '@apollo/react-hooks';
@@ -17,14 +16,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
   },
   header: {
-    width: '100%',
-    flexDirection: 'row',
-  },
-  back: {
-    flexShrink: 0,
-    width: 54,
     alignItems: 'center',
     justifyContent: 'center',
+    borderBottomWidth: 1,
+    borderColor: '#555',
+    paddingTop: 16,
   },
   scrollView: {
     padding: 16,
@@ -36,12 +32,10 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   sectionTitle: {
-    color: '#fff',
-    marginVertical: 8,
-    fontSize: 22,
+    color: Constants.colors.white,
     fontWeight: 'bold',
-    width: '100%',
-    textAlign: 'center',
+    fontSize: 16,
+    marginVertical: 8,
   },
   cellContainer: {
     paddingBottom: 8,
@@ -136,13 +130,10 @@ const CreateScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
-      <ScrollView contentContainerStyle={styles.scrollView}>
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.back} onPress={() => navigation.navigate('Play')}>
-            <Icon name="close" size={32} color="#fff" style={Constants.styles.textShadow} />
-          </TouchableOpacity>
-        </View>
+      <View style={styles.header}>
         <Text style={styles.sectionTitle}>Your Decks</Text>
+      </View>
+      <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.decks}>
           <CreateDeckCell
             key="create"
