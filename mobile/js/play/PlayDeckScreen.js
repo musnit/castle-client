@@ -9,7 +9,8 @@ import { PlayDeckNavigator } from './PlayDeckNavigator';
 import { useNavigation } from '@react-navigation/native';
 import { useListen } from '../ghost/GhostEvents';
 
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Viewport from '../viewport';
 
 import * as Constants from '../Constants';
@@ -49,7 +50,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     minHeight: 54,
   },
   title: {
@@ -62,6 +63,23 @@ const styles = StyleSheet.create({
     height: 48,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  back: {
+    flexShrink: 0,
+    width: 60,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    paddingLeft: 12,
+  },
+  centerHeading: {
+    width: '100%',
+    height: '100%',
+    flexShrink: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: -1, // required to prevent negative margin from blocking back button
+    marginLeft: -54, // required to center properly with back button
   },
 });
 
@@ -171,13 +189,18 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={onPressPrevious} style={styles.navControlButton}>
-          <Icon name="skip-previous" color={prevDeck ? '#fff' : '#666'} size={22} />
+        <TouchableOpacity style={styles.back} onPress={popToTop}>
+          <Icon name="arrow-back" size={32} color="#fff" />
         </TouchableOpacity>
-        <Text style={styles.title}>{title}</Text>
-        <TouchableOpacity onPress={onPressNext} style={styles.navControlButton}>
-          <Icon name="skip-next" color={nextDeck ? '#fff' : '#666'} size={22} />
-        </TouchableOpacity>
+        <View style={styles.centerHeading}>
+          <TouchableOpacity onPress={onPressPrevious} style={styles.navControlButton}>
+            <MCIcon name="skip-previous" color={prevDeck ? '#fff' : '#666'} size={22} />
+          </TouchableOpacity>
+          <Text style={styles.title}>{title}</Text>
+          <TouchableOpacity onPress={onPressNext} style={styles.navControlButton}>
+            <MCIcon name="skip-next" color={nextDeck ? '#fff' : '#666'} size={22} />
+          </TouchableOpacity>
+        </View>
       </View>
       <View style={cardAspectFitStyles}>
         <CurrentDeckCell deck={currentDeck} paused={paused} />
