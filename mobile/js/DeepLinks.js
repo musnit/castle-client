@@ -2,7 +2,6 @@ import { Linking } from 'react-native';
 import { CommonActions } from '@react-navigation/native';
 
 import * as Session from './Session';
-import * as GameScreen from './GameScreen';
 
 let rootNavigatorRef = null;
 
@@ -25,7 +24,7 @@ export const navigateToUri = (uri) => {
     // Game URI?
     {
       const [gameUri, sessionId] = uri.split('#');
-      GameScreen.goToGame({ gameUri, extras: { sessionId } });
+      // TODO: go to castle game given by this uri
     }
   }
 };

@@ -5,7 +5,6 @@ import md5 from 'md5';
 import { Alert } from 'react-native';
 
 import { sendAsync, useListen } from './ghost/GhostEvents';
-import * as GameScreen from './GameScreen';
 import * as Session from './Session';
 
 ///
@@ -133,12 +132,13 @@ export const JS = {
 
     // Go to game with current game as `referrerGame`! Don't steal focus if game was running in
     // the background..
-    GameScreen.goToGame({
+    /* TODO: open game
+    goToGame({
       gameId,
       gameUri,
       focus: false,
       extras: { referrerGame: game, initialParams: params },
-    });
+    }); */
   },
 
   // Storage

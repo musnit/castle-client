@@ -18,7 +18,6 @@ import Popover from 'react-native-popover-view';
 import tinycolor from 'tinycolor2';
 import FastImage from 'react-native-fast-image';
 import FitImage from 'react-native-fit-image';
-import WebView from 'react-native-webview';
 import { Base64 } from 'js-base64';
 import ImagePicker from 'react-native-image-picker';
 import { ReactNativeFile } from 'apollo-upload-client';
@@ -44,8 +43,7 @@ import { useCardCreator } from './scenecreator/CreateCardContext';
 import { sendAsync, useListen } from './ghost/GhostEvents';
 import { ScrollView } from 'react-native-gesture-handler';
 import * as Constants from './Constants';
-import ColorPicker from './ColorPicker';
-import CodeMirrorBase64 from './CodeMirrorBase64';
+import ColorPicker from './scenecreator/inspector/components/ColorPicker';
 import * as Session from './Session';
 import * as SceneCreatorConstants from './scenecreator/SceneCreatorConstants';
 
@@ -1155,93 +1153,6 @@ const ToolFilePicker = ({ element }) => {
   );
 };
 elementTypes['filePicker'] = ToolFilePicker;
-
-const CODE_MIRROR_HTML = Base64.decode(CodeMirrorBase64);
-
-const ToolCodeEditor = ({ element }) => {
-  const webViewRef = useRef(null);
-
-  const [value, setValue] = useValue({
-    element,
-    onNewValue: (newValue) => {
-      if (webViewRef.current) {
-        webViewRef.current.injectJavascript(`
-          window.editor.getDoc().setValue(${JSON.stringify(newValue)});
-        `);
-      }
-    },
-  });
-
-  const injectedJavaScript = `
-    // Initialize CodeMirror
-    window.editor = CodeMirror.fromTextArea(document.getElementById('code'), {
-        mode: 'text/x-lua',
-        lineNumbers: true,
-        lineWrapping: true,
-    });
-
-    // Wrap with indent
-    var charWidth = window.editor.defaultCharWidth(), basePadding = 4;
-    window.editor.on('renderLine', function(cm, line, elt) {
-      var off = (CodeMirror.countColumn(line.text, null, cm.getOption('tabSize')) + 2) * charWidth;
-      elt.style.textIndent = '-' + off + 'px';
-      elt.style.paddingLeft = (basePadding + off) + 'px';
-    });
-    window.editor.refresh();
-
-    // Initial value
-    window.editor.getDoc().setValue(${JSON.stringify(value)});
-
-    // Notify changes
-    window.editor.on('change', function() {
-      window.ReactNativeWebView.postMessage(JSON.stringify({
-        type: 'change',
-        newValue: window.editor.getDoc().getValue(),
-      }));
-    });
-
-    // Notify focus
-    window.editor.on('focus', function() {
-      window.ReactNativeWebView.postMessage(JSON.stringify({
-        type: 'focus',
-      }));
-    });
-    window.editor.on('blur', function() {
-      window.ReactNativeWebView.postMessage(JSON.stringify({
-        type: 'blur',
-      }));
-    });
-  `;
-
-  const onMessage = (event) => {
-    const data = JSON.parse(event.nativeEvent.data);
-    switch (data.type) {
-      case 'change':
-        setValue(data.newValue);
-        break;
-      case 'focus':
-        // console.log('focus');
-        break;
-      case 'blur':
-        // console.log('blur');
-        break;
-    }
-  };
-
-  return (
-    <Labelled element={element}>
-      <WebView
-        ref={webViewRef}
-        style={{ height: 200, borderColor: 'gray', borderWidth: 1, borderRadius: 4 }}
-        source={{ html: CODE_MIRROR_HTML }}
-        injectedJavaScript={injectedJavaScript}
-        onMessage={onMessage}
-        incognito
-      />
-    </Labelled>
-  );
-};
-elementTypes['codeEditor'] = ToolCodeEditor;
 
 const ToolScrollBox = ({ element }) => (
   <ScrollView
