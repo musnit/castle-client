@@ -150,13 +150,13 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
   const [deckIndex, setDeckIndex] = React.useState(initialDeckIndex);
   const [paused, setPaused] = React.useState(false);
 
-  const { popToTop } = useNavigation();
+  const { pop } = useNavigation();
   if (Constants.Android) {
     // after the game loads, it listens for keyboard events and
     // causes react native's back button event to fail
     useListen({
       eventName: 'CASTLE_SYSTEM_BACK_BUTTON',
-      handler: popToTop,
+      handler: () => pop(),
     });
   }
 
@@ -189,7 +189,7 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.back} onPress={popToTop}>
+        <TouchableOpacity style={styles.back} onPress={() => pop()}>
           <Icon name="arrow-back" size={32} color="#fff" />
         </TouchableOpacity>
         <View style={styles.centerHeading}>

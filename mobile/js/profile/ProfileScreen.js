@@ -9,6 +9,7 @@ import {
   Linking,
 } from 'react-native';
 import gql from 'graphql-tag';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { CardCell } from '../components/CardCell';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@apollo/react-hooks';
@@ -28,6 +29,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: 24,
   },
+  navigationRow: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    minHeight: 54,
+  },
   username: { marginTop: 4, fontSize: 18, color: Constants.colors.white, fontWeight: 'bold' },
   profileItems: { marginTop: 16, flexDirection: 'row' },
   scrollView: {
@@ -41,6 +49,13 @@ const styles = StyleSheet.create({
     paddingRight: 16,
     paddingBottom: 16,
     width: '33%',
+  },
+  back: {
+    flexShrink: 0,
+    width: 60,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    paddingLeft: 12,
   },
 });
 
@@ -113,7 +128,11 @@ const PlayDeckCell = ({ deck, onPress }) => {
 };
 
 export const ProfileScreen = ({ userId, route }) => {
-  const { push } = useNavigation();
+  const { push, pop, dangerouslyGetState } = useNavigation();
+
+  // don't useNavigationState() because we don't want to rerender if this changes.
+  const navigationStackIndex = dangerouslyGetState().index;
+
   const { signOutAsync, userId: signedInUserId } = useSession();
   if (!userId && route?.params) {
     userId = route.params.userId;
@@ -140,6 +159,13 @@ export const ProfileScreen = ({ userId, route }) => {
       {queryLoading || queryError ? null : (
         <Fragment>
           <SafeAreaView style={styles.header}>
+            {navigationStackIndex > 0 ? (
+              <View style={styles.navigationRow}>
+                <TouchableOpacity style={styles.back} onPress={() => pop()}>
+                  <Icon name="arrow-back" size={32} color="#fff" />
+                </TouchableOpacity>
+              </View>
+            ) : null}
             <View style={{ width: 96, paddingVertical: 16 }}>
               <UserAvatar url={queryData.photo?.url} />
             </View>

@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { UserAvatar } from '../components/UserAvatar';
 
 import * as Constants from '../Constants';
@@ -27,14 +28,18 @@ const styles = StyleSheet.create({
 
 export const PlayDeckActions = ({ deck }) => {
   const { creator } = deck;
+  const { push } = useNavigation();
+
   return (
     <React.Fragment>
-      <View style={styles.creator} pointerEvents="none">
+      <TouchableOpacity
+        style={styles.creator}
+        onPress={() => push('Profile', { userId: creator.userId })}>
         <View style={styles.avatar}>
           <UserAvatar url={creator.photo?.url} />
         </View>
         <Text style={styles.username}>{creator.username}</Text>
-      </View>
+      </TouchableOpacity>
     </React.Fragment>
   );
 };
