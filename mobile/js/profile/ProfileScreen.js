@@ -44,6 +44,66 @@ const styles = StyleSheet.create({
   },
 });
 
+const PROFILE_FRAGMENT = `
+  id
+  userId
+  name
+  username
+  websiteUrl
+  photo {
+    url
+  }
+  decks {
+    id
+    deckId
+    title
+    creator {
+      userId
+      username
+      photo {
+        url
+      }
+    }
+    isVisible
+    initialCard {
+      id
+      cardId
+      title
+      backgroundImage {
+        url
+        smallUrl
+        privateCardUrl
+      }
+    }
+    variables
+  }
+`;
+
+const useProfileQuery = (userId) => {
+  const { userId: signedInUserId } = useSession();
+  if (!userId || userId === signedInUserId) {
+    return useQuery(
+      gql`
+      query Me {
+        me {
+          ${PROFILE_FRAGMENT}
+        }
+      }`,
+      { fetchPolicy: 'no-cache' }
+    );
+  } else {
+    return useQuery(
+      gql`
+      query UserProfile($userId: ID!) {
+        user(userId: $userId) {
+          ${PROFILE_FRAGMENT}
+        }
+      }`,
+      { fetchPolicy: 'no-cache', variables: { userId } }
+    );
+  }
+};
+
 const PlayDeckCell = ({ deck, onPress }) => {
   return (
     <View style={styles.deckItem}>
@@ -52,9 +112,13 @@ const PlayDeckCell = ({ deck, onPress }) => {
   );
 };
 
-export const ProfileScreen = () => {
-  const { navigate } = useNavigation();
-  const { signOutAsync } = useSession();
+export const ProfileScreen = ({ userId, route }) => {
+  const { push } = useNavigation();
+  const { signOutAsync, userId: signedInUserId } = useSession();
+  if (!userId && route?.params) {
+    userId = route.params.userId;
+  }
+  const isMe = !userId || userId === signedInUserId;
 
   useFocusEffect(
     React.useCallback(() => {
@@ -62,49 +126,12 @@ export const ProfileScreen = () => {
     }, [])
   );
 
-  const { loading: queryLoading, error: queryError, data: queryData } = useQuery(gql`
-    query Me {
-      me {
-        id
-        userId
-        name
-        username
-        websiteUrl
-        photo {
-          url
-        }
-        decks {
-          id
-          deckId
-          title
-          creator {
-            userId
-            username
-            photo {
-              url
-            }
-          }
-          isVisible
-          initialCard {
-            id
-            cardId
-            title
-            backgroundImage {
-              url
-              smallUrl
-              privateCardUrl
-            }
-          }
-          variables
-        }
-      }
-    }
-  `);
+  const { loading: queryLoading, error: queryError, data } = useProfileQuery(userId);
 
-  let decks;
-  if (!queryLoading && !queryError && queryData) {
-    // TODO: generalize ProfileScreen to other users, stop using `me` for this query
-    decks = queryData.me.decks;
+  let decks, queryData;
+  if (!queryLoading && !queryError) {
+    queryData = isMe ? data.me : data.user;
+    decks = queryData.decks;
   }
 
   return (
@@ -114,23 +141,25 @@ export const ProfileScreen = () => {
         <Fragment>
           <SafeAreaView style={styles.header}>
             <View style={{ width: 96, paddingVertical: 16 }}>
-              <UserAvatar url={queryData.me.photo?.url} />
+              <UserAvatar url={queryData.photo?.url} />
             </View>
             <View style={{ alignItems: 'center' }}>
-              <Text style={styles.username}>@{queryData.me.username}</Text>
+              <Text style={styles.username}>@{queryData.username}</Text>
               <View style={styles.profileItems}>
-                {queryData.me.websiteUrl ? (
+                {queryData.websiteUrl ? (
                   <TouchableOpacity
                     style={{ marginRight: 16 }}
                     onPress={() => {
-                      Linking.openURL(queryData.me.websiteUrl);
+                      Linking.openURL(queryData.websiteUrl);
                     }}>
-                    <Text style={{ color: '#fff' }}>{queryData.me.websiteUrl}</Text>
+                    <Text style={{ color: '#fff' }}>{queryData.websiteUrl}</Text>
                   </TouchableOpacity>
                 ) : null}
-                <TouchableOpacity onPress={signOutAsync}>
-                  <Text style={{ color: '#aaa' }}>Log Out</Text>
-                </TouchableOpacity>
+                {isMe ? (
+                  <TouchableOpacity onPress={signOutAsync}>
+                    <Text style={{ color: '#aaa' }}>Log Out</Text>
+                  </TouchableOpacity>
+                ) : null}
               </View>
             </View>
           </SafeAreaView>
@@ -140,10 +169,10 @@ export const ProfileScreen = () => {
                 key={deck.deckId}
                 deck={deck}
                 onPress={() =>
-                  navigate('PlayDeck', {
+                  push('PlayDeck', {
                     decks,
                     initialDeckIndex: ii,
-                    title: `@${queryData.me.username}`,
+                    title: `@${queryData.username}`,
                   })
                 }
               />

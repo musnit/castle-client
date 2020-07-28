@@ -1,6 +1,3 @@
-// Assemble all the `*Screen`s together using `*Navigator`s. Confine navigation things to this
-// module so that the app's navigation flow is always clear.
-
 import React, { Fragment } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -30,6 +27,7 @@ const BrowseNavigator = () => (
   <Stack.Navigator headerMode="none" initialRouteName="HomeScreen">
     <Stack.Screen name="HomeScreen" component={HomeScreen} />
     <Stack.Screen name="PlayDeck" component={PlayDeckScreen} />
+    <Stack.Screen name="Profile" component={ProfileScreen} />
   </Stack.Navigator>
 );
 
@@ -51,8 +49,8 @@ const CreateNavigator = () => (
 );
 
 const ProfileNavigator = () => (
-  <Stack.Navigator headerMode="none" initialRouteName="ProfileScreen">
-    <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+  <Stack.Navigator headerMode="none" initialRouteName="Profile">
+    <Stack.Screen name="Profile" component={ProfileScreen} />
     <Stack.Screen name="PlayDeck" component={PlayDeckScreen} />
   </Stack.Navigator>
 );
