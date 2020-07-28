@@ -1,14 +1,14 @@
 import React from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 
-import * as Constants from './Constants';
+import * as Constants from '../Constants';
 
 // A line of text in the loader overlay
 const LoaderText = ({ children }) => (
   <Text style={{ color: 'white', fontSize: 12 }}>{children}</Text>
 );
 
-const GameLoading = ({ noGame, fetching, luaNetworkRequests, extras }) => (
+export const GameLoading = ({ noGame, fetching, luaNetworkRequests, extras }) => (
   // Render loader overlay until Lua finishes loading
   <View
     style={{
@@ -52,5 +52,3 @@ const GameLoading = ({ noGame, fetching, luaNetworkRequests, extras }) => (
     )}
   </View>
 );
-
-export default GameLoading;

@@ -3,8 +3,8 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native
 import debounce from 'lodash.debounce';
 import throttle from 'lodash.throttle';
 
-import * as Constants from './Constants';
-import { useListen } from './ghost/GhostEvents';
+import * as Constants from '../Constants';
+import { useListen } from '../ghost/GhostEvents';
 
 const styles = StyleSheet.create({
   logItem: {
@@ -37,7 +37,7 @@ let nextId = 0;
 
 const logs = [];
 
-export default GameLogs = ({ visible }) => {
+export const GameLogs = ({ visible }) => {
   const flatListRef = useRef(null);
 
   const [refreshCount, setRefreshCount] = useState(0);

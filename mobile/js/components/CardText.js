@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 
-import * as Constants from './Constants';
+import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
   choiceBlock: {
@@ -77,7 +77,7 @@ const TextActor = (props) => {
   }
 };
 
-export default CardText = (props) => {
+export const CardText = (props) => {
   if (!props.visible) {
     return null;
   }

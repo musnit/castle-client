@@ -22,8 +22,6 @@ import * as LocalId from './local-id';
 import * as Session from './Session';
 import * as Utilities from './utilities';
 
-import CardText from './CardText';
-import CardScene from './CardScene';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -31,6 +29,8 @@ import Viewport from './viewport';
 
 import * as GhostEvents from './ghost/GhostEvents';
 
+import { CardScene } from './game/CardScene';
+import { CardText } from './components/CardText';
 import { CreateCardContext } from './scenecreator/CreateCardContext';
 import { CardHeader, CARD_HEADER_HEIGHT } from './CardHeader';
 import {

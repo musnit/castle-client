@@ -1,9 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, View, Animated, TouchableWithoutFeedback } from 'react-native';
+import { GameView } from './GameView';
 
 import FastImage from 'react-native-fast-image';
-
-import GameView from './GameView';
 
 const styles = StyleSheet.create({
   backgroundImage: {
@@ -20,7 +19,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const CardScene = ({
+export const CardScene = ({
   card,
   style,
   interactionEnabled = true,
@@ -99,5 +98,3 @@ const CardScene = ({
     </View>
   );
 };
-
-export default CardScene;

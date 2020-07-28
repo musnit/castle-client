@@ -4,8 +4,8 @@ import uuid from 'uuid';
 import md5 from 'md5';
 import { Alert } from 'react-native';
 
-import { sendAsync, useListen } from './ghost/GhostEvents';
-import * as Session from './Session';
+import { sendAsync, useListen } from '../ghost/GhostEvents';
+import * as Session from '../Session';
 
 ///
 /// JS -> Lua for GraphQL entities

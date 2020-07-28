@@ -2,16 +2,15 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import gql from 'graphql-tag';
 import { useLazyQuery } from '@apollo/react-hooks';
-import { sendAsync, useGhostEvents, useListen } from './ghost/GhostEvents';
+import { sendAsync, useGhostEvents, useListen } from '../ghost/GhostEvents';
+import { GameLoading } from './GameLoading';
+import { GameLogs } from './GameLogs';
 
-import GameLoading from './GameLoading';
-import GameLogs from './GameLogs';
-import GhostView from './ghost/GhostView';
-import Tools from './Tools';
+import GhostView from '../ghost/GhostView';
 
-import * as GhostChannels from './ghost/GhostChannels';
+import * as GhostChannels from '../ghost/GhostChannels';
 import * as LuaBridge from './LuaBridge';
-import * as Session from './Session';
+import * as Session from '../Session';
 import * as Sentry from '@sentry/react-native';
 
 // Read dimensions settings into the `{ width, height, upscaling, downscaling }` format for `GhostView`
@@ -143,13 +142,12 @@ const useDeckState = ({ deckState }) => {
 // Given a `gameId` or `gameUri`, run and display the game! The lifetime of this component must match the
 // lifetime of the game run -- it must be unmounted when the game is stopped and a new instance mounted
 // if a new game should be run (or even if the same game should be restarted).
-const GameView = ({
+export const GameView = ({
   extras,
   windowed,
   onPressReload,
   logsVisible,
   setLogsVisible,
-  toolsVisible,
   onPressBack,
   onScreenshot,
   onMessage,
@@ -249,5 +247,3 @@ const GameView = ({
     </View>
   );
 };
-
-export default GameView;
