@@ -1,4 +1,3 @@
-// Maintains session state for the API server connection -- auth token and GraphQL client
 import React, { useEffect, useState } from 'react';
 
 import AsyncStorage from '@react-native-community/async-storage';
@@ -14,7 +13,7 @@ import * as Constants from './Constants';
 import * as GhostPushNotifications from './ghost/GhostPushNotifications';
 import * as LocalId from './local-id';
 
-let gAuthToken;
+let gAuthToken, gUserId;
 const TEST_AUTH_TOKEN = null;
 
 const EMPTY_SESSION = {
@@ -41,7 +40,7 @@ GhostPushNotifications.addTokenListener(async (token) => {
 });
 
 export const Provider = (props) => {
-  const [state, setState] = useState({ authToken: null, initialized: false });
+  const [state, setState] = useState({ authToken: null, userId: null, initialized: false });
 
   useEffect(() => {
     let mounted = true;
@@ -52,12 +51,14 @@ export const Provider = (props) => {
           gAuthToken = TEST_AUTH_TOKEN;
         } else {
           gAuthToken = await AsyncStorage.getItem('AUTH_TOKEN');
+          gUserId = await AsyncStorage.getItem('USER_ID');
         }
 
         if (mounted) {
           setState({
             ...state,
             authToken: gAuthToken,
+            userId: gUserId,
             initialized: true,
           });
         }
@@ -67,23 +68,27 @@ export const Provider = (props) => {
     return () => (mounted = false);
   }, []);
 
-  const useNewAuthTokenAsync = async (newAuthToken) => {
+  const useNewAuthTokenAsync = async ({ userId, token }) => {
     if (!TEST_AUTH_TOKEN) {
       apolloClient.resetStore();
-      gAuthToken = newAuthToken;
+      gAuthToken = token;
+      gUserId = userId;
 
-      if (newAuthToken) {
-        await AsyncStorage.setItem('AUTH_TOKEN', newAuthToken);
+      if (token) {
+        await AsyncStorage.setItem('AUTH_TOKEN', token);
+        await AsyncStorage.setItem('USER_ID', userId);
 
         await GhostPushNotifications.requestTokenAsync();
       } else {
         await AsyncStorage.removeItem('AUTH_TOKEN');
+        await AsyncStorage.removeItem('USER_ID');
       }
     }
 
     return setState({
       ...state,
       authToken: gAuthToken,
+      userId: gUserId,
     });
   };
 
@@ -101,7 +106,7 @@ export const Provider = (props) => {
       variables: { userId, password },
     });
     if (result && result.data && result.data.login && result.data.login.userId) {
-      await useNewAuthTokenAsync(result.data.login.token);
+      await useNewAuthTokenAsync(result.data.login);
     }
   };
 
@@ -113,7 +118,7 @@ export const Provider = (props) => {
         }
       `,
     });
-    await useNewAuthTokenAsync(null);
+    await useNewAuthTokenAsync({});
   };
 
   const signUpAsync = async ({ username, name, email, password }) => {
@@ -129,13 +134,14 @@ export const Provider = (props) => {
       variables: { username, name, email, password },
     });
     if (result && result.data && result.data.signup && result.data.signup.userId) {
-      await useNewAuthTokenAsync(result.data.signup.token);
+      await useNewAuthTokenAsync(result.data.signup);
     }
   };
 
   const value = {
     ...state,
-    isSignedIn: state.authToken !== null,
+    userId: state.userId,
+    isSignedIn: !!state.authToken,
     signInAsync,
     signOutAsync,
     signUpAsync,
