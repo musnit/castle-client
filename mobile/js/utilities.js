@@ -5,6 +5,7 @@ import ImagePicker from 'react-native-image-picker';
 import { ReactNativeFile } from 'apollo-upload-client';
 import * as Session from './Session';
 import * as LocalId from './local-id';
+import Url from 'url-parse';
 
 import * as Constants from './Constants';
 
@@ -218,4 +219,33 @@ export const useKeyboard = (config = {}) => {
   }, []);
 
   return [keyboardState, dismiss];
+};
+
+// return { urlToDisplay, urlToOpen }
+//   urlToDisplay guarantees no scheme
+//   urlToOpen guarantees some valid scheme
+export const canonizeUserProvidedUrl = (urlStr) => {
+  let urlToDisplay, urlToOpen;
+  try {
+    const componentsToDisplay = new Url(urlStr);
+    const componentsToOpen = new Url(urlStr);
+
+    componentsToDisplay.set('protocol', '');
+    urlToDisplay = componentsToDisplay.href;
+    if (urlToDisplay.indexOf('//') === 0) {
+      urlToDisplay = urlToDisplay.substring(2);
+    }
+    if (urlToDisplay.slice(-1) == '/') {
+      urlToDisplay = urlToDisplay.substring(0, urlToDisplay.length - 1);
+    }
+    if (
+      !componentsToOpen.protocol ||
+      componentsToOpen.protocol == '' ||
+      componentsToOpen.protocol === 'file:'
+    ) {
+      componentsToOpen.set('protocol', 'https:');
+    }
+    urlToOpen = componentsToOpen.href;
+  } catch (_) {}
+  return { urlToDisplay, urlToOpen };
 };

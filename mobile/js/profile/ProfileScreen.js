@@ -18,6 +18,7 @@ import { useSession } from '../Session';
 import { UserAvatar } from '../components/UserAvatar';
 
 import * as Constants from '../Constants';
+import * as Utilities from '../utilities';
 
 const styles = StyleSheet.create({
   container: {
@@ -152,6 +153,7 @@ export const ProfileScreen = ({ userId, route }) => {
     queryData = isMe ? data.me : data.user;
     decks = queryData.decks;
   }
+  const { urlToDisplay, urlToOpen } = Utilities.canonizeUserProvidedUrl(queryData?.websiteUrl);
 
   return (
     <View style={styles.container}>
@@ -172,13 +174,13 @@ export const ProfileScreen = ({ userId, route }) => {
             <View style={{ alignItems: 'center' }}>
               <Text style={styles.username}>@{queryData.username}</Text>
               <View style={styles.profileItems}>
-                {queryData.websiteUrl ? (
+                {urlToDisplay ? (
                   <TouchableOpacity
                     style={{ marginRight: 16 }}
                     onPress={() => {
-                      Linking.openURL(queryData.websiteUrl);
+                      Linking.openURL(urlToOpen);
                     }}>
-                    <Text style={{ color: '#fff' }}>{queryData.websiteUrl}</Text>
+                    <Text style={{ color: '#fff' }}>{urlToDisplay}</Text>
                   </TouchableOpacity>
                 ) : null}
                 {isMe ? (
