@@ -88,7 +88,7 @@ const ActOn = ({ response }) => {
 const Repeat = ({ response }) => {
   return [
     {
-      type: 'text',
+      type: 'showEntryOptions',
       label: 'Repeat',
     },
     {
