@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { RefreshControl, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { CardCell } from '../components/CardCell';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SegmentedNavigation } from '../components/SegmentedNavigation';
@@ -53,6 +53,7 @@ const MODE_ITEMS = [
 export const HomeScreen = () => {
   const { navigate } = useNavigation();
   const [lastFetchedTime, setLastFetchedTime] = React.useState(null);
+  const [decks, setDecks] = React.useState(undefined);
   const [fetchDecks, query] = useLazyQuery(
     gql`
       query {
@@ -86,24 +87,38 @@ export const HomeScreen = () => {
     { fetchPolicy: 'no-cache' }
   );
 
+  const onRefresh = React.useCallback(() => {
+    fetchDecks();
+    setLastFetchedTime(Date.now());
+  }, [fetchDecks, setLastFetchedTime]);
+
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
       Constants.Android && StatusBar.setTranslucent(true); // needed for tab navigator
       if (!lastFetchedTime || Date.now() - lastFetchedTime > REFETCH_FEED_INTERVAL_MS) {
-        fetchDecks();
-        setLastFetchedTime(Date.now());
+        onRefresh();
       }
     }, [lastFetchedTime])
   );
 
-  let decks;
-  if (query.called && !query.loading && !query.error && query.data) {
-    decks = query.data.allDecks;
-  }
+  React.useEffect(() => {
+    if (query.called && !query.loading && !query.error && query.data) {
+      setDecks(query.data.allDecks);
+    }
+  }, [query.called, query.loading, query.error, query.data]);
 
   const scrollViewRef = React.useRef(null);
   useScrollToTop(scrollViewRef);
+
+  const refreshControl = (
+    <RefreshControl
+      refreshing={lastFetchedTime && query.loading}
+      onRefresh={onRefresh}
+      tintColor="#fff"
+      colors={['#fff']}
+    />
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -114,7 +129,10 @@ export const HomeScreen = () => {
           onSelectItem={() => {}}
         />
       </View>
-      <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollView}>
+      <ScrollView
+        ref={scrollViewRef}
+        contentContainerStyle={styles.scrollView}
+        refreshControl={refreshControl}>
         {decks
           ? decks.map((deck, ii) => (
               <View key={`deck-${deck.deckId}`} style={styles.deckCell}>
