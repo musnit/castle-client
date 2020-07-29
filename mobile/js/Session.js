@@ -260,6 +260,13 @@ const DECK_FRAGMENT = `
     id
     cardId
   }
+  creator {
+    userId
+    username
+    photo {
+      url
+    }
+  }
   variables
 `;
 

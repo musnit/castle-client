@@ -166,10 +166,6 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
     }, [])
   );
 
-  const currentDeck = decks[deckIndex];
-  const prevDeck = deckIndex > 0 ? decks[deckIndex - 1] : null;
-  const nextDeck = deckIndex < decks.length - 1 ? decks[deckIndex + 1] : null;
-
   const onPressPrevious = React.useCallback(() => {
     if (deckIndex > 0) {
       setDeckIndex(deckIndex - 1);
@@ -181,6 +177,10 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
       setDeckIndex(deckIndex + 1);
     }
   }, [deckIndex]);
+
+  const currentDeck = decks[deckIndex];
+  const prevDeck = deckIndex > 0 ? decks[deckIndex - 1] : null;
+  const nextDeck = deckIndex < decks.length - 1 ? decks[deckIndex + 1] : null;
 
   if (!decks) {
     return <View style={styles.container} />;

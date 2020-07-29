@@ -1,5 +1,6 @@
 import { Linking } from 'react-native';
 import { CommonActions } from '@react-navigation/native';
+import Url from 'url-parse';
 
 import * as Session from './Session';
 
@@ -11,7 +12,7 @@ const navigateToRoute = ({ name, params }) => {
   }
 };
 
-export const navigateToUri = (uri) => {
+export const navigateToUri = async (uri) => {
   if (!Session.isSignedIn()) {
     // If not signed in, go to the login screen and tell it to navigate to this URI after
     navigateToRoute({
@@ -23,8 +24,31 @@ export const navigateToUri = (uri) => {
   } else {
     // Game URI?
     {
-      const [gameUri, sessionId] = uri.split('#');
-      // TODO: go to castle game given by this uri
+      const url = new Url(uri);
+      if (url?.pathname) {
+        const pathComponents = url.pathname.split('/');
+        while (pathComponents.length && pathComponents[0] === '') {
+          pathComponents.shift();
+        }
+        if (pathComponents[0] === 'd') {
+          const deckId = pathComponents.length > 1 ? pathComponents[1] : null;
+          if (deckId) {
+            let deck;
+            try {
+              deck = await Session.getDeckById(deckId);
+            } catch (_) {}
+            if (deck) {
+              navigateToRoute({
+                name: 'PlayDeck',
+                params: {
+                  decks: [deck],
+                  title: 'Shared deck',
+                },
+              });
+            }
+          }
+        }
+      }
     }
   }
 };
