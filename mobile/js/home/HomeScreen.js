@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { RefreshControl, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { CardCell } from '../components/CardCell';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeArea } from 'react-native-safe-area-context';
 import { SegmentedNavigation } from '../components/SegmentedNavigation';
 import { useLazyQuery } from '@apollo/react-hooks';
 import {
@@ -51,6 +51,7 @@ const MODE_ITEMS = [
 ];
 
 export const HomeScreen = () => {
+  const insets = useSafeArea();
   const { navigate } = useNavigation();
   const [lastFetchedTime, setLastFetchedTime] = React.useState(null);
   const [decks, setDecks] = React.useState(undefined);
@@ -121,7 +122,7 @@ export const HomeScreen = () => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
         <SegmentedNavigation
           items={MODE_ITEMS}
@@ -150,6 +151,6 @@ export const HomeScreen = () => {
             ))
           : null}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
