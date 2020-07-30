@@ -64,7 +64,8 @@ export const BottomSheet = ({
 
   const snapTo = React.useCallback(
     (toValue, velocity = 0, onFinished) => {
-      const newContainerHeight = SCREEN_HEIGHT - toValue;
+      // containerHeight < 1 causes layout bugs on Android.
+      const newContainerHeight = Math.max(1, SCREEN_HEIGHT - toValue);
       if (containerHeight < newContainerHeight) {
         setContainerHeight(newContainerHeight);
       }
@@ -144,8 +145,7 @@ export const BottomSheet = ({
   return (
     <Animated.View style={[styles.container, { transform: [{ translateY: snapY }] }, style]}>
       {/* inner view constrains the height of the scrollview to the bottom of the screen. */}
-      {/* containerHeight < 1 causes layout bugs on Android. */}
-      <View style={{ height: Math.max(1, containerHeight) }}>
+      <View style={{ height: containerHeight }}>
         <PanGestureHandler
           onGestureEvent={onPanGestureEvent}
           onHandlerStateChange={onPanStateChange}>
@@ -154,7 +154,6 @@ export const BottomSheet = ({
         <KeyboardAwareScrollView
           style={styles.content}
           enableOnAndroid={true}
-          extraHeight={Constants.iOS ? containerHeight - headerHeight : 0}
           extraScrollHeight={Constants.Android ? insets.bottom : 0}
           keyboardShouldPersistTaps="handled">
           {renderContent()}
