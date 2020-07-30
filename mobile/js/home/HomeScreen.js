@@ -17,14 +17,14 @@ import * as Utilities from '../common/utilities';
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#000',
+    backgroundColor: Constants.colors.black,
     flex: 1,
   },
   header: {
     alignItems: 'center',
     justifyContent: 'center',
     borderBottomWidth: 1,
-    borderColor: '#555',
+    borderColor: Constants.colors.grayOnBlackBorder,
     paddingTop: 16,
   },
   scrollView: {
