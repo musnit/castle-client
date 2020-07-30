@@ -15,8 +15,8 @@ const darkBackgroundStyles = StyleSheet.create({
     paddingVertical: 8,
   },
   selectedItem: {
-    paddingBottom: 5,
-    borderBottomWidth: 3,
+    paddingBottom: 6,
+    borderBottomWidth: 2,
     borderColor: Constants.colors.white,
   },
   name: {
