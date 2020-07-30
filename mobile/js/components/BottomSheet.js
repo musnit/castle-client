@@ -136,8 +136,16 @@ export const BottomSheet = ({
   );
 
   React.useEffect(() => {
-    if (isOpen && keyboardState.visible && containerHeight < keyboardState.height + headerHeight) {
-      snapToClosest(SCREEN_HEIGHT - containerHeight - keyboardState.height - headerHeight, 0);
+    const textInputHeight = 48; // approx height of one text input
+    if (
+      isOpen &&
+      keyboardState.visible &&
+      containerHeight < keyboardState.height + headerHeight + textInputHeight
+    ) {
+      snapToClosest(
+        SCREEN_HEIGHT - containerHeight - keyboardState.height - headerHeight - textInputHeight,
+        0
+      );
     }
   }, [keyboardState, isOpen, snapToClosest]);
 
