@@ -11,7 +11,7 @@ import {
 import { CardCell } from '../components/CardCell';
 import FastImage from 'react-native-fast-image';
 import gql from 'graphql-tag';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeArea } from 'react-native-safe-area-context';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { CommonActions, useNavigation, useFocusEffect } from '@react-navigation/native';
 
@@ -21,21 +21,23 @@ import * as LocalId from '../common/local-id';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: Constants.colors.black,
   },
   header: {
     alignItems: 'center',
     justifyContent: 'center',
     borderBottomWidth: 1,
-    borderColor: '#555',
+    borderColor: Constants.colors.grayOnBlackBorder,
     paddingTop: 16,
   },
-  scrollView: {},
-  decks: {
+  scrollView: {
     paddingTop: 16,
     paddingLeft: 16,
+    display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
+  },
+  decks: {
   },
   sectionTitle: {
     color: Constants.colors.white,
@@ -88,6 +90,7 @@ const CreateDeckCell = (props) => {
 };
 
 export const CreateScreen = () => {
+  const insets = useSafeArea();
   const navigation = useNavigation();
   const [decks, setDecks] = React.useState(undefined);
   const [fetchDecks, query] = useLazyQuery(
@@ -145,36 +148,34 @@ export const CreateScreen = () => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <StatusBar barStyle="light-content" />
       <View style={styles.header}>
         <Text style={styles.sectionTitle}>Your Decks</Text>
       </View>
       <ScrollView contentContainerStyle={styles.scrollView} refreshControl={refreshControl}>
-        <View style={styles.decks}>
-          <CreateDeckCell
-            key="create"
-            onPress={() => {
-              navigation.push('CreateDeck', {
-                deckIdToEdit: LocalId.makeId(),
-                cardIdToEdit: LocalId.makeId(),
-              });
-            }}
-          />
-          {decks &&
-            decks.map((deck) => (
-              <EditDeckCell
-                key={deck.deckId}
-                deck={deck}
-                onPress={() => {
-                  navigation.push('CreateDeck', {
-                    deckIdToEdit: deck.deckId,
-                  });
-                }}
-              />
-            ))}
-        </View>
+        <CreateDeckCell
+          key="create"
+          onPress={() => {
+            navigation.push('CreateDeck', {
+              deckIdToEdit: LocalId.makeId(),
+              cardIdToEdit: LocalId.makeId(),
+            });
+          }}
+        />
+        {decks &&
+          decks.map((deck) => (
+            <EditDeckCell
+              key={deck.deckId}
+              deck={deck}
+              onPress={() => {
+                navigation.push('CreateDeck', {
+                  deckIdToEdit: deck.deckId,
+                });
+              }}
+            />
+          ))}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
