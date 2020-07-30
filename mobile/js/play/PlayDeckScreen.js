@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Constants.colors.white,
     fontWeight: 'bold',
+    paddingHorizontal: 16,
   },
   navControlButton: {
     width: 48,
@@ -194,11 +195,11 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
         </TouchableOpacity>
         <View style={styles.centerHeading}>
           <TouchableOpacity onPress={onPressPrevious} style={styles.navControlButton}>
-            <MCIcon name="skip-previous" color={prevDeck ? '#fff' : '#666'} size={22} />
+            <Icon name="skip-previous" color={prevDeck ? '#fff' : '#666'} size={40} />
           </TouchableOpacity>
           <Text style={styles.title}>{title}</Text>
           <TouchableOpacity onPress={onPressNext} style={styles.navControlButton}>
-            <MCIcon name="skip-next" color={nextDeck ? '#fff' : '#666'} size={22} />
+            <Icon name="skip-next" color={nextDeck ? '#fff' : '#666'} size={40} />
           </TouchableOpacity>
         </View>
       </View>
