@@ -1,5 +1,13 @@
 import React from 'react';
-import { View, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import {
+  RefreshControl,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { CardCell } from '../components/CardCell';
 import FastImage from 'react-native-fast-image';
 import gql from 'graphql-tag';
@@ -81,6 +89,7 @@ const CreateDeckCell = (props) => {
 
 export const CreateScreen = () => {
   const navigation = useNavigation();
+  const [decks, setDecks] = React.useState(undefined);
   const [fetchDecks, query] = useLazyQuery(
     gql`
       query Me {
@@ -117,13 +126,23 @@ export const CreateScreen = () => {
     }, [])
   );
 
-  let decks;
-  if (query.called && !query.loading && !query.error && query.data) {
-    decks = query.data.me.decks;
-    if (decks && decks.length) {
-      decks = decks.sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified));
+  React.useEffect(() => {
+    if (query.called && !query.loading && !query.error && query.data) {
+      const decks = query.data.me.decks;
+      if (decks && decks.length) {
+        setDecks(decks.sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified)));
+      }
     }
-  }
+  }, [query.called, query.loading, query.error, query.data]);
+
+  const refreshControl = (
+    <RefreshControl
+      refreshing={query.loading}
+      onRefresh={fetchDecks}
+      tintColor="#fff"
+      colors={['#fff']}
+    />
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -131,7 +150,7 @@ export const CreateScreen = () => {
       <View style={styles.header}>
         <Text style={styles.sectionTitle}>Your Decks</Text>
       </View>
-      <ScrollView contentContainerStyle={styles.scrollView}>
+      <ScrollView contentContainerStyle={styles.scrollView} refreshControl={refreshControl}>
         <View style={styles.decks}>
           <CreateDeckCell
             key="create"
