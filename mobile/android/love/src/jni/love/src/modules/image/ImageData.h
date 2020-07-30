@@ -95,6 +95,10 @@ public:
 	 * @return The color for the given location.
 	 **/
 	void getPixel(int x, int y, Pixel &p) const;
+	
+	void floodFill(int x, int y, ImageData *paths, const Pixel &p);
+	bool isAlphaSet(const Pixel &p);
+	bool arePixelsEqual(const Pixel &p1, const Pixel &p2);
 
 	/**
 	 * Encodes raw pixel data into a given format.
@@ -134,6 +138,8 @@ private:
 
 	// Decode and load an encoded format.
 	void decode(Data *data);
+
+	bool floodFillTest(int x, int y, ImageData *paths, const Pixel &p);
 
 	// The actual data.
 	unsigned char *data = nullptr;

@@ -21,6 +21,7 @@
 #include "ImageData.h"
 #include "Image.h"
 #include "filesystem/Filesystem.h"
+#include <queue>
 
 using love::thread::Lock;
 
@@ -282,6 +283,130 @@ void ImageData::getPixel(int x, int y, Pixel &p) const
 
 	Lock lock(mutex);
 	memcpy(&p, data + ((y * width + x) * pixelsize), pixelsize);
+}
+
+struct flood_pixel_t {
+	int x;
+	int y;
+};
+
+bool ImageData::isAlphaSet(const Pixel &p)
+{
+	switch (format)
+		{
+		case PIXELFORMAT_RGBA8:
+			return p.rgba8[3] > 0;
+		case PIXELFORMAT_RGBA16:
+			return p.rgba16[3] > 0;
+		case PIXELFORMAT_RGBA16F:
+			return p.rgba16f[3] > 0.0;
+		case PIXELFORMAT_RGBA32F:
+			return p.rgba32f[3] > 0.0;
+		default:
+			return true;
+		}
+}
+
+bool ImageData::arePixelsEqual(const Pixel &p1, const Pixel &p2)
+{
+	switch (format)
+		{
+		case PIXELFORMAT_RGBA8:
+			for (int i = 0; i < 4; i++) {
+				if (p1.rgba8[i] != p2.rgba8[i]) {
+					return false;
+				}
+			}
+			return true;
+		case PIXELFORMAT_RGBA16:
+			for (int i = 0; i < 4; i++) {
+				if (p1.rgba16[i] != p2.rgba16[i]) {
+					return false;
+				}
+			}
+			return true;
+		case PIXELFORMAT_RGBA16F:
+			for (int i = 0; i < 4; i++) {
+				if (p1.rgba16f[i] != p2.rgba16f[i]) {
+					return false;
+				}
+			}
+			return true;
+		case PIXELFORMAT_RGBA32F:
+			for (int i = 0; i < 4; i++) {
+				if (p1.rgba32f[i] != p2.rgba32f[i]) {
+					return false;
+				}
+			}
+			return true;
+		default:
+			return true;
+		}
+}
+
+bool ImageData::floodFillTest(int x, int y, ImageData *paths, const Pixel &p)
+{
+	Pixel floodP;
+	getPixel(x, y, floodP);
+	if (arePixelsEqual(floodP, p)) {
+		return false;
+	}
+
+	Pixel pathP;
+	paths->getPixel(x, y, pathP);
+	if (paths->isAlphaSet(pathP)) {
+		return false;
+	}
+
+	return true;
+}
+
+void ImageData::floodFill(int x, int y, ImageData *paths, const Pixel &p)
+{
+	if (!inside(x, y)) {
+		return;
+	}
+
+	std::queue<flood_pixel_t> pixelQueue;
+	flood_pixel_t startPixel;
+	startPixel.x = x;
+	startPixel.y = y;
+
+	pixelQueue.push(startPixel);
+
+	size_t pixelsize = getPixelSize();
+	Lock lock(mutex);
+
+	while (!pixelQueue.empty()) {
+		flood_pixel_t currentPixel = pixelQueue.front();
+		pixelQueue.pop();
+
+		if (floodFillTest(currentPixel.x, currentPixel.y, paths, p)) {
+			unsigned char *pixeldata = data + ((currentPixel.y * width + currentPixel.x) * pixelsize);
+			memcpy(pixeldata, &p, pixelsize);
+
+			for (int dx = -1; dx <= 1; dx++) {
+				for (int dy = -1; dy <= 1; dy++) {
+					bool skip = false;
+					if (dx == 0 && dy == 0) {
+						skip = true;
+					}
+
+					flood_pixel_t newPixel;
+					newPixel.x = currentPixel.x + dx;
+					newPixel.y = currentPixel.y + dy;
+
+					if (!inside(newPixel.x, newPixel.y)) {
+						skip = true;
+					}
+
+					if (!skip && floodFillTest(newPixel.x, newPixel.y, paths, p)) {
+						pixelQueue.push(newPixel);
+					}
+				}
+			}
+		}
+	}
 }
 
 void ImageData::paste(ImageData *src, int dx, int dy, int sx, int sy, int sw, int sh)

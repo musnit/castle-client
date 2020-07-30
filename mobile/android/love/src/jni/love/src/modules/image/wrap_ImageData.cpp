@@ -168,6 +168,24 @@ int w_ImageData_getPixel(lua_State *L)
 	return pushFormats[format](L, p);
 }
 
+int w_ImageData_floodFill(lua_State *L)
+{
+	ImageData *t = luax_checkimagedata(L, 1);
+	int x = (int) luaL_checkinteger(L, 2);
+	int y = (int) luaL_checkinteger(L, 3);
+	ImageData *paths = luax_checkimagedata(L, 4);
+
+	PixelFormat format = t->getFormat();
+
+	Pixel p;
+
+	checkFormats[format](L, 5, p);
+
+	luax_catchexcept(L, [&](){ t->floodFill(x, y, (love::image::ImageData *)paths, p); });
+
+	return 0;
+}
+
 int w_ImageData_setPixel(lua_State *L)
 {
 	ImageData *t = luax_checkimagedata(L, 1);
@@ -344,6 +362,7 @@ static const luaL_Reg w_ImageData_functions[] =
 	{ "setPixel", w_ImageData_setPixel },
 	{ "paste", w_ImageData_paste },
 	{ "encode", w_ImageData_encode },
+	{ "floodFill", w_ImageData_floodFill},
 
 	// Used in the Lua wrapper code.
 	{ "_mapPixelUnsafe", w_ImageData__mapPixelUnsafe },
