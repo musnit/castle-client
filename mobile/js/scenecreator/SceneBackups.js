@@ -72,7 +72,7 @@ const getBackupData = async (cardId, version) => {
   return null;
 };
 
-const SceneBackups = ({ cardId, onSelectSceneData }) => {
+export const SceneBackups = ({ cardId, onSelectSceneData }) => {
   const { showActionSheetWithOptions } = useActionSheet();
   let backups;
 
@@ -138,5 +138,3 @@ const SceneBackups = ({ cardId, onSelectSceneData }) => {
     </View>
   );
 };
-
-export default SceneBackups;

@@ -4,7 +4,7 @@ import { useActionSheet } from '@expo/react-native-action-sheet';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import uuid from 'uuid/v4';
 
-import * as Constants from './Constants';
+import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
   content: {
@@ -124,7 +124,7 @@ const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) 
   );
 };
 
-const DeckVariables = ({ variables, onChange }) => {
+export const DeckVariables = ({ variables, onChange }) => {
   const { showActionSheetWithOptions } = useActionSheet();
 
   const onChangeVariable = React.useCallback(
@@ -181,5 +181,3 @@ const DeckVariables = ({ variables, onChange }) => {
     </View>
   );
 };
-
-export default DeckVariables;

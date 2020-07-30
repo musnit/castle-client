@@ -3,11 +3,10 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { BottomSheet } from '../components/BottomSheet';
+import { DeckVariables } from './DeckVariables';
+import { SceneBackups } from './SceneBackups';
 import { SegmentedNavigation } from '../components/SegmentedNavigation';
 import { useCardCreator } from './CreateCardContext';
-
-import DeckVariables from '../DeckVariables';
-import SceneBackups from './SceneBackups';
 
 const styles = StyleSheet.create({
   container: {
