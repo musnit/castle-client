@@ -143,7 +143,7 @@ export const CreateScreen = () => {
       refreshing={query.loading}
       onRefresh={fetchDecks}
       tintColor="#fff"
-      colors={['#fff']}
+      colors={['#fff', '#ccc']}
     />
   );
 

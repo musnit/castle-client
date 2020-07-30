@@ -117,7 +117,7 @@ export const HomeScreen = () => {
       refreshing={lastFetchedTime && query.loading}
       onRefresh={onRefresh}
       tintColor="#fff"
-      colors={['#fff']}
+      colors={['#fff', '#ccc']}
     />
   );
 
