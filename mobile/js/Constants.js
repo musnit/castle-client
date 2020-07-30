@@ -90,7 +90,7 @@ export const colors = {
   black: '#000',
   grayText: '#888',
   grayOnWhiteBorder: '#ccc',
-  grayOnBlackBorder: '#555',
+  grayOnBlackBorder: '#444',
   white: '#fff',
 };
 
