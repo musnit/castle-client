@@ -45,6 +45,7 @@ export const BottomSheet = ({
   persistLastSnapWhenOpened = false,
   renderHeader = () => null,
   renderContent = () => null,
+  headerHeight = 64,
   onClose,
   onCloseEnd,
   onOpenEnd,
@@ -133,8 +134,6 @@ export const BottomSheet = ({
     },
     [snapToClosest]
   );
-
-  const headerHeight = 48; // TODO: use as prop
 
   React.useEffect(() => {
     if (isOpen && keyboardState.visible && containerHeight < keyboardState.height + headerHeight) {

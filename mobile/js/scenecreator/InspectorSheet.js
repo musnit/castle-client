@@ -23,9 +23,9 @@ const TAB_ITEMS = [
   },
 ];
 
-export default InspectorSheet = ({ element, isOpen, addChildSheet }) => {
+export default InspectorSheet = ({ isOpen, addChildSheet }) => {
   const { root } = useGhostUI();
-  if (!root || !root.panes || !element) return null;
+  if (!root || !root.panes) return null;
 
   const actionsPane = root.panes.sceneCreatorInspectorActions;
   const { isTextActorSelected } = useCardCreator();
@@ -54,12 +54,13 @@ export default InspectorSheet = ({ element, isOpen, addChildSheet }) => {
   );
 
   const renderContent = () => (
-    <InspectorTabs addChildSheet={addChildSheet} selectedTab={selectedTab} element={element} />
+    <InspectorTabs addChildSheet={addChildSheet} selectedTab={selectedTab} />
   );
 
   return (
     <CardCreatorBottomSheet
       isOpen={isOpen}
+      headerHeight={88}
       renderHeader={renderHeader}
       renderContent={renderContent}
       persistLastSnapWhenOpened

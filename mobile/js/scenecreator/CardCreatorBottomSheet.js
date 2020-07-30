@@ -44,6 +44,7 @@ export default CardCreatorBottomSheet = React.memo(
       <BottomSheet
         snapPoints={snapPoints}
         initialSnap={1}
+        headerHeight={headerHeight}
         renderHeader={renderHeader}
         renderContent={renderContent}
         isOpen={isOpen}
