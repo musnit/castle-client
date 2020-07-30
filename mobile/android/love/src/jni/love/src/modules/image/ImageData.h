@@ -96,7 +96,7 @@ public:
 	 **/
 	void getPixel(int x, int y, Pixel &p) const;
 	
-	void floodFill(int x, int y, ImageData *paths, const Pixel &p);
+	int floodFill(int x, int y, ImageData *paths, const Pixel &p);
 	bool isAlphaSet(const Pixel &p);
 	bool arePixelsEqual(const Pixel &p1, const Pixel &p2);
 

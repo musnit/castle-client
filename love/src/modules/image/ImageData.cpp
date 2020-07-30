@@ -361,16 +361,17 @@ bool ImageData::floodFillTest(int x, int y, ImageData *paths, const Pixel &p)
 	return true;
 }
 
-void ImageData::floodFill(int x, int y, ImageData *paths, const Pixel &p)
+int ImageData::floodFill(int x, int y, ImageData *paths, const Pixel &p)
 {
 	if (!inside(x, y)) {
-		return;
+		return 0;
 	}
 
 	std::queue<flood_pixel_t> pixelQueue;
 	flood_pixel_t startPixel;
 	startPixel.x = x;
 	startPixel.y = y;
+	int count = 0;
 
 	pixelQueue.push(startPixel);
 
@@ -383,6 +384,7 @@ void ImageData::floodFill(int x, int y, ImageData *paths, const Pixel &p)
 
 		if (floodFillTest(currentPixel.x, currentPixel.y, paths, p)) {
 			unsigned char *pixeldata = data + ((currentPixel.y * width + currentPixel.x) * pixelsize);
+			count++;
 			memcpy(pixeldata, &p, pixelsize);
 
 			for (int dx = -1; dx <= 1; dx++) {
@@ -407,6 +409,8 @@ void ImageData::floodFill(int x, int y, ImageData *paths, const Pixel &p)
 			}
 		}
 	}
+
+	return count;
 }
 
 void ImageData::paste(ImageData *src, int dx, int dy, int sx, int sy, int sw, int sh)

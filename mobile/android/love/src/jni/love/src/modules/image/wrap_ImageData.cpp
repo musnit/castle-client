@@ -181,9 +181,13 @@ int w_ImageData_floodFill(lua_State *L)
 
 	checkFormats[format](L, 5, p);
 
-	luax_catchexcept(L, [&](){ t->floodFill(x, y, (love::image::ImageData *)paths, p); });
+	int result = 0;
 
-	return 0;
+	luax_catchexcept(L, [&](){ result = t->floodFill(x, y, (love::image::ImageData *)paths, p); });
+
+	lua_pushinteger(L, result);
+
+	return 1;
 }
 
 int w_ImageData_setPixel(lua_State *L)
