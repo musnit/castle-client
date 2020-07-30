@@ -4,7 +4,7 @@ import { useCardCreator } from './CreateCardContext';
 import { useGhostUI } from '../ghost/GhostUI';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-import { BottomSheet } from '../BottomSheet';
+import { BottomSheet } from '../components/BottomSheet';
 import { ToolPane } from '../Tools';
 
 const SETTINGS_PANE_KEY = 'sceneCreatorSettings';

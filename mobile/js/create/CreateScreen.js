@@ -8,7 +8,7 @@ import { useLazyQuery } from '@apollo/react-hooks';
 import { CommonActions, useNavigation, useFocusEffect } from '@react-navigation/native';
 
 import * as Constants from '../Constants';
-import * as LocalId from '../local-id';
+import * as LocalId from '../common/local-id';
 
 const styles = StyleSheet.create({
   container: {

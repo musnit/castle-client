@@ -1,5 +1,5 @@
 import { getVariableName, readableOperator } from '../../SceneCreatorUtilities';
-import { makeCardPreviewTitle } from '../../../utilities';
+import { makeCardPreviewTitle } from '../../../common/utilities';
 
 const Empty = ({ order, isCondition }) => {
   let label;

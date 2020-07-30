@@ -3,11 +3,11 @@ import { Animated, StyleSheet, View } from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useSafeArea } from 'react-native-safe-area-context';
-import { useKeyboard } from './utilities';
+import { useKeyboard } from '../common/utilities';
 
-import Viewport from './viewport';
+import Viewport from '../common/viewport';
 
-import * as Constants from './Constants';
+import * as Constants from '../Constants';
 
 const SPRING_CONFIG = {
   tension: 150,
@@ -158,7 +158,7 @@ export const BottomSheet = ({
           extraScrollHeight={Constants.Android ? insets.bottom : 0}
           keyboardShouldPersistTaps="handled">
           {renderContent()}
-          <View style={{paddingBottom: insets.bottom}}></View>
+          <View style={{ paddingBottom: insets.bottom }}></View>
         </KeyboardAwareScrollView>
       </View>
     </Animated.View>

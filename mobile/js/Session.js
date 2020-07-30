@@ -11,7 +11,7 @@ import gql from 'graphql-tag';
 
 import * as Constants from './Constants';
 import * as GhostPushNotifications from './ghost/GhostPushNotifications';
-import * as LocalId from './local-id';
+import * as LocalId from './common/local-id';
 
 let gAuthToken, gUserId;
 const TEST_AUTH_TOKEN = null;

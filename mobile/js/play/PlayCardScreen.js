@@ -12,7 +12,7 @@ import { useSafeArea } from 'react-native-safe-area-context';
 import * as GhostUI from '../ghost/GhostUI';
 import * as GhostEvents from '../ghost/GhostEvents';
 
-import Viewport from '../viewport';
+import Viewport from '../common/viewport';
 
 import * as Constants from '../Constants';
 import * as Session from '../Session';

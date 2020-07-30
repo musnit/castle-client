@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-import { BottomSheet } from '../BottomSheet';
+import { BottomSheet } from '../components/BottomSheet';
 import { SegmentedNavigation } from '../components/SegmentedNavigation';
 import { useCardCreator } from './CreateCardContext';
 

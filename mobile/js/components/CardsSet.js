@@ -5,8 +5,8 @@ import FastImage from 'react-native-fast-image';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import * as Constants from '../Constants';
-import * as LocalId from '../local-id';
-import * as Utilities from '../utilities';
+import * as LocalId from '../common/local-id';
+import * as Utilities from '../common/utilities';
 
 const styles = StyleSheet.create({
   container: {

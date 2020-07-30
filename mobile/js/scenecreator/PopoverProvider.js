@@ -7,7 +7,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import Viewport from '../viewport';
+import Viewport from '../common/viewport';
 import FastImage from 'react-native-fast-image';
 
 const { vw, vh } = Viewport;

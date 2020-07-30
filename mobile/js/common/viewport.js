@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dimensions } from 'react-native';
 
-import * as Constants from './Constants';
+import * as Constants from '../Constants';
 
 const { width, height } = Dimensions.get('window');
 

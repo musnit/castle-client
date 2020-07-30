@@ -13,7 +13,7 @@ import {
 import gql from 'graphql-tag';
 
 import * as Constants from '../Constants';
-import * as Utilities from '../utilities';
+import * as Utilities from '../common/utilities';
 
 const styles = StyleSheet.create({
   container: {

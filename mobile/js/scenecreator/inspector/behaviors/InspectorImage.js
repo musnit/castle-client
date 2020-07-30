@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import FastImage from 'react-native-fast-image';
 
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
-import * as Utilities from '../../../utilities.js';
+import * as Utilities from '../../../common/utilities.js';
 
 const styles = StyleSheet.create({
   container: {

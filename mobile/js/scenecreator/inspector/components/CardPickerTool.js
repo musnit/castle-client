@@ -4,7 +4,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Labelled, ToolsContext, useValue } from '../../../Tools';
 
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
-import * as Utilities from '../../../utilities';
+import * as Utilities from '../../../common/utilities';
 
 let Colors = SceneCreatorConstants.Colors;
 

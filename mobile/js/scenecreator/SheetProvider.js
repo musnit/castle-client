@@ -9,7 +9,7 @@ import CardToolsSheet from './CardToolsSheet';
 import CreateCardSettingsSheet from './CreateCardSettingsSheet';
 import InspectorSheet from './InspectorSheet';
 
-import Viewport from '../viewport';
+import Viewport from '../common/viewport';
 
 import { CARD_HEADER_HEIGHT } from '../CardHeader';
 const FULL_SHEET_HEIGHT = 100 * Viewport.vh - CARD_HEADER_HEIGHT;

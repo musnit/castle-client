@@ -11,10 +11,10 @@ import { useListen } from '../ghost/GhostEvents';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Viewport from '../viewport';
+import Viewport from '../common/viewport';
 
 import * as Constants from '../Constants';
-import * as Utilities from '../utilities';
+import * as Utilities from '../common/utilities';
 
 const { vw, vh } = Viewport;
 

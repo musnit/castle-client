@@ -9,9 +9,9 @@ import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 
-import * as LocalId from '../local-id';
+import * as LocalId from '../common/local-id';
 import * as Session from '../Session';
-import * as Utilities from '../utilities';
+import * as Utilities from '../common/utilities';
 
 const styles = StyleSheet.create({
   container: {

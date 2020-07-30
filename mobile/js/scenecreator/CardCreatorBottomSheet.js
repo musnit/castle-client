@@ -1,11 +1,11 @@
 import React from 'react';
 import { Keyboard, View } from 'react-native';
-import { BottomSheet } from '../BottomSheet';
+import { BottomSheet } from '../components/BottomSheet';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { CARD_HEADER_HEIGHT } from '../CardHeader';
 import { ToolPane } from '../Tools';
 
-import Viewport from '../viewport';
+import Viewport from '../common/viewport';
 
 import * as Constants from '../Constants';
 

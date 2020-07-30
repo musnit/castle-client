@@ -3,11 +3,11 @@ import { Keyboard } from 'react-native';
 import gql from 'graphql-tag';
 import ImagePicker from 'react-native-image-picker';
 import { ReactNativeFile } from 'apollo-upload-client';
-import * as Session from './Session';
+import * as Session from '../Session';
 import * as LocalId from './local-id';
 import Url from 'url-parse';
 
-import * as Constants from './Constants';
+import * as Constants from '../Constants';
 
 const CARD_TITLE_MAX_LEN = 28;
 

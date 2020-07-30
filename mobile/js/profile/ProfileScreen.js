@@ -18,7 +18,7 @@ import { useSession } from '../Session';
 import { UserAvatar } from '../components/UserAvatar';
 
 import * as Constants from '../Constants';
-import * as Utilities from '../utilities';
+import * as Utilities from '../common/utilities';
 
 const styles = StyleSheet.create({
   container: {
