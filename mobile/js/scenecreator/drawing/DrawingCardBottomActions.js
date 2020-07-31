@@ -10,37 +10,45 @@ export const DRAWING_CARD_FOOTER_HEIGHT = 80;
 const styles = StyleSheet.create({
   container: {
     width: '100%',
+    paddingHorizontal: 2,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     minHeight: DRAWING_CARD_FOOTER_HEIGHT,
   },
 
+  colorPickers: {
+    flexDirection: 'row',
+    paddingLeft: 6,
+  },
   colorPicker: {
-    marginRight: 20,
+    marginRight: 16,
   },
 
+  subtools: {
+    flexDirection: 'row',
+  },
   icon: {
-    marginLeft: 10,
-    width: 40,
-    height: 40,
+    marginLeft: 4,
+    width: 36,
+    height: 36,
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   iconSelected: {
-    marginLeft: 10,
-    backgroundColor: '#fff',
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    marginLeft: 4,
+    width: 36,
+    height: 36,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 20,
   },
 });
 
 const COLOR_ICON = '#FFF';
 const COLOR_ICON_SELECTED = '#000';
+const ICON_SIZE = 22;
 
 export const DrawingCardBottomActions = () => {
   const { activeToolData, activeToolAction } = useCardCreator();
@@ -56,100 +64,104 @@ export const DrawingCardBottomActions = () => {
 
     return (
       <View style={styles.container}>
-        <View style={styles.colorPicker}>
-          <ColorPicker
-            value={{
-              r: activeToolData.fillColor[0],
-              g: activeToolData.fillColor[1],
-              b: activeToolData.fillColor[2],
-            }}
-            setValue={(color) => {
-              activeToolAction('updateFillColor', color);
-            }}
-          />
+        <View style={styles.colorPickers}>
+          <View style={styles.colorPicker}>
+            <ColorPicker
+              value={{
+                r: activeToolData.fillColor[0],
+                g: activeToolData.fillColor[1],
+                b: activeToolData.fillColor[2],
+              }}
+              setValue={(color) => {
+                activeToolAction('updateFillColor', color);
+              }}
+            />
+          </View>
+          <View style={styles.colorPicker}>
+            <ColorPicker
+              value={{
+                r: activeToolData.lineColor[0],
+                g: activeToolData.lineColor[1],
+                b: activeToolData.lineColor[2],
+              }}
+              setValue={(color) => {
+                activeToolAction('updateLineColor', color);
+              }}
+            />
+          </View>
         </View>
-        <View style={styles.colorPicker}>
-          <ColorPicker
-            value={{
-              r: activeToolData.lineColor[0],
-              g: activeToolData.lineColor[1],
-              b: activeToolData.lineColor[2],
-            }}
-            setValue={(color) => {
-              activeToolAction('updateLineColor', color);
-            }}
-          />
+
+        <View style={styles.subtools}>
+          <TouchableOpacity
+            style={artworkSubtool == 'pencil_no_grid' ? styles.iconSelected : styles.icon}
+            onPress={() => activeToolAction('onSelectArtworkSubtool', 'pencil_no_grid')}>
+            <Icon
+              name="gesture"
+              size={ICON_SIZE}
+              color={artworkSubtool == 'pencil_no_grid' ? COLOR_ICON_SELECTED : COLOR_ICON}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={artworkSubtool == 'line' ? styles.iconSelected : styles.icon}
+            onPress={() => activeToolAction('onSelectArtworkSubtool', 'line')}>
+            <MCIcon
+              name="vector-line"
+              size={ICON_SIZE}
+              color={artworkSubtool == 'line' ? COLOR_ICON_SELECTED : COLOR_ICON}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={artworkSubtool == 'pencil' ? styles.iconSelected : styles.icon}
+            onPress={() => activeToolAction('onSelectArtworkSubtool', 'pencil')}>
+            <MCIcon
+              name="vector-polyline"
+              size={ICON_SIZE}
+              color={artworkSubtool == 'pencil' ? COLOR_ICON_SELECTED : COLOR_ICON}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={artworkSubtool == 'move' ? styles.iconSelected : styles.icon}
+            onPress={() => activeToolAction('onSelectArtworkSubtool', 'move')}>
+            <Icon
+              name="pan-tool"
+              size={ICON_SIZE}
+              color={artworkSubtool == 'move' ? COLOR_ICON_SELECTED : COLOR_ICON}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={artworkSubtool == 'bend' ? styles.iconSelected : styles.icon}
+            onPress={() => activeToolAction('onSelectArtworkSubtool', 'bend')}>
+            <Icon
+              name="rounded-corner"
+              size={ICON_SIZE}
+              color={artworkSubtool == 'bend' ? COLOR_ICON_SELECTED : COLOR_ICON}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={artworkSubtool == 'fill' ? styles.iconSelected : styles.icon}
+            onPress={() => activeToolAction('onSelectArtworkSubtool', 'fill')}>
+            <Icon
+              name="format-paint"
+              size={ICON_SIZE}
+              color={artworkSubtool == 'fill' ? COLOR_ICON_SELECTED : COLOR_ICON}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={artworkSubtool == 'erase' ? styles.iconSelected : styles.icon}
+            onPress={() => activeToolAction('onSelectArtworkSubtool', 'erase')}>
+            <Icon
+              name="clear"
+              size={ICON_SIZE}
+              color={artworkSubtool == 'erase' ? COLOR_ICON_SELECTED : COLOR_ICON}
+            />
+          </TouchableOpacity>
         </View>
-
-        <TouchableOpacity
-          style={artworkSubtool == 'pencil_no_grid' ? styles.iconSelected : styles.icon}
-          onPress={() => activeToolAction('onSelectArtworkSubtool', 'pencil_no_grid')}>
-          <Icon
-            name="gesture"
-            size={32}
-            color={artworkSubtool == 'pencil_no_grid' ? COLOR_ICON_SELECTED : COLOR_ICON}
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={artworkSubtool == 'line' ? styles.iconSelected : styles.icon}
-          onPress={() => activeToolAction('onSelectArtworkSubtool', 'line')}>
-          <MCIcon
-            name="vector-line"
-            size={32}
-            color={artworkSubtool == 'line' ? COLOR_ICON_SELECTED : COLOR_ICON}
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={artworkSubtool == 'pencil' ? styles.iconSelected : styles.icon}
-          onPress={() => activeToolAction('onSelectArtworkSubtool', 'pencil')}>
-          <MCIcon
-            name="vector-polyline"
-            size={32}
-            color={artworkSubtool == 'pencil' ? COLOR_ICON_SELECTED : COLOR_ICON}
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={artworkSubtool == 'move' ? styles.iconSelected : styles.icon}
-          onPress={() => activeToolAction('onSelectArtworkSubtool', 'move')}>
-          <Icon
-            name="pan-tool"
-            size={32}
-            color={artworkSubtool == 'move' ? COLOR_ICON_SELECTED : COLOR_ICON}
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={artworkSubtool == 'bend' ? styles.iconSelected : styles.icon}
-          onPress={() => activeToolAction('onSelectArtworkSubtool', 'bend')}>
-          <Icon
-            name="rounded-corner"
-            size={32}
-            color={artworkSubtool == 'bend' ? COLOR_ICON_SELECTED : COLOR_ICON}
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={artworkSubtool == 'fill' ? styles.iconSelected : styles.icon}
-          onPress={() => activeToolAction('onSelectArtworkSubtool', 'fill')}>
-          <Icon
-            name="format-paint"
-            size={32}
-            color={artworkSubtool == 'fill' ? COLOR_ICON_SELECTED : COLOR_ICON}
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={artworkSubtool == 'erase' ? styles.iconSelected : styles.icon}
-          onPress={() => activeToolAction('onSelectArtworkSubtool', 'erase')}>
-          <Icon
-            name="clear"
-            size={32}
-            color={artworkSubtool == 'erase' ? COLOR_ICON_SELECTED : COLOR_ICON}
-          />
-        </TouchableOpacity>
       </View>
     );
   } else {

@@ -3,6 +3,7 @@ import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-nativ
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useGhostUI } from '../../ghost/GhostUI';
 import { useCardCreator } from '../../scenecreator/CreateCardContext';
+import { SegmentedNavigation } from '../../components/SegmentedNavigation';
 
 export const DRAWING_CARD_HEADER_HEIGHT = 150;
 

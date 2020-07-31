@@ -6,13 +6,12 @@ import tinycolor from 'tinycolor2';
 
 const styles = StyleSheet.create({
   button: {
-    padding: 4,
     borderWidth: 2,
     backgroundColor: '#eee',
     borderColor: '#eee',
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 6,
+    borderRadius: 4,
     overflow: 'hidden',
   },
   buttonSelected: {
