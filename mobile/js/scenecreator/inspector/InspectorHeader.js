@@ -157,7 +157,7 @@ export const InspectorHeader = ({
           <TouchableOpacity
             style={[styles.actionButton, { backgroundColor: isDraw2Selected ? '#000' : '#fff' }]}
             onPress={onPress}>
-            <Icon name="edit" size={22} color={isDraw2Selected ? '#fff' : '#000'} />
+            <Icon name="palette" size={22} color={isDraw2Selected ? '#fff' : '#000'} />
           </TouchableOpacity>
         );
       }
@@ -189,8 +189,8 @@ export const InspectorHeader = ({
             <Icon name="close" size={32} color="#000" />
           </TouchableOpacity>
           <View style={styles.actions}>
-            {drawButton1}
             {drawButton2}
+            {drawButton1}
             {scaleRotateButton}
             <TouchableOpacity style={styles.actionButton} onPress={changeSelectionOrder}>
               <Icon name="layers" size={22} color="#000" />

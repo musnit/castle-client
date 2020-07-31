@@ -3,6 +3,7 @@ import { PixelRatio, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useCardCreator } from '../../scenecreator/CreateCardContext';
 import ColorPicker from '../../scenecreator/inspector/components/ColorPicker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export const DRAWING_CARD_FOOTER_HEIGHT = 80;
 
@@ -84,7 +85,7 @@ export const DrawingCardBottomActions = () => {
           style={artworkSubtool == 'pencil_no_grid' ? styles.iconSelected : styles.icon}
           onPress={() => activeToolAction('onSelectArtworkSubtool', 'pencil_no_grid')}>
           <Icon
-            name="create"
+            name="gesture"
             size={32}
             color={artworkSubtool == 'pencil_no_grid' ? COLOR_ICON_SELECTED : COLOR_ICON}
           />
@@ -93,8 +94,8 @@ export const DrawingCardBottomActions = () => {
         <TouchableOpacity
           style={artworkSubtool == 'line' ? styles.iconSelected : styles.icon}
           onPress={() => activeToolAction('onSelectArtworkSubtool', 'line')}>
-          <Icon
-            name="create"
+          <MCIcon
+            name="vector-line"
             size={32}
             color={artworkSubtool == 'line' ? COLOR_ICON_SELECTED : COLOR_ICON}
           />
@@ -103,8 +104,8 @@ export const DrawingCardBottomActions = () => {
         <TouchableOpacity
           style={artworkSubtool == 'pencil' ? styles.iconSelected : styles.icon}
           onPress={() => activeToolAction('onSelectArtworkSubtool', 'pencil')}>
-          <Icon
-            name="create"
+          <MCIcon
+            name="vector-polyline"
             size={32}
             color={artworkSubtool == 'pencil' ? COLOR_ICON_SELECTED : COLOR_ICON}
           />
