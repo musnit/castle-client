@@ -99,6 +99,8 @@ public:
 	int floodFill(int x, int y, ImageData *paths, const Pixel &p);
 	bool isAlphaSet(const Pixel &p);
 	bool arePixelsEqual(const Pixel &p1, const Pixel &p2);
+	void updateFloodFillForNewPaths(ImageData *paths);
+	int getPixelHash(const Pixel &p);
 
 	/**
 	 * Encodes raw pixel data into a given format.
@@ -140,6 +142,7 @@ private:
 	void decode(Data *data);
 
 	bool floodFillTest(int x, int y, ImageData *paths, const Pixel &p);
+	bool floodFillTest2(int x, int y, ImageData *paths, uint8 * pixels);
 
 	// The actual data.
 	unsigned char *data = nullptr;
