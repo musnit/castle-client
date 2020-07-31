@@ -125,8 +125,8 @@ export const DrawingCardBottomActions = () => {
           <TouchableOpacity
             style={artworkSubtool == 'move' ? styles.iconSelected : styles.icon}
             onPress={() => activeToolAction('onSelectArtworkSubtool', 'move')}>
-            <Icon
-              name="pan-tool"
+            <MCIcon
+              name="vector-point"
               size={ICON_SIZE}
               color={artworkSubtool == 'move' ? COLOR_ICON_SELECTED : COLOR_ICON}
             />
@@ -135,8 +135,8 @@ export const DrawingCardBottomActions = () => {
           <TouchableOpacity
             style={artworkSubtool == 'bend' ? styles.iconSelected : styles.icon}
             onPress={() => activeToolAction('onSelectArtworkSubtool', 'bend')}>
-            <Icon
-              name="rounded-corner"
+            <MCIcon
+              name="vector-radius"
               size={ICON_SIZE}
               color={artworkSubtool == 'bend' ? COLOR_ICON_SELECTED : COLOR_ICON}
             />
