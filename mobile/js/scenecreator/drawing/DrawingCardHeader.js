@@ -4,6 +4,7 @@ import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useGhostUI } from '../../ghost/GhostUI';
 import { useCardCreator } from '../../scenecreator/CreateCardContext';
 import { SegmentedNavigation } from '../../components/SegmentedNavigation';
+import * as Constants from '../../Constants';
 
 export const DRAWING_CARD_HEADER_HEIGHT = 150;
 
@@ -36,21 +37,12 @@ const styles = StyleSheet.create({
     marginLeft: -54, // required to center properly with back button
     zIndex: -1, // required to prevent negative margin from blocking back button
   },
-  modeContainer: {
-    width: '100%',
-    height: '25%',
-    flexShrink: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+
+  navigation: {
+    borderBottomWidth: 1,
+    borderBottomColor: Constants.colors.grayOnBlackBorder,
   },
-  artworkOrCollisionText: {
-    color: '#fff',
-  },
-  artworkOrCollisionActiveText: {
-    color: '#fff',
-    textDecorationLine: 'underline',
-  },
+
   shapeContainer: {
     width: '100%',
     height: '50%',
@@ -119,6 +111,17 @@ export const DrawingCardHeader = ({ onPressBack }) => {
         activeToolAction('onSelectCollisionSubtool', subtool);
       };
 
+  const MODE_ITEMS = [
+    {
+      name: 'Artwork',
+      value: 'onSelectArtwork',
+    },
+    {
+      name: 'Collision',
+      value: 'onSelectCollision',
+    },
+  ];
+
   return (
     <View style={styles.container}>
       <View style={styles.topContainer}>
@@ -131,26 +134,13 @@ export const DrawingCardHeader = ({ onPressBack }) => {
           {redoButton}
         </View>
       </View>
-      <View style={styles.modeContainer}>
-        <TouchableOpacity style={styles.action} onPress={() => activeToolAction('onSelectArtwork')}>
-          <Text
-            style={
-              isArtworkActive ? styles.artworkOrCollisionActiveText : styles.artworkOrCollisionText
-            }>
-            Artwork
-          </Text>
-        </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.action}
-          onPress={() => activeToolAction('onSelectCollision')}>
-          <Text
-            style={
-              !isArtworkActive ? styles.artworkOrCollisionActiveText : styles.artworkOrCollisionText
-            }>
-            Collision
-          </Text>
-        </TouchableOpacity>
+      <View style={styles.navigation}>
+        <SegmentedNavigation
+          items={MODE_ITEMS}
+          selectedItem={isArtworkActive ? MODE_ITEMS[0] : MODE_ITEMS[1]}
+          onSelectItem={(item) => activeToolAction(item.value)}
+        />
       </View>
 
       <View style={styles.shapeContainer}>
