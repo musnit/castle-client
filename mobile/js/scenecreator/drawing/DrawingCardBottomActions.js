@@ -145,18 +145,19 @@ export const DrawingCardBottomActions = () => {
           <TouchableOpacity
             style={artworkSubtool == 'fill' ? styles.iconSelected : styles.icon}
             onPress={() => activeToolAction('onSelectArtworkSubtool', 'fill')}>
-            <Icon
-              name="format-paint"
-              size={ICON_SIZE}
+            <MCIcon
+              name="format-color-fill"
+              size={ICON_SIZE + 6}
               color={artworkSubtool == 'fill' ? COLOR_ICON_SELECTED : COLOR_ICON}
+              style={{marginTop: 8}}
             />
           </TouchableOpacity>
 
           <TouchableOpacity
             style={artworkSubtool == 'erase' ? styles.iconSelected : styles.icon}
             onPress={() => activeToolAction('onSelectArtworkSubtool', 'erase')}>
-            <Icon
-              name="clear"
+            <MCIcon
+              name="eraser"
               size={ICON_SIZE}
               color={artworkSubtool == 'erase' ? COLOR_ICON_SELECTED : COLOR_ICON}
             />
