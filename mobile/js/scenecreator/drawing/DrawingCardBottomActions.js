@@ -81,6 +81,26 @@ export const DrawingCardBottomActions = () => {
         </View>
 
         <TouchableOpacity
+          style={artworkSubtool == 'pencil_no_grid' ? styles.iconSelected : styles.icon}
+          onPress={() => activeToolAction('onSelectArtworkSubtool', 'pencil_no_grid')}>
+          <Icon
+            name="create"
+            size={32}
+            color={artworkSubtool == 'pencil_no_grid' ? COLOR_ICON_SELECTED : COLOR_ICON}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={artworkSubtool == 'line' ? styles.iconSelected : styles.icon}
+          onPress={() => activeToolAction('onSelectArtworkSubtool', 'line')}>
+          <Icon
+            name="create"
+            size={32}
+            color={artworkSubtool == 'line' ? COLOR_ICON_SELECTED : COLOR_ICON}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity
           style={artworkSubtool == 'pencil' ? styles.iconSelected : styles.icon}
           onPress={() => activeToolAction('onSelectArtworkSubtool', 'pencil')}>
           <Icon
