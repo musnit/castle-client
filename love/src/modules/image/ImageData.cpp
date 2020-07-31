@@ -534,14 +534,16 @@ void ImageData::updateFloodFillForNewPaths(ImageData *paths)
 
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {
-			Pixel * currentColor = new Pixel;
-			memcpy(currentColor, data + ((y * width + x) * pixelsize), pixelsize);
+			Pixel * currentColor = (Pixel *)(data + ((y * width + x) * pixelsize));
 			
 			int hash = getPixelHash(*currentColor);
 			uint8 region = pixels[y * width + x];
 
 			if (hashToPixel.find(hash) == hashToPixel.end()) {
-				hashToPixel[hash] = currentColor;
+				Pixel * pixelCopy = new Pixel;
+				memcpy(pixelCopy, currentColor, pixelsize);
+
+				hashToPixel[hash] = pixelCopy;
 			}
 
 			if (regionToPixelCounts.find(region) == regionToPixelCounts.end()) {
@@ -580,34 +582,15 @@ void ImageData::updateFloodFillForNewPaths(ImageData *paths)
 			
 			unsigned char *pixeldata = data + ((y * width + x) * pixelsize);
 			memcpy(pixeldata, pixel, pixelsize);
-			
-			/*
-			Pixel pixel;
-			if (region == 0) {
-				pixel.rgba8[0] = 255;
-				pixel.rgba8[1] = 0;
-				pixel.rgba8[2] = 0;
-				pixel.rgba8[3] = 255;
-			} else if (region == 1) {
-				pixel.rgba8[0] = 0;
-				pixel.rgba8[1] = 255;
-				pixel.rgba8[2] = 0;
-				pixel.rgba8[3] = 255;
-			} else if (region == 2) {
-				pixel.rgba8[0] = 255;
-				pixel.rgba8[1] = 0;
-				pixel.rgba8[2] = 255;
-				pixel.rgba8[3] = 255;
-			} else {
-				pixel.rgba8[0] = 0;
-				pixel.rgba8[1] = 0;
-				pixel.rgba8[2] = 255;
-				pixel.rgba8[3] = 255;
-			}
-			
-			unsigned char *pixeldata = data + ((y * width + x) * pixelsize);
-			memcpy(pixeldata, &pixel, pixelsize);*/
 		}
+	}
+
+	for (std::map<int, Pixel *>::iterator it = hashToPixel.begin(); it != hashToPixel.end(); ++it) {
+		delete it->second;
+	}
+
+	for (std::map<int, std::map<int, int> *>::iterator it = regionToPixelCounts.begin(); it != regionToPixelCounts.end(); ++it) {
+		delete it->second;
 	}
 }
 

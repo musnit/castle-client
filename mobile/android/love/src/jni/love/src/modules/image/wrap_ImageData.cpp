@@ -190,6 +190,16 @@ int w_ImageData_floodFill(lua_State *L)
 	return 1;
 }
 
+int w_ImageData_updateFloodFillForNewPaths(lua_State *L)
+{
+	ImageData *t = luax_checkimagedata(L, 1);
+	ImageData *paths = luax_checkimagedata(L, 2);
+
+	luax_catchexcept(L, [&](){ t->updateFloodFillForNewPaths((love::image::ImageData *)paths); });
+
+	return 0;
+}
+
 int w_ImageData_setPixel(lua_State *L)
 {
 	ImageData *t = luax_checkimagedata(L, 1);
@@ -367,6 +377,7 @@ static const luaL_Reg w_ImageData_functions[] =
 	{ "paste", w_ImageData_paste },
 	{ "encode", w_ImageData_encode },
 	{ "floodFill", w_ImageData_floodFill},
+	{ "updateFloodFillForNewPaths", w_ImageData_updateFloodFillForNewPaths },
 
 	// Used in the Lua wrapper code.
 	{ "_mapPixelUnsafe", w_ImageData__mapPixelUnsafe },

@@ -22,6 +22,7 @@
 #include "Image.h"
 #include "filesystem/Filesystem.h"
 #include <queue>
+#include <map>
 
 using love::thread::Lock;
 
@@ -307,6 +308,42 @@ bool ImageData::isAlphaSet(const Pixel &p)
 		}
 }
 
+int ImageData::getPixelHash(const Pixel &p)
+{
+	int result = 0;
+
+	switch (format)
+		{
+		case PIXELFORMAT_RGBA8:
+			for (int i = 0; i < 4; i++) {
+				result += p.rgba8[i];
+				//result *= 1000;
+			}
+			break;
+		case PIXELFORMAT_RGBA16:
+			for (int i = 0; i < 4; i++) {
+				result += p.rgba16[i];
+				//result *= 1000;
+			}
+			break;
+		case PIXELFORMAT_RGBA16F:
+			for (int i = 0; i < 4; i++) {
+				result += p.rgba16f[i];
+				//result *= 1000;
+			}
+			break;
+		case PIXELFORMAT_RGBA32F:
+			for (int i = 0; i < 4; i++) {
+				result += p.rgba32f[i];
+				//result *= 1000;
+			}
+			break;
+		}
+
+
+	return result;
+}
+
 bool ImageData::arePixelsEqual(const Pixel &p1, const Pixel &p2)
 {
 	switch (format)
@@ -411,6 +448,150 @@ int ImageData::floodFill(int x, int y, ImageData *paths, const Pixel &p)
 	}
 
 	return count;
+}
+
+bool ImageData::floodFillTest2(int x, int y, ImageData *paths, uint8* pixels)
+{
+	if (pixels[y * width + x] != 0) {
+		return false;
+	}
+
+	Pixel pathP;
+	paths->getPixel(x, y, pathP);
+	if (paths->isAlphaSet(pathP)) {
+		return false;
+	}
+
+	return true;
+}
+
+void ImageData::updateFloodFillForNewPaths(ImageData *paths)
+{
+	int arrayLength = width * height;
+	uint8* pixels = new uint8[arrayLength];
+	for (int i = 0; i < arrayLength; i++) {
+		pixels[i] = 0;
+	}
+
+	int regionNum = 1;
+
+	for (int x = 0; x < width; x++) {
+		for (int y = 0; y < height; y++) {
+			int pixelIndex = y * width + x;
+
+			if (pixels[pixelIndex] == 0) {
+				int count = 0;
+				std::queue<flood_pixel_t> pixelQueue;
+				flood_pixel_t startPixel;
+				startPixel.x = x;
+				startPixel.y = y;
+
+				pixelQueue.push(startPixel);
+
+				while (!pixelQueue.empty()) {
+					flood_pixel_t currentPixel = pixelQueue.front();
+					pixelQueue.pop();
+
+					if (floodFillTest2(currentPixel.x, currentPixel.y, paths, pixels)) {
+						pixels[(currentPixel.y * width + currentPixel.x)] = regionNum;
+						count++;
+
+						for (int dx = -1; dx <= 1; dx++) {
+							for (int dy = -1; dy <= 1; dy++) {
+								bool skip = false;
+								if (dx == 0 && dy == 0) {
+									skip = true;
+								}
+
+								flood_pixel_t newPixel;
+								newPixel.x = currentPixel.x + dx;
+								newPixel.y = currentPixel.y + dy;
+
+								if (!inside(newPixel.x, newPixel.y)) {
+									skip = true;
+								}
+
+								if (!skip && floodFillTest2(newPixel.x, newPixel.y, paths, pixels)) {
+									pixelQueue.push(newPixel);
+								}
+							}
+						}
+					}
+				}
+
+				if (count > 0) {
+					regionNum++;
+				}
+			}
+		}
+	}
+	
+	size_t pixelsize = getPixelSize();
+	Lock lock(mutex);
+
+	std::map<int, Pixel *> hashToPixel;
+	std::map<int, std::map<int, int>*> regionToPixelCounts;
+
+	for (int x = 0; x < width; x++) {
+		for (int y = 0; y < height; y++) {
+			Pixel * currentColor = (Pixel *)(data + ((y * width + x) * pixelsize));
+			
+			int hash = getPixelHash(*currentColor);
+			uint8 region = pixels[y * width + x];
+
+			if (hashToPixel.find(hash) == hashToPixel.end()) {
+				Pixel * pixelCopy = new Pixel;
+				memcpy(pixelCopy, currentColor, pixelsize);
+
+				hashToPixel[hash] = pixelCopy;
+			}
+
+			if (regionToPixelCounts.find(region) == regionToPixelCounts.end()) {
+				regionToPixelCounts[region] = new std::map<int, int>();
+			}
+
+			std::map<int, int> *pixelCountsMap = regionToPixelCounts[region];
+			if (pixelCountsMap->find(hash) == pixelCountsMap->end()) {
+				(*pixelCountsMap)[hash] = 1;
+			} else {
+				int count = (*pixelCountsMap)[hash];
+				count++;
+				(*pixelCountsMap)[hash] = count;
+			}
+		}
+	}
+	
+	std::map<int, Pixel *> regionToPixel;
+	for (std::map<int, std::map<int, int> *>::iterator it = regionToPixelCounts.begin(); it != regionToPixelCounts.end(); ++it) {
+		int region = it->first;
+		std::map<int, int> *pixelCounts = it->second;
+		
+		int maxCount = 0;
+		for (std::map<int, int>::iterator it2 = pixelCounts->begin(); it2 != pixelCounts->end(); ++it2) {
+			if (it2->second > maxCount) {
+				maxCount = it2->second;
+				regionToPixel[region] = hashToPixel[it2->first];
+			}
+		}
+	}
+	
+	for (int x = 0; x < width; x++) {
+		for (int y = 0; y < height; y++) {
+			uint8 region = pixels[y * width + x];
+			Pixel *pixel = regionToPixel[region];
+			
+			unsigned char *pixeldata = data + ((y * width + x) * pixelsize);
+			memcpy(pixeldata, pixel, pixelsize);
+		}
+	}
+
+	for (std::map<int, Pixel *>::iterator it = hashToPixel.begin(); it != hashToPixel.end(); ++it) {
+		delete it->second;
+	}
+
+	for (std::map<int, std::map<int, int> *>::iterator it = regionToPixelCounts.begin(); it != regionToPixelCounts.end(); ++it) {
+		delete it->second;
+	}
 }
 
 void ImageData::paste(ImageData *src, int dx, int dy, int sx, int sy, int sw, int sh)
