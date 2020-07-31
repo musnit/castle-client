@@ -579,7 +579,7 @@ const CreateCardScreen = ({
         height: DRAWING_MAX_AVAILABLE_CARD_HEIGHT,
       };
     } else {
-      cardFitStyles = { aspectRatio: 0.91 };
+      cardFitStyles = { aspectRatio: 0.91, width: '100%' };
     }
   } else {
     if ((Viewport.vw * 100) / MAX_AVAILABLE_CARD_HEIGHT > Constants.CARD_RATIO) {
