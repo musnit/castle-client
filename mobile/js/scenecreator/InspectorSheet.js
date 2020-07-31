@@ -31,6 +31,20 @@ export default InspectorSheet = ({ isOpen, addChildSheet }) => {
   const { isTextActorSelected } = useCardCreator();
 
   const [selectedTab, setSelectedTab] = React.useState(TAB_ITEMS[0].value);
+  const scrollViewRef = React.useRef(null);
+
+  const setSelectedTabOrScroll = React.useCallback(
+    (value) => {
+      if (value === selectedTab) {
+        if (scrollViewRef.current) {
+          scrollViewRef.current.scrollToPosition(0, 0);
+        }
+      } else {
+        setSelectedTab(value);
+      }
+    },
+    [scrollViewRef.current, selectedTab]
+  );
 
   useEffect(() => {
     // reset selected tab
@@ -48,7 +62,7 @@ export default InspectorSheet = ({ isOpen, addChildSheet }) => {
       isTextActorSelected={isTextActorSelected}
       tabItems={tabItems}
       selectedTab={selectedTab}
-      setSelectedTab={setSelectedTab}
+      setSelectedTab={setSelectedTabOrScroll}
       pane={actionsPane}
     />
   );
@@ -64,6 +78,7 @@ export default InspectorSheet = ({ isOpen, addChildSheet }) => {
       contentKey={`tab-${selectedTab}`}
       renderHeader={renderHeader}
       renderContent={renderContent}
+      scrollViewRef={scrollViewRef}
       persistLastSnapWhenOpened
     />
   );

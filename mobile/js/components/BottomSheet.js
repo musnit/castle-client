@@ -47,6 +47,7 @@ export const BottomSheet = ({
   renderContent = () => null,
   headerHeight = 64,
   contentKey = 'content', // change this to reset the scrollview
+  scrollViewRef = null,
   onClose,
   onCloseEnd,
   onOpenEnd,
@@ -160,6 +161,7 @@ export const BottomSheet = ({
           <Animated.View>{renderHeader()}</Animated.View>
         </PanGestureHandler>
         <KeyboardAwareScrollView
+          ref={scrollViewRef}
           key={contentKey}
           style={styles.content}
           enableOnAndroid={true}
