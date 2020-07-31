@@ -61,6 +61,7 @@ export default InspectorSheet = ({ isOpen, addChildSheet }) => {
     <CardCreatorBottomSheet
       isOpen={isOpen}
       headerHeight={88}
+      contentKey={`tab-${selectedTab}`}
       renderHeader={renderHeader}
       renderContent={renderContent}
       persistLastSnapWhenOpened
