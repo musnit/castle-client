@@ -3,9 +3,9 @@ import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-nativ
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SLIcon from 'react-native-vector-icons/SimpleLineIcons';
-import { useGhostUI } from './ghost/GhostUI';
+import { useGhostUI } from '../ghost/GhostUI';
 
-import * as Constants from './Constants';
+import * as Constants from '../Constants';
 
 export const CARD_HEADER_HEIGHT = 54;
 
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const CardHeader = ({ card, isEditable, onPressBack, mode, onChangeMode }) => {
+export const CreateCardHeader = ({ card, isEditable, onPressBack, mode, onChangeMode }) => {
   const { globalActions, sendGlobalAction } = useGhostUI();
   let playPauseButton, undoButton, redoButton, isPlaying;
   if (globalActions) {

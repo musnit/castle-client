@@ -12,43 +12,36 @@ import {
 import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { ReactNativeFile } from 'apollo-upload-client';
-import * as GhostUI from './ghost/GhostUI';
+import * as GhostUI from '../ghost/GhostUI';
 
 import uuid from 'uuid/v4';
 import { withNavigation, withNavigationFocus } from '@react-navigation/compat';
 
-import * as Constants from './Constants';
-import * as LocalId from './common/local-id';
-import * as Session from './Session';
-import * as Utilities from './common/utilities';
+import * as Constants from '../Constants';
+import * as LocalId from '../common/local-id';
+import * as Session from '../Session';
+import * as Utilities from '../common/utilities';
 
 import Entypo from 'react-native-vector-icons/Entypo';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Viewport from './common/viewport';
+import Viewport from '../common/viewport';
 
-import * as GhostEvents from './ghost/GhostEvents';
+import * as GhostEvents from '../ghost/GhostEvents';
 
-import { CardScene } from './game/CardScene';
-import { CardText } from './components/CardText';
-import { CreateCardContext } from './scenecreator/CreateCardContext';
-import { CardHeader, CARD_HEADER_HEIGHT } from './CardHeader';
-import {
-  DrawingCardHeader,
-  DRAWING_CARD_HEADER_HEIGHT,
-} from './scenecreator/drawing/DrawingCardHeader';
+import { CardScene } from '../game/CardScene';
+import { CardText } from '../components/CardText';
+import { CreateCardContext } from './CreateCardContext';
+import { CreateCardHeader, CARD_HEADER_HEIGHT } from './CreateCardHeader';
+import { DrawingCardHeader, DRAWING_CARD_HEADER_HEIGHT } from './drawing/DrawingCardHeader';
 import {
   DrawingCardBottomActions,
   DRAWING_CARD_FOOTER_HEIGHT,
-} from './scenecreator/drawing/DrawingCardBottomActions';
-import { PopoverProvider } from './scenecreator/PopoverProvider';
-import { SheetProvider } from './scenecreator/SheetProvider';
-import { useGhostUI } from './ghost/GhostUI';
-import {
-  getInspectorBehaviors,
-  getTextActorsData,
-  getActiveTool,
-} from './scenecreator/SceneCreatorUtilities';
+} from './drawing/DrawingCardBottomActions';
+import { PopoverProvider } from './PopoverProvider';
+import { SheetProvider } from './SheetProvider';
+
+import { getInspectorBehaviors, getTextActorsData, getActiveTool } from './SceneCreatorUtilities';
 
 const CARD_HEIGHT = (1 / Constants.CARD_RATIO) * 100 * Viewport.vw;
 
@@ -445,7 +438,7 @@ const CreateCardScreen = ({
   onSceneRevertData,
 }) => {
   const { showActionSheetWithOptions } = useActionSheet();
-  const { root, globalActions, sendGlobalAction, transformAssetUri } = useGhostUI();
+  const { root, globalActions, sendGlobalAction, transformAssetUri } = GhostUI.useGhostUI();
 
   const [activeSheet, setActiveSheet] = React.useState(null);
   React.useEffect(Keyboard.dismiss, [activeSheet]);
@@ -616,7 +609,7 @@ const CreateCardScreen = ({
           {isShowingDraw ? (
             <DrawingCardHeader onPressBack={() => sendGlobalAction('resetActiveTool')} />
           ) : (
-            <CardHeader
+            <CreateCardHeader
               card={card}
               isEditable
               mode={activeSheet}

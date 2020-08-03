@@ -2,7 +2,7 @@ import React from 'react';
 import { Keyboard, View } from 'react-native';
 import { BottomSheet } from '../components/BottomSheet';
 import { useSafeArea } from 'react-native-safe-area-context';
-import { CARD_HEADER_HEIGHT } from '../CardHeader';
+import { CARD_HEADER_HEIGHT } from './CreateCardHeader';
 import { ToolPane } from '../Tools';
 
 import Viewport from '../common/viewport';

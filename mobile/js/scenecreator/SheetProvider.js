@@ -11,7 +11,7 @@ import InspectorSheet from './InspectorSheet';
 
 import Viewport from '../common/viewport';
 
-import { CARD_HEADER_HEIGHT } from '../CardHeader';
+import { CARD_HEADER_HEIGHT } from './CreateCardHeader';
 const FULL_SHEET_HEIGHT = 100 * Viewport.vh - CARD_HEADER_HEIGHT;
 
 const ROOT_SHEETS = [
