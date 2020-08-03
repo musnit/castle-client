@@ -4,7 +4,7 @@ import { CreateDeckScreen } from './CreateDeckScreen';
 import { useNavigation } from '@react-navigation/native';
 import { Transitioning } from 'react-native-reanimated';
 
-import CreateCardScreen from '../scenecreator/CreateCardScreen';
+import CreateCardScreen from '../scenecreator/CreateCardScreenDataProvider';
 
 const styles = StyleSheet.create({
   container: {
