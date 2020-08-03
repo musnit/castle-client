@@ -26,7 +26,7 @@ const ICON_SIZE = 32;
 const BrowseNavigator = () => (
   <Stack.Navigator headerMode="none" initialRouteName="HomeScreen">
     <Stack.Screen name="HomeScreen" component={HomeScreen} />
-    <Stack.Screen name="PlayDeck" component={PlayDeckScreen} />
+    <Stack.Screen name="PlayDeck" component={PlayDeckScreen} options={{ gestureEnabled: false }} />
     <Stack.Screen name="Profile" component={ProfileScreen} />
   </Stack.Navigator>
 );
@@ -51,7 +51,7 @@ const CreateNavigator = () => (
 const ProfileNavigator = () => (
   <Stack.Navigator headerMode="none" initialRouteName="Profile">
     <Stack.Screen name="Profile" component={ProfileScreen} />
-    <Stack.Screen name="PlayDeck" component={PlayDeckScreen} />
+    <Stack.Screen name="PlayDeck" component={PlayDeckScreen} options={{ gestureEnabled: false }} />
   </Stack.Navigator>
 );
 
