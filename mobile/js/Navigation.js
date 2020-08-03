@@ -12,10 +12,10 @@ import { CreateScreen } from './create/CreateScreen';
 import { CreateDeckNavigator } from './create/CreateDeckNavigator';
 import { PlayDeckScreen } from './play/PlayDeckScreen';
 import { HomeScreen } from './home/HomeScreen';
+import { ViewSourceNavigator } from './create/ViewSourceNavigator';
 import * as DeepLinks from './DeepLinks';
 import { ProfileScreen } from './profile/ProfileScreen';
 import * as GhostChannels from './ghost/GhostChannels';
-import ViewSourceScreen from './scenecreator/ViewSourceScreenDataProvider';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -31,7 +31,7 @@ const BrowseNavigator = () => (
     <Stack.Screen name="Profile" component={ProfileScreen} />
     <Stack.Screen
       name="ViewSource"
-      component={ViewSourceScreen}
+      component={ViewSourceNavigator}
       options={{ gestureEnabled: false }}
     />
   </Stack.Navigator>
@@ -60,7 +60,7 @@ const ProfileNavigator = () => (
     <Stack.Screen name="PlayDeck" component={PlayDeckScreen} options={{ gestureEnabled: false }} />
     <Stack.Screen
       name="ViewSource"
-      component={ViewSourceScreen}
+      component={ViewSourceNavigator}
       options={{ gestureEnabled: false }}
     />
   </Stack.Navigator>

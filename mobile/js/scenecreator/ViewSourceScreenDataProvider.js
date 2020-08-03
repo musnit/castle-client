@@ -123,8 +123,18 @@ class ViewSourceScreenDataProvider extends React.Component {
     throw new Error(`Not implemented for ViewSourceScreen`);
   };
 
-  _goToDeck = () => {
-    this.props.navigation.pop();
+  _goToDeck = (deckId = null) => {
+    if (!deckId && this.state.deck) {
+      deckId = this.state.deck.deckId;
+    }
+    if (deckId) {
+      this.props.navigation.navigate('ViewSource', {
+        deckIdToEdit: deckId,
+        cardIdToEdit: undefined,
+      });
+    } else {
+      this.props.navigation.popToTop();
+    }
   };
 
   _saveAndGoToDeck = async () => {

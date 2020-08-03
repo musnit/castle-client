@@ -76,9 +76,7 @@ export const PlayDeckActions = ({ deck }) => {
       <View style={styles.right}>
         <TouchableOpacity
           style={styles.rightButton}
-          onPress={() =>
-            push('ViewSource', { deckIdToEdit: deck.deckId, cardIdToEdit: deck.initialCard.cardId })
-          }>
+          onPress={() => push('ViewSource', { deckIdToEdit: deck.deckId })}>
           <Feather name="code" color="#fff" size={24} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.rightButton} onPress={() => onShareDeck(deck)}>
