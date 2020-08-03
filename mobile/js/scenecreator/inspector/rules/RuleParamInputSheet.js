@@ -1,10 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
+import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
 import { RuleParamInputRow } from '../components/RuleParamInputRow';
 import { useCardCreator } from '../../CreateCardContext';
 
-import BottomSheetHeader from '../../BottomSheetHeader';
-import CardCreatorBottomSheet from '../../CardCreatorBottomSheet';
 import * as Constants from '../../../Constants';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 

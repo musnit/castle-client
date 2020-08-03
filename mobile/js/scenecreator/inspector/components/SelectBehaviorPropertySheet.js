@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import BottomSheetHeader from '../../BottomSheetHeader';
-import CardCreatorBottomSheet from '../../CardCreatorBottomSheet';
+import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
+import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
 
 const styles = StyleSheet.create({
   container: {},

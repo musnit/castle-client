@@ -2,7 +2,7 @@ import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-import * as SceneCreatorConstants from './SceneCreatorConstants';
+import * as SceneCreatorConstants from '../scenecreator/SceneCreatorConstants';
 
 const styles = StyleSheet.create({
   header: {
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BottomSheetHeader = ({ title, onClose, onDone }) => (
+export const BottomSheetHeader = ({ title, onClose, onDone }) => (
   <View style={styles.header}>
     <TouchableOpacity style={styles.back} onPress={onClose}>
       <Icon name="close" size={32} color="#000" />

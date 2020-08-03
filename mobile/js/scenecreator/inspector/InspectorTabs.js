@@ -1,9 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useCardCreator } from '../CreateCardContext';
-
 import { AddBehaviorSheet } from './components/AddBehaviorSheet';
-import SaveBlueprintSheet from '../SaveBlueprintSheet';
+import { useCardCreator } from '../CreateCardContext';
+import { SaveBlueprintSheet } from './components/SaveBlueprintSheet';
 
 import * as SceneCreatorConstants from '../SceneCreatorConstants';
 import * as Inspector from './behaviors/InspectorBehaviors';

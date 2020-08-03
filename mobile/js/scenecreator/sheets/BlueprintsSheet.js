@@ -1,12 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { sendDataPaneAction, ToolImage } from '../Tools';
-import { useGhostUI } from '../ghost/GhostUI';
-import { useCardCreator } from './CreateCardContext';
-
-import BottomSheetHeader from './BottomSheetHeader';
-import CardCreatorBottomSheet from './CardCreatorBottomSheet';
+import { BottomSheetHeader } from '../../components/BottomSheetHeader';
+import { CardCreatorBottomSheet } from './CardCreatorBottomSheet';
+import { sendDataPaneAction, ToolImage } from '../../Tools';
+import { useGhostUI } from '../../ghost/GhostUI';
+import { useCardCreator } from '../CreateCardContext';
 
 const styles = StyleSheet.create({
   container: {

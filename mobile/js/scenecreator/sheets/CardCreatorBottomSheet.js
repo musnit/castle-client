@@ -1,18 +1,18 @@
 import React from 'react';
 import { Keyboard, View } from 'react-native';
-import { BottomSheet } from '../components/BottomSheet';
+import { BottomSheet } from '../../components/BottomSheet';
 import { useSafeArea } from 'react-native-safe-area-context';
-import { CARD_HEADER_HEIGHT } from './CreateCardHeader';
-import { ToolPane } from '../Tools';
+import { CARD_HEADER_HEIGHT } from '../CreateCardHeader';
+import { ToolPane } from '../../Tools';
 
-import Viewport from '../common/viewport';
+import Viewport from '../../common/viewport';
 
-import * as Constants from '../Constants';
+import * as Constants from '../../Constants';
 
 const SCREEN_HEIGHT = 100 * Viewport.vh;
 const CARD_HEIGHT = (1 / Constants.CARD_RATIO) * 100 * Viewport.vw;
 
-export default CardCreatorBottomSheet = React.memo(
+export const CardCreatorBottomSheet = React.memo(
   ({ element, isOpen, renderHeader, renderContent, headerHeight = 64, ...props }) => {
     const insets = useSafeArea();
 

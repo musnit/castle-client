@@ -1,12 +1,11 @@
 import React from 'react';
 import { Text, TouchableOpacity, StyleSheet, View } from 'react-native';
-import { useGhostUI } from '../ghost/GhostUI';
+import { CardCreatorBottomSheet } from './CardCreatorBottomSheet';
+import { useGhostUI } from '../../ghost/GhostUI';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-import * as Constants from '../Constants';
-
-import CardCreatorBottomSheet from './CardCreatorBottomSheet';
+import * as Constants from '../../Constants';
 
 const styles = StyleSheet.create({
   closeButton: {
@@ -21,7 +20,7 @@ const styles = StyleSheet.create({
 // scene creator behaviors can be "tools" which have their own UI.
 // right now the only example is drawing.
 
-export default ActiveToolSheet = ({ element, isOpen, context }) => {
+export const ActiveToolSheet = ({ element, isOpen, context }) => {
   // TODO: once drawing is a data pane, we don't have to subscribe to
   // the root UI here and can just use actions available on `element`
   const { sendGlobalAction } = useGhostUI();

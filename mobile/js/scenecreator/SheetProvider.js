@@ -1,13 +1,12 @@
 import * as React from 'react';
 import { Animated, TouchableWithoutFeedback, View } from 'react-native';
+import { ActiveToolSheet } from './sheets/ActiveToolSheet';
+import { BlueprintsSheet } from './sheets/BlueprintsSheet';
+import { CardToolsSheet } from './sheets/CardToolsSheet';
+import { CreateCardSettingsSheet } from './sheets/CreateCardSettingsSheet';
+import { InspectorSheet } from './inspector/InspectorSheet';
 import { useCardCreator } from './CreateCardContext';
 import { useGhostUI } from '../ghost/GhostUI';
-
-import ActiveToolSheet from './ActiveToolSheet';
-import { BlueprintsSheet } from './BlueprintsSheet';
-import CardToolsSheet from './CardToolsSheet';
-import CreateCardSettingsSheet from './CreateCardSettingsSheet';
-import InspectorSheet from './InspectorSheet';
 
 import Viewport from '../common/viewport';
 

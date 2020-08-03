@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useCardCreator } from './CreateCardContext';
-import { useGhostUI } from '../ghost/GhostUI';
-import { InspectorHeader } from './inspector/InspectorHeader';
-import { InspectorTabs } from './inspector/InspectorTabs';
+import { useCardCreator } from '../CreateCardContext';
+import { useGhostUI } from '../../ghost/GhostUI';
+import { CardCreatorBottomSheet } from '../sheets/CardCreatorBottomSheet';
+import { InspectorHeader } from './InspectorHeader';
+import { InspectorTabs } from './InspectorTabs';
 
-import * as Constants from '../Constants';
-
-import CardCreatorBottomSheet from './CardCreatorBottomSheet';
+import * as Constants from '../../Constants';
 
 const TAB_ITEMS = [
   {
@@ -23,7 +22,7 @@ const TAB_ITEMS = [
   },
 ];
 
-export default InspectorSheet = ({ isOpen, addChildSheet }) => {
+export const InspectorSheet = ({ isOpen, addChildSheet }) => {
   const { root } = useGhostUI();
   if (!root || !root.panes) return null;
 

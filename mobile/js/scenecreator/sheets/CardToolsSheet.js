@@ -2,11 +2,11 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-import { BottomSheet } from '../components/BottomSheet';
-import { DeckVariables } from './DeckVariables';
-import { SceneBackups } from './SceneBackups';
-import { SegmentedNavigation } from '../components/SegmentedNavigation';
-import { useCardCreator } from './CreateCardContext';
+import { BottomSheet } from '../../components/BottomSheet';
+import { DeckVariables } from '../DeckVariables';
+import { SceneBackups } from '../SceneBackups';
+import { SegmentedNavigation } from '../../components/SegmentedNavigation';
+import { useCardCreator } from '../CreateCardContext';
 
 const styles = StyleSheet.create({
   container: {
@@ -59,7 +59,7 @@ const TAB_ITEMS = [
   },
 ];
 
-const CardToolsSheet = ({ onClose, ...props }) => {
+export const CardToolsSheet = ({ onClose, ...props }) => {
   const { card, variables, onVariablesChange: onChange, onSelectBackupData } = useCardCreator();
   const cardId = card?.cardId;
 
@@ -101,5 +101,3 @@ const CardToolsSheet = ({ onClose, ...props }) => {
     />
   );
 };
-
-export default CardToolsSheet;

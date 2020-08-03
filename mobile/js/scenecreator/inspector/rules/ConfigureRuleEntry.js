@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { RuleBlueprintsSheet } from '../../BlueprintsSheet';
+import { RuleBlueprintsSheet } from '../../sheets/BlueprintsSheet';
 import { SelectBehaviorPropertySheet } from '../components/SelectBehaviorPropertySheet';
 import { SelectBehaviorSheet } from '../components/SelectBehaviorSheet';
-import CardDestinationPickerSheet from '../../CardDestinationPickerSheet';
+import { CardDestinationPickerSheet } from '../../sheets/CardDestinationPickerSheet';
 import RuleParamInputSheet from './RuleParamInputSheet';
 import * as Constants from '../../../Constants';
 

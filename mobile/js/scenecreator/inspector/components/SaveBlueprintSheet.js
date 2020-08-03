@@ -1,13 +1,12 @@
 import React from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { useGhostUI } from '../ghost/GhostUI';
-import { sendDataPaneAction } from '../Tools';
+import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
+import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
+import { sendDataPaneAction } from '../../../Tools';
+import { useGhostUI } from '../../../ghost/GhostUI';
 
-import BottomSheetHeader from './BottomSheetHeader';
-import CardCreatorBottomSheet from './CardCreatorBottomSheet';
-
-import * as SceneCreatorConstants from './SceneCreatorConstants';
-import * as Constants from '../Constants';
+import * as SceneCreatorConstants from '../../SceneCreatorConstants';
+import * as Constants from '../../../Constants';
 
 const styles = StyleSheet.create({
   form: {
@@ -44,7 +43,7 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 16,
     color: Constants.colors.white,
-  }
+  },
 });
 
 const SaveBlueprintForm = ({
@@ -100,7 +99,11 @@ const SaveBlueprintForm = ({
       <Text style={styles.label}>Description</Text>
       <TextInput value={description} onChangeText={setDescription} style={styles.input} />
       {isExisting ? <Text>{usedByLabel}</Text> : null}
-      {validationError ? <View style={styles.error}><Text style={styles.errorText}>{validationError}</Text></View> : null}
+      {validationError ? (
+        <View style={styles.error}>
+          <Text style={styles.errorText}>{validationError}</Text>
+        </View>
+      ) : null}
       <View style={styles.actions}>
         {isExisting ? (
           <TouchableOpacity
@@ -127,7 +130,7 @@ const SaveBlueprintForm = ({
   );
 };
 
-export default SaveBlueprintSheet = ({ isOpen, onClose, context }) => {
+export const SaveBlueprintSheet = ({ isOpen, onClose, context }) => {
   let data, sendAction;
 
   const { root } = useGhostUI();

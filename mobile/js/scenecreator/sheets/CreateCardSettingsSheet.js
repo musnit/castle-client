@@ -1,15 +1,14 @@
 import React from 'react';
 import { StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
-import { useCardCreator } from './CreateCardContext';
-import { useGhostUI } from '../ghost/GhostUI';
+import { useCardCreator } from '../CreateCardContext';
+import { useGhostUI } from '../../ghost/GhostUI';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-import { BottomSheet } from '../components/BottomSheet';
-import { ToolPane } from '../Tools';
+import { BottomSheet } from '../../components/BottomSheet';
+import { BottomSheetHeader } from '../../components/BottomSheetHeader';
+import { ToolPane } from '../../Tools';
 
 const SETTINGS_PANE_KEY = 'sceneCreatorSettings';
-
-import BottomSheetHeader from './BottomSheetHeader';
 
 const styles = StyleSheet.create({
   container: {
@@ -49,7 +48,7 @@ const CreateCardSettings = ({ isShowingTextActors, setShowingTextActors }) => {
   );
 };
 
-const CreateCardSettingsSheet = ({ onClose, ...props }) => {
+export const CreateCardSettingsSheet = ({ onClose, ...props }) => {
   const { isShowingTextActors, setShowingTextActors } = useCardCreator();
 
   const renderHeader = () => <BottomSheetHeader title="Layout" onClose={onClose} />;
@@ -69,5 +68,3 @@ const CreateCardSettingsSheet = ({ onClose, ...props }) => {
     />
   );
 };
-
-export default CreateCardSettingsSheet;

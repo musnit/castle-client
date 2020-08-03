@@ -1,12 +1,12 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 
-import { BottomSheet } from '../components/BottomSheet';
-import { CardsSet } from '../components/CardsSet';
-import { useCardCreator } from './CreateCardContext';
-import BottomSheetHeader from './BottomSheetHeader';
+import { BottomSheet } from '../../components/BottomSheet';
+import { BottomSheetHeader } from '../../components/BottomSheetHeader';
+import { CardsSet } from '../../components/CardsSet';
+import { useCardCreator } from '../CreateCardContext';
 
-import * as Constants from '../Constants';
+import * as Constants from '../../Constants';
 
 const DRAWER_EXPANDED_HEIGHT = 500;
 
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CardDestinationPickerSheet = ({ onSelectCard, isOpen, onClose }) => {
+export const CardDestinationPickerSheet = ({ onSelectCard, isOpen, onClose }) => {
   const { deck } = useCardCreator();
 
   const selectAndClose = (card) => {
