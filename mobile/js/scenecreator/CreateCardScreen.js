@@ -88,6 +88,7 @@ const CardBottomActions = ({
   onSave,
   isPlayingScene,
   isSceneLoaded,
+  isDeckOwner,
 }) => {
   if (isPlayingScene || !isSceneLoaded) {
     return null;
@@ -112,15 +113,19 @@ const CardBottomActions = ({
         />
         <Text style={Constants.styles.secondaryButtonLabel}>Layout</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={Constants.styles.primaryButton} onPress={onSave}>
-        <Text style={Constants.styles.primaryButtonLabel}>Done</Text>
-        <MCIcon
-          name="arrow-right"
-          size={22}
-          color="#000"
-          style={Constants.styles.primaryButtonIconRight}
-        />
-      </TouchableOpacity>
+      {isDeckOwner ? (
+        <TouchableOpacity style={Constants.styles.primaryButton} onPress={onSave}>
+          <Text style={Constants.styles.primaryButtonLabel}>Done</Text>
+          <MCIcon
+            name="arrow-right"
+            size={22}
+            color="#000"
+            style={Constants.styles.primaryButtonIconRight}
+          />
+        </TouchableOpacity>
+      ) : (
+        <View pointerEvents="none" style={{ width: 64 }} />
+      )}
     </View>
   );
 };
@@ -156,6 +161,7 @@ export const CreateCardScreen = ({
   onSceneMessage,
   onSceneScreenshot,
   onSceneRevertData,
+  isDeckOwner = true, // does the user own this deck?
 }) => {
   const { showActionSheetWithOptions } = useActionSheet();
   const { root, globalActions, sendGlobalAction, transformAssetUri } = GhostUI.useGhostUI();
@@ -318,6 +324,7 @@ export const CreateCardScreen = ({
     onVariablesChange,
     activeToolData,
     activeToolAction,
+    isDeckOwner,
   };
 
   // SafeAreaView doesn't respond to statusbar being hidden right now
@@ -370,6 +377,7 @@ export const CreateCardScreen = ({
                 onSave={saveAndGoToDeck}
                 isSceneLoaded={isSceneLoaded}
                 isPlayingScene={isPlaying}
+                isDeckOwner={isDeckOwner}
               />
             )}
           </View>

@@ -48,20 +48,28 @@ const styles = StyleSheet.create({
   },
 });
 
-const TAB_ITEMS = [
-  {
-    name: 'Variables',
-    value: 'variables',
-  },
-  {
-    name: 'Backups',
-    value: 'backups',
-  },
-];
-
 export const CardToolsSheet = ({ onClose, ...props }) => {
-  const { card, variables, onVariablesChange: onChange, onSelectBackupData } = useCardCreator();
+  const {
+    card,
+    variables,
+    onVariablesChange: onChange,
+    onSelectBackupData,
+    isDeckOwner,
+  } = useCardCreator();
   const cardId = card?.cardId;
+
+  let TAB_ITEMS = [
+    {
+      name: 'Variables',
+      value: 'variables',
+    },
+  ];
+  if (isDeckOwner) {
+    TAB_ITEMS.push({
+      name: 'Backups',
+      value: 'backups',
+    });
+  }
 
   const [mode, setMode] = React.useState('variables');
 

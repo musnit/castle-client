@@ -102,3 +102,9 @@ export const EMPTY_CARD = {
     data: { empty: true },
   },
 };
+
+export const EMPTY_DECK = {
+  title: '',
+  cards: [],
+  variables: [],
+};
