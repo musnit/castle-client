@@ -1,5 +1,12 @@
 import React from 'react';
-import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  InteractionManager,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
 import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 
@@ -102,27 +109,29 @@ const cardAspectFitStyles = makeCardAspectFitStyles();
 // renders the current focused deck in the feed
 // including the interactive scene.
 const CurrentDeckCell = ({ deck, paused }) => {
-  const isFocused = useIsFocused();
-
   const [ready, setReady] = React.useState(false);
-  React.useEffect(() => {
-    let timeout;
-    let active = true;
-    if (deck) {
-      timeout = setTimeout(() => {
-        active && isFocused && setReady(true);
-      }, 10);
-    } else {
-      active && setReady(false);
-    }
-    return () => {
-      setReady(false);
-      active = false;
-      if (timeout) {
-        clearTimeout(timeout);
-      }
-    };
-  }, [deck, isFocused]);
+  useFocusEffect(
+    React.useCallback(() => {
+      let timeout;
+      const task = InteractionManager.runAfterInteractions(() => {
+        if (deck) {
+          timeout = setTimeout(() => {
+            setReady(true);
+          }, 10);
+        } else {
+          setReady(false);
+        }
+      });
+      return () => {
+        if (timeout) {
+          clearTimeout(timeout);
+          timeout = undefined;
+        }
+        setReady(false);
+        task.cancel();
+      };
+    }, [deck])
+  );
 
   return (
     <View style={styles.itemCard}>
