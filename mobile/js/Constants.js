@@ -108,3 +108,29 @@ export const EMPTY_DECK = {
   cards: [],
   variables: [],
 };
+
+export const FEED_ITEM_DECK_FRAGMENT = `
+  id
+  deckId
+  title
+  creator {
+    userId
+    username
+    photo {
+      url
+    }
+  }
+  initialCard {
+    id
+    cardId
+    title
+    backgroundImage {
+      url
+      smallUrl
+      privateCardUrl
+      overlayUrl
+      primaryColor
+    }
+  }
+  variables
+`;

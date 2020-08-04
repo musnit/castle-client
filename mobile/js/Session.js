@@ -444,3 +444,35 @@ export const getDeckById = async (deckId) => {
   });
   return result.data.deck;
 };
+
+export const getDecksByIds = async (deckIds, fields) => {
+  if (!deckIds || !deckIds.length) return [];
+
+  fields =
+    fields ??
+    `
+    ${DECK_FRAGMENT}
+    cards {
+      ${CARD_FRAGMENT}
+    }`;
+  if (!deckIds || !deckIds.length) return [];
+  let queries = [];
+  deckIds.forEach((deckId, ii) => {
+    queries.push(`
+        deck${ii}: deck(deckId: "${deckId}") {
+          ${fields}
+        }
+    `);
+  });
+  const result = await apolloClient.query({
+    query: gql`
+      query {
+        ${queries.join('\n')}
+      }`,
+  });
+
+  if (result && result.data) {
+    return Object.entries(result.data).map(([alias, deck]) => deck);
+  }
+  return [];
+};

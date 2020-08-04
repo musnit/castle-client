@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { StatusBar, StyleSheet, Text, View } from 'react-native';
 import { NewestDecks } from './NewestDecks';
+import { RecentDecks } from './RecentDecks';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { SegmentedNavigation } from '../components/SegmentedNavigation';
 import { useFocusEffect } from '@react-navigation/native';
@@ -26,11 +27,18 @@ const MODE_ITEMS = [
   {
     name: 'Newest',
     value: 'newest',
+    item: () => <NewestDecks />,
+  },
+  {
+    name: 'History',
+    value: 'recent',
+    item: () => <RecentDecks />,
   },
 ];
 
 export const HomeScreen = () => {
   const insets = useSafeArea();
+  const [mode, setMode] = React.useState(MODE_ITEMS[0].value);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -39,16 +47,18 @@ export const HomeScreen = () => {
     }, [])
   );
 
+  const selectedItem = MODE_ITEMS.find((item) => item.value === mode);
+
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
         <SegmentedNavigation
           items={MODE_ITEMS}
-          selectedItem={MODE_ITEMS[0]}
-          onSelectItem={() => {}}
+          selectedItem={selectedItem}
+          onSelectItem={(item) => setMode(item.value)}
         />
       </View>
-      <NewestDecks />
+      {selectedItem.item()}
     </View>
   );
 };

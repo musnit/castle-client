@@ -5,6 +5,8 @@ import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect, useScrollToTop } from '@react-navigation/native';
 import gql from 'graphql-tag';
 
+import * as Constants from '../Constants';
+
 const REFETCH_FEED_INTERVAL_MS = 30 * 1000;
 
 const styles = StyleSheet.create({
@@ -30,29 +32,7 @@ export const NewestDecks = ({ focused }) => {
     gql`
       query {
         allDecks {
-          id
-          deckId
-          title
-          creator {
-            userId
-            username
-            photo {
-              url
-            }
-          }
-          initialCard {
-            id
-            cardId
-            title
-            backgroundImage {
-              url
-              smallUrl
-              privateCardUrl
-              overlayUrl
-              primaryColor
-            }
-          }
-          variables
+          ${Constants.FEED_ITEM_DECK_FRAGMENT}
         }
       }
     `,
