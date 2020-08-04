@@ -155,6 +155,7 @@ export const CreateCardScreen = ({
   resetDeckState,
   goToDeck,
   goToCard,
+  cardNeedsSave,
   saveAndGoToDeck,
   saveAndGoToCard,
   onVariablesChange,
@@ -216,7 +217,7 @@ export const CreateCardScreen = ({
   }, []);
 
   const maybeSaveAndGoToDeck = React.useCallback(async () => {
-    if (card?.isChanged) {
+    if (cardNeedsSave()) {
       showActionSheetWithOptions(
         {
           title: 'Save changes?',
@@ -236,11 +237,11 @@ export const CreateCardScreen = ({
       // no changes
       return goToDeck();
     }
-  }, [card?.isChanged, saveAndGoToDeck, goToDeck]);
+  }, [cardNeedsSave, saveAndGoToDeck, goToDeck]);
 
   const maybeSaveAndGoToCard = React.useCallback(
     async (nextCard) => {
-      if (card?.isChanged) {
+      if (cardNeedsSave()) {
         const title = Utilities.makeCardPreviewTitle(nextCard, deck);
         showActionSheetWithOptions(
           {
@@ -259,7 +260,7 @@ export const CreateCardScreen = ({
         return goToCard(nextCard);
       }
     },
-    [card?.isChanged, saveAndGoToCard, goToCard]
+    [cardNeedsSave, saveAndGoToCard, goToCard]
   );
 
   const onSelectBackupData = React.useCallback(

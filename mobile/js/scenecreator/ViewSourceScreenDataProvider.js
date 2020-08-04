@@ -149,6 +149,8 @@ class ViewSourceScreenDataProvider extends React.Component {
     throw new Error(`Not implemented for ViewSourceScreen`);
   };
 
+  _cardNeedsSave = () => false; // never prompt to save
+
   _handleSceneScreenshot = async () => {
     // noop for ViewSourceScreen
   };
@@ -197,6 +199,7 @@ class ViewSourceScreenDataProvider extends React.Component {
           resetDeckState={this._resetDeckState}
           goToDeck={this._goToDeck}
           goToCard={this._goToCard}
+          cardNeedsSave={this._cardNeedsSave}
           saveAndGoToDeck={this._saveAndGoToDeck}
           saveAndGoToCard={this._saveAndGoToCard}
           onVariablesChange={this._handleVariablesChange}

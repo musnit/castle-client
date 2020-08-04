@@ -193,6 +193,8 @@ class CreateCardScreenDataProvider extends React.Component {
     this._goToCard(nextCard);
   };
 
+  _cardNeedsSave = () => this.state.card?.isChanged;
+
   _handleSceneScreenshot = async ({ path }) => {
     const result = await Session.apolloClient.mutate({
       mutation: gql`
@@ -266,6 +268,7 @@ class CreateCardScreenDataProvider extends React.Component {
           resetDeckState={this._resetDeckState}
           goToDeck={this._goToDeck}
           goToCard={this._goToCard}
+          cardNeedsSave={this._cardNeedsSave}
           saveAndGoToDeck={this._saveAndGoToDeck}
           saveAndGoToCard={this._saveAndGoToCard}
           onVariablesChange={this._handleVariablesChange}
