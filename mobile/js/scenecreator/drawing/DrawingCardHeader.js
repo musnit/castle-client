@@ -150,27 +150,21 @@ export const DrawingCardHeader = ({ onPressBack }) => {
           </TouchableOpacity>
         )}
 
-        {!isArtworkActive && (
-          <TouchableOpacity style={styles.action} onPress={() => onSelectSubtool('rectangle')}>
-            <Text style={currentShape == 'rectangle' ? styles.activeShape : styles.shape}>
-              Rectangle
-            </Text>
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity style={styles.action} onPress={() => onSelectSubtool('rectangle')}>
+          <Text style={currentShape == 'rectangle' ? styles.activeShape : styles.shape}>
+            Rectangle
+          </Text>
+        </TouchableOpacity>
 
-        {!isArtworkActive && (
-          <TouchableOpacity style={styles.action} onPress={() => onSelectSubtool('circle')}>
-            <Text style={currentShape == 'circle' ? styles.activeShape : styles.shape}>Circle</Text>
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity style={styles.action} onPress={() => onSelectSubtool('circle')}>
+          <Text style={currentShape == 'circle' ? styles.activeShape : styles.shape}>Circle</Text>
+        </TouchableOpacity>
 
-        {!isArtworkActive && (
-          <TouchableOpacity style={styles.action} onPress={() => onSelectSubtool('triangle')}>
-            <Text style={currentShape == 'triangle' ? styles.activeShape : styles.shape}>
-              Triangle
-            </Text>
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity style={styles.action} onPress={() => onSelectSubtool('triangle')}>
+          <Text style={currentShape == 'triangle' ? styles.activeShape : styles.shape}>
+            Triangle
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
