@@ -4,6 +4,8 @@ import { StyleSheet, View } from 'react-native';
 
 import CardTransition from './CardTransition';
 
+import * as History from '../common/history';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -47,6 +49,10 @@ export const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, rou
     },
     [cardState.numCardsViewed]
   );
+
+  React.useEffect(() => {
+    History.addItem(deckId);
+  }, []);
 
   return (
     <View

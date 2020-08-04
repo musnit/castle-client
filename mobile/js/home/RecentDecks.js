@@ -45,7 +45,8 @@ export const RecentDecks = ({ focused }) => {
 
   const fetchDecks = React.useCallback(async () => {
     setLoading(true);
-    const deckIds = await History.getItems();
+    const historyItems = await History.getItems();
+    const deckIds = historyItems.map((item) => item.deckId);
     const decks = await Session.getDecksByIds(deckIds, Constants.FEED_ITEM_DECK_FRAGMENT);
     setDecks(decks);
     setLoading(false);
@@ -71,8 +72,6 @@ export const RecentDecks = ({ focused }) => {
     />
   );
 
-  // TODO: empty state
-
   return (
     <ScrollView
       ref={scrollViewRef}
@@ -93,11 +92,11 @@ export const RecentDecks = ({ focused }) => {
             />
           </View>
         ))
-      ) : (
+      ) : lastFetchedTime && !loading ? (
         <View style={styles.empty}>
           <Text style={styles.emptyText}>You haven't played any decks recently.</Text>
         </View>
-      )}
+      ) : null}
     </ScrollView>
   );
 };
