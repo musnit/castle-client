@@ -22,15 +22,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  title: {
+    width: '100%',
+    height: '100%',
+    flexShrink: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: -54, // required to center properly with back button
+    zIndex: -1, // required to prevent negative margin from blocking back button
+  },
   header: {
     padding: 8,
-    paddingBottom: 8,
-    flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'center',
   },
-  instructionsLabel: {
+  titleLabel: {
+    padding: 8,
     color: '#fff',
-    marginBottom: 16,
+    fontSize: 16,
+  },
+  instructionsLabel: {
+    padding: 8,
+    color: '#fff',
     fontSize: 16,
     lineHeight: 24,
   },
@@ -52,11 +66,19 @@ export const ViewSourceDeckHeader = (props) => {
         <TouchableOpacity style={styles.back} onPress={props.onPressBack}>
           <Icon name="arrow-back" size={30} color="#fff" />
         </TouchableOpacity>
+        <View style={styles.title}>
+          {deck ? (
+            <Text style={styles.titleLabel}>
+              <Text style={{ fontWeight: 'bold' }}>@{deck.creator?.username}</Text>'s deck
+            </Text>
+          ) : null}
+        </View>
       </View>
       {deck ? (
         <View style={styles.header}>
           <Text style={styles.instructionsLabel}>
-            <Text style={{ fontWeight: 'bold' }}>@{deck.creator?.username}</Text>'s deck
+            You are viewing the source for this deck. You can see how it works, but you can't save
+            changes.
           </Text>
         </View>
       ) : null}
