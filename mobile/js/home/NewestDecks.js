@@ -8,6 +8,7 @@ import gql from 'graphql-tag';
 import * as Constants from '../Constants';
 
 const REFETCH_FEED_INTERVAL_MS = 30 * 1000;
+const SCROLL_LOAD_MORE_BUFFER = 96;
 
 const styles = StyleSheet.create({
   scrollView: {
@@ -26,12 +27,24 @@ const styles = StyleSheet.create({
 
 export const NewestDecks = ({ focused }) => {
   const { navigate } = useNavigation();
-  const [lastFetchedTime, setLastFetchedTime] = React.useState(null);
-  const [decks, setDecks] = React.useState(undefined);
+  const [lastFetched, setLastFetched] = React.useState({
+    time: undefined,
+    lastModifiedBefore: undefined,
+  });
+  const [decks, changeDecks] = React.useReducer((decks, action) => {
+    switch (action.type) {
+      case 'set':
+        return action.decks;
+      case 'append':
+        return decks.concat(action.decks);
+      default:
+        throw new Error(`Unrecognized decks action: ${action.type}`);
+    }
+  }, undefined);
   const [fetchDecks, query] = useLazyQuery(
     gql`
-      query {
-        allDecks {
+      query DeckFeed($lastModifiedBefore: Datetime) {
+        deckFeed(limit: 24, lastModifiedBefore: $lastModifiedBefore) {
           ${Constants.FEED_ITEM_DECK_FRAGMENT}
         }
       }
@@ -39,32 +52,64 @@ export const NewestDecks = ({ focused }) => {
     { fetchPolicy: 'no-cache' }
   );
 
-  const onRefresh = React.useCallback(() => {
-    fetchDecks();
-    setLastFetchedTime(Date.now());
-  }, [fetchDecks, setLastFetchedTime]);
+  const onRefresh = React.useCallback(
+    (lastModifiedBefore) => {
+      fetchDecks({
+        variables: {
+          lastModifiedBefore,
+        },
+      });
+      setLastFetched({ time: Date.now(), lastModifiedBefore });
+    },
+    [fetchDecks, setLastFetched]
+  );
 
   useFocusEffect(
     React.useCallback(() => {
-      if (!lastFetchedTime || Date.now() - lastFetchedTime > REFETCH_FEED_INTERVAL_MS) {
+      if (!lastFetched.time || Date.now() - lastFetched.time > REFETCH_FEED_INTERVAL_MS) {
         onRefresh();
       }
     }),
     []
   );
 
+  const onScroll = React.useCallback(
+    (e) => {
+      if (e?.nativeEvent) {
+        const { layoutMeasurement, contentOffset, contentSize } = e.nativeEvent;
+        // reached bottom of scrollview (minus buffer)? load more
+        if (
+          contentOffset.y + layoutMeasurement.height >=
+          contentSize.height - SCROLL_LOAD_MORE_BUFFER
+        ) {
+          if (!query.loading && decks?.length && contentSize.height > 192) {
+            const lastModifiedBefore = decks[decks.length - 1].lastModified;
+            onRefresh(lastModifiedBefore);
+          }
+        }
+      }
+    },
+    [query.loading, decks?.length]
+  );
+
   React.useEffect(() => {
     if (query.called && !query.loading && !query.error && query.data) {
-      setDecks(query.data.allDecks);
+      if (lastFetched.lastModifiedBefore) {
+        // append next page
+        changeDecks({ type: 'append', decks: query.data.deckFeed });
+      } else {
+        // clean refresh
+        changeDecks({ type: 'set', decks: query.data.deckFeed });
+      }
     }
-  }, [query.called, query.loading, query.error, query.data]);
+  }, [query.called, query.loading, query.error, query.data, lastFetched.lastModifiedBefore]);
 
   const scrollViewRef = React.useRef(null);
   useScrollToTop(scrollViewRef);
 
   const refreshControl = (
     <RefreshControl
-      refreshing={lastFetchedTime && query.loading}
+      refreshing={lastFetched.time && query.loading}
       onRefresh={onRefresh}
       tintColor="#fff"
       colors={['#fff', '#ccc']}
@@ -74,11 +119,13 @@ export const NewestDecks = ({ focused }) => {
   return (
     <ScrollView
       ref={scrollViewRef}
+      onScroll={onScroll}
+      scrollEventThrottle={100}
       contentContainerStyle={styles.scrollView}
       refreshControl={refreshControl}>
       {decks
         ? decks.map((deck, ii) => (
-            <View key={`deck-${deck.deckId}`} style={styles.deckCell}>
+            <View key={`deck-${deck.deckId}-${ii}`} style={styles.deckCell}>
               <CardCell
                 card={deck.initialCard}
                 onPress={() =>
