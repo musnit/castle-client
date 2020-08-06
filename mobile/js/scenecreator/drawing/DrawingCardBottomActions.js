@@ -19,17 +19,14 @@ const styles = StyleSheet.create({
 
   colorPickers: {
     flexDirection: 'row',
-    paddingLeft: 6,
-  },
-  colorPicker: {
-    marginRight: 16,
+    paddingLeft: 8,
   },
 
   subtools: {
     flexDirection: 'row',
   },
   icon: {
-    marginLeft: 4,
+    marginLeft: 6,
     width: 36,
     height: 36,
     alignItems: 'center',
