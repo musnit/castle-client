@@ -70,7 +70,7 @@ export const NewestDecks = ({ focused }) => {
         onRefresh();
       }
     }),
-    []
+    [lastFetched.time]
   );
 
   const onScroll = React.useCallback(
