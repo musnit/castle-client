@@ -146,11 +146,22 @@ const CoinFlip = ({ response }) => {
   ];
 };
 
-const IsColliding = () => {
+const IsColliding = ({ response }) => {
+  const hasTag = response.params?.tag && response.params?.tag.length;
   return [
     {
       type: 'selectEntry',
       label: 'this is colliding',
+    },
+    {
+      type: 'text',
+      label: hasTag ? 'with tag' : 'with',
+    },
+    {
+      type: 'selectParamSheet',
+      label: hasTag ? response.params.tag : 'any tag',
+      paramName: 'tag',
+      paramValue: response.params?.tag,
     },
   ];
 };
