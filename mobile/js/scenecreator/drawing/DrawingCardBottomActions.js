@@ -53,7 +53,7 @@ const ICON_SIZE = 22;
 export const DrawingCardBottomActions = () => {
   const { activeToolData, activeToolAction } = useCardCreator();
 
-  if (!activeToolData.fillColor) {
+  if (!activeToolData.color) {
     return null;
   }
 
@@ -68,24 +68,12 @@ export const DrawingCardBottomActions = () => {
           <View style={styles.colorPicker}>
             <ColorPicker
               value={{
-                r: activeToolData.fillColor[0],
-                g: activeToolData.fillColor[1],
-                b: activeToolData.fillColor[2],
+                r: activeToolData.color[0],
+                g: activeToolData.color[1],
+                b: activeToolData.color[2],
               }}
               setValue={(color) => {
-                activeToolAction('updateFillColor', color);
-              }}
-            />
-          </View>
-          <View style={styles.colorPicker}>
-            <ColorPicker
-              value={{
-                r: activeToolData.lineColor[0],
-                g: activeToolData.lineColor[1],
-                b: activeToolData.lineColor[2],
-              }}
-              setValue={(color) => {
-                activeToolAction('updateLineColor', color);
+                activeToolAction('updateColor', color);
               }}
             />
           </View>
@@ -149,7 +137,7 @@ export const DrawingCardBottomActions = () => {
               name="format-color-fill"
               size={ICON_SIZE + 6}
               color={artworkSubtool == 'fill' ? COLOR_ICON_SELECTED : COLOR_ICON}
-              style={{marginTop: 8}}
+              style={{ marginTop: 8 }}
             />
           </TouchableOpacity>
 
