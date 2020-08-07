@@ -53,11 +53,7 @@ export const useOptimisticBehaviorValue = ({ behavior, propName, sendAction, onN
 
   const luaValue = behavior?.properties[propName];
   if (behavior && value !== luaValue) {
-    if (
-      !behavior.lastReportedEventId ||
-      lastSentEventId === null ||
-      behavior.lastReportedEventId === lastSentEventId
-    ) {
+    if (lastSentEventId === null || behavior.lastReportedEventId === lastSentEventId) {
       setValue(luaValue);
       if (onNativeUpdate) {
         onNativeUpdate(luaValue);
