@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   iconSelected: {
-    marginLeft: 4,
+    marginLeft: 6,
     width: 36,
     height: 36,
     alignItems: 'center',
