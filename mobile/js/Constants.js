@@ -18,7 +18,7 @@ export const styles = {
   textShadow: {
     textShadowColor: '#0004',
     textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
+    textShadowRadius: 0,
   },
   plainButton: {
     borderRadius: 6,

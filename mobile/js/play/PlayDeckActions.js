@@ -16,14 +16,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   avatar: {
-    width: 36,
-    height: 36,
+    width: 32,
+    height: 32,
   },
   username: {
     color: '#fff',
     fontWeight: '700',
     fontSize: 16,
-    marginLeft: 16,
+    marginLeft: 12,
     ...Constants.styles.textShadow,
   },
   right: {
@@ -33,11 +33,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   rightButton: {
-    width: 36,
-    height: 36,
+    width: 32,
+    height: 32,
     alignItems: 'center',
     justifyContent: 'center',
+    marginLeft: 8,
   },
+  rightButtonIcon: {
+    ...Constants.styles.textShadow,
+  }
 });
 
 const onShareDeck = async (deck) => {
@@ -77,10 +81,10 @@ export const PlayDeckActions = ({ deck }) => {
         <TouchableOpacity
           style={styles.rightButton}
           onPress={() => push('ViewSource', { deckIdToEdit: deck.deckId })}>
-          <Feather name="code" color="#fff" size={24} />
+          <Feather name="code" color="#fff" size={24} style={styles.rightButtonIcon} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.rightButton} onPress={() => onShareDeck(deck)}>
-          <Feather name="share" color="#fff" size={24} />
+          <Feather name="share" color="#fff" size={24} style={styles.rightButtonIcon} />
         </TouchableOpacity>
       </View>
     </React.Fragment>
