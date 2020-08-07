@@ -69,6 +69,10 @@ export const DrawingCardHeader = ({ onPressBack }) => {
   const { globalActions, sendGlobalAction } = useGhostUI();
   const { activeToolData, activeToolAction } = useCardCreator();
 
+  if (!activeToolData.color) {
+    return null;
+  }
+
   let undoButton, redoButton;
   if (globalActions) {
     const data = globalActions;
@@ -125,7 +129,7 @@ export const DrawingCardHeader = ({ onPressBack }) => {
   ];
 
   let activeColor = '#fff';
-  if (isArtworkActive && activeToolData.color) {
+  if (isArtworkActive) {
     activeColor = tinycolor.fromRatio({
       r: activeToolData.color[0],
       g: activeToolData.color[1],
