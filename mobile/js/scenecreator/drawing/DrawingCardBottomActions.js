@@ -44,10 +44,15 @@ const styles = StyleSheet.create({
 });
 
 const COLOR_ICON = '#888';
+const COLOR_ICON_SELECTED = '#fff';
 const ICON_SIZE = 22;
 
 export const DrawingCardBottomActions = () => {
   const { activeToolData, activeToolAction } = useCardCreator();
+
+  if (!activeToolData.color) {
+    return null;
+  }
 
   const activeColor = tinycolor.fromRatio({
     r: activeToolData.color[0],
@@ -56,10 +61,6 @@ export const DrawingCardBottomActions = () => {
   });
   const activeColorBackground = activeColor.toHexString();
   const activeColorForeground = activeColor.isLight() ? '#000' : '#fff';
-
-  if (!activeToolData.color) {
-    return null;
-  }
 
   const isArtworkActive = activeToolData.currentMode == 'artwork';
 

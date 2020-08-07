@@ -69,12 +69,6 @@ export const DrawingCardHeader = ({ onPressBack }) => {
   const { globalActions, sendGlobalAction } = useGhostUI();
   const { activeToolData, activeToolAction } = useCardCreator();
 
-  const activeColor = tinycolor.fromRatio({
-    r: activeToolData.color[0],
-    g: activeToolData.color[1],
-    b: activeToolData.color[2],
-  }).toHexString();
-
   let undoButton, redoButton;
   if (globalActions) {
     const data = globalActions;
@@ -129,6 +123,15 @@ export const DrawingCardHeader = ({ onPressBack }) => {
       value: 'onSelectCollision',
     },
   ];
+
+  let activeColor = '#fff';
+  if (isArtworkActive && activeToolData.color) {
+    activeColor = tinycolor.fromRatio({
+      r: activeToolData.color[0],
+      g: activeToolData.color[1],
+      b: activeToolData.color[2],
+    }).toHexString();
+  }
 
   return (
     <View style={styles.container}>
