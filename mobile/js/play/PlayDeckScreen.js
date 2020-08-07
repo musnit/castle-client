@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     minHeight: 54,
+    marginBottom: 8,
   },
   title: {
     fontSize: 16,
