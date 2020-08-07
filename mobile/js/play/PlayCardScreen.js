@@ -168,7 +168,7 @@ const PlayCardScreen = ({ card, onSelectNewCard, deckState, onChangeDeckState, p
   const everythingHeight = statusBarHeight + cardHeight + tabBarHeight + insets.bottom;
   const heightDifference = everythingHeight - vh * 100 - statusBarHeight;
 
-  let blocksBottomPadding = 12;
+  let blocksBottomPadding = 8;
   if (heightDifference > 0) {
     blocksBottomPadding = blocksBottomPadding + heightDifference;
   }
