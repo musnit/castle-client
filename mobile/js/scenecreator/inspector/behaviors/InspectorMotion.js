@@ -194,6 +194,14 @@ export default InspectorMotion = ({ moving, rotatingMotion, sendActions }) => {
               sendAction={rotatingPropSendAction}
               displayValue={rotationPropertyDisplayValue}
             />
+            {activeBehavior == moving ? (
+              <BehaviorPropertyInputRow
+                behavior={activeBehavior}
+                propName="density"
+                label="Density"
+                sendAction={activeBehaviorSendAction}
+              />
+            ) : null}
           </React.Fragment>
         ) : null}
       </View>
