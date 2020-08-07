@@ -57,6 +57,15 @@ export const InspectorNumberInput = ({ value, lastNativeUpdate, onChange, ...pro
     [props]
   );
 
+  // if the initial value doesn't validate, update once when mounted
+  React.useEffect(() => {
+    const validatedInitialValue = validate(value);
+    if (validatedInitialValue !== value) {
+      setText(numberToText(validatedInitialValue));
+      onChange(validatedInitialValue);
+    }
+  }, []);
+
   const step = props?.step ?? 1;
   const onChangeText = React.useCallback(
     (text) => {
