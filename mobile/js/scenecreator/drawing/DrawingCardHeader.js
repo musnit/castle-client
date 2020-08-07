@@ -5,6 +5,7 @@ import { useGhostUI } from '../../ghost/GhostUI';
 import { useCardCreator } from '../../scenecreator/CreateCardContext';
 import { SegmentedNavigation } from '../../components/SegmentedNavigation';
 import * as Constants from '../../Constants';
+import tinycolor from 'tinycolor2';
 
 export const DRAWING_CARD_HEADER_HEIGHT = 150;
 
@@ -50,6 +51,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 16,
   },
   activeShape: {
     color: '#fff',
@@ -66,6 +68,12 @@ const styles = StyleSheet.create({
 export const DrawingCardHeader = ({ onPressBack }) => {
   const { globalActions, sendGlobalAction } = useGhostUI();
   const { activeToolData, activeToolAction } = useCardCreator();
+
+  const activeColor = tinycolor.fromRatio({
+    r: activeToolData.color[0],
+    g: activeToolData.color[1],
+    b: activeToolData.color[2],
+  }).toHexString();
 
   let undoButton, redoButton;
   if (globalActions) {
@@ -151,19 +159,15 @@ export const DrawingCardHeader = ({ onPressBack }) => {
         )}
 
         <TouchableOpacity style={styles.action} onPress={() => onSelectSubtool('rectangle')}>
-          <Text style={currentShape == 'rectangle' ? styles.activeShape : styles.shape}>
-            Rectangle
-          </Text>
+          <MCIcon name="square-outline" size={48} color={currentShape == 'rectangle' ? activeColor : "#888"} />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.action} onPress={() => onSelectSubtool('circle')}>
-          <Text style={currentShape == 'circle' ? styles.activeShape : styles.shape}>Circle</Text>
+          <MCIcon name="circle-outline" size={48} color={currentShape == 'circle' ? activeColor : "#888"} />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.action} onPress={() => onSelectSubtool('triangle')}>
-          <Text style={currentShape == 'triangle' ? styles.activeShape : styles.shape}>
-            Triangle
-          </Text>
+          <MCIcon name="triangle-outline" size={48} color={currentShape == 'triangle' ? activeColor : "#888"} />
         </TouchableOpacity>
       </View>
     </View>
