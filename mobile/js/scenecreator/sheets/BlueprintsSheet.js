@@ -6,6 +6,8 @@ import { CardCreatorBottomSheet } from './CardCreatorBottomSheet';
 import { sendDataPaneAction } from '../../Tools';
 import { useGhostUI } from '../../ghost/GhostUI';
 
+import FastImage from 'react-native-fast-image';
+
 const styles = StyleSheet.create({
   container: {
     padding: 16,
@@ -26,24 +28,34 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     marginRight: 16,
     flexShrink: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   title: {
     fontWeight: 'bold',
     marginBottom: 8,
   },
   image: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: 56, // unclear why these need to be 8 pixels smaller than the container
+    width: 56,
     height: 56,
   },
 });
 
+const DEFAULT_BLUEPRINT_IMAGES = {
+  Wall: require('../../../assets/images/add.png'),
+  Ball: require('../../../assets/images/add.png'),
+  Text: require('../../../assets/images/add.png'),
+  Button: require('../../../assets/images/add.png'),
+};
+
 const BlueprintItem = ({ entry, onPress }) => {
   return (
     <TouchableOpacity style={styles.itemContainer} onPress={onPress}>
-      <View style={styles.preview}>{/* TODO: image preview here */}</View>
+      <View style={styles.preview}>
+        {DEFAULT_BLUEPRINT_IMAGES[entry.title] ? (
+          <FastImage source={DEFAULT_BLUEPRINT_IMAGES[entry.title]} style={styles.image} />
+        ) : null}
+      </View>
       <View style={{ flexShrink: 1 }}>
         <Text style={styles.title}>{entry.title}</Text>
         <Text>{entry.description}</Text>
