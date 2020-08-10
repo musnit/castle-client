@@ -42,38 +42,38 @@ const makeChangeOrderOptions = ({ isTextActorSelected, sendAction }) => {
   if (isTextActorSelected) {
     return [
       {
-        name: 'Move Down',
-        action: () => sendAction('moveSelectionForward'),
+        name: 'Move to Top',
+        action: () => sendAction('moveSelectionToBack'),
       },
       {
         name: 'Move Up',
         action: () => sendAction('moveSelectionBackward'),
       },
       {
-        name: 'Move to Bottom',
-        action: () => sendAction('moveSelectionToFront'),
+        name: 'Move Down',
+        action: () => sendAction('moveSelectionForward'),
       },
       {
-        name: 'Move to Top',
-        action: () => sendAction('moveSelectionToBack'),
+        name: 'Move to Bottom',
+        action: () => sendAction('moveSelectionToFront'),
       },
     ];
   } else {
     return [
       {
-        name: 'Move Forward',
-        action: () => sendAction('moveSelectionForward'),
-      },
-      {
-        name: 'Move Backward',
-        action: () => sendAction('moveSelectionBackward'),
-      },
-      {
-        name: 'Move to Front',
+        name: 'Bring to Front',
         action: () => sendAction('moveSelectionToFront'),
       },
       {
-        name: 'Move to Back',
+        name: 'Bring Forward',
+        action: () => sendAction('moveSelectionForward'),
+      },
+      {
+        name: 'Send Backward',
+        action: () => sendAction('moveSelectionBackward'),
+      },
+      {
+        name: 'Send to Back',
         action: () => sendAction('moveSelectionToBack'),
       },
     ];
