@@ -64,6 +64,8 @@ const ToggleWithValue = ({
 };
 
 const CreateCardSettings = ({ element, isShowingTextActors, setShowingTextActors }) => {
+  if (!element) return null;
+
   let settingsData, sendAction;
   if (element.children.count) {
     Object.entries(element.children).forEach(([key, child]) => {
