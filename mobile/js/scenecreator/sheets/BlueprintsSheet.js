@@ -5,26 +5,21 @@ import { BottomSheetHeader } from '../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from './CardCreatorBottomSheet';
 import { sendDataPaneAction } from '../../Tools';
 import { useGhostUI } from '../../ghost/GhostUI';
+import * as Constants from '../../Constants';
 
 import FastImage from 'react-native-fast-image';
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-  },
+  container: {},
   itemContainer: {
-    borderRadius: 3,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderBottomWidth: 2,
-    marginBottom: 16,
+    borderColor: Constants.colors.grayOnWhiteBorder,
+    borderBottomWidth: 1,
     padding: 16,
     flexDirection: 'row',
   },
   preview: {
     width: 64,
     height: 64,
-    backgroundColor: '#ddd',
     borderRadius: 3,
     marginRight: 16,
     flexShrink: 0,
@@ -33,11 +28,16 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: 'bold',
-    marginBottom: 8,
+    fontSize: 16,
+    lineHeight: 22,
+  },
+  description: {
+    fontSize: 16,
+    lineHeight: 22,
   },
   image: {
-    width: 56,
-    height: 56,
+    width: 64,
+    height: 64,
   },
 });
 
@@ -54,7 +54,7 @@ const BlueprintItem = ({ entry, onPress }) => {
       </View>
       <View style={{ flexShrink: 1 }}>
         <Text style={styles.title}>{entry.title}</Text>
-        <Text>{entry.description}</Text>
+        <Text style={styles.description}>{entry.description}</Text>
       </View>
     </TouchableOpacity>
   );
