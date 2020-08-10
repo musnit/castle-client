@@ -8,12 +8,15 @@ import { useCardCreator } from '../CreateCardContext';
 import { BottomSheet } from '../../components/BottomSheet';
 import { BottomSheetHeader } from '../../components/BottomSheetHeader';
 
+import ColorPicker from '../inspector/components/ColorPicker';
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
     borderTopLeftRadius: 6,
     borderTopRightRadius: 6,
   },
+  colorPicker: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   settingsRow: {
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
@@ -78,6 +81,15 @@ const CreateCardSettings = ({ element, isShowingTextActors, setShowingTextActors
 
   return (
     <View>
+      <View style={styles.settingsRow}>
+        <View style={styles.colorPicker}>
+          <Text style={styles.numberLabel}>Card background color</Text>
+          <ColorPicker
+            value={settingsData.sceneProperties.backgroundColor}
+            setValue={(color) => sendAction('set:backgroundColor', color)}
+          />
+        </View>
+      </View>
       <View style={styles.settingsRow}>
         <InspectorCheckbox
           label="Show text actors"
