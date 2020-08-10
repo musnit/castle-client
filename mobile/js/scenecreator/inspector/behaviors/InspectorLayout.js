@@ -74,12 +74,6 @@ export default InspectorLayout = ({ body, circleShape, sendActions }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Layout</Text>
-      <InspectorCheckbox
-        label="Use circular shape"
-        value={circleShape?.isActive}
-        onChange={onChangeCircleShape}
-        style={{ marginRight: 16, marginBottom: 12 }}
-      />
       <View style={styles.properties}>
         {circleShape?.isActive ? (
           <LayoutInput
