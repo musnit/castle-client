@@ -32,7 +32,7 @@ const ROOT_SHEETS = [
     snapPoints: [FULL_SHEET_HEIGHT],
   },
   {
-    key: 'layout',
+    key: 'sceneCreatorSettings',
     Component: CreateCardSettingsSheet,
     snapPoints: [FULL_SHEET_HEIGHT * 0.6],
   },

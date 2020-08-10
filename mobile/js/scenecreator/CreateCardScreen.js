@@ -374,7 +374,7 @@ export const CreateCardScreen = ({
               <CardBottomActions
                 card={card}
                 onAdd={() => setActiveSheet('sceneCreatorBlueprints')}
-                onOpenLayout={() => setActiveSheet('layout')}
+                onOpenLayout={() => setActiveSheet('sceneCreatorSettings')}
                 onSave={saveAndGoToDeck}
                 isSceneLoaded={isSceneLoaded}
                 isPlayingScene={isPlaying}
