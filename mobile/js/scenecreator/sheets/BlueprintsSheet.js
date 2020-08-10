@@ -41,19 +41,15 @@ const styles = StyleSheet.create({
   },
 });
 
-const DEFAULT_BLUEPRINT_IMAGES = {
-  Wall: require('../../../assets/images/add.png'),
-  Ball: require('../../../assets/images/add.png'),
-  Text: require('../../../assets/images/add.png'),
-  Button: require('../../../assets/images/add.png'),
-};
-
 const BlueprintItem = ({ entry, onPress }) => {
   return (
     <TouchableOpacity style={styles.itemContainer} onPress={onPress}>
       <View style={styles.preview}>
-        {DEFAULT_BLUEPRINT_IMAGES[entry.title] ? (
-          <FastImage source={DEFAULT_BLUEPRINT_IMAGES[entry.title]} style={styles.image} />
+        {entry.base64Png ? (
+          <FastImage
+            source={{ uri: `data:image/png;base64,${entry.base64Png}` }}
+            style={styles.image}
+          />
         ) : null}
       </View>
       <View style={{ flexShrink: 1 }}>
