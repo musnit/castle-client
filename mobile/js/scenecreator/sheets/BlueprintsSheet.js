@@ -3,9 +3,8 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { BottomSheetHeader } from '../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from './CardCreatorBottomSheet';
-import { sendDataPaneAction, ToolImage } from '../../Tools';
+import { sendDataPaneAction } from '../../Tools';
 import { useGhostUI } from '../../ghost/GhostUI';
-import { useCardCreator } from '../CreateCardContext';
 
 const styles = StyleSheet.create({
   container: {
@@ -42,21 +41,9 @@ const styles = StyleSheet.create({
 });
 
 const BlueprintItem = ({ entry, onPress }) => {
-  // TODO: needed for transformAssetUri in ToolImage
-  const context = useCardCreator();
-
   return (
     <TouchableOpacity style={styles.itemContainer} onPress={onPress}>
-      <View style={styles.preview}>
-        {entry.actorBlueprint?.components?.Drawing?.url ? (
-          <ToolImage
-            element={{}}
-            path={entry.actorBlueprint?.components.Drawing.url}
-            context={context}
-            style={styles.image}
-          />
-        ) : null}
-      </View>
+      <View style={styles.preview}>{/* TODO: image preview here */}</View>
       <View style={{ flexShrink: 1 }}>
         <Text style={styles.title}>{entry.title}</Text>
         <Text>{entry.description}</Text>
