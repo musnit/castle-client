@@ -2,7 +2,7 @@
 
 Please find more information, updates, and support at [castle.xyz](http://castle.xyz).
 
-Looking for our older games product for Windows and Mac? See [here](../castle-games).
+Looking for our older games product for Windows and Mac? See [here](https://github.com/castle-games/castle-games).
 
 ## Project Structure
 
