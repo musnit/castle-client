@@ -13,25 +13,7 @@ compile_commands.json
 
 imgui.ini
 
-megasource/build
-megasource/installer/build
-megasource/CastleSetup.exe
-
 ._*
-
-macosx/DerivedData
-macosx/DerivedData-beta
-macosx/boost/boost_1_67_0/
-
-win/boost/boost_1_67_0/
-win/boost/boost_1_67_0.zip
-
-desktop/package-lock.json
-
-ghost-releases/
-
-macosx/castle-releases
-megasource/castle-releases
 
 *.aps
 
