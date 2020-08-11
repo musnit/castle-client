@@ -1,0 +1,13 @@
+Copyright for portions of the Ghost and Castle projects are held by LOVE Development Team, 2006-2020 as part of project LOVE and are provided under the zlib license. This license within the LOVE project contains a license specifying additonal copyrights for portions of project LOVE.
+
+Copyright for additional portions of the Ghost and Castle projects are held by various groups which are specified within licenses contained within this project.
+
+All other copyright for the Ghost and Castle projects are held by Monterey's Coast, Inc., 2020 per the following license:
+
+Copyright 2020, Monterey's Coast Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
