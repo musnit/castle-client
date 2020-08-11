@@ -1,5 +1,0 @@
-target 'objective-c-osx' do
-    platform :osx, "10.8"
-    pod 'Bugsnag', :path => "../.."
-end
-
