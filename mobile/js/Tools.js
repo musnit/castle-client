@@ -262,7 +262,7 @@ const viewStyleProps = (p) => {
 
 // Render a pane with default values for the context. Each pane tends to have its own styling, so also takes
 // a `style` prop.
-export const ToolPane = React.memo(({ element, style }) => {
+const ToolPane = React.memo(({ element, style }) => {
   if (!element || !element.props) return null;
   const context = useCardCreator();
   return (
