@@ -3,6 +3,7 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { getPaneData, sendDataPaneAction } from '../../Tools';
 import { SegmentedNavigation } from '../../components/SegmentedNavigation';
 import { useActionSheet } from '@expo/react-native-action-sheet';
+import { useCardCreator } from '../CreateCardContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import * as Constants from '../../Constants';
@@ -89,6 +90,7 @@ export const InspectorHeader = ({
   setSelectedTab,
 }) => {
   const { showActionSheetWithOptions } = useActionSheet();
+  const { behaviorActions } = useCardCreator(); // TODO: only needed for legacy drawing swap
 
   let data, sendAction;
   if (pane) {
@@ -113,8 +115,7 @@ export const InspectorHeader = ({
   }, [sendAction]);
 
   if (data) {
-    let drawButton1, drawButton2, scaleRotateButton;
-    let isDraw1Selected = false;
+    let drawButtonLegacy, drawButton2, scaleRotateButton;
     let isDraw2Selected = false;
 
     if (data.applicableTools) {
@@ -131,17 +132,25 @@ export const InspectorHeader = ({
       );
 
       if (draw1Behavior) {
-        isDraw1Selected = data.activeToolBehaviorId === draw1Behavior.behaviorId;
         const onPress = () =>
-          sendAction(
-            'setActiveTool',
-            isDraw1Selected ? grabBehavior.behaviorId : draw1Behavior.behaviorId
+          showActionSheetWithOptions(
+            {
+              title: 'Migrate to new draw tool?',
+              message:
+                'This action will discard the legacy drawing for this actor and enable the newer drawing tool.',
+              options: ['Continue', 'Cancel'],
+              cancelButtonIndex: 1,
+            },
+            async (buttonIndex) => {
+              if (buttonIndex == 0) {
+                // convert draw1 to draw2
+                await behaviorActions.Drawing('swap', { name: 'Drawing2' });
+              }
+            }
           );
-        drawButton1 = (
-          <TouchableOpacity
-            style={[styles.actionButton, { backgroundColor: isDraw1Selected ? '#000' : '#fff' }]}
-            onPress={onPress}>
-            <Icon name="edit" size={22} color={isDraw1Selected ? '#fff' : '#000'} />
+        drawButtonLegacy = (
+          <TouchableOpacity style={styles.actionButton} onPress={onPress}>
+            <Icon name="edit" size={22} color="#000" />
           </TouchableOpacity>
         );
       }
@@ -190,7 +199,7 @@ export const InspectorHeader = ({
           </TouchableOpacity>
           <View style={styles.actions}>
             {drawButton2}
-            {drawButton1}
+            {drawButtonLegacy}
             {scaleRotateButton}
             <TouchableOpacity style={styles.actionButton} onPress={changeSelectionOrder}>
               <Icon name="layers" size={22} color="#000" />
