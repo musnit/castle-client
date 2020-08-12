@@ -143,8 +143,13 @@ export const InspectorHeader = ({
             },
             async (buttonIndex) => {
               if (buttonIndex == 0) {
-                // convert draw1 to draw2
-                await behaviorActions.Drawing('swap', { name: 'Drawing2' });
+                if (draw2Behavior) {
+                  // actor already has draw2, just remove draw1
+                  behaviorActions.Drawing('remove');
+                } else {
+                  // swap draw1 for draw2
+                  behaviorActions.Drawing('swap', { name: 'Drawing2' });
+                }
               }
             }
           );
