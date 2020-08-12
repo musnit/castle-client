@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
 const BlueprintItem = ({ entry, onPress }) => {
   return (
     <TouchableOpacity style={styles.itemContainer} onPress={onPress}>
-      <View style={styles.preview}>
+      <View style={[styles.preview, entry.base64Png ? null : { backgroundColor: '#ddd' }]}>
         {entry.base64Png ? (
           <FastImage
             source={{ uri: `data:image/png;base64,${entry.base64Png}` }}
