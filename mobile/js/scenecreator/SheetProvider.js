@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Animated, TouchableWithoutFeedback, View } from 'react-native';
-import { ActiveToolSheet } from './sheets/ActiveToolSheet';
 import { BlueprintsSheet } from './sheets/BlueprintsSheet';
 import { CardToolsSheet } from './sheets/CardToolsSheet';
 import { CreateCardSettingsSheet } from './sheets/CreateCardSettingsSheet';
@@ -17,10 +16,6 @@ const ROOT_SHEETS = [
   {
     key: 'sceneCreatorBlueprints',
     Component: BlueprintsSheet,
-  },
-  {
-    key: 'sceneCreatorTool',
-    Component: ActiveToolSheet,
   },
   {
     key: 'sceneCreatorInspector',

@@ -187,15 +187,10 @@ export const CreateCardScreen = ({
       const activeToolBehavior = globalActions.tools.find(
         (behavior) => behavior.behaviorId === globalActions.activeToolBehaviorId
       );
-      if (activeToolBehavior && activeToolBehavior.hasUi) {
-        // legacy: old draw tool
-        setActiveSheet('sceneCreatorTool');
-      } else if (activeToolBehavior && activeToolBehavior.name == 'Draw2') {
-        // new draw tool
+      // show/hide new draw tool
+      if (activeToolBehavior && activeToolBehavior.name == 'Draw2') {
         setIsShowingDraw(true);
       } else {
-        // close old draw tool and new draw tool
-        setActiveSheet(null);
         setIsShowingDraw(false);
       }
     }
