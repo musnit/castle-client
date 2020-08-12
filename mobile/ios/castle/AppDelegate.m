@@ -154,6 +154,7 @@ int SDL_main(int argc, char *argv[]) {
 
 - (void)applicationWillResignActive:(UIApplication *)application {
   [self.sdlDelegate applicationWillResignActive:application];
+  [GhostView sharedGhostView].displayLink.paused = YES;
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
@@ -166,6 +167,7 @@ int SDL_main(int argc, char *argv[]) {
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
   [self.sdlDelegate applicationDidBecomeActive:application];
+  [GhostView sharedGhostView].displayLink.paused = NO;
 }
 
 // Handle remote notification registration.

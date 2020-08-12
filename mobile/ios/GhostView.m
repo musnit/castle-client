@@ -11,6 +11,8 @@
 
 @implementation GhostView
 
+bool ghostPaused;
+
 + (instancetype)sharedGhostView {
   static GhostView *sharedGhostView = nil;
   static dispatch_once_t onceToken;
@@ -175,7 +177,6 @@
 
 extern double ghostScreenScaling;
 extern bool ghostApplyScreenScaling;
-bool ghostPaused;
 
 - (void)setScreenScaling:(double)screenScaling {
   ghostScreenScaling = screenScaling;
