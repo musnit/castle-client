@@ -660,11 +660,11 @@
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
-						DevelopmentTeam = 48GFST92BB;
+						DevelopmentTeam = CUW59GZ74D;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = 48GFST92BB;
+						DevelopmentTeam = CUW59GZ74D;
 					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -1142,7 +1142,7 @@
 			baseConfigurationReference = C1DF76557142480ED55F211A /* Pods-CastleTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 48GFST92BB;
+				DEVELOPMENT_TEAM = CUW59GZ74D;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -1167,7 +1167,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 48GFST92BB;
+				DEVELOPMENT_TEAM = CUW59GZ74D;
 				INFOPLIST_FILE = CastleTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -1193,7 +1193,7 @@
 				CODE_SIGN_ENTITLEMENTS = Castle/Castle.entitlements;
 				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 48GFST92BB;
+				DEVELOPMENT_TEAM = CUW59GZ74D;
 				INFOPLIST_FILE = Castle/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 4.0;
@@ -1202,7 +1202,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "games.castle.castle-debug";
+				PRODUCT_BUNDLE_IDENTIFIER = "xyz.castle.castle-debug";
 				PRODUCT_NAME = Castle;
 				STRIP_INSTALLED_PRODUCT = NO;
 				STRIP_STYLE = "non-global";
@@ -1222,7 +1222,7 @@
 				CODE_SIGN_ENTITLEMENTS = Castle/Castle.entitlements;
 				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 48GFST92BB;
+				DEVELOPMENT_TEAM = CUW59GZ74D;
 				INFOPLIST_FILE = Castle/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 4.0;
@@ -1231,7 +1231,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = games.castle.castle;
+				PRODUCT_BUNDLE_IDENTIFIER = xyz.castle.castle;
 				PRODUCT_NAME = Castle;
 				STRIP_INSTALLED_PRODUCT = NO;
 				STRIP_STYLE = "non-global";
