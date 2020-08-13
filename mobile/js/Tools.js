@@ -12,13 +12,8 @@ import {
   Keyboard,
 } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
-import Slider from '@react-native-community/slider';
-import Markdown from 'react-native-markdown-renderer';
-import Popover from 'react-native-popover-view';
 import tinycolor from 'tinycolor2';
 import FastImage from 'react-native-fast-image';
-import FitImage from 'react-native-fit-image';
-import { Base64 } from 'js-base64';
 import ImagePicker from 'react-native-image-picker';
 import { ReactNativeFile } from 'apollo-upload-client';
 import gql from 'graphql-tag';
@@ -315,8 +310,8 @@ const buttonStyle = ({ selected = false } = {}) => ({
 
 const BasePopover = (props) => {
   const { popoverPlacement } = useContext(ToolsContext);
-
-  return (
+  return null; // TODO: unimplemented
+  /* return (
     <Popover
       placement={popoverPlacement}
       popoverStyle={{
@@ -336,7 +331,7 @@ const BasePopover = (props) => {
       backgroundStyle={{ backgroundColor: 'transparent' }}
       {...props}
     />
-  );
+  ); */
 };
 
 const boldWeight1 = '700';
@@ -394,7 +389,7 @@ const SvgFit = ({ style, uri }) => {
           height: BASE_SVG_SIZE,
           transform: [{ scaleX: scale }, { scaleY: scale }],
         }}>
-        {/* <SvgImage
+        {/* TODO: unimplemented <SvgImage
           style={{
             width: '100%',
             height: '100%',
@@ -618,8 +613,9 @@ const ToolNumberInput = ({ isSlider, element }) => {
   return (
     <Labelled element={element}>
       <View style={{ flexDirection: 'row', alignItems: 'stretch' }}>
-        {isSlider ? (
-          <Slider
+        {isSlider
+          ? {
+              /* TODO: unimplemented <Slider
             style={{
               flex: 1,
 
@@ -638,8 +634,9 @@ const ToolNumberInput = ({ isSlider, element }) => {
               setValue(newValue);
               setText(numberToText(newValue));
             }}
-          />
-        ) : null}
+            /> */
+            }
+          : null}
         <View style={isSlider ? { width: 50, marginLeft: 4 } : { flex: 1 }}>
           <TextInput
             ref={textInputRef}
@@ -849,7 +846,7 @@ const ToolMarkdown = ({ element }) => {
 
   return (
     <View style={{ margin: 4 }}>
-      <Markdown
+      {/* TODO: unimplemented <Markdown
         style={markdownStyles}
         rules={{
           image: (node, children, parent, styles) => {
@@ -864,7 +861,7 @@ const ToolMarkdown = ({ element }) => {
           },
         }}>
         {element.props.source}
-      </Markdown>
+        </Markdown>*/}
     </View>
   );
 };

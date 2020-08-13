@@ -4,7 +4,6 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { ApolloProvider } from '@apollo/react-hooks';
 import { RootNavigator } from './Navigation';
 import BootSplash from 'react-native-bootsplash';
-import DevMenu from '@terrysahaidak/react-native-devmenu';
 import * as GhostEvents from './ghost/GhostEvents';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableAndroidFontFix } from './AndroidFontFix';
@@ -43,19 +42,17 @@ const Main = () => {
 const MainProvider = () => {
   return (
     <View style={{ flex: 1 }}>
-      <DevMenu numberOfTouches={4}>
-        <Session.Provider>
-          <GhostEvents.Provider>
-            <ApolloProvider client={Session.apolloClient}>
-              <ActionSheetProvider>
-                <SafeAreaProvider>
-                  <Main />
-                </SafeAreaProvider>
-              </ActionSheetProvider>
-            </ApolloProvider>
-          </GhostEvents.Provider>
-        </Session.Provider>
-      </DevMenu>
+      <Session.Provider>
+        <GhostEvents.Provider>
+          <ApolloProvider client={Session.apolloClient}>
+            <ActionSheetProvider>
+              <SafeAreaProvider>
+                <Main />
+              </SafeAreaProvider>
+            </ActionSheetProvider>
+          </ApolloProvider>
+        </GhostEvents.Provider>
+      </Session.Provider>
     </View>
   );
 };
