@@ -5,6 +5,7 @@ import { SegmentedNavigation } from '../../components/SegmentedNavigation';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useCardCreator } from '../CreateCardContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import FeatherIcon from 'react-native-vector-icons/Feather';
 
 import * as Constants from '../../Constants';
 
@@ -171,7 +172,7 @@ export const InspectorHeader = ({
           <TouchableOpacity
             style={[styles.actionButton, { backgroundColor: isDraw2Selected ? '#000' : '#fff' }]}
             onPress={onPress}>
-            <Icon name="palette" size={22} color={isDraw2Selected ? '#fff' : '#000'} />
+            <FeatherIcon name="image" size={22} color={isDraw2Selected ? '#fff' : '#000'} />
           </TouchableOpacity>
         );
       }
@@ -207,17 +208,17 @@ export const InspectorHeader = ({
             {drawButtonLegacy}
             {scaleRotateButton}
             <TouchableOpacity style={styles.actionButton} onPress={changeSelectionOrder}>
-              <Icon name="layers" size={22} color="#000" />
+              <FeatherIcon name="layers" size={22} color="#000" />
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.actionButton}
               onPress={() => sendAction('duplicateSelection')}>
-              <Icon name="content-copy" size={22} color="#000" />
+              <FeatherIcon name="copy" size={22} color="#000" />
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.actionButton}
               onPress={() => sendAction('deleteSelection')}>
-              <Icon name="delete" size={22} color="#000" />
+              <FeatherIcon name="trash-2" size={22} color="#000" />
             </TouchableOpacity>
           </View>
         </View>
