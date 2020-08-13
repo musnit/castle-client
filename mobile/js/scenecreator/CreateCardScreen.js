@@ -363,7 +363,9 @@ export const CreateCardScreen = ({
                   isEditable={!isPlaying}
                 />
               </View>
-              <FakePlayDeckActions />
+              {isShowingTextActors ? (
+                <FakePlayDeckActions />
+              ) : null}
             </View>
             {isShowingDraw ? (
               <DrawingCardBottomActions />
