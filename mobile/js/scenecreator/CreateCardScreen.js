@@ -33,6 +33,7 @@ import {
 } from './drawing/DrawingCardBottomActions';
 import { PopoverProvider } from './PopoverProvider';
 import { SheetProvider } from './SheetProvider';
+import { FakePlayDeckActions } from '../play/PlayDeckActions';
 
 import { getInspectorBehaviors, getTextActorsData, getActiveTool } from './SceneCreatorUtilities';
 
@@ -362,6 +363,7 @@ export const CreateCardScreen = ({
                   isEditable={!isPlaying}
                 />
               </View>
+              <FakePlayDeckActions />
             </View>
             {isShowingDraw ? (
               <DrawingCardBottomActions />

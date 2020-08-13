@@ -90,3 +90,28 @@ export const PlayDeckActions = ({ deck }) => {
     </React.Fragment>
   );
 };
+
+export const FakePlayDeckActions = () => {
+  return (
+    <React.Fragment>
+      <View
+        style={styles.creator}
+        pointerEvents="none">
+        <View style={styles.avatar}>
+          {/* <UserAvatar url={creator.photo?.url} /> */}
+        </View>
+        <Text style={styles.username}>username</Text>
+      </View>
+      <View
+        style={styles.right}
+        pointerEvents="none">
+        <View style={styles.rightButton}>
+          <Feather name="code" color="#fff" size={24} style={styles.rightButtonIcon} />
+        </View>
+        <View style={styles.rightButton}>
+          <Feather name="share" color="#fff" size={24} style={styles.rightButtonIcon} />
+        </View>
+      </View>
+    </React.Fragment>
+  );
+};
