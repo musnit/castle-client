@@ -41,6 +41,31 @@ const styles = StyleSheet.create({
   },
 });
 
+const CORE_BLUEPRINT_SORT_ORDER = ['Ball', 'Wall', 'Text box', 'Navigation button'];
+
+const orderedEntries = (library, type = 'actorBlueprint') => {
+  if (!library) return [];
+
+  let entries = Object.entries(library).map(([entryId, entry]) => entry);
+  entries = entries.filter((entry) => entry.entryType === type);
+  entries = entries.sort((a, b) => {
+    if (a.isCore !== b.isCore) {
+      // sort all core entries after all custom entries
+      return a.isCore ? 1 : -1;
+    } else if (a.isCore && b.isCore) {
+      // sort core entries according to prebaked order
+      const aOrder = CORE_BLUEPRINT_SORT_ORDER.indexOf(a.title),
+        bOrder = CORE_BLUEPRINT_SORT_ORDER.indexOf(b.title);
+      if (aOrder !== -1 && bOrder !== -1) {
+        return aOrder < bOrder ? -1 : 1;
+      }
+    }
+    // sort all other entries alphabetically
+    return a.title.localeCompare(b.title);
+  });
+  return entries;
+};
+
 const BlueprintItem = ({ entry, onPress }) => {
   return (
     <TouchableOpacity style={styles.itemContainer} onPress={onPress}>
@@ -84,7 +109,7 @@ export const BlueprintsSheet = ({ element, isOpen, onClose, title, onSelectBluep
 
   const renderContent = () => (
     <View style={styles.container}>
-      {Object.entries(blueprintsData.library).map(([entryId, entry], ii) => {
+      {orderedEntries(blueprintsData?.library).map((entry, ii) => {
         if (entry.entryType === 'actorBlueprint') {
           return (
             <BlueprintItem
