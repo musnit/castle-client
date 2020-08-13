@@ -22,7 +22,6 @@ import { Base64 } from 'js-base64';
 import ImagePicker from 'react-native-image-picker';
 import { ReactNativeFile } from 'apollo-upload-client';
 import gql from 'graphql-tag';
-import SvgImage from 'react-native-remote-svg';
 
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -395,13 +394,13 @@ const SvgFit = ({ style, uri }) => {
           height: BASE_SVG_SIZE,
           transform: [{ scaleX: scale }, { scaleY: scale }],
         }}>
-        <SvgImage
+        {/* <SvgImage
           style={{
             width: '100%',
             height: '100%',
           }}
           source={{ uri }}
-        />
+              /> */}
       </View>
     </View>
   );
