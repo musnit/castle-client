@@ -81,13 +81,23 @@ const wrapInCondition = (response) => {
   };
 };
 
+const replace = (response, newResponse) => {
+  return {
+    ...newResponse,
+    params: {
+      ...newResponse.params,
+      nextResponse: response.params?.nextResponse,
+    },
+  };
+};
+
 export const makeResponseActions = (response, onChangeResponse) => {
   return {
     remove: () => onChangeResponse(removeResponse(response)),
     moveDown: response.params?.nextResponse
       ? () => onChangeResponse(moveResponseDown(response))
       : null,
-    replace: (newResponse) => onChangeResponse(newResponse),
+    replace: (newResponse) => onChangeResponse(replace(response, newResponse)),
     insertBefore: (newResponse) => onChangeResponse(insertBefore(response, newResponse)),
     wrapInCondition: () => onChangeResponse(wrapInCondition(response)),
   };
