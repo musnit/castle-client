@@ -49,12 +49,7 @@ const GeneralTab = ({ behaviors, sendActions, addChildSheet }) => {
       )}
       {!isTextActorSelected && (
         <React.Fragment>
-          <Inspector.Drawing
-            drawing={behaviors.Drawing}
-            drawing2={behaviors.Drawing2}
-            sendAction={sendActions.Drawing}
-          />
-          <Inspector.Image image={behaviors.Image} sendAction={sendActions.Image} />
+          <Inspector.Drawing drawing2={behaviors.Drawing2} sendAction={sendActions.Drawing} />
         </React.Fragment>
       )}
       <Inspector.Tags tags={behaviors.Tags} sendAction={sendActions.Tags} />
