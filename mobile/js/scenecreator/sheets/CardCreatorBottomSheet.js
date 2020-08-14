@@ -44,6 +44,7 @@ export const CardCreatorBottomSheet = React.memo(({ element, headerHeight = 64, 
         backgroundColor: '#fff',
         borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,
         borderTopRightRadius: Constants.CARD_BORDER_RADIUS,
+        ...Constants.styles.dropShadow,
       }}
       {...props}
     />
