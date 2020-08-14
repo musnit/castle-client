@@ -1,4 +1,4 @@
-package games.castle;
+package xyz.castle;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;

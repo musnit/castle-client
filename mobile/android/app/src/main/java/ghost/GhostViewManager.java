@@ -2,7 +2,6 @@ package ghost;
 
 import android.util.Log;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -14,7 +13,7 @@ import org.love2d.android.GameActivity;
 
 import javax.annotation.Nullable;
 
-import games.castle.MainActivity;
+import xyz.castle.MainActivity;
 
 public class GhostViewManager extends SimpleViewManager<ViewGroup> implements LifecycleEventListener {
 

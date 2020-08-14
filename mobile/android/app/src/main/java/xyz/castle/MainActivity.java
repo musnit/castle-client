@@ -1,9 +1,7 @@
-package games.castle;
+package xyz.castle;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.ViewGroup;

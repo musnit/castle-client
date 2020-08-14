@@ -1,6 +1,6 @@
-package games.castle;
+package xyz.castle;
 
-import games.castle.generated.BasePackageList;
+import xyz.castle.generated.BasePackageList;
 
 import android.content.Context;
 import android.app.Application;

@@ -1,4 +1,4 @@
-package games.castle.generated;
+package xyz.castle.generated;
 
 import java.util.Arrays;
 import java.util.List;

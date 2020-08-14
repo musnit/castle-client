@@ -1,7 +1,5 @@
 package ghost;
 
-import android.util.Log;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -18,7 +16,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import androidx.annotation.NonNull;
-import games.castle.CastleFirebaseMessagingService;
+import xyz.castle.CastleFirebaseMessagingService;
 
 public class GhostPushNotificationsModule extends ReactContextBaseJavaModule {
     GhostPushNotificationsModule(ReactApplicationContext reactContext) {

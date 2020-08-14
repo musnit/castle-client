@@ -10,7 +10,7 @@ import com.facebook.react.bridge.WritableArray;
 
 import org.love2d.android.Channels;
 
-import games.castle.MainActivity;
+import xyz.castle.MainActivity;
 
 public class GhostChannelsModule extends ReactContextBaseJavaModule {
   GhostChannelsModule(ReactApplicationContext reactContext) {
