@@ -5,6 +5,7 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 import uuid from 'uuid/v4';
 
 import * as SceneCreatorConstants from './SceneCreatorConstants';
+import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
   content: {
@@ -13,7 +14,7 @@ const styles = StyleSheet.create({
   variableInputContainer: {
     borderBottomWidth: 1,
     borderColor: '#ccc',
-    paddingVertical: 12,
+    paddingVertical: Constants.iOS ? 12 : 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -77,7 +78,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     color: '#888',
-  }
+  },
 });
 
 const EMPTY_VARIABLE = {
@@ -105,7 +106,7 @@ const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) 
   };
   return (
     <View style={styles.variableInputContainer}>
-      <View style={{ flexDirection: 'row', width: '50%' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', width: '50%' }}>
         <Text style={styles.variablePrefix}>$</Text>
         <TextInput
           style={[styles.input, styles.variableName]}
@@ -119,7 +120,7 @@ const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) 
       </View>
       {/* <Text style={[styles.variableType, { width: '32%' }]}>{type}</Text> */}
       <TextInput
-        style={[styles.input, { width: '50s%' }]}
+        style={[styles.input, { width: '50%' }]}
         placeholderTextColor="#666"
         autoCompleteType="off"
         autoCorrect={false}
@@ -195,7 +196,9 @@ export const DeckVariables = ({ variables, onChange }) => {
       </View>
       <View style={styles.explainer}>
         <FeatherIcon name="book-open" size={18} color="#888" style={styles.explainerIcon} />
-        <Text style={styles.explainerText}>Variables are shared between all cards in the same deck.</Text>
+        <Text style={styles.explainerText}>
+          Variables are shared between all cards in the same deck.
+        </Text>
       </View>
     </View>
   );
