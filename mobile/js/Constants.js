@@ -12,8 +12,15 @@ export const styles = {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.25,
-    shadowRadius: 2,
-    elevation: 2,
+    shadowRadius: 0,
+    elevation: 1,
+  },
+  dropShadowUp: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.25,
+    shadowRadius: 1,
+    elevation: 1,
   },
   textShadow: {
     textShadowColor: '#0004',
