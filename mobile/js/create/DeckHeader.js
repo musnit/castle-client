@@ -1,5 +1,12 @@
 import React from 'react';
-import { View, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import {
+  ActivityIndicator,
+  View,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
 import { CardCell } from '../components/CardCell';
 import { SegmentedNavigation } from '../components/SegmentedNavigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -57,36 +64,45 @@ const MODE_ITEMS = [
 ];
 
 const DeckVisibleControl = ({ deck, onToggleVisible }) => {
-  if (!deck) return null;
-  const initialCard = deck.cards.find((c) => c.cardId === deck.initialCard.cardId);
-  if (!initialCard) return null;
+  let initialCard;
+  if (deck) {
+    initialCard = deck.cards.find((c) => c.cardId === deck.initialCard.cardId);
+  }
+  if (!initialCard) {
+    // loading placeholder
+    initialCard = {};
+  }
 
   return (
     <React.Fragment>
       <View style={styles.topCardPreview}>
-        <CardCell card={initialCard} isPrivate={!deck.isVisible} />
+        <CardCell card={initialCard} isPrivate={!deck?.isVisible} />
       </View>
-      <View style={styles.instructions}>
-        {deck.isVisible ? (
-          <React.Fragment>
-            <Text style={styles.instructionsLabel}>
-              This deck is <Text style={{ fontWeight: '700' }}>public</Text>.
-            </Text>
-            <TouchableOpacity style={Constants.styles.primaryButton} onPress={onToggleVisible}>
-              <Text style={Constants.styles.primaryButtonLabel}>Make Private</Text>
-            </TouchableOpacity>
-          </React.Fragment>
-        ) : (
-          <React.Fragment>
-            <Text style={styles.instructionsLabel}>
-              This deck is <Text style={{ fontWeight: '700' }}>private</Text>.
-            </Text>
-            <TouchableOpacity style={Constants.styles.primaryButton} onPress={onToggleVisible}>
-              <Text style={Constants.styles.primaryButtonLabel}>Make Public</Text>
-            </TouchableOpacity>
-          </React.Fragment>
-        )}
-      </View>
+      {deck ? (
+        <View style={styles.instructions}>
+          {deck.isVisible ? (
+            <React.Fragment>
+              <Text style={styles.instructionsLabel}>
+                This deck is <Text style={{ fontWeight: '700' }}>public</Text>.
+              </Text>
+              <TouchableOpacity style={Constants.styles.primaryButton} onPress={onToggleVisible}>
+                <Text style={Constants.styles.primaryButtonLabel}>Make Private</Text>
+              </TouchableOpacity>
+            </React.Fragment>
+          ) : (
+            <React.Fragment>
+              <Text style={styles.instructionsLabel}>
+                This deck is <Text style={{ fontWeight: '700' }}>private</Text>.
+              </Text>
+              <TouchableOpacity style={Constants.styles.primaryButton} onPress={onToggleVisible}>
+                <Text style={Constants.styles.primaryButtonLabel}>Make Public</Text>
+              </TouchableOpacity>
+            </React.Fragment>
+          )}
+        </View>
+      ) : (
+        <ActivityIndicator color="#fff" size="large" />
+      )}
     </React.Fragment>
   );
 };
