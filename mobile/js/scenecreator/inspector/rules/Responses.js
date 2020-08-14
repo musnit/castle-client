@@ -175,7 +175,7 @@ const VariableMeetsCondition = ({ response, context }) => {
     return [
       {
         type: 'selectEntry',
-        label: 'a variable meets a condition:',
+        label: 'variable',
       },
       {
         type: 'selectParamSheet',
@@ -197,7 +197,7 @@ const VariableMeetsCondition = ({ response, context }) => {
     return [
       {
         type: 'selectEntry',
-        label: 'a variable meets a condition',
+        label: 'variable',
       },
       {
         type: 'selectParamSheet',
