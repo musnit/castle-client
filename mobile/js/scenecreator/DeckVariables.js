@@ -1,17 +1,17 @@
 import React from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
-import Ionicon from 'react-native-vector-icons/Ionicons';
+import FeatherIcon from 'react-native-vector-icons/Feather';
 import uuid from 'uuid/v4';
 
-import * as Constants from '../Constants';
+import * as SceneCreatorConstants from './SceneCreatorConstants';
 
 const styles = StyleSheet.create({
   content: {
     padding: 16,
   },
   variableInputContainer: {
-    borderTopWidth: 1,
+    borderBottomWidth: 1,
     borderColor: '#ccc',
     paddingVertical: 12,
     flexDirection: 'row',
@@ -19,10 +19,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   variablePrefix: {
-    color: '#bbb',
+    color: '#888',
     fontSize: 16,
     lineHeight: 20,
-    fontWeight: '700',
     paddingRight: 4,
     flexGrow: 0,
   },
@@ -33,17 +32,19 @@ const styles = StyleSheet.create({
   },
   variableName: {
     flexGrow: 1,
+    fontWeight: '700',
   },
   input: {
     color: '#000',
     fontSize: 16,
     lineHeight: 20,
-    fontWeight: '700',
   },
   labels: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    paddingBottom: 4,
+    borderBottomWidth: 1,
+    borderColor: '#ccc',
   },
   label: {
     width: '33%',
@@ -55,17 +56,28 @@ const styles = StyleSheet.create({
   },
   actions: {
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 16,
   },
   button: {
-    ...Constants.styles.plainButton,
-    backgroundColor: '#000',
+    ...SceneCreatorConstants.styles.button,
   },
   buttonLabel: {
-    paddingHorizontal: 8,
-    ...Constants.styles.plainButtonLabel,
-    color: '#fff',
+    ...SceneCreatorConstants.styles.buttonLabel,
   },
+  explainer: {
+    paddingTop: 16,
+    flexDirection: 'row',
+  },
+  explainerIcon: {
+    marginTop: 4,
+    marginRight: 12,
+  },
+  explainerText: {
+    flex: 1,
+    fontSize: 16,
+    lineHeight: 24,
+    color: '#888',
+  }
 });
 
 const EMPTY_VARIABLE = {
@@ -93,7 +105,7 @@ const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) 
   };
   return (
     <View style={styles.variableInputContainer}>
-      <View style={{ flexDirection: 'row', width: '32%' }}>
+      <View style={{ flexDirection: 'row', width: '50%' }}>
         <Text style={styles.variablePrefix}>$</Text>
         <TextInput
           style={[styles.input, styles.variableName]}
@@ -105,9 +117,9 @@ const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) 
           {...nameInputProps}
         />
       </View>
-      <Text style={[styles.variableType, { width: '32%' }]}>{type}</Text>
+      {/* <Text style={[styles.variableType, { width: '32%' }]}>{type}</Text> */}
       <TextInput
-        style={[styles.input, { width: '32%' }]}
+        style={[styles.input, { width: '50s%' }]}
         placeholderTextColor="#666"
         autoCompleteType="off"
         autoCorrect={false}
@@ -115,9 +127,9 @@ const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) 
         onChangeText={(value) => onChange({ initialValue: maybeParseInt(value) })}
         {...valueInputProps}
       />
-      <View style={{ width: '4%' }}>
+      <View style={{ width: 20, marginLeft: -20 }}>
         <TouchableOpacity onPress={onDelete}>
-          <Ionicon name="md-trash" size={24} color="#999" />
+          <FeatherIcon name="trash-2" size={20} color="#000" />
         </TouchableOpacity>
       </View>
     </View>
@@ -164,9 +176,8 @@ export const DeckVariables = ({ variables, onChange }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.labels}>
-        <Text style={[styles.label, { width: '32%' }]}>Name</Text>
-        <Text style={[styles.label, { width: '32%' }]}>Type</Text>
-        <Text style={[styles.label, { width: '36%' }]}>Initial Value</Text>
+        <Text style={[styles.label, { width: '50%' }]}>Name</Text>
+        <Text style={[styles.label, { width: '50%' }]}>Initial Value</Text>
       </View>
       {variables &&
         variables.map((variable, ii) => (
@@ -178,6 +189,14 @@ export const DeckVariables = ({ variables, onChange }) => {
             {...variable}
           />
         ))}
+      <View style={styles.explainer}>
+        <FeatherIcon name="book-open" size={18} color="#888" style={styles.explainerIcon} />
+        <Text style={styles.explainerText}>Variables can only be integer numbers.</Text>
+      </View>
+      <View style={styles.explainer}>
+        <FeatherIcon name="book-open" size={18} color="#888" style={styles.explainerIcon} />
+        <Text style={styles.explainerText}>Variables are shared between all cards in the same deck.</Text>
+      </View>
     </View>
   );
 };
