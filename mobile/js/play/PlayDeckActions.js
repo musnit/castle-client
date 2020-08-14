@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   },
   rightButtonIcon: {
     ...Constants.styles.textShadow,
-  }
+  },
 });
 
 const onShareDeck = async (deck) => {
@@ -63,13 +63,14 @@ const onShareDeck = async (deck) => {
   } catch (_) {}
 };
 
-export const PlayDeckActions = ({ deck }) => {
+export const PlayDeckActions = ({ deck, disabled }) => {
   const { creator } = deck;
   const { push } = useNavigation();
 
   return (
     <React.Fragment>
       <TouchableOpacity
+        disabled={disabled}
         style={styles.creator}
         onPress={() => push('Profile', { userId: creator.userId })}>
         <View style={styles.avatar}>
@@ -77,7 +78,7 @@ export const PlayDeckActions = ({ deck }) => {
         </View>
         <Text style={styles.username}>{creator.username}</Text>
       </TouchableOpacity>
-      <View style={styles.right}>
+      <View style={styles.right} pointerEvents={disabled ? 'none' : 'auto'}>
         <TouchableOpacity
           style={styles.rightButton}
           onPress={() => push('ViewSource', { deckIdToEdit: deck.deckId })}>
@@ -86,31 +87,6 @@ export const PlayDeckActions = ({ deck }) => {
         <TouchableOpacity style={styles.rightButton} onPress={() => onShareDeck(deck)}>
           <Feather name="share" color="#fff" size={24} style={styles.rightButtonIcon} />
         </TouchableOpacity>
-      </View>
-    </React.Fragment>
-  );
-};
-
-export const FakePlayDeckActions = () => {
-  return (
-    <React.Fragment>
-      <View
-        style={styles.creator}
-        pointerEvents="none">
-        <View style={styles.avatar}>
-          {/* <UserAvatar url={creator.photo?.url} /> */}
-        </View>
-        <Text style={styles.username}>username</Text>
-      </View>
-      <View
-        style={styles.right}
-        pointerEvents="none">
-        <View style={styles.rightButton}>
-          <Feather name="code" color="#fff" size={24} style={styles.rightButtonIcon} />
-        </View>
-        <View style={styles.rightButton}>
-          <Feather name="share" color="#fff" size={24} style={styles.rightButtonIcon} />
-        </View>
       </View>
     </React.Fragment>
   );

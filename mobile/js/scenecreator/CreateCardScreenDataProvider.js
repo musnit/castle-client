@@ -78,6 +78,27 @@ class CreateCardScreenDataProvider extends React.Component {
           // with a blank card unless we stop here.
           throw new Error(`Unable to fetch existing deck or card: ${e}`);
         }
+      } else {
+        // use EMPTY_DECK, but fetch actual creator
+        try {
+          const result = await Session.apolloClient.query({
+            query: gql`
+              query Me {
+                me {
+                  id
+                  userId
+                  username
+                  photo {
+                    url
+                  }
+                }
+              }
+            `,
+          });
+          deck.creator = result.data.me;
+        } catch (e) {
+          throw new Error(`Unable to fetch logged in creator: ${e}`);
+        }
       }
 
       // kludge: this allows us to check the screen's dirty state based on
