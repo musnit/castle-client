@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, Switch, View } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import FeatherIcon from 'react-native-vector-icons/Feather';
 
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
@@ -11,6 +11,7 @@ const styles = StyleSheet.create({
   },
   switch: {
     marginRight: 12,
+    transform: [{ scale: .9 }],
   },
 });
 
@@ -42,7 +43,7 @@ export const BehaviorHeader = ({ name, behavior, sendAction }) => {
         <TouchableOpacity
           onPress={onRemove}
           style={SceneCreatorConstants.styles.behaviorHeaderRemoveButton}>
-          <Icon name="delete" size={22} color="#000" />
+          <FeatherIcon name="trash-2" size={22} color="#000" />
         </TouchableOpacity>
       ) : null}
     </View>
