@@ -51,7 +51,7 @@ export default InspectorTags = ({ tags, sendAction }) => {
       <Text style={styles.label}>
         Tags <Text style={styles.sublabel}>(separated by spaces)</Text>
       </Text>
-      <InspectorTextInput value={value} onChangeText={onChange} />
+      <InspectorTextInput value={value} onChangeText={onChange} autoCapitalize="none" />
     </View>
   );
 };
