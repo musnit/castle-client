@@ -6,8 +6,8 @@
 // GhostView
 //
 
-#define SCENE_CREATOR_USE_PROD_SCENE_CREATOR false
-#define SCENE_CREATOR_DEV_URI @"reload+http://192.168.7.83:8080/Client.lua"
+#define SCENE_CREATOR_USE_PROD_SCENE_CREATOR true
+#define SCENE_CREATOR_DEV_URI @"reload+http://192.168.1.146:8080/Client.lua"
 
 @implementation GhostView
 
