@@ -24,6 +24,7 @@
     "apollo-link-error": "^1.1.12",
     "apollo-link-http": "^1.5.16",
     "apollo-upload-client": "^12.1.0",
+    "expo": "^38.0.9",
     "graphql": "^14.5.8",
     "graphql-tag": "^2.10.1",
     "lodash.debounce": "^4.0.8",
@@ -45,7 +46,8 @@
     "react-native-vector-icons": "^6.6.0",
     "tinycolor2": "^1.4.1",
     "url-parse": "^1.4.7",
-    "uuid": "^3.3.3"
+    "uuid": "^3.3.3",
+    "expo-haptics": "~8.2.1"
   },
   "devDependencies": {
     "@babel/core": "7.9.0",

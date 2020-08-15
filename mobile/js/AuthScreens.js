@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
+import * as Haptics from 'expo-haptics';
 
 import Session, { useSession } from './Session';
 import { navigateToUri } from './DeepLinks';
@@ -170,6 +171,17 @@ const LoginForm = ({ route }) => {
         />
       ) : null}
       <View style={{ width: '100%', alignItems: 'center', paddingBottom: 16 }}>
+        <TouchableOpacity
+          onPress={() => {
+            console.log('Test haptics');
+            Haptics.selectionAsync();
+          }}>
+          <Text style={{ color: Constants.colors.grayText, fontSize: 16 }}>
+            Test Haptics
+            <Text style={{ fontWeight: 'bold', color: Constants.colors.white }}>Sign up</Text>
+          </Text>
+        </TouchableOpacity>
+
         <TouchableOpacity onPress={onPressSignUp}>
           <Text style={{ color: Constants.colors.grayText, fontSize: 16 }}>
             Don't have an account?&nbsp;
@@ -205,12 +217,13 @@ const LoginForm = ({ route }) => {
         returnKeyType="go"
         onSubmitEditing={onPressSignIn}
       />
-      <View style={{
-        width: '100%',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingVertical: 8,
-      }}>
+      <View
+        style={{
+          width: '100%',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          paddingVertical: 8,
+        }}>
         <TouchableOpacity
           style={{ paddingTop: 8, paddingBottom: 16 }}
           onPress={onPressForgotPassword}>
@@ -395,9 +408,10 @@ const ForgotPasswordForm = () => {
         returnKeyType="go"
         onSubmitEditing={onPressResetPassword}
       />
-      <View style={{
-        paddingVertical: 8,
-      }}>
+      <View
+        style={{
+          paddingVertical: 8,
+        }}>
         <TouchableOpacity onPress={onPressResetPassword}>
           <Button text="Reset Password" spinner={resettingPassword} />
         </TouchableOpacity>
