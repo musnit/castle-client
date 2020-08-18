@@ -10,21 +10,6 @@ import * as Constants from '../Constants';
 const REFETCH_FEED_INTERVAL_MS = 30 * 1000;
 const SCROLL_LOAD_MORE_BUFFER = 96;
 
-const styles = StyleSheet.create({
-  scrollView: {
-    paddingLeft: 16,
-    paddingTop: 16,
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  deckCell: {
-    width: '33%',
-    paddingRight: 16,
-    paddingBottom: 16,
-  },
-});
-
 export const NewestDecks = ({ focused }) => {
   const { navigate } = useNavigation();
   const [lastFetched, setLastFetched] = React.useState({
@@ -121,11 +106,11 @@ export const NewestDecks = ({ focused }) => {
       ref={scrollViewRef}
       onScroll={onScroll}
       scrollEventThrottle={100}
-      contentContainerStyle={styles.scrollView}
+      contentContainerStyle={Constants.styles.gridContainer}
       refreshControl={refreshControl}>
       {decks
         ? decks.map((deck, ii) => (
-            <View key={`deck-${deck.deckId}-${ii}`} style={styles.deckCell}>
+            <View key={`deck-${deck.deckId}-${ii}`} style={Constants.styles.gridItem}>
               <CardCell
                 card={deck.initialCard}
                 onPress={() =>

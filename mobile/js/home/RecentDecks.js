@@ -10,18 +10,6 @@ import * as History from '../common/history';
 import * as Session from '../Session';
 
 const styles = StyleSheet.create({
-  scrollView: {
-    paddingLeft: 16,
-    paddingTop: 16,
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  deckCell: {
-    width: '33%',
-    paddingRight: 16,
-    paddingBottom: 16,
-  },
   empty: {
     width: '100%',
     padding: 8,
@@ -75,11 +63,11 @@ export const RecentDecks = ({ focused }) => {
   return (
     <ScrollView
       ref={scrollViewRef}
-      contentContainerStyle={styles.scrollView}
+      contentContainerStyle={Constants.styles.gridContainer}
       refreshControl={refreshControl}>
       {decks?.length ? (
         decks.map((deck, ii) => (
-          <View key={`deck-${deck.deckId}`} style={styles.deckCell}>
+          <View key={`deck-${deck.deckId}`} style={Constants.styles.gridItem}>
             <CardCell
               card={deck.initialCard}
               onPress={() =>

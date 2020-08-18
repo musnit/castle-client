@@ -30,13 +30,6 @@ const styles = StyleSheet.create({
     borderColor: Constants.colors.grayOnBlackBorder,
     paddingTop: 16,
   },
-  scrollView: {
-    paddingTop: 16,
-    paddingLeft: 16,
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
   decks: {
   },
   sectionTitle: {
@@ -44,11 +37,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
     marginVertical: 8,
-  },
-  cellContainer: {
-    paddingBottom: 16,
-    paddingRight: 16,
-    width: '33%',
   },
   cellTitle: {
     fontSize: 16,
@@ -71,7 +59,7 @@ const styles = StyleSheet.create({
 const EditDeckCell = (props) => {
   const { deck, onPress } = props;
   return (
-    <View style={styles.cellContainer}>
+    <View style={Constants.styles.gridItem}>
       <CardCell card={deck.initialCard} onPress={onPress} isPrivate={!deck.isVisible} />
     </View>
   );
@@ -79,7 +67,7 @@ const EditDeckCell = (props) => {
 
 const CreateDeckCell = (props) => {
   return (
-    <View style={styles.cellContainer}>
+    <View style={Constants.styles.gridItem}>
       <TouchableOpacity style={styles.createCell} onPress={props.onPress}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Text style={styles.cellTitle}>Create a new deck</Text>
@@ -153,7 +141,7 @@ export const CreateScreen = () => {
       <View style={styles.header}>
         <Text style={styles.sectionTitle}>Your Decks</Text>
       </View>
-      <ScrollView contentContainerStyle={styles.scrollView} refreshControl={refreshControl}>
+      <ScrollView contentContainerStyle={Constants.styles.gridContainer} refreshControl={refreshControl}>
         <CreateDeckCell
           key="create"
           onPress={() => {

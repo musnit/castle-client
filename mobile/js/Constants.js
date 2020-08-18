@@ -6,6 +6,7 @@ export const Android = Platform.OS === 'android';
 export const CARD_RATIO = 5 / 7;
 export const CARD_BORDER_RADIUS = 12;
 export const CARD_SMALL_BORDER_RADIUS = 6;
+export const GRID_PADDING = 16;
 
 export const styles = {
   dropShadow: {
@@ -90,6 +91,18 @@ export const styles = {
     paddingTop: 4,
     borderRadius: 4,
     backgroundColor: '#ddd',
+  },
+  gridContainer: {
+    paddingTop: 16,
+    paddingLeft: GRID_PADDING,
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  gridItem: {
+    paddingBottom: GRID_PADDING,
+    paddingRight: GRID_PADDING,
+    width: '33.3%',
   },
 };
 

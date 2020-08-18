@@ -40,16 +40,16 @@ const styles = StyleSheet.create({
   username: { marginTop: 4, fontSize: 18, color: Constants.colors.white, fontWeight: 'bold' },
   profileItems: { marginTop: 16, flexDirection: 'row' },
   scrollView: {
-    paddingTop: 16,
-    paddingLeft: 16,
+    paddingTop: 2,
+    paddingLeft: 2,
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
   deckItem: {
-    paddingRight: 16,
-    paddingBottom: 16,
-    width: '33%',
+    paddingRight: 2,
+    paddingBottom: 2,
+    width: '33.3%',
   },
   back: {
     flexShrink: 0,
@@ -122,7 +122,7 @@ const useProfileQuery = (userId) => {
 
 const PlayDeckCell = ({ deck, onPress }) => {
   return (
-    <View style={styles.deckItem}>
+    <View style={Constants.styles.gridItem}>
       <CardCell card={deck.initialCard} onPress={onPress} isPrivate={!deck.isVisible} />
     </View>
   );
@@ -191,7 +191,7 @@ export const ProfileScreen = ({ userId, route }) => {
               </View>
             </View>
           </SafeAreaView>
-          <ScrollView contentContainerStyle={styles.scrollView}>
+          <ScrollView contentContainerStyle={Constants.styles.gridContainer}>
             {decks.map((deck, ii) => (
               <PlayDeckCell
                 key={deck.deckId}
