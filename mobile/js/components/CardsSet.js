@@ -200,6 +200,7 @@ const sortCards = (cards, order) => {
   if (!cards || !cards.length) {
     return cards;
   }
+  cards = cards.concat(); // return a sorted copy
   switch (order) {
     case SortOrder.LAST_MODIFIED_ASC:
       return cards.sort((a, b) => {
