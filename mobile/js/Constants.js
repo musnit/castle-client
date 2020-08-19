@@ -104,6 +104,16 @@ export const styles = {
     paddingRight: GRID_PADDING,
     width: '33.3%',
   },
+  textInputOnWhite: {
+    borderWidth: 1,
+    borderTopWidth: 2,
+    borderRadius: 4,
+    color: '#000',
+    borderColor: '#333',
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    fontSize: 16,
+  }
 };
 
 export const colors = {
