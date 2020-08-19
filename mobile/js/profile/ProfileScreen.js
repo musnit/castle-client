@@ -66,6 +66,7 @@ const PROFILE_FRAGMENT = `
   userId
   name
   username
+  email
   websiteUrl
   photo {
     url
@@ -159,10 +160,10 @@ export const ProfileScreen = ({ userId, route }) => {
   const [settingsSheetIsOpen, setSettingsSheet] = useState(false);
   const onPressSettings = () => {
     setSettingsSheet(true);
-  }
+  };
   const settingsSheetOnClose = () => {
     setSettingsSheet(false);
-  }
+  };
 
   return (
     <Fragment>
@@ -221,7 +222,13 @@ export const ProfileScreen = ({ userId, route }) => {
           </Fragment>
         )}
       </View>
-      <ProfileSettingsSheet isOpen={settingsSheetIsOpen} onClose={settingsSheetOnClose} />
+      {isMe && queryData ? (
+        <ProfileSettingsSheet
+          me={queryData}
+          isOpen={settingsSheetIsOpen}
+          onClose={settingsSheetOnClose}
+        />
+      ) : null}
     </Fragment>
   );
 };

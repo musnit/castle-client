@@ -86,9 +86,16 @@ const ProfileSettingsPasswordSheet = ({ isOpen, onClose }) => {
   );
 };
 
-export const ProfileSettingsSheet = ({ isOpen, onClose }) => {
+export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
   const { signOutAsync, userId: signedInUserId } = useSession();
   const insets = useSafeArea();
+  const [user, changeUser] = React.useReducer(
+    (user, changes) => ({
+      ...user,
+      ...changes,
+    }),
+    me
+  );
 
   const renderHeader = () => (
     <BottomSheetHeader title="Settings" onClose={onClose} onDone={() => console.log('Hi Ben')} />
@@ -107,7 +114,7 @@ export const ProfileSettingsSheet = ({ isOpen, onClose }) => {
       <View style={[styles.section]}>
         <View style={[styles.row, styles.avatarRow]}>
           <View style={styles.avatar}>
-            <UserAvatar url="https://castle.imgix.net/4819d6b02760d194bc35cb19d9203e17?auto=compress&ar=5:7&fit=crop&min-w=420" />
+            <UserAvatar url={user.photo?.url} />
           </View>
           <TouchableOpacity style={Constants.styles.buttonOnWhite}>
             <Text style={Constants.styles.buttonLabelOnWhite}>Edit avatar</Text>
@@ -116,6 +123,8 @@ export const ProfileSettingsSheet = ({ isOpen, onClose }) => {
         <View style={styles.row}>
           <Text style={Constants.styles.textInputLabelOnWhite}>Username</Text>
           <TextInput
+            value={user.username}
+            onChangeText={(username) => changeUser({ username })}
             style={Constants.styles.textInputOnWhite}
             placeholderTextColor={Constants.colors.grayText}
           />
@@ -123,6 +132,8 @@ export const ProfileSettingsSheet = ({ isOpen, onClose }) => {
         <View style={styles.row}>
           <Text style={Constants.styles.textInputLabelOnWhite}>Link</Text>
           <TextInput
+            value={user.websiteUrl}
+            onChangeText={(websiteUrl) => changeUser({ websiteUrl })}
             style={Constants.styles.textInputOnWhite}
             placeholder="http://geocities.com"
             placeholderTextColor={Constants.colors.grayText}
@@ -133,6 +144,8 @@ export const ProfileSettingsSheet = ({ isOpen, onClose }) => {
         <View style={styles.row}>
           <Text style={Constants.styles.textInputLabelOnWhite}>Email</Text>
           <TextInput
+            value={user.email}
+            onChangeText={(email) => changeUser({ email })}
             style={Constants.styles.textInputOnWhite}
             placeholderTextColor={Constants.colors.grayText}
           />
