@@ -113,7 +113,23 @@ export const styles = {
     paddingHorizontal: 8,
     paddingVertical: 6,
     fontSize: 16,
-  }
+  },
+  textInputLabelOnWhite: {
+    fontSize: 16,
+    marginBottom: 6,
+  },
+  buttonOnWhite: {
+    borderWidth: 1,
+    borderBottomWidth: 2,
+    borderColor: '#000',
+    borderRadius: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+  },
+  buttonLabelOnWhite: {
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
 };
 
 export const colors = {
