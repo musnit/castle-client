@@ -113,6 +113,7 @@ export const NewestDecks = ({ focused }) => {
             <View key={`deck-${deck.deckId}-${ii}`} style={Constants.styles.gridItem}>
               <CardCell
                 card={deck.initialCard}
+                imageUrl={deck.creator.photo.url}
                 onPress={() =>
                   navigate('PlayDeck', {
                     decks,

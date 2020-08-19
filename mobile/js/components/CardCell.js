@@ -4,6 +4,7 @@ import { Image, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-n
 import FastImage from 'react-native-fast-image';
 
 import * as Constants from '../Constants';
+import { UserAvatar } from '../components/UserAvatar';
 
 const styles = StyleSheet.create({
   container: {
@@ -15,8 +16,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#8CA5CD',
     width: '100%',
     aspectRatio: Constants.CARD_RATIO,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
     overflow: 'hidden',
   },
   cardPreviewImage: {
@@ -25,10 +26,22 @@ const styles = StyleSheet.create({
     height: '100%',
     resizeMode: 'cover',
   },
-  cardTitle: {
-    ...Constants.styles.plainButton,
-    ...Constants.styles.plainButtonLabel,
+  meta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+  },
+  metaImage: {
+    width: 18,
+    marginRight: 6,
     ...Constants.styles.dropShadow,
+  },
+  metaTitle: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 13,
+    ...Constants.styles.textShadow,
   },
 });
 
@@ -67,6 +80,7 @@ export const CardCell = ({
   card,
   onPress,
   title,
+  imageUrl,
   useOverlay,
   isInitialCard,
   isPrivate,
@@ -100,11 +114,16 @@ export const CardCell = ({
       <TouchableWithoutFeedback disabled={!onPress} onPress={onPress}>
         <View style={cardStyles}>
           {card.backgroundImage && <FastImage style={styles.cardPreviewImage} source={{ uri }} />}
-          {title && (
-            <View style={styles.cardTitle}>
-              <Text>{title}</Text>
+          {imageUrl || title ? (
+            <View style={styles.meta}>
+              {imageUrl && (
+                <View style={styles.metaImage}>
+                  <UserAvatar url={imageUrl} />
+                </View>
+              )}
+              {title && <Text style={styles.metaTitle}>{title}</Text>}
             </View>
-          )}
+          ) : null}
           {isInitialCard && <InitialCardIndicator />}
         </View>
       </TouchableWithoutFeedback>
