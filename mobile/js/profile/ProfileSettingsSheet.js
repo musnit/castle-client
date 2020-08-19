@@ -5,11 +5,13 @@ import { BottomSheetHeader } from '../components/BottomSheetHeader';
 import { BottomSheet } from '../components/BottomSheet';
 import Viewport from '../common/viewport';
 import { useSession } from '../Session';
+import { useSafeArea } from 'react-native-safe-area-context';
 import { UserAvatar } from '../components/UserAvatar';
 
 import * as Constants from '../Constants';
 
 const SHEET_HEIGHT = 100 * Viewport.vh - 100;
+const TAB_BAR_HEIGHT = 49;
 
 const styles = StyleSheet.create({
   section: {
@@ -41,7 +43,13 @@ const styles = StyleSheet.create({
 });
 
 const ProfileSettingsPasswordSheet = ({ isOpen, onClose }) => {
-  const renderHeader = () => <BottomSheetHeader title='Edit password' onClose={onClose} onDone={() => console.log('Hi Ben')} />;
+  const renderHeader = () => (
+    <BottomSheetHeader
+      title="Edit password"
+      onClose={onClose}
+      onDone={() => console.log('Hi Ben')}
+    />
+  );
 
   const renderContent = () => (
     <View>
@@ -80,23 +88,26 @@ const ProfileSettingsPasswordSheet = ({ isOpen, onClose }) => {
 
 export const ProfileSettingsSheet = ({ isOpen, onClose }) => {
   const { signOutAsync, userId: signedInUserId } = useSession();
+  const insets = useSafeArea();
 
-  const renderHeader = () => <BottomSheetHeader title='Settings' onClose={onClose} onDone={() => console.log('Hi Ben')} />;
+  const renderHeader = () => (
+    <BottomSheetHeader title="Settings" onClose={onClose} onDone={() => console.log('Hi Ben')} />
+  );
 
   const [passwordSheetIsOpen, setPasswordSheet] = useState(false);
   const onPressPassword = () => {
     setPasswordSheet(true);
-  }
+  };
   const passwordSheetOnClose = () => {
     setPasswordSheet(false);
-  }
+  };
 
   const renderContent = () => (
-    <View>
+    <View style={{ paddingBottom: TAB_BAR_HEIGHT + insets.bottom }}>
       <View style={[styles.section]}>
         <View style={[styles.row, styles.avatarRow]}>
           <View style={styles.avatar}>
-            <UserAvatar url='https://castle.imgix.net/4819d6b02760d194bc35cb19d9203e17?auto=compress&ar=5:7&fit=crop&min-w=420' />
+            <UserAvatar url="https://castle.imgix.net/4819d6b02760d194bc35cb19d9203e17?auto=compress&ar=5:7&fit=crop&min-w=420" />
           </View>
           <TouchableOpacity style={Constants.styles.buttonOnWhite}>
             <Text style={Constants.styles.buttonLabelOnWhite}>Edit avatar</Text>
@@ -104,20 +115,32 @@ export const ProfileSettingsSheet = ({ isOpen, onClose }) => {
         </View>
         <View style={styles.row}>
           <Text style={Constants.styles.textInputLabelOnWhite}>Username</Text>
-          <TextInput style={Constants.styles.textInputOnWhite} placeholderTextColor={Constants.colors.grayText} />
+          <TextInput
+            style={Constants.styles.textInputOnWhite}
+            placeholderTextColor={Constants.colors.grayText}
+          />
         </View>
         <View style={styles.row}>
           <Text style={Constants.styles.textInputLabelOnWhite}>Link</Text>
-          <TextInput style={Constants.styles.textInputOnWhite} placeholder='http://geocities.com' placeholderTextColor={Constants.colors.grayText} />
+          <TextInput
+            style={Constants.styles.textInputOnWhite}
+            placeholder="http://geocities.com"
+            placeholderTextColor={Constants.colors.grayText}
+          />
         </View>
       </View>
       <View style={[styles.section]}>
         <View style={styles.row}>
           <Text style={Constants.styles.textInputLabelOnWhite}>Email</Text>
-          <TextInput style={Constants.styles.textInputOnWhite} placeholderTextColor={Constants.colors.grayText} />
+          <TextInput
+            style={Constants.styles.textInputOnWhite}
+            placeholderTextColor={Constants.colors.grayText}
+          />
         </View>
         <View style={styles.row}>
-          <View><Text style={Constants.styles.textInputLabelOnWhite}>Password</Text></View>
+          <View>
+            <Text style={Constants.styles.textInputLabelOnWhite}>Password</Text>
+          </View>
           <View style={{ alignItems: 'flex-start' }}>
             <TouchableOpacity onPress={onPressPassword} style={Constants.styles.buttonOnWhite}>
               <Text style={Constants.styles.buttonLabelOnWhite}>Edit password</Text>
