@@ -29,18 +29,10 @@ export default InspectorTags = ({ tags, sendAction }) => {
   const onChange = React.useCallback(
     (tagsString) => {
       if (tags.isActive) {
-        if (tagsString && tagsString.length) {
-          // change property if nonempty
-          setValueAndSendAction('set:tagsString', tagsString);
-        } else {
-          // or remove tags if empty
-          setValueAndSendAction('remove', null);
-        }
+        setValueAndSendAction('set:tagsString', tagsString);
       } else {
-        if (tagsString && tagsString.length) {
-          // add tags if nonempty
-          setValueAndSendAction('add', tagsString, { tagsString });
-        }
+        console.warn(`Expect all actors to have Tags, but this actor did not`);
+        setValueAndSendAction('add', tagsString, { tagsString });
       }
     },
     [tags.isActive, sendAction, setValueAndSendAction]
