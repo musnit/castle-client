@@ -541,7 +541,8 @@ const AddTag = ({ response }) => {
     },
     {
       type: response.params?.tag ? 'selectParamSheet' : 'selectParamSheetPlaceholder',
-      label: response.params?.tag ?? 'Select tag',
+      label:
+        response.params?.tag && response.params.tag.length ? response.params.tag : 'Select tag',
       paramName: 'tag',
       paramValue: response.params?.tag ?? '',
     },
@@ -561,7 +562,8 @@ const RemoveTag = ({ response }) => {
     },
     {
       type: response.params?.tag ? 'selectParamSheet' : 'selectParamSheetPlaceholder',
-      label: response.params?.tag ?? 'Select tag',
+      label:
+        response.params?.tag && response.params.tag.length ? response.params.tag : 'Select tag',
       paramName: 'tag',
       paramValue: response.params?.tag ?? '',
     },
