@@ -159,7 +159,48 @@ class CreateCardScreenDataProvider extends React.Component {
   _saveBackup = () =>
     Session.saveDeck(this.state.card, this.state.deck, this.state.card.variables, true);
 
+  _updateScreenshot = async () => {
+    let screenshotPromise = new Promise((resolve) => {
+      this._screenshotPromiseResolve = resolve;
+    });
+    await GhostEvents.sendAsync('REQUEST_SCREENSHOT');
+
+    try {
+      let screenshotData = await Promise.race([
+        screenshotPromise,
+        new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('timeout')), 5000);
+        }),
+      ]);
+
+      const result = await Session.apolloClient.mutate({
+        mutation: gql`
+          mutation UploadBase64($data: String!, $filename: String, $mimetype: String) {
+            uploadBase64(data: $data, filename: $filename, mimetype: $mimetype) {
+              fileId
+              url
+            }
+          }
+        `,
+        variables: {
+          data: screenshotData,
+          filename: 'screenshot.png',
+          mimetype: 'image/png',
+        },
+        fetchPolicy: 'no-cache',
+      });
+      if (this._mounted && result && result.data && result.data.uploadBase64) {
+        this._handleCardChange({
+          backgroundImage: result.data.uploadBase64,
+        });
+      }
+    } catch (e) {
+      // screenshot didn't happen in time
+    }
+  };
+
   _save = async () => {
+    await this._updateScreenshot();
     await this.setState({ loading: true });
     const { card, deck } = await Session.saveDeck(
       this.state.card,
@@ -187,6 +228,7 @@ class CreateCardScreenDataProvider extends React.Component {
   };
 
   _saveAndGoToDeck = async () => {
+    await this._updateScreenshot();
     await this.setState({ loading: true });
     const { card, deck } = await Session.saveDeck(
       this.state.card,
@@ -217,29 +259,7 @@ class CreateCardScreenDataProvider extends React.Component {
   _cardNeedsSave = () => this.state.card?.isChanged;
 
   _handleSceneScreenshot = async ({ path }) => {
-    const result = await Session.apolloClient.mutate({
-      mutation: gql`
-        mutation UploadFile($file: Upload!) {
-          uploadFile(file: $file) {
-            fileId
-            url
-          }
-        }
-      `,
-      variables: {
-        file: new ReactNativeFile({
-          uri: 'file://' + path,
-          name: 'screenshot.png',
-          type: 'image/png',
-        }),
-      },
-      fetchPolicy: 'no-cache',
-    });
-    if (this._mounted && result && result.data && result.data.uploadFile) {
-      this._handleCardChange({
-        backgroundImage: result.data.uploadFile,
-      });
-    }
+    // no op
   };
 
   _handleSceneMessage = (message) => {
@@ -258,6 +278,11 @@ class CreateCardScreenDataProvider extends React.Component {
           },
         });
         break;
+      }
+      case 'SCREENSHOT_DATA': {
+        if (this._screenshotPromiseResolve) {
+          this._screenshotPromiseResolve(message.data);
+        }
       }
     }
   };
