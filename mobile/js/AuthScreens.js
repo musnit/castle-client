@@ -241,10 +241,6 @@ const CreateAccountForm = () => {
     navigate('LoginScreen');
   };
 
-  const onPressPrivacyPolicy = () => {
-    Linking.openURL('https://castle.games/privacy_policy');
-  };
-
   const onPressCreateAccount = async () => {
     try {
       setCreatingAccount(true);
@@ -336,12 +332,13 @@ const CreateAccountForm = () => {
         onSubmitEditing={onPressCreateAccount}
       />
       <View style={{ paddingTop: 8, paddingBottom: 24 }}>
-        <TouchableOpacity onPress={onPressPrivacyPolicy}>
-          <Text style={{ lineHeight: 20, color: Constants.colors.grayText, fontSize: 13 }}>
+          <Text style={{ lineHeight: 20, color: Constants.colors.grayText, fontSize: 13, textAlign: 'center' }}>
             By clicking "Create Account," you are agreeing to Castle's&nbsp;
-            <Text style={{ fontWeight: 'bold' }}>privacy policy</Text>.
+            <Text style={{ fontWeight: 'bold' }} onPress={() => Linking.openURL('https://castle.xyz/privacy_policy')}>privacy policy</Text>
+            &nbsp;and
+            <Text style={{ fontWeight: 'bold' }} onPress={() => Linking.openURL('https://castle.xyz/terms')}> terms of service</Text>
+            .
           </Text>
-        </TouchableOpacity>
       </View>
       <TouchableOpacity onPress={onPressCreateAccount}>
         <Button text="Create Account" spinner={creatingAccount} />
