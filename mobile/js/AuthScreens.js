@@ -12,7 +12,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
 
-import Session, { useSession } from './Session';
+import { resetPasswordAsync, useSession } from './Session';
 import { navigateToUri } from './DeepLinks';
 
 import * as Constants from './Constants';
@@ -205,12 +205,13 @@ const LoginForm = ({ route }) => {
         returnKeyType="go"
         onSubmitEditing={onPressSignIn}
       />
-      <View style={{
-        width: '100%',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingVertical: 8,
-      }}>
+      <View
+        style={{
+          width: '100%',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          paddingVertical: 8,
+        }}>
         <TouchableOpacity
           style={{ paddingTop: 8, paddingBottom: 16 }}
           onPress={onPressForgotPassword}>
@@ -359,16 +360,16 @@ const ForgotPasswordForm = () => {
 
   const onPressResetPassword = async () => {
     try {
-      setResettingPassword(true);
+      await setResettingPassword(true);
       setErrors([]);
-      await Session.resetPasswordAsync({ username });
-      setResettingPassword(false);
+      await resetPasswordAsync({ username });
+      await setResettingPassword(false);
       navigate('LoginScreen', {
         resetPassword: true,
       });
     } catch (e) {
       setResettingPassword(false);
-      setErrors(e.graphQLErrors);
+      setErrors(e.graphQLErrors ?? e);
     }
   };
 
@@ -395,9 +396,10 @@ const ForgotPasswordForm = () => {
         returnKeyType="go"
         onSubmitEditing={onPressResetPassword}
       />
-      <View style={{
-        paddingVertical: 8,
-      }}>
+      <View
+        style={{
+          paddingVertical: 8,
+        }}>
         <TouchableOpacity onPress={onPressResetPassword}>
           <Button text="Reset Password" spinner={resettingPassword} />
         </TouchableOpacity>
