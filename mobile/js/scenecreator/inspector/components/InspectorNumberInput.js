@@ -39,7 +39,7 @@ const numberToText = (number, decimalDigits = 3) => {
 
 export const InspectorNumberInput = ({ value, lastNativeUpdate, onChange, ...props }) => {
   // Maintain `text` separately from `value` to allow incomplete text such as '' or '3.'
-  const [text, setText] = React.useState(numberToText(value));
+  const [text, setText] = React.useState(numberToText(value, props.decimalDigits));
 
   const validate = React.useCallback(
     (value) => {
@@ -61,7 +61,7 @@ export const InspectorNumberInput = ({ value, lastNativeUpdate, onChange, ...pro
   React.useEffect(() => {
     const validatedInitialValue = validate(value);
     if (validatedInitialValue !== value) {
-      setText(numberToText(validatedInitialValue));
+      setText(numberToText(validatedInitialValue, props.decimalDigits));
       onChange(validatedInitialValue);
     }
   }, []);
@@ -76,17 +76,17 @@ export const InspectorNumberInput = ({ value, lastNativeUpdate, onChange, ...pro
   );
   const onMinus = React.useCallback(() => {
     const newValue = validate(value - step);
-    setText(numberToText(newValue));
+    setText(numberToText(newValue, props.decimalDigits));
     onChange(newValue);
   }, [value, step, onChange]);
   const onPlus = React.useCallback(() => {
     const newValue = validate(value + step);
-    setText(numberToText(newValue));
+    setText(numberToText(newValue, props.decimalDigits));
     onChange(newValue);
   }, [value, step, onChange]);
 
   // refresh displayed text if we got a new value from lua
-  React.useEffect(() => setText(numberToText(value)), [lastNativeUpdate]);
+  React.useEffect(() => setText(numberToText(value, props.decimalDigits)), [lastNativeUpdate]);
 
   return (
     <View style={styles.container}>
