@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import { useQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useSession } from '../Session';
 import { UserAvatar } from '../components/UserAvatar';
+import { ProfileSettingsSheet } from './ProfileSettingsSheet';
 
 import * as Constants from '../Constants';
 import * as Utilities from '../common/utilities';
@@ -155,59 +156,72 @@ export const ProfileScreen = ({ userId, route }) => {
   }
   const { urlToDisplay, urlToOpen } = Utilities.canonizeUserProvidedUrl(queryData?.websiteUrl);
 
+  const [settingsSheetIsOpen, setSettingsSheet] = useState(false);
+  const onPressSettings = () => {
+    setSettingsSheet(true);
+  }
+  const settingsSheetOnClose = () => {
+    setSettingsSheet(false);
+  }
+
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
-      {queryLoading || queryError ? null : (
-        <Fragment>
-          <SafeAreaView style={styles.header}>
-            {navigationStackIndex > 0 ? (
-              <View style={styles.navigationRow}>
-                <TouchableOpacity style={styles.back} onPress={() => pop()}>
-                  <Icon name="arrow-back" size={32} color="#fff" />
-                </TouchableOpacity>
-              </View>
-            ) : null}
-            <View style={{ width: 96, paddingVertical: 16 }}>
-              <UserAvatar url={queryData.photo?.url} />
-            </View>
-            <View style={{ alignItems: 'center' }}>
-              <Text style={styles.username}>@{queryData.username}</Text>
-              <View style={styles.profileItems}>
-                {urlToDisplay ? (
-                  <TouchableOpacity
-                    style={{ marginRight: 16 }}
-                    onPress={() => {
-                      Linking.openURL(urlToOpen);
-                    }}>
-                    <Text style={{ color: '#fff' }}>{urlToDisplay}</Text>
+    <Fragment>
+      <View style={styles.container}>
+        <StatusBar barStyle="light-content" />
+        {queryLoading || queryError ? null : (
+          <Fragment>
+            <SafeAreaView style={styles.header}>
+              {navigationStackIndex > 0 ? (
+                <View style={styles.navigationRow}>
+                  <TouchableOpacity style={styles.back} onPress={() => pop()}>
+                    <Icon name="arrow-back" size={32} color="#fff" />
                   </TouchableOpacity>
-                ) : null}
-                {isMe ? (
-                  <TouchableOpacity onPress={signOutAsync}>
-                    <Text style={{ color: '#aaa' }}>Log Out</Text>
-                  </TouchableOpacity>
-                ) : null}
+                </View>
+              ) : null}
+              <View style={{ width: 96, paddingVertical: 16 }}>
+                <UserAvatar url={queryData.photo?.url} />
               </View>
-            </View>
-          </SafeAreaView>
-          <ScrollView contentContainerStyle={Constants.styles.gridContainer}>
-            {decks.map((deck, ii) => (
-              <PlayDeckCell
-                key={deck.deckId}
-                deck={deck}
-                onPress={() =>
-                  push('PlayDeck', {
-                    decks,
-                    initialDeckIndex: ii,
-                    title: `@${queryData.username}`,
-                  })
-                }
-              />
-            ))}
-          </ScrollView>
-        </Fragment>
-      )}
-    </View>
+              <View style={{ alignItems: 'center' }}>
+                <Text style={styles.username}>@{queryData.username}</Text>
+                <View style={styles.profileItems}>
+                  {urlToDisplay ? (
+                    <TouchableOpacity
+                      style={{ marginRight: 16 }}
+                      onPress={() => {
+                        Linking.openURL(urlToOpen);
+                      }}>
+                      <Text style={{ color: '#fff' }}>{urlToDisplay}</Text>
+                    </TouchableOpacity>
+                  ) : null}
+                  {isMe ? (
+                    <Fragment>
+                      <TouchableOpacity onPress={onPressSettings}>
+                        <Text style={{ color: '#aaa' }}>Settings</Text>
+                      </TouchableOpacity>
+                    </Fragment>
+                  ) : null}
+                </View>
+              </View>
+            </SafeAreaView>
+            <ScrollView contentContainerStyle={Constants.styles.gridContainer}>
+              {decks.map((deck, ii) => (
+                <PlayDeckCell
+                  key={deck.deckId}
+                  deck={deck}
+                  onPress={() =>
+                    push('PlayDeck', {
+                      decks,
+                      initialDeckIndex: ii,
+                      title: `@${queryData.username}`,
+                    })
+                  }
+                />
+              ))}
+            </ScrollView>
+          </Fragment>
+        )}
+      </View>
+      <ProfileSettingsSheet isOpen={settingsSheetIsOpen} onClose={settingsSheetOnClose} />
+    </Fragment>
   );
 };
