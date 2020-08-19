@@ -189,7 +189,7 @@ class CreateCardScreenDataProvider extends React.Component {
         },
         fetchPolicy: 'no-cache',
       });
-      if (this._mounted && result && result.data && result.data.uploadBase64) {
+      if (this._mounted && result?.data?.uploadBase64) {
         this._handleCardChange({
           backgroundImage: result.data.uploadBase64,
         });
@@ -200,8 +200,8 @@ class CreateCardScreenDataProvider extends React.Component {
   };
 
   _save = async () => {
-    await this._updateScreenshot();
     await this.setState({ loading: true });
+    await this._updateScreenshot();
     const { card, deck } = await Session.saveDeck(
       this.state.card,
       this.state.deck,
@@ -228,8 +228,8 @@ class CreateCardScreenDataProvider extends React.Component {
   };
 
   _saveAndGoToDeck = async () => {
-    await this._updateScreenshot();
     await this.setState({ loading: true });
+    await this._updateScreenshot();
     const { card, deck } = await Session.saveDeck(
       this.state.card,
       this.state.deck,
@@ -282,6 +282,7 @@ class CreateCardScreenDataProvider extends React.Component {
       case 'SCREENSHOT_DATA': {
         if (this._screenshotPromiseResolve) {
           this._screenshotPromiseResolve(message.data);
+          this._screenshotPromiseResolve = null;
         }
       }
     }
