@@ -40,12 +40,12 @@ export const HomeScreen = () => {
   const insets = useSafeArea();
   const [mode, setMode] = React.useState(MODE_ITEMS[0].value);
 
-  useFocusEffect(
+  /*useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
       Constants.Android && StatusBar.setTranslucent(true); // needed for tab navigator
     }, [])
-  );
+  );*/
 
   const selectedItem = MODE_ITEMS.find((item) => item.value === mode);
 

@@ -136,4 +136,14 @@ export const NewestDecks = ({ focused }) => {
       onEndReachedThreshold={0.3}
     />
   );
+
+  /*
+  <NativeFeedView
+      decks={decks}
+      style={{
+        width: '100%',
+        height: '100%',
+      }}
+    />
+    */
 };
