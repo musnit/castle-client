@@ -4,6 +4,7 @@ import { CardCell } from '../components/CardCell';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect, useScrollToTop } from '@react-navigation/native';
 import gql from 'graphql-tag';
+import Viewport from '../common/viewport';
 
 import * as Constants from '../Constants';
 
@@ -110,7 +111,9 @@ export const NewestDecks = ({ focused }) => {
       refreshControl={refreshControl}>
       {decks
         ? decks.map((deck, ii) => (
-            <View key={`deck-${deck.deckId}-${ii}`} style={Constants.styles.gridItem}>
+            <View
+              key={`deck-${deck.deckId}-${ii}`}
+              style={[Constants.styles.gridItem, { width: Viewport.gridItemWidth }]}>
               <CardCell
                 card={deck.initialCard}
                 imageUrl={deck.creator.photo.url}

@@ -94,15 +94,13 @@ export const styles = {
   },
   gridContainer: {
     paddingTop: 16,
-    paddingLeft: GRID_PADDING,
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
+    justifyContent: 'space-between',
   },
   gridItem: {
     paddingBottom: GRID_PADDING,
-    paddingRight: GRID_PADDING,
-    width: '33.3%',
   },
   textInputOnWhite: {
     borderWidth: 1,

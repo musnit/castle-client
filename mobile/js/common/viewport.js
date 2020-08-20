@@ -19,4 +19,6 @@ units.isUltraWide = units.aspectRatio < 0.5;
 // only if the height is at least (7/5) the width
 units.isCardWide = units.aspectRatio <= Constants.CARD_RATIO;
 
+units.gridItemWidth = (width - Constants.GRID_PADDING * 2) / 3;
+
 export default units;

@@ -17,6 +17,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useSession } from '../Session';
 import { UserAvatar } from '../components/UserAvatar';
 import { ProfileSettingsSheet } from './ProfileSettingsSheet';
+import Viewport from '../common/viewport';
 
 import * as Constants from '../Constants';
 import * as Utilities from '../common/utilities';
@@ -124,7 +125,7 @@ const useProfileQuery = (userId) => {
 
 const PlayDeckCell = ({ deck, onPress }) => {
   return (
-    <View style={Constants.styles.gridItem}>
+    <View style={[Constants.styles.gridItem, { width: Viewport.gridItemWidth }]}>
       <CardCell card={deck.initialCard} onPress={onPress} isPrivate={!deck.isVisible} />
     </View>
   );

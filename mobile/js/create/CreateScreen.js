@@ -14,6 +14,7 @@ import gql from 'graphql-tag';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { CommonActions, useNavigation, useFocusEffect } from '@react-navigation/native';
+import Viewport from '../common/viewport';
 
 import * as Constants from '../Constants';
 import * as LocalId from '../common/local-id';
@@ -30,8 +31,7 @@ const styles = StyleSheet.create({
     borderColor: Constants.colors.grayOnBlackBorder,
     paddingTop: 16,
   },
-  decks: {
-  },
+  decks: {},
   sectionTitle: {
     color: Constants.colors.white,
     fontWeight: 'bold',
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
 const EditDeckCell = (props) => {
   const { deck, onPress } = props;
   return (
-    <View style={Constants.styles.gridItem}>
+    <View style={[Constants.styles.gridItem, { width: Viewport.gridItemWidth }]}>
       <CardCell card={deck.initialCard} onPress={onPress} isPrivate={!deck.isVisible} />
     </View>
   );
@@ -67,7 +67,7 @@ const EditDeckCell = (props) => {
 
 const CreateDeckCell = (props) => {
   return (
-    <View style={Constants.styles.gridItem}>
+    <View style={[Constants.styles.gridItem, { width: Viewport.gridItemWidth }]}>
       <TouchableOpacity style={styles.createCell} onPress={props.onPress}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Text style={styles.cellTitle}>Create a new deck</Text>
@@ -141,7 +141,9 @@ export const CreateScreen = () => {
       <View style={styles.header}>
         <Text style={styles.sectionTitle}>Your Decks</Text>
       </View>
-      <ScrollView contentContainerStyle={Constants.styles.gridContainer} refreshControl={refreshControl}>
+      <ScrollView
+        contentContainerStyle={Constants.styles.gridContainer}
+        refreshControl={refreshControl}>
         <CreateDeckCell
           key="create"
           onPress={() => {
