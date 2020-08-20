@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
   },
   content: {
     backgroundColor: '#000',
-    height: DRAWER_EXPANDED_HEIGHT - 16 - 24,
+    minHeight: DRAWER_EXPANDED_HEIGHT - 16 - 24,
   },
 });
 
