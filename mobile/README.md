@@ -18,6 +18,9 @@ Once you have the app running, shake the device to open the React Native develop
 
 # Releases
 
+- Open `../base/main.lua` and set `SCENE_CREATOR_API_VERSION` to something other than `dev`, corresponding to the lua release channel you'd like this build to use.
+- Publish `scene-creator` to the release channel chosen for this build.
+
 ## iOS
 
 - Make sure `fastlane` is up to date: `bundle update fastlane` from this directory.
