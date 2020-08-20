@@ -14,14 +14,14 @@ export const styles = {
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.25,
     shadowRadius: 0,
-    elevation: 1,
+    elevation: iOS ? 1 : undefined,
   },
   dropShadowUp: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.25,
     shadowRadius: 1,
-    elevation: 1,
+    elevation: iOS ? 1 : undefined, // TODO: unbreak this for android bottom sheet
   },
   textShadow: {
     textShadowColor: '#0004',
