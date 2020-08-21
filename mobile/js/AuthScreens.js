@@ -332,13 +332,28 @@ const CreateAccountForm = () => {
         onSubmitEditing={onPressCreateAccount}
       />
       <View style={{ paddingTop: 8, paddingBottom: 24 }}>
-          <Text style={{ lineHeight: 20, color: Constants.colors.grayText, fontSize: 13, textAlign: 'center' }}>
-            By clicking "Create Account," you are agreeing to Castle's&nbsp;
-            <Text style={{ fontWeight: 'bold' }} onPress={() => Linking.openURL('https://castle.xyz/privacy_policy')}>privacy policy</Text>
-            &nbsp;and
-            <Text style={{ fontWeight: 'bold' }} onPress={() => Linking.openURL('https://castle.xyz/terms')}> terms of service</Text>
-            .
+        <Text
+          style={{
+            lineHeight: 20,
+            color: Constants.colors.grayText,
+            fontSize: 13,
+            textAlign: 'center',
+          }}>
+          By clicking "Create Account," you are agreeing to Castle's&nbsp;
+          <Text
+            style={{ fontWeight: 'bold' }}
+            onPress={() => Linking.openURL('https://castle.xyz/privacy_policy')}>
+            privacy policy
           </Text>
+          &nbsp;and
+          <Text
+            style={{ fontWeight: 'bold' }}
+            onPress={() => Linking.openURL('https://castle.xyz/terms')}>
+            {' '}
+            terms of service
+          </Text>
+          .
+        </Text>
       </View>
       <TouchableOpacity onPress={onPressCreateAccount}>
         <Button text="Create Account" spinner={creatingAccount} />
@@ -428,7 +443,7 @@ const WithHeader = ({ children }) => (
           aspectRatio: 1,
           marginBottom: 16,
         }}
-        source={require('../assets/images/castle-portal-white-empty.png')}
+        source={require('../assets/images/castle-icon-onblack.png')}
       />
       <FastImage
         style={{
@@ -436,7 +451,7 @@ const WithHeader = ({ children }) => (
           height: 34,
           marginBottom: 16,
         }}
-        source={require('../assets/images/wordmark-white.png')}
+        source={require('../assets/images/castle-wordmark-onblack.png')}
       />
     </View>
     <View style={{ width: '100%', alignItems: 'center' }}>{children}</View>
