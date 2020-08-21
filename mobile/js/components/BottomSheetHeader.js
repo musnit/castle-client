@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import * as SceneCreatorConstants from '../scenecreator/SceneCreatorConstants';
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const BottomSheetHeader = ({ title, onClose, onDone }) => (
+export const BottomSheetHeader = ({ title, onClose, onDone, loading }) => (
   <View style={styles.header}>
     <TouchableOpacity style={styles.back} onPress={onClose}>
       <Icon name="close" size={32} color="#000" />
@@ -62,8 +62,8 @@ export const BottomSheetHeader = ({ title, onClose, onDone }) => (
       <Text style={styles.headingLabel}>{title}</Text>
     </View>
     {onDone && (
-      <TouchableOpacity style={styles.done} onPress={onDone}>
-        <Text style={styles.doneText}>Done</Text>
+      <TouchableOpacity style={styles.done} onPress={onDone} disabled={loading}>
+        {loading ? <ActivityIndicator /> : <Text style={styles.doneText}>Done</Text>}
       </TouchableOpacity>
     )}
   </View>

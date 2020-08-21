@@ -153,13 +153,17 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
     }),
     me
   );
+  const [passwordSheetIsOpen, setPasswordSheet] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const saveUserAndClose = React.useCallback(async () => {
+    await setLoading(true);
     const updatedUser = await updateUserAsync({ user });
     if (updatedUser) {
       onClose();
     }
-  }, [user, onClose]);
+    setLoading(false);
+  }, [user, onClose, setLoading]);
 
   const chooseAvatar = React.useCallback(
     async () =>
@@ -180,10 +184,14 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
   );
 
   const renderHeader = () => (
-    <BottomSheetHeader title="Settings" onClose={onClose} onDone={saveUserAndClose} />
+    <BottomSheetHeader
+      title="Settings"
+      onClose={onClose}
+      onDone={saveUserAndClose}
+      loading={loading}
+    />
   );
 
-  const [passwordSheetIsOpen, setPasswordSheet] = useState(false);
   const onPressPassword = () => {
     setPasswordSheet(true);
   };
@@ -198,7 +206,10 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
           <View style={styles.avatar}>
             <UserAvatar url={user.photo?.url} />
           </View>
-          <TouchableOpacity style={Constants.styles.buttonOnWhite} onPress={chooseAvatar}>
+          <TouchableOpacity
+            style={Constants.styles.buttonOnWhite}
+            onPress={chooseAvatar}
+            disabled={loading}>
             <Text style={Constants.styles.buttonLabelOnWhite}>Edit avatar</Text>
           </TouchableOpacity>
         </View>
@@ -206,6 +217,7 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
           <Text style={Constants.styles.textInputLabelOnWhite}>Username</Text>
           <TextInput
             value={user.username}
+            editable={!loading}
             onChangeText={(username) => changeUser({ username })}
             style={Constants.styles.textInputOnWhite}
             placeholderTextColor={Constants.colors.grayText}
@@ -215,6 +227,7 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
           <Text style={Constants.styles.textInputLabelOnWhite}>Link</Text>
           <TextInput
             value={user.websiteUrl}
+            editable={!loading}
             onChangeText={(websiteUrl) => changeUser({ websiteUrl })}
             style={Constants.styles.textInputOnWhite}
             placeholder="http://geocities.com"
@@ -227,6 +240,7 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
           <Text style={Constants.styles.textInputLabelOnWhite}>Email</Text>
           <TextInput
             value={user.email}
+            editable={!loading}
             onChangeText={(email) => changeUser({ email })}
             style={Constants.styles.textInputOnWhite}
             placeholderTextColor={Constants.colors.grayText}
@@ -237,7 +251,10 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
             <Text style={Constants.styles.textInputLabelOnWhite}>Password</Text>
           </View>
           <View style={{ alignItems: 'flex-start' }}>
-            <TouchableOpacity onPress={onPressPassword} style={Constants.styles.buttonOnWhite}>
+            <TouchableOpacity
+              onPress={onPressPassword}
+              style={Constants.styles.buttonOnWhite}
+              disabled={loading}>
               <Text style={Constants.styles.buttonLabelOnWhite}>Edit password</Text>
             </TouchableOpacity>
           </View>
