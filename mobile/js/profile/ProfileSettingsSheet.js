@@ -120,6 +120,14 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
     message: null,
   });
 
+  React.useEffect(() => {
+    if (isOpen) {
+      setLoading(false);
+      setResetPassword({ sent: false });
+      changeUser(me);
+    }
+  }, [isOpen]);
+
   const saveUserAndClose = React.useCallback(async () => {
     await setLoading(true);
     const updatedUser = await updateUserAsync({ user });
