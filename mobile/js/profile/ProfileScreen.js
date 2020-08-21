@@ -1,18 +1,19 @@
 import React, { Fragment, useState } from 'react';
 import {
-  View,
-  Text,
+  Linking,
+  RefreshControl,
   ScrollView,
   StatusBar,
   StyleSheet,
+  Text,
   TouchableOpacity,
-  Linking,
+  View,
 } from 'react-native';
 import gql from 'graphql-tag';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { CardCell } from '../components/CardCell';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useQuery } from '@apollo/react-hooks';
+import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useSession } from '../Session';
 import { UserAvatar } from '../components/UserAvatar';
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
 const useProfileQuery = (userId) => {
   const { userId: signedInUserId } = useSession();
   if (!userId || userId === signedInUserId) {
-    return useQuery(
+    return useLazyQuery(
       gql`
       query Me {
         me {
@@ -75,15 +76,16 @@ const useProfileQuery = (userId) => {
       { fetchPolicy: 'no-cache' }
     );
   } else {
-    return useQuery(
+    const [fetchProfile, query] = useLazyQuery(
       gql`
       query UserProfile($userId: ID!) {
         user(userId: $userId) {
           ${Constants.USER_PROFILE_FRAGMENT}
         }
       }`,
-      { fetchPolicy: 'no-cache', variables: { userId } }
+      { fetchPolicy: 'no-cache' }
     );
+    return [() => fetchProfile({ variables: { userId } }), query];
   }
 };
 
@@ -97,6 +99,8 @@ const PlayDeckCell = ({ deck, onPress }) => {
 
 export const ProfileScreen = ({ userId, route }) => {
   const { push, pop, dangerouslyGetState } = useNavigation();
+  const [settingsSheetIsOpen, setSettingsSheet] = useState(false);
+  const [user, setUser] = React.useState(null);
 
   // don't useNavigationState() because we don't want to rerender if this changes.
   const navigationStackIndex = dangerouslyGetState().index;
@@ -107,89 +111,99 @@ export const ProfileScreen = ({ userId, route }) => {
   }
   const isMe = !userId || userId === signedInUserId;
 
+  const [fetchProfile, query] = useProfileQuery(userId);
+
+  const onRefresh = React.useCallback(() => {
+    fetchProfile();
+  }, [fetchProfile]);
+
+  React.useEffect(() => {
+    if (query.called && !query.loading && !query.error && query.data) {
+      setUser(isMe ? query.data.me : query.data.user);
+    }
+  }, [query.called, query.loading, query.error, query.data]);
+
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
+      onRefresh();
     }, [])
   );
 
-  const { loading: queryLoading, error: queryError, data } = useProfileQuery(userId);
+  const { urlToDisplay, urlToOpen } = Utilities.canonizeUserProvidedUrl(user?.websiteUrl);
 
-  let decks, queryData;
-  if (!queryLoading && !queryError) {
-    queryData = isMe ? data.me : data.user;
-    decks = queryData.decks;
-  }
-  const { urlToDisplay, urlToOpen } = Utilities.canonizeUserProvidedUrl(queryData?.websiteUrl);
+  const onPressSettings = () => setSettingsSheet(true);
+  const settingsSheetOnClose = () => setSettingsSheet(false);
 
-  const [settingsSheetIsOpen, setSettingsSheet] = useState(false);
-  const onPressSettings = () => {
-    setSettingsSheet(true);
-  };
-  const settingsSheetOnClose = () => {
-    setSettingsSheet(false);
-  };
+  const refreshControl = (
+    <RefreshControl
+      refreshing={query.loading}
+      onRefresh={onRefresh}
+      tintColor="#fff"
+      colors={['#fff', '#ccc']}
+    />
+  );
 
   return (
     <Fragment>
       <View style={styles.container}>
         <StatusBar barStyle="light-content" />
-        {queryLoading || queryError ? null : (
-          <Fragment>
-            <SafeAreaView style={styles.header}>
-              {navigationStackIndex > 0 ? (
-                <View style={styles.navigationRow}>
-                  <TouchableOpacity style={styles.back} onPress={() => pop()}>
-                    <Icon name="arrow-back" size={32} color="#fff" />
-                  </TouchableOpacity>
-                </View>
+        <SafeAreaView style={styles.header}>
+          {navigationStackIndex > 0 ? (
+            <View style={styles.navigationRow}>
+              <TouchableOpacity style={styles.back} onPress={() => pop()}>
+                <Icon name="arrow-back" size={32} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          ) : null}
+          <View style={{ width: 96, paddingVertical: 16 }}>
+            <UserAvatar url={user?.photo?.url} />
+          </View>
+          <View style={{ alignItems: 'center' }}>
+            <Text style={styles.username}>@{user?.username}</Text>
+            <View style={styles.profileItems}>
+              {urlToDisplay ? (
+                <TouchableOpacity
+                  style={{ marginRight: 16 }}
+                  onPress={() => {
+                    Linking.openURL(urlToOpen);
+                  }}>
+                  <Text style={{ color: '#fff' }}>{urlToDisplay}</Text>
+                </TouchableOpacity>
               ) : null}
-              <View style={{ width: 96, paddingVertical: 16 }}>
-                <UserAvatar url={queryData.photo?.url} />
-              </View>
-              <View style={{ alignItems: 'center' }}>
-                <Text style={styles.username}>@{queryData.username}</Text>
-                <View style={styles.profileItems}>
-                  {urlToDisplay ? (
-                    <TouchableOpacity
-                      style={{ marginRight: 16 }}
-                      onPress={() => {
-                        Linking.openURL(urlToOpen);
-                      }}>
-                      <Text style={{ color: '#fff' }}>{urlToDisplay}</Text>
-                    </TouchableOpacity>
-                  ) : null}
-                  {isMe ? (
-                    <Fragment>
-                      <TouchableOpacity onPress={onPressSettings}>
-                        <Text style={{ color: '#aaa' }}>Settings</Text>
-                      </TouchableOpacity>
-                    </Fragment>
-                  ) : null}
-                </View>
-              </View>
-            </SafeAreaView>
-            <ScrollView contentContainerStyle={Constants.styles.gridContainer}>
-              {decks.map((deck, ii) => (
+              {isMe ? (
+                <Fragment>
+                  <TouchableOpacity onPress={onPressSettings}>
+                    <Text style={{ color: '#aaa' }}>Settings</Text>
+                  </TouchableOpacity>
+                </Fragment>
+              ) : null}
+            </View>
+          </View>
+        </SafeAreaView>
+        <ScrollView
+          contentContainerStyle={Constants.styles.gridContainer}
+          refreshControl={refreshControl}>
+          {user?.decks
+            ? user.decks.map((deck, ii) => (
                 <PlayDeckCell
                   key={deck.deckId}
                   deck={deck}
                   onPress={() =>
                     push('PlayDeck', {
-                      decks,
+                      decks: user.decks,
                       initialDeckIndex: ii,
-                      title: `@${queryData.username}`,
+                      title: `@${user.username}`,
                     })
                   }
                 />
-              ))}
-            </ScrollView>
-          </Fragment>
-        )}
+              ))
+            : null}
+        </ScrollView>
       </View>
-      {isMe && queryData ? (
+      {isMe && user ? (
         <ProfileSettingsSheet
-          me={queryData}
+          me={user}
           isOpen={settingsSheetIsOpen}
           onClose={settingsSheetOnClose}
         />
