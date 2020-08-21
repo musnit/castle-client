@@ -93,7 +93,7 @@ export const makeCardPreviewTitles = (deck) => {
   return titles;
 };
 
-export const launchImagePicker = (methodName, callback = () => {}) => {
+export const launchImagePicker = (methodName, callback = () => {}, opts = {}) => {
   const options = { maxWidth: 1024, maxHeight: 1024, imageFileType: 'png' };
 
   if (Constants.Android) {
@@ -108,45 +108,22 @@ export const launchImagePicker = (methodName, callback = () => {}) => {
       } else {
         callback({ uri });
 
-        // Seems like we need to upload after a slight delay...
-        setTimeout(async () => {
-          const name = uri.match(/[^/]*$/)[0] || '';
-          const extension = name.match(/[^.]*$/)[0] || '';
-          const result = await Session.apolloClient.mutate({
-            mutation: gql`
-              mutation UploadFile($file: Upload!) {
-                uploadFile(file: $file) {
-                  fileId
-                  url
-                }
-              }
-            `,
-            variables: {
-              file: new ReactNativeFile({
-                uri,
-                name,
-                type:
-                  extension === 'jpg'
-                    ? 'image/jpeg'
-                    : extension === 'jpg'
-                    ? 'image/jpeg'
-                    : extension === 'png'
-                    ? 'image/png'
-                    : 'application/octet-stream',
-              }),
-            },
-            fetchPolicy: 'no-cache',
-          });
-          callback(result.data.uploadFile);
-        }, 80);
+        if (!opts.noUpload) {
+          // Seems like we need to upload after a slight delay...
+          setTimeout(async () => {
+            const result = await Session.uploadFile({ uri });
+            callback(result);
+          }, 80);
+        }
       }
     }
   });
 };
 
-export const launchImageLibrary = (callback) => launchImagePicker('launchImageLibrary', callback);
+export const launchImageLibrary = (callback, opts) =>
+  launchImagePicker('launchImageLibrary', callback, opts);
 
-export const launchCamera = (callback) => launchImagePicker('launchCamera', callback);
+export const launchCamera = (callback, opts) => launchImagePicker('launchCamera', callback, opts);
 
 const stringAsSearchInvariant = (string) => string.toLowerCase().trim();
 

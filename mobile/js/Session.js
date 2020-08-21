@@ -5,7 +5,7 @@ import { ApolloClient } from 'apollo-client';
 import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
 import { onError } from 'apollo-link-error';
 import { ApolloLink, Observable } from 'apollo-link';
-import { createUploadLink } from 'apollo-upload-client';
+import { createUploadLink, ReactNativeFile } from 'apollo-upload-client';
 import FastImage from 'react-native-fast-image';
 import gql from 'graphql-tag';
 
@@ -475,4 +475,35 @@ export const getDecksByIds = async (deckIds, fields) => {
     return Object.entries(result.data).map(([alias, deck]) => deck);
   }
   return [];
+};
+
+export const uploadFile = async ({ uri }) => {
+  const name = uri.match(/[^/]*$/)[0] || '';
+  const extension = name.match(/[^.]*$/)[0] || '';
+  const result = await apolloClient.mutate({
+    mutation: gql`
+      mutation UploadFile($file: Upload!) {
+        uploadFile(file: $file) {
+          fileId
+          url
+        }
+      }
+    `,
+    variables: {
+      file: new ReactNativeFile({
+        uri,
+        name,
+        type:
+          extension === 'jpg'
+            ? 'image/jpeg'
+            : extension === 'jpg'
+            ? 'image/jpeg'
+            : extension === 'png'
+            ? 'image/png'
+            : 'application/octet-stream',
+      }),
+    },
+    fetchPolicy: 'no-cache',
+  });
+  return result?.data?.uploadFile;
 };

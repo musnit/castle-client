@@ -19,6 +19,7 @@ import { UserAvatar } from '../components/UserAvatar';
 
 import * as Constants from '../Constants';
 import * as Session from '../Session';
+import * as Utilities from '../common/utilities';
 
 const SHEET_HEIGHT = 100 * Viewport.vh - 100;
 const TAB_BAR_HEIGHT = 49;
@@ -53,7 +54,25 @@ const styles = StyleSheet.create({
 });
 
 const updateUserAsync = async ({ user }) => {
-  //          user: { photoFileId: $photoFileId }
+  if (user.photo.isChanged) {
+    // upload new avatar
+    const uploadedFile = await Session.uploadFile({ uri: user.photo.url });
+    if (uploadedFile?.fileId) {
+      const result = await Session.apolloClient.mutate({
+        mutation: gql`
+          mutation($userId: ID!, $photoFileId: ID!) {
+            updateUser(userId: $userId, user: { photoFileId: $photoFileId }) {
+              userId
+            }
+          }
+        `,
+        variables: {
+          userId: user.userId,
+          photoFileId: uploadedFile.fileId,
+        },
+      });
+    }
+  }
   const result = await Session.apolloClient.mutate({
     mutation: gql`
       mutation ($userId: ID!, $websiteUrl: String) {
@@ -142,6 +161,24 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
     }
   }, [user, onClose]);
 
+  const chooseAvatar = React.useCallback(
+    async () =>
+      Utilities.launchImageLibrary(
+        ({ uri, error }) => {
+          if (!error && uri) {
+            changeUser({
+              photo: {
+                isChanged: true,
+                url: uri,
+              },
+            });
+          }
+        },
+        { noUpload: true } // don't upload until the user saves changes
+      ),
+    [changeUser]
+  );
+
   const renderHeader = () => (
     <BottomSheetHeader title="Settings" onClose={onClose} onDone={saveUserAndClose} />
   );
@@ -161,7 +198,7 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
           <View style={styles.avatar}>
             <UserAvatar url={user.photo?.url} />
           </View>
-          <TouchableOpacity style={Constants.styles.buttonOnWhite}>
+          <TouchableOpacity style={Constants.styles.buttonOnWhite} onPress={chooseAvatar}>
             <Text style={Constants.styles.buttonLabelOnWhite}>Edit avatar</Text>
           </TouchableOpacity>
         </View>
