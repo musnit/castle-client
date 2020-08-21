@@ -20,7 +20,7 @@ import * as GhostChannels from './ghost/GhostChannels';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const ICON_SIZE = 32;
+const ICON_SIZE = 28;
 
 // App UI layout
 
@@ -87,11 +87,11 @@ const TabNavigator = () => (
           return (
             <Image
               style={{
-                width: 26,
-                height: 26,
+                width: ICON_SIZE,
+                height: ICON_SIZE,
                 tintColor: color,
               }}
-              source={require('../assets/images/castle-three-tiny.png')}
+              source={require('../assets/images/BottomTabs-browse.png')}
             />
           );
         },
@@ -110,7 +110,7 @@ const TabNavigator = () => (
                 height: ICON_SIZE,
                 tintColor: color,
               }}
-              source={require('../assets/images/HomeOverlay-create.png')}
+              source={require('../assets/images/BottomTabs-create.png')}
             />
           );
         },
@@ -129,7 +129,7 @@ const TabNavigator = () => (
                 height: ICON_SIZE,
                 tintColor: color,
               }}
-              source={require('../assets/images/HomeOverlay-profile.png')}
+              source={require('../assets/images/BottomTabs-profile.png')}
             />
           );
         },
