@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "black-plain-40@3x.png",
+      "filename" : "workplace-1024.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "black-plain-60@3x.png",
+      "filename" : "workplace-1025.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "black-plain-1024.png",
+      "filename" : "workplace-1026.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
