@@ -179,3 +179,39 @@ export const FEED_ITEM_DECK_FRAGMENT = `
   lastModified
   variables
 `;
+
+export const USER_PROFILE_FRAGMENT = `
+  id
+  userId
+  name
+  username
+  email
+  websiteUrl
+  photo {
+    url
+  }
+  decks {
+    id
+    deckId
+    title
+    creator {
+      userId
+      username
+      photo {
+        url
+      }
+    }
+    isVisible
+    initialCard {
+      id
+      cardId
+      title
+      backgroundImage {
+        url
+        smallUrl
+        privateCardUrl
+      }
+    }
+    variables
+  }
+`;

@@ -62,42 +62,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const PROFILE_FRAGMENT = `
-  id
-  userId
-  name
-  username
-  email
-  websiteUrl
-  photo {
-    url
-  }
-  decks {
-    id
-    deckId
-    title
-    creator {
-      userId
-      username
-      photo {
-        url
-      }
-    }
-    isVisible
-    initialCard {
-      id
-      cardId
-      title
-      backgroundImage {
-        url
-        smallUrl
-        privateCardUrl
-      }
-    }
-    variables
-  }
-`;
-
 const useProfileQuery = (userId) => {
   const { userId: signedInUserId } = useSession();
   if (!userId || userId === signedInUserId) {
@@ -105,7 +69,7 @@ const useProfileQuery = (userId) => {
       gql`
       query Me {
         me {
-          ${PROFILE_FRAGMENT}
+          ${Constants.USER_PROFILE_FRAGMENT}
         }
       }`,
       { fetchPolicy: 'no-cache' }
@@ -115,7 +79,7 @@ const useProfileQuery = (userId) => {
       gql`
       query UserProfile($userId: ID!) {
         user(userId: $userId) {
-          ${PROFILE_FRAGMENT}
+          ${Constants.USER_PROFILE_FRAGMENT}
         }
       }`,
       { fetchPolicy: 'no-cache', variables: { userId } }

@@ -1,14 +1,24 @@
 import React, { Fragment, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Linking, TextInput } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Keyboard,
+  Linking,
+  TextInput,
+} from 'react-native';
+import gql from 'graphql-tag';
+import Viewport from '../common/viewport';
 
 import { BottomSheetHeader } from '../components/BottomSheetHeader';
 import { BottomSheet } from '../components/BottomSheet';
-import Viewport from '../common/viewport';
 import { useSession } from '../Session';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { UserAvatar } from '../components/UserAvatar';
 
 import * as Constants from '../Constants';
+import * as Session from '../Session';
 
 const SHEET_HEIGHT = 100 * Viewport.vh - 100;
 const TAB_BAR_HEIGHT = 49;
@@ -41,6 +51,34 @@ const styles = StyleSheet.create({
     color: Constants.colors.grayText,
   },
 });
+
+const updateUserAsync = async ({ user }) => {
+  //          user: { photoFileId: $photoFileId }
+  const result = await Session.apolloClient.mutate({
+    mutation: gql`
+      mutation ($userId: ID!, $websiteUrl: String) {
+       updateUser(
+         userId: $userId
+         user: {
+           websiteUrl: $websiteUrl
+         }
+       ) {
+         ${Constants.USER_PROFILE_FRAGMENT}
+       }
+      }
+    `,
+    variables: {
+      userId: user.userId,
+      ...user,
+    },
+  });
+  // TODO: handle errors
+  if (result?.data?.updateUser) {
+    return result.data.updateUser;
+  } else {
+    console.warn(`Issue updating profile: ${JSON.stringify(result.errors ?? result)}`);
+  }
+};
 
 const ProfileSettingsPasswordSheet = ({ isOpen, onClose }) => {
   const renderHeader = () => (
@@ -97,8 +135,15 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
     me
   );
 
+  const saveUserAndClose = React.useCallback(async () => {
+    const updatedUser = await updateUserAsync({ user });
+    if (updatedUser) {
+      onClose();
+    }
+  }, [user, onClose]);
+
   const renderHeader = () => (
-    <BottomSheetHeader title="Settings" onClose={onClose} onDone={() => console.log('Hi Ben')} />
+    <BottomSheetHeader title="Settings" onClose={onClose} onDone={saveUserAndClose} />
   );
 
   const [passwordSheetIsOpen, setPasswordSheet] = useState(false);
@@ -141,7 +186,7 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
         </View>
       </View>
       <View style={[styles.section]}>
-        <View style={styles.row}>
+        {/* <View style={styles.row}>
           <Text style={Constants.styles.textInputLabelOnWhite}>Email</Text>
           <TextInput
             value={user.email}
@@ -149,7 +194,7 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
             style={Constants.styles.textInputOnWhite}
             placeholderTextColor={Constants.colors.grayText}
           />
-        </View>
+        </View> */}
         <View style={styles.row}>
           <View>
             <Text style={Constants.styles.textInputLabelOnWhite}>Password</Text>
@@ -185,6 +230,8 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
         isOpen={isOpen}
         renderHeader={renderHeader}
         renderContent={renderContent}
+        onOpenEnd={Keyboard.dismiss}
+        onCloseEnd={Keyboard.dismiss}
         style={{
           backgroundColor: '#fff',
           borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,
