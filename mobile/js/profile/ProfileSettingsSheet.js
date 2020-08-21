@@ -51,6 +51,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Constants.colors.grayText,
   },
+  resetPasswordMessage: {
+    fontSize: 16,
+    lineHeight: 20,
+    color: '#666',
+  },
 });
 
 const updateUserAsync = async ({ user }) => {
@@ -99,50 +104,6 @@ const updateUserAsync = async ({ user }) => {
   }
 };
 
-const ProfileSettingsPasswordSheet = ({ isOpen, onClose }) => {
-  const renderHeader = () => (
-    <BottomSheetHeader
-      title="Edit password"
-      onClose={onClose}
-      onDone={() => console.log('Hi Ben')}
-    />
-  );
-
-  const renderContent = () => (
-    <View>
-      <View style={[styles.section]}>
-        <View style={styles.row}>
-          <Text style={Constants.styles.textInputLabelOnWhite}>Current password</Text>
-          <TextInput style={Constants.styles.textInputOnWhite} />
-        </View>
-        <View style={styles.row}>
-          <Text style={Constants.styles.textInputLabelOnWhite}>New password</Text>
-          <TextInput style={Constants.styles.textInputOnWhite} />
-        </View>
-        <View style={styles.row}>
-          <Text style={Constants.styles.textInputLabelOnWhite}>New password, again</Text>
-          <TextInput style={Constants.styles.textInputOnWhite} />
-        </View>
-      </View>
-    </View>
-  );
-
-  return (
-    <BottomSheet
-      snapPoints={[500]}
-      isOpen={isOpen}
-      renderHeader={renderHeader}
-      renderContent={renderContent}
-      style={{
-        backgroundColor: '#fff',
-        borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,
-        borderTopRightRadius: Constants.CARD_BORDER_RADIUS,
-        ...Constants.styles.dropShadowUp,
-      }}
-    />
-  );
-};
-
 export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
   const { signOutAsync, userId: signedInUserId } = useSession();
   const insets = useSafeArea();
@@ -153,8 +114,11 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
     }),
     me
   );
-  const [passwordSheetIsOpen, setPasswordSheet] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [resetPassword, setResetPassword] = useState({
+    sent: false,
+    message: null,
+  });
 
   const saveUserAndClose = React.useCallback(async () => {
     await setLoading(true);
@@ -183,6 +147,23 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
     [changeUser]
   );
 
+  const onPressPassword = React.useCallback(async () => {
+    await setLoading(true);
+    const result = await Session.resetPasswordAsync({ username: user.username });
+    if (result && !result.errors) {
+      setResetPassword({
+        sent: true,
+        message: 'We emailed you a link to reset your password.',
+      });
+    } else {
+      setResetPassword({
+        sent: true,
+        message: `Oops, there was an issue resetting your password: ${result.errors.join(', ')}`,
+      });
+    }
+    setLoading(false);
+  }, [setResetPassword, setLoading]);
+
   const renderHeader = () => (
     <BottomSheetHeader
       title="Settings"
@@ -191,13 +172,6 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
       loading={loading}
     />
   );
-
-  const onPressPassword = () => {
-    setPasswordSheet(true);
-  };
-  const passwordSheetOnClose = () => {
-    setPasswordSheet(false);
-  };
 
   const renderContent = () => (
     <View style={{ paddingBottom: TAB_BAR_HEIGHT + insets.bottom }}>
@@ -251,12 +225,16 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
             <Text style={Constants.styles.textInputLabelOnWhite}>Password</Text>
           </View>
           <View style={{ alignItems: 'flex-start' }}>
-            <TouchableOpacity
-              onPress={onPressPassword}
-              style={Constants.styles.buttonOnWhite}
-              disabled={loading}>
-              <Text style={Constants.styles.buttonLabelOnWhite}>Edit password</Text>
-            </TouchableOpacity>
+            {resetPassword.sent ? (
+              <Text style={styles.resetPasswordMessage}>{resetPassword.message}</Text>
+            ) : (
+              <TouchableOpacity
+                onPress={onPressPassword}
+                style={Constants.styles.buttonOnWhite}
+                disabled={loading}>
+                <Text style={Constants.styles.buttonLabelOnWhite}>Send reset password email</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </View>
@@ -293,7 +271,6 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
           ...Constants.styles.dropShadowUp,
         }}
       />
-      <ProfileSettingsPasswordSheet isOpen={passwordSheetIsOpen} onClose={passwordSheetOnClose} />
     </Fragment>
   );
 };

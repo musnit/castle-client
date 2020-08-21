@@ -226,8 +226,7 @@ const userIdForUsernameAsync = async (username) => {
 
 export const resetPasswordAsync = async ({ username }) => {
   const userId = await userIdForUsernameAsync(username);
-
-  await apolloClient.mutate({
+  const result = await apolloClient.mutate({
     mutation: gql`
       mutation ResetPassword($userId: ID!) {
         sendResetPasswordEmail(userId: $userId)
@@ -235,6 +234,7 @@ export const resetPasswordAsync = async ({ username }) => {
     `,
     variables: { userId },
   });
+  return result;
 };
 
 export const CARD_FRAGMENT = `
