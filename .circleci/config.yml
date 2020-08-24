@@ -1,14 +1,4 @@
 jobs:
-  build_release_macos:
-    macos:
-      xcode: "11.2.1"
-    steps:
-      - checkout
-      - run:
-          name: Build and Upload
-          command: cd macosx && ./release.sh
-      - store_artifacts:
-          path: /tmp/castle-notarize-artifacts
   build_beta_ios:
     macos:
       xcode: "11.2.1"
@@ -39,11 +29,6 @@ workflows:
   version: 2
   build:
     jobs:
-      - build_release_macos:
-          filters:
-            branches:
-              only:
-                - release/macos
       - build_beta_ios:
           filters:
             branches:
