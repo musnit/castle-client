@@ -21,6 +21,7 @@
 #include "RNBootSplash.h"
 #include "GhostPushNotifications.h"
 #include "GhostView.h"
+#include "GhostChannels.h"
 
 #import "../../../ghost-extensions/SDL2-2.0.8/src/video/uikit/SDL_uikitappdelegate.h"
 
@@ -155,6 +156,12 @@ int SDL_main(int argc, char *argv[]) {
 - (void)applicationWillResignActive:(UIApplication *)application {
   [self.sdlDelegate applicationWillResignActive:application];
   [GhostView sharedGhostView].displayLink.paused = YES;
+  if (self.rctBridge) {
+    GhostChannels *channelsModule = [self.rctBridge moduleForName:@"GhostChannels"];
+    if (channelsModule) {
+      [channelsModule setReady:NO];
+    }
+  }
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
@@ -168,6 +175,12 @@ int SDL_main(int argc, char *argv[]) {
 - (void)applicationDidBecomeActive:(UIApplication *)application {
   [self.sdlDelegate applicationDidBecomeActive:application];
   [GhostView sharedGhostView].displayLink.paused = NO;
+  if (self.rctBridge) {
+    GhostChannels *channelsModule = [self.rctBridge moduleForName:@"GhostChannels"];
+    if (channelsModule) {
+      [channelsModule setReady:YES];
+    }
+  }
 }
 
 // Handle remote notification registration.

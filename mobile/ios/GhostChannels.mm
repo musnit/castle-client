@@ -1,19 +1,19 @@
 // Wrapped by 'GhostChannels.js'.
 
-#import <React/RCTBridgeModule.h>
-
 extern "C" {
 #include <lauxlib.h>
 #include <lua.h>
 #include <lualib.h>
 }
 
+#include "GhostChannels.h"
 #include "modules/thread/Channel.h"
 #include "AppDelegate.h"
 #include "GhostView.h"
 
-@interface GhostChannels : NSObject <RCTBridgeModule>
+@interface GhostChannels ()
 
+@property (nonatomic, retain) NSObject *isReadyLock;
 @property (atomic, assign) BOOL isReady;
 
 // A Lua VM just for value conversion
@@ -28,7 +28,8 @@ RCT_EXPORT_MODULE()
 - (instancetype)init {
   if (self = [super init]) {
     self.conversionLuaState = luaL_newstate();
-    self.isReady = YES;
+    self.isReadyLock = [NSObject new];
+    [self setReady:YES];
   }
   return self;
 }
@@ -38,11 +39,27 @@ RCT_EXPORT_MODULE()
 }
 
 - (void)dealloc {
-  self.isReady = NO;
+  [self setReady:NO];
   if (self.conversionLuaState) {
     lua_close(self.conversionLuaState);
     self.conversionLuaState = nil;
   }
+}
+
+- (void)setReady:(BOOL)ready
+{
+  @synchronized (self.isReadyLock) {
+    self.isReady = ready;
+  }
+}
+
+- (BOOL)_checkIsReady
+{
+  BOOL result = NO;
+  @synchronized (self.isReadyLock) {
+    result = self.isReady;
+  }
+  return result;
 }
 
 - (NSString *)stringFromVariant:(love::Variant &)var {
@@ -60,7 +77,7 @@ RCT_EXPORT_MODULE()
 - (void)returnVariant:(love::Variant &)var
              resolver:(RCTPromiseResolveBlock)resolve
              rejecter:(RCTPromiseRejectBlock)reject {
-  if (!self.isReady) {
+  if (![self _checkIsReady]) {
     reject(@"E_GHOST_CHANNELS", @"`GhostChannels`: GhostChannels is not initialized", nil);
     return;
   }
@@ -92,7 +109,7 @@ RCT_EXPORT_METHOD(clearAsync
                   : (NSString *)name
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  if (!self.isReady) {
+  if (![self _checkIsReady]) {
     reject(@"E_GHOST_CHANNELS", @"`GhostChannels`: GhostChannels is not initialized", nil);
     return;
   }
@@ -106,7 +123,7 @@ RCT_EXPORT_METHOD(demandAsync
                   : (NSDictionary *)options
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  if (!self.isReady) {
+  if (![self _checkIsReady]) {
     reject(@"E_GHOST_CHANNELS", @"`GhostChannels`: GhostChannels is not initialized", nil);
     return;
   }
@@ -132,7 +149,7 @@ RCT_EXPORT_METHOD(getCountAsync
                   : (NSString *)name
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  if (!self.isReady) {
+  if (![self _checkIsReady]) {
     reject(@"E_GHOST_CHANNELS", @"`GhostChannels`: GhostChannels is not initialized", nil);
     return;
   }
@@ -145,7 +162,7 @@ RCT_EXPORT_METHOD(hasReadAsync
                   : (NSNumber *)theId
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  if (!self.isReady) {
+  if (![self _checkIsReady]) {
     reject(@"E_GHOST_CHANNELS", @"`GhostChannels`: GhostChannels is not initialized", nil);
     return;
   }
@@ -157,7 +174,7 @@ RCT_EXPORT_METHOD(peekAsync
                   : (NSString *)name
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  if (!self.isReady) {
+  if (![self _checkIsReady]) {
     reject(@"E_GHOST_CHANNELS", @"`GhostChannels`: GhostChannels is not initialized", nil);
     return;
   }
@@ -174,7 +191,7 @@ RCT_EXPORT_METHOD(popAsync
                   : (NSString *)name
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  if (!self.isReady) {
+  if (![self _checkIsReady]) {
     reject(@"E_GHOST_CHANNELS", @"`GhostChannels`: GhostChannels is not initialized", nil);
     return;
   }
@@ -191,7 +208,7 @@ RCT_EXPORT_METHOD(popAllAsync
                   : (NSString *)name
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  if (!self.isReady) {
+  if (![self _checkIsReady]) {
     reject(@"E_GHOST_CHANNELS", @"`GhostChannels`: GhostChannels is not initialized", nil);
     return;
   }
@@ -217,7 +234,7 @@ RCT_EXPORT_METHOD(pushAsync
                   : (NSString *)value
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  if (!self.isReady) {
+  if (![self _checkIsReady]) {
     reject(@"E_GHOST_CHANNELS", @"`GhostChannels`: GhostChannels is not initialized", nil);
     return;
   }
@@ -234,7 +251,7 @@ RCT_EXPORT_METHOD(supplyAsync
                   : (NSDictionary *)options
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  if (!self.isReady) {
+  if (![self _checkIsReady]) {
     reject(@"E_GHOST_CHANNELS", @"`GhostChannels`: GhostChannels is not initialized", nil);
     return;
   }

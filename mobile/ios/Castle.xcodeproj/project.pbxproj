@@ -236,6 +236,7 @@
 		A1CCBA18235518C7009F4DDD /* GhostView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GhostView.m; sourceTree = "<group>"; };
 		A1FA18C22365168600E2ACFE /* GhostInputZone.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GhostInputZone.mm; sourceTree = "<group>"; };
 		A753A21E42DB46D99AD060DF /* RTAliasGrotesk-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "RTAliasGrotesk-Regular.otf"; path = "../assets/fonts/RTAliasGrotesk-Regular.otf"; sourceTree = "<group>"; };
+		B55A282F24F43BCC00A95D42 /* GhostChannels.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GhostChannels.h; sourceTree = "<group>"; };
 		BDA1BD867AE232F85BAD0D0B /* libPods-Castle-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Castle-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1DF76557142480ED55F211A /* Pods-CastleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CastleTests.debug.xcconfig"; path = "Target Support Files/Pods-CastleTests/Pods-CastleTests.debug.xcconfig"; sourceTree = "<group>"; };
 		E4E5BC502DF005B700F3E5D1 /* Pods-Castle-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Castle-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-Castle-tvOSTests/Pods-Castle-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -321,6 +322,7 @@
 				A1FA18C22365168600E2ACFE /* GhostInputZone.mm */,
 				913618972450F12800E9BD15 /* GhostView.h */,
 				A1CCBA18235518C7009F4DDD /* GhostView.m */,
+				B55A282F24F43BCC00A95D42 /* GhostChannels.h */,
 				A1CCBA1423551869009F4DDD /* GhostChannels.mm */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
