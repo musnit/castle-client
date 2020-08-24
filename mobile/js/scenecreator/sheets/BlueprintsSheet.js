@@ -3,8 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { BottomSheetHeader } from '../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from './CardCreatorBottomSheet';
-import { sendDataPaneAction } from '../../Tools';
-import { useGhostUI } from '../../ghost/GhostUI';
+import { sendDataPaneAction, useGhostUI } from '../../ghost/GhostUI';
 import * as Constants from '../../Constants';
 
 import FastImage from 'react-native-fast-image';

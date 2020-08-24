@@ -2,8 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
-import { sendDataPaneAction } from '../../../Tools';
-import { useGhostUI } from '../../../ghost/GhostUI';
+import { sendDataPaneAction, useGhostUI } from '../../../ghost/GhostUI';
 
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 import * as Constants from '../../../Constants';

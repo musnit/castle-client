@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { objectToArray } from '../../../Tools';
+import { objectToArray } from '../../../ghost/GhostUI';
 import { PopoverButton } from '../../PopoverProvider';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';

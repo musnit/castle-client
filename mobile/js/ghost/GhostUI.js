@@ -1,8 +1,6 @@
 import React from 'react';
 import url from 'url';
-import { useListen } from './GhostEvents';
-import { paneVisible } from '../scenecreator/SceneCreatorUtilities';
-import { getPaneData, sendDataPaneAction } from '../Tools';
+import { sendAsync, useListen } from './GhostEvents';
 
 /**
  *  GhostUI manages the state of the castle tool ui "DOM".
@@ -17,7 +15,7 @@ const GhostUIContext = React.createContext({
   setRoot: (root) => {},
 });
 
-const ENTRYPOINT = 'https://raw.githubusercontent.com/nikki93/scene-creator/master/Client.lua';
+const ENTRYPOINT = 'https://raw.githubusercontent.com/castle-xyz/scene-creator/master/Client.lua';
 const GLOBAL_ACTIONS_PANE_KEY = 'sceneCreatorGlobalActions';
 
 // We get state diffs from Lua. This function applies those diffs to
@@ -108,4 +106,49 @@ export const useGhostThemeListener = ({ setLightColors, setDarkColors }) => {
       forceRender();
     },
   });
+};
+
+export const getPaneData = (element) => {
+  if (element) {
+    let data;
+    const dataChild = element.children['data'];
+    if (dataChild) {
+      return dataChild.props.data;
+    }
+  }
+  return null;
+};
+
+// Whether a pane should be rendered
+const paneVisible = (element) => element && element.children && element.children.count > 0;
+
+let nextEventId = 1;
+const sendEvent = (pathId, event) => {
+  const eventId = nextEventId++;
+  sendAsync('CASTLE_TOOL_EVENT', { pathId, event: { ...event, eventId } });
+  return eventId;
+};
+
+export const sendDataPaneAction = (paneElement, action, value, childId) => {
+  const dataChildPathId = paneElement.children[childId ?? 'data'].pathId;
+  return sendEvent(dataChildPathId, { type: action, value });
+};
+
+// Lua CJSON encodes sparse arrays as objects with stringified keys, use this to convert back
+export const objectToArray = (input) => {
+  if (Array.isArray(input)) {
+    return input;
+  }
+
+  const output = [];
+  let i = '0' in input ? 0 : 1;
+  for (;;) {
+    const strI = i.toString();
+    if (!(strI in input)) {
+      break;
+    }
+    output.push(input[strI]);
+    ++i;
+  }
+  return output;
 };

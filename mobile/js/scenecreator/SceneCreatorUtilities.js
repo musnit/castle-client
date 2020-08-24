@@ -1,7 +1,4 @@
-import { getPaneData, sendDataPaneAction } from '../Tools';
-
-// Whether a pane should be rendered
-export const paneVisible = (element) => element && element.children && element.children.count > 0;
+import { getPaneData, sendDataPaneAction } from '../ghost/GhostUI';
 
 export const getVariableName = (variableId, variables) => {
   let variableName = '(none)';

@@ -6,7 +6,6 @@ import { CardText } from '../components/CardText';
 import { useQuery, useEffect } from '@apollo/react-hooks';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeArea } from 'react-native-safe-area-context';
-import { getPaneData } from '../Tools';
 
 import * as GhostUI from '../ghost/GhostUI';
 import * as GhostEvents from '../ghost/GhostEvents';
@@ -126,7 +125,7 @@ const PlayCardScreen = ({ card, onSelectNewCard, deckState, onChangeDeckState, p
 
   let textActors;
   if (root && root.panes) {
-    const data = getPaneData(root.panes[TEXT_ACTORS_PANE]);
+    const data = GhostUI.getPaneData(root.panes[TEXT_ACTORS_PANE]);
     if (data) {
       textActors = data.textActors;
     }

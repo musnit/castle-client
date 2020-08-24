@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { objectToArray } from '../../../Tools';
 import { PopoverButton } from '../../PopoverProvider';
 import { DropdownItemsList } from './InspectorDropdown';
 

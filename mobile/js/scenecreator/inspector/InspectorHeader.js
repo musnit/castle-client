@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { getPaneData, sendDataPaneAction } from '../../Tools';
+import { getPaneData, sendDataPaneAction } from '../../ghost/GhostUI';
 import { SegmentedNavigation } from '../../components/SegmentedNavigation';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useCardCreator } from '../CreateCardContext';
