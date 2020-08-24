@@ -14,6 +14,8 @@ extern "C" {
 
 @interface GhostChannels : NSObject <RCTBridgeModule>
 
+@property (atomic, assign) BOOL isReady;
+
 // A Lua VM just for value conversion
 @property(nonatomic, assign) lua_State *conversionLuaState;
 
@@ -26,6 +28,7 @@ RCT_EXPORT_MODULE()
 - (instancetype)init {
   if (self = [super init]) {
     self.conversionLuaState = luaL_newstate();
+    self.isReady = YES;
   }
   return self;
 }
@@ -35,6 +38,7 @@ RCT_EXPORT_MODULE()
 }
 
 - (void)dealloc {
+  self.isReady = NO;
   if (self.conversionLuaState) {
     lua_close(self.conversionLuaState);
     self.conversionLuaState = nil;
@@ -56,6 +60,10 @@ RCT_EXPORT_MODULE()
 - (void)returnVariant:(love::Variant &)var
              resolver:(RCTPromiseResolveBlock)resolve
              rejecter:(RCTPromiseRejectBlock)reject {
+  if (!self.isReady) {
+    reject(@"E_GHOST_CHANNELS", @"`GhostChannels`: GhostChannels is not initialized", nil);
+    return;
+  }
   NSString *str = [self stringFromVariant:var];
   if (str) {
     resolve(str);
@@ -84,6 +92,10 @@ RCT_EXPORT_METHOD(clearAsync
                   : (NSString *)name
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
+  if (!self.isReady) {
+    reject(@"E_GHOST_CHANNELS", @"`GhostChannels`: GhostChannels is not initialized", nil);
+    return;
+  }
   auto channel = love::thread::Channel::getChannel(name.UTF8String);
   channel->clear();
   resolve(nil);
@@ -94,6 +106,10 @@ RCT_EXPORT_METHOD(demandAsync
                   : (NSDictionary *)options
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
+  if (!self.isReady) {
+    reject(@"E_GHOST_CHANNELS", @"`GhostChannels`: GhostChannels is not initialized", nil);
+    return;
+  }
   auto channel = love::thread::Channel::getChannel(name.UTF8String);
   love::Variant var;
   bool result = false;
@@ -116,6 +132,10 @@ RCT_EXPORT_METHOD(getCountAsync
                   : (NSString *)name
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
+  if (!self.isReady) {
+    reject(@"E_GHOST_CHANNELS", @"`GhostChannels`: GhostChannels is not initialized", nil);
+    return;
+  }
   auto channel = love::thread::Channel::getChannel(name.UTF8String);
   resolve(@(channel->getCount()));
 }
@@ -125,6 +145,10 @@ RCT_EXPORT_METHOD(hasReadAsync
                   : (NSNumber *)theId
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
+  if (!self.isReady) {
+    reject(@"E_GHOST_CHANNELS", @"`GhostChannels`: GhostChannels is not initialized", nil);
+    return;
+  }
   auto channel = love::thread::Channel::getChannel(name.UTF8String);
   resolve(@(channel->hasRead(theId.integerValue)));
 }
@@ -133,6 +157,10 @@ RCT_EXPORT_METHOD(peekAsync
                   : (NSString *)name
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
+  if (!self.isReady) {
+    reject(@"E_GHOST_CHANNELS", @"`GhostChannels`: GhostChannels is not initialized", nil);
+    return;
+  }
   auto channel = love::thread::Channel::getChannel(name.UTF8String);
   love::Variant var;
   if (channel->peek(&var)) {
@@ -146,6 +174,10 @@ RCT_EXPORT_METHOD(popAsync
                   : (NSString *)name
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
+  if (!self.isReady) {
+    reject(@"E_GHOST_CHANNELS", @"`GhostChannels`: GhostChannels is not initialized", nil);
+    return;
+  }
   auto channel = love::thread::Channel::getChannel(name.UTF8String);
   love::Variant var;
   if (channel->pop(&var)) {
@@ -159,6 +191,10 @@ RCT_EXPORT_METHOD(popAllAsync
                   : (NSString *)name
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
+  if (!self.isReady) {
+    reject(@"E_GHOST_CHANNELS", @"`GhostChannels`: GhostChannels is not initialized", nil);
+    return;
+  }
   auto channel = love::thread::Channel::getChannel(name.UTF8String);
   love::Variant var;
 
@@ -181,6 +217,10 @@ RCT_EXPORT_METHOD(pushAsync
                   : (NSString *)value
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
+  if (!self.isReady) {
+    reject(@"E_GHOST_CHANNELS", @"`GhostChannels`: GhostChannels is not initialized", nil);
+    return;
+  }
   auto channel = love::thread::Channel::getChannel(name.UTF8String);
   auto var =
       love::Variant(value.UTF8String,
@@ -194,6 +234,10 @@ RCT_EXPORT_METHOD(supplyAsync
                   : (NSDictionary *)options
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
+  if (!self.isReady) {
+    reject(@"E_GHOST_CHANNELS", @"`GhostChannels`: GhostChannels is not initialized", nil);
+    return;
+  }
   auto channel = love::thread::Channel::getChannel(name.UTF8String);
   auto var =
       love::Variant(value.UTF8String,
