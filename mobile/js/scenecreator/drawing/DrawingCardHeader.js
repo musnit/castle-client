@@ -69,7 +69,7 @@ export const DrawingCardHeader = ({ onPressBack }) => {
   const { globalActions, sendGlobalAction } = useGhostUI();
   const { activeToolData, activeToolAction } = useCardCreator();
 
-  if (!activeToolData.color) {
+  if (!activeToolData) {
     return null;
   }
 
