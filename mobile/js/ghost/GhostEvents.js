@@ -7,14 +7,22 @@ const listenerLists = {}; // `eventName` -> `listenerId` -> `handler`
 let nextListenerId = 1;
 
 const checkEvents = async () => {
-  (await GhostChannels.popAllAsync('LUA_TO_JS_EVENTS')).forEach((eventJson) => {
-    const { name, params } = JSON.parse(eventJson);
+  let events;
+  try {
+    events = await GhostChannels.popAllAsync('LUA_TO_JS_EVENTS');
+  } catch (_) {
+    // ghost channels module isn't ready
+  }
+  if (events) {
+    events.forEach((eventJson) => {
+      const { name, params } = JSON.parse(eventJson);
 
-    const listenerList = listenerLists[name];
-    if (listenerList) {
-      Object.values(listenerList).forEach((handler) => handler(params));
-    }
-  });
+      const listenerList = listenerLists[name];
+      if (listenerList) {
+        Object.values(listenerList).forEach((handler) => handler(params));
+      }
+    });
+  }
   requestAnimationFrame(checkEvents);
 };
 requestAnimationFrame(checkEvents);
@@ -37,13 +45,21 @@ export const listen = (name, handler) => {
 };
 
 export const sendAsync = async (name, params) => {
-  await GhostChannels.pushAsync('JS_EVENTS', JSON.stringify({ name, params }));
+  try {
+    await GhostChannels.pushAsync('JS_EVENTS', JSON.stringify({ name, params }));
+  } catch (e) {
+    console.warn(`GhostEvents.sendAsync(${name}, ...) failed: ${e}`);
+  }
 };
 
 // Clear Lua <-> JS events channels for a new game
 export const clearAsync = async () => {
-  await GhostChannels.clearAsync('JS_EVENTS');
-  await GhostChannels.clearAsync('LUA_JS_EVENTS');
+  try {
+    await GhostChannels.clearAsync('JS_EVENTS');
+    await GhostChannels.clearAsync('LUA_JS_EVENTS');
+  } catch (e) {
+    console.warn(`GhostEvents.clearAsync failed: ${e}`);
+  }
 };
 
 const GhostEventsContext = React.createContext({});
