@@ -35,7 +35,6 @@ const styles = StyleSheet.create({
   metaImage: {
     width: 18,
     marginRight: 6,
-    ...Constants.styles.dropShadow,
   },
   metaTitle: {
     color: '#fff',
@@ -118,7 +117,7 @@ export const CardCell = ({
             <View style={styles.meta}>
               {imageUrl && (
                 <View style={styles.metaImage}>
-                  <UserAvatar url={imageUrl} />
+                  <UserAvatar url={imageUrl} shadow={true} />
                 </View>
               )}
               {title && <Text style={styles.metaTitle}>{title}</Text>}
