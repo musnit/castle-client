@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     padding: 16,
+    paddingBottom: 8,
   },
 });
 
@@ -153,24 +154,6 @@ const PlayCardScreen = ({ card, onSelectNewCard, deckState, onChangeDeckState, p
     },
   });
 
-  const { vw, vh } = Viewport;
-  const insets = useSafeArea();
-  const cardHeight = (1 / Constants.CARD_RATIO) * 100 * vw;
-  const tabBarHeight = 49;
-
-  let statusBarHeight = 0;
-  if (vh * 100 >= cardHeight + insets.top) {
-    statusBarHeight = insets.top;
-  }
-
-  const everythingHeight = statusBarHeight + cardHeight + tabBarHeight + insets.bottom;
-  const heightDifference = everythingHeight - vh * 100 - statusBarHeight;
-
-  let blocksBottomPadding = 8;
-  if (heightDifference > 0) {
-    blocksBottomPadding = blocksBottomPadding + heightDifference;
-  }
-
   return card ? (
     <View style={styles.container}>
       <CardScene
@@ -182,9 +165,7 @@ const PlayCardScreen = ({ card, onSelectNewCard, deckState, onChangeDeckState, p
         onMessage={_handleSceneMessage}
         paused={paused}
       />
-      <View
-        pointerEvents="box-none"
-        style={[styles.description, { paddingBottom: blocksBottomPadding }]}>
+      <View pointerEvents="box-none" style={styles.description}>
         <CardText
           visible
           card={card}
