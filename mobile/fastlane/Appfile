@@ -1,8 +1,8 @@
-app_identifier "games.castle.castle"
-team_id "48GFST92BB"
+app_identifier "xyz.castle.castle"
+team_id "CUW59GZ74D"
 
 for_platform :ios do
   for_lane :development do
-    app_identifier 'games.castle.castle-debug'
+    app_identifier 'xyz.castle.castle-debug'
   end
 end

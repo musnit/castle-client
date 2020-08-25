@@ -21,17 +21,17 @@ platform :ios do
   end
   lane :beta do
     get_certificates(
-        username: "services@castle.games"
+        username: "ben@castle.xyz"
     )
     get_provisioning_profile(
-        username: "services@castle.games"
+        username: "ben@castle.xyz"
     )
     build_app(
       scheme: "Castle",
       workspace: "ios/Castle.xcworkspace"
     )
     upload_to_testflight(
-        username: "services@castle.games"
+        username: "ben@castle.xyz"
     )
   end
 end
