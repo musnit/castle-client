@@ -49,12 +49,12 @@ const onShareDeck = async (deck) => {
   if (Constants.iOS) {
     params = {
       // message: `Open this deck in Castle`,
-      url: `castle://castle.xyz/d/${deck.deckId}`,
+      url: `https://castle.xyz/d/${deck.deckId}`,
     };
   } else {
     params = {
       // title: 'Open this deck in Castle',
-      message: `castle://castle.xyz/d/${deck.deckId}`,
+      message: `https://castle.xyz/d/${deck.deckId}`,
     };
   }
   try {
