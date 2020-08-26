@@ -32,10 +32,12 @@ const styles = StyleSheet.create({
 });
 
 const LayoutInput = ({ behavior, propName, label, sendAction }) => {
+  const [lastNativeUpdate, setLastNativeUpdate] = React.useState(0);
   const [value, sendValue] = useOptimisticBehaviorValue({
     behavior,
     propName,
     sendAction,
+    onNativeUpdate: () => setLastNativeUpdate(lastNativeUpdate + 1),
   });
 
   const onChange = React.useCallback(
@@ -52,6 +54,7 @@ const LayoutInput = ({ behavior, propName, label, sendAction }) => {
       <Text style={styles.inputLabel}>{label}</Text>
       <InspectorNumberInput
         value={value}
+        lastNativeUpdate={lastNativeUpdate}
         onChange={onChange}
         {...behavior.propertySpecs[propName].props}
       />
