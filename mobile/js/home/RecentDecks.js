@@ -31,15 +31,22 @@ export const RecentDecks = ({ focused }) => {
   const [lastFetchedTime, setLastFetchedTime] = React.useState(null);
   const [decks, setDecks] = React.useState(undefined);
   const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState(undefined);
 
   const fetchDecks = React.useCallback(async () => {
     setLoading(true);
-    const historyItems = await History.getItems();
-    const deckIds = historyItems.map((item) => item.deckId);
-    const decks = await Session.getDecksByIds(deckIds, Constants.FEED_ITEM_DECK_FRAGMENT);
+    let decks;
+    try {
+      const historyItems = await History.getItems();
+      const deckIds = historyItems.map((item) => item.deckId);
+      decks = await Session.getDecksByIds(deckIds, Constants.FEED_ITEM_DECK_FRAGMENT);
+    } catch (e) {
+      setError(e);
+    } finally {
+      setLoading(false);
+    }
     setDecks(decks);
-    setLoading(false);
-  }, [setDecks, setLoading]);
+  }, [setDecks, setLoading, setError]);
 
   const onRefresh = React.useCallback(() => {
     fetchDecks();
@@ -83,6 +90,10 @@ export const RecentDecks = ({ focused }) => {
             />
           </View>
         ))
+      ) : error ? (
+        <View style={styles.empty}>
+          <Text style={styles.emptyText}>{error}</Text>
+        </View>
       ) : lastFetchedTime && !loading ? (
         <View style={styles.empty}>
           <Text style={styles.emptyText}>You haven't played any decks recently.</Text>

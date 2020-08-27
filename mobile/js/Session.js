@@ -473,6 +473,8 @@ export const getDecksByIds = async (deckIds, fields) => {
 
   if (result && result.data) {
     return Object.entries(result.data).map(([alias, deck]) => deck);
+  } else if (result?.errors) {
+    throw new Error(`getDecksByIds: ${result.errors[0]}`);
   }
   return [];
 };

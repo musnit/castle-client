@@ -15,7 +15,7 @@ const _initHistory = async () => {
     result = await AsyncStorage.getItem(HISTORY_STORAGE_KEY);
     result = JSON.parse(result);
   } catch (e) {
-    console.warn(`Unable to fetch history: ${e}`);
+    throw new Error(`Unable to fetch history: ${e}`);
   }
   gHistory = result ?? { ...EMPTY_HISTORY, loaded: true };
 };
