@@ -24,9 +24,6 @@ const TAB_ITEMS = [
 
 export const InspectorSheet = ({ isOpen, addChildSheet }) => {
   const { root } = useGhostUI();
-  if (!root || !root.panes) return null;
-
-  const actionsPane = root.panes.sceneCreatorInspectorActions;
   const { isTextActorSelected } = useCardCreator();
 
   const [selectedTab, setSelectedTab] = React.useState(TAB_ITEMS[0].value);
@@ -50,35 +47,40 @@ export const InspectorSheet = ({ isOpen, addChildSheet }) => {
     setSelectedTab(TAB_ITEMS[0].value);
   }, [isTextActorSelected]);
 
-  const tabItems = TAB_ITEMS.filter((tab) => {
-    // hide 'Movement' for text actors
-    return !(isTextActorSelected && tab.value === 'movement');
-  });
+  if (root?.panes) {
+    const actionsPane = root.panes.sceneCreatorInspectorActions;
 
-  const renderHeader = () => (
-    <InspectorHeader
-      isOpen={isOpen}
-      isTextActorSelected={isTextActorSelected}
-      tabItems={tabItems}
-      selectedTab={selectedTab}
-      setSelectedTab={setSelectedTabOrScroll}
-      pane={actionsPane}
-    />
-  );
+    const tabItems = TAB_ITEMS.filter((tab) => {
+      // hide 'Movement' for text actors
+      return !(isTextActorSelected && tab.value === 'movement');
+    });
 
-  const renderContent = () => (
-    <InspectorTabs addChildSheet={addChildSheet} selectedTab={selectedTab} />
-  );
+    const renderHeader = () => (
+      <InspectorHeader
+        isOpen={isOpen}
+        isTextActorSelected={isTextActorSelected}
+        tabItems={tabItems}
+        selectedTab={selectedTab}
+        setSelectedTab={setSelectedTabOrScroll}
+        pane={actionsPane}
+      />
+    );
 
-  return (
-    <CardCreatorBottomSheet
-      isOpen={isOpen}
-      headerHeight={88}
-      contentKey={`tab-${selectedTab}`}
-      renderHeader={renderHeader}
-      renderContent={renderContent}
-      scrollViewRef={scrollViewRef}
-      persistLastSnapWhenOpened
-    />
-  );
+    const renderContent = () => (
+      <InspectorTabs addChildSheet={addChildSheet} selectedTab={selectedTab} />
+    );
+
+    return (
+      <CardCreatorBottomSheet
+        isOpen={isOpen}
+        headerHeight={88}
+        contentKey={`tab-${selectedTab}`}
+        renderHeader={renderHeader}
+        renderContent={renderContent}
+        scrollViewRef={scrollViewRef}
+        persistLastSnapWhenOpened
+      />
+    );
+  }
+  return null;
 };
