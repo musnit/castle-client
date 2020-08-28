@@ -9,6 +9,7 @@ love/platform/xcode/DerivedData-beta/
 love/platform/xcode/.idea
 
 love/build/
+mobile/android/love/.cxx/
 compile_commands.json
 
 imgui.ini
