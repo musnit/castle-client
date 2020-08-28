@@ -34,6 +34,7 @@ export const RuleParamInputRow = ({ label, paramSpec, value, setValue, style, ..
     case 'textArea':
       input = (
         <InspectorTextInput
+          optimistic
           value={value}
           onChangeText={setValue}
           multiline={paramSpec.method === 'textArea'}
