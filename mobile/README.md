@@ -24,7 +24,8 @@ Once you have the app running, shake the device to open the React Native develop
 ## iOS
 
 - Make sure `fastlane` is up to date: `bundle update fastlane` from this directory.
-- Run `./tools/upload-beta-build.sh` to upload a build to testflight. (You will need some credentials from our password store.)
+- Run `./tools/upload-beta-build.sh` to upload a build to testflight.
+- You will need your personal credentials for Castle's Apple team, and you may also be asked to generate an app-specific password (Fastlane will give you instructions if this is needed).
 - Although we have a circleci config for fastlane, it doesn't work right now.
 
 ## Android
