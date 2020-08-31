@@ -18,6 +18,10 @@ const styles = StyleSheet.create({
     minHeight: DRAWING_CARD_FOOTER_HEIGHT,
   },
 
+  collisionContainer: {
+    justifyContent: 'center',
+  },
+
   colorPickers: {
     flexDirection: 'row',
     paddingLeft: 8,
@@ -86,7 +90,11 @@ export const DrawingCardBottomActions = () => {
 
         <View style={styles.subtools}>
           <TouchableOpacity
-            style={artworkSubtool == 'pencil_no_grid' ? [styles.iconSelected, {backgroundColor: activeColorBackground}] : styles.icon}
+            style={
+              artworkSubtool == 'pencil_no_grid'
+                ? [styles.iconSelected, { backgroundColor: activeColorBackground }]
+                : styles.icon
+            }
             onPress={() => activeToolAction('onSelectArtworkSubtool', 'pencil_no_grid')}>
             <Icon
               name="gesture"
@@ -96,7 +104,11 @@ export const DrawingCardBottomActions = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={artworkSubtool == 'line' ? [styles.iconSelected, {backgroundColor: activeColorBackground}] : styles.icon}
+            style={
+              artworkSubtool == 'line'
+                ? [styles.iconSelected, { backgroundColor: activeColorBackground }]
+                : styles.icon
+            }
             onPress={() => activeToolAction('onSelectArtworkSubtool', 'line')}>
             <MCIcon
               name="vector-line"
@@ -106,7 +118,11 @@ export const DrawingCardBottomActions = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={artworkSubtool == 'pencil' ? [styles.iconSelected, {backgroundColor: activeColorBackground}] : styles.icon}
+            style={
+              artworkSubtool == 'pencil'
+                ? [styles.iconSelected, { backgroundColor: activeColorBackground }]
+                : styles.icon
+            }
             onPress={() => activeToolAction('onSelectArtworkSubtool', 'pencil')}>
             <MCIcon
               name="vector-polyline"
@@ -116,7 +132,11 @@ export const DrawingCardBottomActions = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={artworkSubtool == 'move' ? [styles.iconSelected, {backgroundColor: activeColorBackground}] : styles.icon}
+            style={
+              artworkSubtool == 'move'
+                ? [styles.iconSelected, { backgroundColor: activeColorBackground }]
+                : styles.icon
+            }
             onPress={() => activeToolAction('onSelectArtworkSubtool', 'move')}>
             <MCIcon
               name="vector-point"
@@ -126,7 +146,11 @@ export const DrawingCardBottomActions = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={artworkSubtool == 'bend' ? [styles.iconSelected, {backgroundColor: activeColorBackground}] : styles.icon}
+            style={
+              artworkSubtool == 'bend'
+                ? [styles.iconSelected, { backgroundColor: activeColorBackground }]
+                : styles.icon
+            }
             onPress={() => activeToolAction('onSelectArtworkSubtool', 'bend')}>
             <MCIcon
               name="vector-radius"
@@ -136,7 +160,11 @@ export const DrawingCardBottomActions = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={artworkSubtool == 'fill' ? [styles.iconSelected, {backgroundColor: activeColorBackground}] : styles.icon}
+            style={
+              artworkSubtool == 'fill'
+                ? [styles.iconSelected, { backgroundColor: activeColorBackground }]
+                : styles.icon
+            }
             onPress={() => activeToolAction('onSelectArtworkSubtool', 'fill')}>
             <MCIcon
               name="format-color-fill"
@@ -147,7 +175,11 @@ export const DrawingCardBottomActions = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={artworkSubtool == 'erase' ? [styles.iconSelected, {backgroundColor: activeColorBackground}] : styles.icon}
+            style={
+              artworkSubtool == 'erase'
+                ? [styles.iconSelected, { backgroundColor: activeColorBackground }]
+                : styles.icon
+            }
             onPress={() => activeToolAction('onSelectArtworkSubtool', 'erase')}>
             <MCIcon
               name="eraser"
@@ -162,33 +194,45 @@ export const DrawingCardBottomActions = () => {
     const collisionSubtool = activeToolData.collisionSubtool;
 
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, styles.collisionContainer]}>
         <TouchableOpacity
-          style={collisionSubtool == 'move' ? styles.iconSelected : styles.icon}
+          style={
+            collisionSubtool == 'move'
+              ? [styles.iconSelected, { backgroundColor: activeColorBackground }]
+              : styles.icon
+          }
           onPress={() => activeToolAction('onSelectCollisionSubtool', 'move')}>
           <Icon
             name="open-with"
-            size={32}
+            size={ICON_SIZE}
             color={collisionSubtool == 'move' ? COLOR_ICON_SELECTED : COLOR_ICON}
           />
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={collisionSubtool == 'scale-rotate' ? styles.iconSelected : styles.icon}
+          style={
+            collisionSubtool == 'scale-rotate'
+              ? [styles.iconSelected, { backgroundColor: activeColorBackground }]
+              : styles.icon
+          }
           onPress={() => activeToolAction('onSelectCollisionSubtool', 'scale-rotate')}>
           <Icon
             name="crop-rotate"
-            size={32}
+            size={ICON_SIZE}
             color={collisionSubtool == 'scale-rotate' ? COLOR_ICON_SELECTED : COLOR_ICON}
           />
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={collisionSubtool == 'erase' ? styles.iconSelected : styles.icon}
+          style={
+            collisionSubtool == 'erase'
+              ? [styles.iconSelected, { backgroundColor: activeColorBackground }]
+              : styles.icon
+          }
           onPress={() => activeToolAction('onSelectCollisionSubtool', 'erase')}>
-          <Icon
-            name="clear"
-            size={32}
+          <MCIcon
+            name="eraser"
+            size={ICON_SIZE}
             color={collisionSubtool == 'erase' ? COLOR_ICON_SELECTED : COLOR_ICON}
           />
         </TouchableOpacity>
