@@ -90,7 +90,12 @@ export const InspectorNumberInput = ({ value, lastNativeUpdate, onChange, ...pro
 
   return (
     <View style={styles.container}>
-      <InspectorTextInput style={styles.input} value={text} onChangeText={onChangeText} />
+      <InspectorTextInput
+        style={styles.input}
+        value={text}
+        onChangeText={onChangeText}
+        keyboardType={'decimal-pad'}
+      />
       <TouchableOpacity
         style={[styles.button, styles.minusButton]}
         onPress={onMinus}
