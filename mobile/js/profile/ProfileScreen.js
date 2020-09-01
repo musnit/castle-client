@@ -14,7 +14,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { CardCell } from '../components/CardCell';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLazyQuery } from '@apollo/react-hooks';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '../Navigation';
 import { useSession } from '../Session';
 import { UserAvatar } from '../components/UserAvatar';
 import { ProfileSettingsSheet } from './ProfileSettingsSheet';

@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from './Navigation';
 import FastImage from 'react-native-fast-image';
 
 import { resetPasswordAsync, useSession } from './Session';

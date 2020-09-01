@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '../Navigation';
 import { StyleSheet, View } from 'react-native';
 
 import CardTransition from './CardTransition';

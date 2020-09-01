@@ -1,8 +1,8 @@
 import React from 'react';
-import { FlatList, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StatusBar, StyleSheet, Text, View, requireNativeComponent } from 'react-native';
 import { CardCell } from '../components/CardCell';
 import { useLazyQuery } from '@apollo/react-hooks';
-import { useNavigation, useFocusEffect, useScrollToTop } from '@react-navigation/native';
+import { useNavigation, useFocusEffect, useScrollToTop } from '../Navigation';
 import gql from 'graphql-tag';
 import Viewport from '../common/viewport';
 
@@ -10,6 +10,8 @@ import * as Constants from '../Constants';
 
 const REFETCH_FEED_INTERVAL_MS = 30 * 1000;
 const SCROLL_LOAD_MORE_BUFFER = 96;
+
+const NativeFeedView = requireNativeComponent('CastleFeedView', null);
 
 export const NewestDecks = ({ focused }) => {
   const { navigate } = useNavigation();
@@ -137,13 +139,14 @@ export const NewestDecks = ({ focused }) => {
     />
   );
 
-  /*
-  <NativeFeedView
+  /*return (
+    <NativeFeedView
       decks={decks}
       style={{
-        width: '100%',
-        height: '100%',
+        //flex: 1,
+        width: 400,
+        height: 600,
       }}
     />
-    */
+  );*/
 };

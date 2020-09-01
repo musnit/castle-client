@@ -14,6 +14,7 @@ import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
+import com.reactnativenavigation.react.ReactGateway;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -54,6 +55,9 @@ public class MainApplication extends Application implements ReactApplication {
         }
       };
 
+
+    private ReactGateway reactGateway;
+
   @Override
   public ReactNativeHost getReactNativeHost() {
     return mReactNativeHost;
@@ -64,7 +68,16 @@ public class MainApplication extends Application implements ReactApplication {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this); // Remove this line if you don't want Flipper enabled
+      reactGateway = createReactGateway();
   }
+
+    protected ReactGateway createReactGateway() {
+        return new ReactGateway(getReactNativeHost());
+    }
+
+    public ReactGateway getReactGateway() {
+        return reactGateway;
+    }
 
   /**
    * Loads Flipper in React Native templates.

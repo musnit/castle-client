@@ -4,7 +4,7 @@ import { TouchableWithoutFeedback, ScrollView, StyleSheet, View } from 'react-na
 import { CardScene } from '../game/CardScene';
 import { CardText } from '../components/CardText';
 import { useQuery, useEffect } from '@apollo/react-hooks';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '../Navigation';
 import { useSafeArea } from 'react-native-safe-area-context';
 
 import * as GhostUI from '../ghost/GhostUI';

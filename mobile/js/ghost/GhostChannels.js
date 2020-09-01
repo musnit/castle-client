@@ -83,3 +83,23 @@ export const on = (name, handler) => {
     },
   };
 };
+
+export const navigate = (navigatorId, screenType, navigationScreenOptions) => {
+  return NativeModules.GhostChannels.navigate(navigatorId, screenType, navigationScreenOptions);
+};
+
+export const navigateBack = () => {
+  return NativeModules.GhostChannels.navigateBack();
+};
+
+export const getCastleAsyncStorage = (key) => {
+  return NativeModules.GhostChannels.getCastleAsyncStorage(key);
+};
+
+export const setCastleAsyncStorage = (key, value) => {
+  return NativeModules.GhostChannels.setCastleAsyncStorage(key, value);
+};
+
+export const removeCastleAsyncStorage = (key) => {
+  return NativeModules.GhostChannels.removeCastleAsyncStorage(key);
+};
