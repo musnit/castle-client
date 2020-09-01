@@ -7,14 +7,13 @@ import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.facebook.react.ReactActivity;
-import com.facebook.react.ReactActivityDelegate;
-import com.facebook.react.ReactRootView;
-import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
+import com.facebook.react.modules.core.PermissionListener;
+import com.reactnativenavigation.react.NavigationActivity;
 
 import org.love2d.android.GameActivity;
 
-public class MainActivity extends ReactActivity {
+
+public class MainActivity extends NavigationActivity {
 
     private static final boolean SCENE_CREATOR_USE_PROD_SCENE_CREATOR = true;
     private static final String SCENE_CREATOR_DEV_URI = "http://192.168.1.146:8080/Client.lua";
@@ -48,23 +47,6 @@ public class MainActivity extends ReactActivity {
         gameActivity.handleIntent(new Intent(this, GameActivity.class));
         GameActivity.setMetricsFromDisplay(getWindowManager().getDefaultDisplay());
         gameActivity.loadLibraries();
-    }
-
-    // Name of main component for React Native
-    @Override
-    protected String getMainComponentName() {
-        return "Castle";
-    }
-
-    // For 'react-native-gesture-handler'
-    @Override
-    protected ReactActivityDelegate createReactActivityDelegate() {
-        return new ReactActivityDelegate(this, getMainComponentName()) {
-            @Override
-            protected ReactRootView createRootView() {
-                return new RNGestureHandlerEnabledRootView(MainActivity.this);
-            }
-        };
     }
 
     // System behavior for volume, camera, zoom buttons
