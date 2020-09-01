@@ -6,14 +6,15 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Platform,
 } from 'react-native';
 import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
-import { useIsFocused, useFocusEffect } from '@react-navigation/native';
+import { useIsFocused, useFocusEffect } from '../Navigation';
 
 import { CardCell } from '../components/CardCell';
 import { PlayDeckActions } from './PlayDeckActions';
 import { PlayDeckNavigator } from './PlayDeckNavigator';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '../Navigation';
 import { useListen } from '../ghost/GhostEvents';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -111,8 +112,32 @@ const cardAspectFitStyles = makeCardAspectFitStyles();
 // including the interactive scene.
 const CurrentDeckCell = ({ deck, paused }) => {
   const [ready, setReady] = React.useState(false);
-  useFocusEffect(
-    React.useCallback(() => {
+
+  if (Platform.OS == 'ios') {
+    useFocusEffect(
+      React.useCallback(() => {
+        let timeout;
+        const task = InteractionManager.runAfterInteractions(() => {
+          if (deck) {
+            timeout = setTimeout(() => {
+              setReady(true);
+            }, 10);
+          } else {
+            setReady(false);
+          }
+        });
+        return () => {
+          if (timeout) {
+            clearTimeout(timeout);
+            timeout = undefined;
+          }
+          setReady(false);
+          task.cancel();
+        };
+      }, [deck])
+    );
+  } else {
+    React.useEffect(() => {
       let timeout;
       const task = InteractionManager.runAfterInteractions(() => {
         if (deck) {
@@ -131,8 +156,8 @@ const CurrentDeckCell = ({ deck, paused }) => {
         setReady(false);
         task.cancel();
       };
-    }, [deck])
-  );
+    }, [deck]);
+  }
 
   return (
     <View style={styles.itemCard}>

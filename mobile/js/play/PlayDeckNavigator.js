@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import gql from 'graphql-tag';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '../Navigation';
 import { StyleSheet, View } from 'react-native';
 
 import CardTransition from './CardTransition';

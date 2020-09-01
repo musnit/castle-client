@@ -6,7 +6,7 @@ import { ConfigureDeck } from './ConfigureDeck';
 import { DeckHeader } from './DeckHeader';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '../Navigation';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 
 import * as LocalId from '../common/local-id';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { InteractionManager, StyleSheet } from 'react-native';
 import { CreateDeckScreen } from './CreateDeckScreen';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '../Navigation';
 import { Transitioning } from 'react-native-reanimated';
 
 import CreateCardScreen from '../scenecreator/CreateCardScreenDataProvider';
