@@ -189,6 +189,7 @@ const LoginForm = ({ route }) => {
           this._password.focus();
         }}
         blurOnSubmit={false}
+        autoCorrect={false}
       />
       <TextInput
         style={signingIn ? [textInputStyle, disabledTextInputStyle] : textInputStyle}
@@ -285,6 +286,7 @@ const CreateAccountForm = () => {
           this._name.focus();
         }}
         blurOnSubmit={false}
+        autoCorrect={false}
       />
       <TextInput
         style={creatingAccount ? [textInputStyle, disabledTextInputStyle] : textInputStyle}
@@ -300,6 +302,7 @@ const CreateAccountForm = () => {
           this._email.focus();
         }}
         blurOnSubmit={false}
+        autoCorrect={false}
       />
       <TextInput
         style={creatingAccount ? [textInputStyle, disabledTextInputStyle] : textInputStyle}
@@ -316,6 +319,7 @@ const CreateAccountForm = () => {
           this._password.focus();
         }}
         blurOnSubmit={false}
+        autoCorrect={false}
       />
       <TextInput
         style={creatingAccount ? [textInputStyle, disabledTextInputStyle] : textInputStyle}
