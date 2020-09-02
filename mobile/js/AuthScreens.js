@@ -190,6 +190,7 @@ const LoginForm = ({ route }) => {
         }}
         blurOnSubmit={false}
         autoCorrect={false}
+        keyboardType="email-address"
       />
       <TextInput
         style={signingIn ? [textInputStyle, disabledTextInputStyle] : textInputStyle}
@@ -320,6 +321,7 @@ const CreateAccountForm = () => {
         }}
         blurOnSubmit={false}
         autoCorrect={false}
+        keyboardType="email-address"
       />
       <TextInput
         style={creatingAccount ? [textInputStyle, disabledTextInputStyle] : textInputStyle}
