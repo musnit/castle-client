@@ -5,7 +5,7 @@ import { CardsSet } from '../components/CardsSet';
 import { ViewSourceDeckHeader } from './ViewSourceDeckHeader';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@apollo/react-hooks';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '../Navigation';
 
 import * as LocalId from '../common/local-id';
 

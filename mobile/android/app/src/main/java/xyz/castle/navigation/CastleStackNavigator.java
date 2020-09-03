@@ -8,17 +8,7 @@ import java.util.List;
 
 public class CastleStackNavigator extends CastleNavigator {
 
-    private class Screen {
-        String title;
-        CastleNavigationScreen castleNavigationScreen;
-
-        Screen(String title, CastleNavigationScreen castleNavigationScreen) {
-            this.title = title;
-            this.castleNavigationScreen = castleNavigationScreen;
-        }
-    }
-
-    List<Screen> screens = new ArrayList<>();
+    List<CastleNavigationScreen.Instance> screens = new ArrayList<>();
 
     private int index = 0;
 
@@ -26,21 +16,20 @@ public class CastleStackNavigator extends CastleNavigator {
         super(activity);
     }
 
-    public CastleStackNavigator(Activity activity, String reactComponentName) {
+    public CastleStackNavigator(Activity activity, String screenType) {
         this(activity);
 
-        addScreen(reactComponentName, new CastleNavigationScreen(reactComponentName));
+        screens.add(CastleNavigator.screenForType(screenType));
     }
 
-    public void addScreen(String title, CastleNavigationScreen castleNavigationScreen) {
-        screens.add(new Screen(title, castleNavigationScreen));
+    private void bindCurrentScreen() {
+        screens.get(index).bind(this, layout);
     }
 
     @Override
     public void bindViews(FrameLayout layout) {
         super.bindViews(layout);
-
-        screens.get(index).castleNavigationScreen.bind(this, layout);
+        bindCurrentScreen();
     }
 
     @Override
@@ -58,13 +47,20 @@ public class CastleStackNavigator extends CastleNavigator {
     }
 
     @Override
-    public void navigate(String screenName, String opts) {
+    public void navigate(String screenName, String navigationScreenOptions) {
+        CastleNavigationScreen.Instance instance = CastleNavigator.screenForType(screenName);
+        instance.setNavigationScreenOptions(navigationScreenOptions);
+        screens.add(instance);
+        index = screens.size() - 1;
 
+        activity.runOnUiThread(() -> {
+            bindCurrentScreen();
+        });
     }
 
     @Override
     public boolean handleBack() {
-        CastleNavigator navigator = screens.get(index).castleNavigationScreen.navigator();
+        CastleNavigator navigator = screens.get(index).navigator();
         if (navigator != null && navigator.handleBack()) {
              return true;
         }
@@ -72,7 +68,7 @@ public class CastleStackNavigator extends CastleNavigator {
         if (index > 0) {
             screens.remove(index);
             index--;
-            screens.get(index).castleNavigationScreen.bind(this, layout);
+            bindCurrentScreen();
 
             return true;
         }

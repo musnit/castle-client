@@ -171,3 +171,38 @@ export const RootNavigator = () => {
     </NavigationContainer>
   );
 };
+
+export const AndroidNavigationContext = React.createContext({});
+
+export const useNavigation = (...args) => {
+  if (Platform.OS === 'ios') {
+    return realUseNavigation(...args);
+  } else {
+    const { navigatorId } = React.useContext(AndroidNavigationContext);
+
+    return {
+      navigate: (screenType, navigationScreenOptions) => {
+        GhostChannels.navigate(navigatorId, screenType, JSON.stringify(navigationScreenOptions));
+      },
+
+      pop: () => {},
+
+      push: () => {},
+    };
+  }
+};
+
+export const useFocusEffect = (...args) => {
+  if (Platform.OS === 'ios') {
+    return realUseFocusEffect(...args);
+  } else {
+    return useEffect(...args);
+  }
+};
+
+export const useScrollToTop = (...args) => {
+  if (Platform.OS === 'ios') {
+    return realUseScrollToTop(...args);
+  } else {
+  }
+};

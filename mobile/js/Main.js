@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, AppRegistry } from 'react-native';
+import { View, AppRegistry, Platform } from 'react-native';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { ApolloProvider } from '@apollo/react-hooks';
-import { RootNavigator } from './Navigation';
+import { RootNavigator, AndroidNavigationContext } from './Navigation';
 import BootSplash from 'react-native-bootsplash';
 import * as GhostEvents from './ghost/GhostEvents';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -61,77 +61,72 @@ const MainProvider = () => {
   );
 };
 
-const WaitForSession = (props) => {
-  const { initialized } = Session.useSession();
+if (Platform.OS === 'android') {
+  const WaitForSession = (props) => {
+    const { initialized } = Session.useSession();
 
-  // Session not yet initialized? Just show a loading screen...
-  if (!initialized) {
+    // Session not yet initialized? Just show a loading screen...
+    if (!initialized) {
+      return (
+        <View
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'red',
+          }}
+        />
+      );
+    }
+
+    return React.Children.only(props.children);
+  };
+
+  const WrapWithProviders = (props) => {
     return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: 'red',
-        }}
-      />
+      <View style={{ flex: 1 }}>
+        <AndroidNavigationContext.Provider value={{ navigatorId: props.navigatorId }}>
+          <Session.Provider>
+            <GhostEvents.Provider>
+              <ApolloProvider client={Session.apolloClient}>
+                <SafeAreaProvider>
+                  <WaitForSession>{React.Children.only(props.children)}</WaitForSession>
+                </SafeAreaProvider>
+              </ApolloProvider>
+            </GhostEvents.Provider>
+          </Session.Provider>
+        </AndroidNavigationContext.Provider>
+      </View>
     );
-  }
+  };
 
-  return React.Children.only(props.children);
-};
+  const NewestDecksWrapped = (props) => {
+    return (
+      <WrapWithProviders navigatorId={props.navigatorId}>
+        <NewestDecks />
+      </WrapWithProviders>
+    );
+  };
 
-const WrapWithProviders = (props) => {
-  return (
-    <View style={{ flex: 1 }}>
-      <Session.Provider>
-        <GhostEvents.Provider>
-          <ApolloProvider client={Session.apolloClient}>
-            <SafeAreaProvider>
-              <WaitForSession>{React.Children.only(props.children)}</WaitForSession>
-            </SafeAreaProvider>
-          </ApolloProvider>
-        </GhostEvents.Provider>
-      </Session.Provider>
-    </View>
-  );
-};
+  const PlayDeckScreenWrapped = (props) => {
+    return (
+      <WrapWithProviders navigatorId={props.navigatorId}>
+        <PlayDeckScreen {...JSON.parse(props.navigationScreenOptions)} />
+      </WrapWithProviders>
+    );
+  };
 
-let cachedHomeScreen = null;
-const HomeScreenWrapped = () => {
-  if (cachedHomeScreen) {
-    return cachedHomeScreen;
-  }
+  const ProfileScreenWrapped = (props) => {
+    return (
+      <WrapWithProviders navigatorId={props.navigatorId}>
+        <ProfileScreen />
+      </WrapWithProviders>
+    );
+  };
 
-  cachedHomeScreen = (
-    <WrapWithProviders>
-      <NewestDecks />
-    </WrapWithProviders>
-  );
-
-  return cachedHomeScreen;
-};
-
-let cachedProfileScreen = null;
-const ProfileScreenWrapped = () => {
-  if (cachedProfileScreen) {
-    return cachedProfileScreen;
-  }
-
-  cachedProfileScreen = (
-    <WrapWithProviders>
-      <ProfileScreen />
-    </WrapWithProviders>
-  );
-
-  return cachedProfileScreen;
-};
-
-HomeScreenWrapped();
-ProfileScreenWrapped();
-
-AppRegistry.registerComponent('HomeScreen', () => HomeScreenWrapped);
-//AppRegistry.registerComponent('PlayDeckScreen', () => wrapWithProviders(() => PlayDeckScreen));
-AppRegistry.registerComponent('ProfileScreen', () => ProfileScreenWrapped);
+  AppRegistry.registerComponent('NewestDecks', () => NewestDecksWrapped);
+  AppRegistry.registerComponent('PlayDeckScreen', () => PlayDeckScreenWrapped);
+  AppRegistry.registerComponent('ProfileScreen', () => ProfileScreenWrapped);
+}
 
 export default MainProvider;

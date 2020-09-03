@@ -14,66 +14,102 @@ public class CastleNavigationScreen {
         View inflate(Activity activity);
     }
 
-    private String reactComponentName;
-    private CastleReactView castleReactView;
+    private final String screenType;
 
-    private NavigatorFactory navigatorFactory;
-    private CastleNavigator navigator;
+    private final String reactComponentName;
 
-    private NativeViewFactory nativeViewFactory;
-    private View nativeView;
+    private final NavigatorFactory navigatorFactory;
 
-    public CastleNavigationScreen(String reactComponentName) {
+    private final NativeViewFactory nativeViewFactory;
+
+    public CastleNavigationScreen(String screenType, String reactComponentName) {
+        this.screenType = screenType;
         this.reactComponentName = reactComponentName;
+        this.navigatorFactory = null;
+        this.nativeViewFactory = null;
     }
 
-    public CastleNavigationScreen(NavigatorFactory navigatorFactory) {
+    public CastleNavigationScreen(String screenType, NavigatorFactory navigatorFactory) {
+        this.screenType = screenType;
+        this.reactComponentName = null;
         this.navigatorFactory = navigatorFactory;
+        this.nativeViewFactory = null;
     }
 
-    public CastleNavigationScreen(CastleNavigator navigator) {
-        this.navigator = navigator;
+    public CastleNavigationScreen(String screenType, CastleNavigator navigator) {
+        this.screenType = screenType;
+        this.reactComponentName = null;
+        this.navigatorFactory = (Activity activity) -> {
+            return navigator;
+        };
+        this.nativeViewFactory = null;
     }
 
-    public CastleNavigationScreen(NativeViewFactory nativeViewFactory) {
+    public CastleNavigationScreen(String screenType, NativeViewFactory nativeViewFactory) {
+        this.screenType = screenType;
+        this.reactComponentName = null;
+        this.navigatorFactory = null;
         this.nativeViewFactory = nativeViewFactory;
     }
 
-    public CastleNavigator navigator() {
-        return navigator;
+    public String screenType() {
+        return screenType;
     }
 
-    public void bind(CastleNavigator castleNavigator, FrameLayout layout) {
-        Activity activity = castleNavigator.activity;
+    public Instance newInstance() {
+        return new Instance();
+    }
 
-        if (reactComponentName != null) {
-            if (castleReactView == null) {
-                castleReactView = new CastleReactView(activity, reactComponentName);
-                castleReactView.addReactOpt("navigatorId", castleNavigator.id);
-            }
+    public class Instance {
+        private CastleReactView castleReactView;
+        private CastleNavigator navigator;
+        private View nativeView;
+        private String navigationScreenOptions;
 
-            if (layout == null) {
-                activity.setContentView(castleReactView);
+        public CastleNavigator navigator() {
+            return navigator;
+        }
+
+        public void setNavigationScreenOptions(final String navigationScreenOptions) {
+            this.navigationScreenOptions = navigationScreenOptions;
+        }
+
+        public void bind(CastleNavigator castleNavigator, FrameLayout layout) {
+            Activity activity = castleNavigator.activity;
+
+            if (reactComponentName != null) {
+                if (castleReactView == null) {
+                    castleReactView = new CastleReactView(activity, reactComponentName);
+                    castleReactView.addReactOpt("navigatorId", castleNavigator.id);
+
+                    if (navigationScreenOptions != null) {
+                        castleReactView.addReactOpt("navigationScreenOptions", navigationScreenOptions);
+                    }
+                }
+
+                if (layout == null) {
+                    activity.setContentView(castleReactView);
+                } else {
+                    layout.removeAllViews();
+                    layout.addView(castleReactView);
+                }
+            } else if (navigatorFactory != null || navigator != null){
+                if (navigator == null) {
+                    navigator = navigatorFactory.inflate(activity);
+                }
+
+                navigator.bindViews(layout);
             } else {
-                layout.removeAllViews();
-                layout.addView(castleReactView);
-            }
-        } else if (navigatorFactory != null || navigator != null){
-            if (navigator == null) {
-                navigator = navigatorFactory.inflate(activity);
-            }
+                if (nativeView == null) {
+                    nativeView = nativeViewFactory.inflate(activity);
+                }
 
-            navigator.bindViews(layout);
-        } else {
-            if (nativeView == null) {
-                nativeView = nativeViewFactory.inflate(activity);
-            }
-
-            if (layout == null) {
-                activity.setContentView(nativeView);
-            } else {
-                layout.removeAllViews();
-                layout.addView(nativeView);
+                if (layout == null) {
+                    activity.setContentView(nativeView);
+                } else {
+                    layout.removeAllViews();
+                    layout.addView(nativeView);
+                }
             }
         }
     }

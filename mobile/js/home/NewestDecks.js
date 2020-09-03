@@ -2,7 +2,7 @@ import React from 'react';
 import { FlatList, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { CardCell } from '../components/CardCell';
 import { useLazyQuery } from '@apollo/react-hooks';
-import { useNavigation, useFocusEffect, useScrollToTop } from '@react-navigation/native';
+import { useNavigation, useFocusEffect, useScrollToTop } from '../Navigation';
 import gql from 'graphql-tag';
 import Viewport from '../common/viewport';
 

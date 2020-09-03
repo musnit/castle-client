@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.WeakHashMap;
 
 import androidx.annotation.IdRes;
@@ -16,9 +18,10 @@ public abstract class CastleNavigator {
     private boolean hasCalledBindViews = false;
 
     private static int gId = 0;
-    public final String id;
+    public String id;
 
     private static WeakHashMap<String, CastleNavigator> idToNavigator = new WeakHashMap<>();
+    private static Map<String, CastleNavigationScreen> screenTypeToScreen = new HashMap<>();
 
     public CastleNavigator(Activity activity) {
         this.activity = activity;
@@ -27,8 +30,28 @@ public abstract class CastleNavigator {
         idToNavigator.put(id, this);
     }
 
+    public void setId(final String id) {
+        idToNavigator.remove(id);
+        this.id = id;
+        idToNavigator.put(id, this);
+    }
+
     public static CastleNavigator castleNavigatorForId(String id) {
         return idToNavigator.get(id);
+    }
+
+    public static void addScreenType(CastleNavigationScreen screen) {
+        screenTypeToScreen.put(screen.screenType(), screen);
+    }
+
+    public static CastleNavigationScreen.Instance screenForType(String screenType) {
+        CastleNavigationScreen castleNavigationScreen = screenTypeToScreen.get(screenType);
+
+        if (castleNavigationScreen == null) {
+            throw new Error("No screen type " + screenType + " found");
+        }
+
+        return castleNavigationScreen.newInstance();
     }
 
     public void setContentView(View view) {
@@ -74,7 +97,7 @@ public abstract class CastleNavigator {
 
     abstract public void destroy();
 
-    abstract public void navigate(String screenName, String opts);
+    abstract public void navigate(String screenName, String navigationScreenOptions);
 
     abstract public boolean handleBack();
 }

@@ -98,8 +98,8 @@ public class GhostChannelsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  void navigate(String navigatorId, String screenName, String options) {
-    CastleNavigator.castleNavigatorForId(navigatorId).navigate(screenName, options);
+  void navigate(String navigatorId, String screenType, String navigationScreenOptions) {
+    CastleNavigator.castleNavigatorForId("LoggedInRoot").navigate(screenType, navigationScreenOptions);
   }
 
   static {

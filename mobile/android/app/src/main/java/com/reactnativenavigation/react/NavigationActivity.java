@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import xyz.castle.MainApplication;
 import xyz.castle.navigation.CastleNavigationScreen;
+import xyz.castle.navigation.CastleNavigator;
 import xyz.castle.navigation.CastleStackNavigator;
 import xyz.castle.navigation.CastleTabNavigator;
 
@@ -23,7 +24,7 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
     @Nullable
     private PermissionListener mPermissionListener;
 
-    private CastleTabNavigator navigator;
+    private CastleStackNavigator navigator;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,14 +35,30 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
 
         getReactGateway().onActivityCreated(this);
 
-        navigator = new CastleTabNavigator(this, CastleTabNavigator.TABS_BOTTOM);
-        navigator.addTab("Home", new CastleNavigationScreen((Activity activity) -> {
+        // Rn screens
+        CastleNavigator.addScreenType(new CastleNavigationScreen("NewestDecks", "NewestDecks"));
+        CastleNavigator.addScreenType(new CastleNavigationScreen("ProfileScreen", "ProfileScreen"));
+        CastleNavigator.addScreenType(new CastleNavigationScreen("PlayDeck", "PlayDeckScreen"));
+
+
+        CastleNavigator.addScreenType(new CastleNavigationScreen("Recent", new CastleStackNavigator(this, "NewestDecks")));
+        CastleNavigator.addScreenType(new CastleNavigationScreen("History", new CastleStackNavigator(this, "NewestDecks")));
+        CastleNavigator.addScreenType(new CastleNavigationScreen("RootTabScreen", (Activity activity) -> {
             CastleTabNavigator homeNavigator = new CastleTabNavigator(activity, CastleTabNavigator.TABS_TOP);
-            homeNavigator.addTab("Recent", new CastleNavigationScreen(new CastleStackNavigator(activity, "HomeScreen")));
-            homeNavigator.addTab("History", new CastleNavigationScreen(new CastleStackNavigator(activity, "HomeScreen")));
+            homeNavigator.addTab("Recent", "Recent");
+            homeNavigator.addTab("History", "History");
             return homeNavigator;
         }));
-        navigator.addTab("Profile", new CastleNavigationScreen("ProfileScreen"));
+
+        CastleNavigator.addScreenType(new CastleNavigationScreen("LoggedInRoot", (Activity activity) -> {
+            CastleTabNavigator nav = new CastleTabNavigator(this, CastleTabNavigator.TABS_BOTTOM);
+            nav.addTab("RootTabScreen", "Home");
+            nav.addTab("ProfileScreen", "Profile");
+            return nav;
+        }));
+
+        navigator = new CastleStackNavigator(this, "LoggedInRoot");
+        navigator.setId("LoggedInRoot");
         navigator.bindViews(null);
     }
 

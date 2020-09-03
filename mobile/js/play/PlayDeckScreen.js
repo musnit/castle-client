@@ -8,12 +8,12 @@ import {
   View,
 } from 'react-native';
 import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
-import { useIsFocused, useFocusEffect } from '@react-navigation/native';
+import { useIsFocused, useFocusEffect } from '../Navigation';
 
 import { CardCell } from '../components/CardCell';
 import { PlayDeckActions } from './PlayDeckActions';
 import { PlayDeckNavigator } from './PlayDeckNavigator';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '../Navigation';
 import { useListen } from '../ghost/GhostEvents';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';

@@ -13,7 +13,7 @@ import FastImage from 'react-native-fast-image';
 import gql from 'graphql-tag';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useLazyQuery } from '@apollo/react-hooks';
-import { CommonActions, useNavigation, useFocusEffect } from '@react-navigation/native';
+import { CommonActions, useNavigation, useFocusEffect } from '../Navigation';
 import Viewport from '../common/viewport';
 
 import * as Constants from '../Constants';

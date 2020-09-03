@@ -26,17 +26,7 @@ public class CastleTabNavigator extends CastleNavigator {
     private FrameLayout mainLayout;
     private BottomNavigationView bottomNavigationView;
 
-    private class Tab {
-        String title;
-        CastleNavigationScreen castleNavigationScreen;
-
-        Tab(String title, CastleNavigationScreen castleNavigationScreen) {
-            this.title = title;
-            this.castleNavigationScreen = castleNavigationScreen;
-        }
-    }
-
-    List<Tab> tabs = new ArrayList<>();
+    List<CastleNavigationScreen.Instance> tabs = new ArrayList<>();
 
     private int index = 0;
 
@@ -65,14 +55,14 @@ public class CastleTabNavigator extends CastleNavigator {
         bottomNavigationView.setOnNavigationItemSelectedListener((@NonNull MenuItem item) -> {
             int id = item.getItemId();
             index = id;
-            tabs.get(index).castleNavigationScreen.bind(CastleTabNavigator.this, mainLayout);
+            tabs.get(index).bind(CastleTabNavigator.this, mainLayout);
 
             return true;
         });
     }
 
-    public void addTab(String title, CastleNavigationScreen castleNavigationScreen) {
-        tabs.add(new Tab(title, castleNavigationScreen));
+    public void addTab(String screenType, String title) {
+        tabs.add(CastleNavigator.screenForType(screenType));
 
         Menu menu = bottomNavigationView.getMenu();
         menu.add(Menu.NONE, tabs.size() - 1, Menu.NONE, title);
@@ -84,7 +74,7 @@ public class CastleTabNavigator extends CastleNavigator {
         super.bindViews(layout);
 
         setContentView(linearLayout);
-        tabs.get(index).castleNavigationScreen.bind(this, mainLayout);
+        tabs.get(index).bind(this, mainLayout);
     }
 
     @Override
@@ -98,13 +88,13 @@ public class CastleTabNavigator extends CastleNavigator {
     }
 
     @Override
-    public void navigate(String screenName, String opts) {
-        
+    public void navigate(String screenName, String navigationScreenOptions) {
+
     }
 
     @Override
     public boolean handleBack() {
-        CastleNavigator navigator = tabs.get(index).castleNavigationScreen.navigator();
+        CastleNavigator navigator = tabs.get(index).navigator();
         if (navigator != null) {
             return navigator.handleBack();
         }
