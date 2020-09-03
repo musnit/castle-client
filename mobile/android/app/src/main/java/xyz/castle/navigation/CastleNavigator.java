@@ -8,10 +8,33 @@ import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 
 public abstract class CastleNavigator {
-    protected Activity activity;
+    protected final Activity activity;
     protected FrameLayout layout;
 
+    private boolean hasCalledBindViews = false;
+
+    public CastleNavigator(Activity activity) {
+        this.activity = activity;
+    }
+
+    public void setContentView(View view) {
+        if (!hasCalledBindViews) {
+            throw new Error("setContentView must be called in bindViews");
+        }
+
+        if (layout == null) {
+            activity.setContentView(view);
+        } else {
+            layout.removeAllViews();
+            layout.addView(view);
+        }
+    }
+
     public void setContentView(@LayoutRes int layoutResID) {
+        if (!hasCalledBindViews) {
+            throw new Error("setContentView must be called in bindViews");
+        }
+
         if (layout == null) {
             activity.setContentView(layoutResID);
         } else {
@@ -28,8 +51,8 @@ public abstract class CastleNavigator {
         }
     }
 
-    public void bindViews(Activity activity, FrameLayout layout) {
-        this.activity = activity;
+    public void bindViews(FrameLayout layout) {
+        this.hasCalledBindViews = true;
         this.layout = layout;
     }
 

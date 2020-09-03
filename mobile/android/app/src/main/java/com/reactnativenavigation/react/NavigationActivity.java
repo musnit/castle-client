@@ -33,15 +33,15 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
 
         getReactGateway().onActivityCreated(this);
 
-        navigator = new CastleTabNavigator();
+        navigator = new CastleTabNavigator(this);
         navigator.addTab("Home", new CastleNavigationScreen(() -> {
-            CastleTabNavigator homeNavigator = new CastleTabNavigator();
+            CastleTabNavigator homeNavigator = new CastleTabNavigator(NavigationActivity.this);
             homeNavigator.addTab("Recent", new CastleNavigationScreen("HomeScreen"));
             homeNavigator.addTab("History", new CastleNavigationScreen("HomeScreen"));
             return homeNavigator;
         }));
         navigator.addTab("Profile", new CastleNavigationScreen("ProfileScreen"));
-        navigator.bindViews(this, null);
+        navigator.bindViews(null);
     }
 
     @Override

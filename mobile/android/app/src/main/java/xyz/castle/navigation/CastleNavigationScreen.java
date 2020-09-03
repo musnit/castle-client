@@ -52,7 +52,7 @@ public class CastleNavigationScreen {
                 navigator = navigatorFactory.inflate();
             }
 
-            navigator.bindViews(activity, layout);
+            navigator.bindViews(layout);
         } else {
             if (nativeView == null) {
                 nativeView = nativeViewFactory.inflate();
