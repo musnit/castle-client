@@ -103,7 +103,7 @@ export const ProfileScreen = ({ userId, route }) => {
   const [user, setUser] = React.useState(null);
 
   // don't useNavigationState() because we don't want to rerender if this changes.
-  const navigationStackIndex = dangerouslyGetState().index;
+  //const navigationStackIndex = dangerouslyGetState().index;
 
   const { signOutAsync, userId: signedInUserId } = useSession();
   if (!userId && route?.params) {

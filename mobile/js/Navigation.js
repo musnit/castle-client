@@ -167,7 +167,7 @@ export const RootNavigator = () => {
   const { isSignedIn } = useSession();
   return (
     <NavigationContainer ref={DeepLinks.setNavigationRef} onStateChange={onNavigationStateChange}>
-      <HomeScreen />
+      {isSignedIn ? <TabNavigator /> : <AuthNavigator />}
     </NavigationContainer>
   );
 };

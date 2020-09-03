@@ -47,12 +47,18 @@ export const Provider = (props) => {
 
     (async () => {
       if (!state.initialized) {
+        let keys = await AsyncStorage.getAllKeys();
+        console.log('async storage keys:');
+        console.log(keys);
+
         if (TEST_AUTH_TOKEN) {
           gAuthToken = TEST_AUTH_TOKEN;
         } else {
           gAuthToken = await AsyncStorage.getItem('AUTH_TOKEN');
           gUserId = await AsyncStorage.getItem('USER_ID');
         }
+
+        console.log(gAuthToken);
 
         if (mounted) {
           setState({

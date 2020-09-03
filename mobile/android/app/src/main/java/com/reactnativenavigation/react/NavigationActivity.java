@@ -1,13 +1,10 @@
 package com.reactnativenavigation.react;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import android.view.View;
 
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionAwareActivity;
@@ -15,15 +12,17 @@ import com.facebook.react.modules.core.PermissionListener;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
 import xyz.castle.MainApplication;
-import xyz.castle.navigation.CastleReactView;
+import xyz.castle.navigation.CastleNavigationScreen;
+import xyz.castle.navigation.CastleNavigator;
+import xyz.castle.navigation.CastleTabNavigator;
 
-public class NavigationActivity extends AppCompatActivity implements DefaultHardwareBackBtnHandler, PermissionAwareActivity, JsDevReloadHandler.ReloadListener {
+public class NavigationActivity extends FragmentActivity implements DefaultHardwareBackBtnHandler, PermissionAwareActivity, JsDevReloadHandler.ReloadListener {
     @Nullable
     private PermissionListener mPermissionListener;
 
-    //protected Navigator navigator;
+    private CastleTabNavigator navigator;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -31,17 +30,18 @@ public class NavigationActivity extends AppCompatActivity implements DefaultHard
         if (isFinishing()) {
             return;
         }
-        addDefaultSplashLayout();
-        /*navigator = new Navigator(this,
-                new ChildControllersRegistry(),
-                new ModalStack(this),
-                new OverlayManager(),
-                new RootPresenter(this)
-        );
-        navigator.bindViews();*/
-        setContentView(new CastleReactView(this, getReactGateway().reactInstanceManager(), "Castle", "Castle"));
 
         getReactGateway().onActivityCreated(this);
+
+        navigator = new CastleTabNavigator();
+        navigator.addTab("Home", new CastleNavigationScreen(() -> {
+            CastleTabNavigator homeNavigator = new CastleTabNavigator();
+            homeNavigator.addTab("Recent", new CastleNavigationScreen("HomeScreen"));
+            homeNavigator.addTab("History", new CastleNavigationScreen("HomeScreen"));
+            return homeNavigator;
+        }));
+        navigator.addTab("Profile", new CastleNavigationScreen("ProfileScreen"));
+        navigator.bindViews(this, null);
     }
 
     @Override
@@ -72,17 +72,17 @@ public class NavigationActivity extends AppCompatActivity implements DefaultHard
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //if (navigator != null) {
-        //    navigator.destroy();
-        //}
+        if (navigator != null) {
+            navigator.destroy();
+        }
         getReactGateway().onActivityDestroyed(this);
     }
 
     @Override
     public void invokeDefaultOnBackPressed() {
-        //if (!navigator.handleBack(new CommandListenerAdapter())) {
+        if (!navigator.handleBack()) {
             super.onBackPressed();
-        //}
+        }
     }
 
     @Override
@@ -129,16 +129,10 @@ public class NavigationActivity extends AppCompatActivity implements DefaultHard
 
     @Override
     public void onReload() {
-        //navigator.destroyViews();
-    }
-
-    protected void addDefaultSplashLayout() {
-        View view = new View(this);
-        view.setBackgroundColor(Color.WHITE);
-        setContentView(view);
+        navigator.destroyViews();
     }
 
     public void onCatalystInstanceDestroy() {
-        //runOnUiThread(() -> navigator.destroyViews());
+        runOnUiThread(() -> navigator.destroyViews());
     }
 }

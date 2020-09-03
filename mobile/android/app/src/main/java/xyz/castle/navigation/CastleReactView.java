@@ -1,5 +1,6 @@
 package xyz.castle.navigation;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -9,6 +10,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.reactnativenavigation.react.NavigationActivity;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
 public class CastleReactView extends RNGestureHandlerEnabledRootView {
@@ -19,8 +21,13 @@ public class CastleReactView extends RNGestureHandlerEnabledRootView {
     private boolean isAttachedToReactInstance = false;
     private final JSTouchDispatcher jsTouchDispatcher;
 
+    public CastleReactView(Activity activity, String componentName) {
+        this(activity, ((NavigationActivity) activity).getReactGateway().reactInstanceManager(), componentName, componentName);
+    }
+
     public CastleReactView(Context context, ReactInstanceManager reactInstanceManager, String componentId, String componentName) {
         super(context);
+
         this.reactInstanceManager = reactInstanceManager;
         this.componentId = componentId;
         this.componentName = componentName;

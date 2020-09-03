@@ -7,11 +7,9 @@ import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.facebook.react.modules.core.PermissionListener;
 import com.reactnativenavigation.react.NavigationActivity;
 
 import org.love2d.android.GameActivity;
-
 
 public class MainActivity extends NavigationActivity {
 
