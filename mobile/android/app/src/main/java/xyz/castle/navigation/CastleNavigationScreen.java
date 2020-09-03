@@ -7,11 +7,11 @@ import android.widget.FrameLayout;
 public class CastleNavigationScreen {
 
     public interface NavigatorFactory {
-        CastleNavigator inflate();
+        CastleNavigator inflate(Activity activity);
     }
 
     public interface NativeViewFactory {
-        View inflate();
+        View inflate(Activity activity);
     }
 
     private String reactComponentName;
@@ -31,14 +31,25 @@ public class CastleNavigationScreen {
         this.navigatorFactory = navigatorFactory;
     }
 
+    public CastleNavigationScreen(CastleNavigator navigator) {
+        this.navigator = navigator;
+    }
+
     public CastleNavigationScreen(NativeViewFactory nativeViewFactory) {
         this.nativeViewFactory = nativeViewFactory;
     }
 
-    public void bind(Activity activity, FrameLayout layout) {
+    public CastleNavigator navigator() {
+        return navigator;
+    }
+
+    public void bind(CastleNavigator castleNavigator, FrameLayout layout) {
+        Activity activity = castleNavigator.activity;
+
         if (reactComponentName != null) {
             if (castleReactView == null) {
                 castleReactView = new CastleReactView(activity, reactComponentName);
+                castleReactView.addReactOpt("navigatorId", castleNavigator.id);
             }
 
             if (layout == null) {
@@ -47,15 +58,15 @@ public class CastleNavigationScreen {
                 layout.removeAllViews();
                 layout.addView(castleReactView);
             }
-        } else if (navigatorFactory != null ){
+        } else if (navigatorFactory != null || navigator != null){
             if (navigator == null) {
-                navigator = navigatorFactory.inflate();
+                navigator = navigatorFactory.inflate(activity);
             }
 
             navigator.bindViews(layout);
         } else {
             if (nativeView == null) {
-                nativeView = nativeViewFactory.inflate();
+                nativeView = nativeViewFactory.inflate(activity);
             }
 
             if (layout == null) {

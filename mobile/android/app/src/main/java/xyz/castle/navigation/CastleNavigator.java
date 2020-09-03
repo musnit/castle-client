@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import java.util.WeakHashMap;
+
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 
@@ -13,8 +15,20 @@ public abstract class CastleNavigator {
 
     private boolean hasCalledBindViews = false;
 
+    private static int gId = 0;
+    public final String id;
+
+    private static WeakHashMap<String, CastleNavigator> idToNavigator = new WeakHashMap<>();
+
     public CastleNavigator(Activity activity) {
         this.activity = activity;
+        id = "castle-navigator-" + gId++;
+
+        idToNavigator.put(id, this);
+    }
+
+    public static CastleNavigator castleNavigatorForId(String id) {
+        return idToNavigator.get(id);
     }
 
     public void setContentView(View view) {
@@ -60,7 +74,7 @@ public abstract class CastleNavigator {
 
     abstract public void destroy();
 
-    public boolean handleBack() {
-        return false;
-    }
+    abstract public void navigate(String screenName, String opts);
+
+    abstract public boolean handleBack();
 }

@@ -11,6 +11,7 @@ import com.facebook.react.bridge.WritableArray;
 import org.love2d.android.Channels;
 
 import xyz.castle.MainActivity;
+import xyz.castle.navigation.CastleNavigator;
 
 public class GhostChannelsModule extends ReactContextBaseJavaModule {
   GhostChannelsModule(ReactApplicationContext reactContext) {
@@ -94,6 +95,11 @@ public class GhostChannelsModule extends ReactContextBaseJavaModule {
     if (MainActivity.gameActivity != null) {
       MainActivity.gameActivity.setPaused(true);
     }
+  }
+
+  @ReactMethod
+  void navigate(String navigatorId, String screenName, String options) {
+    CastleNavigator.castleNavigatorForId(navigatorId).navigate(screenName, options);
   }
 
   static {

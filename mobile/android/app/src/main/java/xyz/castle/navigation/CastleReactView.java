@@ -13,6 +13,9 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import com.reactnativenavigation.react.NavigationActivity;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class CastleReactView extends RNGestureHandlerEnabledRootView {
 
     private final ReactInstanceManager reactInstanceManager;
@@ -20,6 +23,7 @@ public class CastleReactView extends RNGestureHandlerEnabledRootView {
     private final String componentName;
     private boolean isAttachedToReactInstance = false;
     private final JSTouchDispatcher jsTouchDispatcher;
+    private Map<String, String> options = new HashMap<>();
 
     public CastleReactView(Activity activity, String componentName) {
         this(activity, ((NavigationActivity) activity).getReactGateway().reactInstanceManager(), componentName, componentName);
@@ -34,6 +38,10 @@ public class CastleReactView extends RNGestureHandlerEnabledRootView {
         jsTouchDispatcher = new JSTouchDispatcher(this);
     }
 
+    public void addReactOpt(final String key, final String value) {
+        options.put(key, value);
+    }
+
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
@@ -45,6 +53,11 @@ public class CastleReactView extends RNGestureHandlerEnabledRootView {
         isAttachedToReactInstance = true;
         final Bundle opts = new Bundle();
         opts.putString("componentId", componentId);
+
+        for (Map.Entry<String, String> entry : options.entrySet()) {
+            opts.putString(entry.getKey(), entry.getValue());
+        }
+
         startReactApplication(reactInstanceManager, componentName, opts);
     }
 

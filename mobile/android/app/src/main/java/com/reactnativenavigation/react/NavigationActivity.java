@@ -1,6 +1,7 @@
 package com.reactnativenavigation.react;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,7 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import xyz.castle.MainApplication;
 import xyz.castle.navigation.CastleNavigationScreen;
-import xyz.castle.navigation.CastleNavigator;
+import xyz.castle.navigation.CastleStackNavigator;
 import xyz.castle.navigation.CastleTabNavigator;
 
 public class NavigationActivity extends FragmentActivity implements DefaultHardwareBackBtnHandler, PermissionAwareActivity, JsDevReloadHandler.ReloadListener {
@@ -33,11 +34,11 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
 
         getReactGateway().onActivityCreated(this);
 
-        navigator = new CastleTabNavigator(this);
-        navigator.addTab("Home", new CastleNavigationScreen(() -> {
-            CastleTabNavigator homeNavigator = new CastleTabNavigator(NavigationActivity.this);
-            homeNavigator.addTab("Recent", new CastleNavigationScreen("HomeScreen"));
-            homeNavigator.addTab("History", new CastleNavigationScreen("HomeScreen"));
+        navigator = new CastleTabNavigator(this, CastleTabNavigator.TABS_BOTTOM);
+        navigator.addTab("Home", new CastleNavigationScreen((Activity activity) -> {
+            CastleTabNavigator homeNavigator = new CastleTabNavigator(activity, CastleTabNavigator.TABS_TOP);
+            homeNavigator.addTab("Recent", new CastleNavigationScreen(new CastleStackNavigator(activity, "HomeScreen")));
+            homeNavigator.addTab("History", new CastleNavigationScreen(new CastleStackNavigator(activity, "HomeScreen")));
             return homeNavigator;
         }));
         navigator.addTab("Profile", new CastleNavigationScreen("ProfileScreen"));

@@ -103,7 +103,6 @@ const HomeScreenWrapped = () => {
     return cachedHomeScreen;
   }
 
-  console.log('fuck create home');
   cachedHomeScreen = (
     <WrapWithProviders>
       <NewestDecks />
@@ -119,7 +118,6 @@ const ProfileScreenWrapped = () => {
     return cachedProfileScreen;
   }
 
-  console.log('fuck create profile');
   cachedProfileScreen = (
     <WrapWithProviders>
       <ProfileScreen />
