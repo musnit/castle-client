@@ -50,9 +50,9 @@ public class CastleStackNavigator extends CastleNavigator {
 
     @Override
     public void navigate(String screenName, String navigationScreenOptions) {
-        for (int i = 0; i < screens.size(); i++) {
+        /*for (int i = 0; i < screens.size(); i++) {
             screens.get(i).destroy();
-        }
+        }*/
 
         CastleNavigationScreen.Instance instance = CastleNavigator.screenForType(screenName);
         instance.setNavigationScreenOptions(navigationScreenOptions);

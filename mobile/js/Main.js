@@ -73,7 +73,7 @@ if (Platform.OS === 'android') {
             flex: 1,
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: 'red',
+            backgroundColor: 'black',
           }}
         />
       );

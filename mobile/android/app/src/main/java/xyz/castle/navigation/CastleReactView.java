@@ -2,6 +2,7 @@ package xyz.castle.navigation;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MotionEvent;
 
@@ -36,6 +37,8 @@ public class CastleReactView extends RNGestureHandlerEnabledRootView {
         this.componentId = componentId;
         this.componentName = componentName;
         jsTouchDispatcher = new JSTouchDispatcher(this);
+
+        setBackgroundColor(Color.BLACK);
     }
 
     public void addReactOpt(final String key, final String value) {
