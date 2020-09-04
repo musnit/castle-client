@@ -185,7 +185,9 @@ export const useNavigation = (...args) => {
         GhostChannels.navigate(navigatorId, screenType, JSON.stringify(navigationScreenOptions));
       },
 
-      pop: () => {},
+      pop: () => {
+        GhostChannels.navigateBack();
+      },
 
       push: () => {},
     };
@@ -196,7 +198,7 @@ export const useFocusEffect = (...args) => {
   if (Platform.OS === 'ios') {
     return realUseFocusEffect(...args);
   } else {
-    return useEffect(...args);
+    return useEffect(args[0], []);
   }
 };
 

@@ -87,3 +87,7 @@ export const on = (name, handler) => {
 export const navigate = (navigatorId, screenType, navigationScreenOptions) => {
   return NativeModules.GhostChannels.navigate(navigatorId, screenType, navigationScreenOptions);
 };
+
+export const navigateBack = () => {
+  return NativeModules.GhostChannels.navigateBack();
+};

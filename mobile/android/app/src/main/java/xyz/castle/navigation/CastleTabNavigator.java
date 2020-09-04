@@ -84,7 +84,9 @@ public class CastleTabNavigator extends CastleNavigator {
 
     @Override
     public void destroy() {
-
+        for (int i = 0; i < tabs.size(); i++) {
+            tabs.get(i).destroy();
+        }
     }
 
     @Override

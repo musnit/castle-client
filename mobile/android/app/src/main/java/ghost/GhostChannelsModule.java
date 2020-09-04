@@ -99,7 +99,16 @@ public class GhostChannelsModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   void navigate(String navigatorId, String screenType, String navigationScreenOptions) {
-    CastleNavigator.castleNavigatorForId("LoggedInRoot").navigate(screenType, navigationScreenOptions);
+    getCurrentActivity().runOnUiThread(() -> {
+      CastleNavigator.castleNavigatorForId("LoggedInRoot").navigate(screenType, navigationScreenOptions);
+    });
+  }
+
+  @ReactMethod
+  void navigateBack() {
+    getCurrentActivity().runOnUiThread(() -> {
+      CastleNavigator.castleNavigatorForId("LoggedInRoot").handleBack();
+    });
   }
 
   static {

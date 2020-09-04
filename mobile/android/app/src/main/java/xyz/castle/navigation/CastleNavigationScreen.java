@@ -2,6 +2,8 @@ package xyz.castle.navigation;
 
 import android.app.Activity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.FrameLayout;
 
 public class CastleNavigationScreen {
@@ -74,8 +76,24 @@ public class CastleNavigationScreen {
             this.navigationScreenOptions = navigationScreenOptions;
         }
 
+        public void destroy() {
+            if (castleReactView != null) {
+                castleReactView.destroy();
+            }
+
+            if (navigator != null) {
+                navigator.destroy();
+            }
+
+            castleReactView = null;
+            navigator = null;
+            nativeView = null;
+        }
+
         public void bind(CastleNavigator castleNavigator, FrameLayout layout) {
             Activity activity = castleNavigator.activity;
+
+            View viewToAdd = null;
 
             if (reactComponentName != null) {
                 if (castleReactView == null) {
@@ -87,12 +105,7 @@ public class CastleNavigationScreen {
                     }
                 }
 
-                if (layout == null) {
-                    activity.setContentView(castleReactView);
-                } else {
-                    layout.removeAllViews();
-                    layout.addView(castleReactView);
-                }
+                viewToAdd = castleReactView;
             } else if (navigatorFactory != null || navigator != null){
                 if (navigator == null) {
                     navigator = navigatorFactory.inflate(activity);
@@ -104,11 +117,20 @@ public class CastleNavigationScreen {
                     nativeView = nativeViewFactory.inflate(activity);
                 }
 
+                viewToAdd = nativeView;
+            }
+
+            if (viewToAdd != null) {
+                ViewParent parent = viewToAdd.getParent();
+                if (parent instanceof ViewGroup) {
+                    ((ViewGroup) parent).removeView(viewToAdd);
+                }
+
                 if (layout == null) {
-                    activity.setContentView(nativeView);
+                    activity.setContentView(viewToAdd);
                 } else {
                     layout.removeAllViews();
-                    layout.addView(nativeView);
+                    layout.addView(viewToAdd);
                 }
             }
         }

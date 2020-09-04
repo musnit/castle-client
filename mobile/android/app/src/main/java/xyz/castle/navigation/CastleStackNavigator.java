@@ -37,25 +37,28 @@ public class CastleStackNavigator extends CastleNavigator {
         index = 0;
 
         for (int i = 1; i < screens.size(); i++) {
-            screens.remove(i);
+            screens.remove(i).destroy();
         }
     }
 
     @Override
     public void destroy() {
-
+        for (int i = 0; i < screens.size(); i++) {
+            screens.get(i).destroy();
+        }
     }
 
     @Override
     public void navigate(String screenName, String navigationScreenOptions) {
+        for (int i = 0; i < screens.size(); i++) {
+            screens.get(i).destroy();
+        }
+
         CastleNavigationScreen.Instance instance = CastleNavigator.screenForType(screenName);
         instance.setNavigationScreenOptions(navigationScreenOptions);
         screens.add(instance);
         index = screens.size() - 1;
-
-        activity.runOnUiThread(() -> {
-            bindCurrentScreen();
-        });
+        bindCurrentScreen();
     }
 
     @Override
