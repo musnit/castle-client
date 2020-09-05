@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 
 import AsyncStorage from '@react-native-community/async-storage';
 import { ApolloClient } from 'apollo-client';
@@ -12,6 +13,7 @@ import gql from 'graphql-tag';
 import * as Constants from './Constants';
 import * as GhostPushNotifications from './ghost/GhostPushNotifications';
 import * as LocalId from './common/local-id';
+import * as GhostChannels from './ghost/GhostChannels';
 
 let gAuthToken, gUserId;
 const TEST_AUTH_TOKEN = null;
@@ -21,6 +23,15 @@ const EMPTY_SESSION = {
 };
 
 const SessionContext = React.createContext(EMPTY_SESSION);
+
+let CastleAsyncStorage =
+  Platform.OS === 'ios'
+    ? AsyncStorage
+    : {
+        getItem: GhostChannels.getCastleAsyncStorage,
+        setItem: GhostChannels.setCastleAsyncStorage,
+        removeItem: GhostChannels.removeCastleAsyncStorage,
+      };
 
 GhostPushNotifications.addTokenListener(async (token) => {
   if (!gAuthToken) {
@@ -47,18 +58,12 @@ export const Provider = (props) => {
 
     (async () => {
       if (!state.initialized) {
-        let keys = await AsyncStorage.getAllKeys();
-        console.log('async storage keys:');
-        console.log(keys);
-
         if (TEST_AUTH_TOKEN) {
           gAuthToken = TEST_AUTH_TOKEN;
         } else {
-          gAuthToken = await AsyncStorage.getItem('AUTH_TOKEN');
-          gUserId = await AsyncStorage.getItem('USER_ID');
+          gAuthToken = await CastleAsyncStorage.getItem('AUTH_TOKEN');
+          gUserId = await CastleAsyncStorage.getItem('USER_ID');
         }
-
-        console.log(gAuthToken);
 
         if (mounted) {
           setState({
@@ -81,13 +86,13 @@ export const Provider = (props) => {
       gUserId = userId;
 
       if (token) {
-        await AsyncStorage.setItem('AUTH_TOKEN', token);
-        await AsyncStorage.setItem('USER_ID', userId);
+        await CastleAsyncStorage.setItem('AUTH_TOKEN', token);
+        await CastleAsyncStorage.setItem('USER_ID', userId);
 
         await GhostPushNotifications.requestTokenAsync();
       } else {
-        await AsyncStorage.removeItem('AUTH_TOKEN');
-        await AsyncStorage.removeItem('USER_ID');
+        await CastleAsyncStorage.removeItem('AUTH_TOKEN');
+        await CastleAsyncStorage.removeItem('USER_ID');
       }
     }
 

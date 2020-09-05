@@ -11,6 +11,7 @@ import { enableAndroidFontFix } from './AndroidFontFix';
 import { NewestDecks } from './home/NewestDecks';
 import { PlayDeckScreen } from './play/PlayDeckScreen';
 import { ProfileScreen } from './profile/ProfileScreen';
+import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './AuthScreens';
 
 import * as Session from './Session';
 
@@ -82,7 +83,7 @@ if (Platform.OS === 'android') {
     return React.Children.only(props.children);
   };
 
-  const WrapWithProviders = (props) => {
+  const AddProviders = (props) => {
     return (
       <View style={{ flex: 1 }}>
         <AndroidNavigationContext.Provider value={{ navigatorId: props.navigatorId }}>
@@ -100,33 +101,24 @@ if (Platform.OS === 'android') {
     );
   };
 
-  const NewestDecksWrapped = (props) => {
-    return (
-      <WrapWithProviders navigatorId={props.navigatorId}>
-        <NewestDecks />
-      </WrapWithProviders>
-    );
+  const WrapComponent = (Component) => {
+    return () => {
+      return (props) => {
+        return (
+          <AddProviders navigatorId={props.navigatorId}>
+            <Component />
+          </AddProviders>
+        );
+      };
+    };
   };
 
-  const PlayDeckScreenWrapped = (props) => {
-    return (
-      <WrapWithProviders navigatorId={props.navigatorId}>
-        <PlayDeckScreen {...JSON.parse(props.navigationScreenOptions)} />
-      </WrapWithProviders>
-    );
-  };
-
-  const ProfileScreenWrapped = (props) => {
-    return (
-      <WrapWithProviders navigatorId={props.navigatorId}>
-        <ProfileScreen />
-      </WrapWithProviders>
-    );
-  };
-
-  AppRegistry.registerComponent('NewestDecks', () => NewestDecksWrapped);
-  AppRegistry.registerComponent('PlayDeckScreen', () => PlayDeckScreenWrapped);
-  AppRegistry.registerComponent('ProfileScreen', () => ProfileScreenWrapped);
+  AppRegistry.registerComponent('NewestDecks', WrapComponent(NewestDecks));
+  AppRegistry.registerComponent('PlayDeck', WrapComponent(PlayDeckScreen));
+  AppRegistry.registerComponent('ProfileScreen', WrapComponent(ProfileScreen));
+  AppRegistry.registerComponent('LoginScreen', WrapComponent(LoginScreen));
+  AppRegistry.registerComponent('CreateAccountScreen', WrapComponent(CreateAccountScreen));
+  AppRegistry.registerComponent('ForgotPasswordScreen', WrapComponent(ForgotPasswordScreen));
 }
 
 export default MainProvider;

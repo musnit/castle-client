@@ -38,15 +38,6 @@ public class CastleNavigationScreen {
         this.nativeViewFactory = null;
     }
 
-    public CastleNavigationScreen(String screenType, CastleNavigator navigator) {
-        this.screenType = screenType;
-        this.reactComponentName = null;
-        this.navigatorFactory = (Activity activity) -> {
-            return navigator;
-        };
-        this.nativeViewFactory = null;
-    }
-
     public CastleNavigationScreen(String screenType, NativeViewFactory nativeViewFactory) {
         this.screenType = screenType;
         this.reactComponentName = null;

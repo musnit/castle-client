@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import com.reactnativenavigation.react.NavigationActivity;
@@ -45,6 +46,8 @@ public class MainActivity extends NavigationActivity {
         gameActivity.handleIntent(new Intent(this, GameActivity.class));
         GameActivity.setMetricsFromDisplay(getWindowManager().getDefaultDisplay());
         gameActivity.loadLibraries();
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
     // System behavior for volume, camera, zoom buttons

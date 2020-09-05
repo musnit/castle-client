@@ -48,7 +48,7 @@ public abstract class CastleNavigator {
         CastleNavigationScreen castleNavigationScreen = screenTypeToScreen.get(screenType);
 
         if (castleNavigationScreen == null) {
-            throw new Error("No screen type " + screenType + " found");
+            castleNavigationScreen = new CastleNavigationScreen(screenType, screenType);
         }
 
         return castleNavigationScreen.newInstance();
@@ -96,6 +96,10 @@ public abstract class CastleNavigator {
     abstract public void destroyViews();
 
     abstract public void destroy();
+
+    public void navigate(String screenName) {
+        navigate(screenName, null);
+    }
 
     abstract public void navigate(String screenName, String navigationScreenOptions);
 

@@ -1,5 +1,8 @@
 package ghost;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -10,10 +13,12 @@ import com.facebook.react.bridge.WritableArray;
 
 import org.love2d.android.Channels;
 
+import xyz.castle.CastleSharedPreferences;
 import xyz.castle.MainActivity;
 import xyz.castle.navigation.CastleNavigator;
 
 public class GhostChannelsModule extends ReactContextBaseJavaModule {
+
   GhostChannelsModule(ReactApplicationContext reactContext) {
     super(reactContext);
   }
@@ -100,7 +105,7 @@ public class GhostChannelsModule extends ReactContextBaseJavaModule {
   @ReactMethod
   void navigate(String navigatorId, String screenType, String navigationScreenOptions) {
     getCurrentActivity().runOnUiThread(() -> {
-      CastleNavigator.castleNavigatorForId("LoggedInRoot").navigate(screenType, navigationScreenOptions);
+      CastleNavigator.castleNavigatorForId(navigatorId).navigate(screenType, navigationScreenOptions);
     });
   }
 
@@ -109,6 +114,23 @@ public class GhostChannelsModule extends ReactContextBaseJavaModule {
     getCurrentActivity().runOnUiThread(() -> {
       CastleNavigator.castleNavigatorForId("LoggedInRoot").handleBack();
     });
+  }
+
+  @ReactMethod
+  void getCastleAsyncStorage(String key, Promise promise) {
+    promise.resolve(CastleSharedPreferences.get(key));
+  }
+
+  @ReactMethod
+  void setCastleAsyncStorage(String key, String value, Promise promise) {
+    CastleSharedPreferences.set(key, value);
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  void removeCastleAsyncStorage(String key, Promise promise) {
+    CastleSharedPreferences.remove(key);
+    promise.resolve(null);
   }
 
   static {
