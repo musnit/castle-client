@@ -14,7 +14,7 @@ import org.love2d.android.GameActivity;
 
 public class MainActivity extends NavigationActivity {
 
-    private static final boolean SCENE_CREATOR_USE_PROD_SCENE_CREATOR = false;
+    private static final boolean SCENE_CREATOR_USE_PROD_SCENE_CREATOR = true;
     private static final String SCENE_CREATOR_DEV_URI = "http://192.168.1.147:8080/Client.lua";
 
 

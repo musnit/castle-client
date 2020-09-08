@@ -1,19 +1,5 @@
 import React from 'react';
-<<<<<<< HEAD
 import { FlatList, StatusBar, StyleSheet, Text, View } from 'react-native';
-||||||| constructed merge base
-import { RefreshControl, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
-=======
-import {
-  RefreshControl,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View,
-  requireNativeComponent,
-} from 'react-native';
->>>>>>> working on profilescreen
 import { CardCell } from '../components/CardCell';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect, useScrollToTop } from '../Navigation';
@@ -89,61 +75,12 @@ export const NewestDecks = ({ focused }) => {
     [lastFetched.time]
   );
 
-<<<<<<< HEAD
   const onEndReached = React.useCallback(() => {
     if (!query.loading && decks?.length) {
       const lastModifiedBefore = decks[decks.length - 1].lastModified;
       onRefresh(lastModifiedBefore);
     }
   }, [query.loading, decks?.length]);
-||||||| constructed merge base
-  /*useFocusEffect(
-    React.useCallback(() => {
-      if (!lastFetched.time || Date.now() - lastFetched.time > REFETCH_FEED_INTERVAL_MS) {
-        onRefresh();
-      }
-    }),
-    [lastFetched.time]
-  );
-
-  const onScroll = React.useCallback(
-    (e) => {
-      if (e?.nativeEvent) {
-        const { layoutMeasurement, contentOffset, contentSize } = e.nativeEvent;
-        // reached bottom of scrollview (minus buffer)? load more
-        if (
-          contentOffset.y + layoutMeasurement.height >=
-          contentSize.height - SCROLL_LOAD_MORE_BUFFER
-        ) {
-          if (!query.loading && decks?.length && contentSize.height > 192) {
-            const lastModifiedBefore = decks[decks.length - 1].lastModified;
-            onRefresh(lastModifiedBefore);
-          }
-        }
-      }
-    },
-    [query.loading, decks?.length]
-  );
-=======
-  const onScroll = React.useCallback(
-    (e) => {
-      if (e?.nativeEvent) {
-        const { layoutMeasurement, contentOffset, contentSize } = e.nativeEvent;
-        // reached bottom of scrollview (minus buffer)? load more
-        if (
-          contentOffset.y + layoutMeasurement.height >=
-          contentSize.height - SCROLL_LOAD_MORE_BUFFER
-        ) {
-          if (!query.loading && decks?.length && contentSize.height > 192) {
-            const lastModifiedBefore = decks[decks.length - 1].lastModified;
-            onRefresh(lastModifiedBefore);
-          }
-        }
-      }
-    },
-    [query.loading, decks?.length]
-  );
->>>>>>> working on profilescreen
 
   React.useEffect(() => {
     if (query.called && !query.loading && !query.error && query.data) {
@@ -189,7 +126,6 @@ export const NewestDecks = ({ focused }) => {
   return (
     <FlatList
       ref={scrollViewRef}
-<<<<<<< HEAD
       contentContainerStyle={{ paddingTop: 16 }}
       data={groupedDecks}
       renderItem={renderItem}
@@ -202,59 +138,6 @@ export const NewestDecks = ({ focused }) => {
       onEndReachedThreshold={0.3}
     />
   );
-||||||| constructed merge base
-      onScroll={onScroll}
-      scrollEventThrottle={100}
-      contentContainerStyle={Constants.styles.gridContainer}
-      refreshControl={refreshControl}>
-      {decks
-        ? decks.map((deck, ii) => (
-            <View
-              key={`deck-${deck.deckId}-${ii}`}
-              style={[Constants.styles.gridItem, { width: Viewport.gridItemWidth }]}>
-              <CardCell
-                card={deck.initialCard}
-                imageUrl={deck.creator.photo.url}
-                onPress={() =>
-                  navigate('PlayDeck', {
-                    decks,
-                    initialDeckIndex: ii,
-                    title: 'Newest',
-                  })
-                }
-              />
-            </View>
-          ))
-        : null}
-    </ScrollView>
-  );*/
-=======
-      onScroll={onScroll}
-      scrollEventThrottle={100}
-      contentContainerStyle={Constants.styles.gridContainer}
-      refreshControl={refreshControl}>
-      {decks
-        ? decks.map((deck, ii) => (
-            <View
-              key={`deck-${deck.deckId}-${ii}`}
-              style={[Constants.styles.gridItem, { width: Viewport.gridItemWidth }]}>
-              <CardCell
-                card={deck.initialCard}
-                imageUrl={deck.creator.photo.url}
-                onPress={() =>
-                  navigate('PlayDeck', {
-                    decks,
-                    initialDeckIndex: ii,
-                    title: 'Newest',
-                  })
-                }
-              />
-            </View>
-          ))
-        : null}
-    </ScrollView>
-  );
->>>>>>> working on profilescreen
 
   /*return (
     <NativeFeedView
