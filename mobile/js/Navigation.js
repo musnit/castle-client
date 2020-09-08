@@ -152,7 +152,10 @@ const TabNavigator = () => (
 );
 
 const AuthNavigator = () => (
-  <Stack.Navigator headerMode="none">
+  <Stack.Navigator
+    screenOptions={{
+      headerShown: false,
+    }}>
     <Stack.Screen name="LoginScreen" component={LoginScreen} />
     <Stack.Screen name="CreateAccountScreen" component={CreateAccountScreen} />
     <Stack.Screen name="ForgotPasswordScreen" component={ForgotPasswordScreen} />
