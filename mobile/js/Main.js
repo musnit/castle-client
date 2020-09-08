@@ -104,9 +104,14 @@ if (Platform.OS === 'android') {
   const WrapComponent = (Component) => {
     return () => {
       return (props) => {
+        let childProps = {};
+        if (props.navigationScreenOptions) {
+          childProps = JSON.parse(props.navigationScreenOptions);
+        }
+
         return (
           <AddProviders navigatorId={props.navigatorId}>
-            <Component />
+            <Component {...childProps} />
           </AddProviders>
         );
       };

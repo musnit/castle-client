@@ -189,7 +189,15 @@ export const useNavigation = (...args) => {
         GhostChannels.navigateBack();
       },
 
-      push: () => {},
+      push: (screenType, navigationScreenOptions) => {
+        GhostChannels.navigate(navigatorId, screenType, JSON.stringify(navigationScreenOptions));
+      },
+
+      dangerouslyGetState: () => {
+        return {
+          index: 0,
+        };
+      },
     };
   }
 };
@@ -198,7 +206,7 @@ export const useFocusEffect = (...args) => {
   if (Platform.OS === 'ios') {
     return realUseFocusEffect(...args);
   } else {
-    return useEffect(...args);
+    return useEffect(args[0], []);
   }
 };
 
