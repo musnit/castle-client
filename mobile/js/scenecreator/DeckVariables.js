@@ -200,6 +200,13 @@ export const DeckVariables = ({ variables, onChange }) => {
           Variables are shared between all cards in the same deck.
         </Text>
       </View>
+      <View style={styles.explainer}>
+        <FeatherIcon name="book-open" size={18} color="#888" style={styles.explainerIcon} />
+        <Text style={styles.explainerText}>
+          You can display the current value of a variable in a text box with the notation{' '}
+          <Text style={{ fontFamily: 'Menlo' }}>$variableName</Text>.
+        </Text>
+      </View>
     </View>
   );
 };
