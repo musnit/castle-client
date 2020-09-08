@@ -1,5 +1,5 @@
 import React from 'react';
-import { RefreshControl, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { CardCell } from '../components/CardCell';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect, useScrollToTop } from '@react-navigation/native';
@@ -27,6 +27,7 @@ export const NewestDecks = ({ focused }) => {
         throw new Error(`Unrecognized decks action: ${action.type}`);
     }
   }, undefined);
+  const [groupedDecks, setGroupedDecks] = React.useState([]);
   const [fetchDecks, query] = useLazyQuery(
     gql`
       query DeckFeed($lastModifiedBefore: Datetime) {
@@ -37,6 +38,19 @@ export const NewestDecks = ({ focused }) => {
     `,
     { fetchPolicy: 'no-cache' }
   );
+  React.useEffect(() => {
+    const newGroupedDecks = decks
+      ? decks.reduce((grouped, deck, index) => {
+          if (index % 3 == 0) {
+            grouped.push([deck]);
+          } else {
+            grouped[grouped.length - 1].push(deck);
+          }
+          return grouped;
+        }, [])
+      : [];
+    setGroupedDecks(newGroupedDecks);
+  }, [decks]);
 
   const onRefresh = React.useCallback(
     (lastModifiedBefore) => {
@@ -59,24 +73,12 @@ export const NewestDecks = ({ focused }) => {
     [lastFetched.time]
   );
 
-  const onScroll = React.useCallback(
-    (e) => {
-      if (e?.nativeEvent) {
-        const { layoutMeasurement, contentOffset, contentSize } = e.nativeEvent;
-        // reached bottom of scrollview (minus buffer)? load more
-        if (
-          contentOffset.y + layoutMeasurement.height >=
-          contentSize.height - SCROLL_LOAD_MORE_BUFFER
-        ) {
-          if (!query.loading && decks?.length && contentSize.height > 192) {
-            const lastModifiedBefore = decks[decks.length - 1].lastModified;
-            onRefresh(lastModifiedBefore);
-          }
-        }
-      }
-    },
-    [query.loading, decks?.length]
-  );
+  const onEndReached = React.useCallback(() => {
+    if (!query.loading && decks?.length) {
+      const lastModifiedBefore = decks[decks.length - 1].lastModified;
+      onRefresh(lastModifiedBefore);
+    }
+  }, [query.loading, decks?.length]);
 
   React.useEffect(() => {
     if (query.called && !query.loading && !query.error && query.data) {
@@ -93,41 +95,45 @@ export const NewestDecks = ({ focused }) => {
   const scrollViewRef = React.useRef(null);
   useScrollToTop(scrollViewRef);
 
-  const refreshControl = (
-    <RefreshControl
-      refreshing={lastFetched.time && query.loading}
-      onRefresh={onRefresh}
-      tintColor="#fff"
-      colors={['#fff', '#ccc']}
-    />
-  );
+  const renderItem = ({ item, index }) => {
+    let ii = index;
+    return (
+      <View style={{ flex: 1, flexDirection: 'row' }}>
+        {item.map((deck, ii) => (
+          <CardCell
+            key={`card-${deck.initialCard.cardId}`}
+            style={[
+              Constants.styles.gridItem,
+              { flex: 1, paddingLeft: ii > 0 && Constants.iOS ? 8 : 0 },
+            ]}
+            card={deck.initialCard}
+            imageUrl={deck.creator.photo.url}
+            onPress={() =>
+              navigate('PlayDeck', {
+                decks,
+                initialDeckIndex: ii,
+                title: 'Newest',
+              })
+            }
+          />
+        ))}
+      </View>
+    );
+  };
 
   return (
-    <ScrollView
+    <FlatList
       ref={scrollViewRef}
-      onScroll={onScroll}
-      scrollEventThrottle={100}
-      contentContainerStyle={Constants.styles.gridContainer}
-      refreshControl={refreshControl}>
-      {decks
-        ? decks.map((deck, ii) => (
-            <View
-              key={`deck-${deck.deckId}-${ii}`}
-              style={[Constants.styles.gridItem, { width: Viewport.gridItemWidth }]}>
-              <CardCell
-                card={deck.initialCard}
-                imageUrl={deck.creator.photo.url}
-                onPress={() =>
-                  navigate('PlayDeck', {
-                    decks,
-                    initialDeckIndex: ii,
-                    title: 'Newest',
-                  })
-                }
-              />
-            </View>
-          ))
-        : null}
-    </ScrollView>
+      contentContainerStyle={{ paddingTop: 16 }}
+      data={groupedDecks}
+      renderItem={renderItem}
+      keyExtractor={(item, index) =>
+        item.length ? `row-${item[0].deckId}-${index}` : `row-${index}`
+      }
+      refreshing={!!(lastFetched.time && query.loading)}
+      onRefresh={onRefresh}
+      onEndReached={onEndReached}
+      onEndReachedThreshold={0.3}
+    />
   );
 };

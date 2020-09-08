@@ -84,6 +84,7 @@ export const CardCell = ({
   isInitialCard,
   isPrivate,
   isFullSize,
+  style,
 }) => {
   let cardStyles = styles.card;
   if (card.backgroundImage && card.backgroundImage.primaryColor) {
@@ -107,7 +108,7 @@ export const CardCell = ({
   }
   return (
     <View
-      style={styles.container}
+      style={[styles.container, style]}
       renderToHardwareTextureAndroid={useOverlay}
       shouldRasterizeIOS={useOverlay}>
       <TouchableWithoutFeedback disabled={!onPress} onPress={onPress}>
