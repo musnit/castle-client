@@ -1,7 +1,8 @@
 import React, { Fragment } from 'react';
+import { enableScreens } from 'react-native-screens';
+import { createNativeStackNavigator } from 'react-native-screens/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
 import { Text, View, Image } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
@@ -17,7 +18,8 @@ import * as DeepLinks from './DeepLinks';
 import { ProfileScreen } from './profile/ProfileScreen';
 import * as GhostChannels from './ghost/GhostChannels';
 
-const Stack = createStackNavigator();
+enableScreens();
+const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const ICON_SIZE = 28;
@@ -25,7 +27,11 @@ const ICON_SIZE = 28;
 // App UI layout
 
 const BrowseNavigator = () => (
-  <Stack.Navigator headerMode="none" initialRouteName="HomeScreen">
+  <Stack.Navigator
+    initialRouteName="HomeScreen"
+    screenOptions={{
+      headerShown: false,
+    }}>
     <Stack.Screen name="HomeScreen" component={HomeScreen} />
     <Stack.Screen name="PlayDeck" component={PlayDeckScreen} options={{ gestureEnabled: false }} />
     <Stack.Screen name="Profile" component={ProfileScreen} />
@@ -38,7 +44,10 @@ const BrowseNavigator = () => (
 );
 
 const CreateNavigator = () => (
-  <Stack.Navigator headerMode="none">
+  <Stack.Navigator
+    screenOptions={{
+      headerShown: false,
+    }}>
     <Stack.Screen
       name="Create"
       component={CreateScreen}
@@ -55,7 +64,11 @@ const CreateNavigator = () => (
 );
 
 const ProfileNavigator = () => (
-  <Stack.Navigator headerMode="none" initialRouteName="Profile">
+  <Stack.Navigator
+    initialRouteName="Profile"
+    screenOptions={{
+      headerShown: false,
+    }}>
     <Stack.Screen name="Profile" component={ProfileScreen} />
     <Stack.Screen name="PlayDeck" component={PlayDeckScreen} options={{ gestureEnabled: false }} />
     <Stack.Screen
