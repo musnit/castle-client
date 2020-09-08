@@ -198,7 +198,7 @@ export const useFocusEffect = (...args) => {
   if (Platform.OS === 'ios') {
     return realUseFocusEffect(...args);
   } else {
-    return useEffect(args[0], []);
+    return useEffect(...args);
   }
 };
 

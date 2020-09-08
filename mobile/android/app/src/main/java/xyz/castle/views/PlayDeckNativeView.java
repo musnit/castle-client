@@ -1,4 +1,4 @@
-package xyz.castle;
+package xyz.castle.views;
 
 import android.content.Context;
 import android.widget.FrameLayout;
@@ -7,6 +7,7 @@ import org.love2d.android.Channels;
 import org.love2d.android.GameActivity;
 
 import androidx.annotation.NonNull;
+import xyz.castle.MainActivity;
 
 public class PlayDeckNativeView extends FrameLayout {
     public PlayDeckNativeView(@NonNull Context context) {

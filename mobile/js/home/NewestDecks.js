@@ -18,6 +18,7 @@ export const NewestDecks = ({ focused }) => {
     lastModifiedBefore: undefined,
   });
   const [decks, changeDecks] = React.useReducer((decks, action) => {
+    console.log('FUCK changedecks');
     switch (action.type) {
       case 'set':
         return action.decks;
@@ -54,6 +55,7 @@ export const NewestDecks = ({ focused }) => {
 
   const onRefresh = React.useCallback(
     (lastModifiedBefore) => {
+      console.log('FUCK refresh');
       fetchDecks({
         variables: {
           lastModifiedBefore,

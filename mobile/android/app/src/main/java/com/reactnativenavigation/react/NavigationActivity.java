@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
@@ -21,7 +22,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import xyz.castle.CastleSharedPreferences;
 import xyz.castle.MainApplication;
-import xyz.castle.PlayDeckNativeView;
+import xyz.castle.views.FeedNativeView;
+import xyz.castle.views.PlayDeckNativeView;
 import xyz.castle.navigation.CastleNavigationScreen;
 import xyz.castle.navigation.CastleNavigator;
 import xyz.castle.navigation.CastleStackNavigator;
@@ -43,29 +45,32 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
 
         CastleSharedPreferences.initialize(this);
         getReactGateway().onActivityCreated(this);
+        Fresco.initialize(this);
 
-        CastleNavigator.addScreenType(new CastleNavigationScreen("Recent", (Activity activity) -> (new CastleStackNavigator(this, "NewestDecks"))));
-        CastleNavigator.addScreenType(new CastleNavigationScreen("History", (Activity activity) -> (new CastleStackNavigator(this, "NewestDecks"))));
-        CastleNavigator.addScreenType(new CastleNavigationScreen("RootTabScreen", (Activity activity) -> {
+        new CastleNavigationScreen("Recent", (Activity activity) -> (new CastleStackNavigator(this, "FeedNative"))).register();
+        new CastleNavigationScreen("History", (Activity activity) -> (new CastleStackNavigator(this, "NewestDecks"))).register();
+        new CastleNavigationScreen("RootTabScreen", (Activity activity) -> {
             CastleTabNavigator homeNavigator = new CastleTabNavigator(activity, CastleTabNavigator.TABS_TOP);
             homeNavigator.addTab("Recent", "Recent");
             homeNavigator.addTab("History", "History");
             return homeNavigator;
-        }));
+        }).register();
 
-        CastleNavigator.addScreenType(new CastleNavigationScreen("LoggedInRoot", (Activity activity) -> {
+        new CastleNavigationScreen("LoggedInRoot", (Activity activity) -> {
             CastleTabNavigator nav = new CastleTabNavigator(this, CastleTabNavigator.TABS_BOTTOM);
             nav.addTab("RootTabScreen", "Home");
             nav.addTab("ProfileScreen", "Profile");
             return nav;
-        }));
+        }).register();
 
-        CastleNavigator.addScreenType(new CastleNavigationScreen("TestScreen", (Activity activity) -> (new View(activity))));
-        CastleNavigator.addScreenType(new CastleNavigationScreen("PlayDeckNative", (Activity activity) -> new PlayDeckNativeView(activity)));
+        new CastleNavigationScreen("TestScreen", (Activity activity) -> (new View(activity))).register();
+        new CastleNavigationScreen("PlayDeckNative", (Activity activity) -> new PlayDeckNativeView(activity)).register();
+        new CastleNavigationScreen("FeedNative", (Activity activity) -> new FeedNativeView(activity)).register();
 
-        CastleNavigator.addScreenType(new CastleNavigationScreen("LoginStack", (Activity activity) -> (new CastleStackNavigator(this, "LoginScreen"))));
+        new CastleNavigationScreen("LoginStack", (Activity activity) -> (new CastleStackNavigator(this, "LoginScreen"))).register();
 
-        boolean isLoggedIn = CastleSharedPreferences.getAuthToken() != null;
+        String authToken = CastleSharedPreferences.getAuthToken();
+        boolean isLoggedIn = authToken != null && authToken.length() > 0;
 
         navigator = new CastleSwapNavigator(this, isLoggedIn ? "LoggedInRoot" : "LoginStack");
         //navigator.setId("LoggedInRoot");

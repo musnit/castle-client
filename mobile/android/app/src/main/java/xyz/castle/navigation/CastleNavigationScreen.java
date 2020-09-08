@@ -45,6 +45,10 @@ public class CastleNavigationScreen {
         this.nativeViewFactory = nativeViewFactory;
     }
 
+    public void register() {
+        CastleNavigator.addScreenType(this);
+    }
+
     public String screenType() {
         return screenType;
     }

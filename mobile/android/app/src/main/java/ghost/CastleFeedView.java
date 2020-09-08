@@ -1,15 +1,13 @@
 package ghost;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -28,9 +26,8 @@ import xyz.castle.R;
 public class CastleFeedView extends SimpleViewManager<ViewGroup> {
 
     private FeedViewAdapter mAdapter;
-    private Context mContext;
 
-    private class Deck {
+    private static class Deck {
         String url;
 
         Deck(String url) {
@@ -38,11 +35,36 @@ public class CastleFeedView extends SimpleViewManager<ViewGroup> {
         }
     }
 
-    private class FeedViewAdapter extends BaseAdapter {
+    public static class FeedViewAdapter extends BaseAdapter {
         private List<Deck> mDecks;
+        private Context mContext;
 
-        FeedViewAdapter() {
-            this.mDecks = new ArrayList<>();
+        public FeedViewAdapter(Context context) {
+            mDecks = new ArrayList<>();
+            mContext = context;
+        }
+
+        public void setTestDecks() {
+            List<String> urls = new ArrayList<>();
+            urls.add("https://castle.imgix.net/1ca3e2a09d1718099554fa88b5af512b?auto=compress&ar=5:7&fit=crop&w=420");
+            urls.add("https://castle.imgix.net/70f05824f8150dd74d8827789cb5df41?auto=compress&ar=5:7&fit=crop&w=420");
+            urls.add("https://castle.imgix.net/b18c0ff207af2d16e296ce602ff35368?auto=compress&ar=5:7&fit=crop&w=420");
+            urls.add("https://castle.imgix.net/8312d4fdb63c322ee276b4bee3131fda?auto=compress&ar=5:7&fit=crop&w=420");
+            urls.add("https://castle.imgix.net/82431311ea66034ea585ee7b21f4e650?auto=compress&ar=5:7&fit=crop&w=420");
+            urls.add("https://castle.imgix.net/a8857cf38b752bff0bd04fb31f1f9109?auto=compress&ar=5:7&fit=crop&w=420");
+            urls.add("https://castle.imgix.net/6d2d4306657df3b328a36e98277a76fe?auto=compress&ar=5:7&fit=crop&w=420");
+            urls.add("https://castle.imgix.net/9ae64a1ca042ae3885dd8fda920c2d02?auto=compress&ar=5:7&fit=crop&w=420");
+            urls.add("https://castle.imgix.net/a92c56c0cccd44f21a5496d4878780d8?auto=compress&ar=5:7&fit=crop&w=420");
+            urls.add("https://castle.imgix.net/0142a9c06fbaeb5fd54189d526a77ce3?auto=compress&ar=5:7&fit=crop&w=420");
+
+
+            mDecks.clear();
+
+            for (int i = 0; i < 100; i++) {
+                mDecks.add(new Deck(urls.get(i % urls.size())));
+            }
+
+            notifyDataSetChanged();
         }
 
         void updateDecks(ReadableArray decks) {
@@ -51,7 +73,7 @@ public class CastleFeedView extends SimpleViewManager<ViewGroup> {
             for (int i = 0; i < decks.size(); i++) {
                 ReadableMap deck = decks.getMap(i);
                 ReadableMap backgroundImage = deck.getMap("initialCard").getMap("backgroundImage");
-                String cardBackgroundUrl = backgroundImage.getString("smallUrl") + "&mask=corners";//&corner-radius=20";
+                String cardBackgroundUrl = backgroundImage.getString("smallUrl");// + "&mask=corners";//&corner-radius=20";
 
                 mDecks.add(new Deck(cardBackgroundUrl));
             }
@@ -86,6 +108,7 @@ public class CastleFeedView extends SimpleViewManager<ViewGroup> {
 
             final SimpleDraweeView backgroundImageView = (SimpleDraweeView)view.findViewById(R.id.background_image_view);
             backgroundImageView.setImageURI(deck.url);
+            //backgroundImageView.setBackgroundColor(Color.RED);
 
             /*final SimpleDraweeView creatorPhotoView = (SimpleDraweeView)view.findViewById(R.id.avatar_image_view);
             creatorPhotoView.setImageURI(creatorPhotoUrl);
@@ -107,7 +130,7 @@ public class CastleFeedView extends SimpleViewManager<ViewGroup> {
 
     @NonNull
     @Override
-    protected ViewGroup createViewInstance(@NonNull ThemedReactContext reactContext) {
+    public ViewGroup createViewInstance(@NonNull ThemedReactContext reactContext) {
         GridView view = new GridView(reactContext);
         view.setColumnWidth(400);
         view.setNumColumns(GridView.AUTO_FIT);
@@ -115,9 +138,8 @@ public class CastleFeedView extends SimpleViewManager<ViewGroup> {
         view.setHorizontalSpacing(10);
         view.setStretchMode(GridView.STRETCH_SPACING_UNIFORM);
 
-        mAdapter = new FeedViewAdapter();
+        mAdapter = new FeedViewAdapter(reactContext);
         view.setAdapter(mAdapter);
-        mContext = reactContext;
         return view;
     }
 
