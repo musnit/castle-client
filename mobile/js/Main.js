@@ -95,9 +95,11 @@ if (Platform.OS === 'android') {
           <Session.Provider>
             <GhostEvents.Provider>
               <ApolloProvider client={Session.apolloClient}>
-                <SafeAreaProvider>
-                  <WaitForSession>{React.Children.only(props.children)}</WaitForSession>
-                </SafeAreaProvider>
+                <ActionSheetProvider>
+                  <SafeAreaProvider>
+                    <WaitForSession>{React.Children.only(props.children)}</WaitForSession>
+                  </SafeAreaProvider>
+                </ActionSheetProvider>
               </ApolloProvider>
             </GhostEvents.Provider>
           </Session.Provider>
