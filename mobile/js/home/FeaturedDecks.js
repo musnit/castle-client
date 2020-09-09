@@ -54,11 +54,17 @@ export const FeaturedDecks = ({ focused }) => {
       decks={decks}
       scrollViewRef={scrollViewRef}
       onPressDeck={(deck, col, row) =>
-        navigate('PlayDeck', {
-          decks,
-          initialDeckIndex: row * 3 + col,
-          title: 'Featured',
-        })
+        navigate(
+          'PlayDeck',
+          {
+            decks,
+            initialDeckIndex: row * 3 + col,
+            title: 'Featured',
+          },
+          {
+            isFullscreen: true,
+          }
+        )
       }
       refreshing={!!(lastFetched.time && query.loading)}
       onRefresh={onRefresh}
