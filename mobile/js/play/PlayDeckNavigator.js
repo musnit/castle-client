@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import gql from 'graphql-tag';
 import { useNavigation } from '@react-navigation/native';
 import { StyleSheet, View } from 'react-native';
 
 import CardTransition from './CardTransition';
 
 import * as History from '../common/history';
+import * as Session from '../Session';
 
 const styles = StyleSheet.create({
   container: {
@@ -20,6 +22,18 @@ const styles = StyleSheet.create({
 const EMPTY_PLAY_DECK_STATE = {
   variables: [],
 };
+
+const recordDeckPlay = (deckId) =>
+  Session.apolloClient.mutate({
+    mutation: gql`
+      mutation RecordDeckPlay($deckId: ID!) {
+        recordDeckPlay(deckId: $deckId)
+      }
+    `,
+    variables: {
+      deckId,
+    },
+  });
 
 export const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, route, paused }) => {
   const navigation = useNavigation(); // we use props.route
@@ -50,8 +64,10 @@ export const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, rou
     [cardState.numCardsViewed]
   );
 
+  // TODO: grab history from the server instead
   React.useEffect(() => {
     History.addItem(deckId);
+    recordDeckPlay(deckId);
   }, []);
 
   return (
