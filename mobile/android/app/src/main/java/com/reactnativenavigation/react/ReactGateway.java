@@ -6,6 +6,8 @@ import android.content.Intent;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 
+import xyz.castle.NavigationActivity;
+
 public class ReactGateway {
 
 	private final ReactNativeHost host;

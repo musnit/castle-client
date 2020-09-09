@@ -14,7 +14,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import com.reactnativenavigation.react.NavigationActivity;
+import xyz.castle.NavigationActivity;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
 import java.util.HashMap;

@@ -8,8 +8,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
-import com.reactnativenavigation.react.NavigationActivity;
-
 import org.love2d.android.GameActivity;
 
 public class MainActivity extends NavigationActivity {

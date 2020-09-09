@@ -5,7 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.reactnativenavigation.react.NavigationActivity;
+import xyz.castle.NavigationActivity;
 
 import androidx.fragment.app.Fragment;
 

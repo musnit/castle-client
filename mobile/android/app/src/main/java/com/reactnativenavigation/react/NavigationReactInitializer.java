@@ -6,6 +6,7 @@ import com.facebook.react.bridge.ReactContext;
 import org.greenrobot.eventbus.EventBus;
 
 import androidx.annotation.NonNull;
+import xyz.castle.NavigationActivity;
 
 public class NavigationReactInitializer implements ReactInstanceManager.ReactInstanceEventListener {
 

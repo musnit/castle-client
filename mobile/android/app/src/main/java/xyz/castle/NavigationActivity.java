@@ -1,4 +1,4 @@
-package com.reactnativenavigation.react;
+package xyz.castle;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -12,6 +12,8 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
+import com.reactnativenavigation.react.JsDevReloadHandler;
+import com.reactnativenavigation.react.ReactGateway;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -48,10 +50,12 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
         getReactGateway().onActivityCreated(this);
         Fresco.initialize(this);
 
+        new CastleNavigationScreen("Featured", (Activity activity) -> (new CastleStackNavigator(this, "FeaturedDecks"))).register();
         new CastleNavigationScreen("Newest", (Activity activity) -> (new CastleStackNavigator(this, "NewestDecks"))).register();
         new CastleNavigationScreen("Recent", (Activity activity) -> (new CastleStackNavigator(this, "RecentDecks"))).register();
         new CastleNavigationScreen("RootTabScreen", (Activity activity) -> {
             CastleTabNavigator homeNavigator = new CastleTabNavigator(activity, CastleTabNavigator.TABS_TOP);
+            homeNavigator.addTab("Featured", "Featured", R.drawable.bottomtabs_browse);
             homeNavigator.addTab("Newest", "Newest", R.drawable.bottomtabs_browse);
             homeNavigator.addTab("Recent", "History", R.drawable.bottomtabs_browse);
             homeNavigator.doneAddingTabs();
