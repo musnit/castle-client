@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { StatusBar, StyleSheet, Text, View } from 'react-native';
+import { FeaturedDecks } from './FeaturedDecks';
 import { NewestDecks } from './NewestDecks';
 import { RecentDecks } from './RecentDecks';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -24,6 +25,11 @@ const styles = StyleSheet.create({
 });
 
 const MODE_ITEMS = [
+  {
+    name: 'Featured',
+    value: 'featured',
+    item: () => <FeaturedDecks />,
+  },
   {
     name: 'Newest',
     value: 'newest',
