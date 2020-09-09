@@ -157,11 +157,17 @@ export const ProfileScreen = ({ userId, route }) => {
         <DecksGrid
           decks={user?.decks}
           onPressDeck={(deck, col, row) =>
-            push('PlayDeck', {
-              decks: user?.decks,
-              initialDeckIndex: row * 3 + col,
-              title: `@${user.username}`,
-            })
+            push(
+              'PlayDeck',
+              {
+                decks: user?.decks,
+                initialDeckIndex: row * 3 + col,
+                title: `@${user.username}`,
+              },
+              {
+                isFullscreen: true,
+              }
+            )
           }
           refreshing={query.loading}
           onRefresh={onRefresh}

@@ -66,11 +66,17 @@ export const RecentDecks = ({ focused }) => {
       refreshing={lastFetchedTime && loading}
       onRefresh={onRefresh}
       onPressDeck={(deck, col, row) =>
-        navigate('PlayDeck', {
-          decks,
-          initialDeckIndex: row * 3 + col,
-          title: 'Recent',
-        })
+        navigate(
+          'PlayDeck',
+          {
+            decks,
+            initialDeckIndex: row * 3 + col,
+            title: 'Recent',
+          },
+          {
+            isFullscreen: true,
+          }
+        )
       }
     />
   ) : error ? (

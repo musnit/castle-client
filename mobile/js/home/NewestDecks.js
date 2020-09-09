@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBar, requireNativeComponent, Platform } from 'react-native';
 import { DecksGrid } from '../components/DecksGrid';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
@@ -9,7 +9,10 @@ import * as Constants from '../Constants';
 
 const REFETCH_FEED_INTERVAL_MS = 30 * 1000;
 
-const NativeFeedView = requireNativeComponent('CastleFeedView', null);
+let NativeFeedView;
+if (Platform.OS === 'android') {
+  NativeFeedView = requireNativeComponent('CastleFeedView', null);
+}
 
 export const NewestDecks = ({ focused }) => {
   const { navigate } = useNavigation();
@@ -81,48 +84,22 @@ export const NewestDecks = ({ focused }) => {
   const scrollViewRef = React.useRef(null);
   useScrollToTop(scrollViewRef);
 
-  const renderItem = ({ item, index }) => {
-    let ii = index;
-    return (
-      <View style={{ flex: 1, flexDirection: 'row' }}>
-        {item.map((deck, ii) => (
-          <CardCell
-            key={`card-${deck.initialCard.cardId}`}
-            style={[
-              Constants.styles.gridItem,
-              { flex: 1, paddingLeft: ii > 0 && Constants.iOS ? 8 : 0 },
-            ]}
-            card={deck.initialCard}
-            imageUrl={deck.creator.photo.url}
-            onPress={() =>
-              navigate(
-                'PlayDeck',
-                {
-                  decks,
-                  initialDeckIndex: ii,
-                  title: 'Newest',
-                },
-                {
-                  isFullscreen: true,
-                }
-              )
-            }
-          />
-        ))}
-      </View>
-    );
-  };
-
   return (
     <DecksGrid
       decks={decks}
       scrollViewRef={scrollViewRef}
       onPressDeck={(deck, row, col) =>
-        navigate('PlayDeck', {
-          decks,
-          initialDeckIndex: row * 3 + col,
-          title: 'Newest',
-        })
+        navigate(
+          'PlayDeck',
+          {
+            decks,
+            initialDeckIndex: row * 3 + col,
+            title: 'Newest',
+          },
+          {
+            isFullscreen: true,
+          }
+        )
       }
       refreshing={!!(lastFetched.time && query.loading)}
       onRefresh={onRefresh}
