@@ -5,4 +5,5 @@
     <color name="top_tab_active">#ffffff</color>
     <color name="top_tab_inactive">#888888</color>
     <color name="top_tab_bar_divier">#444444</color>
+    <color name="black">#000000</color>
 </resources>
