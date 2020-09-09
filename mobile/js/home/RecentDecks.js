@@ -2,7 +2,7 @@ import React from 'react';
 import { StatusBar, StyleSheet, Text, View } from 'react-native';
 import { DecksGrid } from '../components/DecksGrid';
 import { useLazyQuery } from '@apollo/react-hooks';
-import { useNavigation, useFocusEffect, useScrollToTop } from '../Navigation';
+import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
 import gql from 'graphql-tag';
 import Viewport from '../common/viewport';
 

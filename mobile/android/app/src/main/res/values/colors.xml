@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="main_castle_color">#9955c8</color>
+    <color name="bottom_tab_inactive">#888888</color>
+    <color name="top_tab_active">#ffffff</color>
+    <color name="top_tab_inactive">#888888</color>
+    <color name="top_tab_bar_divier">#444444</color>
 </resources>

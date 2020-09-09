@@ -1,20 +1,17 @@
 package xyz.castle.navigation;
 
 import android.app.Activity;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.DrawableRes;
+import xyz.castle.R;
 import xyz.castle.ViewUtils;
 
 public class CastleTabNavigator extends CastleNavigator {
@@ -24,7 +21,7 @@ public class CastleTabNavigator extends CastleNavigator {
 
     private LinearLayout linearLayout;
     private FrameLayout mainLayout;
-    private BottomNavigationView bottomNavigationView;
+    private TabBar tabBar;
 
     List<CastleNavigationScreen.Instance> tabs = new ArrayList<>();
 
@@ -39,34 +36,42 @@ public class CastleTabNavigator extends CastleNavigator {
         mainLayout = new FrameLayout(activity);
         mainLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
 
-        bottomNavigationView = new BottomNavigationView(activity);
-        bottomNavigationView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewUtils.dpToPx(50)));
-        bottomNavigationView.setBackgroundColor(Color.BLACK);
-        bottomNavigationView.setItemTextColor(ColorStateList.valueOf(Color.WHITE));
+        if (tabsStyle == TABS_BOTTOM) {
+            tabBar = new BottomTabBar(activity);
+        } else {
+            tabBar = new TopTabBar(activity);
+        }
+
+        tabBar.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewUtils.dpToPx(50)));
+        tabBar.setBackgroundColor(Color.BLACK);
 
         if (tabsStyle == TABS_BOTTOM) {
             linearLayout.addView(mainLayout);
-            linearLayout.addView(bottomNavigationView);
+            linearLayout.addView(tabBar);
         } else {
-            linearLayout.addView(bottomNavigationView);
+            linearLayout.addView(tabBar);
+            View paddingView = new View(activity);
+            paddingView.setBackgroundColor(activity.getResources().getColor(R.color.top_tab_bar_divier));
+            paddingView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewUtils.dpToPx(1)));
+
+            linearLayout.addView(paddingView);
             linearLayout.addView(mainLayout);
         }
 
-        bottomNavigationView.setOnNavigationItemSelectedListener((@NonNull MenuItem item) -> {
-            int id = item.getItemId();
+        tabBar.setListener((int id) -> {
             index = id;
             tabs.get(index).bind(CastleTabNavigator.this, mainLayout);
-
-            return true;
         });
     }
 
-    public void addTab(String screenType, String title) {
+    public void addTab(String screenType, String title, @DrawableRes int resId) {
         tabs.add(CastleNavigator.screenForType(screenType));
 
-        Menu menu = bottomNavigationView.getMenu();
-        menu.add(Menu.NONE, tabs.size() - 1, Menu.NONE, title);
-        //.setIcon(R.drawable.ic_action_one);
+        tabBar.addButton(tabs.size() - 1, title, resId);
+    }
+
+    public void doneAddingTabs() {
+        tabBar.doneAddingButtons();
     }
 
     @Override
@@ -91,7 +96,7 @@ public class CastleTabNavigator extends CastleNavigator {
 
     @Override
     public void navigate(String screenName, String navigationScreenOptions) {
-
+        throw new Error("Cannot call navigate on TabNavigator");
     }
 
     @Override
@@ -99,6 +104,16 @@ public class CastleTabNavigator extends CastleNavigator {
         CastleNavigator navigator = tabs.get(index).navigator();
         if (navigator != null) {
             return navigator.handleBack();
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean popToTop() {
+        CastleNavigator navigator = tabs.get(index).navigator();
+        if (navigator != null) {
+            return navigator.popToTop();
         }
 
         return false;

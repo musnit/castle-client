@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import xyz.castle.CastleSharedPreferences;
 import xyz.castle.MainApplication;
+import xyz.castle.R;
 import xyz.castle.views.FeedNativeView;
 import xyz.castle.views.PlayDeckNativeView;
 import xyz.castle.navigation.CastleNavigationScreen;
@@ -47,19 +48,27 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
         getReactGateway().onActivityCreated(this);
         Fresco.initialize(this);
 
-        new CastleNavigationScreen("Recent", (Activity activity) -> (new CastleStackNavigator(this, "FeedNative"))).register();
-        new CastleNavigationScreen("History", (Activity activity) -> (new CastleStackNavigator(this, "NewestDecks"))).register();
+        new CastleNavigationScreen("Newest", (Activity activity) -> (new CastleStackNavigator(this, "NewestDecks"))).register();
+        new CastleNavigationScreen("Recent", (Activity activity) -> (new CastleStackNavigator(this, "RecentDecks"))).register();
         new CastleNavigationScreen("RootTabScreen", (Activity activity) -> {
             CastleTabNavigator homeNavigator = new CastleTabNavigator(activity, CastleTabNavigator.TABS_TOP);
-            homeNavigator.addTab("Recent", "Recent");
-            homeNavigator.addTab("History", "History");
+            homeNavigator.addTab("Newest", "Newest", R.drawable.bottomtabs_browse);
+            homeNavigator.addTab("Recent", "History", R.drawable.bottomtabs_browse);
+            homeNavigator.doneAddingTabs();
             return homeNavigator;
         }).register();
 
         new CastleNavigationScreen("LoggedInRoot", (Activity activity) -> {
             CastleTabNavigator nav = new CastleTabNavigator(this, CastleTabNavigator.TABS_BOTTOM);
-            nav.addTab("RootTabScreen", "Home");
-            nav.addTab("ProfileScreen", "Profile");
+            nav.addTab("RootTabScreen", null, R.drawable.bottomtabs_browse);
+            nav.addTab("CreateScreen", null, R.drawable.bottomtabs_create);
+            nav.addTab("ProfileScreen", null, R.drawable.bottomtabs_profile);
+            nav.doneAddingTabs();
+            return nav;
+        }).register();
+        new CastleNavigationScreen("LoggedInRootStack", (Activity activity) -> {
+            CastleStackNavigator nav = new CastleStackNavigator(this, "LoggedInRoot");
+            nav.setId("LoggedInRootStack");
             return nav;
         }).register();
 
@@ -72,8 +81,8 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
         String authToken = CastleSharedPreferences.getAuthToken();
         boolean isLoggedIn = authToken != null && authToken.length() > 0;
 
-        navigator = new CastleSwapNavigator(this, isLoggedIn ? "LoggedInRoot" : "LoginStack");
-        //navigator.setId("LoggedInRoot");
+        navigator = new CastleSwapNavigator(this, isLoggedIn ? "LoggedInRootStack" : "LoginStack");
+        navigator.setId("Root");
         navigator.bindViews(null);
     }
 

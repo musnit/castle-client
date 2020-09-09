@@ -103,16 +103,27 @@ public class GhostChannelsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  void navigate(String navigatorId, String screenType, String navigationScreenOptions) {
+  void navigate(String navigatorId, String screenType, String navigationScreenOptions, ReadableMap androidOptions) {
     getCurrentActivity().runOnUiThread(() -> {
-      CastleNavigator.castleNavigatorForId(navigatorId).navigate(screenType, navigationScreenOptions);
+      if (androidOptions.hasKey("isFullscreen") && androidOptions.getBoolean("isFullscreen")) {
+        CastleNavigator.castleNavigatorForId("LoggedInRootStack").navigate(screenType, navigationScreenOptions);
+      } else {
+        CastleNavigator.castleNavigatorForId(navigatorId).navigate(screenType, navigationScreenOptions);
+      }
     });
   }
 
   @ReactMethod
   void navigateBack() {
     getCurrentActivity().runOnUiThread(() -> {
-      CastleNavigator.castleNavigatorForId("LoggedInRoot").handleBack();
+      CastleNavigator.castleNavigatorForId("Root").handleBack();
+    });
+  }
+
+  @ReactMethod
+  void navigatePopToTop() {
+    getCurrentActivity().runOnUiThread(() -> {
+      CastleNavigator.castleNavigatorForId("Root").popToTop();
     });
   }
 

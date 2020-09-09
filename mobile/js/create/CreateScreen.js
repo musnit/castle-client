@@ -13,7 +13,7 @@ import FastImage from 'react-native-fast-image';
 import gql from 'graphql-tag';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useLazyQuery } from '@apollo/react-hooks';
-import { CommonActions, useNavigation, useFocusEffect } from '../Navigation';
+import { CommonActions, useNavigation, useFocusEffect } from '../ReactNavigation';
 import Viewport from '../common/viewport';
 
 import * as Constants from '../Constants';
@@ -147,10 +147,14 @@ export const CreateScreen = () => {
         <CreateDeckCell
           key="create"
           onPress={() => {
-            navigation.push('CreateDeck', {
-              deckIdToEdit: LocalId.makeId(),
-              cardIdToEdit: LocalId.makeId(),
-            });
+            navigation.push(
+              'CreateDeck',
+              {
+                deckIdToEdit: LocalId.makeId(),
+                cardIdToEdit: LocalId.makeId(),
+              },
+              { isFullscreen: true }
+            );
           }}
         />
         {decks &&
@@ -159,9 +163,13 @@ export const CreateScreen = () => {
               key={deck.deckId}
               deck={deck}
               onPress={() => {
-                navigation.push('CreateDeck', {
-                  deckIdToEdit: deck.deckId,
-                });
+                navigation.push(
+                  'CreateDeck',
+                  {
+                    deckIdToEdit: deck.deckId,
+                  },
+                  { isFullscreen: true }
+                );
               }}
             />
           ))}

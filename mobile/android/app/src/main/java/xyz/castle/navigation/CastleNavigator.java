@@ -104,4 +104,6 @@ public abstract class CastleNavigator {
     abstract public void navigate(String screenName, String navigationScreenOptions);
 
     abstract public boolean handleBack();
+
+    abstract public boolean popToTop();
 }

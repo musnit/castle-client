@@ -1,7 +1,7 @@
 import React from 'react';
 import gql from 'graphql-tag';
 import { ReactNativeFile } from 'apollo-upload-client';
-import { withNavigation, withNavigationFocus } from '@react-navigation/compat';
+import { withNavigation, withNavigationFocus } from '../ReactNavigation';
 import { CreateCardScreen } from './CreateCardScreen';
 
 import * as Constants from '../Constants';

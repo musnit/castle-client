@@ -2,7 +2,7 @@ import React from 'react';
 import { StatusBar } from 'react-native';
 import { DecksGrid } from '../components/DecksGrid';
 import { useLazyQuery } from '@apollo/react-hooks';
-import { useNavigation, useFocusEffect, useScrollToTop } from '../Navigation';
+import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
 import gql from 'graphql-tag';
 
 import * as Constants from '../Constants';
@@ -80,6 +80,38 @@ export const NewestDecks = ({ focused }) => {
 
   const scrollViewRef = React.useRef(null);
   useScrollToTop(scrollViewRef);
+
+  const renderItem = ({ item, index }) => {
+    let ii = index;
+    return (
+      <View style={{ flex: 1, flexDirection: 'row' }}>
+        {item.map((deck, ii) => (
+          <CardCell
+            key={`card-${deck.initialCard.cardId}`}
+            style={[
+              Constants.styles.gridItem,
+              { flex: 1, paddingLeft: ii > 0 && Constants.iOS ? 8 : 0 },
+            ]}
+            card={deck.initialCard}
+            imageUrl={deck.creator.photo.url}
+            onPress={() =>
+              navigate(
+                'PlayDeck',
+                {
+                  decks,
+                  initialDeckIndex: ii,
+                  title: 'Newest',
+                },
+                {
+                  isFullscreen: true,
+                }
+              )
+            }
+          />
+        ))}
+      </View>
+    );
+  };
 
   return (
     <DecksGrid

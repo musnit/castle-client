@@ -9,12 +9,12 @@ import {
   Platform,
 } from 'react-native';
 import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
-import { useIsFocused, useFocusEffect } from '../Navigation';
+import { useIsFocused, useFocusEffect } from '../ReactNavigation';
 
 import { CardCell } from '../components/CardCell';
 import { PlayDeckActions } from './PlayDeckActions';
 import { PlayDeckNavigator } from './PlayDeckNavigator';
-import { useNavigation } from '../Navigation';
+import { useNavigation } from '../ReactNavigation';
 import { useListen } from '../ghost/GhostEvents';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';

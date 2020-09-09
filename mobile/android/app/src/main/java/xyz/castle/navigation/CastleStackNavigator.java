@@ -78,4 +78,25 @@ public class CastleStackNavigator extends CastleNavigator {
 
         return false;
     }
+
+    @Override
+    public boolean popToTop() {
+        CastleNavigator navigator = screens.get(index).navigator();
+        if (navigator != null && navigator.popToTop()) {
+            return true;
+        }
+
+        if (index > 0) {
+            while (index > 0) {
+                screens.remove(index);
+                index--;
+            }
+
+            bindCurrentScreen();
+
+            return true;
+        }
+
+        return false;
+    }
 }

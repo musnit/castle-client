@@ -1,7 +1,7 @@
 import React from 'react';
 import { InteractionManager, StyleSheet } from 'react-native';
 import { ViewSourceDeckScreen } from './ViewSourceDeckScreen';
-import { useNavigation } from '../Navigation';
+import { useNavigation } from '../ReactNavigation';
 import { Transitioning } from 'react-native-reanimated';
 
 import ViewSourceScreen from '../scenecreator/ViewSourceScreenDataProvider';

@@ -49,4 +49,14 @@ public class CastleSwapNavigator extends CastleNavigator {
 
         return false;
     }
+
+    @Override
+    public boolean popToTop() {
+        CastleNavigator navigator = screen.navigator();
+        if (navigator != null) {
+            return navigator.popToTop();
+        }
+
+        return false;
+    }
 }
