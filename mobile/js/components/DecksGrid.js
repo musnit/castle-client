@@ -26,6 +26,7 @@ const CardGridRow = ({ decks, onPress }) => {
             { flex: 1, marginLeft: col > 0 && Constants.iOS ? 8 : 0 },
           ]}
           card={deck.initialCard}
+          isPrivate={deck.isVisible === false}
           imageUrl={deck.creator.photo.url}
           onPress={() => onPress(deck, col)}
         />

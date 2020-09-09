@@ -1,24 +1,14 @@
 import React, { Fragment, useState } from 'react';
-import {
-  Linking,
-  RefreshControl,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Linking, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import gql from 'graphql-tag';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { CardCell } from '../components/CardCell';
+import { DecksGrid } from '../components/DecksGrid';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useSession } from '../Session';
 import { UserAvatar } from '../components/UserAvatar';
 import { ProfileSettingsSheet } from './ProfileSettingsSheet';
-import Viewport from '../common/viewport';
 
 import * as Constants from '../Constants';
 import * as Utilities from '../common/utilities';
@@ -89,14 +79,6 @@ const useProfileQuery = (userId) => {
   }
 };
 
-const PlayDeckCell = ({ deck, onPress }) => {
-  return (
-    <View style={[Constants.styles.gridItem, { width: Viewport.gridItemWidth }]}>
-      <CardCell card={deck.initialCard} onPress={onPress} isPrivate={!deck.isVisible} />
-    </View>
-  );
-};
-
 export const ProfileScreen = ({ userId, route }) => {
   const { push, pop, dangerouslyGetState } = useNavigation();
   const [settingsSheetIsOpen, setSettingsSheet] = useState(false);
@@ -135,15 +117,6 @@ export const ProfileScreen = ({ userId, route }) => {
   const onPressSettings = () => setSettingsSheet(true);
   const settingsSheetOnClose = () => setSettingsSheet(false);
 
-  const refreshControl = (
-    <RefreshControl
-      refreshing={query.loading}
-      onRefresh={onRefresh}
-      tintColor="#fff"
-      colors={['#fff', '#ccc']}
-    />
-  );
-
   return (
     <Fragment>
       <View style={styles.container}>
@@ -181,25 +154,18 @@ export const ProfileScreen = ({ userId, route }) => {
             </View>
           </View>
         </SafeAreaView>
-        <ScrollView
-          contentContainerStyle={Constants.styles.gridContainer}
-          refreshControl={refreshControl}>
-          {user?.decks
-            ? user.decks.map((deck, ii) => (
-                <PlayDeckCell
-                  key={deck.deckId}
-                  deck={deck}
-                  onPress={() =>
-                    push('PlayDeck', {
-                      decks: user.decks,
-                      initialDeckIndex: ii,
-                      title: `@${user.username}`,
-                    })
-                  }
-                />
-              ))
-            : null}
-        </ScrollView>
+        <DecksGrid
+          decks={user?.decks}
+          onPressDeck={(deck, col, row) =>
+            push('PlayDeck', {
+              decks: user?.decks,
+              initialDeckIndex: row * 3 + col,
+              title: `@${user.username}`,
+            })
+          }
+          refreshing={query.loading}
+          onRefresh={onRefresh}
+        />
       </View>
       {isMe && user ? (
         <ProfileSettingsSheet

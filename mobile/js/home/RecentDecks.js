@@ -1,6 +1,6 @@
 import React from 'react';
-import { RefreshControl, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
-import { CardCell } from '../components/CardCell';
+import { StatusBar, StyleSheet, Text, View } from 'react-native';
+import { DecksGrid } from '../components/DecksGrid';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect, useScrollToTop } from '@react-navigation/native';
 import gql from 'graphql-tag';
@@ -59,46 +59,27 @@ export const RecentDecks = ({ focused }) => {
   const scrollViewRef = React.useRef(null);
   useScrollToTop(scrollViewRef);
 
-  const refreshControl = (
-    <RefreshControl
+  return decks?.length ? (
+    <DecksGrid
+      decks={decks}
+      scrollViewRef={scrollViewRef}
       refreshing={lastFetchedTime && loading}
       onRefresh={onRefresh}
-      tintColor="#fff"
-      colors={['#fff', '#ccc']}
+      onPressDeck={(deck, col, row) =>
+        navigate('PlayDeck', {
+          decks,
+          initialDeckIndex: row * 3 + col,
+          title: 'Recent',
+        })
+      }
     />
-  );
-
-  return (
-    <ScrollView
-      ref={scrollViewRef}
-      contentContainerStyle={Constants.styles.gridContainer}
-      refreshControl={refreshControl}>
-      {decks?.length ? (
-        decks.map((deck, ii) => (
-          <View
-            key={`deck-${deck.deckId}`}
-            style={[Constants.styles.gridItem, { width: Viewport.gridItemWidth }]}>
-            <CardCell
-              card={deck.initialCard}
-              onPress={() =>
-                navigate('PlayDeck', {
-                  decks,
-                  initialDeckIndex: ii,
-                  title: 'Recent',
-                })
-              }
-            />
-          </View>
-        ))
-      ) : error ? (
-        <View style={styles.empty}>
-          <Text style={styles.emptyText}>{error}</Text>
-        </View>
-      ) : lastFetchedTime && !loading ? (
-        <View style={styles.empty}>
-          <Text style={styles.emptyText}>You haven't played any decks recently.</Text>
-        </View>
-      ) : null}
-    </ScrollView>
-  );
+  ) : error ? (
+    <View style={styles.empty}>
+      <Text style={styles.emptyText}>{error}</Text>
+    </View>
+  ) : lastFetchedTime && !loading ? (
+    <View style={styles.empty}>
+      <Text style={styles.emptyText}>You haven't played any decks recently.</Text>
+    </View>
+  ) : null;
 };
