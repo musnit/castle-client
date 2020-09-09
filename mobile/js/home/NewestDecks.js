@@ -1,15 +1,13 @@
 import React from 'react';
-import { FlatList, StatusBar, StyleSheet, Text, View } from 'react-native';
-import { CardGridRow } from '../components/CardGridRow';
+import { StatusBar } from 'react-native';
+import { DecksGrid } from '../components/DecksGrid';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect, useScrollToTop } from '@react-navigation/native';
 import gql from 'graphql-tag';
-import Viewport from '../common/viewport';
 
 import * as Constants from '../Constants';
 
 const REFETCH_FEED_INTERVAL_MS = 30 * 1000;
-const SCROLL_LOAD_MORE_BUFFER = 96;
 
 export const NewestDecks = ({ focused }) => {
   const { navigate } = useNavigation();
@@ -27,7 +25,6 @@ export const NewestDecks = ({ focused }) => {
         throw new Error(`Unrecognized decks action: ${action.type}`);
     }
   }, undefined);
-  const [groupedDecks, setGroupedDecks] = React.useState([]);
   const [fetchDecks, query] = useLazyQuery(
     gql`
       query DeckFeed($lastModifiedBefore: Datetime) {
@@ -38,19 +35,6 @@ export const NewestDecks = ({ focused }) => {
     `,
     { fetchPolicy: 'no-cache' }
   );
-  React.useEffect(() => {
-    const newGroupedDecks = decks
-      ? decks.reduce((grouped, deck, index) => {
-          if (index % 3 == 0) {
-            grouped.push([deck]);
-          } else {
-            grouped[grouped.length - 1].push(deck);
-          }
-          return grouped;
-        }, [])
-      : [];
-    setGroupedDecks(newGroupedDecks);
-  }, [decks]);
 
   const onRefresh = React.useCallback(
     (lastModifiedBefore) => {
@@ -95,30 +79,16 @@ export const NewestDecks = ({ focused }) => {
   const scrollViewRef = React.useRef(null);
   useScrollToTop(scrollViewRef);
 
-  const renderItem = ({ item, index }) => {
-    let row = index;
-    return (
-      <CardGridRow
-        decks={item}
-        onPress={(deck, col) =>
-          navigate('PlayDeck', {
-            decks,
-            initialDeckIndex: row * 3 + col,
-            title: 'Newest',
-          })
-        }
-      />
-    );
-  };
-
   return (
-    <FlatList
-      ref={scrollViewRef}
-      contentContainerStyle={{ paddingTop: 16 }}
-      data={groupedDecks}
-      renderItem={renderItem}
-      keyExtractor={(item, index) =>
-        item.length ? `row-${item[0].deckId}-${index}` : `row-${index}`
+    <DecksGrid
+      decks={decks}
+      scrollViewRef={scrollViewRef}
+      onPressDeck={(deck, row, col) =>
+        navigate('PlayDeck', {
+          decks,
+          initialDeckIndex: row * 3 + col,
+          title: 'Newest',
+        })
       }
       refreshing={!!(lastFetched.time && query.loading)}
       onRefresh={onRefresh}

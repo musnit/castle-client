@@ -1,6 +1,6 @@
 import React from 'react';
-import { FlatList, StatusBar, Text, View } from 'react-native';
-import { CardGridRow } from '../components/CardGridRow';
+import { StatusBar } from 'react-native';
+import { DecksGrid } from '../components/DecksGrid';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect, useScrollToTop } from '@react-navigation/native';
 import gql from 'graphql-tag';
@@ -15,7 +15,6 @@ export const FeaturedDecks = ({ focused }) => {
     time: undefined,
   });
   const [decks, setDecks] = React.useState(undefined);
-  const [groupedDecks, setGroupedDecks] = React.useState([]);
   const [fetchDecks, query] = useLazyQuery(
     gql`
       query FeaturedFeed {
@@ -26,19 +25,6 @@ export const FeaturedDecks = ({ focused }) => {
     `,
     { fetchPolicy: 'no-cache' }
   );
-  React.useEffect(() => {
-    const newGroupedDecks = decks
-      ? decks.reduce((grouped, deck, index) => {
-          if (index % 3 == 0) {
-            grouped.push([deck]);
-          } else {
-            grouped[grouped.length - 1].push(deck);
-          }
-          return grouped;
-        }, [])
-      : [];
-    setGroupedDecks(newGroupedDecks);
-  }, [decks]);
 
   const onRefresh = React.useCallback(() => {
     fetchDecks();
@@ -63,30 +49,16 @@ export const FeaturedDecks = ({ focused }) => {
   const scrollViewRef = React.useRef(null);
   useScrollToTop(scrollViewRef);
 
-  const renderItem = ({ item, index }) => {
-    let row = index;
-    return (
-      <CardGridRow
-        decks={item}
-        onPress={(deck, col) =>
-          navigate('PlayDeck', {
-            decks,
-            initialDeckIndex: row * 3 + col,
-            title: 'Featured',
-          })
-        }
-      />
-    );
-  };
-
   return (
-    <FlatList
-      ref={scrollViewRef}
-      contentContainerStyle={{ paddingTop: 16 }}
-      data={groupedDecks}
-      renderItem={renderItem}
-      keyExtractor={(item, index) =>
-        item.length ? `row-${item[0].deckId}-${index}` : `row-${index}`
+    <DecksGrid
+      decks={decks}
+      scrollViewRef={scrollViewRef}
+      onPressDeck={(deck, col, row) =>
+        navigate('PlayDeck', {
+          decks,
+          initialDeckIndex: row * 3 + col,
+          title: 'Featured',
+        })
       }
       refreshing={!!(lastFetched.time && query.loading)}
       onRefresh={onRefresh}
