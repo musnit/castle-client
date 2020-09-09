@@ -1,6 +1,6 @@
 import React from 'react';
 import { FlatList, StatusBar, Text, View } from 'react-native';
-import { CardCell } from '../components/CardCell';
+import { CardGridRow } from '../components/CardGridRow';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect, useScrollToTop } from '@react-navigation/native';
 import gql from 'graphql-tag';
@@ -66,26 +66,16 @@ export const FeaturedDecks = ({ focused }) => {
   const renderItem = ({ item, index }) => {
     let row = index;
     return (
-      <View style={{ flex: 1, flexDirection: 'row' }}>
-        {item.map((deck, col) => (
-          <CardCell
-            key={`card-${deck.initialCard.cardId}`}
-            style={[
-              Constants.styles.gridItem,
-              { flex: 1, paddingLeft: col > 0 && Constants.iOS ? 8 : 0 },
-            ]}
-            card={deck.initialCard}
-            imageUrl={deck.creator.photo.url}
-            onPress={() =>
-              navigate('PlayDeck', {
-                decks,
-                initialDeckIndex: row * 3 + col,
-                title: 'Featured',
-              })
-            }
-          />
-        ))}
-      </View>
+      <CardGridRow
+        decks={item}
+        onPress={(deck, col) =>
+          navigate('PlayDeck', {
+            decks,
+            initialDeckIndex: row * 3 + col,
+            title: 'Featured',
+          })
+        }
+      />
     );
   };
 
