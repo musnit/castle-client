@@ -1,6 +1,6 @@
 import React from 'react';
 import { Share, StyleSheet, TouchableOpacity, Text, View } from 'react-native';
-import { useNavigation } from '../Navigation';
+import { useNavigation } from '../ReactNavigation';
 import { UserAvatar } from '../components/UserAvatar';
 
 import Feather from 'react-native-vector-icons/Feather';

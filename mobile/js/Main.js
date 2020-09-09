@@ -2,16 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { View, AppRegistry, Platform } from 'react-native';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { ApolloProvider } from '@apollo/react-hooks';
-import { RootNavigator, AndroidNavigationContext } from './Navigation';
+import { RootNavigator } from './Navigation';
+import { AndroidNavigationContext } from './ReactNavigation';
 import BootSplash from 'react-native-bootsplash';
 import * as GhostEvents from './ghost/GhostEvents';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableAndroidFontFix } from './AndroidFontFix';
 
 import { NewestDecks } from './home/NewestDecks';
+import { RecentDecks } from './home/RecentDecks';
 import { PlayDeckScreen } from './play/PlayDeckScreen';
 import { ProfileScreen } from './profile/ProfileScreen';
 import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './AuthScreens';
+import { CreateScreen } from './create/CreateScreen';
+import { CreateDeckNavigator } from './create/CreateDeckNavigator';
+import { ViewSourceNavigator } from './create/ViewSourceNavigator';
 
 import * as Session from './Session';
 
@@ -119,11 +124,15 @@ if (Platform.OS === 'android') {
   };
 
   AppRegistry.registerComponent('NewestDecks', WrapComponent(NewestDecks));
+  AppRegistry.registerComponent('RecentDecks', WrapComponent(RecentDecks));
   AppRegistry.registerComponent('PlayDeck', WrapComponent(PlayDeckScreen));
   AppRegistry.registerComponent('ProfileScreen', WrapComponent(ProfileScreen));
   AppRegistry.registerComponent('LoginScreen', WrapComponent(LoginScreen));
   AppRegistry.registerComponent('CreateAccountScreen', WrapComponent(CreateAccountScreen));
   AppRegistry.registerComponent('ForgotPasswordScreen', WrapComponent(ForgotPasswordScreen));
+  AppRegistry.registerComponent('CreateScreen', WrapComponent(CreateScreen));
+  AppRegistry.registerComponent('CreateDeck', WrapComponent(CreateDeckNavigator));
+  AppRegistry.registerComponent('ViewSource', WrapComponent(ViewSourceNavigator));
 }
 
 export default MainProvider;

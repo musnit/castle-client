@@ -14,7 +14,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { CardCell } from '../components/CardCell';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLazyQuery } from '@apollo/react-hooks';
-import { useNavigation, useFocusEffect } from '../Navigation';
+import { useNavigation, useFocusEffect } from '../ReactNavigation';
 import { useSession } from '../Session';
 import { UserAvatar } from '../components/UserAvatar';
 import { ProfileSettingsSheet } from './ProfileSettingsSheet';
@@ -190,11 +190,17 @@ export const ProfileScreen = ({ userId, route }) => {
                   key={deck.deckId}
                   deck={deck}
                   onPress={() =>
-                    push('PlayDeck', {
-                      decks: user.decks,
-                      initialDeckIndex: ii,
-                      title: `@${user.username}`,
-                    })
+                    push(
+                      'PlayDeck',
+                      {
+                        decks: user.decks,
+                        initialDeckIndex: ii,
+                        title: `@${user.username}`,
+                      },
+                      {
+                        isFullscreen: true,
+                      }
+                    )
                   }
                 />
               ))

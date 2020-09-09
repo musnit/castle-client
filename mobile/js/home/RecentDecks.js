@@ -2,7 +2,7 @@ import React from 'react';
 import { RefreshControl, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { CardCell } from '../components/CardCell';
 import { useLazyQuery } from '@apollo/react-hooks';
-import { useNavigation, useFocusEffect, useScrollToTop } from '../Navigation';
+import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
 import gql from 'graphql-tag';
 import Viewport from '../common/viewport';
 
@@ -81,11 +81,17 @@ export const RecentDecks = ({ focused }) => {
             <CardCell
               card={deck.initialCard}
               onPress={() =>
-                navigate('PlayDeck', {
-                  decks,
-                  initialDeckIndex: ii,
-                  title: 'Recent',
-                })
+                navigate(
+                  'PlayDeck',
+                  {
+                    decks,
+                    initialDeckIndex: ii,
+                    title: 'Recent',
+                  },
+                  {
+                    isFullscreen: true,
+                  }
+                )
               }
             />
           </View>

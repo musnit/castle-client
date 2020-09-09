@@ -84,12 +84,16 @@ export const on = (name, handler) => {
   };
 };
 
-export const navigate = (navigatorId, screenType, navigationScreenOptions) => {
-  return NativeModules.GhostChannels.navigate(navigatorId, screenType, navigationScreenOptions);
+export const navigate = (...args) => {
+  return NativeModules.GhostChannels.navigate(...args);
 };
 
 export const navigateBack = () => {
   return NativeModules.GhostChannels.navigateBack();
+};
+
+export const navigatePopToTop = () => {
+  return NativeModules.GhostChannels.navigatePopToTop();
 };
 
 export const getCastleAsyncStorage = (key) => {

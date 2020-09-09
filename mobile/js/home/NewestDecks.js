@@ -2,7 +2,7 @@ import React from 'react';
 import { FlatList, StatusBar, StyleSheet, Text, View, requireNativeComponent } from 'react-native';
 import { CardCell } from '../components/CardCell';
 import { useLazyQuery } from '@apollo/react-hooks';
-import { useNavigation, useFocusEffect, useScrollToTop } from '../Navigation';
+import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
 import gql from 'graphql-tag';
 import Viewport from '../common/viewport';
 
@@ -111,11 +111,17 @@ export const NewestDecks = ({ focused }) => {
             card={deck.initialCard}
             imageUrl={deck.creator.photo.url}
             onPress={() =>
-              navigate('PlayDeck', {
-                decks,
-                initialDeckIndex: ii,
-                title: 'Newest',
-              })
+              navigate(
+                'PlayDeck',
+                {
+                  decks,
+                  initialDeckIndex: ii,
+                  title: 'Newest',
+                },
+                {
+                  isFullscreen: true,
+                }
+              )
             }
           />
         ))}

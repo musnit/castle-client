@@ -1,15 +1,9 @@
-import React, { Fragment, useEffect } from 'react';
+import React from 'react';
 import { enableScreens } from 'react-native-screens';
 import { createNativeStackNavigator } from 'react-native-screens/native-stack';
-import {
-  NavigationContainer,
-  useNavigation as realUseNavigation,
-  useFocusEffect as realUseFocusEffect,
-  useScrollToTop as realUseScrollToTop,
-} from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Text, View, Image } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import { Image } from 'react-native';
 
 import { useSession } from './Session';
 
@@ -175,49 +169,4 @@ export const RootNavigator = () => {
       {isSignedIn ? <TabNavigator /> : <AuthNavigator />}
     </NavigationContainer>
   );
-};
-
-export const AndroidNavigationContext = React.createContext({});
-
-export const useNavigation = (...args) => {
-  if (Platform.OS === 'ios') {
-    return realUseNavigation(...args);
-  } else {
-    const { navigatorId } = React.useContext(AndroidNavigationContext);
-
-    return {
-      navigate: (screenType, navigationScreenOptions) => {
-        GhostChannels.navigate(navigatorId, screenType, JSON.stringify(navigationScreenOptions));
-      },
-
-      pop: () => {
-        GhostChannels.navigateBack();
-      },
-
-      push: (screenType, navigationScreenOptions) => {
-        GhostChannels.navigate(navigatorId, screenType, JSON.stringify(navigationScreenOptions));
-      },
-
-      dangerouslyGetState: () => {
-        return {
-          index: 0,
-        };
-      },
-    };
-  }
-};
-
-export const useFocusEffect = (...args) => {
-  if (Platform.OS === 'ios') {
-    return realUseFocusEffect(...args);
-  } else {
-    return useEffect(args[0], []);
-  }
-};
-
-export const useScrollToTop = (...args) => {
-  if (Platform.OS === 'ios') {
-    return realUseScrollToTop(...args);
-  } else {
-  }
 };
