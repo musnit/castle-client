@@ -47,7 +47,7 @@ export const useNavigation = (...args) => {
       },
 
       push: (screenType, navigationScreenOptions, androidOptions) => {
-        GhostChannels.navigate(
+        GhostChannels.navigatePush(
           navigatorId,
           screenType,
           JSON.stringify({

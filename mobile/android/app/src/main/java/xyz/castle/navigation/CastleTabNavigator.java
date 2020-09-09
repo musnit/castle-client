@@ -95,8 +95,13 @@ public class CastleTabNavigator extends CastleNavigator {
     }
 
     @Override
-    public void navigate(String screenName, String navigationScreenOptions) {
+    public void navigate(String screenType, String navigationScreenOptions) {
         throw new Error("Cannot call navigate on TabNavigator");
+    }
+
+    @Override
+    public void navigatePush(String screenType, String navigationScreenOptions) {
+        throw new Error("Cannot call navigatePush on TabNavigator");
     }
 
     @Override

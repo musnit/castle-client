@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, AppRegistry, Platform } from 'react-native';
+import { View, AppRegistry, Platform, DeviceEventEmitter } from 'react-native';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { ApolloProvider } from '@apollo/react-hooks';
 import { RootNavigator } from './Navigation';
@@ -109,6 +109,29 @@ if (Platform.OS === 'android') {
   const WrapComponent = (Component) => {
     return () => {
       return (props) => {
+        const [newProps, setNewProps] = useState({});
+
+        useEffect(() => {
+          let subscription = DeviceEventEmitter.addListener(
+            'CastleNativeNavigationProp',
+            (event) => {
+              let componentId = event.componentId;
+              if (componentId == props.componentId) {
+                let newProps = {};
+                if (event.props.navigationScreenOptions) {
+                  newProps = JSON.parse(event.props.navigationScreenOptions);
+                }
+
+                setNewProps(newProps);
+              }
+            }
+          );
+
+          return () => {
+            subscription.remove();
+          };
+        });
+
         let childProps = {};
         if (props.navigationScreenOptions) {
           childProps = JSON.parse(props.navigationScreenOptions);
@@ -116,7 +139,7 @@ if (Platform.OS === 'android') {
 
         return (
           <AddProviders navigatorId={props.navigatorId}>
-            <Component {...childProps} />
+            <Component {...{ ...childProps, ...newProps }} />
           </AddProviders>
         );
       };
