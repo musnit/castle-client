@@ -49,12 +49,37 @@ public class CastleStackNavigator extends CastleNavigator {
     }
 
     @Override
-    public void navigate(String screenName, String navigationScreenOptions) {
+    public void navigate(String screenType, String navigationScreenOptions) {
+        // look in our stack to see if we have a screen of the same type already
+        for (int i = screens.size() - 1; i >= 0; i--) {
+            if (screens.get(i).screenType().equals(screenType)) {
+                while (index > i) {
+                    screens.remove(index).destroy();
+                    index--;
+                }
+
+                screens.get(index).setNavigationScreenOptions(navigationScreenOptions);
+                bindCurrentScreen();
+
+                return;
+            }
+        }
+
+        // if not, push it to the top of the stack
+        CastleNavigationScreen.Instance instance = CastleNavigator.screenForType(screenType);
+        instance.setNavigationScreenOptions(navigationScreenOptions);
+        screens.add(instance);
+        index = screens.size() - 1;
+        bindCurrentScreen();
+    }
+
+    @Override
+    public void navigatePush(String screenType, String navigationScreenOptions) {
         /*for (int i = 0; i < screens.size(); i++) {
             screens.get(i).destroy();
         }*/
 
-        CastleNavigationScreen.Instance instance = CastleNavigator.screenForType(screenName);
+        CastleNavigationScreen.Instance instance = CastleNavigator.screenForType(screenType);
         instance.setNavigationScreenOptions(navigationScreenOptions);
         screens.add(instance);
         index = screens.size() - 1;
@@ -69,7 +94,7 @@ public class CastleStackNavigator extends CastleNavigator {
         }
 
         if (index > 0) {
-            screens.remove(index);
+            screens.remove(index).destroy();
             index--;
             bindCurrentScreen();
 
@@ -88,7 +113,7 @@ public class CastleStackNavigator extends CastleNavigator {
 
         if (index > 0) {
             while (index > 0) {
-                screens.remove(index);
+                screens.remove(index).destroy();
                 index--;
             }
 

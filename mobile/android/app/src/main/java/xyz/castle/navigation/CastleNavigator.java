@@ -97,11 +97,13 @@ public abstract class CastleNavigator {
 
     abstract public void destroy();
 
-    public void navigate(String screenName) {
-        navigate(screenName, null);
+    public void navigate(String screenType) {
+        navigate(screenType, null);
     }
 
-    abstract public void navigate(String screenName, String navigationScreenOptions);
+    abstract public void navigate(String screenType, String navigationScreenOptions);
+
+    abstract public void navigatePush(String screenType, String navigationScreenOptions);
 
     abstract public boolean handleBack();
 

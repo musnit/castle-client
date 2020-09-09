@@ -57,18 +57,33 @@ public class CastleNavigationScreen {
         return new Instance();
     }
 
+    private static int gId = 0;
+
     public class Instance {
+        private String id;
         private CastleReactView castleReactView;
         private CastleNavigator navigator;
         private View nativeView;
         private String navigationScreenOptions;
 
+        public Instance() {
+            id = "castle-navigator-" + gId++;
+        }
+
         public CastleNavigator navigator() {
             return navigator;
         }
 
+        public String screenType() {
+            return screenType;
+        }
+
         public void setNavigationScreenOptions(final String navigationScreenOptions) {
             this.navigationScreenOptions = navigationScreenOptions;
+
+            if (castleReactView != null && navigationScreenOptions != null) {
+                castleReactView.sendNewProp("navigationScreenOptions", navigationScreenOptions);
+            }
         }
 
         public void destroy() {
@@ -92,7 +107,7 @@ public class CastleNavigationScreen {
 
             if (reactComponentName != null) {
                 if (castleReactView == null) {
-                    castleReactView = new CastleReactView(activity, reactComponentName);
+                    castleReactView = new CastleReactView(activity, id, reactComponentName);
                     castleReactView.addReactOpt("navigatorId", castleNavigator.id);
 
                     if (navigationScreenOptions != null) {

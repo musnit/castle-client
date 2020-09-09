@@ -34,10 +34,19 @@ public class CastleSwapNavigator extends CastleNavigator {
     }
 
     @Override
-    public void navigate(String screenName, String navigationScreenOptions) {
-        screen = CastleNavigator.screenForType(screenName);
+    public void navigate(String screenType, String navigationScreenOptions) {
+        if (screen != null) {
+            screen.destroy();
+        }
+
+        screen = CastleNavigator.screenForType(screenType);
         screen.setNavigationScreenOptions(navigationScreenOptions);
         bindCurrentScreen();
+    }
+
+    @Override
+    public void navigatePush(String screenType, String navigationScreenOptions) {
+        this.navigate(screenType, navigationScreenOptions);
     }
 
     @Override

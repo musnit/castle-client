@@ -88,6 +88,10 @@ export const navigate = (...args) => {
   return NativeModules.GhostChannels.navigate(...args);
 };
 
+export const navigatePush = (...args) => {
+  return NativeModules.GhostChannels.navigatePush(...args);
+};
+
 export const navigateBack = () => {
   return NativeModules.GhostChannels.navigateBack();
 };
