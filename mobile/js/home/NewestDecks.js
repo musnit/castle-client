@@ -96,22 +96,22 @@ export const NewestDecks = ({ focused }) => {
   useScrollToTop(scrollViewRef);
 
   const renderItem = ({ item, index }) => {
-    let ii = index;
+    let row = index;
     return (
       <View style={{ flex: 1, flexDirection: 'row' }}>
-        {item.map((deck, ii) => (
+        {item.map((deck, col) => (
           <CardCell
             key={`card-${deck.initialCard.cardId}`}
             style={[
               Constants.styles.gridItem,
-              { flex: 1, paddingLeft: ii > 0 && Constants.iOS ? 8 : 0 },
+              { flex: 1, paddingLeft: col > 0 && Constants.iOS ? 8 : 0 },
             ]}
             card={deck.initialCard}
             imageUrl={deck.creator.photo.url}
             onPress={() =>
               navigate('PlayDeck', {
                 decks,
-                initialDeckIndex: ii,
+                initialDeckIndex: row * 3 + col,
                 title: 'Newest',
               })
             }
