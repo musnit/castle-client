@@ -7,10 +7,10 @@ import {
   StatusBar,
   Linking,
   ActivityIndicator,
-  KeyboardAvoidingView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import { resetPasswordAsync, useSession } from './Session';
 import { navigateToUri } from './DeepLinks';
@@ -427,12 +427,15 @@ const ForgotPasswordForm = () => {
 };
 
 const WithHeader = ({ children }) => (
-  <KeyboardAvoidingView
-    behavior="padding"
-    enabled
+  <KeyboardAwareScrollView
+    enableOnAndroid={true}
+    keyboardShouldPersistTaps="handled"
     style={{
       flex: 1,
       backgroundColor: Constants.colors.black,
+    }}
+    contentContainerStyle={{
+      flex: 1,
       alignItems: 'center',
       justifyContent: 'center',
       padding: 16,
@@ -461,7 +464,7 @@ const WithHeader = ({ children }) => (
       />
     </View>
     <View style={{ width: '100%', alignItems: 'center' }}>{children}</View>
-  </KeyboardAvoidingView>
+  </KeyboardAwareScrollView>
 );
 
 export const LoginScreen = () => (
