@@ -1,7 +1,7 @@
 import React from 'react';
 import { enableScreens } from 'react-native-screens';
 import { createNativeStackNavigator } from 'react-native-screens/native-stack';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image } from 'react-native';
 
@@ -165,10 +165,22 @@ function onNavigationStateChange(state) {
   GhostChannels.globalPause();
 }
 
+// https://reactnavigation.org/docs/themes/
+const NavigationTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: '#000',
+  },
+};
+
 export const RootNavigator = () => {
   const { isSignedIn } = useSession();
   return (
-    <NavigationContainer ref={DeepLinks.setNavigationRef} onStateChange={onNavigationStateChange}>
+    <NavigationContainer
+      theme={NavigationTheme}
+      ref={DeepLinks.setNavigationRef}
+      onStateChange={onNavigationStateChange}>
       {isSignedIn ? <TabNavigator /> : <AuthNavigator />}
     </NavigationContainer>
   );
