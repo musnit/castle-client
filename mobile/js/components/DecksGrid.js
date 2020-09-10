@@ -1,6 +1,6 @@
 import React from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
-import { CardCell } from '../components/CardCell';
+import { CardCell } from './CardCell';
 
 import * as Constants from '../Constants';
 
@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const CardGridRow = ({ decks, onPress }) => {
+const CardGridRow = React.memo(({ decks, onPress }) => {
   const spacers = new Array(Math.max(0, 3 - decks.length)).fill(0);
   return (
     <View style={{ flexDirection: 'row' }}>
@@ -43,7 +43,7 @@ const CardGridRow = ({ decks, onPress }) => {
       ))}
     </View>
   );
-};
+});
 
 export const DecksGrid = ({ decks, onPressDeck, scrollViewRef, ...props }) => {
   const [groupedDecks, setGroupedDecks] = React.useState([]);
@@ -61,10 +61,13 @@ export const DecksGrid = ({ decks, onPressDeck, scrollViewRef, ...props }) => {
     setGroupedDecks(newGroupedDecks);
   }, [decks]);
 
-  const renderItem = ({ item, index }) => {
-    let row = index;
-    return <CardGridRow decks={item} onPress={(deck, col) => onPressDeck(deck, row, col)} />;
-  };
+  const renderItem = React.useCallback(
+    ({ item, index }) => {
+      let row = index;
+      return <CardGridRow decks={item} onPress={(deck, col) => onPressDeck(deck, row, col)} />;
+    },
+    [onPressDeck]
+  );
 
   return (
     <FlatList
