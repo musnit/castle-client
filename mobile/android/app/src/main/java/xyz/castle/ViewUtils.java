@@ -1,5 +1,6 @@
 package xyz.castle;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Handler;
@@ -20,7 +21,15 @@ public class ViewUtils {
         mainHandler.post(runnable);
     }
 
-    public static int screenWidth() {
-        return Resources.getSystem().getDisplayMetrics().widthPixels;
+    public static int screenWidth(Activity activity) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        return displayMetrics.widthPixels;
+    }
+
+    public static int screenHeight(Activity activity) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        return displayMetrics.heightPixels;
     }
 }

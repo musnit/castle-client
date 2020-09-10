@@ -14,12 +14,12 @@ public class CastleSwapNavigator extends CastleNavigator {
     }
 
     private void bindCurrentScreen() {
-        screen.bind(this, layout);
+        screen.bind(this, layout, navigationWidth, navigationHeight);
     }
 
     @Override
-    public void bindViews(FrameLayout layout) {
-        super.bindViews(layout);
+    public void bindViews(FrameLayout layout, int navigationWidth, int navigationHeight) {
+        super.bindViews(layout, navigationWidth, navigationHeight);
         bindCurrentScreen();
     }
 

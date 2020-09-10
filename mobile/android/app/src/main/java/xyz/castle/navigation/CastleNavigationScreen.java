@@ -100,7 +100,7 @@ public class CastleNavigationScreen {
             nativeView = null;
         }
 
-        public void bind(CastleNavigator castleNavigator, FrameLayout layout) {
+        public void bind(CastleNavigator castleNavigator, FrameLayout layout, int navigationWidth, int navigationHeight) {
             Activity activity = castleNavigator.activity;
 
             View viewToAdd = null;
@@ -115,13 +115,14 @@ public class CastleNavigationScreen {
                     }
                 }
 
+                castleReactView.setNavigationSize(navigationWidth, navigationHeight);
                 viewToAdd = castleReactView;
             } else if (navigatorFactory != null || navigator != null){
                 if (navigator == null) {
                     navigator = navigatorFactory.inflate(activity);
                 }
 
-                navigator.bindViews(layout);
+                navigator.bindViews(layout, navigationWidth, navigationHeight);
             } else {
                 if (nativeView == null) {
                     nativeView = nativeViewFactory.inflate(activity);
@@ -140,6 +141,7 @@ public class CastleNavigationScreen {
                     activity.setContentView(viewToAdd);
                 } else {
                     layout.removeAllViews();
+                    viewToAdd.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                     layout.addView(viewToAdd);
                 }
             }

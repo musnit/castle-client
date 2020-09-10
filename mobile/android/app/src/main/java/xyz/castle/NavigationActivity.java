@@ -87,7 +87,7 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
 
         navigator = new CastleSwapNavigator(this, isLoggedIn ? "LoggedInRootStack" : "LoginStack");
         navigator.setId("Root");
-        navigator.bindViews(null);
+        navigator.bindViews(null, 0, 0);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

@@ -26,9 +26,12 @@ public class CastleTabNavigator extends CastleNavigator {
     List<CastleNavigationScreen.Instance> tabs = new ArrayList<>();
 
     private int index = 0;
+    private int tabHeight;
 
     public CastleTabNavigator(Activity activity, int tabsStyle) {
         super(activity);
+
+        tabHeight = ViewUtils.dpToPx(50);
 
         linearLayout = new LinearLayout(activity);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
@@ -42,7 +45,7 @@ public class CastleTabNavigator extends CastleNavigator {
             tabBar = new TopTabBar(activity);
         }
 
-        tabBar.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewUtils.dpToPx(50)));
+        tabBar.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, tabHeight));
         tabBar.setBackgroundColor(Color.BLACK);
 
         if (tabsStyle == TABS_BOTTOM) {
@@ -60,7 +63,7 @@ public class CastleTabNavigator extends CastleNavigator {
 
         tabBar.setListener((int id) -> {
             index = id;
-            tabs.get(index).bind(CastleTabNavigator.this, mainLayout);
+            tabs.get(index).bind(CastleTabNavigator.this, mainLayout, navigationWidth, navigationHeight + tabHeight);
         });
     }
 
@@ -75,11 +78,11 @@ public class CastleTabNavigator extends CastleNavigator {
     }
 
     @Override
-    public void bindViews(FrameLayout layout) {
-        super.bindViews(layout);
+    public void bindViews(FrameLayout layout, int navigationWidth, int navigationHeight) {
+        super.bindViews(layout, navigationWidth, navigationHeight);
 
         setContentView(linearLayout);
-        tabs.get(index).bind(this, mainLayout);
+        tabs.get(index).bind(this, mainLayout, navigationWidth, navigationHeight + tabHeight);
     }
 
     @Override

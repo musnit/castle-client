@@ -1,5 +1,6 @@
 package xyz.castle.navigation;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -11,10 +12,13 @@ import xyz.castle.ViewUtils;
 
 public class BottomTabBar extends TabBar {
 
+    private Activity activity;
     private Float motionEventX;
 
-    public BottomTabBar(Context context) {
-        super(context);
+    public BottomTabBar(Activity activity) {
+        super(activity);
+
+        this.activity = activity;
 
         setOrientation(HORIZONTAL);
         setOnTouchListener((view, motionEvent) -> {
@@ -25,7 +29,7 @@ public class BottomTabBar extends TabBar {
 
         setOnClickListener(view -> {
             if (motionEventX != null) {
-                float percent = motionEventX / ViewUtils.screenWidth();
+                float percent = motionEventX / ViewUtils.screenWidth(activity);
                 int index = (int) Math.floor(percent * tabs.size());
                 if (index >= tabs.size()) {
                     index = tabs.size() - 1;
@@ -51,7 +55,7 @@ public class BottomTabBar extends TabBar {
                 Tab tab = tabs.get(i);
 
                 RelativeLayout layout = new RelativeLayout(getContext());
-                layout.setLayoutParams(new LinearLayout.LayoutParams(ViewUtils.screenWidth() / tabs.size(), ViewGroup.LayoutParams.MATCH_PARENT));
+                layout.setLayoutParams(new LinearLayout.LayoutParams(ViewUtils.screenWidth(activity) / tabs.size(), ViewGroup.LayoutParams.MATCH_PARENT));
 
                 ImageView imageView = new ImageView(getContext());
                 imageView.setImageResource(tab.resId);

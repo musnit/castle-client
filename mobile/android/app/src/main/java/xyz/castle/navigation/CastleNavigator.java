@@ -14,6 +14,8 @@ import androidx.annotation.LayoutRes;
 public abstract class CastleNavigator {
     protected final Activity activity;
     protected FrameLayout layout;
+    protected int navigationWidth;
+    protected int navigationHeight;
 
     private boolean hasCalledBindViews = false;
 
@@ -88,9 +90,11 @@ public abstract class CastleNavigator {
         }
     }
 
-    public void bindViews(FrameLayout layout) {
+    public void bindViews(FrameLayout layout, int navigationWidth, int navigationHeight) {
         this.hasCalledBindViews = true;
         this.layout = layout;
+        this.navigationWidth = navigationWidth;
+        this.navigationHeight = navigationHeight;
     }
 
     abstract public void destroyViews();

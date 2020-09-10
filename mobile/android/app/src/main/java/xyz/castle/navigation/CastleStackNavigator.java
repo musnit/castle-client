@@ -23,12 +23,12 @@ public class CastleStackNavigator extends CastleNavigator {
     }
 
     private void bindCurrentScreen() {
-        screens.get(index).bind(this, layout);
+        screens.get(index).bind(this, layout, navigationWidth, navigationHeight);
     }
 
     @Override
-    public void bindViews(FrameLayout layout) {
-        super.bindViews(layout);
+    public void bindViews(FrameLayout layout, int navigationWidth, int navigationHeight) {
+        super.bindViews(layout, navigationWidth, navigationHeight);
         bindCurrentScreen();
     }
 

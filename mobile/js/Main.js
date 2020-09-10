@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, AppRegistry, Platform, DeviceEventEmitter } from 'react-native';
+import {
+  View,
+  AppRegistry,
+  Platform,
+  DeviceEventEmitter,
+  Dimensions,
+  PixelRatio,
+} from 'react-native';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { ApolloProvider } from '@apollo/react-hooks';
 import { RootNavigator } from './Navigation';
@@ -109,6 +116,8 @@ if (Platform.OS === 'android') {
     );
   };
 
+  const windowHeight = Dimensions.get('window').height;
+
   const WrapComponent = (Component) => {
     return () => {
       return (props) => {
@@ -140,10 +149,20 @@ if (Platform.OS === 'android') {
           childProps = JSON.parse(props.navigationScreenOptions);
         }
 
+        let verticalSpaceTaken = 20;
+        if (props.navigationHeight) {
+          verticalSpaceTaken += props.navigationHeight / PixelRatio.get();
+        }
+
         return (
-          <AddProviders navigatorId={props.navigatorId}>
-            <Component {...{ ...childProps, ...newProps }} />
-          </AddProviders>
+          <View>
+            <View style={{ height: windowHeight - verticalSpaceTaken }}>
+              <AddProviders navigatorId={props.navigatorId}>
+                <Component {...{ ...childProps, ...newProps }} />
+              </AddProviders>
+            </View>
+            <View style={{ height: verticalSpaceTaken, backgroundColor: 'black' }} />
+          </View>
         );
       };
     };

@@ -28,6 +28,8 @@ public class CastleReactView extends RNGestureHandlerEnabledRootView {
     private boolean isAttachedToReactInstance = false;
     private final JSTouchDispatcher jsTouchDispatcher;
     private Map<String, String> options = new HashMap<>();
+    private int navigationWidth;
+    private int navigationHeight;
 
     public CastleReactView(Activity activity, String componentId, String componentName) {
         this(activity, ((NavigationActivity) activity).getReactGateway().reactInstanceManager(), componentId, componentName);
@@ -71,6 +73,7 @@ public class CastleReactView extends RNGestureHandlerEnabledRootView {
         isAttachedToReactInstance = true;
         final Bundle opts = new Bundle();
         opts.putString("componentId", componentId);
+        opts.putInt("navigationHeight", navigationHeight);
 
         for (Map.Entry<String, String> entry : options.entrySet()) {
             opts.putString(entry.getKey(), entry.getValue());
@@ -103,4 +106,14 @@ public class CastleReactView extends RNGestureHandlerEnabledRootView {
         ReactContext reactContext = reactInstanceManager.getCurrentReactContext();
         return reactContext == null ? null : reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     }
+
+    public void setNavigationSize(int navigationWidth, int navigationHeight) {
+        this.navigationWidth = navigationWidth;
+        this.navigationHeight = navigationHeight;
+    }
+/*
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height - 200, MeasureSpec.EXACTLY));
+    }*/
 }
