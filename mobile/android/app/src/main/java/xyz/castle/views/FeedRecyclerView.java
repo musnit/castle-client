@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,15 +20,29 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import xyz.castle.R;
 import xyz.castle.ViewUtils;
 import xyz.castle.navigation.CastleNavigator;
 
 public class FeedRecyclerView {
+
+    private static long currentDeckId = 0;
+    private static Map<String, Long> deckIdsMap = new HashMap<>();
+
+    private static long deckIdToLongId(String deckId) {
+        if (!deckIdsMap.containsKey(deckId)) {
+            deckIdsMap.put(deckId, currentDeckId++);
+        }
+
+        return deckIdsMap.get(deckId);
+    }
 
     protected GridLayoutManager layoutManager;
     private FeedViewAdapter adapter;
@@ -34,10 +50,12 @@ public class FeedRecyclerView {
     private String feedName;
 
     private static class Deck {
+        long id;
         String url;
         String creatorUrl;
 
-        Deck(String url, String creatorUrl) {
+        Deck(long id, String url, String creatorUrl) {
+            this.id = id;
             this.url = url;
             this.creatorUrl = creatorUrl;
         }
@@ -45,6 +63,7 @@ public class FeedRecyclerView {
 
     private static class DeckRowViewHolder extends RecyclerView.ViewHolder {
 
+        String currentImageUrl = null;
         final SimpleDraweeView deckImageView;
         final SimpleDraweeView creatorImageView;
 
@@ -102,10 +121,19 @@ public class FeedRecyclerView {
 
             for (int i = 0; i < decks.length(); i++) {
                 try {
+                    String id = decks.getJSONObject(i).getString("deckId");
+                    String url = null;
+                    String creatorUrl = null;
+
+                    try {
+                        url = decks.getJSONObject(i).getJSONObject("initialCard").getJSONObject("backgroundImage").getString("smallUrl");
+                    } catch (Exception e) {}
+                    try {
+                        creatorUrl = decks.getJSONObject(i).getJSONObject("creator").getJSONObject("photo").getString("smallUrl");
+                    } catch (Exception e) {}
+
+                    mDecks.add(new Deck(deckIdToLongId(id), imageUrlForWidth(url, deckWidth), imageUrlForWidth(creatorUrl, creatorWidth)));
                     decksJsonArray.put(decks.getJSONObject(i));
-                    String url = decks.getJSONObject(i).getJSONObject("initialCard").getJSONObject("backgroundImage").getString("smallUrl");
-                    String creatorUrl = decks.getJSONObject(i).getJSONObject("creator").getJSONObject("photo").getString("smallUrl");
-                    mDecks.add(new Deck(imageUrlForWidth(url, deckWidth), imageUrlForWidth(creatorUrl, creatorWidth)));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -120,10 +148,18 @@ public class FeedRecyclerView {
             ArrayList newDecks = new ArrayList<>();
 
             for (int i = 0; i < decks.length(); i++) {
-                try {
-                    String url = decks.getJSONObject(i).getJSONObject("initialCard").getJSONObject("backgroundImage").getString("smallUrl");
-                    String creatorUrl = decks.getJSONObject(i).getJSONObject("creator").getJSONObject("photo").getString("smallUrl");
-                    newDecks.add(new Deck(imageUrlForWidth(url, deckWidth), imageUrlForWidth(creatorUrl, creatorWidth)));
+                try {String id = decks.getJSONObject(i).getString("deckId");
+                    String url = null;
+                    String creatorUrl = null;
+
+                    try {
+                        url = decks.getJSONObject(i).getJSONObject("initialCard").getJSONObject("backgroundImage").getString("smallUrl");
+                    } catch (Exception e) {}
+                    try {
+                        creatorUrl = decks.getJSONObject(i).getJSONObject("creator").getJSONObject("photo").getString("smallUrl");
+                    } catch (Exception e) {}
+
+                    newDecks.add(new Deck(deckIdToLongId(id), imageUrlForWidth(url, deckWidth), imageUrlForWidth(creatorUrl, creatorWidth)));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -167,6 +203,8 @@ public class FeedRecyclerView {
 
             SimpleDraweeView deckImageView = new SimpleDraweeView(parent.getContext());
             deckImageView.getHierarchy().setRoundingParams(RoundingParams.fromCornersRadius(ViewUtils.dpToPx(5)));
+            //deckImageView.getHierarchy().setPlaceholderImage(R.drawable.placeholder_deck);
+            //deckImageView.getHierarchy().setFailureImage(R.drawable.placeholder_deck);
             RelativeLayout.LayoutParams deckLp = new RelativeLayout.LayoutParams(deckWidth, deckHeight);
             deckImageView.setLayoutParams(deckLp);
             layout.addView(deckImageView);
@@ -184,12 +222,27 @@ public class FeedRecyclerView {
         }
 
         @Override
+        public long getItemId(int position) {
+            return mDecks.get(position).id;
+        }
+
+        @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder untypedHolder, final int position) {
             Deck deck = mDecks.get(position);
             DeckRowViewHolder holder = (DeckRowViewHolder) untypedHolder;
 
             holder.deckImageView.setImageURI(deck.url);
-            holder.creatorImageView.setImageURI(deck.creatorUrl);
+
+            if (!deck.creatorUrl.equals(holder.currentImageUrl)) {
+                holder.currentImageUrl = deck.creatorUrl;
+                holder.creatorImageView.setImageURI((String) null);
+
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    if (deck.creatorUrl.equals(holder.currentImageUrl)) {
+                        holder.creatorImageView.setImageURI(deck.creatorUrl);
+                    }
+                }, 200);
+            }
 
             holder.itemView.setOnClickListener((View view) -> {
                 try {
@@ -281,6 +334,7 @@ public class FeedRecyclerView {
         recyclerView.setLayoutManager(layoutManager);
 
         adapter = new FeedViewAdapter();
+        adapter.setHasStableIds(true);
         //adapter.setTestDecks();
 
         recyclerView.setAdapter(adapter);
