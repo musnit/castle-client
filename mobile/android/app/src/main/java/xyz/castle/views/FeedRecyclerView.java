@@ -22,8 +22,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import xyz.castle.ViewUtils;
 import xyz.castle.navigation.CastleNavigator;
 
-public class FeedRecyclerView extends RecyclerView {
+public class FeedRecyclerView {
 
+    protected GridLayoutManager layoutManager;
     private FeedViewAdapter adapter;
     private int screenWidth;
     private String feedName;
@@ -81,6 +82,10 @@ public class FeedRecyclerView extends RecyclerView {
             deckHeight = (int) Math.floor(deckWidth * 7.0 / 5.0);
         }
 
+        public JSONArray getJSONDecks() {
+            return decksJsonArray;
+        }
+
         public void addDecks(JSONArray decks) {
             int startIndex = mDecks.size();
 
@@ -95,24 +100,25 @@ public class FeedRecyclerView extends RecyclerView {
             }
 
             ViewUtils.runOnUiThread(() -> {
-                notifyItemRangeChanged(startIndex, decks.length());
+                notifyItemRangeInserted(startIndex, decks.length());
             });
         }
 
         public void replaceDecks(JSONArray decks) {
-            decksJsonArray = decks;
-            mDecks = new ArrayList<>();
+            ArrayList newDecks = new ArrayList<>();
 
             for (int i = 0; i < decks.length(); i++) {
                 try {
                     String url = decks.getJSONObject(i).getJSONObject("initialCard").getJSONObject("backgroundImage").getString("smallUrl");
-                    mDecks.add(new Deck(imageUrlForWidth(url, deckWidth)));
+                    newDecks.add(new Deck(imageUrlForWidth(url, deckWidth)));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
 
             ViewUtils.runOnUiThread(() -> {
+                decksJsonArray = decks;
+                mDecks = newDecks;
                 adapter.notifyDataSetChanged();
             });
         }
@@ -141,7 +147,7 @@ public class FeedRecyclerView extends RecyclerView {
 
         @NonNull
         @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             SimpleDraweeView view = new SimpleDraweeView(parent.getContext());
             view.getHierarchy().setRoundingParams(RoundingParams.fromCornersRadius(ViewUtils.dpToPx(5)));
 
@@ -152,7 +158,7 @@ public class FeedRecyclerView extends RecyclerView {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull ViewHolder untypedHolder, final int position) {
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder untypedHolder, final int position) {
             Deck deck = mDecks.get(position);
             DeckRowViewHolder holder = (DeckRowViewHolder) untypedHolder;
 
@@ -217,20 +223,24 @@ public class FeedRecyclerView extends RecyclerView {
         adapter.replaceDecks(decks);
     }
 
-    public FeedRecyclerView(Activity activity, String feedName) {
-        super(activity);
+    public JSONArray getJSONDecks() {
+        return adapter.getJSONDecks();
+    }
 
+    public FeedRecyclerView(RecyclerView recyclerView, Activity activity, String feedName) {
         this.feedName = feedName;
         screenWidth = ViewUtils.screenWidth(activity);
 
-        setHasFixedSize(true);
-        setLayoutManager(new GridLayoutManager(getContext(), 3));
+        recyclerView.setHasFixedSize(true);
+
+        layoutManager = new GridLayoutManager(activity, 3);
+        recyclerView.setLayoutManager(layoutManager);
 
         adapter = new FeedViewAdapter();
         //adapter.setTestDecks();
 
-        setAdapter(adapter);
-        addItemDecoration(new SpacesItemDecoration(ViewUtils.dpToPx(10)));
+        recyclerView.setAdapter(adapter);
+        recyclerView.addItemDecoration(new SpacesItemDecoration(ViewUtils.dpToPx(10)));
 /*
         setItemViewCacheSize(20);
         setDrawingCacheEnabled(true);
