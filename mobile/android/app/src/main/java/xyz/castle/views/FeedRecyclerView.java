@@ -104,7 +104,7 @@ public class FeedRecyclerView {
                 try {
                     decksJsonArray.put(decks.getJSONObject(i));
                     String url = decks.getJSONObject(i).getJSONObject("initialCard").getJSONObject("backgroundImage").getString("smallUrl");
-                    String creatorUrl = decks.getJSONObject(i).getJSONObject("creator").getJSONObject("photo").getString("url");
+                    String creatorUrl = decks.getJSONObject(i).getJSONObject("creator").getJSONObject("photo").getString("smallUrl");
                     mDecks.add(new Deck(imageUrlForWidth(url, deckWidth), imageUrlForWidth(creatorUrl, creatorWidth)));
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -122,7 +122,7 @@ public class FeedRecyclerView {
             for (int i = 0; i < decks.length(); i++) {
                 try {
                     String url = decks.getJSONObject(i).getJSONObject("initialCard").getJSONObject("backgroundImage").getString("smallUrl");
-                    String creatorUrl = decks.getJSONObject(i).getJSONObject("creator").getJSONObject("photo").getString("url");
+                    String creatorUrl = decks.getJSONObject(i).getJSONObject("creator").getJSONObject("photo").getString("smallUrl");
                     newDecks.add(new Deck(imageUrlForWidth(url, deckWidth), imageUrlForWidth(creatorUrl, creatorWidth)));
                 } catch (JSONException e) {
                     e.printStackTrace();
