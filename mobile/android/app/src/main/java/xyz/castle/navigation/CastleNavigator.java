@@ -1,6 +1,7 @@
 package xyz.castle.navigation;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -67,6 +68,18 @@ public abstract class CastleNavigator {
             layout.removeAllViews();
             layout.addView(view);
         }
+    }
+
+    public void enableOverlay() {
+        if (hasCalledBindViews) {
+            View view = new View(activity);
+            view.setBackgroundColor(Color.BLACK);
+            setContentView(view);
+        }
+    }
+
+    public void disableOverlay() {
+        bindViews(layout, navigationWidth, navigationHeight);
     }
 
     public void setContentView(@LayoutRes int layoutResID) {

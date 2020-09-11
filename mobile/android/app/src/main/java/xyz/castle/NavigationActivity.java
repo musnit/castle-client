@@ -3,6 +3,8 @@ package xyz.castle;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
+import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -18,17 +20,19 @@ import com.reactnativenavigation.react.ReactGateway;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
-import xyz.castle.CastleSharedPreferences;
-import xyz.castle.MainApplication;
-import xyz.castle.R;
+import xyz.castle.api.API;
+import xyz.castle.api.GraphQLOperation;
+import xyz.castle.navigation.CastleNavigator;
 import xyz.castle.views.FeedNativeView;
 import xyz.castle.views.PlayDeckNativeView;
 import xyz.castle.navigation.CastleNavigationScreen;
-import xyz.castle.navigation.CastleNavigator;
 import xyz.castle.navigation.CastleStackNavigator;
 import xyz.castle.navigation.CastleSwapNavigator;
 import xyz.castle.navigation.CastleTabNavigator;
@@ -88,6 +92,59 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
         navigator = new CastleSwapNavigator(this, isLoggedIn ? "LoggedInRootStack" : "LoginStack");
         navigator.setId("Root");
         navigator.bindViews(null, 0, 0);
+
+        if (isLoggedIn) {
+            handleDeepLink(getIntent());
+        }
+    }
+
+    private void navigateToDeck(JSONObject deck) {
+        try {
+            JSONObject playDeckOptions = new JSONObject();
+            JSONArray decksArray = new JSONArray();
+            decksArray.put(deck);
+
+            playDeckOptions.put("decks", decksArray);
+            playDeckOptions.put("title", "Shared deck");
+
+            CastleNavigator.castleNavigatorForId("LoggedInRootStack").navigate("PlayDeck", playDeckOptions.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void handleDeepLink(Intent intent) {
+        String action = intent.getAction();
+        Uri uri = intent.getData();
+
+        if (uri != null
+                && (Intent.ACTION_VIEW.equals(action)
+                || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action))) {
+            String path = uri.getPath();
+            if (path.startsWith("/d/")) {
+                String deckId = path.substring(3);
+
+                navigator.enableOverlay();
+
+                API.getInstance().graphql(GraphQLOperation.Query("deck")
+                        .variable("deckId", "ID!", deckId)
+                        .fields(API.DECK_FIELD_LIST)
+                        .field("cards", API.CARD_FIELD_LIST)
+                        , new API.GraphQLResponseHandler() {
+                            @Override
+                            public void success(JSONObject result) {
+                                navigateToDeck(result);
+                                navigator.disableOverlay();
+                            }
+
+                            @Override
+                            public void failure(Exception e) {
+                                // not a big deal, just don't get the deep link
+                                navigator.disableOverlay();
+                            }
+                        });
+            }
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -120,6 +177,8 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
         if (!getReactGateway().onNewIntent(intent)) {
             super.onNewIntent(intent);
         }
+
+        handleDeepLink(intent);
     }
 
     @Override
