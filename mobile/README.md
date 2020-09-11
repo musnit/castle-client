@@ -2,6 +2,7 @@
 
 - Follow the [dependencies and development environment setup instructions](https://facebook.github.io/react-native/docs/getting-started) in the React Native documentation for your host platform (stop right before "Creating a new application").
 - Run `npm i` in this directory
+- Copy `mobile/.env` from our credentials repository to this directory
 
 # Running
 
