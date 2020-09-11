@@ -93,6 +93,7 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
         navigator.setId("Root");
         navigator.bindViews(null, 0, 0);
 
+        // TODO: should this be before bindViews? don't want feed to load if we're going to a deep link
         if (isLoggedIn) {
             handleDeepLink(getIntent());
         }
@@ -152,7 +153,7 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
         if (event.token == null) {
             navigator.navigate("LoginStack");
         } else {
-            navigator.navigate("LoggedInRoot");
+            navigator.navigate("LoggedInRootStack");
         }
     };
 
