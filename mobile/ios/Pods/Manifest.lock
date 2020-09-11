@@ -1,6 +1,11 @@
 PODS:
+  - Amplitude-iOS (4.7.1)
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.6)
+  - EXAmplitude (8.2.1):
+    - Amplitude-iOS (~> 4.7.1)
+    - UMConstantsInterface
+    - UMCore
   - EXAppLoaderProvider (8.0.0)
   - EXConstants (8.0.0):
     - UMConstantsInterface
@@ -291,6 +296,7 @@ PODS:
 
 DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
+  - EXAmplitude (from `../node_modules/expo-analytics-amplitude/ios`)
   - EXAppLoaderProvider (from `../node_modules/expo-app-loader-provider/ios`)
   - EXConstants (from `../node_modules/expo-constants/ios`)
   - EXFileSystem (from `../node_modules/expo-file-system/ios`)
@@ -354,11 +360,15 @@ SPEC REPOS:
     - SDWebImage
     - SDWebImageWebPCoder
   trunk:
+    - Amplitude-iOS
     - Sentry
 
 EXTERNAL SOURCES:
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
+  EXAmplitude:
+    :path: !ruby/object:Pathname
+    path: "../node_modules/expo-analytics-amplitude/ios"
   EXAppLoaderProvider:
     :path: !ruby/object:Pathname
     path: "../node_modules/expo-app-loader-provider/ios"
@@ -481,8 +491,10 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
+  Amplitude-iOS: a0347ab05f2d196e6bbb22cc6f62eea33b5a035b
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
+  EXAmplitude: 748d2377e9e3f6792f732fa7bb1b513059e27d0f
   EXAppLoaderProvider: f6aeb45ee81887811b34eee5c5f235a6111d58d0
   EXConstants: e287774d0d32634ddaef614f2e488c550c6deefc
   EXFileSystem: fa8ecad925ad984681910a2273930f7255a0a9b5

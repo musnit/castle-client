@@ -2,12 +2,18 @@
 require('node-libs-react-native/globals');
 
 import Main from './js/Main';
+import { AMPLITUDE_KEY, SENTRY_DSN } from '@env';
 
 import * as Sentry from '@sentry/react-native';
+import * as Amplitude from 'expo-analytics-amplitude';
 
 Sentry.init({
-  dsn: 'https://0215bab0a1264d8db40e95388137688e@o406807.ingest.sentry.io/5275015',
+  dsn: SENTRY_DSN,
   environment: __DEV__ ? 'debug' : 'release',
 });
+
+if (AMPLITUDE_KEY) {
+  Amplitude.initialize(AMPLITUDE_KEY);
+}
 
 export default Main;

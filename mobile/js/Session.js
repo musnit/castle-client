@@ -10,6 +10,7 @@ import { createUploadLink, ReactNativeFile } from 'apollo-upload-client';
 import FastImage from 'react-native-fast-image';
 import gql from 'graphql-tag';
 
+import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from './Constants';
 import * as GhostPushNotifications from './ghost/GhostPushNotifications';
 import * as LocalId from './common/local-id';
@@ -63,6 +64,7 @@ export const Provider = (props) => {
         } else {
           gAuthToken = await CastleAsyncStorage.getItem('AUTH_TOKEN');
           gUserId = await CastleAsyncStorage.getItem('USER_ID');
+          Amplitude.setUserId(gUserId);
         }
 
         if (mounted) {
@@ -90,9 +92,11 @@ export const Provider = (props) => {
         await CastleAsyncStorage.setItem('USER_ID', userId);
 
         await GhostPushNotifications.requestTokenAsync();
+        Amplitude.setUserId(gUserId);
       } else {
         await CastleAsyncStorage.removeItem('AUTH_TOKEN');
         await CastleAsyncStorage.removeItem('USER_ID');
+        Amplitude.setUserId(null);
       }
     }
 
