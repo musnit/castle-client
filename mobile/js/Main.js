@@ -99,7 +99,11 @@ if (Platform.OS === 'android') {
   const AddProviders = (props) => {
     return (
       <View style={{ flex: 1 }}>
-        <AndroidNavigationContext.Provider value={{ navigatorId: props.navigatorId }}>
+        <AndroidNavigationContext.Provider
+          value={{
+            navigatorId: props.navigatorId,
+            navigatorWindowHeight: props.navigatorWindowHeight,
+          }}>
           <Session.Provider>
             <GhostEvents.Provider>
               <ApolloProvider client={Session.apolloClient}>
@@ -157,7 +161,9 @@ if (Platform.OS === 'android') {
         return (
           <View>
             <View style={{ height: windowHeight - verticalSpaceTaken }}>
-              <AddProviders navigatorId={props.navigatorId}>
+              <AddProviders
+                navigatorId={props.navigatorId}
+                navigatorWindowHeight={windowHeight - verticalSpaceTaken}>
                 <Component {...{ ...childProps, ...newProps }} />
               </AddProviders>
             </View>

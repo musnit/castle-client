@@ -84,12 +84,6 @@ export const useScrollToTop = (...args) => {
   }
 };
 
-const WithNavigationComponent = (props) => {
-  const navigation = useNavigation();
-
-  return <props.Component navigation={navigation} />;
-};
-
 export const withNavigation = (Component) => {
   if (Platform.OS === 'ios') {
     return realWithNavigation(Component);

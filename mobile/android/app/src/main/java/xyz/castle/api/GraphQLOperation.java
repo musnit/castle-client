@@ -49,7 +49,11 @@ public class GraphQLOperation {
     }
 
     public String build() throws JSONException {
-        String query = type + " MainQuery(";
+        String query = type + " MainQuery";
+
+        if (variables.size() > 0) {
+            query += "(";
+        }
 
         for (int i = 0; i < variables.size(); i++) {
             query += "$" + variables.get(i).name + ": " + variables.get(i).type;
@@ -59,7 +63,15 @@ public class GraphQLOperation {
             }
         }
 
-        query += ") {\n" + name + "(";
+        if (variables.size() > 0) {
+            query += ")";
+        }
+
+        query += " {\n" + name;
+
+        if (variables.size() > 0) {
+            query += "(";
+        }
 
         for (int i = 0; i < variables.size(); i++) {
             String name = variables.get(i).name;
@@ -70,7 +82,11 @@ public class GraphQLOperation {
             }
         }
 
-        query += ") {\n";
+        if (variables.size() > 0) {
+            query += ")";
+        }
+
+        query += " {\n";
 
         for (int i = 0; i < fields.size(); i++) {
             query += fields.get(i).serialize() + "\n";

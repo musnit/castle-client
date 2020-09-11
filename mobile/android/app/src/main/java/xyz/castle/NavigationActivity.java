@@ -30,7 +30,9 @@ import androidx.fragment.app.FragmentActivity;
 import xyz.castle.api.API;
 import xyz.castle.api.GraphQLOperation;
 import xyz.castle.navigation.CastleNavigator;
-import xyz.castle.views.FeedNativeView;
+import xyz.castle.views.FeaturedFeedView;
+import xyz.castle.views.HistoryFeedView;
+import xyz.castle.views.NewestFeedView;
 import xyz.castle.views.PlayDeckNativeView;
 import xyz.castle.navigation.CastleNavigationScreen;
 import xyz.castle.navigation.CastleStackNavigator;
@@ -54,9 +56,9 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
         getReactGateway().onActivityCreated(this);
         Fresco.initialize(this);
 
-        new CastleNavigationScreen("Featured", (Activity activity) -> (new CastleStackNavigator(this, "FeaturedDecks"))).register();
-        new CastleNavigationScreen("Newest", (Activity activity) -> (new CastleStackNavigator(this, "NewestDecks"))).register();
-        new CastleNavigationScreen("Recent", (Activity activity) -> (new CastleStackNavigator(this, "RecentDecks"))).register();
+        new CastleNavigationScreen("Featured", (Activity activity) -> (new CastleStackNavigator(this, "FeaturedDecksNative"))).register();
+        new CastleNavigationScreen("Newest", (Activity activity) -> (new CastleStackNavigator(this, "NewestDecksNative"))).register();
+        new CastleNavigationScreen("Recent", (Activity activity) -> (new CastleStackNavigator(this, "RecentDecksNative"))).register();
         new CastleNavigationScreen("RootTabScreen", (Activity activity) -> {
             CastleTabNavigator homeNavigator = new CastleTabNavigator(activity, CastleTabNavigator.TABS_TOP);
             homeNavigator.addTab("Featured", "Featured", R.drawable.bottomtabs_browse);
@@ -82,7 +84,9 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
 
         new CastleNavigationScreen("TestScreen", (Activity activity) -> (new View(activity))).register();
         new CastleNavigationScreen("PlayDeckNative", (Activity activity) -> new PlayDeckNativeView(activity)).register();
-        new CastleNavigationScreen("FeedNative", (Activity activity) -> new FeedNativeView(activity)).register();
+        new CastleNavigationScreen("FeaturedDecksNative", (Activity activity) -> new FeaturedFeedView(activity)).register();
+        new CastleNavigationScreen("NewestDecksNative", (Activity activity) -> new NewestFeedView(activity)).register();
+        new CastleNavigationScreen("RecentDecksNative", (Activity activity) -> new HistoryFeedView(activity)).register();
 
         new CastleNavigationScreen("LoginStack", (Activity activity) -> (new CastleStackNavigator(this, "LoginScreen"))).register();
 
@@ -108,7 +112,11 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
             playDeckOptions.put("decks", decksArray);
             playDeckOptions.put("title", "Shared deck");
 
-            CastleNavigator.castleNavigatorForId("LoggedInRootStack").navigate("PlayDeck", playDeckOptions.toString());
+            String optionsString = playDeckOptions.toString();
+
+            ViewUtils.runOnUiThread(() -> {
+                CastleNavigator.castleNavigatorForId("LoggedInRootStack").navigate("PlayDeck", optionsString);
+            });
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -133,15 +141,20 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
                         .field("cards", API.CARD_FIELD_LIST)
                         , new API.GraphQLResponseHandler() {
                             @Override
-                            public void success(JSONObject result) {
-                                navigateToDeck(result);
-                                navigator.disableOverlay();
+                            public void success(API.GraphQLResult result) {
+                                navigateToDeck(result.object());
+
+                                ViewUtils.runOnUiThread(() -> {
+                                    navigator.disableOverlay();
+                                });
                             }
 
                             @Override
                             public void failure(Exception e) {
                                 // not a big deal, just don't get the deep link
-                                navigator.disableOverlay();
+                                ViewUtils.runOnUiThread(() -> {
+                                    navigator.disableOverlay();
+                                });
                             }
                         });
             }
