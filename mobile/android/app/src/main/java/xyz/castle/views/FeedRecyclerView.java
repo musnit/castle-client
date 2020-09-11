@@ -1,10 +1,14 @@
 package xyz.castle.views;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import com.facebook.drawee.generic.RoundingParams;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -31,20 +35,24 @@ public class FeedRecyclerView {
 
     private static class Deck {
         String url;
+        String creatorUrl;
 
-        Deck(String url) {
+        Deck(String url, String creatorUrl) {
             this.url = url;
+            this.creatorUrl = creatorUrl;
         }
     }
 
     private static class DeckRowViewHolder extends RecyclerView.ViewHolder {
 
-        final SimpleDraweeView backgroundImageView;
+        final SimpleDraweeView deckImageView;
+        final SimpleDraweeView creatorImageView;
 
-        public DeckRowViewHolder(@NonNull View itemView) {
+        public DeckRowViewHolder(@NonNull View itemView, SimpleDraweeView deckImageView, SimpleDraweeView creatorImageView) {
             super(itemView);
 
-            backgroundImageView = (SimpleDraweeView) itemView;
+            this.deckImageView = deckImageView;
+            this.creatorImageView = creatorImageView;
         }
     }
 
@@ -57,7 +65,7 @@ public class FeedRecyclerView {
                 .path(uri.getPath());
 
         for (String queryParameterName : uri.getQueryParameterNames()) {
-            if (queryParameterName.equals("w")) {
+            if (queryParameterName.equals("w") || queryParameterName.equals("min-w")) {
                 builder.appendQueryParameter("w", "" + width);
             } else {
                 builder.appendQueryParameter(queryParameterName, uri.getQueryParameter(queryParameterName));
@@ -71,6 +79,7 @@ public class FeedRecyclerView {
         private List<Deck> mDecks;
         private int deckWidth;
         private int deckHeight;
+        private int creatorWidth;
         JSONArray decksJsonArray = new JSONArray();
 
         public FeedViewAdapter() {
@@ -80,6 +89,8 @@ public class FeedRecyclerView {
 
             deckWidth = (int) Math.floor((screenWidth - padding * 3.0) / 3.0);
             deckHeight = (int) Math.floor(deckWidth * 7.0 / 5.0);
+
+            creatorWidth = ViewUtils.dpToPx(18);
         }
 
         public JSONArray getJSONDecks() {
@@ -93,7 +104,8 @@ public class FeedRecyclerView {
                 try {
                     decksJsonArray.put(decks.getJSONObject(i));
                     String url = decks.getJSONObject(i).getJSONObject("initialCard").getJSONObject("backgroundImage").getString("smallUrl");
-                    mDecks.add(new Deck(imageUrlForWidth(url, deckWidth)));
+                    String creatorUrl = decks.getJSONObject(i).getJSONObject("creator").getJSONObject("photo").getString("url");
+                    mDecks.add(new Deck(imageUrlForWidth(url, deckWidth), imageUrlForWidth(creatorUrl, creatorWidth)));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -110,7 +122,8 @@ public class FeedRecyclerView {
             for (int i = 0; i < decks.length(); i++) {
                 try {
                     String url = decks.getJSONObject(i).getJSONObject("initialCard").getJSONObject("backgroundImage").getString("smallUrl");
-                    newDecks.add(new Deck(imageUrlForWidth(url, deckWidth)));
+                    String creatorUrl = decks.getJSONObject(i).getJSONObject("creator").getJSONObject("photo").getString("url");
+                    newDecks.add(new Deck(imageUrlForWidth(url, deckWidth), imageUrlForWidth(creatorUrl, creatorWidth)));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -139,7 +152,7 @@ public class FeedRecyclerView {
             mDecks.clear();
 
             for (int i = 0; i < 200; i++) {
-                mDecks.add(new Deck(imageUrlForWidth(urls.get(i % urls.size()), deckWidth)));
+                //mDecks.add(new Deck(imageUrlForWidth(urls.get(i % urls.size()), deckWidth)));
             }
 
             notifyDataSetChanged();
@@ -148,13 +161,26 @@ public class FeedRecyclerView {
         @NonNull
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            SimpleDraweeView view = new SimpleDraweeView(parent.getContext());
-            view.getHierarchy().setRoundingParams(RoundingParams.fromCornersRadius(ViewUtils.dpToPx(5)));
-
+            RelativeLayout layout = new RelativeLayout(parent.getContext());
             GridLayoutManager.LayoutParams lp = new GridLayoutManager.LayoutParams(deckWidth, deckHeight);
-            view.setLayoutParams(lp);
+            layout.setLayoutParams(lp);
 
-            return new DeckRowViewHolder(view);
+            SimpleDraweeView deckImageView = new SimpleDraweeView(parent.getContext());
+            deckImageView.getHierarchy().setRoundingParams(RoundingParams.fromCornersRadius(ViewUtils.dpToPx(5)));
+            RelativeLayout.LayoutParams deckLp = new RelativeLayout.LayoutParams(deckWidth, deckHeight);
+            deckImageView.setLayoutParams(deckLp);
+            layout.addView(deckImageView);
+
+            SimpleDraweeView creatorImageView = new SimpleDraweeView(parent.getContext());
+            creatorImageView.getHierarchy().setRoundingParams(RoundingParams.asCircle());
+            RelativeLayout.LayoutParams creatorLp = new RelativeLayout.LayoutParams(creatorWidth, creatorWidth);
+            creatorLp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+            creatorLp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            creatorLp.setMargins(ViewUtils.dpToPx(8), ViewUtils.dpToPx(6), 0,0);
+            creatorImageView.setLayoutParams(creatorLp);
+            layout.addView(creatorImageView);
+
+            return new DeckRowViewHolder(layout, deckImageView, creatorImageView);
         }
 
         @Override
@@ -162,8 +188,10 @@ public class FeedRecyclerView {
             Deck deck = mDecks.get(position);
             DeckRowViewHolder holder = (DeckRowViewHolder) untypedHolder;
 
-            holder.backgroundImageView.setImageURI(deck.url);
-            holder.backgroundImageView.setOnClickListener((View view) -> {
+            holder.deckImageView.setImageURI(deck.url);
+            holder.creatorImageView.setImageURI(deck.creatorUrl);
+
+            holder.itemView.setOnClickListener((View view) -> {
                 try {
                     JSONObject playDeckOptions = new JSONObject();
 
@@ -227,13 +255,29 @@ public class FeedRecyclerView {
         return adapter.getJSONDecks();
     }
 
+    private static class CastleGridLayoutManager extends GridLayoutManager {
+
+        public CastleGridLayoutManager(Context context, int spanCount) {
+            super(context, spanCount);
+        }
+
+        @Override
+        public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+            try {
+                super.onLayoutChildren(recycler, state);
+            } catch (IndexOutOfBoundsException e) {
+                Log.e("CastleGridLayoutManager", "IndexOOB RecyclerView");
+            }
+        }
+    }
+
     public FeedRecyclerView(RecyclerView recyclerView, Activity activity, String feedName) {
         this.feedName = feedName;
         screenWidth = ViewUtils.screenWidth(activity);
 
         recyclerView.setHasFixedSize(true);
 
-        layoutManager = new GridLayoutManager(activity, 3);
+        layoutManager = new CastleGridLayoutManager(activity, 3);
         recyclerView.setLayoutManager(layoutManager);
 
         adapter = new FeedViewAdapter();

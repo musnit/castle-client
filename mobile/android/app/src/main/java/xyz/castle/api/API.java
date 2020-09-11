@@ -32,7 +32,7 @@ public class API {
     private static final FieldList CREATOR_FIELD_LIST = new FieldList()
             .add("userId")
             .add("username")
-            .add("photo", new FieldList("url"));
+            .add("photo", new FieldList("url", "smallUrl"));
 
     public static final FieldList DECK_FIELD_LIST = new FieldList()
             .add("id")
