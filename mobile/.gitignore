@@ -60,3 +60,5 @@ fastlane/screenshots
 
 # Love native build
 android/love/.externalNativeBuild/
+
+.env
