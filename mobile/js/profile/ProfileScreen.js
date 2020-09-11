@@ -10,6 +10,7 @@ import { useSession } from '../Session';
 import { UserAvatar } from '../components/UserAvatar';
 import { ProfileSettingsSheet } from './ProfileSettingsSheet';
 
+import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 import * as Utilities from '../common/utilities';
 
@@ -92,6 +93,10 @@ export const ProfileScreen = ({ userId, route }) => {
     userId = route.params.userId;
   }
   const isMe = !userId || userId === signedInUserId;
+
+  React.useEffect(() => {
+    Amplitude.logEventWithProperties('VIEW_PROFILE', { userId, isOwnProfile: isMe });
+  }, []);
 
   const [fetchProfile, query] = useProfileQuery(userId);
 

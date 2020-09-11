@@ -97,6 +97,7 @@ export const Provider = (props) => {
         await CastleAsyncStorage.removeItem('AUTH_TOKEN');
         await CastleAsyncStorage.removeItem('USER_ID');
         Amplitude.setUserId(null);
+        Amplitude.clearUserProperties();
       }
     }
 

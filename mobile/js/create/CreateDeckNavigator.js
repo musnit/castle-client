@@ -6,6 +6,8 @@ import { Transitioning } from 'react-native-reanimated';
 
 import CreateCardScreen from '../scenecreator/CreateCardScreenDataProvider';
 
+import * as Amplitude from 'expo-analytics-amplitude';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -31,6 +33,10 @@ export const CreateDeckNavigator = (props) => {
     deckId = params.deckIdToEdit;
     cardId = params.cardIdToEdit;
   }
+
+  React.useEffect(() => {
+    Amplitude.logEventWithProperties('VIEW_CREATE_DECK', { deckId });
+  }, [deckId]);
 
   return <CreateDeckContent deckId={deckId} cardId={cardId} {...props} />;
 };

@@ -7,6 +7,7 @@ import { useSafeArea } from 'react-native-safe-area-context';
 import { SegmentedNavigation } from '../components/SegmentedNavigation';
 import { useFocusEffect } from '@react-navigation/native';
 
+import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 import * as Utilities from '../common/utilities';
 
@@ -52,6 +53,10 @@ export const HomeScreen = () => {
       Constants.Android && StatusBar.setTranslucent(true); // needed for tab navigator
     }, [])
   );
+
+  React.useEffect(() => {
+    Amplitude.logEventWithProperties('VIEW_HOME', { mode });
+  }, [mode]);
 
   const selectedItem = MODE_ITEMS.find((item) => item.value === mode);
 

@@ -5,6 +5,7 @@ import { StyleSheet, View } from 'react-native';
 
 import CardTransition from './CardTransition';
 
+import * as Amplitude from 'expo-analytics-amplitude';
 import * as History from '../common/history';
 import * as Session from '../Session';
 
@@ -68,6 +69,7 @@ export const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, rou
   React.useEffect(() => {
     History.addItem(deckId);
     recordDeckPlay(deckId);
+    Amplitude.logEventWithProperties('VIEW_PLAY_DECK', { deckId });
   }, []);
 
   return (
