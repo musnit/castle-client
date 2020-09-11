@@ -2,6 +2,7 @@
 
 package xyz.castle.api;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -40,6 +41,21 @@ public class API {
             .add("creator", CREATOR_FIELD_LIST)
             .add("variables");
 
+    private static final FieldList INITIAL_CARD_FIELD_LIST = new FieldList()
+            .add("id")
+            .add("cardId")
+            .add("title")
+            .add("backgroundImage", new FieldList("url", "smallUrl", "privateCardUrl", "overlayUrl", "primaryColor"));
+
+    public static final FieldList FEED_ITEM_DECK_FIELD_LIST = new FieldList()
+            .add("id")
+            .add("deckId")
+            .add("title")
+            .add("creator", CREATOR_FIELD_LIST)
+            .add("initialCard", INITIAL_CARD_FIELD_LIST)
+            .add("lastModified")
+            .add("variables");
+
     private static final String API_HOST = "https://api.castle.games/graphql";
 
     private static API sInstance;
@@ -55,8 +71,21 @@ public class API {
         return sInstance;
     }
 
+    public static class GraphQLResult {
+        JSONObject object;
+        JSONArray array;
+
+        public JSONObject object() {
+            return object;
+        }
+
+        public JSONArray array() {
+            return array;
+        }
+    }
+
     public interface GraphQLResponseHandler {
-        void success(JSONObject result);
+        void success(GraphQLResult result);
         void failure(Exception e);
     }
 
@@ -93,11 +122,23 @@ public class API {
                 try {
                     String resultString = response.body().string();
                     JSONObject json = new JSONObject(resultString);
-                    JSONObject result = json.getJSONObject("data").getJSONObject(operation.name);
+                    JSONObject data = json.getJSONObject("data");
 
-                    ViewUtils.runOnUiThread(() -> {
-                        handler.success(result);
-                    });
+                    JSONObject object = null;
+                    JSONArray array = null;
+
+                    try {
+                        object = data.getJSONObject(operation.name);
+                    }catch (JSONException e) {}
+                    try {
+                        array = data.getJSONArray(operation.name);
+                    }catch (JSONException e) {}
+
+                    GraphQLResult result = new GraphQLResult();
+                    result.object = object;
+                    result.array = array;
+
+                    handler.success(result);
                 } catch (IOException | JSONException e) {
                     handler.failure(e);
                 }

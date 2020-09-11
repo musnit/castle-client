@@ -60,7 +60,7 @@ public class CastleFeedView extends SimpleViewManager<ViewGroup> {
 
             mDecks.clear();
 
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 200; i++) {
                 mDecks.add(new Deck(urls.get(i % urls.size())));
             }
 
@@ -98,7 +98,7 @@ public class CastleFeedView extends SimpleViewManager<ViewGroup> {
 
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
-            Deck deck = mDecks.get(i);
+            /*Deck deck = mDecks.get(i);
 
             if (view == null) {
                 final LayoutInflater layoutInflater = LayoutInflater.from(mContext);
@@ -114,11 +114,12 @@ public class CastleFeedView extends SimpleViewManager<ViewGroup> {
             creatorPhotoView.setImageURI(creatorPhotoUrl);
 
             final TextView usernameView = (TextView)view.findViewById(R.id.username_text_view);
-            usernameView.setText(username);*/
+            usernameView.setText(username);* /
 
             view.setLayoutParams(new ViewGroup.LayoutParams(400, 600));
 
-            return view;
+            return view;*/
+            return null;
         }
     }
 

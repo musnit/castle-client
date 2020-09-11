@@ -1,9 +1,10 @@
 import React from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet, View, Platform } from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useKeyboard } from '../common/utilities';
+import { AndroidNavigationContext } from '../ReactNavigation';
 
 import Viewport from '../common/viewport';
 
@@ -18,7 +19,6 @@ const SPRING_CONFIG = {
   useNativeDriver: true,
 };
 
-const SCREEN_HEIGHT = Viewport.vh * 100;
 const SWIPE_MIN_VELOCITY = 128;
 const SWIPE_MIN_DISTANCE = 64;
 
@@ -56,6 +56,12 @@ export const BottomSheet = ({
   const insets = useSafeArea();
   let lastSnap = React.useRef(initialSnap);
   const [keyboardState] = useKeyboard();
+
+  let SCREEN_HEIGHT = Viewport.vh * 100;
+  if (Platform.OS == 'android') {
+    const { navigatorWindowHeight } = React.useContext(AndroidNavigationContext);
+    SCREEN_HEIGHT = navigatorWindowHeight;
+  }
 
   // translation from bottom of the screen
   let snapY = React.useRef(new Animated.Value(SCREEN_HEIGHT)).current;
