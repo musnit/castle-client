@@ -65,12 +65,12 @@ export const RecentDecks = ({ focused }) => {
       scrollViewRef={scrollViewRef}
       refreshing={lastFetchedTime && loading}
       onRefresh={onRefresh}
-      onPressDeck={(deck, col, row) =>
+      onPressDeck={(deck, index) =>
         navigate(
           'PlayDeck',
           {
             decks,
-            initialDeckIndex: row * 3 + col,
+            initialDeckIndex: index,
             title: 'Recent',
           },
           {

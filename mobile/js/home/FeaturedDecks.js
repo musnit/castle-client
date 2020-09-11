@@ -53,12 +53,12 @@ export const FeaturedDecks = ({ focused }) => {
     <DecksGrid
       decks={decks}
       scrollViewRef={scrollViewRef}
-      onPressDeck={(deck, col, row) =>
+      onPressDeck={(deck, index) =>
         navigate(
           'PlayDeck',
           {
             decks,
-            initialDeckIndex: row * 3 + col,
+            initialDeckIndex: index,
             title: 'Featured',
           },
           {

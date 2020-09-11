@@ -64,7 +64,7 @@ export const DecksGrid = ({ decks, onPressDeck, scrollViewRef, ...props }) => {
   const renderItem = React.useCallback(
     ({ item, index }) => {
       let row = index;
-      return <CardGridRow decks={item} onPress={(deck, col) => onPressDeck(deck, col, row)} />;
+      return <CardGridRow decks={item} onPress={(deck, col) => onPressDeck(deck, row * 3 + col)} />;
     },
     [onPressDeck]
   );
