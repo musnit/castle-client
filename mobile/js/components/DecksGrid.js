@@ -21,10 +21,7 @@ const CardGridRow = React.memo(({ decks, onPress }) => {
       {decks.map((deck, col) => (
         <CardCell
           key={`card-${deck.initialCard.cardId}`}
-          style={[
-            Constants.styles.gridItem,
-            { flex: 1, marginLeft: col > 0 && Constants.iOS ? 8 : 0 },
-          ]}
+          style={[Constants.styles.gridItem, { flex: 1, marginLeft: col > 0 ? 8 : 0 }]}
           card={deck.initialCard}
           isPrivate={deck.isVisible === false}
           imageUrl={deck.creator.photo.url}
@@ -37,7 +34,7 @@ const CardGridRow = React.memo(({ decks, onPress }) => {
           style={[
             styles.emptyCell,
             Constants.styles.gridItem,
-            { marginLeft: col + decks.length > 0 && Constants.iOS ? 8 : 0 },
+            { marginLeft: col + decks.length > 0 ? 8 : 0 },
           ]}
         />
       ))}
