@@ -161,12 +161,12 @@ export const ProfileScreen = ({ userId, route }) => {
         </SafeAreaView>
         <DecksGrid
           decks={user?.decks}
-          onPressDeck={(deck, col, row) =>
+          onPressDeck={(deck, index) =>
             push(
               'PlayDeck',
               {
                 decks: user?.decks,
-                initialDeckIndex: row * 3 + col,
+                initialDeckIndex: index,
                 title: `@${user.username}`,
               },
               {
