@@ -286,8 +286,8 @@ export const DrawingCardBottomActions = ({ currentDrawingToolGroup }) => {
                   : styles.icon
               }
               onPress={() => activeToolAction('onSelectCollisionSubtool', 'scale-rotate')}>
-              <Icon
-                name="crop-rotate"
+              <MCIcon
+                name="vector-point"
                 size={ICON_SIZE}
                 color={collisionSubtool == 'scale-rotate' ? activeColorForeground : COLOR_ICON}
               />
