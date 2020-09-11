@@ -181,6 +181,7 @@ export const CreateCardScreen = ({
   const { behaviors, behaviorActions } = getInspectorBehaviors(root);
   const { activeToolData, activeToolAction } = getActiveTool(root);
   const { textActors, isTextActorSelected } = getTextActorsData(root, isPlaying);
+  const [currentDrawingToolGroup, setDrawingToolGroup] = React.useState('draw');
 
   // lua's behaviors can be "tools"
   React.useEffect(() => {
@@ -331,7 +332,11 @@ export const CreateCardScreen = ({
       <PopoverProvider>
         <SafeAreaView style={styles.container}>
           {isShowingDraw ? (
-            <DrawingCardHeader onPressBack={() => sendGlobalAction('resetActiveTool')} />
+            <DrawingCardHeader
+              onPressBack={() => sendGlobalAction('resetActiveTool')}
+              currentDrawingToolGroup={currentDrawingToolGroup}
+              onSelectDrawingToolGroup={setDrawingToolGroup}
+            />
           ) : (
             <CreateCardHeader
               card={card}
@@ -366,7 +371,7 @@ export const CreateCardScreen = ({
               {isPlaying ? <PlayDeckActions deck={deck} disabled /> : null}
             </View>
             {isShowingDraw ? (
-              <DrawingCardBottomActions />
+              <DrawingCardBottomActions currentDrawingToolGroup={currentDrawingToolGroup} />
             ) : (
               <CardBottomActions
                 card={card}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useGhostUI } from '../../ghost/GhostUI';
 import { useCardCreator } from '../../scenecreator/CreateCardContext';
 import { SegmentedNavigation } from '../../components/SegmentedNavigation';
@@ -63,9 +64,28 @@ const styles = StyleSheet.create({
   action: {
     paddingHorizontal: 8,
   },
+  toolGroup: {
+    alignItems: 'center',
+    marginHorizontal: 20,
+  },
+  toolGroupPicker: {
+    marginTop: 8,
+  },
+  toolGroupLabel: {},
+  toolGroupIcon: {
+    marginTop: 4,
+    width: 36,
+    height: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
-export const DrawingCardHeader = ({ onPressBack }) => {
+export const DrawingCardHeader = ({
+  onPressBack,
+  currentDrawingToolGroup,
+  onSelectDrawingToolGroup,
+}) => {
   const { globalActions, sendGlobalAction } = useGhostUI();
   const { activeToolData, activeToolAction } = useCardCreator();
 
@@ -106,9 +126,6 @@ export const DrawingCardHeader = ({ onPressBack }) => {
   }
 
   const isArtworkActive = activeToolData.currentMode == 'artwork';
-  const artworkSubtool = activeToolData.artworkSubtool;
-  const collisionSubtool = activeToolData.collisionSubtool;
-  const currentShape = isArtworkActive ? artworkSubtool : collisionSubtool;
   const onSelectSubtool = isArtworkActive
     ? (subtool) => {
         activeToolAction('onSelectArtworkSubtool', subtool);
@@ -127,15 +144,6 @@ export const DrawingCardHeader = ({ onPressBack }) => {
       value: 'onSelectCollision',
     },
   ];
-
-  let activeColor = '#fff';
-  if (isArtworkActive) {
-    activeColor = tinycolor.fromRatio({
-      r: activeToolData.color[0],
-      g: activeToolData.color[1],
-      b: activeToolData.color[2],
-    }).toHexString();
-  }
 
   return (
     <View style={styles.container}>
@@ -158,24 +166,103 @@ export const DrawingCardHeader = ({ onPressBack }) => {
         />
       </View>
 
-      <View style={styles.shapeContainer}>
-        {false && (
-          <TouchableOpacity style={styles.action} onPress={() => onSelectSubtool('line')}>
-            <Text style={currentShape == 'line' ? styles.activeShape : styles.shape}>Line</Text>
+      <View style={styles.toolGroupPicker}>
+        <View style={styles.shapeContainer}>
+          <TouchableOpacity
+            style={styles.toolGroup}
+            onPress={() => {
+              onSelectDrawingToolGroup('draw');
+              if (isArtworkActive) {
+                onSelectSubtool('pencil');
+              } else {
+                onSelectSubtool('rectangle');
+              }
+            }}>
+            <Text
+              style={[
+                styles.toolGroupLabel,
+                { color: currentDrawingToolGroup == 'draw' ? '#fff' : '#888' },
+              ]}>
+              Draw
+            </Text>
+            <View style={styles.toolGroupIcon}>
+              <MCIcon
+                name="pencil-outline"
+                size={36}
+                color={currentDrawingToolGroup == 'draw' ? '#fff' : '#888'}
+              />
+            </View>
           </TouchableOpacity>
-        )}
 
-        <TouchableOpacity style={styles.action} onPress={() => onSelectSubtool('rectangle')}>
-          <MCIcon name="square-outline" size={48} color={currentShape == 'rectangle' ? activeColor : "#888"} />
-        </TouchableOpacity>
+          {isArtworkActive ? (
+            <TouchableOpacity
+              style={styles.toolGroup}
+              onPress={() => {
+                onSelectDrawingToolGroup('fill');
+                onSelectSubtool('fill');
+              }}>
+              <Text
+                style={[
+                  styles.toolGroupLabel,
+                  { color: currentDrawingToolGroup == 'fill' ? '#fff' : '#888' },
+                ]}>
+                Fill
+              </Text>
+              <View style={styles.toolGroupIcon}>
+                <MCIcon
+                  name="format-color-fill"
+                  size={38}
+                  color={currentDrawingToolGroup == 'fill' ? '#fff' : '#888'}
+                  style={{ marginTop: 4 }}
+                />
+              </View>
+            </TouchableOpacity>
+          ) : null}
 
-        <TouchableOpacity style={styles.action} onPress={() => onSelectSubtool('circle')}>
-          <MCIcon name="circle-outline" size={48} color={currentShape == 'circle' ? activeColor : "#888"} />
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.toolGroup}
+            onPress={() => {
+              onSelectDrawingToolGroup('move');
+              onSelectSubtool('move');
+            }}>
+            <Text
+              style={[
+                styles.toolGroupLabel,
+                { color: currentDrawingToolGroup == 'move' ? '#fff' : '#888' },
+              ]}>
+              Move
+            </Text>
+            <View style={styles.toolGroupIcon}>
+              <Icon
+                name="pan-tool"
+                size={28}
+                color={currentDrawingToolGroup == 'move' ? '#fff' : '#888'}
+              />
+            </View>
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.action} onPress={() => onSelectSubtool('triangle')}>
-          <MCIcon name="triangle-outline" size={48} color={currentShape == 'triangle' ? activeColor : "#888"} />
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.toolGroup}
+            onPress={() => {
+              onSelectDrawingToolGroup('erase');
+              onSelectSubtool('erase');
+            }}>
+            <Text
+              style={[
+                styles.toolGroupLabel,
+                { color: currentDrawingToolGroup == 'erase' ? '#fff' : '#888' },
+              ]}>
+              Erase
+            </Text>
+            <View style={styles.toolGroupIcon}>
+              <MCIcon
+                name="eraser"
+                size={36}
+                color={currentDrawingToolGroup == 'erase' ? '#fff' : '#888'}
+              />
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
