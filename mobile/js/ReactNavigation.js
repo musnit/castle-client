@@ -17,7 +17,7 @@ export const useNavigation = (...args) => {
   if (Platform.OS === 'ios') {
     return realUseNavigation(...args);
   } else {
-    const { navigatorId } = React.useContext(AndroidNavigationContext);
+    const { navigatorId, navigatorStackDepth } = React.useContext(AndroidNavigationContext);
 
     return {
       navigate: (screenType, navigationScreenOptions, androidOptions) => {
@@ -62,7 +62,7 @@ export const useNavigation = (...args) => {
 
       dangerouslyGetState: () => {
         return {
-          index: 0,
+          index: navigatorStackDepth ? navigatorStackDepth : 0,
         };
       },
     };

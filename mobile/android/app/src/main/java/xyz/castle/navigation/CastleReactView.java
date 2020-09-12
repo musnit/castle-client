@@ -27,7 +27,7 @@ public class CastleReactView extends RNGestureHandlerEnabledRootView {
     private final String componentName;
     private boolean isAttachedToReactInstance = false;
     private final JSTouchDispatcher jsTouchDispatcher;
-    private Map<String, String> options = new HashMap<>();
+    private Map<String, Object> options = new HashMap<>();
     private int navigationWidth;
     private int navigationHeight;
 
@@ -47,6 +47,10 @@ public class CastleReactView extends RNGestureHandlerEnabledRootView {
     }
 
     public void addReactOpt(final String key, final String value) {
+        options.put(key, value);
+    }
+
+    public void addReactOpt(final String key, final Integer value) {
         options.put(key, value);
     }
 
@@ -75,8 +79,14 @@ public class CastleReactView extends RNGestureHandlerEnabledRootView {
         opts.putString("componentId", componentId);
         opts.putInt("navigationHeight", navigationHeight);
 
-        for (Map.Entry<String, String> entry : options.entrySet()) {
-            opts.putString(entry.getKey(), entry.getValue());
+        for (Map.Entry<String, Object> entry : options.entrySet()) {
+            Object value = entry.getValue();
+
+            if (value instanceof String) {
+                opts.putString(entry.getKey(), (String) value);
+            } else if (value instanceof Integer) {
+                opts.putInt(entry.getKey(), (Integer) value);
+            }
         }
 
         startReactApplication(reactInstanceManager, componentName, opts);

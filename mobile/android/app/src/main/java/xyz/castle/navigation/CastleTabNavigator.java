@@ -63,7 +63,7 @@ public class CastleTabNavigator extends CastleNavigator {
 
         tabBar.setListener((int id) -> {
             index = id;
-            tabs.get(index).bind(CastleTabNavigator.this, mainLayout, navigationWidth, navigationHeight + tabHeight);
+            tabs.get(index).bind(CastleTabNavigator.this, mainLayout, navigationWidth, navigationHeight + tabHeight, 0);
         });
     }
 
@@ -82,7 +82,7 @@ public class CastleTabNavigator extends CastleNavigator {
         super.bindViews(layout, navigationWidth, navigationHeight);
 
         setContentView(linearLayout);
-        tabs.get(index).bind(this, mainLayout, navigationWidth, navigationHeight + tabHeight);
+        tabs.get(index).bind(this, mainLayout, navigationWidth, navigationHeight + tabHeight, 0);
     }
 
     @Override

@@ -103,6 +103,7 @@ if (Platform.OS === 'android') {
           value={{
             navigatorId: props.navigatorId,
             navigatorWindowHeight: props.navigatorWindowHeight,
+            navigatorStackDepth: props.navigatorStackDepth,
           }}>
           <Session.Provider>
             <GhostEvents.Provider>
@@ -163,7 +164,8 @@ if (Platform.OS === 'android') {
             <View style={{ height: windowHeight - verticalSpaceTaken }}>
               <AddProviders
                 navigatorId={props.navigatorId}
-                navigatorWindowHeight={windowHeight - verticalSpaceTaken}>
+                navigatorWindowHeight={windowHeight - verticalSpaceTaken}
+                navigatorStackDepth={props.stackDepth}>
                 <Component {...{ ...childProps, ...newProps }} />
               </AddProviders>
             </View>

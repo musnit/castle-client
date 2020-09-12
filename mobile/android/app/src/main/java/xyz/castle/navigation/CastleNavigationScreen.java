@@ -100,7 +100,7 @@ public class CastleNavigationScreen {
             nativeView = null;
         }
 
-        public void bind(CastleNavigator castleNavigator, FrameLayout layout, int navigationWidth, int navigationHeight) {
+        public void bind(CastleNavigator castleNavigator, FrameLayout layout, int navigationWidth, int navigationHeight, int stackDepth) {
             Activity activity = castleNavigator.activity;
 
             View viewToAdd = null;
@@ -109,6 +109,7 @@ public class CastleNavigationScreen {
                 if (castleReactView == null) {
                     castleReactView = new CastleReactView(activity, id, reactComponentName);
                     castleReactView.addReactOpt("navigatorId", castleNavigator.id);
+                    castleReactView.addReactOpt("stackDepth", stackDepth);
 
                     if (navigationScreenOptions != null) {
                         castleReactView.addReactOpt("navigationScreenOptions", navigationScreenOptions);
