@@ -17,6 +17,7 @@ import com.google.android.gms.auth.api.credentials.CredentialRequestResponse;
 import com.google.android.gms.auth.api.credentials.Credentials;
 import com.google.android.gms.auth.api.credentials.CredentialsClient;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -189,7 +190,9 @@ public class GhostChannelsModule extends ReactContextBaseJavaModule {
         // resolve the read request.
         ResolvableApiException rae = (ResolvableApiException) e;
         try {
-          rae.startResolutionForResult(getCurrentActivity(), NavigationActivity.RC_READ);
+          if (rae.getStatusCode() == CommonStatusCodes.RESOLUTION_REQUIRED) {
+            rae.startResolutionForResult(getCurrentActivity(), NavigationActivity.RC_READ);
+          }
         } catch (IntentSender.SendIntentException exception) {
         }
       } else if (e instanceof ApiException) {
@@ -202,6 +205,7 @@ public class GhostChannelsModule extends ReactContextBaseJavaModule {
     CredentialsClient client = Credentials.getClient(getCurrentActivity());
 
     Credential.Builder credentialBuilder = new Credential.Builder(username).setPassword(password);
+
     if (profilePictureUri != null) {
       try {
         credentialBuilder.setProfilePictureUri(Uri.parse(profilePictureUri));
