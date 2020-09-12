@@ -11,9 +11,13 @@ import android.view.KeyEvent;
 import android.view.View;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
+import com.google.android.gms.auth.api.credentials.Credential;
 import com.reactnativenavigation.react.JsDevReloadHandler;
 import com.reactnativenavigation.react.ReactGateway;
 
@@ -40,6 +44,10 @@ import xyz.castle.navigation.CastleSwapNavigator;
 import xyz.castle.navigation.CastleTabNavigator;
 
 public class NavigationActivity extends FragmentActivity implements DefaultHardwareBackBtnHandler, PermissionAwareActivity, JsDevReloadHandler.ReloadListener {
+
+    public static final int RC_SAVE = 1234;
+    public static final int RC_READ = 1235;
+
     @Nullable
     private PermissionListener mPermissionListener;
 
@@ -219,10 +227,39 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
         }
     }
 
+    public void sendSmartLockCredentials(final Credential credential) {
+        final String username = credential.getId();
+        final String password = credential.getPassword();
+
+        if (username != null && password != null) {
+            WritableMap payload = Arguments.createMap();
+            payload.putString("username", username);
+            payload.putString("password", password);
+
+            (getReactGateway().reactInstanceManager().getCurrentReactContext()).getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                    .emit("CastleSmartLockCredentials", payload);
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         getReactGateway().onActivityResult(this, requestCode, resultCode, data);
+
+        if (requestCode == RC_SAVE) {
+            if (resultCode == RESULT_OK) {
+                // saved credentials
+            } else {
+                // canceled by user
+            }
+        }
+
+        if (requestCode == RC_READ) {
+            if (resultCode == RESULT_OK) {
+                Credential credential = data.getParcelableExtra(Credential.EXTRA_KEY);
+                sendSmartLockCredentials(credential);
+            } else {}
+        }
     }
 
     @Override

@@ -116,12 +116,21 @@ export const Provider = (props) => {
           login(userId: $userId, password: $password) {
             userId
             token
+            photo {
+              url
+            }
           }
         }
       `,
       variables: { userId, password },
     });
     if (result && result.data && result.data.login && result.data.login.userId) {
+      if (Platform.OS == 'android') {
+        try {
+          GhostChannels.saveSmartLockCredentials(username, password, result.data.login.photo.url);
+        } catch (e) {}
+      }
+
       await useNewAuthTokenAsync(result.data.login);
     }
   };
@@ -144,12 +153,21 @@ export const Provider = (props) => {
           signup(user: { name: $name, username: $username }, email: $email, password: $password) {
             userId
             token
+            photo {
+              url
+            }
           }
         }
       `,
       variables: { username, name, email, password },
     });
     if (result && result.data && result.data.signup && result.data.signup.userId) {
+      if (Platform.OS == 'android') {
+        try {
+          GhostChannels.saveSmartLockCredentials(username, password, result.data.signup.photo.url);
+        } catch (e) {}
+      }
+
       await useNewAuthTokenAsync(result.data.signup);
     }
   };

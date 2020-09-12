@@ -179,6 +179,7 @@ if (Platform.OS === 'android') {
   AppRegistry.registerComponent('RecentDecks', WrapComponent(RecentDecks));
   AppRegistry.registerComponent('PlayDeck', WrapComponent(PlayDeckScreen));
   AppRegistry.registerComponent('ProfileScreen', WrapComponent(ProfileScreen));
+  AppRegistry.registerComponent('Profile', WrapComponent(ProfileScreen));
   AppRegistry.registerComponent('LoginScreen', WrapComponent(LoginScreen));
   AppRegistry.registerComponent('CreateAccountScreen', WrapComponent(CreateAccountScreen));
   AppRegistry.registerComponent('ForgotPasswordScreen', WrapComponent(ForgotPasswordScreen));

@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useEffect } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -7,6 +7,8 @@ import {
   StatusBar,
   Linking,
   ActivityIndicator,
+  Platform,
+  DeviceEventEmitter,
 } from 'react-native';
 import { useNavigation } from './ReactNavigation';
 import FastImage from 'react-native-fast-image';
@@ -16,6 +18,7 @@ import { resetPasswordAsync, useSession } from './Session';
 import { navigateToUri } from './DeepLinks';
 
 import * as Constants from './Constants';
+import * as GhostChannels from './ghost/GhostChannels';
 
 const textInputStyle = {
   color: Constants.colors.white,
@@ -129,6 +132,21 @@ const LoginForm = ({ route }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
+  if (Platform.OS == 'android') {
+    useEffect(() => {
+      GhostChannels.getSmartLockCredentials();
+
+      let subscription = DeviceEventEmitter.addListener('CastleSmartLockCredentials', (event) => {
+        setUsername(event.username);
+        setPassword(event.password);
+      });
+
+      return () => {
+        subscription.remove();
+      };
+    }, []);
+  }
+
   const [signingIn, setSigningIn] = useState(false);
   const [errors, setErrors] = useState([]);
 
@@ -180,6 +198,7 @@ const LoginForm = ({ route }) => {
       <TextInput
         style={signingIn ? [textInputStyle, disabledTextInputStyle] : textInputStyle}
         autoCapitalize="none"
+        value={username}
         onChangeText={(newUsername) => setUsername(newUsername)}
         placeholder="Email or username"
         placeholderTextColor={Constants.colors.white}
@@ -197,6 +216,7 @@ const LoginForm = ({ route }) => {
         autoCapitalize="none"
         secureTextEntry
         textContentType="password"
+        value={password}
         onChangeText={(newPassword) => setPassword(newPassword)}
         placeholder="Password"
         placeholderTextColor={Constants.colors.white}
@@ -249,7 +269,9 @@ const CreateAccountForm = () => {
       setErrors([]);
       await signUpAsync({ username, name, email, password });
       setCreatingAccount(false);
-      navigate('HomeScreen');
+      if (Platform.OS != 'android') {
+        navigate('HomeScreen');
+      }
       if (uriAfter) {
         navigateToUri(uriAfter);
       }

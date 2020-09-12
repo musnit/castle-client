@@ -111,3 +111,15 @@ export const setCastleAsyncStorage = (key, value) => {
 export const removeCastleAsyncStorage = (key) => {
   return NativeModules.GhostChannels.removeCastleAsyncStorage(key);
 };
+
+export const getSmartLockCredentials = () => {
+  return NativeModules.GhostChannels.getSmartLockCredentials();
+};
+
+export const saveSmartLockCredentials = (username, password, profilePictureUrl) => {
+  return NativeModules.GhostChannels.saveSmartLockCredentials(
+    username,
+    password,
+    profilePictureUrl
+  );
+};

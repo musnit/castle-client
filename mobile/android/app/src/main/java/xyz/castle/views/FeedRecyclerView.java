@@ -203,6 +203,7 @@ public class FeedRecyclerView {
 
             SimpleDraweeView deckImageView = new SimpleDraweeView(parent.getContext());
             deckImageView.getHierarchy().setRoundingParams(RoundingParams.fromCornersRadius(ViewUtils.dpToPx(5)));
+            deckImageView.getHierarchy().setFadeDuration(300);
             //deckImageView.getHierarchy().setPlaceholderImage(R.drawable.placeholder_deck);
             //deckImageView.getHierarchy().setFailureImage(R.drawable.placeholder_deck);
             RelativeLayout.LayoutParams deckLp = new RelativeLayout.LayoutParams(deckWidth, deckHeight);
@@ -236,6 +237,8 @@ public class FeedRecyclerView {
             if (!deck.creatorUrl.equals(holder.currentImageUrl)) {
                 holder.currentImageUrl = deck.creatorUrl;
                 holder.creatorImageView.setImageURI((String) null);
+                //holder.creatorImageView.getHierarchy().reset();
+                //holder.creatorImageView.invalidate();
 
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
                     if (deck.creatorUrl.equals(holder.currentImageUrl)) {
