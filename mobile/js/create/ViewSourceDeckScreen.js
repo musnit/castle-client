@@ -28,7 +28,7 @@ const DECK_FRAGMENT = `
     id
     cardId
     title
-    updatedTime
+    lastModified
     backgroundImage {
       url
       smallUrl

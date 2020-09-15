@@ -238,12 +238,12 @@ const sortCards = (cards, order) => {
   switch (order) {
     case SortOrder.LAST_MODIFIED_ASC:
       return cards.sort((a, b) => {
-        return Date.parse(a.updatedTime) - Date.parse(b.updatedTime);
+        return Date.parse(a.lastModified) - Date.parse(b.lastModified);
       });
     case SortOrder.LAST_MODIFIED_DESC:
     default:
       return cards.sort((a, b) => {
-        return Date.parse(b.updatedTime) - Date.parse(a.updatedTime);
+        return Date.parse(b.lastModified) - Date.parse(a.lastModified);
       });
   }
 };

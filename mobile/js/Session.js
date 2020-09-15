@@ -275,7 +275,7 @@ export const CARD_FRAGMENT = `
   id
   cardId
   title
-  updatedTime
+  lastModified
   backgroundImage {
     fileId
     url
