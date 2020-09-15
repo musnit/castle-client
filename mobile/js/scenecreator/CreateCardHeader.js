@@ -44,9 +44,13 @@ export const CreateCardHeader = ({ card, isEditable, onPressBack, mode, onChange
   return (
     <View style={styles.container}>
       <StatusBar hidden={true} />
-      <TouchableOpacity style={styles.back} onPress={onPressBack}>
-        <Icon name="close" size={32} color="#fff" />
-      </TouchableOpacity>
+      {!data?.performing ? (
+        <TouchableOpacity style={styles.back} onPress={onPressBack}>
+          <Icon name="close" size={32} color="#fff" />
+        </TouchableOpacity>
+      ) : (
+        <View style={styles.back} />
+      )}
       {data ? (
         <View style={styles.actionsContainer}>
           {data.performing ? (
