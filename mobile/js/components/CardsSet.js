@@ -1,8 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { CardCell } from './CardCell';
-import FastImage from 'react-native-fast-image';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
+import Feather from 'react-native-vector-icons/Feather';
 
 import * as Constants from '../Constants';
 import * as LocalId from '../common/local-id';
@@ -36,13 +37,11 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 14,
-    color: '#fff',
     paddingVertical: 4,
   },
   newCard: {
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: Constants.colors.white,
     width: '100%',
     aspectRatio: Constants.CARD_RATIO,
     alignItems: 'center',
@@ -52,7 +51,6 @@ const styles = StyleSheet.create({
   },
   newCardTitle: {
     fontSize: 16,
-    color: Constants.colors.white,
     textAlign: 'center',
   },
   settingsRow: {
@@ -62,7 +60,6 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   sortLabel: {
-    color: '#ccc',
     textTransform: 'uppercase',
   },
   layoutPicker: {
@@ -82,8 +79,7 @@ const styles = StyleSheet.create({
   },
   input: {
     padding: 12,
-    paddingLeft: 40,
-    color: '#fff',
+    paddingLeft: 12,
     width: '100%',
   },
   cardOptions: {
@@ -102,17 +98,14 @@ const SearchInput = (props) => {
   const { label } = props;
   return (
     <View style={styles.searchContainer}>
-      <FastImage
-        style={{
-          width: 16,
-          aspectRatio: 1,
-          marginLeft: 12,
-          marginRight: -28,
-        }}
-        source={require('../../assets/images/search.png')}
-      />
+      <Feather name="search" size={16} color="#666" style={{ paddingLeft: 12 }} />
       <TextInput
-        style={styles.input}
+        style={[
+          styles.input,
+          {
+            color: props.lightBackground ? '#000' : '#fff',
+          },
+        ]}
         placeholderTextColor="#999"
         returnKeyType="done"
         autoCapitalize="none"
@@ -122,13 +115,21 @@ const SearchInput = (props) => {
   );
 };
 
-const CardListItem = ({ card, title, onPress }) => (
+const CardListItem = ({ card, title, onPress, lightBackground }) => (
   <TouchableOpacity style={styles.listItem} onPress={onPress}>
-    <Text style={styles.cardTitle}>{title}</Text>
+    <Text
+      style={[
+        styles.cardTitle,
+        {
+          color: lightBackground ? '#000' : '#fff',
+        },
+      ]}>
+      {title}
+    </Text>
   </TouchableOpacity>
 );
 
-const CardsList = ({ cards, titles, initialCard, onPress, searchQuery }) => {
+const CardsList = ({ cards, titles, initialCard, onPress, searchQuery, lightBackground }) => {
   if (cards) {
     cards =
       searchQuery && searchQuery.length
@@ -144,24 +145,51 @@ const CardsList = ({ cards, titles, initialCard, onPress, searchQuery }) => {
             card={card}
             title={titles ? titles[card.cardId] : Utilities.makeCardPreviewTitle(card)}
             onPress={() => onPress(card)}
+            lightBackground={lightBackground}
           />
         ))}
     </View>
   );
 };
 
-const NewCardCell = ({ onPress }) => (
-  <TouchableOpacity style={styles.newCard} onPress={onPress}>
-    <Text style={styles.newCardTitle}>Add a card to this deck</Text>
+const NewCardCell = ({ onPress, lightBackground }) => (
+  <TouchableOpacity
+    style={[
+      styles.newCard,
+      {
+        borderColor: lightBackground ? Constants.colors.black : Constants.colors.white,
+      },
+    ]}
+    onPress={onPress}>
+    <Text
+      style={[
+        styles.newCardTitle,
+        {
+          color: lightBackground ? Constants.colors.black : Constants.colors.white,
+        },
+      ]}>
+      Add a card to this deck
+    </Text>
   </TouchableOpacity>
 );
 
-const CardsGrid = ({ cards, titles, initialCard, onPress, onShowCardOptions, showNewCard }) => {
+const CardsGrid = ({
+  cards,
+  titles,
+  initialCard,
+  onPress,
+  onShowCardOptions,
+  showNewCard,
+  lightBackground,
+}) => {
   return (
     <View style={styles.gridContainer}>
       {showNewCard && (
         <View style={styles.cellContainer} key="new">
-          <NewCardCell onPress={() => onPress({ cardId: LocalId.makeId() })} />
+          <NewCardCell
+            onPress={() => onPress({ cardId: LocalId.makeId() })}
+            lightBackground={lightBackground}
+          />
         </View>
       )}
       {cards &&
@@ -172,7 +200,13 @@ const CardsGrid = ({ cards, titles, initialCard, onPress, onShowCardOptions, sho
               onPress={() => onPress(card)}
               isInitialCard={cards.length > 1 && initialCard && initialCard.cardId === card.cardId}
             />
-            <Text style={styles.cardTitle}>
+            <Text
+              style={[
+                styles.cardTitle,
+                {
+                  color: lightBackground ? '#000' : '#fff',
+                },
+              ]}>
               {titles ? titles[card.cardId] : Utilities.makeCardPreviewTitle(card)}
             </Text>
             {onShowCardOptions && (
@@ -219,7 +253,7 @@ const SortOrderOptions = [SortOrder.LAST_MODIFIED_DESC, SortOrder.LAST_MODIFIED_
 export const CardsSet = (props) => {
   const [state, setState] = React.useState({ mode: 'grid', searchQuery: '' });
   const [sortOrder, setSortOrder] = React.useState(SortOrder.LAST_MODIFIED_DESC);
-  const { deck } = props;
+  const { deck, lightBackground } = props;
 
   let cards, initialCard, titles;
   if (deck) {
@@ -249,36 +283,37 @@ export const CardsSet = (props) => {
   return (
     <View style={styles.container}>
       {state.mode === 'list' && (
-        <SearchInput placeholder="Search" value={state.searchQuery} onChangeText={setQuery} />
+        <SearchInput
+          placeholder="Search"
+          value={state.searchQuery}
+          onChangeText={setQuery}
+          lightBackground={lightBackground}
+        />
       )}
       <View style={styles.settingsRow}>
         <TouchableOpacity onPress={rotateSortOrder}>
-          <Text style={styles.sortLabel}>Sort: {SortOrderLabels[sortOrder]}</Text>
+          <Text
+            style={[
+              styles.sortLabel,
+              {
+                color: lightBackground ? '#666' : '#ccc',
+              },
+            ]}>
+            Sort: {SortOrderLabels[sortOrder]}
+          </Text>
         </TouchableOpacity>
         <View style={styles.layoutPicker}>
           <TouchableOpacity
             style={styles.layoutButton}
             onPress={() => setMode('grid')}
             hitSlop={{ top: 2, left: 2, bottom: 2, right: 2 }}>
-            <FastImage
-              style={{
-                width: 12,
-                aspectRatio: 1,
-              }}
-              source={require('../../assets/images/layout-grid.png')}
-            />
+            <Feather name="grid" size={16} color={lightBackground ? '#666' : '#fff'} />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.layoutButton}
             onPress={() => setMode('list')}
             hitSlop={{ top: 2, left: 2, bottom: 2, right: 2 }}>
-            <FastImage
-              style={{
-                width: 12,
-                aspectRatio: 1,
-              }}
-              source={require('../../assets/images/layout-list.png')}
-            />
+            <Feather name="list" size={16} color={lightBackground ? '#666' : '#fff'} />
           </TouchableOpacity>
         </View>
       </View>

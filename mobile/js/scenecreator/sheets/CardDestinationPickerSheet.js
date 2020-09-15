@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     borderColor: '#666',
   },
   content: {
-    backgroundColor: '#000',
+    backgroundColor: Constants.colors.white,
     minHeight: DRAWER_EXPANDED_HEIGHT - 16 - 24,
   },
 });
@@ -38,7 +38,7 @@ export const CardDestinationPickerSheet = ({ onSelectCard, isOpen, onClose }) =>
   const renderContent = () => {
     return (
       <View style={styles.content}>
-        <CardsSet deck={deck} onPress={selectAndClose} showNewCard />
+        <CardsSet deck={deck} onPress={selectAndClose} showNewCard lightBackground />
       </View>
     );
   };
