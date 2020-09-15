@@ -40,65 +40,52 @@ const styles = StyleSheet.create({
 });
 
 export const CreateCardHeader = ({ card, isEditable, onPressBack, mode, onChangeMode }) => {
-  const { globalActions, sendGlobalAction } = useGhostUI();
-  let playPauseButton, undoButton, redoButton, isPlaying;
-  if (globalActions) {
-    const data = globalActions;
-    isPlaying = data.performing;
-
-    playPauseButton = data.performing ? (
-      <TouchableOpacity style={styles.action} onPress={() => sendGlobalAction('onRewind')}>
-        <SLIcon name="control-start" size={22} color="#fff" />
-      </TouchableOpacity>
-    ) : (
-      <TouchableOpacity style={styles.action} onPress={() => sendGlobalAction('onPlay')}>
-        <SLIcon name="control-play" size={22} color="#fff" />
-      </TouchableOpacity>
-    );
-
-    undoButton = (
-      <TouchableOpacity
-        style={styles.action}
-        disabled={!data.actionsAvailable.onUndo}
-        onPress={() => sendGlobalAction('onUndo')}>
-        <MCIcon
-          name="undo-variant"
-          size={26}
-          color={data.actionsAvailable.onUndo ? '#fff' : '#666'}
-        />
-      </TouchableOpacity>
-    );
-
-    redoButton = (
-      <TouchableOpacity
-        style={styles.action}
-        disabled={!data.actionsAvailable.onRedo}
-        onPress={() => sendGlobalAction('onRedo')}>
-        <MCIcon
-          name="redo-variant"
-          size={26}
-          color={data.actionsAvailable.onRedo ? '#fff' : '#666'}
-        />
-      </TouchableOpacity>
-    );
-  }
+  const { globalActions: data, sendGlobalAction } = useGhostUI();
   return (
     <View style={styles.container}>
       <StatusBar hidden={true} />
       <TouchableOpacity style={styles.back} onPress={onPressBack}>
         <Icon name="close" size={32} color="#fff" />
       </TouchableOpacity>
-      <View style={styles.actionsContainer}>
-        {playPauseButton}
-        {undoButton}
-        {redoButton}
-        <TouchableOpacity
-          style={styles.action}
-          disabled={isPlaying}
-          onPress={() => onChangeMode(mode === 'variables' ? null : 'variables')}>
-          <MCIcon name="variable" size={26} color={isPlaying ? '#666' : '#fff'} />
-        </TouchableOpacity>
-      </View>
+      {data ? (
+        <View style={styles.actionsContainer}>
+          {data.performing ? (
+            <TouchableOpacity style={styles.action} onPress={() => sendGlobalAction('onRewind')}>
+              <SLIcon name="control-start" size={22} color="#fff" />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={styles.action} onPress={() => sendGlobalAction('onPlay')}>
+              <SLIcon name="control-play" size={22} color="#fff" />
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity
+            style={styles.action}
+            disabled={!data.actionsAvailable.onUndo}
+            onPress={() => sendGlobalAction('onUndo')}>
+            <MCIcon
+              name="undo-variant"
+              size={26}
+              color={data.actionsAvailable.onUndo ? '#fff' : '#666'}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.action}
+            disabled={!data.actionsAvailable.onRedo}
+            onPress={() => sendGlobalAction('onRedo')}>
+            <MCIcon
+              name="redo-variant"
+              size={26}
+              color={data.actionsAvailable.onRedo ? '#fff' : '#666'}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.action}
+            disabled={data.performing}
+            onPress={() => onChangeMode(mode === 'variables' ? null : 'variables')}>
+            <MCIcon name="variable" size={26} color={data.performing ? '#666' : '#fff'} />
+          </TouchableOpacity>
+        </View>
+      ) : null}
     </View>
   );
 };

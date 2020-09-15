@@ -23,6 +23,7 @@ import Viewport from '../common/viewport';
 import * as GhostEvents from '../ghost/GhostEvents';
 
 import { CardScene } from '../game/CardScene';
+import { CardSceneLoading } from './CardSceneLoading';
 import { CardText } from '../components/CardText';
 import { CreateCardContext } from './CreateCardContext';
 import { CreateCardHeader, CARD_HEADER_HEIGHT } from './CreateCardHeader';
@@ -369,6 +370,7 @@ export const CreateCardScreen = ({
                 />
               </View>
               {isPlaying ? <PlayDeckActions deck={deck} disabled /> : null}
+              {isSceneLoaded ? null : <CardSceneLoading />}
             </View>
             {isShowingDraw ? (
               <DrawingCardBottomActions currentDrawingToolGroup={currentDrawingToolGroup} />
