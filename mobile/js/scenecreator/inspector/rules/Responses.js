@@ -325,33 +325,6 @@ const SetBehavior = ({ response, context }) => {
   ];
 };
 
-const ChangeBehavior = ({ response, context }) => {
-  let behaviorName;
-  if (response.params?.behaviorId) {
-    const entry = Object.entries(context.behaviors).find(
-      ([_, b]) => b.behaviorId === response.params.behaviorId
-    );
-    if (entry) {
-      behaviorName = entry[1].displayName;
-    }
-  }
-  return [
-    {
-      type: 'showEntryOptions',
-      label: 'Adjust',
-    },
-    {
-      type: 'selectBehaviorPropertySheet',
-      label: behaviorName ?? 'behavior',
-      isPropertyVisible: (spec) => spec?.method === 'numberInput' && spec?.rules?.set === true,
-    },
-    {
-      type: 'text',
-      label: 'property',
-    },
-  ];
-};
-
 const EnableBehavior = ({ response, context }) => {
   let behaviorName;
   if (response.params?.behaviorId) {
@@ -620,7 +593,6 @@ export const Responses = {
   ['variable meets condition']: VariableMeetsCondition,
   ['counter meets condition']: CounterMeetsCondition,
   ['set behavior property']: SetBehavior,
-  ['change behavior property']: ChangeBehavior,
   ['enable behavior']: EnableBehavior,
   ['disable behavior']: DisableBehavior,
   ['reset variable']: ResetVariable,

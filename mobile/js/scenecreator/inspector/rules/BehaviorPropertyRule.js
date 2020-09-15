@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import { RuleParamInputRow } from '../components/RuleParamInputRow';
 import { useCardCreator } from '../../CreateCardContext';
 
@@ -18,6 +19,32 @@ export const BehaviorPropertyRule = ({ response, onChangeResponse, children }) =
   const { behaviors, behaviorActions } = useCardCreator();
   const [lastNativeUpdate, setLastNativeUpdate] = React.useState(0);
   React.useEffect(() => setLastNativeUpdate(lastNativeUpdate + 1), [response?.params?.value]);
+
+  const onChange = React.useCallback(
+    (value) => {
+      onChangeResponse({
+        ...response,
+        params: {
+          ...response.params,
+          value,
+        },
+      });
+    },
+    [response, onChangeResponse]
+  );
+
+  const onChangeRelative = React.useCallback(
+    (relative) => {
+      onChangeResponse({
+        ...response,
+        params: {
+          ...response.params,
+          relative,
+        },
+      });
+    },
+    [response, onChangeResponse]
+  );
 
   const { behaviorId, propertyName } = response.params;
   let behavior;
@@ -42,16 +69,6 @@ export const BehaviorPropertyRule = ({ response, onChangeResponse, children }) =
     };
   }
 
-  const onChange = (value) => {
-    onChangeResponse({
-      ...response,
-      params: {
-        ...response.params,
-        value,
-      },
-    });
-  };
-
   return (
     <View>
       {children}
@@ -63,6 +80,13 @@ export const BehaviorPropertyRule = ({ response, onChangeResponse, children }) =
         style={styles.inputRow}
         lastNativeUpdate={lastNativeUpdate}
       />
+      <View style={styles.inputRow}>
+        <InspectorCheckbox
+          label="Relative to current value"
+          value={response.params.relative}
+          onChange={onChangeRelative}
+        />
+      </View>
     </View>
   );
 };
