@@ -7,7 +7,7 @@ import gql from 'graphql-tag';
 
 import * as Constants from '../Constants';
 
-const REFETCH_FEED_INTERVAL_MS = 30 * 1000;
+const REFETCH_FEED_INTERVAL_MS = 60 * 60 * 1000;
 
 export const FeaturedDecks = ({ focused }) => {
   const { navigate } = useNavigation();
