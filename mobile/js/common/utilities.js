@@ -132,7 +132,7 @@ export const cardMatchesSearchQuery = (card, searchQuery) => {
   if (!searchQuery) return true;
 
   const query = stringAsSearchInvariant(searchQuery);
-  const title = card.title ? stringAsSearchInvariant(card.title) : '';
+  const title = card.title ? stringAsSearchInvariant(makeCardPreviewTitle(card)) : '';
 
   if (title.startsWith(query)) return true;
 
