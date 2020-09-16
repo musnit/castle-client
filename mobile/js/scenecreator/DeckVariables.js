@@ -94,6 +94,8 @@ const maybeParseInt = (value) => {
   return isNaN(result) ? 0 : result;
 };
 
+const validateVariableName = (name) => name.replace(/\s/g, '');
+
 const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) => {
   const nameInputProps = {
     ...props,
@@ -114,7 +116,7 @@ const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) 
           autoCapitalize="none"
           autoCompleteType="off"
           autoCorrect={false}
-          onChangeText={(name) => onChange({ name })}
+          onChangeText={(name) => onChange({ name: validateVariableName(name) })}
           {...nameInputProps}
         />
       </View>
