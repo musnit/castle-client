@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { InspectorTextInput } from './InspectorTextInput';
 import { objectToArray } from '../../../ghost/GhostUI';
 import { PopoverButton } from '../../PopoverProvider';
 
@@ -44,9 +45,31 @@ const styles = StyleSheet.create({
   selectedItemText: {
     fontWeight: 'bold',
   },
+  addItemRow: { flexDirection: 'row', padding: 16 },
+  addItemInput: { width: '100%', flexShrink: 1 },
+  addItemSubmit: {
+    flexShrink: 0,
+    minWidth: 12,
+    padding: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderBottomWidth: 2,
+    borderColor: '#000',
+    marginLeft: 4,
+    borderRadius: 4,
+  },
 });
 
-export const DropdownItemsList = ({ items, selectedItem, onSelectItem, closePopover }) => {
+export const DropdownItemsList = ({
+  items,
+  selectedItem,
+  onSelectItem,
+  showAddItem,
+  onAddItem,
+  closePopover,
+}) => {
+  const [addItemValue, setAddItemValue] = React.useState();
   return (
     <ScrollView>
       {items &&
@@ -64,6 +87,25 @@ export const DropdownItemsList = ({ items, selectedItem, onSelectItem, closePopo
             <Text style={item === selectedItem ? styles.selectedItemText : null}>{item.name}</Text>
           </TouchableOpacity>
         ))}
+      {showAddItem ? (
+        <View key="add-item" style={styles.addItemRow}>
+          <InspectorTextInput
+            value={addItemValue}
+            onChangeText={setAddItemValue}
+            autoCapitalize="none"
+            style={styles.addItemInput}
+            placeholder="Add new..."
+          />
+          <TouchableOpacity
+            style={styles.addItemSubmit}
+            onPress={() => {
+              onAddItem(addItemValue);
+              closePopover();
+            }}>
+            <Icon name="add" size={18} color="#000" />
+          </TouchableOpacity>
+        </View>
+      ) : null}
     </ScrollView>
   );
 };

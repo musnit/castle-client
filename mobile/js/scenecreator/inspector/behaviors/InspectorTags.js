@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 import { DropdownItemsList } from '../components/InspectorDropdown';
-import { InspectorTextInput } from '../components/InspectorTextInput';
 import { PopoverButton } from '../../PopoverProvider';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 
@@ -109,7 +108,9 @@ export default InspectorTags = ({ tags, sendAction }) => {
     Component: DropdownItemsList,
     items: tagsToAdd,
     height: 192,
+    showAddItem: true,
     onSelectItem: (item) => onChange(`${value} ${item.id}`),
+    onAddItem: (item) => onChange(`${value} ${item}`),
   };
 
   return (
