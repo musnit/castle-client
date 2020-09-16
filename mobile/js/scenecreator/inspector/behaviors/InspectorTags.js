@@ -113,6 +113,7 @@ export default InspectorTags = ({ tags, sendAction }) => {
     setComponents(
       value
         .split(' ')
+        .filter((component) => component.length)
         .sort((a, b) => a.localeCompare(b))
         .map((component) => component.toLowerCase())
     );

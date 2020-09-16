@@ -72,21 +72,6 @@ export const DropdownItemsList = ({
   const [addItemValue, setAddItemValue] = React.useState();
   return (
     <ScrollView>
-      {items &&
-        items.map((item, ii) => (
-          <TouchableOpacity
-            key={`item-${ii}`}
-            style={styles.item}
-            onPress={() => {
-              onSelectItem(item);
-              closePopover();
-            }}>
-            <View style={styles.itemIcon}>
-              {item === selectedItem ? <Icon name="check" size={18} color="#000" /> : null}
-            </View>
-            <Text style={item === selectedItem ? styles.selectedItemText : null}>{item.name}</Text>
-          </TouchableOpacity>
-        ))}
       {showAddItem ? (
         <View key="add-item" style={styles.addItemRow}>
           <InspectorTextInput
@@ -106,6 +91,21 @@ export const DropdownItemsList = ({
           </TouchableOpacity>
         </View>
       ) : null}
+      {items &&
+        items.map((item, ii) => (
+          <TouchableOpacity
+            key={`item-${ii}`}
+            style={styles.item}
+            onPress={() => {
+              onSelectItem(item);
+              closePopover();
+            }}>
+            <View style={styles.itemIcon}>
+              {item === selectedItem ? <Icon name="check" size={18} color="#000" /> : null}
+            </View>
+            <Text style={item === selectedItem ? styles.selectedItemText : null}>{item.name}</Text>
+          </TouchableOpacity>
+        ))}
     </ScrollView>
   );
 };
