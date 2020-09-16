@@ -5,6 +5,7 @@ import { PopoverButton } from '../../PopoverProvider';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import Feather from 'react-native-vector-icons/Feather';
 
 const styles = StyleSheet.create({
   container: {
@@ -59,7 +60,30 @@ const styles = StyleSheet.create({
     marginBottom: 9,
     borderStyle: 'dashed',
   },
+  removeButton: {
+    flexDirection: 'row',
+    padding: 8,
+    alignItems: 'center',
+  },
+  removeLabel: {
+    marginLeft: 8,
+    fontSize: 16,
+  },
 });
+
+const RemoveTagButton = ({ tag, onPress, closePopover }) => (
+  <TouchableOpacity
+    style={styles.removeButton}
+    onPress={() => {
+      onPress(tag);
+      closePopover();
+    }}>
+    <Feather name="trash-2" size={20} color="#000" />
+    <Text style={styles.removeLabel}>
+      Remove <Text style={{ fontWeight: 'bold' }}>{tag}</Text>
+    </Text>
+  </TouchableOpacity>
+);
 
 export default InspectorTags = ({ tags, sendAction }) => {
   const [value, setValueAndSendAction] = useOptimisticBehaviorValue({
@@ -113,15 +137,25 @@ export default InspectorTags = ({ tags, sendAction }) => {
     onAddItem: (item) => onChange(`${value} ${item}`),
   };
 
+  const removeTagPopover = {
+    Component: RemoveTagButton,
+    height: 64,
+    onPress: (tag) => onChange(components.filter((existing) => tag !== existing).join(' ')),
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Tags</Text>
       <View style={styles.tagsList}>
         {components.map((tag, ii) => (
-          <TouchableOpacity key={`tag-${tag}-ii`} style={styles.tagCell}>
+          <PopoverButton
+            key={`tag-${tag}-ii`}
+            style={styles.tagCell}
+            activeStyle={[styles.tagCell, styles.activeCell]}
+            popover={{ ...removeTagPopover, tag }}>
             <FontAwesome5 name="hashtag" color="#888" size={12} />
             <Text style={styles.tagCellLabel}>{tag}</Text>
-          </TouchableOpacity>
+          </PopoverButton>
         ))}
         <PopoverButton
           key="add-tag"
