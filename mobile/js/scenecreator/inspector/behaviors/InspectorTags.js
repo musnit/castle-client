@@ -135,7 +135,14 @@ export default InspectorTags = ({ tags, sendAction }) => {
     height: 192,
     showAddItem: true,
     onSelectItem: (item) => onChange(`${value} ${item.id}`),
-    onAddItem: (item) => onChange(`${value} ${item}`),
+    onAddItem: (item) => {
+      if (item) {
+        item = item.replace(/\s/g, '');
+        if (item?.length) {
+          onChange(`${value} ${item}`);
+        }
+      }
+    },
   };
 
   const removeTagPopover = {

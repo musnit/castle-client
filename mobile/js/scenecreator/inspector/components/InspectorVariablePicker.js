@@ -46,12 +46,18 @@ export const InspectorVariablePicker = ({ value, label, onChange, style, context
 
   const addVariable = React.useCallback(
     (name) => {
-      const existing = items?.length ? items : [];
-      const newVariableId = uuid();
-      onVariablesChange(
-        [{ ...SceneCreatorConstants.EMPTY_VARIABLE, name, id: newVariableId }].concat(existing)
-      );
-      onChange(newVariableId);
+      if (name) {
+        name = name.replace(/\s/g, '');
+        if (!name?.length) {
+          return;
+        }
+        const existing = items?.length ? items : [];
+        const newVariableId = uuid();
+        onVariablesChange(
+          [{ ...SceneCreatorConstants.EMPTY_VARIABLE, name, id: newVariableId }].concat(existing)
+        );
+        onChange(newVariableId);
+      }
     },
     [items, onChange, onVariablesChange]
   );
