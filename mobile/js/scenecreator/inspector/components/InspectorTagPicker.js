@@ -77,19 +77,23 @@ const RemoveTagButton = ({ tag, onPress, closePopover }) => (
 /**
  *  @prop value string of tags separated by spaces
  */
-export const InspectorTagPicker = ({ value, onChange, context }) => {
+export const InspectorTagPicker = ({ value, onChange, context, ...props }) => {
   const { tagToActorIds } = context;
   const [components, setComponents] = React.useState([]);
   const [tagsToAdd, setTagsToAdd] = React.useState();
 
   React.useEffect(() => {
-    setComponents(
-      value
-        .split(' ')
-        .filter((component) => component.length)
-        .sort((a, b) => a.localeCompare(b))
-        .map((component) => component.toLowerCase())
-    );
+    if (value) {
+      setComponents(
+        value
+          .split(' ')
+          .filter((component) => component.length)
+          .sort((a, b) => a.localeCompare(b))
+          .map((component) => component.toLowerCase())
+      );
+    } else {
+      setComponents([]);
+    }
   }, [value]);
 
   React.useEffect(() => {
@@ -102,23 +106,46 @@ export const InspectorTagPicker = ({ value, onChange, context }) => {
     }
   }, [tagToActorIds, components]);
 
+  const selectTag = React.useCallback(
+    (item) => {
+      if (props?.singleSelect) {
+        onChange(item.id);
+      } else {
+        onChange(value ? `${value} ${item.id}` : item.id);
+      }
+    },
+    [value, onChange, props?.singleSelect]
+  );
+
+  const addTag = React.useCallback(
+    (item) => {
+      if (item) {
+        if (props?.singleSelect) {
+          item = item.replace(/\s/g, '');
+          if (item.length) {
+            onChange(item);
+          }
+        } else {
+          item = item
+            .split(' ')
+            .filter((c) => c.length && (!components || !components.includes(c)))
+            .join(' ');
+          if (item?.length) {
+            onChange(value?.length ? `${value} ${item}` : item);
+          }
+        }
+      }
+    },
+    [value, components, onChange, props?.singleSelect]
+  );
+
   const addTagPopover = {
     Component: DropdownItemsList,
     items: tagsToAdd,
     height: 192,
     showAddItem: true,
-    onSelectItem: (item) => onChange(value ? `${value} ${item.id}` : item.id),
-    onAddItem: (item) => {
-      if (item) {
-        item = item
-          .split(' ')
-          .filter((c) => c.length && (!components || !components.includes(c)))
-          .join(' ');
-        if (item?.length) {
-          onChange(value?.length ? `${value} ${item}` : item);
-        }
-      }
-    },
+    onSelectItem: selectTag,
+    onAddItem: addTag,
   };
 
   const removeTagPopover = {
@@ -139,13 +166,17 @@ export const InspectorTagPicker = ({ value, onChange, context }) => {
           <Text style={styles.tagCellLabel}>{tag}</Text>
         </PopoverButton>
       ))}
-      <PopoverButton
-        key="add-tag"
-        style={styles.addTagCell}
-        activeStyle={[styles.addTagCell, styles.activeCell]}
-        popover={addTagPopover}>
-        <Text style={styles.addTagCellLabel}>Add tag</Text>
-      </PopoverButton>
+      {!props?.singleSelect || components.length == 0 ? (
+        <PopoverButton
+          key="add-tag"
+          style={styles.addTagCell}
+          activeStyle={[styles.addTagCell, styles.activeCell]}
+          popover={addTagPopover}>
+          <Text style={styles.addTagCellLabel}>
+            {props?.singleSelect ? 'Choose tag' : 'Add tag'}
+          </Text>
+        </PopoverButton>
+      ) : null}
     </View>
   );
 };
