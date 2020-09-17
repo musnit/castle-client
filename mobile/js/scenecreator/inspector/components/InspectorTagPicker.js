@@ -77,7 +77,8 @@ const RemoveTagButton = ({ tag, onPress, closePopover }) => (
 /**
  *  @prop value string of tags separated by spaces
  */
-export const InspectorTagPicker = ({ value, tagToActorIds, onChange }) => {
+export const InspectorTagPicker = ({ value, onChange, context }) => {
+  const { tagToActorIds } = context;
   const [components, setComponents] = React.useState([]);
   const [tagsToAdd, setTagsToAdd] = React.useState();
 
@@ -106,7 +107,7 @@ export const InspectorTagPicker = ({ value, tagToActorIds, onChange }) => {
     items: tagsToAdd,
     height: 192,
     showAddItem: true,
-    onSelectItem: (item) => onChange(`${value} ${item.id}`),
+    onSelectItem: (item) => onChange(value ? `${value} ${item.id}` : item.id),
     onAddItem: (item) => {
       if (item) {
         item = item
@@ -114,7 +115,7 @@ export const InspectorTagPicker = ({ value, tagToActorIds, onChange }) => {
           .filter((c) => c.length && (!components || !components.includes(c)))
           .join(' ');
         if (item?.length) {
-          onChange(`${value} ${item}`);
+          onChange(value?.length ? `${value} ${item}` : item);
         }
       }
     },

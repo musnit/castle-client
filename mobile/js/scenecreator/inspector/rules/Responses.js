@@ -502,10 +502,14 @@ const SendPlayerToCard = ({ response, context }) => {
 };
 
 const AddTag = ({ response }) => {
-  let plural = true;
+  let plural = true,
+    label = 'Select tag';
   if (response.params?.tag) {
     const tags = response.params.tag.split(' ');
-    plural = !(tags && tags.length == 1);
+    if (tags && tags.length) {
+      plural = !(tags.length == 1);
+      label = tags.join(', ');
+    }
   }
   return [
     {
@@ -514,8 +518,7 @@ const AddTag = ({ response }) => {
     },
     {
       type: response.params?.tag ? 'selectParamSheet' : 'selectParamSheetPlaceholder',
-      label:
-        response.params?.tag && response.params.tag.length ? response.params.tag : 'Select tag',
+      label,
       paramName: 'tag',
       paramValue: response.params?.tag ?? '',
     },
@@ -523,10 +526,14 @@ const AddTag = ({ response }) => {
 };
 
 const RemoveTag = ({ response }) => {
-  let plural = true;
+  let plural = true,
+    label = 'Select tag';
   if (response.params?.tag) {
     const tags = response.params.tag.split(' ');
-    plural = !(tags && tags.length == 1);
+    if (tags && tags.length) {
+      plural = !(tags.length == 1);
+      label = tags.join(', ');
+    }
   }
   return [
     {
@@ -535,8 +542,7 @@ const RemoveTag = ({ response }) => {
     },
     {
       type: response.params?.tag ? 'selectParamSheet' : 'selectParamSheetPlaceholder',
-      label:
-        response.params?.tag && response.params.tag.length ? response.params.tag : 'Select tag',
+      label,
       paramName: 'tag',
       paramValue: response.params?.tag ?? '',
     },

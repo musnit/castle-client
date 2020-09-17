@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { InspectorTagPicker } from '../components/InspectorTagPicker';
+import { useCardCreator } from '../../CreateCardContext';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 
 const styles = StyleSheet.create({
@@ -17,13 +18,12 @@ const styles = StyleSheet.create({
 });
 
 export default InspectorTags = ({ tags, sendAction }) => {
+  const context = useCardCreator();
   const [value, setValueAndSendAction] = useOptimisticBehaviorValue({
     behavior: tags,
     propName: 'tagsString',
     sendAction,
   });
-
-  const tagToActorIds = tags?.properties.tagToActorIds;
 
   const onChange = React.useCallback(
     (tagsString) => {
@@ -40,7 +40,7 @@ export default InspectorTags = ({ tags, sendAction }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Tags</Text>
-      <InspectorTagPicker value={value} tagToActorIds={tagToActorIds} onChange={onChange} />
+      <InspectorTagPicker value={value} onChange={onChange} context={context} />
     </View>
   );
 };

@@ -36,7 +36,12 @@ import { PopoverProvider } from './PopoverProvider';
 import { SheetProvider } from './SheetProvider';
 import { PlayDeckActions } from '../play/PlayDeckActions';
 
-import { getInspectorBehaviors, getTextActorsData, getActiveTool } from './SceneCreatorUtilities';
+import {
+  getInspectorBehaviors,
+  getTextActorsData,
+  getActiveTool,
+  getInspectorTags,
+} from './SceneCreatorUtilities';
 
 const CARD_HEIGHT = (1 / Constants.CARD_RATIO) * 100 * Viewport.vw;
 
@@ -182,6 +187,7 @@ export const CreateCardScreen = ({
   const { behaviors, behaviorActions } = getInspectorBehaviors(root);
   const { activeToolData, activeToolAction } = getActiveTool(root);
   const { textActors, isTextActorSelected } = getTextActorsData(root, isPlaying);
+  const { tagToActorIds } = getInspectorTags(behaviors?.Tags);
   const [currentDrawingToolGroup, setDrawingToolGroup] = React.useState('draw');
 
   // lua's behaviors can be "tools"
@@ -321,6 +327,7 @@ export const CreateCardScreen = ({
     setShowingTextActors,
     variables: card.variables,
     onVariablesChange,
+    tagToActorIds,
     activeToolData,
     activeToolAction,
     isDeckOwner,

@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { InspectorCheckbox } from './InspectorCheckbox';
 import { InspectorDropdown } from './InspectorDropdown';
 import { InspectorNumberInput } from './InspectorNumberInput';
+import { InspectorTagPicker } from './InspectorTagPicker';
 import { InspectorTextInput } from './InspectorTextInput';
 import { InspectorVariablePicker } from './InspectorVariablePicker';
 
@@ -23,6 +24,11 @@ export const RuleParamInputRow = ({ label, paramSpec, value, setValue, style, ..
     case 'numberInput':
       input = (
         <InspectorNumberInput value={value} onChange={setValue} {...paramSpec.props} {...props} />
+      );
+      break;
+    case 'tagPicker':
+      input = (
+        <InspectorTagPicker value={value} onChange={setValue} {...paramSpec.props} {...props} />
       );
       break;
     case 'toggle':
