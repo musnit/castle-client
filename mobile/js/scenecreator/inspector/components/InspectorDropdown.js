@@ -86,6 +86,11 @@ export const DropdownItemsList = ({
             autoCapitalize="none"
             style={styles.addItemInput}
             placeholder="Add new..."
+            returnKeyType="go"
+            onSubmitEditing={() => {
+              onAddItem(addItemValue);
+              closePopover();
+            }}
           />
           <TouchableOpacity
             style={styles.addItemSubmit}
