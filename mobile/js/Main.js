@@ -103,6 +103,7 @@ if (Platform.OS === 'android') {
           value={{
             navigatorId: props.navigatorId,
             navigatorWindowHeight: props.navigatorWindowHeight,
+            globalNavigatorHeightOffset: props.globalNavigatorHeightOffset,
             navigatorStackDepth: props.navigatorStackDepth,
           }}>
           <Session.Provider>
@@ -122,6 +123,8 @@ if (Platform.OS === 'android') {
   };
 
   const windowHeight = Dimensions.get('window').height;
+
+  let globalVerticalSpaceTaken = null;
 
   const WrapComponent = (Component) => {
     return () => {
@@ -154,9 +157,15 @@ if (Platform.OS === 'android') {
           childProps = JSON.parse(props.navigationScreenOptions);
         }
 
-        let verticalSpaceTaken = 20;
+        let verticalSpaceTaken = 0;
         if (props.navigationHeight) {
           verticalSpaceTaken += props.navigationHeight / PixelRatio.get();
+        }
+
+        if (!globalVerticalSpaceTaken) {
+          // Viewport.vh is set globally instead of for each root view,
+          // so we just use the first measurement for doing calculations that involve vh
+          globalVerticalSpaceTaken = verticalSpaceTaken;
         }
 
         return (
@@ -165,6 +174,7 @@ if (Platform.OS === 'android') {
               <AddProviders
                 navigatorId={props.navigatorId}
                 navigatorWindowHeight={windowHeight - verticalSpaceTaken}
+                globalNavigatorHeightOffset={globalVerticalSpaceTaken}
                 navigatorStackDepth={props.stackDepth}>
                 <Component {...{ ...childProps, ...newProps }} />
               </AddProviders>

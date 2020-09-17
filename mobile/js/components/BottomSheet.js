@@ -57,14 +57,18 @@ export const BottomSheet = ({
   let lastSnap = React.useRef(initialSnap);
   const [keyboardState] = useKeyboard();
 
-  let SCREEN_HEIGHT = Viewport.vh * 100;
+  let screenHeight = Viewport.vh * 100;
+  let navigatorOffset = 0;
   if (Platform.OS == 'android') {
-    const { navigatorWindowHeight } = React.useContext(AndroidNavigationContext);
-    SCREEN_HEIGHT = navigatorWindowHeight;
+    const { navigatorWindowHeight, globalNavigatorHeightOffset } = React.useContext(
+      AndroidNavigationContext
+    );
+    screenHeight = navigatorWindowHeight;
+    navigatorOffset = globalNavigatorHeightOffset;
   }
 
   // translation from bottom of the screen
-  let snapY = React.useRef(new Animated.Value(SCREEN_HEIGHT)).current;
+  let snapY = React.useRef(new Animated.Value(screenHeight)).current;
   const [containerHeight, setContainerHeight] = React.useState(0);
 
   const onPanGestureEvent = Animated.event([{ nativeEvent: { absoluteY: snapY } }], {
@@ -74,7 +78,7 @@ export const BottomSheet = ({
   const snapTo = React.useCallback(
     (toValue, velocity = 0, onFinished) => {
       // containerHeight < 1 causes layout bugs on Android.
-      const newContainerHeight = Math.max(1, SCREEN_HEIGHT - toValue);
+      const newContainerHeight = Math.max(1, screenHeight - toValue);
       if (containerHeight < newContainerHeight) {
         setContainerHeight(newContainerHeight);
       }
@@ -95,13 +99,13 @@ export const BottomSheet = ({
       let minDist = 9999,
         minIndex = -1;
       for (let ii = 0; ii < snapPoints.length; ii++) {
-        let dist = Math.abs(SCREEN_HEIGHT - snapPoints[ii] - y);
+        let dist = Math.abs(screenHeight - snapPoints[ii] - y);
         if (dist < minDist) {
           minDist = dist;
           minIndex = ii;
         }
       }
-      const signDist = y - (SCREEN_HEIGHT - snapPoints[minIndex]);
+      const signDist = y - (screenHeight - snapPoints[minIndex]);
       if (
         signDist < -SWIPE_MIN_DISTANCE &&
         velocity < -SWIPE_MIN_VELOCITY &&
@@ -114,17 +118,17 @@ export const BottomSheet = ({
       if (persistLastSnapWhenOpened) {
         lastSnap.current = minIndex;
       }
-      return snapTo(SCREEN_HEIGHT - snapPoints[minIndex], velocity);
+      return snapTo(screenHeight - snapPoints[minIndex], velocity);
     },
     [snapTo, snapPoints, persistLastSnapWhenOpened]
   );
 
   React.useEffect(() => {
     if (isOpen) {
-      snapTo(SCREEN_HEIGHT - snapPoints[lastSnap.current], 0, onOpenEnd);
+      snapTo(screenHeight - snapPoints[lastSnap.current], 0, onOpenEnd);
     } else {
       snapY.flattenOffset();
-      snapTo(SCREEN_HEIGHT, 0, onCloseEnd);
+      snapTo(screenHeight, 0, onCloseEnd);
     }
   }, [isOpen, snapPoints[lastSnap.current], onOpenEnd, onCloseEnd]);
 
@@ -132,12 +136,12 @@ export const BottomSheet = ({
     (event) => {
       if (event.nativeEvent.state === State.BEGAN) {
         snapY.setOffset(-event.nativeEvent.y);
-        snapY.setValue(event.nativeEvent.absoluteY);
+        snapY.setValue(event.nativeEvent.absoluteY - navigatorOffset);
       }
-      if (event.nativeEvent.oldState === State.ACTIVE) {
+      if (event.nativeEvent.state === State.END) {
         const { absoluteY, velocityY } = event.nativeEvent;
         snapY.flattenOffset();
-        snapToClosest(absoluteY, velocityY);
+        snapToClosest(absoluteY - navigatorOffset, velocityY);
       }
     },
     [snapToClosest]
@@ -151,7 +155,7 @@ export const BottomSheet = ({
       containerHeight < keyboardState.height + headerHeight + textInputHeight
     ) {
       snapToClosest(
-        SCREEN_HEIGHT - containerHeight - keyboardState.height - headerHeight - textInputHeight,
+        screenHeight - containerHeight - keyboardState.height - headerHeight - textInputHeight,
         0
       );
     }
