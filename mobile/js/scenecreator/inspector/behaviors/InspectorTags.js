@@ -137,7 +137,10 @@ export default InspectorTags = ({ tags, sendAction }) => {
     onSelectItem: (item) => onChange(`${value} ${item.id}`),
     onAddItem: (item) => {
       if (item) {
-        item = item.replace(/\s/g, '');
+        item = item
+          .split(' ')
+          .filter((c) => c.length && (!components || !components.includes(c)))
+          .join(' ');
         if (item?.length) {
           onChange(`${value} ${item}`);
         }
