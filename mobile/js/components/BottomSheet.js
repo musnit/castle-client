@@ -58,13 +58,9 @@ export const BottomSheet = ({
   const [keyboardState] = useKeyboard();
 
   let screenHeight = Viewport.vh * 100;
-  let navigatorOffset = 0;
   if (Platform.OS == 'android') {
-    const { navigatorWindowHeight, globalNavigatorHeightOffset } = React.useContext(
-      AndroidNavigationContext
-    );
+    const { navigatorWindowHeight } = React.useContext(AndroidNavigationContext);
     screenHeight = navigatorWindowHeight;
-    navigatorOffset = globalNavigatorHeightOffset;
   }
 
   // translation from bottom of the screen
@@ -134,14 +130,26 @@ export const BottomSheet = ({
 
   const onPanStateChange = React.useCallback(
     (event) => {
-      if (event.nativeEvent.state === State.BEGAN) {
-        snapY.setOffset(-event.nativeEvent.y);
-        snapY.setValue(event.nativeEvent.absoluteY - navigatorOffset);
+      if (Platform.OS === 'android') {
+        if (
+          event.nativeEvent.oldState === State.ACTIVE &&
+          event.nativeEvent.state === State.ACTIVE
+        ) {
+          snapY.setOffset(-event.nativeEvent.y);
+          snapY.setValue(event.nativeEvent.absoluteY);
+        }
+      } else {
+        if (event.nativeEvent.state === State.BEGAN) {
+          snapY.setOffset(-event.nativeEvent.y);
+          snapY.setValue(event.nativeEvent.absoluteY);
+        }
       }
       if (event.nativeEvent.state === State.END) {
-        const { absoluteY, velocityY } = event.nativeEvent;
-        snapY.flattenOffset();
-        snapToClosest(absoluteY - navigatorOffset, velocityY);
+        if (Platform.OS !== 'android' || event.nativeEvent.oldState !== State.BEGAN) {
+          const { absoluteY, velocityY } = event.nativeEvent;
+          snapY.flattenOffset();
+          snapToClosest(absoluteY, velocityY);
+        }
       }
     },
     [snapToClosest]
