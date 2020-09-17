@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 import { InspectorTextInput } from './InspectorTextInput';
 import { objectToArray } from '../../../ghost/GhostUI';
 import { PopoverButton } from '../../PopoverProvider';
+import * as Constants from '../../../Constants';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -45,7 +46,12 @@ const styles = StyleSheet.create({
   selectedItemText: {
     fontWeight: 'bold',
   },
-  addItemRow: { flexDirection: 'row', padding: 16 },
+  addItemRow: {
+    flexDirection: 'row',
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: Constants.colors.grayOnWhiteBorder,
+  },
   addItemInput: { width: '100%', flexShrink: 1 },
   addItemSubmit: {
     flexShrink: 0,

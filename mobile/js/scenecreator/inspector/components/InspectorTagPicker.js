@@ -5,6 +5,7 @@ import { PopoverButton } from '../../PopoverProvider';
 
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Feather from 'react-native-vector-icons/Feather';
+import * as Constants from '../../../Constants';
 
 const styles = StyleSheet.create({
   tagsList: {
@@ -14,8 +15,9 @@ const styles = StyleSheet.create({
   tagCell: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 6,
-    borderRadius: 3,
+    padding: 8,
+    paddingVertical: 5,
+    borderRadius: 4,
     borderWidth: 1,
     borderBottomWidth: 2,
     borderColor: '#000',
@@ -30,7 +32,7 @@ const styles = StyleSheet.create({
   addTagCell: {
     backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#888',
+    borderColor: '#aaa',
     borderRadius: 4,
     padding: 8,
     paddingVertical: 5,
@@ -42,7 +44,7 @@ const styles = StyleSheet.create({
   },
   addTagCellLabel: {
     fontSize: 16,
-    color: '#888',
+    color: Constants.colors.grayText,
   },
   activeCell: {
     borderBottomWidth: 1,
@@ -150,7 +152,7 @@ export const InspectorTagPicker = ({ value, onChange, context, ...props }) => {
 
   const removeTagPopover = {
     Component: RemoveTagButton,
-    height: 64,
+    height: 42,
     onPress: (tag) => onChange(components.filter((existing) => tag !== existing).join(' ')),
   };
 
