@@ -3,6 +3,10 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { PopoverButton } from '../../PopoverProvider';
 import { DropdownItemsList } from './InspectorDropdown';
 
+import uuid from 'uuid/v4';
+
+import * as SceneCreatorConstants from '../../SceneCreatorConstants';
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
@@ -33,16 +37,33 @@ const styles = StyleSheet.create({
 
 export const InspectorVariablePicker = ({ value, label, onChange, style, context, ...props }) => {
   const items = context.variables || [];
+  const { onVariablesChange } = context;
+
   let selectedItem;
   if (value && value !== 'none') {
     selectedItem = items.find((item) => item.id === value);
   }
+
+  const addVariable = React.useCallback(
+    (name) => {
+      const existing = items?.length ? items : [];
+      const newVariableId = uuid();
+      onVariablesChange(
+        [{ ...SceneCreatorConstants.EMPTY_VARIABLE, name, id: newVariableId }].concat(existing)
+      );
+      onChange(newVariableId);
+    },
+    [items, onChange, onVariablesChange]
+  );
+
   const popover = {
     Component: DropdownItemsList,
     items,
     selectedItem,
     height: 192,
     onSelectItem: (item) => onChange(item.id),
+    showAddItem: true,
+    onAddItem: addVariable,
   };
 
   let valueLabel = selectedItem ? selectedItem.name : '(none)';

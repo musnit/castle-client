@@ -81,14 +81,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const EMPTY_VARIABLE = {
-  id: 0,
-  name: '',
-  type: 'number',
-  initialValue: 0,
-  value: 0,
-};
-
 const maybeParseInt = (value) => {
   const result = parseInt(value);
   return isNaN(result) ? 0 : result;
@@ -151,7 +143,7 @@ export const DeckVariables = ({ variables, onChange }) => {
   );
   const addVariable = React.useCallback(() => {
     const existing = variables && variables.length ? variables : [];
-    return onChange([{ ...EMPTY_VARIABLE, id: uuid() }].concat(existing));
+    return onChange([{ ...SceneCreatorConstants.EMPTY_VARIABLE, id: uuid() }].concat(existing));
   }, [variables, onChange]);
   const deleteVariable = React.useCallback(
     (index) =>
