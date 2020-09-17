@@ -24,6 +24,7 @@ export const CardScene = ({
   style,
   interactionEnabled = true,
   isEditing = false,
+  isEditable = false,
   onScreenshot,
   onMessage,
   deckState,
@@ -66,6 +67,8 @@ export const CardScene = ({
                       deckState,
                     },
                     isEditing,
+                    isEditable,
+                    isDebug: !!__DEV__,
                   }),
                 }}
                 headerVisible={false}

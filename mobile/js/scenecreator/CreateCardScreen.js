@@ -362,6 +362,7 @@ export const CreateCardScreen = ({
                 style={styles.scene}
                 card={card}
                 isEditing={true}
+                isEditable={true}
                 deckState={deckState}
                 onScreenshot={onSceneScreenshot}
                 onMessage={onSceneMessage}
