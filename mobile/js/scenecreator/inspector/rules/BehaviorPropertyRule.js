@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import { RuleParamInputRow } from '../components/RuleParamInputRow';
 import { useCardCreator } from '../../CreateCardContext';
+import * as Constants from '../../../Constants';
 
 const styles = StyleSheet.create({
   inputRow: {
@@ -11,7 +12,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderColor: '#000',
     borderRadius: 6,
+  },
+  relativeRow: {
     padding: 12,
+    borderTopWidth: 1,
+    borderTopColor: Constants.colors.grayOnWhiteBorder,
   },
 });
 
@@ -72,20 +77,22 @@ export const BehaviorPropertyRule = ({ response, onChangeResponse, children }) =
   return (
     <View>
       {children}
-      <RuleParamInputRow
-        label={propertySpec.label}
-        paramSpec={propertySpec}
-        value={response.params.value}
-        setValue={onChange}
-        style={styles.inputRow}
-        lastNativeUpdate={lastNativeUpdate}
-      />
       <View style={styles.inputRow}>
-        <InspectorCheckbox
-          label="Relative to current value"
-          value={response.params.relative}
-          onChange={onChangeRelative}
+        <RuleParamInputRow
+          label={propertySpec.label}
+          paramSpec={propertySpec}
+          value={response.params.value}
+          setValue={onChange}
+          style={{ padding: 12 }}
+          lastNativeUpdate={lastNativeUpdate}
         />
+        <View style={styles.relativeRow}>
+          <InspectorCheckbox
+            label="Relative to current value"
+            value={response.params.relative}
+            onChange={onChangeRelative}
+          />
+        </View>
       </View>
     </View>
   );
