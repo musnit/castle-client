@@ -172,10 +172,12 @@ export const PopoverButton = ({ popover, children, style, activeStyle, ...props 
   const { showPopover, currentPopover } = usePopover();
   const container = React.useRef(null);
   const onPress = () => showPopover({ measureRef: container.current, ...popover });
+  const isActive =
+    currentPopover && currentPopover.visible && currentPopover.measureRef === container.current;
   return (
     <TouchableOpacity
       ref={container}
-      style={currentPopover?.visible ? activeStyle : style}
+      style={isActive ? activeStyle : style}
       onPress={onPress}
       {...props}>
       {children}
