@@ -6,7 +6,6 @@ import { StyleSheet, View } from 'react-native';
 import CardTransition from './CardTransition';
 
 import * as Amplitude from 'expo-analytics-amplitude';
-import * as History from '../common/history';
 import * as Session from '../Session';
 
 const styles = StyleSheet.create({
@@ -65,9 +64,7 @@ export const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, rou
     [cardState.numCardsViewed]
   );
 
-  // TODO: grab history from the server instead
   React.useEffect(() => {
-    History.addItem(deckId);
     recordDeckPlay(deckId);
     Amplitude.logEventWithProperties('VIEW_PLAY_DECK', { deckId });
   }, []);

@@ -4,11 +4,11 @@ import { DecksGrid } from '../components/DecksGrid';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
 import gql from 'graphql-tag';
-import Viewport from '../common/viewport';
 
 import * as Constants from '../Constants';
-import * as History from '../common/history';
 import * as Session from '../Session';
+
+const REFETCH_FEED_INTERVAL_MS = 60 * 1000;
 
 const styles = StyleSheet.create({
   empty: {
@@ -30,31 +30,39 @@ export const RecentDecks = ({ focused }) => {
   const { navigate } = useNavigation();
   const [lastFetchedTime, setLastFetchedTime] = React.useState(null);
   const [decks, setDecks] = React.useState(undefined);
-  const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState(undefined);
 
-  const fetchDecks = React.useCallback(async () => {
-    setLoading(true);
-    let decks;
-    try {
-      const historyItems = await History.getItems();
-      const deckIds = historyItems.map((item) => item.deckId);
-      decks = await Session.getDecksByIds(deckIds, Constants.FEED_ITEM_DECK_FRAGMENT);
-    } catch (e) {
-      setError(e);
-    } finally {
-      setLoading(false);
-    }
-    setDecks(decks);
-  }, [setDecks, setLoading, setError]);
+  const [fetchDecks, query] = useLazyQuery(
+    gql`
+      query DeckHistory {
+        deckHistory(limit: 24) {
+          ${Constants.FEED_ITEM_DECK_FRAGMENT}
+        }
+      }
+    `,
+    { fetchPolicy: 'no-cache' }
+  );
 
   const onRefresh = React.useCallback(() => {
     fetchDecks();
     setLastFetchedTime(Date.now());
-    return () => setLoading(false);
-  }, [fetchDecks, setLastFetchedTime, setLoading]);
+  }, [fetchDecks, setLastFetchedTime]);
 
   useFocusEffect(onRefresh);
+  useFocusEffect(
+    React.useCallback(() => {
+      if (!lastFetchedTime || Date.now() - lastFetchedTime > REFETCH_FEED_INTERVAL_MS) {
+        onRefresh();
+      }
+    }),
+    [lastFetchedTime]
+  );
+
+  React.useEffect(() => {
+    if (query.called && !query.loading && !query.error && query.data) {
+      setDecks(query.data.deckHistory);
+    }
+  }, [query.called, query.loading, query.error, query.data]);
 
   const scrollViewRef = React.useRef(null);
   useScrollToTop(scrollViewRef);
@@ -63,7 +71,7 @@ export const RecentDecks = ({ focused }) => {
     <DecksGrid
       decks={decks}
       scrollViewRef={scrollViewRef}
-      refreshing={lastFetchedTime && loading}
+      refreshing={lastFetchedTime && query.loading}
       onRefresh={onRefresh}
       onPressDeck={(deck, index) =>
         navigate(
@@ -83,7 +91,7 @@ export const RecentDecks = ({ focused }) => {
     <View style={styles.empty}>
       <Text style={styles.emptyText}>{error}</Text>
     </View>
-  ) : lastFetchedTime && !loading ? (
+  ) : lastFetchedTime && !query.loading ? (
     <View style={styles.empty}>
       <Text style={styles.emptyText}>You haven't played any decks recently.</Text>
     </View>
