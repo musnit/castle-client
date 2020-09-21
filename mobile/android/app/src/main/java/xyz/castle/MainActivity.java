@@ -10,6 +10,8 @@ import android.widget.FrameLayout;
 
 import org.love2d.android.GameActivity;
 
+import xyz.castle.api.SceneCreatorDownloader;
+
 public class MainActivity extends NavigationActivity {
 
     private static final boolean SCENE_CREATOR_USE_PROD_SCENE_CREATOR = true;
@@ -46,6 +48,13 @@ public class MainActivity extends NavigationActivity {
         gameActivity.loadLibraries();
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        SceneCreatorDownloader.download(this);
     }
 
     // System behavior for volume, camera, zoom buttons

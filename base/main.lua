@@ -218,9 +218,20 @@ network.async(
 
             homeUrl = GHOST_ROOT_URI
         else
-            local sceneCreatorResponse =
-                network.fetch("https://api.castle.games/api/scene-creator?apiVersion=" .. SCENE_CREATOR_API_VERSION)
-            local fileData = love.filesystem.newFileData(sceneCreatorResponse, "scene_creator.love")
+            local fileData = nil
+            local localFilePath = "scene_creator_downloads/scene_creator_download_" .. SCENE_CREATOR_API_VERSION .. ".love"
+
+            if love.filesystem.exists(localFilePath) then
+                print("Using SceneCreatorDownloader file")
+                fileData = love.filesystem.newFileData(localFilePath)
+            end
+
+            if fileData == nil then
+                local sceneCreatorResponse =
+                    network.fetch("https://api.castle.games/api/scene-creator?apiVersion=" .. SCENE_CREATOR_API_VERSION)
+                fileData = love.filesystem.newFileData(sceneCreatorResponse, "scene_creator.love")
+            end
+
             love.filesystem.mount(fileData, "zip_mount", true)
             homeUrl = "zip://Client.lua"
         end

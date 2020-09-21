@@ -211,6 +211,11 @@ android.applicationVariants.all { variant ->
     zipTask.extension = "love"
     zipTask.from fileTree(dir: '../../../base', include: '**/*')
     variant.processJavaResources.dependsOn(zipTask)
+
+    def copyMainLuaTask = project.tasks.create "copyMainLua${variant.name.capitalize()}", Copy
+    copyMainLuaTask.from("../../../base/main.lua")
+    copyMainLuaTask.into("$buildDir/intermediates/merged_assets/${variant.dirName}/out")
+    variant.processJavaResources.dependsOn(copyMainLuaTask)
 }
 
 dependencies {
