@@ -59,8 +59,7 @@ export default RulePartPickerSheet = ({
   const isEntryVisible = (entry) => {
     return (
       (!behaviors || behaviors[entry.behaviorName]?.isActive) &&
-      (!entry.triggerFilter || entry.triggerFilter[triggerFilter]) &&
-      !(behaviors?.Text.isActive && entry.name === 'change behavior property')
+      (!entry.triggerFilter || entry.triggerFilter[triggerFilter])
     );
   };
 
