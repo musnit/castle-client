@@ -1,6 +1,8 @@
-platform :ios, '10.0'
+platform :ios, '11.0'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
+
+inhibit_all_warnings!
 
 target 'Castle' do
   # Pods for Castle
@@ -39,21 +41,6 @@ target 'Castle' do
   pod 'RNBootSplash', :path => '../node_modules/react-native-bootsplash'
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
-  target 'CastleTests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-
   use_native_modules!
   use_unimodules!
-end
-
-target 'Castle-tvOS' do
-  # Pods for Castle-tvOS
-
-  target 'Castle-tvOSTests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-
 end
