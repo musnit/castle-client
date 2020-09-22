@@ -74,6 +74,8 @@ export const BehaviorPropertyRule = ({ response, onChangeResponse, children }) =
     };
   }
 
+  const isRelativeProperty = propertySpec.method === 'numberInput';
+
   return (
     <View>
       {children}
@@ -86,13 +88,15 @@ export const BehaviorPropertyRule = ({ response, onChangeResponse, children }) =
           style={{ padding: 12 }}
           lastNativeUpdate={lastNativeUpdate}
         />
-        <View style={styles.relativeRow}>
-          <InspectorCheckbox
-            label="Relative to current value"
-            value={response.params.relative}
-            onChange={onChangeRelative}
-          />
-        </View>
+        {isRelativeProperty ? (
+          <View style={styles.relativeRow}>
+            <InspectorCheckbox
+              label="Relative to current value"
+              value={response.params.relative}
+              onChange={onChangeRelative}
+            />
+          </View>
+        ) : null}
       </View>
     </View>
   );
