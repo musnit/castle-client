@@ -1,9 +1,9 @@
-import uuid from 'uuid/v4';
+import shortid from 'shortid';
 
 let _ids = {};
 
 export const makeId = () => {
-  const nextId = uuid();
+  const nextId = shortid.generate();
   _ids[nextId] = { isLocal: true };
   return nextId;
 };
