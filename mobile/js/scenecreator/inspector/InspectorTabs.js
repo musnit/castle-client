@@ -23,6 +23,11 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     fontSize: 16,
   },
+  drawingTags: {
+    flexDirection: 'row',
+    borderTopWidth: 1,
+    borderColor: '#ccc',
+  },
 });
 
 const GeneralTab = ({ behaviors, sendActions, addChildSheet }) => {
@@ -47,12 +52,12 @@ const GeneralTab = ({ behaviors, sendActions, addChildSheet }) => {
           <Inspector.TextLayout text={behaviors.Text} sendAction={sendActions.Text} />
         </React.Fragment>
       )}
-      {!isTextActorSelected && (
-        <React.Fragment>
+      <View style={styles.drawingTags}>
+        {!isTextActorSelected && (
           <Inspector.Drawing drawing2={behaviors.Drawing2} sendAction={sendActions.Drawing} />
-        </React.Fragment>
-      )}
-      <Inspector.Tags tags={behaviors.Tags} sendAction={sendActions.Tags} />
+        )}
+        <Inspector.Tags tags={behaviors.Tags} sendAction={sendActions.Tags} />
+      </View>
       {!isTextActorSelected && (
         <Inspector.Layout
           body={behaviors.Body}

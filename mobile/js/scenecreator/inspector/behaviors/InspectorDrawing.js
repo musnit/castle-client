@@ -9,21 +9,17 @@ import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
 const styles = StyleSheet.create({
   container: {
-    borderTopWidth: 1,
-    borderColor: '#ccc',
     padding: 16,
-    alignItems: 'flex-start',
-  },
-  label: {
-    fontWeight: 'bold',
-    paddingBottom: 16,
-    fontSize: 16,
+    paddingRight: 0,
+    alignItems: 'center',
   },
   image: {
-    width: 64,
-    height: 64,
-    marginRight: 8,
+    width: 96,
+    height: 96,
     marginBottom: 8,
+    backgroundColor: '#0001',
+    borderWidth: 1,
+    borderColor: '#ccc',
   },
 });
 
