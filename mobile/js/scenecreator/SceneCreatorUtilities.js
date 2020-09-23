@@ -89,3 +89,22 @@ export const getTextActorsData = (root, isPlaying) => {
   }
   return { textActors, isTextActorSelected };
 };
+
+export const getInspectorActions = (root) => {
+  let inspectorActions,
+    sendInspectorAction,
+    applicableTools = [];
+  if (root && root.panes) {
+    const pane = root.panes.sceneCreatorInspectorActions;
+    if (pane) {
+      sendInspectorAction = (action, value) => sendDataPaneAction(pane, action, value);
+      inspectorActions = getPaneData(pane);
+      if (inspectorActions?.applicableTools) {
+        Object.values(inspectorActions.applicableTools).forEach((value) => {
+          applicableTools.push(value);
+        });
+      }
+    }
+  }
+  return { inspectorActions, sendInspectorAction, applicableTools };
+};

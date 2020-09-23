@@ -41,6 +41,7 @@ import {
   getTextActorsData,
   getActiveTool,
   getInspectorTags,
+  getInspectorActions,
 } from './SceneCreatorUtilities';
 
 const CARD_HEIGHT = (1 / Constants.CARD_RATIO) * 100 * Viewport.vw;
@@ -185,6 +186,7 @@ export const CreateCardScreen = ({
   const selectedActorId = globalActions?.selectedActorId;
   const hasSelection = selectedActorId !== undefined;
   const { behaviors, behaviorActions } = getInspectorBehaviors(root);
+  const inspectorActions = getInspectorActions(root);
   const { activeToolData, activeToolAction } = getActiveTool(root);
   const { textActors, isTextActorSelected } = getTextActorsData(root, isPlaying);
   const { tagToActorIds } = getInspectorTags(behaviors?.Tags);
@@ -331,6 +333,7 @@ export const CreateCardScreen = ({
     activeToolData,
     activeToolAction,
     isDeckOwner,
+    ...inspectorActions,
   };
 
   // SafeAreaView doesn't respond to statusbar being hidden right now

@@ -48,8 +48,6 @@ export const InspectorSheet = ({ isOpen, addChildSheet }) => {
   }, [isTextActorSelected]);
 
   if (root?.panes) {
-    const actionsPane = root.panes.sceneCreatorInspectorActions;
-
     const tabItems = TAB_ITEMS.filter((tab) => {
       // hide 'Movement' for text actors
       return !(isTextActorSelected && tab.value === 'movement');
@@ -58,11 +56,9 @@ export const InspectorSheet = ({ isOpen, addChildSheet }) => {
     const renderHeader = () => (
       <InspectorHeader
         isOpen={isOpen}
-        isTextActorSelected={isTextActorSelected}
         tabItems={tabItems}
         selectedTab={selectedTab}
         setSelectedTab={setSelectedTabOrScroll}
-        pane={actionsPane}
       />
     );
 
