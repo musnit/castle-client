@@ -26,6 +26,22 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     flex: 1,
   },
+  sectionHeader: {
+    padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sectionLabel: {
+    color: '#fff',
+    textTransform: 'uppercase',
+  },
+  notif: {
+    padding: 16,
+  },
+  notifBody: {
+    color: '#fff',
+    fontSize: 16,
+  },
 });
 
 const DUMMY_NOTIF = {
@@ -33,17 +49,53 @@ const DUMMY_NOTIF = {
   type: 'follow',
   status: 'seen',
   body: '@ccheever played your deck',
-  createdTime: null,
+  lastModified: '2020-09-20 11:00:00.00Z',
 };
 
 const DUMMY_NOTIFS = new Array(5).fill(DUMMY_NOTIF).map((notif, ii) => ({
   ...notif,
+  status: ii === 3 ? 'unseen' : 'seen',
   appNotificationId: ii,
-  createdTime: new Date() - ii * 60,
 }));
+
+const STATUS_HEADERS = {
+  unseen: 'New',
+  seen: 'Earlier',
+};
+
+const NotificationHeader = ({ status }) => {
+  return (
+    <View style={styles.sectionHeader}>
+      <Text style={styles.sectionLabel}>{STATUS_HEADERS[status]}</Text>
+    </View>
+  );
+};
+
+const NotificationItem = ({ notification }) => {
+  return (
+    <View style={styles.notif}>
+      <Text style={styles.notifBody}>{notification.body}</Text>
+    </View>
+  );
+};
 
 export const NotificationsScreen = () => {
   const insets = useSafeArea();
+  const [orderedNotifs, setOrderedNotifs] = React.useState([]);
+  React.useEffect(() => {
+    if (DUMMY_NOTIFS?.length) {
+      setOrderedNotifs(
+        DUMMY_NOTIFS.concat().sort((a, b) => {
+          if (a.status === b.status) {
+            return new Date(b.lastModified) - new Date(a.lastModified);
+          }
+          return a.status === 'seen' ? 1 : -1;
+        })
+      );
+    } else {
+      setOrderedNotifs([]);
+    }
+  }, [DUMMY_NOTIFS]);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -52,10 +104,13 @@ export const NotificationsScreen = () => {
         <Text style={styles.sectionTitle}>Notifications</Text>
       </View>
       <ScrollView contentContainerStyle={styles.scrollView}>
-        {DUMMY_NOTIFS.map((notif, ii) => (
-          <View>
-            <Text style={{ color: '#fff' }}>{notif.body}</Text>
-          </View>
+        {orderedNotifs.map((notif, ii) => (
+          <React.Fragment>
+            {ii === 0 || orderedNotifs[ii - 1].status !== notif.status ? (
+              <NotificationHeader status={notif.status} />
+            ) : null}
+            <NotificationItem key={`notif-${notif.appNotificationId}`} notification={notif} />
+          </React.Fragment>
         ))}
       </ScrollView>
     </View>
