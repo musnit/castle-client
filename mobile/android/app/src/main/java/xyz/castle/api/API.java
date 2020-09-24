@@ -56,7 +56,7 @@ public class API {
             .add("lastModified")
             .add("variables");
 
-    private static final String API_HOST = "https://api.castle.games/graphql";
+    private static final String API_HOST = "https://api.castle.xyz/graphql";
 
     private static API sInstance;
 

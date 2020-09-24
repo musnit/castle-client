@@ -228,7 +228,7 @@ network.async(
 
             if fileData == nil then
                 local sceneCreatorResponse =
-                    network.fetch("https://api.castle.games/api/scene-creator?apiVersion=" .. SCENE_CREATOR_API_VERSION)
+                    network.fetch("https://api.castle.xyz/api/scene-creator?apiVersion=" .. SCENE_CREATOR_API_VERSION)
                 fileData = love.filesystem.newFileData(sceneCreatorResponse, "scene_creator.love")
             end
 

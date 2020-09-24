@@ -252,7 +252,7 @@ else -- We're on the game server, do the GraphQL HTTP requests ourselves
         local response, httpCode, headers, status =
             http.request {
             method = "POST",
-            url = "https://api.castle.games/graphql",
+            url = "https://api.castle.xyz/graphql",
             headers = {
                 ["Content-Type"] = "application/json",
                 ["Accept"] = "application/json",

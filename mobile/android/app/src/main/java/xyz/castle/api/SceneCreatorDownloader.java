@@ -54,7 +54,7 @@ public class SceneCreatorDownloader {
         }
 
         Request.Builder builder = new Request.Builder()
-                .url("https://api.castle.games/api/scene-creator?apiVersion=" + apiVersion);
+                .url("https://api.castle.xyz/api/scene-creator?apiVersion=" + apiVersion);
 
         new OkHttpClient().newCall(builder.build()).enqueue(new Callback() {
             @Override

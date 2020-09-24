@@ -228,7 +228,7 @@ export const apolloClient = new ApolloClient({
         })
     ),
     createUploadLink({
-      uri: 'https://api.castle.games/graphql',
+      uri: 'https://api.castle.xyz/graphql',
     }),
   ]),
   cache: new InMemoryCache({
