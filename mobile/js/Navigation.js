@@ -71,6 +71,7 @@ const NotificationsNavigator = () => (
       component={NotificationsScreen}
       options={{ title: 'Notifications' }}
     />
+    <Stack.Screen name="Profile" component={ProfileScreen} />
   </Stack.Navigator>
 );
 
