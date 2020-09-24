@@ -121,6 +121,7 @@ export const ConfigureRuleEntry = ({
     selectParamSheetPlaceholder: showEditParamSheetForCell,
     selectCardSheet: showCardPicker,
     selectBlueprintSheet: showBlueprintPicker,
+    selectBlueprintSheetPlaceholder: showBlueprintPicker,
     selectBehaviorPropertySheet: showBehaviorPropertyPicker,
     selectBehaviorSheet: showBehaviorPicker,
   };
@@ -154,7 +155,8 @@ export const ConfigureRuleEntry = ({
             );
           }
           case 'selectEntryPlaceholder':
-          case 'selectParamSheetPlaceholder': {
+          case 'selectParamSheetPlaceholder':
+          case 'selectBlueprintSheetPlaceholder': {
             return (
               <TouchableOpacity
                 key={key}
