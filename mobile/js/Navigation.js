@@ -9,8 +9,9 @@ import { useSession } from './Session';
 import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './AuthScreens';
 import { CreateScreen } from './create/CreateScreen';
 import { CreateDeckNavigator } from './create/CreateDeckNavigator';
-import { PlayDeckScreen } from './play/PlayDeckScreen';
 import { HomeScreen } from './home/HomeScreen';
+import { NotificationsScreen } from './notifications/NotificationsScreen';
+import { PlayDeckScreen } from './play/PlayDeckScreen';
 import { ViewSourceNavigator } from './create/ViewSourceNavigator';
 import * as DeepLinks from './DeepLinks';
 import { ProfileScreen } from './profile/ProfileScreen';
@@ -59,6 +60,16 @@ const CreateNavigator = () => (
       name="CreateDeck"
       component={CreateDeckNavigator}
       options={{ gestureEnabled: false }}
+    />
+  </Stack.Navigator>
+);
+
+const NotificationsNavigator = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen
+      name="Notifications"
+      component={NotificationsScreen}
+      options={{ title: 'Notifications' }}
     />
   </Stack.Navigator>
 );
@@ -124,6 +135,24 @@ const TabNavigator = () => (
                 height: ICON_SIZE,
               }}
               source={require('../assets/images/BottomTabs-create.png')}
+            />
+          );
+        },
+      })}
+    />
+    <Tab.Screen
+      name="Notifications"
+      component={NotificationsNavigator}
+      options={({ route }) => ({
+        tabBarIcon: ({ focused, color }) => {
+          return (
+            <Image
+              style={{
+                width: ICON_SIZE,
+                height: ICON_SIZE,
+                tintColor: color,
+              }}
+              source={require('../assets/images/BottomTabs-profile.png')}
             />
           );
         },
