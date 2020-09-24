@@ -237,14 +237,26 @@ const Create = ({ response, context }) => {
       blueprintName = blueprint.title;
     }
   }
+  const paramNames = ['depth', 'xOffset', 'yOffset'];
+  const paramValues = {
+    depth: response.params?.depth ?? null,
+    xOffset: response.params?.xOffset ?? 0,
+    yOffset: response.params?.yOffset ?? 0,
+  };
   return [
     {
       type: 'showEntryOptions',
       label: 'Create',
     },
     {
-      type: 'selectBlueprintSheet',
+      type: blueprintName ? 'selectBlueprintSheet' : 'selectBlueprintSheetPlaceholder',
       label: blueprintName ?? '(choose blueprint)',
+    },
+    {
+      type: 'selectParamSheet',
+      paramNames,
+      paramValues,
+      label: response.params?.depth ?? 'in front of all actors',
     },
     {
       type: 'text',
@@ -252,11 +264,8 @@ const Create = ({ response, context }) => {
     },
     {
       type: 'selectParamSheet',
-      paramNames: ['xOffset', 'yOffset'],
-      paramValues: {
-        xOffset: response.params?.xOffset ?? 0,
-        yOffset: response.params?.yOffset ?? 0,
-      },
+      paramNames,
+      paramValues,
       label: `x: ${response.params?.xOffset ?? 0}, y: ${response.params?.yOffset ?? 0}`,
     },
   ];
