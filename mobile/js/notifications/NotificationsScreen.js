@@ -1,5 +1,6 @@
 import React from 'react';
 import { ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { NotificationBody } from './NotificationBody';
 import { useNavigation, useFocusEffect } from '../ReactNavigation';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { UserAvatar } from '../components/UserAvatar';
@@ -30,6 +31,7 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     paddingHorizontal: 16,
+    paddingTop: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -38,40 +40,57 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   notif: {
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     flexDirection: 'row',
     alignItems: 'center',
   },
   notifBody: {
-    color: '#fff',
-    fontSize: 16,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    flexShrink: 1,
   },
   avatar: {
     maxWidth: 42,
     marginRight: 12,
+    flexShrink: 0,
   },
 });
 
 const DUMMY_NOTIF = {
-  appNotificationId: 0,
-  type: 'follow',
+  notificationId: 0,
+  type: 'play_deck',
   status: 'seen',
-  body: '@ccheever played your deck',
-  lastModified: '2020-09-20 11:00:00.00Z',
-  user: {
-    userId: '39',
-    username: 'ccheever',
-    photo: {
-      url:
-        'https://castle.imgix.net/c9b85f2e241ea97e3ab5c0c29b24e11b?auto=compress&ar=5:7&fit=crop&min-w=420',
-    },
+  body: {
+    message: [
+      {
+        userId: 39,
+        username: 'ccheever',
+      },
+      {
+        text: ' played your deck.',
+      },
+    ],
   },
+  userIds: [39],
+  users: [
+    {
+      userId: '39',
+      username: 'ccheever',
+      photo: {
+        url:
+          'https://castle.imgix.net/c9b85f2e241ea97e3ab5c0c29b24e11b?auto=compress&ar=5:7&fit=crop&min-w=420',
+      },
+    },
+  ],
+  // deckId, deck,
+  updatedTime: '2020-09-20 11:00:00.00Z',
 };
 
 const DUMMY_NOTIFS = new Array(5).fill(DUMMY_NOTIF).map((notif, ii) => ({
   ...notif,
   status: ii === 3 ? 'unseen' : 'seen',
-  appNotificationId: ii,
+  notificationId: ii,
 }));
 
 const STATUS_HEADERS = {
@@ -88,14 +107,17 @@ const NotificationHeader = ({ status }) => {
 };
 
 const NotificationItem = ({ notification, navigateToUser, navigateToDeck }) => {
+  const user = notification.users?.length ? notification.users[0] : null;
   return (
     <View style={styles.notif}>
-      {notification.user?.photo?.url ? (
-        <TouchableOpacity style={styles.avatar} onPress={() => navigateToUser(notification.user)}>
-          <UserAvatar url={notification.user.photo.url} />
+      {user?.photo?.url ? (
+        <TouchableOpacity style={styles.avatar} onPress={() => navigateToUser(user)}>
+          <UserAvatar url={user.photo.url} />
         </TouchableOpacity>
       ) : null}
-      <Text style={styles.notifBody}>{notification.body}</Text>
+      <Text style={styles.notifBody}>
+        <NotificationBody body={notification.body} navigateToUser={navigateToUser} />
+      </Text>
     </View>
   );
 };
@@ -109,7 +131,7 @@ export const NotificationsScreen = () => {
       setOrderedNotifs(
         DUMMY_NOTIFS.concat().sort((a, b) => {
           if (a.status === b.status) {
-            return new Date(b.lastModified) - new Date(a.lastModified);
+            return new Date(b.updatedTime) - new Date(a.updatedTime);
           }
           return a.status === 'seen' ? 1 : -1;
         })
@@ -131,15 +153,11 @@ export const NotificationsScreen = () => {
       </View>
       <ScrollView contentContainerStyle={styles.scrollView}>
         {orderedNotifs.map((notif, ii) => (
-          <React.Fragment>
+          <React.Fragment key={`notif-${notif.notificationId}`}>
             {ii === 0 || orderedNotifs[ii - 1].status !== notif.status ? (
               <NotificationHeader key={`header-${notif.status}-${ii}`} status={notif.status} />
             ) : null}
-            <NotificationItem
-              key={`notif-${notif.appNotificationId}`}
-              notification={notif}
-              navigateToUser={navigateToUser}
-            />
+            <NotificationItem notification={notif} navigateToUser={navigateToUser} />
           </React.Fragment>
         ))}
       </ScrollView>
