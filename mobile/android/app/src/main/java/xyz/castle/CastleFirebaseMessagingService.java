@@ -49,12 +49,17 @@ public class CastleFirebaseMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
                         .setSmallIcon(R.drawable.notification_icon)
-                        .setColor(getResources().getColor(R.color.main_castle_color))
-                        .setContentTitle(title)
-                        .setContentText(messageBody)
+                        .setColor(getResources().getColor(R.color.black))
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)
                         .setContentIntent(pendingIntent);
+
+        if (title != null) {
+            notificationBuilder = notificationBuilder.setContentTitle(title);
+        }
+        if (messageBody != null) {
+            notificationBuilder = notificationBuilder.setContentText(messageBody);
+        }
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
