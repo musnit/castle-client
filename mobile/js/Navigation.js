@@ -71,6 +71,12 @@ const NotificationsNavigator = () => (
       options={{ title: 'Notifications' }}
     />
     <Stack.Screen name="Profile" component={ProfileScreen} />
+    <Stack.Screen name="PlayDeck" component={PlayDeckScreen} options={{ gestureEnabled: false }} />
+    <Stack.Screen
+      name="ViewSource"
+      component={ViewSourceNavigator}
+      options={{ gestureEnabled: false }}
+    />
   </Stack.Navigator>
 );
 
