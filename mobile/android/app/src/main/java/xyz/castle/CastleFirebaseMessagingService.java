@@ -16,6 +16,8 @@ import org.greenrobot.eventbus.EventBus;
 
 public class CastleFirebaseMessagingService extends FirebaseMessagingService {
 
+    private static int sNotificationId = 0;
+
     public static class NewFirebaseTokenEvent {
         public final String token;
 
@@ -65,6 +67,6 @@ public class CastleFirebaseMessagingService extends FirebaseMessagingService {
             notificationManager.createNotificationChannel(channel);
         }
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify(sNotificationId++, notificationBuilder.build());
     }
 }
