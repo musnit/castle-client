@@ -4,9 +4,11 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+
 import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -29,7 +31,17 @@ public class CastleFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         if (remoteMessage.getNotification() != null) {
-            sendNotification(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getBody());
+            final String title = remoteMessage.getNotification().getTitle();
+            final String messageBody = remoteMessage.getNotification().getBody();
+            final Uri imageUri = remoteMessage.getNotification().getImageUrl();
+
+            if (imageUri == null) {
+                sendNotification(title, messageBody, null);
+            } else {
+                ViewUtils.loadBitmap(imageUri, this, (Bitmap bitmap) -> {
+                    sendNotification(title, messageBody, bitmap);
+                });
+            }
         }
     }
 
@@ -38,7 +50,7 @@ public class CastleFirebaseMessagingService extends FirebaseMessagingService {
         EventBus.getDefault().post(new NewFirebaseTokenEvent(token));
     }
 
-    private void sendNotification(String title, String messageBody) {
+    private void sendNotification(String title, String messageBody, Bitmap bitmap) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
@@ -59,6 +71,9 @@ public class CastleFirebaseMessagingService extends FirebaseMessagingService {
         }
         if (messageBody != null) {
             notificationBuilder = notificationBuilder.setContentText(messageBody);
+        }
+        if (bitmap != null) {
+            notificationBuilder.setLargeIcon(bitmap);
         }
 
         NotificationManager notificationManager =
