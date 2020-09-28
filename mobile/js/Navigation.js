@@ -153,11 +153,11 @@ const TabNavigator = () => (
       options={({ route }) => ({
         tabBarIcon: ({ focused, color }) => {
           return (
-            <Image
+            <FastImage
+              tintColor={color}
               style={{
                 width: ICON_SIZE,
                 height: ICON_SIZE,
-                tintColor: color,
               }}
               source={require('../assets/images/BottomTabs-profile.png')}
             />

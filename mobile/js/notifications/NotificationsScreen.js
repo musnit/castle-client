@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  RefreshControl,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -10,6 +11,7 @@ import {
 } from 'react-native';
 import { NotificationBody } from './NotificationBody';
 import { toRecentDate } from '../common/date-utilities';
+import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect } from '../ReactNavigation';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { UserAvatar } from '../components/UserAvatar';
@@ -17,6 +19,7 @@ import { UserAvatar } from '../components/UserAvatar';
 import * as Constants from '../Constants';
 
 import FastImage from 'react-native-fast-image';
+import gql from 'graphql-tag';
 
 const styles = StyleSheet.create({
   container: {
@@ -73,98 +76,12 @@ const styles = StyleSheet.create({
   },
 });
 
-const DUMMY_DECK = {
-  id: '231ff06d-4f6d-4f86-b23e-40871a73b668',
-  deckId: '231ff06d-4f6d-4f86-b23e-40871a73b668',
-  title: 'deck-231f',
-  creator: {
-    userId: '39',
-    username: 'ccheever',
-    photo: {
-      url:
-        'https://castle.imgix.net/c9b85f2e241ea97e3ab5c0c29b24e11b?auto=compress&ar=5:7&fit=crop&min-w=420',
-      __typename: 'HostedFile',
-    },
-    __typename: 'User',
-  },
-  isVisible: true,
-  initialCard: {
-    id: '73135fd7-b368-41c1-aee6-c1b1b983c395',
-    cardId: '73135fd7-b368-41c1-aee6-c1b1b983c395',
-    title: 'card-7313',
-    backgroundImage: {
-      url:
-        'https://castle.imgix.net/33929e0ebedc6a903bc389743a47cf05?auto=compress&ar=5:7&fit=crop&min-w=420',
-      smallUrl:
-        'https://castle.imgix.net/33929e0ebedc6a903bc389743a47cf05?auto=compress&ar=5:7&fit=crop&w=420',
-      privateCardUrl:
-        'https://castle.imgix.net/33929e0ebedc6a903bc389743a47cf05?auto=compress&ar=5:7&fit=crop&w=420&mark-pad=0&mark-h=1&mark-fit=crop&mark64=aHR0cHM6Ly9hc3NldHMuY2FzdGxlLmdhbWVzL2ZhY2Vkb3duLW92ZXJsYXkucG5n',
-      __typename: 'HostedFile',
-    },
-    __typename: 'Card',
-  },
-  variables: [
-    {
-      id: 'fdb3cc50-c77a-4808-900f-77b692077b3c',
-      name: 'flap',
-      type: 'number',
-      value: 0,
-      initialValue: 0,
-    },
-    {
-      id: 'fe510a8f-cc87-4ef7-8028-cf68220959d8',
-      name: 'gameover',
-      type: 'number',
-      value: 0,
-      initialValue: 0,
-    },
-    {
-      id: '82b016d2-363f-493a-87ba-29a97d062b01',
-      name: 'score',
-      type: 'number',
-      value: 0,
-      initialValue: 0,
-    },
-  ],
-  __typename: 'Deck',
-};
-
-const DUMMY_NOTIF = {
-  notificationId: 0,
-  type: 'play_deck',
-  status: 'seen',
-  body: {
-    message: [
-      {
-        userId: 39,
-        username: 'ccheever',
-      },
-      {
-        text: ' played your deck.',
-      },
-    ],
-  },
-  userIds: [39],
-  users: [
-    {
-      userId: '39',
-      username: 'ccheever',
-      photo: {
-        url:
-          'https://castle.imgix.net/c9b85f2e241ea97e3ab5c0c29b24e11b?auto=compress&ar=5:7&fit=crop&min-w=420',
-      },
-    },
-  ],
-  deckId: '231ff06d-4f6d-4f86-b23e-40871a73b668',
-  deck: DUMMY_DECK,
-  updatedTime: '2020-08-30T13:26:00.145Z',
-};
-
-const DUMMY_NOTIFS = new Array(5).fill(DUMMY_NOTIF).map((notif, ii) => ({
-  ...notif,
-  status: ii === 3 ? 'unseen' : 'seen',
-  notificationId: ii,
-}));
+/**
+TODO:
+  extend type Mutation {
+    setNotificationsStatus(notificationIds: [ID]!, status: NotificationStatus!): Null
+}
+*/
 
 const STATUS_HEADERS = {
   unseen: 'New',
@@ -215,10 +132,44 @@ export const NotificationsScreen = () => {
   const insets = useSafeArea();
   const { navigate } = useNavigation();
   const [orderedNotifs, setOrderedNotifs] = React.useState([]);
+  const [fetchNotifs, query] = useLazyQuery(
+    gql`
+      query {
+        notifications(limit: 64) {
+          notificationId
+          type
+          status
+          body
+          userIds
+          users {
+            userId
+            username
+            photo {
+              url
+            }
+          }
+          deckId
+          deck {
+            ${Constants.FEED_ITEM_DECK_FRAGMENT}
+          }
+          updatedTime
+        }
+      }
+    `,
+    { fetchPolicy: 'no-cache' }
+  );
+
+  useFocusEffect(
+    React.useCallback(() => {
+      StatusBar.setBarStyle('light-content'); // needed for tab navigator
+      fetchNotifs();
+    }, [])
+  );
+
   React.useEffect(() => {
-    if (DUMMY_NOTIFS?.length) {
+    if (query.called && !query.loading && !query.error && query.data) {
       setOrderedNotifs(
-        DUMMY_NOTIFS.concat().sort((a, b) => {
+        query.data.notifications.concat().sort((a, b) => {
           if (a.status === b.status) {
             return new Date(b.updatedTime) - new Date(a.updatedTime);
           }
@@ -228,7 +179,7 @@ export const NotificationsScreen = () => {
     } else {
       setOrderedNotifs([]);
     }
-  }, [DUMMY_NOTIFS]);
+  }, [query.called, query.loading, query.error, query.data]);
 
   const navigateToUser = React.useCallback((user) => navigate('Profile', { userId: user.userId }), [
     navigate,
@@ -240,13 +191,22 @@ export const NotificationsScreen = () => {
     })
   );
 
+  const refreshControl = (
+    <RefreshControl
+      refreshing={query.loading}
+      onRefresh={fetchNotifs}
+      tintColor="#fff"
+      colors={['#fff', '#ccc']}
+    />
+  );
+
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <StatusBar barStyle="light-content" />
       <View style={styles.header}>
         <Text style={styles.sectionTitle}>Notifications</Text>
       </View>
-      <ScrollView contentContainerStyle={styles.scrollView}>
+      <ScrollView contentContainerStyle={styles.scrollView} refreshControl={refreshControl}>
         {orderedNotifs.map((notif, ii) => (
           <React.Fragment key={`notif-${notif.notificationId}`}>
             {ii === 0 || orderedNotifs[ii - 1].status !== notif.status ? (
