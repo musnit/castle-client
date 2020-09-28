@@ -3,7 +3,6 @@ import { enableScreens } from 'react-native-screens';
 import { createNativeStackNavigator } from 'react-native-screens/native-stack';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Image } from 'react-native';
 
 import { useSession } from './Session';
 
@@ -16,6 +15,8 @@ import { ViewSourceNavigator } from './create/ViewSourceNavigator';
 import * as DeepLinks from './DeepLinks';
 import { ProfileScreen } from './profile/ProfileScreen';
 import * as GhostChannels from './ghost/GhostChannels';
+
+import FastImage from 'react-native-fast-image';
 
 enableScreens();
 const Stack = createNativeStackNavigator();
@@ -97,11 +98,11 @@ const TabNavigator = () => (
         tabBarVisible: !route.state || route.state.index == 0,
         tabBarIcon: ({ focused, color }) => {
           return (
-            <Image
+            <FastImage
+              tintColor={color}
               style={{
                 width: ICON_SIZE,
                 height: ICON_SIZE,
-                tintColor: color,
               }}
               source={require('../assets/images/BottomTabs-browse.png')}
             />
@@ -116,11 +117,11 @@ const TabNavigator = () => (
         tabBarVisible: !route.state || route.state.index == 0,
         tabBarIcon: ({ focused, color }) => {
           return (
-            <Image
+            <FastImage
+              tintColor={color}
               style={{
                 width: ICON_SIZE,
                 height: ICON_SIZE,
-                tintColor: color,
               }}
               source={require('../assets/images/BottomTabs-create.png')}
             />
@@ -135,11 +136,11 @@ const TabNavigator = () => (
         tabBarVisible: !route.state || route.state.index == 0,
         tabBarIcon: ({ focused, color }) => {
           return (
-            <Image
+            <FastImage
+              tintColor={color}
               style={{
                 width: ICON_SIZE,
                 height: ICON_SIZE,
-                tintColor: color,
               }}
               source={require('../assets/images/BottomTabs-profile.png')}
             />
