@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Platform } from 'react-native';
-
 import AsyncStorage from '@react-native-community/async-storage';
+import debounce from 'lodash.debounce';
+import FastImage from 'react-native-fast-image';
+import gql from 'graphql-tag';
+
+import { Platform } from 'react-native';
 import { ApolloClient } from 'apollo-client';
 import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
 import { onError } from 'apollo-link-error';
 import { ApolloLink, Observable } from 'apollo-link';
 import { createUploadLink, ReactNativeFile } from 'apollo-upload-client';
-import FastImage from 'react-native-fast-image';
-import gql from 'graphql-tag';
 
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from './Constants';
@@ -223,6 +224,35 @@ export const Provider = (props) => {
     });
   }, [state]);
 
+  const markNotificationsReadAsync = React.useCallback(
+    debounce(async ({ notificationIds }) => {
+      const result = await apolloClient.mutate({
+        mutation: gql`
+          mutation SetNotificationsStatus($notificationIds: [ID]!, $status: NotificationStatus!) {
+            setNotificationsStatus(notificationIds: $notificationIds, status: $status)
+          }
+        `,
+        variables: {
+          notificationIds,
+          status: 'seen',
+        },
+      });
+      return setState({
+        ...state,
+        notifications: state.notifications.map((n) => {
+          if (notificationIds.includes(n.notificationId)) {
+            return {
+              ...n,
+              status: 'seen',
+            };
+          }
+          return n;
+        }),
+      });
+    }, 100),
+    [state]
+  );
+
   const value = {
     ...state,
     userId: state.userId,
@@ -231,6 +261,7 @@ export const Provider = (props) => {
     signOutAsync,
     signUpAsync,
     fetchNotificationsAsync,
+    markNotificationsReadAsync,
   };
   return <SessionContext.Provider value={value}>{props.children}</SessionContext.Provider>;
 };

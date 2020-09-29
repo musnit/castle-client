@@ -75,13 +75,6 @@ const styles = StyleSheet.create({
   },
 });
 
-/**
-TODO:
-  extend type Mutation {
-    setNotificationsStatus(notificationIds: [ID]!, status: NotificationStatus!): Null
-}
-*/
-
 const STATUS_HEADERS = {
   unseen: 'New',
   seen: 'Earlier',
@@ -131,16 +124,35 @@ export const NotificationsScreen = () => {
   const insets = useSafeArea();
   const { navigate } = useNavigation();
   const [orderedNotifs, setOrderedNotifs] = React.useState([]);
-  const { notifications, fetchNotificationsAsync } = useSession();
+  const [loading, setLoading] = React.useState(false);
+  const { notifications, fetchNotificationsAsync, markNotificationsReadAsync } = useSession();
+
+  const onRefresh = React.useCallback(async () => {
+    setLoading(true);
+    try {
+      await fetchNotificationsAsync();
+    } catch (_) {}
+    setLoading(false);
+  }, [fetchNotificationsAsync]);
 
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
-      fetchNotificationsAsync();
+      onRefresh();
     }, [])
   );
 
   React.useEffect(() => {
+    if (orderedNotifs?.length) {
+      const unreadIds = orderedNotifs
+        .filter((n) => n.status === 'unseen')
+        .map((n) => n.notificationId);
+      if (unreadIds.length) {
+        markNotificationsReadAsync({
+          notificationIds: unreadIds,
+        });
+      }
+    }
     if (notifications) {
       setOrderedNotifs(
         notifications.concat().sort((a, b) => {
@@ -167,7 +179,8 @@ export const NotificationsScreen = () => {
 
   const refreshControl = (
     <RefreshControl
-      onRefresh={fetchNotificationsAsync}
+      refreshing={loading}
+      onRefresh={onRefresh}
       tintColor="#fff"
       colors={['#fff', '#ccc']}
     />
