@@ -11,15 +11,14 @@ import {
 } from 'react-native';
 import { NotificationBody } from './NotificationBody';
 import { toRecentDate } from '../common/date-utilities';
-import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect } from '../ReactNavigation';
 import { useSafeArea } from 'react-native-safe-area-context';
+import { useSession } from '../Session';
 import { UserAvatar } from '../components/UserAvatar';
 
 import * as Constants from '../Constants';
 
 import FastImage from 'react-native-fast-image';
-import gql from 'graphql-tag';
 
 const styles = StyleSheet.create({
   container: {
@@ -132,44 +131,19 @@ export const NotificationsScreen = () => {
   const insets = useSafeArea();
   const { navigate } = useNavigation();
   const [orderedNotifs, setOrderedNotifs] = React.useState([]);
-  const [fetchNotifs, query] = useLazyQuery(
-    gql`
-      query {
-        notifications(limit: 64) {
-          notificationId
-          type
-          status
-          body
-          userIds
-          users {
-            userId
-            username
-            photo {
-              url
-            }
-          }
-          deckId
-          deck {
-            ${Constants.FEED_ITEM_DECK_FRAGMENT}
-          }
-          updatedTime
-        }
-      }
-    `,
-    { fetchPolicy: 'no-cache' }
-  );
+  const { notifications, fetchNotificationsAsync } = useSession();
 
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
-      fetchNotifs();
+      fetchNotificationsAsync();
     }, [])
   );
 
   React.useEffect(() => {
-    if (query.called && !query.loading && !query.error && query.data) {
+    if (notifications) {
       setOrderedNotifs(
-        query.data.notifications.concat().sort((a, b) => {
+        notifications.concat().sort((a, b) => {
           if (a.status === b.status) {
             return new Date(b.updatedTime) - new Date(a.updatedTime);
           }
@@ -179,7 +153,7 @@ export const NotificationsScreen = () => {
     } else {
       setOrderedNotifs([]);
     }
-  }, [query.called, query.loading, query.error, query.data]);
+  }, [notifications]);
 
   const navigateToUser = React.useCallback((user) => navigate('Profile', { userId: user.userId }), [
     navigate,
@@ -193,8 +167,7 @@ export const NotificationsScreen = () => {
 
   const refreshControl = (
     <RefreshControl
-      refreshing={query.loading}
-      onRefresh={fetchNotifs}
+      onRefresh={fetchNotificationsAsync}
       tintColor="#fff"
       colors={['#fff', '#ccc']}
     />

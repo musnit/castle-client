@@ -21,6 +21,7 @@ const TEST_AUTH_TOKEN = null;
 
 const EMPTY_SESSION = {
   authToken: null,
+  notifications: null,
 };
 
 const SessionContext = React.createContext(EMPTY_SESSION);
@@ -172,6 +173,43 @@ export const Provider = (props) => {
     }
   };
 
+  const fetchNotificationsAsync = React.useCallback(async () => {
+    if (!state.authToken) {
+      return false;
+    }
+    const result = await apolloClient.query({
+      query: gql`
+      query {
+        notifications(limit: 64) {
+          notificationId
+          type
+          status
+          body
+          userIds
+          users {
+            userId
+            username
+            photo {
+              url
+            }
+          }
+          deckId
+          deck {
+            ${Constants.FEED_ITEM_DECK_FRAGMENT}
+          }
+          updatedTime
+        }
+      }
+    `,
+      fetchPolicy: 'no-cache',
+    });
+    const notifications = result?.data?.notifications ?? null;
+    return setState({
+      ...state,
+      notifications,
+    });
+  }, [state]);
+
   const value = {
     ...state,
     userId: state.userId,
@@ -179,6 +217,7 @@ export const Provider = (props) => {
     signInAsync,
     signOutAsync,
     signUpAsync,
+    fetchNotificationsAsync,
   };
   return <SessionContext.Provider value={value}>{props.children}</SessionContext.Provider>;
 };
