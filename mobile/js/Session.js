@@ -82,61 +82,67 @@ export const Provider = (props) => {
     return () => (mounted = false);
   }, []);
 
-  const useNewAuthTokenAsync = async ({ userId, token }) => {
-    if (!TEST_AUTH_TOKEN) {
-      apolloClient.resetStore();
-      gAuthToken = token;
-      gUserId = userId;
+  const useNewAuthTokenAsync = React.useCallback(
+    async ({ userId, token }) => {
+      if (!TEST_AUTH_TOKEN) {
+        apolloClient.resetStore();
+        gAuthToken = token;
+        gUserId = userId;
 
-      if (token) {
-        await CastleAsyncStorage.setItem('AUTH_TOKEN', token);
-        await CastleAsyncStorage.setItem('USER_ID', userId);
+        if (token) {
+          await CastleAsyncStorage.setItem('AUTH_TOKEN', token);
+          await CastleAsyncStorage.setItem('USER_ID', userId);
 
-        await GhostPushNotifications.requestTokenAsync();
-        Amplitude.setUserId(gUserId);
-      } else {
-        await CastleAsyncStorage.removeItem('AUTH_TOKEN');
-        await CastleAsyncStorage.removeItem('USER_ID');
-        Amplitude.setUserId(null);
-        Amplitude.clearUserProperties();
+          await GhostPushNotifications.requestTokenAsync();
+          Amplitude.setUserId(gUserId);
+        } else {
+          await CastleAsyncStorage.removeItem('AUTH_TOKEN');
+          await CastleAsyncStorage.removeItem('USER_ID');
+          Amplitude.setUserId(null);
+          Amplitude.clearUserProperties();
+        }
       }
-    }
 
-    return setState({
-      ...state,
-      authToken: gAuthToken,
-      userId: gUserId,
-    });
-  };
+      return setState({
+        ...state,
+        authToken: gAuthToken,
+        userId: gUserId,
+      });
+    },
+    [state]
+  );
 
-  const signInAsync = async ({ username, password }) => {
-    const userId = await userIdForUsernameAsync(username);
-    const result = await apolloClient.mutate({
-      mutation: gql`
-        mutation SignIn($userId: ID!, $password: String!) {
-          login(userId: $userId, password: $password) {
-            userId
-            token
-            photo {
-              url
+  const signInAsync = React.useCallback(
+    async ({ username, password }) => {
+      const userId = await userIdForUsernameAsync(username);
+      const result = await apolloClient.mutate({
+        mutation: gql`
+          mutation SignIn($userId: ID!, $password: String!) {
+            login(userId: $userId, password: $password) {
+              userId
+              token
+              photo {
+                url
+              }
             }
           }
+        `,
+        variables: { userId, password },
+      });
+      if (result && result.data && result.data.login && result.data.login.userId) {
+        if (Platform.OS == 'android') {
+          try {
+            GhostChannels.saveSmartLockCredentials(username, password, result.data.login.photo.url);
+          } catch (e) {}
         }
-      `,
-      variables: { userId, password },
-    });
-    if (result && result.data && result.data.login && result.data.login.userId) {
-      if (Platform.OS == 'android') {
-        try {
-          GhostChannels.saveSmartLockCredentials(username, password, result.data.login.photo.url);
-        } catch (e) {}
+
+        await useNewAuthTokenAsync(result.data.login);
       }
+    },
+    [useNewAuthTokenAsync]
+  );
 
-      await useNewAuthTokenAsync(result.data.login);
-    }
-  };
-
-  const signOutAsync = async () => {
+  const signOutAsync = React.useCallback(async () => {
     await apolloClient.mutate({
       mutation: gql`
         mutation SignOut {
@@ -145,33 +151,40 @@ export const Provider = (props) => {
       `,
     });
     await useNewAuthTokenAsync({});
-  };
+  }, [useNewAuthTokenAsync]);
 
-  const signUpAsync = async ({ username, name, email, password }) => {
-    const result = await apolloClient.mutate({
-      mutation: gql`
-        mutation SignUp($name: String!, $username: String!, $email: String!, $password: String!) {
-          signup(user: { name: $name, username: $username }, email: $email, password: $password) {
-            userId
-            token
-            photo {
-              url
+  const signUpAsync = React.useCallback(
+    async ({ username, name, email, password }) => {
+      const result = await apolloClient.mutate({
+        mutation: gql`
+          mutation SignUp($name: String!, $username: String!, $email: String!, $password: String!) {
+            signup(user: { name: $name, username: $username }, email: $email, password: $password) {
+              userId
+              token
+              photo {
+                url
+              }
             }
           }
+        `,
+        variables: { username, name, email, password },
+      });
+      if (result && result.data && result.data.signup && result.data.signup.userId) {
+        if (Platform.OS == 'android') {
+          try {
+            GhostChannels.saveSmartLockCredentials(
+              username,
+              password,
+              result.data.signup.photo.url
+            );
+          } catch (e) {}
         }
-      `,
-      variables: { username, name, email, password },
-    });
-    if (result && result.data && result.data.signup && result.data.signup.userId) {
-      if (Platform.OS == 'android') {
-        try {
-          GhostChannels.saveSmartLockCredentials(username, password, result.data.signup.photo.url);
-        } catch (e) {}
-      }
 
-      await useNewAuthTokenAsync(result.data.signup);
-    }
-  };
+        await useNewAuthTokenAsync(result.data.signup);
+      }
+    },
+    [useNewAuthTokenAsync]
+  );
 
   const fetchNotificationsAsync = React.useCallback(async () => {
     if (!state.authToken) {
