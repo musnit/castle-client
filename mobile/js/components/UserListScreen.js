@@ -19,6 +19,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Constants.colors.black,
   },
+  scrollView: {
+    paddingVertical: 16,
+  },
   row: {
     paddingHorizontal: 16,
     paddingVertical: 8,
@@ -58,7 +61,7 @@ export const UserListScreen = ({ users, route }) => {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <ScreenHeader title="Users" />
-      <ScrollView>
+      <ScrollView contentContainerStyle={styles.scrollView}>
         {users.map((user, ii) => (
           <TouchableWithoutFeedback
             key={`user-${user.userId}`}

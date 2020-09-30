@@ -40,8 +40,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   scrollView: {
-    paddingTop: 16,
-    flex: 1,
+    paddingVertical: 16,
   },
   sectionHeader: {
     paddingHorizontal: 16,
@@ -147,20 +146,11 @@ export const NotificationsScreen = () => {
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
       onRefresh();
+      return () => markNotificationsReadAsync();
     }, [])
   );
 
   React.useEffect(() => {
-    if (orderedNotifs?.length) {
-      const unreadIds = orderedNotifs
-        .filter((n) => n.status === 'unseen')
-        .map((n) => n.notificationId);
-      if (unreadIds.length) {
-        markNotificationsReadAsync({
-          notificationIds: unreadIds,
-        });
-      }
-    }
     if (notifications) {
       setOrderedNotifs(
         notifications.concat().sort((a, b) => {

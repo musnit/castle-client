@@ -224,34 +224,27 @@ export const Provider = (props) => {
     });
   }, [state]);
 
-  const markNotificationsReadAsync = React.useCallback(
-    debounce(async ({ notificationIds }) => {
-      const result = await apolloClient.mutate({
-        mutation: gql`
-          mutation SetNotificationsStatus($notificationIds: [ID]!, $status: NotificationStatus!) {
-            setNotificationsStatus(notificationIds: $notificationIds, status: $status)
-          }
-        `,
-        variables: {
-          notificationIds,
-          status: 'seen',
-        },
-      });
-      return setState({
-        ...state,
-        notifications: state.notifications.map((n) => {
-          if (notificationIds.includes(n.notificationId)) {
-            return {
-              ...n,
-              status: 'seen',
-            };
-          }
-          return n;
-        }),
-      });
-    }, 100),
-    [state]
-  );
+  const markNotificationsReadAsync = React.useCallback(async () => {
+    const unreadIds = state.notifications
+      ? state.notifications.filter((n) => n.status === 'unseen').map((n) => n.notificationId)
+      : null;
+    if (!unreadIds?.length) {
+      return;
+    }
+    await _sendMarkNotificationsRead({ notificationIds: unreadIds });
+    return setState({
+      ...state,
+      notifications: state.notifications.map((n) => {
+        if (unreadIds.includes(n.notificationId)) {
+          return {
+            ...n,
+            status: 'seen',
+          };
+        }
+        return n;
+      }),
+    });
+  }, [state]);
 
   const notificationsBadgeCount = state.notifications
     ? state.notifications.reduce((accum, n) => accum + (n.status === 'unseen'), 0)
@@ -631,3 +624,19 @@ export const uploadFile = async ({ uri }) => {
   });
   return result?.data?.uploadFile;
 };
+
+const _sendMarkNotificationsRead = debounce(
+  async ({ notificationIds }) =>
+    apolloClient.mutate({
+      mutation: gql`
+        mutation SetNotificationsStatus($notificationIds: [ID]!, $status: NotificationStatus!) {
+          setNotificationsStatus(notificationIds: $notificationIds, status: $status)
+        }
+      `,
+      variables: {
+        notificationIds,
+        status: 'seen',
+      },
+    }),
+  100
+);
