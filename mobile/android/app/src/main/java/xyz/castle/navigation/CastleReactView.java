@@ -22,6 +22,12 @@ import java.util.Map;
 
 public class CastleReactView extends RNGestureHandlerEnabledRootView {
 
+    private static Map<String, Object> globalOptions = new HashMap<>();
+
+    public static void addGlobalReactOpt(final String key, final String value) {
+        globalOptions.put(key, value);
+    }
+
     private final ReactInstanceManager reactInstanceManager;
     private final String componentId;
     private final String componentName;
@@ -78,6 +84,9 @@ public class CastleReactView extends RNGestureHandlerEnabledRootView {
         final Bundle opts = new Bundle();
         opts.putString("componentId", componentId);
         opts.putInt("navigationHeight", navigationHeight);
+
+        options.putAll(globalOptions);
+        globalOptions.clear();
 
         for (Map.Entry<String, Object> entry : options.entrySet()) {
             Object value = entry.getValue();

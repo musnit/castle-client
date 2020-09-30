@@ -27,6 +27,7 @@ import { CreateDeckNavigator } from './create/CreateDeckNavigator';
 import { ViewSourceNavigator } from './create/ViewSourceNavigator';
 
 import * as Session from './Session';
+import * as PushNotifications from './PushNotifications';
 
 let bootSplashHidden = false;
 
@@ -57,7 +58,11 @@ const Main = () => {
   return <RootNavigator />;
 };
 
-const MainProvider = () => {
+const MainProvider = (props) => {
+  if (props.initialPushNotificationDataString) {
+    PushNotifications.setInitialData(props.initialPushNotificationDataString);
+  }
+
   return (
     <View style={{ flex: 1 }}>
       <Session.Provider>
@@ -160,6 +165,10 @@ if (Platform.OS === 'android') {
         let verticalSpaceTaken = 0;
         if (props.navigationHeight) {
           verticalSpaceTaken += props.navigationHeight / PixelRatio.get();
+        }
+
+        if (props.initialPushNotificationDataString) {
+          PushNotifications.setInitialData(props.initialPushNotificationDataString);
         }
 
         if (!globalVerticalSpaceTaken) {

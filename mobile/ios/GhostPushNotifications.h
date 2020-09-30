@@ -9,6 +9,8 @@
 @property(nonatomic, assign) BOOL hasListeners;
 
 - (void)onNewPushNotificationToken: (NSData *)token;
+- (void)onPushNotificationReceived: (NSDictionary *)data;
+- (void)onPushNotificationClicked: (NSDictionary *)data;
 
 @end
 

@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 
@@ -34,6 +35,7 @@ import androidx.fragment.app.FragmentActivity;
 import xyz.castle.api.API;
 import xyz.castle.api.GraphQLOperation;
 import xyz.castle.navigation.CastleNavigator;
+import xyz.castle.navigation.CastleReactView;
 import xyz.castle.views.FeaturedFeedView;
 import xyz.castle.views.HistoryFeedView;
 import xyz.castle.views.NewestFeedView;
@@ -107,7 +109,10 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
 
         // TODO: should this be before bindViews? don't want feed to load if we're going to a deep link
         if (isLoggedIn) {
-            handleDeepLink(getIntent());
+            Intent intent = getIntent();
+            if (!handleDeepLink(intent)) {
+                handlePushNotification(intent, true);
+            }
         }
     }
 
@@ -130,7 +135,7 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
         }
     }
 
-    private void handleDeepLink(Intent intent) {
+    private boolean handleDeepLink(Intent intent) {
         String action = intent.getAction();
         Uri uri = intent.getData();
 
@@ -165,6 +170,25 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
                                 });
                             }
                         });
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void handlePushNotification(Intent intent, boolean initialLoad) {
+        Bundle extras = intent.getExtras();
+        if (extras != null && extras.containsKey(CastleFirebaseMessagingService.NOTIFICATION_DATA_KEY)) {
+            String dataString = extras.getString(CastleFirebaseMessagingService.NOTIFICATION_DATA_KEY);
+            if (initialLoad) {
+                CastleReactView.addGlobalReactOpt("initialPushNotificationDataString", dataString);
+            } else {
+                WritableMap payload = Arguments.createMap();
+                payload.putString("dataString", dataString);
+                (getReactGateway().reactInstanceManager().getCurrentReactContext()).getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                        .emit("CastlePushNotificationClicked", payload);
             }
         }
     }
@@ -177,6 +201,22 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
             navigator.navigate("LoggedInRootStack");
         }
     };
+
+    public static class RNEvent {
+        String eventName;
+        Object data;
+
+        public RNEvent(String eventName, Object data) {
+            this.eventName = eventName;
+            this.data = data;
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onRNEvent(RNEvent rnEvent) {
+        (getReactGateway().reactInstanceManager().getCurrentReactContext()).getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                .emit(rnEvent.eventName, rnEvent.data);
+    }
 
     @Override
     public void onPostCreate(@Nullable Bundle savedInstanceState) {
@@ -200,7 +240,9 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
             super.onNewIntent(intent);
         }
 
-        handleDeepLink(intent);
+        if (!handleDeepLink(intent)) {
+            handlePushNotification(intent, false);
+        }
     }
 
     @Override

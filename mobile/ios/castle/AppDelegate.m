@@ -52,11 +52,18 @@ int SDL_main(int argc, char *argv[]) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  NSMutableDictionary *initialProps = [NSMutableDictionary dictionary];
+  NSDictionary *notification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+  NSString *dataString = [notification valueForKey:@"dataString"];
+  if (dataString) {
+    initialProps[@"initialPushNotificationDataString"] = dataString;
+  }
+
   self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
   self.rctBridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:self.rctBridge
                                                    moduleName:@"Castle"
-                                            initialProperties:nil];
+                                            initialProperties:initialProps];
 
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
 
@@ -193,6 +200,23 @@ int SDL_main(int argc, char *argv[]) {
 - (void)application:(UIApplication *)app
         didFailToRegisterForRemoteNotificationsWithError:(NSError *)err {
     NSLog(@"Remote notification support is unavailable due to error: %@", err);
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+  fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+  if (application.applicationState == UIApplicationStateInactive) {
+    completionHandler(UIBackgroundFetchResultNewData);
+    GhostPushNotifications *module = [self.rctBridge moduleForName:@"GhostPushNotifications"];
+    [module onPushNotificationClicked:userInfo];
+  } else if (application.applicationState == UIApplicationStateBackground) {
+    completionHandler(UIBackgroundFetchResultNewData);
+    GhostPushNotifications *module = [self.rctBridge moduleForName:@"GhostPushNotifications"];
+    [module onPushNotificationClicked:userInfo];
+  } else {
+    completionHandler(UIBackgroundFetchResultNewData);
+    GhostPushNotifications *module = [self.rctBridge moduleForName:@"GhostPushNotifications"];
+    [module onPushNotificationReceived:userInfo];
+  }
 }
 
 @end

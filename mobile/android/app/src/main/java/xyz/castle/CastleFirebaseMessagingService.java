@@ -11,12 +11,18 @@ import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
 
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.Map;
+
 public class CastleFirebaseMessagingService extends FirebaseMessagingService {
+
+    public static String NOTIFICATION_DATA_KEY = "notification-data";
 
     private static int sNotificationId = 0;
 
@@ -34,12 +40,19 @@ public class CastleFirebaseMessagingService extends FirebaseMessagingService {
             final String title = remoteMessage.getNotification().getTitle();
             final String messageBody = remoteMessage.getNotification().getBody();
             final Uri imageUri = remoteMessage.getNotification().getImageUrl();
+            final Map<String, String> data = remoteMessage.getData();
+
+            String dataString = "";
+            if (data != null && data.containsKey("dataString")) {
+                dataString = data.get("dataString");
+            }
+            final String finalDataString = dataString;
 
             if (imageUri == null) {
-                sendNotification(title, messageBody, null);
+                sendNotification(title, messageBody, null, finalDataString);
             } else {
                 ViewUtils.loadBitmap(imageUri, this, (Bitmap bitmap) -> {
-                    sendNotification(title, messageBody, bitmap);
+                    sendNotification(title, messageBody, bitmap, finalDataString);
                 });
             }
         }
@@ -50,10 +63,11 @@ public class CastleFirebaseMessagingService extends FirebaseMessagingService {
         EventBus.getDefault().post(new NewFirebaseTokenEvent(token));
     }
 
-    private void sendNotification(String title, String messageBody, Bitmap bitmap) {
+    private void sendNotification(String title, String messageBody, Bitmap bitmap, String dataString) {
         Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra(NOTIFICATION_DATA_KEY, dataString);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, sNotificationId, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         String channelId = "default";
@@ -88,5 +102,9 @@ public class CastleFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         notificationManager.notify(sNotificationId++, notificationBuilder.build());
+
+        WritableMap payload = Arguments.createMap();
+        payload.putString("dataString", dataString);
+        EventBus.getDefault().post(new NavigationActivity.RNEvent("CastlePushNotificationReceived", payload));
     }
 }

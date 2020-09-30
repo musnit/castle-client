@@ -19,7 +19,7 @@ RCT_EXPORT_MODULE()
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[@"onNewPushNotificationToken"];
+    return @[@"onNewPushNotificationToken", @"CastlePushNotificationReceived", @"CastlePushNotificationClicked"];
 }
 
 -(void)startObserving {
@@ -33,6 +33,24 @@ RCT_EXPORT_MODULE()
 - (void)onNewPushNotificationToken: (NSData *)token {
   if (self.hasListeners) {
     [self sendEventWithName:@"onNewPushNotificationToken" body:@{@"token": [self apnsTokenToString:token]}];
+  }
+}
+
+- (void)onPushNotificationReceived: (NSDictionary *)data {
+  if (self.hasListeners) {
+    NSString *dataString = [data valueForKey:@"dataString"];
+    if (dataString) {
+      [self sendEventWithName:@"CastlePushNotificationReceived" body:@{@"dataString": dataString}];
+    }
+  }
+}
+
+- (void)onPushNotificationClicked: (NSDictionary *)data {
+  if (self.hasListeners) {
+    NSString *dataString = [data valueForKey:@"dataString"];
+    if (dataString) {
+      [self sendEventWithName:@"CastlePushNotificationClicked" body:@{@"dataString": dataString}];
+    }
   }
 }
 
