@@ -93,15 +93,14 @@ const NotificationItem = ({ notification, navigateToUser, navigateToDeck, naviga
   const user = notification.users?.length ? notification.users[0] : null;
   const onPress = React.useCallback(() => {
     if (notification.type === 'play_deck') {
-      if (notification.users?.length > 2) {
-        navigateToUserList(notification.users);
-      } else {
-        navigateToDeck(notification.deck);
-      }
+      navigateToDeck(notification.deck);
     } else if (notification.type === 'follow') {
       navigateToUser(user);
     }
   }, [notification, user]);
+  const navigateToAllUsers = React.useCallback(() => navigateToUserList(notification.users), [
+    notification?.users,
+  ]);
   return (
     <TouchableWithoutFeedback onPress={onPress}>
       <View style={styles.notif}>
@@ -111,7 +110,11 @@ const NotificationItem = ({ notification, navigateToUser, navigateToDeck, naviga
           </TouchableOpacity>
         ) : null}
         <Text style={styles.notifBody}>
-          <NotificationBody body={notification.body} navigateToUser={navigateToUser} />
+          <NotificationBody
+            body={notification.body}
+            navigateToUser={navigateToUser}
+            navigateToAllUsers={navigateToAllUsers}
+          />
           <Text style={styles.notifTime}> {toRecentDate(notification.updatedTime)}</Text>
         </Text>
         {notification.deck ? (
