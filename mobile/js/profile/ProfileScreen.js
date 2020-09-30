@@ -4,6 +4,7 @@ import gql from 'graphql-tag';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { DecksGrid } from '../components/DecksGrid';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect } from '../ReactNavigation';
 import { useSession } from '../Session';
@@ -24,13 +25,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: 24,
   },
-  navigationRow: {
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    minHeight: 54,
-  },
   username: { marginTop: 4, fontSize: 18, color: Constants.colors.white, fontWeight: 'bold' },
   profileItems: { marginTop: 16, flexDirection: 'row' },
   scrollView: {
@@ -44,13 +38,6 @@ const styles = StyleSheet.create({
     paddingRight: 2,
     paddingBottom: 2,
     width: '33.3%',
-  },
-  back: {
-    flexShrink: 0,
-    width: 60,
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    paddingLeft: 12,
   },
 });
 
@@ -81,12 +68,9 @@ const useProfileQuery = (userId) => {
 };
 
 export const ProfileScreen = ({ userId, route }) => {
-  const { push, pop, dangerouslyGetState } = useNavigation();
+  const { push } = useNavigation();
   const [settingsSheetIsOpen, setSettingsSheet] = useState(false);
   const [user, setUser] = React.useState(null);
-
-  // don't useNavigationState() because we don't want to rerender if this changes.
-  const navigationStackIndex = dangerouslyGetState().index;
 
   const { signOutAsync, userId: signedInUserId } = useSession();
   if (!userId && route?.params) {
@@ -125,15 +109,8 @@ export const ProfileScreen = ({ userId, route }) => {
   return (
     <Fragment>
       <View style={styles.container}>
-        <StatusBar barStyle="light-content" />
         <SafeAreaView style={styles.header}>
-          {navigationStackIndex > 0 ? (
-            <View style={styles.navigationRow}>
-              <TouchableOpacity style={styles.back} onPress={() => pop()}>
-                <Icon name="arrow-back" size={32} color="#fff" />
-              </TouchableOpacity>
-            </View>
-          ) : null}
+          <ScreenHeader />
           <View style={{ width: 96, paddingVertical: 16 }}>
             <UserAvatar url={user?.photo?.url} />
           </View>

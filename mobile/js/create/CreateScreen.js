@@ -9,11 +9,13 @@ import {
   View,
 } from 'react-native';
 import { CardCell } from '../components/CardCell';
-import FastImage from 'react-native-fast-image';
-import gql from 'graphql-tag';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { CommonActions, useNavigation, useFocusEffect } from '../ReactNavigation';
+
+import FastImage from 'react-native-fast-image';
+import gql from 'graphql-tag';
 import Viewport from '../common/viewport';
 
 import * as Constants from '../Constants';
@@ -137,10 +139,7 @@ export const CreateScreen = () => {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      <StatusBar barStyle="light-content" />
-      <View style={styles.header}>
-        <Text style={styles.sectionTitle}>Your Decks</Text>
-      </View>
+      <ScreenHeader title="Your Decks" />
       <ScrollView
         contentContainerStyle={Constants.styles.gridContainer}
         refreshControl={refreshControl}>

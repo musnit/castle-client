@@ -1,13 +1,13 @@
 import React from 'react';
 import {
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import { ScreenHeader } from './ScreenHeader';
 import { useNavigation } from '../ReactNavigation';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { UserAvatar } from '../components/UserAvatar';
@@ -18,19 +18,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Constants.colors.black,
-  },
-  header: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderBottomWidth: 1,
-    borderColor: Constants.colors.grayOnBlackBorder,
-    paddingTop: 16,
-  },
-  sectionTitle: {
-    color: Constants.colors.white,
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginVertical: 8,
   },
   row: {
     paddingHorizontal: 16,
@@ -70,10 +57,7 @@ export const UserListScreen = ({ users, route }) => {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      <StatusBar barStyle="light-content" />
-      <View style={styles.header}>
-        <Text style={styles.sectionTitle}>Users</Text>
-      </View>
+      <ScreenHeader title="Users" />
       <ScrollView>
         {users.map((user, ii) => (
           <TouchableWithoutFeedback

@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import { NotificationBody } from './NotificationBody';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { toRecentDate } from '../common/date-utilities';
 import { useNavigation, useFocusEffect } from '../ReactNavigation';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -193,10 +194,7 @@ export const NotificationsScreen = () => {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      <StatusBar barStyle="light-content" />
-      <View style={styles.header}>
-        <Text style={styles.sectionTitle}>Notifications</Text>
-      </View>
+      <ScreenHeader title="Notifications" />
       <ScrollView contentContainerStyle={styles.scrollView} refreshControl={refreshControl}>
         {orderedNotifs.map((notif, ii) => (
           <React.Fragment key={`notif-${notif.notificationId}`}>
