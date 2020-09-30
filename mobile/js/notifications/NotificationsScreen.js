@@ -88,11 +88,15 @@ const NotificationHeader = ({ status }) => {
   );
 };
 
-const NotificationItem = ({ notification, navigateToUser, navigateToDeck }) => {
+const NotificationItem = ({ notification, navigateToUser, navigateToDeck, navigateToUserList }) => {
   const user = notification.users?.length ? notification.users[0] : null;
   const onPress = React.useCallback(() => {
     if (notification.type === 'play_deck') {
-      navigateToDeck(notification.deck);
+      if (notification.users?.length > 2) {
+        navigateToUserList(notification.users);
+      } else {
+        navigateToDeck(notification.deck);
+      }
     } else if (notification.type === 'follow') {
       navigateToUser(user);
     }
@@ -170,6 +174,7 @@ export const NotificationsScreen = () => {
   const navigateToUser = React.useCallback((user) => navigate('Profile', { userId: user.userId }), [
     navigate,
   ]);
+  const navigateToUserList = React.useCallback((users) => navigate('UserList', { users }));
   const navigateToDeck = React.useCallback((deck) =>
     navigate('PlayDeck', {
       decks: [deck],
@@ -201,6 +206,7 @@ export const NotificationsScreen = () => {
             <NotificationItem
               notification={notif}
               navigateToUser={navigateToUser}
+              navigateToUserList={navigateToUserList}
               navigateToDeck={navigateToDeck}
             />
           </React.Fragment>

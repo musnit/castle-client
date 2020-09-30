@@ -12,6 +12,7 @@ import { CreateDeckNavigator } from './create/CreateDeckNavigator';
 import { HomeScreen } from './home/HomeScreen';
 import { NotificationsScreen } from './notifications/NotificationsScreen';
 import { PlayDeckScreen } from './play/PlayDeckScreen';
+import { UserListScreen } from './components/UserListScreen';
 import { ViewSourceNavigator } from './create/ViewSourceNavigator';
 import * as DeepLinks from './DeepLinks';
 import { ProfileScreen } from './profile/ProfileScreen';
@@ -71,6 +72,7 @@ const NotificationsNavigator = () => (
       component={NotificationsScreen}
       options={{ title: 'Notifications' }}
     />
+    <Stack.Screen name="UserList" component={UserListScreen} />
     <Stack.Screen name="Profile" component={ProfileScreen} />
     <Stack.Screen name="PlayDeck" component={PlayDeckScreen} options={{ gestureEnabled: false }} />
     <Stack.Screen
