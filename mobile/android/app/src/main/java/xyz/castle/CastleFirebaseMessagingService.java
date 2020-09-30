@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class CastleFirebaseMessagingService extends FirebaseMessagingService {
 
-    public static String NOTIFICATION_DATA_KEY = "notification-data";
+    public static String NOTIFICATION_DATA_KEY = "dataString";
 
     private static int sNotificationId = 0;
 
@@ -64,7 +64,7 @@ public class CastleFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     private void sendNotification(String title, String messageBody, Bitmap bitmap, String dataString) {
-        Intent intent = new Intent(this, MainActivity.class);
+        /*Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra(NOTIFICATION_DATA_KEY, dataString);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, sNotificationId, intent,
@@ -101,7 +101,7 @@ public class CastleFirebaseMessagingService extends FirebaseMessagingService {
             notificationManager.createNotificationChannel(channel);
         }
 
-        notificationManager.notify(sNotificationId++, notificationBuilder.build());
+        notificationManager.notify(sNotificationId++, notificationBuilder.build());*/
 
         WritableMap payload = Arguments.createMap();
         payload.putString("dataString", dataString);
