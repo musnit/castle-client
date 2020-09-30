@@ -97,7 +97,7 @@ const ProfileNavigator = () => (
   </Stack.Navigator>
 );
 
-const TabNavigator = () => (
+const TabNavigator = ({ notificationsBadgeCount }) => (
   <Tab.Navigator
     initialRouteName="Browse"
     tabBarOptions={{
@@ -151,6 +151,7 @@ const TabNavigator = () => (
       name="Notifications"
       component={NotificationsNavigator}
       options={({ route }) => ({
+        tabBarBadge: notificationsBadgeCount > 0 ? notificationsBadgeCount : null,
         tabBarIcon: ({ focused, color }) => {
           return (
             <FastImage
@@ -208,17 +209,22 @@ const NavigationTheme = {
   colors: {
     ...DefaultTheme.colors,
     background: '#000',
+    notification: '#fff',
   },
 };
 
 export const RootNavigator = () => {
-  const { isSignedIn } = useSession();
+  const { isSignedIn, notificationsBadgeCount } = useSession();
   return (
     <NavigationContainer
       theme={NavigationTheme}
       ref={DeepLinks.setNavigationRef}
       onStateChange={onNavigationStateChange}>
-      {isSignedIn ? <TabNavigator /> : <AuthNavigator />}
+      {isSignedIn ? (
+        <TabNavigator notificationsBadgeCount={notificationsBadgeCount} />
+      ) : (
+        <AuthNavigator />
+      )}
     </NavigationContainer>
   );
 };

@@ -253,6 +253,10 @@ export const Provider = (props) => {
     [state]
   );
 
+  const notificationsBadgeCount = state.notifications
+    ? state.notifications.reduce((accum, n) => accum + (n.status === 'unseen'), 0)
+    : null;
+
   const value = {
     ...state,
     userId: state.userId,
@@ -262,6 +266,7 @@ export const Provider = (props) => {
     signUpAsync,
     fetchNotificationsAsync,
     markNotificationsReadAsync,
+    notificationsBadgeCount,
   };
   return <SessionContext.Provider value={value}>{props.children}</SessionContext.Provider>;
 };
