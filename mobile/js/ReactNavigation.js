@@ -8,7 +8,7 @@ import {
   withNavigation as realWithNavigation,
   withNavigationFocus as realWithNavigationFocus,
 } from '@react-navigation/compat';
-import { Platform } from 'react-native';
+import { Platform, DeviceEventEmitter } from 'react-native';
 import * as GhostChannels from './ghost/GhostChannels';
 
 export const AndroidNavigationContext = React.createContext({});
@@ -73,7 +73,37 @@ export const useFocusEffect = (...args) => {
   if (Platform.OS === 'ios') {
     return realUseFocusEffect(...args);
   } else {
-    return useEffect(args[0], []);
+    const { viewId } = React.useContext(AndroidNavigationContext);
+
+    let returnFn = null;
+
+    useEffect(() => {
+      let subscription1 = DeviceEventEmitter.addListener('CastleOnFocusView', (event) => {
+        if (event.viewId == viewId) {
+          returnFn = args[0]();
+        }
+      });
+      let subscription2 = DeviceEventEmitter.addListener('CastleOnBlurView', (event) => {
+        if (event.viewId == viewId) {
+          if (returnFn) {
+            returnFn();
+            returnFn = null;
+          }
+        }
+      });
+
+      returnFn = args[0]();
+
+      return () => {
+        subscription1.remove();
+        subscription2.remove();
+
+        if (returnFn) {
+          returnFn();
+          returnFn = null;
+        }
+      };
+    }, []);
   }
 };
 

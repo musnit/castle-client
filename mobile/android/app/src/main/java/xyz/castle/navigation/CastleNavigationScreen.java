@@ -6,6 +6,13 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
 
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableMap;
+
+import org.greenrobot.eventbus.EventBus;
+
+import xyz.castle.NavigationActivity;
+
 public class CastleNavigationScreen {
 
     public interface NavigatorFactory {
@@ -58,6 +65,7 @@ public class CastleNavigationScreen {
     }
 
     private static int gId = 0;
+    private static String gCurrentBoundViewId = "";
 
     public class Instance {
         private String id;
@@ -105,19 +113,34 @@ public class CastleNavigationScreen {
 
             View viewToAdd = null;
 
+            boolean isFocusing = !gCurrentBoundViewId.equals(id);
+            if (isFocusing && gCurrentBoundViewId.length() > 0) {
+                WritableMap payload = Arguments.createMap();
+                payload.putString("viewId", gCurrentBoundViewId);
+                EventBus.getDefault().post(new NavigationActivity.RNEvent("CastleOnBlurView", payload));
+            }
+
             if (reactComponentName != null) {
                 if (castleReactView == null) {
                     castleReactView = new CastleReactView(activity, id, reactComponentName);
                     castleReactView.addReactOpt("navigatorId", castleNavigator.id);
                     castleReactView.addReactOpt("stackDepth", stackDepth);
+                    castleReactView.addReactOpt("viewId", id);
 
                     if (navigationScreenOptions != null) {
                         castleReactView.addReactOpt("navigationScreenOptions", navigationScreenOptions);
                     }
+                } else if (isFocusing) {
+                    // view already exists. need to trigger useFocusEffect
+                    WritableMap payload = Arguments.createMap();
+                    payload.putString("viewId", id);
+                    EventBus.getDefault().post(new NavigationActivity.RNEvent("CastleOnFocusView", payload));
                 }
 
                 castleReactView.setNavigationSize(navigationWidth, navigationHeight);
                 viewToAdd = castleReactView;
+
+                gCurrentBoundViewId = id;
             } else if (navigatorFactory != null || navigator != null){
                 if (navigator == null) {
                     navigator = navigatorFactory.inflate(activity);
@@ -130,6 +153,7 @@ public class CastleNavigationScreen {
                 }
 
                 viewToAdd = nativeView;
+                gCurrentBoundViewId = id;
             }
 
             if (viewToAdd != null) {

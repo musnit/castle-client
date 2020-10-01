@@ -113,31 +113,8 @@ const cardAspectFitStyles = makeCardAspectFitStyles();
 const CurrentDeckCell = ({ deck, paused }) => {
   const [ready, setReady] = React.useState(false);
 
-  if (Platform.OS == 'ios') {
-    useFocusEffect(
-      React.useCallback(() => {
-        let timeout;
-        const task = InteractionManager.runAfterInteractions(() => {
-          if (deck) {
-            timeout = setTimeout(() => {
-              setReady(true);
-            }, 10);
-          } else {
-            setReady(false);
-          }
-        });
-        return () => {
-          if (timeout) {
-            clearTimeout(timeout);
-            timeout = undefined;
-          }
-          setReady(false);
-          task.cancel();
-        };
-      }, [deck])
-    );
-  } else {
-    React.useEffect(() => {
+  useFocusEffect(
+    React.useCallback(() => {
       let timeout;
       const task = InteractionManager.runAfterInteractions(() => {
         if (deck) {
@@ -156,8 +133,8 @@ const CurrentDeckCell = ({ deck, paused }) => {
         setReady(false);
         task.cancel();
       };
-    }, [deck]);
-  }
+    }, [deck])
+  );
 
   return (
     <View style={styles.itemCard}>

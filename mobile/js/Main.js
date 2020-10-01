@@ -109,6 +109,7 @@ if (Platform.OS === 'android') {
         <AndroidNavigationContext.Provider
           value={{
             navigatorId: props.navigatorId,
+            viewId: props.viewId,
             navigatorWindowHeight: props.navigatorWindowHeight,
             globalNavigatorHeightOffset: props.globalNavigatorHeightOffset,
             navigatorStackDepth: props.navigatorStackDepth,
@@ -184,6 +185,7 @@ if (Platform.OS === 'android') {
             <View style={{ height: windowHeight - verticalSpaceTaken }}>
               <AddProviders
                 navigatorId={props.navigatorId}
+                viewId={props.viewId}
                 navigatorWindowHeight={windowHeight - verticalSpaceTaken}
                 globalNavigatorHeightOffset={globalVerticalSpaceTaken}
                 navigatorStackDepth={props.stackDepth}>
