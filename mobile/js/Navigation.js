@@ -220,12 +220,29 @@ const NavigationTheme = {
   },
 };
 
+const rootNavRef = React.createRef();
+const navRefCallback = (r) => {
+  rootNavRef.current = r;
+  DeepLinks.setNavigationRef(r);
+};
+
 export const RootNavigator = () => {
-  const { isSignedIn, notificationsBadgeCount } = useSession();
+  const { isSignedIn, notificationsBadgeCount, fetchNotificationsAsync } = useSession();
+  const handlePushNotification = React.useCallback(
+    (data) => {
+      fetchNotificationsAsync();
+    },
+    [fetchNotificationsAsync]
+  );
+  PushNotifications.usePushNotifications({
+    onClicked: handlePushNotification,
+    onReceived: handlePushNotification,
+  });
+
   return (
     <NavigationContainer
       theme={NavigationTheme}
-      ref={DeepLinks.setNavigationRef}
+      ref={navRefCallback}
       onStateChange={onNavigationStateChange}>
       {isSignedIn ? (
         <TabNavigator notificationsBadgeCount={notificationsBadgeCount} />

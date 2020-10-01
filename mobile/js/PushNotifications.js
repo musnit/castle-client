@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { NativeModules, Platform, DeviceEventEmitter, NativeEventEmitter } from 'react-native';
 
 let gListenerId = 0;
@@ -84,6 +85,16 @@ export const addTokenListener = (listener) => {
     listener(event.token);
   });
 };
+
+export const usePushNotifications = ({ onClicked, onReceived }) =>
+  React.useEffect(() => {
+    const clicked = addClickedListener(onClicked);
+    const received = addReceivedListener(onReceived);
+    return () => {
+      removeListener(clicked);
+      removeListener(received);
+    };
+  });
 
 const _parsePushDataString = (dataString) => {
   let data;
