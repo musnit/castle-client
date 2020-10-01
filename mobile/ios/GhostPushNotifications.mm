@@ -3,6 +3,8 @@
 #import <UIKit/UIKit.h>
 #import <UserNotifications/UserNotifications.h>
 
+#import <React/RCTUtils.h>
+
 @implementation GhostPushNotifications
 
 RCT_EXPORT_MODULE()
@@ -98,5 +100,26 @@ RCT_EXPORT_METHOD(getPlatform
 #endif
 }
 
+RCT_EXPORT_METHOD(getBadgeCount:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+  dispatch_async(dispatch_get_main_queue(), ^{
+    resolve(@([RCTSharedApplication() applicationIconBadgeNumber]));
+  });
+}
+
+RCT_EXPORT_METHOD(setBadgeCount:(NSNumber * _Nonnull)badgeCount
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+  [[UNUserNotificationCenter currentNotificationCenter]
+   getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      if (settings.badgeSetting == UNNotificationSettingEnabled) {
+        [RCTSharedApplication() setApplicationIconBadgeNumber:badgeCount.integerValue];
+        resolve(@(YES));
+      } else {
+        resolve(@(NO));
+      }
+    });
+  }];
+}
 
 @end

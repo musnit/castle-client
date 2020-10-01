@@ -231,7 +231,11 @@ export const Provider = (props) => {
     if (!unreadIds?.length) {
       return;
     }
-    await _sendMarkNotificationsRead({ notificationIds: unreadIds });
+    try {
+      await _sendMarkNotificationsRead({ notificationIds: unreadIds });
+    } catch (_) {
+      console.warn(`Network request to mark notifs read failed, marking locally read anyway`);
+    }
     return setState({
       ...state,
       notifications: state.notifications.map((n) => {
@@ -249,6 +253,7 @@ export const Provider = (props) => {
   const notificationsBadgeCount = state.notifications
     ? state.notifications.reduce((accum, n) => accum + (n.status === 'unseen'), 0)
     : null;
+  PushNotifications.setBadgeCount(notificationsBadgeCount ?? 0);
 
   const value = {
     ...state,

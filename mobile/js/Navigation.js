@@ -231,6 +231,9 @@ export const RootNavigator = () => {
   const { isSignedIn, notificationsBadgeCount, fetchNotificationsAsync } = useSession();
   const handlePushNotification = React.useCallback(
     (data) => {
+      if (data?.numUnseenNotifications) {
+        PushNotifications.setBadgeCount(data.numUnseenNotifications);
+      }
       fetchNotificationsAsync();
     },
     [fetchNotificationsAsync]

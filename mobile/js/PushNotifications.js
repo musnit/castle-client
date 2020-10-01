@@ -86,6 +86,12 @@ export const addTokenListener = (listener) => {
   });
 };
 
+export const setBadgeCount = async (count) => {
+  if (Platform.OS === 'ios') {
+    return NativeModules.GhostPushNotifications.setBadgeCount(count);
+  }
+};
+
 export const usePushNotifications = ({ onClicked, onReceived }) =>
   React.useEffect(() => {
     const clicked = addClickedListener(onClicked);
