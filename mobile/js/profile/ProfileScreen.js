@@ -68,6 +68,14 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     fontSize: 14,
   },
+  followers: {
+    marginTop: 16,
+  },
+  followersLabel: {
+    color: '#ccc',
+    textTransform: 'uppercase',
+    fontSize: 14,
+  },
 });
 
 const useProfileQuery = (userId) => {
@@ -182,6 +190,13 @@ export const ProfileScreen = ({ userId, route }) => {
               </View>
             ) : null}
           </View>
+          {user?.followersCount > 0 ? (
+            <View style={styles.followers}>
+              <Text style={styles.followersLabel}>
+                {user.followersCount} {user.followersCount === 1 ? 'follower' : 'followers'}
+              </Text>
+            </View>
+          ) : null}
         </SafeAreaView>
         <DecksGrid
           decks={user?.decks}

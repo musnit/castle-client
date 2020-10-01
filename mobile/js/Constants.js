@@ -191,6 +191,7 @@ export const USER_PROFILE_FRAGMENT = `
     url
   }
   connections
+  followersCount
   decks {
     id
     deckId
