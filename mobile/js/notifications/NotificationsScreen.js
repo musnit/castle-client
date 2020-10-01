@@ -9,6 +9,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import { FollowButton } from '../components/FollowButton';
 import { NotificationBody } from './NotificationBody';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { toRecentDate } from '../common/date-utilities';
@@ -125,12 +126,13 @@ const NotificationItem = ({ notification, navigateToUser, navigateToDeck, naviga
           />
           <Text style={styles.notifTime}> {toRecentDate(notification.updatedTime)}</Text>
         </Text>
-        {notification.deck ? (
+        {notification.deck && notification.type !== 'follow' ? (
           <FastImage
             style={styles.notifImage}
             source={{ uri: notification.deck.initialCard.backgroundImage.smallUrl }}
           />
         ) : null}
+        {user && notification.type === 'follow' ? <FollowButton user={user} /> : null}
       </View>
     </TouchableWithoutFeedback>
   );

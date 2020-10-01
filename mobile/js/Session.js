@@ -204,6 +204,7 @@ export class Provider extends React.Component {
           users {
             userId
             username
+            connections
             photo {
               url
             }
