@@ -190,6 +190,7 @@ export const USER_PROFILE_FRAGMENT = `
   photo {
     url
   }
+  connections
   decks {
     id
     deckId

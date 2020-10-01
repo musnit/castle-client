@@ -638,6 +638,21 @@ export const uploadFile = async ({ uri }) => {
   return result?.data?.uploadFile;
 };
 
+export const toggleFollowUser = async (userId, follow) => {
+  const result = await apolloClient.mutate({
+    mutation: gql`
+      mutation($userId: ID!, $follow: Boolean!) {
+        toggleFollowUser(userId: $userId, follow: $follow) {
+          userId
+          connections
+        }
+      }
+    `,
+    variables: { userId, follow },
+  });
+  return result?.data?.toggleFollowUser;
+};
+
 const _sendMarkNotificationsRead = debounce(
   async ({ notificationIds }) =>
     apolloClient.mutate({
