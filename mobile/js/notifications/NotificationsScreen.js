@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
   },
   notifBody: {
@@ -64,14 +64,22 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     width: '100%',
     flexShrink: 1,
+    alignSelf: 'center',
   },
   notifTime: {
     color: '#888',
+    fontSize: 13,
   },
   avatar: {
-    maxWidth: 42,
-    marginRight: 12,
+    maxWidth: 36,
+    marginRight: 16,
     flexShrink: 0,
+  },
+  notifImage: {
+    height: 36,
+    aspectRatio: Constants.CARD_RATIO,
+    marginLeft: 16,
+    borderRadius: 2,
   },
 });
 
@@ -118,7 +126,7 @@ const NotificationItem = ({ notification, navigateToUser, navigateToDeck, naviga
         </Text>
         {notification.deck ? (
           <FastImage
-            style={{ width: 32, aspectRatio: Constants.CARD_RATIO }}
+            style={styles.notifImage}
             source={{ uri: notification.deck.initialCard.backgroundImage.smallUrl }}
           />
         ) : null}

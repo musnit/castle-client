@@ -5,11 +5,13 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     color: '#fff',
+    lineHeight: 19,
   },
   highlight: {
     fontSize: 16,
     color: '#fff',
     fontWeight: 'bold',
+    lineHeight: 19,
   },
 });
 
