@@ -157,6 +157,7 @@ const TabNavigator = ({ notificationsBadgeCount }) => {
         name="Notifications"
         component={NotificationsNavigator}
         options={({ route }) => ({
+          tabBarVisible: !route.state || route.state.index == 0,
           tabBarBadge: notificationsBadgeCount > 0 ? notificationsBadgeCount : null,
           tabBarIcon: ({ focused, color }) => {
             return (
