@@ -166,7 +166,7 @@ const TabNavigator = ({ notificationsBadgeCount }) => {
                   width: ICON_SIZE,
                   height: ICON_SIZE,
                 }}
-                source={require('../assets/images/BottomTabs-profile.png')}
+                source={require('../assets/images/BottomTabs-notifications.png')}
               />
             );
           },
