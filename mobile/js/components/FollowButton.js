@@ -20,7 +20,11 @@ const styles = StyleSheet.create({
 
 export const FollowButton = ({ user, onPress, style }) => {
   const isFollowing = user?.connections ? user.connections.includes('following') : false;
+  const [optimisticFollowing, setOptimisticFollowing] = React.useState(isFollowing);
+  React.useEffect(() => setOptimisticFollowing(isFollowing), [isFollowing]);
+
   const onPressFollow = React.useCallback(async () => {
+    setOptimisticFollowing(!isFollowing);
     await toggleFollowUser(user.userId, !isFollowing);
     if (onPress) {
       onPress();
@@ -31,7 +35,7 @@ export const FollowButton = ({ user, onPress, style }) => {
   }
   return (
     <TouchableOpacity style={[styles.followButton, style]} onPress={onPressFollow}>
-      <Text style={styles.followLabel}>{isFollowing ? 'Unfollow' : 'Follow'}</Text>
+      <Text style={styles.followLabel}>{optimisticFollowing ? 'Unfollow' : 'Follow'}</Text>
     </TouchableOpacity>
   );
 };
