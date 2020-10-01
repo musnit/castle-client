@@ -25,6 +25,8 @@ import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './AuthSc
 import { CreateScreen } from './create/CreateScreen';
 import { CreateDeckNavigator } from './create/CreateDeckNavigator';
 import { ViewSourceNavigator } from './create/ViewSourceNavigator';
+import { NotificationsScreen } from './notifications/NotificationsScreen';
+import { UserListScreen } from './components/UserListScreen';
 
 import * as Session from './Session';
 import * as PushNotifications from './PushNotifications';
@@ -207,6 +209,8 @@ if (Platform.OS === 'android') {
   AppRegistry.registerComponent('CreateScreen', WrapComponent(CreateScreen));
   AppRegistry.registerComponent('CreateDeck', WrapComponent(CreateDeckNavigator));
   AppRegistry.registerComponent('ViewSource', WrapComponent(ViewSourceNavigator));
+  AppRegistry.registerComponent('Notifications', WrapComponent(NotificationsScreen));
+  AppRegistry.registerComponent('UserList', WrapComponent(UserListScreen));
 }
 
 export default MainProvider;

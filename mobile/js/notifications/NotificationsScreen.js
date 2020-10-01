@@ -165,15 +165,37 @@ export const NotificationsScreen = () => {
     }
   }, [notifications]);
 
-  const navigateToUser = React.useCallback((user) => navigate('Profile', { userId: user.userId }), [
-    navigate,
-  ]);
-  const navigateToUserList = React.useCallback((users) => navigate('UserList', { users }));
+  const navigateToUser = React.useCallback(
+    (user) =>
+      navigate(
+        'Profile',
+        { userId: user.userId },
+        {
+          isFullscreen: true,
+        }
+      ),
+    [navigate]
+  );
+  const navigateToUserList = React.useCallback((users) =>
+    navigate(
+      'UserList',
+      { users },
+      {
+        isFullscreen: true,
+      }
+    )
+  );
   const navigateToDeck = React.useCallback((deck) =>
-    navigate('PlayDeck', {
-      decks: [deck],
-      title: 'Notifications',
-    })
+    navigate(
+      'PlayDeck',
+      {
+        decks: [deck],
+        title: 'Notifications',
+      },
+      {
+        isFullscreen: true,
+      }
+    )
   );
 
   const refreshControl = (
