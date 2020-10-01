@@ -13,9 +13,9 @@ import { createUploadLink, ReactNativeFile } from 'apollo-upload-client';
 
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from './Constants';
-import * as GhostPushNotifications from './ghost/GhostPushNotifications';
-import * as LocalId from './common/local-id';
 import * as GhostChannels from './ghost/GhostChannels';
+import * as LocalId from './common/local-id';
+import * as PushNotifications from './PushNotifications';
 
 let gAuthToken, gUserId;
 const TEST_AUTH_TOKEN = null;
@@ -36,12 +36,12 @@ let CastleAsyncStorage =
         removeItem: GhostChannels.removeCastleAsyncStorage,
       };
 
-GhostPushNotifications.addTokenListener(async (token) => {
+PushNotifications.addTokenListener(async (token) => {
   if (!gAuthToken) {
     return;
   }
 
-  let platform = await GhostPushNotifications.getPlatformAsync();
+  let platform = await PushNotifications.getPlatformAsync();
 
   await apolloClient.mutate({
     mutation: gql`
@@ -94,7 +94,7 @@ export const Provider = (props) => {
           await CastleAsyncStorage.setItem('AUTH_TOKEN', token);
           await CastleAsyncStorage.setItem('USER_ID', userId);
 
-          await GhostPushNotifications.requestTokenAsync();
+          await PushNotifications.requestTokenAsync();
           Amplitude.setUserId(gUserId);
         } else {
           await CastleAsyncStorage.removeItem('AUTH_TOKEN');
