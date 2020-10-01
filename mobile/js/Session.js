@@ -230,12 +230,16 @@ export class Provider extends React.Component {
     });
   };
 
-  markNotificationsReadAsync = async () => {
-    const unreadIds = this.state.notifications
-      ? this.state.notifications.filter((n) => n.status === 'unseen').map((n) => n.notificationId)
-      : null;
+  markNotificationsReadAsync = async (opts) => {
+    let unreadIds = opts?.unreadIds ?? null;
     if (!unreadIds?.length) {
-      return;
+      // mark all as read if none are specified
+      unreadIds = this.state.notifications
+        ? this.state.notifications.filter((n) => n.status === 'unseen').map((n) => n.notificationId)
+        : null;
+      if (!unreadIds?.length) {
+        return;
+      }
     }
     try {
       await _sendMarkNotificationsRead({ notificationIds: unreadIds });
