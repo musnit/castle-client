@@ -14,9 +14,11 @@ import { NotificationsScreen } from './notifications/NotificationsScreen';
 import { PlayDeckScreen } from './play/PlayDeckScreen';
 import { UserListScreen } from './components/UserListScreen';
 import { ViewSourceNavigator } from './create/ViewSourceNavigator';
-import * as DeepLinks from './DeepLinks';
 import { ProfileScreen } from './profile/ProfileScreen';
+
+import * as DeepLinks from './DeepLinks';
 import * as GhostChannels from './ghost/GhostChannels';
+import * as PushNotifications from './PushNotifications';
 
 import FastImage from 'react-native-fast-image';
 
@@ -99,96 +101,99 @@ const ProfileNavigator = () => (
   </Stack.Navigator>
 );
 
-const TabNavigator = ({ notificationsBadgeCount }) => (
-  <Tab.Navigator
-    initialRouteName="Browse"
-    tabBarOptions={{
-      activeTintColor: '#fff',
-      inactiveTintColor: '#888',
-      style: {
-        borderTopColor: '#888',
-        backgroundColor: '#000',
-      },
-      showLabel: false,
-    }}>
-    <Tab.Screen
-      name="Browse"
-      component={BrowseNavigator}
-      options={({ route }) => ({
-        tabBarVisible: !route.state || route.state.index == 0,
-        tabBarIcon: ({ focused, color }) => {
-          return (
-            <FastImage
-              tintColor={color}
-              style={{
-                width: ICON_SIZE,
-                height: ICON_SIZE,
-              }}
-              source={require('../assets/images/BottomTabs-browse.png')}
-            />
-          );
+const TabNavigator = ({ notificationsBadgeCount }) => {
+  const initialPushData = PushNotifications.getInitialData();
+  return (
+    <Tab.Navigator
+      initialRouteName={initialPushData ? 'Notifications' : 'Browse'}
+      tabBarOptions={{
+        activeTintColor: '#fff',
+        inactiveTintColor: '#888',
+        style: {
+          borderTopColor: '#888',
+          backgroundColor: '#000',
         },
-      })}
-    />
-    <Tab.Screen
-      name="Create"
-      component={CreateNavigator}
-      options={({ route }) => ({
-        tabBarVisible: !route.state || route.state.index == 0,
-        tabBarIcon: ({ focused, color }) => {
-          return (
-            <FastImage
-              tintColor={color}
-              style={{
-                width: ICON_SIZE,
-                height: ICON_SIZE,
-              }}
-              source={require('../assets/images/BottomTabs-create.png')}
-            />
-          );
-        },
-      })}
-    />
-    <Tab.Screen
-      name="Notifications"
-      component={NotificationsNavigator}
-      options={({ route }) => ({
-        tabBarBadge: notificationsBadgeCount > 0 ? notificationsBadgeCount : null,
-        tabBarIcon: ({ focused, color }) => {
-          return (
-            <FastImage
-              tintColor={color}
-              style={{
-                width: ICON_SIZE,
-                height: ICON_SIZE,
-              }}
-              source={require('../assets/images/BottomTabs-profile.png')}
-            />
-          );
-        },
-      })}
-    />
-    <Tab.Screen
-      name="Profile"
-      component={ProfileNavigator}
-      options={({ route }) => ({
-        tabBarVisible: !route.state || route.state.index == 0,
-        tabBarIcon: ({ focused, color }) => {
-          return (
-            <FastImage
-              tintColor={color}
-              style={{
-                width: ICON_SIZE,
-                height: ICON_SIZE,
-              }}
-              source={require('../assets/images/BottomTabs-profile.png')}
-            />
-          );
-        },
-      })}
-    />
-  </Tab.Navigator>
-);
+        showLabel: false,
+      }}>
+      <Tab.Screen
+        name="Browse"
+        component={BrowseNavigator}
+        options={({ route }) => ({
+          tabBarVisible: !route.state || route.state.index == 0,
+          tabBarIcon: ({ focused, color }) => {
+            return (
+              <FastImage
+                tintColor={color}
+                style={{
+                  width: ICON_SIZE,
+                  height: ICON_SIZE,
+                }}
+                source={require('../assets/images/BottomTabs-browse.png')}
+              />
+            );
+          },
+        })}
+      />
+      <Tab.Screen
+        name="Create"
+        component={CreateNavigator}
+        options={({ route }) => ({
+          tabBarVisible: !route.state || route.state.index == 0,
+          tabBarIcon: ({ focused, color }) => {
+            return (
+              <FastImage
+                tintColor={color}
+                style={{
+                  width: ICON_SIZE,
+                  height: ICON_SIZE,
+                }}
+                source={require('../assets/images/BottomTabs-create.png')}
+              />
+            );
+          },
+        })}
+      />
+      <Tab.Screen
+        name="Notifications"
+        component={NotificationsNavigator}
+        options={({ route }) => ({
+          tabBarBadge: notificationsBadgeCount > 0 ? notificationsBadgeCount : null,
+          tabBarIcon: ({ focused, color }) => {
+            return (
+              <FastImage
+                tintColor={color}
+                style={{
+                  width: ICON_SIZE,
+                  height: ICON_SIZE,
+                }}
+                source={require('../assets/images/BottomTabs-profile.png')}
+              />
+            );
+          },
+        })}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileNavigator}
+        options={({ route }) => ({
+          tabBarVisible: !route.state || route.state.index == 0,
+          tabBarIcon: ({ focused, color }) => {
+            return (
+              <FastImage
+                tintColor={color}
+                style={{
+                  width: ICON_SIZE,
+                  height: ICON_SIZE,
+                }}
+                source={require('../assets/images/BottomTabs-profile.png')}
+              />
+            );
+          },
+        })}
+      />
+    </Tab.Navigator>
+  );
+};
 
 const AuthNavigator = () => (
   <Stack.Navigator

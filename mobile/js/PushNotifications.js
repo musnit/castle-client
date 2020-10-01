@@ -1,7 +1,7 @@
 import { NativeModules, Platform, DeviceEventEmitter, NativeEventEmitter } from 'react-native';
 
 let gListenerId = 0;
-let gInitialData = {};
+let gInitialData = null;
 const gReceivedListeners = {};
 const gClickedListeners = {};
 
@@ -12,7 +12,7 @@ const eventEmitter = Platform.select({
 
 eventEmitter.addListener('CastlePushNotificationReceived', (event) => {
   let dataString = event.dataString;
-  let data = JSON.parse(dataString);
+  let data = _parsePushDataString(dataString);
 
   for (const [_, listener] of Object.entries(gReceivedListeners)) {
     listener(data);
@@ -21,7 +21,7 @@ eventEmitter.addListener('CastlePushNotificationReceived', (event) => {
 
 eventEmitter.addListener('CastlePushNotificationClicked', (event) => {
   let dataString = event.dataString;
-  let data = JSON.parse(dataString);
+  let data = _parsePushDataString(dataString);
 
   for (const [_, listener] of Object.entries(gClickedListeners)) {
     listener(data);
@@ -29,7 +29,7 @@ eventEmitter.addListener('CastlePushNotificationClicked', (event) => {
 });
 
 export const setInitialData = (dataString) => {
-  gInitialData = JSON.parse(dataString);
+  gInitialData = _parsePushDataString(dataString);
 };
 
 export const getInitialData = () => {
@@ -37,7 +37,7 @@ export const getInitialData = () => {
 };
 
 export const clearInitialData = () => {
-  gInitialData = {};
+  gInitialData = null;
 };
 
 export const addReceivedListener = (listener) => {
@@ -60,4 +60,14 @@ export const removeListener = (id) => {
   if (gClickedListeners[id]) {
     delete gClickedListeners[id];
   }
+};
+
+const _parsePushDataString = (dataString) => {
+  let data;
+  try {
+    data = JSON.parse(dataString);
+  } catch (e) {
+    console.warn(`Couldn't parse push notification data: ${e}\n(raw data was: ${dataString})`);
+  }
+  return data;
 };
