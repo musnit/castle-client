@@ -3,11 +3,12 @@ import { Linking, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 're
 import gql from 'graphql-tag';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { DecksGrid } from '../components/DecksGrid';
+import { FollowButton } from '../components/FollowButton';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect } from '../ReactNavigation';
-import { useSession, toggleFollowUser } from '../Session';
+import { useSession } from '../Session';
 import { UserAvatar } from '../components/UserAvatar';
 import { ProfileSettingsSheet } from './ProfileSettingsSheet';
 
@@ -42,17 +43,6 @@ const styles = StyleSheet.create({
   connections: {
     marginTop: 24,
     flexDirection: 'row',
-  },
-  followButton: {
-    backgroundColor: Constants.colors.white,
-    borderRadius: 3,
-    padding: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  followLabel: {
-    fontWeight: 'bold',
-    fontSize: 16,
   },
   followedBy: {
     marginLeft: 16,
@@ -143,12 +133,6 @@ export const ProfileScreen = ({ userId, route }) => {
   const onPressSettings = () => setSettingsSheet(true);
   const settingsSheetOnClose = () => setSettingsSheet(false);
 
-  const isFollowing = !isMe && user?.connections.includes('following');
-  const onPressFollow = React.useCallback(() => {
-    toggleFollowUser(user.userId, !isFollowing);
-    onRefresh();
-  }, [onRefresh, isFollowing, user?.userId]);
-
   return (
     <Fragment>
       <View style={styles.container}>
@@ -179,9 +163,7 @@ export const ProfileScreen = ({ userId, route }) => {
             </View>
             {!isMe && user ? (
               <View style={styles.connections}>
-                <TouchableOpacity style={styles.followButton} onPress={onPressFollow}>
-                  <Text style={styles.followLabel}>{isFollowing ? 'Unfollow' : 'Follow'}</Text>
-                </TouchableOpacity>
+                <FollowButton user={user} onPress={onRefresh} />
                 {user.connections.includes('followedBy') ? (
                   <View style={styles.followedBy}>
                     <Text style={styles.followedByLabel}>Follows You</Text>
