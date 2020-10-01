@@ -23,6 +23,7 @@ const TEST_AUTH_TOKEN = null;
 const EMPTY_SESSION = {
   authToken: null,
   notifications: null,
+  notificationsBadgeCount: 0,
 };
 
 const SessionContext = React.createContext(EMPTY_SESSION);
@@ -53,97 +54,104 @@ PushNotifications.addTokenListener(async (token) => {
   });
 });
 
-export const Provider = (props) => {
-  const [state, setState] = useState({ authToken: null, userId: null, initialized: false });
+export class Provider extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      ...EMPTY_SESSION,
+      authToken: null,
+      isSignedIn: false,
+      userId: null,
+      initialized: false,
+      signInAsync: this.signInAsync,
+      signOutAsync: this.signOutAsync,
+      signUpAsync: this.signUpAsync,
+      fetchNotificationsAsync: this.fetchNotificationsAsync,
+      markNotificationsReadAsync: this.markNotificationsReadAsync,
+    };
+  }
 
-  useEffect(() => {
-    let mounted = true;
-
-    (async () => {
-      if (!state.initialized) {
-        if (TEST_AUTH_TOKEN) {
-          gAuthToken = TEST_AUTH_TOKEN;
-        } else {
-          gAuthToken = await CastleAsyncStorage.getItem('AUTH_TOKEN');
-          gUserId = await CastleAsyncStorage.getItem('USER_ID');
-          Amplitude.setUserId(gUserId);
-        }
-
-        if (mounted) {
-          setState({
-            ...state,
-            authToken: gAuthToken,
-            userId: gUserId,
-            initialized: true,
-          });
-        }
-      }
-    })();
-
-    return () => (mounted = false);
-  }, []);
-
-  const useNewAuthTokenAsync = React.useCallback(
-    async ({ userId, token }) => {
-      if (!TEST_AUTH_TOKEN) {
-        apolloClient.resetStore();
-        gAuthToken = token;
-        gUserId = userId;
-
-        if (token) {
-          await CastleAsyncStorage.setItem('AUTH_TOKEN', token);
-          await CastleAsyncStorage.setItem('USER_ID', userId);
-
-          await PushNotifications.requestTokenAsync();
-          Amplitude.setUserId(gUserId);
-        } else {
-          await CastleAsyncStorage.removeItem('AUTH_TOKEN');
-          await CastleAsyncStorage.removeItem('USER_ID');
-          Amplitude.setUserId(null);
-          Amplitude.clearUserProperties();
-        }
+  async componentDidMount() {
+    this._mounted = true;
+    if (!this.state.initialized) {
+      if (TEST_AUTH_TOKEN) {
+        gAuthToken = TEST_AUTH_TOKEN;
+      } else {
+        gAuthToken = await CastleAsyncStorage.getItem('AUTH_TOKEN');
+        gUserId = await CastleAsyncStorage.getItem('USER_ID');
+        Amplitude.setUserId(gUserId);
       }
 
-      return setState({
-        ...state,
-        authToken: gAuthToken,
-        userId: gUserId,
-      });
-    },
-    [state]
-  );
+      if (this._mounted) {
+        this.setState({
+          authToken: gAuthToken,
+          isSignedIn: !!gAuthToken,
+          userId: gUserId,
+          initialized: true,
+        });
+      }
+    }
+  }
 
-  const signInAsync = React.useCallback(
-    async ({ username, password }) => {
-      const userId = await userIdForUsernameAsync(username);
-      const result = await apolloClient.mutate({
-        mutation: gql`
-          mutation SignIn($userId: ID!, $password: String!) {
-            login(userId: $userId, password: $password) {
-              userId
-              token
-              photo {
-                url
-              }
+  componentWillUnmount() {
+    this._mounted = false;
+  }
+
+  useNewAuthTokenAsync = async ({ userId, token }) => {
+    if (!TEST_AUTH_TOKEN) {
+      apolloClient.resetStore();
+      gAuthToken = token;
+      gUserId = userId;
+
+      if (token) {
+        await CastleAsyncStorage.setItem('AUTH_TOKEN', token);
+        await CastleAsyncStorage.setItem('USER_ID', userId);
+
+        await PushNotifications.requestTokenAsync();
+        Amplitude.setUserId(gUserId);
+      } else {
+        await CastleAsyncStorage.removeItem('AUTH_TOKEN');
+        await CastleAsyncStorage.removeItem('USER_ID');
+        Amplitude.setUserId(null);
+        Amplitude.clearUserProperties();
+      }
+    }
+
+    return this.setState({
+      authToken: gAuthToken,
+      isSignedIn: !!gAuthToken,
+      userId: gUserId,
+    });
+  };
+
+  signInAsync = async ({ username, password }) => {
+    const userId = await userIdForUsernameAsync(username);
+    const result = await apolloClient.mutate({
+      mutation: gql`
+        mutation SignIn($userId: ID!, $password: String!) {
+          login(userId: $userId, password: $password) {
+            userId
+            token
+            photo {
+              url
             }
           }
-        `,
-        variables: { userId, password },
-      });
-      if (result && result.data && result.data.login && result.data.login.userId) {
-        if (Platform.OS == 'android') {
-          try {
-            GhostChannels.saveSmartLockCredentials(username, password, result.data.login.photo.url);
-          } catch (e) {}
         }
-
-        await useNewAuthTokenAsync(result.data.login);
+      `,
+      variables: { userId, password },
+    });
+    if (result && result.data && result.data.login && result.data.login.userId) {
+      if (Platform.OS == 'android') {
+        try {
+          GhostChannels.saveSmartLockCredentials(username, password, result.data.login.photo.url);
+        } catch (e) {}
       }
-    },
-    [useNewAuthTokenAsync]
-  );
 
-  const signOutAsync = React.useCallback(async () => {
+      await this.useNewAuthTokenAsync(result.data.login);
+    }
+  };
+
+  signOutAsync = async () => {
     await apolloClient.mutate({
       mutation: gql`
         mutation SignOut {
@@ -151,44 +159,37 @@ export const Provider = (props) => {
         }
       `,
     });
-    await useNewAuthTokenAsync({});
-  }, [useNewAuthTokenAsync]);
+    await this.useNewAuthTokenAsync({});
+  };
 
-  const signUpAsync = React.useCallback(
-    async ({ username, name, email, password }) => {
-      const result = await apolloClient.mutate({
-        mutation: gql`
-          mutation SignUp($name: String!, $username: String!, $email: String!, $password: String!) {
-            signup(user: { name: $name, username: $username }, email: $email, password: $password) {
-              userId
-              token
-              photo {
-                url
-              }
+  signUpAsync = async ({ username, name, email, password }) => {
+    const result = await apolloClient.mutate({
+      mutation: gql`
+        mutation SignUp($name: String!, $username: String!, $email: String!, $password: String!) {
+          signup(user: { name: $name, username: $username }, email: $email, password: $password) {
+            userId
+            token
+            photo {
+              url
             }
           }
-        `,
-        variables: { username, name, email, password },
-      });
-      if (result && result.data && result.data.signup && result.data.signup.userId) {
-        if (Platform.OS == 'android') {
-          try {
-            GhostChannels.saveSmartLockCredentials(
-              username,
-              password,
-              result.data.signup.photo.url
-            );
-          } catch (e) {}
         }
-
-        await useNewAuthTokenAsync(result.data.signup);
+      `,
+      variables: { username, name, email, password },
+    });
+    if (result && result.data && result.data.signup && result.data.signup.userId) {
+      if (Platform.OS == 'android') {
+        try {
+          GhostChannels.saveSmartLockCredentials(username, password, result.data.signup.photo.url);
+        } catch (e) {}
       }
-    },
-    [useNewAuthTokenAsync]
-  );
 
-  const fetchNotificationsAsync = React.useCallback(async () => {
-    if (!state.authToken) {
+      await this.useNewAuthTokenAsync(result.data.signup);
+    }
+  };
+
+  fetchNotificationsAsync = async () => {
+    if (!this.state.authToken) {
       return false;
     }
     const result = await apolloClient.query({
@@ -218,15 +219,20 @@ export const Provider = (props) => {
       fetchPolicy: 'no-cache',
     });
     const notifications = result?.data?.notifications ?? null;
-    return setState({
-      ...state,
+    const notificationsBadgeCount = notifications.reduce(
+      (accum, n) => accum + (n.status === 'unseen'),
+      0
+    );
+    PushNotifications.setBadgeCount(notificationsBadgeCount);
+    return this.setState({
       notifications,
+      notificationsBadgeCount,
     });
-  }, [state]);
+  };
 
-  const markNotificationsReadAsync = React.useCallback(async () => {
-    const unreadIds = state.notifications
-      ? state.notifications.filter((n) => n.status === 'unseen').map((n) => n.notificationId)
+  markNotificationsReadAsync = async () => {
+    const unreadIds = this.state.notifications
+      ? this.state.notifications.filter((n) => n.status === 'unseen').map((n) => n.notificationId)
       : null;
     if (!unreadIds?.length) {
       return;
@@ -236,38 +242,36 @@ export const Provider = (props) => {
     } catch (_) {
       console.warn(`Network request to mark notifs read failed, marking locally read anyway`);
     }
-    return setState({
-      ...state,
-      notifications: state.notifications.map((n) => {
+    return this.setState((state) => {
+      const notifications = state.notifications.map((n) => {
         if (unreadIds.includes(n.notificationId)) {
           return {
             ...n,
             status: 'seen',
           };
         }
+
         return n;
-      }),
+      });
+      const notificationsBadgeCount = notifications.reduce(
+        (accum, n) => accum + (n.status === 'unseen'),
+        0
+      );
+      PushNotifications.setBadgeCount(notificationsBadgeCount);
+      return {
+        ...state,
+        notifications,
+        notificationsBadgeCount,
+      };
     });
-  }, [state]);
-
-  const notificationsBadgeCount = state.notifications
-    ? state.notifications.reduce((accum, n) => accum + (n.status === 'unseen'), 0)
-    : null;
-  PushNotifications.setBadgeCount(notificationsBadgeCount ?? 0);
-
-  const value = {
-    ...state,
-    userId: state.userId,
-    isSignedIn: !!state.authToken,
-    signInAsync,
-    signOutAsync,
-    signUpAsync,
-    fetchNotificationsAsync,
-    markNotificationsReadAsync,
-    notificationsBadgeCount,
   };
-  return <SessionContext.Provider value={value}>{props.children}</SessionContext.Provider>;
-};
+
+  render() {
+    return (
+      <SessionContext.Provider value={this.state}>{this.props.children}</SessionContext.Provider>
+    );
+  }
+}
 
 export const useSession = () => React.useContext(SessionContext);
 
