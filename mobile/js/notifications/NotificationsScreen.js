@@ -17,6 +17,7 @@ import { useSafeArea } from 'react-native-safe-area-context';
 import { useSession } from '../Session';
 import { UserAvatar } from '../components/UserAvatar';
 
+import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 
 import FastImage from 'react-native-fast-image';
@@ -141,6 +142,10 @@ export const NotificationsScreen = () => {
   const [orderedNotifs, setOrderedNotifs] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const { notifications, fetchNotificationsAsync, markNotificationsReadAsync } = useSession();
+
+  React.useEffect(() => {
+    Amplitude.logEventWithProperties('VIEW_NOTIFICATIONS');
+  }, []);
 
   const onRefresh = React.useCallback(async () => {
     setLoading(true);
