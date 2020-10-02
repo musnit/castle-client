@@ -214,14 +214,14 @@ if (Platform.OS === 'android') {
   AppRegistry.registerComponent('Notifications', WrapComponent(NotificationsScreen));
   AppRegistry.registerComponent('UserList', WrapComponent(UserListScreen));
 
-  const handlePushNotification = (data) => {
-    if (data?.numUnseenNotifications) {
+  const handlePushNotification = ({ data, clicked }) => {
+    if (data?.numUnseenNotifications && !clicked) {
       PushNotifications.setBadgeCount(data.numUnseenNotifications);
     }
     Session.fetchNotificationsAsync();
   };
-  PushNotifications.addClickedListener(handlePushNotification);
-  PushNotifications.addReceivedListener(handlePushNotification);
+  PushNotifications.addClickedListener((data) => handlePushNotification({ data, clicked: true }));
+  PushNotifications.addReceivedListener((data) => handlePushNotification({ data, clicked: false }));
 
   (async () => {
     await Session.loadAuthTokenAsync();
