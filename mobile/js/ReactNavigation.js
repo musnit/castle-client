@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import {
   useNavigation as realUseNavigation,
+  useIsFocused as realUseIsFocused,
   useFocusEffect as realUseFocusEffect,
   useScrollToTop as realUseScrollToTop,
 } from '@react-navigation/native';
@@ -66,6 +67,14 @@ export const useNavigation = (...args) => {
         };
       },
     };
+  }
+};
+
+export const useIsFocused = () => {
+  if (Platform.OS === 'ios') {
+    return realUseIsFocused();
+  } else {
+    throw new Error(`useIsFocused: not implemented on Android`);
   }
 };
 

@@ -13,7 +13,8 @@ import { FollowButton } from '../components/FollowButton';
 import { NotificationBody } from './NotificationBody';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { toRecentDate } from '../common/date-utilities';
-import { useNavigation, useFocusEffect } from '../ReactNavigation';
+import { useAppState } from '../ghost/GhostAppState';
+import { useNavigation, useFocusEffect, useIsFocused } from '../ReactNavigation';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useSession } from '../Session';
 import { UserAvatar } from '../components/UserAvatar';
@@ -144,6 +145,19 @@ export const NotificationsScreen = () => {
   const [orderedNotifs, setOrderedNotifs] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const { notifications, fetchNotificationsAsync, markNotificationsReadAsync } = useSession();
+  const isFocused = useIsFocused();
+
+  useAppState(
+    React.useCallback(
+      (state) => {
+        if (state === 'background' && isFocused) {
+          // mark notifs read if we background the app while the notifs tab is focused
+          markNotificationsReadAsync();
+        }
+      },
+      [isFocused]
+    )
+  );
 
   React.useEffect(() => {
     Amplitude.logEventWithProperties('VIEW_NOTIFICATIONS');
