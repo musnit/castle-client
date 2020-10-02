@@ -9,6 +9,7 @@ import { useSession } from './Session';
 import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './AuthScreens';
 import { CreateScreen } from './create/CreateScreen';
 import { CreateDeckNavigator } from './create/CreateDeckNavigator';
+import { useAppState } from './ghost/GhostAppState';
 import { HomeScreen } from './home/HomeScreen';
 import { NotificationsScreen } from './notifications/NotificationsScreen';
 import { PlayDeckScreen } from './play/PlayDeckScreen';
@@ -229,6 +230,8 @@ const navRefCallback = (r) => {
 
 export const RootNavigator = () => {
   const { isSignedIn, notificationsBadgeCount, fetchNotificationsAsync } = useSession();
+
+  // fetch notifications when a notif arrives while we're running
   const handlePushNotification = React.useCallback(
     ({ data, clicked }) => {
       if (data?.numUnseenNotifications && !clicked) {
@@ -242,6 +245,22 @@ export const RootNavigator = () => {
     onClicked: (data) => handlePushNotification({ data, clicked: true }),
     onReceived: (data) => handlePushNotification({ data, clicked: false }),
   });
+
+  // fetch notifs when we first notice a signed in user (including every app boot)
+  React.useEffect(() => {
+    if (isSignedIn) {
+      fetchNotificationsAsync();
+    }
+  }, [isSignedIn]);
+
+  // fetch notifs when the app foregrounds
+  useAppState(
+    React.useCallback((state) => {
+      if (state === 'active') {
+        fetchNotificationsAsync();
+      }
+    }, [])
+  );
 
   return (
     <NavigationContainer
