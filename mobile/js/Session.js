@@ -16,6 +16,7 @@ import * as Constants from './Constants';
 import * as GhostChannels from './ghost/GhostChannels';
 import * as LocalId from './common/local-id';
 import * as PushNotifications from './PushNotifications';
+import * as EventEmitter from './EventEmitter';
 
 let gAuthToken, gUserId;
 const TEST_AUTH_TOKEN = null;
@@ -54,6 +55,20 @@ PushNotifications.addTokenListener(async (token) => {
   });
 });
 
+export async function loadAuthTokenAsync() {
+  if (gAuthToken) {
+    return;
+  }
+
+  if (TEST_AUTH_TOKEN) {
+    gAuthToken = TEST_AUTH_TOKEN;
+  } else {
+    gAuthToken = await CastleAsyncStorage.getItem('AUTH_TOKEN');
+    gUserId = await CastleAsyncStorage.getItem('USER_ID');
+    Amplitude.setUserId(gUserId);
+  }
+}
+
 export class Provider extends React.Component {
   constructor(props) {
     super(props);
@@ -66,7 +81,6 @@ export class Provider extends React.Component {
       signInAsync: this.signInAsync,
       signOutAsync: this.signOutAsync,
       signUpAsync: this.signUpAsync,
-      fetchNotificationsAsync: this.fetchNotificationsAsync,
       markNotificationsReadAsync: this.markNotificationsReadAsync,
     };
   }
@@ -74,13 +88,7 @@ export class Provider extends React.Component {
   async componentDidMount() {
     this._mounted = true;
     if (!this.state.initialized) {
-      if (TEST_AUTH_TOKEN) {
-        gAuthToken = TEST_AUTH_TOKEN;
-      } else {
-        gAuthToken = await CastleAsyncStorage.getItem('AUTH_TOKEN');
-        gUserId = await CastleAsyncStorage.getItem('USER_ID');
-        Amplitude.setUserId(gUserId);
-      }
+      await loadAuthTokenAsync();
 
       if (this._mounted) {
         this.setState({
@@ -91,10 +99,18 @@ export class Provider extends React.Component {
         });
       }
     }
+
+    this._notificationsListener = EventEmitter.addListener(
+      'notifications',
+      ({ notifications, notificationsBadgeCount }) => {
+        this.setState({ notifications, notificationsBadgeCount });
+      }
+    );
   }
 
   componentWillUnmount() {
     this._mounted = false;
+    EventEmitter.removeListener(this._notificationsListener);
   }
 
   useNewAuthTokenAsync = async ({ userId, token }) => {
@@ -186,48 +202,6 @@ export class Provider extends React.Component {
 
       await this.useNewAuthTokenAsync(result.data.signup);
     }
-  };
-
-  fetchNotificationsAsync = async () => {
-    if (!this.state.authToken) {
-      return false;
-    }
-    const result = await apolloClient.query({
-      query: gql`
-      query {
-        notifications(limit: 64) {
-          notificationId
-          type
-          status
-          body
-          userIds
-          users {
-            userId
-            username
-            connections
-            photo {
-              url
-            }
-          }
-          deckId
-          deck {
-            ${Constants.FEED_ITEM_DECK_FRAGMENT}
-          }
-          updatedTime
-        }
-      }
-    `,
-      fetchPolicy: 'no-cache',
-    });
-    const notifications = result?.data?.notifications ?? null;
-    const notificationsBadgeCount = notifications
-      ? notifications.reduce((accum, n) => accum + (n.status === 'unseen'), 0)
-      : 0;
-    PushNotifications.setBadgeCount(notificationsBadgeCount);
-    return this.setState({
-      notifications,
-      notificationsBadgeCount,
-    });
   };
 
   markNotificationsReadAsync = async (opts) => {
@@ -668,3 +642,45 @@ const _sendMarkNotificationsRead = debounce(
     }),
   100
 );
+
+export const fetchNotificationsAsync = async () => {
+  if (!gAuthToken) {
+    return false;
+  }
+  const result = await apolloClient.query({
+    query: gql`
+    query {
+      notifications(limit: 64) {
+        notificationId
+        type
+        status
+        body
+        userIds
+        users {
+          userId
+          username
+          connections
+          photo {
+            url
+          }
+        }
+        deckId
+        deck {
+          ${Constants.FEED_ITEM_DECK_FRAGMENT}
+        }
+        updatedTime
+      }
+    }
+  `,
+    fetchPolicy: 'no-cache',
+  });
+  const notifications = result?.data?.notifications ?? null;
+  const notificationsBadgeCount = notifications
+    ? notifications.reduce((accum, n) => accum + (n.status === 'unseen'), 0)
+    : 0;
+  PushNotifications.setBadgeCount(notificationsBadgeCount);
+  EventEmitter.sendEvent('notifications', {
+    notifications,
+    notificationsBadgeCount,
+  });
+};

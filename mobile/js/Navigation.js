@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from 'react-native-screens/native-stack';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import { useSession } from './Session';
+import { useSession, fetchNotificationsAsync } from './Session';
 
 import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './AuthScreens';
 import { CreateScreen } from './create/CreateScreen';
@@ -229,18 +229,15 @@ const navRefCallback = (r) => {
 };
 
 export const RootNavigator = () => {
-  const { isSignedIn, notificationsBadgeCount, fetchNotificationsAsync } = useSession();
+  const { isSignedIn, notificationsBadgeCount } = useSession();
 
   // fetch notifications when a notif arrives while we're running
-  const handlePushNotification = React.useCallback(
-    ({ data, clicked }) => {
-      if (data?.numUnseenNotifications && !clicked) {
-        PushNotifications.setBadgeCount(data.numUnseenNotifications);
-      }
-      setTimeout(fetchNotificationsAsync, 250);
-    },
-    [fetchNotificationsAsync]
-  );
+  const handlePushNotification = React.useCallback(({ data, clicked }) => {
+    if (data?.numUnseenNotifications && !clicked) {
+      PushNotifications.setBadgeCount(data.numUnseenNotifications);
+    }
+    setTimeout(fetchNotificationsAsync, 250);
+  }, []);
   PushNotifications.usePushNotifications({
     onClicked: (data) => handlePushNotification({ data, clicked: true }),
     onReceived: (data) => handlePushNotification({ data, clicked: false }),

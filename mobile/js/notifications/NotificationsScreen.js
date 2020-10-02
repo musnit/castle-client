@@ -16,7 +16,7 @@ import { toRecentDate } from '../common/date-utilities';
 import { useAppState } from '../ghost/GhostAppState';
 import { useNavigation, useFocusEffect, useIsFocused } from '../ReactNavigation';
 import { useSafeArea } from 'react-native-safe-area-context';
-import { useSession } from '../Session';
+import { useSession, fetchNotificationsAsync } from '../Session';
 import { UserAvatar } from '../components/UserAvatar';
 
 import * as Amplitude from 'expo-analytics-amplitude';
@@ -147,7 +147,7 @@ export const NotificationsScreen = () => {
   const { navigate } = useNavigation();
   const [orderedNotifs, setOrderedNotifs] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
-  const { notifications, fetchNotificationsAsync, markNotificationsReadAsync } = useSession();
+  const { notifications, markNotificationsReadAsync } = useSession();
   const isFocused = useIsFocused();
 
   useAppState(
@@ -163,7 +163,7 @@ export const NotificationsScreen = () => {
   );
 
   React.useEffect(() => {
-    Amplitude.logEventWithProperties('VIEW_NOTIFICATIONS');
+    Amplitude.logEvent('VIEW_NOTIFICATIONS');
   }, []);
 
   const onRefresh = React.useCallback(async () => {
@@ -172,7 +172,7 @@ export const NotificationsScreen = () => {
       await fetchNotificationsAsync();
     } catch (_) {}
     setLoading(false);
-  }, [fetchNotificationsAsync]);
+  }, []);
 
   useFocusEffect(
     React.useCallback(() => {

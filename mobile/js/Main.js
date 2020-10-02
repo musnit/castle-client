@@ -214,16 +214,25 @@ if (Platform.OS === 'android') {
   AppRegistry.registerComponent('Notifications', WrapComponent(NotificationsScreen));
   AppRegistry.registerComponent('UserList', WrapComponent(UserListScreen));
 
-  /*
-  const { fetchNotificationsAsync } = Session.useSession();
   const handlePushNotification = (data) => {
     if (data?.numUnseenNotifications) {
       PushNotifications.setBadgeCount(data.numUnseenNotifications);
     }
-    fetchNotificationsAsync();
+    Session.fetchNotificationsAsync();
   };
   PushNotifications.addClickedListener(handlePushNotification);
-  PushNotifications.addReceivedListener(handlePushNotification);*/
+  PushNotifications.addReceivedListener(handlePushNotification);
+
+  (async () => {
+    await Session.loadAuthTokenAsync();
+    await Session.fetchNotificationsAsync();
+  })();
+
+  DeviceEventEmitter.addListener('onAppStateChange', async (state) => {
+    if (state == 'active') {
+      await Session.fetchNotificationsAsync();
+    }
+  });
 }
 
 export default MainProvider;
