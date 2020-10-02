@@ -38,7 +38,7 @@ public class TopTabBar extends TabBar {
     private void selectIndex(int index) {
         setSelectedIndex(index);
 
-        if (listener != null && selectedIndex != index) {
+        if (listener != null) {
             listener.onSelected(tabs.get(index).id);
         }
     }
