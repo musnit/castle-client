@@ -230,17 +230,17 @@ const navRefCallback = (r) => {
 export const RootNavigator = () => {
   const { isSignedIn, notificationsBadgeCount, fetchNotificationsAsync } = useSession();
   const handlePushNotification = React.useCallback(
-    (data) => {
-      if (data?.numUnseenNotifications) {
+    ({ data, clicked }) => {
+      if (data?.numUnseenNotifications && !clicked) {
         PushNotifications.setBadgeCount(data.numUnseenNotifications);
       }
-      fetchNotificationsAsync();
+      setTimeout(fetchNotificationsAsync, 250);
     },
     [fetchNotificationsAsync]
   );
   PushNotifications.usePushNotifications({
-    onClicked: handlePushNotification,
-    onReceived: handlePushNotification,
+    onClicked: (data) => handlePushNotification({ data, clicked: true }),
+    onReceived: (data) => handlePushNotification({ data, clicked: false }),
   });
 
   return (

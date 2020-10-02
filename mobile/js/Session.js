@@ -220,10 +220,9 @@ export class Provider extends React.Component {
       fetchPolicy: 'no-cache',
     });
     const notifications = result?.data?.notifications ?? null;
-    const notificationsBadgeCount = notifications.reduce(
-      (accum, n) => accum + (n.status === 'unseen'),
-      0
-    );
+    const notificationsBadgeCount = notifications
+      ? notifications.reduce((accum, n) => accum + (n.status === 'unseen'), 0)
+      : 0;
     PushNotifications.setBadgeCount(notificationsBadgeCount);
     return this.setState({
       notifications,
