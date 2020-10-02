@@ -213,6 +213,17 @@ if (Platform.OS === 'android') {
   AppRegistry.registerComponent('ViewSource', WrapComponent(ViewSourceNavigator));
   AppRegistry.registerComponent('Notifications', WrapComponent(NotificationsScreen));
   AppRegistry.registerComponent('UserList', WrapComponent(UserListScreen));
+
+  /*
+  const { fetchNotificationsAsync } = Session.useSession();
+  const handlePushNotification = (data) => {
+    if (data?.numUnseenNotifications) {
+      PushNotifications.setBadgeCount(data.numUnseenNotifications);
+    }
+    fetchNotificationsAsync();
+  };
+  PushNotifications.addClickedListener(handlePushNotification);
+  PushNotifications.addReceivedListener(handlePushNotification);*/
 }
 
 export default MainProvider;

@@ -68,7 +68,8 @@
 
         <service
             android:name=".CastleFirebaseMessagingService"
-            android:exported="false">
+            android:exported="false"
+            android:stopWithTask="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>

@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 
@@ -36,6 +35,7 @@ import xyz.castle.api.API;
 import xyz.castle.api.GraphQLOperation;
 import xyz.castle.navigation.CastleNavigator;
 import xyz.castle.navigation.CastleReactView;
+import xyz.castle.navigation.TabBar;
 import xyz.castle.views.FeaturedFeedView;
 import xyz.castle.views.HistoryFeedView;
 import xyz.castle.views.NewestFeedView;
@@ -54,6 +54,8 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
     private PermissionListener mPermissionListener;
 
     private CastleSwapNavigator navigator;
+    private CastleTabNavigator mainTabNavigator;
+    private TabBar.Tab notificationsTab;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -82,9 +84,11 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
             CastleTabNavigator nav = new CastleTabNavigator(this, CastleTabNavigator.TABS_BOTTOM);
             nav.addTab("RootTabScreen", null, R.drawable.bottomtabs_browse);
             nav.addTab("CreateScreen", null, R.drawable.bottomtabs_create);
-            nav.addTab("Notifications", null, R.drawable.bottomtabs_notifications);
+            notificationsTab = nav.addTab("Notifications", null, R.drawable.bottomtabs_notifications);
             nav.addTab("ProfileScreen", null, R.drawable.bottomtabs_profile);
             nav.doneAddingTabs();
+
+            mainTabNavigator = nav;
             return nav;
         }).register();
         new CastleNavigationScreen("LoggedInRootStack", (Activity activity) -> {
@@ -190,6 +194,14 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
                 payload.putString("dataString", dataString);
                 (getReactGateway().reactInstanceManager().getCurrentReactContext()).getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                         .emit("CastlePushNotificationClicked", payload);
+
+
+            }
+
+            if (mainTabNavigator != null && notificationsTab != null) {
+                ViewUtils.runOnUiThread(() -> {
+                    mainTabNavigator.switchToTab(notificationsTab.id);
+                });
             }
         }
     }
@@ -217,6 +229,21 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
     public void onRNEvent(RNEvent rnEvent) {
         (getReactGateway().reactInstanceManager().getCurrentReactContext()).getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                 .emit(rnEvent.eventName, rnEvent.data);
+    }
+
+    public static class UpdateNotificationsBadgeEvent {
+        int count;
+
+        public UpdateNotificationsBadgeEvent(int count) {
+            this.count = count;
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdateNotificationsBadge(UpdateNotificationsBadgeEvent event) {
+        if (notificationsTab != null) {
+            notificationsTab.updateBadge(event.count);
+        }
     }
 
     @Override

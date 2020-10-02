@@ -17,6 +17,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import androidx.annotation.NonNull;
 import xyz.castle.CastleFirebaseMessagingService;
+import xyz.castle.NavigationActivity;
 
 public class GhostPushNotificationsModule extends ReactContextBaseJavaModule {
     GhostPushNotificationsModule(ReactApplicationContext reactContext) {
@@ -76,5 +77,11 @@ public class GhostPushNotificationsModule extends ReactContextBaseJavaModule {
     @ReactMethod
     void getPlatform(Promise promise) {
         promise.resolve("android");
+    }
+
+    @ReactMethod
+    void setNotificationsBadgeCount(int count, Promise promise) {
+        EventBus.getDefault().post(new NavigationActivity.UpdateNotificationsBadgeEvent(count));
+        promise.resolve(true);
     }
 }

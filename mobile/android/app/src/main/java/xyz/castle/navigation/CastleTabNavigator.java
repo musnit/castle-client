@@ -67,14 +67,40 @@ public class CastleTabNavigator extends CastleNavigator {
         });
     }
 
-    public void addTab(String screenType, String title, @DrawableRes int resId) {
+    public TabBar.Tab addTab(String screenType, String title, @DrawableRes int resId) {
         tabs.add(CastleNavigator.screenForType(screenType));
 
-        tabBar.addButton(tabs.size() - 1, title, resId);
+        return tabBar.addButton(tabs.size() - 1, title, resId);
     }
 
     public void doneAddingTabs() {
         tabBar.doneAddingButtons();
+    }
+
+    public void switchToTab(int id) {
+        int newIndex = -1;
+        for (int i = 0; i < tabBar.tabs.size(); i++) {
+            TabBar.Tab tab = tabBar.tabs.get(i);
+            if (tab.id == id) {
+                newIndex = i;
+            }
+        }
+
+        if (newIndex == -1 || newIndex == index) {
+            return;
+        }
+
+        index = newIndex;
+        tabBar.setSelectedIndex(index);
+        CastleNavigationScreen.Instance instance = tabs.get(index);
+        if (instance.navigator() != null) {
+            instance.navigator().popToTop();
+        }
+        bindCurrentTab();
+    }
+
+    private void bindCurrentTab() {
+        tabs.get(index).bind(this, mainLayout, navigationWidth, navigationHeight + tabHeight, 0);
     }
 
     @Override
@@ -82,7 +108,7 @@ public class CastleTabNavigator extends CastleNavigator {
         super.bindViews(layout, navigationWidth, navigationHeight);
 
         setContentView(linearLayout);
-        tabs.get(index).bind(this, mainLayout, navigationWidth, navigationHeight + tabHeight, 0);
+        bindCurrentTab();
     }
 
     @Override

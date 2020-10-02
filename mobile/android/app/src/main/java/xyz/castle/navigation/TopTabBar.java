@@ -24,12 +24,21 @@ public class TopTabBar extends TabBar {
         setOrientation(HORIZONTAL);
     }
 
-    private void selectIndex(int index) {
-        if (listener != null && selectedIndex != index) {
+
+    @Override
+    public void setSelectedIndex(int index) {
+        if (selectedIndex != index) {
             setSelected(false, (TextView) tabs.get(selectedIndex).view);
             setSelected(true, (TextView) tabs.get(index).view);
 
             selectedIndex = index;
+        }
+    }
+
+    private void selectIndex(int index) {
+        setSelectedIndex(index);
+
+        if (listener != null && selectedIndex != index) {
             listener.onSelected(tabs.get(index).id);
         }
     }

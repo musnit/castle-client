@@ -17,6 +17,8 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Map;
 
@@ -106,5 +108,13 @@ public class CastleFirebaseMessagingService extends FirebaseMessagingService {
         WritableMap payload = Arguments.createMap();
         payload.putString("dataString", dataString);
         EventBus.getDefault().post(new NavigationActivity.RNEvent("CastlePushNotificationReceived", payload));
+
+        try {
+            JSONObject data = new JSONObject(dataString);
+            if (data.has("numUnseenNotifications")) {
+                int count = data.getInt("numUnseenNotifications");
+                EventBus.getDefault().post(new NavigationActivity.UpdateNotificationsBadgeEvent(count));
+            }
+        } catch (JSONException e) {}
     }
 }

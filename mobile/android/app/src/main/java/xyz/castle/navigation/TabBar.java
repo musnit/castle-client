@@ -4,12 +4,15 @@ package xyz.castle.navigation;
 
 import android.content.Context;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.DrawableRes;
+import xyz.castle.ViewUtils;
 
 public abstract class TabBar extends LinearLayout {
 
@@ -21,14 +24,26 @@ public abstract class TabBar extends LinearLayout {
         void onSelected(int id);
     }
 
-    protected static class Tab {
-        int id;
+    public interface OnUpdateBadgeListener {
+        void onUpdateBadge(int count);
+    }
+
+    public static class Tab {
+        public void updateBadge(int count) {
+            ViewUtils.runOnUiThread(() -> {
+                onUpdateBadgeListener.onUpdateBadge(count);
+            });
+        }
+
+        public final int id;
         String title;
         @DrawableRes
         int resId;
         View view;
+        TextView badgeView;
+        OnUpdateBadgeListener onUpdateBadgeListener = (int count) -> {};
 
-        Tab(int id, String title, @DrawableRes int resId) {
+        protected Tab(int id, String title, @DrawableRes int resId) {
             this.id = id;
             this.title = title;
             this.resId = resId;
@@ -39,12 +54,16 @@ public abstract class TabBar extends LinearLayout {
     protected List<Tab> tabs = new ArrayList<>();
     protected int selectedIndex = 0;
 
+    public abstract void setSelectedIndex(int index);
+
     public void setListener(OnItemSelectedListener listener) {
         this.listener = listener;
     }
 
-    public void addButton(int id, String title, @DrawableRes int resId) {
-        tabs.add(new Tab(id, title, resId));
+    public Tab addButton(int id, String title, @DrawableRes int resId) {
+        Tab tab = new Tab(id, title, resId);
+        tabs.add(tab);
+        return tab;
     }
 
     public abstract void doneAddingButtons();
