@@ -17,6 +17,8 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import xyz.castle.NavigationActivity;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,8 +70,7 @@ public class CastleReactView extends RNGestureHandlerEnabledRootView {
         props.putString(key, value);
         payload.putMap("props", props);
 
-        (getReactInstanceManager().getCurrentReactContext()).getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                .emit("CastleNativeNavigationProp", payload);
+        EventBus.getDefault().post(new NavigationActivity.RNEvent("CastleNativeNavigationProp", payload));
     }
 
     @Override

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   useNavigation as realUseNavigation,
   useIsFocused as realUseIsFocused,
@@ -74,7 +74,28 @@ export const useIsFocused = () => {
   if (Platform.OS === 'ios') {
     return realUseIsFocused();
   } else {
-    throw new Error(`useIsFocused: not implemented on Android`);
+    const { viewId } = React.useContext(AndroidNavigationContext);
+    const [isFocused, setIsFocused] = useState(true);
+
+    useEffect(() => {
+      let subscription1 = DeviceEventEmitter.addListener('CastleOnFocusView', (event) => {
+        if (event.viewId == viewId) {
+          setIsFocused(true);
+        }
+      });
+      let subscription2 = DeviceEventEmitter.addListener('CastleOnBlurView', (event) => {
+        if (event.viewId == viewId) {
+          setIsFocused(false);
+        }
+      });
+
+      return () => {
+        subscription1.remove();
+        subscription2.remove();
+      };
+    }, []);
+
+    return isFocused;
   }
 };
 

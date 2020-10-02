@@ -49,9 +49,7 @@ public class GhostPushNotificationsModule extends ReactContextBaseJavaModule {
         // Put data to map
         payload.putString("token", token);
         // Get EventEmitter from context and send event thanks to it
-        getReactApplicationContext()
-                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                .emit("onNewPushNotificationToken", payload);
+        EventBus.getDefault().post(new NavigationActivity.RNEvent("onNewPushNotificationToken", payload));
     }
 
     @ReactMethod
