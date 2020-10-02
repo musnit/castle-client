@@ -84,6 +84,7 @@ const styles = StyleSheet.create({
     marginLeft: 16,
     borderRadius: 2,
   },
+  smallFollowButton: { padding: 6 },
 });
 
 const STATUS_HEADERS = {
@@ -133,7 +134,9 @@ const NotificationItem = ({ notification, navigateToUser, navigateToDeck, naviga
             source={{ uri: notification.deck.initialCard.backgroundImage.smallUrl }}
           />
         ) : null}
-        {user && notification.type === 'follow' ? <FollowButton user={user} /> : null}
+        {user && notification.type === 'follow' ? (
+          <FollowButton user={user} style={styles.smallFollowButton} />
+        ) : null}
       </View>
     </TouchableWithoutFeedback>
   );
