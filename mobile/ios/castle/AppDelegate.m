@@ -19,6 +19,7 @@
 #include <SDL.h>
 
 #include "RNBootSplash.h"
+#include "GhostAppState.h"
 #include "GhostPushNotifications.h"
 #include "GhostView.h"
 #include "GhostChannels.h"
@@ -163,6 +164,7 @@ int SDL_main(int argc, char *argv[]) {
 - (void)applicationWillResignActive:(UIApplication *)application {
   [self.sdlDelegate applicationWillResignActive:application];
   [GhostView sharedGhostView].displayLink.paused = YES;
+  [self _emitAppStateEvent];
   if (self.rctBridge) {
     GhostChannels *channelsModule = [self.rctBridge moduleForName:@"GhostChannels"];
     if (channelsModule) {
@@ -173,19 +175,31 @@ int SDL_main(int argc, char *argv[]) {
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
   [self.sdlDelegate applicationDidEnterBackground:application];
+  [self _emitAppStateEvent];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
   [self.sdlDelegate applicationWillEnterForeground:application];
+  [self _emitAppStateEvent];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
   [self.sdlDelegate applicationDidBecomeActive:application];
   [GhostView sharedGhostView].displayLink.paused = NO;
+  [self _emitAppStateEvent];
   if (self.rctBridge) {
     GhostChannels *channelsModule = [self.rctBridge moduleForName:@"GhostChannels"];
     if (channelsModule) {
       [channelsModule setReady:YES];
+    }
+  }
+}
+
+- (void)_emitAppStateEvent {
+  if (self.rctBridge) {
+    GhostAppState *appStateModule = [self.rctBridge moduleForName:@"GhostAppState"];
+    if (appStateModule) {
+      [appStateModule appStateChanged];
     }
   }
 }

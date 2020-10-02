@@ -73,6 +73,7 @@
 		A1CCBA1623551869009F4DDD /* GhostChannels.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1CCBA1423551869009F4DDD /* GhostChannels.mm */; };
 		A1CCBA19235518C7009F4DDD /* GhostView.m in Sources */ = {isa = PBXBuildFile; fileRef = A1CCBA18235518C7009F4DDD /* GhostView.m */; };
 		A1FA18C32365168600E2ACFE /* GhostInputZone.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1FA18C22365168600E2ACFE /* GhostInputZone.mm */; };
+		B51813F72527916C00C315C9 /* GhostAppState.mm in Sources */ = {isa = PBXBuildFile; fileRef = B51813F62527916C00C315C9 /* GhostAppState.mm */; };
 		B75D12A12F9E5D8776A933D2 /* libPods-Castle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 580488360D0E6A5C5C50B415 /* libPods-Castle.a */; };
 		CD0A84C8B8A44D86830CD6A6 /* RTAliasGrotesk-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = A753A21E42DB46D99AD060DF /* RTAliasGrotesk-Regular.otf */; };
 /* End PBXBuildFile section */
@@ -211,6 +212,8 @@
 		A1CCBA18235518C7009F4DDD /* GhostView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GhostView.m; sourceTree = "<group>"; };
 		A1FA18C22365168600E2ACFE /* GhostInputZone.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GhostInputZone.mm; sourceTree = "<group>"; };
 		A753A21E42DB46D99AD060DF /* RTAliasGrotesk-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "RTAliasGrotesk-Regular.otf"; path = "../assets/fonts/RTAliasGrotesk-Regular.otf"; sourceTree = "<group>"; };
+		B51813EE2527916C00C315C9 /* GhostAppState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GhostAppState.h; sourceTree = "<group>"; };
+		B51813F62527916C00C315C9 /* GhostAppState.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GhostAppState.mm; sourceTree = "<group>"; };
 		B55A282F24F43BCC00A95D42 /* GhostChannels.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GhostChannels.h; sourceTree = "<group>"; };
 		BDA1BD867AE232F85BAD0D0B /* libPods-Castle-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Castle-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1DF76557142480ED55F211A /* Pods-CastleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CastleTests.debug.xcconfig"; path = "Target Support Files/Pods-CastleTests/Pods-CastleTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -271,6 +274,8 @@
 			children = (
 				91395EAF24084E2D00ECBCF9 /* Castle.entitlements */,
 				A1FA18C22365168600E2ACFE /* GhostInputZone.mm */,
+				B51813EE2527916C00C315C9 /* GhostAppState.h */,
+				B51813F62527916C00C315C9 /* GhostAppState.mm */,
 				913618972450F12800E9BD15 /* GhostView.h */,
 				A1CCBA18235518C7009F4DDD /* GhostView.m */,
 				B55A282F24F43BCC00A95D42 /* GhostChannels.h */,
@@ -807,6 +812,7 @@
 				A14FE3E12355CEF0003B7EA0 /* config.c in Sources */,
 				A12CFF0623CC31AB00D721BC /* polypartition.cpp in Sources */,
 				A14FE3D12355CEC2003B7EA0 /* strbuf.c in Sources */,
+				B51813F72527916C00C315C9 /* GhostAppState.mm in Sources */,
 				91395EB8240DE6A700ECBCF9 /* GhostPushNotifications.mm in Sources */,
 				A12CFEEA23CC30F600D721BC /* graphics.cpp in Sources */,
 				A12CFEF023CC311300D721BC /* api.cpp in Sources */,
