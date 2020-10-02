@@ -236,6 +236,9 @@ export const RootNavigator = () => {
     if (data?.numUnseenNotifications && !clicked) {
       PushNotifications.setBadgeCount(data.numUnseenNotifications);
     }
+    if (clicked && rootNavRef.current) {
+      rootNavRef.current.navigate('Notifications');
+    }
     setTimeout(fetchNotificationsAsync, 250);
   }, []);
   PushNotifications.usePushNotifications({
