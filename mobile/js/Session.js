@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import debounce from 'lodash.debounce';
 import FastImage from 'react-native-fast-image';
 import gql from 'graphql-tag';
+import ExpoConstants from 'expo-constants';
 
 import { Platform } from 'react-native';
 import { ApolloClient } from 'apollo-client';
@@ -277,6 +278,9 @@ export const apolloClient = new ApolloClient({
             .then((operation) => {
               const headers = {};
               headers['X-Platform'] = 'mobile';
+              headers['X-OS'] = Platform.OS;
+              headers['X-Build-Version'] = ExpoConstants.nativeBuildVersion;
+              headers['X-App-Version'] = ExpoConstants.nativeAppVersion;
               if (gAuthToken) {
                 headers['X-Auth-Token'] = gAuthToken;
               }
