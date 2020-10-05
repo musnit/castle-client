@@ -237,7 +237,8 @@ export const RootNavigator = () => {
       PushNotifications.setBadgeCount(data.numUnseenNotifications);
     }
     if (clicked && rootNavRef.current) {
-      rootNavRef.current.navigate('Notifications');
+      // pass the `screen` param to ensure we pop to the top of the stack
+      rootNavRef.current.navigate('Notifications', { screen: 'Notifications' });
     }
     setTimeout(fetchNotificationsAsync, 250);
   }, []);
