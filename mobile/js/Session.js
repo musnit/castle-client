@@ -279,8 +279,8 @@ export const apolloClient = new ApolloClient({
               const headers = {};
               headers['X-Platform'] = 'mobile';
               headers['X-OS'] = Platform.OS;
-              headers['X-Build-Version'] = ExpoConstants.nativeBuildVersion;
-              headers['X-App-Version'] = ExpoConstants.nativeAppVersion;
+              headers['X-Build-Version-Code'] = ExpoConstants.nativeBuildVersion;
+              headers['X-Build-Version-Name'] = ExpoConstants.nativeAppVersion;
               if (gAuthToken) {
                 headers['X-Auth-Token'] = gAuthToken;
               }
