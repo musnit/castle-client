@@ -10,6 +10,7 @@ import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect } from '../ReactNavigation';
 import { useSession } from '../Session';
 import { UserAvatar } from '../components/UserAvatar';
+import { ProfileConnections } from './ProfileConnections';
 import { ProfileSettingsSheet } from './ProfileSettingsSheet';
 
 import * as Amplitude from 'expo-analytics-amplitude';
@@ -60,11 +61,7 @@ const styles = StyleSheet.create({
   },
   followers: {
     marginTop: 16,
-  },
-  followersLabel: {
-    color: '#ccc',
-    textTransform: 'uppercase',
-    fontSize: 14,
+    paddingHorizontal: 16,
   },
 });
 
@@ -172,13 +169,12 @@ export const ProfileScreen = ({ userId, route }) => {
               </View>
             ) : null}
           </View>
-          {user?.followersCount > 0 ? (
-            <View style={styles.followers}>
-              <Text style={styles.followersLabel}>
-                {user.followersCount} {user.followersCount === 1 ? 'follower' : 'followers'}
-              </Text>
-            </View>
-          ) : null}
+          <View style={styles.followers}>
+            <ProfileConnections
+              followersCount={user?.followersCount}
+              connections={user?.connectionsYouKnow}
+            />
+          </View>
         </SafeAreaView>
         <DecksGrid
           decks={user?.decks}

@@ -192,6 +192,12 @@ export const USER_PROFILE_FRAGMENT = `
   }
   connections
   followersCount
+  connectionsYouKnow {
+    id
+    userId
+    username
+    photo { url }
+  }
   decks {
     id
     deckId
