@@ -85,6 +85,19 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   smallFollowButton: { padding: 6 },
+  empty: {
+    width: '100%',
+    padding: 8,
+    paddingTop: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyText: {
+    textAlign: 'center',
+    color: '#fff',
+    fontSize: 16,
+    lineHeight: 24,
+  },
 });
 
 const STATUS_HEADERS = {
@@ -243,19 +256,25 @@ export const NotificationsScreen = () => {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <ScreenHeader title="Notifications" />
       <ScrollView contentContainerStyle={styles.scrollView} refreshControl={refreshControl}>
-        {orderedNotifs.map((notif, ii) => (
-          <React.Fragment key={`notif-${notif.notificationId}`}>
-            {ii === 0 || orderedNotifs[ii - 1].status !== notif.status ? (
-              <NotificationHeader key={`header-${notif.status}-${ii}`} status={notif.status} />
-            ) : null}
-            <NotificationItem
-              notification={notif}
-              navigateToUser={navigateToUser}
-              navigateToUserList={navigateToUserList}
-              navigateToDeck={navigateToDeck}
-            />
-          </React.Fragment>
-        ))}
+        {orderedNotifs.length ? (
+          orderedNotifs.map((notif, ii) => (
+            <React.Fragment key={`notif-${notif.notificationId}`}>
+              {ii === 0 || orderedNotifs[ii - 1].status !== notif.status ? (
+                <NotificationHeader key={`header-${notif.status}-${ii}`} status={notif.status} />
+              ) : null}
+              <NotificationItem
+                notification={notif}
+                navigateToUser={navigateToUser}
+                navigateToUserList={navigateToUserList}
+                navigateToDeck={navigateToDeck}
+              />
+            </React.Fragment>
+          ))
+        ) : (
+          <View style={styles.empty}>
+            <Text style={styles.emptyText}>You don't have any notifications yet.</Text>
+          </View>
+        )}
       </ScrollView>
     </View>
   );
