@@ -4,7 +4,7 @@ import * as Constants from '../Constants';
 
 import FastImage from 'react-native-fast-image';
 
-export const UserAvatar = ({ url, shadow }) => {
+export const UserAvatar = ({ url, shadow, style }) => {
   let wrapperStyles = {
     backgroundColor: '#000',
     borderRadius: 1000000,
@@ -14,7 +14,7 @@ export const UserAvatar = ({ url, shadow }) => {
   }
 
   return (
-    <View style={wrapperStyles}>
+    <View style={[wrapperStyles, style]}>
       <FastImage
         style={{
           width: '100%',

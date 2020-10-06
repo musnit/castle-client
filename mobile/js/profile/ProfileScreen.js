@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
   followers: {
     marginTop: 16,
     paddingHorizontal: 16,
+    width: '100%',
   },
 });
 
