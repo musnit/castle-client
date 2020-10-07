@@ -1,5 +1,4 @@
 import React from 'react';
-import { StatusBar, requireNativeComponent, Platform } from 'react-native';
 import { DecksGrid } from '../components/DecksGrid';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
@@ -9,12 +8,7 @@ import * as Constants from '../Constants';
 
 const REFETCH_FEED_INTERVAL_MS = 30 * 1000;
 
-let NativeFeedView;
-if (Platform.OS === 'android') {
-  NativeFeedView = requireNativeComponent('CastleFeedView', null);
-}
-
-export const NewestDecks = () => {
+export const FollowingDecks = () => {
   const { navigate } = useNavigation();
   const [lastFetched, setLastFetched] = React.useState({
     time: undefined,
@@ -32,8 +26,8 @@ export const NewestDecks = () => {
   }, undefined);
   const [fetchDecks, query] = useLazyQuery(
     gql`
-      query DeckFeed($lastModifiedBefore: Datetime) {
-        deckFeed(limit: 24, lastModifiedBefore: $lastModifiedBefore) {
+      query FollowingFeed($lastModifiedBefore: Datetime) {
+        followingFeed(limit: 24, lastModifiedBefore: $lastModifiedBefore) {
           ${Constants.FEED_ITEM_DECK_FRAGMENT}
         }
       }
@@ -73,10 +67,10 @@ export const NewestDecks = () => {
     if (query.called && !query.loading && !query.error && query.data) {
       if (lastFetched.lastModifiedBefore) {
         // append next page
-        changeDecks({ type: 'append', decks: query.data.deckFeed });
+        changeDecks({ type: 'append', decks: query.data.followingFeed });
       } else {
         // clean refresh
-        changeDecks({ type: 'set', decks: query.data.deckFeed });
+        changeDecks({ type: 'set', decks: query.data.followingFeed });
       }
     }
   }, [query.called, query.loading, query.error, query.data, lastFetched.lastModifiedBefore]);
@@ -94,7 +88,7 @@ export const NewestDecks = () => {
           {
             decks,
             initialDeckIndex: index,
-            title: 'Newest',
+            title: 'Following',
           },
           {
             isFullscreen: true,
@@ -107,15 +101,4 @@ export const NewestDecks = () => {
       onEndReachedThreshold={0.3}
     />
   );
-
-  /*return (
-    <NativeFeedView
-      decks={decks}
-      style={{
-        //flex: 1,
-        width: 400,
-        height: 600,
-      }}
-    />
-  );*/
 };

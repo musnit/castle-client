@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { StatusBar, StyleSheet, Text, View } from 'react-native';
 import { FeaturedDecks } from './FeaturedDecks';
+import { FollowingDecks } from './FollowingDecks';
 import { NewestDecks } from './NewestDecks';
 import { RecentDecks } from './RecentDecks';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -32,7 +33,12 @@ const MODE_ITEMS = [
     item: () => <FeaturedDecks />,
   },
   {
-    name: 'Newest',
+    name: 'Following',
+    value: 'following',
+    item: () => <FollowingDecks />,
+  },
+  {
+    name: 'New',
     value: 'newest',
     item: () => <NewestDecks />,
   },
