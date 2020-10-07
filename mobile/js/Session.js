@@ -26,6 +26,7 @@ const EMPTY_SESSION = {
   authToken: null,
   notifications: null,
   notificationsBadgeCount: 0,
+  newFollowingDecks: false,
 };
 
 const SessionContext = React.createContext(EMPTY_SESSION);
@@ -103,8 +104,8 @@ export class Provider extends React.Component {
 
     this._notificationsListener = EventEmitter.addListener(
       'notifications',
-      ({ notifications, notificationsBadgeCount }) => {
-        this.setState({ notifications, notificationsBadgeCount });
+      (notificationsState) => {
+        this.setState(notificationsState);
       }
     );
   }
@@ -654,36 +655,41 @@ export const fetchNotificationsAsync = async () => {
   const result = await apolloClient.query({
     query: gql`
     query {
-      notifications(limit: 64) {
-        notificationId
-        type
-        status
-        body
-        userIds
-        users {
-          userId
-          username
-          connections
-          photo {
-            url
+      notificationsV2(limit: 64) {
+        newFollowingDecks
+        notifications {
+          notificationId
+          type
+          status
+          body
+          userIds
+          users {
+            userId
+            username
+            connections
+            photo {
+              url
+            }
           }
+          deckId
+          deck {
+            ${Constants.FEED_ITEM_DECK_FRAGMENT}
+          }
+          updatedTime
         }
-        deckId
-        deck {
-          ${Constants.FEED_ITEM_DECK_FRAGMENT}
-        }
-        updatedTime
       }
     }
   `,
     fetchPolicy: 'no-cache',
   });
-  const notifications = result?.data?.notifications ?? null;
+  const data = result?.data?.notificationsV2 ?? {};
+  const { notifications, newFollowingDecks } = data;
   const notificationsBadgeCount = notifications
     ? notifications.reduce((accum, n) => accum + (n.status === 'unseen'), 0)
     : 0;
   PushNotifications.setBadgeCount(notificationsBadgeCount);
   EventEmitter.sendEvent('notifications', {
+    newFollowingDecks,
     notifications,
     notificationsBadgeCount,
   });

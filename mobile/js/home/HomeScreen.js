@@ -6,6 +6,7 @@ import { NewestDecks } from './NewestDecks';
 import { RecentDecks } from './RecentDecks';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { SegmentedNavigation } from '../components/SegmentedNavigation';
+import { useSession } from '../Session';
 import { useFocusEffect } from '@react-navigation/native';
 
 import * as Amplitude from 'expo-analytics-amplitude';
@@ -26,7 +27,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const MODE_ITEMS = [
+const makeItems = ({ newFollowingDecks } = {}) => [
   {
     name: 'Featured',
     value: 'featured',
@@ -35,6 +36,7 @@ const MODE_ITEMS = [
   {
     name: 'Following',
     value: 'following',
+    indicator: newFollowingDecks,
     item: () => <FollowingDecks />,
   },
   {
@@ -51,7 +53,11 @@ const MODE_ITEMS = [
 
 export const HomeScreen = () => {
   const insets = useSafeArea();
-  const [mode, setMode] = React.useState(MODE_ITEMS[0].value);
+  const [mode, setMode] = React.useState('featured');
+  const { newFollowingDecks } = useSession();
+  const [items, setItems] = React.useState(makeItems());
+
+  React.useEffect(() => setItems(makeItems({ newFollowingDecks })), [newFollowingDecks]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -64,13 +70,13 @@ export const HomeScreen = () => {
     Amplitude.logEventWithProperties('VIEW_HOME', { mode });
   }, [mode]);
 
-  const selectedItem = MODE_ITEMS.find((item) => item.value === mode);
+  const selectedItem = items.find((item) => item.value === mode);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
         <SegmentedNavigation
-          items={MODE_ITEMS}
+          items={items}
           selectedItem={selectedItem}
           onSelectItem={(item) => setMode(item.value)}
         />
