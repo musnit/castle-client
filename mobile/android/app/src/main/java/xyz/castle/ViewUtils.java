@@ -13,11 +13,13 @@ import com.facebook.common.executors.CallerThreadExecutor;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.DataSource;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.core.ImagePipeline;
 import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
 import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.facebook.imagepipeline.request.Postprocessor;
 
 import androidx.annotation.Nullable;
 
@@ -51,10 +53,19 @@ public class ViewUtils {
         void onCompleted(Bitmap bitmap);
     }
 
-    public static void loadBitmap(Uri uri, Context context, LoadBitmapListener listener) {
-        ImageRequest imageRequest = ImageRequestBuilder
-                .newBuilderWithSource(uri)
-                .build();
+    public static void loadBitmap(Uri uri, Context context, Postprocessor postprocessor, ResizeOptions resizeOptions, LoadBitmapListener listener) {
+        ImageRequestBuilder builder = ImageRequestBuilder
+                .newBuilderWithSource(uri);
+
+        if (postprocessor != null) {
+            builder.setPostprocessor(postprocessor);
+        }
+
+        if (resizeOptions != null) {
+            builder.setResizeOptions(resizeOptions);
+        }
+
+        ImageRequest imageRequest = builder.build();
 
         ImagePipeline imagePipeline = Fresco.getImagePipeline();
         final DataSource<CloseableReference<CloseableImage>>

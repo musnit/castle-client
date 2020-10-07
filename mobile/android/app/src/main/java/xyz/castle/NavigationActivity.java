@@ -54,6 +54,12 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
     public static final int RC_SAVE = 1234;
     public static final int RC_READ = 1235;
 
+    private static boolean gIsFocused = false;
+
+    public static boolean isFocused() {
+        return gIsFocused;
+    }
+
     @Nullable
     private PermissionListener mPermissionListener;
 
@@ -275,6 +281,8 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
     @Override
     protected void onResume() {
         super.onResume();
+        gIsFocused = true;
+
         getReactGateway().onActivityResumed(this);
 
         EventBus.getDefault().register(this);
@@ -301,6 +309,8 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
     @Override
     protected void onPause() {
         super.onPause();
+        gIsFocused = false;
+
         getReactGateway().onActivityPaused(this);
 
         EventBus.getDefault().unregister(this);

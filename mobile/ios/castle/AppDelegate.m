@@ -218,18 +218,26 @@ int SDL_main(int argc, char *argv[]) {
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
   fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+  NSString *removePushNotificationId = [userInfo valueForKey:@"removePushNotificationId"];
+  if (removePushNotificationId) {
+    [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:@[removePushNotificationId]];
+    completionHandler(UIBackgroundFetchResultNoData);
+    return;
+  }
+
   if (application.applicationState == UIApplicationStateInactive) {
-    completionHandler(UIBackgroundFetchResultNewData);
+    // the user has tapped in the notification when app was closed or in background
     GhostPushNotifications *module = [self.rctBridge moduleForName:@"GhostPushNotifications"];
     [module onPushNotificationClicked:userInfo];
+    completionHandler(UIBackgroundFetchResultNoData);
   } else if (application.applicationState == UIApplicationStateBackground) {
-    completionHandler(UIBackgroundFetchResultNewData);
-    GhostPushNotifications *module = [self.rctBridge moduleForName:@"GhostPushNotifications"];
-    [module onPushNotificationClicked:userInfo];
+    // notification has arrived when app was in background
+    completionHandler(UIBackgroundFetchResultNoData);
   } else {
-    completionHandler(UIBackgroundFetchResultNewData);
+    // notication has arrived while app was opened
     GhostPushNotifications *module = [self.rctBridge moduleForName:@"GhostPushNotifications"];
     [module onPushNotificationReceived:userInfo];
+    completionHandler(UIBackgroundFetchResultNoData);
   }
 }
 
