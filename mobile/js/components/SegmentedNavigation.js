@@ -11,6 +11,9 @@ const darkBackgroundStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   item: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 12,
     paddingVertical: 8,
   },
@@ -27,6 +30,14 @@ const darkBackgroundStyles = StyleSheet.create({
     color: Constants.colors.white,
     fontWeight: 'bold',
   },
+  indicator: {
+    width: 9,
+    height: 9,
+    backgroundColor: Constants.colors.white,
+    borderRadius: 5,
+    marginLeft: 6,
+    marginRight: -3,
+  },
 });
 
 const lightBackgroundStyles = StyleSheet.create({
@@ -36,6 +47,9 @@ const lightBackgroundStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   item: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 12,
     paddingVertical: 8,
   },
@@ -51,6 +65,14 @@ const lightBackgroundStyles = StyleSheet.create({
   selectedName: {
     color: Constants.colors.black,
     fontWeight: 'bold',
+  },
+  indicator: {
+    width: 9,
+    height: 9,
+    backgroundColor: Constants.colors.black,
+    borderRadius: 5,
+    marginLeft: 6,
+    marginRight: -3,
   },
 });
 
@@ -72,6 +94,7 @@ export const SegmentedNavigation = (props) => {
               {item.name}
             </Text>
           )}
+          {item.indicator ? <View style={styles.indicator} /> : null}
         </TouchableOpacity>
       ))}
     </View>
