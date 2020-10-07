@@ -1,6 +1,7 @@
 import React from 'react';
-import { StatusBar, StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { DecksGrid } from '../components/DecksGrid';
+import { EmptyFeed } from './EmptyFeed';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
 import gql from 'graphql-tag';
@@ -9,22 +10,6 @@ import * as Constants from '../Constants';
 import * as Session from '../Session';
 
 const REFETCH_FEED_INTERVAL_MS = 60 * 1000;
-
-const styles = StyleSheet.create({
-  empty: {
-    width: '100%',
-    padding: 8,
-    paddingTop: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyText: {
-    textAlign: 'center',
-    color: '#fff',
-    fontSize: 16,
-    lineHeight: 24,
-  },
-});
 
 export const RecentDecks = ({ focused }) => {
   const { navigate } = useNavigation();
@@ -88,12 +73,8 @@ export const RecentDecks = ({ focused }) => {
       }
     />
   ) : error ? (
-    <View style={styles.empty}>
-      <Text style={styles.emptyText}>{error}</Text>
-    </View>
+    <EmptyFeed message={error} />
   ) : lastFetchedTime && !query.loading ? (
-    <View style={styles.empty}>
-      <Text style={styles.emptyText}>You haven't played any decks recently.</Text>
-    </View>
+    <EmptyFeed message="You haven't played any decks recently." />
   ) : null;
 };

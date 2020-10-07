@@ -1,5 +1,6 @@
 import React from 'react';
 import { DecksGrid } from '../components/DecksGrid';
+import { EmptyFeed } from './EmptyFeed';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
 import gql from 'graphql-tag';
@@ -78,7 +79,7 @@ export const FollowingDecks = () => {
   const scrollViewRef = React.useRef(null);
   useScrollToTop(scrollViewRef);
 
-  return (
+  return decks?.length || query.loading ? (
     <DecksGrid
       decks={decks}
       scrollViewRef={scrollViewRef}
@@ -100,5 +101,7 @@ export const FollowingDecks = () => {
       onEndReached={onEndReached}
       onEndReachedThreshold={0.3}
     />
+  ) : (
+    <EmptyFeed message="Follow people you know on Castle to see their decks here." />
   );
 };
