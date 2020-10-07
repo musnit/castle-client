@@ -84,6 +84,7 @@ export class Provider extends React.Component {
       signOutAsync: this.signOutAsync,
       signUpAsync: this.signUpAsync,
       markNotificationsReadAsync: this.markNotificationsReadAsync,
+      markFollowingFeedRead: this.markFollowingFeedRead,
     };
   }
 
@@ -244,6 +245,18 @@ export class Provider extends React.Component {
         notificationsBadgeCount,
       };
     });
+  };
+
+  markFollowingFeedRead = () => {
+    try {
+      // don't await
+      _sendMarkFollowingFeedRead();
+    } catch (_) {
+      console.warn(
+        `Network request to mark following feed read failed, marking locally read anyway`
+      );
+    }
+    return this.setState({ newFollowingDecks: false });
   };
 
   render() {
@@ -631,6 +644,18 @@ export const toggleFollowUser = async (userId, follow) => {
   });
   return result?.data?.toggleFollowUser;
 };
+
+const _sendMarkFollowingFeedRead = debounce(
+  async () =>
+    apolloClient.mutate({
+      mutation: gql`
+        mutation {
+          markFollowingFeedRead
+        }
+      `,
+    }),
+  100
+);
 
 const _sendMarkNotificationsRead = debounce(
   async ({ notificationIds }) =>

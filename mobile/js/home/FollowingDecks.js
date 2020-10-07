@@ -3,6 +3,7 @@ import { DecksGrid } from '../components/DecksGrid';
 import { EmptyFeed } from './EmptyFeed';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
+import { useSession } from '../Session';
 import gql from 'graphql-tag';
 
 import * as Constants from '../Constants';
@@ -11,6 +12,7 @@ const REFETCH_FEED_INTERVAL_MS = 30 * 1000;
 
 export const FollowingDecks = () => {
   const { navigate } = useNavigation();
+  const { markFollowingFeedRead } = useSession();
   const [lastFetched, setLastFetched] = React.useState({
     time: undefined,
     lastModifiedBefore: undefined,
@@ -72,6 +74,7 @@ export const FollowingDecks = () => {
       } else {
         // clean refresh
         changeDecks({ type: 'set', decks: query.data.followingFeed });
+        markFollowingFeedRead(); // mark read when top of feed loaded
       }
     }
   }, [query.called, query.loading, query.error, query.data, lastFetched.lastModifiedBefore]);
