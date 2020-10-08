@@ -1,5 +1,6 @@
 import React from 'react';
-import { Share, StyleSheet, TouchableOpacity, Text, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
+import { shareDeck } from '../common/utilities';
 import { useNavigation } from '../ReactNavigation';
 import { UserAvatar } from '../components/UserAvatar';
 
@@ -44,25 +45,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const onShareDeck = async (deck) => {
-  let params;
-  if (Constants.iOS) {
-    params = {
-      // message: `Open this deck in Castle`,
-      url: `https://castle.xyz/d/${deck.deckId}`,
-    };
-  } else {
-    params = {
-      // title: 'Open this deck in Castle',
-      message: `https://castle.xyz/d/${deck.deckId}`,
-    };
-  }
-  try {
-    Share.share(params);
-    // Share.share() returns a result we could capture if desired
-  } catch (_) {}
-};
-
 export const PlayDeckActions = ({ deck, disabled }) => {
   const { creator } = deck;
   const { push } = useNavigation();
@@ -84,7 +66,7 @@ export const PlayDeckActions = ({ deck, disabled }) => {
           onPress={() => push('ViewSource', { deckIdToEdit: deck.deckId })}>
           <Feather name="code" color="#fff" size={24} style={styles.rightButtonIcon} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.rightButton} onPress={() => onShareDeck(deck)}>
+        <TouchableOpacity style={styles.rightButton} onPress={() => shareDeck(deck)}>
           <Feather name="share" color="#fff" size={24} style={styles.rightButtonIcon} />
         </TouchableOpacity>
       </View>

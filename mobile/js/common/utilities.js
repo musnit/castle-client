@@ -1,5 +1,5 @@
 import React from 'react';
-import { Keyboard } from 'react-native';
+import { Keyboard, Share } from 'react-native';
 import gql from 'graphql-tag';
 import ImagePicker from 'react-native-image-picker';
 import { ReactNativeFile } from 'apollo-upload-client';
@@ -225,4 +225,23 @@ export const canonizeUserProvidedUrl = (urlStr) => {
     urlToOpen = componentsToOpen.href;
   } catch (_) {}
   return { urlToDisplay, urlToOpen };
+};
+
+export const shareDeck = async (deck) => {
+  let params;
+  if (Constants.iOS) {
+    params = {
+      // message: `Open this deck in Castle`,
+      url: `https://castle.xyz/d/${deck.deckId}`,
+    };
+  } else {
+    params = {
+      // title: 'Open this deck in Castle',
+      message: `https://castle.xyz/d/${deck.deckId}`,
+    };
+  }
+  try {
+    Share.share(params);
+    // Share.share() returns a result we could capture if desired
+  } catch (_) {}
 };

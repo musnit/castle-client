@@ -9,8 +9,11 @@ import {
 } from 'react-native';
 import { CardCell } from '../components/CardCell';
 import { SegmentedNavigation } from '../components/SegmentedNavigation';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { shareDeck } from '../common/utilities';
+
 import FastImage from 'react-native-fast-image';
+import Feather from 'react-native-vector-icons/Feather';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import * as Constants from '../Constants';
 
@@ -50,6 +53,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
   },
+  shareButton: {
+    marginLeft: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 const MODE_ITEMS = [
@@ -85,9 +93,14 @@ const DeckVisibleControl = ({ deck, onToggleVisible }) => {
               <Text style={styles.instructionsLabel}>
                 This deck is <Text style={{ fontWeight: '700' }}>public</Text>.
               </Text>
-              <TouchableOpacity style={Constants.styles.primaryButton} onPress={onToggleVisible}>
-                <Text style={Constants.styles.primaryButtonLabel}>Make Private</Text>
-              </TouchableOpacity>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <TouchableOpacity style={Constants.styles.primaryButton} onPress={onToggleVisible}>
+                  <Text style={Constants.styles.primaryButtonLabel}>Make Private</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.shareButton} onPress={() => shareDeck(deck)}>
+                  <Feather name="share" color="#fff" size={24} />
+                </TouchableOpacity>
+              </View>
             </React.Fragment>
           ) : (
             <React.Fragment>
