@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import gql from 'graphql-tag';
 import { useNavigation } from '../ReactNavigation';
 import { StyleSheet, View } from 'react-native';
@@ -44,6 +44,7 @@ export const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, rou
     initialDeckState = route.params.initialDeckState;
   }
 
+  const cardIdRef = useRef(initialCardId);
   const [cardState, setCardState] = useState({
     cardId: initialCardId,
     numCardsViewed: 1,
@@ -57,6 +58,7 @@ export const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, rou
 
   const onSelectNewCard = React.useCallback(
     ({ cardId }) => {
+      cardIdRef.current = cardId;
       setCardState({
         cardId,
         numCardsViewed: cardState.numCardsViewed + 1,
@@ -67,13 +69,17 @@ export const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, rou
 
   React.useEffect(() => {
     Amplitude.logEventWithProperties('VIEW_PLAY_DECK', { deckId });
+
+    return () => {
+      recordDeckPlay(deckId, cardIdRef.current);
+    };
   }, []);
 
   React.useEffect(() => {
     recordDeckPlay(deckId, cardState.cardId);
     let interval = setInterval(() => {
       recordDeckPlay(deckId, cardState.cardId);
-    }, 3 * 1000);
+    }, 10 * 1000);
 
     return () => {
       clearInterval(interval);
