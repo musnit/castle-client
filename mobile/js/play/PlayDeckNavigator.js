@@ -23,15 +23,16 @@ const EMPTY_PLAY_DECK_STATE = {
   variables: [],
 };
 
-const recordDeckPlay = (deckId) =>
+const recordDeckPlay = (deckId, cardId) =>
   Session.apolloClient.mutate({
     mutation: gql`
-      mutation RecordDeckPlay($deckId: ID!) {
-        recordDeckPlay(deckId: $deckId)
+      mutation RecordDeckPlay($deckId: ID!, $cardId: ID) {
+        recordDeckPlay(deckId: $deckId, cardId: $cardId)
       }
     `,
     variables: {
       deckId,
+      cardId,
     },
   });
 
@@ -65,9 +66,19 @@ export const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, rou
   );
 
   React.useEffect(() => {
-    recordDeckPlay(deckId);
     Amplitude.logEventWithProperties('VIEW_PLAY_DECK', { deckId });
   }, []);
+
+  React.useEffect(() => {
+    recordDeckPlay(deckId, cardState.cardId);
+    let interval = setInterval(() => {
+      recordDeckPlay(deckId, cardState.cardId);
+    }, 3 * 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [cardState.cardId]);
 
   return (
     <View
