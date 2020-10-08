@@ -4,6 +4,7 @@ import { View, StyleSheet, Text } from 'react-native';
 import { CardsSet } from '../components/CardsSet';
 import { ConfigureDeck } from './ConfigureDeck';
 import { DeckHeader } from './DeckHeader';
+import { DeckVisibilitySheet } from './DeckVisibilitySheet';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect } from '../ReactNavigation';
@@ -24,7 +25,7 @@ const DECK_FRAGMENT = `
   id
   deckId
   title
-  isVisible
+  visibility
   cards {
     id
     cardId
@@ -54,6 +55,10 @@ export const CreateDeckScreen = (props) => {
   const deckId = props.route.params.deckIdToEdit;
   const [mode, setMode] = React.useState('cards');
   const [deck, setDeck] = React.useState(null);
+  const [visibilitySheetVisible, setVisibilitySheetVisible] = React.useState(false);
+
+  const openVisibilitySheet = React.useCallback(() => setVisibilitySheetVisible(true), []);
+  const closeVisibilitySheet = React.useCallback(() => setVisibilitySheetVisible(false), []);
 
   if (!deckId || LocalId.isLocalId(deckId)) {
     throw new Error(`CreateDeckScreen requires an existing deck id`);
@@ -110,7 +115,7 @@ export const CreateDeckScreen = (props) => {
       const deckUpdateFragment = {
         deckId,
         title: deck.title,
-        isVisible: deck.isVisible,
+        visibility: deck.visibility,
       };
       saveDeck({ variables: { deck: deckUpdateFragment } });
       setDeck({ ...deck, isChanged: false });
@@ -230,28 +235,48 @@ export const CreateDeckScreen = (props) => {
     });
   };
 
+  const onChangeVisibility = React.useCallback(
+    async (visibility) => {
+      const deckUpdateFragment = {
+        deckId,
+        visibility,
+      };
+      saveDeck({ variables: { deck: deckUpdateFragment } });
+      setDeck({ ...deck, visibility });
+    },
+    [setDeck, saveDeck, deck]
+  );
+
   return (
-    <SafeAreaView style={styles.container}>
-      <DeckHeader
-        deck={deck}
-        onPressBack={_goBack}
-        mode={mode}
-        onChangeDeck={_changeDeck}
-        onChangeMode={(mode) => {
-          _maybeSaveDeck();
-          return setMode(mode);
-        }}
-      />
-      {mode === 'cards' ? (
-        <CardsSet
-          showNewCard
+    <React.Fragment>
+      <SafeAreaView style={styles.container}>
+        <DeckHeader
           deck={deck}
-          onShowCardOptions={_showCardOptions}
-          onPress={_navigateToCreateCard}
+          onPressBack={_goBack}
+          mode={mode}
+          onPressVisible={openVisibilitySheet}
+          onChangeMode={(mode) => {
+            _maybeSaveDeck();
+            return setMode(mode);
+          }}
         />
-      ) : (
-        <ConfigureDeck deck={deck} onChange={_changeDeck} onDeleteDeck={_deleteDeck} />
-      )}
-    </SafeAreaView>
+        {mode === 'cards' ? (
+          <CardsSet
+            showNewCard
+            deck={deck}
+            onShowCardOptions={_showCardOptions}
+            onPress={_navigateToCreateCard}
+          />
+        ) : (
+          <ConfigureDeck deck={deck} onChange={_changeDeck} onDeleteDeck={_deleteDeck} />
+        )}
+      </SafeAreaView>
+      <DeckVisibilitySheet
+        isOpen={visibilitySheetVisible}
+        onClose={closeVisibilitySheet}
+        deck={deck}
+        onChangeVisibility={onChangeVisibility}
+      />
+    </React.Fragment>
   );
 };

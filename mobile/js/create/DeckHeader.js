@@ -71,7 +71,7 @@ const MODE_ITEMS = [
   },
 ];
 
-const DeckVisibleControl = ({ deck, onToggleVisible }) => {
+const DeckVisibleControl = ({ deck, onPressVisible }) => {
   let initialCard;
   if (deck) {
     initialCard = deck.cards.find((c) => c.cardId === deck.initialCard.cardId);
@@ -84,32 +84,32 @@ const DeckVisibleControl = ({ deck, onToggleVisible }) => {
   return (
     <React.Fragment>
       <View style={styles.topCardPreview}>
-        <CardCell card={initialCard} isPrivate={!deck?.isVisible} />
+        <CardCell card={initialCard} isPrivate={deck?.visibility === 'private'} />
       </View>
       {deck ? (
         <View style={styles.instructions}>
-          {deck.isVisible ? (
+          {deck.visibility === 'private' ? (
             <React.Fragment>
               <Text style={styles.instructionsLabel}>
-                This deck is <Text style={{ fontWeight: '700' }}>public</Text>.
+                This deck is <Text style={{ fontWeight: '700' }}>private</Text>.
+              </Text>
+              <TouchableOpacity style={Constants.styles.primaryButton} onPress={onPressVisible}>
+                <Text style={Constants.styles.primaryButtonLabel}>Publish</Text>
+              </TouchableOpacity>
+            </React.Fragment>
+          ) : (
+            <React.Fragment>
+              <Text style={styles.instructionsLabel}>
+                This deck is <Text style={{ fontWeight: '700' }}>{deck.visibility}</Text>.
               </Text>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <TouchableOpacity style={Constants.styles.primaryButton} onPress={onToggleVisible}>
-                  <Text style={Constants.styles.primaryButtonLabel}>Make Private</Text>
+                <TouchableOpacity style={Constants.styles.primaryButton} onPress={onPressVisible}>
+                  <Text style={Constants.styles.primaryButtonLabel}>Edit Visibility</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.shareButton} onPress={() => shareDeck(deck)}>
                   <Feather name="share" color="#fff" size={24} />
                 </TouchableOpacity>
               </View>
-            </React.Fragment>
-          ) : (
-            <React.Fragment>
-              <Text style={styles.instructionsLabel}>
-                This deck is <Text style={{ fontWeight: '700' }}>private</Text>.
-              </Text>
-              <TouchableOpacity style={Constants.styles.primaryButton} onPress={onToggleVisible}>
-                <Text style={Constants.styles.primaryButtonLabel}>Make Public</Text>
-              </TouchableOpacity>
             </React.Fragment>
           )}
         </View>
@@ -131,10 +131,7 @@ export const DeckHeader = (props) => {
         </TouchableOpacity>
       </View>
       <View style={styles.header}>
-        <DeckVisibleControl
-          deck={deck}
-          onToggleVisible={() => props.onChangeDeck({ isVisible: !deck.isVisible })}
-        />
+        <DeckVisibleControl deck={deck} onPressVisible={props.onPressVisible} />
       </View>
       <SegmentedNavigation
         items={MODE_ITEMS}
