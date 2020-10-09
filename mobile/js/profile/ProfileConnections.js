@@ -5,7 +5,7 @@ import { UserAvatar } from '../components/UserAvatar';
 const styles = StyleSheet.create({
   text: {
     flexShrink: 1,
-    width: '100%',
+    maxWidth: '100%',
   },
   body: {
     color: '#ccc',
@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   avatars: {
     width: 32,
@@ -30,12 +31,14 @@ const styles = StyleSheet.create({
   avatar1: {
     position: 'absolute',
     width: 28,
+    left: 0,
+    top: -14,
   },
   avatar2: {
     position: 'absolute',
     width: 28,
     left: 10,
-    top: 14,
+    top: -4,
   },
 });
 
