@@ -144,7 +144,7 @@ export const ProfileScreen = ({ userId, route }) => {
             <View style={styles.profileItems}>
               {urlToDisplay ? (
                 <TouchableOpacity
-                  style={{ marginRight: 16 }}
+                  style={{ marginRight: isMe ? 16 : 0 }}
                   onPress={() => {
                     Linking.openURL(urlToOpen);
                   }}>

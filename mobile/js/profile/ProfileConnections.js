@@ -92,9 +92,11 @@ export const ProfileConnections = ({ followersCount, connections }) => {
   // nobody in common, just say "N followers"
   if (!connections?.length) {
     return (
-      <Text style={styles.body}>
-        {followersCount} {followersCount === 1 ? 'follower' : 'followers'}
-      </Text>
+      <View style={styles.row}>
+        <Text style={styles.body}>
+          {followersCount} {followersCount === 1 ? 'follower' : 'followers'}
+        </Text>
+      </View>
     );
   }
 
