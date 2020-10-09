@@ -6,6 +6,7 @@ import { ConfigureDeck } from './ConfigureDeck';
 import { DeckHeader } from './DeckHeader';
 import { DeckVisibilitySheet } from './DeckVisibilitySheet';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { SheetBackgroundOverlay } from '../components/SheetBackgroundOverlay';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect } from '../ReactNavigation';
 import { useActionSheet } from '@expo/react-native-action-sheet';
@@ -271,6 +272,7 @@ export const CreateDeckScreen = (props) => {
           <ConfigureDeck deck={deck} onChange={_changeDeck} onDeleteDeck={_deleteDeck} />
         )}
       </SafeAreaView>
+      {visibilitySheetVisible ? <SheetBackgroundOverlay onPress={closeVisibilitySheet} /> : null}
       <DeckVisibilitySheet
         isOpen={visibilitySheetVisible}
         onClose={closeVisibilitySheet}
