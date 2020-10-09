@@ -120,6 +120,12 @@ const NotificationItem = ({ notification, navigateToUser, navigateToDeck, naviga
       navigateToDeck(notification.deck);
     } else if (notification.type === 'follow') {
       navigateToUser(user);
+    } else if (notification.type === 'new_deck') {
+      navigateToDeck(notification.deck);
+    } else if (notification.deck) {
+      navigateToDeck(notification.deck);
+    } else if (user) {
+      navigateToUser(user);
     }
   }, [notification, user]);
   const navigateToAllUsers = React.useCallback(() => navigateToUserList(notification.users), [
