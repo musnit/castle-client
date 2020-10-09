@@ -40,7 +40,7 @@ public abstract class TabBar extends LinearLayout {
         @DrawableRes
         int resId;
         View view;
-        TextView badgeView;
+        View badgeView;
         OnUpdateBadgeListener onUpdateBadgeListener = (int count) -> {};
 
         protected Tab(int id, String title, @DrawableRes int resId) {

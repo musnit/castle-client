@@ -106,10 +106,10 @@ public class BottomTabBar extends TabBar {
                     if (count <= 0) {
                         tab.badgeView.setVisibility(View.GONE);
                     } else if (count < 100) {
-                        tab.badgeView.setText(Integer.toString(count));
+                        ((TextView) tab.badgeView).setText(Integer.toString(count));
                         tab.badgeView.setVisibility(View.VISIBLE);
                     } else {
-                        tab.badgeView.setText("99+");
+                        ((TextView) tab.badgeView).setText("99+");
                         tab.badgeView.setVisibility(View.VISIBLE);
                     }
                 };

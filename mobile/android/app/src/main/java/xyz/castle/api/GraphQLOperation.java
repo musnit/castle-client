@@ -86,13 +86,17 @@ public class GraphQLOperation {
             query += ")";
         }
 
-        query += " {\n";
+        if (fields.size() > 0) {
+            query += " {\n";
 
-        for (int i = 0; i < fields.size(); i++) {
-            query += fields.get(i).serialize() + "\n";
+            for (int i = 0; i < fields.size(); i++) {
+                query += fields.get(i).serialize() + "\n";
+            }
+
+            query += "}";
         }
 
-        query += "}\n}";
+        query += "\n}";
 
         JSONObject variablesJson = new JSONObject();
         for (int i = 0; i < variables.size(); i++) {

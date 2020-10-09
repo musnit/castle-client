@@ -4,17 +4,20 @@ package xyz.castle.views;
 
 import android.app.Activity;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import androidx.annotation.NonNull;
+import xyz.castle.NavigationActivity;
 import xyz.castle.R;
 import xyz.castle.ViewUtils;
 import xyz.castle.api.API;
 import xyz.castle.api.GraphQLOperation;
+import xyz.castle.navigation.CastleNavigationFocusListener;
 
-public class FollowingFeedView extends NativeFeedView {
+public class FollowingFeedView extends NativeFeedView implements CastleNavigationFocusListener {
     public FollowingFeedView(@NonNull Activity activity) {
         super(activity);
 
@@ -88,5 +91,18 @@ public class FollowingFeedView extends NativeFeedView {
                 });
             }
         });
+    }
+
+    @Override
+    public void onFocus() {
+        GraphQLOperation operation = GraphQLOperation
+                .Mutation("markFollowingFeedRead");
+        API.getInstance().graphql(operation);
+        EventBus.getDefault().post(new NavigationActivity.UpdateFollowingBadge(false));
+    }
+
+    @Override
+    public void onBlur() {
+
     }
 }

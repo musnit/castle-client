@@ -67,6 +67,7 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
     private CastleSwapNavigator navigator;
     private CastleTabNavigator mainTabNavigator;
     private TabBar.Tab notificationsTab;
+    private TabBar.Tab followingTab;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -86,7 +87,7 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
         new CastleNavigationScreen("RootTabScreen", (Activity activity) -> {
             CastleTabNavigator homeNavigator = new CastleTabNavigator(activity, CastleTabNavigator.TABS_TOP);
             homeNavigator.addTab("Featured", "Featured", R.drawable.bottomtabs_browse);
-            homeNavigator.addTab("Following", "Following", R.drawable.bottomtabs_browse);
+            followingTab = homeNavigator.addTab("Following", "Following", R.drawable.bottomtabs_browse);
             homeNavigator.addTab("Newest", "Newest", R.drawable.bottomtabs_browse);
             homeNavigator.addTab("Recent", "History", R.drawable.bottomtabs_browse);
             homeNavigator.doneAddingTabs();
@@ -273,6 +274,21 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
     public void onUpdateNotificationsBadge(UpdateNotificationsBadgeEvent event) {
         if (notificationsTab != null) {
             notificationsTab.updateBadge(event.count);
+        }
+    }
+
+    public static class UpdateFollowingBadge {
+        boolean newFollowingDecks;
+
+        public UpdateFollowingBadge(boolean newFollowingDecks) {
+            this.newFollowingDecks = newFollowingDecks;
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdateFollowingBadge(UpdateFollowingBadge event) {
+        if (followingTab != null) {
+            followingTab.updateBadge(event.newFollowingDecks ? 1 : 0);
         }
     }
 

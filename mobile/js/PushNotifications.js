@@ -86,11 +86,11 @@ export const addTokenListener = (listener) => {
   });
 };
 
-export const setBadgeCount = async (count) => {
+export const setBadgeCount = async (count, newFollowingDecks) => {
   if (Platform.OS === 'ios') {
     return NativeModules.GhostPushNotifications.setBadgeCount(count);
   } else {
-    NativeModules.GhostPushNotifications.setNotificationsBadgeCount(count);
+    NativeModules.GhostPushNotifications.setNotificationsBadgeCount(count, newFollowingDecks);
   }
 };
 

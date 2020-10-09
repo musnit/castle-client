@@ -8,6 +8,7 @@ import android.graphics.Typeface;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Space;
@@ -23,7 +24,6 @@ public class TopTabBar extends TabBar {
 
         setOrientation(HORIZONTAL);
     }
-
 
     @Override
     public void setSelectedIndex(int index) {
@@ -74,12 +74,40 @@ public class TopTabBar extends TabBar {
                 TextView textView = new TextView(getContext());
                 textView.setText(tab.title);
                 textView.setPadding(ViewUtils.dpToPx(12), ViewUtils.dpToPx(8), ViewUtils.dpToPx(12), ViewUtils.dpToPx(8));
+                textView.setId((int) Math.floor(Math.random() * 10000000));
 
                 RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
                 textView.setLayoutParams(layoutParams);
 
                 layout.addView(textView);
+
+                tab.onUpdateBadgeListener = (int count) -> {
+                    if (tab.badgeView == null) {
+                        ImageView badgeView = new ImageView(getContext());
+                        badgeView.setImageResource(R.drawable.unread_indicator_circle);
+                        badgeView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                        //badgeView.setPadding(ViewUtils.dpToPx(12), ViewUtils.dpToPx(8), ViewUtils.dpToPx(0), ViewUtils.dpToPx(8));
+
+                        RelativeLayout.LayoutParams layoutParams2 = new RelativeLayout.LayoutParams(ViewUtils.dpToPx(9), ViewUtils.dpToPx(9));
+                        layoutParams2.addRule(RelativeLayout.ALIGN_BOTTOM, textView.getId());
+                        layoutParams2.addRule(RelativeLayout.ALIGN_TOP, textView.getId());
+                        layoutParams2.addRule(RelativeLayout.ALIGN_RIGHT, textView.getId());
+                        layoutParams2.rightMargin = ViewUtils.dpToPx(6);
+                        badgeView.setLayoutParams(layoutParams2);
+
+                        layout.addView(badgeView);
+                        tab.badgeView = badgeView;
+                    }
+
+                    if (count == 0) {
+                        tab.badgeView.setVisibility(View.GONE);
+                        textView.setPadding(ViewUtils.dpToPx(12), ViewUtils.dpToPx(8), ViewUtils.dpToPx(12), ViewUtils.dpToPx(8));
+                    } else {
+                        tab.badgeView.setVisibility(View.VISIBLE);
+                        textView.setPadding(ViewUtils.dpToPx(12), ViewUtils.dpToPx(8), ViewUtils.dpToPx(12 + 10), ViewUtils.dpToPx(8));
+                    }
+                };
 
                 setSelected(i == selectedIndex, textView);
 

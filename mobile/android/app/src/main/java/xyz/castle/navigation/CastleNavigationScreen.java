@@ -11,6 +11,9 @@ import com.facebook.react.bridge.WritableMap;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import xyz.castle.NavigationActivity;
 
 public class CastleNavigationScreen {
@@ -66,6 +69,7 @@ public class CastleNavigationScreen {
 
     private static int gId = 0;
     private static String gCurrentBoundViewId = "";
+    private static Map<String, View> gIdToNativeView = new HashMap<>();
 
     public class Instance {
         private String id;
@@ -106,6 +110,7 @@ public class CastleNavigationScreen {
             castleReactView = null;
             navigator = null;
             nativeView = null;
+            gIdToNativeView.remove(id);
         }
 
         public void bind(CastleNavigator castleNavigator, FrameLayout layout, int navigationWidth, int navigationHeight, int stackDepth) {
@@ -118,6 +123,11 @@ public class CastleNavigationScreen {
                 WritableMap payload = Arguments.createMap();
                 payload.putString("viewId", gCurrentBoundViewId);
                 EventBus.getDefault().post(new NavigationActivity.RNEvent("CastleOnBlurView", payload));
+
+                View blurNativeView = gIdToNativeView.get(gCurrentBoundViewId);
+                if (blurNativeView != null && blurNativeView instanceof CastleNavigationFocusListener) {
+                    ((CastleNavigationFocusListener) blurNativeView).onBlur();
+                }
             }
 
             if (reactComponentName != null) {
@@ -150,6 +160,11 @@ public class CastleNavigationScreen {
             } else {
                 if (nativeView == null) {
                     nativeView = nativeViewFactory.inflate(activity);
+                    gIdToNativeView.put(id, nativeView);
+                }
+
+                if (isFocusing && nativeView instanceof CastleNavigationFocusListener) {
+                    ((CastleNavigationFocusListener) nativeView).onFocus();
                 }
 
                 viewToAdd = nativeView;

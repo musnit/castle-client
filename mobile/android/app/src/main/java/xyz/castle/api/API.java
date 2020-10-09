@@ -89,6 +89,20 @@ public class API {
         void failure(Exception e);
     }
 
+    public void graphql(GraphQLOperation operation) {
+        graphql(operation, new GraphQLResponseHandler() {
+            @Override
+            public void success(GraphQLResult result) {
+
+            }
+
+            @Override
+            public void failure(Exception e) {
+
+            }
+        });
+    }
+
     public void graphql(GraphQLOperation operation, GraphQLResponseHandler handler) {
         RequestBody body = null;
         try {
