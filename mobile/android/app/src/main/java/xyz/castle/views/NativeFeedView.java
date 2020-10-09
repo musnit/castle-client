@@ -5,6 +5,7 @@ package xyz.castle.views;
 import android.app.Activity;
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
 import org.json.JSONArray;
@@ -20,6 +21,7 @@ public abstract class NativeFeedView extends SwipeRefreshLayout implements Swipe
     RecyclerView recyclerView;
     FeedRecyclerView feedRecyclerView;
     ProgressBar progressBar;
+    FrameLayout emptyStateLayout;
 
     public NativeFeedView(@NonNull Activity activity) {
         super(activity);
@@ -28,6 +30,7 @@ public abstract class NativeFeedView extends SwipeRefreshLayout implements Swipe
 
         progressBar = layout.findViewById(R.id.progress_bar);
         recyclerView = layout.findViewById(R.id.recycler_view);
+        emptyStateLayout = layout.findViewById(R.id.empty_state_layout);
 
         feedRecyclerView = new FeedRecyclerView(recyclerView, activity, feedName());
 
@@ -36,6 +39,22 @@ public abstract class NativeFeedView extends SwipeRefreshLayout implements Swipe
         loadData();
 
         hideLoadMoreProgress();
+    }
+
+    public void addEmptyStateLayout(int resId) {
+        addEmptyStateLayout(inflate(getContext(), resId, null));
+    }
+
+    public void addEmptyStateLayout(View view) {
+        emptyStateLayout.addView(view);
+        progressBar.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.GONE);
+        emptyStateLayout.setVisibility(View.VISIBLE);
+    }
+
+    public void hideEmptyStateLayout() {
+        recyclerView.setVisibility(View.VISIBLE);
+        emptyStateLayout.setVisibility(View.GONE);
     }
 
     private void hideLoadMoreProgress() {

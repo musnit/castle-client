@@ -4,10 +4,12 @@ package xyz.castle.views;
 
 import android.app.Activity;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import androidx.annotation.NonNull;
+import xyz.castle.R;
 import xyz.castle.ViewUtils;
 import xyz.castle.api.API;
 import xyz.castle.api.GraphQLOperation;
@@ -60,10 +62,17 @@ public class HistoryFeedView extends NativeFeedView {
         API.getInstance().graphql(operation, new API.GraphQLResponseHandler() {
             @Override
             public void success(API.GraphQLResult result) {
-                feedRecyclerView.replaceDecks(result.array());
+                JSONArray array = result.array();
+                feedRecyclerView.replaceDecks(array);
 
                 ViewUtils.runOnUiThread(() -> {
                     setRefreshing(false);
+
+                    if (array.length() == 0) {
+                        addEmptyStateLayout(R.layout.history_feed_empty_state);
+                    } else {
+                        hideEmptyStateLayout();
+                    }
                 });
             }
 
