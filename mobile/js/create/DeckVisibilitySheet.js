@@ -18,7 +18,7 @@ import { useSafeArea } from 'react-native-safe-area-context';
 
 import * as Constants from '../Constants';
 
-const SHEET_HEIGHT = 320;
+const SHEET_HEIGHT = 360;
 const TAB_BAR_HEIGHT = 49;
 
 const styles = StyleSheet.create({
