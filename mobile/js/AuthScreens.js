@@ -247,7 +247,7 @@ const LoginForm = ({ route }) => {
   );
 };
 
-const CreateAccountForm = () => {
+const CreateAccountForm = ({ route }) => {
   const { navigate } = useNavigation();
   const { signUpAsync } = useSession();
 
@@ -259,6 +259,11 @@ const CreateAccountForm = () => {
   const [creatingAccount, setCreatingAccount] = useState(false);
   const [errors, setErrors] = useState([]);
 
+  let uriAfter;
+  if (route && route.params) {
+    uriAfter = route.params.uriAfter;
+  }
+
   const onPressLogin = () => {
     navigate('LoginScreen');
   };
@@ -269,9 +274,6 @@ const CreateAccountForm = () => {
       setErrors([]);
       await signUpAsync({ username, name, email, password });
       setCreatingAccount(false);
-      if (Platform.OS != 'android') {
-        navigate('HomeScreen');
-      }
       if (uriAfter) {
         navigateToUri(uriAfter);
       }
@@ -284,9 +286,9 @@ const CreateAccountForm = () => {
   return (
     <Fragment>
       <Fragment>
-        {errors.map((error) => (
-          <Announcement body={errorMessages[error.extensions.code]} />
-        ))}
+        {errors?.length
+          ? errors.map((error) => <Announcement body={errorMessages[error.extensions.code]} />)
+          : null}
       </Fragment>
       <View style={{ paddingBottom: 16, alignItems: 'center' }}>
         <Text style={{ fontSize: 20, color: Constants.colors.white }}>Create a new account</Text>
