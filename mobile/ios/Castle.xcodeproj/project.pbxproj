@@ -74,6 +74,8 @@
 		A1CCBA19235518C7009F4DDD /* GhostView.m in Sources */ = {isa = PBXBuildFile; fileRef = A1CCBA18235518C7009F4DDD /* GhostView.m */; };
 		A1FA18C32365168600E2ACFE /* GhostInputZone.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1FA18C22365168600E2ACFE /* GhostInputZone.mm */; };
 		B51813F72527916C00C315C9 /* GhostAppState.mm in Sources */ = {isa = PBXBuildFile; fileRef = B51813F62527916C00C315C9 /* GhostAppState.mm */; };
+		B55942172534C97A00BD34E7 /* CastleNotificationService.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B559420F2534C97A00BD34E7 /* CastleNotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B55942292534CC0200BD34E7 /* CastleNotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = B55942272534CC0200BD34E7 /* CastleNotificationService.m */; };
 		B75D12A12F9E5D8776A933D2 /* libPods-Castle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 580488360D0E6A5C5C50B415 /* libPods-Castle.a */; };
 		CD0A84C8B8A44D86830CD6A6 /* RTAliasGrotesk-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = A753A21E42DB46D99AD060DF /* RTAliasGrotesk-Regular.otf */; };
 /* End PBXBuildFile section */
@@ -107,7 +109,28 @@
 			remoteGlobalIDString = FA0B78DD1A958B90000E1D17;
 			remoteInfo = "liblove-ios";
 		};
+		B55942152534C97A00BD34E7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B559420E2534C97A00BD34E7;
+			remoteInfo = CastleNotificationService;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		B55942182534C97A00BD34E7 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				B55942172534C97A00BD34E7 /* CastleNotificationService.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
@@ -214,6 +237,10 @@
 		A753A21E42DB46D99AD060DF /* RTAliasGrotesk-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "RTAliasGrotesk-Regular.otf"; path = "../assets/fonts/RTAliasGrotesk-Regular.otf"; sourceTree = "<group>"; };
 		B51813EE2527916C00C315C9 /* GhostAppState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GhostAppState.h; sourceTree = "<group>"; };
 		B51813F62527916C00C315C9 /* GhostAppState.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GhostAppState.mm; sourceTree = "<group>"; };
+		B559420F2534C97A00BD34E7 /* CastleNotificationService.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CastleNotificationService.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		B55942142534C97A00BD34E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B55942272534CC0200BD34E7 /* CastleNotificationService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CastleNotificationService.m; sourceTree = "<group>"; };
+		B55942282534CC0200BD34E7 /* CastleNotificationService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CastleNotificationService.h; sourceTree = "<group>"; };
 		B55A282F24F43BCC00A95D42 /* GhostChannels.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GhostChannels.h; sourceTree = "<group>"; };
 		BDA1BD867AE232F85BAD0D0B /* libPods-Castle-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Castle-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1DF76557142480ED55F211A /* Pods-CastleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CastleTests.debug.xcconfig"; path = "Target Support Files/Pods-CastleTests/Pods-CastleTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -246,6 +273,13 @@
 				A1959DF82410A0CC000C61E0 /* Accelerate.framework in Frameworks */,
 				A14FE3B72355CD66003B7EA0 /* CoreMotion.framework in Frameworks */,
 				A14FE3A82355CBBE003B7EA0 /* liblove.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B559420C2534C97A00BD34E7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -340,6 +374,7 @@
 				13B07FAE1A68108700A75B9A /* Castle */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* CastleTests */,
+				B55942102534C97A00BD34E7 /* CastleNotificationService */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				F290EE920FCD404AA685C745 /* Resources */,
@@ -354,6 +389,7 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* Castle.app */,
+				B559420F2534C97A00BD34E7 /* CastleNotificationService.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -508,6 +544,16 @@
 			name = lpeg;
 			sourceTree = "<group>";
 		};
+		B55942102534C97A00BD34E7 /* CastleNotificationService */ = {
+			isa = PBXGroup;
+			children = (
+				B55942282534CC0200BD34E7 /* CastleNotificationService.h */,
+				B55942272534CC0200BD34E7 /* CastleNotificationService.m */,
+				B55942142534C97A00BD34E7 /* Info.plist */,
+			);
+			path = CastleNotificationService;
+			sourceTree = "<group>";
+		};
 		F290EE920FCD404AA685C745 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -533,16 +579,35 @@
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				A14FE3882355C9B8003B7EA0 /* Remove temporary '.love' package */,
 				1B1082991574591082E9CFD6 /* [CP] Copy Pods Resources */,
+				B55942182534C97A00BD34E7 /* Embed App Extensions */,
 				7E8E071F9E7D48CB901E090C /* Upload Debug Symbols to Sentry */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				B55942162534C97A00BD34E7 /* PBXTargetDependency */,
 			);
 			name = Castle;
 			productName = Castle;
 			productReference = 13B07F961A680F5B00A75B9A /* Castle.app */;
 			productType = "com.apple.product-type.application";
+		};
+		B559420E2534C97A00BD34E7 /* CastleNotificationService */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B55942222534C97A00BD34E7 /* Build configuration list for PBXNativeTarget "CastleNotificationService" */;
+			buildPhases = (
+				B559420B2534C97A00BD34E7 /* Sources */,
+				B559420C2534C97A00BD34E7 /* Frameworks */,
+				B559420D2534C97A00BD34E7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CastleNotificationService;
+			productName = CastleNotificationService;
+			productReference = B559420F2534C97A00BD34E7 /* CastleNotificationService.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -555,6 +620,11 @@
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = CUW59GZ74D;
+					};
+					B559420E2534C97A00BD34E7 = {
+						CreatedOnToolsVersion = 12.0;
+						DevelopmentTeam = CUW59GZ74D;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -583,6 +653,7 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* Castle */,
+				B559420E2534C97A00BD34E7 /* CastleNotificationService */,
 			);
 		};
 /* End PBXProject section */
@@ -628,6 +699,13 @@
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				752DFF0FA2404564937762CE /* RTAliasGrotesk-Bold.otf in Resources */,
 				CD0A84C8B8A44D86830CD6A6 /* RTAliasGrotesk-Regular.otf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B559420D2534C97A00BD34E7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -850,7 +928,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B559420B2534C97A00BD34E7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B55942292534CC0200BD34E7 /* CastleNotificationService.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B55942162534C97A00BD34E7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B559420E2534C97A00BD34E7 /* CastleNotificationService */;
+			targetProxy = B55942152534C97A00BD34E7 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		13B07FB11A68108700A75B9A /* LaunchScreen.xib */ = {
@@ -1042,6 +1136,56 @@
 			};
 			name = Release;
 		};
+		B55942192534C97A00BD34E7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = CUW59GZ74D;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = CastleNotificationService/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "xyz.castle.castle-debug.CastleNotificationService";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B559421A2534C97A00BD34E7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = CUW59GZ74D;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = CastleNotificationService/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = xyz.castle.castle.CastleNotificationService;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1059,6 +1203,15 @@
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
 				83CBBA211A601CBA00E9B192 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B55942222534C97A00BD34E7 /* Build configuration list for PBXNativeTarget "CastleNotificationService" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B55942192534C97A00BD34E7 /* Debug */,
+				B559421A2534C97A00BD34E7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
