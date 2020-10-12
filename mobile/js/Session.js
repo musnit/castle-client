@@ -712,7 +712,8 @@ export const fetchNotificationsAsync = async () => {
   const notificationsBadgeCount = notifications
     ? notifications.reduce((accum, n) => accum + (n.status === 'unseen'), 0)
     : 0;
-  PushNotifications.setBadgeCount(notificationsBadgeCount, newFollowingDecks);
+  PushNotifications.setBadgeCount(notificationsBadgeCount);
+  PushNotifications.setNewFollowingDecks(newFollowingDecks);
   EventEmitter.sendEvent('notifications', {
     newFollowingDecks,
     notifications,

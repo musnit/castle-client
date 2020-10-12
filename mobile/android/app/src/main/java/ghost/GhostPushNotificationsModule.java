@@ -78,8 +78,13 @@ public class GhostPushNotificationsModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    void setNotificationsBadgeCount(int count, boolean newFollowingDecks, Promise promise) {
+    void setNotificationsBadgeCount(int count, Promise promise) {
         EventBus.getDefault().post(new NavigationActivity.UpdateNotificationsBadgeEvent(count));
+        promise.resolve(true);
+    }
+
+    @ReactMethod
+    void setNewFollowingDecks(boolean newFollowingDecks, Promise promise) {
         EventBus.getDefault().post(new NavigationActivity.UpdateFollowingBadge(newFollowingDecks));
         promise.resolve(true);
     }
