@@ -19,7 +19,6 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
   },
   avatars: {
     width: 32,

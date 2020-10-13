@@ -190,6 +190,10 @@ export const USER_PROFILE_FRAGMENT = `
   photo {
     url
   }
+  badges {
+    label
+    image { url }
+  }
   connections
   followersCount
   connectionsYouKnow {

@@ -10,6 +10,7 @@ import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect } from '../ReactNavigation';
 import { useSession } from '../Session';
 import { UserAvatar } from '../components/UserAvatar';
+import { ProfileBadge } from './ProfileBadge';
 import { ProfileConnections } from './ProfileConnections';
 import { ProfileSettingsSheet } from './ProfileSettingsSheet';
 
@@ -24,9 +25,9 @@ const styles = StyleSheet.create({
   },
   header: {
     width: '100%',
-    alignItems: 'center',
     paddingBottom: 24,
   },
+  avatar: { width: 96, margin: 16 },
   username: { marginTop: 4, fontSize: 18, color: Constants.colors.white, fontWeight: 'bold' },
   profileItems: { marginTop: 16, flexDirection: 'row' },
   scrollView: {
@@ -60,9 +61,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   followers: {
-    marginTop: 16,
+    marginVertical: 16,
     paddingHorizontal: 16,
-    width: '100%',
+  },
+  badges: {
+    paddingHorizontal: 16,
   },
 });
 
@@ -136,39 +139,39 @@ export const ProfileScreen = ({ userId, route }) => {
       <View style={styles.container}>
         <SafeAreaView style={styles.header}>
           <ScreenHeader />
-          <View style={{ width: 96, paddingVertical: 16 }}>
-            <UserAvatar url={user?.photo?.url} />
-          </View>
-          <View style={{ alignItems: 'center' }}>
-            <Text style={styles.username}>@{user?.username}</Text>
-            <View style={styles.profileItems}>
-              {urlToDisplay ? (
-                <TouchableOpacity
-                  style={{ marginRight: isMe ? 16 : 0 }}
-                  onPress={() => {
-                    Linking.openURL(urlToOpen);
-                  }}>
-                  <Text style={{ color: '#fff' }}>{urlToDisplay}</Text>
-                </TouchableOpacity>
-              ) : null}
-              {isMe ? (
-                <Fragment>
+          <View style={{ flexDirection: 'row' }}>
+            <View style={styles.avatar}>
+              <UserAvatar url={user?.photo?.url} />
+            </View>
+            <View style={{ paddingVertical: 16 }}>
+              <Text style={styles.username}>@{user?.username}</Text>
+              <View style={styles.profileItems}>
+                {urlToDisplay ? (
+                  <TouchableOpacity
+                    style={{ marginRight: isMe ? 16 : 0 }}
+                    onPress={() => {
+                      Linking.openURL(urlToOpen);
+                    }}>
+                    <Text style={{ color: '#fff' }}>{urlToDisplay}</Text>
+                  </TouchableOpacity>
+                ) : null}
+                {isMe ? (
                   <TouchableOpacity onPress={onPressSettings}>
                     <Text style={{ color: '#aaa' }}>Settings</Text>
                   </TouchableOpacity>
-                </Fragment>
-              ) : null}
-            </View>
-            {!isMe && user ? (
-              <View style={styles.connections}>
-                <FollowButton user={user} onPress={onRefresh} />
-                {user.connections.includes('followedBy') ? (
-                  <View style={styles.followedBy}>
-                    <Text style={styles.followedByLabel}>Follows You</Text>
-                  </View>
                 ) : null}
               </View>
-            ) : null}
+              {!isMe && user ? (
+                <View style={styles.connections}>
+                  <FollowButton user={user} onPress={onRefresh} />
+                  {user.connections.includes('followedBy') ? (
+                    <View style={styles.followedBy}>
+                      <Text style={styles.followedByLabel}>Follows You</Text>
+                    </View>
+                  ) : null}
+                </View>
+              ) : null}
+            </View>
           </View>
           <View style={styles.followers}>
             <ProfileConnections
@@ -176,6 +179,13 @@ export const ProfileScreen = ({ userId, route }) => {
               connections={user?.connectionsYouKnow}
             />
           </View>
+          {user?.badges?.length ? (
+            <View style={styles.badges}>
+              {user.badges.map((badge, ii) => (
+                <ProfileBadge badge={badge} key={`badge-${ii}`} />
+              ))}
+            </View>
+          ) : null}
         </SafeAreaView>
         <DecksGrid
           decks={user?.decks}
