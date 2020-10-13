@@ -237,12 +237,23 @@ const Create = ({ response, context }) => {
       blueprintName = blueprint.title;
     }
   }
-  const paramNames = ['depth', 'xOffset', 'yOffset'];
-  const paramValues = {
-    depth: response.params?.depth ?? null,
-    xOffset: response.params?.xOffset ?? 0,
-    yOffset: response.params?.yOffset ?? 0,
-  };
+  let paramNames, paramValues, label;
+  let coordinateSystem = response.params?.coordinateSystem ?? 'position';
+  if (coordinateSystem === 'position') {
+    paramNames = ['xOffset', 'yOffset'];
+    paramValues = {
+      xOffset: response.params?.xOffset ?? 0,
+      yOffset: response.params?.yOffset ?? 0,
+    };
+    label = `x: ${response.params?.xOffset ?? 0}, y: ${response.params?.yOffset ?? 0}`;
+  } else {
+    paramNames = ['angle', 'distance'];
+    paramValues = {
+      angle: response.params?.angle ?? 0,
+      distance: response.params?.distance ?? 0,
+    };
+    label = `a: ${response.params?.angle ?? 0}, r: ${response.params?.distance ?? 0}`;
+  }
   return [
     {
       type: 'showEntryOptions',
@@ -254,19 +265,25 @@ const Create = ({ response, context }) => {
     },
     {
       type: 'selectParamSheet',
-      paramNames,
-      paramValues,
+      paramName: 'depth',
+      paramValue: response.params?.depth ?? 0,
       label: response.params?.depth ?? 'in front of all actors',
     },
     {
       type: 'text',
-      label: 'at relative position',
+      label: 'at relative',
+    },
+    {
+      type: 'selectParamSheet',
+      paramName: 'coordinateSystem',
+      paramValue: coordinateSystem,
+      label: coordinateSystem,
     },
     {
       type: 'selectParamSheet',
       paramNames,
       paramValues,
-      label: `x: ${response.params?.xOffset ?? 0}, y: ${response.params?.yOffset ?? 0}`,
+      label,
     },
   ];
 };
