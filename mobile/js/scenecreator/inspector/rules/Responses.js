@@ -252,7 +252,7 @@ const Create = ({ response, context }) => {
       angle: response.params?.angle ?? 0,
       distance: response.params?.distance ?? 0,
     };
-    label = `a: ${response.params?.angle ?? 0}, r: ${response.params?.distance ?? 0}`;
+    label = `a: ${response.params?.angle ?? 0}, d: ${response.params?.distance ?? 0}`;
   }
   return [
     {
