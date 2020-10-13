@@ -558,6 +558,25 @@ const RemoveTag = ({ response }) => {
   ];
 };
 
+const MoveTowardOwnAngle = ({ response }) => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Move toward my own angle',
+    },
+    {
+      type: 'text',
+      label: 'with speed',
+    },
+    {
+      type: 'selectParamSheet',
+      label: response.params?.speed ?? 0,
+      paramName: 'speed',
+      paramValue: response.params?.speed,
+    },
+  ];
+};
+
 const MoveTowardActor = ({ response }) => {
   const hasTag = response.params?.tag && response.params?.tag.length;
   return [
@@ -619,6 +638,7 @@ export const Responses = {
   ['restart scene']: RestartScene,
   ['add tag']: AddTag,
   ['remove tag']: RemoveTag,
+  ['move toward own angle']: MoveTowardOwnAngle,
   ['move toward actor']: MoveTowardActor,
   ['face direction of motion']: FaceDirectionOfMotion,
   create: Create,
