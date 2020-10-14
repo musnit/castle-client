@@ -6,6 +6,7 @@ import { ConfigureRuleEntry } from './ConfigureRuleEntry';
 import { getEntryByName } from '../InspectorUtilities';
 import { makeResponseActions } from './ResponseActions';
 import { Responses } from './Responses';
+import { SetVariableResponse as SetVariable } from './SetVariableResponse';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 
 import RuleOptionsSheet from './RuleOptionsSheet';
@@ -264,6 +265,8 @@ const RESPONSE_COMPONENTS = {
   ['act on']: ActOn,
   ['set behavior property']: BehaviorPropertyRule,
   ['change behavior property']: BehaviorPropertyRule,
+  ['set variable']: SetVariable,
+  ['change variable']: SetVariable,
 };
 
 const makeResponseCells = (props) => {
