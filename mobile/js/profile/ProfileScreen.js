@@ -10,6 +10,7 @@ import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect } from '../ReactNavigation';
 import { useSession } from '../Session';
 import { UserAvatar } from '../components/UserAvatar';
+import { PopoverProvider } from '../scenecreator/PopoverProvider';
 import { ProfileBadge } from './ProfileBadge';
 import { ProfileConnections } from './ProfileConnections';
 import { ProfileSettingsSheet } from './ProfileSettingsSheet';
@@ -66,6 +67,7 @@ const styles = StyleSheet.create({
   },
   badges: {
     paddingHorizontal: 16,
+    flexDirection: 'row',
   },
 });
 
@@ -180,11 +182,13 @@ export const ProfileScreen = ({ userId, route }) => {
             />
           </View>
           {user?.badges?.length ? (
-            <View style={styles.badges}>
-              {user.badges.map((badge, ii) => (
-                <ProfileBadge badge={badge} key={`badge-${ii}`} />
-              ))}
-            </View>
+            <PopoverProvider>
+              <View style={styles.badges}>
+                {user.badges.map((badge, ii) => (
+                  <ProfileBadge badge={badge} key={`badge-${ii}`} />
+                ))}
+              </View>
+            </PopoverProvider>
           ) : null}
         </SafeAreaView>
         <DecksGrid
