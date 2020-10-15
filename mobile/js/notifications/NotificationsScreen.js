@@ -42,12 +42,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginVertical: 8,
   },
-  scrollView: {
-    paddingVertical: 16,
-  },
   sectionHeader: {
     paddingHorizontal: 16,
-    paddingTop: 8,
+    paddingTop: 24,
+    paddingBottom: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -57,7 +55,7 @@ const styles = StyleSheet.create({
   },
   notif: {
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingVertical: 10,
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
