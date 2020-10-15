@@ -633,6 +633,8 @@ const FaceDirectionOfMotion = () => {
   ];
 };
 
+const PlaySound = () => [{ type: 'showEntryOptions', label: 'Play sound effect' }];
+
 export const Responses = {
   ['act on']: ActOn,
   ['act on other']: ActOnOther,
@@ -658,6 +660,7 @@ export const Responses = {
   ['move toward own angle']: MoveTowardOwnAngle,
   ['move toward actor']: MoveTowardActor,
   ['face direction of motion']: FaceDirectionOfMotion,
+  ['play sound']: PlaySound,
   create: Create,
   destroy: Destroy,
   show: Show,

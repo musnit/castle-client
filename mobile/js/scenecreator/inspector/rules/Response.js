@@ -5,6 +5,7 @@ import { BehaviorPropertyRule } from './BehaviorPropertyRule';
 import { ConfigureRuleEntry } from './ConfigureRuleEntry';
 import { getEntryByName } from '../InspectorUtilities';
 import { makeResponseActions } from './ResponseActions';
+import { PlaySoundResponse as PlaySound } from './PlaySoundResponse';
 import { Responses } from './Responses';
 import { SetVariableResponse as SetVariable } from './SetVariableResponse';
 import { useActionSheet } from '@expo/react-native-action-sheet';
@@ -38,6 +39,7 @@ const RESPONSE_CATEGORY_ORDER = [
   'state',
   'visible',
   'motion',
+  'sound',
 ];
 const CONDITION_CATEGORY_ORDER = ['state', 'collision', 'random'];
 
@@ -267,6 +269,7 @@ const RESPONSE_COMPONENTS = {
   ['change behavior property']: BehaviorPropertyRule,
   ['set variable']: SetVariable,
   ['change variable']: SetVariable,
+  ['play sound']: PlaySound,
 };
 
 const makeResponseCells = (props) => {
