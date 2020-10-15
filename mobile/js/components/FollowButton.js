@@ -7,8 +7,9 @@ import * as Constants from '../Constants';
 const styles = StyleSheet.create({
   followButton: {
     backgroundColor: Constants.colors.white,
-    borderRadius: 3,
-    padding: 8,
+    borderRadius: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
     alignItems: 'center',
     justifyContent: 'center',
   },
