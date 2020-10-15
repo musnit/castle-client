@@ -289,6 +289,8 @@ function portalMeta:setupLove()
         function newLove.audio.newSource(path, ...)
             if type(path) == "string" then
                 return love.audio.newSource(fetchFileData(path), ...)
+            elseif type(path) == "userdata" and #arg == 1 then
+                return love.audio.newSource(path)
             else
                 return love.audio.newSource(path, ...)
             end
