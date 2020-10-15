@@ -37,6 +37,7 @@ const InspectorRule = ({
   addChildSheet,
   onChangeRule,
   onRemoveRule,
+  sendRuleAction,
 }) => {
   const onChangeTrigger = React.useCallback(
     (trigger) => {
@@ -77,6 +78,7 @@ const InspectorRule = ({
           responses={responses}
           conditions={conditions}
           onChangeResponse={onChangeResponse}
+          sendRuleAction={sendRuleAction}
         />
       </View>
     </View>
@@ -164,6 +166,7 @@ export default InspectorRules = ({ behaviors, sendActions, addChildSheet }) => {
               triggers={rulesData.triggers}
               responses={rulesData.responses}
               conditions={rulesData.conditions}
+              sendRuleAction={sendRuleAction}
             />
           ))}
         </React.Fragment>
