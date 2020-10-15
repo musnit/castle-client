@@ -96,18 +96,22 @@ export const InspectorNumberInput = ({ value, lastNativeUpdate, onChange, ...pro
         onChangeText={onChangeText}
         keyboardType={'decimal-pad'}
       />
-      <TouchableOpacity
-        style={[styles.button, styles.minusButton]}
-        onPress={onMinus}
-        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-        <FontAwesome name="minus" size={14} color="#000" />
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={[styles.button, styles.plusButton]}
-        onPress={onPlus}
-        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-        <FontAwesome name="plus" size={14} color="#000" />
-      </TouchableOpacity>
+      {!props.hideIncrements ? (
+        <React.Fragment>
+          <TouchableOpacity
+            style={[styles.button, styles.minusButton]}
+            onPress={onMinus}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+            <FontAwesome name="minus" size={14} color="#000" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, styles.plusButton]}
+            onPress={onPlus}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+            <FontAwesome name="plus" size={14} color="#000" />
+          </TouchableOpacity>
+        </React.Fragment>
+      ) : null}
     </View>
   );
 };

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { InspectorNumberInput } from '../components/InspectorNumberInput';
 
 import * as Constants from '../../../Constants';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
@@ -10,6 +11,9 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 12,
     alignItems: 'flex-start',
+  },
+  soundInputsRow: {
+    flexDirection: 'row',
   },
   segmentedControl: {
     flexDirection: 'row',
@@ -71,12 +75,22 @@ const SOUND_CATEGORIES = [
 ];
 
 export const PlaySoundResponse = ({ response, onChangeResponse, children, ...props }) => {
+  const [lastNativeUpdate, incrementLastNativeUpdate] = React.useReducer((state) => state + 1, 0);
+  React.useEffect(incrementLastNativeUpdate, [response.params]);
   const onChangeCategory = (index) =>
     onChangeResponse({
       ...response,
       params: {
         ...response.params,
         category: SOUND_CATEGORIES[index].name,
+      },
+    });
+  const onChangeSeed = (seed) =>
+    onChangeResponse({
+      ...response,
+      params: {
+        ...response.params,
+        seed,
       },
     });
   const selectedCategoryIndex = response.params?.category
@@ -106,6 +120,22 @@ export const PlaySoundResponse = ({ response, onChangeResponse, children, ...pro
               />
             </TouchableOpacity>
           ))}
+        </View>
+        <View style={styles.soundInputsRow}>
+          <TouchableOpacity
+            style={SceneCreatorConstants.styles.button}
+            onPress={() => onChangeSeed(Math.floor(Math.random() * Math.floor(9999)))}>
+            <Text style={SceneCreatorConstants.styles.buttonLabel}>New</Text>
+          </TouchableOpacity>
+          <View style={{ width: '25%', marginLeft: 8 }}>
+            <InspectorNumberInput
+              hideIncrements
+              lastNativeUpdate={lastNativeUpdate}
+              placeholder="Seed"
+              value={response.params?.seed}
+              onChange={onChangeSeed}
+            />
+          </View>
         </View>
       </View>
     </React.Fragment>
