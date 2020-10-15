@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { UserAvatar } from '../components/UserAvatar';
+import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
   text: {
@@ -8,36 +9,38 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
   },
   body: {
-    color: '#ccc',
-    fontSize: 14,
-    lineHeight: 19,
+    color: Constants.colors.grayText,
+    fontSize: 16,
+    lineHeight: 22,
   },
   username: {
     color: '#fff',
     paddingHorizontal: 4,
   },
   row: {
+    paddingTop: 12,
+    paddingBottom: 0,
+    paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
   },
   avatars: {
-    width: 32,
-    marginRight: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
+    width: 36,
+    height: 36,
+    marginRight: 16,
   },
   avatar1: {
     position: 'absolute',
-    width: 28,
+    width: 24,
     left: 0,
-    top: -14,
+    top: 0,
   },
   avatar2: {
     position: 'absolute',
-    width: 28,
-    left: 10,
-    top: -4,
+    width: 24,
+    right: 0,
+    bottom: 0,
+    zIndex: -1,
   },
 });
 

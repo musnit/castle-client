@@ -26,11 +26,23 @@ const styles = StyleSheet.create({
   },
   header: {
     width: '100%',
-    paddingBottom: 24,
+    paddingBottom: 8,
   },
-  avatar: { width: 96, margin: 16 },
-  username: { marginTop: 4, fontSize: 18, color: Constants.colors.white, fontWeight: 'bold' },
-  profileItems: { marginTop: 16, flexDirection: 'row' },
+  profileRow: {
+    padding: 16,
+    paddingBottom: 0,
+    flexDirection: 'row',
+  },
+  avatar: {
+    width: 72,
+    marginTop: 4,
+    marginRight: 16,
+  },
+  username: {
+    fontSize: 20,
+    color: Constants.colors.white,
+  },
+  profileItems: { marginTop: 8, flexDirection: 'row' },
   scrollView: {
     paddingTop: 2,
     paddingLeft: 2,
@@ -43,31 +55,25 @@ const styles = StyleSheet.create({
     paddingBottom: 2,
     width: '33.3%',
   },
-  connections: {
-    marginTop: 24,
-    flexDirection: 'row',
-  },
   followedBy: {
     marginLeft: 16,
-    borderRadius: 3,
+    borderRadius: 4,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: Constants.colors.white,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
   },
   followedByLabel: {
     color: Constants.colors.white,
     textTransform: 'uppercase',
-    fontSize: 14,
+    fontSize: 13,
+    letterSpacing: 1,
   },
   followers: {
     marginVertical: 16,
     paddingHorizontal: 16,
-  },
-  badges: {
-    paddingHorizontal: 16,
-    flexDirection: 'row',
   },
 });
 
@@ -140,8 +146,8 @@ export const ProfileScreen = ({ userId, route }) => {
     <Fragment>
       <View style={styles.container}>
         <SafeAreaView style={styles.header}>
-          <ScreenHeader />
-          <View style={{ flexDirection: 'row' }}>
+          <ScreenHeader title="Profile" />
+          <View style={styles.profileRow}>
             <View style={styles.avatar}>
               <UserAvatar url={user?.photo?.url} />
             </View>
@@ -154,36 +160,34 @@ export const ProfileScreen = ({ userId, route }) => {
                     onPress={() => {
                       Linking.openURL(urlToOpen);
                     }}>
-                    <Text style={{ color: '#fff' }}>{urlToDisplay}</Text>
+                    <Text style={{ fontSize: 16, color: Constants.colors.grayText }}>{urlToDisplay}</Text>
                   </TouchableOpacity>
                 ) : null}
                 {isMe ? (
                   <TouchableOpacity onPress={onPressSettings}>
-                    <Text style={{ color: '#aaa' }}>Settings</Text>
+                    <Text style={{ fontSize: 16, color: Constants.colors.grayText }}>Settings</Text>
                   </TouchableOpacity>
                 ) : null}
               </View>
-              {!isMe && user ? (
-                <View style={styles.connections}>
-                  <FollowButton user={user} onPress={onRefresh} />
-                  {user.connections.includes('followedBy') ? (
-                    <View style={styles.followedBy}>
-                      <Text style={styles.followedByLabel}>Follows You</Text>
-                    </View>
-                  ) : null}
+            </View>
+          </View>
+          {!isMe && user ? (
+            <View style={styles.profileRow}>
+              <FollowButton user={user} onPress={onRefresh} />
+              {user.connections.includes('followedBy') ? (
+                <View style={styles.followedBy}>
+                  <Text style={styles.followedByLabel}>Follows You</Text>
                 </View>
               ) : null}
             </View>
-          </View>
-          <View style={styles.followers}>
-            <ProfileConnections
-              followersCount={user?.followersCount}
-              connections={user?.connectionsYouKnow}
-            />
-          </View>
+          ) : null}
+          <ProfileConnections
+            followersCount={user?.followersCount}
+            connections={user?.connectionsYouKnow}
+          />
           {user?.badges?.length ? (
             <PopoverProvider>
-              <View style={styles.badges}>
+              <View style={styles.profileRow}>
                 {user.badges.map((badge, ii) => (
                   <ProfileBadge badge={badge} key={`badge-${ii}`} />
                 ))}

@@ -6,13 +6,14 @@ import FastImage from 'react-native-fast-image';
 
 const styles = StyleSheet.create({
   badge: {
-    width: 36,
-    height: 36,
+    width: 48,
+    height: 48,
     marginRight: 8,
   },
   button: {},
   tooltip: {
-    padding: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
     fontSize: 16,
     lineHeight: 22,
   },
@@ -24,10 +25,10 @@ export const ProfileBadge = ({ badge, style }) => {
   const popover = {
     Component: Tooltip,
     message: badge?.label,
-    height: 44,
+    height: 38,
   };
   return (
-    <PopoverButton popover={popover} style={styles.button}>
+    <PopoverButton popover={popover}>
       <FastImage style={[styles.badge, style]} source={{ uri: badge.image?.url }} />
     </PopoverButton>
   );
