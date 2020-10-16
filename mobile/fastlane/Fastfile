@@ -28,7 +28,13 @@ platform :ios do
     )
     build_app(
       scheme: "Castle",
-      workspace: "ios/Castle.xcworkspace"
+      workspace: "ios/Castle.xcworkspace",
+      export_options: {
+     	provisioningProfiles: { 
+          "xyz.castle.castle" => "xyz.castle.castle AppStore 1598649932",
+          "xyz.castle.castle.CastleNotificationService" => "xyz.castle.castle.CastleNotificationService AppSto",
+        }
+      }
     )
     upload_to_testflight(
         username: "ben@castle.xyz"
