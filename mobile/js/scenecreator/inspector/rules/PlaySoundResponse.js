@@ -15,6 +15,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   playButtonContainer: {
+    paddingLeft: 4,
     paddingRight: 12,
     width: 72,
     flexShrink: 1,
@@ -58,6 +59,14 @@ const styles = StyleSheet.create({
   segmentedControlLabelSelected: {
     color: Constants.colors.white,
     fontWeight: 'bold',
+  },
+  soundInputsRandomize: {
+    fontSize: 15,
+    marginTop: 2,
+  },
+  soundInputsLabel: {
+    marginTop: 6,
+    marginBottom: 2,
   },
 });
 
@@ -178,30 +187,45 @@ export const PlaySoundResponse = ({
               </TouchableOpacity>
             ))}
           </View>
-          <View style={styles.soundInputsRow}>
-            <TouchableOpacity
-              style={SceneCreatorConstants.styles.button}
-              onPress={() => onChangeSeed(Math.floor(Math.random() * Math.floor(9999)))}>
-              <Text style={SceneCreatorConstants.styles.buttonLabel}>New</Text>
-            </TouchableOpacity>
-            <View style={{ width: '30%', marginLeft: 8 }}>
-              <InspectorNumberInput
-                hideIncrements
-                lastNativeUpdate={lastNativeUpdate}
-                placeholder="Seed"
-                value={response.params?.seed}
-                onChange={onChangeSeed}
-              />
-            </View>
-            <View style={{ width: '15%', marginLeft: 8 }}>
-              <InspectorNumberInput
-                hideIncrements
-                lastNativeUpdate={lastNativeUpdate}
-                placeholder="Mutation"
-                value={response.params?.mutationSeed}
-                onChange={onChangeMutation}
-              />
-            </View>
+            <View style={styles.soundInputsRow}>
+              <View style={{ flexDirection: 'column' }}>
+                <View style={{ flexDirection: 'row' }}>
+                  <View style={{ width: '30%', marginRight: 8 }}>
+                    <InspectorNumberInput
+                      hideIncrements
+                      lastNativeUpdate={lastNativeUpdate}
+                      placeholder="Seed"
+                      value={response.params?.seed}
+                      onChange={onChangeSeed}
+                    />
+                  </View>
+                  <TouchableOpacity
+                    style={SceneCreatorConstants.styles.button}
+                    onPress={() => onChangeSeed(Math.floor(Math.random() * Math.floor(9999)))}>
+                    <Feather name='refresh-cw' style={styles.soundInputsRandomize} />
+                  </TouchableOpacity>
+                </View>
+                <Text style={styles.soundInputsLabel}>Coarse</Text>
+              </View>
+              <View style={{ flexDirection: 'column' }}>
+                <View style={{ flexDirection: 'row' }}>
+                  <View style={{ width: '30%', marginRight: 8 }}>
+                    <InspectorNumberInput
+                      hideIncrements
+                      lastNativeUpdate={lastNativeUpdate}
+                      placeholder="Mutation"
+                      value={response.params?.mutationSeed}
+                      onChange={onChangeMutation}
+                    />
+                  </View>
+                  <TouchableOpacity
+                    style={SceneCreatorConstants.styles.button}
+                    onPress={() => onChangeSeed(Math.floor(Math.random() * Math.floor(9999)))}>
+                    <Feather name='refresh-cw' style={styles.soundInputsRandomize} />
+                  </TouchableOpacity>
+                </View>
+                <Text style={styles.soundInputsLabel}>Fine</Text>
+              </View>
           </View>
         </View>
       </View>
