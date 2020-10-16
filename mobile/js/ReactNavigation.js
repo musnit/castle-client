@@ -133,7 +133,7 @@ export const useFocusEffect = (...args) => {
           returnFn = null;
         }
       };
-    }, []);
+    }, [args[0]]);
   }
 };
 
