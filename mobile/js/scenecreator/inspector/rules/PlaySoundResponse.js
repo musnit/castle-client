@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
 const SOUND_CATEGORIES = [
   {
     name: 'pickup',
-    icon: 'anchor',
+    icon: 'umbrella',
   },
   {
     name: 'laser',
@@ -76,7 +76,7 @@ const SOUND_CATEGORIES = [
   },
   {
     name: 'powerup',
-    icon: 'flag',
+    icon: 'key',
   },
   {
     name: 'hit',
@@ -88,11 +88,11 @@ const SOUND_CATEGORIES = [
   },
   {
     name: 'blip',
-    icon: 'key',
+    icon: 'paperclip',
   },
   {
     name: 'random',
-    icon: 'help-circle',
+    icon: 'gift',
   },
 ];
 
