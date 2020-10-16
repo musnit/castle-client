@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     paddingLeft: 4,
     paddingRight: 12,
     width: 72,
-    flexShrink: 1,
+    flexShrink: 0,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -37,6 +37,8 @@ const styles = StyleSheet.create({
   },
   soundInputsRow: {
     flexDirection: 'row',
+    flexShrink: 1,
+    flexGrow: 0,
   },
   segmentedControl: {
     flexDirection: 'row',
@@ -187,45 +189,45 @@ export const PlaySoundResponse = ({
               </TouchableOpacity>
             ))}
           </View>
-            <View style={styles.soundInputsRow}>
-              <View style={{ flexDirection: 'column' }}>
-                <View style={{ flexDirection: 'row' }}>
-                  <View style={{ width: '30%', marginRight: 8 }}>
-                    <InspectorNumberInput
-                      hideIncrements
-                      lastNativeUpdate={lastNativeUpdate}
-                      placeholder="Seed"
-                      value={response.params?.seed}
-                      onChange={onChangeSeed}
-                    />
-                  </View>
-                  <TouchableOpacity
-                    style={SceneCreatorConstants.styles.button}
-                    onPress={() => onChangeSeed(Math.floor(Math.random() * Math.floor(9999)))}>
-                    <Feather name='refresh-cw' style={styles.soundInputsRandomize} />
-                  </TouchableOpacity>
+          <View style={styles.soundInputsRow}>
+            <View style={{ maxWidth: '40%', marginRight: 8, flexShrink: 1 }}>
+              <View style={{ flexDirection: 'row' }}>
+                <View style={{ flexShrink: 1, marginRight: 8 }}>
+                  <InspectorNumberInput
+                    hideIncrements
+                    lastNativeUpdate={lastNativeUpdate}
+                    placeholder="Seed"
+                    value={response.params?.seed}
+                    onChange={onChangeSeed}
+                  />
                 </View>
-                <Text style={styles.soundInputsLabel}>Coarse</Text>
+                <TouchableOpacity
+                  style={SceneCreatorConstants.styles.button}
+                  onPress={() => onChangeSeed(Math.floor(Math.random() * Math.floor(9999)))}>
+                  <Feather name="refresh-cw" style={styles.soundInputsRandomize} />
+                </TouchableOpacity>
               </View>
-              <View style={{ flexDirection: 'column' }}>
-                <View style={{ flexDirection: 'row' }}>
-                  <View style={{ width: '30%', marginRight: 8 }}>
-                    <InspectorNumberInput
-                      hideIncrements
-                      lastNativeUpdate={lastNativeUpdate}
-                      placeholder="Mutation"
-                      value={response.params?.mutationSeed}
-                      onChange={onChangeMutation}
-                    />
-                  </View>
-                  <TouchableOpacity
-                    style={SceneCreatorConstants.styles.button}
-                    onPress={() => onChangeSeed(Math.floor(Math.random() * Math.floor(9999)))}>
-                    <Feather name='refresh-cw' style={styles.soundInputsRandomize} />
-                  </TouchableOpacity>
+              <Text style={styles.soundInputsLabel}>Coarse</Text>
+            </View>
+            <View style={{ maxWidth: '40%', flexShrink: 1 }}>
+              <View style={{ flexDirection: 'row' }}>
+                <View style={{ flexShrink: 1, marginRight: 8 }}>
+                  <InspectorNumberInput
+                    hideIncrements
+                    lastNativeUpdate={lastNativeUpdate}
+                    placeholder="Mutation"
+                    value={response.params?.mutationSeed}
+                    onChange={onChangeMutation}
+                  />
                 </View>
-                <Text style={styles.soundInputsLabel}>Fine</Text>
+                <TouchableOpacity
+                  style={SceneCreatorConstants.styles.button}
+                  onPress={() => onChangeMutation(Math.floor(Math.random() * Math.floor(9999)))}>
+                  <Feather name="refresh-cw" style={styles.soundInputsRandomize} />
+                </TouchableOpacity>
               </View>
+              <Text style={styles.soundInputsLabel}>Fine</Text>
+            </View>
           </View>
         </View>
       </View>
