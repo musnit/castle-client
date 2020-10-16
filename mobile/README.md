@@ -25,6 +25,7 @@ Once you have the app running, shake the device to open the React Native develop
 ## iOS
 
 - Make sure `fastlane` is up to date: `bundle update fastlane` from this directory.
+- You may have to manually download our provisioning profile for `xyz.castle.castle.CastleNotificationService` from the Apple Developer website or through Xcode.
 - Run `./tools/upload-beta-build.sh` to upload a build to testflight.
 - You will need your personal credentials for Castle's Apple team, and you may also be asked to generate an app-specific password (Fastlane will give you instructions if this is needed).
 - Fastlane will download the needed certs, build the app, upload it to Apple, wait for it to "process", and then automatically release it to just employees.
