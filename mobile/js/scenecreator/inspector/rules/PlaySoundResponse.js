@@ -40,6 +40,10 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     flexGrow: 0,
   },
+  shuffleButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   segmentedControl: {
     flexDirection: 'row',
     borderRadius: 4,
@@ -202,7 +206,7 @@ export const PlaySoundResponse = ({
                   />
                 </View>
                 <TouchableOpacity
-                  style={SceneCreatorConstants.styles.button}
+                  style={[SceneCreatorConstants.styles.button, styles.shuffleButton]}
                   onPress={() => onChangeSeed(Math.floor(Math.random() * Math.floor(9999)))}>
                   <Feather name="refresh-cw" style={styles.soundInputsRandomize} />
                 </TouchableOpacity>
@@ -221,7 +225,7 @@ export const PlaySoundResponse = ({
                   />
                 </View>
                 <TouchableOpacity
-                  style={SceneCreatorConstants.styles.button}
+                  style={[SceneCreatorConstants.styles.button, styles.shuffleButton]}
                   onPress={() => onChangeMutation(Math.floor(Math.random() * Math.floor(9999)))}>
                   <Feather name="refresh-cw" style={styles.soundInputsRandomize} />
                 </TouchableOpacity>
