@@ -130,6 +130,14 @@ export const PlaySoundResponse = ({
         seed,
       },
     });
+  const onChangeMutation = (mutationSeed) =>
+    onChangeSound({
+      ...response,
+      params: {
+        ...response.params,
+        mutationSeed,
+      },
+    });
   const selectedCategoryIndex = response.params?.category
     ? SOUND_CATEGORIES.findIndex((c) => c.name === response.params.category)
     : 0;
@@ -183,6 +191,15 @@ export const PlaySoundResponse = ({
                 placeholder="Seed"
                 value={response.params?.seed}
                 onChange={onChangeSeed}
+              />
+            </View>
+            <View style={{ width: '15%', marginLeft: 8 }}>
+              <InspectorNumberInput
+                hideIncrements
+                lastNativeUpdate={lastNativeUpdate}
+                placeholder="Mutation"
+                value={response.params?.mutationSeed}
+                onChange={onChangeMutation}
               />
             </View>
           </View>
