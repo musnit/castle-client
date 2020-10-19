@@ -39,10 +39,9 @@ export const styles = {
     fontSize: 16,
   },
   primaryButton: {
-    borderRadius: 6,
-    paddingTop: 4,
-    paddingBottom: 5,
-    paddingHorizontal: 12,
+    borderRadius: 4,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
     backgroundColor: '#fff',
     flexDirection: 'row',
     alignItems: 'center',
@@ -51,7 +50,6 @@ export const styles = {
   primaryButtonLabel: {
     color: '#000',
     fontSize: 16,
-    lineHeight: 22,
     fontWeight: 'bold',
   },
   primaryButtonIconLeft: {
