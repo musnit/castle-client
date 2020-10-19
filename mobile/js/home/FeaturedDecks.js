@@ -34,7 +34,15 @@ const styles = StyleSheet.create({
   },
 });
 
+const isHalloweenPartyHappening = () => {
+  const endOfHalloweenParty = new Date('2020-10-25T23:59:00');
+  return new Date() < endOfHalloweenParty;
+};
+
 const Halloween2020Promo = () => {
+  if (!isHalloweenPartyHappening()) {
+    return null;
+  }
   return (
     <View style={styles.promoContainer}>
       <View style={styles.promoTitle}>
