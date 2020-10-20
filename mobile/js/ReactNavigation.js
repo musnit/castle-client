@@ -66,6 +66,8 @@ export const useNavigation = (...args) => {
           index: navigatorStackDepth ? navigatorStackDepth : 0,
         };
       },
+
+      navigatorId,
     };
   }
 };

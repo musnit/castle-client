@@ -80,7 +80,7 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
         getReactGateway().onActivityCreated(this);
         Fresco.initialize(this);
 
-        new CastleNavigationScreen("Featured", (Activity activity) -> (new CastleStackNavigator(this, "FeaturedDecksNative"))).register();
+        new CastleNavigationScreen("Featured", (Activity activity) -> (new CastleStackNavigator(this, "FeaturedDecks"))).register();
         new CastleNavigationScreen("Following", (Activity activity) -> (new CastleStackNavigator(this, "FollowingDecksNative"))).register();
         new CastleNavigationScreen("Newest", (Activity activity) -> (new CastleStackNavigator(this, "NewestDecksNative"))).register();
         new CastleNavigationScreen("Recent", (Activity activity) -> (new CastleStackNavigator(this, "RecentDecksNative"))).register();

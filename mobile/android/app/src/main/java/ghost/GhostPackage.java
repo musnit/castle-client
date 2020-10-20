@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import xyz.castle.navigation.CastleNavigationScreenReactViewManager;
+
 public class GhostPackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
@@ -19,6 +21,7 @@ public class GhostPackage implements ReactPackage {
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
     return Arrays.<ViewManager>asList(
         new GhostViewManager(reactContext),
+        new CastleNavigationScreenReactViewManager(),
         new GhostInputZoneManager(),
         new CastleFeedView());
   }
