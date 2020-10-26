@@ -3,6 +3,8 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { InspectorTextInput } from './InspectorTextInput';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
+import * as Constants from '../../../Constants';
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
@@ -88,13 +90,15 @@ export const InspectorNumberInput = ({ value, lastNativeUpdate, onChange, ...pro
   // refresh displayed text if we got a new value from lua
   React.useEffect(() => setText(numberToText(value, props.decimalDigits)), [lastNativeUpdate]);
 
+  // keyboard: numbers-and-punctuation is needed on iOS because the other options lack
+  // a minus sign
   return (
     <View style={styles.container}>
       <InspectorTextInput
         style={styles.input}
         value={text}
         onChangeText={onChangeText}
-        keyboardType={'decimal-pad'}
+        keyboardType={Constants.iOS ? 'numbers-and-punctuation' : 'decimal-pad'}
       />
       {!props.hideIncrements ? (
         <React.Fragment>
