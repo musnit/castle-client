@@ -126,13 +126,16 @@ export const DrawingCardHeader = ({
   }
 
   const isArtworkActive = activeToolData.currentMode == 'artwork';
-  const onSelectSubtool = isArtworkActive
-    ? (subtool) => {
+  const onSelectSubtool = React.useCallback(
+    (subtool) => {
+      if (isArtworkActive) {
         activeToolAction('onSelectArtworkSubtool', subtool);
-      }
-    : (subtool) => {
+      } else {
         activeToolAction('onSelectCollisionSubtool', subtool);
-      };
+      }
+    },
+    [isArtworkActive, activeToolAction]
+  );
 
   const MODE_ITEMS = [
     {
@@ -173,7 +176,7 @@ export const DrawingCardHeader = ({
             onPress={() => {
               onSelectDrawingToolGroup('draw');
               if (isArtworkActive) {
-                onSelectSubtool('pencil');
+                onSelectSubtool('pencil_no_grid');
               } else {
                 onSelectSubtool('rectangle');
               }
