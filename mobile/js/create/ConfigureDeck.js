@@ -37,7 +37,7 @@ export const ConfigureDeck = ({ deck, onChange, onDeleteDeck }) => {
       }
     );
   }, [onDeleteDeck, showActionSheetWithOptions]);
-  return (
+  return deck ? (
     <View style={styles.container}>
       <ConfigureInput
         label="Name"
@@ -49,5 +49,7 @@ export const ConfigureDeck = ({ deck, onChange, onDeleteDeck }) => {
         <Text style={styles.deleteLabel}>Delete Deck</Text>
       </TouchableOpacity>
     </View>
+  ) : (
+    <View style={styles.container} />
   );
 };
