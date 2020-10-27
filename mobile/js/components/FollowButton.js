@@ -36,7 +36,7 @@ export const FollowButton = ({ user, onPress, style }) => {
   }
   return (
     <TouchableOpacity style={[styles.followButton, style]} onPress={onPressFollow}>
-      <Text style={styles.followLabel}>{optimisticFollowing ? 'Unfollow' : 'Follow'}</Text>
+      <Text style={styles.followLabel}>{optimisticFollowing ? 'Following' : 'Follow'}</Text>
     </TouchableOpacity>
   );
 };
