@@ -313,6 +313,12 @@ export const CreateCardScreen = ({
     }
   }
 
+  const isCardTextVisible =
+    (isShowingTextActors || isPlaying) &&
+    !isShowingDraw &&
+    textActors &&
+    Object.keys(textActors).length;
+
   const contextValue = {
     deck,
     card,
@@ -370,16 +376,18 @@ export const CreateCardScreen = ({
                 onScreenshot={onSceneScreenshot}
                 onMessage={onSceneMessage}
               />
-              <View style={styles.textActorsContainer}>
-                <CardText
-                  disabled={loading}
-                  visible={(isShowingTextActors || isPlaying) && !isShowingDraw}
-                  textActors={textActors}
-                  card={card}
-                  onSelect={selectActor}
-                  isEditable={!isPlaying}
-                />
-              </View>
+              {isCardTextVisible ? (
+                <View style={styles.textActorsContainer}>
+                  <CardText
+                    disabled={loading}
+                    visible={isCardTextVisible}
+                    textActors={textActors}
+                    card={card}
+                    onSelect={selectActor}
+                    isEditable={!isPlaying}
+                  />
+                </View>
+              ) : null}
               {isPlaying ? <PlayDeckActions deck={deck} disabled /> : null}
               {isSceneLoaded ? null : <CardSceneLoading />}
             </View>
