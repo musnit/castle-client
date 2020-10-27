@@ -143,7 +143,7 @@ export const DrawingCardHeader = ({
       value: 'onSelectArtwork',
     },
     {
-      name: 'Collision',
+      name: 'Collision Shape',
       value: 'onSelectCollision',
     },
   ];
