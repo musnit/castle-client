@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
 const RESPONSE_CATEGORY_ORDER = [
   'general',
   'behavior',
-  'interaction',
+  'tell other actors',
   'logic',
   'state',
   'visible',

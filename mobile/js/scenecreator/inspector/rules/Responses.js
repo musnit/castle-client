@@ -45,7 +45,11 @@ const ActOnOther = () => {
   return [
     {
       type: 'showEntryOptions',
-      label: 'Act on other',
+      label: 'Tell',
+    },
+    {
+      type: 'text',
+      label: 'the colliding actor to perform',
     },
   ];
 };
@@ -56,7 +60,7 @@ const ActOn = ({ response }) => {
     return [
       {
         type: 'showEntryOptions',
-        label: 'Act on',
+        label: 'Tell',
       },
       {
         type: 'text',
@@ -64,22 +68,34 @@ const ActOn = ({ response }) => {
       },
       {
         type: 'selectParamSheet',
-        label: response.params.tag,
+        label: '#' + response.params.tag,
         paramName: 'tag',
         paramValue: response.params.tag,
+      },
+      {
+        type: 'text',
+        label: 'to perform',
       },
     ];
   } else {
     return [
       {
         type: 'showEntryOptions',
-        label: 'Act on',
+        label: 'Tell',
+      },
+      {
+        type: 'text',
+        label: 'actors with tag',
       },
       {
         type: 'selectParamSheetPlaceholder',
         label: 'Select tag',
         paramName: 'tag',
         paramValue: '',
+      },
+      {
+        type: 'text',
+        label: 'to perform',
       },
     ];
   }
