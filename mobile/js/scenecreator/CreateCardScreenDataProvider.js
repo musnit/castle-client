@@ -149,9 +149,10 @@ class CreateCardScreenDataProvider extends React.Component {
     this.setState((state) => {
       return {
         ...state,
-        deckState: {
+        deckState: Utilities.makeInitialDeckState({
+          ...state.card,
           variables: changes,
-        },
+        }),
       };
     });
   };
