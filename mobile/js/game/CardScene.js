@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { StyleSheet, View, Animated, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, View, TouchableWithoutFeedback } from 'react-native';
 import { GameView } from './GameView';
 
 import FastImage from 'react-native-fast-image';
@@ -88,11 +88,9 @@ export const CardScene = ({
               </TouchableWithoutFeedback>
             ) : null}
             {!loaded && card.backgroundImage ? (
-              <React.Fragment>
-                <Animated.View style={styles.overlay}>
-                  <FastImage style={{ flex: 1 }} source={{ uri: card.backgroundImage.url }} />
-                </Animated.View>
-              </React.Fragment>
+              <View style={styles.overlay}>
+                <FastImage style={{ flex: 1 }} source={{ uri: card.backgroundImage.url }} />
+              </View>
             ) : null}
           </React.Fragment>
         ) : card.backgroundImage ? (
