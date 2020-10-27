@@ -144,7 +144,11 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
           <View style={styles.actions}>
             {scaleRotateButton}
             <TouchableOpacity style={styles.actionButton} onPress={changeSelectionOrder}>
-              <FeatherIcon name="layers" size={22} color="#000" />
+              {isTextActorSelected ? (
+                <Icon name="swap-vert" size={24} color="#000" />
+              ) : (
+                <FeatherIcon name="layers" size={22} color="#000" />
+              )}
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.actionButton}
