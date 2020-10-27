@@ -33,7 +33,7 @@ export default InspectorTextLayout = ({ text, sendAction }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Layout</Text>
-      <InspectorCheckbox value={value} onChange={onChange} label="Visible when the card starts" />
+      <InspectorCheckbox value={value} onChange={onChange} label="Visible" />
     </View>
   );
 };
