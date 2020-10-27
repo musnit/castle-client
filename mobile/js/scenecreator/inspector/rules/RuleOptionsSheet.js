@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
   },
   actions: {
-    padding: 16,
+    paddingHorizontal: 16,
   },
   actionContainer: {
     padding: 12,
@@ -110,11 +110,6 @@ export default RuleOptionsSheet = ({
 
   const renderContent = () => (
     <View style={styles.container}>
-      {entry && (
-        <View style={styles.description}>
-          <Text style={styles.name}>{entry.description}</Text>
-        </View>
-      )}
       <View style={styles.actions}>
         {items.map((item, ii) => {
           if (item.shouldDisplay()) {

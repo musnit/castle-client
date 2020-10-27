@@ -17,13 +17,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
     marginBottom: 16,
-    textTransform: 'capitalize',
   },
   addButton: {
-    borderTopWidth: 1,
-    borderColor: '#ccc',
-    marginTop: 8,
-    paddingTop: 16,
+    paddingTop: 8,
   },
   addButtonLabel: {
     fontSize: 16,
@@ -80,7 +76,9 @@ export default RulePartPickerSheet = ({
             let index = 0;
             return isCategoryVisible[category] ? (
               <View key={`rule-category-${category}`} style={styles.category}>
-                <Text style={styles.categoryLabel}>{category}</Text>
+                <Text style={styles.categoryLabel}>
+                  {category.charAt(0).toUpperCase() + category.slice(1)}
+                </Text>
                 {contents.map((entry) =>
                   isEntryVisible(entry) ? (
                     <AddPart
