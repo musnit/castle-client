@@ -388,6 +388,7 @@ const DECK_FRAGMENT = `
     }
   }
   variables
+  visibility
 `;
 
 export const prefetchCardsAsync = async ({ cardId }) => {
