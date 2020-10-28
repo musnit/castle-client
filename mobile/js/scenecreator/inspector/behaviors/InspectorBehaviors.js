@@ -24,6 +24,6 @@ export const MotionBehaviors = [
   {
     label: 'Controls',
     dependencies: ['Body', 'Moving'],
-    behaviors: ['Drag', 'Sling'],
+    behaviors: ['AnalogStick', 'Drag', 'Sling'],
   },
 ];
