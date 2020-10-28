@@ -345,6 +345,15 @@ const RestartScene = () => {
   ];
 };
 
+const ResetAllVariables = () => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Reset all variables',
+    },
+  ];
+};
+
 const SetBehavior = ({ response, context }) => {
   let behaviorName;
   if (response.params?.behaviorId) {
@@ -676,6 +685,7 @@ export const Responses = {
   ['change counter']: ChangeCounter,
   ['send player to card']: SendPlayerToCard,
   ['restart scene']: RestartScene,
+  ['reset all variables']: ResetAllVariables,
   ['add tag']: AddTag,
   ['remove tag']: RemoveTag,
   ['move toward own angle']: MoveTowardOwnAngle,
