@@ -254,22 +254,31 @@ const Create = ({ response, context }) => {
     }
   }
   let paramNames, paramValues, label;
-  let coordinateSystem = response.params?.coordinateSystem ?? 'position';
-  if (coordinateSystem === 'position') {
+  let coordinateSystem = response.params?.coordinateSystem ?? 'relative position';
+
+  if (coordinateSystem === 'relative position') {
     paramNames = ['xOffset', 'yOffset'];
     paramValues = {
       xOffset: response.params?.xOffset ?? 0,
       yOffset: response.params?.yOffset ?? 0,
     };
     label = `x: ${response.params?.xOffset ?? 0}, y: ${response.params?.yOffset ?? 0}`;
-  } else {
+  } else if (coordinateSystem === 'relative angle and distance') {
     paramNames = ['angle', 'distance'];
     paramValues = {
       angle: response.params?.angle ?? 0,
       distance: response.params?.distance ?? 0,
     };
     label = `a: ${response.params?.angle ?? 0}, d: ${response.params?.distance ?? 0}`;
+  } else {
+    paramNames = ['xAbsolute', 'yAbsolute'];
+    paramValues = {
+      xAbsolute: response.params?.xAbsolute ?? 0,
+      yAbsolute: response.params?.yAbsolute ?? 0,
+    };
+    label = `x: ${response.params?.xAbsolute ?? 0}, y: ${response.params?.yAbsolute ?? 0}`;
   }
+
   return [
     {
       type: 'showEntryOptions',
@@ -286,14 +295,10 @@ const Create = ({ response, context }) => {
       label: response.params?.depth ?? 'in front of all actors',
     },
     {
-      type: 'text',
-      label: 'at relative',
-    },
-    {
       type: 'selectParamSheet',
       paramName: 'coordinateSystem',
       paramValue: coordinateSystem,
-      label: coordinateSystem,
+      label: `at ${coordinateSystem}`,
     },
     {
       type: 'selectParamSheet',
