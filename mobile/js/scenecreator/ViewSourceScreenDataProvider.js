@@ -168,6 +168,7 @@ class ViewSourceScreenDataProvider extends React.Component {
           deckState: {
             ...this.state.deckState,
             ...message.data,
+            setFromLua: true,
           },
         });
         break;

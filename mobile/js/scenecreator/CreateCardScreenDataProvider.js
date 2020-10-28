@@ -3,6 +3,7 @@ import gql from 'graphql-tag';
 import { ReactNativeFile } from 'apollo-upload-client';
 import { withNavigation, withNavigationFocus } from '../ReactNavigation';
 import { CreateCardScreen } from './CreateCardScreen';
+import _ from 'lodash';
 
 import * as Constants from '../Constants';
 import * as GhostEvents from '../ghost/GhostEvents';
@@ -272,12 +273,19 @@ class CreateCardScreenDataProvider extends React.Component {
         break;
       }
       case 'CHANGE_DECK_STATE': {
-        this.setState({
-          deckState: {
-            ...this.state.deckState,
-            ...message.data,
-          },
-        });
+        let deckState = {
+          ...this.state.deckState,
+          ...message.data,
+        };
+
+        if (!_.isEqual(deckState, this.state.deckState)) {
+          this.setState({
+            deckState: {
+              ...deckState,
+              setFromLua: true,
+            },
+          });
+        }
         break;
       }
       case 'SCREENSHOT_DATA': {

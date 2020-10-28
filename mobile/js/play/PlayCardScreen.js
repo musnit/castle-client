@@ -135,7 +135,10 @@ const PlayCardScreen = ({ card, onSelectNewCard, deckState, onChangeDeckState, p
   const _handleSceneMessage = (message) => {
     switch (message.messageType) {
       case 'CHANGE_DECK_STATE': {
-        onChangeDeckState(message.data);
+        onChangeDeckState({
+          ...message.data,
+          setFromLua: true,
+        });
         break;
       }
     }

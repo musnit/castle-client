@@ -133,9 +133,11 @@ const useLuaLoading = ({ onLoaded }) => {
 
 const useDeckState = ({ deckState }) => {
   useEffect(() => {
-    sendAsync('UPDATE_DECK_STATE', {
-      deckState,
-    });
+    if (!deckState.setFromLua) {
+      sendAsync('UPDATE_DECK_STATE', {
+        deckState,
+      });
+    }
   }, [deckState]);
 };
 
