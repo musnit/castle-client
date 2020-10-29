@@ -52,6 +52,24 @@ const Press = () => {
   ];
 };
 
+const TouchDown = () => {
+  return withWhen([
+    {
+      type: 'selectEntry',
+      label: 'a touch begins on this actor',
+    },
+  ]);
+};
+
+const TouchUp = () => {
+  return withWhen([
+    {
+      type: 'selectEntry',
+      label: 'a touch ends on this actor',
+    },
+  ]);
+};
+
 const Sling = () => {
   return withWhen([
     {
@@ -208,6 +226,8 @@ export const Triggers = {
   collide: Collide,
   tap: Tap,
   press: Press,
+  ['touch down']: TouchDown,
+  ['touch up']: TouchUp,
   sling: Sling,
   create: Create,
   destroy: Destroy,
