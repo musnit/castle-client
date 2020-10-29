@@ -79,6 +79,24 @@ const Sling = () => {
   ]);
 };
 
+const AnalogStickBegins = () => {
+  return withWhen([
+    {
+      type: 'selectEntry',
+      label: 'analog stick input begins',
+    },
+  ]);
+};
+
+const AnalogStickEnds = () => {
+  return withWhen([
+    {
+      type: 'selectEntry',
+      label: 'analog stick input ends',
+    },
+  ]);
+};
+
 const Create = () => {
   return withWhen([
     {
@@ -229,6 +247,8 @@ export const Triggers = {
   ['touch down']: TouchDown,
   ['touch up']: TouchUp,
   sling: Sling,
+  ['analog stick begins']: AnalogStickBegins,
+  ['analog stick ends']: AnalogStickEnds,
   create: Create,
   destroy: Destroy,
   ['variable reaches value']: VariableReachesValue,
