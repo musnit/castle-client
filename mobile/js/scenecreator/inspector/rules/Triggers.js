@@ -56,7 +56,7 @@ const TouchDown = () => {
   return withWhen([
     {
       type: 'selectEntry',
-      label: 'a touch begins on this actor',
+      label: 'a touch begins on this',
     },
   ]);
 };
@@ -65,7 +65,7 @@ const TouchUp = () => {
   return withWhen([
     {
       type: 'selectEntry',
-      label: 'a touch ends on this actor',
+      label: 'a touch ends on this',
     },
   ]);
 };
