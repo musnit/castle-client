@@ -6,7 +6,8 @@ import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
 const styles = StyleSheet.create({
   container: {},
   category: {
-    padding: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
@@ -16,10 +17,11 @@ const styles = StyleSheet.create({
   categoryLabel: {
     fontWeight: 'bold',
     fontSize: 16,
-    marginBottom: 16,
+    paddingTop: 12,
+    paddingBottom: 12,
   },
   addButton: {
-    paddingTop: 8,
+    paddingVertical: 8,
   },
   addButtonLabel: {
     fontSize: 16,
@@ -29,7 +31,7 @@ const styles = StyleSheet.create({
 
 const AddPart = ({ isFirst, entry, onAdd }) => {
   return (
-    <TouchableOpacity style={isFirst ? null : styles.addButton} onPress={() => onAdd(entry)}>
+    <TouchableOpacity style={styles.addButton} onPress={() => onAdd(entry)}>
       <Text style={styles.addButtonLabel}>{entry.description ?? entry.name}</Text>
     </TouchableOpacity>
   );
