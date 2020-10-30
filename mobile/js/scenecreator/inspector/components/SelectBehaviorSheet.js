@@ -18,7 +18,8 @@ const styles = StyleSheet.create({
     color: Constants.colors.grayText,
   },
   group: {
-    padding: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
@@ -28,13 +29,11 @@ const styles = StyleSheet.create({
   groupLabel: {
     fontWeight: 'bold',
     fontSize: 16,
-    marginBottom: 12,
+    paddingTop: 12,
+    paddingBottom: 12,
   },
   addButton: {
-    borderTopWidth: 1,
-    borderColor: '#ccc',
-    marginTop: 8,
-    paddingTop: 16,
+    paddingVertical: 8,
   },
   addButtonLabel: {
     fontSize: 16,
@@ -48,7 +47,7 @@ const Behavior = ({ isFirst, behavior, onAdd }) => {
   }
 
   return (
-    <TouchableOpacity style={isFirst ? null : styles.addButton} onPress={onAdd}>
+    <TouchableOpacity style={styles.addButton} onPress={onAdd}>
       <Text style={styles.addButtonLabel}>{behavior.displayName}</Text>
     </TouchableOpacity>
   );
