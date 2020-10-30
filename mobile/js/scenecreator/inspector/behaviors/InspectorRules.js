@@ -154,7 +154,7 @@ export default InspectorRules = ({ behaviors, sendActions, addChildSheet }) => {
             </TouchableOpacity>
           ) : null}
         </View>
-        <React.Fragment>
+        <View style={{ flexDirection: 'column-reverse' }}>
           {rulesItems.map((rule, ii) => (
             <InspectorRule
               key={`rule-${rule.trigger?.name}-${rule.response?.name}-${ii}`}
@@ -169,7 +169,7 @@ export default InspectorRules = ({ behaviors, sendActions, addChildSheet }) => {
               sendRuleAction={sendRuleAction}
             />
           ))}
-        </React.Fragment>
+        </View>
       </View>
       {counter?.isActive ? <Counter counter={counter} sendAction={sendActions.Counter} /> : null}
     </React.Fragment>
