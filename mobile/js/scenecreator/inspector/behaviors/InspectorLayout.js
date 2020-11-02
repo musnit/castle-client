@@ -20,6 +20,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
+  row: {
+    paddingRight: 16,
+  },
   inputContainer: {
     width: '50%',
     paddingRight: 16,
@@ -74,6 +77,18 @@ export default InspectorLayout = ({ body, circleShape, sendActions }) => {
     [sendActions.circleShape]
   );
 
+  const [visible, setVisibleAction] = useOptimisticBehaviorValue({
+    behavior: body,
+    propName: 'visible',
+    sendAction: sendActions.Body,
+  });
+  const onChangeVisible = React.useCallback(
+    (visible) => {
+      setVisibleAction('set:visible', visible);
+    },
+    [setVisibleAction]
+  );
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Layout</Text>
@@ -119,6 +134,9 @@ export default InspectorLayout = ({ body, circleShape, sendActions }) => {
           label="Rotation"
           sendAction={sendActions.Body}
         />
+      </View>
+      <View style={styles.row}>
+        <InspectorCheckbox value={visible} onChange={onChangeVisible} label="Visible" />
       </View>
     </View>
   );
