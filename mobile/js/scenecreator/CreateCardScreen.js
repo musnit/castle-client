@@ -96,7 +96,7 @@ const CardBottomActions = ({
   onSave,
   isPlayingScene,
   isSceneLoaded,
-  isDeckOwner,
+  saveAction,
 }) => {
   if (isPlayingScene || !isSceneLoaded) {
     return null;
@@ -121,7 +121,7 @@ const CardBottomActions = ({
         />
         <Text style={Constants.styles.secondaryButtonLabel}>Layout</Text>
       </TouchableOpacity>
-      {isDeckOwner ? (
+      {saveAction === 'save' ? (
         <TouchableOpacity style={Constants.styles.primaryButton} onPress={onSave}>
           <Text style={Constants.styles.primaryButtonLabel}>Done</Text>
           <MCIcon
@@ -130,6 +130,16 @@ const CardBottomActions = ({
             color="#000"
             style={Constants.styles.primaryButtonIconRight}
           />
+        </TouchableOpacity>
+      ) : saveAction === 'clone' ? (
+        <TouchableOpacity style={Constants.styles.primaryButton} onPress={onSave}>
+          <MCIcon
+            name="content-save-all"
+            size={22}
+            color="#000"
+            style={Constants.styles.primaryButtonIconLeft}
+          />
+          <Text style={Constants.styles.primaryButtonLabel}>Copy</Text>
         </TouchableOpacity>
       ) : (
         <View pointerEvents="none" style={{ width: 64 }} />
@@ -170,6 +180,7 @@ export const CreateCardScreen = ({
   onSceneMessage,
   onSceneScreenshot,
   onSceneRevertData,
+  saveAction = 'none',
   isDeckOwner = true, // does the user own this deck?
 }) => {
   const { showActionSheetWithOptions } = useActionSheet();
@@ -401,7 +412,7 @@ export const CreateCardScreen = ({
                 onSave={saveAndGoToDeck}
                 isSceneLoaded={isSceneLoaded}
                 isPlayingScene={isPlaying}
-                isDeckOwner={isDeckOwner}
+                saveAction={saveAction}
               />
             )}
           </View>

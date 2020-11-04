@@ -115,14 +115,6 @@ class ViewSourceScreenDataProvider extends React.Component {
     });
   };
 
-  _saveBackup = () => {
-    throw new Error(`Not implemented for ViewSourceScreen`);
-  };
-
-  _save = async () => {
-    throw new Error(`Not implemented for ViewSourceScreen`);
-  };
-
   _goToDeck = (deckId = null) => {
     if (!deckId && this.state.deck) {
       deckId = this.state.deck.deckId;
@@ -137,8 +129,29 @@ class ViewSourceScreenDataProvider extends React.Component {
     }
   };
 
+  // saving from the view source screen creates a clone of the deck.
   _saveAndGoToDeck = async () => {
-    throw new Error(`Not implemented for ViewSourceScreen`);
+    await this.setState({ loading: true });
+    const { card, deck } = await Session.saveDeck(
+      this.state.card,
+      this.state.deck,
+      this.state.card.variables,
+      false,
+      this.state.card.cardId // parent card to clone from
+    );
+
+    if (!this._mounted) return;
+    await this.setState({ loading: false });
+
+    // specify both the outer tab (Create) and the inner screen (CreateDeck)
+    // because we don't know whether we are already on the Create tab
+    this.props.navigation.navigate('Create', {
+      screen: 'CreateDeck',
+      params: {
+        deckIdToEdit: deck.deckId,
+        cardIdToEdit: undefined,
+      },
+    });
   };
 
   _goToCard = (nextCard) => {
@@ -190,6 +203,7 @@ class ViewSourceScreenDataProvider extends React.Component {
 
   render() {
     const { deck, card, deckState, loading } = this.state;
+    // TODO: saveAction can be 'clone' or 'none' depending on deck permissions
     return (
       <GhostUI.Provider>
         <CreateCardScreen
@@ -207,7 +221,7 @@ class ViewSourceScreenDataProvider extends React.Component {
           onSceneMessage={this._handleSceneMessage}
           onSceneRevertData={this._handleSceneRevertData}
           onSceneScreenshot={this._handleSceneScreenshot}
-          isDeckOwner={false}
+          saveAction="clone"
         />
       </GhostUI.Provider>
     );

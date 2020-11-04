@@ -331,6 +331,7 @@ class CreateCardScreenDataProvider extends React.Component {
           onSceneMessage={this._handleSceneMessage}
           onSceneRevertData={this._handleSceneRevertData}
           onSceneScreenshot={this._handleSceneScreenshot}
+          saveAction="save"
         />
       </GhostUI.Provider>
     );

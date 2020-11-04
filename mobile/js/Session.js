@@ -469,13 +469,19 @@ async function createNewDestinationCards(deckId, sceneData) {
   return cardsCreated;
 }
 
-export const saveDeck = async (card, deck, variables, isAutosave = false) => {
+export const saveDeck = async (
+  card,
+  deck,
+  variables,
+  isAutosave = false,
+  parentCardId = undefined
+) => {
   const deckUpdateFragment = {
-    deckId: deck.deckId,
+    deckId: parentCardId ? LocalId.makeId() : deck.deckId,
     title: deck.title,
   };
   const cardUpdateFragment = {
-    cardId: card.cardId,
+    cardId: parentCardId ? LocalId.makeId() : card.cardId,
     title: card.title,
     backgroundImageFileId: card.backgroundImage ? card.backgroundImage.fileId : undefined,
     sceneData: card.changedSceneData ? card.changedSceneData : card.scene.data,
@@ -497,11 +503,13 @@ export const saveDeck = async (card, deck, variables, isAutosave = false) => {
 
   const result = await apolloClient.mutate({
     mutation: gql`
-        mutation UpdateDeckAndCard($deck: DeckInput!, $card: CardInput!, $isAutosave: Boolean) {
+        mutation UpdateDeckAndCard(
+          $deck: DeckInput!, $card: CardInput!, $isAutosave: Boolean, $parentCardId: ID) {
           updateCardAndDeckV2(
             deck: $deck,
             card: $card,
             isAutosave: $isAutosave,
+            parentCardId: $parentCardId,
           ) {
             deck {
               ${DECK_FRAGMENT}
@@ -512,13 +520,18 @@ export const saveDeck = async (card, deck, variables, isAutosave = false) => {
           }
         }
       `,
-    variables: { deck: deckUpdateFragment, card: cardUpdateFragment, isAutosave },
+    variables: { deck: deckUpdateFragment, card: cardUpdateFragment, isAutosave, parentCardId },
   });
 
   let updatedCard = result.data.updateCardAndDeckV2.card;
   let newCards = [...deck.cards];
 
-  let existingIndex = deck.cards.findIndex((old) => old.cardId === updatedCard.cardId);
+  // NOTE: if parentCardId was provided, then deck id and card ids all changed.
+  // we can get away with not updating the card ids here because when you clone a deck,
+  // the app immediately navigates to the new deck overview and re-fetches everything.
+  const updatedDeckId = parentCardId ? result.data.updateCardAndDeckV2.deck.deckId : deck.deckId;
+
+  let existingIndex = deck.cards.findIndex((old) => old.cardId === card.cardId);
   if (existingIndex >= 0) {
     newCards[existingIndex] = updatedCard;
   } else {
@@ -526,15 +539,15 @@ export const saveDeck = async (card, deck, variables, isAutosave = false) => {
   }
 
   // mark any local ids as nonlocal
-  if (LocalId.isLocalId(card.cardId)) {
-    LocalId.setIdIsSaved(card.cardId);
+  if (LocalId.isLocalId(updatedCard.cardId)) {
+    LocalId.setIdIsSaved(updatedCard.cardId);
   }
-  if (LocalId.isLocalId(deck.deckId)) {
-    LocalId.setIdIsSaved(deck.deckId);
+  if (LocalId.isLocalId(updatedDeckId)) {
+    LocalId.setIdIsSaved(updatedDeckId);
   }
 
   // create any destination cards marked as 'new' which are referenced by this card
-  const cardsCreated = await createNewDestinationCards(deck.deckId, card.changedSceneData);
+  const cardsCreated = await createNewDestinationCards(updatedDeckId, card.changedSceneData);
   if (cardsCreated) {
     newCards = newCards.concat(cardsCreated);
   }
