@@ -27,6 +27,7 @@ const DECK_FRAGMENT = `
   deckId
   title
   visibility
+  accessPermissions
   cards {
     id
     cardId
@@ -117,6 +118,7 @@ export const CreateDeckScreen = (props) => {
         deckId,
         title: deck.title,
         visibility: deck.visibility,
+        accessPermissions: deck.accessPermissions,
       };
       saveDeck({ variables: { deck: deckUpdateFragment } });
       setDeck({ ...deck, isChanged: false });
@@ -248,6 +250,15 @@ export const CreateDeckScreen = (props) => {
     [setDeck, saveDeck, deck]
   );
 
+  const onChangeAccessPermissions = React.useCallback(
+    async (accessPermissions) => {
+      const deckUpdateFragment = { deckId, accessPermissions };
+      saveDeck({ variables: { deck: deckUpdateFragment } });
+      setDeck({ ...deck, accessPermissions });
+    },
+    [setDeck, saveDeck, deck]
+  );
+
   return (
     <React.Fragment>
       <SafeAreaView style={styles.container}>
@@ -269,7 +280,12 @@ export const CreateDeckScreen = (props) => {
             onPress={_navigateToCreateCard}
           />
         ) : (
-          <ConfigureDeck deck={deck} onChange={_changeDeck} onDeleteDeck={_deleteDeck} />
+          <ConfigureDeck
+            deck={deck}
+            onChange={_changeDeck}
+            onDeleteDeck={_deleteDeck}
+            onChangeAccessPermissions={onChangeAccessPermissions}
+          />
         )}
       </SafeAreaView>
       {visibilitySheetVisible ? <SheetBackgroundOverlay onPress={closeVisibilitySheet} /> : null}

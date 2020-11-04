@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet, Text, View } from 'react-native';
+import { TouchableOpacity, StyleSheet, Switch, Text, View } from 'react-native';
 import { ConfigureInput } from '../components/ConfigureInput';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 
@@ -19,9 +19,19 @@ const styles = StyleSheet.create({
   deleteLabel: {
     color: '#f00',
   },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 16,
+  },
+  rowLabel: {
+    color: '#fff',
+    fontSize: 16,
+  },
 });
 
-export const ConfigureDeck = ({ deck, onChange, onDeleteDeck }) => {
+export const ConfigureDeck = ({ deck, onChange, onDeleteDeck, onChangeAccessPermissions }) => {
   const { showActionSheetWithOptions } = useActionSheet();
   const maybeDeleteDeck = React.useCallback(() => {
     showActionSheetWithOptions(
@@ -45,6 +55,16 @@ export const ConfigureDeck = ({ deck, onChange, onDeleteDeck }) => {
         value={deck.title}
         onChangeText={(title) => onChange({ title })}
       />
+      <View style={styles.row}>
+        <Text style={styles.rowLabel}>Allow others to save a copy</Text>
+        <Switch
+          ios_backgroundColor="#888"
+          value={deck.accessPermissions === 'cloneable'}
+          onValueChange={(value) =>
+            onChangeAccessPermissions(value ? 'cloneable' : 'sourceReadable')
+          }
+        />
+      </View>
       <TouchableOpacity style={styles.deleteButton} onPress={maybeDeleteDeck}>
         <Text style={styles.deleteLabel}>Delete Deck</Text>
       </TouchableOpacity>

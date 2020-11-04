@@ -389,6 +389,7 @@ const DECK_FRAGMENT = `
   }
   variables
   visibility
+  accessPermissions
 `;
 
 export const prefetchCardsAsync = async ({ cardId }) => {
