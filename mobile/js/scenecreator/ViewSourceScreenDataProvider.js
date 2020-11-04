@@ -2,6 +2,8 @@ import React from 'react';
 import { withNavigation, withNavigationFocus } from '../ReactNavigation';
 import { CreateCardScreen } from './CreateCardScreen';
 
+import _ from 'lodash';
+
 import * as Constants from '../Constants';
 import * as GhostEvents from '../ghost/GhostEvents';
 import * as GhostUI from '../ghost/GhostUI';
@@ -108,9 +110,10 @@ class ViewSourceScreenDataProvider extends React.Component {
     this.setState((state) => {
       return {
         ...state,
-        deckState: {
+        deckState: Utilities.makeInitialDeckState({
+          ...state.card,
           variables: changes,
-        },
+        }),
       };
     });
   };
@@ -177,13 +180,19 @@ class ViewSourceScreenDataProvider extends React.Component {
         break;
       }
       case 'CHANGE_DECK_STATE': {
-        this.setState({
-          deckState: {
-            ...this.state.deckState,
-            ...message.data,
-            setFromLua: true,
-          },
-        });
+        let deckState = {
+          ...this.state.deckState,
+          ...message.data,
+        };
+
+        if (!_.isEqual(deckState, this.state.deckState)) {
+          this.setState({
+            deckState: {
+              ...deckState,
+              setFromLua: true,
+            },
+          });
+        }
         break;
       }
     }
