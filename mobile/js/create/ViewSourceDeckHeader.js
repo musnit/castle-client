@@ -57,13 +57,16 @@ const MODE_ITEMS = [
   },
 ];
 
-export const ViewSourceDeckHeader = (props) => {
-  const { deck } = props;
+export const ViewSourceDeckHeader = ({ deck, onPressBack }) => {
+  const message =
+    deck?.accessPermissions === 'cloneable'
+      ? `You are viewing the source for this deck.`
+      : `You are viewing the source for this deck. You can see how it works, but you can't save changes.`;
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
       <View style={styles.navigationRow}>
-        <TouchableOpacity style={styles.back} onPress={props.onPressBack}>
+        <TouchableOpacity style={styles.back} onPress={onPressBack}>
           <Icon name="arrow-back" size={30} color="#fff" />
         </TouchableOpacity>
         <View style={styles.title}>
@@ -76,10 +79,7 @@ export const ViewSourceDeckHeader = (props) => {
       </View>
       {deck ? (
         <View style={styles.header}>
-          <Text style={styles.instructionsLabel}>
-            You are viewing the source for this deck. You can see how it works, but you can't save
-            changes.
-          </Text>
+          <Text style={styles.instructionsLabel}>{message}</Text>
         </View>
       ) : null}
       <SegmentedNavigation

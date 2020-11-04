@@ -21,6 +21,7 @@ const DECK_FRAGMENT = `
   deckId
   title
   isVisible
+  accessPermissions
   creator {
     username
   }
