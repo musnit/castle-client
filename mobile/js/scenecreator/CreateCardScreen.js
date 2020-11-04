@@ -97,10 +97,28 @@ const CardBottomActions = ({
   isPlayingScene,
   isSceneLoaded,
   saveAction,
+  creatorUsername,
 }) => {
+  const { showActionSheetWithOptions } = useActionSheet();
+  const maybeClone = React.useCallback(() => {
+    showActionSheetWithOptions(
+      {
+        title: `Save a private copy of @${creatorUsername}'s deck to your own profile?`,
+        options: ['Save Copy', 'Cancel'],
+        cancelButtonIndex: 1,
+      },
+      (buttonIndex) => {
+        if (buttonIndex == 0) {
+          return onSave();
+        }
+      }
+    );
+  }, [onSave, creatorUsername]);
+
   if (isPlayingScene || !isSceneLoaded) {
     return null;
   }
+
   return (
     <View style={styles.actions}>
       <TouchableOpacity style={Constants.styles.primaryButton} onPress={onAdd}>
@@ -132,14 +150,14 @@ const CardBottomActions = ({
           />
         </TouchableOpacity>
       ) : saveAction === 'clone' ? (
-        <TouchableOpacity style={Constants.styles.primaryButton} onPress={onSave}>
+        <TouchableOpacity style={Constants.styles.primaryButton} onPress={maybeClone}>
           <MCIcon
             name="content-save-all"
             size={22}
             color="#000"
             style={Constants.styles.primaryButtonIconLeft}
           />
-          <Text style={Constants.styles.primaryButtonLabel}>Copy</Text>
+          <Text style={Constants.styles.primaryButtonLabel}>Clone</Text>
         </TouchableOpacity>
       ) : (
         <View pointerEvents="none" style={{ width: 64 }} />
@@ -412,6 +430,7 @@ export const CreateCardScreen = ({
                 onSave={saveAndGoToDeck}
                 isSceneLoaded={isSceneLoaded}
                 isPlayingScene={isPlaying}
+                creatorUsername={deck?.creator?.username}
                 saveAction={saveAction}
               />
             )}
