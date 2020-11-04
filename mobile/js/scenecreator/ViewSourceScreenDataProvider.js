@@ -212,7 +212,6 @@ class ViewSourceScreenDataProvider extends React.Component {
 
   render() {
     const { deck, card, deckState, loading } = this.state;
-    // TODO: saveAction can be 'clone' or 'none' depending on deck permissions
     return (
       <GhostUI.Provider>
         <CreateCardScreen
@@ -230,7 +229,7 @@ class ViewSourceScreenDataProvider extends React.Component {
           onSceneMessage={this._handleSceneMessage}
           onSceneRevertData={this._handleSceneRevertData}
           onSceneScreenshot={this._handleSceneScreenshot}
-          saveAction="clone"
+          saveAction={deck.accessPermissions === 'cloneable' ? 'clone' : 'none'}
         />
       </GhostUI.Provider>
     );
