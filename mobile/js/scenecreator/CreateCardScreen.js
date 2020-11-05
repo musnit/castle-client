@@ -15,9 +15,6 @@ import * as GhostUI from '../ghost/GhostUI';
 import * as Constants from '../Constants';
 import * as Utilities from '../common/utilities';
 
-import Entypo from 'react-native-vector-icons/Entypo';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Viewport from '../common/viewport';
 
 import * as GhostEvents from '../ghost/GhostEvents';
@@ -26,6 +23,7 @@ import { CardScene } from '../game/CardScene';
 import { CardSceneLoading } from './CardSceneLoading';
 import { CardText } from '../components/CardText';
 import { CreateCardContext } from './CreateCardContext';
+import { CreateCardBottomActions, CARD_BOTTOM_MIN_HEIGHT } from './CreateCardBottomActions';
 import { CreateCardHeader, CARD_HEADER_HEIGHT } from './CreateCardHeader';
 import { DrawingCardHeader, DRAWING_CARD_HEADER_HEIGHT } from './drawing/DrawingCardHeader';
 import {
@@ -45,8 +43,6 @@ import {
 } from './SceneCreatorUtilities';
 
 const CARD_HEIGHT = (1 / Constants.CARD_RATIO) * 100 * Viewport.vw;
-
-const CARD_BOTTOM_MIN_HEIGHT = 64;
 
 const MAX_AVAILABLE_CARD_HEIGHT = 100 * Viewport.vh - CARD_HEADER_HEIGHT - CARD_BOTTOM_MIN_HEIGHT;
 const DRAWING_MAX_AVAILABLE_CARD_HEIGHT =
@@ -78,93 +74,7 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 8,
   },
-  actions: {
-    width: '100%',
-    paddingHorizontal: 8,
-    paddingTop: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    minHeight: CARD_BOTTOM_MIN_HEIGHT,
-  },
 });
-
-const CardBottomActions = ({
-  card,
-  onAdd,
-  onOpenLayout,
-  onSave,
-  isPlayingScene,
-  isSceneLoaded,
-  saveAction,
-  creatorUsername,
-}) => {
-  const { showActionSheetWithOptions } = useActionSheet();
-  const maybeClone = React.useCallback(() => {
-    showActionSheetWithOptions(
-      {
-        title: `Save a private copy of @${creatorUsername}'s deck to your own profile?`,
-        options: ['Save Copy', 'Cancel'],
-        cancelButtonIndex: 1,
-      },
-      (buttonIndex) => {
-        if (buttonIndex == 0) {
-          return onSave();
-        }
-      }
-    );
-  }, [onSave, creatorUsername]);
-
-  if (isPlayingScene || !isSceneLoaded) {
-    return null;
-  }
-
-  return (
-    <View style={styles.actions}>
-      <TouchableOpacity style={Constants.styles.primaryButton} onPress={onAdd}>
-        <MCIcon
-          name="shape-polygon-plus"
-          size={22}
-          color="#000"
-          style={Constants.styles.primaryButtonIconLeft}
-        />
-        <Text style={Constants.styles.primaryButtonLabel}>Add</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={Constants.styles.secondaryButton} onPress={onOpenLayout}>
-        <Icon
-          name="grid-on"
-          size={22}
-          color="#fff"
-          style={Constants.styles.secondaryButtonIconLeft}
-        />
-        <Text style={Constants.styles.secondaryButtonLabel}>Layout</Text>
-      </TouchableOpacity>
-      {saveAction === 'save' ? (
-        <TouchableOpacity style={Constants.styles.primaryButton} onPress={onSave}>
-          <Text style={Constants.styles.primaryButtonLabel}>Done</Text>
-          <MCIcon
-            name="arrow-right"
-            size={22}
-            color="#000"
-            style={Constants.styles.primaryButtonIconRight}
-          />
-        </TouchableOpacity>
-      ) : saveAction === 'clone' ? (
-        <TouchableOpacity style={Constants.styles.primaryButton} onPress={maybeClone}>
-          <MCIcon
-            name="content-save-all"
-            size={22}
-            color="#000"
-            style={Constants.styles.primaryButtonIconLeft}
-          />
-          <Text style={Constants.styles.primaryButtonLabel}>Clone</Text>
-        </TouchableOpacity>
-      ) : (
-        <View pointerEvents="none" style={{ width: 64 }} />
-      )}
-    </View>
-  );
-};
 
 // TODO: find a cleaner way to get these
 const getLibraryEntries = (root) => {
@@ -423,7 +333,7 @@ export const CreateCardScreen = ({
             {isShowingDraw ? (
               <DrawingCardBottomActions currentDrawingToolGroup={currentDrawingToolGroup} />
             ) : (
-              <CardBottomActions
+              <CreateCardBottomActions
                 card={card}
                 onAdd={() => setActiveSheet('sceneCreatorBlueprints')}
                 onOpenLayout={() => setActiveSheet('sceneCreatorSettings')}
