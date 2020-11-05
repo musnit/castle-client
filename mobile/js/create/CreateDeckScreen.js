@@ -28,6 +28,13 @@ const DECK_FRAGMENT = `
   title
   visibility
   accessPermissions
+  parentDeckId
+  parentDeck {
+    creator { username }
+    initialCard {
+      backgroundImage { url }
+    }
+  }
   cards {
     id
     cardId

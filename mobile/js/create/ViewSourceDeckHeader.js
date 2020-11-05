@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { DeckParentAttribution } from './DeckParentAttribution';
 import { SegmentedNavigation } from '../components/SegmentedNavigation';
+
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import FastImage from 'react-native-fast-image';
 
@@ -33,8 +35,7 @@ const styles = StyleSheet.create({
     zIndex: -1, // required to prevent negative margin from blocking back button
   },
   header: {
-    padding: 8,
-    alignItems: 'center',
+    padding: 16,
     justifyContent: 'center',
   },
   titleLabel: {
@@ -80,6 +81,7 @@ export const ViewSourceDeckHeader = ({ deck, onPressBack }) => {
       {deck ? (
         <View style={styles.header}>
           <Text style={styles.instructionsLabel}>{message}</Text>
+          <DeckParentAttribution parentDeckId={deck.parentDeckId} parentDeck={deck.parentDeck} />
         </View>
       ) : null}
       <SegmentedNavigation

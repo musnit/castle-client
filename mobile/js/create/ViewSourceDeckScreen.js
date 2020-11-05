@@ -25,6 +25,13 @@ const DECK_FRAGMENT = `
   creator {
     username
   }
+  parentDeckId
+  parentDeck {
+    creator { username }
+    initialCard {
+      backgroundImage { url }
+    }
+  }
   cards {
     id
     cardId

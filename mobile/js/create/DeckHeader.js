@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { CardCell } from '../components/CardCell';
+import { DeckParentAttribution } from './DeckParentAttribution';
 import { SegmentedNavigation } from '../components/SegmentedNavigation';
 import { shareDeck } from '../common/utilities';
 
@@ -35,9 +36,12 @@ const styles = StyleSheet.create({
   },
   header: {
     padding: 8,
-    paddingBottom: 24,
-    flexDirection: 'row',
+    paddingLeft: 16,
     justifyContent: 'center',
+  },
+  visibleControl: {
+    flexDirection: 'row',
+    paddingBottom: 24,
   },
   topCardPreview: {
     maxWidth: '20%',
@@ -82,7 +86,7 @@ const DeckVisibleControl = ({ deck, onPressVisible }) => {
   }
 
   return (
-    <React.Fragment>
+    <View style={styles.visibleControl}>
       <View style={styles.topCardPreview}>
         <CardCell card={initialCard} isPrivate={deck?.visibility === 'private'} />
       </View>
@@ -116,7 +120,7 @@ const DeckVisibleControl = ({ deck, onPressVisible }) => {
       ) : (
         <ActivityIndicator color="#fff" size="large" />
       )}
-    </React.Fragment>
+    </View>
   );
 };
 
@@ -132,6 +136,7 @@ export const DeckHeader = (props) => {
       </View>
       <View style={styles.header}>
         <DeckVisibleControl deck={deck} onPressVisible={props.onPressVisible} />
+        <DeckParentAttribution parentDeckId={deck?.parentDeckId} parentDeck={deck?.parentDeck} />
       </View>
       <SegmentedNavigation
         items={MODE_ITEMS}
