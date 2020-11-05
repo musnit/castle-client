@@ -160,7 +160,9 @@ export const CreateCardScreen = ({
   }, []);
 
   const maybeSaveAndGoToDeck = React.useCallback(async () => {
-    if (cardNeedsSave()) {
+    // don't prompt on back button unless the card has changes and
+    // we're in the card creator
+    if (cardNeedsSave() && saveAction === 'save') {
       showActionSheetWithOptions(
         {
           title: 'Save changes?',
@@ -177,30 +179,45 @@ export const CreateCardScreen = ({
         }
       );
     } else {
-      // no changes
       return goToDeck();
     }
   }, [cardNeedsSave, saveAndGoToDeck, goToDeck]);
 
   const maybeSaveAndGoToCard = React.useCallback(
     async (nextCard) => {
-      if (cardNeedsSave()) {
-        const title = Utilities.makeCardPreviewTitle(nextCard, deck);
-        showActionSheetWithOptions(
-          {
-            title: `Save changes and go to '${title}?'`,
-            options: ['Save and go', 'Cancel'],
-            cancelButtonIndex: 1,
-          },
-          (buttonIndex) => {
-            if (buttonIndex == 0) {
-              return saveAndGoToCard(nextCard);
-            }
-          }
-        );
-      } else {
-        // no changes
+      if (!cardNeedsSave() || saveAction === 'none') {
+        // no changes, or unable to save
         return goToCard(nextCard);
+      } else {
+        const title = Utilities.makeCardPreviewTitle(nextCard, deck);
+        if (saveAction === 'save') {
+          showActionSheetWithOptions(
+            {
+              title: `Save changes and go to '${title}'?`,
+              options: ['Save and go', 'Cancel'],
+              cancelButtonIndex: 1,
+            },
+            (buttonIndex) => {
+              if (buttonIndex == 0) {
+                return saveAndGoToCard(nextCard);
+              }
+            }
+          );
+        } else {
+          // can't clone and go to card, so prompt to discard before leaving
+          showActionSheetWithOptions(
+            {
+              title: `Discard changes and go to '${title}'?`,
+              options: ['Discard and go', 'Cancel'],
+              cancelButtonIndex: 1,
+            },
+            (buttonIndex) => {
+              if (buttonIndex == 0) {
+                return goToCard(nextCard);
+              }
+            }
+          );
+        }
       }
     },
     [cardNeedsSave, saveAndGoToCard, goToCard]

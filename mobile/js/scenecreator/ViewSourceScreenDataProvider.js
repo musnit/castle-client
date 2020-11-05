@@ -187,14 +187,19 @@ class ViewSourceScreenDataProvider extends React.Component {
   };
 
   _goToCard = (nextCard) => {
-    // TODO:
+    setTimeout(() => {
+      this.props.navigation.navigate('ViewSource', {
+        deckIdToEdit: this.state.deck.deckId,
+        cardIdToEdit: nextCard.cardId,
+      });
+    }, 100);
   };
 
   _saveAndGoToCard = async (nextCard) => {
     throw new Error(`Not implemented for ViewSourceScreen`);
   };
 
-  _cardNeedsSave = () => false; // never prompt to save
+  _cardNeedsSave = () => this.state.card?.isChanged;
 
   _handleSceneMessage = (message) => {
     switch (message.messageType) {
