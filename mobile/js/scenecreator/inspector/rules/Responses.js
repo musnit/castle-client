@@ -354,6 +354,15 @@ const ResetAllVariables = () => {
   ];
 };
 
+const FollowWithCamera = () => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Follow this with the camera',
+    },
+  ];
+};
+
 const SetBehavior = ({ response, context }) => {
   let behaviorName;
   if (response.params?.behaviorId) {
@@ -692,6 +701,7 @@ export const Responses = {
   ['move toward actor']: MoveTowardActor,
   ['face direction of motion']: FaceDirectionOfMotion,
   ['play sound']: PlaySound,
+  ['follow with camera']: FollowWithCamera,
   create: Create,
   destroy: Destroy,
   show: Show,

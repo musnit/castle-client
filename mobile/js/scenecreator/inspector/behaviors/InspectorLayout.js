@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const LayoutInput = ({ behavior, propName, label, sendAction }) => {
+const LayoutInput = ({ behavior, propName, label, sendAction, type = 'number' }) => {
   const [lastNativeUpdate, setLastNativeUpdate] = React.useState(0);
   const [value, sendValue] = useOptimisticBehaviorValue({
     behavior,
@@ -55,12 +55,20 @@ const LayoutInput = ({ behavior, propName, label, sendAction }) => {
   return (
     <View style={styles.inputContainer}>
       <Text style={styles.inputLabel}>{label}</Text>
-      <InspectorNumberInput
-        value={value}
-        lastNativeUpdate={lastNativeUpdate}
-        onChange={onChange}
-        {...behavior.propertySpecs[propName].props}
-      />
+      {type == 'number' ? (
+        <InspectorNumberInput
+          value={value}
+          lastNativeUpdate={lastNativeUpdate}
+          onChange={onChange}
+          {...behavior.propertySpecs[propName].props}
+        />
+      ) : (
+        <InspectorCheckbox
+          value={value}
+          onChange={onChange}
+          {...behavior.propertySpecs[propName].props}
+        />
+      )}
     </View>
   );
 };
@@ -132,6 +140,13 @@ export default InspectorLayout = ({ body, circleShape, sendActions }) => {
           behavior={body}
           propName="angle"
           label="Rotation"
+          sendAction={sendActions.Body}
+        />
+        <LayoutInput
+          type="bool"
+          behavior={body}
+          propName="relativeToCamera"
+          label="Relative to camera"
           sendAction={sendActions.Body}
         />
       </View>
