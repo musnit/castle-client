@@ -175,30 +175,16 @@ class CreateCardScreenDataProvider extends React.Component {
         }),
       ]);
 
-      const result = await Session.apolloClient.mutate({
-        mutation: gql`
-          mutation UploadBase64($data: String!, $filename: String, $mimetype: String) {
-            uploadBase64(data: $data, filename: $filename, mimetype: $mimetype) {
-              fileId
-              url
-            }
-          }
-        `,
-        variables: {
-          data: screenshotData,
-          filename: 'screenshot.png',
-          mimetype: 'image/png',
-        },
-        fetchPolicy: 'no-cache',
-      });
-      if (this._mounted && result?.data?.uploadBase64) {
-        this._handleCardChange({
-          backgroundImage: result.data.uploadBase64,
+      const backgroundImage = await Session.uploadBase64(screenshotData);
+      if (this._mounted && backgroundImage) {
+        return this._handleCardChange({
+          backgroundImage,
         });
       }
     } catch (e) {
       // screenshot didn't happen in time
     }
+    return false;
   };
 
   _save = async () => {
@@ -293,6 +279,7 @@ class CreateCardScreenDataProvider extends React.Component {
           this._screenshotPromiseResolve(message.data);
           this._screenshotPromiseResolve = null;
         }
+        break;
       }
     }
   };

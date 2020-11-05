@@ -645,6 +645,26 @@ export const uploadFile = async ({ uri }) => {
   return result?.data?.uploadFile;
 };
 
+export const uploadBase64 = async (data) => {
+  const result = await apolloClient.mutate({
+    mutation: gql`
+      mutation UploadBase64($data: String!, $filename: String, $mimetype: String) {
+        uploadBase64(data: $data, filename: $filename, mimetype: $mimetype) {
+          fileId
+          url
+        }
+      }
+    `,
+    variables: {
+      data,
+      filename: 'screenshot.png',
+      mimetype: 'image/png',
+    },
+    fetchPolicy: 'no-cache',
+  });
+  return result?.data?.uploadBase64;
+};
+
 export const toggleFollowUser = async (userId, follow) => {
   const result = await apolloClient.mutate({
     mutation: gql`

@@ -118,6 +118,32 @@ class ViewSourceScreenDataProvider extends React.Component {
     });
   };
 
+  _updateScreenshot = async () => {
+    let screenshotPromise = new Promise((resolve) => {
+      this._screenshotPromiseResolve = resolve;
+    });
+    await GhostEvents.sendAsync('REQUEST_SCREENSHOT');
+
+    try {
+      let screenshotData = await Promise.race([
+        screenshotPromise,
+        new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('timeout')), 5000);
+        }),
+      ]);
+
+      const backgroundImage = await Session.uploadBase64(screenshotData);
+      if (this._mounted && backgroundImage) {
+        return this._handleCardChange({
+          backgroundImage,
+        });
+      }
+    } catch (e) {
+      // screenshot didn't happen in time
+    }
+    return false;
+  };
+
   _goToDeck = (deckId = null) => {
     if (!deckId && this.state.deck) {
       deckId = this.state.deck.deckId;
@@ -135,6 +161,7 @@ class ViewSourceScreenDataProvider extends React.Component {
   // saving from the view source screen creates a clone of the deck.
   _saveAndGoToDeck = async () => {
     await this.setState({ loading: true });
+    await this._updateScreenshot();
     const { card, deck } = await Session.saveDeck(
       this.state.card,
       this.state.deck,
@@ -192,6 +219,13 @@ class ViewSourceScreenDataProvider extends React.Component {
               setFromLua: true,
             },
           });
+        }
+        break;
+      }
+      case 'SCREENSHOT_DATA': {
+        if (this._screenshotPromiseResolve) {
+          this._screenshotPromiseResolve(message.data);
+          this._screenshotPromiseResolve = null;
         }
         break;
       }
