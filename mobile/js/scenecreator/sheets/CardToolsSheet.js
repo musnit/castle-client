@@ -54,7 +54,7 @@ export const CardToolsSheet = ({ onClose, ...props }) => {
     variables,
     onVariablesChange: onChange,
     onSelectBackupData,
-    isDeckOwner,
+    saveAction,
   } = useCardCreator();
   const cardId = card?.cardId;
 
@@ -64,7 +64,8 @@ export const CardToolsSheet = ({ onClose, ...props }) => {
       value: 'variables',
     },
   ];
-  if (isDeckOwner) {
+  if (saveAction === 'save') {
+    // neither 'clone' nor 'none'
     TAB_ITEMS.push({
       name: 'Backups',
       value: 'backups',

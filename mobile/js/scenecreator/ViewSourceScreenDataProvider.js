@@ -231,6 +231,8 @@ class ViewSourceScreenDataProvider extends React.Component {
   };
 
   _handleSceneRevertData = (data) => {
+    // we don't expose backups to View Source screen, so loading a backup
+    // should not be possible
     throw new Error(`Not implemented for ViewSourceScreen`);
   };
 

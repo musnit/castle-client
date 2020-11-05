@@ -108,7 +108,6 @@ export const CreateCardScreen = ({
   onSceneMessage,
   onSceneRevertData,
   saveAction = 'none',
-  isDeckOwner = true, // does the user own this deck?
 }) => {
   const { showActionSheetWithOptions } = useActionSheet();
   const { root, globalActions, sendGlobalAction, transformAssetUri } = GhostUI.useGhostUI();
@@ -276,7 +275,7 @@ export const CreateCardScreen = ({
     tagToActorIds,
     activeToolData,
     activeToolAction,
-    isDeckOwner,
+    saveAction,
     ...inspectorActions,
   };
 
