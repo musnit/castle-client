@@ -25,7 +25,6 @@ export const CardScene = ({
   interactionEnabled = true,
   isEditing = false,
   isEditable = false,
-  onScreenshot,
   onMessage,
   deckState,
   paused = false,
@@ -75,7 +74,6 @@ export const CardScene = ({
                 onPressReload={onPressReload}
                 logsVisible={isEditing && logsVisible}
                 setLogsVisible={setLogsVisible}
-                onScreenshot={onScreenshot}
                 onMessage={onMessage}
                 onLoaded={onLoaded}
                 deckState={deckState}

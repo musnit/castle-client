@@ -151,7 +151,6 @@ export const GameView = ({
   logsVisible,
   setLogsVisible,
   onPressBack,
-  onScreenshot,
   onMessage,
   onLoaded,
   deckState,
@@ -179,20 +178,6 @@ export const GameView = ({
 
   // TODO: do we actually need to pass in anything for game?
   LuaBridge.useLuaBridge({ game: {} });
-
-  useListen({
-    eventName: 'GHOST_SCREENSHOT',
-    handler: (params) => {
-      if (onScreenshot) {
-        // sometimes getting a "missing request token for request" error
-        // on ios when trying to read the screenshot.png file
-        // without this delay
-        setTimeout(() => {
-          onScreenshot(params);
-        }, 300);
-      }
-    },
-  });
 
   useListen({
     eventName: 'GHOST_MESSAGE',

@@ -196,10 +196,6 @@ class ViewSourceScreenDataProvider extends React.Component {
 
   _cardNeedsSave = () => false; // never prompt to save
 
-  _handleSceneScreenshot = async () => {
-    // noop for ViewSourceScreen
-  };
-
   _handleSceneMessage = (message) => {
     switch (message.messageType) {
       case 'UPDATE_SCENE': {
@@ -264,7 +260,6 @@ class ViewSourceScreenDataProvider extends React.Component {
           onVariablesChange={this._handleVariablesChange}
           onSceneMessage={this._handleSceneMessage}
           onSceneRevertData={this._handleSceneRevertData}
-          onSceneScreenshot={this._handleSceneScreenshot}
           saveAction={deck.accessPermissions === 'cloneable' ? 'clone' : 'none'}
         />
       </GhostUI.Provider>

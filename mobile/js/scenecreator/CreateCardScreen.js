@@ -106,7 +106,6 @@ export const CreateCardScreen = ({
   saveAndGoToCard,
   onVariablesChange,
   onSceneMessage,
-  onSceneScreenshot,
   onSceneRevertData,
   saveAction = 'none',
   isDeckOwner = true, // does the user own this deck?
@@ -312,7 +311,6 @@ export const CreateCardScreen = ({
                 isEditing={true}
                 isEditable={true}
                 deckState={deckState}
-                onScreenshot={onSceneScreenshot}
                 onMessage={onSceneMessage}
               />
               {isCardTextVisible ? (

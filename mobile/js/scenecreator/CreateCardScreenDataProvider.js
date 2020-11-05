@@ -246,10 +246,6 @@ class CreateCardScreenDataProvider extends React.Component {
 
   _cardNeedsSave = () => this.state.card?.isChanged;
 
-  _handleSceneScreenshot = async ({ path }) => {
-    // no op
-  };
-
   _handleSceneMessage = (message) => {
     switch (message.messageType) {
       case 'UPDATE_SCENE': {
@@ -317,7 +313,6 @@ class CreateCardScreenDataProvider extends React.Component {
           onVariablesChange={this._handleVariablesChange}
           onSceneMessage={this._handleSceneMessage}
           onSceneRevertData={this._handleSceneRevertData}
-          onSceneScreenshot={this._handleSceneScreenshot}
           saveAction="save"
         />
       </GhostUI.Provider>
