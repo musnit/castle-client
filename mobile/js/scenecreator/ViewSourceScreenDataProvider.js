@@ -161,7 +161,9 @@ class ViewSourceScreenDataProvider extends React.Component {
   // saving from the view source screen creates a clone of the deck.
   _saveAndGoToDeck = async () => {
     await this.setState({ loading: true });
-    await this._updateScreenshot();
+    if (this.state.card.isChanged) {
+      await this._updateScreenshot();
+    }
     const { card, deck } = await Session.saveDeck(
       this.state.card,
       this.state.deck,
