@@ -21,6 +21,9 @@ const styles = StyleSheet.create({
     marginRight: 8,
     flexShrink: 0,
   },
+  grey: {
+    color: '#999',
+  },
 });
 
 // TODO: navigate when tapped
@@ -42,7 +45,12 @@ export const DeckParentAttribution = ({ parentDeckId, parentDeck }) => {
     return null;
   }
   if (parentDeckId && !parentDeck) {
-    // TODO: parent deck is not accessible
+    // parent deck is not accessible (author deleted it or made it private)
+    return (
+      <Text style={[styles.label, styles.grey]}>
+        This deck was originally copied from a different deck which is no longer available.
+      </Text>
+    );
   }
   return (
     <TouchableOpacity style={styles.parentAttribution} onPress={navigateToParent}>
