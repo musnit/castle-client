@@ -22,6 +22,7 @@ const styles = StyleSheet.create({
   },
   row: {
     paddingRight: 16,
+    marginBottom: 16,
   },
   inputContainer: {
     width: '50%',
@@ -97,6 +98,18 @@ export default InspectorLayout = ({ body, circleShape, sendActions }) => {
     [setVisibleAction]
   );
 
+  const [relative, setRelativeAction] = useOptimisticBehaviorValue({
+    behavior: body,
+    propName: 'relativeToCamera',
+    sendAction: sendActions.Body,
+  });
+  const onChangeRelative = React.useCallback(
+    (relative) => {
+      setVisibleAction('set:relativeToCamera', relative);
+    },
+    [setRelativeAction]
+  );
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Layout</Text>
@@ -142,12 +155,12 @@ export default InspectorLayout = ({ body, circleShape, sendActions }) => {
           label="Rotation"
           sendAction={sendActions.Body}
         />
-        <LayoutInput
-          type="bool"
-          behavior={body}
-          propName="relativeToCamera"
+      </View>
+      <View style={styles.row}>
+        <InspectorCheckbox
+          value={relative}
+          onChange={onChangeRelative}
           label="Relative to camera"
-          sendAction={sendActions.Body}
         />
       </View>
       <View style={styles.row}>
