@@ -105,7 +105,7 @@ export default InspectorLayout = ({ body, circleShape, sendActions }) => {
   });
   const onChangeRelative = React.useCallback(
     (relative) => {
-      setVisibleAction('set:relativeToCamera', relative);
+      setRelativeAction('set:relativeToCamera', relative);
     },
     [setRelativeAction]
   );
