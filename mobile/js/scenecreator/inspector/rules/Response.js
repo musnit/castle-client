@@ -42,7 +42,7 @@ const RESPONSE_CATEGORY_ORDER = [
   'sound',
   'camera',
 ];
-const CONDITION_CATEGORY_ORDER = ['state', 'collision', 'random'];
+const CONDITION_CATEGORY_ORDER = ['state', 'collision', 'random', 'camera'];
 
 const _entryToResponse = (entry) => ({
   name: entry.name,

@@ -240,6 +240,24 @@ const StopsMoving = () => {
   ]);
 };
 
+const EnterCameraViewPort = () => {
+  return withWhen([
+    {
+      type: 'selectEntry',
+      label: 'this enters the camera viewport',
+    },
+  ]);
+};
+
+const ExitCameraViewPort = () => {
+  return withWhen([
+    {
+      type: 'selectEntry',
+      label: 'this exits the camera viewport',
+    },
+  ]);
+};
+
 export const Triggers = {
   collide: Collide,
   tap: Tap,
@@ -257,6 +275,8 @@ export const Triggers = {
   ['counter changes']: CounterChanges,
   ['velocity changes']: VelocityChanges,
   ['stops moving']: StopsMoving,
+  ['enter camera viewport']: EnterCameraViewPort,
+  ['exit camera viewport']: ExitCameraViewPort,
   default: Default,
   empty: Empty,
 };

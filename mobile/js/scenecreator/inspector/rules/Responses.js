@@ -674,6 +674,15 @@ const FaceDirectionOfMotion = () => {
 
 const PlaySound = () => [{ type: 'showEntryOptions', label: 'Play sound effect' }];
 
+const IsInCameraViewport = () => {
+  return [
+    {
+      type: 'selectEntry',
+      label: 'this is in the camera viewport',
+    },
+  ];
+};
+
 export const Responses = {
   ['act on']: ActOn,
   ['act on other']: ActOnOther,
@@ -702,6 +711,7 @@ export const Responses = {
   ['face direction of motion']: FaceDirectionOfMotion,
   ['play sound']: PlaySound,
   ['follow with camera']: FollowWithCamera,
+  ['is in camera viewport']: IsInCameraViewport,
   create: Create,
   destroy: Destroy,
   show: Show,
