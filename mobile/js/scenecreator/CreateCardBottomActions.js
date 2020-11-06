@@ -84,12 +84,12 @@ export const CreateCardBottomActions = ({
       ) : saveAction === 'clone' ? (
         <TouchableOpacity style={Constants.styles.primaryButton} onPress={maybeClone}>
           <MCIcon
-            name="content-save-all"
+            name="directions-fork"
             size={22}
             color="#000"
             style={Constants.styles.primaryButtonIconLeft}
           />
-          <Text style={Constants.styles.primaryButtonLabel}>Clone</Text>
+          <Text style={Constants.styles.primaryButtonLabel}>Remix</Text>
         </TouchableOpacity>
       ) : (
         <View pointerEvents="none" style={{ width: 64 }} />

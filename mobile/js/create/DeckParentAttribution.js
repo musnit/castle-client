@@ -26,8 +26,6 @@ const styles = StyleSheet.create({
   },
 });
 
-// TODO: navigate when tapped
-
 export const DeckParentAttribution = ({ parentDeckId, parentDeck }) => {
   const { navigate } = useNavigation();
   const navigateToParent = React.useCallback(
@@ -48,7 +46,7 @@ export const DeckParentAttribution = ({ parentDeckId, parentDeck }) => {
     // parent deck is not accessible (author deleted it or made it private)
     return (
       <Text style={[styles.label, styles.grey]}>
-        This deck was originally copied from a different deck which is no longer available.
+        This deck is a remix of a different deck which is no longer available.
       </Text>
     );
   }
@@ -58,7 +56,7 @@ export const DeckParentAttribution = ({ parentDeckId, parentDeck }) => {
         <CardCell card={parentDeck.initialCard} />
       </View>
       <Text style={styles.label}>
-        This deck was originally copied from {parentDeck.creator?.username}'s deck.
+        This deck is a remix of @{parentDeck.creator?.username}'s deck.
       </Text>
     </TouchableOpacity>
   );
