@@ -513,7 +513,7 @@ const SetCounter = ({ response }) => {
   return [
     {
       type: 'showEntryOptions',
-      label: `Set the actor's counter`,
+      label: `Modify the actor's counter`,
     },
     {
       type: 'text',

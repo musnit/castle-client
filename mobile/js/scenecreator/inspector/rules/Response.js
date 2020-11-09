@@ -270,6 +270,8 @@ const RESPONSE_COMPONENTS = {
   ['change behavior property']: BehaviorPropertyRule,
   ['set variable']: SetVariable,
   ['change variable']: SetVariable,
+  ['set counter']: SetVariable,
+  ['change counter']: SetVariable,
   ['play sound']: PlaySound,
 };
 
