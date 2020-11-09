@@ -461,7 +461,7 @@ const SetVariable = ({ response, context }) => {
   return [
     {
       type: 'showEntryOptions',
-      label: 'Set variable',
+      label: 'Modify variable value',
     },
     {
       type: 'selectParamSheet',
