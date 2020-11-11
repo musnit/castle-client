@@ -36,6 +36,7 @@ const InspectorRule = ({
   conditions,
   addChildSheet,
   onChangeRule,
+  onCopyRule,
   onRemoveRule,
   sendRuleAction,
 }) => {
@@ -68,6 +69,7 @@ const InspectorRule = ({
         triggers={triggers}
         onChangeTrigger={onChangeTrigger}
         onRemoveRule={onRemoveRule}
+        onCopyRule={onCopyRule}
       />
       <View style={SceneCreatorConstants.styles.insetContainer}>
         <InspectorResponse
@@ -137,6 +139,8 @@ export default InspectorRules = ({ behaviors, sendActions, addChildSheet }) => {
     [rulesItems, sendRuleAction]
   );
 
+  const onCopyRule = React.useCallback((rule) => sendRuleAction('copy', [rule]), [sendRuleAction]);
+
   return (
     <React.Fragment>
       <View style={styles.container}>
@@ -144,8 +148,15 @@ export default InspectorRules = ({ behaviors, sendActions, addChildSheet }) => {
           <TouchableOpacity
             style={SceneCreatorConstants.styles.button}
             onPress={() => sendRuleAction('add')}>
-            <Text style={SceneCreatorConstants.styles.buttonLabel}>Add new rule</Text>
+            <Text style={SceneCreatorConstants.styles.buttonLabel}>Add rule</Text>
           </TouchableOpacity>
+          {rulesData && !rulesData.isClipboardEmpty ? (
+            <TouchableOpacity
+              style={[SceneCreatorConstants.styles.button, { marginLeft: 16 }]}
+              onPress={() => sendRuleAction('paste')}>
+              <Text style={SceneCreatorConstants.styles.buttonLabel}>Paste rule</Text>
+            </TouchableOpacity>
+          ) : null}
           {!counter.isActive ? (
             <TouchableOpacity
               style={[SceneCreatorConstants.styles.button, { marginLeft: 16 }]}
@@ -160,6 +171,7 @@ export default InspectorRules = ({ behaviors, sendActions, addChildSheet }) => {
               key={`rule-${rule.trigger?.name}-${rule.response?.name}-${ii}`}
               rule={rule}
               onChangeRule={onChangeRule}
+              onCopyRule={() => onCopyRule(rule)}
               onRemoveRule={() => onRemoveRule(rule)}
               behaviors={behaviors}
               addChildSheet={addChildSheet}

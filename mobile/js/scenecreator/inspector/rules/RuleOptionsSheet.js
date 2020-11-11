@@ -47,6 +47,15 @@ export default RuleOptionsSheet = ({
   if (type === 'rule') {
     items = [
       {
+        name: 'Copy',
+        icon: 'content-copy',
+        shouldDisplay: () => true,
+        action: () => {
+          actions.copy();
+          onClose();
+        },
+      },
+      {
         name: 'Remove',
         icon: 'trash-can',
         shouldDisplay: () => true,

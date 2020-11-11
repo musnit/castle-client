@@ -36,6 +36,7 @@ export const Trigger = ({
   triggers,
   onChangeTrigger,
   onRemoveRule,
+  onCopyRule,
 }) => {
   const context = useCardCreator();
 
@@ -60,6 +61,7 @@ export const Trigger = ({
         Component: RuleOptionsSheet,
         actions: {
           remove: onRemoveRule,
+          copy: onCopyRule,
         },
         type: 'rule',
       }),
