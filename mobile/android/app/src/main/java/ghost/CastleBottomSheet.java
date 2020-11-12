@@ -137,7 +137,9 @@ public class CastleBottomSheet extends LinearLayout {
         if (view != null && scrollView != null) {
             lastScrollY = scrollView.getScrollY();
 
-            updateRNScrollViewPadding(event.height);
+            // Not sure why we need so much extra padding. Without the extra 100, a text input
+            // on the last row will get hidden
+            updateRNScrollViewPadding(event.height + 100);
 
             // have to wait until padding is updated
             ViewUtils.runOnUiThreadDelay(() -> {
