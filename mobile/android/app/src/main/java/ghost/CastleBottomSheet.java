@@ -93,19 +93,24 @@ public class CastleBottomSheet extends LinearLayout {
     private void scrollToView(final ScrollView scrollViewParent, final View view) {
         // Get deepChild Offset
         Point childOffset = new Point();
-        getDeepChildOffset(scrollViewParent, view.getParent(), view, childOffset);
-        // Scroll to child.
-        scrollViewParent.smoothScrollTo(0, childOffset.y);
+        if (getDeepChildOffset(scrollViewParent, view.getParent(), view, childOffset)) {
+            // Scroll to child.
+            scrollViewParent.smoothScrollTo(0, childOffset.y);
+        }
     }
 
-    private void getDeepChildOffset(final ViewGroup mainParent, final ViewParent parent, final View child, final Point accumulatedOffset) {
+    private boolean getDeepChildOffset(final ViewGroup mainParent, final ViewParent parent, final View child, final Point accumulatedOffset) {
+        if (!(parent instanceof ViewGroup)) {
+            return false;
+        }
+
         ViewGroup parentGroup = (ViewGroup) parent;
         accumulatedOffset.x += child.getLeft();
         accumulatedOffset.y += child.getTop();
         if (parentGroup.equals(mainParent)) {
-            return;
+            return true;
         }
-        getDeepChildOffset(mainParent, parentGroup.getParent(), parentGroup, accumulatedOffset);
+        return getDeepChildOffset(mainParent, parentGroup.getParent(), parentGroup, accumulatedOffset);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
