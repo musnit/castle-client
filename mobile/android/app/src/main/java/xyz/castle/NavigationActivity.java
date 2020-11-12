@@ -76,6 +76,7 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
             return;
         }
 
+        CastleGlobalLayoutListener.createInstance(this);
         CastleSharedPreferences.initialize(this);
         getReactGateway().onActivityCreated(this);
         Fresco.initialize(this);
@@ -134,6 +135,16 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
                 handlePushNotification(intent, true);
             }
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onShowKeyboardEvent(final CastleGlobalLayoutListener.ShowKeyboardEvent event) {
+        mainTabNavigator.hideTabBar();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onHideKeyboardEvent(final CastleGlobalLayoutListener.HideKeyboardEvent event) {
+        mainTabNavigator.showTabBar();
     }
 
     private void navigateToDeck(JSONObject deck) {

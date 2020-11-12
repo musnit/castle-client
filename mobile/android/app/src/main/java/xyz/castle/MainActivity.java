@@ -46,8 +46,6 @@ public class MainActivity extends NavigationActivity {
         gameActivity.handleIntent(new Intent(this, GameActivity.class));
         GameActivity.setMetricsFromDisplay(getWindowManager().getDefaultDisplay());
         gameActivity.loadLibraries();
-
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
     @Override

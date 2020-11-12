@@ -11,6 +11,7 @@ import java.util.WeakHashMap;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
+import xyz.castle.ViewUtils;
 
 public abstract class CastleNavigator {
     protected final Activity activity;
@@ -63,7 +64,7 @@ public abstract class CastleNavigator {
         }
 
         if (layout == null) {
-            activity.setContentView(view);
+            ViewUtils.setActivityContentView(activity, view);
         } else {
             layout.removeAllViews();
             layout.addView(view);

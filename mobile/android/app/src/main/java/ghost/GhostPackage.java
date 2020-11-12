@@ -23,6 +23,8 @@ public class GhostPackage implements ReactPackage {
         new GhostViewManager(reactContext),
         new CastleNavigationScreenReactViewManager(),
         new GhostInputZoneManager(),
-        new CastleFeedView());
+        new CastleFeedView(),
+        new CastleBottomSheetManager()
+    );
   }
 }

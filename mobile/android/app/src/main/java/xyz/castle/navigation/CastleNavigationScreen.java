@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import xyz.castle.NavigationActivity;
+import xyz.castle.ViewUtils;
 
 public class CastleNavigationScreen {
 
@@ -178,7 +179,7 @@ public class CastleNavigationScreen {
                 }
 
                 if (layout == null) {
-                    activity.setContentView(viewToAdd);
+                    ViewUtils.setActivityContentView(activity, viewToAdd);
                 } else {
                     layout.removeAllViews();
                     viewToAdd.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));

@@ -8,6 +8,8 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.facebook.common.executors.CallerThreadExecutor;
 import com.facebook.common.references.CloseableReference;
@@ -37,6 +39,11 @@ public class ViewUtils {
         mainHandler.post(runnable);
     }
 
+    public static void runOnUiThreadDelay(Runnable runnable, long delayMillis) {
+        Handler mainHandler = new Handler(Looper.getMainLooper());
+        mainHandler.postDelayed(runnable, delayMillis);
+    }
+
     public static int screenWidth(Activity activity) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -47,6 +54,20 @@ public class ViewUtils {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         return displayMetrics.heightPixels;
+    }
+
+    public static ViewGroup getActivityView(Activity activity) {
+        return activity.getWindow().getDecorView().findViewById(android.R.id.content);
+    }
+
+    public static void setActivityContentView(Activity activity, View view) {
+        View oldView = getActivityView(activity);
+        if (oldView != null) {
+            oldView.getViewTreeObserver().removeOnGlobalLayoutListener(CastleGlobalLayoutListener.getInstance());
+        }
+
+        activity.setContentView(view);
+        view.getViewTreeObserver().addOnGlobalLayoutListener(CastleGlobalLayoutListener.getInstance());
     }
 
     public interface LoadBitmapListener {

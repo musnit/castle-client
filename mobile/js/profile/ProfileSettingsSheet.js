@@ -7,6 +7,7 @@ import {
   Keyboard,
   Linking,
   TextInput,
+  Platform,
 } from 'react-native';
 import gql from 'graphql-tag';
 import Viewport from '../common/viewport';
@@ -20,8 +21,9 @@ import { UserAvatar } from '../components/UserAvatar';
 import * as Constants from '../Constants';
 import * as Session from '../Session';
 import * as Utilities from '../common/utilities';
+import { AndroidNavigationContext } from '../ReactNavigation';
 
-const SHEET_HEIGHT = 100 * Viewport.vh - 100;
+let SHEET_HEIGHT = 100 * Viewport.vh - 100;
 const TAB_BAR_HEIGHT = 49;
 
 const styles = StyleSheet.create({
@@ -105,6 +107,11 @@ const updateUserAsync = async ({ user }) => {
 };
 
 export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
+  if (Platform.OS == 'android') {
+    const { navigatorWindowHeight } = React.useContext(AndroidNavigationContext);
+    SHEET_HEIGHT = navigatorWindowHeight - 100;
+  }
+
   const { signOutAsync, userId: signedInUserId } = useSession();
   const insets = useSafeArea();
   const [user, changeUser] = React.useReducer(

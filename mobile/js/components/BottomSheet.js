@@ -1,5 +1,13 @@
 import React from 'react';
-import { Animated, StyleSheet, View, Platform } from 'react-native';
+import {
+  Animated,
+  StyleSheet,
+  View,
+  Platform,
+  requireNativeComponent,
+  ScrollView,
+  DeviceEventEmitter,
+} from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -33,6 +41,12 @@ const styles = StyleSheet.create({
   },
 });
 
+let NativeBottomSheet = null;
+
+if (Platform.OS == 'android') {
+  NativeBottomSheet = requireNativeComponent('CastleBottomSheet', null);
+}
+
 /**
  *  @prop isOpen whether the bottom sheet is open (and therefore visible)
  *  @prop snapPoints ascending list of snap points measured from the bottom of the screen
@@ -53,15 +67,62 @@ export const BottomSheet = ({
   onOpenEnd,
   style = {},
 }) => {
-  const insets = useSafeArea();
-  let lastSnap = React.useRef(initialSnap);
-  const [keyboardState] = useKeyboard();
-
   let screenHeight = Viewport.vh * 100;
   if (Platform.OS == 'android') {
     const { navigatorWindowHeight } = React.useContext(AndroidNavigationContext);
     screenHeight = navigatorWindowHeight;
   }
+
+  const textInputHeight = 48; // approx height of one text input
+
+  if (Platform.OS == 'android') {
+    const [viewId] = React.useState(Math.floor(Math.random() * 1000000));
+
+    const [containerHeight, setContainerHeight] = React.useState(0);
+    const [scrollViewPadding, setScrollViewPadding] = React.useState(0);
+    React.useEffect(() => {
+      let subscription = DeviceEventEmitter.addListener('CastleBottomSheetEvent', (event) => {
+        if (event.type == 'height') {
+          setContainerHeight(event.height);
+        }
+
+        if (event.type == 'scrollViewPadding') {
+          setScrollViewPadding(event.padding);
+        }
+      });
+
+      return () => {
+        subscription.remove();
+      };
+    });
+
+    // onCloseEnd, onOpenEnds aren't implemented yet, but they're not used for anything other than
+    // closing the keyboard which the native component already handles
+    return (
+      <NativeBottomSheet
+        style={styles.container}
+        viewId={viewId}
+        isOpen={isOpen}
+        screenHeight={screenHeight}
+        snapPoints={snapPoints}
+        initialSnap={initialSnap}
+        persistLastSnapWhenOpened={persistLastSnapWhenOpened}
+        headerHeight={headerHeight}
+        textInputHeight={textInputHeight}>
+        <View style={[styles.container, style, { height: containerHeight }]} key={contentKey}>
+          {renderHeader()}
+          <ScrollView style={styles.content}>
+            {renderContent()}
+            <View style={{ height: scrollViewPadding }} />
+          </ScrollView>
+        </View>
+      </NativeBottomSheet>
+    );
+  }
+
+  const insets = useSafeArea();
+  let lastSnap = React.useRef(initialSnap);
+  const [keyboardState] = useKeyboard();
 
   // translation from bottom of the screen
   let snapY = React.useRef(new Animated.Value(screenHeight)).current;
@@ -156,7 +217,6 @@ export const BottomSheet = ({
   );
 
   React.useEffect(() => {
-    const textInputHeight = 48; // approx height of one text input
     if (
       isOpen &&
       keyboardState.visible &&

@@ -99,6 +99,14 @@ public class CastleTabNavigator extends CastleNavigator {
         bindCurrentTab();
     }
 
+    public void hideTabBar() {
+        tabBar.setVisibility(View.GONE);
+    }
+
+    public void showTabBar() {
+        tabBar.setVisibility(View.VISIBLE);
+    }
+
     private void bindCurrentTab() {
         tabs.get(index).bind(this, mainLayout, navigationWidth, navigationHeight + tabHeight, 0);
     }

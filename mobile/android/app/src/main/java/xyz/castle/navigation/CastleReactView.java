@@ -10,10 +10,10 @@ import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+
 import xyz.castle.NavigationActivity;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
@@ -76,6 +76,7 @@ public class CastleReactView extends RNGestureHandlerEnabledRootView {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+
         start();
     }
 
