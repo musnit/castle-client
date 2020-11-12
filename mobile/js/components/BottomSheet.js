@@ -82,6 +82,10 @@ export const BottomSheet = ({
     const [scrollViewPadding, setScrollViewPadding] = React.useState(0);
     React.useEffect(() => {
       let subscription = DeviceEventEmitter.addListener('CastleBottomSheetEvent', (event) => {
+        if (event.viewId !== viewId) {
+          return;
+        }
+
         if (event.type == 'height') {
           setContainerHeight(event.height);
         }
