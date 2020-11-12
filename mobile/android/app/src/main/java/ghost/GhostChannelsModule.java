@@ -229,6 +229,11 @@ public class GhostChannelsModule extends ReactContextBaseJavaModule {
     });
   }
 
+  @ReactMethod
+  void setIsPopoverOpen(boolean isOpen) {
+    MainActivity.isPopoverOpen = isOpen;
+  }
+
   static {
     System.loadLibrary("love");
   }

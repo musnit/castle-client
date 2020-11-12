@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import org.love2d.android.GameActivity;
@@ -20,6 +19,8 @@ public class MainActivity extends NavigationActivity {
 
     public static GameActivity gameActivity;
     public static FrameLayout gameLayout;
+
+    public static boolean isPopoverOpen = false;
 
     public static ViewGroup recreateGameLayout(Context context) {
         if (gameLayout != null) {

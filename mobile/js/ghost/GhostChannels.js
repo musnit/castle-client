@@ -123,3 +123,7 @@ export const saveSmartLockCredentials = (username, password, profilePictureUrl) 
     profilePictureUrl
   );
 };
+
+export const setIsPopoverOpen = (isOpen) => {
+  return NativeModules.GhostChannels.setIsPopoverOpen(isOpen);
+};

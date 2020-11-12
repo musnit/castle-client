@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StatusBar, StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SLIcon from 'react-native-vector-icons/SimpleLineIcons';
@@ -41,9 +41,12 @@ const styles = StyleSheet.create({
 
 export const CreateCardHeader = ({ card, isEditable, onPressBack, mode, onChangeMode }) => {
   const { globalActions: data, sendGlobalAction } = useGhostUI();
+
+  // Only hide status bar on iOS because adjustResize breaks when android is in fullscreen.
+  // This breaks keyboard avoiding for popovers. See https://issuetracker.google.com/issues/36911528
   return (
     <View style={styles.container}>
-      <StatusBar hidden={true} />
+      <StatusBar hidden={Platform.OS != 'android'} />
       {!data?.performing ? (
         <TouchableOpacity style={styles.back} onPress={onPressBack}>
           <Icon name="close" size={32} color="#fff" />

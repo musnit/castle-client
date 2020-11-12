@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import xyz.castle.CastleGlobalLayoutListener;
+import xyz.castle.MainActivity;
 import xyz.castle.NavigationActivity;
 import xyz.castle.ViewUtils;
 
@@ -115,7 +116,7 @@ public class CastleBottomSheet extends LinearLayout {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onShowKeyboardEvent(final CastleGlobalLayoutListener.ShowKeyboardEvent event) {
-        if (!isReady() || !isOpen) {
+        if (!isReady() || !isOpen || MainActivity.isPopoverOpen) {
             return;
         }
 
@@ -147,7 +148,7 @@ public class CastleBottomSheet extends LinearLayout {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onHideKeyboardEvent(final CastleGlobalLayoutListener.HideKeyboardEvent event) {
-        if (!isReady() || !isOpen) {
+        if (!isReady() || !isOpen || MainActivity.isPopoverOpen) {
             return;
         }
 

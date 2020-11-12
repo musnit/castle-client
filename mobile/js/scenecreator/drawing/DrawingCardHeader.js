@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StatusBar, StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useGhostUI } from '../../ghost/GhostUI';
@@ -96,7 +96,6 @@ export const DrawingCardHeader = ({
   let undoButton, redoButton;
   if (globalActions) {
     const data = globalActions;
-    isPlaying = data.performing;
 
     undoButton = (
       <TouchableOpacity
@@ -148,10 +147,12 @@ export const DrawingCardHeader = ({
     },
   ];
 
+  // Only hide status bar on iOS because adjustResize breaks when android is in fullscreen.
+  // This breaks keyboard avoiding for popovers. See https://issuetracker.google.com/issues/36911528
   return (
     <View style={styles.container}>
       <View style={styles.topContainer}>
-        <StatusBar hidden={true} />
+        <StatusBar hidden={Platform.OS != 'android'} />
         <TouchableOpacity style={styles.back} onPress={onPressBack}>
           <MCIcon name="arrow-left" size={32} color="#fff" />
         </TouchableOpacity>

@@ -6,9 +6,12 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
+  Platform,
+  Keyboard,
 } from 'react-native';
 import Viewport from '../common/viewport';
 import FastImage from 'react-native-fast-image';
+import * as GhostChannels from '../ghost/GhostChannels';
 
 const { vw, vh } = Viewport;
 
@@ -119,6 +122,7 @@ const Popover = () => {
   const opacity = React.useRef(new Animated.Value(0)).current;
 
   let [measurements, setMeasurements] = React.useState({});
+  let [overrideTopPosition, setOverrideTopPosition] = React.useState(null);
   React.useEffect(() => {
     if (measureRef) {
       measureRef.measure((x, y, anchorWidth, anchorHeight, anchorLeft, anchorTop) => {
@@ -144,6 +148,32 @@ const Popover = () => {
     }
   }, [visible]);
 
+  if (Platform.OS == 'android') {
+    React.useEffect(() => {
+      const _keyboardDidShow = (e) => {
+        let keyboardHeight = e.endCoordinates.height;
+        let screenHeight = vh * 100;
+        let maxY = screenHeight - keyboardHeight - height;
+
+        if (measurements.top > maxY) {
+          setOverrideTopPosition(maxY);
+        }
+      };
+
+      const _keyboardDidHide = () => {
+        setOverrideTopPosition(null);
+      };
+
+      Keyboard.addListener('keyboardDidShow', _keyboardDidShow);
+      Keyboard.addListener('keyboardDidHide', _keyboardDidHide);
+
+      return () => {
+        Keyboard.removeListener('keyboardDidShow', _keyboardDidShow);
+        Keyboard.removeListener('keyboardDidHide', _keyboardDidHide);
+      };
+    }, [measurements]);
+  }
+
   if (!visible || measurements.left === undefined || measurements.top === undefined) {
     return null;
   }
@@ -156,7 +186,13 @@ const Popover = () => {
       <Animated.View
         style={[
           styles.popover,
-          { left: measurements.left, top: measurements.top, width, height, opacity },
+          {
+            left: measurements.left,
+            top: overrideTopPosition == null ? measurements.top : overrideTopPosition,
+            width,
+            height,
+            opacity,
+          },
         ]}>
         <Component closePopover={closePopover} {...props} />
         <Carat
@@ -192,10 +228,20 @@ export const PopoverProvider = (props) => {
   });
 
   const showPopover = React.useCallback(
-    (props) => setState({ visible: true, ...EMPTY_POPOVER, ...props }),
+    (props) => {
+      if (Platform.OS == 'android') {
+        GhostChannels.setIsPopoverOpen(true);
+      }
+      setState({ visible: true, ...EMPTY_POPOVER, ...props });
+    },
     [setState]
   );
-  const closePopover = React.useCallback(() => setState({ visible: false, ...EMPTY_POPOVER }), []);
+  const closePopover = React.useCallback(() => {
+    if (Platform.OS == 'android') {
+      GhostChannels.setIsPopoverOpen(false);
+    }
+    setState({ visible: false, ...EMPTY_POPOVER });
+  }, []);
 
   const value = {
     currentPopover: {
