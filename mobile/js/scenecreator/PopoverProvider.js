@@ -86,7 +86,17 @@ const Carat = ({ style, invertY }) => {
   );
 };
 
-const measurePopover = ({ anchorTop, anchorLeft, anchorWidth, anchorHeight, width, height }) => {
+const measurePopover = ({
+  anchorTop,
+  anchorLeft,
+  anchorWidth,
+  anchorHeight,
+  width,
+  height,
+  keyboardState,
+}) => {
+  const availScreenHeight = vh * 100 - keyboardState.height;
+
   // horizontally center the popover above the calling element
   let popoverLeft = anchorLeft + anchorWidth * 0.5 - width * 0.5;
   let popoverTop = anchorTop - height - POPOVER_MARGIN;
@@ -107,8 +117,8 @@ const measurePopover = ({ anchorTop, anchorLeft, anchorWidth, anchorHeight, widt
     popoverTop = anchorTop + anchorHeight + POPOVER_MARGIN;
     caratTop = 0;
     invertCaratY = true;
-  } else if (popoverTop + height > vh * 100) {
-    popoverTop = vh * 100 - height - POPOVER_MARGIN;
+  } else if (popoverTop + height > availScreenHeight) {
+    popoverTop = availScreenHeight - height - POPOVER_MARGIN;
   }
   if (caratLeft < POPOVER_MARGIN + 3) {
     caratLeft = POPOVER_MARGIN + 3;
@@ -138,13 +148,14 @@ const Popover = () => {
             anchorHeight,
             width,
             height,
+            keyboardState,
           })
         );
       });
     } else if (x !== undefined && y !== undefined) {
       setMeasurements({ left: x, top: y, caratLeft: width * 0.5, caratTop: height });
     }
-  }, [measureRef, x, y, keyboardState.visible]);
+  }, [measureRef, x, y, keyboardState]);
 
   React.useEffect(() => {
     if (visible) {
