@@ -96,11 +96,20 @@ export default RuleOptionsSheet = ({
         },
       },
       {
-        name: 'Wrap in repeat',
+        name: 'Repeat N times',
         icon: 'repeat-once',
         shouldDisplay: () => true,
         action: () => {
           actions.wrapInRepeat();
+          onClose();
+        },
+      },
+      {
+        name: 'Repeat every N seconds',
+        icon: 'clock-outline',
+        shouldDisplay: () => true,
+        action: () => {
+          actions.wrapInInfiniteRepeat();
           onClose();
         },
       },

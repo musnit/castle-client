@@ -94,6 +94,17 @@ const wrapInRepeat = (response) => {
   };
 };
 
+const wrapInInfiniteRepeat = (response) => {
+  return {
+    name: 'infinite repeat',
+    behaviorId: RULES_BEHAVIOR_ID,
+    params: {
+      interval: 1,
+      body: { ...response },
+    },
+  };
+};
+
 const replace = (response, newResponse) => {
   return {
     ...newResponse,
@@ -114,5 +125,6 @@ export const makeResponseActions = (response, onChangeResponse) => {
     insertBefore: (newResponse) => onChangeResponse(insertBefore(response, newResponse)),
     wrapInCondition: () => onChangeResponse(wrapInCondition(response)),
     wrapInRepeat: () => onChangeResponse(wrapInRepeat(response)),
+    wrapInInfiniteRepeat: () => onChangeResponse(wrapInInfiniteRepeat(response)),
   };
 };
