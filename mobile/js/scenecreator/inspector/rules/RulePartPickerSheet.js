@@ -46,6 +46,7 @@ export default RulePartPickerSheet = ({
   onSelectEntry,
   title,
   categoryOrder = null,
+  parentType,
 }) => {
   const onPressAdd = (entry) => {
     onSelectEntry(entry);
@@ -57,7 +58,8 @@ export default RulePartPickerSheet = ({
   const isEntryVisible = (entry) => {
     return (
       (!behaviors || behaviors[entry.behaviorName]?.isActive) &&
-      (!entry.triggerFilter || entry.triggerFilter[triggerFilter])
+      (!entry.triggerFilter || entry.triggerFilter[triggerFilter]) &&
+      (!entry.parentTypeFilter || entry.parentTypeFilter[parentType])
     );
   };
 

@@ -120,6 +120,38 @@ const Repeat = ({ response }) => {
   ];
 };
 
+const InfiniteRepeat = ({ response }) => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Repeat',
+    },
+    {
+      type: 'text',
+      label: 'every',
+    },
+    {
+      type: 'selectParamSheet',
+      paramName: 'interval',
+      paramValue: response.params?.interval,
+      label: response.params?.interval ?? 0,
+    },
+    {
+      type: 'text',
+      label: response.params?.interval === 1 ? 'second' : 'seconds',
+    },
+  ];
+};
+
+const StopRepeating = () => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Stop repeating',
+    },
+  ];
+};
+
 const Wait = ({ response }) => {
   return [
     {
@@ -688,6 +720,8 @@ export const Responses = {
   ['act on other']: ActOnOther,
   if: If,
   repeat: Repeat,
+  ['infinite repeat']: InfiniteRepeat,
+  ['stop repeating']: StopRepeating,
   wait: Wait,
   ['coin flip']: CoinFlip,
   ['is colliding']: IsColliding,

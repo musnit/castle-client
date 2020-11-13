@@ -228,7 +228,12 @@ const Repeat = ({ response, onChangeResponse, children, order, ...props }) => {
     <React.Fragment>
       <View style={styles.responseCells}>{children}</View>
       <View style={SceneCreatorConstants.styles.insetContainer}>
-        <Response response={response.params.body} onChangeResponse={onChangeBody} {...props} />
+        <Response
+          parentType={'repeat'}
+          response={response.params.body}
+          onChangeResponse={onChangeBody}
+          {...props}
+        />
       </View>
     </React.Fragment>
   );
@@ -264,6 +269,7 @@ const ActOn = ({ response, onChangeResponse, children, order, ...props }) => {
 const RESPONSE_COMPONENTS = {
   if: If,
   repeat: Repeat,
+  ['infinite repeat']: Repeat,
   ['act on other']: ActOn,
   ['act on']: ActOn,
   ['set behavior property']: BehaviorPropertyRule,
@@ -287,12 +293,21 @@ const makeResponseCells = (props) => {
 };
 
 const Response = ({ response, onChangeResponse, order = 0, ...props }) => {
-  const { context, addChildSheet, behaviors, responses, conditions, triggerFilter } = props;
+  const {
+    context,
+    addChildSheet,
+    behaviors,
+    responses,
+    conditions,
+    triggerFilter,
+    parentType,
+  } = props;
   const entry = getEntryByName(response?.name, responses);
 
   const onShowResponsePicker = React.useCallback(
     (handler) =>
       addChildSheet({
+        parentType,
         key: 'rulePartPicker',
         Component: RulePartPickerSheet,
         behaviors: props.useAllBehaviors ? null : behaviors,
@@ -302,7 +317,7 @@ const Response = ({ response, onChangeResponse, order = 0, ...props }) => {
         title: 'Select response',
         categoryOrder: RESPONSE_CATEGORY_ORDER,
       }),
-    [addChildSheet, behaviors, response, responses, triggerFilter]
+    [addChildSheet, behaviors, response, responses, triggerFilter, parentType]
   );
 
   const onChangeParams = React.useCallback(
