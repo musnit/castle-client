@@ -51,7 +51,7 @@ public class CastleBottomSheet extends LinearLayout {
     private Integer screenHeight = null;
     private Integer textInputHeight = null;
 
-    private int lastScrollY = 0;
+    private Integer lastScrollY = null;
 
     public CastleBottomSheet(Context context, Activity activity) {
         super(context);
@@ -164,10 +164,13 @@ public class CastleBottomSheet extends LinearLayout {
         if (scrollView != null) {
             updateRNScrollViewPadding(0);
 
-            // have to wait until padding is updated
-            ViewUtils.runOnUiThreadDelay(() -> {
-                scrollView.scrollTo(0, lastScrollY);
-            }, 300);
+            if (lastScrollY != null) {
+                // have to wait until padding is updated
+                ViewUtils.runOnUiThreadDelay(() -> {
+                    scrollView.scrollTo(0, lastScrollY);
+                    lastScrollY = null;
+                }, 300);
+            }
         }
 
         snapToPosition();
