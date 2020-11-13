@@ -1,3 +1,6 @@
+// TODO: stop hardcoding behavior id
+const RULES_BEHAVIOR_ID = 16;
+
 // delete myself
 const removeResponse = (response) => {
   if (response.params?.then) {
@@ -70,13 +73,23 @@ const insertBefore = (response, newResponse) => {
 };
 
 // wrap in condition: change myself into 'if' and change params.then to myself
-// TODO: stop hardcoding behavior id
 const wrapInCondition = (response) => {
   return {
     name: 'if',
-    behaviorId: 16,
+    behaviorId: RULES_BEHAVIOR_ID,
     params: {
       then: { ...response },
+    },
+  };
+};
+
+const wrapInRepeat = (response) => {
+  return {
+    name: 'repeat',
+    behaviorId: RULES_BEHAVIOR_ID,
+    params: {
+      count: 1,
+      body: { ...response },
     },
   };
 };
@@ -100,5 +113,6 @@ export const makeResponseActions = (response, onChangeResponse) => {
     replace: (newResponse) => onChangeResponse(replace(response, newResponse)),
     insertBefore: (newResponse) => onChangeResponse(insertBefore(response, newResponse)),
     wrapInCondition: () => onChangeResponse(wrapInCondition(response)),
+    wrapInRepeat: () => onChangeResponse(wrapInRepeat(response)),
   };
 };

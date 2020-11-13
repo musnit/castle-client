@@ -96,6 +96,15 @@ export default RuleOptionsSheet = ({
         },
       },
       {
+        name: 'Wrap in repeat',
+        icon: 'repeat-once',
+        shouldDisplay: () => true,
+        action: () => {
+          actions.wrapInRepeat();
+          onClose();
+        },
+      },
+      {
         name: 'Replace',
         icon: 'swap-horizontal',
         shouldDisplay: () => true,
