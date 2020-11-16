@@ -2,6 +2,7 @@ import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { InspectorCheckbox } from './InspectorCheckbox';
 import { InspectorDropdown } from './InspectorDropdown';
+import { InspectorExpressionInput } from './InspectorExpressionInput';
 import { InspectorNumberInput } from './InspectorNumberInput';
 import { InspectorTagPicker } from './InspectorTagPicker';
 import { InspectorTextInput } from './InspectorTextInput';
@@ -18,12 +19,27 @@ const styles = StyleSheet.create({
   },
 });
 
-export const RuleParamInputRow = ({ label, paramSpec, value, setValue, style, ...props }) => {
+export const RuleParamInputRow = ({
+  label,
+  paramSpec,
+  value,
+  setValue,
+  onConfigureExpression,
+  style,
+  ...props
+}) => {
   let input;
   switch (paramSpec.method) {
     case 'numberInput':
+      // TODO: non-numeric expressions
       input = (
-        <InspectorNumberInput value={value} onChange={setValue} {...paramSpec.props} {...props} />
+        <InspectorExpressionInput
+          value={value}
+          onChange={setValue}
+          onConfigureExpression={onConfigureExpression}
+          {...paramSpec.props}
+          {...props}
+        />
       );
       break;
     case 'tagPicker':

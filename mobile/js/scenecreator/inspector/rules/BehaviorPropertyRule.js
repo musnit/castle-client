@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { ConfigureExpressionSheet } from '../components/ConfigureExpressionSheet';
 import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import { RuleParamInputRow } from '../components/RuleParamInputRow';
 import { useCardCreator } from '../../CreateCardContext';
@@ -20,7 +21,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const BehaviorPropertyRule = ({ response, onChangeResponse, children }) => {
+export const BehaviorPropertyRule = ({ response, onChangeResponse, addChildSheet, children }) => {
   const { behaviors, behaviorActions } = useCardCreator();
   const [lastNativeUpdate, setLastNativeUpdate] = React.useState(0);
   React.useEffect(() => setLastNativeUpdate(lastNativeUpdate + 1), [response?.params?.value]);
@@ -74,6 +75,16 @@ export const BehaviorPropertyRule = ({ response, onChangeResponse, children }) =
     };
   }
 
+  const onConfigureExpression = () => {
+    addChildSheet({
+      key: 'configureExpression',
+      Component: ConfigureExpressionSheet,
+      paramSpec: propertySpec,
+      value: response.params.value,
+      onChange,
+    });
+  };
+
   const isRelativeProperty = propertySpec.method === 'numberInput';
 
   return (
@@ -85,6 +96,7 @@ export const BehaviorPropertyRule = ({ response, onChangeResponse, children }) =
           paramSpec={propertySpec}
           value={response.params.value}
           setValue={onChange}
+          onConfigureExpression={onConfigureExpression}
           style={{ padding: 12 }}
           lastNativeUpdate={lastNativeUpdate}
         />
