@@ -3,6 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
 import { InspectorExpressionInput } from './InspectorExpressionInput';
+import { promoteToExpression } from '../../SceneCreatorUtilities';
 import { useCardCreator } from '../../CreateCardContext';
 
 const styles = StyleSheet.create({
@@ -13,24 +14,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
-const promoteToExpression = (initialValue) => {
-  const initialType = typeof initialValue;
-  switch (initialType) {
-    case 'object':
-      return initialValue;
-    case 'number':
-    case 'boolean':
-      // promote from primitive to object
-      return {
-        expressionType: 'number',
-        returnType: 'number',
-        params: { value: initialValue },
-      };
-    default:
-      throw new Error(`Invalid expression: ${JSON.stringify(initialValue)}`);
-  }
-};
 
 export const ConfigureExpressionSheet = ({
   paramSpec,

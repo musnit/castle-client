@@ -2,6 +2,7 @@ import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { InspectorDropdown } from './InspectorDropdown';
 import { ParamInput } from './ParamInput';
+import { promoteToExpression } from '../../SceneCreatorUtilities';
 
 import * as Constants from '../../../Constants';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
@@ -57,7 +58,10 @@ export const InspectorExpressionInput = ({ context, expressions, value, onChange
       })
     );
 
-  const onChangeParam = (name, paramValue) =>
+  const onChangeParam = (name, paramValue) => {
+    if (typeof value !== 'object') {
+      value = promoteToExpression(value);
+    }
     onChange({
       ...value,
       params: {
@@ -65,6 +69,7 @@ export const InspectorExpressionInput = ({ context, expressions, value, onChange
         [name]: paramValue,
       },
     });
+  };
 
   return (
     <React.Fragment>
@@ -79,16 +84,16 @@ export const InspectorExpressionInput = ({ context, expressions, value, onChange
       </View>
       <View style={styles.inset}>
         {Object.entries(expressionParamSpecs).map(([name, spec]) => (
-          <React.Fragment>
+          <React.Fragment key={`expression-param-${name}`}>
             <Text key={`expression-name-${name}`} style={styles.paramName}>
               {spec.label}
             </Text>
             <ParamInput
-              key={`expression-param-${name}`}
               name={name}
               paramSpec={spec}
-              value={value.params[name]}
+              value={value.params ? value.params[name] : value}
               setValue={(paramValue) => onChangeParam(name, paramValue)}
+              expressions={expressions}
               context={context}
               ExpressionInputComponent={InspectorExpressionInput}
             />

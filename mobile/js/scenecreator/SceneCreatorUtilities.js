@@ -108,3 +108,21 @@ export const getInspectorActions = (root) => {
   }
   return { inspectorActions, sendInspectorAction, applicableTools };
 };
+
+export const promoteToExpression = (initialValue) => {
+  const initialType = typeof initialValue;
+  switch (initialType) {
+    case 'object':
+      return initialValue;
+    case 'number':
+    case 'boolean':
+      // promote from primitive to object
+      return {
+        expressionType: 'number',
+        returnType: 'number',
+        params: { value: initialValue },
+      };
+    default:
+      throw new Error(`Invalid expression: ${JSON.stringify(initialValue)}`);
+  }
+};
