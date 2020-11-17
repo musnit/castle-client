@@ -1,12 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { InspectorCheckbox } from './InspectorCheckbox';
-import { InspectorDropdown } from './InspectorDropdown';
-import { InspectorInlineExpressionInput } from './InspectorInlineExpressionInput';
-import { InspectorNumberInput } from './InspectorNumberInput';
-import { InspectorTagPicker } from './InspectorTagPicker';
-import { InspectorTextInput } from './InspectorTextInput';
-import { InspectorVariablePicker } from './InspectorVariablePicker';
+import { ParamInput } from './ParamInput';
 
 const styles = StyleSheet.create({
   inputContainer: {
@@ -19,85 +13,15 @@ const styles = StyleSheet.create({
   },
 });
 
-export const RuleParamInputRow = ({
-  label,
-  paramSpec,
-  value,
-  setValue,
-  onConfigureExpression,
-  style,
-  ...props
-}) => {
-  let input;
-  switch (paramSpec.method) {
-    case 'numberInput':
-      if (paramSpec.expression === false) {
-        // expressions forbidden by paramSpec, only allow primitive number
-        input = (
-          <InspectorNumberInput value={value} onChange={setValue} {...paramSpec.props} {...props} />
-        );
-      } else {
-        // TODO: more expressions besides numeric
-        input = (
-          <InspectorInlineExpressionInput
-            value={value}
-            onChange={setValue}
-            onConfigureExpression={onConfigureExpression}
-            {...paramSpec.props}
-            {...props}
-          />
-        );
-      }
-      break;
-    case 'tagPicker':
-      input = (
-        <InspectorTagPicker value={value} onChange={setValue} {...paramSpec.props} {...props} />
-      );
-      break;
-    case 'toggle':
-      input = (
-        <InspectorCheckbox value={value} onChange={setValue} {...paramSpec.props} {...props} />
-      );
-      break;
-    case 'textInput':
-    case 'textArea':
-      input = (
-        <InspectorTextInput
-          optimistic
-          value={value}
-          onChangeText={setValue}
-          multiline={paramSpec.method === 'textArea'}
-          {...paramSpec.props}
-          {...props}
-        />
-      );
-      break;
-    case 'dropdown':
-      if (paramSpec.props?.showVariablesItems) {
-        input = (
-          <InspectorVariablePicker
-            value={value}
-            onChange={setValue}
-            {...paramSpec.props}
-            {...props}
-          />
-        );
-      } else {
-        input = (
-          <InspectorDropdown value={value} onChange={setValue} {...paramSpec.props} {...props} />
-        );
-      }
-      break;
-    default:
-      throw new Error(`Input type ${paramSpec.method} is not supported in RuleParamInputRow`);
-  }
-
+export const RuleParamInputRow = ({ label, paramSpec, style, ...props }) => {
   return (
     <View style={[styles.inputContainer, style]}>
       <View style={{ width: '50%' }}>
         <Text style={styles.inputLabel}>{paramSpec?.label ?? label}</Text>
       </View>
-      <View style={{ width: '50%' }}>{input}</View>
+      <View style={{ width: '50%' }}>
+        <ParamInput paramSpec={paramSpec} {...props} />
+      </View>
     </View>
   );
 };

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { InspectorDropdown } from './InspectorDropdown';
-import { InspectorNumberInput } from './InspectorNumberInput';
+import { ParamInput } from './ParamInput';
 
 import * as Constants from '../../../Constants';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
@@ -40,21 +40,8 @@ const makeEmptyExpression = ({ expressions, expressionType }) => {
   return result;
 };
 
-const ExpressionParam = ({ name, paramSpec, value, onChange }) => {
-  if (paramSpec.expression === false) {
-    // leaf, disallow nested expression
-    switch (paramSpec.method) {
-      case 'numberInput':
-        return <InspectorNumberInput value={value} onChange={onChange} />;
-      default:
-        throw new Error(`Unsupported leaf expression type: ${paramSpec.method}`);
-    }
-  }
-  return null;
-};
-
 // TODO: use returnType to filter available expression types
-export const InspectorExpressionInput = ({ expressions, value, onChange }) => {
+export const InspectorExpressionInput = ({ context, expressions, value, onChange }) => {
   const expressionTypes = Object.keys(expressions);
   const expressionType =
     value.expressionType && expressions[value.expressionType]
@@ -94,14 +81,16 @@ export const InspectorExpressionInput = ({ expressions, value, onChange }) => {
         {Object.entries(expressionParamSpecs).map(([name, spec]) => (
           <React.Fragment>
             <Text key={`expression-name-${name}`} style={styles.paramName}>
-              {spec.description}
+              {spec.label}
             </Text>
-            <ExpressionParam
+            <ParamInput
               key={`expression-param-${name}`}
               name={name}
               paramSpec={spec}
               value={value.params[name]}
-              onChange={(paramValue) => onChangeParam(name, paramValue)}
+              setValue={(paramValue) => onChangeParam(name, paramValue)}
+              context={context}
+              ExpressionInputComponent={InspectorExpressionInput}
             />
           </React.Fragment>
         ))}

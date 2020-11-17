@@ -22,6 +22,10 @@ const styles = StyleSheet.create({
   },
 });
 
+/**
+ *  A compact expression editor which only allows editing primitive numbers, otherwise
+ *  shows a summary and a button to open a richer expression editor.
+ */
 export const InspectorInlineExpressionInput = ({
   value,
   onChange,
@@ -49,6 +53,13 @@ export const InspectorInlineExpressionInput = ({
         Random from {value.params.min} to {value.params.max}
       </Text>
     );
+  } else if (value.expressionType === 'variable') {
+    // preview
+    let variableLabel;
+    if (props.context?.variables) {
+      variableLabel = props.context.variables.find((v) => v.id === value.params.variableId).name;
+    }
+    input = <Text>${variableLabel}</Text>;
   }
   return (
     <View style={styles.container}>

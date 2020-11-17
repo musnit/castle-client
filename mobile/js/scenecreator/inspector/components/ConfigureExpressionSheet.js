@@ -39,12 +39,17 @@ export const ConfigureExpressionSheet = ({
   isOpen,
   onClose,
 }) => {
-  const { expressions } = useCardCreator();
+  const createCardContext = useCardCreator();
   const [value, setValue] = React.useState(promoteToExpression(initialValue));
 
   const renderContent = () => (
     <View style={styles.container}>
-      <InspectorExpressionInput expressions={expressions} value={value} onChange={setValue} />
+      <InspectorExpressionInput
+        context={createCardContext}
+        expressions={createCardContext.expressions}
+        value={value}
+        onChange={setValue}
+      />
     </View>
   );
 

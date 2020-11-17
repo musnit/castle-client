@@ -22,7 +22,8 @@ const styles = StyleSheet.create({
 });
 
 export const BehaviorPropertyRule = ({ response, onChangeResponse, addChildSheet, children }) => {
-  const { behaviors, behaviorActions } = useCardCreator();
+  const context = useCardCreator();
+  const { behaviors, behaviorActions } = context;
   const [lastNativeUpdate, setLastNativeUpdate] = React.useState(0);
   React.useEffect(() => setLastNativeUpdate(lastNativeUpdate + 1), [response?.params?.value]);
 
@@ -96,6 +97,7 @@ export const BehaviorPropertyRule = ({ response, onChangeResponse, addChildSheet
           paramSpec={propertySpec}
           value={response.params.value}
           setValue={onChange}
+          context={context}
           onConfigureExpression={onConfigureExpression}
           style={{ padding: 12 }}
           lastNativeUpdate={lastNativeUpdate}
