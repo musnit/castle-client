@@ -93,6 +93,17 @@ const getLibraryEntries = (root) => {
   return blueprintsData?.library;
 };
 
+const getExpressions = (root) => {
+  const element = root?.panes ? root.panes['sceneCreatorExpressions'] : null;
+  if (!element) return null;
+
+  let expressions;
+  if (element.children.count) {
+    expressions = element.children.data?.props?.data?.expressions;
+  }
+  return expressions;
+};
+
 export const CreateCardScreen = ({
   card,
   deck,
@@ -283,6 +294,7 @@ export const CreateCardScreen = ({
     behaviors,
     behaviorActions,
     library: getLibraryEntries(root),
+    expressions: getExpressions(root),
     transformAssetUri,
     onSelectBackupData,
     isShowingTextActors,
