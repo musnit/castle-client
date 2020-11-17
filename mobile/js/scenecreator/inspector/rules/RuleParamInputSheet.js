@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
+import { ConfigureExpressionSheet } from '../components/ConfigureExpressionSheet';
 import { RuleParamInputRow } from '../components/RuleParamInputRow';
 import { useCardCreator } from '../../CreateCardContext';
 
@@ -38,6 +39,7 @@ export default RuleParamInputSheet = ({
   initialValues,
   isOpen,
   onClose,
+  addChildSheet,
 }) => {
   const context = useCardCreator();
   const findParamSpec = (paramName) => {
@@ -61,22 +63,40 @@ export default RuleParamInputSheet = ({
     }, {})
   );
 
+  const onConfigureExpression = ({ paramSpec, value, onChange }) => {
+    addChildSheet({
+      key: 'configureExpression',
+      Component: ConfigureExpressionSheet,
+      paramSpec,
+      value,
+      onChange,
+    });
+  };
+
   const renderContent = () => (
     <View style={styles.container}>
       <View style={styles.description}>
         <Text style={styles.descriptionText}>{entry.description}</Text>
       </View>
-      {paramNames.map((paramName, ii) => (
-        <View key={`param-${ii}`} style={styles.inputs}>
-          <RuleParamInputRow
-            label={paramName}
-            context={context}
-            paramSpec={findParamSpec(paramName)}
-            value={values[paramName]}
-            setValue={(value) => changeValues({ paramName, value })}
-          />
-        </View>
-      ))}
+      {paramNames.map((paramName, ii) => {
+        const paramSpec = findParamSpec(paramName);
+        const value = values[paramName];
+        const setValue = (value) => changeValues({ paramName, value });
+        return (
+          <View key={`param-${ii}`} style={styles.inputs}>
+            <RuleParamInputRow
+              label={paramName}
+              context={context}
+              paramSpec={paramSpec}
+              value={value}
+              setValue={setValue}
+              onConfigureExpression={() =>
+                onConfigureExpression({ paramSpec, value, onChange: setValue })
+              }
+            />
+          </View>
+        );
+      })}
     </View>
   );
 

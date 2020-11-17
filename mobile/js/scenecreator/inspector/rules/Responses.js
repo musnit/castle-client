@@ -1,4 +1,8 @@
-import { getVariableName, readableOperator } from '../../SceneCreatorUtilities';
+import {
+  getVariableName,
+  makeExpressionSummary,
+  readableOperator,
+} from '../../SceneCreatorUtilities';
 import { makeCardPreviewTitle } from '../../../common/utilities';
 
 const Empty = ({ order, isCondition }) => {
@@ -646,7 +650,7 @@ const RemoveTag = ({ response }) => {
   ];
 };
 
-const MoveTowardOwnAngle = ({ response }) => {
+const MoveTowardOwnAngle = ({ response, context }) => {
   return [
     {
       type: 'showEntryOptions',
@@ -658,14 +662,14 @@ const MoveTowardOwnAngle = ({ response }) => {
     },
     {
       type: 'selectParamSheet',
-      label: response.params?.speed ?? 0,
+      label: makeExpressionSummary(response.params?.speed ?? 0, context),
       paramName: 'speed',
       paramValue: response.params?.speed,
     },
   ];
 };
 
-const MoveTowardActor = ({ response }) => {
+const MoveTowardActor = ({ response, context }) => {
   const hasTag = response.params?.tag && response.params?.tag.length;
   return [
     {
@@ -688,7 +692,7 @@ const MoveTowardActor = ({ response }) => {
     },
     {
       type: 'selectParamSheet',
-      label: response.params?.speed ?? 0,
+      label: makeExpressionSummary(response.params?.speed ?? 0, context),
       paramName: 'speed',
       paramValue: response.params?.speed,
     },

@@ -126,3 +126,29 @@ export const promoteToExpression = (initialValue) => {
       throw new Error(`Invalid expression: ${JSON.stringify(initialValue)}`);
   }
 };
+
+export const makeExpressionSummary = (expression, context) => {
+  if (!expression?.expressionType) {
+    return expression;
+  }
+  switch (expression.expressionType) {
+    case 'number':
+      return expression.params.value;
+    case 'random': {
+      let min = makeExpressionSummary(expression.params.min, context),
+        max = makeExpressionSummary(expression.params.max, context);
+      return `Random from ${min} to ${max}`;
+    }
+    case 'variable': {
+      let variableLabel;
+      if (context?.variables) {
+        variableLabel = context.variables.find((v) => v.id === expression.params.variableId).name;
+      }
+      if (!variableLabel) {
+        variableLabel = expression.params.variableId;
+      }
+      return `\$${variableLabel}`;
+    }
+  }
+  return null;
+};
