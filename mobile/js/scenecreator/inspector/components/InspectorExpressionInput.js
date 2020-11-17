@@ -17,14 +17,21 @@ const styles = StyleSheet.create({
     // borderBottomColor: Constants.colors.grayOnWhiteBorder,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingBottom: 8,
+    marginTop: 8,
   },
   paramName: {
     fontSize: 16,
     marginVertical: 8,
   },
   inset: {
-    paddingLeft: 16,
+    marginTop: 12,
+  },
+  paramLabel: {
+    fontSize: 14,
+    marginVertical: 4,
+  },
+  inputRow: {
+    marginTop: 8,
   },
 });
 
@@ -42,7 +49,7 @@ const makeEmptyExpression = ({ expressions, expressionType }) => {
 };
 
 // TODO: use returnType to filter available expression types
-export const InspectorExpressionInput = ({ context, expressions, value, onChange }) => {
+export const InspectorExpressionInput = ({ label, context, expressions, value, onChange }) => {
   const expressionTypes = Object.keys(expressions);
   const expressionType =
     value.expressionType && expressions[value.expressionType]
@@ -72,9 +79,9 @@ export const InspectorExpressionInput = ({ context, expressions, value, onChange
   };
 
   return (
-    <React.Fragment>
+    <View style={styles.container}>
       <View style={styles.expressionTypeRow}>
-        <Text style={styles.description}>Set to</Text>
+        <Text style={styles.description}>{label ?? 'Set to'}:</Text>
         <InspectorDropdown
           style={{ marginBottom: 0 }}
           value={expressionType}
@@ -82,13 +89,12 @@ export const InspectorExpressionInput = ({ context, expressions, value, onChange
           onChange={onChangeExpressionType}
         />
       </View>
-      <View style={styles.inset}>
+      <View style={[SceneCreatorConstants.styles.insetContainer, styles.inset]}>
         {Object.entries(expressionParamSpecs).map(([name, spec]) => (
-          <React.Fragment key={`expression-param-${name}`}>
-            <Text key={`expression-name-${name}`} style={styles.paramName}>
-              {spec.label}
-            </Text>
+          <View style={styles.inputRow}>
             <ParamInput
+              key={`expression-param-${name}`}
+              label={spec.label}
               name={name}
               paramSpec={spec}
               value={value.params ? value.params[name] : value}
@@ -97,9 +103,12 @@ export const InspectorExpressionInput = ({ context, expressions, value, onChange
               context={context}
               ExpressionInputComponent={InspectorExpressionInput}
             />
-          </React.Fragment>
+            {spec.method !== 'numberInput' || spec.expression === false ? (
+              <Text style={styles.paramLabel}>{spec.label}</Text>
+            ) : null}
+          </View>
         ))}
       </View>
-    </React.Fragment>
+    </View>
   );
 };

@@ -93,7 +93,7 @@ export const InspectorNumberInput = ({ value, lastNativeUpdate, onChange, ...pro
   // keyboard: numbers-and-punctuation is needed on iOS because the other options lack
   // a minus sign
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, props.style]}>
       <InspectorTextInput
         style={styles.input}
         value={text}

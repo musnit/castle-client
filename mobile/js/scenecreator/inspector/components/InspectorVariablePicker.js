@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const InspectorVariablePicker = ({ value, label, onChange, style, context, ...props }) => {
+export const InspectorVariablePicker = ({ value, onChange, style, context, ...props }) => {
   const items = context.variables || [];
   const { onVariablesChange } = context;
 
@@ -76,7 +76,6 @@ export const InspectorVariablePicker = ({ value, label, onChange, style, context
 
   return (
     <View style={[styles.container, style]} {...props}>
-      <Text style={styles.label}>{label}</Text>
       <PopoverButton
         style={styles.box}
         activeStyle={[styles.box, styles.activeBox]}
