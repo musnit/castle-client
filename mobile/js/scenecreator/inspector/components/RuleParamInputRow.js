@@ -2,7 +2,7 @@ import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { InspectorCheckbox } from './InspectorCheckbox';
 import { InspectorDropdown } from './InspectorDropdown';
-import { InspectorExpressionInput } from './InspectorExpressionInput';
+import { InspectorInlineExpressionInput } from './InspectorInlineExpressionInput';
 import { InspectorNumberInput } from './InspectorNumberInput';
 import { InspectorTagPicker } from './InspectorTagPicker';
 import { InspectorTextInput } from './InspectorTextInput';
@@ -31,16 +31,23 @@ export const RuleParamInputRow = ({
   let input;
   switch (paramSpec.method) {
     case 'numberInput':
-      // TODO: non-numeric expressions
-      input = (
-        <InspectorExpressionInput
-          value={value}
-          onChange={setValue}
-          onConfigureExpression={onConfigureExpression}
-          {...paramSpec.props}
-          {...props}
-        />
-      );
+      if (paramSpec.expression === false) {
+        // expressions forbidden by paramSpec, only allow primitive number
+        input = (
+          <InspectorNumberInput value={value} onChange={setValue} {...paramSpec.props} {...props} />
+        );
+      } else {
+        // TODO: more expressions besides numeric
+        input = (
+          <InspectorInlineExpressionInput
+            value={value}
+            onChange={setValue}
+            onConfigureExpression={onConfigureExpression}
+            {...paramSpec.props}
+            {...props}
+          />
+        );
+      }
       break;
     case 'tagPicker':
       input = (
