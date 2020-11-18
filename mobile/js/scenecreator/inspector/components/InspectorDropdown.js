@@ -122,7 +122,12 @@ export const DropdownItemsList = ({
 };
 
 export const InspectorDropdown = ({ value, onChange, style, ...props }) => {
-  const items = objectToArray(props?.items ?? []).map((item) => ({ id: item, name: item }));
+  let items;
+  if (props?.items) {
+    items = objectToArray(props.items ?? []).map((item) => ({ id: item, name: item }));
+  } else if (props?.labeledItems) {
+    items = props.labeledItems;
+  }
   let selectedItem;
   if (value && value !== 'none') {
     selectedItem = items.find((item) => item.id === value);

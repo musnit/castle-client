@@ -50,11 +50,12 @@ const makeEmptyExpression = ({ expressions, expressionType }) => {
 
 // TODO: use returnType to filter available expression types
 export const InspectorExpressionInput = ({ label, context, expressions, value, onChange }) => {
-  const expressionTypes = Object.keys(expressions);
+  const expressionTypes = Object.entries(expressions).map(([type, e]) => ({
+    id: type,
+    name: e.description,
+  }));
   const expressionType =
-    value.expressionType && expressions[value.expressionType]
-      ? value.expressionType
-      : expressionTypes[0];
+    value.expressionType && expressions[value.expressionType] ? value.expressionType : 'number';
   const expressionParamSpecs = expressions[expressionType].paramSpecs;
 
   const onChangeExpressionType = React.useCallback(
@@ -96,7 +97,7 @@ export const InspectorExpressionInput = ({ label, context, expressions, value, o
         <InspectorDropdown
           style={{ marginBottom: 0 }}
           value={expressionType}
-          items={expressionTypes}
+          labeledItems={expressionTypes}
           onChange={onChangeExpressionType}
         />
       </View>
