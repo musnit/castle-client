@@ -102,7 +102,8 @@ export const InspectorExpressionInput = ({ label, context, expressions, value, o
               context={context}
               ExpressionInputComponent={InspectorExpressionInput}
             />
-            {spec.method !== 'numberInput' || spec.expression === false ? (
+            {spec.method !== 'toggle' &&
+            (spec.method !== 'numberInput' || spec.expression === false) ? (
               <Text style={styles.paramLabel}>{spec.label}</Text>
             ) : null}
           </View>
