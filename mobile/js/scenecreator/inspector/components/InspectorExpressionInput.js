@@ -91,9 +91,8 @@ export const InspectorExpressionInput = ({ label, context, expressions, value, o
       </View>
       <View style={[SceneCreatorConstants.styles.insetContainer, styles.inset]}>
         {Object.entries(expressionParamSpecs).map(([name, spec]) => (
-          <View style={styles.inputRow}>
+          <View style={styles.inputRow} key={`expression-param-${name}`}>
             <ParamInput
-              key={`expression-param-${name}`}
               label={spec.label}
               name={name}
               paramSpec={spec}

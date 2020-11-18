@@ -183,7 +183,7 @@ const Wait = ({ response, context }) => {
   ];
 };
 
-const CoinFlip = ({ response }) => {
+const CoinFlip = ({ response, context }) => {
   return [
     {
       type: 'selectEntry',
@@ -197,7 +197,7 @@ const CoinFlip = ({ response }) => {
       type: 'selectParamSheet',
       paramName: 'probability',
       paramValue: response.params.probability,
-      label: response.params.probability,
+      label: makeExpressionSummary(response.params.probability, context),
     },
   ];
 };
@@ -245,7 +245,7 @@ const VariableMeetsCondition = ({ response, context }) => {
       },
       {
         type: 'selectParamSheet',
-        label: response.params.value,
+        label: makeExpressionSummary(response.params.value, context),
         ...changeAllParams,
       },
     ];
@@ -264,7 +264,7 @@ const VariableMeetsCondition = ({ response, context }) => {
   }
 };
 
-const CounterMeetsCondition = ({ response }) => {
+const CounterMeetsCondition = ({ response, context }) => {
   return [
     {
       type: 'selectEntry',
@@ -280,7 +280,7 @@ const CounterMeetsCondition = ({ response }) => {
       type: 'selectParamSheet',
       paramName: 'value',
       paramValue: response.params?.value ?? 0,
-      label: response.params?.value ?? 0,
+      label: makeExpressionSummary(response.params?.value ?? 0, context),
     },
   ];
 };
