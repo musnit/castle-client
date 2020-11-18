@@ -78,7 +78,7 @@ export const BottomSheet = ({
   if (Platform.OS == 'android') {
     const [viewId] = React.useState(Math.floor(Math.random() * 1000000));
 
-    const [containerHeight, setContainerHeight] = React.useState(0);
+    const [containerHeight, setContainerHeight] = React.useState(screenHeight);
     const [scrollViewPadding, setScrollViewPadding] = React.useState(0);
     React.useEffect(() => {
       let subscription = DeviceEventEmitter.addListener('CastleBottomSheetEvent', (event) => {
@@ -102,6 +102,7 @@ export const BottomSheet = ({
 
     // onCloseEnd, onOpenEnds aren't implemented yet, but they're not used for anything other than
     // closing the keyboard which the native component already handles
+    // add 20 to padding to fix issue on Remy's phone
     return (
       <NativeBottomSheet
         style={styles.container}
@@ -117,7 +118,7 @@ export const BottomSheet = ({
           {renderHeader()}
           <ScrollView style={styles.content}>
             {renderContent()}
-            <View style={{ height: scrollViewPadding }} />
+            <View style={{ height: scrollViewPadding + 20 }} />
           </ScrollView>
         </View>
       </NativeBottomSheet>
