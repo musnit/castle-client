@@ -302,21 +302,30 @@ const Create = ({ response, context }) => {
       xOffset: response.params?.xOffset ?? 0,
       yOffset: response.params?.yOffset ?? 0,
     };
-    label = `x: ${response.params?.xOffset ?? 0}, y: ${response.params?.yOffset ?? 0}`;
+    label = `x: ${makeExpressionSummary(
+      response.params?.xOffset ?? 0,
+      context
+    )}, y: ${makeExpressionSummary(response.params?.yOffset ?? 0, context)}`;
   } else if (coordinateSystem === 'relative angle and distance') {
     paramNames = ['angle', 'distance'];
     paramValues = {
       angle: response.params?.angle ?? 0,
       distance: response.params?.distance ?? 0,
     };
-    label = `a: ${response.params?.angle ?? 0}, d: ${response.params?.distance ?? 0}`;
+    label = `a: ${makeExpressionSummary(
+      response.params?.angle ?? 0,
+      context
+    )}, d: ${makeExpressionSummary(response.params?.distance ?? 0, context)}`;
   } else {
     paramNames = ['xAbsolute', 'yAbsolute'];
     paramValues = {
       xAbsolute: response.params?.xAbsolute ?? 0,
       yAbsolute: response.params?.yAbsolute ?? 0,
     };
-    label = `x: ${response.params?.xAbsolute ?? 0}, y: ${response.params?.yAbsolute ?? 0}`;
+    label = `x: ${makeExpressionSummary(
+      response.params?.xAbsolute ?? 0,
+      context
+    )}, y: ${makeExpressionSummary(response.params?.yAbsolute ?? 0, context)}`;
   }
 
   return [
@@ -514,7 +523,7 @@ const SetVariable = ({ response, context }) => {
     },
     {
       type: 'selectParamSheet',
-      label: response.params?.setToValue ?? 0,
+      label: makeExpressionSummary(response.params?.setToValue ?? 0, context),
       ...changeAllParams,
     },
   ];
@@ -543,13 +552,13 @@ const ChangeVariable = ({ response, context }) => {
     },
     {
       type: 'selectParamSheet',
-      label: response.params?.changeBy ?? 0,
+      label: makeExpressionSummary(response.params?.changeBy ?? 0, context),
       ...changeAllParams,
     },
   ];
 };
 
-const SetCounter = ({ response }) => {
+const SetCounter = ({ response, context }) => {
   return [
     {
       type: 'showEntryOptions',
@@ -561,14 +570,14 @@ const SetCounter = ({ response }) => {
     },
     {
       type: 'selectParamSheet',
-      label: response.params?.setToValue ?? 0,
+      label: makeExpressionSummary(response.params?.setToValue ?? 0, context),
       paramName: 'setToValue',
       paramValue: response.params?.setToValue ?? 0,
     },
   ];
 };
 
-const ChangeCounter = ({ response }) => {
+const ChangeCounter = ({ response, context }) => {
   return [
     {
       type: 'showEntryOptions',
@@ -580,7 +589,7 @@ const ChangeCounter = ({ response }) => {
     },
     {
       type: 'selectParamSheet',
-      label: response.params?.changeBy ?? 0,
+      label: makeExpressionSummary(response.params?.changeBy ?? 0, context),
       paramName: 'changeBy',
       paramValue: response.params?.changeBy ?? 0,
     },
