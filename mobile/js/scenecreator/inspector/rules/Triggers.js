@@ -1,4 +1,8 @@
-import { getVariableName, readableOperator } from '../../SceneCreatorUtilities';
+import {
+  getVariableName,
+  makeExpressionSummary,
+  readableOperator,
+} from '../../SceneCreatorUtilities';
 
 const withWhen = (tokens) => {
   tokens.unshift({
@@ -158,7 +162,7 @@ const VariableReachesValue = ({ trigger, context }) => {
       },
       {
         type: 'selectParamSheet',
-        label: trigger.params.value,
+        label: makeExpressionSummary(trigger.params.value, context),
         ...changeAllParams,
       },
     ]);
@@ -192,7 +196,7 @@ const VariableChanges = ({ trigger, context }) => {
   ]);
 };
 
-const CounterReachesValue = ({ trigger }) => {
+const CounterReachesValue = ({ trigger, context }) => {
   return withWhen([
     {
       type: 'selectEntry',
@@ -208,7 +212,7 @@ const CounterReachesValue = ({ trigger }) => {
       type: 'selectParamSheet',
       paramName: 'value',
       paramValue: trigger.params?.value ?? 0,
-      label: trigger.params?.value ?? 0,
+      label: makeExpressionSummary(trigger.params?.value ?? 0, context),
     },
   ]);
 };
