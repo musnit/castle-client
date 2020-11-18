@@ -57,13 +57,16 @@ export const InspectorExpressionInput = ({ label, context, expressions, value, o
       : expressionTypes[0];
   const expressionParamSpecs = expressions[expressionType].paramSpecs;
 
-  const onChangeExpressionType = (expressionType) =>
-    onChange(
-      makeEmptyExpression({
-        expressions,
-        expressionType,
-      })
-    );
+  const onChangeExpressionType = React.useCallback(
+    (expressionType) =>
+      onChange(
+        makeEmptyExpression({
+          expressions,
+          expressionType,
+        })
+      ),
+    [onChange, expressions]
+  );
 
   const onChangeParam = (name, paramValue) => {
     if (typeof value !== 'object') {
@@ -78,6 +81,14 @@ export const InspectorExpressionInput = ({ label, context, expressions, value, o
     });
   };
 
+  const orderedParamSpecs = Object.entries(expressionParamSpecs).sort((a, b) => {
+    const [k1, spec1] = a;
+    const [k2, spec2] = b;
+    const order1 = spec1.order ?? 9999;
+    const order2 = spec2.order ?? 9999;
+    return order1 < order2 ? -1 : 1;
+  });
+
   return (
     <View style={styles.container}>
       <View style={styles.expressionTypeRow}>
@@ -90,7 +101,7 @@ export const InspectorExpressionInput = ({ label, context, expressions, value, o
         />
       </View>
       <View style={[SceneCreatorConstants.styles.insetContainer, styles.inset]}>
-        {Object.entries(expressionParamSpecs).map(([name, spec]) => (
+        {orderedParamSpecs.map(([name, spec]) => (
           <View style={styles.inputRow} key={`expression-param-${name}`}>
             <ParamInput
               label={spec.label}
