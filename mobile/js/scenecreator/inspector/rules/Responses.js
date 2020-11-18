@@ -105,7 +105,7 @@ const ActOn = ({ response }) => {
   }
 };
 
-const Repeat = ({ response }) => {
+const Repeat = ({ response, context }) => {
   return [
     {
       type: 'showEntryOptions',
@@ -115,7 +115,7 @@ const Repeat = ({ response }) => {
       type: 'selectParamSheet',
       paramName: 'count',
       paramValue: response.params?.count,
-      label: response.params?.count ?? 0,
+      label: makeExpressionSummary(response.params?.count ?? 0, context),
     },
     {
       type: 'text',
@@ -124,7 +124,7 @@ const Repeat = ({ response }) => {
   ];
 };
 
-const InfiniteRepeat = ({ response }) => {
+const InfiniteRepeat = ({ response, context }) => {
   return [
     {
       type: 'showEntryOptions',
@@ -138,7 +138,7 @@ const InfiniteRepeat = ({ response }) => {
       type: 'selectParamSheet',
       paramName: 'interval',
       paramValue: response.params?.interval,
-      label: response.params?.interval ?? 0,
+      label: makeExpressionSummary(response.params?.interval ?? 0, context),
     },
     {
       type: 'text',
@@ -156,7 +156,11 @@ const StopRepeating = () => {
   ];
 };
 
-const Wait = ({ response }) => {
+const Wait = ({ response, context }) => {
+  let singular =
+    response.params?.duration === 1 ||
+    (response.params?.duration?.expressionType === 'number' &&
+      response.params.duration.params.value === 1);
   return [
     {
       type: 'showEntryOptions',
@@ -170,11 +174,11 @@ const Wait = ({ response }) => {
       type: 'selectParamSheet',
       paramName: 'duration',
       paramValue: response.params?.duration,
-      label: response.params?.duration ?? 0,
+      label: makeExpressionSummary(response.params?.duration ?? 0, context),
     },
     {
       type: 'text',
-      label: response.params?.duration === 1 ? 'second' : 'seconds',
+      label: singular ? 'second' : 'seconds',
     },
   ];
 };
