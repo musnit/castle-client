@@ -192,6 +192,8 @@ public class CastleBottomSheet extends LinearLayout {
         initialized = true;
 
         updateSnapPoints();
+        position = screenHeight + ViewUtils.dpToPx(1);
+        snapToPosition();
         updateIsOpen();
 
         return false;
