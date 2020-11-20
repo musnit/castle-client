@@ -306,9 +306,9 @@ public class CastleBottomSheet extends LinearLayout {
     }
 
     private void animateToPosition() {
-        animate().y(position).setDuration(200).withEndAction(new Runnable() {
-            @Override
-            public void run() {
+        animate().y(position).setDuration(200).withEndAction(() -> {
+            // if it's closed we don't need to change the height
+            if (position < screenHeight) {
                 updateRNHeight(screenHeight - position);
             }
         }).start();
