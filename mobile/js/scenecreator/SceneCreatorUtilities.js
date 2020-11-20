@@ -149,6 +149,24 @@ export const makeExpressionSummary = (expression, context) => {
       }
       return `\$${variableLabel}`;
     }
+    case 'behavior property': {
+      const { behaviors } = context;
+      let selectedBehavior, selectedProperty;
+      if (expression.params?.behaviorId) {
+        const entry = Object.entries(context.behaviors).find(
+          ([_, b]) => b.behaviorId === expression.params.behaviorId
+        );
+        if (entry) {
+          selectedBehavior = entry[1];
+        }
+      }
+      if (selectedBehavior && expression.params?.propertyName) {
+        selectedProperty = selectedBehavior.propertySpecs[expression.params.propertyName];
+      }
+      if (selectedBehavior && selectedProperty) {
+        return `${selectedBehavior.displayName}: ${selectedProperty.label}`;
+      }
+    }
   }
   return null;
 };

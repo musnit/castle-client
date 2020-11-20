@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { BehaviorPropertyExpression } from './BehaviorPropertyExpression';
 import { InspectorDropdown } from '../components/InspectorDropdown';
 import { ParamInput } from '../components/ParamInput';
 import { promoteToExpression } from '../../SceneCreatorUtilities';
@@ -49,7 +50,14 @@ const makeEmptyExpression = ({ expressions, expressionType }) => {
 };
 
 // TODO: use returnType to filter available expression types
-export const InspectorExpressionInput = ({ label, context, expressions, value, onChange }) => {
+export const InspectorExpressionInput = ({
+  label,
+  context,
+  expressions,
+  value,
+  onChange,
+  showBehaviorPropertyPicker,
+}) => {
   const expressionTypes = Object.entries(expressions).map(([type, e]) => ({
     id: type,
     name: e.description,
@@ -102,24 +110,34 @@ export const InspectorExpressionInput = ({ label, context, expressions, value, o
         />
       </View>
       <View style={[SceneCreatorConstants.styles.insetContainer, styles.inset]}>
-        {orderedParamSpecs.map(([name, spec]) => (
-          <View style={styles.inputRow} key={`expression-param-${name}`}>
-            <ParamInput
-              label={spec.label}
-              name={name}
-              paramSpec={spec}
-              value={value.params ? value.params[name] : value}
-              setValue={(paramValue) => onChangeParam(name, paramValue)}
-              expressions={expressions}
-              context={context}
-              ExpressionInputComponent={InspectorExpressionInput}
-            />
-            {spec.method !== 'toggle' &&
-            (spec.method !== 'numberInput' || spec.expression === false) ? (
-              <Text style={styles.paramLabel}>{spec.label}</Text>
-            ) : null}
-          </View>
-        ))}
+        {expressionType === 'behavior property' ? (
+          <BehaviorPropertyExpression
+            paramSpecs={expressionParamSpecs}
+            value={value}
+            onChange={onChange}
+            context={context}
+            showBehaviorPropertyPicker={showBehaviorPropertyPicker}
+          />
+        ) : (
+          orderedParamSpecs.map(([name, spec]) => (
+            <View style={styles.inputRow} key={`expression-param-${name}`}>
+              <ParamInput
+                label={spec.label}
+                name={name}
+                paramSpec={spec}
+                value={value.params ? value.params[name] : value}
+                setValue={(paramValue) => onChangeParam(name, paramValue)}
+                expressions={expressions}
+                context={context}
+                ExpressionInputComponent={InspectorExpressionInput}
+              />
+              {spec.method !== 'toggle' &&
+              (spec.method !== 'numberInput' || spec.expression === false) ? (
+                <Text style={styles.paramLabel}>{spec.label}</Text>
+              ) : null}
+            </View>
+          ))
+        )}
       </View>
     </View>
   );
