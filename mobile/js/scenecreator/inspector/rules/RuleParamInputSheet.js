@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
-import { ConfigureExpressionSheet } from '../components/ConfigureExpressionSheet';
+import { ConfigureExpressionSheet } from '../expressions/ConfigureExpressionSheet';
 import { RuleParamInputRow } from '../components/RuleParamInputRow';
 import { useCardCreator } from '../../CreateCardContext';
 

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { InspectorNumberInput } from './InspectorNumberInput';
+import { InspectorNumberInput } from '../components/InspectorNumberInput';
 import { makeExpressionSummary } from '../../SceneCreatorUtilities';
 
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { InspectorCheckbox } from './InspectorCheckbox';
 import { InspectorDropdown } from './InspectorDropdown';
-import { InspectorInlineExpressionInput } from './InspectorInlineExpressionInput';
+import { InspectorInlineExpressionInput } from '../expressions/InspectorInlineExpressionInput';
 import { InspectorNumberInput } from './InspectorNumberInput';
 import { InspectorTagPicker } from './InspectorTagPicker';
 import { InspectorTextInput } from './InspectorTextInput';

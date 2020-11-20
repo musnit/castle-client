@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { ConfigureExpressionSheet } from '../components/ConfigureExpressionSheet';
+import { ConfigureExpressionSheet } from '../expressions/ConfigureExpressionSheet';
 import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import { RuleParamInputRow } from '../components/RuleParamInputRow';
 import { useCardCreator } from '../../CreateCardContext';

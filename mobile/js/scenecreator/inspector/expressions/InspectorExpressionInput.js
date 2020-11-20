@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { InspectorDropdown } from './InspectorDropdown';
-import { ParamInput } from './ParamInput';
+import { InspectorDropdown } from '../components/InspectorDropdown';
+import { ParamInput } from '../components/ParamInput';
 import { promoteToExpression } from '../../SceneCreatorUtilities';
 
 import * as Constants from '../../../Constants';
