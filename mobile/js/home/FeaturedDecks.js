@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { StatusBar, View, Text, Linking, StyleSheet } from 'react-native';
+import { StatusBar, View, Text, Linking, StyleSheet, Platform } from 'react-native';
 import { DecksGrid } from '../components/DecksGrid';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
@@ -11,64 +11,55 @@ import * as Constants from '../Constants';
 const REFETCH_FEED_INTERVAL_MS = 60 * 60 * 1000;
 
 const styles = StyleSheet.create({
-  promoContainer: {
-    padding: 24,
+  noticeContainer: {
+    paddingVertical: 24,
+    padding: 16,
     borderBottomWidth: 1,
-    borderColor: Constants.colors.grayOnBlackBorder,
-    alignItems: 'center',
+    borderBottomColor: Constants.colors.grayOnBlackBorder,
   },
-  promoText: {
+  noticeHeadline: {
+    fontSize: 20,
     color: '#fff',
+    fontWeight: '600',
+  },
+  noticeText: {
+    color: '#fff',
+    marginTop: 12,
     fontSize: 16,
-    marginTop: 16,
-    textAlign: 'center',
-  },
-  promoTitle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  promoDate: {
-    fontWeight: 'bold',
-    fontStyle: 'italic',
-    letterSpacing: 1,
+    lineHeight: 22,
   },
 });
 
-const isHalloweenPartyHappening = () => {
-  const endOfHalloweenParty = new Date('2020-10-25T23:59:00');
-  return new Date() < endOfHalloweenParty;
-};
+const AppUpdateNotice = () => {
+  const updateURL =
+    Platform.OS == 'ios'
+      ? 'https://testflight.apple.com/join/kqteP0IC'
+      : 'https://assets.castle.games/Castle.apk';
 
-const Halloween2020Promo = () => {
-  if (!isHalloweenPartyHappening()) {
+  if (true) {
     return null;
   }
   return (
-    <View style={styles.promoContainer}>
-      <View style={styles.promoTitle}>
-        <Text style={{ fontSize: 24 }}>🎃</Text>
-        <FastImage
-          style={{ height: 24, aspectRatio: 7.9, marginHorizontal: 12 }}
-          source={require('../../assets/images/Halloween2020Promo.png')}
-        />
-        <Text style={{ fontSize: 24 }}>🎃</Text>
-      </View>
-      <Text style={[styles.promoText, styles.promoDate]}>
-        <Text>THIS WEEK&nbsp;&nbsp;/&nbsp;&nbsp;WED&thinsp;–&thinsp;SUN</Text>
-      </Text>
-      <Text style={styles.promoText}>
-        hang&nbsp;out • make&nbsp;spooky&nbsp;art • get&nbsp;cool&nbsp;gifts
-      </Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 16 }}>
-        <View style={[Constants.styles.primaryButton, { marginRight: 16 }]}>
+    <View style={styles.noticeContainer}>
+      <View style={{ flexDirection: 'row' }}>
+        <View style={{ flexDirection: 'row', flexGrow: 1, alignItems: 'center' }}>
+          <FastImage
+            style={{ height: 28, aspectRatio: 1, marginRight: 12 }}
+            source={require('../../assets/images/emoji/wand-white.png')}
+          />
+          <Text style={styles.noticeHeadline}>New version available</Text>
+        </View>
+        <View style={Constants.styles.primaryButton}>
           <Text
             style={Constants.styles.primaryButtonLabel}
-            onPress={() => Linking.openURL('https://castle.xyz/halloween')}>
-            Read more
+            onPress={() => Linking.openURL(updateURL)}>
+            Update
           </Text>
         </View>
-        <Text style={{ color: '#fff' }}>~ IF YOU DARE ~</Text>
       </View>
+      <Text style={styles.noticeText}>
+        Update Castle when you have a moment, otherwise new decks won't work correctly!
+      </Text>
     </View>
   );
 };
@@ -115,7 +106,7 @@ export const FeaturedDecks = ({ focused }) => {
 
   return (
     <Fragment>
-      <Halloween2020Promo />
+      <AppUpdateNotice />
       <DecksGrid
         decks={decks}
         scrollViewRef={scrollViewRef}
