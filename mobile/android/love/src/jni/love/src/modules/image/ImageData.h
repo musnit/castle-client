@@ -141,8 +141,8 @@ private:
 	// Decode and load an encoded format.
 	void decode(Data *data);
 
-	bool floodFillTest(int x, int y, ImageData *paths, const Pixel &p);
-	bool floodFillTest2(int x, int y, ImageData *paths, uint8 * pixels);
+	int floodFillTest(int x, int y, ImageData *paths, const Pixel &p);
+	int floodFillTest2(int x, int y, ImageData *paths, uint8 * pixels);
 
 	// The actual data.
 	unsigned char *data = nullptr;

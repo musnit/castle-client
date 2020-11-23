@@ -381,21 +381,21 @@ bool ImageData::arePixelsEqual(const Pixel &p1, const Pixel &p2)
 		}
 }
 
-bool ImageData::floodFillTest(int x, int y, ImageData *paths, const Pixel &p)
+int ImageData::floodFillTest(int x, int y, ImageData *paths, const Pixel &p)
 {
 	Pixel floodP;
 	getPixel(x, y, floodP);
 	if (arePixelsEqual(floodP, p)) {
-		return false;
+		return 1;
 	}
 
 	Pixel pathP;
 	paths->getPixel(x, y, pathP);
 	if (paths->isAlphaSet(pathP)) {
-		return false;
+		return 2;
 	}
 
-	return true;
+	return 0;
 }
 
 int ImageData::floodFill(int x, int y, ImageData *paths, const Pixel &p)
@@ -419,7 +419,7 @@ int ImageData::floodFill(int x, int y, ImageData *paths, const Pixel &p)
 		flood_pixel_t currentPixel = pixelQueue.front();
 		pixelQueue.pop();
 
-		if (floodFillTest(currentPixel.x, currentPixel.y, paths, p)) {
+		if (floodFillTest(currentPixel.x, currentPixel.y, paths, p) == 0) {
 			unsigned char *pixeldata = data + ((currentPixel.y * width + currentPixel.x) * pixelsize);
 			count++;
 			memcpy(pixeldata, &p, pixelsize);
@@ -439,8 +439,15 @@ int ImageData::floodFill(int x, int y, ImageData *paths, const Pixel &p)
 						skip = true;
 					}
 
-					if (!skip && floodFillTest(newPixel.x, newPixel.y, paths, p)) {
-						pixelQueue.push(newPixel);
+					if (!skip) {
+						int testResult = floodFillTest(newPixel.x, newPixel.y, paths, p);
+						if (testResult == 0) {
+							pixelQueue.push(newPixel);
+						} else if (testResult == 2) {
+							unsigned char *pixeldata = data + ((newPixel.y * width + newPixel.x) * pixelsize);
+							count++;
+							memcpy(pixeldata, &p, pixelsize);
+						}
 					}
 				}
 			}
@@ -450,19 +457,19 @@ int ImageData::floodFill(int x, int y, ImageData *paths, const Pixel &p)
 	return count;
 }
 
-bool ImageData::floodFillTest2(int x, int y, ImageData *paths, uint8* pixels)
+int ImageData::floodFillTest2(int x, int y, ImageData *paths, uint8* pixels)
 {
 	if (pixels[y * width + x] != 0) {
-		return false;
+		return 1;
 	}
 
 	Pixel pathP;
 	paths->getPixel(x, y, pathP);
 	if (paths->isAlphaSet(pathP)) {
-		return false;
+		return 2;
 	}
 
-	return true;
+	return 0;
 }
 
 void ImageData::updateFloodFillForNewPaths(ImageData *paths)
@@ -492,7 +499,7 @@ void ImageData::updateFloodFillForNewPaths(ImageData *paths)
 					flood_pixel_t currentPixel = pixelQueue.front();
 					pixelQueue.pop();
 
-					if (floodFillTest2(currentPixel.x, currentPixel.y, paths, pixels)) {
+					if (floodFillTest2(currentPixel.x, currentPixel.y, paths, pixels) == 0) {
 						pixels[(currentPixel.y * width + currentPixel.x)] = regionNum;
 						count++;
 
@@ -511,8 +518,13 @@ void ImageData::updateFloodFillForNewPaths(ImageData *paths)
 									skip = true;
 								}
 
-								if (!skip && floodFillTest2(newPixel.x, newPixel.y, paths, pixels)) {
-									pixelQueue.push(newPixel);
+								if (!skip) {
+									int testResult = floodFillTest2(newPixel.x, newPixel.y, paths, pixels);
+									if (testResult == 0) {
+										pixelQueue.push(newPixel);
+									} else if (testResult == 2) {
+										pixels[(newPixel.y * width + newPixel.x)] = regionNum;
+									}
 								}
 							}
 						}
