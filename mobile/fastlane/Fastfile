@@ -8,6 +8,11 @@ def set_bundle_version_from_commit_count
     key: "CFBundleVersion",
     value: bundle_version
   )
+
+  sh(
+    "../tools/set-app-version.sh",
+    bundle_version
+  )
 end
 
 platform :ios do
