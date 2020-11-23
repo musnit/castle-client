@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SLIcon from 'react-native-vector-icons/SimpleLineIcons';
 import { useGhostUI } from '../ghost/GhostUI';
+import FastImage from 'react-native-fast-image';
 
 import * as Constants from '../Constants';
 
@@ -89,7 +90,13 @@ export const CreateCardHeader = ({ card, isEditable, onPressBack, mode, onChange
             style={styles.action}
             disabled={data.performing}
             onPress={() => onChangeMode(mode === 'variables' ? null : 'variables')}>
-            <MCIcon name="variable" size={26} color={data.performing ? '#666' : '#fff'} />
+            <FastImage
+              style={{
+                width: 22,
+                height: 22,
+              }}
+              source={require('../../assets/images/CreateCardHeader-variables.png')}
+            />
           </TouchableOpacity>
         </View>
       ) : null}
