@@ -157,7 +157,7 @@ export const InspectorTagPicker = ({ value, onChange, context, ...props }) => {
   };
 
   return (
-    <View style={styles.tagsList}>
+    <View style={[styles.tagsList, props.style]}>
       {components.map((tag, ii) => (
         <PopoverButton
           key={`tag-${tag}-ii`}

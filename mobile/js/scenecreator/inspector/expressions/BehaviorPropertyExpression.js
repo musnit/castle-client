@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { InspectorActorRefInput } from '../components/InspectorActorRefInput';
 
 import * as Constants from '../../../Constants';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
@@ -8,7 +9,11 @@ const styles = StyleSheet.create({
   behaviorInputRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    paddingBottom: 8,
+    paddingBottom: 4,
+    alignItems: 'center',
+  },
+  paramLabel: {
+    fontSize: 14,
   },
   cell: {
     marginRight: 8,
@@ -56,34 +61,54 @@ export const BehaviorPropertyExpression = ({
       useAllBehaviors: value.params?.actorType !== 'self',
     });
 
+  const setActorRef = (actorRef) =>
+    onChange({
+      ...value,
+      params: {
+        ...value.params,
+        actorRef,
+      },
+    });
+
   return (
-    <View style={styles.behaviorInputRow}>
-      {selectedBehavior && value.params?.propertyName ? (
-        <React.Fragment>
+    <View>
+      <View style={styles.behaviorInputRow}>
+        {selectedBehavior && value.params?.propertyName ? (
+          <React.Fragment>
+            <TouchableOpacity
+              style={[SceneCreatorConstants.styles.button, styles.cell]}
+              onPress={onChooseBehavior}>
+              <Text style={[SceneCreatorConstants.styles.buttonLabel, { fontWeight: 'normal' }]}>
+                {selectedBehavior.displayName}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[SceneCreatorConstants.styles.button, styles.cell]}
+              onPress={onChooseBehavior}>
+              <Text style={[SceneCreatorConstants.styles.buttonLabel, { fontWeight: 'normal' }]}>
+                {selectedBehavior.propertySpecs[value.params.propertyName].label}
+              </Text>
+            </TouchableOpacity>
+          </React.Fragment>
+        ) : (
           <TouchableOpacity
-            style={[SceneCreatorConstants.styles.button, styles.cell]}
+            style={[SceneCreatorConstants.styles.button, styles.placeholder]}
             onPress={onChooseBehavior}>
-            <Text style={SceneCreatorConstants.styles.buttonLabel}>
-              {selectedBehavior.displayName}
+            <Text style={[SceneCreatorConstants.styles.buttonLabel, styles.placeholderText]}>
+              Choose behavior
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={[SceneCreatorConstants.styles.button, styles.cell]}
-            onPress={onChooseBehavior}>
-            <Text style={SceneCreatorConstants.styles.buttonLabel}>
-              {selectedBehavior.propertySpecs[value.params.propertyName].label}
-            </Text>
-          </TouchableOpacity>
-        </React.Fragment>
-      ) : (
-        <TouchableOpacity
-          style={[SceneCreatorConstants.styles.button, styles.placeholder]}
-          onPress={onChooseBehavior}>
-          <Text style={[SceneCreatorConstants.styles.buttonLabel, styles.placeholderText]}>
-            Choose behavior
-          </Text>
-        </TouchableOpacity>
-      )}
+        )}
+      </View>
+      <Text style={styles.paramLabel}>Property</Text>
+      <View style={[styles.behaviorInputRow, { marginTop: 12 }]}>
+        <InspectorActorRefInput
+          value={value.params?.actorRef}
+          onChange={setActorRef}
+          context={context}
+        />
+      </View>
+      <Text style={styles.paramLabel}>Actor</Text>
     </View>
   );
 };

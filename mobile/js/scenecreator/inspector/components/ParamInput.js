@@ -1,4 +1,5 @@
 import React from 'react';
+import { InspectorActorRefInput } from './InspectorActorRefInput';
 import { InspectorCheckbox } from './InspectorCheckbox';
 import { InspectorDropdown } from './InspectorDropdown';
 import { InspectorInlineExpressionInput } from '../expressions/InspectorInlineExpressionInput';
@@ -75,6 +76,10 @@ export const ParamInput = ({
         );
       }
       break;
+    case 'actorRef':
+      return (
+        <InspectorActorRefInput value={value} onChange={setValue} {...paramSpec.props} {...props} />
+      );
     default:
       throw new Error(`Input type ${paramSpec.method} is not supported in ParamInput`);
   }

@@ -147,7 +147,7 @@ export const InspectorDropdown = ({ value, onChange, style, ...props }) => {
         style={styles.box}
         activeStyle={[styles.box, styles.activeBox]}
         popover={popover}>
-        <Text>{valueLabel}</Text>
+        <Text style={{ fontSize: 16 }}>{valueLabel}</Text>
       </PopoverButton>
     </View>
   );

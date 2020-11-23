@@ -164,7 +164,11 @@ export const makeExpressionSummary = (expression, context) => {
         selectedProperty = selectedBehavior.propertySpecs[expression.params.propertyName];
       }
       if (selectedBehavior && selectedProperty) {
-        return `${selectedBehavior.displayName}: ${selectedProperty.label}`;
+        let actorRef = 'My own';
+        if (expression.params.actorRef?.kind === 'closest') {
+          actorRef = `#${expression.params.actorRef.tag}`;
+        }
+        return `${actorRef}: ${selectedBehavior.displayName}: ${selectedProperty.label}`;
       }
     }
   }
