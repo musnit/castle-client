@@ -352,6 +352,7 @@ const Response = ({ response, onChangeResponse, order = 0, ...props }) => {
       <ConfigureRuleEntry
         entry={entry}
         cells={cells}
+        triggerFilter={triggerFilter}
         useAllBehaviors={props.useAllBehaviors}
         behaviors={behaviors}
         onChangeEntry={onChangeResponse}

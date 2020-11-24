@@ -18,18 +18,27 @@ const ACTOR_REF_KINDS = [
     id: 'closest',
     name: 'The closest actor',
   },
+  {
+    id: 'other',
+    name: 'The colliding actor',
+    triggerFilter: 'collide',
+  },
 ];
 
-export const InspectorActorRefInput = ({ value, onChange, context }) => {
+export const InspectorActorRefInput = ({ value, onChange, context, triggerFilter }) => {
   const kind = value?.kind;
   const onChangeKind = (kind) => onChange({ ...value, kind });
   const tag = value?.tag;
   const onChangeTag = (tag) => onChange({ ...value, tag });
 
+  const kinds = ACTOR_REF_KINDS.filter(
+    (kind) => !kind.triggerFilter || !triggerFilter || kind.triggerFilter === triggerFilter
+  );
+
   return (
     <React.Fragment>
       <InspectorDropdown
-        labeledItems={ACTOR_REF_KINDS}
+        labeledItems={kinds}
         value={kind}
         style={{ marginBottom: 0 }}
         onChange={onChangeKind}

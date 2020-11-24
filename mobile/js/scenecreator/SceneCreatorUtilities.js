@@ -167,6 +167,8 @@ export const makeExpressionSummary = (expression, context) => {
         let actorRef = 'My own';
         if (expression.params.actorRef?.kind === 'closest') {
           actorRef = `#${expression.params.actorRef.tag}`;
+        } else if (expression.params.actorRef?.kind === 'other') {
+          actorRef = `Other`;
         }
         return `${actorRef}: ${selectedBehavior.displayName}: ${selectedProperty.label}`;
       }

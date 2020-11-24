@@ -46,6 +46,7 @@ export const ConfigureRuleEntry = ({
   cells,
   behaviors,
   useAllBehaviors, // true if we should not filter rule options by the actor's behaviors
+  triggerFilter,
   onChangeEntry,
   onShowPicker,
   onShowOptions = () => {},
@@ -58,6 +59,7 @@ export const ConfigureRuleEntry = ({
       Component: RuleParamInputSheet,
       title,
       entry,
+      triggerFilter,
       paramNames,
       initialValues,
       onChangeParams,

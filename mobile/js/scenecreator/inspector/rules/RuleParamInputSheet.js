@@ -34,6 +34,7 @@ const EMPTY_PARAMSPEC = {
 export default RuleParamInputSheet = ({
   title,
   entry,
+  triggerFilter,
   onChangeParams,
   paramNames,
   initialValues,
@@ -68,6 +69,7 @@ export default RuleParamInputSheet = ({
       key: 'configureExpression',
       Component: ConfigureExpressionSheet,
       paramSpec,
+      triggerFilter,
       value,
       onChange,
     });

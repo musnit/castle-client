@@ -17,8 +17,9 @@ const styles = StyleSheet.create({
 });
 
 export const ConfigureExpressionSheet = ({
-  paramSpec,
   value: initialValue,
+  paramSpec,
+  triggerFilter,
   onChange,
   isOpen,
   onClose,
@@ -48,6 +49,7 @@ export const ConfigureExpressionSheet = ({
         value={value}
         onChange={setValue}
         showBehaviorPropertyPicker={showBehaviorPropertyPicker}
+        triggerFilter={triggerFilter}
       />
     </View>
   );

@@ -57,6 +57,7 @@ export const InspectorExpressionInput = ({
   value,
   onChange,
   showBehaviorPropertyPicker,
+  triggerFilter,
 }) => {
   const expressionTypes = Object.entries(expressions).map(([type, e]) => ({
     id: type,
@@ -117,6 +118,7 @@ export const InspectorExpressionInput = ({
             onChange={onChange}
             context={context}
             showBehaviorPropertyPicker={showBehaviorPropertyPicker}
+            triggerFilter={triggerFilter}
           />
         ) : (
           orderedParamSpecs.map(([name, spec]) => (

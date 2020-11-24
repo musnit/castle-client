@@ -34,6 +34,7 @@ export const BehaviorPropertyExpression = ({
   value,
   onChange,
   showBehaviorPropertyPicker,
+  triggerFilter,
   context,
 }) => {
   const { behaviors } = context;
@@ -106,6 +107,7 @@ export const BehaviorPropertyExpression = ({
           value={value.params?.actorRef}
           onChange={setActorRef}
           context={context}
+          triggerFilter={triggerFilter}
         />
       </View>
       <Text style={styles.paramLabel}>Actor</Text>
