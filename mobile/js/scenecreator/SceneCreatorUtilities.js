@@ -142,7 +142,10 @@ export const makeExpressionSummary = (expression, context) => {
     case 'variable': {
       let variableLabel;
       if (context?.variables) {
-        variableLabel = context.variables.find((v) => v.id === expression.params.variableId).name;
+        const variable = context.variables.find((v) => v.id === expression.params.variableId);
+        if (variable) {
+          variableLabel = variable.name;
+        }
       }
       if (!variableLabel) {
         variableLabel = expression.params.variableId;
