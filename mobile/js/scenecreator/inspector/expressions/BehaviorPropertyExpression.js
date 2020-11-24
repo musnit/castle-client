@@ -58,7 +58,7 @@ export const BehaviorPropertyExpression = ({
             propertyName,
           },
         }),
-      useAllBehaviors: value.params?.actorType !== 'self',
+      useAllBehaviors: value.params?.actorRef?.kind !== 'self',
     });
 
   const setActorRef = (actorRef) =>
