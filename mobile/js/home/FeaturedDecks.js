@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { StatusBar, View, Text, Linking, StyleSheet, Platform } from 'react-native';
 import { DecksGrid } from '../components/DecksGrid';
-import { useLazyQuery } from '@apollo/react-hooks';
+import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
 import gql from 'graphql-tag';
 import FastImage from 'react-native-fast-image';
@@ -31,12 +31,25 @@ const styles = StyleSheet.create({
 });
 
 const AppUpdateNotice = () => {
-  const updateURL =
-    Platform.OS == 'ios'
-      ? 'https://testflight.apple.com/join/kqteP0IC'
-      : 'https://assets.castle.games/Castle.apk';
+  const [updateInfo, setUpdateInfo] = React.useState({ isUpdateAvailable: false });
+  const loadUpdateInfo = useQuery(
+    gql`
+      query {
+        clientUpdateStatus {
+          isUpdateAvailable
+          link
+        }
+      }
+    `
+  );
 
-  if (true) {
+  React.useEffect(() => {
+    if (!loadUpdateInfo.loading && !loadUpdateInfo.error && loadUpdateInfo.data) {
+      setUpdateInfo(loadUpdateInfo.data.clientUpdateStatus);
+    }
+  }, [loadUpdateInfo.loading, loadUpdateInfo.error, loadUpdateInfo.data]);
+
+  if (!updateInfo.isUpdateAvailable) {
     return null;
   }
   return (
@@ -52,7 +65,7 @@ const AppUpdateNotice = () => {
         <View style={Constants.styles.primaryButton}>
           <Text
             style={Constants.styles.primaryButtonLabel}
-            onPress={() => Linking.openURL(updateURL)}>
+            onPress={() => Linking.openURL(updateInfo.link)}>
             Update
           </Text>
         </View>
