@@ -1,5 +1,3 @@
 #!/bin/sh
 
-set -e
-
-echo "app version to set is $1!"
+CASTLE_OS=$1 CASTLE_VERSION=$2 node set-app-version.js

@@ -36,5 +36,5 @@ Once you have the app running, shake the device to open the React Native develop
 
 - Make sure you have the minimum JDK and Android SDK versions given at the Android setup link earlier in this readme.
 - Find our Android release credentials in the `android-release` folder of our credential store and follow the readme there to install them.
-- From this directory, run `npx react-native run-android --variant=release`
+- Run `./tools/build-android-prod.sh`
 - Output apk lives under `android/app/build/outputs/apk/release`

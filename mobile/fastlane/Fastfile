@@ -11,6 +11,7 @@ def set_bundle_version_from_commit_count
 
   sh(
     "../tools/set-app-version.sh",
+    "ios",
     bundle_version
   )
 end
