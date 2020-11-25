@@ -19,6 +19,9 @@ import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 import * as Utilities from '../common/utilities';
 
+import Entypo from 'react-native-vector-icons/Entypo';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -42,7 +45,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: Constants.colors.white,
   },
-  profileItems: { marginTop: 8, flexDirection: 'row' },
+  profileItems: { marginTop: 8 },
+  profileItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   scrollView: {
     paddingTop: 2,
     paddingLeft: 2,
@@ -103,6 +110,36 @@ const useProfileQuery = (userId) => {
   }
 };
 
+const makeProfileLinks = ({ user }) => {
+  let linksItems = [];
+  if (user?.websiteUrl) {
+    const { urlToDisplay, urlToOpen } = Utilities.canonizeUserProvidedUrl(user?.websiteUrl);
+    linksItems.push({
+      label: urlToDisplay,
+      onPress: () => Linking.openURL(urlToOpen),
+      iconType: Entypo,
+      icon: 'globe',
+    });
+  }
+  if (user?.twitterUsername) {
+    linksItems.push({
+      label: `twitter.com/${user.twitterUsername}`,
+      onPress: () => Linking.openURL(`https://twitter.com/${user.twitterUsername}`),
+      iconType: Entypo,
+      icon: 'twitter',
+    });
+  }
+  if (user?.itchUsername) {
+    linksItems.push({
+      label: `${user.itchUsername}.itch.io`,
+      onPress: () => Linking.openURL(`https://${user.itchUsername}.itch.io`),
+      iconType: Entypo,
+      icon: 'game-controller',
+    });
+  }
+  return linksItems;
+};
+
 export const ProfileScreen = ({ userId, route }) => {
   const { push } = useNavigation();
   const [settingsSheetIsOpen, setSettingsSheet] = useState(false);
@@ -137,9 +174,15 @@ export const ProfileScreen = ({ userId, route }) => {
     }, [])
   );
 
-  const { urlToDisplay, urlToOpen } = Utilities.canonizeUserProvidedUrl(user?.websiteUrl);
-
-  const onPressSettings = () => setSettingsSheet(true);
+  let linksItems = makeProfileLinks({ user });
+  if (isMe) {
+    linksItems.push({
+      label: 'Settings',
+      onPress: () => setSettingsSheet(true),
+      iconType: MaterialIcons,
+      icon: 'settings',
+    });
+  }
   const settingsSheetOnClose = () => setSettingsSheet(false);
 
   return (
@@ -154,20 +197,30 @@ export const ProfileScreen = ({ userId, route }) => {
             <View style={{ paddingVertical: 16 }}>
               <Text style={styles.username}>@{user?.username}</Text>
               <View style={styles.profileItems}>
-                {urlToDisplay ? (
-                  <TouchableOpacity
-                    style={{ marginRight: isMe ? 16 : 0 }}
-                    onPress={() => {
-                      Linking.openURL(urlToOpen);
-                    }}>
-                    <Text style={{ fontSize: 16, color: Constants.colors.grayText }}>{urlToDisplay}</Text>
-                  </TouchableOpacity>
-                ) : null}
-                {isMe ? (
-                  <TouchableOpacity onPress={onPressSettings}>
-                    <Text style={{ fontSize: 16, color: Constants.colors.grayText }}>Settings</Text>
-                  </TouchableOpacity>
-                ) : null}
+                {linksItems.length > 0
+                  ? linksItems.map((item, ii) => {
+                      const Icon = item.iconType;
+                      return (
+                        <TouchableOpacity
+                          key={`link-item-${ii}`}
+                          style={[
+                            styles.profileItem,
+                            { marginBottom: ii < linksItems.length - 1 ? 8 : 0 },
+                          ]}
+                          onPress={item.onPress}>
+                          <Icon
+                            name={item.icon}
+                            color="#ccc"
+                            size={14}
+                            style={{ marginRight: 8 }}
+                          />
+                          <Text style={{ fontSize: 16, color: Constants.colors.grayText }}>
+                            {item.label}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })
+                  : null}
               </View>
             </View>
           </View>

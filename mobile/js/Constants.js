@@ -185,6 +185,8 @@ export const USER_PROFILE_FRAGMENT = `
   username
   email
   websiteUrl
+  twitterUsername
+  itchUsername
   photo {
     url
   }
