@@ -474,7 +474,7 @@ function network.fetch(url, method, skipCache)
             entry.result = {response, httpCode, headers, status}
         else
             -- Use persisted result if found
-            local persistedResult = (not skipCache) and findPersistedFetchResult(url, method)
+            local persistedResult = (not (RELOAD_SCENE_CREATOR or RELOAD_SCENE_CREATOR_ONCE)) and findPersistedFetchResult(url, method)
             if persistedResult then
                 entry.result = persistedResult
             else -- Else actually fetch then persist it
