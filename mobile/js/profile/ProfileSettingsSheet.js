@@ -82,11 +82,13 @@ const updateUserAsync = async ({ user }) => {
   }
   const result = await Session.apolloClient.mutate({
     mutation: gql`
-      mutation ($userId: ID!, $websiteUrl: String) {
+      mutation ($userId: ID!, $websiteUrl: String, $twitterUsername: String, $itchUsername: String) {
        updateUser(
          userId: $userId
          user: {
-           websiteUrl: $websiteUrl
+           websiteUrl: $websiteUrl,
+           twitterUsername: $twitterUsername,
+           itchUsername: $itchUsername,
          }
        ) {
          ${Constants.USER_PROFILE_FRAGMENT}
@@ -220,6 +222,28 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
             onChangeText={(websiteUrl) => changeUser({ websiteUrl })}
             style={Constants.styles.textInputOnWhite}
             placeholder="http://geocities.com"
+            placeholderTextColor={Constants.colors.grayText}
+          />
+        </View>
+        <View style={styles.row}>
+          <Text style={Constants.styles.textInputLabelOnWhite}>Twitter</Text>
+          <TextInput
+            value={user.twitterUsername}
+            editable={!loading}
+            onChangeText={(twitterUsername) => changeUser({ twitterUsername })}
+            style={Constants.styles.textInputOnWhite}
+            placeholder="Your Twitter username"
+            placeholderTextColor={Constants.colors.grayText}
+          />
+        </View>
+        <View style={styles.row}>
+          <Text style={Constants.styles.textInputLabelOnWhite}>Itch</Text>
+          <TextInput
+            value={user.itchUsername}
+            editable={!loading}
+            onChangeText={(itchUsername) => changeUser({ itchUsername })}
+            style={Constants.styles.textInputOnWhite}
+            placeholder="Your itch username"
             placeholderTextColor={Constants.colors.grayText}
           />
         </View>
