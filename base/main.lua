@@ -92,7 +92,7 @@ do
     local collectedPrints = {} -- Stash prints and flush them to the '.log' file once in a while
     local oldPrint = print -- Save original print function to call later
     function print(...)
-        oldPrint(...)
+        oldPrint('LUA: ', ...)
         local array = {...}
         if castle.system.isRemoteServer() then
             love.thread.getChannel("PRINT"):push(cjson.encode(array))
@@ -111,7 +111,7 @@ do
             err = err:gsub(pattern, filename)
             stack = stack:gsub(pattern, filename)
         end
-        oldPrint(stack)
+        oldPrint('LUA: ', stack)
         local obj = {error = err, stacktrace = stack}
         if castle.system.isRemoteServer() then
             love.thread.getChannel("ERROR"):push(cjson.encode(obj))
