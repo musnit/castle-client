@@ -183,7 +183,12 @@ export const ProfileScreen = ({ userId, route }) => {
       icon: 'settings',
     });
   }
-  const settingsSheetOnClose = () => setSettingsSheet(false);
+  const settingsSheetOnClose = (isChanged) => {
+    setSettingsSheet(false);
+    if (isChanged) {
+      fetchProfile();
+    }
+  };
 
   return (
     <Fragment>

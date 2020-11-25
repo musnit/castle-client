@@ -141,7 +141,7 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
     await setLoading(true);
     const updatedUser = await updateUserAsync({ user });
     if (updatedUser) {
-      onClose();
+      onClose(true);
     }
     setLoading(false);
   }, [user, onClose, setLoading]);
