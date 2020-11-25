@@ -215,7 +215,7 @@ export const ProfileScreen = ({ userId, route }) => {
                           onPress={item.onPress}>
                           <Icon
                             name={item.icon}
-                            color="#ccc"
+                            color="#aaa"
                             size={14}
                             style={{ marginRight: 8 }}
                           />
