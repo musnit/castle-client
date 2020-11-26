@@ -261,8 +261,11 @@ jsEvents.permanentListen(
     "CLEAR_SCENE",
     function(params)
         print("CLEAR_SCENE")
+        jsEvents.clearListeners()
         home = nil
-        collectgarbage("collect")
+        CLEAR_CHILD_ENVS()
+        collectgarbage()
+        collectgarbage()
 
         resetUI()
     end
@@ -272,6 +275,12 @@ jsEvents.permanentListen(
     "BASE_RELOAD",
     function(params)
         print("BASE_RELOAD")
+        jsEvents.clearListeners()
+        CLEAR_CHILD_ENVS()
+        collectgarbage()
+        collectgarbage()
+
+        print("GCTEST: MEM: " .. math.floor(collectgarbage("count")) .. "kb")
         network.async(
             function()
                 if isFirstLoad and love.graphics then
@@ -288,10 +297,7 @@ jsEvents.permanentListen(
 
                 if home ~= nil then
                     home = nil
-                    collectgarbage("collect")
                 end
-
-                jsEvents.clearListeners()
 
                 -- make sure to wait until scene creator is downloaded
                 while homeUrl == nil do

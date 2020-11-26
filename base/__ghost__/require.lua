@@ -88,6 +88,17 @@ local LATEST_SHARE_LUA_URL =
 
 local globalPackageCache = {}
 
+local childEnvs = setmetatable({}, { __mode = "k" })
+
+function CLEAR_CHILD_ENVS()
+    for env in pairs(childEnvs) do
+        for var in pairs(env) do
+            env[var] = nil
+        end
+        childEnvs[env] = nil
+    end
+end
+
 local function explicitRequire(path, opts)
     -- 'share.lua'? Use the latest version...
     if path:match("^https?://raw%.githubusercontent%.com/castle%-games/share%.lua/.*/cs%.lua$") then
@@ -278,6 +289,7 @@ local function explicitRequire(path, opts)
     CHUNK_NAME_TO_FILE_NAME[chunkName] = url:gsub("/?init%.lua$", ""):gsub("(.*)/(.*)", "%2")
 
     -- Parse
+    childEnvs[childEnv] = true -- Remember the child env so we can clear it later
     childEnv._G = childEnv -- `_G` is never updated by Lua, we do it ourselves
     local chunk, err = load(response, chunkName, "bt", childEnv)
     if chunk == nil then
@@ -304,11 +316,11 @@ local function explicitRequire(path, opts)
             globalPackageCache[url] = true
         end
     elseif saveCache ~= false then
-        if result ~= nil then
-            package.loaded[url] = result
-        elseif package.loaded[url] == nil then
-            package.loaded[url] = true
-        end
+        --if result ~= nil then
+        --    package.loaded[url] = result
+        --elseif package.loaded[url] == nil then
+        --    package.loaded[url] = true
+        --end
     end
 
     return result == nil and true or result
