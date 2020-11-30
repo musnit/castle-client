@@ -80,14 +80,7 @@ export const Trigger = ({
     [trigger, onChangeTrigger]
   );
 
-  let cells;
-  if (!trigger || trigger.name === 'none') {
-    cells = Triggers.empty();
-  } else if (Triggers[trigger.name]) {
-    cells = Triggers[trigger.name]({ trigger, context });
-  } else {
-    cells = Triggers.default({ trigger });
-  }
+  let cells = Triggers.makeCells({ trigger, context });
 
   return (
     <View style={styles.triggerCells}>

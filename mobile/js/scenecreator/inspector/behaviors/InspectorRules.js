@@ -2,7 +2,7 @@ import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { sendDataPaneAction, useGhostUI } from '../../../ghost/GhostUI';
 import { Counter } from './InspectorBehaviors';
-import { Rule as InspectorRule } from '../rules/Rule';
+import { RulePreview } from '../rules/RulePreview';
 
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
@@ -13,6 +13,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 16,
+  },
+  rulePreviewButton: {
+    marginHorizontal: 16,
+    marginVertical: 8,
+    padding: 16,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 3,
   },
 });
 
@@ -96,19 +104,19 @@ export default InspectorRules = ({ behaviors, sendActions, addChildSheet }) => {
         </View>
         <View style={{ flexDirection: 'column-reverse' }}>
           {rulesItems.map((rule, ii) => (
-            <InspectorRule
+            <TouchableOpacity
               key={`rule-${rule.trigger?.name}-${rule.response?.name}-${ii}`}
-              rule={rule}
-              onChangeRule={onChangeRule}
-              onCopyRule={() => onCopyRule(rule)}
-              onRemoveRule={() => onRemoveRule(rule)}
-              behaviors={behaviors}
-              addChildSheet={addChildSheet}
-              triggers={rulesData.triggers}
-              responses={rulesData.responses}
-              conditions={rulesData.conditions}
-              sendRuleAction={sendRuleAction}
-            />
+              style={styles.rulePreviewButton}>
+              <RulePreview
+                rule={rule}
+                behaviors={behaviors}
+                addChildSheet={addChildSheet}
+                triggers={rulesData.triggers}
+                responses={rulesData.responses}
+                conditions={rulesData.conditions}
+                sendRuleAction={sendRuleAction}
+              />
+            </TouchableOpacity>
           ))}
         </View>
       </View>

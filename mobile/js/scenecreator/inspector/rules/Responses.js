@@ -732,6 +732,17 @@ const IsInCameraViewport = () => {
   ];
 };
 
+const makeCells = (props) => {
+  const { response } = props;
+  if (!response || response.name === 'none') {
+    return Responses.empty(props);
+  } else if (Responses[response.name]) {
+    return Responses[response.name](props);
+  } else {
+    return Responses.default(props);
+  }
+};
+
 export const Responses = {
   ['act on']: ActOn,
   ['act on other']: ActOnOther,
@@ -769,4 +780,5 @@ export const Responses = {
   hide: Hide,
   empty: Empty,
   default: Default,
+  makeCells,
 };

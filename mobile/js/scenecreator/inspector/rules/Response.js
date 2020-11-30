@@ -143,7 +143,7 @@ const If = ({ response, onChangeResponse, children, order, ...props }) => {
         {children}
         <ConfigureRuleEntry
           entry={getEntryByName(response.params.condition?.name, conditions)}
-          cells={makeResponseCells({
+          cells={Responses.makeCells({
             response: response.params.condition,
             context,
             isCondition: true,
@@ -281,17 +281,6 @@ const RESPONSE_COMPONENTS = {
   ['play sound']: PlaySound,
 };
 
-const makeResponseCells = (props) => {
-  const { response } = props;
-  if (!response || response.name === 'none') {
-    return Responses.empty(props);
-  } else if (Responses[response.name]) {
-    return Responses[response.name](props);
-  } else {
-    return Responses.default(props);
-  }
-};
-
 const Response = ({ response, onChangeResponse, order = 0, ...props }) => {
   const {
     context,
@@ -346,7 +335,7 @@ const Response = ({ response, onChangeResponse, order = 0, ...props }) => {
 
   // render the cells to configure this response
   let responseContents;
-  let cells = makeResponseCells({ response, order, context });
+  let cells = Responses.makeCells({ response, order, context });
   responseContents = (
     <View style={styles.responseCells}>
       <ConfigureRuleEntry

@@ -262,6 +262,18 @@ const ExitCameraViewPort = () => {
   ]);
 };
 
+const makeCells = ({ trigger, context }) => {
+  let cells;
+  if (!trigger || trigger.name === 'none') {
+    cells = Triggers.empty();
+  } else if (Triggers[trigger.name]) {
+    cells = Triggers[trigger.name]({ trigger, context });
+  } else {
+    cells = Triggers.default({ trigger });
+  }
+  return cells;
+};
+
 export const Triggers = {
   collide: Collide,
   tap: Tap,
@@ -283,4 +295,5 @@ export const Triggers = {
   ['exit camera viewport']: ExitCameraViewPort,
   default: Default,
   empty: Empty,
+  makeCells,
 };
