@@ -49,7 +49,7 @@ const AppUpdateNotice = () => {
     }
   }, [loadUpdateInfo.loading, loadUpdateInfo.error, loadUpdateInfo.data]);
 
-  if (!updateInfo.isUpdateAvailable) {
+  if (!updateInfo.isUpdateAvailable || __DEV__) {
     return null;
   }
   return (
