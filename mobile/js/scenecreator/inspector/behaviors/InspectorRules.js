@@ -1,15 +1,10 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useOptimisticBehaviorValue } from '../InspectorUtilities';
-import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import { sendDataPaneAction, useGhostUI } from '../../../ghost/GhostUI';
 import { Counter } from './InspectorBehaviors';
-import { Response as InspectorResponse } from '../rules/Response';
-import { Trigger as InspectorTrigger } from '../rules/Trigger';
+import { Rule as InspectorRule } from '../rules/Rule';
 
-import RulePartPickerSheet from '../rules/RulePartPickerSheet';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
-import * as Constants from '../../../Constants';
 
 const styles = StyleSheet.create({
   container: {},
@@ -19,73 +14,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 16,
   },
-  rule: {
-    paddingTop: 12,
-    paddingHorizontal: 16,
-    marginBottom: 24,
-    borderColor: Constants.colors.grayOnWhiteBorder,
-    borderTopWidth: 1,
-  },
 });
-
-const InspectorRule = ({
-  rule,
-  behaviors,
-  triggers,
-  responses,
-  conditions,
-  addChildSheet,
-  onChangeRule,
-  onCopyRule,
-  onRemoveRule,
-  sendRuleAction,
-}) => {
-  const onChangeTrigger = React.useCallback(
-    (trigger) => {
-      return onChangeRule({
-        ...rule,
-        trigger,
-      });
-    },
-    [onChangeRule]
-  );
-
-  const onChangeResponse = React.useCallback(
-    (response) => {
-      return onChangeRule({
-        ...rule,
-        response,
-      });
-    },
-    [onChangeRule]
-  );
-
-  return (
-    <View style={styles.rule}>
-      <InspectorTrigger
-        trigger={rule.trigger}
-        behaviors={behaviors}
-        addChildSheet={addChildSheet}
-        triggers={triggers}
-        onChangeTrigger={onChangeTrigger}
-        onRemoveRule={onRemoveRule}
-        onCopyRule={onCopyRule}
-      />
-      <View style={SceneCreatorConstants.styles.insetContainer}>
-        <InspectorResponse
-          response={rule.response}
-          triggerFilter={rule.trigger?.name}
-          behaviors={behaviors}
-          addChildSheet={addChildSheet}
-          responses={responses}
-          conditions={conditions}
-          onChangeResponse={onChangeResponse}
-          sendRuleAction={sendRuleAction}
-        />
-      </View>
-    </View>
-  );
-};
 
 export default InspectorRules = ({ behaviors, sendActions, addChildSheet }) => {
   const rules = behaviors.Rules;
