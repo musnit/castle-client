@@ -81,15 +81,11 @@ const styles = StyleSheet.create({
   },
 });
 
-export const DrawingCardHeader = ({
-  onPressBack,
-  currentDrawingToolGroup,
-  onSelectDrawingToolGroup,
-}) => {
+export const DrawingCardHeader = ({ onPressBack }) => {
   const { globalActions, sendGlobalAction } = useGhostUI();
   const { activeToolData, activeToolAction } = useCardCreator();
 
-  if (!activeToolData) {
+  if (!activeToolData.selectedSubtools) {
     return null;
   }
 
@@ -124,26 +120,19 @@ export const DrawingCardHeader = ({
     );
   }
 
-  const isArtworkActive = activeToolData.currentMode == 'artwork';
-  const onSelectSubtool = React.useCallback(
-    (subtool) => {
-      if (isArtworkActive) {
-        activeToolAction('onSelectArtworkSubtool', subtool);
-      } else {
-        activeToolAction('onSelectCollisionSubtool', subtool);
-      }
-    },
-    [isArtworkActive, activeToolAction]
-  );
+  const isArtworkActive = activeToolData.selectedSubtools.root == 'artwork';
+  const currentDrawingToolGroup = isArtworkActive
+    ? activeToolData.selectedSubtools.artwork
+    : activeToolData.selectedSubtools.collision;
 
   const MODE_ITEMS = [
     {
       name: 'Artwork',
-      value: 'onSelectArtwork',
+      value: 'artwork',
     },
     {
       name: 'Collision Shape',
-      value: 'onSelectCollision',
+      value: 'collision',
     },
   ];
 
@@ -166,7 +155,7 @@ export const DrawingCardHeader = ({
         <SegmentedNavigation
           items={MODE_ITEMS}
           selectedItem={isArtworkActive ? MODE_ITEMS[0] : MODE_ITEMS[1]}
-          onSelectItem={(item) => activeToolAction(item.value)}
+          onSelectItem={(item) => activeToolAction('onSelectSubtool', 'root:' + item.value)}
         />
       </View>
 
@@ -175,17 +164,22 @@ export const DrawingCardHeader = ({
           <TouchableOpacity
             style={styles.toolGroup}
             onPress={() => {
-              onSelectDrawingToolGroup('draw');
               if (isArtworkActive) {
-                onSelectSubtool('pencil_no_grid');
+                activeToolAction('onSelectSubtool', 'artwork:artwork_draw');
               } else {
-                onSelectSubtool('rectangle');
+                activeToolAction('onSelectSubtool', 'collision:collision_draw');
               }
             }}>
             <Text
               style={[
                 styles.toolGroupLabel,
-                { color: currentDrawingToolGroup == 'draw' ? '#fff' : '#888' },
+                {
+                  color:
+                    currentDrawingToolGroup == 'artwork_draw' ||
+                    currentDrawingToolGroup == 'collision_draw'
+                      ? '#fff'
+                      : '#888',
+                },
               ]}>
               Draw
             </Text>
@@ -193,7 +187,12 @@ export const DrawingCardHeader = ({
               <MCIcon
                 name="pencil-outline"
                 size={36}
-                color={currentDrawingToolGroup == 'draw' ? '#fff' : '#888'}
+                color={
+                  currentDrawingToolGroup == 'artwork_draw' ||
+                  currentDrawingToolGroup == 'collision_draw'
+                    ? '#fff'
+                    : '#888'
+                }
               />
             </View>
           </TouchableOpacity>
@@ -202,8 +201,7 @@ export const DrawingCardHeader = ({
             <TouchableOpacity
               style={styles.toolGroup}
               onPress={() => {
-                onSelectDrawingToolGroup('fill');
-                onSelectSubtool('fill');
+                activeToolAction('onSelectSubtool', 'artwork:fill');
               }}>
               <Text
                 style={[
@@ -226,13 +224,22 @@ export const DrawingCardHeader = ({
           <TouchableOpacity
             style={styles.toolGroup}
             onPress={() => {
-              onSelectDrawingToolGroup('move');
-              onSelectSubtool('move');
+              if (isArtworkActive) {
+                activeToolAction('onSelectSubtool', 'artwork:artwork_move');
+              } else {
+                activeToolAction('onSelectSubtool', 'collision:collision_move');
+              }
             }}>
             <Text
               style={[
                 styles.toolGroupLabel,
-                { color: currentDrawingToolGroup == 'move' ? '#fff' : '#888' },
+                {
+                  color:
+                    currentDrawingToolGroup == 'artwork_move' ||
+                    currentDrawingToolGroup == 'collision_move'
+                      ? '#fff'
+                      : '#888',
+                },
               ]}>
               Move
             </Text>
@@ -240,7 +247,12 @@ export const DrawingCardHeader = ({
               <Icon
                 name="pan-tool"
                 size={28}
-                color={currentDrawingToolGroup == 'move' ? '#fff' : '#888'}
+                color={
+                  currentDrawingToolGroup == 'artwork_move' ||
+                  currentDrawingToolGroup == 'collision_move'
+                    ? '#fff'
+                    : '#888'
+                }
               />
             </View>
           </TouchableOpacity>
@@ -248,8 +260,11 @@ export const DrawingCardHeader = ({
           <TouchableOpacity
             style={styles.toolGroup}
             onPress={() => {
-              onSelectDrawingToolGroup('erase');
-              onSelectSubtool('erase');
+              if (isArtworkActive) {
+                activeToolAction('onSelectSubtool', 'artwork:erase');
+              } else {
+                activeToolAction('onSelectSubtool', 'collision:erase');
+              }
             }}>
             <Text
               style={[
