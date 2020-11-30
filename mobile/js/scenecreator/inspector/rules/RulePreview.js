@@ -19,6 +19,12 @@ const makeResponseRows = (rows, indent, { response, context }) => {
     cells: Responses.makeCells({ response, context }),
   });
   if (response.params?.then) {
+    // add the 'if' cells to this row
+    let responseCells = rows[rows.length - 1].cells;
+    rows[rows.length - 1].cells = responseCells.concat(
+      Responses.makeCells({ response: response.params.condition, context })
+    );
+
     makeResponseRows(rows, indent + 1, { response: response.params.then, context });
     if (response.params['else']) {
       rows.push({
@@ -32,9 +38,8 @@ const makeResponseRows = (rows, indent, { response, context }) => {
     makeResponseRows(rows, indent + 1, { response: response.params.body, context });
   }
   let nextResponse = response.params?.nextResponse;
-  while (nextResponse) {
+  if (nextResponse) {
     makeResponseRows(rows, indent, { response: nextResponse, context });
-    nextResponse = response.params?.nextResponse;
   }
 };
 
