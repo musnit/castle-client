@@ -206,6 +206,20 @@ export const GameView = ({
     },
   });
 
+  useListen({
+    eventName: 'GHOST_PRINT',
+    handler: (args) => {
+      console.log('LUA: ', args.join(' '));
+    },
+  });
+
+  useListen({
+    eventName: 'GHOST_ERROR',
+    handler: ({ error, stacktrace }) => {
+      console.log(`LUA ERROR: ${error}\n${stacktrace}`);
+    },
+  });
+
   const [landscape, setLandscape] = useState(false);
 
   // TODO: entryPoint should actually reflect native entry point

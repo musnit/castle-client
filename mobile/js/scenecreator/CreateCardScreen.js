@@ -246,6 +246,10 @@ export const CreateCardScreen = ({
     [onSceneRevertData, setActiveSheet]
   );
 
+  const onToggleBelt = React.useCallback(() => {
+    GhostEvents.sendAsync('TOGGLE_BELT', {});
+  }, []);
+
   GhostEvents.useListen({
     eventName: 'NAVIGATE_TO_CARD',
     handler: ({ card }) => maybeSaveAndGoToCard(card),
@@ -361,7 +365,7 @@ export const CreateCardScreen = ({
             ) : (
               <CreateCardBottomActions
                 card={card}
-                onAdd={() => setActiveSheet('sceneCreatorBlueprints')}
+                onAdd={onToggleBelt}
                 onOpenLayout={() => setActiveSheet('sceneCreatorSettings')}
                 onSave={saveAndGoToDeck}
                 isSceneLoaded={isSceneLoaded}
