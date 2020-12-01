@@ -4,16 +4,9 @@ import { Response as InspectorResponse } from './Response';
 import { Trigger as InspectorTrigger } from './Trigger';
 
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
-import * as Constants from '../../../Constants';
 
 const styles = StyleSheet.create({
-  rule: {
-    paddingTop: 12,
-    paddingHorizontal: 16,
-    marginBottom: 24,
-    borderColor: Constants.colors.grayOnWhiteBorder,
-    borderTopWidth: 1,
-  },
+  rule: {},
 });
 
 export const Rule = ({

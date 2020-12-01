@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { sendDataPaneAction, useGhostUI } from '../../../ghost/GhostUI';
 import { Counter } from './InspectorBehaviors';
+import { EditRuleSheet } from '../rules/EditRuleSheet';
 import { RulePreview } from '../rules/RulePreview';
+import { sendDataPaneAction, useGhostUI } from '../../../ghost/GhostUI';
 
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
@@ -78,6 +79,22 @@ export default InspectorRules = ({ behaviors, sendActions, addChildSheet }) => {
 
   const onCopyRule = React.useCallback((rule) => sendRuleAction('copy', [rule]), [sendRuleAction]);
 
+  const onPressRule = React.useCallback(
+    (rule) =>
+      addChildSheet({
+        key: 'editRule',
+        Component: EditRuleSheet,
+        onChangeRule,
+        rule,
+        behaviors,
+        triggers: rulesData.triggers,
+        responses: rulesData.responses,
+        conditions: rulesData.conditions,
+        sendRuleAction,
+      }),
+    [onChangeRule, rulesData, behaviors, sendRuleAction]
+  );
+
   return (
     <React.Fragment>
       <View style={styles.container}>
@@ -105,17 +122,10 @@ export default InspectorRules = ({ behaviors, sendActions, addChildSheet }) => {
         <View style={{ flexDirection: 'column-reverse' }}>
           {rulesItems.map((rule, ii) => (
             <TouchableOpacity
+              onPress={() => onPressRule(rule)}
               key={`rule-${rule.trigger?.name}-${rule.response?.name}-${ii}`}
               style={styles.rulePreviewButton}>
-              <RulePreview
-                rule={rule}
-                behaviors={behaviors}
-                addChildSheet={addChildSheet}
-                triggers={rulesData.triggers}
-                responses={rulesData.responses}
-                conditions={rulesData.conditions}
-                sendRuleAction={sendRuleAction}
-              />
+              <RulePreview rule={rule} />
             </TouchableOpacity>
           ))}
         </View>
