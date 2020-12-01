@@ -85,6 +85,8 @@ export default InspectorRules = ({ behaviors, sendActions, addChildSheet }) => {
         key: 'editRule',
         Component: EditRuleSheet,
         onChangeRule,
+        onRemoveRule,
+        onCopyRule,
         rule,
         behaviors,
         triggers: rulesData.triggers,

@@ -18,17 +18,21 @@ export const EditRuleSheet = ({
   conditions,
   sendRuleAction,
   onChangeRule,
+  onRemoveRule,
+  onCopyRule,
   isOpen,
   onClose,
   addChildSheet,
 }) => {
   const [value, setValue] = React.useState(rule);
 
+  // TODO: onRemoveRule?
   const renderContent = () => (
     <View style={styles.container}>
       <Rule
         rule={value}
         onChangeRule={setValue}
+        onCopyRule={onCopyRule}
         addChildSheet={addChildSheet}
         behaviors={behaviors}
         triggers={triggers}

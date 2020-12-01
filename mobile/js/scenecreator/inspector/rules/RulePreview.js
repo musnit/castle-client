@@ -17,13 +17,15 @@ const makeResponseRows = (rows, indent, { response, context }) => {
   // flatten a deep response into a list of indented rows
   rows.push({
     indent,
-    cells: Responses.makeCells({ response, context }),
+    cells: Responses.makeCells({ response, context, isPreview: true }),
   });
+  if (!response) return;
+
   if (response.params?.then) {
     // add the 'if' cells to this row
     let responseCells = rows[rows.length - 1].cells;
     rows[rows.length - 1].cells = responseCells.concat(
-      Responses.makeCells({ response: response.params.condition, context })
+      Responses.makeCells({ response: response.params.condition, context, isPreview: true })
     );
 
     makeResponseRows(rows, indent + 1, { response: response.params.then, context });
@@ -46,7 +48,7 @@ const makeResponseRows = (rows, indent, { response, context }) => {
 
 export const RulePreview = ({ rule }) => {
   const context = useCardCreator();
-  let triggerCells = Triggers.makeCells({ trigger: rule.trigger, context });
+  let triggerCells = Triggers.makeCells({ trigger: rule.trigger, context, isPreview: true });
 
   let responseRows = [];
   makeResponseRows(responseRows, 1, { response: rule.response, context });

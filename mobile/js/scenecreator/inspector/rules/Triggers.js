@@ -12,13 +12,17 @@ const withWhen = (tokens) => {
   return tokens;
 };
 
-const Empty = () => {
-  return withWhen([
-    {
-      type: 'selectEntryPlaceholder',
-      label: 'Select trigger',
-    },
-  ]);
+const Empty = ({ isPreview }) => {
+  if (isPreview) {
+    return [{ type: 'text', label: '(empty trigger)' }];
+  } else {
+    return withWhen([
+      {
+        type: 'selectEntryPlaceholder',
+        label: 'Select trigger',
+      },
+    ]);
+  }
 };
 
 const Default = ({ trigger }) => {
@@ -262,14 +266,15 @@ const ExitCameraViewPort = () => {
   ]);
 };
 
-const makeCells = ({ trigger, context }) => {
+const makeCells = (props) => {
   let cells;
+  const { trigger } = props;
   if (!trigger || trigger.name === 'none') {
-    cells = Triggers.empty();
+    cells = Triggers.empty(props);
   } else if (Triggers[trigger.name]) {
-    cells = Triggers[trigger.name]({ trigger, context });
+    cells = Triggers[trigger.name](props);
   } else {
-    cells = Triggers.default({ trigger });
+    cells = Triggers.default(props);
   }
   return cells;
 };

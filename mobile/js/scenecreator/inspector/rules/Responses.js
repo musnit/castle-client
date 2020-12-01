@@ -6,7 +6,16 @@ import {
 import { makeCardPreviewTitle } from '../../../common/utilities';
 import { SOUND_CATEGORIES } from './PlaySoundResponse';
 
-const Empty = ({ order, isCondition }) => {
+const Empty = ({ order, isCondition, isPreview }) => {
+  if (isPreview) {
+    return [
+      {
+        type: 'text',
+        label: isCondition ? '(empty condition)' : '(empty response)',
+      },
+    ];
+  }
+
   let label;
   if (isCondition) {
     label = 'Select condition';
@@ -459,6 +468,7 @@ const SetBehavior = ({ response, context }) => {
     {
       type: 'emphasis',
       label: valueLabel,
+      isPreview: true,
     },
   ];
 };
