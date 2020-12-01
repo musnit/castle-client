@@ -413,14 +413,23 @@ const FollowWithCamera = () => {
 };
 
 const SetBehavior = ({ response, context }) => {
-  let behaviorName;
+  let behaviorName, propertyName, valueLabel;
   if (response.params?.behaviorId) {
     const entry = Object.entries(context.behaviors).find(
       ([_, b]) => b.behaviorId === response.params.behaviorId
     );
     if (entry) {
-      behaviorName = entry[1].displayName;
+      let behavior = entry[1];
+      behaviorName = behavior.displayName;
+      if (response.params?.propertyName) {
+        let spec = behavior.propertySpecs[response.params.propertyName];
+        propertyName = spec.label ?? response.params.propertyName;
+      }
     }
+  }
+  valueLabel = response.params?.value !== undefined ? response.params.value : 0;
+  if (response.params?.relative) {
+    valueLabel = `${valueLabel} (relative)`;
   }
   return [
     {
@@ -435,6 +444,20 @@ const SetBehavior = ({ response, context }) => {
     {
       type: 'text',
       label: 'property',
+    },
+    {
+      type: 'emphasis',
+      label: propertyName,
+      isSummary: true,
+    },
+    {
+      type: 'text',
+      label: 'to',
+      isSummary: true,
+    },
+    {
+      type: 'emphasis',
+      label: valueLabel,
     },
   ];
 };
@@ -721,7 +744,15 @@ const FaceDirectionOfMotion = () => {
   ];
 };
 
-const PlaySound = () => [{ type: 'showEntryOptions', label: 'Play sound effect' }];
+const PlaySound = ({ response }) => [
+  { type: 'showEntryOptions', label: 'Play sound effect' },
+  {
+    type: 'emphasis',
+    isSummary: true,
+    label: `${response.params.category}, ${response.params.seed ?? 0}, ${response.params
+      .mutationSeed ?? 0}`,
+  },
+];
 
 const IsInCameraViewport = () => {
   return [
