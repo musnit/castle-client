@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const SOUND_CATEGORIES = [
+export const SOUND_CATEGORIES = [
   {
     name: 'pickup',
     icon: 'umbrella',

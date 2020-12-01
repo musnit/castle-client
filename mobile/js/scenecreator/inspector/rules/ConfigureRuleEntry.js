@@ -132,7 +132,7 @@ export const ConfigureRuleEntry = ({
     <React.Fragment>
       {cells.map((cell, ii) => {
         const key = `entry-cell-${ii}`;
-        if (cell.isSummary) {
+        if (cell.isPreview) {
           return null;
         }
         switch (cell.type) {

@@ -4,6 +4,7 @@ import {
   readableOperator,
 } from '../../SceneCreatorUtilities';
 import { makeCardPreviewTitle } from '../../../common/utilities';
+import { SOUND_CATEGORIES } from './PlaySoundResponse';
 
 const Empty = ({ order, isCondition }) => {
   let label;
@@ -448,12 +449,12 @@ const SetBehavior = ({ response, context }) => {
     {
       type: 'emphasis',
       label: propertyName,
-      isSummary: true,
+      isPreview: true,
     },
     {
       type: 'text',
       label: 'to',
-      isSummary: true,
+      isPreview: true,
     },
     {
       type: 'emphasis',
@@ -744,15 +745,26 @@ const FaceDirectionOfMotion = () => {
   ];
 };
 
-const PlaySound = ({ response }) => [
-  { type: 'showEntryOptions', label: 'Play sound effect' },
-  {
-    type: 'emphasis',
-    isSummary: true,
-    label: `${response.params.category}, ${response.params.seed ?? 0}, ${response.params
-      .mutationSeed ?? 0}`,
-  },
-];
+const PlaySound = ({ response }) => {
+  const soundCategory = SOUND_CATEGORIES.find((c) => c.name === response.params.category);
+  if (!soundCategory) {
+    soundCategory = SOUND_CATEGORIES[SOUND_CATEGORIES.length - 1];
+  }
+  return [
+    { type: 'showEntryOptions', label: 'Play sound effect' },
+    {
+      type: 'icon',
+      isPreview: true,
+      family: 'Feather',
+      icon: soundCategory.icon,
+    },
+    {
+      type: 'emphasis',
+      isPreview: true,
+      label: `${response.params.seed ?? 0}, ${response.params.mutationSeed ?? 0}`,
+    },
+  ];
+};
 
 const IsInCameraViewport = () => {
   return [

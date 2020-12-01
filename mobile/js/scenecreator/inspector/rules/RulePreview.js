@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Triggers } from './Triggers';
 import { Responses } from './Responses';
+import { Triggers } from './Triggers';
 import { useCardCreator } from '../../CreateCardContext';
+import { VectorIcon } from '../../../components/VectorIcon';
 
 const styles = StyleSheet.create({
   rowText: {
@@ -68,11 +69,18 @@ export const RulePreview = ({ rule }) => {
       {responseRows.map((row, ii) => (
         <Text style={[styles.rowText, { marginLeft: row.indent * 12 }]} key={`response-row-${ii}`}>
           {row.cells.map((cell, jj) => {
+            const key = `response-cell-${ii}-${jj}`;
             if (cell.type === 'text') {
               return `${cell.label} `;
+            } else if (cell.type === 'icon') {
+              return (
+                <Text key={key}>
+                  <VectorIcon family={cell.family} name={cell.icon} size={16} color="#000" />{' '}
+                </Text>
+              );
             } else {
               return (
-                <Text style={styles.keyCell} key={`response-cell-${ii}-${jj}`}>
+                <Text style={styles.keyCell} key={key}>
                   {cell.label}{' '}
                 </Text>
               );
