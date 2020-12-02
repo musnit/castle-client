@@ -12,6 +12,7 @@ const styles = StyleSheet.create({
   rowText: {
     fontSize: 16,
     paddingBottom: 8,
+    paddingRight: 16,
   },
   keyCell: { fontWeight: 'bold' },
   newLineIcon: {
