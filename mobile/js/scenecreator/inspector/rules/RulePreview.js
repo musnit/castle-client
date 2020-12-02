@@ -30,13 +30,16 @@ const makeResponseRows = (rows, order, indent, { response, context }) => {
   });
   if (!response) return;
 
-  if (response.params?.then) {
-    // add the 'if' cells to this row
+  if (response.params?.condition) {
+    // append condition to existing row
     let responseCells = rows[rows.length - 1].cells;
     rows[rows.length - 1].cells = responseCells.concat(
       Responses.makeCells({ response: response.params.condition, context, isPreview: true })
     );
+  }
 
+  if (response.params?.then) {
+    // add the 'if' cells to this row
     makeResponseRows(rows, 0, indent + 1, { response: response.params.then, context });
     if (response.params['else']) {
       rows.push({
