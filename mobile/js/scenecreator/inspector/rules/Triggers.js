@@ -6,7 +6,7 @@ import {
 
 const withWhen = (tokens) => {
   tokens.unshift({
-    type: 'showEntryOptions',
+    type: 'text',
     label: 'When',
   });
   return tokens;
@@ -50,7 +50,7 @@ const Tap = () => {
 const Press = () => {
   return [
     {
-      type: 'showEntryOptions',
+      type: 'text',
       label: 'While',
     },
     {

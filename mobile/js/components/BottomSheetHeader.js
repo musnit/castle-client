@@ -53,18 +53,19 @@ const styles = StyleSheet.create({
   },
 });
 
-export const BottomSheetHeader = ({ title, onClose, onDone, loading }) => (
+export const BottomSheetHeader = ({ title, onClose, onDone, renderActions, loading }) => (
   <View style={styles.header}>
     <TouchableOpacity style={styles.back} onPress={onClose}>
       <Icon name="close" size={32} color="#000" />
     </TouchableOpacity>
-    <View style={[styles.headingContainer, onDone ? null : styles.centerHeading]}>
+    <View style={[styles.headingContainer, onDone || renderActions ? null : styles.centerHeading]}>
       <Text style={styles.headingLabel}>{title}</Text>
     </View>
-    {onDone && (
+    {renderActions ? renderActions() : null}
+    {onDone ? (
       <TouchableOpacity style={styles.done} onPress={onDone} disabled={loading}>
         {loading ? <ActivityIndicator /> : <Text style={styles.doneText}>Done</Text>}
       </TouchableOpacity>
-    )}
+    ) : null}
   </View>
 );

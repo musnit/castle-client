@@ -17,8 +17,6 @@ export const Rule = ({
   conditions,
   addChildSheet,
   onChangeRule,
-  onCopyRule,
-  onRemoveRule,
   sendRuleAction,
 }) => {
   const onChangeTrigger = React.useCallback(
@@ -49,8 +47,6 @@ export const Rule = ({
         addChildSheet={addChildSheet}
         triggers={triggers}
         onChangeTrigger={onChangeTrigger}
-        onRemoveRule={onRemoveRule}
-        onCopyRule={onCopyRule}
       />
       <View style={SceneCreatorConstants.styles.insetContainer}>
         <InspectorResponse

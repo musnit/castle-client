@@ -29,15 +29,7 @@ const _entryToTrigger = (entry) => ({
     : {},
 });
 
-export const Trigger = ({
-  trigger,
-  behaviors,
-  addChildSheet,
-  triggers,
-  onChangeTrigger,
-  onRemoveRule,
-  onCopyRule,
-}) => {
+export const Trigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeTrigger }) => {
   const context = useCardCreator();
 
   const onShowTriggerPicker = React.useCallback(
@@ -60,12 +52,12 @@ export const Trigger = ({
         key: 'ruleOptions',
         Component: RuleOptionsSheet,
         actions: {
-          remove: onRemoveRule,
-          copy: onCopyRule,
+          // remove: onRemoveRule,
+          // copy: onCopyRule,
         },
         type: 'rule',
       }),
-    [addChildSheet, onRemoveRule]
+    [addChildSheet]
   );
 
   const onChangeParams = React.useCallback(
