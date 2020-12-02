@@ -1,5 +1,6 @@
 import {
   getVariableName,
+  formatVariableName,
   makeExpressionSummary,
   readableOperator,
 } from '../../SceneCreatorUtilities';
@@ -245,7 +246,7 @@ const VariableMeetsCondition = ({ response, context }) => {
       },
       {
         type: 'selectParamSheet',
-        label: getVariableName(response.params.variableId, context.variables),
+        label: formatVariableName(getVariableName(response.params.variableId, context.variables)),
         ...changeAllParams,
       },
       {
@@ -527,7 +528,7 @@ const ResetVariable = ({ response, context }) => {
     },
     {
       type: 'selectParamSheet',
-      label: getVariableName(response.params?.variableId, context.variables),
+      label: formatVariableName(getVariableName(response.params?.variableId, context.variables)),
       paramName: 'variableId',
       paramValue: response.params?.variableId,
     },
@@ -548,7 +549,7 @@ const SetVariable = ({ response, context }) => {
     },
     {
       type: 'selectParamSheet',
-      label: getVariableName(response.params?.variableId, context.variables),
+      label: formatVariableName(getVariableName(response.params?.variableId, context.variables)),
       ...changeAllParams,
     },
     {
@@ -577,7 +578,7 @@ const ChangeVariable = ({ response, context }) => {
     },
     {
       type: 'selectParamSheet',
-      label: getVariableName(response.params?.variableId, context.variables),
+      label: formatVariableName(getVariableName(response.params?.variableId, context.variables)),
       ...changeAllParams,
     },
     {

@@ -1,5 +1,7 @@
 import { getPaneData, sendDataPaneAction } from '../ghost/GhostUI';
 
+export const formatVariableName = (name) => `\$${name}`;
+
 export const getVariableName = (variableId, variables) => {
   let variableName = '(none)';
   if (variableId && variableId !== 'none') {
@@ -150,7 +152,7 @@ export const makeExpressionSummary = (expression, context) => {
       if (!variableLabel) {
         variableLabel = expression.params.variableId;
       }
-      return `\$${variableLabel}`;
+      return formatVariableName(variableLabel);
     }
     case 'behavior property': {
       const { behaviors } = context;

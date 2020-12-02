@@ -2,6 +2,7 @@ import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { PopoverButton } from '../../PopoverProvider';
 import { DropdownItemsList } from './InspectorDropdown';
+import { formatVariableName } from '../../SceneCreatorUtilities';
 
 import uuid from 'uuid/v4';
 
@@ -72,7 +73,7 @@ export const InspectorVariablePicker = ({ value, onChange, style, context, ...pr
     onAddItem: addVariable,
   };
 
-  let valueLabel = selectedItem ? selectedItem.name : '(none)';
+  let valueLabel = selectedItem ? formatVariableName(selectedItem.name) : '(none)';
 
   return (
     <View style={[styles.container, style]} {...props}>
