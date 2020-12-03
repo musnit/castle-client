@@ -200,6 +200,18 @@ int w_ImageData_updateFloodFillForNewPaths(lua_State *L)
 	return 0;
 }
 
+int w_ImageData_isEmpty(lua_State *L)
+{
+	ImageData *t = luax_checkimagedata(L, 1);
+	bool result = 0;
+
+	luax_catchexcept(L, [&](){ result = t->isEmpty(); });
+
+	lua_pushboolean(L, result);
+
+	return 1;
+}
+
 int w_ImageData_setPixel(lua_State *L)
 {
 	ImageData *t = luax_checkimagedata(L, 1);
@@ -378,6 +390,7 @@ static const luaL_Reg w_ImageData_functions[] =
 	{ "encode", w_ImageData_encode },
 	{ "floodFill", w_ImageData_floodFill},
 	{ "updateFloodFillForNewPaths", w_ImageData_updateFloodFillForNewPaths },
+	{ "isEmpty", w_ImageData_isEmpty },
 
 	// Used in the Lua wrapper code.
 	{ "_mapPixelUnsafe", w_ImageData__mapPixelUnsafe },
