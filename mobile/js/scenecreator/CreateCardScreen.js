@@ -198,7 +198,7 @@ export const CreateCardScreen = ({
     async (nextCard) => {
       if (!cardNeedsSave() || saveAction === 'none') {
         // no changes, or unable to save
-        return goToCard(nextCard);
+        return goToCard(nextCard, isPlaying);
       } else {
         const title = Utilities.makeCardPreviewTitle(nextCard, deck);
         if (saveAction === 'save') {
@@ -210,7 +210,7 @@ export const CreateCardScreen = ({
             },
             (buttonIndex) => {
               if (buttonIndex == 0) {
-                return saveAndGoToCard(nextCard);
+                return saveAndGoToCard(nextCard, isPlaying);
               }
             }
           );
@@ -224,14 +224,14 @@ export const CreateCardScreen = ({
             },
             (buttonIndex) => {
               if (buttonIndex == 0) {
-                return goToCard(nextCard);
+                return goToCard(nextCard, isPlaying);
               }
             }
           );
         }
       }
     },
-    [cardNeedsSave, saveAndGoToCard, goToCard]
+    [cardNeedsSave, saveAndGoToCard, goToCard, isPlaying]
   );
 
   const onSelectBackupData = React.useCallback(

@@ -208,6 +208,7 @@ class CreateCardScreenDataProvider extends React.Component {
       this.props.navigation.navigate('CreateDeck', {
         deckIdToEdit: deckId,
         cardIdToEdit: undefined,
+        initialIsEditing: true,
       });
     } else {
       // there is no deck, go back to create index
@@ -229,19 +230,20 @@ class CreateCardScreenDataProvider extends React.Component {
     return this._goToDeck(deck.deckId);
   };
 
-  _goToCard = (nextCard) => {
+  _goToCard = (nextCard, isPlaying) => {
     setTimeout(() => {
       this.props.navigation.navigate('CreateDeck', {
         deckIdToEdit: this.state.deck.deckId,
         cardIdToEdit: nextCard.cardId,
+        initialIsEditing: !isPlaying,
       });
     }, 100);
   };
 
-  _saveAndGoToCard = async (nextCard) => {
+  _saveAndGoToCard = async (nextCard, isPlaying) => {
     await this._save();
     if (!this._mounted) return;
-    this._goToCard(nextCard);
+    this._goToCard(nextCard, isPlaying);
   };
 
   _cardNeedsSave = () => this.state.card?.isChanged;
