@@ -23,7 +23,7 @@ export const CardScene = ({
   card,
   style,
   interactionEnabled = true,
-  isEditing = false,
+  initialIsEditing = false,
   isEditable = false,
   onMessage,
   deckState,
@@ -65,14 +65,14 @@ export const CardScene = ({
                       data: card.scene.data,
                       deckState,
                     },
-                    isEditing,
+                    isEditing: initialIsEditing,
                     isEditable,
                     isDebug: !!__DEV__,
                   }),
                 }}
                 headerVisible={false}
                 onPressReload={onPressReload}
-                logsVisible={isEditing && logsVisible}
+                logsVisible={initialIsEditing && logsVisible}
                 setLogsVisible={setLogsVisible}
                 onMessage={onMessage}
                 onLoaded={onLoaded}

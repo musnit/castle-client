@@ -16,27 +16,39 @@ const styles = StyleSheet.create({
 });
 
 // switches between card creator and deck creator
-const CreateDeckContent = ({ deckId, cardId, ...props }) => {
+const CreateDeckContent = ({ deckId, cardId, initialIsEditing, ...props }) => {
   if (deckId && !cardId) {
     return <CreateDeckScreen {...props} />;
   } else {
-    return <CreateCardScreen {...props} />;
+    return <CreateCardScreen initialIsEditing={initialIsEditing} {...props} />;
   }
 };
 
 export const CreateDeckNavigator = (props) => {
   const navigation = useNavigation();
 
-  let deckId, cardId;
+  let deckId,
+    cardId,
+    initialIsEditing = true;
   if (props.route && props.route.params) {
     const { params } = props.route;
     deckId = params.deckIdToEdit;
     cardId = params.cardIdToEdit;
+    if (params.initialIsEditing === false) {
+      initialIsEditing = params.initialIsEditing;
+    }
   }
 
   React.useEffect(() => {
     Amplitude.logEventWithProperties('VIEW_CREATE_DECK', { deckId });
   }, [deckId]);
 
-  return <CreateDeckContent deckId={deckId} cardId={cardId} {...props} />;
+  return (
+    <CreateDeckContent
+      deckId={deckId}
+      cardId={cardId}
+      initialIsEditing={initialIsEditing}
+      {...props}
+    />
+  );
 };

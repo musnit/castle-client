@@ -121,7 +121,7 @@ class CreateCardScreenDataProvider extends React.Component {
           async () => {
             const { card } = this.state;
             GhostEvents.sendAsync('SCENE_CREATOR_EDITING', {
-              isEditing: true,
+              isEditing: props.initialIsEditing === false ? false : true,
             });
           }
         );
@@ -302,6 +302,7 @@ class CreateCardScreenDataProvider extends React.Component {
         <CreateCardScreen
           deck={deck}
           card={card}
+          initialIsEditing={this.props.initialIsEditing}
           loading={loading}
           deckState={deckState}
           resetDeckState={this._resetDeckState}

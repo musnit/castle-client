@@ -107,6 +107,7 @@ const getExpressions = (root) => {
 export const CreateCardScreen = ({
   card,
   deck,
+  initialIsEditing = true,
   loading,
   deckState,
   resetDeckState,
@@ -331,8 +332,8 @@ export const CreateCardScreen = ({
                 key={`card-scene-${card.scene && card.scene.sceneId}`}
                 style={styles.scene}
                 card={card}
-                isEditing={true}
                 isEditable={true}
+                initialIsEditing={initialIsEditing}
                 deckState={deckState}
                 onMessage={onSceneMessage}
               />
