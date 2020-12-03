@@ -8,7 +8,7 @@ import { SegmentedNavigation } from '../../components/SegmentedNavigation';
 import * as Constants from '../../Constants';
 import tinycolor from 'tinycolor2';
 
-export const DRAWING_CARD_HEADER_HEIGHT = 150;
+export const DRAWING_CARD_HEADER_HEIGHT = 180;
 
 const styles = StyleSheet.create({
   container: {

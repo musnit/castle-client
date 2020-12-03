@@ -100,6 +100,7 @@ public:
 	bool isAlphaSet(const Pixel &p);
 	bool arePixelsEqual(const Pixel &p1, const Pixel &p2);
 	void updateFloodFillForNewPaths(ImageData *paths);
+	bool isEmpty();
 	int getPixelHash(const Pixel &p);
 
 	/**

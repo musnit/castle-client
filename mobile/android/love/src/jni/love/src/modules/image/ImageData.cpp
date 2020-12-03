@@ -381,6 +381,22 @@ bool ImageData::arePixelsEqual(const Pixel &p1, const Pixel &p2)
 		}
 }
 
+bool ImageData::isEmpty()
+{
+	Pixel p;
+
+	for (int x = 0; x < width; x++) {
+		for (int y = 0; y < height; y++) {
+			getPixel(x, y, p);
+			if (isAlphaSet(p)) {
+				return false;
+			}
+		}
+	}
+	
+	return true;
+}
+
 int ImageData::floodFillTest(int x, int y, ImageData *paths, const Pixel &p)
 {
 	Pixel floodP;
