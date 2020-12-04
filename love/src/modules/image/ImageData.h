@@ -101,6 +101,8 @@ public:
 	bool arePixelsEqual(const Pixel &p1, const Pixel &p2);
 	void updateFloodFillForNewPaths(ImageData *paths);
 	bool isEmpty();
+	void getBounds(int *);
+	void copyImageData(ImageData *, int, int, int, int, int, int);
 	int getPixelHash(const Pixel &p);
 
 	/**
