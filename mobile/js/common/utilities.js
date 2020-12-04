@@ -145,13 +145,13 @@ export const cardMatchesSearchQuery = (card, searchQuery) => {
   return false;
 };
 
-export const makeInitialDeckState = (deck) => {
+export const makeInitialDeckState = (deck, resetValue = true) => {
   return {
     variables: deck.variables
       ? deck.variables.map((variable) => {
           return {
             ...variable,
-            value: variable.initialValue,
+            value: resetValue ? variable.initialValue : variable.value,
           };
         })
       : [],

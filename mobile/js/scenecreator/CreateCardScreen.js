@@ -131,7 +131,8 @@ export const CreateCardScreen = ({
   const [isShowingDraw, setIsShowingDraw] = React.useState(false);
 
   const isSceneLoaded = !!globalActions;
-  const isPlaying = globalActions?.performing;
+  const isPlaying =
+    globalActions?.performing === undefined ? !initialIsEditing : globalActions.performing;
   const selectedActorId = globalActions?.selectedActorId;
   const hasSelection = selectedActorId !== undefined;
   const { behaviors, behaviorActions } = getInspectorBehaviors(root);

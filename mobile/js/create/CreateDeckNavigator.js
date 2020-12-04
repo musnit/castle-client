@@ -16,11 +16,11 @@ const styles = StyleSheet.create({
 });
 
 // switches between card creator and deck creator
-const CreateDeckContent = ({ deckId, cardId, initialIsEditing, ...props }) => {
+const CreateDeckContent = ({ deckId, cardId, ...props }) => {
   if (deckId && !cardId) {
     return <CreateDeckScreen {...props} />;
   } else {
-    return <CreateCardScreen initialIsEditing={initialIsEditing} {...props} />;
+    return <CreateCardScreen {...props} />;
   }
 };
 
@@ -29,11 +29,13 @@ export const CreateDeckNavigator = (props) => {
 
   let deckId,
     cardId,
+    initialDeckState,
     initialIsEditing = true;
   if (props.route && props.route.params) {
     const { params } = props.route;
     deckId = params.deckIdToEdit;
     cardId = params.cardIdToEdit;
+    initialDeckState = params.initialDeckState;
     if (params.initialIsEditing === false) {
       initialIsEditing = params.initialIsEditing;
     }

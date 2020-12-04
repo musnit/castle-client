@@ -102,10 +102,17 @@ class CreateCardScreenDataProvider extends React.Component {
         }
       }
 
-      // kludge: this allows us to check the screen's dirty state based on
-      // the card onChange callback everywhere (even when you modify variables, a
-      // property of the deck)
-      card.variables = deck.variables;
+      let deckState;
+      if (params.initialDeckState) {
+        card.variables = params.initialDeckState.variables;
+        deckState = params.initialDeckState;
+      } else {
+        // kludge: this allows us to check the screen's dirty state based on
+        // the card onChange callback everywhere (even when you modify variables, a
+        // property of the deck)
+        card.variables = deck.variables;
+        deckState = Utilities.makeInitialDeckState(card);
+      }
 
       if (!card.scene) {
         card.scene = Constants.EMPTY_CARD.scene;
@@ -116,12 +123,12 @@ class CreateCardScreenDataProvider extends React.Component {
           {
             deck,
             card,
-            deckState: Utilities.makeInitialDeckState(card),
+            deckState,
           },
           async () => {
             const { card } = this.state;
             GhostEvents.sendAsync('SCENE_CREATOR_EDITING', {
-              isEditing: props.initialIsEditing === false ? false : true,
+              isEditing: params.initialIsEditing === false ? false : true,
             });
           }
         );
@@ -209,6 +216,7 @@ class CreateCardScreenDataProvider extends React.Component {
         deckIdToEdit: deckId,
         cardIdToEdit: undefined,
         initialIsEditing: true,
+        initialDeckState: null,
       });
     } else {
       // there is no deck, go back to create index
@@ -236,6 +244,7 @@ class CreateCardScreenDataProvider extends React.Component {
         deckIdToEdit: this.state.deck.deckId,
         cardIdToEdit: nextCard.cardId,
         initialIsEditing: !isPlaying,
+        initialDeckState: isPlaying ? { ...this.state.deckState, setFromLua: undefined } : null,
       });
     }, 100);
   };
