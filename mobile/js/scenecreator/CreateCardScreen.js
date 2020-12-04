@@ -197,6 +197,9 @@ export const CreateCardScreen = ({
 
   const maybeSaveAndGoToCard = React.useCallback(
     async (nextCard) => {
+      if (!Utilities.canGoToCard(nextCard, isPlaying)) {
+        return;
+      }
       if (!cardNeedsSave() || saveAction === 'none') {
         // no changes, or unable to save
         return goToCard(nextCard, isPlaying);

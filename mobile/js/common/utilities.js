@@ -34,6 +34,12 @@ export const getTextActorsContent = (sceneData) => {
   return contents;
 };
 
+export const canGoToCard = (card, isPlaying) => {
+  if (!card || !card.cardId) return false;
+  if (LocalId.isLocalId(card.cardId) && isPlaying) return false;
+  return true;
+};
+
 export const makeCardPreviewTitle = (card, deck) => {
   if (!card || !card.cardId) {
     return 'Nonexistent card';
