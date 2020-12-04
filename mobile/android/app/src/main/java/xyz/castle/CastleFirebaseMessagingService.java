@@ -19,6 +19,7 @@ import android.widget.RemoteViews;
 
 import androidx.core.app.NotificationCompat;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.postprocessors.RoundPostprocessor;
 import com.facebook.imagepipeline.request.Postprocessor;
@@ -78,6 +79,10 @@ public class CastleFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
+        if (!Fresco.hasBeenInitialized()) {
+            Fresco.initialize(this);
+        }
+
         final Map<String, String> data = remoteMessage.getData();
         if (data != null) {
             if (data.containsKey("removePushNotificationId")) {
