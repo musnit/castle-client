@@ -62,7 +62,7 @@ std::string getExecutablePath();
 /**
  * Causes devices with vibration support to vibrate for about 0.5 seconds.
  **/
-void vibrate();
+void vibrate(double seconds);
 
 /**
  * Enable mix mode (e.g. with background music apps) and playback with a muted device.

@@ -152,7 +152,7 @@ void System::vibrate(double seconds) const
 #ifdef LOVE_ANDROID
 	love::android::vibrate(seconds);
 #elif defined(LOVE_IOS)
-	love::ios::vibrate();
+	love::ios::vibrate(seconds);
 #else
 	LOVE_UNUSED(seconds);
 #endif
