@@ -438,7 +438,15 @@ const SetBehavior = ({ response, context }) => {
       }
     }
   }
-  valueLabel = response.params?.value !== undefined ? response.params.value.toString() : 0;
+  if (response.params?.value === undefined) {
+    valueLabel = 0;
+  } else {
+    if (response.params.value.expressionType) {
+      valueLabel = makeExpressionSummary(response.params.value);
+    } else {
+      valueLabel = response.params.value.toString();
+    }
+  }
   if (response.params?.relative) {
     valueLabel = `${valueLabel} (relative)`;
   }
