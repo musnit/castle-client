@@ -111,6 +111,42 @@ export const getInspectorActions = (root) => {
   return { inspectorActions, sendInspectorAction, applicableTools };
 };
 
+export const getInspectorRules = (root) => {
+  const element = root?.panes ? root.panes['sceneCreatorRules'] : null;
+
+  let rulesData, sendRuleAction;
+  if (element?.children.count) {
+    Object.entries(element.children).forEach(([key, child]) => {
+      if (child.type === 'data') {
+        const data = child.props.data;
+        if (data.name === 'Rules') {
+          rulesData = data;
+        }
+        sendRuleAction = (action, value) => sendDataPaneAction(element, action, value, key);
+      }
+    });
+  }
+
+  let rulesItems = [];
+  if (rulesData) {
+    // there's an issue with the lua bridge applying a diff to arrays,
+    // make sure we don't have one here
+    if (Array.isArray(rulesData.rules)) {
+      throw new Error(`Expecting a dictionary of Rules, got an array.`);
+    } else {
+      rulesItems = Object.entries(rulesData.rules)
+        .map(([index, rule]) => ({ ...rule, index }))
+        .sort((a, b) => parseInt(b.index, 10) < parseInt(a.index, 10));
+    }
+  }
+
+  return {
+    data: rulesData,
+    sendAction: sendRuleAction,
+    items: rulesItems,
+  };
+};
+
 export const promoteToExpression = (initialValue) => {
   const initialType = typeof initialValue;
   switch (initialType) {

@@ -40,6 +40,7 @@ import {
   getActiveTool,
   getInspectorTags,
   getInspectorActions,
+  getInspectorRules,
 } from './SceneCreatorUtilities';
 
 const CARD_HEIGHT = (1 / Constants.CARD_RATIO) * 100 * Viewport.vw;
@@ -140,6 +141,7 @@ export const CreateCardScreen = ({
   const { activeToolData, activeToolAction } = getActiveTool(root);
   const { textActors, isTextActorSelected } = getTextActorsData(root, isPlaying);
   const { tagToActorIds } = getInspectorTags(behaviors?.Tags);
+  const rules = getInspectorRules(root);
 
   // lua's behaviors can be "tools"
   React.useEffect(() => {
@@ -297,6 +299,7 @@ export const CreateCardScreen = ({
     isTextActorSelected,
     behaviors,
     behaviorActions,
+    rules,
     library: getLibraryEntries(root),
     expressions: getExpressions(root),
     transformAssetUri,

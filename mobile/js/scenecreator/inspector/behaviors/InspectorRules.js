@@ -3,7 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Counter } from './InspectorBehaviors';
 import { EditRuleSheet } from '../rules/EditRuleSheet';
 import { RulePreview } from '../rules/RulePreview';
-import { sendDataPaneAction, useGhostUI } from '../../../ghost/GhostUI';
+import { useCardCreator } from '../../CreateCardContext';
 
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
@@ -27,38 +27,11 @@ const styles = StyleSheet.create({
 });
 
 export default InspectorRules = ({ behaviors, sendActions, addChildSheet }) => {
+  const { rules: rulesContext } = useCardCreator();
+  const { data: rulesData, sendAction: sendRuleAction, items: rulesItems } = rulesContext;
+
   const rules = behaviors.Rules;
   const counter = behaviors.Counter;
-
-  // TODO: would be nice not to subscribe here
-  const { root } = useGhostUI();
-  const element = root?.panes ? root.panes['sceneCreatorRules'] : null;
-
-  let rulesData, sendRuleAction;
-  if (element?.children.count) {
-    Object.entries(element.children).forEach(([key, child]) => {
-      if (child.type === 'data') {
-        const data = child.props.data;
-        if (data.name === 'Rules') {
-          rulesData = data;
-        }
-        sendRuleAction = (action, value) => sendDataPaneAction(element, action, value, key);
-      }
-    });
-  }
-
-  let rulesItems = [];
-  if (rulesData) {
-    // there's an issue with the lua bridge applying a diff to arrays,
-    // make sure we don't have one here
-    if (Array.isArray(rulesData.rules)) {
-      throw new Error(`Expecting a dictionary of Rules, got an array.`);
-    } else {
-      rulesItems = Object.entries(rulesData.rules)
-        .map(([index, rule]) => ({ ...rule, index }))
-        .sort((a, b) => parseInt(b.index, 10) < parseInt(a.index, 10));
-    }
-  }
 
   const onChangeRule = React.useCallback(
     (newRule) => {
