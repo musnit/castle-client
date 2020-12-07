@@ -54,14 +54,14 @@ export default InspectorRules = ({ behaviors, sendActions, addChildSheet }) => {
   const onCopyRule = React.useCallback((rule) => sendRuleAction('copy', [rule]), [sendRuleAction]);
 
   const onPressRule = React.useCallback(
-    (rule) =>
+    (ruleIndex) =>
       addChildSheet({
         key: 'editRule',
         Component: EditRuleSheet,
+        ruleIndex,
         onChangeRule,
         onRemoveRule,
         onCopyRule,
-        rule,
         behaviors,
         triggers: rulesData.triggers,
         responses: rulesData.responses,
@@ -98,7 +98,7 @@ export default InspectorRules = ({ behaviors, sendActions, addChildSheet }) => {
         <View style={{ flexDirection: 'column-reverse' }}>
           {rulesItems.map((rule, ii) => (
             <TouchableOpacity
-              onPress={() => onPressRule(rule)}
+              onPress={() => onPressRule(rule.index)}
               key={`rule-${rule.trigger?.name}-${rule.response?.name}-${ii}`}
               style={styles.rulePreviewButton}>
               <RulePreview rule={rule} />

@@ -3,6 +3,7 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
 import { Rule } from './Rule';
+import { useCardCreator } from '../../CreateCardContext';
 
 import FeatherIcon from 'react-native-vector-icons/Feather';
 
@@ -38,7 +39,7 @@ const RuleHeaderActions = ({ onRemoveRule, onCopyRule }) => {
 };
 
 export const EditRuleSheet = ({
-  rule,
+  ruleIndex,
   behaviors,
   triggers,
   responses,
@@ -51,13 +52,16 @@ export const EditRuleSheet = ({
   onClose,
   addChildSheet,
 }) => {
-  const [value, setValue] = React.useState(rule);
+  const { rules: rulesContext } = useCardCreator();
+  const { data, items } = rulesContext;
+  const rule = items.find((r) => r.index === ruleIndex);
+  if (!rule) return null;
 
   const renderContent = () => (
     <View style={styles.container}>
       <Rule
-        rule={value}
-        onChangeRule={(rule) => setValue(rule)}
+        rule={rule}
+        onChangeRule={onChangeRule}
         addChildSheet={addChildSheet}
         behaviors={behaviors}
         triggers={triggers}
@@ -68,27 +72,22 @@ export const EditRuleSheet = ({
     </View>
   );
 
-  const onDone = React.useCallback(() => {
-    onChangeRule(value);
-    onClose();
-  }, [onClose, value]);
-
   const onRemove = React.useCallback(() => {
     onRemoveRule(rule);
     onClose();
   }, [onRemoveRule, onClose, rule]);
 
   const onCopy = React.useCallback(() => {
-    onCopyRule(value);
+    onCopyRule(rule);
     onClose();
-  }, [onCopyRule, onClose, value]);
+  }, [onCopyRule, onClose, rule]);
 
   const renderHeaderActions = () => (
     <RuleHeaderActions onRemoveRule={onRemove} onCopyRule={onCopy} />
   );
 
   const renderHeader = () => (
-    <BottomSheetHeader title="Edit Rule" onClose={onDone} renderActions={renderHeaderActions} />
+    <BottomSheetHeader title="Edit Rule" onClose={onClose} renderActions={renderHeaderActions} />
   );
 
   return (
