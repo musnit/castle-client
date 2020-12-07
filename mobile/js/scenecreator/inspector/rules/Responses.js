@@ -561,6 +561,11 @@ const SetVariable = ({ response, context }) => {
       label: makeExpressionSummary(response.params?.setToValue ?? 0, context),
       ...changeAllParams,
     },
+    {
+      type: 'text',
+      isPreview: true,
+      label: response.params?.relative ? '(relative)' : '',
+    },
   ];
 };
 
