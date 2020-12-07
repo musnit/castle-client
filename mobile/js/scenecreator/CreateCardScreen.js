@@ -43,6 +43,8 @@ import {
   getInspectorRules,
 } from './SceneCreatorUtilities';
 
+const USE_BELT = false;
+
 const CARD_HEIGHT = (1 / Constants.CARD_RATIO) * 100 * Viewport.vw;
 
 const MAX_AVAILABLE_CARD_HEIGHT = 100 * Viewport.vh - CARD_HEADER_HEIGHT - CARD_BOTTOM_MIN_HEIGHT;
@@ -248,6 +250,14 @@ export const CreateCardScreen = ({
     [onSceneRevertData, setActiveSheet]
   );
 
+  const onPressAdd = React.useCallback(() => {
+    if (USE_BELT) {
+      GhostEvents.sendAsync('TOGGLE_BELT', {});
+    } else {
+      setActiveSheet('sceneCreatorBlueprints');
+    }
+  }, []);
+
   GhostEvents.useListen({
     eventName: 'NAVIGATE_TO_CARD',
     handler: ({ card }) => maybeSaveAndGoToCard(card),
@@ -364,7 +374,7 @@ export const CreateCardScreen = ({
             ) : (
               <CreateCardBottomActions
                 card={card}
-                onAdd={() => setActiveSheet('sceneCreatorBlueprints')}
+                onAdd={onPressAdd}
                 onOpenLayout={() => setActiveSheet('sceneCreatorSettings')}
                 onSave={saveAndGoToDeck}
                 isSceneLoaded={isSceneLoaded}
