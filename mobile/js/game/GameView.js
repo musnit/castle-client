@@ -13,6 +13,8 @@ import * as LuaBridge from './LuaBridge';
 import * as Session from '../Session';
 import * as Sentry from '@sentry/react-native';
 
+const FORWARD_LUA_LOGS = false;
+
 // Read dimensions settings into the `{ width, height, upscaling, downscaling }` format for `GhostView`
 const computeDimensionsSettings = ({ metadata }) => {
   const { dimensions, scaling, upscaling, downscaling } = metadata;
@@ -205,6 +207,22 @@ export const GameView = ({
       }
     },
   });
+
+  if (FORWARD_LUA_LOGS) { // This is a constant, so it's ok to wrap hooks in it
+    useListen({
+      eventName: 'GHOST_PRINT',
+      handler: (args) => {
+        console.log('LUA: ', args.join(' '));
+      },
+    });
+
+    useListen({
+      eventName: 'GHOST_ERROR',
+      handler: ({ error, stacktrace }) => {
+        console.log(`LUA ERROR: ${error}\n${stacktrace}`);
+      },
+    });
+  }
 
   const [landscape, setLandscape] = useState(false);
 
