@@ -233,7 +233,7 @@ network.async(
                    fileData = love.filesystem.newFileData(sceneCreatorResponse, "scene_creator.love")
                 end
             else
-                local url = 'https://api.castle.xyz/api/react-native-bundle?channel=' .. channel .. '&platform=lua'
+                local url = 'https://api.castle.xyz/api/react-native-bundle?channel=' .. CASTLE_REACT_NATIVE_CHANNEL .. '&platform=lua'
                 fileData = love.filesystem.newFileData(network.fetch(url), "scene_creator.love")
             end
 
