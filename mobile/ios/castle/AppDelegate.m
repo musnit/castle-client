@@ -126,7 +126,16 @@ int SDL_main(int argc, char *argv[]) {
 //  return [NSURL URLWithString:@"http://192.168.1.15:8081/index.bundle?platform=ios&dev=true&minify=false"];
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
 #else
-  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+  // Read which React Native channel this user is on
+  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+  NSString *channel = [defaults objectForKey:@"Castle_ReactNativeChannel"];
+  if (!channel || [channel isEqualToString:@"default"]) {
+    // Default channel, just load embedded bundle
+    return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+  } else {
+    // Non-default channel URL
+    return [NSURL URLWithString:[NSString stringWithFormat:@"https://api.castle.xyz/api/react-native-bundle?channel=%@&platform=ios", channel]];
+  }
 #endif
 }
 

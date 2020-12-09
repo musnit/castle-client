@@ -72,6 +72,7 @@
 		A1959DFA2410A197000C61E0 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1959DF92410A197000C61E0 /* SystemConfiguration.framework */; };
 		A1CCBA1623551869009F4DDD /* GhostChannels.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1CCBA1423551869009F4DDD /* GhostChannels.mm */; };
 		A1CCBA19235518C7009F4DDD /* GhostView.m in Sources */ = {isa = PBXBuildFile; fileRef = A1CCBA18235518C7009F4DDD /* GhostView.m */; };
+		A1D3A849258177A400666D4D /* CastleNativeUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = A1D3A841258177A400666D4D /* CastleNativeUtils.m */; };
 		A1FA18C32365168600E2ACFE /* GhostInputZone.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1FA18C22365168600E2ACFE /* GhostInputZone.mm */; };
 		B51813F72527916C00C315C9 /* GhostAppState.mm in Sources */ = {isa = PBXBuildFile; fileRef = B51813F62527916C00C315C9 /* GhostAppState.mm */; };
 		B55942172534C97A00BD34E7 /* CastleNotificationService.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B559420F2534C97A00BD34E7 /* CastleNotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -233,6 +234,7 @@
 		A1959DF92410A197000C61E0 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		A1CCBA1423551869009F4DDD /* GhostChannels.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GhostChannels.mm; sourceTree = "<group>"; };
 		A1CCBA18235518C7009F4DDD /* GhostView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GhostView.m; sourceTree = "<group>"; };
+		A1D3A841258177A400666D4D /* CastleNativeUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CastleNativeUtils.m; sourceTree = "<group>"; };
 		A1FA18C22365168600E2ACFE /* GhostInputZone.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GhostInputZone.mm; sourceTree = "<group>"; };
 		A753A21E42DB46D99AD060DF /* RTAliasGrotesk-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "RTAliasGrotesk-Regular.otf"; path = "../assets/fonts/RTAliasGrotesk-Regular.otf"; sourceTree = "<group>"; };
 		B51813EE2527916C00C315C9 /* GhostAppState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GhostAppState.h; sourceTree = "<group>"; };
@@ -306,6 +308,7 @@
 		13B07FAE1A68108700A75B9A /* Castle */ = {
 			isa = PBXGroup;
 			children = (
+				A1D3A841258177A400666D4D /* CastleNativeUtils.m */,
 				91395EAF24084E2D00ECBCF9 /* Castle.entitlements */,
 				A1FA18C22365168600E2ACFE /* GhostInputZone.mm */,
 				B51813EE2527916C00C315C9 /* GhostAppState.h */,
@@ -880,6 +883,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1D3A849258177A400666D4D /* CastleNativeUtils.m in Sources */,
 				A12CFF0423CC318400D721BC /* clipper.cpp in Sources */,
 				A14FE3DE2355CEF0003B7EA0 /* ssl.c in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
