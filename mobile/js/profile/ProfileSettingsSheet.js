@@ -8,7 +8,9 @@ import {
   Linking,
   TextInput,
   Platform,
+  NativeModules,
 } from 'react-native';
+import { useActionSheet } from '@expo/react-native-action-sheet';
 import gql from 'graphql-tag';
 import Viewport from '../common/viewport';
 
@@ -181,6 +183,39 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
     setLoading(false);
   }, [setResetPassword, setLoading]);
 
+  const [experimentalFeaturesChannel, setExperimentalFeaturesChannel] = React.useState('default');
+  React.useEffect(() => {
+    (async () => {
+      const channel = await NativeModules.CastleNativeUtils.getReactNativeChannel();
+      setExperimentalFeaturesChannel(channel || 'default');
+    })();
+  }, []);
+  const { showActionSheetWithOptions } = useActionSheet();
+  const onPressExperimentalFeatures = React.useCallback(async () => {
+    const result = await Session.apolloClient.query({
+      query: gql`
+        query GetReactNativeChannels {
+          getReactNativeChannels
+        }
+      `,
+      fetchPolicy: 'no-cache',
+    });
+    const options = ['default'];
+    if (result.data && result.data.getReactNativeChannels) {
+      console.log(`channels: ${JSON.stringify(result.data.getReactNativeChannels)}`);
+      options.push(...result.data.getReactNativeChannels);
+    }
+    options.push('Cancel');
+    const cancelButtonIndex = options.length - 1;
+    showActionSheetWithOptions({ options, cancelButtonIndex }, async (buttonIndex) => {
+      if (buttonIndex !== cancelButtonIndex) {
+        await NativeModules.CastleNativeUtils.setReactNativeChannel(options[buttonIndex]);
+        const channel = await NativeModules.CastleNativeUtils.getReactNativeChannel();
+        setExperimentalFeaturesChannel(channel || 'default');
+      }
+    });
+  }, []);
+
   const renderHeader = () => (
     <BottomSheetHeader
       title="Settings"
@@ -274,6 +309,21 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
                 <Text style={Constants.styles.buttonLabelOnWhite}>Send reset password email</Text>
               </TouchableOpacity>
             )}
+          </View>
+        </View>
+        <View style={styles.row}>
+          <View>
+            <Text style={Constants.styles.textInputLabelOnWhite}>Experimental features</Text>
+          </View>
+          <View style={{ alignItems: 'flex-start' }}>
+            <TouchableOpacity
+              onPress={onPressExperimentalFeatures}
+              style={Constants.styles.buttonOnWhite}
+              disabled={loading}>
+              <Text style={Constants.styles.buttonLabelOnWhite}>
+                Channel: {experimentalFeaturesChannel}
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
