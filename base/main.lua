@@ -219,17 +219,22 @@ network.async(
             homeUrl = GHOST_ROOT_URI
         else
             local fileData = nil
-            local localFilePath = "scene_creator_downloads/scene_creator_download_" .. SCENE_CREATOR_API_VERSION .. ".love"
+            if not CASTLE_REACT_NATIVE_CHANNEL or CASTLE_REACT_NATIVE_CHANNEL == "default" then
+                local localFilePath = "scene_creator_downloads/scene_creator_download_" .. SCENE_CREATOR_API_VERSION .. ".love"
 
-            if love.filesystem.exists(localFilePath) then
-                print("Using SceneCreatorDownloader file")
-                fileData = love.filesystem.newFileData(localFilePath)
-            end
+                if love.filesystem.exists(localFilePath) then
+                   print("Using SceneCreatorDownloader file")
+                   fileData = love.filesystem.newFileData(localFilePath)
+                end
 
-            if fileData == nil then
-                local sceneCreatorResponse =
-                    network.fetch("https://api.castle.xyz/api/scene-creator?apiVersion=" .. SCENE_CREATOR_API_VERSION)
-                fileData = love.filesystem.newFileData(sceneCreatorResponse, "scene_creator.love")
+                if fileData == nil then
+                   local sceneCreatorResponse =
+                       network.fetch("https://api.castle.xyz/api/scene-creator?apiVersion=" .. SCENE_CREATOR_API_VERSION)
+                   fileData = love.filesystem.newFileData(sceneCreatorResponse, "scene_creator.love")
+                end
+            else
+                local url = 'https://api.castle.xyz/api/react-native-bundle?channel=' .. channel .. '&platform=lua'
+                fileData = love.filesystem.newFileData(network.fetch(url), "scene_creator.love")
             end
 
             love.filesystem.mount(fileData, "zip_mount", true)

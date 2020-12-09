@@ -128,6 +128,16 @@ bool ghostPaused;
     lua_setglobal(L, "GHOST_ROOT_URI");
   }
 
+  // Set the React Native channel
+  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+  NSString *channel = [defaults objectForKey:@"Castle_ReactNativeChannel"];
+  if (channel) {
+    lua_pushstring(L, channel.UTF8String);
+  } else {
+    lua_pushstring(L, "default");
+  }
+  lua_setglobal(L, "CASTLE_REACT_NATIVE_CHANNEL");
+
   // Set the location of the network 'seed' database--contains network data we've 'embedded' into the client
   {
     NSString *ghostNetworkSeedPath = [[NSBundle mainBundle] pathForResource:@"ghost_network_seed" ofType:@"db"];
