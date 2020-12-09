@@ -279,6 +279,34 @@ const char *getGhostRootUri()
     return path;
 }
 
+const char *getCastleReactNativeChannel()
+{
+	static const char *channel = NULL;
+
+	if (channel)
+	{
+		delete channel;
+		channel = NULL;
+	}
+
+	JNIEnv *env = (JNIEnv*) SDL_AndroidGetJNIEnv();
+	jclass activity = env->FindClass("org/love2d/android/GameActivity");
+
+	jmethodID getCastleReactNativeChannel = env->GetStaticMethodID(activity, "getCastleReactNativeChannel", "()Ljava/lang/String;");
+	jstring ghostRootUri = (jstring) env->CallStaticObjectMethod(activity, getCastleReactNativeChannel);
+	const char *utf = env->GetStringUTFChars(ghostRootUri, 0);
+	if (utf)
+	{
+		channel = SDL_strdup(utf);
+		env->ReleaseStringUTFChars(ghostRootUri, utf);
+	}
+
+	env->DeleteLocalRef(ghostRootUri);
+	env->DeleteLocalRef(activity);
+
+	return channel;
+}
+
 double getGhostScreenScaling()
 {
 	JNIEnv *env = (JNIEnv*) SDL_AndroidGetJNIEnv();

@@ -1,12 +1,14 @@
 package xyz.castle;
 
 import androidx.annotation.Nullable;
+import ghost.CastleNativeSettingsModule;
 import xyz.castle.api.ReactNativeDownloader;
 import xyz.castle.generated.BasePackageList;
 
 import android.content.Context;
 import android.app.Application;
 
+import org.love2d.android.GameActivity;
 import org.unimodules.adapters.react.ModuleRegistryAdapter;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import org.unimodules.core.interfaces.SingletonModule;
@@ -40,6 +42,11 @@ public class MainApplication extends Application implements ReactApplication {
     super.onCreate();
 
       CastleSharedPreferences.initialize(this);
+      String channel = CastleNativeSettingsModule.reactNativeChannel();
+      if (channel == null) {
+          channel = "default";
+      }
+      GameActivity.castleReactNativeChannel = channel;
 
       mReactNativeHost =
               new ReactNativeHost(this) {

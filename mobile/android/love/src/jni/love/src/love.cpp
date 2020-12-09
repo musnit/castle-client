@@ -221,6 +221,12 @@ static DoneAction runlove(int argc, char **argv, int &retval)
         lua_setglobal(L, "GHOST_ROOT_URI");
     }
 
+	const char *channel = love::android::getCastleReactNativeChannel();
+	if (channel) {
+		lua_pushstring(L, channel);
+		lua_setglobal(L, "CASTLE_REACT_NATIVE_CHANNEL");
+	}
+
     // Turn the returned boot function into a coroutine and call it until done.
 	lua_newthread(L);
 	lua_pushvalue(L, -2);

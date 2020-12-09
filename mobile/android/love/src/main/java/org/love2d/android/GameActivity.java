@@ -281,6 +281,12 @@ public class GameActivity extends SDLActivity {
     return ghostRootUri == null ? DEFAULT_GHOST_ROOT_URI : ghostRootUri;
   }
 
+  public static String castleReactNativeChannel = "default";
+
+  public static String getCastleReactNativeChannel() {
+      return castleReactNativeChannel;
+  }
+
   public static double ghostScreenScaling = 1;
 
   public static double getGhostScreenScaling() {
