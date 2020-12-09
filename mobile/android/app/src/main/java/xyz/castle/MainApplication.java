@@ -52,6 +52,10 @@ public class MainApplication extends Application implements ReactApplication {
               new ReactNativeHost(this) {
                   @Override
                   public boolean getUseDeveloperSupport() {
+                      if (CastleNativeSettingsModule.reactNativeChannel() != null) {
+                          return false;
+                      }
+
                       return BuildConfig.DEBUG;
                   }
 
@@ -80,9 +84,6 @@ public class MainApplication extends Application implements ReactApplication {
                   @Override
                   protected @Nullable
                   String getJSBundleFile() {
-                      if (BuildConfig.DEBUG) {
-                          return null;
-                      }
                       return ReactNativeDownloader.download(MainApplication.this);
                   }
               };
