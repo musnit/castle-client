@@ -226,4 +226,5 @@ export const USER_PROFILE_FRAGMENT = `
     }
     variables
   }
+  isReactNativeChannelsEnabled
 `;

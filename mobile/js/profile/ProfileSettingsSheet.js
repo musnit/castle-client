@@ -9,6 +9,7 @@ import {
   TextInput,
   Platform,
   NativeModules,
+  Alert,
 } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import gql from 'graphql-tag';
@@ -202,7 +203,6 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
     });
     const options = ['default'];
     if (result.data && result.data.getReactNativeChannels) {
-      console.log(`channels: ${JSON.stringify(result.data.getReactNativeChannels)}`);
       options.push(...result.data.getReactNativeChannels);
     }
     options.push('Cancel');
@@ -212,6 +212,10 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
         await NativeModules.CastleNativeUtils.setReactNativeChannel(options[buttonIndex]);
         const channel = await NativeModules.CastleNativeUtils.getReactNativeChannel();
         setExperimentalFeaturesChannel(channel || 'default');
+        Alert.alert(
+          'Channel changed',
+          'The app must be exited and restarted to see experimental feature changes.'
+        );
       }
     });
   }, []);
@@ -311,21 +315,25 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
             )}
           </View>
         </View>
-        <View style={styles.row}>
-          <View>
-            <Text style={Constants.styles.textInputLabelOnWhite}>Experimental features</Text>
+      </View>
+      <View style={[styles.section]}>
+        {me.isReactNativeChannelsEnabled ? (
+          <View style={styles.row}>
+            <View>
+              <Text style={Constants.styles.textInputLabelOnWhite}>Experimental features</Text>
+            </View>
+            <View style={{ alignItems: 'flex-start' }}>
+              <TouchableOpacity
+                onPress={onPressExperimentalFeatures}
+                style={Constants.styles.buttonOnWhite}
+                disabled={loading}>
+                <Text style={Constants.styles.buttonLabelOnWhite}>
+                  Channel: {experimentalFeaturesChannel}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-          <View style={{ alignItems: 'flex-start' }}>
-            <TouchableOpacity
-              onPress={onPressExperimentalFeatures}
-              style={Constants.styles.buttonOnWhite}
-              disabled={loading}>
-              <Text style={Constants.styles.buttonLabelOnWhite}>
-                Channel: {experimentalFeaturesChannel}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        ) : null}
       </View>
       <View style={styles.links}>
         <TouchableOpacity onPress={signOutAsync}>
