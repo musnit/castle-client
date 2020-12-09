@@ -9,8 +9,8 @@ DIRNAME=`dirname "$0"`
 pushd $DIRNAME > /dev/null
 
 pushd ..
-npx react-native bundle --entry-file js/Main.js --platform ios --bundle-output tools/tmp-ios.bundle
-npx react-native bundle --entry-file js/Main.js --platform android --bundle-output tools/tmp-android.bundle
+npx react-native bundle --entry-file index.js --platform ios --bundle-output tools/tmp-ios.bundle --dev=false
+npx react-native bundle --entry-file index.js --platform android --bundle-output tools/tmp-android.bundle --dev=false
 popd
 
 CHANNEL_NAME=$1 PLATFORM=ios FILENAME=tmp-ios.bundle node upload-react-native-bundle-helper.js
