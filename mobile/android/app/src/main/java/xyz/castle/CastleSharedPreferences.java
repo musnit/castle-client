@@ -3,6 +3,7 @@ package xyz.castle;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -20,12 +21,16 @@ public class CastleSharedPreferences {
 
     private static SharedPreferences sharedPreferences;
 
-    public static void initialize(Activity activity) {
-        sharedPreferences = activity.getPreferences(Context.MODE_PRIVATE);
+    public static void initialize(Context context) {
+        sharedPreferences = context.getSharedPreferences("xyz.castle.MainActivity", Context.MODE_PRIVATE);
     }
 
     public static String get(String key) {
         return sharedPreferences.getString(key, null);
+    }
+
+    public static String get(String key, String def) {
+        return sharedPreferences.getString(key, def);
     }
 
     public static void set(String key, String value) {

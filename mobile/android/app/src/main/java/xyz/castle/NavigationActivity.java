@@ -77,7 +77,6 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
         }
 
         CastleGlobalLayoutListener.createInstance(this);
-        CastleSharedPreferences.initialize(this);
         getReactGateway().onActivityCreated(this);
         Fresco.initialize(this);
 

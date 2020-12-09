@@ -1,5 +1,7 @@
 package xyz.castle;
 
+import androidx.annotation.Nullable;
+import xyz.castle.api.ReactNativeDownloader;
 import xyz.castle.generated.BasePackageList;
 
 import android.content.Context;
@@ -25,38 +27,8 @@ import ghost.GhostPackage;
 public class MainApplication extends Application implements ReactApplication {
   private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(new BasePackageList().getPackageList(), Arrays.<SingletonModule>asList());
 
-  private final ReactNativeHost mReactNativeHost =
-      new ReactNativeHost(this) {
-        @Override
-        public boolean getUseDeveloperSupport() {
-          return BuildConfig.DEBUG;
-        }
-
-        @Override
-        protected List<ReactPackage> getPackages() {
-          @SuppressWarnings("UnnecessaryLocalVariable")
-          List<ReactPackage> packages = new PackageList(this).getPackages();
-          // Packages that cannot be autolinked yet can be added manually here, for example:
-          // packages.add(new MyReactNativePackage());
-          packages.add(new GhostPackage());
-
-          // Add unimodules
-          List<ReactPackage> unimodules = Arrays.<ReactPackage>asList(
-            new ModuleRegistryAdapter(mModuleRegistryProvider)
-          );
-          packages.addAll(unimodules);
-
-          return packages;
-        }
-
-        @Override
-        protected String getJSMainModuleName() {
-          return "index";
-        }
-      };
-
-
-    private ReactGateway reactGateway;
+  private ReactNativeHost mReactNativeHost;
+  private ReactGateway reactGateway;
 
   @Override
   public ReactNativeHost getReactNativeHost() {
@@ -66,9 +38,51 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
+
+      CastleSharedPreferences.initialize(this);
+
+      mReactNativeHost =
+              new ReactNativeHost(this) {
+                  @Override
+                  public boolean getUseDeveloperSupport() {
+                      return BuildConfig.DEBUG;
+                  }
+
+                  @Override
+                  protected List<ReactPackage> getPackages() {
+                      @SuppressWarnings("UnnecessaryLocalVariable")
+                      List<ReactPackage> packages = new PackageList(this).getPackages();
+                      // Packages that cannot be autolinked yet can be added manually here, for example:
+                      // packages.add(new MyReactNativePackage());
+                      packages.add(new GhostPackage());
+
+                      // Add unimodules
+                      List<ReactPackage> unimodules = Arrays.<ReactPackage>asList(
+                              new ModuleRegistryAdapter(mModuleRegistryProvider)
+                      );
+                      packages.addAll(unimodules);
+
+                      return packages;
+                  }
+
+                  @Override
+                  protected String getJSMainModuleName() {
+                      return "index";
+                  }
+
+                  @Override
+                  protected @Nullable
+                  String getJSBundleFile() {
+                      if (BuildConfig.DEBUG) {
+                          return null;
+                      }
+                      return ReactNativeDownloader.download(MainApplication.this);
+                  }
+              };
+
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this); // Remove this line if you don't want Flipper enabled
-      reactGateway = createReactGateway();
+    reactGateway = createReactGateway();
   }
 
     protected ReactGateway createReactGateway() {
