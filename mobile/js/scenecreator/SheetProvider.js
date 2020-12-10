@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { BlueprintsSheet } from './sheets/BlueprintsSheet';
+import { CapturePreviewSheet } from './sheets/CapturePreviewSheet';
 import { CardToolsSheet } from './sheets/CardToolsSheet';
 import { CreateCardSettingsSheet } from './sheets/CreateCardSettingsSheet';
 import { InspectorSheet } from './inspector/InspectorSheet';
@@ -30,6 +31,11 @@ const ROOT_SHEETS = [
     key: 'sceneCreatorSettings',
     Component: CreateCardSettingsSheet,
     snapPoints: [FULL_SHEET_HEIGHT * 0.6],
+  },
+  {
+    key: 'capturePreview',
+    Component: CapturePreviewSheet,
+    snapPoints: [FULL_SHEET_HEIGHT],
   },
 ];
 
