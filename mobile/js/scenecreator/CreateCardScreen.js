@@ -131,6 +131,8 @@ export const CreateCardScreen = ({
   const [isShowingTextActors, setShowingTextActors] = React.useState(true);
   const [isShowingDraw, setIsShowingDraw] = React.useState(false);
 
+  const [lastCaptureData, setLastCaptureData] = React.useState({});
+
   const isSceneLoaded = !!globalActions;
   const isPlaying =
     globalActions?.performing === undefined ? !initialIsEditing : globalActions.performing;
@@ -253,6 +255,15 @@ export const CreateCardScreen = ({
     handler: ({ card }) => maybeSaveAndGoToCard(card),
   });
 
+  GhostEvents.useListen({
+    eventName: 'GHOST_CAPTURE',
+    handler: async (data) => {
+      setLastCaptureData(data);
+      await sendGlobalAction('onRewind');
+      setActiveSheet('capturePreview');
+    },
+  });
+
   if (Constants.Android) {
     // after the game loads, it listens for keyboard events and
     // causes react native's back button event to fail
@@ -312,6 +323,7 @@ export const CreateCardScreen = ({
     activeToolData,
     activeToolAction,
     saveAction,
+    lastCaptureData,
     ...inspectorActions,
   };
 

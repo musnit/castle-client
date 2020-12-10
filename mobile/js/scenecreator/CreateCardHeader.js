@@ -86,18 +86,30 @@ export const CreateCardHeader = ({ card, isEditable, onPressBack, mode, onChange
               color={data.actionsAvailable.onRedo ? '#fff' : '#666'}
             />
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.action}
-            disabled={data.performing}
-            onPress={() => onChangeMode(mode === 'variables' ? null : 'variables')}>
-            <FastImage
-              style={{
-                width: 22,
-                height: 22,
-              }}
-              source={require('../../assets/images/CreateCardHeader-variables.png')}
-            />
-          </TouchableOpacity>
+          {data.performing ? (
+            <TouchableOpacity
+              style={styles.action}
+              disabled={!data.actionsAvailable.startCapture}
+              onPress={() => sendGlobalAction('startCapture')}>
+              <MCIcon
+                name="circle-slice-8"
+                size={26}
+                color={data.actionsAvailable.startCapture ? '#fff' : '#666'}
+              />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={styles.action}
+              onPress={() => onChangeMode(mode === 'variables' ? null : 'variables')}>
+              <FastImage
+                style={{
+                  width: 22,
+                  height: 22,
+                }}
+                source={require('../../assets/images/CreateCardHeader-variables.png')}
+              />
+            </TouchableOpacity>
+          )}
         </View>
       ) : null}
     </View>
