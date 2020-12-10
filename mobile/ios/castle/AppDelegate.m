@@ -133,8 +133,17 @@ int SDL_main(int argc, char *argv[]) {
     // Default channel, just load embedded bundle
     return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
   } else {
-    // Non-default channel URL
-    return [NSURL URLWithString:[NSString stringWithFormat:@"https://api.castle.xyz/api/react-native-bundle?channel=%@&platform=ios", channel]];
+    // Non-default channel URL. Copy embedded assets and download channel bundle to a temporary directory.
+    NSFileManager *mgr = [NSFileManager defaultManager];
+    NSURL *dst = [[mgr temporaryDirectory] URLByAppendingPathComponent:@"CastleBundle"];
+    [mgr createDirectoryAtURL:dst withIntermediateDirectories:YES attributes:nil error:nil];
+    NSURL *src = [[NSBundle mainBundle] URLForResource:@"assets" withExtension:@""];
+    [mgr copyItemAtURL:src toURL:[dst URLByAppendingPathComponent:@"assets"] error:nil];
+    NSURLRequest *req = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://api.castle.xyz/api/react-native-bundle?channel=%@&platform=ios", channel]]];
+    NSData *data = [NSURLConnection sendSynchronousRequest:req returningResponse:nil error:nil];
+    NSURL *bundleDst = [dst URLByAppendingPathComponent:@"main.jsbundle"];
+    [data writeToURL:bundleDst atomically:YES];
+    return bundleDst;
   }
 #endif
 }
