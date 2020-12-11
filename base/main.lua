@@ -8,6 +8,7 @@ local copas = require "copas"
 GRID_SHADER =
 love.graphics.newShader(
     [[
+    uniform float gridCellSize;
     uniform float gridSize;
     uniform float dotRadius;
     uniform vec2 offset;
@@ -16,12 +17,17 @@ love.graphics.newShader(
 
     vec4 effect(vec4 color, Image tex, vec2 texCoords, vec2 screenCoords)
     {
-        vec2 f = mod(screenCoords + offset + dotRadius, gridSize);
+        vec2 f = mod(screenCoords + offset + dotRadius, gridCellSize);
         float l = length(f - dotRadius);
         float s = 1.0 - smoothstep(dotRadius - 1.0, dotRadius + 1.0, l);
         vec2 distToAxis = screenCoords - viewOffset;
+
+        if (gridSize > 0.0 && (abs(distToAxis.x) > gridSize || abs(distToAxis.y) > gridSize)) {
+            discard;
+        }
+
         if (highlightAxes && (abs(distToAxis.x) < dotRadius || abs(distToAxis.y) < dotRadius)) {
-            return vec4(1.0, 1.0, 1.0, s * color.a);
+            return vec4(0.7, 0.7, 0.7, s * color.a);
         } else {
             return vec4(color.rgb, s * color.a);
         }
