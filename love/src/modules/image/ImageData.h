@@ -146,6 +146,8 @@ private:
 
 	int floodFillTest(int x, int y, ImageData *paths, const Pixel &p);
 	int floodFillTest2(int x, int y, ImageData *paths, uint8 * pixels);
+	void clearPixel(Pixel &p);
+	int internalFloodFill(int x, int y, ImageData *paths, const Pixel &p);
 
 	// The actual data.
 	unsigned char *data = nullptr;
