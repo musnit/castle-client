@@ -23,6 +23,7 @@
 #include "filesystem/Filesystem.h"
 #include <queue>
 #include <map>
+#include <set>
 
 using love::thread::Lock;
 
@@ -308,6 +309,35 @@ bool ImageData::isAlphaSet(const Pixel &p)
 		}
 }
 
+void ImageData::clearPixel(Pixel &p)
+{
+	switch (format)
+		{
+		case PIXELFORMAT_RGBA8:
+			for (int i = 0; i < 4; i++) {
+				p.rgba8[i] = 0;
+			}
+			return;
+		case PIXELFORMAT_RGBA16:
+			for (int i = 0; i < 4; i++) {
+				p.rgba16[i] = 0;
+			}
+			return;
+		case PIXELFORMAT_RGBA16F:
+			for (int i = 0; i < 4; i++) {
+				p.rgba16f[i] = 0.0;
+			}
+			return;
+		case PIXELFORMAT_RGBA32F:
+			for (int i = 0; i < 4; i++) {
+				p.rgba32f[i] = 0.0;
+			}
+			return;
+		default:
+			return;
+		}
+}
+
 int ImageData::getPixelHash(const Pixel &p)
 {
 	int result = 0;
@@ -487,6 +517,20 @@ int ImageData::floodFill(int x, int y, ImageData *paths, const Pixel &p)
 		return 0;
 	}
 	
+	int result = internalFloodFill(x, y, paths, p);
+	if (result == -1) {
+		Pixel clearP;
+		clearPixel(clearP);
+		internalFloodFill(x, y, paths, clearP);
+
+		return 0;
+	}
+
+	return result;
+}
+
+int ImageData::internalFloodFill(int x, int y, ImageData *paths, const Pixel &p)
+{
 	Lock lock(mutex);
 	Lock lock2(paths->mutex);
 
@@ -521,7 +565,7 @@ int ImageData::floodFill(int x, int y, ImageData *paths, const Pixel &p)
 					newPixel.y = currentPixel.y + dy;
 
 					if (!inside(newPixel.x, newPixel.y)) {
-						skip = true;
+						return -1;
 					}
 
 					if (!skip) {
@@ -569,6 +613,7 @@ void ImageData::updateFloodFillForNewPaths(ImageData *paths)
 	}
 
 	int regionNum = 1;
+	std::set<int> regionsThatTouchBounds;
 
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {
@@ -603,6 +648,7 @@ void ImageData::updateFloodFillForNewPaths(ImageData *paths)
 								newPixel.y = currentPixel.y + dy;
 
 								if (!inside(newPixel.x, newPixel.y)) {
+									regionsThatTouchBounds.insert(regionNum);
 									skip = true;
 								}
 
@@ -660,16 +706,23 @@ void ImageData::updateFloodFillForNewPaths(ImageData *paths)
 		}
 	}
 	
+	Pixel clearP;
+	clearPixel(clearP);
+
 	std::map<int, Pixel *> regionToPixel;
 	for (std::map<int, std::map<int, int> *>::iterator it = regionToPixelCounts.begin(); it != regionToPixelCounts.end(); ++it) {
 		int region = it->first;
 		std::map<int, int> *pixelCounts = it->second;
 		
-		int maxCount = 0;
-		for (std::map<int, int>::iterator it2 = pixelCounts->begin(); it2 != pixelCounts->end(); ++it2) {
-			if (it2->second > maxCount) {
-				maxCount = it2->second;
-				regionToPixel[region] = hashToPixel[it2->first];
+		if (regionsThatTouchBounds.find(region) != regionsThatTouchBounds.end()) {
+			regionToPixel[region] = &clearP;
+		} else {
+			int maxCount = 0;
+			for (std::map<int, int>::iterator it2 = pixelCounts->begin(); it2 != pixelCounts->end(); ++it2) {
+				if (it2->second > maxCount) {
+					maxCount = it2->second;
+					regionToPixel[region] = hashToPixel[it2->first];
+				}
 			}
 		}
 	}
