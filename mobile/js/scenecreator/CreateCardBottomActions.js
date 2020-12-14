@@ -26,8 +26,6 @@ export const CreateCardBottomActions = ({
   onAdd,
   onOpenLayout,
   onSave,
-  isPlayingScene,
-  isSceneLoaded,
   saveAction,
   creatorUsername,
 }) => {
@@ -46,10 +44,6 @@ export const CreateCardBottomActions = ({
       }
     );
   }, [onSave, creatorUsername]);
-
-  if (isPlayingScene || !isSceneLoaded) {
-    return null;
-  }
 
   return (
     <View style={styles.actions}>
