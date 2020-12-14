@@ -7,6 +7,8 @@ import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as Constants from '../Constants';
 
+const ENABLE_CAPTURE = false;
+
 const styles = StyleSheet.create({
   actions: {
     width: '100%',
@@ -38,6 +40,8 @@ const RecordIcon = ({ color }) => (
 );
 
 export const CreateCardCaptureActions = () => {
+  if (!ENABLE_CAPTURE) return null;
+
   const { globalActions: data, sendGlobalAction } = useGhostUI();
   const [capturing, setCapturing] = React.useState(false);
   const [recordState, setNextRecordState] = React.useReducer(
