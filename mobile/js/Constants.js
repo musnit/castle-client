@@ -11,6 +11,7 @@ export const CARD_RATIO = 5 / 7;
 export const CARD_BORDER_RADIUS = 12;
 export const CARD_SMALL_BORDER_RADIUS = 6;
 export const GRID_PADDING = 8;
+export const CARD_WITH_BELT_RATIO = 0.625;
 
 // on tablets, limit some form widths
 export const TABLET_MAX_FORM_WIDTH = 512;
