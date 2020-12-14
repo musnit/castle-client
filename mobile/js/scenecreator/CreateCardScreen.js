@@ -54,7 +54,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   card: {
-    borderRadius: Constants.CARD_BORDER_RADIUS,
+    // Lua applies a border radius mask in create mode, so we skip it here
+    //borderRadius: Constants.CARD_BORDER_RADIUS,
     aspectRatio: Constants.CARD_WITH_BELT_RATIO,
     width: '100%',
     overflow: 'hidden',
