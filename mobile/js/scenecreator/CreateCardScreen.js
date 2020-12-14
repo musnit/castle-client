@@ -301,7 +301,6 @@ export const CreateCardScreen = ({
   const isCardTextVisible =
     (isShowingTextActors || isPlaying) &&
     !isShowingDraw &&
-    !globalActions?.beltVisible &&
     textActors &&
     Object.keys(textActors).length;
 
