@@ -2,14 +2,18 @@ import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, View, TouchableWithoutFeedback } from 'react-native';
 import { GameLoading } from './GameLoading';
 import { GameView } from './GameView';
+import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
   overlay: {
     position: 'absolute',
+    backgroundColor: 'black',
     left: 0,
-    top: 0,
-    right: 0,
     bottom: 0,
+    width: '100%',
+    aspectRatio: Constants.CARD_RATIO,
+    borderRadius: Constants.CARD_BORDER_RADIUS,
+    overflow: 'hidden',
   },
 });
 
