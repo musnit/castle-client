@@ -23,13 +23,10 @@ import { CardScene } from '../game/CardScene';
 import { CardSceneLoading } from './CardSceneLoading';
 import { CardText } from '../components/CardText';
 import { CreateCardContext } from './CreateCardContext';
-import { CreateCardBottomActions, CARD_BOTTOM_MIN_HEIGHT } from './CreateCardBottomActions';
 import { CreateCardHeader, CARD_HEADER_HEIGHT } from './CreateCardHeader';
+import { CreateCardFooter, getFooterHeight } from './CreateCardFooter';
 import { DrawingCardHeader, DRAWING_CARD_HEADER_HEIGHT } from './drawing/DrawingCardHeader';
-import {
-  DrawingCardBottomActions,
-  DRAWING_CARD_FOOTER_HEIGHT,
-} from './drawing/DrawingCardBottomActions';
+
 import { PopoverProvider } from './PopoverProvider';
 import { SheetProvider } from './SheetProvider';
 import { PlayDeckActions } from '../play/PlayDeckActions';
@@ -46,10 +43,6 @@ import {
 const USE_BELT = false;
 
 const CARD_HEIGHT = (1 / Constants.CARD_RATIO) * 100 * Viewport.vw;
-
-const MAX_AVAILABLE_CARD_HEIGHT = 100 * Viewport.vh - CARD_HEADER_HEIGHT - CARD_BOTTOM_MIN_HEIGHT;
-const DRAWING_MAX_AVAILABLE_CARD_HEIGHT =
-  100 * Viewport.vh - DRAWING_CARD_HEADER_HEIGHT - DRAWING_CARD_FOOTER_HEIGHT;
 
 const styles = StyleSheet.create({
   container: {
@@ -289,19 +282,23 @@ export const CreateCardScreen = ({
   };
 
   let cardFitStyles = null;
+  const headerHeight = isShowingDraw ? DRAWING_CARD_HEADER_HEIGHT : CARD_HEADER_HEIGHT;
+  const footerHeight = getFooterHeight({ isShowingDraw });
+  const maxCardHeight = 100 * Viewport.vh - headerHeight - footerHeight;
+
   if (isShowingDraw) {
-    if ((Viewport.vw * 100) / DRAWING_MAX_AVAILABLE_CARD_HEIGHT > 0.91) {
+    if ((Viewport.vw * 100) / maxCardHeight > 0.91) {
       cardFitStyles = {
         aspectRatio: 0.91,
         width: undefined,
-        height: DRAWING_MAX_AVAILABLE_CARD_HEIGHT,
+        height: maxCardHeight,
       };
     } else {
       cardFitStyles = { aspectRatio: 0.91, width: '100%' };
     }
   } else {
-    if ((Viewport.vw * 100) / MAX_AVAILABLE_CARD_HEIGHT > Constants.CARD_RATIO) {
-      cardFitStyles = { width: undefined, height: MAX_AVAILABLE_CARD_HEIGHT };
+    if ((Viewport.vw * 100) / maxCardHeight > Constants.CARD_RATIO) {
+      cardFitStyles = { width: undefined, height: maxCardHeight };
     }
   }
 
@@ -382,20 +379,17 @@ export const CreateCardScreen = ({
               {isPlaying ? <PlayDeckActions deck={deck} disabled /> : null}
               {isSceneLoaded ? null : <CardSceneLoading />}
             </View>
-            {isShowingDraw ? (
-              <DrawingCardBottomActions />
-            ) : (
-              <CreateCardBottomActions
-                card={card}
-                onAdd={onPressAdd}
-                onOpenLayout={() => setActiveSheet('sceneCreatorSettings')}
-                onSave={saveAndGoToDeck}
-                isSceneLoaded={isSceneLoaded}
-                isPlayingScene={isPlaying}
-                creatorUsername={deck?.creator?.username}
-                saveAction={saveAction}
-              />
-            )}
+            <CreateCardFooter
+              isShowingDraw={isShowingDraw}
+              card={card}
+              onAdd={onPressAdd}
+              onOpenLayout={() => setActiveSheet('sceneCreatorSettings')}
+              onSave={saveAndGoToDeck}
+              isSceneLoaded={isSceneLoaded}
+              isPlayingScene={isPlaying}
+              creatorUsername={deck?.creator?.username}
+              saveAction={saveAction}
+            />
           </View>
         </SafeAreaView>
         <SheetProvider
