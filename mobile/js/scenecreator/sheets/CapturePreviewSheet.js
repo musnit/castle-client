@@ -9,11 +9,11 @@ import * as Constants from '../../Constants';
 
 import FastImage from 'react-native-fast-image';
 
+const CAPTURE_FPS = 12;
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
-    borderTopLeftRadius: 6,
-    borderTopRightRadius: 6,
   },
   previewContainer: {
     margin: 16,
@@ -23,10 +23,15 @@ const styles = StyleSheet.create({
   previewFrame: {
     width: '100%',
     aspectRatio: Constants.CARD_RATIO,
+    borderRadius: 6,
+  },
+  info: {
+    paddingTop: 16,
   },
 });
 
 const CapturePreview = ({ visible, path, numFrames }) => {
+  const [loadedImageSize, setLoadedImageSize] = React.useState({ width: 0, height: 0 });
   const [frameState, incrementFrameState] = React.useReducer(
     (state, action) => {
       const { rate, index } = state;
@@ -50,15 +55,31 @@ const CapturePreview = ({ visible, path, numFrames }) => {
   React.useEffect(() => {
     let frameInterval;
     if (visible) {
-      frameInterval = setInterval(incrementFrameState, 1000 / 8);
+      frameInterval = setInterval(incrementFrameState, 1000 / CAPTURE_FPS);
     }
     return () => clearInterval(frameInterval);
   }, [visible]);
+
+  const onLoad = React.useCallback(
+    (e) => {
+      const { width, height } = e.nativeEvent;
+      setLoadedImageSize({ width, height });
+    },
+    [setLoadedImageSize]
+  );
+
   if (visible && path && numFrames) {
     const currentFramePath = `file://${path}${frameState.index}.png`;
     return (
       <View style={styles.previewContainer}>
-        <FastImage style={styles.previewFrame} source={{ uri: currentFramePath }} />
+        <FastImage style={styles.previewFrame} source={{ uri: currentFramePath }} onLoad={onLoad} />
+        <View style={styles.info}>
+          <Text>Frames sampled per second: {CAPTURE_FPS}</Text>
+          <Text>Number of frames to apex: {numFrames}</Text>
+          <Text>
+            Frame size: {loadedImageSize.width}x{loadedImageSize.height}
+          </Text>
+        </View>
       </View>
     );
   }
