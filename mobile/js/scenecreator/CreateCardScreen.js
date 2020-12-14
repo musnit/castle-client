@@ -40,7 +40,7 @@ import {
   getInspectorRules,
 } from './SceneCreatorUtilities';
 
-const USE_BELT = false;
+const USE_BELT = true;
 
 const CARD_HEIGHT = (1 / Constants.CARD_RATIO) * 100 * Viewport.vw;
 
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   },
   card: {
     borderRadius: Constants.CARD_BORDER_RADIUS,
-    aspectRatio: Constants.CARD_RATIO,
+    aspectRatio: Constants.CARD_WITH_BELT_RATIO,
     width: '100%',
     overflow: 'hidden',
   },
@@ -297,7 +297,7 @@ export const CreateCardScreen = ({
       cardFitStyles = { aspectRatio: 0.91, width: '100%' };
     }
   } else {
-    if ((Viewport.vw * 100) / maxCardHeight > Constants.CARD_RATIO) {
+    if ((Viewport.vw * 100) / maxCardHeight > Constants.CARD_WITH_BELT_RATIO) {
       cardFitStyles = { width: undefined, height: maxCardHeight };
     }
   }
