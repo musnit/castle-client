@@ -68,8 +68,18 @@ const CapturePreview = ({ visible, path, numFrames }) => {
     [setLoadedImageSize]
   );
 
+  // react-native-fast-image assumes files never change on disk for the same uri.
+  // when the preview sheet loads, ensure we miss cache the first time.
+  // (react native's built-in Image component doesn't handle file:// uri well enough.)
+  const [bustCacheKey, setBustCacheKey] = React.useState('');
+  React.useEffect(() => {
+    if (visible) {
+      setBustCacheKey(Date.now().toString());
+    }
+  }, [visible]);
+
   if (visible && path && numFrames) {
-    const currentFramePath = `file://${path}${frameState.index}.png`;
+    const currentFramePath = `file://${path}${frameState.index}.png?key=${bustCacheKey}`;
     return (
       <View style={styles.previewContainer}>
         <FastImage style={styles.previewFrame} source={{ uri: currentFramePath }} onLoad={onLoad} />
