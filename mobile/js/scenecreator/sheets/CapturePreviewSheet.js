@@ -10,6 +10,8 @@ import * as Constants from '../../Constants';
 import FastImage from 'react-native-fast-image';
 
 const CAPTURE_FPS = 12;
+const FPS_RANGE = new Array(11);
+for (let ii = 1; ii < 2.1; ii += 0.1) FPS_RANGE.push(ii);
 
 const styles = StyleSheet.create({
   container: {
@@ -38,6 +40,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  fpsControl: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  fpsButton: {
+    padding: 6,
+    backgroundColor: '#eee',
+    margin: 2,
+  },
 });
 
 const LoadingOverlay = () => (
@@ -49,6 +60,7 @@ const LoadingOverlay = () => (
 const CapturePreview = ({ visible, path, numFrames }) => {
   const [loadedImageSize, setLoadedImageSize] = React.useState({ width: 0, height: 0 });
   const [loadingOverlayVisible, setLoadingOverlayVisible] = React.useState(true);
+  const [previewFps, setPreviewFps] = React.useState(CAPTURE_FPS);
 
   // manages boomerang order
   const [frameState, changeFrameState] = React.useReducer(
@@ -79,10 +91,10 @@ const CapturePreview = ({ visible, path, numFrames }) => {
   React.useEffect(() => {
     let frameInterval;
     if (visible) {
-      frameInterval = setInterval(() => changeFrameState('increment'), 1000 / CAPTURE_FPS);
+      frameInterval = setInterval(() => changeFrameState('increment'), 1000 / previewFps);
     }
     return () => clearInterval(frameInterval);
-  }, [visible]);
+  }, [visible, previewFps]);
 
   const onLoad = React.useCallback(
     (e) => {
@@ -123,6 +135,16 @@ const CapturePreview = ({ visible, path, numFrames }) => {
           <Text>
             Frame size: {loadedImageSize.width}x{loadedImageSize.height}
           </Text>
+          <Text>Playback fps: {previewFps.toFixed(2)}</Text>
+        </View>
+        <View style={styles.fpsControl}>
+          {FPS_RANGE.map((fps) => (
+            <TouchableOpacity
+              style={styles.fpsButton}
+              onPress={() => setPreviewFps(CAPTURE_FPS * fps)}>
+              <Text>{fps.toFixed(1)}x</Text>
+            </TouchableOpacity>
+          ))}
         </View>
         {loadingOverlayVisible ? <LoadingOverlay /> : null}
       </View>
