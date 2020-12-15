@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { BottomSheet } from '../../components/BottomSheet';
 import { BottomSheetHeader } from '../../components/BottomSheetHeader';
@@ -28,34 +28,58 @@ const styles = StyleSheet.create({
   info: {
     paddingTop: 16,
   },
+  loadingOverlay: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
+
+const LoadingOverlay = () => (
+  <View style={styles.loadingOverlay}>
+    <ActivityIndicator />
+  </View>
+);
 
 const CapturePreview = ({ visible, path, numFrames }) => {
   const [loadedImageSize, setLoadedImageSize] = React.useState({ width: 0, height: 0 });
-  const [frameState, incrementFrameState] = React.useReducer(
+  const [loadingOverlayVisible, setLoadingOverlayVisible] = React.useState(true);
+
+  // manages boomerang order
+  const [frameState, changeFrameState] = React.useReducer(
     (state, action) => {
       const { rate, index } = state;
-      if (rate == 1) {
-        if (index == numFrames) {
-          return { rate: -1, index: index - 1 };
+      if (action === 'increment') {
+        if (rate == 1) {
+          if (index == numFrames) {
+            return { rate: -1, index: index - 1 };
+          } else {
+            return { ...state, index: index + 1 };
+          }
         } else {
-          return { ...state, index: index + 1 };
+          if (index == 1) {
+            return { rate: 1, index: index + 1 };
+          } else {
+            return { ...frameState, index: index - 1 };
+          }
         }
-      } else {
-        if (index == 1) {
-          return { rate: 1, index: index + 1 };
-        } else {
-          return { ...frameState, index: index - 1 };
-        }
+      } else if (action === 'reset') {
+        return { index: 1, rate: 1 };
       }
     },
     { index: 1, rate: 1 }
   );
 
+  // animate between frames
   React.useEffect(() => {
     let frameInterval;
     if (visible) {
-      frameInterval = setInterval(incrementFrameState, 1000 / CAPTURE_FPS);
+      frameInterval = setInterval(() => changeFrameState('increment'), 1000 / CAPTURE_FPS);
     }
     return () => clearInterval(frameInterval);
   }, [visible]);
@@ -68,15 +92,25 @@ const CapturePreview = ({ visible, path, numFrames }) => {
     [setLoadedImageSize]
   );
 
-  // react-native-fast-image assumes files never change on disk for the same uri.
-  // when the preview sheet loads, ensure we miss cache the first time.
-  // (react native's built-in Image component doesn't handle file:// uri well enough.)
   const [bustCacheKey, setBustCacheKey] = React.useState('');
   React.useEffect(() => {
     if (visible) {
+      setLoadingOverlayVisible(true);
+      changeFrameState('reset');
+
+      // react-native-fast-image assumes files never change on disk for the same uri.
+      // when the preview sheet loads, ensure we miss cache the first time.
+      // (react native's built-in Image component doesn't handle file:// uri well enough.)
       setBustCacheKey(Date.now().toString());
     }
   }, [visible]);
+
+  React.useEffect(() => {
+    // wait until boomerang loops once to hide overlay
+    if (frameState.rate == -1 && frameState.index == numFrames - 1) {
+      setLoadingOverlayVisible(false);
+    }
+  }, [frameState]);
 
   if (visible && path && numFrames) {
     const currentFramePath = `file://${path}${frameState.index}.png?key=${bustCacheKey}`;
@@ -90,6 +124,7 @@ const CapturePreview = ({ visible, path, numFrames }) => {
             Frame size: {loadedImageSize.width}x{loadedImageSize.height}
           </Text>
         </View>
+        {loadingOverlayVisible ? <LoadingOverlay /> : null}
       </View>
     );
   }
