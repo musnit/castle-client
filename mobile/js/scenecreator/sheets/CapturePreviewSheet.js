@@ -4,6 +4,7 @@ import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'rea
 import { BottomSheet } from '../../components/BottomSheet';
 import { BottomSheetHeader } from '../../components/BottomSheetHeader';
 import { useCardCreator } from '../CreateCardContext';
+import { useGhostUI } from '../../ghost/GhostUI';
 
 import * as Constants from '../../Constants';
 
@@ -140,6 +141,7 @@ const CapturePreview = ({ visible, path, numFrames }) => {
         <View style={styles.fpsControl}>
           {FPS_RANGE.map((fps) => (
             <TouchableOpacity
+              key={`fps-control-${fps}`}
               style={styles.fpsButton}
               onPress={() => setPreviewFps(CAPTURE_FPS * fps)}>
               <Text>{fps.toFixed(1)}x</Text>
@@ -155,11 +157,17 @@ const CapturePreview = ({ visible, path, numFrames }) => {
 
 export const CapturePreviewSheet = ({ onClose, ...props }) => {
   const { lastCaptureData } = useCardCreator();
+  const { sendGlobalAction } = useGhostUI();
   const { path, numFrames } = lastCaptureData;
   const { isOpen } = props;
 
+  const clearDataAndClose = () => {
+    sendGlobalAction('clearCapture'); // free capture buffer - could also do this earlier
+    onClose();
+  };
+
   const renderContent = () => <CapturePreview path={path} numFrames={numFrames} visible={isOpen} />;
-  const renderHeader = () => <BottomSheetHeader title="Card Preview" onClose={onClose} />;
+  const renderHeader = () => <BottomSheetHeader title="Card Preview" onClose={clearDataAndClose} />;
 
   return (
     <BottomSheet
