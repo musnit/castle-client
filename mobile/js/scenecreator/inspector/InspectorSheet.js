@@ -75,6 +75,7 @@ export const InspectorSheet = ({ isOpen, addChildSheet }) => {
         renderContent={renderContent}
         scrollViewRef={scrollViewRef}
         persistLastSnapWhenOpened
+        snapBelowBelt
       />
     );
   }
