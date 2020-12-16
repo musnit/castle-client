@@ -26,7 +26,7 @@ export const Rule = ({
         trigger,
       });
     },
-    [onChangeRule]
+    [onChangeRule, rule]
   );
 
   const onChangeResponse = React.useCallback(
@@ -36,7 +36,7 @@ export const Rule = ({
         response,
       });
     },
-    [onChangeRule]
+    [onChangeRule, rule]
   );
 
   return (
