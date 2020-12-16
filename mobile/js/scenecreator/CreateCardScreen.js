@@ -67,6 +67,10 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 8,
   },
+  playDeckActionsContainer: {
+    marginTop: 100 * Viewport.vw * (1 / Constants.CARD_WITH_BELT_RATIO - 1 / Constants.CARD_RATIO) - 24,
+    flex: 1,
+  },
 });
 
 // TODO: find a cleaner way to get these
