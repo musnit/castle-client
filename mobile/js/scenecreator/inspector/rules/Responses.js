@@ -622,6 +622,11 @@ const SetCounter = ({ response, context }) => {
       paramName: 'setToValue',
       paramValue: response.params?.setToValue ?? 0,
     },
+    {
+      type: 'text',
+      isPreview: true,
+      label: response.params?.relative ? '(relative)' : '',
+    },
   ];
 };
 
