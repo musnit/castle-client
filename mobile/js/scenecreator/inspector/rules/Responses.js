@@ -442,7 +442,7 @@ const SetBehavior = ({ response, context }) => {
     valueLabel = 0;
   } else {
     if (response.params.value.expressionType) {
-      valueLabel = makeExpressionSummary(response.params.value);
+      valueLabel = makeExpressionSummary(response.params.value, context);
     } else {
       valueLabel = response.params.value.toString();
     }
