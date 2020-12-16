@@ -212,6 +212,37 @@ int w_ImageData_isEmpty(lua_State *L)
 	return 1;
 }
 
+int w_ImageData_getBounds(lua_State *L)
+{
+	ImageData *t = luax_checkimagedata(L, 1);
+	int result[4] = {-1, -1, -1, -1};
+
+	luax_catchexcept(L, [&](){ t->getBounds(result); });
+
+	lua_pushinteger(L, result[0]);
+	lua_pushinteger(L, result[1]);
+	lua_pushinteger(L, result[2]);
+	lua_pushinteger(L, result[3]);
+
+	return 4;
+}
+
+int w_ImageData_copyImageData(lua_State *L)
+{
+	ImageData *t = luax_checkimagedata(L, 1);
+	ImageData *sourceImageData = luax_checkimagedata(L, 2);
+	int sourceX = (int) luaL_checkinteger(L, 3);
+	int sourceY = (int) luaL_checkinteger(L, 4);
+	int sourceWidth = (int) luaL_checkinteger(L, 5);
+	int sourceHeight = (int) luaL_checkinteger(L, 6);
+	int destX = (int) luaL_checkinteger(L, 7);
+	int destY = (int) luaL_checkinteger(L, 8);
+	
+	luax_catchexcept(L, [&](){ t->copyImageData((love::image::ImageData *)sourceImageData, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY); });
+	
+	return 0;
+}
+
 int w_ImageData_setPixel(lua_State *L)
 {
 	ImageData *t = luax_checkimagedata(L, 1);
@@ -391,6 +422,8 @@ static const luaL_Reg w_ImageData_functions[] =
 	{ "floodFill", w_ImageData_floodFill},
 	{ "updateFloodFillForNewPaths", w_ImageData_updateFloodFillForNewPaths },
 	{ "isEmpty", w_ImageData_isEmpty },
+	{ "getBounds", w_ImageData_getBounds },
+	{ "copyImageData", w_ImageData_copyImageData },
 
 	// Used in the Lua wrapper code.
 	{ "_mapPixelUnsafe", w_ImageData__mapPixelUnsafe },

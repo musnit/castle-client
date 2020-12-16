@@ -101,6 +101,8 @@ public:
 	bool arePixelsEqual(const Pixel &p1, const Pixel &p2);
 	void updateFloodFillForNewPaths(ImageData *paths);
 	bool isEmpty();
+	void getBounds(int *);
+	void copyImageData(ImageData *, int, int, int, int, int, int);
 	int getPixelHash(const Pixel &p);
 
 	/**
@@ -144,6 +146,8 @@ private:
 
 	int floodFillTest(int x, int y, ImageData *paths, const Pixel &p);
 	int floodFillTest2(int x, int y, ImageData *paths, uint8 * pixels);
+	void clearPixel(Pixel &p);
+	int internalFloodFill(int x, int y, ImageData *paths, const Pixel &p);
 
 	// The actual data.
 	unsigned char *data = nullptr;

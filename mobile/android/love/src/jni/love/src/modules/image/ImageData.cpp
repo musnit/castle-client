@@ -23,6 +23,7 @@
 #include "filesystem/Filesystem.h"
 #include <queue>
 #include <map>
+#include <set>
 
 using love::thread::Lock;
 
@@ -308,6 +309,35 @@ bool ImageData::isAlphaSet(const Pixel &p)
 		}
 }
 
+void ImageData::clearPixel(Pixel &p)
+{
+	switch (format)
+		{
+		case PIXELFORMAT_RGBA8:
+			for (int i = 0; i < 4; i++) {
+				p.rgba8[i] = 0;
+			}
+			return;
+		case PIXELFORMAT_RGBA16:
+			for (int i = 0; i < 4; i++) {
+				p.rgba16[i] = 0;
+			}
+			return;
+		case PIXELFORMAT_RGBA16F:
+			for (int i = 0; i < 4; i++) {
+				p.rgba16f[i] = 0.0;
+			}
+			return;
+		case PIXELFORMAT_RGBA32F:
+			for (int i = 0; i < 4; i++) {
+				p.rgba32f[i] = 0.0;
+			}
+			return;
+		default:
+			return;
+		}
+}
+
 int ImageData::getPixelHash(const Pixel &p)
 {
 	int result = 0;
@@ -397,6 +427,73 @@ bool ImageData::isEmpty()
 	return true;
 }
 
+void ImageData::getBounds(int * result)
+{
+	// top left x, top left y, bottom right x, bottom right y
+	for (int i = 0; i < 4; i++) {
+		result[i] = -1;
+	}
+	
+	Pixel p;
+
+	for (int x = 0; x < width; x++) {
+		for (int y = 0; y < height; y++) {
+			getPixel(x, y, p);
+			if (isAlphaSet(p)) {
+				if (result[0] == -1 || x < result[0]) {
+					result[0] = x;
+				}
+				
+				if (result[1] == -1 || y < result[1]) {
+					result[1] = y;
+				}
+				
+				if (result[2] == -1 || x > result[2]) {
+					result[2] = x;
+				}
+				
+				if (result[3] == -1 || y > result[3]) {
+					result[3] = y;
+				}
+			}
+		}
+	}
+}
+
+// destX and destY can be negative. sourceX + sourceWidth and sourceY + sourceHeight can be greater than the dest size also
+// would be faster to memcpy entire rows but is tricky with all the potential out of bounds errors
+void ImageData::copyImageData(ImageData * sourceImageData, int sourceX, int sourceY, int sourceWidth, int sourceHeight, int destX, int destY)
+{
+	Lock lock(mutex);
+	Lock lock2(sourceImageData->mutex);
+	
+	int sourceActualWidth = sourceImageData->getWidth();
+	int sourceActualHeight = sourceImageData->getHeight();
+	int currentDestY = destY;
+	
+	size_t pixelsize = getPixelSize();
+	
+	for (int y = sourceY; y < sourceY + sourceHeight; y++) {
+		int currentDestX = destX;
+
+		for (int x = sourceX; x < sourceX + sourceWidth; x++) {
+			if (x >= 0 && x < sourceActualWidth &&
+				y >= 0 && y < sourceActualHeight &&
+				currentDestX >= 0 && currentDestX < width &&
+				currentDestY >= 0 && currentDestY < height) {
+				
+				unsigned char *sourcePixel = sourceImageData->data + ((y * sourceActualWidth + x) * pixelsize);
+				unsigned char *destPixel = data + ((currentDestY * width + currentDestX) * pixelsize);
+				memcpy(destPixel, sourcePixel, pixelsize);
+			}
+			
+			currentDestX++;
+		}
+
+		currentDestY++;
+	}
+}
+
 int ImageData::floodFillTest(int x, int y, ImageData *paths, const Pixel &p)
 {
 	Pixel floodP;
@@ -419,6 +516,23 @@ int ImageData::floodFill(int x, int y, ImageData *paths, const Pixel &p)
 	if (!inside(x, y)) {
 		return 0;
 	}
+	
+	int result = internalFloodFill(x, y, paths, p);
+	if (result == -1) {
+		Pixel clearP;
+		clearPixel(clearP);
+		internalFloodFill(x, y, paths, clearP);
+
+		return 0;
+	}
+
+	return result;
+}
+
+int ImageData::internalFloodFill(int x, int y, ImageData *paths, const Pixel &p)
+{
+	Lock lock(mutex);
+	Lock lock2(paths->mutex);
 
 	std::queue<flood_pixel_t> pixelQueue;
 	flood_pixel_t startPixel;
@@ -429,7 +543,6 @@ int ImageData::floodFill(int x, int y, ImageData *paths, const Pixel &p)
 	pixelQueue.push(startPixel);
 
 	size_t pixelsize = getPixelSize();
-	Lock lock(mutex);
 
 	while (!pixelQueue.empty()) {
 		flood_pixel_t currentPixel = pixelQueue.front();
@@ -452,7 +565,7 @@ int ImageData::floodFill(int x, int y, ImageData *paths, const Pixel &p)
 					newPixel.y = currentPixel.y + dy;
 
 					if (!inside(newPixel.x, newPixel.y)) {
-						skip = true;
+						return -1;
 					}
 
 					if (!skip) {
@@ -490,6 +603,9 @@ int ImageData::floodFillTest2(int x, int y, ImageData *paths, uint8* pixels)
 
 void ImageData::updateFloodFillForNewPaths(ImageData *paths)
 {
+	Lock lock(mutex);
+	Lock lock2(paths->mutex);
+	
 	int arrayLength = width * height;
 	uint8* pixels = new uint8[arrayLength];
 	for (int i = 0; i < arrayLength; i++) {
@@ -497,6 +613,7 @@ void ImageData::updateFloodFillForNewPaths(ImageData *paths)
 	}
 
 	int regionNum = 1;
+	std::set<int> regionsThatTouchBounds;
 
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {
@@ -531,6 +648,7 @@ void ImageData::updateFloodFillForNewPaths(ImageData *paths)
 								newPixel.y = currentPixel.y + dy;
 
 								if (!inside(newPixel.x, newPixel.y)) {
+									regionsThatTouchBounds.insert(regionNum);
 									skip = true;
 								}
 
@@ -555,7 +673,6 @@ void ImageData::updateFloodFillForNewPaths(ImageData *paths)
 	}
 	
 	size_t pixelsize = getPixelSize();
-	Lock lock(mutex);
 
 	std::map<int, Pixel *> hashToPixel;
 	std::map<int, std::map<int, int>*> regionToPixelCounts;
@@ -589,16 +706,23 @@ void ImageData::updateFloodFillForNewPaths(ImageData *paths)
 		}
 	}
 	
+	Pixel clearP;
+	clearPixel(clearP);
+
 	std::map<int, Pixel *> regionToPixel;
 	for (std::map<int, std::map<int, int> *>::iterator it = regionToPixelCounts.begin(); it != regionToPixelCounts.end(); ++it) {
 		int region = it->first;
 		std::map<int, int> *pixelCounts = it->second;
 		
-		int maxCount = 0;
-		for (std::map<int, int>::iterator it2 = pixelCounts->begin(); it2 != pixelCounts->end(); ++it2) {
-			if (it2->second > maxCount) {
-				maxCount = it2->second;
-				regionToPixel[region] = hashToPixel[it2->first];
+		if (regionsThatTouchBounds.find(region) != regionsThatTouchBounds.end()) {
+			regionToPixel[region] = &clearP;
+		} else {
+			int maxCount = 0;
+			for (std::map<int, int>::iterator it2 = pixelCounts->begin(); it2 != pixelCounts->end(); ++it2) {
+				if (it2->second > maxCount) {
+					maxCount = it2->second;
+					regionToPixel[region] = hashToPixel[it2->first];
+				}
 			}
 		}
 	}
