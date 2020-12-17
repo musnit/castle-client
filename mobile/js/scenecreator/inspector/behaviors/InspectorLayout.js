@@ -126,13 +126,13 @@ export default InspectorLayout = ({ body, circleShape, sendActions }) => {
             <LayoutInput
               behavior={body}
               propName="widthScale"
-              label="Width Scale %"
+              label="Width Scale"
               sendAction={sendActions.Body}
             />
             <LayoutInput
               behavior={body}
               propName="heightScale"
-              label="Height Scale %"
+              label="Height Scale"
               sendAction={sendActions.Body}
             />
           </React.Fragment>
