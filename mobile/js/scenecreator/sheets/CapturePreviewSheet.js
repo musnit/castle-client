@@ -52,6 +52,17 @@ const styles = StyleSheet.create({
   },
 });
 
+const makeFramePath = (path, index, bustCacheKey) =>
+  `file://${path}${index}.png?key=${bustCacheKey}`;
+
+const preloadImages = (path, numFrames, bustCacheKey) => {
+  let paths = [];
+  for (let ii = 1; ii < numFrames + 1; ii++) {
+    paths.push({ uri: makeFramePath(path, ii, bustCacheKey) });
+  }
+  FastImage.preload(paths);
+};
+
 const LoadingOverlay = () => (
   <View style={styles.loadingOverlay}>
     <ActivityIndicator />
@@ -114,19 +125,18 @@ const CapturePreview = ({ visible, path, numFrames }) => {
       // react-native-fast-image assumes files never change on disk for the same uri.
       // when the preview sheet loads, ensure we miss cache the first time.
       // (react native's built-in Image component doesn't handle file:// uri well enough.)
-      setBustCacheKey(Date.now().toString());
+      let key = Date.now().toString();
+      setBustCacheKey(key);
+
+      (async () => {
+        await preloadImages(path, numFrames, key);
+        setLoadingOverlayVisible(false);
+      })();
     }
   }, [visible]);
 
-  React.useEffect(() => {
-    // wait until boomerang loops once to hide overlay
-    if (frameState.rate == -1 && frameState.index == numFrames - 1) {
-      setLoadingOverlayVisible(false);
-    }
-  }, [frameState]);
-
   if (visible && path && numFrames) {
-    const currentFramePath = `file://${path}${frameState.index}.png?key=${bustCacheKey}`;
+    const currentFramePath = makeFramePath(path, frameState.index, bustCacheKey);
     return (
       <View style={styles.previewContainer}>
         <FastImage style={styles.previewFrame} source={{ uri: currentFramePath }} onLoad={onLoad} />
