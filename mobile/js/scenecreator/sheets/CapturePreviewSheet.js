@@ -11,8 +11,7 @@ import * as Constants from '../../Constants';
 import FastImage from 'react-native-fast-image';
 
 const CAPTURE_FPS = 12;
-const FPS_RANGE = new Array(11);
-for (let ii = 1; ii < 2.1; ii += 0.1) FPS_RANGE.push(ii);
+const PREVIEW_FPS = CAPTURE_FPS * 2;
 
 const styles = StyleSheet.create({
   container: {
@@ -28,9 +27,6 @@ const styles = StyleSheet.create({
     aspectRatio: Constants.CARD_RATIO,
     borderRadius: 6,
   },
-  info: {
-    paddingTop: 16,
-  },
   loadingOverlay: {
     position: 'absolute',
     left: 0,
@@ -40,15 +36,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  fpsControl: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  fpsButton: {
-    padding: 6,
-    backgroundColor: '#eee',
-    margin: 2,
   },
 });
 
@@ -72,7 +59,6 @@ const LoadingOverlay = () => (
 const CapturePreview = ({ visible, path, numFrames }) => {
   const [loadedImageSize, setLoadedImageSize] = React.useState({ width: 0, height: 0 });
   const [loadingOverlayVisible, setLoadingOverlayVisible] = React.useState(true);
-  const [previewFps, setPreviewFps] = React.useState(CAPTURE_FPS);
 
   // manages boomerang order
   const [frameState, changeFrameState] = React.useReducer(
@@ -103,10 +89,10 @@ const CapturePreview = ({ visible, path, numFrames }) => {
   React.useEffect(() => {
     let frameInterval;
     if (visible) {
-      frameInterval = setInterval(() => changeFrameState('increment'), 1000 / previewFps);
+      frameInterval = setInterval(() => changeFrameState('increment'), 1000 / PREVIEW_FPS);
     }
     return () => clearInterval(frameInterval);
-  }, [visible, previewFps]);
+  }, [visible]);
 
   const onLoad = React.useCallback(
     (e) => {
@@ -140,24 +126,6 @@ const CapturePreview = ({ visible, path, numFrames }) => {
     return (
       <View style={styles.previewContainer}>
         <FastImage style={styles.previewFrame} source={{ uri: currentFramePath }} onLoad={onLoad} />
-        <View style={styles.info}>
-          <Text>Frames sampled per second: {CAPTURE_FPS}</Text>
-          <Text>Number of frames to apex: {numFrames}</Text>
-          <Text>
-            Frame size: {loadedImageSize.width}x{loadedImageSize.height}
-          </Text>
-          <Text>Playback fps: {previewFps.toFixed(2)}</Text>
-        </View>
-        <View style={styles.fpsControl}>
-          {FPS_RANGE.map((fps) => (
-            <TouchableOpacity
-              key={`fps-control-${fps}`}
-              style={styles.fpsButton}
-              onPress={() => setPreviewFps(CAPTURE_FPS * fps)}>
-              <Text>{fps.toFixed(1)}x</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
         {loadingOverlayVisible ? <LoadingOverlay /> : null}
       </View>
     );

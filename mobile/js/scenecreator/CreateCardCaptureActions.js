@@ -7,7 +7,7 @@ import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as Constants from '../Constants';
 
-const ENABLE_CAPTURE = false;
+const ENABLE_CAPTURE = true;
 
 const styles = StyleSheet.create({
   actions: {
