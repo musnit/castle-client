@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   playDeckActionsContainer: {
-    marginTop: 100 * Viewport.vw * (1 / Constants.CARD_WITH_BELT_RATIO - 1 / Constants.CARD_RATIO) - 24,
+    marginTop: 100 * Viewport.vw * (1 / Constants.CARD_WITH_BELT_RATIO - 1 / Constants.CARD_RATIO),
     flex: 1,
   },
 });
