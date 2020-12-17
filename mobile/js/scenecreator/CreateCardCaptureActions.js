@@ -79,12 +79,12 @@ export const CreateCardCaptureActions = () => {
         timeout = null;
       }
     };
-  }, [recordState, capturing, sendGlobalAction]);
+  }, [recordState, capturing]);
 
   const startCapture = React.useCallback(() => {
     setCapturing(true);
     setNextRecordState();
-  });
+  }, []);
 
   return (
     <View style={styles.actions}>
