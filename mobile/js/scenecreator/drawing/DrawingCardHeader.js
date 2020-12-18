@@ -148,6 +148,16 @@ export const DrawingCardHeader = ({ onPressBack }) => {
         <View style={styles.actionsContainer}>
           {undoButton}
           {redoButton}
+          <TouchableOpacity
+            style={styles.action}
+            onPressIn={() => {
+              activeToolAction('onViewInContext', 'true');
+            }}
+            onPressOut={() => {
+              activeToolAction('onViewInContext', 'false');
+            }}>
+            <MCIcon name="magnify-minus" size={26} color={'#fff'} />
+          </TouchableOpacity>
         </View>
       </View>
 
