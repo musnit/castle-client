@@ -645,10 +645,9 @@ export const uploadFile = async ({ uri }) => {
   return result?.data?.uploadFile;
 };
 
-export const uploadDeckPreview = async ({ deckId, framePaths }) => {
+export const uploadCardPreview = async ({ cardId, framePaths }) => {
   const files = framePaths.map((path) => {
     const name = path.match(/[^/]*$/)[0] || '';
-    const extension = name.match(/[^.]*$/)[0] || '';
     return new ReactNativeFile({
       uri: path,
       name,
@@ -657,20 +656,20 @@ export const uploadDeckPreview = async ({ deckId, framePaths }) => {
   });
   const result = await apolloClient.mutate({
     mutation: gql`
-      mutation UploadDeckPreview($deckId: ID!, $files: [Upload!]) {
-        uploadDeckPreview(deckId: $deckId, files: $files) {
+      mutation UploadCardPreview($cardId: ID!, $files: [Upload]!) {
+        uploadCardPreview(cardId: $cardId, files: $files) {
           fileId
           url
         }
       }
     `,
     variables: {
-      deckId,
+      cardId,
       files,
     },
     fetchPolicy: 'no-cache',
   });
-  return result?.data?.uploadDeckPreview;
+  return result?.data?.uploadCardPreview;
 };
 
 export const uploadBase64 = async (data) => {
