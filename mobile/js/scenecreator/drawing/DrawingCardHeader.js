@@ -156,7 +156,11 @@ export const DrawingCardHeader = ({ onPressBack }) => {
             onPressOut={() => {
               activeToolAction('onViewInContext', 'false');
             }}>
-            <MCIcon name="magnify-minus" size={26} color={'#fff'} />
+            <MCIcon
+              name={Constants.iOS ? 'image-frame' : 'image-filter-frames'}
+              size={24}
+              color={'#fff'}
+            />
           </TouchableOpacity>
         </View>
       </View>
