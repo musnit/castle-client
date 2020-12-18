@@ -3,7 +3,9 @@ import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'rea
 
 import { BottomSheet } from '../../components/BottomSheet';
 import { BottomSheetHeader } from '../../components/BottomSheetHeader';
+import { useCardCreator } from '../CreateCardContext';
 import { useGhostUI } from '../../ghost/GhostUI';
+import { uploadDeckPreview } from '../../Session';
 
 import * as Constants from '../../Constants';
 import * as GhostEvents from '../../ghost/GhostEvents';
@@ -40,8 +42,13 @@ const styles = StyleSheet.create({
   },
 });
 
-const makeFramePath = (path, index, bustCacheKey) =>
-  `file://${path}${index}.png?key=${bustCacheKey}`;
+const makeFramePath = (path, index, bustCacheKey) => {
+  if (bustCacheKey) {
+    return `file://${path}${index}.png?key=${bustCacheKey}`;
+  } else {
+    return `file://${path}${index}.png`;
+  }
+};
 
 const preloadImages = (path, numFrames, bustCacheKey) => {
   let paths = [];
@@ -136,7 +143,9 @@ const CapturePreview = ({ visible, data, onUseCapture }) => {
 };
 
 export const CapturePreviewSheet = ({ onClose, ...props }) => {
+  const { deck } = useCardCreator();
   const [lastCaptureData, setLastCaptureData] = React.useState({});
+  const [loading, setLoading] = React.useState(false);
   const { sendGlobalAction } = useGhostUI();
   const { isOpen } = props;
 
@@ -152,18 +161,38 @@ export const CapturePreviewSheet = ({ onClose, ...props }) => {
     onClose();
   };
 
-  const onUseCapture = () => {
-    // sendGlobalAction('zipCapture');
-    // TODO: upload frames to server
+  const hasData = lastCaptureData?.path;
+
+  const onUseCapture = async () => {
+    if (hasData) {
+      await setLoading(true);
+      const { path, numFrames } = lastCaptureData;
+      let paths = [];
+      for (let ii = 1; ii < numFrames + 1; ii++) {
+        paths.push(makeFramePath(path, ii));
+      }
+      await uploadDeckPreview({ deckId: deck.deckId, framePaths: paths });
+      // TODO: check errors from upload
+      await setLoading(false);
+      onClose();
+    }
   };
 
   const renderContent = () =>
-    lastCaptureData?.path ? (
+    hasData ? (
       <CapturePreview data={lastCaptureData} visible={isOpen} onUseCapture={onUseCapture} />
     ) : (
       <LoadingOverlay />
     );
-  const renderHeader = () => <BottomSheetHeader title="Card Preview" onClose={clearDataAndClose} />;
+  const renderHeader = () => (
+    <BottomSheetHeader
+      title="Card Preview"
+      onClose={clearDataAndClose}
+      onDone={hasData ? onUseCapture : undefined}
+      doneLabel="Use"
+      loading={loading}
+    />
+  );
 
   return (
     <BottomSheet

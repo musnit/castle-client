@@ -645,6 +645,34 @@ export const uploadFile = async ({ uri }) => {
   return result?.data?.uploadFile;
 };
 
+export const uploadDeckPreview = async ({ deckId, framePaths }) => {
+  const files = framePaths.map((path) => {
+    const name = path.match(/[^/]*$/)[0] || '';
+    const extension = name.match(/[^.]*$/)[0] || '';
+    return new ReactNativeFile({
+      uri: path,
+      name,
+      type: 'image/png',
+    });
+  });
+  const result = await apolloClient.mutate({
+    mutation: gql`
+      mutation UploadDeckPreview($deckId: ID!, $files: [Upload!]) {
+        uploadDeckPreview(deckId: $deckId, files: $files) {
+          fileId
+          url
+        }
+      }
+    `,
+    variables: {
+      deckId,
+      files,
+    },
+    fetchPolicy: 'no-cache',
+  });
+  return result?.data?.uploadDeckPreview;
+};
+
 export const uploadBase64 = async (data) => {
   const result = await apolloClient.mutate({
     mutation: gql`

@@ -53,7 +53,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export const BottomSheetHeader = ({ title, onClose, onDone, renderActions, loading }) => (
+export const BottomSheetHeader = ({
+  title,
+  onClose,
+  onDone,
+  doneLabel,
+  renderActions,
+  loading,
+}) => (
   <View style={styles.header}>
     <TouchableOpacity style={styles.back} onPress={onClose}>
       <Icon name="close" size={32} color="#000" />
@@ -64,7 +71,11 @@ export const BottomSheetHeader = ({ title, onClose, onDone, renderActions, loadi
     {renderActions ? renderActions() : null}
     {onDone ? (
       <TouchableOpacity style={styles.done} onPress={onDone} disabled={loading}>
-        {loading ? <ActivityIndicator /> : <Text style={styles.doneText}>Done</Text>}
+        {loading ? (
+          <ActivityIndicator />
+        ) : (
+          <Text style={styles.doneText}>{doneLabel ?? 'Done'}</Text>
+        )}
       </TouchableOpacity>
     ) : null}
   </View>
