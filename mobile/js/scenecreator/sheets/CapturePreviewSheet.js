@@ -3,10 +3,10 @@ import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'rea
 
 import { BottomSheet } from '../../components/BottomSheet';
 import { BottomSheetHeader } from '../../components/BottomSheetHeader';
-import { useCardCreator } from '../CreateCardContext';
 import { useGhostUI } from '../../ghost/GhostUI';
 
 import * as Constants from '../../Constants';
+import * as GhostEvents from '../../ghost/GhostEvents';
 
 import FastImage from 'react-native-fast-image';
 
@@ -16,6 +16,7 @@ const PREVIEW_FPS = CAPTURE_FPS * 2;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
+    borderRadius: 6,
   },
   previewContainer: {
     margin: 16,
@@ -56,7 +57,8 @@ const LoadingOverlay = () => (
   </View>
 );
 
-const CapturePreview = ({ visible, path, numFrames }) => {
+const CapturePreview = ({ visible, data, onUseCapture }) => {
+  const { path, numFrames } = data;
   const [loadedImageSize, setLoadedImageSize] = React.useState({ width: 0, height: 0 });
   const [loadingOverlayVisible, setLoadingOverlayVisible] = React.useState(true);
 
@@ -134,17 +136,33 @@ const CapturePreview = ({ visible, path, numFrames }) => {
 };
 
 export const CapturePreviewSheet = ({ onClose, ...props }) => {
-  const { lastCaptureData } = useCardCreator();
+  const [lastCaptureData, setLastCaptureData] = React.useState({});
   const { sendGlobalAction } = useGhostUI();
-  const { path, numFrames } = lastCaptureData;
   const { isOpen } = props;
+
+  GhostEvents.useListen({
+    eventName: 'GHOST_CAPTURE',
+    handler: async (data) => {
+      setLastCaptureData(data);
+    },
+  });
 
   const clearDataAndClose = () => {
     sendGlobalAction('clearCapture'); // free capture buffer - could also do this earlier
     onClose();
   };
 
-  const renderContent = () => <CapturePreview path={path} numFrames={numFrames} visible={isOpen} />;
+  const onUseCapture = () => {
+    // sendGlobalAction('zipCapture');
+    // TODO: upload frames to server
+  };
+
+  const renderContent = () =>
+    lastCaptureData?.path ? (
+      <CapturePreview data={lastCaptureData} visible={isOpen} onUseCapture={onUseCapture} />
+    ) : (
+      <LoadingOverlay />
+    );
   const renderHeader = () => <BottomSheetHeader title="Card Preview" onClose={clearDataAndClose} />;
 
   return (

@@ -126,8 +126,6 @@ export const CreateCardScreen = ({
   const [isShowingTextActors, setShowingTextActors] = React.useState(true);
   const [isShowingDraw, setIsShowingDraw] = React.useState(false);
 
-  const [lastCaptureData, setLastCaptureData] = React.useState({});
-
   const isSceneLoaded = !!globalActions;
   const isPlaying =
     globalActions?.performing === undefined ? !initialIsEditing : globalActions.performing;
@@ -259,9 +257,8 @@ export const CreateCardScreen = ({
   });
 
   GhostEvents.useListen({
-    eventName: 'GHOST_CAPTURE',
-    handler: async (data) => {
-      setLastCaptureData(data);
+    eventName: 'GHOST_CAPTURE_PENDING',
+    handler: async () => {
       await sendGlobalAction('onRewind');
       setActiveSheet('capturePreview');
     },
@@ -331,7 +328,6 @@ export const CreateCardScreen = ({
     activeToolData,
     activeToolAction,
     saveAction,
-    lastCaptureData,
     ...inspectorActions,
   };
 
