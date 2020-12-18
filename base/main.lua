@@ -11,6 +11,7 @@ love.graphics.newShader(
     uniform float gridCellSize;
     uniform float gridSize;
     uniform float dotRadius;
+    uniform float axesAlpha;
     uniform vec2 offset;
     uniform vec2 viewOffset;
     uniform bool highlightAxes;
@@ -27,7 +28,7 @@ love.graphics.newShader(
         }
 
         if (highlightAxes && (abs(distToAxis.x) < dotRadius || abs(distToAxis.y) < dotRadius)) {
-            return vec4(0.7, 0.7, 0.7, s * color.a);
+            return vec4(color.rgb, s * axesAlpha);
         } else {
             return vec4(color.rgb, s * color.a);
         }
