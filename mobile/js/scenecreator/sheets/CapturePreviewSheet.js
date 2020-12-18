@@ -5,7 +5,7 @@ import { BottomSheet } from '../../components/BottomSheet';
 import { BottomSheetHeader } from '../../components/BottomSheetHeader';
 import { useCardCreator } from '../CreateCardContext';
 import { useGhostUI } from '../../ghost/GhostUI';
-import { uploadCardPreview } from '../../Session';
+import { uploadDeckPreview } from '../../Session';
 
 import * as Constants from '../../Constants';
 import * as GhostEvents from '../../ghost/GhostEvents';
@@ -143,7 +143,7 @@ const CapturePreview = ({ visible, data, onUseCapture }) => {
 };
 
 export const CapturePreviewSheet = ({ onClose, ...props }) => {
-  const { card } = useCardCreator();
+  const { deck } = useCardCreator();
   const [lastCaptureData, setLastCaptureData] = React.useState({});
   const [loading, setLoading] = React.useState(false);
   const { sendGlobalAction } = useGhostUI();
@@ -171,7 +171,7 @@ export const CapturePreviewSheet = ({ onClose, ...props }) => {
       for (let ii = 1; ii < numFrames + 1; ii++) {
         paths.push(makeFramePath(path, ii));
       }
-      await uploadCardPreview({ cardId: card.cardId, framePaths: paths });
+      await uploadDeckPreview({ deckId: deck.deckId, framePaths: paths });
       // TODO: check errors from upload
       await setLoading(false);
       onClose();
