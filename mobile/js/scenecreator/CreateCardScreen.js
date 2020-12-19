@@ -43,6 +43,8 @@ const USE_BELT = true;
 
 const CARD_HEIGHT = (1 / Constants.CARD_RATIO) * 100 * Viewport.vw;
 
+const BELT_HEIGHT = 100 * Viewport.vw * (1 / Constants.CARD_WITH_BELT_RATIO - 1 / Constants.CARD_RATIO);
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -66,13 +68,17 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   textActorsContainer: {
+    marginTop: BELT_HEIGHT,
     paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 8,
   },
   playDeckActionsContainer: {
-    marginTop: 100 * Viewport.vw * (1 / Constants.CARD_WITH_BELT_RATIO - 1 / Constants.CARD_RATIO),
-    flex: 1,
+    position: 'absolute',
+    top: BELT_HEIGHT,
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
 });
 
