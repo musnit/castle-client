@@ -586,7 +586,7 @@ int ImageData::internalFloodFill(int x, int y, ImageData *paths, const Pixel &p)
 	return count;
 }
 
-int ImageData::floodFillTest2(int x, int y, ImageData *paths, uint8* pixels)
+int ImageData::floodFillTest2(int x, int y, ImageData *paths, int* pixels)
 {
 	if (pixels[y * width + x] != 0) {
 		return 1;
@@ -607,7 +607,7 @@ void ImageData::updateFloodFillForNewPaths(ImageData *paths)
 	Lock lock2(paths->mutex);
 	
 	int arrayLength = width * height;
-	uint8* pixels = new uint8[arrayLength];
+	int* pixels = new int[arrayLength];
 	for (int i = 0; i < arrayLength; i++) {
 		pixels[i] = 0;
 	}
