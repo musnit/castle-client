@@ -153,13 +153,9 @@ export const CapturePreviewSheet = ({ onClose, ...props }) => {
     eventName: 'GHOST_CAPTURE',
     handler: async (data) => {
       setLastCaptureData(data);
+      sendGlobalAction('clearCapture'); // free capture buffer
     },
   });
-
-  const clearDataAndClose = () => {
-    sendGlobalAction('clearCapture'); // free capture buffer - could also do this earlier
-    onClose();
-  };
 
   const hasData = lastCaptureData?.path;
 
@@ -171,10 +167,11 @@ export const CapturePreviewSheet = ({ onClose, ...props }) => {
       for (let ii = 1; ii < numFrames + 1; ii++) {
         paths.push(makeFramePath(path, ii));
       }
-      await uploadDeckPreview({ deckId: deck.deckId, framePaths: paths });
-      // TODO: check errors from upload
+      const result = await uploadDeckPreview({ deckId: deck.deckId, framePaths: paths });
       await setLoading(false);
-      onClose();
+      if (result?.url) {
+        onClose();
+      }
     }
   };
 
@@ -187,7 +184,7 @@ export const CapturePreviewSheet = ({ onClose, ...props }) => {
   const renderHeader = () => (
     <BottomSheetHeader
       title="Card Preview"
-      onClose={clearDataAndClose}
+      onClose={onClose}
       onDone={hasData ? onUseCapture : undefined}
       doneLabel="Use"
       loading={loading}
