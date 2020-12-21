@@ -8,7 +8,7 @@
 
     <application
         android:name=".MainApplication"
-        android:hardwareAccelerated="false"
+        android:hardwareAccelerated="true"
         android:largeHeap="true"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
