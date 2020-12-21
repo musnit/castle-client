@@ -97,6 +97,7 @@ public:
 	void getPixel(int x, int y, Pixel &p) const;
 	
 	int floodFill(int x, int y, ImageData *paths, const Pixel &p);
+	int floodFillErase(int x, int y, int radius, ImageData *paths);
 	bool isAlphaSet(const Pixel &p);
 	bool arePixelsEqual(const Pixel &p1, const Pixel &p2);
 	void updateFloodFillForNewPaths(ImageData *paths);

@@ -24,6 +24,7 @@
 #include <queue>
 #include <map>
 #include <set>
+#include <math.h>
 
 using love::thread::Lock;
 
@@ -527,6 +528,75 @@ int ImageData::floodFill(int x, int y, ImageData *paths, const Pixel &p)
 	}
 
 	return result;
+}
+
+int ImageData::floodFillErase(int x, int y, int radius, ImageData *paths)
+{
+	Pixel clearP;
+	clearPixel(clearP);
+	
+	std::queue<flood_pixel_t> pixelQueue;
+	
+	for (int cy = -radius; cy <= radius; cy++) {
+		float angle = asin((float) cy / (float) radius);
+		float xdiff = abs(radius * cos(angle));
+		
+		for (int cx = -xdiff; cx <= xdiff; cx++) {
+			int px = x + cx;
+			int py = y + cy;
+			if (inside(px, py)) {
+				flood_pixel_t p;
+				p.x = px;
+				p.y = py;
+
+				pixelQueue.push(p);
+			}
+		}
+	}
+
+	int count = 0;
+	size_t pixelsize = getPixelSize();
+
+	while (!pixelQueue.empty()) {
+		flood_pixel_t currentPixel = pixelQueue.front();
+		pixelQueue.pop();
+
+		if (floodFillTest(currentPixel.x, currentPixel.y, paths, clearP) == 0) {
+			unsigned char *pixeldata = data + ((currentPixel.y * width + currentPixel.x) * pixelsize);
+			count++;
+			memcpy(pixeldata, &clearP, pixelsize);
+
+			for (int dx = -1; dx <= 1; dx++) {
+				for (int dy = -1; dy <= 1; dy++) {
+					bool skip = false;
+					if (dx == 0 && dy == 0) {
+						skip = true;
+					}
+
+					flood_pixel_t newPixel;
+					newPixel.x = currentPixel.x + dx;
+					newPixel.y = currentPixel.y + dy;
+
+					if (!inside(newPixel.x, newPixel.y)) {
+						return -1;
+					}
+
+					if (!skip) {
+						int testResult = floodFillTest(newPixel.x, newPixel.y, paths, clearP);
+						if (testResult == 0) {
+							pixelQueue.push(newPixel);
+						} else if (testResult == 2) {
+							unsigned char *pixeldata = data + ((newPixel.y * width + newPixel.x) * pixelsize);
+							count++;
+							memcpy(pixeldata, &clearP, pixelsize);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return count;
 }
 
 int ImageData::internalFloodFill(int x, int y, ImageData *paths, const Pixel &p)

@@ -190,6 +190,23 @@ int w_ImageData_floodFill(lua_State *L)
 	return 1;
 }
 
+int w_ImageData_floodFillErase(lua_State *L)
+{
+	ImageData *t = luax_checkimagedata(L, 1);
+	int x = (int) luaL_checkinteger(L, 2);
+	int y = (int) luaL_checkinteger(L, 3);
+	int radius = (int) luaL_checkinteger(L, 4);
+	ImageData *paths = luax_checkimagedata(L, 5);
+
+	int result = 0;
+
+	luax_catchexcept(L, [&](){ result = t->floodFillErase(x, y, radius, (love::image::ImageData *)paths); });
+
+	lua_pushinteger(L, result);
+
+	return 1;
+}
+
 int w_ImageData_updateFloodFillForNewPaths(lua_State *L)
 {
 	ImageData *t = luax_checkimagedata(L, 1);
@@ -420,6 +437,7 @@ static const luaL_Reg w_ImageData_functions[] =
 	{ "paste", w_ImageData_paste },
 	{ "encode", w_ImageData_encode },
 	{ "floodFill", w_ImageData_floodFill},
+	{ "floodFillErase", w_ImageData_floodFillErase},
 	{ "updateFloodFillForNewPaths", w_ImageData_updateFloodFillForNewPaths },
 	{ "isEmpty", w_ImageData_isEmpty },
 	{ "getBounds", w_ImageData_getBounds },
