@@ -2,6 +2,7 @@ import React from 'react';
 import { Image, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 
 import FastImage from 'react-native-fast-image';
+import Video from 'react-native-video';
 
 import * as Constants from '../Constants';
 import { UserAvatar } from '../components/UserAvatar';
@@ -20,10 +21,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     overflow: 'hidden',
   },
-  cardPreviewImage: {
+  cardPreview: {
     position: 'absolute',
     width: '100%',
     height: '100%',
+  },
+  cardPreviewImage: {
     resizeMode: 'cover',
   },
   meta: {
@@ -75,26 +78,11 @@ const InitialCardIndicator = () => (
   </View>
 );
 
-export const CardCell = ({
-  card,
-  onPress,
-  title,
-  imageUrl,
-  useOverlay,
-  isInitialCard,
-  isPrivate,
-  isFullSize,
-  style,
-}) => {
-  let cardStyles = styles.card;
-  if (card.backgroundImage && card.backgroundImage.primaryColor) {
-    cardStyles = [styles.card, { backgroundColor: card.backgroundImage.primaryColor }];
-  }
-  if (isFullSize) {
-    cardStyles += { borderRadius: Constants.CARD_BORDER_RADIUS };
-  }
-  let uri;
-  if (card.backgroundImage) {
+const CardArtwork = ({ card, useOverlay, isPrivate, previewVideo }) => {
+  if (previewVideo?.url) {
+    return <Video style={styles.cardPreview} source={{ uri: previewVideo.url }} repeat={true} />;
+  } else if (card.backgroundImage) {
+    let uri;
     const { url, smallUrl, overlayUrl, privateCardUrl } = card.backgroundImage;
     if (useOverlay && overlayUrl) {
       uri = overlayUrl;
@@ -105,7 +93,31 @@ export const CardCell = ({
     } else {
       uri = url;
     }
+    return <FastImage style={[styles.cardPreview, styles.cardPreviewImage]} source={{ uri }} />;
   }
+  return null;
+};
+
+export const CardCell = ({
+  card,
+  onPress,
+  title,
+  imageUrl,
+  useOverlay,
+  isInitialCard,
+  isPrivate,
+  isFullSize,
+  previewVideo,
+  style,
+}) => {
+  let cardStyles = styles.card;
+  if (card.backgroundImage && card.backgroundImage.primaryColor) {
+    cardStyles = [styles.card, { backgroundColor: card.backgroundImage.primaryColor }];
+  }
+  if (isFullSize) {
+    cardStyles += { borderRadius: Constants.CARD_BORDER_RADIUS };
+  }
+
   return (
     <View
       style={[styles.container, style]}
@@ -113,7 +125,12 @@ export const CardCell = ({
       shouldRasterizeIOS={useOverlay}>
       <TouchableWithoutFeedback disabled={!onPress} onPress={onPress}>
         <View style={cardStyles}>
-          {card.backgroundImage && <FastImage style={styles.cardPreviewImage} source={{ uri }} />}
+          <CardArtwork
+            card={card}
+            previewVideo={previewVideo}
+            useOverlay={useOverlay}
+            isPrivate={isPrivate}
+          />
           {imageUrl || title ? (
             <View style={styles.meta}>
               {imageUrl && (

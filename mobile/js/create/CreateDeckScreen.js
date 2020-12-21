@@ -35,6 +35,7 @@ const DECK_FRAGMENT = `
       backgroundImage { url }
     }
   }
+  previewVideo { url }
   cards {
     id
     cardId

@@ -88,7 +88,11 @@ const DeckVisibleControl = ({ deck, onPressVisible }) => {
   return (
     <View style={styles.visibleControl}>
       <View style={styles.topCardPreview}>
-        <CardCell card={initialCard} isPrivate={deck?.visibility === 'private'} />
+        <CardCell
+          card={initialCard}
+          isPrivate={deck?.visibility === 'private'}
+          previewVideo={deck?.previewVideo}
+        />
       </View>
       {deck ? (
         <View style={styles.instructions}>
