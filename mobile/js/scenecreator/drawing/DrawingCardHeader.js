@@ -275,15 +275,21 @@ export const DrawingCardHeader = ({ onPressBack }) => {
             style={styles.toolGroup}
             onPress={() => {
               if (isArtworkActive) {
-                activeToolAction('onSelectSubtool', 'artwork:erase');
+                activeToolAction('onSelectSubtool', 'artwork:artwork_erase');
               } else {
-                activeToolAction('onSelectSubtool', 'collision:erase');
+                activeToolAction('onSelectSubtool', 'collision:collision_erase');
               }
             }}>
             <Text
               style={[
                 styles.toolGroupLabel,
-                { color: currentDrawingToolGroup == 'erase' ? '#fff' : '#888' },
+                {
+                  color:
+                    currentDrawingToolGroup == 'artwork_erase' ||
+                    currentDrawingToolGroup == 'collision_erase'
+                      ? '#fff'
+                      : '#888',
+                },
               ]}>
               Erase
             </Text>
@@ -291,7 +297,12 @@ export const DrawingCardHeader = ({ onPressBack }) => {
               <MCIcon
                 name="eraser"
                 size={36}
-                color={currentDrawingToolGroup == 'erase' ? '#fff' : '#888'}
+                color={
+                  currentDrawingToolGroup == 'artwork_erase' ||
+                  currentDrawingToolGroup == 'collision_erase'
+                    ? '#fff'
+                    : '#888'
+                }
               />
             </View>
           </TouchableOpacity>
