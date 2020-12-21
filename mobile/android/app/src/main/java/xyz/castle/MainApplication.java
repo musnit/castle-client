@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import ghost.GhostPackage;
+import com.brentvatne.react.ReactVideoPackage;
 
 public class MainApplication extends Application implements ReactApplication {
   private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(new BasePackageList().getPackageList(), Arrays.<SingletonModule>asList());
@@ -66,6 +67,7 @@ public class MainApplication extends Application implements ReactApplication {
                       // Packages that cannot be autolinked yet can be added manually here, for example:
                       // packages.add(new MyReactNativePackage());
                       packages.add(new GhostPackage());
+                      packages.add(new ReactVideoPackage());
 
                       // Add unimodules
                       List<ReactPackage> unimodules = Arrays.<ReactPackage>asList(
