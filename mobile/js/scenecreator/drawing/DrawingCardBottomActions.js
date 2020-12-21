@@ -221,6 +221,10 @@ export const DrawingCardBottomActions = () => {
 
           {currentDrawingToolGroup == 'artwork_erase' ? (
             <Fragment>
+              <TouchableOpacity onPress={() => activeToolAction('onClearArtwork')}>
+                <Text style={{ color: 'white' }}>CLEAR ALL</Text>
+              </TouchableOpacity>
+
               <TouchableOpacity
                 style={
                   artworkEraseSubtool == 'erase_small'
@@ -324,6 +328,7 @@ export const DrawingCardBottomActions = () => {
             </TouchableOpacity>
           </Fragment>
         ) : null}
+
         {currentDrawingToolGroup == 'collision_move' ? (
           <Fragment>
             <TouchableOpacity
@@ -352,6 +357,14 @@ export const DrawingCardBottomActions = () => {
                 size={ICON_SIZE}
                 color={collisionMoveSubtool == 'scale-rotate' ? activeColorForeground : COLOR_ICON}
               />
+            </TouchableOpacity>
+          </Fragment>
+        ) : null}
+
+        {currentDrawingToolGroup == 'collision_erase' ? (
+          <Fragment>
+            <TouchableOpacity onPress={() => activeToolAction('onClearCollisionShapes')}>
+              <Text style={{ color: 'white' }}>CLEAR ALL</Text>
             </TouchableOpacity>
           </Fragment>
         ) : null}
