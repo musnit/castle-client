@@ -149,6 +149,12 @@ export const CapturePreviewSheet = ({ onClose, ...props }) => {
   const { sendGlobalAction } = useGhostUI();
   const { isOpen } = props;
 
+  React.useEffect(() => {
+    if (!isOpen) {
+      setLastCaptureData({});
+    }
+  }, [isOpen]);
+
   GhostEvents.useListen({
     eventName: 'GHOST_CAPTURE',
     handler: async (data) => {
