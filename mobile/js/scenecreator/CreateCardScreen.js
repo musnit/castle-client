@@ -130,7 +130,7 @@ export const CreateCardScreen = ({
   const isPlaying =
     globalActions?.performing === undefined ? !initialIsEditing : globalActions.performing;
   const selectedActorId = globalActions?.selectedActorId;
-  const hasSelection = selectedActorId !== undefined;
+  const hasSelection = selectedActorId !== undefined && activeSheet !== 'capturePreview';
   const { behaviors, behaviorActions } = getInspectorBehaviors(root);
   const inspectorActions = getInspectorActions(root);
   const { activeToolData, activeToolAction } = getActiveTool(root);
