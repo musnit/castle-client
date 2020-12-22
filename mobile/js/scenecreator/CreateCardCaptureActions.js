@@ -63,20 +63,38 @@ export const CreateCardCaptureActions = () => {
     { status: 'ready' }
   );
 
-  React.useEffect(() => {
-    let timeout;
-    if (capturing && recordState.status !== 'recording') {
-      timeout = setTimeout(() => {
+  const start = React.useRef();
+  const timeout = React.useRef();
+  const advanceTimer = React.useCallback(
+    (time) => {
+      if (!start.current) {
+        start.current = time;
+      }
+      const elapsed = time - start.current;
+      let captureStarted = false;
+      if (elapsed >= 1000) {
+        start.current = time;
         setNextRecordState();
         if (recordState.status === 'countdown' && recordState.countdown === 1) {
+          captureStarted = true;
           sendGlobalAction('startCapture');
         }
-      }, 1000);
+      }
+      if (!captureStarted) {
+        timeout.current = requestAnimationFrame(advanceTimer);
+      }
+    },
+    [recordState]
+  );
+
+  React.useEffect(() => {
+    if (capturing && recordState.status !== 'recording') {
+      timeout.current = requestAnimationFrame(advanceTimer);
     }
     return () => {
-      if (timeout) {
-        clearTimeout(timeout);
-        timeout = null;
+      if (timeout.current) {
+        cancelAnimationFrame(timeout.current);
+        timeout.current = null;
       }
     };
   }, [recordState, capturing]);
