@@ -11,9 +11,12 @@ import * as Constants from '../../Constants';
 import * as GhostEvents from '../../ghost/GhostEvents';
 
 import FastImage from 'react-native-fast-image';
+import Viewport from '../../common/viewport';
 
 const CAPTURE_FPS = 12;
 const PREVIEW_FPS = CAPTURE_FPS * 2;
+
+const PREVIEW_CONTAINER_WIDTH = Viewport.vw * 100 - 32;
 
 const styles = StyleSheet.create({
   container: {
@@ -21,14 +24,24 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   previewContainer: {
+    // set explicit width/height because children will be abs-position
     margin: 16,
     borderRadius: 6,
-    overflow: 'hidden',
+    width: PREVIEW_CONTAINER_WIDTH,
+    aspectRatio: Constants.CARD_RATIO,
   },
   previewFrame: {
+    // position all frames absolutely and move to show
+    position: 'absolute',
+    left: 0,
+    top: 0,
     width: '100%',
     aspectRatio: Constants.CARD_RATIO,
     borderRadius: 6,
+  },
+  hiddenFrame: {
+    // offset invisible frames to prevent rerender/reload
+    left: 5000,
   },
   loadingOverlay: {
     position: 'absolute',
@@ -112,6 +125,7 @@ const CapturePreview = ({ visible, data, onUseCapture }) => {
   );
 
   const [bustCacheKey, setBustCacheKey] = React.useState('');
+  const [frames, setFrames] = React.useState([]);
   React.useEffect(() => {
     if (visible) {
       setLoadingOverlayVisible(true);
@@ -122,6 +136,9 @@ const CapturePreview = ({ visible, data, onUseCapture }) => {
       // (react native's built-in Image component doesn't handle file:// uri well enough.)
       let key = Date.now().toString();
       setBustCacheKey(key);
+      let newFrames = [];
+      for (let ii = 1; ii < numFrames + 1; ii++) newFrames.push(makeFramePath(path, ii, key));
+      setFrames(newFrames);
 
       (async () => {
         await preloadImages(path, numFrames, key);
@@ -131,10 +148,22 @@ const CapturePreview = ({ visible, data, onUseCapture }) => {
   }, [visible]);
 
   if (visible && path && numFrames) {
-    const currentFramePath = makeFramePath(path, frameState.index, bustCacheKey);
+    // render all frames simultaneously, but abs-position the visible one on screen.
+    // prevents white flashes from re-rendering FastImage on Android.
     return (
       <View style={styles.previewContainer}>
-        <FastImage style={styles.previewFrame} source={{ uri: currentFramePath }} onLoad={onLoad} />
+        {frames.map((path, ii) => (
+          <FastImage
+            key={`frame-${ii}`}
+            style={
+              ii + 1 == frameState.index
+                ? styles.previewFrame
+                : [styles.previewFrame, styles.hiddenFrame]
+            }
+            source={{ uri: path }}
+            onLoad={onLoad}
+          />
+        ))}
         {loadingOverlayVisible ? <LoadingOverlay /> : null}
       </View>
     );
