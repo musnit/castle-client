@@ -216,6 +216,20 @@ export const DrawingCardBottomActions = () => {
                   color={artworkMoveSubtool == 'bend' ? activeColorForeground : COLOR_ICON}
                 />
               </TouchableOpacity>
+
+              <TouchableOpacity
+                style={
+                  artworkMoveSubtool == 'move_all'
+                    ? [styles.iconSelected, { backgroundColor: activeColorBackground }]
+                    : styles.icon
+                }
+                onPress={() => activeToolAction('onSelectSubtool', 'artwork_move:move_all')}>
+                <MCIcon
+                  name="cursor-move"
+                  size={ICON_SIZE}
+                  color={artworkMoveSubtool == 'move_all' ? activeColorForeground : COLOR_ICON}
+                />
+              </TouchableOpacity>
             </Fragment>
           ) : null}
 
