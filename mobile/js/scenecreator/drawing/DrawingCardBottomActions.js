@@ -234,59 +234,98 @@ export const DrawingCardBottomActions = () => {
           ) : null}
 
           {currentDrawingToolGroup == 'artwork_erase' ? (
-            <Fragment>
-              <TouchableOpacity onPress={() => activeToolAction('onClearArtwork')}>
+            <View
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}>
+              <TouchableOpacity
+                onPress={() => activeToolAction('onClearArtwork')}
+                style={{
+                  padding: 8,
+                }}>
                 <Text style={{ color: 'white' }}>CLEAR ALL</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity
-                style={
-                  artworkEraseSubtool == 'erase_small'
-                    ? [styles.iconSelected, { backgroundColor: activeColorBackground }]
-                    : styles.icon
-                }
-                onPress={() => activeToolAction('onSelectSubtool', 'artwork_erase:erase_small')}>
-                <View
-                  style={{
-                    width: 20,
-                    height: 20,
-                    backgroundColor: 'white',
-                    borderRadius: 10,
-                  }}></View>
-              </TouchableOpacity>
+              <View
+                style={{
+                  flexDirection: 'row',
+                }}>
+                <TouchableOpacity
+                  style={
+                    artworkEraseSubtool == 'erase_small'
+                      ? [styles.iconSelected, { backgroundColor: activeColorBackground }]
+                      : styles.icon
+                  }
+                  onPress={() => activeToolAction('onSelectSubtool', 'artwork_erase:erase_small')}>
+                  <View
+                    style={{
+                      width: 22,
+                      height: 22,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    <View
+                      style={{
+                        width: 7,
+                        height: 7,
+                        backgroundColor: 'white',
+                        borderRadius: 7,
+                      }}></View>
+                  </View>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                style={
-                  artworkEraseSubtool == 'erase_medium'
-                    ? [styles.iconSelected, { backgroundColor: activeColorBackground }]
-                    : styles.icon
-                }
-                onPress={() => activeToolAction('onSelectSubtool', 'artwork_erase:erase_medium')}>
-                <View
-                  style={{
-                    width: 30,
-                    height: 30,
-                    backgroundColor: 'white',
-                    borderRadius: 15,
-                  }}></View>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={
+                    artworkEraseSubtool == 'erase_medium'
+                      ? [styles.iconSelected, { backgroundColor: activeColorBackground }]
+                      : styles.icon
+                  }
+                  onPress={() => activeToolAction('onSelectSubtool', 'artwork_erase:erase_medium')}>
+                  <View
+                    style={{
+                      width: 22,
+                      height: 22,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    <View
+                      style={{
+                        width: 16,
+                        height: 16,
+                        backgroundColor: 'white',
+                        borderRadius: 16,
+                      }}></View>
+                  </View>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                style={
-                  artworkEraseSubtool == 'erase_large'
-                    ? [styles.iconSelected, { backgroundColor: activeColorBackground }]
-                    : styles.icon
-                }
-                onPress={() => activeToolAction('onSelectSubtool', 'artwork_erase:erase_large')}>
-                <View
-                  style={{
-                    width: 40,
-                    height: 40,
-                    backgroundColor: 'white',
-                    borderRadius: 20,
-                  }}></View>
-              </TouchableOpacity>
-            </Fragment>
+                <TouchableOpacity
+                  style={
+                    artworkEraseSubtool == 'erase_large'
+                      ? [styles.iconSelected, { backgroundColor: activeColorBackground }]
+                      : styles.icon
+                  }
+                  onPress={() => activeToolAction('onSelectSubtool', 'artwork_erase:erase_large')}>
+                  <View
+                    style={{
+                      width: 22,
+                      height: 22,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    <View
+                      style={{
+                        width: 22,
+                        height: 22,
+                        backgroundColor: 'white',
+                        borderRadius: 22,
+                      }}></View>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </View>
           ) : null}
         </View>
       </View>
