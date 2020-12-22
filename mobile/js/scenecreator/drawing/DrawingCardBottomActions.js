@@ -386,20 +386,6 @@ export const DrawingCardBottomActions = () => {
           <Fragment>
             <TouchableOpacity
               style={
-                collisionMoveSubtool == 'move'
-                  ? [styles.iconSelected, { backgroundColor: activeColorBackground }]
-                  : styles.icon
-              }
-              onPress={() => activeToolAction('onSelectSubtool', 'collision_move:move')}>
-              <Icon
-                name="open-with"
-                size={ICON_SIZE}
-                color={collisionMoveSubtool == 'move' ? activeColorForeground : COLOR_ICON}
-              />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={
                 collisionMoveSubtool == 'scale-rotate'
                   ? [styles.iconSelected, { backgroundColor: activeColorBackground }]
                   : styles.icon
@@ -411,6 +397,19 @@ export const DrawingCardBottomActions = () => {
                 color={collisionMoveSubtool == 'scale-rotate' ? activeColorForeground : COLOR_ICON}
               />
             </TouchableOpacity>
+            <TouchableOpacity
+              style={
+                collisionMoveSubtool == 'move'
+                  ? [styles.iconSelected, { backgroundColor: activeColorBackground }]
+                  : styles.icon
+              }
+              onPress={() => activeToolAction('onSelectSubtool', 'collision_move:move')}>
+              <MCIcon
+                name="shape"
+                size={ICON_SIZE}
+                color={collisionMoveSubtool == 'move' ? activeColorForeground : COLOR_ICON}
+              />
+            </TouchableOpacity>
 
             <TouchableOpacity
               style={
@@ -419,8 +418,8 @@ export const DrawingCardBottomActions = () => {
                   : styles.icon
               }
               onPress={() => activeToolAction('onSelectSubtool', 'collision_move:move_all')}>
-              <Icon
-                name="open-with"
+              <MCIcon
+                name="cursor-move"
                 size={ICON_SIZE}
                 color={collisionMoveSubtool == 'move_all' ? activeColorForeground : COLOR_ICON}
               />
