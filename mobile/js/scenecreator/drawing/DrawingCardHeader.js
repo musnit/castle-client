@@ -6,9 +6,10 @@ import { useGhostUI } from '../../ghost/GhostUI';
 import { useCardCreator } from '../../scenecreator/CreateCardContext';
 import { SegmentedNavigation } from '../../components/SegmentedNavigation';
 import * as Constants from '../../Constants';
+import { DrawingCardBottomActions } from './DrawingCardBottomActions';
 import tinycolor from 'tinycolor2';
 
-export const DRAWING_CARD_HEADER_HEIGHT = 180;
+export const DRAWING_CARD_HEADER_HEIGHT = 200;
 
 const styles = StyleSheet.create({
   container: {
@@ -67,9 +68,6 @@ const styles = StyleSheet.create({
   toolGroup: {
     alignItems: 'center',
     marginHorizontal: 20,
-  },
-  toolGroupPicker: {
-    marginTop: 8,
   },
   toolGroupLabel: {},
   toolGroupIcon: {
@@ -173,141 +171,94 @@ export const DrawingCardHeader = ({ onPressBack }) => {
         />
       </View>
 
-      <View style={styles.toolGroupPicker}>
-        <View style={styles.shapeContainer}>
+      <View style={styles.shapeContainer}>
+        <TouchableOpacity
+          style={styles.toolGroup}
+          onPress={() => {
+            if (isArtworkActive) {
+              activeToolAction('onSelectSubtool', 'artwork:artwork_draw');
+            } else {
+              activeToolAction('onSelectSubtool', 'collision:collision_draw');
+            }
+          }}>
+          <View style={styles.toolGroupIcon}>
+            <MCIcon
+              name="pencil-outline"
+              size={36}
+              color={
+                currentDrawingToolGroup == 'artwork_draw' ||
+                currentDrawingToolGroup == 'collision_draw'
+                  ? '#fff'
+                  : '#888'
+              }
+            />
+          </View>
+        </TouchableOpacity>
+
+        {isArtworkActive ? (
           <TouchableOpacity
             style={styles.toolGroup}
             onPress={() => {
-              if (isArtworkActive) {
-                activeToolAction('onSelectSubtool', 'artwork:artwork_draw');
-              } else {
-                activeToolAction('onSelectSubtool', 'collision:collision_draw');
-              }
+              activeToolAction('onSelectSubtool', 'artwork:fill');
             }}>
-            <Text
-              style={[
-                styles.toolGroupLabel,
-                {
-                  color:
-                    currentDrawingToolGroup == 'artwork_draw' ||
-                    currentDrawingToolGroup == 'collision_draw'
-                      ? '#fff'
-                      : '#888',
-                },
-              ]}>
-              Draw
-            </Text>
             <View style={styles.toolGroupIcon}>
               <MCIcon
-                name="pencil-outline"
-                size={36}
-                color={
-                  currentDrawingToolGroup == 'artwork_draw' ||
-                  currentDrawingToolGroup == 'collision_draw'
-                    ? '#fff'
-                    : '#888'
-                }
+                name="format-color-fill"
+                size={38}
+                color={currentDrawingToolGroup == 'fill' ? '#fff' : '#888'}
+                style={{ marginTop: 4 }}
               />
             </View>
           </TouchableOpacity>
+        ) : null}
 
-          {isArtworkActive ? (
-            <TouchableOpacity
-              style={styles.toolGroup}
-              onPress={() => {
-                activeToolAction('onSelectSubtool', 'artwork:fill');
-              }}>
-              <Text
-                style={[
-                  styles.toolGroupLabel,
-                  { color: currentDrawingToolGroup == 'fill' ? '#fff' : '#888' },
-                ]}>
-                Fill
-              </Text>
-              <View style={styles.toolGroupIcon}>
-                <MCIcon
-                  name="format-color-fill"
-                  size={38}
-                  color={currentDrawingToolGroup == 'fill' ? '#fff' : '#888'}
-                  style={{ marginTop: 4 }}
-                />
-              </View>
-            </TouchableOpacity>
-          ) : null}
-
-          <TouchableOpacity
-            style={styles.toolGroup}
-            onPress={() => {
-              if (isArtworkActive) {
-                activeToolAction('onSelectSubtool', 'artwork:artwork_move');
-              } else {
-                activeToolAction('onSelectSubtool', 'collision:collision_move');
+        <TouchableOpacity
+          style={styles.toolGroup}
+          onPress={() => {
+            if (isArtworkActive) {
+              activeToolAction('onSelectSubtool', 'artwork:artwork_move');
+            } else {
+              activeToolAction('onSelectSubtool', 'collision:collision_move');
+            }
+          }}>
+          <View style={styles.toolGroupIcon}>
+            <Icon
+              name="pan-tool"
+              size={28}
+              color={
+                currentDrawingToolGroup == 'artwork_move' ||
+                currentDrawingToolGroup == 'collision_move'
+                  ? '#fff'
+                  : '#888'
               }
-            }}>
-            <Text
-              style={[
-                styles.toolGroupLabel,
-                {
-                  color:
-                    currentDrawingToolGroup == 'artwork_move' ||
-                    currentDrawingToolGroup == 'collision_move'
-                      ? '#fff'
-                      : '#888',
-                },
-              ]}>
-              Move
-            </Text>
-            <View style={styles.toolGroupIcon}>
-              <Icon
-                name="pan-tool"
-                size={28}
-                color={
-                  currentDrawingToolGroup == 'artwork_move' ||
-                  currentDrawingToolGroup == 'collision_move'
-                    ? '#fff'
-                    : '#888'
-                }
-              />
-            </View>
-          </TouchableOpacity>
+            />
+          </View>
+        </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.toolGroup}
-            onPress={() => {
-              if (isArtworkActive) {
-                activeToolAction('onSelectSubtool', 'artwork:artwork_erase');
-              } else {
-                activeToolAction('onSelectSubtool', 'collision:collision_erase');
+        <TouchableOpacity
+          style={styles.toolGroup}
+          onPress={() => {
+            if (isArtworkActive) {
+              activeToolAction('onSelectSubtool', 'artwork:artwork_erase');
+            } else {
+              activeToolAction('onSelectSubtool', 'collision:collision_erase');
+            }
+          }}>
+          <View style={styles.toolGroupIcon}>
+            <MCIcon
+              name="eraser"
+              size={36}
+              color={
+                currentDrawingToolGroup == 'artwork_erase' ||
+                currentDrawingToolGroup == 'collision_erase'
+                  ? '#fff'
+                  : '#888'
               }
-            }}>
-            <Text
-              style={[
-                styles.toolGroupLabel,
-                {
-                  color:
-                    currentDrawingToolGroup == 'artwork_erase' ||
-                    currentDrawingToolGroup == 'collision_erase'
-                      ? '#fff'
-                      : '#888',
-                },
-              ]}>
-              Erase
-            </Text>
-            <View style={styles.toolGroupIcon}>
-              <MCIcon
-                name="eraser"
-                size={36}
-                color={
-                  currentDrawingToolGroup == 'artwork_erase' ||
-                  currentDrawingToolGroup == 'collision_erase'
-                    ? '#fff'
-                    : '#888'
-                }
-              />
-            </View>
-          </TouchableOpacity>
-        </View>
+            />
+          </View>
+        </TouchableOpacity>
       </View>
+      <DrawingCardBottomActions />
     </View>
   );
 };

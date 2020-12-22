@@ -4,6 +4,7 @@ import { CapturePreviewSheet } from './sheets/CapturePreviewSheet';
 import { CardToolsSheet } from './sheets/CardToolsSheet';
 import { CreateCardSettingsSheet } from './sheets/CreateCardSettingsSheet';
 import { InspectorSheet } from './inspector/InspectorSheet';
+import { DrawingLayersSheet } from './sheets/DrawingLayersSheet';
 import { SheetBackgroundOverlay } from '../components/SheetBackgroundOverlay';
 import { useCardCreator } from './CreateCardContext';
 import { useGhostUI } from '../ghost/GhostUI';
@@ -36,6 +37,11 @@ const ROOT_SHEETS = [
     key: 'capturePreview',
     Component: CapturePreviewSheet,
     snapPoints: [FULL_SHEET_HEIGHT],
+  },
+  {
+    key: 'drawingLayers',
+    Component: DrawingLayersSheet,
+    snapPoints: [60, 350],
   },
 ];
 
@@ -90,7 +96,7 @@ export const SheetProvider = ({ activeSheet, setActiveSheet, isShowingDraw }) =>
         }
 
         if (isShowingDraw) {
-          isOpen = false;
+          isOpen = key === 'drawingLayers';
         }
 
         const stack = sheetStacks[key] ?? [sheet];
