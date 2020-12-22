@@ -411,6 +411,20 @@ export const DrawingCardBottomActions = () => {
                 color={collisionMoveSubtool == 'scale-rotate' ? activeColorForeground : COLOR_ICON}
               />
             </TouchableOpacity>
+
+            <TouchableOpacity
+              style={
+                collisionMoveSubtool == 'move_all'
+                  ? [styles.iconSelected, { backgroundColor: activeColorBackground }]
+                  : styles.icon
+              }
+              onPress={() => activeToolAction('onSelectSubtool', 'collision_move:move_all')}>
+              <Icon
+                name="open-with"
+                size={ICON_SIZE}
+                color={collisionMoveSubtool == 'move_all' ? activeColorForeground : COLOR_ICON}
+              />
+            </TouchableOpacity>
           </Fragment>
         ) : null}
 
