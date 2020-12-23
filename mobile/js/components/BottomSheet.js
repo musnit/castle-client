@@ -65,6 +65,7 @@ export const BottomSheet = ({
   onClose,
   onCloseEnd,
   onOpenEnd,
+  useViewInsteadOfScrollview,
   style = {},
 }) => {
   let screenHeight = Viewport.vh * 100;
@@ -116,10 +117,17 @@ export const BottomSheet = ({
         textInputHeight={textInputHeight}>
         <View style={[styles.container, style, { height: containerHeight }]} key={contentKey}>
           {renderHeader()}
-          <ScrollView style={styles.content}>
-            {renderContent()}
-            <View style={{ height: scrollViewPadding + 20 }} />
-          </ScrollView>
+          {useViewInsteadOfScrollview ? (
+            <View style={styles.content}>
+              {renderContent()}
+              <View style={{ height: scrollViewPadding + 20 }} />
+            </View>
+          ) : (
+            <ScrollView style={styles.content}>
+              {renderContent()}
+              <View style={{ height: scrollViewPadding + 20 }} />
+            </ScrollView>
+          )}
         </View>
       </NativeBottomSheet>
     );
@@ -243,16 +251,23 @@ export const BottomSheet = ({
           onHandlerStateChange={onPanStateChange}>
           <Animated.View>{renderHeader()}</Animated.View>
         </PanGestureHandler>
-        <KeyboardAwareScrollView
-          ref={scrollViewRef}
-          key={contentKey}
-          style={styles.content}
-          enableOnAndroid={true}
-          extraScrollHeight={Constants.Android ? insets.bottom : 0}
-          keyboardShouldPersistTaps="handled">
-          {renderContent()}
-          <View style={{ paddingBottom: insets.bottom }}></View>
-        </KeyboardAwareScrollView>
+        {useViewInsteadOfScrollview ? (
+          <View ref={scrollViewRef} key={contentKey} style={styles.content}>
+            {renderContent()}
+            <View style={{ paddingBottom: insets.bottom }}></View>
+          </View>
+        ) : (
+          <KeyboardAwareScrollView
+            ref={scrollViewRef}
+            key={contentKey}
+            style={styles.content}
+            enableOnAndroid={true}
+            extraScrollHeight={Constants.Android ? insets.bottom : 0}
+            keyboardShouldPersistTaps="handled">
+            {renderContent()}
+            <View style={{ paddingBottom: insets.bottom }}></View>
+          </KeyboardAwareScrollView>
+        )}
       </View>
     </Animated.View>
   );
