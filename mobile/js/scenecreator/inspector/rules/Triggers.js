@@ -143,6 +143,38 @@ const Collide = ({ trigger }) => {
   ]);
 };
 
+const GainTag = ({ trigger }) => {
+  const hasTag = trigger.params.tag && trigger.params.tag.length;
+  return withWhen([
+    {
+      type: 'selectEntry',
+      label: hasTag ? 'this gains the tag' : 'this gains a tag',
+    },
+    {
+      type: hasTag ? 'selectParamSheet' : 'selectParamSheetPlaceholder',
+      label: hasTag ? `#${trigger.params.tag}` : 'Select tag',
+      paramName: 'tag',
+      paramValue: trigger.params.tag,
+    },
+  ]);
+};
+
+const LoseTag = ({ trigger }) => {
+  const hasTag = trigger.params.tag && trigger.params.tag.length;
+  return withWhen([
+    {
+      type: 'selectEntry',
+      label: hasTag ? 'this loses the tag' : 'this loses a tag',
+    },
+    {
+      type: hasTag ? 'selectParamSheet' : 'selectParamSheetPlaceholder',
+      label: hasTag ? `#${trigger.params.tag}` : 'Select tag',
+      paramName: 'tag',
+      paramValue: trigger.params.tag,
+    },
+  ]);
+};
+
 const VariableReachesValue = ({ trigger, context }) => {
   const changeAllParams = {
     paramNames: ['variableId', 'comparison', 'value'],
@@ -290,6 +322,8 @@ export const Triggers = {
   ['analog stick ends']: AnalogStickEnds,
   create: Create,
   destroy: Destroy,
+  ['gain tag']: GainTag,
+  ['lose tag']: LoseTag,
   ['variable reaches value']: VariableReachesValue,
   ['variable changes']: VariableChanges,
   ['counter reaches value']: CounterReachesValue,
