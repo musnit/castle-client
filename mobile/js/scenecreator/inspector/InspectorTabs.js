@@ -18,33 +18,20 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 8,
   },
-  blueprintContainer: {
-    padding: 16,
-    alignItems: 'center',
-  },
   blueprintTitle: {
     fontWeight: 'bold',
     paddingBottom: 16,
     fontSize: 16,
   },
+  drawingTags: {
+    flexDirection: 'row',
+  },
 });
 
-const GeneralTab = ({ behaviors, sendActions, addChildSheet }) => {
+const GeneralTab = ({ behaviors, sendActions }) => {
   const { isTextActorSelected } = useCardCreator();
   return (
     <React.Fragment>
-      <View style={styles.blueprintContainer}>
-        <TouchableOpacity
-          style={SceneCreatorConstants.styles.button}
-          onPress={() =>
-            addChildSheet({
-              key: 'saveBlueprint',
-              Component: SaveBlueprintSheet,
-            })
-          }>
-          <Text style={SceneCreatorConstants.styles.buttonLabel}>Save blueprint</Text>
-        </TouchableOpacity>
-      </View>
       {isTextActorSelected && (
         <React.Fragment>
           <Inspector.TextContent text={behaviors.Text} sendAction={sendActions.Text} />
