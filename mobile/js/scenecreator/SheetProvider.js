@@ -41,7 +41,7 @@ const ROOT_SHEETS = [
   {
     key: 'drawingLayers',
     Component: DrawingLayersSheet,
-    snapPoints: [60, 350],
+    snapPoints: [90, 180, 350],
   },
 ];
 
