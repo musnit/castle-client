@@ -2,6 +2,8 @@ import { getPaneData, sendDataPaneAction } from '../ghost/GhostUI';
 
 export const formatVariableName = (name) => `\$${name}`;
 
+export const formatTag = (tag) => `#${tag}`;
+
 export const getVariableName = (variableId, variables) => {
   let variableName = '(none)';
   if (variableId && variableId !== 'none') {

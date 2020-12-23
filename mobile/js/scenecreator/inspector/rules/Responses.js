@@ -1,6 +1,7 @@
 import {
   getVariableName,
   formatVariableName,
+  formatTag,
   makeExpressionSummary,
   readableOperator,
 } from '../../SceneCreatorUtilities';
@@ -83,7 +84,7 @@ const ActOn = ({ response }) => {
       },
       {
         type: 'selectParamSheet',
-        label: '#' + response.params.tag,
+        label: formatTag(response.params.tag),
         paramName: 'tag',
         paramValue: response.params.tag,
       },
@@ -226,7 +227,7 @@ const IsColliding = ({ response }) => {
     },
     {
       type: 'selectParamSheet',
-      label: hasTag ? response.params.tag : 'any tag',
+      label: hasTag ? formatTag(response.params.tag) : 'any tag',
       paramName: 'tag',
       paramValue: response.params?.tag,
     },
@@ -675,7 +676,7 @@ const AddTag = ({ response }) => {
     const tags = response.params.tag.split(' ');
     if (tags && tags.length) {
       plural = !(tags.length == 1);
-      label = tags.join(', ');
+      label = tags.map(formatTag).join(', ');
     }
   }
   return [
@@ -699,7 +700,7 @@ const RemoveTag = ({ response }) => {
     const tags = response.params.tag.split(' ');
     if (tags && tags.length) {
       plural = !(tags.length == 1);
-      label = tags.join(', ');
+      label = tags.map(formatTag).join(', ');
     }
   }
   return [
@@ -724,7 +725,7 @@ const HasTag = ({ response }) => {
     },
     {
       type: response.params?.tag ? 'selectParamSheet' : 'selectParamSheetPlaceholder',
-      label: response.params?.tag ? response.params.tag : 'Select tag',
+      label: response.params?.tag ? formatTag(response.params.tag) : 'Select tag',
       paramName: 'tag',
       paramValue: response.params?.tag ?? '',
     },
@@ -763,7 +764,7 @@ const MoveTowardActor = ({ response, context }) => {
     },
     {
       type: 'selectParamSheet',
-      label: hasTag ? response.params.tag : 'any tag',
+      label: hasTag ? formatTag(response.params.tag) : 'any tag',
       paramName: 'tag',
       paramValue: response.params?.tag,
     },

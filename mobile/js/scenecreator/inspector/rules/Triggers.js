@@ -1,5 +1,6 @@
 import {
   getVariableName,
+  formatTag,
   makeExpressionSummary,
   readableOperator,
 } from '../../SceneCreatorUtilities';
@@ -136,7 +137,7 @@ const Collide = ({ trigger }) => {
     },
     {
       type: 'selectParamSheet',
-      label: hasTag ? trigger.params.tag : 'any actor',
+      label: hasTag ? formatTag(trigger.params.tag) : 'any actor',
       paramName: 'tag',
       paramValue: trigger.params.tag,
     },
@@ -152,7 +153,7 @@ const GainTag = ({ trigger }) => {
     },
     {
       type: hasTag ? 'selectParamSheet' : 'selectParamSheetPlaceholder',
-      label: hasTag ? `#${trigger.params.tag}` : 'Select tag',
+      label: hasTag ? formatTag(trigger.params.tag) : 'Select tag',
       paramName: 'tag',
       paramValue: trigger.params.tag,
     },
@@ -168,7 +169,7 @@ const LoseTag = ({ trigger }) => {
     },
     {
       type: hasTag ? 'selectParamSheet' : 'selectParamSheetPlaceholder',
-      label: hasTag ? `#${trigger.params.tag}` : 'Select tag',
+      label: hasTag ? formatTag(trigger.params.tag) : 'Select tag',
       paramName: 'tag',
       paramValue: trigger.params.tag,
     },
