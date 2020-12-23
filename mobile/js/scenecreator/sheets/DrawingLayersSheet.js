@@ -5,6 +5,7 @@ import { sendDataPaneAction } from '../../ghost/GhostUI';
 import { BottomSheet } from '../../components/BottomSheet';
 
 import FastImage from 'react-native-fast-image';
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const styles = StyleSheet.create({
   container: {
@@ -32,6 +33,8 @@ const styles = StyleSheet.create({
     height: 64,
   },
 });
+
+const ICON_SIZE = 22;
 
 const DrawingLayers = ({ element }) => {
   if (!element) return null;
@@ -64,14 +67,30 @@ const DrawingLayers = ({ element }) => {
         return (
           <View key={layer.title} style={{ flexDirection: 'row', marginTop: 20 }}>
             <TouchableOpacity onPress={() => sendAction('onSelectLayer', layer.id)}>
-              <Text style={layer.id === data.selectedLayer && { fontWeight: 'bold' }}>
+              <Text style={layer.id === data.selectedLayerId && { fontWeight: 'bold' }}>
                 {layer.title}
               </Text>
             </TouchableOpacity>
-            <FastImage
-              source={{ uri: `data:image/png;base64,${layer.frames[0].base64Png}` }}
-              style={styles.image}
-            />
+            <TouchableOpacity
+              style={{ paddingLeft: 20 }}
+              onPress={() =>
+                sendAction('onSetLayerIsVisible', {
+                  layerId: layer.id,
+                  isVisible: !layer.isVisible,
+                })
+              }>
+              <MCIcon
+                name={layer.isVisible ? 'eye-outline' : 'eye-off-outline'}
+                size={ICON_SIZE}
+                color={'#000'}
+              />
+            </TouchableOpacity>
+            <View style={{ paddingLeft: 20 }}>
+              <FastImage
+                source={{ uri: `data:image/png;base64,${layer.frames[0].base64Png}` }}
+                style={styles.image}
+              />
+            </View>
           </View>
         );
       })}
