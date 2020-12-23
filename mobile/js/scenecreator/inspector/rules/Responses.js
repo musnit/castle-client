@@ -716,6 +716,21 @@ const RemoveTag = ({ response }) => {
   ];
 };
 
+const HasTag = ({ response }) => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'this has a tag:',
+    },
+    {
+      type: response.params?.tag ? 'selectParamSheet' : 'selectParamSheetPlaceholder',
+      label: response.params?.tag ? response.params.tag : 'Select tag',
+      paramName: 'tag',
+      paramValue: response.params?.tag ?? '',
+    },
+  ];
+};
+
 const MoveTowardOwnAngle = ({ response, context }) => {
   return [
     {
@@ -840,6 +855,7 @@ export const Responses = {
   ['reset all variables']: ResetAllVariables,
   ['add tag']: AddTag,
   ['remove tag']: RemoveTag,
+  ['has tag']: HasTag,
   ['move toward own angle']: MoveTowardOwnAngle,
   ['move toward actor']: MoveTowardActor,
   ['face direction of motion']: FaceDirectionOfMotion,
