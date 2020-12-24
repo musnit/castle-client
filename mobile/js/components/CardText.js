@@ -48,7 +48,9 @@ const styles = StyleSheet.create({
 
 const TextActor = (props) => {
   const { actor, disabled } = props;
-  if (actor.hasTapTrigger) {
+  if (actor.isGhost) {
+    return null;
+  } else if (actor.hasTapTrigger) {
     return (
       <TouchableOpacity
         style={[
