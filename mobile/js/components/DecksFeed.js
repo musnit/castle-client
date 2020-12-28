@@ -186,30 +186,28 @@ export const DecksFeed = ({ decks }) => {
 
   return (
     <View style={styles.container}>
-      <Animated.View style={{ transform: [{ translateY: containerY }] }}>
-        <View style={cardAspectFitStyles}>
-          <View style={styles.itemCard}>{prevCard && <CardCell card={prevCard} />}</View>
-        </View>
-        <View style={cardAspectFitStyles}>
-          <CurrentDeckCell deck={currentDeck} paused={paused} />
-        </View>
-        <PanGestureHandler
-          onGestureEvent={onPanGestureEvent}
-          onHandlerStateChange={onPanStateChange}>
+      <PanGestureHandler onGestureEvent={onPanGestureEvent} onHandlerStateChange={onPanStateChange}>
+        <Animated.View style={{ transform: [{ translateY: containerY }] }}>
+          <View style={cardAspectFitStyles}>
+            <View style={styles.itemCard}>{prevCard && <CardCell card={prevCard} />}</View>
+          </View>
+          <View style={cardAspectFitStyles}>
+            <CurrentDeckCell deck={currentDeck} paused={paused} />
+          </View>
           <Animated.View style={cardAspectFitStyles}>
             <TouchableWithoutFeedback onPress={snapToNext}>
               <View style={styles.itemCard}>{nextCard && <CardCell card={nextCard} />}</View>
             </TouchableWithoutFeedback>
           </Animated.View>
-        </PanGestureHandler>
-        {nextNextCard && (
-          <View style={cardAspectFitStyles}>
-            <View style={styles.itemCard}>
-              <CardCell card={nextNextCard} />
+          {nextNextCard && (
+            <View style={cardAspectFitStyles}>
+              <View style={styles.itemCard}>
+                <CardCell card={nextNextCard} />
+              </View>
             </View>
-          </View>
-        )}
-      </Animated.View>
+          )}
+        </Animated.View>
+      </PanGestureHandler>
     </View>
   );
 };
