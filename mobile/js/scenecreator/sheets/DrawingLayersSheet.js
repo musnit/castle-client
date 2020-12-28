@@ -76,29 +76,33 @@ const renderItem = ({ item, index, drag, isActive }) => {
 };
 
 const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) => {
-  if (!fastData.layers) {
-    return null;
-  }
+  const [stateLayers, setStateLayers] = React.useState([]);
 
-  let newLayers = fastData.layers;
-  if (!Array.isArray(newLayers)) {
-    newLayers = Object.values(fastData.layers);
-  }
+  useEffect(() => {
+    if (fastData.layers) {
+      let newLayers = fastData.layers;
+      if (!Array.isArray(newLayers)) {
+        newLayers = Object.values(fastData.layers);
+      }
 
-  newLayers.sort((a, b) => b.order - a.order);
+      newLayers.sort((a, b) => b.order - a.order);
 
-  for (let i = 0; i < newLayers.length; i++) {
-    let layer = newLayers[i];
-    layer.isSelected = layer.id === fastData.selectedLayerId;
-    layer.fastAction = fastAction;
-  }
+      for (let i = 0; i < newLayers.length; i++) {
+        let layer = newLayers[i];
+        layer.isSelected = layer.id === fastData.selectedLayerId;
+        layer.fastAction = fastAction;
+      }
+
+      setStateLayers(newLayers);
+    }
+  }, [fastData]);
 
   const onAddLayer = useCallback(() => fastAction('onAddLayer'));
   const keyExtractor = useCallback((item) => item.id, []);
-  const onDragEnd = useCallback(
-    ({ data }) => fastAction('onReorderLayers', data.map((layer) => layer.id)),
-    []
-  );
+  const onDragEnd = useCallback(({ data }) => {
+    setStateLayers(data);
+    fastAction('onReorderLayers', data.map((layer) => layer.id));
+  }, []);
 
   return (
     <View style={{ flex: 1 }}>
@@ -106,7 +110,7 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
         <Text>Add Layer</Text>
       </TouchableOpacity>
       <DraggableFlatList
-        data={newLayers}
+        data={stateLayers}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         onDragEnd={onDragEnd}
