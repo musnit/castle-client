@@ -113,9 +113,11 @@ const PlayCardScreenDataProvider = ({ deckId, cardId, route, ...props }) => {
   }
 
   return (
-    <GhostUI.Provider>
-      <PlayCardScreen card={card} {...props} />
-    </GhostUI.Provider>
+    <GhostUI.FastDataProvider>
+      <GhostUI.Provider>
+        <PlayCardScreen card={card} {...props} />
+      </GhostUI.Provider>
+    </GhostUI.FastDataProvider>
   );
 };
 
