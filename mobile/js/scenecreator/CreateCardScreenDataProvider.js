@@ -308,26 +308,29 @@ class CreateCardScreenDataProvider extends React.Component {
 
   render() {
     const { deck, card, deckState, loading } = this.state;
+
     return (
-      <GhostUI.Provider>
-        <CreateCardScreen
-          deck={deck}
-          card={card}
-          initialIsEditing={this.props.initialIsEditing}
-          loading={loading}
-          deckState={deckState}
-          resetDeckState={this._resetDeckState}
-          goToDeck={this._goToDeck}
-          goToCard={this._goToCard}
-          cardNeedsSave={this._cardNeedsSave}
-          saveAndGoToDeck={this._saveAndGoToDeck}
-          saveAndGoToCard={this._saveAndGoToCard}
-          onVariablesChange={this._handleVariablesChange}
-          onSceneMessage={this._handleSceneMessage}
-          onSceneRevertData={this._handleSceneRevertData}
-          saveAction="save"
-        />
-      </GhostUI.Provider>
+      <GhostUI.FastDataProvider>
+        <GhostUI.Provider>
+          <CreateCardScreen
+            deck={deck}
+            card={card}
+            initialIsEditing={this.props.initialIsEditing}
+            loading={loading}
+            deckState={deckState}
+            resetDeckState={this._resetDeckState}
+            goToDeck={this._goToDeck}
+            goToCard={this._goToCard}
+            cardNeedsSave={this._cardNeedsSave}
+            saveAndGoToDeck={this._saveAndGoToDeck}
+            saveAndGoToCard={this._saveAndGoToCard}
+            onVariablesChange={this._handleVariablesChange}
+            onSceneMessage={this._handleSceneMessage}
+            onSceneRevertData={this._handleSceneRevertData}
+            saveAction="save"
+          />
+        </GhostUI.Provider>
+      </GhostUI.FastDataProvider>
     );
   }
 }

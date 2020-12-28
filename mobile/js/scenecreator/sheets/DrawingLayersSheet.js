@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { sendDataPaneAction } from '../../ghost/GhostUI';
+import { sendDataPaneAction, useFastDataMemo } from '../../ghost/GhostUI';
+import _ from 'lodash';
 
 import { BottomSheet } from '../../components/BottomSheet';
 
@@ -37,83 +38,85 @@ const styles = StyleSheet.create({
 
 const ICON_SIZE = 22;
 
-const DrawingLayers = ({ element }) => {
-  if (!element) return null;
-
-  let data, sendAction;
-  if (element.children.count) {
-    Object.entries(element.children).forEach(([key, child]) => {
-      if (child.type === 'data') {
-        data = child.props.data;
-        sendAction = (action, value) => sendDataPaneAction(element, action, value);
-      }
-    });
-  }
-
-  let layers = data.layers;
-  if (!Array.isArray(layers)) {
-    layers = Object.values(data.layers);
-  }
-
-  layers.sort((a, b) => a.order > b.order);
-
-  const renderItem = ({ item, index, drag, isActive }) => {
-    let layer = item;
-
-    return (
-      <TouchableOpacity style={{ flexDirection: 'row', marginTop: 20 }} onLongPress={drag}>
-        <TouchableOpacity onPress={() => sendAction('onSelectLayer', layer.id)}>
-          <Text style={layer.id === data.selectedLayerId && { fontWeight: 'bold' }}>
-            {layer.title}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{ paddingLeft: 20 }}
-          onPress={() =>
-            sendAction('onSetLayerIsVisible', {
-              layerId: layer.id,
-              isVisible: !layer.isVisible,
-            })
-          }>
-          <MCIcon
-            name={layer.isVisible ? 'eye-outline' : 'eye-off-outline'}
-            size={ICON_SIZE}
-            color={'#000'}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{ paddingLeft: 20 }}
-          onPress={() => sendAction('onDeleteLayer', layer.id)}>
-          <Text>X</Text>
-        </TouchableOpacity>
-        <View style={{ paddingLeft: 20 }}>
-          <FastImage
-            source={{ uri: `data:image/png;base64,${layer.frames[0].base64Png}` }}
-            style={styles.image}
-          />
-        </View>
-      </TouchableOpacity>
-    );
-  };
+const renderItem = ({ item, index, drag, isActive }) => {
+  let layer = item;
 
   return (
-    <View style={{ flex: 1 }}>
-      <View>
-        <TouchableOpacity onPress={() => sendAction('onAddLayer')}>
-          <Text>Add Layer</Text>
-        </TouchableOpacity>
+    <TouchableOpacity style={{ flexDirection: 'row', marginTop: 20 }} onLongPress={drag}>
+      <TouchableOpacity onPress={() => item.fastAction('onSelectLayer', layer.id)}>
+        <Text style={layer.isSelected && { fontWeight: 'bold' }}>{layer.title}</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={{ paddingLeft: 20 }}
+        onPress={() =>
+          item.fastAction('onSetLayerIsVisible', {
+            layerId: layer.id,
+            isVisible: !layer.isVisible,
+          })
+        }>
+        <MCIcon
+          name={layer.isVisible ? 'eye-outline' : 'eye-off-outline'}
+          size={ICON_SIZE}
+          color={'#000'}
+        />
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={{ paddingLeft: 20 }}
+        onPress={() => item.fastAction('onDeleteLayer', layer.id)}>
+        <Text>X</Text>
+      </TouchableOpacity>
+      <View style={{ paddingLeft: 20 }}>
+        <FastImage
+          source={{ uri: `data:image/png;base64,${layer.frames[0].base64Png}` }}
+          style={styles.image}
+        />
       </View>
-      <DraggableFlatList
-        data={layers}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => item.id}
-        onDragEnd={({ data }) => sendAction('onReorderLayers', data.map((layer) => layer.id))}
-      />
-    </View>
+    </TouchableOpacity>
   );
 };
 
-export const DrawingLayersSheet = ({ onClose, element, ...props }) => {
+const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) => {
+  if (!fastData.layers) {
+    return null;
+  }
+
+  let newLayers = fastData.layers;
+  if (!Array.isArray(newLayers)) {
+    newLayers = Object.values(fastData.layers);
+  }
+
+  newLayers.sort((a, b) => b.order - a.order);
+
+  for (let i = 0; i < newLayers.length; i++) {
+    let layer = newLayers[i];
+    layer.isSelected = layer.id === fastData.selectedLayerId;
+    layer.fastAction = fastAction;
+  }
+
+  const onAddLayer = useCallback(() => fastAction('onAddLayer'));
+  const keyExtractor = useCallback((item) => item.id, []);
+  const onDragEnd = useCallback(
+    ({ data }) => fastAction('onReorderLayers', data.map((layer) => layer.id)),
+    []
+  );
+
+  return (
+    <View style={{ flex: 1 }}>
+      <TouchableOpacity onPress={onAddLayer}>
+        <Text>Add Layer</Text>
+      </TouchableOpacity>
+      <DraggableFlatList
+        data={newLayers}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        onDragEnd={onDragEnd}
+        extraData={fastData.selectedLayerId}
+      />
+    </View>
+  );
+});
+
+export const DrawingLayersSheet = ({ onClose, ...props }) => {
   const renderHeader = () => (
     <View style={styles.header}>
       <View>
@@ -121,7 +124,8 @@ export const DrawingLayersSheet = ({ onClose, element, ...props }) => {
       </View>
     </View>
   );
-  const renderContent = () => <DrawingLayers element={element} style={{ flex: 1 }} />;
+
+  const renderContent = () => <DrawingLayers style={{ flex: 1 }} />;
 
   return (
     <BottomSheet

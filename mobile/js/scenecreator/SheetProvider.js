@@ -103,6 +103,10 @@ export const SheetProvider = ({ activeSheet, setActiveSheet, isShowingDraw }) =>
         const addChildSheet = (sheet) => updateSheetStacks({ type: 'push', key, sheet });
         const closeChildSheet = () => updateSheetStacks({ type: 'pop', key });
 
+        if (!isOpen) {
+          return null;
+        }
+
         return stack.map((sheet, stackIndex) => {
           let { key, Component, ...sheetProps } = sheet;
           const closeLastSheet = stackIndex == 0 ? closeRootSheet : closeChildSheet;

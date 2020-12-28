@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { memo, useEffect, useMemo } from 'react';
 import url from 'url';
 import { sendAsync, useListen } from './GhostEvents';
+import * as EventEmitter from '../EventEmitter';
 
 /**
  *  GhostUI manages the state of the castle tool ui "DOM".
@@ -13,6 +14,11 @@ import { sendAsync, useListen } from './GhostEvents';
 const GhostUIContext = React.createContext({
   root: {},
   setRoot: (root) => {},
+});
+
+const GhostFastDataContext = React.createContext({
+  fastData: {},
+  setFastData: (root) => {},
 });
 
 const ENTRYPOINT = 'https://raw.githubusercontent.com/castle-xyz/scene-creator/master/Client.lua';
@@ -50,6 +56,42 @@ const applyDiff = (t, diff) => {
   return u;
 };
 
+const removeFastDataFromDiff = (diff, fastDataDiff = {}) => {
+  if (diff == null) {
+    return { diff, fastDataDiff };
+  }
+
+  for (let k in diff) {
+    const v = diff[k];
+    if (k.startsWith('fast-data-')) {
+      fastDataDiff[k.substring('fast-data-'.length)] = JSON.parse(JSON.stringify(v));
+      diff[k] = {};
+    }
+
+    if (typeof v === 'object') {
+      let result = removeFastDataFromDiff(diff[k], fastDataDiff);
+      diff[k] = result.diff;
+      fastDataDiff = result.fastDataDiff;
+    }
+  }
+
+  return { diff, fastDataDiff };
+};
+
+const doesDiffHaveChanges = (diff) => {
+  for (let k in diff) {
+    const v = diff[k];
+
+    if (typeof v !== 'object') {
+      return true;
+    } else if (doesDiffHaveChanges(v)) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
 export const Provider = (props) => {
   // Maintain tools state
   const [root, setRoot] = React.useState({});
@@ -58,8 +100,15 @@ export const Provider = (props) => {
   useListen({
     eventName: 'CASTLE_TOOLS_UPDATE',
     handler: (diffJson) => {
-      const diff = JSON.parse(diffJson);
-      setRoot((oldRoot) => applyDiff(oldRoot, diff));
+      let { diff, fastDataDiff } = removeFastDataFromDiff(JSON.parse(diffJson));
+
+      if (doesDiffHaveChanges(diff)) {
+        setRoot((oldRoot) => applyDiff(oldRoot, diff));
+      }
+
+      if (doesDiffHaveChanges(fastDataDiff)) {
+        EventEmitter.sendEvent('fastDataDiff', fastDataDiff);
+      }
     },
     onRemove: () => setRoot({}),
   });
@@ -87,7 +136,63 @@ export const Provider = (props) => {
   return <GhostUIContext.Provider value={value}>{props.children}</GhostUIContext.Provider>;
 };
 
+export const FastDataProvider = (props) => {
+  const [fastData, setFastData] = React.useState({});
+
+  useEffect(() => {
+    let listenerId = EventEmitter.addListener('fastDataDiff', (fastDataDiff) => {
+      setFastData((oldFastData) => applyDiff(oldFastData, fastDataDiff));
+    });
+
+    return () => {
+      EventEmitter.removeListener(listenerId);
+    };
+  });
+
+  const value = {
+    fastData,
+    setFastData,
+  };
+
+  return (
+    <GhostFastDataContext.Provider value={value}>{props.children}</GhostFastDataContext.Provider>
+  );
+};
+
 export const useGhostUI = () => React.useContext(GhostUIContext);
+export const useGhostFastData = () => React.useContext(GhostFastDataContext);
+
+export const useFastDataMemo = (key, Comp) => {
+  return (props) => {
+    let context = useGhostFastData();
+    let dataRoot = context.fastData[key];
+
+    let data, action;
+
+    if (dataRoot && dataRoot.props) {
+      data = dataRoot.props.data;
+      action = useMemo(
+        () => (action, value) => {
+          return sendEvent(dataRoot.pathId, { type: action, value });
+        },
+        [dataRoot]
+      );
+    } else {
+      data = useMemo(() => {}, [dataRoot]);
+      action = useMemo(() => () => {}, [dataRoot]);
+    }
+
+    let NewComp = useMemo(
+      () =>
+        memo(({ data, action, ...props }) => {
+          return <Comp fastData={data} fastAction={action} {...props} />;
+        }),
+      []
+    );
+
+    return <NewComp data={data} action={action} {...props} />;
+  };
+};
 
 export const useGhostThemeListener = ({ setLightColors, setDarkColors }) => {
   const { forceRender } = useGhostUI();

@@ -528,6 +528,19 @@ function ui.data(data, props)
    end
 end
 
+function ui.fastData(key, data, props)
+   assert(type(data) == "table", "`ui.data` needs a table `data`")
+   local c = addChild("fast-data-" .. key, data, without(merge({ data = data }, props), "actions"), true)
+   local es = pendingEvents[c.pathId]
+   if es then
+        for _, e in ipairs(es) do
+           if props and props.actions and props.actions[e.type] and type(props.actions[e.type]) == "function" then
+              props.actions[e.type](e.value)
+           end
+        end
+   end
+end
+
 function ui.numberInput(label, value, props)
     assert(type(label) == "string", "`ui.numberInput` needs a string `label`")
     assert(type(value) == "number", "`ui.numberInput` needs a number `value`")
