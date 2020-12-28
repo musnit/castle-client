@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { StatusBar, View, Text, Linking, StyleSheet, Platform } from 'react-native';
-import { DecksGrid } from '../components/DecksGrid';
+import { DecksFeed } from '../components/DecksFeed';
 import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
 import gql from 'graphql-tag';
@@ -120,7 +120,7 @@ export const FeaturedDecks = ({ focused }) => {
   return (
     <Fragment>
       <AppUpdateNotice />
-      <DecksGrid
+      <DecksFeed
         decks={decks}
         scrollViewRef={scrollViewRef}
         onPressDeck={(deck, index) =>
