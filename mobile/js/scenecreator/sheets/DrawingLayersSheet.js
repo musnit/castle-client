@@ -78,6 +78,10 @@ const renderItem = ({ item, index, drag, isActive }) => {
 const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) => {
   const [stateLayers, setStateLayers] = React.useState([]);
 
+  // we need to pass stateSeletedLayerId into extraData instead of fastData.selectedLayerId because
+  // otherwise extraData will trigger the FlatList update before stateLayers gets updated
+  const [stateSeletedLayerId, setStateSelectedLayerId] = React.useState(null);
+
   useEffect(() => {
     if (fastData.layers) {
       let newLayers = fastData.layers;
@@ -97,6 +101,10 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
     }
   }, [fastData]);
 
+  useEffect(() => {
+    setStateSelectedLayerId(fastData.selectedLayerId);
+  }, [fastData.selectedLayerId]);
+
   const onAddLayer = useCallback(() => fastAction('onAddLayer'));
   const keyExtractor = useCallback((item) => item.id, []);
   const onDragEnd = useCallback(({ data }) => {
@@ -114,7 +122,7 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         onDragEnd={onDragEnd}
-        extraData={fastData.selectedLayerId}
+        extraData={stateSeletedLayerId}
       />
     </View>
   );
