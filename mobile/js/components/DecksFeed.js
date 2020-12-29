@@ -19,6 +19,8 @@ import * as Utilities from '../common/utilities';
 
 const { vw, vh } = Viewport;
 
+const FEED_HEADER_HEIGHT = 56;
+
 // if the screen is too stubby, add horizontal padding to the feed
 // such that the aspect-fit cards are 87% of the screen height
 const STUBBY_SCREEN_ITEM_HORIZ_PADDING = Viewport.isCardWide
@@ -46,6 +48,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
+    overflow: 'hidden',
   },
   itemContainer: {
     width: '100%',
@@ -92,7 +95,7 @@ const CurrentDeckCell = ({ deck }) => {
   // TODO: creator overlay
   return (
     <View style={styles.itemCard}>
-      <CardCell card={initialCard} />
+      <CardCell card={initialCard} previewVideo={deck?.previewVideo} />
     </View>
   );
 };
@@ -107,7 +110,7 @@ export const DecksFeed = ({ decks }) => {
   }, [decks]);
 
   const insets = useSafeArea();
-  let centerContentY = insets.top;
+  let centerContentY = insets.top + FEED_HEADER_HEIGHT;
 
   let translateY = React.useRef(new Animated.Value(0)).current;
   let containerY = Animated.add(translateY, centerContentY - DECK_FEED_ITEM_HEIGHT);

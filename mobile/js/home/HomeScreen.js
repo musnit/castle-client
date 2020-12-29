@@ -24,6 +24,15 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: Constants.colors.grayOnBlackBorder,
     paddingTop: 16,
+    backgroundColor: '#000',
+  },
+  elevatedHeader: {
+    position: 'absolute',
+    width: '100%',
+    zIndex: 1,
+    elevation: 1,
+    height: 56,
+    left: 0,
   },
 });
 
@@ -74,7 +83,7 @@ export const HomeScreen = () => {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      <View style={styles.header}>
+      <View style={[styles.header, styles.elevatedHeader, { top: insets.top }]}>
         <SegmentedNavigation
           items={items}
           selectedItem={selectedItem}
