@@ -88,14 +88,8 @@ const makeCardAspectFitStyles = () => {
 const cardAspectFitStyles = makeCardAspectFitStyles();
 
 // renders the current focused deck in the feed
-const CurrentDeckCell = ({ deck }) => {
+const CurrentDeckCell = ({ deck, isPlaying, onSelectPlay }) => {
   const initialCard = deck?.initialCard;
-
-  // TODO: move to parent component
-  // hide header and tab bar when playing
-  // scroll current item to top of screen when playing
-  const [isPlaying, setIsPlaying] = React.useState(false);
-
   if (!initialCard) return null;
 
   // TODO:
@@ -117,14 +111,7 @@ const CurrentDeckCell = ({ deck }) => {
   return (
     <View style={containerStyles}>
       <View style={styles.itemCard}>
-        <CardCell
-          card={initialCard}
-          previewVideo={deck?.previewVideo}
-          onPress={() => {
-            setIsPlaying(true);
-            console.log(`playing`);
-          }}
-        />
+        <CardCell card={initialCard} previewVideo={deck?.previewVideo} onPress={onSelectPlay} />
       </View>
     </View>
   );
@@ -133,7 +120,7 @@ const CurrentDeckCell = ({ deck }) => {
 // TODO: refreshing, onRefresh, onPressDeck
 export const DecksFeed = ({ decks }) => {
   const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
-  const [paused, setPaused] = React.useState(false);
+  const [isPlaying, setIsPlaying] = React.useState(false);
 
   React.useEffect(() => {
     setCurrentCardIndex(0);
@@ -142,21 +129,37 @@ export const DecksFeed = ({ decks }) => {
   const insets = useSafeArea();
   let centerContentY = insets.top + FEED_HEADER_HEIGHT;
 
+  // state from scrolling the feed up and down
   let translateY = React.useRef(new Animated.Value(0)).current;
-  let containerY = Animated.add(translateY, centerContentY - DECK_FEED_ITEM_HEIGHT);
+
+  // state from expanding/collapsing a deck to play it
+  let playingOffsetY = React.useRef(new Animated.Value(0)).current;
+
+  let baseContainerY = Animated.add(translateY, centerContentY - DECK_FEED_ITEM_HEIGHT);
+  let containerY = Animated.add(playingOffsetY, baseContainerY);
   const onPanGestureEvent = Animated.event([{ nativeEvent: { translationY: translateY } }], {
     useNativeDriver: true,
   });
 
   React.useEffect(() => {
     translateY.setValue(0);
+    setIsPlaying(false);
   }, [currentCardIndex]);
+
+  React.useEffect(() => {
+    let toValue = 0;
+    if (isPlaying) {
+      // when playing starts, put the current cell at y-position zero
+      // because that cell is going to become full screen height.
+      toValue = -centerContentY;
+    }
+    Animated.spring(playingOffsetY, { toValue, ...SPRING_CONFIG }).start();
+  }, [isPlaying]);
 
   const snapTo = React.useCallback(
     (toValue, futureCardIndex = null) => {
       Animated.spring(translateY, { toValue, ...SPRING_CONFIG }).start(({ finished }) => {
         if (finished) {
-          setPaused(false);
           if (futureCardIndex !== null) {
             setCurrentCardIndex(futureCardIndex);
           } else {
@@ -197,7 +200,7 @@ export const DecksFeed = ({ decks }) => {
         }
       }
       if (event.nativeEvent.state === State.BEGAN) {
-        setPaused(true);
+        // TODO: legacy setPaused(true);
       }
     },
     [snapTo, snapToNext, snapToPrevious]
@@ -227,7 +230,11 @@ export const DecksFeed = ({ decks }) => {
           <View style={cardAspectFitStyles}>
             <View style={styles.itemCard}>{prevCard && <CardCell card={prevCard} />}</View>
           </View>
-          <CurrentDeckCell deck={currentDeck} paused={paused} />
+          <CurrentDeckCell
+            deck={currentDeck}
+            isPlaying={isPlaying}
+            onSelectPlay={() => setIsPlaying(true)}
+          />
           <Animated.View style={cardAspectFitStyles}>
             <TouchableWithoutFeedback onPress={snapToNext}>
               <View style={styles.itemCard}>{nextCard && <CardCell card={nextCard} />}</View>
