@@ -119,21 +119,28 @@ const TabNavigator = ({ notificationsBadgeCount }) => {
       <Tab.Screen
         name="Browse"
         component={BrowseNavigator}
-        options={({ route }) => ({
-          tabBarVisible: !route.state || route.state.index == 0,
-          tabBarIcon: ({ focused, color }) => {
-            return (
-              <FastImage
-                tintColor={color}
-                style={{
-                  width: ICON_SIZE,
-                  height: ICON_SIZE,
-                }}
-                source={require('../assets/images/BottomTabs-browse.png')}
-              />
-            );
-          },
-        })}
+        options={({ route }) => {
+          const isHome = route.state?.index === 0;
+          let isPlayingFeedDeck = false;
+          if (route?.state?.routes && route.state.routes.length) {
+            isPlayingFeedDeck = route.state.routes[0].params?.deckId !== undefined;
+          }
+          return {
+            tabBarVisible: !route.state || (isHome && !isPlayingFeedDeck),
+            tabBarIcon: ({ focused, color }) => {
+              return (
+                <FastImage
+                  tintColor={color}
+                  style={{
+                    width: ICON_SIZE,
+                    height: ICON_SIZE,
+                  }}
+                  source={require('../assets/images/BottomTabs-browse.png')}
+                />
+              );
+            },
+          };
+        }}
       />
       <Tab.Screen
         name="Create"
