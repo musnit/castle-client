@@ -46,6 +46,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
+    overflow: 'hidden',
   },
   itemContainer: {
     width: '100%',
@@ -92,7 +93,7 @@ const CurrentDeckCell = ({ deck }) => {
   // TODO: creator overlay
   return (
     <View style={styles.itemCard}>
-      <CardCell card={initialCard} />
+      <CardCell card={initialCard} previewVideo={deck?.previewVideo} />
     </View>
   );
 };

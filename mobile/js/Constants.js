@@ -174,6 +174,7 @@ export const FEED_ITEM_DECK_FRAGMENT = `
       primaryColor
     }
   }
+  previewVideo { url }
   lastModified
   variables
 `;
