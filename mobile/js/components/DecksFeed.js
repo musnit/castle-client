@@ -90,12 +90,42 @@ const cardAspectFitStyles = makeCardAspectFitStyles();
 // renders the current focused deck in the feed
 const CurrentDeckCell = ({ deck }) => {
   const initialCard = deck?.initialCard;
+
+  // TODO: move to parent component
+  // hide header and tab bar when playing
+  // scroll current item to top of screen when playing
+  const [isPlaying, setIsPlaying] = React.useState(false);
+
   if (!initialCard) return null;
 
-  // TODO: creator overlay
+  // TODO:
+  // outer view
+  // collapsed: cardAspectFitStyles
+  // expanded: full screen dimensions, center children
+  //
+  // inside: absolute header/footer, card view
+  //
+  // card view:
+  // styles.itemCard
+  // collapsed: CardCell, touchable to set isPlaying
+  // expanded: PlayDeckNavigator
+
+  const containerStyles = isPlaying
+    ? { backgroundColor: '#f00', width: '100%', height: vh * 100, justifyContent: 'center' }
+    : cardAspectFitStyles;
+
   return (
-    <View style={styles.itemCard}>
-      <CardCell card={initialCard} previewVideo={deck?.previewVideo} />
+    <View style={containerStyles}>
+      <View style={styles.itemCard}>
+        <CardCell
+          card={initialCard}
+          previewVideo={deck?.previewVideo}
+          onPress={() => {
+            setIsPlaying(true);
+            console.log(`playing`);
+          }}
+        />
+      </View>
     </View>
   );
 };
@@ -189,14 +219,15 @@ export const DecksFeed = ({ decks }) => {
 
   return (
     <View style={styles.container}>
-      <PanGestureHandler onGestureEvent={onPanGestureEvent} onHandlerStateChange={onPanStateChange}>
+      <PanGestureHandler
+        minDist={8}
+        onGestureEvent={onPanGestureEvent}
+        onHandlerStateChange={onPanStateChange}>
         <Animated.View style={{ transform: [{ translateY: containerY }] }}>
           <View style={cardAspectFitStyles}>
             <View style={styles.itemCard}>{prevCard && <CardCell card={prevCard} />}</View>
           </View>
-          <View style={cardAspectFitStyles}>
-            <CurrentDeckCell deck={currentDeck} paused={paused} />
-          </View>
+          <CurrentDeckCell deck={currentDeck} paused={paused} />
           <Animated.View style={cardAspectFitStyles}>
             <TouchableWithoutFeedback onPress={snapToNext}>
               <View style={styles.itemCard}>{nextCard && <CardCell card={nextCard} />}</View>
