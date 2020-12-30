@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import { CardCell } from './CardCell';
+import { DeckFeedItemHeader } from './DeckFeedItemHeader';
 import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { useIsFocused, useFocusEffect } from '@react-navigation/native';
@@ -62,6 +63,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 6,
   },
+  itemHeader: {
+    position: 'absolute',
+    width: '100%',
+    height: 48,
+    backgroundColor: '#600',
+    top: 0,
+  },
+  itemFooter: {
+    position: 'absolute',
+    width: '100%',
+    bottom: 0,
+    height: 16,
+    backgroundColor: '#600',
+  },
   cardPlaceholder: {
     position: 'absolute',
     top: -DECK_FEED_ITEM_HEIGHT - DECK_FEED_ITEM_MARGIN,
@@ -88,31 +103,42 @@ const makeCardAspectFitStyles = () => {
 const cardAspectFitStyles = makeCardAspectFitStyles();
 
 // renders the current focused deck in the feed
-const CurrentDeckCell = ({ deck, isPlaying, onSelectPlay }) => {
+const CurrentDeckCell = ({ deck, isPlaying, onPressDeck }) => {
   const initialCard = deck?.initialCard;
+  const insets = useSafeArea();
+
   if (!initialCard) return null;
 
   // TODO:
-  // outer view
-  // collapsed: cardAspectFitStyles
-  // expanded: full screen dimensions, center children
-  //
-  // inside: absolute header/footer, card view
+  // animate containerStyles (height and horiz padding)
+  // line up top of card cell between states (not just center)
   //
   // card view:
   // styles.itemCard
   // collapsed: CardCell, touchable to set isPlaying
   // expanded: PlayDeckNavigator
 
+  const onSelectPlay = () => onPressDeck({ deckId: deck.deckId });
+  const onPressBack = () => onPressDeck({ deckId: undefined });
+
   const containerStyles = isPlaying
-    ? { backgroundColor: '#f00', width: '100%', height: vh * 100, justifyContent: 'center' }
+    ? {
+        backgroundColor: '#f00',
+        width: '100%',
+        height: vh * 100 - insets.top,
+        justifyContent: 'center',
+      }
     : cardAspectFitStyles;
 
   return (
-    <View style={containerStyles}>
+    <View style={[containerStyles, { borderRadius: 6, overflow: 'hidden' }]}>
       <View style={styles.itemCard}>
         <CardCell card={initialCard} previewVideo={deck?.previewVideo} onPress={onSelectPlay} />
       </View>
+      <View style={styles.itemHeader}>
+        <DeckFeedItemHeader isPlaying={isPlaying} onPressBack={onPressBack} />
+      </View>
+      <View style={styles.itemFooter} />
     </View>
   );
 };
@@ -223,17 +249,14 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck }) => {
     <View style={styles.container}>
       <PanGestureHandler
         minDist={8}
+        enabled={!isPlaying}
         onGestureEvent={onPanGestureEvent}
         onHandlerStateChange={onPanStateChange}>
         <Animated.View style={{ transform: [{ translateY: containerY }] }}>
           <View style={cardAspectFitStyles}>
             <View style={styles.itemCard}>{prevCard && <CardCell card={prevCard} />}</View>
           </View>
-          <CurrentDeckCell
-            deck={currentDeck}
-            isPlaying={isPlaying}
-            onSelectPlay={() => onPressDeck({ deckId: currentDeck.deckId })}
-          />
+          <CurrentDeckCell deck={currentDeck} isPlaying={isPlaying} onPressDeck={onPressDeck} />
           <Animated.View style={cardAspectFitStyles}>
             <TouchableWithoutFeedback onPress={snapToNext}>
               <View style={styles.itemCard}>{nextCard && <CardCell card={nextCard} />}</View>
