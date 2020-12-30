@@ -26,6 +26,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  headerControls: {
+    width: 150,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   image: {
     width: 50,
     height: 50,
@@ -317,18 +323,44 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
   );
 });
 
-export const DrawingLayersSheet = ({ onClose, ...props }) => {
-  const renderHeader = () => (
+const DrawingLayersHeader = useFastDataMemo('draw-layers', ({ fastData, fastAction }) => {
+  return (
     <View style={styles.header}>
       <View>
         <Text style={styles.headingLabel}>Layers</Text>
       </View>
-      <View>
-        <MCIcon name="play" size={ICON_SIZE} color={'#000'} />
+      <View style={styles.headerControls}>
+        <TouchableOpacity
+          onPress={() =>
+            fastAction('onSetIsOnionSkinningEnabled', !fastData.isOnionSkinningEnabled)
+          }>
+          <MCIcon
+            name={fastData.isOnionSkinningEnabled ? 'check-circle' : 'check-circle-outline'}
+            size={ICON_SIZE}
+            color={'#000'}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => fastAction('onStepBackward')}>
+          <MCIcon name={'step-backward'} size={ICON_SIZE} color={'#000'} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => fastAction('onSetIsPlayingAnimation', !fastData.isPlayingAnimation)}>
+          <MCIcon
+            name={fastData.isPlayingAnimation ? 'pause' : 'play'}
+            size={ICON_SIZE}
+            color={'#000'}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => fastAction('onStepForward')}>
+          <MCIcon name={'step-forward'} size={ICON_SIZE} color={'#000'} />
+        </TouchableOpacity>
       </View>
     </View>
   );
+});
 
+export const DrawingLayersSheet = ({ onClose, ...props }) => {
+  const renderHeader = () => <DrawingLayersHeader style={{ flex: 1 }} />;
   const renderContent = () => <DrawingLayers style={{ flex: 1 }} />;
 
   return (
