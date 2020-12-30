@@ -118,9 +118,8 @@ const CurrentDeckCell = ({ deck, isPlaying, onSelectPlay }) => {
 };
 
 // TODO: refreshing, onRefresh, onPressDeck
-export const DecksFeed = ({ decks }) => {
+export const DecksFeed = ({ decks, isPlaying, onPressDeck }) => {
   const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
-  const [isPlaying, setIsPlaying] = React.useState(false);
 
   React.useEffect(() => {
     setCurrentCardIndex(0);
@@ -143,7 +142,7 @@ export const DecksFeed = ({ decks }) => {
 
   React.useEffect(() => {
     translateY.setValue(0);
-    setIsPlaying(false);
+    onPressDeck({ deckId: undefined }); // clear play state
   }, [currentCardIndex]);
 
   React.useEffect(() => {
@@ -233,7 +232,7 @@ export const DecksFeed = ({ decks }) => {
           <CurrentDeckCell
             deck={currentDeck}
             isPlaying={isPlaying}
-            onSelectPlay={() => setIsPlaying(true)}
+            onSelectPlay={() => onPressDeck({ deckId: currentDeck.deckId })}
           />
           <Animated.View style={cardAspectFitStyles}>
             <TouchableWithoutFeedback onPress={snapToNext}>

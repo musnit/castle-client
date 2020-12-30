@@ -77,7 +77,7 @@ const AppUpdateNotice = () => {
   );
 };
 
-export const FeaturedDecks = ({ focused }) => {
+export const FeaturedDecks = ({ focused, deckId }) => {
   const { navigate } = useNavigation();
   const [lastFetched, setLastFetched] = React.useState({
     time: undefined,
@@ -122,14 +122,13 @@ export const FeaturedDecks = ({ focused }) => {
       <AppUpdateNotice />
       <DecksFeed
         decks={decks}
+        isPlaying={deckId !== undefined}
         scrollViewRef={scrollViewRef}
-        onPressDeck={(deck, index) =>
+        onPressDeck={({ deckId }) =>
           navigate(
-            'PlayDeck',
+            'HomeScreen',
             {
-              decks,
-              initialDeckIndex: index,
-              title: 'Featured',
+              deckId,
             },
             {
               isFullscreen: true,
