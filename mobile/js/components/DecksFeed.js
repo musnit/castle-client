@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Animated,
+  InteractionManager,
   StatusBar,
   StyleSheet,
   Text,
@@ -11,6 +12,7 @@ import { CardCell } from './CardCell';
 import { DeckFeedItemHeader } from './DeckFeedItemHeader';
 import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
+import { PlayDeckNavigator } from '../play/PlayDeckNavigator';
 import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 
 import Viewport from '../common/viewport';
@@ -77,14 +79,12 @@ const styles = StyleSheet.create({
     height: 16,
     backgroundColor: '#600',
   },
-  cardPlaceholder: {
+  absoluteFill: {
     position: 'absolute',
-    top: -DECK_FEED_ITEM_HEIGHT - DECK_FEED_ITEM_MARGIN,
-    width: '100%',
-    height: DECK_FEED_ITEM_HEIGHT,
-    backgroundColor: '#ff0',
-    backgroundColor: '#666',
-    borderRadius: 6,
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
   },
 });
 
@@ -112,11 +112,29 @@ const CurrentDeckCell = ({ deck, isPlaying, onPressDeck }) => {
   // TODO:
   // animate containerStyles (height and horiz padding)
   // line up top of card cell between states (not just center)
-  //
-  // card view:
-  // styles.itemCard
-  // collapsed: CardCell, touchable to set isPlaying
-  // expanded: PlayDeckNavigator
+
+  const [ready, setReady] = React.useState(false);
+
+  React.useEffect(() => {
+    let timeout;
+    const task = InteractionManager.runAfterInteractions(() => {
+      if (deck && isPlaying) {
+        timeout = setTimeout(() => {
+          setReady(true);
+        }, 10);
+      } else {
+        setReady(false);
+      }
+    });
+    return () => {
+      if (timeout) {
+        clearTimeout(timeout);
+        timeout = undefined;
+      }
+      setReady(false);
+      task.cancel();
+    };
+  }, [deck, isPlaying]);
 
   const onSelectPlay = () => onPressDeck({ deckId: deck.deckId });
   const onPressBack = () => onPressDeck({ deckId: undefined });
@@ -134,6 +152,15 @@ const CurrentDeckCell = ({ deck, isPlaying, onPressDeck }) => {
     <View style={[containerStyles, { borderRadius: 6, overflow: 'hidden' }]}>
       <View style={styles.itemCard}>
         <CardCell card={initialCard} previewVideo={deck?.previewVideo} onPress={onSelectPlay} />
+        {ready ? (
+          <View style={styles.absoluteFill}>
+            <PlayDeckNavigator
+              deckId={deck.deckId}
+              initialCardId={deck.initialCard && deck.initialCard.cardId}
+              initialDeckState={Utilities.makeInitialDeckState(deck)}
+            />
+          </View>
+        ) : null}
       </View>
       <View style={styles.itemHeader}>
         <DeckFeedItemHeader isPlaying={isPlaying} onPressBack={onPressBack} />
