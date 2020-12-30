@@ -94,15 +94,14 @@ const renderItem = ({ item, index, drag, isActive }) => {
   let layer = item;
 
   return (
-    <View style={styles.layerRow}>
-      <TouchableOpacity
-        style={[
-          styles.firstCell,
-          {
-            backgroundColor: isActive ? '#ccc' : 'transparent',
-          },
-        ]}
-        onLongPress={drag}>
+    <View
+      style={[
+        styles.layerRow,
+        {
+          backgroundColor: isActive ? '#ccc' : 'transparent',
+        },
+      ]}>
+      <TouchableOpacity style={styles.firstCell} onLongPress={drag}>
         <TouchableOpacity
           onPress={() =>
             item.fastAction('onSetLayerIsVisible', {
@@ -254,18 +253,24 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
   const showFrameActionSheet = useCallback((frame) => {
     let options = [
       {
-        name: 'Delete Frame',
-        action: () => {
-          fastAction('onDeleteFrame', frame);
-        },
-      },
-      {
         name: 'Add Frame After',
         action: () => {
           fastAction('onAddFrameAtPosition', frame);
         },
       },
     ];
+
+    if (frame > 1) {
+      options = [
+        {
+          name: 'Delete Frame',
+          action: () => {
+            fastAction('onDeleteFrame', frame);
+          },
+        },
+        ...options,
+      ];
+    }
 
     showActionSheetWithOptions(
       {
