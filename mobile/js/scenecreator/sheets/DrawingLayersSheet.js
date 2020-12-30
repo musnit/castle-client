@@ -36,6 +36,10 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
   },
+  linkedImage: {
+    width: 64,
+    height: 40,
+  },
   headingLabel: {
     color: '#000',
     fontWeight: '500',
@@ -52,8 +56,6 @@ const styles = StyleSheet.create({
     width: 150,
     justifyContent: 'space-around',
     alignItems: 'center',
-    borderRightWidth: 1,
-    borderRightColor: '#ccc',
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
@@ -62,16 +64,20 @@ const styles = StyleSheet.create({
     height: 64,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRightWidth: 1,
-    borderRightColor: '#ccc',
+  },
+  cellBottomBorder: {
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
-  selectedCell: {
-    width: 64,
-    height: 64,
-    justifyContent: 'center',
-    alignItems: 'center',
+  cellLeftBorder: {
+    borderLeftWidth: 1,
+    borderLeftColor: '#ccc',
+  },
+  cellRightBorder: {
+    borderRightWidth: 1,
+    borderRightColor: '#ccc',
+  },
+  cellSelected: {
     borderWidth: 2,
     borderColor: '#000',
   },
@@ -144,14 +150,36 @@ const renderItem = ({ item, index, drag, isActive }) => {
                 frame: idx + 1,
               });
 
+        let cellStyle = [styles.cell];
+        let isLastCell = idx === layer.frames.length - 1;
+
+        if (isSelected) {
+          cellStyle.push(styles.cellSelected);
+        } else {
+          cellStyle.push(styles.cellBottomBorder);
+
+          if (!frame.isLinked) {
+            cellStyle.push(styles.cellLeftBorder);
+          }
+
+          if (isLastCell) {
+            cellStyle.push(styles.cellRightBorder);
+          }
+        }
+
+        let isLastLink = isLastCell || !layer.frames[idx + 1].isLinked;
+
         return (
-          <TouchableOpacity
-            onPress={onPress}
-            onLongPress={drag}
-            key={idx}
-            style={isSelected ? styles.selectedCell : styles.cell}>
+          <TouchableOpacity onPress={onPress} onLongPress={drag} key={idx} style={cellStyle}>
             {frame.isLinked ? (
-              <MCIcon name="link-variant" size={ICON_SIZE} color={'#000'} />
+              <FastImage
+                style={styles.linkedImage}
+                source={
+                  isLastLink
+                    ? require('../../../assets/images/arrow2.png')
+                    : require('../../../assets/images/arrow1.png')
+                }
+              />
             ) : (
               <FastImage
                 source={{ uri: `data:image/png;base64,${frame.base64Png}` }}
@@ -287,7 +315,10 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
   }, []);
 
   return (
-    <ScrollView horizontal>
+    <ScrollView
+      horizontal
+      showsVerticalScrollIndicator={false}
+      showsHorizontalScrollIndicator={false}>
       <View style={{ flex: 1 }}>
         <View style={styles.layerRow}>
           <TouchableOpacity onPress={onAddLayer} style={styles.firstCell}>
@@ -301,7 +332,10 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
                 : () => fastAction('onSelectFrame', idx + 1);
 
               return (
-                <TouchableOpacity onPress={onPress} style={styles.cell} key={idx}>
+                <TouchableOpacity
+                  onPress={onPress}
+                  style={[styles.cell, styles.cellLeftBorder, styles.cellBottomBorder]}
+                  key={idx}>
                   <Text style={isSelected && { fontWeight: 'bold' }}>{idx + 1}</Text>
 
                   {isSelected && (
@@ -312,7 +346,14 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
                 </TouchableOpacity>
               );
             })}
-          <TouchableOpacity onPress={onAddFrame} style={styles.cell}>
+          <TouchableOpacity
+            onPress={onAddFrame}
+            style={[
+              styles.cell,
+              styles.cellLeftBorder,
+              styles.cellBottomBorder,
+              styles.cellRightBorder,
+            ]}>
             <Text>+</Text>
           </TouchableOpacity>
         </View>
@@ -322,6 +363,8 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
           keyExtractor={keyExtractor}
           onDragEnd={onDragEnd}
           extraData={stateSeletedLayerId}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
         />
       </View>
     </ScrollView>
