@@ -143,9 +143,9 @@ const EditArtButton = () => {
 };
 
 export default InspectorDrawing = ({ drawing2, sendAction }) => {
-  const [loopStyle, loopStyleSetValueAndSendAction] = useOptimisticBehaviorValue({
+  const [playMode, playModeSetValueAndSendAction] = useOptimisticBehaviorValue({
     behavior: drawing2,
-    propName: 'loopStyle',
+    propName: 'playMode',
     sendAction,
   });
 
@@ -159,23 +159,30 @@ export default InspectorDrawing = ({ drawing2, sendAction }) => {
     {
       name: 'Still',
       onSelect: () => {
-        loopStyleSetValueAndSendAction('set:loopStyle', 0);
+        playModeSetValueAndSendAction('set:playMode', 'still');
       },
     },
     {
       name: 'Play Once',
       onSelect: () => {
-        loopStyleSetValueAndSendAction('set:loopStyle', 1);
+        playModeSetValueAndSendAction('set:playMode', 'play once');
       },
     },
     {
       name: 'Loop',
       onSelect: () => {
-        loopStyleSetValueAndSendAction('set:loopStyle', 2);
+        playModeSetValueAndSendAction('set:playMode', 'loop');
       },
     },
   ];
-  const selectedItemIndex = loopStyle;
+
+  let selectedItemIndex = 0;
+  if (playMode == 'play once') {
+    selectedItemIndex = 1;
+  } else if (playMode == 'loop') {
+    selectedItemIndex = 2;
+  }
+
   const onChange = (index) => {
     if (index !== selectedItemIndex) {
       items[index].onSelect();
