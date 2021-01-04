@@ -2,10 +2,12 @@ import React from 'react';
 import {
   Animated,
   InteractionManager,
+  LayoutAnimation,
   StatusBar,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
+  UIManager,
   View,
 } from 'react-native';
 import { CardCell } from './CardCell';
@@ -23,6 +25,12 @@ import * as Utilities from '../common/utilities';
 const { vw, vh } = Viewport;
 
 const FEED_HEADER_HEIGHT = 56;
+
+if (Constants.Android) {
+  if (UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+  }
+}
 
 // if the screen is too stubby, add horizontal padding to the feed
 // such that the aspect-fit cards are 87% of the screen height
@@ -45,6 +53,13 @@ const SPRING_CONFIG = {
   restDisplacementThreshold: 1,
   restSpeedThreshold: 1,
   useNativeDriver: true,
+};
+
+const LAYOUT_SPRING_CONFIG = {
+  duration: 300,
+  create: { type: 'linear', property: 'opacity' },
+  update: { type: 'spring', springDamping: 0.95 },
+  delete: { type: 'linear', property: 'opacity' },
 };
 
 const styles = StyleSheet.create({
@@ -136,21 +151,36 @@ const CurrentDeckCell = ({ deck, isPlaying, onPressDeck }) => {
     };
   }, [deck, isPlaying]);
 
-  const onSelectPlay = () => onPressDeck({ deckId: deck.deckId });
-  const onPressBack = () => onPressDeck({ deckId: undefined });
+  const onSelectPlay = () => {
+    LayoutAnimation.configureNext(LAYOUT_SPRING_CONFIG);
+    onPressDeck({ deckId: deck.deckId });
+  };
+  const onPressBack = () => {
+    LayoutAnimation.configureNext(LAYOUT_SPRING_CONFIG);
+    onPressDeck({ deckId: undefined });
+  };
 
   const containerStyles = isPlaying
     ? {
         backgroundColor: '#f00',
         width: '100%',
         height: vh * 100 - insets.top,
-        justifyContent: 'center',
       }
-    : cardAspectFitStyles;
+    : [cardAspectFitStyles, { height: vw * 100 * (1 / Constants.CARD_RATIO) }];
+
+  // when playing, push the card down below the cell's header
+  let playingOffsetY = React.useRef(new Animated.Value(0)).current;
+  React.useEffect(() => {
+    let toValue = 0;
+    if (isPlaying) {
+      toValue = insets.top + FEED_HEADER_HEIGHT;
+    }
+    Animated.spring(playingOffsetY, { toValue, ...SPRING_CONFIG }).start();
+  }, [isPlaying]);
 
   return (
-    <View style={[containerStyles, { borderRadius: 6, overflow: 'hidden' }]}>
-      <View style={styles.itemCard}>
+    <Animated.View style={[containerStyles, { borderRadius: 6, overflow: 'hidden' }]}>
+      <Animated.View style={[styles.itemCard, { transform: [{ translateY: playingOffsetY }] }]}>
         <CardCell card={initialCard} previewVideo={deck?.previewVideo} onPress={onSelectPlay} />
         {ready ? (
           <View style={styles.absoluteFill}>
@@ -161,12 +191,11 @@ const CurrentDeckCell = ({ deck, isPlaying, onPressDeck }) => {
             />
           </View>
         ) : null}
-      </View>
+      </Animated.View>
       <View style={styles.itemHeader}>
         <DeckFeedItemHeader isPlaying={isPlaying} onPressBack={onPressBack} />
       </View>
-      <View style={styles.itemFooter} />
-    </View>
+    </Animated.View>
   );
 };
 
@@ -174,15 +203,16 @@ const CurrentDeckCell = ({ deck, isPlaying, onPressDeck }) => {
 export const DecksFeed = ({ decks, isPlaying, onPressDeck }) => {
   const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
 
-  React.useEffect(() => {
-    setCurrentCardIndex(0);
-  }, [decks]);
-
   const insets = useSafeArea();
   let centerContentY = insets.top + FEED_HEADER_HEIGHT;
 
   // state from scrolling the feed up and down
   let translateY = React.useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    setCurrentCardIndex(0);
+    translateY.setValue(0);
+  }, [decks]);
 
   // state from expanding/collapsing a deck to play it
   let playingOffsetY = React.useRef(new Animated.Value(0)).current;
@@ -194,8 +224,8 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck }) => {
   });
 
   React.useEffect(() => {
-    translateY.setValue(0);
     onPressDeck({ deckId: undefined }); // clear play state
+    // don't reset translateY here, do it when setting currentCardIndex
   }, [currentCardIndex]);
 
   React.useEffect(() => {
@@ -214,6 +244,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck }) => {
         if (finished) {
           if (futureCardIndex !== null) {
             setCurrentCardIndex(futureCardIndex);
+            translateY.setValue(0);
           } else {
             translateY.setValue(0);
           }
