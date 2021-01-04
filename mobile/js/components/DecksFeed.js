@@ -183,15 +183,16 @@ const CurrentDeckCell = ({ deck, isPlaying, onPressDeck }) => {
 export const DecksFeed = ({ decks, isPlaying, onPressDeck }) => {
   const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
 
-  React.useEffect(() => {
-    setCurrentCardIndex(0);
-  }, [decks]);
-
   const insets = useSafeArea();
   let centerContentY = insets.top + FEED_HEADER_HEIGHT;
 
   // state from scrolling the feed up and down
   let translateY = React.useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    setCurrentCardIndex(0);
+    translateY.setValue(0);
+  }, [decks]);
 
   // state from expanding/collapsing a deck to play it
   let playingOffsetY = React.useRef(new Animated.Value(0)).current;
@@ -203,8 +204,8 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck }) => {
   });
 
   React.useEffect(() => {
-    translateY.setValue(0);
     onPressDeck({ deckId: undefined }); // clear play state
+    // don't reset translateY here, do it when setting currentCardIndex
   }, [currentCardIndex]);
 
   React.useEffect(() => {
@@ -223,6 +224,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck }) => {
         if (finished) {
           if (futureCardIndex !== null) {
             setCurrentCardIndex(futureCardIndex);
+            translateY.setValue(0);
           } else {
             translateY.setValue(0);
           }
