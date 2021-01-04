@@ -6,6 +6,8 @@ import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 
 const styles = StyleSheet.create({
   container: {
+    borderTopWidth: 1,
+    borderColor: '#ccc',
     padding: 16,
     flex: 1,
   },
@@ -38,6 +40,7 @@ export default InspectorTags = ({ tags, sendAction }) => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.label}>Tags</Text>
       <InspectorTagPicker value={value} onChange={onChange} context={context} />
     </View>
   );
