@@ -1,14 +1,14 @@
 import * as React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useCardCreator } from '../../CreateCardContext';
 import { BehaviorPropertyInputRow } from '../components/BehaviorPropertyInputRow';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import FastImage from 'react-native-fast-image';
 
 import * as Constants from '../../../Constants';
-import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
 const styles = StyleSheet.create({
   container: {
@@ -17,13 +17,40 @@ const styles = StyleSheet.create({
     padding: 16,
     flex: 1,
   },
-  image: {
-    width: 96,
-    height: 96,
-    marginBottom: 8,
+  frameContainer: {
+    width: 64,
+    height: 64,
     backgroundColor: '#0001',
     borderWidth: 1,
+    borderRadius: 5,
     borderColor: '#ccc',
+    marginRight: 10,
+  },
+  image: {
+    width: 64,
+    height: 64,
+  },
+  frameIndexContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    width: 30,
+    height: 30,
+    backgroundColor: 'white',
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  frameIndexContainerSelected: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    width: 30,
+    height: 30,
+    backgroundColor: 'black',
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   label: {
     fontWeight: 'bold',
@@ -36,7 +63,7 @@ const styles = StyleSheet.create({
     borderColor: Constants.colors.black,
     borderWidth: 1,
     borderBottomWidth: 2,
-    marginBottom: 8,
+    marginBottom: 20,
   },
   segmentedControlLabels: {
     flexDirection: 'row',
@@ -107,8 +134,10 @@ const EditArtButton = () => {
   }
 
   return (
-    <TouchableOpacity style={SceneCreatorConstants.styles.button} onPress={onPress}>
-      <Text style={SceneCreatorConstants.styles.buttonLabel}>Edit Art</Text>
+    <TouchableOpacity
+      onPress={onPress}
+      style={[styles.frameContainer, { justifyContent: 'center', alignItems: 'center' }]}>
+      <Text style={{ fontSize: 30 }}>+</Text>
     </TouchableOpacity>
   );
 };
@@ -117,6 +146,12 @@ export default InspectorDrawing = ({ drawing2, sendAction }) => {
   const [loopStyle, loopStyleSetValueAndSendAction] = useOptimisticBehaviorValue({
     behavior: drawing2,
     propName: 'loopStyle',
+    sendAction,
+  });
+
+  const [initialFrame, initialFrameSetValueAndSendAction] = useOptimisticBehaviorValue({
+    behavior: drawing2,
+    propName: 'initialFrame',
     sendAction,
   });
 
@@ -147,21 +182,49 @@ export default InspectorDrawing = ({ drawing2, sendAction }) => {
     }
   };
 
+  let frames = [];
+
+  if (drawing2?.properties?.base64PngFrames) {
+    for (let i = 0; i < drawing2.properties.base64PngFrames.numFrames; i++) {
+      let isInitialFrame = initialFrame == i + 1;
+
+      frames.push(
+        <TouchableOpacity
+          key={i}
+          style={styles.frameContainer}
+          disabled={isInitialFrame}
+          onPress={() => {
+            initialFrameSetValueAndSendAction('set:initialFrame', i + 1);
+          }}>
+          <FastImage
+            style={styles.image}
+            source={{
+              uri: `data:image/png;base64,${drawing2.properties.base64PngFrames['frame' + i]}`,
+            }}
+          />
+
+          {isInitialFrame ? (
+            <View style={styles.frameIndexContainerSelected}>
+              <Icon name="check" size={20} color="#fff" />
+            </View>
+          ) : (
+            <View style={styles.frameIndexContainer}>
+              <Text style={{ fontWeight: '500' }}>{i + 1}</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      );
+    }
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Artwork</Text>
 
-      <View style={{ flexDirection: 'row' }}>
-        {drawing2?.properties?.base64Png ? (
-          <FastImage
-            source={{ uri: `data:image/png;base64,${drawing2.properties.base64Png}` }}
-            style={styles.image}
-          />
-        ) : null}
-        <View style={{ paddingLeft: 20, height: 40 }}>
-          <EditArtButton />
-        </View>
-      </View>
+      <ScrollView horizontal style={{ flexDirection: 'row', marginBottom: 20 }}>
+        {frames}
+        <EditArtButton />
+      </ScrollView>
 
       <View style={styles.segmentedControl}>
         {items.map((item, ii) => (
