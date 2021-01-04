@@ -299,6 +299,24 @@ const ExitCameraViewPort = () => {
   ]);
 };
 
+const AnimationLoop = () => {
+  return withWhen([
+    {
+      type: 'selectEntry',
+      label: 'the animation loops',
+    },
+  ]);
+};
+
+const AnimationEnd = () => {
+  return withWhen([
+    {
+      type: 'selectEntry',
+      label: 'the animation ends',
+    },
+  ]);
+};
+
 const makeCells = (props) => {
   let cells;
   const { trigger } = props;
@@ -333,6 +351,8 @@ export const Triggers = {
   ['stops moving']: StopsMoving,
   ['enter camera viewport']: EnterCameraViewPort,
   ['exit camera viewport']: ExitCameraViewPort,
+  ['animation loop']: AnimationLoop,
+  ['animation end']: AnimationEnd,
   default: Default,
   empty: Empty,
   makeCells,
