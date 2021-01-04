@@ -144,13 +144,22 @@ const CurrentDeckCell = ({ deck, isPlaying, onPressDeck }) => {
         backgroundColor: '#f00',
         width: '100%',
         height: vh * 100 - insets.top,
-        justifyContent: 'center',
       }
-    : cardAspectFitStyles;
+    : [cardAspectFitStyles, { height: vw * 100 * (1 / Constants.CARD_RATIO) }];
+
+  // when playing, push the card down below the cell's header
+  let playingOffsetY = React.useRef(new Animated.Value(0)).current;
+  React.useEffect(() => {
+    let toValue = 0;
+    if (isPlaying) {
+      toValue = insets.top + FEED_HEADER_HEIGHT;
+    }
+    Animated.spring(playingOffsetY, { toValue, ...SPRING_CONFIG }).start();
+  }, [isPlaying]);
 
   return (
-    <View style={[containerStyles, { borderRadius: 6, overflow: 'hidden' }]}>
-      <View style={styles.itemCard}>
+    <Animated.View style={[containerStyles, { borderRadius: 6, overflow: 'hidden' }]}>
+      <Animated.View style={[styles.itemCard, { transform: [{ translateY: playingOffsetY }] }]}>
         <CardCell card={initialCard} previewVideo={deck?.previewVideo} onPress={onSelectPlay} />
         {ready ? (
           <View style={styles.absoluteFill}>
@@ -161,12 +170,12 @@ const CurrentDeckCell = ({ deck, isPlaying, onPressDeck }) => {
             />
           </View>
         ) : null}
-      </View>
+      </Animated.View>
       <View style={styles.itemHeader}>
         <DeckFeedItemHeader isPlaying={isPlaying} onPressBack={onPressBack} />
       </View>
       <View style={styles.itemFooter} />
-    </View>
+    </Animated.View>
   );
 };
 
