@@ -2,12 +2,10 @@ import React from 'react';
 import {
   Animated,
   InteractionManager,
-  LayoutAnimation,
   StatusBar,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
-  UIManager,
   View,
 } from 'react-native';
 import { CardCell } from './CardCell';
@@ -25,12 +23,6 @@ import * as Utilities from '../common/utilities';
 const { vw, vh } = Viewport;
 
 const FEED_HEADER_HEIGHT = 56;
-
-if (Constants.Android) {
-  if (UIManager.setLayoutAnimationEnabledExperimental) {
-    UIManager.setLayoutAnimationEnabledExperimental(true);
-  }
-}
 
 // if the screen is too stubby, add horizontal padding to the feed
 // such that the aspect-fit cards are 87% of the screen height
@@ -53,13 +45,6 @@ const SPRING_CONFIG = {
   restDisplacementThreshold: 1,
   restSpeedThreshold: 1,
   useNativeDriver: true,
-};
-
-const LAYOUT_SPRING_CONFIG = {
-  duration: 300,
-  create: { type: 'linear', property: 'opacity' },
-  update: { type: 'spring', springDamping: 0.95 },
-  delete: { type: 'linear', property: 'opacity' },
 };
 
 const styles = StyleSheet.create({
@@ -86,6 +71,8 @@ const styles = StyleSheet.create({
     height: 48,
     backgroundColor: '#600',
     top: 0,
+    borderTopLeftRadius: 6,
+    borderTopRightRadius: 6,
   },
   itemFooter: {
     position: 'absolute',
@@ -93,6 +80,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     height: 16,
     backgroundColor: '#600',
+    borderBottomLeftRadius: 6,
+    borderBottomRightRadius: 6,
   },
   absoluteFill: {
     position: 'absolute',
@@ -118,7 +107,7 @@ const makeCardAspectFitStyles = () => {
 const cardAspectFitStyles = makeCardAspectFitStyles();
 
 // renders the current focused deck in the feed
-const CurrentDeckCell = ({ deck, isPlaying, onPressDeck }) => {
+const CurrentDeckCell = ({ deck, isPlaying, onPressDeck, playingTransition }) => {
   const initialCard = deck?.initialCard;
   const insets = useSafeArea();
 
@@ -151,36 +140,25 @@ const CurrentDeckCell = ({ deck, isPlaying, onPressDeck }) => {
     };
   }, [deck, isPlaying]);
 
-  const onSelectPlay = () => {
-    LayoutAnimation.configureNext(LAYOUT_SPRING_CONFIG);
-    onPressDeck({ deckId: deck.deckId });
-  };
-  const onPressBack = () => {
-    LayoutAnimation.configureNext(LAYOUT_SPRING_CONFIG);
-    onPressDeck({ deckId: undefined });
-  };
+  const onSelectPlay = () => onPressDeck({ deckId: deck.deckId });
+  const onPressBack = () => onPressDeck({ deckId: undefined });
 
-  const containerStyles = isPlaying
-    ? {
-        backgroundColor: '#f00',
-        width: '100%',
-        height: vh * 100 - insets.top,
-      }
-    : [cardAspectFitStyles, { height: vw * 100 * (1 / Constants.CARD_RATIO) }];
-
-  // when playing, push the card down below the cell's header
-  let playingOffsetY = React.useRef(new Animated.Value(0)).current;
-  React.useEffect(() => {
-    let toValue = 0;
-    if (isPlaying) {
-      toValue = insets.top + FEED_HEADER_HEIGHT;
-    }
-    Animated.spring(playingOffsetY, { toValue, ...SPRING_CONFIG }).start();
-  }, [isPlaying]);
+  // when playing, move the header and footer to the screen edges
+  const playingHeaderY = playingTransition.interpolate({
+    inputRange: [0, 1.01],
+    outputRange: [0, -(insets.top + FEED_HEADER_HEIGHT)],
+  });
+  const playingFooterY = playingTransition.interpolate({
+    inputRange: [0, 1.01],
+    outputRange: [
+      0,
+      vh * 100 - DECK_FEED_ITEM_HEIGHT + DECK_FEED_ITEM_MARGIN - insets.top - FEED_HEADER_HEIGHT,
+    ],
+  });
 
   return (
-    <Animated.View style={[containerStyles, { borderRadius: 6, overflow: 'hidden' }]}>
-      <Animated.View style={[styles.itemCard, { transform: [{ translateY: playingOffsetY }] }]}>
+    <View style={[cardAspectFitStyles, { overflow: 'visible', marginBottom: 0 }]}>
+      <View style={styles.itemCard}>
         <CardCell card={initialCard} previewVideo={deck?.previewVideo} onPress={onSelectPlay} />
         {ready ? (
           <View style={styles.absoluteFill}>
@@ -191,11 +169,12 @@ const CurrentDeckCell = ({ deck, isPlaying, onPressDeck }) => {
             />
           </View>
         ) : null}
-      </Animated.View>
-      <View style={styles.itemHeader}>
-        <DeckFeedItemHeader isPlaying={isPlaying} onPressBack={onPressBack} />
       </View>
-    </Animated.View>
+      <Animated.View style={[styles.itemHeader, { transform: [{ translateY: playingHeaderY }] }]}>
+        <DeckFeedItemHeader isPlaying={isPlaying} onPressBack={onPressBack} />
+      </Animated.View>
+      <Animated.View style={[styles.itemFooter, { transform: [{ translateY: playingFooterY }] }]} />
+    </View>
   );
 };
 
@@ -214,11 +193,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck }) => {
     translateY.setValue(0);
   }, [decks]);
 
-  // state from expanding/collapsing a deck to play it
-  let playingOffsetY = React.useRef(new Animated.Value(0)).current;
-
-  let baseContainerY = Animated.add(translateY, centerContentY - DECK_FEED_ITEM_HEIGHT);
-  let containerY = Animated.add(playingOffsetY, baseContainerY);
+  let containerY = Animated.add(translateY, centerContentY - DECK_FEED_ITEM_HEIGHT);
   const onPanGestureEvent = Animated.event([{ nativeEvent: { translationY: translateY } }], {
     useNativeDriver: true,
   });
@@ -228,14 +203,30 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck }) => {
     // don't reset translateY here, do it when setting currentCardIndex
   }, [currentCardIndex]);
 
+  // state from expanding/collapsing a deck to play it
+  // note: non-native duplicate is needed for just the background color fade (not supported by native)
+  const playingTransition = React.useRef(new Animated.Value(0)).current;
+  const playingTransitionNonNative = React.useRef(new Animated.Value(0)).current;
+  const playingOffsetPrevY = playingTransition.interpolate({
+    inputRange: [0, 1.01],
+    outputRange: [0, -250],
+  });
+  const playingOffsetNextY = playingTransition.interpolate({
+    inputRange: [0, 1.01],
+    outputRange: [DECK_FEED_ITEM_MARGIN, 250],
+  });
+  const playingBackgroundColor = playingTransitionNonNative.interpolate({
+    inputRange: [0, 0.8, 1],
+    outputRange: ['rgba(0, 0, 0, 1)', 'rgba(0, 0, 0, 1)', 'rgba(128, 0, 0, 1)'],
+  });
+
   React.useEffect(() => {
-    let toValue = 0;
-    if (isPlaying) {
-      // when playing starts, put the current cell at y-position zero
-      // because that cell is going to become full screen height.
-      toValue = -centerContentY;
-    }
-    Animated.spring(playingOffsetY, { toValue, ...SPRING_CONFIG }).start();
+    Animated.spring(playingTransition, { toValue: isPlaying ? 1.01 : 0, ...SPRING_CONFIG }).start();
+    Animated.spring(playingTransitionNonNative, {
+      toValue: isPlaying ? 1.01 : 0,
+      ...SPRING_CONFIG,
+      useNativeDriver: false,
+    }).start();
   }, [isPlaying]);
 
   const snapTo = React.useCallback(
@@ -304,18 +295,25 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck }) => {
     currentCardIndex < decks.length - 2 ? decks[currentCardIndex + 2].initialCard : null;
 
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, { backgroundColor: playingBackgroundColor }]}>
       <PanGestureHandler
         minDist={8}
         enabled={!isPlaying}
         onGestureEvent={onPanGestureEvent}
         onHandlerStateChange={onPanStateChange}>
         <Animated.View style={{ transform: [{ translateY: containerY }] }}>
-          <View style={cardAspectFitStyles}>
+          <Animated.View
+            style={[cardAspectFitStyles, { transform: [{ translateY: playingOffsetPrevY }] }]}>
             <View style={styles.itemCard}>{prevCard && <CardCell card={prevCard} />}</View>
-          </View>
-          <CurrentDeckCell deck={currentDeck} isPlaying={isPlaying} onPressDeck={onPressDeck} />
-          <Animated.View style={cardAspectFitStyles}>
+          </Animated.View>
+          <CurrentDeckCell
+            deck={currentDeck}
+            isPlaying={isPlaying}
+            onPressDeck={onPressDeck}
+            playingTransition={playingTransition}
+          />
+          <Animated.View
+            style={[cardAspectFitStyles, { transform: [{ translateY: playingOffsetNextY }] }]}>
             <TouchableWithoutFeedback onPress={snapToNext}>
               <View style={styles.itemCard}>{nextCard && <CardCell card={nextCard} />}</View>
             </TouchableWithoutFeedback>
@@ -329,6 +327,6 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck }) => {
           )}
         </Animated.View>
       </PanGestureHandler>
-    </View>
+    </Animated.View>
   );
 };
