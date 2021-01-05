@@ -1,6 +1,6 @@
 # Set up
 
-- Follow the [dependencies and development environment setup instructions](https://facebook.github.io/react-native/docs/getting-started) in the React Native documentation for your host platform (stop right before "Creating a new application").
+- Follow the [dependencies and development environment setup instructions](https://reactnative.dev/docs/environment-setup) in the React Native documentation for your host platform (stop right before "Creating a new application").
 - Run `npm i` in this directory
 - Copy `mobile/.env` from our credentials repository to this directory
 
@@ -8,7 +8,9 @@
 
 ## iOS
 
-- `npx react-native start` to start the packager
+- Make sure Xcode is up to date and Xcode Command Line Tools are installed
+- `npx react-native start` in this directory to start the packager
+- Open `Castle.xcworkspace` in Xcode (not the Xcode Project)
 - Run Debug target on Simulator or device to automatically load dev bundle from the packager
 
 ## Android
