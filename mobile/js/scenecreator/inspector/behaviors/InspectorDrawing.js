@@ -27,8 +27,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   image: {
-    width: 64,
-    height: 64,
+    flex: 1,
   },
   frameIndexContainer: {
     position: 'absolute',
