@@ -2,10 +2,12 @@ import React from 'react';
 import {
   Animated,
   InteractionManager,
+  LayoutAnimation,
   StatusBar,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
+  UIManager,
   View,
 } from 'react-native';
 import { CardCell } from './CardCell';
@@ -23,6 +25,12 @@ import * as Utilities from '../common/utilities';
 const { vw, vh } = Viewport;
 
 const FEED_HEADER_HEIGHT = 56;
+
+if (Constants.Android) {
+  if (UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+  }
+}
 
 // if the screen is too stubby, add horizontal padding to the feed
 // such that the aspect-fit cards are 87% of the screen height
@@ -45,6 +53,13 @@ const SPRING_CONFIG = {
   restDisplacementThreshold: 1,
   restSpeedThreshold: 1,
   useNativeDriver: true,
+};
+
+const LAYOUT_SPRING_CONFIG = {
+  duration: 300,
+  create: { type: 'linear', property: 'opacity' },
+  update: { type: 'spring', springDamping: 0.95 },
+  delete: { type: 'linear', property: 'opacity' },
 };
 
 const styles = StyleSheet.create({
@@ -136,8 +151,14 @@ const CurrentDeckCell = ({ deck, isPlaying, onPressDeck }) => {
     };
   }, [deck, isPlaying]);
 
-  const onSelectPlay = () => onPressDeck({ deckId: deck.deckId });
-  const onPressBack = () => onPressDeck({ deckId: undefined });
+  const onSelectPlay = () => {
+    LayoutAnimation.configureNext(LAYOUT_SPRING_CONFIG);
+    onPressDeck({ deckId: deck.deckId });
+  };
+  const onPressBack = () => {
+    LayoutAnimation.configureNext(LAYOUT_SPRING_CONFIG);
+    onPressDeck({ deckId: undefined });
+  };
 
   const containerStyles = isPlaying
     ? {
@@ -174,7 +195,6 @@ const CurrentDeckCell = ({ deck, isPlaying, onPressDeck }) => {
       <View style={styles.itemHeader}>
         <DeckFeedItemHeader isPlaying={isPlaying} onPressBack={onPressBack} />
       </View>
-      <View style={styles.itemFooter} />
     </Animated.View>
   );
 };
