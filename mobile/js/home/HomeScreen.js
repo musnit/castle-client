@@ -7,7 +7,7 @@ import { RecentDecks } from './RecentDecks';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { SegmentedNavigation } from '../components/SegmentedNavigation';
 import { useSession } from '../Session';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '../ReactNavigation';
 
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';

@@ -16,6 +16,7 @@ import * as GhostEvents from './ghost/GhostEvents';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableAndroidFontFix } from './AndroidFontFix';
 
+import { HomeScreen } from './home/HomeScreen';
 import { FeaturedDecks } from './home/FeaturedDecks';
 import { NewestDecks } from './home/NewestDecks';
 import { RecentDecks } from './home/RecentDecks';
@@ -199,6 +200,7 @@ if (Platform.OS === 'android') {
     };
   };
 
+  AppRegistry.registerComponent('HomeScreen', WrapComponent(HomeScreen));
   AppRegistry.registerComponent('FeaturedDecks', WrapComponent(FeaturedDecks));
   AppRegistry.registerComponent('NewestDecks', WrapComponent(NewestDecks));
   AppRegistry.registerComponent('RecentDecks', WrapComponent(RecentDecks));
