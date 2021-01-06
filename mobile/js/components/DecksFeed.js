@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  ActivityIndicator,
   Animated,
   InteractionManager,
   StatusBar,
@@ -53,6 +54,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000',
     overflow: 'hidden',
+  },
+  loadingIndicator: {
+    position: 'absolute',
+    top: FEED_HEADER_HEIGHT,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8,
+    minHeight: 64,
   },
   itemContainer: {
     width: '100%',
@@ -208,8 +218,7 @@ const CurrentDeckCell = ({ deck, isPlaying, onPressDeck, playingTransition }) =>
   );
 };
 
-// TODO: refreshing, onRefresh, onPressDeck
-export const DecksFeed = ({ decks, isPlaying, onPressDeck }) => {
+export const DecksFeed = ({ decks, isPlaying, onPressDeck, refreshing, onRefresh }) => {
   const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
 
   const insets = useSafeArea();
@@ -223,7 +232,15 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck }) => {
     translateY.setValue(0);
   }, [decks]);
 
+  // refresh control
+  let refreshOverscrollY = React.useRef(new Animated.Value(0)).current;
+  React.useEffect(() => {
+    let toValue = refreshing ? 64 : 0;
+    Animated.spring(refreshOverscrollY, { toValue, ...SPRING_CONFIG }).start();
+  }, [refreshing]);
+
   let containerY = Animated.add(translateY, centerContentY - DECK_FEED_ITEM_HEIGHT);
+  containerY = Animated.add(containerY, refreshOverscrollY);
   const onPanGestureEvent = Animated.event([{ nativeEvent: { translationY: translateY } }], {
     useNativeDriver: true,
   });
@@ -288,9 +305,11 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck }) => {
     if (currentCardIndex > 0) {
       snapTo(DECK_FEED_ITEM_HEIGHT, currentCardIndex - 1);
     } else {
+      // overscroll beyond top of feed
       snapTo(0);
+      onRefresh();
     }
-  }, [currentCardIndex, snapTo]);
+  }, [currentCardIndex, snapTo, onRefresh]);
 
   const onPanStateChange = React.useCallback(
     (event) => {
@@ -327,6 +346,11 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck }) => {
 
   return (
     <Animated.View style={[styles.container, { backgroundColor: playingBackgroundColor }]}>
+      {refreshing ? (
+        <View style={styles.loadingIndicator}>
+          <ActivityIndicator size="large" color={Constants.iOS ? '#fff' : undefined} />
+        </View>
+      ) : null}
       <PanGestureHandler
         minDist={8}
         enabled={!isPlaying}

@@ -114,16 +114,12 @@ export const FeaturedDecks = ({ focused, deckId }) => {
     }
   }, [query.called, query.loading, query.error, query.data]);
 
-  const scrollViewRef = React.useRef(null);
-  useScrollToTop(scrollViewRef);
-
   return (
     <Fragment>
       <AppUpdateNotice />
       <DecksFeed
         decks={decks}
         isPlaying={deckId !== undefined}
-        scrollViewRef={scrollViewRef}
         onPressDeck={({ deckId }) =>
           navigate(
             'HomeScreen',
