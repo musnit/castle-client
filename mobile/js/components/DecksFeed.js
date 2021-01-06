@@ -229,6 +229,11 @@ const CurrentDeckCell = ({
   );
 };
 
+const FeedItemPlaceholderHeader = ({ card }) => {
+  const { headerColor } = makeCardColors(card);
+  return <View style={[styles.itemHeader, { backgroundColor: headerColor }]} />;
+};
+
 export const DecksFeed = ({ decks, isPlaying, onPressDeck, refreshing, onRefresh }) => {
   const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
@@ -372,7 +377,14 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, refreshing, onRefresh
         <Animated.View style={{ transform: [{ translateY: containerY }] }}>
           <Animated.View
             style={[cardAspectFitStyles, { transform: [{ translateY: playingOffsetPrevY }] }]}>
-            <View style={styles.itemCard}>{prevCard && <CardCell card={prevCard} />}</View>
+            <View style={styles.itemCard}>
+              {prevCard ? (
+                <>
+                  <CardCell card={prevCard} />
+                  <FeedItemPlaceholderHeader card={prevCard} />
+                </>
+              ) : null}
+            </View>
           </Animated.View>
           <CurrentDeckCell
             deck={currentDeck}
@@ -384,7 +396,14 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, refreshing, onRefresh
           <Animated.View style={{ transform: [{ translateY: playingOffsetNextY }] }}>
             <View style={cardAspectFitStyles}>
               <TouchableWithoutFeedback onPress={snapToNext}>
-                <View style={styles.itemCard}>{nextCard && <CardCell card={nextCard} />}</View>
+                <View style={styles.itemCard}>
+                  {nextCard ? (
+                    <>
+                      <CardCell card={nextCard} />
+                      <FeedItemPlaceholderHeader card={nextCard} />
+                    </>
+                  ) : null}
+                </View>
               </TouchableWithoutFeedback>
             </View>
             {nextNextCard && (
