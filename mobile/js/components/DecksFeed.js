@@ -10,9 +10,9 @@ import {
   View,
 } from 'react-native';
 import { CardCell } from './CardCell';
-import { DeckFeedItemHeader } from './DeckFeedItemHeader';
 import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
+import { PlayDeckActions } from '../play/PlayDeckActions';
 import { PlayDeckNavigator } from '../play/PlayDeckNavigator';
 import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 
@@ -217,7 +217,7 @@ const CurrentDeckCell = ({
           styles.itemHeader,
           { backgroundColor: headerColor, transform: [{ translateY: playingHeaderY }] },
         ]}>
-        <DeckFeedItemHeader isPlaying={isPlaying} onPressBack={onPressBack} />
+        <PlayDeckActions deck={deck} isPlaying={isPlaying} onPressBack={onPressBack} />
       </Animated.View>
       <Animated.View
         style={[
