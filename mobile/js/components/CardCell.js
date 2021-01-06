@@ -79,9 +79,8 @@ const InitialCardIndicator = () => (
 );
 
 const CardArtwork = ({ card, useOverlay, isPrivate, previewVideo }) => {
-  if (previewVideo?.url) {
-    return <Video style={styles.cardPreview} source={{ uri: previewVideo.url }} repeat={true} />;
-  } else if (card.backgroundImage) {
+  let image = null;
+  if (card.backgroundImage) {
     let uri;
     const { url, smallUrl, overlayUrl, privateCardUrl } = card.backgroundImage;
     if (useOverlay && overlayUrl) {
@@ -93,7 +92,18 @@ const CardArtwork = ({ card, useOverlay, isPrivate, previewVideo }) => {
     } else {
       uri = url;
     }
-    return <FastImage style={[styles.cardPreview, styles.cardPreviewImage]} source={{ uri }} />;
+    image = <FastImage style={[styles.cardPreview, styles.cardPreviewImage]} source={{ uri }} />;
+  }
+  if (previewVideo?.url) {
+    // show the image behind the video because the video drops frames when first loading
+    return (
+      <>
+        {image}
+        <Video style={styles.cardPreview} source={{ uri: previewVideo.url }} repeat={true} />
+      </>
+    );
+  } else if (image) {
+    return image;
   }
   return null;
 };
