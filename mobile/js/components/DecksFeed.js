@@ -137,7 +137,13 @@ const makeCardColors = (card) => {
 };
 
 // renders the current focused deck in the feed
-const CurrentDeckCell = ({ deck, isPlaying, onPressDeck, playingTransition }) => {
+const CurrentDeckCell = ({
+  deck,
+  isPlaying,
+  onPressDeck,
+  playingTransition,
+  previewVideoPaused,
+}) => {
   const initialCard = deck?.initialCard;
   const insets = useSafeArea();
 
@@ -190,7 +196,12 @@ const CurrentDeckCell = ({ deck, isPlaying, onPressDeck, playingTransition }) =>
   return (
     <View style={[cardAspectFitStyles, { overflow: 'visible', marginBottom: 0 }]}>
       <View style={styles.itemCard}>
-        <CardCell card={initialCard} previewVideo={deck?.previewVideo} onPress={onSelectPlay} />
+        <CardCell
+          card={initialCard}
+          previewVideo={deck?.previewVideo}
+          onPress={onSelectPlay}
+          previewVideoPaused={previewVideoPaused}
+        />
         {ready ? (
           <View style={styles.absoluteFill}>
             <PlayDeckNavigator
@@ -220,6 +231,7 @@ const CurrentDeckCell = ({ deck, isPlaying, onPressDeck, playingTransition }) =>
 
 export const DecksFeed = ({ decks, isPlaying, onPressDeck, refreshing, onRefresh }) => {
   const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
+  const [paused, setPaused] = React.useState(false);
 
   const insets = useSafeArea();
   let centerContentY = insets.top + FEED_HEADER_HEIGHT;
@@ -281,6 +293,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, refreshing, onRefresh
     (toValue, futureCardIndex = null) => {
       Animated.spring(translateY, { toValue, ...SPRING_CONFIG }).start(({ finished }) => {
         if (finished) {
+          setPaused(false);
           if (futureCardIndex !== null) {
             setCurrentCardIndex(futureCardIndex);
             translateY.setValue(0);
@@ -324,7 +337,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, refreshing, onRefresh
         }
       }
       if (event.nativeEvent.state === State.BEGAN) {
-        // TODO: legacy setPaused(true);
+        setPaused(true);
       }
     },
     [snapTo, snapToNext, snapToPrevious]
@@ -366,6 +379,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, refreshing, onRefresh
             isPlaying={isPlaying}
             onPressDeck={onPressDeck}
             playingTransition={playingTransition}
+            previewVideoPaused={paused}
           />
           <Animated.View style={{ transform: [{ translateY: playingOffsetNextY }] }}>
             <View style={cardAspectFitStyles}>
