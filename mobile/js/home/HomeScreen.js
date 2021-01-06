@@ -15,6 +15,15 @@ import * as Utilities from '../common/utilities';
 
 const HEADER_HEIGHT = 56;
 
+const SPRING_CONFIG = {
+  tension: 150,
+  friction: 50,
+  overshootClamping: true,
+  restDisplacementThreshold: 1,
+  restSpeedThreshold: 1,
+  useNativeDriver: true,
+};
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: Constants.colors.black,
@@ -95,7 +104,7 @@ export const HomeScreen = ({ route }) => {
     .current;
   React.useEffect(() => {
     const toValue = deckId ? -(HEADER_HEIGHT + insets.top) : 0;
-    Animated.spring(headerY, { toValue, useNativeDriver: true }).start();
+    Animated.spring(headerY, { toValue, ...SPRING_CONFIG }).start();
   }, [deckId]);
 
   return (

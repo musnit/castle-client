@@ -15,6 +15,7 @@ import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { PlayDeckNavigator } from '../play/PlayDeckNavigator';
 import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 
+import tinycolor from 'tinycolor2';
 import Viewport from '../common/viewport';
 
 import * as Constants from '../Constants';
@@ -69,7 +70,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: 48,
-    backgroundColor: '#600',
     top: 0,
     borderTopLeftRadius: 6,
     borderTopRightRadius: 6,
@@ -79,7 +79,6 @@ const styles = StyleSheet.create({
     width: '100%',
     bottom: 0,
     height: 16,
-    backgroundColor: '#600',
     borderBottomLeftRadius: 6,
     borderBottomRightRadius: 6,
   },
@@ -105,6 +104,27 @@ const makeCardAspectFitStyles = () => {
 };
 
 const cardAspectFitStyles = makeCardAspectFitStyles();
+
+const makeCardColors = (card) => {
+  let baseColor, headerColor, backgroundColor;
+  if (card?.backgroundImage?.primaryColor) {
+    baseColor = card.backgroundImage.primaryColor;
+  } else {
+    baseColor = '#333';
+  }
+  let base = tinycolor(baseColor);
+  if (tinycolor(baseColor).isLight()) {
+    headerColor = base.darken().toString();
+    backgroundColor = base.lighten().toString();
+  } else {
+    headerColor = base.lighten().toString();
+    backgroundColor = base.darken().toString();
+  }
+  return {
+    backgroundColor,
+    headerColor,
+  };
+};
 
 // renders the current focused deck in the feed
 const CurrentDeckCell = ({ deck, isPlaying, onPressDeck, playingTransition }) => {
@@ -142,6 +162,7 @@ const CurrentDeckCell = ({ deck, isPlaying, onPressDeck, playingTransition }) =>
 
   const onSelectPlay = () => onPressDeck({ deckId: deck.deckId });
   const onPressBack = () => onPressDeck({ deckId: undefined });
+  const { headerColor, backgroundColor } = makeCardColors(initialCard);
 
   // when playing, move the header and footer to the screen edges
   const playingHeaderY = playingTransition.interpolate({
@@ -170,10 +191,19 @@ const CurrentDeckCell = ({ deck, isPlaying, onPressDeck, playingTransition }) =>
           </View>
         ) : null}
       </View>
-      <Animated.View style={[styles.itemHeader, { transform: [{ translateY: playingHeaderY }] }]}>
+      <Animated.View
+        style={[
+          styles.itemHeader,
+          { backgroundColor: headerColor, transform: [{ translateY: playingHeaderY }] },
+        ]}>
         <DeckFeedItemHeader isPlaying={isPlaying} onPressBack={onPressBack} />
       </Animated.View>
-      <Animated.View style={[styles.itemFooter, { transform: [{ translateY: playingFooterY }] }]} />
+      <Animated.View
+        style={[
+          styles.itemFooter,
+          { backgroundColor: headerColor, transform: [{ translateY: playingFooterY }] },
+        ]}
+      />
     </View>
   );
 };
@@ -215,9 +245,10 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck }) => {
     inputRange: [0, 1.01],
     outputRange: [DECK_FEED_ITEM_MARGIN, 250],
   });
+  const { backgroundColor } = makeCardColors(decks[currentCardIndex]?.initialCard);
   const playingBackgroundColor = playingTransitionNonNative.interpolate({
     inputRange: [0, 0.8, 1],
-    outputRange: ['rgba(0, 0, 0, 1)', 'rgba(0, 0, 0, 1)', 'rgba(128, 0, 0, 1)'],
+    outputRange: ['rgba(0, 0, 0, 1)', 'rgba(0, 0, 0, 1)', tinycolor(backgroundColor).toRgbString()],
   });
 
   React.useEffect(() => {
