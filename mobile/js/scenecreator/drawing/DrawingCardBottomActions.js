@@ -256,6 +256,22 @@ export const DrawingCardBottomActions = useFastDataMemo(
                   }}>
                   <TouchableOpacity
                     style={
+                      artworkEraseSubtool == 'erase_segment'
+                        ? [styles.iconSelected, { backgroundColor: activeColorBackground }]
+                        : styles.icon
+                    }
+                    onPress={() => fastAction('onSelectSubtool', 'artwork_erase:erase_segment')}>
+                    <MCIcon
+                      name="eraser"
+                      size={ICON_SIZE}
+                      color={
+                        artworkEraseSubtool == 'erase_segment' ? activeColorForeground : COLOR_ICON
+                      }
+                    />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={
                       artworkEraseSubtool == 'erase_small'
                         ? [styles.iconSelected, { backgroundColor: activeColorBackground }]
                         : styles.icon
