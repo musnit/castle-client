@@ -297,6 +297,27 @@ const CounterMeetsCondition = ({ response, context }) => {
   ];
 };
 
+const AnimationFrameMeetsCondition = ({ response, context }) => {
+  return [
+    {
+      type: 'selectEntry',
+      label: `the animation frame`,
+    },
+    {
+      type: 'selectParamSheet',
+      paramName: 'comparison',
+      paramValue: response.params?.comparison ?? 'equal',
+      label: readableOperator(response.params?.comparison ?? 'equal'),
+    },
+    {
+      type: 'selectParamSheet',
+      paramName: 'frame',
+      paramValue: response.params?.frame ?? 0,
+      label: makeExpressionSummary(response.params?.frame ?? 0, context),
+    },
+  ];
+};
+
 const Create = ({ response, context }) => {
   let blueprintName;
   if (context?.library && response.params?.entryId) {
@@ -863,6 +884,7 @@ export const Responses = {
   ['play sound']: PlaySound,
   ['follow with camera']: FollowWithCamera,
   ['is in camera viewport']: IsInCameraViewport,
+  ['animation frame meets condition']: AnimationFrameMeetsCondition,
   create: Create,
   destroy: Destroy,
   show: Show,

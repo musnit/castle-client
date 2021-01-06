@@ -317,6 +317,36 @@ const AnimationEnd = () => {
   ]);
 };
 
+const AnimationReachesFrame = ({ trigger, context }) => {
+  return withWhen([
+    {
+      type: 'selectEntry',
+      label: `the animation frame`,
+    },
+    {
+      type: 'selectParamSheet',
+      paramName: 'comparison',
+      paramValue: trigger.params?.comparison ?? 'equal',
+      label: readableOperator(trigger.params?.comparison ?? 'equal'),
+    },
+    {
+      type: 'selectParamSheet',
+      paramName: 'frame',
+      paramValue: trigger.params?.frame ?? 0,
+      label: makeExpressionSummary(trigger.params?.frame ?? 0, context),
+    },
+  ]);
+};
+
+const AnimationFrameChanges = () => {
+  return withWhen([
+    {
+      type: 'selectEntry',
+      label: 'the animation frame changes',
+    },
+  ]);
+};
+
 const makeCells = (props) => {
   let cells;
   const { trigger } = props;
@@ -353,6 +383,8 @@ export const Triggers = {
   ['exit camera viewport']: ExitCameraViewPort,
   ['animation loop']: AnimationLoop,
   ['animation end']: AnimationEnd,
+  ['animation reaches frame']: AnimationReachesFrame,
+  ['animation frame changes']: AnimationFrameChanges,
   default: Default,
   empty: Empty,
   makeCells,
