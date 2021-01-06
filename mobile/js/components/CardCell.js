@@ -78,7 +78,7 @@ const InitialCardIndicator = () => (
   </View>
 );
 
-const CardArtwork = ({ card, useOverlay, isPrivate, previewVideo }) => {
+const CardArtwork = ({ card, useOverlay, isPrivate, previewVideo, previewVideoPaused }) => {
   let image = null;
   if (card.backgroundImage) {
     let uri;
@@ -99,7 +99,12 @@ const CardArtwork = ({ card, useOverlay, isPrivate, previewVideo }) => {
     return (
       <>
         {image}
-        <Video style={styles.cardPreview} source={{ uri: previewVideo.url }} repeat={true} />
+        <Video
+          style={styles.cardPreview}
+          source={{ uri: previewVideo.url }}
+          repeat={true}
+          paused={previewVideoPaused ?? false}
+        />
       </>
     );
   } else if (image) {
@@ -118,6 +123,7 @@ export const CardCell = ({
   isPrivate,
   isFullSize,
   previewVideo,
+  previewVideoPaused,
   style,
 }) => {
   let cardStyles = styles.card;
@@ -138,6 +144,7 @@ export const CardCell = ({
           <CardArtwork
             card={card}
             previewVideo={previewVideo}
+            previewVideoPaused={previewVideoPaused}
             useOverlay={useOverlay}
             isPrivate={isPrivate}
           />
