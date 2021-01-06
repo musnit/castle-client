@@ -4,15 +4,19 @@ import { shareDeck } from '../common/utilities';
 import { useNavigation } from '../ReactNavigation';
 import { UserAvatar } from '../components/UserAvatar';
 
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
 
 import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingTop: 8,
+    paddingHorizontal: 8,
+  },
   creator: {
-    position: 'absolute',
-    left: 16,
-    top: 16,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -27,10 +31,10 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     ...Constants.styles.textShadow,
   },
+  left: {
+    flexDirection: 'row',
+  },
   right: {
-    position: 'absolute',
-    right: 8,
-    top: 16,
     flexDirection: 'row',
   },
   rightButton: {
@@ -45,21 +49,28 @@ const styles = StyleSheet.create({
   },
 });
 
-export const PlayDeckActions = ({ deck, disabled }) => {
+export const PlayDeckActions = ({ deck, isPlaying, onPressBack, disabled }) => {
   const { creator } = deck;
   const { push } = useNavigation();
 
   return (
-    <React.Fragment>
-      <TouchableOpacity
-        disabled={disabled}
-        style={styles.creator}
-        onPress={() => push('Profile', { userId: creator.userId })}>
-        <View style={styles.avatar}>
-          <UserAvatar url={creator.photo?.url} />
-        </View>
-        <Text style={styles.username}>{creator.username}</Text>
-      </TouchableOpacity>
+    <View style={styles.container}>
+      <View style={styles.left}>
+        {isPlaying ? (
+          <TouchableOpacity onPress={onPressBack}>
+            <Icon name="arrow-back" color="#fff" size={32} />
+          </TouchableOpacity>
+        ) : null}
+        <TouchableOpacity
+          disabled={disabled}
+          style={styles.creator}
+          onPress={() => push('Profile', { userId: creator.userId })}>
+          <View style={styles.avatar}>
+            <UserAvatar url={creator.photo?.url} />
+          </View>
+          <Text style={styles.username}>{creator.username}</Text>
+        </TouchableOpacity>
+      </View>
       <View style={styles.right} pointerEvents={disabled ? 'none' : 'auto'}>
         <TouchableOpacity
           style={styles.rightButton}
@@ -70,6 +81,6 @@ export const PlayDeckActions = ({ deck, disabled }) => {
           <Feather name="share" color="#fff" size={24} style={styles.rightButtonIcon} />
         </TouchableOpacity>
       </View>
-    </React.Fragment>
+    </View>
   );
 };
