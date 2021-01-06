@@ -31,7 +31,7 @@ const STUBBY_SCREEN_ITEM_HORIZ_PADDING = Viewport.isCardWide
   ? 0
   : (87 * vh * Constants.CARD_RATIO - 100 * vw) / -2;
 
-const DECK_FEED_ITEM_MARGIN = 64;
+const DECK_FEED_ITEM_MARGIN = 48;
 const DECK_FEED_ITEM_HEIGHT =
   (1 / Constants.CARD_RATIO) * (100 * vw - STUBBY_SCREEN_ITEM_HORIZ_PADDING * 2) + // height of card
   DECK_FEED_ITEM_MARGIN; // margin below cell
@@ -245,7 +245,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck }) => {
     inputRange: [0, 1.01],
     outputRange: [DECK_FEED_ITEM_MARGIN, 250],
   });
-  const { backgroundColor } = makeCardColors(decks[currentCardIndex]?.initialCard);
+  const { backgroundColor } = makeCardColors(decks ? decks[currentCardIndex]?.initialCard : null);
   const playingBackgroundColor = playingTransitionNonNative.interpolate({
     inputRange: [0, 0.8, 1],
     outputRange: ['rgba(0, 0, 0, 1)', 'rgba(0, 0, 0, 1)', tinycolor(backgroundColor).toRgbString()],
@@ -343,19 +343,20 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck }) => {
             onPressDeck={onPressDeck}
             playingTransition={playingTransition}
           />
-          <Animated.View
-            style={[cardAspectFitStyles, { transform: [{ translateY: playingOffsetNextY }] }]}>
-            <TouchableWithoutFeedback onPress={snapToNext}>
-              <View style={styles.itemCard}>{nextCard && <CardCell card={nextCard} />}</View>
-            </TouchableWithoutFeedback>
-          </Animated.View>
-          {nextNextCard && (
+          <Animated.View style={{ transform: [{ translateY: playingOffsetNextY }] }}>
             <View style={cardAspectFitStyles}>
-              <View style={styles.itemCard}>
-                <CardCell card={nextNextCard} />
-              </View>
+              <TouchableWithoutFeedback onPress={snapToNext}>
+                <View style={styles.itemCard}>{nextCard && <CardCell card={nextCard} />}</View>
+              </TouchableWithoutFeedback>
             </View>
-          )}
+            {nextNextCard && (
+              <View style={cardAspectFitStyles}>
+                <View style={styles.itemCard}>
+                  <CardCell card={nextNextCard} />
+                </View>
+              </View>
+            )}
+          </Animated.View>
         </Animated.View>
       </PanGestureHandler>
     </Animated.View>
