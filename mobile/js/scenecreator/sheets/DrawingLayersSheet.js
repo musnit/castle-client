@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 6,
   },
   header: {
-    padding: 20,
+    padding: 16,
     height: 64,
     flexDirection: 'row',
     borderBottomWidth: 1,
@@ -42,10 +42,9 @@ const styles = StyleSheet.create({
   },
   headingLabel: {
     color: '#000',
-    fontWeight: '500',
+    fontWeight: 'bold',
     fontSize: 16,
     width: '100%',
-    textAlign: 'center',
   },
   layerRow: {
     height: 64,
@@ -53,11 +52,29 @@ const styles = StyleSheet.create({
   },
   firstCell: {
     flexDirection: 'row',
-    width: 150,
-    justifyContent: 'space-around',
+    width: 165,
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
+    padding: 16,
+    paddingRight: 12,
+  },
+  addLayerButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  addLayerText: {
+    fontSize: 14,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginLeft: 12,
+  },
+  layerTitle: {
+    flexGrow: 1,
+    marginLeft: 12,
+  },
+  layerTitleText: {
+    fontSize: 16,
   },
   cell: {
     width: 64,
@@ -124,13 +141,16 @@ const renderItem = ({ item, index, drag, isActive }) => {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => item.fastAction('onSelectLayer', layer.id)}
-          onLongPress={drag}>
-          <Text style={layer.isSelected && { fontWeight: 'bold' }}>{layer.title}</Text>
+          onLongPress={drag}
+          style={styles.layerTitle}>
+          <Text style={[styles.layerTitleText, layer.isSelected && { fontWeight: 'bold' }]}>
+            {layer.title}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => item.fastAction('onDeleteLayer', layer.id)}
           onLongPress={drag}>
-          <Text>X</Text>
+          <MCIcon name={'trash-can-outline'} size={ICON_SIZE} color={'#000'} />
         </TouchableOpacity>
       </TouchableOpacity>
       {layer.frames.map((frame, idx) => {
@@ -322,7 +342,10 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
       <View style={{ flex: 1 }}>
         <View style={styles.layerRow}>
           <TouchableOpacity onPress={onAddLayer} style={styles.firstCell}>
-            <Text>+ Add Layer</Text>
+            <View style={styles.addLayerButton}>
+              <MCIcon name={'plus-box-outline'} size={ICON_SIZE} color={'#000'} />
+              <Text style={styles.addLayerText}>Add Layer</Text>
+            </View>
           </TouchableOpacity>
           {stateLayers.length > 0 &&
             stateLayers[0].frames.map((frame, idx) => {
@@ -336,7 +359,9 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
                   onPress={onPress}
                   style={[styles.cell, styles.cellLeftBorder, styles.cellBottomBorder]}
                   key={idx}>
-                  <Text style={isSelected && { fontWeight: 'bold' }}>{idx + 1}</Text>
+                  <Text style={[isSelected && { fontWeight: 'bold' }, { fontSize: 16 }]}>
+                    {idx + 1}
+                  </Text>
 
                   {isSelected && (
                     <View style={styles.cellMenuButton}>
