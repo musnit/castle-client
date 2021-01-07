@@ -8,11 +8,13 @@ import { DrawingLayersSheet } from './sheets/DrawingLayersSheet';
 import { SheetBackgroundOverlay } from '../components/SheetBackgroundOverlay';
 import { useCardCreator } from './CreateCardContext';
 import { useGhostUI } from '../ghost/GhostUI';
+import { useSafeArea } from 'react-native-safe-area-context';
 
 import Viewport from '../common/viewport';
 
 import { CARD_HEADER_HEIGHT } from './CreateCardHeader';
 const FULL_SHEET_HEIGHT = 100 * Viewport.vh - CARD_HEADER_HEIGHT;
+const DRAWING_SHEET_MAX_HEIGHT = 100 * Viewport.vh - 150;
 
 const ROOT_SHEETS = [
   {
@@ -41,7 +43,7 @@ const ROOT_SHEETS = [
   {
     key: 'drawingLayers',
     Component: DrawingLayersSheet,
-    snapPoints: [90, 180, 350],
+    snapPoints: [90, 350, DRAWING_SHEET_MAX_HEIGHT],
   },
 ];
 
