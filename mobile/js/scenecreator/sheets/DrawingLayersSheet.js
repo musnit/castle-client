@@ -8,7 +8,6 @@ import { BottomSheet } from '../../components/BottomSheet';
 
 import FastImage from 'react-native-fast-image';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import DraggableFlatList from 'react-native-draggable-flatlist';
 import { ScrollView } from 'react-native-gesture-handler';
 
 const styles = StyleSheet.create({
@@ -110,49 +109,58 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  layerMenuContainer: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 50,
+    height: 64,
+  },
+  layerMenuButton: {
+    position: 'absolute',
+    backgroundColor: 'black',
+    bottom: 0,
+    right: 0,
+    borderTopLeftRadius: 5,
+    width: 35,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
 const ICON_SIZE = 22;
 
-const renderItem = ({ item, index, drag, isActive }) => {
-  let layer = item;
-
+const LayerRow = ({ layer, index, showLayerActionSheet }) => {
   return (
-    <View
-      key={index}
-      style={[
-        styles.layerRow,
-        {
-          backgroundColor: isActive ? '#ccc' : 'transparent',
-        },
-      ]}>
-      <TouchableOpacity style={styles.firstCell} onLongPress={drag}>
+    <View style={styles.layerRow}>
+      <TouchableOpacity
+        style={styles.firstCell}
+        onPress={() => layer.fastAction('onSelectLayer', layer.id)}>
         <TouchableOpacity
           onPress={() =>
-            item.fastAction('onSetLayerIsVisible', {
+            layer.fastAction('onSetLayerIsVisible', {
               layerId: layer.id,
               isVisible: !layer.isVisible,
             })
-          }
-          onLongPress={drag}>
+          }>
           <MCIcon
             name={layer.isVisible ? 'eye-outline' : 'eye-off-outline'}
             size={ICON_SIZE}
             color={'#000'}
           />
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => item.fastAction('onSelectLayer', layer.id)}
-          onLongPress={drag}
-          style={styles.layerTitle}>
+        <View style={styles.layerTitle}>
           <Text style={[styles.layerTitleText, layer.isSelected && { fontWeight: 'bold' }]}>
             {layer.title}
           </Text>
-        </TouchableOpacity>
+        </View>
         <TouchableOpacity
-          onPress={() => item.fastAction('onDeleteLayer', layer.id)}
-          onLongPress={drag}>
-          <MCIcon name={'trash-can-outline'} size={ICON_SIZE} color={'#000'} />
+          onPress={() => showLayerActionSheet({ layerId: layer.id, index })}
+          style={styles.layerMenuContainer}>
+          <View style={styles.layerMenuButton}>
+            <MCIcon name={'dots-horizontal'} size={ICON_SIZE} color={'#fff'} />
+          </View>
         </TouchableOpacity>
       </TouchableOpacity>
       {layer.frames.map((frame, idx) => {
@@ -166,7 +174,7 @@ const renderItem = ({ item, index, drag, isActive }) => {
                 frame: idx + 1,
               })
           : () =>
-              item.fastAction('onSelectLayerAndFrame', {
+              layer.fastAction('onSelectLayerAndFrame', {
                 frame,
                 layerId: layer.id,
                 frame: idx + 1,
@@ -192,7 +200,7 @@ const renderItem = ({ item, index, drag, isActive }) => {
         let isLastLink = isLastCell || !layer.frames[idx + 1].isLinked;
 
         return (
-          <TouchableOpacity onPress={onPress} onLongPress={drag} key={idx} style={cellStyle}>
+          <TouchableOpacity onPress={onPress} key={idx} style={cellStyle}>
             {frame.isLinked ? (
               <FastImage
                 style={styles.linkedImage}
@@ -224,10 +232,6 @@ const renderItem = ({ item, index, drag, isActive }) => {
 const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) => {
   const { showActionSheetWithOptions } = useActionSheet();
   const [stateLayers, setStateLayers] = React.useState([]);
-
-  // we need to pass stateSeletedLayerId into extraData instead of fastData.selectedLayerId because
-  // otherwise extraData will trigger the FlatList update before stateLayers gets updated
-  const [stateSeletedLayerId, setStateSelectedLayerId] = React.useState(null);
   const [stateSelectedFrame, setStateSelectedFrame] = React.useState(1);
 
   const showCellActionSheet = useCallback((args) => {
@@ -258,6 +262,59 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
     );
   }, []);
 
+  const showLayerActionSheet = useCallback(
+    (args) => {
+      let options = [
+        {
+          name: 'Delete',
+          action: () => {
+            fastAction('onDeleteLayer', args.layerId);
+          },
+        },
+      ];
+
+      if (args.index > 0) {
+        options.push({
+          name: 'Move Up',
+          action: () => {
+            let ids = stateLayers.map((layer) => layer.id);
+            ids.splice(args.index, 1);
+            ids.splice(args.index - 1, 0, args.layerId);
+
+            fastAction('onReorderLayers', ids);
+          },
+        });
+      }
+
+      if (args.index < stateLayers.length - 1) {
+        options.push({
+          name: 'Move Down',
+          action: () => {
+            let ids = stateLayers.map((layer) => layer.id);
+            ids.splice(args.index, 1);
+            ids.splice(args.index + 1, 0, args.layerId);
+
+            fastAction('onReorderLayers', ids);
+          },
+        });
+      }
+
+      showActionSheetWithOptions(
+        {
+          title: 'Layer Options',
+          options: options.map((option) => option.name).concat(['Cancel']),
+          cancelButtonIndex: options.length,
+        },
+        (buttonIndex) => {
+          if (buttonIndex < options.length) {
+            return options[buttonIndex].action();
+          }
+        }
+      );
+    },
+    [stateLayers]
+  );
+
   useEffect(() => {
     if (fastData.layers) {
       let newLayers = JSON.parse(JSON.stringify(fastData.layers));
@@ -272,6 +329,7 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
         layer.isSelected = layer.id === fastData.selectedLayerId;
         layer.fastAction = fastAction;
         layer.showCellActionSheet = showCellActionSheet;
+        layer.showLayerActionSheet = showLayerActionSheet;
         layer.selectedFrame = fastData.selectedFrame;
 
         if (!Array.isArray(layer.frames)) {
@@ -286,20 +344,11 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
   }, [fastData]);
 
   useEffect(() => {
-    setStateSelectedLayerId(fastData.selectedLayerId);
-  }, [fastData.selectedLayerId]);
-
-  useEffect(() => {
     setStateSelectedFrame(fastData.selectedFrame);
   }, [fastData.selectedFrame]);
 
   const onAddLayer = useCallback(() => fastAction('onAddLayer'), []);
   const onAddFrame = useCallback(() => fastAction('onAddFrame'), []);
-  const keyExtractor = useCallback((item) => item.id, []);
-  const onDragEnd = useCallback(({ data }) => {
-    setStateLayers(data);
-    fastAction('onReorderLayers', data.map((layer) => layer.id));
-  }, []);
   const showFrameActionSheet = useCallback((frame) => {
     let options = [
       {
@@ -335,18 +384,6 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
       }
     );
   }, []);
-
-  let items = [];
-  for (let i = 0; i < stateLayers.length; i++) {
-    items.push(
-      renderItem({
-        item: stateLayers[i],
-        drag: () => {},
-        isActive: false,
-        index: i,
-      })
-    );
-  }
 
   return (
     <ScrollView
@@ -403,7 +440,16 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
               <Text>+</Text>
             </TouchableOpacity>
           </View>
-          {items}
+          {stateLayers.map((layer, idx) => {
+            return (
+              <LayerRow
+                key={idx}
+                index={idx}
+                layer={layer}
+                showLayerActionSheet={showLayerActionSheet}
+              />
+            );
+          })}
         </View>
       </ScrollView>
     </ScrollView>
