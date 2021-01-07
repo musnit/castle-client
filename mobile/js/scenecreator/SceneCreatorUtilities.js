@@ -169,11 +169,14 @@ export const promoteToExpression = (initialValue) => {
 
 export const makeExpressionSummary = (expression, context) => {
   if (!expression?.expressionType) {
+    if (typeof expression === 'number') {
+      return Math.round((expression + Number.EPSILON) * 10000) / 10000;
+    }
     return expression;
   }
   switch (expression.expressionType) {
     case 'number':
-      return expression.params.value;
+      return Math.round((expression.params.value + Number.EPSILON) * 10000) / 10000;
     case 'random': {
       let min = makeExpressionSummary(expression.params.min, context),
         max = makeExpressionSummary(expression.params.max, context);
