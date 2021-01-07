@@ -338,6 +338,7 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
   return (
     <ScrollView
       horizontal
+      bounces={false}
       showsVerticalScrollIndicator={false}
       showsHorizontalScrollIndicator={false}>
       <View style={{ flex: 1 }}>
