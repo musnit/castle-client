@@ -14,7 +14,6 @@ import Viewport from '../common/viewport';
 
 import { CARD_HEADER_HEIGHT } from './CreateCardHeader';
 const FULL_SHEET_HEIGHT = 100 * Viewport.vh - CARD_HEADER_HEIGHT;
-const DRAWING_SHEET_MAX_HEIGHT = 100 * Viewport.vh - 150;
 
 const ROOT_SHEETS = [
   {
@@ -28,7 +27,7 @@ const ROOT_SHEETS = [
   {
     key: 'variables',
     Component: CardToolsSheet,
-    snapPoints: [FULL_SHEET_HEIGHT],
+    makeSnapPoints: ({ insets }) => [FULL_SHEET_HEIGHT - insets.top],
   },
   {
     key: 'sceneCreatorSettings',
@@ -38,12 +37,12 @@ const ROOT_SHEETS = [
   {
     key: 'capturePreview',
     Component: CapturePreviewSheet,
-    snapPoints: [FULL_SHEET_HEIGHT],
+    makeSnapPoints: ({ insets }) => [FULL_SHEET_HEIGHT - insets.top],
   },
   {
     key: 'drawingLayers',
     Component: DrawingLayersSheet,
-    snapPoints: [90, 350, DRAWING_SHEET_MAX_HEIGHT],
+    makeSnapPoints: ({ insets }) => [90, 350, Viewport.vh * 100 - insets.top - 48],
   },
 ];
 
@@ -77,6 +76,7 @@ const sheetStackReducer = (prevStacks, action) => {
 export const SheetProvider = ({ activeSheet, setActiveSheet, isShowingDraw }) => {
   const { root, transformAssetUri } = useGhostUI();
   const { isPlaying, hasSelection } = useCardCreator();
+  const insets = useSafeArea();
 
   const [sheetStacks, updateSheetStacks] = React.useReducer(sheetStackReducer, {});
   const closeRootSheet = () => setActiveSheet(null);
@@ -124,6 +124,9 @@ export const SheetProvider = ({ activeSheet, setActiveSheet, isShowingDraw }) =>
             addChildSheet,
             onClose: closeLastSheet,
             element: ghostPaneElement,
+            snapPoints: sheetProps.makeSnapPoints
+              ? sheetProps.makeSnapPoints({ insets })
+              : sheetProps.snapPoints,
           };
 
           return (
