@@ -5,6 +5,7 @@ import { useCardCreator } from '../../CreateCardContext';
 import { BehaviorPropertyInputRow } from '../components/BehaviorPropertyInputRow';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import FastImage from 'react-native-fast-image';
 
@@ -31,7 +32,7 @@ const styles = StyleSheet.create({
   },
   frameIndexContainer: {
     position: 'absolute',
-    bottom: 0,
+    top: 0,
     left: 0,
     width: 30,
     height: 30,
@@ -42,11 +43,22 @@ const styles = StyleSheet.create({
   },
   frameIndexContainerSelected: {
     position: 'absolute',
-    bottom: 0,
+    top: 0,
     left: 0,
     width: 30,
     height: 30,
     backgroundColor: 'black',
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  frameEditArtContainer: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 30,
+    height: 30,
+    backgroundColor: 'white',
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
@@ -126,7 +138,8 @@ const EditArtButton = () => {
         }
       );
   } else if (draw2Behavior) {
-    onPress = () => sendAction('setActiveTool', draw2Behavior.behaviorId);
+    onPress = () =>
+      sendAction('setActiveToolWithOptions', { id: draw2Behavior.behaviorId, addNewFrame: true });
   } else {
     console.warn(`Tried to render InspectorDrawing for an actor that has no drawing`);
     onPress = () => {};
@@ -142,6 +155,9 @@ const EditArtButton = () => {
 };
 
 export default InspectorDrawing = ({ drawing2, sendAction }) => {
+  const { sendInspectorAction, applicableTools } = useCardCreator();
+  const draw2Behavior = applicableTools.find((behavior) => behavior.name === 'Draw2');
+
   const [playMode, playModeSetValueAndSendAction] = useOptimisticBehaviorValue({
     behavior: drawing2,
     propName: 'playMode',
@@ -198,9 +214,15 @@ export default InspectorDrawing = ({ drawing2, sendAction }) => {
         <TouchableOpacity
           key={i}
           style={styles.frameContainer}
-          disabled={isInitialFrame}
           onPress={() => {
-            initialFrameSetValueAndSendAction('set:initialFrame', i + 1);
+            if (isInitialFrame) {
+              sendInspectorAction('setActiveToolWithOptions', {
+                id: draw2Behavior.behaviorId,
+                selectedFrame: i + 1,
+              });
+            } else {
+              initialFrameSetValueAndSendAction('set:initialFrame', i + 1);
+            }
           }}>
           <FastImage
             style={styles.image}
@@ -218,6 +240,17 @@ export default InspectorDrawing = ({ drawing2, sendAction }) => {
               <Text style={{ fontWeight: '500' }}>{i + 1}</Text>
             </View>
           )}
+
+          <TouchableOpacity
+            style={styles.frameEditArtContainer}
+            onPress={() => {
+              sendInspectorAction('setActiveToolWithOptions', {
+                id: draw2Behavior.behaviorId,
+                selectedFrame: i + 1,
+              });
+            }}>
+            <MCIcon name="pencil-outline" size={20} color="#000" />
+          </TouchableOpacity>
         </TouchableOpacity>
       );
     }
