@@ -91,6 +91,7 @@ const styles = StyleSheet.create({
     borderLeftColor: '#ccc',
   },
   cellRightBorder: {
+    width: 65,
     borderRightWidth: 1,
     borderRightColor: '#ccc',
   },
