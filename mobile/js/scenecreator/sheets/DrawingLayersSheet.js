@@ -119,6 +119,7 @@ const renderItem = ({ item, index, drag, isActive }) => {
 
   return (
     <View
+      key={index}
       style={[
         styles.layerRow,
         {
@@ -335,65 +336,76 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
     );
   }, []);
 
+  let items = [];
+  for (let i = 0; i < stateLayers.length; i++) {
+    items.push(
+      renderItem({
+        item: stateLayers[i],
+        drag: () => {},
+        isActive: false,
+        index: i,
+      })
+    );
+  }
+
   return (
     <ScrollView
+      nestedScrollEnabled
       horizontal
       bounces={false}
       showsVerticalScrollIndicator={false}
       showsHorizontalScrollIndicator={false}>
-      <View style={{ flex: 1 }}>
-        <View style={styles.layerRow}>
-          <TouchableOpacity onPress={onAddLayer} style={styles.firstCell}>
-            <View style={styles.addLayerButton}>
-              <MCIcon name={'plus-box-outline'} size={ICON_SIZE} color={'#000'} />
-              <Text style={styles.addLayerText}>Add Layer</Text>
-            </View>
-          </TouchableOpacity>
-          {stateLayers.length > 0 &&
-            stateLayers[0].frames.map((frame, idx) => {
-              let isSelected = stateSelectedFrame == idx + 1;
-              let onPress = isSelected
-                ? () => showFrameActionSheet(idx + 1)
-                : () => fastAction('onSelectFrame', idx + 1);
+      <ScrollView
+        nestedScrollEnabled
+        bounces={false}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}>
+        <View style={{ flex: 1 }}>
+          <View style={styles.layerRow}>
+            <TouchableOpacity onPress={onAddLayer} style={styles.firstCell}>
+              <View style={styles.addLayerButton}>
+                <MCIcon name={'plus-box-outline'} size={ICON_SIZE} color={'#000'} />
+                <Text style={styles.addLayerText}>Add Layer</Text>
+              </View>
+            </TouchableOpacity>
+            {stateLayers.length > 0 &&
+              stateLayers[0].frames.map((frame, idx) => {
+                let isSelected = stateSelectedFrame == idx + 1;
+                let onPress = isSelected
+                  ? () => showFrameActionSheet(idx + 1)
+                  : () => fastAction('onSelectFrame', idx + 1);
 
-              return (
-                <TouchableOpacity
-                  onPress={onPress}
-                  style={[styles.cell, styles.cellLeftBorder, styles.cellBottomBorder]}
-                  key={idx}>
-                  <Text style={[isSelected && { fontWeight: 'bold' }, { fontSize: 16 }]}>
-                    {idx + 1}
-                  </Text>
+                return (
+                  <TouchableOpacity
+                    onPress={onPress}
+                    style={[styles.cell, styles.cellLeftBorder, styles.cellBottomBorder]}
+                    key={idx}>
+                    <Text style={[isSelected && { fontWeight: 'bold' }, { fontSize: 16 }]}>
+                      {idx + 1}
+                    </Text>
 
-                  {isSelected && (
-                    <View style={styles.cellMenuButton}>
-                      <MCIcon name={'dots-horizontal'} size={ICON_SIZE} color={'#fff'} />
-                    </View>
-                  )}
-                </TouchableOpacity>
-              );
-            })}
-          <TouchableOpacity
-            onPress={onAddFrame}
-            style={[
-              styles.cell,
-              styles.cellLeftBorder,
-              styles.cellBottomBorder,
-              styles.cellRightBorder,
-            ]}>
-            <Text>+</Text>
-          </TouchableOpacity>
+                    {isSelected && (
+                      <View style={styles.cellMenuButton}>
+                        <MCIcon name={'dots-horizontal'} size={ICON_SIZE} color={'#fff'} />
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
+            <TouchableOpacity
+              onPress={onAddFrame}
+              style={[
+                styles.cell,
+                styles.cellLeftBorder,
+                styles.cellBottomBorder,
+                styles.cellRightBorder,
+              ]}>
+              <Text>+</Text>
+            </TouchableOpacity>
+          </View>
+          {items}
         </View>
-        <DraggableFlatList
-          data={stateLayers}
-          renderItem={renderItem}
-          keyExtractor={keyExtractor}
-          onDragEnd={onDragEnd}
-          extraData={stateSeletedLayerId}
-          showsVerticalScrollIndicator={false}
-          showsHorizontalScrollIndicator={false}
-        />
-      </View>
+      </ScrollView>
     </ScrollView>
   );
 });
