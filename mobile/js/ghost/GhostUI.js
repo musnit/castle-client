@@ -178,7 +178,7 @@ export const useFastDataMemo = (key, Comp) => {
         [dataRoot]
       );
     } else {
-      data = useMemo(() => {}, [dataRoot]);
+      data = {};
       action = useMemo(() => () => {}, [dataRoot]);
     }
 
