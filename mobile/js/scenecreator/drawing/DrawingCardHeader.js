@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   topContainer: {
-    paddingVertical: 8,
+    paddingTop: 8,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -40,40 +40,31 @@ const styles = StyleSheet.create({
     marginLeft: -54, // required to center properly with back button
     zIndex: -1, // required to prevent negative margin from blocking back button
   },
-
+  action: {
+    paddingHorizontal: 8,
+  },
   navigation: {
     borderBottomWidth: 1,
     borderBottomColor: Constants.colors.grayOnBlackBorder,
   },
-
-  shapeContainer: {
+  toolGroups: {
     width: '100%',
-    height: '50%',
-    flexShrink: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 16,
-  },
-  activeShape: {
-    color: '#fff',
-    textDecorationLine: 'underline',
-  },
-  shape: {
-    color: '#fff',
-  },
-  action: {
-    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: Constants.colors.grayOnBlackBorder,
   },
   toolGroup: {
     alignItems: 'center',
-    marginHorizontal: 20,
+    marginHorizontal: 4,
   },
   toolGroupLabel: {},
   toolGroupIcon: {
     marginTop: 4,
-    width: 36,
-    height: 36,
+    width: 48,
+    height: 48,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -172,7 +163,7 @@ export const DrawingCardHeader = useFastDataMemo(
           />
         </View>
 
-        <View style={styles.shapeContainer}>
+        <View style={styles.toolGroups}>
           <TouchableOpacity
             style={styles.toolGroup}
             onPress={() => {
@@ -207,7 +198,7 @@ export const DrawingCardHeader = useFastDataMemo(
                   name="format-color-fill"
                   size={38}
                   color={currentDrawingToolGroup == 'fill' ? '#fff' : '#888'}
-                  style={{ marginTop: 4 }}
+                  style={{ marginTop: 9 }}
                 />
               </View>
             </TouchableOpacity>
@@ -255,6 +246,7 @@ export const DrawingCardHeader = useFastDataMemo(
                     ? '#fff'
                     : '#888'
                 }
+                style={{ marginTop: 3 }}
               />
             </View>
           </TouchableOpacity>

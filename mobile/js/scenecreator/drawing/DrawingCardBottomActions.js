@@ -7,16 +7,14 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import tinycolor from 'tinycolor2';
 
-export const DRAWING_CARD_FOOTER_HEIGHT = 80;
-
 const styles = StyleSheet.create({
   container: {
     width: '100%',
+    paddingVertical: 12,
     paddingHorizontal: 2,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    minHeight: DRAWING_CARD_FOOTER_HEIGHT,
   },
 
   containerCentered: {
@@ -26,6 +24,7 @@ const styles = StyleSheet.create({
   colorPickers: {
     flexDirection: 'row',
     paddingLeft: 8,
+    paddingVertical: 2,
   },
 
   subtools: {
