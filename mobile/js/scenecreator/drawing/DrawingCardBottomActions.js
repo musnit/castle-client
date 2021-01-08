@@ -117,20 +117,6 @@ export const DrawingCardBottomActions = useFastDataMemo(
 
                 <TouchableOpacity
                   style={
-                    artworkDrawSubtool == 'pencil'
-                      ? [styles.iconSelected, { backgroundColor: activeColorBackground }]
-                      : styles.icon
-                  }
-                  onPress={() => fastAction('onSelectSubtool', 'artwork_draw:pencil')}>
-                  <MCIcon
-                    name="vector-polyline"
-                    size={ICON_SIZE}
-                    color={artworkDrawSubtool == 'pencil' ? activeColorForeground : COLOR_ICON}
-                  />
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={
                     artworkDrawSubtool == 'line'
                       ? [styles.iconSelected, { backgroundColor: activeColorBackground }]
                       : styles.icon
