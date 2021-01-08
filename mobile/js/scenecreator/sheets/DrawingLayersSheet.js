@@ -18,8 +18,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 6,
   },
   header: {
-    padding: 16,
-    height: 64,
+    padding: 8,
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
@@ -27,10 +26,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerControls: {
-    width: 150,
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  },
+  headerControl: {
+    padding: 8,
   },
   image: {
     width: 50,
@@ -463,35 +462,41 @@ const DrawingLayersHeader = useFastDataMemo('draw-layers', ({ fastData, fastActi
 
   return (
     <View style={styles.header}>
-      <View style={{ flexDirection: 'row', flexShrink: 1 }}>
+      <View style={{ flexDirection: 'row', flexShrink: 1, padding: 8 }}>
         <FeatherIcon name="layers" size={22} color="#000" style={{ marginRight: 12 }} />
         <Text style={styles.headingLabel}>Layers</Text>
       </View>
       {numFrames > 1 && (
         <View style={styles.headerControls}>
           <TouchableOpacity
+            style={styles.headerControl}
             onPress={() =>
               fastAction('onSetIsOnionSkinningEnabled', !fastData.isOnionSkinningEnabled)
             }>
             <MCIcon
-              name={fastData.isOnionSkinningEnabled ? 'check-circle' : 'check-circle-outline'}
+              name={fastData.isOnionSkinningEnabled ? 'eye-outline' : 'eye-off-outline'}
               size={ICON_SIZE}
               color={'#000'}
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => fastAction('onStepBackward')}>
-            <MCIcon name={'step-backward'} size={ICON_SIZE} color={'#000'} />
+          <TouchableOpacity
+            style={styles.headerControl}
+            onPress={() => fastAction('onStepBackward')}>
+            <FeatherIcon name={'skip-back'} size={ICON_SIZE} color={'#000'} />
           </TouchableOpacity>
           <TouchableOpacity
+            style={styles.headerControl}
             onPress={() => fastAction('onSetIsPlayingAnimation', !fastData.isPlayingAnimation)}>
-            <MCIcon
+            <FeatherIcon
               name={fastData.isPlayingAnimation ? 'pause' : 'play'}
               size={ICON_SIZE}
               color={'#000'}
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => fastAction('onStepForward')}>
-            <MCIcon name={'step-forward'} size={ICON_SIZE} color={'#000'} />
+          <TouchableOpacity
+            style={styles.headerControl}
+            onPress={() => fastAction('onStepForward')}>
+            <FeatherIcon name={'skip-forward'} size={ICON_SIZE} color={'#000'} />
           </TouchableOpacity>
         </View>
       )}
