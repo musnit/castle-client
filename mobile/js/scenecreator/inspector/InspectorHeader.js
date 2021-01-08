@@ -1,5 +1,12 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  Text,
+  TextInput,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import { SegmentedNavigation } from '../../components/SegmentedNavigation';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useCardCreator } from '../CreateCardContext';
@@ -36,6 +43,22 @@ const styles = StyleSheet.create({
   navigation: {
     borderBottomWidth: 1,
     borderBottomColor: Constants.colors.grayOnWhiteBorder,
+  },
+  titleContainer: {
+    flex: 1,
+  },
+  titleTouchable: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  titleInput: {
+    fontSize: 22,
+    flex: 1,
+    color: 'black',
+  },
+  title: {
+    fontSize: 22,
   },
 });
 
@@ -106,6 +129,23 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
     );
   }, [sendAction]);
 
+  const [isEditingTitle, setIsEditingTitle] = React.useState(false);
+  const [titleInputValue, setTitleInputValue] = React.useState('');
+  React.useEffect(() => {
+    // Stop editing title if the underlying data changed (eg. selected a different actor)
+    setIsEditingTitle(false);
+  }, [data.title])
+  const onStartEditingTitle = React.useCallback(() => {
+    setTitleInputValue(data.title);
+    setIsEditingTitle(true);
+  }, [data.title]);
+  const onEndEditingTitle = React.useCallback(() => {
+    if (titleInputValue.length > 0) {
+      sendAction('setTitle', titleInputValue);
+    }
+    setTimeout(() => setIsEditingTitle(false), 80);
+  }, [titleInputValue]);
+
   if (data) {
     let scaleRotateButton;
 
@@ -141,6 +181,24 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
           <TouchableOpacity style={styles.closeButton} onPress={() => sendAction('closeInspector')}>
             <Icon name="close" size={32} color="#000" />
           </TouchableOpacity>
+          <View style={styles.titleContainer}>
+            {!isEditingTitle ? (
+              <TouchableOpacity
+                style={styles.titleTouchable}
+                onPress={onStartEditingTitle}
+                activeOpacity={1}>
+                <Text style={styles.title} numberOfLines={1} ellipsizeMode="middle">{data.title}</Text>
+              </TouchableOpacity>
+            ) : (
+              <TextInput
+                style={styles.titleInput}
+                value={titleInputValue}
+                onChangeText={(newValue) => setTitleInputValue(newValue)}
+                onBlur={onEndEditingTitle}
+                autoFocus
+              />
+            )}
+          </View>
           <View style={styles.actions}>
             {scaleRotateButton}
             <TouchableOpacity style={styles.actionButton} onPress={changeSelectionOrder}>
