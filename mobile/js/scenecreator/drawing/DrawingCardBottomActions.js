@@ -262,7 +262,7 @@ export const DrawingCardBottomActions = useFastDataMemo(
                     }
                     onPress={() => fastAction('onSelectSubtool', 'artwork_erase:erase_segment')}>
                     <MCIcon
-                      name="eraser"
+                      name="content-cut"
                       size={ICON_SIZE}
                       color={
                         artworkEraseSubtool == 'erase_segment' ? activeColorForeground : COLOR_ICON
