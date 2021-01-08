@@ -19,47 +19,57 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   frameContainer: {
-    width: 64,
-    height: 64,
-    backgroundColor: '#0001',
+    width: 72,
+    height: 72,
+    padding: 4,
     borderWidth: 1,
-    borderRadius: 5,
-    borderColor: '#ccc',
+    borderBottomWidth: 2,
+    borderRadius: 4,
+    borderColor: '#000',
     marginRight: 10,
+  },
+  frameContainerNew: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: '#aaa',
+    borderBottomWidth: 1,
   },
   image: {
     flex: 1,
   },
   frameIndexContainer: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    width: 30,
-    height: 30,
+    top: -4,
+    left: -4,
+    width: 27,
+    height: 27,
     backgroundColor: 'white',
-    borderRadius: 5,
+    borderTopLeftRadius: 3,
+    borderBottomRightRadius: 3,
     justifyContent: 'center',
     alignItems: 'center',
   },
   frameIndexContainerSelected: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    width: 30,
-    height: 30,
+    top: -4,
+    left: -4,
+    width: 27,
+    height: 27,
     backgroundColor: 'black',
-    borderRadius: 5,
+    borderTopLeftRadius: 3,
+    borderBottomRightRadius: 3,
     justifyContent: 'center',
     alignItems: 'center',
   },
   frameEditArtContainer: {
     position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: 30,
-    height: 30,
+    bottom: -4,
+    right: -4,
+    width: 27,
+    height: 27,
     backgroundColor: 'white',
-    borderRadius: 5,
+    borderTopLeftRadius: 3,
+    borderBottomRightRadius: 3,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -146,10 +156,8 @@ const EditArtButton = () => {
   }
 
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={[styles.frameContainer, { justifyContent: 'center', alignItems: 'center' }]}>
-      <Text style={{ fontSize: 30 }}>+</Text>
+    <TouchableOpacity onPress={onPress} style={[styles.frameContainer, styles.frameContainerNew]}>
+      <Text style={{ fontSize: 48, color: '#888' }}>+</Text>
     </TouchableOpacity>
   );
 };
@@ -213,7 +221,7 @@ export default InspectorDrawing = ({ drawing2, sendAction }) => {
       frames.push(
         <TouchableOpacity
           key={i}
-          style={styles.frameContainer}
+          style={[styles.frameContainer, isInitialFrame && styles.frameContainerSelected]}
           onPress={() => {
             if (isInitialFrame) {
               sendInspectorAction('setActiveToolWithOptions', {
@@ -224,33 +232,35 @@ export default InspectorDrawing = ({ drawing2, sendAction }) => {
               initialFrameSetValueAndSendAction('set:initialFrame', i + 1);
             }
           }}>
-          <FastImage
-            style={styles.image}
-            source={{
-              uri: `data:image/png;base64,${drawing2.properties.base64PngFrames['frame' + i]}`,
-            }}
-          />
+          <View style={{ flex: 1, backgroundColor: '#0001', borderRadius: 1 }}>
+            <FastImage
+              style={styles.image}
+              source={{
+                uri: `data:image/png;base64,${drawing2.properties.base64PngFrames['frame' + i]}`,
+              }}
+            />
 
-          {isInitialFrame ? (
-            <View style={styles.frameIndexContainerSelected}>
-              <Icon name="check" size={20} color="#fff" />
-            </View>
-          ) : (
-            <View style={styles.frameIndexContainer}>
-              <Text style={{ fontWeight: '500' }}>{i + 1}</Text>
-            </View>
-          )}
+            {isInitialFrame ? (
+              <View style={styles.frameIndexContainerSelected}>
+                <Icon name="check" size={20} color="#fff" />
+              </View>
+            ) : (
+              <View style={styles.frameIndexContainer}>
+                <Text style={{ fontWeight: '500' }}>{i + 1}</Text>
+              </View>
+            )}
 
-          <TouchableOpacity
-            style={styles.frameEditArtContainer}
-            onPress={() => {
-              sendInspectorAction('setActiveToolWithOptions', {
-                id: draw2Behavior.behaviorId,
-                selectedFrame: i + 1,
-              });
-            }}>
-            <MCIcon name="pencil-outline" size={20} color="#000" />
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.frameEditArtContainer}
+              onPress={() => {
+                sendInspectorAction('setActiveToolWithOptions', {
+                  id: draw2Behavior.behaviorId,
+                  selectedFrame: i + 1,
+                });
+              }}>
+              <MCIcon name="pencil-outline" size={20} color="#000" />
+            </TouchableOpacity>
+          </View>
         </TouchableOpacity>
       );
     }
