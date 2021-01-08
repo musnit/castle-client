@@ -291,6 +291,7 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
           title: 'Layer Options',
           options: options.map((option) => option.name).concat(['Cancel']),
           cancelButtonIndex: options.length,
+          destructiveButtonIndex: 0,
         },
         (buttonIndex) => {
           if (buttonIndex < options.length) {
