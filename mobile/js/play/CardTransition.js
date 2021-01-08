@@ -109,6 +109,11 @@ class CardTransition extends React.Component {
         },
         this._maybeBeginTransition
       );
+    } else if (prevProps !== this.props) {
+      // no transition was triggered, but pass whatever new props on to child card
+      this.setState({
+        currentCardProps: _makeCardProps(this.props),
+      });
     }
   };
 
