@@ -475,16 +475,16 @@ const SetBehavior = ({ response, context }) => {
   return [
     {
       type: 'showEntryOptions',
-      label: 'Set',
+      label: 'Modify',
     },
     {
-      type: 'selectBehaviorPropertySheet',
-      label: behaviorName ?? 'behavior',
+      type: behaviorName ? 'selectBehaviorPropertySheet' : 'selectBehaviorPropertySheetPlaceholder',
+      label: behaviorName ?? 'Select property',
       isPropertyVisible: (spec) => spec?.rules?.set === true,
     },
     {
       type: 'text',
-      label: 'property',
+      label: behaviorName ? 'property' : null,
     },
     {
       type: 'emphasis',

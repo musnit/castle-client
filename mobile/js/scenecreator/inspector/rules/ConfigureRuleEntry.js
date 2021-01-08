@@ -125,6 +125,7 @@ export const ConfigureRuleEntry = ({
     selectBlueprintSheet: showBlueprintPicker,
     selectBlueprintSheetPlaceholder: showBlueprintPicker,
     selectBehaviorPropertySheet: showBehaviorPropertyPicker,
+    selectBehaviorPropertySheetPlaceholder: showBehaviorPropertyPicker,
     selectBehaviorSheet: showBehaviorPicker,
   };
 
@@ -161,7 +162,8 @@ export const ConfigureRuleEntry = ({
           }
           case 'selectEntryPlaceholder':
           case 'selectParamSheetPlaceholder':
-          case 'selectBlueprintSheetPlaceholder': {
+          case 'selectBlueprintSheetPlaceholder':
+          case 'selectBehaviorPropertySheetPlaceholder': {
             return (
               <TouchableOpacity
                 key={key}
