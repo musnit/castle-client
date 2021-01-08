@@ -270,7 +270,7 @@ export const ProfileScreen = ({ userId, route }) => {
           }
           refreshing={query.loading}
           onRefresh={onRefresh}
-          enablePreviewVideo
+          enablePreviewVideo={Constants.iOS}
         />
       </View>
       {isMe && user ? (
