@@ -134,7 +134,7 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
   React.useEffect(() => {
     // Stop editing title if the underlying data changed (eg. selected a different actor)
     setIsEditingTitle(false);
-  }, [data.title])
+  }, [data.title]);
   const onStartEditingTitle = React.useCallback(() => {
     setTitleInputValue(data.title);
     setIsEditingTitle(true);
@@ -149,7 +149,7 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
   if (data) {
     let scaleRotateButton;
 
-    if (applicableTools) {
+    if (!data.isBlueprint && applicableTools) {
       const grabBehavior = applicableTools.find((behavior) => behavior.name === 'Grab');
       const scaleRotateBehavior = applicableTools.find(
         (behavior) => behavior.name === 'ScaleRotate'
@@ -187,7 +187,9 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
                 style={styles.titleTouchable}
                 onPress={onStartEditingTitle}
                 activeOpacity={1}>
-                <Text style={styles.title} numberOfLines={1} ellipsizeMode="middle">{data.title}</Text>
+                <Text style={styles.title} numberOfLines={1} ellipsizeMode="middle">
+                  {data.title}
+                </Text>
               </TouchableOpacity>
             ) : (
               <TextInput
@@ -201,18 +203,22 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
           </View>
           <View style={styles.actions}>
             {scaleRotateButton}
-            <TouchableOpacity style={styles.actionButton} onPress={changeSelectionOrder}>
-              {isTextActorSelected ? (
-                <Icon name="swap-vert" size={24} color="#000" />
-              ) : (
-                <FeatherIcon name="layers" size={22} color="#000" />
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={() => sendAction('duplicateSelection')}>
-              <FeatherIcon name="copy" size={22} color="#000" />
-            </TouchableOpacity>
+            {!data.isBlueprint ? (
+              <TouchableOpacity style={styles.actionButton} onPress={changeSelectionOrder}>
+                {isTextActorSelected ? (
+                  <Icon name="swap-vert" size={24} color="#000" />
+                ) : (
+                  <FeatherIcon name="layers" size={22} color="#000" />
+                )}
+              </TouchableOpacity>
+            ) : null}
+            {data.isBlueprint ? (
+              <TouchableOpacity
+                style={styles.actionButton}
+                onPress={() => sendAction('duplicateSelection')}>
+                <FeatherIcon name="copy" size={22} color="#000" />
+              </TouchableOpacity>
+            ) : null}
             <TouchableOpacity
               style={styles.actionButton}
               onPress={() => sendAction('deleteSelection')}>
