@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
     padding: 16,
-    paddingRight: 12,
+    paddingRight: 8,
   },
   addLayerButton: {
     flexDirection: 'row',
@@ -74,6 +74,12 @@ const styles = StyleSheet.create({
   },
   layerTitleText: {
     fontSize: 16,
+  },
+  layerMenuButton: {
+    width: 36,
+    height: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   cell: {
     width: 64,
@@ -99,24 +105,6 @@ const styles = StyleSheet.create({
     borderColor: '#000',
   },
   cellMenuButton: {
-    position: 'absolute',
-    backgroundColor: 'black',
-    bottom: 0,
-    right: 0,
-    borderTopLeftRadius: 5,
-    width: 35,
-    height: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  layerMenuContainer: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: 50,
-    height: 64,
-  },
-  layerMenuButton: {
     position: 'absolute',
     backgroundColor: 'black',
     bottom: 0,
@@ -155,11 +143,9 @@ const LayerRow = ({ layer, index, showLayerActionSheet }) => {
             {layer.title}
           </Text>
         </View>
-        <TouchableOpacity
-          onPress={() => showLayerActionSheet({ layerId: layer.id, index })}
-          style={styles.layerMenuContainer}>
+        <TouchableOpacity onPress={() => showLayerActionSheet({ layerId: layer.id, index })}>
           <View style={styles.layerMenuButton}>
-            <MCIcon name={'dots-horizontal'} size={ICON_SIZE} color={'#fff'} />
+            <MCIcon name={'dots-horizontal'} size={ICON_SIZE} color={'#000'} />
           </View>
         </TouchableOpacity>
       </TouchableOpacity>
@@ -401,7 +387,7 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
           <View style={styles.layerRow}>
             <TouchableOpacity onPress={onAddLayer} style={styles.firstCell}>
               <View style={styles.addLayerButton}>
-                <MCIcon name={'plus-box-outline'} size={ICON_SIZE} color={'#000'} />
+                <MCIcon name={'plus'} size={ICON_SIZE} color={'#000'} />
                 <Text style={styles.addLayerText}>Add Layer</Text>
               </View>
             </TouchableOpacity>
@@ -417,15 +403,15 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
                     onPress={onPress}
                     style={[styles.cell, styles.cellLeftBorder, styles.cellBottomBorder]}
                     key={idx}>
-                    <Text style={[isSelected && { fontWeight: 'bold' }, { fontSize: 16 }]}>
+                    <Text
+                      style={[
+                        isSelected && { fontWeight: 'bold' },
+                        { fontSize: 16, paddingTop: 12, paddingBottom: 2 },
+                      ]}>
                       {idx + 1}
                     </Text>
 
-                    {isSelected && (
-                      <View style={styles.cellMenuButton}>
-                        <MCIcon name={'dots-horizontal'} size={ICON_SIZE} color={'#fff'} />
-                      </View>
-                    )}
+                    <MCIcon name={'dots-horizontal'} size={ICON_SIZE} color={'#000'} />
                   </TouchableOpacity>
                 );
               })}
@@ -437,7 +423,8 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
                 styles.cellBottomBorder,
                 styles.cellRightBorder,
               ]}>
-              <Text>+</Text>
+              <MCIcon name={'plus'} size={ICON_SIZE} color={'#000'} style={{ marginTop: 5 }} />
+              <Text style={{ letterSpacing: 0.5, paddingTop: 1 }}>FRAME</Text>
             </TouchableOpacity>
           </View>
           {stateLayers.map((layer, idx) => {
