@@ -407,13 +407,15 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
                     key={idx}>
                     <Text
                       style={[
-                        isSelected && { fontWeight: 'bold' },
-                        { fontSize: 16, paddingTop: 12, paddingBottom: 2 },
+                        isSelected && { fontWeight: 'bold', paddingTop: 12, paddingBottom: 2 },
+                        { fontSize: 16 },
                       ]}>
                       {idx + 1}
                     </Text>
 
-                    <MCIcon name={'dots-horizontal'} size={ICON_SIZE} color={'#000'} />
+                    {isSelected && (
+                      <MCIcon name={'dots-horizontal'} size={ICON_SIZE} color={'#000'} />
+                    )}
                   </TouchableOpacity>
                 );
               })}
