@@ -8,6 +8,7 @@ import { BottomSheet } from '../../components/BottomSheet';
 
 import FastImage from 'react-native-fast-image';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import FeatherIcon from 'react-native-vector-icons/Feather';
 import { ScrollView } from 'react-native-gesture-handler';
 
 const styles = StyleSheet.create({
@@ -44,6 +45,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
     width: '100%',
+    marginTop: 2,
   },
   layerRow: {
     height: 64,
@@ -459,7 +461,8 @@ const DrawingLayersHeader = useFastDataMemo('draw-layers', ({ fastData, fastActi
 
   return (
     <View style={styles.header}>
-      <View>
+      <View style={{ flexDirection: 'row' }}>
+        <FeatherIcon name="layers" size={22} color="#000" style={{ marginRight: 12 }} />
         <Text style={styles.headingLabel}>Layers</Text>
       </View>
       {numFrames > 1 && (
