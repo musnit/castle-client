@@ -457,6 +457,19 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
 });
 
 const DrawingLayersHeader = useFastDataMemo('draw-layers', ({ fastData, fastAction }) => {
+  const [numFrames, setNumFrames] = React.useState(1);
+
+  useEffect(() => {
+    if (fastData.layers) {
+      let newLayers = JSON.parse(JSON.stringify(fastData.layers));
+      if (!Array.isArray(newLayers)) {
+        newLayers = Object.values(newLayers);
+      }
+
+      setNumFrames(Object.values(newLayers[0].frames).length);
+    }
+  }, [fastData]);
+
   return (
     <View style={styles.header}>
       <View>
