@@ -167,6 +167,16 @@ export const promoteToExpression = (initialValue) => {
   }
 };
 
+const makeActorRefSummary = (actorRef) => {
+  let result = 'My own';
+  if (actorRef?.kind === 'closest') {
+    result = formatTag(actorRef.tag);
+  } else if (actorRef?.kind === 'other') {
+    result = `Other`;
+  }
+  return result;
+};
+
 export const makeExpressionSummary = (expression, context) => {
   if (!expression?.expressionType) {
     if (typeof expression === 'number') {
@@ -195,6 +205,10 @@ export const makeExpressionSummary = (expression, context) => {
       }
       return formatVariableName(variableLabel);
     }
+    case 'counter value': {
+      const actorRef = makeActorRefSummary(expression.params.actorRef);
+      return `${actorRef}: Counter: Value`;
+    }
     case 'behavior property': {
       const { behaviors } = context;
       let selectedBehavior, selectedProperty;
@@ -210,12 +224,7 @@ export const makeExpressionSummary = (expression, context) => {
         selectedProperty = selectedBehavior.propertySpecs[expression.params.propertyName];
       }
       if (selectedBehavior && selectedProperty) {
-        let actorRef = 'My own';
-        if (expression.params.actorRef?.kind === 'closest') {
-          actorRef = `#${expression.params.actorRef.tag}`;
-        } else if (expression.params.actorRef?.kind === 'other') {
-          actorRef = `Other`;
-        }
+        const actorRef = makeActorRefSummary(expression.params.actorRef);
         return `${actorRef}: ${selectedBehavior.displayName}: ${selectedProperty.label}`;
       }
     }
