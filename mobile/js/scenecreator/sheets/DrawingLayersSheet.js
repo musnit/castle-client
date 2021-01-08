@@ -463,7 +463,7 @@ const DrawingLayersHeader = useFastDataMemo('draw-layers', ({ fastData, fastActi
 
   return (
     <View style={styles.header}>
-      <View style={{ flexDirection: 'row' }}>
+      <View style={{ flexDirection: 'row', flexShrink: 1 }}>
         <FeatherIcon name="layers" size={22} color="#000" style={{ marginRight: 12 }} />
         <Text style={styles.headingLabel}>Layers</Text>
       </View>
