@@ -130,20 +130,22 @@ const CreateCardSettings = ({ element, isShowingTextActors, setShowingTextActors
   );
 };
 
-export const CreateCardSettingsSheet = ({ onClose, element, ...props }) => {
+export const CreateCardSettingsSheet = ({ isOpen, onClose, element, ...props }) => {
   const { isShowingTextActors, setShowingTextActors } = useCardCreator();
 
   const renderHeader = () => <BottomSheetHeader title="Layout" onClose={onClose} />;
-  const renderContent = () => (
-    <CreateCardSettings
-      element={element}
-      isShowingTextActors={isShowingTextActors}
-      setShowingTextActors={setShowingTextActors}
-    />
-  );
+  const renderContent = () =>
+    !isOpen ? null : (
+      <CreateCardSettings
+        element={element}
+        isShowingTextActors={isShowingTextActors}
+        setShowingTextActors={setShowingTextActors}
+      />
+    );
 
   return (
     <BottomSheet
+      isOpen={isOpen}
       renderContent={renderContent}
       renderHeader={renderHeader}
       style={styles.container}

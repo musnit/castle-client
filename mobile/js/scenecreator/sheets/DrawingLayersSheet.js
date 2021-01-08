@@ -504,12 +504,13 @@ const DrawingLayersHeader = useFastDataMemo('draw-layers', ({ fastData, fastActi
   );
 });
 
-export const DrawingLayersSheet = ({ onClose, ...props }) => {
+export const DrawingLayersSheet = ({ isOpen, onClose, ...props }) => {
   const renderHeader = () => <DrawingLayersHeader style={{ flex: 1 }} />;
-  const renderContent = () => <DrawingLayers style={{ flex: 1 }} />;
+  const renderContent = () => (!isOpen ? null : <DrawingLayers style={{ flex: 1 }} />);
 
   return (
     <BottomSheet
+      isOpen={isOpen}
       useViewInsteadOfScrollview
       renderContent={renderContent}
       renderHeader={renderHeader}

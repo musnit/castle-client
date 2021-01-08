@@ -108,13 +108,6 @@ export const SheetProvider = ({ activeSheet, setActiveSheet, isShowingDraw }) =>
         return stack.map((sheet, stackIndex) => {
           let { key, Component, ...sheetProps } = sheet;
 
-          if (!isOpen && key !== 'sceneCreatorInspector') {
-            // don't render sheets that are closed,
-            // but keep rendering inspector so that we preserve state between play/rewind
-            // TODO: do this within individual sheets so we don't break animation
-            return null;
-          }
-
           const closeLastSheet = stackIndex == 0 ? closeRootSheet : closeChildSheet;
           const maybeOverlay =
             stackIndex == 0 ? null : <SheetBackgroundOverlay onPress={closeLastSheet} />;

@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const CardToolsSheet = ({ onClose, ...props }) => {
+export const CardToolsSheet = ({ isOpen, onClose, ...props }) => {
   const {
     card,
     variables,
@@ -75,10 +75,11 @@ export const CardToolsSheet = ({ onClose, ...props }) => {
   const [mode, setMode] = React.useState('variables');
 
   // TODO: memo
-  const renderContent =
-    mode === 'variables'
-      ? () => <DeckVariables variables={variables} onChange={onChange} />
-      : () => <SceneBackups cardId={cardId} onSelectSceneData={onSelectBackupData} />;
+  const renderContent = !isOpen
+    ? () => null
+    : mode === 'variables'
+    ? () => <DeckVariables variables={variables} onChange={onChange} />
+    : () => <SceneBackups cardId={cardId} onSelectSceneData={onSelectBackupData} />;
 
   const renderHeader = () => (
     <View style={styles.header}>
@@ -103,6 +104,7 @@ export const CardToolsSheet = ({ onClose, ...props }) => {
 
   return (
     <BottomSheet
+      isOpen={isOpen}
       renderContent={renderContent}
       renderHeader={renderHeader}
       style={styles.container}

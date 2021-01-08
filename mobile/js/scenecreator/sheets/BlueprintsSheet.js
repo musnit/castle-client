@@ -108,20 +108,22 @@ export const BlueprintsSheet = ({ element, isOpen, onClose, title, onSelectBluep
 
   const renderContent = () => (
     <View style={styles.container}>
-      {orderedEntries(blueprintsData?.library).map((entry, ii) => {
-        if (entry.entryType === 'actorBlueprint') {
-          return (
-            <BlueprintItem
-              key={`blueprint-item-${ii}`}
-              entry={entry}
-              onPress={() => {
-                onSelectBlueprint(entry.entryId);
-                onClose();
-              }}
-            />
-          );
-        } else return null;
-      })}
+      {!isOpen
+        ? null
+        : orderedEntries(blueprintsData?.library).map((entry, ii) => {
+            if (entry.entryType === 'actorBlueprint') {
+              return (
+                <BlueprintItem
+                  key={`blueprint-item-${ii}`}
+                  entry={entry}
+                  onPress={() => {
+                    onSelectBlueprint(entry.entryId);
+                    onClose();
+                  }}
+                />
+              );
+            } else return null;
+          })}
     </View>
   );
 
