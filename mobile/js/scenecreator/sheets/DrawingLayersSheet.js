@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   headerControl: {
-    padding: 8,
+    padding: 10,
   },
   image: {
     width: 50,
