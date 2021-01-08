@@ -272,7 +272,7 @@ export default InspectorDrawing = ({ drawing2, sendAction }) => {
 
       <ScrollView horizontal style={{ flexDirection: 'row', marginBottom: 20 }}>
         {frames}
-        <EditArtButton />
+        {/* <EditArtButton /> */}
       </ScrollView>
 
       <View style={styles.segmentedControl}>
