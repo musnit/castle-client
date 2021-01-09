@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
+import { Animated, StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 import { shareDeck } from '../common/utilities';
 import { useNavigation } from '../ReactNavigation';
 import { UserAvatar } from '../components/UserAvatar';
@@ -13,22 +13,26 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingTop: 8,
+    alignItems: 'center',
     paddingHorizontal: 8,
+    height: '100%',
+  },
+  back: {
+    marginRight: 16,
   },
   creator: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   avatar: {
-    width: 32,
-    height: 32,
+    width: 28,
+    height: 28,
   },
   username: {
     color: '#fff',
     fontWeight: '700',
     fontSize: 16,
-    marginLeft: 12,
+    marginLeft: 8,
     ...Constants.styles.textShadow,
   },
   left: {
@@ -38,11 +42,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   rightButton: {
-    width: 32,
-    height: 32,
+    width: 28,
+    height: 28,
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 8,
+    marginLeft: 16,
   },
   rightButtonIcon: {
     ...Constants.styles.textShadow,
@@ -53,14 +57,28 @@ export const PlayDeckActions = ({ deck, isPlaying, onPressBack, disabled }) => {
   const { creator } = deck;
   const { push } = useNavigation();
 
+  let creatorTransform = React.useRef(new Animated.Value(0)).current;
+  creatorTransformX = creatorTransform.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-(8 + 32), 0],
+  });
+
+  React.useEffect(() => {
+    // Animated.timing(creatorTransform, { toValue: isPlaying ? 1 : 0, duration: 200, useNativeDriver: true }).start();
+    Animated.spring(creatorTransform, {
+      toValue: isPlaying ? 1 : 0,
+      friction: 20,
+      tension: 70,
+      useNativeDriver: true,
+    }).start();
+  }, [isPlaying]);
+
   return (
     <View style={styles.container}>
-      <View style={styles.left}>
-        {isPlaying ? (
-          <TouchableOpacity onPress={onPressBack}>
-            <Icon name="arrow-back" color="#fff" size={32} />
-          </TouchableOpacity>
-        ) : null}
+      <Animated.View style={{ ...styles.left, transform: [{ translateX: creatorTransformX }] }}>
+        <TouchableOpacity style={styles.back} onPress={onPressBack}>
+          <Icon name="arrow-back" color="#fff" size={32} />
+        </TouchableOpacity>
         <TouchableOpacity
           disabled={disabled}
           style={styles.creator}
@@ -70,7 +88,7 @@ export const PlayDeckActions = ({ deck, isPlaying, onPressBack, disabled }) => {
           </View>
           <Text style={styles.username}>{creator.username}</Text>
         </TouchableOpacity>
-      </View>
+      </Animated.View>
       <View style={styles.right} pointerEvents={disabled ? 'none' : 'auto'}>
         <TouchableOpacity
           style={styles.rightButton}
