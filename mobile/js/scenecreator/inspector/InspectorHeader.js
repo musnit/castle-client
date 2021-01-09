@@ -129,16 +129,17 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
     );
   }, [sendAction]);
 
+  const safeTitle = data ? data.title : '';
   const [isEditingTitle, setIsEditingTitle] = React.useState(false);
   const [titleInputValue, setTitleInputValue] = React.useState('');
   React.useEffect(() => {
     // Stop editing title if the underlying data changed (eg. selected a different actor)
     setIsEditingTitle(false);
-  }, [data.title]);
+  }, [safeTitle]);
   const onStartEditingTitle = React.useCallback(() => {
-    setTitleInputValue(data.title);
+    setTitleInputValue(safeTitle);
     setIsEditingTitle(true);
-  }, [data.title]);
+  }, [safeTitle]);
   const onEndEditingTitle = React.useCallback(() => {
     if (titleInputValue.length > 0) {
       sendAction('setTitle', titleInputValue);
@@ -181,26 +182,28 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
           <TouchableOpacity style={styles.closeButton} onPress={() => sendAction('closeInspector')}>
             <Icon name="close" size={32} color="#000" />
           </TouchableOpacity>
-          <View style={styles.titleContainer}>
-            {!isEditingTitle ? (
-              <TouchableOpacity
-                style={styles.titleTouchable}
-                onPress={onStartEditingTitle}
-                activeOpacity={1}>
-                <Text style={styles.title} numberOfLines={1} ellipsizeMode="middle">
-                  {data.title}
-                </Text>
-              </TouchableOpacity>
-            ) : (
-              <TextInput
-                style={styles.titleInput}
-                value={titleInputValue}
-                onChangeText={(newValue) => setTitleInputValue(newValue)}
-                onBlur={onEndEditingTitle}
-                autoFocus
-              />
-            )}
-          </View>
+          {safeTitle.length > 0 ? (
+            <View style={styles.titleContainer}>
+              {!isEditingTitle ? (
+                <TouchableOpacity
+                  style={styles.titleTouchable}
+                  onPress={onStartEditingTitle}
+                  activeOpacity={1}>
+                  <Text style={styles.title} numberOfLines={1} ellipsizeMode="middle">
+                    {safeTitle}
+                  </Text>
+                </TouchableOpacity>
+              ) : (
+                <TextInput
+                  style={styles.titleInput}
+                  value={titleInputValue}
+                  onChangeText={(newValue) => setTitleInputValue(newValue)}
+                  onBlur={onEndEditingTitle}
+                  autoFocus
+                />
+              )}
+            </View>
+          ) : null}
           <View style={styles.actions}>
             {scaleRotateButton}
             {!data.isBlueprint ? (
