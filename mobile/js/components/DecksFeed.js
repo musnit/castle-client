@@ -3,18 +3,15 @@ import {
   ActivityIndicator,
   Animated,
   InteractionManager,
-  StatusBar,
   StyleSheet,
-  Text,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import { CardCell } from './CardCell';
-import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeArea } from 'react-native-safe-area-context';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { PlayDeckActions } from '../play/PlayDeckActions';
 import { PlayDeckNavigator } from '../play/PlayDeckNavigator';
-import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 
 import tinycolor from 'tinycolor2';
 import Viewport from '../common/viewport';
@@ -84,14 +81,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 6,
     borderTopRightRadius: 6,
   },
-  itemFooter: {
-    position: 'absolute',
-    width: '100%',
-    bottom: 0,
-    height: 16,
-    borderBottomLeftRadius: 6,
-    borderBottomRightRadius: 6,
-  },
   absoluteFill: {
     position: 'absolute',
     left: 0,
@@ -115,8 +104,8 @@ const makeCardAspectFitStyles = () => {
 
 const cardAspectFitStyles = makeCardAspectFitStyles();
 
-const makeCardColors = (card) => {
-  let baseColor, headerColor, backgroundColor;
+const makeBackgroundColor = (card) => {
+  let baseColor, backgroundColor;
   if (card?.backgroundImage?.primaryColor) {
     baseColor = card.backgroundImage.primaryColor;
   } else {
@@ -124,16 +113,11 @@ const makeCardColors = (card) => {
   }
   let base = tinycolor(baseColor);
   if (tinycolor(baseColor).isLight()) {
-    headerColor = base.darken().toString();
-    backgroundColor = base.lighten().toString();
+    backgroundColor = base.darken(20).toString();
   } else {
-    headerColor = base.lighten().toString();
     backgroundColor = base.darken().toString();
   }
-  return {
-    backgroundColor,
-    headerColor,
-  };
+  return backgroundColor;
 };
 
 // renders the current focused deck in the feed
@@ -178,19 +162,12 @@ const CurrentDeckCell = ({
 
   const onSelectPlay = () => onPressDeck({ deckId: deck.deckId });
   const onPressBack = () => onPressDeck({ deckId: undefined });
-  const { headerColor, backgroundColor } = makeCardColors(initialCard);
+  const backgroundColor = makeBackgroundColor(initialCard);
 
   // when playing, move the header and footer to the screen edges
   const playingHeaderY = playingTransition.interpolate({
     inputRange: [0, 1.01],
     outputRange: [0, -(insets.top + FEED_HEADER_HEIGHT)],
-  });
-  const playingFooterY = playingTransition.interpolate({
-    inputRange: [0, 1.01],
-    outputRange: [
-      0,
-      vh * 100 - DECK_FEED_ITEM_HEIGHT + DECK_FEED_ITEM_MARGIN - insets.top - FEED_HEADER_HEIGHT,
-    ],
   });
 
   return (
@@ -215,23 +192,17 @@ const CurrentDeckCell = ({
       <Animated.View
         style={[
           styles.itemHeader,
-          { backgroundColor: headerColor, transform: [{ translateY: playingHeaderY }] },
+          { backgroundColor: backgroundColor, transform: [{ translateY: playingHeaderY }] },
         ]}>
         <PlayDeckActions deck={deck} isPlaying={isPlaying} onPressBack={onPressBack} />
       </Animated.View>
-      <Animated.View
-        style={[
-          styles.itemFooter,
-          { backgroundColor: headerColor, transform: [{ translateY: playingFooterY }] },
-        ]}
-      />
     </View>
   );
 };
 
 const FeedItemPlaceholderHeader = ({ card }) => {
-  const { headerColor } = makeCardColors(card);
-  return <View style={[styles.itemHeader, { backgroundColor: headerColor }]} />;
+  const backgroundColor = makeBackgroundColor(card);
+  return <View style={[styles.itemHeader, { backgroundColor: backgroundColor }]} />;
 };
 
 // TODO: BEN: taken from PlayDeckScreen
@@ -296,10 +267,10 @@ export const DecksFeed = ({
     inputRange: [0, 1.01],
     outputRange: [DECK_FEED_ITEM_MARGIN, 250],
   });
-  const { backgroundColor } = makeCardColors(decks ? decks[currentCardIndex]?.initialCard : null);
+  const backgroundColor = makeBackgroundColor(decks ? decks[currentCardIndex]?.initialCard : null);
   const playingBackgroundColor = playingTransitionNonNative.interpolate({
-    inputRange: [0, 0.8, 1],
-    outputRange: ['rgba(0, 0, 0, 1)', 'rgba(0, 0, 0, 1)', tinycolor(backgroundColor).toRgbString()],
+    inputRange: [0, 1],
+    outputRange: ['rgba(0, 0, 0, 1)', tinycolor(backgroundColor).toRgbString()],
   });
 
   React.useEffect(() => {
