@@ -347,14 +347,12 @@ export const DecksFeed = ({
   }
 
   const currentDeck = decks[currentCardIndex];
-  const prevCard = currentCardIndex > 0 ? decks[currentCardIndex - 1].initialCard : null;
-  const nextCard =
-    currentCardIndex < decks.length - 1 ? decks[currentCardIndex + 1].initialCard : null;
+  const prevDeck = currentCardIndex > 0 ? decks[currentCardIndex - 1] : null;
+  const nextDeck = currentCardIndex < decks.length - 1 ? decks[currentCardIndex + 1] : null;
 
   // the edge of the 'next-next' card is shown briefly during the snap animation
   // before the swap occurs.
-  const nextNextCard =
-    currentCardIndex < decks.length - 2 ? decks[currentCardIndex + 2].initialCard : null;
+  const nextNextDeck = currentCardIndex < decks.length - 2 ? decks[currentCardIndex + 2] : null;
 
   return (
     <Animated.View style={[styles.container, { backgroundColor: playingBackgroundColor }]}>
@@ -372,13 +370,18 @@ export const DecksFeed = ({
           <Animated.View
             style={[cardAspectFitStyles, { transform: [{ translateY: playingOffsetPrevY }] }]}>
             <View style={styles.itemCard}>
-              {prevCard ? (
+              {prevDeck ? (
                 <>
-                  <CardCell card={prevCard} />
-                  <FeedItemPlaceholderHeader card={prevCard} />
+                  <CardCell card={prevDeck.initialCard} />
+                  <FeedItemPlaceholderHeader card={prevDeck.initialCard} />
                 </>
               ) : null}
             </View>
+            {prevDeck ? (
+              <View style={styles.itemHeader}>
+                <PlayDeckActions deck={prevDeck} />
+              </View>
+            ) : null}
           </Animated.View>
           <CurrentDeckCell
             deck={currentDeck}
@@ -390,20 +393,30 @@ export const DecksFeed = ({
           <Animated.View style={{ transform: [{ translateY: playingOffsetNextY }] }}>
             <View style={cardAspectFitStyles}>
               <TouchableWithoutFeedback onPress={snapToNext}>
-                <View style={styles.itemCard}>
-                  {nextCard ? (
-                    <>
-                      <CardCell card={nextCard} />
-                      <FeedItemPlaceholderHeader card={nextCard} />
-                    </>
+                <>
+                  <View style={styles.itemCard}>
+                    {nextDeck ? (
+                      <>
+                        <CardCell card={nextDeck.initialCard} />
+                        <FeedItemPlaceholderHeader card={nextDeck.initialCard} />
+                      </>
+                    ) : null}
+                  </View>
+                  {nextDeck ? (
+                    <View style={styles.itemHeader}>
+                      <PlayDeckActions deck={nextDeck} />
+                    </View>
                   ) : null}
-                </View>
+                </>
               </TouchableWithoutFeedback>
             </View>
-            {nextNextCard && (
+            {nextNextDeck && (
               <View style={cardAspectFitStyles}>
                 <View style={styles.itemCard}>
-                  <CardCell card={nextNextCard} />
+                  <CardCell card={nextNextDeck.initialCard} />
+                </View>
+                <View style={styles.itemHeader}>
+                  <PlayDeckActions deck={nextNextDeck} />
                 </View>
               </View>
             )}
