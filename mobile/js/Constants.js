@@ -162,6 +162,10 @@ export const FEED_ITEM_DECK_FRAGMENT = `
       url
     }
   }
+  parentDeckId
+  parentDeck {
+    creator { username }
+  }
   initialCard {
     id
     cardId
