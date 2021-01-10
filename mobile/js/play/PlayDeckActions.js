@@ -35,10 +35,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     ...Constants.styles.textShadow,
   },
-  left: {
-    flexDirection: 'row',
-  },
-  right: {
+  row: {
     flexDirection: 'row',
   },
   rightButton: {
@@ -51,11 +48,27 @@ const styles = StyleSheet.create({
   rightButtonIcon: {
     ...Constants.styles.textShadow,
   },
+  remixIcon: {
+    marginLeft: 8,
+    ...Constants.styles.textShadow,
+  },
 });
 
 export const PlayDeckActions = ({ deck, isPlaying, onPressBack, disabled }) => {
   const { creator } = deck;
   const { push } = useNavigation();
+
+  const { navigate } = useNavigation();
+  const navigateToParent = React.useCallback(
+    () =>
+      navigate('Browse', {
+        screen: 'ViewSource',
+        params: {
+          deckIdToEdit: deck.parentDeckId,
+        },
+      }),
+    [deck.parentDeckId, navigate]
+  );
 
   let creatorTransform = React.useRef(new Animated.Value(0)).current;
   creatorTransformX = creatorTransform.interpolate({
@@ -75,7 +88,7 @@ export const PlayDeckActions = ({ deck, isPlaying, onPressBack, disabled }) => {
 
   return (
     <View style={styles.container}>
-      <Animated.View style={{ ...styles.left, transform: [{ translateX: creatorTransformX }] }}>
+      <Animated.View style={{ ...styles.row, transform: [{ translateX: creatorTransformX }] }}>
         <TouchableOpacity style={styles.back} onPress={onPressBack}>
           <Icon name="arrow-back" color="#fff" size={32} />
         </TouchableOpacity>
@@ -88,8 +101,16 @@ export const PlayDeckActions = ({ deck, isPlaying, onPressBack, disabled }) => {
           </View>
           <Text style={styles.username}>{creator.username}</Text>
         </TouchableOpacity>
+        {deck.parentDeckId && deck.parentDeck && (
+          <View style={styles.creator}>
+            <Feather name="refresh-cw" color="#fff" size={14} style={styles.remixIcon} />
+            <TouchableOpacity disabled={disabled} onPress={navigateToParent}>
+              <Text style={styles.username}>{deck.parentDeck?.creator?.username}</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </Animated.View>
-      <View style={styles.right} pointerEvents={disabled ? 'none' : 'auto'}>
+      <View style={styles.row} pointerEvents={disabled ? 'none' : 'auto'}>
         <TouchableOpacity
           style={styles.rightButton}
           onPress={() => push('ViewSource', { deckIdToEdit: deck.deckId })}>
