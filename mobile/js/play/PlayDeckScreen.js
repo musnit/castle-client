@@ -1,168 +1,33 @@
 import React from 'react';
-import {
-  InteractionManager,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  Platform,
-} from 'react-native';
-import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
+import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useIsFocused, useFocusEffect } from '../ReactNavigation';
 
-import { CardCell } from '../components/CardCell';
-import { PlayDeckActions } from './PlayDeckActions';
-import { PlayDeckNavigator } from './PlayDeckNavigator';
+import { DecksFeed } from '../components/DecksFeed';
 import { useNavigation } from '../ReactNavigation';
 import { useListen } from '../ghost/GhostEvents';
-
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Viewport from '../common/viewport';
+import { useSafeArea } from 'react-native-safe-area-context';
 
 import * as Constants from '../Constants';
 import * as Utilities from '../common/utilities';
 
-const { vw, vh } = Viewport;
-
-// if the screen is too stubby, add horizontal padding to the feed
-// such that the aspect-fit cards are 87% of the screen height
-const STUBBY_SCREEN_ITEM_HORIZ_PADDING = Viewport.isCardWide
-  ? 0
-  : (87 * vh * Constants.CARD_RATIO - 100 * vw) / -2;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
-    justifyContent: 'center',
-  },
-  itemContainer: {
-    width: '100%',
-    alignItems: 'center',
-  },
-  itemCard: {
-    aspectRatio: Constants.CARD_RATIO,
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 6,
-  },
-  absoluteFill: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    right: 0,
-    bottom: 0,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    minHeight: 54,
-    marginBottom: 8,
-  },
-  title: {
-    fontSize: 16,
-    color: Constants.colors.white,
-    fontWeight: 'bold',
-    paddingHorizontal: 16,
-  },
-  navControlButton: {
-    width: 48,
-    height: 48,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  back: {
-    flexShrink: 0,
-    width: 60,
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    paddingLeft: 12,
-  },
-  centerHeading: {
-    width: '100%',
-    height: '100%',
-    flexShrink: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: -1, // required to prevent negative margin from blocking back button
-    marginLeft: -54, // required to center properly with back button
   },
 });
 
-const makeCardAspectFitStyles = () => {
-  if (Viewport.isCardWide) {
-    return styles.itemContainer;
-  }
-  return [
-    styles.itemContainer,
-    {
-      paddingHorizontal: STUBBY_SCREEN_ITEM_HORIZ_PADDING,
-    },
-  ];
-};
-
-const cardAspectFitStyles = makeCardAspectFitStyles();
-
-// renders the current focused deck in the feed
-// including the interactive scene.
-const CurrentDeckCell = ({ deck, paused }) => {
-  const [ready, setReady] = React.useState(false);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      let timeout;
-      const task = InteractionManager.runAfterInteractions(() => {
-        if (deck) {
-          timeout = setTimeout(() => {
-            setReady(true);
-          }, 10);
-        } else {
-          setReady(false);
-        }
-      });
-      return () => {
-        if (timeout) {
-          clearTimeout(timeout);
-          timeout = undefined;
-        }
-        setReady(false);
-        task.cancel();
-      };
-    }, [deck])
-  );
-
-  return (
-    <View style={styles.itemCard}>
-      <CardCell card={deck.initialCard} isFullSize={true} />
-      {ready ? (
-        <View style={styles.absoluteFill}>
-          <PlayDeckNavigator
-            deckId={deck.deckId}
-            initialCardId={deck.initialCard && deck.initialCard.cardId}
-            initialDeckState={Utilities.makeInitialDeckState(deck)}
-            paused={paused}
-          />
-        </View>
-      ) : null}
-      <PlayDeckActions deck={deck} />
-    </View>
-  );
-};
-
+// TODO: support list of decks
+// and distinguish "go back out of this screen" from "collapse current deck but
+// stay on this screen"
 export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) => {
   if (!decks && route?.params) {
     decks = route.params.decks;
     title = route.params.title;
     initialDeckIndex = route.params.initialDeckIndex ?? 0;
   }
+  // TODO: BEN: respect initialDeckIndex
 
-  const [deckIndex, setDeckIndex] = React.useState(initialDeckIndex);
-  const [paused, setPaused] = React.useState(false);
+  const insets = useSafeArea();
 
   const { pop } = useNavigation();
   if (Constants.Android) {
@@ -180,47 +45,18 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
     }, [])
   );
 
-  // reset index into decks if decks changes
-  React.useEffect(() => setDeckIndex(Math.min(initialDeckIndex, decks.length - 1)), [
-    decks?.length,
-    initialDeckIndex,
-  ]);
-
-  const onPressPrevious = React.useCallback(() => {
-    if (deckIndex > 0) {
-      setDeckIndex(deckIndex - 1);
-    }
-  }, [deckIndex]);
-
-  const onPressNext = React.useCallback(() => {
-    if (deckIndex < decks.length - 1) {
-      setDeckIndex(deckIndex + 1);
-    }
-  }, [deckIndex]);
-
-  const currentDeck = decks[deckIndex];
-  const prevDeck = deckIndex > 0 ? decks[deckIndex - 1] : null;
-  const nextDeck = deckIndex < decks.length - 1 ? decks[deckIndex + 1] : null;
-
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.back} onPress={() => pop()}>
-          <Icon name="arrow-back" size={32} color="#fff" />
-        </TouchableOpacity>
-        <View style={styles.centerHeading}>
-          <TouchableOpacity onPress={onPressPrevious} style={styles.navControlButton}>
-            <Icon name="skip-previous" color={prevDeck ? '#fff' : '#666'} size={40} />
-          </TouchableOpacity>
-          <Text style={styles.title}>{title}</Text>
-          <TouchableOpacity onPress={onPressNext} style={styles.navControlButton}>
-            <Icon name="skip-next" color={nextDeck ? '#fff' : '#666'} size={40} />
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View style={cardAspectFitStyles}>
-        {decks && currentDeck ? <CurrentDeckCell deck={currentDeck} paused={paused} /> : null}
-      </View>
-    </SafeAreaView>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      <DecksFeed
+        decks={decks}
+        isPlaying={true}
+        onPressDeck={({ deckId }) => {
+          if (deckId) {
+            throw new Error(`Changing deckId from PlayDeckScreen is not yet supported`);
+          }
+          pop();
+        }}
+      />
+    </View>
   );
 };

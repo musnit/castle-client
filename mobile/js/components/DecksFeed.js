@@ -234,6 +234,17 @@ const FeedItemPlaceholderHeader = ({ card }) => {
   return <View style={[styles.itemHeader, { backgroundColor: headerColor }]} />;
 };
 
+// TODO: BEN: taken from PlayDeckScreen
+/*
+      
+  // reset index into decks if decks changes
+  React.useEffect(() => setDeckIndex(Math.min(initialDeckIndex, decks.length - 1)), [
+    decks?.length,
+    initialDeckIndex,
+  ]);
+
+*/
+
 /**
  The following props mimic RN's FlatList API:
  refreshing, onRefresh, onEndReached, onEndReachedThreshold
@@ -272,11 +283,6 @@ export const DecksFeed = ({
   const onPanGestureEvent = Animated.event([{ nativeEvent: { translationY: translateY } }], {
     useNativeDriver: true,
   });
-
-  React.useEffect(() => {
-    onPressDeck({ deckId: undefined }); // clear play state
-    // don't reset translateY here, do it when setting currentCardIndex
-  }, [currentCardIndex]);
 
   // state from expanding/collapsing a deck to play it
   // note: non-native duplicate is needed for just the background color fade (not supported by native)
