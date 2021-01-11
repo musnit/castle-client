@@ -55,6 +55,7 @@ export const RecentDecks = ({ focused }) => {
   return decks?.length ? (
     <DecksGrid
       decks={decks}
+      contentContainerStyle={{ paddingTop: 64 }}
       scrollViewRef={scrollViewRef}
       refreshing={lastFetchedTime && query.loading}
       onRefresh={onRefresh}
@@ -62,8 +63,9 @@ export const RecentDecks = ({ focused }) => {
         navigate(
           'PlayDeck',
           {
-            decks,
-            initialDeckIndex: index,
+            // TODO: support passing all decks here
+            decks: [deck],
+            initialDeckIndex: 0,
             title: 'Recent',
           },
           {

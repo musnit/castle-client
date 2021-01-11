@@ -76,7 +76,7 @@ export const DecksGrid = ({ decks, onPressDeck, enablePreviewVideo, scrollViewRe
   return (
     <FlatList
       ref={scrollViewRef}
-      contentContainerStyle={{ paddingTop: 16 }}
+      contentContainerStyle={[{ paddingTop: 16 }, props.contentContainerStyle]}
       data={groupedDecks}
       renderItem={renderItem}
       keyExtractor={(item, index) =>
