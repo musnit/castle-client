@@ -6,8 +6,10 @@ import { UserAvatar } from '../components/UserAvatar';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
+import gql from 'graphql-tag';
 
 import * as Constants from '../Constants';
+import * as Session from '../Session';
 
 const styles = StyleSheet.create({
   container: {
@@ -59,16 +61,25 @@ export const PlayDeckActions = ({ deck, isPlaying, onPressBack, disabled }) => {
   const { push } = useNavigation();
 
   const { navigate } = useNavigation();
-  const navigateToParent = React.useCallback(
-    () =>
-      navigate('Browse', {
-        screen: 'ViewSource',
-        params: {
-          deckIdToEdit: deck.parentDeckId,
-        },
-      }),
-    [deck.parentDeckId, navigate]
-  );
+  const navigateToParent = React.useCallback(async () => {
+    const result = await Session.apolloClient.query({
+      query: gql`
+          query GetDeckById($deckId: ID!) {
+            deck(deckId: $deckId) {
+              ${Constants.FEED_ITEM_DECK_FRAGMENT}
+            }
+          }
+        `,
+      variables: { deckId: deck.parentDeckId },
+    });
+    if (result?.data?.deck) {
+      return navigate('PlayDeck', {
+        decks: [result.data.deck],
+        initialDeckIndex: 0,
+        title: 'Remixed deck',
+      });
+    }
+  }, [deck.parentDeckId, navigate]);
 
   let creatorTransform = React.useRef(new Animated.Value(0)).current;
   creatorTransformX = creatorTransform.interpolate({
