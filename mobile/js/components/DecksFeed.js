@@ -234,7 +234,19 @@ const FeedItemPlaceholderHeader = ({ card }) => {
   return <View style={[styles.itemHeader, { backgroundColor: headerColor }]} />;
 };
 
-export const DecksFeed = ({ decks, isPlaying, onPressDeck, refreshing, onRefresh }) => {
+/**
+ The following props mimic RN's FlatList API:
+ refreshing, onRefresh, onEndReached, onEndReachedThreshold
+ */
+export const DecksFeed = ({
+  decks,
+  isPlaying,
+  onPressDeck,
+  refreshing,
+  onRefresh,
+  onEndReached,
+  onEndReachedThreshold,
+}) => {
   const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
 
@@ -244,17 +256,16 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, refreshing, onRefresh
   // state from scrolling the feed up and down
   let translateY = React.useRef(new Animated.Value(0)).current;
 
-  React.useEffect(() => {
-    setCurrentCardIndex(0);
-    translateY.setValue(0);
-  }, [decks]);
-
   // refresh control
   let refreshOverscrollY = React.useRef(new Animated.Value(0)).current;
   React.useEffect(() => {
     let toValue = refreshing ? 64 : 0;
-    Animated.spring(refreshOverscrollY, { toValue, ...SPRING_CONFIG }).start();
-  }, [refreshing]);
+    // only do the spinner animation if we're at the top of the feed
+    // (we might refresh from the middle of the feed if we're appending to infinite scroll)
+    if ((refreshing && currentCardIndex == 0) || !refreshing) {
+      Animated.spring(refreshOverscrollY, { toValue, ...SPRING_CONFIG }).start();
+    }
+  }, [refreshing, currentCardIndex]);
 
   let containerY = Animated.add(translateY, centerContentY - DECK_FEED_ITEM_HEIGHT);
   containerY = Animated.add(containerY, refreshOverscrollY);
@@ -302,13 +313,19 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, refreshing, onRefresh
           if (futureCardIndex !== null) {
             setCurrentCardIndex(futureCardIndex);
             translateY.setValue(0);
+
+            const endReachedProgress = decks.length > 0 ? futureCardIndex / decks.length : 0;
+            const distanceFromEnd = 1 - endReachedProgress;
+            if (onEndReached && distanceFromEnd < onEndReachedThreshold) {
+              onEndReached({ distanceFromEnd });
+            }
           } else {
             translateY.setValue(0);
           }
         }
       });
     },
-    [translateY, currentCardIndex]
+    [translateY, currentCardIndex, onEndReached, onEndReachedThreshold, decks?.length]
   );
 
   const snapToNext = React.useCallback(() => {
