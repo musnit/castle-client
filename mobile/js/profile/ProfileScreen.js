@@ -259,8 +259,9 @@ export const ProfileScreen = ({ userId, route }) => {
             push(
               'PlayDeck',
               {
-                decks: user?.decks,
-                initialDeckIndex: index,
+                // TODO: support list of decks
+                decks: [deck],
+                initialDeckIndex: 0,
                 title: `@${user.username}`,
               },
               {
