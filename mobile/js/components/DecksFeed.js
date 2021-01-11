@@ -8,10 +8,11 @@ import {
   View,
 } from 'react-native';
 import { CardCell } from './CardCell';
-import { useSafeArea } from 'react-native-safe-area-context';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { PlayDeckActions } from '../play/PlayDeckActions';
 import { PlayDeckNavigator } from '../play/PlayDeckNavigator';
+import { useSafeArea } from 'react-native-safe-area-context';
+import { useListen } from '../ghost/GhostEvents';
 
 import tinycolor from 'tinycolor2';
 import Viewport from '../common/viewport';
@@ -163,6 +164,15 @@ const CurrentDeckCell = ({
   const onSelectPlay = () => onPressDeck({ deckId: deck.deckId });
   const onPressBack = () => onPressDeck({ deckId: undefined });
   const backgroundColor = makeBackgroundColor(initialCard);
+
+  if (Constants.Android) {
+    // after the game loads, it listens for keyboard events and
+    // causes react native's back button event to fail
+    useListen({
+      eventName: 'CASTLE_SYSTEM_BACK_BUTTON',
+      handler: onPressBack,
+    });
+  }
 
   // when playing, move the header and footer to the screen edges
   const playingHeaderY = playingTransition.interpolate({
