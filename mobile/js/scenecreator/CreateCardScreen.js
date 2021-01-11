@@ -29,7 +29,6 @@ import { DrawingCardHeader, DRAWING_CARD_HEADER_HEIGHT } from './drawing/Drawing
 
 import { PopoverProvider } from './PopoverProvider';
 import { SheetProvider } from './SheetProvider';
-import { PlayDeckActions } from '../play/PlayDeckActions';
 
 import {
   getInspectorBehaviors,
@@ -372,7 +371,6 @@ export const CreateCardScreen = ({
                   />
                 </View>
               ) : null}
-              {isPlaying ? <PlayDeckActions deck={deck} disabled /> : null}
               {isSceneLoaded ? null : <CardSceneLoading />}
             </View>
             <CreateCardFooter
