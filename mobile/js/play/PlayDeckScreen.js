@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StatusBar, StyleSheet, View } from 'react-native';
 import { useIsFocused, useFocusEffect } from '../ReactNavigation';
 
 import { DecksFeed } from '../components/DecksFeed';
