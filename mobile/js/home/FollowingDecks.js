@@ -79,10 +79,6 @@ export const FollowingDecks = ({ deckId }) => {
     }
   }, [query.called, query.loading, query.error, query.data, lastFetched.lastModifiedBefore]);
 
-  const scrollViewRef = React.useRef(null);
-  useScrollToTop(scrollViewRef);
-
-  // TODO: onEndReached / onEndReachedThreshold
   return decks?.length || query.loading ? (
     <DecksFeed
       decks={decks}

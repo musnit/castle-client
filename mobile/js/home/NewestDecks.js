@@ -1,6 +1,6 @@
 import React from 'react';
 import { StatusBar, requireNativeComponent, Platform } from 'react-native';
-import { DecksGrid } from '../components/DecksGrid';
+import { DecksFeed } from '../components/DecksFeed';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
 import gql from 'graphql-tag';
@@ -14,7 +14,7 @@ if (Platform.OS === 'android') {
   NativeFeedView = requireNativeComponent('CastleFeedView', null);
 }
 
-export const NewestDecks = () => {
+export const NewestDecks = ({ deckId }) => {
   const { navigate } = useNavigation();
   const [lastFetched, setLastFetched] = React.useState({
     time: undefined,
@@ -81,20 +81,15 @@ export const NewestDecks = () => {
     }
   }, [query.called, query.loading, query.error, query.data, lastFetched.lastModifiedBefore]);
 
-  const scrollViewRef = React.useRef(null);
-  useScrollToTop(scrollViewRef);
-
   return (
-    <DecksGrid
+    <DecksFeed
       decks={decks}
-      scrollViewRef={scrollViewRef}
-      onPressDeck={(deck, index) =>
+      isPlaying={deckId !== undefined}
+      onPressDeck={({ deckId }) =>
         navigate(
-          'PlayDeck',
+          'HomeScreen',
           {
-            decks,
-            initialDeckIndex: index,
-            title: 'Newest',
+            deckId,
           },
           {
             isFullscreen: true,
@@ -104,18 +99,7 @@ export const NewestDecks = () => {
       refreshing={!!(lastFetched.time && query.loading)}
       onRefresh={onRefresh}
       onEndReached={onEndReached}
-      onEndReachedThreshold={0.3}
+      onEndReachedThreshold={0.15}
     />
   );
-
-  /*return (
-    <NativeFeedView
-      decks={decks}
-      style={{
-        //flex: 1,
-        width: 400,
-        height: 600,
-      }}
-    />
-  );*/
 };
