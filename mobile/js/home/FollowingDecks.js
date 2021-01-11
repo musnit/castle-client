@@ -1,5 +1,5 @@
 import React from 'react';
-import { DecksGrid } from '../components/DecksGrid';
+import { DecksFeed } from '../components/DecksFeed';
 import { EmptyFeed } from './EmptyFeed';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
@@ -10,7 +10,7 @@ import * as Constants from '../Constants';
 
 const REFETCH_FEED_INTERVAL_MS = 30 * 1000;
 
-export const FollowingDecks = () => {
+export const FollowingDecks = ({ deckId }) => {
   const { navigate } = useNavigation();
   const { markFollowingFeedRead } = useSession();
   const [lastFetched, setLastFetched] = React.useState({
@@ -82,17 +82,16 @@ export const FollowingDecks = () => {
   const scrollViewRef = React.useRef(null);
   useScrollToTop(scrollViewRef);
 
+  // TODO: onEndReached / onEndReachedThreshold
   return decks?.length || query.loading ? (
-    <DecksGrid
+    <DecksFeed
       decks={decks}
-      scrollViewRef={scrollViewRef}
-      onPressDeck={(deck, index) =>
+      isPlaying={deckId !== undefined}
+      onPressDeck={({ deckId }) =>
         navigate(
-          'PlayDeck',
+          'HomeScreen',
           {
-            decks,
-            initialDeckIndex: index,
-            title: 'Following',
+            deckId,
           },
           {
             isFullscreen: true,
@@ -102,7 +101,7 @@ export const FollowingDecks = () => {
       refreshing={!!(lastFetched.time && query.loading)}
       onRefresh={onRefresh}
       onEndReached={onEndReached}
-      onEndReachedThreshold={0.3}
+      onEndReachedThreshold={0.15}
     />
   ) : (
     <EmptyFeed message="Follow people you know on Castle to see their decks here." />
