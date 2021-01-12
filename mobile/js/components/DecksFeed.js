@@ -352,13 +352,16 @@ export const DecksFeed = ({
     return <View style={styles.container} />;
   }
 
+  // The edges of prevPrev/nextNext cards are shown briefly during the snap animation
   const currentDeck = decks[currentCardIndex];
+  const prevPrevDeck = currentCardIndex > -1 ? decks[currentCardIndex - 2] : null;
   const prevDeck = currentCardIndex > 0 ? decks[currentCardIndex - 1] : null;
   const nextDeck = currentCardIndex < decks.length - 1 ? decks[currentCardIndex + 1] : null;
-
-  // the edge of the 'next-next' card is shown briefly during the snap animation
-  // before the swap occurs.
   const nextNextDeck = currentCardIndex < decks.length - 2 ? decks[currentCardIndex + 2] : null;
+
+  if (prevPrevDeck) {
+    containerY = Animated.add(containerY, -DECK_FEED_ITEM_HEIGHT);
+  }
 
   return (
     <Animated.View style={[styles.container, { backgroundColor: playingBackgroundColor }]}>
@@ -374,6 +377,13 @@ export const DecksFeed = ({
         onHandlerStateChange={onPanStateChange}>
         <Animated.View style={{ transform: [{ translateY: containerY }] }}>
           <Animated.View style={{ transform: [{ translateY: playingOffsetPrevY }] }}>
+            {prevPrevDeck && (
+              <View style={cardAspectFitStyles}>
+                <View style={styles.itemCard}>
+                  <CardCell card={prevPrevDeck.initialCard} />
+                </View>
+              </View>
+            )}
             <View style={cardAspectFitStyles}>
               <View style={styles.itemCard}>
                 {prevDeck ? <CardCell card={prevDeck.initialCard} /> : null}
