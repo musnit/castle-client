@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 import { InspectorNumberInput } from '../components/InspectorNumberInput';
 import { InspectorCheckbox } from '../components/InspectorCheckbox';
+import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
 const styles = StyleSheet.create({
   container: {
@@ -32,6 +33,12 @@ const styles = StyleSheet.create({
   inputLabel: {
     paddingBottom: 4,
     fontSize: 16,
+  },
+  applyLayoutChangesContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 10,
+    paddingBottom: 16,
   },
 });
 
@@ -74,7 +81,7 @@ const LayoutInput = ({ behavior, propName, label, sendAction, type = 'number' })
   );
 };
 
-export default InspectorLayout = ({ body, circleShape, sendActions }) => {
+export default InspectorLayout = ({ body, circleShape, sendAction, sendActions }) => {
   const onChangeCircleShape = React.useCallback(
     (value) => {
       if (value) {
@@ -109,6 +116,10 @@ export default InspectorLayout = ({ body, circleShape, sendActions }) => {
     },
     [setRelativeAction]
   );
+
+  const onApplyLayoutChangesToBlueprint = React.useCallback(() => {
+    sendActions.Body('applyLayoutChangesToBlueprint');
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -155,6 +166,15 @@ export default InspectorLayout = ({ body, circleShape, sendActions }) => {
           label="Rotation"
           sendAction={sendActions.Body}
         />
+      </View>
+      <View style={styles.applyLayoutChangesContainer}>
+        <TouchableOpacity
+          style={SceneCreatorConstants.styles.button}
+          onPress={onApplyLayoutChangesToBlueprint}>
+          <Text style={SceneCreatorConstants.styles.buttonLabel}>
+            Apply Layout changes to blueprint
+          </Text>
+        </TouchableOpacity>
       </View>
       <View style={styles.row}>
         <InspectorCheckbox
