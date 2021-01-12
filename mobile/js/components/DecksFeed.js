@@ -24,11 +24,7 @@ const { vw, vh } = Viewport;
 
 const FEED_HEADER_HEIGHT = 56;
 
-// if the screen is too stubby, add horizontal padding to the feed
-// such that the aspect-fit cards are 87% of the screen height
-const STUBBY_SCREEN_ITEM_HORIZ_PADDING = Viewport.isCardWide
-  ? 0
-  : (87 * vh * Constants.CARD_RATIO - 100 * vw) / -2;
+const STUBBY_SCREEN_ITEM_HORIZ_PADDING = Viewport.useSmallFeedItem ? 0 : 16;
 
 const DECK_FEED_ITEM_MARGIN = 24;
 const DECK_FEED_ITEM_HEIGHT =
@@ -88,7 +84,7 @@ const styles = StyleSheet.create({
 });
 
 const makeCardAspectFitStyles = () => {
-  if (Viewport.isCardWide) {
+  if (Viewport.useSmallFeedItem) {
     return styles.itemContainer;
   }
   return [
@@ -177,7 +173,15 @@ const CurrentDeckCell = ({
   });
 
   return (
-    <View style={[cardAspectFitStyles, { overflow: 'visible', marginBottom: 0 }]}>
+    <View
+      style={[
+        cardAspectFitStyles,
+        {
+          overflow: 'visible',
+          marginBottom: 0,
+          paddingHorizontal: isPlaying ? 0 : STUBBY_SCREEN_ITEM_HORIZ_PADDING,
+        },
+      ]}>
       <View style={styles.itemCard}>
         <CardCell
           card={initialCard}

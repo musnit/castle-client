@@ -84,7 +84,7 @@ export const PlayDeckActions = ({ deck, isPlaying, onPressBack, disabled, backgr
   }, [deck.parentDeckId, navigate]);
 
   let creatorTransform = React.useRef(new Animated.Value(0)).current;
-  creatorTransformX = creatorTransform.interpolate({
+  const creatorTransformX = creatorTransform.interpolate({
     inputRange: [0, 1],
     outputRange: [-(8 + 32), 0],
   });
@@ -101,9 +101,11 @@ export const PlayDeckActions = ({ deck, isPlaying, onPressBack, disabled, backgr
   return (
     <View style={{ ...styles.container, backgroundColor: backgroundColor }}>
       <Animated.View style={{ ...styles.row, transform: [{ translateX: creatorTransformX }] }}>
-        <TouchableOpacity style={styles.back} onPress={onPressBack}>
-          <Icon name="arrow-back" color="#fff" size={32} />
-        </TouchableOpacity>
+        <Animated.View style={{ opacity: creatorTransform }}>
+          <TouchableOpacity style={styles.back} onPress={onPressBack}>
+            <Icon name="arrow-back" color="#fff" size={32} />
+          </TouchableOpacity>
+        </Animated.View>
         <TouchableOpacity
           disabled={disabled}
           style={styles.creator}
