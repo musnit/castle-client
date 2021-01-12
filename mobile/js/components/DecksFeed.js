@@ -1,14 +1,6 @@
 import React from 'react';
-import {
-  ActivityIndicator,
-  Animated,
-  InteractionManager,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import { Animated, FlatList, InteractionManager, StyleSheet, View } from 'react-native';
 import { CardCell } from './CardCell';
-import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { PlayDeckActions } from '../play/PlayDeckActions';
 import { PlayDeckNavigator } from '../play/PlayDeckNavigator';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -31,9 +23,6 @@ const DECK_FEED_ITEM_HEIGHT =
   (1 / Constants.CARD_RATIO) * (100 * vw - STUBBY_SCREEN_ITEM_HORIZ_PADDING * 2) + // height of card
   DECK_FEED_ITEM_MARGIN; // margin below cell
 
-const FLIP_MIN_TRANSLATE_Y = DECK_FEED_ITEM_HEIGHT * 0.35;
-const FLIP_MIN_VELOCITY_Y = 72;
-
 const SPRING_CONFIG = {
   tension: 1000,
   friction: 50,
@@ -48,15 +37,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,
     borderTopRightRadius: Constants.CARD_BORDER_RADIUS,
-  },
-  loadingIndicator: {
-    position: 'absolute',
-    top: FEED_HEADER_HEIGHT,
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 8,
-    minHeight: 64,
   },
   itemContainer: {
     width: '100%',
@@ -127,10 +107,6 @@ const CurrentDeckCell = ({
 
   if (!initialCard) return null;
 
-  // TODO:
-  // animate containerStyles (height and horiz padding)
-  // line up top of card cell between states (not just center)
-
   const [ready, setReady] = React.useState(false);
 
   React.useEffect(() => {
@@ -179,7 +155,6 @@ const CurrentDeckCell = ({
         cardAspectFitStyles,
         {
           overflow: 'visible',
-          marginBottom: 0,
           paddingHorizontal: isPlaying ? 0 : STUBBY_SCREEN_ITEM_HORIZ_PADDING,
         },
       ]}>
@@ -238,30 +213,9 @@ export const DecksFeed = ({
 }) => {
   const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
-  const [snapping, setSnapping] = React.useState(false);
 
   const insets = useSafeArea();
   let centerContentY = insets.top + FEED_HEADER_HEIGHT;
-
-  // state from scrolling the feed up and down
-  let translateY = React.useRef(new Animated.Value(0)).current;
-
-  // refresh control
-  let refreshOverscrollY = React.useRef(new Animated.Value(0)).current;
-  React.useEffect(() => {
-    let toValue = refreshing ? 64 : 0;
-    // only do the spinner animation if we're at the top of the feed
-    // (we might refresh from the middle of the feed if we're appending to infinite scroll)
-    if ((refreshing && currentCardIndex == 0) || !refreshing) {
-      Animated.spring(refreshOverscrollY, { toValue, ...SPRING_CONFIG }).start();
-    }
-  }, [refreshing, currentCardIndex]);
-
-  let containerY = Animated.add(translateY, centerContentY - DECK_FEED_ITEM_HEIGHT);
-  containerY = Animated.add(containerY, refreshOverscrollY);
-  const onPanGestureEvent = Animated.event([{ nativeEvent: { translationY: translateY } }], {
-    useNativeDriver: true,
-  });
 
   // state from expanding/collapsing a deck to play it
   // note: non-native duplicate is needed for just the background color fade (not supported by native)
@@ -274,7 +228,7 @@ export const DecksFeed = ({
   });
   const playingOffsetNextY = playingTransition.interpolate({
     inputRange: [0, 1.01],
-    outputRange: [DECK_FEED_ITEM_MARGIN, 150],
+    outputRange: [0, 150],
   });
   const backgroundColor = makeBackgroundColor(decks ? decks[currentCardIndex]?.initialCard : null);
   const playingBackgroundColor = playingTransitionNonNative.interpolate({
@@ -291,161 +245,75 @@ export const DecksFeed = ({
     }).start();
   }, [isPlaying]);
 
-  const snapTo = React.useCallback(
-    (toValue, futureCardIndex = null) => {
-      setSnapping(true);
-      Animated.spring(translateY, {
-        toValue,
-        ...SPRING_CONFIG,
-      }).start(({ finished }) => {
-        setSnapping(false);
-        if (finished) {
-          setPaused(false);
-          if (futureCardIndex !== null) {
-            setCurrentCardIndex(futureCardIndex);
-            translateY.setValue(0);
-
-            const endReachedProgress = decks.length > 0 ? futureCardIndex / decks.length : 0;
-            const distanceFromEnd = 1 - endReachedProgress;
-            if (onEndReached && distanceFromEnd < onEndReachedThreshold) {
-              onEndReached({ distanceFromEnd });
-            }
-          } else {
-            translateY.setValue(0);
-          }
-        }
-      });
-    },
-    [translateY, currentCardIndex, onEndReached, onEndReachedThreshold, decks?.length]
-  );
-
-  const snapToNext = React.useCallback(() => {
-    if (decks && currentCardIndex < decks.length - 1) {
-      snapTo(-DECK_FEED_ITEM_HEIGHT, currentCardIndex + 1);
-    } else {
-      snapTo(0);
-    }
-  }, [decks, currentCardIndex, snapTo]);
-
-  const snapToPrevious = React.useCallback(() => {
-    if (currentCardIndex > 0) {
-      snapTo(DECK_FEED_ITEM_HEIGHT, currentCardIndex - 1);
-    } else {
-      // overscroll beyond top of feed
-      snapTo(0);
-      onRefresh();
-    }
-  }, [currentCardIndex, snapTo, onRefresh]);
-
-  const onPanStateChange = React.useCallback(
-    (event) => {
-      if (event.nativeEvent.oldState === State.ACTIVE) {
-        const { translationY, velocityY } = event.nativeEvent;
-        if (translationY < -FLIP_MIN_TRANSLATE_Y || velocityY < -FLIP_MIN_VELOCITY_Y) {
-          snapToNext();
-        } else if (translationY > FLIP_MIN_TRANSLATE_Y || velocityY > FLIP_MIN_VELOCITY_Y) {
-          snapToPrevious();
-        } else {
-          snapTo(0);
-        }
-      }
-      if (event.nativeEvent.state === State.BEGAN) {
-        setPaused(true);
-      }
-    },
-    [snapTo, snapToNext, snapToPrevious]
-  );
-
-  if (!decks) {
-    return <View style={styles.container} />;
-  }
-
-  // The edges of prevPrev/nextNext cards are shown briefly during the snap animation
-  const currentDeck = decks[currentCardIndex];
-  const prevPrevDeck = currentCardIndex > -1 ? decks[currentCardIndex - 2] : null;
-  const prevDeck = currentCardIndex > 0 ? decks[currentCardIndex - 1] : null;
-  const nextDeck = currentCardIndex < decks.length - 1 ? decks[currentCardIndex + 1] : null;
-  const nextNextDeck = currentCardIndex < decks.length - 2 ? decks[currentCardIndex + 2] : null;
-
-  if (prevPrevDeck) {
-    containerY = Animated.add(containerY, -DECK_FEED_ITEM_HEIGHT);
-  }
-
-  return (
-    <Animated.View style={[styles.container, { backgroundColor: playingBackgroundColor }]}>
-      {refreshing ? (
-        <View style={styles.loadingIndicator}>
-          <ActivityIndicator size="large" color={Constants.iOS ? '#fff' : undefined} />
-        </View>
-      ) : null}
-      <PanGestureHandler
-        minDist={8}
-        enabled={!isPlaying}
-        onGestureEvent={snapping ? undefined : onPanGestureEvent}
-        onHandlerStateChange={onPanStateChange}>
-        <Animated.View style={{ transform: [{ translateY: containerY }] }}>
-          <Animated.View style={{ transform: [{ translateY: playingOffsetPrevY }] }}>
-            {prevPrevDeck && (
-              <View style={cardAspectFitStyles}>
-                <View style={styles.itemCard}>
-                  <CardCell card={prevPrevDeck.initialCard} />
-                </View>
-              </View>
-            )}
-            <View style={cardAspectFitStyles}>
-              <View style={styles.itemCard}>
-                {prevDeck ? <CardCell card={prevDeck.initialCard} /> : null}
-              </View>
-              {prevDeck ? (
-                <View style={styles.itemHeader}>
-                  <PlayDeckActions
-                    deck={prevDeck}
-                    disabled={true}
-                    backgroundColor={makeBackgroundColor(prevDeck.initialCard)}
-                  />
-                </View>
-              ) : null}
-            </View>
-          </Animated.View>
+  const renderItem = React.useCallback(
+    ({ item, index }) => {
+      const deck = item;
+      if (index === currentCardIndex) {
+        return (
           <CurrentDeckCell
-            deck={currentDeck}
+            deck={deck}
             isPlaying={isPlaying}
             onPressDeck={onPressDeck}
             playingTransition={playingTransition}
             previewVideoPaused={paused}
           />
-          <Animated.View style={{ transform: [{ translateY: playingOffsetNextY }] }}>
-            <View style={cardAspectFitStyles}>
-              <View style={styles.itemCard}>
-                {nextDeck ? <CardCell card={nextDeck.initialCard} /> : null}
-              </View>
-              {nextDeck ? (
-                <View style={styles.itemHeader}>
-                  <PlayDeckActions
-                    deck={nextDeck}
-                    disabled={true}
-                    backgroundColor={makeBackgroundColor(nextDeck.initialCard)}
-                  />
-                </View>
-              ) : null}
+        );
+      } else {
+        let translateStyles;
+        if (index === currentCardIndex - 1) {
+          translateStyles = { transform: [{ translateY: playingOffsetPrevY }] };
+        } else if (index === currentCardIndex + 1) {
+          translateStyles = { transform: [{ translateY: playingOffsetNextY }] };
+        }
+        return (
+          <Animated.View style={[cardAspectFitStyles, translateStyles]}>
+            <View style={styles.itemCard}>
+              {deck ? <CardCell card={deck.initialCard} /> : null}
             </View>
-            {nextNextDeck && (
-              <View style={cardAspectFitStyles}>
-                <View style={styles.itemCard}>
-                  <CardCell card={nextNextDeck.initialCard} />
-                </View>
-                <View style={styles.itemHeader}>
-                  <PlayDeckActions
-                    deck={nextNextDeck}
-                    disabled={true}
-                    backgroundColor={makeBackgroundColor(nextNextDeck.initialCard)}
-                  />
-                </View>
+            {deck ? (
+              <View style={styles.itemHeader}>
+                <PlayDeckActions
+                  deck={deck}
+                  disabled={true}
+                  backgroundColor={makeBackgroundColor(deck.initialCard)}
+                />
               </View>
-            )}
+            ) : null}
           </Animated.View>
-        </Animated.View>
-      </PanGestureHandler>
+        );
+      }
+    },
+    [currentCardIndex, isPlaying, paused]
+  );
+
+  const viewabilityConfig = React.useRef({ itemVisiblePercentThreshold: 90 }).current;
+  const onViewableItemsChanged = React.useCallback(({ viewableItems }) => {
+    if (viewableItems.length > 0) {
+      setCurrentCardIndex(viewableItems[0].index);
+    }
+  }, []);
+
+  const onScrollBeginDrag = React.useCallback(() => setPaused(true), []);
+  const onScrollEndDrag = React.useCallback(() => setPaused(false), []);
+
+  return (
+    <Animated.View style={[styles.container, { backgroundColor: playingBackgroundColor }]}>
+      <FlatList
+        data={decks}
+        contentContainerStyle={{ paddingTop: centerContentY }}
+        renderItem={renderItem}
+        initialNumToRender={3}
+        keyExtractor={(item, index) => `${item?.deckId}-${index}`}
+        scrollEnabled={!isPlaying}
+        onScrollBeginDrag={onScrollBeginDrag}
+        onScrollEndDrag={onScrollEndDrag}
+        snapToAlignment="start"
+        snapToInterval={DECK_FEED_ITEM_HEIGHT}
+        decelerationRate="fast"
+        pagingEnabled
+        viewabilityConfig={viewabilityConfig}
+        onViewableItemsChanged={onViewableItemsChanged}
+      />
     </Animated.View>
   );
 };
