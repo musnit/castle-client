@@ -13,8 +13,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   card: {
-    borderRadius: Constants.CARD_SMALL_BORDER_RADIUS,
-    backgroundColor: '#8CA5CD',
+    borderRadius: Constants.CARD_BORDER_RADIUS,
+    backgroundColor: '#000',
     width: '100%',
     aspectRatio: Constants.CARD_RATIO,
     alignItems: 'flex-start',
@@ -52,10 +52,9 @@ const initialCardStyles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: '100%',
-    borderRadius: 6,
     borderWidth: 1,
     borderColor: '#fff',
-    justifyContent: 'flex-end',
+    borderRadius: Constants.CARD_BORDER_RADIUS,
   },
   info: {
     backgroundColor: '#fff',
@@ -121,19 +120,11 @@ export const CardCell = ({
   useOverlay,
   isInitialCard,
   isPrivate,
-  isFullSize,
   previewVideo,
   previewVideoPaused,
   style,
 }) => {
   let cardStyles = styles.card;
-  if (card.backgroundImage && card.backgroundImage.primaryColor) {
-    cardStyles = [styles.card, { backgroundColor: card.backgroundImage.primaryColor }];
-  }
-  if (isFullSize) {
-    cardStyles += { borderRadius: Constants.CARD_BORDER_RADIUS };
-  }
-
   return (
     <View
       style={[styles.container, style]}

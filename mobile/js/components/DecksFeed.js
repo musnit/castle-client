@@ -30,7 +30,7 @@ const STUBBY_SCREEN_ITEM_HORIZ_PADDING = Viewport.isCardWide
   ? 0
   : (87 * vh * Constants.CARD_RATIO - 100 * vw) / -2;
 
-const DECK_FEED_ITEM_MARGIN = 48;
+const DECK_FEED_ITEM_MARGIN = 24;
 const DECK_FEED_ITEM_HEIGHT =
   (1 / Constants.CARD_RATIO) * (100 * vw - STUBBY_SCREEN_ITEM_HORIZ_PADDING * 2) + // height of card
   DECK_FEED_ITEM_MARGIN; // margin below cell
@@ -41,9 +41,6 @@ const FLIP_MIN_VELOCITY_Y = 72;
 const SPRING_CONFIG = {
   tension: 150,
   friction: 50,
-  overshootClamping: true,
-  restDisplacementThreshold: 1,
-  restSpeedThreshold: 1,
   useNativeDriver: true,
 };
 
@@ -52,6 +49,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000',
     overflow: 'hidden',
+    borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,
+    borderTopRightRadius: Constants.CARD_BORDER_RADIUS,
   },
   loadingIndicator: {
     position: 'absolute',
@@ -72,15 +71,12 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 6,
   },
   itemHeader: {
     position: 'absolute',
     width: '100%',
     height: 48,
     top: 0,
-    borderTopLeftRadius: 6,
-    borderTopRightRadius: 6,
   },
   absoluteFill: {
     position: 'absolute',
@@ -199,20 +195,16 @@ const CurrentDeckCell = ({
           </View>
         ) : null}
       </View>
-      <Animated.View
-        style={[
-          styles.itemHeader,
-          { backgroundColor: backgroundColor, transform: [{ translateY: playingHeaderY }] },
-        ]}>
-        <PlayDeckActions deck={deck} isPlaying={isPlaying} onPressBack={onPressBack} />
+      <Animated.View style={[styles.itemHeader, { transform: [{ translateY: playingHeaderY }] }]}>
+        <PlayDeckActions
+          deck={deck}
+          isPlaying={isPlaying}
+          onPressBack={onPressBack}
+          backgroundColor={makeBackgroundColor(deck.initialCard)}
+        />
       </Animated.View>
     </View>
   );
-};
-
-const FeedItemPlaceholderHeader = ({ card }) => {
-  const backgroundColor = makeBackgroundColor(card);
-  return <View style={[styles.itemHeader, { backgroundColor: backgroundColor }]} />;
 };
 
 // TODO: BEN: taken from PlayDeckScreen
@@ -272,11 +264,11 @@ export const DecksFeed = ({
   const playingTransitionNonNative = React.useRef(new Animated.Value(0)).current;
   const playingOffsetPrevY = playingTransition.interpolate({
     inputRange: [0, 1.01],
-    outputRange: [0, -250],
+    outputRange: [0, -150],
   });
   const playingOffsetNextY = playingTransition.interpolate({
     inputRange: [0, 1.01],
-    outputRange: [DECK_FEED_ITEM_MARGIN, 250],
+    outputRange: [DECK_FEED_ITEM_MARGIN, 150],
   });
   const backgroundColor = makeBackgroundColor(decks ? decks[currentCardIndex]?.initialCard : null);
   const playingBackgroundColor = playingTransitionNonNative.interpolate({
@@ -295,7 +287,10 @@ export const DecksFeed = ({
 
   const snapTo = React.useCallback(
     (toValue, futureCardIndex = null) => {
-      Animated.spring(translateY, { toValue, ...SPRING_CONFIG }).start(({ finished }) => {
+      Animated.spring(translateY, {
+        toValue,
+        ...SPRING_CONFIG,
+      }).start(({ finished }) => {
         if (finished) {
           setPaused(false);
           if (futureCardIndex !== null) {
@@ -378,21 +373,21 @@ export const DecksFeed = ({
         onGestureEvent={onPanGestureEvent}
         onHandlerStateChange={onPanStateChange}>
         <Animated.View style={{ transform: [{ translateY: containerY }] }}>
-          <Animated.View
-            style={[cardAspectFitStyles, { transform: [{ translateY: playingOffsetPrevY }] }]}>
-            <View style={styles.itemCard}>
+          <Animated.View style={{ transform: [{ translateY: playingOffsetPrevY }] }}>
+            <View style={cardAspectFitStyles}>
+              <View style={styles.itemCard}>
+                {prevDeck ? <CardCell card={prevDeck.initialCard} /> : null}
+              </View>
               {prevDeck ? (
-                <>
-                  <CardCell card={prevDeck.initialCard} />
-                  <FeedItemPlaceholderHeader card={prevDeck.initialCard} />
-                </>
+                <View style={styles.itemHeader}>
+                  <PlayDeckActions
+                    deck={prevDeck}
+                    disabled={true}
+                    backgroundColor={makeBackgroundColor(prevDeck.initialCard)}
+                  />
+                </View>
               ) : null}
             </View>
-            {prevDeck ? (
-              <View style={styles.itemHeader}>
-                <PlayDeckActions deck={prevDeck} />
-              </View>
-            ) : null}
           </Animated.View>
           <CurrentDeckCell
             deck={currentDeck}
@@ -403,23 +398,18 @@ export const DecksFeed = ({
           />
           <Animated.View style={{ transform: [{ translateY: playingOffsetNextY }] }}>
             <View style={cardAspectFitStyles}>
-              <TouchableWithoutFeedback onPress={snapToNext}>
-                <>
-                  <View style={styles.itemCard}>
-                    {nextDeck ? (
-                      <>
-                        <CardCell card={nextDeck.initialCard} />
-                        <FeedItemPlaceholderHeader card={nextDeck.initialCard} />
-                      </>
-                    ) : null}
-                  </View>
-                  {nextDeck ? (
-                    <View style={styles.itemHeader}>
-                      <PlayDeckActions deck={nextDeck} />
-                    </View>
-                  ) : null}
-                </>
-              </TouchableWithoutFeedback>
+              <View style={styles.itemCard}>
+                {nextDeck ? <CardCell card={nextDeck.initialCard} /> : null}
+              </View>
+              {nextDeck ? (
+                <View style={styles.itemHeader}>
+                  <PlayDeckActions
+                    deck={nextDeck}
+                    disabled={true}
+                    backgroundColor={makeBackgroundColor(nextDeck.initialCard)}
+                  />
+                </View>
+              ) : null}
             </View>
             {nextNextDeck && (
               <View style={cardAspectFitStyles}>
@@ -427,7 +417,11 @@ export const DecksFeed = ({
                   <CardCell card={nextNextDeck.initialCard} />
                 </View>
                 <View style={styles.itemHeader}>
-                  <PlayDeckActions deck={nextNextDeck} />
+                  <PlayDeckActions
+                    deck={nextNextDeck}
+                    disabled={true}
+                    backgroundColor={makeBackgroundColor(nextNextDeck.initialCard)}
+                  />
                 </View>
               </View>
             )}

@@ -18,6 +18,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 8,
     height: '100%',
+    borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,
+    borderTopRightRadius: Constants.CARD_BORDER_RADIUS,
   },
   back: {
     marginRight: 16,
@@ -56,7 +58,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const PlayDeckActions = ({ deck, isPlaying, onPressBack, disabled }) => {
+export const PlayDeckActions = ({ deck, isPlaying, onPressBack, disabled, backgroundColor }) => {
   const { creator } = deck;
   const { push } = useNavigation();
 
@@ -88,7 +90,6 @@ export const PlayDeckActions = ({ deck, isPlaying, onPressBack, disabled }) => {
   });
 
   React.useEffect(() => {
-    // Animated.timing(creatorTransform, { toValue: isPlaying ? 1 : 0, duration: 200, useNativeDriver: true }).start();
     Animated.spring(creatorTransform, {
       toValue: isPlaying ? 1 : 0,
       friction: 20,
@@ -98,7 +99,7 @@ export const PlayDeckActions = ({ deck, isPlaying, onPressBack, disabled }) => {
   }, [isPlaying]);
 
   return (
-    <View style={styles.container}>
+    <View style={{ ...styles.container, backgroundColor: backgroundColor }}>
       <Animated.View style={{ ...styles.row, transform: [{ translateX: creatorTransformX }] }}>
         <TouchableOpacity style={styles.back} onPress={onPressBack}>
           <Icon name="arrow-back" color="#fff" size={32} />
