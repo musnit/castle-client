@@ -35,8 +35,9 @@ const FLIP_MIN_TRANSLATE_Y = DECK_FEED_ITEM_HEIGHT * 0.35;
 const FLIP_MIN_VELOCITY_Y = 72;
 
 const SPRING_CONFIG = {
-  tension: 150,
+  tension: 1000,
   friction: 50,
+  overshootClamping: true,
   useNativeDriver: true,
 };
 
@@ -237,6 +238,7 @@ export const DecksFeed = ({
 }) => {
   const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
+  const [snapping, setSnapping] = React.useState(false);
 
   const insets = useSafeArea();
   let centerContentY = insets.top + FEED_HEADER_HEIGHT;
@@ -291,10 +293,12 @@ export const DecksFeed = ({
 
   const snapTo = React.useCallback(
     (toValue, futureCardIndex = null) => {
+      setSnapping(true);
       Animated.spring(translateY, {
         toValue,
         ...SPRING_CONFIG,
       }).start(({ finished }) => {
+        setSnapping(false);
         if (finished) {
           setPaused(false);
           if (futureCardIndex !== null) {
@@ -377,7 +381,7 @@ export const DecksFeed = ({
       <PanGestureHandler
         minDist={8}
         enabled={!isPlaying}
-        onGestureEvent={onPanGestureEvent}
+        onGestureEvent={snapping ? undefined : onPanGestureEvent}
         onHandlerStateChange={onPanStateChange}>
         <Animated.View style={{ transform: [{ translateY: containerY }] }}>
           <Animated.View style={{ transform: [{ translateY: playingOffsetPrevY }] }}>
