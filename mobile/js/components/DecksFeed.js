@@ -267,7 +267,8 @@ export const DecksFeed = ({
 
   // state from expanding/collapsing a deck to play it
   // note: non-native duplicate is needed for just the background color fade (not supported by native)
-  const playingTransition = React.useRef(new Animated.Value(0)).current;
+  const startingPosition = isPlaying === true ? 1.01 : 0;
+  const playingTransition = React.useRef(new Animated.Value(startingPosition)).current;
   const playingTransitionNonNative = React.useRef(new Animated.Value(0)).current;
   const playingOffsetPrevY = playingTransition.interpolate({
     inputRange: [0, 1.01],
