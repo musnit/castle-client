@@ -138,6 +138,19 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
         }
     }
 
+    public static class HideTabBarEvent {}
+    public static class ShowTabBarEvent {}
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onHideTabBarEvent(final HideTabBarEvent event) {
+        mainTabNavigator.hideTabBar();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onShowTabBarEvent(final ShowTabBarEvent event) {
+        mainTabNavigator.showTabBar();
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onShowKeyboardEvent(final CastleGlobalLayoutListener.ShowKeyboardEvent event) {
         mainTabNavigator.hideTabBar();

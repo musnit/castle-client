@@ -18,6 +18,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.ResolvableApiException;
 
+import org.greenrobot.eventbus.EventBus;
 import org.love2d.android.Channels;
 
 import xyz.castle.CastleSharedPreferences;
@@ -118,6 +119,12 @@ public class GhostChannelsModule extends ReactContextBaseJavaModule {
       } else {
         CastleNavigator.castleNavigatorForId(navigatorId).navigate(screenType, navigationScreenOptions);
       }
+
+      if ("HomeScreen".equals(screenType) && navigationScreenOptions != null && navigationScreenOptions.contains("deckId")) {
+        EventBus.getDefault().post(new NavigationActivity.HideTabBarEvent());
+      } else {
+        EventBus.getDefault().post(new NavigationActivity.ShowTabBarEvent());
+      }
     });
   }
 
@@ -136,6 +143,8 @@ public class GhostChannelsModule extends ReactContextBaseJavaModule {
   void navigateBack() {
     getCurrentActivity().runOnUiThread(() -> {
       CastleNavigator.castleNavigatorForId("Root").handleBack();
+
+      EventBus.getDefault().post(new NavigationActivity.ShowTabBarEvent());
     });
   }
 
@@ -143,6 +152,8 @@ public class GhostChannelsModule extends ReactContextBaseJavaModule {
   void navigatePopToTop() {
     getCurrentActivity().runOnUiThread(() -> {
       CastleNavigator.castleNavigatorForId("Root").popToTop();
+
+      EventBus.getDefault().post(new NavigationActivity.ShowTabBarEvent());
     });
   }
 

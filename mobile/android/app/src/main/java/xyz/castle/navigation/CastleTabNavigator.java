@@ -2,10 +2,10 @@ package xyz.castle.navigation;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ public class CastleTabNavigator extends CastleNavigator {
     public static final int TABS_TOP = 0;
     public static final int TABS_BOTTOM = 1;
 
-    private LinearLayout linearLayout;
+    private FrameLayout frameLayout;
     private FrameLayout mainLayout;
     private TabBar tabBar;
 
@@ -33,11 +33,10 @@ public class CastleTabNavigator extends CastleNavigator {
 
         tabHeight = ViewUtils.dpToPx(50);
 
-        linearLayout = new LinearLayout(activity);
-        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        frameLayout = new FrameLayout(activity);
 
         mainLayout = new FrameLayout(activity);
-        mainLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+        mainLayout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         if (tabsStyle == TABS_BOTTOM) {
             tabBar = new BottomTabBar(activity);
@@ -45,25 +44,33 @@ public class CastleTabNavigator extends CastleNavigator {
             tabBar = new TopTabBar(activity);
         }
 
-        tabBar.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, tabHeight));
         tabBar.setBackgroundColor(Color.BLACK);
 
         if (tabsStyle == TABS_BOTTOM) {
-            linearLayout.addView(mainLayout);
-            linearLayout.addView(tabBar);
+            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, tabHeight);
+            lp.gravity = Gravity.BOTTOM;
+            tabBar.setLayoutParams(lp);
+
+            frameLayout.addView(mainLayout);
+            frameLayout.addView(tabBar);
         } else {
-            linearLayout.addView(tabBar);
+            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, tabHeight);
+            lp.gravity = Gravity.TOP;
+            tabBar.setLayoutParams(lp);
+
+            frameLayout.addView(tabBar);
             View paddingView = new View(activity);
             paddingView.setBackgroundColor(activity.getResources().getColor(R.color.top_tab_bar_divier));
-            paddingView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewUtils.dpToPx(1)));
+            paddingView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewUtils.dpToPx(1)));
 
-            linearLayout.addView(paddingView);
-            linearLayout.addView(mainLayout);
+            frameLayout.addView(paddingView);
+            frameLayout.addView(mainLayout);
         }
 
         tabBar.setListener((int id) -> {
             index = id;
-            tabs.get(index).bind(CastleTabNavigator.this, mainLayout, navigationWidth, navigationHeight + tabHeight, 0);
+            // add + tabHeight to navigation height if the view shouldn't go under the tab bar
+            tabs.get(index).bind(CastleTabNavigator.this, mainLayout, navigationWidth, navigationHeight, 0);
         });
     }
 
@@ -108,14 +115,15 @@ public class CastleTabNavigator extends CastleNavigator {
     }
 
     private void bindCurrentTab() {
-        tabs.get(index).bind(this, mainLayout, navigationWidth, navigationHeight + tabHeight, 0);
+        // add + tabHeight to navigation height if the view shouldn't go under the tab bar
+        tabs.get(index).bind(this, mainLayout, navigationWidth, navigationHeight, 0);
     }
 
     @Override
     public void bindViews(FrameLayout layout, int navigationWidth, int navigationHeight) {
         super.bindViews(layout, navigationWidth, navigationHeight);
 
-        setContentView(linearLayout);
+        setContentView(frameLayout);
         bindCurrentTab();
     }
 
