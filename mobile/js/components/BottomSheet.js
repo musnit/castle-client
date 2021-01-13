@@ -65,6 +65,7 @@ export const BottomSheet = ({
   onClose,
   onCloseEnd,
   onOpenEnd,
+  onSnap,
   useViewInsteadOfScrollview,
   style = {},
 }) => {
@@ -188,9 +189,10 @@ export const BottomSheet = ({
       if (persistLastSnapWhenOpened) {
         lastSnap.current = minIndex;
       }
+      onSnap(minIndex);
       return snapTo(screenHeight - snapPoints[minIndex], velocity);
     },
-    [snapTo, snapPoints, persistLastSnapWhenOpened]
+    [snapTo, snapPoints, persistLastSnapWhenOpened, onSnap]
   );
 
   React.useEffect(() => {
