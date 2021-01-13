@@ -80,7 +80,9 @@ const cardAspectFitStyles = makeCardAspectFitStyles();
 
 const makeBackgroundColor = (card) => {
   let baseColor, backgroundColor;
-  if (card?.backgroundImage?.primaryColor) {
+  if (card?.backgroundColor) {
+    baseColor = card.backgroundColor;
+  } else if (card?.backgroundImage?.primaryColor) {
     baseColor = card.backgroundImage.primaryColor;
   } else {
     baseColor = '#333';

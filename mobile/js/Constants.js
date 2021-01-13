@@ -170,6 +170,7 @@ export const FEED_ITEM_DECK_FRAGMENT = `
     id
     cardId
     title
+    backgroundColor
     backgroundImage {
       url
       smallUrl
