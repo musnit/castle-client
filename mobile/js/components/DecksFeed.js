@@ -24,7 +24,7 @@ const DECK_FEED_ITEM_HEIGHT =
   DECK_FEED_ITEM_MARGIN; // margin below cell
 
 const SPRING_CONFIG = {
-  tension: 1000,
+  tension: 100,
   friction: 50,
   overshootClamping: true,
   useNativeDriver: true,
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   itemHeader: {
     position: 'absolute',
     width: '100%',
-    height: 48,
+    height: 52,
     top: 0,
   },
   absoluteFill: {
@@ -224,8 +224,12 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
   });
   const backgroundColor = makeBackgroundColor(decks ? decks[currentCardIndex]?.initialCard : null);
   const playingBackgroundColor = playingTransitionNonNative.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['rgba(0, 0, 0, 1)', tinycolor(backgroundColor).toRgbString()],
+    inputRange: [0, 0.6, 1.01],
+    outputRange: [
+      'rgba(0, 0, 0, 1)',
+      tinycolor(backgroundColor).toRgbString(),
+      tinycolor(backgroundColor).toRgbString(),
+    ],
   });
 
   React.useEffect(() => {
