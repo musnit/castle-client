@@ -49,6 +49,7 @@ export const CardCreatorBottomSheet = React.memo(({ element, headerHeight = 64, 
         borderTopRightRadius: Constants.CARD_BORDER_RADIUS,
         ...Constants.styles.dropShadowUp,
       }}
+      onSnap={props.onSnap}
       {...props}
     />
   );
