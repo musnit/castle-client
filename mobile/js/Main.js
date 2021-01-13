@@ -135,7 +135,7 @@ if (Platform.OS === 'android') {
 
   let globalVerticalSpaceTaken = null;
 
-  const WrapComponent = (Component) => {
+  const WrapComponent = (Component, opts = {}) => {
     return () => {
       return (props) => {
         const [newProps, setNewProps] = useState({});
@@ -191,6 +191,8 @@ if (Platform.OS === 'android') {
               navigatorStackDepth={props.stackDepth}>
               <Component {...{ ...childProps, ...newProps }} />
             </AddProviders>
+
+            {opts.addTabBarPadding && <View style={{ height: 50 }} />}
           </View>
         );
       };
@@ -202,15 +204,27 @@ if (Platform.OS === 'android') {
   AppRegistry.registerComponent('NewestDecks', WrapComponent(NewestDecks));
   AppRegistry.registerComponent('RecentDecks', WrapComponent(RecentDecks));
   AppRegistry.registerComponent('PlayDeck', WrapComponent(PlayDeckScreen));
-  AppRegistry.registerComponent('ProfileScreen', WrapComponent(ProfileScreen));
-  AppRegistry.registerComponent('Profile', WrapComponent(ProfileScreen));
+  AppRegistry.registerComponent(
+    'ProfileScreen',
+    WrapComponent(ProfileScreen, { addTabBarPadding: true })
+  );
+  AppRegistry.registerComponent(
+    'Profile',
+    WrapComponent(ProfileScreen, { addTabBarPadding: true })
+  );
   AppRegistry.registerComponent('LoginScreen', WrapComponent(LoginScreen));
   AppRegistry.registerComponent('CreateAccountScreen', WrapComponent(CreateAccountScreen));
   AppRegistry.registerComponent('ForgotPasswordScreen', WrapComponent(ForgotPasswordScreen));
-  AppRegistry.registerComponent('CreateScreen', WrapComponent(CreateScreen));
+  AppRegistry.registerComponent(
+    'CreateScreen',
+    WrapComponent(CreateScreen, { addTabBarPadding: true })
+  );
   AppRegistry.registerComponent('CreateDeck', WrapComponent(CreateDeckNavigator));
   AppRegistry.registerComponent('ViewSource', WrapComponent(ViewSourceNavigator));
-  AppRegistry.registerComponent('Notifications', WrapComponent(NotificationsScreen));
+  AppRegistry.registerComponent(
+    'Notifications',
+    WrapComponent(NotificationsScreen, { addTabBarPadding: true })
+  );
   AppRegistry.registerComponent('UserList', WrapComponent(UserListScreen));
 
   const handlePushNotification = ({ data, clicked }) => {
