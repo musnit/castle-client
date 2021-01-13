@@ -89,7 +89,6 @@ export const HomeScreen = ({ route }) => {
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
-      Constants.Android && StatusBar.setTranslucent(true); // needed for tab navigator
     }, [])
   );
 
