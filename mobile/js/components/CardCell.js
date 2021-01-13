@@ -79,9 +79,15 @@ const InitialCardIndicator = () => (
 
 const CardArtwork = ({ card, useOverlay, isPrivate, previewVideo, previewVideoPaused }) => {
   let image = null;
-  if (card.backgroundImage) {
+  let backgroundImage;
+  if (previewVideo?.firstFrameImage) {
+    backgroundImage = previewVideo.firstFrameImage;
+  } else if (card.backgroundImage) {
+    backgroundImage = card.backgroundImage;
+  }
+  if (backgroundImage) {
     let uri;
-    const { url, smallUrl, overlayUrl, privateCardUrl } = card.backgroundImage;
+    const { url, smallUrl, overlayUrl, privateCardUrl } = backgroundImage;
     if (useOverlay && overlayUrl) {
       uri = overlayUrl;
     } else if (isPrivate && privateCardUrl) {

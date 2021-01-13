@@ -163,7 +163,7 @@ const CurrentDeckCell = ({
           card={initialCard}
           previewVideo={deck?.previewVideo}
           onPress={onSelectPlay}
-          previewVideoPaused={previewVideoPaused}
+          previewVideoPaused={previewVideoPaused || ready}
         />
         {ready ? (
           <View style={styles.absoluteFill}>
@@ -264,7 +264,13 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
         return (
           <Animated.View style={[cardAspectFitStyles, translateStyles]}>
             <View style={styles.itemCard}>
-              {deck ? <CardCell card={deck.initialCard} /> : null}
+              {deck ? (
+                <CardCell
+                  card={deck.initialCard}
+                  previewVideo={deck?.previewVideo}
+                  previewVideoPaused
+                />
+              ) : null}
             </View>
             {deck ? (
               <View style={styles.itemHeader}>
