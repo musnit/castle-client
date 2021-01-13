@@ -1,8 +1,14 @@
 import React from 'react';
-import { Animated, StyleSheet, TouchableOpacity, Text, View } from 'react-native';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import { shareDeck } from '../common/utilities';
 import { useNavigation } from '../ReactNavigation';
 import { UserAvatar } from '../components/UserAvatar';
+
+// NOTE: required to use this version of touchable
+// because of the way we position the header outside its parent view,
+// and because of this issue on RN Android: #27232
+// (and unmerged PR #26374)
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
@@ -58,8 +64,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
-
 export const PlayDeckActions = ({ deck, isPlaying, onPressBack, disabled, backgroundColor }) => {
   const { creator } = deck;
   const { push } = useNavigation();
@@ -103,11 +107,11 @@ export const PlayDeckActions = ({ deck, isPlaying, onPressBack, disabled, backgr
   return (
     <View style={{ ...styles.container, backgroundColor: backgroundColor }}>
       <Animated.View style={{ ...styles.row, transform: [{ translateX: creatorTransformX }] }}>
-        <AnimatedTouchableOpacity
-          style={[styles.back, { opacity: creatorTransform }]}
-          onPress={onPressBack}>
-          <Icon name="arrow-back" color="#fff" size={32} />
-        </AnimatedTouchableOpacity>
+        <TouchableOpacity style={styles.back} onPress={onPressBack}>
+          <Animated.View style={{ opacity: creatorTransform }}>
+            <Icon name="arrow-back" color="#fff" size={32} />
+          </Animated.View>
+        </TouchableOpacity>
         <TouchableOpacity
           disabled={disabled}
           style={styles.creator}
