@@ -80,6 +80,8 @@ const InitialCardIndicator = () => (
 const CardArtwork = ({ card, useOverlay, isPrivate, previewVideo, previewVideoPaused }) => {
   let image = null;
   let backgroundImage;
+  const [videoLoading, setVideoLoading] = React.useState(!!previewVideo?.url);
+  const onVideoLoad = React.useCallback(() => setVideoLoading(false));
   if (previewVideo?.firstFrameImage) {
     backgroundImage = previewVideo.firstFrameImage;
   } else if (card.backgroundImage) {
@@ -100,16 +102,19 @@ const CardArtwork = ({ card, useOverlay, isPrivate, previewVideo, previewVideoPa
     image = <FastImage style={[styles.cardPreview, styles.cardPreviewImage]} source={{ uri }} />;
   }
   if (previewVideo?.url) {
-    // show the image behind the video because the video drops frames when first loading
+    // NOTE: rn-video includes a "poster" prop to show a built-in preview image,
+    // but it seems to drop frames before the video actually plays.
+    // instead, show our own image over the video until onLoad is called
     return (
       <>
-        {image}
         <Video
           style={styles.cardPreview}
           source={{ uri: previewVideo.url }}
           repeat={true}
+          onLoad={onVideoLoad}
           paused={previewVideoPaused ?? false}
         />
+        {videoLoading ? image : null}
       </>
     );
   } else if (image) {
