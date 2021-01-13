@@ -4,6 +4,7 @@ import { useGhostUI } from '../../ghost/GhostUI';
 import { CardCreatorBottomSheet } from '../sheets/CardCreatorBottomSheet';
 import { InspectorHeader } from './InspectorHeader';
 import { InspectorTabs } from './InspectorTabs';
+import * as GhostEvents from '../../ghost/GhostEvents';
 
 import * as Constants from '../../Constants';
 
@@ -42,6 +43,12 @@ export const InspectorSheet = ({ isOpen, addChildSheet }) => {
     [scrollViewRef.current, selectedTab]
   );
 
+  const onSnap = React.useCallback((i) => {
+    GhostEvents.sendAsync('SCENE_CREATOR_INSPECTOR_SHEET_MAXIMIZED', {
+      isMaximized: i == 2,
+    });
+  }, []);
+
   useEffect(() => {
     // reset selected tab
     setSelectedTab(TAB_ITEMS[0].value);
@@ -76,6 +83,7 @@ export const InspectorSheet = ({ isOpen, addChildSheet }) => {
         scrollViewRef={scrollViewRef}
         persistLastSnapWhenOpened
         snapBelowBelt
+        onSnap={onSnap}
       />
     );
   }
