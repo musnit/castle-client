@@ -182,18 +182,15 @@ if (Platform.OS === 'android') {
         }
 
         return (
-          <View>
-            <View style={{ height: windowHeight - verticalSpaceTaken }}>
-              <AddProviders
-                navigatorId={props.navigatorId}
-                viewId={props.viewId}
-                navigatorWindowHeight={windowHeight - verticalSpaceTaken}
-                globalNavigatorHeightOffset={globalVerticalSpaceTaken}
-                navigatorStackDepth={props.stackDepth}>
-                <Component {...{ ...childProps, ...newProps }} />
-              </AddProviders>
-            </View>
-            <View style={{ height: verticalSpaceTaken, backgroundColor: 'black' }} />
+          <View style={{ flex: 1 }}>
+            <AddProviders
+              navigatorId={props.navigatorId}
+              viewId={props.viewId}
+              navigatorWindowHeight={windowHeight - verticalSpaceTaken}
+              globalNavigatorHeightOffset={globalVerticalSpaceTaken}
+              navigatorStackDepth={props.stackDepth}>
+              <Component {...{ ...childProps, ...newProps }} />
+            </AddProviders>
           </View>
         );
       };

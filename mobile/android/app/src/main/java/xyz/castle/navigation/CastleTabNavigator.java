@@ -70,7 +70,7 @@ public class CastleTabNavigator extends CastleNavigator {
         tabBar.setListener((int id) -> {
             index = id;
             // add + tabHeight to navigation height if the view shouldn't go under the tab bar
-            tabs.get(index).bind(CastleTabNavigator.this, mainLayout, navigationWidth, navigationHeight, 0);
+            tabs.get(index).bind(CastleTabNavigator.this, mainLayout, navigationWidth, navigationHeight + tabHeight, 0);
         });
     }
 
@@ -116,7 +116,7 @@ public class CastleTabNavigator extends CastleNavigator {
 
     private void bindCurrentTab() {
         // add + tabHeight to navigation height if the view shouldn't go under the tab bar
-        tabs.get(index).bind(this, mainLayout, navigationWidth, navigationHeight, 0);
+        tabs.get(index).bind(this, mainLayout, navigationWidth, navigationHeight + tabHeight, 0);
     }
 
     @Override
