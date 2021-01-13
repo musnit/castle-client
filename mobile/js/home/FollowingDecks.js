@@ -84,15 +84,9 @@ export const FollowingDecks = ({ deckId }) => {
       decks={decks}
       isPlaying={deckId !== undefined}
       onPressDeck={({ deckId }) =>
-        navigate(
-          'HomeScreen',
-          {
-            deckId,
-          },
-          {
-            isFullscreen: true,
-          }
-        )
+        navigate('HomeScreen', {
+          deckId,
+        })
       }
       refreshing={!!(lastFetched.time && query.loading)}
       onRefresh={onRefresh}
