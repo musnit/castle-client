@@ -202,20 +202,12 @@ const CurrentDeckCell = ({
  The following props mimic RN's FlatList API:
  refreshing, onRefresh, onEndReached, onEndReachedThreshold
  */
-export const DecksFeed = ({
-  decks,
-  isPlaying,
-  onPressDeck,
-  refreshing,
-  onRefresh,
-  onEndReached,
-  onEndReachedThreshold,
-}) => {
+export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
   const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
 
   const insets = useSafeArea();
-  let centerContentY = insets.top + FEED_HEADER_HEIGHT;
+  let centerContentY = insets.top + FEED_HEADER_HEIGHT - 1;
 
   // state from expanding/collapsing a deck to play it
   // note: non-native duplicate is needed for just the background color fade (not supported by native)
@@ -299,11 +291,13 @@ export const DecksFeed = ({
   return (
     <Animated.View style={[styles.container, { backgroundColor: playingBackgroundColor }]}>
       <FlatList
+        {...props}
         data={decks}
         contentContainerStyle={{ paddingTop: centerContentY }}
         renderItem={renderItem}
         initialNumToRender={3}
         keyExtractor={(item, index) => `${item?.deckId}-${index}`}
+        showsVerticalScrollIndicator={false}
         scrollEnabled={!isPlaying}
         onScrollBeginDrag={onScrollBeginDrag}
         onScrollEndDrag={onScrollEndDrag}

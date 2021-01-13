@@ -58,6 +58,8 @@ const styles = StyleSheet.create({
   },
 });
 
+const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
+
 export const PlayDeckActions = ({ deck, isPlaying, onPressBack, disabled, backgroundColor }) => {
   const { creator } = deck;
   const { push } = useNavigation();
@@ -101,11 +103,11 @@ export const PlayDeckActions = ({ deck, isPlaying, onPressBack, disabled, backgr
   return (
     <View style={{ ...styles.container, backgroundColor: backgroundColor }}>
       <Animated.View style={{ ...styles.row, transform: [{ translateX: creatorTransformX }] }}>
-        <Animated.View style={{ opacity: creatorTransform }}>
-          <TouchableOpacity style={styles.back} onPress={onPressBack}>
-            <Icon name="arrow-back" color="#fff" size={32} />
-          </TouchableOpacity>
-        </Animated.View>
+        <AnimatedTouchableOpacity
+          style={[styles.back, { opacity: creatorTransform }]}
+          onPress={onPressBack}>
+          <Icon name="arrow-back" color="#fff" size={32} />
+        </AnimatedTouchableOpacity>
         <TouchableOpacity
           disabled={disabled}
           style={styles.creator}
