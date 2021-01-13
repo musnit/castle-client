@@ -80,6 +80,19 @@ export const BottomSheet = ({
   if (Platform.OS == 'android') {
     const [viewId] = React.useState(Math.floor(Math.random() * 1000000));
 
+    const notifySnap = React.useCallback((height) => {
+      let closestDist = 99999;
+      let closestIndex = 0;
+      for (i = 0; i < snapPoints.length; ++i) {
+        const curr = Math.abs(snapPoints[i] - height);
+        if (curr < closestDist) {
+          closestDist = curr;
+          closestIndex = i;
+        }
+      }
+      onSnap && onSnap(closestIndex);
+    }, [onSnap]);
+
     const [containerHeight, setContainerHeight] = React.useState(screenHeight);
     const [scrollViewPadding, setScrollViewPadding] = React.useState(0);
     React.useEffect(() => {
@@ -90,12 +103,23 @@ export const BottomSheet = ({
 
         if (event.type == 'height') {
           setContainerHeight(event.height);
+          if (isOpen) {
+            notifySnap(event.height);
+          }
         }
 
         if (event.type == 'scrollViewPadding') {
           setScrollViewPadding(event.padding);
         }
       });
+
+      React.useEffect(() => {
+        if (isOpen) {
+          notifySnap(containerHeight);
+        } else {
+          notifySnap(0);
+        }
+      }, [isOpen]);
 
       return () => {
         subscription.remove();
@@ -189,7 +213,9 @@ export const BottomSheet = ({
       if (persistLastSnapWhenOpened) {
         lastSnap.current = minIndex;
       }
-      onSnap(minIndex);
+      if (isOpen) {
+        onSnap && onSnap(minIndex);
+      }
       return snapTo(screenHeight - snapPoints[minIndex], velocity);
     },
     [snapTo, snapPoints, persistLastSnapWhenOpened, onSnap]
@@ -198,9 +224,11 @@ export const BottomSheet = ({
   React.useEffect(() => {
     if (isOpen) {
       snapTo(screenHeight - snapPoints[lastSnap.current], 0, onOpenEnd);
+      onSnap && onSnap(lastSnap.current);
     } else {
       snapY.flattenOffset();
       snapTo(screenHeight, 0, onCloseEnd);
+      onSnap && onSnap(0);
     }
   }, [isOpen, snapPoints[lastSnap.current], onOpenEnd, onCloseEnd]);
 
