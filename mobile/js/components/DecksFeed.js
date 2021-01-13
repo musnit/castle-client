@@ -3,7 +3,6 @@ import { Animated, FlatList, InteractionManager, StyleSheet, View } from 'react-
 import { CardCell } from './CardCell';
 import { PlayDeckActions } from '../play/PlayDeckActions';
 import { PlayDeckNavigator } from '../play/PlayDeckNavigator';
-import { useSafeArea } from 'react-native-safe-area-context';
 import { useListen } from '../ghost/GhostEvents';
 
 import tinycolor from 'tinycolor2';
@@ -22,6 +21,8 @@ const DECK_FEED_ITEM_MARGIN = 24;
 const DECK_FEED_ITEM_HEIGHT =
   (1 / Constants.CARD_RATIO) * (100 * vw - STUBBY_SCREEN_ITEM_HORIZ_PADDING * 2) + // height of card
   DECK_FEED_ITEM_MARGIN; // margin below cell
+
+const FEED_ITEM_TOP_Y = FEED_HEADER_HEIGHT + 24;
 
 const SPRING_CONFIG = {
   tension: 100,
@@ -105,7 +106,6 @@ const CurrentDeckCell = ({
   previewVideoPaused,
 }) => {
   const initialCard = deck?.initialCard;
-  const insets = useSafeArea();
 
   if (!initialCard) return null;
 
@@ -148,7 +148,7 @@ const CurrentDeckCell = ({
   // when playing, move the header and footer to the screen edges
   const playingHeaderY = playingTransition.interpolate({
     inputRange: [0, 1.01],
-    outputRange: [0, -(insets.top + FEED_HEADER_HEIGHT)],
+    outputRange: [0, -FEED_ITEM_TOP_Y],
   });
 
   return (
@@ -207,9 +207,6 @@ const CurrentDeckCell = ({
 export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
   const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
-
-  const insets = useSafeArea();
-  let centerContentY = insets.top + FEED_HEADER_HEIGHT - 1;
 
   // state from expanding/collapsing a deck to play it
   // note: non-native duplicate is needed for just the background color fade (not supported by native)
@@ -305,7 +302,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
       <FlatList
         {...props}
         data={decks}
-        contentContainerStyle={{ paddingTop: centerContentY }}
+        contentContainerStyle={{ paddingTop: FEED_ITEM_TOP_Y }}
         renderItem={renderItem}
         initialNumToRender={3}
         keyExtractor={(item, index) => `${item?.deckId}-${index}`}
