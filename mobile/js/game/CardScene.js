@@ -1,15 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, View, TouchableWithoutFeedback } from 'react-native';
+import { GameLoading } from './GameLoading';
 import { GameView } from './GameView';
 
-import FastImage from 'react-native-fast-image';
-
 const styles = StyleSheet.create({
-  backgroundImage: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-  },
   overlay: {
     position: 'absolute',
     left: 0,
@@ -38,62 +32,55 @@ export const CardScene = ({
   const [logsVisible, setLogsVisible] = useState(false);
 
   const [loaded, setLoaded] = useState(false);
-  const onLoaded = async () => {
+  const onLoaded = React.useCallback(() => {
     setLoaded(true);
-  };
+  }, []);
 
   const [shouldDisplay, setShouldDisplay] = useState(false);
   useEffect(() => {
     const timeout = setTimeout(() => {
       setShouldDisplay(true);
-    }, 100);
+    }, 50);
     return () => clearTimeout(timeout);
   }, [card?.cardId]);
 
   return (
     <View style={style}>
-      {card &&
-        (card.scene && card.cardId ? (
-          <React.Fragment>
-            {shouldDisplay && (
-              <GameView
-                key={`game-view-${card.cardId}-${reloadCount}`}
-                extras={{
-                  initialParams: JSON.stringify({
-                    scene: {
-                      sceneId: card.scene.sceneId,
-                      data: card.scene.data,
-                      deckState,
-                    },
-                    isEditing: initialIsEditing,
-                    isEditable,
-                    isDebug: !!__DEV__,
-                  }),
-                }}
-                headerVisible={false}
-                onPressReload={onPressReload}
-                logsVisible={initialIsEditing && logsVisible}
-                setLogsVisible={setLogsVisible}
-                onMessage={onMessage}
-                onLoaded={onLoaded}
-                deckState={deckState}
-                paused={paused}
-              />
-            )}
-            {!interactionEnabled ? (
-              <TouchableWithoutFeedback style={styles.overlay}>
-                <View style={[styles.overlay, { opacity: 0 }]} />
-              </TouchableWithoutFeedback>
-            ) : null}
-            {!loaded && card.backgroundImage ? (
-              <View style={styles.overlay}>
-                <FastImage style={{ flex: 1 }} source={{ uri: card.backgroundImage.url }} />
-              </View>
-            ) : null}
-          </React.Fragment>
-        ) : card.backgroundImage ? (
-          <FastImage style={styles.backgroundImage} source={{ uri: card.backgroundImage.url }} />
-        ) : null)}
+      {card?.scene && card.cardId ? (
+        <React.Fragment>
+          {shouldDisplay && (
+            <GameView
+              key={`game-view-${card.cardId}-${reloadCount}`}
+              extras={{
+                initialParams: JSON.stringify({
+                  scene: {
+                    sceneId: card.scene.sceneId,
+                    data: card.scene.data,
+                    deckState,
+                  },
+                  isEditing: initialIsEditing,
+                  isEditable,
+                  isDebug: !!__DEV__,
+                }),
+              }}
+              headerVisible={false}
+              onPressReload={onPressReload}
+              logsVisible={initialIsEditing && logsVisible}
+              setLogsVisible={setLogsVisible}
+              onMessage={onMessage}
+              onLoaded={onLoaded}
+              deckState={deckState}
+              paused={paused}
+            />
+          )}
+          {!interactionEnabled ? (
+            <TouchableWithoutFeedback style={styles.overlay}>
+              <View style={[styles.overlay, { opacity: 0 }]} />
+            </TouchableWithoutFeedback>
+          ) : null}
+        </React.Fragment>
+      ) : null}
+      {!loaded ? <GameLoading loadingImage={card?.backgroundImage} /> : null}
     </View>
   );
 };

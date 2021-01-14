@@ -208,7 +208,8 @@ export const GameView = ({
     },
   });
 
-  if (FORWARD_LUA_LOGS) { // This is a constant, so it's ok to wrap hooks in it
+  if (FORWARD_LUA_LOGS) {
+    // This is a constant, so it's ok to wrap hooks in it
     useListen({
       eventName: 'GHOST_PRINT',
       handler: (args) => {
@@ -228,27 +229,22 @@ export const GameView = ({
 
   // TODO: entryPoint should actually reflect native entry point
   return (
-    <View style={{ flex: 1 }}>
-      <View
-        style={{ flex: 1 }}
-        onLayout={({
-          nativeEvent: {
-            layout: { width, height },
-          },
-        }) => setLandscape(width > height)}>
-        {eventsReady && initialDataHook.sent ? (
-          <GhostView style={{ flex: 1 }} dimensionsSettings={dimensionsSettings} paused={paused} />
-        ) : null}
-        {!luaLoadingHook.loaded ? (
-          <GameLoading
-            noGame={false}
-            fetching={false}
-            luaNetworkRequests={luaLoadingHook.networkRequests}
-            extras={extras}
-          />
-        ) : null}
-        <GameLogs visible={!windowed && logsVisible} />
-      </View>
+    <View
+      style={{ flex: 1 }}
+      onLayout={({
+        nativeEvent: {
+          layout: { width, height },
+        },
+      }) => setLandscape(width > height)}>
+      {eventsReady && initialDataHook.sent ? (
+        <GhostView style={{ flex: 1 }} dimensionsSettings={dimensionsSettings} paused={paused} />
+      ) : null}
+      <GameLogs visible={!windowed && logsVisible} />
+      {/* 
+HACK: something in here must have an inherent size greater than 0x0 or the game will never load
+on android. currently, this is <GameLoading />
+        */}
+      {!luaLoadingHook.loaded ? <GameLoading /> : null}
     </View>
   );
 };

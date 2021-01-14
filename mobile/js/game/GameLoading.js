@@ -1,54 +1,54 @@
 import React from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
+import { InteractionManager, StyleSheet, View, ActivityIndicator } from 'react-native';
 
-import * as Constants from '../Constants';
+import FastImage from 'react-native-fast-image';
 
-// A line of text in the loader overlay
-const LoaderText = ({ children }) => (
-  <Text style={{ color: 'white', fontSize: 12 }}>{children}</Text>
-);
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  backgroundImage: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    resizeMode: 'cover',
+  },
+});
 
-export const GameLoading = ({ noGame, fetching, luaNetworkRequests, extras }) => (
-  // Render loader overlay until Lua finishes loading
-  <View
-    style={{
-      position: 'absolute',
-      left: 0,
-      top: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'black',
-      justifyContent: 'flex-end',
-      alignItems: 'flex-start',
-      padding: 8,
-    }}>
-    {!extras.seed ? (
-      // If game is 'embedded', don't show a loading indicator and hope it loads quickly
-      <View
-        style={{
-          position: 'absolute',
-          left: 0,
-          top: 0,
-          right: 0,
-          bottom: 0,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <ActivityIndicator size="large" color="#ffffff" />
-      </View>
-    ) : null}
-    {false && Constants.iOS ? null : fetching ? (
-      // Game is being fetched
-      <LoaderText>Fetching game...</LoaderText>
-    ) : noGame ? (
-      // No game to run
-      <LoaderText>No game</LoaderText>
-    ) : luaNetworkRequests.length === 0 ? (
-      // Game is fetched and Lua isn't making network requests, but `love.load` isn't finished yet
-      <LoaderText>Loading game...</LoaderText>
-    ) : (
-      // Game is fetched and Lua is making network requests
-      luaNetworkRequests.map(({ url }) => <LoaderText key={url}>Fetching {url}</LoaderText>)
-    )}
-  </View>
-);
+export const GameLoading = ({ loadingImage }) => {
+  const [visible, setVisible] = React.useState(false);
+
+  // only show the loading spinner if we're still loading after some delay
+  React.useEffect(() => {
+    let timeout;
+    const task = InteractionManager.runAfterInteractions(() => {
+      timeout = setTimeout(() => {
+        setVisible(true);
+      }, 500);
+    });
+    return () => {
+      if (timeout) {
+        clearTimeout(timeout);
+        timeout = undefined;
+      }
+      task.cancel();
+    };
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      {loadingImage?.url ? (
+        <FastImage style={styles.backgroundImage} source={{ uri: loadingImage.url }} />
+      ) : null}
+      {visible ? <ActivityIndicator size="large" color="#fff" /> : null}
+    </View>
+  );
+};
