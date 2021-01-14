@@ -88,7 +88,7 @@ export const FollowingDecks = ({ deckId }) => {
           deckId,
         })
       }
-      refreshing={!!(lastFetched.time && query.loading)}
+      refreshing={!!(lastFetched.time && query.loading && decks?.length)}
       onRefresh={onRefresh}
       onEndReached={onEndReached}
       onEndReachedThreshold={0.15}
