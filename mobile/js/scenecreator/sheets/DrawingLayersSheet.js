@@ -152,7 +152,7 @@ const LayerRow = ({ layer, index, showLayerActionSheet }) => {
       </TouchableOpacity>
       {layer.frames.map((frame, idx) => {
         let isSelected = layer.selectedFrame == idx + 1 && layer.isSelected;
-        let isMenuAvailable = isSelected && idx > 0;
+        let isMenuAvailable = isSelected;
         let onPress = isMenuAvailable
           ? () =>
               layer.showCellActionSheet({
@@ -221,33 +221,63 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
   const [stateLayers, setStateLayers] = React.useState([]);
   const [stateSelectedFrame, setStateSelectedFrame] = React.useState(1);
 
-  const showCellActionSheet = useCallback((args) => {
-    let options = [
-      {
-        name: args.isLinked ? 'Unlink' : 'Link',
-        action: () => {
-          fastAction('onSetCellLinked', {
-            frame: args.frame,
-            layerId: args.layerId,
-            isLinked: !args.isLinked,
-          });
+  const showCellActionSheet = useCallback(
+    (args) => {
+      let options = [
+        {
+          name: 'Copy',
+          action: () => {
+            fastAction('onCopyCell', {
+              frame: args.frame,
+              layerId: args.layerId,
+            });
+          },
         },
-      },
-    ];
+      ];
 
-    showActionSheetWithOptions(
-      {
-        title: 'Cell Options',
-        options: options.map((option) => option.name).concat(['Cancel']),
-        cancelButtonIndex: options.length,
-      },
-      (buttonIndex) => {
-        if (buttonIndex < options.length) {
-          return options[buttonIndex].action();
-        }
+      if (fastData.canPaste) {
+        options.push({
+          name: 'Paste',
+          action: () => {
+            fastAction('onPasteCell', {
+              frame: args.frame,
+              layerId: args.layerId,
+            });
+          },
+        });
       }
-    );
-  }, []);
+
+      if (args.frame > 1) {
+        options = [
+          {
+            name: args.isLinked ? 'Unlink' : 'Link',
+            action: () => {
+              fastAction('onSetCellLinked', {
+                frame: args.frame,
+                layerId: args.layerId,
+                isLinked: !args.isLinked,
+              });
+            },
+          },
+          ...options,
+        ];
+      }
+
+      showActionSheetWithOptions(
+        {
+          title: 'Cell Options',
+          options: options.map((option) => option.name).concat(['Cancel']),
+          cancelButtonIndex: options.length,
+        },
+        (buttonIndex) => {
+          if (buttonIndex < options.length) {
+            return options[buttonIndex].action();
+          }
+        }
+      );
+    },
+    [fastData.canPaste]
+  );
 
   const showLayerActionSheet = useCallback(
     (args) => {
