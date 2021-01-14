@@ -3,6 +3,7 @@ import { Animated, FlatList, InteractionManager, StyleSheet, View } from 'react-
 import { CardCell } from './CardCell';
 import { PlayDeckActions, PlayDeckActionsSkeleton } from '../play/PlayDeckActions';
 import { PlayDeckNavigator } from '../play/PlayDeckNavigator';
+import { useIsFocused } from '../ReactNavigation';
 import { useListen } from '../ghost/GhostEvents';
 
 import tinycolor from 'tinycolor2';
@@ -123,15 +124,13 @@ const CurrentDeckCell = ({
   previewVideoPaused,
 }) => {
   const initialCard = deck?.initialCard;
-
-  if (!initialCard) return null;
-
   const [ready, setReady] = React.useState(false);
+  const isFocused = useIsFocused();
 
   React.useEffect(() => {
     let timeout;
     const task = InteractionManager.runAfterInteractions(() => {
-      if (deck && isPlaying) {
+      if (deck && isPlaying && isFocused) {
         timeout = setTimeout(() => {
           setReady(true);
         }, 10);
@@ -147,7 +146,7 @@ const CurrentDeckCell = ({
       setReady(false);
       task.cancel();
     };
-  }, [deck, isPlaying]);
+  }, [deck, isPlaying, isFocused]);
 
   const onSelectPlay = () => onPressDeck({ deckId: deck.deckId });
   const onPressBack = () => onPressDeck({ deckId: undefined });
@@ -168,6 +167,8 @@ const CurrentDeckCell = ({
     outputRange: [0, -FEED_ITEM_TOP_Y],
   });
 
+  if (!initialCard) return null;
+
   return (
     <View
       style={[
@@ -180,9 +181,9 @@ const CurrentDeckCell = ({
       <View style={styles.itemCard}>
         <CardCell
           card={initialCard}
-          previewVideo={deck?.previewVideo}
+          previewVideo={!ready && deck?.previewVideo && isFocused ? deck.previewVideo : undefined}
           onPress={onSelectPlay}
-          previewVideoPaused={previewVideoPaused || ready}
+          previewVideoPaused={previewVideoPaused}
         />
         {ready ? (
           <View style={styles.absoluteFill}>
