@@ -117,17 +117,19 @@ export const FeaturedDecks = ({ focused, deckId }) => {
   return (
     <Fragment>
       <AppUpdateNotice />
-      <DecksFeed
-        decks={decks}
-        isPlaying={deckId !== undefined}
-        onPressDeck={({ deckId }) =>
-          navigate('HomeScreen', {
-            deckId,
-          })
-        }
-        refreshing={!!(lastFetched.time && query.loading)}
-        onRefresh={onRefresh}
-      />
+      {(decks?.length || query.loading) && (
+        <DecksFeed
+          decks={decks}
+          isPlaying={deckId !== undefined}
+          onPressDeck={({ deckId }) =>
+            navigate('HomeScreen', {
+              deckId,
+            })
+          }
+          refreshing={!!(lastFetched.time && query.loading)}
+          onRefresh={onRefresh}
+        />
+      )}
     </Fragment>
   );
 };

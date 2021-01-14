@@ -1,7 +1,7 @@
 import React from 'react';
 import { Animated, FlatList, InteractionManager, StyleSheet, View } from 'react-native';
 import { CardCell } from './CardCell';
-import { PlayDeckActions } from '../play/PlayDeckActions';
+import { PlayDeckActions, PlayDeckActionsSkeleton } from '../play/PlayDeckActions';
 import { PlayDeckNavigator } from '../play/PlayDeckNavigator';
 import { useListen } from '../ghost/GhostEvents';
 
@@ -50,11 +50,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  itemCardSkeleton: {
+    backgroundColor: '#262626',
+    borderRadius: Constants.CARD_BORDER_RADIUS,
+  },
   itemHeader: {
     position: 'absolute',
     width: '100%',
     height: 52,
     top: 0,
+  },
+  itemHeaderSkeleton: {
+    backgroundColor: '#3C3C3C',
+    borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,
+    borderTopRightRadius: Constants.CARD_BORDER_RADIUS,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
   },
   absoluteFill: {
     position: 'absolute',
@@ -194,6 +206,32 @@ const CurrentDeckCell = ({
   );
 };
 
+const SkeletonFeed = () => {
+  return (
+    <View
+      style={{
+        height: '100%',
+        width: '100%',
+        paddingTop: FEED_ITEM_TOP_Y,
+      }}>
+      <View style={cardAspectFitStyles}>
+        <View style={[styles.itemCard, styles.itemCardSkeleton]}>
+          <View style={[styles.itemHeader, styles.itemHeaderSkeleton]}>
+            <PlayDeckActionsSkeleton />
+          </View>
+        </View>
+      </View>
+      <View style={cardAspectFitStyles}>
+        <View style={[styles.itemCard, styles.itemCardSkeleton]}>
+          <View style={[styles.itemHeader, styles.itemHeaderSkeleton]}>
+            <PlayDeckActionsSkeleton />
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+};
+
 // TODO: BEN: taken from PlayDeckScreen
 /*
       
@@ -312,28 +350,31 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
   const onScrollEndDrag = React.useCallback(() => setPaused(false), []);
 
   return (
-    <Animated.View style={[styles.container, { backgroundColor: playingBackgroundColor }]}>
-      <FlatList
-        {...props}
-        data={decks}
-        contentContainerStyle={{ paddingTop: FEED_ITEM_TOP_Y }}
-        renderItem={renderItem}
-        getItemLayout={getItemLayout}
-        keyExtractor={(item, index) => item?.deckId}
-        showsVerticalScrollIndicator={false}
-        scrollEnabled={!isPlaying}
-        onScrollBeginDrag={onScrollBeginDrag}
-        onScrollEndDrag={onScrollEndDrag}
-        snapToAlignment="start"
-        snapToInterval={DECK_FEED_ITEM_HEIGHT}
-        decelerationRate={0.99}
-        pagingEnabled
-        viewabilityConfig={viewabilityConfig}
-        onViewableItemsChanged={onViewableItemsChanged}
-        initialNumToRender={3}
-        windowSize={5}
-        maxToRenderPerBatch={3}
-      />
-    </Animated.View>
+    <>
+      {!decks && <SkeletonFeed />}
+      <Animated.View style={[styles.container, { backgroundColor: playingBackgroundColor }]}>
+        <FlatList
+          {...props}
+          data={decks}
+          contentContainerStyle={{ paddingTop: FEED_ITEM_TOP_Y }}
+          renderItem={renderItem}
+          getItemLayout={getItemLayout}
+          keyExtractor={(item, index) => item?.deckId}
+          showsVerticalScrollIndicator={false}
+          scrollEnabled={!isPlaying}
+          onScrollBeginDrag={onScrollBeginDrag}
+          onScrollEndDrag={onScrollEndDrag}
+          snapToAlignment="start"
+          snapToInterval={DECK_FEED_ITEM_HEIGHT}
+          decelerationRate={0.99}
+          pagingEnabled
+          viewabilityConfig={viewabilityConfig}
+          onViewableItemsChanged={onViewableItemsChanged}
+          initialNumToRender={3}
+          windowSize={5}
+          maxToRenderPerBatch={3}
+        />
+      </Animated.View>
+    </>
   );
 };

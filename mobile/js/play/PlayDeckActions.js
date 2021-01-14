@@ -22,9 +22,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingLeft: 12,
-    paddingRight: 12,
-    paddingTop: 0,
+    paddingHorizontal: 12,
     height: '100%',
     width: '100%',
     borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,
@@ -41,12 +39,22 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
   },
+  avatarSkeleton: {
+    backgroundColor: '#595959',
+    borderRadius: 14,
+  },
   username: {
     color: '#fff',
     fontWeight: '700',
     fontSize: 16,
     marginLeft: 8,
     ...Constants.styles.textShadow,
+  },
+  usernameSkeleton: {
+    backgroundColor: '#595959',
+    height: 8,
+    width: 100,
+    marginLeft: 8,
   },
   remixIcon: {
     marginLeft: 8,
@@ -63,6 +71,15 @@ const styles = StyleSheet.create({
     ...Constants.styles.textShadow,
   },
 });
+
+export const PlayDeckActionsSkeleton = () => {
+  return (
+    <>
+      <View style={[styles.avatar, styles.avatarSkeleton]}></View>
+      <View style={styles.usernameSkeleton}></View>
+    </>
+  );
+};
 
 export const PlayDeckActions = ({ deck, isPlaying, onPressBack, disabled, backgroundColor }) => {
   const { creator } = deck;

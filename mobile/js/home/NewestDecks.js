@@ -82,18 +82,20 @@ export const NewestDecks = ({ deckId }) => {
   }, [query.called, query.loading, query.error, query.data, lastFetched.lastModifiedBefore]);
 
   return (
-    <DecksFeed
-      decks={decks}
-      isPlaying={deckId !== undefined}
-      onPressDeck={({ deckId }) =>
-        navigate('HomeScreen', {
-          deckId,
-        })
-      }
-      refreshing={!!(lastFetched.time && query.loading)}
-      onRefresh={onRefresh}
-      onEndReached={onEndReached}
-      onEndReachedThreshold={0.15}
-    />
+    (decks?.length || query.loading) && (
+      <DecksFeed
+        decks={decks}
+        isPlaying={deckId !== undefined}
+        onPressDeck={({ deckId }) =>
+          navigate('HomeScreen', {
+            deckId,
+          })
+        }
+        refreshing={!!(lastFetched.time && query.loading)}
+        onRefresh={onRefresh}
+        onEndReached={onEndReached}
+        onEndReachedThreshold={0.15}
+      />
+    )
   );
 };
