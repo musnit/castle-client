@@ -17,16 +17,18 @@ import gql from 'graphql-tag';
 import * as Constants from '../Constants';
 import * as Session from '../Session';
 
+const AVATAR_SIZE = 28;
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 12,
     height: '100%',
     width: '100%',
     borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,
     borderTopRightRadius: Constants.CARD_BORDER_RADIUS,
+    overflow: 'hidden',
   },
   row: {
     flexDirection: 'row',
@@ -36,8 +38,8 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   avatar: {
-    width: 28,
-    height: 28,
+    width: AVATAR_SIZE,
+    height: AVATAR_SIZE,
   },
   avatarSkeleton: {
     backgroundColor: '#595959',
@@ -81,7 +83,14 @@ export const PlayDeckActionsSkeleton = () => {
   );
 };
 
-export const PlayDeckActions = ({ deck, isPlaying, onPressBack, disabled, backgroundColor }) => {
+export const PlayDeckActions = ({
+  deck,
+  isPlaying,
+  onPressBack,
+  disabled,
+  backgroundColor,
+  additionalPadding,
+}) => {
   const { creator } = deck;
   const { push } = useNavigation();
 
@@ -109,7 +118,7 @@ export const PlayDeckActions = ({ deck, isPlaying, onPressBack, disabled, backgr
   let creatorTransform = React.useRef(new Animated.Value(0)).current;
   const creatorTransformX = creatorTransform.interpolate({
     inputRange: [0, 1],
-    outputRange: [-(8 + 32), 0],
+    outputRange: [-(8 + AVATAR_SIZE), -additionalPadding],
   });
 
   React.useEffect(() => {
@@ -122,7 +131,12 @@ export const PlayDeckActions = ({ deck, isPlaying, onPressBack, disabled, backgr
   }, [isPlaying]);
 
   return (
-    <View style={{ ...styles.container, backgroundColor: backgroundColor }}>
+    <View
+      style={{
+        ...styles.container,
+        backgroundColor: backgroundColor,
+        paddingHorizontal: isPlaying ? 12 + additionalPadding : 12,
+      }}>
       <Animated.View
         style={{
           ...styles.row,

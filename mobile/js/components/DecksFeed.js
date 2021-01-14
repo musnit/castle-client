@@ -16,7 +16,7 @@ const { vw, vh } = Viewport;
 
 const FEED_HEADER_HEIGHT = 56;
 
-const STUBBY_SCREEN_ITEM_HORIZ_PADDING = Viewport.useSmallFeedItem ? 0 : 16;
+const STUBBY_SCREEN_ITEM_HORIZ_PADDING = Viewport.useFullFeedItem ? 0 : 16;
 
 const DECK_FEED_ITEM_MARGIN = 24;
 const DECK_FEED_ITEM_HEIGHT =
@@ -201,6 +201,7 @@ const CurrentDeckCell = ({
           isPlaying={isPlaying}
           onPressBack={onPressBack}
           backgroundColor={makeBackgroundColor(deck.initialCard)}
+          additionalPadding={STUBBY_SCREEN_ITEM_HORIZ_PADDING}
         />
       </Animated.View>
     </View>
@@ -321,6 +322,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
                   deck={deck}
                   disabled={true}
                   backgroundColor={makeBackgroundColor(deck.initialCard)}
+                  additionalPadding={STUBBY_SCREEN_ITEM_HORIZ_PADDING}
                 />
               </View>
             ) : null}
