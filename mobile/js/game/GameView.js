@@ -123,6 +123,7 @@ const useLuaLoading = ({ onLoaded }) => {
   useListen({
     eventName: 'SCENE_CREATOR_GAME_LOADED',
     handler: () => {
+      console.log(`SCENE_CREATOR_GAME_LOADED`);
       if (onLoaded) {
         onLoaded();
       }
