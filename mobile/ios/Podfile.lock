@@ -2,6 +2,7 @@ PODS:
   - Amplitude-iOS (4.7.1)
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.6)
+  - DVAssetLoaderDelegate (0.3.3)
   - EXAmplitude (8.2.1):
     - Amplitude-iOS (~> 4.7.1)
     - UMConstantsInterface
@@ -210,11 +211,13 @@ PODS:
     - React
   - react-native-safe-area-context (0.7.3):
     - React
-  - react-native-video (5.1.0-alpha8):
-    - React
-    - react-native-video/Video (= 5.1.0-alpha8)
   - react-native-video/Video (5.1.0-alpha8):
     - React
+  - react-native-video/VideoCaching (5.1.0-alpha8):
+    - DVAssetLoaderDelegate (~> 0.3.1)
+    - React
+    - react-native-video/Video
+    - SPTPersistentCache (~> 1.1.0)
   - React-RCTActionSheet (0.61.5):
     - React-Core/RCTActionSheetHeaders (= 0.61.5)
   - React-RCTAnimation (0.61.5):
@@ -282,6 +285,7 @@ PODS:
   - Sentry (5.1.10):
     - Sentry/Core (= 5.1.10)
   - Sentry/Core (5.1.10)
+  - SPTPersistentCache (1.1.0)
   - UMBarCodeScannerInterface (5.0.0)
   - UMCameraInterface (5.0.0)
   - UMConstantsInterface (5.0.0)
@@ -323,7 +327,8 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
-  - react-native-video (from `../node_modules/react-native-video`)
+  - react-native-video/Video (from `../node_modules/react-native-video`)
+  - react-native-video/VideoCaching (from `../node_modules/react-native-video`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../node_modules/react-native/Libraries/NativeAnimation`)
   - React-RCTBlob (from `../node_modules/react-native/Libraries/Blob`)
@@ -363,10 +368,12 @@ SPEC REPOS:
   trunk:
     - Amplitude-iOS
     - boost-for-react-native
+    - DVAssetLoaderDelegate
     - libwebp
     - SDWebImage
     - SDWebImageWebPCoder
     - Sentry
+    - SPTPersistentCache
 
 EXTERNAL SOURCES:
   DoubleConversion:
@@ -501,6 +508,7 @@ SPEC CHECKSUMS:
   Amplitude-iOS: a0347ab05f2d196e6bbb22cc6f62eea33b5a035b
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
+  DVAssetLoaderDelegate: 0caec20e4e08b8560b691131539e9180024d4bce
   EXAmplitude: 748d2377e9e3f6792f732fa7bb1b513059e27d0f
   EXAppLoaderProvider: f6aeb45ee81887811b34eee5c5f235a6111d58d0
   EXConstants: e287774d0d32634ddaef614f2e488c550c6deefc
@@ -546,6 +554,7 @@ SPEC CHECKSUMS:
   SDWebImage: 0b42b8719ab0c5257177d5894306e8a336b21cbb
   SDWebImageWebPCoder: d0dac55073088d24b2ac1b191a71a8f8d0adac21
   Sentry: 8715e88b813bde9ad37aead365d5b04ac7302153
+  SPTPersistentCache: df36ea46762d7cf026502bbb86a8b79d0080dff4
   UMBarCodeScannerInterface: 550e7ffd7a789289260bde3d547be29407e75437
   UMCameraInterface: 51e4568d64e77615557afaad9a3acdaad5d32d9f
   UMConstantsInterface: 23d658b73efc2b8090519b32007c3de725339492
@@ -560,6 +569,6 @@ SPEC CHECKSUMS:
   UMTaskManagerInterface: ee5b1ee1056eb338ff2d521ba79460d8cd0bae7d
   Yoga: f2a7cd4280bfe2cca5a7aed98ba0eb3d1310f18b
 
-PODFILE CHECKSUM: 04fff2f2be91b86c4d448f75c603a38cd8e52434
+PODFILE CHECKSUM: 279979c037a25724e5692bc2dc5b3100ede4519a
 
 COCOAPODS: 1.8.4

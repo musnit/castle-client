@@ -41,6 +41,9 @@ target 'Castle' do
   pod 'RNBootSplash', :path => '../node_modules/react-native-bootsplash'
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
+  # Explicitly provide rn-video in order to get caching subspec
+  pod 'react-native-video', :path => '../node_modules/react-native-video', :subspecs => ['Video', 'VideoCaching']
+  
   use_native_modules!
   use_unimodules!
 end
