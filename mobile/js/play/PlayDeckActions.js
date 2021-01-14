@@ -22,17 +22,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 8,
+    paddingLeft: 12,
+    paddingRight: 12,
+    paddingTop: 0,
     height: '100%',
+    width: '100%',
     borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,
     borderTopRightRadius: Constants.CARD_BORDER_RADIUS,
   },
-  back: {
-    marginRight: 16,
-  },
-  creator: {
+  row: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  back: {
+    marginRight: 12,
   },
   avatar: {
     width: 28,
@@ -45,8 +48,9 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     ...Constants.styles.textShadow,
   },
-  row: {
-    flexDirection: 'row',
+  remixIcon: {
+    marginLeft: 8,
+    ...Constants.styles.textShadow,
   },
   rightButton: {
     width: 28,
@@ -56,10 +60,6 @@ const styles = StyleSheet.create({
     marginLeft: 16,
   },
   rightButtonIcon: {
-    ...Constants.styles.textShadow,
-  },
-  remixIcon: {
-    marginLeft: 8,
     ...Constants.styles.textShadow,
   },
 });
@@ -106,7 +106,13 @@ export const PlayDeckActions = ({ deck, isPlaying, onPressBack, disabled, backgr
 
   return (
     <View style={{ ...styles.container, backgroundColor: backgroundColor }}>
-      <Animated.View style={{ ...styles.row, transform: [{ translateX: creatorTransformX }] }}>
+      <Animated.View
+        style={{
+          ...styles.row,
+          flex: -1,
+          paddingRight: 16,
+          transform: [{ translateX: creatorTransformX }],
+        }}>
         <TouchableOpacity style={styles.back} onPress={onPressBack}>
           <Animated.View style={{ opacity: creatorTransform }}>
             <Icon name="arrow-back" color="#fff" size={32} />
@@ -114,7 +120,7 @@ export const PlayDeckActions = ({ deck, isPlaying, onPressBack, disabled, backgr
         </TouchableOpacity>
         <TouchableOpacity
           disabled={disabled}
-          style={styles.creator}
+          style={styles.row}
           onPress={() => push('Profile', { userId: creator.userId })}>
           <View style={styles.avatar}>
             <UserAvatar url={creator.photo?.url} />
@@ -122,10 +128,12 @@ export const PlayDeckActions = ({ deck, isPlaying, onPressBack, disabled, backgr
           <Text style={styles.username}>{creator.username}</Text>
         </TouchableOpacity>
         {deck.parentDeckId && deck.parentDeck && (
-          <View style={styles.creator}>
+          <View style={{ ...styles.row, flex: 1 }}>
             <Feather name="refresh-cw" color="#fff" size={14} style={styles.remixIcon} />
             <TouchableOpacity disabled={disabled} onPress={navigateToParent}>
-              <Text style={styles.username}>{deck.parentDeck?.creator?.username}</Text>
+              <Text numberOfLines={1} style={styles.username}>
+                {deck.parentDeck?.creator?.username}
+              </Text>
             </TouchableOpacity>
           </View>
         )}

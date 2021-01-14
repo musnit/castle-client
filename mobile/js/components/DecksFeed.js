@@ -89,10 +89,15 @@ const makeBackgroundColor = (card) => {
     baseColor = '#333';
   }
   let base = tinycolor(baseColor);
-  if (tinycolor(baseColor).isLight()) {
-    backgroundColor = base.darken(20).toString();
+
+  // Using a brightness check rather than isDark/isLight because we mostly want to darken
+  // the color to contrast with the white text only in cases where the card background
+  // is very dark do we want to lighten.
+  let brightness = base.getBrightness();
+  if (brightness < 60) {
+    backgroundColor = base.lighten(15).toString();
   } else {
-    backgroundColor = base.darken().toString();
+    backgroundColor = base.darken(15).toString();
   }
   return backgroundColor;
 };
@@ -321,7 +326,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
         onScrollEndDrag={onScrollEndDrag}
         snapToAlignment="start"
         snapToInterval={DECK_FEED_ITEM_HEIGHT}
-        decelerationRate="fast"
+        decelerationRate={0.99}
         pagingEnabled
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={onViewableItemsChanged}
