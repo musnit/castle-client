@@ -294,6 +294,15 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
     }
   }, []);
 
+  const getItemLayout = React.useCallback(
+    (data, index) => ({
+      length: DECK_FEED_ITEM_HEIGHT,
+      offset: DECK_FEED_ITEM_HEIGHT * index,
+      index,
+    }),
+    []
+  );
+
   const onScrollBeginDrag = React.useCallback(() => setPaused(true), []);
   const onScrollEndDrag = React.useCallback(() => setPaused(false), []);
 
@@ -304,8 +313,8 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
         data={decks}
         contentContainerStyle={{ paddingTop: FEED_ITEM_TOP_Y }}
         renderItem={renderItem}
-        initialNumToRender={3}
-        keyExtractor={(item, index) => `${item?.deckId}-${index}`}
+        getItemLayout={getItemLayout}
+        keyExtractor={(item, index) => item?.deckId}
         showsVerticalScrollIndicator={false}
         scrollEnabled={!isPlaying}
         onScrollBeginDrag={onScrollBeginDrag}
@@ -316,6 +325,9 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
         pagingEnabled
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={onViewableItemsChanged}
+        initialNumToRender={3}
+        windowSize={5}
+        maxToRenderPerBatch={3}
       />
     </Animated.View>
   );

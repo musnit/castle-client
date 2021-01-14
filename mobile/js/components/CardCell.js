@@ -106,16 +106,17 @@ const CardArtwork = ({ card, useOverlay, isPrivate, previewVideo, previewVideoPa
     // but it seems to drop frames before the video actually plays.
     // instead, show our own image over the video until onLoad is called
     return (
-      <>
+      <View pointerEvents="none" style={styles.cardPreview}>
         <Video
           style={styles.cardPreview}
           source={{ uri: previewVideo.url }}
           repeat={true}
+          muted={true}
           onLoad={onVideoLoad}
           paused={previewVideoPaused ?? false}
         />
         {videoLoading ? image : null}
-      </>
+      </View>
     );
   } else if (image) {
     return image;
