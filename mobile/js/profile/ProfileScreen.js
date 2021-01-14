@@ -7,7 +7,7 @@ import { FollowButton } from '../components/FollowButton';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { useLazyQuery } from '@apollo/react-hooks';
-import { useNavigation, useFocusEffect } from '../ReactNavigation';
+import { useNavigation, useFocusEffect, useIsFocused } from '../ReactNavigation';
 import { useSession } from '../Session';
 import { UserAvatar } from '../components/UserAvatar';
 import { PopoverProvider } from '../scenecreator/PopoverProvider';
@@ -140,8 +140,36 @@ const makeProfileLinks = ({ user }) => {
   return linksItems;
 };
 
-export const ProfileScreen = ({ userId, route }) => {
+// keep as separate component so that the isFocused hook doesn't re-render
+// the entire profile screen
+const ProfileDecksGrid = ({ user, refreshing, onRefresh }) => {
   const { push } = useNavigation();
+  const isFocused = useIsFocused();
+  return (
+    <DecksGrid
+      decks={user?.decks}
+      onPressDeck={(deck, index) =>
+        push(
+          'PlayDeck',
+          {
+            // TODO: support list of decks
+            decks: [deck],
+            initialDeckIndex: 0,
+            title: `@${user.username}`,
+          },
+          {
+            isFullscreen: true,
+          }
+        )
+      }
+      refreshing={refreshing}
+      onRefresh={onRefresh}
+      enablePreviewVideo={Constants.iOS && isFocused}
+    />
+  );
+};
+
+export const ProfileScreen = ({ userId, route }) => {
   const [settingsSheetIsOpen, setSettingsSheet] = useState(false);
   const [user, setUser] = React.useState(null);
 
@@ -253,26 +281,7 @@ export const ProfileScreen = ({ userId, route }) => {
             </PopoverProvider>
           ) : null}
         </SafeAreaView>
-        <DecksGrid
-          decks={user?.decks}
-          onPressDeck={(deck, index) =>
-            push(
-              'PlayDeck',
-              {
-                // TODO: support list of decks
-                decks: [deck],
-                initialDeckIndex: 0,
-                title: `@${user.username}`,
-              },
-              {
-                isFullscreen: true,
-              }
-            )
-          }
-          refreshing={query.loading}
-          onRefresh={onRefresh}
-          enablePreviewVideo={Constants.iOS}
-        />
+        <ProfileDecksGrid user={user} refreshing={query.loading} onRefresh={onRefresh} />
       </View>
       {isMe && user ? (
         <ProfileSettingsSheet
