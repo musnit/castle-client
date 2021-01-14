@@ -367,7 +367,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
           onScrollEndDrag={onScrollEndDrag}
           snapToAlignment="start"
           snapToInterval={DECK_FEED_ITEM_HEIGHT}
-          decelerationRate={0.99}
+          decelerationRate="fast"
           pagingEnabled
           viewabilityConfig={viewabilityConfig}
           onViewableItemsChanged={onViewableItemsChanged}
