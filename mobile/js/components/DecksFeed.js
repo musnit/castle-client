@@ -1,9 +1,16 @@
 import React from 'react';
-import { Animated, FlatList, InteractionManager, StyleSheet, View } from 'react-native';
+import {
+  Animated,
+  BackHandler,
+  FlatList,
+  InteractionManager,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { CardCell } from './CardCell';
 import { PlayDeckActions, PlayDeckActionsSkeleton } from '../play/PlayDeckActions';
 import { PlayDeckNavigator } from '../play/PlayDeckNavigator';
-import { useIsFocused } from '../ReactNavigation';
+import { useIsFocused, useFocusEffect } from '../ReactNavigation';
 import { useListen } from '../ghost/GhostEvents';
 
 import tinycolor from 'tinycolor2';
@@ -169,15 +176,32 @@ const CurrentDeckCell = ({
   }, [deck, isPlaying, isFocused]);
 
   const onSelectPlay = () => onPressDeck({ deckId: deck.deckId });
-  const onPressBack = () => onPressDeck({ deckId: undefined });
+  const onPressBack = React.useCallback(() => onPressDeck({ deckId: undefined }), [onPressDeck]);
   const backgroundColor = makeBackgroundColor(initialCard);
 
   if (Constants.Android) {
+    const onHardwareBackPress = React.useCallback(() => {
+      if (isPlaying) {
+        onPressBack();
+        return true;
+      }
+      return false;
+    }, [isPlaying, onPressBack]);
+
+    // with no game loaded, use standard back handler
+    useFocusEffect(
+      React.useCallback(() => {
+        BackHandler.addEventListener('hardwareBackPress', onHardwareBackPress);
+
+        return () => BackHandler.removeEventListener('hardwareBackPress', onHardwareBackPress);
+      }, [onHardwareBackPress])
+    );
+
     // after the game loads, it listens for keyboard events and
     // causes react native's back button event to fail
     useListen({
       eventName: 'CASTLE_SYSTEM_BACK_BUTTON',
-      handler: onPressBack,
+      handler: onHardwareBackPress,
     });
   }
 
