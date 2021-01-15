@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { requireNativeComponent, View } from 'react-native';
+import { requireNativeComponent, View, Platform } from 'react-native';
 
 import * as GhostEvents from './GhostEvents';
 
@@ -61,7 +61,7 @@ const useDimensions = ({ settings }) => {
   return { screenScaling, applyScreenScaling, width, height, onLayoutContainer };
 };
 
-const GhostView = ({ style, dimensionsSettings, paused }) => {
+const GhostView = ({ style, dimensionsSettings, paused, isEditable }) => {
   const dimensionsHook = useDimensions({ settings: dimensionsSettings });
 
   return (
@@ -86,6 +86,8 @@ const GhostView = ({ style, dimensionsSettings, paused }) => {
             screenScaling={dimensionsHook.screenScaling}
             applyScreenScaling={dimensionsHook.applyScreenScaling}
             paused={paused}
+            isEditable={isEditable}
+            resetOnExit={isEditable && Platform.OS === 'ios'}
           />
         </View>
       ) : null}

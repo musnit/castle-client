@@ -273,7 +273,6 @@ RCT_EXPORT_METHOD(supplyAsync
 RCT_EXPORT_METHOD(globalPause
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  [[GhostView sharedGhostView] setPaused:false];
   resolve(nil);
 }
 

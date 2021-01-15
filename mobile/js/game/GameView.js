@@ -157,6 +157,7 @@ export const GameView = ({
   onLoaded,
   deckState,
   paused,
+  isEditable,
 }) => {
   useDeckState({ deckState });
 
@@ -237,7 +238,12 @@ export const GameView = ({
         },
       }) => setLandscape(width > height)}>
       {eventsReady && initialDataHook.sent ? (
-        <GhostView style={{ flex: 1 }} dimensionsSettings={dimensionsSettings} paused={paused} />
+        <GhostView
+          style={{ flex: 1 }}
+          dimensionsSettings={dimensionsSettings}
+          paused={paused}
+          isEditable={isEditable}
+        />
       ) : null}
       <GameLogs visible={!windowed && logsVisible} />
       {/* 

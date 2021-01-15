@@ -12,21 +12,23 @@
 @implementation GhostView
 
 bool ghostPaused;
+bool ghostResetOnExit = false;
 
 + (instancetype)sharedGhostView {
   static GhostView *sharedGhostView = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-      sharedGhostView = [[self alloc] init];
 
-      dispatch_async(dispatch_get_main_queue(), ^{
-        if (!sharedGhostView.luaState) {
-          [sharedGhostView bootLoveWithUri:SCENE_CREATOR_USE_PROD_SCENE_CREATOR ? @"" : SCENE_CREATOR_DEV_URI];
-        } else {
-          RCTLog(@"`GhostView`: already booted, ignoring new `uri`");
-        }
-      });
-  });
+  if (!sharedGhostView || !sharedGhostView.displayLink) {
+    sharedGhostView = [[self alloc] init];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+      if (!sharedGhostView.luaState) {
+        [sharedGhostView bootLoveWithUri:SCENE_CREATOR_USE_PROD_SCENE_CREATOR ? @"" : SCENE_CREATOR_DEV_URI];
+      } else {
+        RCTLog(@"`GhostView`: already booted, ignoring new `uri`");
+      }
+    });
+  }
+
   return sharedGhostView;
 }
 
@@ -53,6 +55,27 @@ bool ghostPaused;
     });
   }
   return self;
+}
+
+- (void)removeFromSuperview {
+  if (ghostResetOnExit) {
+    if (self.displayLink) {
+      [self.displayLink invalidate];
+      self.displayLink = nil;
+    }
+
+    if (self.luaState) {
+      // Send a 'quit' event and step once more hoping it quits cleanly, then just
+      // kill it if still alive
+      SDL_Event quitEvent;
+      quitEvent.type = SDL_QUIT;
+      SDL_PushEvent(&quitEvent);
+      [self stepLove];
+      [self closeLua];
+    }
+  }
+
+  [super removeFromSuperview];
 }
 
 - (void)bootLoveWithUri:(NSString *)uri {
@@ -200,6 +223,10 @@ extern bool ghostApplyScreenScaling;
   ghostPaused = paused;
 }
 
+- (void)setResetOnExit:(BOOL)resetOnExit {
+  ghostResetOnExit = resetOnExit;
+}
+
 - (void)sdlViewAddNotificationReceived:(NSNotification *)notification {
   UIViewController *viewController =
       (UIViewController *)notification.userInfo[@"viewController"];
@@ -248,5 +275,6 @@ RCT_EXPORT_VIEW_PROPERTY(uri, NSString);
 RCT_EXPORT_VIEW_PROPERTY(screenScaling, double);
 RCT_EXPORT_VIEW_PROPERTY(applyScreenScaling, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(paused, BOOL);
+RCT_EXPORT_VIEW_PROPERTY(resetOnExit, BOOL);
 
 @end

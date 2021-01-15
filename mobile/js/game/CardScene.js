@@ -63,6 +63,7 @@ export const CardScene = ({
                   isDebug: !!__DEV__,
                 }),
               }}
+              isEditable={isEditable}
               headerVisible={false}
               onPressReload={onPressReload}
               logsVisible={initialIsEditing && logsVisible}
