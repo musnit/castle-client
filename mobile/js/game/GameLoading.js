@@ -3,6 +3,13 @@ import { InteractionManager, StyleSheet, View, ActivityIndicator } from 'react-n
 
 import FastImage from 'react-native-fast-image';
 
+import * as Constants from '../Constants';
+
+// lua boots quickly on iOS, so only show the spinner for particularly slow cases.
+// lua boots slowly on Android, so go ahead and show the spinner sooner to reduce
+// the time where the screen is doing nothing.
+const LOADING_SPINNER_DELAY = Constants.iOS ? 500 : 50;
+
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
@@ -32,7 +39,7 @@ export const GameLoading = ({ loadingImage }) => {
     const task = InteractionManager.runAfterInteractions(() => {
       timeout = setTimeout(() => {
         setVisible(true);
-      }, 500);
+      }, LOADING_SPINNER_DELAY);
     });
     return () => {
       if (timeout) {
