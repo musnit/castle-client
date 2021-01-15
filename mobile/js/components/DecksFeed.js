@@ -14,13 +14,33 @@ import * as Utilities from '../common/utilities';
 
 const { vw, vh } = Viewport;
 
+// Determines how much horizontal padding to add to each card to ensure proper spacing
+//
+// Design goal is for the selected card to be entirely visible as well as the top
+// half of the next card's header. Rather than do a bunch of fancy math to figure
+// out the appropriate amount of padding at each screen size I just looked at a few
+// phones to figure out ratios that accomplish that:
+//
+// Phone: vw / vh = ratio | amount of padding needed
+// iPhone SE: 3.75 / 6.67 = 0.56 | 20
+// Pixel 3a: 3.6 / 6.92 = 0.52 | 0
+// Pixel 4a: 3.93 / 7.85 = 0.50 | 0
+
+const getItemHorzPadding = () => {
+  const ratio = vw / vh;
+  if (ratio >= 0.56) {
+    return 20;
+  } else if (ratio >= 0.54) {
+    return 10;
+  } else {
+    return 0;
+  }
+};
+
 const FEED_HEADER_HEIGHT = 56;
-
-const STUBBY_SCREEN_ITEM_HORIZ_PADDING = Viewport.useFullFeedItem ? 0 : 16;
-
 const DECK_FEED_ITEM_MARGIN = 24;
 const DECK_FEED_ITEM_HEIGHT =
-  (1 / Constants.CARD_RATIO) * (100 * vw - STUBBY_SCREEN_ITEM_HORIZ_PADDING * 2) + // height of card
+  (1 / Constants.CARD_RATIO) * (100 * vw - getItemHorzPadding() * 2) + // height of card
   DECK_FEED_ITEM_MARGIN; // margin below cell
 
 const FEED_ITEM_TOP_Y = FEED_HEADER_HEIGHT + 24;
@@ -85,7 +105,7 @@ const makeCardAspectFitStyles = () => {
   return [
     styles.itemContainer,
     {
-      paddingHorizontal: STUBBY_SCREEN_ITEM_HORIZ_PADDING,
+      paddingHorizontal: getItemHorzPadding(),
     },
   ];
 };
@@ -175,7 +195,7 @@ const CurrentDeckCell = ({
         cardAspectFitStyles,
         {
           overflow: 'visible',
-          paddingHorizontal: isPlaying ? 0 : STUBBY_SCREEN_ITEM_HORIZ_PADDING,
+          paddingHorizontal: isPlaying ? 0 : getItemHorzPadding(),
         },
       ]}>
       <View style={styles.itemCard}>
@@ -201,7 +221,7 @@ const CurrentDeckCell = ({
           isPlaying={isPlaying}
           onPressBack={onPressBack}
           backgroundColor={makeBackgroundColor(deck.initialCard)}
-          additionalPadding={STUBBY_SCREEN_ITEM_HORIZ_PADDING}
+          additionalPadding={getItemHorzPadding()}
         />
       </Animated.View>
     </View>
@@ -322,7 +342,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
                   deck={deck}
                   disabled={true}
                   backgroundColor={makeBackgroundColor(deck.initialCard)}
-                  additionalPadding={STUBBY_SCREEN_ITEM_HORIZ_PADDING}
+                  additionalPadding={getItemHorzPadding()}
                 />
               </View>
             ) : null}
