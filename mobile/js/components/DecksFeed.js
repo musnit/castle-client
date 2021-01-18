@@ -289,10 +289,8 @@ const SkeletonFeed = () => {
 
 */
 
-/**
- The following props mimic RN's FlatList API:
- refreshing, onRefresh, onEndReached, onEndReachedThreshold
- */
+// NOTE: onRefresh is currently ignored on Android (see further note below)
+// otherwise, FlatList props work here.
 export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
   const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
@@ -396,6 +394,11 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
   const onScrollBeginDrag = React.useCallback(() => setPaused(true), []);
   const onScrollEndDrag = React.useCallback(() => setPaused(false), []);
 
+  // android: refresh control will still intercept pan events on the game
+  // even when scrollEnabled is false. further, dynamically changing the value of onRefresh
+  // on android messes up the scrollview rendering. so, just disable it
+  const onRefresh = Constants.Android ? undefined : props.onRefresh;
+
   return (
     <>
       {!decks && <SkeletonFeed />}
@@ -420,6 +423,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
           initialNumToRender={3}
           windowSize={5}
           maxToRenderPerBatch={3}
+          onRefresh={onRefresh}
         />
       </Animated.View>
     </>
