@@ -308,7 +308,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
   });
   const playingOffsetNextY = playingTransition.interpolate({
     inputRange: [0, 1.01],
-    outputRange: [0, 150],
+    outputRange: [0, 300],
   });
   const backgroundColor = makeBackgroundColor(decks ? decks[currentCardIndex]?.initialCard : null);
   const playingBackgroundColor = playingTransitionNonNative.interpolate({
