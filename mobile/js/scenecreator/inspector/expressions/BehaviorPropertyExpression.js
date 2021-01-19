@@ -6,6 +6,9 @@ import * as Constants from '../../../Constants';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
 const styles = StyleSheet.create({
+  container: {
+    padding: 12,
+  },
   behaviorInputRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -36,6 +39,7 @@ export const BehaviorPropertyExpression = ({
   showBehaviorPropertyPicker,
   triggerFilter,
   context,
+  ...props
 }) => {
   const { behaviors } = context;
   let selectedBehavior;
@@ -72,7 +76,7 @@ export const BehaviorPropertyExpression = ({
     });
 
   return (
-    <View>
+    <View {...props} style={[styles.container, props.style]}>
       <View style={styles.behaviorInputRow}>
         {selectedBehavior && value.params?.propertyName ? (
           <React.Fragment>

@@ -34,9 +34,10 @@ export const InspectorInlineExpressionInput = ({
   ...props
 }) => {
   let input;
+  let propsWithoutStyle = { ...props, style: undefined };
   if (!value.expressionType) {
     // primitive number
-    input = <InspectorNumberInput value={value} onChange={onChange} {...props} />;
+    input = <InspectorNumberInput value={value} onChange={onChange} {...propsWithoutStyle} />;
   } else if (value.expressionType === 'number') {
     const onChangeValue = (newValue) =>
       onChange({
@@ -46,13 +47,19 @@ export const InspectorInlineExpressionInput = ({
           value: newValue,
         },
       });
-    input = <InspectorNumberInput value={value.params.value} onChange={onChangeValue} {...props} />;
+    input = (
+      <InspectorNumberInput
+        value={value.params.value}
+        onChange={onChangeValue}
+        {...propsWithoutStyle}
+      />
+    );
   } else {
     // no inline edit, just preview
     input = <Text>{makeExpressionSummary(value, props.context)}</Text>;
   }
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, props.style]}>
       <TouchableOpacity
         style={styles.button}
         onPress={onConfigureExpression}

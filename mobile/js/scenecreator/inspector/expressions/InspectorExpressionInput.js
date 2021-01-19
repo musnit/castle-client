@@ -27,12 +27,23 @@ const styles = StyleSheet.create({
   inset: {
     marginTop: 12,
   },
-  paramLabel: {
-    fontSize: 14,
-    marginVertical: 4,
+  paramContainer: {
+    marginVertical: 8,
+    borderWidth: 1,
+    borderBottomWidth: 2,
+    borderRadius: 6,
+    borderColor: Constants.colors.black,
   },
-  inputRow: {
-    marginTop: 8,
+  paramLabel: {
+    fontSize: 16,
+  },
+  paramLabelRow: {
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  paramInput: {
+    padding: 12,
   },
 });
 
@@ -110,7 +121,7 @@ export const InspectorExpressionInput = ({
           onChange={onChangeExpressionType}
         />
       </View>
-      <View style={[SceneCreatorConstants.styles.insetContainer, styles.inset]}>
+      <View style={styles.inset}>
         {expressionType === 'behavior property' ? (
           <BehaviorPropertyExpression
             paramSpecs={expressionParamSpecs}
@@ -119,24 +130,26 @@ export const InspectorExpressionInput = ({
             context={context}
             showBehaviorPropertyPicker={showBehaviorPropertyPicker}
             triggerFilter={triggerFilter}
+            style={styles.paramContainer}
           />
         ) : (
           orderedParamSpecs.map(([name, spec]) => (
-            <View style={styles.inputRow} key={`expression-param-${name}`}>
+            <View style={styles.paramContainer} key={`expression-param-${name}`}>
+              {spec.method !== 'toggle' ? (
+                <View style={styles.paramLabelRow}>
+                  <Text style={styles.paramLabel}>{spec.label}</Text>
+                </View>
+              ) : null}
               <ParamInput
                 label={spec.label}
                 name={name}
                 paramSpec={spec}
+                style={styles.paramInput}
                 value={value.params ? value.params[name] : value}
                 setValue={(paramValue) => onChangeParam(name, paramValue)}
                 expressions={expressions}
                 context={context}
-                ExpressionInputComponent={InspectorExpressionInput}
               />
-              {spec.method !== 'toggle' &&
-              (spec.method !== 'numberInput' || spec.expression === false) ? (
-                <Text style={styles.paramLabel}>{spec.label}</Text>
-              ) : null}
             </View>
           ))
         )}

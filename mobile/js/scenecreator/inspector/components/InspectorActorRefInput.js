@@ -4,6 +4,10 @@ import { InspectorDropdown } from './InspectorDropdown';
 import { InspectorTagPicker } from './InspectorTagPicker';
 
 const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   cell: {
     marginLeft: 8,
   },
@@ -25,7 +29,7 @@ const ACTOR_REF_KINDS = [
   },
 ];
 
-export const InspectorActorRefInput = ({ value, onChange, context, triggerFilter }) => {
+export const InspectorActorRefInput = ({ value, onChange, context, triggerFilter, ...props }) => {
   const kind = value?.kind;
   const onChangeKind = (kind) => onChange({ ...value, kind });
   const tag = value?.tag;
@@ -36,7 +40,7 @@ export const InspectorActorRefInput = ({ value, onChange, context, triggerFilter
   );
 
   return (
-    <React.Fragment>
+    <View {...props} style={[styles.container, props.style]}>
       <InspectorDropdown
         labeledItems={kinds}
         value={kind}
@@ -55,6 +59,6 @@ export const InspectorActorRefInput = ({ value, onChange, context, triggerFilter
           />
         </React.Fragment>
       ) : null}
-    </React.Fragment>
+    </View>
   );
 };
