@@ -79,8 +79,8 @@ export const BehaviorPropertyRule = ({ response, onChangeResponse, addChildSheet
   const onConfigureExpression = () => {
     addChildSheet({
       key: 'configureExpression',
+      label: propertySpec.label,
       Component: ConfigureExpressionSheet,
-      paramSpec: propertySpec,
       value: response.params.value,
       onChange,
     });
