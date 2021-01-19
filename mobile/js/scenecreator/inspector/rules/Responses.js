@@ -741,7 +741,7 @@ const RemoveTag = ({ response }) => {
 const HasTag = ({ response }) => {
   return [
     {
-      type: 'showEntryOptions',
+      type: 'selectEntry',
       label: 'this has a tag:',
     },
     {
