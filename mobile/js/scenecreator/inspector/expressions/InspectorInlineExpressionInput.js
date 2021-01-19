@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     borderColor: '#000',
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 6,
+    marginRight: 6,
     borderRadius: 100,
   },
 });
@@ -53,13 +53,13 @@ export const InspectorInlineExpressionInput = ({
   }
   return (
     <View style={styles.container}>
-      <View style={{ flexShrink: 1 }}>{input}</View>
       <TouchableOpacity
         style={styles.button}
         onPress={onConfigureExpression}
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
         <MCIcon name="lock-pattern" size={14} color="#000" />
       </TouchableOpacity>
+      <View style={{ flexShrink: 1 }}>{input}</View>
     </View>
   );
 };

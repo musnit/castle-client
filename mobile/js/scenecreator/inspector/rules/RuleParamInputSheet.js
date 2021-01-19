@@ -24,6 +24,12 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: Constants.colors.grayOnWhiteBorder,
   },
+  inputRow: {
+    borderWidth: 1,
+    borderBottomWidth: 2,
+    borderRadius: 6,
+    borderColor: Constants.colors.black,
+  },
 });
 
 const EMPTY_PARAMSPEC = {
@@ -92,6 +98,7 @@ export default RuleParamInputSheet = ({
               paramSpec={paramSpec}
               value={value}
               setValue={setValue}
+              style={styles.inputRow}
               onConfigureExpression={() =>
                 onConfigureExpression({ paramSpec, value, onChange: setValue })
               }

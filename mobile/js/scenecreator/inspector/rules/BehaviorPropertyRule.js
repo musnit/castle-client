@@ -99,7 +99,6 @@ export const BehaviorPropertyRule = ({ response, onChangeResponse, addChildSheet
           setValue={onChange}
           context={context}
           onConfigureExpression={onConfigureExpression}
-          style={{ padding: 12 }}
           lastNativeUpdate={lastNativeUpdate}
         />
         {isRelativeProperty ? (

@@ -3,10 +3,14 @@ import { StyleSheet, Text, View } from 'react-native';
 import { ParamInput } from './ParamInput';
 
 const styles = StyleSheet.create({
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingBottom: 12,
+  container: {},
+  inputRow: {
+    padding: 12,
+  },
+  labelRow: {
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
   },
   inputLabel: {
     fontSize: 16,
@@ -15,11 +19,11 @@ const styles = StyleSheet.create({
 
 export const RuleParamInputRow = ({ label, paramSpec, style, ...props }) => {
   return (
-    <View style={[styles.inputContainer, style]}>
-      <View style={{ width: '50%' }}>
+    <View style={[styles.container, style]}>
+      <View style={styles.labelRow}>
         <Text style={styles.inputLabel}>{paramSpec?.label ?? label}</Text>
       </View>
-      <View style={{ width: '50%' }}>
+      <View style={styles.inputRow}>
         <ParamInput paramSpec={paramSpec} {...props} />
       </View>
     </View>
