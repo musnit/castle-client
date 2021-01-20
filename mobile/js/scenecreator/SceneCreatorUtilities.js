@@ -192,6 +192,16 @@ export const makeExpressionSummary = (expression, context) => {
         max = makeExpressionSummary(expression.params.max, context);
       return `Random from ${min} to ${max}`;
     }
+    case '+':
+    case '*':
+    case '-':
+    case '/':
+    case '%':
+    case '^': {
+      let lhs = makeExpressionSummary(expression.params.lhs, context),
+        rhs = makeExpressionSummary(expression.params.rhs, context);
+      return `${lhs} ${expression.expressionType} ${rhs}`;
+    }
     case 'variable': {
       let variableLabel;
       if (context?.variables) {
