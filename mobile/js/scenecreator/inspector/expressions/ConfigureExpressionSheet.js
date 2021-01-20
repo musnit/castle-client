@@ -3,13 +3,14 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BehaviorPropertyExpression } from './BehaviorPropertyExpression';
 import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
-import { InspectorDropdown } from '../components/InspectorDropdown';
+import { ExpressionTypePickerSheet } from './ExpressionTypePickerSheet';
 import { ParamInput } from '../components/ParamInput';
 import { promoteToExpression } from '../../SceneCreatorUtilities';
 import { SelectBehaviorPropertySheet } from '../components/SelectBehaviorPropertySheet';
 import { useCardCreator } from '../../CreateCardContext';
 
 import * as Constants from '../../../Constants';
+import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
 const styles = StyleSheet.create({
   container: {
@@ -78,13 +79,10 @@ const InspectorExpressionInput = ({
   addChildSheet,
   depth = 0,
 }) => {
-  const expressionTypes = Object.entries(expressions).map(([type, e]) => ({
-    id: type,
-    name: e.description,
-  }));
   const expressionType =
     value.expressionType && expressions[value.expressionType] ? value.expressionType : 'number';
   const expressionParamSpecs = expressions[expressionType].paramSpecs;
+  const expressionLabel = expressions[expressionType].description;
 
   const onChangeExpressionType = React.useCallback(
     (expressionType) =>
@@ -110,6 +108,16 @@ const InspectorExpressionInput = ({
     });
   };
 
+  const onChooseExpressionType = React.useCallback(
+    () =>
+      addChildSheet({
+        key: `chooseExpressionType-${depth}`,
+        Component: ExpressionTypePickerSheet,
+        onSelectExpressionType: onChangeExpressionType,
+      }),
+    [onChangeExpressionType]
+  );
+
   const orderedParamSpecs = Object.entries(expressionParamSpecs).sort((a, b) => {
     const [k1, spec1] = a;
     const [k2, spec2] = b;
@@ -122,12 +130,11 @@ const InspectorExpressionInput = ({
     <View>
       <View style={styles.expressionTypeRow}>
         <Text style={styles.description}>{label ?? 'Set to'}:</Text>
-        <InspectorDropdown
-          style={{ marginBottom: 0 }}
-          value={expressionType}
-          labeledItems={expressionTypes}
-          onChange={onChangeExpressionType}
-        />
+        <TouchableOpacity
+          style={SceneCreatorConstants.styles.button}
+          onPress={onChooseExpressionType}>
+          <Text style={SceneCreatorConstants.styles.buttonLabel}>{expressionLabel}</Text>
+        </TouchableOpacity>
       </View>
       <View style={styles.inset}>
         {expressionType === 'behavior property' ? (
