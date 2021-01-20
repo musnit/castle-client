@@ -38,12 +38,14 @@ export const ExpressionTypePickerSheet = ({
   isOpen,
   onClose,
   addChildSheet,
+  filterExpression = ([name, spec]) => true,
 }) => {
   const { expressions } = useCardCreator();
   const [expressionCategories, setExpressionCategories] = React.useState(null);
   React.useEffect(() => {
+    const filteredExpressions = Object.entries(expressions).filter(filterExpression);
     setExpressionCategories(
-      Object.entries(expressions).reduce((categories, [expression, value]) => {
+      filteredExpressions.reduce((categories, [expression, value]) => {
         if (!categories[value.category]) {
           categories[value.category] = [];
         }

@@ -15,8 +15,14 @@ import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 16,
+  container: {},
+  actionsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
   },
   description: {
     fontSize: 16,
@@ -84,6 +90,21 @@ const makeEmptyExpression = ({ expressions, expressionType }) => {
   return result;
 };
 
+const wrapExpression = ({ expression, expressions, wrappingType }) => {
+  let result = makeEmptyExpression({ expressions, expressionType: wrappingType });
+  let firstNumericParam = Object.entries(expressions[wrappingType].paramSpecs).find(
+    ([_, spec]) =>
+      (!spec.order || spec.order === 1) &&
+      spec.method === 'numberInput' &&
+      spec.expression !== false
+  );
+  if (firstNumericParam) {
+    let [name, spec] = firstNumericParam;
+    result.params[name] = expression;
+  }
+  return result;
+};
+
 // TODO: use returnType to filter available expression types
 const InspectorExpressionInput = ({
   label,
@@ -94,6 +115,7 @@ const InspectorExpressionInput = ({
   showBehaviorPropertyPicker,
   triggerFilter,
   addChildSheet,
+  style,
   depth = 0,
 }) => {
   const expressionType =
@@ -164,7 +186,7 @@ const InspectorExpressionInput = ({
   );
 
   return (
-    <View>
+    <View style={style}>
       <View style={styles.expressionTypeRow}>
         <Text style={styles.description}>{label ?? 'Set to'}:</Text>
         <TouchableOpacity
@@ -240,6 +262,11 @@ const InspectorExpressionInput = ({
   );
 };
 
+// does it have 2 or more numeric parameters?
+const isExpressionNonUnaryNumeric = ([name, spec]) =>
+  Object.entries(spec.paramSpecs).filter(([k, paramSpec]) => paramSpec.method === 'numberInput')
+    .length > 1;
+
 export const ConfigureExpressionSheet = ({
   value: initialValue,
   label,
@@ -252,6 +279,24 @@ export const ConfigureExpressionSheet = ({
 }) => {
   const createCardContext = useCardCreator();
   const [value, setValue] = React.useState(promoteToExpression(initialValue));
+
+  const showWrappingExpressionPicker = React.useCallback(
+    () =>
+      addChildSheet({
+        key: `chooseExpressionType-${depth}`,
+        Component: ExpressionTypePickerSheet,
+        filterExpression: isExpressionNonUnaryNumeric,
+        onSelectExpressionType: (wrappingType) =>
+          setValue(
+            wrapExpression({
+              expressions: createCardContext.expressions,
+              expression: value,
+              wrappingType,
+            })
+          ),
+      }),
+    [value, createCardContext.expressions]
+  );
 
   const showBehaviorPropertyPicker = React.useCallback(
     ({ onSelectBehaviorProperty, useAllBehaviors }) =>
@@ -268,6 +313,13 @@ export const ConfigureExpressionSheet = ({
 
   const renderContent = () => (
     <View style={styles.container}>
+      <View style={styles.actionsContainer}>
+        <TouchableOpacity
+          style={SceneCreatorConstants.styles.button}
+          onPress={showWrappingExpressionPicker}>
+          <Text style={SceneCreatorConstants.styles.buttonLabel}>Wrap in expression</Text>
+        </TouchableOpacity>
+      </View>
       <InspectorExpressionInput
         depth={depth}
         context={createCardContext}
@@ -277,6 +329,7 @@ export const ConfigureExpressionSheet = ({
         showBehaviorPropertyPicker={showBehaviorPropertyPicker}
         triggerFilter={triggerFilter}
         addChildSheet={addChildSheet}
+        style={{ padding: 16 }}
       />
     </View>
   );
