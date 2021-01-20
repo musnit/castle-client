@@ -162,7 +162,7 @@ const InspectorExpressionInput = ({
               });
             };
             return (
-              <View style={styles.paramContainer} key={`expression-param-${name}`}>
+              <View style={styles.paramContainer} key={`expression-param-${name}-${expressionType}`}>
                 {spec.method !== 'toggle' ? (
                   <View style={styles.paramLabelRow}>
                     <Text style={styles.paramLabel}>{spec.label}</Text>
