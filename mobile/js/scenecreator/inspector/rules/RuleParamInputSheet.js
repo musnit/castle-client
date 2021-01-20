@@ -74,7 +74,7 @@ export default RuleParamInputSheet = ({
     addChildSheet({
       key: 'configureExpression',
       Component: ConfigureExpressionSheet,
-      paramSpec,
+      label: paramSpec.label,
       triggerFilter,
       value,
       onChange,
