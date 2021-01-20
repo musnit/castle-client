@@ -2,6 +2,7 @@ import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { InspectorNumberInput } from '../components/InspectorNumberInput';
 import { makeExpressionSummary } from '../../SceneCreatorUtilities';
+import FastImage from 'react-native-fast-image';
 
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -64,7 +65,13 @@ export const InspectorInlineExpressionInput = ({
         style={styles.button}
         onPress={onConfigureExpression}
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-        <MCIcon name="lock-pattern" size={14} color="#000" />
+        <FastImage
+          style={{
+            width: 16,
+            height: 16,
+          }}
+          source={require('../../../../assets/images/expression.png')}
+        />
       </TouchableOpacity>
       <View style={{ flexShrink: 1 }}>{input}</View>
     </View>
