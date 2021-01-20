@@ -177,7 +177,9 @@ const makeActorRefSummary = (actorRef) => {
   return result;
 };
 
-export const makeExpressionSummary = (expression, context) => {
+const maybeExpressionParens = (str, depth) => (depth > 0 ? `(${str})` : str);
+
+export const makeExpressionSummary = (expression, context, depth = 0) => {
   if (!expression?.expressionType) {
     if (typeof expression === 'number') {
       return Math.round((expression + Number.EPSILON) * 10000) / 10000;
@@ -188,9 +190,9 @@ export const makeExpressionSummary = (expression, context) => {
     case 'number':
       return Math.round((expression.params.value + Number.EPSILON) * 10000) / 10000;
     case 'random': {
-      let min = makeExpressionSummary(expression.params.min, context),
-        max = makeExpressionSummary(expression.params.max, context);
-      return `Random from ${min} to ${max}`;
+      let min = makeExpressionSummary(expression.params.min, context, depth + 1),
+        max = makeExpressionSummary(expression.params.max, context, depth + 1);
+      return maybeExpressionParens(`Random from ${min} to ${max}`, depth);
     }
     case '+':
     case '*':
@@ -198,9 +200,9 @@ export const makeExpressionSummary = (expression, context) => {
     case '/':
     case '%':
     case '^': {
-      let lhs = makeExpressionSummary(expression.params.lhs, context),
-        rhs = makeExpressionSummary(expression.params.rhs, context);
-      return `${lhs} ${expression.expressionType} ${rhs}`;
+      let lhs = makeExpressionSummary(expression.params.lhs, context, depth + 1),
+        rhs = makeExpressionSummary(expression.params.rhs, context, depth + 1);
+      return maybeExpressionParens(`${lhs} ${expression.expressionType} ${rhs}`, depth);
     }
     case 'variable': {
       let variableLabel;
