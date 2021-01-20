@@ -66,14 +66,24 @@ const styles = StyleSheet.create({
   },
   swapLine: {
     position: 'absolute',
-    top: 12,
+    top: 14,
     height: 1,
     width: '100%',
     backgroundColor: '#ddd',
   },
-  swapButton: {
+  swapButtonWrapper: {
     paddingHorizontal: 8,
-    backgroundColor: Constants.colors.white,
+    backgroundColor: '#fff',
+  },
+  swapButton: {
+    ...SceneCreatorConstants.styles.button,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    paddingTop: 1,
+    width: 30,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
@@ -246,10 +256,12 @@ const InspectorExpressionInput = ({
                 {orderedParamSpecs.length == 2 && ii < orderedParamSpecs.length - 1 ? (
                   <View key={`swap-expression-param-${expressionType}-${ii}`} style={styles.swap}>
                     <View style={styles.swapLine} />
-                    <View style={styles.swapButton}>
-                      <TouchableOpacity onPress={() => onSwapParams(ii)}>
-                        <MCIcon name="swap-vertical" size={24} />
-                      </TouchableOpacity>
+                    <View style={styles.swapButtonWrapper}>
+                      <View style={styles.swapButton}>
+                        <TouchableOpacity onPress={() => onSwapParams(ii)}>
+                          <MCIcon name="swap-vertical" size={24} />
+                        </TouchableOpacity>
+                      </View>
                     </View>
                   </View>
                 ) : null}
