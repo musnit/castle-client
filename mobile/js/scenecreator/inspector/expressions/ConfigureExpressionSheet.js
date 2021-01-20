@@ -12,6 +12,8 @@ import { useCardCreator } from '../../CreateCardContext';
 import * as Constants from '../../../Constants';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+
 const styles = StyleSheet.create({
   container: {
     padding: 16,
@@ -52,6 +54,21 @@ const styles = StyleSheet.create({
   paramInput: {
     padding: 12,
   },
+  swap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  swapLine: {
+    position: 'absolute',
+    top: 12,
+    height: 1,
+    width: '100%',
+    backgroundColor: '#ddd',
+  },
+  swapButton: {
+    paddingHorizontal: 8,
+    backgroundColor: Constants.colors.white,
+  },
 });
 
 const makeEmptyExpression = ({ expressions, expressionType }) => {
@@ -83,6 +100,7 @@ const InspectorExpressionInput = ({
     value.expressionType && expressions[value.expressionType] ? value.expressionType : 'number';
   const expressionParamSpecs = expressions[expressionType].paramSpecs;
   const expressionLabel = expressions[expressionType].description;
+  const [lastNativeUpdate, incrementLastNativeUpdate] = React.useReducer((state) => state + 1, 0);
 
   const onChangeExpressionType = React.useCallback(
     (expressionType) =>
@@ -126,6 +144,25 @@ const InspectorExpressionInput = ({
     return order1 < order2 ? -1 : 1;
   });
 
+  const onSwapParams = React.useCallback(
+    (firstParamIndex) => {
+      const [name1, spec1] = orderedParamSpecs[firstParamIndex];
+      const [name2, spec2] = orderedParamSpecs[firstParamIndex + 1];
+      const val1 = value.params[name1];
+      const val2 = value.params[name2];
+      onChange({
+        ...value,
+        params: {
+          ...value.params,
+          [name1]: val2,
+          [name2]: val1,
+        },
+      });
+      incrementLastNativeUpdate();
+    },
+    [orderedParamSpecs, value]
+  );
+
   return (
     <View>
       <View style={styles.expressionTypeRow}>
@@ -148,7 +185,7 @@ const InspectorExpressionInput = ({
             style={styles.paramContainer}
           />
         ) : (
-          orderedParamSpecs.map(([name, spec]) => {
+          orderedParamSpecs.map(([name, spec], ii) => {
             const paramValue = value.params ? value.params[name] : value;
             const setValue = (paramValue) => onChangeParam(name, paramValue);
             const onConfigureExpression = () => {
@@ -162,24 +199,39 @@ const InspectorExpressionInput = ({
               });
             };
             return (
-              <View style={styles.paramContainer} key={`expression-param-${name}-${expressionType}`}>
-                {spec.method !== 'toggle' ? (
-                  <View style={styles.paramLabelRow}>
-                    <Text style={styles.paramLabel}>{spec.label}</Text>
+              <>
+                <View
+                  style={styles.paramContainer}
+                  key={`expression-param-${name}-${expressionType}`}>
+                  {spec.method !== 'toggle' ? (
+                    <View style={styles.paramLabelRow}>
+                      <Text style={styles.paramLabel}>{spec.label}</Text>
+                    </View>
+                  ) : null}
+                  <ParamInput
+                    label={spec.label}
+                    name={name}
+                    paramSpec={spec}
+                    style={styles.paramInput}
+                    value={paramValue}
+                    setValue={setValue}
+                    expressions={expressions}
+                    context={context}
+                    onConfigureExpression={onConfigureExpression}
+                    lastNativeUpdate={lastNativeUpdate}
+                  />
+                </View>
+                {orderedParamSpecs.length == 2 && ii < orderedParamSpecs.length - 1 ? (
+                  <View key={`swap-expression-param-${expressionType}-${ii}`} style={styles.swap}>
+                    <View style={styles.swapLine} />
+                    <View style={styles.swapButton}>
+                      <TouchableOpacity onPress={() => onSwapParams(ii)}>
+                        <MCIcon name="swap-vertical" size={24} />
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 ) : null}
-                <ParamInput
-                  label={spec.label}
-                  name={name}
-                  paramSpec={spec}
-                  style={styles.paramInput}
-                  value={paramValue}
-                  setValue={setValue}
-                  expressions={expressions}
-                  context={context}
-                  onConfigureExpression={onConfigureExpression}
-                />
-              </View>
+              </>
             );
           })
         )}

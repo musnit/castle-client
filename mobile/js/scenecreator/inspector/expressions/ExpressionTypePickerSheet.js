@@ -63,6 +63,7 @@ export const ExpressionTypePickerSheet = ({
                 <Text style={styles.categoryLabel}>{capitalizeFirst(category)}</Text>
                 {entries.map((expression) => (
                   <TouchableOpacity
+                    key={`expression-type-${expression.name}`}
                     style={styles.addButton}
                     onPress={() => {
                       onSelectExpressionType(expression.name);
