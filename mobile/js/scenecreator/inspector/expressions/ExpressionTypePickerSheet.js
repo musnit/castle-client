@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const CATEGORY_ORDER = ['values', 'operators', 'math'];
+const CATEGORY_ORDER = ['values', 'operators', 'math', 'spatial relationships'];
 
 const capitalizeFirst = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
@@ -60,7 +60,7 @@ export const ExpressionTypePickerSheet = ({
       {expressionCategories
         ? CATEGORY_ORDER.map((category) => {
             const entries = expressionCategories[category];
-            return (
+            return entries ? (
               <View key={`expression-category-${category}`} style={styles.category}>
                 <Text style={styles.categoryLabel}>{capitalizeFirst(category)}</Text>
                 {entries.map((expression) => (
@@ -77,7 +77,7 @@ export const ExpressionTypePickerSheet = ({
                   </TouchableOpacity>
                 ))}
               </View>
-            );
+            ) : null;
           })
         : null}
     </View>

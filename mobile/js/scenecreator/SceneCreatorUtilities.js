@@ -256,6 +256,17 @@ export const makeExpressionSummary = (expression, context, depth = 0) => {
         return `${actorRef}: ${selectedBehavior.displayName}: ${selectedProperty.label}`;
       }
     }
+    case 'actor distance': {
+      const fromActor = makeActorRefSummary(expression.params.fromActor),
+        toActor = makeActorRefSummary(expression.params.toActor);
+      return maybeExpressionParens(
+        `The distance from ${fromActor} position to ${toActor} position`
+      );
+    }
+    case 'actor angle':
+      const fromActor = makeActorRefSummary(expression.params.fromActor),
+        toActor = makeActorRefSummary(expression.params.toActor);
+      return maybeExpressionParens(`The angle from ${fromActor} position to ${toActor} position`);
   }
   return null;
 };
