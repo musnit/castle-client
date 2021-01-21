@@ -234,6 +234,44 @@ const IsColliding = ({ response }) => {
   ];
 };
 
+const ExpressionMeetsCondition = ({ response, context }) => {
+  const changeAllParams = {
+    paramNames: ['lhs', 'comparison', 'rhs'],
+    paramValues: { ...response.params },
+  };
+  if (response.params) {
+    return [
+      {
+        type: 'selectParamSheet',
+        label: makeExpressionSummary(response.params.lhs, context),
+        ...changeAllParams,
+      },
+      {
+        type: 'selectParamSheet',
+        label: readableOperator(response.params.comparison),
+        ...changeAllParams,
+      },
+      {
+        type: 'selectParamSheet',
+        label: makeExpressionSummary(response.params.rhs, context),
+        ...changeAllParams,
+      },
+    ];
+  } else {
+    return [
+      {
+        type: 'selectEntry',
+        label: 'expression meets condition:',
+      },
+      {
+        type: 'selectParamSheet',
+        label: '(choose expression)',
+        ...changeAllParams,
+      },
+    ];
+  }
+};
+
 const VariableMeetsCondition = ({ response, context }) => {
   const changeAllParams = {
     paramNames: ['variableId', 'comparison', 'value'],
@@ -862,6 +900,7 @@ export const Responses = {
   wait: Wait,
   ['coin flip']: CoinFlip,
   ['is colliding']: IsColliding,
+  ['expression meets condition']: ExpressionMeetsCondition,
   ['variable meets condition']: VariableMeetsCondition,
   ['counter meets condition']: CounterMeetsCondition,
   ['set behavior property']: SetBehavior,
