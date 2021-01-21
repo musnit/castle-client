@@ -204,6 +204,22 @@ export const makeExpressionSummary = (expression, context, depth = 0) => {
         rhs = makeExpressionSummary(expression.params.rhs, context, depth + 1);
       return maybeExpressionParens(`${lhs} ${expression.expressionType} ${rhs}`, depth);
     }
+    case 'abs': {
+      let number = makeExpressionSummary(expression.params.number, context, depth + 1);
+      return `abs(${number})`;
+    }
+    case 'log': {
+      let base = makeExpressionSummary(expression.params.base, context, depth + 1),
+        number = makeExpressionSummary(expression.params.number, context, depth + 1);
+      return maybeExpressionParens(`Log base ${base} of ${number}`, depth);
+    }
+    case 'min':
+    case 'max':
+    case 'choose': {
+      let lhs = makeExpressionSummary(expression.params.lhs, context, depth + 1),
+        rhs = makeExpressionSummary(expression.params.rhs, context, depth + 1);
+      return `${expression.expressionType}(${lhs}, ${rhs})`;
+    }
     case 'variable': {
       let variableLabel;
       if (context?.variables) {
