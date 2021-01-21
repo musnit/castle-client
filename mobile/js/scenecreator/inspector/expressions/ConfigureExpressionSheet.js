@@ -274,10 +274,11 @@ const InspectorExpressionInput = ({
   );
 };
 
-// does it have 2 or more numeric parameters?
-const isExpressionNonUnaryNumeric = ([name, spec]) =>
-  Object.entries(spec.paramSpecs).filter(([k, paramSpec]) => paramSpec.method === 'numberInput')
-    .length > 1;
+// does it have 1 or more numeric, expression-enabled parameters?
+const canExpressionHaveChildren = ([name, spec]) =>
+  Object.entries(spec.paramSpecs).filter(
+    ([k, paramSpec]) => paramSpec.method === 'numberInput' && paramSpec.expression !== false
+  ).length > 0;
 
 export const ConfigureExpressionSheet = ({
   value: initialValue,
@@ -297,7 +298,7 @@ export const ConfigureExpressionSheet = ({
       addChildSheet({
         key: `chooseExpressionType-${depth}`,
         Component: ExpressionTypePickerSheet,
-        filterExpression: isExpressionNonUnaryNumeric,
+        filterExpression: canExpressionHaveChildren,
         onSelectExpressionType: (wrappingType) =>
           setValue(
             wrapExpression({
