@@ -5,14 +5,18 @@ import { useCardCreator } from '../CreateCardContext';
 import { SaveBlueprintSheet } from './components/SaveBlueprintSheet';
 
 import * as SceneCreatorConstants from '../SceneCreatorConstants';
+import * as Constants from '../../Constants';
 import * as Inspector from './behaviors/InspectorBehaviors';
 import * as InspectorUtilities from './InspectorUtilities';
+
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const styles = StyleSheet.create({
   actionsContainer: {
     alignItems: 'center',
     justifyContent: 'center',
     padding: 16,
+    paddingBottom: 8,
   },
   blueprintContainer: {
     padding: 16,
@@ -76,7 +80,16 @@ const MovementTab = ({ behaviors, sendActions, addChildSheet }) => {
     <React.Fragment>
       <View style={styles.actionsContainer}>
         <TouchableOpacity
-          style={SceneCreatorConstants.styles.button}
+          style={{
+            width: '100%',
+            flexDirection: 'row',
+            alignItems: 'center',
+            borderWidth: 1,
+            borderColor: Constants.colors.grayOnWhiteBorder,
+            borderRadius: 4,
+            paddingVertical: 10,
+            paddingHorizontal: 8,
+          }}
           onPress={() =>
             addChildSheet({
               key: 'addBehavior',
@@ -85,7 +98,20 @@ const MovementTab = ({ behaviors, sendActions, addChildSheet }) => {
               addBehavior: (key) => sendActions[key]('add'),
             })
           }>
-          <Text style={SceneCreatorConstants.styles.buttonLabel}>Add a behavior</Text>
+          <MCIcon
+            name="plus"
+            size={26}
+            color={Constants.colors.grayText}
+            style={{ marginRight: 6 }}
+          />
+          <Text
+            style={{
+              fontSize: 16,
+              color: Constants.colors.grayText,
+              fontWeight: 'normal',
+            }}>
+            Add physics or controls
+          </Text>
         </TouchableOpacity>
       </View>
       <Inspector.Motion
