@@ -50,7 +50,13 @@ export const ExpressionTypePickerSheet = ({
   const { expressions } = useCardCreator();
   const [expressionCategories, setExpressionCategories] = React.useState(null);
   React.useEffect(() => {
-    const filteredExpressions = Object.entries(expressions).filter(filterExpression);
+    const filteredExpressions = Object.entries(expressions)
+      .filter(filterExpression)
+      .sort(([k1, a], [k2, b]) => {
+        if (!b.order) return -1;
+        if (!a.order) return 1;
+        return a.order < b.order ? -1 : 1;
+      });
     setExpressionCategories(
       filteredExpressions.reduce((categories, [expression, value]) => {
         if (!categories[value.category]) {
