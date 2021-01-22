@@ -8,7 +8,7 @@ import * as Constants from '../Constants';
 // lua boots quickly on iOS, so only show the spinner for particularly slow cases.
 // lua boots slowly on Android, so go ahead and show the spinner sooner to reduce
 // the time where the screen is doing nothing.
-const LOADING_SPINNER_DELAY = Constants.iOS ? 500 : 50;
+const LOADING_SPINNER_DELAY = Constants.iOS ? 200 : 50;
 
 const styles = StyleSheet.create({
   container: {
