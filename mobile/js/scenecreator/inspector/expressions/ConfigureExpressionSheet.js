@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const makeEmptyExpression = ({ expressions, expressionType }) => {
+const makeEmptyExpression = ({ expressions, expressionType, blueprint = null }) => {
   let expression = expressions[expressionType];
   let result = {
     expressionType,
@@ -95,7 +95,13 @@ const makeEmptyExpression = ({ expressions, expressionType }) => {
     params: {},
   };
   Object.entries(expression.paramSpecs).forEach(([name, spec]) => {
-    result.params[name] = spec.initialValue;
+    if (blueprint?.params && blueprint.params[name]) {
+      // try to map old params to new params if possible
+      // TODO: we could also try to do this based on param order, not name
+      result.params[name] = blueprint.params[name];
+    } else {
+      result.params[name] = spec.initialValue;
+    }
   });
   return result;
 };
@@ -140,9 +146,10 @@ const InspectorExpressionInput = ({
         makeEmptyExpression({
           expressions,
           expressionType,
+          blueprint: value,
         })
       ),
-    [onChange, expressions]
+    [onChange, expressions, value]
   );
 
   const onChangeParam = (name, paramValue) => {
