@@ -2,6 +2,7 @@ import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 import { InspectorCheckbox } from './InspectorCheckbox';
+import { InspectorDropdown } from './InspectorDropdown';
 import { InspectorNumberInput } from './InspectorNumberInput';
 
 const styles = StyleSheet.create({
@@ -45,6 +46,7 @@ export const BehaviorPropertyInputRow = ({
     [behavior.isActive, sendValue]
   );
 
+  // TODO: merge with ParamInput component
   let input;
   switch (propertySpec.method) {
     case 'numberInput':
@@ -63,6 +65,17 @@ export const BehaviorPropertyInputRow = ({
         <InspectorCheckbox
           lastNativeUpdate={lastNativeUpdate}
           value={displayValue(value)}
+          onChange={onChange}
+          {...propertySpec.props}
+          {...props}
+        />
+      );
+      break;
+    case 'dropdown':
+      input = (
+        <InspectorDropdown
+          lastNativeUpdate={lastNativeUpdate}
+          value={value}
           onChange={onChange}
           {...propertySpec.props}
           {...props}
