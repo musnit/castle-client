@@ -29,7 +29,14 @@ const styles = StyleSheet.create({
   },
 });
 
-const CATEGORY_ORDER = ['values', 'choices', 'spatial relationships', 'arithmetic'];
+const CATEGORY_ORDER = [
+  'values',
+  'choices',
+  'randomness',
+  'spatial relationships',
+  'arithmetic',
+  'functions',
+];
 
 const capitalizeFirst = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 

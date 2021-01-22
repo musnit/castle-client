@@ -204,9 +204,10 @@ export const makeExpressionSummary = (expression, context, depth = 0) => {
         rhs = makeExpressionSummary(expression.params.rhs, context, depth + 1);
       return maybeExpressionParens(`${lhs} ${expression.expressionType} ${rhs}`, depth);
     }
-    case 'abs': {
+    case 'abs':
+    case 'floor': {
       let number = makeExpressionSummary(expression.params.number, context, depth + 1);
-      return `abs(${number})`;
+      return `${expression.expressionType}(${number})`;
     }
     case 'log': {
       let base = makeExpressionSummary(expression.params.base, context, depth + 1),
@@ -215,10 +216,33 @@ export const makeExpressionSummary = (expression, context, depth = 0) => {
     }
     case 'min':
     case 'max':
-    case 'choose': {
+    case 'choose':
+    case 'weighted choose': {
       let lhs = makeExpressionSummary(expression.params.lhs, context, depth + 1),
         rhs = makeExpressionSummary(expression.params.rhs, context, depth + 1);
       return `${expression.expressionType}(${lhs}, ${rhs})`;
+    }
+    case 'mix': {
+      let lhs = makeExpressionSummary(expression.params.lhs, context, depth + 1),
+        rhs = makeExpressionSummary(expression.params.rhs, context, depth + 1),
+        mix = makeExpressionSummary(expression.params.mix, context, depth + 1);
+      return maybeExpressionParens(`${lhs} and ${rhs} mixed by ${mix}`);
+    }
+    case 'clamp': {
+      let number = makeExpressionSummary(expression.params.number, context, depth + 1),
+        min = makeExpressionSummary(expression.params.min, context, depth + 1),
+        max = makeExpressionSummary(expression.params.max, context, depth + 1);
+      return maybeExpressionParens(`${number} clamped between ${min} and ${max}`);
+    }
+    case 'perlin': {
+      let x = makeExpressionSummary(expression.params.x, context, depth + 1),
+        y = makeExpressionSummary(expression.params.y, context, depth + 1);
+      return `${expression.expressionType}(${x}, ${y})`;
+    }
+    case 'gauss': {
+      let mean = makeExpressionSummary(expression.params.mean, context, depth + 1),
+        sigma = makeExpressionSummary(expression.params.sigma, context, depth + 1);
+      return `${expression.expressionType}(${mean}, ${sigma})`;
     }
     case 'variable': {
       let variableLabel;
