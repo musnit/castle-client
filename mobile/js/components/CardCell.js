@@ -81,7 +81,7 @@ const CardArtwork = ({ card, useOverlay, isPrivate, previewVideo, previewVideoPa
   let image = null;
   let backgroundImage;
   const [videoLoading, setVideoLoading] = React.useState(!!previewVideo?.url);
-  const onVideoLoad = React.useCallback(() => setVideoLoading(false));
+  const onVideoLoad = React.useCallback(() => requestAnimationFrame(() => setVideoLoading(false)));
   if (previewVideo?.firstFrameImage) {
     backgroundImage = previewVideo.firstFrameImage;
   } else if (card.backgroundImage) {

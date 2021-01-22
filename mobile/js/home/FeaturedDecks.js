@@ -101,11 +101,14 @@ export const FeaturedDecks = ({ focused, deckId }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      if (!lastFetched.time || Date.now() - lastFetched.time > REFETCH_FEED_INTERVAL_MS) {
+      if (
+        (!lastFetched.time || Date.now() - lastFetched.time > REFETCH_FEED_INTERVAL_MS) &&
+        deckId === undefined
+      ) {
         onRefresh();
       }
     }),
-    [lastFetched.time]
+    [lastFetched.time, deckId]
   );
 
   React.useEffect(() => {

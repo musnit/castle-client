@@ -52,11 +52,14 @@ export const FollowingDecks = ({ deckId }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      if (!lastFetched.time || Date.now() - lastFetched.time > REFETCH_FEED_INTERVAL_MS) {
+      if (
+        (!lastFetched.time || Date.now() - lastFetched.time > REFETCH_FEED_INTERVAL_MS) &&
+        deckId === undefined
+      ) {
         onRefresh();
       }
     }),
-    [lastFetched.time]
+    [lastFetched.time, deckId]
   );
 
   const onEndReached = React.useCallback(() => {
