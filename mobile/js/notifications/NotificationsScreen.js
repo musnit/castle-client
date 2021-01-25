@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  FlatList,
   RefreshControl,
   ScrollView,
   StatusBar,
@@ -22,6 +23,8 @@ import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 
 import FastImage from 'react-native-fast-image';
+
+const NOTIF_HEIGHT = 56;
 
 const styles = StyleSheet.create({
   container: {
@@ -162,7 +165,7 @@ export const NotificationsScreen = () => {
   const insets = useSafeArea();
   const { navigate } = useNavigation();
   const [orderedNotifs, setOrderedNotifs] = React.useState([]);
-  const [loading, setLoading] = React.useState(false);
+  const [refresh, setRefresh] = React.useState(false);
   const { notifications, markNotificationsReadAsync } = useSession();
   const isFocused = useIsFocused();
 
@@ -183,11 +186,11 @@ export const NotificationsScreen = () => {
   }, []);
 
   const onRefresh = React.useCallback(async () => {
-    setLoading(true);
+    setRefresh(true);
     try {
       await fetchNotificationsAsync();
     } catch (_) {}
-    setLoading(false);
+    setRefresh(false);
   }, []);
 
   useFocusEffect(
@@ -246,9 +249,31 @@ export const NotificationsScreen = () => {
     )
   );
 
+  const renderItem = React.useCallback(
+    ({ item, index }) => {
+      const notif = item;
+      const previousNotif = orderedNotifs[index - 1];
+
+      return (
+        <React.Fragment>
+          {index === 0 || (previousNotif && previousNotif.status !== notif.status) ? (
+            <NotificationHeader status={notif.status} />
+          ) : null}
+          <NotificationItem
+            notification={notif}
+            navigateToUser={navigateToUser}
+            navigateToUserList={navigateToUserList}
+            navigateToDeck={navigateToDeck}
+          />
+        </React.Fragment>
+      );
+    },
+    [orderedNotifs]
+  );
+
   const refreshControl = (
     <RefreshControl
-      refreshing={loading}
+      refreshing={refresh}
       onRefresh={onRefresh}
       tintColor="#fff"
       colors={['#fff', '#ccc']}
@@ -258,27 +283,29 @@ export const NotificationsScreen = () => {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <ScreenHeader title="Notifications" />
-      <ScrollView contentContainerStyle={styles.scrollView} refreshControl={refreshControl}>
-        {orderedNotifs.length ? (
-          orderedNotifs.map((notif, ii) => (
-            <React.Fragment key={`notif-${notif.notificationId}`}>
-              {ii === 0 || orderedNotifs[ii - 1].status !== notif.status ? (
-                <NotificationHeader key={`header-${notif.status}-${ii}`} status={notif.status} />
-              ) : null}
-              <NotificationItem
-                notification={notif}
-                navigateToUser={navigateToUser}
-                navigateToUserList={navigateToUserList}
-                navigateToDeck={navigateToDeck}
-              />
-            </React.Fragment>
-          ))
-        ) : (
-          <View style={styles.empty}>
+      {orderedNotifs.length ? (
+        <FlatList
+          data={orderedNotifs}
+          contentContainerStyle={styles.scrollView}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => item.notificationId}
+          showsVerticalScrollIndicator={false}
+          refreshControl={refreshControl}
+          getItemLayout={(data, index) => ({
+            length: NOTIF_HEIGHT,
+            offset: NOTIF_HEIGHT * index,
+            index,
+          })}
+        />
+      ) : (
+        <View style={styles.empty}>
+          {refresh ? (
+            <Text style={styles.emptyText}>Loading...</Text>
+          ) : (
             <Text style={styles.emptyText}>You don't have any notifications yet.</Text>
-          </View>
-        )}
-      </ScrollView>
+          )}
+        </View>
+      )}
     </View>
   );
 };
