@@ -5,8 +5,7 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
+  TouchableHighlight,
   View,
 } from 'react-native';
 import { FollowButton } from '../components/FollowButton';
@@ -130,12 +129,12 @@ const NotificationItem = ({ notification, navigateToUser, navigateToDeck, naviga
     notification?.users,
   ]);
   return (
-    <TouchableWithoutFeedback onPress={onPress}>
+    <TouchableHighlight onPress={onPress} underlayColor={Constants.colors.tapHighlight}>
       <View style={styles.notif}>
         {user?.photo?.url ? (
-          <TouchableOpacity style={styles.avatar} onPress={() => navigateToUser(user)}>
+          <TouchableHighlight style={styles.avatar} onPress={() => navigateToUser(user)}>
             <UserAvatar url={user.photo.url} />
-          </TouchableOpacity>
+          </TouchableHighlight>
         ) : null}
         <Text style={styles.notifBody}>
           <NotificationBody
@@ -155,7 +154,7 @@ const NotificationItem = ({ notification, navigateToUser, navigateToDeck, naviga
           <FollowButton user={user} style={styles.smallFollowButton} />
         ) : null}
       </View>
-    </TouchableWithoutFeedback>
+    </TouchableHighlight>
   );
 };
 

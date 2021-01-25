@@ -130,6 +130,7 @@ export const styles = {
 
 export const colors = {
   black: '#000',
+  tapHighlight: '#111',
   grayText: '#888',
   grayOnWhiteBorder: '#ccc',
   grayOnBlackBorder: '#444',
