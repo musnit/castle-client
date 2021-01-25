@@ -57,7 +57,10 @@ export const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, rou
   }, initialDeckState || EMPTY_PLAY_DECK_STATE);
 
   const onSelectNewCard = React.useCallback(
-    ({ cardId }) => {
+    (card) => {
+      // can be called without a card if someone builds a nav button with no destination
+      if (!card) return;
+      const { cardId } = card;
       cardIdRef.current = cardId;
       setCardState({
         cardId,
