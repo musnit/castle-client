@@ -8,7 +8,10 @@ let rootNavigatorRef = null;
 
 const navigateToRoute = ({ name, params }) => {
   if (rootNavigatorRef) {
-    rootNavigatorRef.dispatch(CommonActions.navigate({ name, params }));
+    // avoid race condition where ref gets set before react-nav finishes initializing
+    requestAnimationFrame(() => {
+      rootNavigatorRef.dispatch(CommonActions.navigate({ name, params }));
+    });
   }
 };
 
