@@ -239,12 +239,17 @@ export const CreateDeckScreen = (props) => {
     );
   };
 
-  const _navigateToCreateCard = (card) => {
-    navigation.navigate('CreateDeck', {
-      deckIdToEdit: deck.deckId,
-      cardIdToEdit: card.cardId,
-    });
-  };
+  const _navigateToCreateCard = React.useCallback(
+    (card) => {
+      if (deck?.deckId) {
+        navigation.navigate('CreateDeck', {
+          deckIdToEdit: deck.deckId,
+          cardIdToEdit: card.cardId,
+        });
+      }
+    },
+    [deck]
+  );
 
   const onChangeVisibility = React.useCallback(
     async (visibility) => {
