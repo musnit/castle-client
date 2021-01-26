@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from 'react-native-screens/native-stack';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import { useSession, fetchNotificationsAsync } from './Session';
+import { useSession, maybeFetchNotificationsAsync } from './Session';
 
 import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './AuthScreens';
 import { CreateScreen } from './create/CreateScreen';
@@ -247,7 +247,7 @@ export const RootNavigator = () => {
       // pass the `screen` param to ensure we pop to the top of the stack
       rootNavRef.current.navigate('Notifications', { screen: 'Notifications' });
     }
-    setTimeout(fetchNotificationsAsync, 250);
+    setTimeout(maybeFetchNotificationsAsync, 250);
   }, []);
   PushNotifications.usePushNotifications({
     onClicked: (data) => handlePushNotification({ data, clicked: true }),
@@ -257,7 +257,7 @@ export const RootNavigator = () => {
   // fetch notifs when we first notice a signed in user (including every app boot)
   React.useEffect(() => {
     if (isSignedIn) {
-      fetchNotificationsAsync();
+      maybeFetchNotificationsAsync();
     }
   }, [isSignedIn]);
 
@@ -265,7 +265,7 @@ export const RootNavigator = () => {
   useAppState(
     React.useCallback((state) => {
       if (state === 'active') {
-        fetchNotificationsAsync();
+        maybeFetchNotificationsAsync();
       }
     }, [])
   );

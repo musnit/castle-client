@@ -735,10 +735,22 @@ const _sendMarkNotificationsRead = debounce(
   100
 );
 
-export const fetchNotificationsAsync = async () => {
+const NOTIF_FETCH_THRESHOLD_MS = 10 * 60 * 1000;
+let notifLastFetchTime;
+
+export const maybeFetchNotificationsAsync = async (force = true) => {
   if (!gAuthToken) {
     return false;
   }
+
+  // This function is called frequently and can result in a lot of unnecessary reloading of the
+  // notifs tab. Only refresh if we need to.
+  if (!force && notifLastFetchTime && Date.now() - notifLastFetchTime < NOTIF_FETCH_THRESHOLD_MS) {
+    return false;
+  }
+
+  notifLastFetchTime = Date.now();
+
   const result = await apolloClient.query({
     query: gql`
     query {

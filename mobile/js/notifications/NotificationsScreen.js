@@ -16,7 +16,7 @@ import { toRecentDate } from '../common/date-utilities';
 import { useAppState } from '../ghost/GhostAppState';
 import { useNavigation, useFocusEffect, useIsFocused } from '../ReactNavigation';
 import { useSafeArea } from 'react-native-safe-area-context';
-import { useSession, fetchNotificationsAsync } from '../Session';
+import { useSession, maybeFetchNotificationsAsync } from '../Session';
 import { UserAvatar } from '../components/UserAvatar';
 
 import * as Amplitude from 'expo-analytics-amplitude';
@@ -185,10 +185,10 @@ export const NotificationsScreen = () => {
     Amplitude.logEvent('VIEW_NOTIFICATIONS');
   }, []);
 
-  const onRefresh = React.useCallback(async () => {
+  const onRefresh = React.useCallback(async (force = true) => {
     setRefresh(true);
     try {
-      await fetchNotificationsAsync();
+      await maybeFetchNotificationsAsync(force);
     } catch (_) {}
     setRefresh(false);
   }, []);
@@ -196,7 +196,8 @@ export const NotificationsScreen = () => {
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
-      onRefresh();
+      // Refresh notifs when focusing on notifs tab, but don't force update
+      onRefresh(false);
       return () => markNotificationsReadAsync();
     }, [])
   );
@@ -297,7 +298,10 @@ export const NotificationsScreen = () => {
             index,
           })}
         />
-      ) : (
+      ) : null}
+      {!notifications ? (
+        // Check notifications rather than orderedNotifs because orderedNotifs takes a few frames
+        // to be created, and we don't want this text to flash for frame
         <View style={styles.empty}>
           {refresh ? (
             <Text style={styles.emptyText}>Loading...</Text>
@@ -305,7 +309,7 @@ export const NotificationsScreen = () => {
             <Text style={styles.emptyText}>You don't have any notifications yet.</Text>
           )}
         </View>
-      )}
+      ) : null}
     </View>
   );
 };

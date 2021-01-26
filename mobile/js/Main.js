@@ -231,19 +231,19 @@ if (Platform.OS === 'android') {
     if (data?.numUnseenNotifications && !clicked) {
       PushNotifications.setBadgeCount(data.numUnseenNotifications);
     }
-    Session.fetchNotificationsAsync();
+    Session.maybeFetchNotificationsAsync();
   };
   PushNotifications.addClickedListener((data) => handlePushNotification({ data, clicked: true }));
   PushNotifications.addReceivedListener((data) => handlePushNotification({ data, clicked: false }));
 
   (async () => {
     await Session.loadAuthTokenAsync();
-    await Session.fetchNotificationsAsync();
+    await Session.maybeFetchNotificationsAsync();
   })();
 
   DeviceEventEmitter.addListener('onAppStateChange', async (state) => {
     if (state == 'active') {
-      await Session.fetchNotificationsAsync();
+      await Session.maybeFetchNotificationsAsync();
     }
   });
 }
