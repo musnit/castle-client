@@ -250,27 +250,24 @@ export const NotificationsScreen = () => {
     )
   );
 
-  const renderItem = React.useCallback(
-    ({ item, index }) => {
-      const notif = item;
-      const previousNotif = orderedNotifs[index - 1];
+  const renderItem = ({ item, index }) => {
+    const notif = item;
+    const previousNotif = orderedNotifs[index - 1];
 
-      return (
-        <React.Fragment>
-          {index === 0 || (previousNotif && previousNotif.status !== notif.status) ? (
-            <NotificationHeader status={notif.status} />
-          ) : null}
-          <NotificationItem
-            notification={notif}
-            navigateToUser={navigateToUser}
-            navigateToUserList={navigateToUserList}
-            navigateToDeck={navigateToDeck}
-          />
-        </React.Fragment>
-      );
-    },
-    [orderedNotifs]
-  );
+    return (
+      <React.Fragment>
+        {index === 0 || (previousNotif && previousNotif.status !== notif.status) ? (
+          <NotificationHeader status={notif.status} />
+        ) : null}
+        <NotificationItem
+          notification={notif}
+          navigateToUser={navigateToUser}
+          navigateToUserList={navigateToUserList}
+          navigateToDeck={navigateToDeck}
+        />
+      </React.Fragment>
+    );
+  };
 
   const refreshControl = (
     <RefreshControl
