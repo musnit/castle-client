@@ -229,7 +229,7 @@ if (Platform.OS === 'android') {
 
   const handlePushNotification = ({ data, clicked }) => {
     if (data?.numUnseenNotifications && !clicked) {
-      PushNotifications.setAppBadgeCount(data.numUnseenNotifications);
+      PushNotifications.setBadgeCount(data.numUnseenNotifications);
     }
     Session.maybeFetchNotificationsAsync();
   };

@@ -241,7 +241,7 @@ export const RootNavigator = () => {
   // fetch notifications when a notif arrives while we're running
   const handlePushNotification = React.useCallback(({ data, clicked }) => {
     if (data?.numUnseenNotifications && !clicked) {
-      PushNotifications.setAppBadgeCount(data.numUnseenNotifications);
+      PushNotifications.setBadgeCount(data.numUnseenNotifications);
     }
     if (clicked && rootNavRef.current) {
       // pass the `screen` param to ensure we pop to the top of the stack
