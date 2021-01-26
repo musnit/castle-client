@@ -238,7 +238,7 @@ export class Provider extends React.Component {
         (accum, n) => accum + (n.status === 'unseen'),
         0
       );
-      PushNotifications.setBadgeCount(notificationsBadgeCount);
+      PushNotifications.setAppBadgeCount(notificationsBadgeCount);
       return {
         ...state,
         notifications,
@@ -786,7 +786,7 @@ export const maybeFetchNotificationsAsync = async (force = true) => {
   const notificationsBadgeCount = notifications
     ? notifications.reduce((accum, n) => accum + (n.status === 'unseen'), 0)
     : 0;
-  PushNotifications.setBadgeCount(notificationsBadgeCount);
+  PushNotifications.setAppBadgeCount(notificationsBadgeCount);
   PushNotifications.setNewFollowingDecks(newFollowingDecks);
   EventEmitter.sendEvent('notifications', {
     newFollowingDecks,

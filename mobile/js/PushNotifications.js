@@ -86,7 +86,7 @@ export const addTokenListener = (listener) => {
   });
 };
 
-export const setBadgeCount = async (count) => {
+export const setAppBadgeCount = async (count) => {
   if (Platform.OS === 'ios') {
     return NativeModules.GhostPushNotifications.setBadgeCount(count);
   } else {
