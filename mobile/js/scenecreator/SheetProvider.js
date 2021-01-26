@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { BlueprintsSheet } from './sheets/BlueprintsSheet';
+import { NewBlueprintSheet } from './sheets/NewBlueprintSheet';
 import { CapturePreviewSheet } from './sheets/CapturePreviewSheet';
 import { CardToolsSheet } from './sheets/CardToolsSheet';
 import { CreateCardSettingsSheet } from './sheets/CreateCardSettingsSheet';
@@ -16,6 +17,10 @@ import { CARD_HEADER_HEIGHT } from './CreateCardHeader';
 const FULL_SHEET_HEIGHT = 100 * Viewport.vh - CARD_HEADER_HEIGHT;
 
 const ROOT_SHEETS = [
+  {
+    key: 'sceneCreatorNewBlueprint',
+    Component: NewBlueprintSheet,
+  },
   {
     key: 'sceneCreatorBlueprints',
     Component: BlueprintsSheet,
