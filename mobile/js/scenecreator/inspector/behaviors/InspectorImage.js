@@ -136,11 +136,12 @@ export default InspectorImage = ({ image, sendAction }) => {
             onPress={() => Utilities.launchImageLibrary(onChangeImage)}>
             <Text style={SceneCreatorConstants.styles.buttonLabel}>Library</Text>
           </TouchableOpacity>
+          {/* we don't currently include camera permissions in the app
           <TouchableOpacity
             style={[SceneCreatorConstants.styles.button, { marginLeft: 8 }]}
             onPress={() => Utilities.launchCamera(onChangeImage)}>
             <Text style={SceneCreatorConstants.styles.buttonLabel}>Camera</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
     </View>
