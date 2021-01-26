@@ -274,6 +274,13 @@ export const CreateCardScreen = ({
     },
   });
 
+  GhostEvents.useListen({
+    eventName: 'SHOW_NEW_BLUEPRINT_SHEET',
+    handler: () => {
+      setActiveSheet('sceneCreatorNewBlueprint');
+    },
+  });
+
   if (Constants.Android) {
     // after the game loads, it listens for keyboard events and
     // causes react native's back button event to fail
