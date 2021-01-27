@@ -10,6 +10,7 @@
 #include "common/config.h"
 #include "common/runtime.h"
 #include "common/Module.h"
+#include "DrawAlgorithms.hpp"
 
 #include <iostream>
 #include <cmath>
@@ -21,14 +22,29 @@ namespace ghost
 
 #define instance() (Module::getInstance<Ghost>(Module::M_GHOST))
 
-int w_test(lua_State *L)
+
+
+int w_subpathDataIntersection(lua_State *L)
 {
-	return 0;
+	Subpath s1(L, 1);
+	Subpath s2(L, 2);
+	
+	std::vector<Point> results = DrawAlgorithms::subpathDataIntersection(s1, s2);
+	
+	lua_createtable(L, results.size(), 0);
+	
+	for (size_t i = 0; i < results.size(); i++) {
+		lua_pushnumber(L, i + 1);
+		results[i].push(L);
+		lua_settable(L, -3);
+	}
+	
+	return 1;
 }
 
 static const luaL_Reg functions[] =
 {
-	{ "test", w_test },
+	{ "subpathDataIntersection", w_subpathDataIntersection },
 	/*{ "newImageData",  w_newImageData },
 	{ "newCompressedData", w_newCompressedData },
 	{ "isCompressed", w_isCompressed },
