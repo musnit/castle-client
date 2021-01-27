@@ -3,9 +3,13 @@ import { TouchableOpacity, StyleSheet, Switch, Text, View } from 'react-native';
 import { ConfigureInput } from '../components/ConfigureInput';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 
+import * as Constants from '../Constants';
+
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    width: '100%',
+    maxWidth: Constants.TABLET_MAX_FORM_WIDTH,
   },
   deleteButton: {
     marginTop: 16,

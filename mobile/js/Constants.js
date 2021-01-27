@@ -8,6 +8,9 @@ export const CARD_BORDER_RADIUS = 12;
 export const CARD_SMALL_BORDER_RADIUS = 6;
 export const GRID_PADDING = 8;
 
+// on tablets, limit some form widths
+export const TABLET_MAX_FORM_WIDTH = 512;
+
 export const styles = {
   dropShadow: {
     shadowColor: '#000',

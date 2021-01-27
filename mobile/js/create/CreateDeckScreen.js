@@ -293,12 +293,14 @@ export const CreateDeckScreen = (props) => {
             onPress={_navigateToCreateCard}
           />
         ) : (
-          <ConfigureDeck
-            deck={deck}
-            onChange={_changeDeck}
-            onDeleteDeck={_deleteDeck}
-            onChangeAccessPermissions={onChangeAccessPermissions}
-          />
+          <View style={{ width: '100%', alignItems: 'center' }}>
+            <ConfigureDeck
+              deck={deck}
+              onChange={_changeDeck}
+              onDeleteDeck={_deleteDeck}
+              onChangeAccessPermissions={onChangeAccessPermissions}
+            />
+          </View>
         )}
       </SafeAreaView>
       {visibilitySheetVisible ? <SheetBackgroundOverlay onPress={closeVisibilitySheet} /> : null}

@@ -487,7 +487,10 @@ const WithHeader = ({ children }) => (
         source={require('../assets/images/castle-wordmark-onblack.png')}
       />
     </View>
-    <View style={{ width: '100%', alignItems: 'center' }}>{children}</View>
+    <View
+      style={{ width: '100%', maxWidth: Constants.TABLET_MAX_FORM_WIDTH, alignItems: 'center' }}>
+      {children}
+    </View>
   </KeyboardAwareScrollView>
 );
 
