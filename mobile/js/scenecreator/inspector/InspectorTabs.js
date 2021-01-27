@@ -39,10 +39,10 @@ const GeneralTab = ({ behaviors, sendActions }) => {
           <Inspector.TextLayout text={behaviors.Text} sendAction={sendActions.Text} />
         </React.Fragment>
       )}
-      {!isTextActorSelected && (
+      {isBlueprint && !isTextActorSelected && (
         <Inspector.Drawing drawing2={behaviors.Drawing2} sendAction={sendActions.Drawing2} />
       )}
-      <Inspector.Tags tags={behaviors.Tags} sendAction={sendActions.Tags} />
+      {isBlueprint && <Inspector.Tags tags={behaviors.Tags} sendAction={sendActions.Tags} />}
 
       {!isTextActorSelected && (
         <Inspector.Layout
@@ -129,10 +129,14 @@ const MovementTab = ({ behaviors, sendActions, addChildSheet }) => {
 };
 
 export const InspectorTabs = ({ selectedTab, addChildSheet }) => {
-  const { behaviors, behaviorActions: sendActions } = useCardCreator();
+  const { inspectorActions, behaviors, behaviorActions: sendActions } = useCardCreator();
 
   if (!behaviors) {
     return <View />;
+  }
+
+  if (inspectorActions && !inspectorActions.isBlueprint) {
+    selectedTab = 'general';
   }
 
   let tabContents;

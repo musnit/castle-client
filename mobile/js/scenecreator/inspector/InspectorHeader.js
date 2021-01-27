@@ -229,15 +229,17 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
             </TouchableOpacity>
           </View>
         </View>
-        <View style={styles.navigation}>
-          <SegmentedNavigation
-            style={styles.navigation}
-            items={tabItems}
-            selectedItem={tabItems.find((i) => i.value === selectedTab)}
-            onSelectItem={(item) => setSelectedTab(item.value)}
-            isLightBackground
-          />
-        </View>
+        {data.isBlueprint ? (
+          <View style={styles.navigation}>
+            <SegmentedNavigation
+              style={styles.navigation}
+              items={tabItems}
+              selectedItem={tabItems.find((i) => i.value === selectedTab)}
+              onSelectItem={(item) => setSelectedTab(item.value)}
+              isLightBackground
+            />
+          </View>
+        ) : null}
       </View>
     );
   }

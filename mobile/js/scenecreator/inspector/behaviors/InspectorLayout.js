@@ -4,6 +4,7 @@ import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 import { InspectorNumberInput } from '../components/InspectorNumberInput';
 import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
+import { useCardCreator } from '../../CreateCardContext';
 
 const styles = StyleSheet.create({
   container: {
@@ -82,6 +83,9 @@ const LayoutInput = ({ behavior, propName, label, sendAction, type = 'number' })
 };
 
 export default InspectorLayout = ({ body, circleShape, sendAction, sendActions }) => {
+  const { inspectorActions } = useCardCreator();
+  const isBlueprint = inspectorActions && inspectorActions.isBlueprint;
+
   const onChangeCircleShape = React.useCallback(
     (value) => {
       if (value) {
@@ -148,18 +152,22 @@ export default InspectorLayout = ({ body, circleShape, sendAction, sendActions }
             />
           </React.Fragment>
         )}
-        <LayoutInput
-          behavior={body}
-          propName="x"
-          label="X Position"
-          sendAction={sendActions.Body}
-        />
-        <LayoutInput
-          behavior={body}
-          propName="y"
-          label="Y Position"
-          sendAction={sendActions.Body}
-        />
+        {!isBlueprint ? (
+          <LayoutInput
+            behavior={body}
+            propName="x"
+            label="X Position"
+            sendAction={sendActions.Body}
+          />
+        ) : null}
+        {!isBlueprint ? (
+          <LayoutInput
+            behavior={body}
+            propName="y"
+            label="Y Position"
+            sendAction={sendActions.Body}
+          />
+        ) : null}
         <LayoutInput
           behavior={body}
           propName="angle"
@@ -167,25 +175,31 @@ export default InspectorLayout = ({ body, circleShape, sendAction, sendActions }
           sendAction={sendActions.Body}
         />
       </View>
-      <View style={styles.applyLayoutChangesContainer}>
-        <TouchableOpacity
-          style={SceneCreatorConstants.styles.button}
-          onPress={onApplyLayoutChangesToBlueprint}>
-          <Text style={SceneCreatorConstants.styles.buttonLabel}>
-            Apply Layout changes to blueprint
-          </Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.row}>
-        <InspectorCheckbox
-          value={relative}
-          onChange={onChangeRelative}
-          label="Relative to camera"
-        />
-      </View>
-      <View style={styles.row}>
-        <InspectorCheckbox value={visible} onChange={onChangeVisible} label="Visible" />
-      </View>
+      {!isBlueprint ? (
+        <View style={styles.applyLayoutChangesContainer}>
+          <TouchableOpacity
+            style={SceneCreatorConstants.styles.button}
+            onPress={onApplyLayoutChangesToBlueprint}>
+            <Text style={SceneCreatorConstants.styles.buttonLabel}>
+              Apply Layout changes to blueprint
+            </Text>
+          </TouchableOpacity>
+        </View>
+      ) : null}
+      {isBlueprint ? (
+        <View style={styles.row}>
+          <InspectorCheckbox
+            value={relative}
+            onChange={onChangeRelative}
+            label="Relative to camera"
+          />
+        </View>
+      ) : null}
+      {isBlueprint ? (
+        <View style={styles.row}>
+          <InspectorCheckbox value={visible} onChange={onChangeVisible} label="Visible" />
+        </View>
+      ) : null}
     </View>
   );
 };
