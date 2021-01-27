@@ -21,36 +21,24 @@ import * as Utilities from '../common/utilities';
 
 const { vw, vh } = Viewport;
 
-// Determines how much horizontal padding to add to each card to ensure proper spacing
-//
-// Design goal is for the selected card to be entirely visible as well as the top
-// half of the next card's header. Rather than do a bunch of fancy math to figure
-// out the appropriate amount of padding at each screen size I just looked at a few
-// phones to figure out ratios that accomplish that:
-//
-// Phone: vw / vh = ratio | amount of padding needed
-// iPhone SE: 3.75 / 6.67 = 0.56 | 20
-// Pixel 3a: 3.6 / 6.92 = 0.52 | 0
-// Pixel 4a: 3.93 / 7.85 = 0.50 | 0
+const FEED_HEADER_HEIGHT = 56;
+const FEED_ITEM_TOP_Y = FEED_HEADER_HEIGHT + 24;
+const DECK_FEED_ITEM_MARGIN = 24;
 
+// Determines how much horizontal padding to add to each card to ensure proper spacing.
+// Design goal is for the selected card to be entirely visible as well as the top
+// half of the next card's header.
 const getItemHorzPadding = () => {
   const ratio = vw / vh;
-  if (ratio >= 0.56) {
-    return 20;
-  } else if (ratio >= 0.54) {
-    return 10;
-  } else {
-    return 0;
-  }
+  const availHeight = vh * 100 - FEED_HEADER_HEIGHT - DECK_FEED_ITEM_MARGIN - 128;
+  const maxWidth = availHeight * Constants.CARD_RATIO;
+  const padding = (vw * 100 - maxWidth) / 2;
+  return padding > 0 ? padding : 0;
 };
 
-const FEED_HEADER_HEIGHT = 56;
-const DECK_FEED_ITEM_MARGIN = 24;
 const DECK_FEED_ITEM_HEIGHT =
   (1 / Constants.CARD_RATIO) * (100 * vw - getItemHorzPadding() * 2) + // height of card
   DECK_FEED_ITEM_MARGIN; // margin below cell
-
-const FEED_ITEM_TOP_Y = FEED_HEADER_HEIGHT + 24;
 
 const SPRING_CONFIG = {
   tension: 100,
