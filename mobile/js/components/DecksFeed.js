@@ -28,9 +28,11 @@ const DECK_FEED_ITEM_MARGIN = 24;
 // Determines how much horizontal padding to add to each card to ensure proper spacing.
 // Design goal is for the selected card to be entirely visible as well as the top
 // half of the next card's header.
-const getItemHorzPadding = () => {
+const getItemHorzPadding = ({ isPlaying = false } = {}) => {
   const ratio = vw / vh;
-  const availHeight = vh * 100 - FEED_HEADER_HEIGHT - DECK_FEED_ITEM_MARGIN - 128;
+  const availHeight = isPlaying
+    ? vh * 100 - FEED_ITEM_TOP_Y - 32
+    : vh * 100 - FEED_ITEM_TOP_Y - DECK_FEED_ITEM_MARGIN - 100;
   const maxWidth = availHeight * Constants.CARD_RATIO;
   const padding = (vw * 100 - maxWidth) / 2;
   return padding > 0 ? padding : 0;
@@ -207,7 +209,7 @@ const CurrentDeckCell = ({
         cardAspectFitStyles,
         {
           overflow: 'visible',
-          paddingHorizontal: isPlaying ? 0 : getItemHorzPadding(),
+          paddingHorizontal: getItemHorzPadding({ isPlaying }),
         },
       ]}>
       <View style={styles.itemCard}>
