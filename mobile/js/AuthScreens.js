@@ -38,7 +38,22 @@ const disabledTextInputStyle = {
   borderColor: Constants.colors.grayText,
 };
 
+const parseErrors = (e) => {
+  if (e.graphQLErrors?.length) {
+    return e.graphQLErrors;
+  } else {
+    return [
+      {
+        message: e.message,
+        extensions: { code: 'NETWORK_ERROR' },
+      },
+    ];
+  }
+};
+
 const errorMessages = {
+  NETWORK_ERROR:
+    'We could not process your request because the app appears to be offline. Please check your network connection and try again.',
   USER_NOT_FOUND:
     'The email or username you entered does not belong to an account. Please check your information and try again.',
   LOGIN_BAD_CREDENTIALS:
@@ -160,7 +175,7 @@ const LoginForm = ({ route }) => {
       }
     } catch (e) {
       setSigningIn(false);
-      setErrors(e.graphQLErrors);
+      setErrors(parseErrors(e));
     }
   };
 
@@ -176,8 +191,8 @@ const LoginForm = ({ route }) => {
     <Fragment>
       {errors ? (
         <Fragment>
-          {errors.map((error) => (
-            <Announcement body={errorMessages[error.extensions.code]} />
+          {errors.map((error, ii) => (
+            <Announcement key={`announcement-${ii}`} body={errorMessages[error.extensions.code]} />
           ))}
         </Fragment>
       ) : null}
@@ -279,7 +294,7 @@ const CreateAccountForm = ({ route }) => {
       }
     } catch (e) {
       setCreatingAccount(false);
-      setErrors(e.graphQLErrors);
+      setErrors(parseErrors(e));
     }
   };
 
@@ -287,7 +302,12 @@ const CreateAccountForm = ({ route }) => {
     <Fragment>
       <Fragment>
         {errors?.length
-          ? errors.map((error) => <Announcement body={errorMessages[error.extensions.code]} />)
+          ? errors.map((error, ii) => (
+              <Announcement
+                key={`announcement-${ii}`}
+                body={errorMessages[error.extensions.code]}
+              />
+            ))
           : null}
       </Fragment>
       <View style={{ paddingBottom: 16, alignItems: 'center' }}>
@@ -411,7 +431,7 @@ const ForgotPasswordForm = () => {
       });
     } catch (e) {
       setResettingPassword(false);
-      setErrors(e.graphQLErrors ?? e);
+      setErrors(parseErrors(e));
     }
   };
 
@@ -419,8 +439,8 @@ const ForgotPasswordForm = () => {
     <Fragment>
       {errors ? (
         <Fragment>
-          {errors.map((error) => (
-            <Announcement body={errorMessages[error.extensions.code]} />
+          {errors.map((error, ii) => (
+            <Announcement key={`announcement-${ii}`} body={errorMessages[error.extensions.code]} />
           ))}
         </Fragment>
       ) : null}
