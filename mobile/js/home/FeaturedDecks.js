@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import { StatusBar, View, Text, Linking, StyleSheet, Platform } from 'react-native';
 import { DecksFeed } from '../components/DecksFeed';
+import { EmptyFeed } from './EmptyFeed';
 import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
 import gql from 'graphql-tag';
@@ -83,6 +84,7 @@ export const FeaturedDecks = ({ focused, deckId }) => {
     time: undefined,
   });
   const [decks, setDecks] = React.useState(undefined);
+  const [error, setError] = React.useState(undefined);
   const [fetchDecks, query] = useLazyQuery(
     gql`
       query FeaturedFeed {
@@ -112,25 +114,36 @@ export const FeaturedDecks = ({ focused, deckId }) => {
   );
 
   React.useEffect(() => {
-    if (query.called && !query.loading && !query.error && query.data) {
-      setDecks(query.data.featuredFeed);
+    if (query.called && !query.loading) {
+      if (query.data) {
+        setDecks(query.data.featuredFeed);
+        setError(undefined);
+      } else if (query.error) {
+        setError(query.error);
+      }
+    } else {
+      setError(undefined);
     }
   }, [query.called, query.loading, query.error, query.data]);
 
   return (
     <Fragment>
       <AppUpdateNotice />
-      <DecksFeed
-        decks={decks}
-        isPlaying={deckId !== undefined}
-        onPressDeck={({ deckId }) =>
-          navigate('HomeScreen', {
-            deckId,
-          })
-        }
-        refreshing={!!(lastFetched.time && query.loading && decks?.length)}
-        onRefresh={onRefresh}
-      />
+      {error ? (
+        <EmptyFeed error={error} />
+      ) : (
+        <DecksFeed
+          decks={decks}
+          isPlaying={deckId !== undefined}
+          onPressDeck={({ deckId }) =>
+            navigate('HomeScreen', {
+              deckId,
+            })
+          }
+          refreshing={!!(lastFetched.time && query.loading && decks?.length)}
+          onRefresh={onRefresh}
+        />
+      )}
     </Fragment>
   );
 };
