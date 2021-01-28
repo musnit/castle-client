@@ -20,6 +20,7 @@ export const UserAvatar = ({ url, shadow, style }) => {
           width: '100%',
           aspectRatio: 1,
           borderRadius: 1000000,
+          backgroundColor: '#666',
         }}
         source={{ uri: url }}
       />

@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
     marginRight: 16,
   },
+  right: { paddingVertical: 16 },
   username: {
     fontSize: 20,
     color: Constants.colors.white,
@@ -80,7 +81,7 @@ const makeProfileLinks = ({ user }) => {
   return linksItems;
 };
 
-export const ProfileHeader = ({ user, isMe, onPressSettings, onRefresh }) => {
+export const ProfileHeader = ({ user, isMe, onPressSettings, onRefresh, loading, error }) => {
   let linksItems = makeProfileLinks({ user });
   if (isMe) {
     linksItems.push({
@@ -97,53 +98,59 @@ export const ProfileHeader = ({ user, isMe, onPressSettings, onRefresh }) => {
         <View style={styles.avatar}>
           <UserAvatar url={user?.photo?.url} />
         </View>
-        <View style={{ paddingVertical: 16 }}>
-          <Text style={styles.username}>@{user?.username}</Text>
-          <View style={styles.profileItems}>
-            {linksItems.length > 0
-              ? linksItems.map((item, ii) => {
-                  const Icon = item.iconType;
-                  return (
-                    <TouchableOpacity
-                      key={`link-item-${ii}`}
-                      style={[
-                        styles.profileItem,
-                        { marginBottom: ii < linksItems.length - 1 ? 8 : 0 },
-                      ]}
-                      onPress={item.onPress}>
-                      <Icon name={item.icon} color="#aaa" size={14} style={{ marginRight: 8 }} />
-                      <Text style={{ fontSize: 16, color: Constants.colors.grayText }}>
-                        {item.label}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })
-              : null}
+        {error ? null : (
+          <View style={styles.right}>
+            <Text style={styles.username}>@{user?.username}</Text>
+            <View style={styles.profileItems}>
+              {linksItems.length > 0
+                ? linksItems.map((item, ii) => {
+                    const Icon = item.iconType;
+                    return (
+                      <TouchableOpacity
+                        key={`link-item-${ii}`}
+                        style={[
+                          styles.profileItem,
+                          { marginBottom: ii < linksItems.length - 1 ? 8 : 0 },
+                        ]}
+                        onPress={item.onPress}>
+                        <Icon name={item.icon} color="#aaa" size={14} style={{ marginRight: 8 }} />
+                        <Text style={{ fontSize: 16, color: Constants.colors.grayText }}>
+                          {item.label}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })
+                : null}
+            </View>
           </View>
-        </View>
+        )}
       </View>
-      {!isMe && user ? (
-        <View style={styles.profileRow}>
-          <FollowButton user={user} onPress={onRefresh} />
-          {user.connections.includes('followedBy') ? (
-            <View style={styles.followedBy}>
-              <Text style={styles.followedByLabel}>Follows You</Text>
+      {user && !error ? (
+        <>
+          {!isMe ? (
+            <View style={styles.profileRow}>
+              <FollowButton user={user} onPress={onRefresh} />
+              {user.connections.includes('followedBy') ? (
+                <View style={styles.followedBy}>
+                  <Text style={styles.followedByLabel}>Follows You</Text>
+                </View>
+              ) : null}
             </View>
           ) : null}
-        </View>
-      ) : null}
-      <ProfileConnections
-        followersCount={user?.followersCount}
-        connections={user?.connectionsYouKnow}
-      />
-      {user?.badges?.length ? (
-        <PopoverProvider>
-          <View style={styles.profileRow}>
-            {user.badges.map((badge, ii) => (
-              <ProfileBadge badge={badge} key={`badge-${ii}`} />
-            ))}
-          </View>
-        </PopoverProvider>
+          <ProfileConnections
+            followersCount={user?.followersCount}
+            connections={user?.connectionsYouKnow}
+          />
+          {user?.badges?.length ? (
+            <PopoverProvider>
+              <View style={styles.profileRow}>
+                {user.badges.map((badge, ii) => (
+                  <ProfileBadge badge={badge} key={`badge-${ii}`} />
+                ))}
+              </View>
+            </PopoverProvider>
+          ) : null}
+        </>
       ) : null}
     </>
   );

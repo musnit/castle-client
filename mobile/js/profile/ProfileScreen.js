@@ -148,6 +148,8 @@ export const ProfileScreen = ({ userId, route }) => {
           <ProfileHeader
             user={user}
             isMe={isMe}
+            loading={query.loading}
+            error={error}
             onPressSettings={() => setSettingsSheet(true)}
             onRefresh={onRefresh}
           />
