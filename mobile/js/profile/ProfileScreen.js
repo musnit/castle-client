@@ -3,6 +3,7 @@ import { Linking, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 're
 import gql from 'graphql-tag';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { DecksGrid } from '../components/DecksGrid';
+import { EmptyFeed } from '../home/EmptyFeed';
 import { FollowButton } from '../components/FollowButton';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -172,6 +173,7 @@ const ProfileDecksGrid = ({ user, refreshing, onRefresh }) => {
 export const ProfileScreen = ({ userId, route }) => {
   const [settingsSheetIsOpen, setSettingsSheet] = useState(false);
   const [user, setUser] = React.useState(null);
+  const [error, setError] = React.useState(undefined);
 
   const { signOutAsync, userId: signedInUserId } = useSession();
   if (!userId && route?.params) {
@@ -190,8 +192,15 @@ export const ProfileScreen = ({ userId, route }) => {
   }, [fetchProfile]);
 
   React.useEffect(() => {
-    if (query.called && !query.loading && !query.error && query.data) {
-      setUser(isMe ? query.data.me : query.data.user);
+    if (query.called && !query.loading) {
+      if (query.data) {
+        setUser(isMe ? query.data.me : query.data.user);
+        setError(undefined);
+      } else if (query.error) {
+        setError(query.error);
+      }
+    } else {
+      setError(undefined);
     }
   }, [query.called, query.loading, query.error, query.data]);
 
@@ -281,7 +290,11 @@ export const ProfileScreen = ({ userId, route }) => {
             </PopoverProvider>
           ) : null}
         </SafeAreaView>
-        <ProfileDecksGrid user={user} refreshing={query.loading} onRefresh={onRefresh} />
+        {error ? (
+          <EmptyFeed error={error} onRefresh={onRefresh} />
+        ) : (
+          <ProfileDecksGrid user={user} refreshing={query.loading} onRefresh={onRefresh} />
+        )}
       </View>
       {isMe && user ? (
         <ProfileSettingsSheet
