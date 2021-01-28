@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-community/async-storage';
 import debounce from 'lodash.debounce';
 import FastImage from 'react-native-fast-image';
 import gql from 'graphql-tag';
 import ExpoConstants from 'expo-constants';
-
+import { CastleAsyncStorage } from './common/CastleAsyncStorage';
 import { Platform } from 'react-native';
 import { ApolloClient } from 'apollo-client';
 import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
@@ -30,15 +29,6 @@ const EMPTY_SESSION = {
 };
 
 const SessionContext = React.createContext(EMPTY_SESSION);
-
-let CastleAsyncStorage =
-  Platform.OS === 'ios'
-    ? AsyncStorage
-    : {
-        getItem: GhostChannels.getCastleAsyncStorage,
-        setItem: GhostChannels.setCastleAsyncStorage,
-        removeItem: GhostChannels.removeCastleAsyncStorage,
-      };
 
 PushNotifications.addTokenListener(async (token) => {
   if (!gAuthToken) {
