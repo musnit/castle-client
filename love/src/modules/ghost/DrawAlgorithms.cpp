@@ -8,6 +8,11 @@
 #include "DrawAlgorithms.hpp"
 #include <math.h>
 
+namespace love
+{
+namespace ghost
+{
+
 bool DrawAlgorithms::floatEquals(float f1, float f2) {
   return f1 > (f2 - 0.001) && f1 < (f2 + 0.001);
 }
@@ -232,4 +237,7 @@ std::vector<Point> DrawAlgorithms::subpathDataIntersection(Subpath s1, Subpath s
 	}
   }
   return results;
+}
+
+}
 }

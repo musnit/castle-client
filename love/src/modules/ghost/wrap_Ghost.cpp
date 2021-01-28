@@ -22,8 +22,6 @@ namespace ghost
 
 #define instance() (Module::getInstance<Ghost>(Module::M_GHOST))
 
-
-
 int w_subpathDataIntersection(lua_State *L)
 {
 	Subpath s1(L, 1);
@@ -42,13 +40,17 @@ int w_subpathDataIntersection(lua_State *L)
 	return 1;
 }
 
+int w_loadDrawData(lua_State *L)
+{
+	DrawData d(L, 1);
+	
+	return 0;
+}
+
 static const luaL_Reg functions[] =
 {
 	{ "subpathDataIntersection", w_subpathDataIntersection },
-	/*{ "newImageData",  w_newImageData },
-	{ "newCompressedData", w_newCompressedData },
-	{ "isCompressed", w_isCompressed },
-	{ "newCubeFaces", w_newCubeFaces },*/
+	{ "loadDrawData", w_loadDrawData },
 	{ 0, 0 }
 };
 
