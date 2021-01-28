@@ -130,7 +130,7 @@ export const FeaturedDecks = ({ focused, deckId }) => {
     <Fragment>
       <AppUpdateNotice />
       {error ? (
-        <EmptyFeed error={error} />
+        <EmptyFeed error={error} onRefresh={onRefresh} />
       ) : (
         <DecksFeed
           decks={decks}

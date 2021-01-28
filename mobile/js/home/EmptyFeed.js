@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const styles = StyleSheet.create({
   empty: {
@@ -21,6 +21,19 @@ const styles = StyleSheet.create({
     color: '#fff',
     paddingHorizontal: 16,
   },
+  refreshButton: {
+    borderWidth: 1,
+    borderBottomWidth: 2,
+    borderColor: '#fff',
+    borderRadius: 4,
+    padding: 16,
+    marginVertical: 64,
+  },
+  refreshText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
 });
 
 const formatError = (error) => {
@@ -40,9 +53,14 @@ const formatError = (error) => {
   return message;
 };
 
-export const EmptyFeed = ({ message, error }) => (
+export const EmptyFeed = ({ message, error, onRefresh }) => (
   <View style={styles.empty}>
     <Text style={styles.emptyText}>{message}</Text>
     {error ? <Text style={styles.error}>{formatError(error)}</Text> : null}
+    {onRefresh ? (
+      <TouchableOpacity style={styles.refreshButton} onPress={onRefresh}>
+        <Text style={styles.refreshText}>Reload</Text>
+      </TouchableOpacity>
+    ) : null}
   </View>
 );
