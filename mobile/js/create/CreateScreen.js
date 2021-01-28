@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import { CardCell } from '../components/CardCell';
+import { EmptyFeed } from '../home/EmptyFeed';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useLazyQuery } from '@apollo/react-hooks';
@@ -83,6 +84,7 @@ export const CreateScreen = () => {
   const insets = useSafeArea();
   const navigation = useNavigation();
   const [decks, setDecks] = React.useState(undefined);
+  const [error, setError] = React.useState(undefined);
   const [fetchDecks, query] = useLazyQuery(
     gql`
       query Me {
@@ -120,11 +122,18 @@ export const CreateScreen = () => {
   );
 
   React.useEffect(() => {
-    if (query.called && !query.loading && !query.error && query.data) {
-      const decks = query.data.me.decks;
-      if (decks && decks.length) {
-        setDecks(decks.sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified)));
+    if (query.called && !query.loading) {
+      if (query.data) {
+        const decks = query.data.me.decks;
+        if (decks && decks.length) {
+          setDecks(decks.sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified)));
+        }
+        setError(undefined);
+      } else if (query.error) {
+        setError(query.error);
       }
+    } else {
+      setError(undefined);
     }
   }, [query.called, query.loading, query.error, query.data]);
 
@@ -140,39 +149,43 @@ export const CreateScreen = () => {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <ScreenHeader title="Your Decks" />
-      <ScrollView
-        contentContainerStyle={Constants.styles.gridContainer}
-        refreshControl={refreshControl}>
-        <CreateDeckCell
-          key="create"
-          onPress={() => {
-            navigation.push(
-              'CreateDeck',
-              {
-                deckIdToEdit: LocalId.makeId(),
-                cardIdToEdit: LocalId.makeId(),
-              },
-              { isFullscreen: true }
-            );
-          }}
-        />
-        {decks &&
-          decks.map((deck) => (
-            <EditDeckCell
-              key={deck.deckId}
-              deck={deck}
-              onPress={() => {
-                navigation.push(
-                  'CreateDeck',
-                  {
-                    deckIdToEdit: deck.deckId,
-                  },
-                  { isFullscreen: true }
-                );
-              }}
-            />
-          ))}
-      </ScrollView>
+      {error ? (
+        <EmptyFeed error={error} onRefresh={fetchDecks} />
+      ) : (
+        <ScrollView
+          contentContainerStyle={Constants.styles.gridContainer}
+          refreshControl={refreshControl}>
+          <CreateDeckCell
+            key="create"
+            onPress={() => {
+              navigation.push(
+                'CreateDeck',
+                {
+                  deckIdToEdit: LocalId.makeId(),
+                  cardIdToEdit: LocalId.makeId(),
+                },
+                { isFullscreen: true }
+              );
+            }}
+          />
+          {decks &&
+            decks.map((deck) => (
+              <EditDeckCell
+                key={deck.deckId}
+                deck={deck}
+                onPress={() => {
+                  navigation.push(
+                    'CreateDeck',
+                    {
+                      deckIdToEdit: deck.deckId,
+                    },
+                    { isFullscreen: true }
+                  );
+                }}
+              />
+            ))}
+        </ScrollView>
+      )}
     </View>
   );
 };
