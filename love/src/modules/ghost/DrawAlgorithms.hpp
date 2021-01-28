@@ -12,6 +12,11 @@
 #include <vector>
 #include "GhostTypes.h"
 
+namespace love
+{
+namespace ghost
+{
+
 class DrawAlgorithms {
 public:
 	static bool floatEquals(float f1, float f2);
@@ -24,5 +29,8 @@ public:
 	static bool isAngleBetween(float N, float a, float b);
 	static std::vector<Point> subpathDataIntersection(Subpath s1, Subpath s2);
 };
+
+}
+}
 
 #endif /* DrawAlgorithms_hpp */
