@@ -1,10 +1,13 @@
 import * as React from 'react';
 import { NativeModules, Platform, DeviceEventEmitter, NativeEventEmitter } from 'react-native';
+import { CastleAsyncStorage } from './common/CastleAsyncStorage';
 
 let gListenerId = 0;
 let gInitialData = null;
 const gReceivedListeners = {};
 const gClickedListeners = {};
+
+const PUSH_TOKEN_STORAGE_KEY = 'pushNotificationToken';
 
 const eventEmitter = Platform.select({
   ios: new NativeEventEmitter(NativeModules.GhostPushNotifications),
@@ -71,6 +74,11 @@ export const requestTokenAsync = async () => {
   }
 };
 
+export const clearTokenAsync = async () => {
+  // just clear local state so we know to notify the server for any future token
+  return CastleAsyncStorage.removeItem(PUSH_TOKEN_STORAGE_KEY);
+};
+
 export const getPlatformAsync = () => {
   return NativeModules.GhostPushNotifications.getPlatform();
 };
@@ -81,8 +89,16 @@ export const addTokenListener = (listener) => {
     android: DeviceEventEmitter,
   });
 
-  eventEmitter.addListener('onNewPushNotificationToken', (event) => {
-    listener(event.token);
+  eventEmitter.addListener('onNewPushNotificationToken', async (event) => {
+    const existingToken = await CastleAsyncStorage.getItem(PUSH_TOKEN_STORAGE_KEY);
+    if (!existingToken || existingToken !== event.token) {
+      listener(event.token);
+      if (event.token) {
+        CastleAsyncStorage.setItem(PUSH_TOKEN_STORAGE_KEY, event.token);
+      } else {
+        CastleAsyncStorage.removeItem(PUSH_TOKEN_STORAGE_KEY);
+      }
+    }
   });
 };
 
