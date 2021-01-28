@@ -35,7 +35,7 @@ int w_subpathDataIntersection(lua_State *L)
 	
 	for (size_t i = 0; i < results.size(); i++) {
 		lua_pushnumber(L, i + 1);
-		results[i].push(L);
+		results[i].write(L);
 		lua_settable(L, -3);
 	}
 	
