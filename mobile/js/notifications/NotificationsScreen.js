@@ -21,6 +21,7 @@ import { UserAvatar } from '../components/UserAvatar';
 
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
+import * as PushNotifications from '../PushNotifications';
 
 import FastImage from 'react-native-fast-image';
 
@@ -183,6 +184,11 @@ export const NotificationsScreen = () => {
 
   React.useEffect(() => {
     Amplitude.logEvent('VIEW_NOTIFICATIONS');
+
+    // request permissions and token for push notifs when the notifs tab is first viewed.
+    // whether they accept or deny, subsequent calls to this method won't pop up anything for
+    // the user.
+    PushNotifications.requestTokenAsync();
   }, []);
 
   const onRefresh = React.useCallback(async (force = true) => {

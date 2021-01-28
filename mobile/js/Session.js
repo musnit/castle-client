@@ -115,12 +115,11 @@ export class Provider extends React.Component {
       if (token) {
         await CastleAsyncStorage.setItem('AUTH_TOKEN', token);
         await CastleAsyncStorage.setItem('USER_ID', userId);
-
-        await PushNotifications.requestTokenAsync();
         Amplitude.setUserId(gUserId);
       } else {
         await CastleAsyncStorage.removeItem('AUTH_TOKEN');
         await CastleAsyncStorage.removeItem('USER_ID');
+        await PushNotifications.clearTokenAsync();
         Amplitude.setUserId(null);
         Amplitude.clearUserProperties();
       }
