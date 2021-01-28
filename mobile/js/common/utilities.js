@@ -1,7 +1,7 @@
 import React from 'react';
 import { Keyboard, Share } from 'react-native';
 import gql from 'graphql-tag';
-import ImagePicker from 'react-native-image-picker';
+import { launchImageLibrary as ImagePickerLaunchImageLibrary } from 'react-native-image-picker';
 import { ReactNativeFile } from 'apollo-upload-client';
 import * as Session from '../Session';
 import * as LocalId from './local-id';
@@ -100,14 +100,18 @@ export const makeCardPreviewTitles = (deck) => {
 };
 
 export const launchImagePicker = (methodName, callback = () => {}, opts = {}) => {
-  const options = { maxWidth: 1024, maxHeight: 1024, imageFileType: 'png' };
+  const options = { maxWidth: 1024, maxHeight: 1024, mediaType: 'photo' };
 
   if (Constants.Android) {
     // URIs may some times be 'content://', this forces copying to 'file://'
     options.rotation = 360;
   }
 
-  ImagePicker[methodName](options, async ({ didCancel, error, uri }) => {
+  if (methodName !== 'launchImageLibrary') {
+    throw new Error(`Currently utilities.js only supports 'launchImageLibrary'`);
+  }
+
+  ImagePickerLaunchImageLibrary(options, async ({ didCancel, error, uri }) => {
     if (!didCancel) {
       if (error) {
         callback({ error });
