@@ -49,6 +49,13 @@ const styles = StyleSheet.create({
     fontSize: 13,
     letterSpacing: 1,
   },
+  skeletonRow: {
+    width: '50%',
+    height: 22,
+    borderRadius: 2,
+    backgroundColor: '#333',
+    marginBottom: 12,
+  },
 });
 
 const makeProfileLinks = ({ user }) => {
@@ -81,6 +88,14 @@ const makeProfileLinks = ({ user }) => {
   return linksItems;
 };
 
+const ProfileLoadingSkeleton = () => (
+  <View style={[styles.right, { width: '100%' }]}>
+    <View style={styles.skeletonRow} />
+    <View style={styles.skeletonRow} />
+    <View style={styles.skeletonRow} />
+  </View>
+);
+
 export const ProfileHeader = ({ user, isMe, onPressSettings, onRefresh, loading, error }) => {
   let linksItems = makeProfileLinks({ user });
   if (isMe) {
@@ -98,7 +113,9 @@ export const ProfileHeader = ({ user, isMe, onPressSettings, onRefresh, loading,
         <View style={styles.avatar}>
           <UserAvatar url={user?.photo?.url} />
         </View>
-        {error ? null : (
+        {error ? null : loading ? (
+          <ProfileLoadingSkeleton />
+        ) : (
           <View style={styles.right}>
             <Text style={styles.username}>@{user?.username}</Text>
             <View style={styles.profileItems}>
