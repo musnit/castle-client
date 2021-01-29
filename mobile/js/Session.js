@@ -223,15 +223,9 @@ export class Provider extends React.Component {
 
         return n;
       });
-      const notificationsBadgeCount = notifications.reduce(
-        (accum, n) => accum + (n.status === 'unseen'),
-        0
-      );
-      PushNotifications.setBadgeCount(notificationsBadgeCount);
       return {
         ...state,
         notifications,
-        notificationsBadgeCount,
       };
     });
   };
@@ -724,6 +718,16 @@ const _sendMarkNotificationsRead = debounce(
   100
 );
 
+export const setNotifBadge = (count) => {
+  // Sets app badge on iOS + Android and in-app tab badge on Android
+  PushNotifications.setBadgeCount(count);
+
+  // Sets in-app tab badge on iOS
+  EventEmitter.sendEvent('notifications', {
+    notificationsBadgeCount: count,
+  });
+};
+
 const NOTIF_FETCH_THRESHOLD_MS = 10 * 60 * 1000;
 let notifLastFetchTime;
 
@@ -775,11 +779,11 @@ export const maybeFetchNotificationsAsync = async (force = true) => {
   const notificationsBadgeCount = notifications
     ? notifications.reduce((accum, n) => accum + (n.status === 'unseen'), 0)
     : 0;
-  PushNotifications.setBadgeCount(notificationsBadgeCount);
   PushNotifications.setNewFollowingDecks(newFollowingDecks);
   EventEmitter.sendEvent('notifications', {
     newFollowingDecks,
     notifications,
-    notificationsBadgeCount,
   });
+
+  setNotifBadge(notificationsBadgeCount);
 };
