@@ -13,6 +13,52 @@ namespace love
 namespace ghost
 {
 
+bool DrawAlgorithms::colorsEqual(std::optional<Color> a1, std::optional<Color> a2) {
+	if (!a1 && !a2) {
+		return true;
+	}
+	if (!a1 || !a2) {
+		return false;
+	}
+	
+	auto c1 = *a1;
+	auto c2 = *a2;
+	
+  for (size_t i = 0; i < 4; i++) {
+	if (!DrawAlgorithms::floatEquals(c1.data[i], c2.data[i])) {
+	  return false;
+	}
+  }
+  return true;
+}
+
+bool DrawAlgorithms::coordinatesEqual(Point c1, Point c2) {
+  if (!floatEquals(c1.x, c2.x)) {
+	return false;
+  }
+  if (!floatEquals(c1.y, c2.y)) {
+	return false;
+  }
+  return true;
+}
+
+bool DrawAlgorithms::optionalCoordinatesEqual(std::optional<Point> c1, std::optional<Point> c2) {
+	if (!c1 && !c2) {
+		return true;
+	}
+	if (!c1 || !c2) {
+		return false;
+	}
+	
+	if (!floatEquals(c1->x, c2->x)) {
+	  return false;
+	}
+	if (!floatEquals(c1->y, c2->y)) {
+	  return false;
+	}
+	return true;
+}
+
 bool DrawAlgorithms::floatEquals(float f1, float f2) {
   return f1 > (f2 - 0.001) && f1 < (f2 + 0.001);
 }
@@ -50,15 +96,14 @@ bool DrawAlgorithms::areAnglesEqual(float a1, float a2) {
   return false;
 }
 
-/*
-std::tuple<int, int> DrawAlgorithms::rayRayIntersection(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
+std::optional<std::tuple<int, int>> DrawAlgorithms::rayRayIntersection(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
   auto denom = ((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4));
   if (denom < 0.01 && denom > -0.01) {
-	return null;
+	return std::nullopt;
   }
   auto t = (((x1 - x3) * (y3 - y4)) - ((y1 - y3) * (x3 - x4))) / denom;
-  return { x1 + (t * (x2 - x1)), y1 + (t * (y2 - y1)) }
-}*/
+	return std::tuple<int, int>({ x1 + (t * (x2 - x1)), y1 + (t * (y2 - y1)) });
+}
 
 float DrawAlgorithms::normalizeRadianAngle(float angle) {
   auto pi2 = 2 * M_PI;
