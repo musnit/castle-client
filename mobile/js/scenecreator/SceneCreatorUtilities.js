@@ -214,6 +214,13 @@ export const makeExpressionSummary = (expression, context, depth = 0) => {
         number = makeExpressionSummary(expression.params.number, context, depth + 1);
       return maybeExpressionParens(`Log base ${base} of ${number}`, depth);
     }
+    case 'number of actors': {
+      if (expression.params.tag) {
+        return `The number of actors tagged ${formatTag(expression.params.tag)}`;
+      } else {
+        return `The total number of actors`;
+      }
+    }
     case 'min':
     case 'max':
     case 'choose':
