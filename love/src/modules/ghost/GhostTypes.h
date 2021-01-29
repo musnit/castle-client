@@ -9,6 +9,8 @@
 #define GhostTypes_h
 
 #include "common/runtime.h"
+#include "tove2d/src/cpp/interface.h"
+#include <optional>
 
 #define GHOST_READ_NUMBER(arg, default) \
 	lua_pushstring(L, #arg);\
@@ -38,6 +40,15 @@
 	lua_gettable(L, index);\
 	if (lua_istable(L, -1)) {\
 		arg.read(L, lua_gettop(L));\
+	}
+
+#define GHOST_READ_OPTIONAL_STRUCT(arg, type) \
+	lua_pushstring(L, #arg);\
+	lua_gettable(L, index);\
+	if (lua_istable(L, -1)) {\
+		type item;\
+		item.read(L, lua_gettop(L));\
+		arg = item;\
 	}
 
 #define GHOST_READ_VECTOR(arg, type) \
@@ -104,33 +115,6 @@ struct Point {
 	}
 };
 
-struct NullablePoint {
-	float x;
-	float y;
-	bool initialized;
-	
-	NullablePoint() {
-		initialized = false;
-	}
-	
-	NullablePoint(float x, float y): x(x), y(y) {
-		initialized = true;
-	}
-	
-	void read(lua_State *L, int index) {
-		GHOST_READ_NUMBER(x, 0)
-		GHOST_READ_NUMBER(y, 0)
-		initialized = true;
-	}
-	
-	void write(lua_State *L) {
-		lua_createtable(L, 0, 2);
-		
-		GHOST_WRITE_NUMBER(x)
-		GHOST_WRITE_NUMBER(y)
-	}
-};
-
 enum SubpathType {
 	line,
 	arc
@@ -144,6 +128,8 @@ struct Subpath {
 	float radius;
 	float startAngle;
 	float endAngle;
+	
+	Subpath() {}
 	
 	Subpath(lua_State *L, int index) {
 		read(L, index);
@@ -169,27 +155,27 @@ struct Subpath {
 };
 
 struct Color {
-	float color[4];
+	float data[4];
 	
 	void read(lua_State *L, int index) {
 		lua_pushnumber(L, 1);
 		lua_gettable(L, index);
-		color[0] = lua_tonumber(L, -1);
+		data[0] = lua_tonumber(L, -1);
 		
 		lua_pushnumber(L, 2);
 		lua_gettable(L, index);
-		color[1] = lua_tonumber(L, -1);
+		data[1] = lua_tonumber(L, -1);
 	
 		lua_pushnumber(L, 3);
 		lua_gettable(L, index);
-		color[2] = lua_tonumber(L, -1);
+		data[2] = lua_tonumber(L, -1);
 		
 		lua_pushnumber(L, 4);
 		lua_gettable(L, index);
 		if (lua_isnumber(L, -1)) {
-			color[3] = lua_tonumber(L, -1);
+			data[3] = lua_tonumber(L, -1);
 		} else {
-			color[3] = 1.0;
+			data[3] = 1.0;
 		}
 	}
 };
@@ -197,22 +183,29 @@ struct Color {
 struct PathData {
 	std::vector<Point> points;
 	int style;
-	NullablePoint bendPoint;
+	std::optional<Point> bendPoint;
 	bool isFreehand;
-	Color color;
+	std::optional<Color> color;
 	bool isTransparent;
+	
+	std::vector<Subpath> subpathDataList;
+	TovePathRef tovePath;
+	
+	PathData() {
+		tovePath.ptr = NULL;
+	}
 	
 	void read(lua_State *L, int index) {
 		GHOST_READ_VECTOR(points, Point)
 		GHOST_READ_INT(style, 1)
-		GHOST_READ_STRUCT(bendPoint)
+		GHOST_READ_OPTIONAL_STRUCT(bendPoint, Point)
 		GHOST_READ_BOOL(isFreehand, false)
-		GHOST_READ_STRUCT(color)
+		GHOST_READ_OPTIONAL_STRUCT(color, Color)
 		GHOST_READ_BOOL(isTransparent, false)
 	}
 };
 
-struct FillImageBounds {
+struct Bounds {
 	float minX, maxX, minY, maxY;
 	
 	void read(lua_State *L, int index) {
@@ -223,96 +216,19 @@ struct FillImageBounds {
 	}
 };
 
-struct DrawDataFrame {
-	bool isLinked;
-	std::vector<PathData> pathDataList;
-	FillImageBounds fillImageBounds;
-	
-	void read(lua_State *L, int index) {
-		GHOST_READ_BOOL(isLinked, false)
-		GHOST_READ_VECTOR(pathDataList, PathData)
-		GHOST_READ_STRUCT(fillImageBounds)
-	}
+typedef std::vector<PathData> PathDataList;
+
+struct AnimationState {
+	float animationFrameTime;
 };
 
-struct DrawDataLayer {
-	std::string title;
-	std::string id;
-	bool isVisible;
-	std::vector<DrawDataFrame> frames;
-	
-	void read(lua_State *L, int index) {
-		GHOST_READ_STRING(title)
-		GHOST_READ_STRING(id)
-		GHOST_READ_BOOL(isVisible, true)
-		GHOST_READ_VECTOR(frames, DrawDataFrame)
-	}
-};
-
-struct DrawData {
-	/*
-	 local newObj = {
-		 _graphics = nil,
-		 _graphicsNeedsReset = true,
-		 pathDataList = obj.pathDataList or {},
-		 color = obj.color or obj.fillColor or {hexStringToRgb("f9a31b")},
-		 lineColor = obj.lineColor or {hexStringToRgb("f9a31b")},
-		 gridSize = obj.gridSize or 0.71428571428571,
-		 scale = obj.scale or DRAW_DATA_SCALE,
-		 pathsCanvas = nil,
-		 fillImageData = nil,
-		 fillImage = nil,
-		 fillImageBounds = obj.fillImageBounds or {
-			 maxX = 0,
-			 maxY = 0,
-			 minX = 0,
-			 minY = 0
-		 },
-		 fillCanvasSize = obj.fillCanvasSize or FILL_CANVAS_SIZE,
-		 fillPng = obj.fillPng or nil,
-		 version = obj.version or nil,
-		 fillPixelsPerUnit = obj.fillPixelsPerUnit or 25.6,
-		 bounds = obj.bounds or nil,
-		 framesBounds = obj.framesBounds or {},
-		 layers = obj.layers or {},
-		 numTotalLayers = obj.numTotalLayers or 1,
-		 selectedLayerId = obj.selectedLayerId or nil,
-		 selectedFrame = obj.selectedFrame or 1,
-		 _layerDataChanged = true,
-		 _layerData = nil,
-	 }
-	 
-	 */
-	
-	Color color;
-	Color lineColor;
-	float gridSize;
-	float scale;
-	int version;
-	float fillPixelsPerUnit;
-	int numTotalLayers;
-	std::vector<DrawDataLayer> layers;
-	
-	DrawData(lua_State *L, int index) {
-		read(L, index);
-	}
-	
-	void read(lua_State *L, int index) {
-		GHOST_READ_STRUCT(color)
-		GHOST_READ_STRUCT(lineColor)
-		GHOST_READ_NUMBER(gridSize, 1234)
-		GHOST_READ_NUMBER(scale, 12345)
-		GHOST_READ_INT(version, 3)
-		GHOST_READ_NUMBER(fillPixelsPerUnit, 25.6)
-		GHOST_READ_INT(numTotalLayers, 1)
-		
-		//framesBounds
-		//selectedLayerId
-		//selectedFrame
-		
-		GHOST_READ_VECTOR(layers, DrawDataLayer)
-	}
-	
+struct AnimationComponentProperties {
+	bool playing;
+	float framesPerSecond;
+	int loopStartFrame;
+	int loopEndFrame;
+	int currentFrame;
+	bool loop;
 };
 
 }

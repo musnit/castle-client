@@ -11,6 +11,7 @@
 #include "common/runtime.h"
 #include "common/Module.h"
 #include "DrawAlgorithms.hpp"
+#include "DrawData.hpp"
 
 #include <iostream>
 #include <cmath>
