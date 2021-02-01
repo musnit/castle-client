@@ -1,7 +1,7 @@
 import React from 'react';
 import { Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { FollowButton } from '../components/FollowButton';
-import { PopoverProvider } from '../scenecreator/PopoverProvider';
+import { PopoverProvider } from '../components/PopoverProvider';
 import { ProfileBadge } from './ProfileBadge';
 import { ProfileConnections } from './ProfileConnections';
 import { UserAvatar } from '../components/UserAvatar';

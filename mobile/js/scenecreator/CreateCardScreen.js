@@ -27,7 +27,7 @@ import { CreateCardHeader, CARD_HEADER_HEIGHT } from './CreateCardHeader';
 import { CreateCardFooter, getFooterHeight } from './CreateCardFooter';
 import { DrawingCardHeader, DRAWING_CARD_HEADER_HEIGHT } from './drawing/DrawingCardHeader';
 
-import { PopoverProvider } from './PopoverProvider';
+import { PopoverProvider } from '../components/PopoverProvider';
 import { SheetProvider } from './SheetProvider';
 
 import {

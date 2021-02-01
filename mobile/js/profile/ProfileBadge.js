@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
-import { PopoverButton } from '../scenecreator/PopoverProvider';
+import { PopoverButton } from '../components/PopoverProvider';
 
 import FastImage from 'react-native-fast-image';
 

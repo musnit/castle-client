@@ -3,6 +3,7 @@ import { Animated, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { FeaturedDecks } from './FeaturedDecks';
 import { FollowingDecks } from './FollowingDecks';
 import { NewestDecks } from './NewestDecks';
+import { PopoverProvider } from '../components/PopoverProvider';
 import { RecentDecks } from './RecentDecks';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { SegmentedNavigation } from '../components/SegmentedNavigation';
@@ -120,7 +121,7 @@ export const HomeScreen = ({ route }) => {
           onSelectItem={(item) => setMode(item.value)}
         />
       </Animated.View>
-      {selectedItem.item({ deckId })}
+      <PopoverProvider>{selectedItem.item({ deckId })}</PopoverProvider>
     </View>
   );
 };

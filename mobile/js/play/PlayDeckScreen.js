@@ -3,6 +3,7 @@ import { BackHandler, StatusBar, StyleSheet, View } from 'react-native';
 import { useIsFocused, useFocusEffect } from '../ReactNavigation';
 
 import { DecksFeed } from '../components/DecksFeed';
+import { PopoverProvider } from '../components/PopoverProvider';
 import { useNavigation } from '../ReactNavigation';
 import { useListen } from '../ghost/GhostEvents';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -58,16 +59,18 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      <DecksFeed
-        decks={decks}
-        isPlaying={true}
-        onPressDeck={({ deckId }) => {
-          if (deckId) {
-            throw new Error(`Changing deckId from PlayDeckScreen is not yet supported`);
-          }
-          pop();
-        }}
-      />
+      <PopoverProvider>
+        <DecksFeed
+          decks={decks}
+          isPlaying={true}
+          onPressDeck={({ deckId }) => {
+            if (deckId) {
+              throw new Error(`Changing deckId from PlayDeckScreen is not yet supported`);
+            }
+            pop();
+          }}
+        />
+      </PopoverProvider>
     </View>
   );
 };

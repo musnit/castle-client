@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { PopoverButton } from '../../PopoverProvider';
+import { PopoverButton } from '../../../components/PopoverProvider';
 import { ColorPicker } from 'react-native-color-picker';
 import tinycolor from 'tinycolor2';
 

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { InspectorTextInput } from './InspectorTextInput';
 import { objectToArray } from '../../../ghost/GhostUI';
-import { PopoverButton } from '../../PopoverProvider';
+import { PopoverButton } from '../../../components/PopoverProvider';
 import * as Constants from '../../../Constants';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';

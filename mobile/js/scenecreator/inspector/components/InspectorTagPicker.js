@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { DropdownItemsList } from '../components/InspectorDropdown';
-import { PopoverButton } from '../../PopoverProvider';
+import { PopoverButton } from '../../../components/PopoverProvider';
 
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Feather from 'react-native-vector-icons/Feather';
