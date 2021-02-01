@@ -1,82 +1,15 @@
 import React, { Fragment } from 'react';
-import { StatusBar, View, Text, Linking, StyleSheet, Platform } from 'react-native';
+import { StatusBar, View, Text, StyleSheet, Platform } from 'react-native';
+import { AppUpdateNotice } from '../components/AppUpdateNotice';
 import { DecksFeed } from '../components/DecksFeed';
 import { EmptyFeed } from './EmptyFeed';
-import { useQuery, useLazyQuery } from '@apollo/react-hooks';
+import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
 import gql from 'graphql-tag';
-import FastImage from 'react-native-fast-image';
 
 import * as Constants from '../Constants';
 
 const REFETCH_FEED_INTERVAL_MS = 60 * 60 * 1000;
-
-const styles = StyleSheet.create({
-  noticeContainer: {
-    paddingVertical: 24,
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: Constants.colors.grayOnBlackBorder,
-  },
-  noticeHeadline: {
-    fontSize: 20,
-    color: '#fff',
-    fontWeight: '600',
-  },
-  noticeText: {
-    color: '#fff',
-    marginTop: 12,
-    fontSize: 16,
-    lineHeight: 22,
-  },
-});
-
-const AppUpdateNotice = () => {
-  const [updateInfo, setUpdateInfo] = React.useState({ isUpdateAvailable: false });
-  const loadUpdateInfo = useQuery(
-    gql`
-      query {
-        clientUpdateStatus {
-          isUpdateAvailable
-          link
-        }
-      }
-    `
-  );
-
-  React.useEffect(() => {
-    if (!loadUpdateInfo.loading && !loadUpdateInfo.error && loadUpdateInfo.data) {
-      setUpdateInfo(loadUpdateInfo.data.clientUpdateStatus);
-    }
-  }, [loadUpdateInfo.loading, loadUpdateInfo.error, loadUpdateInfo.data]);
-
-  if (!updateInfo.isUpdateAvailable || __DEV__) {
-    return null;
-  }
-  return (
-    <View style={styles.noticeContainer}>
-      <View style={{ flexDirection: 'row' }}>
-        <View style={{ flexDirection: 'row', flexGrow: 1, alignItems: 'center' }}>
-          <FastImage
-            style={{ height: 28, aspectRatio: 1, marginRight: 12 }}
-            source={require('../../assets/images/emoji/wand-white.png')}
-          />
-          <Text style={styles.noticeHeadline}>New version available</Text>
-        </View>
-        <View style={Constants.styles.primaryButton}>
-          <Text
-            style={Constants.styles.primaryButtonLabel}
-            onPress={() => Linking.openURL(updateInfo.link)}>
-            Update
-          </Text>
-        </View>
-      </View>
-      <Text style={styles.noticeText}>
-        Update Castle when you have a moment, otherwise new decks won't work correctly!
-      </Text>
-    </View>
-  );
-};
 
 export const FeaturedDecks = ({ focused, deckId }) => {
   const { navigate } = useNavigation();
@@ -128,7 +61,6 @@ export const FeaturedDecks = ({ focused, deckId }) => {
 
   return (
     <Fragment>
-      <AppUpdateNotice />
       {error ? (
         <EmptyFeed error={error} onRefresh={onRefresh} />
       ) : (
@@ -144,6 +76,7 @@ export const FeaturedDecks = ({ focused, deckId }) => {
           onRefresh={onRefresh}
         />
       )}
+      <AppUpdateNotice />
     </Fragment>
   );
 };
