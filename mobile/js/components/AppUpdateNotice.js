@@ -1,5 +1,6 @@
 import React from 'react';
-import { Linking, StyleSheet, Text, View } from 'react-native';
+import { Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { CastleAsyncStorage } from '../common/CastleAsyncStorage';
 import { useQuery } from '@apollo/react-hooks';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -8,6 +9,10 @@ import FastImage from 'react-native-fast-image';
 
 import * as Constants from '../Constants';
 
+// if dismissed, prompt again in 3 hours
+const UPDATE_NOTICE_PROMPT_INTERVAL = 1000 * 60 * 60 * 3;
+const UPDATE_NOTICE_LAST_DISMISSED_TIME_KEY = 'updateNoticeLastDismissedTime';
+
 const styles = StyleSheet.create({
   noticeModalContainer: {
     position: 'absolute',
@@ -15,7 +20,7 @@ const styles = StyleSheet.create({
     top: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.25)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -41,6 +46,7 @@ const styles = StyleSheet.create({
 
 export const AppUpdateNotice = () => {
   const [updateInfo, setUpdateInfo] = React.useState({ isUpdateAvailable: false });
+  const [timeDismissed, setTimeDismissed] = React.useState(Date.now());
   const loadUpdateInfo = useQuery(
     gql`
       query {
@@ -52,13 +58,36 @@ export const AppUpdateNotice = () => {
     `
   );
 
+  const dismissNotice = React.useCallback(() => {
+    (async () => {
+      const now = Date.now();
+      await CastleAsyncStorage.setItem(UPDATE_NOTICE_LAST_DISMISSED_TIME_KEY, now.toString());
+      setTimeDismissed(now);
+    })();
+  }, []);
+
+  React.useEffect(() => {
+    (async () => {
+      let timeDismissed = await CastleAsyncStorage.getItem(UPDATE_NOTICE_LAST_DISMISSED_TIME_KEY);
+      timeDismissed = parseInt(timeDismissed, 10);
+      if (!timeDismissed) {
+        timeDismissed = 0;
+      }
+      setTimeDismissed(timeDismissed);
+    })();
+  }, []);
+
   React.useEffect(() => {
     if (!loadUpdateInfo.loading && !loadUpdateInfo.error && loadUpdateInfo.data) {
       setUpdateInfo(loadUpdateInfo.data.clientUpdateStatus);
     }
   }, [loadUpdateInfo.loading, loadUpdateInfo.error, loadUpdateInfo.data]);
 
-  if (!updateInfo.isUpdateAvailable || __DEV__) {
+  if (
+    !updateInfo.isUpdateAvailable ||
+    Date.now() - timeDismissed < UPDATE_NOTICE_PROMPT_INTERVAL ||
+    __DEV__
+  ) {
     return null;
   }
   return (
@@ -77,16 +106,19 @@ export const AppUpdateNotice = () => {
           Update Castle when you have a moment, otherwise new decks won't work correctly!
         </Text>
         <View style={{ flexDirection: 'row', marginTop: 16, justifyContent: 'center' }}>
-          <View style={Constants.styles.primaryButton}>
-            <Text
-              style={Constants.styles.primaryButtonLabel}
-              onPress={() => Linking.openURL(updateInfo.link)}>
-              Update
-            </Text>
-          </View>
-          <View style={{ alignItems: 'center', justifyContent: 'center', marginLeft: 16 }}>
+          <TouchableOpacity
+            style={Constants.styles.primaryButton}
+            onPress={() => {
+              dismissNotice();
+              Linking.openURL(updateInfo.link);
+            }}>
+            <Text style={Constants.styles.primaryButtonLabel}>Update</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{ alignItems: 'center', justifyContent: 'center', marginLeft: 16 }}
+            onPress={dismissNotice}>
             <Text style={{ color: '#888', fontSize: 16 }}>Maybe later</Text>
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
