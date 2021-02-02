@@ -13,6 +13,9 @@ import * as Constants from '../Constants';
 import * as Utilities from '../common/utilities';
 
 const styles = StyleSheet.create({
+  container: {
+    paddingBottom: 16,
+  },
   profileRow: {
     padding: 16,
     paddingBottom: 0,
@@ -23,7 +26,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
     marginRight: 16,
   },
-  right: { paddingVertical: 16 },
+  right: { paddingTop: 4 },
   username: {
     fontSize: 20,
     color: Constants.colors.white,
@@ -108,7 +111,7 @@ export const ProfileHeader = ({ user, isMe, onPressSettings, onRefresh, loading,
   }
 
   return (
-    <>
+    <View style={styles.container}>
       <View style={styles.profileRow}>
         <View style={styles.avatar}>
           <UserAvatar url={user?.photo?.url} />
@@ -169,6 +172,6 @@ export const ProfileHeader = ({ user, isMe, onPressSettings, onRefresh, loading,
           ) : null}
         </>
       ) : null}
-    </>
+    </View>
   );
 };

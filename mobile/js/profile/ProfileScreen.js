@@ -14,29 +14,6 @@ import { ProfileSettingsSheet } from './ProfileSettingsSheet';
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000',
-  },
-  header: {
-    width: '100%',
-    paddingBottom: 8,
-  },
-  scrollView: {
-    paddingTop: 2,
-    paddingLeft: 2,
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  deckItem: {
-    paddingRight: 2,
-    paddingBottom: 2,
-    width: '33.3%',
-  },
-});
-
 const useProfileQuery = (userId) => {
   const { userId: signedInUserId } = useSession();
   if (!userId || userId === signedInUserId) {
@@ -65,9 +42,10 @@ const useProfileQuery = (userId) => {
 
 // keep as separate component so that the isFocused hook doesn't re-render
 // the entire profile screen
-const ProfileDecksGrid = ({ user, refreshing, onRefresh }) => {
+const ProfileDecksGrid = ({ user, refreshing, onRefresh, error, isMe, onPressSettings }) => {
   const { push } = useNavigation();
   const isFocused = useIsFocused();
+
   return (
     <DecksGrid
       decks={user?.decks}
@@ -88,6 +66,16 @@ const ProfileDecksGrid = ({ user, refreshing, onRefresh }) => {
       refreshing={refreshing}
       onRefresh={onRefresh}
       enablePreviewVideo={Constants.iOS && isFocused}
+      ListHeaderComponent={
+        <ProfileHeader
+          user={user}
+          isMe={isMe}
+          loading={refreshing}
+          error={error}
+          onRefresh={onRefresh}
+          onPressSettings={onPressSettings}
+        />
+      }
     />
   );
 };
@@ -142,24 +130,22 @@ export const ProfileScreen = ({ userId, route }) => {
 
   return (
     <Fragment>
-      <View style={styles.container}>
-        <SafeAreaView style={styles.header}>
-          <ScreenHeader title="Profile" />
-          <ProfileHeader
-            user={user}
-            isMe={isMe}
-            loading={query.loading}
-            error={error}
-            onPressSettings={() => setSettingsSheet(true)}
-            onRefresh={onRefresh}
-          />
-        </SafeAreaView>
+      <SafeAreaView edges={['top', 'left', 'right']}>
+        <ScreenHeader title={user ? '@' + user.username : 'Profile'} />
         {error ? (
           <EmptyFeed error={error} onRefresh={onRefresh} />
         ) : (
-          <ProfileDecksGrid user={user} refreshing={query.loading} onRefresh={onRefresh} />
+          <ProfileDecksGrid
+            user={user}
+            refreshing={query.loading}
+            onRefresh={onRefresh}
+            error={error}
+            isMe={isMe}
+            onPressSettings={() => setSettingsSheet(true)}
+            style
+          />
         )}
-      </View>
+      </SafeAreaView>
       {isMe && user ? (
         <ProfileSettingsSheet
           me={user}
