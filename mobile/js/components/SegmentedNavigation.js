@@ -35,8 +35,9 @@ const darkBackgroundStyles = StyleSheet.create({
     height: 9,
     backgroundColor: Constants.colors.white,
     borderRadius: 5,
-    marginLeft: 6,
-    marginRight: -3,
+    position: 'absolute',
+    right: 2,
+    top: 7,
   },
 });
 
@@ -71,8 +72,9 @@ const lightBackgroundStyles = StyleSheet.create({
     height: 9,
     backgroundColor: Constants.colors.black,
     borderRadius: 5,
-    marginLeft: 6,
-    marginRight: -3,
+    position: 'absolute',
+    right: 2,
+    top: 7,
   },
 });
 
