@@ -109,7 +109,7 @@ const measurePopover = ({
     caratLeft += popoverLeft - POPOVER_MARGIN;
     popoverLeft = POPOVER_MARGIN;
   } else if (popoverLeft > vw * 100 - width - POPOVER_MARGIN) {
-    caratLeft += popoverLeft - vw * 100 - width - POPOVER_MARGIN;
+    caratLeft += popoverLeft - (vw * 100 - width - POPOVER_MARGIN);
     popoverLeft = vw * 100 - width - POPOVER_MARGIN;
   }
   if (popoverTop < POPOVER_MARGIN) {

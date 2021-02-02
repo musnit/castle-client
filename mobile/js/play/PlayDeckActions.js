@@ -1,5 +1,6 @@
 import React from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
+import { Dropdown } from '../components/Dropdown';
 import { shareDeck } from '../common/utilities';
 import { useNavigation } from '../ReactNavigation';
 import { UserAvatar } from '../components/UserAvatar';
@@ -130,6 +131,33 @@ export const PlayDeckActions = ({
     }).start();
   }, [isPlaying]);
 
+  const dropdownItems = [
+    {
+      id: 'view-source',
+      name: 'View deck source',
+    },
+    {
+      id: 'report',
+      name: 'Report and hide this',
+    },
+    {
+      id: 'block',
+      name: `Block @${creator.username}`,
+    },
+  ];
+
+  const onSelectDropdownAction = React.useCallback(
+    (id) => {
+      switch (id) {
+        case 'view-source': {
+          push('ViewSource', { deckIdToEdit: deck.deckId });
+          break;
+        }
+      }
+    },
+    [deck?.deckId]
+  );
+
   return (
     <View
       style={{
@@ -170,11 +198,12 @@ export const PlayDeckActions = ({
         )}
       </Animated.View>
       <View style={styles.row} pointerEvents={disabled ? 'none' : 'auto'}>
-        <TouchableOpacity
+        <Dropdown
           style={styles.rightButton}
-          onPress={() => push('ViewSource', { deckIdToEdit: deck.deckId })}>
-          <Feather name="code" color="#fff" size={24} style={styles.rightButtonIcon} />
-        </TouchableOpacity>
+          labeledItems={dropdownItems}
+          onChange={onSelectDropdownAction}>
+          <Feather name="more-horizontal" color="#fff" size={24} style={styles.rightButtonIcon} />
+        </Dropdown>
         <TouchableOpacity style={styles.rightButton} onPress={() => shareDeck(deck)}>
           <Feather name="share" color="#fff" size={24} style={styles.rightButtonIcon} />
         </TouchableOpacity>
