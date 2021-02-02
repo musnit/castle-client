@@ -42,7 +42,7 @@ const useProfileQuery = (userId) => {
 
 // keep as separate component so that the isFocused hook doesn't re-render
 // the entire profile screen
-const ProfileDecksGrid = ({ user, refreshing, onRefresh, error, isMe, onPressSettings }) => {
+const ProfileDecksGrid = ({ user, refreshing, onRefresh, error, isMe }) => {
   const { push } = useNavigation();
   const isFocused = useIsFocused();
 
@@ -73,7 +73,6 @@ const ProfileDecksGrid = ({ user, refreshing, onRefresh, error, isMe, onPressSet
           loading={refreshing}
           error={error}
           onRefresh={onRefresh}
-          onPressSettings={onPressSettings}
         />
       }
       contentContainerStyle={{ paddingTop: 0 }}
@@ -140,7 +139,11 @@ export const ProfileScreen = ({ userId, route }) => {
   return (
     <Fragment>
       <SafeAreaView edges={['top', 'left', 'right']}>
-        <ScreenHeader title={user ? '@' + user.username : 'Profile'} />
+        <ScreenHeader
+          title={user ? '@' + user.username : 'Profile'}
+          rightIcon={isMe ? 'settings' : null}
+          onRightButtonPress={() => setSettingsSheet(true)}
+        />
         {error ? (
           <EmptyFeed error={error} onRefresh={onRefresh} />
         ) : (
@@ -150,7 +153,6 @@ export const ProfileScreen = ({ userId, route }) => {
             onRefresh={onRefresh}
             error={error}
             isMe={isMe}
-            onPressSettings={() => setSettingsSheet(true)}
             style
           />
         )}

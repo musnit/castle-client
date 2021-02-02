@@ -7,7 +7,6 @@ import { ProfileConnections } from './ProfileConnections';
 import { UserAvatar } from '../components/UserAvatar';
 
 import Entypo from 'react-native-vector-icons/Entypo';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import * as Constants from '../Constants';
 import * as Utilities from '../common/utilities';
@@ -99,16 +98,8 @@ const ProfileLoadingSkeleton = () => (
   </View>
 );
 
-export const ProfileHeader = ({ user, isMe, onPressSettings, onRefresh, loading, error }) => {
+export const ProfileHeader = ({ user, isMe, onRefresh, loading, error }) => {
   let linksItems = makeProfileLinks({ user });
-  if (isMe) {
-    linksItems.push({
-      label: 'Settings',
-      onPress: onPressSettings,
-      iconType: MaterialIcons,
-      icon: 'settings',
-    });
-  }
 
   return (
     <View style={styles.container}>

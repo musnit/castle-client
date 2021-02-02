@@ -7,13 +7,6 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
-  back: {
-    flexShrink: 0,
-    width: 60,
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    paddingLeft: 12,
-  },
   header: {
     width: '100%',
     flexDirection: 'row',
@@ -24,6 +17,20 @@ const styles = StyleSheet.create({
     borderColor: Constants.colors.grayOnBlackBorder,
     paddingTop: 16,
   },
+  button: {
+    flexShrink: 0,
+    width: 60,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
+  buttonLeft: {
+    alignItems: 'flex-start',
+    paddingLeft: 12,
+  },
+  buttonRight: {
+    alignItems: 'flex-end',
+    paddingRight: 12,
+  },
   title: {
     width: '100%',
     height: '100%',
@@ -32,10 +39,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  centerTitle: {
-    zIndex: -1, // required to prevent negative margin from blocking back button
-    marginLeft: -54, // required to center properly with back button
-  },
   titleText: {
     color: Constants.colors.white,
     fontSize: 20,
@@ -43,7 +46,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const ScreenHeader = ({ title }) => {
+export const ScreenHeader = ({ title, rightIcon, onRightButtonPress }) => {
   const { pop, dangerouslyGetState } = useNavigation();
 
   // don't useNavigationState() because we don't want to rerender if this changes.
@@ -55,13 +58,24 @@ export const ScreenHeader = ({ title }) => {
       <StatusBar barStyle="light-content" />
       <View style={styles.header}>
         {showBackButton ? (
-          <TouchableOpacity style={styles.back} onPress={() => pop()}>
+          <TouchableOpacity style={[styles.button, styles.buttonLeft]} onPress={() => pop()}>
             <Icon name="arrow-back" size={32} color="#fff" />
           </TouchableOpacity>
-        ) : null}
+        ) : (
+          <View style={[styles.button, styles.buttonLeft]} />
+        )}
         <View style={[styles.title, showBackButton ? styles.centerTitle : null]}>
           <Text style={styles.titleText}>{title}</Text>
         </View>
+        {rightIcon ? (
+          <TouchableOpacity
+            style={[styles.button, styles.buttonRight]}
+            onPress={onRightButtonPress}>
+            <Icon name={rightIcon} size={24} color="#fff" />
+          </TouchableOpacity>
+        ) : (
+          <View style={[styles.button, styles.buttonRight]} />
+        )}
       </View>
     </React.Fragment>
   );
