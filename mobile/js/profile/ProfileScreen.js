@@ -81,6 +81,8 @@ const ProfileDecksGrid = ({ user, refreshing, onRefresh, error, isMe, onPressSet
   );
 };
 
+const REFETCH_PROFILE_INTERVAL_MS = 60 * 1000;
+
 export const ProfileScreen = ({ userId, route }) => {
   const [settingsSheetIsOpen, setSettingsSheet] = useState(false);
   const [user, setUser] = React.useState(null);
@@ -91,6 +93,8 @@ export const ProfileScreen = ({ userId, route }) => {
     userId = route.params.userId;
   }
   const isMe = !userId || userId === signedInUserId;
+
+  let lastFetchTime;
 
   React.useEffect(() => {
     Amplitude.logEventWithProperties('VIEW_PROFILE', { userId, isOwnProfile: isMe });
@@ -118,7 +122,11 @@ export const ProfileScreen = ({ userId, route }) => {
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
-      onRefresh();
+
+      if (!(lastFetchTime && Date.now() - lastFetchTime < REFETCH_PROFILE_INTERVAL_MS)) {
+        onRefresh();
+        lastFetchTime = Date.now();
+      }
     }, [])
   );
 
