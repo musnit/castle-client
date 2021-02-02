@@ -12,6 +12,7 @@ import { PlayDeckActions, PlayDeckActionsSkeleton } from '../play/PlayDeckAction
 import { PlayDeckNavigator } from '../play/PlayDeckNavigator';
 import { useIsFocused, useFocusEffect } from '../ReactNavigation';
 import { useListen } from '../ghost/GhostEvents';
+import { useSession } from '../Session';
 
 import tinycolor from 'tinycolor2';
 import Viewport from '../common/viewport';
@@ -139,6 +140,7 @@ const CurrentDeckCell = ({
   onPressDeck,
   playingTransition,
   previewVideoPaused,
+  isMe = false,
 }) => {
   const initialCard = deck?.initialCard;
   const [ready, setReady] = React.useState(false);
@@ -236,6 +238,7 @@ const CurrentDeckCell = ({
           onPressBack={onPressBack}
           backgroundColor={makeBackgroundColor(deck.initialCard)}
           additionalPadding={getItemHorzPadding()}
+          isMe={isMe}
         />
       </Animated.View>
     </View>
@@ -284,6 +287,7 @@ const SkeletonFeed = () => {
 export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
   const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
+  const { userId: signedInUserId } = useSession();
 
   // state from expanding/collapsing a deck to play it
   // note: non-native duplicate is needed for just the background color fade (not supported by native)
@@ -328,6 +332,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
             onPressDeck={onPressDeck}
             playingTransition={playingTransition}
             previewVideoPaused={paused}
+            isMe={deck?.creator?.userId === signedInUserId}
           />
         );
       } else {

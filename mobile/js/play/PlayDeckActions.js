@@ -91,11 +91,11 @@ export const PlayDeckActions = ({
   disabled,
   backgroundColor,
   additionalPadding,
+  isMe = false,
 }) => {
   const { creator } = deck;
-  const { push } = useNavigation();
+  const { push, navigate } = useNavigation();
 
-  const { navigate } = useNavigation();
   const navigateToParent = React.useCallback(async () => {
     const result = await Session.apolloClient.query({
       query: gql`
@@ -131,20 +131,22 @@ export const PlayDeckActions = ({
     }).start();
   }, [isPlaying]);
 
-  const dropdownItems = [
+  let dropdownItems = [
     {
       id: 'view-source',
       name: 'View deck source',
     },
-    {
+  ];
+  if (!isMe) {
+    dropdownItems.push({
       id: 'report',
       name: 'Report and hide this',
-    },
-    {
+    });
+    dropdownItems.push({
       id: 'block',
       name: `Block @${creator.username}`,
-    },
-  ];
+    });
+  }
 
   const onSelectDropdownAction = React.useCallback(
     (id) => {
