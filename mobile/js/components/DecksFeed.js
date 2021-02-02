@@ -12,7 +12,7 @@ import { PlayDeckActions, PlayDeckActionsSkeleton } from '../play/PlayDeckAction
 import { PlayDeckNavigator } from '../play/PlayDeckNavigator';
 import { useIsFocused, useFocusEffect } from '../ReactNavigation';
 import { useListen } from '../ghost/GhostEvents';
-import { useSession } from '../Session';
+import { useSession, blockUser } from '../Session';
 
 import tinycolor from 'tinycolor2';
 import Viewport from '../common/viewport';
@@ -140,6 +140,7 @@ const CurrentDeckCell = ({
   onPressDeck,
   playingTransition,
   previewVideoPaused,
+  onRefreshFeed,
   isMe = false,
 }) => {
   const initialCard = deck?.initialCard;
@@ -169,6 +170,12 @@ const CurrentDeckCell = ({
 
   const onSelectPlay = () => onPressDeck({ deckId: deck.deckId });
   const onPressBack = React.useCallback(() => onPressDeck({ deckId: undefined }), [onPressDeck]);
+  const onBlockUser = React.useCallback(async () => {
+    await blockUser(deck?.creator?.userId, true);
+    if (onRefreshFeed) {
+      onRefreshFeed();
+    }
+  }, [onRefreshFeed]);
   const backgroundColor = makeBackgroundColor(initialCard);
 
   if (Constants.Android) {
@@ -239,6 +246,7 @@ const CurrentDeckCell = ({
           backgroundColor={makeBackgroundColor(deck.initialCard)}
           additionalPadding={getItemHorzPadding()}
           isMe={isMe}
+          onBlockUser={onBlockUser}
         />
       </Animated.View>
     </View>
@@ -333,6 +341,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
             playingTransition={playingTransition}
             previewVideoPaused={paused}
             isMe={deck?.creator?.userId === signedInUserId}
+            onRefreshFeed={props.onRefresh}
           />
         );
       } else {
@@ -367,7 +376,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
         );
       }
     },
-    [currentCardIndex, isPlaying, paused]
+    [currentCardIndex, isPlaying, paused, props?.onRefresh]
   );
 
   const viewabilityConfig = React.useRef({ itemVisiblePercentThreshold: 90 }).current;

@@ -2,6 +2,7 @@ import React from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import { Dropdown } from '../components/Dropdown';
 import { shareDeck } from '../common/utilities';
+import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useNavigation } from '../ReactNavigation';
 import { UserAvatar } from '../components/UserAvatar';
 
@@ -91,10 +92,12 @@ export const PlayDeckActions = ({
   disabled,
   backgroundColor,
   additionalPadding,
+  onBlockUser,
   isMe = false,
 }) => {
   const { creator } = deck;
   const { push, navigate } = useNavigation();
+  const { showActionSheetWithOptions } = useActionSheet();
 
   const navigateToParent = React.useCallback(async () => {
     const result = await Session.apolloClient.query({
@@ -142,6 +145,8 @@ export const PlayDeckActions = ({
       id: 'report',
       name: 'Report and hide this',
     });
+  }
+  if (!isMe && onBlockUser) {
     dropdownItems.push({
       id: 'block',
       name: `Block @${creator.username}`,
@@ -155,9 +160,25 @@ export const PlayDeckActions = ({
           push('ViewSource', { deckIdToEdit: deck.deckId });
           break;
         }
+        case 'block': {
+          showActionSheetWithOptions(
+            {
+              title: `Block this person?`,
+              options: ['Block', 'Cancel'],
+              destructiveButtonIndex: 0,
+              cancelButtonIndex: 1,
+            },
+            (buttonIndex) => {
+              if (buttonIndex == 0) {
+                onBlockUser();
+              }
+            }
+          );
+          break;
+        }
       }
     },
-    [deck?.deckId]
+    [deck?.deckId, onBlockUser]
   );
 
   return (

@@ -690,6 +690,21 @@ export const toggleFollowUser = async (userId, follow) => {
   return result?.data?.toggleFollowUser;
 };
 
+export const blockUser = async (userId, isBlocked) => {
+  const result = await apolloClient.mutate({
+    mutation: gql`
+      mutation($userId: ID!, $isBlocked: Boolean!) {
+        blockUser(userId: $userId, isBlocked: $isBlocked) {
+          userId
+          isBlocked
+        }
+      }
+    `,
+    variables: { userId, isBlocked },
+  });
+  return result?.data?.blockUser;
+};
+
 const _sendMarkFollowingFeedRead = debounce(
   async () =>
     apolloClient.mutate({
