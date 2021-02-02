@@ -76,6 +76,7 @@ const ProfileDecksGrid = ({ user, refreshing, onRefresh, error, isMe, onPressSet
           onPressSettings={onPressSettings}
         />
       }
+      contentContainerStyle={{ paddingTop: 0 }}
     />
   );
 };
