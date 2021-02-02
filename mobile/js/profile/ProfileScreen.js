@@ -6,7 +6,7 @@ import { EmptyFeed } from '../home/EmptyFeed';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { useLazyQuery } from '@apollo/react-hooks';
-import { useNavigation, useFocusEffect, useIsFocused } from '../ReactNavigation';
+import { useNavigation, useFocusEffect, useIsFocused, useScrollToTop } from '../ReactNavigation';
 import { useSession } from '../Session';
 import { ProfileHeader } from './ProfileHeader';
 import { ProfileSettingsSheet } from './ProfileSettingsSheet';
@@ -46,6 +46,9 @@ const ProfileDecksGrid = ({ user, refreshing, onRefresh, error, isMe }) => {
   const { push } = useNavigation();
   const isFocused = useIsFocused();
 
+  const scrollViewRef = React.useRef(null);
+  useScrollToTop(scrollViewRef);
+
   return (
     <DecksGrid
       decks={user?.decks}
@@ -66,6 +69,7 @@ const ProfileDecksGrid = ({ user, refreshing, onRefresh, error, isMe }) => {
       refreshing={refreshing}
       onRefresh={onRefresh}
       enablePreviewVideo={Constants.iOS && isFocused}
+      scrollViewRef={scrollViewRef}
       ListHeaderComponent={
         <ProfileHeader
           user={user}
