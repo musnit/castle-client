@@ -247,6 +247,6 @@ if (Platform.OS === 'android') {
       await Session.maybeFetchNotificationsAsync();
     }
   });
-}
+} // Platform.OS == 'Android'
 
 export default MainProvider;

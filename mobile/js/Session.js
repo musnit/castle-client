@@ -74,6 +74,7 @@ export class Provider extends React.Component {
       signInAsync: this.signInAsync,
       signOutAsync: this.signOutAsync,
       signUpAsync: this.signUpAsync,
+      signInAsAnonymousUserAsync: this.signInAsAnonymousUserAsync,
       markNotificationsReadAsync: this.markNotificationsReadAsync,
       markFollowingFeedRead: this.markFollowingFeedRead,
       ...gNotificationState,
@@ -200,6 +201,34 @@ export class Provider extends React.Component {
 
       await this.useNewAuthTokenAsync(result.data.signup);
     }
+  };
+
+  signInAsAnonymousUserAsync = async () => {
+    const response = await apolloClient.mutate({
+      mutation: gql`
+        mutation {
+          createAnonymousUser {
+            userId
+            token
+          }
+        }
+      `,
+    });
+
+    if (
+      !response.data ||
+      !response.data.createAnonymousUser ||
+      !response.data.createAnonymousUser.token
+    ) {
+      if (response.errors) {
+        throw new Error(`Couldn't create anon user: ${response.errors[0]}`);
+      } else {
+        throw new Error(`Couldn't create anon user: no token: ${JSON.stringify(response)}`);
+      }
+    }
+
+    await this.useNewAuthTokenAsync(response.data.createAnonymousUser);
+    return response.data.createAnonymousUser;
   };
 
   markNotificationsReadAsync = async (opts) => {

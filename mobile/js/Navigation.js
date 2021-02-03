@@ -7,6 +7,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSession, maybeFetchNotificationsAsync, setNotifBadge } from './Session';
 
 import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './AuthScreens';
+import { InitialAuthScreen } from './auth/InitialAuthScreen';
 import { CreateScreen } from './create/CreateScreen';
 import { CreateDeckNavigator } from './create/CreateDeckNavigator';
 import { useAppState } from './ghost/GhostAppState';
@@ -204,6 +205,15 @@ const TabNavigator = ({ notificationsBadgeCount }) => {
   );
 };
 
+const InitialAuthNavigator = () => (
+  <Stack.Navigator
+    screenOptions={{
+      headerShown: false,
+    }}>
+    <Stack.Screen name="InitialAuthScreen" component={InitialAuthScreen} />
+  </Stack.Navigator>
+);
+
 const AuthNavigator = () => (
   <Stack.Navigator
     screenOptions={{
@@ -255,7 +265,7 @@ export const RootNavigator = () => {
     onReceived: (data) => handlePushNotification({ data, clicked: false }),
   });
 
-  // fetch notifs when we first notice a signed in user (including every app boot)
+  // fetch notifs when we first notice a signed in user (including every app InitialAuth)
   React.useEffect(() => {
     if (isSignedIn) {
       maybeFetchNotificationsAsync();
@@ -279,7 +289,7 @@ export const RootNavigator = () => {
       {isSignedIn ? (
         <TabNavigator notificationsBadgeCount={notificationsBadgeCount} />
       ) : (
-        <AuthNavigator />
+        <InitialAuthNavigator />
       )}
     </NavigationContainer>
   );
