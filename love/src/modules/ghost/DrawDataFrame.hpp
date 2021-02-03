@@ -9,19 +9,24 @@
 #define DrawDataFrame_hpp
 
 #include <stdio.h>
-#include "GhostTypes.h"
+#include "GhostTypes.hpp"
 
 namespace love
 {
 namespace ghost
 {
 
+class DrawData;
+
 class DrawDataFrame {
+public:
 	bool isLinked;
 	PathDataList pathDataList;
 	Bounds fillImageBounds;
+	bool _graphicsNeedsReset = true;
+	std::optional<ToveGraphicsHolder> _graphics;
+	DrawData *_parent;
 	
-public:
 	void read(lua_State *L, int index) {
 		GHOST_READ_BOOL(isLinked, false)
 		GHOST_READ_VECTOR(pathDataList, PathData)
@@ -36,8 +41,16 @@ public:
 	Bounds getPathDataBounds(std::optional<Bounds> bounds);
 	Bounds getPathDataBoundsInPixelCoordinates();
 	void resetGraphics();
-	ToveGraphicsRef graphics();
+	ToveGraphicsHolder graphics();
 	void renderFill();
+	
+	DrawData *parent() {
+		return _parent;
+	}
+	
+	void setParent(DrawData *d) {
+		_parent = d;
+	}
 };
 
 typedef std::string DrawDataLayerId;
@@ -53,6 +66,10 @@ struct DrawDataLayer {
 		GHOST_READ_STRING(id)
 		GHOST_READ_BOOL(isVisible, true)
 		GHOST_READ_VECTOR(frames, DrawDataFrame)
+	}
+	
+	void setParent(DrawData *d) {
+		_parent = d;
 	}
 };
 

@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 #include <tuple>
-#include "GhostTypes.h"
+#include "GhostTypes.hpp"
 #include "DrawDataFrame.hpp"
 
 namespace love
@@ -52,6 +52,7 @@ class DrawData {
 	 }
 	 
 	 */
+public:
 	
 	Color color;
 	Color lineColor;
@@ -66,7 +67,6 @@ class DrawData {
 	std::vector<DrawDataLayer> layers;
 	bool _layerDataChanged;
 	
-public:
 	DrawData(lua_State *L, int index) {
 		read(L, index);
 		
@@ -115,7 +115,7 @@ public:
 	int getNumFrames();
 	int modFrameIndex(int value);
 	void runAnimation(AnimationState animationState, AnimationComponentProperties componentProperties, float dt, std::function<void(std::string)> fireTrigger, std::function<void()> fireChangedFrame);
-	ToveGraphicsRef graphics();
+	ToveGraphicsHolder graphics();
 	void preload();
 	void render(std::optional<AnimationComponentProperties> componentProperties);
 	bool isPointInBounds(Point point);

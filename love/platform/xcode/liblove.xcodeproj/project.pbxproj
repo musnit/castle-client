@@ -1287,7 +1287,7 @@
 		911BC0E025BF70280027A2CE /* DrawAlgorithms.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DrawAlgorithms.hpp; sourceTree = "<group>"; };
 		911BC10D25C1FB040027A2CE /* DrawData.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DrawData.cpp; sourceTree = "<group>"; };
 		911BC10E25C1FB040027A2CE /* DrawData.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DrawData.hpp; sourceTree = "<group>"; };
-		911BC11425C234C00027A2CE /* GhostTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GhostTypes.h; sourceTree = "<group>"; };
+		911BC11425C234C00027A2CE /* GhostTypes.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GhostTypes.hpp; sourceTree = "<group>"; };
 		911BC12A25C4A18A0027A2CE /* DrawDataFrame.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DrawDataFrame.cpp; sourceTree = "<group>"; };
 		911BC12B25C4A18A0027A2CE /* DrawDataFrame.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DrawDataFrame.hpp; sourceTree = "<group>"; };
 		FA08F5AE16C7525600F007B5 /* liblove-macosx.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "liblove-macosx.plist"; path = "macosx/liblove-macosx.plist"; sourceTree = "<group>"; };
@@ -2150,7 +2150,7 @@
 				911BC0E025BF70280027A2CE /* DrawAlgorithms.hpp */,
 				911BC10D25C1FB040027A2CE /* DrawData.cpp */,
 				911BC10E25C1FB040027A2CE /* DrawData.hpp */,
-				911BC11425C234C00027A2CE /* GhostTypes.h */,
+				911BC11425C234C00027A2CE /* GhostTypes.hpp */,
 				911BC12A25C4A18A0027A2CE /* DrawDataFrame.cpp */,
 				911BC12B25C4A18A0027A2CE /* DrawDataFrame.hpp */,
 			);
