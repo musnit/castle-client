@@ -705,6 +705,20 @@ export const blockUser = async (userId, isBlocked) => {
   return result?.data?.blockUser;
 };
 
+export const reportDeck = async (deckId) => {
+  const result = await apolloClient.mutate({
+    mutation: gql`
+      mutation($deckId: ID!) {
+        reportDeck(deckId: $deckId) {
+          deckId
+        }
+      }
+    `,
+    variables: { deckId },
+  });
+  return result?.data?.reportDeck;
+};
+
 const _sendMarkFollowingFeedRead = debounce(
   async () =>
     apolloClient.mutate({

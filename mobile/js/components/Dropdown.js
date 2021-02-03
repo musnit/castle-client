@@ -69,6 +69,7 @@ export const Dropdown = ({ value, onChange, style, children, ...props }) => {
     items,
     selectedItem,
     height: 156,
+    width: 256,
     onSelectItem: (item) => onChange(item.id),
   };
 

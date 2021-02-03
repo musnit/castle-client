@@ -12,7 +12,7 @@ import { PlayDeckActions, PlayDeckActionsSkeleton } from '../play/PlayDeckAction
 import { PlayDeckNavigator } from '../play/PlayDeckNavigator';
 import { useIsFocused, useFocusEffect } from '../ReactNavigation';
 import { useListen } from '../ghost/GhostEvents';
-import { useSession, blockUser } from '../Session';
+import { useSession, blockUser, reportDeck } from '../Session';
 
 import tinycolor from 'tinycolor2';
 import Viewport from '../common/viewport';
@@ -175,7 +175,13 @@ const CurrentDeckCell = ({
     if (onRefreshFeed) {
       onRefreshFeed();
     }
-  }, [onRefreshFeed]);
+  }, [onRefreshFeed, deck]);
+  const onReportDeck = React.useCallback(async () => {
+    await reportDeck(deck.deckId);
+    if (onRefreshFeed) {
+      onRefreshFeed();
+    }
+  }, [onRefreshFeed, deck]);
   const backgroundColor = makeBackgroundColor(initialCard);
 
   if (Constants.Android) {
@@ -247,6 +253,7 @@ const CurrentDeckCell = ({
           additionalPadding={getItemHorzPadding()}
           isMe={isMe}
           onBlockUser={onBlockUser}
+          onReportDeck={onReportDeck}
         />
       </Animated.View>
     </View>

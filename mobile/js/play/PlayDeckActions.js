@@ -93,6 +93,7 @@ export const PlayDeckActions = ({
   backgroundColor,
   additionalPadding,
   onBlockUser,
+  onReportDeck,
   isMe = false,
 }) => {
   const { creator } = deck;
@@ -140,10 +141,10 @@ export const PlayDeckActions = ({
       name: 'View deck source',
     },
   ];
-  if (!isMe) {
+  if (!isMe && onReportDeck) {
     dropdownItems.push({
       id: 'report',
-      name: 'Report and hide this',
+      name: 'Report and hide this deck',
     });
   }
   if (!isMe && onBlockUser) {
@@ -171,6 +172,22 @@ export const PlayDeckActions = ({
             (buttonIndex) => {
               if (buttonIndex == 0) {
                 onBlockUser();
+              }
+            }
+          );
+          break;
+        }
+        case 'report': {
+          showActionSheetWithOptions(
+            {
+              title: `Does this deck violate our community guidelines? Let us know and we will not show it to you anymore.`,
+              options: ['Report and hide', 'Cancel'],
+              destructiveButtonIndex: 0,
+              cancelButtonIndex: 1,
+            },
+            (buttonIndex) => {
+              if (buttonIndex == 0) {
+                onReportDeck();
               }
             }
           );
