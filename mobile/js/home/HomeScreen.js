@@ -48,35 +48,42 @@ const styles = StyleSheet.create({
   },
 });
 
-const makeItems = ({ newFollowingDecks } = {}) => [
-  {
-    name: 'Featured',
-    value: 'featured',
-    item: (props) => <FeaturedDecks {...props} />,
-  },
-  {
-    name: 'Following',
-    value: 'following',
-    indicator: newFollowingDecks,
-    item: (props) => <FollowingDecks {...props} />,
-  },
-  {
-    name: 'New',
-    value: 'newest',
-    item: (props) => <NewestDecks {...props} />,
-  },
-  {
-    name: 'History',
-    value: 'recent',
-    item: (props) => <RecentDecks {...props} />,
-  },
-];
+const makeItems = ({ newFollowingDecks, isAnonymous } = {}) => {
+  let items = [
+    {
+      name: 'Featured',
+      value: 'featured',
+      item: (props) => <FeaturedDecks {...props} />,
+    },
+    {
+      name: 'New',
+      value: 'newest',
+      item: (props) => <NewestDecks {...props} />,
+    },
+    {
+      name: 'History',
+      value: 'recent',
+      item: (props) => <RecentDecks {...props} />,
+    },
+  ];
+
+  if (!isAnonymous) {
+    items.splice(1, 0, {
+      name: 'Following',
+      value: 'following',
+      indicator: newFollowingDecks,
+      item: (props) => <FollowingDecks {...props} />,
+    });
+  }
+
+  return items;
+};
 
 export const HomeScreen = ({ route }) => {
   useNavigation();
   const insets = useSafeArea();
   const [mode, setMode] = React.useState('featured');
-  const { newFollowingDecks } = useSession();
+  const { newFollowingDecks, isAnonymous } = useSession();
   const [items, setItems] = React.useState(makeItems());
 
   // play a deck within the feed?
@@ -85,7 +92,10 @@ export const HomeScreen = ({ route }) => {
     deckId = route.params.deckId;
   }
 
-  React.useEffect(() => setItems(makeItems({ newFollowingDecks })), [newFollowingDecks]);
+  React.useEffect(() => setItems(makeItems({ newFollowingDecks, isAnonymous })), [
+    newFollowingDecks,
+    isAnonymous,
+  ]);
 
   useFocusEffect(
     React.useCallback(() => {
