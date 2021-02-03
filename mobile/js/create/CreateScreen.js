@@ -8,12 +8,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { AuthPrompt } from '../auth/AuthPrompt';
 import { CardCell } from '../components/CardCell';
+import { CommonActions, useNavigation, useFocusEffect } from '../ReactNavigation';
 import { EmptyFeed } from '../home/EmptyFeed';
 import { ScreenHeader } from '../components/ScreenHeader';
-import { useSafeArea } from 'react-native-safe-area-context';
 import { useLazyQuery } from '@apollo/react-hooks';
-import { CommonActions, useNavigation, useFocusEffect } from '../ReactNavigation';
+import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
+import { useSession } from '../Session';
 
 import FastImage from 'react-native-fast-image';
 import gql from 'graphql-tag';
@@ -81,6 +83,21 @@ const CreateDeckCell = (props) => {
 };
 
 export const CreateScreen = () => {
+  const { isAnonymous } = useSession();
+
+  if (isAnonymous) {
+    return (
+      <SafeAreaView>
+        <ScreenHeader title="Your Decks" />
+        <AuthPrompt message="Sign in or create an account to make your own Castle decks." />
+      </SafeAreaView>
+    );
+  } else {
+    return <CreateScreenAuthenticated />;
+  }
+};
+
+const CreateScreenAuthenticated = () => {
   const insets = useSafeArea();
   const navigation = useNavigation();
   const [decks, setDecks] = React.useState(undefined);
