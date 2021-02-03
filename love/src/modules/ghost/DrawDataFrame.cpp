@@ -6,6 +6,7 @@
 //
 
 #include "DrawDataFrame.hpp"
+#include "DrawData.hpp"
 #include "DrawAlgorithms.hpp"
 
 namespace love
@@ -16,7 +17,7 @@ namespace ghost
 
 
 void DrawDataFrame::deserializePathDataList() {
-  auto newPathDataList = [];
+  /*auto newPathDataList = [];
   for (size_t i = 1; i < pathDataList.size(); i++) {
 	auto pathData = pathDataList[i];
 	if (pathData.points.size() > 2) {
@@ -32,7 +33,7 @@ void DrawDataFrame::deserializePathDataList() {
 	  newPathDataList.push_back(pathData);
 	}
   }
-  pathDataList = newPathDataList;
+  pathDataList = newPathDataList;*/
 }
 /*
 TYPE DrawDataFrame::deserializeFillAndPreview() {
@@ -113,18 +114,18 @@ TYPE DrawDataFrame::serialize() {
 
 void DrawDataFrame::cleanUpPaths() {
   for (size_t i = 1; i < pathDataList.size(); i++) {
-	parent().updatePathDataRendering(pathDataList[i]);
+	parent()->updatePathDataRendering(pathDataList[i]);
   }
 }
 
 Bounds DrawDataFrame::getPathDataBounds(std::optional<Bounds> bounds) {
   if (!bounds) {
-	bounds = {
-	  minX = DRAW_MAX_SIZE;
-	  minY = DRAW_MAX_SIZE;
-	  maxX = -DRAW_MAX_SIZE;
-	  maxY = -DRAW_MAX_SIZE;
-	}
+	  Bounds newBounds;
+	  newBounds.minX = DRAW_MAX_SIZE;
+	  newBounds.minY = DRAW_MAX_SIZE;
+	  newBounds.maxX = -DRAW_MAX_SIZE;
+	  newBounds.maxY = -DRAW_MAX_SIZE;
+	  bounds = newBounds;
   }
   // https://poke1024.github.io/tove2d-api/classes/Graphics.html#Graphics:computeAABB
   auto [minX, minY, maxX, maxY] = graphics().computeAABB();
@@ -152,29 +153,29 @@ Bounds DrawDataFrame::getPathDataBounds(std::optional<Bounds> bounds) {
 	  }
 	}
   }
-  if (minX < bounds.minX) {
-	bounds.minX = minX;
+  if (minX < bounds->minX) {
+	bounds->minX = minX;
   }
-  if (minY < bounds.minY) {
-	bounds.minY = minY;
+  if (minY < bounds->minY) {
+	bounds->minY = minY;
   }
-  if (maxX > bounds.maxX) {
-	bounds.maxX = maxX;
+  if (maxX > bounds->maxX) {
+	bounds->maxX = maxX;
   }
-  if (maxY > bounds.maxY) {
-	bounds.maxY = maxY;
+  if (maxY > bounds->maxY) {
+	bounds->maxY = maxY;
   }
-  return bounds;
+  return *bounds;
 }
 
 Bounds DrawDataFrame::getPathDataBoundsInPixelCoordinates() {
-  auto bounds = getPathDataBounds();
-  return {
-	minX = floor(bounds.minX * parent().fillPixelsPerUnit);
-	minY = floor(bounds.minY * parent().fillPixelsPerUnit);
-	maxX = ceil(bounds.maxX * parent().fillPixelsPerUnit);
-	maxY = ceil(bounds.maxY * parent().fillPixelsPerUnit);
-  }
+  auto bounds = getPathDataBounds(std::nullopt);
+Bounds newBounds;
+	newBounds.minX = floor(bounds.minX * parent()->fillPixelsPerUnit);
+	newBounds.minY = floor(bounds.minY * parent()->fillPixelsPerUnit);
+	newBounds.maxX = ceil(bounds.maxX * parent()->fillPixelsPerUnit);
+	newBounds.maxY = ceil(bounds.maxY * parent()->fillPixelsPerUnit);
+	return newBounds;
 }
 
 void DrawDataFrame::resetGraphics() {
@@ -328,17 +329,16 @@ TYPE DrawDataFrame::updatePathsCanvas() {
   pathsCanvas.renderTo(undefined);
 }*/
 
-ToveGraphicsRef DrawDataFrame::graphics() {
+ToveGraphicsHolder DrawDataFrame::graphics() {
   if (_graphicsNeedsReset || !_graphics) {
 	_graphicsNeedsReset = false;
 	cleanUpPaths();
-	_graphics = tove.newGraphics();
-	_graphics.setDisplay("mesh", 1024);
+	_graphics = ToveGraphicsHolder();
 	for (size_t i = 1; i < pathDataList.size(); i++) {
-	  _graphics.addPath(pathDataList[i].tovePath);
+	  _graphics->addPath(pathDataList[i].tovePath);
 	}
   }
-  return _graphics;
+  return *_graphics;
 }
 
 void DrawDataFrame::renderFill() {

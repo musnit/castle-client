@@ -8,9 +8,6 @@
 #include "DrawData.hpp"
 #include "DrawAlgorithms.hpp"
 
-#define DRAW_MAX_SIZE 10.0
-#define DRAW_LINE_WIDTH 0.2
-
 namespace love
 {
 namespace ghost
@@ -865,7 +862,7 @@ TYPE DrawData::clearFrame() {
   selectedLayer().frames[realFrame] = _newFrame(false);
 }*/
 
-ToveGraphicsRef DrawData::graphics() {
+ToveGraphicsHolder DrawData::graphics() {
   return currentLayerFrame().graphics();
 }
 

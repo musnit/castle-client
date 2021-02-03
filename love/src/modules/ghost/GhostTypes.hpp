@@ -9,8 +9,15 @@
 #define GhostTypes_h
 
 #include "common/runtime.h"
+#include "common/config.h"
+#include "common/Module.h"
 #include "tove2d/src/cpp/interface.h"
 #include <optional>
+#include "graphics/Graphics.h"
+#include "data/DataModule.h"
+
+#define DRAW_MAX_SIZE 10.0
+#define DRAW_LINE_WIDTH 0.2
 
 #define GHOST_READ_NUMBER(arg, default) \
 	lua_pushstring(L, #arg);\
@@ -229,6 +236,102 @@ struct AnimationComponentProperties {
 	int loopEndFrame;
 	int currentFrame;
 	bool loop;
+};
+
+class ToveMeshHolder {
+	
+};
+
+class ToveGraphicsHolder {
+public:
+	ToveGraphicsRef toveGraphics;
+	ToveNameRef toveName;
+	ToveMeshRef toveMesh;
+	graphics::Mesh *loveMesh;
+	data::ByteData *vData;
+	size_t iDataSize = 0;
+	data::ByteData *iData;
+	
+	ToveGraphicsHolder() {
+		toveGraphics = NewGraphics(NULL, "px", 72);
+		//_graphics.setDisplay("mesh", 1024);
+	}
+	
+	void addPath(TovePathRef path) {
+		GraphicsAddPath(toveGraphics, path);
+	}
+	
+	std::tuple<float, float, float, float> computeAABB() {
+		ToveBounds toveBounds = GraphicsGetBounds(toveGraphics, false);
+		return {toveBounds.x0, toveBounds.y0, toveBounds.x1, toveBounds.y1};
+	}
+	
+	void updateVertices() {
+		MeshSetVertexBuffer(toveMesh, vData->getData(), vData->getSize());
+		// Mesh::setVertices
+		memcpy(loveMesh->mapVertexData(), vData->getData(), vData->getSize());
+		loveMesh->unmapVertexData(0, vData->getSize());
+	}
+	
+	void updateTriangles() {
+		int indexCount = MeshGetIndexCount(toveMesh);
+		size_t size = indexCount * sizeof(ToveVertexIndex);
+		
+		if (size != iDataSize) {
+			iData = data::DataModule::instance.newByteData(size);
+			iDataSize = size;
+		}
+		
+		MeshCopyIndexData(toveMesh, iData->getData(), iData->getSize());
+		loveMesh->setVertexMap(graphics::INDEX_UINT16, iData->getData(), iData->getSize());
+	}
+	
+	void getToveMesh() {
+		std::vector<graphics::Mesh::AttribFormat> vertexFormat;
+		graphics::Mesh::AttribFormat attribFormat;
+		attribFormat.name = "VertexPosition";
+		attribFormat.type = graphics::vertex::DATA_FLOAT;
+		attribFormat.components = 2;
+		vertexFormat.push_back(attribFormat);
+		
+		int vertexCount = MeshGetVertexCount(toveMesh);
+		graphics::PrimitiveType primitiveType = MeshGetIndexMode(toveMesh) == TRIANGLES_LIST ? graphics::PRIMITIVE_TRIANGLES : graphics::PRIMITIVE_TRIANGLE_STRIP;
+		
+		// love.graphics.mesh
+		
+		graphics::Graphics *instance = Module::getInstance<graphics::Graphics>(Module::M_GRAPHICS);
+		
+		// TODO: double check that USAGE_STATIC is correct
+		loveMesh = instance->newMesh(vertexFormat, vertexCount, primitiveType, graphics::vertex::USAGE_STATIC);
+		
+		//love.data.newByteData(n * self._vertexByteSize)
+		vData = data::DataModule::instance.newByteData((size_t) vertexCount * 2 * sizeof(float));
+		
+		updateVertices();
+		updateTriangles();
+	}
+	
+	void draw() {
+		toveName = NewName("unnamed");
+		toveMesh = NewColorMesh(toveName);
+		
+		getToveMesh();
+		
+		graphics::Graphics *instance = Module::getInstance<graphics::Graphics>(Module::M_GRAPHICS);
+		
+		// love.graphics.setShader
+		
+		
+		
+		
+		
+		// love.graphics.draw mesh
+		instance->draw(loveMesh, Matrix4());
+		
+		// love.graphics.setShader nil
+		instance->setShader();
+	}
+	
 };
 
 }

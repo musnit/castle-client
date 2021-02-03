@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 #include <vector>
-#include "GhostTypes.h"
+#include "GhostTypes.hpp"
 #include <optional>
 
 namespace love
