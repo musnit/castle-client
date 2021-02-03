@@ -22,7 +22,7 @@ import { NewestDecks } from './home/NewestDecks';
 import { RecentDecks } from './home/RecentDecks';
 import { PlayDeckScreen } from './play/PlayDeckScreen';
 import { ProfileScreen } from './profile/ProfileScreen';
-import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './AuthScreens';
+import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './auth/AuthScreens';
 import { CreateScreen } from './create/CreateScreen';
 import { CreateDeckNavigator } from './create/CreateDeckNavigator';
 import { ViewSourceNavigator } from './create/ViewSourceNavigator';

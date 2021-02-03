@@ -6,7 +6,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { useSession, maybeFetchNotificationsAsync, setNotifBadge } from './Session';
 
-import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './AuthScreens';
+import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './auth/AuthScreens';
 import { InitialAuthScreen } from './auth/InitialAuthScreen';
 import { CreateScreen } from './create/CreateScreen';
 import { CreateDeckNavigator } from './create/CreateDeckNavigator';
@@ -290,10 +290,10 @@ export const RootNavigator = () => {
 
   // fetch notifs when we first notice a signed in user (including every app InitialAuth)
   React.useEffect(() => {
-    if (isSignedIn) {
+    if (isSignedIn && !isAnonymous) {
       maybeFetchNotificationsAsync();
     }
-  }, [isSignedIn]);
+  }, [isSignedIn, isAnonymous]);
 
   // fetch notifs when the app foregrounds
   useAppState(

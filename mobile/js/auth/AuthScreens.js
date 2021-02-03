@@ -2,6 +2,7 @@ import React, { useState, Fragment, useEffect } from 'react';
 import {
   View,
   TouchableOpacity,
+  StyleSheet,
   Text,
   TextInput,
   Linking,
@@ -9,33 +10,69 @@ import {
   Platform,
   DeviceEventEmitter,
 } from 'react-native';
-import { useNavigation } from './ReactNavigation';
+import { useNavigation } from '../ReactNavigation';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import { AuthHeader } from './auth/AuthHeader';
-import { resetPasswordAsync, useSession } from './Session';
-import { navigateToUri } from './DeepLinks';
+import { AuthHeader } from './AuthHeader';
+import { resetPasswordAsync, useSession } from '../Session';
+import { navigateToUri } from '../DeepLinks';
 
-import * as Constants from './Constants';
-import * as GhostChannels from './ghost/GhostChannels';
+import * as Constants from '../Constants';
+import * as GhostChannels from '../ghost/GhostChannels';
 
-const textInputStyle = {
-  color: Constants.colors.white,
-  backgroundColor: Constants.colors.black,
-  width: '100%',
-  borderWidth: 1,
-  borderColor: Constants.colors.white,
-  borderRadius: 4,
-  paddingVertical: 8,
-  paddingHorizontal: 12,
-  marginVertical: 8,
-  fontSize: 16,
-};
-
-const disabledTextInputStyle = {
-  color: Constants.colors.grayText,
-  borderColor: Constants.colors.grayText,
-};
+const styles = StyleSheet.create({
+  announcement: {
+    padding: 16,
+    paddingTop: 12,
+    backgroundColor: Constants.colors.white,
+    borderRadius: 4,
+    marginBottom: 16,
+    flexDirection: 'column',
+  },
+  announcementHeadline: {
+    fontWeight: 'bold',
+    color: Constants.colors.black,
+    fontSize: 16,
+    marginBottom: 4,
+  },
+  announcementBody: {
+    color: Constants.colors.black,
+    lineHeight: 20,
+  },
+  button: {
+    backgroundColor: '#fff',
+    borderRadius: 4,
+    paddingVertical: 6,
+    paddingHorizontal: 9,
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  spinner: {
+    backgroundColor: '#fff',
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    justifyContent: 'center',
+  },
+  textInput: {
+    color: Constants.colors.white,
+    backgroundColor: Constants.colors.black,
+    width: '100%',
+    borderWidth: 1,
+    borderColor: Constants.colors.white,
+    borderRadius: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginVertical: 8,
+    fontSize: 16,
+  },
+  disabledTextInput: {
+    color: Constants.colors.grayText,
+    borderColor: Constants.colors.grayText,
+  },
+});
 
 const parseErrors = (e) => {
   if (e.graphQLErrors?.length) {
@@ -72,60 +109,19 @@ const errorMessages = {
 
 const Announcement = (props) => {
   return (
-    <View
-      style={{
-        padding: 16,
-        paddingTop: 12,
-        backgroundColor: Constants.colors.white,
-        borderRadius: 4,
-        marginBottom: 16,
-        flexDirection: 'column',
-      }}>
-      {props.headline ? (
-        <Text
-          style={{
-            fontWeight: 'bold',
-            color: Constants.colors.black,
-            fontSize: 16,
-            marginBottom: 4,
-          }}>
-          {props.headline}
-        </Text>
-      ) : null}
-      <Text
-        style={{
-          color: Constants.colors.black,
-          lineHeight: 20,
-        }}>
-        {props.body}
-      </Text>
+    <View style={styles.announcement}>
+      {props.headline ? <Text style={styles.announcementHeadline}>{props.headline}</Text> : null}
+      <Text style={styles.announcementBody}>{props.body}</Text>
     </View>
   );
 };
 
 const Button = (props) => {
   return (
-    <View
-      style={{
-        backgroundColor: '#fff',
-        borderRadius: 4,
-        paddingVertical: 6,
-        paddingHorizontal: 9,
-        alignItems: 'center',
-        overflow: 'hidden',
-      }}>
+    <View style={styles.button}>
       <Text style={{ color: '#000', fontWeight: 'bold', fontSize: 16 }}>{props.text}</Text>
       {props.spinner ? (
-        <View
-          style={{
-            backgroundColor: '#fff',
-            position: 'absolute',
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0,
-            justifyContent: 'center',
-          }}>
+        <View style={styles.spinner}>
           <ActivityIndicator size="small" color="#000" />
         </View>
       ) : null}
@@ -210,7 +206,7 @@ const LoginForm = ({ route }) => {
         </TouchableOpacity>
       </View>
       <TextInput
-        style={signingIn ? [textInputStyle, disabledTextInputStyle] : textInputStyle}
+        style={signingIn ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
         autoCapitalize="none"
         value={username}
         onChangeText={(newUsername) => setUsername(newUsername)}
@@ -218,15 +214,12 @@ const LoginForm = ({ route }) => {
         placeholderTextColor={Constants.colors.white}
         editable={!signingIn}
         returnKeyType="next"
-        onSubmitEditing={() => {
-          this._password.focus();
-        }}
         blurOnSubmit={false}
         autoCorrect={false}
         keyboardType="email-address"
       />
       <TextInput
-        style={signingIn ? [textInputStyle, disabledTextInputStyle] : textInputStyle}
+        style={signingIn ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
         autoCapitalize="none"
         secureTextEntry
         textContentType="password"
@@ -235,9 +228,6 @@ const LoginForm = ({ route }) => {
         placeholder="Password"
         placeholderTextColor={Constants.colors.white}
         editable={!signingIn}
-        ref={(input) => {
-          this._password = input;
-        }}
         returnKeyType="go"
         onSubmitEditing={onPressSignIn}
       />
@@ -319,55 +309,40 @@ const CreateAccountForm = ({ route }) => {
         </TouchableOpacity>
       </View>
       <TextInput
-        style={creatingAccount ? [textInputStyle, disabledTextInputStyle] : textInputStyle}
+        style={creatingAccount ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
         autoCapitalize="none"
         placeholder="Username"
         placeholderTextColor={Constants.colors.white}
         onChangeText={(newUsername) => setUsername(newUsername)}
         editable={!creatingAccount}
         returnKeyType="next"
-        onSubmitEditing={() => {
-          this._name.focus();
-        }}
         blurOnSubmit={false}
         autoCorrect={false}
       />
       <TextInput
-        style={creatingAccount ? [textInputStyle, disabledTextInputStyle] : textInputStyle}
+        style={creatingAccount ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
         placeholder="Your name"
         placeholderTextColor={Constants.colors.white}
         onChangeText={(newName) => setName(newName)}
         editable={!creatingAccount}
         returnKeyType="next"
-        ref={(input) => {
-          this._name = input;
-        }}
-        onSubmitEditing={() => {
-          this._email.focus();
-        }}
         blurOnSubmit={false}
         autoCorrect={false}
       />
       <TextInput
-        style={creatingAccount ? [textInputStyle, disabledTextInputStyle] : textInputStyle}
+        style={creatingAccount ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
         autoCapitalize="none"
         placeholder="Email address"
         placeholderTextColor={Constants.colors.white}
         onChangeText={(newEmail) => setEmail(newEmail)}
         editable={!creatingAccount}
         returnKeyType="next"
-        ref={(input) => {
-          this._email = input;
-        }}
-        onSubmitEditing={() => {
-          this._password.focus();
-        }}
         blurOnSubmit={false}
         autoCorrect={false}
         keyboardType="email-address"
       />
       <TextInput
-        style={creatingAccount ? [textInputStyle, disabledTextInputStyle] : textInputStyle}
+        style={creatingAccount ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
         secureTextEntry
         textContentType="password"
         placeholder="New password"
@@ -375,9 +350,6 @@ const CreateAccountForm = ({ route }) => {
         onChangeText={(newPassword) => setPassword(newPassword)}
         editable={!creatingAccount}
         returnKeyType="go"
-        ref={(input) => {
-          this._password = input;
-        }}
         onSubmitEditing={onPressCreateAccount}
       />
       <View style={{ paddingTop: 8, paddingBottom: 24 }}>
@@ -447,7 +419,7 @@ const ForgotPasswordForm = () => {
         <Text style={{ fontSize: 20, color: Constants.colors.white }}>Forgot your password?</Text>
       </View>
       <TextInput
-        style={resettingPassword ? [textInputStyle, disabledTextInputStyle] : textInputStyle}
+        style={resettingPassword ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
         autoCapitalize="none"
         onChangeText={(newUsername) => setUsername(newUsername)}
         placeholder="Email or username"
