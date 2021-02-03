@@ -103,7 +103,25 @@ const ProfileNavigator = () => (
   </Stack.Navigator>
 );
 
-const TabNavigator = ({ notificationsBadgeCount }) => {
+const TabNavigator = () => {
+  const { notificationsBadgeCount } = useSession();
+  // fetch notifications when a notif arrives while we're running
+  const handlePushNotification = React.useCallback(({ data, clicked }) => {
+    if (data?.numUnseenNotifications && !clicked) {
+      // Update badge so we don't have to wait on maybeFetchNotificationsAsync() to do it
+      setNotifBadge(data.numUnseenNotifications);
+    }
+    if (clicked && rootNavRef.current) {
+      // pass the `screen` param to ensure we pop to the top of the stack
+      rootNavRef.current.navigate('Notifications', { screen: 'Notifications' });
+    }
+    setTimeout(maybeFetchNotificationsAsync, 250);
+  }, []);
+  PushNotifications.usePushNotifications({
+    onClicked: (data) => handlePushNotification({ data, clicked: true }),
+    onReceived: (data) => handlePushNotification({ data, clicked: false }),
+  });
+
   const initialPushData = PushNotifications.getInitialData();
   return (
     <Tab.Navigator
@@ -217,11 +235,22 @@ const InitialAuthNavigator = () => (
 const AuthNavigator = () => (
   <Stack.Navigator
     screenOptions={{
-      headerShown: false,
+      headerTintColor: '#fff',
+      headerStyle: {
+        backgroundColor: '#666',
+      },
     }}>
-    <Stack.Screen name="LoginScreen" component={LoginScreen} />
-    <Stack.Screen name="CreateAccountScreen" component={CreateAccountScreen} />
-    <Stack.Screen name="ForgotPasswordScreen" component={ForgotPasswordScreen} />
+    <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ title: 'Sign in' }} />
+    <Stack.Screen
+      name="CreateAccountScreen"
+      component={CreateAccountScreen}
+      options={{ title: 'Sign up' }}
+    />
+    <Stack.Screen
+      name="ForgotPasswordScreen"
+      component={ForgotPasswordScreen}
+      options={{ title: 'Reset password' }}
+    />
   </Stack.Navigator>
 );
 
@@ -245,25 +274,19 @@ const navRefCallback = (r) => {
   DeepLinks.setNavigationRef(r);
 };
 
-export const RootNavigator = () => {
-  const { isSignedIn, notificationsBadgeCount } = useSession();
+const MainAppNavigator = () => (
+  <Stack.Navigator
+    screenOptions={{
+      headerShown: false,
+      stackPresentation: 'modal',
+    }}>
+    <Stack.Screen name="TabNavigator" component={TabNavigator} />
+    <Stack.Screen name="AuthNavigator" component={AuthNavigator} />
+  </Stack.Navigator>
+);
 
-  // fetch notifications when a notif arrives while we're running
-  const handlePushNotification = React.useCallback(({ data, clicked }) => {
-    if (data?.numUnseenNotifications && !clicked) {
-      // Update badge so we don't have to wait on maybeFetchNotificationsAsync() to do it
-      setNotifBadge(data.numUnseenNotifications);
-    }
-    if (clicked && rootNavRef.current) {
-      // pass the `screen` param to ensure we pop to the top of the stack
-      rootNavRef.current.navigate('Notifications', { screen: 'Notifications' });
-    }
-    setTimeout(maybeFetchNotificationsAsync, 250);
-  }, []);
-  PushNotifications.usePushNotifications({
-    onClicked: (data) => handlePushNotification({ data, clicked: true }),
-    onReceived: (data) => handlePushNotification({ data, clicked: false }),
-  });
+export const RootNavigator = () => {
+  const { isSignedIn, isAnonymous } = useSession();
 
   // fetch notifs when we first notice a signed in user (including every app InitialAuth)
   React.useEffect(() => {
@@ -274,11 +297,14 @@ export const RootNavigator = () => {
 
   // fetch notifs when the app foregrounds
   useAppState(
-    React.useCallback((state) => {
-      if (state === 'active') {
-        maybeFetchNotificationsAsync();
-      }
-    }, [])
+    React.useCallback(
+      (state) => {
+        if (state === 'active' && !isAnonymous) {
+          maybeFetchNotificationsAsync();
+        }
+      },
+      [isAnonymous]
+    )
   );
 
   return (
@@ -286,11 +312,7 @@ export const RootNavigator = () => {
       theme={NavigationTheme}
       ref={navRefCallback}
       onStateChange={onNavigationStateChange}>
-      {isSignedIn ? (
-        <TabNavigator notificationsBadgeCount={notificationsBadgeCount} />
-      ) : (
-        <InitialAuthNavigator />
-      )}
+      {isSignedIn ? <MainAppNavigator /> : <InitialAuthNavigator />}
     </NavigationContainer>
   );
 };
