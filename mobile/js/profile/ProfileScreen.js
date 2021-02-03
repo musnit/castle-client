@@ -1,6 +1,7 @@
 import React, { Fragment, useState } from 'react';
 import { StatusBar, StyleSheet, Text, View } from 'react-native';
 import gql from 'graphql-tag';
+import { AuthPrompt } from '../auth/AuthPrompt';
 import { DecksGrid } from '../components/DecksGrid';
 import { EmptyFeed } from '../home/EmptyFeed';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -49,6 +50,16 @@ const ProfileDecksGrid = ({ user, refreshing, onRefresh, error, isMe }) => {
   const scrollViewRef = React.useRef(null);
   useScrollToTop(scrollViewRef);
 
+  const listHeader = (
+    <ProfileHeader
+      user={user}
+      isMe={isMe}
+      loading={refreshing}
+      error={error}
+      onRefresh={onRefresh}
+    />
+  );
+
   return (
     <DecksGrid
       decks={user?.decks}
@@ -70,15 +81,7 @@ const ProfileDecksGrid = ({ user, refreshing, onRefresh, error, isMe }) => {
       onRefresh={onRefresh}
       enablePreviewVideo={Constants.iOS && isFocused}
       scrollViewRef={scrollViewRef}
-      ListHeaderComponent={
-        <ProfileHeader
-          user={user}
-          isMe={isMe}
-          loading={refreshing}
-          error={error}
-          onRefresh={onRefresh}
-        />
-      }
+      ListHeaderComponent={listHeader}
       contentContainerStyle={{ paddingTop: 0 }}
     />
   );
@@ -91,7 +94,7 @@ export const ProfileScreen = ({ userId, route }) => {
   const [user, setUser] = React.useState(null);
   const [error, setError] = React.useState(undefined);
 
-  const { signOutAsync, userId: signedInUserId } = useSession();
+  const { signOutAsync, userId: signedInUserId, isAnonymous } = useSession();
   if (!userId && route?.params) {
     userId = route.params.userId;
   }
@@ -140,34 +143,43 @@ export const ProfileScreen = ({ userId, route }) => {
     }
   };
 
-  return (
-    <Fragment>
-      <SafeAreaView edges={['top', 'left', 'right']}>
-        <ScreenHeader
-          title={user ? '@' + user.username : 'Profile'}
-          rightIcon={isMe ? 'settings' : null}
-          onRightButtonPress={() => setSettingsSheet(true)}
-        />
-        {error ? (
-          <EmptyFeed error={error} onRefresh={onRefresh} />
-        ) : (
-          <ProfileDecksGrid
-            user={user}
-            refreshing={query.loading}
-            onRefresh={onRefresh}
-            error={error}
-            isMe={isMe}
-            style
-          />
-        )}
+  if (isMe && isAnonymous) {
+    return (
+      <SafeAreaView>
+        <ScreenHeader title="Profile" />
+        <AuthPrompt message="Sign in or create an account to build your Castle profile." />
       </SafeAreaView>
-      {isMe && user ? (
-        <ProfileSettingsSheet
-          me={user}
-          isOpen={settingsSheetIsOpen}
-          onClose={settingsSheetOnClose}
-        />
-      ) : null}
-    </Fragment>
-  );
+    );
+  } else {
+    return (
+      <>
+        <SafeAreaView edges={['top', 'left', 'right']}>
+          <ScreenHeader
+            title={user ? '@' + user.username : 'Profile'}
+            rightIcon={isMe ? 'settings' : null}
+            onRightButtonPress={() => setSettingsSheet(true)}
+          />
+          {error ? (
+            <EmptyFeed error={error} onRefresh={onRefresh} />
+          ) : (
+            <ProfileDecksGrid
+              user={user}
+              refreshing={query.loading}
+              onRefresh={onRefresh}
+              error={error}
+              isMe={isMe}
+              style
+            />
+          )}
+        </SafeAreaView>
+        {isMe && user ? (
+          <ProfileSettingsSheet
+            me={user}
+            isOpen={settingsSheetIsOpen}
+            onClose={settingsSheetOnClose}
+          />
+        ) : null}
+      </>
+    );
+  }
 };
