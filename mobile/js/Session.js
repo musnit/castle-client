@@ -19,6 +19,7 @@ import * as PushNotifications from './PushNotifications';
 import * as EventEmitter from './EventEmitter';
 
 let gAuthToken, gUserId;
+let gNotificationState = {};
 const TEST_AUTH_TOKEN = null;
 
 const EMPTY_SESSION = {
@@ -75,6 +76,7 @@ export class Provider extends React.Component {
       signUpAsync: this.signUpAsync,
       markNotificationsReadAsync: this.markNotificationsReadAsync,
       markFollowingFeedRead: this.markFollowingFeedRead,
+      ...gNotificationState,
     };
   }
 
@@ -96,6 +98,10 @@ export class Provider extends React.Component {
     this._notificationsListener = EventEmitter.addListener(
       'notifications',
       (notificationsState) => {
+        gNotificationState = {
+          ...gNotificationState,
+          ...notificationsState,
+        };
         this.setState(notificationsState);
       }
     );
