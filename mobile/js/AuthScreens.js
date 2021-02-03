@@ -254,7 +254,7 @@ const LoginForm = ({ route }) => {
           <Text style={{ color: Constants.colors.grayText, fontSize: 16 }}>Forgot password?</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={onPressSignIn}>
-          <Button text="Log In" spinner={signingIn} />
+          <Button text="Sign In" spinner={signingIn} />
         </TouchableOpacity>
       </View>
     </Fragment>
@@ -314,7 +314,7 @@ const CreateAccountForm = ({ route }) => {
         <TouchableOpacity onPress={onPressLogin}>
           <Text style={{ marginTop: 16, color: Constants.colors.grayText, fontSize: 16 }}>
             Already have an account?&nbsp;
-            <Text style={{ fontWeight: 'bold', color: Constants.colors.white }}>Log in</Text>
+            <Text style={{ fontWeight: 'bold', color: Constants.colors.white }}>Sign in</Text>
           </Text>
         </TouchableOpacity>
       </View>
@@ -480,8 +480,9 @@ const WithHeader = ({ children }) => (
     contentContainerStyle={{
       flex: 1,
       alignItems: 'center',
-      justifyContent: 'center',
       padding: 16,
+      paddingTop: 96,
+      marginTop: -64,
     }}>
     <AuthHeader />
     <View
