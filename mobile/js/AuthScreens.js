@@ -4,16 +4,15 @@ import {
   TouchableOpacity,
   Text,
   TextInput,
-  StatusBar,
   Linking,
   ActivityIndicator,
   Platform,
   DeviceEventEmitter,
 } from 'react-native';
 import { useNavigation } from './ReactNavigation';
-import FastImage from 'react-native-fast-image';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
+import { AuthHeader } from './auth/AuthHeader';
 import { resetPasswordAsync, useSession } from './Session';
 import { navigateToUri } from './DeepLinks';
 
@@ -484,29 +483,7 @@ const WithHeader = ({ children }) => (
       justifyContent: 'center',
       padding: 16,
     }}>
-    <StatusBar backgroundColor="#000" barStyle="light-content" />
-    <View
-      style={{
-        alignItems: 'center',
-        paddingBottom: 16,
-      }}>
-      <FastImage
-        style={{
-          width: 100,
-          aspectRatio: 1,
-          marginBottom: 16,
-        }}
-        source={require('../assets/images/castle-icon-onblack.png')}
-      />
-      <FastImage
-        style={{
-          width: 100,
-          height: 34,
-          marginBottom: 16,
-        }}
-        source={require('../assets/images/castle-wordmark-onblack.png')}
-      />
-    </View>
+    <AuthHeader />
     <View
       style={{ width: '100%', maxWidth: Constants.TABLET_MAX_FORM_WIDTH, alignItems: 'center' }}>
       {children}
