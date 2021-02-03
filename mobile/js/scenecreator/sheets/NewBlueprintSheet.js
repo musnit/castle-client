@@ -1,19 +1,18 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import FastImage from 'react-native-fast-image';
 
 import { BottomSheetHeader } from '../../components/BottomSheetHeader';
-import { CardCreatorBottomSheet } from './CardCreatorBottomSheet';
 import * as Constants from '../../Constants';
 import * as GhostEvents from '../../ghost/GhostEvents';
 
-import FastImage from 'react-native-fast-image';
+import { CardCreatorBottomSheet } from './CardCreatorBottomSheet';
 
 const styles = StyleSheet.create({
   container: {},
   itemContainer: {
-    borderColor: Constants.colors.grayOnWhiteBorder,
-    borderBottomWidth: 1,
     padding: 16,
+    paddingVertical: 6,
     flexDirection: 'row',
   },
   preview: {
@@ -38,9 +37,19 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
   },
+  sectionHeaderSeparator: {
+    paddingTop: 10,
+    borderColor: Constants.colors.grayOnWhiteBorder,
+    borderBottomWidth: 1,
+  },
+  sectionHeaderText: {
+    padding: 16,
+    paddingBottom: 10,
+    color: Constants.colors.grayText,
+  },
 });
 
-const BlueprintItem = ({ entry, onPress }) => {
+const TemplateItem = ({ entry, onPress }) => {
   return (
     <TouchableOpacity style={styles.itemContainer} onPress={onPress}>
       <View style={[styles.preview, entry.base64Png ? null : { backgroundColor: '#ddd' }]}>
@@ -51,43 +60,65 @@ const BlueprintItem = ({ entry, onPress }) => {
           />
         ) : null}
       </View>
-      <View style={{ flexShrink: 1 }}>
+      <View style={{ flexShrink: 1, justifyContent: entry.isBlank ? 'center' : undefined }}>
         <Text style={styles.title}>{entry.title}</Text>
-        <Text style={styles.description}>{entry.description}</Text>
+        {!entry.isBlank ? <Text style={styles.description}>{entry.description}</Text> : null}
       </View>
     </TouchableOpacity>
   );
 };
 
 export const NewBlueprintSheet = ({ element, isOpen, onClose }) => {
-  const templates = element?.children?.data?.props?.data?.templates;
-  if (!templates) {
+  const data = element?.children?.data?.props?.data?.templates.map((entry, i) => ({ index: i, entry }));
+  if (!data) {
     return null;
   }
+  const blanks = data.filter(({ entry }) => entry.isBlank);
+  const templates = data.filter(({ entry }) => !entry.isBlank);
 
   const renderHeader = () => <BottomSheetHeader title="Add a new blueprint" onClose={onClose} />;
 
-  const renderContent = () => (
-    <View style={styles.container}>
-      {!isOpen
-        ? null
-        : templates.map((entry, i) => {
-            if (entry.entryType === 'actorBlueprint') {
-              return (
-                <BlueprintItem
-                  key={i}
-                  entry={entry}
-                  onPress={() => {
-                    GhostEvents.sendAsync('NEW_BLUEPRINT', { templateIndex: i });
-                    onClose();
-                  }}
-                />
-              );
-            }
-          })}
-    </View>
-  );
+  const renderContent = () => {
+    if (!isOpen) {
+      return <View style={styles.container} />;
+    }
 
+    return (
+      <View style={styles.container}>
+        <Text style={styles.sectionHeaderText}>CREATE A BLANK BLUEPRINT</Text>
+        {blanks.map(({ entry, index }) => {
+          if (entry.entryType === 'actorBlueprint') {
+            return (
+              <TemplateItem
+                key={index}
+                entry={entry}
+                onPress={() => {
+                  GhostEvents.sendAsync('NEW_BLUEPRINT', { templateIndex: index });
+                  onClose();
+                }}
+              />
+            );
+          }
+        })}
+        <View style={styles.sectionHeaderSeparator} />
+        <Text style={styles.sectionHeaderText}>START FROM A TEMPLATE</Text>
+        {templates.map(({ entry, index }) => {
+          if (entry.entryType === 'actorBlueprint') {
+            return (
+              <TemplateItem
+                key={index}
+                entry={entry}
+                onPress={() => {
+                  GhostEvents.sendAsync('NEW_BLUEPRINT', { templateIndex: index });
+                  onClose();
+                }}
+              />
+            );
+          }
+        })}
+      </View>
+    );
+  };
   return (
     <CardCreatorBottomSheet
       isOpen={isOpen}
