@@ -441,28 +441,40 @@ const ForgotPasswordForm = () => {
   );
 };
 
-const WithHeader = ({ children }) => (
-  <KeyboardAwareScrollView
-    enableOnAndroid={true}
-    keyboardShouldPersistTaps="handled"
-    style={{
-      flex: 1,
-      backgroundColor: Constants.colors.black,
-    }}
-    contentContainerStyle={{
-      flex: 1,
-      alignItems: 'center',
-      padding: 16,
-      paddingTop: 96,
-      marginTop: -64,
-    }}>
-    <AuthHeader />
-    <View
-      style={{ width: '100%', maxWidth: Constants.TABLET_MAX_FORM_WIDTH, alignItems: 'center' }}>
-      {children}
-    </View>
-  </KeyboardAwareScrollView>
-);
+const WithHeader = ({ children }) => {
+  const { navigate } = useNavigation();
+  const { isSignedIn, isAnonymous } = useSession();
+
+  React.useEffect(() => {
+    if (isSignedIn && !isAnonymous) {
+      // this will close the auth modal if we finish signing in/up
+      navigate('TabNavigator');
+    }
+  }, [isSignedIn, isAnonymous]);
+
+  return (
+    <KeyboardAwareScrollView
+      enableOnAndroid={true}
+      keyboardShouldPersistTaps="handled"
+      style={{
+        flex: 1,
+        backgroundColor: Constants.colors.black,
+      }}
+      contentContainerStyle={{
+        flex: 1,
+        alignItems: 'center',
+        padding: 16,
+        paddingTop: 96,
+        marginTop: -64,
+      }}>
+      <AuthHeader />
+      <View
+        style={{ width: '100%', maxWidth: Constants.TABLET_MAX_FORM_WIDTH, alignItems: 'center' }}>
+        {children}
+      </View>
+    </KeyboardAwareScrollView>
+  );
+};
 
 export const LoginScreen = () => (
   <WithHeader>
