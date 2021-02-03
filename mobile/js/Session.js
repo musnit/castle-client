@@ -18,7 +18,9 @@ import * as LocalId from './common/local-id';
 import * as PushNotifications from './PushNotifications';
 import * as EventEmitter from './EventEmitter';
 
-let gAuthToken, gUserId;
+let gAuthToken,
+  gUserId,
+  gIsAnonymous = false;
 let gNotificationState = {};
 const TEST_AUTH_TOKEN = null;
 
@@ -58,6 +60,8 @@ export async function loadAuthTokenAsync() {
   } else {
     gAuthToken = await CastleAsyncStorage.getItem('AUTH_TOKEN');
     gUserId = await CastleAsyncStorage.getItem('USER_ID');
+    const isAnonStorageValue = await CastleAsyncStorage.getItem('USER_IS_ANONYMOUS');
+    gIsAnonymous = isAnonStorageValue === 'true' || isAnonStorageValue === true;
     Amplitude.setUserId(gUserId);
   }
 }
@@ -70,6 +74,7 @@ export class Provider extends React.Component {
       authToken: null,
       isSignedIn: false,
       userId: null,
+      isAnonymous: false,
       initialized: false,
       signInAsync: this.signInAsync,
       signOutAsync: this.signOutAsync,
@@ -90,6 +95,7 @@ export class Provider extends React.Component {
         this.setState({
           authToken: gAuthToken,
           isSignedIn: !!gAuthToken,
+          isAnonymous: gIsAnonymous,
           userId: gUserId,
           initialized: true,
         });
@@ -113,19 +119,23 @@ export class Provider extends React.Component {
     EventEmitter.removeListener(this._notificationsListener);
   }
 
-  useNewAuthTokenAsync = async ({ userId, token }) => {
+  useNewAuthTokenAsync = async ({ userId, token, isAnonymous }) => {
     if (!TEST_AUTH_TOKEN) {
       apolloClient.resetStore();
       gAuthToken = token;
       gUserId = userId;
+      gIsAnonymous = !!isAnonymous;
 
       if (token) {
         await CastleAsyncStorage.setItem('AUTH_TOKEN', token);
         await CastleAsyncStorage.setItem('USER_ID', userId);
+        await CastleAsyncStorage.setItem('USER_IS_ANONYMOUS', gIsAnonymous.toString());
+
         Amplitude.setUserId(gUserId);
       } else {
         await CastleAsyncStorage.removeItem('AUTH_TOKEN');
         await CastleAsyncStorage.removeItem('USER_ID');
+        await CastleAsyncStorage.removeItem('USER_IS_ANONYMOUS');
         await PushNotifications.clearTokenAsync();
         Amplitude.setUserId(null);
         Amplitude.clearUserProperties();
@@ -136,6 +146,7 @@ export class Provider extends React.Component {
       authToken: gAuthToken,
       isSignedIn: !!gAuthToken,
       userId: gUserId,
+      isAnonymous: gIsAnonymous,
     });
   };
 
@@ -147,6 +158,7 @@ export class Provider extends React.Component {
           login(userId: $userId, password: $password) {
             userId
             token
+            isAnonymous
             photo {
               url
             }
@@ -184,6 +196,7 @@ export class Provider extends React.Component {
           signup(user: { name: $name, username: $username }, email: $email, password: $password) {
             userId
             token
+            isAnonymous
             photo {
               url
             }
@@ -210,6 +223,7 @@ export class Provider extends React.Component {
           createAnonymousUser {
             userId
             token
+            isAnonymous
           }
         }
       `,
@@ -288,6 +302,7 @@ export const useSession = () => React.useContext(SessionContext);
 
 // for checking auth state outside of react component tree
 export const isSignedIn = () => gAuthToken !== null;
+export const isAnonymous = () => gIsAnonymous;
 
 // Based on https://www.apollographql.com/docs/react/migrating/boost-migration/
 export const apolloClient = new ApolloClient({
