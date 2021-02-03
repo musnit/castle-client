@@ -170,23 +170,12 @@ export const NotificationsScreen = () => {
   const { notifications, markNotificationsReadAsync } = useSession();
   const isFocused = useIsFocused();
 
-  const onRefresh = React.useCallback(async (force = true) => {
-    setRefresh(true);
-    try {
-      await maybeFetchNotificationsAsync(force);
-    } catch (_) {}
-    setRefresh(false);
-  }, []);
-
   // Clear the notif badge on tab focus, mark notifs as read on blur
   // Also clear notif badge on blur in case push notifs come in while the user is on the notifs tab
   useFocusEffect(
     React.useCallback(() => {
       setNotifBadge(0);
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
-      if (Constants.Android) {
-        onRefresh(true);
-      }
       return () => {
         setNotifBadge(0);
         markNotificationsReadAsync();
@@ -228,6 +217,14 @@ export const NotificationsScreen = () => {
     // whether they accept or deny, subsequent calls to this method won't pop up anything for
     // the user.
     PushNotifications.requestTokenAsync();
+  }, []);
+
+  const onRefresh = React.useCallback(async (force = true) => {
+    setRefresh(true);
+    try {
+      await maybeFetchNotificationsAsync(force);
+    } catch (_) {}
+    setRefresh(false);
   }, []);
 
   const navigateToUser = React.useCallback(
