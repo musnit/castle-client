@@ -95,6 +95,7 @@ export const PlayDeckActions = ({
   onBlockUser,
   onReportDeck,
   isMe = false,
+  isAnonymous = false,
 }) => {
   const { creator } = deck;
   const { push, navigate } = useNavigation();
@@ -135,12 +136,14 @@ export const PlayDeckActions = ({
     }).start();
   }, [isPlaying]);
 
-  let dropdownItems = [
-    {
+  let dropdownItems = [];
+  if (!isAnonymous) {
+    // TODO: enable anonymous view source
+    dropdownItems.push({
       id: 'view-source',
       name: 'View deck source',
-    },
-  ];
+    });
+  }
   if (!isMe && onReportDeck) {
     dropdownItems.push({
       id: 'report',

@@ -142,6 +142,7 @@ const CurrentDeckCell = ({
   previewVideoPaused,
   onRefreshFeed,
   isMe = false,
+  isAnonymous = false,
 }) => {
   const initialCard = deck?.initialCard;
   const [ready, setReady] = React.useState(false);
@@ -252,6 +253,7 @@ const CurrentDeckCell = ({
           backgroundColor={makeBackgroundColor(deck.initialCard)}
           additionalPadding={getItemHorzPadding()}
           isMe={isMe}
+          isAnonymous={isAnonymous}
           onBlockUser={onBlockUser}
           onReportDeck={onReportDeck}
         />
@@ -302,7 +304,7 @@ const SkeletonFeed = () => {
 export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
   const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
-  const { userId: signedInUserId } = useSession();
+  const { userId: signedInUserId, isAnonymous } = useSession();
 
   // state from expanding/collapsing a deck to play it
   // note: non-native duplicate is needed for just the background color fade (not supported by native)
@@ -348,6 +350,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
             playingTransition={playingTransition}
             previewVideoPaused={paused}
             isMe={deck?.creator?.userId === signedInUserId}
+            isAnonymous={isAnonymous}
             onRefreshFeed={props.onRefresh}
           />
         );
