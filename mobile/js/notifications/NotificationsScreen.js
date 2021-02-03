@@ -9,13 +9,14 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
+import { AuthPrompt } from '../auth/AuthPrompt';
 import { FollowButton } from '../components/FollowButton';
 import { NotificationBody } from './NotificationBody';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { toRecentDate } from '../common/date-utilities';
 import { useAppState } from '../ghost/GhostAppState';
 import { useNavigation, useFocusEffect, useIsFocused } from '../ReactNavigation';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeArea } from 'react-native-safe-area-context';
 import { useSession, maybeFetchNotificationsAsync, setNotifBadge } from '../Session';
 import { UserAvatar } from '../components/UserAvatar';
 
@@ -163,6 +164,25 @@ const NotificationItem = ({ notification, navigateToUser, navigateToDeck, naviga
 };
 
 export const NotificationsScreen = () => {
+  const { isAnonymous } = useSession();
+
+  React.useEffect(() => {
+    Amplitude.logEvent('VIEW_NOTIFICATIONS');
+  }, []);
+
+  if (isAnonymous) {
+    return (
+      <SafeAreaView>
+        <ScreenHeader title="Notifications" />
+        <AuthPrompt message="Sign in or create an account to get notified about the latest activity in Castle." />
+      </SafeAreaView>
+    );
+  } else {
+    return <NotificationsScreenAuthenticated />;
+  }
+};
+
+const NotificationsScreenAuthenticated = () => {
   const insets = useSafeArea();
   const { navigate } = useNavigation();
   const [orderedNotifs, setOrderedNotifs] = React.useState([]);
@@ -212,7 +232,6 @@ export const NotificationsScreen = () => {
   }, [notifications]);
 
   React.useEffect(() => {
-    Amplitude.logEvent('VIEW_NOTIFICATIONS');
     // request permissions and token for push notifs when the notifs tab is first viewed.
     // whether they accept or deny, subsequent calls to this method won't pop up anything for
     // the user.
