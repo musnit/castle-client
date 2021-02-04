@@ -4,6 +4,7 @@ import gql from 'graphql-tag';
 import { AuthPrompt } from '../auth/AuthPrompt';
 import { DecksGrid } from '../components/DecksGrid';
 import { EmptyFeed } from '../home/EmptyFeed';
+import { MiscLinks } from './MiscLinks';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { useLazyQuery } from '@apollo/react-hooks';
@@ -149,6 +150,7 @@ export const ProfileScreen = ({ userId, route }) => {
       <SafeAreaView>
         <ScreenHeader title="Profile" />
         <AuthPrompt message="Sign in or create an account to build your Castle profile." />
+        <MiscLinks />
       </SafeAreaView>
     );
   } else {

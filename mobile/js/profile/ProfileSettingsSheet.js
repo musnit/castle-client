@@ -5,7 +5,6 @@ import {
   View,
   TouchableOpacity,
   Keyboard,
-  Linking,
   TextInput,
   Platform,
   NativeModules,
@@ -17,7 +16,7 @@ import Viewport from '../common/viewport';
 
 import { BottomSheetHeader } from '../components/BottomSheetHeader';
 import { BottomSheet } from '../components/BottomSheet';
-import { useSession } from '../Session';
+import { MiscLinks } from './MiscLinks';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { UserAvatar } from '../components/UserAvatar';
 
@@ -46,15 +45,6 @@ const styles = StyleSheet.create({
   },
   avatarRow: {
     alignItems: 'center',
-  },
-  links: {
-    padding: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  link: {
-    fontSize: 16,
-    color: Constants.colors.grayText,
   },
   resetPasswordMessage: {
     fontSize: 16,
@@ -117,7 +107,6 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
     SHEET_HEIGHT = navigatorWindowHeight - 100;
   }
 
-  const { signOutAsync, userId: signedInUserId } = useSession();
   const insets = useSafeArea();
   const [user, changeUser] = React.useReducer(
     (user, changes) => ({
@@ -335,20 +324,7 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
           </View>
         ) : null}
       </View>
-      <View style={styles.links}>
-        <TouchableOpacity onPress={signOutAsync}>
-          <Text style={styles.link}>Log out</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => Linking.openURL('https://discord.gg/rQETB4H')}>
-          <Text style={styles.link}>Discord</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => Linking.openURL('https://castle.xyz/terms')}>
-          <Text style={styles.link}>Terms</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => Linking.openURL('https://castle.xyz/privacy_policy')}>
-          <Text style={styles.link}>Privacy</Text>
-        </TouchableOpacity>
-      </View>
+      <MiscLinks />
     </View>
   );
 
