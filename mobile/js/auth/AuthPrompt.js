@@ -37,13 +37,22 @@ const styles = StyleSheet.create({
 
 export const AuthPrompt = ({ message }) => {
   const { navigate } = useNavigation();
+
+  const onPressSignIn = React.useCallback(() => {
+    if (Constants.iOS) {
+      // use native modal on iOS
+      navigate('AuthNavigator', { screen: 'LoginScreen' });
+    } else {
+      // use separate root navigator on Android
+      navigate('LoginScreen', {}, { isFullscreen: true });
+    }
+  }, []);
+
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>You're using Castle as a guest.</Text>
       {message ? <Text style={styles.message}>{message}</Text> : null}
-      <TouchableOpacity
-        style={styles.authButton}
-        onPress={() => navigate('AuthNavigator', { screen: 'LoginScreen' })}>
+      <TouchableOpacity style={styles.authButton} onPress={onPressSignIn}>
         <Text style={styles.authButtonLabel}>Sign in to Castle</Text>
       </TouchableOpacity>
     </View>
