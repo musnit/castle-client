@@ -98,7 +98,7 @@ const ProfileLoadingSkeleton = () => (
   </View>
 );
 
-export const ProfileHeader = ({ user, isMe, onRefresh, loading, error }) => {
+export const ProfileHeader = ({ user, isMe, isAnonymous, onRefresh, loading, error }) => {
   let linksItems = makeProfileLinks({ user });
 
   return (
@@ -140,7 +140,7 @@ export const ProfileHeader = ({ user, isMe, onRefresh, loading, error }) => {
         <>
           {!isMe ? (
             <View style={styles.profileRow}>
-              <FollowButton user={user} onPress={onRefresh} />
+              {!isAnonymous ? <FollowButton user={user} onPress={onRefresh} /> : null}
               {user.connections.includes('followedBy') ? (
                 <View style={styles.followedBy}>
                   <Text style={styles.followedByLabel}>Follows You</Text>

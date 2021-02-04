@@ -43,22 +43,12 @@ const useProfileQuery = (userId) => {
 
 // keep as separate component so that the isFocused hook doesn't re-render
 // the entire profile screen
-const ProfileDecksGrid = ({ user, refreshing, onRefresh, error, isMe }) => {
+const ProfileDecksGrid = ({ user, refreshing, onRefresh, error, isMe, ...props }) => {
   const { push } = useNavigation();
   const isFocused = useIsFocused();
 
   const scrollViewRef = React.useRef(null);
   useScrollToTop(scrollViewRef);
-
-  const listHeader = (
-    <ProfileHeader
-      user={user}
-      isMe={isMe}
-      loading={refreshing}
-      error={error}
-      onRefresh={onRefresh}
-    />
-  );
 
   return (
     <DecksGrid
@@ -81,8 +71,8 @@ const ProfileDecksGrid = ({ user, refreshing, onRefresh, error, isMe }) => {
       onRefresh={onRefresh}
       enablePreviewVideo={Constants.iOS && isFocused}
       scrollViewRef={scrollViewRef}
-      ListHeaderComponent={listHeader}
       contentContainerStyle={{ paddingTop: 0 }}
+      {...props}
     />
   );
 };
@@ -143,6 +133,17 @@ export const ProfileScreen = ({ userId, route }) => {
     }
   };
 
+  const ListHeaderComponent = (
+    <ProfileHeader
+      user={user}
+      isMe={isMe}
+      isAnonymous={isAnonymous}
+      loading={query.loading}
+      error={error}
+      onRefresh={onRefresh}
+    />
+  );
+
   if (isMe && isAnonymous) {
     return (
       <SafeAreaView>
@@ -168,7 +169,7 @@ export const ProfileScreen = ({ userId, route }) => {
               onRefresh={onRefresh}
               error={error}
               isMe={isMe}
-              style
+              ListHeaderComponent={ListHeaderComponent}
             />
           )}
         </SafeAreaView>
