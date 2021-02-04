@@ -25,6 +25,7 @@ import { ProfileScreen } from './profile/ProfileScreen';
 import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './auth/AuthScreens';
 import { CreateScreen } from './create/CreateScreen';
 import { CreateDeckNavigator } from './create/CreateDeckNavigator';
+import { InitialAuthScreen } from './auth/InitialAuthScreen';
 import { ViewSourceNavigator } from './create/ViewSourceNavigator';
 import { NotificationsScreen } from './notifications/NotificationsScreen';
 import { UserListScreen } from './components/UserListScreen';
@@ -212,6 +213,7 @@ if (Platform.OS === 'android') {
     'Profile',
     WrapComponent(ProfileScreen, { addTabBarPadding: true })
   );
+  AppRegistry.registerComponent('InitialAuthScreen', WrapComponent(InitialAuthScreen));
   AppRegistry.registerComponent('LoginScreen', WrapComponent(LoginScreen));
   AppRegistry.registerComponent('CreateAccountScreen', WrapComponent(CreateAccountScreen));
   AppRegistry.registerComponent('ForgotPasswordScreen', WrapComponent(ForgotPasswordScreen));

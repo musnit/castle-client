@@ -122,10 +122,12 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
 
         new CastleNavigationScreen("LoginStack", (Activity activity) -> (new CastleStackNavigator(this, "LoginScreen"))).register();
 
+        new CastleNavigationScreen("InitialAuthStack", (Activity activity) -> (new CastleStackNavigator(this, "InitialAuthScreen"))).register();
+
         String authToken = CastleSharedPreferences.getAuthToken();
         boolean isLoggedIn = authToken != null && authToken.length() > 0;
 
-        navigator = new CastleSwapNavigator(this, isLoggedIn ? "LoggedInRootStack" : "LoginStack");
+        navigator = new CastleSwapNavigator(this, isLoggedIn ? "LoggedInRootStack" : "InitialAuthStack");
         navigator.setId("Root");
         navigator.bindViews(null, 0, 0);
 
@@ -246,7 +248,7 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(CastleSharedPreferences.AuthTokenEvent event) {
         if (event.token == null) {
-            navigator.navigate("LoginStack");
+            navigator.navigate("InitialAuthStack");
         } else {
             navigator.navigate("LoggedInRootStack");
         }
