@@ -194,6 +194,7 @@ const NotificationsScreenAuthenticated = () => {
   useFocusEffect(
     React.useCallback(() => {
       setNotifBadge(0);
+      maybeFetchNotificationsAsync(false);
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
       return () => {
         setNotifBadge(0);
@@ -312,7 +313,7 @@ const NotificationsScreenAuthenticated = () => {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <ScreenHeader title="Notifications" />
-      {orderedNotifs.length ? (
+      {orderedNotifs.length > 0 && (
         <FlatList
           data={orderedNotifs}
           contentContainerStyle={styles.scrollView}
@@ -326,18 +327,19 @@ const NotificationsScreenAuthenticated = () => {
             index,
           })}
         />
-      ) : null}
-      {!notifications ? (
+      )}
+      {notifications && notifications.length === 0 && (
+        <View style={styles.empty}>
+          <Text style={styles.emptyText}>You don't have any notifications yet.</Text>
+        </View>
+      )}
+      {!notifications && (
         // Check notifications rather than orderedNotifs because orderedNotifs takes a few frames
         // to be created, and we don't want this text to flash for frame
         <View style={styles.empty}>
-          {refresh ? (
-            <Text style={styles.emptyText}>Loading...</Text>
-          ) : (
-            <Text style={styles.emptyText}>You don't have any notifications yet.</Text>
-          )}
+          {refresh && <Text style={styles.emptyText}>Loading...</Text>}
         </View>
-      ) : null}
+      )}
     </View>
   );
 };

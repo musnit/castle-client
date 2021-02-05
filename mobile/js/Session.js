@@ -125,6 +125,7 @@ export class Provider extends React.Component {
       gAuthToken = token;
       gUserId = userId;
       gIsAnonymous = !!isAnonymous;
+      notifLastFetchTime = null; // want to reload notifs for new user
 
       if (token) {
         await CastleAsyncStorage.setItem('AUTH_TOKEN', token);
