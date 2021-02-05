@@ -88,8 +88,7 @@ export const CreateScreen = () => {
   if (isAnonymous) {
     return (
       <SafeAreaView>
-        <ScreenHeader title="Your Decks" />
-        <AuthPrompt message="Sign in or create an account to make your own Castle decks." />
+        <AuthPrompt message="Create decks and share them with others." />
       </SafeAreaView>
     );
   } else {

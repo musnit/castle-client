@@ -86,6 +86,14 @@ export const styles = {
     marginRight: 6,
     marginBottom: -1,
   },
+  buttonLarge: {
+    paddingTop: 10,
+    paddingBottom: 10,
+    width: 250,
+  },
+  buttonLargeLabel: {
+    fontSize: 20,
+  },
   paneHandle: {
     width: 50,
     alignSelf: 'center',

@@ -3,7 +3,6 @@ import { enableScreens } from 'react-native-screens';
 import { createNativeStackNavigator } from 'react-native-screens/native-stack';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-
 import { useSession, maybeFetchNotificationsAsync, setNotifBadge } from './Session';
 
 import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './auth/AuthScreens';
@@ -17,6 +16,8 @@ import { PlayDeckScreen } from './play/PlayDeckScreen';
 import { UserListScreen } from './components/UserListScreen';
 import { ViewSourceNavigator } from './create/ViewSourceNavigator';
 import { ProfileScreen } from './profile/ProfileScreen';
+
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import * as DeepLinks from './DeepLinks';
 import * as GhostChannels from './ghost/GhostChannels';
@@ -234,13 +235,16 @@ const InitialAuthNavigator = () => (
 
 const AuthNavigator = () => (
   <Stack.Navigator
-    screenOptions={{
+    screenOptions={({ navigation }) => ({
       headerTintColor: '#fff',
+      headerLeft: () => (
+        <Icon name="close" size={24} color="#fff" onPress={() => navigation.pop()} />
+      ),
       headerStyle: {
-        backgroundColor: '#666',
+        backgroundColor: '#000',
       },
-    }}>
-    <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ title: 'Sign in' }} />
+    })}>
+    <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ title: 'Log in' }} />
     <Stack.Screen
       name="CreateAccountScreen"
       component={CreateAccountScreen}

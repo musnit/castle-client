@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { AuthHeader } from './AuthHeader';
 import { useSession } from '../Session';
 
 import * as Constants from '../Constants';
@@ -58,7 +57,6 @@ export const InitialAuthScreen = () => {
 
   return (
     <View style={styles.container}>
-      <AuthHeader />
       {error ? (
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>{error}</Text>

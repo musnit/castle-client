@@ -13,9 +13,10 @@ import {
 import { useNavigation } from '../ReactNavigation';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import { AuthHeader } from './AuthHeader';
 import { resetPasswordAsync, useSession } from '../Session';
 import { navigateToUri } from '../DeepLinks';
+
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import * as Constants from '../Constants';
 import * as GhostChannels from '../ghost/GhostChannels';
@@ -38,14 +39,6 @@ const styles = StyleSheet.create({
   announcementBody: {
     color: Constants.colors.black,
     lineHeight: 20,
-  },
-  button: {
-    backgroundColor: '#fff',
-    borderRadius: 4,
-    paddingVertical: 6,
-    paddingHorizontal: 9,
-    alignItems: 'center',
-    overflow: 'hidden',
   },
   spinner: {
     backgroundColor: '#fff',
@@ -118,8 +111,15 @@ const Announcement = (props) => {
 
 const Button = (props) => {
   return (
-    <View style={styles.button}>
-      <Text style={{ color: '#000', fontWeight: 'bold', fontSize: 16 }}>{props.text}</Text>
+    <View
+      style={{
+        ...Constants.styles.primaryButton,
+        ...Constants.styles.buttonLarge,
+        marginVertical: 24,
+      }}>
+      <Text style={[Constants.styles.primaryButtonLabel, Constants.styles.buttonLargeLabel]}>
+        {props.text}
+      </Text>
       {props.spinner ? (
         <View style={styles.spinner}>
           <ActivityIndicator size="small" color="#000" />
@@ -197,14 +197,6 @@ const LoginForm = ({ route }) => {
           body="We've sent you an email with a link to reset your password."
         />
       ) : null}
-      <View style={{ width: '100%', alignItems: 'center', paddingBottom: 16 }}>
-        <TouchableOpacity onPress={onPressSignUp}>
-          <Text style={{ color: Constants.colors.grayText, fontSize: 16 }}>
-            Don't have an account?&nbsp;
-            <Text style={{ fontWeight: 'bold', color: Constants.colors.white }}>Sign up</Text>
-          </Text>
-        </TouchableOpacity>
-      </View>
       <TextInput
         style={signingIn ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
         autoCapitalize="none"
@@ -216,6 +208,7 @@ const LoginForm = ({ route }) => {
         returnKeyType="next"
         blurOnSubmit={false}
         autoCorrect={false}
+        autoFocus={true}
         keyboardType="email-address"
       />
       <TextInput
@@ -231,22 +224,14 @@ const LoginForm = ({ route }) => {
         returnKeyType="go"
         onSubmitEditing={onPressSignIn}
       />
-      <View
-        style={{
-          width: '100%',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          paddingVertical: 8,
-        }}>
-        <TouchableOpacity
-          style={{ paddingTop: 8, paddingBottom: 16 }}
-          onPress={onPressForgotPassword}>
-          <Text style={{ color: Constants.colors.grayText, fontSize: 16 }}>Forgot password?</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onPressSignIn}>
-          <Button text="Sign In" spinner={signingIn} />
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity onPress={onPressSignIn}>
+        <Button text="Log in" spinner={signingIn} />
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={{ paddingTop: 8, paddingBottom: 16 }}
+        onPress={onPressForgotPassword}>
+        <Text style={{ color: Constants.colors.grayText, fontSize: 16 }}>Forgot password?</Text>
+      </TouchableOpacity>
     </Fragment>
   );
 };
@@ -299,15 +284,6 @@ const CreateAccountForm = ({ route }) => {
             ))
           : null}
       </Fragment>
-      <View style={{ paddingBottom: 16, alignItems: 'center' }}>
-        <Text style={{ fontSize: 20, color: Constants.colors.white }}>Create a new account</Text>
-        <TouchableOpacity onPress={onPressLogin}>
-          <Text style={{ marginTop: 16, color: Constants.colors.grayText, fontSize: 16 }}>
-            Already have an account?&nbsp;
-            <Text style={{ fontWeight: 'bold', color: Constants.colors.white }}>Sign in</Text>
-          </Text>
-        </TouchableOpacity>
-      </View>
       <TextInput
         style={creatingAccount ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
         autoCapitalize="none"
@@ -318,6 +294,7 @@ const CreateAccountForm = ({ route }) => {
         returnKeyType="next"
         blurOnSubmit={false}
         autoCorrect={false}
+        autoFocus={true}
       />
       <TextInput
         style={creatingAccount ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
@@ -352,7 +329,10 @@ const CreateAccountForm = ({ route }) => {
         returnKeyType="go"
         onSubmitEditing={onPressCreateAccount}
       />
-      <View style={{ paddingTop: 8, paddingBottom: 24 }}>
+      <TouchableOpacity onPress={onPressCreateAccount}>
+        <Button text="Create Account" spinner={creatingAccount} />
+      </TouchableOpacity>
+      <View>
         <Text
           style={{
             lineHeight: 20,
@@ -376,9 +356,6 @@ const CreateAccountForm = ({ route }) => {
           .
         </Text>
       </View>
-      <TouchableOpacity onPress={onPressCreateAccount}>
-        <Button text="Create Account" spinner={creatingAccount} />
-      </TouchableOpacity>
     </Fragment>
   );
 };
@@ -442,7 +419,7 @@ const ForgotPasswordForm = () => {
 };
 
 const WithHeader = ({ children }) => {
-  const { navigate } = useNavigation();
+  const { navigate, pop } = useNavigation();
   const { isSignedIn, isAnonymous } = useSession();
 
   React.useEffect(() => {
@@ -463,11 +440,24 @@ const WithHeader = ({ children }) => {
       contentContainerStyle={{
         flex: 1,
         alignItems: 'center',
-        padding: 16,
-        paddingTop: 96,
-        marginTop: -64,
+        padding: 15,
+        paddingTop: 20,
       }}>
-      <AuthHeader />
+      {Platform.OS === 'android' && (
+        <View
+          style={{
+            alignItems: 'flex-start',
+            width: '100%',
+          }}>
+          <Icon
+            name="close"
+            size={24}
+            color="#fff"
+            onPress={() => pop()}
+            style={{ paddingVertical: 16 }}
+          />
+        </View>
+      )}
       <View
         style={{ width: '100%', maxWidth: Constants.TABLET_MAX_FORM_WIDTH, alignItems: 'center' }}>
         {children}

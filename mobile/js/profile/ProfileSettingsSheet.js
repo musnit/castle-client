@@ -324,7 +324,9 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
           </View>
         ) : null}
       </View>
-      <MiscLinks />
+      <View style={{ paddingVertical: 15, alignItems: 'center' }}>
+        <MiscLinks />
+      </View>
     </View>
   );
 

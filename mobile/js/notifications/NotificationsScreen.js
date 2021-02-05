@@ -173,8 +173,7 @@ export const NotificationsScreen = () => {
   if (isAnonymous) {
     return (
       <SafeAreaView>
-        <ScreenHeader title="Notifications" />
-        <AuthPrompt message="Sign in or create an account to get notified about the latest activity in Castle." />
+        <AuthPrompt message="Get notified about new activity." />
       </SafeAreaView>
     );
   } else {

@@ -6,13 +6,12 @@ import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
   links: {
-    padding: 16,
     flexDirection: 'row',
-    justifyContent: 'space-around',
   },
   link: {
     fontSize: 16,
     color: Constants.colors.grayText,
+    paddingHorizontal: 16,
   },
 });
 
