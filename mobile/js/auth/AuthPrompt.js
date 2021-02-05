@@ -23,6 +23,13 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: Constants.colors.white,
+    textAlign: 'center',
+    marginBottom: 16,
+  },
   message: {
     fontSize: 16,
     lineHeight: 24,
@@ -31,7 +38,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const AuthPrompt = ({ message }) => {
+export const AuthPrompt = ({ title, message }) => {
   const { navigate } = useNavigation();
 
   const imageHeight = 200;
@@ -89,14 +96,7 @@ export const AuthPrompt = ({ message }) => {
           }}
           source={require('../../assets/images/castle-icon-onblack.png')}
         />
-        <FastImage
-          style={{
-            width: 130,
-            height: 26,
-            marginBottom: 20,
-          }}
-          source={require('../../assets/images/castle-wordmark-uppercase.png')}
-        />
+        <Text style={styles.title}>{title ? title : 'Castle'}</Text>
         <Text style={styles.message}>
           {message ? message : 'Make and play cool stuff on your phone.'}
         </Text>

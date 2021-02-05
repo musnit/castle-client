@@ -88,7 +88,10 @@ export const CreateScreen = () => {
   if (isAnonymous) {
     return (
       <SafeAreaView>
-        <AuthPrompt message="Create decks and share them with others." />
+        <AuthPrompt
+          title="Create interactive cards"
+          message="Make digital toys, living doodles, or tiny games."
+        />
       </SafeAreaView>
     );
   } else {

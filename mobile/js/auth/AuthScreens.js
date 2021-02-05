@@ -16,7 +16,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { resetPasswordAsync, useSession } from '../Session';
 import { navigateToUri } from '../DeepLinks';
 
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { ScreenHeader } from '../components/ScreenHeader';
 
 import * as Constants from '../Constants';
 import * as GhostChannels from '../ghost/GhostChannels';
@@ -419,7 +419,7 @@ const ForgotPasswordForm = () => {
 };
 
 const WithHeader = ({ children }) => {
-  const { navigate, pop } = useNavigation();
+  const { navigate } = useNavigation();
   const { isSignedIn, isAnonymous } = useSession();
 
   React.useEffect(() => {
@@ -430,39 +430,31 @@ const WithHeader = ({ children }) => {
   }, [isSignedIn, isAnonymous]);
 
   return (
-    <KeyboardAwareScrollView
-      enableOnAndroid={true}
-      keyboardShouldPersistTaps="handled"
-      style={{
-        flex: 1,
-        backgroundColor: Constants.colors.black,
-      }}
-      contentContainerStyle={{
-        flex: 1,
-        alignItems: 'center',
-        padding: 15,
-        paddingTop: 20,
-      }}>
-      {Platform.OS === 'android' && (
+    <>
+      {Platform.OS === 'android' && <ScreenHeader title="Castle" />}
+      <KeyboardAwareScrollView
+        enableOnAndroid={true}
+        keyboardShouldPersistTaps="handled"
+        style={{
+          flex: 1,
+          backgroundColor: Constants.colors.black,
+        }}
+        contentContainerStyle={{
+          flex: 1,
+          alignItems: 'center',
+          padding: 15,
+          paddingTop: 20,
+        }}>
         <View
           style={{
-            alignItems: 'flex-start',
             width: '100%',
+            maxWidth: Constants.TABLET_MAX_FORM_WIDTH,
+            alignItems: 'center',
           }}>
-          <Icon
-            name="close"
-            size={24}
-            color="#fff"
-            onPress={() => pop()}
-            style={{ paddingVertical: 16 }}
-          />
+          {children}
         </View>
-      )}
-      <View
-        style={{ width: '100%', maxWidth: Constants.TABLET_MAX_FORM_WIDTH, alignItems: 'center' }}>
-        {children}
-      </View>
-    </KeyboardAwareScrollView>
+      </KeyboardAwareScrollView>
+    </>
   );
 };
 

@@ -244,11 +244,15 @@ const AuthNavigator = () => (
         backgroundColor: '#000',
       },
     })}>
-    <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ title: 'Log in' }} />
+    <Stack.Screen
+      name="LoginScreen"
+      component={LoginScreen}
+      options={{ title: 'Log in to Castle' }}
+    />
     <Stack.Screen
       name="CreateAccountScreen"
       component={CreateAccountScreen}
-      options={{ title: 'Sign up' }}
+      options={{ title: 'Sign up for Castle' }}
     />
     <Stack.Screen
       name="ForgotPasswordScreen"
