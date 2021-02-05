@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import { AuthPrompt } from '../auth/AuthPrompt';
 import { DecksGrid } from '../components/DecksGrid';
 import { EmptyFeed } from '../home/EmptyFeed';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeArea } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect, useIsFocused, useScrollToTop } from '../ReactNavigation';
@@ -46,6 +46,8 @@ const useProfileQuery = (userId) => {
 const ProfileDecksGrid = ({ user, refreshing, onRefresh, error, isMe, ...props }) => {
   const { push } = useNavigation();
   const isFocused = useIsFocused();
+  const insets = useSafeArea();
+  const paddingBottom = Constants.iOS ? insets.bottom : insets.bottom + 50; // account for android native tab bar
 
   const scrollViewRef = React.useRef(null);
   useScrollToTop(scrollViewRef);
@@ -71,7 +73,7 @@ const ProfileDecksGrid = ({ user, refreshing, onRefresh, error, isMe, ...props }
       onRefresh={onRefresh}
       enablePreviewVideo={Constants.iOS && isFocused}
       scrollViewRef={scrollViewRef}
-      contentContainerStyle={{ paddingTop: 0 }}
+      contentContainerStyle={{ paddingTop: 0, paddingBottom }}
       {...props}
     />
   );
