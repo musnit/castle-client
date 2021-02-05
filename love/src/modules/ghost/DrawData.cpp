@@ -281,7 +281,7 @@ void DrawData::updatePathDataRendering(PathData &pathData) {
   makeSubpathsFromSubpathData(pathData);
 }
 
-DrawDataLayer DrawData::selectedLayer() {
+DrawDataLayer& DrawData::selectedLayer() {
   return layerForId(selectedLayerId);
 }
 
@@ -296,7 +296,7 @@ int DrawData::getRealFrameIndexForLayerId(DrawDataLayerId layerId, int frame) {
   return frame;
 }
 
-DrawDataLayer DrawData::layerForId(DrawDataLayerId id) {
+DrawDataLayer& DrawData::layerForId(DrawDataLayerId id) {
   for (size_t i = 0; i < layers.size(); i++) {
 	if (layers[i].id == id) {
 	  return layers[i];
@@ -306,12 +306,12 @@ DrawDataLayer DrawData::layerForId(DrawDataLayerId id) {
 throw;
 }
 
-DrawDataFrame DrawData::currentLayerFrame() {
+DrawDataFrame& DrawData::currentLayerFrame() {
   auto realFrame = getRealFrameIndexForLayerId(selectedLayer().id, selectedFrame);
   return selectedLayer().frames[realFrame];
 }
 
-PathDataList DrawData::currentPathDataList() {
+PathDataList& DrawData::currentPathDataList() {
   return currentLayerFrame().pathDataList;
 }
 /*
@@ -884,6 +884,7 @@ void DrawData::render(std::optional<AnimationComponentProperties> componentPrope
 	  auto frame = layers[l].frames[realFrame];
 	  frame.renderFill();
 	  frame.graphics().draw();
+	  //frame.graphics().draw();
 	}
   }
 }
