@@ -173,10 +173,7 @@ export const NotificationsScreen = () => {
   if (isAnonymous) {
     return (
       <SafeAreaView>
-        <AuthPrompt
-          title="Share your creations anywhere"
-          message="Get notified when people play your cards."
-        />
+        <AuthPrompt title="Stay up to date" message="Get notified when people play your cards." />
       </SafeAreaView>
     );
   } else {
