@@ -255,6 +255,9 @@ public:
 	ToveGraphicsHolder() {
 		toveGraphics = NewGraphics(NULL, "px", 72);
 		//_graphics.setDisplay("mesh", 1024);
+		
+		toveMesh.ptr = NULL;
+		loveMesh = NULL;
 	}
 	
 	void addPath(TovePathRef path) {
@@ -297,6 +300,14 @@ public:
 		int vertexCount = MeshGetVertexCount(toveMesh);
 		graphics::PrimitiveType primitiveType = MeshGetIndexMode(toveMesh) == TRIANGLES_LIST ? graphics::PRIMITIVE_TRIANGLES : graphics::PRIMITIVE_TRIANGLE_STRIP;
 		
+		if (vertexCount < 1) {
+			return;
+		}
+		
+		if (MeshGetIndexCount(toveMesh) < 1) {
+			return;
+		}
+		
 		// love.graphics.mesh
 		
 		graphics::Graphics *instance = Module::getInstance<graphics::Graphics>(Module::M_GRAPHICS);
@@ -312,11 +323,20 @@ public:
 	}
 	
 	void draw() {
-		toveName = NewName("unnamed");
-		toveMesh = NewColorMesh(toveName);
+		if (toveMesh.ptr == NULL) {
+			toveName = NewName("unnamed");
+			toveMesh = NewColorMesh(toveName);
+			
+			ToveTesselatorRef tess = NewAdaptiveTesselator(1024, 8);
+			TesselatorTessGraphics(tess, toveGraphics, toveMesh, 15);
+			
+			getToveMesh();
+		}
 		
-		getToveMesh();
-		
+		if (loveMesh == NULL) {
+			return;
+		}
+			
 		graphics::Graphics *instance = Module::getInstance<graphics::Graphics>(Module::M_GRAPHICS);
 		
 		// love.graphics.setShader

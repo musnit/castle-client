@@ -41,7 +41,7 @@ public:
 	Bounds getPathDataBounds(std::optional<Bounds> bounds);
 	Bounds getPathDataBoundsInPixelCoordinates();
 	void resetGraphics();
-	ToveGraphicsHolder graphics();
+	ToveGraphicsHolder& graphics();
 	void renderFill();
 	
 	DrawData *parent() {
@@ -69,7 +69,9 @@ struct DrawDataLayer {
 	}
 	
 	void setParent(DrawData *d) {
-		_parent = d;
+		for (size_t i = 0; i < frames.size(); i++) {
+			frames[i].setParent(d);
+		}
 	}
 };
 

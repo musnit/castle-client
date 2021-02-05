@@ -12,6 +12,8 @@ namespace love
 namespace ghost
 {
 
+love::Type Ghost::type("Ghost", &Object::type);
+
 const char *Ghost::getName() const
 {
 	return "love.ghost";
