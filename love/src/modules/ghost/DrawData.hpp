@@ -82,8 +82,8 @@ public:
 	void read(lua_State *L, int index) {
 		GHOST_READ_STRUCT(color)
 		GHOST_READ_STRUCT(lineColor)
-		GHOST_READ_NUMBER(gridSize, 1234)
-		GHOST_READ_NUMBER(scale, 12345)
+		GHOST_READ_NUMBER(gridSize, 0.71428571428571)
+		GHOST_READ_NUMBER(scale, 10)
 		GHOST_READ_INT(version, 3)
 		GHOST_READ_NUMBER(fillPixelsPerUnit, 25.6)
 		GHOST_READ_INT(numTotalLayers, 1)
@@ -108,11 +108,11 @@ public:
 	void drawEndOfArc(PathData &pathData, float p1x, float p1y, float p2x, float p2y);
 	void addSubpathDataForPoints(PathData &pathData, Point p1, Point p2);
 	void updatePathDataRendering(PathData &pathData);
-	DrawDataLayer selectedLayer();
+	DrawDataLayer& selectedLayer();
 	int getRealFrameIndexForLayerId(DrawDataLayerId layerId, int frame);
-	DrawDataLayer layerForId(DrawDataLayerId id);
-	DrawDataFrame currentLayerFrame();
-	PathDataList currentPathDataList();
+	DrawDataLayer& layerForId(DrawDataLayerId id);
+	DrawDataFrame& currentLayerFrame();
+	PathDataList& currentPathDataList();
 	void updateBounds();
 	Bounds getBounds(int frame);
 	bool arePathDatasFloodFillable(PathData pd1, PathData pd2);

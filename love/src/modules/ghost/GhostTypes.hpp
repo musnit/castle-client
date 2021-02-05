@@ -324,6 +324,8 @@ public:
 	
 	void draw() {
 		if (toveMesh.ptr == NULL) {
+			ConfigureShaderCode(TOVE_GLSL3, 2);
+			
 			toveName = NewName("unnamed");
 			toveMesh = NewColorMesh(toveName);
 			
