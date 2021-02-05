@@ -9,6 +9,12 @@ def set_bundle_version_from_commit_count
     value: bundle_version
   )
 
+  set_info_plist_value(
+    path: "./ios/CastleNotificationService/Info.plist",
+    key: "CFBundleVersion",
+    value: bundle_version
+  )
+
   sh(
     "../tools/set-app-version.sh",
     "ios",
