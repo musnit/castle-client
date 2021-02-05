@@ -18,7 +18,7 @@ namespace ghost
 
 void DrawDataFrame::deserializePathDataList() {
   /*auto newPathDataList = [];
-  for (size_t i = 1; i < pathDataList.size(); i++) {
+  for (size_t i = 0; i < pathDataList.size(); i++) {
 	auto pathData = pathDataList[i];
 	if (pathData.points.size() > 2) {
 	  auto pathData = util.deepCopyTable(pathData);
@@ -70,7 +70,7 @@ float DrawDataFrame::round(float num, int numDecimalPlaces) {
 }
 
 std::vector<float> DrawDataFrame::roundFloatArray(std::vector<float> a) {
-  for (size_t i = 1; i < a.size(); i++) {
+  for (size_t i = 0; i < a.size(); i++) {
 	a[i] = round(a[i], 4);
   }
   return a;
@@ -84,7 +84,7 @@ TYPE DrawDataFrame::serialize() {
 	fillCanvasSize = fillCanvasSize;
   }
   auto lastSerializedPathData = null;
-  for (size_t i = 1; i < pathDataList.size(); i++) {
+  for (size_t i = 0; i < pathDataList.size(); i++) {
 	auto pathData = pathDataList[i];
 	auto serializedPathData = {
 	  points = util.deepCopyTable(pathData.points);
@@ -113,7 +113,7 @@ TYPE DrawDataFrame::serialize() {
 }*/
 
 void DrawDataFrame::cleanUpPaths() {
-  for (size_t i = 1; i < pathDataList.size(); i++) {
+  for (size_t i = 0; i < pathDataList.size(); i++) {
 	parent()->updatePathDataRendering(pathDataList[i]);
   }
 }
@@ -134,9 +134,9 @@ Bounds DrawDataFrame::getPathDataBounds(std::optional<Bounds> bounds) {
   maxX = maxX - (DRAW_LINE_WIDTH / 2);
   maxY = maxY - (DRAW_LINE_WIDTH / 2);
   // we still need this because of isTransparent
-  for (size_t i = 1; i < pathDataList.size(); i++) {
+  for (size_t i = 0; i < pathDataList.size(); i++) {
 	auto pathData = pathDataList[i];
-	for (size_t j = 1; j < pathData.points.size(); j++) {
+	for (size_t j = 0; j < pathData.points.size(); j++) {
 	  auto x = pathData.points[j].x;
 	  auto y = pathData.points[j].y;
 	  if (x < minX) {
@@ -329,12 +329,12 @@ TYPE DrawDataFrame::updatePathsCanvas() {
   pathsCanvas.renderTo(undefined);
 }*/
 
-ToveGraphicsHolder DrawDataFrame::graphics() {
+ToveGraphicsHolder& DrawDataFrame::graphics() {
   if (_graphicsNeedsReset || !_graphics) {
 	_graphicsNeedsReset = false;
 	cleanUpPaths();
 	_graphics = ToveGraphicsHolder();
-	for (size_t i = 1; i < pathDataList.size(); i++) {
+	for (size_t i = 0; i < pathDataList.size(); i++) {
 	  _graphics->addPath(pathDataList[i].tovePath);
 	}
   }

@@ -7,11 +7,14 @@
 
 #include "DrawData.hpp"
 #include "DrawAlgorithms.hpp"
+#include "Ghost.hpp"
 
 namespace love
 {
 namespace ghost
 {
+
+love::Type DrawData::type("DrawData", &Ghost::type);
 
 float DrawData::gridCellSize() {
   return gridSize;
@@ -64,7 +67,7 @@ float DrawData::roundGlobalDistanceToGrid(float d) {
   return x;
 }
 
-void DrawData::makeSubpathsFromSubpathData(PathData pathData) {
+void DrawData::makeSubpathsFromSubpathData(PathData &pathData) {
   for (size_t i = 0; i < pathData.subpathDataList.size(); i++) {
 	auto subpathData = pathData.subpathDataList[i];
 	auto subpath = NewSubpath();
@@ -78,7 +81,7 @@ void DrawData::makeSubpathsFromSubpathData(PathData pathData) {
   }
 }
 
-void DrawData::addLineSubpathData(PathData pathData, float p1x, float p1y, float p2x, float p2y) {
+void DrawData::addLineSubpathData(PathData &pathData, float p1x, float p1y, float p2x, float p2y) {
 	Subpath subpath;
 	subpath.type = line;
 	subpath.p1 = Point(p1x, p1y);
@@ -87,7 +90,7 @@ void DrawData::addLineSubpathData(PathData pathData, float p1x, float p1y, float
   pathData.subpathDataList.push_back(subpath);
 }
 
-void DrawData::addCircleSubpathData(PathData pathData, float centerX, float centerY, float radius, float startAngle, float endAngle) {
+void DrawData::addCircleSubpathData(PathData &pathData, float centerX, float centerY, float radius, float startAngle, float endAngle) {
 	Subpath subpath;
 	subpath.type = arc;
 	subpath.center = Point(centerX, centerY);
@@ -98,14 +101,14 @@ void DrawData::addCircleSubpathData(PathData pathData, float centerX, float cent
   pathData.subpathDataList.push_back(subpath);
 }
 
-void DrawData::drawEndOfArc(PathData pathData, float p1x, float p1y, float p2x, float p2y) {
+void DrawData::drawEndOfArc(PathData &pathData, float p1x, float p1y, float p2x, float p2y) {
   if (p1x == p2x && p1y == p2y) {
 	return;
   }
   addLineSubpathData(pathData, p1x, p1y, p2x, p2y);
 }
 
-void DrawData::addSubpathDataForPoints(PathData pathData, Point p1, Point p2) {
+void DrawData::addSubpathDataForPoints(PathData &pathData, Point p1, Point p2) {
   auto style = pathData.style;
   auto bendPointOptional = pathData.bendPoint;
   if (bendPointOptional) {
@@ -250,7 +253,7 @@ void DrawData::addSubpathDataForPoints(PathData pathData, Point p1, Point p2) {
   }
 }
 
-void DrawData::updatePathDataRendering(PathData pathData) {
+void DrawData::updatePathDataRendering(PathData &pathData) {
   if (pathData.tovePath.ptr != NULL) {
 	return;
   }
@@ -544,7 +547,7 @@ void DrawData::applyEditorSettings(TYPE editorSettings) {
 
 /*
 TYPE DrawData::serialize() {
-  for (int i = 1; i < getNumFrames(); i++) {
+  for (int i = 0; i < getNumFrames(); i++) {
 	getBounds(i);
   }
   auto data = {
@@ -730,7 +733,7 @@ TYPE DrawData::addLayer() {
   if (layers.length > 0) {
 	frameCount = layers[1].frames.length;
   }
-  for (int i = 1; i < frameCount; i++) {
+  for (int i = 0; i < frameCount; i++) {
 	newLayer.frames.push_back(_newFrame(i > 1));
   }
   layers.push_back(newLayer);
@@ -862,7 +865,7 @@ TYPE DrawData::clearFrame() {
   selectedLayer().frames[realFrame] = _newFrame(false);
 }*/
 
-ToveGraphicsHolder DrawData::graphics() {
+ToveGraphicsHolder& DrawData::graphics() {
   return currentLayerFrame().graphics();
 }
 

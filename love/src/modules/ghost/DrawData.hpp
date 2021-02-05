@@ -12,13 +12,14 @@
 #include <tuple>
 #include "GhostTypes.hpp"
 #include "DrawDataFrame.hpp"
+#include "common/Object.h"
 
 namespace love
 {
 namespace ghost
 {
 
-class DrawData {
+class DrawData : public Object {
 	/*
 	 local newObj = {
 		 _graphics = nil,
@@ -54,6 +55,8 @@ class DrawData {
 	 */
 public:
 	
+	static love::Type type;
+
 	Color color;
 	Color lineColor;
 	float gridSize;
@@ -88,6 +91,8 @@ public:
 		GHOST_READ_STRING(selectedLayerId)
 		GHOST_READ_INT(selectedFrame, 1)
 		GHOST_READ_VECTOR(layers, DrawDataLayer)
+		
+		selectedFrame = selectedFrame - 1;
 	}
 	
 	float gridCellSize();
@@ -97,12 +102,12 @@ public:
 	std::tuple<int, int> roundGlobalCoordinatesToGrid(float x, float y);
 	std::tuple<int, int> clampGlobalCoordinates(float x, float y);
 	float roundGlobalDistanceToGrid(float d);
-	void makeSubpathsFromSubpathData(PathData pathData);
-	void addLineSubpathData(PathData pathData, float p1x, float p1y, float p2x, float p2y);
-	void addCircleSubpathData(PathData pathData, float centerX, float centerY, float radius, float startAngle, float endAngle);
-	void drawEndOfArc(PathData pathData, float p1x, float p1y, float p2x, float p2y);
-	void addSubpathDataForPoints(PathData pathData, Point p1, Point p2);
-	void updatePathDataRendering(PathData pathData);
+	void makeSubpathsFromSubpathData(PathData &pathData);
+	void addLineSubpathData(PathData &pathData, float p1x, float p1y, float p2x, float p2y);
+	void addCircleSubpathData(PathData &pathData, float centerX, float centerY, float radius, float startAngle, float endAngle);
+	void drawEndOfArc(PathData &pathData, float p1x, float p1y, float p2x, float p2y);
+	void addSubpathDataForPoints(PathData &pathData, Point p1, Point p2);
+	void updatePathDataRendering(PathData &pathData);
 	DrawDataLayer selectedLayer();
 	int getRealFrameIndexForLayerId(DrawDataLayerId layerId, int frame);
 	DrawDataLayer layerForId(DrawDataLayerId id);
@@ -115,7 +120,7 @@ public:
 	int getNumFrames();
 	int modFrameIndex(int value);
 	void runAnimation(AnimationState animationState, AnimationComponentProperties componentProperties, float dt, std::function<void(std::string)> fireTrigger, std::function<void()> fireChangedFrame);
-	ToveGraphicsHolder graphics();
+	ToveGraphicsHolder& graphics();
 	void preload();
 	void render(std::optional<AnimationComponentProperties> componentProperties);
 	bool isPointInBounds(Point point);

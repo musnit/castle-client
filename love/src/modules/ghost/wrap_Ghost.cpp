@@ -43,9 +43,33 @@ int w_subpathDataIntersection(lua_State *L)
 
 int w_loadDrawData(lua_State *L)
 {
-	DrawData d(L, 1);
+	StrongRef<DrawData> i;
+	DrawData *d = new DrawData(L, 1);
+	
+	i.set(d);
+	
+	luax_pushtype(L, i);
+	
+	return 1;
+}
+
+int w_DrawData_render(lua_State *L)
+{
+	DrawData *d = luax_checktype<DrawData>(L, 1);
+	d->render(std::nullopt);
 	
 	return 0;
+}
+
+static const luaL_Reg w_DrawData_functions[] =
+{
+	{ "render", w_DrawData_render },
+	{ 0, 0 }
+};
+
+static int luaopen_drawdata(lua_State *L)
+{
+	return luax_register_type(L, &DrawData::type, w_DrawData_functions, nullptr);
 }
 
 static const luaL_Reg functions[] =
@@ -57,8 +81,7 @@ static const luaL_Reg functions[] =
 
 static const lua_CFunction types[] =
 {
-	/*luaopen_imagedata,
-	luaopen_compressedimagedata,*/
+	luaopen_drawdata,
 	0
 };
 
