@@ -1,0 +1,10 @@
+Make and play interactive cards on Castle. Use our small but powerful editor to create digital cards that come alive with elements you can touch and control.
+
+- Cards can be toys, scenes, stories, tiny games, animations, or just simple doodles.
+- Combine cards into decks to create worlds to explore, or to tell branching, dynamic stories.
+- Browse a feed of new and popular cards made by other creators in the community.
+- Follow your favorite creators and get notified when they release new cards.
+
+Anyone can create cards in the Castle editor. Get started with just a doodle in our simple yet robust drawing tool, which includes shapes, layers, and even frame animation. Then bring your drawing to life with motion, physics, behaviors, rules, and sound effects.
+
+Download Castle and discover a universe of fun, personal interactive art!

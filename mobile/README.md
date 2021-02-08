@@ -22,16 +22,16 @@ Once you have the app running, shake the device to open the React Native develop
 # Releases
 
 - Open `../base/main.lua` and set `SCENE_CREATOR_API_VERSION` to something other than `dev`, corresponding to the lua release channel you'd like this build to use.
+- Do the same thing in `mobile/js/Constants.js`. This tells the server not to serve incompatible decks in the feed.
 - Publish `scene-creator` to the release channel chosen for this build.
 
-## iOS
+## iOS (Testflight)
 
-- Make sure `fastlane` is up to date: `bundle update fastlane` from this directory.
+- Make sure `fastlane` is up to date: `bundle update fastlane` from this directory. (You need the `bundler` gem.)
 - You may have to manually download our provisioning profile for `xyz.castle.castle.CastleNotificationService` from the Apple Developer website or through Xcode.
-- Run `./tools/upload-beta-build.sh` to upload a build to testflight.
+- Run `./tools/upload-ios-build.sh beta` to upload a build to testflight.
 - You will need your personal credentials for Castle's Apple team, and you may also be asked to generate an app-specific password (Fastlane will give you instructions if this is needed).
 - Fastlane will download the needed certs, build the app, upload it to Apple, wait for it to "process", and then automatically release it to just employees.
-- If you want to release the build to more testers, follow the guide in Notion.
 - Although we have a circleci config for fastlane, it doesn't work right now.
 
 ## Android

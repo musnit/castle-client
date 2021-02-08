@@ -52,4 +52,29 @@ platform :ios do
         username: "ben@castle.xyz"
     )
   end
+
+  lane :appstore do
+    get_certificates( # TODO: merge with other lane
+        username: "ben@castle.xyz"
+    )
+    get_provisioning_profile(
+        username: "ben@castle.xyz"
+    )
+    build_app(
+      scheme: "Castle",
+      workspace: "ios/Castle.xcworkspace",
+      export_options: {
+     	provisioningProfiles: { 
+          "xyz.castle.castle" => "xyz.castle.castle AppStore 1598649932",
+          "xyz.castle.castle.CastleNotificationService" => "xyz.castle.castle.CastleNotificationService AppSto",
+        }
+      }
+    )
+    upload_to_app_store(
+      username: "ben@castle.xyz",
+      skip_screenshots: true,
+      submit_for_review: false,
+      metadata_path: "./metadata"
+    )
+  end
 end
