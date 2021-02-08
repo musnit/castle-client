@@ -329,6 +329,7 @@ export const apolloClient = new ApolloClient({
               headers['X-OS'] = Platform.OS;
               headers['X-Build-Version-Code'] = ExpoConstants.nativeBuildVersion;
               headers['X-Build-Version-Name'] = ExpoConstants.nativeAppVersion;
+              headers['X-Scene-Creator-Version'] = Constants.SCENE_CREATOR_LUA_VERSION;
               if (gAuthToken) {
                 headers['X-Auth-Token'] = gAuthToken;
               }
