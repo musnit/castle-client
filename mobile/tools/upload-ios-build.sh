@@ -9,7 +9,7 @@ then
 fi
 
 if [ -z "$1" ]; then
-    echo "Please specify fastlane lane: `beta` or `appstore`"
+    echo "Please specify fastlane lane: beta or appstore"
     exit 1
 fi
 
