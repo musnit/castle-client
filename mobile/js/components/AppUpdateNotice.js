@@ -1,7 +1,7 @@
 import React from 'react';
-import { Linking, NativeModules, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { CastleAsyncStorage } from '../common/CastleAsyncStorage';
-import { useLazyQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/react-hooks';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import gql from 'graphql-tag';
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
 export const AppUpdateNotice = () => {
   const [updateInfo, setUpdateInfo] = React.useState({ isUpdateAvailable: false });
   const [timeDismissed, setTimeDismissed] = React.useState(Date.now());
-  const [fetchUpdateInfo, query] = useLazyQuery(
+  const loadUpdateInfo = useQuery(
     gql`
       query {
         clientUpdateStatus {
@@ -68,13 +68,6 @@ export const AppUpdateNotice = () => {
 
   React.useEffect(() => {
     (async () => {
-      let installSource;
-      if (Constants.iOS) {
-        installSource = await NativeModules.CastleNativeUtils.getInstallSource();
-      }
-      // TODO: pass installSource to clientUpdateStatus
-      fetchUpdateInfo();
-
       let timeDismissed = await CastleAsyncStorage.getItem(UPDATE_NOTICE_LAST_DISMISSED_TIME_KEY);
       timeDismissed = parseInt(timeDismissed, 10);
       if (!timeDismissed) {
@@ -85,10 +78,10 @@ export const AppUpdateNotice = () => {
   }, []);
 
   React.useEffect(() => {
-    if (query.called && !query.loading && !query.error && query.data) {
-      setUpdateInfo(query.data.clientUpdateStatus);
+    if (!loadUpdateInfo.loading && !loadUpdateInfo.error && loadUpdateInfo.data) {
+      setUpdateInfo(loadUpdateInfo.data.clientUpdateStatus);
     }
-  }, [query.loading, query.error, query.data, query.called]);
+  }, [loadUpdateInfo.loading, loadUpdateInfo.error, loadUpdateInfo.data]);
 
   if (
     !updateInfo.isUpdateAvailable ||
