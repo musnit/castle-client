@@ -4,7 +4,7 @@ import FastImage from 'react-native-fast-image';
 import gql from 'graphql-tag';
 import ExpoConstants from 'expo-constants';
 import { CastleAsyncStorage } from './common/CastleAsyncStorage';
-import { Platform } from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 import { ApolloClient } from 'apollo-client';
 import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
 import { onError } from 'apollo-link-error';
@@ -330,6 +330,10 @@ export const apolloClient = new ApolloClient({
               headers['X-Build-Version-Code'] = ExpoConstants.nativeBuildVersion;
               headers['X-Build-Version-Name'] = ExpoConstants.nativeAppVersion;
               headers['X-Scene-Creator-Version'] = Constants.SCENE_CREATOR_LUA_VERSION;
+              if (Constants.iOS) {
+                const installSource = NativeModules.CastleNativeUtils.getConstants().installSource;
+                headers['X-Install-Source'] = installSource;
+              }
               if (gAuthToken) {
                 headers['X-Auth-Token'] = gAuthToken;
               }

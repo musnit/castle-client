@@ -11,6 +11,28 @@
 
 RCT_EXPORT_MODULE()
 
+- (NSDictionary *)constantsToExport
+{
+  NSString *installSource;
+#if TARGET_OS_SIMULATOR
+  installSource = @"simulator";
+#else
+  NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
+  NSString *receiptURLString = [receiptURL path];
+  BOOL isRunningSandboxBuild =  ([receiptURLString rangeOfString:@"sandboxReceipt"].location != NSNotFound);
+  if (isRunningSandboxBuild) {
+    installSource = @"sandbox";
+  } else {
+    installSource = @"appstore";
+  }
+#endif
+  return @{ @"installSource": installSource };
+}
+
++ (BOOL)requiresMainQueueSetup {
+  return NO;
+}
+
 RCT_EXPORT_METHOD(setReactNativeChannel
                   : (NSString *)value
                   : (RCTPromiseResolveBlock)resolve
