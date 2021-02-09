@@ -1,7 +1,12 @@
 default_platform(:ios)
 
+def make_bundle_version
+  bundle_version = Actions.lane_context[SharedValues::VERSION_NUMBER] + ".1" + number_of_commits.to_s
+  return bundle_version
+end
+
 def set_bundle_version_from_commit_count
-  bundle_version = Actions.lane_context[SharedValues::VERSION_NUMBER] + ".1" + number_of_commits.to_s  
+  bundle_version = make_bundle_version
   puts "Setting build number to '" + bundle_version + "'..."
   set_info_plist_value(
     path: "./ios/Castle/Info.plist",
@@ -14,7 +19,11 @@ def set_bundle_version_from_commit_count
     key: "CFBundleVersion",
     value: bundle_version
   )
+end
 
+def set_app_version_on_server
+  bundle_version = make_bundle_version
+  puts "Setting server app version to '" + bundle_version + "'..."
   sh(
     "../tools/set-app-version.sh",
     "ios",
@@ -51,6 +60,7 @@ platform :ios do
     upload_to_testflight(
         username: "ben@castle.xyz"
     )
+    set_app_version_on_server
   end
 
   lane :appstore do
@@ -71,12 +81,12 @@ platform :ios do
       }
     )
     upload_to_app_store(
-      # TODO: maybe set app_version here?
       # TODO: maybe 'force'
       username: "ben@castle.xyz",
       skip_screenshots: true,
       submit_for_review: false,
       metadata_path: "./fastlane/metadata"
     )
+    # do not set_app_version_on_server: wait until apple approval
   end
 end
