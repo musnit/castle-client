@@ -32,4 +32,20 @@ RCT_EXPORT_METHOD(getReactNativeChannel
   }
 }
 
+RCT_EXPORT_METHOD(getInstallSource
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+#if TARGET_OS_SIMULATOR
+  resolve(@"simulator");
+#endif
+  NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
+  NSString *receiptURLString = [receiptURL path];
+  BOOL isRunningSandboxBuild =  ([receiptURLString rangeOfString:@"sandboxReceipt"].location != NSNotFound);
+  if (isRunningSandboxBuild) {
+    resolve(@"sandbox");
+  } else {
+    resolve(@"appstore");
+  }
+}
+
 @end
