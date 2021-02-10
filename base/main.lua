@@ -235,10 +235,18 @@ network.async(
         else
             local fileData = nil
             if not CASTLE_REACT_NATIVE_CHANNEL or CASTLE_REACT_NATIVE_CHANNEL == "default" then
-                local localFilePath = "scene_creator_downloads/scene_creator_download_" .. SCENE_CREATOR_API_VERSION .. ".love"
+                local localFilePath
 
-                if love.filesystem.exists(localFilePath) then
-                   print("Using SceneCreatorDownloader file")
+                if theOS == "Android" then
+                    -- android: look for SceneCreatorDownloader file
+                    localFilePath = "scene_creator_downloads/scene_creator_download_" .. SCENE_CREATOR_API_VERSION .. ".love"
+                elseif theOS == "iOS" then
+                    -- ios: look for embedded file
+                    localFilePath = "scene_creator.love"
+                end
+
+                if localFilePath ~= nil and love.filesystem.exists(localFilePath) then
+                   print("scene creator loader: Using local file")
                    fileData = love.filesystem.newFileData(localFilePath)
                 end
 
