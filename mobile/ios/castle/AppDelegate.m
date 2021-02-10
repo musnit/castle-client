@@ -75,6 +75,8 @@ int SDL_main(int argc, char *argv[]) {
   [self.window makeKeyAndVisible];
   
   [RNBootSplash show:@"LaunchScreen" inView:rootView];
+  
+  [self writeEmbeddedSceneCreator];
 
   // SDL
   self.sdlDelegate = [[SDLUIKitDelegate alloc] init];
@@ -89,6 +91,28 @@ int SDL_main(int argc, char *argv[]) {
   center.delegate = self;
 
   return YES;
+}
+
+- (void)writeEmbeddedSceneCreator
+{
+  // path to scene creator inside app bundle (not accessible at runtime by lua)
+  NSString *bundledSceneCreatorPath = [[NSBundle mainBundle] pathForResource:@"scene_creator" ofType:@"love"];
+  
+  // create path to scene creator inside application support dir (same as love2d's save directory)
+  NSString *appDir = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
+  NSString *loveSaveDir = [appDir stringByAppendingPathComponent:@"Castle"];
+  NSString *savedSceneCreatorPath = [loveSaveDir stringByAppendingPathComponent:@"scene_creator.love"];
+  
+  // copy bundled version to saved version if needed
+  if (![[NSFileManager defaultManager] fileExistsAtPath:savedSceneCreatorPath]
+      && [[NSFileManager defaultManager] fileExistsAtPath:bundledSceneCreatorPath]) {
+    NSError *err = nil;
+    BOOL isDir = NO;
+    if (![[NSFileManager defaultManager] fileExistsAtPath:loveSaveDir isDirectory:&isDir]) {
+      [[NSFileManager defaultManager] createDirectoryAtPath:loveSaveDir withIntermediateDirectories:YES attributes:nil error:&err];
+    }
+    [[NSFileManager defaultManager] copyItemAtPath:bundledSceneCreatorPath toPath:savedSceneCreatorPath error:&err];
+  }
 }
 
 - (void)freezeScreen
