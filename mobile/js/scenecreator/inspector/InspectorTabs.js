@@ -29,7 +29,8 @@ const styles = StyleSheet.create({
 });
 
 const GeneralTab = ({ behaviors, sendActions }) => {
-  const { isTextActorSelected } = useCardCreator();
+  const { inspectorActions, isTextActorSelected } = useCardCreator();
+  const isBlueprint = (inspectorActions && inspectorActions.isBlueprint) || false;
   return (
     <React.Fragment>
       {isTextActorSelected && (
@@ -49,6 +50,10 @@ const GeneralTab = ({ behaviors, sendActions }) => {
           circleShape={behaviors.CircleShape}
           sendActions={sendActions}
         />
+      )}
+
+      {isBlueprint && (
+        <Inspector.Sharing />
       )}
     </React.Fragment>
   );
