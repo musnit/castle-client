@@ -9,6 +9,7 @@ export { default as Sliding } from './InspectorSliding';
 export { default as Tags } from './InspectorTags';
 export { default as TextContent } from './InspectorTextContent';
 export { default as TextLayout } from './InspectorTextLayout';
+export { default as Sharing } from './InspectorSharing';
 
 export const MotionBehaviors = [
   {
