@@ -21,8 +21,7 @@ Once you have the app running, shake the device to open the React Native develop
 
 # Releases
 
-- Open `GhostView.m` (iOS) and `MainActivity.java` (Android) and set `SCENE_CREATOR_API_VERSION` to something other than `dev`, corresponding to the lua release channel you'd like this build to use.
-- Do the same thing in `mobile/js/Constants.js`. This tells the server not to serve incompatible decks in the feed.
+- Run `tools/set-scene-creator-api-version.sh` with something other than `dev`, corresponding to the lua release channel you'd like this build to use. This will modify native config files for iOS and Android. You can commit this change to a release branch, but not to master.
 - Publish `scene-creator` to the release channel chosen for this build.
 
 ## iOS (Testflight)

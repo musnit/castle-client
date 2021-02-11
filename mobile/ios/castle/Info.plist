@@ -35,8 +35,8 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
-        <key>ITSAppUsesNonExemptEncryption</key>
-        <false />
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -54,6 +54,8 @@
 	</dict>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>$(PRODUCT_NAME) would like access to your photo gallery to choose an avatar</string>
+	<key>SceneCreatorApiVersion</key>
+	<string>dev</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>RTAliasGrotesk-Bold.otf</string>
