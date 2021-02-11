@@ -307,6 +307,34 @@ const char *getCastleReactNativeChannel()
 	return channel;
 }
 
+const char *getSceneCreatorApiVersion()
+{
+	static const char *apiVersion = NULL;
+
+	if (apiVersion)
+	{
+		delete apiVersion;
+		apiVersion = NULL;
+	}
+
+	JNIEnv *env = (JNIEnv*) SDL_AndroidGetJNIEnv();
+	jclass activity = env->FindClass("org/love2d/android/GameActivity");
+
+	jmethodID getSceneCreatorApiVersion = env->GetStaticMethodID(activity, "getSceneCreatorApiVersion", "()Ljava/lang/String;");
+	jstring jstr = (jstring) env->CallStaticObjectMethod(activity, getSceneCreatorApiVersion);
+	const char *utf = env->GetStringUTFChars(jstr, 0);
+	if (utf)
+	{
+		apiVersion = SDL_strdup(utf);
+		env->ReleaseStringUTFChars(jstr, utf);
+	}
+
+	env->DeleteLocalRef(jstr);
+	env->DeleteLocalRef(activity);
+
+	return apiVersion;
+}
+
 double getGhostScreenScaling()
 {
 	JNIEnv *env = (JNIEnv*) SDL_AndroidGetJNIEnv();

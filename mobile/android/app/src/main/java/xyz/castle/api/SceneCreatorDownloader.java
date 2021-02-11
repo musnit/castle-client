@@ -28,31 +28,7 @@ public class SceneCreatorDownloader {
         return new File(context.getFilesDir(), "save" + File.separator + "Castle");
     }
 
-    private static String getAPIVersion(Context context) {
-        try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(context.getAssets().open("main.lua")));
-            String line;
-
-            while ((line = br.readLine()) != null) {
-                if (line.contains("SCENE_CREATOR_API_VERSION")) {
-                    br.close();
-                    return line.split("\"")[1];
-                }
-            }
-            br.close();
-        } catch (Exception e) {
-        }
-
-        return null;
-    }
-
-    public static void download(Context context) {
-        final String apiVersion = getAPIVersion(context);
-        if (apiVersion == null) {
-            Log.d("SceneCreatorDownloader", "Could not read api version from main.lua");
-            return;
-        }
-
+    public static void download(Context context, String apiVersion) {
         Request.Builder builder = new Request.Builder()
                 .url("https://api.castle.xyz/api/scene-creator?apiVersion=" + apiVersion);
 

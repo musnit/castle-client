@@ -299,6 +299,12 @@ public class GameActivity extends SDLActivity {
     return ghostApplyScreenScaling;
   }
 
+  public static String sceneCreatorApiVersion = null;
+
+  public static String getSceneCreatorApiVersion() {
+      return sceneCreatorApiVersion;
+  }
+    
     /**
      * Copies a given file from the assets folder to the destination.
      *

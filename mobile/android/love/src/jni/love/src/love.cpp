@@ -227,6 +227,12 @@ static DoneAction runlove(int argc, char **argv, int &retval)
 		lua_setglobal(L, "CASTLE_REACT_NATIVE_CHANNEL");
 	}
 
+        const char *sceneCreatorApiVersion = love::android::getSceneCreatorApiVersion();
+	if (sceneCreatorApiVersion) {
+		lua_pushstring(L, sceneCreatorApiVersion);
+		lua_setglobal(L, "SCENE_CREATOR_API_VERSION_");
+	}
+
     // Turn the returned boot function into a coroutine and call it until done.
 	lua_newthread(L);
 	lua_pushvalue(L, -2);

@@ -73,6 +73,7 @@ bool hasBackgroundMusic();
  */
 const char *getGhostRootUri();
 const char *getCastleReactNativeChannel();
+const char *getSceneCreatorApiVersion();
 double getGhostScreenScaling();
 bool getGhostApplyScreenScaling();
 

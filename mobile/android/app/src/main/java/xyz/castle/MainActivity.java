@@ -15,7 +15,7 @@ public class MainActivity extends NavigationActivity {
 
     private static final boolean SCENE_CREATOR_USE_PROD_SCENE_CREATOR = true;
     private static final String SCENE_CREATOR_DEV_URI = "http://192.168.1.146:8080/Client.lua";
-
+    public static final String SCENE_CREATOR_API_VERSION = "dev";
 
     public static GameActivity gameActivity;
     public static FrameLayout gameLayout;
@@ -42,6 +42,7 @@ public class MainActivity extends NavigationActivity {
         super.onCreate(savedInstanceState);
 
         GameActivity.ghostRootUri = SCENE_CREATOR_USE_PROD_SCENE_CREATOR ? "" : SCENE_CREATOR_DEV_URI;
+        GameActivity.sceneCreatorApiVersion = SCENE_CREATOR_API_VERSION;
         gameActivity = new GameActivity();
         gameActivity.setContexts(this, getApplicationContext());
         gameActivity.handleIntent(new Intent(this, GameActivity.class));
@@ -53,7 +54,7 @@ public class MainActivity extends NavigationActivity {
     protected void onResume() {
         super.onResume();
 
-        SceneCreatorDownloader.download(this);
+        SceneCreatorDownloader.download(this, SCENE_CREATOR_API_VERSION);
     }
 
     // System behavior for volume, camera, zoom buttons
