@@ -1,5 +1,3 @@
-SCENE_CREATOR_API_VERSION = "dev"
-
 local ffi = require "ffi"
 local C = ffi.C
 local cjson = require "cjson"
@@ -237,7 +235,7 @@ network.async(
             if not CASTLE_REACT_NATIVE_CHANNEL or CASTLE_REACT_NATIVE_CHANNEL == "default" then
                 local localFilePath
 
-                if theOS == "Android" then
+                if theOS == "Android" and SCENE_CREATOR_API_VERSION ~= nil then
                     -- android: look for SceneCreatorDownloader file
                     localFilePath = "scene_creator_downloads/scene_creator_download_" .. SCENE_CREATOR_API_VERSION .. ".love"
                 elseif theOS == "iOS" then

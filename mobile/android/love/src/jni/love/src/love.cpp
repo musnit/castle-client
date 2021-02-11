@@ -230,7 +230,7 @@ static DoneAction runlove(int argc, char **argv, int &retval)
         const char *sceneCreatorApiVersion = love::android::getSceneCreatorApiVersion();
 	if (sceneCreatorApiVersion) {
 		lua_pushstring(L, sceneCreatorApiVersion);
-		lua_setglobal(L, "SCENE_CREATOR_API_VERSION_");
+		lua_setglobal(L, "SCENE_CREATOR_API_VERSION");
 	}
 
     // Turn the returned boot function into a coroutine and call it until done.

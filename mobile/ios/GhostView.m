@@ -171,7 +171,7 @@ bool ghostResetOnExit = false;
   
   // set scene creator api version
   lua_pushstring(L, [kSceneCreatorApiVersion cStringUsingEncoding:NSASCIIStringEncoding]);
-  lua_setglobal(L, "SCENE_CREATOR_API_VERSION_");
+  lua_setglobal(L, "SCENE_CREATOR_API_VERSION");
 
   // Set the location of the network 'seed' database--contains network data we've 'embedded' into the client
   {
