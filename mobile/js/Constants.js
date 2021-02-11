@@ -3,10 +3,6 @@ import { Platform } from 'react-native';
 export const iOS = Platform.OS === 'ios';
 export const Android = Platform.OS === 'android';
 
-// duplicate of base/main.lua config.
-// TODO: don't duplicate this
-export const SCENE_CREATOR_LUA_VERSION = 'dev';
-
 export const CARD_RATIO = 5 / 7;
 export const CARD_BORDER_RADIUS = 12;
 export const CARD_SMALL_BORDER_RADIUS = 6;

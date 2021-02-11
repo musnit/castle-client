@@ -3,6 +3,8 @@
 
 #import <React/RCTBridgeModule.h>
 
+#import "GhostView.h"
+
 @interface CastleNativeUtils : NSObject <RCTBridgeModule>
 
 @end
@@ -26,7 +28,10 @@ RCT_EXPORT_MODULE()
     installSource = @"appstore";
   }
 #endif
-  return @{ @"installSource": installSource };
+  return @{
+    @"installSource": installSource,
+    @"sceneCreatorApiVersion": [GhostView sceneCreatorApiVersion],
+  };
 }
 
 + (BOOL)requiresMainQueueSetup {

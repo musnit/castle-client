@@ -329,7 +329,9 @@ export const apolloClient = new ApolloClient({
               headers['X-OS'] = Platform.OS;
               headers['X-Build-Version-Code'] = ExpoConstants.nativeBuildVersion;
               headers['X-Build-Version-Name'] = ExpoConstants.nativeAppVersion;
-              headers['X-Scene-Creator-Version'] = Constants.SCENE_CREATOR_LUA_VERSION;
+              headers[
+                'X-Scene-Creator-Version'
+              ] = NativeModules.CastleNativeUtils.getConstants().sceneCreatorApiVersion;
               if (Constants.iOS) {
                 const installSource = NativeModules.CastleNativeUtils.getConstants().installSource;
                 headers['X-Install-Source'] = installSource;

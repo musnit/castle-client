@@ -9,6 +9,8 @@
 #define SCENE_CREATOR_USE_PROD_SCENE_CREATOR true
 #define SCENE_CREATOR_DEV_URI @"reload+http://192.168.1.146:8080/Client.lua"
 
+NSString * const kSceneCreatorApiVersion = @"dev";
+
 @implementation GhostView
 
 bool ghostPaused;
@@ -30,6 +32,12 @@ bool ghostResetOnExit = false;
   }
 
   return sharedGhostView;
+}
+
++ (NSString *)sceneCreatorApiVersion
+{
+  // TODO: put in info.plist and change with script
+  return kSceneCreatorApiVersion;
 }
 
 - (instancetype)init {
@@ -160,6 +168,10 @@ bool ghostResetOnExit = false;
     lua_pushstring(L, "default");
   }
   lua_setglobal(L, "CASTLE_REACT_NATIVE_CHANNEL");
+  
+  // set scene creator api version
+  lua_pushstring(L, [kSceneCreatorApiVersion cStringUsingEncoding:NSASCIIStringEncoding]);
+  lua_setglobal(L, "SCENE_CREATOR_API_VERSION_");
 
   // Set the location of the network 'seed' database--contains network data we've 'embedded' into the client
   {
