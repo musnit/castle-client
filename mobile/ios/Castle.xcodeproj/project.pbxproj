@@ -878,7 +878,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# TODO: download from api instead of zipping from other repo\npushd \"${SRCROOT}\"/../../../scene-creator/scripts\n./generate_zip.sh\npopd\ncp \"${SRCROOT}\"/../../../scene-creator/scene_creator.love \"${SRCROOT}\"/../scene_creator.love\n";
+			shellScript = "SCENE_CREATOR_API_VERSION=$(/usr/libexec/PlistBuddy -c \"Print :SceneCreatorApiVersion\" \"${SRCROOT}/castle/Info.plist\")\n$SRCROOT/../tools/bundle-scene-creator.sh $SCENE_CREATOR_API_VERSION $SRCROOT/../scene_creator.love\n\n# uncomment below for local version\n# pushd \"${SRCROOT}\"/../../../scene-creator/scripts\n# ./generate_zip.sh\n# popd\n# cp \"${SRCROOT}\"/../../../scene-creator/scene_creator.love \"${SRCROOT}\"/../scene_creator.love\n";
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
 			isa = PBXShellScriptBuildPhase;
