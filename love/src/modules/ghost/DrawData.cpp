@@ -287,6 +287,7 @@ DrawDataLayer& DrawData::selectedLayer() {
 
 int DrawData::getRealFrameIndexForLayerId(DrawDataLayerId layerId, int frame) {
   auto layer = layerForId(layerId);
+	frame = modFrameIndex(frame);
   while (frame >= 0) {
 	if (!layer.frames[frame].isLinked) {
 	  return frame;
