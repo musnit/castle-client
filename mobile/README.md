@@ -39,3 +39,12 @@ Once you have the app running, shake the device to open the React Native develop
 - Find our Android release credentials in the `android-release` folder of our credential store and follow the readme there to install them.
 - Run `./tools/build-android-prod.sh`
 - Output apk lives under `android/app/build/outputs/apk/release`
+
+## Android Play Store
+
+- Use branch `playstore/release`
+- `cd android`
+- `./gradlew bundleRelease`
+- `app/build/outputs/bundle/release/app-release.aab`
+- Upload to internal testing https://play.google.com/console/u/1/developers/6774483098390213048/app/4973889594505423194/tracks/internal-testing
+- On that same page, do "Promote release"
