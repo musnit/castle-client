@@ -142,6 +142,8 @@ const LoginForm = ({ route }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
+  const pwInput = React.useRef();
+
   if (Platform.OS == 'android') {
     useEffect(() => {
       GhostChannels.getSmartLockCredentials();
@@ -210,8 +212,10 @@ const LoginForm = ({ route }) => {
         autoCorrect={false}
         autoFocus={true}
         keyboardType="email-address"
+        onSubmitEditing={() => pwInput.current.focus()}
       />
       <TextInput
+        ref={pwInput}
         style={signingIn ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
         autoCapitalize="none"
         secureTextEntry
@@ -253,6 +257,10 @@ const CreateAccountForm = ({ route }) => {
     uriAfter = route.params.uriAfter;
   }
 
+  const nameInput = React.useRef();
+  const emailInput = React.useRef();
+  const pwInput = React.useRef();
+
   const onPressLogin = () => {
     navigate('LoginScreen');
   };
@@ -274,16 +282,13 @@ const CreateAccountForm = ({ route }) => {
 
   return (
     <Fragment>
-      <Fragment>
-        {errors?.length
-          ? errors.map((error, ii) => (
-              <Announcement
-                key={`announcement-${ii}`}
-                body={errorMessages[error.extensions.code]}
-              />
-            ))
-          : null}
-      </Fragment>
+      {errors?.length ? (
+        <>
+          {errors.map((error, ii) => (
+            <Announcement key={`announcement-${ii}`} body={errorMessages[error.extensions.code]} />
+          ))}
+        </>
+      ) : null}
       <TextInput
         style={creatingAccount ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
         autoCapitalize="none"
@@ -295,8 +300,10 @@ const CreateAccountForm = ({ route }) => {
         blurOnSubmit={false}
         autoCorrect={false}
         autoFocus={true}
+        onSubmitEditing={() => nameInput.current.focus()}
       />
       <TextInput
+        ref={nameInput}
         style={creatingAccount ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
         placeholder="Your name"
         placeholderTextColor={Constants.colors.white}
@@ -305,8 +312,10 @@ const CreateAccountForm = ({ route }) => {
         returnKeyType="next"
         blurOnSubmit={false}
         autoCorrect={false}
+        onSubmitEditing={() => emailInput.current.focus()}
       />
       <TextInput
+        ref={emailInput}
         style={creatingAccount ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
         autoCapitalize="none"
         placeholder="Email address"
@@ -317,8 +326,10 @@ const CreateAccountForm = ({ route }) => {
         blurOnSubmit={false}
         autoCorrect={false}
         keyboardType="email-address"
+        onSubmitEditing={() => pwInput.current.focus()}
       />
       <TextInput
+        ref={pwInput}
         style={creatingAccount ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
         secureTextEntry
         textContentType="password"
