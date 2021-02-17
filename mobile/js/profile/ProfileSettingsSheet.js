@@ -75,10 +75,11 @@ const updateUserAsync = async ({ user }) => {
   }
   const result = await Session.apolloClient.mutate({
     mutation: gql`
-      mutation ($userId: ID!, $websiteUrl: String, $twitterUsername: String, $itchUsername: String) {
+      mutation ($userId: ID!, $username: String!, $websiteUrl: String, $twitterUsername: String, $itchUsername: String) {
        updateUser(
          userId: $userId
          user: {
+           username: $username,
            websiteUrl: $websiteUrl,
            twitterUsername: $twitterUsername,
            itchUsername: $itchUsername,
@@ -237,6 +238,7 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
           <TextInput
             value={user.username}
             editable={!loading}
+            autoCapitalize="none"
             onChangeText={(username) => changeUser({ username })}
             style={Constants.styles.textInputOnWhite}
             placeholderTextColor={Constants.colors.grayText}
