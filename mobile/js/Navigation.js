@@ -105,7 +105,7 @@ const ProfileNavigator = () => (
 );
 
 const TabNavigator = () => {
-  const { notificationsBadgeCount } = useSession();
+  const { notificationsBadgeCount, isAnonymous } = useSession();
   // fetch notifications when a notif arrives while we're running
   const handlePushNotification = React.useCallback(({ data, clicked }) => {
     if (data?.numUnseenNotifications && !clicked) {
@@ -181,26 +181,28 @@ const TabNavigator = () => {
           },
         })}
       />
-      <Tab.Screen
-        name="Notifications"
-        component={NotificationsNavigator}
-        options={({ route }) => ({
-          tabBarVisible: !route.state || route.state.index == 0,
-          tabBarBadge: notificationsBadgeCount > 0 ? notificationsBadgeCount : null,
-          tabBarIcon: ({ focused, color }) => {
-            return (
-              <FastImage
-                tintColor={color}
-                style={{
-                  width: ICON_SIZE,
-                  height: ICON_SIZE,
-                }}
-                source={require('../assets/images/BottomTabs-notifications.png')}
-              />
-            );
-          },
-        })}
-      />
+      {!isAnonymous ? (
+        <Tab.Screen
+          name="Notifications"
+          component={NotificationsNavigator}
+          options={({ route }) => ({
+            tabBarVisible: !route.state || route.state.index == 0,
+            tabBarBadge: notificationsBadgeCount > 0 ? notificationsBadgeCount : null,
+            tabBarIcon: ({ focused, color }) => {
+              return (
+                <FastImage
+                  tintColor={color}
+                  style={{
+                    width: ICON_SIZE,
+                    height: ICON_SIZE,
+                  }}
+                  source={require('../assets/images/BottomTabs-notifications.png')}
+                />
+              );
+            },
+          })}
+        />
+      ) : null}
       <Tab.Screen
         name="Profile"
         component={ProfileNavigator}
