@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 
 import org.greenrobot.eventbus.EventBus;
 
+import xyz.castle.NavigationActivity;
+
 public class CastleSharedPreferences {
 
     public static class AuthTokenEvent {
@@ -16,6 +18,7 @@ public class CastleSharedPreferences {
     }
 
     private static final String AUTH_TOKEN_KEY = "AUTH_TOKEN";
+    private static final String USER_IS_ANONYMOUS_KEY = "USER_IS_ANONYMOUS";
 
     private static SharedPreferences sharedPreferences;
 
@@ -36,6 +39,10 @@ public class CastleSharedPreferences {
 
         if (AUTH_TOKEN_KEY.equals(key)) {
             EventBus.getDefault().post(new AuthTokenEvent(value));
+        }
+        if (USER_IS_ANONYMOUS_KEY.equals(key)) {
+            boolean isAnonymous = value.equals("true");
+            EventBus.getDefault().post(new NavigationActivity.UpdateUserIsAnonymousEvent(isAnonymous));
         }
     }
 

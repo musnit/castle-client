@@ -80,6 +80,10 @@ public class CastleTabNavigator extends CastleNavigator {
         return tabBar.addButton(tabs.size() - 1, title, resId);
     }
 
+    public void setTabHidden(int id, boolean hidden) {
+        tabBar.setTabHidden(id, hidden);
+    }
+
     public void doneAddingTabs() {
         tabBar.doneAddingButtons();
     }

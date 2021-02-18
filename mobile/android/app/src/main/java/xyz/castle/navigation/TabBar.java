@@ -35,6 +35,23 @@ public abstract class TabBar extends LinearLayout {
             });
         }
 
+        private boolean isHidden = false;
+
+        public void setHidden(boolean hidden) {
+            isHidden = hidden;
+            if (view != null) {
+                if (hidden) {
+                    view.setVisibility(View.GONE);
+                } else {
+                    view.setVisibility(View.VISIBLE);
+                }
+            }
+        }
+
+        public boolean getIsHidden() {
+            return isHidden;
+        }
+
         public final int id;
         String title;
         @DrawableRes
@@ -58,6 +75,26 @@ public abstract class TabBar extends LinearLayout {
 
     public void setListener(OnItemSelectedListener listener) {
         this.listener = listener;
+    }
+
+    public void setTabHidden(int id, boolean hidden) {
+        for (int i = 0; i < tabs.size(); i++) {
+            Tab tab = tabs.get(i);
+            if (tab.id == id) {
+                tab.setHidden(hidden);
+            }
+        }
+    }
+
+    public int getNumVisibleTabs() {
+        int count = 0;
+        for (int i = 0; i < tabs.size(); i++) {
+            Tab tab = tabs.get(i);
+            if (!tab.getIsHidden()) {
+                count += 1;
+            }
+        }
+        return count;
     }
 
     public Tab addButton(int id, String title, @DrawableRes int resId) {

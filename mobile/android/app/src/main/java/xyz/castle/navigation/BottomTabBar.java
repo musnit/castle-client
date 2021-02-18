@@ -36,11 +36,13 @@ public class BottomTabBar extends TabBar {
         setOnClickListener(view -> {
             if (motionEventX != null) {
                 float percent = motionEventX / ViewUtils.screenWidth(activity);
-                int index = (int) Math.floor(percent * tabs.size());
-                if (index >= tabs.size()) {
-                    index = tabs.size() - 1;
+                int numVisibleTabs = getNumVisibleTabs();
+                int visibleIndex = (int) Math.floor(percent * numVisibleTabs);
+                if (visibleIndex >= numVisibleTabs) {
+                    visibleIndex = numVisibleTabs - 1;
                 }
 
+                int index = getTabIndexFromVisibleIndex(visibleIndex);
                 setSelectedIndex(index);
 
                 if (listener != null) {
@@ -50,6 +52,22 @@ public class BottomTabBar extends TabBar {
 
             motionEventX = null;
         });
+    }
+
+    public int getTabIndexFromVisibleIndex(int visibleIndex) {
+        int numVisibleTabs = 0;
+        int index = -1;
+        for (int i = 0; i <= tabs.size(); i++) {
+            Tab tab = tabs.get(i);
+            if (!tab.getIsHidden()) {
+                numVisibleTabs++;
+            }
+            if (numVisibleTabs == visibleIndex + 1) {
+                index = i;
+                break;
+            }
+        }
+        return index;
     }
 
     @Override
@@ -63,13 +81,19 @@ public class BottomTabBar extends TabBar {
     }
 
     @Override
+    public void setTabHidden(int id, boolean hidden) {
+        super.setTabHidden(id, hidden);
+        // TODO: redo layout here
+    }
+
+    @Override
     public void doneAddingButtons() {
         ViewUtils.runOnUiThread(() -> {
             for (int i = 0; i < tabs.size(); i++) {
                 Tab tab = tabs.get(i);
 
                 final RelativeLayout layout = new RelativeLayout(getContext());
-                layout.setLayoutParams(new LinearLayout.LayoutParams(ViewUtils.screenWidth(activity) / tabs.size(), ViewGroup.LayoutParams.MATCH_PARENT));
+                layout.setLayoutParams(new LinearLayout.LayoutParams(ViewUtils.screenWidth(activity) / getNumVisibleTabs(), ViewGroup.LayoutParams.MATCH_PARENT));
 
                 ImageView imageView = new ImageView(getContext());
                 {

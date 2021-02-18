@@ -105,6 +105,8 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
             nav.doneAddingTabs();
 
             mainTabNavigator = nav;
+            // TODO: how to set initial state of notifications tab based on anonymitiy?
+            // mainTabNavigator.setTabHidden(notificationsTab.id, true);
             return nav;
         }).register();
         new CastleNavigationScreen("LoggedInRootStack", (Activity activity) -> {
@@ -304,6 +306,21 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
         }
     }
 
+    public static class UpdateUserIsAnonymousEvent {
+        boolean isAnonymous;
+
+        public UpdateUserIsAnonymousEvent(boolean isAnonymous) {
+            this.isAnonymous = isAnonymous;
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdateUserIsAnonymousBadge(UpdateUserIsAnonymousEvent event) {
+        if (notificationsTab != null) {
+            mainTabNavigator.setTabHidden(notificationsTab.id, event.isAnonymous);
+        }
+    }
+    
     public static class UpdateFollowingBadge {
         boolean newFollowingDecks;
 
