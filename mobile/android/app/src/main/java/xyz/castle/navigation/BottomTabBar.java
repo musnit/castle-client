@@ -93,7 +93,7 @@ public class BottomTabBar extends TabBar {
                 Tab tab = tabs.get(i);
 
                 final RelativeLayout layout = new RelativeLayout(getContext());
-                layout.setLayoutParams(new LinearLayout.LayoutParams(ViewUtils.screenWidth(activity) / getNumVisibleTabs(), ViewGroup.LayoutParams.MATCH_PARENT));
+                layout.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
 
                 ImageView imageView = new ImageView(getContext());
                 {

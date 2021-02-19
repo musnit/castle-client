@@ -18,7 +18,7 @@ public class CastleSharedPreferences {
     }
 
     private static final String AUTH_TOKEN_KEY = "AUTH_TOKEN";
-    private static final String USER_IS_ANONYMOUS_KEY = "USER_IS_ANONYMOUS";
+    public static final String USER_IS_ANONYMOUS_KEY = "USER_IS_ANONYMOUS";
 
     private static SharedPreferences sharedPreferences;
 
@@ -41,7 +41,7 @@ public class CastleSharedPreferences {
             EventBus.getDefault().post(new AuthTokenEvent(value));
         }
         if (USER_IS_ANONYMOUS_KEY.equals(key)) {
-            boolean isAnonymous = value.equals("true");
+            boolean isAnonymous = "true".equals(value);
             EventBus.getDefault().post(new NavigationActivity.UpdateUserIsAnonymousEvent(isAnonymous));
         }
     }

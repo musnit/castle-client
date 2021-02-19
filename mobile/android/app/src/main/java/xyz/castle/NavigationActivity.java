@@ -35,6 +35,7 @@ import org.json.JSONObject;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
+import xyz.castle.CastleSharedPreferences;
 import xyz.castle.api.API;
 import xyz.castle.api.GraphQLOperation;
 import xyz.castle.navigation.CastleNavigator;
@@ -105,8 +106,10 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
             nav.doneAddingTabs();
 
             mainTabNavigator = nav;
-            // TODO: how to set initial state of notifications tab based on anonymitiy?
-            // mainTabNavigator.setTabHidden(notificationsTab.id, true);
+            String isAnonymousPreference = CastleSharedPreferences.get(CastleSharedPreferences.USER_IS_ANONYMOUS_KEY);
+            if (isAnonymousPreference == null || isAnonymousPreference.equals("true")) {
+                mainTabNavigator.setTabHidden(notificationsTab.id, true);
+            }
             return nav;
         }).register();
         new CastleNavigationScreen("LoggedInRootStack", (Activity activity) -> {
