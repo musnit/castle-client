@@ -11,6 +11,7 @@ import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect } from '../ReactNavigation';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 
+import * as Amplitude from 'expo-analytics-amplitude';
 import * as LocalId from '../common/local-id';
 import * as Session from '../Session';
 import * as Utilities from '../common/utilities';
@@ -257,6 +258,7 @@ export const CreateDeckScreen = (props) => {
         deckId,
         visibility,
       };
+      Amplitude.logEventWithProperties('CHANGE_DECK_VISIBILITY', { deckId, visibility });
       saveDeck({ variables: { deck: deckUpdateFragment } });
       setDeck({ ...deck, visibility });
     },
