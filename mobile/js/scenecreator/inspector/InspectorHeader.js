@@ -215,13 +215,11 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
                 )}
               </TouchableOpacity>
             ) : null}
-            {data.isBlueprint ? (
-              <TouchableOpacity
-                style={styles.actionButton}
-                onPress={() => sendAction('duplicateSelection')}>
-                <FeatherIcon name="copy" size={22} color="#000" />
-              </TouchableOpacity>
-            ) : null}
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => sendAction('duplicateSelection')}>
+              <FeatherIcon name="copy" size={22} color="#000" />
+            </TouchableOpacity>
             <TouchableOpacity
               style={styles.actionButton}
               onPress={() => sendAction('deleteSelection')}>
