@@ -7,8 +7,10 @@ import * as Session from '../Session';
 import * as LocalId from './local-id';
 import Url from 'url-parse';
 
+import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 
+const { sharedAction } = Share;
 const CARD_TITLE_MAX_LEN = 28;
 
 export const getTextActorsContent = (sceneData) => {
@@ -251,7 +253,12 @@ export const shareDeck = async (deck) => {
     };
   }
   try {
-    Share.share(params);
-    // Share.share() returns a result we could capture if desired
+    const result = await Share.share(params);
+    if (result?.action === sharedAction) {
+      Amplitude.logEventWithProperties('SHARE_DECK', {
+        deckId: deck.deckId,
+        activityType: result.activityType,
+      });
+    }
   } catch (_) {}
 };
