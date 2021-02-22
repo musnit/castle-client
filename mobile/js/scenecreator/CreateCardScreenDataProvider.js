@@ -5,6 +5,7 @@ import { withNavigation, withNavigationFocus } from '../ReactNavigation';
 import { CreateCardScreen } from './CreateCardScreen';
 import _ from 'lodash';
 
+import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 import * as GhostEvents from '../ghost/GhostEvents';
 import * as GhostUI from '../ghost/GhostUI';
@@ -202,8 +203,13 @@ class CreateCardScreenDataProvider extends React.Component {
       this.state.deck,
       this.state.card.variables
     );
+    Amplitude.logEventWithProperties('SAVE_DECK', {
+      deckId: deck.deckId,
+      cardId: card.cardId,
+    });
     if (!this._mounted) return;
-    return this.setState({ card, deck, loading: false });
+    this.setState({ loading: false });
+    return { card, deck };
   };
 
   _goToDeck = (deckId = null) => {
@@ -225,16 +231,7 @@ class CreateCardScreenDataProvider extends React.Component {
   };
 
   _saveAndGoToDeck = async () => {
-    await this.setState({ loading: true });
-    await this._updateScreenshot();
-    const { card, deck } = await Session.saveDeck(
-      this.state.card,
-      this.state.deck,
-      this.state.card.variables
-    );
-
-    if (!this._mounted) return;
-    this.setState({ loading: false });
+    const { card, deck } = await this._save();
     return this._goToDeck(deck.deckId);
   };
 
@@ -250,8 +247,9 @@ class CreateCardScreenDataProvider extends React.Component {
   };
 
   _saveAndGoToCard = async (nextCard, isPlaying) => {
-    await this._save();
+    const { card, deck } = await this._save();
     if (!this._mounted) return;
+    await this.setState({ card, deck });
     this._goToCard(nextCard, isPlaying);
   };
 
