@@ -119,7 +119,7 @@ export class Provider extends React.Component {
     EventEmitter.removeListener(this._notificationsListener);
   }
 
-  useNewAuthTokenAsync = async ({ userId, token, isAnonymous }) => {
+  useNewAuthTokenAsync = async ({ userId, token, isAnonymous, isAdmin }) => {
     if (!TEST_AUTH_TOKEN) {
       apolloClient.resetStore();
       gAuthToken = token;
@@ -133,6 +133,10 @@ export class Provider extends React.Component {
         await CastleAsyncStorage.setItem('USER_IS_ANONYMOUS', gIsAnonymous.toString());
 
         Amplitude.setUserId(gUserId);
+        Amplitude.setUserProperties({
+          isAnonymous: gIsAnonymous,
+          isAdmin: isAdmin === true ? isAdmin : undefined,
+        });
       } else {
         await CastleAsyncStorage.removeItem('AUTH_TOKEN');
         await CastleAsyncStorage.removeItem('USER_ID');
@@ -160,6 +164,7 @@ export class Provider extends React.Component {
             userId
             token
             isAnonymous
+            isAdmin
             photo {
               url
             }
