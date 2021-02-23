@@ -2,6 +2,8 @@ import * as React from 'react';
 import { NativeModules, Platform, DeviceEventEmitter, NativeEventEmitter } from 'react-native';
 import { CastleAsyncStorage } from './common/CastleAsyncStorage';
 
+import * as Amplitude from 'expo-analytics-amplitude';
+
 let gListenerId = 0;
 let gInitialData = null;
 const gReceivedListeners = {};
@@ -27,6 +29,9 @@ eventEmitter.addListener('CastlePushNotificationClicked', (event) => {
   let dataString = event.dataString;
   let data = _parsePushDataString(dataString);
 
+  Amplitude.logEventWithProperties('OPEN_PUSH_NOTIFICATION', {
+    type: data?.type, // category of notif, e.g. 'play_deck'
+  });
   for (const [_, listener] of Object.entries(gClickedListeners)) {
     listener(data);
   }
