@@ -3,12 +3,14 @@ import { Keyboard, Share } from 'react-native';
 import gql from 'graphql-tag';
 import { launchImageLibrary as ImagePickerLaunchImageLibrary } from 'react-native-image-picker';
 import { ReactNativeFile } from 'apollo-upload-client';
-import * as Session from '../Session';
-import * as LocalId from './local-id';
+
+import shortid from 'shortid';
 import Url from 'url-parse';
 
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
+import * as Session from '../Session';
+import * as LocalId from './local-id';
 
 const { sharedAction } = Share;
 const CARD_TITLE_MAX_LEN = 28;
@@ -241,15 +243,24 @@ export const canonizeUserProvidedUrl = (urlStr) => {
 
 export const shareDeck = async (deck) => {
   let params;
+  const cxshid = shortid.generate();
+  const url = `https://castle.xyz/d/${deck.deckId}?cxshid=${cxshid}`;
+  let shortUrl;
+  try {
+    shortUrl = await Session.createShortLink(url);
+  } catch (e) {
+    console.warn(`Failed to generate short url: ${e}`);
+    shortUrl = url;
+  }
   if (Constants.iOS) {
     params = {
       // message: `Open this deck in Castle`,
-      url: `https://castle.xyz/d/${deck.deckId}`,
+      url: shortUrl,
     };
   } else {
     params = {
       // title: 'Open this deck in Castle',
-      message: `https://castle.xyz/d/${deck.deckId}`,
+      message: shortUrl,
     };
   }
   try {

@@ -782,6 +782,20 @@ export const reportDeck = async (deckId) => {
   return result?.data?.reportDeck;
 };
 
+export const createShortLink = async (url) => {
+  const result = await apolloClient.mutate({
+    mutation: gql`
+      mutation($url: String!) {
+        createShortLink(url: $url) {
+          url
+        }
+      }
+    `,
+    variables: { url },
+  });
+  return result?.data?.createShortLink.url;
+};
+
 const _sendMarkFollowingFeedRead = debounce(
   async () =>
     apolloClient.mutate({
