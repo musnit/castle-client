@@ -65,7 +65,7 @@ struct DrawDataLayer {
 		GHOST_READ_STRING(title)
 		GHOST_READ_STRING(id)
 		GHOST_READ_BOOL(isVisible, true)
-		GHOST_READ_VECTOR_POINTER(frames, DrawDataFrame)
+		GHOST_READ_POINTER_VECTOR(frames, DrawDataFrame)
 	}
 	
 	void setParent(DrawData *d) {

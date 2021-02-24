@@ -67,7 +67,7 @@ public:
 	std::vector<std::optional<Bounds>> framesBounds;
 	DrawDataLayerId selectedLayerId;
 	int selectedFrame;
-	std::vector<DrawDataLayer> layers;
+	std::vector<DrawDataLayer *> layers;
 	bool _layerDataChanged;
 	
 	DrawData(lua_State *L, int index) {
@@ -90,8 +90,12 @@ public:
 		GHOST_READ_VECTOR(framesBounds, Bounds)
 		GHOST_READ_STRING(selectedLayerId)
 		GHOST_READ_INT(selectedFrame, 1)
-		GHOST_READ_VECTOR(layers, DrawDataLayer)
+		GHOST_READ_POINTER_VECTOR(layers, DrawDataLayer)
 		
+		for (size_t i = 0; i < layers.size(); i++) {
+			layers[i]->setParent(this);
+		}
+
 		selectedFrame = selectedFrame - 1;
 	}
 	
