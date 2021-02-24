@@ -78,7 +78,7 @@
 		}\
 	}
 
-#define GHOST_READ_VECTOR_POINTER(arg, type) \
+#define GHOST_READ_POINTER_VECTOR(arg, type) \
 	lua_pushstring(L, #arg);\
 	lua_gettable(L, index);\
 	if (lua_istable(L, -1)) {\
