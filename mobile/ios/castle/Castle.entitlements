@@ -7,6 +7,7 @@
 	<key>com.apple.developer.associated-domains</key>
 	<array>
 		<string>applinks:castle.xyz</string>
+		<string>applinks:s.castle.xyz</string>
 	</array>
 </dict>
 </plist>
