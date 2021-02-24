@@ -16,6 +16,50 @@ const navigateToRoute = ({ name, params }) => {
   }
 };
 
+const _navigateToDeck = ({ deck, resolvedUrl }) => {
+  const url = new Url(resolvedUrl, true);
+  const cxshid = url?.query?.cxshid;
+
+  Amplitude.logEventWithProperties('OPEN_DECK_LINK', {
+    deckId: deck.deckId,
+    url: resolvedUrl,
+    cxshid,
+  });
+  navigateToRoute({
+    name: 'PlayDeck',
+    params: {
+      decks: [deck],
+      title: 'Shared deck',
+    },
+  });
+};
+
+// requires an expanded castle url like castle.xyz/d/abcd
+// don't call this externally, better to route through `naviateToUri`
+const _resolveFullUri = async (uri) => {
+  const url = new Url(uri);
+  if (url?.pathname) {
+    const pathComponents = url.pathname.split('/');
+    while (pathComponents.length && pathComponents[0] === '') {
+      pathComponents.shift();
+    }
+    // deck uri?
+    if (pathComponents[0] === 'd') {
+      const deckId = pathComponents.length > 1 ? pathComponents[1] : null;
+      if (deckId) {
+        let deck;
+        try {
+          deck = await Session.getDeckById(deckId);
+        } catch (_) {}
+        if (deck) {
+          return { deck, resolvedUrl: uri };
+        }
+      }
+    }
+  }
+  return { resolvedUrl: uri };
+};
+
 export const navigateToUri = async (uri) => {
   if (!Session.isSignedIn()) {
     // If not signed in, go to the login screen and tell it to navigate to this URI after
@@ -26,37 +70,23 @@ export const navigateToUri = async (uri) => {
       },
     });
   } else {
-    // Game URI?
-    {
-      const url = new Url(uri);
-      if (url?.pathname) {
-        const pathComponents = url.pathname.split('/');
-        while (pathComponents.length && pathComponents[0] === '') {
-          pathComponents.shift();
-        }
-        if (pathComponents[0] === 'd') {
-          const deckId = pathComponents.length > 1 ? pathComponents[1] : null;
-          if (deckId) {
-            let deck;
-            try {
-              deck = await Session.getDeckById(deckId);
-            } catch (_) {}
-            if (deck) {
-              Amplitude.logEventWithProperties('OPEN_DECK_LINK', {
-                deckId: deck.deckId,
-                url: uri,
-              });
-              navigateToRoute({
-                name: 'PlayDeck',
-                params: {
-                  decks: [deck],
-                  title: 'Shared deck',
-                },
-              });
-            }
-          }
-        }
+    let resolved;
+    let handled = false;
+    try {
+      resolved = await Session.resolveDeepLink(uri);
+      if (!resolved) {
+        // this didn't resolve from any short url, try parsing full url
+        resolved = await _resolveFullUri(uri);
       }
+    } catch (e) {
+      console.warn(`Error resolving deep link: ${e}`);
+    }
+    if (resolved?.deck) {
+      handled = true;
+      _navigateToDeck(resolved);
+    }
+    if (!handled) {
+      console.warn(`Unable to handle deep link '${uri}'`);
     }
   }
 };

@@ -796,6 +796,26 @@ export const createShortLink = async (url) => {
   return result?.data?.createShortLink.url;
 };
 
+export const resolveDeepLink = async (url) => {
+  const result = await apolloClient.mutate({
+    mutation: gql`
+      query($url: String!) {
+        resolveDeepLink(url: $url) {
+          resolvedUrl
+          deck {
+            ${DECK_FRAGMENT}
+            cards {
+              ${CARD_FRAGMENT}
+            }
+          }
+        }
+      }
+    `,
+    variables: { url },
+  });
+  return result?.data?.resolveDeepLink;
+};
+
 const _sendMarkFollowingFeedRead = debounce(
   async () =>
     apolloClient.mutate({

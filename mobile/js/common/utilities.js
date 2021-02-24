@@ -268,6 +268,7 @@ export const shareDeck = async (deck) => {
     if (result?.action === sharedAction) {
       Amplitude.logEventWithProperties('SHARE_DECK', {
         deckId: deck.deckId,
+        cxshid,
         activityType: result.activityType,
       });
     }
