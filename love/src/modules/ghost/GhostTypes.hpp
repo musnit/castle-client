@@ -78,6 +78,26 @@
 		}\
 	}
 
+#define GHOST_READ_VECTOR_POINTER(arg, type) \
+	lua_pushstring(L, #arg);\
+	lua_gettable(L, index);\
+	if (lua_istable(L, -1)) {\
+		int tableIndex = lua_gettop(L);\
+		int arrayIndex = 1;\
+		while (true) {\
+			lua_pushnumber(L, arrayIndex);\
+			lua_gettable(L, tableIndex);\
+			if (lua_istable(L, -1)) {\
+				type * item = new type();\
+				item->read(L, lua_gettop(L));\
+				arg.push_back(item);\
+			} else {\
+				break;\
+			}\
+			arrayIndex++;\
+		}\
+	}
+
 #define GHOST_READ_STRING(arg) \
 	lua_pushstring(L, #arg);\
 	lua_gettable(L, index);\
@@ -295,7 +315,16 @@ public:
 		attribFormat.name = "VertexPosition";
 		attribFormat.type = graphics::vertex::DATA_FLOAT;
 		attribFormat.components = 2;
+		
+		
+		graphics::Mesh::AttribFormat attribFormat2;
+		attribFormat2.name = "VertexColor";
+		attribFormat2.type = graphics::vertex::DATA_UNORM8;
+		attribFormat2.components = 4;
+		
+		
 		vertexFormat.push_back(attribFormat);
+		vertexFormat.push_back(attribFormat2);
 		
 		int vertexCount = MeshGetVertexCount(toveMesh);
 		graphics::PrimitiveType primitiveType = MeshGetIndexMode(toveMesh) == TRIANGLES_LIST ? graphics::PRIMITIVE_TRIANGLES : graphics::PRIMITIVE_TRIANGLE_STRIP;
@@ -315,8 +344,9 @@ public:
 		// TODO: double check that USAGE_STATIC is correct
 		loveMesh = instance->newMesh(vertexFormat, vertexCount, primitiveType, graphics::vertex::USAGE_STATIC);
 		
+		int vertexByteSize = 3 * sizeof(float);
 		//love.data.newByteData(n * self._vertexByteSize)
-		vData = data::DataModule::instance.newByteData((size_t) vertexCount * 2 * sizeof(float));
+		vData = data::DataModule::instance.newByteData((size_t) vertexCount * vertexByteSize);
 		
 		updateVertices();
 		updateTriangles();
@@ -343,10 +373,7 @@ public:
 		
 		// love.graphics.setShader
 		
-		
-		
-		
-		
+	
 		// love.graphics.draw mesh
 		instance->draw(loveMesh, Matrix4());
 		

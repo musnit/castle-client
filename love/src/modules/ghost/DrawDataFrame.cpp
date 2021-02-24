@@ -114,7 +114,7 @@ TYPE DrawDataFrame::serialize() {
 
 void DrawDataFrame::cleanUpPaths() {
   for (size_t i = 0; i < pathDataList.size(); i++) {
-	parent()->updatePathDataRendering(pathDataList[i]);
+	parent()->updatePathDataRendering(&pathDataList[i]);
   }
 }
 
@@ -128,7 +128,7 @@ Bounds DrawDataFrame::getPathDataBounds(std::optional<Bounds> bounds) {
 	  bounds = newBounds;
   }
   // https://poke1024.github.io/tove2d-api/classes/Graphics.html#Graphics:computeAABB
-  auto [minX, minY, maxX, maxY] = graphics().computeAABB();
+  auto [minX, minY, maxX, maxY] = graphics()->computeAABB();
   minX = minX + (DRAW_LINE_WIDTH / 2);
   minY = minY + (DRAW_LINE_WIDTH / 2);
   maxX = maxX - (DRAW_LINE_WIDTH / 2);
@@ -329,16 +329,20 @@ TYPE DrawDataFrame::updatePathsCanvas() {
   pathsCanvas.renderTo(undefined);
 }*/
 
-ToveGraphicsHolder& DrawDataFrame::graphics() {
-  if (_graphicsNeedsReset || !_graphics) {
+ToveGraphicsHolder* DrawDataFrame::graphics() {
+  if (_graphicsNeedsReset || _graphics == NULL) {
+	  if (_graphics != NULL) {
+		  delete _graphics;
+	  }
+	  
 	_graphicsNeedsReset = false;
 	cleanUpPaths();
-	_graphics = ToveGraphicsHolder();
+	_graphics = new ToveGraphicsHolder();
 	for (size_t i = 0; i < pathDataList.size(); i++) {
 	  _graphics->addPath(pathDataList[i].tovePath);
 	}
   }
-  return *_graphics;
+  return _graphics;
 }
 
 void DrawDataFrame::renderFill() {
