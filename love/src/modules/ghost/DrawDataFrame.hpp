@@ -24,7 +24,7 @@ public:
 	PathDataList pathDataList;
 	Bounds fillImageBounds;
 	bool _graphicsNeedsReset = true;
-	std::optional<ToveGraphicsHolder> _graphics;
+	ToveGraphicsHolder* _graphics = NULL;
 	DrawData *_parent;
 	
 	void read(lua_State *L, int index) {
@@ -41,7 +41,7 @@ public:
 	Bounds getPathDataBounds(std::optional<Bounds> bounds);
 	Bounds getPathDataBoundsInPixelCoordinates();
 	void resetGraphics();
-	ToveGraphicsHolder& graphics();
+	ToveGraphicsHolder* graphics();
 	void renderFill();
 	
 	DrawData *parent() {
@@ -59,18 +59,18 @@ struct DrawDataLayer {
 	std::string title;
 	DrawDataLayerId id;
 	bool isVisible;
-	std::vector<DrawDataFrame> frames;
+	std::vector<DrawDataFrame *> frames;
 	
 	void read(lua_State *L, int index) {
 		GHOST_READ_STRING(title)
 		GHOST_READ_STRING(id)
 		GHOST_READ_BOOL(isVisible, true)
-		GHOST_READ_VECTOR(frames, DrawDataFrame)
+		GHOST_READ_VECTOR_POINTER(frames, DrawDataFrame)
 	}
 	
 	void setParent(DrawData *d) {
 		for (size_t i = 0; i < frames.size(); i++) {
-			frames[i].setParent(d);
+			frames[i]->setParent(d);
 		}
 	}
 };

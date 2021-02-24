@@ -67,11 +67,11 @@ float DrawData::roundGlobalDistanceToGrid(float d) {
   return x;
 }
 
-void DrawData::makeSubpathsFromSubpathData(PathData &pathData) {
-  for (size_t i = 0; i < pathData.subpathDataList.size(); i++) {
-	auto subpathData = pathData.subpathDataList[i];
+void DrawData::makeSubpathsFromSubpathData(PathData *pathData) {
+  for (size_t i = 0; i < pathData->subpathDataList.size(); i++) {
+	auto subpathData = pathData->subpathDataList[i];
 	auto subpath = NewSubpath();
-	PathAddSubpath(pathData.tovePath, subpath);
+	PathAddSubpath(pathData->tovePath, subpath);
 	if (subpathData.type == line) {
 		SubpathMoveTo(subpath, subpathData.p1.x, subpathData.p1.y);
 		SubpathLineTo(subpath, subpathData.p2.x, subpathData.p2.y);
@@ -81,16 +81,16 @@ void DrawData::makeSubpathsFromSubpathData(PathData &pathData) {
   }
 }
 
-void DrawData::addLineSubpathData(PathData &pathData, float p1x, float p1y, float p2x, float p2y) {
+void DrawData::addLineSubpathData(PathData *pathData, float p1x, float p1y, float p2x, float p2y) {
 	Subpath subpath;
 	subpath.type = line;
 	subpath.p1 = Point(p1x, p1y);
 	subpath.p2 = Point(p2x, p2y);
 	
-  pathData.subpathDataList.push_back(subpath);
+  pathData->subpathDataList.push_back(subpath);
 }
 
-void DrawData::addCircleSubpathData(PathData &pathData, float centerX, float centerY, float radius, float startAngle, float endAngle) {
+void DrawData::addCircleSubpathData(PathData *pathData, float centerX, float centerY, float radius, float startAngle, float endAngle) {
 	Subpath subpath;
 	subpath.type = arc;
 	subpath.center = Point(centerX, centerY);
@@ -98,19 +98,19 @@ void DrawData::addCircleSubpathData(PathData &pathData, float centerX, float cen
 	subpath.startAngle = startAngle;
 	subpath.endAngle = endAngle;
 	
-  pathData.subpathDataList.push_back(subpath);
+  pathData->subpathDataList.push_back(subpath);
 }
 
-void DrawData::drawEndOfArc(PathData &pathData, float p1x, float p1y, float p2x, float p2y) {
+void DrawData::drawEndOfArc(PathData *pathData, float p1x, float p1y, float p2x, float p2y) {
   if (p1x == p2x && p1y == p2y) {
 	return;
   }
   addLineSubpathData(pathData, p1x, p1y, p2x, p2y);
 }
 
-void DrawData::addSubpathDataForPoints(PathData &pathData, Point p1, Point p2) {
-  auto style = pathData.style;
-  auto bendPointOptional = pathData.bendPoint;
+void DrawData::addSubpathDataForPoints(PathData *pathData, Point p1, Point p2) {
+  auto style = pathData->style;
+  auto bendPointOptional = pathData->bendPoint;
   if (bendPointOptional) {
 	  auto bendPoint = *bendPointOptional;
 	auto midpointP1P2 = Point((p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
@@ -181,12 +181,12 @@ void DrawData::addSubpathDataForPoints(PathData &pathData, Point p1, Point p2) {
 	  }
 	  auto testPoint = Point(circleCenter.x + (cos(startAngle + (M_PI / 2)) * radius), circleCenter.y + (sin(startAngle + (M_PI / 2)) * radius));
 	  if (!isPointInBounds(testPoint)) {
-		pathData.style = pathData.style + 1;
-		if (pathData.style > 3) {
-		  pathData.style = 1;
+		pathData->style = pathData->style + 1;
+		if (pathData->style > 3) {
+		  pathData->style = 1;
 		}
-		ReleasePath(pathData.tovePath);
-		pathData.tovePath.ptr = NULL;
+		ReleasePath(pathData->tovePath);
+		pathData->tovePath.ptr = NULL;
 		updatePathDataRendering(pathData);
 		return;
 	  }
@@ -253,13 +253,13 @@ void DrawData::addSubpathDataForPoints(PathData &pathData, Point p1, Point p2) {
   }
 }
 
-void DrawData::updatePathDataRendering(PathData &pathData) {
-  if (pathData.tovePath.ptr != NULL) {
+void DrawData::updatePathDataRendering(PathData *pathData) {
+  if (pathData->tovePath.ptr != NULL) {
 	return;
   }
   TovePathRef path = NewPath(NULL);
-  if (pathData.color) {
-	  PathSetLineColor(path, NewColor(pathData.color->data[0], pathData.color->data[1], pathData.color->data[2], 1));
+  if (pathData->color) {
+	  PathSetLineColor(path, NewColor(pathData->color->data[0], pathData->color->data[1], pathData->color->data[2], 1));
   } else {
 	  PathSetLineColor(path, NewColor(lineColor.data[0], lineColor.data[1], lineColor.data[2], 1));
   }
@@ -267,21 +267,21 @@ void DrawData::updatePathDataRendering(PathData &pathData) {
 	PathSetLineWidth(path, DRAW_LINE_WIDTH);
 	PathSetMiterLimit(path, 1.0);
 	PathSetLineJoin(path, TOVE_LINEJOIN_ROUND);
-	pathData.tovePath = path;
+	pathData->tovePath = path;
 	
-	pathData.subpathDataList.clear();
-  if (pathData.isTransparent) {
+	pathData->subpathDataList.clear();
+  if (pathData->isTransparent) {
 	return;
   }
-  for (size_t i = 0; i < pathData.points.size() - 1; i++) {
-	auto p1 = pathData.points[i];
-	auto p2 = pathData.points[i + 1];
+  for (size_t i = 0; i < pathData->points.size() - 1; i++) {
+	auto p1 = pathData->points[i];
+	auto p2 = pathData->points[i + 1];
 	addSubpathDataForPoints(pathData, p1, p2);
   }
   makeSubpathsFromSubpathData(pathData);
 }
 
-DrawDataLayer& DrawData::selectedLayer() {
+DrawDataLayer* DrawData::selectedLayer() {
   return layerForId(selectedLayerId);
 }
 
@@ -289,7 +289,7 @@ int DrawData::getRealFrameIndexForLayerId(DrawDataLayerId layerId, int frame) {
   auto layer = layerForId(layerId);
 	frame = modFrameIndex(frame);
   while (frame >= 0) {
-	if (!layer.frames[frame].isLinked) {
+	if (!layer->frames[frame]->isLinked) {
 	  return frame;
 	}
 	frame = frame - 1;
@@ -297,23 +297,23 @@ int DrawData::getRealFrameIndexForLayerId(DrawDataLayerId layerId, int frame) {
   return frame;
 }
 
-DrawDataLayer& DrawData::layerForId(DrawDataLayerId id) {
+DrawDataLayer* DrawData::layerForId(DrawDataLayerId id) {
   for (size_t i = 0; i < layers.size(); i++) {
 	if (layers[i].id == id) {
-	  return layers[i];
+	  return &layers[i];
 	}
   }
   
 throw;
 }
 
-DrawDataFrame& DrawData::currentLayerFrame() {
-  auto realFrame = getRealFrameIndexForLayerId(selectedLayer().id, selectedFrame);
-  return selectedLayer().frames[realFrame];
+DrawDataFrame* DrawData::currentLayerFrame() {
+  auto realFrame = getRealFrameIndexForLayerId(selectedLayer()->id, selectedFrame);
+  return selectedLayer()->frames[realFrame];
 }
 
-PathDataList& DrawData::currentPathDataList() {
-  return currentLayerFrame().pathDataList;
+PathDataList* DrawData::currentPathDataList() {
+  return &currentLayerFrame()->pathDataList;
 }
 /*
 TYPE DrawData::new(TYPE obj) {
@@ -388,7 +388,7 @@ TYPE DrawData::new(TYPE obj) {
 	}
   }
   if (newObj.selectedLayerId == null) {
-	newObj.selectedLayerId = newObj.layers[1].id;
+	newObj.selectedLayerId = newObj.layers[0].id;
   }
   newObj.graphics();
   for (int l = 0; l < newObj.layers.length; l++) {
@@ -518,7 +518,7 @@ Bounds DrawData::getBounds(int frame) {
 	auto layer = layers[l];
 	auto realFrame = getRealFrameIndexForLayerId(layer.id, frame);
 	auto frame = layer.frames[realFrame];
-	bounds = frame.getPathDataBounds(bounds);
+	bounds = frame->getPathDataBounds(bounds);
   }
   framesBounds[frame] = bounds;
 	return *bounds;
@@ -621,7 +621,7 @@ TYPE DrawData::deleteLayer(TYPE layerId) {
 	return;
   }
   if (selectedLayerId == layerId) {
-	selectedLayerId = layers[1].id;
+	selectedLayerId = layers[0].id;
 	if (layerIndex <= layers.length) {
 	  selectedLayerId = layers[layerIndex].id;
 	} else if (layerIndex > 1) {
@@ -636,12 +636,12 @@ TYPE DrawData::deleteFrame(TYPE frame) {
   for (int i = 0; i < layers.length; i++) {
 	table.remove(layers[i].frames, frame);
   }
-  if (layers[1].frames.length == 0) {
+  if (layers[0].frames.length == 0) {
 	addFrame();
 	return;
   }
-  if (selectedFrame > layers[1].frames.length) {
-	selectedFrame = layers[1].frames.length;
+  if (selectedFrame > layers[0].frames.length) {
+	selectedFrame = layers[0].frames.length;
   }
   touchLayerData();
 }
@@ -732,7 +732,7 @@ TYPE DrawData::addLayer() {
   }
   auto frameCount = 1;
   if (layers.length > 0) {
-	frameCount = layers[1].frames.length;
+	frameCount = layers[0].frames.length;
   }
   for (int i = 0; i < frameCount; i++) {
 	newLayer.frames.push_back(_newFrame(i > 1));
@@ -743,11 +743,11 @@ TYPE DrawData::addLayer() {
 }
 
 TYPE DrawData::addFrame() {
-  auto isLinked = layers[1].frames.length > 0;
+  auto isLinked = layers[0].frames.length > 0;
   for (int l = 0; l < layers.length; l++) {
 	layers[l].frames.push_back(_newFrame(isLinked));
   }
-  selectedFrame = layers[1].frames.length;
+  selectedFrame = layers[0].frames.length;
   touchLayerData();
 }*/
 
@@ -758,15 +758,15 @@ AnimationState DrawData::newAnimationState() {
 }
 
 int DrawData::getNumFrames() {
-  return layers[1].frames.size();
+  return layers[0].frames.size();
 }
 
 int DrawData::modFrameIndex(int value) {
   auto numFrames = getNumFrames();
-  while (value > numFrames) {
+  while (value >= numFrames) {
 	value = value - numFrames;
   }
-  while (value < 1) {
+  while (value < 0) {
 	value = value + numFrames;
   }
   return value;
@@ -838,14 +838,14 @@ void DrawData::runAnimation(AnimationState animationState, AnimationComponentPro
 TYPE DrawData::stepBackward() {
   selectedFrame = selectedFrame - 1;
   if (selectedFrame < 1) {
-	selectedFrame = layers[1].frames.length;
+	selectedFrame = layers[0].frames.length;
   }
   touchLayerData();
 }
 
 TYPE DrawData::stepForward() {
   selectedFrame = selectedFrame + 1;
-  if (selectedFrame > layers[1].frames.length) {
+  if (selectedFrame > layers[0].frames.length) {
 	selectedFrame = 1;
   }
   touchLayerData();
@@ -853,11 +853,11 @@ TYPE DrawData::stepForward() {
 
 TYPE DrawData::addFrameAtPosition(TYPE position) {
   framesBounds = [];
-  auto isLinked = layers[1].frames.length > 0;
+  auto isLinked = layers[0].frames.length > 0;
   for (int l = 0; l < layers.length; l++) {
 	table.insert(layers[l].frames, position + 1, _newFrame(isLinked));
   }
-  selectedFrame = layers[1].frames.length;
+  selectedFrame = layers[0].frames.length;
   touchLayerData();
 }
 
@@ -866,8 +866,8 @@ TYPE DrawData::clearFrame() {
   selectedLayer().frames[realFrame] = _newFrame(false);
 }*/
 
-ToveGraphicsHolder& DrawData::graphics() {
-  return currentLayerFrame().graphics();
+ToveGraphicsHolder* DrawData::graphics() {
+  return currentLayerFrame()->graphics();
 }
 
 void DrawData::preload() {
@@ -883,8 +883,8 @@ void DrawData::render(std::optional<AnimationComponentProperties> componentPrope
 	if (layers[l].isVisible) {
 	  auto realFrame = getRealFrameIndexForLayerId(layers[l].id, frameIdx);
 	  auto frame = layers[l].frames[realFrame];
-	  frame.renderFill();
-	  frame.graphics().draw();
+	  frame->renderFill();
+	  frame->graphics()->draw();
 	  //frame.graphics().draw();
 	}
   }
@@ -893,7 +893,7 @@ void DrawData::render(std::optional<AnimationComponentProperties> componentPrope
 TYPE DrawData::renderOnionSkinning() {
   auto frame = selectedFrame - 1;
   if (frame < 1) {
-	frame = layers[1].frames.length;
+	frame = layers[0].frames.length;
   }
   for (int l = 0; l < layers.length; l++) {
 	auto layer = layers[l];
@@ -935,9 +935,9 @@ TYPE DrawData::renderForTool(TYPE animationState, TYPE tempTranslateX, TYPE temp
 
 TYPE DrawData::renderPreviewPngForFrames(TYPE size) {
   auto results = {
-	numFrames = layers[1].frames.length;
+	numFrames = layers[0].frames.length;
   }
-  for (int i = 0; i < layers[1].frames.length; i++) {
+  for (int i = 0; i < layers[0].frames.length; i++) {
 	results["frame" + (i - 1)] = renderPreviewPng(i, size);
   }
   return results;
@@ -994,12 +994,12 @@ TYPE DrawData::clearGraphics() {
 }
 
 TYPE DrawData::updateColor(TYPE r, TYPE g, TYPE b) {
-  if (r == color[1] && g == color[2] && b == color[3]) {
+  if (r == color[0] && g == color[1] && b == color[2]) {
 	return false;
   }
-  color[1] = r;
-  color[2] = g;
-  color[3] = b;
+  color[0] = r;
+  color[1] = g;
+  color[2] = b;
   return true;
 }*/
 
