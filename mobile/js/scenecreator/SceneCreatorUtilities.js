@@ -19,7 +19,9 @@ export const getVariableName = (variableId, variables) => {
 
 const READABLE_OPERATORS = {
   equal: 'equals',
+  'greater than': 'is greater than',
   'greater or equal': 'is greater than or equal to',
+  'less than': 'is less than',
   'less or equal': 'is less than or equal to',
 };
 export const readableOperator = (o) => {
