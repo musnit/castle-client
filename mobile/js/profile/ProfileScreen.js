@@ -71,7 +71,7 @@ const ProfileDecksGrid = ({ user, refreshing, onRefresh, error, isMe, ...props }
       }
       refreshing={refreshing}
       onRefresh={onRefresh}
-      enablePreviewVideo={Constants.iOS && isFocused}
+      enablePreviewVideo={false}
       scrollViewRef={scrollViewRef}
       contentContainerStyle={{ paddingTop: 0, paddingBottom }}
       {...props}
