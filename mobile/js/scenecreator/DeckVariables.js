@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
+import { InspectorNumberInput } from './inspector/components/InspectorNumberInput';
+
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import uuid from 'uuid/v4';
 
@@ -81,11 +83,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const maybeParseInt = (value) => {
-  const result = parseInt(value);
-  return isNaN(result) ? 0 : result;
-};
-
 const validateVariableName = (name) => name.replace(/\s/g, '');
 
 const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) => {
@@ -96,7 +93,7 @@ const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) 
   };
   const valueInputProps = {
     ...props,
-    value: props.initialValue?.toString(),
+    value: props.initialValue,
   };
   return (
     <View style={styles.variableInputContainer}>
@@ -113,16 +110,16 @@ const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) 
         />
       </View>
       {/* <Text style={[styles.variableType, { width: '32%' }]}>{type}</Text> */}
-      <TextInput
-        style={[styles.input, { width: '50%' }]}
+      <InspectorNumberInput
+        style={[styles.input, { width: '50%', paddingRight: 28 }]}
         placeholderTextColor="#666"
         autoCompleteType="off"
         autoCorrect={false}
-        keyboardType="number-pad"
-        onChangeText={(value) => onChange({ initialValue: maybeParseInt(value) })}
+        hideIncrements
+        onChange={(value) => onChange({ initialValue: value })}
         {...valueInputProps}
       />
-      <View style={{ width: 20, marginLeft: -20 }}>
+      <View style={{ width: 20, position: 'absolute', right: 0 }}>
         <TouchableOpacity onPress={onDelete}>
           <FeatherIcon name="trash-2" size={20} color="#000" />
         </TouchableOpacity>
@@ -184,10 +181,6 @@ export const DeckVariables = ({ variables, onChange }) => {
             {...variable}
           />
         ))}
-      <View style={styles.explainer}>
-        <FeatherIcon name="book-open" size={18} color="#888" style={styles.explainerIcon} />
-        <Text style={styles.explainerText}>Variables can only be integer numbers.</Text>
-      </View>
       <View style={styles.explainer}>
         <FeatherIcon name="book-open" size={18} color="#888" style={styles.explainerIcon} />
         <Text style={styles.explainerText}>
