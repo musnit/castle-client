@@ -232,8 +232,11 @@ class CreateCardScreenDataProvider extends React.Component {
   };
 
   _saveAndGoToDeck = async () => {
-    const { card, deck } = await this._save();
-    return this._goToDeck(deck.deckId);
+    const result = await this._save();
+    if (result) {
+      const { deck } = result;
+      return this._goToDeck(deck.deckId);
+    }
   };
 
   _goToCard = (nextCard, isPlaying) => {
@@ -248,8 +251,9 @@ class CreateCardScreenDataProvider extends React.Component {
   };
 
   _saveAndGoToCard = async (nextCard, isPlaying) => {
-    const { card, deck } = await this._save();
-    if (!this._mounted) return;
+    const result = await this._save();
+    if (!this._mounted || !result) return;
+    const { card, deck } = result;
     await this.setState({ card, deck });
     this._goToCard(nextCard, isPlaying);
   };
