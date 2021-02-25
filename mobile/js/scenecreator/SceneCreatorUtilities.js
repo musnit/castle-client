@@ -205,9 +205,14 @@ export const makeExpressionSummary = (expression, context, depth = 0) => {
       return maybeExpressionParens(`${lhs} ${expression.expressionType} ${rhs}`, depth);
     }
     case 'abs':
-    case 'floor': {
+    case 'floor':
+    case 'sin':
+    case 'rad': {
       let number = makeExpressionSummary(expression.params.number, context, depth + 1);
       return `${expression.expressionType}(${number})`;
+    }
+    case 'time': {
+      return '⏰';
     }
     case 'log': {
       let base = makeExpressionSummary(expression.params.base, context, depth + 1),
