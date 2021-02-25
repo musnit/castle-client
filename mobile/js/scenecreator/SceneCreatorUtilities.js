@@ -19,6 +19,7 @@ export const getVariableName = (variableId, variables) => {
 
 const READABLE_OPERATORS = {
   equal: 'equals',
+  'not equal': 'does not equal',
   'greater than': 'is greater than',
   'greater or equal': 'is greater than or equal to',
   'less than': 'is less than',
