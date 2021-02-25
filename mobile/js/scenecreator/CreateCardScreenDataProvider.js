@@ -151,8 +151,8 @@ class CreateCardScreenDataProvider extends React.Component {
       };
     });
 
-  _handleVariablesChange = (changes) => {
-    this._handleCardChange({
+  _handleVariablesChange = async (changes) => {
+    await this._handleCardChange({
       variables: changes,
     });
     // update deck variables state passed to scene
