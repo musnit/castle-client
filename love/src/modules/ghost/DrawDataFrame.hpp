@@ -26,11 +26,16 @@ public:
 	bool _graphicsNeedsReset = true;
 	ToveGraphicsHolder* _graphics = NULL;
 	DrawData *_parent;
+	image::ImageData *fillImageData = NULL;
+	graphics::Image *fillImage = NULL;
+	graphics::Canvas *pathsCanvas = NULL;
+	std::string fillPng;
 	
 	void read(lua_State *L, int index) {
 		GHOST_READ_BOOL(isLinked, false)
 		GHOST_READ_VECTOR(pathDataList, PathData)
 		GHOST_READ_STRUCT(fillImageBounds)
+		GHOST_READ_STRING(fillPng)
 	}
 	
 	void deserializePathDataList();
@@ -43,6 +48,21 @@ public:
 	void resetGraphics();
 	ToveGraphicsHolder* graphics();
 	void renderFill();
+	
+	graphics::Image* imageDataToImage(image::ImageData *);
+	image::ImageData* getFillImageDataSizedToPathBounds();
+	graphics::Image* getFillImage();
+	void updateFillImageWithFillImageData();
+	void compressFillCanvas();
+	bool floodFill(float x, float y);
+	bool floodClear(float x, float y, float radius);
+	void resetFill();
+	void updatePathsCanvas();
+	void deserializeFillAndPreview();
+	
+	image::ImageData * canvasToImageData(graphics::Canvas * canvas);
+	graphics::Canvas * newCanvas(int width, int height);
+	void renderToCanvas(graphics::Canvas * canvas, const std::function<void()> & lambda);
 	
 	DrawData *parent() {
 		return _parent;

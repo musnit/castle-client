@@ -885,7 +885,6 @@ void DrawData::render(std::optional<AnimationComponentProperties> componentPrope
 	  auto frame = layers[l]->frames[realFrame];
 	  frame->renderFill();
 	  frame->graphics()->draw();
-	  //frame.graphics().draw();
 	}
   }
 }
