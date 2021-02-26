@@ -42,9 +42,11 @@ Once you have the app running, shake the device to open the React Native develop
 
 ## Android Play Store
 
+- Bump versionCode and versionName in `android/app/build.gradle`
 - Use branch `playstore/release`
 - `cd android`
 - `./gradlew bundleRelease`
 - `app/build/outputs/bundle/release/app-release.aab`
-- Upload to internal testing https://play.google.com/console/u/1/developers/6774483098390213048/app/4973889594505423194/tracks/internal-testing
-- On that same page, do "Promote release"
+- Upload to open testing https://play.google.com/console/u/1/developers/6774483098390213048/app/4973889594505423194/tracks/open-testing
+- Wait until it's reviewed, then go to https://play.google.com/console/u/1/developers/6774483098390213048/app/4973889594505423194/publishing to publish
+- Once it's ready for full release, go to https://play.google.com/console/u/1/developers/6774483098390213048/app/4973889594505423194/tracks/open-testing and do "Promote release"
