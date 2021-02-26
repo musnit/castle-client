@@ -93,6 +93,27 @@ int SDL_main(int argc, char *argv[]) {
   return YES;
 }
 
+- (BOOL)isAppUpdated
+{
+  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+  NSString *currentAppVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
+  NSString *previousVersion = [defaults objectForKey:@"GhostAppVersion"];
+  if (!previousVersion) {
+    // new install
+    [defaults setObject:currentAppVersion forKey:@"GhostAppVersion"];
+    [defaults synchronize];
+    return YES;
+  } else if ([previousVersion isEqualToString:currentAppVersion]) {
+    // same version
+    return NO;
+  } else {
+    // updated version
+    [defaults setObject:currentAppVersion forKey:@"GhostAppVersion"];
+    [defaults synchronize];
+    return YES;
+  }
+}
+
 - (void)writeEmbeddedSceneCreator
 {
   // path to scene creator inside app bundle (not accessible at runtime by lua)
@@ -103,9 +124,11 @@ int SDL_main(int argc, char *argv[]) {
   NSString *loveSaveDir = [appDir stringByAppendingPathComponent:@"Castle"];
   NSString *savedSceneCreatorPath = [loveSaveDir stringByAppendingPathComponent:@"scene_creator.love"];
   
-  // copy bundled version to saved version if needed
-  if (![[NSFileManager defaultManager] fileExistsAtPath:savedSceneCreatorPath]
-      && [[NSFileManager defaultManager] fileExistsAtPath:bundledSceneCreatorPath]) {
+  // copy bundled version to saved version if saved version doesn't exist, or if the app was updated
+  if (
+      (![[NSFileManager defaultManager] fileExistsAtPath:savedSceneCreatorPath] || [self isAppUpdated])
+      && [[NSFileManager defaultManager] fileExistsAtPath:bundledSceneCreatorPath]
+      ) {
     NSError *err = nil;
     BOOL isDir = NO;
     if (![[NSFileManager defaultManager] fileExistsAtPath:loveSaveDir isDirectory:&isDir]) {
