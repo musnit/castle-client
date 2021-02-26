@@ -134,6 +134,10 @@ int SDL_main(int argc, char *argv[]) {
     if (![[NSFileManager defaultManager] fileExistsAtPath:loveSaveDir isDirectory:&isDir]) {
       [[NSFileManager defaultManager] createDirectoryAtPath:loveSaveDir withIntermediateDirectories:YES attributes:nil error:&err];
     }
+    if ([[NSFileManager defaultManager] fileExistsAtPath:savedSceneCreatorPath]) {
+      // remove any old version that may be there already (in the case of an app update)
+      [[NSFileManager defaultManager] removeItemAtPath:savedSceneCreatorPath error:&err];
+    }
     [[NSFileManager defaultManager] copyItemAtPath:bundledSceneCreatorPath toPath:savedSceneCreatorPath error:&err];
   }
 }
