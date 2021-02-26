@@ -241,6 +241,13 @@ struct Bounds {
 		GHOST_READ_NUMBER(minY, 0)
 		GHOST_READ_NUMBER(maxY, 0)
 	}
+	
+	void set(Bounds other) {
+		minX = other.minX;
+		maxX = other.maxX;
+		minY = other.minY;
+		maxY = other.maxY;
+	}
 };
 
 typedef std::vector<PathData> PathDataList;
