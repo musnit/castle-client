@@ -1,7 +1,6 @@
 import React from 'react';
 import { Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { FollowButton } from '../components/FollowButton';
-import { PopoverProvider } from '../components/PopoverProvider';
 import { ProfileBadge } from './ProfileBadge';
 import { ProfileConnections } from './ProfileConnections';
 import { UserAvatar } from '../components/UserAvatar';
@@ -153,13 +152,11 @@ export const ProfileHeader = ({ user, isMe, isAnonymous, onRefresh, loading, err
             connections={user?.connectionsYouKnow}
           />
           {user?.badges?.length ? (
-            <PopoverProvider>
-              <View style={styles.profileRow}>
-                {user.badges.map((badge, ii) => (
-                  <ProfileBadge badge={badge} key={`badge-${ii}`} />
-                ))}
-              </View>
-            </PopoverProvider>
+            <View style={styles.profileRow}>
+              {user.badges.map((badge, ii) => (
+                <ProfileBadge badge={badge} key={`badge-${ii}`} />
+              ))}
+            </View>
           ) : null}
         </>
       ) : null}

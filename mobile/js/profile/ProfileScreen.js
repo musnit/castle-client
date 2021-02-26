@@ -9,6 +9,7 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect, useIsFocused, useScrollToTop } from '../ReactNavigation';
 import { useSession } from '../Session';
+import { PopoverProvider } from '../components/PopoverProvider';
 import { ProfileHeader } from './ProfileHeader';
 import { ProfileSettingsSheet } from './ProfileSettingsSheet';
 
@@ -167,14 +168,16 @@ export const ProfileScreen = ({ userId, route }) => {
           {error ? (
             <EmptyFeed error={error} onRefresh={onRefresh} />
           ) : (
-            <ProfileDecksGrid
-              user={user}
-              refreshing={query.loading}
-              onRefresh={onRefresh}
-              error={error}
-              isMe={isMe}
-              ListHeaderComponent={ListHeaderComponent}
-            />
+            <PopoverProvider>
+              <ProfileDecksGrid
+                user={user}
+                refreshing={query.loading}
+                onRefresh={onRefresh}
+                error={error}
+                isMe={isMe}
+                ListHeaderComponent={ListHeaderComponent}
+              />
+            </PopoverProvider>
           )}
         </SafeAreaView>
         {isMe && user ? (
