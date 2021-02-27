@@ -45,6 +45,7 @@ const useProfileQuery = (userId) => {
 // keep as separate component so that the isFocused hook doesn't re-render
 // the entire profile screen
 const ProfileDecksGrid = ({ user, refreshing, onRefresh, error, isMe, ...props }) => {
+  const decks = user?.decks.filter((deck) => deck.isVisible);
   const { push } = useNavigation();
   const isFocused = useIsFocused();
   const insets = useSafeArea();
@@ -55,7 +56,7 @@ const ProfileDecksGrid = ({ user, refreshing, onRefresh, error, isMe, ...props }
 
   return (
     <DecksGrid
-      decks={user?.decks}
+      decks={decks}
       onPressDeck={(deck, index) =>
         push(
           'PlayDeck',
