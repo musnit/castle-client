@@ -75,13 +75,18 @@ const EMPTY_POPOVER = {
 const Carat = ({ style, invertY }) => {
   const imageStyles = { width: 25, height: 16 };
   if (invertY) {
-    // TODO: just sub in a different image here with correct border radius on the carat
-    // and delete this transform
-    imageStyles.transform = [{ scaleY: -1 }, { translateY: POPOVER_MARGIN - 5 }];
+    imageStyles.transform = [{ translateY: -POPOVER_MARGIN + 6 }];
   }
   return (
     <View style={[styles.carat, style]}>
-      <FastImage style={imageStyles} source={require('../../assets/images/popover-carat.png')} />
+      <FastImage
+        style={imageStyles}
+        source={
+          invertY
+            ? require('../../assets/images/popover-carat-inverted.png')
+            : require('../../assets/images/popover-carat.png')
+        }
+      />
     </View>
   );
 };
@@ -112,7 +117,7 @@ const measurePopover = ({
     caratLeft += popoverLeft - (vw * 100 - width - POPOVER_MARGIN);
     popoverLeft = vw * 100 - width - POPOVER_MARGIN;
   }
-  if (popoverTop < POPOVER_MARGIN) {
+  if (popoverTop < POPOVER_MARGIN * 2) {
     // if we extend above the top of the screen, reverse orientation
     popoverTop = anchorTop + anchorHeight + POPOVER_MARGIN;
     caratTop = 0;
@@ -131,8 +136,7 @@ const measurePopover = ({
 
 const Popover = () => {
   const { currentPopover, closePopover } = usePopover();
-  let { x, y, width, height, Component, measureRef, visible, ...props } = currentPopover;
-  const opacity = React.useRef(new Animated.Value(0)).current;
+  let { x, y, width, height, Component, measureRef, visible, opacity, ...props } = currentPopover;
 
   let [measurements, setMeasurements] = React.useState({});
   const [keyboardState] = useKeyboard();
@@ -156,12 +160,6 @@ const Popover = () => {
       setMeasurements({ left: x, top: y, caratLeft: width * 0.5, caratTop: height });
     }
   }, [measureRef, x, y, keyboardState]);
-
-  React.useEffect(() => {
-    if (visible) {
-      Animated.timing(opacity, { toValue: 1, duration: 250, useNativeDriver: true }).start();
-    }
-  }, [visible]);
 
   if (!visible || measurements.left === undefined || measurements.top === undefined) {
     return null;
@@ -211,8 +209,11 @@ export const PopoverButton = ({ popover, children, style, activeStyle, ...props 
 };
 
 export const PopoverProvider = (props) => {
+  const opacity = React.useRef(new Animated.Value(0)).current;
+
   const [state, setState] = React.useState({
     visible: false,
+    opacity: opacity,
     ...EMPTY_POPOVER,
   });
 
@@ -221,15 +222,29 @@ export const PopoverProvider = (props) => {
       if (Platform.OS == 'android') {
         GhostChannels.setIsPopoverOpen(true);
       }
-      setState({ visible: true, ...EMPTY_POPOVER, ...props });
+
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+
+      setState({ visible: true, opacity: opacity, ...EMPTY_POPOVER, ...props });
     },
     [setState]
   );
+
   const closePopover = React.useCallback(() => {
-    if (Platform.OS == 'android') {
-      GhostChannels.setIsPopoverOpen(false);
-    }
-    setState({ visible: false, ...EMPTY_POPOVER });
+    Animated.timing(opacity, {
+      toValue: 0,
+      duration: 200,
+      useNativeDriver: true,
+    }).start(() => {
+      if (Platform.OS == 'android') {
+        GhostChannels.setIsPopoverOpen(false);
+      }
+      setState({ visible: false, opacity: opacity, ...EMPTY_POPOVER });
+    });
   }, []);
 
   const value = {
