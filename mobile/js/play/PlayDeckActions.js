@@ -141,18 +141,21 @@ export const PlayDeckActions = ({
     // TODO: enable anonymous view source
     dropdownItems.push({
       id: 'view-source',
+      icon: 'search',
       name: 'View deck source',
     });
   }
   if (!isMe && onReportDeck) {
     dropdownItems.push({
       id: 'report',
+      icon: 'flag',
       name: 'Report and hide this deck',
     });
   }
   if (!isMe && onBlockUser) {
     dropdownItems.push({
       id: 'block',
+      icon: 'block',
       name: `Block @${creator.username}`,
     });
   }

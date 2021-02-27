@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { objectToArray } from '../ghost/GhostUI';
 import { PopoverButton } from './PopoverProvider';
-import * as Constants from '../Constants';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -22,7 +21,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   itemIcon: {
-    width: 16,
+    width: 18,
     alignItems: 'center',
     marginRight: 8,
   },
@@ -33,23 +32,26 @@ const styles = StyleSheet.create({
 
 export const DropdownItemsList = ({ items, selectedItem, onSelectItem, closePopover }) => {
   return (
-    <ScrollView>
+    <View>
       {items &&
         items.map((item, ii) => (
           <TouchableOpacity
             key={`item-${ii}`}
-            style={styles.item}
+            style={{ ...styles.item, borderBottomWidth: items[items.length - 1] == item ? 0 : 1 }}
             onPress={() => {
               onSelectItem(item);
               closePopover();
             }}>
             <View style={styles.itemIcon}>
-              {item === selectedItem ? <Icon name="check" size={18} color="#000" /> : null}
+              {item.icon ? <Icon name={item.icon} size={18} color="#000" /> : null}
             </View>
             <Text style={item === selectedItem ? styles.selectedItemText : null}>{item.name}</Text>
+            <View style={styles.itemIcon}>
+              {item === selectedItem ? <Icon name="check" size={18} color="#000" /> : null}
+            </View>
           </TouchableOpacity>
         ))}
-    </ScrollView>
+    </View>
   );
 };
 
@@ -68,7 +70,7 @@ export const Dropdown = ({ value, onChange, style, children, ...props }) => {
     Component: DropdownItemsList,
     items,
     selectedItem,
-    height: 156,
+    height: 52 * items.length,
     width: 256,
     onSelectItem: (item) => onChange(item.id),
   };
