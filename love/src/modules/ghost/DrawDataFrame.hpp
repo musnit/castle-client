@@ -29,13 +29,15 @@ public:
 	image::ImageData *fillImageData = NULL;
 	graphics::Image *fillImage = NULL;
 	graphics::Canvas *pathsCanvas = NULL;
-	std::string fillPng;
+	std::optional<std::string> fillPng;
 	
 	void read(lua_State *L, int index) {
 		GHOST_READ_BOOL(isLinked, false)
 		GHOST_READ_VECTOR(pathDataList, PathData)
 		GHOST_READ_STRUCT(fillImageBounds)
 		GHOST_READ_STRING(fillPng)
+		
+		deserializeFillAndPreview();
 	}
 	
 	void deserializePathDataList();
