@@ -9,6 +9,8 @@
 #include "DrawData.hpp"
 #include "DrawAlgorithms.hpp"
 #include "image/Image.h"
+#include "data/DataModule.h"
+#include "filesystem/Filesystem.h"
 
 #define DEBUG_FILL_IMAGE_SIZE false
 
@@ -40,12 +42,22 @@ void DrawDataFrame::deserializePathDataList() {
 }
 
 void DrawDataFrame::deserializeFillAndPreview() {
-  if (fillPng != NULL) {
-	auto fileDataString = love.data.decode("string", "base64", fillPng);
-	auto fileData = love.filesystem.newFileData(fileDataString, "fill.png");
-	fillImageData = love.image.newImageData(fileData);
+  if (fillPng) {
+	  //data::ContainerType ctype = data::CONTAINER_STRING;
+	  data::EncodeFormat format = data::ENCODE_BASE64;
+	  
+	  size_t fileDataStringLen = 0;
+	  char *fileDataString = nullptr;
+	  fileDataString = data::decode(format, fillPng->c_str(), fillPng->length(), fileDataStringLen);
+	  
+	  filesystem::Filesystem * filesystemModule = Module::getInstance<filesystem::Filesystem>(Module::M_FILESYSTEM);
+	  filesystem::FileData *fileData = filesystemModule->newFileData(fileDataString, fileDataStringLen, "fill.png");
+	  
+	  image::Image *imageModule = Module::getInstance<image::Image>(Module::M_IMAGE);
+	  fillImageData = imageModule->newImageData(fileData);
   }
-  base64Png = renderPreviewPng();
+
+  //base64Png = renderPreviewPng();
 }
 
 bool DrawDataFrame::arePathDatasMergable(PathData pd1, PathData pd2) {
