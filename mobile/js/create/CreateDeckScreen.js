@@ -6,6 +6,7 @@ import { ConfigureDeck } from './ConfigureDeck';
 import { DeckHeader } from './DeckHeader';
 import { DeckVisibilitySheet } from './DeckVisibilitySheet';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { SheetBackgroundOverlay } from '../components/SheetBackgroundOverlay';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect } from '../ReactNavigation';
@@ -64,7 +65,6 @@ export const CreateDeckScreen = (props) => {
   const navigation = useNavigation();
   const { showActionSheetWithOptions } = useActionSheet();
   const deckId = props.route.params.deckIdToEdit;
-  const [mode, setMode] = React.useState('cards');
   const [deck, setDeck] = React.useState(null);
   const [visibilitySheetVisible, setVisibilitySheetVisible] = React.useState(false);
 
@@ -277,7 +277,8 @@ export const CreateDeckScreen = (props) => {
   return (
     <React.Fragment>
       <SafeAreaView style={styles.container}>
-        <DeckHeader
+        <ScreenHeader title="Deck" onBackButtonPress={_goBack} />
+        {/* <DeckHeader
           deck={deck}
           onPressBack={_goBack}
           mode={mode}
@@ -286,24 +287,12 @@ export const CreateDeckScreen = (props) => {
             _maybeSaveDeck();
             return setMode(mode);
           }}
+          /> */}
+        <CardsSet
+          deck={deck}
+          onShowCardOptions={_showCardOptions}
+          onPress={_navigateToCreateCard}
         />
-        {mode === 'cards' ? (
-          <CardsSet
-            showNewCard
-            deck={deck}
-            onShowCardOptions={_showCardOptions}
-            onPress={_navigateToCreateCard}
-          />
-        ) : (
-          <View style={{ width: '100%', alignItems: 'center' }}>
-            <ConfigureDeck
-              deck={deck}
-              onChange={_changeDeck}
-              onDeleteDeck={_deleteDeck}
-              onChangeAccessPermissions={onChangeAccessPermissions}
-            />
-          </View>
-        )}
       </SafeAreaView>
       {visibilitySheetVisible ? <SheetBackgroundOverlay onPress={closeVisibilitySheet} /> : null}
       <DeckVisibilitySheet

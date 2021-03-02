@@ -46,19 +46,21 @@ const styles = StyleSheet.create({
   },
 });
 
-export const ScreenHeader = ({ title, rightIcon, onRightButtonPress }) => {
+export const ScreenHeader = ({ title, rightIcon, onRightButtonPress, onBackButtonPress }) => {
   const { pop, dangerouslyGetState } = useNavigation();
 
   // don't useNavigationState() because we don't want to rerender if this changes.
   const navigationStackIndex = dangerouslyGetState().index;
   const showBackButton = navigationStackIndex > 0;
 
+  const onPressBack = onBackButtonPress ?? (() => pop());
+
   return (
     <React.Fragment>
       <StatusBar barStyle="light-content" />
       <View style={styles.header}>
         {showBackButton ? (
-          <TouchableOpacity style={[styles.button, styles.buttonLeft]} onPress={() => pop()}>
+          <TouchableOpacity style={[styles.button, styles.buttonLeft]} onPress={onPressBack}>
             <Icon name="arrow-back" size={32} color="#fff" />
           </TouchableOpacity>
         ) : (
