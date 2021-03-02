@@ -1,6 +1,6 @@
 import React from 'react';
 import gql from 'graphql-tag';
-import { View, StyleSheet, Text } from 'react-native';
+import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { CardsSet } from '../components/CardsSet';
 import { ConfigureDeck } from './ConfigureDeck';
 import { DeckHeader } from './DeckHeader';
@@ -17,10 +17,23 @@ import * as LocalId from '../common/local-id';
 import * as Session from '../Session';
 import * as Utilities from '../common/utilities';
 
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
+  },
+  addCardButton: {
+    position: 'absolute',
+    right: 24,
+    bottom: 48,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
@@ -252,6 +265,11 @@ export const CreateDeckScreen = (props) => {
     [deck]
   );
 
+  const onPressNewCard = React.useCallback(
+    () => _navigateToCreateCard({ cardId: LocalId.makeId() }),
+    [_navigateToCreateCard]
+  );
+
   const onChangeVisibility = React.useCallback(
     async (visibility) => {
       const deckUpdateFragment = {
@@ -293,6 +311,9 @@ export const CreateDeckScreen = (props) => {
           onShowCardOptions={_showCardOptions}
           onPress={_navigateToCreateCard}
         />
+        <TouchableOpacity style={styles.addCardButton} onPress={onPressNewCard}>
+          <MCIcon name="kabaddi" size={24} />
+        </TouchableOpacity>
       </SafeAreaView>
       {visibilitySheetVisible ? <SheetBackgroundOverlay onPress={closeVisibilitySheet} /> : null}
       <DeckVisibilitySheet
