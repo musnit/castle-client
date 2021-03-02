@@ -30,7 +30,6 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   rowLabel: {
-    color: '#fff',
     fontSize: 16,
   },
 });

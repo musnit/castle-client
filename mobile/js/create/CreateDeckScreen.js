@@ -2,9 +2,8 @@ import React from 'react';
 import gql from 'graphql-tag';
 import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { CardsSet } from '../components/CardsSet';
-import { ConfigureDeck } from './ConfigureDeck';
 import { DeckHeader } from './DeckHeader';
-import { DeckVisibilitySheet } from './DeckVisibilitySheet';
+import { DeckSettingsSheet } from './DeckSettingsSheet';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { SheetBackgroundOverlay } from '../components/SheetBackgroundOverlay';
@@ -17,12 +16,25 @@ import * as LocalId from '../common/local-id';
 import * as Session from '../Session';
 import * as Utilities from '../common/utilities';
 
+import Feather from 'react-native-vector-icons/Feather';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
+  },
+  settingsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+  },
+  layoutPicker: {
+    flexDirection: 'row',
+  },
+  layoutButton: {
+    margin: 6,
   },
   addCardButton: {
     position: 'absolute',
@@ -79,10 +91,10 @@ export const CreateDeckScreen = (props) => {
   const { showActionSheetWithOptions } = useActionSheet();
   const deckId = props.route.params.deckIdToEdit;
   const [deck, setDeck] = React.useState(null);
-  const [visibilitySheetVisible, setVisibilitySheetVisible] = React.useState(false);
+  const [settingsSheetVisible, setSettingsSheetVisible] = React.useState(false);
 
-  const openVisibilitySheet = React.useCallback(() => setVisibilitySheetVisible(true), []);
-  const closeVisibilitySheet = React.useCallback(() => setVisibilitySheetVisible(false), []);
+  const openSettingsSheet = React.useCallback(() => setSettingsSheetVisible(true), []);
+  const closeSettingsSheet = React.useCallback(() => setSettingsSheetVisible(false), []);
 
   if (!deckId || LocalId.isLocalId(deckId)) {
     throw new Error(`CreateDeckScreen requires an existing deck id`);
@@ -139,7 +151,7 @@ export const CreateDeckScreen = (props) => {
       const deckUpdateFragment = {
         deckId,
         title: deck.title,
-        visibility: deck.visibility,
+        // visibility: deck.visibility,
         accessPermissions: deck.accessPermissions,
       };
       saveDeck({ variables: { deck: deckUpdateFragment } });
@@ -270,19 +282,6 @@ export const CreateDeckScreen = (props) => {
     [_navigateToCreateCard]
   );
 
-  const onChangeVisibility = React.useCallback(
-    async (visibility) => {
-      const deckUpdateFragment = {
-        deckId,
-        visibility,
-      };
-      Amplitude.logEventWithProperties('CHANGE_DECK_VISIBILITY', { deckId, visibility });
-      saveDeck({ variables: { deck: deckUpdateFragment } });
-      setDeck({ ...deck, visibility });
-    },
-    [setDeck, saveDeck, deck]
-  );
-
   const onChangeAccessPermissions = React.useCallback(
     async (accessPermissions) => {
       const deckUpdateFragment = { deckId, accessPermissions };
@@ -300,12 +299,24 @@ export const CreateDeckScreen = (props) => {
           deck={deck}
           onPressBack={_goBack}
           mode={mode}
-          onPressVisible={openVisibilitySheet}
+          onPressVisible={openSettingsSheet}
           onChangeMode={(mode) => {
             _maybeSaveDeck();
             return setMode(mode);
           }}
           /> */}
+        <View style={styles.settingsRow}>
+          <View style={styles.layoutPicker}>
+            <TouchableOpacity
+              style={styles.layoutButton}
+              hitSlop={{ top: 2, left: 2, bottom: 2, right: 2 }}>
+              <Feather name="grid" size={20} color="#fff" />
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity onPress={openSettingsSheet}>
+            <MCIcon name="settings" size={24} color="#aaa" />
+          </TouchableOpacity>
+        </View>
         <CardsSet
           deck={deck}
           onShowCardOptions={_showCardOptions}
@@ -315,12 +326,14 @@ export const CreateDeckScreen = (props) => {
           <MCIcon name="kabaddi" size={24} />
         </TouchableOpacity>
       </SafeAreaView>
-      {visibilitySheetVisible ? <SheetBackgroundOverlay onPress={closeVisibilitySheet} /> : null}
-      <DeckVisibilitySheet
-        isOpen={visibilitySheetVisible}
-        onClose={closeVisibilitySheet}
+      {settingsSheetVisible ? <SheetBackgroundOverlay onPress={closeSettingsSheet} /> : null}
+      <DeckSettingsSheet
+        isOpen={settingsSheetVisible}
+        onClose={closeSettingsSheet}
         deck={deck}
-        onChangeVisibility={onChangeVisibility}
+        onChange={_changeDeck}
+        onDeleteDeck={_deleteDeck}
+        onChangeAccessPermissions={onChangeAccessPermissions}
       />
     </React.Fragment>
   );
