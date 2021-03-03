@@ -13,9 +13,10 @@ import { useAppState } from './ghost/GhostAppState';
 import { HomeScreen } from './home/HomeScreen';
 import { NotificationsScreen } from './notifications/NotificationsScreen';
 import { PlayDeckScreen } from './play/PlayDeckScreen';
+import { ProfileScreen } from './profile/ProfileScreen';
+import { ShareDeckScreen } from './share/ShareDeckScreen';
 import { UserListScreen } from './components/UserListScreen';
 import { ViewSourceNavigator } from './create/ViewSourceNavigator';
-import { ProfileScreen } from './profile/ProfileScreen';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -67,6 +68,7 @@ const CreateNavigator = () => (
       component={CreateDeckNavigator}
       options={{ gestureEnabled: false }}
     />
+    <Stack.Screen name="ShareDeck" component={ShareDeckScreen} />
   </Stack.Navigator>
 );
 
