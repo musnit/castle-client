@@ -164,7 +164,7 @@ export const CreateDeckScreen = (props) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      if (lastFocusedTime) {
+      if (lastFocusedTime && loadDeck) {
         loadDeck.refetch();
       }
       lastFocusedTime = Date.now();
@@ -300,8 +300,8 @@ export const CreateDeckScreen = (props) => {
         <ScreenHeader
           title="Deck"
           onBackButtonPress={_goBack}
-          rightIcon="public"
-          onRightButtonPress={() => navigation.navigate('ShareDeck', { deck })}
+          rightIcon={deck ? 'public' : null}
+          onRightButtonPress={deck ? () => navigation.navigate('ShareDeck', { deck }) : null}
         />
         <View style={styles.settingsRow}>
           <View style={styles.layoutPicker}>

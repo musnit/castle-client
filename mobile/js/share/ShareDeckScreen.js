@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { CardCell } from '../components/CardCell';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
+import { shareDeck } from '../common/utilities';
 import { useMutation } from '@apollo/react-hooks';
 import { useNavigation } from '../ReactNavigation';
 
@@ -45,6 +47,26 @@ const styles = StyleSheet.create({
     color: Constants.colors.white,
     fontSize: 16,
   },
+  deckPreview: {
+    height: '100%',
+    flexShrink: 1,
+    paddingTop: 16,
+    paddingBottom: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: Constants.colors.grayOnBlackBorder,
+  },
+  topCard: {
+    height: '100%',
+    flexShrink: 1,
+    aspectRatio: Constants.CARD_RATIO,
+  },
+  previewVideoInfo: {
+    color: '#ccc',
+    padding: 8,
+    textAlign: 'center',
+  },
 });
 
 const VisibilityButton = ({
@@ -79,6 +101,7 @@ export const ShareDeckScreen = ({ route }) => {
   const navigation = useNavigation();
   const deck = route.params.deck;
   const [visibility, setVisibility] = React.useState(deck.visibility);
+  const initialCard = deck.cards.find((c) => c.cardId === deck.initialCard.cardId);
 
   const [saveDeck] = useMutation(
     gql`
@@ -106,7 +129,23 @@ export const ShareDeckScreen = ({ route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScreenHeader title="Share Deck" />
+      <ScreenHeader
+        title="Share Deck"
+        rightIcon="share"
+        onRightButtonPress={() => shareDeck(deck)}
+      />
+      <View style={styles.deckPreview}>
+        <View style={styles.topCard}>
+          <CardCell
+            card={initialCard}
+            isPrivate={visibility === 'private'}
+            previewVideo={deck.previewVideo}
+          />
+          {!deck.previewVideo ? (
+            <Text style={styles.previewVideoInfo}>No video preview</Text>
+          ) : null}
+        </View>
+      </View>
       <VisibilityButton
         icon="public"
         visibility="public"
