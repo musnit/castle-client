@@ -18,7 +18,8 @@ import * as LocalId from '../common/local-id';
 import * as Utilities from '../common/utilities';
 
 // TODO: test on many screen sizes
-const CAROUSEL_ITEM_WIDTH = Viewport.vw * 100 - 48;
+const CAROUSEL_LEFT_PAD = 24;
+const CAROUSEL_ITEM_WIDTH = Viewport.vw * 100 - CAROUSEL_LEFT_PAD * 2;
 const CAROUSEL_HEIGHT = CAROUSEL_ITEM_WIDTH * (1.0 / Constants.CARD_RATIO) - 24;
 
 const styles = StyleSheet.create({
@@ -138,16 +139,29 @@ const CardsGrid = ({
   );
 };
 
-const getCarouselItemLayout = (data, index) => ({
-  length: CAROUSEL_ITEM_WIDTH,
-  offset: CAROUSEL_ITEM_WIDTH * index,
-  index,
-});
+const getCarouselItemLayout = (data, index) => {
+  let length, offset;
+  if (index == 0) {
+    // dummy first cell
+    length = CAROUSEL_LEFT_PAD;
+    offset = 0;
+  } else {
+    length = CAROUSEL_ITEM_WIDTH;
+    offset = CAROUSEL_LEFT_PAD + CAROUSEL_ITEM_WIDTH * index;
+  }
+  return { length, offset, index };
+};
 
 const CardsCarousel = ({ cards, titles, initialCard, onPress, onShowCardOptions }) => {
+  const paddedCards = [{ cardId: '-1' }].concat(cards);
   const renderItem = React.useCallback(
     ({ item, index }) => {
       const card = item;
+      if (card.cardId === '-1') {
+        // add a dummy cell at the beginning to ensure the first card
+        // is horizontally centered.
+        return <View style={{ width: CAROUSEL_LEFT_PAD }} />;
+      }
       return (
         <View style={styles.carouselItem}>
           <View style={{ height: '100%', aspectRatio: Constants.CARD_RATIO }}>
@@ -163,19 +177,21 @@ const CardsCarousel = ({ cards, titles, initialCard, onPress, onShowCardOptions 
     [onPress, initialCard]
   );
 
+  // can't use snapToInterval because of odd-width first cell
+  const snapToOffsets = paddedCards.map((card, ii) => ii * CAROUSEL_ITEM_WIDTH);
+
   return (
     <FlatList
       contentContainerStyle={{ height: CAROUSEL_HEIGHT }}
       horizontal
-      data={cards}
+      data={paddedCards}
       renderItem={renderItem}
       getItemLayout={getCarouselItemLayout}
       keyExtractor={(item, index) => item?.cardId}
       showsHorizontalScrollIndicator={false}
-      snapToAlignment="center"
-      snapToInterval={CAROUSEL_ITEM_WIDTH}
       decelerationRate="fast"
       pagingEnabled
+      snapToOffsets={snapToOffsets}
       initialNumToRender={3}
       windowSize={5}
       maxToRenderPerBatch={3}
