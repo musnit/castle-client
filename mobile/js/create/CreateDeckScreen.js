@@ -1,6 +1,6 @@
 import React from 'react';
 import gql from 'graphql-tag';
-import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { InteractionManager, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { CardsSet } from '../components/CardsSet';
 import { DeckHeader } from './DeckHeader';
 import { DeckSettingsSheet } from './DeckSettingsSheet';
@@ -162,14 +162,22 @@ export const CreateDeckScreen = (props) => {
     setSettingsSheetVisible(false);
   }, [_maybeSaveDeck]);
 
+  // kludge for https://github.com/apollographql/react-apollo/issues/3917
+  const _refetch = React.useCallback(() => {
+    const task = InteractionManager.runAfterInteractions(async () => {
+      if (loadDeck?.refetch) return loadDeck.refetch();
+    });
+    return () => task.cancel();
+  }, [loadDeck?.refetch]);
+
   useFocusEffect(
     React.useCallback(() => {
-      if (lastFocusedTime && loadDeck) {
-        loadDeck.refetch();
+      if (lastFocusedTime) {
+        _refetch();
       }
       lastFocusedTime = Date.now();
       return () => _maybeSaveDeck(); // save on blur
-    }, [deck, loadDeck])
+    }, [deck, _refetch])
   );
 
   const _goBack = async () => {
