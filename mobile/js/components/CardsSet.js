@@ -1,22 +1,31 @@
 import React from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { CardCell } from './CardCell';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import Feather from 'react-native-vector-icons/Feather';
+import Viewport from '../common/viewport';
 
 import * as Constants from '../Constants';
 import * as LocalId from '../common/local-id';
 import * as Utilities from '../common/utilities';
 
+// TODO: test on many screen sizes
+const CAROUSEL_ITEM_WIDTH = Viewport.vw * 100 - 48;
+const CAROUSEL_HEIGHT = CAROUSEL_ITEM_WIDTH * (1.0 / Constants.CARD_RATIO) - 24;
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {},
+  container: {},
   gridContainer: {
     paddingLeft: 8,
-    flex: 1,
+
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
@@ -54,6 +63,11 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '700',
   },
+  carouselItem: {
+    width: CAROUSEL_ITEM_WIDTH,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 const NewCardCell = ({ onPress, lightBackground }) => (
@@ -87,7 +101,7 @@ const CardsGrid = ({
   lightBackground,
 }) => {
   return (
-    <View style={styles.gridContainer}>
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.gridContainer}>
       {showNewCard && (
         <View style={styles.cellContainer} key="new">
           <NewCardCell
@@ -120,7 +134,52 @@ const CardsGrid = ({
             )}
           </View>
         ))}
-    </View>
+    </ScrollView>
+  );
+};
+
+const getCarouselItemLayout = (data, index) => ({
+  length: CAROUSEL_ITEM_WIDTH,
+  offset: CAROUSEL_ITEM_WIDTH * index,
+  index,
+});
+
+const CardsCarousel = ({ cards, titles, initialCard, onPress, onShowCardOptions }) => {
+  const renderItem = React.useCallback(
+    ({ item, index }) => {
+      const card = item;
+      return (
+        <View style={styles.carouselItem}>
+          <View style={{ height: '100%', aspectRatio: Constants.CARD_RATIO }}>
+            <CardCell
+              card={card}
+              onPress={() => onPress(card)}
+              isInitialCard={cards.length > 1 && initialCard && initialCard.cardId === card.cardId}
+            />
+          </View>
+        </View>
+      );
+    },
+    [onPress, initialCard]
+  );
+
+  return (
+    <FlatList
+      contentContainerStyle={{ height: CAROUSEL_HEIGHT }}
+      horizontal
+      data={cards}
+      renderItem={renderItem}
+      getItemLayout={getCarouselItemLayout}
+      keyExtractor={(item, index) => item?.cardId}
+      showsHorizontalScrollIndicator={false}
+      snapToAlignment="center"
+      snapToInterval={CAROUSEL_ITEM_WIDTH}
+      decelerationRate="fast"
+      pagingEnabled
+      initialNumToRender={3}
+      windowSize={5}
+      maxToRenderPerBatch={3}
+    />
   );
 };
 
@@ -150,9 +209,9 @@ const sortCards = (cards, order) => {
 const SortOrderOptions = [SortOrder.LAST_MODIFIED_DESC, SortOrder.LAST_MODIFIED_ASC];
 
 export const CardsSet = (props) => {
-  const [state, setState] = React.useState({ mode: 'grid' });
   const [sortOrder, setSortOrder] = React.useState(SortOrder.LAST_MODIFIED_DESC);
   const { deck, lightBackground } = props;
+  const mode = props.mode ?? 'grid';
 
   let cards, initialCard, titles;
   if (deck) {
@@ -161,19 +220,14 @@ export const CardsSet = (props) => {
     titles = Utilities.makeCardPreviewTitles(deck);
   }
 
-  const setMode = (mode) =>
-    setState({
-      mode,
-    });
-
-  // TODO: state.mode == 'gallery'
   return (
-    <View style={styles.container}>
-      <KeyboardAwareScrollView style={styles.scrollView} keyboardShouldPersistTaps="handled">
-        {state.mode === 'grid' ? (
-          <CardsGrid cards={cards} titles={titles} initialCard={initialCard} {...props} />
-        ) : null}
-      </KeyboardAwareScrollView>
-    </View>
+    <>
+      {mode === 'grid' ? (
+        <CardsGrid cards={cards} titles={titles} initialCard={initialCard} {...props} />
+      ) : null}
+      {mode === 'carousel' ? (
+        <CardsCarousel cards={cards} titles={titles} initialCard={initialCard} {...props} />
+      ) : null}
+    </>
   );
 };
