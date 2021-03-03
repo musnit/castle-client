@@ -26,6 +26,7 @@ export const CardScene = ({
   onMessage,
   deckState,
   paused = false,
+  beltHeightFraction,
 }) => {
   const [reloadCount, setReloadCount] = useState(0);
   const onPressReload = async () => {
@@ -65,6 +66,7 @@ export const CardScene = ({
                   isEditing: initialIsEditing,
                   isEditable,
                   isDebug: !!__DEV__,
+                  beltHeightFraction,
                 }),
               }}
               isEditable={isEditable}

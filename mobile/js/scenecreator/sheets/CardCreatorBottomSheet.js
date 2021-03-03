@@ -15,9 +15,6 @@ export const CardCreatorBottomSheet = React.memo(({ element, headerHeight = 64, 
   const insets = useSafeArea();
 
   const middleSnapPoint = element?.props?.contentHeight ?? SCREEN_HEIGHT * 0.4;
-  const beltInset = props.snapBelowBelt
-    ? 100 * Viewport.vw * (1 / Constants.CARD_WITH_BELT_RATIO - 1 / Constants.CARD_RATIO)
-    : 0;
 
   const snapPoints = [
     // bottom snap is the bottom edge of the card,
@@ -32,8 +29,7 @@ export const CardCreatorBottomSheet = React.memo(({ element, headerHeight = 64, 
       380 // middle snap should sit above the keyboard on small screens
     ),
 
-    // top snap is flush with the bottom of the belt
-    SCREEN_HEIGHT - (CARD_HEADER_HEIGHT + insets.top + beltInset),
+    SCREEN_HEIGHT - (CARD_HEADER_HEIGHT + insets.top + (props.extraTopInset || 0)),
   ];
 
   return (

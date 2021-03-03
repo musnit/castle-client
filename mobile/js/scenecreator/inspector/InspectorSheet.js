@@ -23,7 +23,7 @@ const TAB_ITEMS = [
   },
 ];
 
-export const InspectorSheet = ({ isOpen, addChildSheet }) => {
+export const InspectorSheet = ({ isOpen, addChildSheet, beltHeight }) => {
   const { root } = useGhostUI();
   const { isTextActorSelected } = useCardCreator();
 
@@ -82,7 +82,7 @@ export const InspectorSheet = ({ isOpen, addChildSheet }) => {
         renderContent={renderContent}
         scrollViewRef={scrollViewRef}
         persistLastSnapWhenOpened
-        snapBelowBelt
+        extraTopInset={beltHeight}
         onSnap={onSnap}
       />
     );

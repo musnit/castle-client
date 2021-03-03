@@ -78,7 +78,7 @@ const sheetStackReducer = (prevStacks, action) => {
   return result;
 };
 
-export const SheetProvider = ({ activeSheet, setActiveSheet, isShowingDraw }) => {
+export const SheetProvider = ({ activeSheet, setActiveSheet, isShowingDraw, beltHeight }) => {
   const { root, transformAssetUri } = useGhostUI();
   const { isPlaying, hasSelection } = useCardCreator();
   const insets = useSafeArea();
@@ -129,6 +129,7 @@ export const SheetProvider = ({ activeSheet, setActiveSheet, isShowingDraw }) =>
             snapPoints: sheetProps.makeSnapPoints
               ? sheetProps.makeSnapPoints({ insets })
               : sheetProps.snapPoints,
+            beltHeight,
           };
 
           return (
