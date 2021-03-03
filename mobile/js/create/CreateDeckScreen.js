@@ -91,6 +91,7 @@ export const CreateDeckScreen = (props) => {
   const deckId = props.route.params.deckIdToEdit;
   const [deck, setDeck] = React.useState(null);
   const [settingsSheetVisible, setSettingsSheetVisible] = React.useState(false);
+  const [viewMode, setViewMode] = React.useState('grid');
 
   if (!deckId || LocalId.isLocalId(deckId)) {
     throw new Error(`CreateDeckScreen requires an existing deck id`);
@@ -314,18 +315,30 @@ export const CreateDeckScreen = (props) => {
           <View style={styles.layoutPicker}>
             <TouchableOpacity
               style={styles.layoutButton}
+              onPress={() => setViewMode('carousel')}
               hitSlop={{ top: 2, left: 2, bottom: 2, right: 2 }}>
-              <Feather name="grid" size={20} color="#fff" />
+              <MCIcon
+                name="view-carousel"
+                size={24}
+                color={viewMode === 'carousel' ? '#fff' : '#888'}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.layoutButton}
+              onPress={() => setViewMode('grid')}
+              hitSlop={{ top: 2, left: 2, bottom: 2, right: 2 }}>
+              <Feather name="grid" size={20} color={viewMode === 'grid' ? '#fff' : '#888'} />
             </TouchableOpacity>
           </View>
           <TouchableOpacity onPress={openSettingsSheet}>
-            <MCIcon name="settings" size={24} color="#aaa" />
+            <MCIcon name="settings" size={24} color="#888" />
           </TouchableOpacity>
         </View>
         <CardsSet
           deck={deck}
           onShowCardOptions={_showCardOptions}
           onPress={_navigateToCreateCard}
+          mode={viewMode}
         />
         <TouchableOpacity style={styles.addCardButton} onPress={onPressNewCard}>
           <MCIcon name="kabaddi" size={24} />
