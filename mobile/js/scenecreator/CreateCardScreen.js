@@ -42,9 +42,8 @@ import {
 
 const USE_BELT = true;
 
-const CARD_HEIGHT = (1 / Constants.CARD_RATIO) * 100 * Viewport.vw;
-
-const BELT_HEIGHT = 100 * Viewport.vw * (1 / Constants.CARD_WITH_BELT_RATIO - 1 / Constants.CARD_RATIO);
+const MIN_BELT_HEIGHT = 1.2 * 48;
+const MAX_BELT_HEIGHT = 1.2 * 60;
 
 const styles = StyleSheet.create({
   cardBody: {
@@ -53,9 +52,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   card: {
-    // Lua applies a border radius mask in create mode, so we skip it here
-    //borderRadius: Constants.CARD_BORDER_RADIUS,
-    aspectRatio: Constants.CARD_WITH_BELT_RATIO,
     width: '100%',
     overflow: 'hidden',
   },
@@ -65,17 +61,9 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   textActorsContainer: {
-    marginTop: BELT_HEIGHT,
     paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 8,
-  },
-  playDeckActionsContainer: {
-    position: 'absolute',
-    top: BELT_HEIGHT,
-    bottom: 0,
-    left: 0,
-    right: 0,
   },
 });
 
@@ -299,10 +287,14 @@ export const CreateCardScreen = ({
     justifyContent: isTextActorSelected ? 'flex-start' : 'flex-end',
   };
 
+  // TODO(nikki): Address magic constants / merge with removing bottom actions
   let cardFitStyles = null;
   const headerHeight = isShowingDraw ? DRAWING_CARD_HEADER_HEIGHT : CARD_HEADER_HEIGHT;
   const footerHeight = getFooterHeight({ isShowingDraw });
-  const maxCardHeight = 100 * Viewport.vh - headerHeight - footerHeight;
+  const maxCardHeight = 100 * Viewport.vh - headerHeight - footerHeight - 34 - 44; 
+  let beltHeight = maxCardHeight - (Viewport.vw * 100) / Constants.CARD_RATIO;
+  beltHeight = Math.floor(Math.min(Math.max(MIN_BELT_HEIGHT, beltHeight), MAX_BELT_HEIGHT));
+  const beltHeightFraction = beltHeight / maxCardHeight;
 
   if (isShowingDraw) {
     if ((Viewport.vw * 100) / maxCardHeight > 0.91) {
@@ -315,9 +307,7 @@ export const CreateCardScreen = ({
       cardFitStyles = { aspectRatio: 0.91, width: '100%' };
     }
   } else {
-    if ((Viewport.vw * 100) / maxCardHeight > Constants.CARD_WITH_BELT_RATIO) {
-      cardFitStyles = { width: undefined, height: maxCardHeight };
-    }
+    cardFitStyles = { width: '100%', height: maxCardHeight };
   }
 
   const isCardTextVisible =
@@ -379,9 +369,10 @@ export const CreateCardScreen = ({
                 initialIsEditing={initialIsEditing}
                 deckState={deckState}
                 onMessage={onSceneMessage}
+                beltHeightFraction={beltHeightFraction}
               />
               {isCardTextVisible ? (
-                <View style={styles.textActorsContainer}>
+                <View style={[styles.textActorsContainer, { marginTop: beltHeight }]}>
                   <CardText
                     disabled={loading}
                     visible={isCardTextVisible}
@@ -411,6 +402,7 @@ export const CreateCardScreen = ({
           activeSheet={activeSheet}
           setActiveSheet={setActiveSheet}
           isShowingDraw={isShowingDraw}
+          beltHeight={beltHeight}
         />
       </PopoverProvider>
     </CreateCardContext.Provider>
