@@ -2,7 +2,6 @@ import React from 'react';
 import gql from 'graphql-tag';
 import { InteractionManager, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { CardsSet } from '../components/CardsSet';
-import { DeckHeader } from './DeckHeader';
 import { DeckSettingsSheet } from './DeckSettingsSheet';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
