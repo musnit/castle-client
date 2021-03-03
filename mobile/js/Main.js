@@ -27,6 +27,7 @@ import { CreateScreen } from './create/CreateScreen';
 import { CreateDeckNavigator } from './create/CreateDeckNavigator';
 import { InitialAuthScreen } from './auth/InitialAuthScreen';
 import { ViewSourceNavigator } from './create/ViewSourceNavigator';
+import { ShareDeckScreen } from './share/ShareDeckScreen';
 import { NotificationsScreen } from './notifications/NotificationsScreen';
 import { UserListScreen } from './components/UserListScreen';
 
@@ -222,6 +223,7 @@ if (Platform.OS === 'android') {
     WrapComponent(CreateScreen, { addTabBarPadding: true })
   );
   AppRegistry.registerComponent('CreateDeck', WrapComponent(CreateDeckNavigator));
+  AppRegistry.registerComponent('ShareDeck', WrapComponent(ShareDeckScreen));
   AppRegistry.registerComponent('ViewSource', WrapComponent(ViewSourceNavigator));
   AppRegistry.registerComponent(
     'Notifications',

@@ -93,9 +93,6 @@ export const CreateDeckScreen = (props) => {
   const [deck, setDeck] = React.useState(null);
   const [settingsSheetVisible, setSettingsSheetVisible] = React.useState(false);
 
-  const openSettingsSheet = React.useCallback(() => setSettingsSheetVisible(true), []);
-  const closeSettingsSheet = React.useCallback(() => setSettingsSheetVisible(false), []);
-
   if (!deckId || LocalId.isLocalId(deckId)) {
     throw new Error(`CreateDeckScreen requires an existing deck id`);
   }
@@ -159,6 +156,12 @@ export const CreateDeckScreen = (props) => {
     }
   };
 
+  const openSettingsSheet = React.useCallback(() => setSettingsSheetVisible(true), []);
+  const closeSettingsSheet = React.useCallback(() => {
+    _maybeSaveDeck();
+    setSettingsSheetVisible(false);
+  }, [_maybeSaveDeck]);
+
   useFocusEffect(
     React.useCallback(() => {
       if (lastFocusedTime) {
@@ -166,7 +169,7 @@ export const CreateDeckScreen = (props) => {
       }
       lastFocusedTime = Date.now();
       return () => _maybeSaveDeck(); // save on blur
-    }, [deck])
+    }, [deck, loadDeck])
   );
 
   const _goBack = async () => {
@@ -294,17 +297,12 @@ export const CreateDeckScreen = (props) => {
   return (
     <React.Fragment>
       <SafeAreaView style={styles.container}>
-        <ScreenHeader title="Deck" onBackButtonPress={_goBack} />
-        {/* <DeckHeader
-          deck={deck}
-          onPressBack={_goBack}
-          mode={mode}
-          onPressVisible={openSettingsSheet}
-          onChangeMode={(mode) => {
-            _maybeSaveDeck();
-            return setMode(mode);
-          }}
-          /> */}
+        <ScreenHeader
+          title="Deck"
+          onBackButtonPress={_goBack}
+          rightIcon="public"
+          onRightButtonPress={() => navigation.navigate('ShareDeck', { deck })}
+        />
         <View style={styles.settingsRow}>
           <View style={styles.layoutPicker}>
             <TouchableOpacity
