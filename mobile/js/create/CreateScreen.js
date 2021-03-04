@@ -60,7 +60,11 @@ const EditDeckCell = (props) => {
   const { deck, onPress } = props;
   return (
     <View style={[Constants.styles.gridItem, { width: Viewport.gridItemWidth }]}>
-      <CardCell card={deck.initialCard} onPress={onPress} isPrivate={!deck.isVisible} />
+      <CardCell
+        card={deck.initialCard}
+        onPress={onPress}
+        isPrivate={deck.visibility === 'private'}
+      />
     </View>
   );
 };
@@ -97,7 +101,7 @@ const CreateScreenAuthenticated = () => {
             id
             deckId
             title
-            isVisible
+            visibility
             lastModified
             initialCard {
               id

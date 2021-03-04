@@ -234,7 +234,7 @@ export const USER_PROFILE_FRAGMENT = `
         url
       }
     }
-    isVisible
+    visibility
     initialCard {
       id
       cardId
