@@ -157,7 +157,7 @@ const CardsCarousel = ({ cards, titles, initialCard, onPress, onShowCardOptions 
   const renderItem = React.useCallback(
     ({ item, index }) => {
       const card = item;
-      if (card.cardId === '-1') {
+      if (!card || card.cardId === '-1') {
         // add a dummy cell at the beginning to ensure the first card
         // is horizontally centered.
         return <View style={{ width: CAROUSEL_LEFT_PAD }} />;

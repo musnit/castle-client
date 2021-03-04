@@ -22,6 +22,7 @@ import * as LocalId from '../common/local-id';
 import * as Session from '../Session';
 import * as Utilities from '../common/utilities';
 
+import AsyncStorage from '@react-native-community/async-storage';
 import Feather from 'react-native-vector-icons/Feather';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -96,6 +97,28 @@ const DECK_FRAGMENT = `
   }
 `;
 
+const CREATE_DECK_VIEW_MODE_KEY = `CreateDeckViewMode`;
+
+const setViewModePreference = async (deckId, mode) => {
+  if (!deckId || !mode) return;
+
+  let preferences = await AsyncStorage.getItem(CREATE_DECK_VIEW_MODE_KEY);
+  preferences = preferences ?? '{}';
+  preferences = JSON.parse(preferences);
+  preferences[deckId] = mode;
+  return AsyncStorage.setItem(CREATE_DECK_VIEW_MODE_KEY, JSON.stringify(preferences));
+};
+
+const getViewModePreference = async (deckId) => {
+  if (!deckId) return 'carousel';
+
+  let preferences = await AsyncStorage.getItem(CREATE_DECK_VIEW_MODE_KEY);
+  preferences = preferences ?? '{}';
+  preferences = JSON.parse(preferences);
+  const preference = preferences[deckId];
+  return preference ?? 'carousel';
+};
+
 export const CreateDeckScreen = (props) => {
   let lastFocusedTime;
   const navigation = useNavigation();
@@ -103,7 +126,13 @@ export const CreateDeckScreen = (props) => {
   const deckId = props.route.params.deckIdToEdit;
   const [deck, setDeck] = React.useState(null);
   const [settingsSheetVisible, setSettingsSheetVisible] = React.useState(false);
-  const [viewMode, setViewMode] = React.useState('grid');
+  const [viewMode, setViewMode] = React.useReducer((state, action) => {
+    const { mode, deckId } = action;
+    if (deckId) {
+      setViewModePreference(deckId, mode);
+    }
+    return mode;
+  }, 'carousel');
 
   if (!deckId || LocalId.isLocalId(deckId)) {
     throw new Error(`CreateDeckScreen requires an existing deck id`);
@@ -205,6 +234,12 @@ export const CreateDeckScreen = (props) => {
   React.useEffect(() => {
     if (!loadDeck.loading && !loadDeck.error && loadDeck.data) {
       setDeck(loadDeck.data.deck);
+      (async () => {
+        const viewModePreference = await getViewModePreference(loadDeck.data.deck.deckId);
+        if (viewModePreference) {
+          setViewMode({ mode: viewModePreference });
+        }
+      })();
     }
   }, [loadDeck.loading, loadDeck.error, loadDeck.data]);
 
@@ -335,7 +370,12 @@ export const CreateDeckScreen = (props) => {
               <View style={styles.layoutPicker}>
                 <TouchableOpacity
                   style={styles.layoutButton}
-                  onPress={() => setViewMode('carousel')}
+                  onPress={() =>
+                    setViewMode({
+                      mode: 'carousel',
+                      deckId: deck.deckId,
+                    })
+                  }
                   hitSlop={{ top: 2, left: 2, bottom: 2, right: 2 }}>
                   <MCIcon
                     name="view-carousel"
@@ -345,7 +385,7 @@ export const CreateDeckScreen = (props) => {
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.layoutButton}
-                  onPress={() => setViewMode('grid')}
+                  onPress={() => setViewMode({ mode: 'grid', deckId: deck.deckId })}
                   hitSlop={{ top: 2, left: 2, bottom: 2, right: 2 }}>
                   <Feather name="grid" size={20} color={viewMode === 'grid' ? '#fff' : '#888'} />
                 </TouchableOpacity>
