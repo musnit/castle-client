@@ -186,8 +186,6 @@ export const FEED_ITEM_DECK_FRAGMENT = `
     backgroundImage {
       url
       smallUrl
-      privateCardUrl
-      overlayUrl
       primaryColor
     }
   }
@@ -242,7 +240,6 @@ export const USER_PROFILE_FRAGMENT = `
       backgroundImage {
         url
         smallUrl
-        privateCardUrl
       }
     }
     variables

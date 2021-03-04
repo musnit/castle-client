@@ -85,7 +85,7 @@ const InitialCardIndicator = ({ isFullWidth }) => (
   </View>
 );
 
-const CardArtwork = ({ card, useOverlay, isPrivate, previewVideo, previewVideoPaused }) => {
+const CardArtwork = ({ card, previewVideo, previewVideoPaused }) => {
   let image = null;
   let backgroundImage;
   const [videoLoading, setVideoLoading] = React.useState(!!previewVideo?.url);
@@ -97,12 +97,8 @@ const CardArtwork = ({ card, useOverlay, isPrivate, previewVideo, previewVideoPa
   }
   if (backgroundImage) {
     let uri;
-    const { url, smallUrl, overlayUrl, privateCardUrl } = backgroundImage;
-    if (useOverlay && overlayUrl) {
-      uri = overlayUrl;
-    } else if (isPrivate && privateCardUrl) {
-      uri = privateCardUrl;
-    } else if (smallUrl) {
+    const { url, smallUrl } = backgroundImage;
+    if (smallUrl) {
       uri = smallUrl;
     } else {
       uri = url;
@@ -136,10 +132,9 @@ export const CardCell = ({
   card,
   onPress,
   title,
-  imageUrl,
-  useOverlay,
+  creator,
   isInitialCard,
-  isPrivate,
+  visibility,
   previewVideo,
   previewVideoPaused,
   isFullWidth,
@@ -147,24 +142,19 @@ export const CardCell = ({
 }) => {
   let cardStyles = styles.card;
   return (
-    <View
-      style={[styles.container, style]}
-      renderToHardwareTextureAndroid={useOverlay}
-      shouldRasterizeIOS={useOverlay}>
+    <View style={[styles.container, style]}>
       <TouchableWithoutFeedback disabled={!onPress} onPress={onPress}>
         <View style={cardStyles}>
           <CardArtwork
             card={card}
             previewVideo={previewVideo}
             previewVideoPaused={previewVideoPaused}
-            useOverlay={useOverlay}
-            isPrivate={isPrivate}
           />
-          {imageUrl || title ? (
+          {creator?.photo?.url || title ? (
             <View style={styles.meta}>
-              {imageUrl && (
+              {creator?.photo?.url && (
                 <View style={styles.metaImage}>
-                  <UserAvatar url={imageUrl} shadow={true} />
+                  <UserAvatar url={creator.photo.url} shadow={true} />
                 </View>
               )}
               {title && <Text style={styles.metaTitle}>{title}</Text>}

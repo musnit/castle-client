@@ -110,7 +110,6 @@ const CreateScreenAuthenticated = () => {
               backgroundImage {
                 url
                 smallUrl
-                privateCardUrl
               }
             }
           }

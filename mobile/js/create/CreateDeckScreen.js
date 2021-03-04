@@ -83,7 +83,6 @@ const DECK_FRAGMENT = `
     backgroundImage {
       url
       smallUrl
-      privateCardUrl
       primaryColor
     }
     scene {
