@@ -14,6 +14,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000',
   },
+  settingsRow: {
+    padding: 16,
+  },
 });
 
 const DECK_FRAGMENT = `
@@ -98,6 +101,7 @@ export const ViewSourceDeckScreen = (props) => {
   return (
     <SafeAreaView style={styles.container}>
       <ViewSourceDeckHeader deck={deck} onPressBack={() => navigation.goBack()} />
+      <View style={styles.settingsRow} />
       <CardsSet deck={deck} onPress={_navigateToCard} />
     </SafeAreaView>
   );

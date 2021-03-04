@@ -51,13 +51,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const MODE_ITEMS = [
-  {
-    name: 'Cards',
-    value: 'cards',
-  },
-];
-
 export const ViewSourceDeckHeader = ({ deck, onPressBack }) => {
   const message =
     deck?.accessPermissions === 'cloneable'
@@ -84,11 +77,6 @@ export const ViewSourceDeckHeader = ({ deck, onPressBack }) => {
           <DeckParentAttribution parentDeckId={deck.parentDeckId} parentDeck={deck.parentDeck} />
         </View>
       ) : null}
-      <SegmentedNavigation
-        items={MODE_ITEMS}
-        selectedItem={MODE_ITEMS[0]}
-        onSelectItem={(item) => {}}
-      />
     </View>
   );
 };
