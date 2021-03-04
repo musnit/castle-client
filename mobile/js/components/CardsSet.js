@@ -69,6 +69,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  carouselCardOptions: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    backgroundColor: '#fff',
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  carouselCardOptionsLabel: {
+    fontWeight: 'bold',
+    fontSize: 18,
+    marginTop: -9,
+  },
 });
 
 const NewCardCell = ({ onPress, lightBackground }) => (
@@ -115,6 +131,7 @@ const CardsGrid = ({
         cards.map((card) => (
           <View style={styles.cellContainer} key={card.cardId}>
             <CardCell
+              isFullWidth={true}
               card={card}
               onPress={() => onPress(card)}
               isInitialCard={cards.length > 1 && initialCard && initialCard.cardId === card.cardId}
@@ -170,6 +187,13 @@ const CardsCarousel = ({ cards, titles, initialCard, onPress, onShowCardOptions 
               onPress={() => onPress(card)}
               isInitialCard={cards.length > 1 && initialCard && initialCard.cardId === card.cardId}
             />
+            {onShowCardOptions ? (
+              <TouchableOpacity
+                style={styles.carouselCardOptions}
+                onPress={() => onShowCardOptions(card)}>
+                <Text style={styles.carouselCardOptionsLabel}>...</Text>
+              </TouchableOpacity>
+            ) : null}
           </View>
         </View>
       );
@@ -187,7 +211,7 @@ const CardsCarousel = ({ cards, titles, initialCard, onPress, onShowCardOptions 
       data={paddedCards}
       renderItem={renderItem}
       getItemLayout={getCarouselItemLayout}
-      keyExtractor={(item, index) => item?.cardId}
+      keyExtractor={(item, index) => (item ? item.cardId : `card-${index}`)}
       showsHorizontalScrollIndicator={false}
       decelerationRate="fast"
       pagingEnabled

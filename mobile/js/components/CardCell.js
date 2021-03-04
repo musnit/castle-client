@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
 });
 
 const initialCardStyles = StyleSheet.create({
-  container: {
+  containerFullWidth: {
     position: 'absolute',
     width: '100%',
     height: '100%',
@@ -56,11 +56,19 @@ const initialCardStyles = StyleSheet.create({
     borderColor: '#fff',
     borderRadius: Constants.CARD_BORDER_RADIUS,
   },
-  info: {
+  container: {
+    position: 'absolute',
+    left: 16,
+    top: 16,
     backgroundColor: '#fff',
-    alignItems: 'center',
+    borderRadius: 3,
     padding: 8,
+  },
+  info: {
+    alignItems: 'center',
     width: '100%',
+    backgroundColor: '#fff',
+    padding: 8,
   },
   label: {
     color: '#000',
@@ -69,9 +77,9 @@ const initialCardStyles = StyleSheet.create({
   },
 });
 
-const InitialCardIndicator = () => (
-  <View style={initialCardStyles.container}>
-    <View style={initialCardStyles.info}>
+const InitialCardIndicator = ({ isFullWidth }) => (
+  <View style={isFullWidth ? initialCardStyles.containerFullWidth : initialCardStyles.container}>
+    <View style={isFullWidth ? initialCardStyles.info : null}>
       <Text style={initialCardStyles.label}>Top Card</Text>
     </View>
   </View>
@@ -134,6 +142,7 @@ export const CardCell = ({
   isPrivate,
   previewVideo,
   previewVideoPaused,
+  isFullWidth,
   style,
 }) => {
   let cardStyles = styles.card;
@@ -161,7 +170,7 @@ export const CardCell = ({
               {title && <Text style={styles.metaTitle}>{title}</Text>}
             </View>
           ) : null}
-          {isInitialCard && <InitialCardIndicator />}
+          {isInitialCard && <InitialCardIndicator isFullWidth={isFullWidth} />}
         </View>
       </TouchableWithoutFeedback>
     </View>
