@@ -25,6 +25,7 @@ import * as Utilities from '../common/utilities';
 import AsyncStorage from '@react-native-community/async-storage';
 import Feather from 'react-native-vector-icons/Feather';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import FastImage from 'react-native-fast-image';
 
 const styles = StyleSheet.create({
   container: {
@@ -46,13 +47,17 @@ const styles = StyleSheet.create({
   addCardButton: {
     position: 'absolute',
     right: 24,
-    bottom: 48,
+    bottom: 24,
     width: 64,
     height: 64,
     borderRadius: 32,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  addCardIcon: {
+    height: 48,
+    width: 48,
   },
   loading: {
     alignItems: 'center',
@@ -400,7 +405,10 @@ export const CreateDeckScreen = (props) => {
               mode={viewMode}
             />
             <TouchableOpacity style={styles.addCardButton} onPress={onPressNewCard}>
-              <MCIcon name="kabaddi" size={24} />
+              <FastImage
+                style={styles.addCardIcon}
+                source={require('../../assets/images/create-card.png')}
+              />
             </TouchableOpacity>
           </>
         )}
