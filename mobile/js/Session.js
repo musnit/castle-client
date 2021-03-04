@@ -35,19 +35,29 @@ const SessionContext = React.createContext(EMPTY_SESSION);
 
 PushNotifications.addTokenListener(async (token) => {
   if (!gAuthToken) {
-    return;
+    return false;
   }
 
   let platform = await PushNotifications.getPlatformAsync();
 
-  await apolloClient.mutate({
-    mutation: gql`
-      mutation UpdatePushToken($token: String!, $platform: String!) {
-        updatePushToken(token: $token, platform: $platform)
-      }
-    `,
-    variables: { token, platform },
-  });
+  try {
+    let response = await apolloClient.mutate({
+      mutation: gql`
+        mutation UpdatePushToken($token: String!, $platform: String!) {
+          updatePushToken(token: $token, platform: $platform)
+        }
+      `,
+      variables: { token, platform },
+    });
+
+    if (!response.data || response.errors) {
+      return false;
+    }
+  } catch (e) {
+    return false;
+  }
+
+  return true;
 });
 
 export async function loadAuthTokenAsync() {

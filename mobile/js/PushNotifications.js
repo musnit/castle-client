@@ -97,9 +97,10 @@ export const addTokenListener = (listener) => {
   eventEmitter.addListener('onNewPushNotificationToken', async (event) => {
     const existingToken = await CastleAsyncStorage.getItem(PUSH_TOKEN_STORAGE_KEY);
     if (!existingToken || existingToken !== event.token) {
-      listener(event.token);
       if (event.token) {
-        CastleAsyncStorage.setItem(PUSH_TOKEN_STORAGE_KEY, event.token);
+        if (await listener(event.token)) {
+          CastleAsyncStorage.setItem(PUSH_TOKEN_STORAGE_KEY, event.token);
+        }
       } else {
         CastleAsyncStorage.removeItem(PUSH_TOKEN_STORAGE_KEY);
       }
