@@ -186,7 +186,7 @@ const NotificationsScreenAuthenticated = () => {
   const { navigate } = useNavigation();
   const [orderedNotifs, setOrderedNotifs] = React.useState([]);
   const [refresh, setRefresh] = React.useState(false);
-  const { notifications, markNotificationsReadAsync } = useSession();
+  const { notifications, markNotificationsReadAsync, isAnonymous } = useSession();
   const isFocused = useIsFocused();
 
   // Clear the notif badge on tab focus, mark notifs as read on blur
@@ -235,8 +235,10 @@ const NotificationsScreenAuthenticated = () => {
     // request permissions and token for push notifs when the notifs tab is first viewed.
     // whether they accept or deny, subsequent calls to this method won't pop up anything for
     // the user.
-    PushNotifications.requestTokenAsync();
-  }, []);
+    if (!isAnonymous) {
+      PushNotifications.requestTokenAsync();
+    }
+  }, [isAnonymous]);
 
   const onRefresh = React.useCallback(async (force = true) => {
     setRefresh(true);
