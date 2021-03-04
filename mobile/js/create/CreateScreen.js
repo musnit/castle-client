@@ -43,21 +43,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginVertical: 8,
   },
-  cellTitle: {
-    fontSize: 16,
-    color: Constants.colors.white,
-    textAlign: 'center',
-  },
-  createCell: {
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: Constants.colors.white,
-    width: '100%',
-    aspectRatio: Constants.CARD_RATIO,
+  createDeckButton: {
+    position: 'absolute',
+    right: 24,
+    bottom: 24,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
-    padding: 8,
   },
 });
 
@@ -66,18 +61,6 @@ const EditDeckCell = (props) => {
   return (
     <View style={[Constants.styles.gridItem, { width: Viewport.gridItemWidth }]}>
       <CardCell card={deck.initialCard} onPress={onPress} isPrivate={!deck.isVisible} />
-    </View>
-  );
-};
-
-const CreateDeckCell = (props) => {
-  return (
-    <View style={[Constants.styles.gridItem, { width: Viewport.gridItemWidth }]}>
-      <TouchableOpacity style={styles.createCell} onPress={props.onPress}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Text style={styles.cellTitle}>Create a new deck</Text>
-        </View>
-      </TouchableOpacity>
     </View>
   );
 };
@@ -174,19 +157,6 @@ const CreateScreenAuthenticated = () => {
         <ScrollView
           contentContainerStyle={Constants.styles.gridContainer}
           refreshControl={refreshControl}>
-          <CreateDeckCell
-            key="create"
-            onPress={() => {
-              navigation.push(
-                'CreateDeck',
-                {
-                  deckIdToEdit: LocalId.makeId(),
-                  cardIdToEdit: LocalId.makeId(),
-                },
-                { isFullscreen: true }
-              );
-            }}
-          />
           {decks &&
             decks.map((deck) => (
               <EditDeckCell
@@ -205,6 +175,27 @@ const CreateScreenAuthenticated = () => {
             ))}
         </ScrollView>
       )}
+      <TouchableOpacity
+        style={styles.createDeckButton}
+        onPress={() => {
+          navigation.push(
+            'CreateDeck',
+            {
+              deckIdToEdit: LocalId.makeId(),
+              cardIdToEdit: LocalId.makeId(),
+            },
+            { isFullscreen: true }
+          );
+        }}>
+        <FastImage
+          tintColor="#000"
+          style={{
+            width: 28,
+            height: 28,
+          }}
+          source={require('../../assets/images/BottomTabs-create.png')}
+        />
+      </TouchableOpacity>
     </View>
   );
 };
