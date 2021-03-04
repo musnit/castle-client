@@ -24,7 +24,7 @@ const CardGridRow = React.memo(({ decks, enablePreviewVideo, onPress }) => {
           style={[Constants.styles.gridItem, { flex: 1, marginLeft: col > 0 ? 8 : 0 }]}
           card={deck.initialCard}
           previewVideo={enablePreviewVideo ? deck.previewVideo : undefined}
-          isPrivate={deck.visibility === 'private'}
+          visibility={deck.visibility}
           creator={deck.creator}
           onPress={() => onPress(deck, col)}
         />

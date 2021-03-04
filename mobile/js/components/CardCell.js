@@ -1,11 +1,12 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+import { UserAvatar } from '../components/UserAvatar';
 
 import FastImage from 'react-native-fast-image';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import Video from 'react-native-video';
 
 import * as Constants from '../Constants';
-import { UserAvatar } from '../components/UserAvatar';
 
 const styles = StyleSheet.create({
   container: {
@@ -44,6 +45,18 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 13,
     ...Constants.styles.textShadow,
+  },
+  visibility: {
+    ...Constants.styles.dropShadow,
+    position: 'absolute',
+    top: 4,
+    left: 4,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
@@ -158,6 +171,17 @@ export const CardCell = ({
                 </View>
               )}
               {title && <Text style={styles.metaTitle}>{title}</Text>}
+            </View>
+          ) : null}
+          {visibility && visibility !== 'public' ? (
+            <View style={styles.visibility}>
+              <Icon
+                size={16}
+                name={
+                  visibility === 'private' ? 'lock' : visibility === 'unlisted' ? 'link' : 'share'
+                }
+                color="#000"
+              />
             </View>
           ) : null}
           {isInitialCard && <InitialCardIndicator isFullWidth={isFullWidth} />}

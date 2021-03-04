@@ -136,11 +136,7 @@ export const ShareDeckScreen = ({ route }) => {
       />
       <View style={styles.deckPreview}>
         <View style={styles.topCard}>
-          <CardCell
-            card={initialCard}
-            isPrivate={visibility === 'private'}
-            previewVideo={deck.previewVideo}
-          />
+          <CardCell card={initialCard} visibility={visibility} previewVideo={deck.previewVideo} />
           {!deck.previewVideo ? (
             <Text style={styles.previewVideoInfo}>No video preview</Text>
           ) : null}
