@@ -1,6 +1,13 @@
 import React from 'react';
 import gql from 'graphql-tag';
-import { InteractionManager, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import {
+  ActivityIndicator,
+  InteractionManager,
+  Text,
+  TouchableOpacity,
+  View,
+  StyleSheet,
+} from 'react-native';
 import { CardsSet } from '../components/CardsSet';
 import { DeckSettingsSheet } from './DeckSettingsSheet';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -45,6 +52,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  loading: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 24,
   },
 });
 
@@ -190,9 +202,11 @@ export const CreateDeckScreen = (props) => {
     _goBack();
   };
 
-  if (!loadDeck.loading && !loadDeck.error && loadDeck.data && deck === null) {
-    setDeck(loadDeck.data.deck);
-  }
+  React.useEffect(() => {
+    if (!loadDeck.loading && !loadDeck.error && loadDeck.data) {
+      setDeck(loadDeck.data.deck);
+    }
+  }, [loadDeck.loading, loadDeck.error, loadDeck.data]);
 
   const _changeDeck = (changes) => {
     setDeck({
@@ -311,38 +325,46 @@ export const CreateDeckScreen = (props) => {
           rightIcon={deck ? 'public' : null}
           onRightButtonPress={deck ? () => navigation.navigate('ShareDeck', { deck }) : null}
         />
-        <View style={styles.settingsRow}>
-          <View style={styles.layoutPicker}>
-            <TouchableOpacity
-              style={styles.layoutButton}
-              onPress={() => setViewMode('carousel')}
-              hitSlop={{ top: 2, left: 2, bottom: 2, right: 2 }}>
-              <MCIcon
-                name="view-carousel"
-                size={24}
-                color={viewMode === 'carousel' ? '#fff' : '#888'}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.layoutButton}
-              onPress={() => setViewMode('grid')}
-              hitSlop={{ top: 2, left: 2, bottom: 2, right: 2 }}>
-              <Feather name="grid" size={20} color={viewMode === 'grid' ? '#fff' : '#888'} />
-            </TouchableOpacity>
+        {loadDeck.loading && !deck ? (
+          <View style={styles.loading}>
+            <ActivityIndicator size="large" color="#fff" />
           </View>
-          <TouchableOpacity onPress={openSettingsSheet}>
-            <MCIcon name="settings" size={24} color="#888" />
-          </TouchableOpacity>
-        </View>
-        <CardsSet
-          deck={deck}
-          onShowCardOptions={_showCardOptions}
-          onPress={_navigateToCreateCard}
-          mode={viewMode}
-        />
-        <TouchableOpacity style={styles.addCardButton} onPress={onPressNewCard}>
-          <MCIcon name="kabaddi" size={24} />
-        </TouchableOpacity>
+        ) : (
+          <>
+            <View style={styles.settingsRow}>
+              <View style={styles.layoutPicker}>
+                <TouchableOpacity
+                  style={styles.layoutButton}
+                  onPress={() => setViewMode('carousel')}
+                  hitSlop={{ top: 2, left: 2, bottom: 2, right: 2 }}>
+                  <MCIcon
+                    name="view-carousel"
+                    size={24}
+                    color={viewMode === 'carousel' ? '#fff' : '#888'}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.layoutButton}
+                  onPress={() => setViewMode('grid')}
+                  hitSlop={{ top: 2, left: 2, bottom: 2, right: 2 }}>
+                  <Feather name="grid" size={20} color={viewMode === 'grid' ? '#fff' : '#888'} />
+                </TouchableOpacity>
+              </View>
+              <TouchableOpacity onPress={openSettingsSheet}>
+                <MCIcon name="settings" size={24} color="#888" />
+              </TouchableOpacity>
+            </View>
+            <CardsSet
+              deck={deck}
+              onShowCardOptions={_showCardOptions}
+              onPress={_navigateToCreateCard}
+              mode={viewMode}
+            />
+            <TouchableOpacity style={styles.addCardButton} onPress={onPressNewCard}>
+              <MCIcon name="kabaddi" size={24} />
+            </TouchableOpacity>
+          </>
+        )}
       </SafeAreaView>
       {settingsSheetVisible ? <SheetBackgroundOverlay onPress={closeSettingsSheet} /> : null}
       <DeckSettingsSheet
