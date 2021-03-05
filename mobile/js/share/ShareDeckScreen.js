@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { CardCell } from '../components/CardCell';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -49,8 +49,8 @@ const styles = StyleSheet.create({
   deckPreview: {
     height: '100%',
     flexShrink: 1,
-    paddingTop: 16,
-    paddingBottom: 32,
+    paddingTop: 32,
+    paddingBottom: 48,
     alignItems: 'center',
     justifyContent: 'center',
     borderBottomWidth: 1,
@@ -62,9 +62,15 @@ const styles = StyleSheet.create({
     aspectRatio: Constants.CARD_RATIO,
   },
   previewVideoInfo: {
+    padding: 16,
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  previewVideoInfoText: {
     color: '#ccc',
-    padding: 8,
-    textAlign: 'center',
+  },
+  previewVideoInfoLink: {
+    color: '#fff',
   },
 });
 
@@ -141,9 +147,20 @@ export const ShareDeckScreen = ({ route }) => {
       />
       <View style={styles.deckPreview}>
         <View style={styles.topCard}>
-          <CardCell card={initialCard} visibility={visibility} previewVideo={deck.previewVideo} />
+          <CardCell card={initialCard} previewVideo={deck.previewVideo} />
           {!deck.previewVideo ? (
-            <Text style={styles.previewVideoInfo}>No video preview</Text>
+            <View style={styles.previewVideoInfo}>
+              <Text style={styles.previewVideoInfoText}>No video preview • </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  Alert.alert(
+                    'Add a video preview',
+                    'Add a video preview to your deck by tapping the preview button on any card and then tapping "Record Preview" at the bottom of the card.'
+                  );
+                }}>
+                <Text style={styles.previewVideoInfoLink}>Learn more</Text>
+              </TouchableOpacity>
+            </View>
           ) : null}
         </View>
       </View>
