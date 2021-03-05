@@ -5,6 +5,7 @@ import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SLIcon from 'react-native-vector-icons/SimpleLineIcons';
 import { useGhostUI } from '../ghost/GhostUI';
 import FastImage from 'react-native-fast-image';
+import { useActionSheet } from '@expo/react-native-action-sheet';
 
 import * as Constants from '../Constants';
 
@@ -20,7 +21,7 @@ const styles = StyleSheet.create({
   },
   back: {
     flexShrink: 0,
-    width: 54,
+    width: 56,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 4,
@@ -32,7 +33,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: -54, // required to center properly with back button
     zIndex: -1, // required to prevent negative margin from blocking back button
   },
   action: {
@@ -40,8 +40,32 @@ const styles = StyleSheet.create({
   },
 });
 
-export const CreateCardHeader = ({ card, isEditable, onPressBack, mode, onChangeMode }) => {
+export const CreateCardHeader = ({
+  card,
+  isEditable,
+  onPressBack,
+  mode,
+  onChangeMode,
+  onSave,
+  creatorUsername,
+  saveAction,
+}) => {
   const { globalActions: data, sendGlobalAction } = useGhostUI();
+  const { showActionSheetWithOptions } = useActionSheet();
+  const maybeClone = React.useCallback(() => {
+    showActionSheetWithOptions(
+      {
+        title: `Save a private copy of @${creatorUsername}'s deck to your own profile?`,
+        options: ['Save Copy', 'Cancel'],
+        cancelButtonIndex: 1,
+      },
+      (buttonIndex) => {
+        if (buttonIndex == 0) {
+          return onSave();
+        }
+      }
+    );
+  }, [onSave, creatorUsername]);
 
   // Only hide status bar on iOS because adjustResize breaks when android is in fullscreen.
   // This breaks keyboard avoiding for popovers. See https://issuetracker.google.com/issues/36911528
@@ -100,6 +124,17 @@ export const CreateCardHeader = ({ card, isEditable, onPressBack, mode, onChange
           </TouchableOpacity>
         </View>
       ) : null}
+      {saveAction === 'save' ? (
+        <TouchableOpacity style={Constants.styles.primaryButton} onPress={onSave}>
+          <Text style={Constants.styles.primaryButtonLabel}>Done</Text>
+        </TouchableOpacity>
+      ) : saveAction === 'clone' ? (
+        <TouchableOpacity style={Constants.styles.primaryButton} onPress={maybeClone}>
+          <Text style={Constants.styles.primaryButtonLabel}>Remix</Text>
+        </TouchableOpacity>
+      ) : (
+        <View pointerEvents="none" style={{ width: 64 }} />
+      )}
     </View>
   );
 };

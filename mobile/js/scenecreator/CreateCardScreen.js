@@ -291,7 +291,7 @@ export const CreateCardScreen = ({
   let cardFitStyles = null;
   const headerHeight = isShowingDraw ? DRAWING_CARD_HEADER_HEIGHT : CARD_HEADER_HEIGHT;
   const footerHeight = getFooterHeight({ isShowingDraw });
-  const maxCardHeight = 100 * Viewport.vh - headerHeight - footerHeight - 34 - 44; 
+  const maxCardHeight = 100 * Viewport.vh - headerHeight - footerHeight - 34 - 44;
   let beltHeight = maxCardHeight - (Viewport.vw * 100) / Constants.CARD_RATIO;
   beltHeight = Math.floor(Math.min(Math.max(MIN_BELT_HEIGHT, beltHeight), MAX_BELT_HEIGHT));
   const beltHeightFraction = beltHeight / maxCardHeight;
@@ -356,6 +356,9 @@ export const CreateCardScreen = ({
               mode={activeSheet}
               onChangeMode={setActiveSheet}
               onPressBack={maybeSaveAndGoToDeck}
+              onSave={saveAndGoToDeck}
+              creatorUsername={deck?.creator?.username}
+              saveAction={saveAction}
             />
           )}
           <View style={styles.cardBody}>
