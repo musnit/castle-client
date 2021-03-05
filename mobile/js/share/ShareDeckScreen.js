@@ -12,6 +12,7 @@ import * as Constants from '../Constants';
 
 import gql from 'graphql-tag';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import Feather from 'react-native-vector-icons/Feather';
 
 const styles = StyleSheet.create({
   container: {
@@ -25,7 +26,7 @@ const styles = StyleSheet.create({
   },
   itemIcon: {
     flexShrink: 0,
-    paddingRight: 8,
+    paddingRight: 12,
   },
   itemContents: {
     width: '100%',
@@ -39,7 +40,7 @@ const styles = StyleSheet.create({
   itemName: {
     color: Constants.colors.white,
     fontWeight: 'bold',
-    marginBottom: 12,
+    marginBottom: 4,
     fontSize: 16,
   },
   itemDescription: {
@@ -49,8 +50,7 @@ const styles = StyleSheet.create({
   deckPreview: {
     height: '100%',
     flexShrink: 1,
-    paddingTop: 32,
-    paddingBottom: 48,
+    paddingVertical: 24,
     alignItems: 'center',
     justifyContent: 'center',
     borderBottomWidth: 1,
@@ -62,8 +62,11 @@ const styles = StyleSheet.create({
     aspectRatio: Constants.CARD_RATIO,
   },
   previewVideoInfo: {
-    padding: 16,
+    flexShrink: 0,
+    paddingTop: 16,
+    paddingBottom: 8,
     alignItems: 'center',
+    justifyContent: 'center',
     flexDirection: 'row',
   },
   previewVideoInfoText: {
@@ -141,28 +144,28 @@ export const ShareDeckScreen = ({ route }) => {
         title="Share Deck"
         RightButtonComponent={
           <TouchableOpacity style={Constants.styles.siteHeaderIcon} onPress={() => shareDeck(deck)}>
-            <Icon name="share" size={24} color="#fff" />
+            <Feather name={Constants.iOS ? 'share' : 'share-2'} size={24} color="#fff" />
           </TouchableOpacity>
         }
       />
       <View style={styles.deckPreview}>
         <View style={styles.topCard}>
           <CardCell card={initialCard} previewVideo={deck.previewVideo} />
-          {!deck.previewVideo ? (
-            <View style={styles.previewVideoInfo}>
-              <Text style={styles.previewVideoInfoText}>No video preview • </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  Alert.alert(
-                    'Add a video preview',
-                    'Add a video preview to your deck by tapping the preview button on any card and then tapping "Record Preview" at the bottom of the card.'
-                  );
-                }}>
-                <Text style={styles.previewVideoInfoLink}>Learn more</Text>
-              </TouchableOpacity>
-            </View>
-          ) : null}
         </View>
+        {!deck.previewVideo ? (
+          <View style={styles.previewVideoInfo}>
+            <Text style={styles.previewVideoInfoText}>No video preview • </Text>
+            <TouchableOpacity
+              onPress={() => {
+                Alert.alert(
+                  'Add a video preview',
+                  'Add a video preview to your deck by tapping the preview button on any card and then tapping "Record Preview" at the bottom of the card.'
+                );
+              }}>
+              <Text style={styles.previewVideoInfoLink}>Learn more</Text>
+            </TouchableOpacity>
+          </View>
+        ) : null}
       </View>
       <VisibilityButton
         icon="public"

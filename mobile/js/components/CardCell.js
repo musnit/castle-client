@@ -48,11 +48,11 @@ const styles = StyleSheet.create({
   visibility: {
     ...Constants.styles.dropShadow,
     position: 'absolute',
-    top: 4,
-    left: 4,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    top: 8,
+    left: 8,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
@@ -164,7 +164,7 @@ export const CardCell = ({
           {visibility && visibility !== 'public' ? (
             <View style={styles.visibility}>
               <Icon
-                size={16}
+                size={20}
                 name={
                   visibility === 'private' ? 'lock' : visibility === 'unlisted' ? 'link' : 'share'
                 }

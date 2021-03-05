@@ -251,7 +251,12 @@ export const PlayDeckActions = ({
           <Feather name="more-horizontal" color="#fff" size={24} style={styles.rightButtonIcon} />
         </Dropdown>
         <TouchableOpacity style={styles.rightButton} onPress={() => shareDeck(deck)}>
-          <Feather name="share" color="#fff" size={24} style={styles.rightButtonIcon} />
+          <Feather
+            name={Constants.iOS ? 'share' : 'share-2'}
+            color="#fff"
+            size={24}
+            style={styles.rightButtonIcon}
+          />
         </TouchableOpacity>
       </View>
     </View>

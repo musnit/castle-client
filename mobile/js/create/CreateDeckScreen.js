@@ -23,7 +23,6 @@ import * as Session from '../Session';
 import * as Utilities from '../common/utilities';
 
 import AsyncStorage from '@react-native-community/async-storage';
-import Feather from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import FastImage from 'react-native-fast-image';
 
@@ -375,7 +374,7 @@ export const CreateDeckScreen = (props) => {
                         ? 'lock'
                         : deck.visibility === 'unlisted'
                         ? 'link'
-                        : 'share'
+                        : 'public'
                     }
                     size={18}
                     color="#000"
@@ -414,7 +413,7 @@ export const CreateDeckScreen = (props) => {
                   style={styles.layoutButton}
                   onPress={() => setViewMode({ mode: 'grid', deckId: deck.deckId })}
                   hitSlop={{ top: 2, left: 2, bottom: 2, right: 2 }}>
-                  <Feather name="grid" size={20} color={viewMode === 'grid' ? '#fff' : '#888'} />
+                  <Icon name="apps" size={24} color={viewMode === 'grid' ? '#fff' : '#888'} />
                 </TouchableOpacity>
               </View>
               <TouchableOpacity onPress={openSettingsSheet}>

@@ -55,6 +55,7 @@ export const ConfigureDeck = ({ deck, onChange, onDeleteDeck, onChangeAccessPerm
       <ConfigureInput
         label="Name"
         placeholder="Choose a name for this deck"
+        footerText="Only visible to you"
         value={deck.title}
         onChangeText={(title) => onChange({ title })}
       />
