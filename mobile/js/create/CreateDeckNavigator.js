@@ -42,7 +42,9 @@ export const CreateDeckNavigator = (props) => {
   }
 
   React.useEffect(() => {
-    Amplitude.logEventWithProperties('VIEW_CREATE_DECK', { deckId });
+    if (deckId) {
+      Amplitude.logEventWithProperties('VIEW_CREATE_DECK', { deckId });
+    }
   }, [deckId]);
 
   return (
