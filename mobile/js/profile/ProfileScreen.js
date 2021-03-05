@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import { StatusBar, StyleSheet, Text, View } from 'react-native';
+import { StatusBar, TouchableOpacity, StyleSheet, Text, View } from 'react-native';
 import gql from 'graphql-tag';
 import { AuthPrompt } from '../auth/AuthPrompt';
 import { DecksGrid } from '../components/DecksGrid';
@@ -12,6 +12,7 @@ import { useSession } from '../Session';
 import { PopoverProvider } from '../components/PopoverProvider';
 import { ProfileHeader } from './ProfileHeader';
 import { ProfileSettingsSheet } from './ProfileSettingsSheet';
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
@@ -148,6 +149,14 @@ export const ProfileScreen = ({ userId, route }) => {
     />
   );
 
+  const RightButtonComponent = isMe ? (
+    <TouchableOpacity
+      style={Constants.styles.siteHeaderButton}
+      onPress={() => setSettingsSheet(true)}>
+      <MCIcon name="settings" size={24} color="#fff" />
+    </TouchableOpacity>
+  ) : null;
+
   if (isMe && isAnonymous) {
     return (
       <SafeAreaView>
@@ -163,8 +172,7 @@ export const ProfileScreen = ({ userId, route }) => {
         <SafeAreaView edges={['top', 'left', 'right']}>
           <ScreenHeader
             title={user ? '@' + user.username : 'Profile'}
-            rightIcon={isMe ? 'settings' : null}
-            onRightButtonPress={() => setSettingsSheet(true)}
+            RightButtonComponent={RightButtonComponent}
           />
           {error ? (
             <EmptyFeed error={error} onRefresh={onRefresh} />

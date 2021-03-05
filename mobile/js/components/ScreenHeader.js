@@ -27,10 +27,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingLeft: 12,
   },
-  buttonRight: {
-    alignItems: 'flex-end',
-    paddingRight: 12,
-  },
   title: {
     width: '100%',
     height: '100%',
@@ -46,7 +42,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const ScreenHeader = ({ title, rightIcon, onRightButtonPress, onBackButtonPress }) => {
+export const ScreenHeader = ({ title, onBackButtonPress, RightButtonComponent }) => {
   const { pop, dangerouslyGetState } = useNavigation();
 
   // don't useNavigationState() because we don't want to rerender if this changes.
@@ -69,15 +65,8 @@ export const ScreenHeader = ({ title, rightIcon, onRightButtonPress, onBackButto
         <View style={[styles.title, showBackButton ? styles.centerTitle : null]}>
           <Text style={styles.titleText}>{title}</Text>
         </View>
-        {rightIcon ? (
-          <TouchableOpacity
-            style={[styles.button, styles.buttonRight]}
-            onPress={onRightButtonPress}>
-            <Icon name={rightIcon} size={24} color="#fff" />
-          </TouchableOpacity>
-        ) : (
-          <View style={[styles.button, styles.buttonRight]} />
-        )}
+        <View style={[styles.button]} />
+        {RightButtonComponent}
       </View>
     </React.Fragment>
   );

@@ -56,8 +56,8 @@ export const styles = {
     fontWeight: 'bold',
   },
   primaryButtonIconLeft: {
-    marginLeft: -5,
-    marginRight: 6,
+    marginLeft: -3,
+    marginRight: 4,
     marginBottom: -1,
   },
   primaryButtonIconRight: {
@@ -136,6 +136,17 @@ export const styles = {
   buttonLabelOnWhite: {
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  siteHeaderButton: {
+    position: 'absolute',
+    right: 16,
+    bottom: 12,
+  },
+  siteHeaderIcon: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+    padding: 16,
   },
 };
 

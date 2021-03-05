@@ -27,6 +27,8 @@ import Feather from 'react-native-vector-icons/Feather';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FastImage from 'react-native-fast-image';
 
+import * as Constants from '../Constants';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -361,8 +363,21 @@ export const CreateDeckScreen = (props) => {
         <ScreenHeader
           title="Deck"
           onBackButtonPress={_goBack}
-          rightIcon={deck ? 'public' : null}
-          onRightButtonPress={deck ? () => navigation.navigate('ShareDeck', { deck }) : null}
+          RightButtonComponent={
+            <TouchableOpacity
+              style={Constants.styles.siteHeaderButton}
+              onPress={deck ? () => navigation.navigate('ShareDeck', { deck }) : null}>
+              <View style={Constants.styles.primaryButton}>
+                <MCIcon
+                  name={deck ? 'earth' : null}
+                  size={18}
+                  color="#000"
+                  style={Constants.styles.primaryButtonIconLeft}
+                />
+                <Text style={Constants.styles.primaryButtonLabel}>Share</Text>
+              </View>
+            </TouchableOpacity>
+          }
         />
         {loadDeck.loading && !deck ? (
           <View style={styles.loading}>

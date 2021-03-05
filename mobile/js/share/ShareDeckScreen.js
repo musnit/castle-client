@@ -131,8 +131,11 @@ export const ShareDeckScreen = ({ route }) => {
     <SafeAreaView style={styles.container}>
       <ScreenHeader
         title="Share Deck"
-        rightIcon="share"
-        onRightButtonPress={() => shareDeck(deck)}
+        RightButtonComponent={
+          <TouchableOpacity style={Constants.styles.siteHeaderIcon} onPress={() => shareDeck(deck)}>
+            <Icon name="share" size={24} color="#fff" />
+          </TouchableOpacity>
+        }
       />
       <View style={styles.deckPreview}>
         <View style={styles.topCard}>
