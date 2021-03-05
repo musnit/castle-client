@@ -114,13 +114,7 @@ export const CreateCardHeader = ({
             style={styles.action}
             disabled={data.performing}
             onPress={() => onChangeMode(mode === 'variables' ? null : 'variables')}>
-            <FastImage
-              style={{
-                width: 22,
-                height: 22,
-              }}
-              source={require('../../assets/images/CreateCardHeader-variables.png')}
-            />
+            <SLIcon name="settings" size={24} color="#fff" />
           </TouchableOpacity>
         </View>
       ) : null}
