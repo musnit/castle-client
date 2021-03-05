@@ -20,7 +20,6 @@ const styles = StyleSheet.create({
   },
   item: {
     padding: 16,
-    borderBottomWidth: 1,
     borderBottomColor: Constants.colors.grayOnBlackBorder,
     flexDirection: 'row',
   },
@@ -76,9 +75,12 @@ const VisibilityButton = ({
   description,
   icon,
   isSelected,
+  isLast,
 }) => {
   return (
-    <TouchableOpacity style={styles.item} onPress={() => onChangeVisibility(visibility)}>
+    <TouchableOpacity
+      style={{ ...styles.item, borderBottomWidth: isLast ? 0 : 1 }}
+      onPress={() => onChangeVisibility(visibility)}>
       {icon ? (
         <View style={styles.itemIcon}>
           <Icon name={icon} color="#fff" size={22} />
@@ -152,6 +154,7 @@ export const ShareDeckScreen = ({ route }) => {
         description="Anyone can find and view"
         isSelected={visibility === 'public'}
         onChangeVisibility={onChangeVisibility}
+        isLast={false}
       />
       <VisibilityButton
         icon="link"
@@ -160,6 +163,7 @@ export const ShareDeckScreen = ({ route }) => {
         description="Anyone with the link can view"
         isSelected={visibility === 'unlisted'}
         onChangeVisibility={onChangeVisibility}
+        isLast={false}
       />
       <VisibilityButton
         icon="lock"
@@ -168,6 +172,7 @@ export const ShareDeckScreen = ({ route }) => {
         description="Only visible to you"
         isSelected={visibility === 'private'}
         onChangeVisibility={onChangeVisibility}
+        isLast={true}
       />
     </SafeAreaView>
   );
