@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
+    paddingBottom: 0,
   },
   layoutPicker: {
     flexDirection: 'row',
@@ -390,9 +391,7 @@ export const CreateDeckScreen = (props) => {
           }
         />
         {loadDeck.loading && !deck ? (
-          <View style={styles.loading}>
-            <ActivityIndicator size="large" color="#fff" />
-          </View>
+          <ActivityIndicator size="large" color="#fff" style={{ padding: 48 }} />
         ) : (
           <>
             <View style={styles.settingsRow}>

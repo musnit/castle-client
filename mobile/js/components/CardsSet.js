@@ -23,10 +23,9 @@ const CAROUSEL_ITEM_WIDTH = Viewport.vw * 100 - CAROUSEL_LEFT_PAD * 2;
 const CAROUSEL_HEIGHT = CAROUSEL_ITEM_WIDTH * (1.0 / Constants.CARD_RATIO) - 24;
 
 const styles = StyleSheet.create({
-  container: {},
   gridContainer: {
+    paddingTop: 16,
     paddingLeft: 8,
-
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
@@ -205,7 +204,7 @@ const CardsCarousel = ({ cards, titles, initialCard, onPress, onShowCardOptions 
 
   return (
     <FlatList
-      contentContainerStyle={{ height: CAROUSEL_HEIGHT }}
+      contentContainerStyle={{ height: CAROUSEL_HEIGHT, paddingTop: 16 }}
       horizontal
       data={paddedCards}
       renderItem={renderItem}

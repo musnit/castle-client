@@ -1,15 +1,17 @@
 import React from 'react';
 import gql from 'graphql-tag';
-import { View, StyleSheet, Text } from 'react-native';
+import { ActivityIndicator, Alert, TouchableOpacity, View } from 'react-native';
 import { CardsSet } from '../components/CardsSet';
-import { ViewSourceDeckHeader } from './ViewSourceDeckHeader';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect } from '../ReactNavigation';
+import { ScreenHeader } from '../components/ScreenHeader';
 
 import * as LocalId from '../common/local-id';
 
 import * as Constants from '../Constants';
+
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const DECK_FRAGMENT = `
   id
@@ -90,8 +92,29 @@ export const ViewSourceDeckScreen = (props) => {
 
   return (
     <SafeAreaView style={Constants.styles.container}>
-      <ViewSourceDeckHeader deck={deck} onPressBack={() => navigation.goBack()} />
-      <CardsSet deck={deck} onPress={_navigateToCard} />
+      <ScreenHeader
+        title={deck ? deck.creator.username + "'s deck" : ''}
+        onBackButtonPress={() => navigation.goBack()}
+        RightButtonComponent={
+          deck && deck.accessPermissions !== 'cloneable' ? (
+            <TouchableOpacity
+              style={Constants.styles.siteHeaderIcon}
+              onPress={() => {
+                Alert.alert(
+                  'Viewing source',
+                  "You are viewing the source for this deck. You can see how it works, but you can't save changes."
+                );
+              }}>
+              <Icon name="help-outline" size={24} color="#fff" />
+            </TouchableOpacity>
+          ) : null
+        }
+      />
+      {loadDeck.loading && !deck ? (
+        <ActivityIndicator size="large" color="#fff" style={{ padding: 48 }} />
+      ) : (
+        <CardsSet deck={deck} onPress={_navigateToCard} />
+      )}
     </SafeAreaView>
   );
 };
