@@ -360,7 +360,7 @@ export const CreateDeckScreen = (props) => {
       saveDeck({ variables: { deck: deckUpdateFragment } });
       setDeck({ ...deck, accessPermissions });
     },
-    [setDeck, saveDeck, deck]
+    [setDeck, saveDeck, deck, deckId]
   );
 
   return (
