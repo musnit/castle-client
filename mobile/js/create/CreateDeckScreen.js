@@ -24,7 +24,7 @@ import * as Utilities from '../common/utilities';
 
 import AsyncStorage from '@react-native-community/async-storage';
 import Feather from 'react-native-vector-icons/Feather';
-import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import FastImage from 'react-native-fast-image';
 
 import * as Constants from '../Constants';
@@ -364,19 +364,27 @@ export const CreateDeckScreen = (props) => {
           title="Deck"
           onBackButtonPress={_goBack}
           RightButtonComponent={
-            <TouchableOpacity
-              style={Constants.styles.siteHeaderButton}
-              onPress={deck ? () => navigation.navigate('ShareDeck', { deck }) : null}>
-              <View style={Constants.styles.primaryButton}>
-                <MCIcon
-                  name={deck ? 'earth' : null}
-                  size={18}
-                  color="#000"
-                  style={Constants.styles.primaryButtonIconLeft}
-                />
-                <Text style={Constants.styles.primaryButtonLabel}>Share</Text>
-              </View>
-            </TouchableOpacity>
+            deck ? (
+              <TouchableOpacity
+                style={Constants.styles.siteHeaderButton}
+                onPress={deck ? () => navigation.navigate('ShareDeck', { deck }) : null}>
+                <View style={Constants.styles.primaryButton}>
+                  <Icon
+                    name={
+                      deck.visibility === 'private'
+                        ? 'lock'
+                        : deck.visibility === 'unlisted'
+                        ? 'link'
+                        : 'share'
+                    }
+                    size={18}
+                    color="#000"
+                    style={Constants.styles.primaryButtonIconLeft}
+                  />
+                  <Text style={Constants.styles.primaryButtonLabel}>Share</Text>
+                </View>
+              </TouchableOpacity>
+            ) : null
           }
         />
         {loadDeck.loading && !deck ? (
@@ -396,7 +404,7 @@ export const CreateDeckScreen = (props) => {
                     })
                   }
                   hitSlop={{ top: 2, left: 2, bottom: 2, right: 2 }}>
-                  <MCIcon
+                  <Icon
                     name="view-carousel"
                     size={24}
                     color={viewMode === 'carousel' ? '#fff' : '#888'}
@@ -410,7 +418,7 @@ export const CreateDeckScreen = (props) => {
                 </TouchableOpacity>
               </View>
               <TouchableOpacity onPress={openSettingsSheet}>
-                <MCIcon name="settings" size={24} color="#888" />
+                <Icon name="settings" size={24} color="#888" />
               </TouchableOpacity>
             </View>
             <CardsSet
