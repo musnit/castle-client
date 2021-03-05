@@ -7,6 +7,7 @@ import { sendDataPaneAction, useGhostUI } from '../../ghost/GhostUI';
 import * as Constants from '../../Constants';
 
 import FastImage from 'react-native-fast-image';
+import Feather from 'react-native-vector-icons/Feather';
 
 const styles = StyleSheet.create({
   container: {},
@@ -38,6 +39,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
   },
+  copyButton: { flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
 });
 
 const CORE_BLUEPRINT_SORT_ORDER = ['Ball', 'Wall', 'Text box', 'Navigation button'];
@@ -65,7 +67,7 @@ const orderedEntries = (library, type = 'actorBlueprint') => {
   return entries;
 };
 
-const BlueprintItem = ({ entry, onPress }) => {
+const BlueprintItem = ({ entry, onPress, isRule, onPressCopy }) => {
   return (
     <TouchableOpacity style={styles.itemContainer} onPress={onPress}>
       <View style={[styles.preview, entry.base64Png ? null : { backgroundColor: '#ddd' }]}>
@@ -76,15 +78,20 @@ const BlueprintItem = ({ entry, onPress }) => {
           />
         ) : null}
       </View>
-      <View style={{ flexShrink: 1 }}>
+      <View style={{ flexShrink: 1, width: '100%' }}>
         <Text style={styles.title}>{entry.title}</Text>
         <Text style={styles.description}>{entry.description}</Text>
       </View>
+      {!entry.isCore && !isRule ? (
+        <TouchableOpacity style={styles.copyButton} onPress={() => onPressCopy(entry.entryId)}>
+          <Feather name="copy" size={24} color="#888" />
+        </TouchableOpacity>
+      ) : null}
     </TouchableOpacity>
   );
 };
 
-export const BlueprintsSheet = ({ element, isOpen, onClose, title, onSelectBlueprint }) => {
+export const BlueprintsSheet = ({ element, isOpen, onClose, title, onSelectBlueprint, isRule }) => {
   if (!element) {
     return null;
   }
@@ -104,6 +111,18 @@ export const BlueprintsSheet = ({ element, isOpen, onClose, title, onSelectBluep
     onSelectBlueprint = (entryId) => sendAction('addBlueprintToScene', entryId);
   }
 
+  const copyBlueprint = React.useCallback(
+    (entryId) => {
+      // TODO: copy library entry for this id in JS
+      const library = blueprintsData?.library;
+      if (library) {
+        const entry = library[entryId];
+        // console.log(`copy entry: ${JSON.stringify(entry, null, 2)}`);
+      }
+    },
+    [sendAction, blueprintsData]
+  );
+
   const renderHeader = () => <BottomSheetHeader title={title ?? 'Blueprints'} onClose={onClose} />;
 
   const renderContent = () => (
@@ -120,6 +139,8 @@ export const BlueprintsSheet = ({ element, isOpen, onClose, title, onSelectBluep
                     onSelectBlueprint(entry.entryId);
                     onClose();
                   }}
+                  onPressCopy={copyBlueprint}
+                  isRule={isRule}
                 />
               );
             } else return null;
@@ -140,5 +161,5 @@ export const BlueprintsSheet = ({ element, isOpen, onClose, title, onSelectBluep
 export const RuleBlueprintsSheet = (props) => {
   const { root } = useGhostUI();
   const element = root?.panes ? root.panes['sceneCreatorBlueprints'] : null;
-  return <BlueprintsSheet {...props} element={element} />;
+  return <BlueprintsSheet {...props} element={element} isRule />;
 };
