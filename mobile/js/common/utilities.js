@@ -3,6 +3,7 @@ import { Keyboard, Share } from 'react-native';
 import gql from 'graphql-tag';
 import { launchImageLibrary as ImagePickerLaunchImageLibrary } from 'react-native-image-picker';
 import { ReactNativeFile } from 'apollo-upload-client';
+import tinycolor from 'tinycolor2';
 
 import shortid from 'shortid';
 import Url from 'url-parse';
@@ -273,4 +274,25 @@ export const shareDeck = async (deck) => {
       });
     }
   } catch (_) {}
+};
+
+export const getCardBackgroundColor = (card) => {
+  let baseColor, backgroundColor;
+  if (card?.backgroundColor) {
+    baseColor = card.backgroundColor;
+  } else {
+    baseColor = '#333';
+  }
+  let base = tinycolor(baseColor);
+
+  // Using a brightness check rather than isDark/isLight because we mostly want to darken
+  // the color to contrast with the white text only in cases where the card background
+  // is very dark do we want to lighten.
+  let brightness = base.getBrightness();
+  if (brightness < 60) {
+    backgroundColor = base.lighten(15).toRgbString();
+  } else {
+    backgroundColor = base.darken(15).toRgbString();
+  }
+  return backgroundColor;
 };

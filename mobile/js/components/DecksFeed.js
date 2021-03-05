@@ -14,7 +14,6 @@ import { useIsFocused, useFocusEffect } from '../ReactNavigation';
 import { useListen } from '../ghost/GhostEvents';
 import { useSession, blockUser, reportDeck } from '../Session';
 
-import tinycolor from 'tinycolor2';
 import Viewport from '../common/viewport';
 
 import * as Constants from '../Constants';
@@ -110,29 +109,6 @@ const makeCardAspectFitStyles = () => {
 
 const cardAspectFitStyles = makeCardAspectFitStyles();
 
-const makeBackgroundColor = (card) => {
-  let baseColor, backgroundColor;
-  if (card?.backgroundColor) {
-    baseColor = card.backgroundColor;
-  } else if (card?.backgroundImage?.primaryColor) {
-    baseColor = card.backgroundImage.primaryColor;
-  } else {
-    baseColor = '#333';
-  }
-  let base = tinycolor(baseColor);
-
-  // Using a brightness check rather than isDark/isLight because we mostly want to darken
-  // the color to contrast with the white text only in cases where the card background
-  // is very dark do we want to lighten.
-  let brightness = base.getBrightness();
-  if (brightness < 60) {
-    backgroundColor = base.lighten(15).toString();
-  } else {
-    backgroundColor = base.darken(15).toString();
-  }
-  return backgroundColor;
-};
-
 // renders the current focused deck in the feed
 const CurrentDeckCell = ({
   deck,
@@ -183,7 +159,6 @@ const CurrentDeckCell = ({
       onRefreshFeed();
     }
   }, [onRefreshFeed, deck]);
-  const backgroundColor = makeBackgroundColor(initialCard);
 
   if (Constants.Android) {
     const onHardwareBackPress = React.useCallback(() => {
@@ -250,7 +225,7 @@ const CurrentDeckCell = ({
           deck={deck}
           isPlaying={isPlaying}
           onPressBack={onPressBack}
-          backgroundColor={makeBackgroundColor(deck.initialCard)}
+          backgroundColor={Utilities.getCardBackgroundColor(deck.initialCard)}
           additionalPadding={getItemHorzPadding()}
           isMe={isMe}
           isAnonymous={isAnonymous}
@@ -319,14 +294,12 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
     inputRange: [0, 1.01],
     outputRange: [0, 300],
   });
-  const backgroundColor = makeBackgroundColor(decks ? decks[currentCardIndex]?.initialCard : null);
+  const backgroundColor = Utilities.getCardBackgroundColor(
+    decks ? decks[currentCardIndex]?.initialCard : null
+  );
   const playingBackgroundColor = playingTransitionNonNative.interpolate({
     inputRange: [0, 0.6, 1.01],
-    outputRange: [
-      'rgba(0, 0, 0, 1)',
-      tinycolor(backgroundColor).toRgbString(),
-      tinycolor(backgroundColor).toRgbString(),
-    ],
+    outputRange: ['rgba(0, 0, 0, 1)', backgroundColor, backgroundColor],
   });
 
   React.useEffect(() => {
@@ -377,7 +350,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
                 <PlayDeckActions
                   deck={deck}
                   disabled={true}
-                  backgroundColor={makeBackgroundColor(deck.initialCard)}
+                  backgroundColor={Utilities.getCardBackgroundColor(deck.initialCard)}
                   additionalPadding={getItemHorzPadding()}
                 />
               </View>

@@ -3,7 +3,8 @@ import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { CardCell } from '../components/CardCell';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
-import { shareDeck } from '../common/utilities';
+import { UserAvatar } from '../components/UserAvatar';
+import { shareDeck, getCardBackgroundColor } from '../common/utilities';
 import { useMutation } from '@apollo/react-hooks';
 import { useNavigation } from '../ReactNavigation';
 
@@ -60,6 +61,28 @@ const styles = StyleSheet.create({
     height: '100%',
     flexShrink: 1,
     aspectRatio: Constants.CARD_RATIO,
+  },
+  topCardHeader: {
+    position: 'absolute',
+    width: '100%',
+    top: 0,
+    left: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,
+    borderTopRightRadius: Constants.CARD_BORDER_RADIUS,
+  },
+  avatar: {
+    width: 24,
+    height: 24,
+  },
+  username: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 16,
+    marginLeft: 8,
+    ...Constants.styles.textShadow,
   },
   previewVideoInfo: {
     flexShrink: 0,
@@ -168,6 +191,16 @@ export const ShareDeckScreen = ({ route }) => {
       <View style={styles.deckPreview}>
         <View style={styles.topCard}>
           <CardCell card={initialCard} previewVideo={deck.previewVideo} />
+          <View
+            style={{
+              ...styles.topCardHeader,
+              backgroundColor: getCardBackgroundColor(initialCard),
+            }}>
+            <View style={styles.avatar}>
+              <UserAvatar url={deck.creator.photo?.url} />
+            </View>
+            <Text style={styles.username}>{deck.creator.username}</Text>
+          </View>
         </View>
         {!deck.previewVideo ? (
           <View style={styles.previewVideoInfo}>

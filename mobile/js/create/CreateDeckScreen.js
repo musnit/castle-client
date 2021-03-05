@@ -71,6 +71,13 @@ const DECK_FRAGMENT = `
   id
   deckId
   title
+  creator {
+    userId
+    username
+    photo {
+      url
+    }
+  }
   visibility
   accessPermissions
   parentDeckId
@@ -86,10 +93,10 @@ const DECK_FRAGMENT = `
     cardId
     title
     lastModified
+    backgroundColor
     backgroundImage {
       url
       smallUrl
-      primaryColor
     }
     scene {
       data

@@ -197,7 +197,6 @@ export const FEED_ITEM_DECK_FRAGMENT = `
     backgroundImage {
       url
       smallUrl
-      primaryColor
     }
   }
   previewVideo {
@@ -248,6 +247,7 @@ export const USER_PROFILE_FRAGMENT = `
       id
       cardId
       title
+      backgroundColor
       backgroundImage {
         url
         smallUrl
