@@ -53,7 +53,7 @@ export const DeckParentAttribution = ({ parentDeckId, parentDeck }) => {
   return (
     <TouchableOpacity style={styles.parentAttribution} onPress={navigateToParent}>
       <View style={styles.topCardPreview}>
-        <CardCell card={parentDeck.initialCard} />
+        <CardCell card={parentDeck.initialCard} inGrid={true} />
       </View>
       <Text style={styles.label}>
         This deck is a remix of @{parentDeck.creator?.username}'s deck.

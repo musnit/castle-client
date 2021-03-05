@@ -55,35 +55,32 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   cardOptions: {
-    padding: 4,
-    backgroundColor: '#444',
-    borderRadius: 2,
-  },
-  cardOptionsLabel: {
-    color: '#fff',
-    fontSize: 10,
-    fontWeight: '700',
-  },
-  carouselItem: {
-    width: CAROUSEL_ITEM_WIDTH,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  carouselCardOptions: {
     position: 'absolute',
-    top: 16,
-    right: 16,
     backgroundColor: '#fff',
     width: 32,
     height: 32,
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
+    ...Constants.styles.dropShadow,
   },
-  carouselCardOptionsLabel: {
+  cardOptionsLabel: {
     fontWeight: 'bold',
     fontSize: 18,
     marginTop: -9,
+  },
+  cardOptionsCarousel: {
+    top: 16,
+    right: 16,
+  },
+  cardOptionsGrid: {
+    bottom: 56,
+    right: 16,
+  },
+  carouselItem: {
+    width: CAROUSEL_ITEM_WIDTH,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
@@ -131,10 +128,10 @@ const CardsGrid = ({
         cards.map((card) => (
           <View style={styles.cellContainer} key={card.cardId}>
             <CardCell
-              isFullWidth={true}
               card={card}
               onPress={() => onPress(card)}
               isInitialCard={cards.length > 1 && initialCard && initialCard.cardId === card.cardId}
+              inGrid={true}
             />
             <Text
               style={[
@@ -146,7 +143,9 @@ const CardsGrid = ({
               {titles ? titles[card.cardId] : Utilities.makeCardPreviewTitle(card)}
             </Text>
             {onShowCardOptions && (
-              <TouchableOpacity style={styles.cardOptions} onPress={() => onShowCardOptions(card)}>
+              <TouchableOpacity
+                style={[styles.cardOptions, styles.cardOptionsGrid]}
+                onPress={() => onShowCardOptions(card)}>
                 <Text style={styles.cardOptionsLabel}>...</Text>
               </TouchableOpacity>
             )}
@@ -189,9 +188,9 @@ const CardsCarousel = ({ cards, titles, initialCard, onPress, onShowCardOptions 
             />
             {onShowCardOptions ? (
               <TouchableOpacity
-                style={styles.carouselCardOptions}
+                style={[styles.cardOptions, styles.cardOptionsCarousel]}
                 onPress={() => onShowCardOptions(card)}>
-                <Text style={styles.carouselCardOptionsLabel}>...</Text>
+                <Text style={styles.cardOptionsLabel}>...</Text>
               </TouchableOpacity>
             ) : null}
           </View>

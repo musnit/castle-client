@@ -14,7 +14,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   card: {
-    borderRadius: Constants.CARD_BORDER_RADIUS,
     backgroundColor: '#000',
     width: '100%',
     aspectRatio: Constants.CARD_RATIO,
@@ -61,26 +60,12 @@ const styles = StyleSheet.create({
 });
 
 const initialCardStyles = StyleSheet.create({
-  containerFullWidth: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    borderWidth: 1,
-    borderColor: '#fff',
-    borderRadius: Constants.CARD_BORDER_RADIUS,
-  },
   container: {
     position: 'absolute',
     left: 16,
     top: 16,
     backgroundColor: '#fff',
     borderRadius: 3,
-    padding: 8,
-  },
-  info: {
-    alignItems: 'center',
-    width: '100%',
-    backgroundColor: '#fff',
     padding: 8,
   },
   label: {
@@ -90,11 +75,9 @@ const initialCardStyles = StyleSheet.create({
   },
 });
 
-const InitialCardIndicator = ({ isFullWidth }) => (
-  <View style={isFullWidth ? initialCardStyles.containerFullWidth : initialCardStyles.container}>
-    <View style={isFullWidth ? initialCardStyles.info : null}>
-      <Text style={initialCardStyles.label}>Top Card</Text>
-    </View>
+const InitialCardIndicator = ({ inGrid }) => (
+  <View style={{ ...initialCardStyles.container, top: inGrid ? 8 : 16, left: inGrid ? 8 : 16 }}>
+    <Text style={initialCardStyles.label}>Top Card</Text>
   </View>
 );
 
@@ -150,14 +133,19 @@ export const CardCell = ({
   visibility,
   previewVideo,
   previewVideoPaused,
-  isFullWidth,
+  inGrid,
   style,
 }) => {
-  let cardStyles = styles.card;
   return (
     <View style={[styles.container, style]}>
       <TouchableWithoutFeedback disabled={!onPress} onPress={onPress}>
-        <View style={cardStyles}>
+        <View
+          style={{
+            ...styles.card,
+            borderRadius: inGrid
+              ? Constants.CARD_SMALL_BORDER_RADIUS
+              : Constants.CARD_BORDER_RADIUS,
+          }}>
           <CardArtwork
             card={card}
             previewVideo={previewVideo}
@@ -184,7 +172,7 @@ export const CardCell = ({
               />
             </View>
           ) : null}
-          {isInitialCard && <InitialCardIndicator isFullWidth={isFullWidth} />}
+          {isInitialCard && <InitialCardIndicator inGrid={inGrid} />}
         </View>
       </TouchableWithoutFeedback>
     </View>

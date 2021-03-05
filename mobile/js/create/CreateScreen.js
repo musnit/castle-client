@@ -60,7 +60,12 @@ const EditDeckCell = (props) => {
   const { deck, onPress } = props;
   return (
     <View style={[Constants.styles.gridItem, { width: Viewport.gridItemWidth }]}>
-      <CardCell card={deck.initialCard} onPress={onPress} visibility={deck.visibility} />
+      <CardCell
+        card={deck.initialCard}
+        onPress={onPress}
+        visibility={deck.visibility}
+        inGrid={true}
+      />
     </View>
   );
 };

@@ -27,6 +27,7 @@ const CardGridRow = React.memo(({ decks, enablePreviewVideo, onPress }) => {
           visibility={deck.visibility}
           creator={deck.creator}
           onPress={() => onPress(deck, col)}
+          inGrid={true}
         />
       ))}
       {spacers.map((_, col) => (
