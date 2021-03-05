@@ -44,10 +44,6 @@ const USE_BELT = false;
 const CARD_HEIGHT = (1 / Constants.CARD_RATIO) * 100 * Viewport.vw;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000',
-  },
   cardBody: {
     // contains just the card as a child
     alignItems: 'center',
@@ -335,7 +331,7 @@ export const CreateCardScreen = ({
   return (
     <CreateCardContext.Provider value={contextValue}>
       <PopoverProvider>
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={Constants.styles.container}>
           {isShowingDraw ? (
             <DrawingCardHeader onPressBack={() => sendGlobalAction('resetActiveTool')} />
           ) : (

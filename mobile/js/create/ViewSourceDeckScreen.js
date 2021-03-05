@@ -9,15 +9,7 @@ import { useNavigation, useFocusEffect } from '../ReactNavigation';
 
 import * as LocalId from '../common/local-id';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000',
-  },
-  settingsRow: {
-    padding: 16,
-  },
-});
+import * as Constants from '../Constants';
 
 const DECK_FRAGMENT = `
   id
@@ -97,9 +89,8 @@ export const ViewSourceDeckScreen = (props) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={Constants.styles.container}>
       <ViewSourceDeckHeader deck={deck} onPressBack={() => navigation.goBack()} />
-      <View style={styles.settingsRow} />
       <CardsSet deck={deck} onPress={_navigateToCard} />
     </SafeAreaView>
   );

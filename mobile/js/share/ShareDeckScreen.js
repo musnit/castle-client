@@ -16,10 +16,6 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000',
-  },
   item: {
     padding: 16,
     borderBottomColor: Constants.colors.grayOnBlackBorder,
@@ -173,7 +169,7 @@ export const ShareDeckScreen = ({ route }) => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={Constants.styles.container}>
       <ScreenHeader
         title="Share Deck"
         RightButtonComponent={

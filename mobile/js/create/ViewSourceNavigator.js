@@ -1,17 +1,8 @@
 import React from 'react';
-import { InteractionManager, StyleSheet } from 'react-native';
 import { ViewSourceDeckScreen } from './ViewSourceDeckScreen';
 import { useNavigation } from '../ReactNavigation';
-import { Transitioning } from 'react-native-reanimated';
 
 import ViewSourceScreen from '../scenecreator/ViewSourceScreenDataProvider';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000',
-  },
-});
 
 // switches between card and deck source
 const ViewSourceContent = ({ deckId, cardId, ...props }) => {

@@ -29,10 +29,6 @@ import FastImage from 'react-native-fast-image';
 import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000',
-  },
   settingsRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -365,7 +361,7 @@ export const CreateDeckScreen = (props) => {
 
   return (
     <React.Fragment>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={Constants.styles.container}>
         <ScreenHeader
           title="Deck"
           onBackButtonPress={_goBack}

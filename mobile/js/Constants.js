@@ -12,6 +12,10 @@ export const GRID_PADDING = 8;
 export const TABLET_MAX_FORM_WIDTH = 512;
 
 export const styles = {
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
   dropShadow: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
