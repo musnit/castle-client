@@ -138,13 +138,30 @@ export const ShareDeckScreen = ({ route }) => {
     [setVisibility, saveDeck, deck]
   );
 
+  const onTapShare = React.useCallback(
+    (deck, visibility) => {
+      if (visibility == 'private') {
+        Alert.alert("Can't share deck", 'Make this deck Public or Unlisted in order to share it.');
+      } else {
+        shareDeck(deck);
+      }
+    },
+    [visibility]
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <ScreenHeader
         title="Share Deck"
         RightButtonComponent={
-          <TouchableOpacity style={Constants.styles.siteHeaderIcon} onPress={() => shareDeck(deck)}>
-            <Feather name={Constants.iOS ? 'share' : 'share-2'} size={24} color="#fff" />
+          <TouchableOpacity
+            style={Constants.styles.siteHeaderIcon}
+            onPress={() => onTapShare(deck, visibility)}>
+            <Feather
+              name={Constants.iOS ? 'share' : 'share-2'}
+              size={24}
+              color={visibility == 'private' ? Constants.colors.grayText : Constants.colors.white}
+            />
           </TouchableOpacity>
         }
       />
