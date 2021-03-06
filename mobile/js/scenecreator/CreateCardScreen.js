@@ -388,17 +388,6 @@ export const CreateCardScreen = ({
               ) : null}
               {isSceneLoaded ? null : <CardSceneLoading />}
             </View>
-            <CreateCardFooter
-              isShowingDraw={isShowingDraw}
-              card={card}
-              onAdd={onPressAdd}
-              onOpenLayout={() => setActiveSheet('sceneCreatorSettings')}
-              onSave={saveAndGoToDeck}
-              isSceneLoaded={isSceneLoaded}
-              isPlayingScene={isPlaying}
-              creatorUsername={deck?.creator?.username}
-              saveAction={saveAction}
-            />
           </View>
         </SafeAreaView>
         <SheetProvider
