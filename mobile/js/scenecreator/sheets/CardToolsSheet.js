@@ -7,6 +7,7 @@ import { DeckVariables } from '../DeckVariables';
 import { SceneBackups } from '../SceneBackups';
 import { SegmentedNavigation } from '../../components/SegmentedNavigation';
 import { useCardCreator } from '../CreateCardContext';
+import { CreateCardSettings } from './CreateCardSettingsSheet';
 
 const styles = StyleSheet.create({
   container: {
@@ -63,6 +64,10 @@ export const CardToolsSheet = ({ isOpen, onClose, ...props }) => {
       name: 'Variables',
       value: 'variables',
     },
+    {
+      name: 'Layout',
+      value: 'layout',
+    },
   ];
   if (saveAction === 'save') {
     // neither 'clone' nor 'none'
@@ -79,6 +84,8 @@ export const CardToolsSheet = ({ isOpen, onClose, ...props }) => {
     ? () => null
     : mode === 'variables'
     ? () => <DeckVariables variables={variables} onChange={onChange} />
+    : mode === 'layout'
+    ? () => <CreateCardSettings />
     : () => <SceneBackups cardId={cardId} onSelectSceneData={onSelectBackupData} />;
 
   const renderHeader = () => (

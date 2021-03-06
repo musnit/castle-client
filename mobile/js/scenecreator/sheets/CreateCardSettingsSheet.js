@@ -7,6 +7,7 @@ import { useCardCreator } from '../CreateCardContext';
 
 import { BottomSheet } from '../../components/BottomSheet';
 import { BottomSheetHeader } from '../../components/BottomSheetHeader';
+import { useGhostUI } from '../../ghost/GhostUI';
 
 import ColorPicker from '../inspector/components/ColorPicker';
 
@@ -66,7 +67,11 @@ const ToggleWithValue = ({
   );
 };
 
-const CreateCardSettings = ({ element, isShowingTextActors, setShowingTextActors }) => {
+export const CreateCardSettings = () => {
+  const { isShowingTextActors, setShowingTextActors } = useCardCreator();
+  const { root } = useGhostUI();
+  const element = root.panes['sceneCreatorSettings'];
+
   if (!element) return null;
 
   let settingsData, sendAction;
