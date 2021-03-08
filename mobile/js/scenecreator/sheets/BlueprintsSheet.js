@@ -5,8 +5,8 @@ import { BottomSheetHeader } from '../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from './CardCreatorBottomSheet';
 import { sendDataPaneAction, useGhostUI } from '../../ghost/GhostUI';
 
+import * as Clipboard from '../LibraryEntryClipboard';
 import * as Constants from '../../Constants';
-import * as SceneCreatorUtilities from '../SceneCreatorUtilities';
 
 import FastImage from 'react-native-fast-image';
 import Feather from 'react-native-vector-icons/Feather';
@@ -93,8 +93,8 @@ const BlueprintItem = ({ entry, onPress, isRule, onPressCopy }) => {
   );
 };
 
-const PasteFromClipboardRow = ({ onPaste }) => {
-  const entry = SceneCreatorUtilities.getLibraryEntryClipboard();
+const PasteFromClipboardRow = ({ onPaste, numActorsUsingClipboardEntry }) => {
+  const entry = Clipboard.getLibraryEntryClipboard();
   if (!entry) return null;
   return (
     <TouchableOpacity style={styles.itemContainer} onPress={() => onPaste(entry)}>
@@ -108,7 +108,12 @@ const PasteFromClipboardRow = ({ onPaste }) => {
       </View>
       <View style={{ flexShrink: 1, width: '100%' }}>
         <Text style={styles.title}>Paste from Clipboard</Text>
-        <Text style={styles.description}>{entry.description}</Text>
+        {numActorsUsingClipboardEntry ? (
+          <Text style={styles.description}>
+            Overrides {numActorsUsingClipboardEntry}{' '}
+            {numActorsUsingClipboardEntry === 1 ? 'actor' : 'actors'} in this card
+          </Text>
+        ) : null}
       </View>
     </TouchableOpacity>
   );
@@ -139,7 +144,7 @@ export const BlueprintsSheet = ({ element, isOpen, onClose, title, onSelectBluep
       const library = blueprintsData?.library;
       if (library) {
         const entry = library[entryId];
-        SceneCreatorUtilities.setLibraryEntryAsClipboard(entry);
+        Clipboard.setLibraryEntryAsClipboard(entry);
         onClose();
       }
     },
@@ -160,7 +165,10 @@ export const BlueprintsSheet = ({ element, isOpen, onClose, title, onSelectBluep
     <View style={styles.container}>
       {!isOpen ? null : (
         <>
-          <PasteFromClipboardRow onPaste={pasteBlueprint} />
+          <PasteFromClipboardRow
+            onPaste={pasteBlueprint}
+            numActorsUsingClipboardEntry={blueprintsData?.numActorsUsingClipboardEntry}
+          />
           {orderedEntries(blueprintsData?.library).map((entry, ii) => {
             if (entry.entryType === 'actorBlueprint') {
               return (

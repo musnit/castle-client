@@ -13,6 +13,7 @@ import { useActionSheet } from '@expo/react-native-action-sheet';
 import * as GhostUI from '../ghost/GhostUI';
 
 import * as Constants from '../Constants';
+import * as LibraryEntryClipboard from './LibraryEntryClipboard';
 import * as Utilities from '../common/utilities';
 
 import Viewport from '../common/viewport';
@@ -156,6 +157,13 @@ export const CreateCardScreen = ({
   }, [hasSelection]);
 
   React.useEffect(resetDeckState, [isPlaying]);
+
+  React.useEffect(() => {
+    // sync once on load, in case we already have something in JS clipboard
+    if (isSceneLoaded) {
+      LibraryEntryClipboard.sync();
+    }
+  }, [isSceneLoaded]);
 
   const selectActor = React.useCallback((actorId) => {
     GhostEvents.sendAsync('SELECT_ACTOR', {
