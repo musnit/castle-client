@@ -79,9 +79,7 @@ export const CreateCardHeader = ({
         <TouchableOpacity style={styles.back} onPress={onPressBack}>
           <Icon name="close" size={32} color="#fff" />
         </TouchableOpacity>
-      ) : (
-        <View style={styles.back} />
-      )}
+      ) : null}
       {data ? (
         <View style={styles.actionsContainer}>
           {data.performing ? (
@@ -89,49 +87,53 @@ export const CreateCardHeader = ({
               <SLIcon name="control-start" size={22} color="#fff" />
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity style={styles.action} onPress={() => sendGlobalAction('onPlay')}>
-              <SLIcon name="control-play" size={22} color="#fff" />
-            </TouchableOpacity>
+            <Fragment>
+              <TouchableOpacity style={styles.action} onPress={() => sendGlobalAction('onPlay')}>
+                <SLIcon name="control-play" size={22} color="#fff" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.action}
+                disabled={!data.actionsAvailable.onUndo}
+                onPress={() => sendGlobalAction('onUndo')}>
+                <MCIcon
+                  name="undo-variant"
+                  size={26}
+                  color={data.actionsAvailable.onUndo ? '#fff' : '#666'}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.action}
+                disabled={!data.actionsAvailable.onRedo}
+                onPress={() => sendGlobalAction('onRedo')}>
+                <MCIcon
+                  name="redo-variant"
+                  size={26}
+                  color={data.actionsAvailable.onRedo ? '#fff' : '#666'}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.action}
+                disabled={data.performing}
+                onPress={() => onChangeMode(mode === 'variables' ? null : 'variables')}>
+                <SLIcon name="settings" size={24} color="#fff" />
+              </TouchableOpacity>
+            </Fragment>
           )}
-          <TouchableOpacity
-            style={styles.action}
-            disabled={!data.actionsAvailable.onUndo}
-            onPress={() => sendGlobalAction('onUndo')}>
-            <MCIcon
-              name="undo-variant"
-              size={26}
-              color={data.actionsAvailable.onUndo ? '#fff' : '#666'}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.action}
-            disabled={!data.actionsAvailable.onRedo}
-            onPress={() => sendGlobalAction('onRedo')}>
-            <MCIcon
-              name="redo-variant"
-              size={26}
-              color={data.actionsAvailable.onRedo ? '#fff' : '#666'}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.action}
-            disabled={data.performing}
-            onPress={() => onChangeMode(mode === 'variables' ? null : 'variables')}>
-            <SLIcon name="settings" size={24} color="#fff" />
-          </TouchableOpacity>
         </View>
       ) : null}
-      {saveAction === 'save' ? (
-        <TouchableOpacity style={Constants.styles.primaryButton} onPress={onSave}>
-          <Text style={Constants.styles.primaryButtonLabel}>Done</Text>
-        </TouchableOpacity>
-      ) : saveAction === 'clone' ? (
-        <TouchableOpacity style={Constants.styles.primaryButton} onPress={maybeClone}>
-          <Text style={Constants.styles.primaryButtonLabel}>Remix</Text>
-        </TouchableOpacity>
-      ) : (
-        <View pointerEvents="none" style={{ width: 64 }} />
-      )}
+      {!data?.performing ? (
+        saveAction === 'save' ? (
+          <TouchableOpacity style={Constants.styles.primaryButton} onPress={onSave}>
+            <Text style={Constants.styles.primaryButtonLabel}>Done</Text>
+          </TouchableOpacity>
+        ) : saveAction === 'clone' ? (
+          <TouchableOpacity style={Constants.styles.primaryButton} onPress={maybeClone}>
+            <Text style={Constants.styles.primaryButtonLabel}>Remix</Text>
+          </TouchableOpacity>
+        ) : (
+          <View pointerEvents="none" style={{ width: 64 }} />
+        )
+      ) : null}
     </View>
   );
 };
