@@ -4,7 +4,9 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BottomSheetHeader } from '../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from './CardCreatorBottomSheet';
 import { sendDataPaneAction, useGhostUI } from '../../ghost/GhostUI';
+
 import * as Constants from '../../Constants';
+import * as SceneCreatorUtilities from '../SceneCreatorUtilities';
 
 import FastImage from 'react-native-fast-image';
 import Feather from 'react-native-vector-icons/Feather';
@@ -91,6 +93,27 @@ const BlueprintItem = ({ entry, onPress, isRule, onPressCopy }) => {
   );
 };
 
+const PasteFromClipboardRow = ({ onPaste }) => {
+  const entry = SceneCreatorUtilities.getLibraryEntryClipboard();
+  if (!entry) return null;
+  return (
+    <TouchableOpacity style={styles.itemContainer} onPress={() => onPaste(entry)}>
+      <View style={[styles.preview, entry.base64Png ? null : { backgroundColor: '#ddd' }]}>
+        {entry.base64Png ? (
+          <FastImage
+            source={{ uri: `data:image/png;base64,${entry.base64Png}` }}
+            style={styles.image}
+          />
+        ) : null}
+      </View>
+      <View style={{ flexShrink: 1, width: '100%' }}>
+        <Text style={styles.title}>Paste from Clipboard</Text>
+        <Text style={styles.description}>{entry.description}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
 export const BlueprintsSheet = ({ element, isOpen, onClose, title, onSelectBlueprint, isRule }) => {
   if (!element) {
     return null;
@@ -113,23 +136,32 @@ export const BlueprintsSheet = ({ element, isOpen, onClose, title, onSelectBluep
 
   const copyBlueprint = React.useCallback(
     (entryId) => {
-      // TODO: copy library entry for this id in JS
       const library = blueprintsData?.library;
       if (library) {
         const entry = library[entryId];
-        // console.log(`copy entry: ${JSON.stringify(entry, null, 2)}`);
+        SceneCreatorUtilities.setLibraryEntryAsClipboard(entry);
+        onClose();
       }
     },
-    [sendAction, blueprintsData]
+    [sendAction, blueprintsData, onClose]
+  );
+
+  const pasteBlueprint = React.useCallback(
+    (entry) => {
+      sendAction('pasteBlueprint', entry);
+      onClose();
+    },
+    [sendAction, onClose]
   );
 
   const renderHeader = () => <BottomSheetHeader title={title ?? 'Blueprints'} onClose={onClose} />;
 
   const renderContent = () => (
     <View style={styles.container}>
-      {!isOpen
-        ? null
-        : orderedEntries(blueprintsData?.library).map((entry, ii) => {
+      {!isOpen ? null : (
+        <>
+          <PasteFromClipboardRow onPaste={pasteBlueprint} />
+          {orderedEntries(blueprintsData?.library).map((entry, ii) => {
             if (entry.entryType === 'actorBlueprint') {
               return (
                 <BlueprintItem
@@ -145,6 +177,8 @@ export const BlueprintsSheet = ({ element, isOpen, onClose, title, onSelectBluep
               );
             } else return null;
           })}
+        </>
+      )}
     </View>
   );
 

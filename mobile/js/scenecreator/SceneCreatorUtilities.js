@@ -309,3 +309,13 @@ export const makeExpressionSummary = (expression, context, depth = 0) => {
   }
   return null;
 };
+
+let gLibraryEntryClipboard;
+
+export const setLibraryEntryAsClipboard = (entry) => {
+  gLibraryEntryClipboard = JSON.parse(JSON.stringify(entry));
+};
+
+export const isLibraryEntryClipboardEmpty = () => gLibraryEntryClipboard === undefined;
+
+export const getLibraryEntryClipboard = () => gLibraryEntryClipboard;
