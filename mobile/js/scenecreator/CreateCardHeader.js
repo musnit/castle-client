@@ -8,6 +8,7 @@ import FastImage from 'react-native-fast-image';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 
 import * as Constants from '../Constants';
+import { CreateCardCaptureActions } from './CreateCardCaptureActions';
 
 export const CARD_HEADER_HEIGHT = 54;
 
@@ -37,6 +38,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: -1, // required to prevent negative margin from blocking back button
+  },
+  actionsContainerPerforming: {
+    justifyContent: 'space-between',
   },
   action: {
     paddingHorizontal: 8,
@@ -81,11 +85,18 @@ export const CreateCardHeader = ({
         </TouchableOpacity>
       ) : null}
       {data ? (
-        <View style={styles.actionsContainer}>
+        <View
+          style={[
+            styles.actionsContainer,
+            data.performing ? styles.actionsContainerPerforming : null,
+          ]}>
           {data.performing ? (
-            <TouchableOpacity style={styles.action} onPress={() => sendGlobalAction('onRewind')}>
-              <SLIcon name="control-start" size={22} color="#fff" />
-            </TouchableOpacity>
+            <Fragment>
+              <TouchableOpacity style={styles.action} onPress={() => sendGlobalAction('onRewind')}>
+                <SLIcon name="control-start" size={22} color="#fff" />
+              </TouchableOpacity>
+              <CreateCardCaptureActions />
+            </Fragment>
           ) : (
             <Fragment>
               <TouchableOpacity style={styles.action} onPress={() => sendGlobalAction('onPlay')}>

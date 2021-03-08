@@ -11,13 +11,8 @@ const ENABLE_CAPTURE = true;
 
 const styles = StyleSheet.create({
   actions: {
-    width: '100%',
-    paddingHorizontal: 8,
-    paddingTop: 12,
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'flex-start',
-    minHeight: CARD_BOTTOM_MIN_HEIGHT,
   },
   statusText: {
     color: '#fff',
