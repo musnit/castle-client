@@ -80,6 +80,9 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     ...Constants.styles.textShadow,
   },
+  remixIcon: {
+    marginLeft: 8,
+  },
   previewVideoInfo: {
     flexShrink: 0,
     paddingTop: 16,
@@ -196,6 +199,14 @@ export const ShareDeckScreen = ({ route }) => {
               <UserAvatar url={deck.creator.photo?.url} />
             </View>
             <Text style={styles.username}>{deck.creator.username}</Text>
+            {deck.parentDeckId && deck.parentDeck && (
+              <>
+                <Feather name="refresh-cw" color="#fff" size={12} style={styles.remixIcon} />
+                <Text numberOfLines={1} style={styles.username}>
+                  {deck.parentDeck?.creator?.username}
+                </Text>
+              </>
+            )}
           </View>
         </View>
         {!deck.previewVideo ? (
