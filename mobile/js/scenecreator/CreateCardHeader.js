@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     width: 66,
     alignItems: 'flex-start',
     justifyContent: 'center',
-    paddingLeft: 8,
+    paddingLeft: 11,
   },
   actionsContainer: {
     width: '100%',
@@ -41,6 +41,7 @@ const styles = StyleSheet.create({
   },
   actionsContainerPerforming: {
     justifyContent: 'space-between',
+    paddingLeft: 8,
   },
   action: {
     paddingHorizontal: 8,
@@ -126,7 +127,7 @@ export const CreateCardHeader = ({
                 style={styles.action}
                 disabled={data.performing}
                 onPress={() => onChangeMode(mode === 'variables' ? null : 'variables')}>
-                <SLIcon name="settings" size={24} color="#fff" />
+                <SLIcon name="settings" size={23} color="#fff" />
               </TouchableOpacity>
             </Fragment>
           )}
