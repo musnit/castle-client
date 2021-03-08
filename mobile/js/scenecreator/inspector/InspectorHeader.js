@@ -53,12 +53,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   titleInput: {
-    fontSize: 22,
+    fontSize: 20,
     flex: 1,
     color: 'black',
   },
   title: {
-    fontSize: 22,
+    fontSize: 20,
   },
 });
 
