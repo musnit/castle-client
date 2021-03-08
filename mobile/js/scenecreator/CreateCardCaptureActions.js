@@ -18,17 +18,19 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     lineHeight: 22,
+    marginRight: 12,
   },
   status: {
     flexDirection: 'row',
     paddingVertical: 4,
+    alignItems: 'center',
   },
 });
 
 const RecordIcon = ({ color }) => (
   <MCIcon
     name="circle-slice-8"
-    size={22}
+    size={30}
     style={Constants.styles.secondaryButtonIconLeft}
     color={color}
   />
@@ -103,21 +105,21 @@ export const CreateCardCaptureActions = () => {
     <View style={styles.actions}>
       {recordState.status === 'ready' ? (
         <TouchableOpacity
-          style={Constants.styles.secondaryButton}
+          style={styles.status}
           disabled={!data.actionsAvailable.startCapture}
           onPress={startCapture}>
+          <Text style={styles.statusText}>Record Preview</Text>
           <RecordIcon color={data.actionsAvailable.startCapture ? '#fff' : '#666'} />
-          <Text style={Constants.styles.secondaryButtonLabel}>Record Preview</Text>
         </TouchableOpacity>
       ) : recordState.status === 'countdown' ? (
         <View style={styles.status}>
-          <RecordIcon color="#888" />
           <Text style={styles.statusText}>Recording begins in {recordState.countdown}...</Text>
+          <RecordIcon color="#888" />
         </View>
       ) : recordState.status === 'recording' ? (
         <View style={styles.status}>
-          <RecordIcon color="#f00" />
           <Text style={styles.statusText}>Recording</Text>
+          <RecordIcon color="#f00" />
         </View>
       ) : null}
     </View>
