@@ -12,6 +12,7 @@ import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useCardCreator } from '../CreateCardContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import FeatherIcon from 'react-native-vector-icons/Feather';
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as Constants from '../../Constants';
 
@@ -218,7 +219,16 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
             <TouchableOpacity
               style={styles.actionButton}
               onPress={() => sendAction('duplicateSelection')}>
-              <FeatherIcon name="copy" size={22} color="#000" />
+              {data.isBlueprint ? (
+                <MCIcon
+                  name="source-fork"
+                  size={22}
+                  color="#000"
+                  style={{ transform: [{ rotate: '90deg' }] }}
+                />
+              ) : (
+                <FeatherIcon name="copy" size={22} color="#000" />
+              )}
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.actionButton}
