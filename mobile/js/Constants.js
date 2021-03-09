@@ -175,6 +175,22 @@ export const styles = {
     fontSize: 16,
     lineHeight: 24,
   },
+  floatingActionButton: {
+    position: 'absolute',
+    right: 24,
+    bottom: 24,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.6,
+    shadowRadius: 5,
+    elevation: iOS ? 1 : undefined,
+  },
 };
 
 export const EMPTY_CARD = {

@@ -42,23 +42,11 @@ const styles = StyleSheet.create({
     borderColor: Constants.colors.grayOnBlackBorder,
     paddingTop: 16,
   },
-  decks: {},
   sectionTitle: {
     color: Constants.colors.white,
     fontWeight: 'bold',
     fontSize: 16,
     marginVertical: 8,
-  },
-  createDeckButton: {
-    position: 'absolute',
-    right: 24,
-    bottom: 24,
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
 
@@ -196,7 +184,7 @@ const CreateScreenAuthenticated = () => {
         )
       )}
       <TouchableOpacity
-        style={styles.createDeckButton}
+        style={Constants.styles.floatingActionButton}
         onPress={() => {
           navigation.push(
             'CreateDeck',

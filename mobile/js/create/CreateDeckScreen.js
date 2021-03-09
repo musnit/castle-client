@@ -42,17 +42,6 @@ const styles = StyleSheet.create({
   layoutButton: {
     margin: 6,
   },
-  addCardButton: {
-    position: 'absolute',
-    right: 24,
-    bottom: 24,
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   addCardIcon: {
     height: 48,
     width: 48,
@@ -428,7 +417,9 @@ export const CreateDeckScreen = (props) => {
               onPress={_navigateToCreateCard}
               mode={viewMode}
             />
-            <TouchableOpacity style={styles.addCardButton} onPress={onPressNewCard}>
+            <TouchableOpacity
+              style={Constants.styles.floatingActionButton}
+              onPress={onPressNewCard}>
               <FastImage
                 style={styles.addCardIcon}
                 source={require('../../assets/images/create-card.png')}
