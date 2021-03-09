@@ -4,10 +4,10 @@ import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 
 import javax.annotation.Nullable;
 
-public class JsDevReloadHandlerFacade implements DevBundleDownloadListener, NavigationDevBundleDownloadListener {
+public abstract class ReloadHandlerFacade implements DevBundleDownloadListener {
     @Override
     public void onSuccess() {
-        onSuccess();
+
     }
 
     @Override
