@@ -115,14 +115,8 @@ export const styles = {
     borderRadius: 4,
     backgroundColor: '#ddd',
   },
-  gridContainer: {
-    paddingTop: 16,
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
   gridItem: {
+    paddingRight: GRID_PADDING,
     paddingBottom: GRID_PADDING,
   },
   textInputOnWhite: {

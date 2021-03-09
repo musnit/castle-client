@@ -24,15 +24,13 @@ const CAROUSEL_HEIGHT = CAROUSEL_ITEM_WIDTH * (1.0 / Constants.CARD_RATIO) - 24;
 
 const styles = StyleSheet.create({
   gridContainer: {
-    paddingTop: 16,
-    paddingLeft: 8,
+    paddingTop: Constants.GRID_PADDING,
+    paddingLeft: Constants.GRID_PADDING,
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
   cellContainer: {
-    paddingBottom: 8,
-    paddingRight: 8,
-    width: '33%',
+    width: '33.3%',
     alignItems: 'center',
   },
   cardTitle: {
@@ -116,7 +114,7 @@ const CardsGrid = ({
   return (
     <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.gridContainer}>
       {showNewCard && (
-        <View style={styles.cellContainer} key="new">
+        <View style={[Constants.styles.gridItem, styles.cellContainer]} key="new">
           <NewCardCell
             onPress={() => onPress({ cardId: LocalId.makeId() })}
             lightBackground={lightBackground}
@@ -125,7 +123,7 @@ const CardsGrid = ({
       )}
       {cards &&
         cards.map((card) => (
-          <View style={styles.cellContainer} key={card.cardId}>
+          <View style={[Constants.styles.gridItem, styles.cellContainer]} key={card.cardId}>
             <CardCell
               card={card}
               onPress={() => onPress(card)}

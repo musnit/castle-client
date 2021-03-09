@@ -29,6 +29,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Constants.colors.black,
   },
+  gridContainer: {
+    paddingTop: 16,
+    paddingLeft: Constants.GRID_PADDING,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
   header: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -59,7 +65,7 @@ const styles = StyleSheet.create({
 const EditDeckCell = (props) => {
   const { deck, onPress } = props;
   return (
-    <View style={[Constants.styles.gridItem, { width: Viewport.gridItemWidth }]}>
+    <View style={[Constants.styles.gridItem, { width: '33.3%' }]}>
       <CardCell
         card={deck.initialCard}
         onPress={onPress}
@@ -169,9 +175,7 @@ const CreateScreenAuthenticated = () => {
         <EmptyFeed error={error} onRefresh={fetchDecks} />
       ) : (
         (!decks || decks.length > 0) && (
-          <ScrollView
-            contentContainerStyle={Constants.styles.gridContainer}
-            refreshControl={refreshControl}>
+          <ScrollView contentContainerStyle={styles.gridContainer} refreshControl={refreshControl}>
             {decks &&
               decks.map((deck) => (
                 <EditDeckCell

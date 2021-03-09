@@ -14,6 +14,4 @@ units.vmax = Math.max(units.vw, units.vh);
 units.aspectRatio = width / height;
 units.isUltraWide = units.aspectRatio < 0.5;
 
-units.gridItemWidth = (width - Constants.GRID_PADDING * 2) / 3;
-
 export default units;
