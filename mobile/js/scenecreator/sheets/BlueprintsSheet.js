@@ -17,6 +17,7 @@ const styles = StyleSheet.create({
     borderColor: Constants.colors.grayOnWhiteBorder,
     borderBottomWidth: 1,
     padding: 16,
+    paddingRight: 0,
     flexDirection: 'row',
   },
   preview: {
@@ -41,7 +42,39 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
   },
-  copyButton: { flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
+  copyButton: {
+    padding: 16,
+    flexShrink: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pasteContainer: {
+    justifyContent: 'center',
+  },
+  pasteButton: {
+    borderWidth: 1,
+    borderBottomWidth: 2,
+    borderColor: Constants.colors.black,
+    borderRadius: 4,
+    padding: 12,
+    flexDirection: 'row',
+  },
+  pasteImage: {
+    width: 42,
+    height: 42,
+  },
+  pasteDescription: {
+    paddingLeft: 12,
+    justifyContent: 'center',
+  },
+  pasteTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  pasteSubtitle: {
+    fontSize: 16,
+    marginTop: 4,
+  },
 });
 
 const CORE_BLUEPRINT_SORT_ORDER = ['Ball', 'Wall', 'Text box', 'Navigation button'];
@@ -86,7 +119,7 @@ const BlueprintItem = ({ entry, onPress, isRule, onPressCopy }) => {
       </View>
       {!entry.isCore && !isRule ? (
         <TouchableOpacity style={styles.copyButton} onPress={() => onPressCopy(entry.entryId)}>
-          <Feather name="copy" size={24} color="#888" />
+          <Feather name="copy" size={24} color="#000" />
         </TouchableOpacity>
       ) : null}
     </TouchableOpacity>
@@ -97,23 +130,27 @@ const PasteFromClipboardRow = ({ onPaste, numActorsUsingClipboardEntry }) => {
   const entry = Clipboard.getLibraryEntryClipboard();
   if (!entry) return null;
   return (
-    <TouchableOpacity style={styles.itemContainer} onPress={() => onPaste(entry)}>
-      <View style={[styles.preview, entry.base64Png ? null : { backgroundColor: '#ddd' }]}>
-        {entry.base64Png ? (
-          <FastImage
-            source={{ uri: `data:image/png;base64,${entry.base64Png}` }}
-            style={styles.image}
-          />
-        ) : null}
-      </View>
-      <View style={{ flexShrink: 1, width: '100%' }}>
-        <Text style={styles.title}>Paste from Clipboard</Text>
-        {numActorsUsingClipboardEntry ? (
-          <Text style={styles.description}>
-            Overrides {numActorsUsingClipboardEntry}{' '}
-            {numActorsUsingClipboardEntry === 1 ? 'actor' : 'actors'} in this card
-          </Text>
-        ) : null}
+    <TouchableOpacity
+      style={[styles.itemContainer, styles.pasteContainer]}
+      onPress={() => onPaste(entry)}>
+      <View style={styles.pasteButton}>
+        <View style={entry.base64Png ? null : { backgroundColor: '#ddd' }}>
+          {entry.base64Png ? (
+            <FastImage
+              source={{ uri: `data:image/png;base64,${entry.base64Png}` }}
+              style={styles.pasteImage}
+            />
+          ) : null}
+        </View>
+        <View style={styles.pasteDescription}>
+          <Text style={styles.pasteTitle}>Paste {entry.title}</Text>
+          {numActorsUsingClipboardEntry ? (
+            <Text style={styles.pasteSubtitle}>
+              Overrides {numActorsUsingClipboardEntry}{' '}
+              {numActorsUsingClipboardEntry === 1 ? 'actor' : 'actors'} in this card
+            </Text>
+          ) : null}
+        </View>
       </View>
     </TouchableOpacity>
   );
