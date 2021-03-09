@@ -131,7 +131,7 @@ const CreateScreenAuthenticated = () => {
     if (query.called && !query.loading) {
       if (query.data) {
         const decks = query.data.me.decks;
-        if (decks && decks.length) {
+        if (decks) {
           setDecks(decks.sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified)));
         }
         setError(undefined);
@@ -155,29 +155,41 @@ const CreateScreenAuthenticated = () => {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <ScreenHeader title="Your Decks" />
+
+      {decks && decks.length === 0 && (
+        <View style={Constants.styles.empty}>
+          <Text style={Constants.styles.emptyTitle}>No decks yet</Text>
+          <Text style={Constants.styles.emptyText}>
+            Create your first deck by starting from a blank deck or remixing an existing one.
+          </Text>
+        </View>
+      )}
+
       {error ? (
         <EmptyFeed error={error} onRefresh={fetchDecks} />
       ) : (
-        <ScrollView
-          contentContainerStyle={Constants.styles.gridContainer}
-          refreshControl={refreshControl}>
-          {decks &&
-            decks.map((deck) => (
-              <EditDeckCell
-                key={deck.deckId}
-                deck={deck}
-                onPress={() => {
-                  navigation.push(
-                    'CreateDeck',
-                    {
-                      deckIdToEdit: deck.deckId,
-                    },
-                    { isFullscreen: true }
-                  );
-                }}
-              />
-            ))}
-        </ScrollView>
+        (!decks || decks.length > 0) && (
+          <ScrollView
+            contentContainerStyle={Constants.styles.gridContainer}
+            refreshControl={refreshControl}>
+            {decks &&
+              decks.map((deck) => (
+                <EditDeckCell
+                  key={deck.deckId}
+                  deck={deck}
+                  onPress={() => {
+                    navigation.push(
+                      'CreateDeck',
+                      {
+                        deckIdToEdit: deck.deckId,
+                      },
+                      { isFullscreen: true }
+                    );
+                  }}
+                />
+              ))}
+          </ScrollView>
+        )
       )}
       <TouchableOpacity
         style={styles.createDeckButton}

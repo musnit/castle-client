@@ -1,20 +1,9 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import * as Constants from '../Constants';
+
 const styles = StyleSheet.create({
-  empty: {
-    width: '100%',
-    padding: 8,
-    paddingTop: 128,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyText: {
-    textAlign: 'center',
-    color: '#fff',
-    fontSize: 16,
-    lineHeight: 24,
-  },
   error: {
     fontSize: 16,
     lineHeight: 24,
@@ -54,8 +43,8 @@ const formatError = (error) => {
 };
 
 export const EmptyFeed = ({ message, error, onRefresh }) => (
-  <View style={styles.empty}>
-    <Text style={styles.emptyText}>{message}</Text>
+  <View style={{ ...Constants.styles.empty, marginTop: Constants.FEED_HEADER_HEIGHT }}>
+    <Text style={Constants.styles.emptyText}>{message}</Text>
     {error ? <Text style={styles.error}>{formatError(error)}</Text> : null}
     {onRefresh ? (
       <TouchableOpacity style={styles.refreshButton} onPress={onRefresh}>

@@ -7,9 +7,19 @@ export const CARD_RATIO = 5 / 7;
 export const CARD_BORDER_RADIUS = 12;
 export const CARD_SMALL_BORDER_RADIUS = 6;
 export const GRID_PADDING = 8;
+export const FEED_HEADER_HEIGHT = 56;
 
 // on tablets, limit some form widths
 export const TABLET_MAX_FORM_WIDTH = 512;
+
+export const colors = {
+  black: '#000',
+  tapHighlight: '#111',
+  grayText: '#888',
+  grayOnWhiteBorder: '#ccc',
+  grayOnBlackBorder: '#444',
+  white: '#fff',
+};
 
 export const styles = {
   container: {
@@ -152,15 +162,25 @@ export const styles = {
     bottom: 0,
     padding: 16,
   },
-};
-
-export const colors = {
-  black: '#000',
-  tapHighlight: '#111',
-  grayText: '#888',
-  grayOnWhiteBorder: '#ccc',
-  grayOnBlackBorder: '#444',
-  white: '#fff',
+  empty: {
+    width: '100%',
+    padding: 16,
+    paddingTop: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyTitle: {
+    textAlign: 'center',
+    color: colors.grayText,
+    fontSize: 20,
+    marginBottom: 16,
+  },
+  emptyText: {
+    textAlign: 'center',
+    color: colors.grayText,
+    fontSize: 16,
+    lineHeight: 24,
+  },
 };
 
 export const EMPTY_CARD = {

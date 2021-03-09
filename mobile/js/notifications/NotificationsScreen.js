@@ -87,19 +87,6 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   smallFollowButton: { padding: 6 },
-  empty: {
-    width: '100%',
-    padding: 8,
-    paddingTop: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyText: {
-    textAlign: 'center',
-    color: '#fff',
-    fontSize: 16,
-    lineHeight: 24,
-  },
 });
 
 const STATUS_HEADERS = {
@@ -331,15 +318,18 @@ const NotificationsScreenAuthenticated = () => {
         />
       )}
       {notifications && notifications.length === 0 && (
-        <View style={styles.empty}>
-          <Text style={styles.emptyText}>You don't have any notifications yet.</Text>
+        <View style={Constants.styles.empty}>
+          <Text style={Constants.styles.emptyTitle}>No notifications yet</Text>
+          <Text style={Constants.styles.emptyText}>
+            You'll get notified about new followers or activity on your decks.
+          </Text>
         </View>
       )}
       {!notifications && (
         // Check notifications rather than orderedNotifs because orderedNotifs takes a few frames
         // to be created, and we don't want this text to flash for frame
-        <View style={styles.empty}>
-          {refresh && <Text style={styles.emptyText}>Loading...</Text>}
+        <View style={Constants.styles.empty}>
+          {refresh && <Text style={Constants.styles.emptyText}>Loading...</Text>}
         </View>
       )}
     </View>

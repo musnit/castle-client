@@ -55,7 +55,7 @@ export const RecentDecks = ({ focused }) => {
   return decks?.length ? (
     <DecksGrid
       decks={decks}
-      contentContainerStyle={{ paddingTop: 64 }}
+      contentContainerStyle={{ paddingTop: Constants.FEED_HEADER_HEIGHT + 16 }}
       scrollViewRef={scrollViewRef}
       refreshing={lastFetchedTime && query.loading}
       onRefresh={onRefresh}
