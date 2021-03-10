@@ -33,13 +33,6 @@ Once you have the app running, shake the device to open the React Native develop
 - Fastlane will download the needed certs, build the app, upload it to Apple, wait for it to "process", and then automatically release it to just employees.
 - Although we have a circleci config for fastlane, it doesn't work right now.
 
-## Android
-
-- Make sure you have the minimum JDK and Android SDK versions given at the Android setup link earlier in this readme.
-- Find our Android release credentials in the `android-release` folder of our credential store and follow the readme there to install them.
-- Run `./tools/build-android-prod.sh`
-- Output apk lives under `android/app/build/outputs/apk/release`
-
 ## Android Play Store
 
 - Bump versionCode and versionName in `android/app/build.gradle`
