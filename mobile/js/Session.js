@@ -154,6 +154,7 @@ export class Provider extends React.Component {
         await PushNotifications.clearTokenAsync();
         Amplitude.setUserId(null);
         Amplitude.clearUserProperties();
+        setNotifBadge(0);
       }
     }
 
