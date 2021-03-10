@@ -58,6 +58,7 @@ const EditDeckCell = (props) => {
         card={deck.initialCard}
         onPress={onPress}
         visibility={deck.visibility}
+        playCount={deck.playCount}
         inGrid={true}
       />
     </View>
@@ -98,6 +99,7 @@ const CreateScreenAuthenticated = () => {
             title
             visibility
             lastModified
+            playCount
             initialCard {
               id
               cardId

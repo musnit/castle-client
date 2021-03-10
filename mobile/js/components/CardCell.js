@@ -50,12 +50,30 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 8,
     left: 8,
-    width: 30,
-    height: 30,
+    width: 28,
+    height: 28,
     borderRadius: 15,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  playCount: {
+    ...Constants.styles.dropShadow,
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    borderRadius: 15,
+    paddingVertical: 4,
+    paddingLeft: 3,
+    paddingRight: 6,
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  playCountLabel: {
+    color: '#000',
+    fontWeight: 'bold',
   },
 });
 
@@ -131,6 +149,7 @@ export const CardCell = ({
   creator,
   isInitialCard,
   visibility,
+  playCount,
   previewVideo,
   previewVideoPaused,
   inGrid,
@@ -164,12 +183,18 @@ export const CardCell = ({
           {visibility && visibility !== 'public' ? (
             <View style={styles.visibility}>
               <Icon
-                size={20}
+                size={18}
                 name={
                   visibility === 'private' ? 'lock' : visibility === 'unlisted' ? 'link' : 'share'
                 }
                 color="#000"
               />
+            </View>
+          ) : null}
+          {visibility === 'public' && playCount ? (
+            <View style={styles.playCount}>
+              <Icon size={16} name="play-arrow" color="#000" />
+              <Text style={styles.playCountLabel}>{playCount}</Text>
             </View>
           ) : null}
           {isInitialCard && <InitialCardIndicator inGrid={inGrid} />}

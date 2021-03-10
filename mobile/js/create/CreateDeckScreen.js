@@ -42,6 +42,16 @@ const styles = StyleSheet.create({
   layoutButton: {
     margin: 6,
   },
+  playCount: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  playCountLabel: {
+    color: '#888',
+    fontWeight: 'bold',
+    marginLeft: 2,
+  },
   addCardIcon: {
     height: 48,
     width: 48,
@@ -65,6 +75,7 @@ const DECK_FRAGMENT = `
     }
   }
   visibility
+  playCount
   accessPermissions
   parentDeckId
   parentDeck {
@@ -407,9 +418,17 @@ export const CreateDeckScreen = (props) => {
                   <Icon name="apps" size={24} color={viewMode === 'grid' ? '#fff' : '#888'} />
                 </TouchableOpacity>
               </View>
-              <TouchableOpacity onPress={openSettingsSheet}>
-                <Icon name="settings" size={24} color="#888" />
-              </TouchableOpacity>
+              <View style={styles.layoutPicker}>
+                {deck && deck.visibility === 'public' && deck.playCount ? (
+                  <View style={styles.playCount}>
+                    <Icon name="play-arrow" size={24} color="#888" />
+                    <Text style={styles.playCountLabel}>{deck.playCount}</Text>
+                  </View>
+                ) : null}
+                <TouchableOpacity onPress={openSettingsSheet}>
+                  <Icon name="settings" size={24} color="#888" />
+                </TouchableOpacity>
+              </View>
             </View>
             <CardsSet
               deck={deck}
