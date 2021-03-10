@@ -34,12 +34,6 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
     fontSize: 16,
   },
-  applyLayoutChangesContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 10,
-    paddingBottom: 16,
-  },
 });
 
 const LayoutInput = ({ behavior, propName, label, sendAction, type = 'number' }) => {
@@ -117,10 +111,6 @@ export default InspectorLayout = ({ body, circleShape, sendAction, sendActions }
     [setRelativeAction]
   );
 
-  const onApplyLayoutChangesToBlueprint = React.useCallback(() => {
-    sendActions.Body('applyLayoutChangesToBlueprint');
-  }, []);
-
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Layout</Text>
@@ -166,15 +156,6 @@ export default InspectorLayout = ({ body, circleShape, sendAction, sendActions }
           label="Rotation"
           sendAction={sendActions.Body}
         />
-      </View>
-      <View style={styles.applyLayoutChangesContainer}>
-        <TouchableOpacity
-          style={SceneCreatorConstants.styles.button}
-          onPress={onApplyLayoutChangesToBlueprint}>
-          <Text style={SceneCreatorConstants.styles.buttonLabel}>
-            Apply Layout changes to blueprint
-          </Text>
-        </TouchableOpacity>
       </View>
       <View style={styles.row}>
         <InspectorCheckbox
