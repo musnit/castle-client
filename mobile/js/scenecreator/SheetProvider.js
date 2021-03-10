@@ -32,7 +32,7 @@ const ROOT_SHEETS = [
   {
     key: 'variables',
     Component: CardToolsSheet,
-    makeSnapPoints: ({ insets }) => [FULL_SHEET_HEIGHT - insets.top],
+    makeSnapPoints: ({ insets }) => [FULL_SHEET_HEIGHT * 0.65, FULL_SHEET_HEIGHT - insets.top],
   },
   {
     key: 'sceneCreatorSettings',
