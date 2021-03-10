@@ -17,10 +17,16 @@ import * as Constants from '../Constants';
 import * as LocalId from '../common/local-id';
 import * as Utilities from '../common/utilities';
 
-// TODO: test on many screen sizes
-const CAROUSEL_LEFT_PAD = 24;
-const CAROUSEL_ITEM_WIDTH = Viewport.vw * 100 - CAROUSEL_LEFT_PAD * 2;
-const CAROUSEL_HEIGHT = CAROUSEL_ITEM_WIDTH * (1.0 / Constants.CARD_RATIO) - 24;
+let CAROUSEL_LEFT_PAD = 24;
+let CAROUSEL_ITEM_WIDTH = Viewport.vw * 100 - CAROUSEL_LEFT_PAD * 2;
+let CAROUSEL_HEIGHT = CAROUSEL_ITEM_WIDTH * (1.0 / Constants.CARD_RATIO) - 24;
+
+if (CAROUSEL_HEIGHT > Viewport.vh * 75) {
+  // height-constrain on short screens (e.g. ipad)
+  CAROUSEL_HEIGHT = Viewport.vh * 75;
+  CAROUSEL_ITEM_WIDTH = (CAROUSEL_HEIGHT + 24) * Constants.CARD_RATIO;
+  CAROUSEL_LEFT_PAD = (Viewport.vw * 100 - CAROUSEL_ITEM_WIDTH) / 2;
+}
 
 const styles = StyleSheet.create({
   gridContainer: {

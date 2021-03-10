@@ -216,7 +216,7 @@ export const ShareDeckScreen = ({ route }) => {
               onPress={() => {
                 Alert.alert(
                   'Add a video preview',
-                  'Add a video preview to your deck by tapping the preview button on any card and then tapping "Record Preview" at the bottom of the card.'
+                  'To add a video preview: Open any card in the editor, play the card, and then tap "Record Preview" while playing.'
                 );
               }}>
               <Text style={styles.previewVideoInfoLink}>Learn more</Text>

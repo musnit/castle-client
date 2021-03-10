@@ -191,7 +191,7 @@ export const CardCell = ({
               />
             </View>
           ) : null}
-          {visibility === 'public' && playCount ? (
+          {visibility === 'public' && playCount !== undefined ? (
             <View style={styles.playCount}>
               <Icon size={16} name="play-arrow" color="#000" />
               <Text style={styles.playCountLabel}>{playCount}</Text>
