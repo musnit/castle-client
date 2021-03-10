@@ -7,6 +7,8 @@ import * as Constants from '../../Constants';
 import * as GhostEvents from '../../ghost/GhostEvents';
 
 import { CardCreatorBottomSheet } from './CardCreatorBottomSheet';
+import * as Clipboard from '../LibraryEntryClipboard';
+import { useGhostUI } from '../../ghost/GhostUI';
 
 const styles = StyleSheet.create({
   container: {},
@@ -72,14 +74,30 @@ const TemplateItem = ({ entry, onPress }) => {
   );
 };
 
-const PasteFromClipboardSection = ({ entry }) => {
-  let numActorsUsingClipboardEntry = 1;
+const PasteFromClipboardSection = ({ onPress }) => {
+  const entry = Clipboard.getLibraryEntryClipboard();
+
+  const pasteBlueprint = React.useCallback(() => {
+    Clipboard.pasteBlueprint(entry);
+  }, [entry]);
+
+  const { root } = useGhostUI();
+  const numActorsUsingClipboardEntry = root?.panes['sceneCreatorBlueprints'].children?.data?.props?.data?.numActorsUsingClipboardEntry || 0;
+
+  if (!entry) {
+    return null;
+  }
 
   return (
     <>
       <View style={styles.sectionHeaderSeparator} />
       <Text style={styles.sectionHeaderText}>PASTE FROM CLIPBOARD</Text>
-      <TouchableOpacity style={styles.itemContainer} onPress={() => pasteBlueprint()}>
+      <TouchableOpacity
+        style={styles.itemContainer}
+        onPress={() => {
+          pasteBlueprint();
+          onPress();
+        }}>
         <View style={[styles.preview, entry.base64Png ? null : { backgroundColor: '#ddd' }]}>
           {entry.base64Png ? (
             <FastImage
@@ -89,7 +107,7 @@ const PasteFromClipboardSection = ({ entry }) => {
           ) : null}
         </View>
         <View style={styles.meta}>
-          <Text style={styles.title}>Ball</Text>
+          <Text style={styles.title}>{entry.title}</Text>
           {numActorsUsingClipboardEntry ? (
             <Text style={styles.description}>
               Overrides {numActorsUsingClipboardEntry}{' '}
@@ -137,7 +155,7 @@ export const NewBlueprintSheet = ({ element, isOpen, onClose }) => {
             );
           }
         })}
-        <PasteFromClipboardSection entry={templates[0].entry} />
+        <PasteFromClipboardSection onPress={onClose} />
         <View style={styles.sectionHeaderSeparator} />
         <Text style={styles.sectionHeaderText}>START FROM A TEMPLATE</Text>
         {templates.map(({ entry, index }) => {
