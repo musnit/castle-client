@@ -68,8 +68,41 @@ const TemplateItem = ({ entry, onPress }) => {
   );
 };
 
+const PasteFromClipboardSection = ({ entry }) => {
+  let numActorsUsingClipboardEntry = 1;
+
+  return (
+    <>
+      <View style={styles.sectionHeaderSeparator} />
+      <Text style={styles.sectionHeaderText}>PASTE FROM CLIPBOARD</Text>
+      <TouchableOpacity style={styles.itemContainer} onPress={() => pasteBlueprint()}>
+        <View style={[styles.preview, entry.base64Png ? null : { backgroundColor: '#ddd' }]}>
+          {entry.base64Png ? (
+            <FastImage
+              source={{ uri: `data:image/png;base64,${entry.base64Png}` }}
+              style={styles.image}
+            />
+          ) : null}
+        </View>
+        <View style={{ flexShrink: 1, justifyContent: entry.isBlank ? 'center' : undefined }}>
+          <Text style={styles.title}>Ball</Text>
+          {numActorsUsingClipboardEntry ? (
+            <Text style={styles.description}>
+              Overrides {numActorsUsingClipboardEntry}{' '}
+              {numActorsUsingClipboardEntry === 1 ? 'actor' : 'actors'} in this card
+            </Text>
+          ) : null}
+        </View>
+      </TouchableOpacity>
+    </>
+  );
+};
+
 export const NewBlueprintSheet = ({ element, isOpen, onClose }) => {
-  const data = element?.children?.data?.props?.data?.templates.map((entry, i) => ({ index: i, entry }));
+  const data = element?.children?.data?.props?.data?.templates.map((entry, i) => ({
+    index: i,
+    entry,
+  }));
   if (!data) {
     return null;
   }
@@ -100,6 +133,7 @@ export const NewBlueprintSheet = ({ element, isOpen, onClose }) => {
             );
           }
         })}
+        <PasteFromClipboardSection entry={templates[0].entry} />
         <View style={styles.sectionHeaderSeparator} />
         <Text style={styles.sectionHeaderText}>START FROM A TEMPLATE</Text>
         {templates.map(({ entry, index }) => {
