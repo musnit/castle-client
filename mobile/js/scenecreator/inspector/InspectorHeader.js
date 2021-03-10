@@ -230,6 +230,11 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
                 <FeatherIcon name="copy" size={22} color="#000" />
               )}
             </TouchableOpacity>
+            {data.isBlueprint ? (
+              <TouchableOpacity style={styles.actionButton} onPress={() => copyBlueprint()}>
+                <FeatherIcon name="copy" size={22} color="#000" />
+              </TouchableOpacity>
+            ) : null}
             <TouchableOpacity
               style={styles.actionButton}
               onPress={() => sendAction('deleteSelection')}>
