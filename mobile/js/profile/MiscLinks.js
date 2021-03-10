@@ -24,7 +24,7 @@ export const MiscLinks = () => {
           <Text style={styles.link}>Log out</Text>
         </TouchableOpacity>
       ) : null}
-      <TouchableOpacity onPress={() => Linking.openURL('https://discord.gg/rQETB4H')}>
+      <TouchableOpacity onPress={() => Linking.openURL(Constants.DISCORD_INVITE_LINK)}>
         <Text style={styles.link}>Discord</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => Linking.openURL('https://castle.xyz/terms')}>

@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Linking,
   RefreshControl,
   ScrollView,
   StatusBar,
@@ -156,7 +157,16 @@ const CreateScreenAuthenticated = () => {
         <View style={Constants.styles.empty}>
           <Text style={Constants.styles.emptyTitle}>No decks yet</Text>
           <Text style={Constants.styles.emptyText}>
-            Create your first deck by starting from a blank deck or remixing an existing one.
+            Create your first deck by tapping the plus button below, or remix an existing deck.
+          </Text>
+          <Text style={[Constants.styles.emptyText, { marginTop: 16 }]}>
+            Want help or inspiration?{' '}
+            <Text
+              style={{ color: '#fff' }}
+              onPress={() => Linking.openURL(Constants.DISCORD_INVITE_LINK)}>
+              Join our Discord
+            </Text>
+            !
           </Text>
         </View>
       )}

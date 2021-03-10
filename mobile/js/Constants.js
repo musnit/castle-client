@@ -12,6 +12,8 @@ export const FEED_HEADER_HEIGHT = 56;
 // on tablets, limit some form widths
 export const TABLET_MAX_FORM_WIDTH = 512;
 
+export const DISCORD_INVITE_LINK = 'https://discord.gg/rQETB4H';
+
 export const colors = {
   black: '#000',
   tapHighlight: '#111',
