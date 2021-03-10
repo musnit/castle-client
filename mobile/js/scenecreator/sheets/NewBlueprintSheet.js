@@ -24,6 +24,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  meta: {
+    flexShrink: 1,
+    justifyContent: 'center',
+  },
   title: {
     fontWeight: 'bold',
     fontSize: 16,
@@ -60,7 +64,7 @@ const TemplateItem = ({ entry, onPress }) => {
           />
         ) : null}
       </View>
-      <View style={{ flexShrink: 1, justifyContent: entry.isBlank ? 'center' : undefined }}>
+      <View style={styles.meta}>
         <Text style={styles.title}>{entry.title}</Text>
         {!entry.isBlank ? <Text style={styles.description}>{entry.description}</Text> : null}
       </View>
@@ -84,7 +88,7 @@ const PasteFromClipboardSection = ({ entry }) => {
             />
           ) : null}
         </View>
-        <View style={{ flexShrink: 1, justifyContent: entry.isBlank ? 'center' : undefined }}>
+        <View style={styles.meta}>
           <Text style={styles.title}>Ball</Text>
           {numActorsUsingClipboardEntry ? (
             <Text style={styles.description}>
