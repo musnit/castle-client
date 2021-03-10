@@ -15,6 +15,7 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as Constants from '../../Constants';
+import * as Clipboard from '../LibraryEntryClipboard';
 
 const styles = StyleSheet.create({
   header: {
@@ -147,6 +148,13 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
     }
     setTimeout(() => setIsEditingTitle(false), 80);
   }, [titleInputValue]);
+
+  const copyBlueprint = React.useCallback(
+    () => {
+      Clipboard.copySelectedBlueprint();
+    },
+    [],
+  );
 
   if (data) {
     let scaleRotateButton;
