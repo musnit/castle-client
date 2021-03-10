@@ -124,9 +124,14 @@ int SDL_main(int argc, char *argv[]) {
   NSString *loveSaveDir = [appDir stringByAppendingPathComponent:@"Castle"];
   NSString *savedSceneCreatorPath = [loveSaveDir stringByAppendingPathComponent:@"scene_creator.love"];
   
-  // copy bundled version to saved version if saved version doesn't exist, or if the app was updated
+  BOOL isDevBuild = NO;
+#if DEBUG
+  // running `dev` version scene creator, could get newer copy at any point
+  isDevBuild = YES;
+#endif
+  // copy bundled version to saved version if saved version doesn't exist, or if the app was updated, or if the app is a dev build
   if (
-      (![[NSFileManager defaultManager] fileExistsAtPath:savedSceneCreatorPath] || [self isAppUpdated])
+      (![[NSFileManager defaultManager] fileExistsAtPath:savedSceneCreatorPath] || [self isAppUpdated] || isDevBuild)
       && [[NSFileManager defaultManager] fileExistsAtPath:bundledSceneCreatorPath]
       ) {
     NSError *err = nil;
