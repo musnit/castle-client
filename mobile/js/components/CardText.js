@@ -89,7 +89,9 @@ export const CardText = (props) => {
       .map((actorId) => textActors[actorId])
       .sort((a, b) => {
         if (a.order === b.order) {
-          return a.content.localeCompare(b.content, 'en', { sensitivity: 'base' });
+          const contentA = a.content ?? '';
+          const contentB = b.content ?? '';
+          return contentA.localeCompare(contentB, 'en', { sensitivity: 'base' });
         }
         return a.order - b.order;
       })
