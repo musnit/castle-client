@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { CardCell } from '../components/CardCell';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -222,7 +222,13 @@ export const ShareDeckScreen = ({ route }) => {
               <Text style={styles.previewVideoInfoLink}>Learn more</Text>
             </TouchableOpacity>
           </View>
-        ) : null}
+        ) : (
+          <View style={styles.previewVideoInfo}>
+            <TouchableOpacity onPress={() => Linking.openURL(deck.previewVideo.url)}>
+              <Text style={styles.previewVideoInfoLink}>Download preview video</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
       <VisibilityButton
         icon="public"
