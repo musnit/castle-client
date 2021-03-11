@@ -202,10 +202,12 @@ export const BlueprintsSheet = ({ element, isOpen, onClose, title, onSelectBluep
     <View style={styles.container}>
       {!isOpen ? null : (
         <>
-          <PasteFromClipboardRow
-            onPaste={pasteBlueprint}
-            numActorsUsingClipboardEntry={blueprintsData?.numActorsUsingClipboardEntry}
-          />
+          {!isRule ? (
+            <PasteFromClipboardRow
+              onPaste={pasteBlueprint}
+              numActorsUsingClipboardEntry={blueprintsData?.numActorsUsingClipboardEntry}
+            />
+          ) : null}
           {orderedEntries(blueprintsData?.library).map((entry, ii) => {
             if (entry.entryType === 'actorBlueprint') {
               return (
