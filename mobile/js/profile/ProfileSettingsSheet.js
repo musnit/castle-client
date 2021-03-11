@@ -108,6 +108,8 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
     SHEET_HEIGHT = navigatorWindowHeight - 100;
   }
 
+  const installSource = NativeModules.CastleNativeUtils.getConstants().installSource;
+
   const insets = useSafeArea();
   const [user, changeUser] = React.useReducer(
     (user, changes) => ({
@@ -308,7 +310,7 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
         </View>
       </View>
       <View style={[styles.section]}>
-        {me.isReactNativeChannelsEnabled ? (
+        {me.isReactNativeChannelsEnabled && installSource !== 'appstore' ? (
           <View style={styles.row}>
             <View>
               <Text style={Constants.styles.textInputLabelOnWhite}>Experimental features</Text>
