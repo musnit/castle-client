@@ -78,6 +78,24 @@
 		}\
 	}
 
+#define GHOST_READ_FLOAT_VECTOR(arg) \
+	lua_pushstring(L, #arg);\
+	lua_gettable(L, index);\
+	if (lua_istable(L, -1)) {\
+		int tableIndex = lua_gettop(L);\
+		int arrayIndex = 1;\
+		while (true) {\
+			lua_pushnumber(L, arrayIndex);\
+			lua_gettable(L, tableIndex);\
+			if (lua_isnumber(L, -1)) {\
+				arg.push_back(lua_tonumber(L, -1));\
+			} else {\
+				break;\
+			}\
+			arrayIndex++;\
+		}\
+	}
+
 #define GHOST_READ_POINTER_VECTOR(arg, type) \
 	lua_pushstring(L, #arg);\
 	lua_gettable(L, index);\
@@ -223,11 +241,36 @@ struct PathData {
 	}
 	
 	void read(lua_State *L, int index) {
-		GHOST_READ_VECTOR(points, Point)
+		
+		/*GHOST_READ_VECTOR(points, Point)
 		GHOST_READ_INT(style, 1)
 		GHOST_READ_OPTIONAL_STRUCT(bendPoint, Point)
 		GHOST_READ_BOOL(isFreehand, false)
 		GHOST_READ_OPTIONAL_STRUCT(color, Color)
+		GHOST_READ_BOOL(isTransparent, false)*/
+		
+		std::vector<float> p;
+		GHOST_READ_FLOAT_VECTOR(p)
+		for (size_t i = 0; i < p.size(); i += 2) {
+			points.push_back(Point(p[i], p[i + 1]));
+		}
+		
+		int s;
+		GHOST_READ_INT(s, 1)
+		style = s;
+		
+		std::optional<Point> bp;
+		GHOST_READ_OPTIONAL_STRUCT(bp, Point)
+		bendPoint = bp;
+		
+		bool f;
+		GHOST_READ_BOOL(f, false)
+		isFreehand = f;
+		
+		std::optional<Color> c;
+		GHOST_READ_OPTIONAL_STRUCT(c, Color)
+		color = c;
+		
 		GHOST_READ_BOOL(isTransparent, false)
 	}
 };
