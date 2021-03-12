@@ -6,7 +6,6 @@ GhostEvents.listen('COPY_SELECTED_BLUEPRINT_DATA', (params) => {
   try {
     const entry = JSON.parse(params.data);
     gLibraryEntryClipboard = entry;
-    console.log('copied', entry);
   } catch (e) {
     console.warn(`Could not parse clipboard data from Lua: ${e}`);
   }
