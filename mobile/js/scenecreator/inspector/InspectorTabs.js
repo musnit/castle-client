@@ -60,8 +60,6 @@ const GeneralTab = ({ behaviors, sendActions, addChildSheet }) => {
           sendActions={sendActions}
         />
       )}
-
-      {isBlueprint && <Inspector.Sharing />}
     </React.Fragment>
   );
 };
