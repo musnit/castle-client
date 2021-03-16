@@ -26,7 +26,8 @@ web. This will again take a bit the very first time (Emscripten fetches and
 caches SDL2). Later builds should (hopefully!) be faster.
 
 Finally, run `./run.sh web-serve-release` to serve core as a website to
-http://localhost:8080. Open that URL with a browser to check it out!
+http://localhost:8080. Open that URL with a browser to check it out! You may
+want to open the developer console in your browser to see logging output.
 
 As a bonus, instead of invoking `./run.sh web-release` repeatedly you can use
 `./run.sh web-watch-release` to start a file watcher that will launch a build
