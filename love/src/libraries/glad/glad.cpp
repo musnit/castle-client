@@ -7245,7 +7245,7 @@ static void find_core(void) {
 		major = v[10] - '0'; minor = v[12] - '0'; gles = true;
 	}
 #ifdef __EMSCRIPTEN__
-  // CASTLE: Force GLES2 (WebGL 1) mode
+  // CASTLE: Force GLES2 (WebGL 1) compatibility in web
   major = 2;
   minor = 0;
   gles = true;
