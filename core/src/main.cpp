@@ -8,6 +8,18 @@
 #include "love_default_shaders.h"
 
 namespace love {
+// Bring a bunch of Love symbols into the top level of its namespace
+using namespace love::filesystem;
+using namespace love::timer;
+using namespace love::event;
+using namespace love::touch;
+using namespace love::mouse;
+using namespace love::system;
+using namespace love::window;
+using namespace love::font;
+using namespace love::graphics;
+using namespace love::physics::box2d;
+
 namespace filesystem {
   // Love's filesystem module depends on this symbol. It's defined in
   // 'wrap_FileSystem.cpp', which is for wrapping C++ to Lua. We don't include
@@ -50,7 +62,7 @@ private:                                                                        
 
 public:
   void setupDefaultShaderCode() {
-    using namespace love::graphics;
+    using namespace love;
 
     /* clang-format off */
     Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_GLSL1][0].source[ShaderStage::STAGE_VERTEX] = love_default_glsl1_vertex;
@@ -167,15 +179,15 @@ int main() {
   // Window
   {
     lv.setupDefaultShaderCode(); // Window also initializes graphics, shader code needs to be ready
-    love::window::WindowSettings settings;
+    love::WindowSettings settings;
     settings.highdpi = true;
     lv.window.setWindow(800, 1120, &settings); // This'll be resized-from soon in main loop
   }
 
   // Physics
-  auto world = std::unique_ptr<love::physics::box2d::World>(lv.physics.newWorld(0, 9.8, true));
-  auto groundBody = std::unique_ptr<love::physics::box2d::Body>(
-      lv.physics.newBody(world.get(), 400, 900, love::physics::box2d::Body::BODY_STATIC));
+  auto world = std::unique_ptr<love::World>(lv.physics.newWorld(0, 9.8, true));
+  auto groundBody = std::unique_ptr<love::Body>(
+      lv.physics.newBody(world.get(), 400, 900, love::Body::BODY_STATIC));
 
   // Main loop
   SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0"); // Don't doublecount touches as mouse events
@@ -197,7 +209,7 @@ int main() {
 
     // Process events
     lv.event.pump();
-    love::event::Message *msgp = nullptr;
+    love::Message *msgp = nullptr;
     while (lv.event.poll(msgp)) {
     }
 
@@ -215,11 +227,11 @@ int main() {
         double x, y;
         lv.mouse.getPosition(x, y);
         lv.graphics.rectangle(
-            love::graphics::Graphics::DrawMode::DRAW_FILL, x - 40, y - 40, 80, 80, 5, 5, 40);
+            love::Graphics::DrawMode::DRAW_FILL, x - 40, y - 40, 80, 80, 5, 5, 40);
       }
       for (const auto &touch : lv.touch.getTouches()) {
-        lv.graphics.rectangle(love::graphics::Graphics::DrawMode::DRAW_FILL, touch.x - 40,
-            touch.y - 40, 80, 80, 5, 5, 40);
+        lv.graphics.rectangle(
+            love::Graphics::DrawMode::DRAW_FILL, touch.x - 40, touch.y - 40, 80, 80, 5, 5, 40);
       }
 
       auto fps = fmt::format("fps: {}", lv.timer.getFPS());
