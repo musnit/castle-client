@@ -135,9 +135,9 @@ case "$1" in
     find CMakeLists.txt src web -type f | entr $TIME_TOTAL ./run.sh web-debug
     ;;
   web-serve-release)
-    npx http-server -c-1 build/web-release
+    npx http-server -p 9001 -c-1 build/web-release
     ;;
   web-serve-debug)
-    npx http-server -c-1 build/web-debug
+    npx http-server -p 9001 -c-1 build/web-debug
     ;;
 esac

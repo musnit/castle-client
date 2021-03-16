@@ -24,7 +24,7 @@ You'll need to install CMake and Ninja, which means `brew install cmake ninja`
 on macOS, `sudo apt install cmake ninja-build`-ish on Linux or using their
 official installers on Windows. `run.sh` needs WSL on Windows.
 
-`./run.sh web-init` to setup Emscripten (our C++ web build toolchain).  This
+`./run.sh web-init` to setup Emscripten (our C++ web build toolchain). This
 may take a little bit.
 
 #### Building
@@ -35,7 +35,7 @@ Later builds should (hopefully!) be faster. Every time you edit code in 'src/'
 or 'web/' you'll have to run this again.
 
 `./run.sh web-serve-release` will serve core as a website to
-http://localhost:8080. Open that URL with a browser to check it out! You may
+http://localhost:9001. Open that URL with a browser to check it out! You may
 want to open the developer console in your browser to see logging output.
 
 As a bonus, instead of invoking `./run.sh web-release` repeatedly you can use
