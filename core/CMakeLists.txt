@@ -132,6 +132,10 @@ if(YES)
   add_subdirectory(vendor/lua-5.1.5 EXCLUDE_FROM_ALL)
   target_link_libraries(castle-love PUBLIC lua51)
 
+  # ZLib dependency
+  add_subdirectory(vendor/zlib-1.2.11 EXCLUDE_FROM_ALL)
+  target_link_libraries(castle-love PUBLIC zlibstatic)
+
   # SDL2 dependency
   target_include_directories(castle-love PRIVATE ../ghost-extensions/SDL2-2.0.8/include) # To make 'compile_commands.json' work
   if(WEB)
@@ -230,6 +234,21 @@ if(YES)
     ${LOVE_SRC}/modules/touch/Touch.h ${LOVE_SRC}/modules/touch/sdl/Touch.cpp
     ${LOVE_SRC}/modules/touch/sdl/Touch.h
 
+    # joystick (needed by event)
+    ${LOVE_SRC}/modules/joystick/Joystick.cpp
+    ${LOVE_SRC}/modules/joystick/Joystick.h
+    ${LOVE_SRC}/modules/joystick/JoystickModule.h
+    ${LOVE_SRC}/modules/joystick/sdl/Joystick.cpp
+    ${LOVE_SRC}/modules/joystick/sdl/Joystick.h
+    ${LOVE_SRC}/modules/joystick/sdl/JoystickModule.cpp
+    ${LOVE_SRC}/modules/joystick/sdl/JoystickModule.h
+
+    # keyboard (needed by event)
+    ${LOVE_SRC}/modules/keyboard/Keyboard.cpp
+    ${LOVE_SRC}/modules/keyboard/Keyboard.h
+    ${LOVE_SRC}/modules/keyboard/sdl/Keyboard.cpp
+    ${LOVE_SRC}/modules/keyboard/sdl/Keyboard.h
+
     # system
     ${LOVE_SRC}/modules/system/System.cpp ${LOVE_SRC}/modules/system/System.h
     ${LOVE_SRC}/modules/system/sdl/System.cpp
@@ -302,6 +321,35 @@ if(YES)
     ${LOVE_SRC}/modules/graphics/opengl/ShaderStage.h
     ${LOVE_SRC}/modules/graphics/opengl/StreamBuffer.cpp
     ${LOVE_SRC}/modules/graphics/opengl/StreamBuffer.h
+
+    # image
+    ${LOVE_SRC}/modules/image/CompressedImageData.cpp
+    ${LOVE_SRC}/modules/image/CompressedImageData.h
+    ${LOVE_SRC}/modules/image/CompressedSlice.cpp
+    ${LOVE_SRC}/modules/image/CompressedSlice.h
+    ${LOVE_SRC}/modules/image/FormatHandler.cpp
+    ${LOVE_SRC}/modules/image/FormatHandler.h
+    ${LOVE_SRC}/modules/image/Image.cpp ${LOVE_SRC}/modules/image/Image.h
+    ${LOVE_SRC}/modules/image/ImageData.cpp
+    ${LOVE_SRC}/modules/image/ImageData.h
+    ${LOVE_SRC}/modules/image/ImageDataBase.cpp
+    ${LOVE_SRC}/modules/image/ImageDataBase.h
+    ${LOVE_SRC}/modules/image/magpie/ASTCHandler.cpp
+    ${LOVE_SRC}/modules/image/magpie/ASTCHandler.h
+    ${LOVE_SRC}/modules/image/magpie/ddsHandler.cpp
+    ${LOVE_SRC}/modules/image/magpie/ddsHandler.h
+    ${LOVE_SRC}/modules/image/magpie/EXRHandler.cpp
+    ${LOVE_SRC}/modules/image/magpie/EXRHandler.h
+    ${LOVE_SRC}/modules/image/magpie/KTXHandler.cpp
+    ${LOVE_SRC}/modules/image/magpie/KTXHandler.h
+    ${LOVE_SRC}/modules/image/magpie/PKMHandler.cpp
+    ${LOVE_SRC}/modules/image/magpie/PKMHandler.h
+    ${LOVE_SRC}/modules/image/magpie/PNGHandler.cpp
+    ${LOVE_SRC}/modules/image/magpie/PNGHandler.h
+    ${LOVE_SRC}/modules/image/magpie/PVRHandler.cpp
+    ${LOVE_SRC}/modules/image/magpie/PVRHandler.h
+    ${LOVE_SRC}/modules/image/magpie/STBHandler.cpp
+    ${LOVE_SRC}/modules/image/magpie/STBHandler.h
     )
   target_link_libraries(castle-core PRIVATE castle-love)
 endif()

@@ -21,6 +21,10 @@ namespace filesystem {
 struct Love {
   love::filesystem::physfs::Filesystem filesystem;
   love::timer::Timer timer;
+  love::event::sdl::Event event;
+  love::touch::sdl::Touch touch;
+  love::system::sdl::System system;
+  love::window::sdl::Window window;
 };
 Love lv;
 

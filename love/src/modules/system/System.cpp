@@ -99,7 +99,7 @@ bool System::openURL(const std::string &url) const
 
 	return love::android::openURL(url);
 
-#elif defined(LOVE_LINUX)
+#elif defined(LOVE_LINUX) && !defined(LOVE_EMSCRIPTEN)
 
 	pid_t pid;
 	const char *argv[] = {"xdg-open", url.c_str(), nullptr};
