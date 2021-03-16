@@ -266,12 +266,42 @@ const ActOn = ({ response, onChangeResponse, children, order, ...props }) => {
   );
 };
 
+const CreateText = ({ response, onChangeResponse, children, order, ...props }) => {
+  const onChangeBody = React.useCallback(
+    (body) =>
+      onChangeResponse({
+        ...response,
+        params: {
+          ...response.params,
+          body,
+        },
+      }),
+    [response, onChangeResponse]
+  );
+  return (
+    <React.Fragment>
+      <View style={styles.responseCells}>{children}</View>
+      {response.params?.action === 'perform response' ? (
+        <View style={SceneCreatorConstants.styles.insetContainer}>
+          <Response
+            response={response.params.body}
+            onChangeResponse={onChangeBody}
+            useAllBehaviors
+            {...props}
+          />
+        </View>
+      ) : null}
+    </React.Fragment>
+  );
+};
+
 const RESPONSE_COMPONENTS = {
   if: If,
   repeat: Repeat,
   ['infinite repeat']: Repeat,
   ['act on other']: ActOn,
   ['act on']: ActOn,
+  ['createText']: CreateText,
   ['set behavior property']: BehaviorPropertyRule,
   ['change behavior property']: BehaviorPropertyRule,
   ['set variable']: SetVariable,
