@@ -109,7 +109,9 @@ endif()
 # SDL2
 if(WEB)
   target_compile_options(castle-core PRIVATE "SHELL:-s USE_SDL=2")
+  target_compile_options(castle-core PRIVATE "SHELL:-s FULL_ES2=1")
   target_link_options(castle-core PRIVATE "SHELL:-s USE_SDL=2")
+  target_link_options(castle-core PRIVATE "SHELL:-s FULL_ES2=1")
 else()
 #  set(SDL_STATIC ON CACHE BOOL "" FORCE)
 #  set(SDL_SHARED OFF CACHE BOOL "" FORCE)
@@ -144,7 +146,9 @@ if(YES)
   target_include_directories(castle-love PRIVATE ../ghost-extensions/SDL2-2.0.8/include) # To make 'compile_commands.json' work
   if(WEB)
     target_compile_options(castle-love PRIVATE "SHELL:-s USE_SDL=2")
+    target_compile_options(castle-love PRIVATE "SHELL:-s FULL_ES2=1")
     target_link_options(castle-love PRIVATE "SHELL:-s USE_SDL=2")
+    target_link_options(castle-love PRIVATE "SHELL:-s FULL_ES2=1")
   endif()
 
   target_sources(castle-love PRIVATE

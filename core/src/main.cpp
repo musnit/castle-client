@@ -5,6 +5,8 @@
 
 // Love
 
+#include "love_default_shaders.h"
+
 namespace love {
 namespace filesystem {
   // Love's filesystem module depends on this symbol. It's defined in
@@ -18,15 +20,97 @@ namespace filesystem {
 } // namespace filesystem
 } // namespace love
 
-struct Love {
-  love::filesystem::physfs::Filesystem filesystem;
-  love::timer::Timer timer;
-  love::event::sdl::Event event;
-  love::touch::sdl::Touch touch;
-  love::mouse::sdl::Mouse mouse;
-  love::system::sdl::System system;
-  love::window::sdl::Window window;
-  love::graphics::opengl::Graphics graphics;
+class Love {
+  // Constructs and registers instances of Love modules in order
+
+  struct RegisterModule {
+    RegisterModule(love::Module &mod) {
+      love::Module::registerInstance(&mod);
+    }
+  };
+#define LOVE_MODULE(type, name)                                                                    \
+public:                                                                                            \
+  type name;                                                                                       \
+                                                                                                   \
+private:                                                                                           \
+  RegisterModule reg##name {                                                                       \
+    name                                                                                           \
+  }
+
+  LOVE_MODULE(love::filesystem::physfs::Filesystem, filesystem);
+  LOVE_MODULE(love::timer::Timer, timer);
+  LOVE_MODULE(love::event::sdl::Event, event);
+  LOVE_MODULE(love::touch::sdl::Touch, touch);
+  LOVE_MODULE(love::mouse::sdl::Mouse, mouse);
+  LOVE_MODULE(love::system::sdl::System, system);
+  LOVE_MODULE(love::window::sdl::Window, window);
+  LOVE_MODULE(love::graphics::opengl::Graphics, graphics);
+
+public:
+  void setupDefaultShaderCode() {
+    using namespace love::graphics;
+
+    // We force ESSL1 for all shaders. Also, WebGL doesn't support array textures (I think...), so
+    // we just use 'pixel' rather than 'arraypixel'.
+
+    /* clang-format off */
+    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_GLSL1][0].source[ShaderStage::STAGE_VERTEX] = love_default_essl1_vertex;
+    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_GLSL1][0].source[ShaderStage::STAGE_PIXEL] = love_default_essl1_pixel;
+    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_GLSL1][0].source[ShaderStage::STAGE_VERTEX] = love_default_essl1_vertex;
+    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_GLSL1][0].source[ShaderStage::STAGE_PIXEL] = love_default_essl1_videopixel;
+    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_GLSL1][0].source[ShaderStage::STAGE_VERTEX] = love_default_essl1_vertex;
+    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_GLSL1][0].source[ShaderStage::STAGE_PIXEL] = love_default_essl1_pixel;
+
+    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_ESSL1][0].source[ShaderStage::STAGE_VERTEX] = love_default_essl1_vertex;
+    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_ESSL1][0].source[ShaderStage::STAGE_PIXEL] = love_default_essl1_pixel;
+    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_ESSL1][0].source[ShaderStage::STAGE_VERTEX] = love_default_essl1_vertex;
+    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_ESSL1][0].source[ShaderStage::STAGE_PIXEL] = love_default_essl1_videopixel;
+    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_ESSL1][0].source[ShaderStage::STAGE_VERTEX] = love_default_essl1_vertex;
+    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_ESSL1][0].source[ShaderStage::STAGE_PIXEL] = love_default_essl1_pixel;
+
+    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_GLSL3][0].source[ShaderStage::STAGE_VERTEX] = love_default_essl1_vertex;
+    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_GLSL3][0].source[ShaderStage::STAGE_PIXEL] = love_default_essl1_pixel;
+    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_GLSL3][0].source[ShaderStage::STAGE_VERTEX] = love_default_essl1_vertex;
+    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_GLSL3][0].source[ShaderStage::STAGE_PIXEL] = love_default_essl1_videopixel;
+    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_GLSL3][0].source[ShaderStage::STAGE_VERTEX] = love_default_essl1_vertex;
+    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_GLSL3][0].source[ShaderStage::STAGE_PIXEL] = love_default_essl1_pixel;
+
+    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_ESSL3][0].source[ShaderStage::STAGE_VERTEX] = love_default_essl1_vertex;
+    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_ESSL3][0].source[ShaderStage::STAGE_PIXEL] = love_default_essl1_pixel;
+    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_ESSL3][0].source[ShaderStage::STAGE_VERTEX] = love_default_essl1_vertex;
+    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_ESSL3][0].source[ShaderStage::STAGE_PIXEL] = love_default_essl1_videopixel;
+    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_ESSL3][0].source[ShaderStage::STAGE_VERTEX] = love_default_essl1_vertex;
+    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_ESSL3][0].source[ShaderStage::STAGE_PIXEL] = love_default_essl1_pixel;
+
+    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_GLSL1][1].source[ShaderStage::STAGE_VERTEX] = love_default_gammacorrect_essl1_vertex;
+    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_GLSL1][1].source[ShaderStage::STAGE_PIXEL] = love_default_gammacorrect_essl1_pixel;
+    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_GLSL1][1].source[ShaderStage::STAGE_VERTEX] = love_default_gammacorrect_essl1_vertex;
+    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_GLSL1][1].source[ShaderStage::STAGE_PIXEL] = love_default_gammacorrect_essl1_videopixel;
+    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_GLSL1][1].source[ShaderStage::STAGE_VERTEX] = love_default_gammacorrect_essl1_vertex;
+    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_GLSL1][1].source[ShaderStage::STAGE_PIXEL] = love_default_gammacorrect_essl1_pixel;
+
+    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_ESSL1][1].source[ShaderStage::STAGE_VERTEX] = love_default_gammacorrect_essl1_vertex;
+    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_ESSL1][1].source[ShaderStage::STAGE_PIXEL] = love_default_gammacorrect_essl1_pixel;
+    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_ESSL1][1].source[ShaderStage::STAGE_VERTEX] = love_default_gammacorrect_essl1_vertex;
+    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_ESSL1][1].source[ShaderStage::STAGE_PIXEL] = love_default_gammacorrect_essl1_videopixel;
+    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_ESSL1][1].source[ShaderStage::STAGE_VERTEX] = love_default_gammacorrect_essl1_vertex;
+    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_ESSL1][1].source[ShaderStage::STAGE_PIXEL] = love_default_gammacorrect_essl1_pixel;
+
+    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_GLSL3][1].source[ShaderStage::STAGE_VERTEX] = love_default_gammacorrect_essl1_vertex;
+    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_GLSL3][1].source[ShaderStage::STAGE_PIXEL] = love_default_gammacorrect_essl1_pixel;
+    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_GLSL3][1].source[ShaderStage::STAGE_VERTEX] = love_default_gammacorrect_essl1_vertex;
+    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_GLSL3][1].source[ShaderStage::STAGE_PIXEL] = love_default_gammacorrect_essl1_videopixel;
+    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_GLSL3][1].source[ShaderStage::STAGE_VERTEX] = love_default_gammacorrect_essl1_vertex;
+    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_GLSL3][1].source[ShaderStage::STAGE_PIXEL] = love_default_gammacorrect_essl1_pixel;
+
+    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_ESSL3][1].source[ShaderStage::STAGE_VERTEX] = love_default_gammacorrect_essl1_vertex;
+    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_ESSL3][1].source[ShaderStage::STAGE_PIXEL] = love_default_gammacorrect_essl1_pixel;
+    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_ESSL3][1].source[ShaderStage::STAGE_VERTEX] = love_default_gammacorrect_essl1_vertex;
+    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_ESSL3][1].source[ShaderStage::STAGE_PIXEL] = love_default_gammacorrect_essl1_videopixel;
+    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_ESSL3][1].source[ShaderStage::STAGE_VERTEX] = love_default_gammacorrect_essl1_vertex;
+    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_ESSL3][1].source[ShaderStage::STAGE_PIXEL] = love_default_gammacorrect_essl1_pixel;
+    /* clang-format on */
+  }
 };
 Love lv;
 
@@ -67,6 +151,7 @@ int main() {
 
   // Window
   {
+    lv.setupDefaultShaderCode(); // Window also initializes graphics, shader code needs to be ready
     love::window::WindowSettings settings;
     settings.highdpi = true;
     lv.window.setWindow(500, 700, &settings);
@@ -96,6 +181,13 @@ int main() {
     }
 
     // Draw
+    {
+      lv.graphics.origin();
+
+      lv.graphics.clear(love::Colorf(227.0 / 255, 230.0 / 255, 252.0 / 255, 1), {}, {});
+
+      lv.graphics.present(nullptr);
+    }
 
     return true;
   });
