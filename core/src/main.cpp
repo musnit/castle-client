@@ -44,6 +44,7 @@ private:                                                                        
   LOVE_MODULE(love::mouse::sdl::Mouse, mouse);
   LOVE_MODULE(love::system::sdl::System, system);
   LOVE_MODULE(love::window::sdl::Window, window);
+  LOVE_MODULE(love::font::freetype::Font, font);
   LOVE_MODULE(love::graphics::opengl::Graphics, graphics);
 
 public:
@@ -170,8 +171,6 @@ int main() {
     // Step timer
     lv.timer.step();
 
-    // Update
-
     // Draw
     {
       lv.graphics.origin();
@@ -182,12 +181,17 @@ int main() {
       if (lv.mouse.isDown({ 1 })) {
         double x, y;
         lv.mouse.getPosition(x, y);
-        lv.graphics.rectangle(love::graphics::Graphics::DrawMode::DRAW_FILL, x - 40, y - 40, 80, 80, 5, 5, 40);
+        lv.graphics.rectangle(
+            love::graphics::Graphics::DrawMode::DRAW_FILL, x - 40, y - 40, 80, 80, 5, 5, 40);
       }
       for (const auto &touch : lv.touch.getTouches()) {
-        lv.graphics.rectangle(
-            love::graphics::Graphics::DrawMode::DRAW_FILL, touch.x - 40, touch.y - 40, 80, 80, 5, 5, 40);
+        lv.graphics.rectangle(love::graphics::Graphics::DrawMode::DRAW_FILL, touch.x - 40,
+            touch.y - 40, 80, 80, 5, 5, 40);
       }
+
+      auto fps = fmt::format("fps: {}", lv.timer.getFPS());
+      lv.graphics.setColor(love::Colorf(0, 0, 0, 1));
+      lv.graphics.print({ { fps, { 1, 1, 1, 1 } } }, love::Matrix4(20, 20, 0, 1, 1, 0, 0, 0, 0));
 
       lv.graphics.present(nullptr);
     }
