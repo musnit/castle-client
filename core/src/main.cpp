@@ -30,6 +30,8 @@ struct Love {
 Love lv;
 
 
+// Main
+
 template<typename F>
 void run(F &&frame) {
 #ifdef __EMSCRIPTEN__
@@ -70,8 +72,8 @@ int main() {
   }
 
   // Main loop
-  SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
-  lv.timer.step();
+  SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0"); // Don't doublecount touches as mouse events
+  lv.timer.step(); // First timer step
   run([&]() {
     // Process events
     lv.event.pump();
