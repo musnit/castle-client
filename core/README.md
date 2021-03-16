@@ -20,8 +20,9 @@ Make sure all submodules are initialized with `git submodule update --init --rec
 
 #### First-time setup
 
-You'll need to install CMake, which means `brew install cmake` on macOS, `sudo apt install cmake`-ish
-on Linux or using their official installer on Windows. `run.sh` needs WSL on Windows.
+You'll need to install CMake and Ninja, which means `brew install cmake ninja`
+on macOS, `sudo apt install cmake ninja-build`-ish on Linux or using their
+official installers on Windows. `run.sh` needs WSL on Windows.
 
 `./run.sh web-init` to setup Emscripten (our C++ web build toolchain).  This
 may take a little bit.
