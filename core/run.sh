@@ -4,10 +4,14 @@ set -e
 
 PLATFORM="macOS"
 CMAKE="cmake"
+TIME="time"
+TIME_TOTAL="time"
 
 if [[ -f /proc/version ]]; then
   if grep -q Linux /proc/version; then
     PLATFORM="lin"
+    TIME="time --format=%es\n"
+    TIME_TOTAL="time --format=total\t%es\n"
   fi
   if grep -q Microsoft /proc/version; then
     PLATFORM="win"
@@ -117,18 +121,18 @@ case "$1" in
     ./emsdk activate latest
     ;;
   web-release)
-    $CMAKE -DWEB=ON -H. -Bbuild/web-release -GNinja
-    $CMAKE --build build/web-release
+    $TIME $CMAKE -DWEB=ON -H. -Bbuild/web-release -GNinja
+    $TIME $CMAKE --build build/web-release
     ;;
   web-debug)
-    $CMAKE -DCMAKE_BUILD_TYPE=Debug -DWEB=ON -H. -Bbuild/web-debug -GNinja
-    $CMAKE --build build/web-debug
+    $TIME $CMAKE -DCMAKE_BUILD_TYPE=Debug -DWEB=ON -H. -Bbuild/web-debug -GNinja
+    $TIME $CMAKE --build build/web-debug
     ;;
   web-watch-release)
-    find CMakeLists.txt src web -type f | entr ./run.sh web-release
+    find CMakeLists.txt src web -type f | entr $TIME_TOTAL ./run.sh web-release
     ;;
   web-watch-debug)
-    find CMakeLists.txt src web -type f | entr ./run.sh web-debug
+    find CMakeLists.txt src web -type f | entr $TIME_TOTAL ./run.sh web-debug
     ;;
   web-serve-release)
     npx http-server -c-1 build/web-release
