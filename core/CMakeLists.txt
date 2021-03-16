@@ -165,6 +165,18 @@ if(YES)
     ${LOVE_SRC}/common/Variant.cpp ${LOVE_SRC}/common/Variant.h
     ${LOVE_SRC}/common/Vector.h ${LOVE_SRC}/common/version.h
 
+    # thread
+    ${LOVE_SRC}/modules/thread/Channel.cpp ${LOVE_SRC}/modules/thread/Channel.h
+    ${LOVE_SRC}/modules/thread/LuaThread.cpp
+    ${LOVE_SRC}/modules/thread/LuaThread.h ${LOVE_SRC}/modules/thread/Thread.h
+    ${LOVE_SRC}/modules/thread/ThreadModule.cpp
+    ${LOVE_SRC}/modules/thread/ThreadModule.h
+    ${LOVE_SRC}/modules/thread/threads.cpp ${LOVE_SRC}/modules/thread/threads.h
+    ${LOVE_SRC}/modules/thread/sdl/Thread.cpp
+    ${LOVE_SRC}/modules/thread/sdl/Thread.h
+    ${LOVE_SRC}/modules/thread/sdl/threads.cpp
+    ${LOVE_SRC}/modules/thread/sdl/threads.h
+
     # filesystem
     ${LOVE_SRC}/modules/filesystem/DroppedFile.cpp
     ${LOVE_SRC}/modules/filesystem/DroppedFile.h
