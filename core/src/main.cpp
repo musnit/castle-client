@@ -46,6 +46,7 @@ private:                                                                        
   LOVE_MODULE(love::window::sdl::Window, window);
   LOVE_MODULE(love::font::freetype::Font, font);
   LOVE_MODULE(love::graphics::opengl::Graphics, graphics);
+  LOVE_MODULE(love::physics::box2d::Physics, physics);
 
 public:
   void setupDefaultShaderCode() {
@@ -170,6 +171,11 @@ int main() {
     settings.highdpi = true;
     lv.window.setWindow(800, 1120, &settings); // This'll be resized-from soon in main loop
   }
+
+  // Physics
+  auto world = std::unique_ptr<love::physics::box2d::World>(lv.physics.newWorld(0, 9.8, true));
+  auto groundBody = std::unique_ptr<love::physics::box2d::Body>(
+      lv.physics.newBody(world.get(), 400, 900, love::physics::box2d::Body::BODY_STATIC));
 
   // Main loop
   SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0"); // Don't doublecount touches as mouse events

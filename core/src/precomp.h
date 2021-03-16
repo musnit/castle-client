@@ -1,3 +1,6 @@
+// Standard library
+#include <memory>
+
 // Emscripten
 #ifdef __EMSCRIPTEN__
 #include <emscripten/bind.h>
@@ -17,3 +20,4 @@
 #include <modules/window/sdl/Window.h>
 #include <modules/font/freetype/Font.h>
 #include <modules/graphics/opengl/Graphics.h>
+#include <modules/physics/box2d/Physics.h>
