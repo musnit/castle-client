@@ -1,0 +1,24 @@
+---
+Checks: "-*,\
+  clang-diagnostic-*,\
+  clang-analyzer-*,\
+  performance-*,\
+  portability-*,\
+  bugprone-*,\
+  -bugprone-infinite-loop,\
+  -bugprone-exception-escape,\
+  misc-*,\
+  -misc-unused-parameters,\
+  -misc-non-private-member-variables-in-classes,\
+  cppcoreguidelines-*,\
+  -cppcoreguidelines-macro-usage,\
+  -cppcoreguidelines-avoid-magic-numbers,\
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,\
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,\
+  -cppcoreguidelines-non-private-member-variables-in-classes,\
+  google-explicit-constructor,\
+  modernize-*",\
+  -modernize-use-trailing-return-type",
+WarningsAsErrors: "*"
+...
+
