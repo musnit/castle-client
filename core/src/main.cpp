@@ -171,20 +171,23 @@ int main() {
     lv.timer.step();
 
     // Update
-    if (lv.mouse.isDown({ 1 })) {
-      double x, y;
-      lv.mouse.getPosition(x, y);
-      fmt::print("mouse: {} {}\n", x, y);
-    }
-    for (const auto &touch : lv.touch.getTouches()) {
-      fmt::print("touch: {} {} {} {} {}\n", touch.id, touch.x, touch.y, touch.dx, touch.dy);
-    }
 
     // Draw
     {
       lv.graphics.origin();
 
-      lv.graphics.clear(love::Colorf(227.0 / 255, 230.0 / 255, 252.0 / 255, 1), {}, {});
+      lv.graphics.clear(love::Colorf(0.2, 0.2, 0.2, 1), {}, {});
+
+      lv.graphics.setColor(love::Colorf(0.4, 0.2, 0.2, 1));
+      if (lv.mouse.isDown({ 1 })) {
+        double x, y;
+        lv.mouse.getPosition(x, y);
+        lv.graphics.rectangle(love::graphics::Graphics::DrawMode::DRAW_FILL, x - 40, y - 40, 80, 80, 5, 5, 40);
+      }
+      for (const auto &touch : lv.touch.getTouches()) {
+        lv.graphics.rectangle(
+            love::graphics::Graphics::DrawMode::DRAW_FILL, touch.x - 40, touch.y - 40, 80, 80, 5, 5, 40);
+      }
 
       lv.graphics.present(nullptr);
     }
