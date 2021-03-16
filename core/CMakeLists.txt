@@ -474,54 +474,54 @@ if(YES)
     ${LOVE_SRC}/modules/image/magpie/STBHandler.cpp
     ${LOVE_SRC}/modules/image/magpie/STBHandler.h
 
-    # physics
-    ${LOVE_SRC}/modules/physics/Body.cpp ${LOVE_SRC}/modules/physics/Body.h
-    ${LOVE_SRC}/modules/physics/Joint.cpp ${LOVE_SRC}/modules/physics/Joint.h
-    ${LOVE_SRC}/modules/physics/Shape.cpp ${LOVE_SRC}/modules/physics/Shape.h
-    ${LOVE_SRC}/modules/physics/box2d/Body.cpp
-    ${LOVE_SRC}/modules/physics/box2d/Body.h
-    ${LOVE_SRC}/modules/physics/box2d/ChainShape.cpp
-    ${LOVE_SRC}/modules/physics/box2d/ChainShape.h
-    ${LOVE_SRC}/modules/physics/box2d/CircleShape.cpp
-    ${LOVE_SRC}/modules/physics/box2d/CircleShape.h
-    ${LOVE_SRC}/modules/physics/box2d/Contact.cpp
-    ${LOVE_SRC}/modules/physics/box2d/Contact.h
-    ${LOVE_SRC}/modules/physics/box2d/DistanceJoint.cpp
-    ${LOVE_SRC}/modules/physics/box2d/DistanceJoint.h
-    ${LOVE_SRC}/modules/physics/box2d/EdgeShape.cpp
-    ${LOVE_SRC}/modules/physics/box2d/EdgeShape.h
-    ${LOVE_SRC}/modules/physics/box2d/Fixture.cpp
-    ${LOVE_SRC}/modules/physics/box2d/Fixture.h
-    ${LOVE_SRC}/modules/physics/box2d/FrictionJoint.cpp
-    ${LOVE_SRC}/modules/physics/box2d/FrictionJoint.h
-    ${LOVE_SRC}/modules/physics/box2d/GearJoint.cpp
-    ${LOVE_SRC}/modules/physics/box2d/GearJoint.h
-    ${LOVE_SRC}/modules/physics/box2d/Joint.cpp
-    ${LOVE_SRC}/modules/physics/box2d/Joint.h
-    ${LOVE_SRC}/modules/physics/box2d/MotorJoint.cpp
-    ${LOVE_SRC}/modules/physics/box2d/MotorJoint.h
-    ${LOVE_SRC}/modules/physics/box2d/MouseJoint.cpp
-    ${LOVE_SRC}/modules/physics/box2d/MouseJoint.h
-    ${LOVE_SRC}/modules/physics/box2d/Physics.cpp
-    ${LOVE_SRC}/modules/physics/box2d/Physics.h
-    ${LOVE_SRC}/modules/physics/box2d/PolygonShape.cpp
-    ${LOVE_SRC}/modules/physics/box2d/PolygonShape.h
-    ${LOVE_SRC}/modules/physics/box2d/PrismaticJoint.cpp
-    ${LOVE_SRC}/modules/physics/box2d/PrismaticJoint.h
-    ${LOVE_SRC}/modules/physics/box2d/PulleyJoint.cpp
-    ${LOVE_SRC}/modules/physics/box2d/PulleyJoint.h
-    ${LOVE_SRC}/modules/physics/box2d/RevoluteJoint.cpp
-    ${LOVE_SRC}/modules/physics/box2d/RevoluteJoint.h
-    ${LOVE_SRC}/modules/physics/box2d/RopeJoint.cpp
-    ${LOVE_SRC}/modules/physics/box2d/RopeJoint.h
-    ${LOVE_SRC}/modules/physics/box2d/Shape.cpp
-    ${LOVE_SRC}/modules/physics/box2d/Shape.h
-    ${LOVE_SRC}/modules/physics/box2d/WeldJoint.cpp
-    ${LOVE_SRC}/modules/physics/box2d/WeldJoint.h
-    ${LOVE_SRC}/modules/physics/box2d/WheelJoint.cpp
-    ${LOVE_SRC}/modules/physics/box2d/WheelJoint.h
-    ${LOVE_SRC}/modules/physics/box2d/World.cpp
-    ${LOVE_SRC}/modules/physics/box2d/World.h
+    # physics (skipping love module and using Box2D directly for now)
+    #${LOVE_SRC}/modules/physics/Body.cpp ${LOVE_SRC}/modules/physics/Body.h
+    #${LOVE_SRC}/modules/physics/Joint.cpp ${LOVE_SRC}/modules/physics/Joint.h
+    #${LOVE_SRC}/modules/physics/Shape.cpp ${LOVE_SRC}/modules/physics/Shape.h
+    #${LOVE_SRC}/modules/physics/box2d/Body.cpp
+    #${LOVE_SRC}/modules/physics/box2d/Body.h
+    #${LOVE_SRC}/modules/physics/box2d/ChainShape.cpp
+    #${LOVE_SRC}/modules/physics/box2d/ChainShape.h
+    #${LOVE_SRC}/modules/physics/box2d/CircleShape.cpp
+    #${LOVE_SRC}/modules/physics/box2d/CircleShape.h
+    #${LOVE_SRC}/modules/physics/box2d/Contact.cpp
+    #${LOVE_SRC}/modules/physics/box2d/Contact.h
+    #${LOVE_SRC}/modules/physics/box2d/DistanceJoint.cpp
+    #${LOVE_SRC}/modules/physics/box2d/DistanceJoint.h
+    #${LOVE_SRC}/modules/physics/box2d/EdgeShape.cpp
+    #${LOVE_SRC}/modules/physics/box2d/EdgeShape.h
+    #${LOVE_SRC}/modules/physics/box2d/Fixture.cpp
+    #${LOVE_SRC}/modules/physics/box2d/Fixture.h
+    #${LOVE_SRC}/modules/physics/box2d/FrictionJoint.cpp
+    #${LOVE_SRC}/modules/physics/box2d/FrictionJoint.h
+    #${LOVE_SRC}/modules/physics/box2d/GearJoint.cpp
+    #${LOVE_SRC}/modules/physics/box2d/GearJoint.h
+    #${LOVE_SRC}/modules/physics/box2d/Joint.cpp
+    #${LOVE_SRC}/modules/physics/box2d/Joint.h
+    #${LOVE_SRC}/modules/physics/box2d/MotorJoint.cpp
+    #${LOVE_SRC}/modules/physics/box2d/MotorJoint.h
+    #${LOVE_SRC}/modules/physics/box2d/MouseJoint.cpp
+    #${LOVE_SRC}/modules/physics/box2d/MouseJoint.h
+    #${LOVE_SRC}/modules/physics/box2d/Physics.cpp
+    #${LOVE_SRC}/modules/physics/box2d/Physics.h
+    #${LOVE_SRC}/modules/physics/box2d/PolygonShape.cpp
+    #${LOVE_SRC}/modules/physics/box2d/PolygonShape.h
+    #${LOVE_SRC}/modules/physics/box2d/PrismaticJoint.cpp
+    #${LOVE_SRC}/modules/physics/box2d/PrismaticJoint.h
+    #${LOVE_SRC}/modules/physics/box2d/PulleyJoint.cpp
+    #${LOVE_SRC}/modules/physics/box2d/PulleyJoint.h
+    #${LOVE_SRC}/modules/physics/box2d/RevoluteJoint.cpp
+    #${LOVE_SRC}/modules/physics/box2d/RevoluteJoint.h
+    #${LOVE_SRC}/modules/physics/box2d/RopeJoint.cpp
+    #${LOVE_SRC}/modules/physics/box2d/RopeJoint.h
+    #${LOVE_SRC}/modules/physics/box2d/Shape.cpp
+    #${LOVE_SRC}/modules/physics/box2d/Shape.h
+    #${LOVE_SRC}/modules/physics/box2d/WeldJoint.cpp
+    #${LOVE_SRC}/modules/physics/box2d/WeldJoint.h
+    #${LOVE_SRC}/modules/physics/box2d/WheelJoint.cpp
+    #${LOVE_SRC}/modules/physics/box2d/WheelJoint.h
+    #${LOVE_SRC}/modules/physics/box2d/World.cpp
+    #${LOVE_SRC}/modules/physics/box2d/World.h
     ${LOVE_SRC}/libraries/Box2D/Collision/b2BroadPhase.cpp
     ${LOVE_SRC}/libraries/Box2D/Collision/b2BroadPhase.h
     ${LOVE_SRC}/libraries/Box2D/Collision/b2CollideCircle.cpp
