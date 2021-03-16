@@ -429,6 +429,38 @@ const Create = ({ response, context }) => {
   ];
 };
 
+const CreateText = ({ response, context }) => {
+  let paramNames, paramValues, label;
+  paramNames = ['content', 'action'];
+  paramValues = {
+    content: response.params?.content,
+    action: response.params?.action,
+  };
+
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Create text box',
+    },
+    {
+      type: 'selectParamSheet',
+      paramNames,
+      paramValues,
+      label: `"${response.params?.content}"`, // TODO: truncate
+    },
+    {
+      type: 'text',
+      label: ', when tapped',
+    },
+    {
+      type: 'selectParamSheet',
+      paramNames,
+      paramValues,
+      label: response.params?.action ?? '(choose action)',
+    },
+  ];
+};
+
 const Destroy = () => {
   return [
     {
@@ -925,6 +957,7 @@ export const Responses = {
   ['is in camera viewport']: IsInCameraViewport,
   ['animation frame meets condition']: AnimationFrameMeetsCondition,
   create: Create,
+  createText: CreateText,
   destroy: Destroy,
   show: Show,
   hide: Hide,
