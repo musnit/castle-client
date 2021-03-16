@@ -430,12 +430,27 @@ const Create = ({ response, context }) => {
 };
 
 const CreateText = ({ response, context }) => {
-  let paramNames, paramValues, label;
+  let paramNames, paramValues;
   paramNames = ['content', 'action'];
   paramValues = {
     content: response.params?.content,
     action: response.params?.action,
   };
+
+  let actionLabel;
+  switch (response.params?.action) {
+    case 'none':
+      actionLabel = 'do nothing';
+      break;
+    case 'dismiss':
+      actionLabel = 'dismiss';
+      break;
+    case 'perform response':
+      actionLabel = 'perform response:';
+      break;
+    default:
+      actionLabel = '(choose action)';
+  }
 
   return [
     {
@@ -456,7 +471,7 @@ const CreateText = ({ response, context }) => {
       type: 'selectParamSheet',
       paramNames,
       paramValues,
-      label: response.params?.action ?? '(choose action)',
+      label: actionLabel,
     },
   ];
 };
