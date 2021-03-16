@@ -26,6 +26,7 @@ struct Love {
   love::mouse::sdl::Mouse mouse;
   love::system::sdl::System system;
   love::window::sdl::Window window;
+  love::graphics::opengl::Graphics graphics;
 };
 Love lv;
 

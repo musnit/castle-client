@@ -128,15 +128,19 @@ if(YES)
   set(LOVE_SRC ../love/src)
   target_include_directories(castle-love PUBLIC ${LOVE_SRC} ${LOVE_SRC}/libraries ${LOVE_SRC}/modules)
 
-  # Lua dependency
+  # lua
   add_subdirectory(vendor/lua-5.1.5 EXCLUDE_FROM_ALL)
   target_link_libraries(castle-love PUBLIC lua51)
 
-  # ZLib dependency
+  # zlib
   add_subdirectory(vendor/zlib-1.2.11 EXCLUDE_FROM_ALL)
   target_link_libraries(castle-love PUBLIC zlibstatic)
 
-  # SDL2 dependency
+  # freetype
+  add_subdirectory(vendor/freetype-2.10.0 EXCLUDE_FROM_ALL)
+  target_link_libraries(castle-love PUBLIC freetype)
+
+  # SDL2
   target_include_directories(castle-love PRIVATE ../ghost-extensions/SDL2-2.0.8/include) # To make 'compile_commands.json' work
   if(WEB)
     target_compile_options(castle-love PRIVATE "SHELL:-s USE_SDL=2")
@@ -168,6 +172,27 @@ if(YES)
     ${LOVE_SRC}/common/utf8.cpp ${LOVE_SRC}/common/utf8.h
     ${LOVE_SRC}/common/Variant.cpp ${LOVE_SRC}/common/Variant.h
     ${LOVE_SRC}/common/Vector.h ${LOVE_SRC}/common/version.h
+
+    # data
+    ${LOVE_SRC}/modules/data/ByteData.cpp ${LOVE_SRC}/modules/data/ByteData.h
+    ${LOVE_SRC}/modules/data/CompressedData.cpp
+    ${LOVE_SRC}/modules/data/CompressedData.h
+    ${LOVE_SRC}/modules/data/Compressor.cpp
+    ${LOVE_SRC}/modules/data/Compressor.h
+    ${LOVE_SRC}/modules/data/DataModule.cpp
+    ${LOVE_SRC}/modules/data/DataModule.h ${LOVE_SRC}/modules/data/DataView.cpp
+    ${LOVE_SRC}/modules/data/DataView.h
+    ${LOVE_SRC}/modules/data/HashFunction.cpp
+    ${LOVE_SRC}/modules/data/HashFunction.h
+
+    # math
+    ${LOVE_SRC}/modules/math/BezierCurve.cpp
+    ${LOVE_SRC}/modules/math/BezierCurve.h
+    ${LOVE_SRC}/modules/math/MathModule.cpp
+    ${LOVE_SRC}/modules/math/MathModule.h
+    ${LOVE_SRC}/modules/math/RandomGenerator.cpp
+    ${LOVE_SRC}/modules/math/RandomGenerator.h
+    ${LOVE_SRC}/modules/math/Transform.cpp ${LOVE_SRC}/modules/math/Transform.h
 
     # thread
     ${LOVE_SRC}/modules/thread/Channel.cpp ${LOVE_SRC}/modules/thread/Channel.h
@@ -268,6 +293,24 @@ if(YES)
     ${LOVE_SRC}/modules/window/sdl/Window.cpp
     ${LOVE_SRC}/modules/window/sdl/Window.h
 
+    # font
+    ${LOVE_SRC}/modules/font/BMFontRasterizer.cpp
+    ${LOVE_SRC}/modules/font/BMFontRasterizer.h
+    ${LOVE_SRC}/modules/font/Font.cpp
+    ${LOVE_SRC}/modules/font/Font.h
+    ${LOVE_SRC}/modules/font/GlyphData.cpp
+    ${LOVE_SRC}/modules/font/GlyphData.h
+    ${LOVE_SRC}/modules/font/ImageRasterizer.cpp
+    ${LOVE_SRC}/modules/font/ImageRasterizer.h
+    ${LOVE_SRC}/modules/font/Rasterizer.cpp
+    ${LOVE_SRC}/modules/font/Rasterizer.h
+    ${LOVE_SRC}/modules/font/TrueTypeRasterizer.cpp
+    ${LOVE_SRC}/modules/font/TrueTypeRasterizer.h
+    ${LOVE_SRC}/modules/font/freetype/Font.cpp
+    ${LOVE_SRC}/modules/font/freetype/Font.h
+    ${LOVE_SRC}/modules/font/freetype/TrueTypeRasterizer.cpp
+    ${LOVE_SRC}/modules/font/freetype/TrueTypeRasterizer.h
+
     # graphics
     ${LOVE_SRC}/modules/graphics/Buffer.cpp
     ${LOVE_SRC}/modules/graphics/Buffer.h
@@ -330,6 +373,73 @@ if(YES)
     ${LOVE_SRC}/modules/graphics/opengl/ShaderStage.h
     ${LOVE_SRC}/modules/graphics/opengl/StreamBuffer.cpp
     ${LOVE_SRC}/modules/graphics/opengl/StreamBuffer.h
+    ${LOVE_SRC}/libraries/xxHash/xxhash.c ${LOVE_SRC}/libraries/xxHash/xxhash.h
+    ${LOVE_SRC}/libraries/glad/glad.cpp ${LOVE_SRC}/libraries/glad/glad.hpp
+    ${LOVE_SRC}/libraries/glad/gladfuncs.hpp
+
+    # glslang
+    ${LOVE_SRC}/libraries/glslang/glslang/GenericCodeGen/CodeGen.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/GenericCodeGen/Link.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/Include/arrays.h
+    ${LOVE_SRC}/libraries/glslang/glslang/Include/BaseTypes.h
+    ${LOVE_SRC}/libraries/glslang/glslang/Include/Common.h
+    ${LOVE_SRC}/libraries/glslang/glslang/Include/ConstantUnion.h
+    ${LOVE_SRC}/libraries/glslang/glslang/Include/InfoSink.h
+    ${LOVE_SRC}/libraries/glslang/glslang/Include/InitializeGlobals.h
+    ${LOVE_SRC}/libraries/glslang/glslang/Include/intermediate.h
+    ${LOVE_SRC}/libraries/glslang/glslang/Include/PoolAlloc.h
+    ${LOVE_SRC}/libraries/glslang/glslang/Include/ResourceLimits.h
+    ${LOVE_SRC}/libraries/glslang/glslang/Include/revision.h
+    ${LOVE_SRC}/libraries/glslang/glslang/Include/ShHandle.h
+    ${LOVE_SRC}/libraries/glslang/glslang/Include/Types.h
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/preprocessor/Pp.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/preprocessor/PpAtom.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/preprocessor/PpContext.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/preprocessor/PpContext.h
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/preprocessor/PpScanner.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/preprocessor/PpTokens.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/preprocessor/PpTokens.h
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/Constant.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/gl_types.h
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/glslang_tab.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/glslang_tab.cpp.h
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/InfoSink.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/Initialize.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/Initialize.h
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/Intermediate.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/intermOut.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/IntermTraverse.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/iomapper.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/iomapper.h
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/limits.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/linkValidate.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/LiveTraverser.h
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/localintermediate.h
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/parseConst.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/ParseContextBase.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/ParseHelper.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/ParseHelper.h
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/parseVersions.h
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/PoolAlloc.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/propagateNoContraction.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/propagateNoContraction.h
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/reflection.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/reflection.h
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/RemoveTree.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/RemoveTree.h
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/Scan.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/Scan.h
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/ScanContext.h
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/ShaderLang.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/SymbolTable.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/SymbolTable.h
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/Versions.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/Versions.h
+    ${LOVE_SRC}/libraries/glslang/glslang/OSDependent/osinclude.h
+    ${LOVE_SRC}/libraries/glslang/glslang/OSDependent/Unix/ossource.cpp
+    ${LOVE_SRC}/libraries/glslang/glslang/Public/ShaderLang.h
+    ${LOVE_SRC}/libraries/glslang/OGLCompilersDLL/InitializeDll.cpp
+    ${LOVE_SRC}/libraries/glslang/OGLCompilersDLL/InitializeDll.h
 
     # image
     ${LOVE_SRC}/modules/image/CompressedImageData.cpp
