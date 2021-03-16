@@ -234,6 +234,15 @@ if(YES)
     ${LOVE_SRC}/modules/touch/Touch.h ${LOVE_SRC}/modules/touch/sdl/Touch.cpp
     ${LOVE_SRC}/modules/touch/sdl/Touch.h
 
+    # mouse
+    ${LOVE_SRC}/modules/mouse/Cursor.cpp
+    ${LOVE_SRC}/modules/mouse/Cursor.h
+    ${LOVE_SRC}/modules/mouse/Mouse.h
+    ${LOVE_SRC}/modules/mouse/sdl/Cursor.cpp
+    ${LOVE_SRC}/modules/mouse/sdl/Cursor.h
+    ${LOVE_SRC}/modules/mouse/sdl/Mouse.cpp
+    ${LOVE_SRC}/modules/mouse/sdl/Mouse.h
+
     # joystick (needed by event)
     ${LOVE_SRC}/modules/joystick/Joystick.cpp
     ${LOVE_SRC}/modules/joystick/Joystick.h
