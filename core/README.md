@@ -8,7 +8,7 @@ For now the project is starting with a focus on getting web working.
 
 - **src/**: The C++ core code
 - **web/**: A simple web harness with a canvas and a launcher for the core WASM
-- **vendor/**: External libraries we depend on, usually as Git submodules
+- **vendor/**: External libraries we depend on
 - **assets/**: Static assets for Emscripten to embed into the WASM binary
 - **build/**: (ignored in Git) Build output from Emscripten, including the generated WASM binary
 

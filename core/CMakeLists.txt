@@ -129,7 +129,7 @@ if(YES)
   target_include_directories(castle-love PUBLIC ${LOVE_SRC} ${LOVE_SRC}/libraries ${LOVE_SRC}/modules)
 
   # Lua dependency
-  add_subdirectory(vendor/megasource/libs/lua-5.1.5 EXCLUDE_FROM_ALL)
+  add_subdirectory(vendor/lua-5.1.5 EXCLUDE_FROM_ALL)
   target_link_libraries(castle-love PUBLIC lua51)
 
   # SDL2 dependency
