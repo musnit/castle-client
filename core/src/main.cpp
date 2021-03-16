@@ -18,6 +18,7 @@ using namespace love::system;
 using namespace love::window;
 using namespace love::font;
 using namespace love::graphics;
+using Font = love::graphics::Font;
 
 namespace filesystem {
   // Love's filesystem module depends on this symbol. It's defined in
@@ -182,6 +183,10 @@ int main() {
     lv.window.setWindow(800, 1120, &settings); // This'll be resized-from soon in main loop
   }
 
+  // Debug font
+  auto debugFont = std::unique_ptr<love::Font>(
+      lv.graphics.newDefaultFont(14, love::TrueTypeRasterizer::HINTING_NORMAL));
+
   // Main loop
   SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0"); // Don't doublecount touches as mouse events
   lv.timer.step(); // First timer step
@@ -229,7 +234,8 @@ int main() {
 
       auto fps = fmt::format("fps: {}", lv.timer.getFPS());
       lv.graphics.setColor(love::Colorf(0, 0, 0, 1));
-      lv.graphics.print({ { fps, { 1, 1, 1, 1 } } }, love::Matrix4(20, 20, 0, 1, 1, 0, 0, 0, 0));
+      lv.graphics.print(
+          { { fps, { 1, 1, 1, 1 } } }, debugFont.get(), love::Matrix4(20, 20, 0, 1, 1, 0, 0, 0, 0));
 
       lv.graphics.present(nullptr);
     }
