@@ -111,6 +111,11 @@ case "$1" in
     ;;
 
   # Web
+  web-init)
+    cd vendor/emsdk
+    ./emsdk install latest
+    ./emsdk activate latest
+    ;;
   web-release)
     $CMAKE -DWEB=ON -H. -Bbuild/web-release -GNinja
     $CMAKE --build build/web-release
