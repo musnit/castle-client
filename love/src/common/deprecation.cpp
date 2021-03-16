@@ -33,14 +33,18 @@ static std::vector<const DeprecationInfo *> *deprecatedList = nullptr;
 
 static std::atomic<int> initCount;
 
+#if !defined(LOVE_EMSCRIPTEN)
 static thread::Mutex *mutex = nullptr;
+#endif
 static bool outputEnabled = false;
 
 void initDeprecation()
 {
 	if (initCount.fetch_add(1) == 0)
 	{
+#if !defined(LOVE_EMSCRIPTEN)
 		mutex = thread::newMutex();
+#endif
 
 		// These are heap-allocated because we want to clear them on deinit,
 		// and deinit may be called when the program is shutting down in the
@@ -57,11 +61,15 @@ void deinitDeprecation()
 	{
 		delete deprecated;
 		delete deprecatedList;
+#if !defined(LOVE_EMSCRIPTEN)
 		delete mutex;
+#endif
 
 		deprecated = nullptr;
 		deprecatedList = nullptr;
+#if !defined(LOVE_EMSCRIPTEN)
 		mutex = nullptr;
+#endif
 	}
 }
 
@@ -128,14 +136,18 @@ std::string getDeprecationNotice(const DeprecationInfo &info, bool usewhere)
 GetDeprecated::GetDeprecated()
 	: all(*deprecatedList)
 {
+#if !defined(LOVE_EMSCRIPTEN)
 	if (mutex != nullptr)
 		mutex->lock();
+#endif
 }
 
 GetDeprecated::~GetDeprecated()
 {
+#if !defined(LOVE_EMSCRIPTEN)
 	if (mutex != nullptr)
 		mutex->unlock();
+#endif
 }
 
 MarkDeprecated::MarkDeprecated(const char *name, APIType api)
@@ -146,8 +158,10 @@ MarkDeprecated::MarkDeprecated(const char *name, APIType api)
 MarkDeprecated::MarkDeprecated(const char *name, APIType api, DeprecationType type, const char *replacement)
 	: info(nullptr)
 {
+#if !defined(LOVE_EMSCRIPTEN)
 	if (mutex != nullptr)
 		mutex->lock();
+#endif
 
 	auto it = deprecated->find(name);
 
@@ -180,8 +194,10 @@ MarkDeprecated::~MarkDeprecated()
 	if (outputEnabled && info != nullptr && info->uses == 1)
 		printDeprecationNotice(*info);
 
+#if !defined(LOVE_EMSCRIPTEN)
 	if (mutex != nullptr)
 		mutex->unlock();
+#endif
 }
 
 } // love

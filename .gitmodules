@@ -4,3 +4,6 @@
 [submodule "core/vendor/emsdk"]
 	path = core/vendor/emsdk
 	url = https://github.com/emscripten-core/emsdk.git
+[submodule "core/vendor/megasource"]
+	path = core/vendor/megasource
+	url = https://github.com/Davidobot/megasource.git

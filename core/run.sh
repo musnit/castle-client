@@ -19,7 +19,7 @@ case "$1" in
   # Compile commands DB (used by editor plugins)
   db)
     $CMAKE -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug -H. -Bbuild/db -GNinja
-    cp ./build/db/compile_commands.json .
+    cp ./build/db/compile_commands.json ../
     ;;
 
   # Format

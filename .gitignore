@@ -11,6 +11,7 @@ love/platform/xcode/.idea
 love/build/
 mobile/android/love/.cxx/
 compile_commands.json
+.clangd/
 
 imgui.ini
 
