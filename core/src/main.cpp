@@ -112,6 +112,22 @@ public:
 };
 Love lv;
 
+extern "C" double ghostScreenScaling;
+
+#ifdef __EMSCRIPTEN__
+EM_JS(int, JS_getCanvasWidth, (),
+    { return document.querySelector("#canvas").getBoundingClientRect().width; });
+EM_JS(int, JS_getCanvasHeight, (),
+    { return document.querySelector("#canvas").getBoundingClientRect().height; });
+#else
+int JS_getCanvasWidth() {
+  return 0;
+}
+int JS_getCanvasHeight() {
+  return 0;
+}
+#endif
+
 
 // Main
 
@@ -152,13 +168,27 @@ int main() {
     lv.setupDefaultShaderCode(); // Window also initializes graphics, shader code needs to be ready
     love::window::WindowSettings settings;
     settings.highdpi = true;
-    lv.window.setWindow(500, 700, &settings);
+    lv.window.setWindow(800, 1120, &settings); // This'll be resized-from soon in main loop
   }
 
   // Main loop
   SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0"); // Don't doublecount touches as mouse events
   lv.timer.step(); // First timer step
   run([&]() {
+    {
+      // Update window size and screen scaling
+      static int prevW = 0, prevH = 0;
+      auto w = JS_getCanvasWidth();
+      auto h = JS_getCanvasHeight();
+      if (w != prevW || h != prevH) {
+        fmt::print("canvas resized to {}, {}\n", w, h);
+        SDL_SetWindowSize(lv.window.getSDLWindow(), w, h);
+        ghostScreenScaling = double(w) / 800;
+        prevW = w;
+        prevH = h;
+      }
+    }
+
     // Process events
     lv.event.pump();
     love::event::Message *msgp = nullptr;
