@@ -14,18 +14,26 @@ For now the project is starting with a focus on getting web working.
 
 ## Building and running
 
+Make sure all submodules are initialized with `git submodule update --init --recursive`.
+
 ### Web
 
-First, make sure all submodules are initialized with `git submodule update
---init --recursive`. Then, the first time you ever build for web, you will need
-to run `./run.sh web-init` once to get Emscripten (our C++ web build toolchain)
-setup. This may take a little bit.
+#### First-time setup
 
-Next, run `./run.sh web-release` to build a release version of core for the
-web. This will again take a bit the very first time (Emscripten fetches and
-caches SDL2). Later builds should (hopefully!) be faster.
+You'll need to install CMake, which means `brew install cmake` on macOS, `sudo apt install cmake`-ish
+on Linux or using their official installer on Windows. `run.sh` needs WSL on Windows.
 
-Finally, run `./run.sh web-serve-release` to serve core as a website to
+`./run.sh web-init` to setup Emscripten (our C++ web build toolchain).  This
+may take a little bit.
+
+#### Building
+
+`./run.sh web-release` to build a release version of core for the web. This
+will again take a bit the very first time (Emscripten fetches and caches SDL2).
+Later builds should (hopefully!) be faster. Every time you edit code in 'src/'
+or 'web/' you'll have to run this again.
+
+`./run.sh web-serve-release` will serve core as a website to
 http://localhost:8080. Open that URL with a browser to check it out! You may
 want to open the developer console in your browser to see logging output.
 
