@@ -53,6 +53,22 @@ int w_loadDrawData(lua_State *L)
 	return 1;
 }
 
+int w_loadDrawDataFromString(lua_State *L)
+{
+	const char *json = luaL_checkstring(L, 1);
+	rapidjson::Document document;
+	document.Parse(json);
+	
+	StrongRef<DrawData> i;
+	DrawData *d = new DrawData(document.GetObject());
+	
+	i.set(d);
+	
+	luax_pushtype(L, i);
+	
+	return 1;
+}
+
 int w_DrawData_render(lua_State *L)
 {
 	DrawData *d = luax_checktype<DrawData>(L, 1);
@@ -76,6 +92,7 @@ static const luaL_Reg functions[] =
 {
 	{ "subpathDataIntersection", w_subpathDataIntersection },
 	{ "loadDrawData", w_loadDrawData },
+	{ "loadDrawDataFromString", w_loadDrawDataFromString},
 	{ 0, 0 }
 };
 
