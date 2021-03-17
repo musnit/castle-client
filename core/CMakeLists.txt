@@ -113,11 +113,15 @@ if(WEB)
   target_link_options(castle-core PRIVATE "SHELL:-s USE_SDL=2")
   target_link_options(castle-core PRIVATE "SHELL:-s FULL_ES2=1")
 else()
-#  set(SDL_STATIC ON CACHE BOOL "" FORCE)
-#  set(SDL_SHARED OFF CACHE BOOL "" FORCE)
-#  add_subdirectory(vendor/SDL2 EXCLUDE_FROM_ALL)
-#  target_link_libraries(castle-core PRIVATE SDL2-static)
+  set(SDL_STATIC ON CACHE BOOL "" FORCE)
+  set(SDL_SHARED OFF CACHE BOOL "" FORCE)
+  set(VIDEO_WAYLAND OFF CACHE BOOL "" FORCE)
+  add_subdirectory(../ghost-extensions/SDL2-2.0.8 SDL2-2.0.8 EXCLUDE_FROM_ALL)
+  target_link_libraries(castle-core PRIVATE SDL2-static)
   target_include_directories(castle-core PRIVATE ../ghost-extensions/SDL2-2.0.8/include) # To make 'compile_commands.json' work
+  set(THREADS_PREFER_PTHREAD_FLAG ON)
+  find_package(Threads REQUIRED)
+  target_link_libraries(castle-core PRIVATE Threads::Threads)
 endif()
 
 # fmt
@@ -188,6 +192,13 @@ if(YES)
     ${LOVE_SRC}/modules/data/DataView.h
     ${LOVE_SRC}/modules/data/HashFunction.cpp
     ${LOVE_SRC}/modules/data/HashFunction.h
+
+    # lz4
+    ${LOVE_SRC}/libraries/lz4/lz4.c
+    ${LOVE_SRC}/libraries/lz4/lz4.h
+    ${LOVE_SRC}/libraries/lz4/lz4hc.c
+    ${LOVE_SRC}/libraries/lz4/lz4hc.h
+    ${LOVE_SRC}/libraries/lz4/lz4opt.h
 
     # math
     ${LOVE_SRC}/modules/math/BezierCurve.cpp
@@ -473,6 +484,11 @@ if(YES)
     ${LOVE_SRC}/modules/image/magpie/PVRHandler.h
     ${LOVE_SRC}/modules/image/magpie/STBHandler.cpp
     ${LOVE_SRC}/modules/image/magpie/STBHandler.h
+    ${LOVE_SRC}/libraries/lodepng/lodepng.cpp
+    ${LOVE_SRC}/libraries/lodepng/lodepng.h
+    ${LOVE_SRC}/libraries/ddsparse/ddsinfo.h
+    ${LOVE_SRC}/libraries/ddsparse/ddsparse.cpp
+    ${LOVE_SRC}/libraries/ddsparse/ddsparse.h
     )
   target_link_libraries(castle-core PRIVATE castle-love)
 endif()

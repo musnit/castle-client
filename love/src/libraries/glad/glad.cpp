@@ -7244,10 +7244,10 @@ static void find_core(void) {
 	if (strstr(v, "OpenGL ES ") == v) {
 		major = v[10] - '0'; minor = v[12] - '0'; gles = true;
 	}
-#ifdef __EMSCRIPTEN__
-  // CASTLE: Force GLES2 (WebGL 1) compatibility in web
+  // CASTLE: Force GLES2 (WebGL 1) compatibility
   major = 2;
   minor = 0;
+#ifdef __EMSCRIPTEN__
   gles = true;
 #endif
 	GLVersion.major = major; GLVersion.minor = minor; GLVersion.gles = gles;
