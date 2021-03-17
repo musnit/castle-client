@@ -149,12 +149,9 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
     setTimeout(() => setIsEditingTitle(false), 80);
   }, [titleInputValue]);
 
-  const copyBlueprint = React.useCallback(
-    () => {
-      Clipboard.copySelectedBlueprint();
-    },
-    [],
-  );
+  const copyBlueprint = React.useCallback(() => {
+    Clipboard.copySelectedBlueprint();
+  }, []);
 
   if (data) {
     let scaleRotateButton;
@@ -224,20 +221,22 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
                 )}
               </TouchableOpacity>
             ) : null}
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={() => sendAction('duplicateSelection')}>
-              {data.isBlueprint ? (
-                <MCIcon
-                  name="source-fork"
-                  size={22}
-                  color="#000"
-                  style={{ transform: [{ rotate: '90deg' }] }}
-                />
-              ) : (
-                <FeatherIcon name="copy" size={22} color="#000" />
-              )}
-            </TouchableOpacity>
+            {data.isBlueprint ? ( // Only showing fork / duplicate button for blueprints right now
+              <TouchableOpacity
+                style={styles.actionButton}
+                onPress={() => sendAction('duplicateSelection')}>
+                {data.isBlueprint ? (
+                  <MCIcon
+                    name="source-fork"
+                    size={22}
+                    color="#000"
+                    style={{ transform: [{ rotate: '90deg' }] }}
+                  />
+                ) : (
+                  <FeatherIcon name="copy" size={22} color="#000" />
+                )}
+              </TouchableOpacity>
+            ) : null}
             {data.isBlueprint ? (
               <TouchableOpacity style={styles.actionButton} onPress={() => copyBlueprint()}>
                 <FeatherIcon name="copy" size={22} color="#000" />
