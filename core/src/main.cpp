@@ -203,8 +203,8 @@ int main() {
   SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0"); // Don't doublecount touches as mouse events
   lv.timer.step(); // First timer step
   run([&]() {
+    // Update window size and screen scaling
     {
-      // Update window size and screen scaling
       static int prevW = 0, prevH = 0;
       auto w = JS_getCanvasWidth();
       auto h = JS_getCanvasHeight();
@@ -227,7 +227,7 @@ int main() {
     // Step timer
     lv.timer.step();
 
-    // Testing
+    // Reload on Ctrl+R
     if (lv.keyboard.isDown({ love::Keyboard::KEY_RCTRL, love::Keyboard::KEY_LCTRL })
         && lv.keyboard.isDown({ love::Keyboard::KEY_R })) {
       JS_reload();
