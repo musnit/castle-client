@@ -485,6 +485,15 @@ const Destroy = () => {
   ];
 };
 
+const HideText = () => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Hide all text boxes',
+    },
+  ];
+};
+
 const Show = () => {
   return [
     {
@@ -974,6 +983,7 @@ export const Responses = {
   create: Create,
   createText: CreateText,
   destroy: Destroy,
+  ['hide text']: HideText,
   show: Show,
   hide: Hide,
   empty: Empty,
