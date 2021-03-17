@@ -79,6 +79,19 @@ public:
 		TovePathRef path = NewPath(null);*/
 	}
 	
+	DrawData(rapidjson::Value &root) {
+		read(root);
+		
+		_layerDataChanged = true;
+		
+		/*ToveSubpathRef subpath = NewSubpath();
+		TovePathRef path = NewPath(null);*/
+	}
+	
+	void read(rapidjson::Value &root) {
+		color.read(root["color"].GetArray());
+	}
+	
 	void read(lua_State *L, int index) {
 		GHOST_READ_STRUCT(color)
 		GHOST_READ_STRUCT(lineColor)
