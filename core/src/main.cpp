@@ -207,9 +207,7 @@ int main() {
 
     // Process events
     lv.event.pump();
-    love::Message *msgp = nullptr;
-    while (lv.event.poll(msgp)) {
-    }
+    lv.event.clear();
 
     // Step timer
     lv.timer.step();
