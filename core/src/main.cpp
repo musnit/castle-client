@@ -55,9 +55,9 @@ private:                                                                        
   LOVE_MODULE(love::touch::sdl::Touch, touch);
   LOVE_MODULE(love::mouse::sdl::Mouse, mouse);
   LOVE_MODULE(love::system::sdl::System, system);
-  LOVE_MODULE(love::window::sdl::Window, window);
   LOVE_MODULE(love::font::freetype::Font, font);
   LOVE_MODULE(love::graphics::opengl::Graphics, graphics);
+  LOVE_MODULE(love::window::sdl::Window, window); // Important for this to be last!
 
 public:
   void setupDefaultShaderCode() {
@@ -122,7 +122,6 @@ public:
     /* clang-format on */
   }
 };
-Love lv;
 
 extern "C" double ghostScreenScaling;
 
@@ -154,14 +153,18 @@ void run(F &&frame) {
       0, true);
 #else
   while (frame()) {
-    lv.timer.sleep(0.001);
   }
 #endif
 }
 
+extern "C" bool ghostChildWindowCloseEventReceived;
+
 int main() {
   fmt::print("hello, world!\n");
   fmt::print("welcome to castle core...\n");
+
+  // Love
+  Love lv;
 
   // Filesystem
   {
@@ -208,6 +211,9 @@ int main() {
     // Process events
     lv.event.pump();
     lv.event.clear();
+    if (ghostChildWindowCloseEventReceived) {
+      return false;
+    }
 
     // Step timer
     lv.timer.step();
