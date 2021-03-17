@@ -17,6 +17,7 @@
 #include <modules/timer/Timer.h>
 #include <modules/touch/sdl/Touch.h>
 #include <modules/mouse/sdl/Mouse.h>
+#include <modules/keyboard/sdl/Keyboard.h>
 #include <modules/window/sdl/Window.h>
 #include <modules/font/freetype/Font.h>
 #include <modules/graphics/opengl/Graphics.h>

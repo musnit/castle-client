@@ -14,6 +14,7 @@ using namespace love::timer;
 using namespace love::event;
 using namespace love::touch;
 using namespace love::mouse;
+using namespace love::keyboard;
 using namespace love::system;
 using namespace love::window;
 using namespace love::font;
@@ -54,6 +55,7 @@ private:                                                                        
   LOVE_MODULE(love::event::sdl::Event, event);
   LOVE_MODULE(love::touch::sdl::Touch, touch);
   LOVE_MODULE(love::mouse::sdl::Mouse, mouse);
+  LOVE_MODULE(love::keyboard::sdl::Keyboard, keyboard);
   LOVE_MODULE(love::system::sdl::System, system);
   LOVE_MODULE(love::font::freetype::Font, font);
   LOVE_MODULE(love::graphics::opengl::Graphics, graphics);
@@ -139,6 +141,13 @@ int JS_getCanvasHeight() {
 }
 #endif
 
+#ifdef __EMSCRIPTEN__
+EM_JS(void, JS_reload, (), { window.location.reload(); });
+#else
+void JS_reload() {
+}
+#endif
+
 
 // Main
 
@@ -217,6 +226,12 @@ int main() {
 
     // Step timer
     lv.timer.step();
+
+    // Testing
+    if (lv.keyboard.isDown({ love::Keyboard::KEY_RCTRL, love::Keyboard::KEY_LCTRL })
+        && lv.keyboard.isDown({ love::Keyboard::KEY_R })) {
+      JS_reload();
+    }
 
     // Draw
     {
