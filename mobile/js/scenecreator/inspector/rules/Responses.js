@@ -981,7 +981,7 @@ export const Responses = {
   ['is in camera viewport']: IsInCameraViewport,
   ['animation frame meets condition']: AnimationFrameMeetsCondition,
   create: Create,
-  createText: CreateText,
+  ['create text']: CreateText,
   destroy: Destroy,
   ['hide text']: HideText,
   show: Show,
