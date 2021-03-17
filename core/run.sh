@@ -116,10 +116,20 @@ case "$1" in
 
   # Web
   web-init)
-    cd vendor/emsdk
-    ./emsdk install latest
-    ./emsdk activate latest
+    case $PLATFORM in
+      lin|macOS)
+        cd vendor/emsdk
+        ./emsdk install latest
+        ./emsdk activate latest
+        ;;
+      win)
+        cd vendor/emsdk
+        cmd.exe /c emsdk install latest
+        cmd.exe /c emsdk activate latest
+        ;;
+    esac
     ;;
+
   web-release)
     $TIME $CMAKE -DWEB=ON -H. -Bbuild/web-release -GNinja
     $TIME $CMAKE --build build/web-release
