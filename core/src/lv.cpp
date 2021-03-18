@@ -17,17 +17,15 @@ namespace filesystem {
 } // namespace love
 
 
+//
+// Constructor, destructor
+//
+
 Lv::Lv(int windowWidth, int windowHeight, const char *arg0) {
   // Filesystem
   {
     lv.filesystem.init(arg0);
-    PHYSFS_mount(".", "/", true);
-
-    auto data = std::unique_ptr<love::FileData>(lv.filesystem.read("assets/keepme.txt"));
-    std::string str;
-    str.resize(data->getSize());
-    std::memcpy(&str[0], data->getData(), str.size());
-    fmt::print("contents of 'assets/keepme.txt': {}\n", str);
+    PHYSFS_mount(".", "/", true); // Provide access to files relative to the source directory
   }
 
   // Window
@@ -40,10 +38,15 @@ Lv::Lv(int windowWidth, int windowHeight, const char *arg0) {
 }
 
 
-// Sets up Love's default shaders as done by 'wrap_Graphics.lua'. We don't
-// (want to) make a Lua VM, so we just replicate that in C++.
+//
+// Default shaders
+//
+
 #include "love_default_shaders.h"
+
 void Lv::setupDefaultShaderCode() {
+  // Based on 'wrap_Graphics.lua'. We don't (want to) make a Lua VM, so we just
+  // replicate the whole logic in C++.
 
   using namespace love;
   auto &dsc = Graphics::defaultShaderCode;

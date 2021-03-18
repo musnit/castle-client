@@ -47,7 +47,11 @@ private:                                                                        
   LOVE_MODULE(love::window::sdl::Window, window); // Important for `Window` to be last!
 
 public:
+  Lv(const Lv &) = delete; // Prevent accidental copies
+  const Lv &operator=(const Lv &) = delete;
+
   Lv(int windowWidth, int windowHeight, const char *arg0 = "/love-app");
+
 
 private:
   Lv &lv { *this };

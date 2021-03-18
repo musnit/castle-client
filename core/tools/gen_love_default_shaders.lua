@@ -1,5 +1,5 @@
 -- Modified version of 'wrap_Graphics.lua' from the Love codebase that just
--- prints the shader code to standard output
+-- prints the shader code to standard output in a C++ `#include`-eable format
 
 --[[
 Copyright (c) 2006-2018 LOVE Development Team
