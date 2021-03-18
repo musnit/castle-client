@@ -1,6 +1,7 @@
 ---
 BasedOnStyle: WebKit
 IndentWidth: 2
+SortIncludes: false
 BreakBeforeBraces: Attach
 SpaceInEmptyBlock: false
 MaxEmptyLinesToKeep: 2

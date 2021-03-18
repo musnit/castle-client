@@ -4,6 +4,7 @@ set -e
 
 PLATFORM="macOS"
 CMAKE="cmake"
+CLANG_FORMAT="clang-format"
 TIME="time"
 TIME_TOTAL="time"
 
@@ -16,6 +17,7 @@ if [[ -f /proc/version ]]; then
   if grep -q Microsoft /proc/version; then
     PLATFORM="win"
     CMAKE="cmake.exe"
+    CLANG_FORMAT="clang-format.exe"
   fi
 fi
 
@@ -28,7 +30,7 @@ case "$1" in
 
   # Format
   format)
-    clang-format -i -style=file src/*
+    $CLANG_FORMAT -i -style=file src/*
     ;;
 
   # Desktop
