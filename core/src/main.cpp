@@ -1,131 +1,9 @@
 #include "precomp.h"
 
-#include "libraries/physfs/physfs.h"
+#include "lv.h"
 
 
-// Love
-
-#include "love_default_shaders.h"
-
-namespace love {
-// Bring a bunch of Love symbols into the top level of its namespace
-using namespace love::filesystem;
-using namespace love::timer;
-using namespace love::event;
-using namespace love::touch;
-using namespace love::mouse;
-using namespace love::keyboard;
-using namespace love::system;
-using namespace love::window;
-using namespace love::font;
-using namespace love::graphics;
-using Font = love::graphics::Font;
-
-namespace filesystem {
-  // Love's filesystem module depends on this symbol. It's defined in
-  // 'wrap_FileSystem.cpp', which is for wrapping C++ to Lua. We don't include
-  // that, so we just copy the implementation here.
-  bool hack_setupWriteDirectory() {
-    if (Module::getInstance<Filesystem>(Module::M_FILESYSTEM) != 0)
-      return Module::getInstance<Filesystem>(Module::M_FILESYSTEM)->setupWriteDirectory();
-    return false;
-  }
-} // namespace filesystem
-} // namespace love
-
-class Love {
-  // Constructs and registers instances of Love modules in order
-
-  struct RegisterModule {
-    RegisterModule(love::Module &mod) {
-      love::Module::registerInstance(&mod);
-    }
-  };
-#define LOVE_MODULE(type, name)                                                                    \
-public:                                                                                            \
-  type name;                                                                                       \
-                                                                                                   \
-private:                                                                                           \
-  RegisterModule reg##name {                                                                       \
-    name                                                                                           \
-  }
-
-  LOVE_MODULE(love::filesystem::physfs::Filesystem, filesystem);
-  LOVE_MODULE(love::timer::Timer, timer);
-  LOVE_MODULE(love::event::sdl::Event, event);
-  LOVE_MODULE(love::touch::sdl::Touch, touch);
-  LOVE_MODULE(love::mouse::sdl::Mouse, mouse);
-  LOVE_MODULE(love::keyboard::sdl::Keyboard, keyboard);
-  LOVE_MODULE(love::system::sdl::System, system);
-  LOVE_MODULE(love::font::freetype::Font, font);
-  LOVE_MODULE(love::graphics::opengl::Graphics, graphics);
-  LOVE_MODULE(love::window::sdl::Window, window); // Important for this to be last!
-
-public:
-  void setupDefaultShaderCode() {
-    using namespace love;
-
-    /* clang-format off */
-    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_GLSL1][0].source[ShaderStage::STAGE_VERTEX] = love_default_glsl1_vertex;
-    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_GLSL1][0].source[ShaderStage::STAGE_PIXEL] = love_default_glsl1_pixel;
-    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_GLSL1][0].source[ShaderStage::STAGE_VERTEX] = love_default_glsl1_vertex;
-    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_GLSL1][0].source[ShaderStage::STAGE_PIXEL] = love_default_glsl1_videopixel;
-    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_GLSL1][0].source[ShaderStage::STAGE_VERTEX] = love_default_glsl1_vertex;
-    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_GLSL1][0].source[ShaderStage::STAGE_PIXEL] = love_default_glsl1_arraypixel;
-
-    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_ESSL1][0].source[ShaderStage::STAGE_VERTEX] = love_default_essl1_vertex;
-    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_ESSL1][0].source[ShaderStage::STAGE_PIXEL] = love_default_essl1_pixel;
-    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_ESSL1][0].source[ShaderStage::STAGE_VERTEX] = love_default_essl1_vertex;
-    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_ESSL1][0].source[ShaderStage::STAGE_PIXEL] = love_default_essl1_videopixel;
-    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_ESSL1][0].source[ShaderStage::STAGE_VERTEX] = love_default_essl1_vertex;
-    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_ESSL1][0].source[ShaderStage::STAGE_PIXEL] = love_default_essl1_arraypixel;
-
-    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_GLSL3][0].source[ShaderStage::STAGE_VERTEX] = love_default_glsl3_vertex;
-    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_GLSL3][0].source[ShaderStage::STAGE_PIXEL] = love_default_glsl3_pixel;
-    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_GLSL3][0].source[ShaderStage::STAGE_VERTEX] = love_default_glsl3_vertex;
-    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_GLSL3][0].source[ShaderStage::STAGE_PIXEL] = love_default_glsl3_videopixel;
-    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_GLSL3][0].source[ShaderStage::STAGE_VERTEX] = love_default_glsl3_vertex;
-    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_GLSL3][0].source[ShaderStage::STAGE_PIXEL] = love_default_glsl3_arraypixel;
-
-    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_ESSL3][0].source[ShaderStage::STAGE_VERTEX] = love_default_essl3_vertex;
-    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_ESSL3][0].source[ShaderStage::STAGE_PIXEL] = love_default_essl3_pixel;
-    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_ESSL3][0].source[ShaderStage::STAGE_VERTEX] = love_default_essl3_vertex;
-    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_ESSL3][0].source[ShaderStage::STAGE_PIXEL] = love_default_essl3_videopixel;
-    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_ESSL3][0].source[ShaderStage::STAGE_VERTEX] = love_default_essl3_vertex;
-    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_ESSL3][0].source[ShaderStage::STAGE_PIXEL] = love_default_essl3_arraypixel;
-
-    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_GLSL1][1].source[ShaderStage::STAGE_VERTEX] = love_default_gammacorrect_glsl1_vertex;
-    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_GLSL1][1].source[ShaderStage::STAGE_PIXEL] = love_default_gammacorrect_glsl1_pixel;
-    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_GLSL1][1].source[ShaderStage::STAGE_VERTEX] = love_default_gammacorrect_glsl1_vertex;
-    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_GLSL1][1].source[ShaderStage::STAGE_PIXEL] = love_default_gammacorrect_glsl1_videopixel;
-    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_GLSL1][1].source[ShaderStage::STAGE_VERTEX] = love_default_gammacorrect_glsl1_vertex;
-    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_GLSL1][1].source[ShaderStage::STAGE_PIXEL] = love_default_gammacorrect_glsl1_arraypixel;
-
-    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_ESSL1][1].source[ShaderStage::STAGE_VERTEX] = love_default_gammacorrect_essl1_vertex;
-    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_ESSL1][1].source[ShaderStage::STAGE_PIXEL] = love_default_gammacorrect_essl1_pixel;
-    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_ESSL1][1].source[ShaderStage::STAGE_VERTEX] = love_default_gammacorrect_essl1_vertex;
-    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_ESSL1][1].source[ShaderStage::STAGE_PIXEL] = love_default_gammacorrect_essl1_videopixel;
-    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_ESSL1][1].source[ShaderStage::STAGE_VERTEX] = love_default_gammacorrect_essl1_vertex;
-    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_ESSL1][1].source[ShaderStage::STAGE_PIXEL] = love_default_gammacorrect_essl1_arraypixel;
-
-    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_GLSL3][1].source[ShaderStage::STAGE_VERTEX] = love_default_gammacorrect_glsl3_vertex;
-    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_GLSL3][1].source[ShaderStage::STAGE_PIXEL] = love_default_gammacorrect_glsl3_pixel;
-    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_GLSL3][1].source[ShaderStage::STAGE_VERTEX] = love_default_gammacorrect_glsl3_vertex;
-    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_GLSL3][1].source[ShaderStage::STAGE_PIXEL] = love_default_gammacorrect_glsl3_videopixel;
-    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_GLSL3][1].source[ShaderStage::STAGE_VERTEX] = love_default_gammacorrect_glsl3_vertex;
-    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_GLSL3][1].source[ShaderStage::STAGE_PIXEL] = love_default_gammacorrect_glsl3_arraypixel;
-
-    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_ESSL3][1].source[ShaderStage::STAGE_VERTEX] = love_default_gammacorrect_essl3_vertex;
-    Graphics::defaultShaderCode[Shader::STANDARD_DEFAULT][Shader::LANGUAGE_ESSL3][1].source[ShaderStage::STAGE_PIXEL] = love_default_gammacorrect_essl3_pixel;
-    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_ESSL3][1].source[ShaderStage::STAGE_VERTEX] = love_default_gammacorrect_essl3_vertex;
-    Graphics::defaultShaderCode[Shader::STANDARD_VIDEO][Shader::LANGUAGE_ESSL3][1].source[ShaderStage::STAGE_PIXEL] = love_default_gammacorrect_essl3_videopixel;
-    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_ESSL3][1].source[ShaderStage::STAGE_VERTEX] = love_default_gammacorrect_essl3_vertex;
-    Graphics::defaultShaderCode[Shader::STANDARD_ARRAY][Shader::LANGUAGE_ESSL3][1].source[ShaderStage::STAGE_PIXEL] = love_default_gammacorrect_essl3_arraypixel;
-    /* clang-format on */
-  }
-};
-
-extern "C" double ghostScreenScaling;
+// Calls to JS
 
 #ifdef __EMSCRIPTEN__
 EM_JS(int, JS_getCanvasWidth, (),
@@ -166,6 +44,7 @@ void run(F &&frame) {
 #endif
 }
 
+extern "C" double ghostScreenScaling;
 extern "C" bool ghostChildWindowCloseEventReceived;
 
 #undef main // SDL does some weird stuff overriding `main` with a macro...
@@ -173,28 +52,7 @@ int main() {
   fmt::print("hello, world!\n");
   fmt::print("welcome to castle core...\n");
 
-  // Love
-  Love lv;
-
-  // Filesystem
-  {
-    lv.filesystem.init("/castle-core");
-    PHYSFS_mount(".", "/", true);
-
-    auto data = std::unique_ptr<love::FileData>(lv.filesystem.read("assets/keepme.txt"));
-    std::string str;
-    str.resize(data->getSize());
-    std::memcpy(&str[0], data->getData(), str.size());
-    fmt::print("contents of 'assets/keepme.txt': {}\n", str);
-  }
-
-  // Window
-  {
-    lv.setupDefaultShaderCode(); // Window also initializes graphics, shader code needs to be ready
-    love::WindowSettings settings;
-    settings.highdpi = true;
-    lv.window.setWindow(800, 1120, &settings); // This'll be resized-from soon in main loop
-  }
+  Lv lv(800, 1120);
 
   // Debug font
   auto debugFont = std::unique_ptr<love::Font>(
