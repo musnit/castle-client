@@ -493,6 +493,12 @@ if(YES)
   target_link_libraries(castle-core PRIVATE castle-love)
 endif()
 
+# Box2D
+set(BOX2D_BUILD_UNIT_TESTS OFF CACHE BOOL "" FORCE)
+set(BOX2D_BUILD_TESTBED OFF CACHE BOOL "" FORCE)
+add_subdirectory(vendor/box2d EXCLUDE_FROM_ALL)
+target_link_libraries(castle-core PRIVATE box2d)
+
 # rapidjson
 #target_include_directories(castle-core PRIVATE vendor/rapidjson/include)
 

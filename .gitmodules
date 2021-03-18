@@ -4,3 +4,6 @@
 [submodule "core/vendor/emsdk"]
 	path = core/vendor/emsdk
 	url = https://github.com/emscripten-core/emsdk.git
+[submodule "core/vendor/box2d"]
+	path = core/vendor/box2d
+	url = https://github.com/erincatto/box2d.git
