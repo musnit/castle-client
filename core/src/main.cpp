@@ -180,7 +180,7 @@ int main() {
     lv.filesystem.init("/castle-core");
     PHYSFS_mount(".", "/", true);
 
-    auto data = lv.filesystem.read("assets/keepme.txt");
+    auto data = std::unique_ptr<love::FileData>(lv.filesystem.read("assets/keepme.txt"));
     std::string str;
     str.resize(data->getSize());
     std::memcpy(&str[0], data->getData(), str.size());
