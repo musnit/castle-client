@@ -55,7 +55,9 @@ Engine::~Engine() {
 bool Engine::frame() {
   // Based on the main loop from 'boot.lua' in the Love codebase
 
-  // Update window size and screen scaling based on canvas in web
+  // Update window size and screen scaling based on canvas in web. This will
+  // generate an `SDL_WINDOWEVENT_RESIZED`, so we do it before the event pump
+  // to let Love process that immediately.
 #ifdef __EMSCRIPTEN__
   {
     auto w = JS_getCanvasWidth();
@@ -70,46 +72,59 @@ bool Engine::frame() {
   }
 #endif
 
-  // Process events
+  // Process events. Quit if the window was closed.
   lv.event.pump();
   lv.event.clear();
   if (ghostChildWindowCloseEventReceived) {
     return false;
   }
 
-  // Step timer
-  lv.timer.step();
+  // Step timer and run update with the resulting `dt`
+  update(lv.timer.step());
 
+  // Draw
+  lv.graphics.origin();
+  lv.graphics.clear(love::Colorf(0, 0, 0, 1), {}, {});
+  draw();
+  lv.graphics.present(nullptr);
+
+  return !shouldQuit;
+}
+
+
+//
+// Update
+//
+
+void Engine::update([[maybe_unused]] double dt) {
   // Reload on Ctrl+R
   if (lv.keyboard.isDown({ love::Keyboard::KEY_RCTRL, love::Keyboard::KEY_LCTRL })
       && lv.keyboard.isDown({ love::Keyboard::KEY_R })) {
     JS_reload();
   }
+}
 
-  // Draw
-  {
-    lv.graphics.origin();
 
-    lv.graphics.clear(love::Colorf(0.2, 0.2, 0.2, 1), {}, {});
+//
+// Draw
+//
 
-    lv.graphics.setColor(love::Colorf(0.4, 0.4, 0.2, 1));
-    if (lv.mouse.isDown({ 1 })) {
-      double x, y;
-      lv.mouse.getPosition(x, y);
-      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x - 40, y - 40, 80, 80, 5, 5, 40);
-    }
-    for (const auto &touch : lv.touch.getTouches()) {
-      lv.graphics.rectangle(
-          love::Graphics::DrawMode::DRAW_FILL, touch.x - 40, touch.y - 40, 80, 80, 5, 5, 40);
-    }
+void Engine::draw() {
+  lv.graphics.clear(love::Colorf(0.2, 0.2, 0.2, 1), {}, {});
 
-    auto fps = fmt::format("fps: {}", lv.timer.getFPS());
-    lv.graphics.setColor(love::Colorf(0, 0, 0, 1));
-    lv.graphics.print(
-        { { fps, { 1, 1, 1, 1 } } }, debugFont.get(), love::Matrix4(20, 20, 0, 1, 1, 0, 0, 0, 0));
-
-    lv.graphics.present(nullptr);
+  lv.graphics.setColor(love::Colorf(0.4, 0.4, 0.2, 1));
+  if (lv.mouse.isDown({ 1 })) {
+    double x, y;
+    lv.mouse.getPosition(x, y);
+    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x - 40, y - 40, 80, 80, 5, 5, 40);
+  }
+  for (const auto &touch : lv.touch.getTouches()) {
+    lv.graphics.rectangle(
+        love::Graphics::DrawMode::DRAW_FILL, touch.x - 40, touch.y - 40, 80, 80, 5, 5, 40);
   }
 
-  return true;
+  auto fps = fmt::format("fps: {}", lv.timer.getFPS());
+  lv.graphics.setColor(love::Colorf(0, 0, 0, 1));
+  lv.graphics.print(
+      { { fps, { 1, 1, 1, 1 } } }, debugFont.get(), love::Matrix4(20, 20, 0, 1, 1, 0, 0, 0, 0));
 }
