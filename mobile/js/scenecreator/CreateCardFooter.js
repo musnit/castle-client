@@ -3,7 +3,8 @@ import { CreateCardBottomActions, CARD_BOTTOM_MIN_HEIGHT } from './CreateCardBot
 import { CreateCardCaptureActions } from './CreateCardCaptureActions';
 
 export const getFooterHeight = ({ isShowingDraw }) => {
-  return isShowingDraw ? 0 : CARD_BOTTOM_MIN_HEIGHT;
+  return 0; // We no longer have a footer...
+  //return isShowingDraw ? 0 : CARD_BOTTOM_MIN_HEIGHT;
 };
 
 export const CreateCardFooter = ({ isShowingDraw, isPlayingScene, isSceneLoaded, ...props }) => {
