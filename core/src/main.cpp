@@ -168,6 +168,7 @@ void run(F &&frame) {
 
 extern "C" bool ghostChildWindowCloseEventReceived;
 
+#undef main // SDL does some weird stuff overriding `main` with a macro...
 int main() {
   fmt::print("hello, world!\n");
   fmt::print("welcome to castle core...\n");

@@ -451,7 +451,6 @@ if(YES)
     ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/Versions.cpp
     ${LOVE_SRC}/libraries/glslang/glslang/MachineIndependent/Versions.h
     ${LOVE_SRC}/libraries/glslang/glslang/OSDependent/osinclude.h
-    ${LOVE_SRC}/libraries/glslang/glslang/OSDependent/Unix/ossource.cpp
     ${LOVE_SRC}/libraries/glslang/glslang/Public/ShaderLang.h
     ${LOVE_SRC}/libraries/glslang/OGLCompilersDLL/InitializeDll.cpp
     ${LOVE_SRC}/libraries/glslang/OGLCompilersDLL/InitializeDll.h
@@ -491,6 +490,16 @@ if(YES)
     ${LOVE_SRC}/libraries/ddsparse/ddsparse.h
     )
   target_link_libraries(castle-core PRIVATE castle-love)
+  if(MSVC)
+    target_sources(castle-love PRIVATE
+      ${LOVE_SRC}/libraries/glslang/glslang/OSDependent/Windows/main.cpp
+      ${LOVE_SRC}/libraries/glslang/glslang/OSDependent/Windows/ossource.cpp
+      )
+  else()
+    target_sources(castle-love PRIVATE
+      ${LOVE_SRC}/libraries/glslang/glslang/OSDependent/Unix/ossource.cpp
+      )
+  endif()
 endif()
 
 # Box2D

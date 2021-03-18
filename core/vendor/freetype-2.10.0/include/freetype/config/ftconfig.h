@@ -54,7 +54,9 @@ FT_BEGIN_HEADER
    *
    */
 
+#ifndef _MSC_VER
 #define HAVE_UNISTD_H 1
+#endif
 #define HAVE_FCNTL_H 1
 #define HAVE_STDINT_H 1
 
