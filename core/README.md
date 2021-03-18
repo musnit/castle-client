@@ -47,6 +47,12 @@ every time some source file changes. This needs
 install entr` or `sudo apt install entr` or such. Change and save some file,
 make sure it's done building, and refresh your browser to see the updates!
 
+### Mobile
+
+Core isn't set up for a mobile build yet. Coming soon! It'll probably be
+included as a dependency built with native iOS and Android projects in
+'../mobile'.
+
 ### Desktop
 
 #### Build and run
