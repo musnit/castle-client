@@ -42,7 +42,7 @@ Lv::Lv(int windowWidth, int windowHeight, const char *arg0) {
 // Default shaders
 //
 
-#include "love_default_shaders.h"
+#include "lv_default_shaders.h"
 
 void Lv::setupDefaultShaderCode() {
   // Based on 'wrap_Graphics.lua'. We don't (want to) make a Lua VM, so we just
