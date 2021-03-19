@@ -17,7 +17,7 @@ public:
 
 private:
   Lv lv { 800, 450 };
-  love::RandomGenerator rng;
+  love::RandomGenerator rng; // TODO(nikki): Seed this
 
   int prevWindowWidth = 0, prevWindowHeight = 0;
   bool shouldQuit = false;
@@ -25,20 +25,6 @@ private:
   std::unique_ptr<love::Font> debugFont { lv.graphics.newDefaultFont(
       14, love::TrueTypeRasterizer::HINTING_NORMAL) };
 
-
-  // Rects bench
-  static constexpr auto N = 40000;
-  struct Rect {
-    double x, y;
-    double r, g, b;
-    double speed;
-    double w, h;
-    double phase;
-  };
-  std::vector<Rect> rects;
-
-
-  void init();
 
   void update(double dt);
 

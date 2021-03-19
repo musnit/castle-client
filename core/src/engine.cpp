@@ -42,8 +42,6 @@ Engine::Engine() {
 
   // First timer step
   lv.timer.step();
-
-  init();
 }
 
 Engine::~Engine() {
@@ -95,28 +93,6 @@ bool Engine::frame() {
 
 
 //
-// Init
-//
-
-void Engine::init() {
-  // Rects bench
-  for (auto i = 0; i < N; ++i) {
-    Rect rect;
-    rect.x = lv.graphics.getWidth() * rng.random();
-    rect.y = lv.graphics.getHeight() * rng.random();
-    rect.r = rng.random();
-    rect.g = rng.random();
-    rect.b = rng.random();
-    rect.speed = 0.5 * lv.graphics.getWidth() * rng.random();
-    rect.w = lv.graphics.getWidth() * rng.random() / 16.0;
-    rect.h = lv.graphics.getWidth() * rng.random() / 16.0;
-    rect.phase = 2 * M_PI * rng.random();
-    rects.push_back(rect);
-  }
-}
-
-
-//
 // Update
 //
 
@@ -125,11 +101,6 @@ void Engine::update([[maybe_unused]] double dt) {
   if (lv.keyboard.isDown({ love::Keyboard::KEY_RCTRL, love::Keyboard::KEY_LCTRL })
       && lv.keyboard.isDown({ love::Keyboard::KEY_R })) {
     JS_reload();
-  }
-
-  // Rects bench
-  for (auto &rect : rects) {
-    rect.x = rect.x + rect.speed * sin(lv.timer.getTime() * rect.phase) * dt;
   }
 }
 
@@ -140,16 +111,6 @@ void Engine::update([[maybe_unused]] double dt) {
 
 void Engine::draw() {
   lv.graphics.clear(love::Colorf(0.2, 0.2, 0.2, 1), {}, {});
-
-  // Rects bench
-  for (auto &rect : rects) {
-    lv.graphics.setColor(love::Colorf(rect.r, rect.g, rect.b, 1));
-    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, rect.x, rect.y, rect.w, rect.h);
-  }
-  lv.graphics.setColor(love::Colorf(0, 0, 0, 1));
-  lv.graphics.print({ { fmt::format("fps: {}", lv.timer.getFPS()), { 1, 1, 1, 1 } } },
-      debugFont.get(), love::Matrix4(20, 20, 0, 1, 1, 0, 0, 0, 0));
-  return;
 
   lv.graphics.setColor(love::Colorf(0.4, 0.4, 0.2, 1));
   if (lv.mouse.isDown({ 1 })) {
