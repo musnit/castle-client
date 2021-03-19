@@ -1,3 +1,8 @@
+// This header file is 'precompiled' -- the compiler caches the parsed form of
+// headers it includes, to improve compile times. Mostly useful to put a bunch
+// of headers here that don't change much and are referenced in a lot of places
+// (eg. external library headers).
+
 // Standard library
 #include <memory>
 
