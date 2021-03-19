@@ -56,15 +56,25 @@ int w_loadDrawData(lua_State *L)
 int w_loadDrawDataFromString(lua_State *L)
 {
 	const char *json = luaL_checkstring(L, 1);
-	rapidjson::Document document;
-	document.Parse(json);
 	
 	StrongRef<DrawData> i;
-	DrawData *d = new DrawData(document.GetObject());
+	DrawData *d;
+	
+	Archive archive = Archive::fromString(json);
+	archive.read([&](Archive::Reader &r) {
+		d = new DrawData(r);
+	});
 	
 	i.set(d);
-	
 	luax_pushtype(L, i);
+	
+	// test writing
+	Archive archive2;
+	archive2.write([&](Archive::Writer &w) {
+		d->write(w);
+	});
+	
+	std::string output = archive2.toString();
 	
 	return 1;
 }

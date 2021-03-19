@@ -15,7 +15,7 @@
 #include <optional>
 #include "graphics/Graphics.h"
 #include "data/DataModule.h"
-#include "rapidjson/document.h"
+#include "Archive.h"
 
 #define DRAW_MAX_SIZE 10.0
 #define DRAW_LINE_WIDTH 0.2
@@ -203,16 +203,18 @@ struct Subpath {
 struct Color {
 	float data[4];
 	
-	void read(rapidjson::Value &root) {
-		data[0] = root[0].GetDouble();
-		data[1] = root[1].GetDouble();
-		data[2] = root[2].GetDouble();
-		
-		if (root.Size() > 3) {
-			data[3] = root[3].GetDouble();
-		} else {
-			data[3] = 1.0;
-		}
+	void read(Archive::Reader &archive) {
+		data[0] = archive.num((unsigned int) 0, 1.0);
+		data[1] = archive.num(1, 1.0);
+		data[2] = archive.num(2, 1.0);
+		data[3] = archive.num(3, 1.0);
+	}
+	
+	void write(Archive::Writer &archive) {
+		archive.num(data[0]);
+		archive.num(data[1]);
+		archive.num(data[2]);
+		archive.num(data[3]);
 	}
 	
 	void read(lua_State *L, int index) {
