@@ -3,6 +3,7 @@
 
 namespace love {
 // Bring a bunch of Love symbols into the top level of its namespace
+using namespace love::math;
 using namespace love::filesystem;
 using namespace love::timer;
 using namespace love::event;
@@ -18,8 +19,12 @@ using Font = love::graphics::Font;
 
 
 class Lv {
-  // Our interface to Love's modules. Constructs and registers Love modules in
-  // the right order. Also includes simple Love-related utilities.
+  // Our interface to Love's modules. Love itself has 'love.{h,cpp}' and the
+  // `love` namespace, so we're calling this `Lv` / `lv` to disambiguate.
+  //
+  // Constructs and registers modules in the right order. Registration is
+  // required for the modules to cross-reference each other properly
+  // internally. Also includes simple Love-related utilities.
 
   struct RegisterModule {
     RegisterModule(love::Module &mod) {

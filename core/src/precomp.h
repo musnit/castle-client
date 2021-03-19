@@ -11,13 +11,14 @@
 #include <fmt/format.h>
 
 // love
-#include <modules/event/sdl/Event.h>
+#include <modules/math/RandomGenerator.h>
 #include <modules/filesystem/physfs/Filesystem.h>
-#include <modules/system/sdl/System.h>
 #include <modules/timer/Timer.h>
+#include <modules/event/sdl/Event.h>
 #include <modules/touch/sdl/Touch.h>
 #include <modules/mouse/sdl/Mouse.h>
 #include <modules/keyboard/sdl/Keyboard.h>
-#include <modules/window/sdl/Window.h>
+#include <modules/system/sdl/System.h>
 #include <modules/font/freetype/Font.h>
 #include <modules/graphics/opengl/Graphics.h>
+#include <modules/window/sdl/Window.h>
