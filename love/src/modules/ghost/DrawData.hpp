@@ -79,8 +79,8 @@ public:
 		TovePathRef path = NewPath(null);*/
 	}
 	
-	DrawData(rapidjson::Value &root) {
-		read(root);
+	DrawData(Archive::Reader &archive) {
+		read(archive);
 		
 		_layerDataChanged = true;
 		
@@ -88,8 +88,12 @@ public:
 		TovePathRef path = NewPath(null);*/
 	}
 	
-	void read(rapidjson::Value &root) {
-		color.read(root["color"].GetArray());
+	void read(Archive::Reader &archive) {
+		archive.arr("color", color);
+	}
+	
+	void write(Archive::Writer &archive) {
+		archive.arr("color", color);
 	}
 	
 	void read(lua_State *L, int index) {
