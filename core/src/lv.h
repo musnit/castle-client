@@ -15,7 +15,7 @@ using namespace love::window;
 using namespace love::font;
 using namespace love::graphics;
 using Font = love::graphics::Font;
-} // namespace love
+}
 
 
 class Lv {

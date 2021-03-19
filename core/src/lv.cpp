@@ -13,8 +13,8 @@ namespace filesystem {
       return Module::getInstance<Filesystem>(Module::M_FILESYSTEM)->setupWriteDirectory();
     return false;
   }
-} // namespace filesystem
-} // namespace love
+}
+}
 
 
 //

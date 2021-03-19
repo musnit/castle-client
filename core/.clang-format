@@ -14,4 +14,5 @@ AllowShortBlocksOnASingleLine: false
 IncludeBlocks: Preserve
 AccessModifierOffset: -2
 ColumnLimit: 100
+FixNamespaceComments: false
 ...
