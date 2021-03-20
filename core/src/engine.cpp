@@ -46,26 +46,12 @@ Engine::Engine() {
   // Setup physics test
   {
     b2BodyDef bodyDef;
-    bodyDef.position = b2Vec2(4, 4);
+    bodyDef.position = b2Vec2(4, 1120.0 / 100 - 0.5);
     groundBody = world.CreateBody(&bodyDef);
 
     b2PolygonShape shape;
     shape.SetAsBox(4, 0.5);
     groundBody->CreateFixture(&shape, 0);
-  }
-  {
-    b2BodyDef bodyDef;
-    bodyDef.type = b2_dynamicBody;
-    bodyDef.position = b2Vec2(4, 1);
-    boxBody = world.CreateBody(&bodyDef);
-
-    b2PolygonShape shape;
-    shape.SetAsBox(0.25, 0.25);
-    b2FixtureDef fixtureDef;
-    fixtureDef.shape = &shape;
-    fixtureDef.density = 1;
-    fixtureDef.friction = 0.3;
-    boxBody->CreateFixture(&fixtureDef);
   }
 }
 
@@ -128,8 +114,43 @@ void Engine::update([[maybe_unused]] double dt) {
     JS_reload();
   }
 
-  // Step physics test
-  world.Step(dt, 6, 2);
+  // Update physics test
+  {
+    // Step world
+    world.Step(dt, 6, 2);
+
+    // Create box on click
+    auto mouseDown = false;
+    double mouseX, mouseY;
+    if (lv.mouse.isDown({ 1 })) {
+      mouseDown = true;
+      lv.mouse.getPosition(mouseX, mouseY);
+    } else if (lv.touch.getTouches().size() > 0) {
+      mouseDown = true;
+      auto &touch = lv.touch.getTouches()[0];
+      mouseX = touch.x;
+      mouseY = touch.y;
+    }
+    if (mouseDown && !prevMouseDown) {
+      fmt::print("making!\n");
+
+      b2BodyDef bodyDef;
+      bodyDef.type = b2_dynamicBody;
+      bodyDef.position = b2Vec2(mouseX / 100, mouseY / 100);
+      auto boxBody = world.CreateBody(&bodyDef);
+
+      b2PolygonShape shape;
+      shape.SetAsBox(0.25, 0.25);
+      b2FixtureDef fixtureDef;
+      fixtureDef.shape = &shape;
+      fixtureDef.density = 1;
+      fixtureDef.friction = 0.3;
+      boxBody->CreateFixture(&fixtureDef);
+
+      boxBodies.push_back(boxBody);
+    }
+    prevMouseDown = mouseDown;
+  }
 }
 
 
@@ -146,12 +167,21 @@ void Engine::draw() {
 
     lv.graphics.scale(100, 100);
 
-    lv.graphics.setColor(love::Colorf(0.4, 0.4, 0.4, 1));
-    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, 0, 3.5, 8, 1);
+    {
+      auto [x, y] = groundBody->GetPosition();
+      lv.graphics.setColor(love::Colorf(0.4, 0.4, 0.4, 1));
+      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x - 4, y - 0.5, 8, 1);
+    }
 
     lv.graphics.setColor(love::Colorf(0.4, 0.4, 0.2, 1));
-    auto [x, y] = boxBody->GetPosition();
-    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x - 0.25, y - 0.25, 0.5, 0.5);
+    for (auto &boxBody : boxBodies) {
+      auto [x, y] = boxBody->GetPosition();
+      lv.graphics.push();
+      lv.graphics.translate(x, y);
+      lv.graphics.rotate(boxBody->GetAngle());
+      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, -0.25, -0.25, 0.5, 0.5);
+      lv.graphics.pop();
+    }
 
     lv.graphics.pop();
   }
