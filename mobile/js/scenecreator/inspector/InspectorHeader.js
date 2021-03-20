@@ -221,7 +221,7 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
                 )}
               </TouchableOpacity>
             ) : null}
-            {data.isBlueprint ? ( // Only showing fork / duplicate button for blueprints right now
+            {true || data.isBlueprint ? ( // Leaving this here to allow skipping actor duplicate button...
               <TouchableOpacity
                 style={styles.actionButton}
                 onPress={() => sendAction('duplicateSelection')}>
