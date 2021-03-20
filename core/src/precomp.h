@@ -15,7 +15,7 @@
 // fmt
 #include <fmt/format.h>
 
-// love
+// Love
 #include <modules/math/RandomGenerator.h>
 #include <modules/filesystem/physfs/Filesystem.h>
 #include <modules/timer/Timer.h>
@@ -27,3 +27,6 @@
 #include <modules/font/freetype/Font.h>
 #include <modules/graphics/opengl/Graphics.h>
 #include <modules/window/sdl/Window.h>
+
+// Box2D (disambiguate vs. Love's version)
+#include <../vendor/box2d/include/box2d/box2d.h>

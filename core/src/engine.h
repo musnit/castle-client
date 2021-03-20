@@ -26,6 +26,13 @@ private:
       14, love::TrueTypeRasterizer::HINTING_NORMAL) };
 
 
+  b2World world { b2Vec2(0, 9.8) };
+
+  b2Body *groundBody = nullptr;
+
+  b2Body *boxBody = nullptr;
+
+
   void update(double dt);
 
   void draw();

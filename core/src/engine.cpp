@@ -42,6 +42,31 @@ Engine::Engine() {
 
   // First timer step
   lv.timer.step();
+
+  // Setup physics test
+  {
+    b2BodyDef bodyDef;
+    bodyDef.position = b2Vec2(4, 4);
+    groundBody = world.CreateBody(&bodyDef);
+
+    b2PolygonShape shape;
+    shape.SetAsBox(4, 0.5);
+    groundBody->CreateFixture(&shape, 0);
+  }
+  {
+    b2BodyDef bodyDef;
+    bodyDef.type = b2_dynamicBody;
+    bodyDef.position = b2Vec2(4, 1);
+    boxBody = world.CreateBody(&bodyDef);
+
+    b2PolygonShape shape;
+    shape.SetAsBox(0.25, 0.25);
+    b2FixtureDef fixtureDef;
+    fixtureDef.shape = &shape;
+    fixtureDef.density = 1;
+    fixtureDef.friction = 0.3;
+    boxBody->CreateFixture(&fixtureDef);
+  }
 }
 
 Engine::~Engine() {
@@ -102,6 +127,9 @@ void Engine::update([[maybe_unused]] double dt) {
       && lv.keyboard.isDown({ love::Keyboard::KEY_R })) {
     JS_reload();
   }
+
+  // Step physics test
+  world.Step(dt, 6, 2);
 }
 
 
@@ -112,15 +140,20 @@ void Engine::update([[maybe_unused]] double dt) {
 void Engine::draw() {
   lv.graphics.clear(love::Colorf(0.2, 0.2, 0.2, 1), {}, {});
 
-  lv.graphics.setColor(love::Colorf(0.4, 0.4, 0.2, 1));
-  if (lv.mouse.isDown({ 1 })) {
-    double x, y;
-    lv.mouse.getPosition(x, y);
-    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x - 40, y - 40, 80, 80, 5, 5, 40);
-  }
-  for (const auto &touch : lv.touch.getTouches()) {
-    lv.graphics.rectangle(
-        love::Graphics::DrawMode::DRAW_FILL, touch.x - 40, touch.y - 40, 80, 80, 5, 5, 40);
+  // Draw physics test
+  {
+    lv.graphics.push();
+
+    lv.graphics.scale(100, 100);
+
+    lv.graphics.setColor(love::Colorf(0.4, 0.4, 0.4, 1));
+    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, 0, 3.5, 8, 1);
+
+    lv.graphics.setColor(love::Colorf(0.4, 0.4, 0.2, 1));
+    auto [x, y] = boxBody->GetPosition();
+    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x - 0.25, y - 0.25, 0.5, 0.5);
+
+    lv.graphics.pop();
   }
 
   auto fps = fmt::format("fps: {}", lv.timer.getFPS());
