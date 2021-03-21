@@ -62,12 +62,12 @@ Engine::Engine() {
   {
     const char vert[] = R"(
 vec4 position(mat4 clipSpaceFromLocal, vec4 localPosition) {
-	return clipSpaceFromLocal * localPosition;
+  return clipSpaceFromLocal * localPosition;
 }
     )";
     const char frag[] = R"(
 vec4 effect(vec4 vcolor, Image tex, vec2 texcoord, vec2 pixcoord) {
-	vec4 color = Texel(tex, texcoord) * vcolor;
+  vec4 color = Texel(tex, texcoord) * vcolor;
   if (color.a > 0.2) {
     return vec4(1.0, 0.0, 0.0, 1.0);
   } else {
