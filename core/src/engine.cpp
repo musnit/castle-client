@@ -119,7 +119,7 @@ void Engine::update([[maybe_unused]] double dt) {
     // Step world
     world.Step(dt, 6, 2);
 
-    // Create box on click
+    // Create / destroy boxes on click
     auto mouseDown = false;
     double mouseX, mouseY;
     if (lv.mouse.isDown({ 1 })) {
@@ -132,22 +132,47 @@ void Engine::update([[maybe_unused]] double dt) {
       mouseY = touch.y;
     }
     if (mouseDown && !prevMouseDown) {
-      fmt::print("making!\n");
+      mouseX /= 100; // Scale down to physics coordinates
+      mouseY /= 100;
 
-      b2BodyDef bodyDef;
-      bodyDef.type = b2_dynamicBody;
-      bodyDef.position = b2Vec2(mouseX / 100, mouseY / 100);
-      auto boxBody = world.CreateBody(&bodyDef);
+      // See if we clicked on an existing box. If so, destroy that, else create new
+      struct Callback : b2QueryCallback {
+        b2Body *hit = nullptr;
+        virtual bool ReportFixture(b2Fixture *fixture) override {
+          hit = fixture->GetBody();
+          return false;
+        }
+      };
+      b2AABB aabb { b2Vec2(mouseX - 0.01, mouseY - 0.01), b2Vec2(mouseX + 0.01, mouseY + 0.01) };
+      Callback cb;
+      world.QueryAABB(&cb, aabb);
+      if (cb.hit) {
+        // Hit something, destroy it if it's a box
+        auto tail = std::remove_if(boxBodies.begin(), boxBodies.end(), [&](const b2Body *body) {
+          return body == cb.hit;
+        });
+        if (tail != boxBodies.end()) {
+          boxBodies.erase(tail, boxBodies.end());
+          world.DestroyBody(cb.hit);
+        }
+      } else {
+        // Didn't hit anything, create new box
 
-      b2PolygonShape shape;
-      shape.SetAsBox(0.25, 0.25);
-      b2FixtureDef fixtureDef;
-      fixtureDef.shape = &shape;
-      fixtureDef.density = 1;
-      fixtureDef.friction = 0.3;
-      boxBody->CreateFixture(&fixtureDef);
+        b2BodyDef bodyDef;
+        bodyDef.type = b2_dynamicBody;
+        bodyDef.position = b2Vec2(mouseX, mouseY);
+        auto boxBody = world.CreateBody(&bodyDef);
 
-      boxBodies.push_back(boxBody);
+        b2PolygonShape shape;
+        shape.SetAsBox(0.25, 0.25);
+        b2FixtureDef fixtureDef;
+        fixtureDef.shape = &shape;
+        fixtureDef.density = 1;
+        fixtureDef.friction = 0.3;
+        boxBody->CreateFixture(&fixtureDef);
+
+        boxBodies.push_back(boxBody);
+      }
     }
     prevMouseDown = mouseDown;
   }
