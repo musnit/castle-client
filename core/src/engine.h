@@ -26,12 +26,6 @@ private:
       14, love::TrueTypeRasterizer::HINTING_NORMAL) };
 
 
-  bool prevMouseDown = false;
-  b2World world { b2Vec2(0, 9.8) };
-  b2Body *groundBody = nullptr;
-  std::vector<b2Body *> boxBodies;
-
-
   void update(double dt);
 
   void draw();
