@@ -80,6 +80,11 @@ if(NOT MSVC)
   endif()
 endif()
 
+# Disable RTTI and exceptions
+if(NOT MSVC)
+  target_compile_options(castle-core PRIVATE -fno-rtti -fno-exceptions)
+endif()
+
 # Precompiled header
 if(NOT CMAKE_EXPORT_COMPILE_COMMANDS)
   target_precompile_headers(castle-core PRIVATE src/precomp.h)
@@ -87,6 +92,7 @@ endif()
 
 # Web flags
 if(WEB)
+  target_compile_definitions(castle-core PRIVATE EMSCRIPTEN_HAS_UNBOUND_TYPE_NAMES=0)
   target_link_options(castle-core PRIVATE "SHELL:--bind")
   target_link_options(castle-core PRIVATE "SHELL:-s WASM=1")
   target_link_options(castle-core PRIVATE "SHELL:-s MAX_WEBGL_VERSION=2")
