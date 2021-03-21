@@ -272,7 +272,8 @@ void setPointSize() {
 	gl_PointSize = love_PointSize;
 #endif
 }
-)" : R"(
+)"
+                         : R"(
 uniform sampler2D love_VideoYChannel;
 uniform sampler2D love_VideoCbChannel;
 uniform sampler2D love_VideoCrChannel;

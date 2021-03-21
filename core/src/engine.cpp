@@ -75,7 +75,8 @@ vec4 effect(vec4 vcolor, Image tex, vec2 texcoord, vec2 pixcoord) {
   }
 }
     )";
-    testShader.reset(lv.graphics.newShader(lv.wrapVertexShaderCode(vert), lv.wrapFragmentShaderCode(frag)));
+    testShader.reset(
+        lv.graphics.newShader(lv.wrapVertexShaderCode(vert), lv.wrapFragmentShaderCode(frag)));
   }
 }
 
