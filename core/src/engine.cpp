@@ -57,6 +57,26 @@ Engine::Engine() {
     slices.set(0, 0, imgData.get());
     testImg.reset(lv.graphics.newImage(slices, {}));
   }
+
+  // Setup shader test
+  {
+    const char vert[] = R"(
+vec4 position(mat4 clipSpaceFromLocal, vec4 localPosition) {
+	return clipSpaceFromLocal * localPosition;
+}
+    )";
+    const char frag[] = R"(
+vec4 effect(vec4 vcolor, Image tex, vec2 texcoord, vec2 pixcoord) {
+	vec4 color = Texel(tex, texcoord) * vcolor;
+  if (color.a > 0.2) {
+    return vec4(1.0, 0.0, 0.0, 1.0);
+  } else {
+    return vec4(0.0, 0.0, 0.0, 0.0);
+  }
+}
+    )";
+    testShader.reset(lv.graphics.newShader(lv.wrapVertexShaderCode(vert), lv.wrapFragmentShaderCode(frag)));
+  }
 }
 
 Engine::~Engine() {
@@ -129,8 +149,11 @@ void Engine::draw() {
 
   // Draw image test
   {
+    lv.graphics.push(love::Graphics::STACK_ALL);
     lv.graphics.setColor(love::Colorf(1, 1, 1, 1));
+    lv.graphics.setShader(testShader.get());
     testImg->draw(&lv.graphics, love::Matrix4(120, 20, 0, 1, 1, 0, 0, 0, 0));
+    lv.graphics.pop();
   }
 
   auto fps = fmt::format("fps: {}", lv.timer.getFPS());

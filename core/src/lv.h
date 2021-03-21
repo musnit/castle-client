@@ -63,9 +63,16 @@ public:
 
   Lv(int windowWidth, int windowHeight, const char *arg0 = "/love-app");
 
+  // Add Love boilerplate around shader code. This is required for the
+  // Love-specific extensions to GLSL to work (eg. variables like
+  // `TransformMatrix` or using `effect` as the entrypoint)
+  std::string wrapVertexShaderCode(const char *code);
+  std::string wrapFragmentShaderCode(const char *code);
+
 
 private:
   Lv &lv { *this };
 
+  std::string wrapShaderCode(bool isVertex, const char *code);
   void setupDefaultShaderCode();
 };
