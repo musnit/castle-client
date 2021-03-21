@@ -42,6 +42,16 @@ Engine::Engine() {
 
   // First timer step
   lv.timer.step();
+
+  // Setup image test
+  {
+    auto fileData = std::unique_ptr<love::FileData>(lv.filesystem.read("assets/avatar2.png"));
+    auto imgData = std::unique_ptr<love::ImageData>(lv.image.newImageData(fileData.get()));
+    love::Image::Slices slices(love::TEXTURE_2D);
+    slices.set(0, 0, imgData.get());
+    testImg.reset(lv.graphics.newImage(slices, {}));
+    testImg->setFilter({ love::Texture::FILTER_NEAREST, love::Texture::FILTER_NEAREST });
+  }
 }
 
 Engine::~Engine() {
@@ -111,6 +121,12 @@ void Engine::update([[maybe_unused]] double dt) {
 
 void Engine::draw() {
   lv.graphics.clear(love::Colorf(0.2, 0.2, 0.2, 1), {}, {});
+
+  // Draw image test
+  {
+    lv.graphics.setColor(love::Colorf(1, 1, 1, 1));
+    testImg->draw(&lv.graphics, love::Matrix4(120, 20, 0, 1, 1, 0, 0, 0, 0));
+  }
 
   auto fps = fmt::format("fps: {}", lv.timer.getFPS());
   lv.graphics.setColor(love::Colorf(0, 0, 0, 1));

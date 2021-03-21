@@ -11,9 +11,11 @@ using namespace love::touch;
 using namespace love::mouse;
 using namespace love::keyboard;
 using namespace love::system;
-using namespace love::window;
+using namespace love::image;
 using namespace love::font;
 using namespace love::graphics;
+using namespace love::window;
+using Image = love::graphics::Image;
 using Font = love::graphics::Font;
 }
 
@@ -47,6 +49,7 @@ private:                                                                        
   LOVE_MODULE(love::mouse::sdl::Mouse, mouse);
   LOVE_MODULE(love::keyboard::sdl::Keyboard, keyboard);
   LOVE_MODULE(love::system::sdl::System, system);
+  LOVE_MODULE(love::image::Image, image);
   LOVE_MODULE(love::font::freetype::Font, font);
   LOVE_MODULE(love::graphics::opengl::Graphics, graphics);
   LOVE_MODULE(love::window::sdl::Window, window); // Important for `Window` to be last!

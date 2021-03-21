@@ -24,6 +24,7 @@
 #include <modules/mouse/sdl/Mouse.h>
 #include <modules/keyboard/sdl/Keyboard.h>
 #include <modules/system/sdl/System.h>
+#include <modules/image/Image.h>
 #include <modules/font/freetype/Font.h>
 #include <modules/graphics/opengl/Graphics.h>
 #include <modules/window/sdl/Window.h>
