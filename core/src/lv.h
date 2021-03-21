@@ -3,6 +3,7 @@
 
 namespace love {
 // Bring a bunch of Love symbols into the top level of its namespace
+using namespace love::data;
 using namespace love::math;
 using namespace love::filesystem;
 using namespace love::timer;
@@ -42,6 +43,8 @@ private:                                                                        
     name                                                                                           \
   }
 
+public:
+  love::data::DataModule &data { love::data::DataModule::instance };
   LOVE_MODULE(love::filesystem::physfs::Filesystem, filesystem);
   LOVE_MODULE(love::timer::Timer, timer);
   LOVE_MODULE(love::event::sdl::Event, event);

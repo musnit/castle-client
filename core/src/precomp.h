@@ -16,6 +16,7 @@
 #include <fmt/format.h>
 
 // Love
+#include <modules/data/DataModule.h>
 #include <modules/math/RandomGenerator.h>
 #include <modules/filesystem/physfs/Filesystem.h>
 #include <modules/timer/Timer.h>
