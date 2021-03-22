@@ -22,6 +22,7 @@ import FastImage from 'react-native-fast-image';
 import gql from 'graphql-tag';
 import Viewport from '../common/viewport';
 
+import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 import * as LocalId from '../common/local-id';
 
@@ -120,6 +121,7 @@ const CreateScreenAuthenticated = () => {
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
+      Amplitude.logEvent('VIEW_CREATE');
       fetchDecks();
     }, [])
   );
