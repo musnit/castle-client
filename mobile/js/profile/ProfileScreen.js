@@ -97,10 +97,6 @@ export const ProfileScreen = ({ userId, route }) => {
 
   let lastFetchTime;
 
-  React.useEffect(() => {
-    Amplitude.logEventWithProperties('VIEW_PROFILE', { userId, isOwnProfile: isMe });
-  }, []);
-
   const [fetchProfile, query] = useProfileQuery(userId);
 
   const onRefresh = React.useCallback(() => {
@@ -123,12 +119,13 @@ export const ProfileScreen = ({ userId, route }) => {
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
+      Amplitude.logEventWithProperties('VIEW_PROFILE', { userId, isOwnProfile: isMe });
 
       if (!(lastFetchTime && Date.now() - lastFetchTime < REFETCH_PROFILE_INTERVAL_MS)) {
         onRefresh();
         lastFetchTime = Date.now();
       }
-    }, [])
+    }, [userId, isMe])
   );
 
   const settingsSheetOnClose = (isChanged) => {

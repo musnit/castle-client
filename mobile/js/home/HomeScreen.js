@@ -100,12 +100,9 @@ export const HomeScreen = ({ route }) => {
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
-    }, [])
+      Amplitude.logEventWithProperties('VIEW_HOME', { mode });
+    }, [mode])
   );
-
-  React.useEffect(() => {
-    Amplitude.logEventWithProperties('VIEW_HOME', { mode });
-  }, [mode]);
 
   const selectedItem = items.find((item) => item.value === mode);
 

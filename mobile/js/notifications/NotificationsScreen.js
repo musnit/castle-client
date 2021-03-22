@@ -153,9 +153,11 @@ const NotificationItem = ({ notification, navigateToUser, navigateToDeck, naviga
 export const NotificationsScreen = () => {
   const { isAnonymous } = useSession();
 
-  React.useEffect(() => {
-    Amplitude.logEvent('VIEW_NOTIFICATIONS');
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      Amplitude.logEvent('VIEW_NOTIFICATIONS');
+    }, [])
+  );
 
   if (isAnonymous) {
     return (
