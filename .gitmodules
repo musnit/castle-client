@@ -7,3 +7,6 @@
 [submodule "core/vendor/box2d"]
 	path = core/vendor/box2d
 	url = https://github.com/erincatto/box2d.git
+[submodule "core/vendor/entt"]
+	path = core/vendor/entt
+	url = https://github.com/skypjack/entt.git
