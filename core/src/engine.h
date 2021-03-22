@@ -25,9 +25,6 @@ private:
   std::unique_ptr<love::Font> debugFont { lv.graphics.newDefaultFont(
       14, love::TrueTypeRasterizer::HINTING_NORMAL) };
 
-  std::unique_ptr<love::Image> testImg;
-  std::unique_ptr<love::Shader> testShader;
-
 
   void update(double dt);
 
