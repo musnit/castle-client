@@ -21,7 +21,6 @@ JS_DEFINE(int, JS_getCanvasWidth, (),
     { return document.querySelector("#canvas").getBoundingClientRect().width; });
 JS_DEFINE(int, JS_getCanvasHeight, (),
     { return document.querySelector("#canvas").getBoundingClientRect().height; });
-JS_DEFINE(void, JS_reload, (), { window.location.reload(); });
 
 
 //
@@ -39,6 +38,11 @@ extern "C" bool ghostChildWindowCloseEventReceived; // Whether the OS tried to c
 Engine::Engine() {
   // SDL parameters
   SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0"); // Don't doublecount touches as mouse events
+#ifdef __EMSCRIPTEN__
+  SDL_EventState(SDL_TEXTINPUT, SDL_DISABLE); // Prevent keyboard input capture in web
+  SDL_EventState(SDL_KEYDOWN, SDL_DISABLE);
+  SDL_EventState(SDL_KEYUP, SDL_DISABLE);
+#endif
 
   // First timer step
   lv.timer.step();
@@ -133,11 +137,6 @@ bool Engine::frame() {
 //
 
 void Engine::update([[maybe_unused]] double dt) {
-  // Reload on Ctrl+R
-  if (lv.keyboard.isDown({ love::Keyboard::KEY_RCTRL, love::Keyboard::KEY_LCTRL })
-      && lv.keyboard.isDown({ love::Keyboard::KEY_R })) {
-    JS_reload();
-  }
 }
 
 
