@@ -32,3 +32,6 @@
 
 // Box2D (disambiguate vs. Love's version)
 #include <../vendor/box2d/include/box2d/box2d.h>
+
+// entt
+#include <entt/entity/registry.hpp>

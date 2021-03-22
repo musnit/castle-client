@@ -514,6 +514,9 @@ set(BOX2D_BUILD_TESTBED OFF CACHE BOOL "" FORCE)
 add_subdirectory(vendor/box2d EXCLUDE_FROM_ALL)
 target_link_libraries(castle-core PRIVATE box2d)
 
+# entt
+target_include_directories(castle-core PRIVATE vendor/entt/src)
+
 # rapidjson
 #target_include_directories(castle-core PRIVATE vendor/rapidjson/include)
 
