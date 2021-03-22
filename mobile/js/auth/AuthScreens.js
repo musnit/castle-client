@@ -18,6 +18,7 @@ import { navigateToUri } from '../DeepLinks';
 
 import { ScreenHeader } from '../components/ScreenHeader';
 
+import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 import * as GhostChannels from '../ghost/GhostChannels';
 
@@ -260,6 +261,10 @@ const CreateAccountForm = ({ route }) => {
   const nameInput = React.useRef();
   const emailInput = React.useRef();
   const pwInput = React.useRef();
+
+  useEffect(() => {
+    Amplitude.logEvent('VIEW_SIGN_UP');
+  }, []);
 
   const onPressLogin = () => {
     navigate('LoginScreen');
