@@ -101,7 +101,7 @@ class CreateCardScreenDataProvider extends React.Component {
         } catch (e) {
           throw new Error(`Unable to fetch logged in creator: ${e}`);
         }
-        Amplitude.logEvent('START_CREATING_NEW_DECK');
+        Amplitude.logEvent('START_CREATING_NEW_DECK', { deckId: deck.deckId });
       }
 
       let deckState;
