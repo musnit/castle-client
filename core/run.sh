@@ -152,4 +152,9 @@ case "$1" in
   web-serve-debug)
     npx http-server -p 9001 -c-1 build/web-debug
     ;;
+  web-publish)
+    ./run.sh web-release
+    rm -rf web-publish/*
+    mkdir -p web-publish
+    cp build/web-release/{index.*,castle-core.*} web-publish/
 esac
