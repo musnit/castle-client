@@ -11,6 +11,7 @@ For now the project is starting with a focus on getting web working.
 - **web/**: A simple web harness with a canvas and a launcher for the core WASM
 - **assets/**: Static assets for Emscripten to embed into the WASM binary
 - **build/**: (ignored in Git) Build output from Emscripten, including the generated WASM binary
+- **web-publish/**: Currently published test release of core for the web
 - **tools/**: Useful tools for development, including code generation scripts
 
 ## Building and running
