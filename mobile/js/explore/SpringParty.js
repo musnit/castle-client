@@ -344,8 +344,8 @@ export const SpringPartyCountdown = () => {
         ...Constants.styles.container,
         paddingTop: insets.top,
       }}>
-      {hasPartyStarted && countdown}
-      {!hasPartyStarted && <SpringDecks />}
+      {!hasPartyStarted && countdown}
+      {hasPartyStarted && <SpringDecks />}
     </View>
   );
 };
