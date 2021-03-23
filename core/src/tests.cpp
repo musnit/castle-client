@@ -9,7 +9,7 @@
 
 
 //
-// Basic actor management (add, remove, draw orders)
+// Basic actor management (add, remove, draw order)
 //
 
 struct BasicActorManagementTest : Test {
@@ -76,9 +76,6 @@ struct BasicActorManagementTest : Test {
 
 Tests::Tests() {
   tests.emplace_back(std::make_unique<BasicActorManagementTest>());
-}
-
-Tests::~Tests() {
 }
 
 

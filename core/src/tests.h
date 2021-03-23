@@ -19,7 +19,7 @@ struct Test {
 };
 
 class Tests {
-  // Automated tests for our various APIs. `Engine` creates and instance of
+  // Automated tests for our various APIs. `Engine` creates an instance of
   // this and calls its methods when testing is enabled.
 
 public:
@@ -27,7 +27,6 @@ public:
   const Tests &operator=(const Tests &) = delete;
 
   Tests();
-  ~Tests();
 
   void update(double dt);
   void draw();
