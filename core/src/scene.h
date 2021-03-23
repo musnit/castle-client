@@ -15,9 +15,11 @@ struct Actor {
   Actor &operator=(Actor &&) = default;
 
   ActorId actorId;
-  mutable int drawOrder; // `a.drawOrder < b.drawOrder` means `a` is drawn behind (before) `b`. Draw
-                         // orders are compacted when iterating so the absolute draw order value of
-                         // an actor cannot be relied upon across frames.
+
+  // `a.drawOrder < b.drawOrder` means `a` is drawn behind (before) `b`. Draw orders are compacted
+  // when sorting so their absolute value is not constant across frames for any particular actor.
+  // Only the relative order can be relied upon.
+  mutable int drawOrder;
 };
 
 class Scene {
@@ -48,13 +50,19 @@ public:
 
   void setActorDrawOrder(ActorId actorId, int drawOrder);
   template<typename F>
-  void forEachActorByDrawOrder(F &&f);
+  void forEachActorByDrawOrder(F &&f); // `f` must take either `(ActorId, Actor &)` or `(Actor &)`
+  template<typename F>
+  void forEachActorByDrawOrder(F &&f) const;
 
 
 private:
   entt::registry registry;
 
-  mutable bool actorsNeedSort = false; // Whether need a draw order sort before next iteration
+  mutable int nextNewDrawOrder = 0; // Always greater than the draw order of any existing actor
+  mutable bool needDrawOrderSort = false;
+
+
+  void ensureDrawOrderSort() const;
 };
 
 
@@ -84,17 +92,12 @@ inline const Actor &Scene::getActor(ActorId actorId) const {
 
 template<typename F>
 void Scene::forEachActorByDrawOrder(F &&f) {
-  if (actorsNeedSort) {
-    registry.sort<Actor>(
-        [&](const Actor &a, const Actor &b) {
-          return a.drawOrder < b.drawOrder;
-        },
-        entt::insertion_sort());
-    actorsNeedSort = false;
-    auto nextCompactDrawOrder = 0;
-    registry.view<Actor>().each([&](const Actor &actor) {
-      actor.drawOrder = nextCompactDrawOrder++;
-    });
-  }
+  ensureDrawOrderSort();
   registry.view<Actor>().each(f);
+}
+
+template<typename F>
+void Scene::forEachActorByDrawOrder(F &&f) const {
+  ensureDrawOrderSort();
+  registry.view<const Actor>().each(f);
 }

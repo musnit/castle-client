@@ -6,16 +6,9 @@
 //
 
 ActorId Scene::addActor() {
-  auto actorId = registry.create();
-  auto drawOrder = 0;
-  auto numActors = registry.size<Actor>();
-  if (numActors > 0) {
-    auto highestDrawOrderId = registry.data<Actor>()[numActors - 1];
-    drawOrder = getActor(highestDrawOrderId).drawOrder;
-  }
-  registry.emplace<Actor>(actorId, actorId, drawOrder);
-  actorsNeedSort = true;
-  return actorId;
+  auto newActorId = registry.create();
+  registry.emplace<Actor>(newActorId, newActorId, nextNewDrawOrder++);
+  return newActorId;
 }
 
 void Scene::removeActor(ActorId actorId) {
@@ -27,10 +20,27 @@ void Scene::removeActor(ActorId actorId) {
   // TODO(nikki): Call behavior disable component handlers
 
   registry.destroy(actorId);
-  actorsNeedSort = true;
+  needDrawOrderSort = true;
 }
 
 void Scene::setActorDrawOrder(ActorId actorId, int newDrawOrder) {
   getActor(actorId).drawOrder = newDrawOrder;
-  actorsNeedSort = true;
+  nextNewDrawOrder = std::max(nextNewDrawOrder, newDrawOrder + 1);
+  needDrawOrderSort = true;
+}
+
+void Scene::ensureDrawOrderSort() const {
+  if (needDrawOrderSort) {
+    const_cast<entt::registry &>(registry).sort<Actor>(
+        [&](const Actor &a, const Actor &b) {
+          return a.drawOrder < b.drawOrder;
+        },
+        entt::insertion_sort()); // Insertion sort since it's already mostly sorted
+    needDrawOrderSort = false;
+    auto nextCompactDrawOrder = 0;
+    registry.view<const Actor>().each([&](const Actor &actor) {
+      actor.drawOrder = nextCompactDrawOrder++;
+    });
+    nextNewDrawOrder = nextCompactDrawOrder;
+  }
 }
