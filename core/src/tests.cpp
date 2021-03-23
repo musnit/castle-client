@@ -56,6 +56,16 @@ struct BasicActorManagementTest : Test {
     assert(scene.getActor(actor1).drawOrder == 1);
     assert(scene.getActor(actor3).drawOrder == 2);
 
+    // Check passing to `const Scene &`
+    const auto foo = [&](const Scene &scene) {
+      std::vector<ActorId> results;
+      scene.forEachActorByDrawOrder([&](ActorId actorId, const Actor &) {
+        results.push_back(actorId);
+      });
+      assert(results == std::vector<ActorId>({ actor2, actor1, actor3 }));
+    };
+    foo(scene);
+
     // Remove two actors and check again
     scene.removeActor(actor2);
     scene.removeActor(actor3);
