@@ -32,11 +32,9 @@ void Scene::setActorDrawOrder(ActorId actorId, int newDrawOrder) {
 
 void Scene::ensureDrawOrderSort() const {
   if (needDrawOrderSort) {
-    const_cast<entt::registry &>(registry).sort<Actor>(
-        [&](const Actor &a, const Actor &b) {
-          return a.drawOrder < b.drawOrder;
-        },
-        entt::insertion_sort()); // Insertion sort since it's already mostly sorted
+    const_cast<entt::registry &>(registry).sort<Actor>([&](const Actor &a, const Actor &b) {
+      return a.drawOrder < b.drawOrder;
+    });
     needDrawOrderSort = false;
     auto nextCompactDrawOrder = 0;
     registry.view<const Actor>().each([&](const Actor &actor) {
