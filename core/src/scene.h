@@ -1,3 +1,5 @@
+#pragma once
+
 #include "precomp.h"
 
 
@@ -23,10 +25,9 @@ struct Actor {
 };
 
 class Scene {
-  // Maintains the runtime state of a single Castle scene. This involves
-  // managing `Actor` instances, tracking them by their `ActorId`, managing
-  // behavior instances and the membership of actors in behaviors. Also
-  // provides top-level methods for drawing and updating the whole scene.
+  // Maintains the runtime state of a single Castle scene. This involves managing `Actor` instances,
+  // tracking them by their `ActorId`, managing behavior instances and the membership of actors in
+  // behaviors. Also provides top-level methods for drawing and updating the whole scene.
 
 public:
   static constexpr auto debugChecks = true; // `false` to disable debug reporting (eg. invalid
