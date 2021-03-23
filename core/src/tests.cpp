@@ -31,7 +31,7 @@ struct BasicActorManagementTest : Test {
       assert(results == std::vector<ActorId>({ actor1, actor2 }));
     }
 
-    // Modify draw order and check again
+    // Modify draw order and check again, making sure compacted
     scene.setActorDrawOrder(actor1, 20);
     {
       std::vector<ActorId> results;
@@ -40,13 +40,25 @@ struct BasicActorManagementTest : Test {
       });
       assert(results == std::vector<ActorId>({ actor2, actor1 }));
     }
-
-    // Make sure draw orders are compacted
     assert(scene.getActor(actor2).drawOrder == 0);
     assert(scene.getActor(actor1).drawOrder == 1);
 
-    // Remove an actor and check again
+    // Add another actor and check again
+    auto actor3 = scene.addActor();
+    {
+      std::vector<ActorId> results;
+      scene.forEachActorByDrawOrder([&](ActorId actorId, Actor &) {
+        results.push_back(actorId);
+      });
+      assert(results == std::vector<ActorId>({ actor2, actor1, actor3 }));
+    }
+    assert(scene.getActor(actor2).drawOrder == 0);
+    assert(scene.getActor(actor1).drawOrder == 1);
+    assert(scene.getActor(actor3).drawOrder == 2);
+
+    // Remove two actors and check again
     scene.removeActor(actor2);
+    scene.removeActor(actor3);
     assert(!scene.hasActor(actor2));
     {
       std::vector<ActorId> results;
@@ -55,6 +67,7 @@ struct BasicActorManagementTest : Test {
       });
       assert(results == std::vector<ActorId>({ actor1 }));
     }
+    assert(scene.getActor(actor1).drawOrder == 0);
 
     // Remove last actor and check empty
     scene.removeActor(actor1);
@@ -66,6 +79,20 @@ struct BasicActorManagementTest : Test {
       });
       assert(results == std::vector<ActorId>());
     }
+
+    // Make sure new IDs aren't equal to old ones
+    auto actor4 = scene.addActor();
+    assert(actor1 != actor4);
+    assert(actor2 != actor4);
+    assert(actor3 != actor4);
+    {
+      std::vector<ActorId> results;
+      scene.forEachActorByDrawOrder([&](ActorId actorId, Actor &) {
+        results.push_back(actorId);
+      });
+      assert(results == std::vector<ActorId>({ actor4 }));
+    }
+    assert(scene.getActor(actor4).drawOrder == 0);
   }
 };
 
