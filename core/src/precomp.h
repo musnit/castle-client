@@ -3,6 +3,8 @@
 // of headers here that don't change much and are referenced in a lot of places
 // (eg. external library headers).
 
+#pragma once
+
 // Standard library
 #include <memory>
 
