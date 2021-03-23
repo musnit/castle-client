@@ -1,0 +1,107 @@
+#include "tests.h"
+
+#ifdef CASTLE_ENABLE_TESTS
+
+#undef NDEBUG // To make sure `assert`s aren't elided in release builds
+#include <cassert>
+
+#include "scene.h"
+
+
+//
+// Basic actor management (add, remove, draw orders)
+//
+
+struct BasicActorManagementTest : Test {
+  BasicActorManagementTest() {
+    Scene scene;
+
+    // Add two actors
+    auto actor1 = scene.addActor();
+    assert(scene.hasActor(actor1));
+    auto actor2 = scene.addActor();
+    assert(scene.hasActor(actor2));
+
+    // Check draw order
+    {
+      std::vector<ActorId> results;
+      scene.forEachActorByDrawOrder([&](ActorId actorId, Actor &) {
+        results.push_back(actorId);
+      });
+      assert(results == std::vector<ActorId>({ actor1, actor2 }));
+    }
+
+    // Modify draw order and check again
+    scene.setActorDrawOrder(actor1, 20);
+    {
+      std::vector<ActorId> results;
+      scene.forEachActorByDrawOrder([&](ActorId actorId, Actor &) {
+        results.push_back(actorId);
+      });
+      assert(results == std::vector<ActorId>({ actor2, actor1 }));
+    }
+
+    // Make sure draw orders are compacted
+    assert(scene.getActor(actor2).drawOrder == 0);
+    assert(scene.getActor(actor1).drawOrder == 1);
+
+    // Remove an actor and check again
+    scene.removeActor(actor2);
+    assert(!scene.hasActor(actor2));
+    {
+      std::vector<ActorId> results;
+      scene.forEachActorByDrawOrder([&](ActorId actorId, Actor &) {
+        results.push_back(actorId);
+      });
+      assert(results == std::vector<ActorId>({ actor1 }));
+    }
+
+    // Remove last actor and check empty
+    scene.removeActor(actor1);
+    assert(!scene.hasActor(actor1));
+    {
+      std::vector<ActorId> results;
+      scene.forEachActorByDrawOrder([&](ActorId actorId, Actor &) {
+        results.push_back(actorId);
+      });
+      assert(results == std::vector<ActorId>());
+    }
+  }
+};
+
+
+//
+// Constructor, destructor
+//
+
+Tests::Tests() {
+  tests.emplace_back(std::make_unique<BasicActorManagementTest>());
+}
+
+Tests::~Tests() {
+}
+
+
+//
+// Update
+//
+
+void Tests::update([[maybe_unused]] double dt) {
+  for (auto &test : tests) {
+    test->update(dt);
+  }
+}
+
+
+//
+// Draw
+//
+
+void Tests::draw() {
+  for (auto &test : tests) {
+    test->draw();
+  }
+}
+
+
+#endif

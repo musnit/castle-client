@@ -2,6 +2,7 @@
 
 #include "lv.h"
 #include "scene.h"
+#include "tests.h"
 
 
 class Engine {
@@ -34,7 +35,11 @@ private:
       14, love::TrueTypeRasterizer::HINTING_NORMAL) };
 
 
-  Scene scene; // Single test scene for now
+#ifdef CASTLE_ENABLE_TESTS
+  Tests tests;
+#endif
+
+  Scene scene; // Single scene for now
 
 
   void update(double dt);

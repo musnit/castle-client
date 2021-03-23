@@ -101,6 +101,9 @@ bool Engine::frame() {
 //
 
 void Engine::update([[maybe_unused]] double dt) {
+#ifdef CASTLE_ENABLE_TESTS
+  tests.update(dt);
+#endif
 }
 
 
@@ -110,6 +113,10 @@ void Engine::update([[maybe_unused]] double dt) {
 
 void Engine::draw() {
   lv.graphics.clear(love::Colorf(0.2, 0.2, 0.2, 1), {}, {});
+
+#ifdef CASTLE_ENABLE_TESTS
+  tests.draw();
+#endif
 
   auto fps = fmt::format("fps: {}", lv.timer.getFPS());
   lv.graphics.setColor(love::Colorf(0, 0, 0, 1));

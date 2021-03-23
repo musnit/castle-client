@@ -8,6 +8,7 @@
 ActorId Scene::addActor() {
   auto newActorId = registry.create();
   registry.emplace<Actor>(newActorId, newActorId, nextNewDrawOrder++);
+  needDrawOrderSort = true;
   return newActorId;
 }
 
