@@ -93,11 +93,11 @@ inline const Actor &Scene::getActor(ActorId actorId) const {
 template<typename F>
 void Scene::forEachActorByDrawOrder(F &&f) {
   ensureDrawOrderSort();
-  registry.view<Actor>().each(f);
+  registry.view<Actor>().each(std::forward<F>(f));
 }
 
 template<typename F>
 void Scene::forEachActorByDrawOrder(F &&f) const {
   ensureDrawOrderSort();
-  registry.view<const Actor>().each(f);
+  registry.view<const Actor>().each(std::forward<F>(f));
 }
