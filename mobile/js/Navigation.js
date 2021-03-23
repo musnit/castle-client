@@ -11,6 +11,7 @@ import { CreateScreen } from './create/CreateScreen';
 import { CreateDeckNavigator } from './create/CreateDeckNavigator';
 import { useAppState } from './ghost/GhostAppState';
 import { HomeScreen } from './home/HomeScreen';
+import { ExploreScreen } from './explore/ExploreScreen';
 import { NotificationsScreen } from './notifications/NotificationsScreen';
 import { PlayDeckScreen } from './play/PlayDeckScreen';
 import { ProfileScreen } from './profile/ProfileScreen';
@@ -41,6 +42,23 @@ const BrowseNavigator = () => (
       headerShown: false,
     }}>
     <Stack.Screen name="HomeScreen" component={HomeScreen} />
+    <Stack.Screen name="PlayDeck" component={PlayDeckScreen} options={{ gestureEnabled: false }} />
+    <Stack.Screen name="Profile" component={ProfileScreen} />
+    <Stack.Screen
+      name="ViewSource"
+      component={ViewSourceNavigator}
+      options={{ gestureEnabled: false }}
+    />
+  </Stack.Navigator>
+);
+
+const ExploreNavigator = () => (
+  <Stack.Navigator
+    initialRouteName="Explore"
+    screenOptions={{
+      headerShown: false,
+    }}>
+    <Stack.Screen name="Explore" component={ExploreScreen} />
     <Stack.Screen name="PlayDeck" component={PlayDeckScreen} options={{ gestureEnabled: false }} />
     <Stack.Screen name="Profile" component={ProfileScreen} />
     <Stack.Screen
@@ -158,6 +176,27 @@ const TabNavigator = () => {
                     height: ICON_SIZE,
                   }}
                   source={require('../assets/images/BottomTabs-browse.png')}
+                />
+              );
+            },
+          };
+        }}
+      />
+      <Tab.Screen
+        name="Explore"
+        component={ExploreNavigator}
+        options={({ route }) => {
+          return {
+            tabBarVisible: !route.state || route.state.index == 0,
+            tabBarIcon: ({ focused, color }) => {
+              return (
+                <FastImage
+                  tintColor={color}
+                  style={{
+                    width: ICON_SIZE,
+                    height: ICON_SIZE,
+                  }}
+                  source={require('../assets/images/BottomTabs-explore.png')}
                 />
               );
             },

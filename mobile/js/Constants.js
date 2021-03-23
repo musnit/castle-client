@@ -90,6 +90,8 @@ export const styles = {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#fff',
   },
   secondaryButtonLabel: {
     color: '#fff',
