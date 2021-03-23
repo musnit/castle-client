@@ -1,9 +1,17 @@
 #include "precomp.h"
 
 #include "lv.h"
+#include "scene.h"
 
 
 class Engine {
+  // The top-level instance of Castle core. There should just be one of these
+  // for the entire program. Multiplicity of scenes is managed by having
+  // multiple `Scene` instances.
+  //
+  // This class initializes the various modules involved in Castle core and
+  // contains the top-level logic run on each frame of the main loop.
+
 public:
   Engine(const Engine &) = delete; // Prevent accidental copies
   const Engine &operator=(const Engine &) = delete;
@@ -24,6 +32,9 @@ private:
 
   std::unique_ptr<love::Font> debugFont { lv.graphics.newDefaultFont(
       14, love::TrueTypeRasterizer::HINTING_NORMAL) };
+
+
+  Scene scene; // Single test scene for now
 
 
   void update(double dt);
