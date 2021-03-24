@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
 import { useActionSheet } from '@expo/react-native-action-sheet';
+import { isTablet } from 'react-native-device-info';
 import * as GhostUI from '../ghost/GhostUI';
 
 import * as Constants from '../Constants';
@@ -40,10 +41,9 @@ import {
   getInspectorRules,
 } from './SceneCreatorUtilities';
 
-const USE_BELT = true;
-
-const MIN_BELT_HEIGHT = 1.2 * 48;
-const MAX_BELT_HEIGHT = 1.2 * 60;
+const TABLET_BELT_HEIGHT_MULTIPLIER = isTablet() ? 3 : 1;
+const MIN_BELT_HEIGHT = 1.2 * TABLET_BELT_HEIGHT_MULTIPLIER * 48;
+const MAX_BELT_HEIGHT = 1.2 * TABLET_BELT_HEIGHT_MULTIPLIER * 60;
 
 const styles = StyleSheet.create({
   cardBody: {
@@ -244,14 +244,6 @@ export const CreateCardScreen = ({
     },
     [onSceneRevertData, setActiveSheet]
   );
-
-  const onPressAdd = React.useCallback(() => {
-    if (USE_BELT) {
-      GhostEvents.sendAsync('TOGGLE_BELT', {});
-    } else {
-      setActiveSheet('sceneCreatorBlueprints');
-    }
-  }, []);
 
   GhostEvents.useListen({
     eventName: 'NAVIGATE_TO_CARD',
