@@ -191,12 +191,12 @@ const TabNavigator = () => {
             tabBarIcon: ({ focused, color }) => {
               return (
                 <FastImage
-                  tintColor={color}
+                  tintColor={focused ? '#00D05C' : '#888'}
                   style={{
                     width: ICON_SIZE,
                     height: ICON_SIZE,
                   }}
-                  source={require('../assets/images/BottomTabs-explore.png')}
+                  source={require('../assets/images/BottomTabs-spring.png')}
                 />
               );
             },
