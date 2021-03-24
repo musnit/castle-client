@@ -25,7 +25,7 @@ public:
   BaseBehavior(BaseBehavior &&) = default; // Allow moves
   BaseBehavior &operator=(BaseBehavior &&) = default;
 
-  BaseBehavior(Scene &scene_)
+  explicit BaseBehavior(Scene &scene_)
       : scene(scene_) {
   }
 
