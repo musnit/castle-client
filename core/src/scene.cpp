@@ -22,7 +22,7 @@ Scene::~Scene() {
 
 ActorId Scene::addActor() {
   auto newActorId = registry.create();
-  registry.emplace<Actor>(newActorId, newActorId, nextNewDrawOrder++);
+  registry.emplace<Actor>(newActorId, nextNewDrawOrder++);
   needDrawOrderSort = true;
   return newActorId;
 }

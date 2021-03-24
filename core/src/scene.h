@@ -18,8 +18,6 @@ struct Actor {
   Actor(Actor &&) = default; // Allow moves
   Actor &operator=(Actor &&) = default;
 
-  ActorId actorId;
-
   // `a.drawOrder < b.drawOrder` means `a` is drawn behind (before) `b`. Draw orders are compacted
   // when sorting so their absolute value is not constant across frames for any particular actor.
   // Only the relative order can be relied upon.
