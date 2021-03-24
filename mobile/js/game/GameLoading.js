@@ -75,10 +75,12 @@ export const GameLoading = ({ loadingImage, beltHeight, isEditable }) => {
   );
 
   return (
-    <View style={[styles.container, { top: beltHeight }]}>
+    <View style={styles.container}>
       {loadingImage?.url ? (
         isEditable ? (
-          <View style={styles.backgroundImageContainer}>{backgroundImageComponent}</View>
+          <View style={[styles.backgroundImageContainer, { paddingTop: beltHeight }]}>
+            {backgroundImageComponent}
+          </View>
         ) : (
           backgroundImageComponent
         )
