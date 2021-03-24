@@ -6,6 +6,7 @@
 #include <cassert>
 
 #include "scene.h"
+#include "behaviors/all.h"
 
 
 //
@@ -108,11 +109,68 @@ struct BasicActorManagementTest : Test {
 
 
 //
+// Basic component management (add, remove, has, get, handlers)
+//
+
+struct BasicComponentManagementTest : Test {
+  BasicComponentManagementTest() {
+    Scene scene;
+    auto &testBehavior = scene.behaviors.get<TestBehavior>();
+
+    // Add two actors
+    auto actor1 = scene.addActor();
+    auto actor2 = scene.addActor();
+
+    // Add component to one of them, check all of the things
+    testBehavior.addComponent(actor1);
+    assert(testBehavior.hasComponent(actor1));
+    assert(testBehavior.getComponent(actor1).i == 0);
+    assert((testBehavior.adds == std::vector<std::pair<ActorId, int>> { { actor1, 0 } }));
+    assert((testBehavior.disables == std::vector<std::pair<ActorId, int>> {}));
+    testBehavior.adds.clear();
+    testBehavior.disables.clear();
+
+    // Add component to another, then check again
+    testBehavior.addComponent(actor2);
+    assert(testBehavior.hasComponent(actor2));
+    assert(testBehavior.getComponent(actor1).i == 0);
+    assert(testBehavior.getComponent(actor2).i == 1);
+    assert((testBehavior.adds == std::vector<std::pair<ActorId, int>> { { actor2, 1 } }));
+    assert((testBehavior.disables == std::vector<std::pair<ActorId, int>> {}));
+    testBehavior.adds.clear();
+    testBehavior.disables.clear();
+
+    // Remove from one actor
+    testBehavior.removeComponent(actor1);
+    assert(!testBehavior.hasComponent(actor1));
+    assert(testBehavior.getComponent(actor2).i == 1);
+    assert((testBehavior.disables == std::vector<std::pair<ActorId, int>> { { actor1, 0 } }));
+    testBehavior.adds.clear();
+    testBehavior.disables.clear();
+
+    // Create two actors and add to them, check again
+    auto actor3 = scene.addActor();
+    auto actor4 = scene.addActor();
+    testBehavior.addComponent(actor3);
+    testBehavior.addComponent(actor4);
+    assert((testBehavior.adds
+        == std::vector<std::pair<ActorId, int>> { { actor3, 2 }, { actor4, 3 } }));
+    assert((testBehavior.disables == std::vector<std::pair<ActorId, int>> {}));
+
+    // TODO(nikki): Test `forEachComponent`
+
+    // TODO(nikki): Test calling disable handlers on actor destroy
+  }
+};
+
+
+//
 // Constructor, destructor
 //
 
 Tests::Tests() {
   tests.emplace_back(std::make_unique<BasicActorManagementTest>());
+  tests.emplace_back(std::make_unique<BasicComponentManagementTest>());
 }
 
 

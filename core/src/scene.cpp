@@ -1,5 +1,20 @@
 #include "scene.h"
 
+#include "behaviors/all.h"
+
+
+//
+// Constructor, destructor
+//
+
+Scene::Scene()
+    : behaviorsHolder(std::make_unique<AllBehaviors>(*this))
+    , behaviors(*behaviorsHolder) {
+}
+
+Scene::~Scene() {
+}
+
 
 //
 // Actor management

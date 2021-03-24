@@ -3,6 +3,8 @@
 #include "precomp.h"
 
 
+class AllBehaviors; // Forward declaration otherwise this would be circular...
+
 using ActorId = entt::entity; // An integer unique to each actor that identifies it
 const auto ActorNull = entt::null; // An `ActorId`-compatible value that no actor is identified by
 
@@ -36,8 +38,8 @@ public:
   Scene(const Scene &) = delete; // Prevent accidental copies
   const Scene &operator=(const Scene &) = delete;
 
-  Scene() = default;
-  ~Scene() = default;
+  Scene();
+  ~Scene();
 
 
   // Actor management
@@ -56,14 +58,36 @@ public:
   void forEachActorByDrawOrder(F &&f) const;
 
 
+  // Physics world
+
+  b2World &getPhysicsWorld();
+  const b2World &getPhysicsWorld() const;
+
+
+  // Entity registry (entt instance managing component data)
+
+  entt::registry &getEntityRegistry();
+  const entt::registry &getEntityRegistry() const;
+
+
 private:
   entt::registry registry;
 
   mutable int nextNewDrawOrder = 0; // Always greater than the draw order of any existing actor
   mutable bool needDrawOrderSort = false;
 
+  b2World physicsWorld { b2Vec2(0, 9.8) };
+
+  std::unique_ptr<AllBehaviors> behaviorsHolder;
+
 
   void ensureDrawOrderSort() const;
+
+
+public:
+  // Behaviors
+
+  AllBehaviors &behaviors; // This must be initialized after `behaviorsHolder`
 };
 
 
@@ -101,4 +125,20 @@ template<typename F>
 void Scene::forEachActorByDrawOrder(F &&f) const {
   ensureDrawOrderSort();
   registry.view<const Actor>().each(std::forward<F>(f));
+}
+
+inline b2World &Scene::getPhysicsWorld() {
+  return physicsWorld;
+}
+
+inline const b2World &Scene::getPhysicsWorld() const {
+  return physicsWorld;
+}
+
+inline entt::registry &Scene::getEntityRegistry() {
+  return registry;
+}
+
+inline const entt::registry &Scene::getEntityRegistry() const {
+  return registry;
 }

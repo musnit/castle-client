@@ -54,7 +54,7 @@ else()
 endif()
 
 # Sources
-file(GLOB MY_SOURCES CONFIGURE_DEPENDS src/*.cpp)
+file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS src/*.cpp)
 if(LIB)
   list(REMOVE_ITEM MY_SOURCES "${CMAKE_SOURCE_DIR}/src/main.cpp")
 endif()

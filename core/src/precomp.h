@@ -7,6 +7,8 @@
 
 // Standard library
 #include <memory>
+#include <tuple>
+#include <utility>
 
 // Emscripten
 #ifdef __EMSCRIPTEN__

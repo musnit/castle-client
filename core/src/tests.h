@@ -1,11 +1,11 @@
 #pragma once
 
-#include "precomp.h"
-
-
 #define CASTLE_ENABLE_TESTS // Comment to disable. Test code compilation is skipped when disabled.
 
 #ifdef CASTLE_ENABLE_TESTS
+
+#include "precomp.h"
+
 
 struct Test {
   // Base test type. Inherit from this, implement methods, and list the type in
