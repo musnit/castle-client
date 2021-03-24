@@ -15,7 +15,7 @@ import BootSplash from 'react-native-bootsplash';
 import * as GhostEvents from './ghost/GhostEvents';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableAndroidFontFix } from './AndroidFontFix';
-
+import { ExploreScreen } from './explore/ExploreScreen';
 import { HomeScreen } from './home/HomeScreen';
 import { FeaturedDecks } from './home/FeaturedDecks';
 import { NewestDecks } from './home/NewestDecks';
@@ -214,6 +214,7 @@ if (Platform.OS === 'android') {
     'Profile',
     WrapComponent(ProfileScreen, { addTabBarPadding: true })
   );
+  AppRegistry.registerComponent('ExploreScreen', WrapComponent(ExploreScreen, { addTabBarPadding: true }));
   AppRegistry.registerComponent('InitialAuthScreen', WrapComponent(InitialAuthScreen));
   AppRegistry.registerComponent('LoginScreen', WrapComponent(LoginScreen));
   AppRegistry.registerComponent('CreateAccountScreen', WrapComponent(CreateAccountScreen));
