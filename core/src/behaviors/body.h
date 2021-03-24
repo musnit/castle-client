@@ -5,7 +5,7 @@
 #include "behaviors/base.h"
 
 
-struct BodyComponent {
+struct BodyComponent : BaseComponent {
   b2Body *body;
 };
 

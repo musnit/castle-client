@@ -5,6 +5,10 @@
 #include "scene.h"
 
 
+struct BaseComponent {
+  bool disabled = false;
+};
+
 template<typename Derived, typename Component_>
 class BaseBehavior {
   // The base class for all behavior classes. Provides a bunch of utility methods that all behaviors
@@ -12,6 +16,9 @@ class BaseBehavior {
 
 public:
   using Component = Component_;
+  static_assert(std::is_base_of_v<BaseComponent, Component>,
+      "A behavior's component type must derive from `BaseComponent`");
+
 
   BaseBehavior(const BaseBehavior &) = delete; // Prevent accidental copies
   const BaseBehavior &operator=(const BaseBehavior &) = delete;
@@ -31,6 +38,11 @@ public:
   bool hasComponent(ActorId actorId) const;
   Component &getComponent(ActorId actorId);
   const Component &getComponent(ActorId actorId) const;
+
+  template<typename F>
+  void forEachComponent(F &&f); // `f` must take either `(ActorId, Component &)` or (Component &)
+  template<typename F>
+  void forEachComponent(F &&f) const;
 
 
   // Handlers
@@ -91,4 +103,16 @@ const Component &BaseBehavior<Derived, Component>::getComponent(ActorId actorId)
     }
   }
   return scene.getEntityRegistry().get<Component>(actorId);
+}
+
+template<typename Derived, typename Component>
+template<typename F>
+void BaseBehavior<Derived, Component>::forEachComponent(F &&f) {
+  scene.getEntityRegistry().view<Component>().each(std::forward<F>(f));
+}
+
+template<typename Derived, typename Component>
+template<typename F>
+void BaseBehavior<Derived, Component>::forEachComponent(F &&f) const {
+  scene.getEntityRegistry().view<Component>().each(std::forward<F>(f));
 }

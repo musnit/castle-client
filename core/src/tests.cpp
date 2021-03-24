@@ -58,14 +58,14 @@ struct BasicActorManagementTest : Test {
     assert(scene.getActor(actor3).drawOrder == 2);
 
     // Check passing to `const Scene &`
-    const auto foo = [&](const Scene &scene) {
+    const auto testConstScene = [&](const Scene &scene) {
       std::vector<ActorId> results;
       scene.forEachActorByDrawOrder([&](ActorId actorId, const Actor &) {
         results.push_back(actorId);
       });
       assert(results == std::vector<ActorId>({ actor2, actor1, actor3 }));
     };
-    foo(scene);
+    testConstScene(scene);
 
     // Remove two actors and check again
     scene.removeActor(actor2);
@@ -157,7 +157,23 @@ struct BasicComponentManagementTest : Test {
         == std::vector<std::pair<ActorId, int>> { { actor3, 2 }, { actor4, 3 } }));
     assert((testBehavior.disables == std::vector<std::pair<ActorId, int>> {}));
 
-    // TODO(nikki): Test `forEachComponent`
+    // Test `forEachComponent`
+    {
+      int sum = 0;
+      testBehavior.forEachComponent([&](TestBehavior::Component &component) {
+        sum += component.i;
+      });
+      assert(sum == 6);
+    }
+    const auto testConstScene = [&](const Scene &scene) {
+      // TODO(nikki): This doesn't actually enforce `const TestBehavior::Component &`...
+      int sum = 0;
+      scene.behaviors.get<TestBehavior>().forEachComponent([&](TestBehavior::Component &component) {
+        sum += component.i;
+      });
+      assert(sum == 6);
+    };
+    testConstScene(scene);
 
     // TODO(nikki): Test calling disable handlers on actor destroy
   }

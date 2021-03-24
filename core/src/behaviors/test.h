@@ -9,7 +9,7 @@
 #include "behaviors/base.h"
 
 
-struct TestComponent {
+struct TestComponent : BaseComponent {
   int i;
 };
 
@@ -21,11 +21,11 @@ public:
 
   void handleAddComponent(ActorId actorId, Component &component) {
     component.i = nextI++;
-    adds.push_back({ actorId, component.i });
+    adds.emplace_back(actorId, component.i);
   }
 
   void handleDisableComponent(ActorId actorId, Component &component) {
-    disables.push_back({ actorId, component.i });
+    disables.emplace_back(actorId, component.i);
   }
 
   int nextI = 0;
