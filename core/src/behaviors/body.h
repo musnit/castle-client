@@ -10,5 +10,6 @@ struct BodyComponent : BaseComponent {
 };
 
 class BodyBehavior : public BaseBehavior<BodyBehavior, BodyComponent> {
-
+public:
+  static constexpr char name[] = "Body";
 };

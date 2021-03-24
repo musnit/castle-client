@@ -109,6 +109,26 @@ struct BasicActorManagementTest : Test {
 
 
 //
+// Basic behavior management (names, iterating)
+//
+
+struct BasicBehaviorManagementTest : Test {
+  BasicBehaviorManagementTest() {
+    Scene scene;
+
+    // Iterate behaviors
+    auto foundTestBehavior = false;
+    scene.getBehaviors().forEachBehavior([&](auto &behavior) {
+      if (!std::strcmp(behavior.name, "Test")) {
+        foundTestBehavior = true;
+      }
+    });
+    assert(foundTestBehavior);
+  }
+};
+
+
+//
 // Basic component management (add, remove, has, get, handlers)
 //
 
@@ -186,6 +206,7 @@ struct BasicComponentManagementTest : Test {
 
 Tests::Tests() {
   tests.emplace_back(std::make_unique<BasicActorManagementTest>());
+  tests.emplace_back(std::make_unique<BasicBehaviorManagementTest>());
   tests.emplace_back(std::make_unique<BasicComponentManagementTest>());
 }
 

@@ -19,6 +19,8 @@ class TestBehavior : public BaseBehavior<TestBehavior, TestComponent> {
 public:
   using BaseBehavior::BaseBehavior;
 
+  static constexpr char name[] = "Test";
+
   void handleAddComponent(ActorId actorId, Component &component) {
     component.i = nextI++;
     adds.emplace_back(actorId, component.i);
