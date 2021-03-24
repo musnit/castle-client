@@ -219,6 +219,7 @@ Tests::Tests() {
   tests.emplace_back(std::make_unique<BasicActorManagementTest>());
   tests.emplace_back(std::make_unique<BasicBehaviorManagementTest>());
   tests.emplace_back(std::make_unique<BasicComponentManagementTest>());
+  fmt::print("all tests passed\n");
 }
 
 

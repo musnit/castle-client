@@ -32,23 +32,27 @@ extern "C" bool ghostChildWindowCloseEventReceived; // Whether the OS tried to c
 
 
 //
-// Constructor, destructor
+// Pre-init
 //
 
-Engine::Engine() {
-  // SDL parameters
+Engine::PreInit::PreInit() {
+  // SDL parameters. In pre-init so we can still eg. refresh the page using keyboard if tests fail.
   SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0"); // Don't doublecount touches as mouse events
 #ifdef __EMSCRIPTEN__
   SDL_EventState(SDL_TEXTINPUT, SDL_DISABLE); // Prevent keyboard input capture in web
   SDL_EventState(SDL_KEYDOWN, SDL_DISABLE);
   SDL_EventState(SDL_KEYUP, SDL_DISABLE);
 #endif
-
-  // First timer step
-  lv.timer.step();
 }
 
-Engine::~Engine() {
+
+//
+// Constructor, destructor
+//
+
+Engine::Engine() {
+  // First timer step
+  lv.timer.step();
 }
 
 
