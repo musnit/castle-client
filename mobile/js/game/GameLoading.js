@@ -4,6 +4,7 @@ import { InteractionManager, StyleSheet, View, ActivityIndicator } from 'react-n
 import FastImage from 'react-native-fast-image';
 
 import * as Constants from '../Constants';
+import Viewport from '../common/viewport';
 
 // lua boots quickly on iOS, so only show the spinner for particularly slow cases.
 // lua boots slowly on Android, so go ahead and show the spinner sooner to reduce
@@ -15,8 +16,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     top: 0,
-    right: 0,
-    bottom: 0,
+    width: 100 * Viewport.vw,
+    height: 100 * Viewport.vw / Constants.CARD_RATIO,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -26,11 +27,13 @@ const styles = StyleSheet.create({
     top: 0,
     right: 0,
     bottom: 0,
-    resizeMode: 'cover',
+    resizeMode: 'contain',
+    borderRadius: Constants.CARD_BORDER_RADIUS,
+    overflow: 'hidden',
   },
 });
 
-export const GameLoading = ({ loadingImage }) => {
+export const GameLoading = ({ loadingImage, beltHeight }) => {
   const [visible, setVisible] = React.useState(false);
 
   // only show the loading spinner if we're still loading after some delay
@@ -51,7 +54,7 @@ export const GameLoading = ({ loadingImage }) => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { top: beltHeight }]}>
       {loadingImage?.url ? (
         <FastImage style={styles.backgroundImage} source={{ uri: loadingImage.url }} />
       ) : null}

@@ -365,6 +365,7 @@ export const CreateCardScreen = ({
                 initialIsEditing={initialIsEditing}
                 deckState={deckState}
                 onMessage={onSceneMessage}
+                beltHeight={beltHeight}
                 beltHeightFraction={beltHeightFraction}
               />
               {isCardTextVisible ? (

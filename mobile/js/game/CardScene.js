@@ -11,7 +11,6 @@ const styles = StyleSheet.create({
     left: 0,
     bottom: 0,
     width: '100%',
-    aspectRatio: Constants.CARD_RATIO,
     borderRadius: Constants.CARD_BORDER_RADIUS,
     overflow: 'hidden',
   },
@@ -26,6 +25,7 @@ export const CardScene = ({
   onMessage,
   deckState,
   paused = false,
+  beltHeight,
   beltHeightFraction,
 }) => {
   const [reloadCount, setReloadCount] = useState(0);
@@ -87,7 +87,9 @@ export const CardScene = ({
           ) : null}
         </React.Fragment>
       ) : null}
-      {!loaded ? <GameLoading loadingImage={card?.backgroundImage} /> : null}
+      {!loaded ? (
+        <GameLoading loadingImage={card?.backgroundImage} beltHeight={beltHeight} />
+      ) : null}
     </View>
   );
 };
