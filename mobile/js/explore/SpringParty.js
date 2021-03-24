@@ -113,8 +113,8 @@ export const SpringDecks = () => {
   }, undefined);
   const [fetchDecks, query] = useLazyQuery(
     gql`
-      query DeckFeed($lastModifiedBefore: Datetime) {
-        deckFeed(limit: 9, lastModifiedBefore: $lastModifiedBefore) {
+      query EventFeed {
+        eventFeed {
           ${Constants.FEED_ITEM_DECK_FRAGMENT}
         }
       }
@@ -124,11 +124,7 @@ export const SpringDecks = () => {
 
   const onRefresh = React.useCallback(
     (lastModifiedBefore) => {
-      fetchDecks({
-        variables: {
-          lastModifiedBefore,
-        },
-      });
+      fetchDecks();
       setLastFetched({ time: Date.now(), lastModifiedBefore });
     },
     [fetchDecks, setLastFetched]
@@ -145,15 +141,9 @@ export const SpringDecks = () => {
 
   React.useEffect(() => {
     if (query.called && !query.loading && !query.error && query.data) {
-      if (lastFetched.lastModifiedBefore) {
-        // append next page
-        changeDecks({ type: 'append', decks: query.data.deckFeed });
-      } else {
-        // clean refresh
-        changeDecks({ type: 'set', decks: query.data.deckFeed });
-      }
+      changeDecks({ type: 'set', decks: query.data.deckFeed });
     }
-  }, [query.called, query.loading, query.error, query.data, lastFetched.lastModifiedBefore]);
+  }, [query.called, query.loading, query.error, query.data]);
 
   const scrollViewRef = React.useRef(null);
   useScrollToTop(scrollViewRef);
