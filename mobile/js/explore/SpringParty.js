@@ -16,6 +16,9 @@ import gql from 'graphql-tag';
 const SPRING_PARTY_URL = 'https://castle.xyz/spring_party';
 const REFETCH_FEED_INTERVAL_MS = 60 * 1000;
 
+const PARTY_START = new Date('2021-03-31T00:00:00');
+const PARTY_END = new Date('2021-04-04T23:59:00');
+
 const styles = StyleSheet.create({
   springContainer: {
     alignItems: 'stretch',
@@ -91,8 +94,7 @@ const styles = StyleSheet.create({
 });
 
 export const SpringDecks = () => {
-  const partyEnd = new Date('2021-04-03T23:59:00');
-  const isPartyHappening = partyEnd - new Date() > 0;
+  const isPartyHappening = PARTY_END - new Date() > 0;
 
   const { navigate } = useNavigation();
   const [lastFetched, setLastFetched] = React.useState({
@@ -242,32 +244,31 @@ export const SpringDecks = () => {
   );
 };
 
+const formatNum = (num) => {
+  return ('0' + num).slice(-2);
+};
+
+const getTimeToParty = () => {
+  const diff = (PARTY_START - new Date()) / 1000;
+  let timeLeft = {};
+
+  if (diff > 0) {
+    timeLeft = {
+      days: Math.floor(diff / (60 * 60 * 24)),
+      hours: Math.floor((diff / (60 * 60)) % 24),
+      minutes: Math.floor((diff / 60) % 60),
+      seconds: Math.floor(diff % 60),
+    };
+  }
+
+  return timeLeft;
+};
+
 export const SpringPartyCountdown = () => {
   const insets = useSafeArea();
-  const partyStart = new Date('2021-03-28T23:59:00');
-  const hasPartyStarted = partyStart - new Date() < 0;
-
-  const formatNum = (num) => {
-    return ('0' + num).slice(-2);
-  };
-
-  const getTimeToParty = () => {
-    const diff = (partyStart - new Date()) / 1000;
-    let timeLeft = {};
-
-    if (diff > 0) {
-      timeLeft = {
-        days: Math.floor(diff / (60 * 60 * 24)),
-        hours: Math.floor((diff / (60 * 60)) % 24),
-        minutes: Math.floor((diff / 60) % 60),
-        seconds: Math.floor(diff % 60),
-      };
-    }
-
-    return timeLeft;
-  };
-
+  const hasPartyStarted = PARTY_START - new Date() < 0;
   const [timeToParty, setTimeToParty] = React.useState(getTimeToParty());
+
   React.useEffect(() => {
     if (!hasPartyStarted) {
       const timer = setTimeout(() => {
