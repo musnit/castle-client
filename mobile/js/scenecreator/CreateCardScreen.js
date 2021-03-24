@@ -41,7 +41,7 @@ import {
   getInspectorRules,
 } from './SceneCreatorUtilities';
 
-const TABLET_BELT_HEIGHT_MULTIPLIER = isTablet() ? 3 : 1;
+const TABLET_BELT_HEIGHT_MULTIPLIER = isTablet() ? 2 : 1;
 const MIN_BELT_HEIGHT = 1.2 * TABLET_BELT_HEIGHT_MULTIPLIER * 48;
 const MAX_BELT_HEIGHT = 1.2 * TABLET_BELT_HEIGHT_MULTIPLIER * 60;
 
