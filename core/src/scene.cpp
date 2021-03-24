@@ -8,8 +8,7 @@
 //
 
 Scene::Scene()
-    : behaviorsHolder(std::make_unique<AllBehaviors>(*this))
-    , behaviors(*behaviorsHolder) {
+    : behaviors(std::make_unique<AllBehaviors>(*this)) {
 }
 
 Scene::~Scene() {

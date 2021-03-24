@@ -56,6 +56,12 @@ public:
   void forEachActorByDrawOrder(F &&f) const;
 
 
+  // Behaviors
+
+  AllBehaviors &getBehaviors();
+  const AllBehaviors &getBehaviors() const;
+
+
   // Physics world
 
   b2World &getPhysicsWorld();
@@ -76,16 +82,10 @@ private:
 
   b2World physicsWorld { b2Vec2(0, 9.8) };
 
-  std::unique_ptr<AllBehaviors> behaviorsHolder;
+  std::unique_ptr<AllBehaviors> behaviors;
 
 
   void ensureDrawOrderSort() const;
-
-
-public:
-  // Behaviors
-
-  AllBehaviors &behaviors; // This must be initialized after `behaviorsHolder`
 };
 
 
@@ -123,6 +123,14 @@ template<typename F>
 void Scene::forEachActorByDrawOrder(F &&f) const {
   ensureDrawOrderSort();
   registry.view<const Actor>().each(std::forward<F>(f));
+}
+
+inline AllBehaviors &Scene::getBehaviors() {
+  return *behaviors;
+}
+
+inline const AllBehaviors &Scene::getBehaviors() const {
+  return *behaviors;
 }
 
 inline b2World &Scene::getPhysicsWorld() {

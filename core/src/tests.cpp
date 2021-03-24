@@ -115,7 +115,7 @@ struct BasicActorManagementTest : Test {
 struct BasicComponentManagementTest : Test {
   BasicComponentManagementTest() {
     Scene scene;
-    auto &testBehavior = scene.behaviors.get<TestBehavior>();
+    auto &testBehavior = scene.getBehaviors().get<TestBehavior>();
 
     // Add two actors
     auto actor1 = scene.addActor();
@@ -166,11 +166,11 @@ struct BasicComponentManagementTest : Test {
       assert(sum == 6);
     }
     const auto testConstScene = [&](const Scene &scene) {
-      // TODO(nikki): This doesn't actually enforce `const TestBehavior::Component &`...
       int sum = 0;
-      scene.behaviors.get<TestBehavior>().forEachComponent([&](TestBehavior::Component &component) {
-        sum += component.i;
-      });
+      scene.getBehaviors().get<TestBehavior>().forEachComponent(
+          [&](const TestBehavior::Component &component) {
+            sum += component.i;
+          });
       assert(sum == 6);
     };
     testConstScene(scene);

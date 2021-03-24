@@ -114,5 +114,5 @@ void BaseBehavior<Derived, Component>::forEachComponent(F &&f) {
 template<typename Derived, typename Component>
 template<typename F>
 void BaseBehavior<Derived, Component>::forEachComponent(F &&f) const {
-  scene.getEntityRegistry().view<Component>().each(std::forward<F>(f));
+  scene.getEntityRegistry().view<const Component>().each(std::forward<F>(f));
 }
