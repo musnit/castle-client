@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     width: 100 * Viewport.vw,
-    height: 100 * Viewport.vw / Constants.CARD_RATIO,
+    height: (100 * Viewport.vw) / Constants.CARD_RATIO,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -58,7 +58,9 @@ export const GameLoading = ({ loadingImage, beltHeight }) => {
       {loadingImage?.url ? (
         <FastImage style={styles.backgroundImage} source={{ uri: loadingImage.url }} />
       ) : null}
-      {visible ? <ActivityIndicator size="large" color="#fff" /> : null}
+      {visible && !beltHeight ? ( // There's already an activity indicator in create mode and they look misaligned...
+        <ActivityIndicator size="large" color="#fff" />
+      ) : null}
     </View>
   );
 };
