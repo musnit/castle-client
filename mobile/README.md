@@ -38,8 +38,8 @@ Once you have the app running, shake the device to open the React Native develop
 - Bump versionCode and versionName in `android/app/build.gradle`
 - Use branch `playstore/release`
 - `cd tools`
-- `./build-android-prod.sh` will generate a .aab file and also install it to the connected android device for testing
-- Upload to open testing https://play.google.com/console/u/1/developers/6774483098390213048/app/4973889594505423194/tracks/open-testing
+- `./build-android-prod.sh` will generate a .aab file at tools/build/app-release.aab and also install it to the connected android device for testing
+- Upload to open testing https://play.google.com/console/u/1/developers/6774483098390213048/app/4973889594505423194/tracks/open-testing. Make sure to update the release notes.
 - Wait until it's reviewed, then go to https://play.google.com/console/u/1/developers/6774483098390213048/app/4973889594505423194/publishing to publish
 - Once it's ready for full release, go to https://play.google.com/console/u/1/developers/6774483098390213048/app/4973889594505423194/tracks/open-testing and do "Promote release"
 - Run `./tools/android-set-app-version.sh` to trigger the in-app update banner

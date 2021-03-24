@@ -9,7 +9,7 @@ mkdir build
 
 pushd ../android > /dev/null
 
-#./gradlew bundleRelease
+./gradlew bundleRelease
 cp app/build/outputs/bundle/release/app-release.aab ../tools/build
 
 popd > /dev/null
