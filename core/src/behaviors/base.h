@@ -49,7 +49,7 @@ public:
 
   void handleAddComponent(ActorId, Component &) {
   }
-  void handleDisableComponent(ActorId, Component &) {
+  void handleDisableComponent(ActorId, Component &, [[maybe_unused]] bool removeActor) {
   }
 
 
@@ -76,7 +76,8 @@ void BaseBehavior<Derived, Component>::removeComponent(ActorId actorId) {
     fmt::print("removeComponent: actor doesn't have a component for this behavior");
     return;
   }
-  static_cast<Derived &>(*this).handleDisableComponent(actorId, getComponent(actorId));
+  // NOTE: If adding more steps here, make sure `Scene::removeActor` is in sync
+  static_cast<Derived &>(*this).handleDisableComponent(actorId, getComponent(actorId), false);
   scene.getEntityRegistry().remove<Component>(actorId);
 }
 

@@ -26,13 +26,13 @@ public:
     adds.emplace_back(actorId, component.i);
   }
 
-  void handleDisableComponent(ActorId actorId, Component &component) {
-    disables.emplace_back(actorId, component.i);
+  void handleDisableComponent(ActorId actorId, Component &component, bool removeActor) {
+    disables.emplace_back(actorId, component.i, removeActor);
   }
 
   int nextI = 0;
   std::vector<std::pair<ActorId, int>> adds;
-  std::vector<std::pair<ActorId, int>> disables;
+  std::vector<std::tuple<ActorId, int, bool>> disables;
 };
 
 #endif

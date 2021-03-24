@@ -31,9 +31,11 @@ void Scene::removeActor(ActorId actorId) {
     fmt::print("removeActor: no such actor");
     return;
   }
-
-  // TODO(nikki): Call behavior disable component handlers
-
+  behaviors->forEachBehavior([&](auto &behavior) {
+    if (behavior.hasComponent(actorId)) {
+      behavior.handleDisableComponent(actorId, behavior.getComponent(actorId), true);
+    }
+  });
   registry.destroy(actorId);
   needDrawOrderSort = true;
 }

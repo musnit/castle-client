@@ -146,7 +146,7 @@ struct BasicComponentManagementTest : Test {
     assert(testBehavior.hasComponent(actor1));
     assert(testBehavior.getComponent(actor1).i == 0);
     assert((testBehavior.adds == std::vector<std::pair<ActorId, int>> { { actor1, 0 } }));
-    assert((testBehavior.disables == std::vector<std::pair<ActorId, int>> {}));
+    assert((testBehavior.disables == std::vector<std::tuple<ActorId, int, bool>> {}));
     testBehavior.adds.clear();
     testBehavior.disables.clear();
 
@@ -156,7 +156,7 @@ struct BasicComponentManagementTest : Test {
     assert(testBehavior.getComponent(actor1).i == 0);
     assert(testBehavior.getComponent(actor2).i == 1);
     assert((testBehavior.adds == std::vector<std::pair<ActorId, int>> { { actor2, 1 } }));
-    assert((testBehavior.disables == std::vector<std::pair<ActorId, int>> {}));
+    assert((testBehavior.disables == std::vector<std::tuple<ActorId, int, bool>> {}));
     testBehavior.adds.clear();
     testBehavior.disables.clear();
 
@@ -164,7 +164,8 @@ struct BasicComponentManagementTest : Test {
     testBehavior.removeComponent(actor1);
     assert(!testBehavior.hasComponent(actor1));
     assert(testBehavior.getComponent(actor2).i == 1);
-    assert((testBehavior.disables == std::vector<std::pair<ActorId, int>> { { actor1, 0 } }));
+    assert((testBehavior.disables
+        == std::vector<std::tuple<ActorId, int, bool>> { { actor1, 0, false } }));
     testBehavior.adds.clear();
     testBehavior.disables.clear();
 
@@ -175,7 +176,7 @@ struct BasicComponentManagementTest : Test {
     testBehavior.addComponent(actor4);
     assert((testBehavior.adds
         == std::vector<std::pair<ActorId, int>> { { actor3, 2 }, { actor4, 3 } }));
-    assert((testBehavior.disables == std::vector<std::pair<ActorId, int>> {}));
+    assert((testBehavior.disables == std::vector<std::tuple<ActorId, int, bool>> {}));
 
     // Test `forEachComponent`
     {
@@ -195,7 +196,17 @@ struct BasicComponentManagementTest : Test {
     };
     testConstScene(scene);
 
-    // TODO(nikki): Test calling disable handlers on actor destroy
+    // Test calling of disable handlers on actor destroy
+    scene.removeActor(actor2);
+    scene.removeActor(actor3);
+    assert((testBehavior.disables
+        == std::vector<std::tuple<ActorId, int, bool>> {
+            { actor2, 1, true }, { actor3, 2, true } }));
+    testBehavior.disables.clear();
+    scene.removeActor(actor4);
+    assert((testBehavior.disables
+        == std::vector<std::tuple<ActorId, int, bool>> { { actor4, 3, true } }));
+    testBehavior.disables.clear();
   }
 };
 
