@@ -36,7 +36,14 @@ const recordDeckPlay = (deckId, cardId) =>
     },
   });
 
-export const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, route, paused }) => {
+export const PlayDeckNavigator = ({
+  deckId,
+  initialDeckState,
+  initialCardId,
+  visibility,
+  route,
+  paused,
+}) => {
   const navigation = useNavigation(); // we use props.route
   if (!deckId && route.params) {
     deckId = route.params.deckId;
@@ -71,7 +78,7 @@ export const PlayDeckNavigator = ({ deckId, initialDeckState, initialCardId, rou
   );
 
   React.useEffect(() => {
-    Amplitude.logEventWithProperties('VIEW_PLAY_DECK', { deckId });
+    Amplitude.logEventWithProperties('VIEW_PLAY_DECK', { deckId, visibility });
 
     return () => {
       recordDeckPlay(deckId, cardIdRef.current);

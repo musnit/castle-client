@@ -215,6 +215,7 @@ const CurrentDeckCell = ({
           <View style={styles.absoluteFill}>
             <PlayDeckNavigator
               deckId={deck.deckId}
+              visibility={deck.visibility}
               initialCardId={deck.initialCard && deck.initialCard.cardId}
               initialDeckState={Utilities.makeInitialDeckState(deck)}
             />

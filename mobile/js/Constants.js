@@ -216,6 +216,7 @@ export const FEED_ITEM_DECK_FRAGMENT = `
   id
   deckId
   title
+  visibility
   creator {
     userId
     username
