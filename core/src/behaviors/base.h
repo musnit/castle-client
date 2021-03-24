@@ -53,7 +53,7 @@ public:
   }
 
 
-protected: // Protected so child classes can refer to these
+private:
   Scene &scene;
 };
 
