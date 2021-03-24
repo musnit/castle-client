@@ -193,8 +193,8 @@ const TabNavigator = () => {
                 <FastImage
                   tintColor={focused ? '#00D05C' : '#888'}
                   style={{
-                    width: ICON_SIZE,
-                    height: ICON_SIZE,
+                    width: ICON_SIZE + 2,
+                    height: ICON_SIZE + 2,
                   }}
                   source={require('../assets/images/BottomTabs-spring.png')}
                 />
