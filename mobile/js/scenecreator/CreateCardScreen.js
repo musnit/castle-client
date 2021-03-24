@@ -61,6 +61,15 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   textActorsContainer: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  textActorsAspectRatio: {
+    aspectRatio: Constants.CARD_RATIO,
+    width: '100%',
+    height: '100%',
+    maxWidth: 100 * Viewport.vw,
+    maxHeight: (100 * Viewport.vw) / Constants.CARD_RATIO,
     paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 8,
@@ -279,12 +288,12 @@ export const CreateCardScreen = ({
     justifyContent: isTextActorSelected ? 'flex-start' : 'flex-end',
   };
 
-  // TODO(nikki): Address magic constants / merge with removing bottom actions
   let cardFitStyles = null;
   const insets = useSafeArea();
   const headerHeight = isShowingDraw ? DRAWING_CARD_HEADER_HEIGHT : CARD_HEADER_HEIGHT;
   const footerHeight = getFooterHeight({ isShowingDraw });
-  const maxCardHeight = 100 * Viewport.vh - headerHeight - footerHeight - insets.top - insets.bottom;
+  const maxCardHeight =
+    100 * Viewport.vh - headerHeight - footerHeight - insets.top - insets.bottom;
   let beltHeight = maxCardHeight - (Viewport.vw * 100) / Constants.CARD_RATIO;
   beltHeight = Math.floor(Math.min(Math.max(MIN_BELT_HEIGHT, beltHeight), MAX_BELT_HEIGHT));
   const beltHeightFraction = beltHeight / maxCardHeight;
@@ -370,14 +379,20 @@ export const CreateCardScreen = ({
               />
               {isCardTextVisible ? (
                 <View style={[styles.textActorsContainer, { marginTop: beltHeight }]}>
-                  <CardText
-                    disabled={loading}
-                    visible={isCardTextVisible}
-                    textActors={textActors}
-                    card={card}
-                    onSelect={selectActor}
-                    isEditable={!isPlaying}
-                  />
+                  <View
+                    style={[
+                      styles.textActorsAspectRatio,
+                      { justifyContent: isTextActorSelected ? 'flex-start' : 'flex-end' },
+                    ]}>
+                    <CardText
+                      disabled={loading}
+                      visible={isCardTextVisible}
+                      textActors={textActors}
+                      card={card}
+                      onSelect={selectActor}
+                      isEditable={!isPlaying}
+                    />
+                  </View>
                 </View>
               ) : null}
               {isSceneLoaded ? null : <CardSceneLoading />}
