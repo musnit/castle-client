@@ -4,6 +4,7 @@ import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 import { InspectorNumberInput } from '../components/InspectorNumberInput';
 import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
+import { SaveBlueprintButton } from '../components/SaveBlueprintButton';
 
 const styles = StyleSheet.create({
   container: {
@@ -33,6 +34,12 @@ const styles = StyleSheet.create({
   inputLabel: {
     paddingBottom: 4,
     fontSize: 16,
+  },
+  applyLayoutChangesContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 10,
+    paddingBottom: 16,
   },
 });
 
@@ -156,6 +163,9 @@ export default InspectorLayout = ({ body, circleShape, sendAction, sendActions }
           label="Rotation"
           sendAction={sendActions.Body}
         />
+      </View>
+      <View style={styles.applyLayoutChangesContainer}>
+        <SaveBlueprintButton label="Apply layout changes to blueprint" />
       </View>
       <View style={styles.row}>
         <InspectorCheckbox

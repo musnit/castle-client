@@ -4,7 +4,7 @@ import { sendDataPaneAction, useGhostUI } from '../../../ghost/GhostUI';
 
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
-export const SaveBlueprintButton = () => {
+export const SaveBlueprintButton = ({ label = 'Save blueprint' }) => {
   let data, sendAction;
 
   const { root } = useGhostUI();
@@ -25,7 +25,7 @@ export const SaveBlueprintButton = () => {
         sendAction('updateBlueprint', data.saveBlueprintData);
       }}
       style={SceneCreatorConstants.styles.button}>
-      <Text style={SceneCreatorConstants.styles.buttonLabel}>Save blueprint</Text>
+      <Text style={SceneCreatorConstants.styles.buttonLabel}>{label}</Text>
     </TouchableOpacity>
   );
 };

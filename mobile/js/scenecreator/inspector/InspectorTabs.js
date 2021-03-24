@@ -37,7 +37,7 @@ const GeneralTab = ({ behaviors, sendActions, addChildSheet }) => {
   const isBlueprint = (inspectorActions && inspectorActions.isBlueprint) || false;
   return (
     <React.Fragment>
-      {!isBlueprint && (
+      {false && !isBlueprint && ( // Save blueprint button skipped for now
         <View style={styles.blueprintContainer}>
           <SaveBlueprintButton />
         </View>
