@@ -8,11 +8,14 @@ import { useSafeArea } from 'react-native-safe-area-context';
 
 import * as Constants from '../Constants';
 
+import Viewport from '../common/viewport';
+
 const SHEET_HEIGHT = 360;
 const TAB_BAR_HEIGHT = 49;
 
 export const DeckSettingsSheet = ({ isOpen, onClose, ...props }) => {
   const insets = useSafeArea();
+  const maxSheetHeight = Viewport.vh * 100 - insets.top;
 
   const renderHeader = () => <BottomSheetHeader title="Deck Settings" onClose={onClose} />;
 
@@ -24,11 +27,12 @@ export const DeckSettingsSheet = ({ isOpen, onClose, ...props }) => {
 
   return (
     <BottomSheet
-      snapPoints={[SHEET_HEIGHT]}
+      snapPoints={[SHEET_HEIGHT, maxSheetHeight]}
       isOpen={isOpen}
       renderHeader={renderHeader}
       renderContent={renderContent}
       onOpenEnd={Keyboard.dismiss}
+      onCloseEnd={Keyboard.dismiss}
       style={{
         backgroundColor: '#fff',
         borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,
