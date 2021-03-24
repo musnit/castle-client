@@ -14,8 +14,10 @@ import { useIsFocused, useFocusEffect } from '../ReactNavigation';
 import { useListen } from '../ghost/GhostEvents';
 import { useSession, blockUser, reportDeck } from '../Session';
 
+import debounce from 'lodash.debounce';
 import Viewport from '../common/viewport';
 
+import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 import * as Utilities from '../common/utilities';
 
@@ -361,10 +363,21 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
     [currentCardIndex, isPlaying, paused, props?.onRefresh]
   );
 
+  const logScrollToDeck = React.useCallback(
+    ({ index, deck }) => {
+      if (!isPlaying) {
+        Amplitude.logEventWithProperties('VIEW_FEED_ITEM', { index, deckId: deck?.deckId });
+      }
+    },
+    [isPlaying]
+  );
+  const debounceLogScrollToDeck = debounce(({ ...args }) => logScrollToDeck(args), 500);
+
   const viewabilityConfig = React.useRef({ itemVisiblePercentThreshold: 90 }).current;
   const onViewableItemsChanged = React.useCallback(({ viewableItems }) => {
     if (viewableItems.length > 0) {
       setCurrentCardIndex(viewableItems[0].index);
+      debounceLogScrollToDeck({ index: viewableItems[0].index, deck: viewableItems[0].item });
     }
   }, []);
 
