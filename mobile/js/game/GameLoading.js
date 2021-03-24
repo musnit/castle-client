@@ -17,23 +17,40 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     width: 100 * Viewport.vw,
-    height: (100 * Viewport.vw) / Constants.CARD_RATIO,
+    bottom: 0,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'black',
   },
-  backgroundImage: {
+  backgroundImageContainer: {
     position: 'absolute',
     left: 0,
     top: 0,
-    right: 0,
+    width: 100 * Viewport.vw,
     bottom: 0,
-    resizeMode: 'contain',
+    alignItems: 'center',
+  },
+  backgroundImage: {
+    aspectRatio: Constants.CARD_RATIO,
+    width: '100%',
+    height: '100%',
+    maxWidth: 100 * Viewport.vw,
+    maxHeight: (100 * Viewport.vw) / Constants.CARD_RATIO,
     borderRadius: Constants.CARD_BORDER_RADIUS,
     overflow: 'hidden',
   },
+  activityIndicatorContainer: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
-export const GameLoading = ({ loadingImage, beltHeight }) => {
+export const GameLoading = ({ loadingImage, beltHeight, isEditable }) => {
   const [visible, setVisible] = React.useState(false);
 
   // only show the loading spinner if we're still loading after some delay
@@ -53,13 +70,23 @@ export const GameLoading = ({ loadingImage, beltHeight }) => {
     };
   }, []);
 
+  const backgroundImageComponent = (
+    <FastImage style={styles.backgroundImage} source={{ uri: loadingImage?.url }} />
+  );
+
   return (
     <View style={[styles.container, { top: beltHeight }]}>
       {loadingImage?.url ? (
-        <FastImage style={styles.backgroundImage} source={{ uri: loadingImage.url }} />
+        isEditable ? (
+          <View style={styles.backgroundImageContainer}>{backgroundImageComponent}</View>
+        ) : (
+          backgroundImageComponent
+        )
       ) : null}
-      {visible && !beltHeight ? ( // There's already an activity indicator in create mode and they look misaligned...
-        <ActivityIndicator size="large" color="#fff" />
+      {visible && !isEditable ? (
+        <View style={styles.activityIndicatorContainer}>
+          <ActivityIndicator size="large" color="#fff" />
+        </View>
       ) : null}
     </View>
   );

@@ -88,7 +88,11 @@ export const CardScene = ({
         </React.Fragment>
       ) : null}
       {!loaded ? (
-        <GameLoading loadingImage={card?.backgroundImage} beltHeight={beltHeight} />
+        <GameLoading
+          loadingImage={card?.backgroundImage}
+          isEditable={isEditable}
+          beltHeight={beltHeight}
+        />
       ) : null}
     </View>
   );
