@@ -8,7 +8,7 @@ import Viewport from '../common/viewport';
 import { DecksGrid } from '../components/DecksGrid';
 import { EmptyFeed } from '../home/EmptyFeed';
 import { useLazyQuery } from '@apollo/react-hooks';
-
+import { isTablet } from 'react-native-device-info';
 import FastImage from 'react-native-fast-image';
 import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
 import gql from 'graphql-tag';
@@ -272,7 +272,7 @@ export const SpringPartyCountdown = () => {
     <View
       style={{
         ...styles.springContainer,
-        paddingVertical: -120 * Viewport.aspectRatio + 77 + '%',
+        paddingVertical: isTablet() ? '30%' : -120 * Viewport.aspectRatio + 77 + '%',
       }}>
       <View style={{ alignItems: 'center' }}>
         <Text style={styles.springText}>The honor of your presence</Text>
