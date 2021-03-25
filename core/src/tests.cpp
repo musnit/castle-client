@@ -138,7 +138,7 @@ struct BasicBehaviorManagementTest : Test {
 struct BasicComponentManagementTest : Test {
   BasicComponentManagementTest() {
     Scene scene;
-    auto &testBehavior = scene.getBehaviors().get<TestBehavior>();
+    auto &testBehavior = scene.getBehaviors().byType<TestBehavior>();
 
     // Add two actors
     auto actor1 = scene.addActor();
@@ -193,7 +193,7 @@ struct BasicComponentManagementTest : Test {
     }
     const auto testConstScene = [&](const Scene &scene) {
       int sum = 0;
-      scene.getBehaviors().get<TestBehavior>().forEachComponent(
+      scene.getBehaviors().byType<TestBehavior>().forEachComponent(
           [&](const TestBehavior::Component &component) {
             sum += component.i;
           });

@@ -23,9 +23,9 @@ public:
   // Behavior access
 
   template<typename Behavior>
-  Behavior &get();
+  Behavior &byType();
   template<typename Behavior>
-  const Behavior &get() const;
+  const Behavior &byType() const;
 
   template<typename F>
   void forEachBehavior(F &&f);
@@ -52,12 +52,12 @@ private:
 // Inlined implementations
 
 template<typename Behavior>
-Behavior &AllBehaviors::get() {
+Behavior &AllBehaviors::byType() {
   return std::get<Behavior>(behaviors);
 }
 
 template<typename Behavior>
-const Behavior &AllBehaviors::get() const {
+const Behavior &AllBehaviors::byType() const {
   return std::get<Behavior>(behaviors);
 }
 
