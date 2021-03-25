@@ -40,6 +40,22 @@ public:
 		deserializeFillAndPreview();
 	}
 	
+	void read(Archive::Reader &archive) {
+		isLinked = archive.boolean("isLinked", false);
+		archive.arr("pathDataList", [&]() {
+			for (auto i = 0; i < archive.size(); i++) {
+				PathData pathData;
+				archive.obj(i, pathData);
+				pathDataList.push_back(pathData);
+			}
+		});
+		
+		archive.obj("fillImageBounds", fillImageBounds);
+		fillPng = archive.str("fillPng", "");
+		
+		deserializeFillAndPreview();
+	}
+	
 	void deserializePathDataList();
 	bool arePathDatasMergable(PathData pd1, PathData pd2);
 	float round(float num, int numDecimalPlaces);
@@ -88,6 +104,19 @@ struct DrawDataLayer {
 		GHOST_READ_STRING(id)
 		GHOST_READ_BOOL(isVisible, true)
 		GHOST_READ_POINTER_VECTOR(frames, DrawDataFrame)
+	}
+	
+	void read(Archive::Reader &archive) {
+		title = archive.str("title", "");
+		id = archive.str("id", "");
+		isVisible = archive.boolean("isVisible", true);
+		archive.arr("frames", [&]() {
+			for (auto i = 0; i < archive.size(); i++) {
+				DrawDataFrame *frame = new DrawDataFrame();
+				archive.obj(i, *frame);
+				frames.push_back(frame);
+			}
+		});
 	}
 	
 	void setParent(DrawData *d) {
