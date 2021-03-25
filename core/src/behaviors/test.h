@@ -21,12 +21,12 @@ public:
 
   using BaseBehavior::BaseBehavior;
 
-  void handleAddComponent(ActorId actorId, Component &component) {
+  void handleAddComponent(ActorId actorId, TestComponent &component) {
     component.i = nextI++;
     adds.emplace_back(actorId, component.i);
   }
 
-  void handleDisableComponent(ActorId actorId, Component &component, bool removeActor) {
+  void handleDisableComponent(ActorId actorId, TestComponent &component, bool removeActor) {
     disables.emplace_back(actorId, component.i, removeActor);
   }
 
