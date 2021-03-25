@@ -88,14 +88,46 @@ public:
 		TovePathRef path = NewPath(null);*/
 	}
 	
+	/*template<typename A>
+	void archive(A &obj) {
+		obj.arr("color", color);
+		obj.arr("lineColor", lineColor);
+		obj.num("gridSize", )
+	}*/
+
 	void read(Archive::Reader &archive) {
 		archive.arr("color", color);
+		archive.arr("lineColor", lineColor);
+		gridSize = archive.num("gridSize", 0.71428571428571);
+		scale = archive.num("scale", 10);
+		version = archive.num("version", 3);
+		fillPixelsPerUnit = archive.num("fillPixelsPerUnit", 25.6);
+		numTotalLayers = archive.num("numTotalLayers", 1);
+		archive.arr("framesBounds", [&]() {
+			for (auto i = 0; i < archive.size(); i++) {
+				Bounds bounds;
+				archive.obj(i, bounds);
+				framesBounds.push_back(bounds);
+			}
+		});
+		// TODO: default this to first layer on the server
+		selectedLayerId = archive.str("selectedLayerId", "");
+		// TODO: subtract one on the server
+		selectedFrame = archive.num("selectedFrame", 0);
+		archive.arr("layers", [&]() {
+			for (auto i = 0; i < archive.size(); i++) {
+				DrawDataLayer *layer = new DrawDataLayer();
+				archive.obj(i, *layer);
+				layer->setParent(this);
+				layers.push_back(layer);
+			}
+		});
 	}
-	
+
 	void write(Archive::Writer &archive) {
-		archive.arr("color", color);
+		//archive(obj);
 	}
-	
+
 	void read(lua_State *L, int index) {
 		GHOST_READ_STRUCT(color)
 		GHOST_READ_STRUCT(lineColor)
@@ -115,7 +147,7 @@ public:
 
 		selectedFrame = selectedFrame - 1;
 	}
-	
+
 	float gridCellSize();
 	std::tuple<int, int> globalToGridCoordinates(float x, float y);
 	std::tuple<int, int> gridToGlobalCoordinates(float x, float y);

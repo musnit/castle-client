@@ -153,6 +153,11 @@ struct Point {
 		GHOST_READ_NUMBER(y, 0)
 	}
 	
+	void read(Archive::Reader &archive) {
+		x = archive.num("x", 0);
+		y = archive.num("y", 0);
+	}
+	
 	void write(lua_State *L) {
 		lua_createtable(L, 0, 2);
 		
@@ -203,11 +208,11 @@ struct Subpath {
 struct Color {
 	float data[4];
 	
-	void read(Archive::Reader &archive) {
-		data[0] = archive.num((unsigned int) 0, 1.0);
-		data[1] = archive.num(1, 1.0);
-		data[2] = archive.num(2, 1.0);
-		data[3] = archive.num(3, 1.0);
+	void read(Archive::Reader &obj) {
+		data[0] = obj.num((unsigned int) 0, 1.0);
+		data[1] = obj.num(1, 1.0);
+		data[2] = obj.num(2, 1.0);
+		data[3] = obj.num(3, 1.0);
 	}
 	
 	void write(Archive::Writer &archive) {
@@ -288,6 +293,33 @@ struct PathData {
 		
 		GHOST_READ_BOOL(isTransparent, false)
 	}
+	
+	void read(Archive::Reader &archive) {
+		archive.arr("p", [&]() {
+			points.resize(archive.size() / 2);
+			for (auto i = 0; i < archive.size(); i += 2) {
+				points[i / 2] = Point(archive.num(i), archive.num(i + 1));
+			}
+		});
+		
+		style = archive.num("s", 1);
+		
+		if (archive.has("bp")) {
+			Point bp;
+			archive.obj("bp", bp);
+			bendPoint = bp;
+		}
+		
+		isFreehand = archive.boolean("f", false);
+		
+		if (archive.has("c")) {
+			Color c;
+			archive.arr("c", c);
+			color = c;
+		}
+		
+		isTransparent = archive.boolean("isTransparent", false);
+	}
 };
 
 struct Bounds {
@@ -298,6 +330,13 @@ struct Bounds {
 		GHOST_READ_NUMBER(maxX, 0)
 		GHOST_READ_NUMBER(minY, 0)
 		GHOST_READ_NUMBER(maxY, 0)
+	}
+	
+	void read(Archive::Reader &archive) {
+		minX = archive.num("minX", 0);
+		maxX = archive.num("maxX", 0);
+		minY = archive.num("minY", 0);
+		maxY = archive.num("maxY", 0);
 	}
 	
 	void set(Bounds other) {
