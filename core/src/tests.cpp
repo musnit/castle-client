@@ -232,7 +232,7 @@ Tests::Tests() {
 // Update
 //
 
-void Tests::update([[maybe_unused]] double dt) {
+void Tests::update(double dt) {
   for (auto &test : tests) {
     test->update(dt);
   }

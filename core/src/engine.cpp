@@ -13,7 +13,7 @@
 // Not web. Make a stub that takes any arguments, does nothing, returns default value of `retType`
 #define JS_DEFINE(retType, name, ...)                                                              \
   template<typename... Args>                                                                       \
-  inline static retType name([[maybe_unused]] Args &&... args) {                                   \
+  inline static retType name(Args &&... args) {                                                    \
     return retType();                                                                              \
   }
 #endif
@@ -104,7 +104,7 @@ bool Engine::frame() {
 // Update
 //
 
-void Engine::update([[maybe_unused]] double dt) {
+void Engine::update(double dt) {
 #ifdef CASTLE_ENABLE_TESTS
   tests.update(dt);
 #endif

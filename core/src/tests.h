@@ -14,7 +14,7 @@ struct Test {
   Test() = default;
   virtual ~Test() = default;
 
-  virtual void update([[maybe_unused]] double dt) {
+  virtual void update(double dt) {
   }
   virtual void draw() {
   }
