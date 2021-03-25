@@ -50,8 +50,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 8,
     left: 8,
-    width: 28,
-    height: 28,
+    width: 26,
+    height: 26,
     borderRadius: 15,
     backgroundColor: '#fff',
     alignItems: 'center',
@@ -183,7 +183,7 @@ export const CardCell = ({
           {visibility && visibility !== 'public' ? (
             <View style={styles.visibility}>
               <Icon
-                size={18}
+                size={16}
                 name={
                   visibility === 'private' ? 'lock' : visibility === 'unlisted' ? 'link' : 'share'
                 }
@@ -191,8 +191,8 @@ export const CardCell = ({
               />
             </View>
           ) : null}
-          {visibility === 'public' && playCount !== undefined ? (
-            <View style={styles.playCount}>
+          {visibility !== 'private' && playCount !== undefined ? (
+            <View style={{ ...styles.playCount, left: visibility === 'unlisted' ? 44 : 8 }}>
               <Icon size={16} name="play-arrow" color="#000" />
               <Text style={styles.playCountLabel}>{playCount}</Text>
             </View>
