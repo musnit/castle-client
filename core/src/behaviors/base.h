@@ -5,7 +5,20 @@
 #include "scene.h"
 
 
+// General note:
+//
+// The behavior implementation as a whole is based on static facilities like templates
+// and defining handlers explicitly to avoid the overhead of virtual table lookups. This is
+// especially important when iterating through a lot of components, the compiler can use the
+// statically known sizes / layouts of component types to inline calls and optimize loops.
+//
+// Inheritance is used here simply for code reuse, and /not/ for polymorphism (we never eg. use a
+// `BaseBehavior *` pointer that is actually a `SpecificBehavior *` at runtime).
+
+
 struct BaseComponent {
+  // The base class for all behavior component types.
+
   BaseComponent(const BaseComponent &) = delete; // Prevent accidental copies
   const BaseComponent &operator=(const BaseComponent &) = delete;
   BaseComponent(BaseComponent &&) = default; // Allow moves
@@ -16,7 +29,7 @@ struct BaseComponent {
 
 template<typename Derived, typename Component_>
 class BaseBehavior {
-  // The base class for all behavior classes. Provides a bunch of utility methods that all behaviors
+  // The base class for all behavior types. Provides a bunch of utility methods that all behaviors
   // will probably want.
 
 public:
@@ -52,17 +65,34 @@ public:
   void forEachComponent(F &&f) const;
 
 
-  // Handlers
-
-  void handleAddComponent(ActorId, Component &) {
-  }
-  void handleDisableComponent(ActorId, Component &, [[maybe_unused]] bool removeActor) {
-  }
-
-
 private:
   Scene &scene;
 };
+
+
+namespace Handlers {
+// Handlers are methods on behavior classes that are called when some event occurs. The methods are
+// all named like `handleSomeFoo`. All handler names must be listed here. Once a handler name
+// `SomeFoo` is defined below, the following utilities become available:
+//
+//   hasSomeFoo<BehaviorType>
+//     Use to check whether type `BehaviorType` has `handleSomeFoo` defined. Can be used like
+//     `hasSomeFoo<decltype(behaviorInstance)>` to check on an instance instead of a type.
+
+#define DEFINE_HANDLER(name)                                                                       \
+  template<typename T, typename = void>                                                            \
+  struct has##name##_ : std::false_type {};                                                        \
+  template<typename T>                                                                             \
+  struct has##name##_<T, std::void_t<decltype(&std::remove_reference_t<T>::handle##name)>>         \
+      : std::true_type {};                                                                         \
+  template<typename T>                                                                             \
+  inline constexpr auto has##name = has##name##_<T>::value;
+
+DEFINE_HANDLER(AddComponent);
+DEFINE_HANDLER(DisableComponent);
+
+#undef DEFINE_HANDLER
+}
 
 
 // Inlined implementations
@@ -74,7 +104,9 @@ Component &BaseBehavior<Derived, Component>::addComponent(ActorId actorId) {
     return *component;
   }
   auto &component = scene.getEntityRegistry().emplace<Component>(actorId);
-  static_cast<Derived &>(*this).handleAddComponent(actorId, component);
+  if constexpr (Handlers::hasAddComponent<Derived>) {
+    static_cast<Derived &>(*this).handleAddComponent(actorId, component);
+  }
   return component;
 }
 
@@ -85,7 +117,9 @@ void BaseBehavior<Derived, Component>::removeComponent(ActorId actorId) {
     return;
   }
   // NOTE: If adding more steps here, make sure `Scene::removeActor` is in sync
-  static_cast<Derived &>(*this).handleDisableComponent(actorId, getComponent(actorId), false);
+  if constexpr (Handlers::hasDisableComponent<Derived>) {
+    static_cast<Derived &>(*this).handleDisableComponent(actorId, getComponent(actorId), false);
+  }
   scene.getEntityRegistry().remove<Component>(actorId);
 }
 

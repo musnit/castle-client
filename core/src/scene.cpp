@@ -33,7 +33,9 @@ void Scene::removeActor(ActorId actorId) {
   }
   behaviors->forEachBehavior([&](auto &behavior) {
     if (auto component = behavior.maybeGetComponent(actorId)) {
-      behavior.handleDisableComponent(actorId, *component, true);
+      if constexpr (Handlers::hasDisableComponent<decltype(behavior)>) {
+        behavior.handleDisableComponent(actorId, *component, true);
+      }
     }
   });
   registry.destroy(actorId);
