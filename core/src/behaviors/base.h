@@ -65,6 +65,12 @@ public:
   void forEachComponent(F &&f) const;
 
 
+  // Physics world
+
+  b2World &getPhysicsWorld();
+  const b2World &getPhysicsWorld() const;
+
+
 private:
   Scene &scene;
 };
@@ -75,9 +81,11 @@ namespace Handlers {
 // all named like `handleSomeFoo`. All handler names must be listed here. Once a handler name
 // `SomeFoo` is defined below, the following utilities become available:
 //
-//   hasSomeFoo<BehaviorType>
+//   Handlers::hasSomeFoo<BehaviorType>
 //     Use to check whether type `BehaviorType` has `handleSomeFoo` defined. Can be used like
-//     `hasSomeFoo<decltype(behaviorInstance)>` to check on an instance instead of a type.
+//     `hasSomeFoo<decltype(behaviorInstance)>` to check on an instance instead of a type. This is a
+//     compile-time check (can be used with `if constexpr`), allowing eg. skipping generating a
+//     certain block of code for a behavior that doesn't have a given handler.
 
 #define DEFINE_HANDLER(name)                                                                       \
   template<typename T, typename = void>                                                            \
@@ -168,4 +176,14 @@ template<typename Derived, typename Component>
 template<typename F>
 void BaseBehavior<Derived, Component>::forEachComponent(F &&f) const {
   scene.getEntityRegistry().view<const Component>().each(std::forward<F>(f));
+}
+
+template<typename Derived, typename Component>
+b2World &BaseBehavior<Derived, Component>::getPhysicsWorld() {
+  return scene.getPhysicsWorld();
+}
+
+template<typename Derived, typename Component>
+const b2World &BaseBehavior<Derived, Component>::getPhysicsWorld() const {
+  return scene.getPhysicsWorld();
 }

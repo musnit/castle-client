@@ -2,6 +2,8 @@
 
 #include "precomp.h"
 
+#include "lv.h"
+
 
 class AllBehaviors; // Forward declaration otherwise this would be circular...
 
@@ -76,7 +78,16 @@ public:
   const entt::registry &getEntityRegistry() const;
 
 
+  // Update, draw
+
+  void update(double dt);
+
+  void draw();
+
+
 private:
+  Lv &lv { Lv::getInstance() };
+
   entt::registry registry;
 
   mutable int nextNewDrawOrder = 0; // Always greater than the draw order of any existing actor

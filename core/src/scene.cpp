@@ -61,3 +61,21 @@ void Scene::ensureDrawOrderSort() const {
     nextNewDrawOrder = nextCompactDrawOrder;
   }
 }
+
+
+//
+// Update
+//
+
+void Scene::update(double dt) {
+  // Step physics
+  physicsWorld.Step(dt, 6, 2); // TODO(nikki): Use fixed timestep + catching up
+}
+
+
+//
+// Draw
+//
+
+void Scene::draw() {
+}

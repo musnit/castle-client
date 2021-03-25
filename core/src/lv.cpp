@@ -22,6 +22,8 @@ namespace filesystem {
 //
 
 Lv::Lv(int windowWidth, int windowHeight, const char *arg0) {
+  instance = this;
+
   // Filesystem
   {
     lv.filesystem.init(arg0);

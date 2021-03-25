@@ -14,4 +14,7 @@ public:
   static constexpr char name[] = "Body";
 
   using BaseBehavior::BaseBehavior;
+
+  void handleAddComponent(ActorId actorId, BodyComponent &component);
+  void handleDisableComponent(ActorId actorId, BodyComponent &component, bool removeActor);
 };

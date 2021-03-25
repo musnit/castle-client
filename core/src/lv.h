@@ -65,6 +65,8 @@ public:
 
   Lv(int windowWidth, int windowHeight, const char *arg0 = "/love-app");
 
+  static Lv &getInstance();
+
   // Add Love boilerplate around shader code. This is required for the
   // Love-specific extensions to GLSL to work (eg. variables like
   // `TransformMatrix` or using `effect` as the entrypoint)
@@ -75,6 +77,15 @@ public:
 private:
   Lv &lv { *this };
 
+  inline static Lv *instance = nullptr;
+
   std::string wrapShaderCode(bool isVertex, const char *code);
   void setupDefaultShaderCode();
 };
+
+
+// Inline implementations
+
+inline Lv &Lv::getInstance() {
+  return *instance;
+}
