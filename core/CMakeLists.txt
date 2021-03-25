@@ -107,6 +107,12 @@ if(WEB)
   endif()
 endif()
 
+# Add debug info in desktop release builds
+if((NOT WEB) AND (NOT MSVC))
+  target_compile_options(castle-core PRIVATE -g)
+  target_link_options(castle-core PRIVATE -g)
+endif()
+
 
 #
 # Dependencies
