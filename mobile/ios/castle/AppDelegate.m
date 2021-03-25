@@ -293,7 +293,7 @@ int SDL_main(int argc, char *argv[]) {
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
   fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
   NSString *removePushNotificationId = [userInfo valueForKey:@"removePushNotificationId"];
-  if (removePushNotificationId) {
+  if (removePushNotificationId && [removePushNotificationId isKindOfClass:[NSString class]]) {
     [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:@[removePushNotificationId]];
     completionHandler(UIBackgroundFetchResultNoData);
     return;
