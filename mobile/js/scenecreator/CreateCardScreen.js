@@ -378,8 +378,11 @@ export const CreateCardScreen = ({
                 beltHeightFraction={beltHeightFraction}
               />
               {isCardTextVisible ? (
-                <View style={[styles.textActorsContainer, { marginTop: beltHeight }]}>
+                <View
+                  style={[styles.textActorsContainer, { marginTop: beltHeight }]}
+                  pointerEvents="box-none">
                   <View
+                    pointerEvents="box-none"
                     style={[
                       styles.textActorsAspectRatio,
                       { justifyContent: isTextActorSelected ? 'flex-start' : 'flex-end' },
