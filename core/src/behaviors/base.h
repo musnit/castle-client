@@ -6,6 +6,11 @@
 
 
 struct BaseComponent {
+  BaseComponent(const BaseComponent &) = delete; // Prevent accidental copies
+  const BaseComponent &operator=(const BaseComponent &) = delete;
+  BaseComponent(BaseComponent &&) = default; // Allow moves
+  BaseComponent &operator=(BaseComponent &&) = default;
+
   bool disabled = false;
 };
 
