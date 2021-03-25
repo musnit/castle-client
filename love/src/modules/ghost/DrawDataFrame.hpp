@@ -55,7 +55,21 @@ public:
 		
 		deserializeFillAndPreview();
 	}
-	
+
+	void write(Archive::Writer &archive) {
+		archive.boolean("isLinked", isLinked);
+		archive.arr("pathDataList", [&]() {
+			for (size_t i = 0; i < pathDataList.size(); i++) {
+				archive.obj(pathDataList[i]);
+			}
+		});
+		
+		archive.obj("fillImageBounds", fillImageBounds);
+		if (fillPng) {
+			archive.str("fillPng", *fillPng);
+		}
+	}
+
 	void deserializePathDataList();
 	bool arePathDatasMergable(PathData pd1, PathData pd2);
 	float round(float num, int numDecimalPlaces);
@@ -115,6 +129,17 @@ struct DrawDataLayer {
 				DrawDataFrame *frame = new DrawDataFrame();
 				archive.obj(i, *frame);
 				frames.push_back(frame);
+			}
+		});
+	}
+
+	void write(Archive::Writer &archive) {
+		archive.str("title", title);
+		archive.str("id", id);
+		archive.boolean("isVisible", isVisible);
+		archive.arr("frames", [&]() {
+			for (size_t i = 0; i < frames.size(); i++) {
+				archive.obj(*frames[i]);
 			}
 		});
 	}

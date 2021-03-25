@@ -125,7 +125,25 @@ public:
 	}
 
 	void write(Archive::Writer &archive) {
-		//archive(obj);
+		archive.arr("color", color);
+		archive.arr("lineColor", lineColor);
+		archive.num("gridSize", gridSize);
+		archive.num("scale", scale);
+		archive.num("version", version);
+		archive.num("fillPixelsPerUnit", fillPixelsPerUnit);
+		archive.num("numTotalLayers", numTotalLayers);
+		archive.arr("framesBounds", [&]() {
+			for (size_t i = 0; i < framesBounds.size(); i++) {
+				archive.obj(*framesBounds[i]);
+			}
+		});
+		archive.str("selectedLayerId", selectedLayerId);
+		archive.num("selectedFrame", selectedFrame);
+		archive.arr("layers", [&]() {
+			for (size_t i = 0; i < layers.size(); i++) {
+				archive.obj(*layers[i]);
+			}
+		});
 	}
 
 	void read(lua_State *L, int index) {

@@ -158,6 +158,11 @@ struct Point {
 		y = archive.num("y", 0);
 	}
 	
+	void write(Archive::Writer &archive) {
+		archive.num("x", x);
+		archive.num("y", y);
+	}
+	
 	void write(lua_State *L) {
 		lua_createtable(L, 0, 2);
 		
@@ -320,6 +325,31 @@ struct PathData {
 		
 		isTransparent = archive.boolean("isTransparent", false);
 	}
+	
+	void write(Archive::Writer &archive) {
+		archive.arr("p", [&]() {
+			for (size_t i = 0; i < points.size(); i++) {
+				archive.num(points[i].x);
+				archive.num(points[i].y);
+			}
+		});
+		
+		archive.num("s", style);
+		
+		if (bendPoint) {
+			archive.obj("bp", *bendPoint);
+		}
+		
+		archive.boolean("f", isFreehand);
+		
+		if (color) {
+			archive.arr("c", *color);
+		}
+		
+		if (isTransparent) {
+			archive.boolean("isTransparent", isTransparent);
+		}
+	}
 };
 
 struct Bounds {
@@ -337,6 +367,13 @@ struct Bounds {
 		maxX = archive.num("maxX", 0);
 		minY = archive.num("minY", 0);
 		maxY = archive.num("maxY", 0);
+	}
+	
+	void write(Archive::Writer &archive) {
+		archive.num("minX", minX);
+		archive.num("maxX", maxX);
+		archive.num("minY", minY);
+		archive.num("maxY", maxY);
 	}
 	
 	void set(Bounds other) {
