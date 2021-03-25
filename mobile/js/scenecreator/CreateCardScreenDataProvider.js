@@ -70,6 +70,12 @@ class CreateCardScreenDataProvider extends React.Component {
           deck = await Session.getDeckById(params.deckIdToEdit);
           if (!LocalId.isLocalId(params.cardIdToEdit)) {
             card = deck.cards.find((card) => card.cardId == params.cardIdToEdit);
+            if (!card) {
+              // not sure what is causing this (CASTLE-MOBILE-123)
+              throw new Error(
+                `Tried to edit card id ${params.cardIdToEdit}, but deck ${params.deckIdToEdit} does not contain any such card`
+              );
+            }
             if (deck.initialCard && deck.initialCard.cardId === card.cardId) {
               card.makeInitialCard = true;
             }
