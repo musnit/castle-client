@@ -112,15 +112,15 @@ Component &BaseBehavior<Derived, Component>::addComponent(ActorId actorId) {
 
 template<typename Derived, typename Component>
 void BaseBehavior<Derived, Component>::removeComponent(ActorId actorId) {
-  if (!hasComponent(actorId)) {
+  if (auto component = maybeGetComponent(actorId)) {
+    // NOTE: If adding more steps here, make sure `Scene::removeActor` is in sync
+    if constexpr (Handlers::hasDisableComponent<Derived>) {
+      static_cast<Derived &>(*this).handleDisableComponent(actorId, *component, false);
+    }
+    scene.getEntityRegistry().remove<Component>(actorId);
+  } else {
     fmt::print("removeComponent: actor doesn't have a component for this behavior");
-    return;
   }
-  // NOTE: If adding more steps here, make sure `Scene::removeActor` is in sync
-  if constexpr (Handlers::hasDisableComponent<Derived>) {
-    static_cast<Derived &>(*this).handleDisableComponent(actorId, getComponent(actorId), false);
-  }
-  scene.getEntityRegistry().remove<Component>(actorId);
 }
 
 template<typename Derived, typename Component>
