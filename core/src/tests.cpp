@@ -42,7 +42,9 @@ struct BasicActorManagementTest : Test {
       assert(results == std::vector<ActorId>({ actor2, actor1 }));
     }
     assert(scene.getActor(actor2).drawOrder == 0);
+    assert(scene.maybeGetActor(actor2)->drawOrder == 0);
     assert(scene.getActor(actor1).drawOrder == 1);
+    assert(scene.maybeGetActor(actor1)->drawOrder == 1);
 
     // Add another actor and check again
     auto actor3 = scene.addActor();
@@ -71,6 +73,7 @@ struct BasicActorManagementTest : Test {
     scene.removeActor(actor2);
     scene.removeActor(actor3);
     assert(!scene.hasActor(actor2));
+    assert(!scene.maybeGetActor(actor2));
     {
       std::vector<ActorId> results;
       scene.forEachActorByDrawOrder([&](ActorId actorId, Actor &) {
@@ -145,6 +148,7 @@ struct BasicComponentManagementTest : Test {
     testBehavior.addComponent(actor1);
     assert(testBehavior.hasComponent(actor1));
     assert(testBehavior.getComponent(actor1).i == 0);
+    assert(testBehavior.maybeGetComponent(actor1)->i == 0);
     assert((testBehavior.adds == std::vector<std::pair<ActorId, int>> { { actor1, 0 } }));
     assert((testBehavior.disables == std::vector<std::tuple<ActorId, int, bool>> {}));
     testBehavior.adds.clear();
@@ -163,6 +167,7 @@ struct BasicComponentManagementTest : Test {
     // Remove from one actor
     testBehavior.removeComponent(actor1);
     assert(!testBehavior.hasComponent(actor1));
+    assert(!testBehavior.maybeGetComponent(actor1));
     assert(testBehavior.getComponent(actor2).i == 1);
     assert((testBehavior.disables
         == std::vector<std::tuple<ActorId, int, bool>> { { actor1, 0, false } }));

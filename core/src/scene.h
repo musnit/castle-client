@@ -48,6 +48,8 @@ public:
   bool hasActor(ActorId actorId) const;
   Actor &getActor(ActorId actorId); // Undefined behavior if no such actor!
   const Actor &getActor(ActorId actorId) const;
+  Actor *maybeGetActor(ActorId actorId); // Returns `nullptr` if no such actor
+  const Actor *maybeGetActor(ActorId actorId) const;
 
   void setActorDrawOrder(ActorId actorId, int drawOrder);
   template<typename F>
@@ -111,6 +113,14 @@ inline const Actor &Scene::getActor(ActorId actorId) const {
     }
   }
   return registry.get<Actor>(actorId);
+}
+
+inline Actor *Scene::maybeGetActor(ActorId actorId) {
+  return registry.try_get<Actor>(actorId);
+}
+
+inline const Actor *Scene::maybeGetActor(ActorId actorId) const {
+  return registry.try_get<Actor>(actorId);
 }
 
 template<typename F>

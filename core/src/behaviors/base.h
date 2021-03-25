@@ -32,12 +32,14 @@ public:
 
   // Component management
 
-  Component &addComponent(ActorId actorId);
-  void removeComponent(ActorId actorId);
+  Component &addComponent(ActorId actorId); // Does nothing and returns existing if already present
+  void removeComponent(ActorId actorId); // Does nothing if not present
 
   bool hasComponent(ActorId actorId) const;
-  Component &getComponent(ActorId actorId);
+  Component &getComponent(ActorId actorId); // Undefined behavior if not present!
   const Component &getComponent(ActorId actorId) const;
+  Component *maybeGetComponent(ActorId actorId); // Returns `nullptr` if not present
+  const Component *maybeGetComponent(ActorId actorId) const;
 
   template<typename F>
   void forEachComponent(F &&f); // `f` must take either `(ActorId, Component &)` or (Component &)
@@ -62,8 +64,9 @@ private:
 
 template<typename Derived, typename Component>
 Component &BaseBehavior<Derived, Component>::addComponent(ActorId actorId) {
-  if (hasComponent(actorId)) {
+  if (auto component = maybeGetComponent(actorId)) {
     fmt::print("addComponent: actor already has a component for this behavior");
+    return *component;
   }
   auto &component = scene.getEntityRegistry().emplace<Component>(actorId);
   static_cast<Derived &>(*this).handleAddComponent(actorId, component);
@@ -104,6 +107,16 @@ const Component &BaseBehavior<Derived, Component>::getComponent(ActorId actorId)
     }
   }
   return scene.getEntityRegistry().get<Component>(actorId);
+}
+
+template<typename Derived, typename Component>
+Component *BaseBehavior<Derived, Component>::maybeGetComponent(ActorId actorId) {
+  return scene.getEntityRegistry().try_get<Component>(actorId);
+}
+
+template<typename Derived, typename Component>
+const Component *BaseBehavior<Derived, Component>::maybeGetComponent(ActorId actorId) const {
+  return scene.getEntityRegistry().try_get<Component>(actorId);
 }
 
 template<typename Derived, typename Component>
