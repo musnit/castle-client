@@ -29,6 +29,7 @@ private:
   Lv lv { 800, 1120 };
   love::RandomGenerator rng; // TODO(nikki): Seed this
 
+  [[maybe_unused]] bool prevWindowFocused = true;
   [[maybe_unused]] int prevWindowWidth = 0, prevWindowHeight = 0;
   bool shouldQuit = false;
 

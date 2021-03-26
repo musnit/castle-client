@@ -21,6 +21,7 @@ JS_DEFINE(int, JS_getCanvasWidth, (),
     { return document.querySelector("#canvas").getBoundingClientRect().width; });
 JS_DEFINE(int, JS_getCanvasHeight, (),
     { return document.querySelector("#canvas").getBoundingClientRect().height; });
+JS_DEFINE(int, JS_documentHasFocus, (), { return document.hasFocus() ? 1 : 0; });
 
 
 //
@@ -63,20 +64,37 @@ Engine::Engine() {
 bool Engine::frame() {
   // Based on the main loop from 'boot.lua' in the Love codebase
 
-  // Update window size and screen scaling based on canvas in web. This will
-  // generate an `SDL_WINDOWEVENT_RESIZED`, so we do it before the event pump
-  // to let Love process that immediately.
+  // In web, if the window is unfocused reduce loop frequency and pause to keep CPU usage low.
 #ifdef __EMSCRIPTEN__
   {
-    auto w = JS_getCanvasWidth();
-    auto h = JS_getCanvasHeight();
-    if (w != prevWindowWidth || h != prevWindowHeight) {
-      fmt::print("canvas resized to {}, {}\n", w, h);
-      SDL_SetWindowSize(lv.window.getSDLWindow(), w, h);
-      ghostScreenScaling = double(w) / 800;
-      prevWindowWidth = w;
-      prevWindowHeight = h;
+    auto focused = JS_documentHasFocus();
+    if (focused != prevWindowFocused) {
+      prevWindowFocused = focused;
+      if (focused) {
+        emscripten_set_main_loop_timing(EM_TIMING_RAF, 0);
+        lv.timer.step(); // Step timer and skip frame so we don't have a huge `dt`
+        return true;
+      } else {
+        emscripten_set_main_loop_timing(EM_TIMING_SETTIMEOUT, 100);
+      }
     }
+    if (!focused) {
+      return true;
+    }
+  }
+#endif
+
+  // Update window size and screen scaling based on canvas in web. This will generate an
+  // `SDL_WINDOWEVENT_RESIZED`, so we do it before the event pump to let Love process that
+  // immediately.
+#ifdef __EMSCRIPTEN__
+  if (auto w = JS_getCanvasWidth(), h = JS_getCanvasHeight();
+      w != prevWindowWidth || h != prevWindowHeight) {
+    fmt::print("canvas resized to {}, {}\n", w, h);
+    SDL_SetWindowSize(lv.window.getSDLWindow(), w, h);
+    ghostScreenScaling = double(w) / 800;
+    prevWindowWidth = w;
+    prevWindowHeight = h;
   }
 #endif
 
