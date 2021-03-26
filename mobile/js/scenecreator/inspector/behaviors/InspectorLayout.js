@@ -5,6 +5,7 @@ import { InspectorNumberInput } from '../components/InspectorNumberInput';
 import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 import { SaveBlueprintButton } from '../components/SaveBlueprintButton';
+import { useCardCreator } from '../../CreateCardContext';
 
 const styles = StyleSheet.create({
   container: {
@@ -83,6 +84,9 @@ const LayoutInput = ({ behavior, propName, label, sendAction, type = 'number' })
 };
 
 export default InspectorLayout = ({ body, circleShape, sendAction, sendActions }) => {
+  const { inspectorActions, isTextActorSelected } = useCardCreator();
+  const hasBlueprint = (inspectorActions && inspectorActions.hasBlueprint) || false;
+
   const onChangeCircleShape = React.useCallback(
     (value) => {
       if (value) {
@@ -164,9 +168,11 @@ export default InspectorLayout = ({ body, circleShape, sendAction, sendActions }
           sendAction={sendActions.Body}
         />
       </View>
-      <View style={styles.applyLayoutChangesContainer}>
-        <SaveBlueprintButton label="Apply layout changes to blueprint" />
-      </View>
+      {hasBlueprint && (
+        <View style={styles.applyLayoutChangesContainer}>
+          <SaveBlueprintButton label="Apply layout changes to blueprint" />
+        </View>
+      )}
       <View style={styles.row}>
         <InspectorCheckbox
           value={relative}
