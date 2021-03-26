@@ -1,4 +1,4 @@
-#include "dummy_drawing.h"
+#include "debug_draw.h"
 
 #include "behaviors/all.h"
 
@@ -7,8 +7,8 @@
 // Draw
 //
 
-void DummyDrawingBehavior::handleDrawComponent(
-    ActorId actorId, const DummyDrawingComponent &component) const {
+void DebugDrawBehavior::handleDrawComponent(
+    ActorId actorId, const DebugDrawComponent &component) const {
   if (auto maybeBodyComponent = getBehaviors().byType<BodyBehavior>().maybeGetComponent(actorId)) {
     auto body = maybeBodyComponent->body;
 

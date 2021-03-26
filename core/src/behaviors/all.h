@@ -5,7 +5,7 @@
 #include "scene.h"
 #include "behaviors/body.h"
 #include "behaviors/test.h"
-#include "behaviors/dummy_drawing.h"
+#include "behaviors/debug_draw.h"
 
 
 class AllBehaviors {
@@ -38,7 +38,7 @@ private:
   /* clang-format off */
   std::tuple<
     BodyBehavior,
-    DummyDrawingBehavior
+    DebugDrawBehavior
 #ifdef CASTLE_ENABLE_TESTS
     , TestBehavior
 #endif

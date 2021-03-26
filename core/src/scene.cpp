@@ -11,11 +11,11 @@ Scene::Scene()
     : behaviors(std::make_unique<AllBehaviors>(*this)) {
   auto actor1 = addActor();
   getBehaviors().byType<BodyBehavior>().addComponent(actor1);
-  getBehaviors().byType<DummyDrawingBehavior>().addComponent(actor1);
+  getBehaviors().byType<DebugDrawBehavior>().addComponent(actor1);
 
   auto actor2 = addActor();
   getBehaviors().byType<BodyBehavior>().addComponent(actor2);
-  getBehaviors().byType<DummyDrawingBehavior>().addComponent(actor2);
+  getBehaviors().byType<DebugDrawBehavior>().addComponent(actor2);
 }
 
 Scene::~Scene() {
