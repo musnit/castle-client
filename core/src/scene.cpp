@@ -35,7 +35,7 @@ ActorId Scene::addActor() {
 
 void Scene::removeActor(ActorId actorId) {
   if (!hasActor(actorId)) {
-    fmt::print("removeActor: no such actor");
+    fmt::print("removeActor: no such actor\n");
     return;
   }
   getBehaviors().forEachBehavior([&](auto &behavior) {

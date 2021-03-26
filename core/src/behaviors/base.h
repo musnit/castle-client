@@ -115,7 +115,7 @@ DEFINE_HANDLER(DrawComponent);
 template<typename Derived, typename Component>
 Component &BaseBehavior<Derived, Component>::addComponent(ActorId actorId) {
   if (auto component = maybeGetComponent(actorId)) {
-    fmt::print("addComponent: actor already has a component for this behavior");
+    fmt::print("addComponent: actor already has a component for this behavior\n");
     return *component;
   }
   auto &component = scene.getEntityRegistry().emplace<Component>(actorId);
@@ -134,7 +134,7 @@ void BaseBehavior<Derived, Component>::removeComponent(ActorId actorId) {
     }
     scene.getEntityRegistry().remove<Component>(actorId);
   } else {
-    fmt::print("removeComponent: actor doesn't have a component for this behavior");
+    fmt::print("removeComponent: actor doesn't have a component for this behavior\n");
   }
 }
 
@@ -147,7 +147,7 @@ template<typename Derived, typename Component>
 Component &BaseBehavior<Derived, Component>::getComponent(ActorId actorId) {
   if constexpr (Scene::debugChecks) {
     if (!hasComponent(actorId)) {
-      fmt::print("getComponent: actor doesn't have a component for this behavior");
+      fmt::print("getComponent: actor doesn't have a component for this behavior\n");
     }
   }
   return scene.getEntityRegistry().get<Component>(actorId);
@@ -157,7 +157,7 @@ template<typename Derived, typename Component>
 const Component &BaseBehavior<Derived, Component>::getComponent(ActorId actorId) const {
   if constexpr (Scene::debugChecks) {
     if (!hasComponent(actorId)) {
-      fmt::print("getComponent: actor doesn't have a component for this behavior");
+      fmt::print("getComponent: actor doesn't have a component for this behavior\n");
     }
   }
   return scene.getEntityRegistry().get<Component>(actorId);
