@@ -80,9 +80,9 @@ if(NOT MSVC)
   endif()
 endif()
 
-# Disable RTTI and exceptions
+# Disable exceptions
 if(NOT MSVC)
-  target_compile_options(castle-core PRIVATE -fno-rtti -fno-exceptions)
+  target_compile_options(castle-core PRIVATE -fno-exceptions)
 endif()
 
 # Precompiled header
