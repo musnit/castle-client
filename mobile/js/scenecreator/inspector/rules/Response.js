@@ -302,7 +302,7 @@ const RESPONSE_COMPONENTS = {
   ['infinite repeat']: Repeat,
   ['act on other']: ActOn,
   ['act on']: ActOn,
-  ['createText']: CreateText,
+  ['create text']: CreateText,
   ['set behavior property']: BehaviorPropertyRule,
   ['change behavior property']: BehaviorPropertyRule,
   ['set variable']: SetVariable,
