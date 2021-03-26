@@ -15,7 +15,7 @@ export const ExploreScreen = ({ route }) => {
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
-      Amplitude.logEventWithProperties('VIEW_EXPLORE');
+      Amplitude.logEvent('VIEW_EXPLORE');
     })
   );
 

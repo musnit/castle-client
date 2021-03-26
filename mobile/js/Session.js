@@ -192,7 +192,7 @@ export class Provider extends React.Component {
       }
 
       await this.useNewAuthTokenAsync(result.data.login);
-      Amplitude.logEventWithProperties('SIGN_IN'); // user id already set for amplitude
+      Amplitude.logEvent('SIGN_IN'); // user id already set for amplitude
     }
   };
 
@@ -204,7 +204,7 @@ export class Provider extends React.Component {
         }
       `,
     });
-    Amplitude.logEventWithProperties('SIGN_OUT'); // user id is still set in amplitude
+    Amplitude.logEvent('SIGN_OUT'); // user id is still set in amplitude
     await this.useNewAuthTokenAsync({}); // clear user id
   };
 
@@ -232,7 +232,7 @@ export class Provider extends React.Component {
       }
 
       await this.useNewAuthTokenAsync(result.data.signup);
-      Amplitude.logEventWithProperties('SIGN_UP'); // user id already set for amplitude
+      Amplitude.logEvent('SIGN_UP'); // user id already set for amplitude
     }
   };
 
