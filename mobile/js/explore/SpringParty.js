@@ -16,8 +16,8 @@ import gql from 'graphql-tag';
 const SPRING_PARTY_URL = 'https://castle.xyz/spring_party';
 const REFETCH_FEED_INTERVAL_MS = 60 * 1000;
 
-const PARTY_START = new Date('2021-03-31T00:00:00');
-const PARTY_END = new Date('2021-04-04T23:59:00');
+const PARTY_START = new Date(1617206400000); // 03/31/21 9 AM PST
+const PARTY_END = new Date(1617605940000); // 04/04/21 11:59 PM PST
 
 const styles = StyleSheet.create({
   springContainer: {
