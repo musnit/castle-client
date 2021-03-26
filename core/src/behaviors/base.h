@@ -71,6 +71,12 @@ public:
   const b2World &getPhysicsWorld() const;
 
 
+  // Other behaviors
+
+  AllBehaviors &getBehaviors();
+  const AllBehaviors &getBehaviors() const;
+
+
 private:
   Scene &scene;
 };
@@ -98,6 +104,7 @@ namespace Handlers {
 
 DEFINE_HANDLER(AddComponent);
 DEFINE_HANDLER(DisableComponent);
+DEFINE_HANDLER(DrawComponent);
 
 #undef DEFINE_HANDLER
 }
@@ -186,4 +193,14 @@ b2World &BaseBehavior<Derived, Component>::getPhysicsWorld() {
 template<typename Derived, typename Component>
 const b2World &BaseBehavior<Derived, Component>::getPhysicsWorld() const {
   return scene.getPhysicsWorld();
+}
+
+template<typename Derived, typename Component>
+AllBehaviors &BaseBehavior<Derived, Component>::getBehaviors() {
+  return scene.getBehaviors();
+}
+
+template<typename Derived, typename Component>
+const AllBehaviors &BaseBehavior<Derived, Component>::getBehaviors() const {
+  return scene.getBehaviors();
 }

@@ -82,7 +82,7 @@ public:
 
   void update(double dt);
 
-  void draw();
+  void draw() const;
 
 
 private:

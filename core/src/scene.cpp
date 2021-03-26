@@ -11,9 +11,11 @@ Scene::Scene()
     : behaviors(std::make_unique<AllBehaviors>(*this)) {
   auto actor1 = addActor();
   getBehaviors().byType<BodyBehavior>().addComponent(actor1);
+  getBehaviors().byType<DummyDrawingBehavior>().addComponent(actor1);
 
   auto actor2 = addActor();
   getBehaviors().byType<BodyBehavior>().addComponent(actor2);
+  getBehaviors().byType<DummyDrawingBehavior>().addComponent(actor2);
 }
 
 Scene::~Scene() {
@@ -36,7 +38,7 @@ void Scene::removeActor(ActorId actorId) {
     fmt::print("removeActor: no such actor");
     return;
   }
-  behaviors->forEachBehavior([&](auto &behavior) {
+  getBehaviors().forEachBehavior([&](auto &behavior) {
     if constexpr (Handlers::hasDisableComponent<decltype(behavior)>) {
       if (auto component = behavior.maybeGetComponent(actorId)) {
         behavior.handleDisableComponent(actorId, *component, true);
@@ -82,7 +84,7 @@ void Scene::update(double dt) {
 // Draw
 //
 
-void Scene::draw() {
+void Scene::draw() const {
   lv.graphics.push(love::Graphics::STACK_ALL);
 
   // Temporary view transform
@@ -90,21 +92,16 @@ void Scene::draw() {
   lv.graphics.scale(800.0 / viewWidth, 800.0 / viewWidth);
   lv.graphics.translate(0.5 * viewWidth, 0.5 * viewWidth);
 
-  // Debug draw bodies
-  lv.graphics.setColor(love::Colorf(0.4, 0.4, 0.2, 1));
-  getBehaviors().byType<BodyBehavior>().forEachComponent(
-      [&](ActorId actorId, BodyComponent &component) {
-        lv.graphics.push();
-        auto [x, y] = component.body->GetPosition();
-        lv.graphics.translate(x, y);
-        lv.graphics.rotate(component.body->GetAngle());
-        lv.graphics.rectangle(love::Graphics::DRAW_FILL, -0.25, -0.25, 0.5, 0.5);
-        lv.graphics.pop();
-
-        if (y > 3) { // Silly test...
-          removeActor(actorId);
+  // Draw scene
+  forEachActorByDrawOrder([&](ActorId actorId, const Actor &actor) {
+    getBehaviors().forEachBehavior([&](auto &behavior) {
+      if constexpr (Handlers::hasDrawComponent<decltype(behavior)>) {
+        if (auto component = behavior.maybeGetComponent(actorId)) {
+          behavior.handleDrawComponent(actorId, *component);
         }
-      });
+      }
+    });
+  });
 
   lv.graphics.pop();
 }

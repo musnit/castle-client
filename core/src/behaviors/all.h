@@ -5,6 +5,7 @@
 #include "scene.h"
 #include "behaviors/body.h"
 #include "behaviors/test.h"
+#include "behaviors/dummy_drawing.h"
 
 
 class AllBehaviors {
@@ -29,12 +30,15 @@ public:
 
   template<typename F>
   void forEachBehavior(F &&f);
+  template<typename F>
+  void forEachBehavior(F &&f) const;
 
 
 private:
   /* clang-format off */
   std::tuple<
-    BodyBehavior
+    BodyBehavior,
+    DummyDrawingBehavior
 #ifdef CASTLE_ENABLE_TESTS
     , TestBehavior
 #endif
@@ -63,6 +67,15 @@ const Behavior &AllBehaviors::byType() const {
 
 template<typename F>
 void AllBehaviors::forEachBehavior(F &&f) {
+  std::apply(
+      [&](auto &&... args) {
+        (f(args), ...);
+      },
+      behaviors);
+}
+
+template<typename F>
+void AllBehaviors::forEachBehavior(F &&f) const {
   std::apply(
       [&](auto &&... args) {
         (f(args), ...);
