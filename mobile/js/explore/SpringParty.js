@@ -141,7 +141,7 @@ export const SpringDecks = () => {
 
   React.useEffect(() => {
     if (query.called && !query.loading && !query.error && query.data) {
-      changeDecks({ type: 'set', decks: query.data.deckFeed });
+      changeDecks({ type: 'set', decks: query.data.eventFeed });
     }
   }, [query.called, query.loading, query.error, query.data]);
 
