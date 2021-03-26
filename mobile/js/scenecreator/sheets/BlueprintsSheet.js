@@ -102,9 +102,42 @@ const orderedEntries = (library, type = 'actorBlueprint') => {
   return entries;
 };
 
+function stringify(obj_from_json) {
+  if (Array.isArray(obj_from_json)) {
+    let props = obj_from_json.map(val => stringify(val)).join(",");
+    return `{${props}}`;
+  }
+    if (typeof obj_from_json !== "object"){
+        // not an object, stringify using native function
+        return JSON.stringify(obj_from_json);
+    }
+    let props = Object
+        .keys(obj_from_json)
+        .filter(key => obj_from_json[key] !== undefined)
+        .map(key => `${key} = ${stringify(obj_from_json[key])}`)
+        .join(",");
+    return `{${props}}`;
+}
+
 const BlueprintItem = ({ entry, onPress, isRule, onPressCopy }) => {
+  const logItem = () => {
+    const entryCopy = {
+      ...entry,
+      base64Png: undefined,
+      actorBlueprint: {
+        ...entry.actorBlueprint,
+        components: {
+          ...entry.actorBlueprint.components,
+          Drawing2: undefined,
+        },
+      },
+    };
+    console.log(`ben: entry: ${stringify(entryCopy)}`);
+    console.log(`  entry.base64Png is: ${entry.base64Png}`);
+    console.log(`  entry.actorBlueprint.components.Drawing2 is: ${stringify(entry.actorBlueprint.components.Drawing2)}`);
+  };
   return (
-    <TouchableOpacity style={styles.itemContainer} onPress={onPress}>
+    <TouchableOpacity style={styles.itemContainer} onPress={logItem}>
       <View style={[styles.preview, entry.base64Png ? null : { backgroundColor: '#ddd' }]}>
         {entry.base64Png ? (
           <FastImage
