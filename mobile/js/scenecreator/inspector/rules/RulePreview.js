@@ -15,6 +15,7 @@ const styles = StyleSheet.create({
     paddingRight: 16,
   },
   keyCell: { fontWeight: 'bold' },
+  noteCell: { fontStyle: 'italic', color: '#333' },
   newLineIcon: {
     marginHorizontal: 2,
     color: '#aaa',
@@ -26,6 +27,7 @@ const makeResponseRows = (rows, order, indent, { response, context }) => {
   rows.push({
     indent,
     order,
+    isNote: response?.name === 'note' ? true : undefined,
     cells: Responses.makeCells({ response, context, isPreview: true }),
   });
   if (!response) return;
@@ -105,6 +107,12 @@ export const RulePreview = ({ rule }) => {
                 return (
                   <Text key={key}>
                     <VectorIcon family={cell.family} name={cell.icon} size={16} color="#000" />{' '}
+                  </Text>
+                );
+              } else if (row.isNote) {
+                return (
+                  <Text style={styles.noteCell} key={key}>
+                    {cell.label}{' '}
                   </Text>
                 );
               } else {

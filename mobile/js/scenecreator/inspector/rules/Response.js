@@ -41,6 +41,7 @@ const RESPONSE_CATEGORY_ORDER = [
   'motion',
   'sound',
   'camera',
+  'meta',
 ];
 const CONDITION_CATEGORY_ORDER = ['state', 'collision', 'random', 'camera', 'draw'];
 

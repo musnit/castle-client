@@ -935,6 +935,30 @@ const IsInCameraViewport = () => {
   ];
 };
 
+const Note = ({ response, isPreview }) => {
+  const cells = [
+    {
+      type: 'icon',
+      isPreview: true,
+      family: 'FontAwesome',
+      icon: 'sticky-note-o',
+    },
+    {
+      type: response.params?.note?.length ? 'selectParamSheet' : 'selectParamSheetPlaceholder',
+      paramName: 'note',
+      paramValue: response.params?.note,
+      label: response.params?.note?.length ? response.params.note : '(empty)',
+    },
+  ];
+  if (!isPreview) {
+    cells.unshift({
+      type: 'selectEntry',
+      label: 'Note: ',
+    });
+  }
+  return cells;
+};
+
 const makeCells = (props) => {
   const { response } = props;
   if (!response || response.name === 'none') {
@@ -986,6 +1010,7 @@ export const Responses = {
   ['hide text']: HideText,
   show: Show,
   hide: Hide,
+  note: Note,
   empty: Empty,
   default: Default,
   makeCells,
