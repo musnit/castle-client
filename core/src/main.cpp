@@ -1,7 +1,6 @@
 #include "precomp.h"
 
 #include "engine.h"
-#include "props.h"
 
 
 // Run the main loop, calling `frame` per frame. `frame` should return a
@@ -22,23 +21,9 @@ void loop(F &&frame) {
 #endif
 }
 
-
-struct TestProps {
-  PROP(char, hello) = 32;
-  PROP(std::string, bar) = "woah";
-  int x;
-};
-
-
 // Main web and desktop entrypoint
 #undef main // SDL does some weird stuff overriding `main` with a macro...
 int main() {
-  TestProps props;
-
-  Props::forEach(props, [&](auto &prop) {
-    fmt::print("{}: {}\n", prop.name(), prop.value);
-  });
-
   Engine eng;
   loop([&]() {
     return eng.frame();
