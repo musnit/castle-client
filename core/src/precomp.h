@@ -39,3 +39,6 @@
 
 // entt
 #include <entt/entity/registry.hpp>
+
+// magic_get
+#include <boost/pfr.hpp>

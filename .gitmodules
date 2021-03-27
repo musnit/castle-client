@@ -10,3 +10,6 @@
 [submodule "core/vendor/entt"]
 	path = core/vendor/entt
 	url = https://github.com/skypjack/entt.git
+[submodule "core/vendor/magic_get"]
+	path = core/vendor/magic_get
+	url = https://github.com/apolukhin/magic_get.git
