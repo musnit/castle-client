@@ -95,12 +95,10 @@ namespace Handlers {
 
 #define DEFINE_HANDLER(name)                                                                       \
   template<typename T, typename = void>                                                            \
-  struct has##name##_ : std::false_type {};                                                        \
+  inline constexpr auto has##name = false;                                                         \
   template<typename T>                                                                             \
-  struct has##name##_<T, std::void_t<decltype(&std::remove_reference_t<T>::handle##name)>>         \
-      : std::true_type {};                                                                         \
-  template<typename T>                                                                             \
-  inline constexpr auto has##name = has##name##_<T>::value;
+  inline constexpr auto                                                                            \
+      has##name<T, std::void_t<decltype(&std::remove_reference_t<T>::handle##name)>> = true;
 
 DEFINE_HANDLER(AddComponent);
 DEFINE_HANDLER(DisableComponent);
