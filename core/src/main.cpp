@@ -23,7 +23,15 @@ void loop(F &&frame) {
 
 
 struct PropAttribs {
-  // Extra attributes on properties for eg. UI. Nothing here for now.
+  PropAttribs &uiStyle(const char *) {
+    return *this;
+  }
+  PropAttribs &min(int) {
+    return *this;
+  }
+  PropAttribs &max(int) {
+    return *this;
+  }
 };
 
 template<typename Value, typename Internal>
@@ -59,14 +67,14 @@ struct PropTypeFix<T(U)> {
 private:                                                                                           \
   struct INTERNAL_##name {                                                                         \
     static constexpr const char nameStr[] = #name;                                                 \
-    inline static PropAttribs attribs __VA_ARGS__;                                                 \
+    inline static PropAttribs attribs = PropAttribs() __VA_ARGS__;                                 \
   };                                                                                               \
                                                                                                    \
 public:                                                                                            \
   Prop<PropTypeFix<void(type)>::Type, INTERNAL_##name> name
 
 struct TestProps {
-  PROP(int, hello) = 32;
+  PROP(int, hello, .uiStyle("slider").min(0).max(1)) = 32;
   PROP(std::string, bar) = "woah";
   PROP((std::pair<int, int>), woo) = { 3, 2 };
 };
