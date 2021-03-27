@@ -48,6 +48,13 @@ private:
   static constexpr auto nameHs = entt::hashed_string(Internal::nameStr);
 };
 
+template<typename T>
+struct PropTypeFix;
+template<typename T, typename U>
+struct PropTypeFix<T(U)> {
+  using Type = U;
+};
+
 #define PROP(type, name, ...)                                                                      \
 private:                                                                                           \
   struct INTERNAL_##name {                                                                         \
@@ -56,11 +63,12 @@ private:                                                                        
   };                                                                                               \
                                                                                                    \
 public:                                                                                            \
-  Prop<type, INTERNAL_##name> name
+  Prop<PropTypeFix<void(type)>::Type, INTERNAL_##name> name
 
 struct TestProps {
   PROP(int, hello) = 32;
   PROP(std::string, bar) = "woah";
+  PROP((std::pair<int, int>), woo) = { 3, 2 };
 };
 
 
