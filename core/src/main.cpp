@@ -56,13 +56,6 @@ private:
   static constexpr auto nameHs = entt::hashed_string(Internal::nameStr);
 };
 
-template<typename T>
-struct PropTypeFix;
-template<typename T, typename U>
-struct PropTypeFix<T(U)> {
-  using Type = U;
-};
-
 #define PROP(type, name, ...)                                                                      \
 private:                                                                                           \
   struct INTERNAL_##name {                                                                         \
@@ -71,7 +64,11 @@ private:                                                                        
   };                                                                                               \
                                                                                                    \
 public:                                                                                            \
-  Prop<PropTypeFix<void(type)>::Type, INTERNAL_##name> name
+  Prop<PROP_PARENS_1(PROP_PARENS_3 type), INTERNAL_##name> name
+#define PROP_PARENS_1(...) PROP_PARENS_2(__VA_ARGS__)
+#define PROP_PARENS_2(...) NO## __VA_ARGS__
+#define PROP_PARENS_3(...) PROP_PARENS_3 __VA_ARGS__
+#define NOPROP_PARENS_3
 
 struct TestProps {
   PROP(int, hello, .uiStyle("slider").min(0).max(1)) = 32;
