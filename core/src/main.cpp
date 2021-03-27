@@ -1,6 +1,7 @@
 #include "precomp.h"
 
 #include "engine.h"
+#include "props.h"
 
 
 // Run the main loop, calling `frame` per frame. `frame` should return a
@@ -22,58 +23,10 @@ void loop(F &&frame) {
 }
 
 
-struct PropAttribs {
-  PropAttribs &uiStyle(const char *) {
-    return *this;
-  }
-  PropAttribs &min(int) {
-    return *this;
-  }
-  PropAttribs &max(int) {
-    return *this;
-  }
-};
-
-template<typename Value, typename Internal>
-struct Prop {
-  Value value;
-  inline static const PropAttribs &attribs = Internal::attribs;
-
-  template<typename... Args>
-  Prop(Args &&...args)
-      : value(std::forward<Args>(args)...) {
-  }
-
-  static constexpr uint32_t nameHash() {
-    return nameHs.value();
-  }
-
-  static constexpr std::string_view name() {
-    return nameHs.data();
-  }
-
-private:
-  static constexpr auto nameHs = entt::hashed_string(Internal::nameStr);
-};
-
-#define PROP(type, name, ...)                                                                      \
-private:                                                                                           \
-  struct INTERNAL_##name {                                                                         \
-    static constexpr const char nameStr[] = #name;                                                 \
-    inline static PropAttribs attribs = PropAttribs() __VA_ARGS__;                                 \
-  };                                                                                               \
-                                                                                                   \
-public:                                                                                            \
-  Prop<PROP_PARENS_1(PROP_PARENS_3 type), INTERNAL_##name> name
-#define PROP_PARENS_1(...) PROP_PARENS_2(__VA_ARGS__)
-#define PROP_PARENS_2(...) NO## __VA_ARGS__
-#define PROP_PARENS_3(...) PROP_PARENS_3 __VA_ARGS__
-#define NOPROP_PARENS_3
-
 struct TestProps {
-  PROP(int, hello, .uiStyle("slider").min(0).max(1)) = 32;
+  PROP(char, hello) = 32;
   PROP(std::string, bar) = "woah";
-  PROP((std::pair<int, int>), woo) = { 3, 2 };
+  int x;
 };
 
 
@@ -82,10 +35,8 @@ struct TestProps {
 int main() {
   TestProps props;
 
-  boost::pfr::for_each_field(props, [&](auto &prop) {
-    if constexpr (std::remove_reference_t<decltype(prop)>::name() == "hello") {
-      fmt::print("{}: {}\n", prop.name(), prop.value);
-    }
+  Props::forEach(props, [&](auto &prop) {
+    fmt::print("{}: {}\n", prop.name(), prop.value);
   });
 
   Engine eng;
