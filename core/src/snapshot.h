@@ -21,12 +21,12 @@ public:
   // From file or JSON
 
   static Snapshot fromFile(const char *path);
-  static Snapshot fromJSON(const char *json);
+  static Snapshot fromJson(const char *json);
 
 
   // To JSON
 
-  std::string toJSON();
+  std::string toJson();
 
 
   // To `Scene`

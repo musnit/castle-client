@@ -453,13 +453,13 @@ struct Archive {
     return ar;
   }
 
-  static auto fromJSON(const char *json) -> Archive {
+  static auto fromJson(const char *json) -> Archive {
     Archive ar;
     ar.root.Parse(json);
     return ar;
   }
 
-  auto toJSON() -> std::string {
+  auto toJson() -> std::string {
     json::StringBuffer buffer;
     json::PrettyWriter writer(buffer);
     writer.SetIndent(' ', 2);

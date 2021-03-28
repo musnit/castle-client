@@ -26,7 +26,7 @@ private:
 };
 
 class Library {
-  // Stores a library entries that scenes can read / write. The scene doesn't store this data
+  // Stores a library of entries that scenes can read / write. The scene doesn't store this data
   // directly to allow for sharing / caching entry data across scenes in the future, if we end up
   // doing that.
 

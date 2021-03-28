@@ -20,8 +20,8 @@ Snapshot Snapshot::fromFile(const char *path) {
   return Snapshot(Archive::fromFile(path));
 }
 
-Snapshot Snapshot::fromJSON(const char *json) {
-  return Snapshot(Archive::fromJSON(json));
+Snapshot Snapshot::fromJson(const char *json) {
+  return Snapshot(Archive::fromJson(json));
 }
 
 
@@ -79,7 +79,7 @@ Scene Snapshot::toScene() {
 
             if (maybeEntryComponentsReader) {
               maybeEntryComponentsReader->obj(behaviorName, [&]() {
-                // Fallback to blueprints properties for this component
+                // Fallback to blueprints's properties for this component
                 reader.setFallback(maybeEntryComponentsReader->jsonValue());
               });
             }
