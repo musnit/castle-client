@@ -29,6 +29,11 @@ public:
   const Behavior &byType() const;
 
   template<typename F>
+  void byName(const char *name, F &&f); // If name is statically known, prefer `byType` above
+  template<typename F>
+  void byName(const char *name, F &&f) const;
+
+  template<typename F>
   void forEachBehavior(F &&f);
   template<typename F>
   void forEachBehavior(F &&f) const;
@@ -63,6 +68,32 @@ Behavior &AllBehaviors::byType() {
 template<typename Behavior>
 const Behavior &AllBehaviors::byType() const {
   return std::get<Behavior>(behaviors);
+}
+
+template<typename F>
+void AllBehaviors::byName(const char *name, F &&f) {
+  const auto nameHs = entt::hashed_string(name);
+  forEachBehavior([&](auto &behavior) {
+    constexpr auto behaviorNameHs
+        = entt::hashed_string(std::remove_reference_t<decltype(behavior)>::name);
+    if (nameHs.value() == behaviorNameHs.value()
+        && !std::strcmp(nameHs.data(), behaviorNameHs.data())) {
+      f(behavior);
+    }
+  });
+}
+
+template<typename F>
+void AllBehaviors::byName(const char *name, F &&f) const {
+  const auto nameHs = entt::hashed_string(name);
+  forEachBehavior([&](auto &behavior) {
+    constexpr auto behaviorNameHs
+        = entt::hashed_string(std::remove_reference_t<decltype(behavior)>::name);
+    if (nameHs.value() == behaviorNameHs.value()
+        && !std::strcmp(nameHs.data(), behaviorNameHs.data())) {
+      f(behavior);
+    }
+  });
 }
 
 template<typename F>

@@ -10,9 +10,9 @@ class LibraryEntry {
 
 public:
   LibraryEntry(const LibraryEntry &) = delete; // Prevent accidental copies
-  auto operator=(const LibraryEntry &) -> LibraryEntry & = delete;
+  const LibraryEntry &operator=(const LibraryEntry &) = delete;
   LibraryEntry(LibraryEntry &&) = default; // Allow moves
-  auto operator=(LibraryEntry &&) -> LibraryEntry & = default;
+  LibraryEntry &operator=(LibraryEntry &&) = default;
 
   const json::Value &getJsonValue() const;
 

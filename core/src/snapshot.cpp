@@ -1,6 +1,7 @@
 #include "snapshot.h"
 
 #include "scene.h"
+#include "behaviors/all.h"
 
 
 //
@@ -69,24 +70,39 @@ Scene Snapshot::toScene() {
       // Components
       reader.obj("bp", [&]() {
         reader.obj("components", [&]() {
+          // Fallback to blueprint's components
           if (maybeEntryComponentsReader) {
-            // Fallback to blueprint's components
             reader.setFallback(maybeEntryComponentsReader->jsonValue());
           }
 
+          // Load each component
           reader.each([&](const char *behaviorName) {
-            fmt::print("  reading component '{}'\n", behaviorName);
+            auto found = false;
+            scene.getBehaviors().byName(behaviorName, [&](auto &behavior) {
+              // We found a behavior with this name
+              found = true;
+              fmt::print("  reading component '{}'\n", behaviorName);
 
-            if (maybeEntryComponentsReader) {
-              maybeEntryComponentsReader->obj(behaviorName, [&]() {
-                // Fallback to blueprints's properties for this component
-                reader.setFallback(maybeEntryComponentsReader->jsonValue());
+              // Fallback to blueprints's properties for this component
+              if (maybeEntryComponentsReader) {
+                maybeEntryComponentsReader->obj(behaviorName, [&]() {
+                  reader.setFallback(maybeEntryComponentsReader->jsonValue());
+                });
+              }
+
+              // TODO: Add component to actor
+
+              // Read props
+              reader.each([&](const char *propName) {
+                fmt::print("    reading prop '{}'\n", propName);
               });
-            }
 
-            reader.each([&](const char *propName) {
-              fmt::print("    reading prop '{}'\n", propName);
+              // TODO: Call `handleReadComponent` handler
             });
+            if (!found) {
+              // Didn't find this behavior, just log for now
+              fmt::print("  skipped component '{}'\n", behaviorName);
+            }
           });
         });
       });
