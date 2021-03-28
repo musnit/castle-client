@@ -31,11 +31,12 @@ Snapshot Snapshot::fromJSON(const char *json) {
 
 Scene Snapshot::toScene() {
   Scene scene;
+  auto &library = scene.getLibrary();
 
   archive.read([&](Archive::Reader &reader) {
     // Library
-    reader.each("library", [&](const char *entryId) {
-      fmt::print("reading library entry '{}'\n", entryId);
+    reader.each("library", [&]() {
+      library.readEntry(reader);
     });
 
     // Actors
@@ -43,10 +44,52 @@ Scene Snapshot::toScene() {
       // Actor ID
       auto maybeActorId = reader.str("actorId");
       if (!maybeActorId) {
+        fmt::print("tried to read actor without `actorId`!");
         return;
       }
       auto actorId = *maybeActorId;
       fmt::print("reading actor '{}'\n", actorId);
+
+      // Parent entry
+      std::optional<Reader> maybeEntryComponentsReader;
+      if (auto maybeEntryId = reader.str("parentEntryId")) {
+        if (auto maybeEntry = library.maybeGetEntry(*maybeEntryId)) {
+          auto &entryJson = maybeEntry->getJsonValue();
+          Reader entryReader(entryJson);
+          entryReader.obj("actorBlueprint", [&]() {
+            entryReader.obj("components", [&]() {
+              // TODO(nikki): We can cache the component reader in the `LibraryEntry` to reuse the
+              //              reader lookup cache when we add one
+              maybeEntryComponentsReader = Reader(*entryReader.jsonValue());
+            });
+          });
+        };
+      }
+
+      // Components
+      reader.obj("bp", [&]() {
+        reader.obj("components", [&]() {
+          if (maybeEntryComponentsReader) {
+            // Fallback to blueprint's components
+            reader.setFallback(maybeEntryComponentsReader->jsonValue());
+          }
+
+          reader.each([&](const char *behaviorName) {
+            fmt::print("  reading component '{}'\n", behaviorName);
+
+            if (maybeEntryComponentsReader) {
+              maybeEntryComponentsReader->obj(behaviorName, [&]() {
+                // Fallback to blueprints properties for this component
+                reader.setFallback(maybeEntryComponentsReader->jsonValue());
+              });
+            }
+
+            reader.each([&](const char *propName) {
+              fmt::print("    reading prop '{}'\n", propName);
+            });
+          });
+        });
+      });
     });
   });
 

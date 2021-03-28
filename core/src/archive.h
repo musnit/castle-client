@@ -8,6 +8,10 @@
 class Reader {
 
 public:
+  explicit Reader(const json::Value &cur_)
+      : cur(&cur_) {
+  }
+
   auto has(const char *key) -> bool {
     return cur->IsObject() ? cur->HasMember(key) : false;
   }
@@ -68,7 +72,7 @@ public:
       }
       if (fallback && fallback->IsObject()) {
         for (auto &[key, val] : fallback->GetObject()) {
-          if (find(key.GetString()) == cur->MemberEnd()) {
+          if (find(key.GetString(), false) == cur->MemberEnd()) {
             visit(key, val);
           }
         }
@@ -240,10 +244,16 @@ public:
     return std::nullopt;
   }
 
+  const json::Value *jsonValue() {
+    return cur;
+  }
+
   // Make current object inherit from other JSON
 
-  void setFallback(json::Value *fallback_) {
-    fallback = fallback_;
+  void setFallback(const json::Value *fallback_) {
+    if (cur != fallback_) { // Falling back to self doesn't help...
+      fallback = fallback_;
+    }
   }
 
 
@@ -252,10 +262,6 @@ private:
 
   const json::Value *cur;
   const json::Value *fallback;
-
-  explicit Reader(const json::Value &cur_)
-      : cur(&cur_) {
-  }
 
   template<typename F>
   auto enter(const json::Value *child, F &&f) -> void {
@@ -268,13 +274,13 @@ private:
     fallback = parentFallback;
   }
 
-  json::Value::ConstMemberIterator find(const char *key) {
+  json::Value::ConstMemberIterator find(const char *key, bool useFallback = true) {
     // TODO(nikki): This gets hit a lot, maybe optimize using a cache of `entt::hashed_string` ->
     //              result pairs (need to save / restore around `enter` above)
     if (auto mem = cur->FindMember(key); mem != cur->MemberEnd()) {
       return mem;
     }
-    if (fallback) {
+    if (useFallback && fallback) {
       if (auto mem = fallback->FindMember(key); mem != fallback->MemberEnd()) {
         return mem;
       }

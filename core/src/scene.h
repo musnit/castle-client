@@ -3,6 +3,7 @@
 #include "precomp.h"
 
 #include "lv.h"
+#include "library.h"
 
 
 class AllBehaviors; // Forward declaration otherwise this would be circular...
@@ -79,6 +80,12 @@ public:
   const entt::registry &getEntityRegistry() const;
 
 
+  // Library
+
+  Library &getLibrary();
+  const Library &getLibrary() const;
+
+
   // Update, draw
 
   void update(double dt);
@@ -97,6 +104,8 @@ private:
   b2World physicsWorld { b2Vec2(0, 9.8) };
 
   std::unique_ptr<AllBehaviors> behaviors;
+
+  Library library; // Library instance maintained at scene level for now
 
 
   void ensureDrawOrderSort() const;
@@ -169,4 +178,12 @@ inline entt::registry &Scene::getEntityRegistry() {
 
 inline const entt::registry &Scene::getEntityRegistry() const {
   return registry;
+}
+
+inline Library &Scene::getLibrary() {
+  return library;
+}
+
+inline const Library &Scene::getLibrary() const {
+  return library;
 }
