@@ -527,7 +527,7 @@ target_include_directories(castle-core PRIVATE vendor/entt/src)
 target_include_directories(castle-core PRIVATE vendor/magic_get/include)
 
 # rapidjson
-#target_include_directories(castle-core PRIVATE vendor/rapidjson/include)
+target_include_directories(castle-core PRIVATE vendor/rapidjson/include)
 
 
 #

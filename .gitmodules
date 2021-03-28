@@ -13,3 +13,6 @@
 [submodule "core/vendor/magic_get"]
 	path = core/vendor/magic_get
 	url = https://github.com/apolukhin/magic_get.git
+[submodule "core/vendor/rapidjson"]
+	path = core/vendor/rapidjson
+	url = https://github.com/Tencent/rapidjson.git
