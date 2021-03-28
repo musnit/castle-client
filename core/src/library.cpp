@@ -25,5 +25,4 @@ void Library::readEntry(Reader &reader) {
   auto entryId = *maybeEntryId;
   json::Value jsonValue(*reader.jsonValue(), alloc, true);
   entries.insert_or_assign(entryId, LibraryEntry(std::move(jsonValue)));
-  fmt::print("library allocator size: {}\n", alloc.Size());
 }
