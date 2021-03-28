@@ -3,9 +3,36 @@
 #include "precomp.h"
 
 #include "behaviors/base.h"
+#include "props.h"
 
 
 struct BodyComponent : BaseComponent {
+  struct Props {
+    PROP(float, x) = 0;
+    PROP(float, y) = 0;
+    PROP(float, angle) = 0;
+
+    PROP(float, width) = 1;
+    PROP(float, height) = 1;
+    PROP(float, widthScale) = 0.1;
+    PROP(float, heightScale) = 0.1;
+
+    PROP(bool, bullet) = false;
+    PROP(bool, visible) = true;
+
+    PROP(std::string, bodyType) = "static";
+
+    PROP((std::array<float, 4>), massData) = { 0, 0, 0, 0 };
+
+    PROP(std::string, layerName) = "main";
+
+    struct FixtureProps {
+      PROP(std::string, shapeType) = "polygon";
+      PROP(std::vector<float>, points);
+    };
+    PROP(std::vector<FixtureProps>, fixtures);
+  } props;
+
   b2Body *body;
 };
 
