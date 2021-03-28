@@ -4,6 +4,9 @@
 
 
 struct Archive {
+  // Stores an in-memory JSON document. Allows traversal of the existing data or overwriting with
+  // new data.
+
   Archive(const Archive &) = delete; // Prevent accidental copies
   auto operator=(const Archive &) -> Archive & = delete;
   Archive(Archive &&) = default; // Allow moves
@@ -15,7 +18,7 @@ struct Archive {
 
   // From / to buffer
 
-  static auto fromFile(const std::string &path) -> Archive {
+  static auto fromFile(const char *path) -> Archive {
     Archive ar;
     std::ifstream ifs(path);
     json::BasicIStreamWrapper isw(ifs);
@@ -23,13 +26,13 @@ struct Archive {
     return ar;
   }
 
-  static auto fromString(const char *json) -> Archive {
+  static auto fromJSON(const char *json) -> Archive {
     Archive ar;
     ar.root.Parse(json);
     return ar;
   }
 
-  auto toString() -> std::string {
+  auto toJSON() -> std::string {
     json::StringBuffer buffer;
     json::PrettyWriter writer(buffer);
     writer.SetIndent(' ', 2);

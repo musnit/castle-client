@@ -21,6 +21,8 @@ Scene::Scene()
 Scene::~Scene() {
 }
 
+Scene::Scene(Scene &&) = default;
+
 
 //
 // Actor management

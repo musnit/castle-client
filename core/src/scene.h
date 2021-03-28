@@ -37,6 +37,7 @@ public:
 
   Scene(const Scene &) = delete; // Prevent accidental copies
   const Scene &operator=(const Scene &) = delete;
+  Scene(Scene &&); // Allow move-construction (lets us return it from `Snapshot`)
 
   Scene();
   ~Scene();

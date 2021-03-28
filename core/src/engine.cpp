@@ -1,5 +1,7 @@
 #include "engine.h"
 
+#include "snapshot.h"
+
 
 //
 // JavaScript utilities (stubs in not-web)
@@ -51,7 +53,8 @@ Engine::PreInit::PreInit() {
 // Constructor, destructor
 //
 
-Engine::Engine() {
+Engine::Engine()
+    : scene(Snapshot::fromFile("assets/test-scene-1.json").toScene()) {
   // First timer step
   lv.timer.step();
 }
