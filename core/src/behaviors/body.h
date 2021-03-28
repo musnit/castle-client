@@ -22,7 +22,7 @@ struct BodyComponent : BaseComponent {
 
     PROP(std::string, bodyType) = "static";
 
-    PROP((std::array<float, 4>), massData) = { 0, 0, 0, 0 };
+    PROP((std::array<float, 4>), massData) = { 0.0f, 0.0f, 0.0f, 0.0f };
 
     PROP(std::string, layerName) = "main";
 

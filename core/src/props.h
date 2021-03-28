@@ -15,9 +15,16 @@ struct Prop {
   // The name is a compile time constant, and the hash of the name is also computed at compile time.
   // This helps with fast lookups.
 
-  template<typename... Args>
+  template<typename Value_ = Value,
+      typename std::enable_if<!std::is_aggregate_v<Value_>, int>::type = 0, typename... Args>
   Prop(Args &&... args)
       : value(std::forward<Args>(args)...) {
+  }
+
+  template<typename Value_ = Value,
+      typename std::enable_if<std::is_aggregate_v<Value_>, int>::type = 0, typename... Args>
+  Prop(Args &&... args)
+      : value { std::forward<Args>(args)... } {
   }
 
   Value &operator()() {
