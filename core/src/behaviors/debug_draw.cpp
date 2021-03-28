@@ -9,9 +9,7 @@
 
 void DebugDrawBehavior::handleDrawComponent(
     ActorId actorId, const DebugDrawComponent &component) const {
-  if (auto maybeBodyComponent = getBehaviors().byType<BodyBehavior>().maybeGetComponent(actorId)) {
-    auto body = maybeBodyComponent->body;
-
+  if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId)) {
     lv.graphics.push();
     auto [x, y] = body->GetPosition();
     lv.graphics.translate(x, y);
@@ -22,11 +20,11 @@ void DebugDrawBehavior::handleDrawComponent(
       auto shape = fixture->GetShape();
       switch (shape->GetType()) {
       case b2Shape::e_circle: {
-        auto circle = dynamic_cast<b2CircleShape *>(shape);
+        auto circle = dynamic_cast<const b2CircleShape *>(shape);
         lv.graphics.circle(love::Graphics::DRAW_FILL, 0, 0, circle->m_radius);
       } break;
       case b2Shape::e_polygon: {
-        auto poly = dynamic_cast<b2PolygonShape *>(shape);
+        auto poly = dynamic_cast<const b2PolygonShape *>(shape);
         lv.graphics.polygon(
             love::Graphics::DRAW_FILL, (love::Vector2 *)poly->m_vertices, poly->m_count, false);
       } break;

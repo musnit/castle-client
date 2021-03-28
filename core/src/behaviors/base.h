@@ -5,15 +5,15 @@
 #include "scene.h"
 
 
-// General note:
+// Architectural notes. This may be over-engineering, still not sure. We'll see how it pans out.
 //
-// The behavior implementation as a whole is based on static facilities like templates
-// and defining handlers explicitly to avoid the overhead of virtual table lookups. This is
-// especially important when iterating through a lot of components, the compiler can use the
-// statically known sizes / layouts of component types to inline calls and optimize loops.
-//
-// Inheritance is used here simply for code reuse, and /not/ for polymorphism (we never eg. use a
-// `BaseBehavior *` pointer that is actually a `SpecificBehavior *` at runtime).
+//   - Only the behavior owning a component should have direct data access to the component. (eg.
+//     `getComponent` is protected).
+//   - Data access for other behaviors should go through a public API of that behavior that takes
+//     `ActorId` and returns the data (eg. see `getPhysicsBody` in `BodyBehavior`).
+//   - Might make sense for that data access to mostly be `const` (read-only),
+//     and only use private members (so friend behaviors can access) for
+//     read-write access?
 
 
 struct BaseComponent {
@@ -52,17 +52,7 @@ public:
 
   Component &addComponent(ActorId actorId); // Does nothing and returns existing if already present
   void removeComponent(ActorId actorId); // Does nothing if not present
-
   bool hasComponent(ActorId actorId) const;
-  Component &getComponent(ActorId actorId); // Undefined behavior if not present!
-  const Component &getComponent(ActorId actorId) const;
-  Component *maybeGetComponent(ActorId actorId); // Returns `nullptr` if not present
-  const Component *maybeGetComponent(ActorId actorId) const;
-
-  template<typename F>
-  void forEachComponent(F &&f); // `f` must take either `(ActorId, Component &)` or (Component &)
-  template<typename F>
-  void forEachComponent(F &&f) const;
 
 
   // Physics world
@@ -77,7 +67,22 @@ public:
   const AllBehaviors &getBehaviors() const;
 
 
+protected:
+  // Own component data
+
+  Component &getComponent(ActorId actorId); // Undefined behavior if not present!
+  const Component &getComponent(ActorId actorId) const;
+  Component *maybeGetComponent(ActorId actorId); // Returns `nullptr` if not present
+  const Component *maybeGetComponent(ActorId actorId) const;
+
+  template<typename F>
+  void forEachComponent(F &&f); // `f` must take either `(ActorId, Component &)` or (Component &)
+  template<typename F>
+  void forEachComponent(F &&f) const;
+
+
 private:
+  friend class Scene;
   Scene &scene;
 };
 
