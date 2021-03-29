@@ -90,8 +90,7 @@ public:
   // Scene-level props
 
   struct Props {
-    // PROP(love::Colorf, backgroundColor) = { 227 / 255.0, 230 / 255.0, 252 / 255.0, 1 };
-    PROP(love::Colorf, backgroundColor) = { 0, 0, 0, 1 };
+    PROP(love::Colorf, backgroundColor) = { 227 / 255.0, 230 / 255.0, 252 / 255.0, 1 };
   } props;
 
 
