@@ -14,7 +14,7 @@ void DebugDrawBehavior::handleDrawComponent(
     auto [x, y] = body->GetPosition();
     lv.graphics.translate(x, y);
     lv.graphics.rotate(body->GetAngle());
-    lv.graphics.setColor(love::Colorf(0.4, 0.4, 0.2, 1));
+    lv.graphics.setColor(love::Colorf(0.1436, 0.6235, 0.8706, 1));
 
     for (auto fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()) {
       auto shape = fixture->GetShape();
