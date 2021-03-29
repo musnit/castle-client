@@ -83,9 +83,9 @@ void Scene::draw() const {
   lv.graphics.push(love::Graphics::STACK_ALL);
 
   // Temporary view transform
-  constexpr auto viewWidth = 10.0;
+  constexpr auto viewWidth = 10.0, viewHeight = 7.0 * viewWidth / 5.0;
   lv.graphics.scale(800.0 / viewWidth, 800.0 / viewWidth);
-  lv.graphics.translate(0.5 * viewWidth, 0.5 * viewWidth);
+  lv.graphics.translate(0.5 * viewWidth, 0.5 * viewHeight);
 
   // Draw scene
   forEachActorByDrawOrder([&](ActorId actorId, const Actor &actor) {
