@@ -192,6 +192,10 @@ Other various tips:
   - The main exception is for optional return values or parameters. eg.
     `Scene::maybeGetActor` will return a `nullptr` if not present. The code
     calling these should always handle the `nullptr` case.
+- **Prefer default member initializers**
+  - As much as possible, initialize members by directly writing their default
+    values when defining the member itself (as opposed to in the constructor of
+    the surrounding class).
 
 ### Architecture
 
