@@ -30,6 +30,11 @@ Snapshot Snapshot::fromJson(const char *json) {
 // To `Scene`
 //
 
+template<typename T, typename = void>
+static constexpr auto hasProps = false;
+template<typename T>
+static constexpr auto hasProps<T, std::void_t<decltype(std::declval<T>().props)>> = true;
+
 Scene Snapshot::toScene() {
   Scene scene;
   auto &library = scene.getLibrary();
@@ -95,12 +100,11 @@ Scene Snapshot::toScene() {
 
               // Add component to actor
               auto &component = behavior.addComponent(actorId);
-              (void)component;
 
               // Read props
-              reader.each([&](const char *propName) {
-                fmt::print("    reading prop '{}'\n", propName);
-              });
+              if constexpr (hasProps<decltype(component)>) {
+                reader.read(component.props);
+              }
 
               // TODO: Call `handleReadComponent` handler
             });

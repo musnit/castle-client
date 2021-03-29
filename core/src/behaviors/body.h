@@ -22,7 +22,8 @@ struct BodyComponent : BaseComponent {
 
     PROP(std::string, bodyType) = "static";
 
-    PROP((std::array<float, 4>), massData) = { 0.0f, 0.0f, 0.0f, 0.0f };
+    //PROP((std::array<float, 4>), massData) = { 0.0f, 0.0f, 0.0f, 0.0f };
+    std::array<float, 4> massData = { 0.0f, 0.0f, 0.0f, 0.0f };
 
     PROP(std::string, layerName) = "main";
 
@@ -30,7 +31,8 @@ struct BodyComponent : BaseComponent {
       PROP(std::string, shapeType) = "polygon";
       PROP(std::vector<float>, points);
     };
-    PROP(std::vector<FixtureProps>, fixtures);
+    //PROP(std::vector<FixtureProps>, fixtures);
+    std::vector<FixtureProps> fixtures;
   } props;
 
   b2Body *body;

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "precomp.h"
 
 
@@ -14,6 +16,8 @@ struct Prop {
   //
   // The name is a compile time constant, and the hash of the name is also computed at compile time.
   // This helps with fast lookups.
+
+  Value value;
 
   template<typename Value_ = Value,
       typename std::enable_if<!std::is_aggregate_v<Value_>, int>::type = 0, typename... Args>
@@ -44,7 +48,6 @@ struct Prop {
   }
 
 private:
-  Value value;
   inline static const PropAttribs &attribs = Internal::attribs;
   static constexpr auto nameHs = entt::hashed_string(Internal::nameStr);
 };
@@ -114,5 +117,4 @@ void forEach(Struct &&s, F &&f) {
     }
   });
 }
-
 }

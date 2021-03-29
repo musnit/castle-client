@@ -1,6 +1,7 @@
 #pragma once
 
 #include "precomp.h"
+#include "props.h"
 
 
 class Reader; // Forward declarations
@@ -108,10 +109,20 @@ public:
 
   // Current value
 
-  // Returns empty optional if doesn't have requested type
-  std::optional<bool> boolean();
+
+  std::optional<bool> boolean(); // Returns empty optional if doesn't have requested type
   std::optional<double> num();
   std::optional<const char *> str();
+
+  void read(int &i); // Read current value into an existing primitive
+  void read(float &f);
+  void read(bool &b);
+  void read(std::string &s);
+
+  template<typename F>
+  void read(F &&f); // Read value into an existing custom type. Can be a function that is called, a
+                    // type with a `.read` method, or an aggregate with props
+
   const json::Value *jsonValue(); // Return RapidJSON form of current value
 
 
@@ -126,6 +137,11 @@ private:
 
   const json::Value *cur;
   const json::Value *fallback;
+
+  template<typename T, typename = void>
+  static constexpr auto hasRead = false;
+  template<typename T>
+  static constexpr auto hasRead<T, std::void_t<decltype(&std::remove_reference_t<T>::read)>> = true;
 
   template<typename F>
   void enter(const json::Value *child, F &&f);
@@ -472,6 +488,59 @@ inline std::optional<const char *> Reader::str() {
   return std::nullopt;
 }
 
+inline void Reader::read(int &i) {
+  if (cur->IsNumber()) {
+    i = cur->GetInt();
+  }
+}
+
+inline void Reader::read(float &f) {
+  if (cur->IsNumber()) {
+    f = cur->GetDouble();
+  }
+}
+
+inline void Reader::read(bool &b) {
+  if (cur->IsBool()) {
+    b = cur->GetBool();
+  }
+}
+
+inline void Reader::read(std::string &s) {
+  if (cur->IsString()) {
+    s = cur->GetString();
+  }
+}
+
+template<typename F>
+void Reader::read(F &&f) {
+  if constexpr (std::is_invocable_v<F>) {
+    f();
+  } else if constexpr (hasRead<F>) {
+    f.read(*this);
+  } else if (std::is_aggregate_v<std::remove_reference_t<F>>) {
+    // TODO(nikki): Use a better `constexpr`-compatible check for whether an aggregate has props
+    auto hasProps = false;
+    Props::forEach(f, [&](auto &prop) {
+      hasProps = true;
+    });
+    if (hasProps) {
+      each([&](const char *key) {
+        const auto keyHs = entt::hashed_string(key);
+        Props::forEach(f, [&](auto &prop) {
+          using Prop = std::remove_reference_t<decltype(prop)>;
+          constexpr auto propNameHash = Prop::nameHash();
+          constexpr auto propName = Prop::name();
+          if (keyHs.value() == propNameHash && key == propName) {
+            fmt::print("    reading prop '{}'\n", propName);
+            read(prop.value);
+          }
+        });
+      });
+    }
+  }
+}
+
 inline const json::Value *Reader::jsonValue() {
   return cur;
 }
@@ -484,18 +553,15 @@ inline void Reader::setFallback(const json::Value *fallback_) {
 
 template<typename F>
 void Reader::enter(const json::Value *child, F &&f) {
+  // Save parent state and enter child
   auto parent = cur;
   auto parentFallback = fallback;
-
   cur = child;
   fallback = nullptr;
 
-  if constexpr (std::is_invocable_v<F>) {
-    f();
-  } else {
-    f.read(*this);
-  }
+  read(f);
 
+  // Restore parent state
   cur = parent;
   fallback = parentFallback;
 }
