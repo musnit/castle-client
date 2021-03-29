@@ -43,13 +43,16 @@ Scene Snapshot::toScene() {
     // Actors
     reader.each("actors", [&]() {
       // Actor ID
-      auto maybeActorId = reader.str("actorId");
-      if (!maybeActorId) {
+      auto maybeActorIdStr = reader.str("actorId");
+      if (!maybeActorIdStr) {
         fmt::print("tried to read actor without `actorId`!");
         return;
       }
-      auto actorId = *maybeActorId;
-      fmt::print("reading actor '{}'\n", actorId);
+      auto actorIdStr = *maybeActorIdStr;
+      fmt::print("reading actor '{}'\n", actorIdStr);
+
+      // Add actor
+      auto actorId = scene.addActor();
 
       // Parent entry
       std::optional<Reader> maybeEntryComponentsReader;
@@ -90,7 +93,9 @@ Scene Snapshot::toScene() {
                 });
               }
 
-              // TODO: Add component to actor
+              // Add component to actor
+              auto &component = behavior.addComponent(actorId);
+              (void)component;
 
               // Read props
               reader.each([&](const char *propName) {
@@ -106,6 +111,11 @@ Scene Snapshot::toScene() {
           });
         });
       });
+
+      // Debug
+      if (scene.getBehaviors().byType<BodyBehavior>().hasComponent(actorId)) {
+        scene.getBehaviors().byType<DebugDrawBehavior>().addComponent(actorId);
+      }
     });
   });
 
