@@ -33,6 +33,8 @@ public:
   int nextI = 0;
   std::vector<std::pair<ActorId, int>> adds;
   std::vector<std::tuple<ActorId, int, bool>> disables;
+
+  friend struct BasicComponentManagementTest;
 };
 
 #endif

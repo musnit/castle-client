@@ -1,6 +1,6 @@
 #pragma once
 
-//#define CASTLE_ENABLE_TESTS // Comment to disable. Test code compilation is skipped when disabled.
+#define CASTLE_ENABLE_TESTS // Comment to disable. Test code compilation is skipped when disabled.
 
 #ifdef CASTLE_ENABLE_TESTS
 
