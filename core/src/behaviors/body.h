@@ -17,12 +17,13 @@ struct BodyComponent : BaseComponent {
     PROP(float, widthScale) = 0.1;
     PROP(float, heightScale) = 0.1;
 
-    PROP(bool, bullet) = false;
+    // NOTE: Skipping `bullet` because it's never `true`
+    // PROP(bool, bullet) = false;
     PROP(bool, visible) = true;
 
     PROP(std::string, bodyType) = "static";
 
-    // NOTE: We don't need `massData` anymore because this is automatically calculated with
+    // NOTE: Skipping `massData` because this is automatically calculated with
     //       `b2Body::ResetMassData()` after creating / updating fixtures
     // PROP((std::array<float, 4>), massData) = { 0.0f, 0.0f, 0.0f, 0.0f };
 
@@ -57,6 +58,8 @@ public:
 
 private:
   b2Body *maybeGetPhysicsBody(ActorId actorId); // `nullptr` if not present
+
+  b2Fixture *addFixture(BodyComponent &component, b2Shape *shape);
 };
 
 
