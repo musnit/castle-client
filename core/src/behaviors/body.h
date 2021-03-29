@@ -22,7 +22,9 @@ struct BodyComponent : BaseComponent {
 
     PROP(std::string, bodyType) = "static";
 
-    PROP((std::array<float, 4>), massData) = { 0.0f, 0.0f, 0.0f, 0.0f };
+    // NOTE: We don't need `massData` anymore because this is automatically calculated with
+    //       `b2Body::ResetMassData()` after creating / updating fixtures
+    // PROP((std::array<float, 4>), massData) = { 0.0f, 0.0f, 0.0f, 0.0f };
 
     PROP(std::string, layerName) = "main";
 
