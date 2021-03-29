@@ -139,8 +139,6 @@ void Engine::update(double dt) {
 //
 
 void Engine::draw() {
-  lv.graphics.clear(love::Colorf(0.2, 0.2, 0.2, 1), {}, {});
-
   scene.draw();
 
 #ifdef CASTLE_ENABLE_TESTS

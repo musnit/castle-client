@@ -80,6 +80,8 @@ void Scene::update(double dt) {
 //
 
 void Scene::draw() const {
+  lv.graphics.clear(props.backgroundColor(), {}, {});
+
   lv.graphics.push(love::Graphics::STACK_ALL);
 
   // Temporary view transform

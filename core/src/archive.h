@@ -117,6 +117,7 @@ public:
   void read(float &f);
   void read(bool &b);
   void read(std::string &s);
+  void read(love::Colorf &c);
   template<typename T, size_t N>
   void read(std::array<T, N> &a);
   template<typename T>
@@ -512,6 +513,25 @@ inline void Reader::read(bool &b) {
 inline void Reader::read(std::string &s) {
   if (cur->IsString()) {
     s = cur->GetString();
+  }
+}
+
+inline void Reader::read(love::Colorf &c) {
+  switch (cur->GetType()) {
+  case json::kArrayType:
+    c.r = num(0u, 0);
+    c.g = num(1, 0);
+    c.b = num(2, 0);
+    c.a = num(3, 1);
+    break;
+  case json::kObjectType:
+    c.r = num("r", 0);
+    c.g = num("g", 0);
+    c.b = num("b", 0);
+    c.a = num("a", 1);
+    break;
+  default:
+    break;
   }
 }
 

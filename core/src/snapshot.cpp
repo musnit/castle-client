@@ -124,6 +124,11 @@ Scene Snapshot::toScene() {
         scene.getBehaviors().byType<DebugDrawBehavior>().addComponent(actorId);
       }
     });
+
+    // Scene-level props
+    reader.obj("sceneProperties", [&]() {
+      reader.read(scene.props);
+    });
   });
 
   return scene;
