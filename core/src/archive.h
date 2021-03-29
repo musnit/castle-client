@@ -109,7 +109,6 @@ public:
 
   // Current value
 
-
   std::optional<bool> boolean(); // Returns empty optional if doesn't have requested type
   std::optional<double> num();
   std::optional<const char *> str();
@@ -118,10 +117,14 @@ public:
   void read(float &f);
   void read(bool &b);
   void read(std::string &s);
+  template<typename T, size_t N>
+  void read(std::array<T, N> &a);
+  template<typename T>
+  void read(std::vector<T> &v);
 
-  template<typename F>
-  void read(F &&f); // Read value into an existing custom type. Can be a function that is called, a
-                    // type with a `.read` method, or an aggregate with props
+  template<typename T>
+  void read(T &&v); // Read value into an existing object of custom type. Can be a function, a type
+                    // with a `T::read(Reader &reader)` method, or an aggregate with props
 
   const json::Value *jsonValue(); // Return RapidJSON form of current value
 
@@ -512,27 +515,46 @@ inline void Reader::read(std::string &s) {
   }
 }
 
-template<typename F>
-void Reader::read(F &&f) {
-  if constexpr (std::is_invocable_v<F>) {
-    f();
-  } else if constexpr (hasRead<F>) {
-    f.read(*this);
-  } else if (std::is_aggregate_v<std::remove_reference_t<F>>) {
+template<typename T, size_t N>
+void Reader::read(std::array<T, N> &a) {
+  auto i = 0;
+  each([&]() {
+    read(a[i++]);
+  });
+  while (i < int(N)) {
+    a[i++] = {}; // Clear out remaining elements if target array is longer
+  }
+}
+
+template<typename T>
+void Reader::read(std::vector<T> &v) {
+  v.resize(size());
+  auto i = 0;
+  each([&]() {
+    read(v[i++]);
+  });
+}
+
+template<typename T>
+void Reader::read(T &&v) {
+  if constexpr (std::is_invocable_v<T>) {
+    v();
+  } else if constexpr (hasRead<T>) {
+    v.read(*this);
+  } else if (std::is_aggregate_v<std::remove_reference_t<T>>) {
     // TODO(nikki): Use a better `constexpr`-compatible check for whether an aggregate has props
     auto hasProps = false;
-    Props::forEach(f, [&](auto &prop) {
+    Props::forEach(v, [&](auto &prop) {
       hasProps = true;
     });
     if (hasProps) {
       each([&](const char *key) {
         const auto keyHs = entt::hashed_string(key);
-        Props::forEach(f, [&](auto &prop) {
+        Props::forEach(v, [&](auto &prop) {
           using Prop = std::remove_reference_t<decltype(prop)>;
           constexpr auto propNameHash = Prop::nameHash();
           constexpr auto propName = Prop::name();
           if (keyHs.value() == propNameHash && key == propName) {
-            fmt::print("    reading prop '{}'\n", propName);
             read(prop.value);
           }
         });

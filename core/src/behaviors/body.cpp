@@ -5,7 +5,26 @@
 // Add, disable
 //
 
-void BodyBehavior::handleAddComponent(ActorId actorId, BodyComponent &component) {
+void BodyBehavior::handleReadComponent(ActorId actorId, BodyComponent &component, Reader &reader) {
+  // Log props
+  fmt::print("read body:\n");
+  Props::forEach(component.props, [&](auto &prop) {
+    constexpr auto propName = std::remove_reference_t<decltype(prop)>::name();
+    if constexpr (propName != "massData" && propName != "fixtures") {
+      fmt::print("  prop {}: {}\n", prop.name(), prop.value);
+    }
+  });
+  fmt::print("  massData: {}\n", component.props.massData());
+  fmt::print("  fixtures:\n");
+  for (auto &fixture : component.props.fixtures()) {
+    if (fixture.shapeType() == "polygon") {
+      fmt::print("    polygon: {}\n", fixture.points());
+    } else {
+      fmt::print(
+          "    circle: x: {}, y: {}, radius: {}\n", fixture.x(), fixture.y(), fixture.radius());
+    }
+  }
+
   // Body
   b2BodyDef bodyDef;
   bodyDef.type = b2_dynamicBody;
@@ -24,5 +43,7 @@ void BodyBehavior::handleAddComponent(ActorId actorId, BodyComponent &component)
 
 void BodyBehavior::handleDisableComponent(
     ActorId actorId, BodyComponent &component, bool removeActor) {
-  getPhysicsWorld().DestroyBody(component.body);
+  if (component.body) {
+    getPhysicsWorld().DestroyBody(component.body);
+  }
 }

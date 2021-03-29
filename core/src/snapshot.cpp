@@ -106,7 +106,10 @@ Scene Snapshot::toScene() {
                 reader.read(component.props);
               }
 
-              // TODO: Call `handleReadComponent` handler
+              // Call `handleReadComponent`
+              if constexpr (Handlers::hasReadComponent<decltype(behavior)>) {
+                behavior.handleReadComponent(actorId, component, reader);
+              }
             });
             if (!found) {
               // Didn't find this behavior, just log for now

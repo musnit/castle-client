@@ -21,6 +21,7 @@
 
 // fmt
 #include <fmt/format.h>
+#include <fmt/ranges.h>
 
 // Love
 #include <modules/data/DataModule.h>
