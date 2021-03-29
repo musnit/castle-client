@@ -519,7 +519,7 @@ void Writer::boolean(K &&key, bool val) {
   cur->AddMember(makeStr(std::forward<K>(key)), json::Value(val), alloc);
 }
 
-void Writer::boolean(bool val) {
+inline void Writer::boolean(bool val) {
   cur->PushBack(val, alloc);
 }
 
@@ -528,7 +528,7 @@ void Writer::num(K &&key, int val) {
   cur->AddMember(makeStr(std::forward<K>(key)), json::Value(val), alloc);
 }
 
-void Writer::num(int val) {
+inline void Writer::num(int val) {
   cur->PushBack(val, alloc);
 }
 
@@ -537,7 +537,7 @@ void Writer::num(K &&key, double val) {
   cur->AddMember(makeStr(std::forward<K>(key)), json::Value(val), alloc);
 }
 
-void Writer::num(double val) {
+inline void Writer::num(double val) {
   cur->PushBack(val, alloc);
 }
 
