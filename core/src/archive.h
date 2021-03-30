@@ -208,13 +208,13 @@ private:
   template<typename T>
   static constexpr auto isCStrArray = false;
   template<size_t N>
-  static constexpr auto isCStrArray<const char[N]> = true; // NOLINT
+  static constexpr auto isCStrArray<const char[N]> = true;
   template<size_t N>
-  static constexpr auto isCStrArray<const char (&)[N]> = true; // NOLINT
+  static constexpr auto isCStrArray<const char (&)[N]> = true;
   template<size_t N>
-  static constexpr auto isCStrArray<char[N]> = true; // NOLINT
+  static constexpr auto isCStrArray<char[N]> = true;
   template<size_t N>
-  static constexpr auto isCStrArray<char (&)[N]> = true; // NOLINT
+  static constexpr auto isCStrArray<char (&)[N]> = true;
 
   template<typename K>
   json::Value makeStr(K &&key);
