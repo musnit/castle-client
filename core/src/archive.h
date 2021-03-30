@@ -575,7 +575,7 @@ void Reader::read(T &&v) {
           constexpr auto propNameHash = Prop::nameHash();
           constexpr auto propName = Prop::name();
           if (keyHs.value() == propNameHash && key == propName) {
-            read(prop.value);
+            read(prop());
           }
         });
       });

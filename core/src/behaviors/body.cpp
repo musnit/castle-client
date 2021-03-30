@@ -10,7 +10,7 @@ void BodyBehavior::handleReadComponent(ActorId actorId, BodyComponent &component
   Props::forEach(component.props, [&](auto &prop) {
     constexpr auto propName = std::remove_reference_t<decltype(prop)>::name();
     if constexpr (propName != "fixtures") {
-      fmt::print("    {}: {}\n", prop.name(), prop.value);
+      fmt::print("    {}: {}\n", prop.name(), prop());
     }
   });
   fmt::print("    fixtures:\n");
