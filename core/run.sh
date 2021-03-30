@@ -30,7 +30,7 @@ case "$1" in
 
   # Format
   format)
-    $CLANG_FORMAT -i -style=file src/*
+    $CLANG_FORMAT -i -style=file $(find src/ -type f)
     ;;
 
   # Desktop

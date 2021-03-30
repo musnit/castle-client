@@ -140,7 +140,7 @@ private:
   friend class Archive;
 
   const json::Value *cur;
-  const json::Value *fallback;
+  const json::Value *fallback = nullptr;
 
   template<typename T, typename = void>
   static constexpr auto hasRead = false;
@@ -208,13 +208,13 @@ private:
   template<typename T>
   static constexpr auto isCStrArray = false;
   template<size_t N>
-  static constexpr auto isCStrArray<const char[N]> = true;
+  static constexpr auto isCStrArray<const char[N]> = true; // NOLINT
   template<size_t N>
-  static constexpr auto isCStrArray<const char (&)[N]> = true;
+  static constexpr auto isCStrArray<const char (&)[N]> = true; // NOLINT
   template<size_t N>
-  static constexpr auto isCStrArray<char[N]> = true;
+  static constexpr auto isCStrArray<char[N]> = true; // NOLINT
   template<size_t N>
-  static constexpr auto isCStrArray<char (&)[N]> = true;
+  static constexpr auto isCStrArray<char (&)[N]> = true; // NOLINT
 
   template<typename K>
   json::Value makeStr(K &&key);

@@ -1,8 +1,10 @@
 ---
 Checks: "-*,\
   clang-diagnostic-*,\
+  -clang-diagnostic-pragma-pack,\
   clang-analyzer-*,\
   performance-*,\
+  -performance-noexcept-move-constructor,\
   portability-*,\
   bugprone-*,\
   -bugprone-infinite-loop,\
@@ -13,12 +15,17 @@ Checks: "-*,\
   cppcoreguidelines-*,\
   -cppcoreguidelines-macro-usage,\
   -cppcoreguidelines-avoid-magic-numbers,\
-  -cppcoreguidelines-pro-bounds-pointer-arithmetic,\
-  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,\
+  -cppcoreguidelines-special-member-functions,\
   -cppcoreguidelines-non-private-member-variables-in-classes,\
+  -cppcoreguidelines-avoid-non-const-global-variables,\
+  -cppcoreguidelines-pro-bounds-constant-array-index,\
+  -cppcoreguidelines-pro-type-cstyle-cast,\
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,\
+  -cppcoreguidelines-pro-type-const-cast,\
   google-explicit-constructor,\
-  modernize-*",\
-  -modernize-use-trailing-return-type",
+  modernize-*,\
+  -modernize-use-nodiscard,\
+  -modernize-use-trailing-return-type"
 WarningsAsErrors: "*"
 ...
 

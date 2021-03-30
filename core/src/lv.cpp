@@ -6,13 +6,12 @@
 // Love's filesystem module depends on this symbol. It's defined in
 // 'wrap_FileSystem.cpp', which is for wrapping C++ to Lua. We don't include
 // that, so we just copy the implementation here.
-namespace love {
-namespace filesystem {
-  bool hack_setupWriteDirectory() {
-    if (Module::getInstance<Filesystem>(Module::M_FILESYSTEM) != 0)
-      return Module::getInstance<Filesystem>(Module::M_FILESYSTEM)->setupWriteDirectory();
-    return false;
+namespace love::filesystem {
+bool hack_setupWriteDirectory() {
+  if (Module::getInstance<Filesystem>(Module::M_FILESYSTEM) != nullptr) {
+    return Module::getInstance<Filesystem>(Module::M_FILESYSTEM)->setupWriteDirectory();
   }
+  return false;
 }
 }
 

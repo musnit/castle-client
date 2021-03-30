@@ -11,8 +11,7 @@ Scene::Scene()
     : behaviors(std::make_unique<AllBehaviors>(*this)) {
 }
 
-Scene::~Scene() {
-}
+Scene::~Scene() = default;
 
 Scene::Scene(Scene &&) = default;
 
@@ -71,7 +70,7 @@ void Scene::ensureDrawOrderSort() const {
 
 void Scene::update(double dt) {
   // Step physics
-  physicsWorld.Step(dt, 6, 2); // TODO(nikki): Use fixed timestep + catching up
+  physicsWorld.Step(float(dt), 6, 2); // TODO(nikki): Use fixed timestep + catching up
 }
 
 

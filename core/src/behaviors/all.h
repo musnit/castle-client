@@ -99,7 +99,7 @@ void AllBehaviors::byName(const char *name, F &&f) const {
 template<typename F>
 void AllBehaviors::forEachBehavior(F &&f) {
   std::apply(
-      [&](auto &&... args) {
+      [&](auto &&...args) {
         (f(args), ...);
       },
       behaviors);
@@ -108,7 +108,7 @@ void AllBehaviors::forEachBehavior(F &&f) {
 template<typename F>
 void AllBehaviors::forEachBehavior(F &&f) const {
   std::apply(
-      [&](auto &&... args) {
+      [&](auto &&...args) {
         (f(args), ...);
       },
       behaviors);

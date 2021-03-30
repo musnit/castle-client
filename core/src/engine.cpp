@@ -15,7 +15,7 @@
 // Not web. Make a stub that takes any arguments, does nothing, returns default value of `retType`
 #define JS_DEFINE(retType, name, ...)                                                              \
   template<typename... Args>                                                                       \
-  inline static retType name(Args &&... args) {                                                    \
+  inline static retType name(Args &&...args) {                                                     \
     return retType();                                                                              \
   }
 #endif
