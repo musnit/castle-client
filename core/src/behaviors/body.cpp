@@ -2,27 +2,10 @@
 
 
 //
-// Add, disable
+// Enable, disable
 //
 
-void BodyBehavior::handleReadComponent(ActorId actorId, BodyComponent &component, Reader &reader) {
-  // Log props
-  Props::forEach(component.props, [&](auto &prop) {
-    constexpr auto propName = std::remove_reference_t<decltype(prop)>::name();
-    if constexpr (propName != "fixtures") {
-      fmt::print("    {}: {}\n", prop.name(), prop());
-    }
-  });
-  fmt::print("    fixtures:\n");
-  for (auto &fixture : component.props.fixtures()) {
-    if (fixture.shapeType() == "polygon") {
-      fmt::print("      polygon: {}\n", fixture.points());
-    } else {
-      fmt::print(
-          "      circle: x: {}, y: {}, radius: {}\n", fixture.x(), fixture.y(), fixture.radius());
-    }
-  }
-
+void BodyBehavior::handleEnableComponent(ActorId actorId, BodyComponent &component) {
   // Body
   b2BodyDef bodyDef;
   bodyDef.position = { component.props.x(), component.props.y() };
@@ -43,6 +26,7 @@ void BodyBehavior::handleReadComponent(ActorId actorId, BodyComponent &component
         shape.m_radius = widthScale * fixture.radius();
         addFixture(component, &shape);
       } else {
+        // Non-uniformly scaled circle -- approximate with a polygon
         auto x = fixture.x(), y = fixture.y();
         auto radius = fixture.radius();
         std::array<b2Vec2, 8> points;

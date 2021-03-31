@@ -114,7 +114,7 @@ C++ has a large surface area with tons of gotchas and varying styles, with old
 C++ code looking quite different from modern C++. We use C++17 in this
 codebase, which provides us the following quite useful features:
 
-- **auto**: Use `auto` often as the type of variables to avoid repeating
+- **`auto`**: Use `auto` often as the type of variables to avoid repeating
   yourself and to support generic constructs.
 - **Constructors, destructors**: C++ will automatically destruct objects at the
   end of a scope. It will also automatically call member constructors and
@@ -132,6 +132,8 @@ codebase, which provides us the following quite useful features:
   `forEachComponent`). If taken as an `F&&` template parameter the compiler
   will almost always inline these. Avoid `std::function` for the most part --
   we don't really need dynamic callbacks in our code.
+- **`enum class`**: Always use `enum class` instead of bare `enum` to define
+  enumerations. This scopes the enum value identifiers under the enum type.
 
 Other various tips:
 

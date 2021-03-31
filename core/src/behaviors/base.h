@@ -24,7 +24,7 @@ struct BaseComponent {
   BaseComponent(BaseComponent &&) = default; // Allow moves
   BaseComponent &operator=(BaseComponent &&) = default;
 
-  bool disabled = false;
+  bool disabled = true;
 };
 
 template<typename Derived, typename Component_>
@@ -50,7 +50,7 @@ public:
 
   // Component management
 
-  Component &addComponent(ActorId actorId); // Does nothing and returns existing if already present
+  Component &addComponent(ActorId actorId); // Does nothing if already present
   void removeComponent(ActorId actorId); // Does nothing if not present
   bool hasComponent(ActorId actorId) const;
 
@@ -105,7 +105,7 @@ namespace Handlers {
   inline constexpr auto                                                                            \
       has##name<T, std::void_t<decltype(&std::remove_reference_t<T>::handle##name)>> = true;
 
-DEFINE_HANDLER(AddComponent);
+DEFINE_HANDLER(EnableComponent);
 DEFINE_HANDLER(DisableComponent);
 DEFINE_HANDLER(DrawComponent);
 DEFINE_HANDLER(ReadComponent);
@@ -122,11 +122,7 @@ Component &BaseBehavior<Derived, Component>::addComponent(ActorId actorId) {
     fmt::print("addComponent: actor already has a component for this behavior\n");
     return *component;
   }
-  auto &component = scene.getEntityRegistry().emplace<Component>(actorId);
-  if constexpr (Handlers::hasAddComponent<Derived>) {
-    static_cast<Derived &>(*this).handleAddComponent(actorId, component);
-  }
-  return component;
+  return scene.getEntityRegistry().emplace<Component>(actorId);
 }
 
 template<typename Derived, typename Component>

@@ -49,7 +49,7 @@ public:
   using BaseBehavior::BaseBehavior;
 
 
-  void handleReadComponent(ActorId actorId, BodyComponent &component, Reader &reader);
+  void handleEnableComponent(ActorId actorId, BodyComponent &component);
   void handleDisableComponent(ActorId actorId, BodyComponent &component, bool removeActor);
 
 

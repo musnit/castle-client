@@ -141,10 +141,10 @@ case "$1" in
     $TIME $CMAKE --build build/web-debug
     ;;
   web-watch-release)
-    find CMakeLists.txt src web -type f | entr $TIME_TOTAL ./run.sh web-release
+    find CMakeLists.txt src assets web -type f | entr $TIME_TOTAL ./run.sh web-release
     ;;
   web-watch-debug)
-    find CMakeLists.txt src web -type f | entr $TIME_TOTAL ./run.sh web-debug
+    find CMakeLists.txt src assets web -type f | entr $TIME_TOTAL ./run.sh web-debug
     ;;
   web-serve-release)
     npx http-server -p 9001 -c-1 build/web-release

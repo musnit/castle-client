@@ -111,6 +111,14 @@ Scene Snapshot::toScene() {
               if constexpr (Handlers::hasReadComponent<decltype(behavior)>) {
                 behavior.handleReadComponent(actorId, component, reader);
               }
+
+              // Enable and call `handleEnableComponent` if not disabled
+              if (!reader.boolean("disabled", false)) {
+                component.disabled = false;
+                if constexpr (Handlers::hasEnableComponent<decltype(behavior)>) {
+                  behavior.handleEnableComponent(actorId, component);
+                }
+              }
             });
             if (!found) {
               // Didn't find this behavior, just log for now
