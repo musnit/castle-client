@@ -44,16 +44,16 @@ void BodyBehavior::handleEnableComponent(ActorId actorId, BodyComponent &compone
       // Polygon with given points
       auto pointsProps = fixture.points();
       std::array<b2Vec2, 8> points;
-      for (auto i = 0; i < int(pointsProps.size()); i += 2) {
-        points[i / 2].x = widthScale * pointsProps[i];
-        points[i / 2].y = heightScale * pointsProps[i + 1];
+      auto nPoints = std::min(int(pointsProps.size() / 2), 8);
+      for (auto i = 0; i < nPoints; ++i) {
+        points[i].x = widthScale * pointsProps[2 * i];
+        points[i].y = heightScale * pointsProps[2 * i + 1];
       }
       b2PolygonShape shape;
-      shape.Set(points.data(), pointsProps.size() / 2);
+      shape.Set(points.data(), nPoints);
       addFixture(component, &shape);
     }
   }
-  // NOTE: Need to call `handleUpdateComponentFixture` and then reset mass data
 }
 
 void BodyBehavior::handleDisableComponent(
