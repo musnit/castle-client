@@ -500,7 +500,7 @@ inline void Reader::read(int &i) {
 
 inline void Reader::read(float &f) {
   if (cur->IsNumber()) {
-    f = cur->GetDouble();
+    f = cur->GetFloat();
   }
 }
 
@@ -583,9 +583,7 @@ inline const json::Value *Reader::jsonValue() {
 }
 
 inline void Reader::setFallback(const json::Value *fallback_) {
-  if (cur != fallback_) { // Falling back to self doesn't help...
-    fallback = fallback_;
-  }
+  fallback = cur != fallback_ ? fallback_ : nullptr; // Falling back to self doesn't help...
 }
 
 template<typename F>
