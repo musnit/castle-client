@@ -43,17 +43,28 @@ void BodyBehavior::handleReadComponent(ActorId actorId, BodyComponent &component
         shape.m_radius = widthScale * fixture.radius();
         addFixture(component, &shape);
       } else {
-        // TODO(nikki): Non-uniformly scaled circle
+        auto x = fixture.x(), y = fixture.y();
+        auto radius = fixture.radius();
+        std::array<b2Vec2, 8> points;
+        auto angle = 0.0f;
+        for (auto i = 0; i < 8; ++i) {
+          auto dX = radius * cos(angle), dY = radius * sin(angle);
+          points[i] = { widthScale * (x + dX), heightScale * (y + dY) };
+          angle -= 2 * M_PI / 8;
+        }
+        b2PolygonShape shape;
+        shape.Set(points.data(), 8);
+        addFixture(component, &shape);
       }
     } else if (fixture.shapeType() == "polygon") {
       // Polygon with given points
       auto pointsProps = fixture.points();
-      b2PolygonShape shape;
       std::array<b2Vec2, 8> points;
       for (auto i = 0; i < int(pointsProps.size()); i += 2) {
         points[i / 2].x = widthScale * pointsProps[i];
         points[i / 2].y = heightScale * pointsProps[i + 1];
       }
+      b2PolygonShape shape;
       shape.Set(points.data(), pointsProps.size() / 2);
       addFixture(component, &shape);
     }
