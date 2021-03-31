@@ -85,12 +85,11 @@ void AllBehaviors::byName(const char *name, F &&f) {
 
 template<typename F>
 void AllBehaviors::byName(const char *name, F &&f) const {
-  const auto nameHs = entt::hashed_string(name);
+  const auto nameHash = entt::hashed_string(name).value();
   forEachBehavior([&](auto &behavior) {
-    constexpr auto behaviorNameHs
-        = entt::hashed_string(std::remove_reference_t<decltype(behavior)>::name);
-    if (nameHs.value() == behaviorNameHs.value()
-        && !std::strcmp(nameHs.data(), behaviorNameHs.data())) {
+    constexpr auto behaviorName = std::remove_reference_t<decltype(behavior)>::name;
+    constexpr auto behaviorNameHash = entt::hashed_string(behaviorName).value();
+    if (nameHash == behaviorNameHash && !std::strcmp(name, behaviorName)) {
       f(behavior);
     }
   });

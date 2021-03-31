@@ -565,12 +565,12 @@ void Reader::read(T &&v) {
     v.read(*this);
   } else if constexpr (Props::hasProps<T>) { // Avoid iterating if no props inside
     each([&](const char *key) {
-      const auto keyHs = entt::hashed_string(key);
+      const auto keyHash = entt::hashed_string(key).value();
       Props::forEach(v, [&](auto &prop) {
         using Prop = std::remove_reference_t<decltype(prop)>;
         constexpr auto propNameHash = Prop::nameHash(); // Ensure compile-time constants
         constexpr auto propName = Prop::name();
-        if (keyHs.value() == propNameHash && key == propName) {
+        if (keyHash == propNameHash && key == propName) {
           read(prop());
         }
       });

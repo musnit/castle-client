@@ -42,14 +42,14 @@ struct Prop {
   }
 
   static constexpr std::string_view name() {
-    return nameHs.data();
+    return Internal::name;
   }
 
 private:
   Value value;
 
   inline static const PropAttribs &attribs = Internal::attribs;
-  static constexpr auto nameHs = entt::hashed_string(Internal::nameStr);
+  static constexpr auto nameHs = entt::hashed_string(Internal::name.data());
 };
 
 
@@ -72,15 +72,15 @@ private:
 //   fmt::print("health is: {}\n", thing.health.value);
 //   thing.aPair.value.first = 7;
 
-#define PROP(type, name, ...)                                                                      \
+#define PROP(type, name_, ...)                                                                     \
 private:                                                                                           \
-  struct INTERNAL_##name {                                                                         \
-    static constexpr const char nameStr[] = #name;                                                 \
+  struct INTERNAL_##name_ {                                                                        \
+    static constexpr std::string_view name = #name_;                                               \
     inline static PropAttribs attribs = PropAttribs() __VA_ARGS__;                                 \
   };                                                                                               \
                                                                                                    \
 public:                                                                                            \
-  Prop<PROP_PARENS_1(PROP_PARENS_3 type), INTERNAL_##name> name
+  Prop<PROP_PARENS_1(PROP_PARENS_3 type), INTERNAL_##name_> name_
 #define PROP_PARENS_1(...) PROP_PARENS_2(__VA_ARGS__)
 #define PROP_PARENS_2(...) NO##__VA_ARGS__
 #define PROP_PARENS_3(...) PROP_PARENS_3 __VA_ARGS__
