@@ -106,6 +106,8 @@ if(WEB)
     target_compile_options(castle-core PRIVATE "SHELL:--profiling")
     target_link_options(castle-core PRIVATE "SHELL:--profiling")
   endif()
+  file(GLOB MY_ASSETS CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/assets/*)
+  set_target_properties(castle-core PROPERTIES LINK_DEPENDS "${MY_ASSETS}")
 endif()
 
 # Add debug info in desktop release builds
