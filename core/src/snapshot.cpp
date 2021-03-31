@@ -30,10 +30,11 @@ Snapshot Snapshot::fromJson(const char *json) {
 // To `Scene`
 //
 
+// Whether `T::props` exists
 template<typename T, typename = void>
-static constexpr auto hasProps = false;
+static constexpr auto hasPropsMember = false;
 template<typename T>
-static constexpr auto hasProps<T, std::void_t<decltype(std::declval<T>().props)>> = true;
+static constexpr auto hasPropsMember<T, std::void_t<decltype(std::declval<T>().props)>> = true;
 
 Scene Snapshot::toScene() {
   Scene scene;
@@ -102,7 +103,7 @@ Scene Snapshot::toScene() {
               auto &component = behavior.addComponent(actorId);
 
               // Read props
-              if constexpr (hasProps<decltype(component)>) {
+              if constexpr (hasPropsMember<decltype(component)>) {
                 reader.read(component.props);
               }
 

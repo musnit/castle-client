@@ -125,7 +125,7 @@ public:
 
   template<typename T>
   void read(T &&v); // Read value into an existing object of custom type. Can be a function, a type
-                    // with a `T::read(Reader &reader)` method, or an aggregate with props
+                    // with a `T::read(Reader &reader)` method, or reflectable with props
 
   const json::Value *jsonValue(); // Return RapidJSON form of current value
 
@@ -557,29 +557,24 @@ void Reader::read(std::vector<T> &v) {
 
 template<typename T>
 void Reader::read(T &&v) {
+  static_assert(std::is_invocable_v<T> || hasRead<T> || Props::isReflectable<T>,
+      "read: this type is not readable");
   if constexpr (std::is_invocable_v<T>) {
     v();
   } else if constexpr (hasRead<T>) {
     v.read(*this);
-  } else if (std::is_aggregate_v<std::remove_reference_t<T>>) {
-    // TODO(nikki): Use a better `constexpr`-compatible check for whether an aggregate has props
-    auto hasProps = false;
-    Props::forEach(v, [&](auto &prop) {
-      hasProps = true;
-    });
-    if (hasProps) {
-      each([&](const char *key) {
-        const auto keyHs = entt::hashed_string(key);
-        Props::forEach(v, [&](auto &prop) {
-          using Prop = std::remove_reference_t<decltype(prop)>;
-          constexpr auto propNameHash = Prop::nameHash();
-          constexpr auto propName = Prop::name();
-          if (keyHs.value() == propNameHash && key == propName) {
-            read(prop());
-          }
-        });
+  } else if constexpr (Props::hasProps<T>) { // Avoid iterating if no props inside
+    each([&](const char *key) {
+      const auto keyHs = entt::hashed_string(key);
+      Props::forEach(v, [&](auto &prop) {
+        using Prop = std::remove_reference_t<decltype(prop)>;
+        constexpr auto propNameHash = Prop::nameHash(); // Ensure compile-time constants
+        constexpr auto propName = Prop::name();
+        if (keyHs.value() == propNameHash && key == propName) {
+          read(prop());
+        }
       });
-    }
+    });
   }
 }
 

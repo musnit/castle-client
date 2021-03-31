@@ -16,7 +16,7 @@ public:
   AllBehaviors(const AllBehaviors &) = delete; // Prevent accidental copies
   const AllBehaviors &operator=(const AllBehaviors &) = delete;
 
-  AllBehaviors(Scene &scene)
+  explicit AllBehaviors(Scene &scene)
       : AllBehaviors(scene, std::make_index_sequence<std::tuple_size_v<decltype(behaviors)>>()) {
   }
 

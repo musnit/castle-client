@@ -11,8 +11,8 @@ struct PropAttribs {
 
 template<typename Value, typename Internal>
 struct Prop {
-  // Tracks a property's value, name and attributes. This type is usually not meant to be
-  // instantiated directly, with normal use being through the `PROP` macro.
+  // Tracks a prop's value, name and attributes. This type is usually not meant to be instantiated
+  // directly, with normal use being through the `PROP` macro.
   //
   // The name is a compile time constant, and the hash of the name is also computed at compile time.
   // This helps with fast lookups.
@@ -53,10 +53,10 @@ private:
 };
 
 
-// Macro for defining a reflectable property in a struct. Examples:
+// Macro for defining a reflectable prop in a struct. Examples:
 //
 //   struct Foo {
-//     PROP(int, health) = 32;              // `int` property named `health` with default value `32`
+//     PROP(int, health) = 32;              // `int` prop named `health` with default value `32`
 //     PROP(std::vector<int>, vec);         // No default value, invokes default constructor (empty)
 //     PROP(std::string, space) = "place";
 //     PROP((std::pair<int, int>), aPair) = { 1, 2 };    // Need extra parens if the type has commas
@@ -64,9 +64,9 @@ private:
 //     int nope = 42;                       // This is a regular untracked field
 //   };
 //
-// The result is a member with that name with type `Prop<...>` (see `Prop` above). You can then use
-// the members of that type to query information about the property. To continue with the `Foo`
-// example from above:
+// The result is a member with that name of type `Prop<type, someInternals>`. You can then use the
+// members of that type to query information about the prop. To continue with the `Foo` example from
+// above:
 //
 //   Foo thing;
 //   fmt::print("health is: {}\n", thing.health.value);
@@ -89,32 +89,63 @@ public:                                                                         
 
 namespace Props {
 
-// `Props::isProp<T>` is `true` iff. `T` is a `Prop<...>`
+// Whether `T` is itself a prop or a (possibly const) reference to one
 
 template<typename T>
 inline constexpr auto isProp = false;
 template<typename... Params>
 inline constexpr auto isProp<Prop<Params...>> = true;
+template<typename... Params>
+inline constexpr auto isProp<Prop<Params...> &> = true;
+template<typename... Params>
+inline constexpr auto isProp<const Prop<Params...> &> = true;
 
 
-// Iterate through all the properties (defined with `PROP` above) of a struct. This expands to all
-// the properties at compile time, with the function `F` being invoked with each property (of type
-// `Prop<...>`). For this to work the struct must not have any private members or constructors.
+// Whether we can reflect `T` to look for prop members inside
+
+template<typename T>
+inline constexpr auto isReflectable = std::is_aggregate_v<std::remove_reference_t<T>>;
+
+
+// Whether `T` has at least one prop member
+
+namespace Internal {
+  template<typename T, typename... Vs>
+  inline constexpr auto isAnyProp = isProp<T> || isAnyProp<Vs...>;
+  template<typename T>
+  inline constexpr auto isAnyProp<T> = isProp<T>;
+  template<typename T>
+  inline constexpr auto isAnyTupleElementProp = false;
+  template<typename... Ts>
+  inline constexpr auto isAnyTupleElementProp<std::tuple<Ts...>> = isAnyProp<Ts...>;
+};
+template<typename T>
+constexpr auto hasProps
+    = (isReflectable<
+           T> && Internal::isAnyTupleElementProp<decltype(boost::pfr::structure_to_tuple(std::declval<T>()))>);
+
+
+// Iterate through all the props of a struct. This expands to all the properties at compile time,
+// with the function `F` being invoked with each prop (of type `Prop<...>`).
 //
-// For example, the following code prints each property name and value in a struct. Here
-// `prop.value` has different types on each 'iteration', depending on which property is being
+// For example, the following code prints each prop name and value in a struct. Here `prop()` (the
+// value of the prop) has different types on each 'iteration', depending on which prop is being
 // referenced:
 //
 //   Props::forEach(aStruct, [&](auto &prop) {
-//     fmt::print("{}: {}\n", prop.name(), prop.value);    // Print each property name and value
+//     fmt::print("{}: {}\n", prop.name(), prop());    // Print each prop name and value
 //   })
 
 template<typename Struct, typename F>
 void forEach(Struct &&s, F &&f) {
-  boost::pfr::for_each_field(std::forward<Struct>(s), [&](auto &&prop) {
-    if constexpr (isProp<std::remove_reference_t<decltype(prop)>>) {
-      f(std::forward<decltype(prop)>(prop));
-    }
-  });
+  static_assert(isReflectable<Struct>, "forEach: this type is not reflectable");
+  if constexpr (isReflectable<Struct>) {
+    boost::pfr::for_each_field(std::forward<Struct>(s), [&](auto &&prop) {
+      if constexpr (isProp<decltype(prop)>) {
+        f(std::forward<decltype(prop)>(prop));
+      }
+    });
+  }
 }
+
 }
