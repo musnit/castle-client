@@ -14,7 +14,8 @@ struct RotatingMotionComponent : BaseComponent {
   } props;
 };
 
-class RotatingMotionBehavior : public BaseBehavior<RotatingMotionBehavior, RotatingMotionComponent> {
+class RotatingMotionBehavior
+    : public BaseBehavior<RotatingMotionBehavior, RotatingMotionComponent> {
 public:
   static constexpr char name[] = "RotatingMotion";
 
@@ -22,7 +23,6 @@ public:
 
 
   void handleEnableComponent(ActorId actorId, RotatingMotionComponent &component);
-  void handleDisableComponent(ActorId actorId, RotatingMotionComponent &component, bool removeActor);
-
-  void handlePerform(double dt);
+  void handleDisableComponent(
+      ActorId actorId, RotatingMotionComponent &component, bool removeActor);
 };

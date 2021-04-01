@@ -11,6 +11,8 @@ void RotatingMotionBehavior::handleEnableComponent(
     ActorId actorId, RotatingMotionComponent &component) {
   if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId)) {
     body->SetType(b2_kinematicBody);
+    body->SetLinearVelocity({ component.props.vx(), component.props.vy() });
+    body->SetAngularVelocity(float(2 * M_PI * component.props.rotationsPerSecond()));
   }
 }
 
@@ -21,18 +23,4 @@ void RotatingMotionBehavior::handleDisableComponent(
       body->SetType(b2_staticBody); // Internally sets velocities to zero
     }
   }
-}
-
-
-//
-// Perform
-//
-
-void RotatingMotionBehavior::handlePerform(double dt) {
-  forEachComponent([&](ActorId actorId, RotatingMotionComponent &component) {
-    if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId)) {
-      body->SetLinearVelocity({ component.props.vx(), component.props.vy() });
-      body->SetAngularVelocity(float(2 * M_PI * component.props.rotationsPerSecond()));
-    }
-  });
 }
