@@ -110,7 +110,7 @@ inline constexpr auto isReflectable = std::is_aggregate_v<std::remove_reference_
 // Whether `T` has at least one prop member
 
 namespace Internal {
-  template<typename T, typename... Vs>
+  template<typename T = int, typename... Vs>
   inline constexpr auto isAnyProp = isProp<T> || isAnyProp<Vs...>;
   template<typename T>
   inline constexpr auto isAnyProp<T> = isProp<T>;

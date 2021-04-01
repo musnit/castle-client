@@ -4,6 +4,7 @@
 
 #include "scene.h"
 #include "behaviors/body.h"
+#include "behaviors/solid.h"
 #include "behaviors/test.h"
 #include "behaviors/debug_draw.h"
 
@@ -43,6 +44,7 @@ private:
   /* clang-format off */
   std::tuple<
     BodyBehavior,
+    SolidBehavior,
     DebugDrawBehavior
 #ifdef CASTLE_ENABLE_TESTS
     , TestBehavior

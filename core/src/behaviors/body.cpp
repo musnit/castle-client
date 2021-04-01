@@ -69,8 +69,9 @@ void BodyBehavior::handleDisableComponent(
 //
 
 b2Fixture *BodyBehavior::addFixture(BodyComponent &component, b2Shape *shape) {
+  // Defaults that other behaviors may override
   b2FixtureDef fixtureDef;
-  // fixtureDef.isSensor = true; // TODO(nikki): Uncomment this after `Solid` is ready
+  fixtureDef.isSensor = true;
   fixtureDef.friction = 0;
   fixtureDef.restitution = 0;
   fixtureDef.density = 1;

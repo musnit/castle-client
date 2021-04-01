@@ -57,6 +57,8 @@ public:
 
 
 private:
+  friend class SolidBehavior; // Other behaviors that modify the Box2D body
+
   b2Body *maybeGetPhysicsBody(ActorId actorId); // `nullptr` if not present
 
   b2Fixture *addFixture(BodyComponent &component, b2Shape *shape);
