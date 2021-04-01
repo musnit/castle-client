@@ -102,6 +102,9 @@ Scene Snapshot::toScene() {
               // Add component to actor
               auto &component = behavior.addComponent(actorId);
 
+              // Read enabled state
+              component.disabled = reader.boolean("disabled", false);
+
               // Read props
               if constexpr (hasPropsMember<decltype(component)>) {
                 reader.read(component.props);
@@ -111,18 +114,20 @@ Scene Snapshot::toScene() {
               if constexpr (Handlers::hasReadComponent<decltype(behavior)>) {
                 behavior.handleReadComponent(actorId, component, reader);
               }
-
-              // Enable and call `handleEnableComponent` if not disabled
-              if (!reader.boolean("disabled", false)) {
-                component.disabled = false;
-                if constexpr (Handlers::hasEnableComponent<decltype(behavior)>) {
-                  behavior.handleEnableComponent(actorId, component);
-                }
-              }
             });
             if (!found) {
               // Didn't find this behavior, just log for now
               fmt::print("  skipped component '{}'\n", behaviorName);
+            }
+          });
+
+          // After all components are loaded, call enable handlers in behavior order
+          scene.getBehaviors().forEachBehavior([&](auto &behavior) {
+            if constexpr (Handlers::hasEnableComponent<decltype(behavior)>) {
+              if (auto component = behavior.maybeGetComponent(actorId);
+                  component && !component->disabled) {
+                behavior.handleEnableComponent(actorId, *component);
+              }
             }
           });
         });

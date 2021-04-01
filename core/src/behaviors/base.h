@@ -83,6 +83,8 @@ protected:
 
 private:
   friend class Scene;
+  friend class Snapshot;
+
   Scene &scene;
 };
 
