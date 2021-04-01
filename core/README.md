@@ -77,11 +77,26 @@ this section.
 
 `./run.sh db` will generate a 'compile_commands.json' file in '../', which can
 be used by VSCode, vim with coc.nvim or many other editors to understand the
-C++ codebase (eg. provide autocomplete, notify about errors, ...).
+C++ codebase. Here's a few images and an animation showing such features from
+vim -- auto complete, error indicators, hover information (useful to get types
+of `auto` variables) and jump to definition:
+
+![auto complete](docs/cpp-editor-autocomplete.png)
+
+![error indicators](docs/cpp-editor-errors.png)
+
+![hover information](docs/cpp-editor-hover-info.png)
+
+![jump to definition](docs/cpp-editor-go-to-definition.gif)
 
 `./run.sh format` will auto-format the code. Needs
 [clang-format](https://clang.llvm.org/docs/ClangFormat.html), which you can
 install with `brew install clang-format` or such.
+
+`./run.sh cloc` will show per-file and total lines of code counts for files in
+'src/'. It ignores some modules that are just wrappers (like `Lv`) and ignores
+test and debug files. This needs
+[cloc](https://github.com/AlDanial/cloc#install-via-package-manager).
 
 `VALGRIND=on ./run.sh release` will run a desktop release build with
 [Valgrind](https://valgrind.org) which helps detect leaks and other memory
