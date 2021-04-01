@@ -70,7 +70,19 @@ void Scene::ensureDrawOrderSort() const {
 
 void Scene::update(double dt) {
   // Step physics
-  physicsWorld.Step(float(dt), 6, 2); // TODO(nikki): Use fixed timestep + catching up
+  {
+    constexpr auto updateRate = 120.0, updatePeriod = 1 / updateRate;
+    physicsUpdateTimeRemaining += dt;
+    auto nSteps = 0;
+    while (physicsUpdateTimeRemaining >= updatePeriod) {
+      if (nSteps > 60) {
+        physicsUpdateTimeRemaining = 0;
+        break;
+      }
+      physicsWorld.Step(updatePeriod, 6, 2);
+      physicsUpdateTimeRemaining -= updatePeriod;
+    }
+  }
 }
 
 

@@ -110,6 +110,7 @@ private:
   mutable bool needDrawOrderSort = false;
 
   b2World physicsWorld { b2Vec2(0, 9.8) };
+  double physicsUpdateTimeRemaining = 0;
 
   std::unique_ptr<AllBehaviors> behaviors;
 
