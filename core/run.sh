@@ -33,6 +33,11 @@ case "$1" in
     $CLANG_FORMAT -i -style=file $(find src/ -type f)
     ;;
 
+  # Count lines of code
+  cloc)
+    cloc src --by-file --exclude_list_file=.cloc_exclude_list
+    ;;
+
   # Desktop
   release)
     case $PLATFORM in
