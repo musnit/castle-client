@@ -13,7 +13,9 @@ void SolidBehavior::handleEnableComponent(ActorId actorId, SolidComponent &compo
 
 void SolidBehavior::handleDisableComponent(
     ActorId actorId, SolidComponent &component, bool removeActor) {
-  setEnabled(actorId, component, false);
+  if (!removeActor) {
+    setEnabled(actorId, component, false);
+  }
 }
 
 void SolidBehavior::setEnabled(ActorId actorId, SolidComponent &component, bool enabled) {
