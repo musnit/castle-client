@@ -17,14 +17,16 @@ struct BodyComponent : BaseComponent {
     PROP(float, widthScale) = 0.1;
     PROP(float, heightScale) = 0.1;
 
-    // NOTE: Skipping `bullet` because it's never `true`
+    // NOTE: Skipping because it's never `true`
     // PROP(bool, bullet) = false;
+
     PROP(bool, visible) = true;
 
-    PROP(std::string, bodyType) = "static";
+    // NOTE: Skipping because we start static and other behaviors (eg. `MovingBehavior`) set this
+    // PROP(std::string, bodyType) = "static";
 
-    // NOTE: Skipping `massData` because this is automatically calculated with
-    //       `b2Body::ResetMassData()` after creating / updating fixtures
+    // NOTE: Skipping because this is automatically calculated with `b2Body::ResetMassData()` after
+    //       creating / updating fixtures
     // PROP((std::array<float, 4>), massData) = { 0.0f, 0.0f, 0.0f, 0.0f };
 
     PROP(std::string, layerName) = "main";
@@ -58,6 +60,7 @@ public:
 
 private:
   friend class SolidBehavior; // Other behaviors that modify the Box2D body
+  friend class MovingBehavior;
 
   b2Body *maybeGetPhysicsBody(ActorId actorId); // `nullptr` if not present
 

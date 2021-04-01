@@ -10,9 +10,7 @@ void BodyBehavior::handleEnableComponent(ActorId actorId, BodyComponent &compone
   b2BodyDef bodyDef;
   bodyDef.position = { component.props.x(), component.props.y() };
   bodyDef.angle = component.props.angle();
-  bodyDef.type = component.props.bodyType() == "dynamic" ? b2_dynamicBody
-      : component.props.bodyType() == "kinematic"        ? b2_kinematicBody
-                                                         : b2_staticBody;
+  bodyDef.type = b2_staticBody;
   component.body = getPhysicsWorld().CreateBody(&bodyDef);
 
   // Fixtures

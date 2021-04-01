@@ -5,6 +5,7 @@
 #include "scene.h"
 #include "behaviors/body.h"
 #include "behaviors/solid.h"
+#include "behaviors/moving.h"
 #include "behaviors/test.h"
 #include "behaviors/debug_draw.h"
 
@@ -45,6 +46,7 @@ private:
   std::tuple<
     BodyBehavior,
     SolidBehavior,
+    MovingBehavior,
     DebugDrawBehavior
 #ifdef CASTLE_ENABLE_TESTS
     , TestBehavior
