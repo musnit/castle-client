@@ -9,6 +9,7 @@
 #include "behaviors/falling.h"
 #include "behaviors/bouncy.h"
 #include "behaviors/friction.h"
+#include "behaviors/rotating_motion.h"
 #include "behaviors/test.h"
 #include "behaviors/debug_draw.h"
 
@@ -53,6 +54,7 @@ private:
     FallingBehavior,
     BouncyBehavior,
     FrictionBehavior,
+    RotatingMotionBehavior,
     DebugDrawBehavior
 #ifdef CASTLE_ENABLE_TESTS
     , TestBehavior

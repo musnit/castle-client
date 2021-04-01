@@ -69,7 +69,7 @@ void Scene::ensureDrawOrderSort() const {
 //
 
 void Scene::update(double dt) {
-  // Step physics
+  // Step physics. Do this before behavior performance to allow behaviors to make changes after.
   {
     constexpr auto updateRate = 120.0, updatePeriod = 1 / updateRate;
     physicsUpdateTimeRemaining += dt;
@@ -83,6 +83,13 @@ void Scene::update(double dt) {
       physicsUpdateTimeRemaining -= updatePeriod;
     }
   }
+
+  // Perform behaviors
+  getBehaviors().forEachBehavior([&](auto &behavior) {
+    if constexpr (Handlers::hasPerform<decltype(behavior)>) {
+      behavior.handlePerform(dt);
+    }
+  });
 }
 
 

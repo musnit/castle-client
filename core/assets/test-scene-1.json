@@ -72,9 +72,10 @@
       "bp": {
         "components": {
           "Body": {
-            "x": 8.8817841970013e-16,
+            "x": -1.5,
             "y": 6,
-            "angle": -1.2362518120312e-8
+            "angle": -1.2362518120312e-8,
+            "widthScale": 0.65
           }
         }
       },
@@ -85,7 +86,19 @@
       "bp": {
         "components": {
           "Body": {
-            "x": -3.25,
+            "x": -3.9999992847443,
+            "y": 5.5
+          }
+        }
+      },
+      "actorId": "0:10",
+      "parentEntryId": "9dec18be-8113-430f-c378-904688ee15b0"
+    },
+    {
+      "bp": {
+        "components": {
+          "Body": {
+            "x": -2,
             "y": 4.75,
             "angle": -1.2362518120312e-8,
             "massData": [0, 0, 4, 0.66666668653488]
@@ -986,6 +999,142 @@
               "version": 2,
               "zeroShapesInV1": false
             }
+          }
+        }
+      }
+    },
+    "9dec18be-8113-430f-c378-904688ee15b0": {
+      "title": "Wall 4",
+      "entryId": "9dec18be-8113-430f-c378-904688ee15b0",
+      "base64Png": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAgMAAAAhHED1AAAADFBMVEUAAAAJKDcST28kn96BE2+VAAAAA3RSTlMAQIDntwj7AAAAc0lEQVR4nO3bMRWAQBBDwaXAFxKuQS/ObjkNhAbe/D7jIFU/aD+DxgKuDppVW7LvjoEDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADPgcqAF27r+XH+890k6T1qMQWTwgAAAABJRU5ErkJggg==",
+      "entryType": "actorBlueprint",
+      "description": "Solid square that doesn't move",
+      "actorBlueprint": {
+        "components": {
+          "Body": {
+            "angle": 1.5707961320877,
+            "width": 0.98995000123978,
+            "bullet": false,
+            "height": 0.98995000123978,
+            "visible": true,
+            "bodyType": "kinematic",
+            "disabled": false,
+            "fixtures": [
+              {
+                "points": [-5, -5, -5, 5, 5, 5, 5, -5],
+                "shapeType": "polygon"
+              }
+            ],
+            "massData": [0, 0, 0, 0],
+            "layerName": "main",
+            "widthScale": 0.25,
+            "heightScale": 0.1,
+            "editorBounds": {
+              "maxX": 5,
+              "maxY": 5,
+              "minX": -5,
+              "minY": -5
+            }
+          },
+          "Tags": {
+            "disabled": false,
+            "tagsString": ""
+          },
+          "Solid": {
+            "disabled": false
+          },
+          "Drawing2": {
+            "hash": "eJx1UU2L00AYXn+CCw1qWlvBxYMXuyjSwxKbTZR2+52mtr3NJrPpbJNJyMRuUzzsQfHgHsSL+An+AK8L3ral7X4gu3jwoMWT6EWEiCVIETTT7R59YOb9mJl3nvd9PDZyZDVcghTCm6orAAd4bPSwA21TagALkhSuxH8PiAJ0uLDbgjZBJo4MyfTMC3vs+Z616LGRrst020zPigf+w9hWrO+4Fty3oeIArOmQ3VNtsHFc/dK+jjBcNnXT9qL+mVAo9OHCV85/9pTiI+fvfKb4wYXZewu7a0jXC1gbT3bmUIXPlzaurNzSzGSAnCQ3RFkLvCINxcBmA8sbLcHUaYbX+WxFlKnbxImruWb5epwGyWpJKuvZZDG/WqvT90I9XRJvyjDdcdx1kZ8WE4RcTlaEjJNYzFxekVqSxYvJ0v9Xqrym8Lged1Nynl9v3J5+xKdL8jXRbqY1TVtaGiizlt+cnp9/DHqcf3b8K8AXzv85ovgetDxcNe9glQQa9A3Qrsb6BsI1hu5VhmZqsXcWcBp0khlEHKpAdGiZCDvEi9HZM1vMsQQzM0uenLE9pIYHxHF1GH4ScDlX/MTepVy6B6/Fbcrl4ts/D8ZTLuyeZiNVQh3oPzJG28boG/d+qgdqQ50UoC1j5Mx0S9y4HznAsO0UAnYpNXpILy4D3AKEFpjMnTqimZQBNMiftPh8sjn3YrL592WwXgX+P1xCE+o=",
+            "loop": false,
+            "playing": false,
+            "disabled": false,
+            "drawData": {
+              "color": [
+                0.14360261804917,
+                0.62352941176471,
+                0.87058823529412,
+                1
+              ],
+              "scale": 10,
+              "bounds": {
+                "maxX": 5,
+                "maxY": 5,
+                "minX": -5,
+                "minY": -5
+              },
+              "fillPng": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAABlBMVEUAAAAkn94NkT71AAAAAXRSTlMAQObYZgAAADZJREFUeJztyjEBAAAEADDNNUcDLt92L+KSvSpBEARBEARBEARBEARBEARBEARBEARBEITfcBnZ1yIUOBjhWAAAAABJRU5ErkJggg==",
+              "version": 2,
+              "gridSize": 0.71428571428571,
+              "lineColor": [0.66037992589614, 0.4, 0.93333333333333, 1],
+              "nextPathId": 4,
+              "pathDataList": [
+                {
+                  "id": 1,
+                  "color": [0.1436, 0.6235, 0.8706, 1],
+                  "style": 1,
+                  "points": [
+                    {
+                      "x": -5,
+                      "y": -5
+                    },
+                    {
+                      "x": -5,
+                      "y": 5
+                    },
+                    {
+                      "x": 5,
+                      "y": 5
+                    },
+                    {
+                      "x": 5,
+                      "y": -5
+                    },
+                    {
+                      "x": -5,
+                      "y": -5
+                    }
+                  ]
+                }
+              ],
+              "fillCanvasSize": 256,
+              "fillImageBounds": {
+                "maxX": 128,
+                "maxY": 128,
+                "minX": -128,
+                "minY": -128
+              },
+              "fillPixelsPerUnit": 25.6
+            },
+            "initialFrame": 1,
+            "framesPerSecond": 4,
+            "physicsBodyData": {
+              "scale": 10,
+              "shapes": [
+                {
+                  "p1": {
+                    "x": 5,
+                    "y": 5
+                  },
+                  "p2": {
+                    "x": -5,
+                    "y": -5
+                  },
+                  "type": "rectangle"
+                }
+              ],
+              "version": 2,
+              "zeroShapesInV1": false
+            }
+          },
+          "Friction": {
+            "disabled": false,
+            "friction": 0.2
+          },
+          "RotatingMotion": {
+            "vx": 2,
+            "vy": 0,
+            "disabled": false,
+            "rotationsPerSecond": 0
           }
         }
       }

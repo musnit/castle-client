@@ -109,8 +109,9 @@ namespace Handlers {
 
 DEFINE_HANDLER(EnableComponent);
 DEFINE_HANDLER(DisableComponent);
-DEFINE_HANDLER(DrawComponent);
 DEFINE_HANDLER(ReadComponent);
+DEFINE_HANDLER(Perform);
+DEFINE_HANDLER(DrawComponent);
 
 #undef DEFINE_HANDLER
 }
