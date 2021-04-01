@@ -7,6 +7,7 @@
 #include "behaviors/solid.h"
 #include "behaviors/moving.h"
 #include "behaviors/falling.h"
+#include "behaviors/bouncy.h"
 #include "behaviors/test.h"
 #include "behaviors/debug_draw.h"
 
@@ -49,6 +50,7 @@ private:
     SolidBehavior,
     MovingBehavior,
     FallingBehavior,
+    BouncyBehavior,
     DebugDrawBehavior
 #ifdef CASTLE_ENABLE_TESTS
     , TestBehavior

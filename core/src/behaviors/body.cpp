@@ -72,7 +72,7 @@ b2Fixture *BodyBehavior::addFixture(BodyComponent &component, b2Shape *shape) {
   b2FixtureDef fixtureDef;
   fixtureDef.isSensor = true;
   fixtureDef.friction = 0;
-  fixtureDef.restitution = 0;
+  fixtureDef.restitutionThreshold = 0.1; // Keeps bounciness on at lower speeds
   fixtureDef.density = 1;
   fixtureDef.shape = shape;
   return component.body->CreateFixture(&fixtureDef);
