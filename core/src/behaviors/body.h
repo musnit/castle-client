@@ -61,6 +61,7 @@ public:
 private:
   friend class SolidBehavior; // Other behaviors that modify the Box2D body
   friend class MovingBehavior;
+  friend class FallingBehavior;
 
   b2Body *maybeGetPhysicsBody(ActorId actorId); // `nullptr` if not present
 

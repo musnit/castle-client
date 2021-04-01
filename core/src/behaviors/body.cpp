@@ -8,9 +8,10 @@
 void BodyBehavior::handleEnableComponent(ActorId actorId, BodyComponent &component) {
   // Body
   b2BodyDef bodyDef;
+  bodyDef.type = b2_staticBody;
   bodyDef.position = { component.props.x(), component.props.y() };
   bodyDef.angle = component.props.angle();
-  bodyDef.type = b2_staticBody;
+  bodyDef.gravityScale = 0;
   component.body = getPhysicsWorld().CreateBody(&bodyDef);
 
   // Fixtures
