@@ -24,7 +24,10 @@ void SlowdownBehavior::handleDisableComponent(
     ActorId actorId, SlowdownComponent &component, bool removeActor) {
   if (!removeActor) {
     if (component.joint) {
-      getPhysicsWorld().DestroyJoint(component.joint);
+      if (getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId)) {
+        // Make sure body still exists when destroying joint
+        getPhysicsWorld().DestroyJoint(component.joint);
+      }
       component.joint = nullptr;
     }
   }
