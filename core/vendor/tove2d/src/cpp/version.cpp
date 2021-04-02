@@ -15,7 +15,7 @@ static const char tove_version[] = "2.0b1-7-gd57a0ba";
 
 extern "C" {
 
-EXPORT const char *GetVersion() {
+EXPORT const char *GetToveVersion() {
 	return tove_version;
 }
 

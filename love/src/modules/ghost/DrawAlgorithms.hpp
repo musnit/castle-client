@@ -8,6 +8,7 @@
 #ifndef DrawAlgorithms_hpp
 #define DrawAlgorithms_hpp
 
+#define _USE_MATH_DEFINES
 #include <stdio.h>
 #include <vector>
 #include "GhostTypes.hpp"

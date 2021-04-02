@@ -375,7 +375,7 @@ typedef struct {
 	uint32_t id; // >= 1
 	uint32_t version;
 } ToveSendArgs;
-const char *GetVersion();
+const char *GetToveVersion();
 void SetReportFunction(ToveReportFunction f);
 void SetReportLevel(ToveReportLevel l);
 
@@ -617,7 +617,7 @@ tove.init = function(path)
     end
 	tove.lib = lib
 	tove.getVersion = function()
-		return ffi.string(lib.GetVersion())
+		return ffi.string(lib.GetToveVersion())
 	end
 
 	do

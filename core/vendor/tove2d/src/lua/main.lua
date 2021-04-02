@@ -60,7 +60,7 @@ tove.init = function(path)
 	local lib = ffi.load(libPath)
 	tove.lib = lib
 	tove.getVersion = function()
-		return ffi.string(lib.GetVersion())
+		return ffi.string(lib.GetToveVersion())
 	end
 
 	do

@@ -8,7 +8,11 @@
 #ifndef DrawDataFrame_hpp
 #define DrawDataFrame_hpp
 
+#define _USE_MATH_DEFINES
+
 #include <stdio.h>
+#include <functional>
+
 #include "GhostTypes.hpp"
 
 namespace love {

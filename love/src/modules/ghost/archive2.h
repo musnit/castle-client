@@ -394,19 +394,19 @@ public:
     }
 
     template<typename T>
-    struct isCStrArray : std::false_type {};
+    struct isCStrArray2 : std::false_type {};
     template<size_t N>
-    struct isCStrArray<const char[N]> : std::true_type {};
+    struct isCStrArray2<const char[N]> : std::true_type {};
     template<size_t N>
-    struct isCStrArray<const char (&)[N]> : std::true_type {};
+    struct isCStrArray2<const char (&)[N]> : std::true_type {};
     template<size_t N>
-    struct isCStrArray<char[N]> : std::true_type {};
+    struct isCStrArray2<char[N]> : std::true_type {};
     template<size_t N>
-    struct isCStrArray<char (&)[N]> : std::true_type {};
+    struct isCStrArray2<char (&)[N]> : std::true_type {};
 
     template<typename K>
     auto makeStr(K &&key) -> json::Value {
-      if constexpr (isCStrArray<K>::value) {
+      if constexpr (isCStrArray2<K>::value) {
         return json::Value(json::Value::StringRefType(std::forward<K>(key)));
       } else if constexpr (std::is_same_v<std::remove_cv_t<std::remove_reference_t<K>>,
                                std::string>) {

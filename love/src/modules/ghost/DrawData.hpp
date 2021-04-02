@@ -8,11 +8,15 @@
 #ifndef DrawData_hpp
 #define DrawData_hpp
 
+#define _USE_MATH_DEFINES
+
 #include <stdio.h>
 #include <tuple>
+#include <functional>
+
+#include "common/Object.h"
 #include "GhostTypes.hpp"
 #include "DrawDataFrame.hpp"
-#include "common/Object.h"
 
 namespace love
 {
