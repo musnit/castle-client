@@ -17,6 +17,7 @@ using namespace love::system;
 using namespace love::image;
 using namespace love::font;
 using namespace love::graphics;
+using namespace love::ghost;
 using namespace love::window;
 using Image = love::graphics::Image;
 using Font = love::graphics::Font;

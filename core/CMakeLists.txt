@@ -143,11 +143,46 @@ endif()
 add_subdirectory(vendor/fmt EXCLUDE_FROM_ALL)
 target_link_libraries(castle-core PRIVATE fmt::fmt)
 
+# tove
+add_library(castle-tove STATIC)
+set(TOVE_SRC vendor/tove2d)
+add_subdirectory(vendor/tove2d/src/thirdparty/fp16 EXCLUDE_FROM_ALL)
+target_link_libraries(castle-tove PRIVATE fp16)
+target_include_directories(castle-tove PUBLIC vendor)
+target_sources(castle-tove PRIVATE
+  ${TOVE_SRC}/src/cpp/version.cpp
+	${TOVE_SRC}/src/cpp/interface/api.cpp
+	${TOVE_SRC}/src/cpp/graphics.cpp
+	${TOVE_SRC}/src/cpp/nsvg.cpp
+	${TOVE_SRC}/src/cpp/paint.cpp
+	${TOVE_SRC}/src/cpp/path.cpp
+	${TOVE_SRC}/src/cpp/references.cpp
+	${TOVE_SRC}/src/cpp/subpath.cpp
+	${TOVE_SRC}/src/cpp/mesh/flatten.cpp
+	${TOVE_SRC}/src/cpp/mesh/mesh.cpp
+	${TOVE_SRC}/src/cpp/mesh/meshifier.cpp
+	${TOVE_SRC}/src/cpp/mesh/partition.cpp
+	${TOVE_SRC}/src/cpp/mesh/triangles.cpp
+	${TOVE_SRC}/src/cpp/gpux/curve_data.cpp
+	${TOVE_SRC}/src/cpp/gpux/geometry_data.cpp
+	${TOVE_SRC}/src/cpp/gpux/geometry_feed.cpp
+	${TOVE_SRC}/src/cpp/shader/gen.cpp
+	${TOVE_SRC}/src/thirdparty/clipper.cpp
+	${TOVE_SRC}/src/thirdparty/polypartition/src/polypartition.cpp
+	${TOVE_SRC}/src/thirdparty/tinyxml2/tinyxml2.cpp
+	${TOVE_SRC}/src/cpp/warn.cpp
+)
+target_link_libraries(castle-core PRIVATE castle-tove)
+
 # love
 if(YES)
   add_library(castle-love STATIC)
+  target_compile_features(castle-love PRIVATE cxx_std_17)
+  set_target_properties(castle-love PROPERTIES CXX_EXTENSIONS OFF)
   set(LOVE_SRC ../love/src)
   target_include_directories(castle-love PUBLIC ${LOVE_SRC} ${LOVE_SRC}/libraries ${LOVE_SRC}/modules)
+  # for tove
+  target_include_directories(castle-love PUBLIC vendor)
 
   # lua
   add_subdirectory(vendor/lua-5.1.5 EXCLUDE_FROM_ALL)
@@ -503,6 +538,20 @@ if(YES)
     ${LOVE_SRC}/libraries/ddsparse/ddsinfo.h
     ${LOVE_SRC}/libraries/ddsparse/ddsparse.cpp
     ${LOVE_SRC}/libraries/ddsparse/ddsparse.h
+
+    # ghost
+    ${LOVE_SRC}/modules/ghost/archive2.h
+    ${LOVE_SRC}/modules/ghost/DrawAlgorithms.cpp
+    ${LOVE_SRC}/modules/ghost/DrawAlgorithms.hpp
+    ${LOVE_SRC}/modules/ghost/DrawData.cpp
+    ${LOVE_SRC}/modules/ghost/DrawData.hpp
+    ${LOVE_SRC}/modules/ghost/DrawDataFrame.cpp
+    ${LOVE_SRC}/modules/ghost/DrawDataFrame.hpp
+    ${LOVE_SRC}/modules/ghost/Ghost.cpp
+    ${LOVE_SRC}/modules/ghost/Ghost.hpp
+    ${LOVE_SRC}/modules/ghost/GhostTypes.hpp
+    ${LOVE_SRC}/modules/ghost/wrap_Ghost.cpp
+    ${LOVE_SRC}/modules/ghost/wrap_Ghost.hpp
     )
   target_link_libraries(castle-core PRIVATE castle-love)
   if(MSVC)
@@ -531,7 +580,6 @@ target_include_directories(castle-core PRIVATE vendor/magic_get/include)
 
 # rapidjson
 target_include_directories(castle-core PRIVATE vendor/rapidjson/include)
-
 
 #
 # Assets

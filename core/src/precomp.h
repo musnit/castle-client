@@ -54,3 +54,6 @@
 #include "rapidjson/prettywriter.h"
 #include "rapidjson/writer.h"
 namespace json = rapidjson;
+
+// This has to be after rapidjson
+#include <modules/ghost/DrawData.hpp>

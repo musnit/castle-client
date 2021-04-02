@@ -79,7 +79,7 @@ public:
 		TovePathRef path = NewPath(null);*/
 	}
 	
-	DrawData(Archive::Reader &archive) {
+	DrawData(Archive2::Reader &archive) {
 		read(archive);
 		
 		_layerDataChanged = true;
@@ -95,7 +95,7 @@ public:
 		obj.num("gridSize", )
 	}*/
 
-	void read(Archive::Reader &archive) {
+	void read(Archive2::Reader &archive) {
 		archive.arr("color", color);
 		archive.arr("lineColor", lineColor);
 		gridSize = archive.num("gridSize", 0.71428571428571);
@@ -124,7 +124,7 @@ public:
 		});
 	}
 
-	void write(Archive::Writer &archive) {
+	void write(Archive2::Writer &archive) {
 		archive.arr("color", color);
 		archive.arr("lineColor", lineColor);
 		archive.num("gridSize", gridSize);

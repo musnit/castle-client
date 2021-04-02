@@ -1364,7 +1364,6 @@
 		911BC11425C234C00027A2CE /* GhostTypes.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GhostTypes.hpp; sourceTree = "<group>"; };
 		911BC12A25C4A18A0027A2CE /* DrawDataFrame.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DrawDataFrame.cpp; sourceTree = "<group>"; };
 		911BC12B25C4A18A0027A2CE /* DrawDataFrame.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DrawDataFrame.hpp; sourceTree = "<group>"; };
-		91BB92982605167F00D746BF /* Archive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Archive.h; sourceTree = "<group>"; };
 		FA08F5AE16C7525600F007B5 /* liblove-macosx.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "liblove-macosx.plist"; path = "macosx/liblove-macosx.plist"; sourceTree = "<group>"; };
 		FA0B78DD1A958B90000E1D17 /* liblove.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblove.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA0B78F71A958E3B000E1D17 /* b64.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = b64.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
@@ -2296,7 +2295,6 @@
 				911BC11425C234C00027A2CE /* GhostTypes.hpp */,
 				911BC12A25C4A18A0027A2CE /* DrawDataFrame.cpp */,
 				911BC12B25C4A18A0027A2CE /* DrawDataFrame.hpp */,
-				91BB92982605167F00D746BF /* Archive.h */,
 			);
 			path = ghost;
 			sourceTree = "<group>";

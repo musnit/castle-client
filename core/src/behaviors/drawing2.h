@@ -10,6 +10,8 @@ struct Drawing2Component : BaseComponent {
   struct Props {
     PROP(std::string, drawData) = "";
   } props;
+
+  love::DrawData *drawData = NULL;
 };
 
 class Drawing2Behavior : public BaseBehavior<Drawing2Behavior, Drawing2Component> {
@@ -19,6 +21,7 @@ public:
 
   using BaseBehavior::BaseBehavior;
 
+  void handleEnableComponent(ActorId actorId, Drawing2Component &component);
   void handleDrawComponent(ActorId actorId, const Drawing2Component &component) const;
 
 private:
