@@ -146,9 +146,9 @@ target_link_libraries(castle-core PRIVATE fmt::fmt)
 # tove
 add_library(castle-tove STATIC)
 set(TOVE_SRC vendor/tove2d)
-add_subdirectory(vendor/tove2d/src/thirdparty/fp16 EXCLUDE_FROM_ALL)
-target_link_libraries(castle-tove PRIVATE fp16)
-target_include_directories(castle-tove PUBLIC vendor)
+target_compile_features(castle-tove PRIVATE cxx_std_17)
+set_target_properties(castle-tove PROPERTIES CXX_EXTENSIONS OFF)
+target_include_directories(castle-tove PUBLIC vendor vendor/tove2d/src/thirdparty/fp16/include)
 target_sources(castle-tove PRIVATE
   ${TOVE_SRC}/src/cpp/version.cpp
 	${TOVE_SRC}/src/cpp/interface/api.cpp
