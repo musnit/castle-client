@@ -9,6 +9,11 @@
 
 Scene::Scene()
     : behaviors(std::make_unique<AllBehaviors>(*this)) {
+  // Create the background body (a static body useful to attach joints to)
+  {
+    b2BodyDef physicsBackgroundBodyDef;
+    physicsBackgroundBody = physicsWorld.CreateBody(&physicsBackgroundBodyDef);
+  }
 }
 
 Scene::~Scene() = default;

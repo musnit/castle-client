@@ -55,10 +55,11 @@ public:
   bool hasComponent(ActorId actorId) const;
 
 
-  // Physics world
+  // Physics
 
   b2World &getPhysicsWorld();
   const b2World &getPhysicsWorld() const;
+  b2Body *getPhysicsBackgroundBody();
 
 
   // Other behaviors
@@ -196,6 +197,11 @@ b2World &BaseBehavior<Derived, Component>::getPhysicsWorld() {
 template<typename Derived, typename Component>
 const b2World &BaseBehavior<Derived, Component>::getPhysicsWorld() const {
   return scene.getPhysicsWorld();
+}
+
+template<typename Derived, typename Component>
+b2Body *BaseBehavior<Derived, Component>::getPhysicsBackgroundBody() {
+  return scene.getPhysicsBackgroundBody();
 }
 
 template<typename Derived, typename Component>

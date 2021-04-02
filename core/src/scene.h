@@ -69,10 +69,11 @@ public:
   const AllBehaviors &getBehaviors() const;
 
 
-  // Physics world
+  // Physics
 
   b2World &getPhysicsWorld();
   const b2World &getPhysicsWorld() const;
+  b2Body *getPhysicsBackgroundBody();
 
 
   // Entity registry (entt instance managing component data)
@@ -110,6 +111,7 @@ private:
   mutable bool needDrawOrderSort = false;
 
   b2World physicsWorld { b2Vec2(0, 9.8) };
+  b2Body *physicsBackgroundBody = nullptr;
   double physicsUpdateTimeRemaining = 0;
 
   std::unique_ptr<AllBehaviors> behaviors;
@@ -179,6 +181,10 @@ inline b2World &Scene::getPhysicsWorld() {
 
 inline const b2World &Scene::getPhysicsWorld() const {
   return physicsWorld;
+}
+
+inline b2Body *Scene::getPhysicsBackgroundBody() {
+  return physicsBackgroundBody;
 }
 
 inline entt::registry &Scene::getEntityRegistry() {

@@ -59,6 +59,7 @@ void BodyBehavior::handleDisableComponent(
     ActorId actorId, BodyComponent &component, bool removeActor) {
   if (component.body) {
     getPhysicsWorld().DestroyBody(component.body);
+    component.body = nullptr;
   }
 }
 

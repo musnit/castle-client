@@ -65,6 +65,7 @@ private:
   friend class BouncyBehavior;
   friend class FrictionBehavior;
   friend class RotatingMotionBehavior;
+  friend class SlowdownBehavior;
 
   b2Body *maybeGetPhysicsBody(ActorId actorId); // `nullptr` if not present
 
