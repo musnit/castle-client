@@ -11,6 +11,7 @@
 #include "behaviors/friction.h"
 #include "behaviors/rotating_motion.h"
 #include "behaviors/slowdown.h"
+#include "behaviors/speed_limit.h"
 #include "behaviors/test.h"
 #include "behaviors/debug_draw.h"
 
@@ -57,6 +58,7 @@ private:
     FrictionBehavior,
     RotatingMotionBehavior,
     SlowdownBehavior,
+    SpeedLimitBehavior,
     DebugDrawBehavior
 #ifdef CASTLE_ENABLE_TESTS
     , TestBehavior
