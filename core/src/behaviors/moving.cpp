@@ -15,6 +15,7 @@ void MovingBehavior::handleEnableComponent(ActorId actorId, MovingComponent &com
     for (auto fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()) {
       fixture->SetDensity(component.props.density());
     }
+    body->ResetMassData();
   }
 }
 
