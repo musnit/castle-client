@@ -54,7 +54,7 @@ Engine::PreInit::PreInit() {
 //
 
 Engine::Engine()
-    : scene(Snapshot::fromFile("assets/test-motion-speed-limit.json").toScene()) {
+    : scene(Snapshot::fromFile("assets/test-motion-sliding.json").toScene()) {
   // First timer step
   lv.timer.step();
 }
