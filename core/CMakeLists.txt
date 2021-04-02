@@ -143,37 +143,6 @@ endif()
 add_subdirectory(vendor/fmt EXCLUDE_FROM_ALL)
 target_link_libraries(castle-core PRIVATE fmt::fmt)
 
-# tove
-add_library(castle-tove STATIC)
-set(TOVE_SRC vendor/tove2d)
-target_compile_features(castle-tove PRIVATE cxx_std_17)
-set_target_properties(castle-tove PROPERTIES CXX_EXTENSIONS OFF)
-target_include_directories(castle-tove PUBLIC vendor vendor/tove2d/src/thirdparty/fp16/include)
-target_sources(castle-tove PRIVATE
-  ${TOVE_SRC}/src/cpp/version.cpp
-	${TOVE_SRC}/src/cpp/interface/api.cpp
-	${TOVE_SRC}/src/cpp/graphics.cpp
-	${TOVE_SRC}/src/cpp/nsvg.cpp
-	${TOVE_SRC}/src/cpp/paint.cpp
-	${TOVE_SRC}/src/cpp/path.cpp
-	${TOVE_SRC}/src/cpp/references.cpp
-	${TOVE_SRC}/src/cpp/subpath.cpp
-	${TOVE_SRC}/src/cpp/mesh/flatten.cpp
-	${TOVE_SRC}/src/cpp/mesh/mesh.cpp
-	${TOVE_SRC}/src/cpp/mesh/meshifier.cpp
-	${TOVE_SRC}/src/cpp/mesh/partition.cpp
-	${TOVE_SRC}/src/cpp/mesh/triangles.cpp
-	${TOVE_SRC}/src/cpp/gpux/curve_data.cpp
-	${TOVE_SRC}/src/cpp/gpux/geometry_data.cpp
-	${TOVE_SRC}/src/cpp/gpux/geometry_feed.cpp
-	${TOVE_SRC}/src/cpp/shader/gen.cpp
-	${TOVE_SRC}/src/thirdparty/clipper.cpp
-	${TOVE_SRC}/src/thirdparty/polypartition/src/polypartition.cpp
-	${TOVE_SRC}/src/thirdparty/tinyxml2/tinyxml2.cpp
-	${TOVE_SRC}/src/cpp/warn.cpp
-)
-target_link_libraries(castle-core PRIVATE castle-tove)
-
 # love
 if(YES)
   add_library(castle-love STATIC)
@@ -181,8 +150,6 @@ if(YES)
   set_target_properties(castle-love PROPERTIES CXX_EXTENSIONS OFF)
   set(LOVE_SRC ../love/src)
   target_include_directories(castle-love PUBLIC ${LOVE_SRC} ${LOVE_SRC}/libraries ${LOVE_SRC}/modules)
-  # for tove
-  target_include_directories(castle-love PUBLIC vendor)
 
   # lua
   add_subdirectory(vendor/lua-5.1.5 EXCLUDE_FROM_ALL)
@@ -204,6 +171,10 @@ if(YES)
     target_link_options(castle-love PRIVATE "SHELL:-s USE_SDL=2")
     target_link_options(castle-love PRIVATE "SHELL:-s FULL_ES2=1")
   endif()
+
+  # tove
+  set(TOVE_SRC vendor/tove2d)
+  target_include_directories(castle-love PUBLIC vendor vendor/tove2d/src/thirdparty/fp16/include)
 
   target_sources(castle-love PRIVATE
     # common
@@ -552,6 +523,29 @@ if(YES)
     ${LOVE_SRC}/modules/ghost/GhostTypes.hpp
     ${LOVE_SRC}/modules/ghost/wrap_Ghost.cpp
     ${LOVE_SRC}/modules/ghost/wrap_Ghost.hpp
+
+    # tove
+    ${TOVE_SRC}/src/cpp/version.cpp
+    ${TOVE_SRC}/src/cpp/interface/api.cpp
+    ${TOVE_SRC}/src/cpp/graphics.cpp
+    ${TOVE_SRC}/src/cpp/nsvg.cpp
+    ${TOVE_SRC}/src/cpp/paint.cpp
+    ${TOVE_SRC}/src/cpp/path.cpp
+    ${TOVE_SRC}/src/cpp/references.cpp
+    ${TOVE_SRC}/src/cpp/subpath.cpp
+    ${TOVE_SRC}/src/cpp/mesh/flatten.cpp
+    ${TOVE_SRC}/src/cpp/mesh/mesh.cpp
+    ${TOVE_SRC}/src/cpp/mesh/meshifier.cpp
+    ${TOVE_SRC}/src/cpp/mesh/partition.cpp
+    ${TOVE_SRC}/src/cpp/mesh/triangles.cpp
+    ${TOVE_SRC}/src/cpp/gpux/curve_data.cpp
+    ${TOVE_SRC}/src/cpp/gpux/geometry_data.cpp
+    ${TOVE_SRC}/src/cpp/gpux/geometry_feed.cpp
+    ${TOVE_SRC}/src/cpp/shader/gen.cpp
+    ${TOVE_SRC}/src/thirdparty/clipper.cpp
+    ${TOVE_SRC}/src/thirdparty/polypartition/src/polypartition.cpp
+    ${TOVE_SRC}/src/thirdparty/tinyxml2/tinyxml2.cpp
+    ${TOVE_SRC}/src/cpp/warn.cpp
     )
   target_link_libraries(castle-core PRIVATE castle-love)
   if(MSVC)
