@@ -15,6 +15,7 @@
 #include "behaviors/sliding.h"
 #include "behaviors/test.h"
 #include "behaviors/debug_draw.h"
+#include "behaviors/drawing2.h"
 
 
 class AllBehaviors {
@@ -61,7 +62,8 @@ private:
     SlowdownBehavior,
     SpeedLimitBehavior,
     SlidingBehavior,
-    DebugDrawBehavior
+    DebugDrawBehavior,
+    Drawing2Behavior
 #ifdef CASTLE_ENABLE_TESTS
     , TestBehavior
 #endif
