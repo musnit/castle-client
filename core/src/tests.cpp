@@ -112,118 +112,11 @@ struct BasicActorManagementTest : Test {
 
 
 //
-// Basic behavior management (names, iterating)
-//
-
-struct BasicBehaviorManagementTest : Test {
-  BasicBehaviorManagementTest() {
-    Scene scene;
-
-    // Iterate behaviors
-    auto foundTestBehavior = false;
-    scene.getBehaviors().forEachBehavior([&](auto &behavior) {
-      if (!std::strcmp(behavior.name, "Test")) {
-        foundTestBehavior = true;
-      }
-    });
-    assert(foundTestBehavior);
-  }
-};
-
-
-//
-// Basic component management (add, remove, has, get, handlers)
-//
-
-struct BasicComponentManagementTest : Test {
-  BasicComponentManagementTest() {
-    Scene scene;
-    auto &testBehavior = scene.getBehaviors().byType<TestBehavior>();
-
-    // Add two actors
-    auto actor1 = scene.addActor();
-    auto actor2 = scene.addActor();
-
-    // Add component to one of them, check all of the things
-    testBehavior.addComponent(actor1);
-    assert(testBehavior.hasComponent(actor1));
-    assert(testBehavior.getComponent(actor1).i == 0);
-    assert(testBehavior.maybeGetComponent(actor1)->i == 0);
-    assert((testBehavior.adds == std::vector<std::pair<ActorId, int>> { { actor1, 0 } }));
-    assert((testBehavior.disables == std::vector<std::tuple<ActorId, int, bool>> {}));
-    testBehavior.adds.clear();
-    testBehavior.disables.clear();
-
-    // Add component to another, then check again
-    testBehavior.addComponent(actor2);
-    assert(testBehavior.hasComponent(actor2));
-    assert(testBehavior.getComponent(actor1).i == 0);
-    assert(testBehavior.getComponent(actor2).i == 1);
-    assert((testBehavior.adds == std::vector<std::pair<ActorId, int>> { { actor2, 1 } }));
-    assert((testBehavior.disables == std::vector<std::tuple<ActorId, int, bool>> {}));
-    testBehavior.adds.clear();
-    testBehavior.disables.clear();
-
-    // Remove from one actor
-    testBehavior.removeComponent(actor1);
-    assert(!testBehavior.hasComponent(actor1));
-    assert(!testBehavior.maybeGetComponent(actor1));
-    assert(testBehavior.getComponent(actor2).i == 1);
-    assert((testBehavior.disables
-        == std::vector<std::tuple<ActorId, int, bool>> { { actor1, 0, false } }));
-    testBehavior.adds.clear();
-    testBehavior.disables.clear();
-
-    // Create two actors and add to them, check again
-    auto actor3 = scene.addActor();
-    auto actor4 = scene.addActor();
-    testBehavior.addComponent(actor3);
-    testBehavior.addComponent(actor4);
-    assert((testBehavior.adds
-        == std::vector<std::pair<ActorId, int>> { { actor3, 2 }, { actor4, 3 } }));
-    assert((testBehavior.disables == std::vector<std::tuple<ActorId, int, bool>> {}));
-
-    // Test `forEachComponent`
-    {
-      int sum = 0;
-      testBehavior.forEachComponent([&](TestBehavior::Component &component) {
-        sum += component.i;
-      });
-      assert(sum == 6);
-    }
-    const auto testConstScene = [&](const Scene &scene) {
-      int sum = 0;
-      scene.getBehaviors().byType<TestBehavior>().forEachComponent(
-          [&](const TestBehavior::Component &component) {
-            sum += component.i;
-          });
-      assert(sum == 6);
-    };
-    testConstScene(scene);
-
-    // Test calling of disable handlers on actor destroy
-    scene.removeActor(actor2);
-    scene.removeActor(actor3);
-    assert((testBehavior.disables
-        == std::vector<std::tuple<ActorId, int, bool>> {
-            { actor2, 1, true }, { actor3, 2, true } }));
-    testBehavior.disables.clear();
-    scene.removeActor(actor4);
-    assert((testBehavior.disables
-        == std::vector<std::tuple<ActorId, int, bool>> { { actor4, 3, true } }));
-    testBehavior.disables.clear();
-  }
-};
-
-
-//
 // Constructor, destructor
 //
 
 Tests::Tests() {
   tests.emplace_back(std::make_unique<BasicActorManagementTest>());
-  tests.emplace_back(std::make_unique<BasicBehaviorManagementTest>());
-  tests.emplace_back(std::make_unique<BasicComponentManagementTest>());
   fmt::print("all tests passed\n");
 }
 
