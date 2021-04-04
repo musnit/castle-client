@@ -8,11 +8,13 @@
 #ifndef GhostTypes_h
 #define GhostTypes_h
 
+#include <optional>
+#include <memory>
+
 #include "common/runtime.h"
 #include "common/config.h"
 #include "common/Module.h"
 #include "tove2d/src/cpp/interface.h"
-#include <optional>
 #include "graphics/Graphics.h"
 #include "data/DataModule.h"
 #include "archive2.h"
@@ -258,9 +260,17 @@ namespace ghost {
 
     std::vector<Subpath> subpathDataList;
     TovePathRef tovePath;
+    std::vector<ToveSubpathRef> toveSubpaths;
 
     PathData() {
       tovePath.ptr = NULL;
+    }
+
+    ~PathData() {
+      for (auto &subpath : toveSubpaths) {
+        ReleaseSubpath(subpath);
+      }
+      ReleasePath(tovePath);
     }
 
     void read(lua_State *L, int index) {
@@ -401,13 +411,14 @@ namespace ghost {
 
   class ToveGraphicsHolder {
   public:
-    ToveGraphicsRef toveGraphics;
-    ToveNameRef toveName;
-    ToveMeshRef toveMesh;
-    graphics::Mesh *loveMesh;
-    data::ByteData *vData;
+    ToveGraphicsRef toveGraphics { nullptr };
+    ToveNameRef toveName { nullptr };
+    ToveMeshRef toveMesh { nullptr };
+    ToveTesselatorRef toveTess { nullptr };
+    std::unique_ptr<graphics::Mesh> loveMesh;
+    std::unique_ptr<data::ByteData> vData;
     size_t iDataSize = 0;
-    data::ByteData *iData;
+    std::unique_ptr<data::ByteData> iData;
 
     ToveGraphicsHolder() {
       toveGraphics = NewGraphics(NULL, "px", 72);
@@ -415,6 +426,13 @@ namespace ghost {
 
       toveMesh.ptr = NULL;
       loveMesh = NULL;
+    }
+
+    ~ToveGraphicsHolder() {
+      ReleaseTesselator(toveTess);
+      ReleaseMesh(toveMesh);
+      ReleaseName(toveName);
+      ReleaseGraphics(toveGraphics);
     }
 
     void addPath(TovePathRef path) {
@@ -438,7 +456,7 @@ namespace ghost {
       size_t size = indexCount * sizeof(ToveVertexIndex);
 
       if (size != iDataSize) {
-        iData = data::DataModule::instance.newByteData(size);
+        iData = std::unique_ptr<data::ByteData>(data::DataModule::instance.newByteData(size));
         iDataSize = size;
       }
 
@@ -481,12 +499,13 @@ namespace ghost {
       graphics::Graphics *instance = Module::getInstance<graphics::Graphics>(Module::M_GRAPHICS);
 
       // TODO: double check that USAGE_STATIC is correct
-      loveMesh = instance->newMesh(
-          vertexFormat, vertexCount, primitiveType, graphics::vertex::USAGE_STATIC);
+      loveMesh = std::unique_ptr<graphics::Mesh>(instance->newMesh(
+          vertexFormat, vertexCount, primitiveType, graphics::vertex::USAGE_STATIC));
 
       int vertexByteSize = 3 * sizeof(float);
       // love.data.newByteData(n * self._vertexByteSize)
-      vData = data::DataModule::instance.newByteData((size_t)vertexCount * vertexByteSize);
+      vData = std::unique_ptr<data::ByteData>(
+          data::DataModule::instance.newByteData((size_t)vertexCount * vertexByteSize));
 
       updateVertices();
       updateTriangles();
@@ -499,8 +518,8 @@ namespace ghost {
         toveName = NewName("unnamed");
         toveMesh = NewColorMesh(toveName);
 
-        ToveTesselatorRef tess = NewAdaptiveTesselator(1024, 8);
-        TesselatorTessGraphics(tess, toveGraphics, toveMesh, 15);
+        toveTess = NewAdaptiveTesselator(1024, 8);
+        TesselatorTessGraphics(toveTess, toveGraphics, toveMesh, 15);
 
         getToveMesh();
       }
@@ -515,7 +534,7 @@ namespace ghost {
 
 
       // love.graphics.draw mesh
-      instance->draw(loveMesh, Matrix4());
+      instance->draw(loveMesh.get(), Matrix4());
 
       // love.graphics.setShader nil
       instance->setShader();

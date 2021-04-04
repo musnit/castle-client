@@ -71,6 +71,7 @@ void DrawData::makeSubpathsFromSubpathData(PathData *pathData) {
   for (size_t i = 0; i < pathData->subpathDataList.size(); i++) {
 	auto subpathData = pathData->subpathDataList[i];
 	auto subpath = NewSubpath();
+	pathData->toveSubpaths.push_back(subpath);
 	PathAddSubpath(pathData->tovePath, subpath);
 	if (subpathData.type == line) {
 		SubpathMoveTo(subpath, subpathData.p1.x, subpathData.p1.y);
@@ -259,9 +260,13 @@ void DrawData::updatePathDataRendering(PathData *pathData) {
   }
   TovePathRef path = NewPath(NULL);
   if (pathData->color) {
-	  PathSetLineColor(path, NewColor(pathData->color->data[0], pathData->color->data[1], pathData->color->data[2], 1));
+		auto col = NewColor(pathData->color->data[0], pathData->color->data[1], pathData->color->data[2], 1);
+	  PathSetLineColor(path, col);
+		ReleasePaint(col);
   } else {
-	  PathSetLineColor(path, NewColor(lineColor.data[0], lineColor.data[1], lineColor.data[2], 1));
+		auto col = NewColor(lineColor.data[0], lineColor.data[1], lineColor.data[2], 1);
+	  PathSetLineColor(path, col);
+		ReleasePaint(col);
   }
 	
 	PathSetLineWidth(path, DRAW_LINE_WIDTH);
