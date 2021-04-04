@@ -148,11 +148,11 @@ inline const Actor &Scene::getActor(ActorId actorId) const {
 }
 
 inline Actor *Scene::maybeGetActor(ActorId actorId) {
-  return registry.try_get<Actor>(actorId);
+  return registry.valid(actorId) ? registry.try_get<Actor>(actorId) : nullptr;
 }
 
 inline const Actor *Scene::maybeGetActor(ActorId actorId) const {
-  return registry.try_get<Actor>(actorId);
+  return registry.valid(actorId) ? registry.try_get<Actor>(actorId) : nullptr;
 }
 
 template<typename F>
