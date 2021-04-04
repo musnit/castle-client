@@ -300,7 +300,7 @@ int DrawData::getRealFrameIndexForLayerId(DrawDataLayerId layerId, int frame) {
 DrawDataLayer* DrawData::layerForId(DrawDataLayerId id) {
   for (size_t i = 0; i < layers.size(); i++) {
 	if (layers[i]->id == id) {
-	  return layers[i];
+	  return layers[i].get();
 	}
   }
   
@@ -309,7 +309,7 @@ throw;
 
 DrawDataFrame* DrawData::currentLayerFrame() {
   auto realFrame = getRealFrameIndexForLayerId(selectedLayer()->id, selectedFrame);
-  return selectedLayer()->frames[realFrame];
+  return selectedLayer()->frames[realFrame].get();
 }
 
 PathDataList* DrawData::currentPathDataList() {
@@ -515,9 +515,9 @@ Bounds DrawData::getBounds(int frame) {
   }
   std::optional<Bounds> bounds = std::nullopt;
   for (size_t l = 0; l < layers.size(); l++) {
-	auto layer = layers[l];
+	auto layer = layers[l].get();
 	auto realFrame = getRealFrameIndexForLayerId(layer->id, frame);
-	auto frame = layer->frames[realFrame];
+	auto frame = layer->frames[realFrame].get();
 	bounds = frame->getPathDataBounds(bounds);
   }
   framesBounds[frame] = bounds;
@@ -882,7 +882,7 @@ void DrawData::render(std::optional<AnimationComponentProperties> componentPrope
   for (size_t l = 0; l < layers.size(); l++) {
 	if (layers[l]->isVisible) {
 	  auto realFrame = getRealFrameIndexForLayerId(layers[l]->id, frameIdx);
-	  auto frame = layers[l]->frames[realFrame];
+	  auto frame = layers[l]->frames[realFrame].get();
 	  frame->renderFill();
 	  frame->graphics()->draw();
 	}

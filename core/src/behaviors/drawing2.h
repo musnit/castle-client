@@ -11,7 +11,7 @@ struct Drawing2Component : BaseComponent {
     PROP(std::string, drawData) = "";
   } props;
 
-  love::DrawData *drawData = NULL;
+  std::unique_ptr<love::DrawData> drawData;
 };
 
 class Drawing2Behavior : public BaseBehavior<Drawing2Behavior, Drawing2Component> {

@@ -12,6 +12,7 @@
 
 #include <stdio.h>
 #include <functional>
+#include <memory>
 
 #include "GhostTypes.hpp"
 
@@ -26,11 +27,11 @@ namespace ghost {
     PathDataList pathDataList;
     Bounds fillImageBounds;
     bool _graphicsNeedsReset = true;
-    ToveGraphicsHolder *_graphics = NULL;
+    std::unique_ptr<ToveGraphicsHolder> _graphics;
     DrawData *_parent;
-    image::ImageData *fillImageData = NULL;
-    graphics::Image *fillImage = NULL;
-    graphics::Canvas *pathsCanvas = NULL;
+    std::unique_ptr<image::ImageData> fillImageData;
+    std::unique_ptr<graphics::Image> fillImage;
+    std::unique_ptr<graphics::Canvas> pathsCanvas;
     std::optional<std::string> fillPng;
 
     void read(lua_State *L, int index) {
@@ -113,7 +114,7 @@ namespace ghost {
     std::string title;
     DrawDataLayerId id;
     bool isVisible;
-    std::vector<DrawDataFrame *> frames;
+    std::vector<std::unique_ptr<DrawDataFrame>> frames;
 
     void read(lua_State *L, int index) {
       GHOST_READ_STRING(title)
@@ -128,9 +129,9 @@ namespace ghost {
       isVisible = archive.boolean("isVisible", true);
       archive.arr("frames", [&]() {
         for (auto i = 0; i < archive.size(); i++) {
-          DrawDataFrame *frame = new DrawDataFrame();
+          auto frame = std::make_unique<DrawDataFrame>();
           archive.obj(i, *frame);
-          frames.push_back(frame);
+          frames.push_back(std::move(frame));
         }
       });
     }

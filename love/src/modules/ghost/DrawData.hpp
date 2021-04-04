@@ -71,7 +71,7 @@ public:
 	std::vector<std::optional<Bounds>> framesBounds;
 	DrawDataLayerId selectedLayerId;
 	int selectedFrame;
-	std::vector<DrawDataLayer *> layers;
+	std::vector<std::unique_ptr<DrawDataLayer>> layers;
 	bool _layerDataChanged;
 	
 	DrawData(lua_State *L, int index) {
@@ -120,10 +120,10 @@ public:
 		selectedFrame = archive.num("selectedFrame", 0);
 		archive.arr("layers", [&]() {
 			for (auto i = 0; i < archive.size(); i++) {
-				DrawDataLayer *layer = new DrawDataLayer();
+				auto layer = std::make_unique<DrawDataLayer>();
 				archive.obj(i, *layer);
 				layer->setParent(this);
-				layers.push_back(layer);
+				layers.push_back(std::move(layer));
 			}
 		});
 	}

@@ -7,7 +7,7 @@ void Drawing2Behavior::handleEnableComponent(ActorId actorId, Drawing2Component 
   fmt::print("here '{}'\n", component.props.drawData());
   Archive2 archive = Archive2::fromString(component.props.drawData().c_str());
   archive.read([&](Archive2::Reader &r) {
-    component.drawData = new love::DrawData(r);
+    component.drawData = std::make_unique<love::DrawData>(r);
   });
 }
 
