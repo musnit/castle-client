@@ -107,9 +107,9 @@
       lua_pushnumber(L, arrayIndex);                                                               \
       lua_gettable(L, tableIndex);                                                                 \
       if (lua_istable(L, -1)) {                                                                    \
-        type *item = new type();                                                                   \
+        auto item = std::make_unique<type>();                                                      \
         item->read(L, lua_gettop(L));                                                              \
-        arg.push_back(item);                                                                       \
+        arg.push_back(std::move(item));                                                            \
       } else {                                                                                     \
         break;                                                                                     \
       }                                                                                            \
