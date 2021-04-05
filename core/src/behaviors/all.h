@@ -44,9 +44,9 @@ public:
   void byName(const char *name, F &&f) const;
 
   template<typename F>
-  void forEachBehavior(F &&f);
+  void forEach(F &&f);
   template<typename F>
-  void forEachBehavior(F &&f) const;
+  void forEach(F &&f) const;
 
 
 private:
@@ -93,7 +93,7 @@ const Behavior &AllBehaviors::byType() const {
 template<typename F>
 void AllBehaviors::byName(const char *name, F &&f) {
   const auto nameHash = entt::hashed_string(name).value();
-  forEachBehavior([&](auto &behavior) {
+  forEach([&](auto &behavior) {
     constexpr auto behaviorName = std::remove_reference_t<decltype(behavior)>::name;
     constexpr auto behaviorNameHash = entt::hashed_string(behaviorName).value();
     if (nameHash == behaviorNameHash && !std::strcmp(name, behaviorName)) {
@@ -105,7 +105,7 @@ void AllBehaviors::byName(const char *name, F &&f) {
 template<typename F>
 void AllBehaviors::byName(const char *name, F &&f) const {
   const auto nameHash = entt::hashed_string(name).value();
-  forEachBehavior([&](auto &behavior) {
+  forEach([&](auto &behavior) {
     constexpr auto behaviorName = std::remove_reference_t<decltype(behavior)>::name;
     constexpr auto behaviorNameHash = entt::hashed_string(behaviorName).value();
     if (nameHash == behaviorNameHash && !std::strcmp(name, behaviorName)) {
@@ -115,7 +115,7 @@ void AllBehaviors::byName(const char *name, F &&f) const {
 }
 
 template<typename F>
-void AllBehaviors::forEachBehavior(F &&f) {
+void AllBehaviors::forEach(F &&f) {
   std::apply(
       [&](auto &&...args) {
         (f(args), ...);
@@ -124,7 +124,7 @@ void AllBehaviors::forEachBehavior(F &&f) {
 }
 
 template<typename F>
-void AllBehaviors::forEachBehavior(F &&f) const {
+void AllBehaviors::forEach(F &&f) const {
   std::apply(
       [&](auto &&...args) {
         (f(args), ...);

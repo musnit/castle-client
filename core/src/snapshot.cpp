@@ -122,7 +122,7 @@ Scene Snapshot::toScene() {
           });
 
           // After all components are loaded, call enable handlers in behavior order
-          scene.getBehaviors().forEachBehavior([&](auto &behavior) {
+          scene.getBehaviors().forEach([&](auto &behavior) {
             if constexpr (Handlers::hasEnableComponent<decltype(behavior)>) {
               if (auto component = behavior.maybeGetComponent(actorId);
                   component && !component->disabled) {

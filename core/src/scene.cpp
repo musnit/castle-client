@@ -37,7 +37,7 @@ void Scene::removeActor(ActorId actorId) {
     fmt::print("removeActor: no such actor\n");
     return;
   }
-  getBehaviors().forEachBehavior([&](auto &behavior) {
+  getBehaviors().forEach([&](auto &behavior) {
     if constexpr (Handlers::hasDisableComponent<decltype(behavior)>) {
       if (auto component = behavior.maybeGetComponent(actorId)) {
         behavior.handleDisableComponent(actorId, *component, true);
@@ -90,7 +90,7 @@ void Scene::update(double dt) {
   }
 
   // Perform behaviors
-  getBehaviors().forEachBehavior([&](auto &behavior) {
+  getBehaviors().forEach([&](auto &behavior) {
     if constexpr (Handlers::hasPerform<decltype(behavior)>) {
       behavior.handlePerform(dt);
     }
@@ -114,7 +114,7 @@ void Scene::draw() const {
 
   // Draw scene
   forEachActorByDrawOrder([&](ActorId actorId, const Actor &actor) {
-    getBehaviors().forEachBehavior([&](auto &behavior) {
+    getBehaviors().forEach([&](auto &behavior) {
       if constexpr (Handlers::hasDrawComponent<decltype(behavior)>) {
         if (auto component = behavior.maybeGetComponent(actorId)) {
           behavior.handleDrawComponent(actorId, *component);
