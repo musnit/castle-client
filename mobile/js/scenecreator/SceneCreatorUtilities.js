@@ -302,10 +302,15 @@ export const makeExpressionSummary = (expression, context, depth = 0) => {
         `The distance from ${fromActor} position to ${toActor} position`
       );
     }
-    case 'actor angle':
+    case 'actor angle': {
       const fromActor = makeActorRefSummary(expression.params.fromActor),
         toActor = makeActorRefSummary(expression.params.toActor);
       return maybeExpressionParens(`The angle from ${fromActor} position to ${toActor} position`);
+    }
+    case 'angle of motion': {
+      const actorRef = makeActorRefSummary(expression.params.actorRef);
+      return maybeExpressionParens(`${actorRef}: angle of motion`);
+    }
   }
   return null;
 };
