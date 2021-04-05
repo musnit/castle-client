@@ -3,31 +3,28 @@
 #include "behaviors/all.h"
 
 
-void Drawing2Behavior::handleEnableComponent(ActorId actorId, Drawing2Component &component) {
-  fmt::print("here '{}'\n", component.props.drawData());
-  Archive2 archive = Archive2::fromString(component.props.drawData().c_str());
-  archive.read([&](Archive2::Reader &r) {
-    component.drawData = std::make_unique<love::DrawData>(r);
+//
+// Read, write
+//
+
+void Drawing2Behavior::handleReadComponent(
+    ActorId actorId, Drawing2Component &component, Reader &reader) {
+  reader.obj("drawData", [&]() {
+    component.drawData = std::make_unique<love::DrawData>(reader);
   });
 }
+
 
 //
 // Draw
 //
-
 
 void Drawing2Behavior::handleDrawComponent(
     ActorId actorId, const Drawing2Component &component) const {
   if (component.drawData) {
     lv.graphics.push();
 
-    love::Colorf color;
-    color.r = 1.0;
-    color.g = 1.0;
-    color.b = 1.0;
-    color.a = 1.0;
-    lv.graphics.setColor(color);
-
+    lv.graphics.setColor(love::Colorf(1, 1, 1, 1));
     component.drawData->render(std::nullopt);
 
     lv.graphics.pop();

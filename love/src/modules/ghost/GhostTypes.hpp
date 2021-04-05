@@ -17,7 +17,7 @@
 #include "tove2d/src/cpp/interface.h"
 #include "graphics/Graphics.h"
 #include "data/DataModule.h"
-#include "archive2.h"
+#include "archive.h"
 
 #define DRAW_MAX_SIZE 10.0
 #define DRAW_LINE_WIDTH 0.2
@@ -155,12 +155,12 @@ namespace ghost {
       GHOST_READ_NUMBER(y, 0)
     }
 
-    void read(Archive2::Reader &archive) {
+    void read(Archive::Reader &archive) {
       x = archive.num("x", 0);
       y = archive.num("y", 0);
     }
 
-    void write(Archive2::Writer &archive) {
+    void write(Archive::Writer &archive) {
       archive.num("x", x);
       archive.num("y", y);
     }
@@ -213,14 +213,14 @@ namespace ghost {
   struct Color {
     float data[4];
 
-    void read(Archive2::Reader &obj) {
+    void read(Archive::Reader &obj) {
       data[0] = obj.num((unsigned int)0, 1.0);
       data[1] = obj.num(1, 1.0);
       data[2] = obj.num(2, 1.0);
       data[3] = obj.num(3, 1.0);
     }
 
-    void write(Archive2::Writer &archive) {
+    void write(Archive::Writer &archive) {
       archive.num(data[0]);
       archive.num(data[1]);
       archive.num(data[2]);
@@ -307,7 +307,7 @@ namespace ghost {
       GHOST_READ_BOOL(isTransparent, false)
     }
 
-    void read(Archive2::Reader &archive) {
+    void read(Archive::Reader &archive) {
       archive.arr("p", [&]() {
         points.resize(archive.size() / 2);
         for (auto i = 0; i < archive.size(); i += 2) {
@@ -334,7 +334,7 @@ namespace ghost {
       isTransparent = archive.boolean("isTransparent", false);
     }
 
-    void write(Archive2::Writer &archive) {
+    void write(Archive::Writer &archive) {
       archive.arr("p", [&]() {
         for (size_t i = 0; i < points.size(); i++) {
           archive.num(points[i].x);
@@ -370,14 +370,14 @@ namespace ghost {
       GHOST_READ_NUMBER(maxY, 0)
     }
 
-    void read(Archive2::Reader &archive) {
+    void read(Archive::Reader &archive) {
       minX = archive.num("minX", 0);
       maxX = archive.num("maxX", 0);
       minY = archive.num("minY", 0);
       maxY = archive.num("maxY", 0);
     }
 
-    void write(Archive2::Writer &archive) {
+    void write(Archive::Writer &archive) {
       archive.num("minX", minX);
       archive.num("maxX", maxX);
       archive.num("minY", minY);

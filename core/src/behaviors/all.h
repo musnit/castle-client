@@ -62,7 +62,7 @@ private:
     SlowdownBehavior,
     SpeedLimitBehavior,
     SlidingBehavior,
-    DebugDrawBehavior,
+    //DebugDrawBehavior,
     Drawing2Behavior
 #ifdef CASTLE_ENABLE_TESTS
     , TestBehavior

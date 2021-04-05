@@ -21,7 +21,7 @@ public:
 
   using BaseBehavior::BaseBehavior;
 
-  void handleEnableComponent(ActorId actorId, Drawing2Component &component);
+  void handleReadComponent(ActorId actorId, Drawing2Component &component, Reader &reader);
   void handleDrawComponent(ActorId actorId, const Drawing2Component &component) const;
 
 private:

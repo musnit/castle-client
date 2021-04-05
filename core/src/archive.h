@@ -1,6 +1,20 @@
 #pragma once
 
-#include "precomp.h"
+// No `#include "precomp.h"` so we can use this in Ghost
+
+#include <fstream>
+
+#include "rapidjson/document.h"
+#include "rapidjson/istreamwrapper.h"
+#include "rapidjson/ostreamwrapper.h"
+#include "rapidjson/prettywriter.h"
+#include "rapidjson/writer.h"
+namespace json = rapidjson;
+
+#include "entt/core/hashed_string.hpp"
+
+#include "common/Color.h"
+
 #include "props.h"
 
 
@@ -98,9 +112,9 @@ public:
   // By array index
 
   // Returned indexed member of given type if exists, else return default
-  bool boolean(unsigned int i, bool def);
-  double num(unsigned int i, double def);
-  const char *str(unsigned int i, const char *def);
+  bool boolean(unsigned int i, bool def = false);
+  double num(unsigned int i, double def = 0);
+  const char *str(unsigned int i, const char *def = "");
   template<typename F>
   void arr(unsigned int i, F &&f); // Enter sub-array at index if exists
   template<typename F>
@@ -145,7 +159,8 @@ private:
   template<typename T, typename = void>
   static constexpr auto hasRead = false;
   template<typename T>
-  static constexpr auto hasRead<T, std::void_t<decltype(&std::remove_reference_t<T>::read)>> = true;
+  static constexpr auto hasRead<T,
+      decltype(std::declval<std::remove_reference_t<T>>().read(std::declval<Reader &>()))> = true;
 
   template<typename F>
   void enter(const json::Value *child, F &&f);

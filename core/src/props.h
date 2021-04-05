@@ -1,6 +1,10 @@
 #pragma once
 
-#include "precomp.h"
+// No `#include "precomp.h"` so we can use this in Ghost
+
+#include "entt/core/hashed_string.hpp"
+
+#include <boost/pfr.hpp>
 
 
 struct PropAttribs {

@@ -7,6 +7,7 @@ Checks: "-*,\
   -performance-noexcept-move-constructor,\
   portability-*,\
   bugprone-*,\
+  -bugprone-macro-parentheses,\
   -bugprone-infinite-loop,\
   -bugprone-exception-escape,\
   misc-*,\
@@ -25,6 +26,7 @@ Checks: "-*,\
   -cppcoreguidelines-avoid-c-arrays,\
   google-explicit-constructor,\
   modernize-*,\
+  -modernize-deprecated-headers,\
   -modernize-avoid-c-arrays,\
   -modernize-use-nodiscard,\
   -modernize-use-trailing-return-type"

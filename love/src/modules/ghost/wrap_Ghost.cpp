@@ -55,8 +55,8 @@ namespace ghost {
     StrongRef<DrawData> i;
     DrawData *d;
 
-    Archive2 archive = Archive2::fromString(json);
-    archive.read([&](Archive2::Reader &r) {
+    Archive archive = Archive::fromJson(json);
+    archive.read([&](Archive::Reader &r) {
       d = new DrawData(r);
     });
 
@@ -64,12 +64,12 @@ namespace ghost {
     luax_pushtype(L, i);
 
     // test writing
-    Archive2 archive2;
-    archive2.write([&](Archive2::Writer &w) {
+    Archive archive2;
+    archive2.write([&](Archive::Writer &w) {
       d->write(w);
     });
 
-    std::string output = archive2.toString();
+    std::string output = archive2.toJson();
 
     return 1;
   }

@@ -43,7 +43,7 @@ namespace ghost {
       deserializeFillAndPreview();
     }
 
-    void read(Archive2::Reader &archive) {
+    void read(Archive::Reader &archive) {
       isLinked = archive.boolean("isLinked", false);
       archive.arr("pathDataList", [&]() {
         for (auto i = 0; i < archive.size(); i++) {
@@ -59,7 +59,7 @@ namespace ghost {
       deserializeFillAndPreview();
     }
 
-    void write(Archive2::Writer &archive) {
+    void write(Archive::Writer &archive) {
       archive.boolean("isLinked", isLinked);
       archive.arr("pathDataList", [&]() {
         for (size_t i = 0; i < pathDataList.size(); i++) {
@@ -123,7 +123,7 @@ namespace ghost {
       GHOST_READ_POINTER_VECTOR(frames, DrawDataFrame)
     }
 
-    void read(Archive2::Reader &archive) {
+    void read(Archive::Reader &archive) {
       title = archive.str("title", "");
       id = archive.str("id", "");
       isVisible = archive.boolean("isVisible", true);
@@ -136,7 +136,7 @@ namespace ghost {
       });
     }
 
-    void write(Archive2::Writer &archive) {
+    void write(Archive::Writer &archive) {
       archive.str("title", title);
       archive.str("id", id);
       archive.boolean("isVisible", isVisible);

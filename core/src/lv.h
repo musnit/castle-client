@@ -2,6 +2,8 @@
 
 #include "precomp.h"
 
+#include <modules/ghost/DrawData.hpp>
+
 
 namespace love {
 // Bring a bunch of Love symbols into the top level of its namespace

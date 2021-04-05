@@ -134,9 +134,9 @@ Scene Snapshot::toScene() {
       });
 
       // Debug
-      if (scene.getBehaviors().byType<BodyBehavior>().hasComponent(actorId)) {
-        scene.getBehaviors().byType<DebugDrawBehavior>().addComponent(actorId);
-      }
+      //if (scene.getBehaviors().byType<BodyBehavior>().hasComponent(actorId)) {
+      //  scene.getBehaviors().byType<DebugDrawBehavior>().addComponent(actorId);
+      //}
     });
 
     // Scene-level props

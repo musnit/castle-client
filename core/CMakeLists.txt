@@ -152,6 +152,9 @@ if(YES)
   set(LOVE_SRC ../love/src)
   target_include_directories(castle-love PUBLIC ${LOVE_SRC} ${LOVE_SRC}/libraries ${LOVE_SRC}/modules)
 
+  # archive.h
+  target_include_directories(castle-love PUBLIC src vendor/magic_get/include vendor/entt/src)
+
   # lua
   add_subdirectory(vendor/lua-5.1.5 EXCLUDE_FROM_ALL)
   target_link_libraries(castle-love PUBLIC lua51)
@@ -512,7 +515,6 @@ if(YES)
     ${LOVE_SRC}/libraries/ddsparse/ddsparse.h
 
     # ghost
-    ${LOVE_SRC}/modules/ghost/archive2.h
     ${LOVE_SRC}/modules/ghost/DrawAlgorithms.cpp
     ${LOVE_SRC}/modules/ghost/DrawAlgorithms.hpp
     ${LOVE_SRC}/modules/ghost/DrawData.cpp
