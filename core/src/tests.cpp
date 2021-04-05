@@ -6,6 +6,7 @@
 #include <cassert>
 
 #include "scene.h"
+#include "snapshot.h"
 #include "behaviors/all.h"
 
 
@@ -112,11 +113,26 @@ struct BasicActorManagementTest : Test {
 
 
 //
+// Basic drawing loading
+//
+
+struct BasicDrawingLoadingTest : Test {
+  BasicDrawingLoadingTest() {
+    auto scene = Snapshot::fromFile("assets/test-drawing2.json").toScene();
+
+    // Can query and check component data now. May need to `friend class BasicDrawingLoadingTest` in
+    // `Drawing2Behavior`...
+  }
+};
+
+
+//
 // Constructor, destructor
 //
 
 Tests::Tests() {
   tests.emplace_back(std::make_unique<BasicActorManagementTest>());
+  tests.emplace_back(std::make_unique<BasicDrawingLoadingTest>());
   fmt::print("all tests passed\n");
 }
 
