@@ -99,6 +99,18 @@ inline Touch::Touch(
     , loveTouchId(loveTouchId_) {
 }
 
+inline int Gesture::getCount() const {
+  return count;
+}
+
+inline int Gesture::getMaxCount() const {
+  return maxCount;
+}
+
+inline bool Gesture::isAllReleased() const {
+  return allReleased;
+}
+
 inline const Touch &Gesture::getTouch(TouchId touchId) const {
   return registry.get<Touch>(touchId);
 }

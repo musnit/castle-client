@@ -145,8 +145,14 @@ void Engine::draw() {
   tests.draw();
 #endif
 
-  auto fps = fmt::format("fps: {}", lv.timer.getFPS());
+  auto &gesture = scene.getGesture();
+  auto message = fmt::format(R"(fps: {}
+gesture:
+  count: {}
+  maxCount: {}
+  allReleased: {})",
+      lv.timer.getFPS(), gesture.getCount(), gesture.getMaxCount(), gesture.isAllReleased());
   lv.graphics.setColor(love::Colorf(0, 0, 0, 1));
   lv.graphics.print(
-      { { fps, { 1, 1, 1, 1 } } }, debugFont.get(), love::Matrix4(20, 20, 0, 1, 1, 0, 0, 0, 0));
+      { { message, { 1, 1, 1, 1 } } }, debugFont.get(), love::Matrix4(20, 20, 0, 1, 1, 0, 0, 0, 0));
 }
