@@ -38,5 +38,5 @@ private:
   const Archive archive;
 
 
-  Snapshot(Archive archive_);
+  explicit Snapshot(Archive archive_);
 };

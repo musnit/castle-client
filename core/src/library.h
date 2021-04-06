@@ -22,7 +22,7 @@ private:
 
   json::Value jsonValue;
 
-  LibraryEntry(json::Value jsonValue);
+  explicit LibraryEntry(json::Value jsonValue);
 };
 
 class Library {

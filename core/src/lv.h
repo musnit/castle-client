@@ -35,7 +35,7 @@ class Lv {
   // internally. Also includes simple Love-related utilities.
 
   struct RegisterModule {
-    RegisterModule(love::Module &mod) {
+    explicit RegisterModule(love::Module &mod) {
       love::Module::registerInstance(&mod);
     }
   };
