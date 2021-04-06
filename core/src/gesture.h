@@ -31,9 +31,10 @@ private:
   friend class Gesture;
 
   love::int64 loveTouchId;
+  bool isMouse;
 
   Touch(float screenX_, float screenY_, float x_, float y_, double pressTime_,
-      love::int64 loveTouchId_); // Private so only `Gesture` can create
+      love::int64 loveTouchId_, bool isMouse_); // Private so only `Gesture` can create
 };
 
 class Scene; // Forward declare because `Scene` contains us
@@ -80,6 +81,9 @@ private:
   int count = 0;
   int maxCount = 0;
   bool allReleased = false;
+
+
+  void updateTouch(float screenX, float screenY, love::int64 loveTouchId, bool isMouse);
 };
 
 
@@ -89,14 +93,15 @@ inline Gesture::Gesture(Scene &scene_)
     : scene(scene_) {
 }
 
-inline Touch::Touch(
-    float screenX_, float screenY_, float x_, float y_, double pressTime_, love::int64 loveTouchId_)
+inline Touch::Touch(float screenX_, float screenY_, float x_, float y_, double pressTime_,
+    love::int64 loveTouchId_, bool isMouse_)
     : screenX(screenX_)
     , screenY(screenY_)
     , x(x_)
     , y(y_)
     , pressTime(pressTime_)
-    , loveTouchId(loveTouchId_) {
+    , loveTouchId(loveTouchId_)
+    , isMouse(isMouse_) {
 }
 
 inline int Gesture::getCount() const {
