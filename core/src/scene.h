@@ -5,6 +5,7 @@
 #include "lv.h"
 #include "library.h"
 #include "props.h"
+#include "gesture.h"
 
 
 class AllBehaviors; // Forward declaration otherwise this would be circular...
@@ -88,6 +89,17 @@ public:
   const Library &getLibrary() const;
 
 
+  // View transform
+
+  const love::Transform &getViewTransform() const;
+  love::Vector2 inverseViewTransformPoint(const love::Vector2 &point) const;
+
+
+  // Gesture
+
+  const Gesture &getGesture() const;
+
+
   // Scene-level props
 
   struct Props {
@@ -117,6 +129,10 @@ private:
   std::unique_ptr<AllBehaviors> behaviors;
 
   Library library; // Library instance maintained at scene level for now
+
+  mutable love::Transform viewTransform;
+
+  Gesture gesture { *this };
 
 
   void ensureDrawOrderSort() const;
@@ -201,4 +217,16 @@ inline Library &Scene::getLibrary() {
 
 inline const Library &Scene::getLibrary() const {
   return library;
+}
+
+inline const love::Transform &Scene::getViewTransform() const {
+  return viewTransform;
+}
+
+inline love::Vector2 Scene::inverseViewTransformPoint(const love::Vector2 &point) const {
+  return viewTransform.inverseTransformPoint(point);
+}
+
+inline const Gesture &Scene::getGesture() const {
+  return gesture;
 }

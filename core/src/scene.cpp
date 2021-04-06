@@ -74,6 +74,9 @@ void Scene::ensureDrawOrderSort() const {
 //
 
 void Scene::update(double dt) {
+  // Update gesture first so behaviors can read it
+  gesture.update();
+
   // Step physics. Do this before behavior performance to allow behaviors to make changes after.
   {
     constexpr auto updateRate = 120.0, updatePeriod = 1 / updateRate;
@@ -109,8 +112,10 @@ void Scene::draw() const {
 
   // Temporary view transform
   constexpr auto viewWidth = 10.0, viewHeight = 7.0 * viewWidth / 5.0;
-  lv.graphics.scale(800.0 / viewWidth, 800.0 / viewWidth);
-  lv.graphics.translate(0.5 * viewWidth, 0.5 * viewHeight);
+  viewTransform.reset();
+  viewTransform.scale(800.0 / viewWidth, 800.0 / viewWidth);
+  viewTransform.translate(0.5 * viewWidth, 0.5 * viewHeight);
+  lv.graphics.applyTransform(&viewTransform);
 
   // Draw scene
   forEachActorByDrawOrder([&](ActorId actorId, const Actor &actor) {
@@ -121,6 +126,12 @@ void Scene::draw() const {
         }
       }
     });
+  });
+
+  // Debug draw gesture
+  lv.graphics.setColor({ 1, 0, 0, 1 });
+  getGesture().forEachTouch([&](TouchId touchId, const Touch &touch) {
+    lv.graphics.circle(love::Graphics::DRAW_FILL, touch.x, touch.y, 0.5);
   });
 
   lv.graphics.pop();
