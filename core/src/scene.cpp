@@ -78,12 +78,14 @@ void Scene::update(double dt) {
   gesture.update();
 
   // Step physics. Do this before behavior performance to allow behaviors to make changes after.
+  // We're using a fixed timestep (see https://gafferongames.com/post/fix_your_timestep/).
   {
+    constexpr auto maxSteps = 60;
     constexpr auto updateRate = 120.0, updatePeriod = 1 / updateRate;
     physicsUpdateTimeRemaining += dt;
     auto nSteps = 0;
     while (physicsUpdateTimeRemaining >= updatePeriod) {
-      if (nSteps > 60) {
+      if (nSteps > maxSteps) {
         physicsUpdateTimeRemaining = 0;
         break;
       }

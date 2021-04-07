@@ -43,51 +43,49 @@ void SlingBehavior::handleDrawOverlay() const {
     return; // Nothing to draw if no components
   }
   getGesture().withSingleTouch([&](const Touch &touch) {
-    if (touch.movedNear) {
-      auto drag = touch.initialPos - touch.pos;
-      auto dragLen = drag.getLength();
-      if (dragLen > 0) {
-        if (dragLen > maxDragLength) {
-          drag *= maxDragLength / dragLen;
-          dragLen = maxDragLength;
-        }
-        auto dragDir = drag / dragLen;
-
-        lv.graphics.push();
-
-        // TODO(nikki): Pull view scale and pixel scale into `Scene` utility methods
-        auto viewScale = getScene().getViewTransform().getMatrix().getElements()[0];
-        auto pixelScale = float(lv.window.getDPIScale() / viewScale);
-        lv.graphics.setLineWidth(1.25f * pixelScale);
-
-        // Circle with solid outline and transparent fill
-        auto circleRadius = 18 * pixelScale;
-        lv.graphics.setColor({ 1, 1, 1, 0.8 });
-        lv.graphics.circle(
-            love::Graphics::DRAW_LINE, touch.initialPos.x, touch.initialPos.y, circleRadius);
-        lv.graphics.setColor({ 1, 1, 1, 0.3 });
-        lv.graphics.circle(
-            love::Graphics::DRAW_FILL, touch.initialPos.x, touch.initialPos.y, circleRadius);
-
-        // Line, triangle
-        constexpr float lineLengthMultiplier = 0.8;
-        auto triangleLength = 25 * pixelScale;
-        auto triangleWidth = 10 * pixelScale;
-        auto end = touch.initialPos + drag * lineLengthMultiplier;
-        auto dirTL = dragDir * triangleLength;
-        auto dirTW = dragDir * triangleWidth;
-        lv.graphics.setColor({ 1, 1, 1, 0.8 });
-        std::array line { touch.initialPos, end - dirTL };
-        lv.graphics.polyline(line.data(), line.size());
-        std::array triangle {
-          end,
-          love::Vector2(end.x - dirTL.x - dirTW.y, end.y - dirTL.y + dirTW.x),
-          love::Vector2(end.x - dirTL.x + dirTW.y, end.y - dirTL.y - dirTW.x),
-        };
-        lv.graphics.polygon(love::Graphics::DRAW_FILL, triangle.data(), triangle.size(), false);
-
-        lv.graphics.pop();
+    auto drag = touch.initialPos - touch.pos;
+    auto dragLen = drag.getLength();
+    if (dragLen > 0) {
+      if (dragLen > maxDragLength) {
+        drag *= maxDragLength / dragLen;
+        dragLen = maxDragLength;
       }
+      auto dragDir = drag / dragLen;
+
+      lv.graphics.push();
+
+      // TODO(nikki): Pull view scale and pixel scale into `Scene` utility methods
+      auto viewScale = getScene().getViewTransform().getMatrix().getElements()[0];
+      auto pixelScale = float(lv.window.getDPIScale() / viewScale);
+      lv.graphics.setLineWidth(1.25f * pixelScale);
+
+      // Circle with solid outline and transparent fill
+      auto circleRadius = 18 * pixelScale;
+      lv.graphics.setColor({ 1, 1, 1, 0.8 });
+      lv.graphics.circle(
+          love::Graphics::DRAW_LINE, touch.initialPos.x, touch.initialPos.y, circleRadius);
+      lv.graphics.setColor({ 1, 1, 1, 0.3 });
+      lv.graphics.circle(
+          love::Graphics::DRAW_FILL, touch.initialPos.x, touch.initialPos.y, circleRadius);
+
+      // Line, triangle
+      constexpr float lineLengthMultiplier = 0.8;
+      auto triangleLength = 25 * pixelScale;
+      auto triangleWidth = 10 * pixelScale;
+      auto end = touch.initialPos + drag * lineLengthMultiplier;
+      auto dirTL = dragDir * triangleLength;
+      auto dirTW = dragDir * triangleWidth;
+      lv.graphics.setColor({ 1, 1, 1, 0.8 });
+      std::array line { touch.initialPos, end - dirTL };
+      lv.graphics.polyline(line.data(), line.size());
+      std::array triangle {
+        end,
+        love::Vector2(end.x - dirTL.x - dirTW.y, end.y - dirTL.y + dirTW.x),
+        love::Vector2(end.x - dirTL.x + dirTW.y, end.y - dirTL.y - dirTW.x),
+      };
+      lv.graphics.polygon(love::Graphics::DRAW_FILL, triangle.data(), triangle.size(), false);
+
+      lv.graphics.pop();
     }
   });
 }

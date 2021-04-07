@@ -284,7 +284,7 @@ inline Reader::Reader(const json::Value &cur_)
 }
 
 inline bool Reader::has(const char *key) {
-  return cur->IsObject() ? cur->HasMember(key) : false;
+  return cur->IsObject() && find(key) != cur->MemberEnd();
 }
 
 inline int Reader::size() {
