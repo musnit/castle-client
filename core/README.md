@@ -68,6 +68,9 @@ debug one. The resulting 'castle-core' executables end up in 'build/release' or
 'build/debug' and can be used with a profiler or debugger tool. They need to be
 launched with 'core/' as the working directory.
 
+To build and run from Xcode, use `./run.sh xcode` then open
+'build/xcode/castle-core.xcodeproj' and select the castle-core target.
+
 ## Development
 
 If you're contributing changes to the codebase, please take the time to read

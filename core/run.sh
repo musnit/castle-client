@@ -108,6 +108,10 @@ case "$1" in
         ;;
     esac
     ;;
+  xcode)
+    $CMAKE -DCMAKE_BUILD_TYPE=Debug -H. -Bbuild/xcode -GXcode
+    $CMAKE --build build/xcode
+    ;;
   lib-release)
     case $PLATFORM in
       lin|macOS)

@@ -7245,8 +7245,15 @@ static void find_core(void) {
 		major = v[10] - '0'; minor = v[12] - '0'; gles = true;
 	}
   // CASTLE: Force GLES2 (WebGL 1) compatibility
+#ifdef __APPLE__
+	#include "TargetConditionals.h"
+#endif
+
+#ifndef TARGET_OS_MAC
   major = 2;
   minor = 0;
+#endif
+
 #ifdef __EMSCRIPTEN__
   gles = true;
 #endif

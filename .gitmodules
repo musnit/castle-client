@@ -16,3 +16,6 @@
 [submodule "core/vendor/rapidjson"]
 	path = core/vendor/rapidjson
 	url = https://github.com/Tencent/rapidjson.git
+[submodule "core/vendor/SDL2"]
+	path = core/vendor/SDL2
+	url = https://github.com/spurious/SDL-mirror.git

@@ -83,7 +83,7 @@ if(NOT MSVC)
 endif()
 
 # Disable exceptions
-if(NOT MSVC)
+if(WEB)
   target_compile_options(castle-core PRIVATE -fno-exceptions)
 endif()
 
@@ -128,6 +128,16 @@ if(WEB)
   target_compile_options(castle-core PRIVATE "SHELL:-s FULL_ES2=1")
   target_link_options(castle-core PRIVATE "SHELL:-s USE_SDL=2")
   target_link_options(castle-core PRIVATE "SHELL:-s FULL_ES2=1")
+elseif(APPLE AND (NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "iOS"))
+  set(SDL_STATIC ON CACHE BOOL "" FORCE)
+  set(SDL_SHARED OFF CACHE BOOL "" FORCE)
+  set(VIDEO_WAYLAND OFF CACHE BOOL "" FORCE)
+  add_subdirectory(vendor/SDL2 SDL2 EXCLUDE_FROM_ALL)
+  target_link_libraries(castle-core PRIVATE SDL2-static)
+  target_include_directories(castle-core PRIVATE vendor/SDL2/include) # To make 'compile_commands.json' work
+  set(THREADS_PREFER_PTHREAD_FLAG ON)
+  find_package(Threads REQUIRED)
+  target_link_libraries(castle-core PRIVATE Threads::Threads)
 else()
   set(SDL_STATIC ON CACHE BOOL "" FORCE)
   set(SDL_SHARED OFF CACHE BOOL "" FORCE)
@@ -168,7 +178,12 @@ if(YES)
   target_link_libraries(castle-love PUBLIC freetype)
 
   # SDL2
-  target_include_directories(castle-love PRIVATE ../ghost-extensions/SDL2-2.0.8/include) # To make 'compile_commands.json' work
+  if(APPLE AND (NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "iOS"))
+    target_include_directories(castle-love PRIVATE vendor/SDL2/include) # To make 'compile_commands.json' work
+  else()
+    target_include_directories(castle-love PRIVATE ../ghost-extensions/SDL2-2.0.8/include) # To make 'compile_commands.json' work
+  endif()
+
   if(WEB)
     target_compile_options(castle-love PRIVATE "SHELL:-s USE_SDL=2")
     target_compile_options(castle-love PRIVATE "SHELL:-s FULL_ES2=1")
@@ -556,6 +571,12 @@ if(YES)
       ${LOVE_SRC}/libraries/glslang/glslang/OSDependent/Windows/main.cpp
       ${LOVE_SRC}/libraries/glslang/glslang/OSDependent/Windows/ossource.cpp
       )
+  elseif(APPLE AND (NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "iOS"))
+    target_sources(castle-love PRIVATE
+      ${LOVE_SRC}/libraries/glslang/glslang/OSDependent/Unix/ossource.cpp
+      ${LOVE_SRC}/common/macosx.mm ${LOVE_SRC}/common/macosx.h
+      ${LOVE_SRC}/libraries/physfs/physfs_platform_apple.m
+    )
   else()
     target_sources(castle-love PRIVATE
       ${LOVE_SRC}/libraries/glslang/glslang/OSDependent/Unix/ossource.cpp
