@@ -20,6 +20,7 @@ void SlingBehavior::handlePerform(double dt) {
       auto drag = touch.initialPos - touch.pos;
       auto dragLen = drag.getLength();
       if (dragLen > maxDragLength) {
+        // Clamp to max drag length
         drag *= maxDragLength / dragLen;
         dragLen = maxDragLength;
       }
@@ -47,6 +48,7 @@ void SlingBehavior::handleDrawOverlay() const {
     auto dragLen = drag.getLength();
     if (dragLen > 0) {
       if (dragLen > maxDragLength) {
+        // Clamp to max drag length
         drag *= maxDragLength / dragLen;
         dragLen = maxDragLength;
       }
@@ -54,9 +56,7 @@ void SlingBehavior::handleDrawOverlay() const {
 
       lv.graphics.push();
 
-      // TODO(nikki): Pull view scale and pixel scale into `Scene` utility methods
-      auto viewScale = getScene().getViewTransform().getMatrix().getElements()[0];
-      auto pixelScale = float(lv.window.getDPIScale() / viewScale);
+      auto pixelScale = getScene().getPixelScale();
       lv.graphics.setLineWidth(1.25f * pixelScale);
 
       // Circle with solid outline and transparent fill

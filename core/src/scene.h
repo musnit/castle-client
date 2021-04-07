@@ -93,6 +93,8 @@ public:
 
   const love::Transform &getViewTransform() const;
   love::Vector2 inverseViewTransformPoint(const love::Vector2 &point) const;
+  float getViewScale() const;
+  float getPixelScale() const;
 
 
   // Gesture
@@ -225,6 +227,14 @@ inline const love::Transform &Scene::getViewTransform() const {
 
 inline love::Vector2 Scene::inverseViewTransformPoint(const love::Vector2 &point) const {
   return viewTransform.inverseTransformPoint(point);
+}
+
+inline float Scene::getViewScale() const {
+  return viewTransform.getMatrix().getElements()[0];
+}
+
+inline float Scene::getPixelScale() const {
+  return float(lv.window.getDPIScale() / getViewScale());
 }
 
 inline const Gesture &Scene::getGesture() const {

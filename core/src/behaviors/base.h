@@ -56,28 +56,21 @@ public:
   bool hasAnyEnabledComponent() const;
 
 
-  // Physics
-
-  b2World &getPhysicsWorld();
-  const b2World &getPhysicsWorld() const;
-  b2Body *getPhysicsBackgroundBody();
-
-
   // Other behaviors
 
   AllBehaviors &getBehaviors();
   const AllBehaviors &getBehaviors() const;
 
 
-  // Gesture
-
-  const Gesture &getGesture() const;
-
-
   // Scene
 
   Scene &getScene();
   const Scene &getScene() const;
+
+
+  // Gesture
+
+  const Gesture &getGesture() const;
 
 
 protected:
@@ -231,21 +224,6 @@ void BaseBehavior<Derived, Component>::forEachEnabledComponent(F &&f) const {
 }
 
 template<typename Derived, typename Component>
-b2World &BaseBehavior<Derived, Component>::getPhysicsWorld() {
-  return scene.getPhysicsWorld();
-}
-
-template<typename Derived, typename Component>
-const b2World &BaseBehavior<Derived, Component>::getPhysicsWorld() const {
-  return scene.getPhysicsWorld();
-}
-
-template<typename Derived, typename Component>
-b2Body *BaseBehavior<Derived, Component>::getPhysicsBackgroundBody() {
-  return scene.getPhysicsBackgroundBody();
-}
-
-template<typename Derived, typename Component>
 AllBehaviors &BaseBehavior<Derived, Component>::getBehaviors() {
   return scene.getBehaviors();
 }
@@ -253,11 +231,6 @@ AllBehaviors &BaseBehavior<Derived, Component>::getBehaviors() {
 template<typename Derived, typename Component>
 const AllBehaviors &BaseBehavior<Derived, Component>::getBehaviors() const {
   return scene.getBehaviors();
-}
-
-template<typename Derived, typename Component>
-const Gesture &BaseBehavior<Derived, Component>::getGesture() const {
-  return scene.getGesture();
 }
 
 template<typename Derived, typename Component>
@@ -270,3 +243,7 @@ const Scene &BaseBehavior<Derived, Component>::getScene() const {
   return scene;
 }
 
+template<typename Derived, typename Component>
+const Gesture &BaseBehavior<Derived, Component>::getGesture() const {
+  return scene.getGesture();
+}

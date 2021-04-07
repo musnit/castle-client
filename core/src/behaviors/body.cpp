@@ -12,7 +12,7 @@ void BodyBehavior::handleEnableComponent(ActorId actorId, BodyComponent &compone
   bodyDef.position = { component.props.x(), component.props.y() };
   bodyDef.angle = component.props.angle();
   bodyDef.gravityScale = 0;
-  component.body = getPhysicsWorld().CreateBody(&bodyDef);
+  component.body = getScene().getPhysicsWorld().CreateBody(&bodyDef);
 
   // Fixtures
   auto widthScale = component.props.widthScale(), heightScale = component.props.heightScale();
@@ -58,7 +58,7 @@ void BodyBehavior::handleEnableComponent(ActorId actorId, BodyComponent &compone
 void BodyBehavior::handleDisableComponent(
     ActorId actorId, BodyComponent &component, bool removeActor) {
   if (component.body) {
-    getPhysicsWorld().DestroyBody(component.body);
+    getScene().getPhysicsWorld().DestroyBody(component.body);
     component.body = nullptr;
   }
 }
