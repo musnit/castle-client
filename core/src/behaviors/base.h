@@ -77,9 +77,9 @@ protected:
   const Component *maybeGetComponent(ActorId actorId) const;
 
   template<typename F>
-  void forEachComponent(F &&f); // `f` must take either `(ActorId, Component &)` or (Component &)
+  void forEachEnabledComponent(F &&f); // `f` takes `(ActorId, Component &)` or (Component &)
   template<typename F>
-  void forEachComponent(F &&f) const;
+  void forEachEnabledComponent(F &&f) const;
 
 
 private:
@@ -179,14 +179,31 @@ const Component *BaseBehavior<Derived, Component>::maybeGetComponent(ActorId act
 
 template<typename Derived, typename Component>
 template<typename F>
-void BaseBehavior<Derived, Component>::forEachComponent(F &&f) {
-  scene.getEntityRegistry().view<Component>().each(std::forward<F>(f));
+void BaseBehavior<Derived, Component>::forEachEnabledComponent(F &&f) {
+  scene.getEntityRegistry().view<Component>().each(([&](ActorId actorId, Component &component) {
+    if (!component.disabled) {
+      if constexpr (std::is_invocable_v<F, ActorId, Component &>) {
+        f(actorId, component);
+      } else {
+        f(component);
+      }
+    }
+  }));
 }
 
 template<typename Derived, typename Component>
 template<typename F>
-void BaseBehavior<Derived, Component>::forEachComponent(F &&f) const {
-  scene.getEntityRegistry().view<const Component>().each(std::forward<F>(f));
+void BaseBehavior<Derived, Component>::forEachEnabledComponent(F &&f) const {
+  scene.getEntityRegistry().view<const Component>().each(
+      ([&](ActorId actorId, const Component &component) {
+        if (!component.disabled) {
+          if constexpr (std::is_invocable_v<F, ActorId, const Component &>) {
+            f(actorId, component);
+          } else {
+            f(component);
+          }
+        }
+      }));
 }
 
 template<typename Derived, typename Component>

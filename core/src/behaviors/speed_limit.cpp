@@ -22,7 +22,7 @@ void SpeedLimitBehavior::handleDisableComponent(
 //
 
 void SpeedLimitBehavior::handlePerform(double dt) {
-  forEachComponent([&](ActorId actorId, SpeedLimitComponent &component) {
+  forEachEnabledComponent([&](ActorId actorId, SpeedLimitComponent &component) {
     if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId)) {
       auto maximumSpeed = component.props.maximumSpeed();
       auto maximumSpeedSquared = maximumSpeed * maximumSpeed;
