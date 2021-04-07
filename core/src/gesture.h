@@ -8,7 +8,9 @@
 using TouchId = entt::entity;
 
 struct Touch {
-  // Data about a single touch in a gesture
+  // Data about a single touch in a gesture. Includes flags for whether the touch was just pressed
+  // or just released this frame, allowing processing gestures using per-frame polling rather than
+  // event subscription.
 
   Touch(const Touch &) = delete; // Prevent accidental copies
   const Touch &operator=(const Touch &) = delete;
@@ -24,8 +26,8 @@ struct Touch {
   love::Vector2 delta { 0, 0 };
   bool pressed = true; // Whether just pressed this frame
   bool released = false; // Whether just released this frame
-  bool movedNear = false;
-  bool movedFar = false;
+  bool movedNear = false; // Whether this touch has moved at all
+  bool movedFar = false; // Whether this touch has moved beyond a certain threshold
   double pressTime; // `lv.timer.getTime()` when pressed
 
 private:
@@ -41,9 +43,9 @@ private:
 class Scene; // Forward declare because `Scene` contains us
 
 class Gesture {
-  // A set of simultaneous touch data (position, time) from first touch press to last touch release
-  // is called a 'gesture'. This module provides methods for accessing information about the
-  // currently active gesture.
+  // A set of simultaneous touches from first touch press to last touch release is called a
+  // 'gesture'. Provides methods for accessing each active touch in the current gesture, along with
+  // information about the gesture as a whole.
   //
   // Each touch can also have additional data attached and queried of any type.
 
@@ -66,7 +68,7 @@ public:
   template<typename F>
   void forEachTouch(F &&f) const; // `f` takes `(TouchId, const Touch &)` or `(const Touch &)`
   template<typename F>
-  void single(F &&f) const; // `forEachTouch(f)` if `getMaxCount() == 1`
+  void withSingleTouch(F &&f) const; // `forEachTouch(f)` if `getMaxCount() == 1`
 
 
   // Update
@@ -124,12 +126,12 @@ inline const Touch &Gesture::getTouch(TouchId touchId) const {
 
 template<typename F>
 inline void Gesture::forEachTouch(F &&f) const {
-  registry.view<const Touch>().each(f);
+  registry.view<const Touch>().each(std::forward<F>(f));
 }
 
 template<typename F>
-inline void Gesture::single(F &&f) const {
+inline void Gesture::withSingleTouch(F &&f) const {
   if (getMaxCount() == 1) {
-    registry.view<const Touch>().each(f);
+    forEachTouch(std::forward<F>(f));
   }
 }

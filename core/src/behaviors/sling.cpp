@@ -14,7 +14,7 @@ void SlingBehavior::handlePerform(double dt) {
   if (!hasAnyEnabledComponent()) {
     return; // Skip gesture logic if no components
   }
-  getGesture().single([&](const Touch &touch) {
+  getGesture().withSingleTouch([&](const Touch &touch) {
     if (touch.released && touch.movedNear) {
       // Apply velocity on release
       auto drag = touch.initialPos - touch.pos;
@@ -42,7 +42,7 @@ void SlingBehavior::handleDrawOverlay() const {
   if (!hasAnyEnabledComponent()) {
     return; // Nothing to draw if no components
   }
-  getGesture().single([&](const Touch &touch) {
+  getGesture().withSingleTouch([&](const Touch &touch) {
     if (touch.movedNear) {
       auto drag = touch.initialPos - touch.pos;
       auto dragLen = drag.getLength();

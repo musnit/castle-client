@@ -357,7 +357,7 @@ void Reader::each(const char *key, F &&f) {
   if (cur->IsObject()) {
     if (auto mem = find(key); mem != cur->MemberEnd()) {
       enter(&mem->value, [&]() {
-        each(f);
+        each(std::forward<F>(f));
       });
     }
   }
@@ -609,7 +609,7 @@ void Reader::enter(const json::Value *child, F &&f) {
   cur = child;
   fallback = nullptr;
 
-  read(f);
+  read(std::forward<F>(f));
 
   // Restore parent state
   cur = parent;
@@ -672,7 +672,7 @@ void Writer::arr(K &&key, F &&f) {
   auto parent = cur;
   auto child = json::Value(json::kArrayType);
   cur = &child;
-  runLambdaOrCallWrite(f);
+  runLambdaOrCallWrite(std::forward<F>(f));
   cur = parent;
   cur->AddMember(makeStr(std::forward<K>(key)), child, alloc);
 }
@@ -682,7 +682,7 @@ void Writer::arr(F &&f) {
   auto parent = cur;
   auto child = json::Value(json::kArrayType);
   cur = &child;
-  runLambdaOrCallWrite(f);
+  runLambdaOrCallWrite(std::forward<F>(f));
   cur = parent;
   cur->PushBack(child, alloc);
 }
@@ -692,7 +692,7 @@ void Writer::obj(K &&key, F &&f) {
   auto parent = cur;
   auto child = json::Value(json::kObjectType);
   cur = &child;
-  runLambdaOrCallWrite(f);
+  runLambdaOrCallWrite(std::forward<F>(f));
   cur = parent;
   cur->AddMember(makeStr(std::forward<K>(key)), child, alloc);
 }
@@ -702,7 +702,7 @@ void Writer::obj(F &&f) {
   auto parent = cur;
   auto child = json::Value(json::kObjectType);
   cur = &child;
-  runLambdaOrCallWrite(f);
+  runLambdaOrCallWrite(std::forward<F>(f));
   cur = parent;
   cur->PushBack(child, alloc);
 }
