@@ -54,7 +54,7 @@ Engine::PreInit::PreInit() {
 //
 
 Engine::Engine()
-    : scene(Snapshot::fromFile("assets/test-motion-sliding.json").toScene()) {
+    : scene(Snapshot::fromFile("assets/test-sling.json").toScene()) {
   // First timer step
   lv.timer.step();
 }

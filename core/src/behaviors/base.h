@@ -53,6 +53,7 @@ public:
   Component &addComponent(ActorId actorId); // Does nothing if already present
   void removeComponent(ActorId actorId); // Does nothing if not present
   bool hasComponent(ActorId actorId) const;
+  bool hasAnyEnabledComponent() const;
 
 
   // Physics
@@ -66,6 +67,17 @@ public:
 
   AllBehaviors &getBehaviors();
   const AllBehaviors &getBehaviors() const;
+
+
+  // Gesture
+
+  const Gesture &getGesture() const;
+
+
+  // Scene
+
+  Scene &getScene();
+  const Scene &getScene() const;
 
 
 protected:
@@ -113,6 +125,7 @@ DEFINE_HANDLER(DisableComponent);
 DEFINE_HANDLER(ReadComponent);
 DEFINE_HANDLER(Perform);
 DEFINE_HANDLER(DrawComponent);
+DEFINE_HANDLER(DrawOverlay);
 
 #undef DEFINE_HANDLER
 }
@@ -145,6 +158,17 @@ void BaseBehavior<Derived, Component>::removeComponent(ActorId actorId) {
 template<typename Derived, typename Component>
 bool BaseBehavior<Derived, Component>::hasComponent(ActorId actorId) const {
   return scene.hasActor(actorId) && scene.getEntityRegistry().has<Component>(actorId);
+}
+
+template<typename Derived, typename Component>
+bool BaseBehavior<Derived, Component>::hasAnyEnabledComponent() const {
+  for (const auto &[actorId, component] :
+      scene.getEntityRegistry().view<const Component>().each()) {
+    if (!component.disabled) {
+      return true;
+    }
+  }
+  return false;
 }
 
 template<typename Derived, typename Component>
@@ -230,3 +254,19 @@ template<typename Derived, typename Component>
 const AllBehaviors &BaseBehavior<Derived, Component>::getBehaviors() const {
   return scene.getBehaviors();
 }
+
+template<typename Derived, typename Component>
+const Gesture &BaseBehavior<Derived, Component>::getGesture() const {
+  return scene.getGesture();
+}
+
+template<typename Derived, typename Component>
+Scene &BaseBehavior<Derived, Component>::getScene() {
+  return scene;
+}
+
+template<typename Derived, typename Component>
+const Scene &BaseBehavior<Derived, Component>::getScene() const {
+  return scene;
+}
+

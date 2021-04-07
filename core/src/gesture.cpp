@@ -3,7 +3,7 @@
 #include "scene.h"
 
 
-constexpr auto touchMoveFarThreshold = 35;
+constexpr float touchMoveFarThreshold = 35;
 
 
 //
@@ -69,22 +69,16 @@ void Gesture::updateTouch(float screenX, float screenY, love::int64 loveTouchId,
       // Found existing touch, update it
       found = true;
       touch.pressed = false;
-      touch.dx = pos.x - touch.x;
-      touch.dy = pos.y - touch.y;
-      touch.x = pos.x;
-      touch.y = pos.y;
-      touch.screenDX = screenPos.x - touch.screenX;
-      touch.screenDY = screenPos.y - touch.screenY;
-      touch.screenX = screenPos.x;
-      touch.screenY = screenPos.y;
+      touch.delta = pos - touch.pos;
+      touch.pos = pos;
+      touch.screenDelta = screenPos - touch.screenPos;
+      touch.screenPos = screenPos;
       if (!touch.movedFar) {
-        auto totalDisp = love::Vector2(touch.screenX, touch.screenY)
-            - love::Vector2(touch.initialScreenX, touch.initialScreenY);
-        auto totalDispSqLen = totalDisp.getLengthSquare();
-        if (totalDispSqLen > 0) {
+        auto distSq = (touch.screenPos - touch.initialScreenPos).getLengthSquare();
+        if (distSq > 0) {
           touch.movedNear = true;
         }
-        if (totalDispSqLen > touchMoveFarThreshold * touchMoveFarThreshold) {
+        if (distSq > touchMoveFarThreshold * touchMoveFarThreshold) {
           touch.movedFar = true;
         }
       }
@@ -92,7 +86,8 @@ void Gesture::updateTouch(float screenX, float screenY, love::int64 loveTouchId,
   });
   if (!found) {
     // Didn't find an existing touch, it's a new one
-    registry.emplace<Touch>(registry.create(),
-        Touch(screenPos.x, screenPos.y, pos.x, pos.y, lv.timer.getTime(), loveTouchId, isMouse));
+    auto newTouchId = registry.create();
+    registry.emplace<Touch>(
+        newTouchId, Touch(newTouchId, screenPos, pos, lv.timer.getTime(), loveTouchId, isMouse));
   }
 }

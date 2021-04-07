@@ -15,12 +15,13 @@ struct Touch {
   Touch(Touch &&) = default; // Allow moves
   Touch &operator=(Touch &&) = default;
 
-  float screenX, screenY;
-  float initialScreenX = screenX, initialScreenY = screenY;
-  float screenDX = 0, screenDY = 0;
-  float x, y;
-  float initialX = x, initialY = y;
-  float dx = 0, dy = 0;
+  TouchId id;
+  love::Vector2 screenPos;
+  love::Vector2 initialScreenPos { screenPos.x, screenPos.y };
+  love::Vector2 screenDelta { 0, 0 };
+  love::Vector2 pos;
+  love::Vector2 initialPos { pos.x, pos.y };
+  love::Vector2 delta { 0, 0 };
   bool pressed = true; // Whether just pressed this frame
   bool released = false; // Whether just released this frame
   bool movedNear = false;
@@ -33,7 +34,7 @@ private:
   love::int64 loveTouchId;
   bool isMouse;
 
-  Touch(float screenX_, float screenY_, float x_, float y_, double pressTime_,
+  Touch(TouchId id_, const love::Vector2 &screenPos_, const love::Vector2 &pos_, double pressTime_,
       love::int64 loveTouchId_, bool isMouse_); // Private so only `Gesture` can create
 };
 
@@ -49,7 +50,7 @@ class Gesture {
 public:
   Gesture(const Gesture &) = delete; // Prevent accidental copies
   const Gesture &operator=(const Gesture &) = delete;
-  Gesture(Gesture &&); // Allow move-construction
+  Gesture(Gesture &&) = default; // Allow move-construction
 
   explicit Gesture(Scene &scene_);
 
@@ -63,7 +64,9 @@ public:
                               // gesture). `false` if no current gesture.
   const Touch &getTouch(TouchId touchId) const;
   template<typename F>
-  void forEachTouch(F &&f) const; // `F` must take `(TouchId, const Touch &)` or `(const Touch &)`
+  void forEachTouch(F &&f) const; // `f` takes `(TouchId, const Touch &)` or `(const Touch &)`
+  template<typename F>
+  void single(F &&f) const; // `forEachTouch(f)` if `getMaxCount() == 1`
 
 
   // Update
@@ -93,12 +96,11 @@ inline Gesture::Gesture(Scene &scene_)
     : scene(scene_) {
 }
 
-inline Touch::Touch(float screenX_, float screenY_, float x_, float y_, double pressTime_,
-    love::int64 loveTouchId_, bool isMouse_)
-    : screenX(screenX_)
-    , screenY(screenY_)
-    , x(x_)
-    , y(y_)
+inline Touch::Touch(TouchId id_, const love::Vector2 &screenPos_, const love::Vector2 &pos_,
+    double pressTime_, love::int64 loveTouchId_, bool isMouse_)
+    : id(id_)
+    , screenPos(screenPos_)
+    , pos(pos_)
     , pressTime(pressTime_)
     , loveTouchId(loveTouchId_)
     , isMouse(isMouse_) {
@@ -123,4 +125,11 @@ inline const Touch &Gesture::getTouch(TouchId touchId) const {
 template<typename F>
 inline void Gesture::forEachTouch(F &&f) const {
   registry.view<const Touch>().each(f);
+}
+
+template<typename F>
+inline void Gesture::single(F &&f) const {
+  if (getMaxCount() == 1) {
+    registry.view<const Touch>().each(f);
+  }
 }

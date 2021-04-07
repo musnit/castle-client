@@ -68,6 +68,7 @@ private:
   friend class SlowdownBehavior;
   friend class SpeedLimitBehavior;
   friend class SlidingBehavior;
+  friend class SlingBehavior;
 
   b2Body *maybeGetPhysicsBody(ActorId actorId); // `nullptr` if not present
 

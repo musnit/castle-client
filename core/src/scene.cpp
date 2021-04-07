@@ -117,7 +117,7 @@ void Scene::draw() const {
   viewTransform.translate(0.5 * viewWidth, 0.5 * viewHeight);
   lv.graphics.applyTransform(&viewTransform);
 
-  // Draw scene
+  // Scene
   forEachActorByDrawOrder([&](ActorId actorId, const Actor &actor) {
     getBehaviors().forEach([&](auto &behavior) {
       if constexpr (Handlers::hasDrawComponent<decltype(behavior)>) {
@@ -128,10 +128,11 @@ void Scene::draw() const {
     });
   });
 
-  // Debug draw gesture
-  lv.graphics.setColor({ 1, 0, 0, 1 });
-  getGesture().forEachTouch([&](TouchId touchId, const Touch &touch) {
-    lv.graphics.circle(love::Graphics::DRAW_FILL, touch.x, touch.y, 0.5);
+  // Overlays
+  getBehaviors().forEach([&](auto &behavior) {
+    if constexpr (Handlers::hasDrawOverlay<decltype(behavior)>) {
+      behavior.handleDrawOverlay();
+    }
   });
 
   lv.graphics.pop();
