@@ -7,6 +7,17 @@
 
 using TouchId = entt::entity;
 
+struct TouchToken {
+  // A token to identify the purpose of a touch. Helps prevent overloading a single touch for
+  // different uses.
+
+private:
+  friend struct Touch;
+
+  inline static auto nextId = 1; // `0` marks no use
+  int id = nextId++;
+};
+
 struct Touch {
   // Data about a single touch in a gesture. Includes flags for whether the touch was just pressed
   // or just released this frame, allowing processing gestures using per-frame polling rather than
@@ -30,11 +41,14 @@ struct Touch {
   bool movedFar = false; // Whether this touch has moved beyond a certain threshold
   double pressTime; // `lv.timer.getTime()` when pressed
 
+  bool use(const TouchToken &token) const;
+
 private:
   friend class Gesture;
 
   love::int64 loveTouchId;
   bool isMouse;
+  mutable int tokenId = 0;
 
   Touch(TouchId id_, const love::Vector2 &screenPos_, const love::Vector2 &pos_, double pressTime_,
       love::int64 loveTouchId_, bool isMouse_); // Private so only `Gesture` can create
@@ -94,10 +108,6 @@ private:
 
 // Inlined implementations
 
-inline Gesture::Gesture(Scene &scene_)
-    : scene(scene_) {
-}
-
 inline Touch::Touch(TouchId id_, const love::Vector2 &screenPos_, const love::Vector2 &pos_,
     double pressTime_, love::int64 loveTouchId_, bool isMouse_)
     : id(id_)
@@ -106,6 +116,18 @@ inline Touch::Touch(TouchId id_, const love::Vector2 &screenPos_, const love::Ve
     , pressTime(pressTime_)
     , loveTouchId(loveTouchId_)
     , isMouse(isMouse_) {
+}
+
+inline bool Touch::use(const TouchToken &token) const {
+  if (tokenId == 0) {
+    tokenId = token.id;
+    return true;
+  }
+  return tokenId == token.id;
+}
+
+inline Gesture::Gesture(Scene &scene_)
+    : scene(scene_) {
 }
 
 inline int Gesture::getCount() const {
