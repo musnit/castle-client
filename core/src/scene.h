@@ -230,7 +230,7 @@ inline love::Vector2 Scene::inverseViewTransformPoint(const love::Vector2 &point
 }
 
 inline float Scene::getViewScale() const {
-  return viewTransform.getMatrix().getElements()[0];
+  return viewTransform.getMatrix().getElements()[0]; // Assuming no rotation
 }
 
 inline float Scene::getPixelScale() const {
