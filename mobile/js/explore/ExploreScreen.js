@@ -2,6 +2,7 @@ import * as React from 'react';
 import { StatusBar, StyleSheet, Linking, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SearchInput } from './SearchInput';
+import { SearchResults } from './SearchResults';
 import { useFocusEffect, useNavigation } from '../ReactNavigation';
 
 import * as Amplitude from 'expo-analytics-amplitude';
@@ -14,6 +15,7 @@ export const ExploreScreen = ({ route }) => {
   useNavigation();
 
   const [isSearching, setIsSearching] = React.useState(false);
+  const [searchQuery, setSearchQuery] = React.useState(undefined);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -24,11 +26,17 @@ export const ExploreScreen = ({ route }) => {
 
   const onStartSearch = React.useCallback(() => setIsSearching(true), []);
   const onCancelSearch = React.useCallback(() => setIsSearching(false), []);
+  const onChangeSearchQuery = React.useCallback((text) => setSearchQuery(text), []);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <SearchInput onFocus={onStartSearch} onCancel={onCancelSearch} />
-      {isSearching ? null : <SpringPartyCountdown />}
+      <SearchInput
+        onFocus={onStartSearch}
+        onCancel={onCancelSearch}
+        value={searchQuery}
+        onChangeText={onChangeSearchQuery}
+      />
+      {isSearching ? <SearchResults query={searchQuery} /> : <SpringPartyCountdown />}
     </SafeAreaView>
   );
 };
