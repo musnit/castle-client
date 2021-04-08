@@ -70,6 +70,7 @@ export const SearchInput = ({ onFocus, onCancel, ...props }) => {
       <TextInput
         ref={textInputRef}
         style={styles.input}
+        autoCapitalize="none"
         placeholder="Search for people..."
         placeholderTextColor={Constants.colors.white}
         onFocus={onTextInputFocus}

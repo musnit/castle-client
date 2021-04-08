@@ -2,7 +2,11 @@ import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { UserAvatar } from '../components/UserAvatar';
 
+import debounce from 'lodash.debounce';
+import gql from 'graphql-tag';
+
 import * as Constants from '../Constants';
+import * as Session from '../Session';
 
 const styles = StyleSheet.create({
   container: {
@@ -24,13 +28,25 @@ const styles = StyleSheet.create({
   },
 });
 
-const DUMMY_RESULT = {
-  id: '235',
-  username: 'irondavy',
-  photo: {
-    url:
-      'https://castle.imgix.net/ddaaa55b15faeb0fdf0784c75b7281b7?auto=compress&fit=crop&min-w=420',
-  },
+const search = async (query) => {
+  const result = await Session.apolloClient.query({
+    query: gql`
+      query($text: String!) {
+        autocomplete(text: $text) {
+          users {
+            id
+            userId
+            username
+            photo {
+              url
+            }
+          }
+        }
+      }
+    `,
+    variables: { text: query },
+  });
+  return result.data?.autocomplete;
 };
 
 const SearchResult = ({ user }) => {
@@ -43,15 +59,27 @@ const SearchResult = ({ user }) => {
 };
 
 export const SearchResults = ({ query, onCancel }) => {
+  const [results, setResults] = React.useState();
+  const searchDebounce = React.useRef();
+  React.useEffect(() => {
+    searchDebounce.current = debounce(async (query) => {
+      const results = await search(query);
+      setResults(results);
+    }, 500);
+  }, []);
+  React.useEffect(() => {
+    if (query?.length && searchDebounce.current) {
+      searchDebounce.current(query);
+    } else {
+      setResults(undefined);
+    }
+  }, [query]);
+
   return (
     <View style={styles.container}>
-      {query?.length ? (
-        <>
-          <SearchResult user={DUMMY_RESULT} />
-          <SearchResult user={DUMMY_RESULT} />
-          <SearchResult user={DUMMY_RESULT} />
-        </>
-      ) : null}
+      {results?.users?.length
+        ? results.users.map((user) => <SearchResult key={`user-${user.id}`} user={user} />)
+        : null}
     </View>
   );
 };
