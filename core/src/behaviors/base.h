@@ -156,7 +156,7 @@ bool BaseBehavior<Derived, Component>::hasComponent(ActorId actorId) const {
 template<typename Derived, typename Component>
 bool BaseBehavior<Derived, Component>::hasAnyEnabledComponent() const {
   for (const auto &[actorId, component] :
-       scene.getEntityRegistry().template view<const Component>().each()) {
+      scene.getEntityRegistry().template view<const Component>().each()) {
     if (!component.disabled) {
       return true;
     }
@@ -197,21 +197,22 @@ const Component *BaseBehavior<Derived, Component>::maybeGetComponent(ActorId act
 template<typename Derived, typename Component>
 template<typename F>
 void BaseBehavior<Derived, Component>::forEachEnabledComponent(F &&f) {
-    scene.getEntityRegistry().template view<Component>().each(([&](ActorId actorId, Component &component) {
-    if (!component.disabled) {
-      if constexpr (std::is_invocable_v<F, ActorId, Component &>) {
-        f(actorId, component);
-      } else {
-        f(component);
-      }
-    }
-  }));
+  scene.getEntityRegistry().template view<Component>().each(
+      ([&](ActorId actorId, Component &component) {
+        if (!component.disabled) {
+          if constexpr (std::is_invocable_v<F, ActorId, Component &>) {
+            f(actorId, component);
+          } else {
+            f(component);
+          }
+        }
+      }));
 }
 
 template<typename Derived, typename Component>
 template<typename F>
 void BaseBehavior<Derived, Component>::forEachEnabledComponent(F &&f) const {
-    scene.getEntityRegistry().template view<const Component>().each(
+  scene.getEntityRegistry().template view<const Component>().each(
       ([&](ActorId actorId, const Component &component) {
         if (!component.disabled) {
           if constexpr (std::is_invocable_v<F, ActorId, const Component &>) {
