@@ -17,6 +17,7 @@
 #include "behaviors/debug_draw.h"
 #include "behaviors/drawing2.h"
 #include "behaviors/sling.h"
+#include "behaviors/drag.h"
 
 
 class AllBehaviors {
@@ -45,7 +46,7 @@ public:
   void byName(const char *name, F &&f) const;
 
   template<typename F>
-  void forEach(F &&f);
+  void forEach(F &&f); // Expands at compile time in order below. `f` must take `(auto &)`.
   template<typename F>
   void forEach(F &&f) const;
 
@@ -53,7 +54,12 @@ public:
 private:
   /* clang-format off */
   std::tuple<
+    // `forEach` expands in this order, which means handlers are generally fired in this order too
+
+    // Basics
     BodyBehavior,
+
+    // Motion
     SolidBehavior,
     MovingBehavior,
     FallingBehavior,
@@ -63,10 +69,17 @@ private:
     SlowdownBehavior,
     SpeedLimitBehavior,
     SlidingBehavior,
+
+    // Controls
+    DragBehavior, // Listed first so it can capture touches
     SlingBehavior,
+
+    // Rendering
     DebugDrawBehavior,
     Drawing2Behavior
+
 #ifdef CASTLE_ENABLE_TESTS
+    // Tests
     , TestBehavior
 #endif
     > behaviors;

@@ -25,7 +25,7 @@ void SlowdownBehavior::handleDisableComponent(
   if (!removeActor) {
     if (component.joint) {
       if (getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId)) {
-        // Make sure body still exists when destroying joint
+        // Body destruction destroys attached joints, so make sure to have checked that
         getScene().getPhysicsWorld().DestroyJoint(component.joint);
       }
       component.joint = nullptr;

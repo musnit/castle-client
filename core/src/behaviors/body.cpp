@@ -8,6 +8,7 @@
 void BodyBehavior::handleEnableComponent(ActorId actorId, BodyComponent &component) {
   // Body
   b2BodyDef bodyDef;
+  bodyDef.userData.pointer = entt::to_integral(actorId) + 1; // `actorId` can be 0, so offset
   bodyDef.type = b2_staticBody;
   bodyDef.position = { component.props.x(), component.props.y() };
   bodyDef.angle = component.props.angle();

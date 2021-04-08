@@ -5,7 +5,7 @@
 #include "lv.h"
 
 
-using TouchId = entt::entity;
+using TouchId = entt::entity; // Is unique throughout a `Scene`s lifetime, never recycled
 
 struct TouchToken {
   // A token to identify the purpose of a touch. Helps prevent overloading a single touch for
@@ -41,7 +41,9 @@ struct Touch {
   bool movedFar = false; // Whether this touch has moved beyond a certain threshold
   double pressTime; // `lv.timer.getTime()` when pressed
 
-  bool use(const TouchToken &token) const;
+  bool use(const TouchToken &token) const; // Mark for this purpose, return whether successful
+  bool isUsed() const; // Whether marked for any purpose
+  bool isUsed(const TouchToken &token) const; // Whether marked for a given purpose
 
 private:
   friend class Gesture;
@@ -78,7 +80,9 @@ public:
                            // gesture. Zero if no current gesture.
   bool isAllReleased() const; // Whether all touches are released (true for one frame at end of
                               // gesture). `false` if no current gesture.
+  bool hasTouch(TouchId touchId) const;
   const Touch &getTouch(TouchId touchId) const;
+  const Touch *maybeGetTouch(TouchId touchId) const;
   template<typename F>
   void forEachTouch(F &&f) const; // `f` takes `(TouchId, const Touch &)` or `(const Touch &)`
   template<typename F>
@@ -126,6 +130,14 @@ inline bool Touch::use(const TouchToken &token) const {
   return tokenId == token.id;
 }
 
+inline bool Touch::isUsed() const {
+  return tokenId != 0;
+}
+
+inline bool Touch::isUsed(const TouchToken &token) const {
+  return tokenId == token.id;
+}
+
 inline Gesture::Gesture(Scene &scene_)
     : scene(scene_) {
 }
@@ -142,8 +154,16 @@ inline bool Gesture::isAllReleased() const {
   return allReleased;
 }
 
+inline bool Gesture::hasTouch(TouchId touchId) const {
+  return registry.valid(touchId);
+}
+
 inline const Touch &Gesture::getTouch(TouchId touchId) const {
   return registry.get<Touch>(touchId);
+}
+
+inline const Touch *Gesture::maybeGetTouch(TouchId touchId) const {
+  return hasTouch(touchId) ? &getTouch(touchId) : nullptr;
 }
 
 template<typename F>

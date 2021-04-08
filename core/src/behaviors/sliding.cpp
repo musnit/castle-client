@@ -36,10 +36,11 @@ void SlidingBehavior::handleDisableComponent(
   if (!removeActor) {
     if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId)) {
       if (component.joint) {
+        // Body destruction destroys attached joints, so check make sure to have checked that
         getScene().getPhysicsWorld().DestroyJoint(component.joint);
-        component.joint = nullptr;
       }
       body->SetFixedRotation(false);
     }
+    component.joint = nullptr;
   }
 }

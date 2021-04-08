@@ -55,7 +55,18 @@ public:
   void handleDisableComponent(ActorId actorId, BodyComponent &component, bool removeActor);
 
 
+  // `ActorId` <-> `b2Body` association
+
   const b2Body *maybeGetPhysicsBody(ActorId actorId) const; // `nullptr` if not present
+  ActorId maybeGetActorId(const b2Body *body) const; // `nullActor` if not present
+
+
+  // Queries
+
+  template<typename F> // `F` takes `(ActorId, const b2Fixture *)`, returns `false` to stop query
+  void forEachActorAtBoundingBox(float minX, float minY, float maxX, float maxY, F &&f) const;
+  template<typename F>
+  void forEachActorAtPoint(float x, float y, F &&f) const;
 
 
 private:
@@ -69,6 +80,7 @@ private:
   friend class SpeedLimitBehavior;
   friend class SlidingBehavior;
   friend class SlingBehavior;
+  friend class DragBehavior;
 
   b2Body *maybeGetPhysicsBody(ActorId actorId); // `nullptr` if not present
 
@@ -90,4 +102,42 @@ inline const b2Body *BodyBehavior::maybeGetPhysicsBody(ActorId actorId) const {
     return component->body;
   }
   return nullptr;
+}
+
+inline ActorId BodyBehavior::maybeGetActorId(const b2Body *body) const {
+  auto actorId = ActorId(const_cast<b2Body *>(body)->GetUserData().pointer - 1);
+  return hasComponent(actorId) ? actorId : nullActor;
+}
+
+template<typename F>
+void BodyBehavior::forEachActorAtBoundingBox(
+    float minX, float minY, float maxX, float maxY, F &&f) const {
+  struct Callback : b2QueryCallback {
+    const BodyBehavior &bodyBehavior;
+    const F f;
+
+    Callback(const BodyBehavior &bodyBehavior_, F &&f_)
+        : bodyBehavior(bodyBehavior_)
+        , f(std::forward<F>(f_)) {
+    }
+
+    bool ReportFixture(b2Fixture *fixture) final {
+      if (auto actorId = bodyBehavior.maybeGetActorId(fixture->GetBody()); actorId != nullActor) {
+        return f(actorId, (const b2Fixture *)fixture);
+      }
+      return true;
+    }
+  } cb(*this, std::forward<F>(f));
+  getScene().getPhysicsWorld().QueryAABB(&cb, { { minX, minY }, { maxX, maxY } });
+}
+
+template<typename F>
+void BodyBehavior::forEachActorAtPoint(float x, float y, F &&f) const {
+  forEachActorAtBoundingBox(
+      x - 0.01, y - 0.01, x + 0.01, y + 0.01, [&](ActorId actorId, const b2Fixture *fixture) {
+        if (fixture->TestPoint({ x, y })) {
+          return f(actorId, fixture);
+        }
+        return true;
+      });
 }
