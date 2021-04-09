@@ -27,10 +27,6 @@ import * as Constants from '../Constants';
 import * as LocalId from '../common/local-id';
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Constants.colors.black,
-  },
   gridContainer: {
     paddingTop: 16,
     paddingLeft: Constants.GRID_PADDING,
@@ -152,7 +148,7 @@ const CreateScreenAuthenticated = () => {
   );
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[Constants.styles.container, { paddingTop: insets.top }]}>
       <ScreenHeader title="Your Decks" />
 
       {decks && decks.length === 0 && (

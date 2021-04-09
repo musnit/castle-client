@@ -1,21 +1,23 @@
 import React from 'react';
-import { StatusBar, requireNativeComponent, Platform } from 'react-native';
-import { DecksFeed } from '../components/DecksFeed';
+import { View } from 'react-native';
+import { ScreenHeader } from '../components/ScreenHeader';
+import { DecksGrid } from '../components/DecksGrid';
+
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
 import gql from 'graphql-tag';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import * as Constants from '../Constants';
 
 const REFETCH_FEED_INTERVAL_MS = 30 * 1000;
 
-let NativeFeedView;
-if (Platform.OS === 'android') {
-  NativeFeedView = requireNativeComponent('CastleFeedView', null);
-}
+export const ExploreFeed = ({ route }) => {
+  const feedId = route?.params.feedId;
+  const title = route?.params.title;
 
-export const NewestDecks = ({ deckId }) => {
   const { navigate } = useNavigation();
+
   const [lastFetched, setLastFetched] = React.useState({
     time: undefined,
     lastModifiedBefore: undefined,
@@ -30,10 +32,11 @@ export const NewestDecks = ({ deckId }) => {
         throw new Error(`Unrecognized decks action: ${action.type}`);
     }
   }, undefined);
+
   const [fetchDecks, query] = useLazyQuery(
     gql`
-      query DeckFeed($lastModifiedBefore: Datetime) {
-        deckFeed(limit: 24, lastModifiedBefore: $lastModifiedBefore) {
+      query paginateFeed($feedId: ID!, $lastModifiedBefore: Datetime) {
+        paginateFeed(feedId: $feedId, lastModifiedBefore: $lastModifiedBefore) {
           ${Constants.FEED_ITEM_DECK_FRAGMENT}
         }
       }
@@ -45,6 +48,7 @@ export const NewestDecks = ({ deckId }) => {
     (lastModifiedBefore) => {
       fetchDecks({
         variables: {
+          feedId,
           lastModifiedBefore,
         },
       });
@@ -55,14 +59,11 @@ export const NewestDecks = ({ deckId }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      if (
-        (!lastFetched.time || Date.now() - lastFetched.time > REFETCH_FEED_INTERVAL_MS) &&
-        deckId === undefined
-      ) {
+      if (!lastFetched.time || Date.now() - lastFetched.time > REFETCH_FEED_INTERVAL_MS) {
         onRefresh();
       }
     }),
-    [lastFetched.time, deckId]
+    [lastFetched.time]
   );
 
   const onEndReached = React.useCallback(() => {
@@ -76,27 +77,43 @@ export const NewestDecks = ({ deckId }) => {
     if (query.called && !query.loading && !query.error && query.data) {
       if (lastFetched.lastModifiedBefore) {
         // append next page
-        changeDecks({ type: 'append', decks: query.data.deckFeed });
+        changeDecks({ type: 'append', decks: query.data.paginateFeed });
       } else {
         // clean refresh
-        changeDecks({ type: 'set', decks: query.data.deckFeed });
+        changeDecks({ type: 'set', decks: query.data.paginateFeed });
       }
     }
   }, [query.called, query.loading, query.error, query.data, lastFetched.lastModifiedBefore]);
 
+  const scrollViewRef = React.useRef(null);
+  useScrollToTop(scrollViewRef);
+
   return (
-    <DecksFeed
-      decks={decks}
-      isPlaying={deckId !== undefined}
-      onPressDeck={({ deckId }) =>
-        navigate('HomeScreen', {
-          deckId,
-        })
-      }
-      refreshing={!!(lastFetched.time && query.loading && decks?.length)}
-      onRefresh={onRefresh}
-      onEndReached={onEndReached}
-      onEndReachedThreshold={0.15}
-    />
+    <SafeAreaView style={Constants.styles.container}>
+      <ScreenHeader title={title} />
+      {decks?.length ? (
+        <DecksGrid
+          decks={decks}
+          contentContainerStyle={{ paddingTop: 16 }}
+          scrollViewRef={scrollViewRef}
+          refreshing={lastFetched.time && query.loading}
+          onRefresh={onRefresh}
+          onPressDeck={(deck, index) =>
+            navigate(
+              'PlayDeck',
+              {
+                // TODO: support passing all decks here
+                decks: [deck],
+                initialDeckIndex: 0,
+                title: 'Recent',
+              },
+              {
+                isFullscreen: true,
+              }
+            )
+          }
+        />
+      ) : null}
+    </SafeAreaView>
   );
 };

@@ -42,6 +42,14 @@ export const ExploreRow = ({ feed }) => {
       }
     );
   };
+
+  const onPressTitle = () => {
+    navigate('ExploreFeed', {
+      feedId: feed.feedId,
+      title: feed.title,
+    });
+  };
+
   const renderItem = ({ item, index }) => {
     const deck = item;
 
@@ -54,7 +62,9 @@ export const ExploreRow = ({ feed }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{feed.title}</Text>
+      <TouchableOpacity onPress={onPressTitle}>
+        <Text style={styles.title}>{feed.title}</Text>
+      </TouchableOpacity>
       <FlatList
         data={feed.decks}
         horizontal={true}

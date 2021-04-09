@@ -23,13 +23,13 @@ export const ExploreScreen = ({ route }) => {
   const [fetchFeeds, query] = useLazyQuery(
     gql`
         query exploreFeed {
-        exploreFeeds {
-            title
-            feedId
-            decks {
-              ${Constants.FEED_ITEM_DECK_FRAGMENT}
-            }
-        }
+          exploreFeeds {
+              title
+              feedId
+              decks {
+                ${Constants.FEED_ITEM_DECK_FRAGMENT}
+              }
+          }
         }
     `,
     { fetchPolicy: 'no-cache' }

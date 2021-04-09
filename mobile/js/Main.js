@@ -16,9 +16,9 @@ import * as GhostEvents from './ghost/GhostEvents';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableAndroidFontFix } from './AndroidFontFix';
 import { ExploreScreen } from './explore/ExploreScreen';
+import { ExploreFeed } from './explore/ExploreFeed';
 import { HomeScreen } from './home/HomeScreen';
 import { FeaturedDecks } from './home/FeaturedDecks';
-import { NewestDecks } from './home/NewestDecks';
 import { RecentDecks } from './home/RecentDecks';
 import { PlayDeckScreen } from './play/PlayDeckScreen';
 import { ProfileScreen } from './profile/ProfileScreen';
@@ -214,7 +214,11 @@ if (Platform.OS === 'android') {
     'Profile',
     WrapComponent(ProfileScreen, { addTabBarPadding: true })
   );
-  AppRegistry.registerComponent('ExploreScreen', WrapComponent(ExploreScreen, { addTabBarPadding: true }));
+  AppRegistry.registerComponent(
+    'ExploreScreen',
+    WrapComponent(ExploreScreen, { addTabBarPadding: true })
+  );
+  AppRegistry.registerComponent('ExploreFeed', WrapComponent(ExploreFeed));
   AppRegistry.registerComponent('InitialAuthScreen', WrapComponent(InitialAuthScreen));
   AppRegistry.registerComponent('LoginScreen', WrapComponent(LoginScreen));
   AppRegistry.registerComponent('CreateAccountScreen', WrapComponent(CreateAccountScreen));

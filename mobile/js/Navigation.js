@@ -12,6 +12,7 @@ import { CreateDeckNavigator } from './create/CreateDeckNavigator';
 import { useAppState } from './ghost/GhostAppState';
 import { HomeScreen } from './home/HomeScreen';
 import { ExploreScreen } from './explore/ExploreScreen';
+import { ExploreFeed } from './explore/ExploreFeed';
 import { NotificationsScreen } from './notifications/NotificationsScreen';
 import { PlayDeckScreen } from './play/PlayDeckScreen';
 import { ProfileScreen } from './profile/ProfileScreen';
@@ -59,6 +60,7 @@ const ExploreNavigator = () => (
       headerShown: false,
     }}>
     <Stack.Screen name="Explore" component={ExploreScreen} />
+    <Stack.Screen name="ExploreFeed" component={ExploreFeed} />
     <Stack.Screen name="PlayDeck" component={PlayDeckScreen} options={{ gestureEnabled: false }} />
     <Stack.Screen name="Profile" component={ProfileScreen} />
     <Stack.Screen
