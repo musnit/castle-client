@@ -7,25 +7,29 @@ import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
   container: {
+    flexDirection: 'row',
+    alignItems: 'center',
     margin: 16,
+  },
+  inputWrapper: {
     borderWidth: 1,
     borderRadius: 4,
     borderColor: Constants.colors.white,
     flexDirection: 'row',
     alignItems: 'center',
+    flexShrink: 1,
   },
   searchIcon: {
-    paddingLeft: 4,
+    paddingLeft: 6,
   },
   input: {
     color: Constants.colors.white,
     padding: 8,
     width: '100%',
-    flexShrink: 1,
   },
   cancelButton: {
     flexShrink: 0,
-    paddingRight: 8,
+    paddingLeft: 16,
   },
   cancel: {
     color: Constants.colors.white,
@@ -66,17 +70,19 @@ export const SearchInput = ({ onFocus, onCancel, ...props }) => {
 
   return (
     <View style={styles.container}>
-      <Feather name="search" color={Constants.colors.white} size={20} style={styles.searchIcon} />
-      <TextInput
-        ref={textInputRef}
-        style={styles.input}
-        autoCapitalize="none"
-        placeholder="Search for people..."
-        placeholderTextColor={Constants.colors.white}
-        onFocus={onTextInputFocus}
-        onBlur={onTextInputBlur}
-        {...props}
-      />
+      <View style={styles.inputWrapper}>
+        <Feather name="search" color={Constants.colors.white} size={20} style={styles.searchIcon} />
+        <TextInput
+          ref={textInputRef}
+          style={styles.input}
+          autoCapitalize="none"
+          placeholder="Search for people..."
+          placeholderTextColor={Constants.colors.white}
+          onFocus={onTextInputFocus}
+          onBlur={onTextInputBlur}
+          {...props}
+        />
+      </View>
       {isFocused ? (
         <TouchableOpacity style={styles.cancelButton} onPress={cancelSearch}>
           <Text style={styles.cancel}>Cancel</Text>
