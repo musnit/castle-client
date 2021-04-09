@@ -60,9 +60,9 @@ const SearchResult = ({ user, onSelectUser }) => {
   );
 };
 
-export const SearchResults = ({ query, onCancel }) => {
+export const SearchResults = ({ query, onCancel, initialResults }) => {
   const { navigate } = useNavigation();
-  const [results, setResults] = React.useState();
+  const [results, setResults] = React.useState(initialResults);
   const searchDebounce = React.useRef();
   React.useEffect(() => {
     searchDebounce.current = debounce(async (query) => {
@@ -74,7 +74,7 @@ export const SearchResults = ({ query, onCancel }) => {
     if (query?.length && searchDebounce.current) {
       searchDebounce.current(query);
     } else {
-      setResults(undefined);
+      setResults(initialResults);
     }
   }, [query]);
 

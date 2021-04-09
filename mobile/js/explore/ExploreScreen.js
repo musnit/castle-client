@@ -10,7 +10,6 @@ import { useLazyQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 
 import * as Amplitude from 'expo-analytics-amplitude';
-
 import * as Constants from '../Constants';
 
 const REFETCH_FEED_INTERVAL_MS = 60 * 1000;
@@ -22,21 +21,34 @@ export const ExploreScreen = ({ route }) => {
   const [feeds, setFeeds] = React.useState(undefined);
   const [fetchFeeds, query] = useLazyQuery(
     gql`
-        query exploreFeed {
-          exploreFeeds {
-              title
-              feedId
-              decks {
-                ${Constants.FEED_ITEM_DECK_FRAGMENT}
-              }
+      query exploreFeed {
+        exploreFeeds {
+          title
+          feedId
+          decks {
+            ${Constants.FEED_ITEM_DECK_FRAGMENT}
           }
         }
+        exploreSearch(text: "") {
+          users {
+            id
+            userId
+            username
+            photo {
+              url
+            }
+          }
+        }
+      }
     `,
     { fetchPolicy: 'no-cache' }
   );
 
   const [isSearching, setIsSearching] = React.useState(false);
-  const [searchQuery, setSearchQuery] = React.useState(undefined);
+  const [searchQuery, setSearchQuery] = React.useState();
+
+  // preload a set of search results that display right when you focus the search bar
+  const [preloadSearchResults, setPreloadSearchResults] = React.useState();
 
   useFocusEffect(
     React.useCallback(() => {
@@ -50,7 +62,6 @@ export const ExploreScreen = ({ route }) => {
     setLastFetchedTime(Date.now());
   }, [fetchFeeds, setLastFetchedTime]);
 
-  useFocusEffect(onRefresh);
   useFocusEffect(
     React.useCallback(() => {
       if (!lastFetchedTime || Date.now() - lastFetchedTime > REFETCH_FEED_INTERVAL_MS) {
@@ -63,6 +74,7 @@ export const ExploreScreen = ({ route }) => {
   React.useEffect(() => {
     if (query.called && !query.loading && !query.error && query.data) {
       setFeeds(query.data.exploreFeeds);
+      setPreloadSearchResults(query.data.exploreSearch);
     }
   }, [query.called, query.loading, query.error, query.data]);
 
@@ -82,7 +94,7 @@ export const ExploreScreen = ({ route }) => {
         onChangeText={onChangeSearchQuery}
       />
       {isSearching ? (
-        <SearchResults query={searchQuery} />
+        <SearchResults query={searchQuery} initialResults={preloadSearchResults} />
       ) : (
         <ScrollView>
           {feeds && feeds.map((feed) => <ExploreRow feed={feed} key={feed.feedId} />)}
