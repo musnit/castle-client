@@ -32,7 +32,7 @@ const search = async (query) => {
   const result = await Session.apolloClient.query({
     query: gql`
       query($text: String!) {
-        autocomplete(text: $text) {
+        exploreSearch(text: $text) {
           users {
             id
             userId
@@ -46,7 +46,7 @@ const search = async (query) => {
     `,
     variables: { text: query },
   });
-  return result.data?.autocomplete;
+  return result.data?.exploreSearch;
 };
 
 const SearchResult = ({ user }) => {
