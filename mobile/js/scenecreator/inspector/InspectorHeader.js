@@ -13,6 +13,7 @@ import { useCardCreator } from '../CreateCardContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useSession } from '../../Session';
 
 import * as Constants from '../../Constants';
 import * as Clipboard from '../LibraryEntryClipboard';
@@ -113,6 +114,7 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
     sendInspectorAction: sendAction,
     applicableTools,
     isTextActorSelected,
+    deck,
   } = useCardCreator();
 
   const changeSelectionOrder = React.useCallback(() => {
@@ -182,6 +184,16 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
       }
     }
 
+    const { userId: signedInUserId } = useSession();
+    let canCopyBlueprint = false;
+    if (deck) {
+      if (deck.accessPermissions == 'cloneable' || deck.creator.id == signedInUserId) {
+        canCopyBlueprint = true;
+      }
+    } else {
+      canCopyBlueprint = true;
+    }
+
     return (
       <View pointerEvents={isOpen ? 'auto' : 'none'}>
         <View style={styles.header}>
@@ -237,7 +249,7 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
                 )}
               </TouchableOpacity>
             ) : null}
-            {data.isBlueprint ? (
+            {data.isBlueprint && canCopyBlueprint ? (
               <TouchableOpacity style={styles.actionButton} onPress={() => copyBlueprint()}>
                 <FeatherIcon name="copy" size={22} color="#000" />
               </TouchableOpacity>
