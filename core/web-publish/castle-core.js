@@ -187,7 +187,7 @@ var Module = typeof Module !== 'undefined' ? Module : {};
     }
   
    }
-   loadPackage({"files": [{"filename": "/assets/test-motion-sliding.json", "start": 0, "end": 35511, "audio": 0}, {"filename": "/assets/test-motion-speed-limit.json", "start": 35511, "end": 62402, "audio": 0}, {"filename": "/assets/test-drawing2.json", "start": 62402, "end": 72374, "audio": 0}, {"filename": "/assets/test-motion-slowdown.json", "start": 72374, "end": 105938, "audio": 0}, {"filename": "/assets/test-motion-basic.json", "start": 105938, "end": 154337, "audio": 0}, {"filename": "/assets/keepme.txt", "start": 154337, "end": 154351, "audio": 0}, {"filename": "/assets/test-analog-stick-drag.json", "start": 154351, "end": 169996, "audio": 0}, {"filename": "/assets/test-sling-drag.json", "start": 169996, "end": 196744, "audio": 0}], "remote_package_size": 196744, "package_uuid": "62b22278-9832-475a-a970-533bbd2fba1c"});
+   loadPackage({"files": [{"filename": "/assets/test-motion-sliding.json", "start": 0, "end": 35511, "audio": 0}, {"filename": "/assets/test-motion-speed-limit.json", "start": 35511, "end": 62402, "audio": 0}, {"filename": "/assets/test-drawing2.json", "start": 62402, "end": 72374, "audio": 0}, {"filename": "/assets/test-motion-slowdown.json", "start": 72374, "end": 105938, "audio": 0}, {"filename": "/assets/test-motion-basic.json", "start": 105938, "end": 154337, "audio": 0}, {"filename": "/assets/keepme.txt", "start": 154337, "end": 154351, "audio": 0}, {"filename": "/assets/test-analog-stick-drag.json", "start": 154351, "end": 169996, "audio": 0}, {"filename": "/assets/test-sling-drag.json", "start": 169996, "end": 196744, "audio": 0}], "remote_package_size": 196744, "package_uuid": "bcb06aa5-3461-4160-9dce-f9ecf0f8163d"});
   
   })();
   
