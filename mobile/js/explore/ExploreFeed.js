@@ -8,9 +8,8 @@ import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigatio
 import gql from 'graphql-tag';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
-
-const REFETCH_FEED_INTERVAL_MS = 30 * 1000;
 
 export const ExploreFeed = ({ route }) => {
   const feedId = route?.params.feedId;
@@ -57,13 +56,12 @@ export const ExploreFeed = ({ route }) => {
     [fetchDecks, setLastFetched]
   );
 
+  React.useEffect(onRefresh, [feedId]);
+
   useFocusEffect(
     React.useCallback(() => {
-      if (!lastFetched.time || Date.now() - lastFetched.time > REFETCH_FEED_INTERVAL_MS) {
-        onRefresh();
-      }
-    }),
-    [lastFetched.time]
+      Amplitude.logEvent('VIEW_EXPLORE_FEED', { feedId });
+    }, [feedId])
   );
 
   const onEndReached = React.useCallback(() => {
