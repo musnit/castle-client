@@ -7,14 +7,13 @@ import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    paddingHorizontal: 16,
     width: '100%',
     maxWidth: Constants.TABLET_MAX_FORM_WIDTH,
   },
   deleteButton: {
-    marginTop: 16,
     borderWidth: 1,
-    borderColor: '#c00',
+    borderColor: '#f00',
     borderRadius: 6,
     alignItems: 'center',
     justifyContent: 'center',
@@ -22,6 +21,7 @@ const styles = StyleSheet.create({
   },
   deleteLabel: {
     color: '#f00',
+    fontSize: 16,
   },
   row: {
     flexDirection: 'row',
@@ -52,13 +52,6 @@ export const ConfigureDeck = ({ deck, onChange, onDeleteDeck, onChangeAccessPerm
   }, [onDeleteDeck, showActionSheetWithOptions]);
   return deck ? (
     <View style={styles.container}>
-      <ConfigureInput
-        label="Name"
-        placeholder="Choose a name for this deck"
-        footerText="Only visible to you"
-        value={deck.title}
-        onChangeText={(title) => onChange({ title })}
-      />
       <View style={styles.row}>
         <Text style={styles.rowLabel}>Allow others to remix this deck</Text>
         <Switch
