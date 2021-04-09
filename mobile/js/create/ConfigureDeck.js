@@ -60,7 +60,7 @@ export const ConfigureDeck = ({ deck, onChange, onDeleteDeck, onChangeAccessPerm
         onChangeText={(title) => onChange({ title })}
       />
       <View style={styles.row}>
-        <Text style={styles.rowLabel}>Allow others to save a copy</Text>
+        <Text style={styles.rowLabel}>Allow others to remix this deck</Text>
         <Switch
           ios_backgroundColor="#888"
           value={deck.accessPermissions === 'cloneable'}
