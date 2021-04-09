@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Animated, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { FeaturedDecks } from './FeaturedDecks';
 import { FollowingDecks } from './FollowingDecks';
-import { NewestDecks } from './NewestDecks';
 import { PopoverProvider } from '../components/PopoverProvider';
 import { RecentDecks } from './RecentDecks';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -54,11 +53,6 @@ const makeItems = ({ newFollowingDecks, isAnonymous } = {}) => {
       name: 'Featured',
       value: 'featured',
       item: (props) => <FeaturedDecks {...props} />,
-    },
-    {
-      name: 'New',
-      value: 'newest',
-      item: (props) => <NewestDecks {...props} />,
     },
     {
       name: 'History',
