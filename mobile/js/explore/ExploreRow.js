@@ -16,6 +16,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     marginHorizontal: 16,
     marginBottom: 8,
+    textTransform: 'uppercase',
   },
   itemCard: {
     aspectRatio: Constants.CARD_RATIO,
