@@ -1,6 +1,8 @@
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { UserAvatar } from '../components/UserAvatar';
+import { useNavigation } from '@react-navigation/native';
 
 import debounce from 'lodash.debounce';
 import gql from 'graphql-tag';
@@ -49,16 +51,17 @@ const search = async (query) => {
   return result.data?.exploreSearch;
 };
 
-const SearchResult = ({ user }) => {
+const SearchResult = ({ user, onSelectUser }) => {
   return (
-    <View style={styles.row}>
+    <TouchableOpacity style={styles.row} onPress={() => onSelectUser(user)}>
       <UserAvatar url={user?.photo?.url} style={styles.avatar} />
       <Text style={styles.rowLabel}>{user.username}</Text>
-    </View>
+    </TouchableOpacity>
   );
 };
 
 export const SearchResults = ({ query, onCancel }) => {
+  const { navigate } = useNavigation();
   const [results, setResults] = React.useState();
   const searchDebounce = React.useRef();
   React.useEffect(() => {
@@ -75,11 +78,20 @@ export const SearchResults = ({ query, onCancel }) => {
     }
   }, [query]);
 
+  const onSelectUser = React.useCallback(
+    (user) => navigate('Profile', { userId: user.userId }),
+    []
+  );
+
   return (
-    <View style={styles.container}>
+    <KeyboardAwareScrollView
+      contentContainerStyle={styles.container}
+      keyboardShouldPersistTaps="always">
       {results?.users?.length
-        ? results.users.map((user) => <SearchResult key={`user-${user.id}`} user={user} />)
+        ? results.users.map((user) => (
+            <SearchResult key={`user-${user.id}`} user={user} onSelectUser={onSelectUser} />
+          ))
         : null}
-    </View>
+    </KeyboardAwareScrollView>
   );
 };

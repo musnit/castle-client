@@ -67,7 +67,10 @@ export const ExploreScreen = ({ route }) => {
   }, [query.called, query.loading, query.error, query.data]);
 
   const onStartSearch = React.useCallback(() => setIsSearching(true), []);
-  const onCancelSearch = React.useCallback(() => setIsSearching(false), []);
+  const onCancelSearch = React.useCallback(() => {
+    setIsSearching(false);
+    setSearchQuery(undefined);
+  }, []);
   const onChangeSearchQuery = React.useCallback((text) => setSearchQuery(text), []);
 
   return (
