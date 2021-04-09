@@ -112,7 +112,7 @@ export const PlayDeckActions = ({
         `,
       variables: { deckId: deck.parentDeckId },
     });
-    if (result?.data?.deck) {
+    if (result?.data?.deck && result.data.deck.visibility == 'public') {
       return navigate('PlayDeck', {
         decks: [result.data.deck],
         initialDeckIndex: 0,
