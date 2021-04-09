@@ -60,7 +60,9 @@ void AnalogStickBehavior::handlePerform(double dt) {
           auto currVel = body->GetLinearVelocity();
           auto currAngle = std::atan2(currVel.y, currVel.x);
           auto dragAngle = std::atan2(drag.y, drag.x);
-          auto dAngle = std::fmod(currAngle - dragAngle + M_PI, 2 * M_PI) - M_PI;
+          constexpr auto twoPi = 2 * M_PI;
+          auto dAngle = currAngle - dragAngle + M_PI;
+          dAngle = dAngle - std::floor(dAngle / twoPi) * twoPi - M_PI;
           frameSpeed *= 1 + turnFriction * std::abs(dAngle / M_PI);
         }
 
