@@ -14,6 +14,10 @@ Looking for our older games product for Windows and Mac? See [here](https://gith
   |-- openssl           # openssl lib for Ghost engine
 ```
 
+## Setting up
+
+- `git submodule update --init --recursive`
+
 ## Run on mobile
 
 See [mobile/README.md](mobile/README.md).

@@ -1,5 +1,6 @@
 # Set up
 
+- Follow the parent README's setup instructions
 - Follow the [dependencies and development environment setup instructions](https://reactnative.dev/docs/environment-setup) in the React Native documentation for your host platform (stop right before "Creating a new application").
 - Run `npm i` in this directory
 - Copy `mobile/.env` from our credentials repository to this directory
