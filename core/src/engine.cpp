@@ -54,7 +54,7 @@ Engine::PreInit::PreInit() {
 //
 
 Engine::Engine()
-    : scene(Snapshot::fromFile("assets/test-sling-drag.json").toScene()) {
+    : scene(Snapshot::fromFile("assets/test-analog-stick-drag.json").toScene()) {
   // First timer step
   lv.timer.step();
 }

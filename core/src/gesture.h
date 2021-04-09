@@ -51,6 +51,8 @@ private:
   love::int64 loveTouchId;
   bool isMouse;
   mutable int tokenId = 0;
+  inline static uint64_t nextOrder = 0;
+  uint64_t order = nextOrder++;
 
   Touch(TouchId id_, const love::Vector2 &screenPos_, const love::Vector2 &pos_, double pressTime_,
       love::int64 loveTouchId_, bool isMouse_); // Private so only `Gesture` can create
@@ -84,7 +86,8 @@ public:
   const Touch &getTouch(TouchId touchId) const;
   const Touch *maybeGetTouch(TouchId touchId) const;
   template<typename F>
-  void forEachTouch(F &&f) const; // `f` takes `(TouchId, const Touch &)` or `(const Touch &)`
+  void forEachTouch(F &&f) const; // `f` takes `(TouchId, const Touch &)` or `(const Touch &)`.
+                                  // Iterates in earliest to latest order.
   template<typename F>
   void withSingleTouch(F &&f) const; // `forEachTouch(f)` if `getMaxCount() == 1`
 

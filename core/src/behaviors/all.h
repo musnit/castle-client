@@ -18,6 +18,7 @@
 #include "behaviors/drawing2.h"
 #include "behaviors/sling.h"
 #include "behaviors/drag.h"
+#include "behaviors/analog_stick.h"
 
 
 class AllBehaviors {
@@ -72,6 +73,7 @@ private:
 
     // Controls
     DragBehavior, // Listed first so it can capture touches
+    AnalogStickBehavior,
     SlingBehavior,
 
     // Rendering

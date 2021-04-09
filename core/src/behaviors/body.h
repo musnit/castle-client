@@ -81,6 +81,7 @@ private:
   friend class SlidingBehavior;
   friend class SlingBehavior;
   friend class DragBehavior;
+  friend class AnalogStickBehavior;
 
   b2Body *maybeGetPhysicsBody(ActorId actorId); // `nullptr` if not present
 

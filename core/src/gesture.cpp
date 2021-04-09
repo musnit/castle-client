@@ -56,6 +56,13 @@ void Gesture::update() {
     maxCount = 0;
     allReleased = false;
   }
+
+  // Keep touches sorted by creation order
+  registry.sort<Touch>(
+      [&](const Touch &a, const Touch &b) {
+        return a.order < b.order;
+      },
+      entt::insertion_sort());
 }
 
 void Gesture::updateTouch(float screenX, float screenY, love::int64 loveTouchId, bool isMouse) {

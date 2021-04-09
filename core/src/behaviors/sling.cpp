@@ -49,8 +49,8 @@ void SlingBehavior::handleDrawOverlay() const {
     return; // Nothing to draw if no components
   }
   getGesture().withSingleTouch([&](const Touch &touch) {
-    if (!touch.use(slingToken)) {
-      return; // Touch was used for some other purpose
+    if (!touch.isUsed(slingToken)) {
+      return; // Only draw touches we're using
     }
     auto drag = touch.initialPos - touch.pos;
     auto dragLen = drag.getLength();
