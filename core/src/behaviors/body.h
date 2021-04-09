@@ -33,7 +33,7 @@ struct BodyComponent : BaseComponent {
 
     struct FixtureProps {
       PROP(std::string, shapeType) = "polygon";
-      PROP(std::vector<float>, points);
+      PROP((SmallVector<float, 8>), points);
       PROP(float, x) = 0;
       PROP(float, y) = 0;
       PROP(float, radius) = 0;

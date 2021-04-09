@@ -15,6 +15,8 @@ namespace json = rapidjson;
 
 #include "common/Color.h"
 
+#include "utils/small_vector.h"
+
 #include "props.h"
 
 
@@ -136,6 +138,8 @@ public:
   void read(std::array<T, N> &a);
   template<typename T>
   void read(std::vector<T> &v);
+  template<typename T, unsigned N>
+  void read(SmallVector<T, N> &v);
 
   template<typename T>
   void read(T &&v); // Read value into an existing object of custom type. Can be a function, a type
@@ -563,6 +567,15 @@ void Reader::read(std::array<T, N> &a) {
 
 template<typename T>
 void Reader::read(std::vector<T> &v) {
+  v.resize(size());
+  auto i = 0;
+  each([&]() {
+    read(v[i++]);
+  });
+}
+
+template<typename T, unsigned N>
+void Reader::read(SmallVector<T, N> &v) {
   v.resize(size());
   auto i = 0;
   each([&]() {

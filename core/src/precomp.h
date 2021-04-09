@@ -54,3 +54,6 @@
 #include "rapidjson/prettywriter.h"
 #include "rapidjson/writer.h"
 namespace json = rapidjson;
+
+// SmallVector
+#include "utils/small_vector.h"
