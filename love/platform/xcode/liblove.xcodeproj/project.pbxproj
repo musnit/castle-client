@@ -5221,7 +5221,10 @@
 					"\"$(SRCROOT)/../../src/libraries\"",
 					"\"$(SRCROOT)/../../src/modules\"",
 					"\"$(SRCROOT)/../../src/libraries/enet/libenet/include\"",
-					"\"$(SRCROOT)/../../../ghost-extensions",
+					"\"$(SRCROOT)/../../../ghost-extensions\"",
+					"\"$(SRCROOT)/../../../core/src\"",
+					"\"$(SRCROOT)/../../../core/vendor/entt/src\"",
+					"\"$(SRCROOT)/../../../core/vendor/magic_get/include\"",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "@rpath";
@@ -5290,7 +5293,10 @@
 					"\"$(SRCROOT)/../../src/libraries\"",
 					"\"$(SRCROOT)/../../src/modules\"",
 					"\"$(SRCROOT)/../../src/libraries/enet/libenet/include\"",
-					"\"$(SRCROOT)/../../../ghost-extensions",
+					"\"$(SRCROOT)/../../../ghost-extensions\"",
+					"\"$(SRCROOT)/../../../core/src\"",
+					"\"$(SRCROOT)/../../../core/vendor/entt/src\"",
+					"\"$(SRCROOT)/../../../core/vendor/magic_get/include\"",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "@rpath";
@@ -5483,7 +5489,10 @@
 					"\"$(SRCROOT)/../../src/libraries\"",
 					"\"$(SRCROOT)/../../src/modules\"",
 					"\"$(SRCROOT)/../../src/libraries/enet/libenet/include\"",
-					"\"$(SRCROOT)/../../../ghost-extensions",
+					"\"$(SRCROOT)/../../../ghost-extensions\"",
+					"\"$(SRCROOT)/../../../core/src\"",
+					"\"$(SRCROOT)/../../../core/vendor/entt/src\"",
+					"\"$(SRCROOT)/../../../core/vendor/magic_get/include\"",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "@rpath";
