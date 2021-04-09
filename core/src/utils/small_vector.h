@@ -988,7 +988,8 @@ void SmallVectorBase::grow_pod(void *FirstEl, size_t MinSizeInBytes,
 #undef LLVM_VECSMALL_ATTRIBUTE_ALWAYS_INLINE
 #undef LLVM_VECSMALL_UNLIKELY
 
-template<typename T, unsigned N = 3>
+// Bring into top-level namespace
+template<typename T, unsigned N>
 using SmallVector = smallvec::SmallVector<T, N>;
 
 #endif

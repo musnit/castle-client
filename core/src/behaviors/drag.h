@@ -16,7 +16,7 @@ struct DragComponent : BaseComponent {
     b2MouseJoint *joint = nullptr; // Pulls toward the touch position
     b2Vec2 localPos; // Point on actor held onto in local space
   };
-  SmallVector<Handle> handles;
+  SmallVector<Handle, 2> handles;
 };
 
 class DragBehavior : public BaseBehavior<DragBehavior, DragComponent> {
