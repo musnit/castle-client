@@ -31,8 +31,10 @@ void DragBehavior::handleDisableComponent(
 
 void DragBehavior::handlePerform(double dt) {
   if (!hasAnyEnabledComponent()) {
-    return; // Skip gesture logic if no components
+    return; // Nothing to do if no components
   }
+
+  // Create handles on touch presses
   getGesture().forEachTouch([&](TouchId touchId, const Touch &touch) {
     if (touch.isUsed()) {
       return; // Skip physics logic if touch already used
@@ -73,10 +75,14 @@ void DragBehavior::handlePerform(double dt) {
     }
   });
 
+  // Update or remove existing handles
   forEachEnabledComponent([&](ActorId actorId, DragComponent &component) {
     auto &handles = component.handles;
+    if (handles.empty()) {
+      return; // Early exit if no handles
+    }
 
-    // Update handles. Mark for removal by setting `.joint` to `nullptr`.
+    // Iterate and set `.joint` to `nullptr` to mark for removal, then use `std::remove_if`
     for (auto &handle : handles) {
       if (handle.joint) { // Just in case...
         if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId)) {
@@ -94,8 +100,6 @@ void DragBehavior::handlePerform(double dt) {
         }
       }
     }
-
-    // Remove handles marked for removal
     handles.erase(std::remove_if(handles.begin(), handles.end(),
                       [&](DragComponent::Handle &handle) {
                         return handle.joint == nullptr;
@@ -122,8 +126,12 @@ void DragBehavior::handleDrawOverlay() const {
   auto circleRadius = 18 * pixelScale;
 
   forEachEnabledComponent([&](ActorId actorId, const DragComponent &component) {
+    auto &handles = component.handles;
+    if (handles.empty()) {
+      return; // Skip body lookup if no handles
+    }
     if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId)) {
-      for (auto &handle : component.handles) {
+      for (auto &handle : handles) {
         if (auto touch = getGesture().maybeGetTouch(handle.touchId); touch && !touch->released) {
           // Draw circles at handle and touch, with a line connecting them
 
