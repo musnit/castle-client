@@ -278,7 +278,7 @@ void DrawData::updatePathDataRendering(PathData *pathData) {
   if (pathData->isTransparent) {
 	return;
   }
-  for (size_t i = 0; i < pathData->points.size() - 1; i++) {
+  for (size_t i = 0; i + 1 < pathData->points.size(); i++) {
 	auto p1 = pathData->points[i];
 	auto p2 = pathData->points[i + 1];
 	addSubpathDataForPoints(pathData, p1, p2);
