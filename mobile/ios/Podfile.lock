@@ -296,10 +296,10 @@ PODS:
     - SDWebImageWebPCoder (~> 0.6.1)
   - RNGestureHandler (1.10.3):
     - React-Core
-  - RNReanimated (1.7.0):
-    - React
-  - RNScreens (2.10.1):
-    - React
+  - RNReanimated (1.13.3):
+    - React-Core
+  - RNScreens (2.18.1):
+    - React-Core
   - RNSentry (2.4.0):
     - React-Core
     - Sentry (= 6.1.4)
@@ -576,8 +576,8 @@ SPEC CHECKSUMS:
   RNDeviceInfo: ab2ab4ca9e7f2bc4f35d62ab6ce2b66f2cbf1e7a
   RNFastImage: e19ba191922e7dab9d932a4d59d62d76660aa222
   RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
-  RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
-  RNScreens: b748efec66e095134c7166ca333b628cd7e6f3e2
+  RNReanimated: 514a11da3a2bcc6c3dfd9de32b38e2b9bf101926
+  RNScreens: f7ad633b2e0190b77b6a7aab7f914fad6f198d8d
   RNSentry: b0d55027200c96f52e26b9bfb20296d47fc5051d
   RNVectorIcons: 0bb4def82230be1333ddaeee9fcba45f0b288ed4
   SDWebImage: 7acbb57630ac7db4a495547fb73916ff3e432f6b
