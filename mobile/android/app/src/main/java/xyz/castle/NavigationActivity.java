@@ -43,7 +43,6 @@ import xyz.castle.navigation.TabBar;
 import xyz.castle.views.FeaturedFeedView;
 import xyz.castle.views.FollowingFeedView;
 import xyz.castle.views.HistoryFeedView;
-import xyz.castle.views.NewestFeedView;
 import xyz.castle.views.PlayDeckNativeView;
 import xyz.castle.navigation.CastleNavigationScreen;
 import xyz.castle.navigation.CastleStackNavigator;
@@ -82,13 +81,11 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
 
         new CastleNavigationScreen("Featured", (Activity activity) -> (new CastleStackNavigator(this, "FeaturedDecks"))).register();
         new CastleNavigationScreen("Following", (Activity activity) -> (new CastleStackNavigator(this, "FollowingDecksNative"))).register();
-        new CastleNavigationScreen("Newest", (Activity activity) -> (new CastleStackNavigator(this, "NewestDecksNative"))).register();
         new CastleNavigationScreen("Recent", (Activity activity) -> (new CastleStackNavigator(this, "RecentDecksNative"))).register();
         new CastleNavigationScreen("RootTabScreen", (Activity activity) -> {
             CastleTabNavigator homeNavigator = new CastleTabNavigator(activity, CastleTabNavigator.TABS_TOP);
             homeNavigator.addTab("Featured", "Featured", R.drawable.bottomtabs_browse);
             followingTab = homeNavigator.addTab("Following", "Following", R.drawable.bottomtabs_browse);
-            homeNavigator.addTab("Newest", "Newest", R.drawable.bottomtabs_browse);
             homeNavigator.addTab("Recent", "History", R.drawable.bottomtabs_browse);
             homeNavigator.doneAddingTabs();
             return homeNavigator;
@@ -118,7 +115,6 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
         new CastleNavigationScreen("PlayDeckNative", (Activity activity) -> new PlayDeckNativeView(activity)).register();
         new CastleNavigationScreen("FeaturedDecksNative", (Activity activity) -> new FeaturedFeedView(activity)).register();
         new CastleNavigationScreen("FollowingDecksNative", (Activity activity) -> new FollowingFeedView(activity)).register();
-        new CastleNavigationScreen("NewestDecksNative", (Activity activity) -> new NewestFeedView(activity)).register();
         new CastleNavigationScreen("RecentDecksNative", (Activity activity) -> new HistoryFeedView(activity)).register();
 
         new CastleNavigationScreen("LoginStack", (Activity activity) -> (new CastleStackNavigator(this, "LoginScreen"))).register();
