@@ -48,7 +48,7 @@ public:
 
   // Actor management
 
-  ActorId addActor();
+  ActorId addActor(Reader *maybeReader = nullptr, const char *maybeParentEntryId = nullptr);
   void removeActor(ActorId actorId);
 
   bool hasActor(ActorId actorId) const;
