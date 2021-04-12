@@ -21,7 +21,8 @@ void DebugDrawBehavior::handleDrawComponent(
       switch (shape->GetType()) {
       case b2Shape::e_circle: {
         auto circle = dynamic_cast<const b2CircleShape *>(shape);
-        lv.graphics.circle(love::Graphics::DRAW_FILL, 0, 0, circle->m_radius);
+        lv.graphics.circle(
+            love::Graphics::DRAW_FILL, circle->m_p.x, circle->m_p.y, circle->m_radius);
       } break;
       case b2Shape::e_polygon: {
         auto poly = dynamic_cast<const b2PolygonShape *>(shape);
