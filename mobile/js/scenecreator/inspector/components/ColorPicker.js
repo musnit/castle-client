@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { PopoverButton } from '../../../components/PopoverProvider';
-import { ColorPicker } from 'react-native-color-picker';
 import tinycolor from 'tinycolor2';
 
 const styles = StyleSheet.create({
@@ -91,21 +90,6 @@ const colors = [
   '#423934',
 ];
 
-const ColorPickerPopover = ({ valueStr, setValueFromStr, closePopover }) => {
-  return (
-    <ColorPicker
-      style={{ width: 200, height: 200 }}
-      oldColor={valueStr}
-      //onColorChange={setValueFromStr}
-      onColorSelected={(newValueStr) => {
-        setValueFromStr(newValueStr);
-        closePopover();
-      }}
-      onOldColorSelected={() => closePopover()}
-    />
-  );
-};
-
 const ColorPicker64Popover = ({ setValueFromStr, closePopover }) => {
   var swatches = [];
   for (let i = 0; i < colors.length; i++) {
@@ -123,7 +107,7 @@ const ColorPicker64Popover = ({ setValueFromStr, closePopover }) => {
   return <View style={styles.picker}>{swatches}</View>;
 };
 
-const NewColorPicker = ({ value, setValue }) => {
+const ColorPicker = ({ value, setValue }) => {
   let valueStr;
   if (value) {
     const r255 = 255 * value.r;
@@ -155,4 +139,4 @@ const NewColorPicker = ({ value, setValue }) => {
   );
 };
 
-export default NewColorPicker;
+export default ColorPicker;
