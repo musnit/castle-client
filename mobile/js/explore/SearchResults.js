@@ -2,7 +2,7 @@ import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { UserAvatar } from '../components/UserAvatar';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '../ReactNavigation';
 
 import debounce from 'lodash.debounce';
 import gql from 'graphql-tag';
