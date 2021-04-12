@@ -4,9 +4,9 @@ import { useIsFocused, useFocusEffect } from '../ReactNavigation';
 
 import { DecksFeed } from '../components/DecksFeed';
 import { PopoverProvider } from '../components/PopoverProvider';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '../ReactNavigation';
 import { useListen } from '../ghost/GhostEvents';
-import { useSafeArea } from 'react-native-safe-area-context';
 
 import * as Constants from '../Constants';
 import * as Utilities from '../common/utilities';
@@ -27,8 +27,6 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
     initialDeckIndex = route.params.initialDeckIndex ?? 0;
   }
   // TODO: BEN: respect initialDeckIndex
-
-  const insets = useSafeArea();
 
   const { pop } = useNavigation();
   if (Constants.Android) {
@@ -58,7 +56,7 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
   );
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <PopoverProvider>
         <DecksFeed
           decks={decks}
@@ -71,6 +69,6 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
           }}
         />
       </PopoverProvider>
-    </View>
+    </SafeAreaView>
   );
 };

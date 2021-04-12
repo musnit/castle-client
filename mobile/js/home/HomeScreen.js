@@ -4,7 +4,7 @@ import { FeaturedDecks } from './FeaturedDecks';
 import { FollowingDecks } from './FollowingDecks';
 import { PopoverProvider } from '../components/PopoverProvider';
 import { RecentDecks } from './RecentDecks';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SegmentedNavigation } from '../components/SegmentedNavigation';
 import { useSession } from '../Session';
 import { useFocusEffect, useNavigation } from '../ReactNavigation';
@@ -75,7 +75,7 @@ const makeItems = ({ newFollowingDecks, isAnonymous } = {}) => {
 
 export const HomeScreen = ({ route }) => {
   useNavigation();
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   const [mode, setMode] = React.useState('featured');
   const { newFollowingDecks, isAnonymous } = useSession();
   const [items, setItems] = React.useState(makeItems());

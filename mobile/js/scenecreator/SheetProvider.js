@@ -9,7 +9,7 @@ import { DrawingLayersSheet } from './sheets/DrawingLayersSheet';
 import { SheetBackgroundOverlay } from '../components/SheetBackgroundOverlay';
 import { useCardCreator } from './CreateCardContext';
 import { useGhostUI } from '../ghost/GhostUI';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Viewport from '../common/viewport';
 
@@ -81,7 +81,7 @@ const sheetStackReducer = (prevStacks, action) => {
 export const SheetProvider = ({ activeSheet, setActiveSheet, isShowingDraw, beltHeight }) => {
   const { root, transformAssetUri } = useGhostUI();
   const { isPlaying, hasSelection } = useCardCreator();
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
 
   const [sheetStacks, updateSheetStacks] = React.useReducer(sheetStackReducer, {});
   const closeRootSheet = () => setActiveSheet(null);

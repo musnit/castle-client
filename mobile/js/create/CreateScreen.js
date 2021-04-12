@@ -13,9 +13,9 @@ import { AuthPrompt } from '../auth/AuthPrompt';
 import { CardCell } from '../components/CardCell';
 import { CommonActions, useNavigation, useFocusEffect } from '../ReactNavigation';
 import { EmptyFeed } from '../home/EmptyFeed';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { useLazyQuery } from '@apollo/react-hooks';
-import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
 import { useSession } from '../Session';
 
 import FastImage from 'react-native-fast-image';
@@ -81,7 +81,6 @@ export const CreateScreen = () => {
 };
 
 const CreateScreenAuthenticated = () => {
-  const insets = useSafeArea();
   const navigation = useNavigation();
   const [decks, setDecks] = React.useState(undefined);
   const [error, setError] = React.useState(undefined);
@@ -148,7 +147,7 @@ const CreateScreenAuthenticated = () => {
   );
 
   return (
-    <View style={[Constants.styles.container, { paddingTop: insets.top }]}>
+    <SafeAreaView style={Constants.styles.container} edges={['top']}>
       <ScreenHeader title="Your Decks" />
 
       {decks && decks.length === 0 && (
@@ -214,6 +213,6 @@ const CreateScreenAuthenticated = () => {
           source={require('../../assets/images/BottomTabs-create.png')}
         />
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 };

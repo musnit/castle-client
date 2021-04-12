@@ -7,9 +7,9 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from './ScreenHeader';
 import { useNavigation } from '../ReactNavigation';
-import { useSafeArea } from 'react-native-safe-area-context';
 import { UserAvatar } from '../components/UserAvatar';
 
 import * as Constants from '../Constants';
@@ -48,7 +48,6 @@ const styles = StyleSheet.create({
 });
 
 export const UserListScreen = ({ users, route }) => {
-  const insets = useSafeArea();
   const { push } = useNavigation();
 
   if (!users && route?.params) {
@@ -59,7 +58,7 @@ export const UserListScreen = ({ users, route }) => {
   ]);
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <ScreenHeader title="Users" />
       <ScrollView contentContainerStyle={styles.scrollView}>
         {users.map((user, ii) => (
@@ -79,6 +78,6 @@ export const UserListScreen = ({ users, route }) => {
           </TouchableWithoutFeedback>
         ))}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };

@@ -17,7 +17,7 @@ import Viewport from '../common/viewport';
 import { BottomSheetHeader } from '../components/BottomSheetHeader';
 import { BottomSheet } from '../components/BottomSheet';
 import { MiscLinks } from './MiscLinks';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { UserAvatar } from '../components/UserAvatar';
 
 import * as Constants from '../Constants';
@@ -110,7 +110,7 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
 
   const installSource = NativeModules.CastleNativeUtils.getConstants().installSource;
 
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   const [user, changeUser] = React.useReducer(
     (user, changes) => ({
       ...user,

@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from 'react-native';
-import { useSafeArea, SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets, SafeAreaView } from 'react-native-safe-area-context';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { isTablet } from 'react-native-device-info';
 import * as GhostUI from '../ghost/GhostUI';
@@ -289,7 +289,7 @@ export const CreateCardScreen = ({
   };
 
   let cardFitStyles = null;
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   const headerHeight = isShowingDraw ? DRAWING_CARD_HEADER_HEIGHT : CARD_HEADER_HEIGHT;
   const footerHeight = getFooterHeight({ isShowingDraw });
   const maxCardHeight =

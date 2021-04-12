@@ -16,7 +16,7 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import { toRecentDate } from '../common/date-utilities';
 import { useAppState } from '../ghost/GhostAppState';
 import { useNavigation, useFocusEffect, useIsFocused } from '../ReactNavigation';
-import { SafeAreaView, useSafeArea } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSession, maybeFetchNotificationsAsync, setNotifBadge } from '../Session';
 import { UserAvatar } from '../components/UserAvatar';
 
@@ -171,7 +171,6 @@ export const NotificationsScreen = () => {
 };
 
 const NotificationsScreenAuthenticated = () => {
-  const insets = useSafeArea();
   const { navigate } = useNavigation();
   const [orderedNotifs, setOrderedNotifs] = React.useState([]);
   const [refresh, setRefresh] = React.useState(false);
@@ -302,7 +301,7 @@ const NotificationsScreenAuthenticated = () => {
   );
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <ScreenHeader title="Notifications" />
       {orderedNotifs.length > 0 && (
         <FlatList
@@ -334,6 +333,6 @@ const NotificationsScreenAuthenticated = () => {
           {refresh && <Text style={Constants.styles.emptyText}>Loading...</Text>}
         </View>
       )}
-    </View>
+    </SafeAreaView>
   );
 };

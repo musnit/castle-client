@@ -5,7 +5,6 @@ import { CardScene } from '../game/CardScene';
 import { CardText } from '../components/CardText';
 import { useQuery, useEffect } from '@apollo/react-hooks';
 import { useNavigation } from '../ReactNavigation';
-import { useSafeArea } from 'react-native-safe-area-context';
 
 import * as GhostUI from '../ghost/GhostUI';
 import * as GhostEvents from '../ghost/GhostEvents';

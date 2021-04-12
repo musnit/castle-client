@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useKeyboard } from '../common/utilities';
 import { AndroidNavigationContext } from '../ReactNavigation';
 
@@ -161,7 +161,7 @@ export const BottomSheet = ({
     );
   }
 
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   let lastSnap = React.useRef(initialSnap);
   const [keyboardState] = useKeyboard();
 
