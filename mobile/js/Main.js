@@ -203,7 +203,6 @@ if (Platform.OS === 'android') {
 
   AppRegistry.registerComponent('HomeScreen', WrapComponent(HomeScreen));
   AppRegistry.registerComponent('FeaturedDecks', WrapComponent(FeaturedDecks));
-  AppRegistry.registerComponent('NewestDecks', WrapComponent(NewestDecks));
   AppRegistry.registerComponent('RecentDecks', WrapComponent(RecentDecks));
   AppRegistry.registerComponent('PlayDeck', WrapComponent(PlayDeckScreen));
   AppRegistry.registerComponent(
