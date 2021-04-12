@@ -67,8 +67,7 @@ export const ExploreScreen = ({ route }) => {
       if (!lastFetchedTime || Date.now() - lastFetchedTime > REFETCH_FEED_INTERVAL_MS) {
         onRefresh();
       }
-    }),
-    [lastFetchedTime]
+    }, [lastFetchedTime])
   );
 
   React.useEffect(() => {

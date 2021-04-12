@@ -1,4 +1,5 @@
 import React from 'react';
+import { LogBox } from 'react-native';
 import { enableScreens } from 'react-native-screens';
 import { createNativeStackNavigator } from 'react-native-screens/native-stack';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
@@ -31,6 +32,14 @@ import FastImage from 'react-native-fast-image';
 enableScreens();
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+
+// we access the navigation route's "secret" index in order to decide whether to show the tab bar.
+// the solution recommended by the react-nav authors isn't sufficient for our case,
+// so just suppress these warnings.
+// see further discussion: https://github.com/react-navigation/react-navigation/issues/9056
+LogBox.ignoreLogs([
+  "Accessing the 'state' property of the 'route' object is not supported. If you want to get the focused route name, use the 'getFocusedRouteNameFromRoute' helper instead: https://reactnavigation.org/docs/screen-options-resolution/#setting-parent-screen-options-based-on-child-navigators-state",
+]);
 
 const ICON_SIZE = 28;
 

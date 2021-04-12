@@ -42,8 +42,7 @@ export const FeaturedDecks = ({ focused, deckId }) => {
       ) {
         onRefresh();
       }
-    }),
-    [lastFetched.time, deckId]
+    }, [lastFetched.time, deckId])
   );
 
   React.useEffect(() => {

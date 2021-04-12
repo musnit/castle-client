@@ -58,8 +58,7 @@ export const FollowingDecks = ({ deckId }) => {
       ) {
         onRefresh();
       }
-    }),
-    [lastFetched.time, deckId]
+    }, [lastFetched.time, deckId])
   );
 
   const onEndReached = React.useCallback(() => {
