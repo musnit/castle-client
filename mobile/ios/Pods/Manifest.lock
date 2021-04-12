@@ -212,8 +212,8 @@ PODS:
   - React-jsinspector (0.63.4)
   - react-native-image-picker (3.1.4):
     - React-Core
-  - react-native-safe-area-context (0.7.3):
-    - React
+  - react-native-safe-area-context (3.2.0):
+    - React-Core
   - react-native-video (5.1.0-alpha8):
     - React
     - react-native-video/Video (= 5.1.0-alpha8)
@@ -559,7 +559,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 93bd528844ad21dc07aab1c67cb10abae6df6949
   React-jsinspector: 58aef7155bc9a9683f5b60b35eccea8722a4f53a
   react-native-image-picker: 248afb60a0c5a24153cb7c7483b257f30541323b
-  react-native-safe-area-context: 8260e5157617df4b72865f44006797f895b2ada7
+  react-native-safe-area-context: f0906bf8bc9835ac9a9d3f97e8bde2a997d8da79
   react-native-video: 8d97379f3c2322a569f1e27542ad1a646cad9444
   React-RCTActionSheet: 89a0ca9f4a06c1f93c26067af074ccdce0f40336
   React-RCTAnimation: 1bde3ecc0c104c55df246eda516e0deb03c4e49b
