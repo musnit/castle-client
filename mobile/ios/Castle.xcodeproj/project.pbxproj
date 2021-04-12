@@ -1101,7 +1101,7 @@
 					../../love/platform/xcode/ios/include/luajit,
 					"../../ghost-extensions/tove2d/src/thirdparty/fp16/include",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LIBRARY_SEARCH_PATHS = ../../openssl/lib/iOS;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1157,7 +1157,7 @@
 					../../love/platform/xcode/ios/include/luajit,
 					"../../ghost-extensions/tove2d/src/thirdparty/fp16/include",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LIBRARY_SEARCH_PATHS = ../../openssl/lib/iOS;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
