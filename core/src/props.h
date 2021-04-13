@@ -73,8 +73,8 @@ private:
 // above:
 //
 //   Foo thing;
-//   fmt::print("health is: {}\n", thing.health.value);
-//   thing.aPair.value.first = 7;
+//   fmt::print("{} is: {}\n", thing.health.name(), thing.health());
+//   thing.aPair().first = 7;
 
 #define PROP(type, name_, ...)                                                                     \
 private:                                                                                           \
