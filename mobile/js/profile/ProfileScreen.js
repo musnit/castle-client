@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import { StatusBar, TouchableOpacity, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, StatusBar, Text, View } from 'react-native';
 import gql from 'graphql-tag';
 import { AuthPrompt } from '../auth/AuthPrompt';
 import { DecksGrid } from '../components/DecksGrid';
@@ -147,11 +147,9 @@ export const ProfileScreen = ({ userId, route }) => {
   );
 
   const RightButtonComponent = isMe ? (
-    <TouchableOpacity
-      style={Constants.styles.siteHeaderButton}
-      onPress={() => setSettingsSheet(true)}>
-      <MCIcon name="settings" size={24} color="#fff" />
-    </TouchableOpacity>
+    <Pressable style={Constants.styles.siteHeaderButton} onPress={() => setSettingsSheet(true)}>
+      {({ pressed }) => <MCIcon name="settings" size={24} color={pressed ? '#666' : '#fff'} />}
+    </Pressable>
   ) : null;
 
   if (isMe && isAnonymous) {

@@ -1,9 +1,9 @@
 import * as React from 'react';
 import {
   Animated,
+  Pressable,
   StyleSheet,
   Text,
-  TouchableOpacity,
   TouchableWithoutFeedback,
   View,
   Platform,
@@ -198,13 +198,13 @@ export const PopoverButton = ({ popover, children, style, activeStyle, ...props 
   const isActive =
     currentPopover && currentPopover.visible && currentPopover.measureRef === container.current;
   return (
-    <TouchableOpacity
+    <Pressable
       ref={container}
-      style={isActive ? activeStyle : style}
+      style={({ pressed }) => (isActive || pressed ? activeStyle : style)}
       onPress={onPress}
       {...props}>
       {children}
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
