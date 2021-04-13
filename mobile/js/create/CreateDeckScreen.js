@@ -3,6 +3,7 @@ import gql from 'graphql-tag';
 import {
   ActivityIndicator,
   InteractionManager,
+  Pressable,
   Text,
   TouchableOpacity,
   View,
@@ -396,7 +397,7 @@ export const CreateDeckScreen = (props) => {
           <>
             <View style={styles.settingsRow}>
               <View style={styles.layoutPicker}>
-                <TouchableOpacity
+                <Pressable
                   style={styles.layoutButton}
                   onPress={() =>
                     setViewMode({
@@ -410,13 +411,13 @@ export const CreateDeckScreen = (props) => {
                     size={24}
                     color={viewMode === 'carousel' ? '#fff' : '#888'}
                   />
-                </TouchableOpacity>
-                <TouchableOpacity
+                </Pressable>
+                <Pressable
                   style={styles.layoutButton}
                   onPress={() => setViewMode({ mode: 'grid', deckId: deck.deckId })}
                   hitSlop={{ top: 2, left: 2, bottom: 2, right: 2 }}>
                   <Icon name="apps" size={24} color={viewMode === 'grid' ? '#fff' : '#888'} />
-                </TouchableOpacity>
+                </Pressable>
               </View>
               <View style={styles.layoutPicker}>
                 {deck && deck.visibility === 'public' && deck.playCount ? (
@@ -425,9 +426,11 @@ export const CreateDeckScreen = (props) => {
                     <Text style={styles.playCountLabel}>{deck.playCount}</Text>
                   </View>
                 ) : null}
-                <TouchableOpacity onPress={openSettingsSheet}>
-                  <Icon name="settings" size={24} color="#888" />
-                </TouchableOpacity>
+                <Pressable onPress={openSettingsSheet}>
+                  {({ pressed }) => (
+                    <Icon name="settings" size={24} color={pressed ? '#333' : '#888'} />
+                  )}
+                </Pressable>
               </View>
             </View>
             <CardsSet

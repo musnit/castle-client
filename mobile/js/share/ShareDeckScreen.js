@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Alert, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Linking, Pressable, Text, TouchableOpacity, StyleSheet, View } from 'react-native';
 import { CardCell } from '../components/CardCell';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -176,15 +176,21 @@ export const ShareDeckScreen = ({ route }) => {
       <ScreenHeader
         title="Share Deck"
         RightButtonComponent={
-          <TouchableOpacity
+          <Pressable
             style={Constants.styles.siteHeaderIcon}
             onPress={() => onTapShare(deck, visibility)}>
-            <Feather
-              name={Constants.iOS ? 'share' : 'share-2'}
-              size={24}
-              color={visibility == 'private' ? Constants.colors.grayText : Constants.colors.white}
-            />
-          </TouchableOpacity>
+            {({ pressed }) => (
+              <Feather
+                name={Constants.iOS ? 'share' : 'share-2'}
+                size={24}
+                color={
+                  visibility == 'private' || pressed
+                    ? Constants.colors.grayText
+                    : Constants.colors.white
+                }
+              />
+            )}
+          </Pressable>
         }
       />
       <View style={styles.deckPreview}>
