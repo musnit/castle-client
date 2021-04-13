@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import Feather from 'react-native-vector-icons/Feather';
 
@@ -84,9 +84,9 @@ export const SearchInput = ({ onFocus, onCancel, ...props }) => {
         />
       </View>
       {isFocused ? (
-        <TouchableOpacity style={styles.cancelButton} onPress={cancelSearch}>
+        <Pressable style={styles.cancelButton} onPress={cancelSearch}>
           <Text style={styles.cancel}>Cancel</Text>
-        </TouchableOpacity>
+        </Pressable>
       ) : null}
     </View>
   );

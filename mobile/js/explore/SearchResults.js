@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { UserAvatar } from '../components/UserAvatar';
 import { useNavigation } from '../ReactNavigation';
@@ -20,6 +20,9 @@ const styles = StyleSheet.create({
     borderBottomColor: Constants.colors.grayOnBlackBorder,
     padding: 16,
     alignItems: 'center',
+  },
+  pressedRow: {
+    backgroundColor: '#333',
   },
   rowLabel: {
     color: Constants.colors.white,
@@ -53,10 +56,12 @@ const search = async (query) => {
 
 const SearchResult = ({ user, onSelectUser }) => {
   return (
-    <TouchableOpacity style={styles.row} onPress={() => onSelectUser(user)}>
+    <Pressable
+      style={({ pressed }) => [styles.row, pressed ? styles.pressedRow : null]}
+      onPress={() => onSelectUser(user)}>
       <UserAvatar url={user?.photo?.url} style={styles.avatar} />
       <Text style={styles.rowLabel}>{user.username}</Text>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
