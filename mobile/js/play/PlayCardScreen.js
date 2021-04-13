@@ -1,6 +1,6 @@
 import React from 'react';
 import gql from 'graphql-tag';
-import { TouchableWithoutFeedback, ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { CardScene } from '../game/CardScene';
 import { CardText } from '../components/CardText';
 import { useQuery, useEffect } from '@apollo/react-hooks';

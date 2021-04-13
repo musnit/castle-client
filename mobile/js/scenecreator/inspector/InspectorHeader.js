@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  Text,
-  TextInput,
-  TouchableWithoutFeedback,
-} from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Text, TextInput } from 'react-native';
 import { SegmentedNavigation } from '../../components/SegmentedNavigation';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useCardCreator } from '../CreateCardContext';

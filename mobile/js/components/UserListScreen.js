@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, Pressable, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from './ScreenHeader';
 import { useNavigation } from '../ReactNavigation';
@@ -62,20 +55,19 @@ export const UserListScreen = ({ users, route }) => {
       <ScreenHeader title="Users" />
       <ScrollView contentContainerStyle={styles.scrollView}>
         {users.map((user, ii) => (
-          <TouchableWithoutFeedback
+          <Pressable
             key={`user-${user.userId}`}
-            onPress={() => navigateToUser(user)}>
-            <View style={styles.row}>
-              {user.photo?.url ? (
-                <View style={styles.avatar}>
-                  <UserAvatar url={user.photo.url} />
-                </View>
-              ) : null}
-              <View style={styles.rowBody}>
-                <Text style={styles.username}>{user.username}</Text>
+            onPress={() => navigateToUser(user)}
+            style={styles.row}>
+            {user.photo?.url ? (
+              <View style={styles.avatar}>
+                <UserAvatar url={user.photo.url} />
               </View>
+            ) : null}
+            <View style={styles.rowBody}>
+              <Text style={styles.username}>{user.username}</Text>
             </View>
-          </TouchableWithoutFeedback>
+          </Pressable>
         ))}
       </ScrollView>
     </SafeAreaView>

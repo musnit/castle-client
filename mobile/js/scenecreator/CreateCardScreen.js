@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  Keyboard,
-  View,
-  PixelRatio,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-} from 'react-native';
+import { Keyboard, View, PixelRatio, StyleSheet, Text } from 'react-native';
 import { useSafeAreaInsets, SafeAreaView } from 'react-native-safe-area-context';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { isTablet } from 'react-native-device-info';

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+import { StyleSheet, Text, Pressable, View } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const styles = StyleSheet.create({
@@ -31,11 +31,9 @@ export const InspectorCheckbox = ({ value, label, onChange, style, ...props }) =
   return (
     <View style={[styles.container, style]} {...props}>
       <Text style={styles.label}>{label}</Text>
-      <TouchableWithoutFeedback onPress={onPress}>
-        <View style={styles.box}>
-          {value ? <FontAwesome name="check" size={18} color="#000" /> : null}
-        </View>
-      </TouchableWithoutFeedback>
+      <Pressable onPress={onPress} style={styles.box}>
+        {value ? <FontAwesome name="check" size={18} color="#000" /> : null}
+      </Pressable>
     </View>
   );
 };

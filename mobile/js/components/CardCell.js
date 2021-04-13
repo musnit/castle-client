@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+import { Image, StyleSheet, Text, Pressable, View } from 'react-native';
 import { UserAvatar } from '../components/UserAvatar';
 
 import FastImage from 'react-native-fast-image';
@@ -157,49 +157,47 @@ export const CardCell = ({
 }) => {
   return (
     <View style={[styles.container, style]}>
-      <TouchableWithoutFeedback disabled={!onPress} onPress={onPress}>
-        <View
-          style={{
-            ...styles.card,
-            borderRadius: inGrid
-              ? Constants.CARD_SMALL_BORDER_RADIUS
-              : Constants.CARD_BORDER_RADIUS,
-          }}>
-          <CardArtwork
-            card={card}
-            previewVideo={previewVideo}
-            previewVideoPaused={previewVideoPaused}
-          />
-          {creator?.photo?.url || title ? (
-            <View style={styles.meta}>
-              {creator?.photo?.url && (
-                <View style={styles.metaImage}>
-                  <UserAvatar url={creator.photo.url} shadow={true} />
-                </View>
-              )}
-              {title && <Text style={styles.metaTitle}>{title}</Text>}
-            </View>
-          ) : null}
-          {visibility && visibility !== 'public' ? (
-            <View style={styles.visibility}>
-              <Icon
-                size={16}
-                name={
-                  visibility === 'private' ? 'lock' : visibility === 'unlisted' ? 'link' : 'share'
-                }
-                color="#000"
-              />
-            </View>
-          ) : null}
-          {visibility !== 'private' && playCount !== undefined ? (
-            <View style={{ ...styles.playCount, left: visibility === 'unlisted' ? 44 : 8 }}>
-              <Icon size={16} name="play-arrow" color="#000" />
-              <Text style={styles.playCountLabel}>{playCount}</Text>
-            </View>
-          ) : null}
-          {isInitialCard && <InitialCardIndicator inGrid={inGrid} />}
-        </View>
-      </TouchableWithoutFeedback>
+      <Pressable
+        disabled={!onPress}
+        onPress={onPress}
+        style={{
+          ...styles.card,
+          borderRadius: inGrid ? Constants.CARD_SMALL_BORDER_RADIUS : Constants.CARD_BORDER_RADIUS,
+        }}>
+        <CardArtwork
+          card={card}
+          previewVideo={previewVideo}
+          previewVideoPaused={previewVideoPaused}
+        />
+        {creator?.photo?.url || title ? (
+          <View style={styles.meta}>
+            {creator?.photo?.url && (
+              <View style={styles.metaImage}>
+                <UserAvatar url={creator.photo.url} shadow={true} />
+              </View>
+            )}
+            {title && <Text style={styles.metaTitle}>{title}</Text>}
+          </View>
+        ) : null}
+        {visibility && visibility !== 'public' ? (
+          <View style={styles.visibility}>
+            <Icon
+              size={16}
+              name={
+                visibility === 'private' ? 'lock' : visibility === 'unlisted' ? 'link' : 'share'
+              }
+              color="#000"
+            />
+          </View>
+        ) : null}
+        {visibility !== 'private' && playCount !== undefined ? (
+          <View style={{ ...styles.playCount, left: visibility === 'unlisted' ? 44 : 8 }}>
+            <Icon size={16} name="play-arrow" color="#000" />
+            <Text style={styles.playCountLabel}>{playCount}</Text>
+          </View>
+        ) : null}
+        {isInitialCard && <InitialCardIndicator inGrid={inGrid} />}
+      </Pressable>
     </View>
   );
 };
