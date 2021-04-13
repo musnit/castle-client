@@ -7,17 +7,16 @@ import Viewport from '../common/viewport';
 
 import { DecksGrid } from '../components/DecksGrid';
 import { EmptyFeed } from '../home/EmptyFeed';
-import { useLazyQuery } from '@apollo/react-hooks';
+import { useLazyQuery, gql } from '@apollo/client';
 import { isTablet } from 'react-native-device-info';
 import FastImage from 'react-native-fast-image';
 import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
-import gql from 'graphql-tag';
 
 const SPRING_PARTY_URL = 'https://castle.xyz/spring_party';
 const REFETCH_FEED_INTERVAL_MS = 60 * 1000;
 
-const PARTY_START = new Date("2021-03-31T09:00:00.000-07:00");
-const PARTY_END = new Date("2021-04-04T23:59:00.000-07:00");
+const PARTY_START = new Date('2021-03-31T09:00:00.000-07:00');
+const PARTY_END = new Date('2021-04-04T23:59:00.000-07:00');
 
 const styles = StyleSheet.create({
   springContainer: {

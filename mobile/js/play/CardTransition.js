@@ -1,6 +1,6 @@
 import React from 'react';
 import { Animated, Easing, InteractionManager, Platform, StyleSheet, View } from 'react-native';
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client';
 
 import * as Constants from '../Constants';
 import * as Session from '../Session';

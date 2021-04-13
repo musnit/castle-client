@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
-import gql from 'graphql-tag';
-import { useLazyQuery } from '@apollo/react-hooks';
+import { useLazyQuery, gql } from '@apollo/client';
 import { sendAsync, useGhostEvents, useListen } from '../ghost/GhostEvents';
 import { GameLoading } from './GameLoading';
 import { GameLogs } from './GameLogs';

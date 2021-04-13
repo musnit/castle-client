@@ -1,10 +1,9 @@
 import React from 'react';
 import { Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { CastleAsyncStorage } from '../common/CastleAsyncStorage';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, gql } from '@apollo/client';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import gql from 'graphql-tag';
 import FastImage from 'react-native-fast-image';
 
 import * as Constants from '../Constants';

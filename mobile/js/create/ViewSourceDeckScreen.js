@@ -1,9 +1,8 @@
 import React from 'react';
-import gql from 'graphql-tag';
 import { ActivityIndicator, Alert, TouchableOpacity, View } from 'react-native';
 import { CardsSet } from '../components/CardsSet';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, gql } from '@apollo/client';
 import { useNavigation, useFocusEffect } from '../ReactNavigation';
 import { ScreenHeader } from '../components/ScreenHeader';
 

@@ -8,7 +8,7 @@ import { UserAvatar } from '../components/UserAvatar';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client';
 
 import * as Constants from '../Constants';
 import * as Session from '../Session';

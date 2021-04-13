@@ -8,7 +8,7 @@ import {
   PixelRatio,
 } from 'react-native';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
-import { ApolloProvider } from '@apollo/react-hooks';
+import { ApolloProvider } from '@apollo/client';
 import { RootNavigator } from './Navigation';
 import { AndroidNavigationContext } from './ReactNavigation';
 import BootSplash from 'react-native-bootsplash';

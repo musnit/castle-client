@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import debounce from 'lodash.debounce';
 import FastImage from 'react-native-fast-image';
-import gql from 'graphql-tag';
 import ExpoConstants from 'expo-constants';
 import { CastleAsyncStorage } from './common/CastleAsyncStorage';
 import { NativeModules, Platform } from 'react-native';
-import { ApolloClient } from 'apollo-client';
-import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
-import { onError } from 'apollo-link-error';
-import { ApolloLink, Observable } from 'apollo-link';
+import { gql, ApolloClient, ApolloLink, Observable } from '@apollo/client';
+import { InMemoryCache } from '@apollo/client/cache';
+import { onError } from '@apollo/client/link/error';
 import { createUploadLink, ReactNativeFile } from 'apollo-upload-client';
 
 import * as Amplitude from 'expo-analytics-amplitude';
@@ -324,7 +322,6 @@ export const useSession = () => React.useContext(SessionContext);
 export const isSignedIn = () => gAuthToken !== null;
 export const isAnonymous = () => gIsAnonymous;
 
-// Based on https://www.apollographql.com/docs/react/migrating/boost-migration/
 export const apolloClient = new ApolloClient({
   link: ApolloLink.from([
     onError(({ graphQLErrors, networkError }) => {
@@ -378,9 +375,17 @@ export const apolloClient = new ApolloClient({
     }),
   ]),
   cache: new InMemoryCache({
-    cacheRedirects: {
+    // https://www.apollographql.com/docs/react/caching/advanced-topics/#cache-redirects-using-field-policy-read-functions
+    typePolicies: {
       Query: {
-        card: (_, args, { getCacheKey }) => getCacheKey({ __typename: 'Card', id: args.cardId }),
+        fields: {
+          card(_, { args, toReference }) {
+            return toReference({
+              __typename: 'Card',
+              id: args.cardId,
+            });
+          },
+        },
       },
     },
   }),

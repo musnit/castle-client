@@ -1,4 +1,4 @@
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client';
 import AsyncStorage from '@react-native-community/async-storage';
 import uuid from 'uuid';
 import md5 from 'md5';

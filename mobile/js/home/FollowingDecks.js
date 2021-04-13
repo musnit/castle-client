@@ -1,10 +1,9 @@
 import React from 'react';
 import { DecksFeed } from '../components/DecksFeed';
 import { EmptyFeed } from './EmptyFeed';
-import { useLazyQuery } from '@apollo/react-hooks';
+import { useLazyQuery, gql } from '@apollo/client';
 import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
 import { useSession } from '../Session';
-import gql from 'graphql-tag';
 
 import * as Constants from '../Constants';
 

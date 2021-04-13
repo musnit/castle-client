@@ -1,6 +1,6 @@
 import React from 'react';
 import { Keyboard, Share } from 'react-native';
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client';
 import { launchImageLibrary as ImagePickerLaunchImageLibrary } from 'react-native-image-picker';
 import { ReactNativeFile } from 'apollo-upload-client';
 import tinycolor from 'tinycolor2';

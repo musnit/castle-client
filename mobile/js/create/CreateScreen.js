@@ -15,11 +15,10 @@ import { CommonActions, useNavigation, useFocusEffect } from '../ReactNavigation
 import { EmptyFeed } from '../home/EmptyFeed';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
-import { useLazyQuery } from '@apollo/react-hooks';
+import { useLazyQuery, gql } from '@apollo/client';
 import { useSession } from '../Session';
 
 import FastImage from 'react-native-fast-image';
-import gql from 'graphql-tag';
 import Viewport from '../common/viewport';
 
 import * as Amplitude from 'expo-analytics-amplitude';

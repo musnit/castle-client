@@ -1,5 +1,4 @@
 import React from 'react';
-import gql from 'graphql-tag';
 import {
   ActivityIndicator,
   InteractionManager,
@@ -14,7 +13,7 @@ import { DeckSettingsSheet } from './DeckSettingsSheet';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { SheetBackgroundOverlay } from '../components/SheetBackgroundOverlay';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useQuery, useMutation, gql } from '@apollo/client';
 import { useNavigation, useFocusEffect } from '../ReactNavigation';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 

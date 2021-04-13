@@ -1,11 +1,11 @@
 import * as React from 'react';
+import { gql } from '@apollo/client';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { UserAvatar } from '../components/UserAvatar';
 import { useNavigation } from '../ReactNavigation';
 
 import debounce from 'lodash.debounce';
-import gql from 'graphql-tag';
 
 import * as Constants from '../Constants';
 import * as Session from '../Session';

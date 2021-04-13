@@ -1,7 +1,6 @@
 import React from 'react';
-import gql from 'graphql-tag';
-import { useQuery } from '@apollo/react-hooks';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { gql, useQuery } from '@apollo/client';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import uuid from 'uuid/v4';

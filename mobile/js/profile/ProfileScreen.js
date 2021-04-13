@@ -1,12 +1,11 @@
 import React, { Fragment, useState } from 'react';
 import { Pressable, StyleSheet, StatusBar, Text, View } from 'react-native';
-import gql from 'graphql-tag';
 import { AuthPrompt } from '../auth/AuthPrompt';
 import { DecksGrid } from '../components/DecksGrid';
 import { EmptyFeed } from '../home/EmptyFeed';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
-import { useLazyQuery } from '@apollo/react-hooks';
+import { useLazyQuery, gql } from '@apollo/client';
 import { useNavigation, useFocusEffect, useIsFocused, useScrollToTop } from '../ReactNavigation';
 import { useSession } from '../Session';
 import { PopoverProvider } from '../components/PopoverProvider';

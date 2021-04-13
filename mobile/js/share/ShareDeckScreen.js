@@ -5,13 +5,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { UserAvatar } from '../components/UserAvatar';
 import { shareDeck, getCardBackgroundColor } from '../common/utilities';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, gql } from '@apollo/client';
 import { useNavigation } from '../ReactNavigation';
 
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 
-import gql from 'graphql-tag';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
 

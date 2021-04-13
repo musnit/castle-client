@@ -6,8 +6,7 @@ import { SearchResults } from './SearchResults';
 import { ExploreRow } from './ExploreRow';
 import { useFocusEffect, useNavigation } from '../ReactNavigation';
 
-import { useLazyQuery } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
+import { useLazyQuery, gql } from '@apollo/client';
 
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';

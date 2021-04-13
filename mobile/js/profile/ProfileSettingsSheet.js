@@ -11,7 +11,7 @@ import {
   Alert,
 } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client';
 import Viewport from '../common/viewport';
 
 import { BottomSheetHeader } from '../components/BottomSheetHeader';

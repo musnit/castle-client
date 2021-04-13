@@ -2,9 +2,8 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import { DecksGrid } from '../components/DecksGrid';
 import { EmptyFeed } from './EmptyFeed';
-import { useLazyQuery } from '@apollo/react-hooks';
+import { useLazyQuery, gql } from '@apollo/client';
 import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
-import gql from 'graphql-tag';
 
 import * as Constants from '../Constants';
 import * as Session from '../Session';

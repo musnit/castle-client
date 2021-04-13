@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client';
 import { useNavigation } from '../ReactNavigation';
 import { StyleSheet, View } from 'react-native';
 

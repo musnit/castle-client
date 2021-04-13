@@ -1,12 +1,10 @@
 import React from 'react';
 import { View } from 'react-native';
-import { ScreenHeader } from '../components/ScreenHeader';
 import { DecksGrid } from '../components/DecksGrid';
-
-import { useLazyQuery } from '@apollo/react-hooks';
+import { useLazyQuery, gql } from '@apollo/client';
 import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
-import gql from 'graphql-tag';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenHeader } from '../components/ScreenHeader';
 
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
