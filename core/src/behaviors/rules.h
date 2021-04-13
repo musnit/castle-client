@@ -6,11 +6,13 @@
 #include "props.h"
 
 
+struct BaseResponse; // Forward declarations
+using ResponseRef = BaseResponse *;
+
+
 //
 // Behavior
 //
-
-struct BaseResponse; // Forward declaration
 
 struct RulesComponent : BaseComponent {
   struct Props {
@@ -32,9 +34,9 @@ public:
 
 
 private:
-  // Root responses
+  json::MemoryPoolAllocator<json::CrtAllocator> alloc;
 
-  std::unordered_map<void *, std::unique_ptr<BaseResponse>> roots;
+  std::unordered_map<void *, ResponseRef> roots; // Map from JSON object to loaded response
 
 
   // Loaders (maps from names to read functions for rule types)
@@ -47,18 +49,18 @@ private:
   struct TriggerLoader {
     entt::hashed_string nameHs;
     int behaviorId = -1;
-    void (*read)(Scene &scene, ActorId actorId, BaseResponse *response, Reader &reader) = nullptr;
+    void (*read)(Scene &scene, ActorId actorId, ResponseRef response, Reader &reader) = nullptr;
   };
   inline static std::vector<TriggerLoader> triggerLoaders;
 
   struct ResponseLoader {
     entt::hashed_string nameHs;
     int behaviorId = -1;
-    std::unique_ptr<BaseResponse> (*read)(RulesBehavior &rules, Reader &reader) = nullptr;
+    ResponseRef (*read)(RulesBehavior &rules, Reader &reader) = nullptr;
   };
   inline static std::vector<ResponseLoader> responseLoaders;
 
-  std::unique_ptr<BaseResponse> readResponse(Reader &reader);
+  ResponseRef readResponse(Reader &reader);
 };
 
 
@@ -82,7 +84,7 @@ struct TriggerComponent {
 
   struct Entry {
     T trigger;
-    BaseResponse *response = nullptr;
+    ResponseRef response = nullptr;
   };
   SmallVector<Entry, 4> entries;
 };
@@ -93,8 +95,6 @@ struct TriggerComponent {
 //
 
 struct BaseTrigger {};
-
-using ResponseRef = std::unique_ptr<BaseResponse>;
 
 struct BaseResponse {
   virtual ~BaseResponse() = default;
@@ -143,7 +143,7 @@ RuleRegistration<T>::RuleRegistration(const char *name, int behaviorId) {
     RulesBehavior::triggerLoaders.push_back({
         entt::hashed_string(name),
         behaviorId,
-        +[](Scene &scene, ActorId actorId, BaseResponse *response, Reader &reader) {
+        +[](Scene &scene, ActorId actorId, ResponseRef response, Reader &reader) {
           // Add a `TriggerComponent<T>` entry for this rule
           auto &component
               = scene.getEntityRegistry().template get_or_emplace<TriggerComponent<T>>(actorId);
@@ -165,9 +165,10 @@ RuleRegistration<T>::RuleRegistration(const char *name, int behaviorId) {
     RulesBehavior::responseLoaders.push_back({
         entt::hashed_string(name),
         behaviorId,
-        +[](RulesBehavior &rules, Reader &reader) -> std::unique_ptr<BaseResponse> {
+        +[](RulesBehavior &rules, Reader &reader) -> ResponseRef {
           // Initialize a new response, read params and return
-          auto response = std::make_unique<T>();
+          auto response = (T *)rules.alloc.Malloc(sizeof(T));
+          new (response) T();
           reader.obj("params", [&]() {
             // Reflected props
             if constexpr (Props::hasProps<decltype(response->params)>) {

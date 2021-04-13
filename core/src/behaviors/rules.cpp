@@ -49,20 +49,17 @@ void RulesBehavior::handleReadComponent(
     ActorId actorId, RulesComponent &component, Reader &reader) {
   reader.each("rules", [&]() {
     // Response
-    BaseResponse *response = nullptr;
+    ResponseRef response = nullptr;
     reader.obj("response", [&]() {
       auto jsonPtr = (void *)reader.jsonValue();
-
-      // Return pre-existing root response for this JSON if found
       if (auto found = roots.find(jsonPtr); found != roots.end()) {
-        response = found->second.get();
-        return;
+        // Found a pre-existing root response for this JSON
+        response = found->second;
+      } else {
+        // New JSON -- read and remember as a root
+        response = readResponse(reader);
+        roots.insert_or_assign(jsonPtr, response);
       }
-
-      // Read response and remember it as a root
-      auto holder = readResponse(reader);
-      response = holder.get();
-      roots.insert_or_assign(jsonPtr, std::move(holder));
     });
     if (!response) {
       return; // Failed to load response
@@ -87,7 +84,7 @@ void RulesBehavior::handleReadComponent(
   });
 }
 
-std::unique_ptr<BaseResponse> RulesBehavior::readResponse(Reader &reader) {
+ResponseRef RulesBehavior::readResponse(Reader &reader) {
   // Find loader by name and behavior id
   if (auto maybeName = reader.str("name")) {
     if (auto maybeBehaviorId = reader.num("behaviorId")) {
