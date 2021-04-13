@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, Pressable, View } from 'react-native';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as Constants from '../Constants';
@@ -85,7 +85,7 @@ export const SegmentedNavigation = (props) => {
   return (
     <View style={styles.container}>
       {items.map((item) => (
-        <TouchableOpacity
+        <Pressable
           key={item.value}
           style={[styles.item, item === selectedItem ? styles.selectedItem : null]}
           onPress={() => onSelectItem(item)}>
@@ -97,7 +97,7 @@ export const SegmentedNavigation = (props) => {
             </Text>
           )}
           {item.indicator ? <View style={styles.indicator} /> : null}
-        </TouchableOpacity>
+        </Pressable>
       ))}
     </View>
   );
