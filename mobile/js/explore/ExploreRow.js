@@ -30,39 +30,45 @@ const styles = StyleSheet.create({
 export const ExploreRow = ({ feed }) => {
   const { navigate } = useNavigation();
 
-  const onPressDeck = (deck) => {
-    navigate(
-      'PlayDeck',
-      {
-        decks: [deck],
-        initialDeckIndex: 0,
-        title: feed.title,
-      },
-      {
-        isFullscreen: true,
-      }
-    );
-  };
+  const onPressDeck = React.useCallback(
+    (deck) => {
+      navigate(
+        'PlayDeck',
+        {
+          decks: [deck],
+          initialDeckIndex: 0,
+          title: feed.title,
+        },
+        {
+          isFullscreen: true,
+        }
+      );
+    },
+    [navigate, feed]
+  );
 
-  const onPressTitle = () => {
+  const onPressTitle = React.useCallback(() => {
     navigate('ExploreFeed', {
       feedId: feed.feedId,
       title: feed.title,
     });
-  };
+  }, [navigate, feed]);
 
-  const renderItem = React.useCallback(({ item, index }) => {
-    const deck = item;
+  const renderItem = React.useCallback(
+    ({ item, index }) => {
+      const deck = item;
 
-    return deck ? (
-      <CardCell
-        card={deck.initialCard}
-        creator={deck.creator}
-        onPress={() => onPressDeck(deck)}
-        style={styles.itemCard}
-      />
-    ) : null;
-  }, []);
+      return deck ? (
+        <CardCell
+          card={deck.initialCard}
+          creator={deck.creator}
+          onPress={() => onPressDeck(deck)}
+          style={styles.itemCard}
+        />
+      ) : null;
+    },
+    [onPressDeck]
+  );
 
   return (
     <View style={styles.container}>

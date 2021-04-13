@@ -85,7 +85,7 @@ export const ExploreScreen = ({ route }) => {
   const onChangeSearchQuery = React.useCallback((text) => setSearchQuery(text), []);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }} edges={['top']}>
       <SearchInput
         onFocus={onStartSearch}
         onCancel={onCancelSearch}
