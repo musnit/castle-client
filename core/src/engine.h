@@ -21,7 +21,7 @@ public:
 
   Engine()
       : Engine("assets/test-c++-aquarium.json") {};
-  Engine(const char *sceneFile);
+  Engine(std::string scenePath);
 
   // Run one frame of the main loop. Return `false` if we should quit.
   bool frame();
@@ -32,7 +32,7 @@ public:
 private:
   Lv lv { 800, 1120 };
   love::RandomGenerator rng; // TODO(nikki): Seed this
-  const char *sceneFile;
+  std::string scenePath;
 
   [[maybe_unused]] bool prevWindowFocused = true;
   [[maybe_unused]] int prevWindowWidth = 0, prevWindowHeight = 0;

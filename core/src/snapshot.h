@@ -31,7 +31,7 @@ public:
 
   // To `Scene`
 
-  Scene *toScene();
+  std::unique_ptr<Scene> toScene();
 
 
 private:

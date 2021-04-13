@@ -53,8 +53,8 @@ Engine::PreInit::PreInit() {
 // Constructor, destructor
 //
 
-Engine::Engine(const char *sceneFile)
-    : sceneFile(sceneFile) {
+Engine::Engine(std::string scenePath)
+    : scenePath(scenePath) {
   // First timer step
   lv.timer.step();
   reloadFromFile();
@@ -62,7 +62,7 @@ Engine::Engine(const char *sceneFile)
 
 
 void Engine::reloadFromFile() {
-  scene = std::unique_ptr<Scene>(Snapshot::fromFile(sceneFile).toScene());
+  scene = Snapshot::fromFile(scenePath.c_str()).toScene();
 }
 
 //

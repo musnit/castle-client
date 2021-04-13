@@ -30,8 +30,8 @@ Snapshot Snapshot::fromJson(const char *json) {
 // To `Scene`
 //
 
-Scene *Snapshot::toScene() {
-  Scene *scene = new Scene();
+std::unique_ptr<Scene> Snapshot::toScene() {
+  auto scene = std::make_unique<Scene>();
   auto &library = scene->getLibrary();
 
   archive.read([&](Archive::Reader &reader) {
