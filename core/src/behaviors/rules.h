@@ -47,17 +47,22 @@ template<typename T>
 struct TriggerComponent {
   // Has entries for each rule with a trigger of type `T` on an actor. Includes the parameters of
   // the trigger along with the id of the body to execute.
+  //
+  // May be removed dynamically if it is no longer relevant (eg. `TriggerComponent<CreateTrigger>`
+  // is removed after it is run once). May be added dynamically if discovered at runtime (eg.
+  // `TriggerComponent<WaitTrigger>` is added when a wait response is run).
 
   struct Entry {
     T trigger;
     // TODO(nikki): Add id of rule body
   };
-  SmallVector<Entry, 8> entries;
+  SmallVector<Entry, 4> entries;
 };
+
 
 template<typename T>
 struct RuleRegistration {
-  // Registers a rule entity (trigger, response or expression) for loading. Must be defined as an
+  // Registers a rule type (trigger, response or expression) for loading. Must be defined as an
   // `inline static const` member of the type so it's constructed when the application starts.
 
   RuleRegistration(const char *name, int behaviorId);
