@@ -34,12 +34,12 @@
       "bp": {
         "components": {
           "Body": {
-            "x": 3,
-            "y": -5
+            "x": 0.25,
+            "y": -5.75
           }
         }
       },
-      "actorId": "0:3",
+      "actorId": "0:1",
       "parentEntryId": "3a5f3aca-f0f5-41de-c14d-6c5545ddcc3c"
     },
     {
@@ -319,7 +319,14 @@
                 "response": {
                   "name": "note",
                   "params": {
-                    "note": "hello, world!"
+                    "note": "hello, world!",
+                    "nextResponse": {
+                      "name": "note",
+                      "params": {
+                        "note": "hello, again! :O"
+                      },
+                      "behaviorId": 16
+                    }
                   },
                   "behaviorId": 16
                 }

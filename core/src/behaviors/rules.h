@@ -37,7 +37,7 @@ private:
   std::unordered_map<void *, std::unique_ptr<BaseResponse>> roots;
 
 
-  // Loaders
+  // Loaders (maps from names to read functions for rule types)
 
   template<typename T>
   friend struct RuleRegistration;
@@ -54,9 +54,11 @@ private:
   struct ResponseLoader {
     entt::hashed_string nameHs;
     int behaviorId = -1;
-    std::unique_ptr<BaseResponse> (*read)(Reader &reader) = nullptr;
+    std::unique_ptr<BaseResponse> (*read)(RulesBehavior &rules, Reader &reader) = nullptr;
   };
   inline static std::vector<ResponseLoader> responseLoaders;
+
+  std::unique_ptr<BaseResponse> readResponse(Reader &reader);
 };
 
 
@@ -67,10 +69,12 @@ private:
 template<typename T>
 struct TriggerComponent {
   // Actors that have rules with triggers of type `T` have this component, linking them to the
-  // responses to execute for that trigger. Also enables fast searches for actors with a given
-  // trigger type. Since there can be multiple rules with the same trigger type on an actor, this
-  // component has multiple 'entries', one per rule, each with the parameters of the trigger and the
-  // response to execute for that rule.
+  // response to execute for that trigger. Also enables fast searches for actors with a given
+  // trigger type.
+  //
+  // Since there can be multiple rules with the same trigger type on an actor, this component has
+  // multiple 'entries', one per rule, each with the parameters of the trigger and the response to
+  // execute for that rule.
   //
   // Usually added when reading the rules of an actor, but may also be added or removed dynamically
   // (eg. `TriggerComponent<CreateTrigger>` is removed once the create trigger is run so it's never
@@ -88,12 +92,20 @@ struct TriggerComponent {
 // Base rule types
 //
 
-struct BaseTrigger {
-  // Base type of all triggers. Nothing here yet...
-};
+struct BaseTrigger {};
+
+using ResponseRef = std::unique_ptr<BaseResponse>;
 
 struct BaseResponse {
   virtual ~BaseResponse() = default;
+
+  void run(int);
+
+private:
+  template<typename T>
+  friend struct RuleRegistration;
+
+  ResponseRef next = nullptr;
 
   virtual void run() = 0;
 };
@@ -115,6 +127,13 @@ struct RuleRegistration {
 
 // Inlined implementations
 
+inline void BaseResponse::run(int) {
+  run();
+  if (next) {
+    next->run(0); // Hopefully this compiles to a tail call...
+  }
+}
+
 template<typename T>
 RuleRegistration<T>::RuleRegistration(const char *name, int behaviorId) {
   static_assert(std::is_base_of_v<BaseTrigger, T> || std::is_base_of_v<BaseResponse, T>,
@@ -131,7 +150,10 @@ RuleRegistration<T>::RuleRegistration(const char *name, int behaviorId) {
           component.entries.emplace_back();
           auto &entry = component.entries.back();
           entry.response = response;
+
+          // Read params
           if constexpr (Props::hasProps<decltype(entry.trigger.params)>) {
+            // Reflected props
             reader.obj("params", [&]() {
               reader.read(entry.trigger.params);
             });
@@ -143,15 +165,20 @@ RuleRegistration<T>::RuleRegistration(const char *name, int behaviorId) {
     RulesBehavior::responseLoaders.push_back({
         entt::hashed_string(name),
         behaviorId,
-        +[](Reader &reader) -> std::unique_ptr<BaseResponse> {
-          // Initialize, read and return response
+        +[](RulesBehavior &rules, Reader &reader) -> std::unique_ptr<BaseResponse> {
+          // Initialize a new response, read params and return
           auto response = std::make_unique<T>();
-          if constexpr (Props::hasProps<decltype(response->params)>) {
-            reader.obj("params", [&]() {
+          reader.obj("params", [&]() {
+            // Reflected props
+            if constexpr (Props::hasProps<decltype(response->params)>) {
               reader.read(response->params);
+            }
+
+            // Child responses
+            reader.obj("nextResponse", [&]() {
+              response->next = rules.readResponse(reader);
             });
-          }
-          // TODO(nikki): Read `nextResponse`
+          });
           return response;
         },
     });
