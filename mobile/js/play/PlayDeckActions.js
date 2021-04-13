@@ -1,16 +1,10 @@
 import React from 'react';
-import { Animated, StyleSheet, Text, View } from 'react-native';
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Dropdown } from '../components/Dropdown';
 import { shareDeck } from '../common/utilities';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useNavigation } from '../ReactNavigation';
 import { UserAvatar } from '../components/UserAvatar';
-
-// NOTE: required to use this version of touchable
-// because of the way we position the header outside its parent view,
-// and because of this issue on RN Android: #27232
-// (and unmerged PR #26374)
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
@@ -218,12 +212,14 @@ export const PlayDeckActions = ({
           paddingRight: 16,
           transform: [{ translateX: creatorTransformX }],
         }}>
-        <TouchableOpacity style={styles.back} onPress={onPressBack}>
-          <Animated.View style={{ opacity: creatorTransform }}>
-            <Icon name="arrow-back" color="#fff" size={32} />
-          </Animated.View>
-        </TouchableOpacity>
-        <TouchableOpacity
+        <Pressable style={styles.back} onPress={onPressBack}>
+          {({ pressed }) => (
+            <Animated.View style={{ opacity: creatorTransform }}>
+              <Icon name="arrow-back" color={pressed ? '#ccc' : '#fff'} size={32} />
+            </Animated.View>
+          )}
+        </Pressable>
+        <Pressable
           disabled={disabled}
           style={styles.row}
           onPress={() => push('Profile', { userId: creator.userId })}>
@@ -231,15 +227,15 @@ export const PlayDeckActions = ({
             <UserAvatar url={creator.photo?.url} />
           </View>
           <Text style={styles.username}>{creator.username}</Text>
-        </TouchableOpacity>
+        </Pressable>
         {deck.parentDeckId && deck.parentDeck && (
           <View style={{ ...styles.row, flex: 1 }}>
             <Feather name="refresh-cw" color="#fff" size={14} style={styles.remixIcon} />
-            <TouchableOpacity disabled={disabled} onPress={navigateToParent}>
+            <Pressable disabled={disabled} onPress={navigateToParent}>
               <Text numberOfLines={1} style={styles.username}>
                 {deck.parentDeck?.creator?.username}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         )}
       </Animated.View>
@@ -250,14 +246,16 @@ export const PlayDeckActions = ({
           onChange={onSelectDropdownAction}>
           <Feather name="more-horizontal" color="#fff" size={24} style={styles.rightButtonIcon} />
         </Dropdown>
-        <TouchableOpacity style={styles.rightButton} onPress={() => shareDeck(deck)}>
-          <Feather
-            name={Constants.iOS ? 'share' : 'share-2'}
-            color="#fff"
-            size={24}
-            style={styles.rightButtonIcon}
-          />
-        </TouchableOpacity>
+        <Pressable style={styles.rightButton} onPress={() => shareDeck(deck)}>
+          {({ pressed }) => (
+            <Feather
+              name={Constants.iOS ? 'share' : 'share-2'}
+              color={pressed ? '#ccc' : '#fff'}
+              size={24}
+              style={styles.rightButtonIcon}
+            />
+          )}
+        </Pressable>
       </View>
     </View>
   );
