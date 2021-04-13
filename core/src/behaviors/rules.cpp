@@ -4,7 +4,7 @@
 
 
 //
-// Triggers
+// Basic triggers
 //
 
 struct CreateTrigger : BaseTrigger {
@@ -16,8 +16,20 @@ struct CreateTrigger : BaseTrigger {
 
 
 //
-// Responses
+// Basic responses
 //
+
+struct NoteResponse final : BaseResponse {
+  inline static const RuleRegistration<NoteResponse> registration { "note", 16 };
+
+  struct Params {
+    PROP(std::string, note) = "";
+  } params;
+
+  void run() override {
+    fmt::print("note: {}\n", params.note());
+  }
+};
 
 
 //
@@ -36,7 +48,41 @@ void RulesBehavior::handleDisableComponent(
 void RulesBehavior::handleReadComponent(
     ActorId actorId, RulesComponent &component, Reader &reader) {
   reader.each("rules", [&]() {
-    // Read trigger
+    // Response
+    BaseResponse *response = nullptr;
+    reader.obj("response", [&]() {
+      auto jsonPtr = (void *)reader.jsonValue();
+
+      // Return pre-existing response for this JSON if found
+      if (auto found = roots.find(jsonPtr); found != roots.end()) {
+        response = found->second.get();
+        return;
+      }
+
+      // Read response and remember it
+      const auto readResponse = [&]() -> std::unique_ptr<BaseResponse> {
+        if (auto maybeName = reader.str("name")) {
+          if (auto maybeBehaviorId = reader.num("behaviorId")) {
+            auto nameHash = entt::hashed_string(*maybeName).value();
+            for (auto &loader : responseLoaders) {
+              if (loader.behaviorId == *maybeBehaviorId && nameHash == loader.nameHs.value()
+                  && !std::strcmp(*maybeName, loader.nameHs.data())) {
+                return loader.read(reader);
+              }
+            }
+          }
+        }
+        return nullptr;
+      };
+      auto holder = readResponse();
+      response = holder.get();
+      roots.insert_or_assign(jsonPtr, std::move(holder));
+    });
+    if (!response) {
+      return; // Failed to load response
+    }
+
+    // Trigger
     reader.obj("trigger", [&]() {
       if (auto maybeName = reader.str("name")) {
         if (auto maybeBehaviorId = reader.num("behaviorId")) {
@@ -44,7 +90,7 @@ void RulesBehavior::handleReadComponent(
           for (auto &loader : triggerLoaders) {
             if (loader.behaviorId == *maybeBehaviorId && nameHash == loader.nameHs.value()
                 && !std::strcmp(*maybeName, loader.nameHs.data())) {
-              loader.read(getScene(), actorId, reader);
+              loader.read(getScene(), actorId, response, reader);
               break;
             }
           }
@@ -66,7 +112,7 @@ void RulesBehavior::handlePerform(double dt) {
   registry.view<TriggerComponent<CreateTrigger>>().each(
       [&](ActorId actorId, TriggerComponent<CreateTrigger> &component) {
         for (auto &entry : component.entries) {
-          fmt::print("firing create trigger on {}\n", entt::to_integral(actorId));
+          entry.response->run();
         }
       });
   registry.clear<TriggerComponent<CreateTrigger>>();

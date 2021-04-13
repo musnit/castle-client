@@ -308,6 +308,21 @@
                   },
                   "behaviorId": 16
                 }
+              },
+              {
+                "index": "46",
+                "trigger": {
+                  "name": "create",
+                  "params": {},
+                  "behaviorId": 16
+                },
+                "response": {
+                  "name": "note",
+                  "params": {
+                    "note": "hello, world!"
+                  },
+                  "behaviorId": 16
+                }
               }
             ],
             "disabled": false
