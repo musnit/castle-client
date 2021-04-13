@@ -31,7 +31,7 @@ public:
 
   // To `Scene`
 
-  Scene toScene();
+  Scene *toScene();
 
 
 private:

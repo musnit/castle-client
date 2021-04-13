@@ -19,15 +19,20 @@ public:
   Engine(const Engine &) = delete; // Prevent accidental copies
   const Engine &operator=(const Engine &) = delete;
 
-  Engine();
+  Engine()
+      : Engine("assets/test-c++-aquarium.json") {};
+  Engine(const char *sceneFile);
 
   // Run one frame of the main loop. Return `false` if we should quit.
   bool frame();
+
+  void reloadFromFile();
 
 
 private:
   Lv lv { 800, 1120 };
   love::RandomGenerator rng; // TODO(nikki): Seed this
+  const char *sceneFile;
 
   [[maybe_unused]] bool prevWindowFocused = true;
   [[maybe_unused]] int prevWindowWidth = 0, prevWindowHeight = 0;
@@ -47,8 +52,7 @@ private:
   Tests tests;
 #endif
 
-  Scene scene; // Single scene for now
-
+  std::unique_ptr<Scene> scene;
 
   void update(double dt);
 

@@ -166,4 +166,9 @@ case "$1" in
     rm -rf web-publish/*
     mkdir -p web-publish
     cp build/web-release/{index.*,castle-core.*} web-publish/
+    ;;
+
+  # Scenes
+  load-card)
+    node tools/main.js $2
 esac

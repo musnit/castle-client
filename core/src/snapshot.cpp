@@ -30,9 +30,9 @@ Snapshot Snapshot::fromJson(const char *json) {
 // To `Scene`
 //
 
-Scene Snapshot::toScene() {
-  Scene scene;
-  auto &library = scene.getLibrary();
+Scene *Snapshot::toScene() {
+  Scene *scene = new Scene();
+  auto &library = scene->getLibrary();
 
   archive.read([&](Archive::Reader &reader) {
     // Library
@@ -54,13 +54,13 @@ Scene Snapshot::toScene() {
       // Read actor
       auto maybeParentEntryId = reader.str("parentEntryId", nullptr);
       reader.obj("bp", [&]() {
-        scene.addActor(&reader, maybeParentEntryId);
+        scene->addActor(&reader, maybeParentEntryId);
       });
     });
 
     // Scene-level props
     reader.obj("sceneProperties", [&]() {
-      reader.read(scene.props);
+      reader.read(scene->props);
     });
   });
 

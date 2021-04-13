@@ -105,6 +105,9 @@ test and debug files. This needs
 [Valgrind](https://valgrind.org) which helps detect leaks and other memory
 issues. Valgrind only runs well on Linux (I think...).
 
+`./run.sh load-card Z5CXTBdpf8` loads a card scene into assets/test-watch.json.
+Uncomment `#define WATCH_SCENE_FILE` in main.cpp to watch this file for changes.
+
 ### Values
 
 We want this codebase to provide a robust, performant engine for Castle that

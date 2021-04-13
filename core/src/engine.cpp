@@ -53,12 +53,17 @@ Engine::PreInit::PreInit() {
 // Constructor, destructor
 //
 
-Engine::Engine()
-    : scene(Snapshot::fromFile("assets/test-c++-aquarium.json").toScene()) {
+Engine::Engine(const char *sceneFile)
+    : sceneFile(sceneFile) {
   // First timer step
   lv.timer.step();
+  reloadFromFile();
 }
 
+
+void Engine::reloadFromFile() {
+  scene = std::unique_ptr<Scene>(Snapshot::fromFile(sceneFile).toScene());
+}
 
 //
 // Frame
@@ -126,7 +131,7 @@ bool Engine::frame() {
 //
 
 void Engine::update(double dt) {
-  scene.update(dt);
+  scene->update(dt);
 
 #ifdef CASTLE_ENABLE_TESTS
   tests.update(dt);
@@ -139,7 +144,7 @@ void Engine::update(double dt) {
 //
 
 void Engine::draw() {
-  scene.draw();
+  scene->draw();
 
 #ifdef CASTLE_ENABLE_TESTS
   tests.draw();
