@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, FlatList, View } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Pressable, StyleSheet, Text, FlatList, View } from 'react-native';
 import { CardCell } from '../components/CardCell';
 import { useNavigation } from '../ReactNavigation';
 
@@ -21,6 +20,7 @@ const styles = StyleSheet.create({
   itemCard: {
     aspectRatio: Constants.CARD_RATIO,
     height: 160,
+    width: null,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 8,
@@ -51,21 +51,24 @@ export const ExploreRow = ({ feed }) => {
     });
   };
 
-  const renderItem = ({ item, index }) => {
+  const renderItem = React.useCallback(({ item, index }) => {
     const deck = item;
 
-    return (
-      <TouchableOpacity onPress={() => onPressDeck(deck)} style={styles.itemCard}>
-        {deck ? <CardCell card={deck.initialCard} creator={deck.creator} /> : null}
-      </TouchableOpacity>
-    );
-  };
+    return deck ? (
+      <CardCell
+        card={deck.initialCard}
+        creator={deck.creator}
+        onPress={() => onPressDeck(deck)}
+        style={styles.itemCard}
+      />
+    ) : null;
+  }, []);
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={onPressTitle}>
+      <Pressable onPress={onPressTitle}>
         <Text style={styles.title}>{feed.title}</Text>
-      </TouchableOpacity>
+      </Pressable>
       <FlatList
         data={feed.decks}
         horizontal={true}
