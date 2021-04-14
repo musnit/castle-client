@@ -170,5 +170,5 @@ case "$1" in
 
   # Scenes
   load-card)
-    node tools/main.js $2
+    node tools/main.js $2 $3
 esac
