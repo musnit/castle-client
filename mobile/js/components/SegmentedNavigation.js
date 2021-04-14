@@ -9,12 +9,13 @@ const darkBackgroundStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingBottom: 8,
   },
   item: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     paddingVertical: 8,
   },
   selectedItem: {

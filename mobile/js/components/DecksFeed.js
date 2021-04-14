@@ -23,7 +23,7 @@ import * as Utilities from '../common/utilities';
 
 const { vw, vh } = Viewport;
 
-const FEED_ITEM_TOP_Y = Constants.FEED_HEADER_HEIGHT + 24;
+const FEED_ITEM_TOP_Y = Constants.FEED_HEADER_HEIGHT;
 const DECK_FEED_ITEM_MARGIN = 24;
 
 // Determines how much horizontal padding to add to each card to ensure proper spacing.

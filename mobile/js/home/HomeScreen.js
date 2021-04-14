@@ -13,8 +13,6 @@ import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 import * as Utilities from '../common/utilities';
 
-const HEADER_HEIGHT = 56;
-
 const SPRING_CONFIG = {
   tension: 150,
   friction: 50,
@@ -32,9 +30,6 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     justifyContent: 'center',
-    borderBottomWidth: 1,
-    borderColor: Constants.colors.grayOnBlackBorder,
-    paddingTop: 16,
     backgroundColor: '#000',
   },
   elevatedHeader: {
@@ -42,7 +37,7 @@ const styles = StyleSheet.create({
     width: '100%',
     zIndex: 1,
     elevation: 1,
-    height: HEADER_HEIGHT,
+    height: Constants.FEED_HEADER_HEIGHT,
     left: 0,
   },
 });
@@ -101,10 +96,11 @@ export const HomeScreen = ({ route }) => {
   const selectedItem = items.find((item) => item.value === mode);
 
   // animate hide header when deck is played
-  const headerY = React.useRef(new Animated.Value(deckId ? -(HEADER_HEIGHT + insets.top) : 0))
-    .current;
+  const headerY = React.useRef(
+    new Animated.Value(deckId ? -(Constants.FEED_HEADER_HEIGHT + insets.top) : 0)
+  ).current;
   React.useEffect(() => {
-    const toValue = deckId ? -(HEADER_HEIGHT + insets.top) : 0;
+    const toValue = deckId ? -(Constants.FEED_HEADER_HEIGHT + insets.top) : 0;
     Animated.spring(headerY, { toValue, ...SPRING_CONFIG }).start();
   }, [deckId]);
 
