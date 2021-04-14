@@ -74,7 +74,7 @@ int SDL_main(int argc, char *argv[]) {
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   
-  [RNBootSplash show:@"LaunchScreen" inView:rootView];
+  [RNBootSplash initWithStoryboard:@"BootSplash" rootView:rootView];
   
   [self writeEmbeddedSceneCreator];
 

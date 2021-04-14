@@ -57,7 +57,7 @@ const Main = () => {
   }
 
   if (!bootSplashHidden) {
-    setTimeout(() => BootSplash.hide({ duration: 150 }), 100);
+    setTimeout(() => BootSplash.hide({ fade: true }), 250);
     bootSplashHidden = true;
   }
   return <RootNavigator />;

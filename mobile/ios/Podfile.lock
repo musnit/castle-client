@@ -284,8 +284,8 @@ PODS:
     - React-Core (= 0.63.4)
     - React-cxxreact (= 0.63.4)
     - React-jsi (= 0.63.4)
-  - RNBootSplash (1.0.3):
-    - React
+  - RNBootSplash (3.2.0):
+    - React-Core
   - RNCAsyncStorage (1.6.2):
     - React
   - RNDeviceInfo (5.6.1):
@@ -571,7 +571,7 @@ SPEC CHECKSUMS:
   React-RCTText: 5c51df3f08cb9dedc6e790161195d12bac06101c
   React-RCTVibration: ae4f914cfe8de7d4de95ae1ea6cc8f6315d73d9d
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
-  RNBootSplash: bba8b884b667778b0fd0c34a5f909046ff0f2237
+  RNBootSplash: 24175aa28fe203b10c48dc34e78d946fd33c77af
   RNCAsyncStorage: 5ae4d57458804e99f73d427214442a6b10a53856
   RNDeviceInfo: ab2ab4ca9e7f2bc4f35d62ab6ce2b66f2cbf1e7a
   RNFastImage: e19ba191922e7dab9d932a4d59d62d76660aa222
