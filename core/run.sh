@@ -45,7 +45,7 @@ case "$1" in
         $CMAKE -H. -Bbuild/release -GNinja
         $CMAKE --build build/release
         if [[ -z "$VALGRIND" ]]; then
-          ./build/release/castle-core
+          ./build/release/castle-core $2
         else
           SUPPRESSIONS="
           {
@@ -84,13 +84,13 @@ case "$1" in
             --gen-suppressions=all \
             --leak-check=full \
             -s \
-            ./build/release/castle-core
+            ./build/release/castle-core $2
         fi
         ;;
       win)
         $CMAKE -H. -Bbuild/msvc -G"Visual Studio 16"
         $CMAKE --build build/msvc --config Release
-        ./build/msvc/Release/castle-core.exe 
+        ./build/msvc/Release/castle-core.exe $2
         ;;
     esac
     ;;
@@ -99,12 +99,12 @@ case "$1" in
       lin|macOS)
         $CMAKE -DCMAKE_BUILD_TYPE=Debug -H. -Bbuild/debug -GNinja
         $CMAKE --build build/debug
-        ./build/debug/castle-core
+        ./build/debug/castle-core $2
         ;;
       win)
         $CMAKE -H. -Bbuild/msvc -G"Visual Studio 16"
         $CMAKE --build build/msvc --config Debug
-        ./build/msvc/Debug/castle-core.exe 
+        ./build/msvc/Debug/castle-core.exe $2
         ;;
     esac
     ;;

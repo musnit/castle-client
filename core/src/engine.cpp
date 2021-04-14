@@ -53,9 +53,6 @@ Engine::PreInit::PreInit() {
 // Constructor, destructor
 //
 
-Engine::Engine()
-    : Engine("assets/test-c++-aquarium.json") {};
-
 Engine::Engine(std::string scenePath_)
     : scenePath(std::move(scenePath_)) {
   // First timer step

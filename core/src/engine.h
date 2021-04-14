@@ -19,7 +19,6 @@ public:
   Engine(const Engine &) = delete; // Prevent accidental copies
   const Engine &operator=(const Engine &) = delete;
 
-  Engine();
   explicit Engine(std::string scenePath_);
 
   // Run one frame of the main loop. Return `false` if we should quit.
