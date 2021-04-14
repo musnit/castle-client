@@ -104,6 +104,14 @@ bool Engine::frame() {
     prevWindowWidth = w;
     prevWindowHeight = h;
   }
+#else
+  if (auto w = 400, h = 560; w != prevWindowWidth || h != prevWindowHeight) {
+    fmt::print("canvas resized to {}, {}\n", w, h);
+    SDL_SetWindowSize(lv.window.getSDLWindow(), w, h);
+    ghostScreenScaling = double(w) / 800;
+    prevWindowWidth = w;
+    prevWindowHeight = h;
+  }
 #endif
 
   // Process events. Quit if the window was closed.

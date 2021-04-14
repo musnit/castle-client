@@ -22,7 +22,16 @@ void loop(F &&frame) {
 // Main web and desktop entrypoint
 #undef main // SDL does some weird stuff overriding `main` with a macro...
 int main(int argc, char *argv[]) {
-  const char *scenePath = argc > 1 ? argv[1] : "assets/test-c++-aquarium.json";
+  const char *defaultScenePath = "assets/test-c++-aquarium.json";
+#ifdef __APPLE__
+#include "TargetConditionals.h"
+#ifdef TARGET_OS_MAC
+  defaultScenePath = "../../../assets/test-watch.json";
+#endif
+#endif
+
+
+  const char *scenePath = argc > 1 ? argv[1] : defaultScenePath;
   Engine eng(scenePath);
   loop([&]() {
 #ifndef __EMSCRIPTEN__
