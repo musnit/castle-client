@@ -23,7 +23,7 @@ struct NoteResponse final : BaseResponse {
   inline static const RuleRegistration<NoteResponse> registration { "note", 16 };
 
   struct Params {
-    PROP(std::string, note) = "";
+    PROP(std::string, note);
   } params;
 
   void run() override {
