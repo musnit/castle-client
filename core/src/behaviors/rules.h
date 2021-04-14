@@ -154,7 +154,7 @@ RuleRegistration<T>::RuleRegistration(const char *name, int behaviorId) {
     RulesBehavior::triggerLoaders.push_back({
         entt::hashed_string(name),
         behaviorId,
-        +[](Scene &scene, ActorId actorId, ResponseRef response, Reader &reader) {
+        [](Scene &scene, ActorId actorId, ResponseRef response, Reader &reader) {
           // Add a `TriggerComponent<T>` entry for this rule
           auto &component
               = scene.getEntityRegistry().template get_or_emplace<TriggerComponent<T>>(actorId);
@@ -176,7 +176,7 @@ RuleRegistration<T>::RuleRegistration(const char *name, int behaviorId) {
     RulesBehavior::responseLoaders.push_back({
         entt::hashed_string(name),
         behaviorId,
-        +[](RulesBehavior &rules, Reader &reader) -> ResponseRef {
+        [](RulesBehavior &rules, Reader &reader) -> ResponseRef {
           // Initialize a new response, read params and return
           auto response = (T *)rules.pool.Malloc(sizeof(T));
           new (response) T();

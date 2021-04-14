@@ -24,7 +24,6 @@ struct NoteResponse final : BaseResponse {
 
   struct Params {
     PROP(std::string, note) = "";
-    std::vector<int> vals { 1, 2, 3, 4, 5 };
   } params;
 
   void run() override {
