@@ -37,6 +37,7 @@ struct NoteResponse final : BaseResponse {
 //
 
 RulesBehavior::~RulesBehavior() {
+  // Call destructors on pool-allocated objects
   for (auto response : responses) {
     response->~BaseResponse();
   }
@@ -123,7 +124,7 @@ void RulesBehavior::handlePerform(double dt) {
   registry.view<TriggerComponent<CreateTrigger>>().each(
       [&](ActorId actorId, TriggerComponent<CreateTrigger> &component) {
         for (auto &entry : component.entries) {
-          entry.response->run(0);
+          entry.response->runChain();
         }
       });
   registry.clear<TriggerComponent<CreateTrigger>>();

@@ -39,23 +39,24 @@ public:
 
 private:
   // Using a pool allocator for rule nodes (responses and expressions) since we'll be allocating a
-  // lot of small objects and visiting them somewhat in order when executing. We need to also keep
-  // track of the pointers so we can call destructors later.
+  // lot of small objects and visiting them somewhat in order when running. Also keep track of the
+  // pointers so we can call destructors later, since the pool itself will only drop the memory
+  // without destructing objects.
   json::MemoryPoolAllocator<json::CrtAllocator> pool;
   std::vector<ResponseRef> responses;
 
   // Map from JSON object pointer to loaded responses. Allows us to reuse response instances loaded
-  // from the same JSON -- which happens every time an actor inherits rules from a blueprint that
-  // was loaded before. Value may be `nullptr` if loading the response failed.
+  // from the same JSON instance -- which happens every time we create an actor that inherits rules
+  // from a previously loaded blueprint. Value may be `nullptr` if loading the response failed --
+  // still helps to cache that it failed.
   std::unordered_map<void *, ResponseRef> responseCache;
 
 
-  // Loaders (maps from names to read functions for rule types)
+  // Loaders (maps from names to read functions for rule types, filled by `RuleRegistration` when
+  // the application starts)
 
   template<typename T>
   friend struct RuleRegistration;
-
-  friend struct BaseResponse;
 
   struct TriggerLoader {
     entt::hashed_string nameHs;
@@ -82,12 +83,12 @@ private:
 template<typename T>
 struct TriggerComponent {
   // Actors that have rules with triggers of type `T` have this component, linking them to the
-  // response to execute for that trigger. Also enables fast searches for actors with a given
-  // trigger type.
+  // response to run for that trigger. Also enables fast searches for actors with a given trigger
+  // type.
   //
   // Since there can be multiple rules with the same trigger type on an actor, this component has
-  // multiple 'entries', one per rule, each with the parameters of the trigger and the response to
-  // execute for that rule.
+  // multiple 'entries', one per rule, each with the parameters of the trigger and a reference to
+  // the response to run for that rule.
   //
   // Usually added when reading the rules of an actor, but may also be added or removed dynamically
   // (eg. `TriggerComponent<CreateTrigger>` is removed once the create trigger is run so it's never
@@ -110,7 +111,8 @@ struct BaseTrigger {};
 struct BaseResponse {
   virtual ~BaseResponse() = default;
 
-  void run(int);
+  void runChain(); // Run this response and then run the next responses after it
+
 
 private:
   template<typename T>
@@ -118,7 +120,7 @@ private:
 
   ResponseRef next = nullptr;
 
-  virtual void run() = 0;
+  virtual void run() = 0; // Run this response, and not next ones. Overridden in response types.
 };
 
 
@@ -138,10 +140,10 @@ struct RuleRegistration {
 
 // Inlined implementations
 
-inline void BaseResponse::run(int) {
+inline void BaseResponse::runChain() {
   run();
   if (next) {
-    next->run(0); // Hopefully this compiles to a tail call...
+    next->runChain();
   }
 }
 
