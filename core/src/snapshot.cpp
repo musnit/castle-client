@@ -48,7 +48,7 @@ std::unique_ptr<Scene> Snapshot::toScene() {
         fmt::print("tried to read actor without `actorId`!");
         return;
       }
-      //auto actorIdStr = *maybeActorIdStr;
+      // auto actorIdStr = *maybeActorIdStr;
 
       // Read actor
       auto maybeParentEntryId = reader.str("parentEntryId", nullptr);

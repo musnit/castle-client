@@ -10,20 +10,36 @@ async function runAsync() {
 
   try {
     // Try as card
-    const response = await Axios.post('https://api.castle.xyz/graphql', {
-      operationName: null,
-      variables: {},
-      query: `{\n  card(cardId: "${process.argv[2]}") {\n    sceneData\n  }\n}\n`,
-    });
+    const response = await Axios.post(
+      'https://api.castle.xyz/graphql',
+      {
+        operationName: null,
+        variables: {},
+        query: `{\n  card(cardId: "${process.argv[2]}") {\n    sceneData\n  }\n}\n`,
+      },
+      {
+        headers: {
+          'X-Enable-Scene-Creator-Migrations': true,
+        },
+      }
+    );
     snapshot = response.data.data.card.sceneData.snapshot;
   } catch (e) {
     // Try as deck
     try {
-      const response = await Axios.post('https://api.castle.xyz/graphql', {
-        operationName: null,
-        variables: {},
-        query: `{\n  deck(deckId: "${process.argv[2]}") {\n    initialCard { sceneData }\n  }\n}\n`,
-      });
+      const response = await Axios.post(
+        'https://api.castle.xyz/graphql',
+        {
+          operationName: null,
+          variables: {},
+          query: `{\n  deck(deckId: "${process.argv[2]}") {\n    initialCard { sceneData }\n  }\n}\n`,
+        },
+        {
+          headers: {
+            'X-Enable-Scene-Creator-Migrations': true,
+          },
+        }
+      );
       snapshot = response.data.data.deck.initialCard.sceneData.snapshot;
     } catch (e) {}
   }

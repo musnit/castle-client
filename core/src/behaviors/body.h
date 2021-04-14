@@ -59,6 +59,7 @@ public:
 
   b2Body *maybeGetPhysicsBody(ActorId actorId); // `nullptr` if not present
   const b2Body *maybeGetPhysicsBody(ActorId actorId) const; // `nullptr` if not present
+  love::Vector2 getScale(ActorId actorId) const; // `nullptr` if not present
   ActorId maybeGetActorId(const b2Body *body) const; // `nullActor` if not present
 
 
@@ -94,6 +95,13 @@ inline const b2Body *BodyBehavior::maybeGetPhysicsBody(ActorId actorId) const {
 inline ActorId BodyBehavior::maybeGetActorId(const b2Body *body) const {
   auto actorId = ActorId(const_cast<b2Body *>(body)->GetUserData().pointer - 1);
   return hasComponent(actorId) ? actorId : nullActor;
+}
+
+inline love::Vector2 BodyBehavior::getScale(ActorId actorId) const {
+  if (auto component = maybeGetComponent(actorId)) {
+    return love::Vector2(component->props.widthScale(), component->props.heightScale());
+  }
+  return love::Vector2();
 }
 
 template<typename F>

@@ -39,7 +39,7 @@ namespace ghost {
   }
 
   void DrawDataFrame::deserializeFillAndPreview() {
-    if (fillPng) {
+    if (fillPng && fillPng->length() > 0) {
       // data::ContainerType ctype = data::CONTAINER_STRING;
       data::EncodeFormat format = data::ENCODE_BASE64;
 
