@@ -53,17 +53,20 @@ Engine::PreInit::PreInit() {
 // Constructor, destructor
 //
 
-Engine::Engine(std::string scenePath)
-    : scenePath(scenePath) {
+Engine::Engine()
+    : Engine("assets/test-c++-aquarium.json") {};
+
+Engine::Engine(std::string scenePath_)
+    : scenePath(std::move(scenePath_)) {
   // First timer step
   lv.timer.step();
   reloadFromFile();
 }
 
-
 void Engine::reloadFromFile() {
   scene = Snapshot::fromFile(scenePath.c_str()).toScene();
 }
+
 
 //
 // Frame

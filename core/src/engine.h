@@ -19,9 +19,8 @@ public:
   Engine(const Engine &) = delete; // Prevent accidental copies
   const Engine &operator=(const Engine &) = delete;
 
-  Engine()
-      : Engine("assets/test-c++-aquarium.json") {};
-  Engine(std::string scenePath);
+  Engine();
+  explicit Engine(std::string scenePath_);
 
   // Run one frame of the main loop. Return `false` if we should quit.
   bool frame();
@@ -30,9 +29,10 @@ public:
 
 
 private:
+  std::string scenePath;
+
   Lv lv { 800, 1120 };
   love::RandomGenerator rng; // TODO(nikki): Seed this
-  std::string scenePath;
 
   [[maybe_unused]] bool prevWindowFocused = true;
   [[maybe_unused]] int prevWindowWidth = 0, prevWindowHeight = 0;

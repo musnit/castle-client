@@ -12,6 +12,7 @@
 #include <fstream>
 #include <optional>
 #include <unordered_map>
+#include <filesystem>
 
 // Emscripten
 #ifdef __EMSCRIPTEN__
