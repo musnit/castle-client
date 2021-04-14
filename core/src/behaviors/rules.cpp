@@ -24,12 +24,24 @@ struct NoteResponse final : BaseResponse {
 
   struct Params {
     PROP(std::string, note) = "";
+    std::vector<int> vals { 1, 2, 3, 4, 5 };
   } params;
 
   void run() override {
     fmt::print("note: {}\n", params.note());
   }
 };
+
+
+//
+// Constructor, destructor
+//
+
+RulesBehavior::~RulesBehavior() {
+  for (auto response : responses) {
+    response->~BaseResponse();
+  }
+}
 
 
 //
@@ -52,13 +64,13 @@ void RulesBehavior::handleReadComponent(
     ResponseRef response = nullptr;
     reader.obj("response", [&]() {
       auto jsonPtr = (void *)reader.jsonValue();
-      if (auto found = roots.find(jsonPtr); found != roots.end()) {
-        // Found a pre-existing root response for this JSON
+      if (auto found = responseCache.find(jsonPtr); found != responseCache.end()) {
+        // Found a pre-existing response for this JSON
         response = found->second;
       } else {
-        // New JSON -- read and remember as a root
+        // New JSON -- read and cache it
         response = readResponse(reader);
-        roots.insert_or_assign(jsonPtr, response);
+        responseCache.insert_or_assign(jsonPtr, response);
       }
     });
     if (!response) {

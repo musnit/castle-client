@@ -25,6 +25,10 @@ public:
 
   using BaseBehavior::BaseBehavior;
 
+  RulesBehavior(RulesBehavior &&) = default; // Allow move construction
+
+  ~RulesBehavior();
+
 
   void handleDisableComponent(ActorId actorId, RulesComponent &component, bool removeActor);
 
@@ -34,9 +38,16 @@ public:
 
 
 private:
-  json::MemoryPoolAllocator<json::CrtAllocator> alloc;
+  // Using a pool allocator for rule nodes (responses and expressions) since we'll be allocating a
+  // lot of small objects and visiting them somewhat in order when executing. We need to also keep
+  // track of the pointers so we can call destructors later.
+  json::MemoryPoolAllocator<json::CrtAllocator> pool;
+  std::vector<ResponseRef> responses;
 
-  std::unordered_map<void *, ResponseRef> roots; // Map from JSON object to loaded response
+  // Map from JSON object pointer to loaded responses. Allows us to reuse response instances loaded
+  // from the same JSON -- which happens every time an actor inherits rules from a blueprint that
+  // was loaded before. Value may be `nullptr` if loading the response failed.
+  std::unordered_map<void *, ResponseRef> responseCache;
 
 
   // Loaders (maps from names to read functions for rule types)
@@ -167,8 +178,9 @@ RuleRegistration<T>::RuleRegistration(const char *name, int behaviorId) {
         behaviorId,
         +[](RulesBehavior &rules, Reader &reader) -> ResponseRef {
           // Initialize a new response, read params and return
-          auto response = (T *)rules.alloc.Malloc(sizeof(T));
+          auto response = (T *)rules.pool.Malloc(sizeof(T));
           new (response) T();
+          rules.responses.emplace_back(response);
           reader.obj("params", [&]() {
             // Reflected props
             if constexpr (Props::hasProps<decltype(response->params)>) {
