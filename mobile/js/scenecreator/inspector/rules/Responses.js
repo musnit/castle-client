@@ -906,7 +906,7 @@ const FaceDirectionOfMotion = () => {
 };
 
 const PlaySound = ({ response }) => {
-  const soundCategory = SOUND_CATEGORIES.find((c) => c.name === response.params.category);
+  let soundCategory = SOUND_CATEGORIES.find((c) => c.name === response.params.category);
   if (!soundCategory) {
     soundCategory = SOUND_CATEGORIES[SOUND_CATEGORIES.length - 1];
   }

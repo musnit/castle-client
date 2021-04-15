@@ -88,8 +88,6 @@ export const GameLogs = ({ visible }) => {
       }}>
       <View
         style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
           paddingHorizontal: 16,
           paddingBottom: 8,
           borderBottomWidth: 1,

@@ -162,7 +162,6 @@ const LayerRow = ({ layer, index, showLayerActionSheet }) => {
               })
           : () =>
               layer.fastAction('onSelectLayerAndFrame', {
-                frame,
                 layerId: layer.id,
                 frame: idx + 1,
               });

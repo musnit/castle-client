@@ -36,17 +36,14 @@ export const ParamInput = ({
           />
         );
       }
-      break;
     case 'tagPicker':
       return (
         <InspectorTagPicker value={value} onChange={setValue} {...paramSpec.props} {...props} />
       );
-      break;
     case 'toggle':
       return (
         <InspectorCheckbox value={value} onChange={setValue} {...paramSpec.props} {...props} />
       );
-      break;
     case 'textInput':
     case 'textArea':
       return (
@@ -59,7 +56,6 @@ export const ParamInput = ({
           {...props}
         />
       );
-      break;
     case 'dropdown':
       if (paramSpec.props?.showVariablesItems) {
         return (
@@ -75,7 +71,6 @@ export const ParamInput = ({
           <InspectorDropdown value={value} onChange={setValue} {...paramSpec.props} {...props} />
         );
       }
-      break;
     case 'actorRef':
       return (
         <InspectorActorRefInput value={value} onChange={setValue} {...paramSpec.props} {...props} />

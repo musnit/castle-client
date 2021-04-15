@@ -82,7 +82,9 @@ const PasteFromClipboardSection = ({ onPress }) => {
   }, [entry]);
 
   const { root } = useGhostUI();
-  const numActorsUsingClipboardEntry = root?.panes['sceneCreatorBlueprints'].children?.data?.props?.data?.numActorsUsingClipboardEntry || 0;
+  const numActorsUsingClipboardEntry =
+    root?.panes['sceneCreatorBlueprints'].children?.data?.props?.data
+      ?.numActorsUsingClipboardEntry || 0;
 
   if (!entry) {
     return null;
