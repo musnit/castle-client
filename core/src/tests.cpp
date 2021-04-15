@@ -7,6 +7,7 @@
 
 #include "scene.h"
 #include "snapshot.h"
+#include "platform.h"
 #include "behaviors/all.h"
 
 
@@ -118,7 +119,7 @@ struct BasicActorManagementTest : Test {
 
 struct BasicDrawingLoadingTest : Test {
   BasicDrawingLoadingTest() {
-    auto scene = Snapshot::fromFile("assets/test-drawing2.json").toScene();
+    auto scene = Snapshot::fromFile(Platform::getAssetPath("test-drawing2.json")).toScene();
 
     // Can query and check component data now. May need to `friend class BasicDrawingLoadingTest` in
     // `Drawing2Behavior`...

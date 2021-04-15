@@ -19,17 +19,15 @@ public:
   Engine(const Engine &) = delete; // Prevent accidental copies
   const Engine &operator=(const Engine &) = delete;
 
-  explicit Engine(std::string scenePath_);
+  Engine();
 
   // Run one frame of the main loop. Return `false` if we should quit.
   bool frame();
 
-  void reloadFromFile();
+  void loadFromFile(const char *path);
 
 
 private:
-  std::string scenePath;
-
   Lv lv { 800 / 2, 1120 / 2 };
   love::RandomGenerator rng; // TODO(nikki): Seed this
 
@@ -38,7 +36,7 @@ private:
   bool shouldQuit = false;
 
   std::unique_ptr<love::Font> debugFont { lv.graphics.newDefaultFont(
-      14, love::TrueTypeRasterizer::HINTING_NORMAL) };
+      22, love::TrueTypeRasterizer::HINTING_NORMAL) };
 
 
   struct PreInit {

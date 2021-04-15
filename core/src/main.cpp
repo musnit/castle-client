@@ -1,5 +1,7 @@
 #include "precomp.h"
 #include "engine.h"
+#include "platform.h"
+
 
 // Run the main loop, calling `frame` per frame. `frame` should return a
 // boolean that is `false` when it wants to quit. Handles both the web and
@@ -22,17 +24,11 @@ void loop(F &&frame) {
 // Main web and desktop entrypoint
 #undef main // SDL does some weird stuff overriding `main` with a macro...
 int main(int argc, char *argv[]) {
-  const char *defaultScenePath = "assets/test-c++-aquarium.json";
-#ifdef __APPLE__
-#include "TargetConditionals.h"
-#ifdef TARGET_OS_MAC
-  defaultScenePath = "../../../assets/test-watch.json";
-#endif
-#endif
+  Engine eng;
 
+  auto scenePath = Platform::getAssetPath(argc > 1 ? argv[1] : "test-c++-aquarium.json");
+  eng.loadFromFile(scenePath.c_str());
 
-  const char *scenePath = argc > 1 ? argv[1] : defaultScenePath;
-  Engine eng(scenePath);
   loop([&]() {
 #ifndef __EMSCRIPTEN__
     // Reload scene if it changed
@@ -49,7 +45,7 @@ int main(int argc, char *argv[]) {
         auto newWriteTime = getLastWriteTime();
         if (newWriteTime != writeTime) {
           writeTime = newWriteTime;
-          eng.reloadFromFile();
+          eng.loadFromFile(scenePath.c_str());
         }
       }
     }

@@ -53,15 +53,13 @@ Engine::PreInit::PreInit() {
 // Constructor, destructor
 //
 
-Engine::Engine(std::string scenePath_)
-    : scenePath(std::move(scenePath_)) {
+Engine::Engine() {
   // First timer step
   lv.timer.step();
-  reloadFromFile();
 }
 
-void Engine::reloadFromFile() {
-  scene = Snapshot::fromFile(scenePath.c_str()).toScene();
+void Engine::loadFromFile(const char *path) {
+  scene = Snapshot::fromFile(path).toScene();
 }
 
 
@@ -138,7 +136,9 @@ bool Engine::frame() {
 //
 
 void Engine::update(double dt) {
-  scene->update(dt);
+  if (scene) {
+    scene->update(dt);
+  }
 
 #ifdef CASTLE_ENABLE_TESTS
   tests.update(dt);
@@ -151,13 +151,22 @@ void Engine::update(double dt) {
 //
 
 void Engine::draw() {
-  scene->draw();
+  if (scene) {
+    scene->draw();
+  }
 
 #ifdef CASTLE_ENABLE_TESTS
   tests.draw();
 #endif
 
-  lv.graphics.setColor(love::Colorf(0, 0, 0, 1));
-  lv.graphics.print({ { scene->getDebugMessages(), { 1, 1, 1, 1 } } }, debugFont.get(),
+  // Debug messages
+  const char *debugText = "loading...";
+  if (scene) {
+    debugText = scene->getDebugMessages().c_str();
+    lv.graphics.setColor(love::Colorf(0, 0, 0, 1));
+  } else {
+    lv.graphics.setColor(love::Colorf(1, 1, 1, 1));
+  }
+  lv.graphics.print({ { debugText, { 1, 1, 1, 1 } } }, debugFont.get(),
       love::Matrix4(20, 20, 0, 1, 1, 0, 0, 0, 0));
 }
