@@ -121,7 +121,7 @@ void RulesBehavior::handlePerform(double dt) {
   auto &scene = getScene();
 
   // Fire create triggers. Then clear them so they're only run once on each actor.
-  fireTrigger<CreateTrigger>();
+  fireAll<CreateTrigger>();
   scene.getEntityRegistry().clear<TriggerComponent<CreateTrigger>>();
 
   // Run scheduled responses
