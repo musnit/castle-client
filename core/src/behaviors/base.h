@@ -27,13 +27,12 @@ struct BaseComponent {
   bool disabled = true;
 };
 
-template<typename Derived, typename Component_>
+template<typename Derived, typename Component>
 class BaseBehavior {
   // The base class for all behavior types. Provides a bunch of utility methods that all behaviors
   // will probably want.
 
 public:
-  using Component = Component_;
   static_assert(std::is_base_of_v<BaseComponent, Component>,
       "A behavior's component type must derive from `BaseComponent`");
 
@@ -113,10 +112,18 @@ namespace Handlers {
   inline constexpr auto                                                                            \
       has##name<T, std::void_t<decltype(&std::remove_reference_t<T>::handle##name)>> = true;
 
+// Lifecycle
 DEFINE_HANDLER(EnableComponent);
 DEFINE_HANDLER(DisableComponent);
+DEFINE_HANDLER(PreRemoveActor);
+
+// Read, write
 DEFINE_HANDLER(ReadComponent);
+
+// Perform
 DEFINE_HANDLER(Perform);
+
+// Draw
 DEFINE_HANDLER(DrawComponent);
 DEFINE_HANDLER(DrawOverlay);
 
