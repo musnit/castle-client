@@ -32,12 +32,21 @@ template<typename T>
 static constexpr auto hasPropsMember<T, std::void_t<decltype(std::declval<T>().props)>> = true;
 
 ActorId Scene::addActor(Reader *maybeReader, const char *maybeParentEntryId) {
-  // Actor entry
+  // Make sure parent entry exists
+  const LibraryEntry *maybeParentEntry = nullptr;
+  if (maybeParentEntryId) {
+    maybeParentEntry = library.maybeGetEntry(maybeParentEntryId);
+    if (!maybeParentEntry) {
+      return nullActor;
+    }
+  }
+
+  // Actor
   auto actorId = registry.create();
   registry.emplace<Actor>(actorId, nextNewDrawOrder++);
   needDrawOrderSort = true;
 
-  // Common read code
+  // Components reading code that's called below
   std::optional<Reader> maybeFallbackComponentsReader;
   const auto readComponents = [&](Reader &reader) {
     // Fallback to blueprint's components
@@ -51,7 +60,6 @@ ActorId Scene::addActor(Reader *maybeReader, const char *maybeParentEntryId) {
       getBehaviors().byName(behaviorName, [&](auto &behavior) {
         // We found a behavior with this name
         found = true;
-        fmt::print("  reading component '{}'\n", behaviorName);
 
         // Fallback to blueprints's properties for this component
         if (maybeFallbackComponentsReader) {
@@ -76,10 +84,6 @@ ActorId Scene::addActor(Reader *maybeReader, const char *maybeParentEntryId) {
           behavior.handleReadComponent(actorId, component, reader);
         }
       });
-      if (!found) {
-        // Didn't find this behavior, just log for now
-        fmt::print("  skipped component '{}'\n", behaviorName);
-      }
     });
 
     // After all components are loaded, call enable handlers in behavior order
@@ -94,24 +98,22 @@ ActorId Scene::addActor(Reader *maybeReader, const char *maybeParentEntryId) {
   };
 
   // Find parent components reader
-  if (maybeParentEntryId) {
-    if (auto maybeParentEntry = library.maybeGetEntry(maybeParentEntryId)) {
-      auto &maybeParentJson = maybeParentEntry->getJsonValue();
-      Reader parentReader(maybeParentJson);
-      parentReader.obj("actorBlueprint", [&]() {
-        parentReader.obj("components", [&]() {
-          // TODO(nikki): We can cache the component reader in the `LibraryEntry` to reuse the
-          //              reader lookup cache when we add one
-          if (maybeReader) {
-            // Have an actor reader, just set the parent reader to fallback to
-            maybeFallbackComponentsReader = Reader(*parentReader.jsonValue());
-          } else {
-            // No actor reader given, read directly from parent
-            readComponents(parentReader);
-          }
-        });
+  if (maybeParentEntry) {
+    auto &parentJson = maybeParentEntry->getJsonValue();
+    Reader parentReader(parentJson);
+    parentReader.obj("actorBlueprint", [&]() {
+      parentReader.obj("components", [&]() {
+        // TODO(nikki): We can cache the component reader in the `LibraryEntry` to reuse the
+        //              reader lookup cache when we add one
+        if (maybeReader) {
+          // Have an actor reader, just set the parent reader to fallback to
+          maybeFallbackComponentsReader = Reader(*parentReader.jsonValue());
+        } else {
+          // No actor reader given, read directly from parent
+          readComponents(parentReader);
+        }
       });
-    };
+    });
   }
 
   // Read from actor reader
@@ -178,6 +180,11 @@ void Scene::ensureDrawOrderSort() const {
 //
 
 void Scene::update(double dt) {
+  // Default debug messages
+  debugMessages.clear();
+  addDebugMessage("fps: {}", lv.timer.getFPS());
+  addDebugMessage("actors: {}", getEntityRegistry().alive());
+
   // Update time
   performTime += dt; // For now we're always performing
 

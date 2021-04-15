@@ -25,7 +25,9 @@ struct RuleContext {
 
   ActorId actorId;
 
-  Scene &getScene();
+  Scene &getScene() const;
+
+  RuleContext copy() const;
 
 
 private:
@@ -83,6 +85,12 @@ public:
                                             // `F` is `(const Trigger &) -> bool`
 
 
+  // Response scheduling
+
+  void schedule(ResponseRef response, RuleContext ctx,
+      double performTime = 0); // `performTime` is absolute `Scene::getPerformTime()`
+
+
 private:
   // Using a pool allocator for rule nodes (responses and expressions) since we'll be allocating a
   // lot of small objects and visiting them somewhat in order when running. Also keep track of the
@@ -103,10 +111,10 @@ private:
   struct Thread {
     // A thread is an invocation of a response scheduled to run soon along with its context
 
-    double scheduledPerformTime; // `Scene::getPerformTime()` at or after which this thread should
-                                 // be run. Perform time is always >= 0, so 0 means run immediately.
     ResponseRef response = nullptr;
     RuleContext ctx;
+    double scheduledPerformTime; // `Scene::getPerformTime()` at or after which this thread should
+                                 // be run. Perform time is always >= 0, so 0 means run immediately.
   };
   std::vector<Thread> scheduled; // All threads scheduled to run soon
   std::vector<Thread> current; // A temporary list of threads to run in the current frame. Stored as
@@ -174,12 +182,12 @@ struct BaseResponse {
 
   void runChain(const RuleContext &ctx); // Run this response and then next responses after it
 
+  ResponseRef next = nullptr;
+
 
 private:
   template<typename T>
   friend struct RuleRegistration;
-
-  ResponseRef next = nullptr;
 
   virtual void run(const RuleContext &ctx) = 0; // Run only this response, and not next ones.
                                                 // Implemented in concrete response types.
@@ -205,8 +213,12 @@ private:
 
 // Inlined implementations
 
-inline Scene &RuleContext::getScene() {
+inline Scene &RuleContext::getScene() const {
   return *scene;
+}
+
+inline RuleContext RuleContext::copy() const {
+  return { actorId, *scene };
 }
 
 template<typename Trigger, typename... Component>
@@ -223,7 +235,7 @@ void RulesBehavior::fireAllIf(F &&filter) {
       [&](ActorId actorId, const TriggerComponent<Trigger> &component, const auto &...rest) {
         for (auto &entry : component.entries) {
           if (filter(actorId, entry.trigger, rest...)) {
-            scheduled.push_back(Thread { 0, entry.response, RuleContext { actorId, scene } });
+            schedule(entry.response, { actorId, scene });
           }
         }
       });
@@ -243,10 +255,14 @@ void RulesBehavior::fireIf(ActorId actorId, F &&filter) {
       = getScene().getEntityRegistry().try_get<TriggerComponent<Trigger>>(actorId)) {
     for (auto &entry : maybeComponent->entries) {
       if (filter((const Trigger &)entry.trigger)) {
-        scheduled.push_back(Thread { 0, entry.response, RuleContext { actorId, scene } });
+        schedule(entry.response, { actorId, scene });
       }
     }
   }
+}
+
+inline void RulesBehavior::schedule(ResponseRef response, RuleContext ctx, double performTime) {
+  scheduled.push_back({ response, std::move(ctx), performTime });
 }
 
 inline void BaseResponse::runChain(const RuleContext &ctx) {

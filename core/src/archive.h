@@ -131,6 +131,7 @@ public:
 
   void read(int &i); // Read current value into an existing primitive
   void read(float &f);
+  void read(double &f);
   void read(bool &b);
   void read(std::string &s);
   void read(love::Colorf &c);
@@ -520,6 +521,12 @@ inline void Reader::read(int &i) {
 inline void Reader::read(float &f) {
   if (cur->IsNumber()) {
     f = cur->GetFloat();
+  }
+}
+
+inline void Reader::read(double &f) {
+  if (cur->IsNumber()) {
+    f = cur->GetDouble();
   }
 }
 

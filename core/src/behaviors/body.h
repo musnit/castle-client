@@ -57,6 +57,7 @@ public:
 
   // `ActorId` <-> `b2Body` association
 
+  b2Body *maybeGetPhysicsBody(ActorId actorId); // `nullptr` if not present
   const b2Body *maybeGetPhysicsBody(ActorId actorId) const; // `nullptr` if not present
   ActorId maybeGetActorId(const b2Body *body) const; // `nullActor` if not present
 
@@ -70,21 +71,6 @@ public:
 
 
 private:
-  friend class SolidBehavior; // Other behaviors that modify the Box2D body
-  friend class MovingBehavior;
-  friend class FallingBehavior;
-  friend class BouncyBehavior;
-  friend class FrictionBehavior;
-  friend class RotatingMotionBehavior;
-  friend class SlowdownBehavior;
-  friend class SpeedLimitBehavior;
-  friend class SlidingBehavior;
-  friend class SlingBehavior;
-  friend class DragBehavior;
-  friend class AnalogStickBehavior;
-
-  b2Body *maybeGetPhysicsBody(ActorId actorId); // `nullptr` if not present
-
   b2Fixture *addFixture(BodyComponent &component, b2Shape *shape);
 };
 

@@ -4,7 +4,7 @@
 
 
 //
-// Basic triggers
+// Lifecycle triggers
 //
 
 struct CreateTrigger : BaseTrigger {
@@ -23,18 +23,116 @@ struct DestroyTrigger : BaseTrigger {
 
 
 //
-// Basic responses
+// Lifecycle responses
+//
+
+struct CreateResponse final : BaseResponse {
+  inline static const RuleRegistration<CreateResponse> registration { "create", 16 };
+
+  struct Params {
+    PROP(std::string, entryId);
+    PROP(std::string, coordinateSystem) = "relative position";
+    PROP(float, xOffset) = 0;
+    PROP(float, yOffset) = 0;
+    PROP(float, xAbsolute) = 0;
+    PROP(float, yAbsolute) = 0;
+    PROP(float, angle) = 0;
+    PROP(float, distance) = 0;
+    PROP(std::string, depth) = "in front of all actors";
+  } params;
+
+  ResponseRef realNext = nullptr;
+
+  void run(const RuleContext &ctx) override {
+    auto &scene = ctx.getScene();
+
+    // Make sure we have an `entryId`
+    auto &entryId = params.entryId();
+    if (entryId.empty()) {
+      return;
+    }
+
+    // Create actor and make sure that was successful
+    auto newActorId = scene.addActor(nullptr, entryId.c_str());
+    if (newActorId == nullActor) {
+      return;
+    }
+
+    // TODO(nikki): Handle depth
+
+    // Set position
+    auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
+    if (auto newBody = bodyBehavior.maybeGetPhysicsBody(newActorId)) {
+      // Check coordinate system by looking at a couple characters of the string...
+      auto &coordinateSystem = params.coordinateSystem();
+      if (coordinateSystem[0] == 'r') {
+        auto creatorPos = b2Vec2(0, 0);
+        float creatorAngle = 0;
+        if (auto creatorBody = bodyBehavior.maybeGetPhysicsBody(ctx.actorId)) {
+          creatorPos = creatorBody->GetPosition();
+          creatorAngle = creatorBody->GetAngle();
+        }
+        if (coordinateSystem[9] == 'p') {
+          // Relative position
+          newBody->SetTransform(
+              {
+                  creatorPos.x + params.xOffset(),
+                  creatorPos.y + params.yOffset(),
+              },
+              newBody->GetAngle());
+        } else {
+          // TODO(nikki): Relative angle and distance
+        }
+      } else {
+        // TODO(nikki): Absolute position
+      }
+    }
+    // TODO(nikki): Handle absolute position
+  }
+};
+
+
+//
+// Timing responses
+//
+
+struct WaitResponse final : BaseResponse {
+  inline static const RuleRegistration<WaitResponse> registration { "wait", 16 };
+
+  struct Params {
+    PROP(double, duration);
+  } params;
+
+  ResponseRef realNext = nullptr;
+
+  void run(const RuleContext &ctx) override {
+    // Save `next` to `realNext` and then unset `next` so `BaseResponse` doesn't automatically
+    // continue down the chain in `runChain()`. We'll schedule `realNext` ourselves.
+    if (next) {
+      realNext = next;
+      next = nullptr;
+    }
+    auto &scene = ctx.getScene();
+    auto &rulesBehavior = scene.getBehaviors().byType<RulesBehavior>();
+    rulesBehavior.schedule(realNext, ctx.copy(), scene.getPerformTime() + params.duration());
+  }
+};
+
+
+//
+// Meta responses
 //
 
 struct NoteResponse final : BaseResponse {
   inline static const RuleRegistration<NoteResponse> registration { "note", 16 };
 
   struct Params {
-    PROP(std::string, note);
+    // NOTE: Skipping because we don't actually use it when running, so avoid parsing overhead
+    // PROP(std::string, note);
   } params;
 
   void run(const RuleContext &ctx) override {
-    fmt::print("actorId: {}, note: {}\n", ctx.actorId, params.note());
+    // Nothing to do...
   }
 };
 
@@ -133,6 +231,7 @@ void RulesBehavior::handlePerform(double dt) {
 
   // Run scheduled responses
   auto performTime = scene.getPerformTime();
+  scene.addDebugMessage("scheduled before: {}", scheduled.size());
   scheduled.erase(std::remove_if(scheduled.begin(), scheduled.end(),
                       [&](Thread &thread) {
                         if (performTime >= thread.scheduledPerformTime) {
@@ -142,8 +241,13 @@ void RulesBehavior::handlePerform(double dt) {
                         return false;
                       }),
       scheduled.end());
+  scene.addDebugMessage("scheduled after: {}", scheduled.size());
+  scene.addDebugMessage("current before: {}", current.size());
   for (auto &thread : current) {
-    thread.response->runChain(thread.ctx);
+    if (thread.response) {
+      thread.response->runChain(thread.ctx);
+    }
   }
   current.clear();
+  scene.addDebugMessage("current before: {}", current.size());
 }

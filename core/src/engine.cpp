@@ -157,8 +157,7 @@ void Engine::draw() {
   tests.draw();
 #endif
 
-  auto debugText = fmt::format("fps: {}", lv.timer.getFPS());
   lv.graphics.setColor(love::Colorf(0, 0, 0, 1));
-  lv.graphics.print({ { debugText, { 1, 1, 1, 1 } } }, debugFont.get(),
+  lv.graphics.print({ { scene->getDebugMessages(), { 1, 1, 1, 1 } } }, debugFont.get(),
       love::Matrix4(20, 20, 0, 1, 1, 0, 0, 0, 0));
 }
