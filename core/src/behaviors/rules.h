@@ -11,6 +11,37 @@ using ResponseRef = BaseResponse *;
 
 
 //
+// Context
+//
+
+struct RuleContext {
+  // Holds local values for one invocation of a response or expression. Passed to the `run(...)`
+  // method of responses or the `eval(...)` method of expressions.
+
+  RuleContext(const RuleContext &) = delete; // Prevent accidental copies
+  RuleContext &operator=(const RuleContext &) = delete;
+  RuleContext(RuleContext &&) = default; // Allow moves
+  RuleContext &operator=(RuleContext &&) = default;
+
+  ActorId actorId;
+
+  Scene &getScene();
+
+
+private:
+  friend class RulesBehavior;
+
+  Scene *scene; // Needs to be a pointer and not a reference to preserve move assignment for
+                // `std::remove_if`
+
+  RuleContext(ActorId actorId_, Scene &scene_)
+      : actorId(actorId_)
+      , scene(&scene_) {
+  }
+};
+
+
+//
 // Behavior
 //
 
@@ -37,6 +68,18 @@ public:
   void handlePerform(double dt);
 
 
+  // Trigger firing
+
+  template<typename Trigger>
+  void fireTrigger(const RuleContext &ctx); // Fire trigger on all actors that have it
+
+  template<typename Trigger, typename F> // F is `(ActorId, const Trigger &) -> bool`
+  void fireTrigger(const RuleContext &ctx, F &&filter); // As above but only when `filter` is `true`
+
+  template<typename Trigger>
+  void fireTrigger(ActorId actorId, const RuleContext &ctx); // Fire on single actor, if has trigger
+
+
 private:
   // Using a pool allocator for rule nodes (responses and expressions) since we'll be allocating a
   // lot of small objects and visiting them somewhat in order when running. Also keep track of the
@@ -50,6 +93,21 @@ private:
   // from a previously loaded blueprint. Value may be `nullptr` if loading the response failed --
   // still helps to cache that it failed.
   std::unordered_map<void *, ResponseRef> responseCache;
+
+
+  // Threads
+
+  struct Thread {
+    // A thread is an invocation of a response scheduled to run soon along with its context
+
+    double scheduledPerformTime; // `Scene::getPerformTime()` at or after which this thread should
+                                 // be run. Perform time is always >= 0, so 0 means run immediately.
+    ResponseRef response = nullptr;
+    RuleContext ctx;
+  };
+  std::vector<Thread> scheduled; // All threads scheduled to run soon
+  std::vector<Thread> current; // A temporary list of threads to run in the current frame. Stored as
+                               // a member so we can reuse its memory from frame to frame.
 
 
   // Loaders (maps from names to read functions for rule types, filled by `RuleRegistration` when
@@ -68,7 +126,7 @@ private:
   struct ResponseLoader {
     entt::hashed_string nameHs;
     int behaviorId = -1;
-    ResponseRef (*read)(RulesBehavior &rules, Reader &reader) = nullptr;
+    ResponseRef (*read)(RulesBehavior &rulesBehavior, Reader &reader) = nullptr;
   };
   inline static std::vector<ResponseLoader> responseLoaders;
 
@@ -80,9 +138,9 @@ private:
 // Triggering
 //
 
-template<typename T>
+template<typename Trigger>
 struct TriggerComponent {
-  // Actors that have rules with triggers of type `T` have this component, linking them to the
+  // Actors that have rules with triggers of type `Trigger` have this component, linking them to the
   // response to run for that trigger. Also enables fast searches for actors with a given trigger
   // type.
   //
@@ -95,7 +153,7 @@ struct TriggerComponent {
   // run twice).
 
   struct Entry {
-    T trigger;
+    Trigger trigger;
     ResponseRef response = nullptr;
   };
   SmallVector<Entry, 4> entries;
@@ -111,7 +169,7 @@ struct BaseTrigger {};
 struct BaseResponse {
   virtual ~BaseResponse() = default;
 
-  void runChain(); // Run this response and then run the next responses after it
+  void runChain(const RuleContext &ctx); // Run this response and then next responses after it
 
 
 private:
@@ -120,7 +178,8 @@ private:
 
   ResponseRef next = nullptr;
 
-  virtual void run() = 0; // Run this response, and not next ones. Overridden in response types.
+  virtual void run(const RuleContext &ctx) = 0; // Run only this response, and not next ones.
+                                                // Implemented in concrete response types.
 };
 
 
@@ -140,10 +199,14 @@ struct RuleRegistration {
 
 // Inlined implementations
 
-inline void BaseResponse::runChain() {
-  run();
+inline Scene &RuleContext::getScene() {
+  return *scene;
+}
+
+inline void BaseResponse::runChain(const RuleContext &ctx) {
+  run(ctx);
   if (next) {
-    next->runChain();
+    next->runChain(ctx);
   }
 }
 
@@ -178,11 +241,11 @@ RuleRegistration<T>::RuleRegistration(const char *name, int behaviorId) {
     RulesBehavior::responseLoaders.push_back({
         entt::hashed_string(name),
         behaviorId,
-        [](RulesBehavior &rules, Reader &reader) -> ResponseRef {
+        [](RulesBehavior &rulesBehavior, Reader &reader) -> ResponseRef {
           // Initialize a new response, read params and return
-          auto response = (T *)rules.pool.Malloc(sizeof(T));
+          auto response = (T *)rulesBehavior.pool.Malloc(sizeof(T));
           new (response) T();
-          rules.responses.emplace_back(response);
+          rulesBehavior.responses.emplace_back(response);
           reader.obj("params", [&]() {
             // Reflected props
             if constexpr (Props::hasProps<decltype(response->params)>) {
@@ -191,7 +254,7 @@ RuleRegistration<T>::RuleRegistration(const char *name, int behaviorId) {
 
             // Child responses
             reader.obj("nextResponse", [&]() {
-              response->next = rules.readResponse(reader);
+              response->next = rulesBehavior.readResponse(reader);
             });
           });
           return response;

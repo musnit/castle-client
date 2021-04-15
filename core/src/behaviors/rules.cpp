@@ -26,8 +26,8 @@ struct NoteResponse final : BaseResponse {
     PROP(std::string, note);
   } params;
 
-  void run() override {
-    fmt::print("note: {}\n", params.note());
+  void run(const RuleContext &ctx) override {
+    fmt::print("actorId: {}, note: {}\n", ctx.actorId, params.note());
   }
 };
 
@@ -118,14 +118,31 @@ ResponseRef RulesBehavior::readResponse(Reader &reader) {
 //
 
 void RulesBehavior::handlePerform(double dt) {
+  auto &scene = getScene();
   auto &registry = getScene().getEntityRegistry();
 
   // Fire create triggers and clear them
   registry.view<TriggerComponent<CreateTrigger>>().each(
       [&](ActorId actorId, TriggerComponent<CreateTrigger> &component) {
         for (auto &entry : component.entries) {
-          entry.response->runChain();
+          scheduled.push_back(Thread { 0, entry.response, RuleContext { actorId, scene } });
         }
       });
   registry.clear<TriggerComponent<CreateTrigger>>();
+
+  // Run scheduled responses
+  auto performTime = getScene().getPerformTime();
+  scheduled.erase(std::remove_if(scheduled.begin(), scheduled.end(),
+                      [&](Thread &thread) {
+                        if (performTime >= thread.scheduledPerformTime) {
+                          current.push_back(std::move(thread));
+                          return true;
+                        }
+                        return false;
+                      }),
+      scheduled.end());
+  for (auto &thread : current) {
+    thread.response->runChain(thread.ctx);
+  }
+  current.clear();
 }

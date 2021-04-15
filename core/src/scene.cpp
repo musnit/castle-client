@@ -171,6 +171,9 @@ void Scene::ensureDrawOrderSort() const {
 //
 
 void Scene::update(double dt) {
+  // Update time
+  performTime += dt; // For now we're always performing
+
   // Update gesture first so behaviors can read it
   gesture.update();
 

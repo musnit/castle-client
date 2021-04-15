@@ -109,6 +109,11 @@ public:
   } props;
 
 
+  // Time
+
+  double getPerformTime() const; // Time under performance since start, not including time paused
+
+
   // Update, draw
 
   void update(double dt);
@@ -135,6 +140,8 @@ private:
   mutable love::Transform viewTransform;
 
   Gesture gesture { *this };
+
+  double performTime = 0;
 
 
   void ensureDrawOrderSort() const;
@@ -239,4 +246,8 @@ inline float Scene::getPixelScale() const {
 
 inline const Gesture &Scene::getGesture() const {
   return gesture;
+}
+
+inline double Scene::getPerformTime() const {
+  return performTime;
 }
