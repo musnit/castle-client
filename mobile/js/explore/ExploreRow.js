@@ -2,25 +2,29 @@ import * as React from 'react';
 import { Pressable, StyleSheet, Text, FlatList, View } from 'react-native';
 import { CardCell } from '../components/CardCell';
 import { useNavigation } from '../ReactNavigation';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 24,
+    marginTop: 16,
+    marginBottom: 16,
+  },
+  rowHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingBottom: 8,
   },
   title: {
     color: Constants.colors.white,
-    fontWeight: 'bold',
-    letterSpacing: 1,
-    marginHorizontal: 16,
-    marginBottom: 8,
-    textTransform: 'uppercase',
+    fontSize: 16,
   },
   itemCard: {
     aspectRatio: Constants.CARD_RATIO,
-    height: 160,
-    width: null,
+    height: null,
+    width: 100,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 8,
@@ -64,6 +68,7 @@ export const ExploreRow = ({ feed }) => {
           creator={deck.creator}
           onPress={() => onPressDeck(deck)}
           style={styles.itemCard}
+          inGrid={true}
         />
       ) : null;
     },
@@ -72,8 +77,9 @@ export const ExploreRow = ({ feed }) => {
 
   return (
     <View style={styles.container}>
-      <Pressable onPress={onPressTitle}>
+      <Pressable onPress={onPressTitle} style={styles.rowHeader}>
         <Text style={styles.title}>{feed.title}</Text>
+        <Icon size={24} name="chevron-right" color="#fff" />
       </Pressable>
       <FlatList
         data={feed.decks}

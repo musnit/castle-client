@@ -9,11 +9,13 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    margin: 16,
+    padding: 18,
+    borderBottomWidth: 1,
+    borderColor: Constants.colors.grayOnBlackBorder,
   },
   inputWrapper: {
     borderWidth: 1,
-    borderRadius: 4,
+    borderRadius: 6,
     borderColor: Constants.colors.white,
     flexDirection: 'row',
     alignItems: 'center',
