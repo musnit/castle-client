@@ -41,8 +41,6 @@ struct CreateResponse final : BaseResponse {
     PROP(std::string, depth) = "in front of all actors";
   } params;
 
-  ResponseRef realNext = nullptr;
-
   void run(const RuleContext &ctx) override {
     auto &scene = ctx.getScene();
 
@@ -63,31 +61,30 @@ struct CreateResponse final : BaseResponse {
     // Set position
     auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
     if (auto newBody = bodyBehavior.maybeGetPhysicsBody(newActorId)) {
-      // Check coordinate system by looking at a couple characters of the string...
+      b2Vec2 newPos;
       auto &coordinateSystem = params.coordinateSystem();
-      if (coordinateSystem[0] == 'r') {
-        auto creatorPos = b2Vec2(0, 0);
+      if (coordinateSystem[0] == 'r') { // Whether starts with "relative" or "absolute"
+        // Relative
+        b2Vec2 creatorPos;
         float creatorAngle = 0;
         if (auto creatorBody = bodyBehavior.maybeGetPhysicsBody(ctx.actorId)) {
           creatorPos = creatorBody->GetPosition();
           creatorAngle = creatorBody->GetAngle();
         }
-        if (coordinateSystem[9] == 'p') {
+        if (coordinateSystem[9] == 'p') { // Whether has "position" or "angle" in the middle
           // Relative position
-          newBody->SetTransform(
-              {
-                  creatorPos.x + params.xOffset(),
-                  creatorPos.y + params.yOffset(),
-              },
-              newBody->GetAngle());
+          newPos = creatorPos + b2Vec2(params.xOffset(), params.yOffset());
         } else {
-          // TODO(nikki): Relative angle and distance
+          // Relative angle and distance
+          auto angle = params.angle() + creatorAngle;
+          newPos = creatorPos + params.distance() * b2Vec2(std::cos(angle), std::sin(angle));
         }
       } else {
-        // TODO(nikki): Absolute position
+        // Absolute
+        newPos = { params.xAbsolute(), params.yAbsolute() };
       }
+      newBody->SetTransform(newPos, newBody->GetAngle());
     }
-    // TODO(nikki): Handle absolute position
   }
 };
 
