@@ -100,19 +100,21 @@ struct WaitResponse final : BaseResponse {
     PROP(double, duration);
   } params;
 
-  ResponseRef realNext = nullptr;
+  ResponseRef body = nullptr;
+
+  void linearize(ResponseRef continuation) override {
+    // Linearize normally, then unset `next` so `BaseResponse` doesn't automatically continue in
+    // `runChain()`. We'll save the original value and schedule it ourselves.
+    BaseResponse::linearize(continuation);
+    body = next;
+    next = nullptr;
+  }
 
   void run(const RuleContext &ctx) override {
-    // Save `next` to `realNext` and then unset `next` so `BaseResponse` doesn't automatically
-    // continue down the chain in `runChain()`. We'll schedule `realNext` ourselves.
-    if (next) {
-      realNext = next;
-      next = nullptr;
-    }
-    if (realNext) {
+    if (body) {
       auto &scene = ctx.getScene();
       auto &rulesBehavior = scene.getBehaviors().byType<RulesBehavior>();
-      rulesBehavior.schedule(realNext, ctx.copy(), scene.getPerformTime() + params.duration());
+      rulesBehavior.schedule(body, ctx.move(), scene.getPerformTime() + params.duration());
     }
   }
 };
@@ -174,6 +176,10 @@ void RulesBehavior::handleReadComponent(
       } else {
         // New JSON -- read and cache it
         response = readResponse(reader);
+        if (response) {
+          // This is a root, so linearize from here
+          response->linearize(nullptr);
+        }
         responseCache.insert_or_assign(jsonPtr, response);
       }
     });

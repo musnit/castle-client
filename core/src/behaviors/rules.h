@@ -27,19 +27,16 @@ struct RuleContext {
 
   Scene &getScene() const;
 
-  RuleContext copy() const;
+  RuleContext move() const; // Invalidates this context and returns a copy. Not commonly used, meant
+                            // for re-scheduling the same context (eg. see `WaitResponse`).
 
 
 private:
-  friend class RulesBehavior;
+  friend class RulesBehavior; // To let it construct us
 
-  Scene *scene; // Needs to be a pointer and not a reference to preserve move assignment for
-                // `std::remove_if`
+  Scene *scene;
 
-  RuleContext(ActorId actorId_, Scene &scene_)
-      : actorId(actorId_)
-      , scene(&scene_) {
-  }
+  RuleContext(ActorId actorId_, Scene &scene_);
 };
 
 
@@ -125,7 +122,7 @@ private:
   // the application starts)
 
   template<typename T>
-  friend struct RuleRegistration;
+  friend struct RuleRegistration; // To let it write to loaders
 
   struct TriggerLoader {
     entt::hashed_string nameHs;
@@ -182,13 +179,13 @@ struct BaseResponse {
 
   void runChain(const RuleContext &ctx); // Run this response and then next responses after it
 
+  virtual void linearize(ResponseRef continuation); // 'Flatten' the tree so resuming suspended
+                                                    // response chains continues parent branches
+
   ResponseRef next = nullptr;
 
 
 private:
-  template<typename T>
-  friend struct RuleRegistration;
-
   virtual void run(const RuleContext &ctx) = 0; // Run only this response, and not next ones.
                                                 // Implemented in concrete response types.
 };
@@ -217,8 +214,14 @@ inline Scene &RuleContext::getScene() const {
   return *scene;
 }
 
-inline RuleContext RuleContext::copy() const {
-  return { actorId, *scene };
+inline RuleContext RuleContext::move() const {
+  return std::move(const_cast<RuleContext &>(*this));
+}
+
+
+inline RuleContext::RuleContext(ActorId actorId_, Scene &scene_)
+    : actorId(actorId_)
+    , scene(&scene_) {
 }
 
 template<typename Trigger, typename... Component>
@@ -263,6 +266,14 @@ void RulesBehavior::fireIf(ActorId actorId, F &&filter) {
 
 inline void RulesBehavior::schedule(ResponseRef response, RuleContext ctx, double performTime) {
   scheduled.push_back({ response, std::move(ctx), performTime });
+}
+
+inline void BaseResponse::linearize(ResponseRef continuation) {
+  if (next) {
+    next->linearize(continuation);
+  } else {
+    next = continuation;
+  }
 }
 
 inline void BaseResponse::runChain(const RuleContext &ctx) {
