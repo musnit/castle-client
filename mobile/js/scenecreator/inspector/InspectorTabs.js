@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { AddBehaviorSheet } from './components/AddBehaviorSheet';
 import { useCardCreator } from '../CreateCardContext';
-import { SaveBlueprintButton } from './components/SaveBlueprintButton';
+import { SaveBlueprintSheet } from './components/SaveBlueprintSheet';
 
 import * as SceneCreatorConstants from '../SceneCreatorConstants';
 import * as Constants from '../../Constants';
@@ -34,12 +34,21 @@ const styles = StyleSheet.create({
 
 const GeneralTab = ({ behaviors, sendActions, addChildSheet }) => {
   const { inspectorActions, isTextActorSelected } = useCardCreator();
-  const isBlueprint = (inspectorActions && inspectorActions.isBlueprint) || false;
+  const hasBlueprint = (inspectorActions && inspectorActions.hasBlueprint) || false;
   return (
     <React.Fragment>
-      {false && !isBlueprint && ( // Save blueprint button skipped for now
+      {!hasBlueprint && (
         <View style={styles.blueprintContainer}>
-          <SaveBlueprintButton />
+          <TouchableOpacity
+            style={SceneCreatorConstants.styles.button}
+            onPress={() =>
+              addChildSheet({
+                key: 'saveBlueprint',
+                Component: SaveBlueprintSheet,
+              })
+            }>
+            <Text style={SceneCreatorConstants.styles.buttonLabel}>Save blueprint</Text>
+          </TouchableOpacity>
         </View>
       )}
       {isTextActorSelected && (
