@@ -61,7 +61,7 @@ public:
   ~RulesBehavior();
 
 
-  void handleDisableComponent(ActorId actorId, RulesComponent &component, bool removeActor);
+  void handlePreRemoveActor(ActorId actorId, RulesComponent &component);
 
   void handleReadComponent(ActorId actorId, RulesComponent &component, Reader &reader);
 
@@ -197,6 +197,9 @@ struct RuleRegistration {
   // starts.
 
   RuleRegistration(const char *name, int behaviorId);
+
+private:
+  inline static bool registered = false; // To catch erroneous double-registration of the same type
 };
 
 
@@ -237,9 +240,9 @@ template<typename Trigger, typename F>
 void RulesBehavior::fireIf(ActorId actorId, F &&filter) {
   auto &scene = getScene();
   if (auto maybeComponent
-      = getScene().getEntityRegistry().try_get<const TriggerComponent<Trigger>>(actorId)) {
+      = getScene().getEntityRegistry().try_get<TriggerComponent<Trigger>>(actorId)) {
     for (auto &entry : maybeComponent->entries) {
-      if (filter(entry.trigger)) {
+      if (filter((const Trigger &)entry.trigger)) {
         scheduled.push_back(Thread { 0, entry.response, RuleContext { actorId, scene } });
       }
     }
@@ -257,6 +260,13 @@ template<typename T>
 RuleRegistration<T>::RuleRegistration(const char *name, int behaviorId) {
   static_assert(std::is_base_of_v<BaseTrigger, T> || std::is_base_of_v<BaseResponse, T>,
       "RuleRegistration: type must derive from `BaseTrigger` or `BaseResponse`");
+  if (registered) {
+    fmt::print("RuleRegistration: tried to register the same type twice -- make sure you're using "
+               "the correct `T` in `RuleRegistration<T>` (must be the same as the containing "
+               "`struct` or `class`)\n");
+    std::abort();
+  }
+  registered = true;
   if constexpr (std::is_base_of_v<BaseTrigger, T>) {
     // This is a trigger type
     RulesBehavior::triggerLoaders.push_back({

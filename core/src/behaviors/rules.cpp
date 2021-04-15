@@ -14,6 +14,13 @@ struct CreateTrigger : BaseTrigger {
   } params;
 };
 
+struct DestroyTrigger : BaseTrigger {
+  inline static const RuleRegistration<DestroyTrigger> registration { "destroy", 16 };
+
+  struct Params {
+  } params;
+};
+
 
 //
 // Basic responses
@@ -45,11 +52,11 @@ RulesBehavior::~RulesBehavior() {
 
 
 //
-// Enable, disable
+// Lifecycle
 //
 
-void RulesBehavior::handleDisableComponent(
-    ActorId actorId, RulesComponent &component, bool removeActor) {
+void RulesBehavior::handlePreRemoveActor(ActorId actorId, RulesComponent &component) {
+  fire<DestroyTrigger>(actorId);
 }
 
 
