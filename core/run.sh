@@ -80,6 +80,7 @@ case "$1" in
           }
           "
           valgrind \
+            --log-file="./build/valgrind.log" \
             --suppressions=<(echo "$SUPPRESSIONS") \
             --gen-suppressions=all \
             --leak-check=full \
