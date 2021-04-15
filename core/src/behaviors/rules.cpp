@@ -119,19 +119,13 @@ ResponseRef RulesBehavior::readResponse(Reader &reader) {
 
 void RulesBehavior::handlePerform(double dt) {
   auto &scene = getScene();
-  auto &registry = getScene().getEntityRegistry();
 
-  // Fire create triggers and clear them
-  registry.view<TriggerComponent<CreateTrigger>>().each(
-      [&](ActorId actorId, TriggerComponent<CreateTrigger> &component) {
-        for (auto &entry : component.entries) {
-          scheduled.push_back(Thread { 0, entry.response, RuleContext { actorId, scene } });
-        }
-      });
-  registry.clear<TriggerComponent<CreateTrigger>>();
+  // Fire create triggers. Then clear them so they're only run once on each actor.
+  fireTrigger<CreateTrigger>();
+  scene.getEntityRegistry().clear<TriggerComponent<CreateTrigger>>();
 
   // Run scheduled responses
-  auto performTime = getScene().getPerformTime();
+  auto performTime = scene.getPerformTime();
   scheduled.erase(std::remove_if(scheduled.begin(), scheduled.end(),
                       [&](Thread &thread) {
                         if (performTime >= thread.scheduledPerformTime) {

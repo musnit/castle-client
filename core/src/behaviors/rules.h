@@ -70,14 +70,17 @@ public:
 
   // Trigger firing
 
-  template<typename Trigger>
-  void fireTrigger(const RuleContext &ctx); // Fire trigger on all actors that have it
+  template<typename Trigger, typename... Component>
+  void fireTrigger(); // Fire on all actors that have trigger and components
+  template<typename Trigger, typename... Component, typename F>
+  void fireTrigger(F &&filter); // Like above but also `filter` must return `true`.
+                                // `F` is `(ActorId, const Trigger &, const Component &...) -> bool`
 
-  template<typename Trigger, typename F> // F is `(ActorId, const Trigger &) -> bool`
-  void fireTrigger(const RuleContext &ctx, F &&filter); // As above but only when `filter` is `true`
-
   template<typename Trigger>
-  void fireTrigger(ActorId actorId, const RuleContext &ctx); // Fire on single actor, if has trigger
+  void fireTrigger(ActorId actorId); // Fire on single actor if has trigger
+  template<typename Trigger, typename F>
+  void fireTrigger(ActorId actorId, F &&filter); // Like above but also `filter` must return `true`
+                                                 // `F` is `(const Trigger &) -> bool`
 
 
 private:
@@ -201,6 +204,46 @@ struct RuleRegistration {
 
 inline Scene &RuleContext::getScene() {
   return *scene;
+}
+
+template<typename Trigger, typename... Component>
+void RulesBehavior::fireTrigger() {
+  fireTrigger<Trigger, Component...>([](const auto &...) {
+    return true;
+  });
+}
+
+template<typename Trigger, typename... Component, typename F>
+void RulesBehavior::fireTrigger(F &&filter) {
+  auto &scene = getScene();
+  scene.getEntityRegistry().view<const TriggerComponent<Trigger>, const Component...>().each(
+      [&](ActorId actorId, const TriggerComponent<Trigger> &component, const auto &...rest) {
+        for (auto &entry : component.entries) {
+          if (filter(actorId, entry.trigger, rest...)) {
+            scheduled.push_back(Thread { 0, entry.response, RuleContext { actorId, scene } });
+          }
+        }
+      });
+}
+
+template<typename Trigger>
+void RulesBehavior::fireTrigger(ActorId actorId) {
+  fireTrigger<Trigger>(actorId, [](const auto &) {
+    return true;
+  });
+}
+
+template<typename Trigger, typename F>
+void RulesBehavior::fireTrigger(ActorId actorId, F &&filter) {
+  auto &scene = getScene();
+  if (auto maybeComponent
+      = getScene().getEntityRegistry().try_get<const TriggerComponent<Trigger>>(actorId)) {
+    for (auto &entry : maybeComponent->entries) {
+      if (filter(entry.trigger)) {
+        scheduled.push_back(Thread { 0, entry.response, RuleContext { actorId, scene } });
+      }
+    }
+  }
 }
 
 inline void BaseResponse::runChain(const RuleContext &ctx) {
