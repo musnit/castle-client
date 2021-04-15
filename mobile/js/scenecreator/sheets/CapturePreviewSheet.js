@@ -1,11 +1,11 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import { BottomSheet } from '../../components/BottomSheet';
 import { BottomSheetHeader } from '../../components/BottomSheetHeader';
 import { useCardCreator } from '../CreateCardContext';
 import { useGhostUI } from '../../ghost/GhostUI';
-import { uploadDeckPreview } from '../../Session';
+import { uploadDeckPreview, useSession } from '../../Session';
 
 import * as Constants from '../../Constants';
 import * as GhostEvents from '../../ghost/GhostEvents';
@@ -87,14 +87,14 @@ const CapturePreview = ({ visible, data, onUseCapture }) => {
     (state, action) => {
       const { rate, index } = state;
       if (action === 'increment') {
-        if (rate == 1) {
-          if (index == numFrames) {
+        if (rate === 1) {
+          if (index === numFrames) {
             return { rate: -1, index: index - 1 };
           } else {
             return { ...state, index: index + 1 };
           }
         } else {
-          if (index == 1) {
+          if (index === 1) {
             return { rate: 1, index: index + 1 };
           } else {
             return { ...frameState, index: index - 1 };
@@ -173,6 +173,7 @@ const CapturePreview = ({ visible, data, onUseCapture }) => {
 
 export const CapturePreviewSheet = ({ onClose, ...props }) => {
   const { deck } = useCardCreator();
+  const { userId: signedInUserId } = useSession();
   const [lastCaptureData, setLastCaptureData] = React.useState({});
   const [loading, setLoading] = React.useState(false);
   const { sendGlobalAction } = useGhostUI();
@@ -195,7 +196,8 @@ export const CapturePreviewSheet = ({ onClose, ...props }) => {
   const hasData = lastCaptureData?.path;
 
   const onUseCapture = async () => {
-    if (hasData) {
+    const isDeckOwner = signedInUserId === deck?.creator?.userId;
+    if (hasData && isDeckOwner) {
       await setLoading(true);
       const { path, numFrames } = lastCaptureData;
       let paths = [];
