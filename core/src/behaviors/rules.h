@@ -85,7 +85,8 @@ public:
   // Response scheduling
 
   void schedule(ResponseRef response, RuleContext ctx,
-      double performTime = 0); // `performTime` is absolute `Scene::getPerformTime()`
+      double performTime = 0); // `performTime` is absolute `Scene::getPerformTime()` at or after
+                               // which the response should be run. 0 means run immediately.
 
 
 private:
@@ -110,8 +111,7 @@ private:
 
     ResponseRef response = nullptr;
     RuleContext ctx;
-    double scheduledPerformTime; // `Scene::getPerformTime()` at or after which this thread should
-                                 // be run. Perform time is always >= 0, so 0 means run immediately.
+    double scheduledPerformTime = 0;
   };
   std::vector<Thread> scheduled; // All threads scheduled to run soon
   std::vector<Thread> current; // A temporary list of threads to run in the current frame. Stored as
@@ -254,8 +254,7 @@ void RulesBehavior::fire(ActorId actorId) {
 template<typename Trigger, typename F>
 void RulesBehavior::fireIf(ActorId actorId, F &&filter) {
   auto &scene = getScene();
-  if (auto maybeComponent
-      = getScene().getEntityRegistry().try_get<TriggerComponent<Trigger>>(actorId)) {
+  if (auto maybeComponent = scene.getEntityRegistry().try_get<TriggerComponent<Trigger>>(actorId)) {
     for (auto &entry : maybeComponent->entries) {
       if (filter((const Trigger &)entry.trigger)) {
         schedule(entry.response, { actorId, scene });

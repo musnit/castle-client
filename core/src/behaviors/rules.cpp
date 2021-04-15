@@ -234,9 +234,11 @@ void RulesBehavior::handlePerform(double dt) {
   fireAll<CreateTrigger>();
   scene.getEntityRegistry().clear<TriggerComponent<CreateTrigger>>();
 
-  // Run scheduled responses
+  // Run responses. Move ready responses from `scheduled` to `current`, then run and clear
+  // `current`. We don't run responses directly from `scheduled` because they could schedule new
+  // responses when run, which would modify `scheduled` and invalidate the iteration.
   auto performTime = scene.getPerformTime();
-  scene.addDebugMessage("scheduled before: {}", scheduled.size());
+  scene.addDebugMessage("scheduled: {}", scheduled.size());
   scheduled.erase(std::remove_if(scheduled.begin(), scheduled.end(),
                       [&](Thread &thread) {
                         if (performTime >= thread.scheduledPerformTime) {
@@ -246,13 +248,11 @@ void RulesBehavior::handlePerform(double dt) {
                         return false;
                       }),
       scheduled.end());
-  scene.addDebugMessage("scheduled after: {}", scheduled.size());
-  scene.addDebugMessage("current before: {}", current.size());
+  scene.addDebugMessage("current: {}", current.size());
   for (auto &thread : current) {
-    if (thread.response) {
+    if (thread.response) { // Some times this is `nullptr` under extreme memory pressure...
       thread.response->runChain(thread.ctx);
     }
   }
   current.clear();
-  scene.addDebugMessage("current before: {}", current.size());
 }
