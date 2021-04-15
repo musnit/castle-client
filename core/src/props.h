@@ -23,13 +23,13 @@ struct Prop {
 
   template<typename Value_ = Value,
       typename std::enable_if<!std::is_aggregate_v<Value_>, int>::type = 0, typename... Args>
-  Prop(Args &&...args)
+  Prop(Args &&...args) // NOLINT(google-explicit-constructor)
       : value(std::forward<Args>(args)...) {
   }
 
   template<typename Value_ = Value,
       typename std::enable_if<std::is_aggregate_v<Value_>, int>::type = 0, typename... Args>
-  Prop(Args &&...args)
+  Prop(Args &&...args) // NOLINT(google-explicit-constructor)
       : value { std::forward<Args>(args)... } {
   }
 
