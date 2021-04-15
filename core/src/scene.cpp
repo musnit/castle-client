@@ -32,12 +32,12 @@ template<typename T>
 static constexpr auto hasPropsMember<T, std::void_t<decltype(std::declval<T>().props)>> = true;
 
 ActorId Scene::addActor(Reader *maybeReader, const char *maybeParentEntryId) {
-  // Make sure parent entry exists
+  // Find parent entry
   const LibraryEntry *maybeParentEntry = nullptr;
   if (maybeParentEntryId) {
     maybeParentEntry = library.maybeGetEntry(maybeParentEntryId);
-    if (!maybeParentEntry) {
-      return nullActor;
+    if (!maybeParentEntry && !maybeReader) {
+      return nullActor; // Parent entry requested but doesn't exist, and we also have no actor data
     }
   }
 
