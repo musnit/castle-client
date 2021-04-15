@@ -341,8 +341,10 @@ void vibrate(double seconds)
 {
 	@autoreleasepool
 	{
-		static UIImpactFeedbackGenerator *feedbackGenerator = [[UIImpactFeedbackGenerator alloc] init];
-		[feedbackGenerator impactOccurredWithIntensity:seconds];
+		if (@available(iOS 13.0, *)) {
+			static UIImpactFeedbackGenerator *feedbackGenerator = [[UIImpactFeedbackGenerator alloc] init];
+			[feedbackGenerator impactOccurredWithIntensity:seconds];
+		}
 //		AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
 	}
 }
