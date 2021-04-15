@@ -109,9 +109,11 @@ struct WaitResponse final : BaseResponse {
       realNext = next;
       next = nullptr;
     }
-    auto &scene = ctx.getScene();
-    auto &rulesBehavior = scene.getBehaviors().byType<RulesBehavior>();
-    rulesBehavior.schedule(realNext, ctx.copy(), scene.getPerformTime() + params.duration());
+    if (realNext) {
+      auto &scene = ctx.getScene();
+      auto &rulesBehavior = scene.getBehaviors().byType<RulesBehavior>();
+      rulesBehavior.schedule(realNext, ctx.copy(), scene.getPerformTime() + params.duration());
+    }
   }
 };
 
