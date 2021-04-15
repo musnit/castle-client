@@ -59,8 +59,12 @@ public:
 
   b2Body *maybeGetPhysicsBody(ActorId actorId); // `nullptr` if not present
   const b2Body *maybeGetPhysicsBody(ActorId actorId) const; // `nullptr` if not present
-  love::Vector2 getScale(ActorId actorId) const; // `nullptr` if not present
   ActorId maybeGetActorId(const b2Body *body) const; // `nullActor` if not present
+
+
+  // Rendering properties
+
+  love::Vector2 getScale(ActorId actorId) const; // `{ 0, 0 }` if not present
 
 
   // Queries
