@@ -1,10 +1,9 @@
 import React, { Fragment } from 'react';
-import { StatusBar, View, Text, StyleSheet, Platform } from 'react-native';
 import { AppUpdateNotice } from '../components/AppUpdateNotice';
 import { DecksFeed } from '../components/DecksFeed';
 import { EmptyFeed } from './EmptyFeed';
 import { useLazyQuery, gql } from '@apollo/client';
-import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
+import { useNavigation, useFocusEffect } from '../ReactNavigation';
 
 import * as Constants from '../Constants';
 
@@ -41,7 +40,7 @@ export const FeaturedDecks = ({ focused, deckId }) => {
       ) {
         onRefresh();
       }
-    }, [lastFetched.time, deckId])
+    }, [lastFetched.time, deckId, onRefresh])
   );
 
   React.useEffect(() => {

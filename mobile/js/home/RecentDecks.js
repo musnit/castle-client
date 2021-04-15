@@ -1,12 +1,10 @@
 import React from 'react';
-import { Text, View } from 'react-native';
 import { DecksGrid } from '../components/DecksGrid';
 import { EmptyFeed } from './EmptyFeed';
 import { useLazyQuery, gql } from '@apollo/client';
 import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
 
 import * as Constants from '../Constants';
-import * as Session from '../Session';
 
 const REFETCH_FEED_INTERVAL_MS = 60 * 1000;
 
@@ -32,18 +30,20 @@ export const RecentDecks = ({ focused }) => {
     setLastFetchedTime(Date.now());
   }, [fetchDecks, setLastFetchedTime]);
 
-  useFocusEffect(onRefresh);
   useFocusEffect(
     React.useCallback(() => {
       if (!lastFetchedTime || Date.now() - lastFetchedTime > REFETCH_FEED_INTERVAL_MS) {
         onRefresh();
       }
-    }, [lastFetchedTime])
+    }, [lastFetchedTime, onRefresh])
   );
 
   React.useEffect(() => {
     if (query.called && !query.loading && !query.error && query.data) {
       setDecks(query.data.deckHistory);
+      setError(undefined);
+    } else if (query.error) {
+      setError(query.error);
     }
   }, [query.called, query.loading, query.error, query.data]);
 

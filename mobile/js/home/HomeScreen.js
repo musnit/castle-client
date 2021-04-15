@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Animated, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { Animated, StatusBar, StyleSheet, View } from 'react-native';
 import { FeaturedDecks } from './FeaturedDecks';
 import { FollowingDecks } from './FollowingDecks';
 import { PopoverProvider } from '../components/PopoverProvider';
@@ -11,7 +11,6 @@ import { useFocusEffect, useNavigation } from '../ReactNavigation';
 
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
-import * as Utilities from '../common/utilities';
 
 const SPRING_CONFIG = {
   tension: 150,

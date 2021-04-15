@@ -2,7 +2,7 @@ import React from 'react';
 import { DecksFeed } from '../components/DecksFeed';
 import { EmptyFeed } from './EmptyFeed';
 import { useLazyQuery, gql } from '@apollo/client';
-import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
+import { useNavigation, useFocusEffect } from '../ReactNavigation';
 import { useSession } from '../Session';
 
 import * as Constants from '../Constants';
@@ -57,7 +57,7 @@ export const FollowingDecks = ({ deckId }) => {
       ) {
         onRefresh();
       }
-    }, [lastFetched.time, deckId])
+    }, [lastFetched.time, deckId, onRefresh])
   );
 
   const onEndReached = React.useCallback(() => {
@@ -65,7 +65,7 @@ export const FollowingDecks = ({ deckId }) => {
       const lastModifiedBefore = decks[decks.length - 1].lastModified;
       onRefresh(lastModifiedBefore);
     }
-  }, [query.loading, decks?.length]);
+  }, [query.loading, decks, onRefresh]);
 
   React.useEffect(() => {
     if (query.called && !query.loading && !query.error && query.data) {
