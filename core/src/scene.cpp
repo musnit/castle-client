@@ -123,10 +123,10 @@ ActorId Scene::addActor(Reader *maybeReader, const char *maybeParentEntryId) {
     });
   }
 
-  // Debug
-  if (getBehaviors().byType<BodyBehavior>().hasComponent(actorId)) {
-    getBehaviors().byType<DebugDrawBehavior>().addComponent(actorId);
-  }
+  // Debug draw (must be enabled in 'all.h' for this to work)
+  // if (getBehaviors().byType<BodyBehavior>().hasComponent(actorId)) {
+  //  getBehaviors().byType<DebugDrawBehavior>().addComponent(actorId);
+  //}
 
   return actorId;
 }

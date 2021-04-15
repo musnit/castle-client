@@ -81,7 +81,7 @@ private:
     RulesBehavior,
 
     // Rendering
-    DebugDrawBehavior,
+    //DebugDrawBehavior,
     Drawing2Behavior
 
 #ifdef CASTLE_ENABLE_TESTS
