@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
 
 const UserAvatars = ({ users }) => {
   if (!users?.length) return null;
-  if (users.length == 1) {
+  if (users.length === 1) {
     return <UserAvatar style={styles.avatars} url={users[0].photo.url} />;
   } else {
     return (
@@ -87,7 +87,6 @@ const UsersList = ({ users }) => {
         </React.Fragment>
       );
   }
-  return null;
 };
 
 export const ProfileConnections = ({ followersCount, connections }) => {

@@ -159,16 +159,13 @@ export const ShareDeckScreen = ({ route }) => {
     [setVisibility, saveDeck, deck]
   );
 
-  const onTapShare = React.useCallback(
-    (deck, visibility) => {
-      if (visibility == 'private') {
-        Alert.alert("Can't share deck", 'Make this deck Public or Unlisted in order to share it.');
-      } else {
-        shareDeck(deck);
-      }
-    },
-    [visibility]
-  );
+  const onTapShare = React.useCallback((deck, visibility) => {
+    if (visibility === 'private') {
+      Alert.alert("Can't share deck", 'Make this deck Public or Unlisted in order to share it.');
+    } else {
+      shareDeck(deck);
+    }
+  }, []);
 
   return (
     <SafeAreaView style={Constants.styles.container}>
@@ -183,7 +180,7 @@ export const ShareDeckScreen = ({ route }) => {
                 name={Constants.iOS ? 'share' : 'share-2'}
                 size={24}
                 color={
-                  visibility == 'private' || pressed
+                  visibility === 'private' || pressed
                     ? Constants.colors.grayText
                     : Constants.colors.white
                 }

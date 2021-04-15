@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StatusBar, StyleSheet, View, ScrollView } from 'react-native';
+import { StatusBar, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SearchInput } from './SearchInput';
 import { SearchResults } from './SearchResults';
@@ -53,7 +53,7 @@ export const ExploreScreen = ({ route }) => {
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
       Amplitude.logEvent('VIEW_EXPLORE');
-    })
+    }, [])
   );
 
   const onRefresh = React.useCallback(() => {
@@ -66,7 +66,7 @@ export const ExploreScreen = ({ route }) => {
       if (!lastFetchedTime || Date.now() - lastFetchedTime > REFETCH_FEED_INTERVAL_MS) {
         onRefresh();
       }
-    }, [lastFetchedTime])
+    }, [lastFetchedTime, onRefresh])
   );
 
   React.useEffect(() => {

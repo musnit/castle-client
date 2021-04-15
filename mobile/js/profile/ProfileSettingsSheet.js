@@ -58,7 +58,7 @@ const updateUserAsync = async ({ user }) => {
     // upload new avatar
     const uploadedFile = await Session.uploadFile({ uri: user.photo.url });
     if (uploadedFile?.fileId) {
-      const result = await Session.apolloClient.mutate({
+      await Session.apolloClient.mutate({
         mutation: gql`
           mutation($userId: ID!, $photoFileId: ID!) {
             updateUser(userId: $userId, user: { photoFileId: $photoFileId }) {
@@ -103,7 +103,7 @@ const updateUserAsync = async ({ user }) => {
 };
 
 export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
-  if (Platform.OS == 'android') {
+  if (Platform.OS === 'android') {
     const { navigatorWindowHeight } = React.useContext(AndroidNavigationContext);
     SHEET_HEIGHT = navigatorWindowHeight - 100;
   }
@@ -174,7 +174,7 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
       });
     }
     setLoading(false);
-  }, [setResetPassword, setLoading]);
+  }, [setResetPassword, setLoading, user.username]);
 
   const [experimentalFeaturesChannel, setExperimentalFeaturesChannel] = React.useState('default');
   React.useEffect(() => {

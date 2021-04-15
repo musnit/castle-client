@@ -77,8 +77,8 @@ const styles = StyleSheet.create({
 export const PlayDeckActionsSkeleton = () => {
   return (
     <View style={[styles.container, styles.containerSkeleton]}>
-      <View style={[styles.avatar, styles.avatarSkeleton]}></View>
-      <View style={styles.usernameSkeleton}></View>
+      <View style={[styles.avatar, styles.avatarSkeleton]} />
+      <View style={styles.usernameSkeleton} />
     </View>
   );
 };
@@ -109,7 +109,7 @@ export const PlayDeckActions = ({
         `,
       variables: { deckId: deck.parentDeckId },
     });
-    if (result?.data?.deck && result.data.deck.visibility == 'public') {
+    if (result?.data?.deck && result.data.deck.visibility === 'public') {
       return navigate('PlayDeck', {
         decks: [result.data.deck],
         initialDeckIndex: 0,
@@ -173,7 +173,7 @@ export const PlayDeckActions = ({
               cancelButtonIndex: 1,
             },
             (buttonIndex) => {
-              if (buttonIndex == 0) {
+              if (buttonIndex === 0) {
                 onBlockUser();
               }
             }
@@ -189,7 +189,7 @@ export const PlayDeckActions = ({
               cancelButtonIndex: 1,
             },
             (buttonIndex) => {
-              if (buttonIndex == 0) {
+              if (buttonIndex === 0) {
                 onReportDeck();
               }
             }
@@ -198,7 +198,7 @@ export const PlayDeckActions = ({
         }
       }
     },
-    [deck?.deckId, onBlockUser]
+    [deck?.deckId, onBlockUser, onReportDeck]
   );
 
   return (

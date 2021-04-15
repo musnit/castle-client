@@ -1,6 +1,6 @@
 import React from 'react';
-import { BackHandler, StatusBar, StyleSheet, View } from 'react-native';
-import { useIsFocused, useFocusEffect } from '../ReactNavigation';
+import { BackHandler, StatusBar, StyleSheet } from 'react-native';
+import { useFocusEffect } from '../ReactNavigation';
 
 import { DecksFeed } from '../components/DecksFeed';
 import { PopoverProvider } from '../components/PopoverProvider';
@@ -9,7 +9,6 @@ import { useNavigation } from '../ReactNavigation';
 import { useListen } from '../ghost/GhostEvents';
 
 import * as Constants from '../Constants';
-import * as Utilities from '../common/utilities';
 
 const styles = StyleSheet.create({
   container: {

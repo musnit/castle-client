@@ -1,5 +1,5 @@
 import React from 'react';
-import { Animated, Easing, InteractionManager, Platform, StyleSheet, View } from 'react-native';
+import { Animated, Easing, Platform, StyleSheet } from 'react-native';
 import { gql } from '@apollo/client';
 
 import * as Constants from '../Constants';
@@ -28,7 +28,6 @@ const styles = StyleSheet.create({
 });
 
 const getBackgroundImageUrl = async (deckId, cardId) => {
-  let backgroundImageUrl = null;
   if (cardId) {
     const { data } = await Session.apolloClient.query({
       query: gql`

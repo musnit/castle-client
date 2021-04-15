@@ -1,5 +1,4 @@
 import React from 'react';
-import { View } from 'react-native';
 import { DecksGrid } from '../components/DecksGrid';
 import { useLazyQuery, gql } from '@apollo/client';
 import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
@@ -51,7 +50,7 @@ export const ExploreFeed = ({ route }) => {
       });
       setLastFetched({ time: Date.now(), lastModifiedBefore });
     },
-    [fetchDecks, setLastFetched]
+    [fetchDecks, setLastFetched, feedId]
   );
 
   React.useEffect(onRefresh, [feedId]);
@@ -61,13 +60,6 @@ export const ExploreFeed = ({ route }) => {
       Amplitude.logEvent('VIEW_EXPLORE_FEED', { feedId });
     }, [feedId])
   );
-
-  const onEndReached = React.useCallback(() => {
-    if (!query.loading && decks?.length) {
-      const lastModifiedBefore = decks[decks.length - 1].lastModified;
-      onRefresh(lastModifiedBefore);
-    }
-  }, [query.loading, decks?.length]);
 
   React.useEffect(() => {
     if (query.called && !query.loading && !query.error && query.data) {

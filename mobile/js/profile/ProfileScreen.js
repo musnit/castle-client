@@ -1,12 +1,12 @@
-import React, { Fragment, useState } from 'react';
-import { Pressable, StyleSheet, StatusBar, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { Pressable, StatusBar } from 'react-native';
 import { AuthPrompt } from '../auth/AuthPrompt';
 import { DecksGrid } from '../components/DecksGrid';
 import { EmptyFeed } from '../home/EmptyFeed';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { useLazyQuery, gql } from '@apollo/client';
-import { useNavigation, useFocusEffect, useIsFocused, useScrollToTop } from '../ReactNavigation';
+import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
 import { useSession } from '../Session';
 import { PopoverProvider } from '../components/PopoverProvider';
 import { ProfileHeader } from './ProfileHeader';
@@ -47,7 +47,6 @@ const useProfileQuery = (userId) => {
 const ProfileDecksGrid = ({ user, refreshing, onRefresh, error, isMe, ...props }) => {
   const decks = user?.decks.filter((deck) => deck.visibility === 'public');
   const { push } = useNavigation();
-  const isFocused = useIsFocused();
   const insets = useSafeAreaInsets();
   const paddingBottom = Constants.iOS ? insets.bottom : insets.bottom + 50; // account for android native tab bar
 
@@ -88,13 +87,13 @@ export const ProfileScreen = ({ userId, route }) => {
   const [user, setUser] = React.useState(null);
   const [error, setError] = React.useState(undefined);
 
-  const { signOutAsync, userId: signedInUserId, isAnonymous } = useSession();
+  const { userId: signedInUserId, isAnonymous } = useSession();
   if (!userId && route?.params) {
     userId = route.params.userId;
   }
   const isMe = !userId || userId === signedInUserId;
 
-  let lastFetchTime;
+  let lastFetchTime = React.useRef();
 
   const [fetchProfile, query] = useProfileQuery(userId);
 
@@ -120,11 +119,13 @@ export const ProfileScreen = ({ userId, route }) => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
       Amplitude.logEventWithProperties('VIEW_PROFILE', { userId, isOwnProfile: isMe });
 
-      if (!(lastFetchTime && Date.now() - lastFetchTime < REFETCH_PROFILE_INTERVAL_MS)) {
+      if (
+        !(lastFetchTime.current && Date.now() - lastFetchTime.current < REFETCH_PROFILE_INTERVAL_MS)
+      ) {
         onRefresh();
-        lastFetchTime = Date.now();
+        lastFetchTime.current = Date.now();
       }
-    }, [userId, isMe])
+    }, [userId, isMe, onRefresh])
   );
 
   const settingsSheetOnClose = (isChanged) => {

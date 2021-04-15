@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { gql } from '@apollo/client';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { UserAvatar } from '../components/UserAvatar';
 import { useNavigation } from '../ReactNavigation';
@@ -81,7 +81,7 @@ export const SearchResults = ({ query, onCancel, initialResults }) => {
     } else {
       setResults(initialResults);
     }
-  }, [query]);
+  }, [query, initialResults]);
 
   const onSelectUser = React.useCallback(
     (user) => navigate('Profile', { userId: user.userId }),

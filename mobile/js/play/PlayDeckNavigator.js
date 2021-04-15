@@ -83,7 +83,7 @@ export const PlayDeckNavigator = ({
     return () => {
       recordDeckPlay(deckId, cardIdRef.current);
     };
-  }, []);
+  }, [deckId, visibility]);
 
   React.useEffect(() => {
     recordDeckPlay(deckId, cardState.cardId);

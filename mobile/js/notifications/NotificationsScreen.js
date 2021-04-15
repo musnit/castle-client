@@ -2,7 +2,6 @@ import React from 'react';
 import {
   FlatList,
   RefreshControl,
-  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
@@ -116,9 +115,10 @@ const NotificationItem = ({ notification, navigateToUser, navigateToDeck, naviga
     } else if (user) {
       navigateToUser(user);
     }
-  }, [notification, user]);
+  }, [notification, user, navigateToUser, navigateToDeck]);
   const navigateToAllUsers = React.useCallback(() => navigateToUserList(notification.users), [
     notification?.users,
+    navigateToUserList,
   ]);
   return (
     <TouchableHighlight onPress={onPress} underlayColor={Constants.colors.tapHighlight}>
@@ -188,7 +188,7 @@ const NotificationsScreenAuthenticated = () => {
         setNotifBadge(0);
         markNotificationsReadAsync();
       };
-    }, [])
+    }, [markNotificationsReadAsync])
   );
 
   // Clear badge + mark notifs read if we background the app while the notifs tab is focused
@@ -200,7 +200,7 @@ const NotificationsScreenAuthenticated = () => {
           markNotificationsReadAsync();
         }
       },
-      [isFocused]
+      [isFocused, markNotificationsReadAsync]
     )
   );
 
@@ -247,26 +247,30 @@ const NotificationsScreenAuthenticated = () => {
       ),
     [navigate]
   );
-  const navigateToUserList = React.useCallback((users) =>
-    navigate(
-      'UserList',
-      { users },
-      {
-        isFullscreen: true,
-      }
-    )
+  const navigateToUserList = React.useCallback(
+    (users) =>
+      navigate(
+        'UserList',
+        { users },
+        {
+          isFullscreen: true,
+        }
+      ),
+    []
   );
-  const navigateToDeck = React.useCallback((deck) =>
-    navigate(
-      'PlayDeck',
-      {
-        decks: [deck],
-        title: 'Notifications',
-      },
-      {
-        isFullscreen: true,
-      }
-    )
+  const navigateToDeck = React.useCallback(
+    (deck) =>
+      navigate(
+        'PlayDeck',
+        {
+          decks: [deck],
+          title: 'Notifications',
+        },
+        {
+          isFullscreen: true,
+        }
+      ),
+    []
   );
 
   const renderItem = React.useCallback(

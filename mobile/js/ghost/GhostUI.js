@@ -194,28 +194,8 @@ export const useFastDataMemo = (key, Comp) => {
   };
 };
 
-export const useGhostThemeListener = ({ setLightColors, setDarkColors }) => {
-  const { forceRender } = useGhostUI();
-  React.useEffect(() => {
-    setLightColors();
-    forceRender();
-  }, []);
-  useListen({
-    eventName: 'CASTLE_TOOLS_COLORS',
-    handler: ({ isDark = false } = {}) => {
-      if (isDark) {
-        setDarkColors();
-      } else {
-        setLightColors();
-      }
-      forceRender();
-    },
-  });
-};
-
 export const getPaneData = (element) => {
   if (element) {
-    let data;
     const dataChild = element.children['data'];
     if (dataChild) {
       return dataChild.props.data;
