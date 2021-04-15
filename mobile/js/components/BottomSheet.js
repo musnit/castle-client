@@ -47,12 +47,14 @@ if (Platform.OS == 'android') {
   NativeBottomSheet = requireNativeComponent('CastleBottomSheet', null);
 }
 
+const TEXT_INPUT_HEIGHT = 48; // approx height of one text input
+
 /**
  *  @prop isOpen whether the bottom sheet is open (and therefore visible)
  *  @prop snapPoints ascending list of snap points measured from the bottom of the screen
  *  @prop initialSnap index into snapPoints to use when opening the sheet
  */
-export const BottomSheet = ({
+const BottomSheetIOS = ({
   isOpen = false,
   snapPoints = [32, 256],
   initialSnap = 0,
@@ -70,96 +72,6 @@ export const BottomSheet = ({
   style = {},
 }) => {
   let screenHeight = Viewport.vh * 100;
-  if (Platform.OS == 'android') {
-    const { navigatorWindowHeight } = React.useContext(AndroidNavigationContext);
-    screenHeight = navigatorWindowHeight;
-  }
-
-  const textInputHeight = 48; // approx height of one text input
-
-  if (Platform.OS == 'android') {
-    const [viewId] = React.useState(Math.floor(Math.random() * 1000000));
-
-    const notifySnap = React.useCallback(
-      (height) => {
-        let closestDist = 99999;
-        let closestIndex = 0;
-        for (i = 0; i < snapPoints.length; ++i) {
-          const curr = Math.abs(snapPoints[i] - height);
-          if (curr < closestDist) {
-            closestDist = curr;
-            closestIndex = i;
-          }
-        }
-        onSnap && onSnap(closestIndex);
-      },
-      [onSnap]
-    );
-
-    const [containerHeight, setContainerHeight] = React.useState(screenHeight);
-    const [scrollViewPadding, setScrollViewPadding] = React.useState(0);
-    React.useEffect(() => {
-      let subscription = DeviceEventEmitter.addListener('CastleBottomSheetEvent', (event) => {
-        if (event.viewId !== viewId) {
-          return;
-        }
-
-        if (event.type == 'height') {
-          setContainerHeight(event.height);
-          if (isOpen) {
-            notifySnap(event.height);
-          }
-        }
-
-        if (event.type == 'scrollViewPadding') {
-          setScrollViewPadding(event.padding);
-        }
-      });
-
-      return () => {
-        subscription.remove();
-      };
-    });
-
-    React.useEffect(() => {
-      if (isOpen) {
-        notifySnap(containerHeight);
-      } else {
-        notifySnap(0);
-      }
-    }, [isOpen]);
-
-    // onCloseEnd, onOpenEnds aren't implemented yet, but they're not used for anything other than
-    // closing the keyboard which the native component already handles
-    // add 20 to padding to fix issue on Remy's phone
-    return (
-      <NativeBottomSheet
-        style={styles.container}
-        viewId={viewId}
-        isOpen={isOpen}
-        screenHeight={screenHeight}
-        snapPoints={snapPoints}
-        initialSnap={initialSnap}
-        persistLastSnapWhenOpened={persistLastSnapWhenOpened}
-        headerHeight={headerHeight}
-        textInputHeight={textInputHeight}>
-        <View style={[styles.container, style, { height: containerHeight }]} key={contentKey}>
-          {renderHeader()}
-          {useViewInsteadOfScrollview ? (
-            <View style={styles.content}>
-              {renderContent()}
-              <View style={{ height: scrollViewPadding + 20 }} />
-            </View>
-          ) : (
-            <ScrollView style={styles.content}>
-              {renderContent()}
-              <View style={{ height: scrollViewPadding + 20 }} />
-            </ScrollView>
-          )}
-        </View>
-      </NativeBottomSheet>
-    );
-  }
 
   const insets = useSafeAreaInsets();
   let lastSnap = React.useRef(initialSnap);
@@ -237,22 +149,12 @@ export const BottomSheet = ({
 
   const onPanStateChange = React.useCallback(
     (event) => {
-      if (Platform.OS === 'android') {
-        if (
-          event.nativeEvent.oldState === State.ACTIVE &&
-          event.nativeEvent.state === State.ACTIVE
-        ) {
-          snapY.setOffset(-event.nativeEvent.y);
-          snapY.setValue(event.nativeEvent.absoluteY);
-        }
-      } else {
-        if (event.nativeEvent.state === State.BEGAN) {
-          snapY.setOffset(-event.nativeEvent.y);
-          snapY.setValue(event.nativeEvent.absoluteY);
-        }
+      if (event.nativeEvent.state === State.BEGAN) {
+        snapY.setOffset(-event.nativeEvent.y);
+        snapY.setValue(event.nativeEvent.absoluteY);
       }
       if (event.nativeEvent.state === State.END) {
-        if (Platform.OS !== 'android' || event.nativeEvent.oldState !== State.BEGAN) {
+        if (event.nativeEvent.oldState !== State.BEGAN) {
           const { absoluteY, velocityY } = event.nativeEvent;
           snapY.flattenOffset();
           snapToClosest(absoluteY, velocityY);
@@ -266,10 +168,10 @@ export const BottomSheet = ({
     if (
       isOpen &&
       keyboardState.visible &&
-      containerHeight < keyboardState.height + headerHeight + textInputHeight
+      containerHeight < keyboardState.height + headerHeight + TEXT_INPUT_HEIGHT
     ) {
       snapToClosest(
-        screenHeight - containerHeight - keyboardState.height - headerHeight - textInputHeight,
+        screenHeight - containerHeight - keyboardState.height - headerHeight - TEXT_INPUT_HEIGHT,
         0
       );
     }
@@ -295,7 +197,6 @@ export const BottomSheet = ({
             key={contentKey}
             style={styles.content}
             enableOnAndroid={true}
-            extraScrollHeight={Constants.Android ? insets.bottom : 0}
             keyboardShouldPersistTaps="handled">
             {renderContent()}
             <View style={{ paddingBottom: insets.bottom }}></View>
@@ -305,3 +206,114 @@ export const BottomSheet = ({
     </Animated.View>
   );
 };
+
+const BottomSheetAndroid = ({
+  isOpen = false,
+  snapPoints = [32, 256],
+  initialSnap = 0,
+  persistLastSnapWhenOpened = false,
+  renderHeader = () => null,
+  renderContent = () => null,
+  headerHeight = 64,
+  contentKey = 'content', // change this to reset the scrollview
+  scrollViewRef = null,
+  onClose,
+  onCloseEnd,
+  onOpenEnd,
+  onSnap,
+  useViewInsteadOfScrollview,
+  style = {},
+}) => {
+  let screenHeight = Viewport.vh * 100;
+  const { navigatorWindowHeight } = React.useContext(AndroidNavigationContext);
+  screenHeight = navigatorWindowHeight;
+
+  const TEXT_INPUT_HEIGHT = 48; // approx height of one text input
+
+  const [viewId] = React.useState(Math.floor(Math.random() * 1000000));
+
+  const notifySnap = React.useCallback(
+    (height) => {
+      let closestDist = 99999;
+      let closestIndex = 0;
+      for (i = 0; i < snapPoints.length; ++i) {
+        const curr = Math.abs(snapPoints[i] - height);
+        if (curr < closestDist) {
+          closestDist = curr;
+          closestIndex = i;
+        }
+      }
+      onSnap && onSnap(closestIndex);
+    },
+    [onSnap]
+  );
+
+  const [containerHeight, setContainerHeight] = React.useState(screenHeight);
+  const [scrollViewPadding, setScrollViewPadding] = React.useState(0);
+  React.useEffect(() => {
+    let subscription = DeviceEventEmitter.addListener('CastleBottomSheetEvent', (event) => {
+      if (event.viewId !== viewId) {
+        return;
+      }
+
+      if (event.type == 'height') {
+        setContainerHeight(event.height);
+        if (isOpen) {
+          notifySnap(event.height);
+        }
+      }
+
+      if (event.type == 'scrollViewPadding') {
+        setScrollViewPadding(event.padding);
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  });
+
+  React.useEffect(() => {
+    if (isOpen) {
+      notifySnap(containerHeight);
+    } else {
+      notifySnap(0);
+    }
+  }, [isOpen]);
+
+  // onCloseEnd, onOpenEnds aren't implemented yet, but they're not used for anything other than
+  // closing the keyboard which the native component already handles
+  // add 20 to padding to fix issue on Remy's phone
+  return (
+    <NativeBottomSheet
+      style={styles.container}
+      viewId={viewId}
+      isOpen={isOpen}
+      screenHeight={screenHeight}
+      snapPoints={snapPoints}
+      initialSnap={initialSnap}
+      persistLastSnapWhenOpened={persistLastSnapWhenOpened}
+      headerHeight={headerHeight}
+      textInputHeight={TEXT_INPUT_HEIGHT}>
+      <View style={[styles.container, style, { height: containerHeight }]} key={contentKey}>
+        {renderHeader()}
+        {useViewInsteadOfScrollview ? (
+          <View style={styles.content}>
+            {renderContent()}
+            <View style={{ height: scrollViewPadding + 20 }} />
+          </View>
+        ) : (
+          <ScrollView style={styles.content}>
+            {renderContent()}
+            <View style={{ height: scrollViewPadding + 20 }} />
+          </ScrollView>
+        )}
+      </View>
+    </NativeBottomSheet>
+  );
+};
+
+export const BottomSheet = Platform.select({
+  ios: BottomSheetIOS,
+  android: BottomSheetAndroid,
+});
