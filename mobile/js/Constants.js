@@ -8,6 +8,7 @@ export const CARD_BORDER_RADIUS = 12;
 export const CARD_SMALL_BORDER_RADIUS = 6;
 export const GRID_PADDING = 8;
 export const FEED_HEADER_HEIGHT = 48;
+export const FEED_ITEM_HEADER_HEIGHT = 52;
 
 // on tablets, limit some form widths
 export const TABLET_MAX_FORM_WIDTH = 512;

@@ -19,12 +19,16 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    height: '100%',
+    height: Constants.FEED_ITEM_HEADER_HEIGHT,
     width: '100%',
     borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,
     borderTopRightRadius: Constants.CARD_BORDER_RADIUS,
     overflow: 'hidden',
+  },
+  containerSkeleton: {
+    paddingHorizontal: 12,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
   row: {
     flexDirection: 'row',
@@ -72,10 +76,10 @@ const styles = StyleSheet.create({
 
 export const PlayDeckActionsSkeleton = () => {
   return (
-    <>
+    <View style={[styles.container, styles.containerSkeleton]}>
       <View style={[styles.avatar, styles.avatarSkeleton]}></View>
       <View style={styles.usernameSkeleton}></View>
-    </>
+    </View>
   );
 };
 
@@ -84,7 +88,6 @@ export const PlayDeckActions = ({
   isPlaying,
   onPressBack,
   disabled,
-  backgroundColor,
   additionalPadding,
   onBlockUser,
   onReportDeck,
@@ -202,8 +205,8 @@ export const PlayDeckActions = ({
     <View
       style={{
         ...styles.container,
-        backgroundColor: backgroundColor,
-        paddingHorizontal: isPlaying ? 12 + additionalPadding : 12,
+        paddingLeft: isPlaying ? 12 + additionalPadding : 12,
+        paddingRight: 12,
       }}>
       <Animated.View
         style={{

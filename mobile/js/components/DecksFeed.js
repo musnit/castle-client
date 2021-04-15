@@ -23,25 +23,24 @@ import * as Utilities from '../common/utilities';
 
 const { vw, vh } = Viewport;
 
-const FEED_ITEM_TOP_Y = Constants.FEED_HEADER_HEIGHT;
 const DECK_FEED_ITEM_MARGIN = 24;
 
 // Determines how much horizontal padding to add to each card to ensure proper spacing.
 // Design goal is for the selected card to be entirely visible as well as the top
 // half of the next card's header.
 const getItemHorzPadding = ({ isPlaying = false } = {}) => {
-  const ratio = vw / vh;
   const availHeight = isPlaying
-    ? vh * 100 - FEED_ITEM_TOP_Y - 32
-    : vh * 100 - FEED_ITEM_TOP_Y - DECK_FEED_ITEM_MARGIN - 100;
+    ? vh * 100 - Constants.FEED_HEADER_HEIGHT - 32
+    : vh * 100 - Constants.FEED_HEADER_HEIGHT - DECK_FEED_ITEM_MARGIN - 140;
   const maxWidth = availHeight * Constants.CARD_RATIO;
   const padding = (vw * 100 - maxWidth) / 2;
   return padding > 0 ? padding : 0;
 };
 
 const DECK_FEED_ITEM_HEIGHT =
-  (1 / Constants.CARD_RATIO) * (100 * vw - getItemHorzPadding() * 2) + // height of card
-  DECK_FEED_ITEM_MARGIN; // margin below cell
+  (1 / Constants.CARD_RATIO) * (100 * vw - getItemHorzPadding() * 2) + // height of preview
+  DECK_FEED_ITEM_MARGIN + // margin between items
+  Constants.FEED_ITEM_HEADER_HEIGHT; // height of the creator header
 
 const SPRING_CONFIG = {
   tension: 100,
@@ -64,6 +63,7 @@ const styles = StyleSheet.create({
     marginBottom: DECK_FEED_ITEM_MARGIN,
   },
   itemCard: {
+    marginTop: Constants.FEED_ITEM_HEADER_HEIGHT,
     aspectRatio: Constants.CARD_RATIO,
     width: '100%',
     alignItems: 'center',
@@ -76,16 +76,10 @@ const styles = StyleSheet.create({
   itemHeader: {
     position: 'absolute',
     width: '100%',
-    height: 52,
+    height: Constants.FEED_ITEM_HEADER_HEIGHT + Constants.CARD_BORDER_RADIUS,
     top: 0,
-  },
-  itemHeaderSkeleton: {
-    backgroundColor: '#3C3C3C',
     borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,
     borderTopRightRadius: Constants.CARD_BORDER_RADIUS,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
   },
   absoluteFill: {
     position: 'absolute',
@@ -190,7 +184,7 @@ const CurrentDeckCell = ({
   // when playing, move the header and footer to the screen edges
   const playingHeaderY = playingTransition.interpolate({
     inputRange: [0, 1.01],
-    outputRange: [0, -FEED_ITEM_TOP_Y],
+    outputRange: [0, -Constants.FEED_HEADER_HEIGHT],
   });
 
   if (!initialCard) return null;
@@ -204,6 +198,25 @@ const CurrentDeckCell = ({
           paddingHorizontal: getItemHorzPadding({ isPlaying }),
         },
       ]}>
+      <Animated.View
+        style={[
+          styles.itemHeader,
+          {
+            transform: [{ translateY: playingHeaderY }],
+            backgroundColor: Utilities.getCardBackgroundColor(deck.initialCard),
+          },
+        ]}>
+        <PlayDeckActions
+          deck={deck}
+          isPlaying={isPlaying}
+          onPressBack={onPressBack}
+          additionalPadding={getItemHorzPadding()}
+          isMe={isMe}
+          isAnonymous={isAnonymous}
+          onBlockUser={onBlockUser}
+          onReportDeck={onReportDeck}
+        />
+      </Animated.View>
       <View style={styles.itemCard}>
         <CardCell
           card={initialCard}
@@ -222,19 +235,6 @@ const CurrentDeckCell = ({
           </View>
         ) : null}
       </View>
-      <Animated.View style={[styles.itemHeader, { transform: [{ translateY: playingHeaderY }] }]}>
-        <PlayDeckActions
-          deck={deck}
-          isPlaying={isPlaying}
-          onPressBack={onPressBack}
-          backgroundColor={Utilities.getCardBackgroundColor(deck.initialCard)}
-          additionalPadding={getItemHorzPadding()}
-          isMe={isMe}
-          isAnonymous={isAnonymous}
-          onBlockUser={onBlockUser}
-          onReportDeck={onReportDeck}
-        />
-      </Animated.View>
     </View>
   );
 };
@@ -245,21 +245,19 @@ const SkeletonFeed = () => {
       style={{
         height: '100%',
         width: '100%',
-        paddingTop: FEED_ITEM_TOP_Y,
+        paddingTop: Constants.FEED_HEADER_HEIGHT,
       }}>
       <View style={cardAspectFitStyles}>
-        <View style={[styles.itemCard, styles.itemCardSkeleton]}>
-          <View style={[styles.itemHeader, styles.itemHeaderSkeleton]}>
-            <PlayDeckActionsSkeleton />
-          </View>
+        <View style={[styles.itemHeader, { backgroundColor: '#3c3c3c' }]}>
+          <PlayDeckActionsSkeleton />
         </View>
+        <View style={[styles.itemCard, styles.itemCardSkeleton]} />
       </View>
       <View style={cardAspectFitStyles}>
-        <View style={[styles.itemCard, styles.itemCardSkeleton]}>
-          <View style={[styles.itemHeader, styles.itemHeaderSkeleton]}>
-            <PlayDeckActionsSkeleton />
-          </View>
+        <View style={[styles.itemHeader, { backgroundColor: '#3c3c3c' }]}>
+          <PlayDeckActionsSkeleton />
         </View>
+        <View style={[styles.itemCard, styles.itemCardSkeleton]} />
       </View>
     </View>
   );
@@ -338,6 +336,19 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
         }
         return (
           <Animated.View style={[cardAspectFitStyles, translateStyles]}>
+            {deck ? (
+              <View
+                style={[
+                  styles.itemHeader,
+                  { backgroundColor: Utilities.getCardBackgroundColor(deck.initialCard) },
+                ]}>
+                <PlayDeckActions
+                  deck={deck}
+                  disabled={true}
+                  additionalPadding={getItemHorzPadding()}
+                />
+              </View>
+            ) : null}
             <View style={styles.itemCard}>
               {deck ? (
                 <CardCell
@@ -347,16 +358,6 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
                 />
               ) : null}
             </View>
-            {deck ? (
-              <View style={styles.itemHeader}>
-                <PlayDeckActions
-                  deck={deck}
-                  disabled={true}
-                  backgroundColor={Utilities.getCardBackgroundColor(deck.initialCard)}
-                  additionalPadding={getItemHorzPadding()}
-                />
-              </View>
-            ) : null}
           </Animated.View>
         );
       }
@@ -406,7 +407,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
         <FlatList
           {...props}
           data={decks}
-          contentContainerStyle={{ paddingTop: FEED_ITEM_TOP_Y }}
+          contentContainerStyle={{ paddingTop: Constants.FEED_HEADER_HEIGHT }}
           renderItem={renderItem}
           getItemLayout={getItemLayout}
           keyExtractor={(item, index) => item?.deckId}
