@@ -16,8 +16,6 @@ import { AndroidNavigationContext } from '../ReactNavigation';
 
 import Viewport from '../common/viewport';
 
-import * as Constants from '../Constants';
-
 const SPRING_CONFIG = {
   tension: 150,
   friction: 50,
@@ -43,7 +41,7 @@ const styles = StyleSheet.create({
 
 let NativeBottomSheet = null;
 
-if (Platform.OS == 'android') {
+if (Platform.OS === 'android') {
   NativeBottomSheet = requireNativeComponent('CastleBottomSheet', null);
 }
 
@@ -189,7 +187,7 @@ const BottomSheetIOS = ({
         {useViewInsteadOfScrollview ? (
           <View ref={scrollViewRef} key={contentKey} style={styles.content}>
             {renderContent()}
-            <View style={{ paddingBottom: insets.bottom }}></View>
+            <View style={{ paddingBottom: insets.bottom }} />
           </View>
         ) : (
           <KeyboardAwareScrollView
@@ -199,7 +197,7 @@ const BottomSheetIOS = ({
             enableOnAndroid={true}
             keyboardShouldPersistTaps="handled">
             {renderContent()}
-            <View style={{ paddingBottom: insets.bottom }}></View>
+            <View style={{ paddingBottom: insets.bottom }} />
           </KeyboardAwareScrollView>
         )}
       </View>
@@ -236,7 +234,7 @@ const BottomSheetAndroid = ({
     (height) => {
       let closestDist = 99999;
       let closestIndex = 0;
-      for (i = 0; i < snapPoints.length; ++i) {
+      for (let i = 0; i < snapPoints.length; ++i) {
         const curr = Math.abs(snapPoints[i] - height);
         if (curr < closestDist) {
           closestDist = curr;
@@ -256,14 +254,14 @@ const BottomSheetAndroid = ({
         return;
       }
 
-      if (event.type == 'height') {
+      if (event.type === 'height') {
         setContainerHeight(event.height);
         if (isOpen) {
           notifySnap(event.height);
         }
       }
 
-      if (event.type == 'scrollViewPadding') {
+      if (event.type === 'scrollViewPadding') {
         setScrollViewPadding(event.padding);
       }
     });
@@ -279,7 +277,7 @@ const BottomSheetAndroid = ({
     } else {
       notifySnap(0);
     }
-  }, [isOpen]);
+  }, [isOpen, notifySnap, containerHeight]);
 
   // onCloseEnd, onOpenEnds aren't implemented yet, but they're not used for anything other than
   // closing the keyboard which the native component already handles
