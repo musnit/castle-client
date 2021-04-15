@@ -30,7 +30,7 @@ public:
 private:
   std::string scenePath;
 
-  Lv lv { 800, 1120 };
+  Lv lv { 800 / 2, 1120 / 2 };
   love::RandomGenerator rng; // TODO(nikki): Seed this
 
   [[maybe_unused]] bool prevWindowFocused = true;

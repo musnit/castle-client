@@ -92,10 +92,10 @@ bool Engine::frame() {
   }
 #endif
 
+#ifdef __EMSCRIPTEN__
   // Update window size and screen scaling based on canvas in web. This will generate an
   // `SDL_WINDOWEVENT_RESIZED`, so we do it before the event pump to let Love process that
   // immediately.
-#ifdef __EMSCRIPTEN__
   if (auto w = JS_getCanvasWidth(), h = JS_getCanvasHeight();
       w != prevWindowWidth || h != prevWindowHeight) {
     fmt::print("canvas resized to {}, {}\n", w, h);
@@ -105,12 +105,11 @@ bool Engine::frame() {
     prevWindowHeight = h;
   }
 #else
-  if (auto w = 400, h = 560; w != prevWindowWidth || h != prevWindowHeight) {
-    fmt::print("canvas resized to {}, {}\n", w, h);
-    SDL_SetWindowSize(lv.window.getSDLWindow(), w, h);
+  // Just set screen scaling based on window size in desktop
+  {
+    int w = 0, h = 0;
+    SDL_GetWindowSize(lv.window.getSDLWindow(), &w, &h);
     ghostScreenScaling = double(w) / 800;
-    prevWindowWidth = w;
-    prevWindowHeight = h;
   }
 #endif
 
