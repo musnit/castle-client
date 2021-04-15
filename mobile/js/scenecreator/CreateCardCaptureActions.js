@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { CARD_BOTTOM_MIN_HEIGHT } from './CreateCardBottomActions';
+import { useCardCreator } from './CreateCardContext';
 import { useGhostUI } from '../ghost/GhostUI';
+import { useSession } from '../Session';
 
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -38,6 +39,8 @@ const RecordIcon = ({ color }) => (
 
 export const CreateCardCaptureActions = () => {
   if (!ENABLE_CAPTURE) return null;
+  const { deck } = useCardCreator();
+  const { userId: signedInUserId } = useSession();
 
   const { globalActions: data, sendGlobalAction } = useGhostUI();
   const [capturing, setCapturing] = React.useState(false);
@@ -94,12 +97,17 @@ export const CreateCardCaptureActions = () => {
         timeout.current = null;
       }
     };
-  }, [recordState, capturing]);
+  }, [recordState, capturing, advanceTimer]);
 
   const startCapture = React.useCallback(() => {
     setCapturing(true);
     setNextRecordState();
   }, []);
+
+  if (deck?.creator?.userId !== signedInUserId) {
+    // disallow capture UI if you don't own this deck
+    return null;
+  }
 
   return (
     <View style={styles.actions}>
