@@ -238,7 +238,7 @@ void RulesBehavior::handlePerform(double dt) {
   // `current`. We don't run responses directly from `scheduled` because they could schedule new
   // responses when run, which would modify `scheduled` and invalidate the iteration.
   auto performTime = scene.getPerformTime();
-  scene.addDebugMessage("scheduled: {}", scheduled.size());
+  Debug::display("scheduled: {}", scheduled.size());
   scheduled.erase(std::remove_if(scheduled.begin(), scheduled.end(),
                       [&](Thread &thread) {
                         if (performTime >= thread.scheduledPerformTime) {
@@ -248,7 +248,7 @@ void RulesBehavior::handlePerform(double dt) {
                         return false;
                       }),
       scheduled.end());
-  scene.addDebugMessage("current: {}", current.size());
+  Debug::display("current: {}", current.size());
   for (auto &thread : current) {
     if (thread.response) { // Some times this is `nullptr` under extreme memory pressure...
       thread.response->runChain(thread.ctx);

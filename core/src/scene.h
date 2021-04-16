@@ -121,13 +121,6 @@ public:
   void draw() const;
 
 
-  // Debug
-
-  template<typename... Args>
-  void addDebugMessage(Args &&...args);
-  const std::string &getDebugMessages() const;
-
-
 private:
   Lv &lv { Lv::getInstance() };
 
@@ -149,8 +142,6 @@ private:
   Gesture gesture { *this };
 
   double performTime = 0;
-
-  std::string debugMessages;
 
 
   void ensureDrawOrderSort() const;
@@ -259,14 +250,4 @@ inline const Gesture &Scene::getGesture() const {
 
 inline double Scene::getPerformTime() const {
   return performTime;
-}
-
-template<typename... Args>
-inline void Scene::addDebugMessage(Args &&...args) {
-  debugMessages.append(fmt::format(std::forward<Args>(args)...));
-  debugMessages.append("\n");
-};
-
-inline const std::string &Scene::getDebugMessages() const {
-  return debugMessages;
 }

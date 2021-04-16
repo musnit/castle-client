@@ -137,6 +137,9 @@ bool Engine::frame() {
 
 void Engine::update(double dt) {
   if (scene) {
+    Debug::display("fps: {}", lv.timer.getFPS());
+    Debug::display("actors: {}", scene->getEntityRegistry().alive());
+
     scene->update(dt);
   }
 
@@ -160,13 +163,12 @@ void Engine::draw() {
 #endif
 
   // Debug messages
-  const char *debugText = "loading...";
   if (scene) {
-    debugText = scene->getDebugMessages().c_str();
     lv.graphics.setColor(love::Colorf(0, 0, 0, 1));
   } else {
+    Debug::display("loading...");
     lv.graphics.setColor(love::Colorf(1, 1, 1, 1));
   }
-  lv.graphics.print({ { debugText, { 1, 1, 1, 1 } } }, debugFont.get(),
+  lv.graphics.print({ { Debug::getAndClearDisplay(), { 1, 1, 1, 1 } } }, debugFont.get(),
       love::Matrix4(20, 20, 0, 1, 1, 0, 0, 0, 0));
 }

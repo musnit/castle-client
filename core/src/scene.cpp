@@ -180,11 +180,6 @@ void Scene::ensureDrawOrderSort() const {
 //
 
 void Scene::update(double dt) {
-  // Default debug messages
-  debugMessages.clear();
-  addDebugMessage("fps: {}", lv.timer.getFPS());
-  addDebugMessage("actors: {}", getEntityRegistry().alive());
-
   // Update time
   performTime += dt; // For now we're always performing
 

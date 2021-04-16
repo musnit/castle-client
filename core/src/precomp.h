@@ -58,3 +58,6 @@ namespace json = rapidjson;
 
 // SmallVector
 #include "utils/small_vector.h"
+
+// Debug
+#include "debug.h"

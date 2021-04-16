@@ -6,3 +6,4 @@ src/tests.cpp
 src/behaviors/test.h
 src/behaviors/debug_draw.h
 src/behaviors/debug_draw.cpp
+src/utils/small_vector.h
