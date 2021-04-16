@@ -92,11 +92,15 @@ export const SearchResults = ({ query, onCancel, initialResults }) => {
     <KeyboardAwareScrollView
       contentContainerStyle={styles.container}
       keyboardShouldPersistTaps="always">
-      {results?.users?.length
-        ? results.users.map((user) => (
+      {query?.length ? (
+        results?.users?.length ? (
+          results.users.map((user) => (
             <SearchResult key={`user-${user.id}`} user={user} onSelectUser={onSelectUser} />
           ))
-        : null}
+        ) : (
+          <Text style={styles.rowLabel}>No results</Text>
+        )
+      ) : null}
     </KeyboardAwareScrollView>
   );
 };
