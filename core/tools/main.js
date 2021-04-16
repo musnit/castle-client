@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 async function runAsync() {
-  const outPath = process.argv[3] || '../assets/test-watch.json';
+  const outFilename = process.argv[3] || 'test-watch.json';
   let snapshot;
 
   try {
@@ -45,7 +45,10 @@ async function runAsync() {
   }
 
   if (snapshot) {
-    fs.writeFileSync(path.join(__dirname, outPath), JSON.stringify(snapshot, null, 2));
+    fs.writeFileSync(
+      path.join(__dirname, '../assets/' + outFilename),
+      JSON.stringify(snapshot, null, 2)
+    );
   } else {
     console.log("Couldn't find any card or deck with this id...");
   }
