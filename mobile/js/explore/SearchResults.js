@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { gql } from '@apollo/client';
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { UserAvatar } from '../components/UserAvatar';
 import { useNavigation } from '../ReactNavigation';
@@ -92,14 +92,14 @@ export const SearchResults = ({ query, onCancel, initialResults }) => {
     <KeyboardAwareScrollView
       contentContainerStyle={styles.container}
       keyboardShouldPersistTaps="always">
-      {query?.length ? (
-        results?.users?.length ? (
-          results.users.map((user) => (
-            <SearchResult key={`user-${user.id}`} user={user} onSelectUser={onSelectUser} />
-          ))
-        ) : (
+      {results?.users?.length ? (
+        results.users.map((user) => (
+          <SearchResult key={`user-${user.id}`} user={user} onSelectUser={onSelectUser} />
+        ))
+      ) : query?.length ? (
+        <View style={styles.row}>
           <Text style={styles.rowLabel}>No results</Text>
-        )
+        </View>
       ) : null}
     </KeyboardAwareScrollView>
   );
