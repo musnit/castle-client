@@ -19,7 +19,7 @@ LibraryEntry::LibraryEntry(json::Value jsonValue_)
 void Library::readEntry(Reader &reader) {
   auto maybeEntryId = reader.str("entryId");
   if (!maybeEntryId) {
-    fmt::print("tried to read library entry without `entryId`!");
+    Debug::log("tried to read library entry without `entryId`!");
     return;
   }
   auto entryId = *maybeEntryId;

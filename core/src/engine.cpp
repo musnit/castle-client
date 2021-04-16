@@ -96,7 +96,7 @@ bool Engine::frame() {
   // immediately.
   if (auto w = JS_getCanvasWidth(), h = JS_getCanvasHeight();
       w != prevWindowWidth || h != prevWindowHeight) {
-    fmt::print("canvas resized to {}, {}\n", w, h);
+    Debug::log("canvas resized to {}, {}", w, h);
     SDL_SetWindowSize(lv.window.getSDLWindow(), w, h);
     ghostScreenScaling = double(w) / 800;
     prevWindowWidth = w;

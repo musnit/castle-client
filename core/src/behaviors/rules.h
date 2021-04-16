@@ -287,10 +287,9 @@ RuleRegistration<T>::RuleRegistration(const char *name, int behaviorId) {
   static_assert(std::is_base_of_v<BaseTrigger, T> || std::is_base_of_v<BaseResponse, T>,
       "RuleRegistration: type must derive from `BaseTrigger` or `BaseResponse`");
   if (registered) {
-    fmt::print("RuleRegistration: tried to register the same type twice -- make sure you're using "
-               "the correct `T` in `RuleRegistration<T>` (must be the same as the containing "
-               "`struct` or `class`)\n");
-    std::abort();
+    Debug::fatal("RuleRegistration: tried to register the same type twice -- make sure you're "
+                 "using the correct `T` in `RuleRegistration<T>` (must be the same as the "
+                 "containing `struct` or `class`)");
   }
   registered = true;
   if constexpr (std::is_base_of_v<BaseTrigger, T>) {

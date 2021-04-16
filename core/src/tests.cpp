@@ -134,7 +134,7 @@ struct BasicDrawingLoadingTest : Test {
 Tests::Tests() {
   tests.emplace_back(std::make_unique<BasicActorManagementTest>());
   tests.emplace_back(std::make_unique<BasicDrawingLoadingTest>());
-  fmt::print("all tests passed\n");
+  Debug::log("all tests passed");
 }
 
 

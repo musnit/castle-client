@@ -133,7 +133,7 @@ ActorId Scene::addActor(Reader *maybeReader, const char *maybeParentEntryId) {
 
 void Scene::removeActor(ActorId actorId) {
   if (!hasActor(actorId)) {
-    fmt::print("removeActor: no such actor\n");
+    Debug::log("removeActor: no such actor");
     return;
   }
   getBehaviors().forEach([&](auto &behavior) {

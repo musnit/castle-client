@@ -45,7 +45,7 @@ std::unique_ptr<Scene> Snapshot::toScene() {
       // Log actor ID
       auto maybeActorIdStr = reader.str("actorId");
       if (!maybeActorIdStr) {
-        fmt::print("tried to read actor without `actorId`!");
+        Debug::log("tried to read actor without `actorId`!");
         return;
       }
       // auto actorIdStr = *maybeActorIdStr;

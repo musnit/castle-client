@@ -73,7 +73,7 @@ private:
 // above:
 //
 //   Foo thing;
-//   fmt::print("{} is: {}\n", thing.health.name(), thing.health());
+//   Debug::log("{} is: {}", thing.health.name(), thing.health());
 //   thing.aPair().first = 7;
 
 #define PROP(type, name_, ...)                                                                     \
@@ -137,7 +137,7 @@ constexpr auto hasProps
 // referenced:
 //
 //   Props::forEach(aStruct, [&](auto &prop) {
-//     fmt::print("{}: {}\n", prop.name(), prop());    // Print each prop name and value
+//     Debug::log("{}: {}", prop.name(), prop());    // Print each prop name and value
 //   })
 
 template<typename Struct, typename F>

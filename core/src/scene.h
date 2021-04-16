@@ -157,7 +157,7 @@ inline bool Scene::hasActor(ActorId actorId) const {
 inline Actor &Scene::getActor(ActorId actorId) {
   if constexpr (Scene::debugChecks) {
     if (!hasActor(actorId)) {
-      fmt::print("getActor: no such actor\n");
+      Debug::log("getActor: no such actor");
     }
   }
   return registry.get<Actor>(actorId);
@@ -166,7 +166,7 @@ inline Actor &Scene::getActor(ActorId actorId) {
 inline const Actor &Scene::getActor(ActorId actorId) const {
   if constexpr (Scene::debugChecks) {
     if (!hasActor(actorId)) {
-      fmt::print("getActor: no such actor\n");
+      Debug::log("getActor: no such actor");
     }
   }
   return registry.get<Actor>(actorId);
