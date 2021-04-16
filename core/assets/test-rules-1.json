@@ -1,0 +1,343 @@
+{
+  "actors": [
+    {
+      "bp": {
+        "components": {
+          "Body": {
+            "x": -3.75,
+            "y": -5.25
+          }
+        }
+      },
+      "actorId": "0:2",
+      "parentEntryId": "39670208-6d84-47b1-c7a4-f66ee85e21dd"
+    }
+  ],
+  "library": {
+    "39670208-6d84-47b1-c7a4-f66ee85e21dd": {
+      "title": "Ball",
+      "entryId": "39670208-6d84-47b1-c7a4-f66ee85e21dd",
+      "base64Png": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEABAMAAACuXLVVAAAAIVBMVEUAAAAJKDgST28bd6cknt4kn944fbJfOVlzFy1MW4ZWESI6LBUbAAAAC3RSTlMAQIC/////////v3LQIhgAAAfcSURBVHic7Z3tfds4DIdrpwNc4gzgph4grT1A0ug2kBVrgEucAXJ1BriLOkBz8go35UmiaL0RJEiA5LW/4msU4THwByRSEvnu3S/7oW12XtlvcVxfrNfJydafPwTFqLwnE7u7CsVwrvAu7MuHEO43kPsmDL4RZuCvP0Vh6dP9onP0+3Zo3V+uvPnvoj/2PmS4W/rxf/r5Su+Npe0Rnz24n22M7nsI/EqQ/vXuewjMBK1/de7VWmAluMD+/H4QGAkWFj/fB4G1f5kGJoKFVfj5CeZO/vkIXP1zEYj6c/EvCMhteeXuXxB8oflfUPwzEJzZ19+UYOnuvxEAxT+VYEX23/RE5yQQBdARfHLzP+fwT0nCisV/Q+CUhAVdAMLqJFzb+5/xJEASLK0BuBJQm0sS5lwJqM0lBBvGADQEliE4Y/XfJMFOhxvGBNRWheDOxv+COQBNCG7x/mecChRW6xA/gXHJHgC7EHgIgF0IfATAJgQzL/4bAlwI3ntIQG0pthds/ASgDgGqF3A3wT4AKgQrTxnAtsO5twA0IVhGDADuougzAKhK9FWDwlJzM/JWg8KMMpx7DUATgqUWYOU3AEYZ+roMdGaQ4ZnnDBgvCL4zsK1DoMmBbwkKAE0O/DYBYdocEDOQ/YE5StMKqBk4vGKOSuEcEDOQFwUSAMoBMQO7okDmAKgDagZKXATgOqB2oUPxDXUcmANiBioJ/IU7EsoBMQAVwHcsQOJDAnukBMBr8nvidaBESgC8LwomAagZEjOwQ0sAaIahukALMC1EqgQKtAS2dQ6mIggoAbUIAkpAKQK6BCwyoOoERAnkVhKoc3DDKwG7DKhUGLAIa0vHKiRKILPMwFSFRAlUGXi2+49xK9JKIDsej28PD5rTHSwlMBXBSpOBx0IYHGTbGthOW5FGAtJ/5eQ7cEhpHYBaBEgN7ovCRFAFADUiGAH0VXgGSiAvBqYkKK2uA60NVQgXQVm7falUePwKEVQ1iBsQjAD6KgQ1WAfgtT37E0Bwby/BCcAGAig7/zIdR8UxUyqjDXshpMF8+JOVBA41KAB6KpxDEihHJ88VxVBad0E8QD7JeV6OhVC3CQf/wzKAimA3jW5WDtNQM/7tCHBjLAKlvATBtzfBc4CaAwLg1gQAyKtsm1LdHQ7aa4TW+mUAFMEO6HDHQXN8tW9CY4AZAAAW+KA/qw/BAJzKACgCzW1OXp78/+novw8AXIruddeYp39MNwlG6+oQqEJTi32ozd1/rw4vIQDCzxNn0HaIrg6BKnS5yg8s19+nmADwcz4wgPY+oatDdRXSAXb6q4QJwPDvKABtCk73pUAfYtCg/gynRgD0IezEpw5AWwUmAHIRGM8gJwnUjZClCJ4NANeaRnjPAaA/gx6AowgMwwXZi9Wd+J6sQePksWyFl8oqzJzudftmrGMJAFwKMqL/rfFuNW2fG+jmBgiWGetY9mJwXEYzcx17BjA/RPMMYH6CIgHcZ+iy5q4M+J3mi5m8HDoDnGaP/n1RQJiHbESAZlQGjw7MRUADyB6LoY0JEBczCsDw5zf2NjwC8SS5BYAGZgj/r18bk4PVwSGleequvSNxAShHo7Kn6SgJMWhyB3icjIrzMQHmGZIzwKNiUCqGqyeCDDN97QqQqwfFA4ISM3PkCJBBsyKl0OXL8fi2R42bHQHqk6sF3k0a4CYu3AAyzaxMn+DZfCo3gL3ux9lNnDgBZPqTt/MmuBtaOTSyAtibTl5doisVos7lci2YTt4SzAXAGADPABlnAFwA9g6Pp8wA+JvSDFffeADbu+IdawAcAA6sAbAHuOcNgP3Y8ECftVECADO1E6ubkOOzAQjg1gpg5/p0CDI5P4B9eQH7yqYFwI1mlkwFwBsAa4At7hpnA3Ctm6j0b3Ki0mVk8lMAdE+t4gEI/77maH4AAPl6MbYV/mwA3VMz6uukzgA3LQC6FXIDyEe3kRpB91pnHID+WyxR6rD/OlskgO4rgyh12AeIUof913ii1GH/3eYoZRAbYPhOZ4QyGL7OF6EM0sG3PhEAhq+3RyiD4Uut4VU4/sIgBkDfv+8PrlUAw+/Ngqtw/MFbcBWOv/EIrcLpVy6Be+FYg8FFMP3mMfAtwfQznxBffXem+NAprAqnEgjcilSfvQZV4VQCIdY+6Ez51WtIEagkEFQE6i+fL8OFQCWBkJ0AWozE+xIgPQCV/xBLcAiDPn4PVYjg5/+hChFejyZQDuClUMLkIFUXYbgc6FYECtIMdYvRhMiBJgMhliMyrckUezmg+AsiRV8Syuu6bC2Afm226MuCRV8YzfN9kbYJCPMrQ8z6gLGXB4y/QCL7OrmdIRcNjr5IZvRlQr1dEBA1KCz6UrHRF8uNv1xw9AWT4y8Z7SEEtpsIxF42PP7C6cwXxcQ2AP+DxfOjbx/AGYLErgSlnXFuIeG0j0fsTTTibyPCs49H4r6RSvytZBiSUPu/I2y8SCVothdz2ESlsxWNgCQABoKEJABhc+qmWuSdN2NvKxZ/YzVXgoRBgASClNO/JLDoicz+rQmaoxPWPVcFAS4N4ufT609JgAhC4sV/RbBCISS+/Ff2MTEitEdwyq9voi2DWkjlX+/O/fiv7CpJAIa0+8snnxsvSyXAtva97/PFRufeY/R7CGAU1iHc1za7UoRhHXrj74/9bccDe+8w4m28/svY7D8trY3Z3PwQagAAAABJRU5ErkJggg==",
+      "entryType": "actorBlueprint",
+      "description": "Solid circle that obeys gravity",
+      "actorBlueprint": {
+        "components": {
+          "Body": {
+            "angle": 0,
+            "width": 0.98995000123978,
+            "bullet": false,
+            "height": 0.98995000123978,
+            "visible": true,
+            "bodyType": "static",
+            "disabled": false,
+            "fixtures": [
+              {
+                "x": 0,
+                "y": 0,
+                "radius": 5,
+                "shapeType": "circle"
+              }
+            ],
+            "massData": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "layerName": "main",
+            "widthScale": 0.1,
+            "heightScale": 0.1,
+            "editorBounds": {
+              "maxX": 5,
+              "maxY": 5,
+              "minX": -5,
+              "minY": -5
+            }
+          },
+          "Tags": {
+            "disabled": false,
+            "tagsString": ""
+          },
+          "Rules": {
+            "rules": [
+              {
+                "index": "43",
+                "trigger": {
+                  "name": "create",
+                  "params": {},
+                  "behaviorId": 16
+                },
+                "response": {
+                  "name": "if",
+                  "params": {
+                    "else": {
+                      "name": "note",
+                      "params": {
+                        "note": "tails!"
+                      },
+                      "behaviorId": 16
+                    },
+                    "then": {
+                      "name": "note",
+                      "params": {
+                        "note": "heads!"
+                      },
+                      "behaviorId": 16
+                    },
+                    "condition": {
+                      "name": "coin flip",
+                      "params": {
+                        "probability": 0.5
+                      },
+                      "behaviorId": 16
+                    },
+                    "nextResponse": {
+                      "name": "wait",
+                      "params": {
+                        "duration": 1,
+                        "nextResponse": {
+                          "name": "create",
+                          "params": {
+                            "angle": 0,
+                            "depth": "in front of all actors",
+                            "entryId": "39670208-6d84-47b1-c7a4-f66ee85e21dd",
+                            "xOffset": 1,
+                            "yOffset": 0,
+                            "distance": 0,
+                            "xAbsolute": 0,
+                            "yAbsolute": 0,
+                            "coordinateSystem": "relative position"
+                          },
+                          "behaviorId": 16
+                        }
+                      },
+                      "behaviorId": 16
+                    }
+                  },
+                  "behaviorId": 16
+                }
+              }
+            ],
+            "disabled": false
+          },
+          "Drawing2": {
+            "hash": "v2-436de6ce191b857dbc6cf32afd284afc",
+            "loop": false,
+            "playing": false,
+            "disabled": false,
+            "drawData": {
+              "color": [
+                0.45098039215686,
+                0.090196078431373,
+                0.17647058823529,
+                1
+              ],
+              "lineColor": [
+                0.66037992589614,
+                0.4,
+                0.93333333333333,
+                1
+              ],
+              "gridSize": 0.71428571428571,
+              "scale": 10,
+              "fillPixelsPerUnit": 25.6,
+              "numTotalLayers": 1,
+              "selectedFrame": 1,
+              "layers": [
+                {
+                  "id": "layer1",
+                  "title": "Layer 1",
+                  "frames": [
+                    {
+                      "fillPng": "iVBORw0KGgoAAAANSUhEUgAAAPwAAAD8AQMAAABpZVskAAAABlBMVEUAAAAkn94NkT71AAAAAXRSTlMAQObYZgAAA/RJREFUeJzV2s1u4yAQB/BUPeSYR+BReDS8pxz7SlQ59LiPsER9gHVultYyG39gYOY/TKqNKi2H1gm/2sOAbQE9HKpiYwyHRrnXx+jl+lNcigzW+tgrJ5BP4WL7FMdUHycM7A6EhuR6fI1jAeA1TAFi12qDcI2Xsj4O7RBgEFUIKAhXg9AOAQRxJIAFcSKA9ailwLdjZKmiMbIoXxkgUbIYaZSGg64dI80lr6+bwRtBmsEbQZoBGlE3AzSiboZFwLdbWbcT1ZftRK2s2olaGeOYAR1vaykSAdNQJsJgkBNhMciJcBjkROD6nAichiIROA1FInAaikQIadDBnikjgZQpK4GUKSeB8CiQ6lMqpUTuqZQS+QAYcaanfIQTOWpgyIc40wXoIOgpsATc8qGHmb7mwwDBJwWkPl6KcCD4IID11TkfDhC8EcD6yuTD8SHAOtMWxwiMFLDedsUH2JkqKD90ANwosARcyw8egE8KHAGX8kPIwKdePQtgv9aJgvVoSBmbTAn6HfSp18pML19vwyG42K2gCnrYwftdLycfBHCPfVz6tY8EvObYF1slch4xW2jz6f0c30UAc11/iiRPM1gH1BLa9BJJnjJYQ+vceq1cpgTWQRCOcbAYXFOjSOdOqQe22Pl9lsB2w3p2GyVwTmekN0ECjXeKWX4bCXQrmBj4RYCl4KcG3nawVI0i8BtwFJy+CAYGDAG0XgVTBsvJewbsdhBWcPsyGAn4w4CrASsqGFQQdwDrM+gF0P8zuElg3J5ZIgjbML9KIL2iPgUwpPfoRQDhPtKCjcXLlYD7EyQOJxlMr+nHGwbjMpa9K27mGvR2+WmKJ1UN5r9dnrj5SVWDH+uvQzWJL8H2EvbFk6oC0yl9+YpBGsrlk6oC/A4lgN1fFFw1cNHAWQPoaVoC/rAkgD/qFuD2Y5SG6t7sNRBAfQXeNYDyVIEPDfzGwKKvc/H/BzBt0H0HEF/ra2nMJZ8HpAnvWqZvAfJccS7jM4A8oZ3L8AwgT6rn0j8CXAuEpwDbAmiOw4BpATTPYqA5KFWAppNlgfNNBlojBs95KWgNCDzvpqA1IPDcnwEnA7z+wICVgYeLJEXBqygMNLrz8BiQu3NbC1KXm+TOUEFaPRRBWn90EgiPAisBvwEjge6gpHKrl1OpgX2FU11EVZdh1YVcfSnYYuB3YDDodqAuaKtL4uqiurosry7s61sDFgFfAINAVwB1gwMlYiyBusmibtPoGz2gGV0F1M0m3oyxBuqGF29GIMBS4AlQt+3UjT9161DdfNS3L9UNUHULlcyvAaiC4CE8sBGsbiXrm9Hqdna+BmrDXNQtdXVTXt/WV/8xYOl0Uv8XJmn1xSrit+QAAAAASUVORK5CYII=",
+                      "pathDataList": [
+                        {
+                          "p": [
+                            0,
+                            -5,
+                            5,
+                            0
+                          ],
+                          "c": [
+                            0.1436,
+                            0.6235,
+                            0.8706,
+                            1
+                          ],
+                          "s": 2
+                        },
+                        {
+                          "p": [
+                            5,
+                            0,
+                            0,
+                            5,
+                            -5,
+                            0
+                          ],
+                          "c": [
+                            0.1436,
+                            0.6235,
+                            0.8706,
+                            1
+                          ],
+                          "s": 3
+                        },
+                        {
+                          "p": [
+                            -5,
+                            0,
+                            0,
+                            -5
+                          ],
+                          "c": [
+                            0.1436,
+                            0.6235,
+                            0.8706,
+                            1
+                          ],
+                          "s": 2
+                        },
+                        {
+                          "p": [
+                            -3.1511,
+                            -0.7011,
+                            -3,
+                            -1.1367,
+                            -2.7778,
+                            -1.4833,
+                            -2.5378,
+                            -1.7056,
+                            -2.2978,
+                            -1.8033,
+                            -2.0578,
+                            -1.8033,
+                            -1.8089,
+                            -1.7944,
+                            -1.4978,
+                            -1.6522,
+                            -1.1422,
+                            -1.4922,
+                            -0.7511,
+                            -1.3322,
+                            -0.4222,
+                            -1.2789,
+                            -0.1111,
+                            -1.2789,
+                            0.1644,
+                            -1.4567,
+                            0.5733,
+                            -1.9456,
+                            0.6889,
+                            -2.1322,
+                            0.8667,
+                            -2.4522,
+                            0.9911,
+                            -2.7189
+                          ],
+                          "c": [
+                            0.451,
+                            0.0902,
+                            0.1765,
+                            1
+                          ],
+                          "s": 1,
+                          "f": true
+                        },
+                        {
+                          "p": [
+                            -1.6844,
+                            0.7122,
+                            -1.2933,
+                            0.2944,
+                            -1.1156,
+                            0.1167,
+                            -0.6978,
+                            -0.1411,
+                            -0.2711,
+                            -0.2833,
+                            0.1378,
+                            -0.2833,
+                            0.4667,
+                            -0.2567,
+                            0.8044,
+                            -0.1056,
+                            1.2489,
+                            0.1078,
+                            1.7644,
+                            0.1344,
+                            2.0311,
+                            -0.0344,
+                            2.1289,
+                            -0.2478,
+                            2.2267,
+                            -0.55,
+                            2.3156,
+                            -0.8078,
+                            2.3778,
+                            -1.0656
+                          ],
+                          "c": [
+                            0.451,
+                            0.0902,
+                            0.1765,
+                            1
+                          ],
+                          "s": 1,
+                          "f": true
+                        }
+                      ],
+                      "fillCanvasSize": 256,
+                      "fillImageBounds": {
+                        "maxX": 130,
+                        "maxY": 130,
+                        "minX": -126,
+                        "minY": -126
+                      }
+                    }
+                  ],
+                  "isVisible": true
+                }
+              ],
+              "version": 3,
+              "framesBounds": [
+                {
+                  "maxX": 5,
+                  "maxY": 5,
+                  "minX": -5,
+                  "minY": -5
+                }
+              ],
+              "pathDataList": {},
+              "selectedLayerId": "layer1"
+            },
+            "initialFrame": 1,
+            "framesPerSecond": 4,
+            "physicsBodyData": {
+              "scale": 10,
+              "shapes": [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "type": "circle",
+                  "radius": 5
+                }
+              ],
+              "version": 2,
+              "zeroShapesInV1": false
+            }
+          }
+        }
+      }
+    }
+  },
+  "sceneProperties": {
+    "backgroundColor": {
+      "b": 0.98823529411765,
+      "g": 0.90196078431373,
+      "r": 0.89019607843137
+    },
+    "coordinateSystemVersion": 2
+  },
+  "actorBlueprintInherit": true
+}

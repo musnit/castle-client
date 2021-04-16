@@ -75,11 +75,17 @@ private:
 //   Foo thing;
 //   Debug::log("{} is: {}", thing.health.name(), thing.health());
 //   thing.aPair().first = 7;
+//
+// `PROP_NAMED` can be used to explicitly specify a different name string for reflection. This is
+// useful if the string desired collides with a C++ keyword. An example from `IfResponse::Params`:
+//
+//   PROP_NAMED("else", ResponseRef, else_) = nullptr;
 
-#define PROP(type, name_, ...)                                                                     \
+#define PROP(type, name_, ...) PROP_NAMED(#name_, type, name_, __VA_ARGS__)
+#define PROP_NAMED(nameStr, type, name_, ...)                                                      \
 private:                                                                                           \
   struct INTERNAL_##name_ {                                                                        \
-    static constexpr std::string_view name = #name_;                                               \
+    static constexpr std::string_view name = nameStr;                                              \
     inline static PropAttribs attribs = PropAttribs() __VA_ARGS__;                                 \
   };                                                                                               \
                                                                                                    \

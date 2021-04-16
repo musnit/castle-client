@@ -14,6 +14,10 @@ Scene::Scene()
     b2BodyDef physicsBackgroundBodyDef;
     physicsBackgroundBody = physicsWorld.CreateBody(&physicsBackgroundBodyDef);
   }
+
+  // Seed the random number generator
+  // TODO(nikki): This seems to not actually help?
+  rng.setSeed({ love::uint64(lv.timer.getTime()) });
 }
 
 Scene::~Scene() = default;

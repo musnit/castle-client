@@ -26,7 +26,7 @@ struct DestroyTrigger : BaseTrigger {
 // Lifecycle responses
 //
 
-struct CreateResponse final : BaseResponse {
+struct CreateResponse : BaseResponse {
   inline static const RuleRegistration<CreateResponse> registration { "create", 16 };
 
   struct Params {
@@ -90,14 +90,59 @@ struct CreateResponse final : BaseResponse {
 
 
 //
+// Control flow responses
+//
+
+struct IfResponse : BaseResponse {
+  inline static const RuleRegistration<IfResponse> registration { "if", 16 };
+
+  struct Params {
+    PROP(ResponseRef, condition) = nullptr;
+    PROP(ResponseRef, then) = nullptr;
+    PROP_NAMED("else", ResponseRef, else_) = nullptr;
+  } params;
+
+  void linearize(ResponseRef continuation) override {
+    // Linearize normally, then run `next` as a continuation after either branch. Don't run `next`
+    // after ourselves. This ensures nested 'wait's in either branch block outer responses.
+    BaseResponse::linearize(continuation);
+    auto then = params.then(), else_ = params.else_();
+    if (then) {
+      then->linearize(next);
+    }
+    if (else_) {
+      else_->linearize(next);
+    }
+    if (then || else_) {
+      next = nullptr;
+    }
+  }
+
+  void run(const RuleContext &ctx) override {
+    if (auto condition = params.condition()) {
+      if (condition->eval(ctx)) {
+        if (auto then = params.then()) {
+          then->runChain(ctx);
+        }
+      } else {
+        if (auto else_ = params.else_()) {
+          else_->runChain(ctx);
+        }
+      }
+    }
+  }
+};
+
+
+//
 // Timing responses
 //
 
-struct WaitResponse final : BaseResponse {
+struct WaitResponse : BaseResponse {
   inline static const RuleRegistration<WaitResponse> registration { "wait", 16 };
 
   struct Params {
-    PROP(double, duration);
+    PROP(double, duration) = 1;
   } params;
 
   ResponseRef body = nullptr;
@@ -121,19 +166,41 @@ struct WaitResponse final : BaseResponse {
 
 
 //
+// Random responses
+//
+
+struct CoinFlipResponse : BaseResponse {
+  inline static const RuleRegistration<CoinFlipResponse> registration { "coin flip", 16 };
+
+  struct Params {
+    PROP(double, probability) = 0.5;
+  } params;
+
+  bool eval(const RuleContext &ctx) override {
+    return ctx.getScene().getRNG().random() < params.probability();
+  }
+};
+
+
+//
 // Meta responses
 //
 
-struct NoteResponse final : BaseResponse {
+#define DEBUG_LOG_NOTE_RESPONSE // Uncomment to log note messages
+
+struct NoteResponse : BaseResponse {
   inline static const RuleRegistration<NoteResponse> registration { "note", 16 };
 
   struct Params {
-    // NOTE: Skipping because we don't actually use it when running, so avoid parsing overhead
-    // PROP(std::string, note);
+#ifdef DEBUG_LOG_NOTE_RESPONSE
+    PROP(std::string, note); // Only needed if we're going to log notes, skip overhead otherwise
+#endif
   } params;
 
   void run(const RuleContext &ctx) override {
-    // Nothing to do...
+#ifdef DEBUG_LOG_NOTE_RESPONSE
+    Debug::log("actor {} note: {}", ctx.actorId, params.note());
+#endif
   }
 };
 
@@ -197,10 +264,11 @@ void RulesBehavior::handleReadComponent(
             if (loader.behaviorId == *maybeBehaviorId && nameHash == loader.nameHs.value()
                 && !std::strcmp(*maybeName, loader.nameHs.data())) {
               loader.read(getScene(), actorId, response, reader);
-              break;
+              return;
             }
           }
         }
+        Debug::log("RulesBehavior: unsupported trigger type '{}'", *maybeName);
       }
     });
   });
@@ -218,6 +286,7 @@ ResponseRef RulesBehavior::readResponse(Reader &reader) {
         }
       }
     }
+    Debug::log("RulesBehavior: unsupported response type '{}'", *maybeName);
   }
   return nullptr;
 }

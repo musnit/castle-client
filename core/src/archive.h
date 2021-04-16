@@ -55,6 +55,12 @@ public:
   using Reader = ::Reader;
 
 
+  // For marking prop types to skip
+
+  template<typename T>
+  static constexpr auto skipProp = false;
+
+
 private:
   json::Document root;
 };
@@ -602,11 +608,13 @@ void Reader::read(T &&v) {
     each([&](const char *key) {
       const auto keyHash = entt::hashed_string(key).value();
       Props::forEach(v, [&](auto &prop) {
-        using Prop = std::remove_reference_t<decltype(prop)>;
-        constexpr auto propNameHash = Prop::nameHash(); // Ensure compile-time constants
-        constexpr auto propName = Prop::name();
-        if (keyHash == propNameHash && key == propName) {
-          read(prop());
+        if constexpr (!Archive::skipProp<std::remove_reference_t<decltype(prop())>>) {
+          using Prop = std::remove_reference_t<decltype(prop)>;
+          constexpr auto propNameHash = Prop::nameHash(); // Ensure compile-time constants
+          constexpr auto propName = Prop::name();
+          if (keyHash == propNameHash && key == propName) {
+            read(prop());
+          }
         }
       });
     });

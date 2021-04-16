@@ -7,7 +7,12 @@
 
 
 struct BaseResponse; // Forward declarations
+
+// Type for referencing other responses from responses
 using ResponseRef = BaseResponse *;
+template<>
+constexpr auto Archive::skipProp<ResponseRef> = true; // Don't auto-read `ResponseRef`s, we'll do
+                                                      // that with special logic
 
 
 //
@@ -177,17 +182,24 @@ struct BaseTrigger {};
 struct BaseResponse {
   virtual ~BaseResponse() = default;
 
-  void runChain(const RuleContext &ctx); // Run this response and then next responses after it
+  // Run this response and then next responses after it
+  void runChain(const RuleContext &ctx);
 
-  virtual void linearize(ResponseRef continuation); // 'Flatten' the tree so resuming suspended
-                                                    // response chains continues parent branches
+  // Evaluate as a boolean expression. Only exists to account for legacy responses with
+  // `returnType = "boolean"` -- those should eventually just become actual expressions.
+  virtual bool eval(const RuleContext &ctx);
 
-  ResponseRef next = nullptr;
+
+  // 'Flatten' the tree so resuming suspended response chains continues parent branches
+  virtual void linearize(ResponseRef continuation);
+
+
+  ResponseRef next = nullptr; // The response to run after this one, if any
 
 
 private:
-  virtual void run(const RuleContext &ctx) = 0; // Run only this response, and not next ones.
-                                                // Implemented in concrete response types.
+  // Run only this response and not next ones. Implemented in concrete response types.
+  virtual void run(const RuleContext &ctx);
 };
 
 
@@ -267,12 +279,19 @@ inline void RulesBehavior::schedule(ResponseRef response, RuleContext ctx, doubl
   scheduled.push_back({ response, std::move(ctx), performTime });
 }
 
+inline bool BaseResponse::eval(const RuleContext &ctx) {
+  return false;
+}
+
 inline void BaseResponse::linearize(ResponseRef continuation) {
   if (next) {
     next->linearize(continuation);
   } else {
     next = continuation;
   }
+}
+
+inline void BaseResponse::run(const RuleContext &ctx) {
 }
 
 inline void BaseResponse::runChain(const RuleContext &ctx) {
@@ -334,6 +353,22 @@ RuleRegistration<T>::RuleRegistration(const char *name, int behaviorId) {
             reader.obj("nextResponse", [&]() {
               response->next = rulesBehavior.readResponse(reader);
             });
+            if constexpr (Props::hasProps<decltype(response->params)>) {
+              reader.each([&](const char *key) {
+                const auto keyHash = entt::hashed_string(key).value();
+                Props::forEach(response->params, [&](auto &prop) {
+                  if constexpr (std::is_same_v<ResponseRef,
+                                    std::remove_reference_t<decltype(prop())>>) {
+                    using Prop = std::remove_reference_t<decltype(prop)>;
+                    constexpr auto propNameHash = Prop::nameHash(); // Ensure compile-time constants
+                    constexpr auto propName = Prop::name();
+                    if (keyHash == propNameHash && key == propName) {
+                      prop() = rulesBehavior.readResponse(reader);
+                    }
+                  }
+                });
+              });
+            }
           });
           return response;
         },

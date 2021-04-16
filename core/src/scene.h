@@ -114,6 +114,11 @@ public:
   double getPerformTime() const; // Time under performance since start, not including time paused
 
 
+  // RNG
+
+  love::RandomGenerator &getRNG();
+
+
   // Update, draw
 
   void update(double dt);
@@ -142,6 +147,8 @@ private:
   Gesture gesture { *this };
 
   double performTime = 0;
+
+  love::RandomGenerator rng;
 
 
   void ensureDrawOrderSort() const;
@@ -250,4 +257,8 @@ inline const Gesture &Scene::getGesture() const {
 
 inline double Scene::getPerformTime() const {
   return performTime;
+}
+
+inline love::RandomGenerator &Scene::getRNG() {
+  return rng;
 }

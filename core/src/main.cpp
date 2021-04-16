@@ -26,7 +26,7 @@ void loop(F &&frame) {
 int main(int argc, char *argv[]) {
   Engine eng;
 
-  auto scenePath = Platform::getAssetPath(argc > 1 ? argv[1] : "test-c++-aquarium.json");
+  auto scenePath = Platform::getAssetPath(argc > 1 ? argv[1] : "test-rules-1.json");
   eng.loadFromFile(scenePath.c_str());
 
   loop([&]() {
