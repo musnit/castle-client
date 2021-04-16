@@ -46,22 +46,22 @@ const styles = StyleSheet.create({
   deckPreview: {
     height: '100%',
     flexShrink: 1,
-    paddingVertical: 24,
+    paddingVertical: 12,
     alignItems: 'center',
     justifyContent: 'center',
     borderBottomWidth: 1,
     borderBottomColor: Constants.colors.grayOnBlackBorder,
   },
   topCard: {
-    height: '100%',
     flexShrink: 1,
+  },
+  cardArt: {
     aspectRatio: Constants.CARD_RATIO,
+    flexShrink: 1,
+    borderBottomLeftRadius: Constants.CARD_BORDER_RADIUS,
+    borderBottomRightRadius: Constants.CARD_BORDER_RADIUS,
   },
   topCardHeader: {
-    position: 'absolute',
-    width: '100%',
-    top: 0,
-    left: 0,
     flexDirection: 'row',
     alignItems: 'center',
     padding: 12,
@@ -134,6 +134,7 @@ export const ShareDeckScreen = ({ route }) => {
   const deck = route.params.deck;
   const [visibility, setVisibility] = React.useState(deck.visibility);
   const initialCard = deck.cards.find((c) => c.cardId === deck.initialCard.cardId);
+  const backgroundColor = getCardBackgroundColor(initialCard);
 
   const [saveDeck] = useMutation(
     gql`
@@ -191,11 +192,10 @@ export const ShareDeckScreen = ({ route }) => {
       />
       <View style={styles.deckPreview}>
         <View style={styles.topCard}>
-          <CardCell card={initialCard} previewVideo={deck.previewVideo} />
           <View
             style={{
               ...styles.topCardHeader,
-              backgroundColor: getCardBackgroundColor(initialCard),
+              backgroundColor: backgroundColor,
             }}>
             <View style={styles.avatar}>
               <UserAvatar url={deck.creator.photo?.url} />
@@ -209,6 +209,9 @@ export const ShareDeckScreen = ({ route }) => {
                 </Text>
               </>
             )}
+          </View>
+          <View style={[styles.cardArt, { backgroundColor: backgroundColor }]}>
+            <CardCell card={initialCard} previewVideo={deck.previewVideo} />
           </View>
         </View>
         {!deck.previewVideo ? (

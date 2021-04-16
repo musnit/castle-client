@@ -65,7 +65,7 @@ export const CardScene = ({
                   },
                   isEditing: initialIsEditing,
                   isEditable,
-                  isDebug: !!__DEV__,
+                  isDebug: false,
                   beltHeightFraction,
                 }),
               }}
