@@ -29,7 +29,7 @@ const RuleHeaderActions = ({ onRemoveRule, onCopyRule }) => {
   return (
     <View style={styles.actions}>
       <TouchableOpacity style={styles.actionButton} onPress={onCopyRule}>
-        <FeatherIcon name="copy" size={22} color="#000" />
+        <FeatherIcon name="clipboard" size={22} color="#000" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.actionButton} onPress={onRemoveRule}>
         <FeatherIcon name="trash-2" size={22} color="#000" />

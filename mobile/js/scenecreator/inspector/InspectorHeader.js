@@ -244,7 +244,7 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
             ) : null}
             {data.isBlueprint && canCopyBlueprint ? (
               <TouchableOpacity style={styles.actionButton} onPress={() => copyBlueprint()}>
-                <FeatherIcon name="copy" size={22} color="#000" />
+                <FeatherIcon name="clipboard" size={22} color="#000" />
               </TouchableOpacity>
             ) : null}
             <TouchableOpacity
