@@ -73,14 +73,28 @@
                     "else": {
                       "name": "note",
                       "params": {
-                        "note": "tails!"
+                        "note": "waiting 3 seconds",
+                        "nextResponse": {
+                          "name": "wait",
+                          "params": {
+                            "duration": 3
+                          },
+                          "behaviorId": 16
+                        }
                       },
                       "behaviorId": 16
                     },
                     "then": {
                       "name": "note",
                       "params": {
-                        "note": "heads!"
+                        "note": "waiting 1 second",
+                        "nextResponse": {
+                          "name": "wait",
+                          "params": {
+                            "duration": 1
+                          },
+                          "behaviorId": 16
+                        }
                       },
                       "behaviorId": 16
                     },
@@ -92,24 +106,17 @@
                       "behaviorId": 16
                     },
                     "nextResponse": {
-                      "name": "wait",
+                      "name": "create",
                       "params": {
-                        "duration": 1,
-                        "nextResponse": {
-                          "name": "create",
-                          "params": {
-                            "angle": 0,
-                            "depth": "in front of all actors",
-                            "entryId": "39670208-6d84-47b1-c7a4-f66ee85e21dd",
-                            "xOffset": 1,
-                            "yOffset": 0,
-                            "distance": 0,
-                            "xAbsolute": 0,
-                            "yAbsolute": 0,
-                            "coordinateSystem": "relative position"
-                          },
-                          "behaviorId": 16
-                        }
+                        "angle": 0,
+                        "depth": "in front of all actors",
+                        "entryId": "39670208-6d84-47b1-c7a4-f66ee85e21dd",
+                        "xOffset": 1,
+                        "yOffset": 0,
+                        "distance": 0,
+                        "xAbsolute": 0,
+                        "yAbsolute": 0,
+                        "coordinateSystem": "relative position"
                       },
                       "behaviorId": 16
                     }

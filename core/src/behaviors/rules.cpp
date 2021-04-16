@@ -103,8 +103,8 @@ struct IfResponse : BaseResponse {
   } params;
 
   void linearize(ResponseRef continuation) override {
-    // Linearize normally, then run `next` as a continuation after either branch. Don't run `next`
-    // after ourselves. This ensures nested 'wait's in either branch block outer responses.
+    // Linearize normally, then set `next` as a continuation after either branch. Don't continue
+    // `next` after ourselves. This ensures nested 'wait's in either branch block outer responses.
     BaseResponse::linearize(continuation);
     auto then = params.then(), else_ = params.else_();
     if (then) {
