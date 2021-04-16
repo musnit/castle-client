@@ -3,7 +3,7 @@ import { StatusBar, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SearchInput } from './SearchInput';
 import { SearchResults } from './SearchResults';
-import { ExploreRow } from './ExploreRow';
+import { ExploreRow, SkeletonExploreRow } from './ExploreRow';
 import { useFocusEffect, useNavigation } from '../ReactNavigation';
 
 import { useLazyQuery, gql } from '@apollo/client';
@@ -95,6 +95,13 @@ export const ExploreScreen = ({ route }) => {
         <SearchResults query={searchQuery} initialResults={preloadSearchResults} />
       ) : (
         <ScrollView>
+          {!feeds && (
+            <>
+              <SkeletonExploreRow />
+              <SkeletonExploreRow />
+              <SkeletonExploreRow />
+            </>
+          )}
           {feeds && feeds.map((feed) => <ExploreRow feed={feed} key={feed.feedId} />)}
         </ScrollView>
       )}

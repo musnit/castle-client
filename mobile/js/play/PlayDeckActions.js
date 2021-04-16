@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     height: AVATAR_SIZE,
   },
   avatarSkeleton: {
-    backgroundColor: '#595959',
+    backgroundColor: Constants.colors.skeletonText,
     borderRadius: 14,
   },
   username: {
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     ...Constants.styles.textShadow,
   },
   usernameSkeleton: {
-    backgroundColor: '#595959',
+    backgroundColor: Constants.colors.skeletonText,
     height: 8,
     width: 100,
     marginLeft: 8,

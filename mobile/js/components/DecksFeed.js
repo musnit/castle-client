@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   itemCardSkeleton: {
-    backgroundColor: '#262626',
+    backgroundColor: Constants.colors.skeletonBG,
     borderRadius: Constants.CARD_BORDER_RADIUS,
   },
   itemHeader: {

@@ -22,6 +22,8 @@ export const colors = {
   grayOnWhiteBorder: '#ccc',
   grayOnBlackBorder: '#444',
   white: '#fff',
+  skeletonBG: '#262626',
+  skeletonText: '#595959',
 };
 
 export const styles = {

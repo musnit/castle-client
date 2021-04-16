@@ -29,6 +29,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 8,
   },
+  skeletonRowHeader: {
+    backgroundColor: Constants.colors.skeletonText,
+    height: 12,
+    width: 100,
+    marginHorizontal: 16,
+    marginBottom: 12,
+    marginTop: 8,
+  },
+  skeletonCarousel: {
+    flexDirection: 'row',
+    marginLeft: 16,
+  },
+  skeletonCard: {
+    aspectRatio: Constants.CARD_RATIO,
+    borderRadius: Constants.CARD_BORDER_RADIUS,
+    backgroundColor: Constants.colors.skeletonBG,
+    width: 100,
+    marginRight: 8,
+  },
 });
 
 export const ExploreRow = ({ feed }) => {
@@ -89,6 +108,20 @@ export const ExploreRow = ({ feed }) => {
         renderItem={renderItem}
         keyExtractor={(item, index) => item?.deckId}
       />
+    </View>
+  );
+};
+
+export const SkeletonExploreRow = () => {
+  return (
+    <View style={styles.container}>
+      <View style={styles.skeletonRowHeader} />
+      <View style={styles.skeletonCarousel}>
+        <View style={styles.skeletonCard} />
+        <View style={styles.skeletonCard} />
+        <View style={styles.skeletonCard} />
+        <View style={styles.skeletonCard} />
+      </View>
     </View>
   );
 };
