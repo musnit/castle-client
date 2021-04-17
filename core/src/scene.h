@@ -52,8 +52,6 @@ public:
   void removeActor(ActorId actorId);
 
   bool hasActor(ActorId actorId) const;
-  Actor &getActor(ActorId actorId); // Undefined behavior if no such actor!
-  const Actor &getActor(ActorId actorId) const;
   Actor *maybeGetActor(ActorId actorId); // Returns `nullptr` if no such actor
   const Actor *maybeGetActor(ActorId actorId) const;
 
@@ -130,6 +128,7 @@ private:
   Lv &lv { Lv::getInstance() };
 
   entt::registry registry;
+  entt::basic_view<entt::entity, entt::exclude_t<>, Actor> actorView = registry.view<Actor>();
 
   mutable int nextNewDrawOrder = 0; // Always greater than the draw order of any existing actor
   mutable bool needDrawOrderSort = false;
@@ -161,42 +160,28 @@ inline bool Scene::hasActor(ActorId actorId) const {
   return registry.valid(actorId);
 }
 
-inline Actor &Scene::getActor(ActorId actorId) {
-  if constexpr (Scene::debugChecks) {
-    if (!hasActor(actorId)) {
-      Debug::log("getActor: no such actor");
-    }
-  }
-  return registry.get<Actor>(actorId);
-}
-
-inline const Actor &Scene::getActor(ActorId actorId) const {
-  if constexpr (Scene::debugChecks) {
-    if (!hasActor(actorId)) {
-      Debug::log("getActor: no such actor");
-    }
-  }
-  return registry.get<Actor>(actorId);
-}
-
 inline Actor *Scene::maybeGetActor(ActorId actorId) {
-  return registry.valid(actorId) ? registry.try_get<Actor>(actorId) : nullptr;
+  return registry.valid(actorId) && actorView.contains(actorId)
+      ? &std::get<0>(actorView.get(actorId))
+      : nullptr;
 }
 
 inline const Actor *Scene::maybeGetActor(ActorId actorId) const {
-  return registry.valid(actorId) ? registry.try_get<Actor>(actorId) : nullptr;
+  return registry.valid(actorId) && actorView.contains(actorId)
+      ? &std::get<0>(actorView.get(actorId))
+      : nullptr;
 }
 
 template<typename F>
 void Scene::forEachActorByDrawOrder(F &&f) {
   ensureDrawOrderSort();
-  registry.view<Actor>().each(std::forward<F>(f));
+  actorView.each(std::forward<F>(f));
 }
 
 template<typename F>
 void Scene::forEachActorByDrawOrder(F &&f) const {
   ensureDrawOrderSort();
-  registry.view<const Actor>().each(std::forward<F>(f));
+  actorView.each(std::forward<F>(f));
 }
 
 inline AllBehaviors &Scene::getBehaviors() {

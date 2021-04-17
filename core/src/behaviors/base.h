@@ -75,8 +75,6 @@ public:
 protected:
   // Own component data
 
-  Component &getComponent(ActorId actorId); // Undefined behavior if not present!
-  const Component &getComponent(ActorId actorId) const;
   Component *maybeGetComponent(ActorId actorId); // Returns `nullptr` if not present
   const Component *maybeGetComponent(ActorId actorId) const;
 
@@ -91,6 +89,8 @@ private:
   friend class Snapshot;
 
   Scene &scene;
+  entt::basic_view<entt::entity, entt::exclude_t<>, Component> componentView
+      = scene.getEntityRegistry().view<Component>();
 };
 
 
@@ -157,13 +157,12 @@ void BaseBehavior<Derived, Component>::removeComponent(ActorId actorId) {
 
 template<typename Derived, typename Component>
 bool BaseBehavior<Derived, Component>::hasComponent(ActorId actorId) const {
-  return scene.hasActor(actorId) && scene.getEntityRegistry().template has<Component>(actorId);
+  return scene.hasActor(actorId) && componentView.contains(actorId);
 }
 
 template<typename Derived, typename Component>
 bool BaseBehavior<Derived, Component>::hasAnyEnabledComponent() const {
-  for (const auto &[actorId, component] :
-      scene.getEntityRegistry().template view<const Component>().each()) {
+  for (const auto &[actorId, component] : componentView.each()) {
     if (!component.disabled) {
       return true;
     }
@@ -172,63 +171,41 @@ bool BaseBehavior<Derived, Component>::hasAnyEnabledComponent() const {
 }
 
 template<typename Derived, typename Component>
-Component &BaseBehavior<Derived, Component>::getComponent(ActorId actorId) {
-  if constexpr (Scene::debugChecks) {
-    if (!hasComponent(actorId)) {
-      Debug::log("getComponent: actor doesn't have a component for this behavior");
-    }
-  }
-  return scene.getEntityRegistry().template get<Component>(actorId);
-}
-
-template<typename Derived, typename Component>
-const Component &BaseBehavior<Derived, Component>::getComponent(ActorId actorId) const {
-  if constexpr (Scene::debugChecks) {
-    if (!hasComponent(actorId)) {
-      Debug::log("getComponent: actor doesn't have a component for this behavior");
-    }
-  }
-  return scene.getEntityRegistry().template get<Component>(actorId);
-}
-
-template<typename Derived, typename Component>
 Component *BaseBehavior<Derived, Component>::maybeGetComponent(ActorId actorId) {
-  return scene.getEntityRegistry().template try_get<Component>(actorId);
+  return componentView.contains(actorId) ? &std::get<0>(componentView.get(actorId)) : nullptr;
 }
 
 template<typename Derived, typename Component>
 const Component *BaseBehavior<Derived, Component>::maybeGetComponent(ActorId actorId) const {
-  return scene.getEntityRegistry().template try_get<Component>(actorId);
+  return componentView.contains(actorId) ? &std::get<0>(componentView.get(actorId)) : nullptr;
 }
 
 template<typename Derived, typename Component>
 template<typename F>
 void BaseBehavior<Derived, Component>::forEachEnabledComponent(F &&f) {
-  scene.getEntityRegistry().template view<Component>().each(
-      ([&](ActorId actorId, Component &component) {
-        if (!component.disabled) {
-          if constexpr (std::is_invocable_v<F, ActorId, Component &>) {
-            f(actorId, component);
-          } else {
-            f(component);
-          }
-        }
-      }));
+  componentView.each(([&](ActorId actorId, Component &component) {
+    if (!component.disabled) {
+      if constexpr (std::is_invocable_v<F, ActorId, Component &>) {
+        f(actorId, component);
+      } else {
+        f(component);
+      }
+    }
+  }));
 }
 
 template<typename Derived, typename Component>
 template<typename F>
 void BaseBehavior<Derived, Component>::forEachEnabledComponent(F &&f) const {
-  scene.getEntityRegistry().template view<const Component>().each(
-      ([&](ActorId actorId, const Component &component) {
-        if (!component.disabled) {
-          if constexpr (std::is_invocable_v<F, ActorId, const Component &>) {
-            f(actorId, component);
-          } else {
-            f(component);
-          }
-        }
-      }));
+  componentView.each(([&](ActorId actorId, const Component &component) {
+    if (!component.disabled) {
+      if constexpr (std::is_invocable_v<F, ActorId, const Component &>) {
+        f(actorId, component);
+      } else {
+        f(component);
+      }
+    }
+  }));
 }
 
 template<typename Derived, typename Component>

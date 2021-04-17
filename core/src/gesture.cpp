@@ -12,7 +12,7 @@ constexpr float touchMoveFarThreshold = 35;
 
 void Gesture::update() {
   // Clear old released touches
-  registry.view<Touch>().each([&](TouchId touchId, Touch &touch) {
+  touchView.each([&](TouchId touchId, Touch &touch) {
     if (touch.released) {
       registry.destroy(touchId);
     }
@@ -29,7 +29,7 @@ void Gesture::update() {
   }
 
   // Mark newly released touches
-  registry.view<Touch>().each([&](Touch &touch) {
+  touchView.each([&](Touch &touch) {
     if (touch.isMouse) {
       if (!lv.mouse.isDown({ 1 })) {
         touch.released = true;
@@ -45,11 +45,11 @@ void Gesture::update() {
   });
 
   // Update counts and all-released state
-  count = registry.size<Touch>();
+  count = touchView.size();
   if (count > 0) {
     maxCount = std::max(maxCount, count);
     allReleased = true;
-    registry.view<const Touch>().each([&](const Touch &touch) {
+    touchView.each([&](const Touch &touch) {
       allReleased = allReleased && touch.released;
     });
   } else {
@@ -71,7 +71,7 @@ void Gesture::updateTouch(float screenX, float screenY, love::int64 loveTouchId,
 
   // Assuming a small number of simultaneous touches so this nested loop is fine
   auto found = false;
-  registry.view<Touch>().each([&](Touch &touch) {
+  touchView.each([&](Touch &touch) {
     if ((touch.isMouse && isMouse) || touch.loveTouchId == loveTouchId) {
       // Found existing touch, update it
       found = true;

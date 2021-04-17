@@ -159,9 +159,11 @@ void Scene::removeActor(ActorId actorId) {
 }
 
 void Scene::setActorDrawOrder(ActorId actorId, int newDrawOrder) {
-  getActor(actorId).drawOrder = newDrawOrder;
-  nextNewDrawOrder = std::max(nextNewDrawOrder, newDrawOrder + 1);
-  needDrawOrderSort = true;
+  if (auto actor = maybeGetActor(actorId)) {
+    actor->drawOrder = newDrawOrder;
+    nextNewDrawOrder = std::max(nextNewDrawOrder, newDrawOrder + 1);
+    needDrawOrderSort = true;
+  }
 }
 
 void Scene::ensureDrawOrderSort() const {

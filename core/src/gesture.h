@@ -83,7 +83,6 @@ public:
   bool isAllReleased() const; // Whether all touches are released (true for one frame at end of
                               // gesture). `false` if no current gesture.
   bool hasTouch(TouchId touchId) const;
-  const Touch &getTouch(TouchId touchId) const;
   const Touch *maybeGetTouch(TouchId touchId) const;
   template<typename F>
   void forEachTouch(F &&f) const; // `f` takes `(TouchId, const Touch &)` or `(const Touch &)`.
@@ -103,6 +102,7 @@ private:
 
   entt::registry registry; // This is separate from the `Scene`'s actor registry. Each entity here
                            // represents a touch. This allows attaching extra data as components.
+  entt::basic_view<entt::entity, entt::exclude_t<>, Touch> touchView = registry.view<Touch>();
 
   int count = 0;
   int maxCount = 0;
@@ -161,17 +161,13 @@ inline bool Gesture::hasTouch(TouchId touchId) const {
   return registry.valid(touchId);
 }
 
-inline const Touch &Gesture::getTouch(TouchId touchId) const {
-  return registry.get<Touch>(touchId);
-}
-
 inline const Touch *Gesture::maybeGetTouch(TouchId touchId) const {
-  return hasTouch(touchId) ? &getTouch(touchId) : nullptr;
+  return hasTouch(touchId) ? &std::get<0>(touchView.get(touchId)) : nullptr;
 }
 
 template<typename F>
 inline void Gesture::forEachTouch(F &&f) const {
-  registry.view<const Touch>().each(std::forward<F>(f));
+  touchView.each(std::forward<F>(f));
 }
 
 template<typename F>

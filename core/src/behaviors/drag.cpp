@@ -48,7 +48,7 @@ void DragBehavior::handlePerform(double dt) {
       getBehaviors().byType<BodyBehavior>().forEachActorAtPoint(
           touch.pos.x, touch.pos.y, [&](ActorId actorId, const b2Fixture *fixture) {
             if (auto component = maybeGetComponent(actorId); component && !component->disabled) {
-              auto drawOrder = getScene().getActor(actorId).drawOrder;
+              auto drawOrder = getScene().maybeGetActor(actorId)->drawOrder;
               if (drawOrder > maxDrawOrder) {
                 hitActorId = actorId;
                 hitComponent = component;
