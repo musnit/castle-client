@@ -353,22 +353,14 @@ RuleRegistration<T>::RuleRegistration(const char *name, int behaviorId) {
             reader.obj("nextResponse", [&]() {
               response->next = rulesBehavior.readResponse(reader);
             });
-            if constexpr (Props::hasProps<decltype(response->params)>) {
-              reader.each([&](const char *key) {
-                const auto keyHash = entt::hashed_string(key).value();
-                Props::forEach(response->params, [&](auto &prop) {
-                  if constexpr (std::is_same_v<ResponseRef,
-                                    std::remove_reference_t<decltype(prop())>>) {
-                    using Prop = std::remove_reference_t<decltype(prop)>;
-                    constexpr auto propNameHash = Prop::nameHash(); // Ensure compile-time constants
-                    constexpr auto propName = Prop::name();
-                    if (keyHash == propNameHash && key == propName) {
-                      prop() = rulesBehavior.readResponse(reader);
-                    }
-                  }
+            Props::forEach(response->params, [&](auto &prop) {
+              if constexpr (std::is_same_v<ResponseRef,
+                                std::remove_reference_t<decltype(prop())>>) {
+                reader.obj(std::remove_reference_t<decltype(prop)>::name().data(), [&]() {
+                  prop() = rulesBehavior.readResponse(reader);
                 });
-              });
-            }
+              }
+            });
           });
           return response;
         },
