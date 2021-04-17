@@ -105,30 +105,27 @@ struct IfResponse : BaseResponse {
   void linearize(ResponseRef continuation) override {
     // Linearize normally, then set `next` as a continuation after either branch. Don't continue
     // `next` after ourselves. This ensures nested 'wait's in either branch block outer responses.
+    // If any branch doesn't exist, default it to just proceeding with next responses.
     BaseResponse::linearize(continuation);
-    auto then = params.then(), else_ = params.else_();
-    if (then) {
-      then->linearize(next);
+    if (params.then()) {
+      params.then()->linearize(next);
+    } else {
+      params.then() = next;
     }
-    if (else_) {
-      else_->linearize(next);
+    if (params.else_()) {
+      params.else_()->linearize(next);
+    } else {
+      params.else_() = next;
     }
-    if (then || else_) {
-      next = nullptr;
-    }
+    next = nullptr;
   }
 
   void run(const RuleContext &ctx) override {
-    if (auto condition = params.condition()) {
-      if (condition->eval(ctx)) {
-        if (auto then = params.then()) {
-          then->runChain(ctx);
-        }
-      } else {
-        if (auto else_ = params.else_()) {
-          else_->runChain(ctx);
-        }
-      }
+    // Default to 'then' branch on non-existent condition
+    if (auto condition = params.condition(); !condition || condition->eval(ctx)) {
+      params.then()->runChain(ctx);
+    } else {
+      params.else_()->runChain(ctx);
     }
   }
 };
