@@ -65,7 +65,7 @@ struct CreateResponse : BaseResponse {
       auto &coordinateSystem = params.coordinateSystem();
       if (coordinateSystem[0] == 'r') { // Whether starts with "relative" or "absolute"
         // Relative
-        b2Vec2 creatorPos;
+        auto creatorPos = b2Vec2(0, 0);
         float creatorAngle = 0;
         if (auto creatorBody = bodyBehavior.maybeGetPhysicsBody(ctx.actorId)) {
           creatorPos = creatorBody->GetPosition();
