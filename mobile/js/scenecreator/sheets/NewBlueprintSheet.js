@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
   container: {},
   itemContainer: {
     padding: 16,
-    paddingVertical: 6,
+    paddingVertical: 8,
     flexDirection: 'row',
   },
   preview: {
@@ -25,6 +25,8 @@ const styles = StyleSheet.create({
     flexShrink: 0,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#0001',
+    padding: 8,
   },
   meta: {
     flexShrink: 1,
@@ -33,15 +35,15 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: 'bold',
     fontSize: 16,
-    lineHeight: 22,
+    lineHeight: 21,
   },
   description: {
     fontSize: 16,
-    lineHeight: 22,
+    lineHeight: 21,
   },
   image: {
-    width: 64,
-    height: 64,
+    width: 56,
+    height: 56,
   },
   sectionHeaderSeparator: {
     paddingTop: 10,
@@ -52,13 +54,34 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 10,
     color: Constants.colors.grayText,
+    textAlign: 'center',
+  },
+  blankSection: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingVertical: 8,
+  },
+  blankItemContainer: {
+    paddingHorizontal: 16,
+    alignItems: 'center',
+  },
+  blankImage: {
+    width: 64,
+    height: 64,
+  },
+  blankMeta: {
+    marginTop: 8,
+  },
+  blankTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 
 const TemplateItem = ({ entry, onPress }) => {
   return (
     <TouchableOpacity style={styles.itemContainer} onPress={onPress}>
-      <View style={[styles.preview, entry.base64Png ? null : { backgroundColor: '#ddd' }]}>
+      <View style={styles.preview}>
         {entry.base64Png ? (
           <FastImage
             source={{ uri: `data:image/png;base64,${entry.base64Png}` }}
@@ -69,6 +92,22 @@ const TemplateItem = ({ entry, onPress }) => {
       <View style={styles.meta}>
         <Text style={styles.title}>{entry.title}</Text>
         {!entry.isBlank ? <Text style={styles.description}>{entry.description}</Text> : null}
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+const BlankTemplateItem = ({ entry, onPress }) => {
+  return (
+    <TouchableOpacity style={styles.blankItemContainer} onPress={onPress}>
+      {entry.base64Png ? (
+        <FastImage
+          source={{ uri: `data:image/png;base64,${entry.base64Png}` }}
+          style={styles.blankImage}
+        />
+      ) : null}
+      <View style={styles.blankMeta}>
+        <Text style={styles.blankTitle}>{entry.title}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -143,20 +182,22 @@ export const NewBlueprintSheet = ({ element, isOpen, onClose }) => {
     return (
       <View style={styles.container}>
         <Text style={styles.sectionHeaderText}>CREATE A BLANK BLUEPRINT</Text>
-        {blanks.map(({ entry, index }) => {
-          if (entry.entryType === 'actorBlueprint') {
-            return (
-              <TemplateItem
-                key={index}
-                entry={entry}
-                onPress={() => {
-                  GhostEvents.sendAsync('NEW_BLUEPRINT', { templateIndex: index });
-                  onClose();
-                }}
-              />
-            );
-          }
-        })}
+        <View style={styles.blankSection}>
+          {blanks.map(({ entry, index }) => {
+            if (entry.entryType === 'actorBlueprint') {
+              return (
+                <BlankTemplateItem
+                  key={index}
+                  entry={entry}
+                  onPress={() => {
+                    GhostEvents.sendAsync('NEW_BLUEPRINT', { templateIndex: index });
+                    onClose();
+                  }}
+                />
+              );
+            }
+          })}
+        </View>
         <PasteFromClipboardSection onPress={onClose} />
         <View style={styles.sectionHeaderSeparator} />
         <Text style={styles.sectionHeaderText}>START FROM A TEMPLATE</Text>
