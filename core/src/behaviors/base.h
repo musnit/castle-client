@@ -90,7 +90,7 @@ private:
 
   Scene &scene;
   entt::basic_view<entt::entity, entt::exclude_t<>, Component> componentView
-      = scene.getEntityRegistry().view<Component>();
+      = scene.getEntityRegistry().template view<Component>();
 };
 
 

@@ -4,6 +4,9 @@ const Axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
+// const API_HOST = 'https://api.castle.xyz';
+const API_HOST = 'http://localhost:1380';
+
 async function runAsync() {
   const outFilename = process.argv[3] || 'test-watch.json';
   let snapshot;
@@ -11,7 +14,7 @@ async function runAsync() {
   try {
     // Try as card
     const response = await Axios.post(
-      'https://api.castle.xyz/graphql',
+      `${API_HOST}/graphql`,
       {
         operationName: null,
         variables: {},
@@ -28,7 +31,7 @@ async function runAsync() {
     // Try as deck
     try {
       const response = await Axios.post(
-        'https://api.castle.xyz/graphql',
+        `${API_HOST}/graphql`,
         {
           operationName: null,
           variables: {},
