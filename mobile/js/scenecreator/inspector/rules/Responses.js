@@ -952,7 +952,7 @@ const Note = ({ response, isPreview }) => {
   ];
   if (!isPreview) {
     cells.unshift({
-      type: 'selectEntry',
+      type: 'showEntryOptions',
       label: 'Note: ',
     });
   }
