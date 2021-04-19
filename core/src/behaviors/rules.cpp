@@ -120,6 +120,88 @@ struct IfResponse : BaseResponse {
   }
 };
 
+struct RepeatResponse : BaseResponse {
+  inline static const RuleRegistration<RepeatResponse> registration { "repeat", 16 };
+
+  struct Params {
+    PROP(int, count) = 3;
+    PROP(ResponseRef, body) = nullptr;
+  } params;
+
+  void linearize(ResponseRef continuation) override {
+    // Set ourselves as the continuation after the body. This way execution will loop back around to
+    // us after the body, even if there are nested 'wait's in it.
+    BaseResponse::linearize(next, continuation);
+    BaseResponse::linearize(params.body(), this);
+  }
+
+  void run(RuleContext &ctx) override {
+    // Check if we're in progress (are at the top of the repeat stack)
+    if (ctx.repeatStack.size() > 0) {
+      if (auto &top = ctx.repeatStack.back(); top.response == this) {
+        if (top.count > 0) {
+          // Have repetitions left -- decrement and enter body
+          --top.count;
+          ctx.setNext(params.body());
+        } else {
+          // No repetitions left -- pop ourselves off repeat stack and continue with `next` normally
+          ctx.repeatStack.pop_back();
+        }
+        return;
+      }
+    }
+
+    // Not in progress -- add ourselves to repeat stack
+    if (auto count = params.count(); count > 0) {
+      // We're about to do one repetition right away, so save `count - 1` to the stack
+      ctx.repeatStack.push_back({ this, count - 1 });
+      ctx.setNext(params.body());
+    }
+  }
+};
+
+struct InfiniteRepeatResponse : BaseResponse {
+  inline static const RuleRegistration<InfiniteRepeatResponse> registration {
+    "infinite repeat",
+    16,
+  };
+
+  struct Params {
+    PROP(double, interval) = 1;
+    PROP(ResponseRef, body) = nullptr;
+  } params;
+
+  void linearize(ResponseRef continuation) override {
+    // Set ourselves as the continuation after the body. This way execution will loop back around to
+    // us after the body, even if there are nested 'wait's in it.
+    BaseResponse::linearize(next, continuation);
+    BaseResponse::linearize(params.body(), this);
+  }
+
+  void run(RuleContext &ctx) override {
+    if (ctx.repeatStack.size() > 0 && ctx.repeatStack.back().response == this) {
+      // We got back here after the body -- check whether to stop or continue
+      if (ctx.repeatStack.back().count == 0) {
+        // Stopped -- remove ourselves from the repeat stack and continue with `next` normally
+        ctx.repeatStack.pop_back();
+      } else {
+        // Not stopped -- schedule `body` to after the interval, or the next frame if the interval
+        // is close enough to 60Hz
+        ctx.setNext(params.body());
+        auto &scene = ctx.getScene();
+        auto &rulesBehavior = scene.getBehaviors().byType<RulesBehavior>();
+        auto interval = params.interval();
+        auto performTime = interval < 0.02 ? 0 : scene.getPerformTime() + interval;
+        rulesBehavior.schedule(ctx.suspend(), performTime);
+      }
+    } else {
+      // Haven't started yet -- add ourselves to the repeat stack and do one repetition right away
+      ctx.repeatStack.push_back({ this, 1 }); // Just use `1`, we don't actually check the value
+      ctx.setNext(params.body());
+    }
+  }
+};
+
 
 //
 // Timing responses

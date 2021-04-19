@@ -35,6 +35,18 @@
       },
       "actorId": "0:3",
       "parentEntryId": "5baa5681-0eab-443b-c403-4fc890257bde"
+    },
+    {
+      "bp": {
+        "components": {
+          "Body": {
+            "x": -3.75,
+            "y": 1.75
+          }
+        }
+      },
+      "actorId": "0:5",
+      "parentEntryId": "3cb31ec7-9e4d-4208-c200-849b4aff3667"
     }
   ],
   "library": {
@@ -352,6 +364,368 @@
                   "y": 0,
                   "type": "circle",
                   "radius": 5
+                }
+              ],
+              "version": 2,
+              "zeroShapesInV1": false
+            }
+          }
+        }
+      }
+    },
+    "3cb31ec7-9e4d-4208-c200-849b4aff3667": {
+      "title": "Wall",
+      "entryId": "3cb31ec7-9e4d-4208-c200-849b4aff3667",
+      "base64Png": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEABAMAAACuXLVVAAAAIVBMVEUAAAAJKDgST28knt5UsObj5v/L0/izwPGDmuObreprm+KHAz8HAAAAA3RSTlMAQIDntwj7AAAEwElEQVR4nO3d73XTMBAA8LIBzMAGlA2ADahsD9DEGSCNOwBU5XuamAl4TEnkJk3qSPL9jfp4d99KCvdDJznWWXm5urJ4A/GhWDzn/3hdLD4NgHL5r69D/nclAe/fCODz1yLx5QXw7aZIfDeAAQxgAAMYwAAGMIABDGAAAxjAAAYwgAEMYAADGOA/BrhVYUDnb8sCvF8XBVTe/ygNWBYF1KUBnX+E/JoeYOsfygJgc1APAJyDegDgHNQDdN6Dfk8RAJqDagDgdVAVsCwKqIFTQA0AnQJqAF8YAJ4CWoCuNAD4TqQGAF8FtADQNwI1APSNQAtQgRehEqCG3ZHrAeCLUAeAqYAKoEVUQAPgPHwNqABaTAUUAGEAliUBuyUA2hJpAXZLADEFFQDIARAHNMgBkAa4LWoJyAM63BIgAlzvn2NzN3olFOAnKj8FMNv6Y7xqxYUCPEJaYyzAwr+Kx+MohPzIAhAAlT+LzT5pyI+bgRRAN+T89XcXf46GfhfDeCALgAeEaeaf9j/M78eDscTmRwPG02z1Kv8anR8LWJz9L90J4Sn+lwQBLrbO3aqn50cCGso0kwR0pDLLAVC3uxqAGr7n1AFgNhwaAI0KoACoDYcGYFcB4TWIA6hUAANAtD0i0SbwCACi7XEeVepmHQ7gVSDZuoUDGlYFksMHB/DWQHL44ABWBdKNQzAA0XuMRPoiDgaw3gcyExgMYFWgTW+YoABeBTL3y1AAqwJNZvigAFYFthk9EMCqQJNrmgABLacC29x9BBhAr0B2AKCAmnEvlB0A8BwAnQmKRptvm6mfpHITe1Z1wFTfUBsw2TjVBkz2DZUB7WTXRBdQTbetdAGhozVxH6cKgDRONQHhEjDZutcEgDrXPMDs/vehQ/ZwlqoFNU45gFHX+NCxPX11eifBAIzyB8Lt6NX19L9CB0S61uEJwmBw86F1CLmHIANcLP8Q+741sKVIBgxd8/5udvi56sYQWEuTCmjOp9iIAGypEgFDAZbjP5136PxUQFjjsd70fN+43swiLwoCXCI/IWiAFvl8VhowdaOpDqgFO4YkgGTTmgIQbZlSAKKPDSgA0ccGFIBo05oAYDQrqo0EgFGByOdeCAB6BarIPRoeUKEPSbxE7IkDHsCqwHnLHA/w9OcWseJRTlAwpsCaD2A8OYoWjwIg5l9Ex45whoR4KxJ2KpELGAEAnAJuto/bl/yx4qEB06fGZ6u+Pz3rFG6R++ROCQ2YeiNYjHKfMmK/jwW4LMBl0id2ClhA9pMLLpM+tVMhHGRKAk7z76reb1Yh7vNnrLCAOt10qPb5+8PEP43kTgkLaJPXoWafXvk4X/I6VJHSU0YgcRkYxp+wX8TPgfgqXCB25CxAFV8EFTW/UKOSdJhTEpDqV1wMkHijuRggzADq6QoRAOeUnwTAcRo2EoCavlWRAbC26wIAXsNEAID5YJcKgHfCSQDAa5jwAbzzNTKAZVEA65ihDIDVM+MDmF1LNoA5BfiAhnnWlw2gNyzEALxnJ2xAWxrAXIUSI1AYkNipXA5wM/7E3cUBzDCAAQxgAAMYwAAGMIABDGAAAxjAAAYwgAEMYAADHAHFv264+BculwUU/9Lt8l87XvyL1y3Kxj8HNbVysYEk+gAAAABJRU5ErkJggg==",
+      "entryType": "actorBlueprint",
+      "description": "Solid square that doesn't move",
+      "actorBlueprint": {
+        "components": {
+          "Body": {
+            "angle": 0,
+            "width": 0.98995000123978,
+            "bullet": false,
+            "height": 0.98995000123978,
+            "visible": true,
+            "bodyType": "static",
+            "disabled": false,
+            "fixtures": [
+              {
+                "points": [
+                  -5,
+                  -5,
+                  -5,
+                  5,
+                  5,
+                  5,
+                  5,
+                  -5
+                ],
+                "shapeType": "polygon"
+              }
+            ],
+            "massData": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "layerName": "main",
+            "widthScale": 0.1,
+            "heightScale": 0.1,
+            "editorBounds": {
+              "maxX": 5,
+              "maxY": 5,
+              "minX": -5,
+              "minY": -5
+            }
+          },
+          "Tags": {
+            "disabled": false,
+            "tagsString": ""
+          },
+          "Rules": {
+            "rules": [
+              {
+                "index": "43",
+                "trigger": {
+                  "name": "create",
+                  "params": {},
+                  "behaviorId": 16
+                },
+                "response": {
+                  "name": "infinite repeat",
+                  "params": {
+                    "body": {
+                      "name": "note",
+                      "params": {
+                        "note": "(5) a repetition (out of infinity)!",
+                        "nextResponse": {
+                          "name": "wait",
+                          "params": {
+                            "duration": 1
+                          },
+                          "behaviorId": 16
+                        }
+                      },
+                      "behaviorId": 16
+                    },
+                    "interval": 1
+                  },
+                  "behaviorId": 16
+                }
+              },
+              {
+                "index": "44",
+                "trigger": {
+                  "name": "create",
+                  "params": {},
+                  "behaviorId": 16
+                },
+                "response": {
+                  "name": "repeat",
+                  "params": {
+                    "body": {
+                      "name": "note",
+                      "params": {
+                        "note": "(4) a repetition (out of 5)!",
+                        "nextResponse": {
+                          "name": "wait",
+                          "params": {
+                            "duration": 1
+                          },
+                          "behaviorId": 16
+                        }
+                      },
+                      "behaviorId": 16
+                    },
+                    "count": 5
+                  },
+                  "behaviorId": 16
+                }
+              }
+            ],
+            "disabled": false
+          },
+          "Solid": {
+            "disabled": false
+          },
+          "Drawing2": {
+            "hash": "v2-e70266519836051a024bc50d642120b1",
+            "loop": false,
+            "playing": false,
+            "disabled": false,
+            "drawData": {
+              "color": [
+                0.89019607843137,
+                0.90196078431373,
+                1,
+                1
+              ],
+              "lineColor": [
+                0.66037992589614,
+                0.4,
+                0.93333333333333,
+                1
+              ],
+              "gridSize": 0.71428571428571,
+              "scale": 10,
+              "fillPixelsPerUnit": 25.6,
+              "numTotalLayers": 1,
+              "selectedFrame": 1,
+              "layers": [
+                {
+                  "id": "layer1",
+                  "title": "Layer 1",
+                  "frames": [
+                    {
+                      "fillPng": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAABlBMVEUkn97j5v8iBVWaAAACeUlEQVR4nO3YMY7qMBAG4KwoUuYIPoqPFp4oUnKkxyoF1wBRvDZoi3UR4UdwQjy/PfsLUWxjFyDiD+NkzIyTqnq7Wf9jGwsooIACCijgN8HIgHsbDAxc3wZnBi4M9Awc3wYdA3sGGgYMATcKLAEjBS0BjgJPwMDAlYELAz0DRwY6BhoColgpwBIwMhCFIg9OnoBPBnYM1ATcGgKcIWBoNeCqj+ktPksJDlU1jf5HBfed/jRErYFxuhdo/NhowN17tni/EINp9tMorQZOYaIfXgN9OFCroPOZFoOGgHip5oElIMoaeeAYGHL9MbgycGagZ+DIwB66/jFwRGAAdACSUOwRWAANgCQUhoB5xBU42b/koRVgrObgrgBDMX9hBRcAZwQYih4BLvodAgxFjcDI/iVRreCvBKNBAM1ZApZMpoIlk6mgZ6Aj4JmONbCcpQqWs1TBM19r4Fl0NLBjoNbAEPLomq8BjHOqHqwChjvY3N8PrQIO89OhNV8DmD5tK3vaKGCcJu8eZSUPnJlet3FNkSBcYFetvwBAFMQcyGRCCTIlRYJMSREgV1IEiDc3WZCrGBKk/RLkSooAuZIiQK6kCJArKQJAHnMJ6BiAK31NgJHgjABDcUmAlaBHgLE6JqCVoEEAwRwZGMwPYNoshf+nAM/vPh7ghv9nFoQnvJsELOslDFBhYV3B9rEZm3NIDOYFdXvsOpeWAU7s9mIwr7iDIWDrNfAVprBRwXc40qhgnqMl4NQS8OkJ2DHQMGAIwLWfAFzaCcA0lAJPAKahBGCWSQDull4HuJ16HeB26nWAJSMBhoCkpvwGsAR4CrAVUEABBRRQgA+3qG+2/1ZI9dC355u3AAAAAElFTkSuQmCC",
+                      "pathDataList": [
+                        {
+                          "p": [
+                            -5,
+                            -5,
+                            -5,
+                            5,
+                            5,
+                            5,
+                            5,
+                            -5,
+                            -5,
+                            -5
+                          ],
+                          "c": [
+                            0.1436,
+                            0.6235,
+                            0.8706,
+                            1
+                          ],
+                          "s": 1
+                        },
+                        {
+                          "p": [
+                            -2.4311,
+                            -0.1056,
+                            -2.2267,
+                            -0.3989,
+                            -2.0489,
+                            -0.7011,
+                            -1.8178,
+                            -1.03,
+                            -1.5689,
+                            -1.2433,
+                            -1.32,
+                            -1.3322,
+                            -1.0533,
+                            -1.3411,
+                            -0.7956,
+                            -1.3411,
+                            -0.5111,
+                            -1.2878,
+                            -0.2444,
+                            -1.2167,
+                            0.0044,
+                            -1.1722,
+                            0.2444,
+                            -1.1633,
+                            0.4933,
+                            -1.1722,
+                            0.7511,
+                            -1.3233,
+                            1,
+                            -1.51,
+                            1.2311,
+                            -1.7233,
+                            1.4089,
+                            -1.9633,
+                            1.5689,
+                            -2.2478,
+                            1.7022,
+                            -2.5322,
+                            1.8089,
+                            -2.8256,
+                            1.8356,
+                            -2.8878
+                          ],
+                          "c": [
+                            0.5176,
+                            0.6078,
+                            0.8941,
+                            1
+                          ],
+                          "s": 1,
+                          "f": true
+                        },
+                        {
+                          "p": [
+                            -1.6933,
+                            1.9656,
+                            -1.5778,
+                            1.4678,
+                            -1.2578,
+                            0.9611,
+                            -1.0089,
+                            0.7211,
+                            -0.7244,
+                            0.5611,
+                            -0.3956,
+                            0.5167,
+                            -0.0578,
+                            0.5167,
+                            0.2622,
+                            0.5167,
+                            0.5556,
+                            0.5967,
+                            0.8133,
+                            0.6589,
+                            1.0889,
+                            0.6856,
+                            1.3289,
+                            0.6856,
+                            1.6133,
+                            0.6322,
+                            1.9067,
+                            0.4633,
+                            2.1822,
+                            0.2411,
+                            2.4489,
+                            0.0189,
+                            2.68,
+                            -0.2211,
+                            2.84,
+                            -0.4078,
+                            2.9556,
+                            -0.6033
+                          ],
+                          "c": [
+                            0.5176,
+                            0.6078,
+                            0.8941,
+                            1
+                          ],
+                          "s": 1,
+                          "f": true
+                        },
+                        {
+                          "p": [
+                            -0.2889,
+                            3.0056,
+                            -0.2622,
+                            2.8011,
+                            -0.1111,
+                            2.4722,
+                            0.1111,
+                            2.1789,
+                            0.4133,
+                            1.9656,
+                            0.7244,
+                            1.8233,
+                            1.1333,
+                            1.7256,
+                            1.5244,
+                            1.6989,
+                            1.8711,
+                            1.69,
+                            2.2978,
+                            1.69,
+                            2.6533,
+                            1.7078,
+                            2.8667,
+                            1.7167,
+                            3.2133,
+                            1.5389,
+                            3.3822,
+                            1.2544
+                          ],
+                          "c": [
+                            0.5176,
+                            0.6078,
+                            0.8941,
+                            1
+                          ],
+                          "s": 1,
+                          "f": true
+                        }
+                      ],
+                      "fillCanvasSize": 256,
+                      "fillImageBounds": {
+                        "maxX": 128,
+                        "maxY": 128,
+                        "minX": -128,
+                        "minY": -128
+                      }
+                    }
+                  ],
+                  "isVisible": true
+                }
+              ],
+              "version": 3,
+              "framesBounds": [
+                {
+                  "maxX": 5,
+                  "maxY": 5,
+                  "minX": -5,
+                  "minY": -5
+                }
+              ],
+              "pathDataList": {},
+              "selectedLayerId": "layer1"
+            },
+            "initialFrame": 1,
+            "framesPerSecond": 4,
+            "physicsBodyData": {
+              "scale": 10,
+              "shapes": [
+                {
+                  "p1": {
+                    "x": 5,
+                    "y": 5
+                  },
+                  "p2": {
+                    "x": -5,
+                    "y": -5
+                  },
+                  "type": "rectangle"
                 }
               ],
               "version": 2,

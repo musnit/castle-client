@@ -29,11 +29,20 @@ public:
   RuleContext(RuleContext &&) = default; // Allow moves
   RuleContext &operator=(RuleContext &&) = default;
 
-  ActorId actorId;
+
+  ActorId actorId; // Actor on whom the respones should act
+
+
+  struct RepeatStackElem {
+    ResponseRef response = nullptr; // The response we're associated with
+    int count = 0; // Remaining repetions. For 'infinite repeat' this is 1 to continue or 0 to stop.
+  };
+  SmallVector<RepeatStackElem, 2> repeatStack; // Tracks repeat responses currently in progress
+
 
   Scene &getScene() const;
 
-  void setNext(ResponseRef newNext);
+  void setNext(ResponseRef newNext); // Set next response to run when this context is resumed
   RuleContext suspend(); // Pauses this context and returns a copy that can be re-scheduled
 
 
