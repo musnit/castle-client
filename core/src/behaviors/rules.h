@@ -28,20 +28,21 @@ struct RuleContext {
   RuleContext(RuleContext &&) = default; // Allow moves
   RuleContext &operator=(RuleContext &&) = default;
 
+  ResponseRef next = nullptr;
+
   ActorId actorId;
 
   Scene &getScene() const;
 
-  RuleContext move() const; // Invalidates this context and returns a copy. Not commonly used, meant
-                            // for re-scheduling the same context (eg. see `WaitResponse`).
+  RuleContext suspend(); // Pauses this context and returns a copy that can be re-scheduled
 
 
 private:
-  friend class RulesBehavior; // To let it construct us
+  friend class RulesBehavior;
 
   Scene *scene;
 
-  RuleContext(ActorId actorId_, Scene &scene_);
+  RuleContext(ResponseRef next_, ActorId actorId_, Scene &scene_);
 };
 
 
@@ -89,7 +90,7 @@ public:
 
   // Response scheduling
 
-  void schedule(ResponseRef response, RuleContext ctx,
+  void schedule(RuleContext ctx,
       double performTime = 0); // `performTime` is absolute `Scene::getPerformTime()` at or after
                                // which the response should be run. 0 means run immediately.
 
@@ -112,9 +113,8 @@ private:
   // Threads
 
   struct Thread {
-    // A thread is an invocation of a response scheduled to run soon along with its context
+    // A thread is a context (next response + locals) scheduled to run soon
 
-    ResponseRef response = nullptr;
     RuleContext ctx;
     double scheduledPerformTime = 0;
   };
@@ -182,12 +182,9 @@ struct BaseTrigger {};
 struct BaseResponse {
   virtual ~BaseResponse() = default;
 
-  // Run this response and then next responses after it
-  void runChain(const RuleContext &ctx);
-
   // Evaluate as a boolean expression. Only exists to account for legacy responses with
   // `returnType = "boolean"` -- those should eventually just become actual expressions.
-  virtual bool eval(const RuleContext &ctx);
+  virtual bool eval(RuleContext &ctx);
 
 
   // 'Flatten' the tree so resuming suspended response chains continues parent branches
@@ -198,8 +195,10 @@ struct BaseResponse {
 
 
 private:
+  friend class RulesBehavior;
+
   // Run only this response and not next ones. Implemented in concrete response types.
-  virtual void run(const RuleContext &ctx);
+  virtual void run(RuleContext &ctx);
 };
 
 
@@ -226,13 +225,15 @@ inline Scene &RuleContext::getScene() const {
   return *scene;
 }
 
-inline RuleContext RuleContext::move() const {
-  return std::move(const_cast<RuleContext &>(*this));
+inline RuleContext RuleContext::suspend() {
+  auto result = std::move(*this);
+  next = nullptr;
+  return result;
 }
 
-
-inline RuleContext::RuleContext(ActorId actorId_, Scene &scene_)
-    : actorId(actorId_)
+inline RuleContext::RuleContext(ResponseRef next_, ActorId actorId_, Scene &scene_)
+    : next(next_)
+    , actorId(actorId_)
     , scene(&scene_) {
 }
 
@@ -250,7 +251,7 @@ void RulesBehavior::fireAllIf(F &&filter) {
       [&](ActorId actorId, const TriggerComponent<Trigger> &component, const auto &...rest) {
         for (auto &entry : component.entries) {
           if (filter(actorId, entry.trigger, rest...)) {
-            schedule(entry.response, { actorId, scene });
+            schedule({ entry.response, actorId, scene });
           }
         }
       });
@@ -269,17 +270,19 @@ void RulesBehavior::fireIf(ActorId actorId, F &&filter) {
   if (auto maybeComponent = scene.getEntityRegistry().try_get<TriggerComponent<Trigger>>(actorId)) {
     for (auto &entry : maybeComponent->entries) {
       if (filter((const Trigger &)entry.trigger)) {
-        schedule(entry.response, { actorId, scene });
+        schedule({ entry.response, actorId, scene });
       }
     }
   }
 }
 
-inline void RulesBehavior::schedule(ResponseRef response, RuleContext ctx, double performTime) {
-  scheduled.push_back({ response, std::move(ctx), performTime });
+inline void RulesBehavior::schedule(RuleContext ctx, double performTime) {
+  if (ctx.next) {
+    scheduled.push_back({ std::move(ctx), performTime });
+  }
 }
 
-inline bool BaseResponse::eval(const RuleContext &ctx) {
+inline bool BaseResponse::eval(RuleContext &ctx) {
   return false;
 }
 
@@ -291,14 +294,7 @@ inline void BaseResponse::linearize(ResponseRef continuation) {
   }
 }
 
-inline void BaseResponse::run(const RuleContext &ctx) {
-}
-
-inline void BaseResponse::runChain(const RuleContext &ctx) {
-  run(ctx);
-  if (next) {
-    next->runChain(ctx);
-  }
+inline void BaseResponse::run(RuleContext &ctx) {
 }
 
 template<typename T>

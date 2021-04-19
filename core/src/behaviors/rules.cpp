@@ -41,7 +41,7 @@ struct CreateResponse : BaseResponse {
     PROP(std::string, depth) = "in front of all actors";
   } params;
 
-  void run(const RuleContext &ctx) override {
+  void run(RuleContext &ctx) override {
     auto &scene = ctx.getScene();
 
     // Make sure we have an `entryId`
@@ -103,9 +103,9 @@ struct IfResponse : BaseResponse {
   } params;
 
   void linearize(ResponseRef continuation) override {
-    // Linearize normally, then set `next` as a continuation after either branch. Don't continue
-    // `next` after ourselves. This ensures nested 'wait's in either branch block outer responses.
-    // If any branch doesn't exist, default it to just proceeding with next responses.
+    // Linearize normally, then set `next` as a continuation after either branch. This ensures
+    // nested 'wait's in either branch block outer responses.  If any branch doesn't exist, default
+    // it to just proceeding with next responses.
     BaseResponse::linearize(continuation);
     if (params.then()) {
       params.then()->linearize(next);
@@ -117,15 +117,14 @@ struct IfResponse : BaseResponse {
     } else {
       params.else_() = next;
     }
-    next = nullptr;
   }
 
-  void run(const RuleContext &ctx) override {
+  void run(RuleContext &ctx) override {
     // Default to 'then' branch on non-existent condition
     if (auto condition = params.condition(); !condition || condition->eval(ctx)) {
-      params.then()->runChain(ctx);
+      ctx.next = params.then();
     } else {
-      params.else_()->runChain(ctx);
+      ctx.next = params.else_();
     }
   }
 };
@@ -142,21 +141,11 @@ struct WaitResponse : BaseResponse {
     PROP(double, duration) = 1;
   } params;
 
-  ResponseRef body = nullptr;
-
-  void linearize(ResponseRef continuation) override {
-    // Linearize normally, then unset `next` so `BaseResponse` doesn't automatically continue in
-    // `runChain()`. We'll save the original value and schedule it ourselves.
-    BaseResponse::linearize(continuation);
-    body = next;
-    next = nullptr;
-  }
-
-  void run(const RuleContext &ctx) override {
-    if (body) {
+  void run(RuleContext &ctx) override {
+    if (next) {
       auto &scene = ctx.getScene();
       auto &rulesBehavior = scene.getBehaviors().byType<RulesBehavior>();
-      rulesBehavior.schedule(body, ctx.move(), scene.getPerformTime() + params.duration());
+      rulesBehavior.schedule(ctx.suspend(), scene.getPerformTime() + params.duration());
     }
   }
 };
@@ -173,7 +162,7 @@ struct CoinFlipResponse : BaseResponse {
     PROP(double, probability) = 0.5;
   } params;
 
-  bool eval(const RuleContext &ctx) override {
+  bool eval(RuleContext &ctx) override {
     return ctx.getScene().getRNG().random() < params.probability();
   }
 };
@@ -194,7 +183,7 @@ struct NoteResponse : BaseResponse {
 #endif
   } params;
 
-  void run(const RuleContext &ctx) override {
+  void run(RuleContext &ctx) override {
 #ifdef DEBUG_LOG_NOTE_RESPONSE
     Debug::log("actor {} note: {}", ctx.actorId, params.note());
 #endif
@@ -316,8 +305,12 @@ void RulesBehavior::handlePerform(double dt) {
       scheduled.end());
   Debug::display("current: {}", current.size());
   for (auto &thread : current) {
-    if (thread.response) { // Some times this is `nullptr` under extreme memory pressure...
-      thread.response->runChain(thread.ctx);
+    auto &ctx = thread.ctx;
+    auto curr = ctx.next;
+    while (curr) {
+      ctx.next = curr->next;
+      curr->run(ctx);
+      curr = ctx.next;
     }
   }
   current.clear();
