@@ -6,12 +6,16 @@ import { BottomSheetHeader } from '../../components/BottomSheetHeader';
 import * as Constants from '../../Constants';
 import * as GhostEvents from '../../ghost/GhostEvents';
 
-import { CardCreatorBottomSheet } from './CardCreatorBottomSheet';
+import { BottomSheet } from '../../components/BottomSheet';
 import * as Clipboard from '../LibraryEntryClipboard';
 import { useGhostUI } from '../../ghost/GhostUI';
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+  },
   itemContainer: {
     padding: 16,
     paddingVertical: 8,
@@ -161,7 +165,7 @@ const PasteFromClipboardSection = ({ onPress }) => {
   );
 };
 
-export const NewBlueprintSheet = ({ element, isOpen, onClose }) => {
+export const NewBlueprintSheet = ({ element, isOpen, onClose, ...props }) => {
   const data = element?.children?.data?.props?.data?.templates.map((entry, i) => ({
     index: i,
     entry,
@@ -180,7 +184,7 @@ export const NewBlueprintSheet = ({ element, isOpen, onClose }) => {
     }
 
     return (
-      <View style={styles.container}>
+      <>
         <Text style={styles.sectionHeaderText}>CREATE A BLANK BLUEPRINT</Text>
         <View style={styles.blankSection}>
           {blanks.map(({ entry, index }) => {
@@ -215,14 +219,16 @@ export const NewBlueprintSheet = ({ element, isOpen, onClose }) => {
             );
           }
         })}
-      </View>
+      </>
     );
   };
   return (
-    <CardCreatorBottomSheet
+    <BottomSheet
       isOpen={isOpen}
       renderHeader={renderHeader}
       renderContent={renderContent}
+      style={styles.container}
+      {...props}
     />
   );
 };

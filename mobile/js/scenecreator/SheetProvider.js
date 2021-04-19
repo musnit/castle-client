@@ -20,6 +20,7 @@ const ROOT_SHEETS = [
   {
     key: 'sceneCreatorNewBlueprint',
     Component: NewBlueprintSheet,
+    makeSnapPoints: ({ insets }) => [FULL_SHEET_HEIGHT * 0.75, FULL_SHEET_HEIGHT - insets.top],
   },
   {
     key: 'sceneCreatorBlueprints',
