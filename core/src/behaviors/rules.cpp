@@ -202,6 +202,19 @@ struct InfiniteRepeatResponse : BaseResponse {
   }
 };
 
+struct StopRepeatingResponse : BaseResponse {
+  inline static const RuleRegistration<StopRepeatingResponse> registration { "stop repeating", 16 };
+
+  struct Params {
+  } params;
+
+  void run(RuleContext &ctx) override {
+    if (ctx.repeatStack.size() > 0) {
+      ctx.repeatStack.back().count = 0;
+    }
+  }
+};
+
 
 //
 // Timing responses
