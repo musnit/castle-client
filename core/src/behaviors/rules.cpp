@@ -276,7 +276,8 @@ ResponseRef RulesBehavior::readResponse(Reader &reader) {
 void RuleContext::run() {
   auto curr = next;
   while (curr) {
-    next = curr->next;
+    next = curr->next; // Default to the response's `next`. It'll have an opportunity to override
+                       // this in its `run()`.
     curr->run(*this);
     curr = next;
   }

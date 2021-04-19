@@ -190,6 +190,7 @@ struct BaseResponse {
   virtual bool eval(RuleContext &ctx);
 
 
+protected:
   // 'Flatten' the tree so resuming suspended response chains continues parent branches
   virtual void linearize(ResponseRef continuation);
   static void linearize(ResponseRef &target, ResponseRef continuation);
@@ -200,6 +201,9 @@ struct BaseResponse {
 
 private:
   friend class RuleContext;
+  friend class RulesBehavior;
+  template<typename T>
+  friend struct RuleRegistration;
 
   // Run the response. Just runs this response and not next ones. Implemented in concrete types.
   virtual void run(RuleContext &ctx);
