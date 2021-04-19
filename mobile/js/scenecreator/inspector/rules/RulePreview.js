@@ -40,9 +40,11 @@ const makeResponseRows = (rows, order, indent, { response, context }) => {
     );
   }
 
-  if (response.params?.then) {
+  if (response.params?.then || (response.params && response.params['else'])) {
     // add the 'if' cells to this row
-    makeResponseRows(rows, 0, indent + 1, { response: response.params.then, context });
+    if (response.params.then) {
+      makeResponseRows(rows, 0, indent + 1, { response: response.params.then, context });
+    }
     if (response.params['else']) {
       rows.push({
         indent,
