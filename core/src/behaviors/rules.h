@@ -19,30 +19,34 @@ constexpr auto Archive::skipProp<ResponseRef> = true; // Don't auto-read `Respon
 // Context
 //
 
-struct RuleContext {
+class RuleContext {
   // Holds local values for one invocation of a response or expression. Passed to the `run(...)`
   // method of responses or the `eval(...)` method of expressions.
 
+public:
   RuleContext(const RuleContext &) = delete; // Prevent accidental copies
   RuleContext &operator=(const RuleContext &) = delete;
   RuleContext(RuleContext &&) = default; // Allow moves
   RuleContext &operator=(RuleContext &&) = default;
 
-  ResponseRef next = nullptr;
-
   ActorId actorId;
 
   Scene &getScene() const;
 
+  void setNext(ResponseRef newNext);
   RuleContext suspend(); // Pauses this context and returns a copy that can be re-scheduled
 
 
 private:
   friend class RulesBehavior;
 
+  ResponseRef next = nullptr;
+
   Scene *scene;
 
   RuleContext(ResponseRef next_, ActorId actorId_, Scene &scene_);
+
+  void run();
 };
 
 
@@ -110,17 +114,16 @@ private:
   std::unordered_map<void *, ResponseRef> responseCache;
 
 
-  // Threads
+  // Scheduling
 
-  struct Thread {
-    // A thread is a context (next response + locals) scheduled to run soon
-
+  struct Scheduled {
+    // A context scheduled to run soon
     RuleContext ctx;
-    double scheduledPerformTime = 0;
+    double performTime = 0;
   };
-  std::vector<Thread> scheduled; // All threads scheduled to run soon
-  std::vector<Thread> current; // A temporary list of threads to run in the current frame. Stored as
-                               // a member so we can reuse its memory from frame to frame.
+  std::vector<Scheduled> scheduleds;
+  std::vector<RuleContext> current; // A temporary list of contexts to run in the current frame.
+                                    // Stored as a member so we can reuse its memory.
 
 
   // Loaders (maps from names to read functions for rule types, filled by `RuleRegistration` when
@@ -189,15 +192,16 @@ struct BaseResponse {
 
   // 'Flatten' the tree so resuming suspended response chains continues parent branches
   virtual void linearize(ResponseRef continuation);
+  static void linearize(ResponseRef &target, ResponseRef continuation);
 
 
   ResponseRef next = nullptr; // The response to run after this one, if any
 
 
 private:
-  friend class RulesBehavior;
+  friend class RuleContext;
 
-  // Run only this response and not next ones. Implemented in concrete response types.
+  // Run the response. Just runs this response and not next ones. Implemented in concrete types.
   virtual void run(RuleContext &ctx);
 };
 
@@ -225,6 +229,10 @@ inline Scene &RuleContext::getScene() const {
   return *scene;
 }
 
+inline void RuleContext::setNext(ResponseRef newNext) {
+  next = newNext;
+}
+
 inline RuleContext RuleContext::suspend() {
   auto result = std::move(*this);
   next = nullptr;
@@ -232,8 +240,8 @@ inline RuleContext RuleContext::suspend() {
 }
 
 inline RuleContext::RuleContext(ResponseRef next_, ActorId actorId_, Scene &scene_)
-    : next(next_)
-    , actorId(actorId_)
+    : actorId(actorId_)
+    , next(next_)
     , scene(&scene_) {
 }
 
@@ -278,7 +286,7 @@ void RulesBehavior::fireIf(ActorId actorId, F &&filter) {
 
 inline void RulesBehavior::schedule(RuleContext ctx, double performTime) {
   if (ctx.next) {
-    scheduled.push_back({ std::move(ctx), performTime });
+    scheduleds.push_back({ std::move(ctx), performTime });
   }
 }
 
@@ -287,10 +295,14 @@ inline bool BaseResponse::eval(RuleContext &ctx) {
 }
 
 inline void BaseResponse::linearize(ResponseRef continuation) {
-  if (next) {
-    next->linearize(continuation);
+  linearize(next, continuation);
+}
+
+inline void BaseResponse::linearize(ResponseRef &target, ResponseRef continuation) {
+  if (target) {
+    target->linearize(continuation);
   } else {
-    next = continuation;
+    target = continuation;
   }
 }
 

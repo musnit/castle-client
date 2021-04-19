@@ -103,28 +103,19 @@ struct IfResponse : BaseResponse {
   } params;
 
   void linearize(ResponseRef continuation) override {
-    // Linearize normally, then set `next` as a continuation after either branch. This ensures
-    // nested 'wait's in either branch block outer responses.  If any branch doesn't exist, default
-    // it to just proceeding with next responses.
-    BaseResponse::linearize(continuation);
-    if (params.then()) {
-      params.then()->linearize(next);
-    } else {
-      params.then() = next;
-    }
-    if (params.else_()) {
-      params.else_()->linearize(next);
-    } else {
-      params.else_() = next;
-    }
+    // Set `next` as the continuation after either branch. This ensures nested 'wait's in either
+    // branch block outer responses, and also defaults either branch to `next` if empty.
+    BaseResponse::linearize(next, continuation);
+    BaseResponse::linearize(params.then(), next);
+    BaseResponse::linearize(params.else_(), next);
   }
 
   void run(RuleContext &ctx) override {
     // Default to 'then' branch on non-existent condition
     if (auto condition = params.condition(); !condition || condition->eval(ctx)) {
-      ctx.next = params.then();
+      ctx.setNext(params.then());
     } else {
-      ctx.next = params.else_();
+      ctx.setNext(params.else_());
     }
   }
 };
@@ -282,6 +273,15 @@ ResponseRef RulesBehavior::readResponse(Reader &reader) {
 // Perform
 //
 
+void RuleContext::run() {
+  auto curr = next;
+  while (curr) {
+    next = curr->next;
+    curr->run(*this);
+    curr = next;
+  }
+}
+
 void RulesBehavior::handlePerform(double dt) {
   auto &scene = getScene();
 
@@ -289,29 +289,23 @@ void RulesBehavior::handlePerform(double dt) {
   fireAll<CreateTrigger>();
   scene.getEntityRegistry().clear<TriggerComponent<CreateTrigger>>();
 
-  // Run responses. Move ready responses from `scheduled` to `current`, then run and clear
-  // `current`. We don't run responses directly from `scheduled` because they could schedule new
-  // responses when run, which would modify `scheduled` and invalidate the iteration.
+  // Run contexts. Move ready contexts from `scheduleds` to `current`, then run and clear `current`.
+  // We don't run contexts directly from `scheduleds` because they could schedule new contexts when
+  // run, which would modify `scheduleds` and invalidate the iteration.
   auto performTime = scene.getPerformTime();
-  Debug::display("scheduled: {}", scheduled.size());
-  scheduled.erase(std::remove_if(scheduled.begin(), scheduled.end(),
-                      [&](Thread &thread) {
-                        if (performTime >= thread.scheduledPerformTime) {
-                          current.push_back(std::move(thread));
-                          return true;
-                        }
-                        return false;
-                      }),
-      scheduled.end());
+  Debug::display("scheduled: {}", scheduleds.size());
+  scheduleds.erase(std::remove_if(scheduleds.begin(), scheduleds.end(),
+                       [&](Scheduled &scheduled) {
+                         if (performTime >= scheduled.performTime) {
+                           current.push_back(std::move(scheduled.ctx));
+                           return true;
+                         }
+                         return false;
+                       }),
+      scheduleds.end());
   Debug::display("current: {}", current.size());
-  for (auto &thread : current) {
-    auto &ctx = thread.ctx;
-    auto curr = ctx.next;
-    while (curr) {
-      ctx.next = curr->next;
-      curr->run(ctx);
-      curr = ctx.next;
-    }
+  for (auto &ctx : current) {
+    ctx.run();
   }
   current.clear();
 }
