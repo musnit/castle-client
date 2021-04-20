@@ -208,6 +208,9 @@ struct TriggerComponent {
 struct BaseTrigger {};
 
 struct ExpressionUtils {
+  // A common set of utility functions to evaluate child expressions, to be used in response and
+  // expression types. Useful for handling default values properly.
+
   template<typename T>
   static T eval(ExpressionRef expr, RuleContext &ctx, T def = {});
 };

@@ -73,19 +73,19 @@ struct CreateResponse : BaseResponse {
         }
         if (coordinateSystem[9] == 'p') { // Whether has "position" or "angle" in the middle
           // Relative position
-          auto xOffset = eval<double>(params.xOffset(), ctx);
-          auto yOffset = eval<double>(params.yOffset(), ctx);
+          auto xOffset = eval<float>(params.xOffset(), ctx);
+          auto yOffset = eval<float>(params.yOffset(), ctx);
           newPos = creatorPos + b2Vec2(xOffset, yOffset);
         } else {
           // Relative angle and distance
-          auto angle = float(eval<double>(params.angle(), ctx) + creatorAngle);
-          auto distance = float(eval<double>(params.distance(), ctx));
+          auto angle = eval<float>(params.angle(), ctx) + creatorAngle;
+          auto distance = eval<float>(params.distance(), ctx);
           newPos = creatorPos + distance * b2Vec2(std::cos(angle), std::sin(angle));
         }
       } else {
         // Absolute
-        auto xAbsolute = float(eval<double>(params.xAbsolute(), ctx));
-        auto yAbsolute = float(eval<double>(params.yAbsolute(), ctx));
+        auto xAbsolute = eval<float>(params.xAbsolute(), ctx);
+        auto yAbsolute = eval<float>(params.yAbsolute(), ctx);
         newPos = { xAbsolute, yAbsolute };
       }
       newBody->SetTransform(newPos, newBody->GetAngle());
@@ -129,7 +129,7 @@ struct RepeatResponse : BaseResponse {
   inline static const RuleRegistration<RepeatResponse> registration { "repeat", 16 };
 
   struct Params {
-    PROP(int, count) = 3;
+    PROP(ExpressionRef, count); // = 3;
     PROP(ResponseRef, body);
   } params;
 
@@ -157,7 +157,7 @@ struct RepeatResponse : BaseResponse {
     }
 
     // Not in progress -- add ourselves to repeat stack
-    if (auto count = params.count(); count > 0) {
+    if (auto count = eval<int>(params.count(), ctx, 3); count > 0) {
       // We're about to do one repetition right away, so save `count - 1` to the stack
       ctx.repeatStack.push_back({ this, count - 1 });
       ctx.setNext(params.body());

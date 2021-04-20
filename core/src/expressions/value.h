@@ -34,7 +34,7 @@ inline ExpressionValue::ExpressionValue(double value_)
 
 template<typename T>
 bool is() {
-  if constexpr (std::is_same_v<double, T>) {
+  if constexpr (std::is_same_v<double, T> || std::is_same_v<float, T> || std::is_same_v<int, T>) {
     return true;
   } else {
     return false;
@@ -43,7 +43,7 @@ bool is() {
 
 template<typename T>
 T ExpressionValue::as(T def) {
-  if constexpr (std::is_same_v<double, T>) {
+  if constexpr (std::is_same_v<double, T> || std::is_same_v<float, T> || std::is_same_v<int, T>) {
     return value;
   } else {
     return def;
