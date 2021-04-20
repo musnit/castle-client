@@ -7,7 +7,8 @@
 
 class ExpressionValue {
   // Contains the result of a rule expression, which is dynamically typed. Has methods to check the
-  // dynamic type and get the C++ value. Currently the only supported type is `double` for numbers.
+  // dynamic type and get the C++ value. Currently the only supported stored type is `double` for
+  // numbers, retrievable as `double`, `float` or `int`.
 
 public:
   ExpressionValue() = default;
@@ -15,10 +16,10 @@ public:
 
 
   template<typename T>
-  bool is(); // Whether the value has type `T`
+  bool is(); // Whether the current value can be interpreted as C++ type `T`
 
   template<typename T>
-  T as(T def); // Get the value of type `T`, or given default of not of type `T`
+  T as(T def); // Get the the current value as C++ type `T`, or given default if not `is<T>()`
 
 
 private:

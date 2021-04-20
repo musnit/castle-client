@@ -117,7 +117,7 @@ struct IfResponse : BaseResponse {
 
   void run(RuleContext &ctx) override {
     // Default to 'then' branch on non-existent condition
-    if (auto condition = params.condition(); !condition || condition->evalLegacy(ctx)) {
+    if (auto condition = params.condition(); !condition || condition->evaluate(ctx)) {
       ctx.setNext(params.then());
     } else {
       ctx.setNext(params.else_());
@@ -254,7 +254,7 @@ struct CoinFlipResponse : BaseResponse {
     PROP(ExpressionRef, probability); // = 0.5;
   } params;
 
-  bool evalLegacy(RuleContext &ctx) override {
+  bool evaluate(RuleContext &ctx) override {
     auto probability = eval<double>(params.probability(), ctx, 0.5);
     return ctx.getScene().getRNG().random() < probability;
   }
@@ -285,17 +285,19 @@ struct NoteResponse : BaseResponse {
 
 
 //
-// Number expression
+// Expressions
 //
 
 struct NumberExpression : BaseExpression {
+  // Defined in this file so we can use it in `readExpression` below
+
   inline static const RuleRegistration<NumberExpression> registration { "number" };
 
   struct Params {
     PROP(double, value) = 0;
   } params;
 
-  ExpressionValue eval(RuleContext &ctx) override {
+  ExpressionValue evaluate(RuleContext &ctx) override {
     return ExpressionValue(params.value());
   }
 };
@@ -390,14 +392,13 @@ ResponseRef RulesBehavior::readResponse(Reader &reader) {
 ExpressionRef RulesBehavior::readExpression(Reader &reader) {
   if (auto value = reader.num()) {
     // Plain number value
-    // TODO(nikki): Optimize `ExpressionRef` to such number values inline
+    // TODO(nikki): Optimize `ExpressionRef` to hold such number values inline
     auto expression = (NumberExpression *)pool.Malloc(sizeof(NumberExpression));
     new (expression) NumberExpression();
     expressions.emplace_back(expression);
     expression->params.value() = *value;
     return expression;
   } else {
-    Debug::log("not a number!");
     // Nested expression -- find loader by type
     if (auto maybeName = reader.str("expressionType")) {
       auto nameHash = entt::hashed_string(*maybeName).value();

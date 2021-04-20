@@ -202,10 +202,18 @@ struct TriggerComponent {
 
 
 //
-// Base rule types
+// Base trigger
 //
 
-struct BaseTrigger {};
+struct BaseTrigger {
+  // Base for all trigger types. Derive from this and include a `RuleRegistration` to define a new
+  // trigger type.
+};
+
+
+//
+// Expression utilities
+//
 
 struct ExpressionUtils {
   // A common set of utility functions to evaluate child expressions, to be used in response and
@@ -215,19 +223,26 @@ struct ExpressionUtils {
   static T eval(ExpressionRef expr, RuleContext &ctx, T def = {});
 };
 
+
+//
+// Base response
+//
+
 struct BaseResponse : ExpressionUtils {
+  // Base for all response types. Derive from this and include a `RuleRegistration` to define a new
+  // response type.
+
   virtual ~BaseResponse() = default;
 
   // Evaluate as a boolean expression. Only exists to account for legacy responses with
   // `returnType = "boolean"` -- those should eventually just become actual expressions.
-  virtual bool evalLegacy(RuleContext &ctx);
+  virtual bool evaluate(RuleContext &ctx);
 
 
 protected:
   // 'Flatten' the tree so resuming suspended response chains continues parent branches
   virtual void linearize(ResponseRef continuation);
   static void linearize(ResponseRef &target, ResponseRef continuation);
-
 
   ResponseRef next = nullptr; // The response to run after this one, if any
 
@@ -242,7 +257,15 @@ private:
   virtual void run(RuleContext &ctx);
 };
 
+
+//
+// Base expression
+//
+
 struct BaseExpression : ExpressionUtils {
+  // Base for all expression types. Derive from this and include a `RuleRegistration` to define a
+  // new expression type.
+
   virtual ~BaseExpression() = default;
 
 
@@ -250,7 +273,7 @@ private:
   friend struct ExpressionUtils;
 
   // Evaluate the expression. Implemented in concrete types.
-  virtual ExpressionValue eval(RuleContext &ctx);
+  virtual ExpressionValue evaluate(RuleContext &ctx);
 };
 
 
@@ -342,13 +365,13 @@ inline void RulesBehavior::schedule(RuleContext ctx, double performTime) {
 template<typename T>
 inline T ExpressionUtils::eval(ExpressionRef expr, RuleContext &ctx, T def) {
   if (expr) {
-    return expr->eval(ctx).as<T>(def);
+    return expr->evaluate(ctx).as<T>(def);
   } else {
     return def;
   }
 }
 
-inline bool BaseResponse::evalLegacy(RuleContext &ctx) {
+inline bool BaseResponse::evaluate(RuleContext &ctx) {
   return false;
 }
 
@@ -367,7 +390,7 @@ inline void BaseResponse::linearize(ResponseRef &target, ResponseRef continuatio
 inline void BaseResponse::run(RuleContext &ctx) {
 }
 
-inline ExpressionValue BaseExpression::eval(RuleContext &ctx) {
+inline ExpressionValue BaseExpression::evaluate(RuleContext &ctx) {
   return ExpressionValue(0);
 }
 
