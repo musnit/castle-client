@@ -2,8 +2,6 @@
 
 
 struct AddExpression : BaseExpression {
-  // Defined in this file so we can use it in `readExpression` below
-
   inline static const RuleRegistration<AddExpression> registration { "+" };
 
   struct Params {

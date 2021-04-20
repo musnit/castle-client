@@ -285,25 +285,6 @@ struct NoteResponse : BaseResponse {
 
 
 //
-// Expressions
-//
-
-struct NumberExpression : BaseExpression {
-  // Defined in this file so we can use it in `readExpression` below
-
-  inline static const RuleRegistration<NumberExpression> registration { "number" };
-
-  struct Params {
-    PROP(double, value) = 0;
-  } params;
-
-  ExpressionValue eval(RuleContext &ctx) override {
-    return params.value();
-  }
-};
-
-
-//
 // Constructor, destructor
 //
 
