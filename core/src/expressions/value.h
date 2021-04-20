@@ -12,14 +12,14 @@ class ExpressionValue {
 
 public:
   ExpressionValue() = default;
-  explicit ExpressionValue(double value_);
+  ExpressionValue(double value_); // NOLINT(google-explicit-constructor)
 
 
   template<typename T>
   bool is(); // Whether the current value can be interpreted as C++ type `T`
 
   template<typename T>
-  T as(T def); // Get the the current value as C++ type `T`, or given default if not `is<T>()`
+  T as(T def = {}); // Get the the current value as C++ type `T`, or given default if not `is<T>()`
 
 
 private:

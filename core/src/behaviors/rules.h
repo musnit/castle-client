@@ -7,17 +7,39 @@
 #include "expressions/value.h"
 
 
+//
+// References
+//
+
 struct BaseResponse; // Forward declarations
 struct BaseExpression;
+class RuleContext;
 
-// Type for referencing other responses from responses
-using ResponseRef = BaseResponse *;
+using ResponseRef = BaseResponse *; // Type for referencing other responses from responses
 template<>
 constexpr auto Archive::skipProp<ResponseRef> = true; // Don't auto-read `ResponseRef`s, we'll do
                                                       // that with special logic
 
-// Type for referencing expressions from responses
-using ExpressionRef = BaseExpression *;
+struct ExpressionRef {
+  // Type for referencing expressions from responses. We use a wrapper type here rather than a raw
+  // `BaseResponse *` so it can hold a default value and embed constants directly.
+
+  ExpressionRef(ExpressionValue constant_ = 0); // NOLINT(google-explicit-constructor)
+
+  ExpressionValue eval(RuleContext &ctx);
+
+  template<typename T>
+  T eval(RuleContext &ctx); // Falls back to constant if child expression returns wrong type
+
+
+private:
+  friend class RulesBehavior;
+  template<typename T>
+  friend struct RuleRegistration; // To let it write to loaders
+
+  BaseExpression *maybeExpression = nullptr; // A child expression node, if we actually have one
+  ExpressionValue constant = 0; // The constant value if no child node
+};
 template<>
 constexpr auto Archive::skipProp<ExpressionRef> = true; // Don't auto-read `ExpressionRef`s, we'll
                                                         // do that with special logic
@@ -123,7 +145,7 @@ private:
   // without destructing objects.
   json::MemoryPoolAllocator<json::CrtAllocator> pool;
   std::vector<ResponseRef> responses;
-  std::vector<ExpressionRef> expressions;
+  std::vector<BaseExpression *> expressions;
 
   // Map from JSON object pointer to loaded responses. Allows us to reuse response instances loaded
   // from the same JSON instance -- which happens every time we create an actor that inherits rules
@@ -166,12 +188,12 @@ private:
 
   struct ExpressionLoader {
     entt::hashed_string nameHs;
-    ExpressionRef (*read)(RulesBehavior &rulesBehavior, Reader &reader) = nullptr;
+    void (*read)(ExpressionRef &expr, RulesBehavior &rulesBehavior, Reader &reader) = nullptr;
   };
   inline static std::vector<ExpressionLoader> expressionLoaders;
 
   ResponseRef readResponse(Reader &reader);
-  ExpressionRef readExpression(Reader &reader);
+  void readExpression(ExpressionRef &expr, Reader &reader);
 };
 
 
@@ -212,23 +234,10 @@ struct BaseTrigger {
 
 
 //
-// Expression utilities
-//
-
-struct ExpressionUtils {
-  // A common set of utility functions to evaluate child expressions, to be used in response and
-  // expression types. Useful for handling default values properly.
-
-  template<typename T>
-  static T eval(ExpressionRef expr, RuleContext &ctx, T def = {});
-};
-
-
-//
 // Base response
 //
 
-struct BaseResponse : ExpressionUtils {
+struct BaseResponse {
   // Base for all response types. Derive from this and include a `RuleRegistration` to define a new
   // response type.
 
@@ -236,7 +245,7 @@ struct BaseResponse : ExpressionUtils {
 
   // Evaluate as a boolean expression. Only exists to account for legacy responses with
   // `returnType = "boolean"` -- those should eventually just become actual expressions.
-  virtual bool evaluate(RuleContext &ctx);
+  virtual bool eval(RuleContext &ctx);
 
 
 protected:
@@ -262,7 +271,7 @@ private:
 // Base expression
 //
 
-struct BaseExpression : ExpressionUtils {
+struct BaseExpression {
   // Base for all expression types. Derive from this and include a `RuleRegistration` to define a
   // new expression type.
 
@@ -270,10 +279,10 @@ struct BaseExpression : ExpressionUtils {
 
 
 private:
-  friend struct ExpressionUtils;
+  friend struct ExpressionRef;
 
   // Evaluate the expression. Implemented in concrete types.
-  virtual ExpressionValue evaluate(RuleContext &ctx);
+  virtual ExpressionValue eval(RuleContext &ctx);
 };
 
 
@@ -296,6 +305,24 @@ private:
 
 
 // Inlined implementations
+
+inline ExpressionRef::ExpressionRef(ExpressionValue constant_)
+    : constant(constant_) {
+}
+
+inline ExpressionValue ExpressionRef::eval(RuleContext &ctx) {
+  if (maybeExpression) {
+    return maybeExpression->eval(ctx);
+  } else {
+    return constant;
+  }
+}
+
+template<typename T>
+T ExpressionRef::eval(RuleContext &ctx) {
+  // TODO(nikki): Make this actually have the fallback behavior when we have more value types
+  return eval(ctx).as<T>();
+}
 
 inline Scene &RuleContext::getScene() const {
   return *scene;
@@ -362,16 +389,7 @@ inline void RulesBehavior::schedule(RuleContext ctx, double performTime) {
   }
 }
 
-template<typename T>
-inline T ExpressionUtils::eval(ExpressionRef expr, RuleContext &ctx, T def) {
-  if (expr) {
-    return expr->evaluate(ctx).as<T>(def);
-  } else {
-    return def;
-  }
-}
-
-inline bool BaseResponse::evaluate(RuleContext &ctx) {
+inline bool BaseResponse::eval(RuleContext &ctx) {
   return false;
 }
 
@@ -390,8 +408,8 @@ inline void BaseResponse::linearize(ResponseRef &target, ResponseRef continuatio
 inline void BaseResponse::run(RuleContext &ctx) {
 }
 
-inline ExpressionValue BaseExpression::evaluate(RuleContext &ctx) {
-  return ExpressionValue(0);
+inline ExpressionValue BaseExpression::eval(RuleContext &ctx) {
+  return 0;
 }
 
 template<typename T>
@@ -453,7 +471,7 @@ RuleRegistration<T>::RuleRegistration(const char *name, int behaviorId) {
                     } else if constexpr (std::is_same_v<ExpressionRef,
                                              std::remove_reference_t<decltype(prop())>>) {
                       // Child expression
-                      prop() = rulesBehavior.readExpression(reader);
+                      rulesBehavior.readExpression(prop(), reader);
                     } else {
                       // Regular prop
                       reader.read(prop());
@@ -482,9 +500,10 @@ RuleRegistration<T>::RuleRegistration(const char *name) {
     // This is an expression type
     RulesBehavior::expressionLoaders.push_back({
         entt::hashed_string(name),
-        [](RulesBehavior &rulesBehavior, Reader &reader) -> ExpressionRef {
+        [](ExpressionRef &expr, RulesBehavior &rulesBehavior, Reader &reader) {
           // Initialize a new expression, read params and return
           auto expression = (T *)rulesBehavior.pool.Malloc(sizeof(T));
+          expr.maybeExpression = expression;
           new (expression) T();
           rulesBehavior.expressions.emplace_back(expression);
           reader.obj("params", [&]() {
@@ -500,7 +519,7 @@ RuleRegistration<T>::RuleRegistration(const char *name) {
                     if constexpr (std::is_same_v<ExpressionRef,
                                       std::remove_reference_t<decltype(prop())>>) {
                       // Child expression
-                      prop() = rulesBehavior.readExpression(reader);
+                      rulesBehavior.readExpression(prop(), reader);
                     } else {
                       // Regular prop
                       reader.read(prop());
@@ -510,7 +529,6 @@ RuleRegistration<T>::RuleRegistration(const char *name) {
               });
             }
           });
-          return expression;
         },
     });
   }

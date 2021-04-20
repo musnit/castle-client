@@ -7,11 +7,11 @@ struct AddExpression : BaseExpression {
   inline static const RuleRegistration<AddExpression> registration { "+" };
 
   struct Params {
-    PROP(ExpressionRef, lhs); // = 0;
-    PROP(ExpressionRef, rhs); // = 0;
+    PROP(ExpressionRef, lhs);
+    PROP(ExpressionRef, rhs);
   } params;
 
-  ExpressionValue evaluate(RuleContext &ctx) override {
-    return ExpressionValue(eval<double>(params.lhs(), ctx) + eval<double>(params.rhs(), ctx));
+  ExpressionValue eval(RuleContext &ctx) override {
+    return params.lhs().eval<double>(ctx) + params.rhs().eval<double>(ctx);
   }
 };

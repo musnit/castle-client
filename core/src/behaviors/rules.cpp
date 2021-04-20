@@ -32,12 +32,12 @@ struct CreateResponse : BaseResponse {
   struct Params {
     PROP(std::string, entryId);
     PROP(std::string, coordinateSystem) = "relative position";
-    PROP(ExpressionRef, xOffset); // = 0;
-    PROP(ExpressionRef, yOffset); // = 0;
-    PROP(ExpressionRef, xAbsolute); // = 0;
-    PROP(ExpressionRef, yAbsolute); // = 0;
-    PROP(ExpressionRef, angle); // = 0;
-    PROP(ExpressionRef, distance); // = 0;
+    PROP(ExpressionRef, xOffset) = 0;
+    PROP(ExpressionRef, yOffset) = 0;
+    PROP(ExpressionRef, xAbsolute) = 0;
+    PROP(ExpressionRef, yAbsolute) = 0;
+    PROP(ExpressionRef, angle) = 0;
+    PROP(ExpressionRef, distance) = 0;
     PROP(std::string, depth) = "in front of all actors";
   } params;
 
@@ -73,19 +73,19 @@ struct CreateResponse : BaseResponse {
         }
         if (coordinateSystem[9] == 'p') { // Whether has "position" or "angle" in the middle
           // Relative position
-          auto xOffset = eval<float>(params.xOffset(), ctx);
-          auto yOffset = eval<float>(params.yOffset(), ctx);
+          auto xOffset = params.xOffset().eval<float>(ctx);
+          auto yOffset = params.yOffset().eval<float>(ctx);
           newPos = creatorPos + b2Vec2(xOffset, yOffset);
         } else {
           // Relative angle and distance
-          auto angle = eval<float>(params.angle(), ctx) + creatorAngle;
-          auto distance = eval<float>(params.distance(), ctx);
+          auto angle = params.angle().eval<float>(ctx) + creatorAngle;
+          auto distance = params.distance().eval<float>(ctx);
           newPos = creatorPos + distance * b2Vec2(std::cos(angle), std::sin(angle));
         }
       } else {
         // Absolute
-        auto xAbsolute = eval<float>(params.xAbsolute(), ctx);
-        auto yAbsolute = eval<float>(params.yAbsolute(), ctx);
+        auto xAbsolute = params.xAbsolute().eval<float>(ctx);
+        auto yAbsolute = params.yAbsolute().eval<float>(ctx);
         newPos = { xAbsolute, yAbsolute };
       }
       newBody->SetTransform(newPos, newBody->GetAngle());
@@ -102,9 +102,9 @@ struct IfResponse : BaseResponse {
   inline static const RuleRegistration<IfResponse> registration { "if", 16 };
 
   struct Params {
-    PROP(ResponseRef, condition);
-    PROP(ResponseRef, then);
-    PROP_NAMED("else", ResponseRef, else_);
+    PROP(ResponseRef, condition) = nullptr;
+    PROP(ResponseRef, then) = nullptr;
+    PROP_NAMED("else", ResponseRef, else_) = nullptr;
   } params;
 
   void linearize(ResponseRef continuation) override {
@@ -117,7 +117,7 @@ struct IfResponse : BaseResponse {
 
   void run(RuleContext &ctx) override {
     // Default to 'then' branch on non-existent condition
-    if (auto condition = params.condition(); !condition || condition->evaluate(ctx)) {
+    if (auto condition = params.condition(); !condition || condition->eval(ctx)) {
       ctx.setNext(params.then());
     } else {
       ctx.setNext(params.else_());
@@ -129,8 +129,8 @@ struct RepeatResponse : BaseResponse {
   inline static const RuleRegistration<RepeatResponse> registration { "repeat", 16 };
 
   struct Params {
-    PROP(ExpressionRef, count); // = 3;
-    PROP(ResponseRef, body);
+    PROP(ExpressionRef, count) = 3;
+    PROP(ResponseRef, body) = nullptr;
   } params;
 
   void linearize(ResponseRef continuation) override {
@@ -157,7 +157,7 @@ struct RepeatResponse : BaseResponse {
     }
 
     // Not in progress -- add ourselves to repeat stack
-    if (auto count = eval<int>(params.count(), ctx, 3); count > 0) {
+    if (auto count = params.count().eval<int>(ctx); count > 0) {
       // We're about to do one repetition right away, so save `count - 1` to the stack
       ctx.repeatStack.push_back({ this, count - 1 });
       ctx.setNext(params.body());
@@ -173,7 +173,7 @@ struct InfiniteRepeatResponse : BaseResponse {
 
   struct Params {
     PROP(double, interval) = 1;
-    PROP(ResponseRef, body);
+    PROP(ResponseRef, body) = nullptr;
   } params;
 
   void linearize(ResponseRef continuation) override {
@@ -229,14 +229,14 @@ struct WaitResponse : BaseResponse {
   inline static const RuleRegistration<WaitResponse> registration { "wait", 16 };
 
   struct Params {
-    PROP(ExpressionRef, duration); // = 1;
+    PROP(ExpressionRef, duration) = 1;
   } params;
 
   void run(RuleContext &ctx) override {
     if (next) {
       auto &scene = ctx.getScene();
       auto &rulesBehavior = scene.getBehaviors().byType<RulesBehavior>();
-      auto duration = eval<double>(params.duration(), ctx, 1);
+      auto duration = params.duration().eval<double>(ctx);
       rulesBehavior.schedule(ctx.suspend(), scene.getPerformTime() + duration);
     }
   }
@@ -251,11 +251,11 @@ struct CoinFlipResponse : BaseResponse {
   inline static const RuleRegistration<CoinFlipResponse> registration { "coin flip", 16 };
 
   struct Params {
-    PROP(ExpressionRef, probability); // = 0.5;
+    PROP(ExpressionRef, probability) = 0.5;
   } params;
 
-  bool evaluate(RuleContext &ctx) override {
-    auto probability = eval<double>(params.probability(), ctx, 0.5);
+  bool eval(RuleContext &ctx) override {
+    auto probability = params.probability().eval<double>(ctx);
     return ctx.getScene().getRNG().random() < probability;
   }
 };
@@ -297,8 +297,8 @@ struct NumberExpression : BaseExpression {
     PROP(double, value) = 0;
   } params;
 
-  ExpressionValue evaluate(RuleContext &ctx) override {
-    return ExpressionValue(params.value());
+  ExpressionValue eval(RuleContext &ctx) override {
+    return params.value();
   }
 };
 
@@ -389,27 +389,21 @@ ResponseRef RulesBehavior::readResponse(Reader &reader) {
   return nullptr;
 }
 
-ExpressionRef RulesBehavior::readExpression(Reader &reader) {
+void RulesBehavior::readExpression(ExpressionRef &expr, Reader &reader) {
   if (auto value = reader.num()) {
     // Plain number value
-    // TODO(nikki): Optimize `ExpressionRef` to hold such number values inline
-    auto expression = (NumberExpression *)pool.Malloc(sizeof(NumberExpression));
-    new (expression) NumberExpression();
-    expressions.emplace_back(expression);
-    expression->params.value() = *value;
-    return expression;
+    expr.constant = *value;
   } else {
     // Nested expression -- find loader by type
     if (auto maybeName = reader.str("expressionType")) {
       auto nameHash = entt::hashed_string(*maybeName).value();
       for (auto &loader : expressionLoaders) {
         if (nameHash == loader.nameHs.value() && !std::strcmp(*maybeName, loader.nameHs.data())) {
-          return loader.read(*this, reader);
+          loader.read(expr, *this, reader);
         }
       }
       Debug::log("RulesBehavior: unsupported expression type '{}'", *maybeName);
     }
-    return nullptr;
   }
 }
 
