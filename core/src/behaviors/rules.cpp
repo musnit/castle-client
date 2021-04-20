@@ -32,12 +32,12 @@ struct CreateResponse : BaseResponse {
   struct Params {
     PROP(std::string, entryId);
     PROP(std::string, coordinateSystem) = "relative position";
-    PROP(float, xOffset) = 0;
-    PROP(float, yOffset) = 0;
-    PROP(float, xAbsolute) = 0;
-    PROP(float, yAbsolute) = 0;
-    PROP(float, angle) = 0;
-    PROP(float, distance) = 0;
+    PROP(ExpressionRef, xOffset); // = 0;
+    PROP(ExpressionRef, yOffset); // = 0;
+    PROP(ExpressionRef, xAbsolute); // = 0;
+    PROP(ExpressionRef, yAbsolute); // = 0;
+    PROP(ExpressionRef, angle); // = 0;
+    PROP(ExpressionRef, distance); // = 0;
     PROP(std::string, depth) = "in front of all actors";
   } params;
 
@@ -73,15 +73,20 @@ struct CreateResponse : BaseResponse {
         }
         if (coordinateSystem[9] == 'p') { // Whether has "position" or "angle" in the middle
           // Relative position
-          newPos = creatorPos + b2Vec2(params.xOffset(), params.yOffset());
+          auto xOffset = eval<double>(params.xOffset(), ctx);
+          auto yOffset = eval<double>(params.yOffset(), ctx);
+          newPos = creatorPos + b2Vec2(xOffset, yOffset);
         } else {
           // Relative angle and distance
-          auto angle = params.angle() + creatorAngle;
-          newPos = creatorPos + params.distance() * b2Vec2(std::cos(angle), std::sin(angle));
+          auto angle = float(eval<double>(params.angle(), ctx) + creatorAngle);
+          auto distance = float(eval<double>(params.distance(), ctx));
+          newPos = creatorPos + distance * b2Vec2(std::cos(angle), std::sin(angle));
         }
       } else {
         // Absolute
-        newPos = { params.xAbsolute(), params.yAbsolute() };
+        auto xAbsolute = float(eval<double>(params.xAbsolute(), ctx));
+        auto yAbsolute = float(eval<double>(params.yAbsolute(), ctx));
+        newPos = { xAbsolute, yAbsolute };
       }
       newBody->SetTransform(newPos, newBody->GetAngle());
     }
@@ -97,9 +102,9 @@ struct IfResponse : BaseResponse {
   inline static const RuleRegistration<IfResponse> registration { "if", 16 };
 
   struct Params {
-    PROP(ResponseRef, condition) = nullptr;
-    PROP(ResponseRef, then) = nullptr;
-    PROP_NAMED("else", ResponseRef, else_) = nullptr;
+    PROP(ResponseRef, condition);
+    PROP(ResponseRef, then);
+    PROP_NAMED("else", ResponseRef, else_);
   } params;
 
   void linearize(ResponseRef continuation) override {
@@ -112,7 +117,7 @@ struct IfResponse : BaseResponse {
 
   void run(RuleContext &ctx) override {
     // Default to 'then' branch on non-existent condition
-    if (auto condition = params.condition(); !condition || condition->eval(ctx)) {
+    if (auto condition = params.condition(); !condition || condition->evalLegacy(ctx)) {
       ctx.setNext(params.then());
     } else {
       ctx.setNext(params.else_());
@@ -125,7 +130,7 @@ struct RepeatResponse : BaseResponse {
 
   struct Params {
     PROP(int, count) = 3;
-    PROP(ResponseRef, body) = nullptr;
+    PROP(ResponseRef, body);
   } params;
 
   void linearize(ResponseRef continuation) override {
@@ -168,7 +173,7 @@ struct InfiniteRepeatResponse : BaseResponse {
 
   struct Params {
     PROP(double, interval) = 1;
-    PROP(ResponseRef, body) = nullptr;
+    PROP(ResponseRef, body);
   } params;
 
   void linearize(ResponseRef continuation) override {
@@ -224,14 +229,15 @@ struct WaitResponse : BaseResponse {
   inline static const RuleRegistration<WaitResponse> registration { "wait", 16 };
 
   struct Params {
-    PROP(double, duration) = 1;
+    PROP(ExpressionRef, duration); // = 1;
   } params;
 
   void run(RuleContext &ctx) override {
     if (next) {
       auto &scene = ctx.getScene();
       auto &rulesBehavior = scene.getBehaviors().byType<RulesBehavior>();
-      rulesBehavior.schedule(ctx.suspend(), scene.getPerformTime() + params.duration());
+      auto duration = eval<double>(params.duration(), ctx, 1);
+      rulesBehavior.schedule(ctx.suspend(), scene.getPerformTime() + duration);
     }
   }
 };
@@ -245,11 +251,12 @@ struct CoinFlipResponse : BaseResponse {
   inline static const RuleRegistration<CoinFlipResponse> registration { "coin flip", 16 };
 
   struct Params {
-    PROP(double, probability) = 0.5;
+    PROP(ExpressionRef, probability); // = 0.5;
   } params;
 
-  bool eval(RuleContext &ctx) override {
-    return ctx.getScene().getRNG().random() < params.probability();
+  bool evalLegacy(RuleContext &ctx) override {
+    auto probability = eval<double>(params.probability(), ctx, 0.5);
+    return ctx.getScene().getRNG().random() < probability;
   }
 };
 
@@ -273,6 +280,23 @@ struct NoteResponse : BaseResponse {
 #ifdef DEBUG_LOG_NOTE_RESPONSE
     Debug::log("actor {} note: {}", ctx.actorId, params.note());
 #endif
+  }
+};
+
+
+//
+// Number expression
+//
+
+struct NumberExpression : BaseExpression {
+  inline static const RuleRegistration<NumberExpression> registration { "number" };
+
+  struct Params {
+    PROP(double, value) = 0;
+  } params;
+
+  ExpressionValue eval(RuleContext &ctx) override {
+    return ExpressionValue(params.value());
   }
 };
 
@@ -361,6 +385,31 @@ ResponseRef RulesBehavior::readResponse(Reader &reader) {
     Debug::log("RulesBehavior: unsupported response type '{}'", *maybeName);
   }
   return nullptr;
+}
+
+ExpressionRef RulesBehavior::readExpression(Reader &reader) {
+  if (auto value = reader.num()) {
+    // Plain number value
+    // TODO(nikki): Optimize `ExpressionRef` to such number values inline
+    auto expression = (NumberExpression *)pool.Malloc(sizeof(NumberExpression));
+    new (expression) NumberExpression();
+    expressions.emplace_back(expression);
+    expression->params.value() = *value;
+    return expression;
+  } else {
+    Debug::log("not a number!");
+    // Nested expression -- find loader by type
+    if (auto maybeName = reader.str("expressionType")) {
+      auto nameHash = entt::hashed_string(*maybeName).value();
+      for (auto &loader : expressionLoaders) {
+        if (nameHash == loader.nameHs.value() && !std::strcmp(*maybeName, loader.nameHs.data())) {
+          return loader.read(*this, reader);
+        }
+      }
+      Debug::log("RulesBehavior: unsupported expression type '{}'", *maybeName);
+    }
+    return nullptr;
+  }
 }
 
 

@@ -4,15 +4,23 @@
 
 #include "behaviors/base.h"
 #include "props.h"
+#include "expressions/value.h"
 
 
 struct BaseResponse; // Forward declarations
+struct BaseExpression;
 
 // Type for referencing other responses from responses
 using ResponseRef = BaseResponse *;
 template<>
 constexpr auto Archive::skipProp<ResponseRef> = true; // Don't auto-read `ResponseRef`s, we'll do
                                                       // that with special logic
+
+// Type for referencing expressions from responses
+using ExpressionRef = BaseExpression *;
+template<>
+constexpr auto Archive::skipProp<ExpressionRef> = true; // Don't auto-read `ExpressionRef`s, we'll
+                                                        // do that with special logic
 
 
 //
@@ -115,6 +123,7 @@ private:
   // without destructing objects.
   json::MemoryPoolAllocator<json::CrtAllocator> pool;
   std::vector<ResponseRef> responses;
+  std::vector<ExpressionRef> expressions;
 
   // Map from JSON object pointer to loaded responses. Allows us to reuse response instances loaded
   // from the same JSON instance -- which happens every time we create an actor that inherits rules
@@ -155,7 +164,14 @@ private:
   };
   inline static std::vector<ResponseLoader> responseLoaders;
 
+  struct ExpressionLoader {
+    entt::hashed_string nameHs;
+    ExpressionRef (*read)(RulesBehavior &rulesBehavior, Reader &reader) = nullptr;
+  };
+  inline static std::vector<ExpressionLoader> expressionLoaders;
+
   ResponseRef readResponse(Reader &reader);
+  ExpressionRef readExpression(Reader &reader);
 };
 
 
@@ -191,12 +207,17 @@ struct TriggerComponent {
 
 struct BaseTrigger {};
 
-struct BaseResponse {
+struct ExpressionUtils {
+  template<typename T>
+  static T eval(ExpressionRef expr, RuleContext &ctx, T def = {});
+};
+
+struct BaseResponse : ExpressionUtils {
   virtual ~BaseResponse() = default;
 
   // Evaluate as a boolean expression. Only exists to account for legacy responses with
   // `returnType = "boolean"` -- those should eventually just become actual expressions.
-  virtual bool eval(RuleContext &ctx);
+  virtual bool evalLegacy(RuleContext &ctx);
 
 
 protected:
@@ -218,6 +239,17 @@ private:
   virtual void run(RuleContext &ctx);
 };
 
+struct BaseExpression : ExpressionUtils {
+  virtual ~BaseExpression() = default;
+
+
+private:
+  friend struct ExpressionUtils;
+
+  // Evaluate the expression. Implemented in concrete types.
+  virtual ExpressionValue eval(RuleContext &ctx);
+};
+
 
 //
 // Registration
@@ -230,6 +262,7 @@ struct RuleRegistration {
   // starts.
 
   RuleRegistration(const char *name, int behaviorId);
+  explicit RuleRegistration(const char *name);
 
 private:
   inline static bool registered = false; // To catch erroneous double-registration of the same type
@@ -303,7 +336,16 @@ inline void RulesBehavior::schedule(RuleContext ctx, double performTime) {
   }
 }
 
-inline bool BaseResponse::eval(RuleContext &ctx) {
+template<typename T>
+inline T ExpressionUtils::eval(ExpressionRef expr, RuleContext &ctx, T def) {
+  if (expr) {
+    return expr->eval(ctx).as<T>(def);
+  } else {
+    return def;
+  }
+}
+
+inline bool BaseResponse::evalLegacy(RuleContext &ctx) {
   return false;
 }
 
@@ -320,6 +362,10 @@ inline void BaseResponse::linearize(ResponseRef &target, ResponseRef continuatio
 }
 
 inline void BaseResponse::run(RuleContext &ctx) {
+}
+
+inline ExpressionValue BaseExpression::eval(RuleContext &ctx) {
+  return ExpressionValue(0);
 }
 
 template<typename T>
@@ -365,25 +411,80 @@ RuleRegistration<T>::RuleRegistration(const char *name, int behaviorId) {
           new (response) T();
           rulesBehavior.responses.emplace_back(response);
           reader.obj("params", [&]() {
-            // Reflected props
+            // Reflect on `params`
             if constexpr (Props::hasProps<decltype(response->params)>) {
-              reader.read(response->params);
-            }
-
-            // Child responses
-            reader.obj("nextResponse", [&]() {
-              response->next = rulesBehavior.readResponse(reader);
-            });
-            Props::forEach(response->params, [&](auto &prop) {
-              if constexpr (std::is_same_v<ResponseRef,
-                                std::remove_reference_t<decltype(prop())>>) {
-                reader.obj(std::remove_reference_t<decltype(prop)>::name().data(), [&]() {
-                  prop() = rulesBehavior.readResponse(reader);
+              reader.each([&](const char *key) {
+                const auto keyHash = entt::hashed_string(key).value();
+                Props::forEach(response->params, [&](auto &prop) {
+                  using Prop = std::remove_reference_t<decltype(prop)>;
+                  constexpr auto propNameHash = Prop::nameHash(); // Ensure compile-time constants
+                  constexpr auto propName = Prop::name();
+                  if (keyHash == propNameHash && key == propName) {
+                    if constexpr (std::is_same_v<ResponseRef,
+                                      std::remove_reference_t<decltype(prop())>>) {
+                      // Child response
+                      prop() = rulesBehavior.readResponse(reader);
+                    } else if constexpr (std::is_same_v<ExpressionRef,
+                                             std::remove_reference_t<decltype(prop())>>) {
+                      // Child expression
+                      prop() = rulesBehavior.readExpression(reader);
+                    } else {
+                      // Regular prop
+                      reader.read(prop());
+                    }
+                  }
                 });
-              }
-            });
+              });
+
+              // Next response
+              reader.obj("nextResponse", [&]() {
+                response->next = rulesBehavior.readResponse(reader);
+              });
+            }
           });
           return response;
+        },
+    });
+  }
+}
+
+template<typename T>
+RuleRegistration<T>::RuleRegistration(const char *name) {
+  static_assert(std::is_base_of_v<BaseExpression, T>,
+      "RuleRegistration: type must derive from `BaseExpression`");
+  if constexpr (std::is_base_of_v<BaseExpression, T>) {
+    // This is an expression type
+    RulesBehavior::expressionLoaders.push_back({
+        entt::hashed_string(name),
+        [](RulesBehavior &rulesBehavior, Reader &reader) -> ExpressionRef {
+          // Initialize a new expression, read params and return
+          auto expression = (T *)rulesBehavior.pool.Malloc(sizeof(T));
+          new (expression) T();
+          rulesBehavior.expressions.emplace_back(expression);
+          reader.obj("params", [&]() {
+            // Reflect on `params`
+            if constexpr (Props::hasProps<decltype(expression->params)>) {
+              reader.each([&](const char *key) {
+                const auto keyHash = entt::hashed_string(key).value();
+                Props::forEach(expression->params, [&](auto &prop) {
+                  using Prop = std::remove_reference_t<decltype(prop)>;
+                  constexpr auto propNameHash = Prop::nameHash(); // Ensure compile-time constants
+                  constexpr auto propName = Prop::name();
+                  if (keyHash == propNameHash && key == propName) {
+                    if constexpr (std::is_same_v<ExpressionRef,
+                                      std::remove_reference_t<decltype(prop())>>) {
+                      // Child expression
+                      prop() = rulesBehavior.readExpression(reader);
+                    } else {
+                      // Regular prop
+                      reader.read(prop());
+                    }
+                  }
+                });
+              });
+            }
+          });
+          return expression;
         },
     });
   }
