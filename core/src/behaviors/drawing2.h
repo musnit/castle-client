@@ -7,11 +7,8 @@
 
 
 struct Drawing2Component : BaseComponent {
-  struct Props {
-    PROP(std::string, drawData) = "";
-  } props;
-
-  std::unique_ptr<love::DrawData> drawData;
+  std::string hash;
+  std::shared_ptr<love::DrawData> drawData;
 };
 
 class Drawing2Behavior : public BaseBehavior<Drawing2Behavior, Drawing2Component> {
@@ -26,4 +23,6 @@ public:
 
 private:
   Lv &lv { Lv::getInstance() };
+
+  std::unordered_map<std::string, std::shared_ptr<love::DrawData>> drawDataCache;
 };

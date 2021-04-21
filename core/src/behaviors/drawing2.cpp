@@ -9,9 +9,15 @@
 
 void Drawing2Behavior::handleReadComponent(
     ActorId actorId, Drawing2Component &component, Reader &reader) {
-  reader.obj("drawData", [&]() {
-    component.drawData = std::make_unique<love::DrawData>(reader);
-  });
+  component.hash = reader.str("hash", "");
+
+  if (auto found = drawDataCache.find(component.hash); found == drawDataCache.end()) {
+    reader.obj("drawData", [&]() {
+      drawDataCache.insert_or_assign(component.hash, std::make_shared<love::DrawData>(reader));
+    });
+  }
+
+  component.drawData = drawDataCache.find(component.hash)->second;
 }
 
 
