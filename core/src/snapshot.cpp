@@ -34,7 +34,8 @@ std::unique_ptr<Scene> Snapshot::toScene() {
   auto scene = std::make_unique<Scene>();
   auto &library = scene->getLibrary();
 
-  archive.read([&](Archive::Reader &reader) {
+  // Common scene reading code used below
+  const auto readScene = [&](Archive::Reader &reader) {
     // Library
     reader.each("library", [&]() {
       library.readEntry(reader);
@@ -61,6 +62,26 @@ std::unique_ptr<Scene> Snapshot::toScene() {
     reader.obj("sceneProperties", [&]() {
       reader.read(scene->props);
     });
+  };
+
+  archive.read([&](Archive::Reader &reader) {
+    if (reader.has("data")) {
+      // GraphQL response
+      reader.obj("data", [&]() {
+        reader.obj("deck", [&]() {
+          reader.obj("initialCard", [&]() {
+            reader.obj("sceneData", [&]() {
+              reader.obj("snapshot", [&]() {
+                readScene(reader);
+              });
+            });
+          });
+        });
+      });
+    } else {
+      // Direct scene data
+      readScene(reader);
+    }
   });
 
   return scene;

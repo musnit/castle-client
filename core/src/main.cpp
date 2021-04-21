@@ -26,12 +26,14 @@ void loop(F &&frame) {
 int main(int argc, char *argv[]) {
   Engine eng;
 
-  auto scenePath = Platform::getAssetPath(argc > 1 ? argv[1] : "test-watch.json");
-  eng.loadFromFile(scenePath.c_str());
+  auto scenePath = Platform::getAssetPath(argc > 1 ? argv[1] : "test-rules-1.json");
+  if (!eng.hasInitialDeck()) {
+    eng.loadSceneFromFile(scenePath.c_str());
+  }
 
   loop([&]() {
 #ifndef __EMSCRIPTEN__
-    // Reload scene if it changed
+    // Reload scene from file if it changed
     {
       static const auto getLastWriteTime = [&]() {
         auto ftime = std::filesystem::last_write_time(scenePath);
@@ -45,7 +47,7 @@ int main(int argc, char *argv[]) {
         auto newWriteTime = getLastWriteTime();
         if (newWriteTime != writeTime) {
           writeTime = newWriteTime;
-          eng.loadFromFile(scenePath.c_str());
+          eng.loadSceneFromFile(scenePath.c_str());
         }
       }
     }

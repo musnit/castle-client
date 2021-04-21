@@ -24,7 +24,8 @@ public:
   // Run one frame of the main loop. Return `false` if we should quit.
   bool frame();
 
-  void loadFromFile(const char *path);
+  bool hasInitialDeck() const;
+  void loadSceneFromFile(const char *path);
 
 
 private:
@@ -49,6 +50,10 @@ private:
 #endif
 
   std::unique_ptr<Scene> scene;
+
+
+  void tryLoadInitialDeck();
+
 
   void update(double dt);
 

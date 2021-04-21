@@ -16,7 +16,7 @@
 #define JS_DEFINE(retType, name, ...)                                                              \
   template<typename... Args>                                                                       \
   inline static retType name(Args &&...args) {                                                     \
-    return retType();                                                                              \
+    return {};                                                                                     \
   }
 #endif
 JS_DEFINE(int, JS_getCanvasWidth, (),
@@ -24,6 +24,16 @@ JS_DEFINE(int, JS_getCanvasWidth, (),
 JS_DEFINE(int, JS_getCanvasHeight, (),
     { return document.querySelector("#canvas").getBoundingClientRect().height; });
 JS_DEFINE(int, JS_documentHasFocus, (), { return document.hasFocus() ? 1 : 0; });
+JS_DEFINE(int, JS_hasInitialDeck, (), { return Castle.hasInitialDeck ? 1 : 0; });
+JS_DEFINE(char *, JS_getInitialDeckGraphQlJson, (), {
+  if (Castle.initialDeckGraphQlJson) {
+    const result = Castle.initialDeckGraphQlJson;
+    delete Castle.initialDeckGraphQlJson; // Don't need to keep this data around in JS
+    return allocate(intArrayFromString(result), ALLOC_NORMAL);
+  } else {
+    return 0;
+  };
+});
 
 
 //
@@ -58,8 +68,30 @@ Engine::Engine() {
   lv.timer.step();
 }
 
-void Engine::loadFromFile(const char *path) {
+
+//
+// Deck / scene management
+//
+
+bool Engine::hasInitialDeck() const {
+#ifdef __EMSCRIPTEN__
+  return JS_hasInitialDeck();
+#else
+  return false;
+#endif
+}
+
+void Engine::loadSceneFromFile(const char *path) {
   scene = Snapshot::fromFile(path).toScene();
+}
+
+void Engine::tryLoadInitialDeck() {
+#ifdef __EMSCRIPTEN__
+  if (auto maybeGraphQlJson = JS_getInitialDeckGraphQlJson()) {
+    scene = Snapshot::fromJson(maybeGraphQlJson).toScene();
+    free(maybeGraphQlJson);
+  }
+#endif
 }
 
 
@@ -136,6 +168,12 @@ bool Engine::frame() {
 //
 
 void Engine::update(double dt) {
+  // If no scene yet, try loading the initial deck
+  if (!scene) {
+    tryLoadInitialDeck();
+  }
+
+  // Update scene
   if (scene) {
     Debug::display("fps: {}", lv.timer.getFPS());
     Debug::display("actors: {}", scene->getEntityRegistry().alive());
