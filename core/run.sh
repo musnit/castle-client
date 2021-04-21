@@ -87,6 +87,7 @@ case "$1" in
             --leak-check=full \
             -s \
             ./build/release/castle-core $2
+          cat build/valgrind.log
         fi
         ;;
       win)
