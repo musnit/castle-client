@@ -12,22 +12,20 @@
 
 #include "common/Module.h"
 
-namespace love
-{
-namespace ghost
-{
+namespace love {
+namespace ghost {
 
-class Ghost : public Module
-{
-public:
-	static love::Type type;
-	
-	virtual ModuleType getModuleType() const { return M_GHOST; }
-	
-	/// @copydoc love::Module::getName
-	const char *getName() const;
-	
-};
+  class Ghost : public Module {
+  public:
+    static love::Type type;
+
+    virtual ModuleType getModuleType() const {
+      return M_GHOST;
+    }
+
+    /// @copydoc love::Module::getName
+    const char *getName() const;
+  };
 
 
 } // ghost

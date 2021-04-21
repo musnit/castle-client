@@ -7,17 +7,14 @@
 
 #include "Ghost.hpp"
 
-namespace love
-{
-namespace ghost
-{
+namespace love {
+namespace ghost {
 
-love::Type Ghost::type("Ghost", &Object::type);
+  love::Type Ghost::type("Ghost", &Object::type);
 
-const char *Ghost::getName() const
-{
-	return "love.ghost";
-}
+  const char *Ghost::getName() const {
+    return "love.ghost";
+  }
 
 
 } // ghost

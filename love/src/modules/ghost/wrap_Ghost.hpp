@@ -12,12 +12,10 @@
 #include "common/runtime.h"
 #include "Ghost.hpp"
 
-namespace love
-{
-namespace ghost
-{
+namespace love {
+namespace ghost {
 
-extern "C" LOVE_EXPORT int luaopen_love_ghost(lua_State *L);
+  extern "C" LOVE_EXPORT int luaopen_love_ghost(lua_State *L);
 
 } // ghost
 } // love
