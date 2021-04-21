@@ -34,7 +34,7 @@ inline ExpressionValue::ExpressionValue(double value_)
 }
 
 template<typename T>
-bool is() {
+bool ExpressionValue::is() {
   if constexpr (std::is_same_v<double, T> || std::is_same_v<float, T> || std::is_same_v<int, T>) {
     return true;
   } else {

@@ -320,8 +320,12 @@ inline ExpressionValue ExpressionRef::eval(RuleContext &ctx) {
 
 template<typename T>
 T ExpressionRef::eval(RuleContext &ctx) {
-  // TODO(nikki): Make this actually have the fallback behavior when we have more value types
-  return eval(ctx).as<T>();
+  if (maybeExpression) {
+    if (auto result = maybeExpression->eval(ctx); result.is<T>()) {
+      return result.as<T>();
+    }
+  }
+  return constant.as<T>();
 }
 
 inline Scene &RuleContext::getScene() const {
