@@ -4,11 +4,15 @@
 
 
 // Developer settings. You can add an 'src/dev_settings.h' file with your own local overrides for
-// these values -- that file is '.gitignore'd and will not affect upstream.
+// these values -- that file is '.gitignore'd and will not affect upstream. An update to the
+// modification time of 'main.cpp' (by re-saving it) may be needed to force the build system to pick
+// up the change.
 #if __has_include("dev_settings.h")
 #include "dev_settings.h"
 #else
-#define DEV_DEFAULT_SCENE_FILENAME "test-watch.json"
+namespace DevSettings {
+constexpr auto defaultSceneFilename = "test-watch.json";
+};
 #endif
 
 
@@ -34,7 +38,7 @@ void loop(F &&frame) {
 int main(int argc, char *argv[]) {
   Engine eng;
 
-  auto scenePath = Platform::getAssetPath(argc > 1 ? argv[1] : DEV_DEFAULT_SCENE_FILENAME);
+  auto scenePath = Platform::getAssetPath(argc > 1 ? argv[1] : DevSettings::defaultSceneFilename);
   if (!eng.hasInitialDeck()) {
     eng.loadSceneFromFile(scenePath.c_str());
   }
