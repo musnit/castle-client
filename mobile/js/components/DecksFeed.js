@@ -4,6 +4,7 @@ import {
   BackHandler,
   FlatList,
   InteractionManager,
+  Platform,
   StyleSheet,
   View,
 } from 'react-native';
@@ -104,6 +105,35 @@ const makeCardAspectFitStyles = () => {
 
 const cardAspectFitStyles = makeCardAspectFitStyles();
 
+const useDeckCellAndroidBackHandler = Platform.select({
+  ios: () => null,
+  android: ({ isPlaying, onPressBack }) => {
+    const onHardwareBackPress = React.useCallback(() => {
+      if (isPlaying) {
+        onPressBack();
+        return true;
+      }
+      return false;
+    }, [isPlaying, onPressBack]);
+
+    // with no game loaded, use standard back handler
+    useFocusEffect(
+      React.useCallback(() => {
+        BackHandler.addEventListener('hardwareBackPress', onHardwareBackPress);
+
+        return () => BackHandler.removeEventListener('hardwareBackPress', onHardwareBackPress);
+      }, [onHardwareBackPress])
+    );
+
+    // after the game loads, it listens for keyboard events and
+    // causes react native's back button event to fail
+    return useListen({
+      eventName: 'CASTLE_SYSTEM_BACK_BUTTON',
+      handler: onHardwareBackPress,
+    });
+  },
+});
+
 // renders the current focused deck in the feed
 const CurrentDeckCell = ({
   deck,
@@ -155,37 +185,13 @@ const CurrentDeckCell = ({
     }
   }, [onRefreshFeed, deck]);
 
-  if (Constants.Android) {
-    const onHardwareBackPress = React.useCallback(() => {
-      if (isPlaying) {
-        onPressBack();
-        return true;
-      }
-      return false;
-    }, [isPlaying, onPressBack]);
-
-    // with no game loaded, use standard back handler
-    useFocusEffect(
-      React.useCallback(() => {
-        BackHandler.addEventListener('hardwareBackPress', onHardwareBackPress);
-
-        return () => BackHandler.removeEventListener('hardwareBackPress', onHardwareBackPress);
-      }, [onHardwareBackPress])
-    );
-
-    // after the game loads, it listens for keyboard events and
-    // causes react native's back button event to fail
-    useListen({
-      eventName: 'CASTLE_SYSTEM_BACK_BUTTON',
-      handler: onHardwareBackPress,
-    });
-  }
-
   // when playing, move the header and footer to the screen edges
   const playingHeaderY = playingTransition.interpolate({
     inputRange: [0, 1.01],
     outputRange: [0, -Constants.FEED_HEADER_HEIGHT],
   });
+
+  useDeckCellAndroidBackHandler({ isPlaying, onPressBack });
 
   if (!initialCard) return null;
 
@@ -262,17 +268,6 @@ const SkeletonFeed = () => {
     </View>
   );
 };
-
-// TODO: BEN: taken from PlayDeckScreen
-/*
-      
-  // reset index into decks if decks changes
-  React.useEffect(() => setDeckIndex(Math.min(initialDeckIndex, decks.length - 1)), [
-    decks?.length,
-    initialDeckIndex,
-  ]);
-
-*/
 
 // NOTE: onRefresh is currently ignored on Android (see further note below)
 // otherwise, FlatList props work here.
