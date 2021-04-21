@@ -148,6 +148,8 @@ void Scene::removeActor(ActorId actorId) {
     }
   });
   getBehaviors().forEach([&](auto &behavior) {
+    // NOTE: Must be consistent with `BaseBehavior::removeComponent` and
+    //       `BaseBehavior::disableComponent`
     if constexpr (Handlers::hasDisableComponent<decltype(behavior)>) {
       if (auto component = behavior.maybeGetComponent(actorId)) {
         behavior.handleDisableComponent(actorId, *component, true);

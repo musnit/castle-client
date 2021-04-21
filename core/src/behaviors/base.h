@@ -52,6 +52,9 @@ public:
   Component &addComponent(ActorId actorId); // Does nothing if already present
   void removeComponent(ActorId actorId); // Does nothing if not present
   bool hasComponent(ActorId actorId) const;
+
+  void enableComponent(ActorId actorId);
+  void disableComponent(ActorId actorId);
   bool hasAnyEnabledComponent() const;
 
 
@@ -145,7 +148,7 @@ Component &BaseBehavior<Derived, Component>::addComponent(ActorId actorId) {
 template<typename Derived, typename Component>
 void BaseBehavior<Derived, Component>::removeComponent(ActorId actorId) {
   if (auto component = maybeGetComponent(actorId)) {
-    // NOTE: If adding more steps here, make sure `Scene::removeActor` is in sync
+    // NOTE: Must be consistent with `BaseBehavior::disableComponent` and `Scene::removeActor`
     if constexpr (Handlers::hasDisableComponent<Derived>) {
       static_cast<Derived &>(*this).handleDisableComponent(actorId, *component, false);
     }
@@ -158,6 +161,27 @@ void BaseBehavior<Derived, Component>::removeComponent(ActorId actorId) {
 template<typename Derived, typename Component>
 bool BaseBehavior<Derived, Component>::hasComponent(ActorId actorId) const {
   return scene.hasActor(actorId) && componentView.contains(actorId);
+}
+
+template<typename Derived, typename Component>
+void BaseBehavior<Derived, Component>::enableComponent(ActorId actorId) {
+  if (auto component = maybeGetComponent(actorId); component && component->disabled) {
+    component->disabled = false;
+    if constexpr (Handlers::hasEnableComponent<Derived>) {
+      static_cast<Derived &>(*this).handleEnableComponent(actorId, *component);
+    }
+  }
+}
+
+template<typename Derived, typename Component>
+void BaseBehavior<Derived, Component>::disableComponent(ActorId actorId) {
+  if (auto component = maybeGetComponent(actorId); component && !component->disabled) {
+    // NOTE: Must be consistent with `BaseBehavior::removeComponent` and `Scene::removeActor`
+    component->disabled = true;
+    if constexpr (Handlers::hasDisableComponent<Derived>) {
+      static_cast<Derived &>(*this).handleDisableComponent(actorId, *component, false);
+    }
+  }
 }
 
 template<typename Derived, typename Component>

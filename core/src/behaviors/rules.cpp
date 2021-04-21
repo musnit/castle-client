@@ -98,6 +98,22 @@ struct CreateResponse : BaseResponse {
 // Behavior responses
 //
 
+struct EnableBehaviorResponse : BaseResponse {
+  inline static const RuleRegistration<EnableBehaviorResponse, RulesBehavior> registration {
+    "enable behavior"
+  };
+
+  struct Params {
+    PROP(int, behaviorId) = -1;
+  } params;
+
+  void run(RuleContext &ctx) override {
+    ctx.getScene().getBehaviors().byId(params.behaviorId(), [&](auto &behavior) {
+      behavior.enableComponent(ctx.actorId);
+    });
+  }
+};
+
 struct DisableBehaviorResponse : BaseResponse {
   inline static const RuleRegistration<DisableBehaviorResponse, RulesBehavior> registration {
     "disable behavior"
@@ -108,6 +124,9 @@ struct DisableBehaviorResponse : BaseResponse {
   } params;
 
   void run(RuleContext &ctx) override {
+    ctx.getScene().getBehaviors().byId(params.behaviorId(), [&](auto &behavior) {
+      behavior.disableComponent(ctx.actorId);
+    });
   }
 };
 

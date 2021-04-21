@@ -43,9 +43,14 @@ public:
   const Behavior &byType() const;
 
   template<typename F>
-  void byName(const char *name, F &&f); // If name is statically known, prefer `byType` above
+  void byName(const char *name, F &&f); // If `name` is a static constant, prefer `byType` above
   template<typename F>
   void byName(const char *name, F &&f) const;
+
+  template<typename F>
+  void byId(int behaviorId, F &&f); // If `behaviorId` is a static constant, prefer `byType` above
+  template<typename F>
+  void byId(int behaviorId, F &&f) const;
 
   template<typename F>
   void forEach(F &&f); // Expands at compile time in order below. `f` must take `(auto &)`.
@@ -130,6 +135,26 @@ void AllBehaviors::byName(const char *name, F &&f) const {
     constexpr auto behaviorName = std::remove_reference_t<decltype(behavior)>::name;
     constexpr auto behaviorNameHash = entt::hashed_string(behaviorName).value();
     if (nameHash == behaviorNameHash && !std::strcmp(name, behaviorName)) {
+      f(behavior);
+    }
+  });
+}
+
+template<typename F>
+void AllBehaviors::byId(int behaviorId, F &&f) {
+  forEach([&](auto &behavior) {
+    constexpr auto behaviorBehaviorId = std::remove_reference_t<decltype(behavior)>::behaviorId;
+    if (behaviorId == behaviorBehaviorId) {
+      f(behavior);
+    }
+  });
+}
+
+template<typename F>
+void AllBehaviors::byId(int behaviorId, F &&f) const {
+  forEach([&](auto &behavior) {
+    constexpr auto behaviorBehaviorId = std::remove_reference_t<decltype(behavior)>::behaviorId;
+    if (behaviorId == behaviorBehaviorId) {
       f(behavior);
     }
   });
