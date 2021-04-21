@@ -114,6 +114,9 @@
               }),
             });
             Castle.initialDeckGraphQlJson = await response.text();
+            //const parsed = JSON.parse(Castle.initialDeckGraphQlJson);
+            //const sceneData = parsed.data.deck.initialCard.sceneData;
+            //console.log(`loaded: ${JSON.stringify(sceneData, null, 2)}`);
           })();
         } else {
           Castle.hasInitialDeck = false;
