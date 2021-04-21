@@ -10,6 +10,7 @@ const API_HOST = 'https://api.castle.xyz';
 async function runAsync() {
   const outFilename = process.argv[3] || 'test-watch.json';
   let snapshot;
+  const id = process.argv[2];
 
   try {
     // Try as card
@@ -18,7 +19,14 @@ async function runAsync() {
       {
         operationName: null,
         variables: {},
-        query: `{\n  card(cardId: "${process.argv[2]}") {\n    sceneData\n  }\n}\n`,
+        variables: { id },
+        query: `
+          query GetCardSceneData($id: ID!) {
+            card(cardId: $id) {
+              sceneData
+            }
+          }
+        `,
       },
       {
         headers: {
@@ -34,8 +42,16 @@ async function runAsync() {
         `${API_HOST}/graphql`,
         {
           operationName: null,
-          variables: {},
-          query: `{\n  deck(deckId: "${process.argv[2]}") {\n    initialCard { sceneData }\n  }\n}\n`,
+          variables: { id },
+          query: `
+            query GetDeckInitialCardSceneData($id: ID!) {
+              deck(deckId: $id) {
+                initialCard {
+                  sceneData
+                }
+              }
+            }
+          `,
         },
         {
           headers: {
