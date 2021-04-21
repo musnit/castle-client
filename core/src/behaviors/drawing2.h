@@ -14,7 +14,8 @@ struct Drawing2Component : BaseComponent {
 class Drawing2Behavior : public BaseBehavior<Drawing2Behavior, Drawing2Component> {
 
 public:
-  static constexpr char name[] = "Drawing2";
+  static constexpr auto name = "Drawing2";
+  static constexpr auto behaviorId = 20;
 
   using BaseBehavior::BaseBehavior;
 

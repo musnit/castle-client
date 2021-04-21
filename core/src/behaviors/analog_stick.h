@@ -16,7 +16,8 @@ struct AnalogStickComponent : BaseComponent {
 
 class AnalogStickBehavior : public BaseBehavior<AnalogStickBehavior, AnalogStickComponent> {
 public:
-  static constexpr char name[] = "AnalogStick";
+  static constexpr auto name = "AnalogStick";
+  static constexpr auto behaviorId = 21;
 
   using BaseBehavior::BaseBehavior;
 

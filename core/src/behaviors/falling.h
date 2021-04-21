@@ -14,7 +14,8 @@ struct FallingComponent : BaseComponent {
 
 class FallingBehavior : public BaseBehavior<FallingBehavior, FallingComponent> {
 public:
-  static constexpr char name[] = "Falling";
+  static constexpr auto name = "Falling";
+  static constexpr auto behaviorId = 8;
 
   using BaseBehavior::BaseBehavior;
 

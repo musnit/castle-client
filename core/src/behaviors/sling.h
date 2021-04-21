@@ -14,7 +14,8 @@ struct SlingComponent : BaseComponent {
 
 class SlingBehavior : public BaseBehavior<SlingBehavior, SlingComponent> {
 public:
-  static constexpr char name[] = "Sling";
+  static constexpr auto name = "Sling";
+  static constexpr auto behaviorId = 14;
 
   using BaseBehavior::BaseBehavior;
 

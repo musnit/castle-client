@@ -17,7 +17,7 @@ class TestBehavior : public BaseBehavior<TestBehavior, TestComponent> {
   // A simple behavior used in 'tests.cpp' to make sure basic behavior functionality works
 
 public:
-  static constexpr char name[] = "Test";
+  static constexpr auto name = "Test";
 
   using BaseBehavior::BaseBehavior;
 

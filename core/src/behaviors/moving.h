@@ -17,7 +17,8 @@ struct MovingComponent : BaseComponent {
 
 class MovingBehavior : public BaseBehavior<MovingBehavior, MovingComponent> {
 public:
-  static constexpr char name[] = "Moving";
+  static constexpr auto name = "Moving";
+  static constexpr auto behaviorId = 7;
 
   using BaseBehavior::BaseBehavior;
 

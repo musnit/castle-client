@@ -14,7 +14,8 @@ struct BouncyComponent : BaseComponent {
 
 class BouncyBehavior : public BaseBehavior<BouncyBehavior, BouncyComponent> {
 public:
-  static constexpr char name[] = "Bouncy";
+  static constexpr auto name = "Bouncy";
+  static constexpr auto behaviorId = 6;
 
   using BaseBehavior::BaseBehavior;
 

@@ -46,7 +46,8 @@ struct BodyComponent : BaseComponent {
 
 class BodyBehavior : public BaseBehavior<BodyBehavior, BodyComponent> {
 public:
-  static constexpr char name[] = "Body";
+  static constexpr auto name = "Body";
+  static constexpr auto behaviorId = 1;
 
   using BaseBehavior::BaseBehavior;
 

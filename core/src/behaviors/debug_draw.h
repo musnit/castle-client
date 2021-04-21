@@ -14,7 +14,7 @@ class DebugDrawBehavior : public BaseBehavior<DebugDrawBehavior, DebugDrawCompon
   // useable state.
 
 public:
-  static constexpr char name[] = "DebugDraw";
+  static constexpr auto name = "DebugDraw";
 
   using BaseBehavior::BaseBehavior;
 

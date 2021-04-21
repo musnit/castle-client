@@ -17,7 +17,8 @@ struct SlowdownComponent : BaseComponent {
 
 class SlowdownBehavior : public BaseBehavior<SlowdownBehavior, SlowdownComponent> {
 public:
-  static constexpr char name[] = "Slowdown";
+  static constexpr auto name = "Slowdown";
+  static constexpr auto behaviorId = 10;
 
   using BaseBehavior::BaseBehavior;
 

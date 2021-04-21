@@ -21,7 +21,8 @@ struct DragComponent : BaseComponent {
 
 class DragBehavior : public BaseBehavior<DragBehavior, DragComponent> {
 public:
-  static constexpr char name[] = "Drag";
+  static constexpr auto name = "Drag";
+  static constexpr auto behaviorId = 15;
 
   using BaseBehavior::BaseBehavior;
 

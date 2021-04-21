@@ -34,7 +34,7 @@ struct ExpressionRef {
 
 private:
   friend class RulesBehavior;
-  template<typename T>
+  template<typename T, typename Behavior>
   friend struct RuleRegistration; // To let it write to loaders
 
   BaseExpression *maybeExpression = nullptr; // A child expression node, if we actually have one
@@ -100,7 +100,8 @@ struct RulesComponent : BaseComponent {
 
 class RulesBehavior : public BaseBehavior<RulesBehavior, RulesComponent> {
 public:
-  static constexpr char name[] = "Rules";
+  static constexpr auto name = "Rules";
+  static constexpr auto behaviorId = 16;
 
   using BaseBehavior::BaseBehavior;
 
@@ -169,7 +170,7 @@ private:
   // Loaders (maps from names to read functions for rule types, filled by `RuleRegistration` when
   // the application starts)
 
-  template<typename T>
+  template<typename T, typename Behavior>
   friend struct RuleRegistration; // To let it write to loaders
 
   struct TriggerLoader {
@@ -259,7 +260,7 @@ protected:
 private:
   friend class RuleContext;
   friend class RulesBehavior;
-  template<typename T>
+  template<typename T, typename Behavior>
   friend struct RuleRegistration;
 
   // Run the response. Just runs this response and not next ones. Implemented in concrete types.
@@ -290,13 +291,12 @@ private:
 // Registration
 //
 
-template<typename T>
+template<typename T, typename Behavior = void>
 struct RuleRegistration {
   // Registers a rule type (trigger, response or expression) for loading. Must be defined as an
   // `inline static const` member of the type so that registration occurs when the application
   // starts.
 
-  RuleRegistration(const char *name, int behaviorId);
   explicit RuleRegistration(const char *name);
 
 private:
@@ -416,13 +416,15 @@ inline ExpressionValue BaseExpression::eval(RuleContext &ctx) {
   return 0;
 }
 
-template<typename T>
-RuleRegistration<T>::RuleRegistration(const char *name, int behaviorId) {
-  static_assert(std::is_base_of_v<BaseTrigger, T> || std::is_base_of_v<BaseResponse, T>,
-      "RuleRegistration: type must derive from `BaseTrigger` or `BaseResponse`");
+template<typename T, typename Behavior>
+RuleRegistration<T, Behavior>::RuleRegistration(const char *name) {
+  static_assert(
+      std::is_base_of_v<BaseTrigger,
+          T> || std::is_base_of_v<BaseResponse, T> || std::is_base_of_v<BaseExpression, T>,
+      "RuleRegistration: type must derive from `BaseTrigger`, `BaseResponse` or `BaseExpression`");
   if (registered) {
     Debug::fatal("RuleRegistration: tried to register the same type twice -- make sure you're "
-                 "using the correct `T` in `RuleRegistration<T>` (must be the same as the "
+                 "using the correct `T` in `RuleRegistration<T, ...>` (must be the same as the "
                  "containing `struct` or `class`)");
   }
   registered = true;
@@ -430,7 +432,7 @@ RuleRegistration<T>::RuleRegistration(const char *name, int behaviorId) {
     // This is a trigger type
     RulesBehavior::triggerLoaders.push_back({
         entt::hashed_string(name),
-        behaviorId,
+        Behavior::behaviorId,
         [](Scene &scene, ActorId actorId, ResponseRef response, Reader &reader) {
           // Add a `TriggerComponent<T>` entry for this rule
           auto &component
@@ -452,7 +454,7 @@ RuleRegistration<T>::RuleRegistration(const char *name, int behaviorId) {
     // This is a response type
     RulesBehavior::responseLoaders.push_back({
         entt::hashed_string(name),
-        behaviorId,
+        Behavior::behaviorId,
         [](RulesBehavior &rulesBehavior, Reader &reader) -> ResponseRef {
           // Initialize a new response, read params and return
           auto response = (T *)rulesBehavior.pool.Malloc(sizeof(T));
@@ -493,14 +495,7 @@ RuleRegistration<T>::RuleRegistration(const char *name, int behaviorId) {
           return response;
         },
     });
-  }
-}
-
-template<typename T>
-RuleRegistration<T>::RuleRegistration(const char *name) {
-  static_assert(std::is_base_of_v<BaseExpression, T>,
-      "RuleRegistration: type must derive from `BaseExpression`");
-  if constexpr (std::is_base_of_v<BaseExpression, T>) {
+  } else if constexpr (std::is_base_of_v<BaseExpression, T>) {
     // This is an expression type
     RulesBehavior::expressionLoaders.push_back({
         entt::hashed_string(name),

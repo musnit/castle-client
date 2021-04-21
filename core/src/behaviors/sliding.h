@@ -17,7 +17,8 @@ struct SlidingComponent : BaseComponent {
 
 class SlidingBehavior : public BaseBehavior<SlidingBehavior, SlidingComponent> {
 public:
-  static constexpr char name[] = "Sliding";
+  static constexpr auto name = "Sliding";
+  static constexpr auto behaviorId = 9;
 
   using BaseBehavior::BaseBehavior;
 

@@ -16,7 +16,8 @@ struct SpeedLimitComponent : BaseComponent {
 
 class SpeedLimitBehavior : public BaseBehavior<SpeedLimitBehavior, SpeedLimitComponent> {
 public:
-  static constexpr char name[] = "SpeedLimit";
+  static constexpr auto name = "SpeedLimit";
+  static constexpr auto behaviorId = 12;
 
   using BaseBehavior::BaseBehavior;
 

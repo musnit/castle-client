@@ -13,7 +13,8 @@ struct SolidComponent : BaseComponent {
 
 class SolidBehavior : public BaseBehavior<SolidBehavior, SolidComponent> {
 public:
-  static constexpr char name[] = "Solid";
+  static constexpr auto name = "Solid";
+  static constexpr auto behaviorId = 5;
 
   using BaseBehavior::BaseBehavior;
 

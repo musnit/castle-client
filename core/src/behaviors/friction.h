@@ -14,7 +14,8 @@ struct FrictionComponent : BaseComponent {
 
 class FrictionBehavior : public BaseBehavior<FrictionBehavior, FrictionComponent> {
 public:
-  static constexpr char name[] = "Friction";
+  static constexpr auto name = "Friction";
+  static constexpr auto behaviorId = 11;
 
   using BaseBehavior::BaseBehavior;
 

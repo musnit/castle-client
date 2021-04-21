@@ -8,14 +8,14 @@
 //
 
 struct CreateTrigger : BaseTrigger {
-  inline static const RuleRegistration<CreateTrigger> registration { "create", 16 };
+  inline static const RuleRegistration<CreateTrigger, RulesBehavior> registration { "create" };
 
   struct Params {
   } params;
 };
 
 struct DestroyTrigger : BaseTrigger {
-  inline static const RuleRegistration<DestroyTrigger> registration { "destroy", 16 };
+  inline static const RuleRegistration<DestroyTrigger, RulesBehavior> registration { "destroy" };
 
   struct Params {
   } params;
@@ -27,7 +27,7 @@ struct DestroyTrigger : BaseTrigger {
 //
 
 struct CreateResponse : BaseResponse {
-  inline static const RuleRegistration<CreateResponse> registration { "create", 16 };
+  inline static const RuleRegistration<CreateResponse, RulesBehavior> registration { "create" };
 
   struct Params {
     PROP(std::string, entryId);
@@ -95,11 +95,29 @@ struct CreateResponse : BaseResponse {
 
 
 //
+// Behavior responses
+//
+
+struct DisableBehaviorResponse : BaseResponse {
+  inline static const RuleRegistration<DisableBehaviorResponse, RulesBehavior> registration {
+    "disable behavior"
+  };
+
+  struct Params {
+    PROP(int, behaviorId) = -1;
+  } params;
+
+  void run(RuleContext &ctx) override {
+  }
+};
+
+
+//
 // Control flow responses
 //
 
 struct IfResponse : BaseResponse {
-  inline static const RuleRegistration<IfResponse> registration { "if", 16 };
+  inline static const RuleRegistration<IfResponse, RulesBehavior> registration { "if" };
 
   struct Params {
     PROP(ResponseRef, condition) = nullptr;
@@ -126,7 +144,7 @@ struct IfResponse : BaseResponse {
 };
 
 struct RepeatResponse : BaseResponse {
-  inline static const RuleRegistration<RepeatResponse> registration { "repeat", 16 };
+  inline static const RuleRegistration<RepeatResponse, RulesBehavior> registration { "repeat" };
 
   struct Params {
     PROP(ExpressionRef, count) = 3;
@@ -166,9 +184,8 @@ struct RepeatResponse : BaseResponse {
 };
 
 struct InfiniteRepeatResponse : BaseResponse {
-  inline static const RuleRegistration<InfiniteRepeatResponse> registration {
-    "infinite repeat",
-    16,
+  inline static const RuleRegistration<InfiniteRepeatResponse, RulesBehavior> registration {
+    "infinite repeat"
   };
 
   struct Params {
@@ -208,7 +225,9 @@ struct InfiniteRepeatResponse : BaseResponse {
 };
 
 struct StopRepeatingResponse : BaseResponse {
-  inline static const RuleRegistration<StopRepeatingResponse> registration { "stop repeating", 16 };
+  inline static const RuleRegistration<StopRepeatingResponse, RulesBehavior> registration {
+    "stop repeating"
+  };
 
   struct Params {
   } params;
@@ -226,7 +245,7 @@ struct StopRepeatingResponse : BaseResponse {
 //
 
 struct WaitResponse : BaseResponse {
-  inline static const RuleRegistration<WaitResponse> registration { "wait", 16 };
+  inline static const RuleRegistration<WaitResponse, RulesBehavior> registration { "wait" };
 
   struct Params {
     PROP(ExpressionRef, duration) = 1;
@@ -248,7 +267,9 @@ struct WaitResponse : BaseResponse {
 //
 
 struct CoinFlipResponse : BaseResponse {
-  inline static const RuleRegistration<CoinFlipResponse> registration { "coin flip", 16 };
+  inline static const RuleRegistration<CoinFlipResponse, RulesBehavior> registration {
+    "coin flip"
+  };
 
   struct Params {
     PROP(ExpressionRef, probability) = 0.5;
@@ -268,7 +289,7 @@ struct CoinFlipResponse : BaseResponse {
 #define DEBUG_LOG_NOTE_RESPONSE // Uncomment to log note messages
 
 struct NoteResponse : BaseResponse {
-  inline static const RuleRegistration<NoteResponse> registration { "note", 16 };
+  inline static const RuleRegistration<NoteResponse, RulesBehavior> registration { "note" };
 
   struct Params {
 #ifdef DEBUG_LOG_NOTE_RESPONSE
