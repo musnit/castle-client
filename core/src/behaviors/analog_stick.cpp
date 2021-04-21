@@ -9,6 +9,29 @@ static const TouchToken analogStickToken;
 
 
 //
+// Triggers
+//
+
+struct AnalogStickBeginsTrigger : BaseTrigger {
+  inline static const RuleRegistration<AnalogStickBeginsTrigger, AnalogStickBehavior> registration {
+    "analog stick begins"
+  };
+
+  struct Params {
+  } params;
+};
+
+struct AnalogStickEndsTrigger : BaseTrigger {
+  inline static const RuleRegistration<AnalogStickEndsTrigger, AnalogStickBehavior> registration {
+    "analog stick ends"
+  };
+
+  struct Params {
+  } params;
+};
+
+
+//
 // Perform
 //
 
@@ -76,6 +99,14 @@ void AnalogStickBehavior::handlePerform(double dt) {
         body->ApplyLinearImpulseToCenter({ impulse.x, impulse.y }, true);
       }
     });
+
+    // Fire triggers -- don't fire if began and ended in the same frame
+    if (newTouch && !touch.released) {
+      getBehaviors().byType<RulesBehavior>().fireAll<AnalogStickBeginsTrigger>();
+    }
+    if (!newTouch && touch.released) {
+      getBehaviors().byType<RulesBehavior>().fireAll<AnalogStickEndsTrigger>();
+    }
   });
 }
 
