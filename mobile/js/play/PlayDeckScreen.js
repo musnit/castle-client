@@ -1,14 +1,11 @@
 import React from 'react';
-import { BackHandler, StatusBar, StyleSheet } from 'react-native';
+import { StatusBar, StyleSheet } from 'react-native';
 import { useFocusEffect } from '../ReactNavigation';
-
+import { useGameViewAndroidBackHandler } from '../common/GameViewAndroidBackHandler';
 import { DecksFeed } from '../components/DecksFeed';
 import { PopoverProvider } from '../components/PopoverProvider';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '../ReactNavigation';
-import { useListen } from '../ghost/GhostEvents';
-
-import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
   container: {
@@ -28,25 +25,8 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
   // TODO: BEN: respect initialDeckIndex
 
   const { pop } = useNavigation();
-  if (Constants.Android) {
-    const onHardwareBackPress = React.useCallback(() => pop(), [pop]);
-
-    // with no game loaded, use standard back handler
-    useFocusEffect(
-      React.useCallback(() => {
-        BackHandler.addEventListener('hardwareBackPress', onHardwareBackPress);
-
-        return () => BackHandler.removeEventListener('hardwareBackPress', onHardwareBackPress);
-      }, [onHardwareBackPress])
-    );
-
-    // after the game loads, it listens for keyboard events and
-    // causes react native's back button event to fail
-    useListen({
-      eventName: 'CASTLE_SYSTEM_BACK_BUTTON',
-      handler: onHardwareBackPress,
-    });
-  }
+  const onHardwareBackPress = React.useCallback(() => pop(), [pop]);
+  useGameViewAndroidBackHandler({ onHardwareBackPress });
 
   useFocusEffect(
     React.useCallback(() => {

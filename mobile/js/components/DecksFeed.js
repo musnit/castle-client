@@ -1,18 +1,10 @@
 import React from 'react';
-import {
-  Animated,
-  BackHandler,
-  FlatList,
-  InteractionManager,
-  Platform,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { Animated, FlatList, InteractionManager, StyleSheet, View } from 'react-native';
 import { CardCell } from './CardCell';
 import { PlayDeckActions, PlayDeckActionsSkeleton } from '../play/PlayDeckActions';
 import { PlayDeckNavigator } from '../play/PlayDeckNavigator';
-import { useIsFocused, useFocusEffect } from '../ReactNavigation';
-import { useListen } from '../ghost/GhostEvents';
+import { useGameViewAndroidBackHandler } from '../common/GameViewAndroidBackHandler';
+import { useIsFocused } from '../ReactNavigation';
 import { useSession, blockUser, reportDeck } from '../Session';
 
 import debounce from 'lodash.debounce';
@@ -105,35 +97,6 @@ const makeCardAspectFitStyles = () => {
 
 const cardAspectFitStyles = makeCardAspectFitStyles();
 
-const useDeckCellAndroidBackHandler = Platform.select({
-  ios: () => null,
-  android: ({ isPlaying, onPressBack }) => {
-    const onHardwareBackPress = React.useCallback(() => {
-      if (isPlaying) {
-        onPressBack();
-        return true;
-      }
-      return false;
-    }, [isPlaying, onPressBack]);
-
-    // with no game loaded, use standard back handler
-    useFocusEffect(
-      React.useCallback(() => {
-        BackHandler.addEventListener('hardwareBackPress', onHardwareBackPress);
-
-        return () => BackHandler.removeEventListener('hardwareBackPress', onHardwareBackPress);
-      }, [onHardwareBackPress])
-    );
-
-    // after the game loads, it listens for keyboard events and
-    // causes react native's back button event to fail
-    return useListen({
-      eventName: 'CASTLE_SYSTEM_BACK_BUTTON',
-      handler: onHardwareBackPress,
-    });
-  },
-});
-
 // renders the current focused deck in the feed
 const CurrentDeckCell = ({
   deck,
@@ -191,7 +154,14 @@ const CurrentDeckCell = ({
     outputRange: [0, -Constants.FEED_HEADER_HEIGHT],
   });
 
-  useDeckCellAndroidBackHandler({ isPlaying, onPressBack });
+  const onHardwareBackPress = React.useCallback(() => {
+    if (isPlaying) {
+      onPressBack();
+      return true;
+    }
+    return false;
+  }, [isPlaying, onPressBack]);
+  useGameViewAndroidBackHandler({ onHardwareBackPress });
 
   if (!initialCard) return null;
 
