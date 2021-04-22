@@ -124,8 +124,8 @@ namespace ghost {
         bendPoint = Point(((bendPoint.x - midpointP1P2.x) * scaleAmt) + midpointP1P2.x,
             ((bendPoint.y - midpointP1P2.y) * scaleAmt) + midpointP1P2.y);
       }
-      auto p1NormalVector = Point(-bendPoint.y - p1.y, bendPoint.x - p1.x);
-      auto p2NormalVector = Point(-bendPoint.y - p2.y, bendPoint.x - p2.x);
+      auto p1NormalVector = Point(-(bendPoint.y - p1.y), bendPoint.x - p1.x);
+      auto p2NormalVector = Point(-(bendPoint.y - p2.y), bendPoint.x - p2.x);
       auto p1Midpoint = Point((bendPoint.x + p1.x) / 2, (bendPoint.y + p1.y) / 2);
       auto p2Midpoint = Point((bendPoint.x + p2.x) / 2, (bendPoint.y + p2.y) / 2);
       auto rayIntersectionResult = DrawAlgorithms::rayRayIntersection(p1Midpoint.x, p1Midpoint.y,
@@ -135,7 +135,8 @@ namespace ghost {
         addLineSubpathData(pathData, p1.x, p1.y, p2.x, p2.y);
         return;
       }
-      auto [circleCenterX, circleCenterY] = *rayIntersectionResult;
+      auto circleCenterX = rayIntersectionResult->first;
+      auto circleCenterY = rayIntersectionResult->second;
 
       auto radius = sqrt(pow(p1.y - circleCenterY, 2) + pow(p1.x - circleCenterX, 2));
       if (radius > 50.0) {

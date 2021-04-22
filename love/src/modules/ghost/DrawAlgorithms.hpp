@@ -28,7 +28,7 @@ namespace ghost {
     static float pointsDistance(Point p1, Point p2);
     static float distance(Point p1, Point p2);
     static bool areAnglesEqual(float a1, float a2);
-    static std::optional<std::tuple<int, int>> rayRayIntersection(
+    static std::optional<std::pair<float, float>> rayRayIntersection(
         float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4);
     static float normalizeRadianAngle(float angle);
     static bool isAngleBetween(float N, float a, float b);

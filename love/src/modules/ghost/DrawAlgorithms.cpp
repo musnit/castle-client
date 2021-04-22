@@ -94,14 +94,14 @@ namespace ghost {
     return false;
   }
 
-  std::optional<std::tuple<int, int>> DrawAlgorithms::rayRayIntersection(
+  std::optional<std::pair<float, float>> DrawAlgorithms::rayRayIntersection(
       float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
     auto denom = ((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4));
     if (denom < 0.01 && denom > -0.01) {
       return std::nullopt;
     }
     auto t = (((x1 - x3) * (y3 - y4)) - ((y1 - y3) * (x3 - x4))) / denom;
-    return std::tuple<int, int>({ x1 + (t * (x2 - x1)), y1 + (t * (y2 - y1)) });
+    return std::pair<float, float>({ x1 + (t * (x2 - x1)), y1 + (t * (y2 - y1)) });
   }
 
   float DrawAlgorithms::normalizeRadianAngle(float angle) {
