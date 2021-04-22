@@ -36,7 +36,7 @@ case "$1" in
 
   # Count lines of code
   cloc)
-    cloc src --by-file --exclude_list_file=.cloc_exclude_list
+    cloc src ../love/src/modules/ghost --by-file --exclude_list_file=.cloc_exclude_list
     ;;
 
   # Desktop
