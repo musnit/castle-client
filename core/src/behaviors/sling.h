@@ -8,7 +8,7 @@
 
 struct SlingComponent : BaseComponent {
   struct Props {
-    PROP(float, speed) = 0;
+    PROP(float, speed) = 3.5;
   } props;
 };
 
