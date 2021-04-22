@@ -14,9 +14,8 @@ using ActorId = entt::entity; // Is unique throughout a `Scene`'s lifetime, neve
 constexpr auto nullActor = entt::null; // An `ActorId`-compatible sentinel value
 
 struct Actor {
-  // Bookkeeping information that is common to all actors. Data specific to
-  // each behavior is managed outside of this, in components for that
-  // particular behavior.
+  // Bookkeeping information that is common to all actors. Data specific to each behavior is managed
+  // outside of this, in components for that particular behavior.
 
   Actor(const Actor &) = delete; // Prevent accidental copies
   const Actor &operator=(const Actor &) = delete;
@@ -35,9 +34,6 @@ class Scene {
   // behaviors. Also provides top-level methods for drawing and updating the whole scene.
 
 public:
-  static constexpr auto debugChecks = true; // `false` to disable debug reporting (eg. invalid
-                                            // `ActorId`s) and gain a slight performance boost
-
   Scene(const Scene &) = delete; // Prevent accidental copies
   const Scene &operator=(const Scene &) = delete;
   Scene(Scene &&); // Allow move-construction (lets us return it from `Snapshot`)

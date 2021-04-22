@@ -8,12 +8,11 @@
 
 
 class Engine {
-  // The top-level instance of Castle core. There should just be one of these
-  // for the entire program. Multiplicity of scenes is managed by having
-  // multiple `Scene` instances.
+  // The top-level instance of Castle core. There should just be one of these for the entire
+  // program. Multiplicity of scenes is managed by having multiple `Scene` instances.
   //
-  // This class initializes the various modules involved in Castle core and
-  // contains the top-level logic run on each frame of the main loop.
+  // This class initializes the various modules involved in Castle core and contains the top-level
+  // logic run on each frame of the main loop.
 
 public:
   Engine(const Engine &) = delete; // Prevent accidental copies
