@@ -421,6 +421,7 @@ void RulesBehavior::readExpression(ExpressionRef &expr, Reader &reader) {
       for (auto &loader : expressionLoaders) {
         if (nameHash == loader.nameHs.value() && !std::strcmp(*maybeName, loader.nameHs.data())) {
           loader.read(expr, *this, reader);
+          return;
         }
       }
       Debug::log("RulesBehavior: unsupported expression type '{}'", *maybeName);
