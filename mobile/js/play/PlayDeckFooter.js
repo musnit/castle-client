@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable as PressableRN, StyleSheet, Text, View } from 'react-native';
 import { gql } from '@apollo/client';
 import { useNavigation } from '../ReactNavigation';
 import { ReactionButton } from '../components/ReactionButton';
@@ -9,6 +9,11 @@ import * as Constants from '../Constants';
 import * as Session from '../Session';
 
 import Feather from 'react-native-vector-icons/Feather';
+import { TouchableNativeFeedback as PressableRNGH } from 'react-native-gesture-handler';
+
+// required because android Pressable doesn't receive touches outside parent container
+// waiting for merge: https://github.com/facebook/react-native/pull/29039
+const Pressable = Constants.iOS ? PressableRN : PressableRNGH;
 
 const AVATAR_SIZE = 36;
 

@@ -1,10 +1,15 @@
 import React from 'react';
-import { Animated, Pressable, StyleSheet } from 'react-native';
+import { Animated, Pressable as PressableRN, StyleSheet } from 'react-native';
 
 import * as Constants from '../Constants';
 
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
+import { TouchableNativeFeedback as PressableRNGH } from 'react-native-gesture-handler';
+
+// required because android Pressable doesn't receive touches outside parent container
+// waiting for merge: https://github.com/facebook/react-native/pull/29039
+const Pressable = Constants.iOS ? PressableRN : PressableRNGH;
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const SPRING_CONFIG = {
@@ -24,7 +29,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     backgroundColor: '#fff',
     flexShrink: 0,
-    marginLeft: 16,
     alignItems: 'center',
     justifyContent: 'center',
   },
