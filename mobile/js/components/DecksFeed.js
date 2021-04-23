@@ -2,10 +2,12 @@ import React from 'react';
 import { Animated, FlatList, InteractionManager, StyleSheet, View } from 'react-native';
 import { CardCell } from './CardCell';
 import { PlayDeckActions, PlayDeckActionsSkeleton } from '../play/PlayDeckActions';
+import { PlayDeckFooter } from '../play/PlayDeckFooter';
 import { PlayDeckNavigator } from '../play/PlayDeckNavigator';
 import { useGameViewAndroidBackHandler } from '../common/GameViewAndroidBackHandler';
 import { useIsFocused } from '../ReactNavigation';
 import { useSession, blockUser, reportDeck } from '../Session';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import debounce from 'lodash.debounce';
 import Viewport from '../common/viewport';
@@ -74,6 +76,12 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,
     borderTopRightRadius: Constants.CARD_BORDER_RADIUS,
   },
+  itemFooter: {
+    position: 'absolute',
+    width: '100%',
+    bottom: 0,
+    height: 72,
+  },
   absoluteFill: {
     position: 'absolute',
     left: 0,
@@ -111,6 +119,7 @@ const CurrentDeckCell = ({
   const initialCard = deck?.initialCard;
   const [ready, setReady] = React.useState(false);
   const isFocused = useIsFocused();
+  const insets = useSafeAreaInsets();
 
   React.useEffect(() => {
     let timeout;
@@ -152,6 +161,19 @@ const CurrentDeckCell = ({
   const playingHeaderY = playingTransition.interpolate({
     inputRange: [0, 1.01],
     outputRange: [0, -Constants.FEED_HEADER_HEIGHT],
+  });
+
+  const playingFooterY = playingTransition.interpolate({
+    inputRange: [0, 1.01],
+    outputRange: [
+      0,
+      vh * 100 -
+        DECK_FEED_ITEM_HEIGHT +
+        DECK_FEED_ITEM_MARGIN -
+        insets.top -
+        insets.bottom -
+        Constants.FEED_HEADER_HEIGHT,
+    ],
   });
 
   const onHardwareBackPress = React.useCallback(() => {
@@ -211,6 +233,9 @@ const CurrentDeckCell = ({
           </View>
         ) : null}
       </View>
+      <Animated.View style={[styles.itemFooter, { transform: [{ translateY: playingFooterY }] }]}>
+        <PlayDeckFooter deck={deck} />
+      </Animated.View>
     </View>
   );
 };
@@ -341,12 +366,12 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
   const debounceLogScrollToDeck = debounce(({ ...args }) => logScrollToDeck(args), 500);
 
   const viewabilityConfig = React.useRef({ itemVisiblePercentThreshold: 90 }).current;
-  const onViewableItemsChanged = React.useCallback(({ viewableItems }) => {
+  const onViewableItemsChanged = React.useRef(({ viewableItems }) => {
     if (viewableItems.length > 0) {
       setCurrentCardIndex(viewableItems[0].index);
       debounceLogScrollToDeck({ index: viewableItems[0].index, deck: viewableItems[0].item });
     }
-  }, []);
+  });
 
   const getItemLayout = React.useCallback(
     (data, index) => ({
@@ -385,7 +410,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
           decelerationRate="fast"
           pagingEnabled
           viewabilityConfig={viewabilityConfig}
-          onViewableItemsChanged={onViewableItemsChanged}
+          onViewableItemsChanged={onViewableItemsChanged.current}
           initialNumToRender={3}
           windowSize={5}
           maxToRenderPerBatch={3}

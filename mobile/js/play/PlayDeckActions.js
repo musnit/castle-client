@@ -1,19 +1,14 @@
 import React from 'react';
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Pressable, StyleSheet, View } from 'react-native';
 import { Dropdown } from '../components/Dropdown';
 import { shareDeck } from '../common/utilities';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useNavigation } from '../ReactNavigation';
-import { UserAvatar } from '../components/UserAvatar';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
-import { gql } from '@apollo/client';
 
 import * as Constants from '../Constants';
-import * as Session from '../Session';
-
-const AVATAR_SIZE = 28;
 
 const styles = StyleSheet.create({
   container: {
@@ -37,31 +32,6 @@ const styles = StyleSheet.create({
   back: {
     marginRight: 12,
   },
-  avatar: {
-    width: AVATAR_SIZE,
-    height: AVATAR_SIZE,
-  },
-  avatarSkeleton: {
-    backgroundColor: Constants.colors.skeletonText,
-    borderRadius: 14,
-  },
-  username: {
-    color: '#fff',
-    fontWeight: '700',
-    fontSize: 16,
-    marginLeft: 8,
-    ...Constants.styles.textShadow,
-  },
-  usernameSkeleton: {
-    backgroundColor: Constants.colors.skeletonText,
-    height: 8,
-    width: 100,
-    marginLeft: 8,
-  },
-  remixIcon: {
-    marginLeft: 8,
-    ...Constants.styles.textShadow,
-  },
   rightButton: {
     width: 28,
     height: 28,
@@ -75,12 +45,7 @@ const styles = StyleSheet.create({
 });
 
 export const PlayDeckActionsSkeleton = () => {
-  return (
-    <View style={[styles.container, styles.containerSkeleton]}>
-      <View style={[styles.avatar, styles.avatarSkeleton]} />
-      <View style={styles.usernameSkeleton} />
-    </View>
-  );
+  return <View style={[styles.container, styles.containerSkeleton]} />;
 };
 
 export const PlayDeckActions = ({
@@ -95,37 +60,13 @@ export const PlayDeckActions = ({
   isAnonymous = false,
 }) => {
   const { creator } = deck;
-  const { push, navigate } = useNavigation();
+  const { push } = useNavigation();
   const { showActionSheetWithOptions } = useActionSheet();
 
-  const navigateToParent = React.useCallback(async () => {
-    const result = await Session.apolloClient.query({
-      query: gql`
-          query GetDeckById($deckId: ID!) {
-            deck(deckId: $deckId) {
-              ${Constants.FEED_ITEM_DECK_FRAGMENT}
-            }
-          }
-        `,
-      variables: { deckId: deck.parentDeckId },
-    });
-    if (result?.data?.deck && result.data.deck.visibility === 'public') {
-      return navigate('PlayDeck', {
-        decks: [result.data.deck],
-        initialDeckIndex: 0,
-        title: 'Remixed deck',
-      });
-    }
-  }, [deck.parentDeckId, navigate]);
-
-  let creatorTransform = React.useRef(new Animated.Value(0)).current;
-  const creatorTransformX = creatorTransform.interpolate({
-    inputRange: [0, 1],
-    outputRange: [-(8 + AVATAR_SIZE), -additionalPadding],
-  });
+  let backTransform = React.useRef(new Animated.Value(0)).current;
 
   React.useEffect(() => {
-    Animated.spring(creatorTransform, {
+    Animated.spring(backTransform, {
       toValue: isPlaying ? 1 : 0,
       friction: 20,
       tension: 70,
@@ -213,34 +154,14 @@ export const PlayDeckActions = ({
           ...styles.row,
           flex: -1,
           paddingRight: 16,
-          transform: [{ translateX: creatorTransformX }],
         }}>
         <Pressable style={styles.back} onPress={onPressBack}>
           {({ pressed }) => (
-            <Animated.View style={{ opacity: creatorTransform }}>
+            <Animated.View style={{ opacity: backTransform }}>
               <Icon name="arrow-back" color={pressed ? '#ccc' : '#fff'} size={32} />
             </Animated.View>
           )}
         </Pressable>
-        <Pressable
-          disabled={disabled}
-          style={styles.row}
-          onPress={() => push('Profile', { userId: creator.userId })}>
-          <View style={styles.avatar}>
-            <UserAvatar url={creator.photo?.url} />
-          </View>
-          <Text style={styles.username}>{creator.username}</Text>
-        </Pressable>
-        {deck.parentDeckId && deck.parentDeck && (
-          <View style={{ ...styles.row, flex: 1 }}>
-            <Feather name="refresh-cw" color="#fff" size={14} style={styles.remixIcon} />
-            <Pressable disabled={disabled} onPress={navigateToParent}>
-              <Text numberOfLines={1} style={styles.username}>
-                {deck.parentDeck?.creator?.username}
-              </Text>
-            </Pressable>
-          </View>
-        )}
       </Animated.View>
       <View style={styles.row} pointerEvents={disabled ? 'none' : 'auto'}>
         <Dropdown
