@@ -30,15 +30,21 @@ public:
 
 
   Token getToken(const char *str); // Get the token for a string
-  void insert(const Token &token, Value value); // Insert at given token -- no-op if token invalid
-  Value *lookup(const Token &token); // Lookup by token -- `nullptr` if not present
+  const std::string *getString(Token token); // Get string for token -- `nullptr` if token invalid
+
+  void insert(Token token, Value value); // Insert at given token -- no-op if token invalid
+  Value *lookup(Token token); // Lookup by token -- `nullptr` if not present
 
 
 private:
   struct Entry {
+    const std::string *str;
     std::optional<Value> value;
   };
   std::vector<Entry> entries;
+
+  // NOTE: Keys in the below map are pointed-to from above entries, so their addresses must be
+  //       stable (this is true for `std::unordered_map`).
   std::unordered_map<std::string, Token> tokens;
 };
 
@@ -55,22 +61,30 @@ typename TokenMap<Value>::Token TokenMap<Value>::getToken(const char *key) {
   if (auto found = tokens.find(key); found != tokens.end()) {
     return found->second;
   } else {
-    entries.push_back(Entry { std::nullopt });
-    Token token { int(entries.size()) - 1 };
-    tokens.insert_or_assign(key, token);
+    Token token { int(entries.size()) };
+    auto [iter, inserted] = tokens.insert_or_assign(key, token);
+    entries.push_back(Entry { &iter->first, std::nullopt });
     return token;
   }
 }
 
 template<typename Value>
-void TokenMap<Value>::insert(const Token &token, Value value) {
+const std::string *TokenMap<Value>::getString(Token token) {
+  if (0 <= token.index && token.index < int(entries.size())) {
+    return entries[token.index].str;
+  }
+  return nullptr;
+}
+
+template<typename Value>
+void TokenMap<Value>::insert(Token token, Value value) {
   if (0 <= token.index && token.index < int(entries.size())) {
     entries[token.index].value = value;
   }
 }
 
 template<typename Value>
-Value *TokenMap<Value>::lookup(const Token &token) {
+Value *TokenMap<Value>::lookup(Token token) {
   if (0 <= token.index && token.index < int(entries.size())) {
     if (auto &entry = entries[token.index]; entry.value) {
       return &(*entry.value);

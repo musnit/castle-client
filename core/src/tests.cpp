@@ -192,20 +192,24 @@ struct TokenMapTest : Test {
       }
     }
     for (auto i = 0; i < 1000; ++i) {
+      auto key = fmt::format("large{}", i);
       auto val = tm.lookup(tokens[i]);
-      auto val2 = tm.lookup(tm.getToken(fmt::format("large{}", i).c_str()));
+      auto val2 = tm.lookup(tm.getToken(key.c_str()));
       if (i % 2 == 0) {
         assert(val);
         assert(val->i == 10 * i);
         assert(val2);
         assert(val2->i == 10 * i);
-        val->i = 100 * i;
+        val->i = 100 * i; // Change value
+        auto str = tm.getString(tokens[i]);
+        assert(str);
+        assert(*str == key);
       } else {
         assert(!val);
         assert(!val2);
       }
     }
-    for (auto i = 0; i < 1000; ++i) {
+    for (auto i = 0; i < 1000; ++i) { // Check with changed values
       auto val = tm.lookup(tokens[i]);
       auto val2 = tm.lookup(tm.getToken(fmt::format("large{}", i).c_str()));
       if (i % 2 == 0) {
