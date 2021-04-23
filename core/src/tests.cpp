@@ -43,9 +43,8 @@ struct BasicActorManagementTest : Test {
       });
       assert(results == std::vector<ActorId>({ actor2, actor1 }));
     }
-    assert(scene.getActor(actor2).drawOrder == 0);
     assert(scene.maybeGetActor(actor2)->drawOrder == 0);
-    assert(scene.getActor(actor1).drawOrder == 1);
+    assert(scene.maybeGetActor(actor1)->drawOrder == 1);
     assert(scene.maybeGetActor(actor1)->drawOrder == 1);
 
     // Add another actor and check again
@@ -57,9 +56,9 @@ struct BasicActorManagementTest : Test {
       });
       assert(results == std::vector<ActorId>({ actor2, actor1, actor3 }));
     }
-    assert(scene.getActor(actor2).drawOrder == 0);
-    assert(scene.getActor(actor1).drawOrder == 1);
-    assert(scene.getActor(actor3).drawOrder == 2);
+    assert(scene.maybeGetActor(actor2)->drawOrder == 0);
+    assert(scene.maybeGetActor(actor1)->drawOrder == 1);
+    assert(scene.maybeGetActor(actor3)->drawOrder == 2);
 
     // Check passing to `const Scene &`
     const auto testConstScene = [&](const Scene &scene) {
@@ -83,7 +82,7 @@ struct BasicActorManagementTest : Test {
       });
       assert(results == std::vector<ActorId>({ actor1 }));
     }
-    assert(scene.getActor(actor1).drawOrder == 0);
+    assert(scene.maybeGetActor(actor1)->drawOrder == 0);
 
     // Remove last actor and check empty
     scene.removeActor(actor1);
@@ -108,7 +107,7 @@ struct BasicActorManagementTest : Test {
       });
       assert(results == std::vector<ActorId>({ actor4 }));
     }
-    assert(scene.getActor(actor4).drawOrder == 0);
+    assert(scene.maybeGetActor(actor4)->drawOrder == 0);
   }
 };
 
@@ -119,7 +118,7 @@ struct BasicActorManagementTest : Test {
 
 struct BasicDrawingLoadingTest : Test {
   BasicDrawingLoadingTest() {
-    auto scene = Snapshot::fromFile(Platform::getAssetPath("test-drawing2.json")).toScene();
+    auto scene = Snapshot::fromFile(Platform::getAssetPath("test-drawing2.json").c_str()).toScene();
 
     // Can query and check component data now. May need to `friend class BasicDrawingLoadingTest` in
     // `Drawing2Behavior`...
