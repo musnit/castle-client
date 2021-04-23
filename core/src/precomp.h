@@ -27,6 +27,7 @@
 // Love
 #include <modules/data/DataModule.h>
 #include <modules/math/RandomGenerator.h>
+#include <modules/math/MathModule.h>
 #include <modules/filesystem/physfs/Filesystem.h>
 #include <modules/timer/Timer.h>
 #include <modules/event/sdl/Event.h>

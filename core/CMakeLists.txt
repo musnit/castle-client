@@ -249,6 +249,12 @@ if(YES)
     ${LOVE_SRC}/modules/math/RandomGenerator.h
     ${LOVE_SRC}/modules/math/Transform.cpp ${LOVE_SRC}/modules/math/Transform.h
 
+    # noise1234
+    ${LOVE_SRC}/libraries/noise1234/noise1234.cpp
+	  ${LOVE_SRC}/libraries/noise1234/noise1234.h
+	  ${LOVE_SRC}/libraries/noise1234/simplexnoise1234.cpp
+	  ${LOVE_SRC}/libraries/noise1234/simplexnoise1234.h
+
     # thread
     ${LOVE_SRC}/modules/thread/Channel.cpp ${LOVE_SRC}/modules/thread/Channel.h
     ${LOVE_SRC}/modules/thread/LuaThread.cpp
