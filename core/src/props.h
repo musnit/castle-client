@@ -131,8 +131,8 @@ namespace Internal {
 };
 template<typename T>
 constexpr auto hasProps
-    = (isReflectable<
-           T> && Internal::isAnyTupleElementProp<decltype(boost::pfr::structure_to_tuple(std::declval<T>()))>);
+    = (!std::is_empty_v<std::remove_reference_t<
+            T>> && isReflectable<T> && Internal::isAnyTupleElementProp<decltype(boost::pfr::structure_to_tuple(std::declval<T>()))>);
 
 
 // Iterate through all the props of a struct. This expands to all the properties at compile time,
@@ -149,7 +149,7 @@ constexpr auto hasProps
 template<typename Struct, typename F>
 void forEach(Struct &&s, F &&f) {
   static_assert(isReflectable<Struct>, "forEach: this type is not reflectable");
-  if constexpr (isReflectable<Struct>) {
+  if constexpr (hasProps<Struct> && isReflectable<Struct>) {
     boost::pfr::for_each_field(std::forward<Struct>(s), [&](auto &&prop) {
       if constexpr (isProp<decltype(prop)>) {
         f(std::forward<decltype(prop)>(prop));
