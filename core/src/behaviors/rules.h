@@ -442,11 +442,7 @@ RuleRegistration<T, Behavior>::RuleRegistration(const char *name) {
           entry.response = response;
 
           // Read params
-#ifdef _MSC_VER
-          {
-#else
-          if constexpr (Props::hasProps<decltype(entry.trigger.params)>) {
-#endif
+          if constexpr (Props::hasProps<T::Params>) {
             // Reflected props
             reader.obj("params", [&]() {
               reader.read(entry.trigger.params);
@@ -466,11 +462,7 @@ RuleRegistration<T, Behavior>::RuleRegistration(const char *name) {
           rulesBehavior.responses.emplace_back(response);
           reader.obj("params", [&]() {
             // Reflect on `params`
-#ifdef _MSC_VER
-            {
-#else
-            if constexpr (Props::hasProps<decltype(response->params)>) {
-#endif
+            if constexpr (Props::hasProps<T::Params>) {
               reader.each([&](const char *key) {
                 const auto keyHash = entt::hashed_string(key).value();
                 Props::forEach(response->params, [&](auto &prop) {
@@ -515,11 +507,7 @@ RuleRegistration<T, Behavior>::RuleRegistration(const char *name) {
           rulesBehavior.expressions.emplace_back(expression);
           reader.obj("params", [&]() {
             // Reflect on `params`
-#ifdef _MSC_VER
-            {
-#else
-            if constexpr (Props::hasProps<decltype(expression->params)>) {
-#endif
+            if constexpr (Props::hasProps<T::Params>) {
               reader.each([&](const char *key) {
                 const auto keyHash = entt::hashed_string(key).value();
                 Props::forEach(expression->params, [&](auto &prop) {

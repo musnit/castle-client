@@ -79,7 +79,7 @@ const std::string *TokenMap<Value>::getString(Token token) {
 template<typename Value>
 void TokenMap<Value>::insert(Token token, Value value) {
   if (0 <= token.index && token.index < int(entries.size())) {
-    entries[token.index].value = value;
+    entries[token.index].value = std::move(value);
   }
 }
 
