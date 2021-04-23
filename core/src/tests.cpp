@@ -9,6 +9,7 @@
 #include "snapshot.h"
 #include "platform.h"
 #include "behaviors/all.h"
+#include "token_map.h"
 
 
 //
@@ -127,12 +128,108 @@ struct BasicDrawingLoadingTest : Test {
 
 
 //
+// Token map
+//
+
+struct TokenMapTest : Test {
+  TokenMapTest() {
+    struct TestValue {
+      int i = -1;
+    };
+
+    TokenMap<TestValue> tm;
+
+    // Make sure no values initially
+    auto tok1 = tm.getToken("1");
+    assert(!tm.lookup(tok1));
+    auto tok2 = tm.getToken("2");
+    assert(!tm.lookup(tok2));
+    auto tok3 = tm.getToken("3");
+    assert(!tm.lookup(tok3));
+
+    // Try insert and lookup, modify, and lookup again
+    {
+      tm.insert(tok1, { 10 });
+      auto val1 = tm.lookup(tok1);
+      assert(val1);
+      assert(val1->i == 10);
+      val1->i = 11;
+    }
+    {
+      auto val1 = tm.lookup(tok1);
+      assert(val1);
+      assert(val1->i == 11);
+    }
+    assert(!tm.lookup(tok2));
+    assert(!tm.lookup(tok3));
+
+    // Insert at another key
+    {
+      tm.insert(tok2, { 20 });
+      auto val2 = tm.lookup(tok2);
+      assert(val2);
+      assert(val2->i == 20);
+    }
+    assert(tm.lookup(tok1));
+    assert(!tm.lookup(tok3));
+
+    // Try looking up by generating another token for same string
+    {
+      auto val1 = tm.lookup(tm.getToken("1"));
+      assert(val1);
+      assert(val1->i == 11);
+      auto val2 = tm.lookup(tm.getToken("2"));
+      assert(val2);
+      assert(val2->i == 20);
+    }
+
+    // Large test
+    std::vector<decltype(tm)::Token> tokens;
+    for (auto i = 0; i < 1000; ++i) {
+      auto &tok = tokens.emplace_back(tm.getToken(fmt::format("large{}", i).c_str()));
+      if (i % 2 == 0) {
+        tm.insert(tok, { 10 * i });
+      }
+    }
+    for (auto i = 0; i < 1000; ++i) {
+      auto val = tm.lookup(tokens[i]);
+      auto val2 = tm.lookup(tm.getToken(fmt::format("large{}", i).c_str()));
+      if (i % 2 == 0) {
+        assert(val);
+        assert(val->i == 10 * i);
+        assert(val2);
+        assert(val2->i == 10 * i);
+        val->i = 100 * i;
+      } else {
+        assert(!val);
+        assert(!val2);
+      }
+    }
+    for (auto i = 0; i < 1000; ++i) {
+      auto val = tm.lookup(tokens[i]);
+      auto val2 = tm.lookup(tm.getToken(fmt::format("large{}", i).c_str()));
+      if (i % 2 == 0) {
+        assert(val);
+        assert(val->i == 100 * i);
+        assert(val2);
+        assert(val2->i == 100 * i);
+      } else {
+        assert(!val);
+        assert(!val2);
+      }
+    }
+  }
+};
+
+
+//
 // Constructor, destructor
 //
 
 Tests::Tests() {
   tests.emplace_back(std::make_unique<BasicActorManagementTest>());
   tests.emplace_back(std::make_unique<BasicDrawingLoadingTest>());
+  tests.emplace_back(std::make_unique<TokenMapTest>());
   Debug::log("all tests passed");
 }
 
