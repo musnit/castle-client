@@ -80,6 +80,8 @@ const styles = StyleSheet.create({
     width: '100%',
     bottom: 0,
     height: 72,
+    zIndex: 1,
+    elevation: 1,
   },
   absoluteFill: {
     position: 'absolute',
@@ -89,6 +91,20 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
 });
+
+// CurrentDeckCell uses absolute positioning to expand on top of surrounding cells
+// when playing a deck. By default, the next cell in the list covers touches in the cell
+// footer. To fix this, invert FlatList's default z index so earlier cells are on top
+// of later cells.
+// https://github.com/facebook/react-native/issues/18616#issuecomment-389444165
+const InvertZIndexCellRendererComponent = ({ children, index, style, ...props }) => {
+  const cellStyle = [style, { zIndex: 1000 - index, elevation: 1000 - index }];
+  return (
+    <View style={cellStyle} index={index} {...props}>
+      {children}
+    </View>
+  );
+};
 
 const makeCardAspectFitStyles = () => {
   if (Viewport.useSmallFeedItem) {
@@ -158,7 +174,7 @@ const CurrentDeckCell = ({
 
   const playingFooterY = playingTransition.interpolate({
     inputRange: [0, 1.01],
-    outputRange: [0, vh * 100 - DECK_FEED_ITEM_HEIGHT - insets.bottom],
+    outputRange: [0, vh * 100 - DECK_FEED_ITEM_HEIGHT - insets.bottom - 20],
   });
 
   const onHardwareBackPress = React.useCallback(() => {
@@ -303,7 +319,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
           translateStyles = { transform: [{ translateY: playingOffsetNextY }] };
         }
         return (
-          <Animated.View style={[cardAspectFitStyles, translateStyles]}>
+          <Animated.View style={[cardAspectFitStyles, translateStyles]} pointerEvents="none">
             <View style={styles.itemCard}>
               {deck ? (
                 <CardCell
@@ -361,6 +377,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
       <Animated.View style={[styles.container, { backgroundColor: playingBackgroundColor }]}>
         <FlatList
           {...props}
+          CellRendererComponent={InvertZIndexCellRendererComponent}
           data={decks}
           renderItem={renderItem}
           getItemLayout={getItemLayout}
