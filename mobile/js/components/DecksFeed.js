@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
 const InvertZIndexCellRendererComponent = ({ children, index, style, ...props }) => {
   const cellStyle = [style, { zIndex: 1000 - index, elevation: 1000 - index }];
   return (
-    <View style={cellStyle} index={index} {...props}>
+    <View index={index} style={cellStyle} {...props}>
       {children}
     </View>
   );
@@ -371,6 +371,10 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
   // on android messes up the scrollview rendering. so, just disable it
   const onRefresh = Constants.Android ? undefined : props.onRefresh;
 
+  // android: overflow doesn't work on single-deck lists unless this is defined,
+  // but we dont' want it in multi-deck cases because it prevents scrolling
+  const contentContainerStyle = Constants.Android && decks?.length === 1 ? { flex: 1 } : undefined;
+
   return (
     <>
       {!decks && <SkeletonFeed />}
@@ -379,6 +383,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
           {...props}
           CellRendererComponent={InvertZIndexCellRendererComponent}
           data={decks}
+          contentContainerStyle={contentContainerStyle}
           renderItem={renderItem}
           getItemLayout={getItemLayout}
           keyExtractor={(item, index) => item?.deckId}
