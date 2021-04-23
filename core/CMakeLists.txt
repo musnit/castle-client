@@ -111,12 +111,18 @@ if(WEB)
   set_target_properties(castle-core PROPERTIES LINK_DEPENDS "${MY_ASSETS}")
 endif()
 
-# Add debug info in desktop release builds
+# Add debug info in non-MSVC desktop release builds
 if((NOT WEB) AND (NOT MSVC))
   target_compile_options(castle-core PRIVATE -g)
   target_link_options(castle-core PRIVATE -g)
 endif()
 
+# Working directory for debugging with MSVC
+if(MSVC)
+  set_target_properties(castle-core PROPERTIES
+    VS_DEBUGGER_WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
+    VS_STARTUP_PROJECT castle-core)
+endif()
 
 #
 # Dependencies
@@ -166,8 +172,10 @@ if(YES)
   target_include_directories(castle-love PUBLIC src vendor/magic_get/include vendor/entt/src)
 
   # lua
+  set(LUA_BUILD_STATIC ON CACHE BOOL "" FORCE)
+  set(LUA_BUILD_SHARED OFF CACHE BOOL "" FORCE)
   add_subdirectory(vendor/lua-5.1.5 EXCLUDE_FROM_ALL)
-  target_link_libraries(castle-love PUBLIC lua51)
+  target_link_libraries(castle-love PUBLIC lua51-static)
 
   # zlib
   add_subdirectory(vendor/zlib-1.2.11 EXCLUDE_FROM_ALL)
