@@ -2,13 +2,13 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { gql } from '@apollo/client';
 import { useNavigation } from '../ReactNavigation';
+import { ReactionButton } from '../components/ReactionButton';
 import { UserAvatar } from '../components/UserAvatar';
 
 import * as Constants from '../Constants';
 import * as Session from '../Session';
 
 import Feather from 'react-native-vector-icons/Feather';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 const AVATAR_SIZE = 36;
 
@@ -46,17 +46,6 @@ const styles = StyleSheet.create({
   remixIcon: {
     marginLeft: 8,
     ...Constants.styles.textShadow,
-  },
-  reactButton: {
-    // TODO: actual react button
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#fff',
-    flexShrink: 0,
-    marginLeft: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
 
@@ -106,10 +95,7 @@ export const PlayDeckFooter = ({ deck }) => {
           </View>
         )}
       </View>
-
-      <Pressable style={styles.reactButton}>
-        <FontAwesome5 name="fire-alt" size={24} color="#000" />
-      </Pressable>
+      <ReactionButton />
     </View>
   );
 };
