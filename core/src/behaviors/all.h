@@ -13,7 +13,6 @@
 #include "behaviors/slowdown.h"
 #include "behaviors/speed_limit.h"
 #include "behaviors/sliding.h"
-#include "behaviors/test.h"
 #include "behaviors/debug_draw.h"
 #include "behaviors/drawing2.h"
 #include "behaviors/sling.h"
@@ -89,10 +88,6 @@ private:
     //DebugDrawBehavior,
     Drawing2Behavior
 
-#ifdef CASTLE_ENABLE_TESTS
-    // Tests
-    , TestBehavior
-#endif
     > behaviors;
   /* clang-format on */
 
