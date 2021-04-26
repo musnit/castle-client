@@ -25,8 +25,7 @@ const useProfileQuery = (userId) => {
         me {
           ${Constants.USER_PROFILE_FRAGMENT}
         }
-      }`,
-      { fetchPolicy: 'no-cache' }
+      }`
     );
   } else {
     const [fetchProfile, query] = useLazyQuery(
@@ -35,8 +34,7 @@ const useProfileQuery = (userId) => {
         user(userId: $userId) {
           ${Constants.USER_PROFILE_FRAGMENT}
         }
-      }`,
-      { fetchPolicy: 'no-cache' }
+      }`
     );
     return [() => fetchProfile({ variables: { userId } }), query];
   }

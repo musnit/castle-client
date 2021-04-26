@@ -375,15 +375,29 @@ export const apolloClient = new ApolloClient({
     }),
   ]),
   cache: new InMemoryCache({
-    // https://www.apollographql.com/docs/react/caching/advanced-topics/#cache-redirects-using-field-policy-read-functions
     typePolicies: {
       Query: {
         fields: {
+          // https://www.apollographql.com/docs/react/caching/advanced-topics/#cache-redirects-using-field-policy-read-functions
           card(_, { args, toReference }) {
             return toReference({
               __typename: 'Card',
-              id: args.cardId,
+              id: args.id,
             });
+          },
+        },
+      },
+      Card: {
+        fields: {
+          backgroundImage: {
+            merge: (existing, incoming) => ({ ...existing, ...incoming }),
+          },
+        },
+      },
+      Deck: {
+        fields: {
+          reactions: {
+            merge: false, // always take server version
           },
         },
       },
@@ -428,8 +442,8 @@ export const CARD_FRAGMENT = `
   title
   lastModified
   backgroundImage {
-    fileId
     url
+    smallUrl
   }
   scene {
     data
