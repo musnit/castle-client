@@ -38,7 +38,8 @@ struct BodyComponent : BaseComponent {
       PROP(float, y) = 0;
       PROP(float, radius) = 0;
     };
-    PROP(std::vector<FixtureProps>, fixtures);
+    PROP(std::vector<FixtureProps>, fixtures); // `std::vector` rather than `SmallVector` because we
+                                               // rarely read this data at perform-time and it's big
   } props;
 
   b2Body *body = nullptr;
