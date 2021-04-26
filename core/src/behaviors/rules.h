@@ -35,7 +35,7 @@ struct ExpressionRef {
 private:
   friend class RulesBehavior;
   template<typename T, typename Behavior>
-  friend struct RuleRegistration; // To let it write to loaders
+  friend struct RuleRegistration;
 
   BaseExpression *maybeExpression = nullptr; // A child expression node, if we actually have one
   ExpressionValue constant = 0; // The constant value if no child node
@@ -60,7 +60,7 @@ public:
   RuleContext &operator=(RuleContext &&) = default;
 
 
-  ActorId actorId; // Actor on whom the respones should act
+  ActorId actorId; // Actor on whom the response should act
 
 
   struct RepeatStackElem {
