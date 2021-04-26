@@ -20,6 +20,8 @@ public:
   struct Token {
     // Returned when a string is reserved. Can then be used to look up by that string.
 
+    bool operator==(const Token &other) const;
+
   private:
     friend class TokenMap;
 
@@ -30,10 +32,11 @@ public:
 
 
   Token getToken(const char *str); // Get the token for a string
-  const std::string *getString(Token token); // Get string for token -- `nullptr` if token invalid
+  const std::string *getString(Token token) const; // Get string for token -- `nullptr` if invalid
 
   void insert(Token token, Value value); // Insert at given token -- no-op if token invalid
   Value *lookup(Token token); // Lookup by token -- `nullptr` if not present
+  const Value *lookup(Token token) const;
 
 
 private:
@@ -50,6 +53,11 @@ private:
 
 
 // Inlined implementations
+
+template<typename Value>
+inline bool TokenMap<Value>::Token::operator==(const Token &other) const {
+  return index == other.index;
+}
 
 template<typename Value>
 TokenMap<Value>::Token::Token(int index_)
@@ -69,7 +77,7 @@ typename TokenMap<Value>::Token TokenMap<Value>::getToken(const char *key) {
 }
 
 template<typename Value>
-const std::string *TokenMap<Value>::getString(Token token) {
+const std::string *TokenMap<Value>::getString(Token token) const {
   if (0 <= token.index && token.index < int(entries.size())) {
     return entries[token.index].str;
   }
@@ -91,4 +99,9 @@ Value *TokenMap<Value>::lookup(Token token) {
     }
   }
   return nullptr;
+}
+
+template<typename Value>
+const Value *TokenMap<Value>::lookup(Token token) const {
+  return const_cast<TokenMap &>(*this).lookup(token);
 }

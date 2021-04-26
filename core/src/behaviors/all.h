@@ -19,6 +19,7 @@
 #include "behaviors/drag.h"
 #include "behaviors/analog_stick.h"
 #include "behaviors/rules.h"
+#include "behaviors/tags.h"
 
 
 class AllBehaviors {
@@ -83,6 +84,7 @@ private:
 
     // Logic
     RulesBehavior,
+    TagsBehavior,
 
     // Rendering
     //DebugDrawBehavior,
