@@ -100,7 +100,7 @@ export const PlayDeckFooter = ({ deck }) => {
           </View>
         )}
       </View>
-      <ReactionButton />
+      <ReactionButton deckId={deck?.deckId} reactions={deck?.reactions} />
     </View>
   );
 };

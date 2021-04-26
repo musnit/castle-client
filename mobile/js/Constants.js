@@ -245,6 +245,10 @@ export const FEED_ITEM_DECK_FRAGMENT = `
     url
     firstFrameImage { url, smallUrl }
   }
+  reactions {
+    reactionId
+    count
+  }
   lastModified
   variables
 `;
@@ -300,3 +304,7 @@ export const USER_PROFILE_FRAGMENT = `
   }
   isReactNativeChannelsEnabled
 `;
+
+export const reactionIds = {
+  fire: 'fire',
+};
