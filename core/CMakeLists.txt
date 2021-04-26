@@ -131,9 +131,9 @@ endif()
 # SDL2
 if(WEB)
   target_compile_options(castle-core PRIVATE "SHELL:-s USE_SDL=2")
-  target_compile_options(castle-core PRIVATE "SHELL:-s FULL_ES2=1")
+  #target_compile_options(castle-core PRIVATE "SHELL:-s FULL_ES2=1")
   target_link_options(castle-core PRIVATE "SHELL:-s USE_SDL=2")
-  target_link_options(castle-core PRIVATE "SHELL:-s FULL_ES2=1")
+  #target_link_options(castle-core PRIVATE "SHELL:-s FULL_ES2=1")
 elseif(APPLE AND (NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "iOS"))
   set(SDL_STATIC ON CACHE BOOL "" FORCE)
   set(SDL_SHARED OFF CACHE BOOL "" FORCE)
@@ -194,9 +194,9 @@ if(YES)
 
   if(WEB)
     target_compile_options(castle-love PRIVATE "SHELL:-s USE_SDL=2")
-    target_compile_options(castle-love PRIVATE "SHELL:-s FULL_ES2=1")
+    #target_compile_options(castle-love PRIVATE "SHELL:-s FULL_ES2=1")
     target_link_options(castle-love PRIVATE "SHELL:-s USE_SDL=2")
-    target_link_options(castle-love PRIVATE "SHELL:-s FULL_ES2=1")
+    #target_link_options(castle-love PRIVATE "SHELL:-s FULL_ES2=1")
   endif()
 
   # tove

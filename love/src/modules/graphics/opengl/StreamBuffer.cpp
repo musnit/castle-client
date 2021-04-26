@@ -551,7 +551,7 @@ love::graphics::StreamBuffer *CreateStreamBuffer(BufferType mode, size_t size)
 		return new StreamBufferSubDataOrphan(mode, size);
 	}
 	else
-		return new StreamBufferClientMemory(mode, size);
+		return new StreamBufferSubDataOrphan(mode, size);
 }
 
 } // opengl
