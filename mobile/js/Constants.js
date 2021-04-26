@@ -248,6 +248,7 @@ export const FEED_ITEM_DECK_FRAGMENT = `
   reactions {
     reactionId
     count
+    users { userId }
   }
   lastModified
   variables
