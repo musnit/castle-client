@@ -1,5 +1,5 @@
 import React from 'react';
-import { Animated, Pressable as PressableRN, StyleSheet } from 'react-native';
+import { Animated, Pressable as PressableRN, StyleSheet, Text, View } from 'react-native';
 
 import * as Constants from '../Constants';
 
@@ -34,7 +34,33 @@ const styles = StyleSheet.create({
   },
 });
 
-export const ReactionButton = () => {
+const countStyles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    right: -6,
+    bottom: -4,
+    padding: 2,
+    backgroundColor: '#000',
+    borderRadius: 2,
+    minWidth: 12,
+  },
+  label: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+});
+
+const ReactionCount = ({ reaction }) => {
+  if (!reaction?.count) return null;
+  return (
+    <View style={countStyles.container} pointerEvents="none">
+      <Text style={countStyles.label}>{reaction.count}</Text>
+    </View>
+  );
+};
+
+export const ReactionButton = ({ deckId, reactions }) => {
   const buttonScale = React.useRef(new Animated.Value(1)).current;
   const onPress = React.useCallback(() => {
     Animated.stagger(100, [
@@ -43,11 +69,17 @@ export const ReactionButton = () => {
     ]).start();
   }, []);
 
+  let fire;
+  if (reactions?.length) {
+    fire = reactions.find((reaction) => reaction.reactionId === Constants.reactionIds.fire);
+  }
+
   return (
     <AnimatedPressable
       onPress={onPress}
       style={[styles.container, { transform: [{ scale: buttonScale }] }]}>
       <FontAwesome5 name="fire-alt" size={24} color="#000" />
+      <ReactionCount reaction={fire} />
     </AnimatedPressable>
   );
 };
