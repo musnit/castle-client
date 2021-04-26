@@ -33,8 +33,7 @@ export const FollowingDecks = ({ deckId }) => {
           ${Constants.FEED_ITEM_DECK_FRAGMENT}
         }
       }
-    `,
-    { fetchPolicy: 'no-cache' }
+    `
   );
 
   const onRefresh = React.useCallback(

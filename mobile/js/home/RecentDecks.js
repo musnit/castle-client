@@ -21,8 +21,7 @@ export const RecentDecks = ({ focused }) => {
           ${Constants.FEED_ITEM_DECK_FRAGMENT}
         }
       }
-    `,
-    { fetchPolicy: 'no-cache' }
+    `
   );
 
   const onRefresh = React.useCallback(() => {

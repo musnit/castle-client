@@ -229,6 +229,7 @@ export const FEED_ITEM_DECK_FRAGMENT = `
   }
   parentDeckId
   parentDeck {
+    deckId
     creator { username }
   }
   initialCard {
@@ -279,29 +280,7 @@ export const USER_PROFILE_FRAGMENT = `
     photo { url }
   }
   decks {
-    id
-    deckId
-    title
-    creator {
-      userId
-      username
-      photo {
-        url
-      }
-    }
-    visibility
-    initialCard {
-      id
-      cardId
-      title
-      backgroundColor
-      backgroundImage {
-        url
-        smallUrl
-      }
-    }
-    variables
-    previewVideo { url }
+    ${FEED_ITEM_DECK_FRAGMENT}
   }
   isReactNativeChannelsEnabled
 `;
