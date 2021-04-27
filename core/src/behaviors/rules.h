@@ -474,8 +474,8 @@ RuleRegistration<T, Behavior>::RuleRegistration(const char *name) {
                 const auto keyHash = entt::hashed_string(key).value();
                 Props::forEach(response->params, [&](auto &prop) {
                   using Prop = std::remove_reference_t<decltype(prop)>;
-                  constexpr auto propNameHash = Prop::nameHash(); // Ensure compile-time constants
-                  constexpr auto propName = Prop::name();
+                  constexpr auto propNameHash = Prop::nameHash; // Ensure compile-time constants
+                  constexpr auto propName = Prop::name;
                   if (keyHash == propNameHash && key == propName) {
                     if constexpr (std::is_same_v<ResponseRef,
                                       std::remove_reference_t<decltype(prop())>>) {
@@ -519,8 +519,8 @@ RuleRegistration<T, Behavior>::RuleRegistration(const char *name) {
                 const auto keyHash = entt::hashed_string(key).value();
                 Props::forEach(expression->params, [&](auto &prop) {
                   using Prop = std::remove_reference_t<decltype(prop)>;
-                  constexpr auto propNameHash = Prop::nameHash(); // Ensure compile-time constants
-                  constexpr auto propName = Prop::name();
+                  constexpr auto propNameHash = Prop::nameHash; // Ensure compile-time constants
+                  constexpr auto propName = Prop::name;
                   if (keyHash == propNameHash && key == propName) {
                     if constexpr (std::is_same_v<ExpressionRef,
                                       std::remove_reference_t<decltype(prop())>>) {

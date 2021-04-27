@@ -1,6 +1,10 @@
 #pragma once
 
-#include "precomp.h"
+// No `#include "precomp.h"` so we can use this in Ghost
+
+#include <vector>
+#include <unordered_map>
+#include <string>
 
 
 template<typename Value>

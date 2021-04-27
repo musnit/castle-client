@@ -4,7 +4,9 @@
 
 #include "entt/core/hashed_string.hpp"
 
-#include <boost/pfr.hpp>
+#include "boost/pfr.hpp"
+
+#include "token_map.h"
 
 
 struct PropAttribs {
@@ -12,6 +14,25 @@ struct PropAttribs {
   // use, maximum and minimum values, etc. Currently empty.
 };
 
+
+// Id system for props. Use `Props::getId(someString)` to get a `PropId` for that string. You can
+// then do fast comparisons against the `.id` of a prop, avoiding string comparisons. This is used
+// in behavior set / get rules for example -- the rule element saves the id upfront, which can be
+// used by the behavior setter or getter when visiting props to compare.
+
+namespace Props {
+namespace Internal {
+  struct IdValue {}; // Just a marker type to make `IdMap` distinct from other `TokenMap`s
+  using IdMap = TokenMap<IdValue>;
+}
+using PropId = Internal::IdMap::Token;
+
+inline PropId getId(const char *str) {
+  static Internal::IdMap ids;
+  return ids.getToken(str);
+}
+}
+using PropId = Props::PropId;
 
 template<typename Value, typename Internal>
 struct Prop {
@@ -41,19 +62,12 @@ struct Prop {
     return value;
   }
 
-  static constexpr uint32_t nameHash() {
-    return nameHs.value();
-  }
-
-  static constexpr std::string_view name() {
-    return Internal::name;
-  }
+  static constexpr std::string_view name = Internal::name;
+  static constexpr uint32_t nameHash = entt::hashed_string(name.data()).value();
+  inline static const PropId id = Props::getId(name.data());
 
 private:
   Value value;
-
-  inline static const PropAttribs &attribs = Internal::attribs;
-  static constexpr auto nameHs = entt::hashed_string(Internal::name.data());
 };
 
 
@@ -73,7 +87,7 @@ private:
 // above:
 //
 //   Foo thing;
-//   Debug::log("{} is: {}", thing.health.name(), thing.health());
+//   Debug::log("{} is: {}", thing.health.name, thing.health());
 //   thing.aPair().first = 7;
 //
 // `PROP_NAMED` can be used to explicitly specify a different name string for reflection. This is
@@ -143,7 +157,7 @@ constexpr auto hasProps
 // referenced:
 //
 //   Props::forEach(aStruct, [&](auto &prop) {
-//     Debug::log("{}: {}", prop.name(), prop());    // Print each prop name and value
+//     Debug::log("{}: {}", prop.name, prop());    // Print each prop name and value
 //   })
 
 template<typename Struct, typename F>

@@ -142,6 +142,7 @@ public:
   void read(double &f);
   void read(bool &b);
   void read(std::string &s);
+  void read(PropId &propId);
   void read(love::Colorf &c);
   template<typename T, size_t N>
   void read(std::array<T, N> &a);
@@ -558,6 +559,12 @@ inline void Reader::read(std::string &s) {
   }
 }
 
+inline void Reader::read(PropId &i) {
+  if (cur->IsString()) {
+    i = Props::getId(cur->GetString());
+  }
+}
+
 inline void Reader::read(love::Colorf &c) {
   switch (cur->GetType()) {
   case json::kArrayType:
@@ -620,8 +627,8 @@ void Reader::read(T &&v) {
       Props::forEach(v, [&](auto &prop) {
         if constexpr (!Archive::skipProp<std::remove_reference_t<decltype(prop())>>) {
           using Prop = std::remove_reference_t<decltype(prop)>;
-          constexpr auto propNameHash = Prop::nameHash(); // Ensure compile-time constants
-          constexpr auto propName = Prop::name();
+          constexpr auto propNameHash = Prop::nameHash; // Ensure compile-time constants
+          constexpr auto propName = Prop::name;
           if (keyHash == propNameHash && key == propName) {
             read(prop());
           }

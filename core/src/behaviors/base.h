@@ -61,10 +61,8 @@ public:
 
   // Properties -- mostly meant for access from rules
 
-  void setProperty(ActorId actorId, const uint32_t nameHash, const std::string &name,
-      const ExpressionValue &value, bool relative);
-  ExpressionValue getProperty(
-      ActorId actorId, const uint32_t nameHash, const std::string &name) const;
+  void setProperty(ActorId actorId, PropId propId, const ExpressionValue &value, bool relative);
+  ExpressionValue getProperty(ActorId actorId, PropId propId) const;
 
 
   // Other behaviors
@@ -242,16 +240,13 @@ void BaseBehavior<Derived, Component>::forEachEnabledComponent(F &&f) const {
 }
 
 template<typename Derived, typename Component>
-void BaseBehavior<Derived, Component>::setProperty(ActorId actorId, const uint32_t nameHash,
-    const std::string &name, const ExpressionValue &value, bool relative) {
+void BaseBehavior<Derived, Component>::setProperty(
+    ActorId actorId, PropId propId, const ExpressionValue &value, bool relative) {
   if (auto component = maybeGetComponent(actorId)) {
     // Try reflected props
     Props::forEach(component->props, [&](auto &prop) {
-      using Prop = std::remove_reference_t<decltype(prop)>;
-      using PropValue = std::remove_reference_t<decltype(prop())>;
-      constexpr auto propNameHash = Prop::nameHash(); // Ensure compile-time constants
-      constexpr auto propName = Prop::name();
-      if (nameHash == propNameHash && name == propName) {
+      if (propId == prop.id) {
+        using PropValue = std::remove_reference_t<decltype(prop())>;
         if constexpr (std::is_same_v<bool, PropValue>) { // Prevent number-to-bool` conversion
           if (value.is<bool>()) {
             prop() = value.as<bool>();
@@ -268,16 +263,13 @@ void BaseBehavior<Derived, Component>::setProperty(ActorId actorId, const uint32
 
 template<typename Derived, typename Component>
 ExpressionValue BaseBehavior<Derived, Component>::getProperty(
-    ActorId actorId, const uint32_t nameHash, const std::string &name) const {
+    ActorId actorId, PropId propId) const {
   ExpressionValue result;
   if (auto component = maybeGetComponent(actorId)) {
     // Try reflected props
     Props::forEach(component->props, [&](auto &prop) {
-      using Prop = std::remove_reference_t<decltype(prop)>;
-      using PropValue = std::remove_reference_t<decltype(prop())>;
-      constexpr auto propNameHash = Prop::nameHash(); // Ensure compile-time constants
-      constexpr auto propName = Prop::name();
-      if (nameHash == propNameHash && name == propName) {
+      if (propId == prop.id) {
+        using PropValue = std::remove_reference_t<decltype(prop())>;
         if constexpr (std::is_arithmetic_v<PropValue>) {
           result = ExpressionValue(prop());
         }

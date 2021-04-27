@@ -137,20 +137,15 @@ struct SetBehaviorPropertyResponse : BaseResponse {
 
   struct Params {
     PROP(int, behaviorId) = -1;
-    PROP(std::string, propertyName);
+    PROP(PropId, propertyName);
     PROP(ExpressionRef, value);
     PROP(bool, relative) = false;
   } params;
 
-  std::optional<uint32_t> propertyNameHash;
-
   void run(RuleContext &ctx) override {
     ctx.getScene().getBehaviors().byId(params.behaviorId(), [&](auto &behavior) {
-      if (!propertyNameHash) {
-        propertyNameHash = entt::hashed_string(params.propertyName().c_str()).value();
-      }
-      behavior.setProperty(ctx.actorId, *propertyNameHash, params.propertyName(),
-          params.value().eval(ctx), params.relative());
+      behavior.setProperty(
+          ctx.actorId, params.propertyName(), params.value().eval(ctx), params.relative());
     });
   }
 };
