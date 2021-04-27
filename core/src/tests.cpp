@@ -254,7 +254,7 @@ struct BasicTagsTest : Test {
     {
       auto comp = tagsBehavior.maybeGetComponent(a1);
       assert(comp);
-      comp->props.tagsString() = "tag1";
+      comp->props.tagsString() = "Tag1";
       tagsBehavior.enableComponent(a1);
     }
     assert(tagsBehavior.hasTag(a1, t1));
@@ -269,7 +269,7 @@ struct BasicTagsTest : Test {
     {
       auto comp = tagsBehavior.maybeGetComponent(a2);
       assert(comp);
-      comp->props.tagsString() = "tag1 tag2";
+      comp->props.tagsString() = "tag1 Tag2";
       tagsBehavior.enableComponent(a2);
     }
     assert(tagsBehavior.hasTag(a1, t1));
@@ -283,7 +283,7 @@ struct BasicTagsTest : Test {
       assert((std::set(result.begin(), result.end()) == std::set<ActorId> { a1, a2 }));
     }
     {
-      auto &result = tagsBehavior.getActors(tagsBehavior.getTag("tag2"));
+      auto &result = tagsBehavior.getActors(tagsBehavior.getTag("TAG2"));
       assert((std::set(result.begin(), result.end()) == std::set<ActorId> { a2 }));
     }
 
@@ -300,18 +300,18 @@ struct BasicTagsTest : Test {
 
     // Test some more parsing
     {
-      auto foo = tagsBehavior.getTag("foo");
+      auto foo = tagsBehavior.getTag("FOO");
       auto foooo = tagsBehavior.getTag("foooo");
       auto bar = tagsBehavior.getTag("bar");
 
       assert((tagsBehavior.parseTags("foo") == TagVector { foo }));
       assert((tagsBehavior.parseTags("foo       foooo") == TagVector { foo, foooo }));
       assert((tagsBehavior.parseTags("   foo       foooo") == TagVector { foo, foooo }));
-      assert((tagsBehavior.parseTags(" foo   bar   foooo ") == TagVector { foo, bar, foooo }));
-      assert((tagsBehavior.parseTags(" foo   bar   foooo bar ") == TagVector { foo, bar, foooo }));
+      assert((tagsBehavior.parseTags(" foo   bar   Foooo ") == TagVector { foo, bar, foooo }));
+      assert((tagsBehavior.parseTags(" foo   BAR   foooo bar ") == TagVector { foo, bar, foooo }));
 
       // Make sure also works for previously unregistered tag
-      auto result = tagsBehavior.parseTags(" foo   bar   new bar ");
+      auto result = tagsBehavior.parseTags(" FOO   bar   new bar ");
       assert((result == TagVector { foo, bar, tagsBehavior.getTag("new") }));
     }
   }

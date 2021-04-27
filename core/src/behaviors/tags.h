@@ -97,37 +97,11 @@ inline Tag::Tag(TagsMap::Token token_)
 }
 
 inline Tag TagsBehavior::getTag(const char *str) {
-  return Tag(map.getToken(str));
-}
-
-inline TagVector TagsBehavior::parseTags(const char *str) {
-  TagVector result;
-  for (const char *start = str; *start != '\0';) { // Search for words
-    // Skip whitespace
-    while (*start != '\0' && std::isspace(*start)) {
-      ++start;
-    }
-    if (*start == '\0') {
-      break; // Hit end of string
-    }
-
-    // Find end of word
-    const char *end = start;
-    while (*end != '\0' && !std::isspace(*end)) {
-      ++end;
-    }
-
-    // Add tag from this word if not already added
-    std::string word(start, end - start);
-    auto tag = getTag(word.c_str());
-    if (std::find(result.begin(), result.end(), tag) == result.end()) {
-      result.push_back(tag);
-    }
-
-    // Continue at end of this word
-    start = end;
+  std::string lower(str);
+  for (auto &c : lower) {
+    c = std::tolower(c);
   }
-  return result;
+  return Tag(map.getToken(lower.c_str()));
 }
 
 inline const std::string *TagsBehavior::getString(Tag tag) {

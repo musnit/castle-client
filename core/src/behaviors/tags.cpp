@@ -16,6 +16,40 @@ void Tag::read(Reader &reader) {
   }
 }
 
+TagVector TagsBehavior::parseTags(const char *str) {
+  TagVector result;
+  for (const char *start = str; *start != '\0';) { // Search for words
+    // Skip whitespace
+    while (*start != '\0' && std::isspace(*start)) {
+      ++start;
+    }
+    if (*start == '\0') {
+      break; // Hit end of string
+    }
+
+    // Find end of word
+    const char *end = start;
+    while (*end != '\0' && !std::isspace(*end)) {
+      ++end;
+    }
+
+    // Add tag from this word if not already added. We construct a `Tag` directly here and don't use
+    // `getTag` to avoid the copy.
+    std::string word(start, end - start);
+    for (auto &c : word) {
+      c = std::tolower(c);
+    }
+    Tag tag(map.getToken(word.c_str()));
+    if (std::find(result.begin(), result.end(), tag) == result.end()) {
+      result.push_back(tag);
+    }
+
+    // Continue at end of this word
+    start = end;
+  }
+  return result;
+}
+
 
 //
 // Enable, disable
