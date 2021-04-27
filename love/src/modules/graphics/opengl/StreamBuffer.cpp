@@ -551,7 +551,11 @@ love::graphics::StreamBuffer *CreateStreamBuffer(BufferType mode, size_t size)
 		return new StreamBufferSubDataOrphan(mode, size);
 	}
 	else
+		// XXX(Castle): Switching to subdata orphan instead of client memory so we
+		//              can run without `-s FULL_ES2=1` on Emscripten (see:
+		//              https://emscripten.org/docs/porting/multimedia_and_graphics/OpenGL-support.html#opengl-es-2-0-3-0-emulation)
 		return new StreamBufferSubDataOrphan(mode, size);
+		// return new StreamBufferClientMemory(mode, size);
 }
 
 } // opengl
