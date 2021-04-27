@@ -253,7 +253,11 @@ void BaseBehavior<Derived, Component>::setProperty(
           }
         } else if constexpr (std::is_arithmetic_v<PropValue>) { // All non-`bool` number types
           if (value.is<double>()) {
-            prop() = value.as<double>();
+            if (relative) {
+              prop() += value.as<double>();
+            } else {
+              prop() = value.as<double>();
+            }
           }
         }
       }

@@ -28,3 +28,30 @@ struct NumberOfActorsExpression : BaseExpression {
     return tagsBehavior.getActors(params.tag()).size();
   }
 };
+
+struct ActorRef {
+  PROP(std::string, kind) = "self";
+  PROP(Tag, tag);
+};
+
+struct BehaviorPropertyExpression : BaseExpression {
+  inline static const RuleRegistration<BehaviorPropertyExpression> registration {
+    "behavior property"
+  };
+
+  struct Params {
+    PROP(int, behaviorId) = -1;
+    PROP(PropId, propertyName);
+    PROP(ActorRef, actorRef); // TODO(nikki): Actually use `actorRef`
+  } params;
+
+  ExpressionValue eval(RuleContext &ctx) override {
+    auto actorId = ctx.actorId; // Codegen turns out better if we compute these outside the lambda
+    auto propId = params.propertyName();
+    ExpressionValue result;
+    ctx.getScene().getBehaviors().byId(params.behaviorId(), [&](auto &behavior) {
+      result = behavior.getProperty(actorId, propId);
+    });
+    return result;
+  }
+};

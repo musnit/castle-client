@@ -143,9 +143,12 @@ struct SetBehaviorPropertyResponse : BaseResponse {
   } params;
 
   void run(RuleContext &ctx) override {
+    auto actorId = ctx.actorId; // Codegen turns out better if we compute these outside the lambda
+    auto propId = params.propertyName();
+    auto value = params.value().eval(ctx);
+    auto relative = params.relative();
     ctx.getScene().getBehaviors().byId(params.behaviorId(), [&](auto &behavior) {
-      behavior.setProperty(
-          ctx.actorId, params.propertyName(), params.value().eval(ctx), params.relative());
+      behavior.setProperty(actorId, propId, value, relative);
     });
   }
 };

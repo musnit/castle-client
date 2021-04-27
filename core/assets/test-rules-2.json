@@ -638,19 +638,46 @@
                               "params": {
                                 "tag": "t3",
                                 "body": {
-                                  "name": "set behavior property",
+                                  "name": "note",
                                   "params": {
-                                    "value": 45,
-                                    "relative": true,
-                                    "behaviorId": 1,
+                                    "note": "inside second act on!",
                                     "nextResponse": {
-                                      "name": "wait",
+                                      "name": "set behavior property",
                                       "params": {
-                                        "duration": 1
+                                        "value": 45,
+                                        "relative": true,
+                                        "behaviorId": 1,
+                                        "nextResponse": {
+                                          "name": "wait",
+                                          "params": {
+                                            "duration": 1,
+                                            "nextResponse": {
+                                              "name": "set behavior property",
+                                              "params": {
+                                                "value": {
+                                                  "params": {
+                                                    "actorRef": {
+                                                      "kind": "self"
+                                                    },
+                                                    "behaviorId": 1,
+                                                    "propertyName": "angle"
+                                                  },
+                                                  "returnType": "number",
+                                                  "expressionType": "behavior property"
+                                                },
+                                                "relative": true,
+                                                "behaviorId": 1,
+                                                "propertyName": "angle"
+                                              },
+                                              "behaviorId": 16
+                                            }
+                                          },
+                                          "behaviorId": 16
+                                        },
+                                        "propertyName": "angle"
                                       },
                                       "behaviorId": 16
-                                    },
-                                    "propertyName": "angle"
+                                    }
                                   },
                                   "behaviorId": 16
                                 }
