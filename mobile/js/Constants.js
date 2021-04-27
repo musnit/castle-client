@@ -250,7 +250,7 @@ export const FEED_ITEM_DECK_FRAGMENT = `
     id
     reactionId
     count
-    users { userId }
+    isCurrentUserToggled
   }
   lastModified
   variables

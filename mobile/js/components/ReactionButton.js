@@ -59,7 +59,7 @@ const makeOptimisticCount = (initial, optimistic) => {
   if (initial && !optimistic) return -1;
 };
 
-const toggleReaction = async ({ userId, reactionId, deck, enabled }) => {
+const toggleReaction = async ({ reactionId, deck, enabled }) => {
   const result = await Session.apolloClient.mutate({
     mutation: gql`
       mutation($reactionId: ID!, $deckId: ID!, $enabled: Boolean!) {
@@ -67,9 +67,7 @@ const toggleReaction = async ({ userId, reactionId, deck, enabled }) => {
           id
           reactionId
           count
-          users {
-            userId
-          }
+          isCurrentUserToggled
         }
       }
     `,
@@ -92,9 +90,7 @@ const toggleReaction = async ({ userId, reactionId, deck, enabled }) => {
                       id
                       reactionId
                       count
-                      users {
-                        userId
-                      }
+                      isCurrentUserToggled
                     }
                   `,
                 })
@@ -132,12 +128,7 @@ export const ReactionButton = ({ deck }) => {
     fire = reactions.find((reaction) => reaction.reactionId === Constants.reactionIds.fire);
   }
 
-  let initialIsSelected = false; // TODO: use top level gql field for this
-  const { userId } = Session.useSession();
-  if (fire?.users) {
-    let me = fire.users.find((u) => u.userId === userId);
-    initialIsSelected = me !== undefined;
-  }
+  let initialIsSelected = fire?.isCurrentUserToggled;
   const [isSelected, toggleSelected] = React.useReducer((state, action) => {
     toggleReaction({
       reactionId: Constants.reactionIds.fire,
@@ -148,12 +139,12 @@ export const ReactionButton = ({ deck }) => {
   }, initialIsSelected);
 
   const onPress = React.useCallback(() => {
-    toggleSelected({ userId, deck });
+    toggleSelected({ deck });
     Animated.stagger(100, [
       Animated.spring(buttonScale, { toValue: 2, ...SPRING_CONFIG }),
       Animated.spring(buttonScale, { toValue: 1, ...SPRING_CONFIG }),
     ]).start();
-  }, [userId, deck]);
+  }, [deck]);
 
   return (
     <AnimatedPressable
