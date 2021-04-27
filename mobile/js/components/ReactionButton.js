@@ -59,69 +59,48 @@ const makeOptimisticCount = (initial, optimistic) => {
   if (initial && !optimistic) return -1;
 };
 
-// TODO: probably can just get this part from the server
-const makeOptimisticReactions = ({ reactions, reactionId, enabled, userId }) => {
-  let found = false;
-  let newReactions = reactions
-    .map((reaction) => {
-      let newReaction = { ...reaction };
-      if (newReaction.reactionId === reactionId) {
-        found = true;
-        newReaction.count = reaction.count + makeOptimisticCount(reaction.count, enabled);
-        const userExists = newReaction.users && newReaction.users.find((u) => u.userId === userId);
-        if (enabled && !userExists) {
-          newReaction.users = newReaction.users ?? [];
-          newReaction.users.push({ userId, __typename: 'User' });
-        }
-        if (!enabled && userExists) {
-          newReaction.users = newReaction.users.filter((u) => u.userId !== userId);
-        }
-      }
-      return newReaction;
-    })
-    .filter((reaction) => reaction.count > 0);
-  if (!found && enabled) {
-    newReactions.push({
-      __typename: 'Reaction',
-      reactionId,
-      count: 1,
-      users: [{ userId, __typename: 'User' }],
-    });
-  }
-  return newReactions;
-};
-
-const toggleReaction = async ({ userId, reactionId, deckId, reactions, enabled }) => {
+const toggleReaction = async ({ userId, reactionId, deck, enabled }) => {
   const result = await Session.apolloClient.mutate({
     mutation: gql`
       mutation($reactionId: ID!, $deckId: ID!, $enabled: Boolean!) {
-        toggleReaction(reactionId: $reactionId, deckId: $deckId, enabled: $enabled)
+        toggleReaction(reactionId: $reactionId, deckId: $deckId, enabled: $enabled) {
+          id
+          reactionId
+          count
+          users {
+            userId
+          }
+        }
       }
     `,
-    variables: { reactionId, deckId, enabled },
+    variables: { reactionId, deckId: deck.deckId, enabled },
     update: (cache, { data }) => {
       // not working: https://www.apollographql.com/docs/react/caching/cache-interaction/#example-updating-the-cache-after-a-mutation
       cache.modify({
-        id: deckId,
+        id: cache.identify(deck),
         fields: {
-          // TODO: this is never called for some reason
-          reactions: () => {
-            // TODO: get `data` from toggleReaction api instead of making it up
-            const newReactions = makeOptimisticReactions({
-              userId,
-              enabled,
-              reactionId,
-              reactions,
-            });
-            const newReactionsRef = cache.writeFragment({
-              data: { reactions: newReactions },
-              fragment: gql`
-                fragment Reactions on Deck {
-                  reactions
-                }
-              `,
-            });
-            return newReactionsRef;
+          reactions(_, { DELETE }) {
+            const newReactions = data.toggleReaction;
+            if (!newReactions?.length) {
+              return DELETE;
+            } else {
+              let newReactionsRefs = newReactions.map((reaction) =>
+                cache.writeFragment({
+                  data: reaction,
+                  fragment: gql`
+                    fragment Reactions on Reaction {
+                      id
+                      reactionId
+                      count
+                      users {
+                        userId
+                      }
+                    }
+                  `,
+                })
+              );
+              return newReactionsRefs;
+            }
           },
         },
       });
@@ -140,7 +119,12 @@ const ReactionCount = ({ reaction, optimisticCount }) => {
   );
 };
 
-export const ReactionButton = ({ deckId, reactions }) => {
+export const ReactionButton = ({ deck }) => {
+  let deckId, reactions;
+  if (deck) {
+    deckId = deck.deckId;
+    reactions = deck.reactions;
+  }
   const buttonScale = React.useRef(new Animated.Value(1)).current;
 
   let fire;
@@ -164,12 +148,12 @@ export const ReactionButton = ({ deckId, reactions }) => {
   }, initialIsSelected);
 
   const onPress = React.useCallback(() => {
-    toggleSelected({ userId, deckId, reactions });
+    toggleSelected({ userId, deck });
     Animated.stagger(100, [
       Animated.spring(buttonScale, { toValue: 2, ...SPRING_CONFIG }),
       Animated.spring(buttonScale, { toValue: 1, ...SPRING_CONFIG }),
     ]).start();
-  }, [userId, deckId, reactions]);
+  }, [userId, deck]);
 
   return (
     <AnimatedPressable

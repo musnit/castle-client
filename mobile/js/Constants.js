@@ -247,6 +247,7 @@ export const FEED_ITEM_DECK_FRAGMENT = `
     firstFrameImage { url, smallUrl }
   }
   reactions {
+    id
     reactionId
     count
     users { userId }

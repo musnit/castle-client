@@ -394,13 +394,6 @@ export const apolloClient = new ApolloClient({
           },
         },
       },
-      Deck: {
-        fields: {
-          reactions: {
-            merge: false, // always take server version
-          },
-        },
-      },
     },
   }),
 });
