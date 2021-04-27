@@ -70,10 +70,8 @@ export const PlayDeckFooter = ({ deck }) => {
       variables: { deckId: deck.parentDeckId },
     });
     if (result?.data?.deck && result.data.deck.visibility === 'public') {
-      return navigate('PlayDeck', {
-        decks: [result.data.deck],
-        initialDeckIndex: 0,
-        title: 'Remixed deck',
+      return navigate('DeckRemixes', {
+        deck: result.data.deck,
       });
     }
   }, [deck.parentDeckId, navigate]);

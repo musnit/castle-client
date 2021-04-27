@@ -20,6 +20,7 @@ import { ProfileScreen } from './profile/ProfileScreen';
 import { ShareDeckScreen } from './share/ShareDeckScreen';
 import { UserListScreen } from './components/UserListScreen';
 import { ViewSourceNavigator } from './create/ViewSourceNavigator';
+import { DeckRemixesScreen } from './play/DeckRemixesScreen';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -59,6 +60,7 @@ const BrowseNavigator = () => (
       component={ViewSourceNavigator}
       options={{ gestureEnabled: false }}
     />
+    <Stack.Screen name="DeckRemixes" component={DeckRemixesScreen} />
   </Stack.Navigator>
 );
 
@@ -77,6 +79,7 @@ const ExploreNavigator = () => (
       component={ViewSourceNavigator}
       options={{ gestureEnabled: false }}
     />
+    <Stack.Screen name="DeckRemixes" component={DeckRemixesScreen} />
   </Stack.Navigator>
 );
 
@@ -116,6 +119,7 @@ const NotificationsNavigator = () => (
       component={ViewSourceNavigator}
       options={{ gestureEnabled: false }}
     />
+    <Stack.Screen name="DeckRemixes" component={DeckRemixesScreen} />
   </Stack.Navigator>
 );
 
@@ -132,6 +136,7 @@ const ProfileNavigator = () => (
       component={ViewSourceNavigator}
       options={{ gestureEnabled: false }}
     />
+    <Stack.Screen name="DeckRemixes" component={DeckRemixesScreen} />
   </Stack.Navigator>
 );
 
