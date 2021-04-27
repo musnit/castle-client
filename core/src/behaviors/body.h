@@ -55,6 +55,7 @@ public:
 
   void handleEnableComponent(ActorId actorId, BodyComponent &component);
   void handleDisableComponent(ActorId actorId, BodyComponent &component, bool removeActor);
+  void handlePerform(double dt);
 
 
   // `ActorId` <-> `b2Body` association

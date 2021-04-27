@@ -7,6 +7,9 @@
 
 
 struct Drawing2Component : BaseComponent {
+  struct Props {
+  } props;
+
   std::string hash;
   std::shared_ptr<love::DrawData> drawData;
 };

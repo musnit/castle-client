@@ -66,6 +66,16 @@ void BodyBehavior::handleDisableComponent(
 
 
 //
+// Perform
+//
+
+void BodyBehavior::handlePerform(double dt) {
+  forEachEnabledComponent([&](ActorId actorId, BodyComponent &component) {
+    Debug::display("actor {} angle {}", actorId, component.props.angle());
+  });
+}
+
+//
 // Fixtures
 //
 

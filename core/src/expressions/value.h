@@ -16,10 +16,11 @@ public:
 
 
   template<typename T>
-  bool is(); // Whether the current value can be interpreted as C++ type `T`
+  bool is() const; // Whether the current value can be interpreted as C++ type `T`
 
   template<typename T>
-  T as(T def = {}); // Get the the current value as C++ type `T`, or given default if not `is<T>()`
+  T as(T def
+      = {}) const; // Get the the current value as C++ type `T`, or given default if not `is<T>()`
 
 
 private:
@@ -34,7 +35,7 @@ inline ExpressionValue::ExpressionValue(double value_)
 }
 
 template<typename T>
-bool ExpressionValue::is() {
+bool ExpressionValue::is() const {
   if constexpr (std::is_same_v<double, T> || std::is_same_v<float, T> || std::is_same_v<int, T>) {
     return true;
   } else {
@@ -43,7 +44,7 @@ bool ExpressionValue::is() {
 }
 
 template<typename T>
-T ExpressionValue::as(T def) {
+T ExpressionValue::as(T def) const {
   if constexpr (std::is_same_v<double, T> || std::is_same_v<float, T> || std::is_same_v<int, T>) {
     return value;
   } else {
