@@ -53,8 +53,8 @@ const PlayCardScreenDataProvider = ({ deckId, cardId, route, ...props }) => {
             cardId
             title
             backgroundImage {
-              fileId
               url
+              smallUrl
             }
             scene {
               sceneId
@@ -65,6 +65,7 @@ const PlayCardScreenDataProvider = ({ deckId, cardId, route, ...props }) => {
       `,
       {
         variables: { cardId },
+        fetchPolicy: 'network-only',
       }
     );
 
@@ -81,8 +82,8 @@ const PlayCardScreenDataProvider = ({ deckId, cardId, route, ...props }) => {
               cardId
               title
               backgroundImage {
-                fileId
                 url
+                smallUrl
               }
               scene {
                 data
@@ -94,6 +95,7 @@ const PlayCardScreenDataProvider = ({ deckId, cardId, route, ...props }) => {
       `,
       {
         variables: { deckId },
+        fetchPolicy: 'network-only',
       }
     );
 
