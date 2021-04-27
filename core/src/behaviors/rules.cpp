@@ -285,7 +285,7 @@ struct ActOnResponse : BaseResponse {
           ++top.index;
           ctx.setNext(params.body());
         } else {
-          // No repetitions left -- return to original actor, pop off stack, continue with `next`
+          // No actors left -- return to original actor, pop off stack, continue with `next`
           ctx.actorId = top.returnActorId;
           ctx.actOnStack.pop_back();
         }

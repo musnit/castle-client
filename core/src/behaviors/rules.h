@@ -71,7 +71,7 @@ public:
 
   struct ActOnStackElem {
     ResponseRef response = nullptr; // The response we're associated with
-    int index = 0; // Which index in the actor list to visit next
+    int index = 0; // Which index in the actor set to visit next
     ActorId returnActorId = nullActor; // Which actor to return to when done
   };
   SmallVector<ActOnStackElem, 2> actOnStack; // Tracks enclosing act-on responses in progress
