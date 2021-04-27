@@ -22,12 +22,14 @@ public:
 
     bool operator==(const Token &other) const;
 
+    Token() = default; // To allow default construction when reading
+
   private:
     friend class TokenMap;
 
     explicit Token(int index_);
 
-    int index;
+    int index = -1;
   };
 
 

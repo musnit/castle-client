@@ -65,6 +65,8 @@ std::unique_ptr<Scene> Snapshot::toScene() {
   };
 
   archive.read([&](Archive::Reader &reader) {
+    reader.setScene(scene.get()); // Associate new reader with scene
+
     if (reader.has("data")) {
       // GraphQL response
       reader.obj("data", [&]() {

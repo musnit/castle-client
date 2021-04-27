@@ -67,7 +67,14 @@ public:
     ResponseRef response = nullptr; // The response we're associated with
     int count = 0; // Remaining repetions. For 'infinite repeat' this is 1 to continue or 0 to stop.
   };
-  SmallVector<RepeatStackElem, 2> repeatStack; // Tracks repeat responses currently in progress
+  SmallVector<RepeatStackElem, 2> repeatStack; // Tracks enclosing repeat responses in progress
+
+  struct ActOnStackElem {
+    ResponseRef response = nullptr; // The response we're associated with
+    int index = 0; // Which index in the actor list to visit next
+    ActorId returnActorId = nullActor; // Which actor to return to when done
+  };
+  SmallVector<ActOnStackElem, 2> actOnStack; // Tracks enclosing act-on responses in progress
 
 
   Scene &getScene() const;

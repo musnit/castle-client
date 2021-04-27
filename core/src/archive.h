@@ -2,6 +2,7 @@
 
 // No `#include "precomp.h"` so we can use this in Ghost
 
+#include <optional>
 #include <fstream>
 
 #include "rapidjson/document.h"
@@ -22,6 +23,7 @@ namespace json = rapidjson;
 
 class Reader; // Forward declarations
 class Writer;
+class Scene;
 
 class Archive {
   // Stores a JSON document in an in-memory format. Allows traversal of the existing data or
@@ -161,11 +163,19 @@ public:
   void setFallback(const json::Value *fallback_);
 
 
+  // Scene association
+
+  void setScene(Scene *scene_); // Associate with a scene so functions deep in a reading call stack
+                                // (eg. `Tag::read`) can retrieve the scene / behaviors to work on
+  Scene *getScene();
+
+
 private:
   friend class Archive;
 
   const json::Value *cur;
   const json::Value *fallback = nullptr;
+  Scene *scene = nullptr;
 
   template<typename T, typename = void>
   static constexpr auto hasRead = false;
@@ -627,6 +637,14 @@ inline const json::Value *Reader::jsonValue() {
 
 inline void Reader::setFallback(const json::Value *fallback_) {
   fallback = cur != fallback_ ? fallback_ : nullptr; // Falling back to self doesn't help...
+}
+
+inline void Reader::setScene(Scene *scene_) {
+  scene = scene_;
+}
+
+inline Scene *Reader::getScene() {
+  return scene;
 }
 
 template<typename F>

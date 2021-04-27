@@ -11,11 +11,12 @@
 // Tag
 //
 
+using TaggedActorIds = SmallVector<ActorId, 4>;
 struct TagsMapElem {
   // Used internally by `TagsBehavior` as an element in the tag -> actors map. Defined first and at
   // top-level because `TagsComponent` depends on `Tag` depends on `TagsMap` depends on this.
 
-  SmallVector<ActorId, 4> actorIds;
+  TaggedActorIds actorIds;
 };
 using TagsMap = TokenMap<TagsMapElem>;
 
@@ -23,7 +24,11 @@ struct Tag {
   // For storing tag references at runtime (eg. in rule elements or other behaviors). Enables fast
   // lookups and deduplicates string data.
 
+  Tag() = default; // To allow default construction when reading
+
   bool operator==(const Tag &other) const;
+
+  void read(Reader &reader);
 
 private:
   friend class TagsBehavior;
@@ -64,14 +69,14 @@ public:
 
   Tag getTag(const char *str); // Get tag from string with exact single tag (no whitespace)
   TagVector parseTags(const char *str); // Get from string with space-separated words -- also dedups
+  const std::string *getString(Tag tag); // Get string from tag -- `nullptr` if unrecognized
 
 
   // `ActorId` <-> `Tag`
 
   bool hasTag(ActorId actorId, Tag tag) const;
-  const TagVector &getTags(ActorId actorId) const;
-  template<typename F>
-  void forEachActorWithTag(Tag tag, F &&f) const; // `f` takes `(ActorId)`
+  const TagVector &getTags(ActorId actorId) const; // Direct short-lived view of underlying vector
+  const TaggedActorIds &getActors(Tag tag) const; // Direct short-lived view of underlying vector
 
 
 private:
@@ -125,6 +130,10 @@ inline TagVector TagsBehavior::parseTags(const char *str) {
   return result;
 }
 
+inline const std::string *TagsBehavior::getString(Tag tag) {
+  return map.getString(tag.token);
+}
+
 inline bool TagsBehavior::hasTag(ActorId actorId, Tag tag) const {
   if (auto component = maybeGetComponent(actorId)) {
     auto &tags = component->tags;
@@ -143,11 +152,11 @@ inline const TagVector &TagsBehavior::getTags(ActorId actorId) const {
   }
 }
 
-template<typename F>
-inline void TagsBehavior::forEachActorWithTag(Tag tag, F &&f) const {
+inline const TaggedActorIds &TagsBehavior::getActors(Tag tag) const {
   if (auto elem = map.lookup(tag.token)) {
-    for (auto actorId : elem->actorIds) {
-      f(actorId);
-    }
+    return elem->actorIds;
+  } else {
+    static TaggedActorIds empty;
+    return empty;
   }
 }

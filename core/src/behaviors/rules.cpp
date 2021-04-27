@@ -258,6 +258,50 @@ struct StopRepeatingResponse : BaseResponse {
   }
 };
 
+struct ActOnResponse : BaseResponse {
+  inline static const RuleRegistration<ActOnResponse, RulesBehavior> registration { "act on" };
+
+  struct Params {
+    PROP(Tag, tag);
+    PROP(ResponseRef, body) = nullptr;
+  } params;
+
+  void linearize(ResponseRef continuation) override {
+    // Same as `RepeatResponse::linearize`
+    BaseResponse::linearize(next, continuation);
+    BaseResponse::linearize(params.body(), this);
+  }
+
+  void run(RuleContext &ctx) override {
+    auto &tagsBehavior = ctx.getScene().getBehaviors().byType<TagsBehavior>();
+    auto &actorIds = tagsBehavior.getActors(params.tag());
+
+    // Check if we're in progress (are at the top of the act-on stack)
+    if (ctx.actOnStack.size() > 0) {
+      if (auto &top = ctx.actOnStack.back(); top.response == this) {
+        if (top.index < int(actorIds.size())) {
+          // Still have actors left to visit -- set to visit next actor, increment index, enter body
+          ctx.actorId = actorIds[top.index];
+          ++top.index;
+          ctx.setNext(params.body());
+        } else {
+          // No repetitions left -- return to original actor, pop off stack, continue with `next`
+          ctx.actorId = top.returnActorId;
+          ctx.actOnStack.pop_back();
+        }
+        return;
+      }
+    }
+
+    // Not in progress -- add ourselves to the act-on stack
+    if (!actorIds.empty()) {
+      ctx.actOnStack.push_back({ this, 1, ctx.actorId }); // Visiting index 0 right away, 1 is next
+      ctx.actorId = actorIds[0];
+      ctx.setNext(params.body());
+    }
+  }
+};
+
 
 //
 // Timing responses

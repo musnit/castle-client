@@ -114,6 +114,7 @@ ActorId Scene::addActor(Reader *maybeReader, const char *maybeParentEntryId) {
           maybeFallbackComponentsReader = Reader(*parentReader.jsonValue());
         } else {
           // No actor reader given, read directly from parent
+          parentReader.setScene(this); // New reader so make sure to associate with scene
           readComponents(parentReader);
         }
       });
