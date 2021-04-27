@@ -32,9 +32,11 @@ void TagsBehavior::handleEnableComponent(ActorId actorId, TagsComponent &compone
       map.insert(tag.token, {});
       elem = map.lookup(tag.token);
     }
-    if (elem) { // This should always pass
-      elem->actorIds.push_back(actorId); // NOTE: We're assuming it's not already there because the
-                                         //       component is just being enabled now
+    if (elem) { // Should always pass because we inserted above if not present
+      auto &actorIds = elem->actorIds;
+      if (!actorIds.contains(actorId)) { // Should also always pass, but just making sure
+        actorIds.emplace(actorId);
+      }
     }
   }
 }
@@ -43,11 +45,11 @@ void TagsBehavior::handleDisableComponent(
     ActorId actorId, TagsComponent &component, bool removeActor) {
   // Remove from map for each tag
   for (auto tag : component.tags) {
-    if (auto elem = map.lookup(tag.token)) { // This should always pass
-      // TODO(nikki): We do a linear-time scan to remove here, use some kind of sparse set instead?
-      //              Let's get all the functionality working first before doing that though...
+    if (auto elem = map.lookup(tag.token)) { // Should always pass
       auto &actorIds = elem->actorIds;
-      actorIds.erase(std::remove(actorIds.begin(), actorIds.end(), actorId), actorIds.end());
+      if (actorIds.contains(actorId)) { // Should also always pass, but just making sure
+        actorIds.remove(actorId);
+      }
     }
   }
 }

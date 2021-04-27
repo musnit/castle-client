@@ -11,14 +11,14 @@
 // Tag
 //
 
-using TaggedActorIds = SmallVector<ActorId, 4>;
 struct TagsMapElem {
   // Used internally by `TagsBehavior` as an element in the tag -> actors map. Defined first and at
   // top-level because `TagsComponent` depends on `Tag` depends on `TagsMap` depends on this.
 
-  TaggedActorIds actorIds;
+  ActorIdSet actorIds;
 };
-using TagsMap = TokenMap<TagsMapElem>;
+
+using TagsMap = TokenMap<TagsMapElem>; // Used by `TagsBehavior` as tag -> actors map
 
 struct Tag {
   // For storing tag references at runtime (eg. in rule elements or other behaviors). Enables fast
@@ -56,7 +56,7 @@ struct TagsComponent : BaseComponent {
 class TagsBehavior : public BaseBehavior<TagsBehavior, TagsComponent> {
 public:
   static constexpr auto name = "Tags";
-  static constexpr auto behaviorId = 7;
+  static constexpr auto behaviorId = 17;
 
   using BaseBehavior::BaseBehavior;
 
@@ -76,7 +76,7 @@ public:
 
   bool hasTag(ActorId actorId, Tag tag) const;
   const TagVector &getTags(ActorId actorId) const; // Direct short-lived view of underlying vector
-  const TaggedActorIds &getActors(Tag tag) const; // Direct short-lived view of underlying vector
+  const ActorIdSet &getActors(Tag tag) const; // Direct short-lived view of underlying set
 
 
 private:
@@ -152,11 +152,11 @@ inline const TagVector &TagsBehavior::getTags(ActorId actorId) const {
   }
 }
 
-inline const TaggedActorIds &TagsBehavior::getActors(Tag tag) const {
+inline const ActorIdSet &TagsBehavior::getActors(Tag tag) const {
   if (auto elem = map.lookup(tag.token)) {
     return elem->actorIds;
   } else {
-    static TaggedActorIds empty;
+    static ActorIdSet empty;
     return empty;
   }
 }

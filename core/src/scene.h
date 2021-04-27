@@ -12,6 +12,7 @@ class AllBehaviors; // Forward declaration otherwise this would be circular...
 
 using ActorId = entt::entity; // Is unique throughout a `Scene`'s lifetime, never recycled
 constexpr auto nullActor = entt::null; // An `ActorId`-compatible sentinel value
+using ActorIdSet = entt::sparse_set;
 
 struct Actor {
   // Bookkeeping information that is common to all actors. Data specific to each behavior is managed

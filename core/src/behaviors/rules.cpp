@@ -281,7 +281,7 @@ struct ActOnResponse : BaseResponse {
       if (auto &top = ctx.actOnStack.back(); top.response == this) {
         if (top.index < int(actorIds.size())) {
           // Still have actors left to visit -- set to visit next actor, increment index, enter body
-          ctx.actorId = actorIds[top.index];
+          ctx.actorId = actorIds.data()[top.index];
           ++top.index;
           ctx.setNext(params.body());
         } else {
@@ -296,7 +296,7 @@ struct ActOnResponse : BaseResponse {
     // Not in progress -- add ourselves to the act-on stack
     if (!actorIds.empty()) {
       ctx.actOnStack.push_back({ this, 1, ctx.actorId }); // Visiting index 0 right away, 1 is next
-      ctx.actorId = actorIds[0];
+      ctx.actorId = actorIds.data()[0];
       ctx.setNext(params.body());
     }
   }

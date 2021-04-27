@@ -279,35 +279,23 @@ struct BasicTagsTest : Test {
 
     // Query
     {
-      std::set<ActorId> result;
-      tagsBehavior.forEachActorWithTag(t1, [&](ActorId actorId) {
-        result.insert(actorId);
-      });
-      assert((result == std::set<ActorId> { a1, a2 }));
+      auto &result = tagsBehavior.getActors(t1);
+      assert((std::set(result.begin(), result.end()) == std::set<ActorId> { a1, a2 }));
     }
     {
-      std::set<ActorId> result;
-      tagsBehavior.forEachActorWithTag(tagsBehavior.getTag("tag2"), [&](ActorId actorId) {
-        result.insert(actorId);
-      });
-      assert((result == std::set<ActorId> { a2 }));
+      auto &result = tagsBehavior.getActors(tagsBehavior.getTag("tag2"));
+      assert((std::set(result.begin(), result.end()) == std::set<ActorId> { a2 }));
     }
 
     // Remove actor and query again
-    scene.removeActor(a2);
+    scene.removeActor(a1);
     {
-      std::set<ActorId> result;
-      tagsBehavior.forEachActorWithTag(tagsBehavior.getTag("tag1"), [&](ActorId actorId) {
-        result.insert(actorId);
-      });
-      assert((result == std::set<ActorId> { a1 }));
+      auto &result = tagsBehavior.getActors(tagsBehavior.getTag("tag1"));
+      assert((std::set(result.begin(), result.end()) == std::set<ActorId> { a2 }));
     }
     {
-      std::set<ActorId> result;
-      tagsBehavior.forEachActorWithTag(t2, [&](ActorId actorId) {
-        result.insert(actorId);
-      });
-      assert((result == std::set<ActorId> {}));
+      auto &result = tagsBehavior.getActors(t2);
+      assert((std::set(result.begin(), result.end()) == std::set<ActorId> { a2 }));
     }
 
     // Test some more parsing
