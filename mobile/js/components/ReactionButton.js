@@ -5,6 +5,7 @@ import { gql } from '@apollo/client';
 import * as Constants from '../Constants';
 import * as Session from '../Session';
 
+import debounce from 'lodash.debounce';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 import { TouchableNativeFeedback as PressableRNGH } from 'react-native-gesture-handler';
@@ -105,6 +106,8 @@ const toggleReaction = async ({ reactionId, deck, enabled }) => {
   return result;
 };
 
+const toggleReactionDebounce = debounce(toggleReaction, 100);
+
 const ReactionCount = ({ reaction, optimisticCount }) => {
   const totalCount = (reaction?.count ?? 0) + (optimisticCount ?? 0);
   if (!totalCount) return null;
@@ -130,7 +133,7 @@ export const ReactionButton = ({ deck }) => {
 
   let initialIsSelected = fire?.isCurrentUserToggled;
   const [isSelected, toggleSelected] = React.useReducer((state, action) => {
-    toggleReaction({
+    toggleReactionDebounce({
       reactionId: Constants.reactionIds.fire,
       enabled: !state,
       ...action,
