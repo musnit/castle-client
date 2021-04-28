@@ -35,7 +35,7 @@ export const DeckRemixesScreen = ({ route }) => {
   const parentDeckId = deck.deckId;
   const { push } = useNavigation();
   const insets = useSafeAreaInsets();
-  const paddingBottom = Constants.iOS ? insets.bottom : insets.bottom + 50;
+  const paddingBottom = insets.bottom + 64;
   let decks;
 
   const queryDecks = useQuery(
