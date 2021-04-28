@@ -454,18 +454,18 @@ void RulesBehavior::handleReadComponent(
     // Trigger
     reader.obj("trigger", [&]() {
       // Find loader by name and behavior id
-      if (auto maybeName = reader.str("name")) {
-        if (auto maybeBehaviorId = reader.num("behaviorId")) {
-          auto nameHash = entt::hashed_string(*maybeName).value();
+      if (auto name = reader.str("name")) {
+        if (auto behaviorId = reader.num("behaviorId")) {
+          auto nameHash = entt::hashed_string(*name).value();
           for (auto &loader : triggerLoaders) {
-            if (loader.behaviorId == *maybeBehaviorId && nameHash == loader.nameHs.value()
-                && !std::strcmp(*maybeName, loader.nameHs.data())) {
+            if (loader.behaviorId == *behaviorId && nameHash == loader.nameHs.value()
+                && !std::strcmp(*name, loader.nameHs.data())) {
               loader.read(getScene(), actorId, response, reader);
               return;
             }
           }
         }
-        Debug::log("RulesBehavior: unsupported trigger type '{}'", *maybeName);
+        Debug::log("RulesBehavior: unsupported trigger type '{}'", *name);
       }
     });
   });
@@ -473,17 +473,17 @@ void RulesBehavior::handleReadComponent(
 
 ResponseRef RulesBehavior::readResponse(Reader &reader) {
   // Find loader by name and behavior id
-  if (auto maybeName = reader.str("name")) {
-    if (auto maybeBehaviorId = reader.num("behaviorId")) {
-      auto nameHash = entt::hashed_string(*maybeName).value();
+  if (auto name = reader.str("name")) {
+    if (auto behaviorId = reader.num("behaviorId")) {
+      auto nameHash = entt::hashed_string(*name).value();
       for (auto &loader : responseLoaders) {
-        if (loader.behaviorId == *maybeBehaviorId && nameHash == loader.nameHs.value()
-            && !std::strcmp(*maybeName, loader.nameHs.data())) {
+        if (loader.behaviorId == *behaviorId && nameHash == loader.nameHs.value()
+            && !std::strcmp(*name, loader.nameHs.data())) {
           return loader.read(*this, reader);
         }
       }
     }
-    Debug::log("RulesBehavior: unsupported response type '{}'", *maybeName);
+    Debug::log("RulesBehavior: unsupported response type '{}'", *name);
   }
   return nullptr;
 }
@@ -494,15 +494,15 @@ void RulesBehavior::readExpression(ExpressionRef &expr, Reader &reader) {
     expr.constant = *value;
   } else {
     // Nested expression -- find loader by type
-    if (auto maybeName = reader.str("expressionType")) {
-      auto nameHash = entt::hashed_string(*maybeName).value();
+    if (auto name = reader.str("expressionType")) {
+      auto nameHash = entt::hashed_string(*name).value();
       for (auto &loader : expressionLoaders) {
-        if (nameHash == loader.nameHs.value() && !std::strcmp(*maybeName, loader.nameHs.data())) {
+        if (nameHash == loader.nameHs.value() && !std::strcmp(*name, loader.nameHs.data())) {
           loader.read(expr, *this, reader);
           return;
         }
       }
-      Debug::log("RulesBehavior: unsupported expression type '{}'", *maybeName);
+      Debug::log("RulesBehavior: unsupported expression type '{}'", *name);
     }
   }
 }

@@ -87,9 +87,9 @@ void Engine::loadSceneFromFile(const char *path) {
 
 void Engine::tryLoadInitialDeck() {
 #ifdef __EMSCRIPTEN__
-  if (auto maybeGraphQlJson = JS_getInitialDeckGraphQlJson()) {
-    scene = Snapshot::fromJson(maybeGraphQlJson).toScene();
-    free(maybeGraphQlJson);
+  if (auto graphQlJson = JS_getInitialDeckGraphQlJson()) {
+    scene = Snapshot::fromJson(graphQlJson).toScene();
+    free(graphQlJson);
   }
 #endif
 }

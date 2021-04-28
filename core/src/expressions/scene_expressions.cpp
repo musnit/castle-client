@@ -42,18 +42,19 @@ struct ActorRef {
       auto &scene = ctx.getScene();
       auto &tagsBehavior = scene.getBehaviors().byType<TagsBehavior>();
       auto &taggedActorIds = tagsBehavior.getActors(tag());
-      auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
-      if (auto body = bodyBehavior.maybeGetPhysicsBody(ctx.actorId)) {
-        // Current actor has a body -- return closest with tag
-        auto nTaggedActorIds = taggedActorIds.size();
-        if (nTaggedActorIds == 0) {
-          return nullActor;
-        } else if (nTaggedActorIds == 1) { // Avoid math in common singleton scenario
-          return taggedActorIds.data()[0];
-        } else {
+      if (auto nTaggedActorIds = taggedActorIds.size(); nTaggedActorIds == 0) {
+        return nullActor;
+      } else if (nTaggedActorIds == 1) {
+        // Only one actor with this tag -- avoid extra logic and just return it
+        return taggedActorIds.data()[0];
+      } else {
+        // Multiple actors with this tag
+        auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
+        if (auto body = bodyBehavior.maybeGetPhysicsBody(ctx.actorId)) {
+          // Current actor has a body -- return closest with tag
           auto pos = body->GetPosition();
           ActorId closestActorId = nullActor;
-          float closestSqDist = std::numeric_limits<float>::max();
+          auto closestSqDist = std::numeric_limits<float>::max();
           for (auto taggedActorId : taggedActorIds) {
             if (auto taggedBody = bodyBehavior.maybeGetPhysicsBody(taggedActorId)) {
               // Has a body -- check if closer
@@ -70,10 +71,8 @@ struct ActorRef {
             }
           }
           return closestActorId;
-        }
-      } else {
-        // Current actor doesn't have a body -- return first actor with tag
-        if (!taggedActorIds.empty()) {
+        } else {
+          // Current actor doesn't have a body -- return first actor with tag
           return taggedActorIds.data()[0];
         }
       }

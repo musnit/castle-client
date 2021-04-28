@@ -8,10 +8,10 @@
 //
 
 void Tag::read(Reader &reader) {
-  if (auto maybeScene = reader.getScene()) {
-    if (auto maybeStr = reader.str()) {
-      auto &tagsBehavior = maybeScene->getBehaviors().byType<TagsBehavior>();
-      *this = tagsBehavior.getTag(*maybeStr);
+  if (auto scene = reader.getScene()) {
+    if (auto str = reader.str()) {
+      auto &tagsBehavior = scene->getBehaviors().byType<TagsBehavior>();
+      *this = tagsBehavior.getTag(*str);
     }
   }
 }

@@ -385,8 +385,8 @@ void RulesBehavior::fire(ActorId actorId) {
 template<typename Trigger, typename F>
 void RulesBehavior::fireIf(ActorId actorId, F &&filter) {
   auto &scene = getScene();
-  if (auto maybeComponent = scene.getEntityRegistry().try_get<TriggerComponent<Trigger>>(actorId)) {
-    for (auto &entry : maybeComponent->entries) {
+  if (auto component = scene.getEntityRegistry().try_get<TriggerComponent<Trigger>>(actorId)) {
+    for (auto &entry : component->entries) {
       if (filter((const Trigger &)entry.trigger)) {
         schedule({ entry.response, actorId, scene });
       }
