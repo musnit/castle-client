@@ -32,10 +32,15 @@ const getItemHorzPadding = ({ isPlaying = false } = {}) => {
   return padding > 0 ? padding : 0;
 };
 
-const DECK_FEED_ITEM_HEIGHT =
-  (1 / Constants.CARD_RATIO) * (100 * vw - getItemHorzPadding() * 2) + // height of preview
-  DECK_FEED_ITEM_MARGIN + // margin between items
-  Constants.FEED_ITEM_HEADER_HEIGHT; // height of the creator header
+const getItemHeight = ({ isPlaying = false } = {}) => {
+  return (
+    (1 / Constants.CARD_RATIO) * (100 * vw - getItemHorzPadding({ isPlaying }) * 2) + // height of preview
+    DECK_FEED_ITEM_MARGIN + // margin between items
+    Constants.FEED_ITEM_HEADER_HEIGHT
+  ); // height of the creator header
+};
+
+const DECK_FEED_ITEM_DEFAULT_HEIGHT = getItemHeight();
 
 const SPRING_CONFIG = {
   tension: 100,
@@ -174,7 +179,7 @@ const CurrentDeckCell = ({
 
   const playingFooterY = playingTransition.interpolate({
     inputRange: [0, 1.01],
-    outputRange: [0, vh * 100 - DECK_FEED_ITEM_HEIGHT - insets.bottom - 20],
+    outputRange: [0, vh * 100 - getItemHeight({ isPlaying: true }) - insets.bottom],
   });
 
   const onHardwareBackPress = React.useCallback(() => {
@@ -356,8 +361,8 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
 
   const getItemLayout = React.useCallback(
     (data, index) => ({
-      length: DECK_FEED_ITEM_HEIGHT,
-      offset: DECK_FEED_ITEM_HEIGHT * index,
+      length: DECK_FEED_ITEM_DEFAULT_HEIGHT,
+      offset: DECK_FEED_ITEM_DEFAULT_HEIGHT * index,
       index,
     }),
     []
@@ -392,7 +397,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
           onScrollBeginDrag={onScrollBeginDrag}
           onScrollEndDrag={onScrollEndDrag}
           snapToAlignment="start"
-          snapToInterval={DECK_FEED_ITEM_HEIGHT}
+          snapToInterval={DECK_FEED_ITEM_DEFAULT_HEIGHT}
           decelerationRate="fast"
           pagingEnabled
           viewabilityConfig={viewabilityConfig}
