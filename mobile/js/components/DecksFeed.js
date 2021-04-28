@@ -207,7 +207,6 @@ const CurrentDeckCell = ({
           deck={deck}
           isPlaying={isPlaying}
           onPressBack={onPressBack}
-          additionalPadding={getItemHorzPadding()}
           isMe={isMe}
           isAnonymous={isAnonymous}
           onBlockUser={onBlockUser}

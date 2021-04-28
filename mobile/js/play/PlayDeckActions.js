@@ -53,7 +53,6 @@ export const PlayDeckActions = ({
   isPlaying,
   onPressBack,
   disabled,
-  additionalPadding,
   onBlockUser,
   onReportDeck,
   isMe = false,
@@ -63,13 +62,13 @@ export const PlayDeckActions = ({
   const { push } = useNavigation();
   const { showActionSheetWithOptions } = useActionSheet();
 
-  let backTransform = React.useRef(new Animated.Value(0)).current;
+  let playingTransition = React.useRef(new Animated.Value(0)).current;
 
   React.useEffect(() => {
-    Animated.spring(backTransform, {
+    Animated.spring(playingTransition, {
       toValue: isPlaying ? 1 : 0,
       friction: 20,
-      tension: 70,
+      tension: 10,
       useNativeDriver: true,
     }).start();
   }, [isPlaying]);
@@ -143,26 +142,17 @@ export const PlayDeckActions = ({
   );
 
   return (
-    <View
+    <Animated.View
       style={{
         ...styles.container,
-        paddingLeft: isPlaying ? 12 + additionalPadding : 12,
-        paddingRight: 12,
+        paddingHorizontal: 12,
+        opacity: playingTransition,
       }}>
-      <Animated.View
-        style={{
-          ...styles.row,
-          flex: -1,
-          paddingRight: 16,
-        }}>
+      <View style={styles.row}>
         <Pressable style={styles.back} onPress={onPressBack}>
-          {({ pressed }) => (
-            <Animated.View style={{ opacity: backTransform }}>
-              <Icon name="arrow-back" color={pressed ? '#ccc' : '#fff'} size={32} />
-            </Animated.View>
-          )}
+          {({ pressed }) => <Icon name="arrow-back" color={pressed ? '#ccc' : '#fff'} size={32} />}
         </Pressable>
-      </Animated.View>
+      </View>
       <View style={styles.row} pointerEvents={disabled ? 'none' : 'auto'}>
         <Dropdown
           style={styles.rightButton}
@@ -181,6 +171,6 @@ export const PlayDeckActions = ({
           )}
         </Pressable>
       </View>
-    </View>
+    </Animated.View>
   );
 };
