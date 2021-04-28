@@ -1,9 +1,10 @@
 import React from 'react';
-import { Pressable as PressableRN, StyleSheet, Text, View } from 'react-native';
+import { Animated, Pressable as PressableRN, StyleSheet, Text, View } from 'react-native';
 import { gql } from '@apollo/client';
 import { useNavigation } from '../ReactNavigation';
 import { ReactionButton } from '../components/ReactionButton';
 import { UserAvatar } from '../components/UserAvatar';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import * as Constants from '../Constants';
 import * as Session from '../Session';
@@ -22,6 +23,12 @@ const styles = StyleSheet.create({
     padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  background: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    height: 80,
   },
   left: {
     flexDirection: 'row',
@@ -54,7 +61,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const PlayDeckFooter = ({ deck }) => {
+export const PlayDeckFooter = ({ deck, isPlaying }) => {
   const { creator } = deck;
   const { push, navigate } = useNavigation();
 
@@ -76,8 +83,26 @@ export const PlayDeckFooter = ({ deck }) => {
     }
   }, [deck.parentDeckId, navigate]);
 
+  let playingTransition = React.useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    Animated.spring(playingTransition, {
+      toValue: isPlaying ? 0 : 1,
+      friction: 20,
+      tension: 10,
+      useNativeDriver: true,
+    }).start();
+  }, [isPlaying]);
+
   return (
     <View style={styles.container}>
+      <Animated.View style={[styles.background, { opacity: playingTransition }]}>
+        <LinearGradient
+          // Background Linear Gradient
+          colors={['transparent', 'rgba(0,0,0,0.7)']}
+          style={[styles.background]}
+        />
+      </Animated.View>
       <View style={styles.left}>
         <Pressable
           style={styles.creator}

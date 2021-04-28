@@ -1,7 +1,9 @@
 {
   "name": "RNBootSplash",
   "dependencies": {
-    "React-Core": []
+    "React-Core": [
+
+    ]
   },
   "version": "3.2.0",
   "license": "MIT",

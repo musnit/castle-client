@@ -14,6 +14,8 @@ PODS:
   - EXFileSystem (8.0.0):
     - UMCore
     - UMFileSystemInterface
+  - EXLinearGradient (9.1.0):
+    - UMCore
   - EXPermissions (8.0.0):
     - UMCore
     - UMPermissionsInterface
@@ -338,6 +340,7 @@ DEPENDENCIES:
   - EXAppLoaderProvider (from `../node_modules/expo-app-loader-provider/ios`)
   - EXConstants (from `../node_modules/expo-constants/ios`)
   - EXFileSystem (from `../node_modules/expo-file-system/ios`)
+  - EXLinearGradient (from `../node_modules/expo-linear-gradient/ios`)
   - EXPermissions (from `../node_modules/expo-permissions/ios`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/Libraries/FBReactNativeSpec`)
@@ -419,6 +422,9 @@ EXTERNAL SOURCES:
   EXFileSystem:
     :path: !ruby/object:Pathname
     path: "../node_modules/expo-file-system/ios"
+  EXLinearGradient:
+    :path: !ruby/object:Pathname
+    path: "../node_modules/expo-linear-gradient/ios"
   EXPermissions:
     :path: !ruby/object:Pathname
     path: "../node_modules/expo-permissions/ios"
@@ -542,6 +548,7 @@ SPEC CHECKSUMS:
   EXAppLoaderProvider: f6aeb45ee81887811b34eee5c5f235a6111d58d0
   EXConstants: e287774d0d32634ddaef614f2e488c550c6deefc
   EXFileSystem: fa8ecad925ad984681910a2273930f7255a0a9b5
+  EXLinearGradient: 39b1cf1df5b885e8c35e8afedc9d8893b9fced4b
   EXPermissions: 3e58e0fbb2e9539ad1ef5617ff02c2356447421e
   FBLazyVector: 3bb422f41b18121b71783a905c10e58606f7dc3e
   FBReactNativeSpec: f2c97f2529dd79c083355182cc158c9f98f4bd6e
