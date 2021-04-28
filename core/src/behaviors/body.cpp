@@ -70,10 +70,49 @@ void BodyBehavior::handleDisableComponent(
 //
 
 void BodyBehavior::handlePerform(double dt) {
-  forEachEnabledComponent([&](ActorId actorId, BodyComponent &component) {
-    Debug::display("actor {} angle {}", actorId, component.props.angle());
-  });
 }
+
+
+//
+// Getters / setters
+//
+
+ExpressionValue BodyBehavior::handleGetProperty(
+    const BodyComponent &component, PropId propId) const {
+  auto body = component.body;
+  if (!body) {
+    return {};
+  }
+  auto &props = component.props;
+  if (propId == props.x.id) {
+    return body->GetPosition().x;
+  } else if (propId == props.y.id) {
+    return body->GetPosition().y;
+  } else if (propId == props.angle.id) {
+    return body->GetAngle() * 180 / M_PI;
+  } else {
+    return BaseBehavior::handleGetProperty(component, propId);
+  }
+}
+
+void BodyBehavior::handleSetProperty(
+    BodyComponent &component, PropId propId, const ExpressionValue &value) {
+  auto body = component.body;
+  if (!body) {
+    return;
+  }
+  auto &props = component.props;
+  if (propId == props.x.id) {
+    body->SetTransform({ value.as<float>(), body->GetPosition().y }, body->GetAngle());
+  } else if (propId == props.y.id) {
+    body->SetTransform({ body->GetPosition().x, value.as<float>() }, body->GetAngle());
+  } else if (propId == props.angle.id) {
+    body->SetTransform(body->GetPosition(), float(value.as<double>() * M_PI / 180));
+  } else {
+    BaseBehavior::handleSetProperty(component, propId, value);
+  }
+}
+
 
 //
 // Fixtures

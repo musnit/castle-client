@@ -55,7 +55,11 @@ public:
 
   void handleEnableComponent(ActorId actorId, BodyComponent &component);
   void handleDisableComponent(ActorId actorId, BodyComponent &component, bool removeActor);
+
   void handlePerform(double dt);
+
+  ExpressionValue handleGetProperty(const BodyComponent &component, PropId propId) const;
+  void handleSetProperty(BodyComponent &component, PropId propId, const ExpressionValue &value);
 
 
   // `ActorId` <-> `b2Body` association

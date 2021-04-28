@@ -61,10 +61,11 @@ public:
 
   // Properties -- mostly meant for access from rules
 
-  void setProperty(ActorId actorId, PropId propId, const ExpressionValue &value, bool relative);
   ExpressionValue getProperty(ActorId actorId, PropId propId) const;
-  void handleSetProperty(Component &component, PropId propId, const ExpressionValue &value);
+  void setProperty(ActorId actorId, PropId propId, const ExpressionValue &value, bool relative);
+
   ExpressionValue handleGetProperty(const Component &component, PropId propId) const;
+  void handleSetProperty(Component &component, PropId propId, const ExpressionValue &value);
 
 
   // Other behaviors
