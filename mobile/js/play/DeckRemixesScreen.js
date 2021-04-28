@@ -79,40 +79,42 @@ export const DeckRemixesScreen = ({ route }) => {
     decks = queryDecks.data.deck.childDecks;
   }
 
+  const ListHeaderComponent = (
+    <View style={styles.header}>
+      <View style={{ flexDirection: 'row', paddingLeft: Constants.GRID_PADDING }}>
+        <View style={[styles.emptyCell, Constants.styles.gridItem]} />
+        <CardCell
+          style={[Constants.styles.gridItem, { flex: 1 }]}
+          card={deck.initialCard}
+          visibility={deck.visibility}
+          creator={deck.creator}
+          onPress={() =>
+            push(
+              'PlayDeck',
+              {
+                decks: [deck],
+                initialDeckIndex: 0,
+              },
+              {
+                isFullscreen: true,
+              }
+            )
+          }
+          inGrid={true}
+        />
+        <View style={[styles.emptyCell, Constants.styles.gridItem]} />
+      </View>
+      <View style={styles.sectionTitle}>
+        <Text style={styles.sectionTitleLabel}>
+          {deck ? 'Remixes of @' + deck.creator.username + "'s deck" : ''}
+        </Text>
+      </View>
+    </View>
+  );
+
   return (
     <SafeAreaView edges={['top', 'left', 'right']}>
       <ScreenHeader title={'Remixes'} />
-      <View style={styles.header}>
-        <View style={{ flexDirection: 'row', paddingLeft: Constants.GRID_PADDING }}>
-          <View style={[styles.emptyCell, Constants.styles.gridItem]} />
-          <CardCell
-            style={[Constants.styles.gridItem, { flex: 1 }]}
-            card={deck.initialCard}
-            visibility={deck.visibility}
-            creator={deck.creator}
-            onPress={() =>
-              push(
-                'PlayDeck',
-                {
-                  decks: [deck],
-                  initialDeckIndex: 0,
-                  title: 'Recent',
-                },
-                {
-                  isFullscreen: true,
-                }
-              )
-            }
-            inGrid={true}
-          />
-          <View style={[styles.emptyCell, Constants.styles.gridItem]} />
-        </View>
-        <View style={styles.sectionTitle}>
-          <Text style={styles.sectionTitleLabel}>
-            {deck ? 'Remixes of @' + deck.creator.username + "'s deck" : ''}
-          </Text>
-        </View>
-      </View>
       {decks?.length ? (
         <DecksGrid
           decks={decks}
@@ -130,6 +132,7 @@ export const DeckRemixesScreen = ({ route }) => {
               }
             )
           }
+          ListHeaderComponent={ListHeaderComponent}
         />
       ) : null}
     </SafeAreaView>
