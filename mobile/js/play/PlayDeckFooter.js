@@ -16,11 +16,13 @@ import { TouchableNativeFeedback as PressableRNGH } from 'react-native-gesture-h
 // waiting for merge: https://github.com/facebook/react-native/pull/29039
 const Pressable = Constants.iOS ? PressableRN : PressableRNGH;
 
-const AVATAR_SIZE = 36;
+const AVATAR_SIZE = 32;
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    paddingVertical: 8,
+    paddingLeft: 16,
+    paddingRight: 8,
     flexDirection: 'row',
     alignItems: 'center',
   },

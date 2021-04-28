@@ -6,7 +6,7 @@ import * as Constants from '../Constants';
 import * as Session from '../Session';
 
 import debounce from 'lodash.debounce';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import FastImage from 'react-native-fast-image';
 
 import { TouchableNativeFeedback as PressableRNGH } from 'react-native-gesture-handler';
 
@@ -24,31 +24,32 @@ const SPRING_CONFIG = {
 
 const styles = StyleSheet.create({
   container: {
-    ...Constants.styles.dropShadow,
-
-    // TODO: actual react button
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#fff',
-    flexShrink: 0,
+    width: 56,
+    height: 56,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  image: {
+    width: 56,
+    height: 56,
   },
 });
 
 const countStyles = StyleSheet.create({
   container: {
     position: 'absolute',
-    right: -6,
-    bottom: -4,
-    padding: 2,
+    right: 6,
+    bottom: 2,
+    paddingHorizontal: 4,
+    paddingTop: 2,
+    paddingBottom: 2,
     backgroundColor: '#000',
     borderRadius: 2,
     minWidth: 12,
   },
+
   label: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: 'bold',
     color: '#fff',
   },
@@ -150,14 +151,23 @@ export const ReactionButton = ({ deck }) => {
   }, [deck]);
 
   return (
-    <AnimatedPressable
-      onPress={onPress}
-      style={[styles.container, { transform: [{ scale: buttonScale }] }]}>
-      <FontAwesome5 name="fire-alt" size={24} color={isSelected ? '#f00' : '#000'} />
+    <View>
+      <AnimatedPressable
+        onPress={onPress}
+        style={[styles.container, { transform: [{ scale: buttonScale }] }]}>
+        <FastImage
+          style={styles.image}
+          source={
+            isSelected
+              ? require('../../assets/images/emoji/fire-selected.png')
+              : require('../../assets/images/emoji/fire.png')
+          }
+        />
+      </AnimatedPressable>
       <ReactionCount
         reaction={fire}
         optimisticCount={makeOptimisticCount(initialIsSelected, isSelected)}
       />
-    </AnimatedPressable>
+    </View>
   );
 };
