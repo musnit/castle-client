@@ -63,6 +63,8 @@ public:
 
   void setProperty(ActorId actorId, PropId propId, const ExpressionValue &value, bool relative);
   ExpressionValue getProperty(ActorId actorId, PropId propId) const;
+  void handleSetProperty(Component &component, PropId propId, const ExpressionValue &value);
+  ExpressionValue handleGetProperty(const Component &component, PropId propId) const;
 
 
   // Other behaviors
@@ -243,25 +245,13 @@ template<typename Derived, typename Component>
 void BaseBehavior<Derived, Component>::setProperty(
     ActorId actorId, PropId propId, const ExpressionValue &value, bool relative) {
   if (auto component = maybeGetComponent(actorId)) {
-    // Try reflected props
-    Props::forEach(component->props, [&](auto &prop) {
-      if (propId == prop.id) {
-        using PropValue = std::remove_reference_t<decltype(prop())>;
-        if constexpr (std::is_same_v<bool, PropValue>) { // Prevent number-to-bool` conversion
-          if (value.is<bool>()) {
-            prop() = value.as<bool>();
-          }
-        } else if constexpr (std::is_arithmetic_v<PropValue>) { // All non-`bool` number types
-          if (value.is<double>()) {
-            if (relative) {
-              prop() += value.as<double>();
-            } else {
-              prop() = value.as<double>();
-            }
-          }
-        }
-      }
-    });
+    if (relative && value.is<double>()) {
+      auto curr = static_cast<const Derived &>(*this).handleGetProperty(*component, propId);
+      static_cast<Derived &>(*this).handleSetProperty(
+          *component, propId, curr.template as<double>() + value.template as<double>());
+    } else {
+      static_cast<Derived &>(*this).handleSetProperty(*component, propId, value);
+    }
   }
 }
 
@@ -270,16 +260,42 @@ ExpressionValue BaseBehavior<Derived, Component>::getProperty(
     ActorId actorId, PropId propId) const {
   ExpressionValue result;
   if (auto component = maybeGetComponent(actorId)) {
-    // Try reflected props
-    Props::forEach(component->props, [&](auto &prop) {
-      if (propId == prop.id) {
-        using PropValue = std::remove_reference_t<decltype(prop())>;
-        if constexpr (std::is_arithmetic_v<PropValue>) {
-          result = ExpressionValue(prop());
+    result = static_cast<const Derived &>(*this).handleGetProperty(*component, propId);
+  }
+  return result;
+}
+
+template<typename Derived, typename Component>
+void BaseBehavior<Derived, Component>::handleSetProperty(
+    Component &component, PropId propId, const ExpressionValue &value) {
+  Props::forEach(component.props, [&](auto &prop) {
+    if (propId == prop.id) {
+      using PropValue = std::remove_reference_t<decltype(prop())>;
+      if constexpr (std::is_same_v<bool, PropValue>) { // Prevent number-to-bool` conversion
+        if (value.is<bool>()) {
+          prop() = value.as<bool>();
+        }
+      } else if constexpr (std::is_arithmetic_v<PropValue>) { // All non-`bool` number types
+        if (value.is<double>()) {
+          prop() = value.as<double>();
         }
       }
-    });
-  }
+    }
+  });
+}
+
+template<typename Derived, typename Component>
+ExpressionValue BaseBehavior<Derived, Component>::handleGetProperty(
+    const Component &component, PropId propId) const {
+  ExpressionValue result;
+  Props::forEach(component.props, [&](auto &prop) {
+    if (propId == prop.id) {
+      using PropValue = std::remove_reference_t<decltype(prop())>;
+      if constexpr (std::is_arithmetic_v<PropValue>) {
+        result = ExpressionValue(prop());
+      }
+    }
+  });
   return result;
 }
 
