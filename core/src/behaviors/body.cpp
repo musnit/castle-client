@@ -78,7 +78,7 @@ void BodyBehavior::handlePerform(double dt) {
 //
 
 ExpressionValue BodyBehavior::handleGetProperty(
-    const BodyComponent &component, PropId propId) const {
+    ActorId actorId, const BodyComponent &component, PropId propId) const {
   auto body = component.body;
   if (!body) {
     return {};
@@ -91,12 +91,12 @@ ExpressionValue BodyBehavior::handleGetProperty(
   } else if (propId == props.angle.id) {
     return body->GetAngle() * 180 / M_PI;
   } else {
-    return BaseBehavior::handleGetProperty(component, propId);
+    return BaseBehavior::handleGetProperty(actorId, component, propId);
   }
 }
 
 void BodyBehavior::handleSetProperty(
-    BodyComponent &component, PropId propId, const ExpressionValue &value) {
+    ActorId actorId, BodyComponent &component, PropId propId, const ExpressionValue &value) {
   auto body = component.body;
   if (!body) {
     return;
@@ -109,7 +109,7 @@ void BodyBehavior::handleSetProperty(
   } else if (propId == props.angle.id) {
     body->SetTransform(body->GetPosition(), float(value.as<double>() * M_PI / 180));
   } else {
-    BaseBehavior::handleSetProperty(component, propId, value);
+    BaseBehavior::handleSetProperty(actorId, component, propId, value);
   }
 }
 

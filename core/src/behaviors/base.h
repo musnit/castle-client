@@ -64,8 +64,10 @@ public:
   ExpressionValue getProperty(ActorId actorId, PropId propId) const;
   void setProperty(ActorId actorId, PropId propId, const ExpressionValue &value, bool relative);
 
-  ExpressionValue handleGetProperty(const Component &component, PropId propId) const;
-  void handleSetProperty(Component &component, PropId propId, const ExpressionValue &value);
+  ExpressionValue handleGetProperty(
+      ActorId actorId, const Component &component, PropId propId) const;
+  void handleSetProperty(
+      ActorId actorId, Component &component, PropId propId, const ExpressionValue &value);
 
 
   // Other behaviors
@@ -247,11 +249,12 @@ void BaseBehavior<Derived, Component>::setProperty(
     ActorId actorId, PropId propId, const ExpressionValue &value, bool relative) {
   if (auto component = maybeGetComponent(actorId)) {
     if (relative && value.is<double>()) {
-      auto curr = static_cast<const Derived &>(*this).handleGetProperty(*component, propId);
+      auto curr
+          = static_cast<const Derived &>(*this).handleGetProperty(actorId, *component, propId);
       static_cast<Derived &>(*this).handleSetProperty(
-          *component, propId, curr.template as<double>() + value.template as<double>());
+          actorId, *component, propId, curr.template as<double>() + value.template as<double>());
     } else {
-      static_cast<Derived &>(*this).handleSetProperty(*component, propId, value);
+      static_cast<Derived &>(*this).handleSetProperty(actorId, *component, propId, value);
     }
   }
 }
@@ -261,14 +264,14 @@ ExpressionValue BaseBehavior<Derived, Component>::getProperty(
     ActorId actorId, PropId propId) const {
   ExpressionValue result;
   if (auto component = maybeGetComponent(actorId)) {
-    result = static_cast<const Derived &>(*this).handleGetProperty(*component, propId);
+    result = static_cast<const Derived &>(*this).handleGetProperty(actorId, *component, propId);
   }
   return result;
 }
 
 template<typename Derived, typename Component>
 void BaseBehavior<Derived, Component>::handleSetProperty(
-    Component &component, PropId propId, const ExpressionValue &value) {
+    ActorId actorId, Component &component, PropId propId, const ExpressionValue &value) {
   Props::forEach(component.props, [&](auto &prop) {
     if (propId == prop.id) {
       using PropValue = std::remove_reference_t<decltype(prop())>;
@@ -287,7 +290,7 @@ void BaseBehavior<Derived, Component>::handleSetProperty(
 
 template<typename Derived, typename Component>
 ExpressionValue BaseBehavior<Derived, Component>::handleGetProperty(
-    const Component &component, PropId propId) const {
+    ActorId actorId, const Component &component, PropId propId) const {
   ExpressionValue result;
   Props::forEach(component.props, [&](auto &prop) {
     if (propId == prop.id) {

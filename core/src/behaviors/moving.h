@@ -25,4 +25,9 @@ public:
 
   void handleEnableComponent(ActorId actorId, MovingComponent &component);
   void handleDisableComponent(ActorId actorId, MovingComponent &component, bool removeActor);
+
+  ExpressionValue handleGetProperty(
+      ActorId actorId, const MovingComponent &component, PropId propId) const;
+  void handleSetProperty(
+      ActorId actorId, MovingComponent &component, PropId propId, const ExpressionValue &value);
 };

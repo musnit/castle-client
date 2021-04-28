@@ -58,8 +58,10 @@ public:
 
   void handlePerform(double dt);
 
-  ExpressionValue handleGetProperty(const BodyComponent &component, PropId propId) const;
-  void handleSetProperty(BodyComponent &component, PropId propId, const ExpressionValue &value);
+  ExpressionValue handleGetProperty(
+      ActorId actorId, const BodyComponent &component, PropId propId) const;
+  void handleSetProperty(
+      ActorId actorId, BodyComponent &component, PropId propId, const ExpressionValue &value);
 
 
   // `ActorId` <-> `b2Body` association

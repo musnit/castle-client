@@ -30,3 +30,51 @@ void MovingBehavior::handleDisableComponent(
     }
   }
 }
+
+
+//
+// Getters / setters
+//
+
+ExpressionValue MovingBehavior::handleGetProperty(
+    ActorId actorId, const MovingComponent &component, PropId propId) const {
+  auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId);
+  if (!body) {
+    return {};
+  }
+  auto &props = component.props;
+  if (propId == props.vx.id) {
+    return body->GetLinearVelocity().x;
+  } else if (propId == props.vy.id) {
+    return body->GetLinearVelocity().y;
+  } else if (propId == props.angularVelocity.id) {
+    return body->GetAngularVelocity() * 180 / M_PI;
+  } else if (propId == props.density.id) {
+    return props.density();
+  } else {
+    return BaseBehavior::handleGetProperty(actorId, component, propId);
+  }
+}
+
+void MovingBehavior::handleSetProperty(
+    ActorId actorId, MovingComponent &component, PropId propId, const ExpressionValue &value) {
+  auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId);
+  if (!body) {
+    return;
+  }
+  auto &props = component.props;
+  if (propId == props.vx.id) {
+    body->SetLinearVelocity({ value.as<float>(), body->GetLinearVelocity().y });
+  } else if (propId == props.vy.id) {
+    body->SetLinearVelocity({ body->GetLinearVelocity().x, value.as<float>() });
+  } else if (propId == props.angularVelocity.id) {
+    body->SetAngularVelocity(float(value.as<double>() * M_PI / 180));
+  } else if (propId == props.density.id) {
+    for (auto fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()) {
+      fixture->SetDensity(component.props.density());
+    }
+    body->ResetMassData();
+  } else {
+    BaseBehavior::handleSetProperty(actorId, component, propId, value);
+  }
+}

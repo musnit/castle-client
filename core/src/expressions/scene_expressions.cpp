@@ -32,6 +32,57 @@ struct NumberOfActorsExpression : BaseExpression {
 struct ActorRef {
   PROP(std::string, kind) = "self";
   PROP(Tag, tag);
+
+  ActorId eval(RuleContext &ctx) {
+    switch (kind()[0]) {
+    case 's': { // "self"
+      return ctx.actorId;
+    }
+    case 'c': { // "closest"
+      auto &scene = ctx.getScene();
+      auto &tagsBehavior = scene.getBehaviors().byType<TagsBehavior>();
+      auto &taggedActorIds = tagsBehavior.getActors(tag());
+      auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
+      if (auto body = bodyBehavior.maybeGetPhysicsBody(ctx.actorId)) {
+        // Current actor has a body -- return closest with tag
+        auto nTaggedActorIds = taggedActorIds.size();
+        if (nTaggedActorIds == 0) {
+          return nullActor;
+        } else if (nTaggedActorIds == 1) { // Avoid math in common singleton scenario
+          return taggedActorIds.data()[0];
+        } else {
+          auto pos = body->GetPosition();
+          ActorId closestActorId = nullActor;
+          float closestSqDist = std::numeric_limits<float>::max();
+          for (auto taggedActorId : taggedActorIds) {
+            if (auto taggedBody = bodyBehavior.maybeGetPhysicsBody(taggedActorId)) {
+              // Has a body -- check if closer
+              auto sqDist = (taggedBody->GetPosition() - pos).LengthSquared();
+              if (sqDist < closestSqDist) {
+                closestActorId = taggedActorId;
+                closestSqDist = sqDist;
+              }
+            } else {
+              // Doesn't have a body -- assume it's at infinity
+              if (closestSqDist == std::numeric_limits<float>::max()) {
+                closestActorId = taggedActorId;
+              }
+            }
+          }
+          return closestActorId;
+        }
+      } else {
+        // Current actor doesn't have a body -- return first actor with tag
+        if (!taggedActorIds.empty()) {
+          return taggedActorIds.data()[0];
+        }
+      }
+    }
+    case 'o': { // "other"
+    }
+    }
+    return nullActor;
+  }
 };
 
 struct BehaviorPropertyExpression : BaseExpression {
@@ -46,10 +97,14 @@ struct BehaviorPropertyExpression : BaseExpression {
   } params;
 
   ExpressionValue eval(RuleContext &ctx) override {
-    auto actorId = ctx.actorId; // Codegen turns out better if we compute these outside the lambda
+    auto actorId = params.actorRef().eval(ctx);
+    if (actorId == nullActor) {
+      return {};
+    }
     auto propId = params.propertyName();
     ExpressionValue result;
     ctx.getScene().getBehaviors().byId(params.behaviorId(), [&](auto &behavior) {
+      // Keep the body of this lambda small for better codegen
       result = behavior.getProperty(actorId, propId);
     });
     return result;
