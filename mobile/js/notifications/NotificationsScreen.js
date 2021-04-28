@@ -22,6 +22,7 @@ import { UserAvatar } from '../components/UserAvatar';
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 import * as PushNotifications from '../PushNotifications';
+import * as Utilities from '../common/utilities';
 
 import FastImage from 'react-native-fast-image';
 
@@ -103,19 +104,23 @@ const NotificationHeader = ({ status }) => {
 
 const NotificationItem = ({ notification, navigateToUser, navigateToDeck, navigateToUserList }) => {
   const user = notification.users?.length ? notification.users[0] : null;
+  const type = Utilities.getNotificationType(notification);
+
   const onPress = React.useCallback(() => {
-    if (notification.type === 'play_deck') {
+    if (type === 'play_deck') {
       navigateToDeck(notification.deck);
-    } else if (notification.type === 'follow') {
+    } else if (type === 'follow') {
       navigateToUser(user);
-    } else if (notification.type === 'new_deck') {
+    } else if (type === 'new_deck') {
+      navigateToDeck(notification.deck);
+    } else if (type === 'reaction') {
       navigateToDeck(notification.deck);
     } else if (notification.deck) {
       navigateToDeck(notification.deck);
     } else if (user) {
       navigateToUser(user);
     }
-  }, [notification, user, navigateToUser, navigateToDeck]);
+  }, [type, notification, user, navigateToUser, navigateToDeck]);
   const navigateToAllUsers = React.useCallback(() => navigateToUserList(notification.users), [
     notification?.users,
     navigateToUserList,
@@ -136,6 +141,7 @@ const NotificationItem = ({ notification, navigateToUser, navigateToDeck, naviga
           />
           <Text style={styles.notifTime}> {toRecentDate(notification.updatedTime)}</Text>
         </Text>
+        {/* TODO: if type === 'reaction', use Utilities.getNotificationReactionId(), then overlay the reaction sticker on the deck art */}
         {notification.deck && notification.type !== 'follow' ? (
           <FastImage
             style={styles.notifImage}

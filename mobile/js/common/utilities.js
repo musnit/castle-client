@@ -296,3 +296,19 @@ export const getCardBackgroundColor = (card) => {
   }
   return backgroundColor;
 };
+
+export const getNotificationType = (n) => {
+  if (!n?.type) return null;
+  if (n.type.indexOf('react_deck_') === 0) {
+    return 'reaction';
+  }
+  return n.type;
+};
+
+export const getNotificationReactionId = (n) => {
+  if (getNotificationType(n) === 'reaction') {
+    const prefixLength = 'react_deck_'.length;
+    return n.type.substring(prefixLength);
+  }
+  return null;
+};
