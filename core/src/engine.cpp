@@ -176,6 +176,7 @@ void Engine::update(double dt) {
   // Update scene
   if (scene) {
     Debug::display("fps: {}", lv.timer.getFPS());
+    Debug::display("scaling: {}, {}, {}", lv.window.getDPIScale(), lv.graphics.getCurrentDPIScale(), ghostScreenScaling);
     Debug::display("actors: {}", scene->getEntityRegistry().alive());
 
     scene->update(dt);
