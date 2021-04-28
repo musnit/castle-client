@@ -93,20 +93,28 @@ struct BehaviorPropertyExpression : BaseExpression {
   struct Params {
     PROP(int, behaviorId) = -1;
     PROP(PropId, propertyName);
-    PROP(ActorRef, actorRef); // TODO(nikki): Actually use `actorRef`
+    PROP(ActorRef, actorRef);
   } params;
 
+  // Cache the call to `.getProperty` so we don't have to do the lookup by `behaviorId` every time
+  // this expression is evaluated
+
+  ExpressionValue (*cache)(RuleContext &, ActorId, PropId) = nullptr;
+
   ExpressionValue eval(RuleContext &ctx) override {
-    auto actorId = params.actorRef().eval(ctx);
-    if (actorId == nullActor) {
+    if (!cache) {
+      ctx.getScene().getBehaviors().byId(params.behaviorId(), [&](auto &behavior) {
+        using Behavior = std::remove_reference_t<decltype(behavior)>;
+        cache = [](RuleContext &ctx, ActorId actorId, PropId propId) {
+          auto &behavior = ctx.getScene().getBehaviors().byType<Behavior>();
+          return behavior.getProperty(actorId, propId);
+        };
+      });
+    }
+    if (cache) {
+      return cache(ctx, params.actorRef().eval(ctx), params.propertyName());
+    } else {
       return {};
     }
-    auto propId = params.propertyName();
-    ExpressionValue result;
-    ctx.getScene().getBehaviors().byId(params.behaviorId(), [&](auto &behavior) {
-      // Keep the body of this lambda small for better codegen
-      result = behavior.getProperty(actorId, propId);
-    });
-    return result;
   }
 };

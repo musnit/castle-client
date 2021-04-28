@@ -142,15 +142,25 @@ struct SetBehaviorPropertyResponse : BaseResponse {
     PROP(bool, relative) = false;
   } params;
 
+  // Cache the call to `.setProperty` so we don't have to do the lookup by `behaviorId` every time
+  // this response is run
+
+  void (*cache)(RuleContext &, ActorId, PropId, const ExpressionValue &, bool) = nullptr;
+
   void run(RuleContext &ctx) override {
-    auto actorId = ctx.actorId;
-    auto propId = params.propertyName();
-    auto value = params.value().eval(ctx);
-    auto relative = params.relative();
-    ctx.getScene().getBehaviors().byId(params.behaviorId(), [&](auto &behavior) {
-      // Keep the body of this lambda small for better codegen
-      behavior.setProperty(actorId, propId, value, relative);
-    });
+    if (!cache) {
+      ctx.getScene().getBehaviors().byId(params.behaviorId(), [&](auto &behavior) {
+        using Behavior = std::remove_reference_t<decltype(behavior)>;
+        cache = [](RuleContext &ctx, ActorId actorId, PropId propId, const ExpressionValue &value,
+                    bool relative) {
+          auto &behavior = ctx.getScene().getBehaviors().byType<Behavior>();
+          behavior.setProperty(actorId, propId, value, relative);
+        };
+      });
+    }
+    if (cache) {
+      cache(ctx, ctx.actorId, params.propertyName(), params.value().eval(ctx), params.relative());
+    }
   }
 };
 
