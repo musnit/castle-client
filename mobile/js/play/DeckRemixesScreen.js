@@ -6,6 +6,7 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import { useQuery, gql } from '@apollo/client';
 import { CardCell } from './../components/CardCell';
 import { useNavigation } from '../ReactNavigation';
+import { UserAvatar } from './../components/UserAvatar';
 
 import * as Constants from '../Constants';
 
@@ -19,6 +20,13 @@ const styles = StyleSheet.create({
     borderRadius: Constants.CARD_SMALL_BORDER_RADIUS,
     backgroundColor: 'transparent',
     aspectRatio: Constants.CARD_RATIO,
+  },
+  avatar: {
+    width: 48,
+    height: 48,
+    position: 'absolute',
+    bottom: 0,
+    left: -10,
   },
   sectionTitle: {
     marginTop: 16,
@@ -83,30 +91,33 @@ export const DeckRemixesScreen = ({ route }) => {
     <View style={styles.header}>
       <View style={{ flexDirection: 'row', paddingLeft: Constants.GRID_PADDING }}>
         <View style={[styles.emptyCell, Constants.styles.gridItem]} />
-        <CardCell
-          style={[Constants.styles.gridItem, { flex: 1 }]}
-          card={deck.initialCard}
-          visibility={deck.visibility}
-          creator={deck.creator}
-          onPress={() =>
-            push(
-              'PlayDeck',
-              {
-                decks: [deck],
-                initialDeckIndex: 0,
-              },
-              {
-                isFullscreen: true,
-              }
-            )
-          }
-          inGrid={true}
-        />
+        <View style={[Constants.styles.gridItem, { flex: 1 }]}>
+          <CardCell
+            card={deck.initialCard}
+            visibility={deck.visibility}
+            onPress={() =>
+              push(
+                'PlayDeck',
+                {
+                  decks: [deck],
+                  initialDeckIndex: 0,
+                },
+                {
+                  isFullscreen: true,
+                }
+              )
+            }
+            inGrid={true}
+          />
+          <View style={styles.avatar} pointerEvents="none">
+            <UserAvatar url={deck.creator.photo?.url} />
+          </View>
+        </View>
         <View style={[styles.emptyCell, Constants.styles.gridItem]} />
       </View>
       <View style={styles.sectionTitle}>
         <Text style={styles.sectionTitleLabel}>
-          {deck ? 'Remixes of @' + deck.creator.username + "'s deck" : ''}
+          Remixes of<Text style={{ fontWeight: 'bold' }}> @{deck.creator.username}</Text>'s deck
         </Text>
       </View>
     </View>
