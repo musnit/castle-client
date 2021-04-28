@@ -23,6 +23,7 @@ JS_DEFINE(int, JS_getCanvasWidth, (),
     { return document.querySelector("#canvas").getBoundingClientRect().width; });
 JS_DEFINE(int, JS_getCanvasHeight, (),
     { return document.querySelector("#canvas").getBoundingClientRect().height; });
+JS_DEFINE(double, JS_getDevicePixelRatio, (), { return window.devicePixelRatio; });
 JS_DEFINE(int, JS_documentHasFocus, (), { return document.hasFocus() ? 1 : 0; });
 JS_DEFINE(int, JS_hasInitialDeck, (), { return Castle.hasInitialDeck ? 1 : 0; });
 JS_DEFINE(char *, JS_getInitialDeckGraphQlJson, (), {
@@ -176,7 +177,8 @@ void Engine::update(double dt) {
   // Update scene
   if (scene) {
     Debug::display("fps: {}", lv.timer.getFPS());
-    Debug::display("scaling: {}, {}, {}", lv.window.getDPIScale(), lv.graphics.getCurrentDPIScale(), ghostScreenScaling);
+    Debug::display("scaling: {:.2f}, {:.2f}, {:.2f}, {:.2f}", JS_getDevicePixelRatio(),
+        lv.window.getDPIScale(), lv.graphics.getCurrentDPIScale(), ghostScreenScaling);
     Debug::display("actors: {}", scene->getEntityRegistry().alive());
 
     scene->update(dt);
