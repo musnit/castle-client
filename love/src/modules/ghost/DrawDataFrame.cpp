@@ -464,8 +464,29 @@ namespace ghost {
       float a = 0.0;
       float sx = 1 / parent()->fillPixelsPerUnit;
       float sy = 1 / parent()->fillPixelsPerUnit;
-      Matrix4 mat = Matrix4(x, y, a, sx, sy, 0.0, 0.0, 0.0, 0.0);
-      graphicsModule->draw(fillImage, mat);
+
+      // Avoid using `love::graphics::Graphics::draw` directly since it needs to stream vertex
+      // information, which doesn't perform well on WebGL -- we'll just keep and use our own static
+      // mesh of vertex information instead
+      //
+      // This was the old code:
+      //   Matrix4 mat = Matrix4(x, y, a, sx, sy, 0.0, 0.0, 0.0, 0.0);
+      //   graphicsModule->draw(fillImage, mat);
+      //
+      static auto quad = [&]() {
+        std::vector<love::graphics::Vertex> quadVerts {
+          { 0, 0, 0, 0, { 0xff, 0xff, 0xff, 0xff } },
+          { 1, 0, 1, 0, { 0xff, 0xff, 0xff, 0xff } },
+          { 1, 1, 1, 1, { 0xff, 0xff, 0xff, 0xff } },
+          { 0, 1, 0, 1, { 0xff, 0xff, 0xff, 0xff } },
+        };
+        return std::unique_ptr<love::graphics::Mesh>(graphicsModule->newMesh(quadVerts,
+            love::graphics::PRIMITIVE_TRIANGLE_FAN, love::graphics::vertex::USAGE_STATIC));
+      }();
+      quad->setTexture(fillImage);
+      auto iw = fillImage->getWidth(), ih = fillImage->getHeight();
+      quad->draw(graphicsModule, love::Matrix4(x, y, a, sx * iw, sy * ih, 0, 0, 0, 0));
+      quad->setTexture(nullptr);
     }
   }
   /*
