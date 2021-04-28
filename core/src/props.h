@@ -4,8 +4,6 @@
 
 #include "entt/core/hashed_string.hpp"
 
-#include "boost/pfr.hpp"
-
 #include "token_map.h"
 
 
@@ -125,32 +123,138 @@ template<typename... Params>
 inline constexpr auto isProp<const Prop<Params...> &> = true;
 
 
-// Whether we can reflect `T` to look for prop members inside
+// Whether we can reflect `T` to look for fields inside
 
 template<typename T>
-inline constexpr auto isReflectable = std::is_aggregate_v<std::remove_reference_t<T>>;
+inline constexpr auto isReflectable = std::is_aggregate_v<T> && !std::is_polymorphic_v<T>;
+template<typename T>
+inline constexpr auto isReflectable<T &> = isReflectable<T>;
+template<typename T>
+inline constexpr auto isReflectable<const T &> = isReflectable<T>;
+
+
+// Get a tuple of references to fields (whether prop or not) of a reflectable. From:
+// https://github.com/felixguendling/cista/tree/83c760166dd8dc069ad939143011e0921ccb5acd/include/cista/reflection
+
+struct CanConvertToAnything {
+  template<typename Type>
+  operator Type() const; // NOLINT(google-explicit-constructor)
+};
+
+template<typename Aggregate, typename IndexSequence = std::index_sequence<>, typename = void>
+struct countReflectableFieldsImpl : IndexSequence {};
+
+template<typename Aggregate, size_t... Indices>
+struct countReflectableFieldsImpl<Aggregate, std::index_sequence<Indices...>,
+    std::void_t<decltype(
+        Aggregate { (static_cast<void>(Indices), std::declval<CanConvertToAnything>())...,
+            std::declval<CanConvertToAnything>() })>>
+    : countReflectableFieldsImpl<Aggregate, std::index_sequence<Indices..., sizeof...(Indices)>> {};
+
+template<typename T>
+constexpr size_t countReflectableFields() {
+  return countReflectableFieldsImpl<std::remove_cv_t<std::remove_reference_t<T>>>().size();
+}
+
+template<typename T>
+auto reflectableToTuple(T &val) {
+  constexpr auto n = countReflectableFields<T>();
+  static_assert(n <= 24, "reflectableToTuple: only up to 24 fields supported");
+  if constexpr (n == 0) {
+    return std::tie();
+  } else if constexpr (n == 1) {
+    auto &[a] = val;
+    return std::tie(a);
+  } else if constexpr (n == 2) {
+    auto &[a, b] = val;
+    return std::tie(a, b);
+  } else if constexpr (n == 3) {
+    auto &[a, b, c] = val;
+    return std::tie(a, b, c);
+  } else if constexpr (n == 4) {
+    auto &[a, b, c, d] = val;
+    return std::tie(a, b, c, d);
+  } else if constexpr (n == 5) {
+    auto &[a, b, c, d, e] = val;
+    return std::tie(a, b, c, d, e);
+  } else if constexpr (n == 6) {
+    auto &[a, b, c, d, e, f] = val;
+    return std::tie(a, b, c, d, e, f);
+  } else if constexpr (n == 7) {
+    auto &[a, b, c, d, e, f, g] = val;
+    return std::tie(a, b, c, d, e, f, g);
+  } else if constexpr (n == 8) {
+    auto &[a, b, c, d, e, f, g, h] = val;
+    return std::tie(a, b, c, d, e, f, g, h);
+  } else if constexpr (n == 9) {
+    auto &[a, b, c, d, e, f, g, h, i] = val;
+    return std::tie(a, b, c, d, e, f, g, h, i);
+  } else if constexpr (n == 10) {
+    auto &[a, b, c, d, e, f, g, h, i, j] = val;
+    return std::tie(a, b, c, d, e, f, g, h, i, j);
+  } else if constexpr (n == 11) {
+    auto &[a, b, c, d, e, f, g, h, i, j, k] = val;
+    return std::tie(a, b, c, d, e, f, g, h, i, j, k);
+  } else if constexpr (n == 12) {
+    auto &[a, b, c, d, e, f, g, h, i, j, k, l] = val;
+    return std::tie(a, b, c, d, e, f, g, h, i, j, k, l);
+  } else if constexpr (n == 13) {
+    auto &[a, b, c, d, e, f, g, h, i, j, k, l, m] = val;
+    return std::tie(a, b, c, d, e, f, g, h, i, j, k, l, m);
+  } else if constexpr (n == 14) {
+    auto &[a, b, c, d, e, f, g, h, i, j, k, l, m, n] = val;
+    return std::tie(a, b, c, d, e, f, g, h, i, j, k, l, m, n);
+  } else if constexpr (n == 15) {
+    auto &[a, b, c, d, e, f, g, h, i, j, k, l, m, n, o] = val;
+    return std::tie(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o);
+  } else if constexpr (n == 16) {
+    auto &[a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p] = val;
+    return std::tie(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p);
+  } else if constexpr (n == 17) {
+    auto &[a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q] = val;
+    return std::tie(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q);
+  } else if constexpr (n == 18) {
+    auto &[a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r] = val;
+    return std::tie(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r);
+  } else if constexpr (n == 19) {
+    auto &[a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s] = val;
+    return std::tie(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s);
+  } else if constexpr (n == 20) {
+    auto &[a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t] = val;
+    return std::tie(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t);
+  } else if constexpr (n == 21) {
+    auto &[a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u] = val;
+    return std::tie(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u);
+  } else if constexpr (n == 22) {
+    auto &[a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v] = val;
+    return std::tie(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v);
+  } else if constexpr (n == 23) {
+    auto &[a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w] = val;
+    return std::tie(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w);
+  } else if constexpr (n == 24) {
+    auto &[a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x] = val;
+    return std::tie(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x);
+  }
+}
 
 
 // Whether `T` has at least one prop member
 
-namespace Internal {
-  template<typename T = int, typename... Vs>
-  inline constexpr auto isAnyProp = isProp<T> || isAnyProp<Vs...>;
-  template<typename T>
-  inline constexpr auto isAnyProp<T> = isProp<T>;
-  template<typename T>
-  inline constexpr auto isAnyTupleElementProp = false;
-  template<typename... Ts>
-  inline constexpr auto isAnyTupleElementProp<std::tuple<Ts...>> = isAnyProp<Ts...>;
-};
+template<typename T = int, typename... Vs>
+inline constexpr auto isAnyProp = isProp<T> || isAnyProp<Vs...>;
+template<typename T>
+inline constexpr auto isAnyProp<T> = isProp<T>;
+template<typename T>
+inline constexpr auto isAnyTupleElementProp = false;
+template<typename... Ts>
+inline constexpr auto isAnyTupleElementProp<std::tuple<Ts...>> = isAnyProp<Ts...>;
 template<typename T>
 constexpr auto hasProps
-    = (!std::is_empty_v<std::remove_reference_t<
-            T>> && isReflectable<T> && Internal::isAnyTupleElementProp<decltype(boost::pfr::structure_to_tuple(std::declval<T>()))>);
+    = isReflectable<T> &&isAnyTupleElementProp<decltype(reflectableToTuple(std::declval<T &>()))>;
 
 
-// Iterate through all the props of a struct. This expands to all the properties at compile time,
-// with the function `F` being invoked with each prop (of type `Prop<...>`).
+// Iterate through all the props of a struct. This expands to all the props at compile time, with
+// the function `F` being invoked with each prop (of type `Prop<...>`).
 //
 // For example, the following code prints each prop name and value in a struct. Here `prop()` (the
 // value of the prop) has different types on each 'iteration', depending on which prop is being
@@ -161,14 +265,19 @@ constexpr auto hasProps
 //   })
 
 template<typename Struct, typename F>
-void forEach(Struct &&s, F &&f) {
-  static_assert(isReflectable<Struct>, "forEach: this type is not reflectable");
-  if constexpr (hasProps<Struct> && isReflectable<Struct>) {
-    boost::pfr::for_each_field(std::forward<Struct>(s), [&](auto &&prop) {
-      if constexpr (isProp<decltype(prop)>) {
-        f(std::forward<decltype(prop)>(prop));
+void forEach(Struct &s, F &&f) {
+  static_assert(isReflectable<Struct>, "forEachProp: this type is not reflectable");
+  if constexpr (hasProps<Struct>) {
+    const auto visitField = [&](auto &field) {
+      if constexpr (isProp<decltype(field)>) {
+        f(field);
       }
-    });
+    };
+    std::apply(
+        [&](auto &&...args) {
+          (visitField(args), ...);
+        },
+        reflectableToTuple(s));
   }
 }
 

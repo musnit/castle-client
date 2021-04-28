@@ -46,9 +46,6 @@
 // entt
 #include <entt/entity/registry.hpp>
 
-// magic_get
-#include <boost/pfr.hpp>
-
 // rapidjson
 #include "rapidjson/document.h"
 #include "rapidjson/istreamwrapper.h"
