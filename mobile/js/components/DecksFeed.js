@@ -18,7 +18,7 @@ import * as Utilities from '../common/utilities';
 
 const { vw, vh } = Viewport;
 
-const DECK_FEED_ITEM_MARGIN = 24;
+const DECK_FEED_ITEM_MARGIN = 0;
 
 // Determines how much horizontal padding to add to each card to ensure proper spacing.
 // Design goal is for the selected card to be entirely visible as well as the top
@@ -41,6 +41,7 @@ const getItemHeight = ({ isPlaying = false } = {}) => {
 };
 
 const DECK_FEED_ITEM_DEFAULT_HEIGHT = getItemHeight();
+const DECK_FEED_ITEM_FOOTER = 72;
 
 const SPRING_CONFIG = {
   tension: 100,
@@ -84,7 +85,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     bottom: 0,
-    height: 72,
+    height: DECK_FEED_ITEM_FOOTER,
     zIndex: 1,
     elevation: 1,
   },
@@ -177,9 +178,16 @@ const CurrentDeckCell = ({
     }
   }, [onRefreshFeed, deck]);
 
+  console.log(vh * 100);
+  console.log(getItemHeight({ isPlaying: true }));
+  console.log(insets.bottom);
+
   const playingFooterY = playingTransition.interpolate({
     inputRange: [0, 1.01],
-    outputRange: [0, vh * 100 - getItemHeight({ isPlaying: true }) - insets.bottom],
+    outputRange: [
+      0,
+      (vh * 100 - getItemHeight({ isPlaying: true }) - insets.bottom + DECK_FEED_ITEM_FOOTER) / 2,
+    ],
   });
 
   const onHardwareBackPress = React.useCallback(() => {
