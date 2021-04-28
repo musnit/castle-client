@@ -1,18 +1,24 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, Pressable } from 'react-native';
 import { DecksGrid } from '../components/DecksGrid';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ScreenHeader } from '../components/ScreenHeader';
 import { useQuery, gql } from '@apollo/client';
 import { CardCell } from './../components/CardCell';
 import { useNavigation } from '../ReactNavigation';
 import { UserAvatar } from './../components/UserAvatar';
+
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
   header: {
     paddingVertical: 32,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 24,
+    left: 12,
   },
   emptyCell: {
     width: '100%',
@@ -41,7 +47,7 @@ const styles = StyleSheet.create({
 export const DeckRemixesScreen = ({ route }) => {
   const deck = route?.params.deck;
   const parentDeckId = deck.deckId;
-  const { push } = useNavigation();
+  const { push, pop } = useNavigation();
   const insets = useSafeAreaInsets();
   const paddingBottom = insets.bottom + 64;
   let decks;
@@ -89,6 +95,9 @@ export const DeckRemixesScreen = ({ route }) => {
 
   const ListHeaderComponent = (
     <View style={styles.header}>
+      <Pressable style={styles.backButton} onPress={() => pop()}>
+        <Icon name="arrow-back" size={32} color="#fff" />
+      </Pressable>
       <View style={{ flexDirection: 'row', paddingLeft: Constants.GRID_PADDING }}>
         <View style={[styles.emptyCell, Constants.styles.gridItem]} />
         <View style={[Constants.styles.gridItem, { flex: 1 }]}>
@@ -125,7 +134,6 @@ export const DeckRemixesScreen = ({ route }) => {
 
   return (
     <SafeAreaView edges={['top', 'left', 'right']}>
-      <ScreenHeader title={'Remixes'} />
       {decks?.length ? (
         <DecksGrid
           decks={decks}
