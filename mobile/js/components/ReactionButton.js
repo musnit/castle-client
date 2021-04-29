@@ -15,6 +15,11 @@ import { TouchableNativeFeedback as PressableRNGH } from 'react-native-gesture-h
 const Pressable = Constants.iOS ? PressableRN : PressableRNGH;
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
+FastImage.preload([
+  require('../../assets/images/emoji/fire-selected.png'),
+  require('../../assets/images/emoji/fire.png'),
+]);
+
 const SPRING_CONFIG = {
   tension: 100,
   friction: 50,
