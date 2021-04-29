@@ -12,6 +12,7 @@ import { ApolloProvider } from '@apollo/client';
 import { RootNavigator } from './Navigation';
 import { AndroidNavigationContext } from './ReactNavigation';
 import BootSplash from 'react-native-bootsplash';
+import { DeckRemixesScreen } from './play/DeckRemixesScreen';
 import * as GhostEvents from './ghost/GhostEvents';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableAndroidFontFix } from './AndroidFontFix';
@@ -226,6 +227,7 @@ if (Platform.OS === 'android') {
     'CreateScreen',
     WrapComponent(CreateScreen, { addTabBarPadding: true })
   );
+  AppRegistry.registerComponent('DeckRemixes', WrapComponent(DeckRemixesScreen));
   AppRegistry.registerComponent('CreateDeck', WrapComponent(CreateDeckNavigator));
   AppRegistry.registerComponent('ShareDeck', WrapComponent(ShareDeckScreen));
   AppRegistry.registerComponent('ViewSource', WrapComponent(ViewSourceNavigator));

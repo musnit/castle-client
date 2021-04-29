@@ -152,6 +152,7 @@ export const PlayDeckActions = ({
   const onPressRemix = () => {
     return push('DeckRemixes', {
       deck: deck,
+      isFullscreen: true,
     });
   };
 
