@@ -80,30 +80,26 @@ const toggleReaction = async ({ reactionId, deck, enabled }) => {
     `,
     variables: { reactionId, deckId: deck.deckId, enabled },
     update: (cache, { data }) => {
-      // not working: https://www.apollographql.com/docs/react/caching/cache-interaction/#example-updating-the-cache-after-a-mutation
+      // https://www.apollographql.com/docs/react/caching/cache-interaction/#example-updating-the-cache-after-a-mutation
       cache.modify({
         id: cache.identify(deck),
         fields: {
           reactions(_, { DELETE }) {
             const newReactions = data.toggleReaction;
-            if (!newReactions?.length) {
-              return DELETE;
-            } else {
-              let newReactionsRefs = newReactions.map((reaction) =>
-                cache.writeFragment({
-                  data: reaction,
-                  fragment: gql`
-                    fragment Reactions on Reaction {
-                      id
-                      reactionId
-                      count
-                      isCurrentUserToggled
-                    }
-                  `,
-                })
-              );
-              return newReactionsRefs;
-            }
+            let newReactionsRefs = newReactions.map((reaction) =>
+              cache.writeFragment({
+                data: reaction,
+                fragment: gql`
+                  fragment Reactions on Reaction {
+                    id
+                    reactionId
+                    count
+                    isCurrentUserToggled
+                  }
+                `,
+              })
+            );
+            return newReactionsRefs;
           },
         },
       });
