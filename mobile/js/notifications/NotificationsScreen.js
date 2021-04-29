@@ -87,12 +87,16 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   smallFollowButton: { padding: 6 },
+  reactionSticker: { position: 'absolute', left: 4, bottom: -8, width: 32, height: 32 },
 });
 
 const STATUS_HEADERS = {
   unseen: 'New',
   seen: 'Earlier',
 };
+
+// TODO: swap out for different reaction types
+const REACTION_IMAGE_FIRE = require('../../assets/images/emoji/fire-selected.png');
 
 const NotificationHeader = ({ status }) => {
   return (
@@ -141,16 +145,20 @@ const NotificationItem = ({ notification, navigateToUser, navigateToDeck, naviga
           />
           <Text style={styles.notifTime}> {toRecentDate(notification.updatedTime)}</Text>
         </Text>
-        {/* TODO: if type === 'reaction', use Utilities.getNotificationReactionId(), then overlay the reaction sticker on the deck art */}
-        {notification.deck && notification.type !== 'follow' ? (
-          <FastImage
-            style={styles.notifImage}
-            source={{ uri: notification.deck.initialCard.backgroundImage.smallUrl }}
-          />
-        ) : null}
-        {user && notification.type === 'follow' ? (
-          <FollowButton user={user} style={styles.smallFollowButton} />
-        ) : null}
+        <View>
+          {notification.deck && type !== 'follow' ? (
+            <FastImage
+              style={styles.notifImage}
+              source={{ uri: notification.deck.initialCard.backgroundImage.smallUrl }}
+            />
+          ) : null}
+          {user && type === 'follow' ? (
+            <FollowButton user={user} style={styles.smallFollowButton} />
+          ) : null}
+          {type === 'reaction' ? (
+            <FastImage style={styles.reactionSticker} source={REACTION_IMAGE_FIRE} />
+          ) : null}
+        </View>
       </View>
     </TouchableHighlight>
   );
