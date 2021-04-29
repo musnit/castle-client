@@ -227,6 +227,7 @@ export const FEED_ITEM_DECK_FRAGMENT = `
       url
     }
   }
+  childDecksCount
   parentDeckId
   parentDeck {
     deckId

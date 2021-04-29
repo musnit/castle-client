@@ -1,5 +1,5 @@
 import React from 'react';
-import { Animated, Pressable, StyleSheet, View } from 'react-native';
+import { Animated, Pressable, StyleSheet, View, Text } from 'react-native';
 import { Dropdown } from '../components/Dropdown';
 import { shareDeck } from '../common/utilities';
 import { useActionSheet } from '@expo/react-native-action-sheet';
@@ -7,6 +7,7 @@ import { useNavigation } from '../ReactNavigation';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
+import Ionicon from 'react-native-vector-icons/Ionicons';
 
 import * as Constants from '../Constants';
 
@@ -33,11 +34,18 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   rightButton: {
-    width: 28,
-    height: 28,
+    minWidth: 28,
+    minHeight: 28,
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'row',
     marginLeft: 16,
+  },
+  rightButtonCount: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginLeft: 8,
   },
   rightButtonIcon: {
     ...Constants.styles.textShadow,
@@ -166,9 +174,16 @@ export const PlayDeckActions = ({
           onChange={onSelectDropdownAction}>
           <Feather name="more-horizontal" color="#fff" size={24} style={styles.rightButtonIcon} />
         </Dropdown>
-        <Pressable style={styles.rightButton} onPress={onPressRemix}>
-          {({ pressed }) => <Icon name="shuffle" color={pressed ? '#ccc' : '#fff'} size={32} />}
-        </Pressable>
+        {deck?.childDecksCount > 0 && (
+          <Pressable style={styles.rightButton} onPress={onPressRemix}>
+            {({ pressed }) => (
+              <>
+                <Ionicon name="ios-shuffle" color={pressed ? '#ccc' : '#fff'} size={32} />
+                <Text style={styles.rightButtonCount}>{deck.childDecksCount}</Text>
+              </>
+            )}
+          </Pressable>
+        )}
         <Pressable style={styles.rightButton} onPress={() => shareDeck(deck)}>
           {({ pressed }) => (
             <Feather
