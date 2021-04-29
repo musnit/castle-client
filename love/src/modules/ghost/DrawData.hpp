@@ -192,8 +192,8 @@ namespace ghost {
     AnimationState newAnimationState();
     int getNumFrames();
     int modFrameIndex(int value);
-    void runAnimation(AnimationState animationState,
-        AnimationComponentProperties componentProperties, float dt,
+    void runAnimation(AnimationState &animationState,
+        AnimationComponentProperties &componentProperties, float dt,
         std::function<void(std::string)> fireTrigger, std::function<void()> fireChangedFrame);
     ToveGraphicsHolder *graphics();
     void preload();

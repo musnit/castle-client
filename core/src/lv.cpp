@@ -34,7 +34,7 @@ Lv::Lv(int windowWidth, int windowHeight, const char *arg0) {
     lv.setupDefaultShaderCode(); // Window also initializes graphics, shader code needs to be ready
     love::WindowSettings settings;
     settings.highdpi = true;
-    //settings.msaa = 2;
+    // settings.msaa = 2;
     lv.window.setWindow(windowWidth, windowHeight, &settings);
   }
 }

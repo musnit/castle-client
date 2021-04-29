@@ -788,8 +788,8 @@ namespace ghost {
     return value;
   }
 
-  void DrawData::runAnimation(AnimationState animationState,
-      AnimationComponentProperties componentProperties, float dt,
+  void DrawData::runAnimation(AnimationState &animationState,
+      AnimationComponentProperties &componentProperties, float dt,
       std::function<void(std::string)> fireTrigger, std::function<void()> fireChangedFrame) {
     if (!componentProperties.playing) {
       return;
@@ -799,11 +799,11 @@ namespace ghost {
     if (animationState.animationFrameTime > abs(secondsPerFrame)) {
       animationState.animationFrameTime = animationState.animationFrameTime - abs(secondsPerFrame);
       auto firstFrame = componentProperties.loopStartFrame;
-      if (!firstFrame || firstFrame < 1 || firstFrame > getNumFrames()) {
+      if (firstFrame < 1 || firstFrame > getNumFrames()) {
         firstFrame = 1;
       }
       auto lastFrame = componentProperties.loopEndFrame;
-      if (!lastFrame || lastFrame < 1 || lastFrame > getNumFrames()) {
+      if (lastFrame < 1 || lastFrame > getNumFrames()) {
         lastFrame = getNumFrames();
       }
       auto currentFrame = modFrameIndex(componentProperties.currentFrame);

@@ -394,17 +394,34 @@ namespace ghost {
 
   typedef std::vector<PathData> PathDataList;
 
-  struct AnimationState {
+  class AnimationState {
+  public:
     float animationFrameTime;
+
+    AnimationState()
+        : animationFrameTime(0.0) {
+    }
   };
 
-  struct AnimationComponentProperties {
+  class AnimationComponentProperties {
+  public:
     bool playing;
     float framesPerSecond;
     int loopStartFrame;
     int loopEndFrame;
     int currentFrame;
     bool loop;
+
+    void read(Archive::Reader &archive) {
+      playing = archive.boolean("playing", false);
+      framesPerSecond = archive.num("framesPerSecond", 4);
+      currentFrame = archive.num("initialFrame", 1);
+      loop = archive.boolean("loop", false);
+
+      // these can only be set from "set property" responses
+      loopStartFrame = -1;
+      loopEndFrame = -1;
+    }
   };
 
   class ToveMeshHolder {};

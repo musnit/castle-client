@@ -12,6 +12,8 @@ struct Drawing2Component : BaseComponent {
 
   std::string hash;
   std::shared_ptr<love::DrawData> drawData;
+  love::AnimationComponentProperties animationComponentProperties;
+  love::AnimationState animationState;
 };
 
 class Drawing2Behavior : public BaseBehavior<Drawing2Behavior, Drawing2Component> {
@@ -23,6 +25,7 @@ public:
   using BaseBehavior::BaseBehavior;
 
   void handleReadComponent(ActorId actorId, Drawing2Component &component, Reader &reader);
+  void handlePerform(double dt);
   void handleDrawComponent(ActorId actorId, const Drawing2Component &component) const;
 
 private:
