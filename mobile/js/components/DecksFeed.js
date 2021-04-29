@@ -132,7 +132,7 @@ const CurrentDeckCell = ({
   React.useEffect(() => {
     let timeout;
     const task = InteractionManager.runAfterInteractions(() => {
-      if (deck && isPlaying && isFocused) {
+      if (deck?.deckId && isPlaying && isFocused) {
         timeout = setTimeout(() => {
           setReady(true);
         }, 10);
@@ -148,7 +148,7 @@ const CurrentDeckCell = ({
       setReady(false);
       task.cancel();
     };
-  }, [deck, isPlaying, isFocused]);
+  }, [deck?.deckId, isPlaying, isFocused]);
 
   const onSelectPlay = () => onPressDeck({ deckId: deck.deckId });
   const onPressBack = React.useCallback(() => onPressDeck({ deckId: undefined }), [onPressDeck]);
