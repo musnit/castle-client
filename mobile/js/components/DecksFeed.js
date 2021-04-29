@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     marginBottom: DECK_FEED_ITEM_MARGIN,
+    paddingHorizontal: getItemHorzPadding(),
   },
   itemCard: {
     marginTop: Constants.FEED_ITEM_HEADER_HEIGHT,
@@ -111,20 +112,6 @@ const InvertZIndexCellRendererComponent = ({ children, index, style, ...props })
     </View>
   );
 };
-
-const makeCardAspectFitStyles = () => {
-  if (Viewport.useSmallFeedItem) {
-    return styles.itemContainer;
-  }
-  return [
-    styles.itemContainer,
-    {
-      paddingHorizontal: getItemHorzPadding(),
-    },
-  ];
-};
-
-const cardAspectFitStyles = makeCardAspectFitStyles();
 
 // renders the current focused deck in the feed
 const CurrentDeckCell = ({
@@ -178,15 +165,14 @@ const CurrentDeckCell = ({
     }
   }, [onRefreshFeed, deck]);
 
-  console.log(vh * 100);
-  console.log(getItemHeight({ isPlaying: true }));
-  console.log(insets.bottom);
-
   const playingFooterY = playingTransition.interpolate({
     inputRange: [0, 1.01],
     outputRange: [
       0,
-      (vh * 100 - getItemHeight({ isPlaying: true }) - insets.bottom + DECK_FEED_ITEM_FOOTER) / 2,
+      // Vertically center the footer in the gap between the bottom of the card and the insets
+      DECK_FEED_ITEM_FOOTER +
+        (vh * 100 - getItemHeight({ isPlaying: true }) - insets.top - insets.bottom) / 2 -
+        DECK_FEED_ITEM_FOOTER / 2,
     ],
   });
 
@@ -204,7 +190,7 @@ const CurrentDeckCell = ({
   return (
     <View
       style={[
-        cardAspectFitStyles,
+        styles.itemContainer,
         {
           overflow: 'visible',
           paddingHorizontal: getItemHorzPadding({ isPlaying }),
@@ -254,13 +240,13 @@ const SkeletonFeed = () => {
         width: '100%',
         paddingTop: Constants.FEED_HEADER_HEIGHT,
       }}>
-      <View style={cardAspectFitStyles}>
+      <View style={styles.itemContainer}>
         <View style={[styles.itemHeader, { backgroundColor: '#3c3c3c' }]}>
           <PlayDeckActionsSkeleton />
         </View>
         <View style={[styles.itemCard, styles.itemCardSkeleton]} />
       </View>
-      <View style={cardAspectFitStyles}>
+      <View style={styles.itemContainer}>
         <View style={[styles.itemHeader, { backgroundColor: '#3c3c3c' }]}>
           <PlayDeckActionsSkeleton />
         </View>
@@ -331,7 +317,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
           translateStyles = { transform: [{ translateY: playingOffsetNextY }] };
         }
         return (
-          <Animated.View style={[cardAspectFitStyles, translateStyles]} pointerEvents="none">
+          <Animated.View style={[styles.itemContainer, translateStyles]} pointerEvents="none">
             <View style={styles.itemCard}>
               {deck ? (
                 <CardCell

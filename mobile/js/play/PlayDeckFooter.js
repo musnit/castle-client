@@ -88,10 +88,9 @@ export const PlayDeckFooter = ({ deck, isPlaying }) => {
   let playingTransition = React.useRef(new Animated.Value(0)).current;
 
   React.useEffect(() => {
-    Animated.spring(playingTransition, {
+    Animated.timing(playingTransition, {
       toValue: isPlaying ? 0 : 1,
-      friction: 20,
-      tension: 10,
+      duration: 100,
       useNativeDriver: true,
     }).start();
   }, [isPlaying]);
