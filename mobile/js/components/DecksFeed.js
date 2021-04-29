@@ -225,7 +225,9 @@ const CurrentDeckCell = ({
           </View>
         ) : null}
       </View>
-      <Animated.View style={[styles.itemFooter, { transform: [{ translateY: playingFooterY }] }]}>
+      <Animated.View
+        style={[styles.itemFooter, { transform: [{ translateY: playingFooterY }] }]}
+        pointerEvents="box-none">
         <PlayDeckFooter deck={deck} isPlaying={isPlaying} />
       </Animated.View>
     </View>

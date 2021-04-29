@@ -96,15 +96,17 @@ export const PlayDeckFooter = ({ deck, isPlaying }) => {
   }, [isPlaying]);
 
   return (
-    <View style={styles.container}>
-      <Animated.View style={[styles.background, { opacity: playingTransition }]}>
+    <View style={styles.container} pointerEvents="box-none">
+      <Animated.View
+        style={[styles.background, { opacity: playingTransition }]}
+        pointerEvents="none">
         <LinearGradient
           // Background Linear Gradient
           colors={['transparent', 'rgba(0, 0, 0, 0.3)', 'rgba(0,0,0,0.7)']}
           style={[styles.background]}
         />
       </Animated.View>
-      <View style={styles.left}>
+      <View style={styles.left} pointerEvents="box-none">
         <Pressable
           style={styles.creator}
           onPress={() => push('Profile', { userId: creator.userId })}>
