@@ -1,10 +1,11 @@
 import React from 'react';
-import { Keyboard, Share } from 'react-native';
+import { Image, Keyboard, Share } from 'react-native';
 import { gql } from '@apollo/client';
 import { launchImageLibrary as ImagePickerLaunchImageLibrary } from 'react-native-image-picker';
 import { ReactNativeFile } from 'apollo-upload-client';
 import tinycolor from 'tinycolor2';
 
+import FastImage from 'react-native-fast-image';
 import shortid from 'shortid';
 import Url from 'url-parse';
 
@@ -311,4 +312,13 @@ export const getNotificationReactionId = (n) => {
     return n.type.substring(prefixLength);
   }
   return null;
+};
+
+// https://github.com/DylanVann/react-native-fast-image/issues/395#issuecomment-453850446
+export const preloadImageRequires = (images) => {
+  const uris = images.map((image) => ({
+    uri: Image.resolveAssetSource(image).uri,
+  }));
+
+  FastImage.preload(uris);
 };

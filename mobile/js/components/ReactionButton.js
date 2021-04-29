@@ -4,6 +4,7 @@ import { gql } from '@apollo/client';
 
 import * as Constants from '../Constants';
 import * as Session from '../Session';
+import * as Utilities from '../common/utilities';
 
 import debounce from 'lodash.debounce';
 import FastImage from 'react-native-fast-image';
@@ -15,7 +16,7 @@ import { TouchableNativeFeedback as PressableRNGH } from 'react-native-gesture-h
 const Pressable = Constants.iOS ? PressableRN : PressableRNGH;
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-FastImage.preload([
+Utilities.preloadImageRequires([
   require('../../assets/images/emoji/fire-selected.png'),
   require('../../assets/images/emoji/fire.png'),
 ]);
