@@ -19,6 +19,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 24,
     left: 12,
+    zIndex: 1,
+    elevation: 1,
   },
   emptyCell: {
     width: '100%',
@@ -153,7 +155,14 @@ export const DeckRemixesScreen = ({ route }) => {
           }
           ListHeaderComponent={ListHeaderComponent}
         />
-      ) : null}
+      ) : (
+        <React.Fragment>
+          {ListHeaderComponent}
+          <View style={Constants.styles.empty}>
+            <Text style={Constants.styles.emptyText}>No remixes yet.</Text>
+          </View>
+        </React.Fragment>
+      )}
     </SafeAreaView>
   );
 };

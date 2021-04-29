@@ -141,6 +141,12 @@ export const PlayDeckActions = ({
     [deck?.deckId, onBlockUser, onReportDeck]
   );
 
+  const onPressRemix = () => {
+    return push('DeckRemixes', {
+      deck: deck,
+    });
+  };
+
   return (
     <Animated.View
       style={{
@@ -160,6 +166,9 @@ export const PlayDeckActions = ({
           onChange={onSelectDropdownAction}>
           <Feather name="more-horizontal" color="#fff" size={24} style={styles.rightButtonIcon} />
         </Dropdown>
+        <Pressable style={styles.rightButton} onPress={onPressRemix}>
+          {({ pressed }) => <Icon name="shuffle" color={pressed ? '#ccc' : '#fff'} size={32} />}
+        </Pressable>
         <Pressable style={styles.rightButton} onPress={() => shareDeck(deck)}>
           {({ pressed }) => (
             <Feather
