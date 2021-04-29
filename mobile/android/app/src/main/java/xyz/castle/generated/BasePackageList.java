@@ -10,6 +10,7 @@ public class BasePackageList {
         new expo.modules.analytics.amplitude.AmplitudePackage(),
         new expo.modules.constants.ConstantsPackage(),
         new expo.modules.filesystem.FileSystemPackage(),
+        new expo.modules.lineargradient.LinearGradientPackage(),
         new expo.modules.permissions.PermissionsPackage()
     );
   }
