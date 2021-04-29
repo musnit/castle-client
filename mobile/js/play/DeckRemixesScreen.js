@@ -59,36 +59,12 @@ export const DeckRemixesScreen = ({ route }) => {
       query ChildDecks($parentDeckId: ID!) {
         deck(deckId: $parentDeckId) {
           childDecks {
-            id
-            deckId
-            title
-            creator {
-              userId
-              username
-              photo {
-                url
-              }
-            }
-            visibility
-            initialCard {
-              id
-              cardId
-              title
-              backgroundColor
-              backgroundImage {
-                url
-                smallUrl
-              }
-            }
-            variables
-            previewVideo {
-              url
-            }
+            ${Constants.FEED_ITEM_DECK_FRAGMENT}
           }
         }
       }
     `,
-    { variables: { parentDeckId } }
+    { variables: { parentDeckId }, fetchPolicy: 'no-cache' }
   );
 
   if (!queryDecks.loading && !queryDecks.error && queryDecks.data) {

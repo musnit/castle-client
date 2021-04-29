@@ -79,9 +79,15 @@ export const PlayDeckFooter = ({ deck, isPlaying }) => {
       variables: { deckId: deck.parentDeckId },
     });
     if (result?.data?.deck && result.data.deck.visibility === 'public') {
-      return navigate('DeckRemixes', {
-        deck: result.data.deck,
-      });
+      return navigate(
+        'DeckRemixes',
+        {
+          deck: result.data.deck,
+        },
+        {
+          isFullscreen: true,
+        }
+      );
     }
   }, [deck.parentDeckId, navigate]);
 
