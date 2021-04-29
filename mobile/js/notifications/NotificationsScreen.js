@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   smallFollowButton: { padding: 6 },
-  reactionSticker: { position: 'absolute', left: 4, bottom: -8, width: 32, height: 32 },
+  reactionSticker: { position: 'absolute', right: -14, bottom: -8, width: 32, height: 32 },
 });
 
 const STATUS_HEADERS = {
