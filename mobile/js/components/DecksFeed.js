@@ -1,7 +1,7 @@
 import React from 'react';
 import { Animated, FlatList, InteractionManager, StyleSheet, View } from 'react-native';
 import { CardCell } from './CardCell';
-import { PlayDeckActions, PlayDeckActionsSkeleton } from '../play/PlayDeckActions';
+import { PlayDeckActions } from '../play/PlayDeckActions';
 import { PlayDeckFooter } from '../play/PlayDeckFooter';
 import { PlayDeckNavigator } from '../play/PlayDeckNavigator';
 import { useGameViewAndroidBackHandler } from '../common/GameViewAndroidBackHandler';
@@ -238,18 +238,11 @@ const SkeletonFeed = () => {
       style={{
         height: '100%',
         width: '100%',
-        paddingTop: Constants.FEED_HEADER_HEIGHT,
       }}>
       <View style={styles.itemContainer}>
-        <View style={[styles.itemHeader, { backgroundColor: '#3c3c3c' }]}>
-          <PlayDeckActionsSkeleton />
-        </View>
         <View style={[styles.itemCard, styles.itemCardSkeleton]} />
       </View>
       <View style={styles.itemContainer}>
-        <View style={[styles.itemHeader, { backgroundColor: '#3c3c3c' }]}>
-          <PlayDeckActionsSkeleton />
-        </View>
         <View style={[styles.itemCard, styles.itemCardSkeleton]} />
       </View>
     </View>
