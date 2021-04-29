@@ -100,7 +100,7 @@ export const PlayDeckFooter = ({ deck, isPlaying }) => {
       <Animated.View style={[styles.background, { opacity: playingTransition }]}>
         <LinearGradient
           // Background Linear Gradient
-          colors={['transparent', 'rgba(0,0,0,0.7)']}
+          colors={['transparent', 'rgba(0, 0, 0, 0.3)', 'rgba(0,0,0,0.7)']}
           style={[styles.background]}
         />
       </Animated.View>
