@@ -202,32 +202,30 @@ private:
 
   ResponseRef readResponse(Reader &reader);
   void readExpression(ExpressionRef &expr, Reader &reader);
-};
 
 
-//
-// Triggering
-//
+  // Triggering
 
-template<typename Trigger>
-struct TriggerComponent {
-  // Actors that have rules with triggers of type `Trigger` have this component, linking them to the
-  // response to run for that trigger. Also enables fast searches for actors with a given trigger
-  // type.
-  //
-  // Since there can be multiple rules with the same trigger type on an actor, this component has
-  // multiple 'entries', one per rule, each with the parameters of the trigger and a reference to
-  // the response to run for that rule.
-  //
-  // Usually added when reading the rules of an actor, but may also be added or removed dynamically
-  // (eg. `TriggerComponent<CreateTrigger>` is removed once the create trigger is run so it's never
-  // run twice).
+  template<typename Trigger>
+  struct TriggerComponent {
+    // Actors that have rules with triggers of type `Trigger` have this component, linking them to
+    // the response to run for that trigger. Also enables fast searches for actors with a given
+    // trigger type.
+    //
+    // Since there can be multiple rules with the same trigger type on an actor, this component has
+    // multiple 'entries', one per rule, each with the parameters of the trigger and a reference to
+    // the response to run for that rule.
+    //
+    // Usually added when reading the rules of an actor, but may also be added or removed
+    // dynamically (eg. `TriggerComponent<CreateTrigger>` is removed once the create trigger is run
+    // so it's never run twice).
 
-  struct Entry {
-    Trigger trigger;
-    ResponseRef response = nullptr;
+    struct Entry {
+      Trigger trigger;
+      ResponseRef response = nullptr;
+    };
+    SmallVector<Entry, 4> entries;
   };
-  SmallVector<Entry, 4> entries;
 };
 
 
@@ -443,7 +441,8 @@ RuleRegistration<T, Behavior>::RuleRegistration(const char *name) {
         [](Scene &scene, ActorId actorId, ResponseRef response, Reader &reader) {
           // Add a `TriggerComponent<T>` entry for this rule
           auto &component
-              = scene.getEntityRegistry().template get_or_emplace<TriggerComponent<T>>(actorId);
+              = scene.getEntityRegistry()
+                    .template get_or_emplace<RulesBehavior::TriggerComponent<T>>(actorId);
           component.entries.emplace_back();
           auto &entry = component.entries.back();
           entry.response = response;

@@ -13,6 +13,21 @@ struct CollideTrigger : BaseTrigger {
   struct Params {
     PROP(Tag, tag);
   } params;
+
+  inline static int nextId = 0;
+  int id = nextId++; // Used for debouncing
+};
+
+struct CollideTriggerMarker {
+  // Added to an actor when a collision trigger is fired on it to track and prevent firing the same
+  // trigger multiple times for the same other actor. All markers are removed at the end of the
+  // frame so new collisions can be registered again.
+
+  struct Entry {
+    int triggerId; // Matches `CollideTrigger::id` for the trigger we're marking
+    ActorId otherActorId;
+  };
+  SmallVector<Entry, 4> entries;
 };
 
 
@@ -85,6 +100,8 @@ void BodyBehavior::handleDisableComponent(
 //
 
 void BodyBehavior::handlePerform(double dt) {
+  // Clear markers so new triggers can be registered
+  getScene().getEntityRegistry().clear<CollideTriggerMarker>();
 }
 
 
@@ -93,16 +110,35 @@ void BodyBehavior::handlePerform(double dt) {
 //
 
 void BodyBehavior::handleBeginPhysicsContact(b2Contact *contact) {
+  // Get the actor ids involved
   auto body1 = contact->GetFixtureA()->GetBody();
   auto body2 = contact->GetFixtureB()->GetBody();
   auto actorId1 = maybeGetActorId(body1);
   auto actorId2 = maybeGetActorId(body2);
-  Debug::log("contact: {}, {}", entt::to_integral(actorId1), entt::to_integral(actorId2));
-  // auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
-  // if (auto component1 = maybeGetComponent(actorId1)) {
-  //}
-  // if (auto component2 = maybeGetComponent(actorId2)) {
-  //}
+
+  // Fire triggers, using markers to deduplicate
+  auto &registry = getScene().getEntityRegistry();
+  auto &tagsBehavior = getBehaviors().byType<TagsBehavior>();
+  auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
+  const auto visit = [&](ActorId actorId, ActorId otherActorId) {
+    rulesBehavior.fireIf<CollideTrigger>(actorId, [&](const CollideTrigger &trigger) {
+      auto tag = trigger.params.tag();
+      if (!(tag == emptyTag || tagsBehavior.hasTag(otherActorId, tag))) {
+        return false; // Tag didn't match
+      }
+      auto triggerId = trigger.id;
+      auto &marker = registry.get_or_emplace<CollideTriggerMarker>(actorId);
+      for (auto &entry : marker.entries) {
+        if (entry.triggerId == triggerId && entry.otherActorId == otherActorId) {
+          return false; // Already marked for this trigger and other actor
+        }
+      }
+      marker.entries.push_back({ triggerId, otherActorId });
+      return true;
+    });
+  };
+  visit(actorId1, actorId2);
+  visit(actorId2, actorId1);
 }
 
 

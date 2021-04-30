@@ -154,8 +154,15 @@
                   "behaviorId": 1
                 },
                 "response": {
-                  "name": "destroy",
-                  "params": {},
+                  "name": "note",
+                  "params": {
+                    "note": "collided!",
+                    "nextResponse": {
+                      "name": "destroy",
+                      "params": {},
+                      "behaviorId": 16
+                    }
+                  },
                   "behaviorId": 16
                 }
               }
