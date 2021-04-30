@@ -504,12 +504,12 @@ RuleRegistration<T, Behavior>::RuleRegistration(const char *name) {
                   }
                 });
               });
-
-              // Next response
-              reader.obj("nextResponse", [&]() {
-                response->next = rulesBehavior.readResponse(reader);
-              });
             }
+
+            // Next response
+            reader.obj("nextResponse", [&]() {
+              response->next = rulesBehavior.readResponse(reader);
+            });
           });
           return response;
         },

@@ -48,7 +48,7 @@ public:
   ActorId addActor(Reader *maybeReader = nullptr, const char *maybeParentEntryId = nullptr);
   void removeActor(ActorId actorId);
 
-  bool hasActor(ActorId actorId) const;
+  bool hasActor(ActorId actorId) const; // Whether `actorId` exists. Always `false` for `nullActor`.
   Actor *maybeGetActor(ActorId actorId); // Returns `nullptr` if no such actor
   const Actor *maybeGetActor(ActorId actorId) const;
 

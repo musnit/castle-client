@@ -237,15 +237,13 @@ struct RepeatResponse : BaseResponse {
     // Check if we're in progress (are at the top of the repeat stack)
     if (ctx.repeatStack.size() > 0) {
       if (auto &top = ctx.repeatStack.back(); top.response == this) {
-        if (!ctx.getScene().hasActor(ctx.actorId)) {
-          // Actor was destroyed -- stop entire rule chain
-          ctx.suspend();
-        } else if (top.count > 0) {
-          // Have repetitions left -- decrement and enter body
+        // Check that we have repetitions left and also that the current actor exists
+        if (top.count > 0 && ctx.getScene().hasActor(ctx.actorId)) {
+          // Continue -- decrement count and enter body
           --top.count;
           ctx.setNext(params.body());
         } else {
-          // No repetitions left -- pop ourselves off repeat stack and continue with `next` normally
+          // Stop -- pop ourselves off repeat stack and continue with `next` normally
           ctx.repeatStack.pop_back();
         }
         return;
@@ -280,26 +278,23 @@ struct InfiniteRepeatResponse : BaseResponse {
 
   void run(RuleContext &ctx) override {
     if (ctx.repeatStack.size() > 0 && ctx.repeatStack.back().response == this) {
-      // We got back here after the body -- check whether to stop or continue
-      if (!ctx.getScene().hasActor(ctx.actorId)) {
-        // Actor was destroyed -- stop entire rule chain
-        ctx.suspend();
-      } else if (ctx.repeatStack.back().count == 0) {
-        // Stopped -- remove ourselves from the repeat stack and continue with `next` normally
-        ctx.repeatStack.pop_back();
-      } else {
-        // Not stopped -- schedule `body` to after the interval, or the next frame if the interval
-        // is close enough to 60Hz
+      // Got back here after body -- check that we're not stopped and that the current actor exists
+      if (ctx.repeatStack.back().count != 0 && ctx.getScene().hasActor(ctx.actorId)) {
+        // Continue -- schedule `body` to after the interval, or the next frame if the interval is
+        // close enough to 60Hz
         ctx.setNext(params.body());
         auto &scene = ctx.getScene();
         auto &rulesBehavior = scene.getBehaviors().byType<RulesBehavior>();
         auto interval = params.interval();
         auto performTime = interval < 0.02 ? 0 : scene.getPerformTime() + interval;
         rulesBehavior.schedule(ctx.suspend(), performTime);
+      } else {
+        // Stop -- remove ourselves from the repeat stack and continue with `next` normally
+        ctx.repeatStack.pop_back();
       }
     } else {
       // Haven't started yet -- add ourselves to the repeat stack and do one repetition right away
-      ctx.repeatStack.push_back({ this, 1 }); // Just use `1`, we don't actually check the value
+      ctx.repeatStack.push_back({ this, 1 }); // Just use `1` -- we continue for anything `!= 0`
       ctx.setNext(params.body());
     }
   }
@@ -315,7 +310,7 @@ struct StopRepeatingResponse : BaseResponse {
 
   void run(RuleContext &ctx) override {
     if (ctx.repeatStack.size() > 0) {
-      ctx.repeatStack.back().count = 0;
+      ctx.repeatStack.back().count = 0; // Cancels `RepeatResponse` and `InfiniteRepeatResponse`
     }
   }
 };
@@ -355,10 +350,45 @@ struct ActOnResponse : BaseResponse {
       }
     }
 
-    // Not in progress -- add ourselves to the act-on stack
+    // Not in progress -- add ourselves to the act-on stack and start visiting actors
     if (!actorIds.empty()) {
       ctx.actOnStack.push_back({ this, 1, ctx.actorId }); // Visiting index 0 right away, 1 is next
       ctx.actorId = actorIds.data()[0];
+      ctx.setNext(params.body());
+    }
+  }
+};
+
+struct ActOnOtherResponse : BaseResponse {
+  inline static const RuleRegistration<ActOnOtherResponse, RulesBehavior> registration {
+    "act on other"
+  };
+
+  struct Params {
+    PROP(ResponseRef, body) = nullptr;
+  } params;
+
+  void linearize(ResponseRef continuation) override {
+    // Same as `RepeatResponse::linearize`
+    BaseResponse::linearize(next, continuation);
+    BaseResponse::linearize(params.body(), this);
+  }
+
+  void run(RuleContext &ctx) override {
+    // Check if we're in progress (are at the top of the act-on stack)
+    if (ctx.actOnStack.size() > 0) {
+      if (auto &top = ctx.actOnStack.back(); top.response == this) {
+        // Return to original actor, pop off stack, continue with `next`
+        ctx.actorId = top.returnActorId;
+        ctx.actOnStack.pop_back();
+        return;
+      }
+    }
+
+    // Not in progress -- if `otherActorId` exists, add ourselves to the act-on stack and visit it
+    if (auto otherActorId = ctx.extras.otherActorId; ctx.getScene().hasActor(otherActorId)) {
+      ctx.actOnStack.push_back({ this, 1, ctx.actorId }); // We don't really use `index`
+      ctx.actorId = otherActorId;
       ctx.setNext(params.body());
     }
   }
