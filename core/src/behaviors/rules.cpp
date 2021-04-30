@@ -585,7 +585,7 @@ void RulesBehavior::handlePerform(double dt) {
   auto &registry = scene.getEntityRegistry();
 
   // Fire create triggers. Then clear them so they're only run once on each actor.
-  fireAll<CreateTrigger>({});
+  fireAllEnabled<CreateTrigger>({});
   registry.clear<TriggerComponent<CreateTrigger>>();
 
   // Run contexts. Move ready contexts from `scheduleds` to `current`, then run and clear `current`.

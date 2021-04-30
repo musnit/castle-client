@@ -9,6 +9,18 @@ static const TouchToken slingToken;
 
 
 //
+// Triggers
+//
+
+struct SlingTrigger : BaseTrigger {
+  inline static const RuleRegistration<SlingTrigger, SlingBehavior> registration { "sling" };
+
+  struct Params {
+  } params;
+};
+
+
+//
 // Perform
 //
 
@@ -35,6 +47,10 @@ void SlingBehavior::handlePerform(double dt) {
           body->SetLinearVelocity({ vel.x, vel.y });
         }
       });
+
+      // Fire triggers
+      auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
+      rulesBehavior.fireAllEnabled<SlingTrigger, SlingComponent>({});
     }
   });
 }

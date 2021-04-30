@@ -136,7 +136,7 @@ public:
   // Trigger firing
 
   template<typename Trigger, typename... Component>
-  void fireAll(RuleContextExtras extras); // Fire on all actors with trigger and components
+  void fireAllEnabled(RuleContextExtras extras); // Fire on all with trigger and enabled components
   template<typename Trigger, typename... Component, typename F>
   void fireAllIf(RuleContextExtras extras,
       F &&filter); // Like above but also `filter` must return `true`.
@@ -367,9 +367,9 @@ inline RuleContext::RuleContext(
 }
 
 template<typename Trigger, typename... Component>
-void RulesBehavior::fireAll(RuleContextExtras extras) {
-  fireAllIf<Trigger, Component...>(extras, [](const auto &...) {
-    return true;
+void RulesBehavior::fireAllEnabled(RuleContextExtras extras) {
+  fireAllIf<Trigger, Component...>(extras, [](ActorId, const Trigger &, const auto &...component) {
+    return (!component.disabled && ...);
   });
 }
 
@@ -377,8 +377,8 @@ template<typename Trigger, typename... Component, typename F>
 void RulesBehavior::fireAllIf(RuleContextExtras extras, F &&filter) {
   auto &scene = getScene();
   scene.getEntityRegistry().view<const TriggerComponent<Trigger>, const Component...>().each(
-      [&](ActorId actorId, const TriggerComponent<Trigger> &component, const auto &...rest) {
-        for (auto &entry : component.entries) {
+      [&](ActorId actorId, const TriggerComponent<Trigger> &triggerComponent, const auto &...rest) {
+        for (auto &entry : triggerComponent.entries) {
           if (filter(actorId, entry.trigger, rest...)) {
             schedule({ entry.response, actorId, extras, scene });
           }
@@ -396,8 +396,9 @@ void RulesBehavior::fire(ActorId actorId, RuleContextExtras extras) {
 template<typename Trigger, typename F>
 void RulesBehavior::fireIf(ActorId actorId, RuleContextExtras extras, F &&filter) {
   auto &scene = getScene();
-  if (auto component = scene.getEntityRegistry().try_get<TriggerComponent<Trigger>>(actorId)) {
-    for (auto &entry : component->entries) {
+  if (auto triggerComponent
+      = scene.getEntityRegistry().try_get<TriggerComponent<Trigger>>(actorId)) {
+    for (auto &entry : triggerComponent->entries) {
       if (filter((const Trigger &)entry.trigger)) {
         schedule({ entry.response, actorId, extras, scene });
       }

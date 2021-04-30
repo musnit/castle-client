@@ -102,10 +102,12 @@ void AnalogStickBehavior::handlePerform(double dt) {
 
     // Fire triggers -- don't fire if began and ended in the same frame
     if (newTouch && !touch.released) {
-      getBehaviors().byType<RulesBehavior>().fireAll<AnalogStickBeginsTrigger>({});
+      auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
+      rulesBehavior.fireAllEnabled<AnalogStickBeginsTrigger, AnalogStickComponent>({});
     }
     if (!newTouch && touch.released) {
-      getBehaviors().byType<RulesBehavior>().fireAll<AnalogStickEndsTrigger>({});
+      auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
+      rulesBehavior.fireAllEnabled<AnalogStickEndsTrigger, AnalogStickComponent>({});
     }
   });
 }
