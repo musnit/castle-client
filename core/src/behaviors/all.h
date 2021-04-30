@@ -20,6 +20,7 @@
 #include "behaviors/analog_stick.h"
 #include "behaviors/rules.h"
 #include "behaviors/tags.h"
+#include "behaviors/text.h"
 
 
 class AllBehaviors {
@@ -88,6 +89,7 @@ private:
 
     // Rendering
     //DebugDrawBehavior,
+    TextBehavior,
     Drawing2Behavior
 
     > behaviors;

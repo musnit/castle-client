@@ -1,24 +1,13 @@
 #include "engine.h"
 
 #include "snapshot.h"
+#include "js.h"
 
 
 //
 // JavaScript utilities (stubs in not-web)
 //
 
-#ifdef __EMSCRIPTEN__
-// In web use
-// https://emscripten.org/docs/porting/connecting_cpp_and_javascript/Interacting-with-code.html#interacting-with-code-call-javascript-from-native
-#define JS_DEFINE(retType, name, ...) EM_JS(retType, name, __VA_ARGS__)
-#else
-// Not web. Make a stub that takes any arguments, does nothing, returns default value of `retType`
-#define JS_DEFINE(retType, name, ...)                                                              \
-  template<typename... Args>                                                                       \
-  inline static retType name(Args &&...args) {                                                     \
-    return {};                                                                                     \
-  }
-#endif
 JS_DEFINE(int, JS_getCanvasWidth, (),
     { return document.querySelector("#canvas").getBoundingClientRect().width; });
 JS_DEFINE(int, JS_getCanvasHeight, (),

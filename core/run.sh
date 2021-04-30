@@ -174,6 +174,11 @@ case "$1" in
     mkdir -p web-publish
     cp build/web-release/{index.*,castle-core.*} web-publish/
     ;;
+  web-publish-www)
+    ./run.sh web-release
+    rm -rf ../../castle-www/public/player/*
+    cp build/web-release/castle-core.* ../../castle-www/public/player/
+    ;;
 
   # Scenes
   load-card)

@@ -717,7 +717,7 @@ void Writer::str(K &&key, V &&val) {
 
 template<typename V>
 void Writer::str(V &&val) {
-  cur->PushBack(makStr(std::forward<V>(val)), alloc);
+  cur->PushBack(makeStr(std::forward<V>(val)), alloc);
 }
 
 template<typename K, typename F>
