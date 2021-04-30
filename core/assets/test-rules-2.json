@@ -167,6 +167,13 @@
                               "name": "destroy",
                               "params": {},
                               "behaviorId": 16
+                            },
+                            "nextResponse": {
+                              "name": "note",
+                              "params": {
+                                "note": "back outside!"
+                              },
+                              "behaviorId": 16
                             }
                           },
                           "behaviorId": 16

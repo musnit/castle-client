@@ -112,8 +112,8 @@ ActorId Scene::addActor(Reader *maybeReader, const char *maybeParentEntryId) {
     Reader parentReader(parentJson);
     parentReader.obj("actorBlueprint", [&]() {
       parentReader.obj("components", [&]() {
-        // TODO(nikki): We can cache the component reader in the `LibraryEntry` to reuse the
-        //              reader lookup cache when we add one
+        // NOTE: We can cache the component reader in the `LibraryEntry` to reuse the reader lookup
+        //       cache when we add one
         if (maybeReader) {
           // Have an actor reader, just set the parent reader to fallback to
           maybeFallbackComponentsReader = Reader(*parentReader.jsonValue());

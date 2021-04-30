@@ -670,8 +670,8 @@ void Reader::enter(const json::Value *child, F &&f) {
 }
 
 inline json::Value::ConstMemberIterator Reader::find(const char *key, bool useFallback) {
-  // TODO(nikki): This gets hit a lot, maybe optimize using a cache of `entt::hashed_string` ->
-  //              result pairs (need to save / restore around `enter` above)
+  // NOTE: This gets hit a lot, maybe optimize using a cache of `entt::hashed_string` -> result
+  //       pairs (need to save / restore around `enter` above)
   if (auto mem = cur->FindMember(key); mem != cur->MemberEnd()) {
     return mem;
   }
