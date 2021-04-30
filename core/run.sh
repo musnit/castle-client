@@ -145,11 +145,15 @@ case "$1" in
     ;;
 
   web-release)
-    $TIME $CMAKE -DWEB=ON -H. -Bbuild/web-release -GNinja
+    if [ ! -d build/web-release ]; then
+      $TIME $CMAKE -DWEB=ON -H. -Bbuild/web-release -GNinja
+    fi
     $TIME $CMAKE --build build/web-release
     ;;
   web-debug)
-    $TIME $CMAKE -DCMAKE_BUILD_TYPE=Debug -DWEB=ON -H. -Bbuild/web-debug -GNinja
+    if [ ! -d build/web-debug ]; then
+      $TIME $CMAKE -DCMAKE_BUILD_TYPE=Debug -DWEB=ON -H. -Bbuild/web-debug -GNinja
+    fi
     $TIME $CMAKE --build build/web-debug
     ;;
   web-watch-release)
