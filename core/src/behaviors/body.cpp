@@ -121,7 +121,9 @@ void BodyBehavior::handleBeginPhysicsContact(b2Contact *contact) {
   auto &tagsBehavior = getBehaviors().byType<TagsBehavior>();
   auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
   const auto visit = [&](ActorId actorId, ActorId otherActorId) {
-    rulesBehavior.fireIf<CollideTrigger>(actorId, [&](const CollideTrigger &trigger) {
+    RuleContextExtras extras;
+    extras.otherActorId = otherActorId;
+    rulesBehavior.fireIf<CollideTrigger>(actorId, extras, [&](const CollideTrigger &trigger) {
       auto tag = trigger.params.tag();
       if (!(tag == emptyTag || tagsBehavior.hasTag(otherActorId, tag))) {
         return false; // Tag didn't match

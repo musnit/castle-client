@@ -419,7 +419,7 @@ RulesBehavior::~RulesBehavior() {
 //
 
 void RulesBehavior::handlePreRemoveActor(ActorId actorId, RulesComponent &component) {
-  fire<DestroyTrigger>(actorId);
+  fire<DestroyTrigger>(actorId, {});
 }
 
 
@@ -526,7 +526,7 @@ void RulesBehavior::handlePerform(double dt) {
   auto &scene = getScene();
 
   // Fire create triggers. Then clear them so they're only run once on each actor.
-  fireAll<CreateTrigger>();
+  fireAll<CreateTrigger>({});
   scene.getEntityRegistry().clear<TriggerComponent<CreateTrigger>>();
 
   // Run contexts. Move ready contexts from `scheduleds` to `current`, then run and clear `current`.

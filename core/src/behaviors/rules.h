@@ -49,6 +49,14 @@ constexpr auto Archive::skipProp<ExpressionRef> = true; // Don't auto-read `Expr
 // Context
 //
 
+struct RuleContextExtras {
+  // Extra data held in a rule context, usually passed in at the trigger site. We'll can make this
+  // more dynamically typed and extendable in the future, but for now all we've needed is
+  // `otherActorId`.
+
+  ActorId otherActorId = nullActor;
+};
+
 class RuleContext {
   // Holds local values for one invocation of a response or expression. Passed to the `run(...)`
   // method of responses or the `eval(...)` method of expressions.
@@ -61,6 +69,7 @@ public:
 
 
   ActorId actorId; // Actor on whom the response should act
+  RuleContextExtras extras; // Extra information this context carries
 
 
   struct RepeatStackElem {
@@ -90,7 +99,7 @@ private:
 
   Scene *scene;
 
-  RuleContext(ResponseRef next_, ActorId actorId_, Scene &scene_);
+  RuleContext(ResponseRef next_, ActorId actorId_, RuleContextExtras extras_, Scene &scene_);
 
   void run();
 };
@@ -127,16 +136,18 @@ public:
   // Trigger firing
 
   template<typename Trigger, typename... Component>
-  void fireAll(); // Fire on all actors that have trigger and components
+  void fireAll(RuleContextExtras extras); // Fire on all actors with trigger and components
   template<typename Trigger, typename... Component, typename F>
-  void fireAllIf(F &&filter); // Like above but also `filter` must return `true`.
-                              // `F` is `(ActorId, const Trigger &, const Component &...) -> bool`
+  void fireAllIf(RuleContextExtras extras,
+      F &&filter); // Like above but also `filter` must return `true`.
+                   // `F` is `(ActorId, const Trigger &, const Component &...) -> bool`
 
   template<typename Trigger>
-  void fire(ActorId actorId); // Fire on single actor if has trigger
+  void fire(ActorId actorId, RuleContextExtras extras); // Fire on single actor if has trigger
   template<typename Trigger, typename F>
-  void fireIf(ActorId actorId, F &&filter); // Like above but also `filter` must return `true`
-                                            // `F` is `(const Trigger &) -> bool`
+  void fireIf(ActorId actorId, RuleContextExtras extras,
+      F &&filter); // Like above but also `filter` must return `true`
+                   // `F` is `(const Trigger &) -> bool`
 
 
   // Response scheduling
@@ -347,46 +358,48 @@ inline RuleContext RuleContext::suspend() {
   return result;
 }
 
-inline RuleContext::RuleContext(ResponseRef next_, ActorId actorId_, Scene &scene_)
+inline RuleContext::RuleContext(
+    ResponseRef next_, ActorId actorId_, RuleContextExtras extras_, Scene &scene_)
     : actorId(actorId_)
+    , extras(extras_)
     , next(next_)
     , scene(&scene_) {
 }
 
 template<typename Trigger, typename... Component>
-void RulesBehavior::fireAll() {
-  fireAllIf<Trigger, Component...>([](const auto &...) {
+void RulesBehavior::fireAll(RuleContextExtras extras) {
+  fireAllIf<Trigger, Component...>(extras, [](const auto &...) {
     return true;
   });
 }
 
 template<typename Trigger, typename... Component, typename F>
-void RulesBehavior::fireAllIf(F &&filter) {
+void RulesBehavior::fireAllIf(RuleContextExtras extras, F &&filter) {
   auto &scene = getScene();
   scene.getEntityRegistry().view<const TriggerComponent<Trigger>, const Component...>().each(
       [&](ActorId actorId, const TriggerComponent<Trigger> &component, const auto &...rest) {
         for (auto &entry : component.entries) {
           if (filter(actorId, entry.trigger, rest...)) {
-            schedule({ entry.response, actorId, scene });
+            schedule({ entry.response, actorId, extras, scene });
           }
         }
       });
 }
 
 template<typename Trigger>
-void RulesBehavior::fire(ActorId actorId) {
-  fireIf<Trigger>(actorId, [](const auto &) {
+void RulesBehavior::fire(ActorId actorId, RuleContextExtras extras) {
+  fireIf<Trigger>(actorId, extras, [](const auto &) {
     return true;
   });
 }
 
 template<typename Trigger, typename F>
-void RulesBehavior::fireIf(ActorId actorId, F &&filter) {
+void RulesBehavior::fireIf(ActorId actorId, RuleContextExtras extras, F &&filter) {
   auto &scene = getScene();
   if (auto component = scene.getEntityRegistry().try_get<TriggerComponent<Trigger>>(actorId)) {
     for (auto &entry : component->entries) {
       if (filter((const Trigger &)entry.trigger)) {
-        schedule({ entry.response, actorId, scene });
+        schedule({ entry.response, actorId, extras, scene });
       }
     }
   }
