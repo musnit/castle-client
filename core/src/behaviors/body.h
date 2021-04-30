@@ -58,6 +58,8 @@ public:
 
   void handlePerform(double dt);
 
+  void handleBeginPhysicsContact(b2Contact *contact);
+
   ExpressionValue handleGetProperty(
       ActorId actorId, const BodyComponent &component, PropId propId) const;
   void handleSetProperty(

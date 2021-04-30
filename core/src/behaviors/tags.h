@@ -38,6 +38,8 @@ private:
   explicit Tag(TagsMap::Token token_);
 };
 
+constexpr Tag emptyTag; // Compare with this to check if it's the default / empty tag
+
 using TagVector = SmallVector<Tag, 4>; // For storing multiple tags
 
 

@@ -130,6 +130,11 @@ private:
   mutable int nextNewDrawOrder = 0; // Always greater than the draw order of any existing actor
   mutable bool needDrawOrderSort = false;
 
+  struct PhysicsContactListener : b2ContactListener {
+    Scene &scene;
+    explicit PhysicsContactListener(Scene &scene_);
+    void BeginContact(b2Contact *contact) override;
+  } physicsContactListener; // Must outlive `physicsWorld` below
   b2World physicsWorld { b2Vec2(0, 9.8) };
   b2Body *physicsBackgroundBody = nullptr;
   double physicsUpdateTimeRemaining = 0;

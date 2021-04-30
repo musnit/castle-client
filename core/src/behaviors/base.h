@@ -138,6 +138,9 @@ DEFINE_HANDLER(ReadComponent);
 // Perform
 DEFINE_HANDLER(Perform);
 
+// Physics contacts
+DEFINE_HANDLER(BeginPhysicsContact);
+
 // Draw
 DEFINE_HANDLER(DrawComponent);
 DEFINE_HANDLER(DrawOverlay);

@@ -8,9 +8,14 @@
 //
 
 Scene::Scene()
-    : behaviors(std::make_unique<AllBehaviors>(*this)) {
-  // Create the background body (a static body useful to attach joints to)
+    : physicsContactListener(*this)
+    , behaviors(std::make_unique<AllBehaviors>(*this)) {
+  // Physics setup
   {
+    // Associate contact listener
+    physicsWorld.SetContactListener(&physicsContactListener);
+
+    // Create background body (a static body useful to attach joints to)
     b2BodyDef physicsBackgroundBodyDef;
     physicsBackgroundBody = physicsWorld.CreateBody(&physicsBackgroundBodyDef);
   }
@@ -203,7 +208,7 @@ void Scene::update(double dt) {
     physicsUpdateTimeRemaining += dt;
     auto nSteps = 0;
     while (physicsUpdateTimeRemaining >= updatePeriod) {
-      if (nSteps > maxSteps) {
+      if (++nSteps; nSteps > maxSteps) {
         physicsUpdateTimeRemaining = 0;
         break;
       }
@@ -216,6 +221,23 @@ void Scene::update(double dt) {
   getBehaviors().forEach([&](auto &behavior) {
     if constexpr (Handlers::hasPerform<decltype(behavior)>) {
       behavior.handlePerform(dt);
+    }
+  });
+}
+
+
+//
+// Physics contacts
+//
+
+Scene::PhysicsContactListener::PhysicsContactListener(Scene &scene_)
+    : scene(scene_) {
+}
+
+void Scene::PhysicsContactListener::BeginContact(b2Contact *contact) {
+  scene.getBehaviors().forEach([&](auto &behavior) {
+    if constexpr (Handlers::hasBeginPhysicsContact<decltype(behavior)>) {
+      behavior.handleBeginPhysicsContact(contact);
     }
   });
 }

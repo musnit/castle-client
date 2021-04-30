@@ -1,5 +1,20 @@
 #include "body.h"
 
+#include "behaviors/all.h"
+
+
+//
+// Triggers
+//
+
+struct CollideTrigger : BaseTrigger {
+  inline static const RuleRegistration<CollideTrigger, BodyBehavior> registration { "collide" };
+
+  struct Params {
+    PROP(Tag, tag);
+  } params;
+};
+
 
 //
 // Enable, disable
@@ -70,6 +85,24 @@ void BodyBehavior::handleDisableComponent(
 //
 
 void BodyBehavior::handlePerform(double dt) {
+}
+
+
+//
+// Physics contact
+//
+
+void BodyBehavior::handleBeginPhysicsContact(b2Contact *contact) {
+  auto body1 = contact->GetFixtureA()->GetBody();
+  auto body2 = contact->GetFixtureB()->GetBody();
+  auto actorId1 = maybeGetActorId(body1);
+  auto actorId2 = maybeGetActorId(body2);
+  Debug::log("contact: {}, {}", entt::to_integral(actorId1), entt::to_integral(actorId2));
+  // auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
+  // if (auto component1 = maybeGetComponent(actorId1)) {
+  //}
+  // if (auto component2 = maybeGetComponent(actorId2)) {
+  //}
 }
 
 
