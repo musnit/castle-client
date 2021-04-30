@@ -78,6 +78,7 @@ struct ActorRef {
       }
     }
     case 'o': { // "other"
+      return ctx.extras.otherActorId;
     }
     }
     return nullActor;
