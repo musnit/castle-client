@@ -72,10 +72,12 @@ set_target_properties(castle-core PROPERTIES CXX_EXTENSIONS OFF)
 
 # Warnings
 if(NOT MSVC)
-  target_compile_options(castle-core PRIVATE -fcolor-diagnostics -pedantic-errors -Wall -Wextra -Wno-missing-braces
+  target_compile_options(castle-core PRIVATE -fcolor-diagnostics -fdiagnostics-absolute-paths
+    -pedantic-errors -Wall -Wextra -Wno-missing-braces
     -Wno-gnu-zero-variadic-macro-arguments -Wno-nested-anon-types -Wno-unused-parameter -Wno-pragma-pack
     -Wno-gnu-anonymous-struct -Wno-deprecated-copy)
-  target_link_options(castle-core PRIVATE -fcolor-diagnostics -pedantic-errors -Wall -Wextra -Wno-missing-braces)
+  target_link_options(castle-core PRIVATE -fcolor-diagnostics -fdiagnostics-absolute-paths
+    -pedantic-errors -Wall -Wextra)
   if(WIN32)
     target_compile_options(castle-core PRIVATE -Wno-language-extension-token)
     target_link_options(castle-core PRIVATE -Wno-language-extension-token)

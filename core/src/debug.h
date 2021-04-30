@@ -40,6 +40,7 @@ template<typename... Args>
 inline void Debug::log(Args &&...args) {
   fmt::print(std::forward<Args>(args)...);
   fmt::print("\n");
+  std::fflush(stdout);
 };
 
 template<typename... Args>
