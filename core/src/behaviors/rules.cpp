@@ -68,6 +68,7 @@ struct CreateResponse : BaseResponse {
         auto creatorPos = b2Vec2(0, 0);
         float creatorAngle = 0;
         if (auto creatorBody = bodyBehavior.maybeGetPhysicsBody(ctx.actorId)) {
+          // TODO(nikki): Use old position, angle if creator actor was destroyed
           creatorPos = creatorBody->GetPosition();
           creatorAngle = creatorBody->GetAngle();
         }
@@ -89,6 +90,27 @@ struct CreateResponse : BaseResponse {
         newPos = { xAbsolute, yAbsolute };
       }
       newBody->SetTransform(newPos, newBody->GetAngle());
+    }
+  }
+};
+
+struct DestroyResponseMarker {
+  // Added to an actor when a destroy response is run on it, marking an impending destruction. The
+  // actor is destroyed at the end of the frame rather than right away, so that rule execution can
+  // continue.
+};
+
+struct DestroyResponse : BaseResponse {
+  inline static const RuleRegistration<DestroyResponse, RulesBehavior> registration { "destroy" };
+
+  struct Params {
+  } params;
+
+  void run(RuleContext &ctx) override {
+    auto &scene = ctx.getScene();
+    auto actorId = ctx.actorId;
+    if (scene.hasActor(actorId)) {
+      scene.getEntityRegistry().emplace_or_replace<DestroyResponseMarker>(actorId);
     }
   }
 };
@@ -215,7 +237,10 @@ struct RepeatResponse : BaseResponse {
     // Check if we're in progress (are at the top of the repeat stack)
     if (ctx.repeatStack.size() > 0) {
       if (auto &top = ctx.repeatStack.back(); top.response == this) {
-        if (top.count > 0) {
+        if (!ctx.getScene().hasActor(ctx.actorId)) {
+          // Actor was destroyed -- stop entire rule chain
+          ctx.suspend();
+        } else if (top.count > 0) {
           // Have repetitions left -- decrement and enter body
           --top.count;
           ctx.setNext(params.body());
@@ -256,7 +281,10 @@ struct InfiniteRepeatResponse : BaseResponse {
   void run(RuleContext &ctx) override {
     if (ctx.repeatStack.size() > 0 && ctx.repeatStack.back().response == this) {
       // We got back here after the body -- check whether to stop or continue
-      if (ctx.repeatStack.back().count == 0) {
+      if (!ctx.getScene().hasActor(ctx.actorId)) {
+        // Actor was destroyed -- stop entire rule chain
+        ctx.suspend();
+      } else if (ctx.repeatStack.back().count == 0) {
         // Stopped -- remove ourselves from the repeat stack and continue with `next` normally
         ctx.repeatStack.pop_back();
       } else {
@@ -524,10 +552,11 @@ void RuleContext::run() {
 
 void RulesBehavior::handlePerform(double dt) {
   auto &scene = getScene();
+  auto &registry = scene.getEntityRegistry();
 
   // Fire create triggers. Then clear them so they're only run once on each actor.
   fireAll<CreateTrigger>({});
-  scene.getEntityRegistry().clear<TriggerComponent<CreateTrigger>>();
+  registry.clear<TriggerComponent<CreateTrigger>>();
 
   // Run contexts. Move ready contexts from `scheduleds` to `current`, then run and clear `current`.
   // We don't run contexts directly from `scheduleds` because they could schedule new contexts when
@@ -548,4 +577,11 @@ void RulesBehavior::handlePerform(double dt) {
     ctx.run();
   }
   current.clear();
+
+  // Actually remove actors marked by `DestroyResponse`.
+  registry.view<DestroyResponseMarker>().each([&](ActorId actorId) {
+    // Destroying the current entity while iterating is safe according to:
+    // https://github.com/skypjack/entt/wiki/Crash-Course:-entity-component-system#what-is-allowed-and-what-is-not
+    scene.removeActor(actorId);
+  });
 }

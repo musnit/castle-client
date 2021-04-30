@@ -211,12 +211,12 @@ bool BaseBehavior<Derived, Component>::hasAnyEnabledComponent() const {
 
 template<typename Derived, typename Component>
 Component *BaseBehavior<Derived, Component>::maybeGetComponent(ActorId actorId) {
-  return componentView.contains(actorId) ? &std::get<0>(componentView.get(actorId)) : nullptr;
+  return hasComponent(actorId) ? &std::get<0>(componentView.get(actorId)) : nullptr;
 }
 
 template<typename Derived, typename Component>
 const Component *BaseBehavior<Derived, Component>::maybeGetComponent(ActorId actorId) const {
-  return componentView.contains(actorId) ? &std::get<0>(componentView.get(actorId)) : nullptr;
+  return hasComponent(actorId) ? &std::get<0>(componentView.get(actorId)) : nullptr;
 }
 
 template<typename Derived, typename Component>

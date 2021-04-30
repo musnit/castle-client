@@ -159,9 +159,36 @@
                     "note": "collided!",
                     "nextResponse": {
                       "name": "destroy",
-                      "params": {},
+                      "params": {
+                        "nextResponse": {
+                          "name": "act on other",
+                          "params": {
+                            "body": {
+                              "name": "destroy",
+                              "params": {},
+                              "behaviorId": 16
+                            }
+                          },
+                          "behaviorId": 16
+                        }
+                      },
                       "behaviorId": 16
                     }
+                  },
+                  "behaviorId": 16
+                }
+              },
+              {
+                "index": "44",
+                "trigger": {
+                  "name": "destroy",
+                  "params": {},
+                  "behaviorId": 16
+                },
+                "response": {
+                  "name": "note",
+                  "params": {
+                    "note": "circle destroyed!"
                   },
                   "behaviorId": 16
                 }
@@ -992,6 +1019,26 @@
           "Tags": {
             "disabled": false,
             "tagsString": "t1 t2"
+          },
+          "Rules": {
+            "rules": [
+              {
+                "index": "43",
+                "trigger": {
+                  "name": "destroy",
+                  "params": {},
+                  "behaviorId": 16
+                },
+                "response": {
+                  "name": "note",
+                  "params": {
+                    "note": "square destroyed!"
+                  },
+                  "behaviorId": 16
+                }
+              }
+            ],
+            "disabled": false
           },
           "Solid": {
             "disabled": false

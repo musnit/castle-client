@@ -225,3 +225,23 @@ Other various tips:
 Coming soon: explain how the current modules relate to each other, explain how
 the actor / behavior system is architected, and how to add new behaviors.
 
+### Entity-component-system lifetime safety
+
+Various notes related to safety / lifetimes in the ECS, will flesh this out
+more soon...
+
+- When iterating through entt components (using `forEachComponent` or directly
+  using `.view<...>().each(...)` etc. on the `entt::registry`), make sure to
+  keep in mind which operations are allowed. The full details can be found in
+  the [entt documentation](https://github.com/skypjack/entt/wiki/Crash-Course:-entity-component-system#what-is-allowed-and-what-is-not),
+  but generally speaking:
+  - You can destroy the currently visited entity (`Scene::removeActor` destroys
+    the entity), but you can't destroy other entities
+  - You can remove components from the currently visited entity, but you can't
+    remove components from other entities
+  - You can add components, of types other than the types being iterated, to
+    this or any other entity
+- In rule elements (responses, expressions) that operate on `ctx.actorId`, make
+  sure they handle the scenario where that actor has already been destroyed.
+  This should usually happen automatically when using eg. `maybeGetComponent`
+  and handle the `nullptr` result scenario (which should be done regardless).
