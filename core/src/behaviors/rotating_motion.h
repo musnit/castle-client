@@ -26,4 +26,9 @@ public:
   void handleEnableComponent(ActorId actorId, RotatingMotionComponent &component);
   void handleDisableComponent(
       ActorId actorId, RotatingMotionComponent &component, bool removeActor);
+
+  ExpressionValue handleGetProperty(
+      ActorId actorId, const RotatingMotionComponent &component, PropId propId) const;
+  void handleSetProperty(
+      ActorId actorId, RotatingMotionComponent &component, PropId propId, const ExpressionValue &value);
 };

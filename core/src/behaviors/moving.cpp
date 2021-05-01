@@ -33,7 +33,7 @@ void MovingBehavior::handleDisableComponent(
 
 
 //
-// Getters / setters
+// Getters, setters
 //
 
 ExpressionValue MovingBehavior::handleGetProperty(

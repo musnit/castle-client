@@ -145,7 +145,7 @@ void BodyBehavior::handleBeginPhysicsContact(b2Contact *contact) {
 
 
 //
-// Getters / setters
+// Getters, setters
 //
 
 ExpressionValue BodyBehavior::handleGetProperty(
