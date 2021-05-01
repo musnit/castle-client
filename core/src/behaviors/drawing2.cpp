@@ -32,8 +32,8 @@ void Drawing2Behavior::handlePerform(double dt) {
   }
 
   forEachEnabledComponent([&](ActorId actorId, Drawing2Component &component) {
-    component.drawData->runAnimation(
-        component.animationState, component.animationComponentProperties, dt, NULL, NULL);
+    component.drawData->runAnimation(component.animationState,
+        component.animationComponentProperties, float(dt), nullptr, nullptr);
   });
 }
 
