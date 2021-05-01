@@ -20,6 +20,7 @@ if [[ -f /proc/version ]]; then
     CLANG_FORMAT="clang-format.exe"
   fi
 fi
+CMAKE="$TIME $CMAKE"
 
 case "$1" in
   # Compile commands DB (used by editor plugins)
@@ -146,15 +147,15 @@ case "$1" in
 
   web-release)
     if [ ! -d build/web-release ]; then
-      $TIME $CMAKE -DWEB=ON -H. -Bbuild/web-release -GNinja
+      $CMAKE -DWEB=ON -H. -Bbuild/web-release -GNinja
     fi
-    $TIME $CMAKE --build build/web-release
+    $CMAKE --build build/web-release
     ;;
   web-debug)
     if [ ! -d build/web-debug ]; then
-      $TIME $CMAKE -DCMAKE_BUILD_TYPE=Debug -DWEB=ON -H. -Bbuild/web-debug -GNinja
+      $CMAKE -DCMAKE_BUILD_TYPE=Debug -DWEB=ON -H. -Bbuild/web-debug -GNinja
     fi
-    $TIME $CMAKE --build build/web-debug
+    $CMAKE --build build/web-debug
     ;;
   web-watch-release)
     find CMakeLists.txt src assets web -type f | entr $TIME_TOTAL ./run.sh web-release
