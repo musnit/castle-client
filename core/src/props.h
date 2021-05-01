@@ -264,20 +264,99 @@ constexpr auto hasProps
 //     Debug::log("{}: {}", prop.name, prop());    // Print each prop name and value
 //   })
 
-template<typename Struct, typename F>
-void forEach(Struct &s, F &&f) {
-  static_assert(isReflectable<Struct>, "forEachProp: this type is not reflectable");
-  if constexpr (hasProps<Struct>) {
-    const auto visitField = [&](auto &field) {
+template<typename T, typename F>
+void forEach(T &val, F &&func) {
+  static_assert(isReflectable<T>, "forEachProp: this type is not reflectable");
+  if constexpr (hasProps<T>) {
+    const auto C = [&](auto &field) {
       if constexpr (isProp<decltype(field)>) {
-        f(field);
+        func(field);
       }
     };
-    std::apply(
-        [&](auto &&...args) {
-          (visitField(args), ...);
-        },
-        reflectableToTuple(s));
+    constexpr auto n = countReflectableFields<T>();
+    static_assert(n <= 24, "forEachProp: only up to 24 fields supported");
+    if constexpr (n == 1) {
+      auto &[a] = val;
+      (C(a));
+    } else if constexpr (n == 2) {
+      auto &[a, b] = val;
+      (C(a), C(b));
+    } else if constexpr (n == 3) {
+      auto &[a, b, c] = val;
+      (C(a), C(b), C(c));
+    } else if constexpr (n == 4) {
+      auto &[a, b, c, d] = val;
+      (C(a), C(b), C(c), C(d));
+    } else if constexpr (n == 5) {
+      auto &[a, b, c, d, e] = val;
+      (C(a), C(b), C(c), C(d), C(e));
+    } else if constexpr (n == 6) {
+      auto &[a, b, c, d, e, f] = val;
+      (C(a), C(b), C(c), C(d), C(e), C(f));
+    } else if constexpr (n == 7) {
+      auto &[a, b, c, d, e, f, g] = val;
+      (C(a), C(b), C(c), C(d), C(e), C(f), C(g));
+    } else if constexpr (n == 8) {
+      auto &[a, b, c, d, e, f, g, h] = val;
+      (C(a), C(b), C(c), C(d), C(e), C(f), C(g), C(h));
+    } else if constexpr (n == 9) {
+      auto &[a, b, c, d, e, f, g, h, i] = val;
+      (C(a), C(b), C(c), C(d), C(e), C(f), C(g), C(h), C(i));
+    } else if constexpr (n == 10) {
+      auto &[a, b, c, d, e, f, g, h, i, j] = val;
+      (C(a), C(b), C(c), C(d), C(e), C(f), C(g), C(h), C(i), C(j));
+    } else if constexpr (n == 11) {
+      auto &[a, b, c, d, e, f, g, h, i, j, k] = val;
+      (C(a), C(b), C(c), C(d), C(e), C(f), C(g), C(h), C(i), C(j), C(k));
+    } else if constexpr (n == 12) {
+      auto &[a, b, c, d, e, f, g, h, i, j, k, l] = val;
+      (C(a), C(b), C(c), C(d), C(e), C(f), C(g), C(h), C(i), C(j), C(k), C(l));
+    } else if constexpr (n == 13) {
+      auto &[a, b, c, d, e, f, g, h, i, j, k, l, m] = val;
+      (C(a), C(b), C(c), C(d), C(e), C(f), C(g), C(h), C(i), C(j), C(k), C(l), C(m));
+    } else if constexpr (n == 14) {
+      auto &[a, b, c, d, e, f, g, h, i, j, k, l, m, n] = val;
+      (C(a), C(b), C(c), C(d), C(e), C(f), C(g), C(h), C(i), C(j), C(k), C(l), C(m), C(n));
+    } else if constexpr (n == 15) {
+      auto &[a, b, c, d, e, f, g, h, i, j, k, l, m, n, o] = val;
+      (C(a), C(b), C(c), C(d), C(e), C(f), C(g), C(h), C(i), C(j), C(k), C(l), C(m), C(n), C(o));
+    } else if constexpr (n == 16) {
+      auto &[a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p] = val;
+      (C(a), C(b), C(c), C(d), C(e), C(f), C(g), C(h), C(i), C(j), C(k), C(l), C(m), C(n), C(o),
+          C(p));
+    } else if constexpr (n == 17) {
+      auto &[a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q] = val;
+      (C(a), C(b), C(c), C(d), C(e), C(f), C(g), C(h), C(i), C(j), C(k), C(l), C(m), C(n), C(o),
+          C(p), C(q));
+    } else if constexpr (n == 18) {
+      auto &[a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r] = val;
+      (C(a), C(b), C(c), C(d), C(e), C(f), C(g), C(h), C(i), C(j), C(k), C(l), C(m), C(n), C(o),
+          C(p), C(q), C(r));
+    } else if constexpr (n == 19) {
+      auto &[a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s] = val;
+      (C(a), C(b), C(c), C(d), C(e), C(f), C(g), C(h), C(i), C(j), C(k), C(l), C(m), C(n), C(o),
+          C(p), C(q), C(r), C(s));
+    } else if constexpr (n == 20) {
+      auto &[a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t] = val;
+      (C(a), C(b), C(c), C(d), C(e), C(f), C(g), C(h), C(i), C(j), C(k), C(l), C(m), C(n), C(o),
+          C(p), C(q), C(r), C(s), C(t));
+    } else if constexpr (n == 21) {
+      auto &[a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u] = val;
+      (C(a), C(b), C(c), C(d), C(e), C(f), C(g), C(h), C(i), C(j), C(k), C(l), C(m), C(n), C(o),
+          C(p), C(q), C(r), C(s), C(t), C(u));
+    } else if constexpr (n == 22) {
+      auto &[a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v] = val;
+      (C(a), C(b), C(c), C(d), C(e), C(f), C(g), C(h), C(i), C(j), C(k), C(l), C(m), C(n), C(o),
+          C(p), C(q), C(r), C(s), C(t), C(u), C(v));
+    } else if constexpr (n == 23) {
+      auto &[a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w] = val;
+      (C(a), C(b), C(c), C(d), C(e), C(f), C(g), C(h), C(i), C(j), C(k), C(l), C(m), C(n), C(o),
+          C(p), C(q), C(r), C(s), C(t), C(u), C(v), C(w));
+    } else if constexpr (n == 24) {
+      auto &[a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x] = val;
+      (C(a), C(b), C(c), C(d), C(e), C(f), C(g), C(h), C(i), C(j), C(k), C(l), C(m), C(n), C(o),
+          C(p), C(q), C(r), C(s), C(t), C(u), C(v), C(w), C(x));
+    }
   }
 }
 
