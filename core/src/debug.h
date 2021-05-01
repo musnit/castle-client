@@ -51,8 +51,10 @@ inline void Debug::fatal(Args &&...args) {
 
 template<typename... Args>
 inline void Debug::display(Args &&...args) {
-  displayText.append(fmt::format(std::forward<Args>(args)...));
-  displayText.append("\n");
+  if (displayText.size() < 3000) { // In case we forget to clear it
+    displayText.append(fmt::format(std::forward<Args>(args)...));
+    displayText.append("\n");
+  }
 };
 
 inline std::string Debug::getAndClearDisplay() {
