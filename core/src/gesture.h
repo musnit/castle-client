@@ -83,7 +83,7 @@ public:
   bool isAllReleased() const; // Whether all touches are released (true for one frame at end of
                               // gesture). `false` if no current gesture.
   bool hasTouch(TouchId touchId) const;
-  const Touch *maybeGetTouch(TouchId touchId) const;
+  const Touch *maybeGetTouch(TouchId touchId) const; // Shortlived -- data may move on next frame
   template<typename F>
   void forEachTouch(F &&f) const; // `f` takes `(TouchId, const Touch &)` or `(const Touch &)`.
                                   // Iterates in earliest to latest order.
@@ -96,7 +96,7 @@ public:
   template<typename T, typename... Args>
   void setData(TouchId touchId, Args &&...args) const;
   template<typename T>
-  T *maybeGetData(TouchId touchId) const;
+  T *maybeGetData(TouchId touchId) const; // Shortlived -- may move when added to other touches
 
 
   // Update

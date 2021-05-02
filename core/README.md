@@ -199,16 +199,21 @@ Other various tips:
   or draw method will make sure the scene data isn't accidentally edited.
   Methods on a class that only read data should be marked as `const` (on the
   end) to let them be used on `const` instances.
-- **Don't store pointers to long-term data**
-  - This is especially important for components. The component storage system
-    will move components in memory as they are added and removed (to keep the
-    layout tight), so pointers will be invalidated.
+- **Don't store pointers in long term data (generally)**
+  - Most methods that return pointers do so to return optional data by
+    reference. The data pointed-to may be overwritten with other data when the
+    underlying data structure is re-organized, so such pointers are
+    short-lived.
+  - This is especially important for pointers to components. The component
+    storage system will move components in memory as they are added and
+    removed, so pointers will be invalidated.
   - "Resources" like `love::Image`s are notable exceptions. For these, prefer
     an `std::unique_ptr` at the site of ownership, and pass references
     everywhere else.
   - `b2Body` is another exception. Here we need to actually just store a raw
     pointer because the `b2World` manages the memory and we must go through
-    `b2World::DestroyBody`.
+    `b2World::DestroyBody`. Box2D does not move body data in memory, so
+    pointers stay valid till the body is destroyed.
 - **Prefer passing references vs. pointers**
   - It's clearer that the parameter isn't optional (can't pass `nullptr`).
   - You can use `.` rather than `->` to access members.

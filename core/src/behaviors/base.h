@@ -90,7 +90,8 @@ public:
 protected:
   // Own component data
 
-  Component *maybeGetComponent(ActorId actorId); // Returns `nullptr` if not present
+  Component *maybeGetComponent(ActorId actorId); // Shortlived -- data may move on adding / removing
+                                                 // components. Returns `nullptr` if not present.
   const Component *maybeGetComponent(ActorId actorId) const;
 
   template<typename F>

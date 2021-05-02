@@ -49,7 +49,8 @@ public:
   void removeActor(ActorId actorId);
 
   bool hasActor(ActorId actorId) const; // Whether `actorId` exists. Always `false` for `nullActor`.
-  Actor *maybeGetActor(ActorId actorId); // Returns `nullptr` if no such actor
+  Actor *maybeGetActor(ActorId actorId); // Returns `nullptr` if no such actor. Shortlived -- data
+                                         // may move as actors are added / removed.
   const Actor *maybeGetActor(ActorId actorId) const;
 
   void setActorDrawOrder(ActorId actorId, int drawOrder);

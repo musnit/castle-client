@@ -42,7 +42,8 @@ public:
   const std::string *getString(Token token) const; // Get string for token -- `nullptr` if invalid
 
   void insert(Token token, Value value); // Insert at given token -- no-op if token invalid
-  Value *lookup(Token token); // Lookup by token -- `nullptr` if not present
+  Value *lookup(Token token); // Lookup by token. Shortlived -- data may move when adding values.
+                              // `nullptr` if not present.
   const Value *lookup(Token token) const;
 
 
