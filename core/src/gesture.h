@@ -6,6 +6,7 @@
 
 
 using TouchId = entt::entity; // Is unique throughout a `Scene`s lifetime, never recycled
+constexpr auto nullTouch = entt::null; // A `TouchId`-compatible sentinel value
 
 struct TouchToken {
   // A token to identify the purpose of a touch. Helps prevent overloading a single touch for
@@ -41,9 +42,10 @@ struct Touch {
   bool movedFar = false; // Whether this touch has moved beyond a certain threshold
   double pressTime; // `lv.timer.getTime()` when pressed
 
-  bool use(const TouchToken &token) const; // Mark for this purpose, return whether successful
+  bool use(const TouchToken &token) const; // Mark for purpose if not already used, return if so
+  void forceUse(const TouchToken &token) const; // Mark for purpose, unmark any old purpose
   bool isUsed() const; // Whether marked for any purpose
-  bool isUsed(const TouchToken &token) const; // Whether marked for a given purpose
+  bool isUsed(const TouchToken &token) const; // Whether marked for given purpose
 
 private:
   friend class Gesture;
@@ -139,6 +141,10 @@ inline bool Touch::use(const TouchToken &token) const {
     return true;
   }
   return tokenId == token.id;
+}
+
+inline void Touch::forceUse(const TouchToken &token) const {
+  tokenId = token.id;
 }
 
 inline bool Touch::isUsed() const {

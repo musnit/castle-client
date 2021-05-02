@@ -146,7 +146,7 @@ void BodyBehavior::handlePerform(double dt) {
       // Tap
       for (auto actorId : currHits) {
         if (rulesBehavior.fire<TapTrigger>(actorId, {})) {
-          touch.use(bodyTriggerTouchToken);
+          touch.forceUse(bodyTriggerTouchToken);
         }
       }
     }
@@ -162,12 +162,12 @@ void BodyBehavior::handlePerform(double dt) {
             || std::find(prevHits.begin(), prevHits.end(), actorId) == prevHits.end()) {
           // Pressed or moved onto actor -- touch down
           if (rulesBehavior.fire<TouchDownTrigger>(actorId, {})) {
-            touch.use(bodyTriggerTouchToken);
+            touch.forceUse(bodyTriggerTouchToken);
           }
         }
         // Currently on actor -- press
         if (rulesBehavior.fire<PressTrigger>(actorId, {})) {
-          touch.use(bodyTriggerTouchToken);
+          touch.forceUse(bodyTriggerTouchToken);
         }
       }
       for (auto actorId : prevHits) {

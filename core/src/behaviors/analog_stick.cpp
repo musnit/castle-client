@@ -42,19 +42,20 @@ void AnalogStickBehavior::handlePerform(double dt) {
 
   // Find the analog stick touch, mark it as used, apply motion to actors. Not using
   // `.withSingleTouch` to allow other simultaneous touches (eg. button presses).
-  auto found = false;
-  getGesture().forEachTouch([&](const Touch &touch) {
-    if (found) {
-      return; // Already found an analog stick touch, don't consider multiple
+  auto done = false;
+  getGesture().forEachTouch([&](TouchId touchId, const Touch &touch) {
+    if (done) {
+      return; // Already applied a touch
     }
     if (!touch.movedNear) {
-      return; // Need to move touch to initiate analog stick
+      return; // Need to move touch to apply analog stick
     }
-    auto newTouch = !touch.isUsed(analogStickTouchToken); // New touch if we haven't used it yet
-    if (!touch.use(analogStickTouchToken)) {
-      return; // Touch was used for some other purpose
+    auto newTouch = touchId != lastTouchId;
+    if (newTouch && !touch.use(analogStickTouchToken)) {
+      return; // Don't consider new touch if already used
     }
-    found = true;
+    lastTouchId = touchId;
+    done = true;
 
     // Initialize center
     if (newTouch) {
@@ -124,11 +125,8 @@ void AnalogStickBehavior::handleDrawOverlay() const {
 
   constexpr float maxDrawDragLength = 0.8 * maxDragLength;
 
-  getGesture().forEachTouch([&](const Touch &touch) {
-    if (!touch.isUsed(analogStickTouchToken)) {
-      return; // Only draw touches we're using
-    }
-    auto clampedTouchPos = touch.pos;
+  if (auto touch = getGesture().maybeGetTouch(lastTouchId)) {
+    auto clampedTouchPos = touch->pos;
     auto drag = clampedTouchPos - center;
     auto dragLen = drag.getLength();
     if (dragLen > 0) {
@@ -163,5 +161,5 @@ void AnalogStickBehavior::handleDrawOverlay() const {
 
       lv.graphics.pop();
     }
-  });
+  }
 }

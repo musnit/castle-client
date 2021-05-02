@@ -30,5 +30,7 @@ public:
 private:
   Lv &lv { Lv::getInstance() };
 
+  TouchId lastTouchId = nullTouch; // Track our touch even if it's used for a different purpose
+                                   // after the gesture starts
   love::Vector2 center;
 };

@@ -5,12 +5,43 @@
         "components": {
           "Body": {
             "x": 0,
-            "y": 1
+            "y": 1,
+            "angle": 0.7853981256485
           }
         }
       },
       "actorId": "0:3",
       "parentEntryId": "c35ec941-89b0-4608-c6ee-dd54e1551cda"
+    },
+    {
+      "bp": {
+        "components": {
+          "Body": {
+            "x": -3,
+            "y": -5.25,
+            "massData": [
+              0,
+              0,
+              25,
+              26.041667938232
+            ]
+          }
+        }
+      },
+      "actorId": "0:2",
+      "parentEntryId": "5f8388ef-dd1f-4b4d-cb03-8d8893631b6b"
+    },
+    {
+      "bp": {
+        "components": {
+          "Body": {
+            "x": 3.5,
+            "y": -6
+          }
+        }
+      },
+      "actorId": "0:5",
+      "parentEntryId": "c5fd7e8d-03cd-4360-c374-b382d47c2620"
     }
   ],
   "library": {
@@ -222,6 +253,173 @@
           "Friction": {
             "disabled": false,
             "friction": 0.2
+          }
+        }
+      }
+    },
+    "5f8388ef-dd1f-4b4d-cb03-8d8893631b6b": {
+      "title": "Wall 2",
+      "entryId": "5f8388ef-dd1f-4b4d-cb03-8d8893631b6b",
+      "base64Png": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEABAMAAACuXLVVAAAAD1BMVEUAAAAiqt0imd0zmd0iqu72sHsRAAAAAXRSTlMAQObYZgAAAOBJREFUeJzt0kENwDAMBEG3EIogCYNQKH9QlSwVw+UxawIna6qkuuZO3egB78pdD8g9YO4esIL1gOADJgO/gSd0DDDAAAMMMMAAAwwwwAADDDDAAAMMMMAAAwwwwAADDDDAAAMMMMAAAwwwwAADDDDAAAMMMMAAAwwwwAADDDDAAAMMMMAAAwwwwAADDDDAAAMMMMAAAwwwwAADDDDAAAMMMMAAAwwwwAADDDDAAAMMMMAAAwwwwAADDDDAAAMMMMAAAwwwwAADDDDAAAMMMMAAAwycYyAWA2cYuHMERkn1AddYnKzMkaTEAAAAAElFTkSuQmCC",
+      "entryType": "actorBlueprint",
+      "description": "Solid square that doesn't move.",
+      "actorBlueprint": {
+        "components": {
+          "Body": {
+            "angle": 0,
+            "width": 0.98995000123978,
+            "bullet": false,
+            "height": 0.98995000123978,
+            "visible": true,
+            "bodyType": "dynamic",
+            "disabled": false,
+            "fixtures": [
+              {
+                "shapeType": "polygon",
+                "points": [
+                  -5,
+                  -5,
+                  -5,
+                  5,
+                  5,
+                  5,
+                  5,
+                  -5
+                ]
+              }
+            ],
+            "massData": [
+              0,
+              0,
+              25,
+              26.041667938232
+            ],
+            "layerName": "main",
+            "widthScale": 0.25,
+            "heightScale": 0.25,
+            "editorBounds": {
+              "maxX": 5,
+              "maxY": 5,
+              "minX": -5,
+              "minY": -5
+            }
+          },
+          "Drag": {
+            "disabled": false
+          },
+          "Tags": {
+            "disabled": false,
+            "tagsString": ""
+          },
+          "Moving": {
+            "vx": 0,
+            "vy": 0,
+            "density": 1,
+            "disabled": false,
+            "angularVelocity": 0
+          },
+          "Drawing2": {
+            "hash": "v2-702bcebfc7b137e62d3b6629729f1c8b",
+            "loop": false,
+            "playing": false,
+            "disabled": false,
+            "drawData": {
+              "color": [
+                0.14117647058824,
+                0.62352941176471,
+                0.87058823529412,
+                1
+              ],
+              "lineColor": [
+                0.66037992589614,
+                0.4,
+                0.93333333333333,
+                1
+              ],
+              "gridSize": 0.71428571428571,
+              "scale": 10,
+              "fillPixelsPerUnit": 25.6,
+              "numTotalLayers": 1,
+              "selectedFrame": 1,
+              "layers": [
+                {
+                  "id": "layer1",
+                  "title": "Layer 1",
+                  "frames": [
+                    {
+                      "fillPng": "iVBORw0KGgoAAAANSUhEUgAAAP4AAAD+AQMAAAAgWCoSAAAAA1BMVEUkn94PjLrgAAAAH0lEQVR4nO3BMQEAAADCoPVPbQwfoAAAAAAAAAAAngYgvgABEZnlUgAAAABJRU5ErkJggg==",
+                      "pathDataList": [
+                        {
+                          "p": [
+                            -5,
+                            -5,
+                            -5,
+                            5,
+                            5,
+                            5,
+                            5,
+                            -5,
+                            -5,
+                            -5
+                          ],
+                          "c": [
+                            0.1412,
+                            0.6235,
+                            0.8706,
+                            1
+                          ],
+                          "s": 1
+                        }
+                      ],
+                      "fillCanvasSize": 256,
+                      "fillImageBounds": {
+                        "maxX": 129,
+                        "maxY": 129,
+                        "minX": -127,
+                        "minY": -127
+                      }
+                    }
+                  ],
+                  "isVisible": true
+                }
+              ],
+              "version": 3,
+              "framesBounds": [
+                {
+                  "maxX": 5,
+                  "maxY": 5,
+                  "minX": -5,
+                  "minY": -5
+                }
+              ],
+              "pathDataList": {},
+              "selectedLayerId": "layer1"
+            },
+            "initialFrame": 1,
+            "framesPerSecond": 4,
+            "physicsBodyData": {
+              "scale": 10,
+              "shapes": [
+                {
+                  "p1": {
+                    "x": 5,
+                    "y": 5
+                  },
+                  "p2": {
+                    "x": -5,
+                    "y": -5
+                  },
+                  "type": "rectangle"
+                }
+              ],
+              "version": 2,
+              "zeroShapesInV1": false
+            }
+          },
+          "Slowdown": {
+            "disabled": false,
+            "motionSlowdown": 5,
+            "rotationSlowdown": 0.5
           }
         }
       }
@@ -840,9 +1038,6 @@
             ],
             "disabled": false
           },
-          "Solid": {
-            "disabled": false
-          },
           "Drawing2": {
             "hash": "v2-0c24f4f632c09d12f70a49bccec21869",
             "loop": false,
@@ -970,6 +1165,194 @@
           "Friction": {
             "disabled": false,
             "friction": 0.2
+          }
+        }
+      }
+    },
+    "c5fd7e8d-03cd-4360-c374-b382d47c2620": {
+      "title": "Ball 5",
+      "entryId": "c5fd7e8d-03cd-4360-c374-b382d47c2620",
+      "base64Png": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEABAMAAACuXLVVAAAAD1BMVEUAAAC7RJm7VZnMRJm7VaqPLz9aAAAAAXRSTlMAQObYZgAABGVJREFUeJztne2R4zAIhqNUkKQCbwc3qcDpv6k7yZEj2foWvGT2gL87AwuPATmydLmoqIzK4xkq2Lh53c+6wsw/sgIx/3MvKbv5OPMpZTWfzD2QhXzyISgYn+f8P+//YuGwX88+Lwkt2Q+V2n5r+plAMNXsJ1i40dm/9uXfK5kHTU8/Y0W49uffC0kMTFf2GTgYyz9dPRjNP1U9GM8/TT0wfc9/ioNlxv51Kv9v/TPhwGT+3zpufx6AOQxGK8CJg9FqQJD/qWpAkv+3jtifaAFnGUkCRf53CgZCMDgD5LQ7BMMzQE7XTgcoAdikMwB0BHgOli4HSPP/1q4AUBPQSwE9AX0UkBPQSwEHAT0UsBDQQwEPAe0UsBDQQwEXAa0UsBHQSgEfAW0UsBHQSgHxHHDU+lzASYDVegCYpRYCTgI2CkQJqFNgmAn4p2UHuAmwUg4ALwGOglII+AmwWnCAnwCrefvsRWCTfA4ABLiVYtYBCAGP/FTAOgmEumYcwBBgJeMAdx/4UJC2D+gDXtPPgQER8Mr1AxwCaQgQfWCnIBUCkvfCrZp6f4wjwKowAikIWNcDJwYS6wNgFUhXAigB98T6AIvAGQJkFXAUHHMArQKpSgCbBbyuwgicIEBWAcfA4TEAV4FzJTBgAl7HmQCPwAECMAGOgsgBOAGPeHUArwJWw0oAWhTGElKI7gSOgdABAQKe0XsCAQJe0VwogUBYCAyegHguFOgEVj8UGhkGbsIIBBAIVAFHgWgnsLo7IELA/bM2EOkEVjyFEp3AMeAdgK8JvPq1gcg0YNVPBFII7IUAvSbYGfCPgRABz30iECLgtU8E0gyITAMbA4vkNGD1JjkNWL3JtgLfDJQBcQbkEHgXAqFO4CgQnQitik6EVpUBZUAZUAaUAWVAGVAGlAFlQBlQBvT9gL4fUAa+gwF9V6y/F8gzoL8b6u+Gun9A9w9IFYJgF40EA1+1j0j3kolMBNHOYpFuEO4u1z2luq9YpBtEDghAcNhdj/++YIkcEFgbxPYFusHBATgEx8989Dsj/dYMOxd+5feG+s2pfneMrQQp+8h2kPn6Hnf+wJJ0ADgTpO0DK0HGARgE2YNI/vtzSFC/HhWO48EgkLcPeU9QPJUK0g+K5xcjGCjZR5SCyqlc/OeSLUUHAP2gbJ//bdFacYC9FNTs6/mE3FNB3T5vKWg6uJnktPI0AflJIA6BJAEuBJIEbCGQJMCFgOe84jYCthBIEuBCIEnAFgJJAlwI6M8tbydgC4EkAS4EkgRsIZAkwArpXDB0mwktAf32aafDdcAB0ulwxD7VSnHixjuyleLwbTZUBIzap8Jg3D7BbTaz91oR9ITJe7XmCZizP4/BrH1/pyW4AoQyVQ1m7rPaxYznn+h6veHZgO56v34OiG+6HOKAJP+74J//o+Cf/6PUbzn1uSd6/k/S0RcI79eMpDX/TOYvjRWB69/f5OdeU1bzVsrZZzdvBffsZyXJAm/uzwLOvMrvlb8JlEhDdDXUfgAAAABJRU5ErkJggg==",
+      "entryType": "actorBlueprint",
+      "description": "Bouncing ball that obeys gravity.",
+      "actorBlueprint": {
+        "components": {
+          "Body": {
+            "angle": 0,
+            "width": 0.98995000123978,
+            "bullet": false,
+            "height": 0.98995000123978,
+            "visible": true,
+            "bodyType": "dynamic",
+            "disabled": false,
+            "fixtures": [
+              {
+                "shapeType": "circle",
+                "x": 0,
+                "y": 0,
+                "radius": 5
+              }
+            ],
+            "massData": [
+              0,
+              0,
+              4,
+              0.66666668653488
+            ],
+            "layerName": "main",
+            "widthScale": 0.1,
+            "heightScale": 0.1,
+            "editorBounds": {
+              "maxX": 5,
+              "maxY": 5,
+              "minX": -5,
+              "minY": -5
+            }
+          },
+          "Tags": {
+            "disabled": false,
+            "tagsString": ""
+          },
+          "Moving": {
+            "vx": 0,
+            "vy": 0,
+            "density": 1,
+            "disabled": false,
+            "angularVelocity": 0
+          },
+          "Drawing2": {
+            "hash": "v2-3ccb1861398fa2b6a5b8462d6cd38dcb",
+            "loop": false,
+            "playing": false,
+            "disabled": false,
+            "drawData": {
+              "color": [
+                0.07843137254902,
+                0.20392156862745,
+                0.3921568627451,
+                1
+              ],
+              "lineColor": [
+                0.66037992589614,
+                0.4,
+                0.93333333333333,
+                1
+              ],
+              "gridSize": 0.71428571428571,
+              "scale": 10,
+              "fillPixelsPerUnit": 25.6,
+              "numTotalLayers": 1,
+              "selectedFrame": 1,
+              "layers": [
+                {
+                  "id": "layer1",
+                  "title": "Layer 1",
+                  "frames": [
+                    {
+                      "fillPng": "iVBORw0KGgoAAAANSUhEUgAAAP4AAAD+AgMAAABn+FDCAAAACVBMVEUAAAAkn968SpsrjDq8AAAAAXRSTlMAQObYZgAAA5RJREFUeJztnEty2zAMhp3OOAvuk0WPwFPoCF20PYROwSNo070XyUzMUzayLYniAwTwc4ZaGOviK560TQI5nQg5/7kJ9U8oefnr73L9rdI/j36Vfwr9Nx/K5yDVf/d7uQoJZx/Lp0j/JdH3/kMCGDMAP/H1f+b0vR8QB0ROZB0QOPFa0vdX0ACmCWUDmCYQBrBMoAxgmUAawDDhB61fN6FQhJsMtH6pCDeplKOpAjwNGOsAMoy1EM7yRQGqIZxlwDwgfaCrcBGiFFgeUD6wPPD+UtLn5GCWYh4ME1CsJaYHxTzU+2CRQj+wPSj5YPkAlwXw9fOJ5CZxlmwijQCQDYKVAHJBkOjngiAJQTYIRgTIBMHKAGkQZPppEPiNcJekHXin2SbJucY8zTYBY5hGUaofR1FWRrNEUZTGMKlFcQzjKFo5YB/FUQ7YHc3SOpxllwZ5EqIoGgVgF0VFEvYf0lYDCNOg0Q+jqEnCDqBJwi4N8k6YJThTVEkI82h1gC0NIwrQ6W9p0GUxOJR0WQzyqMtikEejBKx5VJbB1o9WC1jyOGoBy7Go1V8KQVsGayFoy2AtBG0ZrACjBniwDBoABqyOlkoa9YAJq6OlklCAvhAfpagvxEclwQB9JT8ONQMAfBMAUMn3WoYBFgE4rBUaACasFe7NgAKQXmoA+GgAQJrx1o5IMzYAXI8AMBDANwBAx0EDwHAAgMUA7gCA8QlAAdMT8AQ8AU/AYQD9z8QjfLT1B/T/htIbcIRvqv2/rcMA+DcTDOj/uxH+6dv/1zt+AQEBXItLmP73SAYBNLlLg68D+99owpey/e+V8atxqwe4Ns8DRg9o9EQCv/LAAPihCn4qwx/rrBbgTuBD03ACC+Ghjz/aws/G8MM1/HSuzeOEAtwKMDrAqo+PUMBDHLo8hjNRKsAlAFgNwAUAeJjHaACBPj7QBI9UwUNd+FiZkQN2+opuiAYU5WmI50TFgEsEsFKAiwBGCoj0xVFMRmXhMVN40BUftTUyQKKPjxvDA8/4yLWRADL6+Ng5PPiOj94bPiCrj68f8I/mvAcNVjDgJRCuD+VVGuaHdFGf6QO1TsTygVpoYvlA6OMLUfBKFr4UVu+HCw2AF+OqYaRDOMtIA1wVQH/K1g2omFA3oMGKJrwkiq+plk1wTAC8qlsqR7Y+vq6ML0zDK9tpLrkZLNkg/f9vhCCSmsX5b1lX93/p9L/lrf63A/4DgQvFDe8eFuwAAAAASUVORK5CYII=",
+                      "pathDataList": [
+                        {
+                          "p": [
+                            0,
+                            -5,
+                            5,
+                            0
+                          ],
+                          "c": [
+                            0.7373,
+                            0.2902,
+                            0.6078,
+                            1
+                          ],
+                          "s": 2
+                        },
+                        {
+                          "p": [
+                            5,
+                            0,
+                            0,
+                            5,
+                            -5,
+                            0
+                          ],
+                          "c": [
+                            0.7373,
+                            0.2902,
+                            0.6078,
+                            1
+                          ],
+                          "s": 3
+                        },
+                        {
+                          "p": [
+                            -5,
+                            0,
+                            0,
+                            -5
+                          ],
+                          "c": [
+                            0.7373,
+                            0.2902,
+                            0.6078,
+                            1
+                          ],
+                          "s": 2
+                        }
+                      ],
+                      "fillCanvasSize": 256,
+                      "fillImageBounds": {
+                        "maxX": 129,
+                        "maxY": 129,
+                        "minX": -127,
+                        "minY": -127
+                      }
+                    }
+                  ],
+                  "isVisible": true
+                }
+              ],
+              "version": 3,
+              "framesBounds": [
+                {
+                  "maxX": 5,
+                  "maxY": 5,
+                  "minX": -5,
+                  "minY": -5
+                }
+              ],
+              "pathDataList": {},
+              "selectedLayerId": "layer1"
+            },
+            "initialFrame": 1,
+            "framesPerSecond": 4,
+            "physicsBodyData": {
+              "scale": 10,
+              "shapes": [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "type": "circle",
+                  "radius": 5
+                }
+              ],
+              "version": 2,
+              "zeroShapesInV1": false
+            }
+          },
+          "Friction": {
+            "disabled": false,
+            "friction": 0.2
+          },
+          "Slowdown": {
+            "disabled": false,
+            "motionSlowdown": 1,
+            "rotationSlowdown": 0.5
+          },
+          "AnalogStick": {
+            "axes": "x and y",
+            "speed": 6,
+            "disabled": false,
+            "turnFriction": 3
           }
         }
       }
