@@ -5,7 +5,7 @@
 
 constexpr float maxDragLength = 2;
 
-static const TouchToken analogStickToken;
+static const TouchToken analogStickTouchToken;
 
 
 //
@@ -50,8 +50,8 @@ void AnalogStickBehavior::handlePerform(double dt) {
     if (!touch.movedNear) {
       return; // Need to move touch to initiate analog stick
     }
-    auto newTouch = !touch.isUsed(analogStickToken); // It's a new touch if we haven't used it yet
-    if (!touch.use(analogStickToken)) {
+    auto newTouch = !touch.isUsed(analogStickTouchToken); // New touch if we haven't used it yet
+    if (!touch.use(analogStickTouchToken)) {
       return; // Touch was used for some other purpose
     }
     found = true;
@@ -125,7 +125,7 @@ void AnalogStickBehavior::handleDrawOverlay() const {
   constexpr float maxDrawDragLength = 0.8 * maxDragLength;
 
   getGesture().forEachTouch([&](const Touch &touch) {
-    if (!touch.isUsed(analogStickToken)) {
+    if (!touch.isUsed(analogStickTouchToken)) {
       return; // Only draw touches we're using
     }
     auto clampedTouchPos = touch.pos;

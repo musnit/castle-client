@@ -5,7 +5,7 @@
 
 constexpr float maxDragLength = 3;
 
-static const TouchToken slingToken;
+static const TouchToken slingTouchToken;
 
 
 //
@@ -29,7 +29,7 @@ void SlingBehavior::handlePerform(double dt) {
     return; // Skip gesture logic if no components
   }
   getGesture().withSingleTouch([&](const Touch &touch) {
-    if (!touch.use(slingToken)) {
+    if (!touch.use(slingTouchToken)) {
       return; // Touch was used for some other purpose
     }
     if (touch.released && touch.movedNear) {
@@ -65,7 +65,7 @@ void SlingBehavior::handleDrawOverlay() const {
     return; // Nothing to draw if no components
   }
   getGesture().withSingleTouch([&](const Touch &touch) {
-    if (!touch.isUsed(slingToken)) {
+    if (!touch.isUsed(slingTouchToken)) {
       return; // Only draw touches we're using
     }
     auto drag = touch.initialPos - touch.pos;
