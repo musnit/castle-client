@@ -19,7 +19,12 @@
           "Body": {
             "x": -2.25,
             "y": 0.5,
-            "massData": [0, 0, 4, 0.66666668653488]
+            "massData": [
+              0,
+              0,
+              4,
+              0.66666668653488
+            ]
           }
         }
       },
@@ -32,7 +37,12 @@
           "Body": {
             "x": -0.25,
             "y": 2,
-            "massData": [0, 0, 21, 25.375],
+            "massData": [
+              0,
+              0,
+              21,
+              25.375
+            ],
             "widthScale": 0.35
           }
         }
@@ -70,7 +80,12 @@
           "Body": {
             "x": -0.5,
             "y": -5,
-            "massData": [0, 0, 49, 100.04167175293],
+            "massData": [
+              0,
+              0,
+              49,
+              100.04167175293
+            ],
             "widthScale": 0.35,
             "heightScale": 0.35
           }
@@ -97,7 +112,12 @@
           "Body": {
             "x": -0.25,
             "y": -3.75,
-            "massData": [0, 0, 27, 50.625],
+            "massData": [
+              0,
+              0,
+              27,
+              50.625
+            ],
             "heightScale": 0.45
           }
         }
@@ -111,7 +131,12 @@
           "Body": {
             "x": 2.25,
             "y": -4,
-            "massData": [0, 0, 40, 96.66667175293],
+            "massData": [
+              0,
+              0,
+              40,
+              96.66667175293
+            ],
             "widthScale": 0.5,
             "heightScale": 0.2
           }
@@ -152,13 +177,18 @@
             "disabled": false,
             "fixtures": [
               {
+                "shapeType": "circle",
                 "x": 0,
                 "y": 0,
-                "radius": 5,
-                "shapeType": "circle"
+                "radius": 5
               }
             ],
-            "massData": [0, 0, 4, 0.66666668653488],
+            "massData": [
+              0,
+              0,
+              4,
+              0.66666668653488
+            ],
             "layerName": "main",
             "widthScale": 0.1,
             "heightScale": 0.1,
@@ -192,7 +222,7 @@
             "disabled": false
           },
           "Drawing2": {
-            "hash": "eJyNVEuP21QUBvELqNQRkKYzSFQsssjLea0G+9qxHSdxHMeOnZ1fsR0/x9dJbItFFyAWFRJCLGhZINRu2VZiR6t2WirUigUSULFCsEFIQVQjNEICe5iu4ZPsc+7xOd9nX11/u1L5SWil0NYgFugprsTKrrT/ODOigLeU0IC0L9b/vA81xTWuPNgYEbQDv3wMz57tLuW99+I0NI41O9Jc405SOo4U3V7DgztpqfRQj5Ttv5RvfuXavgECN4h2+yevXLx48dvXfz48uXG9wPeHJ1/+WOC3w0uld648WNquO/HNZ6ffvWSLGDvd1hjSDNAcY16wCMHMM65YEnkc5RHzNnjgFhXMxUYiIRSp4/eQsTPr1IsFKk35mTtCOVaVF8V8EA6mRF8wBlnsOSS7XaGjqUDAOcUQFBApHqmSghQQrlsXMmEb0rK7qjSWzpFHO3Aj4B2yOyT9Hht2unq/wjrJvJr0ssyp4E4lS1GwNMceI7UHUZOVRr2UdUm9S2WtSqaBIORtn1QmFVLXeATv4C6HSdPUxkK5sZSbAjnhhDUQNVydMhYWBw69cmo2B/sdk0cEGWddZYRmswFnkosB0pkuZzJSSxtwuKKO2DGxWaIbURgLEjeKQ0TSlAW6VXr28GgUWpOIUTeY2PelVJwu6l1XmOvLQaLBdoOPhmzoGtHaWKd1lNlqIQfWfYRGN5bBo0NCMk3QpSiYAID3HZqTZZYGjtse8CLhzxh+5RAG6snEADg4xnDhYGaTtIW2ed5lSJ4nTMauOW4kGA6LMGST9vwY1wCM2zQ+J9BIgnXUHDNRJEJOoI7qOgcBv2KbqtNHFUOdz0wTITI8bBoI2rIQUxmBFLTxvp+MV1jMY3NnyeBH5izutjVKxChojmR9iwtB3k+tIJqZ1oja5t+T4VU8xbqTCOuafGXLdHCqNgk2BF5110kAsGp2NJeJ3nLTiLdYa8JNUQQhqY1JLOd00u5uuEWtybU1zNn2zElNwTiqI2m9SrMzWxpGs6n6ab23XZidODbzI7rmeRTtZ1JDmmLauEv2+2KrhXFTBAhWNE41TEi7qIvo2ypnSh6FUYzJ+DpAuQplGS0qMFImNpPtuOVxmVSTgIWLS1tjHLZeHSDQ6LaCIUdSqCG0TKY2qJtWxxTQ4XQQQA+o1pGX6QEjj7yIAq1wPMMrER3hlsXXsjBZYi5O8CgWVmcLuTaLxlAVbX5hxDSRNtT+EPSBU5dVdjznVS70h0CUCERUmxbOJlBBYotfNmAdEFgbVL0qWgUTVIRWkCRVPFRTY6N2UXwb+b0mSzqed/YPEm5/5vBrzgPgvnZuBZ+/fOHCh8rdw5NXn/2R46fDk9+fFvg1t4JjNVj7OixMxlMS6eCeZ/vyXnGX9oqKfPB1qMRW4TBDG8a7y3nncRjYfgx35V2p/P7etVIRStcOSndt/dJ9GKeuUf4ol32N+6H0diF759FnxO1C9o0v/nrv2ZlszvJpwXU2WISD5zR7pZvlW5f/13z5fOL8NUo392/9p3DpoRnZOm9nxskH3tPb3tNfDr8580I7MVw4MSLBt+Nzz+y99W75kW8k8STfAVrff1w0AsXfKLAgOH3hxSdFhfYU08Ceb+PHp1dfuH569e8b+fVJnv8DrPhMag==",
+            "hash": "v2-fde2b52b92f8770a7f79fff5b78e85df",
             "loop": false,
             "playing": false,
             "disabled": false,
@@ -203,77 +233,100 @@
                 0.87058823529412,
                 1
               ],
-              "scale": 10,
-              "bounds": {
-                "maxX": 5,
-                "maxY": 5,
-                "minX": -5,
-                "minY": -5
-              },
-              "fillPng": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAABlBMVEUAAAAkn94NkT71AAAAAXRSTlMAQObYZgAAAopJREFUeJztmkGOwjAMRUEsWHKEHCVHS4/GUXoEll1UzUwpIYlj+2fkqmIksvUD7G8LGn9Op78dF+OkxW/x9zzk+Dk+zyACfgNmKX6Jr3OXM9yOlGd8Hz5+zcCopSinGaP+GdcS4D7DlQBXRyiBpY2fY3UGPQUuCVcDbRKhBtokIjk0iQsF7gS4UYDOlaMAzTJQgGZJ47RfTY40y2sLjHqONEvfAvVUNUXQMtp4XcaZAwa9iLqMphPrKbvBVFnXyVRZ18lUWdfJxcs62SrLOplerueuy1AKwcpQCuF4IAvheSALEXggC8HHsxCCDFkIQYYOICkl6JSVEnTKSjkEeAmYEJCkDBKQpJTiGIhA6SSlKGSSEgKi0klrUekO4KG3ImntDcCst6IDWEArXs1AgNKrrVsQUHq1dQsCSjO3bkFAaebWTgg4EzDp3e4A5h4gaMCyC6DFnxNjBtSBWkfKDqgTt86cHVBHsgMYdwDUoe4AHjsAzghMHwF4IzD/DyB8PrB8gS+wK7DH0PovED/luxoCB/zqWYE9fv2twB5PQRA44GHvgEfWIx68vQZ03Q6cBkw9gP0aBQH7Xc9+37Tfee33bny19wZg7ttgQAAuSSAAFzX2XRBcN8GFFV55BQR4CUhrNycBUy8Al4dw/QgXmHBHKgKndCAQ+Hhe5HoeyKtgxwN5mQzX0XChDVficKkO1/J4se85oLQGHAeU5gK0J1gh7gUALRJosmCbhqmzdoKYMmrHC5pNTD+rIrDhhS0zpxfBlDESABp/TZY0TrNsbViSZetIEy2bFLCFCk1YbONWSbQpnLCVXE4Vb3hDOxsa4thSf2s1CEB6C/m/A/CPAVshoxx/Dpbyevb8ADwrn93OGkmmAAAAAElFTkSuQmCC",
-              "version": 2,
+              "lineColor": [
+                0.66037992589614,
+                0.4,
+                0.93333333333333,
+                1
+              ],
               "gridSize": 0.71428571428571,
-              "lineColor": [0.66037992589614, 0.4, 0.93333333333333, 1],
+              "scale": 10,
+              "fillPixelsPerUnit": 25.6,
+              "numTotalLayers": 1,
+              "selectedFrame": 1,
+              "version": 3,
               "nextPathId": 4,
-              "pathDataList": [
+              "frames": 1,
+              "layers": [
                 {
-                  "id": 1,
-                  "color": [0.1436, 0.6235, 0.8706, 1],
-                  "style": 2,
-                  "points": [
+                  "title": "Layer 1",
+                  "frames": [
                     {
-                      "x": 0,
-                      "y": -5
-                    },
-                    {
-                      "x": 5,
-                      "y": 0
+                      "pathDataList": [
+                        {
+                          "id": 1,
+                          "p": [
+                            0,
+                            -5,
+                            5,
+                            0
+                          ],
+                          "c": [
+                            0.1436,
+                            0.6235,
+                            0.8706,
+                            1
+                          ],
+                          "s": 2
+                        },
+                        {
+                          "id": 2,
+                          "p": [
+                            5,
+                            0,
+                            0,
+                            5,
+                            -5,
+                            0
+                          ],
+                          "c": [
+                            0.1436,
+                            0.6235,
+                            0.8706,
+                            1
+                          ],
+                          "s": 3
+                        },
+                        {
+                          "id": 4,
+                          "p": [
+                            -5,
+                            0,
+                            0,
+                            -5
+                          ],
+                          "c": [
+                            0.1436,
+                            0.6235,
+                            0.8706,
+                            1
+                          ],
+                          "s": 2
+                        }
+                      ],
+                      "fillImageBounds": {
+                        "maxX": 128,
+                        "maxY": 128,
+                        "minX": -128,
+                        "minY": -128
+                      },
+                      "fillCanvasSize": 256,
+                      "fillPng": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAABlBMVEUAAAAkn94NkT71AAAAAXRSTlMAQObYZgAAAopJREFUeJztmkGOwjAMRUEsWHKEHCVHS4/GUXoEll1UzUwpIYlj+2fkqmIksvUD7G8LGn9Op78dF+OkxW/x9zzk+Dk+zyACfgNmKX6Jr3OXM9yOlGd8Hz5+zcCopSinGaP+GdcS4D7DlQBXRyiBpY2fY3UGPQUuCVcDbRKhBtokIjk0iQsF7gS4UYDOlaMAzTJQgGZJ47RfTY40y2sLjHqONEvfAvVUNUXQMtp4XcaZAwa9iLqMphPrKbvBVFnXyVRZ18lUWdfJxcs62SrLOplerueuy1AKwcpQCuF4IAvheSALEXggC8HHsxCCDFkIQYYOICkl6JSVEnTKSjkEeAmYEJCkDBKQpJTiGIhA6SSlKGSSEgKi0klrUekO4KG3ImntDcCst6IDWEArXs1AgNKrrVsQUHq1dQsCSjO3bkFAaebWTgg4EzDp3e4A5h4gaMCyC6DFnxNjBtSBWkfKDqgTt86cHVBHsgMYdwDUoe4AHjsAzghMHwF4IzD/DyB8PrB8gS+wK7DH0PovED/luxoCB/zqWYE9fv2twB5PQRA44GHvgEfWIx68vQZ03Q6cBkw9gP0aBQH7Xc9+37Tfee33bny19wZg7ttgQAAuSSAAFzX2XRBcN8GFFV55BQR4CUhrNycBUy8Al4dw/QgXmHBHKgKndCAQ+Hhe5HoeyKtgxwN5mQzX0XChDVficKkO1/J4se85oLQGHAeU5gK0J1gh7gUALRJosmCbhqmzdoKYMmrHC5pNTD+rIrDhhS0zpxfBlDESABp/TZY0TrNsbViSZetIEy2bFLCFCk1YbONWSbQpnLCVXE4Vb3hDOxsa4thSf2s1CEB6C/m/A/CPAVshoxx/Dpbyevb8ADwrn93OGkmmAAAAAElFTkSuQmCC"
                     }
-                  ]
-                },
-                {
-                  "id": 2,
-                  "color": [0.1436, 0.6235, 0.8706, 1],
-                  "style": 3,
-                  "points": [
-                    {
-                      "x": 5,
-                      "y": 0
-                    },
-                    {
-                      "x": 0,
-                      "y": 5
-                    },
-                    {
-                      "x": -5,
-                      "y": 0
-                    }
-                  ]
-                },
-                {
-                  "id": 4,
-                  "color": [0.1436, 0.6235, 0.8706, 1],
-                  "style": 2,
-                  "points": [
-                    {
-                      "x": -5,
-                      "y": 0
-                    },
-                    {
-                      "x": 0,
-                      "y": -5
-                    }
-                  ]
+                  ],
+                  "isVisible": true,
+                  "id": "layer1"
                 }
               ],
-              "fillCanvasSize": 256,
-              "fillImageBounds": {
-                "maxX": 128,
-                "maxY": 128,
-                "minX": -128,
-                "minY": -128
-              },
-              "fillPixelsPerUnit": 25.6
+              "framesBounds": [
+                {
+                  "maxX": 5,
+                  "maxY": 5,
+                  "minX": -5,
+                  "minY": -5
+                }
+              ],
+              "selectedLayerId": "layer1"
             },
             "initialFrame": 1,
             "framesPerSecond": 4,
@@ -321,11 +374,25 @@
             "disabled": false,
             "fixtures": [
               {
-                "points": [-5, -5, -5, 5, 5, 5, 5, -5],
-                "shapeType": "polygon"
+                "shapeType": "polygon",
+                "points": [
+                  -5,
+                  -5,
+                  -5,
+                  5,
+                  5,
+                  5,
+                  5,
+                  -5
+                ]
               }
             ],
-            "massData": [0, 0, 0, 0],
+            "massData": [
+              0,
+              0,
+              0,
+              0
+            ],
             "layerName": "main",
             "widthScale": 0.1,
             "heightScale": 0.1,
@@ -344,7 +411,7 @@
             "disabled": false
           },
           "Drawing2": {
-            "hash": "eJx1UU2L00AYXn+CCw1qWlvBxYMXuyjSwxKbTZR2+52mtr3NJrPpbJNJyMRuUzzsQfHgHsSL+An+AK8L3ral7X4gu3jwoMWT6EWEiCVIETTT7R59YOb9mJl3nvd9PDZyZDVcghTCm6orAAd4bPSwA21TagALkhSuxH8PiAJ0uLDbgjZBJo4MyfTMC3vs+Z616LGRrst020zPigf+w9hWrO+4Fty3oeIArOmQ3VNtsHFc/dK+jjBcNnXT9qL+mVAo9OHCV85/9pTiI+fvfKb4wYXZewu7a0jXC1gbT3bmUIXPlzaurNzSzGSAnCQ3RFkLvCINxcBmA8sbLcHUaYbX+WxFlKnbxImruWb5epwGyWpJKuvZZDG/WqvT90I9XRJvyjDdcdx1kZ8WE4RcTlaEjJNYzFxekVqSxYvJ0v9Xqrym8Lged1Nynl9v3J5+xKdL8jXRbqY1TVtaGiizlt+cnp9/DHqcf3b8K8AXzv85ovgetDxcNe9glQQa9A3Qrsb6BsI1hu5VhmZqsXcWcBp0khlEHKpAdGiZCDvEi9HZM1vMsQQzM0uenLE9pIYHxHF1GH4ScDlX/MTepVy6B6/Fbcrl4ts/D8ZTLuyeZiNVQh3oPzJG28boG/d+qgdqQ50UoC1j5Mx0S9y4HznAsO0UAnYpNXpILy4D3AKEFpjMnTqimZQBNMiftPh8sjn3YrL592WwXgX+P1xCE+o=",
+            "hash": "v2-37667bd3feb5b3e8851e93f161633451",
             "loop": false,
             "playing": false,
             "disabled": false,
@@ -355,55 +422,72 @@
                 0.87058823529412,
                 1
               ],
-              "scale": 10,
-              "bounds": {
-                "maxX": 5,
-                "maxY": 5,
-                "minX": -5,
-                "minY": -5
-              },
-              "fillPng": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAABlBMVEUAAAAkn94NkT71AAAAAXRSTlMAQObYZgAAADZJREFUeJztyjEBAAAEADDNNUcDLt92L+KSvSpBEARBEARBEARBEARBEARBEARBEARBEITfcBnZ1yIUOBjhWAAAAABJRU5ErkJggg==",
-              "version": 2,
+              "lineColor": [
+                0.66037992589614,
+                0.4,
+                0.93333333333333,
+                1
+              ],
               "gridSize": 0.71428571428571,
-              "lineColor": [0.66037992589614, 0.4, 0.93333333333333, 1],
+              "scale": 10,
+              "fillPixelsPerUnit": 25.6,
+              "numTotalLayers": 1,
+              "selectedFrame": 1,
+              "version": 3,
               "nextPathId": 4,
-              "pathDataList": [
+              "frames": 1,
+              "layers": [
                 {
-                  "id": 1,
-                  "color": [0.1436, 0.6235, 0.8706, 1],
-                  "style": 1,
-                  "points": [
+                  "title": "Layer 1",
+                  "frames": [
                     {
-                      "x": -5,
-                      "y": -5
-                    },
-                    {
-                      "x": -5,
-                      "y": 5
-                    },
-                    {
-                      "x": 5,
-                      "y": 5
-                    },
-                    {
-                      "x": 5,
-                      "y": -5
-                    },
-                    {
-                      "x": -5,
-                      "y": -5
+                      "pathDataList": [
+                        {
+                          "id": 1,
+                          "p": [
+                            -5,
+                            -5,
+                            -5,
+                            5,
+                            5,
+                            5,
+                            5,
+                            -5,
+                            -5,
+                            -5
+                          ],
+                          "c": [
+                            0.1436,
+                            0.6235,
+                            0.8706,
+                            1
+                          ],
+                          "s": 1
+                        }
+                      ],
+                      "fillImageBounds": {
+                        "maxX": 128,
+                        "maxY": 128,
+                        "minX": -128,
+                        "minY": -128
+                      },
+                      "fillCanvasSize": 256,
+                      "fillPng": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAABlBMVEUAAAAkn94NkT71AAAAAXRSTlMAQObYZgAAADZJREFUeJztyjEBAAAEADDNNUcDLt92L+KSvSpBEARBEARBEARBEARBEARBEARBEARBEITfcBnZ1yIUOBjhWAAAAABJRU5ErkJggg=="
                     }
-                  ]
+                  ],
+                  "isVisible": true,
+                  "id": "layer1"
                 }
               ],
-              "fillCanvasSize": 256,
-              "fillImageBounds": {
-                "maxX": 128,
-                "maxY": 128,
-                "minX": -128,
-                "minY": -128
-              },
-              "fillPixelsPerUnit": 25.6
+              "framesBounds": [
+                {
+                  "maxX": 5,
+                  "maxY": 5,
+                  "minX": -5,
+                  "minY": -5
+                }
+              ],
+              "selectedLayerId": "layer1"
             },
             "initialFrame": 1,
             "framesPerSecond": 4,
@@ -451,11 +535,25 @@
             "disabled": false,
             "fixtures": [
               {
-                "points": [-5, -5, -5, 5, 5, 5, 5, -5],
-                "shapeType": "polygon"
+                "shapeType": "polygon",
+                "points": [
+                  -5,
+                  -5,
+                  -5,
+                  5,
+                  5,
+                  5,
+                  5,
+                  -5
+                ]
               }
             ],
-            "massData": [0, 0, 9, 3.375],
+            "massData": [
+              0,
+              0,
+              9,
+              3.375
+            ],
             "layerName": "main",
             "widthScale": 0.15,
             "heightScale": 0.15,
@@ -488,7 +586,7 @@
             "disabled": false
           },
           "Drawing2": {
-            "hash": "eJx1UU2L00AYXn+CCw1qWlvBxYMXuyjSwxKbTZR2+52mtr3NJrPpbJNJyMRuUzzsQfHgHsSL+An+AK8L3ral7X4gu3jwoMWT6EWEiCVIETTT7R59YOb9mJl3nvd9PDZyZDVcghTCm6orAAd4bPSwA21TagALkhSuxH8PiAJ0uLDbgjZBJo4MyfTMC3vs+Z616LGRrst020zPigf+w9hWrO+4Fty3oeIArOmQ3VNtsHFc/dK+jjBcNnXT9qL+mVAo9OHCV85/9pTiI+fvfKb4wYXZewu7a0jXC1gbT3bmUIXPlzaurNzSzGSAnCQ3RFkLvCINxcBmA8sbLcHUaYbX+WxFlKnbxImruWb5epwGyWpJKuvZZDG/WqvT90I9XRJvyjDdcdx1kZ8WE4RcTlaEjJNYzFxekVqSxYvJ0v9Xqrym8Lged1Nynl9v3J5+xKdL8jXRbqY1TVtaGiizlt+cnp9/DHqcf3b8K8AXzv85ovgetDxcNe9glQQa9A3Qrsb6BsI1hu5VhmZqsXcWcBp0khlEHKpAdGiZCDvEi9HZM1vMsQQzM0uenLE9pIYHxHF1GH4ScDlX/MTepVy6B6/Fbcrl4ts/D8ZTLuyeZiNVQh3oPzJG28boG/d+qgdqQ50UoC1j5Mx0S9y4HznAsO0UAnYpNXpILy4D3AKEFpjMnTqimZQBNMiftPh8sjn3YrL592WwXgX+P1xCE+o=",
+            "hash": "v2-37667bd3feb5b3e8851e93f161633451",
             "loop": false,
             "playing": false,
             "disabled": false,
@@ -499,55 +597,72 @@
                 0.87058823529412,
                 1
               ],
-              "scale": 10,
-              "bounds": {
-                "maxX": 5,
-                "maxY": 5,
-                "minX": -5,
-                "minY": -5
-              },
-              "fillPng": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAABlBMVEUAAAAkn94NkT71AAAAAXRSTlMAQObYZgAAADZJREFUeJztyjEBAAAEADDNNUcDLt92L+KSvSpBEARBEARBEARBEARBEARBEARBEARBEITfcBnZ1yIUOBjhWAAAAABJRU5ErkJggg==",
-              "version": 2,
+              "lineColor": [
+                0.66037992589614,
+                0.4,
+                0.93333333333333,
+                1
+              ],
               "gridSize": 0.71428571428571,
-              "lineColor": [0.66037992589614, 0.4, 0.93333333333333, 1],
+              "scale": 10,
+              "fillPixelsPerUnit": 25.6,
+              "numTotalLayers": 1,
+              "selectedFrame": 1,
+              "version": 3,
               "nextPathId": 4,
-              "pathDataList": [
+              "frames": 1,
+              "layers": [
                 {
-                  "id": 1,
-                  "color": [0.1436, 0.6235, 0.8706, 1],
-                  "style": 1,
-                  "points": [
+                  "title": "Layer 1",
+                  "frames": [
                     {
-                      "x": -5,
-                      "y": -5
-                    },
-                    {
-                      "x": -5,
-                      "y": 5
-                    },
-                    {
-                      "x": 5,
-                      "y": 5
-                    },
-                    {
-                      "x": 5,
-                      "y": -5
-                    },
-                    {
-                      "x": -5,
-                      "y": -5
+                      "pathDataList": [
+                        {
+                          "id": 1,
+                          "p": [
+                            -5,
+                            -5,
+                            -5,
+                            5,
+                            5,
+                            5,
+                            5,
+                            -5,
+                            -5,
+                            -5
+                          ],
+                          "c": [
+                            0.1436,
+                            0.6235,
+                            0.8706,
+                            1
+                          ],
+                          "s": 1
+                        }
+                      ],
+                      "fillImageBounds": {
+                        "maxX": 128,
+                        "maxY": 128,
+                        "minX": -128,
+                        "minY": -128
+                      },
+                      "fillCanvasSize": 256,
+                      "fillPng": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAABlBMVEUAAAAkn94NkT71AAAAAXRSTlMAQObYZgAAADZJREFUeJztyjEBAAAEADDNNUcDLt92L+KSvSpBEARBEARBEARBEARBEARBEARBEARBEITfcBnZ1yIUOBjhWAAAAABJRU5ErkJggg=="
                     }
-                  ]
+                  ],
+                  "isVisible": true,
+                  "id": "layer1"
                 }
               ],
-              "fillCanvasSize": 256,
-              "fillImageBounds": {
-                "maxX": 128,
-                "maxY": 128,
-                "minX": -128,
-                "minY": -128
-              },
-              "fillPixelsPerUnit": 25.6
+              "framesBounds": [
+                {
+                  "maxX": 5,
+                  "maxY": 5,
+                  "minX": -5,
+                  "minY": -5
+                }
+              ],
+              "selectedLayerId": "layer1"
             },
             "initialFrame": 1,
             "framesPerSecond": 4,
@@ -595,11 +710,25 @@
             "disabled": false,
             "fixtures": [
               {
-                "points": [-5, -5, -5, 5, 5, 5, 5, -5],
-                "shapeType": "polygon"
+                "shapeType": "polygon",
+                "points": [
+                  -5,
+                  -5,
+                  -5,
+                  5,
+                  5,
+                  5,
+                  5,
+                  -5
+                ]
               }
             ],
-            "massData": [0, 0, 9, 3.375],
+            "massData": [
+              0,
+              0,
+              9,
+              3.375
+            ],
             "layerName": "main",
             "widthScale": 0.15,
             "heightScale": 0.15,
@@ -625,7 +754,7 @@
             "angularVelocity": 0
           },
           "Drawing2": {
-            "hash": "eJx1UU2L00AYXn+CCw1qWlvBxYMXuyjSwxKbTZR2+52mtr3NJrPpbJNJyMRuUzzsQfHgHsSL+An+AK8L3ral7X4gu3jwoMWT6EWEiCVIETTT7R59YOb9mJl3nvd9PDZyZDVcghTCm6orAAd4bPSwA21TagALkhSuxH8PiAJ0uLDbgjZBJo4MyfTMC3vs+Z616LGRrst020zPigf+w9hWrO+4Fty3oeIArOmQ3VNtsHFc/dK+jjBcNnXT9qL+mVAo9OHCV85/9pTiI+fvfKb4wYXZewu7a0jXC1gbT3bmUIXPlzaurNzSzGSAnCQ3RFkLvCINxcBmA8sbLcHUaYbX+WxFlKnbxImruWb5epwGyWpJKuvZZDG/WqvT90I9XRJvyjDdcdx1kZ8WE4RcTlaEjJNYzFxekVqSxYvJ0v9Xqrym8Lged1Nynl9v3J5+xKdL8jXRbqY1TVtaGiizlt+cnp9/DHqcf3b8K8AXzv85ovgetDxcNe9glQQa9A3Qrsb6BsI1hu5VhmZqsXcWcBp0khlEHKpAdGiZCDvEi9HZM1vMsQQzM0uenLE9pIYHxHF1GH4ScDlX/MTepVy6B6/Fbcrl4ts/D8ZTLuyeZiNVQh3oPzJG28boG/d+qgdqQ50UoC1j5Mx0S9y4HznAsO0UAnYpNXpILy4D3AKEFpjMnTqimZQBNMiftPh8sjn3YrL592WwXgX+P1xCE+o=",
+            "hash": "v2-37667bd3feb5b3e8851e93f161633451",
             "loop": false,
             "playing": false,
             "disabled": false,
@@ -636,55 +765,72 @@
                 0.87058823529412,
                 1
               ],
-              "scale": 10,
-              "bounds": {
-                "maxX": 5,
-                "maxY": 5,
-                "minX": -5,
-                "minY": -5
-              },
-              "fillPng": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAABlBMVEUAAAAkn94NkT71AAAAAXRSTlMAQObYZgAAADZJREFUeJztyjEBAAAEADDNNUcDLt92L+KSvSpBEARBEARBEARBEARBEARBEARBEARBEITfcBnZ1yIUOBjhWAAAAABJRU5ErkJggg==",
-              "version": 2,
+              "lineColor": [
+                0.66037992589614,
+                0.4,
+                0.93333333333333,
+                1
+              ],
               "gridSize": 0.71428571428571,
-              "lineColor": [0.66037992589614, 0.4, 0.93333333333333, 1],
+              "scale": 10,
+              "fillPixelsPerUnit": 25.6,
+              "numTotalLayers": 1,
+              "selectedFrame": 1,
+              "version": 3,
               "nextPathId": 4,
-              "pathDataList": [
+              "frames": 1,
+              "layers": [
                 {
-                  "id": 1,
-                  "color": [0.1436, 0.6235, 0.8706, 1],
-                  "style": 1,
-                  "points": [
+                  "title": "Layer 1",
+                  "frames": [
                     {
-                      "x": -5,
-                      "y": -5
-                    },
-                    {
-                      "x": -5,
-                      "y": 5
-                    },
-                    {
-                      "x": 5,
-                      "y": 5
-                    },
-                    {
-                      "x": 5,
-                      "y": -5
-                    },
-                    {
-                      "x": -5,
-                      "y": -5
+                      "pathDataList": [
+                        {
+                          "id": 1,
+                          "p": [
+                            -5,
+                            -5,
+                            -5,
+                            5,
+                            5,
+                            5,
+                            5,
+                            -5,
+                            -5,
+                            -5
+                          ],
+                          "c": [
+                            0.1436,
+                            0.6235,
+                            0.8706,
+                            1
+                          ],
+                          "s": 1
+                        }
+                      ],
+                      "fillImageBounds": {
+                        "maxX": 128,
+                        "maxY": 128,
+                        "minX": -128,
+                        "minY": -128
+                      },
+                      "fillCanvasSize": 256,
+                      "fillPng": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAABlBMVEUAAAAkn94NkT71AAAAAXRSTlMAQObYZgAAADZJREFUeJztyjEBAAAEADDNNUcDLt92L+KSvSpBEARBEARBEARBEARBEARBEARBEARBEITfcBnZ1yIUOBjhWAAAAABJRU5ErkJggg=="
                     }
-                  ]
+                  ],
+                  "isVisible": true,
+                  "id": "layer1"
                 }
               ],
-              "fillCanvasSize": 256,
-              "fillImageBounds": {
-                "maxX": 128,
-                "maxY": 128,
-                "minX": -128,
-                "minY": -128
-              },
-              "fillPixelsPerUnit": 25.6
+              "framesBounds": [
+                {
+                  "maxX": 5,
+                  "maxY": 5,
+                  "minX": -5,
+                  "minY": -5
+                }
+              ],
+              "selectedLayerId": "layer1"
             },
             "initialFrame": 1,
             "framesPerSecond": 4,

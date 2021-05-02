@@ -91,6 +91,14 @@ public:
   void withSingleTouch(F &&f) const; // `forEachTouch(f)` if `getMaxCount() == 1`
 
 
+  // Data -- extra data of any type that can be associated with a touch
+
+  template<typename T, typename... Args>
+  void setData(TouchId touchId, Args &&...args) const;
+  template<typename T>
+  T *maybeGetData(TouchId touchId) const;
+
+
   // Update
 
   void update();
@@ -175,4 +183,17 @@ inline void Gesture::withSingleTouch(F &&f) const {
   if (getMaxCount() == 1) {
     forEachTouch(std::forward<F>(f));
   }
+}
+
+template<typename T, typename... Args>
+void Gesture::setData(TouchId touchId, Args &&...args) const {
+  if (hasTouch(touchId)) {
+    const_cast<entt::registry &>(registry).emplace_or_replace<T>(
+        touchId, std::forward<Args>(args)...);
+  }
+}
+
+template<typename T>
+T *Gesture::maybeGetData(TouchId touchId) const {
+  return hasTouch(touchId) ? const_cast<entt::registry &>(registry).try_get<T>(touchId) : nullptr;
 }

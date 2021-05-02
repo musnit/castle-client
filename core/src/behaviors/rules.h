@@ -133,19 +133,19 @@ public:
   void handlePerform(double dt);
 
 
-  // Trigger firing
+  // Trigger firing -- all methods return whether any triggers were actually fired
 
   template<typename Trigger, typename... Component>
-  void fireAllEnabled(RuleContextExtras extras); // Fire on all with trigger and enabled components
+  bool fireAllEnabled(RuleContextExtras extras); // Fire on all with trigger and enabled components
   template<typename Trigger, typename... Component, typename F>
-  void fireAllIf(RuleContextExtras extras,
+  bool fireAllIf(RuleContextExtras extras,
       F &&filter); // Like above but also `filter` must return `true`.
                    // `F` is `(ActorId, const Trigger &, const Component &...) -> bool`
 
   template<typename Trigger>
-  void fire(ActorId actorId, RuleContextExtras extras); // Fire on single actor if has trigger
+  bool fire(ActorId actorId, RuleContextExtras extras); // Fire on single actor if has trigger
   template<typename Trigger, typename F>
-  void fireIf(ActorId actorId, RuleContextExtras extras,
+  bool fireIf(ActorId actorId, RuleContextExtras extras,
       F &&filter); // Like above but also `filter` must return `true`
                    // `F` is `(const Trigger &) -> bool`
 
@@ -367,43 +367,53 @@ inline RuleContext::RuleContext(
 }
 
 template<typename Trigger, typename... Component>
-void RulesBehavior::fireAllEnabled(RuleContextExtras extras) {
-  fireAllIf<Trigger, Component...>(extras, [](ActorId, const Trigger &, const auto &...component) {
-    return (!component.disabled && ...);
-  });
+bool RulesBehavior::fireAllEnabled(RuleContextExtras extras) {
+  return fireAllIf<Trigger, Component...>(
+      extras, [](ActorId, const Trigger &, const auto &...component) {
+        return (!component.disabled && ...);
+      });
 }
 
 template<typename Trigger, typename... Component, typename F>
-void RulesBehavior::fireAllIf(RuleContextExtras extras, F &&filter) {
+bool RulesBehavior::fireAllIf(RuleContextExtras extras, F &&filter) {
+  auto fired = false;
   auto &scene = getScene();
   scene.getEntityRegistry().view<const TriggerComponent<Trigger>, const Component...>().each(
       [&](ActorId actorId, const TriggerComponent<Trigger> &triggerComponent, const auto &...rest) {
         for (auto &entry : triggerComponent.entries) {
           if (filter(actorId, entry.trigger, rest...)) {
             schedule({ entry.response, actorId, extras, scene });
+            fired = true;
           }
         }
       });
+  return fired;
 }
 
 template<typename Trigger>
-void RulesBehavior::fire(ActorId actorId, RuleContextExtras extras) {
-  fireIf<Trigger>(actorId, extras, [](const auto &) {
+bool RulesBehavior::fire(ActorId actorId, RuleContextExtras extras) {
+  return fireIf<Trigger>(actorId, extras, [](const auto &) {
     return true;
   });
 }
 
 template<typename Trigger, typename F>
-void RulesBehavior::fireIf(ActorId actorId, RuleContextExtras extras, F &&filter) {
+bool RulesBehavior::fireIf(ActorId actorId, RuleContextExtras extras, F &&filter) {
+  auto fired = false;
   auto &scene = getScene();
+  if (!scene.hasActor(actorId)) {
+    return false;
+  }
   if (auto triggerComponent
       = scene.getEntityRegistry().try_get<TriggerComponent<Trigger>>(actorId)) {
     for (auto &entry : triggerComponent->entries) {
       if (filter((const Trigger &)entry.trigger)) {
         schedule({ entry.response, actorId, extras, scene });
+        fired = true;
       }
     }
   }
+  return fired;
 }
 
 inline void RulesBehavior::schedule(RuleContext ctx, double performTime) {

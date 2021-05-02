@@ -3,6 +3,9 @@
 #include "behaviors/all.h"
 
 
+static const TouchToken bodyTriggerTouchToken; // Marks a touch as used by a body trigger
+
+
 //
 // Triggers
 //
@@ -15,19 +18,49 @@ struct CollideTrigger : BaseTrigger {
   } params;
 
   inline static int nextId = 0;
-  int id = nextId++; // Used for debouncing
+  int id = nextId++; // Associates with `CollideTriggerMarker`
 };
 
 struct CollideTriggerMarker {
   // Added to an actor when a collision trigger is fired on it to track and prevent firing the same
-  // trigger multiple times for the same other actor. All markers are removed at the end of the
-  // frame so new collisions can be registered again.
+  // trigger multiple times for the same other actor. All markers are removed after the physics step
+  // so new collisions can be registered again.
 
   struct Entry {
     int triggerId; // Matches `CollideTrigger::id` for the trigger we're marking
     ActorId otherActorId;
   };
   SmallVector<Entry, 4> entries;
+};
+
+struct TapTrigger : BaseTrigger {
+  inline static const RuleRegistration<TapTrigger, BodyBehavior> registration { "tap" };
+
+  struct Params {
+  } params;
+};
+
+struct PressTrigger : BaseTrigger {
+  inline static const RuleRegistration<PressTrigger, BodyBehavior> registration { "press" };
+
+  struct Params {
+  } params;
+};
+
+struct TouchDownTrigger : BaseTrigger {
+  inline static const RuleRegistration<TouchDownTrigger, BodyBehavior> registration {
+    "touch down"
+  };
+
+  struct Params {
+  } params;
+};
+
+struct TouchUpTrigger : BaseTrigger {
+  inline static const RuleRegistration<TouchUpTrigger, BodyBehavior> registration { "touch up" };
+
+  struct Params {
+  } params;
 };
 
 
@@ -100,8 +133,52 @@ void BodyBehavior::handleDisableComponent(
 //
 
 void BodyBehavior::handlePerform(double dt) {
-  // Clear markers so new triggers can be registered
+  // Clear collide trigger markers so new collide triggers can be fired
   getScene().getEntityRegistry().clear<CollideTriggerMarker>();
+
+  // Manage touch hit tracking and triggers
+  auto &gesture = getGesture();
+  auto currTime = lv.timer.getTime();
+  auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
+  gesture.forEachTouch([&](TouchId touchId, const Touch &touch) {
+    QueryResult currHits = getActorsAtPoint(touch.pos.x, touch.pos.y);
+    if (touch.released && !touch.movedFar && currTime - touch.pressTime < 0.3) {
+      // Tap
+      for (auto actorId : currHits) {
+        if (rulesBehavior.fire<TapTrigger>(actorId, {})) {
+          touch.use(bodyTriggerTouchToken);
+        }
+      }
+    }
+    if (touch.released) {
+      // Touch up
+      for (auto actorId : currHits) {
+        rulesBehavior.fire<TouchUpTrigger>(actorId, {});
+      }
+    } else {
+      auto &prevHits = getActorsAtTouch(touchId);
+      for (auto actorId : currHits) {
+        if (touch.pressed
+            || std::find(prevHits.begin(), prevHits.end(), actorId) == prevHits.end()) {
+          // Pressed or moved onto actor -- touch down
+          if (rulesBehavior.fire<TouchDownTrigger>(actorId, {})) {
+            touch.use(bodyTriggerTouchToken);
+          }
+        }
+        // Currently on actor -- press
+        if (rulesBehavior.fire<PressTrigger>(actorId, {})) {
+          touch.use(bodyTriggerTouchToken);
+        }
+      }
+      for (auto actorId : prevHits) {
+        if (std::find(currHits.begin(), currHits.end(), actorId) == currHits.end()) {
+          // Moved off actor -- touch up
+          rulesBehavior.fire<TouchUpTrigger>(actorId, {});
+        }
+      }
+    }
+    gesture.setData<ActorsAtTouch>(touchId, std::move(currHits));
+  });
 }
 
 

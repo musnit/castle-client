@@ -80,13 +80,27 @@ public:
 
   // Queries
 
-  template<typename F> // `F` takes `(ActorId, const b2Fixture *)`, returns `false` to stop query
-  void forEachActorAtBoundingBox(float minX, float minY, float maxX, float maxY, F &&f) const;
-  template<typename F>
-  void forEachActorAtPoint(float x, float y, F &&f) const;
+  using QueryResult = SmallVector<ActorId, 8>; // A list of actors resulting from a query
+
+  QueryResult getActorsAtBoundingBox(float minX, float minY, float maxX, float maxY) const;
+  QueryResult getActorsAtPoint(float x, float y) const;
+
+  // Prefer this for querying at touch. Results are cached at start of frame -- actors may have
+  // moved or been destroyed since. Reference lives till end of frame, meant for immediate use.
+  const QueryResult &getActorsAtTouch(TouchId touchId) const;
 
 
 private:
+  Lv &lv { Lv::getInstance() };
+
+
+  struct ActorsAtTouch {
+    // Extra data attached to touches that tracks the actors at the touch
+
+    QueryResult result;
+  };
+
+
   b2Fixture *addFixture(BodyComponent &component, b2Shape *shape);
 };
 
@@ -119,35 +133,65 @@ inline love::Vector2 BodyBehavior::getScale(ActorId actorId) const {
   return love::Vector2();
 }
 
-template<typename F>
-void BodyBehavior::forEachActorAtBoundingBox(
-    float minX, float minY, float maxX, float maxY, F &&f) const {
+inline BodyBehavior::QueryResult BodyBehavior::getActorsAtBoundingBox(
+    float minX, float minY, float maxX, float maxY) const {
+  QueryResult result;
   struct Callback : b2QueryCallback {
+    QueryResult &result;
     const BodyBehavior &bodyBehavior;
-    const F f;
 
-    Callback(const BodyBehavior &bodyBehavior_, F &&f_)
-        : bodyBehavior(bodyBehavior_)
-        , f(std::forward<F>(f_)) {
+    Callback(QueryResult &result_, const BodyBehavior &bodyBehavior_)
+        : result(result_)
+        , bodyBehavior(bodyBehavior_) {
     }
 
     bool ReportFixture(b2Fixture *fixture) final {
       if (auto actorId = bodyBehavior.maybeGetActorId(fixture->GetBody()); actorId != nullActor) {
-        return f(actorId, (const b2Fixture *)fixture);
+        if (std::find(result.begin(), result.end(), actorId) == result.end()) {
+          result.push_back(actorId);
+        }
       }
       return true;
     }
-  } cb(*this, std::forward<F>(f));
+  } cb(result, *this);
   getScene().getPhysicsWorld().QueryAABB(&cb, { { minX, minY }, { maxX, maxY } });
+  return result;
 }
 
-template<typename F>
-void BodyBehavior::forEachActorAtPoint(float x, float y, F &&f) const {
-  forEachActorAtBoundingBox(
-      x - 0.01, y - 0.01, x + 0.01, y + 0.01, [&](ActorId actorId, const b2Fixture *fixture) {
-        if (fixture->TestPoint({ x, y })) {
-          return f(actorId, fixture);
+inline BodyBehavior::QueryResult BodyBehavior::getActorsAtPoint(float x, float y) const {
+  QueryResult result;
+  struct Callback : b2QueryCallback {
+    QueryResult &result;
+    const BodyBehavior &bodyBehavior;
+    b2Vec2 point;
+
+    Callback(QueryResult &result_, const BodyBehavior &bodyBehavior_, b2Vec2 point_)
+        : result(result_)
+        , bodyBehavior(bodyBehavior_)
+        , point(point_) {
+    }
+
+    bool ReportFixture(b2Fixture *fixture) final {
+      if (auto actorId = bodyBehavior.maybeGetActorId(fixture->GetBody()); actorId != nullActor) {
+        if (std::find(result.begin(), result.end(), actorId) == result.end()) {
+          if (fixture->TestPoint(point)) {
+            result.push_back(actorId);
+          }
         }
-        return true;
-      });
+      }
+      return true;
+    }
+  } cb(result, *this, { x, y });
+  getScene().getPhysicsWorld().QueryAABB(
+      &cb, { { x - 0.01f, y - 0.01f }, { x + 0.01f, y + 0.01f } });
+  return result;
+}
+
+inline const BodyBehavior::QueryResult &BodyBehavior::getActorsAtTouch(TouchId touchId) const {
+  if (auto actorsAtTouch = getGesture().maybeGetData<ActorsAtTouch>(touchId)) {
+    return actorsAtTouch->result;
+  } else {
+    static QueryResult empty;
+    return empty;
+  }
 }

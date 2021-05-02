@@ -34,6 +34,9 @@ void DragBehavior::handlePerform(double dt) {
     return; // Nothing to do if no components
   }
 
+  auto &scene = getScene();
+  auto &bodyBehavior = getBehaviors().byType<BodyBehavior>();
+
   // Create handles on touch presses
   getGesture().forEachTouch([&](TouchId touchId, const Touch &touch) {
     if (touch.isUsed()) {
@@ -45,22 +48,21 @@ void DragBehavior::handlePerform(double dt) {
       DragComponent *hitComponent = nullptr;
       const b2Body *hitBody = nullptr;
       int maxDrawOrder = -1;
-      getBehaviors().byType<BodyBehavior>().forEachActorAtPoint(
-          touch.pos.x, touch.pos.y, [&](ActorId actorId, const b2Fixture *fixture) {
-            if (auto component = maybeGetComponent(actorId); component && !component->disabled) {
-              auto drawOrder = getScene().maybeGetActor(actorId)->drawOrder;
-              if (drawOrder > maxDrawOrder) {
-                hitActorId = actorId;
-                hitComponent = component;
-                hitBody = fixture->GetBody();
-                maxDrawOrder = drawOrder;
-              }
+      for (auto actorId : bodyBehavior.getActorsAtTouch(touchId)) {
+        if (auto component = maybeGetComponent(actorId); component && !component->disabled) {
+          if (auto actor = scene.maybeGetActor(actorId); actor && actor->drawOrder > maxDrawOrder) {
+            if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
+              hitActorId = actorId;
+              hitComponent = component;
+              hitBody = body;
+              maxDrawOrder = actor->drawOrder;
             }
-            return true;
-          });
+          }
+        }
+      }
       if (hitComponent && touch.use(dragToken)) { // Don't use touch if nothing found
         b2MouseJointDef jointDef;
-        jointDef.bodyA = getScene().getPhysicsBackgroundBody();
+        jointDef.bodyA = scene.getPhysicsBackgroundBody();
         jointDef.bodyB = const_cast<b2Body *>(hitBody);
         jointDef.target = { touch.pos.x, touch.pos.y };
         jointDef.maxForce = 1000 * hitBody->GetMass(); // This is what Love does in its `MouseJoint`
@@ -68,7 +70,7 @@ void DragBehavior::handlePerform(double dt) {
             jointDef.bodyB); // This is needed in the new Box2D (see its 'test.cpp')
         hitComponent->handles.push_back({
             touchId,
-            (b2MouseJoint *)getScene().getPhysicsWorld().CreateJoint(&jointDef),
+            (b2MouseJoint *)scene.getPhysicsWorld().CreateJoint(&jointDef),
             hitBody->GetLocalPoint(jointDef.target),
         });
       }
@@ -85,13 +87,13 @@ void DragBehavior::handlePerform(double dt) {
     // Iterate and set `.joint` to `nullptr` to mark for removal, then use `std::remove_if`
     for (auto &handle : handles) {
       if (handle.joint) { // Just in case...
-        if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId)) {
+        if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
           if (auto touch = getGesture().maybeGetTouch(handle.touchId); touch && !touch->released) {
             // Touch not yet released -- update joint
             handle.joint->SetTarget({ touch->pos.x, touch->pos.y });
           } else {
             // Touch released or no longer exists -- destroy joint and remove handle
-            getScene().getPhysicsWorld().DestroyJoint(handle.joint);
+            scene.getPhysicsWorld().DestroyJoint(handle.joint);
             handle.joint = nullptr;
           }
         } else {
