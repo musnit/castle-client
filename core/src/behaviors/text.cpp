@@ -4,8 +4,11 @@
 #include "archive.h"
 #include "js.h"
 
-JS_DEFINE(int, JS_updateTextActors, (const char *msg, int lenmsg),
-    { Castle.updateTextActors(UTF8ToString(msg, lenmsg)) });
+JS_DEFINE(int, JS_updateTextActors, (const char *msg, int lenmsg), {
+  if (Castle.updateTextActors) {
+    Castle.updateTextActors(UTF8ToString(msg, lenmsg));
+  }
+});
 
 //
 // Read, write
