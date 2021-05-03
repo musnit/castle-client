@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Animated, StatusBar, StyleSheet, View } from 'react-native';
+import { DeckCommentsSheet } from '../play/DeckCommentsSheet';
 import { FeaturedDecks } from './FeaturedDecks';
 import { FollowingDecks } from './FollowingDecks';
 import { PopoverProvider } from '../components/PopoverProvider';
@@ -103,6 +104,32 @@ export const HomeScreen = ({ route }) => {
     Animated.spring(headerY, { toValue, ...SPRING_CONFIG }).start();
   }, [deckId]);
 
+  const [commentsState, setCommentsState] = React.useReducer(
+    (state, action) => {
+      if (action.type === 'open') {
+        return {
+          isOpen: true,
+          deckId: action.deckId,
+        };
+      }
+      if (action.type === 'close') {
+        return {
+          ...state,
+          isOpen: false,
+        };
+      }
+    },
+    {
+      isOpen: false,
+      deckId: null,
+    }
+  );
+  const openComments = React.useCallback(
+    ({ deckId }) => setCommentsState({ type: 'open', deckId }),
+    []
+  );
+  const closeComments = React.useCallback(() => setCommentsState({ type: 'close' }), []);
+
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <PopoverProvider>
@@ -118,7 +145,12 @@ export const HomeScreen = ({ route }) => {
             onSelectItem={(item) => setMode(item.value)}
           />
         </Animated.View>
-        {selectedItem.item({ deckId })}
+        {selectedItem.item({ deckId, onPressComments: openComments })}
+        <DeckCommentsSheet
+          isOpen={commentsState.isOpen}
+          onClose={closeComments}
+          deckId={commentsState.deckId}
+        />
       </PopoverProvider>
     </View>
   );
