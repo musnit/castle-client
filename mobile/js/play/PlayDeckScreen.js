@@ -2,7 +2,7 @@ import React from 'react';
 import { StatusBar, StyleSheet } from 'react-native';
 import { useFocusEffect } from '../ReactNavigation';
 import { useGameViewAndroidBackHandler } from '../common/GameViewAndroidBackHandler';
-import { DeckCommentsSheet } from './DeckCommentsSheet';
+import { CommentsSheet } from '../comments/CommentsSheet';
 import { DecksFeed } from '../components/DecksFeed';
 import { PopoverProvider } from '../components/PopoverProvider';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -54,7 +54,7 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
           }}
           onPressComments={openComments}
         />
-        <DeckCommentsSheet isOpen={isCommentsVisible} onClose={closeComments} deckId={deckId} />
+        <CommentsSheet isOpen={isCommentsVisible} onClose={closeComments} deckId={deckId} />
       </PopoverProvider>
     </SafeAreaView>
   );

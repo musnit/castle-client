@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Animated, StatusBar, StyleSheet, View } from 'react-native';
-import { DeckCommentsSheet } from '../play/DeckCommentsSheet';
+import { CommentsSheet } from '../comments/CommentsSheet';
 import { FeaturedDecks } from './FeaturedDecks';
 import { FollowingDecks } from './FollowingDecks';
 import { PopoverProvider } from '../components/PopoverProvider';
@@ -146,7 +146,7 @@ export const HomeScreen = ({ route }) => {
           />
         </Animated.View>
         {selectedItem.item({ deckId, onPressComments: openComments })}
-        <DeckCommentsSheet
+        <CommentsSheet
           isOpen={commentsState.isOpen}
           onClose={closeComments}
           deckId={commentsState.deckId}
