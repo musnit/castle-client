@@ -149,6 +149,9 @@ public:
       F &&filter); // Like above but also `filter` must return `true`
                    // `F` is `(const Trigger &) -> bool`
 
+  template<typename Trigger>
+  bool hasTrigger(ActorId actorId) const;
+
 
   // Response scheduling
 
@@ -414,6 +417,13 @@ bool RulesBehavior::fireIf(ActorId actorId, RuleContextExtras extras, F &&filter
     }
   }
   return fired;
+}
+
+template<typename Trigger>
+inline bool RulesBehavior::hasTrigger(ActorId actorId) const {
+  auto &scene = getScene();
+  return scene.hasActor(actorId)
+      && scene.getEntityRegistry().has<TriggerComponent<Trigger>>(actorId);
 }
 
 inline void RulesBehavior::schedule(RuleContext ctx, double performTime) {
