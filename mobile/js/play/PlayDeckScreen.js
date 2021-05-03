@@ -2,6 +2,7 @@ import React from 'react';
 import { StatusBar, StyleSheet } from 'react-native';
 import { useFocusEffect } from '../ReactNavigation';
 import { useGameViewAndroidBackHandler } from '../common/GameViewAndroidBackHandler';
+import { DeckCommentsSheet } from './DeckCommentsSheet';
 import { DecksFeed } from '../components/DecksFeed';
 import { PopoverProvider } from '../components/PopoverProvider';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -23,6 +24,7 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
     initialDeckIndex = route.params.initialDeckIndex ?? 0;
   }
   // TODO: BEN: respect initialDeckIndex
+  const deckId = decks?.length ? decks[0].deckId : null;
 
   const { pop } = useNavigation();
   const onHardwareBackPress = React.useCallback(() => pop(), [pop]);
@@ -33,6 +35,10 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
     }, [])
   );
+
+  const [isCommentsVisible, setIsCommentsVisible] = React.useState(false);
+  const openComments = React.useCallback(() => setIsCommentsVisible(true), []);
+  const closeComments = React.useCallback(() => setIsCommentsVisible(false), []);
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -46,7 +52,9 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
             }
             pop();
           }}
+          onPressComments={openComments}
         />
+        <DeckCommentsSheet isOpen={isCommentsVisible} onClose={closeComments} deckId={deckId} />
       </PopoverProvider>
     </SafeAreaView>
   );

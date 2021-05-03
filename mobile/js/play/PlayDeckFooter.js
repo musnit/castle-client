@@ -10,6 +10,7 @@ import * as Constants from '../Constants';
 import * as Session from '../Session';
 
 import Feather from 'react-native-vector-icons/Feather';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { TouchableNativeFeedback as PressableRNGH } from 'react-native-gesture-handler';
 
 // required because android Pressable doesn't receive touches outside parent container
@@ -63,7 +64,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const PlayDeckFooter = ({ deck, isPlaying }) => {
+export const PlayDeckFooter = ({ deck, isPlaying, onPressComments }) => {
   const { creator } = deck;
   const { push, navigate } = useNavigation();
 
@@ -132,6 +133,15 @@ export const PlayDeckFooter = ({ deck, isPlaying }) => {
           </View>
         )}
       </View>
+      <Pressable
+        style={{
+          /* yoooo check out this shitty comment button */ backgroundColor: '#fff',
+          padding: 4,
+          borderRadius: 12,
+        }}
+        onPress={onPressComments}>
+        <FontAwesome5 name="comment" size={36} />
+      </Pressable>
       <ReactionButton deck={deck} />
     </View>
   );
