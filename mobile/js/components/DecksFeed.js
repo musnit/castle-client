@@ -123,6 +123,7 @@ const CurrentDeckCell = ({
   onRefreshFeed,
   isMe = false,
   isAnonymous = false,
+  onPressComments = () => {},
 }) => {
   const initialCard = deck?.initialCard;
   const [ready, setReady] = React.useState(false);
@@ -228,7 +229,7 @@ const CurrentDeckCell = ({
       <Animated.View
         style={[styles.itemFooter, { transform: [{ translateY: playingFooterY }] }]}
         pointerEvents="box-none">
-        <PlayDeckFooter deck={deck} isPlaying={isPlaying} />
+        <PlayDeckFooter deck={deck} isPlaying={isPlaying} onPressComments={onPressComments} />
       </Animated.View>
     </View>
   );
@@ -253,7 +254,7 @@ const SkeletonFeed = () => {
 
 // NOTE: onRefresh is currently ignored on Android (see further note below)
 // otherwise, FlatList props work here.
-export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
+export const DecksFeed = ({ decks, isPlaying, onPressDeck, onPressComments, ...props }) => {
   const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
   const { userId: signedInUserId, isAnonymous } = useSession();
@@ -297,6 +298,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
             deck={deck}
             isPlaying={isPlaying}
             onPressDeck={onPressDeck}
+            onPressComments={() => onPressComments({ deckId: deck.deckId })}
             playingTransition={playingTransition}
             previewVideoPaused={paused}
             isMe={deck?.creator?.userId === signedInUserId}
@@ -326,7 +328,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, ...props }) => {
         );
       }
     },
-    [currentCardIndex, isPlaying, paused, props?.onRefresh]
+    [currentCardIndex, isPlaying, paused, props?.onRefresh, onPressComments]
   );
 
   const logScrollToDeck = React.useCallback(
