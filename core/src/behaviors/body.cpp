@@ -104,6 +104,7 @@ void BodyBehavior::handlePerform(double dt) {
   auto currTime = lv.timer.getTime();
   auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
   gesture.forEachTouch([&](TouchId touchId, const Touch &touch) {
+    auto &prevHits = getActorsAtTouch(touchId);
     QueryResult currHits = getActorsAtPoint(touch.pos.x, touch.pos.y);
     if (touch.released && !touch.movedFar && currTime - touch.pressTime < 0.3) {
       // Tap
@@ -119,7 +120,6 @@ void BodyBehavior::handlePerform(double dt) {
         rulesBehavior.fire<TouchUpTrigger>(actorId, {});
       }
     } else {
-      auto &prevHits = getActorsAtTouch(touchId);
       for (auto actorId : currHits) {
         if (touch.pressed
             || std::find(prevHits.begin(), prevHits.end(), actorId) == prevHits.end()) {
@@ -133,11 +133,11 @@ void BodyBehavior::handlePerform(double dt) {
           touch.forceUse(bodyTriggerTouchToken);
         }
       }
-      for (auto actorId : prevHits) {
-        if (std::find(currHits.begin(), currHits.end(), actorId) == currHits.end()) {
-          // Moved off actor -- touch up
-          rulesBehavior.fire<TouchUpTrigger>(actorId, {});
-        }
+    }
+    for (auto actorId : prevHits) {
+      if (std::find(currHits.begin(), currHits.end(), actorId) == currHits.end()) {
+        // Moved off actor -- touch up
+        rulesBehavior.fire<TouchUpTrigger>(actorId, {});
       }
     }
     gesture.setData<ActorsAtTouch>(touchId, std::move(currHits));
