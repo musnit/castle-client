@@ -12,10 +12,7 @@ void MovingBehavior::handleEnableComponent(ActorId actorId, MovingComponent &com
     body->SetType(b2_dynamicBody); // Do this before setting velocities, otherwise they're ignored
     body->SetLinearVelocity({ component.props.vx(), component.props.vy() });
     body->SetAngularVelocity(float(component.props.angularVelocity() * M_PI / 180));
-    for (auto fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()) {
-      fixture->SetDensity(component.props.density());
-    }
-    body->ResetMassData();
+    handleUpdateComponentFixtures(actorId, component, body);
   }
 }
 
@@ -23,9 +20,7 @@ void MovingBehavior::handleDisableComponent(
     ActorId actorId, MovingComponent &component, bool removeActor) {
   if (!removeActor) {
     if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId)) {
-      for (auto fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()) {
-        fixture->SetDensity(1);
-      }
+      handleUpdateComponentFixtures(actorId, component, body);
       body->SetType(b2_staticBody); // Internally sets velocities to zero
     }
   }
@@ -70,11 +65,23 @@ void MovingBehavior::handleSetProperty(
   } else if (propId == props.angularVelocity.id) {
     body->SetAngularVelocity(float(value.as<double>() * M_PI / 180));
   } else if (propId == props.density.id) {
-    for (auto fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()) {
-      fixture->SetDensity(component.props.density());
-    }
-    body->ResetMassData();
+    props.density() = value.as<float>();
+    handleUpdateComponentFixtures(actorId, component, body);
   } else {
     BaseBehavior::handleSetProperty(actorId, component, propId, value);
   }
+}
+
+
+//
+// Fixtures
+//
+
+void MovingBehavior::handleUpdateComponentFixtures(
+    ActorId actorId, MovingComponent &component, b2Body *body) {
+  auto density = component.disabled ? 1 : component.props.density();
+  for (auto fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()) {
+    fixture->SetDensity(density);
+  }
+  body->ResetMassData();
 }

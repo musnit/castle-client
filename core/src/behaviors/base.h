@@ -144,8 +144,9 @@ DEFINE_HANDLER(ReadComponent);
 // Perform
 DEFINE_HANDLER(Perform);
 
-// Physics contacts
+// Physics
 DEFINE_HANDLER(BeginPhysicsContact);
+DEFINE_HANDLER(UpdateComponentFixtures);
 
 // Draw
 DEFINE_HANDLER(DrawComponent);

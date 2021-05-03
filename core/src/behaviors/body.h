@@ -101,7 +101,9 @@ private:
   };
 
 
-  void recreateFixtures(BodyComponent &component);
+  // Fixtures
+
+  void recreateFixtures(ActorId actorId, BodyComponent &component, bool notify);
   b2Fixture *addFixture(BodyComponent &component, b2Shape *shape);
 };
 

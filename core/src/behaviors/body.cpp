@@ -79,7 +79,7 @@ void BodyBehavior::handleEnableComponent(ActorId actorId, BodyComponent &compone
   component.body = getScene().getPhysicsWorld().CreateBody(&bodyDef);
 
   // Fixtures
-  recreateFixtures(component);
+  recreateFixtures(actorId, component, false);
 }
 
 void BodyBehavior::handleDisableComponent(
@@ -225,10 +225,10 @@ void BodyBehavior::handleSetProperty(
     body->SetTransform(body->GetPosition(), float(value.as<double>() * M_PI / 180));
   } else if (propId == props.widthScale.id) {
     props.widthScale() = value.as<float>() / 10;
-    recreateFixtures(component); // PERF: Maybe just mark dirty and do this at end of frame?
+    recreateFixtures(actorId, component, true); // PERF: Mark dirty and do this at end of frame?
   } else if (propId == props.heightScale.id) {
     props.heightScale() = value.as<float>() / 10;
-    recreateFixtures(component); // PERF: Maybe just mark dirty and do this at end of frame?
+    recreateFixtures(actorId, component, true); // PERF: Mark dirty and do this at end of frame?
   } else {
     BaseBehavior::handleSetProperty(actorId, component, propId, value);
   }
@@ -239,7 +239,7 @@ void BodyBehavior::handleSetProperty(
 // Fixtures
 //
 
-void BodyBehavior::recreateFixtures(BodyComponent &component) {
+void BodyBehavior::recreateFixtures(ActorId actorId, BodyComponent &component, bool notify) {
   auto body = component.body;
   if (!body) {
     return;
@@ -290,6 +290,17 @@ void BodyBehavior::recreateFixtures(BodyComponent &component) {
       shape.Set(points.data(), nPoints);
       addFixture(component, &shape);
     }
+  }
+
+  // Notify behaviors that update fixtures
+  if (notify) {
+    getBehaviors().forEach([&](auto &behavior) {
+      if (Handlers::hasUpdateComponentFixtures<decltype(behavior)>) {
+        //if (auto component = behavior.maybeGetComponent(actorId)) {
+        //  behavior.handleUpdateComponentFixtures(actorId, *component, body);
+        //}
+      }
+    });
   }
 }
 
