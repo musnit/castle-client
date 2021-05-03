@@ -225,10 +225,10 @@ void BodyBehavior::handleSetProperty(
     body->SetTransform(body->GetPosition(), float(value.as<double>() * M_PI / 180));
   } else if (propId == props.widthScale.id) {
     props.widthScale() = value.as<float>() / 10;
-    recreateFixtures(component); // NOTE: Maybe just mark dirty and do this at end of frame?
+    recreateFixtures(component); // PERF: Maybe just mark dirty and do this at end of frame?
   } else if (propId == props.heightScale.id) {
     props.heightScale() = value.as<float>() / 10;
-    recreateFixtures(component); // NOTE: Maybe just mark dirty and do this at end of frame?
+    recreateFixtures(component); // PERF: Maybe just mark dirty and do this at end of frame?
   } else {
     BaseBehavior::handleSetProperty(actorId, component, propId, value);
   }
