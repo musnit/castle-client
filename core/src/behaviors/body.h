@@ -101,6 +101,7 @@ private:
   };
 
 
+  void recreateFixtures(BodyComponent &component);
   b2Fixture *addFixture(BodyComponent &component, b2Shape *shape);
 };
 

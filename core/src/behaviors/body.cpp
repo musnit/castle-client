@@ -79,44 +79,7 @@ void BodyBehavior::handleEnableComponent(ActorId actorId, BodyComponent &compone
   component.body = getScene().getPhysicsWorld().CreateBody(&bodyDef);
 
   // Fixtures
-  auto widthScale = component.props.widthScale(), heightScale = component.props.heightScale();
-  for (auto &fixture : component.props.fixtures()) {
-    if (fixture.shapeType() == "circle") {
-      if (abs(abs(widthScale) - abs(heightScale)) < 0.002) {
-        // Uniformly-scaled circle
-        b2CircleShape shape;
-        shape.m_p = { widthScale * fixture.x(), heightScale * fixture.y() };
-        shape.m_radius = widthScale * fixture.radius();
-        addFixture(component, &shape);
-      } else {
-        // Non-uniformly scaled circle -- approximate with a polygon
-        auto x = fixture.x(), y = fixture.y();
-        auto radius = fixture.radius();
-        std::array<b2Vec2, 8> points;
-        auto angle = 0.0f;
-        for (auto i = 0; i < 8; ++i) {
-          auto dX = radius * cos(angle), dY = radius * sin(angle);
-          points[i] = { widthScale * (x + dX), heightScale * (y + dY) };
-          angle -= 2 * M_PI / 8;
-        }
-        b2PolygonShape shape;
-        shape.Set(points.data(), 8);
-        addFixture(component, &shape);
-      }
-    } else if (fixture.shapeType() == "polygon") {
-      // Polygon with given points
-      auto pointsProps = fixture.points();
-      std::array<b2Vec2, 8> points;
-      auto nPoints = std::min(int(pointsProps.size() / 2), 8);
-      for (auto i = 0; i < nPoints; ++i) {
-        points[i].x = widthScale * pointsProps[2 * i];
-        points[i].y = heightScale * pointsProps[2 * i + 1];
-      }
-      b2PolygonShape shape;
-      shape.Set(points.data(), nPoints);
-      addFixture(component, &shape);
-    }
-  }
+  recreateFixtures(component);
 }
 
 void BodyBehavior::handleDisableComponent(
@@ -238,6 +201,10 @@ ExpressionValue BodyBehavior::handleGetProperty(
     return body->GetPosition().y;
   } else if (propId == props.angle.id) {
     return body->GetAngle() * 180 / M_PI;
+  } else if (propId == props.widthScale.id) {
+    return 10 * props.widthScale();
+  } else if (propId == props.heightScale.id) {
+    return 10 * props.heightScale();
   } else {
     return BaseBehavior::handleGetProperty(actorId, component, propId);
   }
@@ -256,6 +223,12 @@ void BodyBehavior::handleSetProperty(
     body->SetTransform({ body->GetPosition().x, value.as<float>() }, body->GetAngle());
   } else if (propId == props.angle.id) {
     body->SetTransform(body->GetPosition(), float(value.as<double>() * M_PI / 180));
+  } else if (propId == props.widthScale.id) {
+    props.widthScale() = value.as<float>() / 10;
+    recreateFixtures(component); // NOTE: Maybe just mark dirty and do this at end of frame?
+  } else if (propId == props.heightScale.id) {
+    props.heightScale() = value.as<float>() / 10;
+    recreateFixtures(component); // NOTE: Maybe just mark dirty and do this at end of frame?
   } else {
     BaseBehavior::handleSetProperty(actorId, component, propId, value);
   }
@@ -265,6 +238,60 @@ void BodyBehavior::handleSetProperty(
 //
 // Fixtures
 //
+
+void BodyBehavior::recreateFixtures(BodyComponent &component) {
+  auto body = component.body;
+  if (!body) {
+    return;
+  }
+
+  // Destroy current fixtures
+  for (auto fixture = body->GetFixtureList(); fixture;) {
+    auto next = fixture->GetNext();
+    body->DestroyFixture(fixture);
+    fixture = next;
+  }
+
+  // Create new fixtures
+  auto widthScale = component.props.widthScale(), heightScale = component.props.heightScale();
+  for (auto &fixture : component.props.fixtures()) {
+    if (fixture.shapeType() == "circle") {
+      if (abs(abs(widthScale) - abs(heightScale)) < 0.002) {
+        // Uniformly-scaled circle
+        b2CircleShape shape;
+        shape.m_p = { widthScale * fixture.x(), heightScale * fixture.y() };
+        shape.m_radius = widthScale * fixture.radius();
+        addFixture(component, &shape);
+      } else {
+        // Non-uniformly scaled circle -- approximate with a polygon
+        auto x = fixture.x(), y = fixture.y();
+        auto radius = fixture.radius();
+        std::array<b2Vec2, 8> points;
+        auto angle = 0.0f;
+        for (auto i = 0; i < 8; ++i) {
+          auto dX = radius * cos(angle), dY = radius * sin(angle);
+          points[i] = { widthScale * (x + dX), heightScale * (y + dY) };
+          angle -= 2 * M_PI / 8;
+        }
+        b2PolygonShape shape;
+        shape.Set(points.data(), 8);
+        addFixture(component, &shape);
+      }
+    } else if (fixture.shapeType() == "polygon") {
+      // Polygon with given points
+      auto pointsProps = fixture.points();
+      std::array<b2Vec2, 8> points;
+      auto nPoints = std::min(int(pointsProps.size() / 2), 8);
+      for (auto i = 0; i < nPoints; ++i) {
+        points[i].x = widthScale * pointsProps[2 * i];
+        points[i].y = heightScale * pointsProps[2 * i + 1];
+      }
+      b2PolygonShape shape;
+      shape.Set(points.data(), nPoints);
+      addFixture(component, &shape);
+    }
+  }
+}
 
 b2Fixture *BodyBehavior::addFixture(BodyComponent &component, b2Shape *shape) {
   // Defaults that other behaviors may override
