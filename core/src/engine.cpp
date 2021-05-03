@@ -27,6 +27,7 @@ JS_DEFINE(char *, JS_getInitialDeckGraphQlJson, (), {
 JS_DEFINE(char *, JS_getNextCardSceneData, (), {
   if (Castle.nextCardSceneData) {
     const result = Castle.nextCardSceneData;
+    Castle.nextCardSceneData = null;
     return allocate(intArrayFromString(result), ALLOC_NORMAL);
   } else {
     return 0;
