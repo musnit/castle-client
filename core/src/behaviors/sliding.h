@@ -27,5 +27,5 @@ public:
   void handleDisableComponent(ActorId actorId, SlidingComponent &component, bool removeActor);
 
   void handleSetProperty(
-      ActorId actorId, MovingComponent &component, PropId propId, const ExpressionValue &value);
+      ActorId actorId, SlidingComponent &component, PropId propId, const ExpressionValue &value);
 };
