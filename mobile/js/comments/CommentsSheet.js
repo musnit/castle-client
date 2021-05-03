@@ -3,6 +3,7 @@ import { StyleSheet, TextInput, View, Keyboard } from 'react-native';
 
 import { BottomSheetHeader } from '../components/BottomSheetHeader';
 import { BottomSheet } from '../components/BottomSheet';
+import { CommentInput } from './CommentInput';
 import { CommentsList } from './CommentsList';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useKeyboard } from '../common/utilities';
@@ -29,7 +30,7 @@ export const CommentsSheet = ({ isOpen, onClose, ...props }) => {
         paddingBottom: keyboardState.visible ? keyboardState.height - insets.bottom : 0,
       }}>
       <CommentsList isOpen={isOpen} {...props} />
-      <TextInput style={{ padding: 16, borderTopWidth: 1, borderColor: '#ddd' }} />
+      <CommentInput />
     </View>
   );
 
