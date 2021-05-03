@@ -36,7 +36,7 @@ const DUMMY_COMMENTS = new Array(20)
   .fill(DUMMY_COMMENT)
   .map((comment, ii) => ({ ...comment, id: ii, commentId: ii }));
 
-const DeckComment = ({ comment }) => {
+const Comment = ({ comment }) => {
   return (
     <View style={styles.commentContainer}>
       <Text style={styles.authorUsername}>{comment.author.username}</Text>
@@ -47,7 +47,7 @@ const DeckComment = ({ comment }) => {
   );
 };
 
-export const DeckComments = ({ deckId, isOpen }) => {
+export const CommentsList = ({ deckId, isOpen }) => {
   const [comments, setComments] = React.useState(null);
   React.useEffect(() => {
     // TODO: fetch from api
@@ -58,7 +58,7 @@ export const DeckComments = ({ deckId, isOpen }) => {
 
   const renderItem = React.useCallback(({ item, index }) => {
     const comment = item;
-    return <DeckComment comment={comment} />;
+    return <Comment comment={comment} />;
   }, []);
 
   return (
