@@ -55,7 +55,7 @@ export const DeckComments = ({ deckId, isOpen }) => {
     if (isOpen) {
       setComments(DUMMY_COMMENTS);
     }
-  }, [isOpen]);
+  }, [isOpen, deckId]);
 
   const renderItem = React.useCallback(({ item, index }) => {
     const comment = item;
