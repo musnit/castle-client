@@ -44,3 +44,24 @@ void SlidingBehavior::handleDisableComponent(
     component.joint = nullptr;
   }
 }
+
+
+//
+// Getters, setters
+//
+
+void SlidingBehavior::handleSetProperty(
+    ActorId actorId, SlidingComponent &component, PropId propId, const ExpressionValue &value) {
+  auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId);
+  if (!body) {
+    return;
+  }
+  auto &props = component.props;
+  if (propId == props.direction.id) { // NOLINT(bugprone-branch-clone)
+    // TODO(nikki): Handle string values, then implement this
+  } else if (propId == props.isRotationAllowed.id) {
+    // TODO(nikki): Handle boolean values, then implement this
+  } else {
+    BaseBehavior::handleSetProperty(actorId, component, propId, value);
+  }
+}

@@ -23,6 +23,9 @@ public:
   void handleEnableComponent(ActorId actorId, FrictionComponent &component);
   void handleDisableComponent(ActorId actorId, FrictionComponent &component, bool removeActor);
 
+  void handleSetProperty(
+      ActorId actorId, FrictionComponent &component, PropId propId, const ExpressionValue &value);
+
   friend class BodyBehavior;
   void handleUpdateComponentFixtures(ActorId actorId, FrictionComponent &component, b2Body *body);
 };

@@ -24,6 +24,26 @@ void BouncyBehavior::handleDisableComponent(
 
 
 //
+// Getters, setters
+//
+
+void BouncyBehavior::handleSetProperty(
+    ActorId actorId, BouncyComponent &component, PropId propId, const ExpressionValue &value) {
+  auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId);
+  if (!body) {
+    return;
+  }
+  auto &props = component.props;
+  if (propId == props.bounciness.id) {
+    props.bounciness() = value.as<float>();
+    handleUpdateComponentFixtures(actorId, component, body);
+  } else {
+    BaseBehavior::handleSetProperty(actorId, component, propId, value);
+  }
+}
+
+
+//
 // Fixtures
 //
 
