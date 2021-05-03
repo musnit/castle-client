@@ -26,10 +26,11 @@ public:
   void handleEnableComponent(ActorId actorId, MovingComponent &component);
   void handleDisableComponent(ActorId actorId, MovingComponent &component, bool removeActor);
 
-  void handleUpdateComponentFixtures(ActorId actorId, MovingComponent &component, b2Body *body);
-
   ExpressionValue handleGetProperty(
       ActorId actorId, const MovingComponent &component, PropId propId) const;
   void handleSetProperty(
       ActorId actorId, MovingComponent &component, PropId propId, const ExpressionValue &value);
+
+  friend class BodyBehavior;
+  void handleUpdateComponentFixtures(ActorId actorId, MovingComponent &component, b2Body *body);
 };

@@ -295,10 +295,10 @@ void BodyBehavior::recreateFixtures(ActorId actorId, BodyComponent &component, b
   // Notify behaviors that update fixtures
   if (notify) {
     getBehaviors().forEach([&](auto &behavior) {
-      if (Handlers::hasUpdateComponentFixtures<decltype(behavior)>) {
-        //if (auto component = behavior.maybeGetComponent(actorId)) {
-        //  behavior.handleUpdateComponentFixtures(actorId, *component, body);
-        //}
+      if constexpr (Handlers::hasUpdateComponentFixtures<decltype(behavior)>) {
+        if (auto component = behavior.maybeGetComponent(actorId)) {
+          behavior.handleUpdateComponentFixtures(actorId, *component, body);
+        }
       }
     });
   }

@@ -22,7 +22,10 @@ public:
   void handleEnableComponent(ActorId actorId, SolidComponent &component);
   void handleDisableComponent(ActorId actorId, SolidComponent &component, bool removeActor);
 
+  friend class BodyBehavior;
+  void handleUpdateComponentFixtures(ActorId actorId, SolidComponent &component, b2Body *body);
+
 
 private:
-  void setEnabled(ActorId actorId, SolidComponent &component, bool enabled);
+  void wakeBodyAndColliders(b2Body *body);
 };
