@@ -3,7 +3,6 @@ import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     paddingHorizontal: 16,
   },
   commentContainer: {
@@ -33,7 +32,7 @@ const DUMMY_COMMENT = {
   // TODO: switch to body format
   message: 'Cool game bruu',
 };
-const DUMMY_COMMENTS = new Array(4)
+const DUMMY_COMMENTS = new Array(20)
   .fill(DUMMY_COMMENT)
   .map((comment, ii) => ({ ...comment, id: ii, commentId: ii }));
 
@@ -68,6 +67,7 @@ export const DeckComments = ({ deckId, isOpen }) => {
       data={comments}
       renderItem={renderItem}
       keyExtractor={(item, index) => item.commentId.toString()}
+      inverted
     />
   );
 };

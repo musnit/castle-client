@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { StyleSheet, View, Keyboard } from 'react-native';
+import { StyleSheet, TextInput, View, Keyboard } from 'react-native';
 
 import { BottomSheetHeader } from '../components/BottomSheetHeader';
 import { BottomSheet } from '../components/BottomSheet';
 import { DeckComments } from './DeckComments';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useKeyboard } from '../common/utilities';
 
 import * as Constants from '../Constants';
 
@@ -18,14 +19,23 @@ export const DeckCommentsSheet = ({ isOpen, onClose, ...props }) => {
 
   const renderHeader = () => <BottomSheetHeader title="Comments" onClose={onClose} />;
 
+  const [keyboardState] = useKeyboard();
+
+  // TODO: maybe account for tab bar (see DeckSettingsSheet)
   const renderContent = () => (
-    <View style={{ paddingBottom: TAB_BAR_HEIGHT + insets.bottom }}>
+    <View
+      style={{
+        flex: 1,
+        paddingBottom: keyboardState.visible ? keyboardState.height - insets.bottom : 0,
+      }}>
       <DeckComments isOpen={isOpen} {...props} />
+      <TextInput style={{ padding: 16, borderTopWidth: 1, borderColor: '#ddd' }} />
     </View>
   );
 
   return (
     <BottomSheet
+      useViewInsteadOfScrollview
       snapPoints={[maxSheetHeight]}
       isOpen={isOpen}
       renderHeader={renderHeader}
