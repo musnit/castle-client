@@ -24,6 +24,14 @@ JS_DEFINE(char *, JS_getInitialDeckGraphQlJson, (), {
     return 0;
   };
 });
+JS_DEFINE(char *, JS_getNextCardSceneData, (), {
+  if (Castle.nextCardSceneData) {
+    const result = Castle.nextCardSceneData;
+    return allocate(intArrayFromString(result), ALLOC_NORMAL);
+  } else {
+    return 0;
+  };
+});
 
 
 //
@@ -80,6 +88,15 @@ void Engine::tryLoadInitialDeck() {
   if (auto graphQlJson = JS_getInitialDeckGraphQlJson()) {
     scene = Snapshot::fromJson(graphQlJson).toScene();
     free(graphQlJson);
+  }
+#endif
+}
+
+void Engine::tryLoadNextCard() {
+#ifdef __EMSCRIPTEN__
+  if (auto sceneDataJson = JS_getNextCardSceneData()) {
+    scene = Snapshot::fromJson(sceneDataJson).toScene();
+    free(sceneDataJson);
   }
 #endif
 }
@@ -162,6 +179,8 @@ void Engine::update(double dt) {
   if (!scene) {
     tryLoadInitialDeck();
   }
+
+  tryLoadNextCard();
 
   // Update scene
   if (scene) {

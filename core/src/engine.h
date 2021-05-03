@@ -52,6 +52,7 @@ private:
 
 
   void tryLoadInitialDeck();
+  void tryLoadNextCard();
 
 
   void update(double dt);
