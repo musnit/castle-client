@@ -16,6 +16,15 @@ JS_DEFINE(int, JS_updateTextActors, (const char *msg, int lenmsg), {
 
 void TextBehavior::handleReadComponent(ActorId actorId, TextComponent &component, Reader &reader) {
   if (component.props.order() == -1) {
+    int maxExistingOrder = 0;
+
+    forEachComponent([&](ActorId actorId, TextComponent &component) {
+      if (component.props.order() >= maxExistingOrder) {
+        maxExistingOrder = component.props.order();
+      }
+    });
+
+    component.props.order() = maxExistingOrder + 1;
   }
 }
 
@@ -25,14 +34,17 @@ void TextBehavior::handleReadComponent(ActorId actorId, TextComponent &component
 
 void TextBehavior::handlePerform(double dt) {
   if (!hasAnyEnabledComponent()) {
-    return; // Skip gesture logic if no components
+    return; // Skip logic if no components
   }
 
   Archive archive;
   archive.write([&](Archive::Writer &w) {
     w.arr("textActors", [&]() {
       forEachEnabledComponent([&](ActorId actorId, TextComponent &component) {
-        w.str(component.props.content());
+        w.obj([&]() {
+          w.str("content", component.props.content());
+          w.num("order", component.props.order());
+        });
       });
     });
   });

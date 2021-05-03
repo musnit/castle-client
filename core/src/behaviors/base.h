@@ -99,6 +99,11 @@ protected:
   template<typename F>
   void forEachEnabledComponent(F &&f) const;
 
+  template<typename F>
+  void forEachComponent(F &&f); // `f` takes `(ActorId, Component &)` or (Component &)
+  template<typename F>
+  void forEachComponent(F &&f) const;
+
 
 private:
   friend class Scene;
@@ -244,6 +249,30 @@ void BaseBehavior<Derived, Component>::forEachEnabledComponent(F &&f) const {
       } else {
         f(component);
       }
+    }
+  }));
+}
+
+template<typename Derived, typename Component>
+template<typename F>
+void BaseBehavior<Derived, Component>::forEachComponent(F &&f) {
+  componentView.each(([&](ActorId actorId, Component &component) {
+    if constexpr (std::is_invocable_v<F, ActorId, Component &>) {
+      f(actorId, component);
+    } else {
+      f(component);
+    }
+  }));
+}
+
+template<typename Derived, typename Component>
+template<typename F>
+void BaseBehavior<Derived, Component>::forEachComponent(F &&f) const {
+  componentView.each(([&](ActorId actorId, const Component &component) {
+    if constexpr (std::is_invocable_v<F, ActorId, const Component &>) {
+      f(actorId, component);
+    } else {
+      f(component);
     }
   }));
 }
