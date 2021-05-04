@@ -4,6 +4,7 @@
 
 #include "lv.h"
 #include "scene.h"
+#include "variables.h"
 #include "tests.h"
 
 
@@ -47,6 +48,8 @@ private:
 #ifdef CASTLE_ENABLE_TESTS
   Tests tests;
 #endif
+
+  Variables variables;
 
   std::unique_ptr<Scene> scene;
 

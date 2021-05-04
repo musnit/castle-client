@@ -3,6 +3,7 @@
 #include "precomp.h"
 
 #include "archive.h"
+#include "variables.h"
 
 
 class Scene;
@@ -31,7 +32,7 @@ public:
 
   // To `Scene`
 
-  std::unique_ptr<Scene> toScene();
+  std::unique_ptr<Scene> toScene(Variables &variables);
 
 
 private:

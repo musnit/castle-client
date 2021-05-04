@@ -81,13 +81,13 @@ bool Engine::hasInitialDeck() const {
 }
 
 void Engine::loadSceneFromFile(const char *path) {
-  scene = Snapshot::fromFile(path).toScene();
+  scene = Snapshot::fromFile(path).toScene(variables);
 }
 
 void Engine::tryLoadInitialDeck() {
 #ifdef __EMSCRIPTEN__
   if (auto graphQlJson = JS_getInitialDeckGraphQlJson()) {
-    scene = Snapshot::fromJson(graphQlJson).toScene();
+    scene = Snapshot::fromJson(graphQlJson).toScene(variables);
     free(graphQlJson);
   }
 #endif
@@ -96,7 +96,7 @@ void Engine::tryLoadInitialDeck() {
 void Engine::tryLoadNextCard() {
 #ifdef __EMSCRIPTEN__
   if (auto sceneDataJson = JS_getNextCardSceneData()) {
-    scene = Snapshot::fromJson(sceneDataJson).toScene();
+    scene = Snapshot::fromJson(sceneDataJson).toScene(variables);
     free(sceneDataJson);
   }
 #endif

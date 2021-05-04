@@ -6,6 +6,7 @@
 #include "library.h"
 #include "props.h"
 #include "gesture.h"
+#include "variables.h"
 
 
 class AllBehaviors; // Forward declaration otherwise this would be circular...
@@ -39,7 +40,7 @@ public:
   const Scene &operator=(const Scene &) = delete;
   Scene(Scene &&); // Allow move-construction (lets us return it from `Snapshot`)
 
-  Scene();
+  explicit Scene(Variables &variables_);
   ~Scene();
 
 
@@ -98,6 +99,12 @@ public:
   const Gesture &getGesture() const;
 
 
+  // Variables
+
+  Variables &getVariables();
+  const Variables &getVariables() const;
+
+
   // Scene-level props
 
   struct Props {
@@ -124,6 +131,7 @@ public:
 
 private:
   Lv &lv { Lv::getInstance() };
+  Variables &variables;
 
   entt::registry registry;
   entt::basic_view<entt::entity, entt::exclude_t<>, Actor> actorView = registry.view<Actor>();
@@ -237,6 +245,14 @@ inline float Scene::getViewScale() const {
 
 inline float Scene::getPixelScale() const {
   return float(lv.window.getDPIScale() / getViewScale());
+}
+
+inline Variables &Scene::getVariables() {
+  return variables;
+}
+
+inline const Variables &Scene::getVariables() const {
+  return variables;
 }
 
 inline const Gesture &Scene::getGesture() const {

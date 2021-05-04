@@ -7,8 +7,9 @@
 // Constructor, destructor
 //
 
-Scene::Scene()
-    : physicsContactListener(*this)
+Scene::Scene(Variables &variables_)
+    : variables(variables_)
+    , physicsContactListener(*this)
     , behaviors(std::make_unique<AllBehaviors>(*this)) {
   // Physics setup
   {
@@ -223,6 +224,9 @@ void Scene::update(double dt) {
       behavior.handlePerform(dt);
     }
   });
+
+  // Perform variables
+  variables.perform(dt);
 }
 
 

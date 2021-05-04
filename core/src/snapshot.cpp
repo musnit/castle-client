@@ -30,8 +30,8 @@ Snapshot Snapshot::fromJson(const char *json) {
 // To `Scene`
 //
 
-std::unique_ptr<Scene> Snapshot::toScene() {
-  auto scene = std::make_unique<Scene>();
+std::unique_ptr<Scene> Snapshot::toScene(Variables &variables) {
+  auto scene = std::make_unique<Scene>(variables);
   auto &library = scene->getLibrary();
 
   // Common scene reading code used below
@@ -77,6 +77,10 @@ std::unique_ptr<Scene> Snapshot::toScene() {
                 readScene(reader);
               });
             });
+          });
+
+          reader.arr("variables", [&]() {
+            variables.read(reader);
           });
         });
       });

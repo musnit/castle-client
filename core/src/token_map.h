@@ -22,6 +22,15 @@ class TokenMap {
   // using `std::unique_ptr<TheActualValue>` for `Value`).
 
 public:
+  TokenMap(const TokenMap &) = delete; // Prevent accidental copies
+  TokenMap &operator=(const TokenMap &) = delete;
+  TokenMap(TokenMap &&) = default; // Allow moves
+  TokenMap &operator=(TokenMap &&) = default;
+
+  TokenMap() = default;
+  ~TokenMap() = default;
+
+
   struct Token {
     // Returned when a string is reserved. Can then be used to look up by that string.
 

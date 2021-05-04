@@ -104,6 +104,7 @@
                 query: `
                   query GetDeckInitialCardSceneData($deckId: ID!) {
                     deck(deckId: $deckId) {
+                      variables
                       initialCard {
                         sceneData
                       }
