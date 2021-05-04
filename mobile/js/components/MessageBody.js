@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableWithoutFeedback } from 'react-native';
 
-const styles = StyleSheet.create({
+const defaultStyles = StyleSheet.create({
   text: {
     fontSize: 16,
     color: '#fff',
@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const BodyToken = ({ token, navigateToUser, navigateToAllUsers }) => {
+const BodyToken = ({ styles, token, navigateToUser, navigateToAllUsers }) => {
   if (token.text) {
     if (token.usersList) {
       return (
@@ -36,7 +36,12 @@ const BodyToken = ({ token, navigateToUser, navigateToAllUsers }) => {
   return null;
 };
 
-export const NotificationBody = ({ body, navigateToUser, navigateToAllUsers }) => {
+export const MessageBody = ({
+  body,
+  styles = defaultStyles,
+  navigateToUser,
+  navigateToAllUsers,
+}) => {
   if (!body?.message) {
     return null;
   }
@@ -48,6 +53,7 @@ export const NotificationBody = ({ body, navigateToUser, navigateToAllUsers }) =
           token={token}
           navigateToUser={navigateToUser}
           navigateToAllUsers={navigateToAllUsers}
+          styles={styles}
         />
       ))}
     </React.Fragment>

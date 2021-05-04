@@ -10,12 +10,12 @@ import {
 } from 'react-native';
 import { AuthPrompt } from '../auth/AuthPrompt';
 import { FollowButton } from '../components/FollowButton';
-import { NotificationBody } from './NotificationBody';
+import { MessageBody } from '../components/MessageBody';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { toRecentDate } from '../common/date-utilities';
 import { useAppState } from '../ghost/GhostAppState';
 import { useNavigation, useFocusEffect, useIsFocused } from '../ReactNavigation';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSession, maybeFetchNotificationsAsync, setNotifBadge } from '../Session';
 import { UserAvatar } from '../components/UserAvatar';
 
@@ -90,6 +90,20 @@ const styles = StyleSheet.create({
   reactionSticker: { position: 'absolute', right: -14, bottom: -8, width: 32, height: 32 },
 });
 
+const notifBodyStyles = StyleSheet.create({
+  text: {
+    fontSize: 16,
+    color: '#fff',
+    lineHeight: 19,
+  },
+  highlight: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: 'bold',
+    lineHeight: 19,
+  },
+});
+
 const STATUS_HEADERS = {
   unseen: 'New',
   seen: 'Earlier',
@@ -138,10 +152,11 @@ const NotificationItem = ({ notification, navigateToUser, navigateToDeck, naviga
           </TouchableHighlight>
         ) : null}
         <Text style={styles.notifBody}>
-          <NotificationBody
+          <MessageBody
             body={notification.body}
             navigateToUser={navigateToUser}
             navigateToAllUsers={navigateToAllUsers}
+            styles={notifBodyStyles}
           />
           <Text style={styles.notifTime}> {toRecentDate(notification.updatedTime)}</Text>
         </Text>
