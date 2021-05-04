@@ -65,6 +65,29 @@ struct TouchUpTrigger : BaseTrigger {
 
 
 //
+// Responses
+//
+
+struct FaceDirectionOfMotionResponse : BaseResponse {
+  inline static const RuleRegistration<FaceDirectionOfMotionResponse, BodyBehavior> registration {
+    "face direction of motion"
+  };
+
+  struct Params {
+  } params;
+
+  void run(RuleContext &ctx) override {
+    auto &bodyBehavior = ctx.getScene().getBehaviors().byType<BodyBehavior>();
+    if (auto body = bodyBehavior.maybeGetPhysicsBody(ctx.actorId)) {
+      if (auto [vx, vy] = body->GetLinearVelocity(); !(vx == 0 && vy == 0)) {
+        body->SetTransform(body->GetPosition(), std::atan2(vy, vx));
+      }
+    }
+  }
+};
+
+
+//
 // Enable, disable
 //
 

@@ -316,7 +316,7 @@ struct RuleRegistration {
   // `inline static const` member of the type so that registration occurs when the application
   // starts.
 
-  explicit RuleRegistration(const char *name);
+  explicit RuleRegistration(const char *name, bool allowDuplicates = false);
 
 private:
   inline static bool registered = false; // To catch erroneous double-registration of the same type
@@ -456,12 +456,12 @@ inline ExpressionValue BaseExpression::eval(RuleContext &ctx) {
 }
 
 template<typename T, typename Behavior>
-RuleRegistration<T, Behavior>::RuleRegistration(const char *name) {
+RuleRegistration<T, Behavior>::RuleRegistration(const char *name, bool allowDuplicates) {
   static_assert(
       std::is_base_of_v<BaseTrigger,
           T> || std::is_base_of_v<BaseResponse, T> || std::is_base_of_v<BaseExpression, T>,
       "RuleRegistration: type must derive from `BaseTrigger`, `BaseResponse` or `BaseExpression`");
-  if (registered) {
+  if (registered && !allowDuplicates) {
     Debug::fatal("RuleRegistration: tried to register the same type twice -- make sure you're "
                  "using the correct `T` in `RuleRegistration<T, ...>` (must be the same as the "
                  "containing `struct` or `class`)");

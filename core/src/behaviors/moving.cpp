@@ -4,6 +4,84 @@
 
 
 //
+// Responses
+//
+
+struct MoveTowardOwnAngleResponse : BaseResponse {
+  inline static const RuleRegistration<MoveTowardOwnAngleResponse, MovingBehavior> registration {
+    "move toward own angle"
+  };
+
+  struct Params {
+    PROP(ExpressionRef, speed) = 0;
+  } params;
+
+  void run(RuleContext &ctx) override {
+    auto &bodyBehavior = ctx.getScene().getBehaviors().byType<BodyBehavior>();
+    if (auto body = bodyBehavior.maybeGetPhysicsBody(ctx.actorId)) {
+      auto angle = body->GetAngle();
+      auto mass = body->GetMass();
+      auto speed = params.speed().eval<float>(ctx);
+      body->ApplyLinearImpulseToCenter(
+          { mass * speed * std::cos(angle), mass * speed * std::sin(angle) }, true);
+    }
+  }
+};
+
+struct MoveTowardActorResponse : BaseResponse {
+  // Register for both moving and rotating motion
+  inline static const RuleRegistration<MoveTowardActorResponse, MovingBehavior> registration1 {
+    "move toward actor", true
+  };
+  inline static const RuleRegistration<MoveTowardActorResponse, RotatingMotionBehavior>
+      registration2 { "move toward actor", true };
+
+  struct Params {
+    PROP(Tag, tag);
+    PROP(ExpressionRef, speed) = 0;
+  } params;
+
+  void run(RuleContext &ctx) override {
+    // Need a body
+    auto &scene = ctx.getScene();
+    auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
+    if (auto body = bodyBehavior.maybeGetPhysicsBody(ctx.actorId)) {
+      // Find actors with tag
+      auto &tagsBehavior = scene.getBehaviors().byType<TagsBehavior>();
+      auto &taggedActorIds = tagsBehavior.getActors(params.tag());
+      if (taggedActorIds.empty()) {
+        return;
+      }
+
+      // Find delta to closest actor among tagged
+      auto pos = body->GetPosition();
+      auto closestDelta = b2Vec2(0, 0);
+      auto closestSqDist = std::numeric_limits<float>::max();
+      auto found = false;
+      for (auto taggedActorId : taggedActorIds) {
+        if (auto taggedBody = bodyBehavior.maybeGetPhysicsBody(taggedActorId)) {
+          auto delta = taggedBody->GetPosition() - pos;
+          auto sqDist = delta.LengthSquared();
+          if (sqDist < closestSqDist) {
+            closestDelta = delta;
+            closestSqDist = sqDist;
+            found = true;
+          }
+        }
+      }
+      if (found) {
+        // Apply impulse
+        auto mass = body->GetMass();
+        auto speed = params.speed().eval<float>(ctx);
+        body->ApplyLinearImpulseToCenter(
+            mass * speed * (1 / std::sqrt(closestSqDist)) * closestDelta, true);
+      }
+    }
+  }
+};
+
+
+//
 // Enable, disable
 //
 
