@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { MessageBody } from '../components/MessageBody';
 
 const styles = StyleSheet.create({
   container: {
@@ -13,13 +14,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#ddd',
     padding: 8,
     borderRadius: 6,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   authorUsername: {
     fontWeight: 'bold',
     marginRight: 8,
     paddingTop: 8,
   },
-  commentText: {},
+});
+
+const commentBodyStyles = StyleSheet.create({
+  text: {
+    color: '#000',
+  },
+  highlight: {
+    color: '#000',
+    fontWeight: 'bold',
+  },
 });
 
 const DUMMY_COMMENT = {
@@ -29,8 +41,9 @@ const DUMMY_COMMENT = {
     username: 'ben',
     // TODO
   },
-  // TODO: switch to body format
-  message: 'Cool game bruu',
+  body: {
+    message: [{ text: 'Cool game bruu' }],
+  },
 };
 const DUMMY_COMMENTS = new Array(20)
   .fill(DUMMY_COMMENT)
@@ -41,7 +54,7 @@ const Comment = ({ comment }) => {
     <View style={styles.commentContainer}>
       <Text style={styles.authorUsername}>{comment.author.username}</Text>
       <View style={styles.commentBody}>
-        <Text style={styles.commentText}>{comment.message}</Text>
+        <MessageBody body={comment.body} styles={commentBodyStyles} />
       </View>
     </View>
   );
