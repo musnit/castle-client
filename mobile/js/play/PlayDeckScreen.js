@@ -53,6 +53,7 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
             pop();
           }}
           onPressComments={openComments}
+          isCommentsOpen={isCommentsVisible}
         />
         <CommentsSheet isOpen={isCommentsVisible} onClose={closeComments} deckId={deckId} />
       </PopoverProvider>

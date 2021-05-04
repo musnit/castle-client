@@ -9,7 +9,7 @@ import * as Constants from '../Constants';
 
 const REFETCH_FEED_INTERVAL_MS = 60 * 60 * 1000;
 
-export const FeaturedDecks = ({ focused, deckId, onPressComments }) => {
+export const FeaturedDecks = ({ focused, deckId, onPressComments, isCommentsOpen }) => {
   const { navigate } = useNavigation();
   const [lastFetched, setLastFetched] = React.useState({
     time: undefined,
@@ -69,6 +69,7 @@ export const FeaturedDecks = ({ focused, deckId, onPressComments }) => {
             })
           }
           onPressComments={onPressComments}
+          isCommentsOpen={isCommentsOpen}
           refreshing={!!(lastFetched.time && query.loading && decks?.length)}
           onRefresh={onRefresh}
         />
