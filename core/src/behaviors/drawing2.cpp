@@ -48,17 +48,18 @@ void Drawing2Behavior::handleDrawComponent(
   }
 
   if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId)) {
-    lv.graphics.push();
-    auto [x, y] = body->GetPosition();
-    lv.graphics.translate(x, y);
-    lv.graphics.rotate(body->GetAngle());
+    if (auto info = getBehaviors().byType<BodyBehavior>().getRenderInfo(actorId); info.visible) {
+      lv.graphics.push();
 
-    auto scale = getBehaviors().byType<BodyBehavior>().getScale(actorId);
-    lv.graphics.scale(scale.x, scale.y);
+      auto [x, y] = body->GetPosition();
+      lv.graphics.translate(x, y);
+      lv.graphics.rotate(body->GetAngle());
+      lv.graphics.scale(info.widthScale, info.heightScale);
 
-    lv.graphics.setColor(love::Colorf(1, 1, 1, 1));
-    component.drawData->render(component.animationComponentProperties);
+      lv.graphics.setColor(love::Colorf(1, 1, 1, 1));
+      component.drawData->render(component.animationComponentProperties);
 
-    lv.graphics.pop();
+      lv.graphics.pop();
+    }
   }
 }

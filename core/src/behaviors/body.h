@@ -73,9 +73,14 @@ public:
   ActorId maybeGetActorId(const b2Body *body) const; // `nullActor` if not present
 
 
-  // Rendering properties
+  // Information needed for rendering
 
-  love::Vector2 getScale(ActorId actorId) const; // `{ 0, 0 }` if not present
+  struct RenderInfo {
+    bool visible = false;
+    float widthScale = 1;
+    float heightScale = 1;
+  };
+  RenderInfo getRenderInfo(ActorId actorId) const;
 
 
   // Queries
@@ -132,11 +137,16 @@ inline ActorId BodyBehavior::maybeGetActorId(const b2Body *body) const {
   return hasComponent(actorId) ? actorId : nullActor;
 }
 
-inline love::Vector2 BodyBehavior::getScale(ActorId actorId) const {
+inline BodyBehavior::RenderInfo BodyBehavior::getRenderInfo(ActorId actorId) const {
   if (auto component = maybeGetComponent(actorId)) {
-    return love::Vector2(component->props.widthScale(), component->props.heightScale());
+    return {
+      component->props.visible(),
+      component->props.widthScale(),
+      component->props.heightScale(),
+    };
+  } else {
+    return {};
   }
-  return love::Vector2();
 }
 
 inline BodyBehavior::QueryResult BodyBehavior::getActorsAtBoundingBox(
