@@ -119,7 +119,7 @@ const CurrentDeckCell = ({
   isPlaying,
   onPressDeck,
   playingTransition,
-  previewVideoPaused,
+  paused,
   onRefreshFeed,
   isMe = false,
   isAnonymous = false,
@@ -213,7 +213,7 @@ const CurrentDeckCell = ({
           card={initialCard}
           previewVideo={!ready && deck?.previewVideo && isFocused ? deck.previewVideo : undefined}
           onPress={onSelectPlay}
-          previewVideoPaused={previewVideoPaused}
+          previewVideoPaused={paused}
         />
         {ready ? (
           <View style={styles.absoluteFill}>
@@ -222,6 +222,7 @@ const CurrentDeckCell = ({
               visibility={deck.visibility}
               initialCardId={deck.initialCard && deck.initialCard.cardId}
               initialDeckState={Utilities.makeInitialDeckState(deck)}
+              paused={paused}
             />
           </View>
         ) : null}
@@ -254,7 +255,14 @@ const SkeletonFeed = () => {
 
 // NOTE: onRefresh is currently ignored on Android (see further note below)
 // otherwise, FlatList props work here.
-export const DecksFeed = ({ decks, isPlaying, onPressDeck, onPressComments, ...props }) => {
+export const DecksFeed = ({
+  decks,
+  isPlaying,
+  onPressDeck,
+  onPressComments,
+  isCommentsOpen,
+  ...props
+}) => {
   const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
   const { userId: signedInUserId, isAnonymous } = useSession();
@@ -300,7 +308,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, onPressComments, ...p
             onPressDeck={onPressDeck}
             onPressComments={() => onPressComments({ deckId: deck.deckId })}
             playingTransition={playingTransition}
-            previewVideoPaused={paused}
+            paused={paused || isCommentsOpen}
             isMe={deck?.creator?.userId === signedInUserId}
             isAnonymous={isAnonymous}
             onRefreshFeed={props.onRefresh}
@@ -328,7 +336,7 @@ export const DecksFeed = ({ decks, isPlaying, onPressDeck, onPressComments, ...p
         );
       }
     },
-    [currentCardIndex, isPlaying, paused, props?.onRefresh, onPressComments]
+    [currentCardIndex, isPlaying, paused, props?.onRefresh, onPressComments, isCommentsOpen]
   );
 
   const logScrollToDeck = React.useCallback(

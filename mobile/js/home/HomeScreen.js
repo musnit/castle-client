@@ -145,7 +145,11 @@ export const HomeScreen = ({ route }) => {
             onSelectItem={(item) => setMode(item.value)}
           />
         </Animated.View>
-        {selectedItem.item({ deckId, onPressComments: openComments })}
+        {selectedItem.item({
+          deckId,
+          onPressComments: openComments,
+          isCommentsOpen: commentsState.isOpen,
+        })}
         <CommentsSheet
           isOpen={commentsState.isOpen}
           onClose={closeComments}
