@@ -309,11 +309,7 @@ void BaseBehavior<Derived, Component>::handleSetProperty(
   Props::forEach(component.props, [&](auto &prop) {
     if (propId == prop.id) {
       using PropValue = std::remove_reference_t<decltype(prop())>;
-      if constexpr (std::is_same_v<bool, PropValue>) { // Prevent number-to-bool` conversion
-        if (value.is<bool>()) {
-          prop() = value.as<bool>();
-        }
-      } else if constexpr (std::is_arithmetic_v<PropValue>) { // All non-`bool` number types
+      if constexpr (std::is_arithmetic_v<PropValue>) { // Also includes `bool`
         if (value.is<double>()) {
           prop() = value.as<double>();
         }
