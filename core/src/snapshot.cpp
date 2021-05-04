@@ -71,16 +71,16 @@ std::unique_ptr<Scene> Snapshot::toScene(Variables &variables) {
       // GraphQL response
       reader.obj("data", [&]() {
         reader.obj("deck", [&]() {
+          // Read variables first so they're defined before scene variable references are read
+          reader.arr("variables", [&]() {
+            variables.read(reader);
+          });
           reader.obj("initialCard", [&]() {
             reader.obj("sceneData", [&]() {
               reader.obj("snapshot", [&]() {
                 readScene(reader);
               });
             });
-          });
-
-          reader.arr("variables", [&]() {
-            variables.read(reader);
           });
         });
       });

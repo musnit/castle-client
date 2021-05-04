@@ -22,18 +22,18 @@ void Variables::read(Reader &reader) {
   map = {};
   byVariableId.clear();
   reader.each([&]() {
-    auto maybeVariableId = reader.str("id");
-    if (!maybeVariableId) {
+    auto variableId = reader.str("id");
+    if (!variableId) {
       return;
     }
-    auto maybeName = reader.str("name");
-    if (!maybeName) {
+    auto name = reader.str("name");
+    if (!name) {
       return;
     }
 
-    auto token = map.getToken(*maybeName);
+    auto token = map.getToken(*name);
     map.insert(token, MapElem { reader.num("initialValue", 0) });
-    byVariableId.insert_or_assign(*maybeVariableId, Variable { token });
+    byVariableId.insert_or_assign(*variableId, Variable { token });
   });
 }
 

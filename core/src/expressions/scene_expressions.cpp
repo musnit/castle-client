@@ -1,4 +1,5 @@
 #include "behaviors/all.h"
+#include "variables.h"
 
 
 // Expressions whose results depend on scene state
@@ -11,6 +12,18 @@ struct TimeExpression : BaseExpression {
 
   ExpressionValue eval(RuleContext &ctx) override {
     return ctx.getScene().getPerformTime();
+  }
+};
+
+struct VariableExpression : BaseExpression {
+  inline static const RuleRegistration<VariableExpression> registration { "variable" };
+
+  struct Params {
+    PROP(Variable, variableId);
+  } params;
+
+  ExpressionValue eval(RuleContext &ctx) override {
+    return ctx.getScene().getVariables().get(params.variableId());
   }
 };
 
