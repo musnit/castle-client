@@ -60,7 +60,11 @@ void SlidingBehavior::handleSetProperty(
   if (propId == props.direction.id) { // NOLINT(bugprone-branch-clone)
     // TODO(nikki): Handle string values, then implement this
   } else if (propId == props.isRotationAllowed.id) {
-    // TODO(nikki): Handle boolean values, then implement this
+    auto disallowRotation = value.as<int>() == 0;
+    if (disallowRotation) {
+      body->SetAngularVelocity(0);
+    }
+    body->SetFixedRotation(disallowRotation);
   } else {
     BaseBehavior::handleSetProperty(actorId, component, propId, value);
   }
