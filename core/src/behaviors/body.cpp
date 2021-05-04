@@ -3,9 +3,6 @@
 #include "behaviors/all.h"
 
 
-static const TouchToken bodyTriggerTouchToken; // Marks a touch as used by a body trigger
-
-
 //
 // Triggers
 //
@@ -162,7 +159,7 @@ void BodyBehavior::handlePerform(double dt) {
       // Tap
       for (auto actorId : currHits) {
         if (rulesBehavior.fire<TapTrigger>(actorId, {})) {
-          touch.forceUse(bodyTriggerTouchToken);
+          touch.forceUse(triggerTouchToken);
         }
       }
     }
@@ -177,12 +174,12 @@ void BodyBehavior::handlePerform(double dt) {
             || std::find(prevHits.begin(), prevHits.end(), actorId) == prevHits.end()) {
           // Pressed or moved onto actor -- touch down
           if (rulesBehavior.fire<TouchDownTrigger>(actorId, {})) {
-            touch.forceUse(bodyTriggerTouchToken);
+            touch.forceUse(triggerTouchToken);
           }
         }
         // Currently on actor -- press
         if (rulesBehavior.fire<PressTrigger>(actorId, {})) {
-          touch.forceUse(bodyTriggerTouchToken);
+          touch.forceUse(triggerTouchToken);
         }
       }
     }

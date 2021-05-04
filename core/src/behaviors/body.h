@@ -90,6 +90,9 @@ public:
   const QueryResult &getActorsAtTouch(TouchId touchId) const;
 
 
+  inline static const TouchToken triggerTouchToken; // Marks as used by touch triggers
+
+
 private:
   Lv &lv { Lv::getInstance() };
 

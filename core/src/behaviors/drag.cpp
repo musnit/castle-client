@@ -39,7 +39,7 @@ void DragBehavior::handlePerform(double dt) {
 
   // Create handles on touch presses
   getGesture().forEachTouch([&](TouchId touchId, const Touch &touch) {
-    if (touch.isUsed()) {
+    if (touch.isUsed() && !touch.isUsed(BodyBehavior::triggerTouchToken)) {
       return; // Skip physics logic if touch already used
     }
     if (touch.pressed) {
@@ -60,7 +60,7 @@ void DragBehavior::handlePerform(double dt) {
           }
         }
       }
-      if (hitComponent && touch.use(dragToken)) { // Don't use touch if nothing found
+      if (hitComponent && (touch.isUsed(BodyBehavior::triggerTouchToken) || touch.use(dragToken))) {
         b2MouseJointDef jointDef;
         jointDef.bodyA = scene.getPhysicsBackgroundBody();
         jointDef.bodyB = const_cast<b2Body *>(hitBody);
