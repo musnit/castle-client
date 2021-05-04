@@ -80,6 +80,10 @@ std::unique_ptr<Scene> Snapshot::toScene() {
           });
         });
       });
+    } else if (reader.has("snapshot")) {
+      reader.obj("snapshot", [&]() {
+        readScene(reader);
+      });
     } else {
       // Direct scene data
       readScene(reader);

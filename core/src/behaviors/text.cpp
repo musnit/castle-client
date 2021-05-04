@@ -21,9 +21,6 @@ JS_DEFINE(int, JS_getClickedTextActorId, (), {
 JS_DEFINE(int, JS_navigateToCard, (const char *msg, int lenmsg),
     { Castle.navigateToCardId(UTF8ToString(msg, lenmsg)); });
 
-JS_DEFINE(int, JS_preloadCard, (const char *msg, int lenmsg),
-    { Castle.preloadCardId(UTF8ToString(msg, lenmsg)); });
-
 struct TextTapTrigger : BaseTrigger {
   inline static const RuleRegistration<TextTapTrigger, TextBehavior> registration { "tap" };
 
@@ -37,8 +34,6 @@ struct Card {
   void read(Reader &reader) {
     title = reader.str("title", "");
     cardId = reader.str("cardId", "");
-
-    JS_preloadCard(cardId.c_str(), cardId.length());
   }
 
   std::string title;
