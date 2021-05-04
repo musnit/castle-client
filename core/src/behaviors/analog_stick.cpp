@@ -81,13 +81,14 @@ void AnalogStickBehavior::handlePerform(double dt) {
 
         // Boost speed if actor is currently moving away from analog stick direction
         if (auto turnFriction = component.props.turnFriction(); turnFriction > 0) {
-          auto currVel = body->GetLinearVelocity();
-          auto currAngle = std::atan2(currVel.y, currVel.x);
-          auto dragAngle = std::atan2(drag.y, drag.x);
-          constexpr auto twoPi = 2 * M_PI;
-          auto dAngle = currAngle - dragAngle + M_PI;
-          dAngle = dAngle - std::floor(dAngle / twoPi) * twoPi - M_PI;
-          frameSpeed *= 1 + turnFriction * std::abs(dAngle / M_PI);
+          if (auto [vx, vy] = body->GetLinearVelocity(); !(vx == 0 && vy == 0)) {
+            auto currAngle = std::atan2(vy, vx);
+            auto dragAngle = std::atan2(drag.y, drag.x);
+            constexpr auto twoPi = 2 * M_PI;
+            auto dAngle = currAngle - dragAngle + M_PI;
+            dAngle = dAngle - std::floor(dAngle / twoPi) * twoPi - M_PI;
+            frameSpeed *= 1 + turnFriction * std::abs(dAngle / M_PI);
+          }
         }
 
         // Apply impulse, constraining to desired axes
