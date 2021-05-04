@@ -118,3 +118,68 @@ struct BehaviorPropertyExpression : BaseExpression {
     }
   }
 };
+
+struct ActorDistanceExpression : BaseExpression {
+  inline static const RuleRegistration<ActorDistanceExpression> registration { "actor distance" };
+
+  struct Params {
+    PROP(ActorRef, fromActor);
+    PROP(ActorRef, toActor);
+  } params;
+
+  ExpressionValue eval(RuleContext &ctx) override {
+    auto &bodyBehavior = ctx.getScene().getBehaviors().byType<BodyBehavior>();
+    auto fromBody = bodyBehavior.maybeGetPhysicsBody(params.fromActor().eval(ctx));
+    if (!fromBody) {
+      return 0;
+    }
+    auto toBody = bodyBehavior.maybeGetPhysicsBody(params.toActor().eval(ctx));
+    if (!toBody) {
+      return 0;
+    }
+    return (toBody->GetPosition() - fromBody->GetPosition()).Length();
+  }
+};
+
+struct ActorAngleExpression : BaseExpression {
+  inline static const RuleRegistration<ActorAngleExpression> registration { "actor angle" };
+
+  struct Params {
+    PROP(ActorRef, fromActor);
+    PROP(ActorRef, toActor);
+  } params;
+
+  ExpressionValue eval(RuleContext &ctx) override {
+    auto &bodyBehavior = ctx.getScene().getBehaviors().byType<BodyBehavior>();
+    auto fromBody = bodyBehavior.maybeGetPhysicsBody(params.fromActor().eval(ctx));
+    if (!fromBody) {
+      return 0;
+    }
+    auto toBody = bodyBehavior.maybeGetPhysicsBody(params.toActor().eval(ctx));
+    if (!toBody) {
+      return 0;
+    }
+    if (auto [dx, dy] = toBody->GetPosition() - fromBody->GetPosition(); !(dx == 0 && dy == 0)) {
+      return std::atan2(dy, dx) * 180 / M_PI;
+    }
+    return 0;
+  }
+};
+
+struct AngleOfMotionExpression : BaseExpression {
+  inline static const RuleRegistration<AngleOfMotionExpression> registration { "angle of motion" };
+
+  struct Params {
+    PROP(ActorRef, actorRef);
+  } params;
+
+  ExpressionValue eval(RuleContext &ctx) override {
+    auto &bodyBehavior = ctx.getScene().getBehaviors().byType<BodyBehavior>();
+    if (auto body = bodyBehavior.maybeGetPhysicsBody(params.actorRef().eval(ctx))) {
+      if (auto [vx, vy] = body->GetLinearVelocity(); !(vx == 0 && vy == 0)) {
+        return std::atan2(vy, vx) * 180 / M_PI;
+      }
+    }
+    return 0;
+  }
+};
