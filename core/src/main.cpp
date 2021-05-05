@@ -25,15 +25,15 @@ int main(int argc, char *argv[]) {
   Engine eng;
 
   const char *scenePath = nullptr;
-    if (!eng.hasInitialDeck()) {
-      if (argc > 1) {
-        scenePath = argv[1];
-        eng.loadSceneFromFile(scenePath);
-      } else {
-          scenePath = "../../../test-watch.json";
-          eng.loadSceneFromFile(scenePath);
-      }
+  if (!eng.hasInitialDeck()) {
+    if (argc > 1) {
+      scenePath = argv[1];
+      eng.loadSceneFromFile(scenePath);
+    } else {
+      scenePath = "../../../test-watch.json";
+      eng.loadSceneFromFile(scenePath);
     }
+  }
 
   loop([&]() {
 #ifndef __EMSCRIPTEN__

@@ -601,3 +601,45 @@ target_include_directories(castle-core PRIVATE vendor/magic_get/include)
 
 # rapidjson
 target_include_directories(castle-core PRIVATE vendor/rapidjson/include)
+
+# soloud
+add_library(soloud STATIC)
+target_include_directories(soloud PUBLIC vendor/soloud20200207/include vendor/soloud20200207/src/backend/miniaudio)
+target_compile_definitions(soloud PRIVATE WITH_MINIAUDIO)
+set(SOLOUD_SRC vendor/soloud20200207/src)
+target_sources(soloud PRIVATE
+  ${SOLOUD_SRC}/audiosource/noise/soloud_noise.cpp
+  ${SOLOUD_SRC}/audiosource/sfxr/soloud_sfxr.cpp
+  ${SOLOUD_SRC}/backend/miniaudio/soloud_miniaudio.cpp
+  ${SOLOUD_SRC}/c_api/soloud_c.cpp
+  ${SOLOUD_SRC}/core/soloud_audiosource.cpp
+  ${SOLOUD_SRC}/core/soloud_bus.cpp
+  ${SOLOUD_SRC}/core/soloud_core_3d.cpp
+  ${SOLOUD_SRC}/core/soloud_core_basicops.cpp
+  ${SOLOUD_SRC}/core/soloud_core_faderops.cpp
+  ${SOLOUD_SRC}/core/soloud_core_filterops.cpp
+  ${SOLOUD_SRC}/core/soloud_core_getters.cpp
+  ${SOLOUD_SRC}/core/soloud_core_setters.cpp
+  ${SOLOUD_SRC}/core/soloud_core_voicegroup.cpp
+  ${SOLOUD_SRC}/core/soloud_core_voiceops.cpp
+  ${SOLOUD_SRC}/core/soloud_fader.cpp
+  ${SOLOUD_SRC}/core/soloud_fft_lut.cpp
+  ${SOLOUD_SRC}/core/soloud_fft.cpp
+  ${SOLOUD_SRC}/core/soloud_file.cpp
+  ${SOLOUD_SRC}/core/soloud_filter.cpp
+  ${SOLOUD_SRC}/core/soloud_misc.cpp
+  ${SOLOUD_SRC}/core/soloud_queue.cpp
+  ${SOLOUD_SRC}/core/soloud_thread.cpp
+  ${SOLOUD_SRC}/core/soloud.cpp
+  ${SOLOUD_SRC}/filter/soloud_bassboostfilter.cpp
+  ${SOLOUD_SRC}/filter/soloud_biquadresonantfilter.cpp
+  ${SOLOUD_SRC}/filter/soloud_dcremovalfilter.cpp
+  ${SOLOUD_SRC}/filter/soloud_echofilter.cpp
+  ${SOLOUD_SRC}/filter/soloud_fftfilter.cpp
+  ${SOLOUD_SRC}/filter/soloud_flangerfilter.cpp
+  ${SOLOUD_SRC}/filter/soloud_freeverbfilter.cpp
+  ${SOLOUD_SRC}/filter/soloud_lofifilter.cpp
+  ${SOLOUD_SRC}/filter/soloud_robotizefilter.cpp
+  ${SOLOUD_SRC}/filter/soloud_waveshaperfilter.cpp
+)
+target_link_libraries(castle-core PRIVATE soloud)
