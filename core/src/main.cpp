@@ -3,19 +3,6 @@
 #include "platform.h"
 
 
-// Developer settings. You can add an 'src/dev_settings.h' file with your own local overrides for
-// these values -- that file is '.gitignore'd and will not affect upstream. An update to the
-// modification time of 'main.cpp' (by re-saving it) may be needed to force the build system to pick
-// up the change.
-#if __has_include("dev_settings.h")
-#include "dev_settings.h"
-#else
-namespace DevSettings {
-constexpr auto defaultSceneFilename = "test-watch.json";
-};
-#endif
-
-
 // Run the main loop, calling `frame` per frame. `frame` should return a boolean that is `false`
 // when it wants to quit. Handles both the web and desktop cases.
 template<typename F>
@@ -38,15 +25,16 @@ void loop(F &&frame) {
 int main(int argc, char *argv[]) {
   Engine eng;
 
-  auto scenePath = Platform::getAssetPath(argc > 1 ? argv[1] : DevSettings::defaultSceneFilename);
-  if (!eng.hasInitialDeck()) {
-    eng.loadSceneFromFile(scenePath.c_str());
+  const char *scenePath = nullptr;
+  if (argc > 1 && !eng.hasInitialDeck()) {
+    scenePath = argv[1];
+    eng.loadSceneFromFile(scenePath);
   }
 
   loop([&]() {
 #ifndef __EMSCRIPTEN__
     // Reload scene from file if it changed
-    {
+    if (scenePath) {
       static const auto getLastWriteTime = [&]() {
         auto ftime = std::filesystem::last_write_time(scenePath);
         return ftime.time_since_epoch().count();
@@ -59,7 +47,7 @@ int main(int argc, char *argv[]) {
         auto newWriteTime = getLastWriteTime();
         if (newWriteTime != writeTime) {
           writeTime = newWriteTime;
-          eng.loadSceneFromFile(scenePath.c_str());
+          eng.loadSceneFromFile(scenePath);
         }
       }
     }
