@@ -1,6 +1,5 @@
 #include "precomp.h"
 #include "engine.h"
-#include "platform.h"
 
 
 // Run the main loop, calling `frame` per frame. `frame` should return a boolean that is `false`
