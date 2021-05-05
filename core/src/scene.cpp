@@ -7,7 +7,7 @@
 // Constructor, destructor
 //
 
-Scene::Scene(Variables &variables_)
+Scene::Scene(Variables &variables_, Reader *maybeReader)
     : variables(variables_)
     , physicsContactListener(*this)
     , behaviors(std::make_unique<AllBehaviors>(*this)) {
@@ -24,11 +24,50 @@ Scene::Scene(Variables &variables_)
   // Seed the random number generator
   // TODO(nikki): This seems to not actually help?
   rng.setSeed({ love::uint64(lv.timer.getTime()) });
+
+  // Read
+  if (maybeReader) {
+    read(*maybeReader);
+  }
 }
 
 Scene::~Scene() = default;
 
 Scene::Scene(Scene &&) = default;
+
+
+//
+// Read, write
+//
+
+void Scene::read(Reader &reader) {
+  // Library
+  reader.each("library", [&]() {
+    library.readEntry(reader);
+  });
+
+  // Actors
+  reader.each("actors", [&]() {
+    // Legacy actor ID
+    auto maybeActorIdStr = reader.str("actorId");
+    if (!maybeActorIdStr) {
+      Debug::log("tried to read actor without `actorId`!");
+      return;
+    }
+    // auto actorIdStr = *maybeActorIdStr;
+
+    // Actor
+    auto maybeParentEntryId = reader.str("parentEntryId", nullptr);
+    reader.obj("bp", [&]() {
+      addActor(&reader, maybeParentEntryId);
+    });
+  });
+
+  // Scene-level props
+  reader.obj("sceneProperties", [&]() {
+    reader.read(props);
+  });
+}
 
 
 //

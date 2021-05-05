@@ -40,7 +40,7 @@ public:
   const Scene &operator=(const Scene &) = delete;
   Scene(Scene &&); // Allow move-construction (lets us return it from `Snapshot`)
 
-  explicit Scene(Variables &variables_);
+  Scene(Variables &variables_, Reader *maybeReader = nullptr);
   ~Scene();
 
 
@@ -160,6 +160,8 @@ private:
 
   love::RandomGenerator rng;
 
+
+  void read(Reader &reader);
 
   void ensureDrawOrderSort() const;
 };

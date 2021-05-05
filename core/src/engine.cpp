@@ -1,6 +1,5 @@
 #include "engine.h"
 
-#include "snapshot.h"
 #include "js.h"
 
 
@@ -81,7 +80,19 @@ bool Engine::hasInitialDeck() const {
 }
 
 void Engine::loadSceneFromFile(const char *path) {
-  scene = Snapshot::fromFile(path).toScene(variables);
+  auto archive = Archive::fromFile(path);
+  archive.read([&](Reader &reader) {
+    reader.arr("variables", [&]() {
+      variables.read(reader);
+    });
+    reader.obj("initialCard", [&]() {
+      reader.obj("sceneData", [&]() {
+        reader.obj("snapshot", [&]() {
+          scene = std::make_unique<Scene>(variables, &reader);
+        });
+      });
+    });
+  });
 }
 
 void Engine::tryLoadVariables() {
@@ -100,7 +111,12 @@ void Engine::tryLoadVariables() {
 void Engine::tryLoadNextCard() {
 #ifdef __EMSCRIPTEN__
   if (auto sceneDataJson = JS_getNextCardSceneData()) {
-    scene = Snapshot::fromJson(sceneDataJson).toScene(variables);
+    auto archive = Archive::fromJson(sceneDataJson);
+    archive.read([&](Reader &reader) {
+      reader.obj("snapshot", [&]() {
+        scene = std::make_unique<Scene>(variables, &reader);
+      });
+    });
     free(sceneDataJson);
   }
 #endif

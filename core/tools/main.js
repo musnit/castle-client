@@ -9,21 +9,22 @@ const API_HOST = 'https://api.castle.xyz';
 
 async function runAsync() {
   const outFilename = process.argv[3] || 'test-watch.json';
-  let sceneData;
+  let result;
   const id = process.argv[2];
 
   try {
-    // Try as card
     const response = await Axios.post(
       `${API_HOST}/graphql`,
       {
         operationName: null,
-        variables: {},
         variables: { id },
         query: `
-          query GetCardSceneData($id: ID!) {
-            card(cardId: $id) {
-              sceneData
+          query GetDeckInitialCardSceneData($id: ID!) {
+            deck(deckId: $id) {
+              variables
+              initialCard {
+                sceneData
+              }
             }
           }
         `,
@@ -35,40 +36,13 @@ async function runAsync() {
         },
       }
     );
-    sceneData = response.data.data.card.sceneData;
-  } catch (e) {
-    // Try as deck
-    try {
-      const response = await Axios.post(
-        `${API_HOST}/graphql`,
-        {
-          operationName: null,
-          variables: { id },
-          query: `
-            query GetDeckInitialCardSceneData($id: ID!) {
-              deck(deckId: $id) {
-                initialCard {
-                  sceneData
-                }
-              }
-            }
-          `,
-        },
-        {
-          headers: {
-            'X-Enable-Scene-Creator-Migrations': true,
-            'X-Castle-Skip-Cache': true,
-          },
-        }
-      );
-      sceneData = response.data.data.deck.initialCard.sceneData;
-    } catch (e) {}
-  }
+    result = response.data.data.deck;
+  } catch (e) {}
 
-  if (sceneData) {
-    fs.writeFileSync(path.join(__dirname, '../' + outFilename), JSON.stringify(sceneData, null, 2));
+  if (result) {
+    fs.writeFileSync(path.join(__dirname, '../' + outFilename), JSON.stringify(result, null, 2));
   } else {
-    console.log("Couldn't find any card or deck with this id...");
+    console.log("Couldn't find any deck with this id...");
   }
 }
 
