@@ -606,6 +606,9 @@ target_include_directories(castle-core PRIVATE vendor/rapidjson/include)
 add_library(soloud STATIC)
 target_include_directories(soloud PUBLIC vendor/soloud20200207/include vendor/soloud20200207/src/backend/miniaudio)
 target_compile_definitions(soloud PRIVATE WITH_MINIAUDIO)
+if(NOT MSVC)
+  target_compile_options(soloud PRIVATE -fdiagnostics-absolute-paths)
+endif()
 set(SOLOUD_SRC vendor/soloud20200207/src)
 target_sources(soloud PRIVATE
   ${SOLOUD_SRC}/audiosource/noise/soloud_noise.cpp

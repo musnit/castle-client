@@ -41,7 +41,7 @@ public:
   const Scene &operator=(const Scene &) = delete;
   Scene(Scene &&); // Allow move-construction (lets us return it from `Snapshot`)
 
-  Scene(Variables &variables_, Reader *maybeReader = nullptr);
+  explicit Scene(Variables &variables_, Reader *maybeReader = nullptr);
   ~Scene();
 
 
