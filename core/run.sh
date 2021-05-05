@@ -127,18 +127,6 @@ case "$1" in
     $CMAKE -DCMAKE_BUILD_TYPE=Debug -H. -Bbuild/xcode -GXcode
     $CMAKE --build build/xcode
     ;;
-  lib-release)
-    case $PLATFORM in
-      lin|macOS)
-        $CMAKE -DLIB=ON -H. -Bbuild/lib-release -GNinja
-        $CMAKE --build build/lib-release
-        ;;
-      win)
-        $CMAKE -DLIB=ON -H. -Bbuild/lib-msvc -G"Visual Studio 16"
-        $CMAKE --build build/lib-msvc --config Release
-        ;;
-    esac
-    ;;
 
   # Web
   web-init)
@@ -155,41 +143,16 @@ case "$1" in
         ;;
     esac
     ;;
-
   web-release)
     if [ ! -d build/web-release ]; then
       $CMAKE -DWEB=ON -H. -Bbuild/web-release -GNinja
     fi
     $CMAKE --build build/web-release
-    ;;
-  web-debug)
-    if [ ! -d build/web-debug ]; then
-      $CMAKE -DCMAKE_BUILD_TYPE=Debug -DWEB=ON -H. -Bbuild/web-debug -GNinja
-    fi
-    $CMAKE --build build/web-debug
+    rm -rf ../../castle-www/public/player/*
+    cp build/web-release/castle-core.* ../../castle-www/public/player/
     ;;
   web-watch-release)
     find CMakeLists.txt src assets web -type f | entr $TIME_TOTAL ./run.sh web-release
-    ;;
-  web-watch-debug)
-    find CMakeLists.txt src assets web -type f | entr $TIME_TOTAL ./run.sh web-debug
-    ;;
-  web-serve-release)
-    npx http-server -p 9001 -c-1 build/web-release
-    ;;
-  web-serve-debug)
-    npx http-server -p 9001 -c-1 build/web-debug
-    ;;
-  web-publish)
-    ./run.sh web-release
-    rm -rf web-publish/*
-    mkdir -p web-publish
-    cp build/web-release/{index.*,castle-core.*} web-publish/
-    ;;
-  web-publish-www)
-    ./run.sh web-release
-    rm -rf ../../castle-www/public/player/*
-    cp build/web-release/castle-core.* ../../castle-www/public/player/
     ;;
 
   # Scenes

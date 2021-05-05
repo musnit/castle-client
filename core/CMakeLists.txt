@@ -47,28 +47,16 @@ endif()
 # Target
 #
 
-if(LIB)
-  add_library(castle-core STATIC)
-else()
-  add_executable(castle-core)
-endif()
+add_executable(castle-core)
 
 # Sources
 file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS src/*.cpp)
-if(LIB)
-  list(REMOVE_ITEM MY_SOURCES "${CMAKE_SOURCE_DIR}/src/main.cpp")
-endif()
 target_sources(castle-core PRIVATE ${MY_SOURCES})
 target_include_directories(castle-core PRIVATE src)
 
 # Standard
 target_compile_features(castle-core PRIVATE cxx_std_17)
 set_target_properties(castle-core PROPERTIES CXX_EXTENSIONS OFF)
-
-# clang-tidy (need to define this before the target (?))
-#if(TIDY)
-#  set(CMAKE_CXX_CLANG_TIDY "/usr/local/opt/llvm/bin/clang-tidy" "--header-filter=../../src")
-#endif()
 
 # Warnings
 if(NOT MSVC)
