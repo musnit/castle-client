@@ -65,32 +65,9 @@ std::unique_ptr<Scene> Snapshot::toScene(Variables &variables) {
 
   archive.read([&](Archive::Reader &reader) {
     reader.setScene(scene.get()); // Associate new reader with scene
-
-    if (reader.has("data")) {
-      // GraphQL response
-      reader.obj("data", [&]() {
-        reader.obj("deck", [&]() {
-          // Read variables first so they're defined before scene variable references are read
-          reader.arr("variables", [&]() {
-            variables.read(reader);
-          });
-          reader.obj("initialCard", [&]() {
-            reader.obj("sceneData", [&]() {
-              reader.obj("snapshot", [&]() {
-                readScene(reader);
-              });
-            });
-          });
-        });
-      });
-    } else if (reader.has("snapshot")) {
-      reader.obj("snapshot", [&]() {
-        readScene(reader);
-      });
-    } else {
-      // Direct scene data
+    reader.obj("snapshot", [&]() {
       readScene(reader);
-    }
+    });
   });
 
   return scene;

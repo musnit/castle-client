@@ -54,6 +54,7 @@ private:
   std::unique_ptr<Scene> scene;
 
 
+  void tryLoadVariables();
   void tryLoadNextCard();
 
 

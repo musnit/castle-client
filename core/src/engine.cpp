@@ -15,6 +15,15 @@ JS_DEFINE(int, JS_getCanvasHeight, (),
 JS_DEFINE(double, JS_getDevicePixelRatio, (), { return window.devicePixelRatio; });
 JS_DEFINE(int, JS_documentHasFocus, (), { return document.hasFocus() ? 1 : 0; });
 JS_DEFINE(int, JS_hasInitialDeck, (), { return Castle.hasInitialDeck ? 1 : 0; });
+JS_DEFINE(char *, JS_getVariables, (), {
+  if (Castle.variables) {
+    const result = Castle.variables;
+    Castle.variables = null;
+    return allocate(intArrayFromString(result), ALLOC_NORMAL);
+  } else {
+    return 0;
+  };
+});
 JS_DEFINE(char *, JS_getNextCardSceneData, (), {
   if (Castle.nextCardSceneData) {
     const result = Castle.nextCardSceneData;
@@ -73,6 +82,19 @@ bool Engine::hasInitialDeck() const {
 
 void Engine::loadSceneFromFile(const char *path) {
   scene = Snapshot::fromFile(path).toScene(variables);
+}
+
+void Engine::tryLoadVariables() {
+#ifdef __EMSCRIPTEN__
+  if (auto variablesJson = JS_getVariables()) {
+    auto archive = Archive::fromJson(variablesJson);
+    archive.read([&](Reader &reader) {
+      reader.arr("variables", [&]() {
+        variables.read(reader);
+      });
+    });
+  }
+#endif
 }
 
 void Engine::tryLoadNextCard() {
@@ -158,6 +180,7 @@ bool Engine::frame() {
 //
 
 void Engine::update(double dt) {
+  tryLoadVariables();
   tryLoadNextCard();
 
   // Update scene
