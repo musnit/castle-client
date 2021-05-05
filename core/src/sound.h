@@ -6,7 +6,9 @@
 #include "soloud_sfxr.h"
 
 class Sound {
-  SoLoud::Soloud soloud;
+  static bool hasInitializedSoloud;
+  static SoLoud::Soloud soloud;
+  static std::map<std::string, std::unique_ptr<SoLoud::Sfxr>> sfxrSounds;
 
 public:
   Sound(const Sound &) = delete; // Prevent accidental copies
