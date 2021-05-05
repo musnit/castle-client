@@ -77,27 +77,22 @@ void TextBehavior::handleReadComponent(ActorId actorId, TextComponent &component
 //
 
 void TextBehavior::handlePerform(double dt) {
+#ifdef __EMSCRIPTEN__ // Text actors only work on web for now
   if (!hasAnyEnabledComponent()) {
     return; // Skip logic if no components
   }
 
   auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
-
-  std::set<int> clickedTextActorIds;
   while (true) {
-    int clickedTextActorId = JS_getClickedTextActorId();
-    if (clickedTextActorId < 0) {
-      break;
+    if (auto actorIdInt = JS_getClickedTextActorId(); actorIdInt > 0) {
+      auto actorId = ActorId(actorIdInt);
+      if (auto component = maybeGetComponent(actorId); component && !component->disabled) {
+        rulesBehavior.fire<TextTapTrigger>(actorId, {});
+      }
     } else {
-      clickedTextActorIds.insert(clickedTextActorId);
+      break;
     }
   }
-
-  forEachEnabledComponent([&](ActorId actorId, TextComponent &component) {
-    if (clickedTextActorIds.find((int)entt::to_integral(actorId)) != clickedTextActorIds.end()) {
-      rulesBehavior.fire<TextTapTrigger>(actorId, {});
-    }
-  });
 
   Archive archive;
   archive.write([&](Archive::Writer &w) {
@@ -113,7 +108,7 @@ void TextBehavior::handlePerform(double dt) {
     });
   });
 
-
-  std::string output = archive.toJson();
+  auto output = archive.toJson();
   JS_updateTextActors(output.c_str(), output.length());
+#endif
 }
