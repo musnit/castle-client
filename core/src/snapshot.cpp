@@ -1,7 +1,6 @@
 #include "snapshot.h"
 
 #include "scene.h"
-#include "behaviors/all.h"
 
 
 //
