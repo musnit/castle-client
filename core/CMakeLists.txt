@@ -109,8 +109,6 @@ if(WEB)
     target_compile_options(castle-core PRIVATE "SHELL:--profiling")
     target_link_options(castle-core PRIVATE "SHELL:--profiling")
   endif()
-  file(GLOB MY_ASSETS CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/assets/*)
-  set_target_properties(castle-core PROPERTIES LINK_DEPENDS "${MY_ASSETS}")
 endif()
 
 # Add debug info in non-MSVC desktop release builds
@@ -125,6 +123,7 @@ if(MSVC)
     VS_DEBUGGER_WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
     VS_STARTUP_PROJECT castle-core)
 endif()
+
 
 #
 # Dependencies
@@ -617,16 +616,8 @@ target_include_directories(castle-core PRIVATE vendor/rapidjson/include)
 
 
 #
-# Assets
+# Additional build steps
 #
-
-# Bundle 'assets/'
-if(WEB)
-  target_link_options(castle-core PRIVATE "SHELL:--preload-file ${PROJECT_SOURCE_DIR}/assets@assets")
-elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "iOS")
-  target_sources(castle-core PRIVATE "assets")
-  set_target_properties(castle-core PROPERTIES RESOURCE "assets")
-endif()
 
 # Static web files
 if(WEB)
