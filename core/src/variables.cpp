@@ -28,7 +28,7 @@ void Variables::read(Reader &reader) {
       return;
     }
     auto token = map.getToken(*variableId);
-    map.insert(token, { *name, reader.num("initialValue", 0) });
+    map.insert(token, MapElem(*name, reader.num("initialValue", 0)));
   });
 }
 

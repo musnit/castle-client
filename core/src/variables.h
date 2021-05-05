@@ -17,6 +17,8 @@ class Variables {
     std::string name;
     ExpressionValue initialValue;
     ExpressionValue value = initialValue;
+
+    MapElem(std::string name_, ExpressionValue initialValue_);
   };
   using Map = TokenMap<MapElem>;
 
@@ -72,6 +74,11 @@ using Variable = Variables::Variable;
 
 
 // Inlined implementation
+
+inline Variables::MapElem::MapElem(std::string name_, ExpressionValue initialValue_)
+    : name(std::move(name_))
+    , initialValue(initialValue_) {
+}
 
 inline Variable::Variable(Variables::Map::Token token_)
     : token(token_) {
