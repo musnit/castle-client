@@ -30,15 +30,97 @@ freely, subject to the following restrictions:
 #include "soloud_file.h"
 
 namespace SoLoud {
+
+
+// luajit rand implementation
+
+
+struct RandomState {
+  uint64_t gen[4]; /* State of the 4 LFSR generators. */
+  int valid; /* State is valid. */
+};
+
+typedef union {
+  uint64_t u64;
+  double d;
+} U64double;
+
+/* Update generator i and compute a running xor of all states. */
+#define TW223_GEN(i, k, q, s)                                                                      \
+  z = rs->gen[i];                                                                                  \
+  z = (((z << q) ^ z) >> (k - s)) ^ ((z & ((uint64_t)(int64_t)-1 << (64 - k))) << s);              \
+  r ^= z;                                                                                          \
+  rs->gen[i] = z;
+
+
+#define U64x(hi, lo) (((uint64_t)0x##hi << 32) + (uint64_t)0x##lo)
+
+static uint64_t lj_math_random_step(RandomState *rs) {
+  uint64_t z, r = 0;
+  TW223_GEN(0, 63, 31, 18)
+  TW223_GEN(1, 58, 19, 28)
+  TW223_GEN(2, 55, 24, 7)
+  TW223_GEN(3, 47, 21, 8)
+  return (r & U64x(000fffff, ffffffff)) | U64x(3ff00000, 00000000);
+}
+
+static void random_init(RandomState *rs, double d) {
+  uint32_t r = 0x11090601; /* 64-k[i] as four 8 bit constants. */
+  int i;
+  for (i = 0; i < 4; i++) {
+    U64double u;
+    uint32_t m = 1u << (r & 255);
+    r >>= 8;
+    u.d = d = d * 3.14159265358979323846 + 2.7182818284590452354;
+    if (u.u64 < m)
+      u.u64 += m; /* Ensure k[i] MSB of gen[i] are non-zero. */
+    rs->gen[i] = u.u64;
+  }
+  rs->valid = 1;
+  for (i = 0; i < 10; i++)
+    lj_math_random_step(rs);
+}
+
+static double math_random(RandomState *rs) {
+  U64double u;
+  double d;
+
+  u.u64 = lj_math_random_step(rs);
+  d = u.d - 1.0;
+  return d;
+}
+
+
+static RandomState rs;
+static double luajit_rand() {
+  return math_random(&rs);
+}
+
+static void luajit_srand(double seed) {
+  random_init(&rs, seed);
+
+  // copy behavior from sfxr.lua setseed
+  luajit_rand();
+  luajit_rand();
+  luajit_rand();
+  luajit_rand();
+  luajit_rand();
+  luajit_rand();
+}
+
+
+// end luajit rand
+
+
 SfxrInstance::SfxrInstance(Sfxr *aParent) {
   mParent = aParent;
   mParams = aParent->mParams;
-  mRand.srand(0x792352);
+  luajit_srand(0x792352);
   resetSample(false);
   playing_sample = 1;
 }
 
-#define frnd(x) ((float)(mRand.rand() % 10001) / 10000 * (x))
+#define frnd(x) ((float)luajit_rand() * (x))
 
 unsigned int SfxrInstance::getAudio(
     float *aBuffer, unsigned int aSamplesToRead, unsigned int /*aBufferSize*/) {
@@ -277,70 +359,77 @@ void SfxrInstance::resetSample(bool aRestart) {
 }
 
 
-#define rnd(n) (mRand.rand() % ((n) + 1))
 #undef frnd
-#define frnd(x) ((float)(mRand.rand() % 10001) / 10000 * (x))
-
+#define frnd(x) ((float)luajit_rand() * (x))
+#define frndrange(l, h) (l + ((float)luajit_rand() * (h - l)))
+#define rnd(n) ((int)(floor(frnd(n))))
+#define maybe(w) (rnd(w) == 0)
 
 result Sfxr::loadPreset(int aPresetNo, int aRandSeed) {
-  if (aPresetNo < 0 || aPresetNo > 6)
+  if (aPresetNo < 0 || aPresetNo > 7)
     return INVALID_PARAMETER;
 
   resetParams();
-  mRand.srand(aRandSeed);
+  luajit_srand(aRandSeed);
   switch (aPresetNo) {
   case 0: // pickup/coin
     mParams.p_base_freq = 0.4f + frnd(0.5f);
     mParams.p_env_attack = 0.0f;
     mParams.p_env_sustain = frnd(0.1f);
-    mParams.p_env_decay = 0.1f + frnd(0.4f);
     mParams.p_env_punch = 0.3f + frnd(0.3f);
-    if (rnd(1)) {
+    mParams.p_env_decay = 0.1f + frnd(0.4f);
+    if (maybe(1)) {
       mParams.p_arp_speed = 0.5f + frnd(0.2f);
       mParams.p_arp_mod = 0.2f + frnd(0.4f);
     }
     break;
   case 1: // laser/shoot
-    mParams.wave_type = rnd(2);
-    if (mParams.wave_type == 2 && rnd(1))
+    mParams.wave_type = rnd(3);
+    if (mParams.wave_type == 2 && maybe(1))
       mParams.wave_type = rnd(1);
-    mParams.p_base_freq = 0.5f + frnd(0.5f);
-    mParams.p_freq_limit = mParams.p_base_freq - 0.2f - frnd(0.6f);
-    if (mParams.p_freq_limit < 0.2f)
-      mParams.p_freq_limit = 0.2f;
-    mParams.p_freq_ramp = -0.15f - frnd(0.2f);
+
     if (rnd(2) == 0) {
       mParams.p_base_freq = 0.3f + frnd(0.6f);
       mParams.p_freq_limit = frnd(0.1f);
-      mParams.p_freq_ramp = -0.35f - frnd(0.3f);
+      mParams.p_freq_ramp = frndrange(-0.65, -0.35);
+    } else {
+      mParams.p_base_freq = 0.5f + frnd(0.5f);
+      mParams.p_freq_limit = mParams.p_base_freq - frndrange(0.2, 0.4);
+      if (mParams.p_freq_limit < 0.2f)
+        mParams.p_freq_limit = 0.2f;
+      mParams.p_freq_ramp = frndrange(-0.35, -0.15);
     }
-    if (rnd(1)) {
+
+    if (maybe(1)) {
       mParams.p_duty = frnd(0.5f);
       mParams.p_duty_ramp = frnd(0.2f);
     } else {
       mParams.p_duty = 0.4f + frnd(0.5f);
       mParams.p_duty_ramp = -frnd(0.7f);
     }
+
     mParams.p_env_attack = 0.0f;
     mParams.p_env_sustain = 0.1f + frnd(0.2f);
     mParams.p_env_decay = frnd(0.4f);
-    if (rnd(1))
+
+
+    if (maybe(1))
       mParams.p_env_punch = frnd(0.3f);
     if (rnd(2) == 0) {
       mParams.p_pha_offset = frnd(0.2f);
       mParams.p_pha_ramp = -frnd(0.2f);
     }
-    if (rnd(1))
+    if (maybe(1))
       mParams.p_hpf_freq = frnd(0.3f);
     break;
   case 2: // explosion
     mParams.wave_type = 3;
-    if (rnd(1)) {
+    if (maybe(1)) {
       mParams.p_base_freq = 0.1f + frnd(0.4f);
-      mParams.p_freq_ramp = -0.1f + frnd(0.4f);
+      mParams.p_freq_ramp = frndrange(-0.1, 0.3);
     } else {
       mParams.p_base_freq = 0.2f + frnd(0.7f);
-      mParams.p_freq_ramp = -0.2f - frnd(0.2f);
+      mParams.p_freq_ramp = frndrange(-0.2, -0.4);
     }
     mParams.p_base_freq *= mParams.p_base_freq;
     if (rnd(4) == 0)
@@ -349,34 +438,34 @@ result Sfxr::loadPreset(int aPresetNo, int aRandSeed) {
       mParams.p_repeat_speed = 0.3f + frnd(0.5f);
     mParams.p_env_attack = 0.0f;
     mParams.p_env_sustain = 0.1f + frnd(0.3f);
+    mParams.p_env_punch = 0.2f + frnd(0.6f);
     mParams.p_env_decay = frnd(0.5f);
     if (rnd(1) == 0) {
-      mParams.p_pha_offset = -0.3f + frnd(0.9f);
-      mParams.p_pha_ramp = -frnd(0.3f);
+      mParams.p_pha_offset = frndrange(-0.3, 0.6);
+      mParams.p_pha_ramp = frndrange(-0.3, 0.0);
     }
-    mParams.p_env_punch = 0.2f + frnd(0.6f);
-    if (rnd(1)) {
+    if (rnd(1) == 0) {
       mParams.p_vib_strength = frnd(0.7f);
       mParams.p_vib_speed = frnd(0.6f);
     }
     if (rnd(2) == 0) {
       mParams.p_arp_speed = 0.6f + frnd(0.3f);
-      mParams.p_arp_mod = 0.8f - frnd(1.6f);
+      mParams.p_arp_mod = frndrange(-0.8, 0.8);
     }
     break;
   case 3: // powerup
-    if (rnd(1))
+    if (maybe(1))
       mParams.wave_type = 1;
     else
       mParams.p_duty = frnd(0.6f);
-    if (rnd(1)) {
+    if (maybe(1)) {
       mParams.p_base_freq = 0.2f + frnd(0.3f);
       mParams.p_freq_ramp = 0.1f + frnd(0.4f);
       mParams.p_repeat_speed = 0.4f + frnd(0.4f);
     } else {
       mParams.p_base_freq = 0.2f + frnd(0.3f);
       mParams.p_freq_ramp = 0.05f + frnd(0.2f);
-      if (rnd(1)) {
+      if (maybe(1)) {
         mParams.p_vib_strength = frnd(0.7f);
         mParams.p_vib_speed = frnd(0.6f);
       }
@@ -386,43 +475,239 @@ result Sfxr::loadPreset(int aPresetNo, int aRandSeed) {
     mParams.p_env_decay = 0.1f + frnd(0.4f);
     break;
   case 4: // hit/hurt
-    mParams.wave_type = rnd(2);
+    mParams.wave_type = rnd(3);
     if (mParams.wave_type == 2)
       mParams.wave_type = 3;
     if (mParams.wave_type == 0)
       mParams.p_duty = frnd(0.6f);
+
     mParams.p_base_freq = 0.2f + frnd(0.6f);
-    mParams.p_freq_ramp = -0.3f - frnd(0.4f);
+    mParams.p_freq_ramp = frndrange(-0.7, -0.3);
     mParams.p_env_attack = 0.0f;
     mParams.p_env_sustain = frnd(0.1f);
     mParams.p_env_decay = 0.1f + frnd(0.2f);
-    if (rnd(1))
+    if (maybe(1))
       mParams.p_hpf_freq = frnd(0.3f);
     break;
   case 5: // jump
     mParams.wave_type = 0;
+
     mParams.p_duty = frnd(0.6f);
     mParams.p_base_freq = 0.3f + frnd(0.3f);
     mParams.p_freq_ramp = 0.1f + frnd(0.2f);
+
     mParams.p_env_attack = 0.0f;
     mParams.p_env_sustain = 0.1f + frnd(0.3f);
     mParams.p_env_decay = 0.1f + frnd(0.2f);
-    if (rnd(1))
+
+    if (maybe(1))
       mParams.p_hpf_freq = frnd(0.3f);
-    if (rnd(1))
+    if (maybe(1))
       mParams.p_lpf_freq = 1.0f - frnd(0.6f);
     break;
   case 6: // blip/select
-    mParams.wave_type = rnd(1);
+    mParams.wave_type = rnd(2);
+
     if (mParams.wave_type == 0)
       mParams.p_duty = frnd(0.6f);
+
     mParams.p_base_freq = 0.2f + frnd(0.4f);
     mParams.p_env_attack = 0.0f;
     mParams.p_env_sustain = 0.1f + frnd(0.1f);
     mParams.p_env_decay = frnd(0.2f);
     mParams.p_hpf_freq = 0.1f;
     break;
+
+  case 7: // random
+    if (maybe(1)) {
+      mParams.p_repeat_speed = frndrange(0.0, 1.0);
+    }
+
+    if (maybe(1)) {
+      mParams.p_base_freq = pow(frndrange(-1, 1), 3) + 0.5;
+    } else {
+      mParams.p_base_freq = pow(frndrange(-1, 1), 2);
+    }
+
+    mParams.p_freq_limit = 0.0f;
+    mParams.p_freq_ramp = pow(frndrange(-1, 1), 5); // slide
+
+    if (mParams.p_base_freq > 0.7 && mParams.p_freq_ramp > 0.2) {
+      mParams.p_freq_ramp = -mParams.p_freq_ramp;
+    } else if (mParams.p_base_freq < 0.2 && mParams.p_freq_ramp < -0.05) {
+      mParams.p_freq_ramp = -mParams.p_freq_ramp;
+    }
+    mParams.p_freq_dramp = pow(frndrange(-1, 1), 3); // dslide
+
+    mParams.p_duty = frndrange(-1, 1); // duty.ratio
+    mParams.p_duty_ramp = pow(frndrange(-1, 1), 3); // duty.sweep
+
+    mParams.p_vib_strength = pow(frndrange(-1, 1), 3);
+    mParams.p_vib_speed = frndrange(-1, 1);
+    mParams.p_vib_delay = frndrange(-1, 1);
+
+    mParams.p_env_attack = pow(frndrange(-1, 1), 3);
+    mParams.p_env_sustain = pow(frndrange(-1, 1), 2);
+    mParams.p_env_punch = pow(frndrange(-1, 1), 2);
+    mParams.p_env_decay = frndrange(-1, 1);
+
+    if (mParams.p_env_attack + mParams.p_env_sustain + mParams.p_env_decay < 0.2) {
+      mParams.p_env_sustain = mParams.p_env_sustain + 0.2 + frndrange(0.0, 0.3);
+      mParams.p_env_decay = mParams.p_env_decay + 0.2 + frndrange(0.0, 0.3);
+    }
+
+    mParams.p_lpf_resonance = frndrange(-1, 1);
+    mParams.p_lpf_freq = 1.0 - pow(frndrange(0, 1), 3);
+    mParams.p_lpf_ramp = pow(frndrange(-1, 1), 3);
+    if (mParams.p_lpf_freq < 0.1 && mParams.p_lpf_ramp < -0.05) {
+      mParams.p_lpf_ramp = -mParams.p_lpf_ramp;
+    }
+
+    mParams.p_hpf_freq = pow(frndrange(0, 1), 3);
+    mParams.p_hpf_ramp = pow(frndrange(-1, 1), 5);
+
+    mParams.p_pha_offset = pow(frndrange(-1, 1), 3);
+    mParams.p_pha_ramp = pow(frndrange(-1, 1), 3);
+
+    mParams.p_arp_speed = frndrange(-1, 1);
+    mParams.p_arp_mod = frndrange(-1, 1);
+    break;
   }
+
+  sanitizeParameters();
+
+  return 0;
+}
+
+
+result Sfxr::mutate(int amount, int seed) {
+  luajit_srand(seed);
+  float a = (float)amount / 20.0;
+  float b = (1.0 - a) * 10;
+
+  if (maybe(b)) {
+    mParams.p_base_freq = mParams.p_base_freq + frndrange(-a, a);
+  }
+  if (maybe(b)) {
+    mParams.p_freq_ramp = mParams.p_freq_ramp + frndrange(-a, a);
+  }
+  if (maybe(b)) {
+    mParams.p_freq_dramp = mParams.p_freq_dramp + frndrange(-a, a);
+  }
+
+  if (maybe(b)) {
+    mParams.p_duty = mParams.p_duty + frndrange(-a, a);
+  }
+  if (maybe(b)) {
+    mParams.p_duty_ramp = mParams.p_duty_ramp + frndrange(-a, a);
+  }
+
+  if (maybe(b)) {
+    mParams.p_vib_strength = mParams.p_vib_strength + frndrange(-a, a);
+  }
+  if (maybe(b)) {
+    mParams.p_vib_speed = mParams.p_vib_speed + frndrange(-a, a);
+  }
+  if (maybe(b)) {
+    mParams.p_vib_delay = mParams.p_vib_delay + frndrange(-a, a);
+  }
+
+  if (maybe(b)) {
+    mParams.p_env_attack = mParams.p_env_attack + frndrange(-a, a);
+  }
+  if (maybe(b)) {
+    mParams.p_env_sustain = mParams.p_env_sustain + frndrange(-a, a);
+  }
+  if (maybe(b)) {
+    mParams.p_env_punch = mParams.p_env_punch + frndrange(-a, a);
+  }
+  if (maybe(b)) {
+    mParams.p_env_decay = mParams.p_env_decay + frndrange(-a, a);
+  }
+
+  if (maybe(b)) {
+    mParams.p_lpf_resonance = mParams.p_lpf_resonance + frndrange(-a, a);
+  }
+  if (maybe(b)) {
+    mParams.p_lpf_freq = mParams.p_lpf_freq + frndrange(-a, a);
+  }
+  if (maybe(b)) {
+    mParams.p_lpf_ramp = mParams.p_lpf_ramp + frndrange(-a, a);
+  }
+  if (maybe(b)) {
+    mParams.p_hpf_freq = mParams.p_hpf_freq + frndrange(-a, a);
+  }
+  if (maybe(b)) {
+    mParams.p_hpf_ramp = mParams.p_hpf_ramp + frndrange(-a, a);
+  }
+
+  if (maybe(b)) {
+    mParams.p_pha_offset = mParams.p_pha_offset + frndrange(-a, a);
+  }
+  if (maybe(b)) {
+    mParams.p_pha_ramp = mParams.p_pha_ramp + frndrange(-a, a);
+  }
+
+  if (maybe(b)) {
+    mParams.p_arp_speed = mParams.p_arp_speed + frndrange(-a, a);
+  }
+  if (maybe(b)) {
+    mParams.p_arp_mod = mParams.p_arp_mod + frndrange(-a, a);
+  }
+
+  if (maybe(b)) {
+    mParams.p_repeat_speed = mParams.p_repeat_speed + frndrange(-a, a);
+  }
+
+  sanitizeParameters();
+
+  return 0;
+}
+
+static float clamp(float n, float min, float max) {
+  if (n < min) {
+    return min;
+  } else if (n > max) {
+    return max;
+  } else {
+    return n;
+  }
+}
+
+result Sfxr::sanitizeParameters() {
+
+  mParams.p_repeat_speed = clamp(mParams.p_repeat_speed, 0, 1);
+  mParams.wave_type = clamp(mParams.wave_type, 0, 3);
+
+  mParams.p_env_attack = clamp(mParams.p_env_attack, 0, 1);
+  mParams.p_env_sustain = clamp(mParams.p_env_sustain, 0, 1);
+  mParams.p_env_punch = clamp(mParams.p_env_punch, 0, 1);
+  mParams.p_env_decay = clamp(mParams.p_env_decay, 0, 1);
+
+  mParams.p_base_freq = clamp(mParams.p_base_freq, 0, 1);
+  mParams.p_freq_limit = clamp(mParams.p_freq_limit, 0, 1);
+  mParams.p_freq_ramp = clamp(mParams.p_freq_ramp, -1, 1);
+  mParams.p_freq_dramp = clamp(mParams.p_freq_dramp, -1, 1);
+
+  mParams.p_vib_strength = clamp(mParams.p_vib_strength, 0, 1);
+  mParams.p_vib_speed = clamp(mParams.p_vib_speed, 0, 1);
+  mParams.p_vib_delay = clamp(mParams.p_vib_delay, 0, 1);
+
+  mParams.p_arp_mod = clamp(mParams.p_arp_mod, -1, 1);
+  mParams.p_arp_speed = clamp(mParams.p_arp_speed, 0, 1);
+
+  mParams.p_duty = clamp(mParams.p_duty, 0, 1);
+  mParams.p_duty_ramp = clamp(mParams.p_duty_ramp, -1, 1);
+
+  mParams.p_pha_offset = clamp(mParams.p_pha_offset, -1, 1);
+  mParams.p_pha_ramp = clamp(mParams.p_pha_ramp, -1, 1);
+
+  mParams.p_lpf_freq = clamp(mParams.p_lpf_freq, 0, 1);
+  mParams.p_lpf_ramp = clamp(mParams.p_lpf_ramp, -1, 1);
+  mParams.p_lpf_resonance = clamp(mParams.p_lpf_resonance, 0, 1);
+  mParams.p_hpf_freq = clamp(mParams.p_hpf_freq, 0, 1);
+  mParams.p_hpf_ramp = clamp(mParams.p_hpf_ramp, -1, 1);
+
   return 0;
 }
 

@@ -466,6 +466,29 @@ struct SetVariableResponse : BaseResponse {
 
 
 //
+// Sound responses
+//
+
+struct PlaySoundResponse : BaseResponse {
+  inline static const RuleRegistration<PlaySoundResponse, RulesBehavior> registration {
+    "play sound"
+  };
+
+  struct Params {
+    PROP(std::string, category);
+    PROP(int, seed);
+    PROP(int, mutationSeed) = 0;
+    PROP(int, mutationAmount) = 5;
+  } params;
+
+  void run(RuleContext &ctx) override {
+    auto &sound = ctx.getScene().getSound();
+    sound.play(params.category(), params.seed(), params.mutationSeed(), params.mutationAmount());
+  }
+};
+
+
+//
 // Meta responses
 //
 

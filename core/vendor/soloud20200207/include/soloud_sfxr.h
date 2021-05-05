@@ -141,6 +141,8 @@ public:
   result loadParamsFile(File *aFile);
 
   result loadPreset(int aPresetNo, int aRandSeed);
+  result mutate(int amount, int seed);
+  result sanitizeParameters();
   virtual AudioSourceInstance *createInstance();
 };
 };

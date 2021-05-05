@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
   const char *scenePath = nullptr;
   if (!eng.hasInitialDeck()) {
 #ifdef LOVE_MACOSX
-    constexpr auto defaultScenePath = "../../test-watch.json";
+    constexpr auto defaultScenePath = "../../../test-watch.json";
 #else
     constexpr auto defaultScenePath = "test-watch.json";
 #endif

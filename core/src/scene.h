@@ -7,6 +7,7 @@
 #include "props.h"
 #include "gesture.h"
 #include "variables.h"
+#include "sound.h"
 
 
 class AllBehaviors; // Forward declaration otherwise this would be circular...
@@ -105,6 +106,12 @@ public:
   const Variables &getVariables() const;
 
 
+  // Sound
+
+  Sound &getSound();
+  const Sound &getSound() const;
+
+
   // Scene-level props
 
   struct Props {
@@ -132,6 +139,7 @@ public:
 private:
   Lv &lv { Lv::getInstance() };
   Variables &variables;
+  Sound sound;
 
   entt::registry registry;
   entt::basic_view<entt::entity, entt::exclude_t<>, Actor> actorView = registry.view<Actor>();
@@ -255,6 +263,14 @@ inline Variables &Scene::getVariables() {
 
 inline const Variables &Scene::getVariables() const {
   return variables;
+}
+
+inline Sound &Scene::getSound() {
+  return sound;
+}
+
+inline const Sound &Scene::getSound() const {
+  return sound;
 }
 
 inline const Gesture &Scene::getGesture() const {
