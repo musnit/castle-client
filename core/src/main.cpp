@@ -24,16 +24,19 @@ void loop(F &&frame) {
 int main(int argc, char *argv[]) {
   Engine eng;
 
+#ifndef __EMSCRIPTEN__
+  // Load from file on desktop
   const char *scenePath = nullptr;
   if (!eng.hasInitialDeck()) {
-    if (argc > 1) {
-      scenePath = argv[1];
-      eng.loadSceneFromFile(scenePath);
-    } else {
-      scenePath = "../../../test-watch.json";
-      eng.loadSceneFromFile(scenePath);
-    }
+#ifdef LOVE_MACOSX
+    constexpr auto defaultScenePath = "../../test-watch.json";
+#else
+    constexpr auto defaultScenePath = "test-watch.json";
+#endif
+    scenePath = argc > 1 ? argv[1] : defaultScenePath;
+    eng.loadSceneFromFile(scenePath);
   }
+#endif
 
   loop([&]() {
 #ifndef __EMSCRIPTEN__
