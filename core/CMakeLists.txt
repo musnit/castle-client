@@ -613,13 +613,3 @@ target_include_directories(castle-core PRIVATE vendor/magic_get/include)
 
 # rapidjson
 target_include_directories(castle-core PRIVATE vendor/rapidjson/include)
-
-
-#
-# Additional build steps
-#
-
-# Static web files
-if(WEB)
-  configure_file(web/index.html index.html COPYONLY)
-endif()

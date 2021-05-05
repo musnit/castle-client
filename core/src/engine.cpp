@@ -15,15 +15,6 @@ JS_DEFINE(int, JS_getCanvasHeight, (),
 JS_DEFINE(double, JS_getDevicePixelRatio, (), { return window.devicePixelRatio; });
 JS_DEFINE(int, JS_documentHasFocus, (), { return document.hasFocus() ? 1 : 0; });
 JS_DEFINE(int, JS_hasInitialDeck, (), { return Castle.hasInitialDeck ? 1 : 0; });
-JS_DEFINE(char *, JS_getInitialDeckGraphQlJson, (), {
-  if (Castle.initialDeckGraphQlJson) {
-    const result = Castle.initialDeckGraphQlJson;
-    delete Castle.initialDeckGraphQlJson; // Don't need to keep this data around in JS
-    return allocate(intArrayFromString(result), ALLOC_NORMAL);
-  } else {
-    return 0;
-  };
-});
 JS_DEFINE(char *, JS_getNextCardSceneData, (), {
   if (Castle.nextCardSceneData) {
     const result = Castle.nextCardSceneData;
@@ -82,15 +73,6 @@ bool Engine::hasInitialDeck() const {
 
 void Engine::loadSceneFromFile(const char *path) {
   scene = Snapshot::fromFile(path).toScene(variables);
-}
-
-void Engine::tryLoadInitialDeck() {
-#ifdef __EMSCRIPTEN__
-  if (auto graphQlJson = JS_getInitialDeckGraphQlJson()) {
-    scene = Snapshot::fromJson(graphQlJson).toScene(variables);
-    free(graphQlJson);
-  }
-#endif
 }
 
 void Engine::tryLoadNextCard() {
@@ -176,11 +158,6 @@ bool Engine::frame() {
 //
 
 void Engine::update(double dt) {
-  // If no scene yet, try loading the initial deck
-  if (!scene) {
-    tryLoadInitialDeck();
-  }
-
   tryLoadNextCard();
 
   // Update scene

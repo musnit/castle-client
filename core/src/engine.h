@@ -54,7 +54,6 @@ private:
   std::unique_ptr<Scene> scene;
 
 
-  void tryLoadInitialDeck();
   void tryLoadNextCard();
 
 
