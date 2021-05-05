@@ -31,6 +31,7 @@ async function runAsync() {
       {
         headers: {
           'X-Enable-Scene-Creator-Migrations': true,
+          'X-Castle-Skip-Cache': true,
         },
       }
     );
@@ -56,6 +57,7 @@ async function runAsync() {
         {
           headers: {
             'X-Enable-Scene-Creator-Migrations': true,
+            'X-Castle-Skip-Cache': true,
           },
         }
       );
