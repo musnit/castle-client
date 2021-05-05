@@ -29,131 +29,120 @@ freely, subject to the following restrictions:
 #include "soloud.h"
 #include "soloud_misc.h"
 
-namespace SoLoud
-{
-	class File;
+namespace SoLoud {
+class File;
 
-	struct SfxrParams
-	{
-		int wave_type;
+struct SfxrParams {
+  int wave_type;
 
-		float p_base_freq;
-		float p_freq_limit;
-		float p_freq_ramp;
-		float p_freq_dramp;
-		float p_duty;
-		float p_duty_ramp;
+  float p_base_freq;
+  float p_freq_limit;
+  float p_freq_ramp;
+  float p_freq_dramp;
+  float p_duty;
+  float p_duty_ramp;
 
-		float p_vib_strength;
-		float p_vib_speed;
-		float p_vib_delay;
+  float p_vib_strength;
+  float p_vib_speed;
+  float p_vib_delay;
 
-		float p_env_attack;
-		float p_env_sustain;
-		float p_env_decay;
-		float p_env_punch;
+  float p_env_attack;
+  float p_env_sustain;
+  float p_env_decay;
+  float p_env_punch;
 
-		bool filter_on;
-		float p_lpf_resonance;
-		float p_lpf_freq;
-		float p_lpf_ramp;
-		float p_hpf_freq;
-		float p_hpf_ramp;
+  bool filter_on;
+  float p_lpf_resonance;
+  float p_lpf_freq;
+  float p_lpf_ramp;
+  float p_hpf_freq;
+  float p_hpf_ramp;
 
-		float p_pha_offset;
-		float p_pha_ramp;
+  float p_pha_offset;
+  float p_pha_ramp;
 
-		float p_repeat_speed;
+  float p_repeat_speed;
 
-		float p_arp_speed;
-		float p_arp_mod;
+  float p_arp_speed;
+  float p_arp_mod;
 
-		float master_vol;
+  float master_vol;
 
-		float sound_vol;
-	};
+  float sound_vol;
+};
 
-	class Sfxr;
+class Sfxr;
 
-	class SfxrInstance : public AudioSourceInstance
-	{
-		Sfxr *mParent;
+class SfxrInstance : public AudioSourceInstance {
+  Sfxr *mParent;
 
-		Misc::Prg mRand;
-		SfxrParams mParams;
+  Misc::Prg mRand;
+  SfxrParams mParams;
 
-		bool playing_sample;
-		int phase;
-		double fperiod;
-		double fmaxperiod;
-		double fslide;
-		double fdslide;
-		int period;
-		float square_duty;
-		float square_slide;
-		int env_stage;
-		int env_time;
-		int env_length[3];
-		float env_vol;
-		float fphase;
-		float fdphase;
-		int iphase;
-		float phaser_buffer[1024];
-		int ipp;
-		float noise_buffer[32];
-		float fltp;
-		float fltdp;
-		float fltw;
-		float fltw_d;
-		float fltdmp;
-		float fltphp;
-		float flthp;
-		float flthp_d;
-		float vib_phase;
-		float vib_speed;
-		float vib_amp;
-		int rep_time;
-		int rep_limit;
-		int arp_time;
-		int arp_limit;
-		double arp_mod;
+  bool playing_sample;
+  int phase;
+  double fperiod;
+  double fmaxperiod;
+  double fslide;
+  double fdslide;
+  int period;
+  float square_duty;
+  float square_slide;
+  int env_stage;
+  int env_time;
+  int env_length[3];
+  float env_vol;
+  float fphase;
+  float fdphase;
+  int iphase;
+  float phaser_buffer[1024];
+  int ipp;
+  float noise_buffer[32];
+  float fltp;
+  float fltdp;
+  float fltw;
+  float fltw_d;
+  float fltdmp;
+  float fltphp;
+  float flthp;
+  float flthp_d;
+  float vib_phase;
+  float vib_speed;
+  float vib_amp;
+  int rep_time;
+  int rep_limit;
+  int arp_time;
+  int arp_limit;
+  double arp_mod;
 
-		void resetSample(bool aRestart);
+  void resetSample(bool aRestart);
 
-	public:
-		SfxrInstance(Sfxr *aParent);
-		virtual unsigned int getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize);
-		virtual bool hasEnded();
-	};
+public:
+  SfxrInstance(Sfxr *aParent);
+  virtual unsigned int getAudio(
+      float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize);
+  virtual bool hasEnded();
+};
 
-	class Sfxr : public AudioSource
-	{
-	public:
-		SfxrParams mParams;
+class Sfxr : public AudioSource {
+public:
+  SfxrParams mParams;
 
-		enum SFXR_PRESETS 
-		{
-			COIN,
-			LASER,
-			EXPLOSION,
-			POWERUP,
-			HURT,
-			JUMP,
-			BLIP
-		};
+  enum SFXR_PRESETS { COIN, LASER, EXPLOSION, POWERUP, HURT, JUMP, BLIP };
 
-		Misc::Prg mRand;
-		
-		Sfxr();
-		virtual ~Sfxr();
-		void resetParams();
-		result loadParams(const char* aFilename);
-		result loadParamsMem(unsigned char *aMem, unsigned int aLength, bool aCopy = false, bool aTakeOwnership = true);
-		result loadParamsFile(File *aFile);
+  Misc::Prg mRand;
 
-		result loadPreset(int aPresetNo, int aRandSeed);
-		virtual AudioSourceInstance *createInstance();
-	};
+  Sfxr();
+  virtual ~Sfxr();
+  void resetParams();
+  result loadParams(const char *aFilename);
+  result loadParamsMem(
+      unsigned char *aMem, unsigned int aLength, bool aCopy = false, bool aTakeOwnership = true);
+  result loadParamsFile(File *aFile);
+
+  result loadPreset(int aPresetNo, int aRandSeed);
+  virtual AudioSourceInstance *createInstance();
+};
 };
 
 #endif
