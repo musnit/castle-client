@@ -55,6 +55,9 @@ public:
                               // `nullptr` if not present.
   const Value *lookup(Token token) const;
 
+  template<typename F>
+  void forEach(F &&f); // `f` takes `(Token, Value &)`
+
 
 private:
   struct Entry {
@@ -121,4 +124,16 @@ Value *TokenMap<Value>::lookup(Token token) {
 template<typename Value>
 const Value *TokenMap<Value>::lookup(Token token) const {
   return const_cast<TokenMap &>(*this).lookup(token);
+}
+
+template<typename Value>
+template<typename F>
+void TokenMap<Value>::forEach(F &&f) {
+  auto nEntries = int(entries.size());
+  for (auto i = 0; i < nEntries; ++i) {
+    auto &entry = entries[i];
+    if (entry.value) {
+      f(Token { i }, *entry.value);
+    }
+  }
 }

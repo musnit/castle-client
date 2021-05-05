@@ -7,14 +7,16 @@
 
 
 class Variables {
-  // Manages state of deck-level variables. New variables can be define, and values of existing
+  // Manages state of deck-level variables. New variables can be defined, and values of existing
   // variables updated or queried.
   //
   // This isn't a behavior because it doesn't have per-actor data and deck-level variable state
   // needs to outlive the scene.
 
   struct MapElem {
-    ExpressionValue value;
+    std::string name;
+    ExpressionValue initialValue;
+    ExpressionValue value = initialValue;
   };
   using Map = TokenMap<MapElem>;
 
@@ -29,7 +31,7 @@ public:
 
   struct Variable {
     // For storing variable references at runtime (eg. in rule elements or other behaviors). Enables
-    // fast lookups and deduplicates string name data.
+    // fast lookups and deduplicates string data.
 
     Variable() = default;
 
@@ -63,9 +65,7 @@ public:
 
 
 private:
-  Map map;
-
-  std::unordered_map<std::string, Variable> byVariableId; // Map of UUID -> variable reference
+  Map map; // NOTE: Keyed by variable id, not name
 };
 
 using Variable = Variables::Variable;
