@@ -29,17 +29,22 @@ official installers on Windows. `run.sh` needs WSL on Windows.
 `./run.sh web-init` to setup Emscripten (our C++ web build toolchain). This
 may take a little bit.
 
+You will also need the '[castle-www](git@github.com:castle-xyz/castle-www.git)'
+repository checked out at '../' relative to the checkout of this repository, to
+actually serve the website and provide the surrounding scaffolding.
+
 #### Build and run
 
 `./run.sh web-release` to build a release version of core for the web. This
 will again take a bit the very first time (Emscripten fetches and caches SDL2).
 Later builds should (hopefully!) be faster. Every time you edit code in 'src/'
-or 'web/' you'll have to run this again.
+or 'web/' you'll have to run this again. It will copy the resulting '.wasm' and
+other files to '../castle-www/...'.
 
-`./run.sh web-serve-release` will serve core as a website to
-http://localhost:9001. This needs Node for the HTTP server. Open that URL with
-a browser to check it out! You may want to open the developer console in your
-browser to see logging output.
+Then, in '../castle-www', do `npm i` if you have't already and `npm run dev` to
+serve the website.
+[http://localhost:1337/p/ImdcvUwj2](http://localhost:1337/p/ImdcvUwj2) should
+then show you a deck! You can change the URL parameter there to see other decks.
 
 As a bonus, instead of invoking `./run.sh web-release` repeatedly you can use
 `./run.sh web-watch-release` to start a file watcher that will launch a build
@@ -47,6 +52,9 @@ every time some source file changes. This needs
 [entr](http://eradman.com/entrproject/), which you can install with `brew
 install entr` or `sudo apt install entr` or such. Change and save some file,
 make sure it's done building, and refresh your browser to see the updates!
+
+Make sure to also keep the '../castle-www' directory up to date with git and
+`npm i`.
 
 ### Mobile
 
@@ -116,16 +124,16 @@ important to care about the architecture and take the time to lay it all out
 well. Here are some core values that could guide us in the beginning of this
 project:
 
-- Let's start out with very little, and only *add things as needed*. We're
+- Let's start out with very little, and only _add things as needed_. We're
   getting a chance for a fresh start but aided by all the experience, existing
   scene data and existing Lua code we've already collected. We can use that to
   make evidence-based decisions about what's necessary.
-- Focus on *simplicity*. Prefer a well-understandable solution to a problem, if
+- Focus on _simplicity_. Prefer a well-understandable solution to a problem, if
   it's not clear that added complexity will gain us much.
-- Focus on *performance*. For our engine, performance is a feature. Users can
+- Focus on _performance_. For our engine, performance is a feature. Users can
   very easily run a "Repeat N" loop to create tons of actors, and the more the
   engine can handle, the more media exploration they can do.
-- Focus on *pragmatism*. Solve for cases we will actually run into in practice.
+- Focus on _pragmatism_. Solve for cases we will actually run into in practice.
 
 ### C++
 
@@ -145,9 +153,9 @@ codebase, which provides us the following quite useful features:
   it exists, it must be initialized (even if empty, like an initially empty
   `Scene`).
 - **Move semantics**: This allows us to keep a lot of objects as just 'values'
-   but still move them around without copying. This is how
-   `Snapshot::toScene()` can just return a `Scene` that is stored in `Engine`
-   for example.
+  but still move them around without copying. This is how
+  `Snapshot::toScene()` can just return a `Scene` that is stored in `Engine`
+  for example.
 - **Lambdas**: Perhaps one of the most useful new(-ish) C++ features. Used
   extensively in our codebase to form control structures (eg.
   `forEachComponent`). If taken as an `F&&` template parameter the compiler
