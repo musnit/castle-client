@@ -41,6 +41,8 @@ Scene::Scene(Scene &&) = default;
 //
 
 void Scene::read(Reader &reader) {
+  reader.setScene(this);
+
   // Library
   reader.each("library", [&]() {
     library.readEntry(reader);
