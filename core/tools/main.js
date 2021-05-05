@@ -9,7 +9,7 @@ const API_HOST = 'https://api.castle.xyz';
 
 async function runAsync() {
   const outFilename = process.argv[3] || 'test-watch.json';
-  let snapshot;
+  let sceneData;
   const id = process.argv[2];
 
   try {
@@ -34,7 +34,7 @@ async function runAsync() {
         },
       }
     );
-    snapshot = response.data.data.card.sceneData.snapshot;
+    sceneData = response.data.data.card.sceneData;
   } catch (e) {
     // Try as deck
     try {
@@ -59,15 +59,12 @@ async function runAsync() {
           },
         }
       );
-      snapshot = response.data.data.deck.initialCard.sceneData.snapshot;
+      sceneData = response.data.data.deck.initialCard.sceneData;
     } catch (e) {}
   }
 
-  if (snapshot) {
-    fs.writeFileSync(
-      path.join(__dirname, '../assets/' + outFilename),
-      JSON.stringify(snapshot, null, 2)
-    );
+  if (sceneData) {
+    fs.writeFileSync(path.join(__dirname, '../' + outFilename), JSON.stringify(sceneData, null, 2));
   } else {
     console.log("Couldn't find any card or deck with this id...");
   }
