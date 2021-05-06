@@ -22,6 +22,8 @@ public:
   T as(T def
       = {}) const; // Get the the current value as C++ type `T`, or given default if not `is<T>()`
 
+  bool compare(const std::string &comparison, const ExpressionValue &rhs);
+
 
 private:
   double value = 0;
@@ -50,4 +52,30 @@ T ExpressionValue::as(T def) const {
   } else {
     return def;
   }
+}
+
+inline bool ExpressionValue::compare(const std::string &comparison, const ExpressionValue &rhs) {
+  switch (comparison[0]) {
+  case 'e': { // "equal"
+    return value == rhs.value;
+  }
+  case 'n': { // "not equal"
+    return value != rhs.value;
+  }
+  case 'l': {
+    if (comparison[5] == 'o') { // "less or equal"
+      return value <= rhs.value;
+    } else { // "less than"
+      return value < rhs.value;
+    }
+  }
+  case 'g': {
+    if (comparison[8] == 'o') { // "greater or equal"
+      return value >= rhs.value;
+    } else { // "greater"
+      return value > rhs.value;
+    }
+  }
+  }
+  return false;
 }

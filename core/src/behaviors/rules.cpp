@@ -418,6 +418,26 @@ struct WaitResponse : BaseResponse {
 
 
 //
+// Expressions responses
+//
+
+struct ExpressionMeetsConditionResponse : BaseResponse {
+  inline static const RuleRegistration<ExpressionMeetsConditionResponse, RulesBehavior>
+      registration { "expression meets condition" };
+
+  struct Params {
+    PROP(ExpressionRef, lhs) = 0;
+    PROP(std::string, comparison) = "equal";
+    PROP(ExpressionRef, rhs) = 0;
+  } params;
+
+  bool eval(RuleContext &ctx) override {
+    return params.lhs().eval(ctx).compare(params.comparison(), params.rhs().eval(ctx));
+  }
+};
+
+
+//
 // Random responses
 //
 
