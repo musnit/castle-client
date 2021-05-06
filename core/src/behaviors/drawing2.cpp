@@ -98,10 +98,6 @@ void Drawing2Behavior::handleReadComponent(
 //
 
 void Drawing2Behavior::handlePerform(double dt) {
-  if (!hasAnyEnabledComponent()) {
-    return; // Skip gesture logic if no components
-  }
-
   auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
   forEachEnabledComponent([&](ActorId actorId, Drawing2Component &component) {
     auto drawData = component.drawData.get();
