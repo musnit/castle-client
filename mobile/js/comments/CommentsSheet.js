@@ -15,8 +15,8 @@ import Viewport from '../common/viewport';
 
 const TAB_BAR_HEIGHT = 49;
 
-const needsTabBarPadding = ({ navigationIndex }) => {
-  return Constants.iOS && navigationIndex === 0;
+const needsTabBarPadding = ({ navigationIndex, keyboardState }) => {
+  return Constants.iOS && navigationIndex === 0 && !keyboardState.visible;
 };
 
 export const CommentsSheet = ({ isOpen, onClose, ...props }) => {
@@ -30,7 +30,7 @@ export const CommentsSheet = ({ isOpen, onClose, ...props }) => {
   const [keyboardState] = useKeyboard();
 
   let paddingBottom = keyboardState.visible ? keyboardState.height - insets.bottom : 0;
-  if (needsTabBarPadding({ navigationIndex: dangerouslyGetState().index })) {
+  if (needsTabBarPadding({ navigationIndex: dangerouslyGetState().index, keyboardState })) {
     paddingBottom += TAB_BAR_HEIGHT;
   }
   const renderContent = () => (
