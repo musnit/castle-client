@@ -25727,7 +25727,17 @@ ma_result ma_device_start__webaudio(ma_device* pDevice)
 
     if (pDevice->type == ma_device_type_playback || pDevice->type == ma_device_type_duplex) {
         EM_ASM({
-            miniaudio.get_device_by_index($0).webaudio.resume();
+            var resume = function() {
+                miniaudio.get_device_by_index($0).webaudio.resume();
+
+                setTimeout(function() {
+                    if (miniaudio.get_device_by_index($0).webaudio.state === 'running') {
+                        window.document.body.removeEventListener('touchend', resume, false);
+                    }
+                }, 0);
+            };
+
+            window.document.body.addEventListener('touchend', resume, false);
         }, pDevice->webaudio.indexPlayback);
     }
 
