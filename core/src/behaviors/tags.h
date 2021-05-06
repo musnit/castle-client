@@ -82,9 +82,16 @@ public:
 
 
 private:
+  friend struct AddTagResponse;
+  friend struct RemoveTagResponse;
   friend struct BasicTagsTest; // Test accesses our components directly -- may remove that later
 
   TagsMap map;
+
+
+  // Only updates in map, doesn't update the component
+  void addToMap(ActorId actorId, Tag tag);
+  void removeFromMap(ActorId actorId, Tag tag);
 };
 
 

@@ -4,7 +4,7 @@
 
 
 //
-// Tag reading
+// Tag reference reading
 //
 
 void Tag::read(Reader &reader) {
@@ -50,40 +50,116 @@ TagVector TagsBehavior::parseTags(const char *str) {
   return result;
 }
 
+struct ReadableTagVector {
+  TagVector vec;
+
+  void read(Reader &reader) {
+    if (auto scene = reader.getScene()) {
+      if (auto str = reader.str()) {
+        auto &tagsBehavior = scene->getBehaviors().byType<TagsBehavior>();
+        vec = tagsBehavior.parseTags(*str);
+      }
+    }
+  }
+};
+
+
+//
+// Responses
+//
+
+struct AddTagResponse : BaseResponse {
+  inline static const RuleRegistration<AddTagResponse, TagsBehavior> registration { "add tag" };
+
+  struct Params {
+    PROP(ReadableTagVector, tag);
+  } params;
+
+  void run(RuleContext &ctx) override {
+    auto actorId = ctx.actorId;
+    auto &tagsBehavior = ctx.getScene().getBehaviors().byType<TagsBehavior>();
+    if (auto component = tagsBehavior.maybeGetComponent(actorId)) {
+      auto &tags = component->tags;
+      for (auto tag : params.tag().vec) {
+        if (std::find(tags.begin(), tags.end(), tag) == tags.end()) {
+          tags.push_back(tag);
+          tagsBehavior.addToMap(actorId, tag);
+        }
+      }
+    }
+  }
+};
+
+struct RemoveTagResponse : BaseResponse {
+  inline static const RuleRegistration<RemoveTagResponse, TagsBehavior> registration {
+    "remove tag"
+  };
+
+  struct Params {
+    PROP(ReadableTagVector, tag);
+  } params;
+
+  void run(RuleContext &ctx) override {
+    auto actorId = ctx.actorId;
+    auto &tagsBehavior = ctx.getScene().getBehaviors().byType<TagsBehavior>();
+    auto &paramsTags = params.tag().vec;
+    if (auto component = tagsBehavior.maybeGetComponent(actorId)) {
+      auto &tags = component->tags;
+      tags.erase(
+          std::remove_if(tags.begin(), tags.end(),
+              [&](Tag tag) {
+                if (std::find(paramsTags.begin(), paramsTags.end(), tag) != paramsTags.end()) {
+                  tagsBehavior.removeFromMap(actorId, tag);
+                  return true;
+                }
+                return false;
+              }),
+          tags.end());
+    }
+  }
+};
+
 
 //
 // Enable, disable
 //
 
 void TagsBehavior::handleEnableComponent(ActorId actorId, TagsComponent &component) {
-  // Parse tags
   component.tags = parseTags(component.props.tagsString().c_str());
-
-  // Add to map for each tag
   for (auto tag : component.tags) {
-    auto elem = map.lookup(tag.token);
-    if (!elem) {
-      map.insert(tag.token, {});
-      elem = map.lookup(tag.token);
-    }
-    if (elem) { // Should always pass because we inserted above if not present
-      auto &actorIds = elem->actorIds;
-      if (!actorIds.contains(actorId)) { // Should also always pass, but just making sure
-        actorIds.emplace(actorId);
-      }
-    }
+    addToMap(actorId, tag);
   }
 }
 
 void TagsBehavior::handleDisableComponent(
     ActorId actorId, TagsComponent &component, bool removeActor) {
-  // Remove from map for each tag
   for (auto tag : component.tags) {
-    if (auto elem = map.lookup(tag.token)) { // Should always pass
-      auto &actorIds = elem->actorIds;
-      if (actorIds.contains(actorId)) { // Should also always pass, but just making sure
-        actorIds.remove(actorId);
-      }
+    removeFromMap(actorId, tag);
+  }
+}
+
+
+//
+// Add, remove tags
+//
+
+void TagsBehavior::addToMap(ActorId actorId, Tag tag) {
+  auto elem = map.lookup(tag.token);
+  if (!elem) {
+    map.insert(tag.token, {});
+    elem = map.lookup(tag.token);
+  }
+  if (elem) { // Just added above if not present so should pass
+    if (auto &actorIds = elem->actorIds; !actorIds.contains(actorId)) {
+      actorIds.emplace(actorId);
+    }
+  }
+}
+
+void TagsBehavior::removeFromMap(ActorId actorId, Tag tag) {
+  if (auto elem = map.lookup(tag.token)) {
+    if (auto &actorIds = elem->actorIds; actorIds.contains(actorId)) {
+      actorIds.remove(actorId);
     }
   }
 }
