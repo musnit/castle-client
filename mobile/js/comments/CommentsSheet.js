@@ -7,6 +7,7 @@ import { CommentInput } from './CommentInput';
 import { CommentsList } from './CommentsList';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useKeyboard } from '../common/utilities';
+import { useNavigation } from '../ReactNavigation';
 
 import * as Constants from '../Constants';
 
@@ -14,7 +15,13 @@ import Viewport from '../common/viewport';
 
 const TAB_BAR_HEIGHT = 49;
 
+const needsTabBarPadding = ({ navigationIndex }) => {
+  return Constants.iOS && navigationIndex === 0;
+};
+
 export const CommentsSheet = ({ isOpen, onClose, ...props }) => {
+  const { dangerouslyGetState } = useNavigation();
+
   const insets = useSafeAreaInsets();
   const maxSheetHeight = Viewport.vh * 100 - insets.top - Constants.FEED_HEADER_HEIGHT;
 
@@ -22,12 +29,15 @@ export const CommentsSheet = ({ isOpen, onClose, ...props }) => {
 
   const [keyboardState] = useKeyboard();
 
-  // TODO: maybe account for tab bar (see DeckSettingsSheet)
+  let paddingBottom = keyboardState.visible ? keyboardState.height - insets.bottom : 0;
+  if (needsTabBarPadding({ navigationIndex: dangerouslyGetState().index })) {
+    paddingBottom += TAB_BAR_HEIGHT;
+  }
   const renderContent = () => (
     <View
       style={{
         flex: 1,
-        paddingBottom: keyboardState.visible ? keyboardState.height - insets.bottom : 0,
+        paddingBottom,
       }}>
       <CommentsList isOpen={isOpen} {...props} />
       <CommentInput />
