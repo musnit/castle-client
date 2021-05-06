@@ -21,6 +21,7 @@
 #include "behaviors/rules.h"
 #include "behaviors/tags.h"
 #include "behaviors/text.h"
+#include "behaviors/counter.h"
 
 
 class AllBehaviors {
@@ -86,6 +87,7 @@ private:
     // Logic
     RulesBehavior,
     TagsBehavior,
+    CounterBehavior,
 
     // Rendering
     //DebugDrawBehavior,

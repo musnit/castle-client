@@ -132,6 +132,22 @@ struct BehaviorPropertyExpression : BaseExpression {
   }
 };
 
+struct CounterValueExpression : BaseExpression {
+  inline static const RuleRegistration<CounterValueExpression> registration { "counter value" };
+
+  struct Params {
+    PROP(ActorRef, actorRef);
+  } params;
+
+  ExpressionValue eval(RuleContext &ctx) override {
+    auto &counterBehavior = ctx.getScene().getBehaviors().byType<CounterBehavior>();
+    if (auto component = counterBehavior.maybeGetComponent(ctx.actorId)) {
+      return component->props.value();
+    }
+    return {};
+  }
+};
+
 struct ActorDistanceExpression : BaseExpression {
   inline static const RuleRegistration<ActorDistanceExpression> registration { "actor distance" };
 
