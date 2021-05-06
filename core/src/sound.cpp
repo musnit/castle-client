@@ -40,6 +40,8 @@ void Sound::play(std::string category, int seed, int mutationSeed, int mutationA
       sound->mutate(mutationAmount, seed + mutationSeed);
     }
 
+    sound->clampLength();
+
     Sound::sfxrSounds.insert(std::make_pair(key, std::move(sound)));
   }
 

@@ -143,6 +143,7 @@ public:
   result loadPreset(int aPresetNo, int aRandSeed);
   result mutate(int amount, int seed);
   result sanitizeParameters();
+  result clampLength();
   virtual AudioSourceInstance *createInstance();
 };
 };

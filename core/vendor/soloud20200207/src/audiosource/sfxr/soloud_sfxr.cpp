@@ -712,6 +712,20 @@ result Sfxr::sanitizeParameters() {
   return 0;
 }
 
+#define SOUND_MAX_DUR 1.0
+
+result Sfxr::clampLength() {
+  float dur = mParams.p_env_attack + mParams.p_env_sustain + mParams.p_env_decay;
+  if (dur > SOUND_MAX_DUR) {
+    float ratio = SOUND_MAX_DUR / dur;
+    mParams.p_env_attack = mParams.p_env_attack * ratio;
+    mParams.p_env_sustain = mParams.p_env_sustain * ratio;
+    mParams.p_env_decay = mParams.p_env_sustain * ratio;
+  }
+
+  return 0;
+}
+
 void Sfxr::resetParams() {
   mParams.wave_type = 0;
 
