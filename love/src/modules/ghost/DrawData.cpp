@@ -779,10 +779,8 @@ namespace ghost {
 
   int DrawData::modFrameIndex(int value) {
     auto numFrames = getNumFrames();
-    while (value >= numFrames) {
-      value = value - numFrames;
-    }
-    while (value < 0) {
+    value = value % numFrames;
+    if (value < 0) {
       value = value + numFrames;
     }
     return value;
