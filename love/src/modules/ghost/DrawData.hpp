@@ -189,12 +189,15 @@ namespace ghost {
     void updateBounds();
     Bounds getBounds(int frame);
     bool arePathDatasFloodFillable(PathData pd1, PathData pd2);
+    AnimationState newAnimationState();
     int getNumFrames();
     int modFrameIndex(int value);
+    void runAnimation(AnimationState &animationState,
+        AnimationComponentProperties &componentProperties, float dt,
+        std::function<void(std::string)> fireTrigger, std::function<void()> fireChangedFrame);
     ToveGraphicsHolder *graphics();
     void preload();
     void render(std::optional<AnimationComponentProperties> componentProperties);
-    void render(int frame);
     bool isPointInBounds(Point point);
   };
 

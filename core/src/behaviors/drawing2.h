@@ -8,18 +8,12 @@
 
 struct Drawing2Component : BaseComponent {
   struct Props {
-    PROP(bool, playing) = false;
-    PROP(double, framesPerSecond) = false;
-    PROP(int, currentFrame) = 1;
-    PROP(bool, loop) = false;
-    PROP(int, loopStartFrame) = -1;
-    PROP(int, loopEndFrame) = -1;
   } props;
 
   std::string hash;
   std::shared_ptr<love::DrawData> drawData;
-
-  double frameTime = 0;
+  love::AnimationComponentProperties animationComponentProperties;
+  love::AnimationState animationState;
 };
 
 class Drawing2Behavior : public BaseBehavior<Drawing2Behavior, Drawing2Component> {
@@ -35,8 +29,6 @@ public:
   void handleDrawComponent(ActorId actorId, const Drawing2Component &component) const;
 
 private:
-  friend struct AnimationFrameMeetsConditionResponse;
-
   Lv &lv { Lv::getInstance() };
 
   std::unordered_map<std::string, std::shared_ptr<love::DrawData>> drawDataCache;

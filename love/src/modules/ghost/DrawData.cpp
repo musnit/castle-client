@@ -767,6 +767,12 @@ namespace ghost {
     touchLayerData();
   }*/
 
+  AnimationState DrawData::newAnimationState() {
+    AnimationState state;
+    state.animationFrameTime = 0.0;
+    return state;
+  }
+
   int DrawData::getNumFrames() {
     return layers[0]->frames.size();
   }
@@ -782,6 +788,70 @@ namespace ghost {
     return value;
   }
 
+  void DrawData::runAnimation(AnimationState &animationState,
+      AnimationComponentProperties &componentProperties, float dt,
+      std::function<void(std::string)> fireTrigger, std::function<void()> fireChangedFrame) {
+    if (!componentProperties.playing) {
+      return;
+    }
+    animationState.animationFrameTime = animationState.animationFrameTime + dt;
+    auto secondsPerFrame = 1 / componentProperties.framesPerSecond;
+    if (animationState.animationFrameTime > abs(secondsPerFrame)) {
+      animationState.animationFrameTime = animationState.animationFrameTime - abs(secondsPerFrame);
+      auto firstFrame = componentProperties.loopStartFrame;
+      if (firstFrame < 1 || firstFrame > getNumFrames()) {
+        firstFrame = 1;
+      }
+      auto lastFrame = componentProperties.loopEndFrame;
+      if (lastFrame < 1 || lastFrame > getNumFrames()) {
+        lastFrame = getNumFrames();
+      }
+      auto currentFrame = modFrameIndex(componentProperties.currentFrame);
+      auto changedFrames = false;
+      if (secondsPerFrame > 0) {
+        if (currentFrame == lastFrame) {
+          if (componentProperties.loop) {
+            componentProperties.currentFrame = firstFrame;
+            changedFrames = true;
+            if (fireTrigger) {
+              fireTrigger("animation loop");
+            }
+          } else {
+            componentProperties.playing = false;
+            animationState.animationFrameTime = 0;
+            if (fireTrigger) {
+              fireTrigger("animation end");
+            }
+          }
+        } else {
+          componentProperties.currentFrame = currentFrame + 1;
+          changedFrames = true;
+        }
+      } else {
+        if (currentFrame == firstFrame) {
+          if (componentProperties.loop) {
+            componentProperties.currentFrame = lastFrame;
+            changedFrames = true;
+            if (fireTrigger) {
+              fireTrigger("animation loop");
+            }
+          } else {
+            componentProperties.playing = false;
+            animationState.animationFrameTime = 0;
+            if (fireTrigger) {
+              fireTrigger("animation end");
+            }
+          }
+        } else {
+          componentProperties.currentFrame = currentFrame - 1;
+          changedFrames = true;
+        }
+      }
+      if (changedFrames && fireChangedFrame) {
+        fireChangedFrame();
+      }
+    }
+  }
   /*
   TYPE DrawData::stepBackward() {
     selectedFrame = selectedFrame - 1;
@@ -825,13 +895,8 @@ namespace ghost {
   void DrawData::render(std::optional<AnimationComponentProperties> componentProperties) {
     auto frameIdx = selectedFrame;
     if (componentProperties && componentProperties->currentFrame) {
-      frameIdx = componentProperties->currentFrame;
+      frameIdx = modFrameIndex(componentProperties->currentFrame);
     }
-    render(frameIdx);
-  }
-
-  void DrawData::render(int frame) {
-    auto frameIdx = modFrameIndex(frame);
     for (size_t l = 0; l < layers.size(); l++) {
       if (layers[l]->isVisible) {
         auto realFrame = getRealFrameIndexForLayerId(layers[l]->id, frameIdx);
