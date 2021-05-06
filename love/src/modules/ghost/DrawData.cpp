@@ -788,11 +788,11 @@ namespace ghost {
     return value;
   }
 
-  void DrawData::runAnimation(AnimationState &animationState,
-      AnimationComponentProperties &componentProperties, float dt,
-      std::function<void(std::string)> fireTrigger, std::function<void()> fireChangedFrame) {
+  DrawData::RunAnimationResult DrawData::runAnimation(
+      AnimationState &animationState, AnimationComponentProperties &componentProperties, float dt) {
+    RunAnimationResult result;
     if (!componentProperties.playing) {
-      return;
+      return result;
     }
     animationState.animationFrameTime = animationState.animationFrameTime + dt;
     auto secondsPerFrame = 1 / componentProperties.framesPerSecond;
@@ -807,50 +807,39 @@ namespace ghost {
         lastFrame = getNumFrames();
       }
       auto currentFrame = modFrameIndex(componentProperties.currentFrame);
-      auto changedFrames = false;
       if (secondsPerFrame > 0) {
         if (currentFrame == lastFrame) {
           if (componentProperties.loop) {
             componentProperties.currentFrame = firstFrame;
-            changedFrames = true;
-            if (fireTrigger) {
-              fireTrigger("animation loop");
-            }
+            result.changed = true;
+            result.loop = true;
           } else {
             componentProperties.playing = false;
             animationState.animationFrameTime = 0;
-            if (fireTrigger) {
-              fireTrigger("animation end");
-            }
+            result.end = true;
           }
         } else {
           componentProperties.currentFrame = currentFrame + 1;
-          changedFrames = true;
+          result.changed = true;
         }
       } else {
         if (currentFrame == firstFrame) {
           if (componentProperties.loop) {
             componentProperties.currentFrame = lastFrame;
-            changedFrames = true;
-            if (fireTrigger) {
-              fireTrigger("animation loop");
-            }
+            result.changed = true;
+            result.loop = true;
           } else {
             componentProperties.playing = false;
             animationState.animationFrameTime = 0;
-            if (fireTrigger) {
-              fireTrigger("animation end");
-            }
+            result.end = true;
           }
         } else {
           componentProperties.currentFrame = currentFrame - 1;
-          changedFrames = true;
+          result.changed = true;
         }
       }
-      if (changedFrames && fireChangedFrame) {
-        fireChangedFrame();
-      }
     }
+    return result;
   }
   /*
   TYPE DrawData::stepBackward() {

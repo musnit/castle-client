@@ -4,6 +4,73 @@
 
 
 //
+// Triggers
+//
+
+struct AnimationEndTrigger : BaseTrigger {
+  inline static const RuleRegistration<AnimationEndTrigger, Drawing2Behavior> registration {
+    "animation end"
+  };
+
+  struct Params {
+  } params;
+};
+
+struct AnimationLoopTrigger : BaseTrigger {
+  inline static const RuleRegistration<AnimationLoopTrigger, Drawing2Behavior> registration {
+    "animation loop"
+  };
+
+  struct Params {
+  } params;
+};
+
+struct AnimationReachesFrameTrigger : BaseTrigger {
+  inline static const RuleRegistration<AnimationReachesFrameTrigger, Drawing2Behavior>
+      registration { "animation reaches frame" };
+
+  struct Params {
+    PROP(std::string, comparison) = "equal";
+    PROP(int, frame) = 1;
+  } params;
+};
+
+struct AnimationFrameChangesTrigger : BaseTrigger {
+  inline static const RuleRegistration<AnimationFrameChangesTrigger, Drawing2Behavior>
+      registration { "animation frame changes" };
+
+  struct Params {
+  } params;
+};
+
+
+//
+// Responses
+//
+
+struct AnimationFrameMeetsConditionResponse : BaseResponse {
+  inline static const RuleRegistration<AnimationFrameMeetsConditionResponse, Drawing2Behavior>
+      registration { "animation frame meets condition" };
+
+  struct Params {
+    PROP(std::string, comparison) = "equal";
+    PROP(ExpressionRef, frame) = 1;
+  } params;
+
+  bool eval(RuleContext &ctx) override {
+    auto &drawing2Behavior = ctx.getScene().getBehaviors().byType<Drawing2Behavior>();
+    auto &comparison = params.comparison();
+    auto frame = params.frame().eval(ctx);
+    if (auto component = drawing2Behavior.maybeGetComponent(ctx.actorId)) {
+      auto currFrame = ExpressionValue(component->animationComponentProperties.currentFrame);
+      return currFrame.compare(comparison, frame);
+    }
+    return false;
+  }
+};
+
+
+//
 // Read, write
 //
 
@@ -15,12 +82,14 @@ void Drawing2Behavior::handleReadComponent(
 
   if (auto found = drawDataCache.find(component.hash); found == drawDataCache.end()) {
     reader.obj("drawData", [&]() {
-      drawDataCache.insert_or_assign(component.hash, std::make_shared<love::DrawData>(reader));
+      component.drawData = std::make_shared<love::DrawData>(reader);
+      drawDataCache.insert_or_assign(component.hash, component.drawData);
     });
+  } else {
+    component.drawData = found->second;
   }
-
-  component.drawData = drawDataCache.find(component.hash)->second;
 }
+
 
 //
 // Perform
@@ -31,11 +100,23 @@ void Drawing2Behavior::handlePerform(double dt) {
     return; // Skip gesture logic if no components
   }
 
+  auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
   forEachEnabledComponent([&](ActorId actorId, Drawing2Component &component) {
-    component.drawData->runAnimation(component.animationState,
-        component.animationComponentProperties, float(dt), nullptr, nullptr);
+    auto drawData = component.drawData.get();
+    auto &animProps = component.animationComponentProperties;
+    auto result = drawData->runAnimation(component.animationState, animProps, float(dt));
+    if (result.loop) {
+      rulesBehavior.fire<AnimationLoopTrigger>(actorId, {});
+    }
+    if (result.end) {
+      rulesBehavior.fire<AnimationEndTrigger>(actorId, {});
+    }
+    if (result.changed) {
+      fireChangeFrameTriggers(actorId, component);
+    }
   });
 }
+
 
 //
 // Draw
@@ -62,4 +143,65 @@ void Drawing2Behavior::handleDrawComponent(
       lv.graphics.pop();
     }
   }
+}
+
+
+//
+// Getters, setters
+//
+
+ExpressionValue Drawing2Behavior::handleGetProperty(
+    ActorId actorId, const Drawing2Component &component, PropId propId) const {
+  auto &animProps = component.animationComponentProperties;
+  if (propId == decltype(DrawingAnimationProps::currentFrame)::id) {
+    return animProps.currentFrame;
+  } else if (propId == decltype(DrawingAnimationProps::playMode)::id) {
+    // TODO(nikki): Handle string values, then implement this
+    return {};
+  } else if (propId == decltype(DrawingAnimationProps::framesPerSecond)::id) {
+    return animProps.framesPerSecond;
+  } else if (propId == decltype(DrawingAnimationProps::loopStartFrame)::id) {
+    return animProps.loopStartFrame;
+  } else if (propId == decltype(DrawingAnimationProps::loopEndFrame)::id) {
+    return animProps.loopEndFrame;
+  } else {
+    return BaseBehavior::handleGetProperty(actorId, component, propId);
+  }
+}
+
+void Drawing2Behavior::handleSetProperty(
+    ActorId actorId, Drawing2Component &component, PropId propId, const ExpressionValue &value) {
+  fireChangeFrameTriggers(actorId, component);
+  auto &animProps = component.animationComponentProperties;
+  if (propId == decltype(DrawingAnimationProps::currentFrame)::id) {
+    animProps.currentFrame = value.as<int>();
+  } else if (propId == decltype(DrawingAnimationProps::playMode)::id) {
+    // TODO(nikki): Handle string values, then implement this
+  } else if (propId == decltype(DrawingAnimationProps::framesPerSecond)::id) {
+    animProps.framesPerSecond = value.as<float>();
+  } else if (propId == decltype(DrawingAnimationProps::loopStartFrame)::id) {
+    animProps.loopStartFrame = value.as<int>();
+  } else if (propId == decltype(DrawingAnimationProps::loopEndFrame)::id) {
+    animProps.loopEndFrame = value.as<int>();
+  } else {
+    BaseBehavior::handleSetProperty(actorId, component, propId, value);
+  }
+}
+
+
+//
+// Frame change triggering
+//
+
+void Drawing2Behavior::fireChangeFrameTriggers(
+    ActorId actorId, const Drawing2Component &component) {
+  auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
+  auto drawData = component.drawData.get();
+  auto &animProps = component.animationComponentProperties;
+  rulesBehavior.fire<AnimationFrameChangesTrigger>(actorId, {});
+  auto currFrame = ExpressionValue(drawData->modFrameIndex(animProps.currentFrame));
+  rulesBehavior.fireIf<AnimationReachesFrameTrigger>(
+      actorId, {}, [&](const AnimationReachesFrameTrigger &trigger) {
+        return currFrame.compare(trigger.params.comparison(), trigger.params.frame());
+      });
 }
