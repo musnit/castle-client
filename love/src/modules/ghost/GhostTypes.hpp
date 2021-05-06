@@ -394,15 +394,6 @@ namespace ghost {
 
   typedef std::vector<PathData> PathDataList;
 
-  class AnimationState {
-  public:
-    float animationFrameTime;
-
-    AnimationState()
-        : animationFrameTime(0.0) {
-    }
-  };
-
   class AnimationComponentProperties {
   public:
     bool playing;
