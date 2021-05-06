@@ -166,7 +166,7 @@ struct ClampExpression : BaseExpression {
     auto number = params.number().eval<double>(ctx);
     auto min = params.min().eval<double>(ctx);
     auto max = params.max().eval<double>(ctx);
-    return std::max(min, std::min(number, max));
+    return std::clamp(min, number, max);
   }
 };
 
