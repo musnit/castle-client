@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { MessageBody } from '../components/MessageBody';
 import { toRecentDate } from '../common/date-utilities';
 import { UserAvatar } from '../components/UserAvatar';
+import { useNavigation } from '../ReactNavigation';
 
 const styles = StyleSheet.create({
   container: {
@@ -56,6 +57,7 @@ const DUMMY_COMMENT = {
   commentId: 0,
   createdTime: '2021-05-05T21:19:31.415Z',
   author: {
+    userId: 6,
     username: 'ben',
     photo: {
       url:
@@ -73,6 +75,7 @@ const DUMMY_REPLY = {
   commentId: 0,
   createdTime: '2021-05-06T21:19:31.415Z',
   author: {
+    userId: 1,
     username: 'jesse',
     photo: {
       url:
@@ -97,37 +100,49 @@ const DUMMY_COMMENTS = new Array(20).fill(DUMMY_COMMENT).map((comment, ii) => {
   };
 });
 
-const CommentReplies = ({ replies }) => {
+const CommentReplies = ({ replies, ...props }) => {
   return (
     <View style={styles.repliesContainer}>
       {replies.map((reply, ii) => (
-        <Comment comment={reply} key={`reply-${ii}`} />
+        <Comment comment={reply} key={`reply-${ii}`} {...props} />
       ))}
     </View>
   );
 };
 
-const Comment = ({ comment, prevComment }) => {
+const Comment = ({ comment, prevComment, navigateToUser }) => {
   // could use `prevComment` to render groups of comments by the same author.
   return (
     <View style={styles.commentContainer}>
-      <UserAvatar url={comment.author.photo?.url} style={styles.authorAvatar} />
+      <Pressable onPress={() => navigateToUser(comment.author)}>
+        <UserAvatar url={comment.author.photo?.url} style={styles.authorAvatar} />
+      </Pressable>
       <View style={{ flex: 1 }}>
         <View style={styles.commentMeta}>
-          <Text style={styles.authorUsername}>{comment.author.username}</Text>
+          <Pressable onPress={() => navigateToUser(comment.author)}>
+            <Text style={styles.authorUsername}>{comment.author.username}</Text>
+          </Pressable>
           <Text style={styles.commentDate}>{toRecentDate(comment.createdTime)}</Text>
         </View>
         <View style={styles.commentBody}>
-          <MessageBody body={comment.body} styles={commentBodyStyles} />
+          <MessageBody
+            body={comment.body}
+            styles={commentBodyStyles}
+            navigateToUser={navigateToUser}
+          />
         </View>
-        {comment.replies?.length ? <CommentReplies replies={comment.replies} /> : null}
+        {comment.replies?.length ? (
+          <CommentReplies replies={comment.replies} navigateToUser={navigateToUser} />
+        ) : null}
       </View>
     </View>
   );
 };
 
 export const CommentsList = ({ deckId, isOpen }) => {
+  const { push } = useNavigation();
   const [comments, setComments] = React.useState(null);
+
   React.useEffect(() => {
     // TODO: fetch from api
     if (isOpen) {
@@ -135,13 +150,27 @@ export const CommentsList = ({ deckId, isOpen }) => {
     }
   }, [isOpen, deckId]);
 
+  const navigateToUser = React.useCallback(
+    (user) =>
+      push(
+        'Profile',
+        { userId: user.userId },
+        {
+          isFullscreen: true,
+        }
+      ),
+    [push]
+  );
+
   const renderItem = React.useCallback(
     ({ item, index }) => {
       const comment = item;
       const prevComment = index > 0 ? comments[index - 1] : null;
-      return <Comment comment={comment} prevComment={prevComment} />;
+      return (
+        <Comment comment={comment} prevComment={prevComment} navigateToUser={navigateToUser} />
+      );
     },
-    [comments]
+    [comments, navigateToUser]
   );
 
   return (
