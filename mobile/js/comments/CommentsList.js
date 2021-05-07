@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { MessageBody } from '../components/MessageBody';
+import { toRecentDate } from '../common/date-utilities';
 import { UserAvatar } from '../components/UserAvatar';
 
 const styles = StyleSheet.create({
@@ -11,15 +12,23 @@ const styles = StyleSheet.create({
   commentContainer: {
     flexDirection: 'row',
   },
+  commentMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  commentDate: {
+    color: '#666',
+    fontSize: 12,
+  },
   commentBody: {
-    paddingVertical: 8,
+    paddingBottom: 8,
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
   authorUsername: {
     fontWeight: 'bold',
     marginRight: 8,
-    paddingTop: 8,
+    lineHeight: 32,
   },
   authorAvatar: {
     width: 24,
@@ -45,6 +54,7 @@ const commentBodyStyles = StyleSheet.create({
 const DUMMY_COMMENT = {
   id: 0,
   commentId: 0,
+  createdTime: '2021-05-05T21:19:31.415Z',
   author: {
     username: 'ben',
     photo: {
@@ -61,6 +71,7 @@ const DUMMY_COMMENT = {
 const DUMMY_REPLY = {
   id: 0,
   commentId: 0,
+  createdTime: '2021-05-06T21:19:31.415Z',
   author: {
     username: 'jesse',
     photo: {
@@ -102,7 +113,10 @@ const Comment = ({ comment, prevComment }) => {
     <View style={styles.commentContainer}>
       <UserAvatar url={comment.author.photo?.url} style={styles.authorAvatar} />
       <View style={{ flex: 1 }}>
-        <Text style={styles.authorUsername}>{comment.author.username}</Text>
+        <View style={styles.commentMeta}>
+          <Text style={styles.authorUsername}>{comment.author.username}</Text>
+          <Text style={styles.commentDate}>{toRecentDate(comment.createdTime)}</Text>
+        </View>
         <View style={styles.commentBody}>
           <MessageBody body={comment.body} styles={commentBodyStyles} />
         </View>
