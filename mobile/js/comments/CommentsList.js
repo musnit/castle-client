@@ -56,7 +56,7 @@ const DUMMY_COMMENT = {
   id: 0,
   commentId: 0,
   createdTime: '2021-05-05T21:19:31.415Z',
-  author: {
+  fromUser: {
     userId: 6,
     username: 'ben',
     photo: {
@@ -67,14 +67,14 @@ const DUMMY_COMMENT = {
   body: {
     message: [{ text: 'Cool game bruu' }],
   },
-  replies: [],
+  childComments: [],
 };
 
 const DUMMY_REPLY = {
   id: 0,
   commentId: 0,
   createdTime: '2021-05-06T21:19:31.415Z',
-  author: {
+  fromUser: {
     userId: 1,
     username: 'jesse',
     photo: {
@@ -88,13 +88,13 @@ const DUMMY_REPLY = {
 };
 
 const DUMMY_COMMENTS = new Array(20).fill(DUMMY_COMMENT).map((comment, ii) => {
-  let replies = [...comment.replies];
+  let childComments = [...comment.childComments];
   if (ii === 2 || ii === 12) {
-    replies.push(DUMMY_REPLY);
+    childComments.push(DUMMY_REPLY);
   }
   return {
     ...comment,
-    replies,
+    childComments,
     id: ii,
     commentId: ii,
   };
@@ -114,13 +114,13 @@ const Comment = ({ comment, prevComment, navigateToUser }) => {
   // could use `prevComment` to render groups of comments by the same author.
   return (
     <View style={styles.commentContainer}>
-      <Pressable onPress={() => navigateToUser(comment.author)}>
-        <UserAvatar url={comment.author.photo?.url} style={styles.authorAvatar} />
+      <Pressable onPress={() => navigateToUser(comment.fromUser)}>
+        <UserAvatar url={comment.fromUser.photo?.url} style={styles.authorAvatar} />
       </Pressable>
       <View style={{ flex: 1 }}>
         <View style={styles.commentMeta}>
-          <Pressable onPress={() => navigateToUser(comment.author)}>
-            <Text style={styles.authorUsername}>{comment.author.username}</Text>
+          <Pressable onPress={() => navigateToUser(comment.fromUser)}>
+            <Text style={styles.authorUsername}>{comment.fromUser.username}</Text>
           </Pressable>
           <Text style={styles.commentDate}>{toRecentDate(comment.createdTime)}</Text>
         </View>
@@ -131,8 +131,8 @@ const Comment = ({ comment, prevComment, navigateToUser }) => {
             navigateToUser={navigateToUser}
           />
         </View>
-        {comment.replies?.length ? (
-          <CommentReplies replies={comment.replies} navigateToUser={navigateToUser} />
+        {comment.childComments?.length ? (
+          <CommentReplies replies={comment.childComments} navigateToUser={navigateToUser} />
         ) : null}
       </View>
     </View>
