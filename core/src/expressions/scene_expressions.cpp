@@ -62,24 +62,27 @@ struct ActorRef {
         return taggedActorIds.data()[0];
       } else {
         // Multiple actors with this tag
+        auto actorId = ctx.actorId;
         auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
-        if (auto body = bodyBehavior.maybeGetPhysicsBody(ctx.actorId)) {
+        if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
           // Current actor has a body -- return closest with tag
           auto pos = body->GetPosition();
           ActorId closestActorId = nullActor;
           auto closestSqDist = std::numeric_limits<float>::max();
           for (auto taggedActorId : taggedActorIds) {
-            if (auto taggedBody = bodyBehavior.maybeGetPhysicsBody(taggedActorId)) {
-              // Has a body -- check if closer
-              auto sqDist = (taggedBody->GetPosition() - pos).LengthSquared();
-              if (sqDist < closestSqDist) {
-                closestActorId = taggedActorId;
-                closestSqDist = sqDist;
-              }
-            } else {
-              // Doesn't have a body -- assume it's at infinity
-              if (closestSqDist == std::numeric_limits<float>::max()) {
-                closestActorId = taggedActorId;
+            if (taggedActorId != actorId) {
+              if (auto taggedBody = bodyBehavior.maybeGetPhysicsBody(taggedActorId)) {
+                // Has a body -- check if closer
+                auto sqDist = (taggedBody->GetPosition() - pos).LengthSquared();
+                if (sqDist < closestSqDist) {
+                  closestActorId = taggedActorId;
+                  closestSqDist = sqDist;
+                }
+              } else {
+                // Doesn't have a body -- assume it's at infinity
+                if (closestSqDist == std::numeric_limits<float>::max()) {
+                  closestActorId = taggedActorId;
+                }
               }
             }
           }

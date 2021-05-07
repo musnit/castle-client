@@ -43,9 +43,10 @@ struct MoveTowardActorResponse : BaseResponse {
 
   void run(RuleContext &ctx) override {
     // Need a body
+    auto actorId = ctx.actorId;
     auto &scene = ctx.getScene();
     auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
-    if (auto body = bodyBehavior.maybeGetPhysicsBody(ctx.actorId)) {
+    if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
       // Find actors with tag
       auto &tagsBehavior = scene.getBehaviors().byType<TagsBehavior>();
       auto &taggedActorIds = tagsBehavior.getActors(params.tag());
@@ -59,17 +60,19 @@ struct MoveTowardActorResponse : BaseResponse {
       auto closestSqDist = std::numeric_limits<float>::max();
       auto found = false;
       for (auto taggedActorId : taggedActorIds) {
-        if (auto taggedBody = bodyBehavior.maybeGetPhysicsBody(taggedActorId)) {
-          auto delta = taggedBody->GetPosition() - pos;
-          auto sqDist = delta.LengthSquared();
-          if (sqDist < closestSqDist) {
-            closestDelta = delta;
-            closestSqDist = sqDist;
-            found = true;
+        if (taggedActorId != actorId) {
+          if (auto taggedBody = bodyBehavior.maybeGetPhysicsBody(taggedActorId)) {
+            auto delta = taggedBody->GetPosition() - pos;
+            auto sqDist = delta.LengthSquared();
+            if (sqDist < closestSqDist) {
+              closestDelta = delta;
+              closestSqDist = sqDist;
+              found = true;
+            }
           }
         }
       }
-      if (found) {
+      if (found && closestSqDist > 0) {
         // Apply impulse
         auto mass = body->GetMass();
         auto speed = params.speed().eval<float>(ctx);
