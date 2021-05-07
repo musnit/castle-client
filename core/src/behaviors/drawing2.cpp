@@ -62,8 +62,10 @@ struct AnimationFrameMeetsConditionResponse : BaseResponse {
     auto &comparison = params.comparison();
     auto frame = params.frame().eval(ctx);
     if (auto component = drawing2Behavior.maybeGetComponent(ctx.actorId)) {
-      auto currFrame = ExpressionValue(component->animationComponentProperties.currentFrame);
-      return currFrame.compare(comparison, frame);
+      auto drawData = component->drawData.get();
+      auto &animProps = component->animationComponentProperties;
+      auto oneIndexedFrame = drawData->modFrameIndex(animProps.currentFrame) + 1;
+      return ExpressionValue(oneIndexedFrame).compare(comparison, frame);
     }
     return false;
   }
@@ -199,9 +201,9 @@ void Drawing2Behavior::fireChangeFrameTriggers(
   auto drawData = component.drawData.get();
   auto &animProps = component.animationComponentProperties;
   rulesBehavior.fire<AnimationFrameChangesTrigger>(actorId, {});
-  auto currFrame = ExpressionValue(drawData->modFrameIndex(animProps.currentFrame));
+  auto oneIndexedFrame = ExpressionValue(drawData->modFrameIndex(animProps.currentFrame) + 1);
   rulesBehavior.fireIf<AnimationReachesFrameTrigger>(
       actorId, {}, [&](const AnimationReachesFrameTrigger &trigger) {
-        return currFrame.compare(trigger.params.comparison(), trigger.params.frame());
+        return oneIndexedFrame.compare(trigger.params.comparison(), trigger.params.frame());
       });
 }
