@@ -6,16 +6,13 @@ import { UserAvatar } from '../components/UserAvatar';
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
+    paddingVertical: 8,
   },
   commentContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 8,
   },
   commentBody: {
-    backgroundColor: '#ddd',
-    padding: 8,
-    borderRadius: 6,
+    paddingVertical: 8,
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
@@ -27,7 +24,11 @@ const styles = StyleSheet.create({
   authorAvatar: {
     width: 24,
     height: 24,
-    marginRight: 16,
+    marginRight: 12,
+    marginTop: 4,
+  },
+  repliesContainer: {
+    paddingLeft: 8,
   },
 });
 
@@ -54,18 +55,58 @@ const DUMMY_COMMENT = {
   body: {
     message: [{ text: 'Cool game bruu' }],
   },
+  replies: [],
 };
-const DUMMY_COMMENTS = new Array(20)
-  .fill(DUMMY_COMMENT)
-  .map((comment, ii) => ({ ...comment, id: ii, commentId: ii }));
+
+const DUMMY_REPLY = {
+  id: 0,
+  commentId: 0,
+  author: {
+    username: 'jesse',
+    photo: {
+      url:
+        'https://castle.imgix.net/e9826782deed21a5b952a37b4861aeed?auto=compress&fit=crop&min-w=420',
+    },
+  },
+  body: {
+    message: [{ text: 'here is a reply' }],
+  },
+};
+
+const DUMMY_COMMENTS = new Array(20).fill(DUMMY_COMMENT).map((comment, ii) => {
+  let replies = [...comment.replies];
+  if (ii === 2 || ii === 12) {
+    replies.push(DUMMY_REPLY);
+  }
+  return {
+    ...comment,
+    replies,
+    id: ii,
+    commentId: ii,
+  };
+});
+
+const CommentReplies = ({ replies }) => {
+  return (
+    <View style={styles.repliesContainer}>
+      {replies.map((reply, ii) => (
+        <Comment comment={reply} key={`reply-${ii}`} />
+      ))}
+    </View>
+  );
+};
 
 const Comment = ({ comment, prevComment }) => {
   // could use `prevComment` to render groups of comments by the same author.
   return (
     <View style={styles.commentContainer}>
       <UserAvatar url={comment.author.photo?.url} style={styles.authorAvatar} />
-      <View style={styles.commentBody}>
-        <MessageBody body={comment.body} styles={commentBodyStyles} />
+      <View style={{ flex: 1 }}>
+        <Text style={styles.authorUsername}>{comment.author.username}</Text>
+        <View style={styles.commentBody}>
+          <MessageBody body={comment.body} styles={commentBodyStyles} />
+        </View>
+        {comment.replies?.length ? <CommentReplies replies={comment.replies} /> : null}
       </View>
     </View>
   );
