@@ -156,7 +156,7 @@ ExpressionValue Drawing2Behavior::handleGetProperty(
     ActorId actorId, const Drawing2Component &component, PropId propId) const {
   auto &animProps = component.animationComponentProperties;
   if (propId == decltype(DrawingAnimationProps::currentFrame)::id) {
-    return animProps.currentFrame;
+    return animProps.currentFrame + 1;
   } else if (propId == decltype(DrawingAnimationProps::playMode)::id) {
     // TODO(nikki): Handle string values, then implement this
     return {};
@@ -176,7 +176,7 @@ void Drawing2Behavior::handleSetProperty(
   fireChangeFrameTriggers(actorId, component);
   auto &animProps = component.animationComponentProperties;
   if (propId == decltype(DrawingAnimationProps::currentFrame)::id) {
-    animProps.currentFrame = value.as<int>();
+    animProps.currentFrame = value.as<int>() - 1;
   } else if (propId == decltype(DrawingAnimationProps::playMode)::id) {
     // TODO(nikki): Handle string values, then implement this
   } else if (propId == decltype(DrawingAnimationProps::framesPerSecond)::id) {
