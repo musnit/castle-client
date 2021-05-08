@@ -79,15 +79,17 @@ struct IsCollidingResponse : BaseResponse {
     auto &tagsBehavior = ctx.getScene().getBehaviors().byType<TagsBehavior>();
     if (auto body = bodyBehavior.maybeGetPhysicsBody(ctx.actorId)) {
       const auto tag = params.tag();
-      auto contactEdge = body->GetContactList();
-      if (contactEdge && tag == emptyTag) {
-        return true; // Found at least one collider and not filtering by tag
-      }
-      for (; contactEdge; contactEdge = contactEdge->next) {
-        auto body1 = contactEdge->contact->GetFixtureA()->GetBody();
-        auto body2 = contactEdge->contact->GetFixtureB()->GetBody();
-        auto otherBody = body == body1 ? body2 : body1;
-        return tagsBehavior.hasTag(bodyBehavior.maybeGetActorId(otherBody), tag);
+      for (auto contactEdge = body->GetContactList(); contactEdge;
+           contactEdge = contactEdge->next) {
+        if (auto contact = contactEdge->contact; contact->IsTouching()) {
+          auto body1 = contactEdge->contact->GetFixtureA()->GetBody();
+          auto body2 = contactEdge->contact->GetFixtureB()->GetBody();
+          auto otherBody = body == body1 ? body2 : body1;
+          if (tag == emptyTag
+              || tagsBehavior.hasTag(bodyBehavior.maybeGetActorId(otherBody), tag)) {
+            return true;
+          }
+        }
       }
     }
     return false;
