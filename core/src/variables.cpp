@@ -57,6 +57,24 @@ struct SetVariableResponse : BaseResponse {
   }
 };
 
+struct VariableMeetsConditionResponse : BaseResponse {
+  inline static const RuleRegistration<VariableMeetsConditionResponse, RulesBehavior> registration {
+    "variable meets condition"
+  };
+
+  struct Params {
+    PROP(Variable, variableId);
+    PROP(std::string, comparison);
+    PROP(ExpressionRef, value);
+  } params;
+
+  bool eval(RuleContext &ctx) override {
+    auto &variables = ctx.getScene().getVariables();
+    auto value = params.value().eval(ctx);
+    return variables.get(params.variableId()).compare(params.comparison(), value);
+  }
+};
+
 
 //
 // Reading
@@ -96,6 +114,10 @@ void Variables::set(Variable variable, ExpressionValue value) {
   if (auto elem = map.lookup(variable.token)) {
     elem->value = value;
     if (scene) {
+      // PERF: Scans through /all/ variable-related triggers to find the ones pertaining to this
+      //       variable. Maybe keep a mapping from variable somewhere? Tricky because we have to
+      //       add / remove as actors are added / removed -- maybe should just do it in rules
+      //       behavior.
       auto &rulesBehavior = scene->getBehaviors().byType<RulesBehavior>();
       rulesBehavior.fireAllIf<VariableChangesTrigger>(
           {}, [&](ActorId actorId, const VariableChangesTrigger &trigger) {
