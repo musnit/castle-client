@@ -34,6 +34,33 @@ struct VariableChangesTrigger : BaseTrigger {
 // Responses
 //
 
+struct ResetVariableResponse : BaseResponse {
+  inline static const RuleRegistration<ResetVariableResponse, RulesBehavior> registration {
+    "reset variable"
+  };
+
+  struct Params {
+    PROP(Variable, variableId);
+  } params;
+
+  void run(RuleContext &ctx) override {
+    ctx.getScene().getVariables().reset(params.variableId());
+  }
+};
+
+struct ResetAllVariablesResponse : BaseResponse {
+  inline static const RuleRegistration<ResetAllVariablesResponse, RulesBehavior> registration {
+    "reset all variables"
+  };
+
+  struct Params {
+  } params;
+
+  void run(RuleContext &ctx) override {
+    ctx.getScene().getVariables().resetAll();
+  }
+};
+
 struct SetVariableResponse : BaseResponse {
   inline static const RuleRegistration<SetVariableResponse, RulesBehavior> registration {
     "set variable"
@@ -112,23 +139,39 @@ void Variables::read(Reader &reader) {
 
 void Variables::set(Variable variable, ExpressionValue value) {
   if (auto elem = map.lookup(variable.token)) {
-    elem->value = value;
-    if (scene) {
-      // PERF: Scans through /all/ variable-related triggers to find the ones pertaining to this
-      //       variable. Maybe keep a mapping from variable somewhere? Tricky because we have to
-      //       add / remove as actors are added / removed -- maybe should just do it in rules
-      //       behavior.
-      auto &rulesBehavior = scene->getBehaviors().byType<RulesBehavior>();
-      rulesBehavior.fireAllIf<VariableChangesTrigger>(
-          {}, [&](ActorId actorId, const VariableChangesTrigger &trigger) {
-            return trigger.params.variableId() == variable;
-          });
-      rulesBehavior.fireAllIf<VariableReachesValueTrigger>(
-          {}, [&](ActorId actorId, const VariableReachesValueTrigger &trigger) {
-            return trigger.params.variableId() == variable
-                && value.compare(trigger.params.comparison(), trigger.params.value());
-          });
-    }
+    set(variable, *elem, value);
+  }
+}
+
+void Variables::reset(Variable variable) {
+  if (auto elem = map.lookup(variable.token)) {
+    set(variable, *elem, elem->initialValue);
+  }
+}
+
+void Variables::resetAll() {
+  map.forEach([&](Map::Token token, MapElem &elem) {
+    set(Variable(token), elem, elem.initialValue);
+  });
+}
+
+void Variables::set(Variable variable, MapElem &elem, ExpressionValue value) {
+  elem.value = value;
+  if (scene) {
+    // PERF: Scans through /all/ variable-related triggers to find the ones pertaining to this
+    //       variable. Maybe keep a mapping from variable somewhere? Tricky because we have to
+    //       add / remove as actors are added / removed -- maybe should just do it in rules
+    //       behavior.
+    auto &rulesBehavior = scene->getBehaviors().byType<RulesBehavior>();
+    rulesBehavior.fireAllIf<VariableChangesTrigger>(
+        {}, [&](ActorId actorId, const VariableChangesTrigger &trigger) {
+          return trigger.params.variableId() == variable;
+        });
+    rulesBehavior.fireAllIf<VariableReachesValueTrigger>(
+        {}, [&](ActorId actorId, const VariableReachesValueTrigger &trigger) {
+          return trigger.params.variableId() == variable
+              && value.compare(trigger.params.comparison(), trigger.params.value());
+        });
   }
 }
 

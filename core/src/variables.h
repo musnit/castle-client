@@ -66,6 +66,8 @@ public:
 
   ExpressionValue get(Variable variable) const; // Default `ExpressionValue` if no such variable
   void set(Variable variable, ExpressionValue value);
+  void reset(Variable variable);
+  void resetAll();
 
 
   // Perform
@@ -77,6 +79,9 @@ private:
   Map map; // NOTE: Keyed by variable id, not name
 
   Scene *scene = nullptr;
+
+
+  void set(Variable variable, MapElem &elem, ExpressionValue value);
 };
 
 using Variable = Variables::Variable;
