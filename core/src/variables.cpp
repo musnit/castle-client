@@ -1,6 +1,61 @@
 #include "variables.h"
 
-#include "behaviors/rules.h"
+#include "behaviors/all.h"
+
+
+//
+// Triggers
+//
+
+struct VariableReachesValueTrigger : BaseTrigger {
+  inline static const RuleRegistration<VariableReachesValueTrigger, RulesBehavior> registration {
+    "variable reaches value"
+  };
+
+  struct Params {
+    PROP(Variable, variableId);
+    PROP(std::string, comparison) = "equal";
+    PROP(double, value) = 0;
+  } params;
+};
+
+struct VariableChangesTrigger : BaseTrigger {
+  inline static const RuleRegistration<VariableChangesTrigger, RulesBehavior> registration {
+    "variable changees"
+  };
+
+  struct Params {
+    PROP(Variable, variableId);
+  } params;
+};
+
+
+//
+// Responses
+//
+
+struct SetVariableResponse : BaseResponse {
+  inline static const RuleRegistration<SetVariableResponse, RulesBehavior> registration {
+    "set variable"
+  };
+
+  struct Params {
+    PROP(Variable, variableId);
+    PROP(ExpressionRef, setToValue);
+    PROP(bool, relative);
+  } params;
+
+  void run(RuleContext &ctx) override {
+    auto variable = params.variableId();
+    auto &variables = ctx.getScene().getVariables();
+    auto value = params.setToValue().eval(ctx);
+    if (params.relative() && value.is<double>()) {
+      variables.set(variable, variables.get(variable).as<double>() + value.as<double>());
+    } else {
+      variables.set(variable, value);
+    }
+  }
+};
 
 
 //
@@ -30,6 +85,29 @@ void Variables::read(Reader &reader) {
     auto token = map.getToken(*variableId);
     map.insert(token, MapElem(*name, reader.num("initialValue", 0)));
   });
+}
+
+
+//
+// Get, set
+//
+
+void Variables::set(Variable variable, ExpressionValue value) {
+  if (auto elem = map.lookup(variable.token)) {
+    elem->value = value;
+    if (scene) {
+      auto &rulesBehavior = scene->getBehaviors().byType<RulesBehavior>();
+      rulesBehavior.fireAllIf<VariableChangesTrigger>(
+          {}, [&](ActorId actorId, const VariableChangesTrigger &trigger) {
+            return trigger.params.variableId() == variable;
+          });
+      rulesBehavior.fireAllIf<VariableReachesValueTrigger>(
+          {}, [&](ActorId actorId, const VariableReachesValueTrigger &trigger) {
+            return trigger.params.variableId() == variable
+                && value.compare(trigger.params.comparison(), trigger.params.value());
+          });
+    }
+  }
 }
 
 

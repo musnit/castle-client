@@ -458,34 +458,6 @@ struct CoinFlipResponse : BaseResponse {
 
 
 //
-// Variables responses
-//
-
-struct SetVariableResponse : BaseResponse {
-  inline static const RuleRegistration<SetVariableResponse, RulesBehavior> registration {
-    "set variable"
-  };
-
-  struct Params {
-    PROP(Variable, variableId);
-    PROP(ExpressionRef, setToValue);
-    PROP(bool, relative);
-  } params;
-
-  void run(RuleContext &ctx) override {
-    auto variable = params.variableId();
-    auto &variables = ctx.getScene().getVariables();
-    auto value = params.setToValue().eval(ctx);
-    if (params.relative() && value.is<double>()) {
-      variables.set(variable, variables.get(variable).as<double>() + value.as<double>());
-    } else {
-      variables.set(variable, value);
-    }
-  }
-};
-
-
-//
 // Sound responses
 //
 

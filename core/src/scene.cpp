@@ -11,6 +11,9 @@ Scene::Scene(Variables &variables_, Reader *maybeReader)
     : variables(variables_)
     , physicsContactListener(*this)
     , behaviors(std::make_unique<AllBehaviors>(*this)) {
+  // Tell variables about us
+  variables.setScene(this);
+
   // Physics setup
   {
     // Associate contact listener
@@ -31,7 +34,10 @@ Scene::Scene(Variables &variables_, Reader *maybeReader)
   }
 }
 
-Scene::~Scene() = default;
+Scene::~Scene() {
+  // Tell variables we no longer exist
+  variables.setScene(nullptr);
+}
 
 Scene::Scene(Scene &&) = default;
 
