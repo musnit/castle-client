@@ -25,6 +25,14 @@ struct AnimationLoopTrigger : BaseTrigger {
   } params;
 };
 
+struct AnimationFrameChangesTrigger : BaseTrigger {
+  inline static const RuleRegistration<AnimationFrameChangesTrigger, Drawing2Behavior>
+      registration { "animation frame changes" };
+
+  struct Params {
+  } params;
+};
+
 struct AnimationReachesFrameTrigger : BaseTrigger {
   inline static const RuleRegistration<AnimationReachesFrameTrigger, Drawing2Behavior>
       registration { "animation reaches frame" };
@@ -32,14 +40,6 @@ struct AnimationReachesFrameTrigger : BaseTrigger {
   struct Params {
     PROP(std::string, comparison) = "equal";
     PROP(int, frame) = 1;
-  } params;
-};
-
-struct AnimationFrameChangesTrigger : BaseTrigger {
-  inline static const RuleRegistration<AnimationFrameChangesTrigger, Drawing2Behavior>
-      registration { "animation frame changes" };
-
-  struct Params {
   } params;
 };
 

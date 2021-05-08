@@ -504,6 +504,121 @@ struct NoteResponse : BaseResponse {
 
 
 //
+// Variables triggers
+//
+
+struct VariableChangesTrigger : BaseTrigger {
+  inline static const RuleRegistration<VariableChangesTrigger, RulesBehavior> registration {
+    "variable changes"
+  };
+
+  struct Params {
+    PROP(Variable, variableId);
+  } params;
+};
+
+struct VariableReachesValueTrigger : BaseTrigger {
+  inline static const RuleRegistration<VariableReachesValueTrigger, RulesBehavior> registration {
+    "variable reaches value"
+  };
+
+  struct Params {
+    PROP(Variable, variableId);
+    PROP(std::string, comparison) = "equal";
+    PROP(double, value) = 0;
+  } params;
+};
+
+void RulesBehavior::fireVariablesTriggers(Variable variable, const ExpressionValue &value) {
+  // PERF: Scans through /all/ variable-related triggers to find the ones pertaining to this
+  //       variable. Maybe keep a mapping from variable somewhere? Should also add / remove as
+  //       actors are added / removed.
+  fireAllIf<VariableChangesTrigger>(
+      {}, [&](ActorId actorId, const VariableChangesTrigger &trigger) {
+        return trigger.params.variableId() == variable;
+      });
+  fireAllIf<VariableReachesValueTrigger>(
+      {}, [&](ActorId actorId, const VariableReachesValueTrigger &trigger) {
+        return trigger.params.variableId() == variable
+            && value.compare(trigger.params.comparison(), trigger.params.value());
+      });
+}
+
+
+//
+// Variables responses
+//
+
+struct ResetVariableResponse : BaseResponse {
+  inline static const RuleRegistration<ResetVariableResponse, RulesBehavior> registration {
+    "reset variable"
+  };
+
+  struct Params {
+    PROP(Variable, variableId);
+  } params;
+
+  void run(RuleContext &ctx) override {
+    ctx.getScene().getVariables().reset(params.variableId());
+  }
+};
+
+struct ResetAllVariablesResponse : BaseResponse {
+  inline static const RuleRegistration<ResetAllVariablesResponse, RulesBehavior> registration {
+    "reset all variables"
+  };
+
+  struct Params {
+  } params;
+
+  void run(RuleContext &ctx) override {
+    ctx.getScene().getVariables().resetAll();
+  }
+};
+
+struct SetVariableResponse : BaseResponse {
+  inline static const RuleRegistration<SetVariableResponse, RulesBehavior> registration {
+    "set variable"
+  };
+
+  struct Params {
+    PROP(Variable, variableId);
+    PROP(ExpressionRef, setToValue);
+    PROP(bool, relative);
+  } params;
+
+  void run(RuleContext &ctx) override {
+    auto variable = params.variableId();
+    auto &variables = ctx.getScene().getVariables();
+    auto value = params.setToValue().eval(ctx);
+    if (params.relative() && value.is<double>()) {
+      variables.set(variable, variables.get(variable).as<double>() + value.as<double>());
+    } else {
+      variables.set(variable, value);
+    }
+  }
+};
+
+struct VariableMeetsConditionResponse : BaseResponse {
+  inline static const RuleRegistration<VariableMeetsConditionResponse, RulesBehavior> registration {
+    "variable meets condition"
+  };
+
+  struct Params {
+    PROP(Variable, variableId);
+    PROP(std::string, comparison);
+    PROP(ExpressionRef, value);
+  } params;
+
+  bool eval(RuleContext &ctx) override {
+    auto &variables = ctx.getScene().getVariables();
+    auto value = params.value().eval(ctx);
+    return variables.get(params.variableId()).compare(params.comparison(), value);
+  }
+};
+
+
+//
 // Constructor, destructor
 //
 

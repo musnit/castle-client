@@ -5,6 +5,7 @@
 #include "behaviors/base.h"
 #include "props.h"
 #include "expressions/value.h"
+#include "variables.h"
 
 
 //
@@ -151,6 +152,8 @@ public:
 
   template<typename Trigger>
   bool hasTrigger(ActorId actorId) const;
+
+  void fireVariablesTriggers(Variable variable, const ExpressionValue &value);
 
 
   // Response scheduling

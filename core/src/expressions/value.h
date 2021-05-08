@@ -22,7 +22,7 @@ public:
   T as(T def
       = {}) const; // Get the the current value as C++ type `T`, or given default if not `is<T>()`
 
-  bool compare(const std::string &comparison, const ExpressionValue &rhs);
+  bool compare(const std::string &comparison, const ExpressionValue &rhs) const;
 
 
 private:
@@ -54,7 +54,8 @@ T ExpressionValue::as(T def) const {
   }
 }
 
-inline bool ExpressionValue::compare(const std::string &comparison, const ExpressionValue &rhs) {
+inline bool ExpressionValue::compare(
+    const std::string &comparison, const ExpressionValue &rhs) const {
   switch (comparison[0]) {
   case 'e': { // "equal"
     return value == rhs.value;
