@@ -52,9 +52,10 @@ public:
   };
 
 
-  // Scene association
+  // Scene linking (for firing triggers)
 
-  void setScene(Scene *scene_); // Set to `nullptr` to dissociate
+  void linkScene(Scene *scene_);
+  void unlinkScene(Scene *scene_);
 
 
   // Read
@@ -102,8 +103,14 @@ inline Variable::Variable(Variables::Map::Token token_)
     : token(token_) {
 }
 
-inline void Variables::setScene(Scene *scene_) {
+inline void Variables::linkScene(Scene *scene_) {
   scene = scene_;
+}
+
+inline void Variables::unlinkScene(Scene *scene_) {
+  if (scene == scene_) {
+    scene = nullptr;
+  }
 }
 
 inline const ExpressionValue &Variables::get(Variable variable) const {

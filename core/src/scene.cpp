@@ -11,8 +11,8 @@ Scene::Scene(Variables &variables_, Reader *maybeReader)
     : variables(variables_)
     , physicsContactListener(*this)
     , behaviors(std::make_unique<AllBehaviors>(*this)) {
-  // Tell variables about us
-  variables.setScene(this);
+  // Link to variables
+  variables.linkScene(this);
 
   // Physics setup
   {
@@ -35,8 +35,8 @@ Scene::Scene(Variables &variables_, Reader *maybeReader)
 }
 
 Scene::~Scene() {
-  // Tell variables we no longer exist
-  variables.setScene(nullptr);
+  // Unlink from variables
+  variables.unlinkScene(this);
 }
 
 Scene::Scene(Scene &&) = default;
