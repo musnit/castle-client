@@ -28,4 +28,5 @@ public:
 
   friend struct CounterValueExpression;
   friend struct SetCounterResponse;
+  friend struct CounterMeetsConditionResponse;
 };
