@@ -4,9 +4,9 @@
 #include "archive.h"
 #include "js.h"
 
-JS_DEFINE(int, JS_updateTextActors, (const char *msg, int lenmsg), {
+JS_DEFINE(int, JS_updateTextActors, (const char *msg, int msgLen), {
   if (Castle.updateTextActors) {
-    Castle.updateTextActors(UTF8ToString(msg, lenmsg));
+    Castle.updateTextActors(UTF8ToString(msg, msgLen));
   }
 });
 
@@ -18,8 +18,11 @@ JS_DEFINE(int, JS_getClickedTextActorId, (), {
   }
 });
 
-JS_DEFINE(int, JS_navigateToCard, (const char *msg, int lenmsg),
-    { Castle.navigateToCardId(UTF8ToString(msg, lenmsg)); });
+JS_DEFINE(int, JS_navigateToCardId, (const char *cardId, int cardIdLen),
+    { Castle.navigateToCardId(UTF8ToString(cardId, cardIdLen)); });
+
+JS_DEFINE(int, JS_preloadCardId, (const char *cardId, int cardIdLen),
+    { Castle.preloadCardId(UTF8ToString(cardId, cardIdLen)); });
 
 struct TextTapTrigger : BaseTrigger {
   inline static const RuleRegistration<TextTapTrigger, TextBehavior> registration { "tap" };
@@ -34,6 +37,7 @@ struct Card {
   void read(Reader &reader) {
     title = reader.str("title", "");
     cardId = reader.str("cardId", "");
+    JS_preloadCardId(cardId.c_str(), cardId.size());
   }
 
   std::string title;
@@ -50,7 +54,7 @@ struct SendPlayerToCardResponse : BaseResponse {
   } params;
 
   void run(RuleContext &ctx) override {
-    JS_navigateToCard(params.card().cardId.c_str(), params.card().cardId.length());
+    JS_navigateToCardId(params.card().cardId.c_str(), params.card().cardId.length());
   }
 };
 
