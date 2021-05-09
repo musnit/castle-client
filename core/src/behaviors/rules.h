@@ -140,7 +140,7 @@ public:
   bool fireAllEnabled(RuleContextExtras extras); // Fire on all with trigger and enabled components
   template<typename Trigger, typename... Component, typename F>
   bool fireAllIf(RuleContextExtras extras,
-      F &&filter); // Like above but also `filter` must return `true`.
+      F &&filter); // Like above but `filter` must return `true` (enablement is not checked).
                    // `F` is `(ActorId, const Trigger &, const Component &...) -> bool`
 
   template<typename Trigger>

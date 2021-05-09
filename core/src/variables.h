@@ -64,7 +64,7 @@ public:
 
   // Get / set
 
-  ExpressionValue get(Variable variable) const; // Default `ExpressionValue` if no such variable
+  const ExpressionValue &get(Variable variable) const; // Default `ExpressionValue` if no such
   void set(Variable variable, ExpressionValue value);
   void reset(Variable variable);
   void resetAll();
@@ -106,10 +106,11 @@ inline void Variables::setScene(Scene *scene_) {
   scene = scene_;
 }
 
-inline ExpressionValue Variables::get(Variable variable) const {
+inline const ExpressionValue &Variables::get(Variable variable) const {
   if (auto elem = map.lookup(variable.token)) {
     return elem->value;
   } else {
-    return {};
+    static ExpressionValue empty;
+    return empty;
   }
 }

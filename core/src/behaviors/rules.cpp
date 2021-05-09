@@ -531,8 +531,8 @@ struct VariableReachesValueTrigger : BaseTrigger {
 
 void RulesBehavior::fireVariablesTriggers(Variable variable, const ExpressionValue &value) {
   // PERF: Scans through /all/ variable-related triggers to find the ones pertaining to this
-  //       variable. Maybe keep a mapping from variable somewhere? Should also add / remove as
-  //       actors are added / removed.
+  //       variable. Maybe keep a mapping from variable somewhere? Would also have to add / remove
+  //       those mappings as actors are added / removed.
   fireAllIf<VariableChangesTrigger>(
       {}, [&](ActorId actorId, const VariableChangesTrigger &trigger) {
         return trigger.params.variableId() == variable;
@@ -543,6 +543,11 @@ void RulesBehavior::fireVariablesTriggers(Variable variable, const ExpressionVal
             && value.compare(trigger.params.comparison(), trigger.params.value());
       });
 }
+
+struct VariableReachesValueTriggerOnAddMarker {
+  // Added to newly added actors to remind ourselves to fire 'variable reaches value' triggers on it
+  // for the current value of variables
+};
 
 
 //
@@ -685,6 +690,9 @@ void RulesBehavior::handleReadComponent(
       }
     });
   });
+
+  // Keep a reminder to fire variable reaches value trigger for current variable values
+  getScene().getEntityRegistry().emplace<VariableReachesValueTriggerOnAddMarker>(actorId);
 }
 
 ResponseRef RulesBehavior::readResponse(Reader &reader) {
@@ -745,6 +753,16 @@ void RulesBehavior::handlePerform(double dt) {
   // Fire create triggers. Then clear them so they're only run once on each actor.
   fireAllEnabled<CreateTrigger>({});
   registry.clear<TriggerComponent<CreateTrigger>>();
+
+  // Fire 'variable reaches value' triggers that match the current value for actors that were newly
+  // added. Then clear the markers so we only check once on each actor.
+  auto &variables = scene.getVariables();
+  fireAllIf<VariableReachesValueTrigger, VariableReachesValueTriggerOnAddMarker>(
+      {}, [&](ActorId actorId, const VariableReachesValueTrigger &trigger) {
+        auto &currValue = variables.get(trigger.params.variableId());
+        return currValue.compare(trigger.params.comparison(), trigger.params.value());
+      });
+  registry.clear<VariableReachesValueTriggerOnAddMarker>();
 
   // Run contexts. Move ready contexts from `scheduleds` to `current`, then run and clear `current`.
   // We don't run contexts directly from `scheduleds` because they could schedule new contexts when
