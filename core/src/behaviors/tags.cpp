@@ -33,13 +33,12 @@ TagVector TagsBehavior::parseTags(const char *str) {
       ++end;
     }
 
-    // Add tag from this word if not already added. We construct a `Tag` directly here and don't use
-    // `getTag` to avoid the copy.
+    // Add tag from this word if not already added.
     std::string word(start, end - start);
     for (auto &c : word) {
       c = std::tolower(c);
     }
-    Tag tag(map.getToken(word.c_str()));
+    auto tag = getTagAlreadyLowercase(word.c_str());
     if (std::find(result.begin(), result.end(), tag) == result.end()) {
       result.push_back(tag);
     }

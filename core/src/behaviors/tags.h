@@ -69,7 +69,8 @@ public:
 
   // string <-> `Tag`
 
-  Tag getTag(const char *str); // Get tag from string with exact single tag (no whitespace)
+  Tag getTag(const char *str); // Get tag from string with exact single tag, case insensitive
+  Tag getTagAlreadyLowercase(const char *str); // Like above but case sensitive (lowercase expected)
   TagVector parseTags(const char *str); // Get from string with space-separated words -- also dedups
   const std::string *getString(Tag tag); // Get string from tag -- `nullptr` if unrecognized
 
@@ -110,7 +111,11 @@ inline Tag TagsBehavior::getTag(const char *str) {
   for (auto &c : lower) {
     c = std::tolower(c);
   }
-  return Tag(map.getToken(lower.c_str()));
+  return getTagAlreadyLowercase(lower.c_str());
+}
+
+inline Tag TagsBehavior::getTagAlreadyLowercase(const char *str) {
+  return Tag(map.getToken(str));
 }
 
 inline const std::string *TagsBehavior::getString(Tag tag) {
