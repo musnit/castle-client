@@ -13,6 +13,18 @@ const styles = StyleSheet.create({
   commentContainer: {
     flexDirection: 'row',
   },
+  authorAvatar: {
+    width: 24,
+    height: 24,
+    marginRight: 8,
+    marginTop: 8,
+  },
+  commentBubble: {
+    backgroundColor: '#f1f1f1',
+    borderRadius: 15,
+    paddingVertical: 2,
+    paddingHorizontal: 12,
+  },
   commentMeta: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -28,17 +40,12 @@ const styles = StyleSheet.create({
   },
   authorUsername: {
     fontWeight: 'bold',
-    marginRight: 8,
+    marginRight: 4,
     lineHeight: 32,
-  },
-  authorAvatar: {
-    width: 24,
-    height: 24,
-    marginRight: 12,
-    marginTop: 4,
   },
   repliesContainer: {
     paddingLeft: 8,
+    marginTop: 8,
   },
 });
 
@@ -104,32 +111,34 @@ const CommentReplies = ({ replies, ...props }) => {
   return (
     <View style={styles.repliesContainer}>
       {replies.map((reply, ii) => (
-        <Comment comment={reply} key={`reply-${ii}`} {...props} />
+        <Comment comment={reply} key={`reply-${ii}`} isReply={false} {...props} />
       ))}
     </View>
   );
 };
 
-const Comment = ({ comment, prevComment, navigateToUser }) => {
+const Comment = ({ comment, isReply = true, prevComment, navigateToUser }) => {
   // could use `prevComment` to render groups of comments by the same author.
   return (
-    <View style={styles.commentContainer}>
+    <View style={[styles.commentContainer, { marginBottom: isReply ? 8 : 0 }]}>
       <Pressable onPress={() => navigateToUser(comment.fromUser)}>
         <UserAvatar url={comment.fromUser.photo?.url} style={styles.authorAvatar} />
       </Pressable>
-      <View style={{ flex: 1 }}>
-        <View style={styles.commentMeta}>
-          <Pressable onPress={() => navigateToUser(comment.fromUser)}>
-            <Text style={styles.authorUsername}>{comment.fromUser.username}</Text>
-          </Pressable>
-          <Text style={styles.commentDate}>{toRecentDate(comment.createdTime)}</Text>
-        </View>
-        <View style={styles.commentBody}>
-          <MessageBody
-            body={comment.body}
-            styles={commentBodyStyles}
-            navigateToUser={navigateToUser}
-          />
+      <View style={{}}>
+        <View style={styles.commentBubble}>
+          <View style={styles.commentMeta}>
+            <Pressable onPress={() => navigateToUser(comment.fromUser)}>
+              <Text style={styles.authorUsername}>{comment.fromUser.username}</Text>
+            </Pressable>
+            <Text style={styles.commentDate}>{toRecentDate(comment.createdTime)}</Text>
+          </View>
+          <View style={styles.commentBody}>
+            <MessageBody
+              body={comment.body}
+              styles={commentBodyStyles}
+              navigateToUser={navigateToUser}
+            />
+          </View>
         </View>
         {comment.childComments?.length ? (
           <CommentReplies replies={comment.childComments} navigateToUser={navigateToUser} />
