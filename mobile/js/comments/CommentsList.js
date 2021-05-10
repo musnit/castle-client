@@ -3,6 +3,7 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { MessageBody } from '../components/MessageBody';
 import { toRecentDate } from '../common/date-utilities';
 import { UserAvatar } from '../components/UserAvatar';
+import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useLazyQuery, gql } from '@apollo/client';
 import { useNavigation } from '../ReactNavigation';
 
@@ -66,21 +67,21 @@ const CommentReplies = ({ replies, ...props }) => {
   return (
     <View style={styles.repliesContainer}>
       {replies.map((reply, ii) => (
-        <Comment comment={reply} key={`reply-${ii}`} isReply={false} {...props} />
+        <Comment comment={reply} key={`reply-${ii}`} isReply {...props} />
       ))}
     </View>
   );
 };
 
-const Comment = ({ comment, isReply = true, prevComment, navigateToUser }) => {
+const Comment = ({ comment, isReply = false, prevComment, navigateToUser, showCommentActions }) => {
   // could use `prevComment` to render groups of comments by the same author.
   return (
-    <View style={[styles.commentContainer, { marginBottom: isReply ? 8 : 0 }]}>
+    <View style={[styles.commentContainer, { marginBottom: isReply ? 0 : 8 }]}>
       <Pressable onPress={() => navigateToUser(comment.fromUser)}>
         <UserAvatar url={comment.fromUser.photo?.url} style={styles.authorAvatar} />
       </Pressable>
       <View>
-        <View style={styles.commentBubble}>
+        <Pressable style={styles.commentBubble} onPress={() => showCommentActions(comment)}>
           <View style={styles.commentMeta}>
             <Pressable onPress={() => navigateToUser(comment.fromUser)}>
               <Text style={styles.authorUsername}>{comment.fromUser.username}</Text>
@@ -94,9 +95,13 @@ const Comment = ({ comment, isReply = true, prevComment, navigateToUser }) => {
               navigateToUser={navigateToUser}
             />
           </View>
-        </View>
+        </Pressable>
         {comment.childComments?.length ? (
-          <CommentReplies replies={comment.childComments} navigateToUser={navigateToUser} />
+          <CommentReplies
+            replies={comment.childComments}
+            navigateToUser={navigateToUser}
+            showCommentActions={showCommentActions}
+          />
         ) : null}
       </View>
     </View>
@@ -106,6 +111,7 @@ const Comment = ({ comment, isReply = true, prevComment, navigateToUser }) => {
 export const CommentsList = ({ deckId, isOpen }) => {
   const { push } = useNavigation();
   const [comments, setComments] = React.useState(null);
+  const { showActionSheetWithOptions } = useActionSheet();
 
   const [fetchComments, query] = useLazyQuery(
     gql`
@@ -150,12 +156,33 @@ export const CommentsList = ({ deckId, isOpen }) => {
     [push]
   );
 
+  const showCommentActions = React.useCallback(
+    (comment) =>
+      showActionSheetWithOptions(
+        {
+          title: `@${comment.fromUser.username}'s comment`,
+          options: ['Reply', 'Report', 'Cancel'],
+          destructiveButtonIndex: 1,
+          cancelButtonIndex: 2,
+        },
+        (buttonIndex) => {
+          // TODO: reply/report
+        }
+      ),
+    [showActionSheetWithOptions]
+  );
+
   const renderItem = React.useCallback(
     ({ item, index }) => {
       const comment = item;
       const prevComment = index > 0 ? comments[index - 1] : null;
       return (
-        <Comment comment={comment} prevComment={prevComment} navigateToUser={navigateToUser} />
+        <Comment
+          comment={comment}
+          prevComment={prevComment}
+          navigateToUser={navigateToUser}
+          showCommentActions={showCommentActions}
+        />
       );
     },
     [comments, navigateToUser]
