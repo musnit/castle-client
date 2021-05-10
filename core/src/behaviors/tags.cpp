@@ -118,6 +118,19 @@ struct RemoveTagResponse : BaseResponse {
   }
 };
 
+struct HasTagResponse : BaseResponse {
+  inline static const RuleRegistration<HasTagResponse, TagsBehavior> registration { "has tag" };
+
+  struct Params {
+    PROP(Tag, tag);
+  } params;
+
+  bool eval(RuleContext &ctx) override {
+    auto &tagsBehavior = ctx.getScene().getBehaviors().byType<TagsBehavior>();
+    return tagsBehavior.hasTag(ctx.actorId, params.tag());
+  }
+};
+
 
 //
 // Enable, disable
