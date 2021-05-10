@@ -64,6 +64,27 @@ struct ReadableTagVector {
 
 
 //
+// Triggers
+//
+
+struct GainTagTrigger : BaseTrigger {
+  inline static const RuleRegistration<GainTagTrigger, TagsBehavior> registration { "gain tag" };
+
+  struct Params {
+    PROP(Tag, tag);
+  } params;
+};
+
+struct LoseTagTrigger : BaseTrigger {
+  inline static const RuleRegistration<LoseTagTrigger, TagsBehavior> registration { "lose tag" };
+
+  struct Params {
+    PROP(Tag, tag);
+  } params;
+};
+
+
+//
 // Responses
 //
 
@@ -77,12 +98,17 @@ struct AddTagResponse : BaseResponse {
   void run(RuleContext &ctx) override {
     auto actorId = ctx.actorId;
     auto &tagsBehavior = ctx.getScene().getBehaviors().byType<TagsBehavior>();
+    auto &rulesBehavior = ctx.getScene().getBehaviors().byType<RulesBehavior>();
     if (auto component = tagsBehavior.maybeGetComponent(actorId)) {
       auto &tags = component->tags;
       for (auto tag : params.tag().vec) {
         if (std::find(tags.begin(), tags.end(), tag) == tags.end()) {
           tags.push_back(tag);
           tagsBehavior.addToMap(actorId, tag);
+          rulesBehavior.fireIf<GainTagTrigger>(actorId, {}, [&](const GainTagTrigger &trigger) {
+            auto triggerTag = trigger.params.tag();
+            return triggerTag == emptyTag || triggerTag == tag;
+          });
         }
       }
     }
@@ -102,13 +128,21 @@ struct RemoveTagResponse : BaseResponse {
     auto actorId = ctx.actorId;
     auto &tagsBehavior = ctx.getScene().getBehaviors().byType<TagsBehavior>();
     auto &paramsTags = params.tag().vec;
+    auto &rulesBehavior = ctx.getScene().getBehaviors().byType<RulesBehavior>();
     if (auto component = tagsBehavior.maybeGetComponent(actorId)) {
+      // Iterate through existing tags, removing tags that are in `paramsTags` -- also updating our
+      // tag -> actors maps and firing triggers
       auto &tags = component->tags;
       tags.erase(
           std::remove_if(tags.begin(), tags.end(),
               [&](Tag tag) {
                 if (std::find(paramsTags.begin(), paramsTags.end(), tag) != paramsTags.end()) {
                   tagsBehavior.removeFromMap(actorId, tag);
+                  rulesBehavior.fireIf<LoseTagTrigger>(
+                      actorId, {}, [&](const LoseTagTrigger &trigger) {
+                        auto triggerTag = trigger.params.tag();
+                        return triggerTag == emptyTag || triggerTag == tag;
+                      });
                   return true;
                 }
                 return false;
