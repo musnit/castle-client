@@ -1,10 +1,11 @@
 import React from 'react';
 import { Animated, Pressable as PressableRN, StyleSheet, Text, View } from 'react-native';
 import { gql } from '@apollo/client';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '../ReactNavigation';
 import { ReactionButton } from '../components/ReactionButton';
+import { SocialCount } from '../components/SocialCount';
 import { UserAvatar } from '../components/UserAvatar';
-import { LinearGradient } from 'expo-linear-gradient';
 
 import * as Constants from '../Constants';
 import * as Session from '../Session';
@@ -139,6 +140,7 @@ export const PlayDeckFooter = ({ deck, isPlaying, onPressComments }) => {
       </View>
       <Pressable onPress={onPressComments}>
         <FastImage style={styles.image} source={require('../../assets/images/emoji/comment.png')} />
+        <SocialCount count={deck.comments?.count} />
       </Pressable>
       <ReactionButton deck={deck} />
     </View>
