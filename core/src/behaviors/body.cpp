@@ -85,8 +85,7 @@ struct IsCollidingResponse : BaseResponse {
           auto body1 = contactEdge->contact->GetFixtureA()->GetBody();
           auto body2 = contactEdge->contact->GetFixtureB()->GetBody();
           auto otherBody = body == body1 ? body2 : body1;
-          if (tag == emptyTag
-              || tagsBehavior.hasTag(bodyBehavior.maybeGetActorId(otherBody), tag)) {
+          if (tagsBehavior.hasTag(bodyBehavior.maybeGetActorId(otherBody), tag)) {
             return true;
           }
         }
@@ -216,7 +215,7 @@ void BodyBehavior::handleBeginPhysicsContact(b2Contact *contact) {
     extras.otherActorId = otherActorId;
     rulesBehavior.fireIf<CollideTrigger>(actorId, extras, [&](const CollideTrigger &trigger) {
       auto tag = trigger.params.tag();
-      if (!(tag == emptyTag || tagsBehavior.hasTag(otherActorId, tag))) {
+      if (!tagsBehavior.hasTag(otherActorId, tag)) {
         return false; // Tag didn't match
       }
       auto triggerId = trigger.id;

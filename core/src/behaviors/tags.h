@@ -123,6 +123,9 @@ inline const std::string *TagsBehavior::getString(Tag tag) {
 }
 
 inline bool TagsBehavior::hasTag(ActorId actorId, Tag tag) const {
+  if (tag == emptyTag) {
+    return true;
+  }
   if (auto component = maybeGetComponent(actorId)) {
     auto &tags = component->tags;
     return std::find(tags.begin(), tags.end(), tag) != tags.end();
