@@ -49,8 +49,7 @@ struct MoveTowardActorResponse : BaseResponse {
     if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
       // Find actors with tag
       auto &tagsBehavior = scene.getBehaviors().byType<TagsBehavior>();
-      auto &taggedActorIds = tagsBehavior.getActors(params.tag());
-      if (taggedActorIds.empty()) {
+      if (tagsBehavior.numActorsWithTag(params.tag()) == 0) {
         return;
       }
 
@@ -59,7 +58,7 @@ struct MoveTowardActorResponse : BaseResponse {
       auto closestDelta = b2Vec2(0, 0);
       auto closestSqDist = std::numeric_limits<float>::max();
       auto found = false;
-      for (auto taggedActorId : taggedActorIds) {
+      tagsBehavior.forEachActorWithTag(params.tag(), [&](ActorId taggedActorId) {
         if (taggedActorId != actorId) {
           if (auto taggedBody = bodyBehavior.maybeGetPhysicsBody(taggedActorId)) {
             auto delta = taggedBody->GetPosition() - pos;
@@ -71,7 +70,7 @@ struct MoveTowardActorResponse : BaseResponse {
             }
           }
         }
-      }
+      });
       if (found && closestSqDist > 0) {
         // Apply impulse
         auto mass = body->GetMass();

@@ -38,7 +38,7 @@ struct NumberOfActorsExpression : BaseExpression {
 
   ExpressionValue eval(RuleContext &ctx) override {
     auto &tagsBehavior = ctx.getScene().getBehaviors().byType<TagsBehavior>();
-    return tagsBehavior.getActors(params.tag()).size();
+    return tagsBehavior.numActorsWithTag(params.tag());
   }
 };
 
@@ -54,12 +54,11 @@ struct ActorRef {
     case 'c': { // "closest"
       auto &scene = ctx.getScene();
       auto &tagsBehavior = scene.getBehaviors().byType<TagsBehavior>();
-      auto &taggedActorIds = tagsBehavior.getActors(tag());
-      if (auto nTaggedActorIds = taggedActorIds.size(); nTaggedActorIds == 0) {
+      if (auto numActors = tagsBehavior.numActorsWithTag(tag()); numActors == 0) {
         return nullActor;
-      } else if (nTaggedActorIds == 1) {
+      } else if (numActors == 1) {
         // Only one actor with this tag -- avoid extra logic and just return it
-        return taggedActorIds.data()[0];
+        return tagsBehavior.indexActorWithTag(tag(), 0);
       } else {
         // Multiple actors with this tag
         auto actorId = ctx.actorId;
@@ -69,7 +68,7 @@ struct ActorRef {
           auto pos = body->GetPosition();
           ActorId closestActorId = nullActor;
           auto closestSqDist = std::numeric_limits<float>::max();
-          for (auto taggedActorId : taggedActorIds) {
+          tagsBehavior.forEachActorWithTag(tag(), [&](ActorId taggedActorId) {
             if (taggedActorId != actorId) {
               if (auto taggedBody = bodyBehavior.maybeGetPhysicsBody(taggedActorId)) {
                 // Has a body -- check if closer
@@ -85,11 +84,11 @@ struct ActorRef {
                 }
               }
             }
-          }
+          });
           return closestActorId;
         } else {
           // Current actor doesn't have a body -- return first actor with tag
-          return taggedActorIds.data()[0];
+          return tagsBehavior.indexActorWithTag(tag(), 0);
         }
       }
     }

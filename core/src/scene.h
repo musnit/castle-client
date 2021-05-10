@@ -60,7 +60,13 @@ public:
   void forEachActorByDrawOrder(F &&f); // `f` must take either `(ActorId, Actor &)` or `(Actor &)`
   template<typename F>
   void forEachActorByDrawOrder(F &&f) const;
+  template<typename F>
+  void forEachActor(F &&f); // `f` as above
+  template<typename F>
+  void forEachActor(F &&f) const;
   int numActors() const;
+  ActorId indexActor(int index) const; // Order maintained as long as actors not added / removed.
+                                       // Undefined if out of bounds.
 
 
   // Behaviors
@@ -206,8 +212,22 @@ void Scene::forEachActorByDrawOrder(F &&f) const {
   actorView.each(std::forward<F>(f));
 }
 
+template<typename F>
+void Scene::forEachActor(F &&f) {
+  actorView.each(std::forward<F>(f));
+}
+
+template<typename F>
+void Scene::forEachActor(F &&f) const {
+  actorView.each(std::forward<F>(f));
+}
+
 inline int Scene::numActors() const {
   return actorView.size();
+}
+
+inline ActorId Scene::indexActor(int index) const {
+  return actorView.data()[index];
 }
 
 inline AllBehaviors &Scene::getBehaviors() {

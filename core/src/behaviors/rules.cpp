@@ -331,14 +331,15 @@ struct ActOnResponse : BaseResponse {
 
   void run(RuleContext &ctx) override {
     auto &tagsBehavior = ctx.getScene().getBehaviors().byType<TagsBehavior>();
-    auto &actorIds = tagsBehavior.getActors(params.tag());
+    auto tag = params.tag();
+    auto numActors = tagsBehavior.numActorsWithTag(tag);
 
     // Check if we're in progress (are at the top of the act-on stack)
     if (ctx.actOnStack.size() > 0) {
       if (auto &top = ctx.actOnStack.back(); top.response == this) {
-        if (top.index < int(actorIds.size())) {
+        if (top.index < numActors) {
           // Still have actors left to visit -- set to visit next actor, increment index, enter body
-          ctx.actorId = actorIds.data()[top.index];
+          ctx.actorId = tagsBehavior.indexActorWithTag(tag, top.index);
           ++top.index;
           ctx.setNext(params.body());
         } else {
@@ -351,9 +352,9 @@ struct ActOnResponse : BaseResponse {
     }
 
     // Not in progress -- add ourselves to the act-on stack and start visiting actors
-    if (!actorIds.empty()) {
+    if (numActors > 0) {
       ctx.actOnStack.push_back({ this, 1, ctx.actorId }); // Visiting index 0 right away, 1 is next
-      ctx.actorId = actorIds.data()[0];
+      ctx.actorId = tagsBehavior.indexActorWithTag(tag, 0);
       ctx.setNext(params.body());
     }
   }

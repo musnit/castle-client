@@ -79,7 +79,11 @@ public:
 
   bool hasTag(ActorId actorId, Tag tag) const;
   const TagVector &getTags(ActorId actorId) const; // Direct short-lived view of underlying vector
-  const ActorIdSet &getActors(Tag tag) const; // Direct short-lived view of underlying set
+  template<typename F>
+  void forEachActorWithTag(Tag tag, F &&f) const; // `f` takes `(ActorId)`
+  int numActorsWithTag(Tag tag) const;
+  ActorId indexActorWithTag(Tag tag, int index); // Order maintained as long as actors / tags not
+                                                 // added / removed. Undefined if out of bounds!
 
 
 private:
@@ -143,11 +147,41 @@ inline const TagVector &TagsBehavior::getTags(ActorId actorId) const {
   }
 }
 
-inline const ActorIdSet &TagsBehavior::getActors(Tag tag) const {
-  if (auto elem = map.lookup(tag.token)) {
-    return elem->actorIds;
+template<typename F>
+void TagsBehavior::forEachActorWithTag(Tag tag, F &&f) const {
+  if (tag == emptyTag) {
+    getScene().forEachActor([&](ActorId actorId, const Actor &actor) {
+      f(actorId);
+    });
   } else {
-    static ActorIdSet empty;
-    return empty;
+    if (auto elem = map.lookup(tag.token)) {
+      for (auto actorId : elem->actorIds) {
+        f(actorId);
+      }
+    }
+  }
+}
+
+inline int TagsBehavior::numActorsWithTag(Tag tag) const {
+  if (tag == emptyTag) {
+    return getScene().numActors();
+  } else {
+    if (auto elem = map.lookup(tag.token)) {
+      return elem->actorIds.size();
+    } else {
+      return 0;
+    }
+  }
+}
+
+inline ActorId TagsBehavior::indexActorWithTag(Tag tag, int index) {
+  if (tag == emptyTag) {
+    return getScene().indexActor(index);
+  } else {
+    if (auto elem = map.lookup(tag.token)) {
+      return elem->actorIds.data()[index];
+    } else {
+      return nullActor;
+    }
   }
 }
