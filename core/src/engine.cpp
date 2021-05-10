@@ -111,8 +111,8 @@ void Engine::tryLoadVariables() {
 void Engine::tryLoadNextCard() {
 #ifdef __EMSCRIPTEN__
   if (auto sceneDataJson = JS_getNextCardSceneData()) {
-    auto archive = Archive::fromJson(sceneDataJson);
-    archive.read([&](Reader &reader) {
+    sceneArchive = Archive::fromJson(sceneDataJson);
+    sceneArchive.read([&](Reader &reader) {
       reader.obj("snapshot", [&]() {
         scene = std::make_unique<Scene>(variables, &reader);
       });
@@ -204,8 +204,15 @@ void Engine::update(double dt) {
     Debug::display("fps: {}", lv.timer.getFPS());
     Debug::display("scaling: {:.2f}, {:.2f}, {:.2f}, {:.2f}", JS_getDevicePixelRatio(),
         lv.window.getDPIScale(), lv.graphics.getCurrentDPIScale(), ghostScreenScaling);
-    Debug::display("actors: {}", scene->numActors());
 
+    if (scene->isRestartRequested()) {
+      sceneArchive.read([&](Reader &reader) {
+        reader.obj("snapshot", [&]() {
+          scene = std::make_unique<Scene>(variables, &reader);
+        });
+      });
+    }
+    Debug::display("actors: {}", scene->numActors());
     scene->update(dt);
   }
 

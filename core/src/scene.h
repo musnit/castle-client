@@ -136,6 +136,12 @@ public:
   love::RandomGenerator &getRNG();
 
 
+  // Restarting
+
+  void requestRestart();
+  bool isRestartRequested() const;
+
+
   // Update, draw
 
   void update(double dt);
@@ -174,6 +180,8 @@ private:
   double performTime = 0;
 
   love::RandomGenerator rng;
+
+  bool restartRequested = false;
 
 
   void read(Reader &reader);
@@ -312,4 +320,12 @@ inline double Scene::getPerformTime() const {
 
 inline love::RandomGenerator &Scene::getRNG() {
   return rng;
+}
+
+inline void Scene::requestRestart() {
+  restartRequested = true;
+}
+
+inline bool Scene::isRestartRequested() const {
+  return restartRequested;
 }

@@ -188,6 +188,24 @@ struct SetBehaviorPropertyResponse : BaseResponse {
 
 
 //
+// Scene responses
+//
+
+struct RestartSceneResponse : BaseResponse {
+  inline static const RuleRegistration<RestartSceneResponse, RulesBehavior> registration {
+    "restart scene"
+  };
+
+  struct Params {
+  } params;
+
+  void run(RuleContext &ctx) override {
+    ctx.getScene().requestRestart();
+  }
+};
+
+
+//
 // Control flow responses
 //
 

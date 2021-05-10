@@ -6,6 +6,7 @@
 #include "scene.h"
 #include "variables.h"
 #include "tests.h"
+#include "archive.h"
 
 
 class Engine {
@@ -51,6 +52,7 @@ private:
 
   Variables variables;
 
+  Archive sceneArchive;
   std::unique_ptr<Scene> scene;
 
 
