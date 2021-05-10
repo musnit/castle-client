@@ -41,8 +41,11 @@ export const CommentInput = ({ onAddComment }) => {
         onChangeText={setValue}
         multiline
       />
-      <Pressable style={styles.submitButton} onPress={() => addComment(value)}>
-        <MCIcon name="send" color="#999" size={24} />
+      <Pressable
+        style={styles.submitButton}
+        onPress={() => addComment(value)}
+        disabled={!value || value.length === 0}>
+        <MCIcon name="send" color={value?.length > 0 ? '#000' : '#999'} size={24} />
       </Pressable>
     </View>
   );
