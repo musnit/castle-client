@@ -26,11 +26,24 @@ const styles = StyleSheet.create({
   },
 });
 
-export const CommentInput = () => (
-  <View style={styles.container}>
-    <TextInput style={styles.textInput} placeholder="Add a comment..." multiline />
-    <Pressable style={styles.submitButton}>
-      <MCIcon name="send" color="#999" size={24} />
-    </Pressable>
-  </View>
-);
+export const CommentInput = ({ onAddComment }) => {
+  const [value, setValue] = React.useState();
+  const addComment = React.useCallback((message) => {
+    onAddComment(message);
+    setValue(undefined);
+  }, []);
+  return (
+    <View style={styles.container}>
+      <TextInput
+        style={styles.textInput}
+        placeholder="Add a comment..."
+        value={value}
+        onChangeText={setValue}
+        multiline
+      />
+      <Pressable style={styles.submitButton} onPress={() => addComment(value)}>
+        <MCIcon name="send" color="#999" size={24} />
+      </Pressable>
+    </View>
+  );
+};
