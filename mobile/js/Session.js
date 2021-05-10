@@ -387,6 +387,9 @@ export const apolloClient = new ApolloClient({
           },
         },
       },
+      CommentsList: {
+        keyFields: ['threadId'],
+      },
       Card: {
         fields: {
           backgroundImage: {

@@ -253,6 +253,10 @@ export const FEED_ITEM_DECK_FRAGMENT = `
     count
     isCurrentUserToggled
   }
+  comments {
+    threadId
+    count
+  }
   lastModified
   variables
 `;
@@ -285,6 +289,30 @@ export const USER_PROFILE_FRAGMENT = `
     ${FEED_ITEM_DECK_FRAGMENT}
   }
   isReactNativeChannelsEnabled
+`;
+
+export const COMMENT_FRAGMENT = `
+  commentId
+  fromUser {
+    userId
+    username
+    photo { url }
+  }
+  body
+  createdTime
+`;
+
+export const COMMENTS_LIST_FRAGMENT = `
+  threadId
+  count
+  comments {
+    ${COMMENT_FRAGMENT}
+    childComments {
+      threadId
+      count
+      comments { ${COMMENT_FRAGMENT} }
+    }
+  }
 `;
 
 export const reactionIds = {
