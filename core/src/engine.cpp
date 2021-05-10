@@ -204,7 +204,7 @@ void Engine::update(double dt) {
     Debug::display("fps: {}", lv.timer.getFPS());
     Debug::display("scaling: {:.2f}, {:.2f}, {:.2f}, {:.2f}", JS_getDevicePixelRatio(),
         lv.window.getDPIScale(), lv.graphics.getCurrentDPIScale(), ghostScreenScaling);
-    Debug::display("actors: {}", scene->getEntityRegistry().alive());
+    Debug::display("actors: {}", scene->numActors());
 
     scene->update(dt);
   }

@@ -60,6 +60,7 @@ public:
   void forEachActorByDrawOrder(F &&f); // `f` must take either `(ActorId, Actor &)` or `(Actor &)`
   template<typename F>
   void forEachActorByDrawOrder(F &&f) const;
+  int numActors() const;
 
 
   // Behaviors
@@ -203,6 +204,10 @@ template<typename F>
 void Scene::forEachActorByDrawOrder(F &&f) const {
   ensureDrawOrderSort();
   actorView.each(std::forward<F>(f));
+}
+
+inline int Scene::numActors() const {
+  return actorView.size();
 }
 
 inline AllBehaviors &Scene::getBehaviors() {
