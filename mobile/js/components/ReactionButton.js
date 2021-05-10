@@ -1,6 +1,7 @@
 import React from 'react';
 import { Animated, Pressable as PressableRN, StyleSheet, Text, View } from 'react-native';
 import { gql } from '@apollo/client';
+import { SocialCount } from './SocialCount';
 
 import * as Constants from '../Constants';
 import * as Session from '../Session';
@@ -38,26 +39,6 @@ const styles = StyleSheet.create({
   image: {
     width: 56,
     height: 56,
-  },
-});
-
-const countStyles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    right: 6,
-    bottom: 2,
-    paddingHorizontal: 4,
-    paddingTop: 2,
-    paddingBottom: 2,
-    backgroundColor: '#000',
-    borderRadius: 2,
-    minWidth: 12,
-  },
-
-  label: {
-    fontSize: 11,
-    fontWeight: 'bold',
-    color: '#fff',
   },
 });
 
@@ -111,16 +92,6 @@ const toggleReaction = async ({ reactionId, deck, enabled }) => {
 
 const toggleReactionDebounce = debounce(toggleReaction, 100);
 
-const ReactionCount = ({ reaction, optimisticCount }) => {
-  const totalCount = (reaction?.count ?? 0) + (optimisticCount ?? 0);
-  if (!totalCount) return null;
-  return (
-    <View style={countStyles.container} pointerEvents="none">
-      <Text style={countStyles.label}>{totalCount}</Text>
-    </View>
-  );
-};
-
 export const ReactionButton = ({ deck }) => {
   let deckId, reactions;
   if (deck) {
@@ -166,8 +137,8 @@ export const ReactionButton = ({ deck }) => {
           }
         />
       </AnimatedPressable>
-      <ReactionCount
-        reaction={fire}
+      <SocialCount
+        count={fire?.count}
         optimisticCount={makeOptimisticCount(initialIsSelected, isSelected)}
       />
     </View>
