@@ -83,7 +83,7 @@ public:
   void forEachActorWithTag(Tag tag, F &&f) const; // `f` takes `(ActorId)`
   int numActorsWithTag(Tag tag) const;
   ActorId indexActorWithTag(Tag tag, int index); // Order maintained as long as actors / tags not
-                                                 // added / removed. Undefined if out of bounds!
+                                                 // added / removed. `nullActor` if out of bounds.
 
 
 private:
@@ -175,10 +175,13 @@ inline int TagsBehavior::numActorsWithTag(Tag tag) const {
 }
 
 inline ActorId TagsBehavior::indexActorWithTag(Tag tag, int index) {
+  if (index < 0) {
+    return nullActor;
+  }
   if (tag == emptyTag) {
     return getScene().indexActor(index);
   } else {
-    if (auto elem = map.lookup(tag.token)) {
+    if (auto elem = map.lookup(tag.token); index < int(elem->actorIds.size())) {
       return elem->actorIds.data()[index];
     } else {
       return nullActor;

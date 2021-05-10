@@ -66,7 +66,7 @@ public:
   void forEachActor(F &&f) const;
   int numActors() const;
   ActorId indexActor(int index) const; // Order maintained as long as actors not added / removed.
-                                       // Undefined if out of bounds.
+                                       // `nullActor` if out of bounds.
 
 
   // Behaviors
@@ -227,7 +227,11 @@ inline int Scene::numActors() const {
 }
 
 inline ActorId Scene::indexActor(int index) const {
-  return actorView.data()[index];
+  if (0 <= index && index < int(actorView.size())) {
+    return actorView.data()[index];
+  } else {
+    return nullActor;
+  }
 }
 
 inline AllBehaviors &Scene::getBehaviors() {
