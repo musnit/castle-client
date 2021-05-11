@@ -299,6 +299,7 @@ export const COMMENT_FRAGMENT = `
     photo { url }
   }
   body
+  isDeleted
   createdTime
 `;
 

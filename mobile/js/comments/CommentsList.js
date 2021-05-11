@@ -4,7 +4,7 @@ import { MessageBody } from '../components/MessageBody';
 import { toRecentDate } from '../common/date-utilities';
 import { UserAvatar } from '../components/UserAvatar';
 import { useActionSheet } from '@expo/react-native-action-sheet';
-import { useLazyQuery, gql } from '@apollo/client';
+import { useLazyQuery, useMutation, gql } from '@apollo/client';
 import { useNavigation } from '../ReactNavigation';
 
 import * as Constants from '../Constants';
@@ -130,6 +130,24 @@ export const CommentsList = ({ deckId, isOpen, setReplyingToComment }) => {
     `
   );
 
+  const [reportComment] = useMutation(
+    gql`
+      mutation ($commentId: ID!) {
+        reportComment(commentId: $commentId) {
+          ${Constants.COMMENTS_LIST_FRAGMENT}
+        }
+      }
+    `
+  );
+
+  const onReportComment = React.useCallback(
+    (comment) =>
+      reportComment({
+        variables: { commentId: comment.commentId },
+      }),
+    [reportComment]
+  );
+
   React.useEffect(() => {
     if (isOpen) {
       fetchComments({ variables: { deckId } });
@@ -164,7 +182,20 @@ export const CommentsList = ({ deckId, isOpen, setReplyingToComment }) => {
       let options = [
         {
           name: 'Report',
-          action: () => {},
+          action: () =>
+            showActionSheetWithOptions(
+              {
+                title: `Report @${comment.fromUser.username}'s comment?`,
+                options: ['Report', 'Cancel'],
+                destructiveButtonIndex: 0,
+                cancelButtonIndex: 1,
+              },
+              (buttonIndex) => {
+                if (buttonIndex === 0) {
+                  onReportComment(comment);
+                }
+              }
+            ),
         },
       ];
       if (!isReply) {
@@ -187,7 +218,7 @@ export const CommentsList = ({ deckId, isOpen, setReplyingToComment }) => {
         }
       );
     },
-    [showActionSheetWithOptions, setReplyingToComment]
+    [showActionSheetWithOptions, setReplyingToComment, onReportComment]
   );
 
   const renderItem = React.useCallback(
