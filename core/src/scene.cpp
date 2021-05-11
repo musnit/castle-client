@@ -304,10 +304,9 @@ void Scene::draw() const {
   lv.graphics.push(love::Graphics::STACK_ALL);
 
   // View transform
-  constexpr auto viewWidth = 10.0, viewHeight = 7.0 * viewWidth / 5.0;
   viewTransform.reset();
-  viewTransform.scale(800.0 / viewWidth, 800.0 / viewWidth);
-  viewTransform.translate(0.5 * viewWidth, 0.5 * viewHeight);
+  viewTransform.scale(800.0f / viewWidth, 800.0f / viewWidth);
+  viewTransform.translate(0.5f * viewWidth, 0.5f * viewHeight);
   if (cameraTarget != nullActor) {
     if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(cameraTarget)) {
       auto [x, y] = body->GetPosition();

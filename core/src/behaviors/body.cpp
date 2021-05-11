@@ -60,6 +60,24 @@ struct TouchUpTrigger : BaseTrigger {
   } params;
 };
 
+struct EnterCameraViewportTrigger : BaseTrigger {
+  inline static const RuleRegistration<EnterCameraViewportTrigger, BodyBehavior> registration {
+    "enter camera viewport"
+  };
+
+  struct Params {
+  } params;
+};
+
+struct ExitCameraViewportTrigger : BaseTrigger {
+  inline static const RuleRegistration<ExitCameraViewportTrigger, BodyBehavior> registration {
+    "exit camera viewport"
+  };
+
+  struct Params {
+  } params;
+};
+
 
 //
 // Responses
@@ -146,52 +164,89 @@ void BodyBehavior::handleDisableComponent(
 //
 
 void BodyBehavior::handlePerform(double dt) {
-  // Clear collide trigger markers so new collide triggers can be fired
-  getScene().getEntityRegistry().clear<CollideTriggerMarker>();
-
-  // Manage touch hit tracking and triggers
-  auto &gesture = getGesture();
-  auto currTime = lv.timer.getTime();
+  auto &scene = getScene();
+  auto &registry = scene.getEntityRegistry();
   auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
-  gesture.forEachTouch([&](TouchId touchId, const Touch &touch) {
-    auto &prevHits = getActorsAtTouch(touchId);
-    QueryResult currHits = getActorsAtPoint(touch.pos.x, touch.pos.y);
-    if (touch.released && !touch.movedFar && currTime - touch.pressTime < 0.3) {
-      // Tap
-      for (auto actorId : currHits) {
-        if (rulesBehavior.fire<TapTrigger>(actorId, {})) {
-          touch.forceUse(triggerTouchToken);
+
+  // Clear collide trigger markers so new collide triggers can be fired
+  registry.clear<CollideTriggerMarker>();
+
+  // Touch hit tracking and triggers
+  {
+    auto &gesture = getGesture();
+    auto currTime = lv.timer.getTime();
+    gesture.forEachTouch([&](TouchId touchId, const Touch &touch) {
+      auto &prevHits = getActorsAtTouch(touchId);
+      ActorsAtTouch currHits;
+      forEachActorAtPoint(touch.pos.x, touch.pos.y, [&](ActorId actorId, const b2Fixture *fixture) {
+        if (std::find(currHits.begin(), currHits.end(), actorId) == currHits.end()) {
+          currHits.push_back(actorId);
         }
-      }
-    }
-    if (touch.released) {
-      // Touch up
-      for (auto actorId : currHits) {
-        rulesBehavior.fire<TouchUpTrigger>(actorId, {});
-      }
-    } else {
-      for (auto actorId : currHits) {
-        if (touch.pressed
-            || std::find(prevHits.begin(), prevHits.end(), actorId) == prevHits.end()) {
-          // Pressed or moved onto actor -- touch down
-          if (rulesBehavior.fire<TouchDownTrigger>(actorId, {})) {
+        return true;
+      });
+      if (touch.released && !touch.movedFar && currTime - touch.pressTime < 0.3) {
+        // Tap
+        for (auto actorId : currHits) {
+          if (rulesBehavior.fire<TapTrigger>(actorId, {})) {
             touch.forceUse(triggerTouchToken);
           }
         }
-        // Currently on actor -- press
-        if (rulesBehavior.fire<PressTrigger>(actorId, {})) {
-          touch.forceUse(triggerTouchToken);
+      }
+      if (touch.released) {
+        // Touch up
+        for (auto actorId : currHits) {
+          rulesBehavior.fire<TouchUpTrigger>(actorId, {});
+        }
+      } else {
+        for (auto actorId : currHits) {
+          if (touch.pressed
+              || std::find(prevHits.begin(), prevHits.end(), actorId) == prevHits.end()) {
+            // Pressed or moved onto actor -- touch down
+            if (rulesBehavior.fire<TouchDownTrigger>(actorId, {})) {
+              touch.forceUse(triggerTouchToken);
+            }
+          }
+          // Currently on actor -- press
+          if (rulesBehavior.fire<PressTrigger>(actorId, {})) {
+            touch.forceUse(triggerTouchToken);
+          }
         }
       }
-    }
-    for (auto actorId : prevHits) {
-      if (std::find(currHits.begin(), currHits.end(), actorId) == currHits.end()) {
-        // Moved off actor -- touch up
-        rulesBehavior.fire<TouchUpTrigger>(actorId, {});
+      for (auto actorId : prevHits) {
+        if (std::find(currHits.begin(), currHits.end(), actorId) == currHits.end()) {
+          // Moved off actor -- touch up
+          rulesBehavior.fire<TouchUpTrigger>(actorId, {});
+        }
       }
-    }
-    gesture.setData<ActorsAtTouch>(touchId, std::move(currHits));
-  });
+      gesture.setData<ActorsAtTouch>(touchId, std::move(currHits));
+    });
+  }
+
+  // Viewport containment tracking and triggers
+  {
+    ActorIdSet currHits;
+    auto cameraPos = scene.getCameraPosition();
+    auto cameraSize = scene.getCameraSize();
+    auto min = cameraPos - cameraSize * 0.5;
+    auto max = cameraPos + cameraSize * 0.5;
+    forEachActorAtBoundingBox(
+        min.x, min.y, max.x, max.y, [&](ActorId actorId, const b2Fixture *fixture) {
+          if (!currHits.contains(actorId)) {
+            currHits.emplace(actorId);
+            if (!viewportMarkerView.contains(actorId)) {
+              registry.emplace<ViewportMarker>(actorId);
+              rulesBehavior.fire<EnterCameraViewportTrigger>(actorId, {});
+            }
+          }
+          return true;
+        });
+    viewportMarkerView.each([&](ActorId actorId) {
+      if (!currHits.contains(actorId)) {
+        registry.remove<ViewportMarker>(actorId);
+        rulesBehavior.fire<ExitCameraViewportTrigger>(actorId, {});
+      }
+    });
+  }
 }
 
 

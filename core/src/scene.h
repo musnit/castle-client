@@ -103,6 +103,7 @@ public:
 
   void setCameraTarget(ActorId target);
   love::Vector2 getCameraPosition() const;
+  love::Vector2 getCameraSize() const;
 
 
   // Gesture
@@ -176,6 +177,7 @@ private:
 
   Library library; // Library instance maintained at scene level for now
 
+  float viewWidth = 10.0, viewHeight = 7.0f * viewWidth / 5.0f;
   mutable love::Transform viewTransform;
   mutable float cameraX = 0, cameraY = 0;
   mutable ActorId cameraTarget = nullActor;
@@ -305,6 +307,10 @@ inline void Scene::setCameraTarget(ActorId target) {
 
 inline love::Vector2 Scene::getCameraPosition() const {
   return { cameraX, cameraY };
+}
+
+inline love::Vector2 Scene::getCameraSize() const {
+  return { viewWidth, viewHeight };
 }
 
 inline Variables &Scene::getVariables() {
