@@ -6,6 +6,7 @@ import { UserAvatar } from '../components/UserAvatar';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useLazyQuery, useMutation, gql } from '@apollo/client';
 import { useNavigation } from '../ReactNavigation';
+import { useSession } from '../Session';
 
 import * as Constants from '../Constants';
 
@@ -113,6 +114,7 @@ const Comment = ({ comment, isReply = false, prevComment, navigateToUser, showCo
 
 export const CommentsList = ({ deckId, isOpen, setReplyingToComment }) => {
   const { push } = useNavigation();
+  const { userId: signedInUserId } = useSession();
   const [comments, setComments] = React.useState(null);
   const { showActionSheetWithOptions } = useActionSheet();
 
@@ -148,6 +150,24 @@ export const CommentsList = ({ deckId, isOpen, setReplyingToComment }) => {
     [reportComment]
   );
 
+  const [deleteComment] = useMutation(
+    gql`
+      mutation ($commentId: ID!) {
+        deleteComment(commentId: $commentId) {
+          ${Constants.COMMENTS_LIST_FRAGMENT}
+        }
+      }
+    `
+  );
+
+  const onDeleteComment = React.useCallback(
+    (comment) =>
+      deleteComment({
+        variables: { commentId: comment.commentId },
+      }),
+    [deleteComment]
+  );
+
   React.useEffect(() => {
     if (isOpen) {
       fetchComments({ variables: { deckId } });
@@ -179,8 +199,29 @@ export const CommentsList = ({ deckId, isOpen, setReplyingToComment }) => {
 
   const showCommentActions = React.useCallback(
     ({ comment, isReply }) => {
-      let options = [
-        {
+      let options = [];
+      const isOwnComment = signedInUserId === comment.fromUser.userId;
+      // TODO: also support deleting if you are the deck owner
+      if (isOwnComment) {
+        options.unshift({
+          name: 'Delete',
+          action: () =>
+            showActionSheetWithOptions(
+              {
+                title: 'Delete this comment?',
+                options: ['Delete', 'Cancel'],
+                destructiveButtonIndex: 0,
+                cancelButtonIndex: 1,
+              },
+              (buttonIndex) => {
+                if (buttonIndex === 0) {
+                  onDeleteComment(comment);
+                }
+              }
+            ),
+        });
+      } else {
+        options.unshift({
           name: 'Report',
           action: () =>
             showActionSheetWithOptions(
@@ -196,8 +237,8 @@ export const CommentsList = ({ deckId, isOpen, setReplyingToComment }) => {
                 }
               }
             ),
-        },
-      ];
+        });
+      }
       if (!isReply) {
         options.unshift({
           name: 'Reply',
@@ -218,7 +259,13 @@ export const CommentsList = ({ deckId, isOpen, setReplyingToComment }) => {
         }
       );
     },
-    [showActionSheetWithOptions, setReplyingToComment, onReportComment]
+    [
+      showActionSheetWithOptions,
+      setReplyingToComment,
+      onReportComment,
+      onDeleteComment,
+      signedInUserId,
+    ]
   );
 
   const renderItem = React.useCallback(

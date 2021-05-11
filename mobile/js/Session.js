@@ -389,6 +389,13 @@ export const apolloClient = new ApolloClient({
       },
       CommentsList: {
         keyFields: ['threadId'],
+        fields: {
+          comments: {
+            // https://go.apollo.dev/c/merging-non-normalized-objects
+            // always prefer incoming list of comments
+            merge: false,
+          },
+        },
       },
       Card: {
         fields: {
