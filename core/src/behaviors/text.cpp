@@ -21,7 +21,7 @@ JS_DEFINE(int, JS_getClickedTextActorId, (), {
 JS_DEFINE(int, JS_navigateToCardId, (const char *cardId, int cardIdLen),
     { Castle.navigateToCardId(UTF8ToString(cardId, cardIdLen)); });
 
-//JS_DEFINE(int, JS_preloadCardId, (const char *cardId, int cardIdLen),
+// JS_DEFINE(int, JS_preloadCardId, (const char *cardId, int cardIdLen),
 //    { Castle.preloadCardId(UTF8ToString(cardId, cardIdLen)); });
 
 struct TextTapTrigger : BaseTrigger {
@@ -37,7 +37,7 @@ struct Card {
   void read(Reader &reader) {
     title = reader.str("title", "");
     cardId = reader.str("cardId", "");
-    //JS_preloadCardId(cardId.c_str(), cardId.size());
+    // JS_preloadCardId(cardId.c_str(), cardId.size());
   }
 
   std::string title;
@@ -55,6 +55,34 @@ struct SendPlayerToCardResponse : BaseResponse {
 
   void run(RuleContext &ctx) override {
     JS_navigateToCardId(params.card().cardId.c_str(), params.card().cardId.length());
+  }
+};
+
+struct ShowResponse : BaseResponse {
+  inline static const RuleRegistration<ShowResponse, TextBehavior> registration { "show" };
+
+  struct Params {
+  } params;
+
+  void run(RuleContext &ctx) override {
+    auto &textBehavior = ctx.getScene().getBehaviors().byType<TextBehavior>();
+    if (auto component = textBehavior.maybeGetComponent(ctx.actorId)) {
+      component->props.visible() = true;
+    }
+  }
+};
+
+struct HideResponse : BaseResponse {
+  inline static const RuleRegistration<HideResponse, TextBehavior> registration { "hide" };
+
+  struct Params {
+  } params;
+
+  void run(RuleContext &ctx) override {
+    auto &textBehavior = ctx.getScene().getBehaviors().byType<TextBehavior>();
+    if (auto component = textBehavior.maybeGetComponent(ctx.actorId)) {
+      component->props.visible() = false;
+    }
   }
 };
 
@@ -84,7 +112,7 @@ void TextBehavior::handlePerform(double dt) {
 #ifdef __EMSCRIPTEN__ // Text actors only work on web for now
   auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
   while (true) {
-    if (auto actorIdInt = JS_getClickedTextActorId(); actorIdInt > 0) {
+    if (auto actorIdInt = JS_getClickedTextActorId(); actorIdInt >= 0) {
       auto actorId = ActorId(actorIdInt);
       if (auto component = maybeGetComponent(actorId); component && !component->disabled) {
         rulesBehavior.fire<TextTapTrigger>(actorId, {});
@@ -98,12 +126,14 @@ void TextBehavior::handlePerform(double dt) {
   archive.write([&](Archive::Writer &w) {
     w.arr("textActors", [&]() {
       forEachEnabledComponent([&](ActorId actorId, TextComponent &component) {
-        w.obj([&]() {
-          w.num("actorId", (int)entt::to_integral(actorId));
-          w.str("content", component.props.content());
-          w.num("order", component.props.order());
-          w.boolean("hasTapTrigger", rulesBehavior.hasTrigger<TextTapTrigger>(actorId));
-        });
+        if (component.props.visible()) {
+          w.obj([&]() {
+            w.num("actorId", (int)entt::to_integral(actorId));
+            w.str("content", component.props.content());
+            w.num("order", component.props.order());
+            w.boolean("hasTapTrigger", rulesBehavior.hasTrigger<TextTapTrigger>(actorId));
+          });
+        }
       });
     });
   });

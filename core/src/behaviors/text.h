@@ -23,4 +23,8 @@ public:
 
   void handleReadComponent(ActorId actorId, TextComponent &component, Reader &reader);
   void handlePerform(double dt);
+
+private:
+  friend struct ShowResponse;
+  friend struct HideResponse;
 };
