@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
     lineHeight: 32,
   },
   repliesContainer: {
+    flexDirection: 'column-reverse',
     paddingLeft: 8,
     marginTop: 8,
   },
@@ -81,7 +82,9 @@ const Comment = ({ comment, isReply = false, prevComment, navigateToUser, showCo
         <UserAvatar url={comment.fromUser.photo?.url} style={styles.authorAvatar} />
       </Pressable>
       <View>
-        <Pressable style={styles.commentBubble} onPress={() => showCommentActions(comment)}>
+        <Pressable
+          style={styles.commentBubble}
+          onPress={() => showCommentActions({ comment, isReply })}>
           <View style={styles.commentMeta}>
             <Pressable onPress={() => navigateToUser(comment.fromUser)}>
               <Text style={styles.authorUsername}>{comment.fromUser.username}</Text>
@@ -96,9 +99,9 @@ const Comment = ({ comment, isReply = false, prevComment, navigateToUser, showCo
             />
           </View>
         </Pressable>
-        {comment.childComments?.length ? (
+        {comment.childComments?.comments?.length ? (
           <CommentReplies
-            replies={comment.childComments}
+            replies={comment.childComments.comments}
             navigateToUser={navigateToUser}
             showCommentActions={showCommentActions}
           />
@@ -108,7 +111,7 @@ const Comment = ({ comment, isReply = false, prevComment, navigateToUser, showCo
   );
 };
 
-export const CommentsList = ({ deckId, isOpen }) => {
+export const CommentsList = ({ deckId, isOpen, setReplyingToComment }) => {
   const { push } = useNavigation();
   const [comments, setComments] = React.useState(null);
   const { showActionSheetWithOptions } = useActionSheet();
@@ -157,19 +160,34 @@ export const CommentsList = ({ deckId, isOpen }) => {
   );
 
   const showCommentActions = React.useCallback(
-    (comment) =>
-      showActionSheetWithOptions(
+    ({ comment, isReply }) => {
+      let options = [
+        {
+          name: 'Report',
+          action: () => {},
+        },
+      ];
+      if (!isReply) {
+        options.unshift({
+          name: 'Reply',
+          action: () => setReplyingToComment(comment),
+        });
+      }
+      return showActionSheetWithOptions(
         {
           title: `@${comment.fromUser.username}'s comment`,
-          options: ['Reply', 'Report', 'Cancel'],
-          destructiveButtonIndex: 1,
-          cancelButtonIndex: 2,
+          options: options.map((o) => o.name).concat(['Cancel']),
+          destructiveButtonIndex: options.length - 1,
+          cancelButtonIndex: options.length,
         },
         (buttonIndex) => {
-          // TODO: reply/report
+          if (buttonIndex < options.length) {
+            options[buttonIndex].action();
+          }
         }
-      ),
-    [showActionSheetWithOptions]
+      );
+    },
+    [showActionSheetWithOptions, setReplyingToComment]
   );
 
   const renderItem = React.useCallback(

@@ -28,6 +28,8 @@ export const CommentsSheet = ({ isOpen, onClose, deckId, ...props }) => {
 
   const renderHeader = () => <BottomSheetHeader title="Comments" onClose={onClose} />;
 
+  const [replyingToComment, setReplyingToComment] = React.useState();
+
   const [addComment] = useMutation(
     gql`
       mutation ($deckId: ID!, $message: String!, $parentCommentId: ID) {
@@ -47,7 +49,7 @@ export const CommentsSheet = ({ isOpen, onClose, deckId, ...props }) => {
           parentCommentId,
         },
       }),
-    [addComment]
+    [addComment, deckId]
   );
 
   const [keyboardState] = useKeyboard();
@@ -62,8 +64,17 @@ export const CommentsSheet = ({ isOpen, onClose, deckId, ...props }) => {
         flex: 1,
         paddingBottom,
       }}>
-      <CommentsList isOpen={isOpen} deckId={deckId} {...props} />
-      <CommentInput onAddComment={onAddComment} />
+      <CommentsList
+        isOpen={isOpen}
+        deckId={deckId}
+        setReplyingToComment={setReplyingToComment}
+        {...props}
+      />
+      <CommentInput
+        onAddComment={onAddComment}
+        replyingToComment={replyingToComment}
+        clearReplyingToComment={() => setReplyingToComment(undefined)}
+      />
     </View>
   );
 
