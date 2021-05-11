@@ -735,6 +735,10 @@ void RulesBehavior::readExpression(ExpressionRef &expr, Reader &reader) {
   if (auto value = reader.num()) {
     // Plain number value
     expr.constant = *value;
+  } else if (auto value = reader.boolean()) {
+    // Plain boolean value
+    expr.constant = *value ? 1 : 0; // TODO: Use actual `bool` type case in `ExpressionValue` when
+                                    // we have multiple types there?
   } else {
     // Nested expression -- find loader by type
     if (auto name = reader.str("expressionType")) {
