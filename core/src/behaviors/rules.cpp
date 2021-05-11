@@ -643,6 +643,24 @@ struct VariableMeetsConditionResponse : BaseResponse {
 
 
 //
+// Camera responses
+//
+
+struct FollowWithCameraResponse : BaseResponse {
+  inline static const RuleRegistration<FollowWithCameraResponse, RulesBehavior> registration {
+    "follow with camera"
+  };
+
+  struct Params {
+  } params;
+
+  void run(RuleContext &ctx) override {
+    ctx.getScene().setCameraTarget(ctx.actorId);
+  }
+};
+
+
+//
 // Constructor, destructor
 //
 

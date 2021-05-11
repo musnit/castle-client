@@ -94,12 +94,15 @@ public:
   const Library &getLibrary() const;
 
 
-  // View transform
+  // View, camera
 
   const love::Transform &getViewTransform() const;
   love::Vector2 inverseViewTransformPoint(const love::Vector2 &point) const;
   float getViewScale() const;
   float getPixelScale() const;
+
+  void setCameraTarget(ActorId target);
+  love::Vector2 getCameraPosition() const;
 
 
   // Gesture
@@ -174,6 +177,8 @@ private:
   Library library; // Library instance maintained at scene level for now
 
   mutable love::Transform viewTransform;
+  mutable float cameraX = 0, cameraY = 0;
+  mutable ActorId cameraTarget = nullActor;
 
   Gesture gesture { *this };
 
@@ -292,6 +297,14 @@ inline float Scene::getViewScale() const {
 
 inline float Scene::getPixelScale() const {
   return float(lv.window.getDPIScale() / getViewScale());
+}
+
+inline void Scene::setCameraTarget(ActorId target) {
+  cameraTarget = target;
+}
+
+inline love::Vector2 Scene::getCameraPosition() const {
+  return { cameraX, cameraY };
 }
 
 inline Variables &Scene::getVariables() {
