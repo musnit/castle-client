@@ -131,6 +131,20 @@ struct FaceDirectionOfMotionResponse : BaseResponse {
   }
 };
 
+struct IsInCameraViewportResponse : BaseResponse {
+  inline static const RuleRegistration<IsInCameraViewportResponse, BodyBehavior> registration {
+    "is in camera viewport"
+  };
+
+  struct Params {
+  } params;
+
+  bool eval(RuleContext &ctx) override {
+    auto &bodyBehavior = ctx.getScene().getBehaviors().byType<BodyBehavior>();
+    return bodyBehavior.viewportMarkerView.contains(ctx.actorId);
+  }
+};
+
 
 //
 // Enable, disable

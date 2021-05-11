@@ -105,17 +105,20 @@ private:
   Lv &lv { Lv::getInstance() };
 
 
+  // Fixtures
+
+  void recreateFixtures(ActorId actorId, BodyComponent &component, bool notify);
+  b2Fixture *addFixture(BodyComponent &component, b2Shape *shape);
+
+
+  // Viewport
+
   struct ViewportMarker {
     // Component that marks an actor as being currently in the camera viewport
   };
   entt::basic_view<entt::entity, entt::exclude_t<>, ViewportMarker> viewportMarkerView
       = getScene().getEntityRegistry().view<ViewportMarker>();
-
-
-  // Fixtures
-
-  void recreateFixtures(ActorId actorId, BodyComponent &component, bool notify);
-  b2Fixture *addFixture(BodyComponent &component, b2Shape *shape);
+  friend struct IsInCameraViewportResponse;
 };
 
 
