@@ -53,6 +53,10 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
     marginTop: 8,
   },
+  commentUnavailableLabel: {
+    fontStyle: 'italic',
+    color: '#888',
+  },
 });
 
 const commentBodyStyles = StyleSheet.create({
@@ -93,11 +97,15 @@ const Comment = ({ comment, isReply = false, prevComment, navigateToUser, showCo
             <Text style={styles.commentDate}>{toRecentDate(comment.createdTime)}</Text>
           </View>
           <View style={styles.commentBody}>
-            <MessageBody
-              body={comment.body}
-              styles={commentBodyStyles}
-              navigateToUser={navigateToUser}
-            />
+            {comment.isDeleted ? (
+              <Text style={styles.commentUnavailableLabel}>This comment was deleted</Text>
+            ) : (
+              <MessageBody
+                body={comment.body}
+                styles={commentBodyStyles}
+                navigateToUser={navigateToUser}
+              />
+            )}
           </View>
         </Pressable>
         {comment.childComments?.comments?.length ? (
