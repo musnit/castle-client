@@ -143,6 +143,7 @@ DEFINE_HANDLER(ReadComponent);
 
 // Perform
 DEFINE_HANDLER(Perform);
+DEFINE_HANDLER(PerformCamera);
 
 // Physics
 DEFINE_HANDLER(BeginPhysicsContact);

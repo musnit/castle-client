@@ -89,6 +89,7 @@ struct CreateResponse : BaseResponse {
         auto yAbsolute = params.yAbsolute().eval<float>(ctx);
         newPos = { xAbsolute, yAbsolute };
       }
+      // TODO(nikki): Handle camera layer position
       newBody->SetTransform(newPos, newBody->GetAngle());
     }
   }

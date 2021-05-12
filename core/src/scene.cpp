@@ -272,6 +272,23 @@ void Scene::update(double dt) {
     }
   });
 
+  // Move camera
+  auto oldCameraX = cameraX, oldCameraY = cameraY;
+  if (cameraTarget != nullActor) {
+    if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(cameraTarget)) {
+      auto [x, y] = body->GetPosition();
+      cameraX = x;
+      cameraY = y;
+    } else {
+      cameraTarget = nullActor;
+    }
+  }
+  getBehaviors().forEach([&](auto &behavior) {
+    if constexpr (Handlers::hasPerformCamera<decltype(behavior)>) {
+      behavior.handlePerformCamera(cameraX - oldCameraX, cameraY - oldCameraY);
+    }
+  });
+
   // Perform variables
   variables.perform(dt);
 }
@@ -307,15 +324,6 @@ void Scene::draw() const {
   viewTransform.reset();
   viewTransform.scale(800.0f / viewWidth, 800.0f / viewWidth);
   viewTransform.translate(0.5f * viewWidth, 0.5f * viewHeight);
-  if (cameraTarget != nullActor) {
-    if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(cameraTarget)) {
-      auto [x, y] = body->GetPosition();
-      cameraX = x;
-      cameraY = y;
-    } else {
-      cameraTarget = nullActor;
-    }
-  }
   viewTransform.translate(-cameraX, -cameraY);
   lv.graphics.applyTransform(&viewTransform);
 

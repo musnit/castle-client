@@ -147,10 +147,22 @@ struct IsInCameraViewportResponse : BaseResponse {
 
 
 //
+// Camera layer
+//
+
+struct CameraLayerMarker {
+  // Component that marks an actor as being in the camera layer (relative to camera). Used so we can
+  // quickly query for such actors.
+};
+
+
+//
 // Enable, disable
 //
 
 void BodyBehavior::handleEnableComponent(ActorId actorId, BodyComponent &component) {
+  auto &scene = getScene();
+
   // Body
   b2BodyDef bodyDef;
   bodyDef.userData.pointer = entt::to_integral(actorId) + 1; // `actorId` can be 0, so offset
@@ -158,12 +170,13 @@ void BodyBehavior::handleEnableComponent(ActorId actorId, BodyComponent &compone
   bodyDef.position = { component.props.x(), component.props.y() };
   bodyDef.angle = component.props.angle();
   bodyDef.gravityScale = 0;
-  component.body = getScene().getPhysicsWorld().CreateBody(&bodyDef);
+  component.body = scene.getPhysicsWorld().CreateBody(&bodyDef);
 
   // Layer
   switch (component.props.layerName()[0]) {
   case 'c': { // "camera"
     component.layer = BodyLayer::Camera;
+    scene.getEntityRegistry().emplace<CameraLayerMarker>(actorId);
     break;
   }
   }
@@ -271,6 +284,19 @@ void BodyBehavior::handlePerform(double dt) {
   }
 }
 
+void BodyBehavior::handlePerformCamera(float deltaX, float deltaY) {
+  if (deltaX == 0 && deltaY == 0) {
+    return;
+  }
+  auto delta = b2Vec2(deltaX, deltaY);
+  getScene().getEntityRegistry().view<CameraLayerMarker, BodyComponent>().each(
+      [&](ActorId actorId, BodyComponent &component) {
+        if (auto body = component.body) {
+          body->SetTransform(body->GetPosition() + delta, body->GetAngle());
+        }
+      });
+}
+
 
 //
 // Physics contact
@@ -323,9 +349,17 @@ ExpressionValue BodyBehavior::handleGetProperty(
   }
   auto &props = component.props;
   if (propId == props.x.id) {
-    return body->GetPosition().x;
+    auto result = body->GetPosition().x;
+    if (component.layer == BodyLayer::Camera) {
+      result -= getScene().getCameraPosition().x;
+    }
+    return result;
   } else if (propId == props.y.id) {
-    return body->GetPosition().y;
+    auto result = body->GetPosition().y;
+    if (component.layer == BodyLayer::Camera) {
+      result -= getScene().getCameraPosition().y;
+    }
+    return result;
   } else if (propId == props.angle.id) {
     return body->GetAngle() * 180 / M_PI;
   } else if (propId == props.widthScale.id) {
@@ -345,9 +379,17 @@ void BodyBehavior::handleSetProperty(
   }
   auto &props = component.props;
   if (propId == props.x.id) {
-    body->SetTransform({ value.as<float>(), body->GetPosition().y }, body->GetAngle());
+    auto newX = value.as<float>();
+    if (component.layer == BodyLayer::Camera) {
+      newX += getScene().getCameraPosition().x;
+    }
+    body->SetTransform({ newX, body->GetPosition().y }, body->GetAngle());
   } else if (propId == props.y.id) {
-    body->SetTransform({ body->GetPosition().x, value.as<float>() }, body->GetAngle());
+    auto newY = value.as<float>();
+    if (component.layer == BodyLayer::Camera) {
+      newY += getScene().getCameraPosition().y;
+    }
+    body->SetTransform({ body->GetPosition().x, newY }, body->GetAngle());
   } else if (propId == props.angle.id) {
     body->SetTransform(body->GetPosition(), float(value.as<double>() * M_PI / 180));
   } else if (propId == props.widthScale.id) {

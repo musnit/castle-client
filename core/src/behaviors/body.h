@@ -63,6 +63,7 @@ public:
   void handleDisableComponent(ActorId actorId, BodyComponent &component, bool removeActor);
 
   void handlePerform(double dt);
+  void handlePerformCamera(float deltaX, float deltaY);
 
   void handleBeginPhysicsContact(b2Contact *contact);
 
