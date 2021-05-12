@@ -4,6 +4,29 @@
 
 
 //
+// Triggers
+//
+
+struct VelocityChangesTrigger : BaseTrigger {
+  inline static const RuleRegistration<VelocityChangesTrigger, MovingBehavior> registration {
+    "velocity changes"
+  };
+
+  struct Params {
+  } params;
+};
+
+struct StopsMovingTrigger : BaseTrigger {
+  inline static const RuleRegistration<StopsMovingTrigger, MovingBehavior> registration {
+    "stops moving"
+  };
+
+  struct Params {
+  } params;
+};
+
+
+//
 // Responses
 //
 
@@ -102,8 +125,58 @@ void MovingBehavior::handleDisableComponent(
     if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId)) {
       handleUpdateComponentFixtures(actorId, component, body);
       body->SetType(b2_staticBody); // Internally sets velocities to zero
+
+      auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
+      rulesBehavior.fire<VelocityChangesTrigger>(actorId, {});
+      // rulesBehavior.fire<StopsMovingTrigger>(actorId, {}); // NOTE: Should we do this?
     }
   }
+}
+
+
+//
+// Perform
+//
+
+void MovingBehavior::handlePerform(double dt) {
+  // Motion triggers
+  auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
+  forEachEnabledComponent([&](ActorId actorId, MovingComponent &component) {
+    if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId)) {
+      // Check if velocity changed
+      if (rulesBehavior.hasTrigger<VelocityChangesTrigger>(actorId)) {
+        auto [vx, vy] = body->GetLinearVelocity();
+        auto va = body->GetAngularVelocity();
+        auto &prevVelocity = component.prevVelocity;
+        if (!prevVelocity || prevVelocity->x != vx || prevVelocity->y != vy
+            || prevVelocity->a != va) {
+          rulesBehavior.fire<VelocityChangesTrigger>(actorId, {});
+        }
+        prevVelocity = { vx, vy, va };
+      }
+
+      // Check if position changed
+      if (rulesBehavior.hasTrigger<StopsMovingTrigger>(actorId)) {
+        constexpr auto translationThreshold = 0.0005;
+        constexpr auto rotationThreshold = 0.001;
+        auto [x, y] = body->GetPosition();
+        auto a = body->GetAngle();
+        auto &prevPosition = component.prevPosition;
+        if (prevPosition) {
+          auto moving = std::abs(prevPosition->x - x) >= translationThreshold
+              || std::abs(prevPosition->y - y) >= translationThreshold
+              || std::abs(prevPosition->a - a) >= rotationThreshold;
+          if (component.isMoving != moving) {
+            if (!moving) {
+              rulesBehavior.fire<StopsMovingTrigger>(actorId, {});
+            }
+            component.isMoving = moving;
+          }
+        }
+        prevPosition = { x, y, a };
+      }
+    }
+  });
 }
 
 

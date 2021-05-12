@@ -13,6 +13,14 @@ struct MovingComponent : BaseComponent {
     PROP(float, angularVelocity) = 0;
     PROP(float, density) = 1;
   } props;
+
+  // Tracking for motion triggers
+  struct PrevCoords {
+    float x, y, a;
+  };
+  std::optional<PrevCoords> prevPosition;
+  std::optional<PrevCoords> prevVelocity;
+  bool isMoving = false; // Whether currently above the motion threshold
 };
 
 class MovingBehavior : public BaseBehavior<MovingBehavior, MovingComponent> {
@@ -25,6 +33,8 @@ public:
 
   void handleEnableComponent(ActorId actorId, MovingComponent &component);
   void handleDisableComponent(ActorId actorId, MovingComponent &component, bool removeActor);
+
+  void handlePerform(double dt);
 
   ExpressionValue handleGetProperty(
       ActorId actorId, const MovingComponent &component, PropId propId) const;
