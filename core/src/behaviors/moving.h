@@ -14,7 +14,8 @@ struct MovingComponent : BaseComponent {
     PROP(float, density) = 1;
   } props;
 
-  // Tracking for motion triggers
+  // Tracking for motion triggers. These values are only updated when the relevant triggers are
+  // present on the actor.
   struct PrevCoords {
     float x, y, a;
   };

@@ -6,6 +6,11 @@
 #include "props.h"
 
 
+enum class BodyLayer {
+  Main,
+  Camera,
+};
+
 struct BodyComponent : BaseComponent {
   struct Props {
     PROP(float, x) = 0;
@@ -43,6 +48,7 @@ struct BodyComponent : BaseComponent {
   } props;
 
   b2Body *body = nullptr;
+  BodyLayer layer = BodyLayer::Main;
 };
 
 class BodyBehavior : public BaseBehavior<BodyBehavior, BodyComponent> {

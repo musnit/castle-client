@@ -160,6 +160,14 @@ void BodyBehavior::handleEnableComponent(ActorId actorId, BodyComponent &compone
   bodyDef.gravityScale = 0;
   component.body = getScene().getPhysicsWorld().CreateBody(&bodyDef);
 
+  // Layer
+  switch (component.props.layerName()[0]) {
+  case 'c': { // "camera"
+    component.layer = BodyLayer::Camera;
+    break;
+  }
+  }
+
   // Fixtures
   recreateFixtures(actorId, component, false);
 }
@@ -424,12 +432,18 @@ void BodyBehavior::recreateFixtures(ActorId actorId, BodyComponent &component, b
 }
 
 b2Fixture *BodyBehavior::addFixture(BodyComponent &component, b2Shape *shape) {
-  // Defaults that other behaviors may override
   b2FixtureDef fixtureDef;
+
+  // Defaults that other behaviors may override
   fixtureDef.isSensor = true;
   fixtureDef.friction = 0;
   fixtureDef.restitutionThreshold = 0.1; // Keeps bounciness on at lower speeds
   fixtureDef.density = 1;
+
+  // Collision mask based on layer
+  fixtureDef.filter.categoryBits = 1 << int(component.layer);
+  fixtureDef.filter.maskBits = 1 << int(component.layer);
+
   fixtureDef.shape = shape;
   return component.body->CreateFixture(&fixtureDef);
 }
