@@ -122,7 +122,7 @@ const Comment = ({ comment, isReply = false, prevComment, navigateToUser, showCo
 
 export const CommentsList = ({ deckId, isOpen, setReplyingToComment }) => {
   const { push } = useNavigation();
-  const { userId: signedInUserId } = useSession();
+  const { userId: signedInUserId, isAnonymous } = useSession();
   const [comments, setComments] = React.useState(null);
   const { showActionSheetWithOptions } = useActionSheet();
 
@@ -207,6 +207,10 @@ export const CommentsList = ({ deckId, isOpen, setReplyingToComment }) => {
 
   const showCommentActions = React.useCallback(
     ({ comment, isReply }) => {
+      if (isAnonymous) {
+        return;
+      }
+
       let options = [];
       const isOwnComment = signedInUserId === comment.fromUser.userId;
       // TODO: also support deleting if you are the deck owner
@@ -273,6 +277,7 @@ export const CommentsList = ({ deckId, isOpen, setReplyingToComment }) => {
       onReportComment,
       onDeleteComment,
       signedInUserId,
+      isAnonymous,
     ]
   );
 

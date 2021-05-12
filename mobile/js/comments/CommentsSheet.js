@@ -9,6 +9,7 @@ import { gql, useMutation } from '@apollo/client';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useKeyboard } from '../common/utilities';
 import { useNavigation } from '../ReactNavigation';
+import { useSession } from '../Session';
 
 import * as Constants from '../Constants';
 
@@ -22,6 +23,7 @@ const needsTabBarPadding = ({ navigationIndex, keyboardState }) => {
 
 export const CommentsSheet = ({ isOpen, onClose, deckId, ...props }) => {
   const { dangerouslyGetState } = useNavigation();
+  const { isAnonymous } = useSession();
 
   const insets = useSafeAreaInsets();
   const maxSheetHeight = Viewport.vh * 100 - insets.top - Constants.FEED_HEADER_HEIGHT;
@@ -70,11 +72,13 @@ export const CommentsSheet = ({ isOpen, onClose, deckId, ...props }) => {
         setReplyingToComment={setReplyingToComment}
         {...props}
       />
-      <CommentInput
-        onAddComment={onAddComment}
-        replyingToComment={replyingToComment}
-        clearReplyingToComment={() => setReplyingToComment(undefined)}
-      />
+      {!isAnonymous ? (
+        <CommentInput
+          onAddComment={onAddComment}
+          replyingToComment={replyingToComment}
+          clearReplyingToComment={() => setReplyingToComment(undefined)}
+        />
+      ) : null}
     </View>
   );
 
