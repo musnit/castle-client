@@ -38,7 +38,11 @@ export const CommentsSheet = ({ isOpen, onClose, deckId, ...props }) => {
     Constants.FEED_HEADER_HEIGHT -
     (needsTabBarHeight({ navigationIndex }) ? TAB_BAR_HEIGHT : 0);
 
-  const renderHeader = () => <BottomSheetHeader title="Comments" onClose={onClose} />;
+  const closeSheet = React.useCallback(() => {
+    Keyboard.dismiss();
+    return onClose();
+  }, [onClose]);
+  const renderHeader = () => <BottomSheetHeader title="Comments" onClose={closeSheet} />;
 
   const [replyingToComment, setReplyingToComment] = React.useState();
 
