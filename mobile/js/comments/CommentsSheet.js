@@ -21,12 +21,21 @@ const needsTabBarPadding = ({ navigationIndex, keyboardState }) => {
   return Constants.iOS && navigationIndex === 0 && !keyboardState.visible;
 };
 
+const needsTabBarHeight = ({ navigationIndex }) => {
+  return Constants.Android && navigationIndex === 0;
+};
+
 export const CommentsSheet = ({ isOpen, onClose, deckId, ...props }) => {
   const { dangerouslyGetState } = useNavigation();
   const { isAnonymous } = useSession();
 
   const insets = useSafeAreaInsets();
-  const maxSheetHeight = Viewport.vh * 100 - insets.top - Constants.FEED_HEADER_HEIGHT;
+  const navigationIndex = dangerouslyGetState().index;
+  const maxSheetHeight =
+    Viewport.vh * 100 -
+    insets.top -
+    Constants.FEED_HEADER_HEIGHT -
+    (needsTabBarHeight({ navigationIndex }) ? TAB_BAR_HEIGHT : 0);
 
   const renderHeader = () => <BottomSheetHeader title="Comments" onClose={onClose} />;
 
@@ -56,10 +65,12 @@ export const CommentsSheet = ({ isOpen, onClose, deckId, ...props }) => {
 
   const [keyboardState] = useKeyboard();
 
-  let paddingBottom = keyboardState.visible ? keyboardState.height - insets.bottom : 0;
-  if (needsTabBarPadding({ navigationIndex: dangerouslyGetState().index, keyboardState })) {
+  let paddingBottom =
+    Constants.iOS && keyboardState.visible ? keyboardState.height - insets.bottom : 0;
+  if (needsTabBarPadding({ navigationIndex, keyboardState })) {
     paddingBottom += TAB_BAR_HEIGHT;
   }
+
   const renderContent = () => (
     <View
       style={{
