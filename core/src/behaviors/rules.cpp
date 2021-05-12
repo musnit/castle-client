@@ -95,6 +95,64 @@ struct CreateResponse : BaseResponse {
   }
 };
 
+struct CreateTextResponse : BaseResponse {
+  inline static const RuleRegistration<CreateTextResponse, RulesBehavior> registration {
+    "create text"
+  };
+
+  struct Params {
+    PROP(std::string, content) = "";
+    PROP(std::string, action) = "dismiss";
+  } params;
+
+  void run(RuleContext &ctx) override {
+    // params.body()
+
+    Archive writerArchive;
+    writerArchive.write([&](Archive::Writer &w) {
+      w.obj("components", [&]() {
+        w.obj("Text", [&]() {
+          w.str("content", params.content());
+        });
+
+        // TODO: handle perform response
+        if (params.action() == "dismiss") {
+          w.obj("Rules", [&]() {
+            w.arr("rules", [&]() {
+              w.obj([&]() {
+                w.obj("trigger", [&]() {
+                  w.str("name", "tap");
+                  w.num("behaviorId", 19);
+                  w.obj("params", [&]() {
+                  });
+                });
+
+                w.obj("response", [&]() {
+                  w.str("name", "destroy");
+                  w.num("behaviorId", 16);
+                  w.obj("params", [&]() {
+                  });
+                });
+              });
+            });
+          });
+        }
+      });
+    });
+
+    auto readerArchive = Archive::fromJson(writerArchive.toJson().c_str());
+    readerArchive.read([&](Reader &reader) {
+      auto &scene = ctx.getScene();
+
+      // Create actor and make sure that was successful
+      auto newActorId = scene.addActor(&reader, nullptr);
+      if (newActorId == nullActor) {
+        return;
+      }
+    });
+  }
+};
+
 struct DestroyResponseMarker {
   // Added to an actor when a destroy response is run on it, marking an impending destruction. The
   // actor is destroyed at the end of the frame rather than right away, so that rule execution can
@@ -113,6 +171,23 @@ struct DestroyResponse : BaseResponse {
     if (scene.hasActor(actorId)) {
       scene.getEntityRegistry().emplace_or_replace<DestroyResponseMarker>(actorId);
     }
+  }
+};
+
+struct HideTextResponse : BaseResponse {
+  inline static const RuleRegistration<HideTextResponse, RulesBehavior> registration {
+    "hide text"
+  };
+
+  struct Params {
+  } params;
+
+  void run(RuleContext &ctx) override {
+    auto &scene = ctx.getScene();
+    scene.getBehaviors().byType<TextBehavior>().forEachComponent(
+        [&](ActorId actorId, TextComponent &component) {
+          component.props.visible() = false;
+        });
   }
 };
 

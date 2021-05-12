@@ -27,4 +27,5 @@ public:
 private:
   friend struct ShowResponse;
   friend struct HideResponse;
+  friend struct HideTextResponse;
 };
