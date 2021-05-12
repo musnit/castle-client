@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, TextInput, View, Keyboard } from 'react-native';
+import { KeyboardAvoidingView, StyleSheet, TextInput, View, Keyboard } from 'react-native';
 
 import { BottomSheetHeader } from '../components/BottomSheetHeader';
 import { BottomSheet } from '../components/BottomSheet';
@@ -16,9 +16,10 @@ import * as Constants from '../Constants';
 import Viewport from '../common/viewport';
 
 const TAB_BAR_HEIGHT = 49;
+const SHEET_HEADER_HEIGHT = 62;
 
-const needsTabBarPadding = ({ navigationIndex, keyboardState }) => {
-  return Constants.iOS && navigationIndex === 0 && !keyboardState.visible;
+const needsTabBarPadding = ({ navigationIndex }) => {
+  return Constants.iOS && navigationIndex === 0;
 };
 
 const needsTabBarHeight = ({ navigationIndex }) => {
@@ -63,20 +64,13 @@ export const CommentsSheet = ({ isOpen, onClose, deckId, ...props }) => {
     [addComment, deckId]
   );
 
-  const [keyboardState] = useKeyboard();
-
-  let paddingBottom =
-    Constants.iOS && keyboardState.visible ? keyboardState.height - insets.bottom : 0;
-  if (needsTabBarPadding({ navigationIndex, keyboardState })) {
-    paddingBottom += TAB_BAR_HEIGHT;
+  let paddingBottomIOS = 0;
+  if (needsTabBarPadding({ navigationIndex })) {
+    paddingBottomIOS += TAB_BAR_HEIGHT;
   }
 
-  const renderContent = () => (
-    <View
-      style={{
-        flex: 1,
-        paddingBottom,
-      }}>
+  const renderContentInner = () => (
+    <>
       <CommentsList
         isOpen={isOpen}
         deckId={deckId}
@@ -90,8 +84,22 @@ export const CommentsSheet = ({ isOpen, onClose, deckId, ...props }) => {
           clearReplyingToComment={() => setReplyingToComment(undefined)}
         />
       ) : null}
-    </View>
+    </>
   );
+
+  const renderContent = Constants.Android
+    ? () => <View style={{ flex: 1 }}>{renderContentInner()}</View>
+    : () => (
+        <View style={{ flex: 1 }}>
+          <KeyboardAvoidingView
+            keyboardVerticalOffset={Viewport.vh * 100 - maxSheetHeight + SHEET_HEADER_HEIGHT}
+            behavior="padding"
+            style={{ flex: 1 }}>
+            {renderContentInner()}
+          </KeyboardAvoidingView>
+          <View style={{ height: paddingBottomIOS }} />
+        </View>
+      );
 
   return (
     <BottomSheet
