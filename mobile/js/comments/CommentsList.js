@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     paddingVertical: 2,
     paddingHorizontal: 12,
+    marginBottom: 8,
   },
   commentMeta: {
     flexDirection: 'row',
@@ -50,8 +51,6 @@ const styles = StyleSheet.create({
   },
   repliesContainer: {
     flexDirection: 'column-reverse',
-    paddingLeft: 8,
-    marginTop: 8,
   },
   commentUnavailableLabel: {
     fontStyle: 'italic',
@@ -82,7 +81,7 @@ const CommentReplies = ({ replies, ...props }) => {
 const Comment = ({ comment, isReply = false, prevComment, navigateToUser, showCommentActions }) => {
   // could use `prevComment` to render groups of comments by the same author.
   return (
-    <View style={[styles.commentContainer, { marginBottom: isReply ? 0 : 8 }]}>
+    <View style={[styles.commentContainer]}>
       <Pressable onPress={() => navigateToUser(comment.fromUser)}>
         <UserAvatar url={comment.fromUser.photo?.url} style={styles.authorAvatar} />
       </Pressable>

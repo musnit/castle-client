@@ -28,15 +28,14 @@ const styles = StyleSheet.create({
   },
   replyingToRow: {
     flexDirection: 'row',
-    paddingTop: 8,
+    paddingTop: 12,
     paddingHorizontal: 12,
   },
   replyingToLabel: {
-    fontSize: 12,
     color: '#888',
   },
   clearReplyButton: {
-    marginLeft: 4,
+    marginRight: 4,
   },
 });
 
@@ -58,15 +57,15 @@ export const CommentInput = ({ onAddComment, replyingToComment, clearReplyingToC
     <View style={styles.container}>
       {replyingToComment ? (
         <View style={styles.replyingToRow}>
-          <Text style={styles.replyingToLabel}>
-            Replying to @{replyingToComment.fromUser.username}
-          </Text>
           <Pressable
             style={styles.clearReplyButton}
             onPress={clearReplyingToComment}
             hitSlop={{ top: 4, left: 4, right: 4, bottom: 4 }}>
-            <MCIcon name="close-circle" color="#888" size={16} />
+            <MCIcon name="close" color="#888" size={16} />
           </Pressable>
+          <Text style={styles.replyingToLabel}>
+            Replying to @{replyingToComment.fromUser.username}
+          </Text>
         </View>
       ) : null}
       <View style={styles.inputRow}>

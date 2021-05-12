@@ -63,7 +63,10 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     ...Constants.styles.textShadow,
   },
-  image: {
+  commentButton: {
+    marginRight: 8,
+  },
+  commentIcon: {
     width: 56,
     height: 56,
   },
@@ -138,8 +141,11 @@ export const PlayDeckFooter = ({ deck, isPlaying, onPressComments }) => {
           </View>
         )}
       </View>
-      <Pressable onPress={onPressComments}>
-        <FastImage style={styles.image} source={require('../../assets/images/emoji/comment.png')} />
+      <Pressable style={styles.commentButton} onPress={onPressComments}>
+        <FastImage
+          style={styles.commentIcon}
+          source={require('../../assets/images/emoji/comment.png')}
+        />
         <SocialCount count={deck.comments?.count} />
       </Pressable>
       <ReactionButton deck={deck} />
