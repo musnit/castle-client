@@ -24,7 +24,8 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
     initialDeckIndex = route.params.initialDeckIndex ?? 0;
   }
   // TODO: BEN: respect initialDeckIndex
-  const deckId = decks?.length ? decks[0].deckId : null;
+  const deck = decks?.length ? decks[0] : null;
+  const deckId = deck?.deckId;
 
   const { pop } = useNavigation();
   const onHardwareBackPress = React.useCallback(() => pop(), [pop]);
@@ -55,7 +56,7 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
           onPressComments={openComments}
           isCommentsOpen={isCommentsVisible}
         />
-        <CommentsSheet isOpen={isCommentsVisible} onClose={closeComments} deckId={deckId} />
+        <CommentsSheet isOpen={isCommentsVisible} onClose={closeComments} deck={deck} />
       </PopoverProvider>
     </SafeAreaView>
   );

@@ -109,7 +109,7 @@ export const HomeScreen = ({ route }) => {
       if (action.type === 'open') {
         return {
           isOpen: true,
-          deckId: action.deckId,
+          deck: action.deck,
         };
       }
       if (action.type === 'close') {
@@ -125,7 +125,7 @@ export const HomeScreen = ({ route }) => {
     }
   );
   const openComments = React.useCallback(
-    ({ deckId }) => setCommentsState({ type: 'open', deckId }),
+    ({ deck }) => setCommentsState({ type: 'open', deck }),
     []
   );
   const closeComments = React.useCallback(() => setCommentsState({ type: 'close' }), []);
@@ -153,7 +153,7 @@ export const HomeScreen = ({ route }) => {
         <CommentsSheet
           isOpen={commentsState.isOpen}
           onClose={closeComments}
-          deckId={commentsState.deckId}
+          deck={commentsState.deck}
         />
       </PopoverProvider>
     </View>

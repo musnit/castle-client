@@ -306,7 +306,7 @@ export const DecksFeed = ({
             deck={deck}
             isPlaying={isPlaying}
             onPressDeck={onPressDeck}
-            onPressComments={() => onPressComments({ deckId: deck.deckId })}
+            onPressComments={() => onPressComments({ deck })}
             playingTransition={playingTransition}
             paused={paused || isCommentsOpen}
             isMe={deck?.creator?.userId === signedInUserId}

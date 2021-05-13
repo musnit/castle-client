@@ -26,7 +26,7 @@ const needsTabBarHeight = ({ navigationIndex }) => {
   return Constants.Android && navigationIndex === 0;
 };
 
-export const CommentsSheet = ({ isOpen, onClose, deckId, ...props }) => {
+export const CommentsSheet = ({ isOpen, onClose, deck, ...props }) => {
   const { dangerouslyGetState } = useNavigation();
   const { isAnonymous } = useSession();
 
@@ -53,19 +53,42 @@ export const CommentsSheet = ({ isOpen, onClose, deckId, ...props }) => {
           ${Constants.COMMENTS_LIST_FRAGMENT}
         }
       }
-    `
+    `,
+    {
+      update: (cache, { data }) => {
+        // https://www.apollographql.com/docs/react/caching/cache-interaction/#example-updating-the-cache-after-a-mutation
+        cache.modify({
+          id: cache.identify(deck),
+          fields: {
+            comments(_, { DELETE }) {
+              const newCommentsList = data.addDeckComment;
+              const newCommentsListRef = cache.writeFragment({
+                data: newCommentsList,
+                fragment: gql`
+                  fragment NewCommentsList on CommentsList {
+                    threadId
+                    count
+                  }
+                `,
+              });
+              return newCommentsListRef;
+            },
+          },
+        });
+      },
+    }
   );
 
   const onAddComment = React.useCallback(
     (message, parentCommentId = null) =>
       addComment({
         variables: {
-          deckId,
+          deckId: deck.deckId,
           message,
           parentCommentId,
         },
       }),
-    [addComment, deckId]
+    [addComment, deck]
   );
 
   let paddingBottomIOS = 0;
@@ -77,7 +100,7 @@ export const CommentsSheet = ({ isOpen, onClose, deckId, ...props }) => {
     <>
       <CommentsList
         isOpen={isOpen}
-        deckId={deckId}
+        deckId={deck?.deckId}
         setReplyingToComment={setReplyingToComment}
         {...props}
       />
