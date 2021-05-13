@@ -31,14 +31,14 @@ struct Touch {
 
   TouchId id;
   love::Vector2 screenPos; // Screen-space position in device-independent pixels
-  love::Vector2 initialScreenPos { screenPos.x, screenPos.y };
-  love::Vector2 screenDelta { 0, 0 };
+  love::Vector2 initialScreenPos = screenPos;
+  love::Vector2 screenDelta = { 0, 0 };
   love::Vector2 pos; // World-space position in world units
-  love::Vector2 initialPos { pos.x, pos.y };
-  love::Vector2 delta { 0, 0 };
+  love::Vector2 initialPos = pos;
+  love::Vector2 delta = { 0, 0 };
   love::Vector2 cameraPos; // Camera-space position in world units
-  love::Vector2 initialCameraPos { cameraPos.x, cameraPos.y };
-  love::Vector2 cameraDelta { 0, 0 };
+  love::Vector2 initialCameraPos = cameraPos;
+  love::Vector2 cameraDelta = { 0, 0 };
   bool pressed = true; // Whether just pressed this frame
   bool released = false; // Whether just released this frame
   bool movedNear = false; // Whether this touch has moved at all
