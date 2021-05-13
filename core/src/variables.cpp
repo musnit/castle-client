@@ -62,15 +62,3 @@ void Variables::set(Variable variable, MapElem &elem, ExpressionValue value) {
     rulesBehavior.fireVariablesTriggers(variable, value);
   }
 }
-
-
-//
-// Perform
-//
-
-void Variables::perform(double dt) {
-  Debug::display("variables:");
-  map.forEach([&](Map::Token token, MapElem &elem) {
-    Debug::display("  {}: {}", elem.name, elem.value.as<float>());
-  });
-}

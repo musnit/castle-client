@@ -15,6 +15,8 @@ class Debug {
   // https://github.com/fmtlib/fmt#examples).
 
 public:
+  inline static bool isEnabled = false;
+
   // Print a message to the console
   template<typename... Args>
   static void log(Args &&...args);
@@ -38,9 +40,11 @@ private:
 
 template<typename... Args>
 inline void Debug::log(Args &&...args) {
-  fmt::print(std::forward<Args>(args)...);
-  fmt::print("\n");
-  std::fflush(stdout);
+  if (isEnabled) {
+    fmt::print(std::forward<Args>(args)...);
+    fmt::print("\n");
+    std::fflush(stdout);
+  }
 };
 
 template<typename... Args>
@@ -51,7 +55,7 @@ inline void Debug::fatal(Args &&...args) {
 
 template<typename... Args>
 inline void Debug::display(Args &&...args) {
-  if (displayText.size() < 3000) { // In case we forget to clear it
+  if (isEnabled && displayText.size() < 3000) {
     displayText.append(fmt::format(std::forward<Args>(args)...));
     displayText.append("\n");
   }

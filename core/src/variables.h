@@ -71,11 +71,6 @@ public:
   void resetAll();
 
 
-  // Perform
-
-  void perform(double dt);
-
-
 private:
   Map map; // NOTE: Keyed by variable id, not name
 

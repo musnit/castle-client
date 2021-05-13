@@ -288,9 +288,6 @@ void Scene::update(double dt) {
       behavior.handlePerformCamera(cameraX - oldCameraX, cameraY - oldCameraY);
     }
   });
-
-  // Perform variables
-  variables.perform(dt);
 }
 
 

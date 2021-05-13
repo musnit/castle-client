@@ -32,6 +32,8 @@ JS_DEFINE(char *, JS_getNextCardSceneData, (), {
     return 0;
   };
 });
+JS_DEFINE(int, JS_isDebugEnabled, (),
+    { return new URLSearchParams(window.location.search).get("debug") != null; });
 
 
 //
@@ -47,6 +49,9 @@ extern "C" bool ghostChildWindowCloseEventReceived; // Whether the OS tried to c
 //
 
 Engine::PreInit::PreInit() {
+  // Read debug flag
+  Debug::isEnabled = JS_isDebugEnabled();
+
   // SDL parameters. In pre-init so we can still eg. refresh the page using keyboard if tests fail.
   SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0"); // Don't doublecount touches as mouse events
 #ifdef __EMSCRIPTEN__
@@ -201,10 +206,6 @@ void Engine::update(double dt) {
 
   // Update scene
   if (scene) {
-    Debug::display("fps: {}", lv.timer.getFPS());
-    Debug::display("scaling: {:.2f}, {:.2f}, {:.2f}, {:.2f}", JS_getDevicePixelRatio(),
-        lv.window.getDPIScale(), lv.graphics.getCurrentDPIScale(), ghostScreenScaling);
-
     if (scene->isRestartRequested()) {
       sceneArchive.read([&](Reader &reader) {
         reader.obj("snapshot", [&]() {
@@ -212,7 +213,10 @@ void Engine::update(double dt) {
         });
       });
     }
+
+    Debug::display("fps: {}", lv.timer.getFPS());
     Debug::display("actors: {}", scene->numActors());
+
     scene->update(dt);
   }
 
@@ -242,6 +246,8 @@ void Engine::draw() {
     Debug::display("loading...");
     lv.graphics.setColor(love::Colorf(1, 1, 1, 1));
   }
-  lv.graphics.print({ { Debug::getAndClearDisplay(), { 1, 1, 1, 1 } } }, debugFont.get(),
-      love::Matrix4(20, 20, 0, 1, 1, 0, 0, 0, 0));
+  if (Debug::isEnabled) {
+    lv.graphics.print({ { Debug::getAndClearDisplay(), { 1, 1, 1, 1 } } }, debugFont.get(),
+        love::Matrix4(20, 20, 0, 1, 1, 0, 0, 0, 0));
+  }
 }
