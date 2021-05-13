@@ -119,7 +119,7 @@ const Comment = ({ comment, isReply = false, prevComment, navigateToUser, showCo
   );
 };
 
-export const CommentsList = ({ deckId, isOpen, setReplyingToComment }) => {
+export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
   const { push } = useNavigation();
   const { userId: signedInUserId, isAnonymous } = useSession();
   const [comments, setComments] = React.useState(null);
@@ -177,9 +177,9 @@ export const CommentsList = ({ deckId, isOpen, setReplyingToComment }) => {
 
   React.useEffect(() => {
     if (isOpen) {
-      fetchComments({ variables: { deckId } });
+      fetchComments({ variables: { deckId: deck?.deckId } });
     }
-  }, [isOpen, deckId]);
+  }, [isOpen, deck]);
 
   React.useEffect(() => {
     if (query.called && !query.loading) {
@@ -212,8 +212,9 @@ export const CommentsList = ({ deckId, isOpen, setReplyingToComment }) => {
 
       let options = [];
       const isOwnComment = signedInUserId === comment.fromUser.userId;
-      // TODO: also support deleting if you are the deck owner
-      if (isOwnComment) {
+      const isDeckOwner = signedInUserId === deck.creator.userId;
+
+      if (isOwnComment || isDeckOwner) {
         options.unshift({
           name: 'Delete',
           action: () =>
@@ -231,7 +232,8 @@ export const CommentsList = ({ deckId, isOpen, setReplyingToComment }) => {
               }
             ),
         });
-      } else {
+      }
+      if (!isOwnComment) {
         options.unshift({
           name: 'Report',
           action: () =>
@@ -277,6 +279,7 @@ export const CommentsList = ({ deckId, isOpen, setReplyingToComment }) => {
       onDeleteComment,
       signedInUserId,
       isAnonymous,
+      deck,
     ]
   );
 

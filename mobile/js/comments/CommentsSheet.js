@@ -100,7 +100,7 @@ export const CommentsSheet = ({ isOpen, onClose, deck, ...props }) => {
     <>
       <CommentsList
         isOpen={isOpen}
-        deckId={deck?.deckId}
+        deck={deck}
         setReplyingToComment={setReplyingToComment}
         {...props}
       />
