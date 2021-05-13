@@ -30,12 +30,15 @@ struct Touch {
   Touch &operator=(Touch &&) = default;
 
   TouchId id;
-  love::Vector2 screenPos;
+  love::Vector2 screenPos; // Screen-space position in device-independent pixels
   love::Vector2 initialScreenPos { screenPos.x, screenPos.y };
   love::Vector2 screenDelta { 0, 0 };
-  love::Vector2 pos;
+  love::Vector2 pos; // World-space position in world units
   love::Vector2 initialPos { pos.x, pos.y };
   love::Vector2 delta { 0, 0 };
+  love::Vector2 cameraPos; // Camera-space position in world units
+  love::Vector2 initialCameraPos { cameraPos.x, cameraPos.y };
+  love::Vector2 cameraDelta { 0, 0 };
   bool pressed = true; // Whether just pressed this frame
   bool released = false; // Whether just released this frame
   bool movedNear = false; // Whether this touch has moved at all
@@ -56,8 +59,9 @@ private:
   inline static uint64_t nextOrder = 0;
   uint64_t order = nextOrder++;
 
-  Touch(TouchId id_, const love::Vector2 &screenPos_, const love::Vector2 &pos_, double pressTime_,
-      love::int64 loveTouchId_, bool isMouse_); // Private so only `Gesture` can create
+  Touch(TouchId id_, const love::Vector2 &screenPos_, const love::Vector2 &pos_,
+      const love::Vector2 &cameraPos_, double pressTime_, love::int64 loveTouchId_,
+      bool isMouse_); // Private so only `Gesture` can create
 };
 
 class Scene; // Forward declare because `Scene` contains us
@@ -126,10 +130,11 @@ private:
 // Inlined implementations
 
 inline Touch::Touch(TouchId id_, const love::Vector2 &screenPos_, const love::Vector2 &pos_,
-    double pressTime_, love::int64 loveTouchId_, bool isMouse_)
+    const love::Vector2 &cameraPos_, double pressTime_, love::int64 loveTouchId_, bool isMouse_)
     : id(id_)
     , screenPos(screenPos_)
     , pos(pos_)
+    , cameraPos(cameraPos_)
     , pressTime(pressTime_)
     , loveTouchId(loveTouchId_)
     , isMouse(isMouse_) {

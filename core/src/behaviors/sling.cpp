@@ -34,7 +34,7 @@ void SlingBehavior::handlePerform(double dt) {
     }
     if (touch.released && touch.movedNear) {
       // Apply velocity on release
-      auto drag = touch.initialPos - touch.pos;
+      auto drag = touch.initialCameraPos - touch.cameraPos;
       auto dragLen = drag.getLength();
       if (dragLen > maxDragLength) {
         // Clamp to max drag length
@@ -68,7 +68,7 @@ void SlingBehavior::handleDrawOverlay() const {
     if (!touch.isUsed(slingTouchToken)) {
       return; // Only draw touches we're using
     }
-    auto drag = touch.initialPos - touch.pos;
+    auto drag = touch.initialCameraPos - touch.cameraPos;
     auto dragLen = drag.getLength();
     if (dragLen > 0) {
       if (dragLen > maxDragLength) {
@@ -79,6 +79,8 @@ void SlingBehavior::handleDrawOverlay() const {
       auto dragDir = drag / dragLen;
 
       lv.graphics.push();
+      auto cameraPos = getScene().getCameraPosition();
+      lv.graphics.translate(cameraPos.x, cameraPos.y);
 
       auto pixelScale = getScene().getPixelScale();
       lv.graphics.setLineWidth(1.25f * pixelScale);
@@ -86,21 +88,21 @@ void SlingBehavior::handleDrawOverlay() const {
       // Circle with solid outline and transparent fill
       auto circleRadius = 18 * pixelScale;
       lv.graphics.setColor({ 1, 1, 1, 0.8 });
-      lv.graphics.circle(
-          love::Graphics::DRAW_LINE, touch.initialPos.x, touch.initialPos.y, circleRadius);
+      lv.graphics.circle(love::Graphics::DRAW_LINE, touch.initialCameraPos.x,
+          touch.initialCameraPos.y, circleRadius);
       lv.graphics.setColor({ 1, 1, 1, 0.3 });
-      lv.graphics.circle(
-          love::Graphics::DRAW_FILL, touch.initialPos.x, touch.initialPos.y, circleRadius);
+      lv.graphics.circle(love::Graphics::DRAW_FILL, touch.initialCameraPos.x,
+          touch.initialCameraPos.y, circleRadius);
 
       // Line, triangle
       constexpr float lineLengthMultiplier = 0.8;
       auto triangleLength = 25 * pixelScale;
       auto triangleWidth = 10 * pixelScale;
-      auto end = touch.initialPos + drag * lineLengthMultiplier;
+      auto end = touch.initialCameraPos + drag * lineLengthMultiplier;
       auto dirTL = dragDir * triangleLength;
       auto dirTW = dragDir * triangleWidth;
       lv.graphics.setColor({ 1, 1, 1, 0.8 });
-      std::array line { touch.initialPos, end - dirTL };
+      std::array line { touch.initialCameraPos, end - dirTL };
       lv.graphics.polyline(line.data(), line.size());
       std::array triangle {
         end,

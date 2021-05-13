@@ -68,6 +68,7 @@ void Gesture::update() {
 void Gesture::updateTouch(float screenX, float screenY, love::int64 loveTouchId, bool isMouse) {
   auto screenPos = love::Vector2(screenX, screenY);
   auto pos = scene.inverseViewTransformPoint(screenPos);
+  auto cameraPos = pos - scene.getCameraPosition();
 
   // Assuming a small number of simultaneous touches so this nested loop is fine
   auto found = false;
@@ -76,10 +77,12 @@ void Gesture::updateTouch(float screenX, float screenY, love::int64 loveTouchId,
       // Found existing touch, update it
       found = true;
       touch.pressed = false;
-      touch.delta = pos - touch.pos;
-      touch.pos = pos;
       touch.screenDelta = screenPos - touch.screenPos;
       touch.screenPos = screenPos;
+      touch.delta = pos - touch.pos;
+      touch.pos = pos;
+      touch.cameraDelta = cameraPos - touch.cameraPos;
+      touch.cameraPos = cameraPos;
       if (!touch.movedFar) {
         auto distSq = (touch.screenPos - touch.initialScreenPos).getLengthSquare();
         if (distSq > 0) {
@@ -94,7 +97,7 @@ void Gesture::updateTouch(float screenX, float screenY, love::int64 loveTouchId,
   if (!found) {
     // Didn't find an existing touch, it's a new one
     auto newTouchId = registry.create();
-    registry.emplace<Touch>(
-        newTouchId, Touch(newTouchId, screenPos, pos, lv.timer.getTime(), loveTouchId, isMouse));
+    registry.emplace<Touch>(newTouchId,
+        Touch(newTouchId, screenPos, pos, cameraPos, lv.timer.getTime(), loveTouchId, isMouse));
   }
 }

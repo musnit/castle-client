@@ -59,15 +59,15 @@ void AnalogStickBehavior::handlePerform(double dt) {
 
     // Initialize center
     if (newTouch) {
-      center = touch.pos;
+      center = touch.cameraPos;
     }
 
     // Pull center toward touch (simplification of Lua `_updateCenter`)
-    auto drag = touch.pos - center;
+    auto drag = touch.cameraPos - center;
     center += drag * float(drag.getLength() > maxDragLength ? 0.06 : 0.02);
 
     // Recompute drag after pulling, clamp to max
-    drag = touch.pos - center;
+    drag = touch.cameraPos - center;
     auto dragLen = drag.getLength();
     if (dragLen > maxDragLength) {
       drag *= maxDragLength / dragLen;
@@ -127,7 +127,7 @@ void AnalogStickBehavior::handleDrawOverlay() const {
   constexpr float maxDrawDragLength = 0.8 * maxDragLength;
 
   if (auto touch = getGesture().maybeGetTouch(lastTouchId)) {
-    auto clampedTouchPos = touch->pos;
+    auto clampedTouchPos = touch->cameraPos;
     auto drag = clampedTouchPos - center;
     auto dragLen = drag.getLength();
     if (dragLen > 0) {
@@ -139,6 +139,8 @@ void AnalogStickBehavior::handleDrawOverlay() const {
       }
 
       lv.graphics.push();
+      auto cameraPos = getScene().getCameraPosition();
+      lv.graphics.translate(cameraPos.x, cameraPos.y);
 
       auto pixelScale = getScene().getPixelScale();
       lv.graphics.setLineWidth(1.25f * pixelScale);
