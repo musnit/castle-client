@@ -5,8 +5,13 @@
 #include "behaviors/base.h"
 #include "lv.h"
 
+//#define ENABLE_DEBUG_DRAW
 
-struct DebugDrawComponent : BaseComponent {};
+
+struct DebugDrawComponent : BaseComponent {
+  struct Props {
+  } props;
+};
 
 class DebugDrawBehavior : public BaseBehavior<DebugDrawBehavior, DebugDrawComponent> {
   // Just draws the collision shapes of the Body behavior on the actor. Useful for debugging
@@ -15,6 +20,7 @@ class DebugDrawBehavior : public BaseBehavior<DebugDrawBehavior, DebugDrawCompon
 
 public:
   static constexpr auto name = "DebugDraw";
+  static constexpr auto behaviorId = 1000;
 
   using BaseBehavior::BaseBehavior;
 

@@ -90,7 +90,9 @@ private:
     CounterBehavior,
 
     // Rendering
-    //DebugDrawBehavior,
+#ifdef ENABLE_DEBUG_DRAW
+    DebugDrawBehavior,
+#endif
     TextBehavior,
     Drawing2Behavior
 
