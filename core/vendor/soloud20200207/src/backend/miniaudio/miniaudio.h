@@ -25737,7 +25737,12 @@ ma_result ma_device_start__webaudio(ma_device* pDevice)
                 }, 0);
             };
 
-            window.document.body.addEventListener('touchend', resume, false);
+            var supportsTouch = 'ontouchstart' in window;
+            if (supportsTouch) {
+                window.document.body.addEventListener('touchend', resume, false);
+            } else {
+                miniaudio.get_device_by_index($0).webaudio.resume();
+            }
         }, pDevice->webaudio.indexPlayback);
     }
 
