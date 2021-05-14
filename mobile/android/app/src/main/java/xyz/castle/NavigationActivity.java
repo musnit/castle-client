@@ -151,14 +151,19 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
         mainTabNavigator.showTabBar();
     }
 
+    private static boolean sKeyboardHidTabBar = false;
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onShowKeyboardEvent(final CastleGlobalLayoutListener.ShowKeyboardEvent event) {
-        mainTabNavigator.hideTabBar();
+        sKeyboardHidTabBar = mainTabNavigator.hideTabBar();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onHideKeyboardEvent(final CastleGlobalLayoutListener.HideKeyboardEvent event) {
-        mainTabNavigator.showTabBar();
+        if (sKeyboardHidTabBar) {
+            mainTabNavigator.showTabBar();
+        }
+
+        sKeyboardHidTabBar = false;
     }
 
     private void navigateToDeck(JSONObject deck) {
