@@ -22,8 +22,8 @@ const needsTabBarPadding = ({ navigationIndex }) => {
   return Constants.iOS && navigationIndex === 0;
 };
 
-const needsTabBarHeight = ({ navigationIndex }) => {
-  return Constants.Android && navigationIndex === 0;
+const needsTabBarHeight = ({ isFullScreen }) => {
+  return Constants.Android && !isFullScreen;
 };
 
 export const CommentsSheet = ({ isOpen, onClose, deck, isFullScreen, ...props }) => {
@@ -36,7 +36,7 @@ export const CommentsSheet = ({ isOpen, onClose, deck, isFullScreen, ...props })
     Viewport.vh * 100 -
     insets.top -
     Constants.FEED_HEADER_HEIGHT -
-    (needsTabBarHeight({ navigationIndex }) ? TAB_BAR_HEIGHT : 0);
+    (needsTabBarHeight({ isFullScreen }) ? TAB_BAR_HEIGHT : 0);
 
   const closeSheet = React.useCallback(() => {
     Keyboard.dismiss();
