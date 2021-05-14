@@ -220,11 +220,17 @@ const BottomSheetAndroid = ({
   onOpenEnd,
   onSnap,
   useViewInsteadOfScrollview,
+  isFullScreen,
   style = {},
 }) => {
-  let screenHeight = Viewport.vh * 100;
+  let screenHeight;
   const { navigatorWindowHeight } = React.useContext(AndroidNavigationContext);
-  screenHeight = navigatorWindowHeight;
+
+  if (isFullScreen) {
+    screenHeight = Viewport.vh * 100;
+  } else {
+    screenHeight = navigatorWindowHeight;
+  }
 
   const TEXT_INPUT_HEIGHT = 48; // approx height of one text input
 

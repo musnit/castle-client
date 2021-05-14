@@ -151,6 +151,7 @@ export const HomeScreen = ({ route }) => {
           isCommentsOpen: commentsState.isOpen,
         })}
         <CommentsSheet
+          isFullScreen={!!deckId}
           isOpen={commentsState.isOpen}
           onClose={closeComments}
           deck={commentsState.deck}

@@ -40,7 +40,6 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
   const [isCommentsVisible, setIsCommentsVisible] = React.useState(false);
   const openComments = React.useCallback(() => setIsCommentsVisible(true), []);
   const closeComments = React.useCallback(() => setIsCommentsVisible(false), []);
-
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <PopoverProvider>
@@ -56,7 +55,12 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
           onPressComments={openComments}
           isCommentsOpen={isCommentsVisible}
         />
-        <CommentsSheet isOpen={isCommentsVisible} onClose={closeComments} deck={deck} />
+        <CommentsSheet
+          isFullScreen
+          isOpen={isCommentsVisible}
+          onClose={closeComments}
+          deck={deck}
+        />
       </PopoverProvider>
     </SafeAreaView>
   );

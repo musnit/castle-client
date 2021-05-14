@@ -181,9 +181,10 @@ public class CastleBottomSheet extends LinearLayout {
     }
 
     private boolean initialize() {
-        if (initialized) {
+        // comment sheet on homescreen needs to change screenheight after initialized
+        /*if (initialized) {
             return true;
-        }
+        }*/
 
         if (!isReady()) {
             return false;

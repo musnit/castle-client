@@ -26,7 +26,7 @@ const needsTabBarHeight = ({ navigationIndex }) => {
   return Constants.Android && navigationIndex === 0;
 };
 
-export const CommentsSheet = ({ isOpen, onClose, deck, ...props }) => {
+export const CommentsSheet = ({ isOpen, onClose, deck, isFullScreen, ...props }) => {
   const { dangerouslyGetState } = useNavigation();
   const { isAnonymous } = useSession();
 
@@ -130,6 +130,7 @@ export const CommentsSheet = ({ isOpen, onClose, deck, ...props }) => {
 
   return (
     <BottomSheet
+      isFullScreen={isFullScreen}
       useViewInsteadOfScrollview
       snapPoints={[maxSheetHeight]}
       isOpen={isOpen}
