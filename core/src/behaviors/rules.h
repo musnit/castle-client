@@ -71,6 +71,8 @@ public:
 
   ActorId actorId; // Actor on whom the response should act
   RuleContextExtras extras; // Extra information this context carries
+  b2Vec2 lastPosition = { 0, 0 }; // Last position of actor if it was destroyed
+  float lastAngle = 0; // Last angle of actor if it was destroyed
 
 
   struct RepeatStackElem {

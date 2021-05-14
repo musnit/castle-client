@@ -65,10 +65,9 @@ struct CreateResponse : BaseResponse {
       auto &coordinateSystem = params.coordinateSystem();
       if (coordinateSystem[0] == 'r') { // Whether starts with "relative" or "absolute"
         // Relative
-        auto creatorPos = b2Vec2(0, 0);
-        float creatorAngle = 0;
+        auto creatorPos = ctx.lastPosition;
+        float creatorAngle = ctx.lastAngle;
         if (auto creatorBody = bodyBehavior.maybeGetPhysicsBody(ctx.actorId)) {
-          // TODO(nikki): Use old position, angle if creator actor was destroyed
           creatorPos = creatorBody->GetPosition();
           creatorAngle = creatorBody->GetAngle();
         }
@@ -169,6 +168,11 @@ struct DestroyResponse : BaseResponse {
     auto &scene = ctx.getScene();
     auto actorId = ctx.actorId;
     if (scene.hasActor(actorId)) {
+      auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
+      if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
+        ctx.lastPosition = body->GetPosition();
+        ctx.lastAngle = body->GetAngle();
+      }
       scene.getEntityRegistry().emplace_or_replace<DestroyResponseMarker>(actorId);
     }
   }
