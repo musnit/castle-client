@@ -375,24 +375,33 @@ struct InfiniteRepeatResponse : BaseResponse {
   }
 
   void run(RuleContext &ctx) override {
+    // We always come back here after waiting rather than directly enter the body so we can break
+    // out if the actor was destroyed. `count == 0` means stop repeating, `count == 1` means wait,
+    // `count == 2` means enter body.
     if (ctx.repeatStack.size() > 0 && ctx.repeatStack.back().response == this) {
-      // Got back here after body -- check that we're not stopped and that the current actor exists
-      if (ctx.repeatStack.back().count != 0 && ctx.getScene().hasActor(ctx.actorId)) {
-        // Continue -- schedule `body` to after the interval, or the next frame if the interval is
-        // close enough to 60Hz
-        ctx.setNext(params.body());
+      // Got back here -- check that we're not stopped and that the current actor exists
+      auto count = ctx.repeatStack.back().count;
+      if (count == 0 || !ctx.getScene().hasActor(ctx.actorId)) {
+        // Stop -- remove ourselves from the repeat stack and continue with `next` normally
+        ctx.repeatStack.pop_back();
+      } else if (count == 1) {
+        // Wait and come back here, setting count to 2 so we enter body immediately next time.
+        // Schedule for next frame if interval is close enough to 60Hz.
         auto &scene = ctx.getScene();
         auto &rulesBehavior = scene.getBehaviors().byType<RulesBehavior>();
         auto interval = params.interval();
         auto performTime = interval < 0.02 ? 0 : scene.getPerformTime() + interval;
+        ctx.repeatStack.back().count = 2;
+        ctx.setNext(this);
         rulesBehavior.schedule(ctx.suspend(), performTime);
       } else {
-        // Stop -- remove ourselves from the repeat stack and continue with `next` normally
-        ctx.repeatStack.pop_back();
+        // Enter the body immediately, setting count to 1 so we wait next time
+        ctx.repeatStack.back().count = 1;
+        ctx.setNext(params.body());
       }
     } else {
-      // Haven't started yet -- add ourselves to the repeat stack and do one repetition right away
-      ctx.repeatStack.push_back({ this, 1 }); // Just use `1` -- we continue for anything `!= 0`
+      // Haven't started yet -- enter the body immediately, setting count to 1 so we wait next time
+      ctx.repeatStack.push_back({ this, 1 });
       ctx.setNext(params.body());
     }
   }
