@@ -274,7 +274,8 @@ void Scene::update(double dt) {
     }
   });
 
-  // Move camera
+  // Move camera. Do this after behavior performance so we use the latest position of the camera
+  // target actor.
   auto oldCameraX = cameraX, oldCameraY = cameraY;
   if (cameraTarget != nullActor) {
     if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(cameraTarget)) {
@@ -285,9 +286,10 @@ void Scene::update(double dt) {
       cameraTarget = nullActor;
     }
   }
+  auto cameraDeltaX = cameraX - oldCameraX, cameraDeltaY = cameraY - oldCameraY;
   getBehaviors().forEach([&](auto &behavior) {
     if constexpr (Handlers::hasPerformCamera<decltype(behavior)>) {
-      behavior.handlePerformCamera(cameraX - oldCameraX, cameraY - oldCameraY);
+      behavior.handlePerformCamera(cameraDeltaX, cameraDeltaY);
     }
   });
 }
