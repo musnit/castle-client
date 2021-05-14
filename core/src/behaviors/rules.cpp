@@ -78,7 +78,7 @@ struct CreateResponse : BaseResponse {
           newPos = creatorPos + b2Vec2(xOffset, yOffset);
         } else {
           // Relative angle and distance
-          auto angle = params.angle().eval<float>(ctx) + creatorAngle;
+          auto angle = float(params.angle().eval<double>(ctx) * M_PI / 180) + creatorAngle;
           auto distance = params.distance().eval<float>(ctx);
           newPos = creatorPos + distance * b2Vec2(std::cos(angle), std::sin(angle));
         }
