@@ -504,7 +504,7 @@ namespace ghost {
           msaa = 4;
     });
     previewCanvas.renderTo(undefined);
-   /*
+   / *
    TYPE DrawDataFrame::function() {
      auto pathBounds = getPathDataBounds();
      auto width = pathBounds.maxX - pathBounds.minX;

@@ -67,7 +67,7 @@ namespace ghost {
     int numTotalLayers;
     std::vector<std::optional<Bounds>> framesBounds;
     DrawDataLayerId selectedLayerId;
-    int selectedFrame;
+    OneIndexFrame selectedFrame;
     std::vector<std::unique_ptr<DrawDataLayer>> layers;
     bool _layerDataChanged;
 
@@ -77,7 +77,8 @@ namespace ghost {
       _layerDataChanged = true;
 
       /*ToveSubpathRef subpath = NewSubpath();
-      TovePathRef path = NewPath(null);*/
+      TovePathRef path = NewPath(null);
+      */
     }
 
     DrawData(Archive::Reader &archive) {
@@ -113,8 +114,7 @@ namespace ghost {
       });
       // TODO: default this to first layer on the server
       selectedLayerId = archive.str("selectedLayerId", "");
-      // TODO: subtract one on the server
-      selectedFrame = archive.num("selectedFrame", 0);
+      selectedFrame.value = archive.num("selectedFrame", 1);
       archive.arr("layers", [&]() {
         for (auto i = 0; i < archive.size(); i++) {
           auto layer = std::make_unique<DrawDataLayer>();
@@ -139,7 +139,7 @@ namespace ghost {
         }
       });
       archive.str("selectedLayerId", selectedLayerId);
-      archive.num("selectedFrame", selectedFrame);
+      archive.num("selectedFrame", selectedFrame.value);
       archive.arr("layers", [&]() {
         for (size_t i = 0; i < layers.size(); i++) {
           archive.obj(*layers[i]);
@@ -157,14 +157,14 @@ namespace ghost {
       GHOST_READ_INT(numTotalLayers, 1)
       GHOST_READ_VECTOR(framesBounds, Bounds)
       GHOST_READ_STRING(selectedLayerId)
-      GHOST_READ_INT(selectedFrame, 1)
+      int selectedFrameValue;
+      GHOST_READ_INT_2(selectedFrameValue, selectedFrame, 1)
+      selectedFrame.value = selectedFrameValue;
       GHOST_READ_POINTER_VECTOR(layers, DrawDataLayer)
 
       for (size_t i = 0; i < layers.size(); i++) {
         layers[i]->setParent(this);
       }
-
-      selectedFrame = selectedFrame - 1;
     }
 
     float gridCellSize();
@@ -183,6 +183,7 @@ namespace ghost {
     void updatePathDataRendering(PathData *pathData);
     DrawDataLayer *selectedLayer();
     int getRealFrameIndexForLayerId(DrawDataLayerId layerId, int frame);
+    int getRealFrameIndexForLayerId(DrawDataLayerId layerId, OneIndexFrame frame);
     DrawDataLayer *layerForId(DrawDataLayerId id);
     DrawDataFrame *currentLayerFrame();
     PathDataList *currentPathDataList();
@@ -192,6 +193,7 @@ namespace ghost {
     AnimationState newAnimationState();
     int getNumFrames();
     int modFrameIndex(int value);
+    int modFrameIndex(OneIndexFrame frame);
     struct RunAnimationResult {
       bool loop = false;
       bool end = false;

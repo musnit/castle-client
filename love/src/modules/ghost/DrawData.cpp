@@ -301,6 +301,18 @@ namespace ghost {
     return layerForId(selectedLayerId);
   }
 
+  int DrawData::getRealFrameIndexForLayerId(DrawDataLayerId layerId, OneIndexFrame oneIndexFrame) {
+    auto layer = layerForId(layerId);
+    int frame = modFrameIndex(oneIndexFrame);
+    while (frame >= 0) {
+      if (!layer->frames[frame]->isLinked) {
+        return frame;
+      }
+      frame = frame - 1;
+    }
+    return frame;
+  }
+
   int DrawData::getRealFrameIndexForLayerId(DrawDataLayerId layerId, int frame) {
     auto layer = layerForId(layerId);
     frame = modFrameIndex(frame);
@@ -522,7 +534,7 @@ namespace ghost {
   }*/
 
   void DrawData::updateBounds() {
-    framesBounds[selectedFrame] = std::nullopt;
+    framesBounds[selectedFrame.value - 1] = std::nullopt;
   }
 
   Bounds DrawData::getBounds(int frame) {
@@ -786,6 +798,10 @@ namespace ghost {
     return value;
   }
 
+  int DrawData::modFrameIndex(OneIndexFrame frame) {
+    return modFrameIndex(frame.value - 1);
+  }
+
   DrawData::RunAnimationResult DrawData::runAnimation(
       AnimationState &animationState, AnimationComponentProperties &componentProperties, float dt) {
     RunAnimationResult result;
@@ -796,19 +812,19 @@ namespace ghost {
     auto secondsPerFrame = 1 / componentProperties.framesPerSecond;
     if (animationState.animationFrameTime > abs(secondsPerFrame)) {
       animationState.animationFrameTime = animationState.animationFrameTime - abs(secondsPerFrame);
-      auto firstFrame = componentProperties.loopStartFrame;
-      if (firstFrame < 1 || firstFrame > getNumFrames()) {
-        firstFrame = 1;
+      auto firstFrame = componentProperties.loopStartFrame.toZeroIndex();
+      if (firstFrame < 0 || firstFrame >= getNumFrames()) {
+        firstFrame = 0;
       }
-      auto lastFrame = componentProperties.loopEndFrame;
-      if (lastFrame < 1 || lastFrame > getNumFrames()) {
-        lastFrame = getNumFrames();
+      auto lastFrame = componentProperties.loopEndFrame.toZeroIndex();
+      if (lastFrame < 0 || lastFrame >= getNumFrames()) {
+        lastFrame = getNumFrames() - 1;
       }
       auto currentFrame = modFrameIndex(componentProperties.currentFrame);
       if (secondsPerFrame > 0) {
         if (currentFrame == lastFrame) {
           if (componentProperties.loop) {
-            componentProperties.currentFrame = firstFrame;
+            componentProperties.currentFrame.setFromZeroIndex(firstFrame);
             result.changed = true;
             result.loop = true;
           } else {
@@ -817,13 +833,13 @@ namespace ghost {
             result.end = true;
           }
         } else {
-          componentProperties.currentFrame = currentFrame + 1;
+          componentProperties.currentFrame.setFromZeroIndex(currentFrame + 1);
           result.changed = true;
         }
       } else {
         if (currentFrame == firstFrame) {
           if (componentProperties.loop) {
-            componentProperties.currentFrame = lastFrame;
+            componentProperties.currentFrame.setFromZeroIndex(lastFrame);
             result.changed = true;
             result.loop = true;
           } else {
@@ -832,7 +848,7 @@ namespace ghost {
             result.end = true;
           }
         } else {
-          componentProperties.currentFrame = currentFrame - 1;
+          componentProperties.currentFrame.setFromZeroIndex(currentFrame - 1);
           result.changed = true;
         }
       }
@@ -880,8 +896,8 @@ namespace ghost {
   }
 
   void DrawData::render(std::optional<AnimationComponentProperties> componentProperties) {
-    auto frameIdx = selectedFrame;
-    if (componentProperties && componentProperties->currentFrame) {
+    int frameIdx = selectedFrame.value - 1;
+    if (componentProperties) {
       frameIdx = modFrameIndex(componentProperties->currentFrame);
     }
     for (size_t l = 0; l < layers.size(); l++) {

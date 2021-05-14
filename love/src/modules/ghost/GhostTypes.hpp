@@ -40,6 +40,16 @@
     arg = default;                                                                                 \
   }
 
+#define GHOST_READ_INT_2(var, arg, default)                                                        \
+  lua_pushstring(L, #arg);                                                                         \
+  lua_gettable(L, index);                                                                          \
+  if (lua_isnumber(L, -1)) {                                                                       \
+    var = lua_tointeger(L, -1);                                                                    \
+  } else {                                                                                         \
+    var = default;                                                                                 \
+  }
+
+
 #define GHOST_WRITE_NUMBER(arg)                                                                    \
   lua_pushstring(L, #arg);                                                                         \
   lua_pushnumber(L, arg);                                                                          \
@@ -403,24 +413,36 @@ namespace ghost {
     }
   };
 
+  struct OneIndexFrame {
+    int value;
+
+    int toZeroIndex() {
+      return value - 1;
+    }
+
+    void setFromZeroIndex(int v) {
+      value = v + 1;
+    }
+  };
+
   class AnimationComponentProperties {
   public:
     bool playing;
     float framesPerSecond;
-    int loopStartFrame;
-    int loopEndFrame;
-    int currentFrame;
+    OneIndexFrame loopStartFrame;
+    OneIndexFrame loopEndFrame;
+    OneIndexFrame currentFrame;
     bool loop;
 
     void read(Archive::Reader &archive) {
       playing = archive.boolean("playing", false);
       framesPerSecond = archive.num("framesPerSecond", 4);
-      currentFrame = archive.num("initialFrame", 1);
+      currentFrame.value = archive.num("initialFrame", 1);
       loop = archive.boolean("loop", false);
 
       // these can only be set from "set property" responses
-      loopStartFrame = -1;
-      loopEndFrame = -1;
+      loopStartFrame.value = -1;
+      loopEndFrame.value = -1;
     }
   };
 

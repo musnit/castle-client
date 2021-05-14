@@ -60,12 +60,12 @@ struct AnimationFrameMeetsConditionResponse : BaseResponse {
   bool eval(RuleContext &ctx) override {
     auto &drawing2Behavior = ctx.getScene().getBehaviors().byType<Drawing2Behavior>();
     auto &comparison = params.comparison();
-    auto frame = params.frame().eval(ctx);
     if (auto component = drawing2Behavior.maybeGetComponent(ctx.actorId)) {
       auto drawData = component->drawData.get();
+      auto frame = ExpressionValue(drawData->modFrameIndex(params.frame().eval(ctx).as<int>() - 1));
       auto &animProps = component->animationComponentProperties;
-      auto oneIndexedFrame = drawData->modFrameIndex(animProps.currentFrame) + 1;
-      return ExpressionValue(oneIndexedFrame).compare(comparison, frame);
+      auto currentFrame = drawData->modFrameIndex(animProps.currentFrame);
+      return ExpressionValue(currentFrame).compare(comparison, frame);
     }
     return false;
   }
@@ -152,16 +152,16 @@ ExpressionValue Drawing2Behavior::handleGetProperty(
     ActorId actorId, const Drawing2Component &component, PropId propId) const {
   auto &animProps = component.animationComponentProperties;
   if (propId == decltype(DrawingAnimationProps::currentFrame)::id) {
-    return animProps.currentFrame + 1;
+    return animProps.currentFrame.value;
   } else if (propId == decltype(DrawingAnimationProps::playMode)::id) {
     // TODO(nikki): Handle string values, then implement this
     return {};
   } else if (propId == decltype(DrawingAnimationProps::framesPerSecond)::id) {
     return animProps.framesPerSecond;
   } else if (propId == decltype(DrawingAnimationProps::loopStartFrame)::id) {
-    return animProps.loopStartFrame;
+    return animProps.loopStartFrame.value;
   } else if (propId == decltype(DrawingAnimationProps::loopEndFrame)::id) {
-    return animProps.loopEndFrame;
+    return animProps.loopEndFrame.value;
   } else {
     return BaseBehavior::handleGetProperty(actorId, component, propId);
   }
@@ -169,18 +169,18 @@ ExpressionValue Drawing2Behavior::handleGetProperty(
 
 void Drawing2Behavior::handleSetProperty(
     ActorId actorId, Drawing2Component &component, PropId propId, const ExpressionValue &value) {
-  fireChangeFrameTriggers(actorId, component);
   auto &animProps = component.animationComponentProperties;
   if (propId == decltype(DrawingAnimationProps::currentFrame)::id) {
-    animProps.currentFrame = value.as<int>() - 1;
+    animProps.currentFrame.value = value.as<int>();
+    fireChangeFrameTriggers(actorId, component);
   } else if (propId == decltype(DrawingAnimationProps::playMode)::id) {
     // TODO(nikki): Handle string values, then implement this
   } else if (propId == decltype(DrawingAnimationProps::framesPerSecond)::id) {
     animProps.framesPerSecond = value.as<float>();
   } else if (propId == decltype(DrawingAnimationProps::loopStartFrame)::id) {
-    animProps.loopStartFrame = value.as<int>();
+    animProps.loopStartFrame.value = value.as<int>();
   } else if (propId == decltype(DrawingAnimationProps::loopEndFrame)::id) {
-    animProps.loopEndFrame = value.as<int>();
+    animProps.loopEndFrame.value = value.as<int>();
   } else {
     BaseBehavior::handleSetProperty(actorId, component, propId, value);
   }
@@ -197,9 +197,10 @@ void Drawing2Behavior::fireChangeFrameTriggers(
   auto drawData = component.drawData.get();
   auto &animProps = component.animationComponentProperties;
   rulesBehavior.fire<AnimationFrameChangesTrigger>(actorId, {});
-  auto oneIndexedFrame = ExpressionValue(drawData->modFrameIndex(animProps.currentFrame) + 1);
+  auto currentFrame = ExpressionValue(drawData->modFrameIndex(animProps.currentFrame));
   rulesBehavior.fireIf<AnimationReachesFrameTrigger>(
       actorId, {}, [&](const AnimationReachesFrameTrigger &trigger) {
-        return oneIndexedFrame.compare(trigger.params.comparison(), trigger.params.frame());
+        auto triggerFrame = ExpressionValue(drawData->modFrameIndex(trigger.params.frame() - 1));
+        return currentFrame.compare(trigger.params.comparison(), triggerFrame);
       });
 }
