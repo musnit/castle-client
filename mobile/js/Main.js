@@ -224,7 +224,7 @@ if (Platform.OS === 'android') {
   AppRegistry.registerComponent('CreateAccountScreen', WrapComponent(CreateAccountScreen));
   AppRegistry.registerComponent('ForgotPasswordScreen', WrapComponent(ForgotPasswordScreen));
   AppRegistry.registerComponent(
-    'CreateScreen',
+    'Create',
     WrapComponent(CreateScreen, { addTabBarPadding: true })
   );
   AppRegistry.registerComponent('DeckRemixes', WrapComponent(DeckRemixesScreen));

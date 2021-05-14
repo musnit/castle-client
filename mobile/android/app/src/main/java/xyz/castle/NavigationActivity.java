@@ -98,7 +98,7 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
             CastleTabNavigator nav = new CastleTabNavigator(this, CastleTabNavigator.TABS_BOTTOM);
             nav.addTab("HomeScreenRoot", null, R.drawable.bottomtabs_browse);
             nav.addTab("ExploreScreenStack", null, R.drawable.bottomtabs_explore);
-            nav.addTab("CreateScreen", null, R.drawable.bottomtabs_create);
+            nav.addTab("Create", null, R.drawable.bottomtabs_create);
             notificationsTab = nav.addTab("Notifications", null, R.drawable.bottomtabs_notifications);
             nav.addTab("ProfileScreen", null, R.drawable.bottomtabs_profile);
             nav.doneAddingTabs();
