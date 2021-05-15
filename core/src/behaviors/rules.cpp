@@ -839,14 +839,28 @@ ResponseRef RulesBehavior::readResponse(Reader &reader) {
 }
 
 void RulesBehavior::readExpression(ExpressionRef &expr, Reader &reader) {
-  if (auto value = reader.num()) {
+  switch (auto jsonValue = reader.jsonValue(); jsonValue->GetType()) {
+  case json::kNumberType: {
     // Plain number value
-    expr.constant = *value;
-  } else if (auto value = reader.boolean()) {
+    expr.constant = jsonValue->GetDouble();
+    break;
+  }
+  case json::kFalseType:
+  case json::kTrueType: {
     // Plain boolean value
-    expr.constant = *value ? 1 : 0; // TODO: Use actual `bool` type case in `ExpressionValue` when
-                                    // we have multiple types there?
-  } else {
+    expr.constant = jsonValue->GetBool();
+    break;
+  }
+  case json::kStringType: {
+    // Plain string value
+    auto length = jsonValue->GetStringLength();
+    auto str = (char *)pool.Malloc(length + 1);
+    std::memcpy(str, jsonValue->GetString(), length);
+    str[length] = '\0';
+    expr.constant = str;
+    break;
+  }
+  case json::kObjectType: {
     // Nested expression -- find loader by type
     if (auto name = reader.str("expressionType")) {
       auto nameHash = entt::hashed_string(*name).value();
@@ -858,6 +872,13 @@ void RulesBehavior::readExpression(ExpressionRef &expr, Reader &reader) {
       }
       Debug::log("RulesBehavior: unsupported expression type '{}'", *name);
     }
+    break;
+  }
+  case json::kArrayType:
+  case json::kNullType: {
+    // Unsupported
+    break;
+  }
   }
 }
 

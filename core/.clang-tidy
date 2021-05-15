@@ -24,6 +24,7 @@ Checks: "-*,\
   -cppcoreguidelines-pro-bounds-array-to-pointer-decay,\
   -cppcoreguidelines-pro-type-const-cast,\
   -cppcoreguidelines-pro-bounds-pointer-arithmetic,\
+  -cppcoreguidelines-pro-type-vararg,\
   -cppcoreguidelines-avoid-c-arrays,\
   google-explicit-constructor,\
   modernize-*,\

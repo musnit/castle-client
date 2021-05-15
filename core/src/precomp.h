@@ -13,6 +13,7 @@
 #include <optional>
 #include <unordered_map>
 #include <filesystem>
+#include <variant>
 
 // Emscripten
 #ifdef __EMSCRIPTEN__

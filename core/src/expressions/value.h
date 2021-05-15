@@ -12,71 +12,90 @@ class ExpressionValue {
 
 public:
   ExpressionValue() = default;
+  ExpressionValue(int value_); // Disambiguate `const char *`. NOLINT(google-explicit-constructor)
   ExpressionValue(double value_); // NOLINT(google-explicit-constructor)
+  ExpressionValue(const char *value_); // NOLINT(google-explicit-constructor)
 
 
   template<typename T>
   bool is() const; // Whether the current value can be interpreted as C++ type `T`
 
   template<typename T>
-  T as(T def
-      = {}) const; // Get the the current value as C++ type `T`, or given default if not `is<T>()`
+  T as(T def = {}) const; // Get the the current value as C++ type `T`, or `def` if not `is<T>()`
 
   bool compare(const std::string &comparison, const ExpressionValue &rhs) const;
 
 
 private:
-  double value = 0;
+  std::variant<double, const char *> value = 0.0;
 };
 
 
 // Inlined implementations
 
+inline ExpressionValue::ExpressionValue(int value_)
+    : value(double(value_)) {
+}
+
 inline ExpressionValue::ExpressionValue(double value_)
+    : value(value_) {
+}
+
+inline ExpressionValue::ExpressionValue(const char *value_)
     : value(value_) {
 }
 
 template<typename T>
 bool ExpressionValue::is() const {
-  if constexpr (std::is_same_v<double, T> || std::is_same_v<float, T> || std::is_same_v<int, T>) {
-    return true;
+  if constexpr (std::is_arithmetic_v<T>) {
+    return std::holds_alternative<double>(value);
   } else {
-    return false;
+    return std::holds_alternative<T>(value);
   }
 }
 
 template<typename T>
 T ExpressionValue::as(T def) const {
-  if constexpr (std::is_same_v<double, T> || std::is_same_v<float, T> || std::is_same_v<int, T>) {
-    return value;
+  if constexpr (std::is_arithmetic_v<T>) {
+    if (std::holds_alternative<double>(value)) {
+      return std::get<double>(value);
+    } else {
+      return 0;
+    }
   } else {
-    return def;
+    if (std::holds_alternative<T>(value)) {
+      return std::get<T>(value);
+    } else {
+      return {};
+    }
   }
 }
 
 inline bool ExpressionValue::compare(
     const std::string &comparison, const ExpressionValue &rhs) const {
-  switch (comparison[0]) {
-  case 'e': { // "equal"
-    return value == rhs.value;
-  }
-  case 'n': { // "not equal"
-    return value != rhs.value;
-  }
-  case 'l': {
-    if (comparison[5] == 'o') { // "less or equal"
-      return value <= rhs.value;
-    } else { // "less than"
-      return value < rhs.value;
+  if (std::holds_alternative<double>(value)) {
+    switch (comparison[0]) {
+    case 'e': { // "equal"
+      return value == rhs.value;
     }
-  }
-  case 'g': {
-    if (comparison[8] == 'o') { // "greater or equal"
-      return value >= rhs.value;
-    } else { // "greater"
-      return value > rhs.value;
+    case 'n': { // "not equal"
+      return value != rhs.value;
     }
-  }
+    case 'l': {
+      if (comparison[5] == 'o') { // "less or equal"
+        return value <= rhs.value;
+      } else { // "less than"
+        return value < rhs.value;
+      }
+    }
+    case 'g': {
+      if (comparison[8] == 'o') { // "greater or equal"
+        return value >= rhs.value;
+      } else { // "greater"
+        return value > rhs.value;
+      }
+    }
+    }
   }
   return false;
 }

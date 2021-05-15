@@ -314,6 +314,10 @@ void BaseBehavior<Derived, Component>::handleSetProperty(
         if (value.is<double>()) {
           prop() = value.as<double>();
         }
+      } else if constexpr (std::is_same_v<std::string, PropValue>) {
+        if (value.is<const char *>()) {
+          prop() = value.as<const char *>();
+        }
       }
     }
   });
