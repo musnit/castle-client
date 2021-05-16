@@ -19,13 +19,14 @@ import * as Utilities from '../common/utilities';
 const { vw, vh } = Viewport;
 
 const DECK_FEED_ITEM_MARGIN = 0;
+const DECK_FEED_ITEM_FOOTER = 72;
 
 // Determines how much horizontal padding to add to each card to ensure proper spacing.
 // Design goal is for the selected card to be entirely visible as well as the top
 // half of the next card's header.
 const getItemHorzPadding = ({ isPlaying = false } = {}) => {
   const availHeight = isPlaying
-    ? vh * 100 - Constants.FEED_HEADER_HEIGHT - 32
+    ? vh * 100 - Constants.FEED_HEADER_HEIGHT - DECK_FEED_ITEM_FOOTER - 32
     : vh * 100 - Constants.FEED_HEADER_HEIGHT - DECK_FEED_ITEM_MARGIN - 140;
   const maxWidth = availHeight * Constants.CARD_RATIO;
   const padding = (vw * 100 - maxWidth) / 2;
@@ -41,7 +42,6 @@ const getItemHeight = ({ isPlaying = false } = {}) => {
 };
 
 const DECK_FEED_ITEM_DEFAULT_HEIGHT = getItemHeight();
-const DECK_FEED_ITEM_FOOTER = 72;
 
 const SPRING_CONFIG = {
   tension: 100,
