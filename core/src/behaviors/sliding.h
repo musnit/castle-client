@@ -12,6 +12,7 @@ struct SlidingComponent : BaseComponent {
     PROP(bool, isRotationAllowed) = true;
   } props;
 
+  b2Body *anchorBody = nullptr;
   b2Joint *joint = nullptr;
 };
 
@@ -28,4 +29,7 @@ public:
 
   void handleSetProperty(
       ActorId actorId, SlidingComponent &component, PropId propId, const ExpressionValue &value);
+
+  friend class BodyBehavior;
+  void handleUpdateComponentPosition(ActorId actorId, SlidingComponent &component, b2Body *body);
 };

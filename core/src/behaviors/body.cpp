@@ -292,7 +292,7 @@ void BodyBehavior::handlePerformCamera(float deltaX, float deltaY) {
   getScene().getEntityRegistry().view<CameraLayerMarker, BodyComponent>().each(
       [&](ActorId actorId, BodyComponent &component) {
         if (auto body = component.body) {
-          body->SetTransform(body->GetPosition() + delta, body->GetAngle());
+          setPosition(actorId, component, body->GetPosition() + delta);
         }
       });
 }
@@ -400,6 +400,25 @@ void BodyBehavior::handleSetProperty(
     recreateFixtures(actorId, component, true); // PERF: Mark dirty and do this at end of frame?
   } else {
     BaseBehavior::handleSetProperty(actorId, component, propId, value);
+  }
+}
+
+void BodyBehavior::setPosition(ActorId actorId, b2Vec2 pos) {
+  if (auto component = maybeGetComponent(actorId)) {
+    setPosition(actorId, *component, pos);
+  }
+}
+
+void BodyBehavior::setPosition(ActorId actorId, BodyComponent &component, b2Vec2 pos) {
+  if (auto body = component.body) {
+    body->SetTransform(pos, body->GetAngle());
+    getBehaviors().forEach([&](auto &behavior) {
+      if constexpr (Handlers::hasUpdateComponentPosition<decltype(behavior)>) {
+        if (auto component = behavior.maybeGetComponent(actorId)) {
+          behavior.handleUpdateComponentPosition(actorId, *component, body);
+        }
+      }
+    });
   }
 }
 

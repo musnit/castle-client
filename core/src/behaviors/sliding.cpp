@@ -8,19 +8,26 @@
 //
 
 void SlidingBehavior::handleEnableComponent(ActorId actorId, SlidingComponent &component) {
+  auto &world = getScene().getPhysicsWorld();
+
   if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId)) {
+    auto pos = body->GetPosition();
+    b2BodyDef anchorBodyDef;
+    anchorBodyDef.position = pos;
+    component.anchorBody = world.CreateBody(&anchorBodyDef);
+
     auto &direction = component.props.direction();
     if (direction == "none") {
       // May still want rotation, so fix to a revolute joint
       b2RevoluteJointDef jointDef;
-      jointDef.Initialize(getScene().getPhysicsBackgroundBody(), body, body->GetPosition());
-      component.joint = getScene().getPhysicsWorld().CreateJoint(&jointDef);
+      jointDef.Initialize(component.anchorBody, body, pos);
+      component.joint = world.CreateJoint(&jointDef);
     } else if (direction != "both") {
       // Constrain motion to one direction
       b2WheelJointDef jointDef;
-      jointDef.Initialize(getScene().getPhysicsBackgroundBody(), body, body->GetPosition(),
-          direction == "horizontal" ? b2Vec2(1, 0) : b2Vec2(0, 1));
-      component.joint = getScene().getPhysicsWorld().CreateJoint(&jointDef);
+      jointDef.Initialize(
+          component.anchorBody, body, pos, direction == "horizontal" ? b2Vec2(1, 0) : b2Vec2(0, 1));
+      component.joint = world.CreateJoint(&jointDef);
     }
     if (component.props.isRotationAllowed()) {
       body->SetFixedRotation(false);
@@ -67,5 +74,18 @@ void SlidingBehavior::handleSetProperty(
     body->SetFixedRotation(disallowRotation);
   } else {
     BaseBehavior::handleSetProperty(actorId, component, propId, value);
+  }
+}
+
+
+//
+// Position update
+//
+
+void SlidingBehavior::handleUpdateComponentPosition(
+    ActorId actorId, SlidingComponent &component, b2Body *body) {
+  auto pos = body->GetPosition();
+  if (auto anchorBody = component.anchorBody) {
+    anchorBody->SetTransform(pos, anchorBody->GetAngle());
   }
 }

@@ -80,6 +80,12 @@ public:
   ActorId maybeGetActorId(const b2Body *body) const; // `nullActor` if not present
 
 
+  // Transform
+
+  void setPosition(ActorId actorId, b2Vec2 pos); // Use this instead of `SetTransform` when setting
+                                                 // body position -- notifies other behaviors
+
+
   // Information needed for rendering
 
   struct RenderInfo {
@@ -110,6 +116,11 @@ public:
 
 private:
   Lv &lv { Lv::getInstance() };
+
+
+  // Transform
+
+  void setPosition(ActorId actorId, BodyComponent &component, b2Vec2 pos);
 
 
   // Fixtures

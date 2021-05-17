@@ -148,6 +148,7 @@ DEFINE_HANDLER(PerformCamera);
 // Physics
 DEFINE_HANDLER(BeginPhysicsContact);
 DEFINE_HANDLER(UpdateComponentFixtures);
+DEFINE_HANDLER(UpdateComponentPosition);
 
 // Draw
 DEFINE_HANDLER(DrawComponent);
