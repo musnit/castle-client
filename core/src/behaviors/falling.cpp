@@ -10,6 +10,7 @@
 void FallingBehavior::handleEnableComponent(ActorId actorId, FallingComponent &component) {
   if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId)) {
     body->SetGravityScale(component.props.gravity());
+    body->SetAwake(true);
   }
 }
 
