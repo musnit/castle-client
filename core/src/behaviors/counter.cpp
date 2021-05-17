@@ -51,7 +51,7 @@ struct SetCounterResponse : BaseResponse {
       // Update value
       auto &props = component->props;
       auto newValue = params.relative() ? props.value() + value : value;
-      newValue = std::clamp(props.minValue(), newValue, props.maxValue());
+      newValue = std::clamp(newValue, props.minValue(), props.maxValue());
       props.value() = newValue;
 
       // Fire triggers
@@ -94,7 +94,7 @@ void CounterBehavior::handleSetProperty(
     ActorId actorId, CounterComponent &component, PropId propId, const ExpressionValue &value) {
   auto &props = component.props;
   if (propId == props.value.id) {
-    props.value() = std::clamp(props.minValue(), value.as<double>(), props.maxValue());
+    props.value() = std::clamp(value.as<double>(), props.minValue(), props.maxValue());
   } else {
     BaseBehavior::handleSetProperty(actorId, component, propId, value);
   }
