@@ -18,17 +18,20 @@ void Variable::read(Reader &reader) {
 
 void Variables::read(Reader &reader) {
   map = {};
+  byName.clear();
   reader.each([&]() {
     auto variableId = reader.str("id");
     if (!variableId) {
       return;
     }
-    auto name = reader.str("name");
-    if (!name) {
+    auto nameCStr = reader.str("name");
+    if (!nameCStr) {
       return;
     }
+    auto name = std::string(*nameCStr);
     auto token = map.getToken(*variableId);
-    map.insert(token, MapElem(*name, reader.num("initialValue", 0)));
+    map.insert(token, MapElem(name, reader.num("initialValue", 0)));
+    byName.insert_or_assign(std::move(name), Variable { token });
   });
 }
 

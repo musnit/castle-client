@@ -28,4 +28,7 @@ private:
   friend struct ShowResponse;
   friend struct HideResponse;
   friend struct HideTextResponse;
+
+
+  std::string formatContent(const std::string &content) const;
 };

@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include <filesystem>
 #include <variant>
+#include <regex>
 
 // Emscripten
 #ifdef __EMSCRIPTEN__

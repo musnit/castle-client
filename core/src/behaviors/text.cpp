@@ -4,6 +4,11 @@
 #include "archive.h"
 #include "js.h"
 
+
+//
+// JavaScript bindings
+//
+
 JS_DEFINE(int, JS_updateTextActors, (const char *msg, int msgLen), {
   if (Castle.updateTextActors) {
     Castle.updateTextActors(UTF8ToString(msg, msgLen));
@@ -24,12 +29,22 @@ JS_DEFINE(int, JS_navigateToCardId, (const char *cardId, int cardIdLen),
 // JS_DEFINE(int, JS_preloadCardId, (const char *cardId, int cardIdLen),
 //    { Castle.preloadCardId(UTF8ToString(cardId, cardIdLen)); });
 
+
+//
+// Triggers
+//
+
 struct TextTapTrigger : BaseTrigger {
   inline static const RuleRegistration<TextTapTrigger, TextBehavior> registration { "tap" };
 
   struct Params {
   } params;
 };
+
+
+//
+// Responses
+//
 
 struct Card {
   Card() = default;
@@ -86,6 +101,7 @@ struct HideResponse : BaseResponse {
   }
 };
 
+
 //
 // Read, write
 //
@@ -103,6 +119,7 @@ void TextBehavior::handleReadComponent(ActorId actorId, TextComponent &component
     component.props.order() = maxExistingOrder + 1;
   }
 }
+
 
 //
 // Perform
@@ -123,15 +140,15 @@ void TextBehavior::handlePerform(double dt) {
   }
 
   Archive archive;
-  archive.write([&](Archive::Writer &w) {
-    w.arr("textActors", [&]() {
+  archive.write([&](Archive::Writer &writer) {
+    writer.arr("textActors", [&]() {
       forEachEnabledComponent([&](ActorId actorId, TextComponent &component) {
         if (component.props.visible()) {
-          w.obj([&]() {
-            w.num("actorId", (int)entt::to_integral(actorId));
-            w.str("content", component.props.content());
-            w.num("order", component.props.order());
-            w.boolean("hasTapTrigger", rulesBehavior.hasTrigger<TextTapTrigger>(actorId));
+          writer.obj([&]() {
+            writer.num("actorId", (int)entt::to_integral(actorId));
+            writer.str("content", formatContent(component.props.content()));
+            writer.num("order", component.props.order());
+            writer.boolean("hasTapTrigger", rulesBehavior.hasTrigger<TextTapTrigger>(actorId));
           });
         }
       });
@@ -141,4 +158,41 @@ void TextBehavior::handlePerform(double dt) {
   auto output = archive.toJson();
   JS_updateTextActors(output.c_str(), output.length());
 #endif
+}
+
+
+//
+// Content formatting
+//
+
+std::string TextBehavior::formatContent(const std::string &content) const {
+  std::string result;
+  static std::regex re("\\$([a-zA-Z0-9_-]+)");
+  auto it = content.begin(), end = content.end();
+  auto &variables = getScene().getVariables();
+  for (std::smatch match; std::regex_search(it, end, match, re); it = match[0].second) {
+    result += match.prefix();
+    auto name = match.str(1);
+    if (auto value = variables.get(name)) {
+      // We want to remove trailing zeros and show at most 5 digits after the decimal point.
+      // `.5f` keeps trailing zeros, while `.5g` counts digits before the decimal point. So we need
+      // to work around this...
+      auto str = fmt::format("{:.5f}", value->as<double>());
+      if (!str.empty()) {
+        auto strip = int(str.size() - 1);
+        while (strip > 0 && str[strip] == '0') {
+          --strip;
+        }
+        if (strip > 0 && str[strip] == '.') {
+          --strip;
+        }
+        result += str.substr(0, strip + 1);
+      }
+    } else {
+      result += '$';
+      result += name;
+    }
+  }
+  result.append(it, end);
+  return result;
 }

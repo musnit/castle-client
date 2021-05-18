@@ -66,6 +66,7 @@ public:
   // Get / set
 
   const ExpressionValue &get(Variable variable) const; // Default `ExpressionValue` if no such
+  std::optional<ExpressionValue> get(const std::string &name) const;
   void set(Variable variable, ExpressionValue value);
   void reset(Variable variable);
   void resetAll();
@@ -73,6 +74,7 @@ public:
 
 private:
   Map map; // NOTE: Keyed by variable id, not name
+  std::unordered_map<std::string, Variable> byName;
 
   Scene *scene = nullptr;
 
@@ -114,5 +116,13 @@ inline const ExpressionValue &Variables::get(Variable variable) const {
   } else {
     static ExpressionValue empty;
     return empty;
+  }
+}
+
+inline std::optional<ExpressionValue> Variables::get(const std::string &variable) const {
+  if (auto found = byName.find(variable); found != byName.end()) {
+    return get(found->second);
+  } else {
+    return std::nullopt;
   }
 }

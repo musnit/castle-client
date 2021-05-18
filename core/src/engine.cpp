@@ -4,7 +4,7 @@
 
 
 //
-// JavaScript utilities (stubs in not-web)
+// JavaScript bindings
 //
 
 JS_DEFINE(int, JS_getCanvasWidth, (),
