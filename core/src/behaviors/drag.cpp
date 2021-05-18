@@ -127,6 +127,8 @@ void DragBehavior::handleDrawOverlay() const {
 
   auto circleRadius = 18 * pixelScale;
 
+  auto cameraPos = getScene().getCameraPosition();
+
   forEachEnabledComponent([&](ActorId actorId, const DragComponent &component) {
     auto &handles = component.handles;
     if (handles.empty()) {
@@ -143,13 +145,14 @@ void DragBehavior::handleDrawOverlay() const {
           lv.graphics.setColor({ 1, 1, 1, 0.3 });
           lv.graphics.circle(love::Graphics::DRAW_FILL, handlePos.x, handlePos.y, circleRadius);
 
+          auto touchPos = touch->cameraPos + cameraPos; // Use most up-to-date position
           lv.graphics.setColor({ 1, 1, 1, 0.8 });
-          lv.graphics.circle(love::Graphics::DRAW_LINE, touch->pos.x, touch->pos.y, circleRadius);
+          lv.graphics.circle(love::Graphics::DRAW_LINE, touchPos.x, touchPos.y, circleRadius);
           lv.graphics.setColor({ 1, 1, 1, 0.3 });
-          lv.graphics.circle(love::Graphics::DRAW_FILL, touch->pos.x, touch->pos.y, circleRadius);
+          lv.graphics.circle(love::Graphics::DRAW_FILL, touchPos.x, touchPos.y, circleRadius);
 
           lv.graphics.setColor({ 1, 1, 1, 0.8 });
-          std::array line { love::Vector2(handlePos.x, handlePos.y), touch->pos };
+          std::array line { love::Vector2(handlePos.x, handlePos.y), touchPos };
           lv.graphics.polyline(line.data(), line.size());
         }
       }

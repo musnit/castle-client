@@ -84,8 +84,7 @@ void SlidingBehavior::handleSetProperty(
 
 void SlidingBehavior::handleUpdateComponentPosition(
     ActorId actorId, SlidingComponent &component, b2Body *body) {
-  auto pos = body->GetPosition();
   if (auto anchorBody = component.anchorBody) {
-    anchorBody->SetTransform(pos, anchorBody->GetAngle());
+    anchorBody->SetTransform(body->GetPosition(), anchorBody->GetAngle());
   }
 }
