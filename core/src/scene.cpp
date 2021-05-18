@@ -325,7 +325,8 @@ void Scene::draw() const {
   // View transform
   viewTransform.reset();
   viewTransform.scale(800.0f / viewWidth, 800.0f / viewWidth);
-  viewTransform.translate(0.5f * viewWidth, 0.5f * viewHeight);
+  auto viewYOffset = 0.5f * (props.coordinateSystemVersion() == 2 ? viewHeight : viewWidth);
+  viewTransform.translate(0.5f * viewWidth, viewYOffset);
   viewTransform.translate(-cameraX, -cameraY);
   lv.graphics.applyTransform(&viewTransform);
 
