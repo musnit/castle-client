@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { AutocompleteTextInput } from '../components/AutocompleteTextInput';
 
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -53,6 +54,7 @@ export const CommentInput = ({ onAddComment, replyingToComment, clearReplyingToC
     },
     [replyingToComment, clearReplyingToComment]
   );
+
   return (
     <View style={styles.container}>
       {replyingToComment ? (
@@ -69,7 +71,7 @@ export const CommentInput = ({ onAddComment, replyingToComment, clearReplyingToC
         </View>
       ) : null}
       <View style={styles.inputRow}>
-        <TextInput
+        <AutocompleteTextInput
           style={styles.textInput}
           placeholder="Add a comment..."
           value={value}
