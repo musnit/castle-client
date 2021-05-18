@@ -40,7 +40,7 @@ const autocompleteUsers = (text) =>
     variables: { text },
   });
 
-export const AutocompleteTextInput = ({ onChangeText, ...props }) => {
+export const AutocompleteTextInput = ({ onChangeText, updateCache, ...props }) => {
   const [query, setQuery] = React.useState();
   const [autocomplete, setAutocomplete] = React.useState({
     type: null,
@@ -96,9 +96,15 @@ export const AutocompleteTextInput = ({ onChangeText, ...props }) => {
         const { user, query } = autocomplete;
         onChangeText(props.value.replace(query, `@${user.username} `));
         setQuery();
+        if (updateCache) {
+          updateCache({
+            type: 'addUser',
+            user,
+          });
+        }
       }
     },
-    [props.value, onChangeText]
+    [props.value, onChangeText, updateCache]
   );
 
   return (

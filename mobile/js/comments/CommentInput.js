@@ -42,13 +42,24 @@ const styles = StyleSheet.create({
 
 export const CommentInput = ({ onAddComment, replyingToComment, clearReplyingToComment }) => {
   const [value, setValue] = React.useState();
+
+  // maintain cache of entities (e.g. user mentions) to help assemble this comment's body
+  // when we send it to the server
+  const commentBodyCache = React.useRef({});
+  const updateCache = React.useCallback((action) => {
+    if (action.type === 'addUser') {
+      const { user } = action;
+      commentBodyCache.current[user.username] = user;
+    }
+  }, []);
+
   const addComment = React.useCallback(
     (message) => {
       let parentCommentId = null;
       if (replyingToComment) {
         parentCommentId = replyingToComment.commentId;
       }
-      onAddComment(message, parentCommentId);
+      onAddComment(message, parentCommentId, commentBodyCache.current);
       setValue(undefined);
       clearReplyingToComment();
     },
@@ -72,6 +83,7 @@ export const CommentInput = ({ onAddComment, replyingToComment, clearReplyingToC
       ) : null}
       <View style={styles.inputRow}>
         <AutocompleteTextInput
+          updateCache={updateCache}
           style={styles.textInput}
           placeholder="Add a comment..."
           value={value}

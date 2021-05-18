@@ -5,6 +5,7 @@ import { BottomSheetHeader } from '../components/BottomSheetHeader';
 import { BottomSheet } from '../components/BottomSheet';
 import { CommentInput } from './CommentInput';
 import { CommentsList } from './CommentsList';
+import { formatMessage } from '../common/chat-utilities';
 import { gql, useMutation } from '@apollo/client';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useKeyboard } from '../common/utilities';
@@ -80,14 +81,16 @@ export const CommentsSheet = ({ isOpen, onClose, deck, isFullScreen, ...props })
   );
 
   const onAddComment = React.useCallback(
-    (message, parentCommentId = null) =>
-      addComment({
+    (message, parentCommentId = null, commentBodyCache = {}) => {
+      const formattedMessage = formatMessage(message, commentBodyCache);
+      return addComment({
         variables: {
           deckId: deck.deckId,
-          message,
+          message: formattedMessage,
           parentCommentId,
         },
-      }),
+      });
+    },
     [addComment, deck]
   );
 
