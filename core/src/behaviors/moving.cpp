@@ -140,43 +140,45 @@ void MovingBehavior::handleDisableComponent(
 
 void MovingBehavior::handlePerform(double dt) {
   // Motion triggers
-  auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
-  forEachEnabledComponent([&](ActorId actorId, MovingComponent &component) {
-    if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId)) {
-      // Check if velocity changed
-      if (rulesBehavior.hasTrigger<VelocityChangesTrigger>(actorId)) {
-        auto [vx, vy] = body->GetLinearVelocity();
-        auto va = body->GetAngularVelocity();
-        auto &prevVelocity = component.prevVelocity;
-        if (!prevVelocity || prevVelocity->x != vx || prevVelocity->y != vy
-            || prevVelocity->a != va) {
-          rulesBehavior.fire<VelocityChangesTrigger>(actorId, {});
-        }
-        prevVelocity = { vx, vy, va };
-      }
-
-      // Check if position changed
-      if (rulesBehavior.hasTrigger<StopsMovingTrigger>(actorId)) {
-        constexpr auto translationThreshold = 0.0005;
-        constexpr auto rotationThreshold = 0.001;
-        auto [x, y] = body->GetPosition();
-        auto a = body->GetAngle();
-        auto &prevPosition = component.prevPosition;
-        if (prevPosition) {
-          auto moving = std::abs(prevPosition->x - x) >= translationThreshold
-              || std::abs(prevPosition->y - y) >= translationThreshold
-              || std::abs(prevPosition->a - a) >= rotationThreshold;
-          if (component.isMoving != moving) {
-            if (!moving) {
-              rulesBehavior.fire<StopsMovingTrigger>(actorId, {});
-            }
-            component.isMoving = moving;
+  if (auto nSteps = getScene().numPhysicsStepsPerformed(); nSteps > 0) {
+    auto translationThreshold = 0.00025 * nSteps;
+    auto rotationThreshold = 0.0005 * nSteps;
+    auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
+    forEachEnabledComponent([&](ActorId actorId, MovingComponent &component) {
+      if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId)) {
+        // Check if velocity changed
+        if (rulesBehavior.hasTrigger<VelocityChangesTrigger>(actorId)) {
+          auto [vx, vy] = body->GetLinearVelocity();
+          auto va = body->GetAngularVelocity();
+          auto &prevVelocity = component.prevVelocity;
+          if (!prevVelocity || prevVelocity->x != vx || prevVelocity->y != vy
+              || prevVelocity->a != va) {
+            rulesBehavior.fire<VelocityChangesTrigger>(actorId, {});
           }
+          prevVelocity = { vx, vy, va };
         }
-        prevPosition = { x, y, a };
+
+        // Check if position changed
+        if (rulesBehavior.hasTrigger<StopsMovingTrigger>(actorId)) {
+          auto [x, y] = body->GetPosition();
+          auto a = body->GetAngle();
+          auto &prevPosition = component.prevPosition;
+          if (prevPosition) {
+            auto moving = std::abs(prevPosition->x - x) >= translationThreshold
+                || std::abs(prevPosition->y - y) >= translationThreshold
+                || std::abs(prevPosition->a - a) >= rotationThreshold;
+            if (component.isMoving != moving) {
+              if (!moving) {
+                rulesBehavior.fire<StopsMovingTrigger>(actorId, {});
+              }
+              component.isMoving = moving;
+            }
+          }
+          prevPosition = { x, y, a };
+        }
       }
-    }
-  });
+    });
+  }
 }
 
 

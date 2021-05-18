@@ -80,6 +80,7 @@ public:
   b2World &getPhysicsWorld();
   const b2World &getPhysicsWorld() const;
   b2Body *getPhysicsBackgroundBody();
+  int numPhysicsStepsPerformed() const; // Number of 120Hz physics steps performed in this frame
 
 
   // Entity registry (entt instance managing component data)
@@ -172,6 +173,7 @@ private:
   } physicsContactListener; // Must outlive `physicsWorld` below
   b2World physicsWorld { b2Vec2(0, 9.8) };
   b2Body *physicsBackgroundBody = nullptr;
+  int nPhysicsStepsPerformed = 0;
   double physicsUpdateTimeRemaining = 0;
 
   std::unique_ptr<AllBehaviors> behaviors;
@@ -268,6 +270,10 @@ inline const b2World &Scene::getPhysicsWorld() const {
 
 inline b2Body *Scene::getPhysicsBackgroundBody() {
   return physicsBackgroundBody;
+}
+
+inline int Scene::numPhysicsStepsPerformed() const {
+  return nPhysicsStepsPerformed;
 }
 
 inline entt::registry &Scene::getEntityRegistry() {
