@@ -1,9 +1,5 @@
 #include "sound.h"
 
-bool Sound::hasInitializedSoloud = false;
-SoLoud::Soloud Sound::soloud;
-std::map<std::string, std::unique_ptr<SoLoud::Sfxr>> Sound::sfxrSounds;
-
 Sound::Sound() {
   if (!Sound::hasInitializedSoloud) {
     Sound::hasInitializedSoloud = true;
@@ -11,7 +7,7 @@ Sound::Sound() {
   }
 }
 
-void Sound::play(std::string category, int seed, int mutationSeed, int mutationAmount) {
+void Sound::play(const std::string &category, int seed, int mutationSeed, int mutationAmount) {
   std::string key = "category: " + category + " seed:" + std::to_string(seed) + " mutationSeed:"
       + std::to_string(mutationSeed) + " mutationAmount:" + std::to_string(mutationAmount);
 
