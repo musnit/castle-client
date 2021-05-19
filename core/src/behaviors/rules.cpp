@@ -56,7 +56,22 @@ struct CreateResponse : BaseResponse {
       return;
     }
 
-    // TODO(nikki): Handle depth
+    // Set depth
+    int newDrawOrder = 0, creatorDrawOrder = 0;
+    if (auto actor = scene.maybeGetActor(ctx.actorId)) {
+      creatorDrawOrder = actor->drawOrder;
+    }
+    auto &depth = params.depth();
+    if (depth.compare("behind all actors") == 0) {
+      newDrawOrder = 1;
+    } else if (depth.compare("behind this actor") == 0) {
+      newDrawOrder = creatorDrawOrder;
+    } else if (depth.compare("in front of this actor") == 0) {
+      newDrawOrder = creatorDrawOrder + 1;
+    }
+    if (newDrawOrder != 0) {
+      scene.setActorDrawOrder(newActorId, newDrawOrder);
+    }
 
     // Set position
     auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
