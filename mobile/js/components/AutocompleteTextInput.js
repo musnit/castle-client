@@ -32,7 +32,7 @@ const autocompleteUsers = (text) =>
   Session.apolloClient.query({
     query: gql`
       query($text: String!) {
-        autocomplete(text: $text) {
+        exploreSearch(text: $text) {
           users {
             userId
             username
@@ -55,7 +55,7 @@ export const AutocompleteTextInput = ({ onChangeText, updateCache, ...props }) =
       if (text?.length) {
         const matches = text.match(/([@][\w_-]+)$/g);
         if (matches?.length) {
-          setQuery(matches[0]);
+          setQuery(matches[0].substring(1));
         } else {
           setQuery();
         }
@@ -74,10 +74,10 @@ export const AutocompleteTextInput = ({ onChangeText, updateCache, ...props }) =
       if (mounted) {
         if (query?.length) {
           const result = await autocompleteUsers(query);
-          if (result?.data.autocomplete.users.length) {
+          if (result?.data.exploreSearch.users.length) {
             setAutocomplete({
               type: 'users',
-              users: result.data.autocomplete.users.slice(0, MAX_AUTOCOMPLETE_RESULTS),
+              users: result.data.exploreSearch.users.slice(0, MAX_AUTOCOMPLETE_RESULTS),
             });
           } else {
             setAutocomplete({ type: null });
