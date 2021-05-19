@@ -4,11 +4,14 @@ import { gql } from '@apollo/client';
 
 import * as Session from '../Session';
 
+import Viewport from '../common/viewport';
+
 const MAX_AUTOCOMPLETE_RESULTS = 6;
 
 const styles = StyleSheet.create({
   users: {
     position: 'absolute',
+    width: Viewport.vw * 100 - 32,
     bottom: 48,
     borderWidth: 1,
     borderColor: '#000',
@@ -18,8 +21,8 @@ const styles = StyleSheet.create({
   },
   userRow: {
     padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    borderTopWidth: 1,
+    borderColor: '#ccc',
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -112,10 +115,10 @@ export const AutocompleteTextInput = ({ onChangeText, updateCache, ...props }) =
       <TextInput onChangeText={onChangeTextAutocomplete} {...props} />
       {autocomplete.users ? (
         <View style={styles.users}>
-          {autocomplete.users.map((user) => (
+          {autocomplete.users.map((user, ii) => (
             <Pressable
               key={`user-${user.userId}`}
-              style={styles.userRow}
+              style={[styles.userRow, { borderTopWidth: ii === 0 ? 0 : 1 }]}
               onPress={() => onSelectAutocomplete({ type: 'user', user, query })}>
               <Text>{user.username}</Text>
             </Pressable>
