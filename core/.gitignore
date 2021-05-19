@@ -2,3 +2,6 @@ build/
 
 src/dev_settings.h
 test-watch.json
+
+# emacs tags table
+TAGS

@@ -100,6 +100,12 @@ of `auto` variables) and jump to definition:
 
 ![jump to definition](docs/cpp-editor-go-to-definition.gif)
 
+To set up jump to definition with emacs:
+
+- Install `ctags`: `brew install ctags`
+- Run `ctags -e -R` from `src` to create the file `src/TAGS`
+- Visit `src/TAGS` the first time you want to jump to a definition.
+
 `./run.sh format` will auto-format the code. Needs
 [clang-format](https://clang.llvm.org/docs/ClangFormat.html), which you can
 install with `brew install clang-format` or such.
