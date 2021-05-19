@@ -97,7 +97,7 @@ export const AutocompleteTextInput = ({ onChangeText, updateCache, ...props }) =
     (autocomplete) => {
       if (autocomplete.type === 'user') {
         const { user, query } = autocomplete;
-        onChangeText(props.value.replace(query, `@${user.username} `));
+        onChangeText(props.value.replace(query, `${user.username} `));
         setQuery();
         if (updateCache) {
           updateCache({
