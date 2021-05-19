@@ -165,6 +165,13 @@ public:
                                // which the response should be run. 0 means run immediately.
 
 
+  // Response <-> index
+
+  int getResponseIndex(ResponseRef response) const; // Unique index for response, `-1` if invalid
+  ResponseRef getResponse(int index); // Get by above index, `nullptr` if invalid
+  int getDestroyResponseIndex(); // Index for 'destroy' response to use in 'create text' rules
+
+
 private:
   // Using a pool allocator for rule nodes (responses and expressions) since we'll be allocating a
   // lot of small objects and visiting them somewhat in order when running. Also keep track of the
@@ -173,6 +180,7 @@ private:
   json::MemoryPoolAllocator<json::CrtAllocator> pool;
   std::vector<ResponseRef> responses;
   std::vector<BaseExpression *> expressions;
+  int destroyResponseIndex = -1; // See `getDestroyResponseIndex`
 
   // Map from JSON object pointer to loaded responses. Allows us to reuse response instances loaded
   // from the same JSON instance -- which happens every time we create an actor that inherits rules
@@ -435,6 +443,23 @@ inline void RulesBehavior::schedule(RuleContext ctx, double performTime) {
   if (ctx.next) {
     scheduleds.push_back({ std::move(ctx), performTime });
   }
+}
+
+inline int RulesBehavior::getResponseIndex(ResponseRef response) const {
+  auto nResponses = int(responses.size());
+  for (auto i = 0; i < nResponses; ++i) {
+    if (responses[i] == response) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+inline ResponseRef RulesBehavior::getResponse(int index) {
+  if (0 <= index && index < int(responses.size())) {
+    return responses[index];
+  }
+  return nullptr;
 }
 
 inline bool BaseResponse::eval(RuleContext &ctx) {

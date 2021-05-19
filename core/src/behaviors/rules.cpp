@@ -99,54 +99,57 @@ struct CreateTextResponse : BaseResponse {
   };
 
   struct Params {
-    PROP(std::string, content) = "";
+    PROP(std::string, content);
     PROP(std::string, action) = "dismiss";
+    PROP(ResponseRef, body) = nullptr;
   } params;
 
-  void run(RuleContext &ctx) override {
-    // params.body()
+  void linearize(ResponseRef continuation) override {
+    BaseResponse::linearize(next, continuation);
+    BaseResponse::linearize(params.body(), nullptr);
+  }
 
-    Archive writerArchive;
-    writerArchive.write([&](Archive::Writer &w) {
-      w.obj("components", [&]() {
-        w.obj("Text", [&]() {
-          w.str("content", params.content());
+  void run(RuleContext &ctx) override {
+    // Create blueprint of new text actor to add
+    Archive archive;
+    archive.write([&](Archive::Writer &writer) {
+      writer.obj("components", [&]() {
+        // Text component with content
+        writer.obj("Text", [&]() {
+          writer.str("content", params.content());
         });
 
-        // TODO: handle perform response
-        if (params.action() == "dismiss") {
-          w.obj("Rules", [&]() {
-            w.arr("rules", [&]() {
-              w.obj([&]() {
-                w.obj("trigger", [&]() {
-                  w.str("name", "tap");
-                  w.num("behaviorId", 19);
-                  w.obj("params", [&]() {
-                  });
-                });
+        // Rules component with action
+        writer.obj("Rules", [&]() {
+          writer.arr("rules", [&]() {
+            writer.obj([&]() {
+              // Tap trigger
+              writer.obj("trigger", [&]() {
+                writer.str("name", "tap");
+                writer.num("behaviorId", TextBehavior::behaviorId);
+              });
 
-                w.obj("response", [&]() {
-                  w.str("name", "destroy");
-                  w.num("behaviorId", 16);
-                  w.obj("params", [&]() {
-                  });
-                });
+              // Response
+              writer.obj("response", [&]() {
+                auto body = params.body();
+                auto &rulesBehavior = ctx.getScene().getBehaviors().byType<RulesBehavior>();
+                if (params.action()[0] == 'p' && body) {
+                  // "perform response" body
+                  writer.num("index", rulesBehavior.getResponseIndex(body));
+                } else {
+                  // "dismiss"
+                  writer.num("index", rulesBehavior.getDestroyResponseIndex());
+                }
               });
             });
           });
-        }
+        });
       });
     });
 
-    auto readerArchive = Archive::fromJson(writerArchive.toJson().c_str());
-    readerArchive.read([&](Reader &reader) {
-      auto &scene = ctx.getScene();
-
-      // Create actor and make sure that was successful
-      auto newActorId = scene.addActor(&reader, nullptr);
-      if (newActorId == nullActor) {
-        return;
-      }
+    // Create actor from blueprint
+    archive.read([&](Reader &reader) {
+      ctx.getScene().addActor(&reader, nullptr);
     });
   }
 };
@@ -324,8 +327,8 @@ struct RepeatResponse : BaseResponse {
   } params;
 
   void linearize(ResponseRef continuation) override {
-    // Set ourselves as the continuation after the body. This way execution will loop back around to
-    // us after the body, even if there are nested 'wait's in it.
+    // Set ourselves as the continuation after the body. This way execution will loop back around
+    // to us after the body, even if there are nested 'wait's in it.
     BaseResponse::linearize(next, continuation);
     BaseResponse::linearize(params.body(), this);
   }
@@ -367,8 +370,8 @@ struct InfiniteRepeatResponse : BaseResponse {
   } params;
 
   void linearize(ResponseRef continuation) override {
-    // Set ourselves as the continuation after the body. This way execution will loop back around to
-    // us after the body, even if there are nested 'wait's in it.
+    // Set ourselves as the continuation after the body. This way execution will loop back around
+    // to us after the body, even if there are nested 'wait's in it.
     BaseResponse::linearize(next, continuation);
     BaseResponse::linearize(params.body(), this);
   }
@@ -399,7 +402,8 @@ struct InfiniteRepeatResponse : BaseResponse {
         ctx.setNext(params.body());
       }
     } else {
-      // Haven't started yet -- enter the body immediately, setting count to 1 so we wait next time
+      // Haven't started yet -- enter the body immediately, setting count to 1 so we wait next
+      // time
       ctx.repeatStack.push_back({ this, 1 });
       ctx.setNext(params.body());
     }
@@ -444,7 +448,8 @@ struct ActOnResponse : BaseResponse {
     if (ctx.actOnStack.size() > 0) {
       if (auto &top = ctx.actOnStack.back(); top.response == this) {
         if (top.index < numActors) {
-          // Still have actors left to visit -- set to visit next actor, increment index, enter body
+          // Still have actors left to visit -- set to visit next actor, increment index, enter
+          // body
           ctx.actorId = tagsBehavior.indexActorWithTag(tag, top.index);
           ++top.index;
           ctx.setNext(params.body());
@@ -652,8 +657,8 @@ void RulesBehavior::fireVariablesTriggers(Variable variable, const ExpressionVal
 }
 
 struct VariableReachesValueTriggerOnAddMarker {
-  // Added to newly added actors to remind ourselves to fire 'variable reaches value' triggers on it
-  // for the current value of variables
+  // Added to newly added actors to remind ourselves to fire 'variable reaches value' triggers on
+  // it for the current value of variables
 };
 
 
@@ -779,9 +784,12 @@ void RulesBehavior::handleReadComponent(
     // Response
     ResponseRef response = nullptr;
     reader.obj("response", [&]() {
-      auto jsonPtr = (void *)reader.jsonValue();
-      if (auto found = responseCache.find(jsonPtr); found != responseCache.end()) {
-        // Found a pre-existing response for this JSON
+      if (auto index = reader.num("index")) {
+        // Pre-existing response from index
+        response = getResponse(*index);
+      } else if (auto found = responseCache.find((void *)reader.jsonValue());
+                 found != responseCache.end()) {
+        // Pre-existing response found in cache
         response = found->second;
       } else {
         // New JSON -- read and cache it
@@ -790,7 +798,7 @@ void RulesBehavior::handleReadComponent(
           // This is a root, so linearize from here
           response->linearize(nullptr);
         }
-        responseCache.insert_or_assign(jsonPtr, response);
+        responseCache.insert_or_assign((void *)reader.jsonValue(), response);
       }
     });
     if (!response) {
@@ -835,6 +843,16 @@ ResponseRef RulesBehavior::readResponse(Reader &reader) {
     Debug::log("RulesBehavior: unsupported response type '{}'", *name);
   }
   return nullptr;
+}
+
+int RulesBehavior::getDestroyResponseIndex() {
+  if (destroyResponseIndex == -1) {
+    auto response = (DestroyResponse *)pool.Malloc(sizeof(DestroyResponse));
+    new (response) DestroyResponse();
+    responses.emplace_back(response);
+    destroyResponseIndex = int(responses.size()) - 1;
+  };
+  return destroyResponseIndex;
 }
 
 void RulesBehavior::readExpression(ExpressionRef &expr, Reader &reader) {
@@ -904,8 +922,8 @@ void RulesBehavior::handlePerform(double dt) {
   fireAllEnabled<CreateTrigger>({});
   registry.clear<TriggerComponent<CreateTrigger>>();
 
-  // Fire 'variable reaches value' triggers that match the current value for actors that were newly
-  // added. Then clear the markers so we only check once on each actor.
+  // Fire 'variable reaches value' triggers that match the current value for actors that were
+  // newly added. Then clear the markers so we only check once on each actor.
   auto &variables = scene.getVariables();
   fireAllIf<VariableReachesValueTrigger, VariableReachesValueTriggerOnAddMarker>(
       {}, [&](ActorId actorId, const VariableReachesValueTrigger &trigger) {
@@ -914,9 +932,9 @@ void RulesBehavior::handlePerform(double dt) {
       });
   registry.clear<VariableReachesValueTriggerOnAddMarker>();
 
-  // Run contexts. Move ready contexts from `scheduleds` to `current`, then run and clear `current`.
-  // We don't run contexts directly from `scheduleds` because they could schedule new contexts when
-  // run, which would modify `scheduleds` and invalidate the iteration.
+  // Run contexts. Move ready contexts from `scheduleds` to `current`, then run and clear
+  // `current`. We don't run contexts directly from `scheduleds` because they could schedule new
+  // contexts when run, which would modify `scheduleds` and invalidate the iteration.
   auto performTime = scene.getPerformTime();
   Debug::display("scheduled: {}", scheduleds.size());
   scheduleds.erase(std::remove_if(scheduleds.begin(), scheduleds.end(),
