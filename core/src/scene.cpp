@@ -25,7 +25,6 @@ Scene::Scene(Variables &variables_, Reader *maybeReader)
   }
 
   // Seed the random number generator
-  // TODO(nikki): This seems to not actually help?
   rng.setSeed({ love::uint64(lv.timer.getTime()) });
 
   // Read
