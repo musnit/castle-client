@@ -171,16 +171,16 @@ void Drawing2Behavior::handleSetProperty(
     ActorId actorId, Drawing2Component &component, PropId propId, const ExpressionValue &value) {
   auto &animProps = component.animationComponentProperties;
   if (propId == decltype(DrawingAnimationProps::currentFrame)::id) {
-    animProps.currentFrame.value = round(value.as<double>());
+    animProps.currentFrame.value = int(std::round(value.as<double>()));
     fireChangeFrameTriggers(actorId, component);
   } else if (propId == decltype(DrawingAnimationProps::playMode)::id) {
     // TODO(nikki): Handle string values, then implement this
   } else if (propId == decltype(DrawingAnimationProps::framesPerSecond)::id) {
     animProps.framesPerSecond = value.as<float>();
   } else if (propId == decltype(DrawingAnimationProps::loopStartFrame)::id) {
-    animProps.loopStartFrame.value = round(value.as<double>());
+    animProps.loopStartFrame.value = int(std::round(value.as<double>()));
   } else if (propId == decltype(DrawingAnimationProps::loopEndFrame)::id) {
-    animProps.loopEndFrame.value = round(value.as<double>());
+    animProps.loopEndFrame.value = int(std::round(value.as<double>()));
   } else {
     BaseBehavior::handleSetProperty(actorId, component, propId, value);
   }
