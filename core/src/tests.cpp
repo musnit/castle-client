@@ -35,19 +35,6 @@ struct BasicActorManagementTest : Test {
       assert(results == std::vector<ActorId>({ actor1, actor2 }));
     }
 
-    // Modify draw order and check again, making sure compacted
-    scene.setActorDrawOrder(actor1, 20);
-    {
-      std::vector<ActorId> results;
-      scene.forEachActorByDrawOrder([&](ActorId actorId, Actor &) {
-        results.push_back(actorId);
-      });
-      assert(results == std::vector<ActorId>({ actor2, actor1 }));
-    }
-    assert(scene.maybeGetActor(actor2)->drawOrder == 0);
-    assert(scene.maybeGetActor(actor1)->drawOrder == 1);
-    assert(scene.maybeGetActor(actor1)->drawOrder == 1);
-
     // Add another actor and check again
     auto actor3 = scene.addActor();
     {

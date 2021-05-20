@@ -55,7 +55,6 @@ public:
                                          // may move as actors are added / removed.
   const Actor *maybeGetActor(ActorId actorId) const;
 
-  void setActorDrawOrder(ActorId actorId, int drawOrder);
   template<typename F>
   void forEachActorByDrawOrder(F &&f); // `f` must take either `(ActorId, Actor &)` or `(Actor &)`
   template<typename F>
