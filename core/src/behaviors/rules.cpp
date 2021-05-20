@@ -43,20 +43,44 @@ struct CreateResponse : BaseResponse {
 
   void run(RuleContext &ctx) override {
     auto &scene = ctx.getScene();
+    auto creatorActorId = ctx.actorId;
 
-    // Make sure we have an `entryId`
-    auto &entryId = params.entryId();
-    if (entryId.empty()) {
+    // Start an `ActorDesc`
+    Scene::ActorDesc newActorDesc;
+
+    // Parent entry id
+    if (auto &entryId = params.entryId(); entryId.empty()) {
       return;
+    } else {
+      newActorDesc.parentEntryId = entryId.c_str();
     }
 
-    // Create actor and make sure that was successful
-    auto newActorId = scene.addActor(nullptr, entryId.c_str());
+    // Depth
+    if (auto &depth = params.depth(); depth[0] == 'b') {
+      if (depth[7] == 't') {
+        // Behind this
+        newActorDesc.drawOrderRelativeTo = creatorActorId;
+        newActorDesc.drawOrderRelativity = Scene::ActorDesc::Behind;
+      } else {
+        // Behind all
+        newActorDesc.drawOrderRelativity = Scene::ActorDesc::BehindAll;
+      }
+    } else {
+      if (depth[12] == 't') {
+        // Front of this
+        newActorDesc.drawOrderRelativeTo = creatorActorId;
+        newActorDesc.drawOrderRelativity = Scene::ActorDesc::FrontOf;
+      } else {
+        // Front of all
+        newActorDesc.drawOrderRelativity = Scene::ActorDesc::FrontOfAll;
+      }
+    }
+
+    // Add the actor and check if successful
+    auto newActorId = scene.addActor(newActorDesc);
     if (newActorId == nullActor) {
       return;
     }
-
-    // TODO(nikki): Handle depth
 
     // Set position
     auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
@@ -66,8 +90,8 @@ struct CreateResponse : BaseResponse {
       if (coordinateSystem[0] == 'r') { // Whether starts with "relative" or "absolute"
         // Relative
         auto creatorPos = ctx.lastPosition;
-        float creatorAngle = ctx.lastAngle;
-        if (auto creatorBody = bodyBehavior.maybeGetPhysicsBody(ctx.actorId)) {
+        auto creatorAngle = ctx.lastAngle;
+        if (auto creatorBody = bodyBehavior.maybeGetPhysicsBody(creatorActorId)) {
           creatorPos = creatorBody->GetPosition();
           creatorAngle = creatorBody->GetAngle();
         }
@@ -149,7 +173,9 @@ struct CreateTextResponse : BaseResponse {
 
     // Create actor from blueprint
     archive.read([&](Reader &reader) {
-      ctx.getScene().addActor(&reader, nullptr);
+      Scene::ActorDesc newActorDesc;
+      newActorDesc.reader = &reader;
+      ctx.getScene().addActor(newActorDesc);
     });
   }
 };
@@ -931,6 +957,10 @@ void RulesBehavior::handlePerform(double dt) {
         return currValue.compare(trigger.params.comparison(), trigger.params.value());
       });
   registry.clear<VariableReachesValueTriggerOnAddMarker>();
+
+  // Make sure draw orders are compacted before responses are run so that `CreateResponse`s cause
+  // correct relative draw orders to be set
+  scene.ensureDrawOrderSort();
 
   // Run contexts. Move ready contexts from `scheduleds` to `current`, then run and clear
   // `current`. We don't run contexts directly from `scheduleds` because they could schedule new

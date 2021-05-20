@@ -34,7 +34,14 @@ public:
 
   // Actor management
 
-  ActorId addActor(Reader *maybeReader = nullptr, const char *maybeParentEntryId = nullptr);
+  struct ActorDesc {
+    Reader *reader = nullptr;
+    const char *parentEntryId = nullptr;
+    enum DrawOrderRelativity { BehindAll, Behind, FrontOf, FrontOfAll };
+    DrawOrderRelativity drawOrderRelativity = FrontOfAll;
+    ActorId drawOrderRelativeTo = nullActor;
+  };
+  ActorId addActor(const ActorDesc &params);
   void removeActor(ActorId actorId);
   bool hasActor(ActorId actorId) const; // Whether `actorId` exists. Always `false` for `nullActor`.
                                         // may move as actors are added / removed.
@@ -47,12 +54,14 @@ public:
 
   // Draw order
   struct DrawOrder {
-    int value;
+    int value = -1;
+    int tieBreak = 0;
     bool operator<(const DrawOrder &other) const;
   };
-  inline static const DrawOrder minDrawOrder { -1 };
+  inline static const DrawOrder minDrawOrder { -1, 0 };
   const DrawOrder *maybeGetDrawOrder(ActorId actorId) const; // `nullptr` if invalid. Shortlived,
                                                              // may move as actors added / removed.
+  void ensureDrawOrderSort() const;
   template<typename F>
   void forEachActorByDrawOrder(F &&f) const; // `f` must take `(ActorId)`
 
@@ -152,7 +161,11 @@ private:
 
   entt::basic_view<entt::entity, entt::exclude_t<>, DrawOrder> drawOrderView
       = registry.view<DrawOrder>();
-  mutable int nextNewDrawOrder = 0; // Always greater than the draw order of any existing actor
+  static constexpr auto backDrawOrder = 0; // Always less than draw order value of any actor
+  mutable int frontDrawOrder = 1; // Always greater than draw order value of any actor
+  static constexpr auto initialDrawOrderTieBreak
+      = std::numeric_limits<int>::max() - 32; // `- 32` to stay away from overflow
+  mutable int nextDrawOrderTieBreak = initialDrawOrderTieBreak; // Start near max, move toward zero
   mutable bool needDrawOrderSort = false;
 
   struct PhysicsContactListener : b2ContactListener {
@@ -184,8 +197,6 @@ private:
 
 
   void read(Reader &reader);
-
-  void ensureDrawOrderSort() const;
 };
 
 
@@ -221,7 +232,7 @@ inline const Scene::DrawOrder *Scene::maybeGetDrawOrder(ActorId actorId) const {
 }
 
 inline bool Scene::DrawOrder::operator<(const DrawOrder &other) const {
-  return value < other.value;
+  return std::tie(value, tieBreak) < std::tie(other.value, other.tieBreak);
 }
 
 template<typename F>

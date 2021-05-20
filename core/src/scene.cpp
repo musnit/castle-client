@@ -66,7 +66,10 @@ void Scene::read(Reader &reader) {
     // Actor
     auto maybeParentEntryId = reader.str("parentEntryId", nullptr);
     reader.obj("bp", [&]() {
-      addActor(&reader, maybeParentEntryId);
+      ActorDesc actorDesc;
+      actorDesc.reader = &reader;
+      actorDesc.parentEntryId = maybeParentEntryId;
+      addActor(actorDesc);
     });
   });
 
@@ -81,19 +84,50 @@ void Scene::read(Reader &reader) {
 // Actor management
 //
 
-ActorId Scene::addActor(Reader *maybeReader, const char *maybeParentEntryId) {
+ActorId Scene::addActor(const ActorDesc &params) {
   // Find parent entry
   const LibraryEntry *maybeParentEntry = nullptr;
-  if (maybeParentEntryId) {
-    maybeParentEntry = library.maybeGetEntry(maybeParentEntryId);
-    if (!maybeParentEntry && !maybeReader) {
+  if (params.parentEntryId) {
+    maybeParentEntry = library.maybeGetEntry(params.parentEntryId);
+    if (!maybeParentEntry && !params.reader) {
       return nullActor; // Parent entry requested but doesn't exist, and we also have no actor data
     }
   }
 
   // Actor
   auto actorId = registry.create();
-  registry.emplace<DrawOrder>(actorId, nextNewDrawOrder++);
+
+  // Draw order
+  DrawOrder drawOrder;
+  auto drawOrderRelativity = params.drawOrderRelativity;
+  if (drawOrderRelativity == ActorDesc::Behind || drawOrderRelativity == ActorDesc::FrontOf) {
+    if (auto otherDrawOrder = maybeGetDrawOrder(params.drawOrderRelativeTo)) {
+      // Relative to found given actor -- tie break is set later below
+      drawOrder.value = otherDrawOrder->value;
+    } else {
+      // Front of all if given actor not found
+      drawOrderRelativity = ActorDesc::FrontOfAll;
+    }
+  }
+  if (drawOrderRelativity == ActorDesc::BehindAll) {
+    // Behind all means in front of the 'back' sentinel value
+    drawOrder.value = backDrawOrder;
+    drawOrderRelativity = ActorDesc::FrontOf;
+  }
+  if (drawOrderRelativity == ActorDesc::FrontOfAll) {
+    // Front of all means behind the 'front' sentinel value
+    drawOrder.value = frontDrawOrder;
+    drawOrderRelativity = ActorDesc::Behind;
+  }
+  if (drawOrderRelativity == ActorDesc::Behind) {
+    // Next negative tie break closer to zero
+    drawOrder.tieBreak = -(nextDrawOrderTieBreak--);
+  }
+  if (drawOrderRelativity == ActorDesc::FrontOf) {
+    // Next positive tie break closer to zero
+    drawOrder.tieBreak = nextDrawOrderTieBreak--;
+  }
+  registry.emplace<DrawOrder>(actorId, drawOrder);
   needDrawOrderSort = true;
 
   // Components reading code that's called below
@@ -147,7 +181,7 @@ ActorId Scene::addActor(Reader *maybeReader, const char *maybeParentEntryId) {
       parentReader.obj("components", [&]() {
         // PERF: We can cache the component reader in the `LibraryEntry` to reuse the reader lookup
         //       cache when we add one
-        if (maybeReader) {
+        if (params.reader) {
           // Have an actor reader, just set the parent reader to fallback to
           maybeFallbackComponentsReader = Reader(*parentReader.jsonValue());
         } else {
@@ -160,9 +194,9 @@ ActorId Scene::addActor(Reader *maybeReader, const char *maybeParentEntryId) {
   }
 
   // Read from actor reader
-  if (maybeReader) {
-    maybeReader->obj("components", [&]() {
-      readComponents(*maybeReader);
+  if (params.reader) {
+    params.reader->obj("components", [&]() {
+      readComponents(*params.reader);
     });
   }
 
@@ -205,11 +239,15 @@ void Scene::ensureDrawOrderSort() const {
   if (needDrawOrderSort) {
     const_cast<entt::registry &>(registry).sort<DrawOrder>(std::less());
     needDrawOrderSort = false;
-    auto nextCompactDrawOrder = 0;
-    const_cast<entt::registry &>(registry).view<DrawOrder>().each([&](DrawOrder &drawOrder) {
+
+    // 'Compact' draw orders: set values from 1 to `numActors()` in order, zero-out tie breaks
+    auto nextCompactDrawOrder = 1;
+    drawOrderView.each([&](DrawOrder &drawOrder) {
       drawOrder.value = nextCompactDrawOrder++;
+      drawOrder.tieBreak = 0;
     });
-    nextNewDrawOrder = nextCompactDrawOrder;
+    frontDrawOrder = nextCompactDrawOrder;
+    nextDrawOrderTieBreak = initialDrawOrderTieBreak;
   }
 }
 
