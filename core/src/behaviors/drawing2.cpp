@@ -154,7 +154,13 @@ ExpressionValue Drawing2Behavior::handleGetProperty(
   if (propId == decltype(DrawingAnimationProps::currentFrame)::id) {
     return animProps.currentFrame.value;
   } else if (propId == decltype(DrawingAnimationProps::playMode)::id) {
-    // TODO(nikki): Handle string values, then implement this
+    if (!animProps.playing) {
+      return "still";
+    } else if (animProps.loop) {
+      return "loop";
+    } else {
+      return "play once";
+    }
     return {};
   } else if (propId == decltype(DrawingAnimationProps::framesPerSecond)::id) {
     return animProps.framesPerSecond;
@@ -174,7 +180,19 @@ void Drawing2Behavior::handleSetProperty(
     animProps.currentFrame.value = int(std::round(value.as<double>()));
     fireChangeFrameTriggers(actorId, component);
   } else if (propId == decltype(DrawingAnimationProps::playMode)::id) {
-    // TODO(nikki): Handle string values, then implement this
+    if (value.is<const char *>()) {
+      auto playMode = value.as<const char *>();
+      if (playMode[0] == 's') { // "still"
+        animProps.playing = false;
+        animProps.loop = false;
+      } else if (playMode[0] == 'p') { // "play once"
+        animProps.playing = true;
+        animProps.loop = false;
+      } else { // "loop"
+        animProps.playing = true;
+        animProps.loop = true;
+      }
+    }
   } else if (propId == decltype(DrawingAnimationProps::framesPerSecond)::id) {
     animProps.framesPerSecond = value.as<float>();
   } else if (propId == decltype(DrawingAnimationProps::loopStartFrame)::id) {

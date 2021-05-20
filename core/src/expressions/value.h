@@ -7,8 +7,11 @@
 
 class ExpressionValue {
   // Contains the result of a rule expression, which is dynamically typed. Has methods to check the
-  // dynamic type and get the C++ value. Currently the only supported stored type is `double` for
-  // numbers, retrievable as `double`, `float` or `int`.
+  // dynamic type and get the C++ value. Currently the supported types are:
+  //   `double`, `float`, `int`: all stored internally as `double`
+  //   `bool`: also stored as `double`, interpreting `0` as `false` and everything else as `true`
+  //   `const char *`: stored as `const char *` -- which means the string is not owned and must
+  //                  outlive the value (!!)
 
 public:
   ExpressionValue() = default;
