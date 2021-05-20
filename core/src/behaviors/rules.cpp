@@ -622,7 +622,7 @@ struct PlaySoundResponse : BaseResponse {
 // Meta responses
 //
 
-#define DEBUG_LOG_NOTE_RESPONSE // Uncomment to log note messages
+//#define DEBUG_LOG_NOTE_RESPONSE // Uncomment to log note messages
 
 struct NoteResponse : BaseResponse {
   inline static const RuleRegistration<NoteResponse, RulesBehavior> registration { "note" };
