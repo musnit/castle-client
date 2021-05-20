@@ -240,13 +240,15 @@ void Engine::draw() {
 #endif
 
   // Debug messages
-  if (scene) {
-    lv.graphics.setColor(love::Colorf(0, 0, 0, 1));
-  } else {
-    Debug::display("loading...");
-    lv.graphics.setColor(love::Colorf(1, 1, 1, 1));
-  }
   if (Debug::isEnabled) {
+    if (scene) {
+      // Scene exists -- draw debug messages in black
+      lv.graphics.setColor(love::Colorf(0, 0, 0, 1));
+    } else {
+      // No scene -- show loading message in white on black background
+      Debug::display("loading...");
+      lv.graphics.setColor(love::Colorf(1, 1, 1, 1));
+    }
     lv.graphics.print({ { Debug::getAndClearDisplay(), { 1, 1, 1, 1 } } }, debugFont.get(),
         love::Matrix4(20, 20, 0, 1, 1, 0, 0, 0, 0));
   }
