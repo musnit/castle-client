@@ -47,15 +47,16 @@ void DragBehavior::handlePerform(double dt) {
       ActorId hitActorId = nullActor;
       DragComponent *hitComponent = nullptr;
       const b2Body *hitBody = nullptr;
-      int maxDrawOrder = -1;
+      auto maxDrawOrder = Scene::minDrawOrder;
       for (auto actorId : bodyBehavior.getActorsAtTouch(touchId)) {
         if (auto component = maybeGetComponent(actorId); component && !component->disabled) {
-          if (auto actor = scene.maybeGetActor(actorId); actor && actor->drawOrder > maxDrawOrder) {
+          if (auto drawOrder = scene.maybeGetDrawOrder(actorId);
+              drawOrder && maxDrawOrder < *drawOrder) {
             if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
               hitActorId = actorId;
               hitComponent = component;
               hitBody = body;
-              maxDrawOrder = actor->drawOrder;
+              maxDrawOrder = *drawOrder;
             }
           }
         }

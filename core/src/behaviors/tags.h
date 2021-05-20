@@ -150,7 +150,7 @@ inline const TagVector &TagsBehavior::getTags(ActorId actorId) const {
 template<typename F>
 void TagsBehavior::forEachActorWithTag(Tag tag, F &&f) const {
   if (tag == emptyTag) {
-    getScene().forEachActor([&](ActorId actorId, const Actor &actor) {
+    getScene().forEachActor([&](ActorId actorId) {
       f(actorId);
     });
   } else {

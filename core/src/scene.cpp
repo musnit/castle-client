@@ -99,7 +99,7 @@ ActorId Scene::addActor(Reader *maybeReader, const char *maybeParentEntryId) {
 
   // Actor
   auto actorId = registry.create();
-  registry.emplace<Actor>(actorId, nextNewDrawOrder++);
+  registry.emplace<DrawOrder>(actorId, nextNewDrawOrder++);
   needDrawOrderSort = true;
 
   // Components reading code that's called below
@@ -217,13 +217,11 @@ void Scene::removeActor(ActorId actorId) {
 
 void Scene::ensureDrawOrderSort() const {
   if (needDrawOrderSort) {
-    const_cast<entt::registry &>(registry).sort<Actor>([&](const Actor &a, const Actor &b) {
-      return a.drawOrder < b.drawOrder;
-    });
+    const_cast<entt::registry &>(registry).sort<DrawOrder>(std::less());
     needDrawOrderSort = false;
     auto nextCompactDrawOrder = 0;
-    registry.view<const Actor>().each([&](const Actor &actor) {
-      actor.drawOrder = nextCompactDrawOrder++;
+    const_cast<entt::registry &>(registry).view<DrawOrder>().each([&](DrawOrder &drawOrder) {
+      drawOrder.value = nextCompactDrawOrder++;
     });
     nextNewDrawOrder = nextCompactDrawOrder;
   }
@@ -323,7 +321,7 @@ void Scene::draw() const {
   lv.graphics.applyTransform(&viewTransform);
 
   // Scene
-  forEachActorByDrawOrder([&](ActorId actorId, const Actor &actor) {
+  forEachActorByDrawOrder([&](ActorId actorId) {
     getBehaviors().forEach([&](auto &behavior) {
       if constexpr (Handlers::hasDrawComponent<decltype(behavior)>) {
         if (auto component = behavior.maybeGetComponent(actorId)) {

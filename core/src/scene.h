@@ -14,26 +14,13 @@ class AllBehaviors; // Forward declaration otherwise this would be circular...
 
 using ActorId = entt::entity; // Is unique throughout a `Scene`'s lifetime, never recycled
 constexpr auto nullActor = entt::null; // An `ActorId`-compatible sentinel value
-using ActorIdSet = entt::sparse_set;
-
-struct Actor {
-  // Bookkeeping information that is common to all actors. Data specific to each behavior is managed
-  // outside of this, in components for that particular behavior.
-
-  Actor(const Actor &) = delete; // Prevent accidental copies
-  const Actor &operator=(const Actor &) = delete;
-  Actor(Actor &&) = default; // Allow moves
-  Actor &operator=(Actor &&) = default;
-
-  // `a.drawOrder < b.drawOrder` means `a` is drawn behind (before) `b`. Draw orders are compacted
-  // when sorting so their absolute value is not constant across frames for any particular actor.
-  // Only the relative order can be relied upon.
-  mutable int drawOrder;
-};
+using ActorIdSet = entt::sparse_set; // Good for fast membership checks and maintaining a set of
+                                     // `ActorId`s over a long time (eg. in `TagsBehavior`). Might
+                                     // take up a lot of memory / may have heavy lifecycle cost.
 
 class Scene {
-  // Maintains the runtime state of a single Castle scene. This involves managing `Actor` instances,
-  // tracking them by their `ActorId`, managing behavior instances and the membership of actors in
+  // Maintains the runtime state of a single Castle scene. This involves managing actor creation and
+  // destruction, draw orders, managing behavior instances and the membership of actors in
   // behaviors. Also provides top-level methods for drawing and updating the whole scene.
 
 public:
@@ -49,23 +36,25 @@ public:
 
   ActorId addActor(Reader *maybeReader = nullptr, const char *maybeParentEntryId = nullptr);
   void removeActor(ActorId actorId);
-
   bool hasActor(ActorId actorId) const; // Whether `actorId` exists. Always `false` for `nullActor`.
-  Actor *maybeGetActor(ActorId actorId); // Returns `nullptr` if no such actor. Shortlived -- data
-                                         // may move as actors are added / removed.
-  const Actor *maybeGetActor(ActorId actorId) const;
-
+                                        // may move as actors are added / removed.
   template<typename F>
-  void forEachActorByDrawOrder(F &&f); // `f` must take either `(ActorId, Actor &)` or `(Actor &)`
-  template<typename F>
-  void forEachActorByDrawOrder(F &&f) const;
-  template<typename F>
-  void forEachActor(F &&f); // `f` as above
-  template<typename F>
-  void forEachActor(F &&f) const;
+  void forEachActor(F &&f) const; // `f` must take `(ActorId)`
   int numActors() const;
   ActorId indexActor(int index) const; // Order maintained as long as actors not added / removed.
                                        // `nullActor` if out of bounds.
+
+
+  // Draw order
+  struct DrawOrder {
+    int value;
+    bool operator<(const DrawOrder &other) const;
+  };
+  inline static const DrawOrder minDrawOrder { -1 };
+  const DrawOrder *maybeGetDrawOrder(ActorId actorId) const; // `nullptr` if invalid. Shortlived,
+                                                             // may move as actors added / removed.
+  template<typename F>
+  void forEachActorByDrawOrder(F &&f) const; // `f` must take `(ActorId)`
 
 
   // Behaviors
@@ -160,8 +149,9 @@ private:
   Sound sound;
 
   entt::registry registry;
-  entt::basic_view<entt::entity, entt::exclude_t<>, Actor> actorView = registry.view<Actor>();
 
+  entt::basic_view<entt::entity, entt::exclude_t<>, DrawOrder> drawOrderView
+      = registry.view<DrawOrder>();
   mutable int nextNewDrawOrder = 0; // Always greater than the draw order of any existing actor
   mutable bool needDrawOrderSort = false;
 
@@ -205,50 +195,39 @@ inline bool Scene::hasActor(ActorId actorId) const {
   return registry.valid(actorId);
 }
 
-inline Actor *Scene::maybeGetActor(ActorId actorId) {
-  return registry.valid(actorId) && actorView.contains(actorId)
-      ? &std::get<0>(actorView.get(actorId))
-      : nullptr;
-}
-
-inline const Actor *Scene::maybeGetActor(ActorId actorId) const {
-  return registry.valid(actorId) && actorView.contains(actorId)
-      ? &std::get<0>(actorView.get(actorId))
-      : nullptr;
-}
-
-template<typename F>
-void Scene::forEachActorByDrawOrder(F &&f) {
-  ensureDrawOrderSort();
-  actorView.each(std::forward<F>(f));
-}
-
-template<typename F>
-void Scene::forEachActorByDrawOrder(F &&f) const {
-  ensureDrawOrderSort();
-  actorView.each(std::forward<F>(f));
-}
-
-template<typename F>
-void Scene::forEachActor(F &&f) {
-  actorView.each(std::forward<F>(f));
-}
-
 template<typename F>
 void Scene::forEachActor(F &&f) const {
-  actorView.each(std::forward<F>(f));
+  drawOrderView.each([&](ActorId actorId, const DrawOrder &order) {
+    f(actorId);
+  });
 }
 
 inline int Scene::numActors() const {
-  return actorView.size();
+  return drawOrderView.size();
 }
 
 inline ActorId Scene::indexActor(int index) const {
-  if (0 <= index && index < int(actorView.size())) {
-    return actorView.data()[index];
+  if (0 <= index && index < int(drawOrderView.size())) {
+    return drawOrderView.data()[index];
   } else {
     return nullActor;
   }
+}
+
+inline const Scene::DrawOrder *Scene::maybeGetDrawOrder(ActorId actorId) const {
+  return registry.valid(actorId) && drawOrderView.contains(actorId)
+      ? &std::get<0>(drawOrderView.get(actorId))
+      : nullptr;
+}
+
+inline bool Scene::DrawOrder::operator<(const DrawOrder &other) const {
+  return value < other.value;
+}
+
+template<typename F>
+inline void Scene::forEachActorByDrawOrder(F &&f) const {
+  ensureDrawOrderSort();
+  forEachActor(std::forward<F>(f));
 }
 
 inline AllBehaviors &Scene::getBehaviors() {
