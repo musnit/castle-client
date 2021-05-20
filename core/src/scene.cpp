@@ -38,8 +38,6 @@ Scene::~Scene() {
   variables.unlinkScene(this);
 }
 
-Scene::Scene(Scene &&) = default;
-
 
 //
 // Read, write
