@@ -11,10 +11,10 @@
 // scales max torque down twice, but I had to also do this for max force to make the behavior
 // actually match empirically...
 static float maxForceForMotionSlowdown(float motionSlowdown) {
-  return std::max(0.01f, 10 * 0.5f * 0.5f * motionSlowdown);
+  return 0.5f * 0.5f * std::max(0.01f, 10 * motionSlowdown);
 }
 static float maxTorqueForRotationSlowdown(float rotationSlowdown) {
-  return std::max(0.01f, 8 * 0.5f * 0.5f * rotationSlowdown);
+  return 0.5f * 0.5f * std::max(0.01f, 8 * rotationSlowdown);
 }
 
 
