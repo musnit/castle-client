@@ -81,12 +81,6 @@ void Scene::read(Reader &reader) {
 // Actor management
 //
 
-// Whether `T::props` exists -- used by `addActor`
-template<typename T, typename = void>
-static constexpr auto hasPropsMember = false;
-template<typename T>
-static constexpr auto hasPropsMember<T, std::void_t<decltype(std::declval<T>().props)>> = true;
-
 ActorId Scene::addActor(Reader *maybeReader, const char *maybeParentEntryId) {
   // Find parent entry
   const LibraryEntry *maybeParentEntry = nullptr;
@@ -124,18 +118,10 @@ ActorId Scene::addActor(Reader *maybeReader, const char *maybeParentEntryId) {
           });
         }
 
-        // Add component to actor
+        // Add component and read its properties. Call behavior's read handler if it has one.
         auto &component = behavior.addComponent(actorId);
-
-        // Read enabled state
         component.disabled = reader.boolean("disabled", false);
-
-        // Read props
-        if constexpr (hasPropsMember<decltype(component)>) {
-          reader.read(component.props);
-        }
-
-        // Call `handleReadComponent`
+        reader.read(component.props);
         if constexpr (Handlers::hasReadComponent<decltype(behavior)>) {
           behavior.handleReadComponent(actorId, component, reader);
         }
