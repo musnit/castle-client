@@ -64,8 +64,9 @@ void SlidingBehavior::handleSetProperty(
     return;
   }
   auto &props = component.props;
-  if (propId == props.direction.id) { // NOLINT(bugprone-branch-clone)
-    // TODO(nikki): Handle string values, then implement this
+  if (propId == props.direction.id) {
+    // NOTE: 'Moves horizontally' / 'Moves vertically' options aren't available in 'Axis Lock'
+    //       property setter rules so ignoring this for now...
   } else if (propId == props.isRotationAllowed.id) {
     auto disallowRotation = value.as<int>() == 0;
     if (disallowRotation) {
