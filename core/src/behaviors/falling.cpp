@@ -22,3 +22,24 @@ void FallingBehavior::handleDisableComponent(
     }
   }
 }
+
+
+//
+// Getters, setters
+//
+
+void FallingBehavior::handleSetProperty(
+    ActorId actorId, FallingComponent &component, PropId propId, const ExpressionValue &value) {
+  auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId);
+  if (!body) {
+    return;
+  }
+  auto &props = component.props;
+  if (propId == props.gravity.id) {
+    auto gravity = value.as<float>();
+    props.gravity() = gravity;
+    body->SetGravityScale(gravity);
+  } else {
+    BaseBehavior::handleSetProperty(actorId, component, propId, value);
+  }
+}

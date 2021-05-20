@@ -22,4 +22,7 @@ public:
 
   void handleEnableComponent(ActorId actorId, FallingComponent &component);
   void handleDisableComponent(ActorId actorId, FallingComponent &component, bool removeActor);
+
+  void handleSetProperty(
+      ActorId actorId, FallingComponent &component, PropId propId, const ExpressionValue &value);
 };
