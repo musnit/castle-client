@@ -78,8 +78,13 @@ const CommentReplies = ({ replies, ...props }) => {
   );
 };
 
-const Comment = ({ comment, isReply = false, prevComment, navigateToUser, showCommentActions }) => {
-  // could use `prevComment` to render groups of comments by the same author.
+const Comment = ({
+  comment,
+  isReply = false,
+  parentCommentId,
+  navigateToUser,
+  showCommentActions,
+}) => {
   return (
     <View style={[styles.commentContainer]}>
       <Pressable onPress={() => navigateToUser(comment.fromUser)}>
@@ -88,7 +93,7 @@ const Comment = ({ comment, isReply = false, prevComment, navigateToUser, showCo
       <View>
         <Pressable
           style={styles.commentBubble}
-          onPress={() => showCommentActions({ comment, isReply })}>
+          onPress={() => showCommentActions({ comment, isReply, parentCommentId })}>
           <View style={styles.commentMeta}>
             <Pressable onPress={() => navigateToUser(comment.fromUser)}>
               <Text style={styles.authorUsername}>{comment.fromUser.username}</Text>
@@ -109,6 +114,7 @@ const Comment = ({ comment, isReply = false, prevComment, navigateToUser, showCo
         </Pressable>
         {comment.childComments?.comments?.length ? (
           <CommentReplies
+            parentCommentId={comment.commentId}
             replies={comment.childComments.comments}
             navigateToUser={navigateToUser}
             showCommentActions={showCommentActions}
@@ -205,7 +211,7 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
   );
 
   const showCommentActions = React.useCallback(
-    ({ comment, isReply }) => {
+    ({ comment, isReply, parentCommentId }) => {
       if (isAnonymous) {
         return;
       }
@@ -257,6 +263,12 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
           name: 'Reply',
           action: () => setReplyingToComment(comment),
         });
+      } else {
+        // reply-to-reply needs parent comment id because we only go one-deep on threads
+        options.unshift({
+          name: 'Reply',
+          action: () => setReplyingToComment({ ...comment, parentCommentId }),
+        });
       }
       return showActionSheetWithOptions(
         {
@@ -286,11 +298,9 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
   const renderItem = React.useCallback(
     ({ item, index }) => {
       const comment = item;
-      const prevComment = index > 0 ? comments[index - 1] : null;
       return (
         <Comment
           comment={comment}
-          prevComment={prevComment}
           navigateToUser={navigateToUser}
           showCommentActions={showCommentActions}
         />

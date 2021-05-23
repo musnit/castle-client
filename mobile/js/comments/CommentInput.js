@@ -53,11 +53,27 @@ export const CommentInput = ({ onAddComment, replyingToComment, clearReplyingToC
     }
   }, []);
 
+  // when we begin a reply-to-reply, mention the user we're replying to
+  React.useEffect(() => {
+    if (replyingToComment?.parentCommentId) {
+      setValue(`@${replyingToComment.fromUser.username} `);
+      updateCache({
+        type: 'addUser',
+        user: replyingToComment.fromUser,
+      });
+    }
+  }, [replyingToComment, setValue, updateCache]);
+
   const addComment = React.useCallback(
     (message) => {
       let parentCommentId = null;
       if (replyingToComment) {
-        parentCommentId = replyingToComment.commentId;
+        // if reply-to-reply, stay under parent's thread
+        if (replyingToComment.parentCommentId) {
+          parentCommentId = replyingToComment.parentCommentId;
+        } else {
+          parentCommentId = replyingToComment.commentId;
+        }
       }
       onAddComment(message, parentCommentId, commentBodyCache.current);
       setValue(undefined);
