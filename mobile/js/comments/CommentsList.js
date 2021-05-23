@@ -212,7 +212,7 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
 
   const showCommentActions = React.useCallback(
     ({ comment, isReply, parentCommentId }) => {
-      if (isAnonymous) {
+      if (isAnonymous || comment.isDeleted) {
         return;
       }
 
