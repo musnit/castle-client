@@ -55,7 +55,9 @@ const makeResponseRows = (rows, order, indent, { response, context }) => {
     }
   }
   if (response.params?.body) {
-    makeResponseRows(rows, 0, indent + 1, { response: response.params.body, context });
+    if (!(response.name === 'create text' && response.params.action !== 'perform response')) {
+      makeResponseRows(rows, 0, indent + 1, { response: response.params.body, context });
+    }
   }
   let nextResponse = response.params?.nextResponse;
   if (nextResponse) {
