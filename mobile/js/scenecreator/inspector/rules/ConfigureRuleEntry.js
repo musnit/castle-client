@@ -63,6 +63,7 @@ export const ConfigureRuleEntry = ({
       paramNames,
       initialValues,
       onChangeParams,
+      useAllBehaviors,
     });
 
   const showEditParamSheetForCell = (cell) => {

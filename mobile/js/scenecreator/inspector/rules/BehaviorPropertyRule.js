@@ -21,7 +21,13 @@ const styles = StyleSheet.create({
   },
 });
 
-export const BehaviorPropertyRule = ({ response, onChangeResponse, addChildSheet, children }) => {
+export const BehaviorPropertyRule = ({
+  response,
+  onChangeResponse,
+  addChildSheet,
+  useAllBehaviors,
+  children,
+}) => {
   const context = useCardCreator();
   const { behaviors, behaviorActions } = context;
   const [lastNativeUpdate, setLastNativeUpdate] = React.useState(0);
@@ -83,6 +89,7 @@ export const BehaviorPropertyRule = ({ response, onChangeResponse, addChildSheet
       Component: ConfigureExpressionSheet,
       value: response.params.value,
       onChange,
+      useAllBehaviors,
     });
   };
 

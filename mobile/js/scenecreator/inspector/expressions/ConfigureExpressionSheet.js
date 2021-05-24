@@ -296,6 +296,10 @@ export const ConfigureExpressionSheet = ({
   onClose,
   addChildSheet,
   depth = 0,
+
+  // `true` if we are wrapped in `Act On` or some other situation where we don't want
+  // to filter behaviors by the owning actor.
+  useAllBehaviors = false,
 }) => {
   const createCardContext = useCardCreator();
   const [value, setValue] = React.useState(promoteToExpression(initialValue));
@@ -319,16 +323,21 @@ export const ConfigureExpressionSheet = ({
   );
 
   const showBehaviorPropertyPicker = React.useCallback(
-    ({ onSelectBehaviorProperty, useAllBehaviors }) =>
-      addChildSheet({
+    (args) => {
+      // the calling context might also provide useAllBehaviors == true, independent of whether
+      // this component has props.useAllBehaviors == true. for example
+      // when setting a behavior property belonging to an `other` actorRef
+      const { onSelectBehaviorProperty, useAllBehaviors: childUseAllBehaviors } = args;
+      return addChildSheet({
         key: 'expressionBehaviorPropertyPicker',
         Component: SelectBehaviorPropertySheet,
         behaviors: createCardContext.behaviors,
-        useAllBehaviors,
+        useAllBehaviors: useAllBehaviors || childUseAllBehaviors,
         isPropertyVisible: (spec) => spec?.rules?.get === true,
         onSelectBehaviorProperty,
-      }),
-    [createCardContext.behaviors]
+      });
+    },
+    [createCardContext.behaviors, useAllBehaviors]
   );
 
   const renderContent = () => (

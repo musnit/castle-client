@@ -44,6 +44,7 @@ export default RuleParamInputSheet = ({
   onChangeParams,
   paramNames,
   initialValues,
+  useAllBehaviors = false,
   isOpen,
   onClose,
   addChildSheet,
@@ -78,6 +79,7 @@ export default RuleParamInputSheet = ({
       triggerFilter,
       value,
       onChange,
+      useAllBehaviors,
     });
   };
 
