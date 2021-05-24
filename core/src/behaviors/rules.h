@@ -199,6 +199,7 @@ private:
   std::vector<Scheduled> scheduleds;
   std::vector<RuleContext> current; // A temporary list of contexts to run in the current frame.
                                     // Stored as a member so we can reuse its memory.
+  bool firstFrame = true; // Whether we're on the first performance frame
 
 
   // Loaders (maps from names to read functions for rule types, filled by `RuleRegistration` when

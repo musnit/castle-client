@@ -949,14 +949,17 @@ void RulesBehavior::handlePerform(double dt) {
   registry.clear<TriggerComponent<CreateTrigger>>();
 
   // Fire 'variable reaches value' triggers that match the current value for actors that were
-  // newly added. Then clear the markers so we only check once on each actor.
-  auto &variables = scene.getVariables();
-  fireAllIf<VariableReachesValueTrigger, VariableReachesValueTriggerOnAddMarker>(
-      {}, [&](ActorId actorId, const VariableReachesValueTrigger &trigger) {
-        auto &currValue = variables.get(trigger.params.variableId());
-        return currValue.compare(trigger.params.comparison(), trigger.params.value());
-      });
-  registry.clear<VariableReachesValueTriggerOnAddMarker>();
+  // newly added. Then clear the markers so we only check once on each actor. We skip this on the
+  // first frame to let variables be updated once before comparison (eg. to count initial actors).
+  if (!firstFrame) {
+    auto &variables = scene.getVariables();
+    fireAllIf<VariableReachesValueTrigger, VariableReachesValueTriggerOnAddMarker>(
+        {}, [&](ActorId actorId, const VariableReachesValueTrigger &trigger) {
+          auto &currValue = variables.get(trigger.params.variableId());
+          return currValue.compare(trigger.params.comparison(), trigger.params.value());
+        });
+    registry.clear<VariableReachesValueTriggerOnAddMarker>();
+  }
 
   // Make sure draw orders are compacted before responses are run so that `CreateResponse`s cause
   // correct relative draw orders to be set
@@ -988,4 +991,6 @@ void RulesBehavior::handlePerform(double dt) {
     // https://github.com/skypjack/entt/wiki/Crash-Course:-entity-component-system#what-is-allowed-and-what-is-not
     scene.removeActor(actorId);
   });
+
+  firstFrame = false;
 }
