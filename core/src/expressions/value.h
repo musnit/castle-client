@@ -26,7 +26,9 @@ public:
   template<typename T>
   T as(T def = {}) const; // Get the the current value as C++ type `T`, or `def` if not `is<T>()`
 
-  bool compare(const std::string &comparison, const ExpressionValue &rhs) const;
+  bool operator==(const ExpressionValue &other) const;
+  bool operator!=(const ExpressionValue &other) const;
+  bool compare(const std::string &comparison, const ExpressionValue &other) const;
 
 
 private:
@@ -74,28 +76,44 @@ T ExpressionValue::as(T def) const {
   }
 }
 
+inline bool ExpressionValue::operator==(const ExpressionValue &other) const {
+  if (std::holds_alternative<const char *>(value)) {
+    if (std::holds_alternative<const char *>(other.value)) {
+      return !std::strcmp(std::get<const char *>(value), std::get<const char *>(other.value));
+    } else {
+      return false;
+    }
+  } else {
+    return value == other.value;
+  }
+}
+
+inline bool ExpressionValue::operator!=(const ExpressionValue &other) const {
+  return !(*this == other);
+}
+
 inline bool ExpressionValue::compare(
-    const std::string &comparison, const ExpressionValue &rhs) const {
+    const std::string &comparison, const ExpressionValue &other) const {
   if (std::holds_alternative<double>(value)) {
     switch (comparison[0]) {
     case 'e': { // "equal"
-      return value == rhs.value;
+      return *this == other;
     }
     case 'n': { // "not equal"
-      return value != rhs.value;
+      return *this != other;
     }
     case 'l': {
       if (comparison[5] == 'o') { // "less or equal"
-        return value <= rhs.value;
+        return value <= other.value;
       } else { // "less than"
-        return value < rhs.value;
+        return value < other.value;
       }
     }
     case 'g': {
       if (comparison[8] == 'o') { // "greater or equal"
-        return value >= rhs.value;
+        return value >= other.value;
       } else { // "greater"
-        return value > rhs.value;
+        return value > other.value;
       }
     }
     }

@@ -59,9 +59,11 @@ void Variables::resetAll() {
 }
 
 void Variables::set(Variable variable, MapElem &elem, ExpressionValue value) {
-  elem.value = value;
-  if (scene) {
-    auto &rulesBehavior = scene->getBehaviors().byType<RulesBehavior>();
-    rulesBehavior.fireVariablesTriggers(variable, value);
+  if (elem.value != value) {
+    elem.value = value;
+    if (scene) {
+      auto &rulesBehavior = scene->getBehaviors().byType<RulesBehavior>();
+      rulesBehavior.fireVariablesTriggers(variable, value);
+    }
   }
 }
