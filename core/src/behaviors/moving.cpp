@@ -239,4 +239,9 @@ void MovingBehavior::handleUpdateComponentFixtures(
     fixture->SetDensity(density);
   }
   body->ResetMassData();
+  if (body->GetMass() == 0) {
+    // Make sure we have a positive mass
+    b2MassData massData { 1, b2Vec2(0, 0), 0 };
+    body->SetMassData(&massData);
+  }
 }
