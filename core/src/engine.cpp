@@ -49,8 +49,12 @@ extern "C" bool ghostChildWindowCloseEventReceived; // Whether the OS tried to c
 //
 
 Engine::PreInit::PreInit() {
-  // Read debug flag
+  // Set debug based on flag in web, always enabled on other targets (for now)
+#ifdef __EMSCRIPTEN__
   Debug::isEnabled = JS_isDebugEnabled();
+#else
+  Debug::isEnabled = true;
+#endif
 
   // SDL parameters. In pre-init so we can still eg. refresh the page using keyboard if tests fail.
   SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0"); // Don't doublecount touches as mouse events
@@ -166,6 +170,11 @@ bool Engine::frame() {
     ghostScreenScaling = double(w) / 800;
     prevWindowWidth = w;
     prevWindowHeight = h;
+  }
+#elif __ANDROID__
+  {
+    // TODO: android
+    ghostScreenScaling = 1.0;
   }
 #else
   // Just set screen scaling based on window size in desktop

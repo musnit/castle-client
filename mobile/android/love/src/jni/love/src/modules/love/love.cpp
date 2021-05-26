@@ -69,13 +69,6 @@ extern "C"
 {
 	int luaopen_lpeg(lua_State *L);
 
-	int luaopen_ssl_core(lua_State *L);
-	int luaopen_ssl_config(lua_State *L);
-	int luaopen_ssl_x509(lua_State *L);
-	int luaopen_ssl_context(lua_State *L);
-
-	int luaopen_crypto(lua_State *L);
-
 	int luaopen_cjson(lua_State *l);
 	int luaopen_cjson_safe(lua_State *l);
 
@@ -157,6 +150,7 @@ extern "C"
 #if defined(LOVE_ENABLE_WINDOW)
 	extern int luaopen_love_window(lua_State*);
 #endif
+	extern int luaopen_love_ghost(lua_State*);
 	extern int luaopen_love_nogame(lua_State*);
 	extern int luaopen_love_boot(lua_State*);
 }
@@ -219,6 +213,7 @@ static const luaL_Reg modules[] = {
 #if defined(LOVE_ENABLE_WINDOW)
 	{ "love.window", luaopen_love_window },
 #endif
+	{ "love.ghost", luaopen_love_ghost },
 	{ "love.nogame", luaopen_love_nogame },
 	{ "love.boot", luaopen_love_boot },
 	{ 0, 0 }
@@ -457,13 +452,6 @@ int luaopen_love(lua_State *L)
 #endif
 
 	love::luax_preload(L, luaopen_lpeg, "lpeg");
-
-	love::luax_preload(L, luaopen_ssl_core, "ssl.core");
-	love::luax_preload(L, luaopen_ssl_config, "ssl.config");
-	love::luax_preload(L, luaopen_ssl_x509, "ssl.x509");
-	love::luax_preload(L, luaopen_ssl_context, "ssl.context");
-
-	love::luax_preload(L, luaopen_crypto, "crypto");
 
 	love::luax_preload(L, luaopen_cjson, "cjson");
 	love::luax_preload(L, luaopen_cjson_safe, "cjson.safe");

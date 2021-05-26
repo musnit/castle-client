@@ -12,9 +12,12 @@
 #include <fstream>
 #include <optional>
 #include <unordered_map>
-#include <filesystem>
 #include <variant>
 #include <regex>
+
+#ifndef __ANDROID__
+#include <filesystem>
+#endif
 
 // Emscripten
 #ifdef __EMSCRIPTEN__

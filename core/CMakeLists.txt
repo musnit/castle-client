@@ -47,7 +47,11 @@ endif()
 # Target
 #
 
-add_executable(castle-core)
+if(ANDROID)
+  add_library(castle-core SHARED)
+else()
+  add_executable(castle-core)
+endif()
 
 # Sources
 file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS src/*.cpp)
@@ -114,10 +118,20 @@ if(MSVC)
     VS_STARTUP_PROJECT castle-core)
 endif()
 
+if(ANDROID)
+  target_compile_definitions(castle-core PRIVATE __ANDROID__)
+endif()
+
 
 #
 # Dependencies
 #
+
+if (ANDROID)
+  set(ANDROID_JNI_SRC ../mobile/android/love/src/jni)
+  set_target_properties(castle-core PROPERTIES DEBUG_POSTFIX "")
+  target_link_libraries(castle-core PRIVATE android log OpenSLES dl)
+endif()
 
 # SDL2
 if(WEB)
@@ -132,6 +146,18 @@ elseif(APPLE AND (NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "iOS"))
   add_subdirectory(vendor/SDL2 SDL2 EXCLUDE_FROM_ALL)
   target_link_libraries(castle-core PRIVATE SDL2-static)
   target_include_directories(castle-core PRIVATE vendor/SDL2/include) # To make 'compile_commands.json' work
+  set(THREADS_PREFER_PTHREAD_FLAG ON)
+  find_package(Threads REQUIRED)
+  target_link_libraries(castle-core PRIVATE Threads::Threads)
+elseif(ANDROID)
+  #set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+  set(SDL_STATIC ON CACHE BOOL "" FORCE)
+  set(SDL_SHARED OFF CACHE BOOL "" FORCE)
+  set(VIDEO_WAYLAND OFF CACHE BOOL "" FORCE)
+  add_subdirectory(${ANDROID_JNI_SRC}/SDL2-2.0.7 SDL2-2.0.7 EXCLUDE_FROM_ALL)
+  target_link_libraries(castle-core PRIVATE SDL2-static)
+  set_property(TARGET SDL2-static PROPERTY POSITION_INDEPENDENT_CODE ON)
+  target_include_directories(castle-core PRIVATE ${ANDROID_JNI_SRC}/SDL2-2.0.7/include) # To make 'compile_commands.json' work
   set(THREADS_PREFER_PTHREAD_FLAG ON)
   find_package(Threads REQUIRED)
   target_link_libraries(castle-core PRIVATE Threads::Threads)
@@ -156,17 +182,26 @@ if(YES)
   add_library(castle-love STATIC)
   target_compile_features(castle-love PRIVATE cxx_std_17)
   set_target_properties(castle-love PROPERTIES CXX_EXTENSIONS OFF)
-  set(LOVE_SRC ../love/src)
+  if (ANDROID)
+    set(LOVE_SRC ${ANDROID_JNI_SRC}/love/src)
+  else()
+    set(LOVE_SRC ../love/src)
+  endif()
   target_include_directories(castle-love PUBLIC ${LOVE_SRC} ${LOVE_SRC}/libraries ${LOVE_SRC}/modules)
 
   # archive.h
   target_include_directories(castle-love PUBLIC src vendor/magic_get/include vendor/entt/src)
 
   # lua
-  set(LUA_BUILD_STATIC ON CACHE BOOL "" FORCE)
-  set(LUA_BUILD_SHARED OFF CACHE BOOL "" FORCE)
-  add_subdirectory(vendor/lua-5.1.5 EXCLUDE_FROM_ALL)
-  target_link_libraries(castle-love PUBLIC lua51-static)
+  #if (ANDROID)
+  #  target_include_directories(castle-core PUBLIC ${ANDROID_JNI_SRC}/LuaJIT-2.1/src)
+  #  target_link_libraries(castle-love PUBLIC ${ANDROID_JNI_SRC}/LuaJIT-2.1/android/${ANDROID_ABI}/libluajit.a)
+  #else()
+    set(LUA_BUILD_STATIC ON CACHE BOOL "" FORCE)
+    set(LUA_BUILD_SHARED OFF CACHE BOOL "" FORCE)
+    add_subdirectory(vendor/lua-5.1.5 EXCLUDE_FROM_ALL)
+    target_link_libraries(castle-love PUBLIC lua51-static)
+  #endif()
 
   # zlib
   add_subdirectory(vendor/zlib-1.2.11 EXCLUDE_FROM_ALL)
@@ -177,7 +212,9 @@ if(YES)
   target_link_libraries(castle-love PUBLIC freetype)
 
   # SDL2
-  if(APPLE AND (NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "iOS"))
+  if (ANDROID)
+    target_include_directories(castle-love PRIVATE ${ANDROID_JNI_SRC}/SDL2-2.0.7/include) # To make 'compile_commands.json' work
+  elseif(APPLE AND (NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "iOS"))
     target_include_directories(castle-love PRIVATE vendor/SDL2/include) # To make 'compile_commands.json' work
   else()
     target_include_directories(castle-love PRIVATE ../ghost-extensions/SDL2-2.0.8/include) # To make 'compile_commands.json' work
@@ -191,8 +228,16 @@ if(YES)
   endif()
 
   # tove
-  set(TOVE_SRC vendor/tove2d)
-  target_include_directories(castle-love PUBLIC vendor vendor/tove2d/src/thirdparty/fp16/include)
+  if (ANDROID)
+    set(TOVE_SRC ${ANDROID_JNI_SRC}/ghost-extensions/tove2d)
+    target_include_directories(castle-love PUBLIC ${ANDROID_JNI_SRC}/ghost-extensions ${ANDROID_JNI_SRC}/ghost-extensions/tove2d/src/thirdparty/fp16/include)
+  else()
+    set(TOVE_SRC vendor/tove2d)
+    target_include_directories(castle-love PUBLIC vendor vendor/tove2d/src/thirdparty/fp16/include)
+  endif()
+
+  # rapidjson
+  target_include_directories(castle-love PRIVATE vendor/rapidjson/include)
 
   target_sources(castle-love PRIVATE
     # common
@@ -582,10 +627,15 @@ if(YES)
       ${LOVE_SRC}/common/macosx.mm ${LOVE_SRC}/common/macosx.h
       ${LOVE_SRC}/libraries/physfs/physfs_platform_apple.m
     )
+  elseif(ANDROID)
+    target_sources(castle-love PRIVATE
+      ${LOVE_SRC}/libraries/glslang/glslang/OSDependent/Unix/ossource.cpp
+      ${LOVE_SRC}/common/android.cpp ${LOVE_SRC}/common/android.h
+    )
   else()
     target_sources(castle-love PRIVATE
       ${LOVE_SRC}/libraries/glslang/glslang/OSDependent/Unix/ossource.cpp
-      )
+    )
   endif()
 endif()
 

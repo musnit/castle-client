@@ -497,6 +497,26 @@ source_group("modules\\font" FILES ${LOVE_SRC_MODULE_FONT_ROOT})
 source_group("modules\\font\\freetype" FILES ${LOVE_SRC_MODULE_FONT_FREETYPE})
 
 #
+# love.ghost
+#
+
+set(LOVE_SRC_MODULE_GHOST
+	src/modules/ghost/DrawAlgorithms.cpp
+	src/modules/ghost/DrawAlgorithms.hpp
+	src/modules/ghost/DrawData.cpp
+	src/modules/ghost/DrawData.hpp
+	src/modules/ghost/DrawDataFrame.cpp
+	src/modules/ghost/DrawDataFrame.hpp
+	src/modules/ghost/Ghost.cpp
+	src/modules/ghost/Ghost.hpp
+	src/modules/ghost/GhostTypes.hpp
+	src/modules/ghost/wrap_Ghost.cpp
+	src/modules/ghost/wrap_Ghost.hpp
+)
+
+source_group("modules\\ghost" FILES ${LOVE_SRC_MODULE_GHOST})
+
+#
 # love.graphics
 #
 
@@ -1666,7 +1686,6 @@ set(LOVE_3P
 	love_3p_wuff
 	love_3p_xxhash
 )
-
 love_disable_warnings(love_3p_box2d love_3p_enet love_3p_luasocket love_3p_physfs)
 
 #
@@ -1680,6 +1699,7 @@ set(LOVE_LIB_SRC
 	${LOVE_SRC_MODULE_EVENT}
 	${LOVE_SRC_MODULE_FILESYSTEM}
 	${LOVE_SRC_MODULE_FONT}
+	${LOVE_SRC_MODULE_GHOST}
 	${LOVE_SRC_MODULE_GRAPHICS}
 	${LOVE_SRC_MODULE_IMAGE}
 	${LOVE_SRC_MODULE_JOYSTICK}

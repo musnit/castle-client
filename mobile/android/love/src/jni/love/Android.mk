@@ -9,7 +9,7 @@ LOCAL_CFLAGS    := -fexceptions -g -Dlinux -Dunix \
 	-DGL_GLEXT_PROTOTYPES -DLOVE_TURBO_JPEG -DLOVE_NO_DEVIL \
 	-DAL_ALEXT_PROTOTYPES
 
-LOCAL_CPPFLAGS  := ${LOCAL_CFLAGS} 
+LOCAL_CPPFLAGS  := ${LOCAL_CFLAGS}
 
 ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
 	# arm64 does have socklen_t
@@ -42,7 +42,11 @@ LOCAL_C_INCLUDES  :=  \
 	${LOCAL_PATH}/../libvorbis-1.3.5/include \
 	${LOCAL_PATH}/../LuaJIT-2.1/src \
 	${LOCAL_PATH}/../libogg-1.3.2/include \
-	${LOCAL_PATH}/../libtheora-1.2.0alpha1/include 
+	${LOCAL_PATH}/../libtheora-1.2.0alpha1/include \
+	${LOCAL_PATH}/../ghost-extensions \
+	${LOCAL_PATH}/../../../../../../core/src \
+	${LOCAL_PATH}/../../../../../../core/vendor/rapidjson/include \
+	${LOCAL_PATH}/../../../../../../core/vendor/entt/src
 		
 LOCAL_SRC_FILES := \
 	$(filter-out \
@@ -61,6 +65,7 @@ LOCAL_SRC_FILES := \
  	$(wildcard ${LOCAL_PATH}/src/modules/filesystem/physfs/*.cpp) \
 	$(wildcard ${LOCAL_PATH}/src/modules/font/*.cpp) \
  	$(wildcard ${LOCAL_PATH}/src/modules/font/freetype/*.cpp) \
+	$(wildcard ${LOCAL_PATH}/src/modules/ghost/*.cpp) \
 	$(wildcard ${LOCAL_PATH}/src/modules/graphics/*.cpp) \
  	$(wildcard ${LOCAL_PATH}/src/modules/graphics/opengl/*.cpp) \
 	$(wildcard ${LOCAL_PATH}/src/modules/image/*.cpp) \

@@ -19,6 +19,17 @@ void loop(F &&frame) {
 #endif
 }
 
+#ifdef ANDROID
+int SDL_main(int argc, char *argv[]) {
+  Engine eng;
+
+  loop([&]() {
+    return eng.frame();
+  });
+  return 0;
+}
+#endif
+
 // Main web and desktop entrypoint
 #undef main // SDL does some weird stuff overriding `main` with a macro...
 int main(int argc, char *argv[]) {
