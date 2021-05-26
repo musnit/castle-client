@@ -1,217 +1,123 @@
-#!/bin/bash
+#!/bin/sh
 
-# Architectures to build libraries for
-declare -a ARCHITECTURES=("arm" "armv7a" "x86")
+ANDROID_NDK=/Users/jesseruder/android/android-ndk-r20b
+OPENSSL_VERSION=1.1.1k
 
-# OpenSSL version to download if src is missing
-OPENSSL_VERSION="1.0.2j"
+API_LEVEL=23
 
-# Set acccording to your Android NDK
-ANDROID_PLATFORM="android-14"
+BUILD_DIR=/tmp/openssl_android_build
+OUT_DIR=/tmp/openssl_android
 
-ANDROID_ARM_TOOLCHAIN="arm-linux-androideabi-4.8"
-ANDROID_X86_TOOLCHAIN="x86-4.8"
+BUILD_TARGETS="armeabi armeabi-v7a arm64-v8a x86 x86_64"
 
-####################################################################################################
-## Do not modify below this line unless you know what are you doing
-
-ANDROID_ARM_ARCH="arch-arm"
-ANDROID_X86_ARCH="arch-x86"
-
-####################################################################################################
-
-RETURN_DIR="$PWD"
-UDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-DIR="${UDIR}/sources_orig"
-
-cd "${UDIR}"
-if [ ! -d "${DIR}" ]; then
-        OPENSSL_URL="https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz"
-        echo "OpenSSL not found in ${DIR}, trying to download: ${URL}"
-        curl -O "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz"
-
-        if [ ! -f "openssl-${OPENSSL_VERSION}.tar.gz" ]; then
-            echo "> ERROR: cannot find sources directory with OpenSSL library: ${DIR}"
-            echo "         Please download sources at http://www.openssl.org/source/ and extract it at ${DIR}"
-            exit -2
-        fi
-
-        tar -xzvf "openssl-${OPENSSL_VERSION}.tar.gz"
-        mv "openssl-${OPENSSL_VERSION}" "${DIR}"
+if [ ! -d openssl-${OPENSSL_VERSION} ]
+then
+    if [ ! -f openssl-${OPENSSL_VERSION}.tar.gz ]
+    then
+        wget https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz || exit 128
+    fi
+    tar xzf openssl-${OPENSSL_VERSION}.tar.gz || exit 128
 fi
 
-# Check for rsync.
-which rsync 2>/dev/null > /dev/null
-RSYNC_OK=$?
-if [[ $RSYNC_OK != 0 ]]; then
-    echo "> Error: rsync was not found, please install it".
-    exit 3
-fi
+cd openssl-${OPENSSL_VERSION} || exit 128
 
-####################################################################################################
 
-# Outputs architecture directory.
-function getArchDir() {
-    echo "${DIR}_$1"
+##### Prepare Files #####
+sed -i 's/.*-mandroid.*//' Configurations/15-android.conf
+patch -p1 -N <<EOP
+--- old/Configurations/unix-Makefile.tmpl   2018-09-11 14:48:19.000000000 +0200
++++ new/Configurations/unix-Makefile.tmpl   2018-10-18 09:06:27.282007245 +0200
+@@ -43,12 +43,17 @@
+      # will return the name from shlib(\$libname) with any SO version number
+      # removed.  On some systems, they may therefore return the exact same
+      # string.
+-     sub shlib {
++     sub shlib_simple {
+          my \$lib = shift;
+          return () if \$disabled{shared} || \$lib =~ /\\.a$/;
+-         return \$unified_info{sharednames}->{\$lib}. \$shlibvariant. '\$(SHLIB_EXT)';
++
++         if (windowsdll()) {
++             return \$lib . '\$(SHLIB_EXT_IMPORT)';
++         }
++         return \$lib .  '\$(SHLIB_EXT_SIMPLE)';
+      }
+-     sub shlib_simple {
++     
++   sub shlib {
+          my \$lib = shift;
+          return () if \$disabled{shared} || \$lib =~ /\\.a$/;
+
+EOP
+
+##### remove output-directory #####
+rm -rf $OUT_DIR
+
+##### export ndk directory. Required by openssl-build-scripts #####
+export ANDROID_NDK
+
+##### build-function #####
+build_the_thing() {
+    TOOLCHAIN=$ANDROID_NDK/toolchains/llvm/prebuilt/darwin-x86_64
+    export PATH=$TOOLCHAIN/$TRIBLE/bin:$TOOLCHAIN/bin:"$PATH"
+echo $PATH
+    make clean
+    #./Configure $SSL_TARGET $OPTIONS -fuse-ld="$TOOLCHAIN/$TRIBLE/bin/ld" "-gcc-toolchain $TOOLCHAIN" && \
+    ./Configure $SSL_TARGET $OPTIONS -fuse-ld="$TOOLCHAIN/$TRIBLE/bin/ld" && \
+    make && \
+    make install DESTDIR=$DESTDIR || exit 128
 }
 
-# Gets the build host architecture
-function getToolchainDir(){
-    _TOOLCH=$1
-    ANDROID_TOOLCHAIN=""
-    for host in "linux-x86_64" "linux-x86" "darwin-x86_64" "darwin-x86"
-    do
-      if [ -d "${ANDROID_NDK}/toolchains/${_TOOLCH}/prebuilt/$host/bin" ]; then
-        ANDROID_TOOLCHAIN="${ANDROID_NDK}/toolchains/${_TOOLCH}/prebuilt/$host/bin"
-        break
-      fi
-    done
-    echo "${ANDROID_TOOLCHAIN}"
-}
-
-function cleanVars () {
-    unset TOOLCHAIN_PATH
-    unset MACHINE
-    unset RELEASE
-    unset SYSTEM
-    unset ARCH
-    unset CROSS_COMPILE
-    unset HOSTCC
-    unset TOOL
-    unset NDK_TOOLCHAIN_BASENAME
-    unset CC
-    unset CXX
-    unset LINK
-    unset LD
-    unset AR
-    unset RANLIB
-    unset STRIP
-    unset ARCH_FLAGS
-    unset ARCH_LINK
-    unset CPPFLAGS
-    unset CXXFLAGS
-    unset CFLAGS
-    unset LDFLAGS
-}
-
-####################################################################################################
-# AMRV7a
-function compileArmv7 () {
-    export TOOLCHAIN_PATH=$(getToolchainDir $ANDROID_ARM_TOOLCHAIN)
-    export MACHINE=armv7l
-    export RELEASE=2.6.37
-    export SYSTEM=android
-    export ARCH=arm
-    export CROSS_COMPILE="arm-linux-androideabi-"
-    export ANDROID_DEV="$ANDROID_NDK/platforms/${ANDROID_PLATFORM}/${ANDROID_ARM_ARCH}/usr"
-    export HOSTCC=gcc
-    env
-    PATH=$TOOLCHAIN_PATH:$PATH ./config shared no-ssl2 no-ssl3 no-comp no-hw
-    PATH=$TOOLCHAIN_PATH:$PATH make depend
-    PATH=$TOOLCHAIN_PATH:$PATH make
-}
-
-####################################################################################################
-# ARM
-function compileArm () {
-    $ANDROID_NDK/build/tools/make-standalone-toolchain.sh --platform=${ANDROID_PLATFORM} --toolchain=${ANDROID_ARM_TOOLCHAIN} --install-dir=`pwd`/android-toolchain-arm
-    export TOOLCHAIN_PATH=`pwd`/android-toolchain-arm/bin
-    export TOOL=arm-linux-androideabi
-    export NDK_TOOLCHAIN_BASENAME=${TOOLCHAIN_PATH}/${TOOL}
-    export CC=$NDK_TOOLCHAIN_BASENAME-gcc
-    export CXX=$NDK_TOOLCHAIN_BASENAME-g++
-    export LINK=${CXX}
-    export LD=$NDK_TOOLCHAIN_BASENAME-ld
-    export AR=$NDK_TOOLCHAIN_BASENAME-ar
-    export RANLIB=$NDK_TOOLCHAIN_BASENAME-ranlib
-    export STRIP=$NDK_TOOLCHAIN_BASENAME-strip
-    export ARCH_FLAGS="-mthumb"
-    export ARCH_LINK=
-    export CPPFLAGS=" ${ARCH_FLAGS} -fpic -ffunction-sections -funwind-tables -fstack-protector -fno-strict-aliasing -finline-limit=64 "
-    export CXXFLAGS=" ${ARCH_FLAGS} -fpic -ffunction-sections -funwind-tables -fstack-protector -fno-strict-aliasing -finline-limit=64 -frtti -fexceptions "
-    export CFLAGS=" ${ARCH_FLAGS} -fpic -ffunction-sections -funwind-tables -fstack-protector -fno-strict-aliasing -finline-limit=64 "
-    export LDFLAGS=" ${ARCH_LINK} "
-    PATH=$TOOLCHAIN_PATH:$PATH ./Configure android shared no-ssl2 no-ssl3 no-comp no-hw
-    PATH=$TOOLCHAIN_PATH:$PATH make depend
-    PATH=$TOOLCHAIN_PATH:$PATH make
-}
-
-
-####################################################################################################
-# x86
-function compileX86 () {
-    export TOOLCHAIN_PATH=$(getToolchainDir $ANDROID_X86_TOOLCHAIN)
-    export MACHINE=i686
-    export RELEASE=2.6.37
-    export SYSTEM=android
-    export ARCH=x86
-    export CROSS_COMPILE="i686-linux-android-"
-    export ANDROID_DEV="$ANDROID_NDK/platforms/${ANDROID_PLATFORM}/${ANDROID_X86_ARCH}/usr"
-    export HOSTCC=gcc
-    PATH=$TOOLCHAIN_PATH:$PATH ./config shared no-ssl2 no-ssl3 no-comp no-hw
-    PATH=$TOOLCHAIN_PATH:$PATH make depend
-    PATH=$TOOLCHAIN_PATH:$PATH make
-}
-
-####################################################################################################
-
-#
-# Builds architecture in its directory.
-#
-function buildArchitectureSeparately () {
-    curArch=$1
-    ARCHDIR=$(getArchDir $curArch)
-
-    echo -e "\n\n\n"
-    echo "================================================================================"
-    echo " - ARCH: ${curArch}"
-    echo "================================================================================"
-    echo "> Copying architecture $curArch to $ARCHDIR/"
-    rsync -a --update --exclude '*.o' -v "${DIR}/" "${ARCHDIR}/"
-
-    # Clear old libraries, if needed.
-    cd "${ARCHDIR}"
-    # clearlib
-
-    echo "> Building architecture ${curArch} in directory: ${ARCHDIR}"
-    cd "${ARCHDIR}"
-
-    # Particular build commands
-    cleanVars
-    case "$curArch" in
-    armv7*)
-        echo "armv7"
-        compileArmv7
-        LIBDIR="${UDIR}/arch-armeabi-v7a/lib"
-
-        # includes
-        mkdir -p "${UDIR}/sources/include"
-        rsync -avL "${ARCHDIR}/include/" "${UDIR}/sources/include/"
-        ;;
-    arm)
-        echo "arm"
-        compileArm
-        LIBDIR="${UDIR}/arch-armeabi/lib"
-        ;;
-    x86)
-        echo "x86"
-        compileX86
-        LIBDIR="${UDIR}/arch-x86/lib"
-        ;;
-
-    esac
-    mkdir -p "$LIBDIR"
-    cp lib*.a "$LIBDIR"
-    cp lib*.so "$LIBDIR"
-}
-
-for i in "${ARCHITECTURES[@]}"
+##### set variables according to build-tagret #####
+for build_target in $BUILD_TARGETS
 do
-	buildArchitectureSeparately "${i}"
+    case $build_target in
+    armeabi)
+        TRIBLE="arm-linux-androideabi"
+        TC_NAME="arm-linux-androideabi-4.9"
+        #OPTIONS="--target=armv5te-linux-androideabi -mthumb -fPIC -latomic -D__ANDROID_API__=$API_LEVEL"
+        OPTIONS="--target=armv5te-linux-androideabi -mthumb -fPIC -latomic -D__ANDROID_API__=$API_LEVEL"
+        DESTDIR="/tmp/$BUILD_DIR/armeabi"
+        SSL_TARGET="android-arm"
+    ;;
+    armeabi-v7a)
+        TRIBLE="arm-linux-androideabi"
+        TC_NAME="arm-linux-androideabi-4.9"
+        OPTIONS="--target=armv7a-linux-androideabi -Wl,--fix-cortex-a8 -fPIC -D__ANDROID_API__=$API_LEVEL"
+        DESTDIR="/tmp/$BUILD_DIR/armeabi-v7a"
+        SSL_TARGET="android-arm"
+    ;;
+    x86)
+        TRIBLE="i686-linux-android"
+        TC_NAME="x86-4.9"
+        OPTIONS="-fPIC -D__ANDROID_API__=${API_LEVEL}"
+        DESTDIR="/tmp/$BUILD_DIR/x86"
+        SSL_TARGET="android-x86"
+    ;;
+    x86_64)
+        TRIBLE="x86_64-linux-android"
+        TC_NAME="x86_64-4.9"
+        OPTIONS="-fPIC -D__ANDROID_API__=${API_LEVEL}"
+        DESTDIR="/tmp/$BUILD_DIR/x86_64"
+        SSL_TARGET="android-x86_64"
+    ;;
+    arm64-v8a)
+        TRIBLE="aarch64-linux-android"
+        TC_NAME="aarch64-linux-android-4.9"
+        OPTIONS="-fPIC -D__ANDROID_API__=${API_LEVEL}"
+        DESTDIR="/tmp/$BUILD_DIR/arm64-v8a"
+        SSL_TARGET="android-arm64"
+    ;;
+    esac
+
+    rm -rf $DESTDIR
+    build_the_thing
+#### copy libraries and includes to output-directory #####
+    mkdir -p $OUT_DIR/inc/$build_target
+    cp -R $DESTDIR/usr/local/include/* $OUT_DIR/inc/$build_target
+    mkdir -p $OUT_DIR/lib/$build_target
+    cp -R $DESTDIR/usr/local/lib/*.so $OUT_DIR/lib/$build_target
+    cp -R $DESTDIR/usr/local/lib/*.a $OUT_DIR/lib/$build_target
 done
 
-# Return to calling directory.
-cd "${RETURN_DIR}"
-echo "> DONE for [${PEX_BUILD}]"
-
-
+echo Success

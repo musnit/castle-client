@@ -114,6 +114,10 @@ if(MSVC)
     VS_STARTUP_PROJECT castle-core)
 endif()
 
+if(ANDROID)
+  target_compile_definitions(castle-core PRIVATE __ANDROID__)
+endif()
+
 
 #
 # Dependencies
@@ -152,7 +156,14 @@ add_subdirectory(vendor/fmt EXCLUDE_FROM_ALL)
 target_link_libraries(castle-core PRIVATE fmt::fmt)
 
 # love
-if(YES)
+if (ANDROID)
+  set(ANDROID_JNI_SRC ../mobile/android/love/src/jni)
+  target_include_directories(castle-core PRIVATE ${ANDROID_JNI_SRC}/love/src ${ANDROID_JNI_SRC}/love/src/modules)
+
+  target_include_directories(castle-core PRIVATE ${ANDROID_JNI_SRC}/freetype2-android/include)
+endif()
+
+if(NOT ANDROID)
   add_library(castle-love STATIC)
   target_compile_features(castle-love PRIVATE cxx_std_17)
   set_target_properties(castle-love PROPERTIES CXX_EXTENSIONS OFF)

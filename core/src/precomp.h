@@ -12,9 +12,12 @@
 #include <fstream>
 #include <optional>
 #include <unordered_map>
-#include <filesystem>
 #include <variant>
 #include <regex>
+
+#ifndef __ANDROID__
+#include <filesystem>
+#endif
 
 // Emscripten
 #ifdef __EMSCRIPTEN__
@@ -30,17 +33,20 @@
 #include <modules/data/DataModule.h>
 #include <modules/math/RandomGenerator.h>
 #include <modules/math/MathModule.h>
-#include <modules/filesystem/physfs/Filesystem.h>
 #include <modules/timer/Timer.h>
+#include <modules/image/Image.h>
+#include <modules/font/freetype/Font.h>
+#include <modules/graphics/opengl/Graphics.h>
+#include <modules/window/sdl/Window.h>
+
+#ifndef __ANDROID__
+#include <modules/filesystem/physfs/Filesystem.h>
 #include <modules/event/sdl/Event.h>
 #include <modules/touch/sdl/Touch.h>
 #include <modules/mouse/sdl/Mouse.h>
 #include <modules/keyboard/sdl/Keyboard.h>
 #include <modules/system/sdl/System.h>
-#include <modules/image/Image.h>
-#include <modules/font/freetype/Font.h>
-#include <modules/graphics/opengl/Graphics.h>
-#include <modules/window/sdl/Window.h>
+#endif
 
 // Box2D (disambiguate vs. Love's version)
 #include <../vendor/box2d/include/box2d/box2d.h>

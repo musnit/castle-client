@@ -10,6 +10,7 @@ love/platform/xcode/.idea
 
 love/build/
 mobile/android/love/.cxx/
+mobile/android/app/.cxx/
 compile_commands.json
 .clangd/
 .cache/
