@@ -56,6 +56,9 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     color: '#888',
   },
+  emptyMessage: {
+    color: '#888',
+  },
 });
 
 const commentBodyStyles = StyleSheet.create({
@@ -308,6 +311,18 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
     },
     [comments, navigateToUser]
   );
+
+  if (isAnonymous && !comments?.length) {
+    // empty comments list + no text input is weird for anon users,
+    // show a message instead
+    return (
+      <View style={styles.container}>
+        <Text style={styles.emptyMessage}>
+          This deck has no comments yet. Log in to Castle to write the first comment.
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <FlatList
