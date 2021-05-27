@@ -167,6 +167,11 @@ bool Engine::frame() {
     prevWindowWidth = w;
     prevWindowHeight = h;
   }
+#elif __ANDROID__
+  {
+    // TODO: android
+    ghostScreenScaling = 1.0;
+  }
 #else
   // Just set screen scaling based on window size in desktop
   {

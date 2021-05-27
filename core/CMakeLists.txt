@@ -47,7 +47,11 @@ endif()
 # Target
 #
 
-add_executable(castle-core)
+if(ANDROID)
+  add_library(castle-core STATIC)
+else()
+  add_executable(castle-core)
+endif()
 
 # Sources
 file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS src/*.cpp)
@@ -161,6 +165,10 @@ if (ANDROID)
   target_include_directories(castle-core PRIVATE ${ANDROID_JNI_SRC}/love/src ${ANDROID_JNI_SRC}/love/src/modules)
 
   target_include_directories(castle-core PRIVATE ${ANDROID_JNI_SRC}/freetype2-android/include)
+
+  target_include_directories(castle-core PRIVATE ${ANDROID_JNI_SRC}/LuaJIT-2.1/src)
+
+  target_include_directories(castle-core PRIVATE ${ANDROID_JNI_SRC}/ghost-extensions)
 endif()
 
 if(NOT ANDROID)
