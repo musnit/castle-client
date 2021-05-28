@@ -39,7 +39,7 @@
 #include "wrap_FrictionJoint.h"
 #include "wrap_WeldJoint.h"
 #include "wrap_WheelJoint.h"
-#include "wrap_RopeJoint.h"
+//#include "wrap_RopeJoint.h"
 #include "wrap_MotorJoint.h"
 
 namespace love
@@ -423,24 +423,24 @@ int w_newWheelJoint(lua_State *L)
 	return 1;
 }
 
-int w_newRopeJoint(lua_State *L)
-{
-	Body *body1 = luax_checkbody(L, 1);
-	Body *body2 = luax_checkbody(L, 2);
-	float x1 = (float)luaL_checknumber(L, 3);
-	float y1 = (float)luaL_checknumber(L, 4);
-	float x2 = (float)luaL_checknumber(L, 5);
-	float y2 = (float)luaL_checknumber(L, 6);
-	float maxLength = (float)luaL_checknumber(L, 7);
-	bool collideConnected = luax_optboolean(L, 8, false);
-	RopeJoint *j;
-	luax_catchexcept(L, [&]() {
-		j = instance()->newRopeJoint(body1, body2, x1, y1, x2, y2, maxLength, collideConnected);
-	});
-	luax_pushtype(L, j);
-	j->release();
-	return 1;
-}
+//int w_newRopeJoint(lua_State *L)
+//{
+//	Body *body1 = luax_checkbody(L, 1);
+//	Body *body2 = luax_checkbody(L, 2);
+//	float x1 = (float)luaL_checknumber(L, 3);
+//	float y1 = (float)luaL_checknumber(L, 4);
+//	float x2 = (float)luaL_checknumber(L, 5);
+//	float y2 = (float)luaL_checknumber(L, 6);
+//	float maxLength = (float)luaL_checknumber(L, 7);
+//	bool collideConnected = luax_optboolean(L, 8, false);
+//	RopeJoint *j;
+//	luax_catchexcept(L, [&]() {
+//		j = instance()->newRopeJoint(body1, body2, x1, y1, x2, y2, maxLength, collideConnected);
+//	});
+//	luax_pushtype(L, j);
+//	j->release();
+//	return 1;
+//}
 
 int w_newMotorJoint(lua_State *L)
 {
@@ -502,7 +502,7 @@ static const luaL_Reg functions[] =
 	{ "newFrictionJoint", w_newFrictionJoint },
 	{ "newWeldJoint", w_newWeldJoint },
 	{ "newWheelJoint", w_newWheelJoint },
-	{ "newRopeJoint", w_newRopeJoint },
+//	{ "newRopeJoint", w_newRopeJoint },
 	{ "newMotorJoint", w_newMotorJoint },
 	{ "getDistance", w_getDistance },
 	{ "getMeter", w_getMeter },
@@ -531,7 +531,7 @@ static const lua_CFunction types[] =
 	luaopen_frictionjoint,
 	luaopen_weldjoint,
 	luaopen_wheeljoint,
-	luaopen_ropejoint,
+//	luaopen_ropejoint,
 	luaopen_motorjoint,
 	0
 };

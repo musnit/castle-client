@@ -86,7 +86,7 @@ PolygonShape *Physics::newRectangleShape(float x, float y, float w, float h, flo
 EdgeShape *Physics::newEdgeShape(float x1, float y1, float x2, float y2)
 {
 	b2EdgeShape *s = new b2EdgeShape();
-	s->Set(Physics::scaleDown(b2Vec2(x1, y1)), Physics::scaleDown(b2Vec2(x2, y2)));
+//	s->Set(Physics::scaleDown(b2Vec2(x1, y1)), Physics::scaleDown(b2Vec2(x2, y2)));
 	return new EdgeShape(s);
 }
 
@@ -196,7 +196,8 @@ int Physics::newChainShape(lua_State *L)
 		if (loop)
 			s->CreateLoop(vecs, vcount);
 		else
-			s->CreateChain(vecs, vcount);
+			;
+//			s->CreateChain(vecs, vcount);
 	}
 	catch (love::Exception &)
 	{
@@ -273,10 +274,10 @@ WheelJoint *Physics::newWheelJoint(Body *body1, Body *body2, float xA, float yA,
 	return new WheelJoint(body1, body2, xA, yA, xB, yB, ax, ay, collideConnected);
 }
 
-RopeJoint *Physics::newRopeJoint(Body *body1, Body *body2, float x1, float y1, float x2, float y2, float maxLength, bool collideConnected)
-{
-	return new RopeJoint(body1, body2, x1, y1, x2, y2, maxLength, collideConnected);
-}
+//RopeJoint *Physics::newRopeJoint(Body *body1, Body *body2, float x1, float y1, float x2, float y2, float maxLength, bool collideConnected)
+//{
+//	return new RopeJoint(body1, body2, x1, y1, x2, y2, maxLength, collideConnected);
+//}
 
 MotorJoint *Physics::newMotorJoint(Body *body1, Body *body2)
 {
@@ -296,30 +297,35 @@ Fixture *Physics::newFixture(Body *body, Shape *shape, float density)
 
 int Physics::getDistance(lua_State *L)
 {
-	Fixture *fixtureA = luax_checktype<Fixture>(L, 1);
-	Fixture *fixtureB = luax_checktype<Fixture>(L, 2);
-	b2DistanceProxy pA, pB;
-	b2DistanceInput i;
-	b2DistanceOutput o;
-	b2SimplexCache c;
-	c.count = 0;
-
-	luax_catchexcept(L, [&]() {
-		pA.Set(fixtureA->fixture->GetShape(), 0);
-		pB.Set(fixtureB->fixture->GetShape(), 0);
-		i.proxyA = pA;
-		i.proxyB = pB;
-		i.transformA = fixtureA->fixture->GetBody()->GetTransform();
-		i.transformB = fixtureB->fixture->GetBody()->GetTransform();
-		i.useRadii = true;
-		b2Distance(&o, &c, &i);
-	});
-
-	lua_pushnumber(L, Physics::scaleUp(o.distance));
-	lua_pushnumber(L, Physics::scaleUp(o.pointA.x));
-	lua_pushnumber(L, Physics::scaleUp(o.pointA.y));
-	lua_pushnumber(L, Physics::scaleUp(o.pointB.x));
-	lua_pushnumber(L, Physics::scaleUp(o.pointB.y));
+//	Fixture *fixtureA = luax_checktype<Fixture>(L, 1);
+//	Fixture *fixtureB = luax_checktype<Fixture>(L, 2);
+//	b2DistanceProxy pA, pB;
+//	b2DistanceInput i;
+//	b2DistanceOutput o;
+//	b2SimplexCache c;
+//	c.count = 0;
+//
+//	luax_catchexcept(L, [&]() {
+//		pA.Set(fixtureA->fixture->GetShape(), 0);
+//		pB.Set(fixtureB->fixture->GetShape(), 0);
+//		i.proxyA = pA;
+//		i.proxyB = pB;
+//		i.transformA = fixtureA->fixture->GetBody()->GetTransform();
+//		i.transformB = fixtureB->fixture->GetBody()->GetTransform();
+//		i.useRadii = true;
+//		b2Distance(&o, &c, &i);
+//	});
+//
+//	lua_pushnumber(L, Physics::scaleUp(o.distance));
+//	lua_pushnumber(L, Physics::scaleUp(o.pointA.x));
+//	lua_pushnumber(L, Physics::scaleUp(o.pointA.y));
+//	lua_pushnumber(L, Physics::scaleUp(o.pointB.x));
+//	lua_pushnumber(L, Physics::scaleUp(o.pointB.y));
+	lua_pushnumber(L, 0);
+	lua_pushnumber(L, 0);
+	lua_pushnumber(L, 0);
+	lua_pushnumber(L, 0);
+	lua_pushnumber(L, 0);
 	return 5;
 }
 

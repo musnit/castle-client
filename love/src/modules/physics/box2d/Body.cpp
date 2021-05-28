@@ -46,7 +46,8 @@ Body::Body(World *world, b2Vec2 p, Body::Type type)
 	udata->ref = nullptr;
 	b2BodyDef def;
 	def.position = Physics::scaleDown(p);
-	def.userData = (void *) udata;
+	def.userData.pointer = (uintptr_t)(void *) udata;
+//	def.userData = (void *) udata;
 	body = world->world->CreateBody(&def);
 	// Box2D body holds a reference to the love Body.
 	this->retain();
@@ -58,7 +59,8 @@ Body::Body(b2Body *b)
 	: body(b)
 	, udata(nullptr)
 {
-	udata = (bodyudata *) b->GetUserData();
+	udata = (bodyudata *)(void *) b->GetUserData().pointer;
+//	udata = (bodyudata *) b->GetUserData();
 	world = (World *) Memoizer::find(b->GetWorld());
 	// Box2D body holds a reference to the love Body.
 	this->retain();
@@ -384,7 +386,8 @@ void Body::setBullet(bool bullet)
 
 bool Body::isActive() const
 {
-	return body->IsActive();
+	return true;
+//	return body->IsActive();
 }
 
 bool Body::isAwake() const
@@ -404,7 +407,7 @@ bool Body::isSleepingAllowed() const
 
 void Body::setActive(bool active)
 {
-	body->SetActive(active);
+//	body->SetActive(active);
 }
 
 void Body::setAwake(bool awake)
@@ -556,7 +559,8 @@ int Body::setUserData(lua_State *L)
 	if (udata == nullptr)
 	{
 		udata = new bodyudata();
-		body->SetUserData((void *) udata);
+		body->GetUserData().pointer = (uintptr_t)(void *) udata;
+//		body->SetUserData((void *) udata);
 	}
 
 	if(!udata->ref)
