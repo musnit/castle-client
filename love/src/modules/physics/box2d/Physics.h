@@ -42,7 +42,7 @@
 #include "FrictionJoint.h"
 #include "WeldJoint.h"
 #include "WheelJoint.h"
-#include "RopeJoint.h"
+//#include "RopeJoint.h"
 #include "MotorJoint.h"
 
 namespace love
@@ -261,7 +261,7 @@ public:
 	 * @param maxLength The maximum distance for the bodies.
 	 * @param collideConnected Whether the connected bodies should collide with each other. Defaults to false.
 	 **/
-	RopeJoint *newRopeJoint(Body *body1, Body *body2, float x1, float y1, float x2, float y2, float maxLength, bool collideConnected);
+//	RopeJoint *newRopeJoint(Body *body1, Body *body2, float x1, float y1, float x2, float y2, float maxLength, bool collideConnected);
 
 	/**
 	 * Creates a new MotorJoint controlling the relative motion between body1

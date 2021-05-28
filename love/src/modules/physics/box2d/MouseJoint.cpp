@@ -49,6 +49,7 @@ MouseJoint::MouseJoint(Body *body1, float x, float y)
 	def.bodyB = body1->body;
 	def.maxForce = 1000.0f * body1->body->GetMass();
 	def.target = Physics::scaleDown(b2Vec2(x,y));
+	b2LinearStiffness(def.stiffness, def.damping, 5.0, 0.7, def.bodyA, def.bodyB);
 	joint = (b2MouseJoint *)createJoint(&def);
 }
 
@@ -86,22 +87,22 @@ void MouseJoint::setFrequency(float hz)
 	if (hz <= FLT_EPSILON * 2)
 		throw love::Exception("MouseJoint frequency must be a positive number.");
 
-	joint->SetFrequency(hz);
+//	joint->SetFrequency(hz);
 }
 
 float MouseJoint::getFrequency() const
 {
-	return joint->GetFrequency();
+	return 0;//joint->GetFrequency();
 }
 
 void MouseJoint::setDampingRatio(float d)
 {
-	joint->SetDampingRatio(d);
+//	joint->SetDampingRatio(d);
 }
 
 float MouseJoint::getDampingRatio() const
 {
-	return joint->GetDampingRatio();
+	return 0;//joint->GetDampingRatio();
 }
 
 Body *MouseJoint::getBodyA() const

@@ -31,7 +31,7 @@
 #include "FrictionJoint.h"
 #include "WeldJoint.h"
 #include "WheelJoint.h"
-#include "RopeJoint.h"
+//#include "RopeJoint.h"
 #include "MotorJoint.h"
 
 namespace love
@@ -66,8 +66,8 @@ void luax_pushjoint(lua_State *L, Joint *j)
 		return luax_pushtype(L, WeldJoint::type, j);
 	case Joint::JOINT_WHEEL:
 		return luax_pushtype(L, WheelJoint::type, j);
-	case Joint::JOINT_ROPE:
-		return luax_pushtype(L, RopeJoint::type, j);
+//	case Joint::JOINT_ROPE:
+//		return luax_pushtype(L, RopeJoint::type, j);
 	case Joint::JOINT_MOTOR:
 		return luax_pushtype(L, MotorJoint::type, j);
 	default:

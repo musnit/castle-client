@@ -30,7 +30,7 @@
 #include <vector>
 
 // Box2D
-#include <Box2D/Box2D.h>
+#include <box2d/box2d.h>
 
 namespace love
 {
@@ -104,7 +104,7 @@ public:
 	public:
 		RayCastCallback(lua_State *L, int idx);
 		~RayCastCallback();
-		virtual float32 ReportFixture(b2Fixture *fixture, const b2Vec2 &point, const b2Vec2 &normal, float32 fraction);
+		virtual float ReportFixture(b2Fixture *fixture, const b2Vec2 &point, const b2Vec2 &normal, float fraction);
 	private:
 		lua_State *L;
 		int funcidx;
