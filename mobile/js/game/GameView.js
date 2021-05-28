@@ -1,20 +1,20 @@
+import * as Sentry from '@sentry/react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
-import { useLazyQuery, gql } from '@apollo/client';
-import { sendAsync, useGhostEvents, useListen } from '../ghost/GhostEvents';
-import { GameLoading } from './GameLoading';
-import { GameLogs } from './GameLogs';
 
+import CastleCoreView from '../core/CastleCoreView';
+import { sendAsync, useGhostEvents, useListen } from '../ghost/GhostEvents';
 import GhostView from '../ghost/GhostView';
 
-import * as GhostChannels from '../ghost/GhostChannels';
+import { GameLoading } from './GameLoading';
+import { GameLogs } from './GameLogs';
 import * as LuaBridge from './LuaBridge';
-import * as Session from '../Session';
-import * as Sentry from '@sentry/react-native';
 
+const USE_CORE = true;
 const FORWARD_LUA_LOGS = false;
 
-// Read dimensions settings into the `{ width, height, upscaling, downscaling }` format for `GhostView`
+// Read dimensions settings into the `{ width, height, upscaling, downscaling }`
+// format for the native view
 const computeDimensionsSettings = ({ metadata }) => {
   const { dimensions, scaling, upscaling, downscaling } = metadata;
 
@@ -69,8 +69,8 @@ const computeDimensionsSettings = ({ metadata }) => {
   return dimensionsSettings;
 };
 
-// Populate the 'INITIAL_DATA' channel that Lua reads for various initial settings (eg. the user
-// object, initial audio volume, initial post, ...)
+// Populate the 'INITIAL_DATA' channel that Lua reads for various initial
+// settings (eg. the user object, initial audio volume, initial post, ...)
 const useInitialData = ({ extras }) => {
   const [sent, setSent] = useState(false);
 
@@ -142,9 +142,10 @@ const useDeckState = ({ deckState }) => {
   }, [deckState]);
 };
 
-// Given a `gameId` or `gameUri`, run and display the game! The lifetime of this component must match the
-// lifetime of the game run -- it must be unmounted when the game is stopped and a new instance mounted
-// if a new game should be run (or even if the same game should be restarted).
+// Given a `gameId` or `gameUri`, run and display the game! The lifetime of this
+// component must match the lifetime of the game run -- it must be unmounted
+// when the game is stopped and a new instance mounted if a new game should be
+// run (or even if the same game should be restarted).
 export const GameView = ({
   extras,
   windowed,
@@ -227,6 +228,14 @@ export const GameView = ({
 
   const [landscape, setLandscape] = useState(false);
 
+  const NativeView = USE_CORE ? CastleCoreView : GhostView;
+  if (USE_CORE) {
+    useEffect(() => {
+      // TODO: Implement a core loaded event and fire `onLoaded` this when that happens
+      setTimeout(() => onLoaded(), 100);
+    }, []);
+  }
+
   // TODO: entryPoint should actually reflect native entry point
   return (
     <View
@@ -237,7 +246,7 @@ export const GameView = ({
         },
       }) => setLandscape(width > height)}>
       {eventsReady && initialDataHook.sent ? (
-        <GhostView
+        <NativeView
           style={{ flex: 1 }}
           dimensionsSettings={dimensionsSettings}
           paused={paused}
@@ -249,7 +258,7 @@ export const GameView = ({
 HACK: something in here must have an inherent size greater than 0x0 or the game will never load
 on android. currently, this is <GameLoading />
         */}
-      {!luaLoadingHook.loaded ? <GameLoading /> : null}
+      {!USE_CORE && !luaLoadingHook.loaded ? <GameLoading /> : null}
     </View>
   );
 };

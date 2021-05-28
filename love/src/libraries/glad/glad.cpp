@@ -7248,12 +7248,10 @@ static void find_core(void) {
 #ifdef __APPLE__
 	#include "TargetConditionals.h"
 #endif
-
-#ifndef TARGET_OS_MAC
+#if !TARGET_OS_OSX
   major = 2;
   minor = 0;
 #endif
-
 #ifdef __EMSCRIPTEN__
   gles = true;
 #endif

@@ -11,6 +11,8 @@
 
 #include "modules/love/love.h"
 
+#define USE_CORE
+
 #ifndef GhostView_h
 #define GhostView_h
 
