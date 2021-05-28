@@ -70,6 +70,8 @@ public:
   void set(Variable variable, ExpressionValue value);
   void reset(Variable variable);
   void resetAll();
+  template<typename F>
+  void forEach(F &&f) const; // `F` takes `(const char *name, const ExpressionValue &)`
 
 
 private:
@@ -125,4 +127,11 @@ inline std::optional<ExpressionValue> Variables::get(const std::string &variable
   } else {
     return std::nullopt;
   }
+}
+
+template<typename F>
+void Variables::forEach(F &&f) const {
+  map.forEach([&](Map::Token token, const MapElem &elem) {
+    f(elem.name.c_str(), elem.value);
+  });
 }

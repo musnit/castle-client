@@ -57,6 +57,8 @@ public:
 
   template<typename F>
   void forEach(F &&f); // `f` takes `(Token, Value &)`
+  template<typename F>
+  void forEach(F &&f) const; // `f` takes `(Token, const Value &)`
 
 
 private:
@@ -136,4 +138,12 @@ void TokenMap<Value>::forEach(F &&f) {
       f(Token { i }, *entry.value);
     }
   }
+}
+
+template<typename Value>
+template<typename F>
+void TokenMap<Value>::forEach(F &&f) const {
+  const_cast<TokenMap &>(*this).forEach([&](Token token, Value &value) {
+    f(token, (const Value &)value);
+  });
 }

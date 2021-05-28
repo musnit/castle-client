@@ -218,6 +218,13 @@ void Engine::update(double dt) {
     Debug::display("actors: {}", scene->numActors());
 
     scene->update(dt);
+
+    Debug::display("variables:");
+    variables.forEach([&](const char *name, const ExpressionValue &value) {
+      if (value.is<double>()) {
+        Debug::display("  {}: {}", name, value.as<double>());
+      }
+    });
   }
 
 #ifdef CASTLE_ENABLE_TESTS
