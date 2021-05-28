@@ -49,6 +49,8 @@ endif()
 
 if(ANDROID)
   add_library(castle-core SHARED)
+elseif(IOS)
+  add_library(castle-core STATIC)
 else()
   add_executable(castle-core)
 endif()
@@ -104,7 +106,7 @@ if(WEB)
 endif()
 
 # Add debug info in non-MSVC desktop release builds
-if((NOT WEB) AND (NOT MSVC))
+if((NOT MOBILE) AND (NOT WEB) AND (NOT MSVC))
   target_compile_options(castle-core PRIVATE -g)
   target_link_options(castle-core PRIVATE -g)
   add_compile_options(-g)
@@ -139,7 +141,7 @@ if(WEB)
   #target_compile_options(castle-core PRIVATE "SHELL:-s FULL_ES2=1")
   target_link_options(castle-core PRIVATE "SHELL:-s USE_SDL=2")
   #target_link_options(castle-core PRIVATE "SHELL:-s FULL_ES2=1")
-elseif(APPLE AND (NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "iOS"))
+elseif(APPLE AND (NOT IOS))
   set(SDL_STATIC ON CACHE BOOL "" FORCE)
   set(SDL_SHARED OFF CACHE BOOL "" FORCE)
   set(VIDEO_WAYLAND OFF CACHE BOOL "" FORCE)
@@ -161,7 +163,7 @@ elseif(ANDROID)
   set(THREADS_PREFER_PTHREAD_FLAG ON)
   find_package(Threads REQUIRED)
   target_link_libraries(castle-core PRIVATE Threads::Threads)
-else()
+elseif(NOT IOS)
   set(SDL_STATIC ON CACHE BOOL "" FORCE)
   set(SDL_SHARED OFF CACHE BOOL "" FORCE)
   set(VIDEO_WAYLAND OFF CACHE BOOL "" FORCE)
@@ -178,14 +180,24 @@ add_subdirectory(vendor/fmt EXCLUDE_FROM_ALL)
 target_link_libraries(castle-core PRIVATE fmt::fmt)
 
 # love
-if(YES)
+set(LOVE_SRC ../love/src)
+if(IOS)
+  # Just add include dirs on iOS, actual building / linking is part of mobile project
+  target_include_directories(castle-core PUBLIC
+    ${LOVE_SRC} ${LOVE_SRC}/libraries ${LOVE_SRC}/modules
+    vendor/lua-5.1.5/src
+    vendor/zlib-1.2.11
+    vendor/freetype-2.10.0/include
+    vendor/SDL2/include
+    vendor vendor/tove2d/src/thirdparty/fp16/include
+    )
+else()
+  # Love as a CMake sub-project
   add_library(castle-love STATIC)
   target_compile_features(castle-love PRIVATE cxx_std_17)
   set_target_properties(castle-love PROPERTIES CXX_EXTENSIONS OFF)
   if (ANDROID)
     set(LOVE_SRC ${ANDROID_JNI_SRC}/love/src)
-  else()
-    set(LOVE_SRC ../love/src)
   endif()
   target_include_directories(castle-love PUBLIC ${LOVE_SRC} ${LOVE_SRC}/libraries ${LOVE_SRC}/modules)
 
@@ -648,9 +660,6 @@ target_link_libraries(castle-core PRIVATE box2d)
 # entt
 target_include_directories(castle-core PRIVATE vendor/entt/src)
 
-# magic_get
-target_include_directories(castle-core PRIVATE vendor/magic_get/include)
-
 # rapidjson
 target_include_directories(castle-core PRIVATE vendor/rapidjson/include)
 
@@ -665,7 +674,6 @@ set(SOLOUD_SRC vendor/soloud20200207/src)
 target_sources(soloud PRIVATE
   ${SOLOUD_SRC}/audiosource/noise/soloud_noise.cpp
   ${SOLOUD_SRC}/audiosource/sfxr/soloud_sfxr.cpp
-  ${SOLOUD_SRC}/backend/miniaudio/soloud_miniaudio.cpp
   ${SOLOUD_SRC}/c_api/soloud_c.cpp
   ${SOLOUD_SRC}/core/soloud_audiosource.cpp
   ${SOLOUD_SRC}/core/soloud_bus.cpp
@@ -697,4 +705,9 @@ target_sources(soloud PRIVATE
   ${SOLOUD_SRC}/filter/soloud_robotizefilter.cpp
   ${SOLOUD_SRC}/filter/soloud_waveshaperfilter.cpp
 )
+if(APPLE)
+  target_sources(soloud PRIVATE ${SOLOUD_SRC}/backend/miniaudio/soloud_miniaudio.mm)
+else()
+  target_sources(soloud PRIVATE ${SOLOUD_SRC}/backend/miniaudio/soloud_miniaudio.cpp)
+endif()
 target_link_libraries(castle-core PRIVATE soloud)
