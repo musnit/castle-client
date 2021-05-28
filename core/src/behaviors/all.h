@@ -102,7 +102,7 @@ private:
 
   template<size_t... Is>
   AllBehaviors(Scene &scene, std::index_sequence<Is...>)
-      : behaviors(std::tuple_element_t<Is, decltype(behaviors)> { scene }...) {
+      : behaviors((Is, scene)...) {
   }
 };
 

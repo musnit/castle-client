@@ -128,6 +128,12 @@ case "$1" in
     $CMAKE --build build/xcode
     ;;
 
+  # Mobile
+  ios)
+    $CMAKE -DMOBILE=ON -DCMAKE_SYSTEM_NAME=iOS -H. -Bbuild/ios -GXcode
+    #$CMAKE --build build/ios --config Release
+    ;;
+
   # Web
   web-init)
     case $PLATFORM in
