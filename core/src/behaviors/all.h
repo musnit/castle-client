@@ -102,7 +102,7 @@ private:
 
   template<size_t... Is>
   AllBehaviors(Scene &scene, std::index_sequence<Is...>)
-      : behaviors((Is, scene)...) {
+      : behaviors(((void)Is, scene)...) {
   }
 };
 
