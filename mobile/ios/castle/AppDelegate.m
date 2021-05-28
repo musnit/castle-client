@@ -85,7 +85,9 @@ int SDL_main(int argc, char *argv[]) {
   SDL_iPhoneSetEventPump(SDL_FALSE);
 
   // GhostView
+#ifndef USE_CORE
   [GhostView sharedGhostView];
+#endif
 
   UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
   center.delegate = self;
@@ -237,7 +239,9 @@ int SDL_main(int argc, char *argv[]) {
 
 - (void)applicationWillResignActive:(UIApplication *)application {
   [self.sdlDelegate applicationWillResignActive:application];
+#ifndef USE_CORE
   [GhostView sharedGhostView].displayLink.paused = YES;
+#endif
   [self _emitAppStateEvent];
   if (self.rctBridge) {
     GhostChannels *channelsModule = [self.rctBridge moduleForName:@"GhostChannels"];
@@ -259,7 +263,9 @@ int SDL_main(int argc, char *argv[]) {
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
   [self.sdlDelegate applicationDidBecomeActive:application];
+#ifndef USE_CORE
   [GhostView sharedGhostView].displayLink.paused = NO;
+#endif
   [self _emitAppStateEvent];
   if (self.rctBridge) {
     GhostChannels *channelsModule = [self.rctBridge moduleForName:@"GhostChannels"];
