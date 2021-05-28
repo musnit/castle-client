@@ -76,6 +76,7 @@
 		A1CCBA1623551869009F4DDD /* GhostChannels.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1CCBA1423551869009F4DDD /* GhostChannels.mm */; };
 		A1CCBA19235518C7009F4DDD /* GhostView.m in Sources */ = {isa = PBXBuildFile; fileRef = A1CCBA18235518C7009F4DDD /* GhostView.m */; };
 		A1D3A849258177A400666D4D /* CastleNativeUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = A1D3A841258177A400666D4D /* CastleNativeUtils.m */; };
+		A1F835A02661964000E65FE9 /* CastleCoreView.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1F8359F2661964000E65FE9 /* CastleCoreView.mm */; };
 		A1FA18C32365168600E2ACFE /* GhostInputZone.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1FA18C22365168600E2ACFE /* GhostInputZone.mm */; };
 		B51813F72527916C00C315C9 /* GhostAppState.mm in Sources */ = {isa = PBXBuildFile; fileRef = B51813F62527916C00C315C9 /* GhostAppState.mm */; };
 		B55942172534C97A00BD34E7 /* CastleNotificationService.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B559420F2534C97A00BD34E7 /* CastleNotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -268,6 +269,7 @@
 		A1CCBA1423551869009F4DDD /* GhostChannels.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GhostChannels.mm; sourceTree = "<group>"; };
 		A1CCBA18235518C7009F4DDD /* GhostView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GhostView.m; sourceTree = "<group>"; };
 		A1D3A841258177A400666D4D /* CastleNativeUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CastleNativeUtils.m; sourceTree = "<group>"; };
+		A1F8359F2661964000E65FE9 /* CastleCoreView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CastleCoreView.mm; sourceTree = "<group>"; };
 		A1FA18C22365168600E2ACFE /* GhostInputZone.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GhostInputZone.mm; sourceTree = "<group>"; };
 		A753A21E42DB46D99AD060DF /* RTAliasGrotesk-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "RTAliasGrotesk-Regular.otf"; path = "../assets/fonts/RTAliasGrotesk-Regular.otf"; sourceTree = "<group>"; };
 		B51813EE2527916C00C315C9 /* GhostAppState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GhostAppState.h; sourceTree = "<group>"; };
@@ -347,6 +349,7 @@
 		13B07FAE1A68108700A75B9A /* Castle */ = {
 			isa = PBXGroup;
 			children = (
+				A1F8359F2661964000E65FE9 /* CastleCoreView.mm */,
 				B5942AAD2627646B003CF6DB /* BootSplash.storyboard */,
 				A1D3A841258177A400666D4D /* CastleNativeUtils.m */,
 				91395EAF24084E2D00ECBCF9 /* Castle.entitlements */,
@@ -1029,6 +1032,7 @@
 				A12CFEF823CC313100D721BC /* triangles.cpp in Sources */,
 				A12CFEFF23CC314E00D721BC /* geometry_feed.cpp in Sources */,
 				A12CFEF623CC313100D721BC /* meshifier.cpp in Sources */,
+				A1F835A02661964000E65FE9 /* CastleCoreView.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				A12CFEEB23CC30F600D721BC /* paint.cpp in Sources */,
 				A14FE3F42355CF2D003B7EA0 /* lpcap.c in Sources */,
@@ -1118,7 +1122,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -1164,10 +1168,21 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					../../love/src,
+					../../love/src/libraries,
+					../../love/src/modules,
 					"../../ghost-extensions/SDL2-2.0.8/include",
 					../../openssl/include,
 					../../love/platform/xcode/ios/include/luajit,
 					"../../ghost-extensions/tove2d/src/thirdparty/fp16/include",
+					../../core/src,
+					../../core/vendor/fmt/include,
+					../../core/vendor/entt/src,
+					../../core/vendor/rapidjson/include,
+					"../../core/vendor/freetype-2.10.0/include",
+					../../core/vendor,
+					../../core/vendor/tove2d/src/thirdparty/fp16/include,
+					../../core/vendor/soloud20200207/include,
+					../../core/vendor/soloud20200207/src/backend/miniaudio,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LIBRARY_SEARCH_PATHS = ../../openssl/lib/iOS;
@@ -1181,7 +1196,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -1224,6 +1239,7 @@
 					../../openssl/include,
 					../../love/platform/xcode/ios/include/luajit,
 					"../../ghost-extensions/tove2d/src/thirdparty/fp16/include",
+					../../core/src,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LIBRARY_SEARCH_PATHS = ../../openssl/lib/iOS;
