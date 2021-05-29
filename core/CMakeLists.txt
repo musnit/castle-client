@@ -129,8 +129,8 @@ endif()
 
 if (ANDROID)
   set(ANDROID_JNI_SRC ../mobile/android/love/src/jni)
-
-  target_link_libraries(castle-core PRIVATE android log OpenSLES)
+  set_target_properties(castle-core PROPERTIES DEBUG_POSTFIX "")
+  target_link_libraries(castle-core PRIVATE android log OpenSLES dl)
 endif()
 
 # SDL2

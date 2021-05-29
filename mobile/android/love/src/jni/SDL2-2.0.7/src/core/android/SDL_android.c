@@ -472,7 +472,7 @@ JNIEXPORT int JNICALL SDL_JAVA_INTERFACE(nativeRunMain)(JNIEnv* env, jclass cls,
         dlclose(library_handle);
 
     } else {
-        __android_log_print(ANDROID_LOG_ERROR, "SDL", "nativeRunMain(): Couldn't load library %s", library_file);
+        __android_log_print(ANDROID_LOG_ERROR, "SDL", "nativeRunMain(): Couldn't load library %s      error %s", library_file, dlerror());
     }
     (*env)->ReleaseStringUTFChars(env, library, library_file);
 

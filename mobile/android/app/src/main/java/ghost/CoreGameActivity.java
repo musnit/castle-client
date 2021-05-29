@@ -25,7 +25,7 @@ public class CoreGameActivity extends SDLActivity {
     protected String[] getLibraries() {
         return new String[]{
                 "c++_shared",
-                "castle-cored",
+                "castle-core",
         };
     }
 

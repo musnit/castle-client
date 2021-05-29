@@ -227,6 +227,11 @@ export const GameView = ({
 
   const [landscape, setLandscape] = useState(false);
 
+  useEffect(() => {
+    // TODO: Implement a core loaded event and fire `onLoaded` this when that happens
+    setTimeout(() => onLoaded(), 100);
+  }, []);
+
   // TODO: entryPoint should actually reflect native entry point
   return (
     <View
@@ -249,7 +254,7 @@ export const GameView = ({
 HACK: something in here must have an inherent size greater than 0x0 or the game will never load
 on android. currently, this is <GameLoading />
         */}
-      {!luaLoadingHook.loaded ? <GameLoading /> : null}
+      {false && !luaLoadingHook.loaded ? <GameLoading /> : null}
     </View>
   );
 };

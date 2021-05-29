@@ -21,7 +21,11 @@ void loop(F &&frame) {
 
 // Main web and desktop entrypoint
 #undef main // SDL does some weird stuff overriding `main` with a macro...
+#ifdef ANDROID
+int SDL_main(int argc, char *argv[]) {
+#else
 int main(int argc, char *argv[]) {
+#endif
   Engine eng;
 
 #ifndef __EMSCRIPTEN__
