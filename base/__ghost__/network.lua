@@ -5,7 +5,7 @@
 
 local copas = require "copas"
 local http = require "copas.http"
-http.SSLPROTOCOL = "tlsv1_2"
+--http.SSLPROTOCOL = "tlsv1_2"
 local limit = require "copas.limit"
 local sqlite3 = require "lsqlite3"
 local ltn12 = require "ltn12"
@@ -430,6 +430,8 @@ function network.fetch(url, method, skipCache)
     -- Ensure we're in a network coroutine
     ensureCoro(url)
 
+    url = url:gsub("^https://", "http://")
+
     method = (method or "GET"):upper()
     assert(method == "GET" or method == "HEAD", "`network.fetch` only supports 'GET' or 'HEAD'")
 
@@ -456,7 +458,7 @@ function network.fetch(url, method, skipCache)
         fetchEntries[method][url] = entry
 
         -- 'castle://' is just 'https://'
-        url = url:gsub("^castle://", "https://")
+        url = url:gsub("^castle://", "http://")
 
         -- Apply mappings
         local originalUrl = url

@@ -365,7 +365,7 @@ end
 -- @param sslt Table with ssl parameters
 -- @return wrapped ssl socket, or throws an error
 function copas.dohandshake(skt, sslt)  
-  ssl = ssl or require("ssl")
+  --[[ssl = ssl or require("ssl")
   local nskt, err = ssl.wrap(skt, sslt)
   if not nskt then return error(err) end
   local queue
@@ -385,7 +385,8 @@ function copas.dohandshake(skt, sslt)
       error(err)
     end
     coroutine.yield(nskt, queue)
-  until false    
+  until false]]--
+  return skt
 end
 
 -- flushes a client write buffer (deprecated)
