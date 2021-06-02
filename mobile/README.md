@@ -5,6 +5,11 @@
 - Run `npm i` in this directory
 - Copy `mobile/.env` from our credentials repository to this directory
 
+## Android
+
+- Remove the `ndk.dir` field from local.properties if you added it for the React Native setup.
+- Install NDK version `22.1.7171670` and CMake version `3.18.1` from the Android SDK manager.
+
 # Running
 
 ## iOS
