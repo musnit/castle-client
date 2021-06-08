@@ -1,6 +1,7 @@
 #include "engine.h"
 
 #include "js.h"
+#include "api.h"
 
 
 //
@@ -102,6 +103,28 @@ void Engine::loadSceneFromFile(const char *path) {
       });
     });
   });
+}
+
+void Engine::loadSceneFromDeckId(const char *deckId) {
+  API::graphql("{\n  deck(deckId: \"" + std::string(deckId)
+          + "\") {\n    variables\n    initialCard {\n     "
+            " sceneData\n    }\n  }\n}\n",
+      [&](bool success, Reader &reader) {
+        reader.obj("data", [&]() {
+          reader.obj("deck", [&]() {
+            reader.arr("variables", [&]() {
+              variables.read(reader);
+            });
+            reader.obj("initialCard", [&]() {
+              reader.obj("sceneData", [&]() {
+                reader.obj("snapshot", [&]() {
+                  scene = std::make_unique<Scene>(variables, &reader);
+                });
+              });
+            });
+          });
+        });
+      });
 }
 
 void Engine::tryLoadVariables() {

@@ -22,6 +22,7 @@ void loop(F &&frame) {
 #ifdef ANDROID
 int SDL_main(int argc, char *argv[]) {
   Engine eng;
+  eng.loadSceneFromDeckId("ae5b8c7e-fd3a-4835-b972-fbf0bed2b81c");
 
   loop([&]() {
     return eng.frame();

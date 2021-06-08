@@ -714,3 +714,8 @@ else()
   target_sources(soloud PRIVATE ${SOLOUD_SRC}/backend/miniaudio/soloud_miniaudio.cpp)
 endif()
 target_link_libraries(castle-core PRIVATE soloud)
+
+# curl
+set(CMAKE_USE_OPENSSL OFF CACHE BOOL "" FORCE)
+add_subdirectory(vendor/curl-7.77.0 EXCLUDE_FROM_ALL)
+target_link_libraries(castle-core PRIVATE libcurl)

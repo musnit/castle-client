@@ -33,6 +33,7 @@ public:
 
   bool hasInitialDeck() const;
   void loadSceneFromFile(const char *path);
+  void loadSceneFromDeckId(const char *deckId);
 
 
   // Bridge access

@@ -5,6 +5,10 @@
 #include <fmt/format.h>
 #include <fmt/ranges.h>
 
+#ifdef ANDROID
+#include <android/log.h>
+#endif
+
 
 class Debug {
   // Utilities useful for debugging: graphical display of messages, logging to the console,
@@ -41,9 +45,15 @@ private:
 template<typename... Args>
 inline void Debug::log(Args &&...args) {
   if (isEnabled) {
+
+#ifdef ANDROID
+    __android_log_print(
+        ANDROID_LOG_INFO, "castle-core", "%s", fmt::format(std::forward<Args>(args)...).c_str());
+#else
     fmt::print(std::forward<Args>(args)...);
     fmt::print("\n");
     std::fflush(stdout);
+#endif
   }
 };
 
