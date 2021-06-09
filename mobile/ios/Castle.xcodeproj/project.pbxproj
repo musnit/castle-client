@@ -33,6 +33,10 @@
 		A12CFF0423CC318400D721BC /* clipper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A12CFF0323CC318400D721BC /* clipper.cpp */; };
 		A12CFF0623CC31AB00D721BC /* polypartition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A12CFF0523CC31AB00D721BC /* polypartition.cpp */; };
 		A12CFF0823CC31C100D721BC /* tinyxml2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A12CFF0723CC31C100D721BC /* tinyxml2.cpp */; };
+		A1376ADB26714F100095021E /* libbox2d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1376AD726714EE60095021E /* libbox2d.a */; };
+		A1376ADC26714F100095021E /* libcastle-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1376AD826714EE60095021E /* libcastle-core.a */; };
+		A1376ADD26714F100095021E /* libfmt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1376AD926714EE60095021E /* libfmt.a */; };
+		A1376ADE26714F100095021E /* libsoloud.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1376ADA26714EE60095021E /* libsoloud.a */; };
 		A14FE39F2355CB83003B7EA0 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A14FE39E2355CB83003B7EA0 /* AudioToolbox.framework */; };
 		A14FE3A12355CB8B003B7EA0 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A14FE3A02355CB8B003B7EA0 /* AVFoundation.framework */; };
 		A14FE3A32355CB93003B7EA0 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A14FE3A22355CB93003B7EA0 /* CoreGraphics.framework */; };
@@ -72,10 +76,6 @@
 		A1CCBA1623551869009F4DDD /* GhostChannels.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1CCBA1423551869009F4DDD /* GhostChannels.mm */; };
 		A1CCBA19235518C7009F4DDD /* GhostView.m in Sources */ = {isa = PBXBuildFile; fileRef = A1CCBA18235518C7009F4DDD /* GhostView.m */; };
 		A1D3A849258177A400666D4D /* CastleNativeUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = A1D3A841258177A400666D4D /* CastleNativeUtils.m */; };
-		A1E695E8267041E800711D05 /* libbox2d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1E695E1267041AF00711D05 /* libbox2d.a */; };
-		A1E695E9267041E800711D05 /* libcastle-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1E695E3267041AF00711D05 /* libcastle-core.a */; };
-		A1E695EA267041E800711D05 /* libfmtd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1E695E5267041AF00711D05 /* libfmtd.a */; };
-		A1E695EB267041E800711D05 /* libsoloud.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1E695E7267041AF00711D05 /* libsoloud.a */; };
 		A1E695EE26708E2E00711D05 /* CastleCoreBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1E695ED26708E2D00711D05 /* CastleCoreBridge.mm */; };
 		A1F835A02661964000E65FE9 /* CastleCoreView.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1F8359F2661964000E65FE9 /* CastleCoreView.mm */; };
 		A1FA18C32365168600E2ACFE /* GhostInputZone.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1FA18C22365168600E2ACFE /* GhostInputZone.mm */; };
@@ -116,34 +116,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = FA0B78DD1A958B90000E1D17;
 			remoteInfo = "liblove-ios";
-		};
-		A1E695E0267041AF00711D05 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A1E695D6267041AF00711D05 /* castle-core.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 2554089548854E79B0E0B058;
-			remoteInfo = box2d;
-		};
-		A1E695E2267041AF00711D05 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A1E695D6267041AF00711D05 /* castle-core.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8DE163225B5C4BE98D27FAE4;
-			remoteInfo = "castle-core";
-		};
-		A1E695E4267041AF00711D05 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A1E695D6267041AF00711D05 /* castle-core.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D47066DB42884772A90F2305;
-			remoteInfo = fmt;
-		};
-		A1E695E6267041AF00711D05 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A1E695D6267041AF00711D05 /* castle-core.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 6A69FD4D48174B55B42FBFFE;
-			remoteInfo = soloud;
 		};
 		B55942152534C97A00BD34E7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -213,6 +185,10 @@
 		A12CFF0323CC318400D721BC /* clipper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = clipper.cpp; path = "../../ghost-extensions/tove2d/src/thirdparty/clipper.cpp"; sourceTree = "<group>"; };
 		A12CFF0523CC31AB00D721BC /* polypartition.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = polypartition.cpp; path = "../../ghost-extensions/tove2d/src/thirdparty/polypartition/src/polypartition.cpp"; sourceTree = "<group>"; };
 		A12CFF0723CC31C100D721BC /* tinyxml2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tinyxml2.cpp; path = "../../ghost-extensions/tove2d/src/thirdparty/tinyxml2/tinyxml2.cpp"; sourceTree = "<group>"; };
+		A1376AD726714EE60095021E /* libbox2d.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbox2d.a; path = ../../core/binaries/ios/libbox2d.a; sourceTree = "<group>"; };
+		A1376AD826714EE60095021E /* libcastle-core.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libcastle-core.a"; path = "../../core/binaries/ios/libcastle-core.a"; sourceTree = "<group>"; };
+		A1376AD926714EE60095021E /* libfmt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfmt.a; path = ../../core/binaries/ios/libfmt.a; sourceTree = "<group>"; };
+		A1376ADA26714EE60095021E /* libsoloud.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsoloud.a; path = ../../core/binaries/ios/libsoloud.a; sourceTree = "<group>"; };
 		A14FE3892355CA44003B7EA0 /* SDL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL.xcodeproj; path = "../../ghost-extensions/SDL2-2.0.8/Xcode-iOS/SDL/SDL.xcodeproj"; sourceTree = "<group>"; };
 		A14FE3952355CA7B003B7EA0 /* liblove.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = liblove.xcodeproj; path = ../../love/platform/xcode/liblove.xcodeproj; sourceTree = "<group>"; };
 		A14FE39E2355CB83003B7EA0 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -269,7 +245,6 @@
 		A1CCBA1423551869009F4DDD /* GhostChannels.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GhostChannels.mm; sourceTree = "<group>"; };
 		A1CCBA18235518C7009F4DDD /* GhostView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GhostView.m; sourceTree = "<group>"; };
 		A1D3A841258177A400666D4D /* CastleNativeUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CastleNativeUtils.m; sourceTree = "<group>"; };
-		A1E695D6267041AF00711D05 /* castle-core.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "castle-core.xcodeproj"; path = "../../core/build_ios/castle-core.xcodeproj"; sourceTree = "<group>"; };
 		A1E695EC267043CB00711D05 /* CastleCoreView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CastleCoreView.h; sourceTree = "<group>"; };
 		A1E695ED26708E2D00711D05 /* CastleCoreBridge.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CastleCoreBridge.mm; sourceTree = "<group>"; };
 		A1F8359F2661964000E65FE9 /* CastleCoreView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CastleCoreView.mm; sourceTree = "<group>"; };
@@ -296,24 +271,24 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1E695EA267041E800711D05 /* libfmtd.a in Frameworks */,
 				A14FE3AE2355CC0E003B7EA0 /* libssl.a in Frameworks */,
 				A14FE3AB2355CBE3003B7EA0 /* libbz2.tbd in Frameworks */,
-				A1E695E9267041E800711D05 /* libcastle-core.a in Frameworks */,
+				A1376ADC26714F100095021E /* libcastle-core.a in Frameworks */,
 				A14FE3B52355CC39003B7EA0 /* QuartzCore.framework in Frameworks */,
 				A14FE3A32355CB93003B7EA0 /* CoreGraphics.framework in Frameworks */,
 				A1959DF42410A026000C61E0 /* CoreTelephony.framework in Frameworks */,
 				A14FE3A72355CBB6003B7EA0 /* libz.tbd in Frameworks */,
 				B75D12A12F9E5D8776A933D2 /* libPods-Castle.a in Frameworks */,
 				A1959DF62410A032000C61E0 /* WebKit.framework in Frameworks */,
+				A1376ADD26714F100095021E /* libfmt.a in Frameworks */,
 				A14FE3A52355CB9A003B7EA0 /* GameController.framework in Frameworks */,
 				A14FE3AF2355CC21003B7EA0 /* libcrypto.a in Frameworks */,
 				A14FE3A92355CBC8003B7EA0 /* libSDL2.a in Frameworks */,
-				A1E695E8267041E800711D05 /* libbox2d.a in Frameworks */,
+				A1376ADB26714F100095021E /* libbox2d.a in Frameworks */,
 				A14FE3B32355CC32003B7EA0 /* OpenAL.framework in Frameworks */,
 				A14FE39F2355CB83003B7EA0 /* AudioToolbox.framework in Frameworks */,
 				A14FE3A12355CB8B003B7EA0 /* AVFoundation.framework in Frameworks */,
-				A1E695EB267041E800711D05 /* libsoloud.a in Frameworks */,
+				A1376ADE26714F100095021E /* libsoloud.a in Frameworks */,
 				A1959DFA2410A197000C61E0 /* SystemConfiguration.framework in Frameworks */,
 				A14FE3B12355CC2B003B7EA0 /* Metal.framework in Frameworks */,
 				A1959DF82410A0CC000C61E0 /* Accelerate.framework in Frameworks */,
@@ -380,6 +355,10 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A1376AD726714EE60095021E /* libbox2d.a */,
+				A1376AD826714EE60095021E /* libcastle-core.a */,
+				A1376AD926714EE60095021E /* libfmt.a */,
+				A1376ADA26714EE60095021E /* libsoloud.a */,
 				A1959DF92410A197000C61E0 /* SystemConfiguration.framework */,
 				A1959DF72410A0CC000C61E0 /* Accelerate.framework */,
 				A1959DF52410A032000C61E0 /* WebKit.framework */,
@@ -417,7 +396,6 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				A1E695D6267041AF00711D05 /* castle-core.xcodeproj */,
 				B5E6E25E25D452500059479D /* scene_creator.love */,
 				A14FE3F62355D0C8003B7EA0 /* package.love */,
 				A14FE3B92355CE21003B7EA0 /* ghost-extensions */,
@@ -596,17 +574,6 @@
 			name = lpeg;
 			sourceTree = "<group>";
 		};
-		A1E695D7267041AF00711D05 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				A1E695E1267041AF00711D05 /* libbox2d.a */,
-				A1E695E3267041AF00711D05 /* libcastle-core.a */,
-				A1E695E5267041AF00711D05 /* libfmtd.a */,
-				A1E695E7267041AF00711D05 /* libsoloud.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		B55942102534C97A00BD34E7 /* CastleNotificationService */ = {
 			isa = PBXGroup;
 			children = (
@@ -705,10 +672,6 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = A1E695D7267041AF00711D05 /* Products */;
-					ProjectRef = A1E695D6267041AF00711D05 /* castle-core.xcodeproj */;
-				},
-				{
 					ProductGroup = A14FE3962355CA7B003B7EA0 /* Products */;
 					ProjectRef = A14FE3952355CA7B003B7EA0 /* liblove.xcodeproj */;
 				},
@@ -752,34 +715,6 @@
 			fileType = archive.ar;
 			path = liblove.a;
 			remoteRef = A14FE39C2355CA7B003B7EA0 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		A1E695E1267041AF00711D05 /* libbox2d.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libbox2d.a;
-			remoteRef = A1E695E0267041AF00711D05 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		A1E695E3267041AF00711D05 /* libcastle-core.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libcastle-core.a";
-			remoteRef = A1E695E2267041AF00711D05 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		A1E695E5267041AF00711D05 /* libfmtd.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libfmtd.a;
-			remoteRef = A1E695E4267041AF00711D05 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		A1E695E7267041AF00711D05 /* libsoloud.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libsoloud.a;
-			remoteRef = A1E695E6267041AF00711D05 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -1191,7 +1126,10 @@
 					../../core/vendor/soloud20200207/src/backend/miniaudio,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
-				LIBRARY_SEARCH_PATHS = ../../openssl/lib/iOS;
+				LIBRARY_SEARCH_PATHS = (
+					../../openssl/lib/iOS,
+					../../core/binaries/ios,
+				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -1248,7 +1186,10 @@
 					../../core/src,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
-				LIBRARY_SEARCH_PATHS = ../../openssl/lib/iOS;
+				LIBRARY_SEARCH_PATHS = (
+					../../openssl/lib/iOS,
+					../../core/binaries/ios,
+				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;

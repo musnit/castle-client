@@ -129,8 +129,15 @@ case "$1" in
     ;;
 
   # Mobile
-  ios)
-    $CMAKE -DIOS=ON -DCMAKE_SYSTEM_NAME=iOS -H. -Bbuild_ios -GXcode
+  ios-release)
+    $CMAKE -DIOS=ON -DCMAKE_SYSTEM_NAME=iOS -H. -Bbuild/ios -GXcode
+    $CMAKE --build build/ios --config Release
+    cp \
+      build/ios/Release-iphoneos/libsoloud.a \
+      build/ios/Release-iphoneos/libcastle-core.a \
+      build/ios/vendor/fmt/Release-iphoneos/libfmt.a \
+      build/ios/vendor/box2d/bin/Release/libbox2d.a \
+      binaries/ios
     ;;
 
   # Web
