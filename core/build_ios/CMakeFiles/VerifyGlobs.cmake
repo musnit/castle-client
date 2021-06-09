@@ -23,6 +23,7 @@ set(OLD_GLOB
   "/Users/nikki/Development/castle-xyz/castle-client/core/src/behaviors/speed_limit.cpp"
   "/Users/nikki/Development/castle-xyz/castle-client/core/src/behaviors/tags.cpp"
   "/Users/nikki/Development/castle-xyz/castle-client/core/src/behaviors/text.cpp"
+  "/Users/nikki/Development/castle-xyz/castle-client/core/src/bridge.cpp"
   "/Users/nikki/Development/castle-xyz/castle-client/core/src/engine.cpp"
   "/Users/nikki/Development/castle-xyz/castle-client/core/src/expressions/math.cpp"
   "/Users/nikki/Development/castle-xyz/castle-client/core/src/expressions/random.cpp"

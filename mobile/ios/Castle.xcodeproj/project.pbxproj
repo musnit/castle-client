@@ -76,6 +76,7 @@
 		A1E695E9267041E800711D05 /* libcastle-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1E695E3267041AF00711D05 /* libcastle-core.a */; };
 		A1E695EA267041E800711D05 /* libfmtd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1E695E5267041AF00711D05 /* libfmtd.a */; };
 		A1E695EB267041E800711D05 /* libsoloud.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1E695E7267041AF00711D05 /* libsoloud.a */; };
+		A1E695EE26708E2E00711D05 /* CastleCoreBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1E695ED26708E2D00711D05 /* CastleCoreBridge.mm */; };
 		A1F835A02661964000E65FE9 /* CastleCoreView.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1F8359F2661964000E65FE9 /* CastleCoreView.mm */; };
 		A1FA18C32365168600E2ACFE /* GhostInputZone.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1FA18C22365168600E2ACFE /* GhostInputZone.mm */; };
 		B51813F72527916C00C315C9 /* GhostAppState.mm in Sources */ = {isa = PBXBuildFile; fileRef = B51813F62527916C00C315C9 /* GhostAppState.mm */; };
@@ -269,6 +270,8 @@
 		A1CCBA18235518C7009F4DDD /* GhostView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GhostView.m; sourceTree = "<group>"; };
 		A1D3A841258177A400666D4D /* CastleNativeUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CastleNativeUtils.m; sourceTree = "<group>"; };
 		A1E695D6267041AF00711D05 /* castle-core.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "castle-core.xcodeproj"; path = "../../core/build_ios/castle-core.xcodeproj"; sourceTree = "<group>"; };
+		A1E695EC267043CB00711D05 /* CastleCoreView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CastleCoreView.h; sourceTree = "<group>"; };
+		A1E695ED26708E2D00711D05 /* CastleCoreBridge.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CastleCoreBridge.mm; sourceTree = "<group>"; };
 		A1F8359F2661964000E65FE9 /* CastleCoreView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CastleCoreView.mm; sourceTree = "<group>"; };
 		A1FA18C22365168600E2ACFE /* GhostInputZone.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GhostInputZone.mm; sourceTree = "<group>"; };
 		A753A21E42DB46D99AD060DF /* RTAliasGrotesk-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "RTAliasGrotesk-Regular.otf"; path = "../assets/fonts/RTAliasGrotesk-Regular.otf"; sourceTree = "<group>"; };
@@ -349,6 +352,8 @@
 		13B07FAE1A68108700A75B9A /* Castle */ = {
 			isa = PBXGroup;
 			children = (
+				A1E695ED26708E2D00711D05 /* CastleCoreBridge.mm */,
+				A1E695EC267043CB00711D05 /* CastleCoreView.h */,
 				A1F8359F2661964000E65FE9 /* CastleCoreView.mm */,
 				B5942AAD2627646B003CF6DB /* BootSplash.storyboard */,
 				A1D3A841258177A400666D4D /* CastleNativeUtils.m */,
@@ -1020,6 +1025,7 @@
 				A12CFEE723CC30F600D721BC /* references.cpp in Sources */,
 				A14FE3C62355CE94003B7EA0 /* lsqlite3.c in Sources */,
 				A12CFF0823CC31C100D721BC /* tinyxml2.cpp in Sources */,
+				A1E695EE26708E2E00711D05 /* CastleCoreBridge.mm in Sources */,
 				A14FE3DF2355CEF0003B7EA0 /* ec.c in Sources */,
 				A14FE3CF2355CEC2003B7EA0 /* fpconv.c in Sources */,
 				A12CFEE823CC30F600D721BC /* warn.cpp in Sources */,

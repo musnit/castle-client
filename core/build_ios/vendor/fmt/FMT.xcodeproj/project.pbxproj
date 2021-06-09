@@ -9,22 +9,22 @@
 /* Begin PBXAggregateTarget section */
 		757E16BCA76944E5B17CC686 /* ALL_BUILD */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = D63DADF71A1344338DBCF45D /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */;
+			buildConfigurationList = 754785A8713C41EEA15BA0E6 /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */;
 			buildPhases = (
-				07879D60F6144FC381E869A7 /* CMake Rules */,
+				2F82443A52C34112A6CEAFD6 /* CMake Rules */,
 			);
 			dependencies = (
-				35E8919C161D4F038E669D95 /* PBXTargetDependency */,
-				13F9B0BBC20D42799C50FBCC /* PBXTargetDependency */,
+				0B8CC8EDCE8E4636AFD1EB7F /* PBXTargetDependency */,
+				F11371B1421B42CDB6FE59C9 /* PBXTargetDependency */,
 			);
 			name = ALL_BUILD;
 			productName = ALL_BUILD;
 		};
 		BAE7AAAFCCF3485EA5F572FF /* ZERO_CHECK */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = 966BFD8D5E0941B686900457 /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */;
+			buildConfigurationList = 5525D40892D54B83AFAF7CAB /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */;
 			buildPhases = (
-				8233CB9C74B548219DC1983D /* CMake Rules */,
+				871A0599986248F090846CF4 /* CMake Rules */,
 			);
 			dependencies = (
 			);
@@ -33,12 +33,12 @@
 		};
 		F2D8A80F21EA456090B76415 /* install */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = EAB2ADB86AAB459A924C8FF8 /* Build configuration list for PBXAggregateTarget "install" */;
+			buildConfigurationList = E2B48669E8B94D24B089232A /* Build configuration list for PBXAggregateTarget "install" */;
 			buildPhases = (
-				70C224A7443A4FEF968770B9 /* CMake PostBuild Rules */,
+				803571456DFE493EA5A31D59 /* CMake PostBuild Rules */,
 			);
 			dependencies = (
-				8B04F78068B94CAD9D191668 /* PBXTargetDependency */,
+				A85276145BB6420E9DBD1E80 /* PBXTargetDependency */,
 			);
 			name = install;
 			productName = install;
@@ -46,192 +46,192 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		084F20A276DA4A9C8B03A42B /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/README.rst */ = {isa = PBXBuildFile; fileRef = 996A5B1B4BCF4601AF9D1C95 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/README.rst */; };
-		087566281E03446BB16AB48F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/color.h */ = {isa = PBXBuildFile; fileRef = 8F3FE1AFE1384903949797B9 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/color.h */; };
-		38EF15D2CEC2420596AE41E8 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/ChangeLog.rst */ = {isa = PBXBuildFile; fileRef = 28DC6B7D989340A9BAAF29B9 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/ChangeLog.rst */; };
-		3B9B166215014053A3606836 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/os.h */ = {isa = PBXBuildFile; fileRef = 8FFFE791A85F4F31AFEE5BF2 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/os.h */; };
-		58E2A48BE7A24C3589051D82 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/posix.h */ = {isa = PBXBuildFile; fileRef = 4C20342E09B1429BA9D312C3 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/posix.h */; };
-		5F4ABFA11C004F4894359066 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/format.h */ = {isa = PBXBuildFile; fileRef = 4735043A9CAA4E368747857A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/format.h */; };
-		60E1F2F542AC4A30915A4266 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/ostream.h */ = {isa = PBXBuildFile; fileRef = 049E5E66EB1B4C76A96A139B /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/ostream.h */; };
-		76A2D8F2D8524CE4A756EBFC /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/locale.h */ = {isa = PBXBuildFile; fileRef = D167AB37D8D84903B9EA26C1 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/locale.h */; };
-		8707A4949ED143528DAB1C76 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/core.h */ = {isa = PBXBuildFile; fileRef = 0E3CD24E37324A91BB2D821F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/core.h */; };
-		8F07FDD8C0A94722AD622FF0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/printf.h */ = {isa = PBXBuildFile; fileRef = D26313B621C8463F9ABD04BF /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/printf.h */; };
-		9E4A810E4691483DB6D0D326 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/CMakeLists.txt */ = {isa = PBXBuildFile; fileRef = A2146A0F6A4E4E8A94A3D7EE /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/CMakeLists.txt */; };
-		C88436DE045A434FBC73A871 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/ranges.h */ = {isa = PBXBuildFile; fileRef = D15D072558EA4BD5AB85A2D8 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/ranges.h */; };
-		D7633610A142462780A6CCC5 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/format-inl.h */ = {isa = PBXBuildFile; fileRef = 821D404BA4C84C6D9EA06E9E /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/format-inl.h */; };
-		E15C58C4389C4C7EAEFD4A18 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/chrono.h */ = {isa = PBXBuildFile; fileRef = D647CB5E5FC64FC7A6D2FD67 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/chrono.h */; };
-		E51D2BDC56B04E5280DA9055 /* /Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt/CMakeFiles/fmt.dir/Info.plist */ = {isa = PBXBuildFile; fileRef = 1E70379116C44234B4346398 /* /Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt/CMakeFiles/fmt.dir/Info.plist */; };
-		E955AA8A18F44D3AB4FA48EE /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/src/os.cc */ = {isa = PBXBuildFile; fileRef = 867BE754E09A4D4A9974E013 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/src/os.cc */; };
-		EDF0552CA965473A8089134A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/src/format.cc */ = {isa = PBXBuildFile; fileRef = 27CEB405E3914FEEBC148321 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/src/format.cc */; };
-		FEF55589C4A6429BB55D4040 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/compile.h */ = {isa = PBXBuildFile; fileRef = 5C593CE48FD64867B9BB80F8 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/compile.h */; };
+		0602DF32D5BC48D0A24991E6 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/color.h */ = {isa = PBXBuildFile; fileRef = 59F55C883E1541E1B642DE7E /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/color.h */; };
+		08E469617B17419FAF4E58F9 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/format-inl.h */ = {isa = PBXBuildFile; fileRef = 3AEC397208624C078A815509 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/format-inl.h */; };
+		0B824301AB5F4523AD938003 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/os.h */ = {isa = PBXBuildFile; fileRef = 871369CFC56B4B17B904FDBB /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/os.h */; };
+		266A7DB7F62F478E936B58D4 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/posix.h */ = {isa = PBXBuildFile; fileRef = 0B5EB63E9A7E463BA079A72B /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/posix.h */; };
+		2753F38FA5DE49F6BFAA99D0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/printf.h */ = {isa = PBXBuildFile; fileRef = 1EFCCA9C276842D99E05EA65 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/printf.h */; };
+		30CB5B7AC13942EBADEE63AC /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/src/format.cc */ = {isa = PBXBuildFile; fileRef = 691F3C3327354BBF9EF48867 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/src/format.cc */; };
+		4BF5212494664D469789E1A7 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/CMakeLists.txt */ = {isa = PBXBuildFile; fileRef = F956BF9D4A944F18A2435420 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/CMakeLists.txt */; };
+		5AFC35359A864F75AA0769FE /* /Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt/CMakeFiles/fmt.dir/Info.plist */ = {isa = PBXBuildFile; fileRef = B12D883DCF794264A3D5BBC2 /* /Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt/CMakeFiles/fmt.dir/Info.plist */; };
+		668CA765ABC749709F8CB9EF /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/core.h */ = {isa = PBXBuildFile; fileRef = CE72D5353D224E2C970A775F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/core.h */; };
+		8069625D4AF14A31B419C15E /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/locale.h */ = {isa = PBXBuildFile; fileRef = 90D35AB08B6F46E59F0AA7A4 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/locale.h */; };
+		8B22447C34B8499290A00813 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/chrono.h */ = {isa = PBXBuildFile; fileRef = D1B358BE43BB4E3182F51819 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/chrono.h */; };
+		9761040B265C482BA987FDD7 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/ostream.h */ = {isa = PBXBuildFile; fileRef = A43918BD82404E4BBB434BD5 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/ostream.h */; };
+		9BED5BD10AB94DC288960EF9 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/format.h */ = {isa = PBXBuildFile; fileRef = 1D3A1571A0124D75B3D9A9B0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/format.h */; };
+		DE61C8136551423BA6D69067 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/compile.h */ = {isa = PBXBuildFile; fileRef = E5CA031BCDD64747853A65CE /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/compile.h */; };
+		DE95A715C8544825B173CC07 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/ranges.h */ = {isa = PBXBuildFile; fileRef = 41A7EC9898064354B9BD037E /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/ranges.h */; };
+		E0EA8A6C6A92475184405A17 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/ChangeLog.rst */ = {isa = PBXBuildFile; fileRef = EF3CE52FEEE4470488B05B7D /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/ChangeLog.rst */; };
+		E3082C97D61742E3BB436D24 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/README.rst */ = {isa = PBXBuildFile; fileRef = 1C11A02EF6F648D1B8D60775 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/README.rst */; };
+		FE8610E3355C4C8180C1DE93 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/src/os.cc */ = {isa = PBXBuildFile; fileRef = 1386C61D2D6A44509202CCF7 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/src/os.cc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildStyle section */
-		66F6E639EEA843E68D87F2C9 /* RelWithDebInfo */ = {
-			isa = PBXBuildStyle;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-			};
-			name = RelWithDebInfo;
-		};
-		83E1BB836E744A808F44FF08 /* MinSizeRel */ = {
+		37300631F880493F9533D8D3 /* MinSizeRel */ = {
 			isa = PBXBuildStyle;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
 			};
 			name = MinSizeRel;
 		};
-		B2A579F1A57D471BA67D267F /* Debug */ = {
+		487A9A6D924D4E78BACEB13E /* RelWithDebInfo */ = {
 			isa = PBXBuildStyle;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
 			};
-			name = Debug;
+			name = RelWithDebInfo;
 		};
-		C91E3772CD724C49B91A3D6B /* Release */ = {
+		8FE823C481C948B38162A1A5 /* Release */ = {
 			isa = PBXBuildStyle;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
 			};
 			name = Release;
 		};
+		E24C382CB7154DE187F9CCC7 /* Debug */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Debug;
+		};
 /* End PBXBuildStyle section */
 
 /* Begin PBXContainerItemProxy section */
-		30FF051F935F4082B20F176A /* PBXContainerItemProxy */ = {
+		1BA11705D32D4F6496C9A8A9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 190A7A9A3EF84C6187BB63C9 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 757E16BCA76944E5B17CC686;
 			remoteInfo = ALL_BUILD;
 		};
-		7C457E14A60348FDB7936D46 /* PBXContainerItemProxy */ = {
+		63ABE973D506476BA4D34838 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 190A7A9A3EF84C6187BB63C9 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = BAE7AAAFCCF3485EA5F572FF;
 			remoteInfo = ZERO_CHECK;
 		};
-		E0ECFD1B882744FCAFEB5622 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 190A7A9A3EF84C6187BB63C9 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = BAE7AAAFCCF3485EA5F572FF;
-			remoteInfo = ZERO_CHECK;
-		};
-		FD5BB6F19FF14C03AC4028BB /* PBXContainerItemProxy */ = {
+		7F39EB61573C47E7915E2601 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 190A7A9A3EF84C6187BB63C9 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 70DDEECAE1B44680BB30605D;
 			remoteInfo = fmt;
 		};
+		BD989AB2637F4EC69C3F4837 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 190A7A9A3EF84C6187BB63C9 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BAE7AAAFCCF3485EA5F572FF;
+			remoteInfo = ZERO_CHECK;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		049E5E66EB1B4C76A96A139B /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/ostream.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ostream.h; path = include/fmt/ostream.h; sourceTree = SOURCE_ROOT; };
-		0E3CD24E37324A91BB2D821F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/core.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = core.h; path = include/fmt/core.h; sourceTree = SOURCE_ROOT; };
-		1E70379116C44234B4346398 /* /Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt/CMakeFiles/fmt.dir/Info.plist */ = {isa = PBXFileReference; explicitFileType = sourcecode.text.plist; fileEncoding = 4; name = Info.plist; path = ../../build_ios/vendor/fmt/CMakeFiles/fmt.dir/Info.plist; sourceTree = SOURCE_ROOT; };
-		27CEB405E3914FEEBC148321 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/src/format.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = format.cc; path = src/format.cc; sourceTree = SOURCE_ROOT; };
-		28DC6B7D989340A9BAAF29B9 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/ChangeLog.rst */ = {isa = PBXFileReference; explicitFileType = sourcecode; fileEncoding = 4; name = ChangeLog.rst; path = ChangeLog.rst; sourceTree = SOURCE_ROOT; };
-		4735043A9CAA4E368747857A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/format.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = format.h; path = include/fmt/format.h; sourceTree = SOURCE_ROOT; };
-		4C20342E09B1429BA9D312C3 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/posix.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = posix.h; path = include/fmt/posix.h; sourceTree = SOURCE_ROOT; };
-		5C593CE48FD64867B9BB80F8 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/compile.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = compile.h; path = include/fmt/compile.h; sourceTree = SOURCE_ROOT; };
-		60982780ECDD4C868C9A9957 /* fmt */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libfmtd.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		821D404BA4C84C6D9EA06E9E /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/format-inl.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = "format-inl.h"; path = "include/fmt/format-inl.h"; sourceTree = SOURCE_ROOT; };
-		867BE754E09A4D4A9974E013 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/src/os.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = os.cc; path = src/os.cc; sourceTree = SOURCE_ROOT; };
-		8F3FE1AFE1384903949797B9 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/color.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = color.h; path = include/fmt/color.h; sourceTree = SOURCE_ROOT; };
-		8FFFE791A85F4F31AFEE5BF2 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/os.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = os.h; path = include/fmt/os.h; sourceTree = SOURCE_ROOT; };
-		996A5B1B4BCF4601AF9D1C95 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/README.rst */ = {isa = PBXFileReference; explicitFileType = sourcecode; fileEncoding = 4; name = README.rst; path = README.rst; sourceTree = SOURCE_ROOT; };
-		A2146A0F6A4E4E8A94A3D7EE /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
-		D15D072558EA4BD5AB85A2D8 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/ranges.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ranges.h; path = include/fmt/ranges.h; sourceTree = SOURCE_ROOT; };
-		D167AB37D8D84903B9EA26C1 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/locale.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = locale.h; path = include/fmt/locale.h; sourceTree = SOURCE_ROOT; };
-		D26313B621C8463F9ABD04BF /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/printf.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = printf.h; path = include/fmt/printf.h; sourceTree = SOURCE_ROOT; };
-		D647CB5E5FC64FC7A6D2FD67 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/chrono.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = chrono.h; path = include/fmt/chrono.h; sourceTree = SOURCE_ROOT; };
-		DF4D24F42C074117821D5C04 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		0B5EB63E9A7E463BA079A72B /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/posix.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = posix.h; path = include/fmt/posix.h; sourceTree = SOURCE_ROOT; };
+		1386C61D2D6A44509202CCF7 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/src/os.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = os.cc; path = src/os.cc; sourceTree = SOURCE_ROOT; };
+		1C11A02EF6F648D1B8D60775 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/README.rst */ = {isa = PBXFileReference; explicitFileType = sourcecode; fileEncoding = 4; name = README.rst; path = README.rst; sourceTree = SOURCE_ROOT; };
+		1D3A1571A0124D75B3D9A9B0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/format.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = format.h; path = include/fmt/format.h; sourceTree = SOURCE_ROOT; };
+		1EFCCA9C276842D99E05EA65 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/printf.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = printf.h; path = include/fmt/printf.h; sourceTree = SOURCE_ROOT; };
+		2D891BAD8CBC476287E95040 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		3AEC397208624C078A815509 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/format-inl.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = "format-inl.h"; path = "include/fmt/format-inl.h"; sourceTree = SOURCE_ROOT; };
+		41A7EC9898064354B9BD037E /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/ranges.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ranges.h; path = include/fmt/ranges.h; sourceTree = SOURCE_ROOT; };
+		59F55C883E1541E1B642DE7E /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/color.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = color.h; path = include/fmt/color.h; sourceTree = SOURCE_ROOT; };
+		691F3C3327354BBF9EF48867 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/src/format.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = format.cc; path = src/format.cc; sourceTree = SOURCE_ROOT; };
+		871369CFC56B4B17B904FDBB /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/os.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = os.h; path = include/fmt/os.h; sourceTree = SOURCE_ROOT; };
+		90D35AB08B6F46E59F0AA7A4 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/locale.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = locale.h; path = include/fmt/locale.h; sourceTree = SOURCE_ROOT; };
+		A43918BD82404E4BBB434BD5 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/ostream.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ostream.h; path = include/fmt/ostream.h; sourceTree = SOURCE_ROOT; };
+		AEFFAF775ED74D63B7F61AAF /* fmt */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libfmtd.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		B12D883DCF794264A3D5BBC2 /* /Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt/CMakeFiles/fmt.dir/Info.plist */ = {isa = PBXFileReference; explicitFileType = sourcecode.text.plist; fileEncoding = 4; name = Info.plist; path = ../../build_ios/vendor/fmt/CMakeFiles/fmt.dir/Info.plist; sourceTree = SOURCE_ROOT; };
+		CE72D5353D224E2C970A775F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/core.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = core.h; path = include/fmt/core.h; sourceTree = SOURCE_ROOT; };
+		D1B358BE43BB4E3182F51819 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/chrono.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = chrono.h; path = include/fmt/chrono.h; sourceTree = SOURCE_ROOT; };
+		E5CA031BCDD64747853A65CE /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/compile.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = compile.h; path = include/fmt/compile.h; sourceTree = SOURCE_ROOT; };
+		EF3CE52FEEE4470488B05B7D /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/ChangeLog.rst */ = {isa = PBXFileReference; explicitFileType = sourcecode; fileEncoding = 4; name = ChangeLog.rst; path = ChangeLog.rst; sourceTree = SOURCE_ROOT; };
+		F956BF9D4A944F18A2435420 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
-		6C88ED28232C4C4E89B3DD88 /* Header Files */ = {
+		42795D68B32147BE9FCD56C4 /* fmt */ = {
 			isa = PBXGroup;
 			children = (
-				D647CB5E5FC64FC7A6D2FD67 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/chrono.h */,
-				8F3FE1AFE1384903949797B9 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/color.h */,
-				5C593CE48FD64867B9BB80F8 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/compile.h */,
-				0E3CD24E37324A91BB2D821F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/core.h */,
-				821D404BA4C84C6D9EA06E9E /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/format-inl.h */,
-				4735043A9CAA4E368747857A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/format.h */,
-				D167AB37D8D84903B9EA26C1 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/locale.h */,
-				8FFFE791A85F4F31AFEE5BF2 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/os.h */,
-				049E5E66EB1B4C76A96A139B /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/ostream.h */,
-				4C20342E09B1429BA9D312C3 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/posix.h */,
-				D26313B621C8463F9ABD04BF /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/printf.h */,
-				D15D072558EA4BD5AB85A2D8 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/ranges.h */,
+				AD3AE66B1CAE462296BF9DA0 /* Source Files */,
+				758E8DF7EAFD4E709BCADA95 /* Header Files */,
+				5E2D52AE9E4B4019B537E1B9 /* Resources */,
+				F956BF9D4A944F18A2435420 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/CMakeLists.txt */,
+				EF3CE52FEEE4470488B05B7D /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/ChangeLog.rst */,
+				1C11A02EF6F648D1B8D60775 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/README.rst */,
 			);
-			name = "Header Files";
+			name = fmt;
 			sourceTree = "<group>";
 		};
-		70286FAB1AAE42AEBAF5E4CE /* CMake Rules */ = {
+		563B451A8A594156B3C4978C = {
+			isa = PBXGroup;
+			children = (
+				42795D68B32147BE9FCD56C4 /* fmt */,
+				D612920448E4429A842DC8C4 /* ALL_BUILD */,
+				8615F2EBD5A54AE2A1E09ABE /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		57BCF1F0E7A64784B078EBB0 /* CMake Rules */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = "CMake Rules";
 			sourceTree = "<group>";
 		};
-		78FDC8642E414C949AAB55ED /* Source Files */ = {
+		5E2D52AE9E4B4019B537E1B9 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				27CEB405E3914FEEBC148321 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/src/format.cc */,
-				867BE754E09A4D4A9974E013 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/src/os.cc */,
-			);
-			name = "Source Files";
-			sourceTree = "<group>";
-		};
-		956836AD315A45769D942F2A /* fmt */ = {
-			isa = PBXGroup;
-			children = (
-				78FDC8642E414C949AAB55ED /* Source Files */,
-				6C88ED28232C4C4E89B3DD88 /* Header Files */,
-				A5214469639A42299A5EAB03 /* Resources */,
-				A2146A0F6A4E4E8A94A3D7EE /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/CMakeLists.txt */,
-				28DC6B7D989340A9BAAF29B9 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/ChangeLog.rst */,
-				996A5B1B4BCF4601AF9D1C95 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/README.rst */,
-			);
-			name = fmt;
-			sourceTree = "<group>";
-		};
-		A5214469639A42299A5EAB03 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				1E70379116C44234B4346398 /* /Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt/CMakeFiles/fmt.dir/Info.plist */,
+				B12D883DCF794264A3D5BBC2 /* /Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt/CMakeFiles/fmt.dir/Info.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
 		};
-		D389918D317D41F29DC20184 = {
+		758E8DF7EAFD4E709BCADA95 /* Header Files */ = {
 			isa = PBXGroup;
 			children = (
-				956836AD315A45769D942F2A /* fmt */,
-				E70A4E8B323E4E0FA4F3F8E7 /* ALL_BUILD */,
-				EDCEB6F4524F48F6805047CD /* Products */,
+				D1B358BE43BB4E3182F51819 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/chrono.h */,
+				59F55C883E1541E1B642DE7E /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/color.h */,
+				E5CA031BCDD64747853A65CE /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/compile.h */,
+				CE72D5353D224E2C970A775F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/core.h */,
+				3AEC397208624C078A815509 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/format-inl.h */,
+				1D3A1571A0124D75B3D9A9B0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/format.h */,
+				90D35AB08B6F46E59F0AA7A4 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/locale.h */,
+				871369CFC56B4B17B904FDBB /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/os.h */,
+				A43918BD82404E4BBB434BD5 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/ostream.h */,
+				0B5EB63E9A7E463BA079A72B /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/posix.h */,
+				1EFCCA9C276842D99E05EA65 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/printf.h */,
+				41A7EC9898064354B9BD037E /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include/fmt/ranges.h */,
 			);
+			name = "Header Files";
 			sourceTree = "<group>";
 		};
-		E70A4E8B323E4E0FA4F3F8E7 /* ALL_BUILD */ = {
+		8615F2EBD5A54AE2A1E09ABE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				70286FAB1AAE42AEBAF5E4CE /* CMake Rules */,
-				DF4D24F42C074117821D5C04 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/CMakeLists.txt */,
-			);
-			name = ALL_BUILD;
-			sourceTree = "<group>";
-		};
-		EDCEB6F4524F48F6805047CD /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				60982780ECDD4C868C9A9957 /* fmt */,
+				AEFFAF775ED74D63B7F61AAF /* fmt */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		AD3AE66B1CAE462296BF9DA0 /* Source Files */ = {
+			isa = PBXGroup;
+			children = (
+				691F3C3327354BBF9EF48867 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/src/format.cc */,
+				1386C61D2D6A44509202CCF7 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/src/os.cc */,
+			);
+			name = "Source Files";
+			sourceTree = "<group>";
+		};
+		D612920448E4429A842DC8C4 /* ALL_BUILD */ = {
+			isa = PBXGroup;
+			children = (
+				57BCF1F0E7A64784B078EBB0 /* CMake Rules */,
+				2D891BAD8CBC476287E95040 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/CMakeLists.txt */,
+			);
+			name = ALL_BUILD;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -239,18 +239,18 @@
 /* Begin PBXNativeTarget section */
 		70DDEECAE1B44680BB30605D /* fmt */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 3FB63E89452641319E4FEF18 /* Build configuration list for PBXNativeTarget "fmt" */;
+			buildConfigurationList = EE74DD7CC235461EA18C30D5 /* Build configuration list for PBXNativeTarget "fmt" */;
 			buildPhases = (
-				D367C9C6B5A94C5F93B70E56 /* Sources */,
+				66301ABA855E434083E62037 /* Sources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				77C463451BCE4DA789143B94 /* PBXTargetDependency */,
+				5412BD677AC54A75AD884BD6 /* PBXTargetDependency */,
 			);
 			name = fmt;
 			productName = fmt;
-			productReference = 60982780ECDD4C868C9A9957 /* fmt */;
+			productReference = AEFFAF775ED74D63B7F61AAF /* fmt */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -262,18 +262,18 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1250;
 			};
-			buildConfigurationList = 22772667991F4201966E0FE3 /* Build configuration list for PBXProject "FMT" */;
+			buildConfigurationList = 5FE36733C4444F708C0C5766 /* Build configuration list for PBXProject "FMT" */;
 			buildSettings = {
 			};
 			buildStyles = (
-				B2A579F1A57D471BA67D267F /* Debug */,
-				C91E3772CD724C49B91A3D6B /* Release */,
-				83E1BB836E744A808F44FF08 /* MinSizeRel */,
-				66F6E639EEA843E68D87F2C9 /* RelWithDebInfo */,
+				E24C382CB7154DE187F9CCC7 /* Debug */,
+				8FE823C481C948B38162A1A5 /* Release */,
+				37300631F880493F9533D8D3 /* MinSizeRel */,
+				487A9A6D924D4E78BACEB13E /* RelWithDebInfo */,
 			);
 			compatibilityVersion = "Xcode 3.2";
 			hasScannedForEncodings = 0;
-			mainGroup = D389918D317D41F29DC20184;
+			mainGroup = 563B451A8A594156B3C4978C;
 			projectDirPath = ../../../vendor/fmt;
 			projectRoot = "";
 			targets = (
@@ -286,7 +286,7 @@
 /* End PBXProject section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		07879D60F6144FC381E869A7 /* CMake Rules */ = {
+		2F82443A52C34112A6CEAFD6 /* CMake Rules */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -297,7 +297,7 @@
 			shellScript = "make -C /Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt -f /Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt/CMakeScripts/ALL_BUILD_cmakeRulesBuildPhase.make$CONFIGURATION OBJDIR=$(basename \"$OBJECT_FILE_DIR_normal\") all";
 			showEnvVarsInLog = 0;
 		};
-		6B4A08A10FFC4804944880CB = {
+		70A5B4B4C645461C9D0954E0 = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -312,7 +312,7 @@
 exit 0";
 			showEnvVarsInLog = 0;
 		};
-		70C224A7443A4FEF968770B9 /* CMake PostBuild Rules */ = {
+		803571456DFE493EA5A31D59 /* CMake PostBuild Rules */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -323,7 +323,7 @@ exit 0";
 			shellScript = "make -C /Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt -f /Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt/CMakeScripts/install_postBuildPhase.make$CONFIGURATION OBJDIR=$(basename \"$OBJECT_FILE_DIR_normal\") all";
 			showEnvVarsInLog = 0;
 		};
-		8233CB9C74B548219DC1983D /* CMake Rules */ = {
+		871A0599986248F090846CF4 /* CMake Rules */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -334,7 +334,7 @@ exit 0";
 			shellScript = "make -C /Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt -f /Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt/CMakeScripts/ZERO_CHECK_cmakeRulesBuildPhase.make$CONFIGURATION OBJDIR=$(basename \"$OBJECT_FILE_DIR_normal\") all";
 			showEnvVarsInLog = 0;
 		};
-		891A5B16F2DD49FB807588CA = {
+		EB1BB708C43647209BFA4C21 = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -349,7 +349,7 @@ exit 0";
 exit 0";
 			showEnvVarsInLog = 0;
 		};
-		9E795EDCE2634856A3D6F57D = {
+		F547454BAC344686B9294133 = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -367,42 +367,42 @@ exit 0";
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		D367C9C6B5A94C5F93B70E56 /* Sources */ = {
+		66301ABA855E434083E62037 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EDF0552CA965473A8089134A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/src/format.cc */,
-				E955AA8A18F44D3AB4FA48EE /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/src/os.cc */,
+				30CB5B7AC13942EBADEE63AC /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/src/format.cc */,
+				FE8610E3355C4C8180C1DE93 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/src/os.cc */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		13F9B0BBC20D42799C50FBCC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 70DDEECAE1B44680BB30605D /* fmt */;
-			targetProxy = FD5BB6F19FF14C03AC4028BB /* PBXContainerItemProxy */;
-		};
-		35E8919C161D4F038E669D95 /* PBXTargetDependency */ = {
+		0B8CC8EDCE8E4636AFD1EB7F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = BAE7AAAFCCF3485EA5F572FF /* ZERO_CHECK */;
-			targetProxy = E0ECFD1B882744FCAFEB5622 /* PBXContainerItemProxy */;
+			targetProxy = 63ABE973D506476BA4D34838 /* PBXContainerItemProxy */;
 		};
-		77C463451BCE4DA789143B94 /* PBXTargetDependency */ = {
+		5412BD677AC54A75AD884BD6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = BAE7AAAFCCF3485EA5F572FF /* ZERO_CHECK */;
-			targetProxy = 7C457E14A60348FDB7936D46 /* PBXContainerItemProxy */;
+			targetProxy = BD989AB2637F4EC69C3F4837 /* PBXContainerItemProxy */;
 		};
-		8B04F78068B94CAD9D191668 /* PBXTargetDependency */ = {
+		A85276145BB6420E9DBD1E80 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 757E16BCA76944E5B17CC686 /* ALL_BUILD */;
-			targetProxy = 30FF051F935F4082B20F176A /* PBXContainerItemProxy */;
+			targetProxy = 1BA11705D32D4F6496C9A8A9 /* PBXContainerItemProxy */;
+		};
+		F11371B1421B42CDB6FE59C9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 70DDEECAE1B44680BB30605D /* fmt */;
+			targetProxy = 7F39EB61573C47E7915E2601 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		0CAD4ED16A4D4BE5AE706D02 /* MinSizeRel */ = {
+		12602DF37754408AA0D6503F /* MinSizeRel */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ONLY_ACTIVE_ARCH = YES;
@@ -411,289 +411,7 @@ exit 0";
 			};
 			name = MinSizeRel;
 		};
-		36D731AF6ABA4FCE90897181 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = "-g ";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = ALL_BUILD;
-				SECTORDER_FLAGS = "";
-				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
-			};
-			name = Debug;
-		};
-		40D27BF2BAC843EE93893C7B /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = iphoneos;
-				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt/build";
-			};
-			name = Release;
-		};
-		41B3188B3EDB457FB283194A /* MinSizeRel */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = "-g ";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = install;
-				SECTORDER_FLAGS = "";
-				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
-			};
-			name = MinSizeRel;
-		};
-		458532C1E5F6464783B605A5 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = "-g ";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = install;
-				SECTORDER_FLAGS = "";
-				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
-			};
-			name = Release;
-		};
-		5054E5148F0C428885FF2E57 /* MinSizeRel */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				EXECUTABLE_PREFIX = lib;
-				EXECUTABLE_SUFFIX = .a;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = ("/Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include");
-				INSTALL_PATH = "";
-				LIBRARY_STYLE = STATIC;
-				OTHER_CPLUSPLUSFLAGS = "    -DNDEBUG    '-std=gnu++11'  ";
-				OTHER_LIBTOOLFLAGS = " ";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = fmt;
-				SECTORDER_FLAGS = "";
-				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
-			};
-			name = MinSizeRel;
-		};
-		584DC724EE40456682D07DBB /* RelWithDebInfo */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = "-g ";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = ZERO_CHECK;
-				SECTORDER_FLAGS = "";
-				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
-			};
-			name = RelWithDebInfo;
-		};
-		5C47C49620A54D80869E388D /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = "-g ";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = ZERO_CHECK;
-				SECTORDER_FLAGS = "";
-				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
-			};
-			name = Release;
-		};
-		5F7A90ED6E5345A285D77D02 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				EXECUTABLE_PREFIX = lib;
-				EXECUTABLE_SUFFIX = .a;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = ("/Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include");
-				INSTALL_PATH = "";
-				LIBRARY_STYLE = STATIC;
-				OTHER_CPLUSPLUSFLAGS = "    -DNDEBUG    '-std=gnu++11'  ";
-				OTHER_LIBTOOLFLAGS = " ";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = fmt;
-				SECTORDER_FLAGS = "";
-				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
-			};
-			name = Release;
-		};
-		75ABBED204E94A0D8C7EE464 /* MinSizeRel */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = "-g ";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = ZERO_CHECK;
-				SECTORDER_FLAGS = "";
-				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
-			};
-			name = MinSizeRel;
-		};
-		7C467ED35D844A979E262EA2 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = iphoneos;
-				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt/build";
-			};
-			name = Debug;
-		};
-		8F4A4992D3284854A78F617F /* RelWithDebInfo */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = "-g ";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = ALL_BUILD;
-				SECTORDER_FLAGS = "";
-				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
-			};
-			name = RelWithDebInfo;
-		};
-		8FFD23D5E4E649A58C0BF3C3 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = "-g ";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = ALL_BUILD;
-				SECTORDER_FLAGS = "";
-				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
-			};
-			name = Release;
-		};
-		942319FBD44E433588DF5710 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = "-g ";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = install;
-				SECTORDER_FLAGS = "";
-				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
-			};
-			name = Debug;
-		};
-		975619F0930D40AD999E3D4E /* RelWithDebInfo */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				EXECUTABLE_PREFIX = lib;
-				EXECUTABLE_SUFFIX = .a;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 2;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = ("/Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include");
-				INSTALL_PATH = "";
-				LIBRARY_STYLE = STATIC;
-				OTHER_CPLUSPLUSFLAGS = "       -DNDEBUG    '-std=gnu++11'  ";
-				OTHER_LIBTOOLFLAGS = " ";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = fmt;
-				SECTORDER_FLAGS = "";
-				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
-			};
-			name = RelWithDebInfo;
-		};
-		B1AB0D5BBE0740DA9A5FDC37 /* RelWithDebInfo */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = iphoneos;
-				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt/build";
-			};
-			name = RelWithDebInfo;
-		};
-		D079E1F770114457AB54A20B /* RelWithDebInfo */ = {
+		1C18BE163D154982ADD45FE3 /* RelWithDebInfo */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
@@ -713,7 +431,67 @@ exit 0";
 			};
 			name = RelWithDebInfo;
 		};
-		DB65E7AD02AC48D4959BE634 /* Debug */ = {
+		20D3D3B239B2426787C35F90 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = "-g ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		2F6DC0D3908E4F2BAEF4D2F7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = "-g ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = install;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Debug;
+		};
+		366CC12F174141C989799AB4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = "-g ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = install;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Release;
+		};
+		500D8682846B4620ACC68CBD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
@@ -731,9 +509,9 @@ exit 0";
 				USE_HEADERMAP = NO;
 				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
 			};
-			name = Debug;
+			name = Release;
 		};
-		E9AC3695E2814EC698197646 /* MinSizeRel */ = {
+		6F39D77A94FD43019E239CA7 /* MinSizeRel */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
@@ -753,7 +531,27 @@ exit 0";
 			};
 			name = MinSizeRel;
 		};
-		EB2A37104C744102BAD03A17 /* Debug */ = {
+		7E0BA93FAF7B4105B36DA508 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = "-g ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		876C5AE208324CAB9B93E3FF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
@@ -778,60 +576,262 @@ exit 0";
 			};
 			name = Debug;
 		};
+		903BF21A3FDE438D92C3FBE5 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = "-g ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = install;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		95C0225E8C394A1EBBF5A37B /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .a;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = ("/Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include");
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = STATIC;
+				OTHER_CPLUSPLUSFLAGS = "    -DNDEBUG    '-std=gnu++11'  ";
+				OTHER_LIBTOOLFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = fmt;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		96D90F383845469392358CCA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = "-g ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Debug;
+		};
+		AA7924CD3A7642C98E32E215 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt/build";
+			};
+			name = Debug;
+		};
+		AFC793A18D804DCAA884C00D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = "-g ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Debug;
+		};
+		BFEB035B40974FEC8602A44D /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt/build";
+			};
+			name = RelWithDebInfo;
+		};
+		C1622631F8F3434A901DA590 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = "-g ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Release;
+		};
+		DF699972AB7D47B0B6C149AF /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = "-g ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		E1066A46058444118FA18708 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt/build";
+			};
+			name = Release;
+		};
+		E3096E9D96BB4444AB47ECD5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .a;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = ("/Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include");
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = STATIC;
+				OTHER_CPLUSPLUSFLAGS = "    -DNDEBUG    '-std=gnu++11'  ";
+				OTHER_LIBTOOLFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = fmt;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Release;
+		};
+		EC0BD9E82895446596F54CE7 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .a;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 2;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = ("/Users/nikki/Development/castle-xyz/castle-client/core/vendor/fmt/include");
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = STATIC;
+				OTHER_CPLUSPLUSFLAGS = "       -DNDEBUG    '-std=gnu++11'  ";
+				OTHER_LIBTOOLFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = fmt;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		22772667991F4201966E0FE3 /* Build configuration list for PBXProject "FMT" */ = {
+		5525D40892D54B83AFAF7CAB /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7C467ED35D844A979E262EA2 /* Debug */,
-				40D27BF2BAC843EE93893C7B /* Release */,
-				0CAD4ED16A4D4BE5AE706D02 /* MinSizeRel */,
-				B1AB0D5BBE0740DA9A5FDC37 /* RelWithDebInfo */,
+				AFC793A18D804DCAA884C00D /* Debug */,
+				500D8682846B4620ACC68CBD /* Release */,
+				DF699972AB7D47B0B6C149AF /* MinSizeRel */,
+				7E0BA93FAF7B4105B36DA508 /* RelWithDebInfo */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		3FB63E89452641319E4FEF18 /* Build configuration list for PBXNativeTarget "fmt" */ = {
+		5FE36733C4444F708C0C5766 /* Build configuration list for PBXProject "FMT" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				EB2A37104C744102BAD03A17 /* Debug */,
-				5F7A90ED6E5345A285D77D02 /* Release */,
-				5054E5148F0C428885FF2E57 /* MinSizeRel */,
-				975619F0930D40AD999E3D4E /* RelWithDebInfo */,
+				AA7924CD3A7642C98E32E215 /* Debug */,
+				E1066A46058444118FA18708 /* Release */,
+				12602DF37754408AA0D6503F /* MinSizeRel */,
+				BFEB035B40974FEC8602A44D /* RelWithDebInfo */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		966BFD8D5E0941B686900457 /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */ = {
+		754785A8713C41EEA15BA0E6 /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DB65E7AD02AC48D4959BE634 /* Debug */,
-				5C47C49620A54D80869E388D /* Release */,
-				75ABBED204E94A0D8C7EE464 /* MinSizeRel */,
-				584DC724EE40456682D07DBB /* RelWithDebInfo */,
+				96D90F383845469392358CCA /* Debug */,
+				C1622631F8F3434A901DA590 /* Release */,
+				6F39D77A94FD43019E239CA7 /* MinSizeRel */,
+				20D3D3B239B2426787C35F90 /* RelWithDebInfo */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		D63DADF71A1344338DBCF45D /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */ = {
+		E2B48669E8B94D24B089232A /* Build configuration list for PBXAggregateTarget "install" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				36D731AF6ABA4FCE90897181 /* Debug */,
-				8FFD23D5E4E649A58C0BF3C3 /* Release */,
-				E9AC3695E2814EC698197646 /* MinSizeRel */,
-				8F4A4992D3284854A78F617F /* RelWithDebInfo */,
+				2F6DC0D3908E4F2BAEF4D2F7 /* Debug */,
+				366CC12F174141C989799AB4 /* Release */,
+				903BF21A3FDE438D92C3FBE5 /* MinSizeRel */,
+				1C18BE163D154982ADD45FE3 /* RelWithDebInfo */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		EAB2ADB86AAB459A924C8FF8 /* Build configuration list for PBXAggregateTarget "install" */ = {
+		EE74DD7CC235461EA18C30D5 /* Build configuration list for PBXNativeTarget "fmt" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				942319FBD44E433588DF5710 /* Debug */,
-				458532C1E5F6464783B605A5 /* Release */,
-				41B3188B3EDB457FB283194A /* MinSizeRel */,
-				D079E1F770114457AB54A20B /* RelWithDebInfo */,
+				876C5AE208324CAB9B93E3FF /* Debug */,
+				E3096E9D96BB4444AB47ECD5 /* Release */,
+				95C0225E8C394A1EBBF5A37B /* MinSizeRel */,
+				EC0BD9E82895446596F54CE7 /* RelWithDebInfo */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

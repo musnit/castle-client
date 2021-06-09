@@ -7,6 +7,7 @@
 #include "variables.h"
 #include "tests.h"
 #include "archive.h"
+#include "bridge.h"
 
 
 class Engine {
@@ -22,14 +23,25 @@ public:
 
   Engine();
 
-  // Run one frame of the main loop. Return `false` if we should quit.
+
+  // Main loop
+
   bool frame();
+
+
+  // Scene data
 
   bool hasInitialDeck() const;
   void loadSceneFromFile(const char *path);
 
 
+  // Bridge access
+
+  Bridge &getBridge();
+
+
 private:
+  Bridge bridge { *this };
   Lv lv { 800 / 2, 1120 / 2 };
 
   [[maybe_unused]] bool prevWindowFocused = true;
@@ -64,3 +76,10 @@ private:
 
   void draw();
 };
+
+
+// Inlined implementations
+
+inline Bridge &Engine::getBridge() {
+  return bridge;
+}

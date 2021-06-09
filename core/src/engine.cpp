@@ -269,3 +269,30 @@ void Engine::draw() {
         love::Matrix4(20, 20, 0, 1, 1, 0, 0, 0, 0));
   }
 }
+
+
+//
+// Bridge events testing
+//
+
+struct TestReceiver {
+  inline static const BridgeRegistration<TestReceiver> registration { "test" };
+
+  struct Params {
+    PROP(double, topLevel) = 0;
+    struct Elem {
+      PROP(double, foo) = 42;
+      PROP(std::string, bar) = "default";
+    };
+    PROP(std::vector<Elem>, elems);
+  } params;
+
+  void receive(Engine &engine) {
+    Debug::log("core: received test event:");
+    Debug::log("  topLevel: {}", params.topLevel());
+    Debug::log("  elems: {}", params.topLevel());
+    for (auto &elem : params.elems()) {
+      Debug::log("    foo: {}, bar: '{}'", elem.foo(), elem.bar());
+    }
+  }
+};

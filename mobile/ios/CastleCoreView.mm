@@ -1,35 +1,27 @@
+#import "CastleCoreView.h"
+
 #import <AVFoundation/AVFoundation.h>
 
-#import <React/RCTView.h>
 #import <React/RCTViewManager.h>
 
 #include <SDL.h>
-
-#include "engine.h"
 
 
 //
 // Engine instance
 //
 
-static Engine &getEngine() {
+namespace CastleCore {
+Engine &getEngine() {
   static Engine engine;
   return engine;
+}
 }
 
 
 //
 // CastleCoreView
 //
-
-@interface CastleCoreView : RCTView
-
-@property(nonatomic, strong) CADisplayLink *displayLink;
-
-+ (instancetype)sharedCastleCoreView;
-- (void)setPaused:(BOOL)paused;
-
-@end
 
 @implementation CastleCoreView
 
@@ -38,14 +30,6 @@ static Engine &getEngine() {
 
   if (!sharedCastleCoreView || !sharedCastleCoreView.displayLink) {
     sharedCastleCoreView = [[self alloc] init];
-
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//      if (!sharedCastleCoreView.luaState) {
-//        [sharedCastleCoreView bootLoveWithUri:SCENE_CREATOR_USE_PROD_SCENE_CREATOR ? @"" : SCENE_CREATOR_DEV_URI];
-//      } else {
-//        RCTLog(@"`CastleCoreView`: already booted, ignoring new `uri`");
-//      }
-//    });
   }
 
   return sharedCastleCoreView;
@@ -85,7 +69,7 @@ static bool paused = false;
   if (paused) {
     return;
   }
-  getEngine().frame();
+  CastleCore::getEngine().frame();
 }
 
 - (void)setUri:(NSString *)uri {
