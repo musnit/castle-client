@@ -33,10 +33,10 @@
 		A12CFF0423CC318400D721BC /* clipper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A12CFF0323CC318400D721BC /* clipper.cpp */; };
 		A12CFF0623CC31AB00D721BC /* polypartition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A12CFF0523CC31AB00D721BC /* polypartition.cpp */; };
 		A12CFF0823CC31C100D721BC /* tinyxml2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A12CFF0723CC31C100D721BC /* tinyxml2.cpp */; };
-		A1376ADB26714F100095021E /* libbox2d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1376AD726714EE60095021E /* libbox2d.a */; };
-		A1376ADC26714F100095021E /* libcastle-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1376AD826714EE60095021E /* libcastle-core.a */; };
-		A1376ADD26714F100095021E /* libfmt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1376AD926714EE60095021E /* libfmt.a */; };
-		A1376ADE26714F100095021E /* libsoloud.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1376ADA26714EE60095021E /* libsoloud.a */; };
+		A1376B3226717D3B0095021E /* libbox2d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1376B2E26717D3B0095021E /* libbox2d.a */; };
+		A1376B3326717D3B0095021E /* libcastle-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1376B2F26717D3B0095021E /* libcastle-core.a */; };
+		A1376B3426717D3B0095021E /* libfmt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1376B3026717D3B0095021E /* libfmt.a */; };
+		A1376B3526717D3B0095021E /* libsoloud.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1376B3126717D3B0095021E /* libsoloud.a */; };
 		A14FE39F2355CB83003B7EA0 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A14FE39E2355CB83003B7EA0 /* AudioToolbox.framework */; };
 		A14FE3A12355CB8B003B7EA0 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A14FE3A02355CB8B003B7EA0 /* AVFoundation.framework */; };
 		A14FE3A32355CB93003B7EA0 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A14FE3A22355CB93003B7EA0 /* CoreGraphics.framework */; };
@@ -185,10 +185,10 @@
 		A12CFF0323CC318400D721BC /* clipper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = clipper.cpp; path = "../../ghost-extensions/tove2d/src/thirdparty/clipper.cpp"; sourceTree = "<group>"; };
 		A12CFF0523CC31AB00D721BC /* polypartition.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = polypartition.cpp; path = "../../ghost-extensions/tove2d/src/thirdparty/polypartition/src/polypartition.cpp"; sourceTree = "<group>"; };
 		A12CFF0723CC31C100D721BC /* tinyxml2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tinyxml2.cpp; path = "../../ghost-extensions/tove2d/src/thirdparty/tinyxml2/tinyxml2.cpp"; sourceTree = "<group>"; };
-		A1376AD726714EE60095021E /* libbox2d.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbox2d.a; path = ../../core/binaries/ios/libbox2d.a; sourceTree = "<group>"; };
-		A1376AD826714EE60095021E /* libcastle-core.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libcastle-core.a"; path = "../../core/binaries/ios/libcastle-core.a"; sourceTree = "<group>"; };
-		A1376AD926714EE60095021E /* libfmt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfmt.a; path = ../../core/binaries/ios/libfmt.a; sourceTree = "<group>"; };
-		A1376ADA26714EE60095021E /* libsoloud.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsoloud.a; path = ../../core/binaries/ios/libsoloud.a; sourceTree = "<group>"; };
+		A1376B2E26717D3B0095021E /* libbox2d.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbox2d.a; path = ../../core/binaries/ios/libbox2d.a; sourceTree = "<group>"; };
+		A1376B2F26717D3B0095021E /* libcastle-core.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libcastle-core.a"; path = "../../core/binaries/ios/libcastle-core.a"; sourceTree = "<group>"; };
+		A1376B3026717D3B0095021E /* libfmt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfmt.a; path = ../../core/binaries/ios/libfmt.a; sourceTree = "<group>"; };
+		A1376B3126717D3B0095021E /* libsoloud.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsoloud.a; path = ../../core/binaries/ios/libsoloud.a; sourceTree = "<group>"; };
 		A14FE3892355CA44003B7EA0 /* SDL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL.xcodeproj; path = "../../ghost-extensions/SDL2-2.0.8/Xcode-iOS/SDL/SDL.xcodeproj"; sourceTree = "<group>"; };
 		A14FE3952355CA7B003B7EA0 /* liblove.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = liblove.xcodeproj; path = ../../love/platform/xcode/liblove.xcodeproj; sourceTree = "<group>"; };
 		A14FE39E2355CB83003B7EA0 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -271,24 +271,24 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1376B3226717D3B0095021E /* libbox2d.a in Frameworks */,
+				A1376B3326717D3B0095021E /* libcastle-core.a in Frameworks */,
+				A1376B3426717D3B0095021E /* libfmt.a in Frameworks */,
+				A1376B3526717D3B0095021E /* libsoloud.a in Frameworks */,
 				A14FE3AE2355CC0E003B7EA0 /* libssl.a in Frameworks */,
 				A14FE3AB2355CBE3003B7EA0 /* libbz2.tbd in Frameworks */,
-				A1376ADC26714F100095021E /* libcastle-core.a in Frameworks */,
 				A14FE3B52355CC39003B7EA0 /* QuartzCore.framework in Frameworks */,
 				A14FE3A32355CB93003B7EA0 /* CoreGraphics.framework in Frameworks */,
 				A1959DF42410A026000C61E0 /* CoreTelephony.framework in Frameworks */,
 				A14FE3A72355CBB6003B7EA0 /* libz.tbd in Frameworks */,
 				B75D12A12F9E5D8776A933D2 /* libPods-Castle.a in Frameworks */,
 				A1959DF62410A032000C61E0 /* WebKit.framework in Frameworks */,
-				A1376ADD26714F100095021E /* libfmt.a in Frameworks */,
 				A14FE3A52355CB9A003B7EA0 /* GameController.framework in Frameworks */,
 				A14FE3AF2355CC21003B7EA0 /* libcrypto.a in Frameworks */,
 				A14FE3A92355CBC8003B7EA0 /* libSDL2.a in Frameworks */,
-				A1376ADB26714F100095021E /* libbox2d.a in Frameworks */,
 				A14FE3B32355CC32003B7EA0 /* OpenAL.framework in Frameworks */,
 				A14FE39F2355CB83003B7EA0 /* AudioToolbox.framework in Frameworks */,
 				A14FE3A12355CB8B003B7EA0 /* AVFoundation.framework in Frameworks */,
-				A1376ADE26714F100095021E /* libsoloud.a in Frameworks */,
 				A1959DFA2410A197000C61E0 /* SystemConfiguration.framework in Frameworks */,
 				A14FE3B12355CC2B003B7EA0 /* Metal.framework in Frameworks */,
 				A1959DF82410A0CC000C61E0 /* Accelerate.framework in Frameworks */,
@@ -355,10 +355,10 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				A1376AD726714EE60095021E /* libbox2d.a */,
-				A1376AD826714EE60095021E /* libcastle-core.a */,
-				A1376AD926714EE60095021E /* libfmt.a */,
-				A1376ADA26714EE60095021E /* libsoloud.a */,
+				A1376B2E26717D3B0095021E /* libbox2d.a */,
+				A1376B2F26717D3B0095021E /* libcastle-core.a */,
+				A1376B3026717D3B0095021E /* libfmt.a */,
+				A1376B3126717D3B0095021E /* libsoloud.a */,
 				A1959DF92410A197000C61E0 /* SystemConfiguration.framework */,
 				A1959DF72410A0CC000C61E0 /* Accelerate.framework */,
 				A1959DF52410A032000C61E0 /* WebKit.framework */,
