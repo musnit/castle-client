@@ -1,0 +1,1150 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		757E16BCA76944E5B17CC686 /* ALL_BUILD */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 907C85CFCEA54A47AA6217A4 /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */;
+			buildPhases = (
+				0B150EF021B549E2AB5D9C55 /* CMake Rules */,
+			);
+			dependencies = (
+				192183949BCD4B2690E310E6 /* PBXTargetDependency */,
+				DDF7A63F30744213A44B2D99 /* PBXTargetDependency */,
+			);
+			name = ALL_BUILD;
+			productName = ALL_BUILD;
+		};
+		BAE7AAAFCCF3485EA5F572FF /* ZERO_CHECK */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = EB57CB523A374CB4BBF87D13 /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */;
+			buildPhases = (
+				E2BACB9B934C477A8408176E /* CMake Rules */,
+			);
+			dependencies = (
+			);
+			name = ZERO_CHECK;
+			productName = ZERO_CHECK;
+		};
+		F2D8A80F21EA456090B76415 /* install */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = B8E567F0A06F4BF1AE307B6C /* Build configuration list for PBXAggregateTarget "install" */;
+			buildPhases = (
+				DE5312FA301A4DE0B995B405 /* CMake PostBuild Rules */,
+			);
+			dependencies = (
+				895917FA209243128252E5C1 /* PBXTargetDependency */,
+			);
+			name = install;
+			productName = install;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		0477320250EE4895931123B2 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_gear_joint.cpp */ = {isa = PBXBuildFile; fileRef = 8C00DF5DF272499D892ED1FF /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_gear_joint.cpp */; };
+		04B4E8458E55480E885F65B8 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_world.h */ = {isa = PBXBuildFile; fileRef = E4CC2652120B4290A51AC6F9 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_world.h */; };
+		18104BE79E654D728A8EF630 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_dynamic_tree.h */ = {isa = PBXBuildFile; fileRef = 2F6AEA868EFC45458E750C19 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_dynamic_tree.h */; };
+		1B50AE0EE40D4E47B4FC77DB /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_polygon_contact.h */ = {isa = PBXBuildFile; fileRef = 43321E78483740369EACDDEC /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_polygon_contact.h */; };
+		21F07DC1ED2E4826B321F3F3 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_circle_contact.h */ = {isa = PBXBuildFile; fileRef = 7B81298161C3406CB3405A72 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_circle_contact.h */; };
+		21F0FAB04EC64DCFA4033322 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_joint.h */ = {isa = PBXBuildFile; fileRef = 5816426D42AF46BF9A23E4BA /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_joint.h */; };
+		22F83316D6F94258978FBD34 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_motor_joint.cpp */ = {isa = PBXBuildFile; fileRef = D20D74EA60674510BC8224D2 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_motor_joint.cpp */; };
+		24C668D158DA437FB835FB8C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_growable_stack.h */ = {isa = PBXBuildFile; fileRef = 5134347E43904F848AD5E782 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_growable_stack.h */; };
+		25B66D958DFF47258FE65D8A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_pulley_joint.h */ = {isa = PBXBuildFile; fileRef = 05F4B0DE16E849E3B311D678 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_pulley_joint.h */; };
+		315AAE853A984E54A5868F44 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/rope/b2_rope.cpp */ = {isa = PBXBuildFile; fileRef = FCAA604A84444C52973E3F6F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/rope/b2_rope.cpp */; };
+		319F4D63DD5B4747B88E6EF3 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_body.cpp */ = {isa = PBXBuildFile; fileRef = 957A02D53EA34456AF29F77A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_body.cpp */; };
+		35B0C00DA22242CC91265AD2 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_chain_shape.h */ = {isa = PBXBuildFile; fileRef = BC8B5C26E15A4284ACC629FD /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_chain_shape.h */; };
+		3A9968DFA1584E0E95FA2BBE /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_pulley_joint.cpp */ = {isa = PBXBuildFile; fileRef = CDABA7F63A884B05993B5AB8 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_pulley_joint.cpp */; };
+		3B9EC97EE08F44C2ADC40CB7 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_types.h */ = {isa = PBXBuildFile; fileRef = 6553C65543CD42DD9F6B869B /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_types.h */; };
+		3CBFD65184224352AEE1F28B /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_fixture.cpp */ = {isa = PBXBuildFile; fileRef = B053DB98E9FC4C0798B5146C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_fixture.cpp */; };
+		3CF6195F3C0F41E9A6CA94A3 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_fixture.h */ = {isa = PBXBuildFile; fileRef = BC0BBB37A22F4B1F99C4AC93 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_fixture.h */; };
+		41F97E38457744B08614773C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_rope.h */ = {isa = PBXBuildFile; fileRef = 833CFF98B44242E2A2509327 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_rope.h */; };
+		448DD6AFD1EF440D92169B87 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_draw.cpp */ = {isa = PBXBuildFile; fileRef = 65FF21A467AD47A5B8AA53D0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_draw.cpp */; };
+		46EEB5961210453DA2C398ED /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_broad_phase.cpp */ = {isa = PBXBuildFile; fileRef = 7A6E9A4BFA7044F1AFCDD559 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_broad_phase.cpp */; };
+		49E7E1BB2EA348F2AEEFC8E5 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_circle_shape.h */ = {isa = PBXBuildFile; fileRef = 9616F37909674EBA8E63FC77 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_circle_shape.h */; };
+		4BEE549937B04DEDBAE330B6 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_block_allocator.h */ = {isa = PBXBuildFile; fileRef = E07AFFEE4D7E4265B683DDFD /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_block_allocator.h */; };
+		4C47A6C1D1D447138BEC50ED /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_stack_allocator.h */ = {isa = PBXBuildFile; fileRef = F87EF2B8E530472F910305E1 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_stack_allocator.h */; };
+		4E0E2C625E1B42128336B358 /* /Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d/src/CMakeFiles/box2d.dir/Info.plist */ = {isa = PBXBuildFile; fileRef = 8508BF817BD24251ABC93F5D /* /Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d/src/CMakeFiles/box2d.dir/Info.plist */; };
+		4F6DD71315824F77BE45B654 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_contact.cpp */ = {isa = PBXBuildFile; fileRef = A274BD8F2F82474C847F0604 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_contact.cpp */; };
+		4FCBEFBF5CBD43B8BA3E21A6 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_timer.h */ = {isa = PBXBuildFile; fileRef = BC848D8ECF13470592811C31 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_timer.h */; };
+		53793DEC848C4540816A57FF /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/CMakeLists.txt */ = {isa = PBXBuildFile; fileRef = CF0F5C0AB18E49219C96E748 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/CMakeLists.txt */; };
+		558E10B310444FAA95671071 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_collision.cpp */ = {isa = PBXBuildFile; fileRef = CC41DEF6337547389EAE051E /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_collision.cpp */; };
+		56E2A8FDDAD54213AD121FD5 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_collide_circle.cpp */ = {isa = PBXBuildFile; fileRef = B20D161008F54254BC57AB5A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_collide_circle.cpp */; };
+		573BD3AB3E984A489775F407 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_revolute_joint.cpp */ = {isa = PBXBuildFile; fileRef = D6741A2DC8D740058A7FE875 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_revolute_joint.cpp */; };
+		5C5BA6BB5616434E8E8C60E9 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_friction_joint.h */ = {isa = PBXBuildFile; fileRef = 4271B9F5BF3E442899B52137 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_friction_joint.h */; };
+		5C6F000523E14A54806098BC /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_world_callbacks.h */ = {isa = PBXBuildFile; fileRef = A633477D7DC642919FD0BC1A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_world_callbacks.h */; };
+		5CA9DC706A1A451BB31569BB /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_world.cpp */ = {isa = PBXBuildFile; fileRef = 52E872C2FF4E4E82B6878C71 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_world.cpp */; };
+		5FA2156F59F44E97B8F45CCE /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_island.h */ = {isa = PBXBuildFile; fileRef = B560023959CD4A5090B0E8C0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_island.h */; };
+		6402E1C1AE1E43B4A279BEE1 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_polygon_circle_contact.cpp */ = {isa = PBXBuildFile; fileRef = F6645195C1E5489D943D7775 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_polygon_circle_contact.cpp */; };
+		655042F123014E73B05B18EE /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_contact.h */ = {isa = PBXBuildFile; fileRef = 8272A9211CD341E49780F2D0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_contact.h */; };
+		6854F926B6B54005B1CB2C74 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_polygon_contact.cpp */ = {isa = PBXBuildFile; fileRef = 3992A656E70442EA8A5CFF32 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_polygon_contact.cpp */; };
+		68F4C9C574E249E38449F2D9 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_api.h */ = {isa = PBXBuildFile; fileRef = 15E6C8D547D349EF8DF4430C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_api.h */; };
+		69D954F7D31049E7BF20349A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_distance_joint.cpp */ = {isa = PBXBuildFile; fileRef = 11DCF561653A43DE97FBD58F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_distance_joint.cpp */; };
+		6C11C43F3741493BB8BE7A7B /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_friction_joint.cpp */ = {isa = PBXBuildFile; fileRef = E9DD72FDE625411C8C0D309C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_friction_joint.cpp */; };
+		6D2CD1C0C0B044F289A23B49 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/box2d.h */ = {isa = PBXBuildFile; fileRef = 5161EEFDAF6C4614A6DE99DF /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/box2d.h */; };
+		6D6B545E0B1E476187515459 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_prismatic_joint.cpp */ = {isa = PBXBuildFile; fileRef = C5BB949A32AF4DDAB5DD93DF /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_prismatic_joint.cpp */; };
+		724FB9DD4AFD45ECA558A05C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_wheel_joint.h */ = {isa = PBXBuildFile; fileRef = 5017F9F0904A4F68BB07B054 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_wheel_joint.h */; };
+		726EEEB1AC67498B893CA0C4 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_contact_manager.h */ = {isa = PBXBuildFile; fileRef = 4893EF97A9414931BBB2E5D2 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_contact_manager.h */; };
+		72D23DFEBDE84D7FA7E367C8 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_stack_allocator.cpp */ = {isa = PBXBuildFile; fileRef = 83F2B2B3EAA84B0C88843E70 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_stack_allocator.cpp */; };
+		76572C14529B4475B0946434 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_distance.cpp */ = {isa = PBXBuildFile; fileRef = 88FECB7B5D0B4E45B7FE93CC /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_distance.cpp */; };
+		76AE11DD177247B19772AC3B /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_prismatic_joint.h */ = {isa = PBXBuildFile; fileRef = 5BEDEEA1263C42A1B4A4AD4D /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_prismatic_joint.h */; };
+		7773FB3539CE4BDBBA23CE83 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_polygon_shape.h */ = {isa = PBXBuildFile; fileRef = 2BBE9BA6C90F4DB5B33015A7 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_polygon_shape.h */; };
+		78CED213265D4D828556A51D /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_weld_joint.cpp */ = {isa = PBXBuildFile; fileRef = 61BFF63F701640259B350B3C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_weld_joint.cpp */; };
+		79EF786979014ED1AC29F562 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_broad_phase.h */ = {isa = PBXBuildFile; fileRef = 783E0D7264284EF99265D6CE /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_broad_phase.h */; };
+		7A2B5C6B187A44EF829FA468 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_block_allocator.cpp */ = {isa = PBXBuildFile; fileRef = 031909F4E2954669ACEC540F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_block_allocator.cpp */; };
+		7B29E6EC42854CB0953EF3DC /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_chain_polygon_contact.h */ = {isa = PBXBuildFile; fileRef = 16B5146153AC47A5953B60F9 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_chain_polygon_contact.h */; };
+		7BBB7451BA0046A58B9BFE48 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_settings.cpp */ = {isa = PBXBuildFile; fileRef = 5E822C11BA754C2A9817CBF9 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_settings.cpp */; };
+		7C3C237070794075B1B9461D /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_math.h */ = {isa = PBXBuildFile; fileRef = 26156A1CD0944792B52C5F3A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_math.h */; };
+		7CC2D4E280C74BA1AEA08A43 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_time_of_impact.h */ = {isa = PBXBuildFile; fileRef = 49387FA7C0864CEF9E86BE3D /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_time_of_impact.h */; };
+		7CD211DD1CB5488895847484 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_draw.h */ = {isa = PBXBuildFile; fileRef = 20FA780C02B24739A821A03C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_draw.h */; };
+		7FF4CB5BFF0249FAA3B601CF /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_body.h */ = {isa = PBXBuildFile; fileRef = 6DE5809207FC44E0B40E5714 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_body.h */; };
+		877CE9B7E9DD46D9A75FBDBD /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_collide_edge.cpp */ = {isa = PBXBuildFile; fileRef = 6F56F01C28254FE588B9FE9F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_collide_edge.cpp */; };
+		8DDAB8F757BF499C9FA9CFAC /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_common.h */ = {isa = PBXBuildFile; fileRef = DF29823BF02F4471B80A738C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_common.h */; };
+		9145F3D310BE46308330F9C3 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_contact_solver.cpp */ = {isa = PBXBuildFile; fileRef = E84DC512B78F47A691D77EC0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_contact_solver.cpp */; };
+		946215F5C88946B997CA2F60 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_edge_polygon_contact.cpp */ = {isa = PBXBuildFile; fileRef = 64FFAD3469DA47819840BDD2 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_edge_polygon_contact.cpp */; };
+		94B7A2E0269646BE976FA5F0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_mouse_joint.h */ = {isa = PBXBuildFile; fileRef = 2CED71B9CD1548B5971D3F63 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_mouse_joint.h */; };
+		961F57F659DE4698BBEEA56A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_chain_circle_contact.cpp */ = {isa = PBXBuildFile; fileRef = 63609EB75C5042C489477EE4 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_chain_circle_contact.cpp */; };
+		97AB6A7C9D004E26BC57D771 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_island.cpp */ = {isa = PBXBuildFile; fileRef = 0381D8324ECF4C14A5838CA0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_island.cpp */; };
+		99E68C319C884C22A953C973 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_polygon_circle_contact.h */ = {isa = PBXBuildFile; fileRef = 4325CE43D16948A3A1267CA8 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_polygon_circle_contact.h */; };
+		9A7AD98B39F24698A3257D19 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_distance_joint.h */ = {isa = PBXBuildFile; fileRef = 2A2768C72178447A8CFB60CE /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_distance_joint.h */; };
+		9CFB1C8D513C4159BB94AF59 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_time_step.h */ = {isa = PBXBuildFile; fileRef = BA5192F8C8C74959B627A732 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_time_step.h */; };
+		9F4E1D259614486F884CCDA8 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_shape.h */ = {isa = PBXBuildFile; fileRef = F83F851469774326B8F5DB44 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_shape.h */; };
+		A16A0385202540078CE18171 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_revolute_joint.h */ = {isa = PBXBuildFile; fileRef = 766187E4677A4217B392437F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_revolute_joint.h */; };
+		A1964C38953F4731A703964E /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_edge_polygon_contact.h */ = {isa = PBXBuildFile; fileRef = 5CFB044E73E542099D57AC08 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_edge_polygon_contact.h */; };
+		A4AF7F0A147D4F269945DEAA /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_settings.h */ = {isa = PBXBuildFile; fileRef = E4AFE659728E49248CEA7082 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_settings.h */; };
+		A672026324A449AF9B7CD2A4 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_edge_shape.cpp */ = {isa = PBXBuildFile; fileRef = BCBA3C57C6564EB9932B0B99 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_edge_shape.cpp */; };
+		AB287876B0AE4520BCAE1573 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_joint.cpp */ = {isa = PBXBuildFile; fileRef = 4722C85AD33C468ABACF1FC0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_joint.cpp */; };
+		ABEB4936A36145929F3444CB /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_collide_polygon.cpp */ = {isa = PBXBuildFile; fileRef = 867F405ADDD248138578421F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_collide_polygon.cpp */; };
+		AC138BF209EC4CF98E88B629 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_math.cpp */ = {isa = PBXBuildFile; fileRef = AE4C56257F2943EC8BD0BAFB /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_math.cpp */; };
+		ACEE1209010648C68BDB02A6 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_dynamic_tree.cpp */ = {isa = PBXBuildFile; fileRef = 20E6C7FCD4004F3AADD05B38 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_dynamic_tree.cpp */; };
+		B1DD4A40A872448B8BD0F077 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_edge_circle_contact.h */ = {isa = PBXBuildFile; fileRef = 2BB7E5D9B4E44D4D90EA009C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_edge_circle_contact.h */; };
+		B1E4987AE71746B38F207841 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_weld_joint.h */ = {isa = PBXBuildFile; fileRef = DDD0347415B3484B987A6BC7 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_weld_joint.h */; };
+		BFACA007C817431BA2DEA128 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_contact_manager.cpp */ = {isa = PBXBuildFile; fileRef = 286A667BD404493186CCE332 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_contact_manager.cpp */; };
+		C05ADA7ED3AA43DA97E8A75F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_mouse_joint.cpp */ = {isa = PBXBuildFile; fileRef = 9924B71CFBC746EEB9B7DC8F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_mouse_joint.cpp */; };
+		C3B827C32B4440B69E95AAFD /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_gear_joint.h */ = {isa = PBXBuildFile; fileRef = E41F3A5552A5445BA8798281 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_gear_joint.h */; };
+		C7AB0B9C9E9A43748E9102F0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_edge_circle_contact.cpp */ = {isa = PBXBuildFile; fileRef = E938C9A4E44E4C71A393159E /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_edge_circle_contact.cpp */; };
+		C9B74FEDF50E4813817DE017 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_collision.h */ = {isa = PBXBuildFile; fileRef = 3B600E88F88F4D40AF508C23 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_collision.h */; };
+		CA762CD4C5194739BB95AADA /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_chain_shape.cpp */ = {isa = PBXBuildFile; fileRef = FE32BFA0EDAE4DA98D1F2B32 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_chain_shape.cpp */; };
+		CC203C485ED4414AB9A0A3CB /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_distance.h */ = {isa = PBXBuildFile; fileRef = 8AF3A307367443779341437C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_distance.h */; };
+		D094C71832184BA4B5A7BA5B /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_timer.cpp */ = {isa = PBXBuildFile; fileRef = C40E3218C6CA40F8AC757DEA /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_timer.cpp */; };
+		D99E5F5F7E054715A1BDD119 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_chain_polygon_contact.cpp */ = {isa = PBXBuildFile; fileRef = 33B9E01F315246CB9FD7118A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_chain_polygon_contact.cpp */; };
+		DAC0BFC2E7604141B8655C28 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_polygon_shape.cpp */ = {isa = PBXBuildFile; fileRef = E6A0EC30FAB3471E9DA97B86 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_polygon_shape.cpp */; };
+		E6739FEA5D4A465FA5A5BFA8 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_contact_solver.h */ = {isa = PBXBuildFile; fileRef = A3E4F97F32DD48D5A78CBA89 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_contact_solver.h */; };
+		EC53156546934859BC6C204B /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_chain_circle_contact.h */ = {isa = PBXBuildFile; fileRef = F5A191812A9D4037AF36E34B /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_chain_circle_contact.h */; };
+		F42C17A077294E0F8AEFFDC8 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_circle_shape.cpp */ = {isa = PBXBuildFile; fileRef = 31D4C1008ABF46EB95A6FE08 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_circle_shape.cpp */; };
+		F58E0737613E46FCBA1BB9DB /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_world_callbacks.cpp */ = {isa = PBXBuildFile; fileRef = 81CD09B7D99B4F9CB46DA96E /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_world_callbacks.cpp */; };
+		F71D57691BDC436CA4A925F0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_edge_shape.h */ = {isa = PBXBuildFile; fileRef = 1D7B2825C65E4D728BCF4285 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_edge_shape.h */; };
+		F8F5937D6B7B40E78E879AF1 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_wheel_joint.cpp */ = {isa = PBXBuildFile; fileRef = C807951D933E4A9AB5F46636 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_wheel_joint.cpp */; };
+		FB98B3B0856A40D2A21DB896 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_circle_contact.cpp */ = {isa = PBXBuildFile; fileRef = 8338702F36914E72BD338CB2 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_circle_contact.cpp */; };
+		FEFC4CF1FEF446089E28C5A9 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_motor_joint.h */ = {isa = PBXBuildFile; fileRef = 7BF64F7CEB314CA8B765F23D /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_motor_joint.h */; };
+		FFE3F9AF75424ECFB466CB71 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_time_of_impact.cpp */ = {isa = PBXBuildFile; fileRef = 5CDA6F48787145C49BA0751A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_time_of_impact.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXBuildStyle section */
+		13769A83A7B347CEBD048DEA /* Release */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Release;
+		};
+		268B5D639A704AC2BDA0131F /* Debug */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Debug;
+		};
+		675103E1964143BCA90D735F /* MinSizeRel */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = MinSizeRel;
+		};
+		CF8CB408619649B3A508ADC8 /* RelWithDebInfo */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = RelWithDebInfo;
+		};
+/* End PBXBuildStyle section */
+
+/* Begin PBXContainerItemProxy section */
+		445C376C05C540EBA175A5EE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F06703BDDD9C4E589D1588E2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 757E16BCA76944E5B17CC686;
+			remoteInfo = ALL_BUILD;
+		};
+		5DE1F4A47F994161922FC7F2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F06703BDDD9C4E589D1588E2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4EC8D41F73C4D469A3EF70F;
+			remoteInfo = box2d;
+		};
+		F3651DC0906F4FFE95CE01E1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F06703BDDD9C4E589D1588E2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BAE7AAAFCCF3485EA5F572FF;
+			remoteInfo = ZERO_CHECK;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		031909F4E2954669ACEC540F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_block_allocator.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_block_allocator.cpp; path = src/common/b2_block_allocator.cpp; sourceTree = SOURCE_ROOT; };
+		0381D8324ECF4C14A5838CA0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_island.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_island.cpp; path = src/dynamics/b2_island.cpp; sourceTree = SOURCE_ROOT; };
+		05F4B0DE16E849E3B311D678 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_pulley_joint.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_pulley_joint.h; path = include/box2d/b2_pulley_joint.h; sourceTree = SOURCE_ROOT; };
+		11DCF561653A43DE97FBD58F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_distance_joint.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_distance_joint.cpp; path = src/dynamics/b2_distance_joint.cpp; sourceTree = SOURCE_ROOT; };
+		15E6C8D547D349EF8DF4430C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_api.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_api.h; path = include/box2d/b2_api.h; sourceTree = SOURCE_ROOT; };
+		16B5146153AC47A5953B60F9 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_chain_polygon_contact.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_chain_polygon_contact.h; path = src/dynamics/b2_chain_polygon_contact.h; sourceTree = SOURCE_ROOT; };
+		1D7B2825C65E4D728BCF4285 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_edge_shape.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_edge_shape.h; path = include/box2d/b2_edge_shape.h; sourceTree = SOURCE_ROOT; };
+		20E6C7FCD4004F3AADD05B38 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_dynamic_tree.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_dynamic_tree.cpp; path = src/collision/b2_dynamic_tree.cpp; sourceTree = SOURCE_ROOT; };
+		20FA780C02B24739A821A03C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_draw.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_draw.h; path = include/box2d/b2_draw.h; sourceTree = SOURCE_ROOT; };
+		26156A1CD0944792B52C5F3A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_math.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_math.h; path = include/box2d/b2_math.h; sourceTree = SOURCE_ROOT; };
+		286A667BD404493186CCE332 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_contact_manager.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_contact_manager.cpp; path = src/dynamics/b2_contact_manager.cpp; sourceTree = SOURCE_ROOT; };
+		2A2768C72178447A8CFB60CE /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_distance_joint.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_distance_joint.h; path = include/box2d/b2_distance_joint.h; sourceTree = SOURCE_ROOT; };
+		2BB7E5D9B4E44D4D90EA009C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_edge_circle_contact.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_edge_circle_contact.h; path = src/dynamics/b2_edge_circle_contact.h; sourceTree = SOURCE_ROOT; };
+		2BBE9BA6C90F4DB5B33015A7 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_polygon_shape.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_polygon_shape.h; path = include/box2d/b2_polygon_shape.h; sourceTree = SOURCE_ROOT; };
+		2CED71B9CD1548B5971D3F63 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_mouse_joint.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_mouse_joint.h; path = include/box2d/b2_mouse_joint.h; sourceTree = SOURCE_ROOT; };
+		2F6AEA868EFC45458E750C19 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_dynamic_tree.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_dynamic_tree.h; path = include/box2d/b2_dynamic_tree.h; sourceTree = SOURCE_ROOT; };
+		31D4C1008ABF46EB95A6FE08 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_circle_shape.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_circle_shape.cpp; path = src/collision/b2_circle_shape.cpp; sourceTree = SOURCE_ROOT; };
+		33B9E01F315246CB9FD7118A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_chain_polygon_contact.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_chain_polygon_contact.cpp; path = src/dynamics/b2_chain_polygon_contact.cpp; sourceTree = SOURCE_ROOT; };
+		3992A656E70442EA8A5CFF32 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_polygon_contact.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_polygon_contact.cpp; path = src/dynamics/b2_polygon_contact.cpp; sourceTree = SOURCE_ROOT; };
+		3B600E88F88F4D40AF508C23 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_collision.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_collision.h; path = include/box2d/b2_collision.h; sourceTree = SOURCE_ROOT; };
+		4271B9F5BF3E442899B52137 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_friction_joint.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_friction_joint.h; path = include/box2d/b2_friction_joint.h; sourceTree = SOURCE_ROOT; };
+		4325CE43D16948A3A1267CA8 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_polygon_circle_contact.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_polygon_circle_contact.h; path = src/dynamics/b2_polygon_circle_contact.h; sourceTree = SOURCE_ROOT; };
+		43321E78483740369EACDDEC /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_polygon_contact.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_polygon_contact.h; path = src/dynamics/b2_polygon_contact.h; sourceTree = SOURCE_ROOT; };
+		4722C85AD33C468ABACF1FC0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_joint.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_joint.cpp; path = src/dynamics/b2_joint.cpp; sourceTree = SOURCE_ROOT; };
+		4893EF97A9414931BBB2E5D2 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_contact_manager.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_contact_manager.h; path = include/box2d/b2_contact_manager.h; sourceTree = SOURCE_ROOT; };
+		49387FA7C0864CEF9E86BE3D /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_time_of_impact.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_time_of_impact.h; path = include/box2d/b2_time_of_impact.h; sourceTree = SOURCE_ROOT; };
+		5017F9F0904A4F68BB07B054 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_wheel_joint.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_wheel_joint.h; path = include/box2d/b2_wheel_joint.h; sourceTree = SOURCE_ROOT; };
+		5134347E43904F848AD5E782 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_growable_stack.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_growable_stack.h; path = include/box2d/b2_growable_stack.h; sourceTree = SOURCE_ROOT; };
+		5161EEFDAF6C4614A6DE99DF /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/box2d.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = box2d.h; path = include/box2d/box2d.h; sourceTree = SOURCE_ROOT; };
+		52E872C2FF4E4E82B6878C71 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_world.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_world.cpp; path = src/dynamics/b2_world.cpp; sourceTree = SOURCE_ROOT; };
+		5816426D42AF46BF9A23E4BA /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_joint.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_joint.h; path = include/box2d/b2_joint.h; sourceTree = SOURCE_ROOT; };
+		5BEDEEA1263C42A1B4A4AD4D /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_prismatic_joint.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_prismatic_joint.h; path = include/box2d/b2_prismatic_joint.h; sourceTree = SOURCE_ROOT; };
+		5CDA6F48787145C49BA0751A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_time_of_impact.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_time_of_impact.cpp; path = src/collision/b2_time_of_impact.cpp; sourceTree = SOURCE_ROOT; };
+		5CFB044E73E542099D57AC08 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_edge_polygon_contact.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_edge_polygon_contact.h; path = src/dynamics/b2_edge_polygon_contact.h; sourceTree = SOURCE_ROOT; };
+		5E822C11BA754C2A9817CBF9 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_settings.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_settings.cpp; path = src/common/b2_settings.cpp; sourceTree = SOURCE_ROOT; };
+		61BFF63F701640259B350B3C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_weld_joint.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_weld_joint.cpp; path = src/dynamics/b2_weld_joint.cpp; sourceTree = SOURCE_ROOT; };
+		63609EB75C5042C489477EE4 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_chain_circle_contact.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_chain_circle_contact.cpp; path = src/dynamics/b2_chain_circle_contact.cpp; sourceTree = SOURCE_ROOT; };
+		64FFAD3469DA47819840BDD2 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_edge_polygon_contact.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_edge_polygon_contact.cpp; path = src/dynamics/b2_edge_polygon_contact.cpp; sourceTree = SOURCE_ROOT; };
+		6553C65543CD42DD9F6B869B /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_types.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_types.h; path = include/box2d/b2_types.h; sourceTree = SOURCE_ROOT; };
+		65FF21A467AD47A5B8AA53D0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_draw.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_draw.cpp; path = src/common/b2_draw.cpp; sourceTree = SOURCE_ROOT; };
+		6DE5809207FC44E0B40E5714 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_body.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_body.h; path = include/box2d/b2_body.h; sourceTree = SOURCE_ROOT; };
+		6F56F01C28254FE588B9FE9F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_collide_edge.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_collide_edge.cpp; path = src/collision/b2_collide_edge.cpp; sourceTree = SOURCE_ROOT; };
+		766187E4677A4217B392437F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_revolute_joint.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_revolute_joint.h; path = include/box2d/b2_revolute_joint.h; sourceTree = SOURCE_ROOT; };
+		783E0D7264284EF99265D6CE /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_broad_phase.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_broad_phase.h; path = include/box2d/b2_broad_phase.h; sourceTree = SOURCE_ROOT; };
+		7A6E9A4BFA7044F1AFCDD559 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_broad_phase.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_broad_phase.cpp; path = src/collision/b2_broad_phase.cpp; sourceTree = SOURCE_ROOT; };
+		7B81298161C3406CB3405A72 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_circle_contact.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_circle_contact.h; path = src/dynamics/b2_circle_contact.h; sourceTree = SOURCE_ROOT; };
+		7BF64F7CEB314CA8B765F23D /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_motor_joint.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_motor_joint.h; path = include/box2d/b2_motor_joint.h; sourceTree = SOURCE_ROOT; };
+		81CD09B7D99B4F9CB46DA96E /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_world_callbacks.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_world_callbacks.cpp; path = src/dynamics/b2_world_callbacks.cpp; sourceTree = SOURCE_ROOT; };
+		8272A9211CD341E49780F2D0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_contact.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_contact.h; path = include/box2d/b2_contact.h; sourceTree = SOURCE_ROOT; };
+		8338702F36914E72BD338CB2 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_circle_contact.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_circle_contact.cpp; path = src/dynamics/b2_circle_contact.cpp; sourceTree = SOURCE_ROOT; };
+		833CFF98B44242E2A2509327 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_rope.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_rope.h; path = include/box2d/b2_rope.h; sourceTree = SOURCE_ROOT; };
+		83F2B2B3EAA84B0C88843E70 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_stack_allocator.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_stack_allocator.cpp; path = src/common/b2_stack_allocator.cpp; sourceTree = SOURCE_ROOT; };
+		8508BF817BD24251ABC93F5D /* /Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d/src/CMakeFiles/box2d.dir/Info.plist */ = {isa = PBXFileReference; explicitFileType = sourcecode.text.plist; fileEncoding = 4; name = Info.plist; path = ../../build_ios/vendor/box2d/src/CMakeFiles/box2d.dir/Info.plist; sourceTree = SOURCE_ROOT; };
+		867F405ADDD248138578421F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_collide_polygon.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_collide_polygon.cpp; path = src/collision/b2_collide_polygon.cpp; sourceTree = SOURCE_ROOT; };
+		88FECB7B5D0B4E45B7FE93CC /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_distance.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_distance.cpp; path = src/collision/b2_distance.cpp; sourceTree = SOURCE_ROOT; };
+		8AF3A307367443779341437C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_distance.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_distance.h; path = include/box2d/b2_distance.h; sourceTree = SOURCE_ROOT; };
+		8C00DF5DF272499D892ED1FF /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_gear_joint.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_gear_joint.cpp; path = src/dynamics/b2_gear_joint.cpp; sourceTree = SOURCE_ROOT; };
+		957A02D53EA34456AF29F77A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_body.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_body.cpp; path = src/dynamics/b2_body.cpp; sourceTree = SOURCE_ROOT; };
+		9616F37909674EBA8E63FC77 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_circle_shape.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_circle_shape.h; path = include/box2d/b2_circle_shape.h; sourceTree = SOURCE_ROOT; };
+		98C68045A6D549A2A87E402E /* box2d */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libbox2d.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		9924B71CFBC746EEB9B7DC8F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_mouse_joint.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_mouse_joint.cpp; path = src/dynamics/b2_mouse_joint.cpp; sourceTree = SOURCE_ROOT; };
+		A274BD8F2F82474C847F0604 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_contact.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_contact.cpp; path = src/dynamics/b2_contact.cpp; sourceTree = SOURCE_ROOT; };
+		A3E4F97F32DD48D5A78CBA89 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_contact_solver.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_contact_solver.h; path = src/dynamics/b2_contact_solver.h; sourceTree = SOURCE_ROOT; };
+		A633477D7DC642919FD0BC1A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_world_callbacks.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_world_callbacks.h; path = include/box2d/b2_world_callbacks.h; sourceTree = SOURCE_ROOT; };
+		AE4C56257F2943EC8BD0BAFB /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_math.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_math.cpp; path = src/common/b2_math.cpp; sourceTree = SOURCE_ROOT; };
+		B053DB98E9FC4C0798B5146C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_fixture.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_fixture.cpp; path = src/dynamics/b2_fixture.cpp; sourceTree = SOURCE_ROOT; };
+		B20D161008F54254BC57AB5A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_collide_circle.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_collide_circle.cpp; path = src/collision/b2_collide_circle.cpp; sourceTree = SOURCE_ROOT; };
+		B560023959CD4A5090B0E8C0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_island.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_island.h; path = src/dynamics/b2_island.h; sourceTree = SOURCE_ROOT; };
+		BA5192F8C8C74959B627A732 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_time_step.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_time_step.h; path = include/box2d/b2_time_step.h; sourceTree = SOURCE_ROOT; };
+		BC0BBB37A22F4B1F99C4AC93 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_fixture.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_fixture.h; path = include/box2d/b2_fixture.h; sourceTree = SOURCE_ROOT; };
+		BC848D8ECF13470592811C31 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_timer.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_timer.h; path = include/box2d/b2_timer.h; sourceTree = SOURCE_ROOT; };
+		BC8B5C26E15A4284ACC629FD /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_chain_shape.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_chain_shape.h; path = include/box2d/b2_chain_shape.h; sourceTree = SOURCE_ROOT; };
+		BCBA3C57C6564EB9932B0B99 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_edge_shape.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_edge_shape.cpp; path = src/collision/b2_edge_shape.cpp; sourceTree = SOURCE_ROOT; };
+		C40E3218C6CA40F8AC757DEA /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_timer.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_timer.cpp; path = src/common/b2_timer.cpp; sourceTree = SOURCE_ROOT; };
+		C5BB949A32AF4DDAB5DD93DF /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_prismatic_joint.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_prismatic_joint.cpp; path = src/dynamics/b2_prismatic_joint.cpp; sourceTree = SOURCE_ROOT; };
+		C807951D933E4A9AB5F46636 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_wheel_joint.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_wheel_joint.cpp; path = src/dynamics/b2_wheel_joint.cpp; sourceTree = SOURCE_ROOT; };
+		CC41DEF6337547389EAE051E /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_collision.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_collision.cpp; path = src/collision/b2_collision.cpp; sourceTree = SOURCE_ROOT; };
+		CD61C53362254FD0BD13DD93 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		CDABA7F63A884B05993B5AB8 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_pulley_joint.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_pulley_joint.cpp; path = src/dynamics/b2_pulley_joint.cpp; sourceTree = SOURCE_ROOT; };
+		CF0F5C0AB18E49219C96E748 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = src/CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		D20D74EA60674510BC8224D2 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_motor_joint.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_motor_joint.cpp; path = src/dynamics/b2_motor_joint.cpp; sourceTree = SOURCE_ROOT; };
+		D6741A2DC8D740058A7FE875 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_revolute_joint.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_revolute_joint.cpp; path = src/dynamics/b2_revolute_joint.cpp; sourceTree = SOURCE_ROOT; };
+		DDD0347415B3484B987A6BC7 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_weld_joint.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_weld_joint.h; path = include/box2d/b2_weld_joint.h; sourceTree = SOURCE_ROOT; };
+		DF29823BF02F4471B80A738C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_common.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_common.h; path = include/box2d/b2_common.h; sourceTree = SOURCE_ROOT; };
+		E07AFFEE4D7E4265B683DDFD /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_block_allocator.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_block_allocator.h; path = include/box2d/b2_block_allocator.h; sourceTree = SOURCE_ROOT; };
+		E41F3A5552A5445BA8798281 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_gear_joint.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_gear_joint.h; path = include/box2d/b2_gear_joint.h; sourceTree = SOURCE_ROOT; };
+		E4AFE659728E49248CEA7082 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_settings.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_settings.h; path = include/box2d/b2_settings.h; sourceTree = SOURCE_ROOT; };
+		E4CC2652120B4290A51AC6F9 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_world.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_world.h; path = include/box2d/b2_world.h; sourceTree = SOURCE_ROOT; };
+		E6A0EC30FAB3471E9DA97B86 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_polygon_shape.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_polygon_shape.cpp; path = src/collision/b2_polygon_shape.cpp; sourceTree = SOURCE_ROOT; };
+		E84DC512B78F47A691D77EC0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_contact_solver.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_contact_solver.cpp; path = src/dynamics/b2_contact_solver.cpp; sourceTree = SOURCE_ROOT; };
+		E938C9A4E44E4C71A393159E /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_edge_circle_contact.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_edge_circle_contact.cpp; path = src/dynamics/b2_edge_circle_contact.cpp; sourceTree = SOURCE_ROOT; };
+		E9DD72FDE625411C8C0D309C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_friction_joint.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_friction_joint.cpp; path = src/dynamics/b2_friction_joint.cpp; sourceTree = SOURCE_ROOT; };
+		F5A191812A9D4037AF36E34B /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_chain_circle_contact.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_chain_circle_contact.h; path = src/dynamics/b2_chain_circle_contact.h; sourceTree = SOURCE_ROOT; };
+		F6645195C1E5489D943D7775 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_polygon_circle_contact.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_polygon_circle_contact.cpp; path = src/dynamics/b2_polygon_circle_contact.cpp; sourceTree = SOURCE_ROOT; };
+		F83F851469774326B8F5DB44 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_shape.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_shape.h; path = include/box2d/b2_shape.h; sourceTree = SOURCE_ROOT; };
+		F87EF2B8E530472F910305E1 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_stack_allocator.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = b2_stack_allocator.h; path = include/box2d/b2_stack_allocator.h; sourceTree = SOURCE_ROOT; };
+		FCAA604A84444C52973E3F6F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/rope/b2_rope.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_rope.cpp; path = src/rope/b2_rope.cpp; sourceTree = SOURCE_ROOT; };
+		FE32BFA0EDAE4DA98D1F2B32 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_chain_shape.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = b2_chain_shape.cpp; path = src/collision/b2_chain_shape.cpp; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		1CEF484EE0324CF3A1E61CA3 /* CMake Rules */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "CMake Rules";
+			sourceTree = "<group>";
+		};
+		2093AF8A0BD94A11908CB182 /* collision */ = {
+			isa = PBXGroup;
+			children = (
+				7A6E9A4BFA7044F1AFCDD559 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_broad_phase.cpp */,
+				FE32BFA0EDAE4DA98D1F2B32 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_chain_shape.cpp */,
+				31D4C1008ABF46EB95A6FE08 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_circle_shape.cpp */,
+				B20D161008F54254BC57AB5A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_collide_circle.cpp */,
+				6F56F01C28254FE588B9FE9F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_collide_edge.cpp */,
+				867F405ADDD248138578421F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_collide_polygon.cpp */,
+				CC41DEF6337547389EAE051E /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_collision.cpp */,
+				88FECB7B5D0B4E45B7FE93CC /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_distance.cpp */,
+				20E6C7FCD4004F3AADD05B38 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_dynamic_tree.cpp */,
+				BCBA3C57C6564EB9932B0B99 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_edge_shape.cpp */,
+				E6A0EC30FAB3471E9DA97B86 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_polygon_shape.cpp */,
+				5CDA6F48787145C49BA0751A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_time_of_impact.cpp */,
+			);
+			name = collision;
+			sourceTree = "<group>";
+		};
+		24642812890045519AC837A7 = {
+			isa = PBXGroup;
+			children = (
+				CD0B55A77FFF47F0B6E91CEF /* ALL_BUILD */,
+				593308FB2D4F4CCFAB589072 /* box2d */,
+				97FE6F8E5BDC46FABB54A566 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2B3F65E8018B429FA1FDC447 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				8508BF817BD24251ABC93F5D /* /Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d/src/CMakeFiles/box2d.dir/Info.plist */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		2D190F87B8E3497CAC54AE8A /* src */ = {
+			isa = PBXGroup;
+			children = (
+				2093AF8A0BD94A11908CB182 /* collision */,
+				424428BC13F3464C90DD88B4 /* common */,
+				7292C51F62CB4455B1DA65C7 /* dynamics */,
+				8770801DDDB54F428CB48240 /* rope */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
+		424428BC13F3464C90DD88B4 /* common */ = {
+			isa = PBXGroup;
+			children = (
+				031909F4E2954669ACEC540F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_block_allocator.cpp */,
+				65FF21A467AD47A5B8AA53D0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_draw.cpp */,
+				AE4C56257F2943EC8BD0BAFB /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_math.cpp */,
+				5E822C11BA754C2A9817CBF9 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_settings.cpp */,
+				83F2B2B3EAA84B0C88843E70 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_stack_allocator.cpp */,
+				C40E3218C6CA40F8AC757DEA /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_timer.cpp */,
+			);
+			name = common;
+			sourceTree = "<group>";
+		};
+		556B9A8082C54A5CA89E9AC6 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				8B4A3C6F7A06415599BD7B83 /* box2d */,
+			);
+			name = include;
+			sourceTree = "<group>";
+		};
+		593308FB2D4F4CCFAB589072 /* box2d */ = {
+			isa = PBXGroup;
+			children = (
+				2D190F87B8E3497CAC54AE8A /* src */,
+				556B9A8082C54A5CA89E9AC6 /* include */,
+				2B3F65E8018B429FA1FDC447 /* Resources */,
+				CF0F5C0AB18E49219C96E748 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/CMakeLists.txt */,
+			);
+			name = box2d;
+			sourceTree = "<group>";
+		};
+		7292C51F62CB4455B1DA65C7 /* dynamics */ = {
+			isa = PBXGroup;
+			children = (
+				957A02D53EA34456AF29F77A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_body.cpp */,
+				63609EB75C5042C489477EE4 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_chain_circle_contact.cpp */,
+				F5A191812A9D4037AF36E34B /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_chain_circle_contact.h */,
+				33B9E01F315246CB9FD7118A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_chain_polygon_contact.cpp */,
+				16B5146153AC47A5953B60F9 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_chain_polygon_contact.h */,
+				8338702F36914E72BD338CB2 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_circle_contact.cpp */,
+				7B81298161C3406CB3405A72 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_circle_contact.h */,
+				A274BD8F2F82474C847F0604 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_contact.cpp */,
+				286A667BD404493186CCE332 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_contact_manager.cpp */,
+				E84DC512B78F47A691D77EC0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_contact_solver.cpp */,
+				A3E4F97F32DD48D5A78CBA89 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_contact_solver.h */,
+				11DCF561653A43DE97FBD58F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_distance_joint.cpp */,
+				E938C9A4E44E4C71A393159E /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_edge_circle_contact.cpp */,
+				2BB7E5D9B4E44D4D90EA009C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_edge_circle_contact.h */,
+				64FFAD3469DA47819840BDD2 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_edge_polygon_contact.cpp */,
+				5CFB044E73E542099D57AC08 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_edge_polygon_contact.h */,
+				B053DB98E9FC4C0798B5146C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_fixture.cpp */,
+				E9DD72FDE625411C8C0D309C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_friction_joint.cpp */,
+				8C00DF5DF272499D892ED1FF /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_gear_joint.cpp */,
+				0381D8324ECF4C14A5838CA0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_island.cpp */,
+				B560023959CD4A5090B0E8C0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_island.h */,
+				4722C85AD33C468ABACF1FC0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_joint.cpp */,
+				D20D74EA60674510BC8224D2 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_motor_joint.cpp */,
+				9924B71CFBC746EEB9B7DC8F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_mouse_joint.cpp */,
+				F6645195C1E5489D943D7775 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_polygon_circle_contact.cpp */,
+				4325CE43D16948A3A1267CA8 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_polygon_circle_contact.h */,
+				3992A656E70442EA8A5CFF32 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_polygon_contact.cpp */,
+				43321E78483740369EACDDEC /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_polygon_contact.h */,
+				C5BB949A32AF4DDAB5DD93DF /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_prismatic_joint.cpp */,
+				CDABA7F63A884B05993B5AB8 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_pulley_joint.cpp */,
+				D6741A2DC8D740058A7FE875 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_revolute_joint.cpp */,
+				61BFF63F701640259B350B3C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_weld_joint.cpp */,
+				C807951D933E4A9AB5F46636 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_wheel_joint.cpp */,
+				52E872C2FF4E4E82B6878C71 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_world.cpp */,
+				81CD09B7D99B4F9CB46DA96E /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_world_callbacks.cpp */,
+			);
+			name = dynamics;
+			sourceTree = "<group>";
+		};
+		8770801DDDB54F428CB48240 /* rope */ = {
+			isa = PBXGroup;
+			children = (
+				FCAA604A84444C52973E3F6F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/rope/b2_rope.cpp */,
+			);
+			name = rope;
+			sourceTree = "<group>";
+		};
+		8B4A3C6F7A06415599BD7B83 /* box2d */ = {
+			isa = PBXGroup;
+			children = (
+				15E6C8D547D349EF8DF4430C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_api.h */,
+				E07AFFEE4D7E4265B683DDFD /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_block_allocator.h */,
+				6DE5809207FC44E0B40E5714 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_body.h */,
+				783E0D7264284EF99265D6CE /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_broad_phase.h */,
+				BC8B5C26E15A4284ACC629FD /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_chain_shape.h */,
+				9616F37909674EBA8E63FC77 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_circle_shape.h */,
+				3B600E88F88F4D40AF508C23 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_collision.h */,
+				DF29823BF02F4471B80A738C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_common.h */,
+				8272A9211CD341E49780F2D0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_contact.h */,
+				4893EF97A9414931BBB2E5D2 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_contact_manager.h */,
+				8AF3A307367443779341437C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_distance.h */,
+				2A2768C72178447A8CFB60CE /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_distance_joint.h */,
+				20FA780C02B24739A821A03C /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_draw.h */,
+				2F6AEA868EFC45458E750C19 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_dynamic_tree.h */,
+				1D7B2825C65E4D728BCF4285 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_edge_shape.h */,
+				BC0BBB37A22F4B1F99C4AC93 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_fixture.h */,
+				4271B9F5BF3E442899B52137 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_friction_joint.h */,
+				E41F3A5552A5445BA8798281 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_gear_joint.h */,
+				5134347E43904F848AD5E782 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_growable_stack.h */,
+				5816426D42AF46BF9A23E4BA /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_joint.h */,
+				26156A1CD0944792B52C5F3A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_math.h */,
+				7BF64F7CEB314CA8B765F23D /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_motor_joint.h */,
+				2CED71B9CD1548B5971D3F63 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_mouse_joint.h */,
+				2BBE9BA6C90F4DB5B33015A7 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_polygon_shape.h */,
+				5BEDEEA1263C42A1B4A4AD4D /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_prismatic_joint.h */,
+				05F4B0DE16E849E3B311D678 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_pulley_joint.h */,
+				766187E4677A4217B392437F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_revolute_joint.h */,
+				833CFF98B44242E2A2509327 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_rope.h */,
+				E4AFE659728E49248CEA7082 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_settings.h */,
+				F83F851469774326B8F5DB44 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_shape.h */,
+				F87EF2B8E530472F910305E1 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_stack_allocator.h */,
+				49387FA7C0864CEF9E86BE3D /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_time_of_impact.h */,
+				BA5192F8C8C74959B627A732 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_time_step.h */,
+				BC848D8ECF13470592811C31 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_timer.h */,
+				6553C65543CD42DD9F6B869B /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_types.h */,
+				DDD0347415B3484B987A6BC7 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_weld_joint.h */,
+				5017F9F0904A4F68BB07B054 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_wheel_joint.h */,
+				E4CC2652120B4290A51AC6F9 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_world.h */,
+				A633477D7DC642919FD0BC1A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/b2_world_callbacks.h */,
+				5161EEFDAF6C4614A6DE99DF /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/include/box2d/box2d.h */,
+			);
+			name = box2d;
+			sourceTree = "<group>";
+		};
+		97FE6F8E5BDC46FABB54A566 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				98C68045A6D549A2A87E402E /* box2d */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		CD0B55A77FFF47F0B6E91CEF /* ALL_BUILD */ = {
+			isa = PBXGroup;
+			children = (
+				1CEF484EE0324CF3A1E61CA3 /* CMake Rules */,
+				CD61C53362254FD0BD13DD93 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/CMakeLists.txt */,
+			);
+			name = ALL_BUILD;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D4EC8D41F73C4D469A3EF70F /* box2d */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 89CAC491E10F40E499CB097D /* Build configuration list for PBXNativeTarget "box2d" */;
+			buildPhases = (
+				CC9597F003E14C3F93443310 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = box2d;
+			productName = box2d;
+			productReference = 98C68045A6D549A2A87E402E /* box2d */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F06703BDDD9C4E589D1588E2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1250;
+			};
+			buildConfigurationList = F82AC6FA6ABA4EA8942D0AA1 /* Build configuration list for PBXProject "box2d" */;
+			buildSettings = {
+			};
+			buildStyles = (
+				268B5D639A704AC2BDA0131F /* Debug */,
+				13769A83A7B347CEBD048DEA /* Release */,
+				675103E1964143BCA90D735F /* MinSizeRel */,
+				CF8CB408619649B3A508ADC8 /* RelWithDebInfo */,
+			);
+			compatibilityVersion = "Xcode 3.2";
+			hasScannedForEncodings = 0;
+			mainGroup = 24642812890045519AC837A7;
+			projectDirPath = ../../../vendor/box2d;
+			projectRoot = "";
+			targets = (
+				757E16BCA76944E5B17CC686 /* ALL_BUILD */,
+				BAE7AAAFCCF3485EA5F572FF /* ZERO_CHECK */,
+				D4EC8D41F73C4D469A3EF70F /* box2d */,
+				F2D8A80F21EA456090B76415 /* install */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		0B150EF021B549E2AB5D9C55 /* CMake Rules */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "CMake Rules";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make -C /Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d -f /Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d/CMakeScripts/ALL_BUILD_cmakeRulesBuildPhase.make$CONFIGURATION OBJDIR=$(basename \"$OBJECT_FILE_DIR_normal\") all";
+			showEnvVarsInLog = 0;
+		};
+		29942EB1575D48CC924404C0 = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here
+exit 0";
+			showEnvVarsInLog = 0;
+		};
+		A25E58248A1C4D7C8417EE6E = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here
+exit 0";
+			showEnvVarsInLog = 0;
+		};
+		AB6B9346FC944222B3CAEAF9 = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here
+exit 0";
+			showEnvVarsInLog = 0;
+		};
+		DE5312FA301A4DE0B995B405 /* CMake PostBuild Rules */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "CMake PostBuild Rules";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make -C /Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d -f /Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d/CMakeScripts/install_postBuildPhase.make$CONFIGURATION OBJDIR=$(basename \"$OBJECT_FILE_DIR_normal\") all";
+			showEnvVarsInLog = 0;
+		};
+		E2BACB9B934C477A8408176E /* CMake Rules */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "CMake Rules";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make -C /Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d -f /Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d/CMakeScripts/ZERO_CHECK_cmakeRulesBuildPhase.make$CONFIGURATION OBJDIR=$(basename \"$OBJECT_FILE_DIR_normal\") all";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		CC9597F003E14C3F93443310 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				46EEB5961210453DA2C398ED /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_broad_phase.cpp */,
+				CA762CD4C5194739BB95AADA /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_chain_shape.cpp */,
+				F42C17A077294E0F8AEFFDC8 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_circle_shape.cpp */,
+				56E2A8FDDAD54213AD121FD5 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_collide_circle.cpp */,
+				877CE9B7E9DD46D9A75FBDBD /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_collide_edge.cpp */,
+				ABEB4936A36145929F3444CB /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_collide_polygon.cpp */,
+				558E10B310444FAA95671071 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_collision.cpp */,
+				76572C14529B4475B0946434 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_distance.cpp */,
+				ACEE1209010648C68BDB02A6 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_dynamic_tree.cpp */,
+				A672026324A449AF9B7CD2A4 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_edge_shape.cpp */,
+				DAC0BFC2E7604141B8655C28 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_polygon_shape.cpp */,
+				FFE3F9AF75424ECFB466CB71 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/collision/b2_time_of_impact.cpp */,
+				7A2B5C6B187A44EF829FA468 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_block_allocator.cpp */,
+				448DD6AFD1EF440D92169B87 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_draw.cpp */,
+				AC138BF209EC4CF98E88B629 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_math.cpp */,
+				7BBB7451BA0046A58B9BFE48 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_settings.cpp */,
+				72D23DFEBDE84D7FA7E367C8 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_stack_allocator.cpp */,
+				D094C71832184BA4B5A7BA5B /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/common/b2_timer.cpp */,
+				319F4D63DD5B4747B88E6EF3 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_body.cpp */,
+				961F57F659DE4698BBEEA56A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_chain_circle_contact.cpp */,
+				D99E5F5F7E054715A1BDD119 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_chain_polygon_contact.cpp */,
+				FB98B3B0856A40D2A21DB896 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_circle_contact.cpp */,
+				4F6DD71315824F77BE45B654 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_contact.cpp */,
+				BFACA007C817431BA2DEA128 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_contact_manager.cpp */,
+				9145F3D310BE46308330F9C3 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_contact_solver.cpp */,
+				69D954F7D31049E7BF20349A /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_distance_joint.cpp */,
+				C7AB0B9C9E9A43748E9102F0 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_edge_circle_contact.cpp */,
+				946215F5C88946B997CA2F60 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_edge_polygon_contact.cpp */,
+				3CBFD65184224352AEE1F28B /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_fixture.cpp */,
+				6C11C43F3741493BB8BE7A7B /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_friction_joint.cpp */,
+				0477320250EE4895931123B2 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_gear_joint.cpp */,
+				97AB6A7C9D004E26BC57D771 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_island.cpp */,
+				AB287876B0AE4520BCAE1573 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_joint.cpp */,
+				22F83316D6F94258978FBD34 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_motor_joint.cpp */,
+				C05ADA7ED3AA43DA97E8A75F /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_mouse_joint.cpp */,
+				6402E1C1AE1E43B4A279BEE1 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_polygon_circle_contact.cpp */,
+				6854F926B6B54005B1CB2C74 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_polygon_contact.cpp */,
+				6D6B545E0B1E476187515459 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_prismatic_joint.cpp */,
+				3A9968DFA1584E0E95FA2BBE /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_pulley_joint.cpp */,
+				573BD3AB3E984A489775F407 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_revolute_joint.cpp */,
+				78CED213265D4D828556A51D /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_weld_joint.cpp */,
+				F8F5937D6B7B40E78E879AF1 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_wheel_joint.cpp */,
+				5CA9DC706A1A451BB31569BB /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_world.cpp */,
+				F58E0737613E46FCBA1BB9DB /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/dynamics/b2_world_callbacks.cpp */,
+				315AAE853A984E54A5868F44 /* /Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/rope/b2_rope.cpp */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		192183949BCD4B2690E310E6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4EC8D41F73C4D469A3EF70F /* box2d */;
+			targetProxy = 5DE1F4A47F994161922FC7F2 /* PBXContainerItemProxy */;
+		};
+		895917FA209243128252E5C1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 757E16BCA76944E5B17CC686 /* ALL_BUILD */;
+			targetProxy = 445C376C05C540EBA175A5EE /* PBXContainerItemProxy */;
+		};
+		DDF7A63F30744213A44B2D99 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BAE7AAAFCCF3485EA5F572FF /* ZERO_CHECK */;
+			targetProxy = F3651DC0906F4FFE95CE01E1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		137EAD8DEBA042BFBC192A51 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = "-g ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = install;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		27A00FB32FDA4AC5A9B08187 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = "-g ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		2FF7F7E09F354410B239A4B2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = "-g ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = install;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Release;
+		};
+		3318D50512BA4D038680E665 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d/build";
+			};
+			name = MinSizeRel;
+		};
+		3D1EBA3B1B124A6A820D2C4C /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d/bin/RelWithDebInfo";
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .a;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 2;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = ("/Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/../include","/Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src");
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = STATIC;
+				OTHER_CPLUSPLUSFLAGS = "       -DNDEBUG -fvisibility=hidden -fvisibility-inlines-hidden    '-std=c++11'  ";
+				OTHER_LIBTOOLFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = box2d;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d/src";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		497800477A3345CE9E59DB72 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = "-g ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Debug;
+		};
+		6C321E082EE74A5295FEB6AF /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = "-g ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		6DAA07A938D5419FA7DC3D99 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d/bin/MinSizeRel";
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .a;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = ("/Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/../include","/Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src");
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = STATIC;
+				OTHER_CPLUSPLUSFLAGS = "    -DNDEBUG -fvisibility=hidden -fvisibility-inlines-hidden    '-std=c++11'  ";
+				OTHER_LIBTOOLFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = box2d;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d/src";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		84BE246E06AE4E208E7A19E2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d/bin/Debug";
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .a;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = ("/Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/../include","/Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src");
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = STATIC;
+				OTHER_CPLUSPLUSFLAGS = "   -fvisibility=hidden -fvisibility-inlines-hidden    '-std=c++11'  ";
+				OTHER_LIBTOOLFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = box2d;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d/src";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Debug;
+		};
+		935FA60EEBB44CE4A5737C63 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d/build";
+			};
+			name = Debug;
+		};
+		9B1F60DD4EF3497DB92B703C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = "-g ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = install;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Debug;
+		};
+		A9826224CB6F448F96330479 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d/build";
+			};
+			name = RelWithDebInfo;
+		};
+		B2E3CD3920B04BEEB917206B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = "-g ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Release;
+		};
+		C125ED2A5E754C81B3656F23 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = "-g ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = install;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		C1EFB34D07B040BBA4D1585F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d/build";
+			};
+			name = Release;
+		};
+		D23CC199689848B8B3507C94 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = "-g ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		EDFF8022407244309AA5E33F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = "-g ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Debug;
+		};
+		F5477C8BF738405F981A06AB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = "-g ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Release;
+		};
+		F6B90B774D8C41A4A0597C15 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = "-g ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		F9B844045B6F4DC188C682C6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d/bin/Release";
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .a;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = ("/Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src/../include","/Users/nikki/Development/castle-xyz/castle-client/core/vendor/box2d/src");
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = STATIC;
+				OTHER_CPLUSPLUSFLAGS = "    -DNDEBUG -fvisibility=hidden -fvisibility-inlines-hidden    '-std=c++11'  ";
+				OTHER_LIBTOOLFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = box2d;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d/src";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		89CAC491E10F40E499CB097D /* Build configuration list for PBXNativeTarget "box2d" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				84BE246E06AE4E208E7A19E2 /* Debug */,
+				F9B844045B6F4DC188C682C6 /* Release */,
+				6DAA07A938D5419FA7DC3D99 /* MinSizeRel */,
+				3D1EBA3B1B124A6A820D2C4C /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		907C85CFCEA54A47AA6217A4 /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EDFF8022407244309AA5E33F /* Debug */,
+				B2E3CD3920B04BEEB917206B /* Release */,
+				27A00FB32FDA4AC5A9B08187 /* MinSizeRel */,
+				6C321E082EE74A5295FEB6AF /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B8E567F0A06F4BF1AE307B6C /* Build configuration list for PBXAggregateTarget "install" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9B1F60DD4EF3497DB92B703C /* Debug */,
+				2FF7F7E09F354410B239A4B2 /* Release */,
+				C125ED2A5E754C81B3656F23 /* MinSizeRel */,
+				137EAD8DEBA042BFBC192A51 /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		EB57CB523A374CB4BBF87D13 /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				497800477A3345CE9E59DB72 /* Debug */,
+				F5477C8BF738405F981A06AB /* Release */,
+				F6B90B774D8C41A4A0597C15 /* MinSizeRel */,
+				D23CC199689848B8B3507C94 /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F82AC6FA6ABA4EA8942D0AA1 /* Build configuration list for PBXProject "box2d" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				935FA60EEBB44CE4A5737C63 /* Debug */,
+				C1EFB34D07B040BBA4D1585F /* Release */,
+				3318D50512BA4D038680E665 /* MinSizeRel */,
+				A9826224CB6F448F96330479 /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F06703BDDD9C4E589D1588E2 /* Project object */;
+}

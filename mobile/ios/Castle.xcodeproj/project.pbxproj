@@ -33,10 +33,6 @@
 		A12CFF0423CC318400D721BC /* clipper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A12CFF0323CC318400D721BC /* clipper.cpp */; };
 		A12CFF0623CC31AB00D721BC /* polypartition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A12CFF0523CC31AB00D721BC /* polypartition.cpp */; };
 		A12CFF0823CC31C100D721BC /* tinyxml2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A12CFF0723CC31C100D721BC /* tinyxml2.cpp */; };
-		A1429B742660708A009D2951 /* libbox2d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1429B5626606FEF009D2951 /* libbox2d.a */; };
-		A1429B752660708A009D2951 /* libcastle-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1429B5826606FEF009D2951 /* libcastle-core.a */; };
-		A1429B762660708A009D2951 /* libfmtd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1429B5A26606FEF009D2951 /* libfmtd.a */; };
-		A1429B772660708A009D2951 /* libsoloud.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1429B5C26606FEF009D2951 /* libsoloud.a */; };
 		A14FE39F2355CB83003B7EA0 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A14FE39E2355CB83003B7EA0 /* AudioToolbox.framework */; };
 		A14FE3A12355CB8B003B7EA0 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A14FE3A02355CB8B003B7EA0 /* AVFoundation.framework */; };
 		A14FE3A32355CB93003B7EA0 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A14FE3A22355CB93003B7EA0 /* CoreGraphics.framework */; };
@@ -76,6 +72,10 @@
 		A1CCBA1623551869009F4DDD /* GhostChannels.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1CCBA1423551869009F4DDD /* GhostChannels.mm */; };
 		A1CCBA19235518C7009F4DDD /* GhostView.m in Sources */ = {isa = PBXBuildFile; fileRef = A1CCBA18235518C7009F4DDD /* GhostView.m */; };
 		A1D3A849258177A400666D4D /* CastleNativeUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = A1D3A841258177A400666D4D /* CastleNativeUtils.m */; };
+		A1E695E8267041E800711D05 /* libbox2d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1E695E1267041AF00711D05 /* libbox2d.a */; };
+		A1E695E9267041E800711D05 /* libcastle-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1E695E3267041AF00711D05 /* libcastle-core.a */; };
+		A1E695EA267041E800711D05 /* libfmtd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1E695E5267041AF00711D05 /* libfmtd.a */; };
+		A1E695EB267041E800711D05 /* libsoloud.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1E695E7267041AF00711D05 /* libsoloud.a */; };
 		A1F835A02661964000E65FE9 /* CastleCoreView.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1F8359F2661964000E65FE9 /* CastleCoreView.mm */; };
 		A1FA18C32365168600E2ACFE /* GhostInputZone.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1FA18C22365168600E2ACFE /* GhostInputZone.mm */; };
 		B51813F72527916C00C315C9 /* GhostAppState.mm in Sources */ = {isa = PBXBuildFile; fileRef = B51813F62527916C00C315C9 /* GhostAppState.mm */; };
@@ -88,34 +88,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		A1429B5526606FEF009D2951 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A1429B4B26606FEF009D2951 /* castle-core.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = C3E2D8E5BB4048B6885A1740;
-			remoteInfo = box2d;
-		};
-		A1429B5726606FEF009D2951 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A1429B4B26606FEF009D2951 /* castle-core.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 358CCBD79380464B92BCB208;
-			remoteInfo = "castle-core";
-		};
-		A1429B5926606FEF009D2951 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A1429B4B26606FEF009D2951 /* castle-core.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = EC0BDAE4552D4298ABC90909;
-			remoteInfo = fmt;
-		};
-		A1429B5B26606FEF009D2951 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A1429B4B26606FEF009D2951 /* castle-core.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 5B44DF16876D4645846570B2;
-			remoteInfo = soloud;
-		};
 		A14FE3912355CA44003B7EA0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A14FE3892355CA44003B7EA0 /* SDL.xcodeproj */;
@@ -143,6 +115,34 @@
 			proxyType = 2;
 			remoteGlobalIDString = FA0B78DD1A958B90000E1D17;
 			remoteInfo = "liblove-ios";
+		};
+		A1E695E0267041AF00711D05 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1E695D6267041AF00711D05 /* castle-core.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 2554089548854E79B0E0B058;
+			remoteInfo = box2d;
+		};
+		A1E695E2267041AF00711D05 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1E695D6267041AF00711D05 /* castle-core.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8DE163225B5C4BE98D27FAE4;
+			remoteInfo = "castle-core";
+		};
+		A1E695E4267041AF00711D05 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1E695D6267041AF00711D05 /* castle-core.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D47066DB42884772A90F2305;
+			remoteInfo = fmt;
+		};
+		A1E695E6267041AF00711D05 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1E695D6267041AF00711D05 /* castle-core.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 6A69FD4D48174B55B42FBFFE;
+			remoteInfo = soloud;
 		};
 		B55942152534C97A00BD34E7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -212,7 +212,6 @@
 		A12CFF0323CC318400D721BC /* clipper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = clipper.cpp; path = "../../ghost-extensions/tove2d/src/thirdparty/clipper.cpp"; sourceTree = "<group>"; };
 		A12CFF0523CC31AB00D721BC /* polypartition.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = polypartition.cpp; path = "../../ghost-extensions/tove2d/src/thirdparty/polypartition/src/polypartition.cpp"; sourceTree = "<group>"; };
 		A12CFF0723CC31C100D721BC /* tinyxml2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tinyxml2.cpp; path = "../../ghost-extensions/tove2d/src/thirdparty/tinyxml2/tinyxml2.cpp"; sourceTree = "<group>"; };
-		A1429B4B26606FEF009D2951 /* castle-core.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "castle-core.xcodeproj"; path = "../../core/build/ios/castle-core.xcodeproj"; sourceTree = "<group>"; };
 		A14FE3892355CA44003B7EA0 /* SDL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL.xcodeproj; path = "../../ghost-extensions/SDL2-2.0.8/Xcode-iOS/SDL/SDL.xcodeproj"; sourceTree = "<group>"; };
 		A14FE3952355CA7B003B7EA0 /* liblove.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = liblove.xcodeproj; path = ../../love/platform/xcode/liblove.xcodeproj; sourceTree = "<group>"; };
 		A14FE39E2355CB83003B7EA0 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -269,6 +268,7 @@
 		A1CCBA1423551869009F4DDD /* GhostChannels.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GhostChannels.mm; sourceTree = "<group>"; };
 		A1CCBA18235518C7009F4DDD /* GhostView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GhostView.m; sourceTree = "<group>"; };
 		A1D3A841258177A400666D4D /* CastleNativeUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CastleNativeUtils.m; sourceTree = "<group>"; };
+		A1E695D6267041AF00711D05 /* castle-core.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "castle-core.xcodeproj"; path = "../../core/build_ios/castle-core.xcodeproj"; sourceTree = "<group>"; };
 		A1F8359F2661964000E65FE9 /* CastleCoreView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CastleCoreView.mm; sourceTree = "<group>"; };
 		A1FA18C22365168600E2ACFE /* GhostInputZone.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GhostInputZone.mm; sourceTree = "<group>"; };
 		A753A21E42DB46D99AD060DF /* RTAliasGrotesk-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "RTAliasGrotesk-Regular.otf"; path = "../assets/fonts/RTAliasGrotesk-Regular.otf"; sourceTree = "<group>"; };
@@ -293,10 +293,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1429B762660708A009D2951 /* libfmtd.a in Frameworks */,
+				A1E695EA267041E800711D05 /* libfmtd.a in Frameworks */,
 				A14FE3AE2355CC0E003B7EA0 /* libssl.a in Frameworks */,
 				A14FE3AB2355CBE3003B7EA0 /* libbz2.tbd in Frameworks */,
-				A1429B752660708A009D2951 /* libcastle-core.a in Frameworks */,
+				A1E695E9267041E800711D05 /* libcastle-core.a in Frameworks */,
 				A14FE3B52355CC39003B7EA0 /* QuartzCore.framework in Frameworks */,
 				A14FE3A32355CB93003B7EA0 /* CoreGraphics.framework in Frameworks */,
 				A1959DF42410A026000C61E0 /* CoreTelephony.framework in Frameworks */,
@@ -306,11 +306,11 @@
 				A14FE3A52355CB9A003B7EA0 /* GameController.framework in Frameworks */,
 				A14FE3AF2355CC21003B7EA0 /* libcrypto.a in Frameworks */,
 				A14FE3A92355CBC8003B7EA0 /* libSDL2.a in Frameworks */,
-				A1429B742660708A009D2951 /* libbox2d.a in Frameworks */,
+				A1E695E8267041E800711D05 /* libbox2d.a in Frameworks */,
 				A14FE3B32355CC32003B7EA0 /* OpenAL.framework in Frameworks */,
 				A14FE39F2355CB83003B7EA0 /* AudioToolbox.framework in Frameworks */,
 				A14FE3A12355CB8B003B7EA0 /* AVFoundation.framework in Frameworks */,
-				A1429B772660708A009D2951 /* libsoloud.a in Frameworks */,
+				A1E695EB267041E800711D05 /* libsoloud.a in Frameworks */,
 				A1959DFA2410A197000C61E0 /* SystemConfiguration.framework in Frameworks */,
 				A14FE3B12355CC2B003B7EA0 /* Metal.framework in Frameworks */,
 				A1959DF82410A0CC000C61E0 /* Accelerate.framework in Frameworks */,
@@ -412,7 +412,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				A1429B4B26606FEF009D2951 /* castle-core.xcodeproj */,
+				A1E695D6267041AF00711D05 /* castle-core.xcodeproj */,
 				B5E6E25E25D452500059479D /* scene_creator.love */,
 				A14FE3F62355D0C8003B7EA0 /* package.love */,
 				A14FE3B92355CE21003B7EA0 /* ghost-extensions */,
@@ -482,17 +482,6 @@
 				A12CFEE023CC30F600D721BC /* warn.cpp */,
 			);
 			name = tove2d;
-			sourceTree = "<group>";
-		};
-		A1429B4C26606FEF009D2951 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				A1429B5626606FEF009D2951 /* libbox2d.a */,
-				A1429B5826606FEF009D2951 /* libcastle-core.a */,
-				A1429B5A26606FEF009D2951 /* libfmtd.a */,
-				A1429B5C26606FEF009D2951 /* libsoloud.a */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		A14FE38A2355CA44003B7EA0 /* Products */ = {
@@ -602,6 +591,17 @@
 			name = lpeg;
 			sourceTree = "<group>";
 		};
+		A1E695D7267041AF00711D05 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A1E695E1267041AF00711D05 /* libbox2d.a */,
+				A1E695E3267041AF00711D05 /* libcastle-core.a */,
+				A1E695E5267041AF00711D05 /* libfmtd.a */,
+				A1E695E7267041AF00711D05 /* libsoloud.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		B55942102534C97A00BD34E7 /* CastleNotificationService */ = {
 			isa = PBXGroup;
 			children = (
@@ -700,8 +700,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = A1429B4C26606FEF009D2951 /* Products */;
-					ProjectRef = A1429B4B26606FEF009D2951 /* castle-core.xcodeproj */;
+					ProductGroup = A1E695D7267041AF00711D05 /* Products */;
+					ProjectRef = A1E695D6267041AF00711D05 /* castle-core.xcodeproj */;
 				},
 				{
 					ProductGroup = A14FE3962355CA7B003B7EA0 /* Products */;
@@ -721,34 +721,6 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		A1429B5626606FEF009D2951 /* libbox2d.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libbox2d.a;
-			remoteRef = A1429B5526606FEF009D2951 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		A1429B5826606FEF009D2951 /* libcastle-core.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libcastle-core.a";
-			remoteRef = A1429B5726606FEF009D2951 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		A1429B5A26606FEF009D2951 /* libfmtd.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libfmtd.a;
-			remoteRef = A1429B5926606FEF009D2951 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		A1429B5C26606FEF009D2951 /* libsoloud.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libsoloud.a;
-			remoteRef = A1429B5B26606FEF009D2951 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		A14FE3922355CA44003B7EA0 /* libSDL2.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -775,6 +747,34 @@
 			fileType = archive.ar;
 			path = liblove.a;
 			remoteRef = A14FE39C2355CA7B003B7EA0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A1E695E1267041AF00711D05 /* libbox2d.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libbox2d.a;
+			remoteRef = A1E695E0267041AF00711D05 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A1E695E3267041AF00711D05 /* libcastle-core.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libcastle-core.a";
+			remoteRef = A1E695E2267041AF00711D05 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A1E695E5267041AF00711D05 /* libfmtd.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libfmtd.a;
+			remoteRef = A1E695E4267041AF00711D05 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A1E695E7267041AF00711D05 /* libsoloud.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libsoloud.a;
+			remoteRef = A1E695E6267041AF00711D05 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */

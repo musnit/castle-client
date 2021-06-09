@@ -130,8 +130,7 @@ case "$1" in
 
   # Mobile
   ios)
-    $CMAKE -DIOS=ON -DCMAKE_SYSTEM_NAME=iOS -H. -Bbuild/ios -GXcode
-    #$CMAKE --build build/ios --config Release
+    $CMAKE -DIOS=ON -DCMAKE_SYSTEM_NAME=iOS -H. -Bbuild_ios -GXcode
     ;;
 
   # Web

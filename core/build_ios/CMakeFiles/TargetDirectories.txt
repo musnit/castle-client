@@ -1,0 +1,14 @@
+/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/CMakeFiles/install.dir
+/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/CMakeFiles/soloud.dir
+/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/CMakeFiles/castle-core.dir
+/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/CMakeFiles/ALL_BUILD.dir
+/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/CMakeFiles/ZERO_CHECK.dir
+/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt/CMakeFiles/install.dir
+/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt/CMakeFiles/fmt.dir
+/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt/CMakeFiles/ALL_BUILD.dir
+/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/fmt/CMakeFiles/ZERO_CHECK.dir
+/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d/CMakeFiles/install.dir
+/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d/CMakeFiles/ALL_BUILD.dir
+/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d/CMakeFiles/ZERO_CHECK.dir
+/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d/src/CMakeFiles/install.dir
+/Users/nikki/Development/castle-xyz/castle-client/core/build_ios/vendor/box2d/src/CMakeFiles/box2d.dir
