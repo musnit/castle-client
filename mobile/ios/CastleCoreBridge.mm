@@ -17,7 +17,9 @@
 RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(sendEventAsync:(NSString *)eventJson) {
-  CastleCore::getEngine().getBridge().receiveEvent(eventJson.UTF8String);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    CastleCore::getEngine().getBridge().receiveEvent(eventJson.UTF8String);
+  });
 }
 
 @end
