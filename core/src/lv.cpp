@@ -6,7 +6,7 @@
 // Love's filesystem module depends on this symbol. It's defined in
 // 'wrap_FileSystem.cpp', which is for wrapping C++ to Lua. We don't include
 // that, so we just copy the implementation here.
-#if !(LOVE_IOS || LOVE_ANDROID)
+#if !LOVE_IOS
 namespace love::filesystem {
 bool hack_setupWriteDirectory() {
   if (Module::getInstance<Filesystem>(Module::M_FILESYSTEM) != nullptr) {
