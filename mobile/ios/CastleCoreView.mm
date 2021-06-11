@@ -14,6 +14,11 @@
 namespace CastleCore {
 Engine &getEngine() {
   static Engine engine;
+  static bool initialized = false;
+  if (!initialized) {
+    initialized = true;
+    engine.loadSceneFromDeckId("ae5b8c7e-fd3a-4835-b972-fbf0bed2b81c");
+  }
   return engine;
 }
 }

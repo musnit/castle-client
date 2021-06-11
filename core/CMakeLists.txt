@@ -57,6 +57,11 @@ endif()
 
 # Sources
 file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS src/*.cpp)
+if (IOS)
+  list(APPEND MY_SOURCES "${CMAKE_SOURCE_DIR}/src/api_ios.mm")
+else()
+  list(APPEND MY_SOURCES "${CMAKE_SOURCE_DIR}/src/api_default.cpp")
+end()
 if(LIB)
   list(REMOVE_ITEM MY_SOURCES "${CMAKE_SOURCE_DIR}/src/main.cpp")
 endif()
@@ -714,8 +719,3 @@ else()
   target_sources(soloud PRIVATE ${SOLOUD_SRC}/backend/miniaudio/soloud_miniaudio.cpp)
 endif()
 target_link_libraries(castle-core PRIVATE soloud)
-
-# curl
-set(CMAKE_USE_OPENSSL OFF CACHE BOOL "" FORCE)
-add_subdirectory(vendor/curl-7.77.0 EXCLUDE_FROM_ALL)
-target_link_libraries(castle-core PRIVATE libcurl)
