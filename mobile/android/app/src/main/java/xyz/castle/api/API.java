@@ -20,6 +20,23 @@ import xyz.castle.ViewUtils;
 
 public class API {
 
+    public static String jniPostRequest(final String postBody) {
+        RequestBody body = RequestBody.create(JSON, postBody);
+        Request.Builder builder = new Request.Builder()
+                .url(API_HOST)
+                .post(body)
+                .addHeader("X-Platform", "mobile")
+                .addHeader("X-Enable-Scene-Creator-Migrations", "true");
+
+        try {
+            Response response = client.newCall(builder.build()).execute();
+            return response.body().string();
+        } catch (IOException e) {
+            return "error";
+        }
+    }
+
+
     public static final FieldList CARD_FIELD_LIST = new FieldList()
             .add("id")
             .add("cardId")
@@ -60,8 +77,8 @@ public class API {
 
     private static API sInstance;
 
-    private final OkHttpClient client = new OkHttpClient();
-    private final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+    private static final OkHttpClient client = new OkHttpClient();
+    private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
     public static API getInstance() {
         if (sInstance == null) {

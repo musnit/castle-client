@@ -57,11 +57,17 @@ endif()
 
 # Sources
 file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS src/*.cpp)
-if (IOS)
+
+list(REMOVE_ITEM MY_SOURCES "${CMAKE_SOURCE_DIR}/src/api_android.cpp")
+list(REMOVE_ITEM MY_SOURCES "${CMAKE_SOURCE_DIR}/src/api_default.cpp")
+if(IOS)
   list(APPEND MY_SOURCES "${CMAKE_SOURCE_DIR}/src/api_ios.mm")
+elseif(ANDROID)
+  list(APPEND MY_SOURCES "${CMAKE_SOURCE_DIR}/src/api_android.cpp")
 else()
   list(APPEND MY_SOURCES "${CMAKE_SOURCE_DIR}/src/api_default.cpp")
-end()
+endif()
+
 if(LIB)
   list(REMOVE_ITEM MY_SOURCES "${CMAKE_SOURCE_DIR}/src/main.cpp")
 endif()

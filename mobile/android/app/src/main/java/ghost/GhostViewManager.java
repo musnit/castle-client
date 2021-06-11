@@ -23,7 +23,7 @@ public class GhostViewManager extends SimpleViewManager<ViewGroup> implements Li
 
   @Override
   public String getName() {
-    return "GhostView";
+    return "CastleCoreView";
   }
 
   @Override

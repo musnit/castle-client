@@ -31,6 +31,10 @@ private:
 public:
   template<typename F>
   static void graphql(std::string query, F &&callback) {
+#ifdef ANDROID
+    graphqlThread(query, callback);
+#else
     std::thread { &API::graphqlThread<F>, query, callback }.detach();
+#endif
   }
 };
