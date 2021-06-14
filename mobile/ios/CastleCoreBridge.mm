@@ -1,4 +1,5 @@
 #import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
 #import <React/RCTLog.h>
 
 #import "CastleCoreView.h"
@@ -8,13 +9,43 @@
 // CastleCoreBridge
 //
 
-@interface CastleCoreBridge : NSObject <RCTBridgeModule>
+@interface CastleCoreBridge : RCTEventEmitter <RCTBridgeModule>
 
 @end
 
 @implementation CastleCoreBridge
+{
+  bool hasListeners;
+}
 
 RCT_EXPORT_MODULE();
+
+static __weak CastleCoreBridge *instance = nil;
+
+-(instancetype)init {
+  if (self = [super init]) {
+    instance = self;
+  }
+  return self;
+}
+
+-(void)dealloc {
+  if (instance == self) {
+    instance = nil;
+  }
+}
+
+-(void)startObserving {
+    hasListeners = YES;
+}
+
+-(void)stopObserving {
+    hasListeners = NO;
+}
+
+-(NSArray<NSString *> *)supportedEvents {
+  return @[@"onReceiveEvent"];
+}
 
 RCT_EXPORT_METHOD(sendEventAsync:(NSString *)eventJson) {
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -23,4 +54,12 @@ RCT_EXPORT_METHOD(sendEventAsync:(NSString *)eventJson) {
 }
 
 @end
+
+namespace CastleCore {
+void sendEventToJS(const char *eventJson) {
+  if (instance) {
+    [instance sendEventWithName:@"onReceiveEvent" body:[NSString stringWithUTF8String:eventJson]];
+  }
+}
+}
 

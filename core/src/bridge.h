@@ -19,6 +19,8 @@ public:
 
   // Sending events to JavaScript (called from rest of core code)
 
+  void sendEvent(const char *eventJson);
+
 
   // Receiving events from JavaScript (called from React Native modules)
 

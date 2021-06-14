@@ -1,6 +1,19 @@
 #include "bridge.h"
 
 
+namespace CastleCore {
+void sendEventToJS(const char *eventJson);
+#if __ANDROID__
+void sendEventToJS(const char *eventJson) {
+  // TODO: Implement using JNI on Android
+}
+#endif
+}
+
+void Bridge::sendEvent(const char *eventJson) {
+  CastleCore::sendEventToJS(eventJson);
+}
+
 void Bridge::receiveEvent(const char *eventJson) {
   auto archive = Archive::fromJson(eventJson);
   archive.read([&](Reader &reader) {

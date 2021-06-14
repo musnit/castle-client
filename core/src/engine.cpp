@@ -317,5 +317,7 @@ struct TestReceiver {
     for (auto &elem : params.elems()) {
       Debug::log("    foo: {}, bar: '{}'", elem.foo(), elem.bar());
     }
+
+    engine.getBridge().sendEvent("test data");
   }
 };

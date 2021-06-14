@@ -124,8 +124,6 @@ public:
 
   using BaseBehavior::BaseBehavior;
 
-  RulesBehavior(RulesBehavior &&) = default; // Allow move construction
-
   ~RulesBehavior();
 
 

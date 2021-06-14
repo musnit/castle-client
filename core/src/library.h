@@ -33,8 +33,6 @@ class Library {
 public:
   Library(const Library &) = delete; // Prevent accidental copies
   const Library &operator=(const Library &) = delete;
-  Library(Library &&) = default; // Allow moves
-  Library &operator=(Library &&) = default;
 
   Library() = default;
 
