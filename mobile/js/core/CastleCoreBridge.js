@@ -9,4 +9,6 @@ export async function sendEventAsync(name, params) {
 const eventEmitter = new NativeEventEmitter(NativeModules.CastleCoreBridge);
 eventEmitter.addListener('onReceiveEvent', (eventJson) => {
   console.log(`received event from core: ${eventJson}`);
+  // TODO: Allow registering handlers from other modules, then dispatch to
+  //       handler based on `.name` and pass `.params`
 });

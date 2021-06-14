@@ -330,6 +330,6 @@ struct TestReceiver {
     TestResponse response;
     response.elems().push_back({ 3, "three" });
     response.elems().push_back({ 400, "four hundred" });
-    engine.getBridge().sendEvent(response);
+    engine.getBridge().sendEvent("test_response", response);
   }
 };

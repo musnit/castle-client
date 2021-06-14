@@ -20,7 +20,7 @@ public:
   // Sending events to JavaScript (called from rest of core code)
 
   template<typename T>
-  void sendEvent(const T &event);
+  void sendEvent(const char *name, const T &params);
 
 
   // Receiving events from JavaScript (called from React Native modules)
@@ -62,10 +62,13 @@ inline Bridge::Bridge(Engine &engine_)
 }
 
 template<typename T>
-void Bridge::sendEvent(const T &event) {
+void Bridge::sendEvent(const char *name, const T &params) {
   Archive archive;
   archive.write([&](Archive::Writer &writer) {
-    writer.write(event);
+    writer.str("name", name);
+    writer.obj("params", [&]() {
+      writer.write(params);
+    });
   });
   sendEventToJS(archive.toJson().c_str());
 }
