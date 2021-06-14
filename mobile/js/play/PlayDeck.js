@@ -1,19 +1,30 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { CardScene } from '../game/CardScene';
+import { CardText } from '../components/CardText';
 import { gql } from '@apollo/client';
-import { useNavigation } from '../ReactNavigation';
 
 import * as Amplitude from 'expo-analytics-amplitude';
+import * as Constants from '../Constants';
 import * as Session from '../Session';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    borderRadius: Constants.CARD_BORDER_RADIUS,
+    overflow: 'hidden',
   },
-  card: {
+  scene: {
     position: 'absolute',
     width: '100%',
     height: '100%',
+  },
+  textActors: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: 16,
+    paddingBottom: 8,
   },
 });
 
@@ -30,20 +41,15 @@ const recordDeckPlay = (deckId, cardId) =>
     },
   });
 
-export const PlayDeck = ({ deckId, visibility, route, paused }) => {
-  const navigation = useNavigation(); // we use props.route
-  if (!deckId && route.params) {
-    deckId = route.params.deckId;
-  }
-
+export const PlayDeck = ({ deck, visibility, route, paused }) => {
   React.useEffect(() => {
-    Amplitude.logEventWithProperties('VIEW_PLAY_DECK', { deckId, visibility });
+    Amplitude.logEventWithProperties('VIEW_PLAY_DECK', { deckId: deck.deckId, visibility });
 
     return () => {
       // TODO: can't record deck play until we have card id from the engine
       // recordDeckPlay(deckId, cardIdRef.current);
     };
-  }, [deckId, visibility]);
+  }, [deck.deckId, visibility]);
 
   // TODO: can't record deck play until we have card id from the engine
   /* React.useEffect(() => {
@@ -55,21 +61,31 @@ export const PlayDeck = ({ deckId, visibility, route, paused }) => {
     return () => {
       clearInterval(interval);
     };
-  }, [cardState.cardId]); */
+    }, [cardState.cardId]); */
 
-  // TODO: DeckScene, TextActors
+  const selectActor = React.useCallback((actorId) => {
+    // TODO: tell engine that the actor was selected
+    /* GhostEvents.sendAsync('SELECT_ACTOR', {
+      actorId,
+    }); */
+  }, []);
+
   return (
     <View style={styles.container}>
-      {/* <CardTransition
-        deckId={deckId}
-        cardId={cardState.cardId}
-        counter={cardState.numCardsViewed}
-        style={styles.card}
-        onSelectNewCard={onSelectNewCard}
-        deckState={playDeckState}
-        onChangeDeckState={changePlayDeckState}
+      <CardScene
+        deck={deck}
+        interactionEnabled={true}
+        key={`deck-scene-${deck.deckId}`}
+        style={styles.scene}
         paused={paused}
-        /> */}
+      />
+      <View pointerEvents="box-none" style={styles.textActors}>
+        {/* <CardText
+          visible
+          textActors={textActors}
+          onSelect={selectActor}
+          /> */}
+      </View>
     </View>
   );
 };

@@ -17,13 +17,12 @@ const styles = StyleSheet.create({
 });
 
 export const CardScene = ({
-  card,
+  deck,
   style,
   interactionEnabled = true,
   initialIsEditing = false,
   isEditable = false,
   onMessage,
-  deckState,
   paused = false,
   beltHeight,
   beltHeightFraction,
@@ -47,22 +46,18 @@ export const CardScene = ({
       setShouldDisplay(true);
     }, 50);
     return () => clearTimeout(timeout);
-  }, [card?.cardId]);
+  }, [deck?.deckId]);
 
   return (
     <View style={style}>
-      {card?.scene && card.cardId ? (
+      {deck?.deckId ? (
         <React.Fragment>
           {shouldDisplay && (
             <GameView
-              key={`game-view-${card.cardId}-${reloadCount}`}
+              key={`game-view-${deck.deckId}-${reloadCount}`}
               extras={{
                 initialParams: JSON.stringify({
-                  scene: {
-                    sceneId: card.scene.sceneId,
-                    data: card.scene.data,
-                    deckState,
-                  },
+                  deckId: deck.deckId,
                   isEditing: initialIsEditing,
                   isEditable,
                   isDebug: !!__DEV__,
@@ -76,7 +71,6 @@ export const CardScene = ({
               setLogsVisible={setLogsVisible}
               onMessage={onMessage}
               onLoaded={onLoaded}
-              deckState={deckState}
               paused={paused}
             />
           )}
@@ -89,7 +83,7 @@ export const CardScene = ({
       ) : null}
       {!loaded ? (
         <GameLoading
-          loadingImage={card?.backgroundImage}
+          loadingImage={deck?.initialCard?.backgroundImage}
           isEditable={isEditable}
           beltHeight={beltHeight}
         />

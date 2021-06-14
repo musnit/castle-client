@@ -217,7 +217,7 @@ const CurrentDeckCell = ({
         />
         {ready ? (
           <View style={styles.absoluteFill}>
-            <PlayDeck deckId={deck.deckId} visibility={deck.visibility} paused={paused} />
+            <PlayDeck deck={deck} visibility={deck.visibility} paused={paused} />
           </View>
         ) : null}
       </View>

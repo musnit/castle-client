@@ -132,16 +132,6 @@ const useLuaLoading = ({ onLoaded }) => {
   return { networkRequests, loaded };
 };
 
-const useDeckState = ({ deckState }) => {
-  useEffect(() => {
-    if (!deckState.setFromLua) {
-      sendAsync('UPDATE_DECK_STATE', {
-        deckState,
-      });
-    }
-  }, [deckState]);
-};
-
 // Given a `gameId` or `gameUri`, run and display the game! The lifetime of this
 // component must match the lifetime of the game run -- it must be unmounted
 // when the game is stopped and a new instance mounted if a new game should be
@@ -155,12 +145,9 @@ export const GameView = ({
   onPressBack,
   onMessage,
   onLoaded,
-  deckState,
   paused,
   isEditable,
 }) => {
-  useDeckState({ deckState });
-
   const dimensionsSettings = computeDimensionsSettings({
     metadata: {
       dimensions: 800,
