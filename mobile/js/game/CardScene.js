@@ -55,9 +55,9 @@ export const CardScene = ({
           {shouldDisplay && (
             <GameView
               key={`game-view-${deck.deckId}-${reloadCount}`}
+              deckId={deck.deckId}
               extras={{
                 initialParams: JSON.stringify({
-                  deckId: deck.deckId,
                   isEditing: initialIsEditing,
                   isEditable,
                   isDebug: !!__DEV__,

@@ -2,6 +2,7 @@ import * as Sentry from '@sentry/react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 
+import * as CastleCoreBridge from '../core/CastleCoreBridge';
 import CastleCoreView from '../core/CastleCoreView';
 import { sendAsync, useGhostEvents, useListen } from '../ghost/GhostEvents';
 import GhostView from '../ghost/GhostView';
@@ -69,31 +70,6 @@ const computeDimensionsSettings = ({ metadata }) => {
   return dimensionsSettings;
 };
 
-// Populate the 'INITIAL_DATA' channel that Lua reads for various initial
-// settings (eg. the user object, initial audio volume, initial post, ...)
-const useInitialData = ({ extras }) => {
-  const [sent, setSent] = useState(false);
-
-  useEffect(() => {
-    // Prepare the data
-    const initialData = {
-      /*graphics: {
-          width: dimensionsSettings.width,
-          height: dimensionsSettings.height,
-        },*/
-      audio: { volume: 1 },
-      user: {},
-      initialParams: extras.initialParams ? extras.initialParams : undefined,
-      // TODO(nikki): Add `initialPost`...
-    };
-
-    sendAsync('BASE_RELOAD', initialData);
-    setSent(true);
-  }, []);
-
-  return { sent };
-};
-
 // Keep track of Lua loading state
 const useLuaLoading = ({ onLoaded }) => {
   // Maintain list of network requests Lua is making
@@ -132,11 +108,8 @@ const useLuaLoading = ({ onLoaded }) => {
   return { networkRequests, loaded };
 };
 
-// Given a `gameId` or `gameUri`, run and display the game! The lifetime of this
-// component must match the lifetime of the game run -- it must be unmounted
-// when the game is stopped and a new instance mounted if a new game should be
-// run (or even if the same game should be restarted).
 export const GameView = ({
+  deckId,
   extras,
   windowed,
   onPressReload,
@@ -155,8 +128,6 @@ export const GameView = ({
   });
 
   const { gameDidMount, gameDidUnmount, eventsReady } = useGhostEvents();
-
-  const initialDataHook = useInitialData({ eventsReady, extras });
 
   useEffect(() => {
     const id = Math.floor(Math.random() * Math.floor(1000));
@@ -232,14 +203,13 @@ export const GameView = ({
           layout: { width, height },
         },
       }) => setLandscape(width > height)}>
-      {eventsReady && initialDataHook.sent ? (
-        <NativeView
-          style={{ flex: 1 }}
-          dimensionsSettings={dimensionsSettings}
-          paused={paused}
-          isEditable={isEditable}
-        />
-      ) : null}
+      <NativeView
+        deckId={deckId}
+        style={{ flex: 1 }}
+        dimensionsSettings={dimensionsSettings}
+        paused={paused}
+        isEditable={isEditable}
+      />
       <GameLogs visible={!windowed && logsVisible} />
       {/* 
 HACK: something in here must have an inherent size greater than 0x0 or the game will never load

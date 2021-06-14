@@ -14,11 +14,6 @@
 namespace CastleCore {
 Engine &getEngine() {
   static Engine engine;
-  static bool initialized = false;
-  if (!initialized) {
-    initialized = true;
-    engine.loadSceneFromDeckId("ae5b8c7e-fd3a-4835-b972-fbf0bed2b81c");
-  }
   return engine;
 }
 }
@@ -77,7 +72,9 @@ static bool paused = false;
   CastleCore::getEngine().frame();
 }
 
-- (void)setUri:(NSString *)uri {
+- (void)setDeckId:(NSString *)deckId {
+  const char *deckIdCStr = [deckId cStringUsingEncoding:NSUTF8StringEncoding];
+  CastleCore::getEngine().loadSceneFromDeckId(deckIdCStr);
 }
 
 extern double ghostScreenScaling;
@@ -140,7 +137,7 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-RCT_EXPORT_VIEW_PROPERTY(uri, NSString);
+RCT_EXPORT_VIEW_PROPERTY(deckId, NSString);
 RCT_EXPORT_VIEW_PROPERTY(screenScaling, double);
 RCT_EXPORT_VIEW_PROPERTY(applyScreenScaling, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(paused, BOOL);

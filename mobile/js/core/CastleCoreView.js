@@ -60,7 +60,7 @@ const useDimensions = ({ settings }) => {
   return { screenScaling, applyScreenScaling, width, height, onLayoutContainer };
 };
 
-const CastleCoreView = ({ style, dimensionsSettings, paused, isEditable }) => {
+const CastleCoreView = ({ deckId, style, dimensionsSettings, paused, isEditable }) => {
   const dimensionsHook = useDimensions({ settings: dimensionsSettings });
 
   return (
@@ -84,6 +84,7 @@ const CastleCoreView = ({ style, dimensionsSettings, paused, isEditable }) => {
             style={{ width: '100%', height: '100%' }}
             screenScaling={dimensionsHook.screenScaling}
             applyScreenScaling={dimensionsHook.applyScreenScaling}
+            deckId={deckId}
             paused={paused}
             isEditable={isEditable}
             resetOnExit={isEditable && Platform.OS === 'ios'}
