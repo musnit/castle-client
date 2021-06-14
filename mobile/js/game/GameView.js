@@ -5,13 +5,11 @@ import { View } from 'react-native';
 import * as CastleCoreBridge from '../core/CastleCoreBridge';
 import CastleCoreView from '../core/CastleCoreView';
 import { sendAsync, useGhostEvents, useListen } from '../ghost/GhostEvents';
-import GhostView from '../ghost/GhostView';
 
 import { GameLoading } from './GameLoading';
 import { GameLogs } from './GameLogs';
 import * as LuaBridge from './LuaBridge';
 
-const USE_CORE = true;
 const FORWARD_LUA_LOGS = false;
 
 // Read dimensions settings into the `{ width, height, upscaling, downscaling }`
@@ -70,44 +68,6 @@ const computeDimensionsSettings = ({ metadata }) => {
   return dimensionsSettings;
 };
 
-// Keep track of Lua loading state
-const useLuaLoading = ({ onLoaded }) => {
-  // Maintain list of network requests Lua is making
-  const [networkRequests, setNetworkRequests] = useState([]);
-  useListen({
-    eventName: 'GHOST_NETWORK_REQUEST',
-    handler: async ({ type, id, url, method }) => {
-      if (type === 'start') {
-        // Add to `networkRequests` if `url` is new
-        setNetworkRequests((networkRequests) =>
-          !networkRequests.find((req) => req.url == url)
-            ? [...networkRequests, { id, url, method }]
-            : networkRequests
-        );
-      }
-      if (type === 'stop') {
-        // Wait for a slight bit then remove from `networkRequests`
-        await new Promise((resolve) => setTimeout(resolve, 60));
-        setNetworkRequests((networkRequests) => networkRequests.filter((req) => req.id !== id));
-      }
-    },
-  });
-
-  // Maintain whether Lua finished loading (`love.load` is done)
-  const [loaded, setLoaded] = useState(false);
-  useListen({
-    eventName: 'SCENE_CREATOR_GAME_LOADED',
-    handler: () => {
-      if (onLoaded) {
-        onLoaded();
-      }
-      setLoaded(true);
-    },
-  });
-
-  return { networkRequests, loaded };
-};
-
 export const GameView = ({
   deckId,
   extras,
@@ -134,8 +94,6 @@ export const GameView = ({
     gameDidMount(id);
     return () => gameDidUnmount(id);
   }, []);
-
-  const luaLoadingHook = useLuaLoading({ onLoaded });
 
   // TODO: do we actually need to pass in anything for game?
   LuaBridge.useLuaBridge({ game: {} });
@@ -186,15 +144,11 @@ export const GameView = ({
 
   const [landscape, setLandscape] = useState(false);
 
-  const NativeView = USE_CORE ? CastleCoreView : GhostView;
-  if (USE_CORE) {
-    useEffect(() => {
-      // TODO: Implement a core loaded event and fire `onLoaded` this when that happens
-      setTimeout(() => onLoaded(), 100);
-    }, []);
-  }
+  useEffect(() => {
+    // TODO: Implement a core loaded event and fire `onLoaded` this when that happens
+    setTimeout(() => onLoaded(), 100);
+  }, []);
 
-  // TODO: entryPoint should actually reflect native entry point
   return (
     <View
       style={{ flex: 1 }}
@@ -203,7 +157,7 @@ export const GameView = ({
           layout: { width, height },
         },
       }) => setLandscape(width > height)}>
-      <NativeView
+      <CastleCoreView
         deckId={deckId}
         style={{ flex: 1 }}
         dimensionsSettings={dimensionsSettings}
@@ -214,8 +168,9 @@ export const GameView = ({
       {/* 
 HACK: something in here must have an inherent size greater than 0x0 or the game will never load
 on android. currently, this is <GameLoading />
+TODO: show if loading (new engine)
         */}
-      {!USE_CORE && !luaLoadingHook.loaded ? <GameLoading /> : null}
+      {false ? <GameLoading /> : null}
     </View>
   );
 };

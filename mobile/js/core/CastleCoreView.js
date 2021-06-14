@@ -91,22 +91,6 @@ const CastleCoreView = ({ deckId, style, dimensionsSettings, paused, isEditable 
           />
         </View>
       ) : null}
-      <View style={{ position: 'absolute', bottom: 20, left: 20 }}>
-        <TouchableOpacity
-          style={{ width: 80, height: 80, backgroundColor: 'red', borderRadius: 8 }}
-          onPress={() => {
-            CastleCoreBridge.sendEventAsync('test', {
-              topLevel: 100,
-              elems: [
-                { foo: 200, bar: 'two hundred' },
-                { foo: 150, bar: 'one hundred fifty' },
-                { bar: 'no number' },
-                { foo: 700 },
-              ],
-            });
-          }}
-        />
-      </View>
     </View>
   );
 };
