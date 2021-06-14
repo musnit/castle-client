@@ -22,6 +22,10 @@ RCT_EXPORT_MODULE();
 
 static __weak CastleCoreBridge *instance = nil;
 
++ (BOOL)requiresMainQueueSetup {
+  return YES;
+}
+
 -(instancetype)init {
   if (self = [super init]) {
     instance = self;
