@@ -10,7 +10,7 @@ void sendEventToJS(const char *eventJson) {
 #endif
 }
 
-void Bridge::sendEvent(const char *eventJson) {
+void Bridge::sendEventToJS(const char *eventJson) {
   CastleCore::sendEventToJS(eventJson);
 }
 

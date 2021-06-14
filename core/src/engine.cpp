@@ -310,6 +310,15 @@ struct TestReceiver {
     PROP(std::vector<Elem>, elems);
   } params;
 
+  struct TestResponse {
+    PROP(double, moreTopLevel) = 9001;
+    struct Elem {
+      PROP(double, foo);
+      PROP(std::string, bar);
+    };
+    PROP(std::vector<Elem>, elems);
+  } response;
+
   void receive(Engine &engine) {
     Debug::log("core: received test event:");
     Debug::log("  topLevel: {}", params.topLevel());
@@ -318,6 +327,9 @@ struct TestReceiver {
       Debug::log("    foo: {}, bar: '{}'", elem.foo(), elem.bar());
     }
 
-    engine.getBridge().sendEvent("test data");
+    TestResponse response;
+    response.elems().push_back({ 3, "three" });
+    response.elems().push_back({ 400, "four hundred" });
+    engine.getBridge().sendEvent(response);
   }
 };

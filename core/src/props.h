@@ -25,9 +25,14 @@ namespace Internal {
 }
 using PropId = Internal::IdMap::Token;
 
+inline Internal::IdMap ids;
+
 inline PropId getId(const char *str) {
-  static Internal::IdMap ids;
   return ids.getToken(str);
+}
+
+inline const std::string *getName(PropId propId) {
+  return ids.getString(propId);
 }
 }
 using PropId = Props::PropId;

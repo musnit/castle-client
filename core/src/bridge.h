@@ -19,7 +19,8 @@ public:
 
   // Sending events to JavaScript (called from rest of core code)
 
-  void sendEvent(const char *eventJson);
+  template<typename T>
+  void sendEvent(const T &event);
 
 
   // Receiving events from JavaScript (called from React Native modules)
@@ -38,6 +39,8 @@ private:
     void (*receive)(Engine &engine, Reader &reader) = nullptr;
   };
   inline static std::vector<ReceiverEntry> receiverEntries;
+
+  void sendEventToJS(const char *eventJson);
 };
 
 template<typename T>
@@ -56,6 +59,15 @@ private:
 
 inline Bridge::Bridge(Engine &engine_)
     : engine(engine_) {
+}
+
+template<typename T>
+void Bridge::sendEvent(const T &event) {
+  Archive archive;
+  archive.write([&](Archive::Writer &writer) {
+    writer.write(event);
+  });
+  sendEventToJS(archive.toJson().c_str());
 }
 
 template<typename T>

@@ -204,6 +204,7 @@ public:
   // in C++, and is specialized here to avoid needing to dynamically allocate memory to copy them
   // to. Constant string literals are a pretty common case here `(eg. writer.num("health", 42))`.
 
+
   // Insert element at key. The current value must be an object.
 
   template<typename K>
@@ -233,6 +234,13 @@ public:
   void obj(F &&f); // Enter the sub-object once created
 
 
+  // Write a value of custom type. Can be a function, a type with a `T::write(Writer &writer)`
+  // method, or reflectable with props
+
+  template<typename T>
+  void write(T &&v);
+
+
 private:
   friend class Archive;
 
@@ -253,11 +261,33 @@ private:
   template<size_t N>
   static constexpr auto isCStrArray<char (&)[N]> = true;
 
+  template<typename T, typename = void>
+  static constexpr auto hasWrite = false;
+  template<typename T>
+  static constexpr auto hasWrite<T,
+      decltype(std::declval<std::remove_reference_t<T>>().write(std::declval<Writer &>()))> = true;
+
   template<typename K>
   json::Value makeStr(K &&key);
 
   template<typename F>
   void runLambdaOrCallWrite(F &&f);
+
+  json::Value write_(const int &i);
+  json::Value write_(const float &f);
+  json::Value write_(const double &f);
+  json::Value write_(const bool &b);
+  json::Value write_(const std::string &s);
+  json::Value write_(const PropId &propId);
+  json::Value write_(const love::Colorf &c);
+  template<typename T, size_t N>
+  json::Value write_(const std::array<T, N> &a);
+  template<typename T>
+  json::Value write_(const std::vector<T> &v);
+  template<typename T, unsigned N>
+  json::Value write_(const SmallVector<T, N> &v);
+  template<typename T>
+  json::Value write_(T &&v);
 };
 
 
@@ -760,6 +790,11 @@ void Writer::obj(F &&f) {
   cur->PushBack(child, alloc);
 }
 
+template<typename T>
+void Writer::write(T &&v) {
+  *cur = write_(std::forward<T>(v));
+}
+
 inline Writer::Writer(json::Value &cur_, json::Value::AllocatorType &alloc_)
     : cur(&cur_)
     , alloc(alloc_) {
@@ -784,4 +819,96 @@ void Writer::runLambdaOrCallWrite(F &&f) {
   } else {
     f.write(*this);
   }
+}
+
+inline json::Value Writer::write_(const int &i) {
+  return json::Value(i);
+}
+
+inline json::Value Writer::write_(const float &f) {
+  return json::Value(f);
+}
+
+inline json::Value Writer::write_(const double &f) {
+  return json::Value(f);
+}
+
+inline json::Value Writer::write_(const bool &b) {
+  return json::Value(b);
+}
+
+inline json::Value Writer::write_(const std::string &s) {
+  return makeStr(s);
+}
+
+inline json::Value Writer::write_(const PropId &propId) {
+  if (auto str = Props::getName(propId)) {
+    return makeStr(*str);
+  } else {
+    return makeStr("");
+  }
+}
+
+inline json::Value Writer::write_(const love::Colorf &c) {
+  auto result = json::Value(json::kArrayType);
+  result.Reserve(4, alloc);
+  result.PushBack(json::Value(c.r), alloc);
+  result.PushBack(json::Value(c.g), alloc);
+  result.PushBack(json::Value(c.b), alloc);
+  result.PushBack(json::Value(c.a), alloc);
+  return result;
+}
+
+template<typename T, size_t N>
+inline json::Value Writer::write_(const std::array<T, N> &a) {
+  auto result = json::Value(json::kArrayType);
+  result.Reserve(a.size(), alloc);
+  for (auto &elem : a) {
+    result.PushBack(write_(elem), alloc);
+  }
+  return result;
+}
+
+template<typename T>
+inline json::Value Writer::write_(const std::vector<T> &v) {
+  auto result = json::Value(json::kArrayType);
+  result.Reserve(v.size(), alloc);
+  for (auto &elem : v) {
+    result.PushBack(write_(elem), alloc);
+  }
+  return result;
+}
+
+template<typename T, unsigned N>
+inline json::Value Writer::write_(const SmallVector<T, N> &v) {
+  auto result = json::Value(json::kArrayType);
+  result.Reserve(v.size(), alloc);
+  for (auto &elem : v) {
+    result.PushBack(write_(elem), alloc);
+  }
+  return result;
+}
+
+template<typename T>
+json::Value Writer::write_(T &&v) {
+  static_assert(std::is_invocable_v<T> || hasWrite<T> || Props::isReflectable<T>,
+      "write: this type is not writeable");
+  auto parent = cur;
+  auto child = json::Value(json::kObjectType);
+  cur = &child;
+  if constexpr (std::is_invocable_v<T>) {
+    v();
+  } else if constexpr (hasWrite<T>) {
+    v.write_(*this);
+  } else if constexpr (Props::hasProps<T>) { // Avoid iterating if no props inside
+    Props::forEach(v, [&](auto &prop) {
+      if constexpr (!Archive::skipProp<std::remove_reference_t<decltype(prop())>>) {
+        using Prop = std::remove_reference_t<decltype(prop)>;
+        constexpr auto propName = Prop::name;
+        cur->AddMember(json::StringRef(propName.data(), propName.size()), write_(prop()), alloc);
+      }
+    });
+  }
+  cur = parent;
+  return child;
 }
