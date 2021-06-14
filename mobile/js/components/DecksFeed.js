@@ -3,7 +3,7 @@ import { Animated, FlatList, InteractionManager, StyleSheet, View } from 'react-
 import { CardCell } from './CardCell';
 import { PlayDeckActions } from '../play/PlayDeckActions';
 import { PlayDeckFooter } from '../play/PlayDeckFooter';
-import { PlayDeckNavigator } from '../play/PlayDeckNavigator';
+import { PlayDeck } from '../play/PlayDeck';
 import { useGameViewAndroidBackHandler } from '../common/GameViewAndroidBackHandler';
 import { useIsFocused } from '../ReactNavigation';
 import { useSession, blockUser, reportDeck } from '../Session';
@@ -217,13 +217,7 @@ const CurrentDeckCell = ({
         />
         {ready ? (
           <View style={styles.absoluteFill}>
-            <PlayDeckNavigator
-              deckId={deck.deckId}
-              visibility={deck.visibility}
-              initialCardId={deck.initialCard && deck.initialCard.cardId}
-              initialDeckState={Utilities.makeInitialDeckState(deck)}
-              paused={paused}
-            />
+            <PlayDeck deckId={deck.deckId} visibility={deck.visibility} paused={paused} />
           </View>
         ) : null}
       </View>
