@@ -6,7 +6,7 @@
 
 @interface GhostAppState ()
 
-@property (nonatomic, assign) BOOL hasListeners;
+@property(nonatomic, assign) BOOL hasListeners;
 
 @end
 
@@ -26,15 +26,15 @@ RCT_EXPORT_MODULE()
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[@"onAppStateChange"];
+  return @[ @"onAppStateChange" ];
 }
 
--(void)startObserving {
-    self.hasListeners = YES;
+- (void)startObserving {
+  self.hasListeners = YES;
 }
 
--(void)stopObserving {
-    self.hasListeners = NO;
+- (void)stopObserving {
+  self.hasListeners = NO;
 }
 
 - (void)appStateChanged {
@@ -46,14 +46,14 @@ RCT_EXPORT_MODULE()
   });
 }
 
-- (NSString *)_applicationStateString: (UIApplicationState)state {
+- (NSString *)_applicationStateString:(UIApplicationState)state {
   switch (state) {
-    case UIApplicationStateActive:
-      return @"active";
-    case UIApplicationStateInactive:
-      return @"inactive";
-    case UIApplicationStateBackground:
-      return @"background";
+  case UIApplicationStateActive:
+    return @"active";
+  case UIApplicationStateInactive:
+    return @"inactive";
+  case UIApplicationStateBackground:
+    return @"background";
   }
   return @"";
 }

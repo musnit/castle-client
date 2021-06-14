@@ -2,7 +2,6 @@
 
 #import <React/RCTView.h>
 
-
 //
 // Engine instance
 //
@@ -16,7 +15,6 @@ Engine &getEngine();
 }
 
 #endif
-
 
 //
 // CastleCoreView

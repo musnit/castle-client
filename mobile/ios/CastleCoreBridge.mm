@@ -4,7 +4,6 @@
 
 #import "CastleCoreView.h"
 
-
 //
 // CastleCoreBridge
 //
@@ -13,8 +12,7 @@
 
 @end
 
-@implementation CastleCoreBridge
-{
+@implementation CastleCoreBridge {
   bool hasListeners;
 }
 
@@ -26,32 +24,32 @@ static __weak CastleCoreBridge *instance = nil;
   return YES;
 }
 
--(instancetype)init {
+- (instancetype)init {
   if (self = [super init]) {
     instance = self;
   }
   return self;
 }
 
--(void)dealloc {
+- (void)dealloc {
   if (instance == self) {
     instance = nil;
   }
 }
 
--(void)startObserving {
-    hasListeners = YES;
+- (void)startObserving {
+  hasListeners = YES;
 }
 
--(void)stopObserving {
-    hasListeners = NO;
+- (void)stopObserving {
+  hasListeners = NO;
 }
 
--(NSArray<NSString *> *)supportedEvents {
-  return @[@"onReceiveEvent"];
+- (NSArray<NSString *> *)supportedEvents {
+  return @[ @"onReceiveEvent" ];
 }
 
-RCT_EXPORT_METHOD(sendEventAsync:(NSString *)eventJson) {
+RCT_EXPORT_METHOD(sendEventAsync : (NSString *)eventJson) {
   dispatch_async(dispatch_get_main_queue(), ^{
     CastleCore::getEngine().getBridge().receiveEvent(eventJson.UTF8String);
   });
@@ -66,4 +64,3 @@ void sendEventToJS(const char *eventJson) {
   }
 }
 }
-

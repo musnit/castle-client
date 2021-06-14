@@ -1,7 +1,7 @@
 // Wrapped by 'GhostInputZone.js'.
+#import <React/RCTUIManager.h>
 #import <React/RCTView.h>
 #import <React/RCTViewManager.h>
-#import <React/RCTUIManager.h>
 
 extern "C" {
 #include <lauxlib.h>
@@ -14,8 +14,7 @@ extern "C" {
 static void channelPush(NSString *name, NSString *value) {
   auto channel = love::thread::Channel::getChannel(name.UTF8String);
   auto var =
-  love::Variant(value.UTF8String,
-                [value lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
+      love::Variant(value.UTF8String, [value lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
   channel->push(var);
 }
 
@@ -177,15 +176,16 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-RCT_EXPORT_METHOD(updateChild:(nonnull NSNumber *)reactTag
-                  childId:(nonnull NSNumber *)childId
-                  x:(nonnull NSNumber *)x
-                  y:(nonnull NSNumber *)y
-                  width:(nonnull NSNumber *)width
-                  height:(nonnull NSNumber *)height
-                  config:(nonnull NSDictionary *)config
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(updateChild
+                  : (nonnull NSNumber *)reactTag childId
+                  : (nonnull NSNumber *)childId x
+                  : (nonnull NSNumber *)x y
+                  : (nonnull NSNumber *)y width
+                  : (nonnull NSNumber *)width height
+                  : (nonnull NSNumber *)height config
+                  : (nonnull NSDictionary *)config resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
   GhostInputZone *view = (GhostInputZone *)[self.bridge.uiManager viewForReactTag:reactTag];
   if (view) {
     [view updateChild:childId x:x y:y width:width height:height config:config];

@@ -13,15 +13,15 @@
 
 RCT_EXPORT_MODULE()
 
-- (NSDictionary *)constantsToExport
-{
+- (NSDictionary *)constantsToExport {
   NSString *installSource;
 #if TARGET_OS_SIMULATOR
   installSource = @"simulator";
 #else
   NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
   NSString *receiptURLString = [receiptURL path];
-  BOOL isRunningSandboxBuild =  ([receiptURLString rangeOfString:@"sandboxReceipt"].location != NSNotFound);
+  BOOL isRunningSandboxBuild =
+      ([receiptURLString rangeOfString:@"sandboxReceipt"].location != NSNotFound);
   if (isRunningSandboxBuild) {
     installSource = @"sandbox";
   } else {
@@ -29,8 +29,8 @@ RCT_EXPORT_MODULE()
   }
 #endif
   return @{
-    @"installSource": installSource,
-    @"sceneCreatorApiVersion": [GhostView sceneCreatorApiVersion],
+    @"installSource" : installSource,
+    @"sceneCreatorApiVersion" : [GhostView sceneCreatorApiVersion],
   };
 }
 

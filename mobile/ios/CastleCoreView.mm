@@ -6,7 +6,6 @@
 
 #include <SDL.h>
 
-
 //
 // Engine instance
 //
@@ -17,7 +16,6 @@ Engine &getEngine() {
   return engine;
 }
 }
-
 
 //
 // CastleCoreView
@@ -35,8 +33,7 @@ Engine &getEngine() {
   return sharedCastleCoreView;
 }
 
-+ (NSString *)sceneCreatorApiVersion
-{
++ (NSString *)sceneCreatorApiVersion {
   return [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SceneCreatorApiVersion"];
 }
 
@@ -44,16 +41,14 @@ Engine &getEngine() {
   if (self = [super init]) {
     self.displayLink = nil;
 
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(sdlViewAddNotificationReceived:)
-               name:@"sdl_view_add"
-             object:nil];
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(sdlViewRemoveNotificationReceived:)
-               name:@"sdl_view_remove"
-             object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(sdlViewAddNotificationReceived:)
+                                                 name:@"sdl_view_add"
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(sdlViewRemoveNotificationReceived:)
+                                                 name:@"sdl_view_remove"
+                                               object:nil];
 
     dispatch_async(dispatch_get_main_queue(), ^{
       self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(doFrame)];
@@ -93,8 +88,7 @@ extern bool ghostApplyScreenScaling;
 }
 
 - (void)sdlViewAddNotificationReceived:(NSNotification *)notification {
-  UIViewController *viewController =
-      (UIViewController *)notification.userInfo[@"viewController"];
+  UIViewController *viewController = (UIViewController *)notification.userInfo[@"viewController"];
 
   // Remove from whatever it was attached to before
   [viewController.view removeFromSuperview];
@@ -106,15 +100,13 @@ extern bool ghostApplyScreenScaling;
 }
 
 - (void)sdlViewRemoveNotificationReceived:(NSNotification *)notification {
-  UIViewController *viewController =
-      (UIViewController *)notification.userInfo[@"viewController"];
+  UIViewController *viewController = (UIViewController *)notification.userInfo[@"viewController"];
 
   // Remove from whatever it's attached to (hopefully us)
   [viewController.view removeFromSuperview];
 }
 
 @end
-
 
 //
 // CastleCoreViewManager

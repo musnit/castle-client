@@ -6,15 +6,15 @@ extern "C" {
 #include <lualib.h>
 }
 
-#include "GhostChannels.h"
-#include "modules/thread/Channel.h"
 #include "AppDelegate.h"
+#include "GhostChannels.h"
 #include "GhostView.h"
+#include "modules/thread/Channel.h"
 
 @interface GhostChannels ()
 
-@property (nonatomic, retain) NSObject *isReadyLock;
-@property (atomic, assign) BOOL isReady;
+@property(nonatomic, retain) NSObject *isReadyLock;
+@property(atomic, assign) BOOL isReady;
 
 // A Lua VM just for value conversion
 @property(nonatomic, assign) lua_State *conversionLuaState;
@@ -46,30 +46,26 @@ RCT_EXPORT_MODULE()
   }
 }
 
-- (void)setReady:(BOOL)ready
-{
-  @synchronized (self.isReadyLock) {
+- (void)setReady:(BOOL)ready {
+  @synchronized(self.isReadyLock) {
     self.isReady = ready;
   }
 }
 
-- (BOOL)_checkIsReady
-{
+- (BOOL)_checkIsReady {
   BOOL result = NO;
-  @synchronized (self.isReadyLock) {
+  @synchronized(self.isReadyLock) {
     result = self.isReady;
   }
   return result;
 }
 
 - (NSString *)stringFromVariant:(love::Variant &)var {
-  if (var.getType() != love::Variant::STRING &&
-      var.getType() != love::Variant::SMALLSTRING) {
+  if (var.getType() != love::Variant::STRING && var.getType() != love::Variant::SMALLSTRING) {
     return nil;
   }
   var.toLua(self.conversionLuaState);
-  NSString *str = [NSString
-      stringWithUTF8String:luaL_checkstring(self.conversionLuaState, -1)];
+  NSString *str = [NSString stringWithUTF8String:luaL_checkstring(self.conversionLuaState, -1)];
   lua_pop(self.conversionLuaState, 1);
   return str;
 }
@@ -85,8 +81,7 @@ RCT_EXPORT_MODULE()
   if (str) {
     resolve(str);
   } else {
-    reject(@"E_GHOST_CHANNELS",
-           @"`GhostChannels`: can only accept string values from Lua", nil);
+    reject(@"E_GHOST_CHANNELS", @"`GhostChannels`: can only accept string values from Lua", nil);
   }
 }
 
@@ -94,14 +89,13 @@ RCT_EXPORT_MODULE()
 // Methods
 //
 
-
 RCT_EXPORT_METHOD(freezeScreenAsync
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   dispatch_async(dispatch_get_main_queue(), ^{
-      AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-      [appDelegate freezeScreen];
-      resolve(nil);
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    [appDelegate freezeScreen];
+    resolve(nil);
   });
 }
 
@@ -221,8 +215,7 @@ RCT_EXPORT_METHOD(popAllAsync
     if (str) {
       [ret addObject:str];
     } else {
-      reject(@"E_GHOST_CHANNELS",
-             @"`GhostChannels`: can only accept string values from Lua", nil);
+      reject(@"E_GHOST_CHANNELS", @"`GhostChannels`: can only accept string values from Lua", nil);
       return;
     }
   }
@@ -240,8 +233,7 @@ RCT_EXPORT_METHOD(pushAsync
   }
   auto channel = love::thread::Channel::getChannel(name.UTF8String);
   auto var =
-      love::Variant(value.UTF8String,
-                    [value lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
+      love::Variant(value.UTF8String, [value lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
   resolve(@(channel->push(var)));
 }
 
@@ -257,8 +249,7 @@ RCT_EXPORT_METHOD(supplyAsync
   }
   auto channel = love::thread::Channel::getChannel(name.UTF8String);
   auto var =
-      love::Variant(value.UTF8String,
-                    [value lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
+      love::Variant(value.UTF8String, [value lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
 
   bool result = false;
   id timeout = options[@"timeout"];
@@ -270,9 +261,7 @@ RCT_EXPORT_METHOD(supplyAsync
   resolve(@(result));
 }
 
-RCT_EXPORT_METHOD(globalPause
-                  : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(globalPause : (RCTPromiseResolveBlock)resolve : (RCTPromiseRejectBlock)reject) {
   resolve(nil);
 }
 

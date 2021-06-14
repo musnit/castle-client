@@ -22,7 +22,8 @@ bool ghostResetOnExit = false;
 
     dispatch_async(dispatch_get_main_queue(), ^{
       if (!sharedGhostView.luaState) {
-        [sharedGhostView bootLoveWithUri:SCENE_CREATOR_USE_PROD_SCENE_CREATOR ? @"" : SCENE_CREATOR_DEV_URI];
+        [sharedGhostView
+            bootLoveWithUri:SCENE_CREATOR_USE_PROD_SCENE_CREATOR ? @"" : SCENE_CREATOR_DEV_URI];
       } else {
         RCTLog(@"`GhostView`: already booted, ignoring new `uri`");
       }
@@ -32,8 +33,7 @@ bool ghostResetOnExit = false;
   return sharedGhostView;
 }
 
-+ (NSString *)sceneCreatorApiVersion
-{
++ (NSString *)sceneCreatorApiVersion {
   return [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SceneCreatorApiVersion"];
 }
 
@@ -43,16 +43,14 @@ bool ghostResetOnExit = false;
 
     self.displayLink = nil;
 
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(sdlViewAddNotificationReceived:)
-               name:@"sdl_view_add"
-             object:nil];
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(sdlViewRemoveNotificationReceived:)
-               name:@"sdl_view_remove"
-             object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(sdlViewAddNotificationReceived:)
+                                                 name:@"sdl_view_add"
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(sdlViewRemoveNotificationReceived:)
+                                                 name:@"sdl_view_remove"
+                                               object:nil];
 
     dispatch_async(dispatch_get_main_queue(), ^{
       self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(stepLove)];
@@ -110,8 +108,7 @@ bool ghostResetOnExit = false;
     lua_pushstring(L, "embedded boot.lua");
     lua_rawseti(L, -2, -1);
 
-    NSArray *bundlepaths =
-        [[NSBundle mainBundle] pathsForResourcesOfType:@"love" inDirectory:nil];
+    NSArray *bundlepaths = [[NSBundle mainBundle] pathsForResourcesOfType:@"love" inDirectory:nil];
     if (bundlepaths.count > 0) {
       lua_pushstring(L, [bundlepaths[0] UTF8String]);
       lua_rawseti(L, -2, 0);
@@ -165,14 +162,17 @@ bool ghostResetOnExit = false;
     lua_pushstring(L, "default");
   }
   lua_setglobal(L, "CASTLE_REACT_NATIVE_CHANNEL");
-  
+
   // set scene creator api version
-  lua_pushstring(L, [[[self class] sceneCreatorApiVersion] cStringUsingEncoding:NSASCIIStringEncoding]);
+  lua_pushstring(
+      L, [[[self class] sceneCreatorApiVersion] cStringUsingEncoding:NSASCIIStringEncoding]);
   lua_setglobal(L, "SCENE_CREATOR_API_VERSION");
 
-  // Set the location of the network 'seed' database--contains network data we've 'embedded' into the client
+  // Set the location of the network 'seed' database--contains network data we've 'embedded' into
+  // the client
   {
-    NSString *ghostNetworkSeedPath = [[NSBundle mainBundle] pathForResource:@"ghost_network_seed" ofType:@"db"];
+    NSString *ghostNetworkSeedPath =
+        [[NSBundle mainBundle] pathForResource:@"ghost_network_seed" ofType:@"db"];
     if (ghostNetworkSeedPath) {
       lua_pushstring(L, ghostNetworkSeedPath.UTF8String);
       lua_setglobal(L, "GHOST_NETWORK_SEED_PATH");
@@ -185,8 +185,7 @@ bool ghostResetOnExit = false;
     if (session.isOtherAudioPlaying) {
       NSError *err;
       if (![session setCategory:AVAudioSessionCategoryAmbient error:&err])
-        NSLog(@"Error in AVAudioSession setCategory: %@",
-              [err localizedDescription]);
+        NSLog(@"Error in AVAudioSession setCategory: %@", [err localizedDescription]);
     }
   }
 }
@@ -237,8 +236,7 @@ extern bool ghostApplyScreenScaling;
 }
 
 - (void)sdlViewAddNotificationReceived:(NSNotification *)notification {
-  UIViewController *viewController =
-      (UIViewController *)notification.userInfo[@"viewController"];
+  UIViewController *viewController = (UIViewController *)notification.userInfo[@"viewController"];
 
   // Remove from whatever it was attached to before
   [viewController.view removeFromSuperview];
@@ -250,8 +248,7 @@ extern bool ghostApplyScreenScaling;
 }
 
 - (void)sdlViewRemoveNotificationReceived:(NSNotification *)notification {
-  UIViewController *viewController =
-      (UIViewController *)notification.userInfo[@"viewController"];
+  UIViewController *viewController = (UIViewController *)notification.userInfo[@"viewController"];
 
   // Remove from whatever it's attached to (hopefully us)
   [viewController.view removeFromSuperview];
