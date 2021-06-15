@@ -12,9 +12,7 @@ export async function sendAsync(name, params) {
 
 const eventEmitter = new NativeEventEmitter(NativeModules.CastleCoreBridge);
 eventEmitter.addListener('onReceiveEvent', (eventJson) => {
-  console.log(`received event from core: ${eventJson}`);
   const { name, params } = JSON.parse(eventJson);
-
   const listenerList = listenerLists[name];
   if (listenerList) {
     Object.values(listenerList).forEach((handler) => handler(params));

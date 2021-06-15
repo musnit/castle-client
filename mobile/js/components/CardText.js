@@ -87,8 +87,7 @@ export const CardText = (props) => {
   let orderedActors = [];
 
   if (textActors) {
-    orderedActors = Object.keys(textActors)
-      .map((actorId) => textActors[actorId])
+    orderedActors = textActors
       .sort((a, b) => {
         if (a.order === b.order) {
           const contentA = a.content ?? '';
@@ -103,7 +102,7 @@ export const CardText = (props) => {
   return (
     <React.Fragment>
       {orderedActors.map((actor, ii) => {
-        const { actorId } = actor.actor;
+        const { actorId } = actor;
         return (
           <TextActor
             key={`text-${actorId}`}

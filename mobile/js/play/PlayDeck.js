@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { CardScene } from '../game/CardScene';
 import { CardText } from '../components/CardText';
 import { gql } from '@apollo/client';
+import { useListen } from '../core/CoreEvents';
 
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
@@ -63,6 +64,15 @@ export const PlayDeck = ({ deck, visibility, route, paused }) => {
     };
     }, [cardState.cardId]); */
 
+  const [textActors, setTextActors] = React.useState([]);
+  useListen({
+    eventName: 'TEXT_ACTORS_DATA',
+    handler: ({ data }) => {
+      const { textActors } = JSON.parse(data);
+      setTextActors(textActors);
+    },
+  });
+
   const selectActor = React.useCallback((actorId) => {
     // TODO: tell engine that the actor was selected
     /* GhostEvents.sendAsync('SELECT_ACTOR', {
@@ -80,11 +90,7 @@ export const PlayDeck = ({ deck, visibility, route, paused }) => {
         paused={paused}
       />
       <View pointerEvents="box-none" style={styles.textActors}>
-        {/* <CardText
-          visible
-          textActors={textActors}
-          onSelect={selectActor}
-          /> */}
+        <CardText visible textActors={textActors} onSelect={selectActor} />
       </View>
     </View>
   );
