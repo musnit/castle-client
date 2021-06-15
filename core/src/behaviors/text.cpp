@@ -126,7 +126,7 @@ void TextBehavior::handleReadComponent(ActorId actorId, TextComponent &component
 //
 
 void TextBehavior::handlePerform(double dt) {
-#ifdef __EMSCRIPTEN__ // Text actors only work on web for now
+#ifdef __EMSCRIPTEN__
   auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
   while (true) {
     if (auto actorIdInt = JS_getClickedTextActorId(); actorIdInt >= 0) {
@@ -138,28 +138,47 @@ void TextBehavior::handlePerform(double dt) {
       break;
     }
   }
+#endif
 
+  // TODO: maybe register this type of data callback with engine?
+  sendBridgeData();
+}
+
+//
+// Data
+//
+
+struct TextActorsDataEvent {
+  PROP(std::string, data) = "";
+};
+
+void TextBehavior::sendBridgeData() {
+  auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
+  
   Archive archive;
   archive.write([&](Archive::Writer &writer) {
     writer.arr("textActors", [&]() {
       forEachEnabledComponent([&](ActorId actorId, TextComponent &component) {
-        if (component.props.visible()) {
-          writer.obj([&]() {
-            writer.num("actorId", (int)entt::to_integral(actorId));
-            writer.str("content", formatContent(component.props.content()));
-            writer.num("order", component.props.order());
-            writer.boolean("hasTapTrigger", rulesBehavior.hasTrigger<TextTapTrigger>(actorId));
-          });
-        }
+        writer.obj([&]() {
+          writer.num("actorId", (int)entt::to_integral(actorId));
+          writer.str("content", formatContent(component.props.content()));
+          writer.num("order", component.props.order());
+          writer.boolean("hasTapTrigger", rulesBehavior.hasTrigger<TextTapTrigger>(actorId));
+          writer.boolean("visible", component.props.visible());
+        });
       });
     });
   });
 
   auto output = archive.toJson();
+#ifdef __EMSCRIPTEN__
   JS_updateTextActors(output.c_str(), output.length());
+#else
+  TextActorsDataEvent textActorsData;
+  textActorsData.data = output;
+  getScene().getBridge().sendEvent("TEXT_ACTORS_DATA", textActorsData);
 #endif
 }
-
 
 //
 // Content formatting
