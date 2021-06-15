@@ -341,3 +341,16 @@ struct TestReceiver {
     engine.getBridge().sendEvent("test_response", response);
   }
 };
+
+struct ClearSceneReceiver {
+  inline static const BridgeRegistration<ClearSceneReceiver> registration { "CLEAR_SCENE" };
+
+  struct Params {
+    PROP(int, code) = 0;
+  } params;
+
+  void receive(Engine &engine) {
+    Debug::log("core: received CLEAR_SCENE");
+    // TODO: clear scene
+  }
+};
