@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { requireNativeComponent, View, Platform, TouchableOpacity } from 'react-native';
-import * as CastleCoreBridge from './CastleCoreBridge';
 
 // Implemented by 'CastleCoreView.mm' / 'CastleCoreViewManager.java'.
 const NativeCastleCoreView = requireNativeComponent('CastleCoreView', null);

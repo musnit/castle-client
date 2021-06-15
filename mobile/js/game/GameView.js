@@ -2,9 +2,9 @@ import * as Sentry from '@sentry/react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 
-import * as CastleCoreBridge from '../core/CastleCoreBridge';
+import { useListen } from '../core/CoreEvents';
 import CastleCoreView from '../core/CastleCoreView';
-import { sendAsync, useGhostEvents, useListen } from '../ghost/GhostEvents';
+import { sendAsync, useGhostEvents } from '../ghost/GhostEvents';
 
 import { GameLoading } from './GameLoading';
 import { GameLogs } from './GameLogs';
@@ -98,6 +98,7 @@ export const GameView = ({
   // TODO: do we actually need to pass in anything for game?
   LuaBridge.useLuaBridge({ game: {} });
 
+  // TODO: migrate these events to core engine
   useListen({
     eventName: 'GHOST_MESSAGE',
     handler: (params) => {
@@ -144,10 +145,10 @@ export const GameView = ({
 
   const [landscape, setLandscape] = useState(false);
 
-  useEffect(() => {
-    // TODO: Implement a core loaded event and fire `onLoaded` this when that happens
-    setTimeout(() => onLoaded(), 100);
-  }, []);
+  useListen({
+    eventName: 'SCENE_LOADED',
+    handler: onLoaded,
+  });
 
   return (
     <View
