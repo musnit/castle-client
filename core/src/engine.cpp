@@ -89,6 +89,10 @@ bool Engine::hasInitialDeck() const {
 #endif
 }
 
+struct SceneLoadedEvent {
+  PROP(int, status) = 0;
+};
+
 void Engine::loadSceneFromFile(const char *path) {
   auto archive = Archive::fromFile(path);
   archive.read([&](Reader &reader) {
@@ -99,6 +103,8 @@ void Engine::loadSceneFromFile(const char *path) {
       reader.obj("sceneData", [&]() {
         reader.obj("snapshot", [&]() {
           scene = std::make_unique<Scene>(variables, &reader);
+          SceneLoadedEvent event;
+          getBridge().sendEvent("SCENE_LOADED", event);
         });
       });
     });
@@ -119,6 +125,8 @@ void Engine::loadSceneFromDeckId(const char *deckId) {
               reader.obj("sceneData", [&]() {
                 reader.obj("snapshot", [&]() {
                   scene = std::make_unique<Scene>(variables, &reader);
+                  SceneLoadedEvent event;
+                  getBridge().sendEvent("SCENE_LOADED", event);
                 });
               });
             });
