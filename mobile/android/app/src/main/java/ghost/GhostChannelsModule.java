@@ -19,7 +19,6 @@ import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.ResolvableApiException;
 
 import org.greenrobot.eventbus.EventBus;
-import org.love2d.android.Channels;
 
 import xyz.castle.CastleSharedPreferences;
 import xyz.castle.MainActivity;
@@ -44,42 +43,42 @@ public class GhostChannelsModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   void clearAsync(String name, Promise promise) {
-    Channels.nativeClear(name);
-    promise.resolve(null);
+    /*Channels.nativeClear(name);
+    promise.resolve(null);*/
   }
 
   @ReactMethod
   void demandAsync(String name, ReadableMap options, Promise promise) {
-    if (options.hasKey("timeout")) {
+    /*if (options.hasKey("timeout")) {
       promise.resolve(Channels.nativeDemand(name, options.getDouble("timeout")));
     } else {
       promise.resolve(Channels.nativeDemand(name, -1));
-    }
+    }*/
   }
 
   @ReactMethod
   void getCountAsync(String name, Promise promise) {
-    promise.resolve(Channels.nativeGetCount(name));
+    //promise.resolve(Channels.nativeGetCount(name));
   }
 
   @ReactMethod
   void hasReadAsync(String name, Integer id, Promise promise) {
-    promise.resolve(Channels.nativeHasRead(name, id));
+    //promise.resolve(Channels.nativeHasRead(name, id));
   }
 
   @ReactMethod
   void peekAsync(String name, Promise promise) {
-    promise.resolve(Channels.nativePeek(name));
+    //promise.resolve(Channels.nativePeek(name));
   }
 
   @ReactMethod
   void popAsync(String name, Promise promise) {
-    promise.resolve(Channels.nativePop(name));
+    //promise.resolve(Channels.nativePop(name));
   }
 
   @ReactMethod
   void popAllAsync(String name, Promise promise) {
-    WritableArray array = Arguments.createArray();
+    /*WritableArray array = Arguments.createArray();
     while (true) {
       String val = Channels.nativePop(name);
       if (val == null) {
@@ -87,21 +86,21 @@ public class GhostChannelsModule extends ReactContextBaseJavaModule {
       }
       array.pushString(val);
     }
-    promise.resolve(array);
+    promise.resolve(array);*/
   }
 
   @ReactMethod
   void pushAsync(String name, String value, Promise promise) {
-    promise.resolve(Channels.nativePush(name, value));
+    //promise.resolve(Channels.nativePush(name, value));
   }
 
   @ReactMethod
   void supplyAsync(String name, String value, ReadableMap options, Promise promise) {
-    if (options.hasKey("timeout")) {
+    /*if (options.hasKey("timeout")) {
       promise.resolve(Channels.nativeSupply(name, value, options.getDouble("timeout")));
     } else {
       promise.resolve(Channels.nativeSupply(name, value, -1));
-    }
+    }*/
   }
 
   @ReactMethod
@@ -243,9 +242,5 @@ public class GhostChannelsModule extends ReactContextBaseJavaModule {
   @ReactMethod
   void setIsPopoverOpen(boolean isOpen) {
     MainActivity.isPopoverOpen = isOpen;
-  }
-
-  static {
-    System.loadLibrary("love");
   }
 }

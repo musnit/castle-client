@@ -122,15 +122,17 @@ if (Platform.OS === 'android') {
             navigatorStackDepth: props.navigatorStackDepth,
           }}>
           <Session.Provider>
-            <GhostEvents.Provider>
-              <ApolloProvider client={Session.apolloClient}>
-                <ActionSheetProvider>
-                  <SafeAreaProvider>
-                    <WaitForSession>{React.Children.only(props.children)}</WaitForSession>
-                  </SafeAreaProvider>
-                </ActionSheetProvider>
-              </ApolloProvider>
-            </GhostEvents.Provider>
+            <CoreEvents.Provider>
+              <GhostEvents.Provider>
+                <ApolloProvider client={Session.apolloClient}>
+                  <ActionSheetProvider>
+                    <SafeAreaProvider>
+                      <WaitForSession>{React.Children.only(props.children)}</WaitForSession>
+                    </SafeAreaProvider>
+                  </ActionSheetProvider>
+                </ApolloProvider>
+              </GhostEvents.Provider>
+            </CoreEvents.Provider>
           </Session.Provider>
         </AndroidNavigationContext.Provider>
       </View>

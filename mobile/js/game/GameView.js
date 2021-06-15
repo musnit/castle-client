@@ -163,12 +163,6 @@ export const GameView = ({
         paused={paused}
         isEditable={isEditable}
       />
-      {/* 
-HACK: something in here must have an inherent size greater than 0x0 or the game will never load
-on android. currently, this is <GameLoading />
-TODO: show if loading (new engine)
-        */}
-      {false ? <GameLoading /> : null}
     </View>
   );
 };
