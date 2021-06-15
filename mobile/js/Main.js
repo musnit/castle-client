@@ -14,6 +14,7 @@ import { AndroidNavigationContext } from './ReactNavigation';
 import BootSplash from 'react-native-bootsplash';
 import { DeckRemixesScreen } from './play/DeckRemixesScreen';
 import * as GhostEvents from './ghost/GhostEvents';
+import * as CoreEvents from './core/CoreEvents';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableAndroidFontFix } from './AndroidFontFix';
 import { ExploreScreen } from './explore/ExploreScreen';
@@ -72,15 +73,17 @@ const MainProvider = (props) => {
   return (
     <View style={{ flex: 1 }}>
       <Session.Provider>
-        <GhostEvents.Provider>
-          <ApolloProvider client={Session.apolloClient}>
-            <ActionSheetProvider>
-              <SafeAreaProvider>
-                <Main />
-              </SafeAreaProvider>
-            </ActionSheetProvider>
-          </ApolloProvider>
-        </GhostEvents.Provider>
+        <CoreEvents.Provider>
+          <GhostEvents.Provider>
+            <ApolloProvider client={Session.apolloClient}>
+              <ActionSheetProvider>
+                <SafeAreaProvider>
+                  <Main />
+                </SafeAreaProvider>
+              </ActionSheetProvider>
+            </ApolloProvider>
+          </GhostEvents.Provider>
+        </CoreEvents.Provider>
       </Session.Provider>
     </View>
   );
@@ -223,10 +226,7 @@ if (Platform.OS === 'android') {
   AppRegistry.registerComponent('LoginScreen', WrapComponent(LoginScreen));
   AppRegistry.registerComponent('CreateAccountScreen', WrapComponent(CreateAccountScreen));
   AppRegistry.registerComponent('ForgotPasswordScreen', WrapComponent(ForgotPasswordScreen));
-  AppRegistry.registerComponent(
-    'Create',
-    WrapComponent(CreateScreen, { addTabBarPadding: true })
-  );
+  AppRegistry.registerComponent('Create', WrapComponent(CreateScreen, { addTabBarPadding: true }));
   AppRegistry.registerComponent('DeckRemixes', WrapComponent(DeckRemixesScreen));
   AppRegistry.registerComponent('CreateDeck', WrapComponent(CreateDeckNavigator));
   AppRegistry.registerComponent('ShareDeck', WrapComponent(ShareDeckScreen));

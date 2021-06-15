@@ -2,9 +2,8 @@ import * as Sentry from '@sentry/react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 
-import { useListen } from '../core/CoreEvents';
+import { useListen, useCoreEvents } from '../core/CoreEvents';
 import CastleCoreView from '../core/CastleCoreView';
-import { sendAsync, useGhostEvents } from '../ghost/GhostEvents';
 
 import { GameLoading } from './GameLoading';
 import { GameLogs } from './GameLogs';
@@ -87,12 +86,12 @@ export const GameView = ({
     },
   });
 
-  const { gameDidMount, gameDidUnmount, eventsReady } = useGhostEvents();
+  const { engineDidMount, engineDidUnmount } = useCoreEvents();
 
   useEffect(() => {
     const id = Math.floor(Math.random() * Math.floor(1000));
-    gameDidMount(id);
-    return () => gameDidUnmount(id);
+    engineDidMount(id);
+    return () => engineDidUnmount(id);
   }, []);
 
   // TODO: do we actually need to pass in anything for game?

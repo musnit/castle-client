@@ -37,27 +37,63 @@ export const listen = (name, handler) => {
     },
   };
 };
+const CoreEventsContext = React.createContext({});
+
+// maintain `eventsReady` state, and mark this as true only when the engine component mounts
+export const Provider = (props) => {
+  const [state, setState] = React.useState({
+    eventsId: null,
+    eventsReady: false,
+  });
+
+  const engineDidMount = async (eventsId) => {
+    setState({
+      eventsId,
+      eventsReady: true,
+    });
+  };
+
+  const engineDidUnmount = (eventsId) => {
+    sendAsync('CLEAR_SCENE');
+    setState({
+      eventsReady: false,
+    });
+  };
+
+  const value = {
+    ...state,
+    engineDidMount,
+    engineDidUnmount,
+  };
+
+  return <CoreEventsContext.Provider value={value}>{props.children}</CoreEventsContext.Provider>;
+};
+
+export const useCoreEvents = () => React.useContext(CoreEventsContext);
 
 export const useListen = ({ eventName, handler, onRemove }) => {
   const savedHandler = React.useRef();
+  const { eventsReady } = useCoreEvents();
 
   React.useEffect(() => {
     savedHandler.current = handler;
   }, [handler]);
 
   React.useEffect(() => {
-    let mounted = true;
-    const handle = listen(eventName, (params) => {
-      if (mounted) {
-        savedHandler.current(params);
-      }
-    });
-    return () => {
-      mounted = false;
-      if (onRemove) {
-        onRemove();
-      }
-      handle.remove();
-    };
-  }, []);
+    if (eventsReady) {
+      let mounted = true;
+      const handle = listen(eventName, (params) => {
+        if (mounted) {
+          savedHandler.current(params);
+        }
+      });
+      return () => {
+        mounted = false;
+        if (onRemove) {
+          onRemove();
+        }
+        handle.remove();
+      };
+    }
+  }, [eventsReady]);
 };
