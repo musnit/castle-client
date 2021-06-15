@@ -33,8 +33,6 @@ export const CardScene = ({
     setReloadCount(reloadCount + 1);
   };
 
-  const [logsVisible, setLogsVisible] = useState(false);
-
   const [loaded, setLoaded] = useState(false);
   const onLoaded = React.useCallback(() => {
     setLoaded(true);
@@ -67,8 +65,6 @@ export const CardScene = ({
               isEditable={isEditable}
               headerVisible={false}
               onPressReload={onPressReload}
-              logsVisible={initialIsEditing && logsVisible}
-              setLogsVisible={setLogsVisible}
               onMessage={onMessage}
               onLoaded={onLoaded}
               paused={paused}

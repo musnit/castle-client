@@ -1,13 +1,15 @@
 import * as Sentry from '@sentry/react-native';
 import React, { useEffect, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { useListen, useCoreEvents } from '../core/CoreEvents';
 import CastleCoreView from '../core/CastleCoreView';
 
 import { GameLoading } from './GameLoading';
-import { GameLogs } from './GameLogs';
-import * as LuaBridge from './LuaBridge';
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+});
 
 const FORWARD_LUA_LOGS = false;
 
@@ -72,8 +74,6 @@ export const GameView = ({
   extras,
   windowed,
   onPressReload,
-  logsVisible,
-  setLogsVisible,
   onPressBack,
   onMessage,
   onLoaded,
@@ -93,9 +93,6 @@ export const GameView = ({
     engineDidMount(id);
     return () => engineDidUnmount(id);
   }, []);
-
-  // TODO: do we actually need to pass in anything for game?
-  LuaBridge.useLuaBridge({ game: {} });
 
   // TODO: migrate these events to core engine
   useListen({
@@ -143,6 +140,14 @@ export const GameView = ({
   }
 
   const [landscape, setLandscape] = useState(false);
+  const setOrientation = React.useCallback(
+    ({
+      nativeEvent: {
+        layout: { width, height },
+      },
+    }) => setLandscape(width > height),
+    []
+  );
 
   useListen({
     eventName: 'SCENE_LOADED',
@@ -150,21 +155,14 @@ export const GameView = ({
   });
 
   return (
-    <View
-      style={{ flex: 1 }}
-      onLayout={({
-        nativeEvent: {
-          layout: { width, height },
-        },
-      }) => setLandscape(width > height)}>
+    <View style={styles.container} onLayout={setOrientation}>
       <CastleCoreView
         deckId={deckId}
-        style={{ flex: 1 }}
+        style={styles.container}
         dimensionsSettings={dimensionsSettings}
         paused={paused}
         isEditable={isEditable}
       />
-      <GameLogs visible={!windowed && logsVisible} />
       {/* 
 HACK: something in here must have an inherent size greater than 0x0 or the game will never load
 on android. currently, this is <GameLoading />
