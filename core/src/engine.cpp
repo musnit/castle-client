@@ -102,7 +102,7 @@ void Engine::loadSceneFromFile(const char *path) {
     reader.obj("initialCard", [&]() {
       reader.obj("sceneData", [&]() {
         reader.obj("snapshot", [&]() {
-          scene = std::make_unique<Scene>(variables, &reader);
+          scene = std::make_unique<Scene>(getBridge(), variables, &reader);
           SceneLoadedEvent event;
           getBridge().sendEvent("SCENE_LOADED", event);
         });
@@ -124,7 +124,7 @@ void Engine::loadSceneFromDeckId(const char *deckId) {
             reader.obj("initialCard", [&]() {
               reader.obj("sceneData", [&]() {
                 reader.obj("snapshot", [&]() {
-                  scene = std::make_unique<Scene>(variables, &reader);
+                  scene = std::make_unique<Scene>(getBridge(), variables, &reader);
                   SceneLoadedEvent event;
                   getBridge().sendEvent("SCENE_LOADED", event);
                 });
@@ -154,7 +154,7 @@ void Engine::tryLoadNextCard() {
     sceneArchive = Archive::fromJson(sceneDataJson);
     sceneArchive.read([&](Reader &reader) {
       reader.obj("snapshot", [&]() {
-        scene = std::make_unique<Scene>(variables, &reader);
+        scene = std::make_unique<Scene>(getBridge(), variables, &reader);
       });
     });
     free(sceneDataJson);
@@ -249,7 +249,7 @@ void Engine::update(double dt) {
     if (scene->isRestartRequested()) {
       sceneArchive.read([&](Reader &reader) {
         reader.obj("snapshot", [&]() {
-          scene = std::make_unique<Scene>(variables, &reader);
+          scene = std::make_unique<Scene>(getBridge(), variables, &reader);
         });
       });
     }

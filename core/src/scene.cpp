@@ -7,8 +7,9 @@
 // Constructor, destructor
 //
 
-Scene::Scene(Variables &variables_, Reader *maybeReader)
+Scene::Scene(Bridge &bridge_, Variables &variables_, Reader *maybeReader)
     : variables(variables_)
+    , bridge(bridge_)
     , physicsContactListener(*this)
     , behaviors(std::make_unique<AllBehaviors>(*this)) {
   // Link to variables

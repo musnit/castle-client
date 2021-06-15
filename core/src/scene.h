@@ -8,6 +8,7 @@
 #include "gesture.h"
 #include "variables.h"
 #include "sound.h"
+#include "bridge.h"
 
 
 class AllBehaviors; // Forward declaration otherwise this would be circular...
@@ -27,7 +28,7 @@ public:
   Scene(const Scene &) = delete; // Prevent accidental copies
   const Scene &operator=(const Scene &) = delete;
 
-  explicit Scene(Variables &variables_, Reader *maybeReader = nullptr);
+  explicit Scene(Bridge &bridge_, Variables &variables_, Reader *maybeReader = nullptr);
   ~Scene();
 
 
@@ -114,6 +115,12 @@ public:
   const Variables &getVariables() const;
 
 
+  // Bridge
+
+  Bridge &getBridge();
+  const Bridge &getBridge() const;
+
+
   // Sound
 
   Sound &getSound();
@@ -154,6 +161,7 @@ public:
 private:
   Lv &lv { Lv::getInstance() };
   Variables &variables;
+  Bridge &bridge;
   Sound sound;
 
   entt::registry registry;
@@ -314,6 +322,14 @@ inline Variables &Scene::getVariables() {
 
 inline const Variables &Scene::getVariables() const {
   return variables;
+}
+
+inline Bridge &Scene::getBridge() {
+  return bridge;
+}
+
+inline const Bridge &Scene::getBridge() const {
+  return bridge;
 }
 
 inline Sound &Scene::getSound() {
