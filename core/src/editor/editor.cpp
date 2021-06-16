@@ -3,6 +3,7 @@
 Editor::Editor(Bridge &bridge_, Lv &lv_)
     : bridge(bridge_)
     , lv(lv_) {
+  isEditorStateDirty = true;
 }
 
 void Editor::readScene(Reader &reader) {
@@ -15,9 +16,9 @@ void Editor::readVariables(Reader &reader) {
 };
 
 void Editor::update(double dt) {
-  // Update scene
   if (scene) {
-    if (scene->isRestartRequested()) {
+    // TODO: Update scene when performing
+    /* if (scene->isRestartRequested()) {
       sceneArchive.read([&](Reader &reader) {
         reader.obj("snapshot", [&]() {
           scene = std::make_unique<Scene>(bridge, variables, &reader);
@@ -28,12 +29,30 @@ void Editor::update(double dt) {
     Debug::display("fps: {}", lv.timer.getFPS());
     Debug::display("actors: {}", scene->numActors());
 
-    scene->update(dt);
+    scene->update(dt); */
+
+    maybeSendData();
   }
 }
 
 void Editor::draw() {
   if (scene) {
     scene->draw();
+  }
+}
+
+//
+// Events
+//
+
+struct EditorStateEvent {
+  PROP(bool, performing) = false;
+};
+
+void Editor::maybeSendData() {
+  if (isEditorStateDirty) {
+    EditorStateEvent ev;
+    bridge.sendEvent("EDITOR_STATE", ev);
+    isEditorStateDirty = false;
   }
 }

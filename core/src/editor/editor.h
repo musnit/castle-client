@@ -32,6 +32,10 @@ private:
 
   Archive sceneArchive;
   std::unique_ptr<Scene> scene;
+
+  // events and data
+  void maybeSendData();
+  bool isEditorStateDirty;
 };
 
 inline bool Editor::hasScene() {
