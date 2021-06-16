@@ -3,11 +3,11 @@
 #include "precomp.h"
 
 #include "lv.h"
-#include "scene.h"
 #include "variables.h"
 #include "tests.h"
 #include "archive.h"
 #include "bridge.h"
+#include "player.h"
 
 
 class Engine {
@@ -49,10 +49,6 @@ private:
   [[maybe_unused]] int prevWindowWidth = 0, prevWindowHeight = 0;
   bool shouldQuit = false;
 
-  std::unique_ptr<love::Font> debugFont { lv.graphics.newDefaultFont(
-      22, love::TrueTypeRasterizer::HINTING_NORMAL) };
-
-
   struct PreInit {
     // Allows us to run some early initialization steps before the rest of the
     // members are initialized.
@@ -63,16 +59,8 @@ private:
   Tests tests;
 #endif
 
-  Variables variables;
-
-  Archive sceneArchive;
-  std::unique_ptr<Scene> scene;
-
-
-  void tryLoadVariables();
-  void tryLoadNextCard();
-
-
+  std::unique_ptr<Player> player;
+  
   void update(double dt);
 
   void draw();

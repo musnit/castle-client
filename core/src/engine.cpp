@@ -74,6 +74,9 @@ Engine::PreInit::PreInit() {
 Engine::Engine() {
   // First timer step
   lv.timer.step();
+
+  // TODO: editing vs. playing
+  player = std::make_unique<Player>(bridge, lv);
 }
 
 
@@ -97,12 +100,12 @@ void Engine::loadSceneFromFile(const char *path) {
   auto archive = Archive::fromFile(path);
   archive.read([&](Reader &reader) {
     reader.arr("variables", [&]() {
-      variables.read(reader);
+      player->readVariables(reader);
     });
     reader.obj("initialCard", [&]() {
       reader.obj("sceneData", [&]() {
         reader.obj("snapshot", [&]() {
-          scene = std::make_unique<Scene>(getBridge(), variables, &reader);
+          player->readScene(reader);
           SceneLoadedEvent event;
           getBridge().sendEvent("SCENE_LOADED", event);
         });
@@ -119,12 +122,12 @@ void Engine::loadSceneFromDeckId(const char *deckId) {
         reader.obj("data", [&]() {
           reader.obj("deck", [&]() {
             reader.arr("variables", [&]() {
-              variables.read(reader);
+              player->readVariables(reader);
             });
             reader.obj("initialCard", [&]() {
               reader.obj("sceneData", [&]() {
                 reader.obj("snapshot", [&]() {
-                  scene = std::make_unique<Scene>(getBridge(), variables, &reader);
+                  player->readScene(reader);
                   SceneLoadedEvent event;
                   getBridge().sendEvent("SCENE_LOADED", event);
                 });
@@ -133,33 +136,6 @@ void Engine::loadSceneFromDeckId(const char *deckId) {
           });
         });
       });
-}
-
-void Engine::tryLoadVariables() {
-#ifdef __EMSCRIPTEN__
-  if (auto variablesJson = JS_getVariables()) {
-    auto archive = Archive::fromJson(variablesJson);
-    archive.read([&](Reader &reader) {
-      reader.arr("variables", [&]() {
-        variables.read(reader);
-      });
-    });
-  }
-#endif
-}
-
-void Engine::tryLoadNextCard() {
-#ifdef __EMSCRIPTEN__
-  if (auto sceneDataJson = JS_getNextCardSceneData()) {
-    sceneArchive = Archive::fromJson(sceneDataJson);
-    sceneArchive.read([&](Reader &reader) {
-      reader.obj("snapshot", [&]() {
-        scene = std::make_unique<Scene>(getBridge(), variables, &reader);
-      });
-    });
-    free(sceneDataJson);
-  }
-#endif
 }
 
 
@@ -241,31 +217,7 @@ bool Engine::frame() {
 //
 
 void Engine::update(double dt) {
-  tryLoadVariables();
-  tryLoadNextCard();
-
-  // Update scene
-  if (scene) {
-    if (scene->isRestartRequested()) {
-      sceneArchive.read([&](Reader &reader) {
-        reader.obj("snapshot", [&]() {
-          scene = std::make_unique<Scene>(getBridge(), variables, &reader);
-        });
-      });
-    }
-
-    Debug::display("fps: {}", lv.timer.getFPS());
-    Debug::display("actors: {}", scene->numActors());
-
-    scene->update(dt);
-
-    Debug::display("variables:");
-    variables.forEach([&](const char *name, const ExpressionValue &value) {
-      if (value.is<double>()) {
-        Debug::display("  {}: {}", name, value.as<double>());
-      }
-    });
-  }
+  player->update(dt);
 
 #ifdef CASTLE_ENABLE_TESTS
   tests.update(dt);
@@ -278,27 +230,11 @@ void Engine::update(double dt) {
 //
 
 void Engine::draw() {
-  if (scene) {
-    scene->draw();
-  }
+  player->draw();
 
 #ifdef CASTLE_ENABLE_TESTS
   tests.draw();
 #endif
-
-  // Debug messages
-  if (Debug::isEnabled) {
-    if (scene) {
-      // Scene exists -- draw debug messages in black
-      lv.graphics.setColor(love::Colorf(0, 0, 0, 1));
-    } else {
-      // No scene -- show loading message in white on black background
-      Debug::display("loading...");
-      lv.graphics.setColor(love::Colorf(1, 1, 1, 1));
-    }
-    lv.graphics.print({ { Debug::getAndClearDisplay(), { 1, 1, 1, 1 } } }, debugFont.get(),
-        love::Matrix4(20, 20, 0, 1, 1, 0, 0, 0, 0));
-  }
 }
 
 
