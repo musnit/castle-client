@@ -26,7 +26,7 @@ Engine &getEngine() {
 + (instancetype)sharedCastleCoreView {
   static CastleCoreView *sharedCastleCoreView = nil;
 
-  if (!sharedCastleCoreView || !sharedCastleCoreView.displayLink) {
+  if (!sharedCastleCoreView) {
     sharedCastleCoreView = [[self alloc] init];
   }
 
@@ -49,13 +49,25 @@ Engine &getEngine() {
                                              selector:@selector(sdlViewRemoveNotificationReceived:)
                                                  name:@"sdl_view_remove"
                                                object:nil];
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-      self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(doFrame)];
-      [self.displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
-    });
   }
   return self;
+}
+
+- (void)willMoveToSuperview:(nullable UIView *)newSuperview {
+  if (newSuperview != nil && !self.displayLink) {
+    self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(doFrame)];
+    [self.displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+  }
+  [super willMoveToSuperview:newSuperview];
+}
+
+- (void)removeFromSuperview {
+  if (self.displayLink) {
+    [self.displayLink invalidate];
+    self.displayLink = nil;
+  }
+
+  [super removeFromSuperview];
 }
 
 static bool paused = false;

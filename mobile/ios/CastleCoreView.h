@@ -22,7 +22,7 @@ Engine &getEngine();
 
 @interface CastleCoreView : RCTView
 
-@property(nonatomic, strong) CADisplayLink *displayLink;
+@property (nonatomic, strong) CADisplayLink *displayLink;
 
 + (instancetype)sharedCastleCoreView;
 - (void)setPaused:(BOOL)paused;
