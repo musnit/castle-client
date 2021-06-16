@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { CardScene } from '../game/CardScene';
 import { CardText } from '../components/CardText';
 import { gql } from '@apollo/client';
-import { useListen } from '../core/CoreEvents';
+import { sendAsync, useListen } from '../core/CoreEvents';
 
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
@@ -74,10 +74,9 @@ export const PlayDeck = ({ deck, visibility, route, paused }) => {
   });
 
   const selectActor = React.useCallback((actorId) => {
-    // TODO: tell engine that the actor was selected
-    /* GhostEvents.sendAsync('SELECT_ACTOR', {
+    sendAsync('SELECT_ACTOR', {
       actorId,
-    }); */
+    });
   }, []);
 
   return (

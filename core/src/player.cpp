@@ -7,7 +7,6 @@
 Player::Player(Bridge &bridge_, Lv &lv_)
     : bridge(bridge_)
     , lv(lv_) {
-
 }
 
 void Player::tryLoadVariables() {

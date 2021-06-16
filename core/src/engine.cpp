@@ -135,6 +135,22 @@ void Engine::loadSceneFromDeckId(const char *deckId) {
       });
 }
 
+void Engine::loadSceneFromCardId(const char *cardId) {
+  API::graphql("{\n  card(cardId: \"" + std::string(cardId) + "\") {\n    sceneData\n  }\n}\n",
+      [&](bool success, Reader &reader) {
+        reader.obj("data", [&]() {
+          reader.obj("card", [&]() {
+            reader.obj("sceneData", [&]() {
+              reader.obj("snapshot", [&]() {
+                player.readScene(reader);
+                SceneLoadedEvent event;
+                getBridge().sendEvent("SCENE_LOADED", event);
+              });
+            });
+          });
+        });
+      });
+}
 
 //
 // Frame
@@ -214,6 +230,11 @@ bool Engine::frame() {
 //
 
 void Engine::update(double dt) {
+  if (player.hasScene() && player.getScene().getNextCardId()) {
+    loadSceneFromCardId(player.getScene().getNextCardId()->c_str());
+    player.getScene().setNextCardId(std::nullopt);
+  }
+
   player.update(dt);
 
 #ifdef CASTLE_ENABLE_TESTS

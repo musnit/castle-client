@@ -150,6 +150,10 @@ public:
   void requestRestart();
   bool isRestartRequested() const;
 
+  // Changing cards
+  void setNextCardId(std::optional<std::string>);
+  std::optional<std::string> getNextCardId();
+
 
   // Update, draw
 
@@ -201,6 +205,7 @@ private:
   love::RandomGenerator rng;
 
   bool restartRequested = false;
+  std::optional<std::string> nextCardId;
 
 
   void read(Reader &reader);
@@ -358,4 +363,12 @@ inline void Scene::requestRestart() {
 
 inline bool Scene::isRestartRequested() const {
   return restartRequested;
+}
+
+inline void Scene::setNextCardId(std::optional<std::string> value) {
+  nextCardId = value;
+}
+
+inline std::optional<std::string> Scene::getNextCardId() {
+  return nextCardId;
 }

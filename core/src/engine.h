@@ -34,11 +34,14 @@ public:
   bool hasInitialDeck() const;
   void loadSceneFromFile(const char *path);
   void loadSceneFromDeckId(const char *deckId);
+  void loadSceneFromCardId(const char *cardId);
 
 
   // Bridge access
 
   Bridge &getBridge();
+
+  Scene &getScene();
 
 
 private:
@@ -61,7 +64,7 @@ private:
 
   // TODO: editing vs. playing
   Player player { bridge, lv };
-  
+
   void update(double dt);
 
   void draw();
@@ -72,4 +75,8 @@ private:
 
 inline Bridge &Engine::getBridge() {
   return bridge;
+}
+
+inline Scene &Engine::getScene() {
+  return player.getScene();
 }

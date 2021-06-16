@@ -3,10 +3,11 @@
 #include "behaviors/all.h"
 #include "archive.h"
 #include "js.h"
+#include "engine.h"
 
 
 //
-// JavaScript bindings
+// Web bindings
 //
 
 JS_DEFINE(int, JS_updateTextActors, (const char *msg, int msgLen), {
@@ -28,6 +29,23 @@ JS_DEFINE(int, JS_navigateToCardId, (const char *cardId, int cardIdLen),
 
 // JS_DEFINE(int, JS_preloadCardId, (const char *cardId, int cardIdLen),
 //    { Castle.preloadCardId(UTF8ToString(cardId, cardIdLen)); });
+
+//
+// React native bindings
+//
+
+struct SelectActorReceiver {
+  inline static const BridgeRegistration<SelectActorReceiver> registration { "SELECT_ACTOR" };
+
+  struct Params {
+    PROP(int, actorId) = -1;
+  } params;
+
+  void receive(Engine &engine) {
+    auto &textBehavior = engine.getScene().getBehaviors().byType<TextBehavior>();
+    textBehavior.clickedTextActorIdsQueue.push(params.actorId());
+  }
+};
 
 
 //
@@ -69,7 +87,11 @@ struct SendPlayerToCardResponse : BaseResponse {
   } params;
 
   void run(RuleContext &ctx) override {
+#ifdef __EMSCRIPTEN__
     JS_navigateToCardId(params.card().cardId.c_str(), params.card().cardId.length());
+#else
+    ctx.getScene().setNextCardId(params.card().cardId);
+#endif
   }
 };
 
@@ -126,10 +148,15 @@ void TextBehavior::handleReadComponent(ActorId actorId, TextComponent &component
 //
 
 void TextBehavior::handlePerform(double dt) {
-#ifdef __EMSCRIPTEN__
   auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
   while (true) {
+#ifdef __EMSCRIPTEN__
     if (auto actorIdInt = JS_getClickedTextActorId(); actorIdInt >= 0) {
+#else
+    if (!clickedTextActorIdsQueue.empty()) {
+      auto actorIdInt = clickedTextActorIdsQueue.front();
+      clickedTextActorIdsQueue.pop();
+#endif
       auto actorId = ActorId(actorIdInt);
       if (auto component = maybeGetComponent(actorId); component && !component->disabled) {
         rulesBehavior.fire<TextTapTrigger>(actorId, {});
@@ -138,7 +165,6 @@ void TextBehavior::handlePerform(double dt) {
       break;
     }
   }
-#endif
 
   maybeSendBridgeData();
 }
@@ -153,7 +179,7 @@ struct TextActorsDataEvent {
 
 void TextBehavior::maybeSendBridgeData() {
   auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
-  
+
   Archive archive;
   archive.write([&](Archive::Writer &writer) {
     writer.arr("textActors", [&]() {

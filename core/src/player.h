@@ -21,6 +21,8 @@ public:
   void readScene(Reader &reader);
   void readVariables(Reader &reader);
   Variables &getVariables();
+  bool hasScene();
+  Scene &getScene();
 
 private:
   Bridge &bridge;
@@ -33,7 +35,15 @@ private:
 
   Archive sceneArchive;
   std::unique_ptr<Scene> scene;
-  
+
   std::unique_ptr<love::Font> debugFont { lv.graphics.newDefaultFont(
       22, love::TrueTypeRasterizer::HINTING_NORMAL) };
 };
+
+inline bool Player::hasScene() {
+  return !!scene;
+}
+
+inline Scene &Player::getScene() {
+  return *scene;
+}
