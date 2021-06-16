@@ -15,24 +15,6 @@ JS_DEFINE(int, JS_getCanvasHeight, (),
 JS_DEFINE(double, JS_getDevicePixelRatio, (), { return window.devicePixelRatio; });
 JS_DEFINE(int, JS_documentHasFocus, (), { return document.hasFocus() ? 1 : 0; });
 JS_DEFINE(int, JS_hasInitialDeck, (), { return Castle.hasInitialDeck ? 1 : 0; });
-JS_DEFINE(char *, JS_getVariables, (), {
-  if (Castle.variables) {
-    const result = Castle.variables;
-    Castle.variables = null;
-    return allocate(intArrayFromString(result), ALLOC_NORMAL);
-  } else {
-    return 0;
-  };
-});
-JS_DEFINE(char *, JS_getNextCardSceneData, (), {
-  if (Castle.nextCardSceneData) {
-    const result = Castle.nextCardSceneData;
-    Castle.nextCardSceneData = null;
-    return allocate(intArrayFromString(result), ALLOC_NORMAL);
-  } else {
-    return 0;
-  };
-});
 JS_DEFINE(int, JS_isDebugEnabled, (),
     { return new URLSearchParams(window.location.search).get("debug") != null; });
 

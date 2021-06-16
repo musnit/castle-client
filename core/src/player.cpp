@@ -1,5 +1,32 @@
 #include "player.h"
 
+#include "js.h"
+
+
+//
+// JavaScript bindings
+//
+
+JS_DEFINE(char *, JS_getVariables, (), {
+  if (Castle.variables) {
+    const result = Castle.variables;
+    Castle.variables = null;
+    return allocate(intArrayFromString(result), ALLOC_NORMAL);
+  } else {
+    return 0;
+  };
+});
+JS_DEFINE(char *, JS_getNextCardSceneData, (), {
+  if (Castle.nextCardSceneData) {
+    const result = Castle.nextCardSceneData;
+    Castle.nextCardSceneData = null;
+    return allocate(intArrayFromString(result), ALLOC_NORMAL);
+  } else {
+    return 0;
+  };
+});
+
+
 //
 // Constructor, destructor
 //

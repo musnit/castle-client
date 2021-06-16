@@ -11,7 +11,9 @@ void sendEventToJS(const char *eventJson) {
 }
 
 void Bridge::sendEventToJS(const char *eventJson) {
+#ifndef __EMSCRIPTEN__
   CastleCore::sendEventToJS(eventJson);
+#endif
 }
 
 void Bridge::receiveEvent(const char *eventJson) {
