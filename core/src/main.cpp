@@ -21,7 +21,7 @@ void loop(F &&frame) {
 
 #ifdef ANDROID
 int SDL_main(int argc, char *argv[]) {
-  Engine eng;
+  Engine eng(false);
   eng.loadSceneFromDeckId("ae5b8c7e-fd3a-4835-b972-fbf0bed2b81c");
 
   loop([&]() {
@@ -34,7 +34,7 @@ int SDL_main(int argc, char *argv[]) {
 // Main web and desktop entrypoint
 #undef main // SDL does some weird stuff overriding `main` with a macro...
 int main(int argc, char *argv[]) {
-  Engine eng;
+  Engine eng(false);
 
 #ifndef __EMSCRIPTEN__
   // Load from file on desktop

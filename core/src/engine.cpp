@@ -71,9 +71,18 @@ Engine::PreInit::PreInit() {
 // Constructor, destructor
 //
 
-Engine::Engine() {
+Engine::Engine(bool isEditing_) : isEditing(isEditing_) {
   // First timer step
   lv.timer.step();
+  if (isEditing) {
+    editor = new Editor(bridge, lv);
+  }
+}
+
+Engine::~Engine() {
+  if (isEditing) {
+    delete editor;
+  }
 }
 
 
@@ -97,12 +106,20 @@ void Engine::loadSceneFromFile(const char *path) {
   auto archive = Archive::fromFile(path);
   archive.read([&](Reader &reader) {
     reader.arr("variables", [&]() {
-      player.readVariables(reader);
+      if (isEditing) {
+        editor->readVariables(reader);
+      } else {
+        player.readVariables(reader);
+      }
     });
     reader.obj("initialCard", [&]() {
       reader.obj("sceneData", [&]() {
         reader.obj("snapshot", [&]() {
-          player.readScene(reader);
+          if (isEditing) {
+            editor->readScene(reader);
+          } else {
+            player.readScene(reader);
+          }
           SceneLoadedEvent event;
           getBridge().sendEvent("SCENE_LOADED", event);
         });
@@ -119,12 +136,20 @@ void Engine::loadSceneFromDeckId(const char *deckId) {
         reader.obj("data", [&]() {
           reader.obj("deck", [&]() {
             reader.arr("variables", [&]() {
-              player.readVariables(reader);
+              if (isEditing) {
+                editor->readVariables(reader);
+              } else {
+                player.readVariables(reader);
+              }
             });
             reader.obj("initialCard", [&]() {
               reader.obj("sceneData", [&]() {
                 reader.obj("snapshot", [&]() {
-                  player.readScene(reader);
+                  if (isEditing) {
+                    editor->readScene(reader);
+                  } else {
+                    player.readScene(reader);
+                  }
                   SceneLoadedEvent event;
                   getBridge().sendEvent("SCENE_LOADED", event);
                 });
@@ -142,7 +167,11 @@ void Engine::loadSceneFromCardId(const char *cardId) {
           reader.obj("card", [&]() {
             reader.obj("sceneData", [&]() {
               reader.obj("snapshot", [&]() {
-                player.readScene(reader);
+                if (isEditing) {
+                  editor->readScene(reader);
+                } else {
+                  player.readScene(reader);
+                }
                 SceneLoadedEvent event;
                 getBridge().sendEvent("SCENE_LOADED", event);
               });
@@ -230,12 +259,20 @@ bool Engine::frame() {
 //
 
 void Engine::update(double dt) {
-  if (player.hasScene() && player.getScene().getNextCardId()) {
-    loadSceneFromCardId(player.getScene().getNextCardId()->c_str());
-    player.getScene().setNextCardId(std::nullopt);
+  if (isEditing) {
+    // TODO: switching cards in editor?
+  } else {
+    if (player.hasScene() && player.getScene().getNextCardId()) {
+      loadSceneFromCardId(player.getScene().getNextCardId()->c_str());
+      player.getScene().setNextCardId(std::nullopt);
+    }
   }
 
-  player.update(dt);
+  if (isEditing) {
+    editor->update(dt);
+  } else {
+    player.update(dt);
+  }
 
 #ifdef CASTLE_ENABLE_TESTS
   tests.update(dt);
@@ -248,7 +285,11 @@ void Engine::update(double dt) {
 //
 
 void Engine::draw() {
-  player.draw();
+  if (isEditing) {
+    editor->draw();
+  } else {
+    player.draw();
+  }
 
 #ifdef CASTLE_ENABLE_TESTS
   tests.draw();

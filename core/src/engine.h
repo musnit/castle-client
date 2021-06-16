@@ -8,7 +8,7 @@
 #include "archive.h"
 #include "bridge.h"
 #include "player.h"
-
+#include "editor/editor.h"
 
 class Engine {
   // The top-level instance of Castle core. There should just be one of these for the entire
@@ -21,8 +21,8 @@ public:
   Engine(const Engine &) = delete; // Prevent accidental copies
   const Engine &operator=(const Engine &) = delete;
 
-  Engine();
-
+  explicit Engine(bool isEditing);
+  ~Engine();
 
   // Main loop
 
@@ -62,8 +62,9 @@ private:
   Tests tests;
 #endif
 
-  // TODO: editing vs. playing
   Player player { bridge, lv };
+  Editor *editor;
+  bool isEditing = false;
 
   void update(double dt);
 
