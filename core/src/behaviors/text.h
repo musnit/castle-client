@@ -31,5 +31,7 @@ private:
 
 
   std::string formatContent(const std::string &content) const;
-  void sendBridgeData();
+
+  std::string lastDataSent;
+  void maybeSendBridgeData();
 };

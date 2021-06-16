@@ -140,8 +140,7 @@ void TextBehavior::handlePerform(double dt) {
   }
 #endif
 
-  // TODO: maybe register this type of data callback with engine?
-  sendBridgeData();
+  maybeSendBridgeData();
 }
 
 //
@@ -152,7 +151,7 @@ struct TextActorsDataEvent {
   PROP(std::string, data) = "";
 };
 
-void TextBehavior::sendBridgeData() {
+void TextBehavior::maybeSendBridgeData() {
   auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
   
   Archive archive;
@@ -171,13 +170,16 @@ void TextBehavior::sendBridgeData() {
   });
 
   auto output = archive.toJson();
+  if (lastDataSent.compare(output) != 0) {
 #ifdef __EMSCRIPTEN__
-  JS_updateTextActors(output.c_str(), output.length());
+    JS_updateTextActors(output.c_str(), output.length());
 #else
-  TextActorsDataEvent textActorsData;
-  textActorsData.data = output;
-  getScene().getBridge().sendEvent("TEXT_ACTORS_DATA", textActorsData);
+    TextActorsDataEvent textActorsData;
+    textActorsData.data = output;
+    getScene().getBridge().sendEvent("TEXT_ACTORS_DATA", textActorsData);
 #endif
+    lastDataSent = output;
+  }
 }
 
 //
