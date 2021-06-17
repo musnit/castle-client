@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useCardCreator } from './CreateCardContext';
-import { useCoreState } from '../core/CoreEvents';
+import { useCoreState, sendGlobalAction } from '../core/CoreEvents';
 import { useSession } from '../Session';
 
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -43,8 +43,6 @@ export const CreateCardCaptureActions = () => {
   const { userId: signedInUserId } = useSession();
 
   const data = useCoreState('EDITOR_GLOBAL_ACTIONS');
-  // TODO: support these actions in core
-  const sendGlobalAction = () => {};
 
   const [capturing, setCapturing] = React.useState(false);
   const [recordState, setNextRecordState] = React.useReducer(

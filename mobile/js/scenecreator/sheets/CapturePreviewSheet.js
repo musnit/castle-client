@@ -3,8 +3,8 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import { BottomSheet } from '../../components/BottomSheet';
 import { BottomSheetHeader } from '../../components/BottomSheetHeader';
+import { sendGlobalAction } from '../../core/CoreEvents';
 import { useCardCreator } from '../CreateCardContext';
-import { useGhostUI } from '../../ghost/GhostUI';
 import { uploadDeckPreview, useSession } from '../../Session';
 
 import * as Constants from '../../Constants';
@@ -176,7 +176,6 @@ export const CapturePreviewSheet = ({ onClose, ...props }) => {
   const { userId: signedInUserId } = useSession();
   const [lastCaptureData, setLastCaptureData] = React.useState({});
   const [loading, setLoading] = React.useState(false);
-  const { sendGlobalAction } = useGhostUI();
   const { isOpen } = props;
 
   React.useEffect(() => {

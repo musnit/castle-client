@@ -2,7 +2,7 @@ import React from 'react';
 import { StatusBar, StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useCoreState } from '../../core/CoreEvents';
+import { useCoreState, sendGlobalAction } from '../../core/CoreEvents';
 import { useFastDataMemo } from '../../ghost/GhostUI';
 import { useCardCreator } from '../../scenecreator/CreateCardContext';
 import { SegmentedNavigation } from '../../components/SegmentedNavigation';
@@ -75,8 +75,6 @@ export const DrawingCardHeader = useFastDataMemo(
   'draw-tools',
   ({ fastData, fastAction, onPressBack }) => {
     const globalActions = useCoreState('EDITOR_GLOBAL_ACTIONS');
-    // TODO: support these actions in core
-    const sendGlobalAction = () => {};
 
     if (!fastData.selectedSubtools) {
       return null;

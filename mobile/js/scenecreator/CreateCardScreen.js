@@ -12,7 +12,7 @@ import * as Utilities from '../common/utilities';
 import Viewport from '../common/viewport';
 
 import * as GhostEvents from '../ghost/GhostEvents';
-import { useListen, useCoreState } from '../core/CoreEvents';
+import { useListen, useCoreState, sendGlobalAction } from '../core/CoreEvents';
 
 import { CardScene } from '../game/CardScene';
 import { CardSceneLoading } from './CardSceneLoading';
@@ -122,7 +122,7 @@ export const CreateCardScreen = ({
   const [isShowingTextActors, setShowingTextActors] = React.useState(true);
   const [isShowingDraw, setIsShowingDraw] = React.useState(false);
 
-  const { root, sendGlobalAction, transformAssetUri } = GhostUI.useGhostUI();
+  const { root, transformAssetUri } = GhostUI.useGhostUI();
   const globalActions = useCoreState('EDITOR_GLOBAL_ACTIONS');
 
   const isSceneLoaded = !!globalActions;

@@ -104,3 +104,5 @@ export const useCoreState = (eventName) => {
   });
   return data;
 };
+
+export const sendGlobalAction = (action) => sendAsync('EDITOR_GLOBAL_ACTION', { action });
