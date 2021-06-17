@@ -6,12 +6,8 @@
 //
 
 namespace CastleCore {
-void sendEventToJS(const char *eventJson); // Implemented in CastleCoreBridge.mm on iOS
-#if __ANDROID__
-void sendEventToJS(const char *eventJson) {
-  // TODO: Implement using JNI on Android
-}
-#endif
+void sendEventToJS(const char *eventJson); // Implemented in CastleCoreBridge.mm on iOS and at the
+                                           // bottom of this file on Android
 }
 
 void Bridge::sendEvent(const char *eventJson) {
@@ -55,12 +51,36 @@ void Bridge::flushPendingReceives() {
   }
 }
 
+
+//
+// Android implementation
+//
+
 #if __ANDROID__
+
 #include <jni.h>
+
+// To JS
+namespace CastleCore {
+void sendEventToJS(const char *eventJson) {
+  auto oldEnv = (JNIEnv *)SDL_AndroidGetJNIEnv();
+  JavaVM *jvm = nullptr;
+  oldEnv->GetJavaVM(&jvm);
+  JNIEnv *env = nullptr;
+  jvm->AttachCurrentThread(&env, nullptr);
+  auto klass = env->FindClass("ghost/CastleCoreBridgeModule");
+  auto method = env->GetStaticMethodID(klass, "staticSendEventToJS", "(Ljava/lang/String;)V");
+  auto jEventJson = env->NewStringUTF(eventJson);
+  env->CallStaticVoidMethod(klass, method, jEventJson);
+}
+}
+
+// From JS
 extern "C" JNIEXPORT void JNICALL Java_ghost_CastleCoreBridgeModule_nativeSendEvent(
     JNIEnv *env, jclass clazz, jstring eventJson) {
   auto nativeEventJson = env->GetStringUTFChars(eventJson, nullptr);
   Bridge::enqueueReceiveEvent(nativeEventJson);
   env->ReleaseStringUTFChars(eventJson, nativeEventJson);
 }
+
 #endif
