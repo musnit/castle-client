@@ -64,3 +64,20 @@ void Editor::maybeSendData() {
     isEditorStateDirty = false;
   }
 }
+
+struct EditorGlobalActionReceiver {
+  inline static const BridgeRegistration<EditorGlobalActionReceiver> registration {
+    "EDITOR_GLOBAL_ACTION"
+  };
+
+  struct Params {
+    PROP(std::string, action);
+  } params;
+
+  void receive(Engine &engine) {
+    auto action = params.action();
+
+    // TODO: expect keys from `ActionsAvailable`, e.g. onPlay, onRewind, onUndo...
+    Debug::log("editor received global action: {}", action);
+  }
+};
