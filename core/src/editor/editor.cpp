@@ -33,6 +33,10 @@ void Editor::update(double dt) {
 
     scene->update(dt); */
 
+    // TODO: select when not performing
+    scene->updateGesture();
+    selection.touchToSelect(*scene);
+    
     maybeSendData();
   }
 }
@@ -49,6 +53,7 @@ void Editor::draw() {
 
 struct EditorGlobalActionsEvent {
   PROP(bool, performing) = false;
+  // PROP(ActorId, selectedActorId);
 
   struct ActionsAvailable {
     PROP(bool, onPlay) = true;
@@ -60,6 +65,9 @@ struct EditorGlobalActionsEvent {
 void Editor::maybeSendData() {
   if (isEditorStateDirty) {
     EditorGlobalActionsEvent ev;
+    if (selection.hasSelection()) {
+      // ev.selectedActorId = selection.getSelectedActorIds()[0];
+    }
     bridge.sendEvent("EDITOR_GLOBAL_ACTIONS", ev);
     isEditorStateDirty = false;
   }

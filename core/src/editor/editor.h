@@ -5,6 +5,7 @@
 #include "bridge.h"
 #include "scene.h"
 #include "variables.h"
+#include "selection.h"
 
 class Editor {
   // manages a scene instance that is being edited.
@@ -32,6 +33,8 @@ private:
 
   Archive sceneArchive;
   std::unique_ptr<Scene> scene;
+
+  Selection selection;
 
   // events and data
   void maybeSendData();

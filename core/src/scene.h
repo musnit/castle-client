@@ -158,6 +158,7 @@ public:
   // Update, draw
 
   void update(double dt);
+  void updateGesture();
 
   void draw() const;
 

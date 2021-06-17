@@ -255,13 +255,17 @@ void Scene::ensureDrawOrderSort() const {
 // Update
 //
 
+void Scene::updateGesture() {
+  gesture.update();
+}
+
 void Scene::update(double dt) {
   // Update time
   dt = std::min(dt, 0.1); // Clamp `dt` to avoid huge steps
   performTime += dt; // For now we're always performing
 
   // Update gesture first so behaviors can read it
-  gesture.update();
+  updateGesture();
 
   // Step physics. Do this before behavior performance to allow behaviors to make changes after.
   // We're using a fixed timestep (see https://gafferongames.com/post/fix_your_timestep/).
