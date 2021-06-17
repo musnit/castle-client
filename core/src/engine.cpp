@@ -223,6 +223,9 @@ bool Engine::frame() {
     return false;
   }
 
+  // Process bridge
+  bridge.flushPendingReceives();
+
   // Step timer and run update with the resulting `dt`
   update(lv.timer.step());
 

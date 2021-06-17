@@ -25,11 +25,19 @@ public:
 
   // Receiving events from JavaScript (called from React Native modules)
 
-  void receiveEvent(const char *eventJson);
+  void receiveEvent(const char *eventJson); // NOTE: Must be called on Engine main loop thread!
+
+  static void enqueueReceiveEvent(const char *eventJson); // Can be called from any thread
+
+  void flushPendingReceives();
 
 
 private:
   Engine &engine;
+
+
+  void sendEvent(const char *eventJson);
+
 
   template<typename T>
   friend struct BridgeRegistration; // To let it write to entries
@@ -40,7 +48,8 @@ private:
   };
   inline static std::vector<ReceiverEntry> receiverEntries;
 
-  void sendEventToJS(const char *eventJson);
+  inline static std::mutex receiveQueueMutex;
+  inline static std::vector<std::string> receiveQueue;
 };
 
 template<typename T>
@@ -70,7 +79,7 @@ void Bridge::sendEvent(const char *name, const T &params) {
       writer.write(params);
     });
   });
-  sendEventToJS(archive.toJson().c_str());
+  sendEvent(archive.toJson().c_str());
 }
 
 template<typename T>

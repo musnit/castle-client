@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include <variant>
 #include <regex>
+#include <mutex>
 
 #ifndef __ANDROID__
 #include <filesystem>

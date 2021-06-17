@@ -14,7 +14,11 @@ import xyz.castle.navigation.CastleNavigationScreenReactViewManager;
 public class GhostPackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-    return Arrays.<NativeModule>asList(new GhostChannelsModule(reactContext), new GhostPushNotificationsModule(reactContext), new CastleNativeSettingsModule(reactContext));
+    return Arrays.<NativeModule>asList(
+        new CastleCoreBridgeModule(reactContext),
+        new GhostChannelsModule(reactContext),
+        new GhostPushNotificationsModule(reactContext),
+        new CastleNativeSettingsModule(reactContext));
   }
 
   @Override
