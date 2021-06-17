@@ -23,7 +23,7 @@ constexpr auto Archive::skipProp<ResponseRef> = true; // Don't auto-read `Respon
 
 struct ExpressionRef {
   // Type for referencing expressions from responses. We use a wrapper type here rather than a raw
-  // `BaseResponse *` so it can hold a default value and embed constants directly.
+  // `BaseExpression *` so it can hold a default value and embed constants directly.
 
   ExpressionRef(ExpressionValue constant_ = 0); // NOLINT(google-explicit-constructor)
 
