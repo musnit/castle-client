@@ -50,9 +50,12 @@ static __weak CastleCoreBridge *instance = nil;
 }
 
 RCT_EXPORT_METHOD(sendEventAsync : (NSString *)eventJson) {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    CastleCore::getEngine().getBridge().receiveEvent(eventJson.UTF8String);
-  });
+  // Without this check, the PRELOAD_DECK event crashes the engine on the first card
+  if (CastleCore::isEngineInitialized()) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      CastleCore::getEngine().getBridge().receiveEvent(eventJson.UTF8String);
+    });
+  }
 }
 
 @end

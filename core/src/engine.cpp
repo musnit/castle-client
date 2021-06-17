@@ -53,7 +53,8 @@ Engine::PreInit::PreInit() {
 // Constructor, destructor
 //
 
-Engine::Engine(bool isEditing_) : isEditing(isEditing_) {
+Engine::Engine(bool isEditing_)
+    : isEditing(isEditing_) {
   // First timer step
   lv.timer.step();
   if (isEditing) {
@@ -111,56 +112,36 @@ void Engine::loadSceneFromFile(const char *path) {
 }
 
 void Engine::loadSceneFromDeckId(const char *deckId) {
-  API::graphql("{\n  deck(deckId: \"" + std::string(deckId)
-          + "\") {\n    variables\n    initialCard {\n     "
-            " sceneData\n    }\n  }\n}\n",
-      [&](bool success, Reader &reader) {
-        reader.obj("data", [&]() {
-          reader.obj("deck", [&]() {
-            reader.arr("variables", [&]() {
-              if (isEditing) {
-                editor->readVariables(reader);
-              } else {
-                player.readVariables(reader);
-              }
-            });
-            reader.obj("initialCard", [&]() {
-              reader.obj("sceneData", [&]() {
-                reader.obj("snapshot", [&]() {
-                  if (isEditing) {
-                    editor->readScene(reader);
-                  } else {
-                    player.readScene(reader);
-                  }
-                  SceneLoadedEvent event;
-                  getBridge().sendEvent("SCENE_LOADED", event);
-                });
-              });
-            });
-          });
-        });
+  API::loadDeck(
+      deckId,
+      [=](Reader &reader) {
+        if (isEditing) {
+          editor->readVariables(reader);
+        } else {
+          player.readVariables(reader);
+        }
+      },
+      [=](Reader &reader) {
+        if (isEditing) {
+          editor->readScene(reader);
+        } else {
+          player.readScene(reader);
+        }
+        SceneLoadedEvent event;
+        getBridge().sendEvent("SCENE_LOADED", event);
       });
 }
 
 void Engine::loadSceneFromCardId(const char *cardId) {
-  API::graphql("{\n  card(cardId: \"" + std::string(cardId) + "\") {\n    sceneData\n  }\n}\n",
-      [&](bool success, Reader &reader) {
-        reader.obj("data", [&]() {
-          reader.obj("card", [&]() {
-            reader.obj("sceneData", [&]() {
-              reader.obj("snapshot", [&]() {
-                if (isEditing) {
-                  editor->readScene(reader);
-                } else {
-                  player.readScene(reader);
-                }
-                SceneLoadedEvent event;
-                getBridge().sendEvent("SCENE_LOADED", event);
-              });
-            });
-          });
-        });
-      });
+  API::loadCard(cardId, [=](Reader &reader) {
+    if (isEditing) {
+      editor->readScene(reader);
+    } else {
+      player.readScene(reader);
+    }
+    SceneLoadedEvent event;
+    getBridge().sendEvent("SCENE_LOADED", event);
+  });
 }
 
 //
@@ -332,5 +313,17 @@ struct ClearSceneReceiver {
   void receive(Engine &engine) {
     Debug::log("core: received CLEAR_SCENE");
     // TODO: clear scene
+  }
+};
+
+struct PreloadDeckReceiver {
+  inline static const BridgeRegistration<PreloadDeckReceiver> registration { "PRELOAD_DECK" };
+
+  struct Params {
+    PROP(std::string, deckId);
+  } params;
+
+  void receive(Engine &engine) {
+    API::preloadDeck(params.deckId());
   }
 };

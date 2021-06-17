@@ -11,8 +11,14 @@
 //
 
 namespace CastleCore {
+static bool engineInitialized = false;
+bool isEngineInitialized() {
+  return engineInitialized;
+}
+
 Engine &getEngine() {
   static Engine engine(false);
+  engineInitialized = true;
   return engine;
 }
 }

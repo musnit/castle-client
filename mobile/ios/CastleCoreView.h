@@ -11,6 +11,7 @@
 #include "engine.h"
 
 namespace CastleCore {
+bool isEngineInitialized();
 Engine &getEngine();
 }
 

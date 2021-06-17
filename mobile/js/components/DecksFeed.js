@@ -15,6 +15,7 @@ import Viewport from '../common/viewport';
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 import * as Utilities from '../common/utilities';
+import { sendAsync } from '../core/CoreEvents';
 
 const { vw, vh } = Viewport;
 
@@ -150,6 +151,14 @@ const CurrentDeckCell = ({
       task.cancel();
     };
   }, [deck?.deckId, isPlaying, isFocused]);
+
+  React.useEffect(() => {
+    if (deck && deck.deckId) {
+      sendAsync('PRELOAD_DECK', {
+        deckId: deck.deckId,
+      });
+    }
+  }, [deck?.deckId]);
 
   const onSelectPlay = () => onPressDeck({ deckId: deck.deckId });
   const onPressBack = React.useCallback(() => onPressDeck({ deckId: undefined }), [onPressDeck]);
