@@ -12,6 +12,7 @@ import * as Utilities from '../common/utilities';
 import Viewport from '../common/viewport';
 
 import * as GhostEvents from '../ghost/GhostEvents';
+import { useListen, useCoreState } from '../core/CoreEvents';
 
 import { CardScene } from '../game/CardScene';
 import { CardSceneLoading } from './CardSceneLoading';
@@ -114,13 +115,15 @@ export const CreateCardScreen = ({
   saveAction = 'none',
 }) => {
   const { showActionSheetWithOptions } = useActionSheet();
-  const { root, globalActions, sendGlobalAction, transformAssetUri } = GhostUI.useGhostUI();
 
   const [activeSheet, setActiveSheet] = React.useState(null);
   React.useEffect(Keyboard.dismiss, [activeSheet]);
 
   const [isShowingTextActors, setShowingTextActors] = React.useState(true);
   const [isShowingDraw, setIsShowingDraw] = React.useState(false);
+
+  const { root, sendGlobalAction, transformAssetUri } = GhostUI.useGhostUI();
+  const globalActions = useCoreState('EDITOR_GLOBAL_ACTIONS');
 
   const isSceneLoaded = !!globalActions;
   const isPlaying =
@@ -358,6 +361,7 @@ export const CreateCardScreen = ({
           <View style={styles.cardBody}>
             <View style={[styles.card, cardBackgroundStyles, cardFitStyles]}>
               <CardScene
+                deck={deck}
                 interactionEnabled={true}
                 key={`card-scene-${card.scene && card.scene.sceneId}`}
                 style={styles.scene}

@@ -1,14 +1,15 @@
 import React, { Fragment } from 'react';
 import { StatusBar, StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import SLIcon from 'react-native-vector-icons/SimpleLineIcons';
-import { useGhostUI } from '../ghost/GhostUI';
-import FastImage from 'react-native-fast-image';
+import { useCoreState } from '../core/CoreEvents';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 
 import * as Constants from '../Constants';
 import { CreateCardCaptureActions } from './CreateCardCaptureActions';
+
+import FastImage from 'react-native-fast-image';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import SLIcon from 'react-native-vector-icons/SimpleLineIcons';
 
 export const CARD_HEADER_HEIGHT = 54;
 
@@ -58,7 +59,10 @@ export const CreateCardHeader = ({
   creatorUsername,
   saveAction,
 }) => {
-  const { globalActions: data, sendGlobalAction } = useGhostUI();
+  const data = useCoreState('EDITOR_GLOBAL_ACTIONS');
+  // TODO: support these actions in core
+  const sendGlobalAction = () => {};
+
   const { showActionSheetWithOptions } = useActionSheet();
   const maybeClone = React.useCallback(() => {
     showActionSheetWithOptions(

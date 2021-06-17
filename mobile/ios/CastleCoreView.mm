@@ -12,7 +12,7 @@
 
 namespace CastleCore {
 Engine &getEngine() {
-  static Engine engine;
+  static Engine engine(false);
   return engine;
 }
 }

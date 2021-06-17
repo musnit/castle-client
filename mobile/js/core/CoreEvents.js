@@ -95,3 +95,12 @@ export const useListen = ({ eventName, handler, onRemove }) => {
     }
   }, [eventsReady]);
 };
+
+export const useCoreState = (eventName) => {
+  const [data, setData] = React.useState();
+  useListen({
+    eventName,
+    handler: (data) => setData(data),
+  });
+  return data;
+};
