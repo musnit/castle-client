@@ -94,26 +94,27 @@ inline bool ExpressionValue::operator!=(const ExpressionValue &other) const {
 
 inline bool ExpressionValue::compare(
     const std::string &comparison, const ExpressionValue &other) const {
-  if (std::holds_alternative<double>(value)) {
+  if (std::holds_alternative<double>(value) && std::holds_alternative<double>(other.value)) {
+    auto num = std::get<double>(value), otherNum = std::get<double>(other.value);
     switch (comparison[0]) {
     case 'e': { // "equal"
-      return *this == other;
+      return num == otherNum;
     }
     case 'n': { // "not equal"
-      return *this != other;
+      return num != otherNum;
     }
     case 'l': {
       if (comparison[5] == 'o') { // "less or equal"
-        return value <= other.value;
+        return num <= otherNum;
       } else { // "less than"
-        return value < other.value;
+        return num < otherNum;
       }
     }
     case 'g': {
       if (comparison[8] == 'o') { // "greater or equal"
-        return value >= other.value;
+        return num >= otherNum;
       } else { // "greater"
-        return value > other.value;
+        return num > otherNum;
       }
     }
     }
