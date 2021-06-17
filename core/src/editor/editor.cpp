@@ -8,11 +8,13 @@ Editor::Editor(Bridge &bridge_, Lv &lv_)
 
 void Editor::readScene(Reader &reader) {
   scene = std::make_unique<Scene>(bridge, variables, &reader);
+  isEditorStateDirty = true;
   Debug::log("editor: read scene");
 }
 
 void Editor::readVariables(Reader &reader) {
   variables.read(reader);
+  isEditorStateDirty = true;
 };
 
 void Editor::update(double dt) {
@@ -45,14 +47,20 @@ void Editor::draw() {
 // Events
 //
 
-struct EditorStateEvent {
+struct EditorGlobalActionsEvent {
   PROP(bool, performing) = false;
+
+  struct ActionsAvailable {
+    PROP(bool, onPlay) = true;
+    PROP(bool, onRewind) = false;
+  };
+  PROP(ActionsAvailable, actionsAvailable);
 };
 
 void Editor::maybeSendData() {
   if (isEditorStateDirty) {
-    EditorStateEvent ev;
-    bridge.sendEvent("EDITOR_STATE", ev);
+    EditorGlobalActionsEvent ev;
+    bridge.sendEvent("EDITOR_GLOBAL_ACTIONS", ev);
     isEditorStateDirty = false;
   }
 }
