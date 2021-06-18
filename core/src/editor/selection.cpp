@@ -23,6 +23,7 @@ void Selection::selectActorFromHits(const BodyBehavior::ActorsAtTouch &hits) {
 }
 
 void Selection::touchToSelect(Scene &scene) {
+  selectionChanged = false;
   scene.getGesture().withSingleTouch([&](const Touch &touch) {
     auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
     auto isShortPress = lv.timer.getTime() - touch.pressTime < 0.2;

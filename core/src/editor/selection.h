@@ -14,6 +14,7 @@ public:
   void touchToSelect(Scene &scene);
 
   bool hasSelection();
+  bool isSelectionChanged();
   ActorIdSet &getSelectedActorIds();
   
   void selectActor(ActorId actorId);
@@ -26,6 +27,7 @@ private:
 
   void applySelection(Scene &scene);
   void selectActorFromHits(const BodyBehavior::ActorsAtTouch &hits);
+  bool selectionChanged = false;
 };
 
 inline ActorIdSet &Selection::getSelectedActorIds() {
@@ -33,21 +35,28 @@ inline ActorIdSet &Selection::getSelectedActorIds() {
 }
 
 inline bool Selection::hasSelection() {
-  return selection.empty();
+  return !selection.empty();
+}
+
+inline bool Selection::isSelectionChanged() {
+  return selectionChanged;
 }
 
 inline void Selection::selectActor(ActorId actorId) {
+  selectionChanged = true;
   if (!selection.contains(actorId)) {
     selection.emplace(actorId);
   }
 }
 
 inline void Selection::deselectActor(ActorId actorId) {
+  selectionChanged = true;
   if (selection.contains(actorId)) {
     selection.remove(actorId);
   }
 }
 
 inline void Selection::deselectAllActors() {
+  selectionChanged = true;
   selection.clear();
 }
