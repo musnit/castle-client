@@ -39,6 +39,7 @@ private:
   // events and data
   void maybeSendData();
   bool isEditorStateDirty;
+  bool isAllBehaviorsStateDirty;
 };
 
 inline bool Editor::hasScene() {

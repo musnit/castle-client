@@ -28,6 +28,7 @@ class MovingBehavior : public BaseBehavior<MovingBehavior, MovingComponent> {
 public:
   static constexpr auto name = "Moving";
   static constexpr auto behaviorId = 7;
+  static constexpr auto displayName = "Dynamic Motion";
 
   using BaseBehavior::BaseBehavior;
 

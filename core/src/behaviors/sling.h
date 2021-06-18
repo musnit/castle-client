@@ -16,6 +16,7 @@ class SlingBehavior : public BaseBehavior<SlingBehavior, SlingComponent> {
 public:
   static constexpr auto name = "Sling";
   static constexpr auto behaviorId = 14;
+  static constexpr auto displayName = "Slingshot";
 
   using BaseBehavior::BaseBehavior;
 

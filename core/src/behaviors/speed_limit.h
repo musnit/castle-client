@@ -18,6 +18,7 @@ class SpeedLimitBehavior : public BaseBehavior<SpeedLimitBehavior, SpeedLimitCom
 public:
   static constexpr auto name = "SpeedLimit";
   static constexpr auto behaviorId = 12;
+  static constexpr auto displayName = "Speed Limit";
 
   using BaseBehavior::BaseBehavior;
 

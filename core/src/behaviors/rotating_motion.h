@@ -19,6 +19,7 @@ class RotatingMotionBehavior
 public:
   static constexpr auto name = "RotatingMotion";
   static constexpr auto behaviorId = 13;
+  static constexpr auto displayName = "Fixed Motion";
 
   using BaseBehavior::BaseBehavior;
 

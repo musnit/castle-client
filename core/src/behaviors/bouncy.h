@@ -16,6 +16,7 @@ class BouncyBehavior : public BaseBehavior<BouncyBehavior, BouncyComponent> {
 public:
   static constexpr auto name = "Bouncy";
   static constexpr auto behaviorId = 6;
+  static constexpr auto displayName = "Bounce";
 
   using BaseBehavior::BaseBehavior;
 

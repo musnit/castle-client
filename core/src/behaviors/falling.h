@@ -16,6 +16,7 @@ class FallingBehavior : public BaseBehavior<FallingBehavior, FallingComponent> {
 public:
   static constexpr auto name = "Falling";
   static constexpr auto behaviorId = 8;
+  static constexpr auto displayName = "Gravity";
 
   using BaseBehavior::BaseBehavior;
 

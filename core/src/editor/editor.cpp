@@ -1,14 +1,17 @@
 #include "editor.h"
+#include "behaviors/all.h"
 
 Editor::Editor(Bridge &bridge_, Lv &lv_)
     : bridge(bridge_)
     , lv(lv_) {
   isEditorStateDirty = true;
+  isAllBehaviorsStateDirty = true;
 }
 
 void Editor::readScene(Reader &reader) {
   scene = std::make_unique<Scene>(bridge, variables, &reader);
   isEditorStateDirty = true;
+  isAllBehaviorsStateDirty = true;
   Debug::log("editor: read scene");
 }
 
@@ -38,6 +41,7 @@ void Editor::update(double dt) {
     selection.touchToSelect(*scene);
     if (selection.isSelectionChanged()) {
       isEditorStateDirty = true;
+      isAllBehaviorsStateDirty = true;
     }
     
     maybeSendData();
@@ -65,18 +69,6 @@ struct EditorGlobalActionsEvent {
   PROP(ActionsAvailable, actionsAvailable);
 };
 
-void Editor::maybeSendData() {
-  if (isEditorStateDirty) {
-    EditorGlobalActionsEvent ev;
-    if (selection.hasSelection()) {
-      ActorId firstActorId = *(selection.getSelectedActorIds().begin());
-      ev.selectedActorId = entt::to_integral(firstActorId);
-    }
-    bridge.sendEvent("EDITOR_GLOBAL_ACTIONS", ev);
-    isEditorStateDirty = false;
-  }
-}
-
 struct EditorGlobalActionReceiver {
   inline static const BridgeRegistration<EditorGlobalActionReceiver> registration {
     "EDITOR_GLOBAL_ACTION"
@@ -93,3 +85,41 @@ struct EditorGlobalActionReceiver {
     Debug::log("editor received global action: {}", action);
   }
 };
+
+struct EditorAllBehaviorsEvent {
+  struct Behavior {
+    PROP(int, behaviorId);
+    PROP(std::string, name);
+    PROP(std::string, displayName);
+    PROP(bool, isActive) = false;
+    // TODO: PROP(std::vector<std::string>, dependencies);
+    // TODO: propertySpecs
+  };
+  PROP(std::vector<Behavior>, behaviors);
+};
+
+void Editor::maybeSendData() {
+  if (isEditorStateDirty) {
+    EditorGlobalActionsEvent ev;
+    if (selection.hasSelection()) {
+      ev.selectedActorId = entt::to_integral(selection.firstSelectedActorId());
+    }
+    bridge.sendEvent("EDITOR_GLOBAL_ACTIONS", ev);
+    isEditorStateDirty = false;
+  }
+  if (isAllBehaviorsStateDirty) {
+    EditorAllBehaviorsEvent ev;
+    scene->getBehaviors().forEach([&](auto &behavior) {
+      EditorAllBehaviorsEvent::Behavior elem;
+      elem.behaviorId = std::remove_reference_t<decltype(behavior)>::behaviorId;
+      elem.name = std::remove_reference_t<decltype(behavior)>::name;
+      elem.displayName = std::remove_reference_t<decltype(behavior)>::displayName;
+      if (selection.hasSelection()) {
+        elem.isActive = behavior.hasComponent(selection.firstSelectedActorId());
+      }
+      ev.behaviors().push_back(elem);
+    });
+    bridge.sendEvent("EDITOR_ALL_BEHAVIORS", ev);
+    isAllBehaviorsStateDirty = false;
+  }
+}

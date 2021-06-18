@@ -19,6 +19,7 @@ class SlowdownBehavior : public BaseBehavior<SlowdownBehavior, SlowdownComponent
 public:
   static constexpr auto name = "Slowdown";
   static constexpr auto behaviorId = 10;
+  static constexpr auto displayName = "Slow Down";
 
   using BaseBehavior::BaseBehavior;
 

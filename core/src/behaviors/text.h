@@ -18,6 +18,7 @@ class TextBehavior : public BaseBehavior<TextBehavior, TextComponent> {
 public:
   static constexpr auto name = "Text";
   static constexpr auto behaviorId = 19;
+  static constexpr auto displayName = "Text";
 
   using BaseBehavior::BaseBehavior;
 

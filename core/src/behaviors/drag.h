@@ -23,6 +23,7 @@ class DragBehavior : public BaseBehavior<DragBehavior, DragComponent> {
 public:
   static constexpr auto name = "Drag";
   static constexpr auto behaviorId = 15;
+  static constexpr auto displayName = "Drag";
 
   using BaseBehavior::BaseBehavior;
 

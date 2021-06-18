@@ -121,6 +121,7 @@ class RulesBehavior : public BaseBehavior<RulesBehavior, RulesComponent> {
 public:
   static constexpr auto name = "Rules";
   static constexpr auto behaviorId = 16;
+  static constexpr auto displayName = "Rules";
 
   using BaseBehavior::BaseBehavior;
 

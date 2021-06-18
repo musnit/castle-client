@@ -15,6 +15,7 @@ class SolidBehavior : public BaseBehavior<SolidBehavior, SolidComponent> {
 public:
   static constexpr auto name = "Solid";
   static constexpr auto behaviorId = 5;
+  static constexpr auto displayName = "Solid";
 
   using BaseBehavior::BaseBehavior;
 

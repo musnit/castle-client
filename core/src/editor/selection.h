@@ -16,6 +16,7 @@ public:
   bool hasSelection();
   bool isSelectionChanged();
   ActorIdSet &getSelectedActorIds();
+  ActorId firstSelectedActorId();
   
   void selectActor(ActorId actorId);
   void deselectActor(ActorId actorId);
@@ -32,6 +33,13 @@ private:
 
 inline ActorIdSet &Selection::getSelectedActorIds() {
   return selection;
+}
+
+inline ActorId Selection::firstSelectedActorId() {
+  if (hasSelection()) {
+    return *(selection.begin());
+  }
+  return entt::null;
 }
 
 inline bool Selection::hasSelection() {

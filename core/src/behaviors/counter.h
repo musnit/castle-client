@@ -18,6 +18,7 @@ class CounterBehavior : public BaseBehavior<CounterBehavior, CounterComponent> {
 public:
   static constexpr auto name = "Counter";
   static constexpr auto behaviorId = 18;
+  static constexpr auto displayName = "Counter";
 
   using BaseBehavior::BaseBehavior;
 

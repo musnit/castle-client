@@ -16,6 +16,7 @@ class FrictionBehavior : public BaseBehavior<FrictionBehavior, FrictionComponent
 public:
   static constexpr auto name = "Friction";
   static constexpr auto behaviorId = 11;
+  static constexpr auto displayName = "Friction";
 
   using BaseBehavior::BaseBehavior;
 

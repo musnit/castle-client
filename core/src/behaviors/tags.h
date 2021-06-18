@@ -59,6 +59,7 @@ class TagsBehavior : public BaseBehavior<TagsBehavior, TagsComponent> {
 public:
   static constexpr auto name = "Tags";
   static constexpr auto behaviorId = 17;
+  static constexpr auto displayName = "Tags";
 
   using BaseBehavior::BaseBehavior;
 

@@ -55,6 +55,7 @@ class BodyBehavior : public BaseBehavior<BodyBehavior, BodyComponent> {
 public:
   static constexpr auto name = "Body";
   static constexpr auto behaviorId = 1;
+  static constexpr auto displayName = "Layout";
 
   using BaseBehavior::BaseBehavior;
 

@@ -18,6 +18,7 @@ class AnalogStickBehavior : public BaseBehavior<AnalogStickBehavior, AnalogStick
 public:
   static constexpr auto name = "AnalogStick";
   static constexpr auto behaviorId = 21;
+  static constexpr auto displayName = "Analog Stick";
 
   using BaseBehavior::BaseBehavior;
 

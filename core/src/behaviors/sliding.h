@@ -20,6 +20,7 @@ class SlidingBehavior : public BaseBehavior<SlidingBehavior, SlidingComponent> {
 public:
   static constexpr auto name = "Sliding";
   static constexpr auto behaviorId = 9;
+  static constexpr auto displayName = "Axis Lock";
 
   using BaseBehavior::BaseBehavior;
 
