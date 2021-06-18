@@ -20,8 +20,8 @@ struct PropAttribs {
   ATTRIB(bool, rulesGet, true);
   ATTRIB(bool, rulesSet, true);
   ATTRIB(const char *, label, "");
-  ATTRIB(bool, min, std::numeric_limits<float>::min());
-  ATTRIB(bool, max, std::numeric_limits<float>::max());
+  ATTRIB(float, min, std::numeric_limits<float>::min());
+  ATTRIB(float, max, std::numeric_limits<float>::max());
 
 #undef ATTRIB
 };
