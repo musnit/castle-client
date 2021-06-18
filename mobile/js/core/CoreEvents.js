@@ -35,7 +35,15 @@ export const listen = (name, handler) => {
     },
   };
 };
+
 const CoreEventsContext = React.createContext({});
+
+// maintain a cache of event data
+// so that a component can mount later and get the most recent data for its subscription
+let coreStateCache = {};
+const setCoreStateCache = (eventName, data) => (coreStateCache[eventName] = data);
+const getCoreStateCache = (eventName) => coreStateCache[eventName];
+const clearCoreStateCache = () => (coreStateCache = {});
 
 // maintain `eventsReady` state, and mark this as true only when the engine component mounts
 export const Provider = (props) => {
@@ -53,6 +61,7 @@ export const Provider = (props) => {
 
   const engineDidUnmount = (eventsId) => {
     sendAsync('CLEAR_SCENE');
+    clearCoreStateCache();
     setState({
       eventsReady: false,
     });
@@ -97,10 +106,13 @@ export const useListen = ({ eventName, handler, onRemove }) => {
 };
 
 export const useCoreState = (eventName) => {
-  const [data, setData] = React.useState();
+  const [data, setData] = React.useState(getCoreStateCache(eventName));
   useListen({
     eventName,
-    handler: (data) => setData(data),
+    handler: (data) => {
+      setCoreStateCache(eventName, data);
+      return setData(data);
+    },
   });
   return data;
 };
