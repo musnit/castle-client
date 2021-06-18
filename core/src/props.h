@@ -8,8 +8,22 @@
 
 
 struct PropAttribs {
-  // Attributes that can be attached to props. Could include metadata like the UI input style to
-  // use, maximum and minimum values, etc. Currently empty.
+  // Attributes that can be attached to props
+
+#define ATTRIB(type, name, default)                                                                \
+  type name##_ = default;                                                                          \
+  constexpr PropAttribs &name(type value) {                                                        \
+    name##_ = value;                                                                               \
+    return *this;                                                                                  \
+  }
+
+  ATTRIB(bool, rulesGet, true);
+  ATTRIB(bool, rulesSet, true);
+  ATTRIB(const char *, label, "");
+  ATTRIB(bool, min, std::numeric_limits<float>::min());
+  ATTRIB(bool, max, std::numeric_limits<float>::max());
+
+#undef ATTRIB
 };
 
 
@@ -67,6 +81,7 @@ struct Prop {
 
   static constexpr std::string_view name = Internal::name;
   static constexpr uint32_t nameHash = entt::hashed_string(name.data()).value();
+  static constexpr const PropAttribs &attribs = Internal::attribs;
   inline static const PropId id = Props::getId(name.data());
 
 private:
@@ -103,7 +118,7 @@ private:
 private:                                                                                           \
   struct INTERNAL_##name_ {                                                                        \
     static constexpr std::string_view name = nameStr;                                              \
-    inline static PropAttribs attribs = PropAttribs() __VA_ARGS__;                                 \
+    static constexpr PropAttribs attribs = PropAttribs().label(name.data()) __VA_ARGS__;           \
   };                                                                                               \
                                                                                                    \
 public:                                                                                            \

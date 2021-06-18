@@ -50,6 +50,34 @@ Engine::PreInit::PreInit() {
 
 
 //
+// `PropAttribs` demo
+//
+
+struct Stuff {
+  PROP(double, speed, .label("coolSpeed").min(0).max(100));
+  PROP(std::string, secret, .rulesGet(false).rulesSet(false));
+};
+
+void propAttribsDemo() {
+  Stuff stuff;
+  Debug::log("PropAttribs demo");
+  Props::forEach(stuff, [&](auto &prop) {
+    using Prop = std::remove_reference_t<decltype(prop)>;
+    Debug::log("  prop: {}", Prop::name);
+    // Need to add a `_` on the end when accessing attribs
+    Debug::log("    rulesGet: {}", Prop::attribs.rulesGet_);
+    Debug::log("    rulesSet: {}", Prop::attribs.rulesSet_);
+    Debug::log("    label: {}", Prop::attribs.label_);
+    Debug::log("    min: {}", Prop::attribs.min_);
+    Debug::log("    max: {}", Prop::attribs.max_);
+    if constexpr (Prop::attribs.rulesGet_) { // constexpr checks allowed
+      Debug::log("    can get!");
+    }
+  });
+}
+
+
+//
 // Constructor, destructor
 //
 
@@ -60,6 +88,8 @@ Engine::Engine(bool isEditing_)
   if (isEditing) {
     editor = new Editor(bridge, lv);
   }
+
+  propAttribsDemo();
 }
 
 Engine::~Engine() {
@@ -264,44 +294,8 @@ void Engine::draw() {
 
 
 //
-// Bridge events testing
+// Bridge events
 //
-
-struct TestReceiver {
-  inline static const BridgeRegistration<TestReceiver> registration { "test" };
-
-  struct Params {
-    PROP(double, topLevel) = 0;
-    struct Elem {
-      PROP(double, foo) = 42;
-      PROP(std::string, bar) = "default";
-    };
-    PROP(std::vector<Elem>, elems);
-  } params;
-
-  struct TestResponse {
-    PROP(double, moreTopLevel) = 9001;
-    struct Elem {
-      PROP(double, foo);
-      PROP(std::string, bar);
-    };
-    PROP(std::vector<Elem>, elems);
-  } response;
-
-  void receive(Engine &engine) {
-    Debug::log("core: received test event:");
-    Debug::log("  topLevel: {}", params.topLevel());
-    Debug::log("  elems: {}", params.topLevel());
-    for (auto &elem : params.elems()) {
-      Debug::log("    foo: {}, bar: '{}'", elem.foo(), elem.bar());
-    }
-
-    TestResponse response;
-    response.elems().push_back({ 3, "three" });
-    response.elems().push_back({ 400, "four hundred" });
-    engine.getBridge().sendEvent("test_response", response);
-  }
-};
 
 struct ClearSceneReceiver {
   inline static const BridgeRegistration<ClearSceneReceiver> registration { "CLEAR_SCENE" };
