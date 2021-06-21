@@ -1,4 +1,5 @@
 #include "editor.h"
+#include "archive.h"
 #include "behaviors/all.h"
 
 Editor::Editor(Bridge &bridge_, Lv &lv_)
@@ -42,6 +43,15 @@ void Editor::update(double dt) {
     if (selection.isSelectionChanged()) {
       isEditorStateDirty = true;
       isAllBehaviorsStateDirty = true;
+      if (selection.hasSelection()) {
+        auto selectedActorId = selection.firstSelectedActorId();
+        scene->getBehaviors().forEach([&](auto &behavior) {
+          if (behavior.hasComponent(selectedActorId)) {
+            auto behaviorId = std::remove_reference_t<decltype(behavior)>::behaviorId;
+            selectedComponentStateDirty.insert(behaviorId);
+          }
+        });
+      }
     }
     
     maybeSendData();
@@ -86,6 +96,14 @@ struct EditorGlobalActionReceiver {
   }
 };
 
+void Editor::sendGlobalActions() {
+  EditorGlobalActionsEvent ev;
+  if (selection.hasSelection()) {
+    ev.selectedActorId = entt::to_integral(selection.firstSelectedActorId());
+  }
+  bridge.sendEvent("EDITOR_GLOBAL_ACTIONS", ev);
+};
+
 struct EditorAllBehaviorsEvent {
   struct Behavior {
     struct PropertySpec {
@@ -108,55 +126,89 @@ struct EditorAllBehaviorsEvent {
   PROP(std::vector<Behavior>, behaviors);
 };
 
+void Editor::sendAllBehaviors() {
+  EditorAllBehaviorsEvent ev;
+  scene->getBehaviors().forEach([&](auto &behavior) {
+    using BehaviorType = std::remove_reference_t<decltype(behavior)>;
+    EditorAllBehaviorsEvent::Behavior elem;
+    elem.behaviorId = BehaviorType::behaviorId;
+    elem.name = BehaviorType::name;
+    elem.displayName = BehaviorType::displayName;
+    if (selection.hasSelection()) {
+      elem.isActive = behavior.hasComponent(selection.firstSelectedActorId());
+    }
+
+    static typename BehaviorType::ComponentType emptyComponent;
+    Props::forEach(emptyComponent.props, [&](auto &prop) {
+      using Prop = std::remove_reference_t<decltype(prop)>;
+      constexpr auto &attribs = Prop::attribs;
+
+      EditorAllBehaviorsEvent::Behavior::PropertySpec spec;
+      spec.name = Prop::name;
+      spec.type = prop.getType();
+      spec.label = attribs.label_;
+      spec.min = attribs.min_;
+      spec.max = attribs.max_;
+      spec.rulesGet = attribs.rulesGet_;
+      spec.rulesSet = attribs.rulesSet_;
+      if (attribs.allowedValues_[0]) {
+        for (auto &allowedValue : attribs.allowedValues_) {
+          if (!allowedValue) {
+            break;
+          }
+          spec.allowedValues().push_back(allowedValue);
+        }
+      }
+      
+      elem.propertySpecs().push_back(spec);
+    });
+    
+    ev.behaviors().push_back(elem);
+   });
+   bridge.sendEvent("EDITOR_ALL_BEHAVIORS", ev);
+};
+
+struct EditorSelectedComponentEvent {
+  PROP(bool, isDisabled) = false;
+  PROP(std::string, properties);
+};
+
+// send behavior property values for the selected actor's components
+void Editor::sendSelectedComponent(int behaviorId) {
+  scene->getBehaviors().byId(behaviorId, [&](auto &behavior) {
+    using BehaviorType = std::remove_reference_t<decltype(behavior)>;
+    auto component = behavior.maybeGetComponent(selection.firstSelectedActorId());
+    if (component) {
+      EditorSelectedComponentEvent ev;
+      ev.isDisabled = component->disabled;
+
+      // TODO: maybe template the Event over this Component in order to embed props directly
+      Archive ar;
+      ar.write([&](Archive::Writer &writer) {
+        // writer.write(component->props);
+        writer.write((const decltype(component->props) &)component->props);
+      });
+      ev.properties = ar.toJson();
+
+      std::string eventName = std::string("EDITOR_SELECTED_COMPONENT:") + BehaviorType::name;
+      bridge.sendEvent(eventName.c_str(), ev);
+    }
+  });
+}
+
 void Editor::maybeSendData() {
   if (isEditorStateDirty) {
-    EditorGlobalActionsEvent ev;
-    if (selection.hasSelection()) {
-      ev.selectedActorId = entt::to_integral(selection.firstSelectedActorId());
-    }
-    bridge.sendEvent("EDITOR_GLOBAL_ACTIONS", ev);
+    sendGlobalActions();
     isEditorStateDirty = false;
   }
   if (isAllBehaviorsStateDirty) {
-    EditorAllBehaviorsEvent ev;
-    scene->getBehaviors().forEach([&](auto &behavior) {
-      using BehaviorType = std::remove_reference_t<decltype(behavior)>;
-      EditorAllBehaviorsEvent::Behavior elem;
-      elem.behaviorId = BehaviorType::behaviorId;
-      elem.name = BehaviorType::name;
-      elem.displayName = BehaviorType::displayName;
-      if (selection.hasSelection()) {
-        elem.isActive = behavior.hasComponent(selection.firstSelectedActorId());
-      }
-
-      static typename BehaviorType::ComponentType emptyComponent;
-      Props::forEach(emptyComponent.props, [&](auto &prop) {
-        using Prop = std::remove_reference_t<decltype(prop)>;
-        constexpr auto &attribs = Prop::attribs;
-
-        EditorAllBehaviorsEvent::Behavior::PropertySpec spec;
-        spec.name = Prop::name;
-        spec.type = prop.getType();
-        spec.label = attribs.label_;
-        spec.min = attribs.min_;
-        spec.max = attribs.max_;
-        spec.rulesGet = attribs.rulesGet_;
-        spec.rulesSet = attribs.rulesSet_;
-        if (attribs.allowedValues_[0]) {
-          for (auto &allowedValue : attribs.allowedValues_) {
-            if (!allowedValue) {
-              break;
-            }
-            spec.allowedValues().push_back(allowedValue);
-          }
-        }
-
-        elem.propertySpecs().push_back(spec);
-      });
-
-      ev.behaviors().push_back(elem);
-    });
-    bridge.sendEvent("EDITOR_ALL_BEHAVIORS", ev);
+    sendAllBehaviors();
     isAllBehaviorsStateDirty = false;
+  }
+  if (!selectedComponentStateDirty.empty()) {
+    for (auto behaviorId : selectedComponentStateDirty) {
+      sendSelectedComponent(behaviorId);
+    }
+    selectedComponentStateDirty.clear();
   }
 }

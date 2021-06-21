@@ -38,8 +38,16 @@ private:
 
   // events and data
   void maybeSendData();
+  
   bool isEditorStateDirty;
+  void sendGlobalActions();
+
   bool isAllBehaviorsStateDirty;
+  void sendAllBehaviors();
+
+  // behaviorId present indicates dirty state for selected actor
+  std::set<int> selectedComponentStateDirty;
+  void sendSelectedComponent(int behaviorId);
 };
 
 inline bool Editor::hasScene() {
