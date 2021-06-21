@@ -55,7 +55,7 @@ Engine::PreInit::PreInit() {
 
 struct Stuff {
   PROP(double, speed, .label("coolSpeed").min(0).max(100));
-  PROP(std::string, secret, .rulesGet(false).rulesSet(false));
+  PROP(std::string, secret, .rulesGet(false).rulesSet(false).allowedValues("hello", "world"));
 };
 
 void propAttribsDemo() {
@@ -63,15 +63,26 @@ void propAttribsDemo() {
   Debug::log("PropAttribs demo");
   Props::forEach(stuff, [&](auto &prop) {
     using Prop = std::remove_reference_t<decltype(prop)>;
+    constexpr auto &attribs = Prop::attribs;
     Debug::log("  prop: {}", Prop::name);
     // Need to add a `_` on the end when accessing attribs
-    Debug::log("    rulesGet: {}", Prop::attribs.rulesGet_);
-    Debug::log("    rulesSet: {}", Prop::attribs.rulesSet_);
-    Debug::log("    label: {}", Prop::attribs.label_);
-    Debug::log("    min: {}", Prop::attribs.min_);
-    Debug::log("    max: {}", Prop::attribs.max_);
-    if constexpr (Prop::attribs.rulesGet_) { // constexpr checks allowed
+    Debug::log("    rulesGet: {}", attribs.rulesGet_);
+    Debug::log("    rulesSet: {}", attribs.rulesSet_);
+    Debug::log("    label: {}", attribs.label_);
+    Debug::log("    min: {}", attribs.min_);
+    Debug::log("    max: {}", attribs.max_);
+    if constexpr (attribs.rulesGet_) { // constexpr checks allowed
       Debug::log("    can get!");
+    }
+    if (attribs.allowedValues_[0]) { // Non-empty allowed value list?
+      Debug::log("    allowedValues:");
+      // List ends when we either hit end of array or `nullptr`
+      for (auto &allowedValue : attribs.allowedValues_) { // Array-typed so this works
+        if (!allowedValue) {
+          break;
+        }
+        Debug::log("      {}", allowedValue);
+      }
     }
   });
 }

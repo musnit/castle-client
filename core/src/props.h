@@ -23,6 +23,20 @@ struct PropAttribs {
   ATTRIB(float, min, std::numeric_limits<float>::min());
   ATTRIB(float, max, std::numeric_limits<float>::max());
 
+  static constexpr auto maxNumAllowedValues = 16;
+  const char *allowedValues_[maxNumAllowedValues] = { nullptr };
+  template<typename... Args>
+  constexpr PropAttribs &allowedValues(Args... args) {
+    auto i = 0;
+    const auto visit = [&](const char *value) {
+      if (i < maxNumAllowedValues) {
+        allowedValues_[i++] = value;
+      }
+    };
+    (visit(args), ...);
+    return *this;
+  }
+
 #undef ATTRIB
 };
 
