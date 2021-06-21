@@ -8,7 +8,12 @@
 
 struct BouncyComponent : BaseComponent {
   struct Props {
-    PROP(float, bounciness) = 0.8;
+    PROP(
+         float, bounciness,
+         .label("Rebound")
+         .min(0)
+         .max(2)
+         ) = 0.8;
   } props;
 };
 

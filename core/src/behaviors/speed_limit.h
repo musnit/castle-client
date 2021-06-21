@@ -8,7 +8,11 @@
 
 struct SpeedLimitComponent : BaseComponent {
   struct Props {
-    PROP(float, maximumSpeed) = 1;
+    PROP(
+         float, maximumSpeed,
+         .label("Max speed")
+         .min(0.1)
+         ) = 1;
   } props;
 
   b2FrictionJoint *joint = nullptr;

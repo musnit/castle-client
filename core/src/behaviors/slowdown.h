@@ -8,8 +8,16 @@
 
 struct SlowdownComponent : BaseComponent {
   struct Props {
-    PROP(float, motionSlowdown) = 5;
-    PROP(float, rotationSlowdown) = 0.5;
+    PROP(
+         float, motionSlowdown,
+         .label("Translation")
+         .min(0)
+         ) = 5;
+    PROP(
+         float, rotationSlowdown,
+         .label("Rotation")
+         .min(0)
+         ) = 0.5;
   } props;
 
   b2FrictionJoint *joint = nullptr;

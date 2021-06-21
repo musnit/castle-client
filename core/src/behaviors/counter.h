@@ -8,9 +8,23 @@
 
 struct CounterComponent : BaseComponent {
   struct Props {
-    PROP(double, value) = 0;
-    PROP(double, minValue) = 0;
-    PROP(double, maxValue) = 100;
+    PROP(
+         double, value,
+         .label("Value")
+         .rulesSet(false)
+         ) = 0;
+    PROP(
+         double, minValue,
+         .label("minimum value")
+         .rulesGet(false)
+         .rulesSet(false)
+         ) = 0;
+    PROP(
+         double, maxValue,
+         .label("maximum value")
+         .rulesGet(false)
+         .rulesSet(false)
+         ) = 100;
   } props;
 };
 

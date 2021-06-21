@@ -8,8 +8,18 @@
 
 struct SlidingComponent : BaseComponent {
   struct Props {
-    PROP(std::string, direction) = "both";
-    PROP(bool, isRotationAllowed) = true;
+    PROP(
+         std::string, direction,
+         .label("Direction")
+         .rulesGet(false)
+         .rulesSet(false)
+         .allowedValues("horizontal", "vertical", "both", "none")
+         ) = "both";
+    PROP(
+         bool, isRotationAllowed,
+         .label("Rotates")
+         .rulesGet(false)
+         ) = true;
   } props;
 
   b2Body *anchorBody = nullptr;

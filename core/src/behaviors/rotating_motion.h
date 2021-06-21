@@ -8,9 +8,9 @@
 
 struct RotatingMotionComponent : BaseComponent {
   struct Props {
-    PROP(float, vx) = 0;
-    PROP(float, vy) = 0;
-    PROP(float, rotationsPerSecond) = 0;
+    PROP(float, vx, .label("Velocity X")) = 0;
+    PROP(float, vy, .label("Velocity Y")) = 0;
+    PROP(float, rotationsPerSecond, .label("Rotations per second")) = 0;
   } props;
 };
 

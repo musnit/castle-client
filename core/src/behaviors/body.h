@@ -13,19 +13,33 @@ enum class BodyLayer {
 
 struct BodyComponent : BaseComponent {
   struct Props {
-    PROP(float, x) = 0;
-    PROP(float, y) = 0;
-    PROP(float, angle) = 0;
+    PROP(float, x, .label("X Position")) = 0;
+    PROP(float, y, .label("Y Position")) = 0;
+    PROP(float, angle, .label("Rotation")) = 0;
 
-    PROP(float, width) = 1;
-    PROP(float, height) = 1;
-    PROP(float, widthScale) = 0.1;
-    PROP(float, heightScale) = 0.1;
+    PROP(
+         float, width,
+         .label("Width")
+         .rulesGet(false)
+         .rulesSet(false)
+         ) = 1;
+    PROP(
+         float, height,
+         .label("Height")
+         .rulesGet(false)
+         .rulesSet(false)
+         ) = 1;
+    PROP(float, widthScale, .label("Width Scale")) = 0.1;
+    PROP(float, heightScale, .label("Height Scale")) = 0.1;
 
     // NOTE: Skipping because it's never `true`
     // PROP(bool, bullet) = false;
 
-    PROP(bool, visible) = true;
+    PROP(
+         bool, visible,
+         .label("Visible")
+         .rulesGet(false)
+         ) = true;
 
     // NOTE: Skipping because we start static and other behaviors (eg. `MovingBehavior`) set this
     // PROP(std::string, bodyType) = "static";
@@ -34,7 +48,11 @@ struct BodyComponent : BaseComponent {
     //       creating / updating fixtures
     // PROP((std::array<float, 4>), massData) = { 0.0f, 0.0f, 0.0f, 0.0f };
 
-    PROP(std::string, layerName) = "main";
+    PROP(
+         std::string, layerName,
+         .rulesGet(false)
+         .rulesSet(false)
+         ) = "main";
 
     struct FixtureProps {
       PROP(std::string, shapeType) = "polygon";
@@ -43,7 +61,11 @@ struct BodyComponent : BaseComponent {
       PROP(float, y) = 0;
       PROP(float, radius) = 0;
     };
-    PROP(std::vector<FixtureProps>, fixtures); // `std::vector` rather than `SmallVector` because we
+    PROP(
+         std::vector<FixtureProps>, fixtures,
+         .rulesGet(false)
+         .rulesSet(false)
+         ); // `std::vector` rather than `SmallVector` because we
                                                // rarely read this data at perform-time and it's big
   } props;
 

@@ -8,8 +8,16 @@
 
 struct TextComponent : BaseComponent {
   struct Props {
-    PROP(std::string, content) = "";
-    PROP(bool, visible) = true;
+    PROP(
+         std::string, content,
+         .label("Content")
+         .rulesGet(false)
+         ) = "";
+    PROP(
+         bool, visible,
+         .label("Visible")
+         .rulesGet(false)
+         ) = true;
     PROP(int, order) = -1;
   } props;
 };

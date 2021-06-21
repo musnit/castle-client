@@ -91,6 +91,12 @@ struct EditorAllBehaviorsEvent {
     struct PropertySpec {
       PROP(std::string, name);
       PROP(std::string, type);
+      PROP(std::string, label);
+      PROP(float, min);
+      PROP(float, max);
+      PROP(bool, rulesGet);
+      PROP(bool, rulesSet);
+      PROP(std::vector<std::string>, allowedValues);
     };
     
     PROP(int, behaviorId);
@@ -126,9 +132,24 @@ void Editor::maybeSendData() {
       static typename BehaviorType::ComponentType emptyComponent;
       Props::forEach(emptyComponent.props, [&](auto &prop) {
         using Prop = std::remove_reference_t<decltype(prop)>;
+        constexpr auto &attribs = Prop::attribs;
+
         EditorAllBehaviorsEvent::Behavior::PropertySpec spec;
         spec.name = Prop::name;
         spec.type = prop.getType();
+        spec.label = attribs.label_;
+        spec.min = attribs.min_;
+        spec.max = attribs.max_;
+        spec.rulesGet = attribs.rulesGet_;
+        spec.rulesSet = attribs.rulesSet_;
+        if (attribs.allowedValues_[0]) {
+          for (auto &allowedValue : attribs.allowedValues_) {
+            if (!allowedValue) {
+              break;
+            }
+            spec.allowedValues().push_back(allowedValue);
+          }
+        }
 
         elem.propertySpecs().push_back(spec);
       });

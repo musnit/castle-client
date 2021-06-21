@@ -8,7 +8,11 @@
 
 struct FrictionComponent : BaseComponent {
   struct Props {
-    PROP(float, friction) = 0.2;
+    PROP(
+         float, friction,
+         .label("Amount")
+         .min(0)
+         ) = 0.2;
   } props;
 };
 

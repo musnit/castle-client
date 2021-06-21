@@ -8,9 +8,22 @@
 
 struct AnalogStickComponent : BaseComponent {
   struct Props {
-    PROP(float, speed) = 6;
-    PROP(float, turnFriction) = 3;
-    PROP(std::string, axes) = "x and y";
+    PROP(
+         float, speed,
+         .label("Speed")
+         .min(-50)
+         .max(50)
+         ) = 6;
+    PROP(
+         float, turnFriction,
+         .label("Turn friction")
+         .min(0)
+         .max(10)
+         ) = 3;
+    PROP(
+         std::string, axes,
+         .allowedValues("x and y", "x", "y")
+         ) = "x and y";
   } props;
 };
 

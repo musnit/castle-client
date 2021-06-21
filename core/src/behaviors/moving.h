@@ -8,10 +8,14 @@
 
 struct MovingComponent : BaseComponent {
   struct Props {
-    PROP(float, vx) = 0;
-    PROP(float, vy) = 0;
-    PROP(float, angularVelocity) = 0;
-    PROP(float, density) = 1;
+    PROP(float, vx, .label("Velocity X")) = 0;
+    PROP(float, vy, .label("Velocity Y")) = 0;
+    PROP(float, angularVelocity, .label("Rotation speed (degrees)")) = 0;
+    PROP(
+         float, density,
+         .label("Density")
+         .min(0.1)
+         ) = 1;
   } props;
 
   // Tracking for motion triggers. These values are only updated when the relevant triggers are

@@ -8,7 +8,7 @@
 
 struct FallingComponent : BaseComponent {
   struct Props {
-    PROP(float, gravity) = 1;
+    PROP(float, gravity, .label("Strength")) = 1;
   } props;
 };
 

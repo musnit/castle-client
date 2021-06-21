@@ -49,7 +49,10 @@ using TagVector = SmallVector<Tag, 4>; // For storing multiple tags
 
 struct TagsComponent : BaseComponent {
   struct Props {
-    PROP(std::string, tagsString); // Single string of all tags separated by whitespace
+    PROP(
+         std::string, tagsString,
+         .label("tags")
+         ); // Single string of all tags separated by whitespace
   } props;
 
   TagVector tags;
