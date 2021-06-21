@@ -79,6 +79,18 @@ struct Prop {
     return value;
   }
 
+  std::string getType() {
+    std::string rawType = typeid(Value).name();
+    if (rawType.find("vector") != std::string::npos) {
+      // TODO: something better here with underlying type
+      return "vector";
+    }
+    if (rawType.find("string") != std::string::npos) {
+      return "string";
+    }
+    return rawType;
+  }
+
   static constexpr std::string_view name = Internal::name;
   static constexpr uint32_t nameHash = entt::hashed_string(name.data()).value();
   static constexpr const PropAttribs &attribs = Internal::attribs;

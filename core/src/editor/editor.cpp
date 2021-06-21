@@ -88,12 +88,16 @@ struct EditorGlobalActionReceiver {
 
 struct EditorAllBehaviorsEvent {
   struct Behavior {
+    struct PropertySpec {
+      PROP(std::string, name);
+      PROP(std::string, type);
+    };
+    
     PROP(int, behaviorId);
     PROP(std::string, name);
     PROP(std::string, displayName);
     PROP(bool, isActive) = false;
-    // TODO: PROP(std::vector<std::string>, dependencies);
-    // TODO: propertySpecs
+    PROP(std::vector<PropertySpec>, propertySpecs);
   };
   PROP(std::vector<Behavior>, behaviors);
 };
@@ -110,13 +114,25 @@ void Editor::maybeSendData() {
   if (isAllBehaviorsStateDirty) {
     EditorAllBehaviorsEvent ev;
     scene->getBehaviors().forEach([&](auto &behavior) {
+      using BehaviorType = std::remove_reference_t<decltype(behavior)>;
       EditorAllBehaviorsEvent::Behavior elem;
-      elem.behaviorId = std::remove_reference_t<decltype(behavior)>::behaviorId;
-      elem.name = std::remove_reference_t<decltype(behavior)>::name;
-      elem.displayName = std::remove_reference_t<decltype(behavior)>::displayName;
+      elem.behaviorId = BehaviorType::behaviorId;
+      elem.name = BehaviorType::name;
+      elem.displayName = BehaviorType::displayName;
       if (selection.hasSelection()) {
         elem.isActive = behavior.hasComponent(selection.firstSelectedActorId());
       }
+
+      static typename BehaviorType::ComponentType emptyComponent;
+      Props::forEach(emptyComponent.props, [&](auto &prop) {
+        using Prop = std::remove_reference_t<decltype(prop)>;
+        EditorAllBehaviorsEvent::Behavior::PropertySpec spec;
+        spec.name = Prop::name;
+        spec.type = prop.getType();
+
+        elem.propertySpecs().push_back(spec);
+      });
+
       ev.behaviors().push_back(elem);
     });
     bridge.sendEvent("EDITOR_ALL_BEHAVIORS", ev);

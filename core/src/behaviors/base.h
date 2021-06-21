@@ -25,6 +25,7 @@ struct BaseComponent {
   BaseComponent(BaseComponent &&) = default; // Allow moves
   BaseComponent &operator=(BaseComponent &&) = default;
 
+  BaseComponent() {}
   bool disabled = true;
 };
 
@@ -49,6 +50,7 @@ public:
 
 
   // Component management
+  using ComponentType = Component;
 
   Component &addComponent(ActorId actorId); // Does nothing if already present
   void removeComponent(ActorId actorId); // Does nothing if not present
