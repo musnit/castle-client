@@ -25,6 +25,15 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
   },
+  swatchSelected: {
+    width: 36,
+    height: 36,
+    borderWidth: 2,
+    borderColor: '#fff',
+    margin: -2,
+    zIndex: 2,
+    borderRadius: 4,
+  },
 });
 
 const colors = [
@@ -90,7 +99,7 @@ const colors = [
   '#423934',
 ];
 
-const ColorPicker64Popover = ({ setValueFromStr, closePopover }) => {
+const ColorPicker64Popover = ({ valueHex, setValueFromStr, closePopover }) => {
   var swatches = [];
   for (let i = 0; i < colors.length; i++) {
     swatches.push(
@@ -100,7 +109,11 @@ const ColorPicker64Popover = ({ setValueFromStr, closePopover }) => {
           setValueFromStr(colors[i]);
           closePopover();
         }}
-        style={[styles.swatch, { backgroundColor: colors[i] }]}></TouchableOpacity>
+        style={[
+          styles.swatch,
+          { backgroundColor: colors[i] },
+          colors[i] == valueHex ? styles.swatchSelected : null,
+        ]}></TouchableOpacity>
     );
   }
 
@@ -108,12 +121,13 @@ const ColorPicker64Popover = ({ setValueFromStr, closePopover }) => {
 };
 
 const ColorPicker = ({ value, setValue }) => {
-  let valueStr;
+  let valueStr, valueHex;
   if (value) {
     const r255 = 255 * value.r;
     const g255 = 255 * value.g;
     const b255 = 255 * value.b;
     valueStr = `rgb(${r255}, ${g255}, ${b255})`;
+    valueHex = '#' + tinycolor(valueStr).toHex();
   }
 
   const setValueFromStr = (newValueStr) => {
@@ -123,7 +137,7 @@ const ColorPicker = ({ value, setValue }) => {
 
   const popover = {
     Component: ColorPicker64Popover,
-    valueStr,
+    valueHex,
     setValueFromStr,
     width: 330,
     height: 204,
