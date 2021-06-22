@@ -1,8 +1,17 @@
 import React from 'react';
 import { NativeEventEmitter, NativeModules } from 'react-native';
+import CoreStateTransform from './CoreStateTransform';
 
 const listenerLists = {}; // `eventName` -> `listenerId` -> `handler`
 let nextListenerId = 1;
+
+// maintain a cache of event data
+// so that a component can mount later and get the most recent data for its subscription
+const CORE_STATE_PREFIX = 'EDITOR_';
+let coreStateCache = {};
+const setCoreStateCache = (eventName, data) => (coreStateCache[eventName] = data);
+const getCoreStateCache = (eventName) => coreStateCache[eventName];
+const clearCoreStateCache = () => (coreStateCache = {});
 
 export async function sendAsync(name, params) {
   const event = { name, params };
@@ -14,8 +23,15 @@ const eventEmitter = new NativeEventEmitter(NativeModules.CastleCoreBridge);
 eventEmitter.addListener('onReceiveEvent', (eventJson) => {
   const { name, params } = JSON.parse(eventJson);
   const listenerList = listenerLists[name];
+  let data = params;
+  if (name.startsWith(CORE_STATE_PREFIX)) {
+    if (CoreStateTransform[name]) {
+      data = CoreStateTransform[name](params);
+    }
+    setCoreStateCache(name, data);
+  }
   if (listenerList) {
-    Object.values(listenerList).forEach((handler) => handler(params));
+    Object.values(listenerList).forEach((handler) => handler(data));
   }
 });
 
@@ -37,13 +53,6 @@ export const listen = (name, handler) => {
 };
 
 const CoreEventsContext = React.createContext({});
-
-// maintain a cache of event data
-// so that a component can mount later and get the most recent data for its subscription
-let coreStateCache = {};
-const setCoreStateCache = (eventName, data) => (coreStateCache[eventName] = data);
-const getCoreStateCache = (eventName) => coreStateCache[eventName];
-const clearCoreStateCache = () => (coreStateCache = {});
 
 // maintain `eventsReady` state, and mark this as true only when the engine component mounts
 export const Provider = (props) => {
@@ -110,7 +119,6 @@ export const useCoreState = (eventName) => {
   useListen({
     eventName,
     handler: (data) => {
-      setCoreStateCache(eventName, data);
       return setData(data);
     },
   });
