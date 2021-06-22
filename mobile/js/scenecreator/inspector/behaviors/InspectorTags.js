@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { InspectorTagPicker } from '../components/InspectorTagPicker';
 import { useCardCreator } from '../../CreateCardContext';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
+import { useCoreState, sendBehaviorAction } from '../../../core/CoreEvents';
 
 const styles = StyleSheet.create({
   container: {
@@ -18,10 +19,15 @@ const styles = StyleSheet.create({
   },
 });
 
-export default InspectorTags = ({ tags, sendAction }) => {
+export default InspectorTags = ({ tags }) => {
+  const tagsComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Tags');
+  const sendAction = React.useCallback((...args) => sendBehaviorAction('Tags', ...args), [
+    sendBehaviorAction,
+  ]);
+
   const context = useCardCreator();
   const [value, setValueAndSendAction] = useOptimisticBehaviorValue({
-    behavior: tags,
+    behavior: tagsComponent,
     propName: 'tagsString',
     sendAction,
   });

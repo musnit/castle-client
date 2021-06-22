@@ -6,6 +6,7 @@ import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 import { SaveBlueprintButton } from '../components/SaveBlueprintButton';
 import { useCardCreator } from '../../CreateCardContext';
+import { useCoreState, sendBehaviorAction } from '../../../core/CoreEvents';
 
 const styles = StyleSheet.create({
   container: {
@@ -44,10 +45,10 @@ const styles = StyleSheet.create({
   },
 });
 
-const LayoutInput = ({ behavior, propName, label, sendAction, type = 'number' }) => {
+const LayoutInput = ({ behavior, component, propName, label, sendAction, type = 'number' }) => {
   const [lastNativeUpdate, setLastNativeUpdate] = React.useState(0);
   const [value, sendValue] = useOptimisticBehaviorValue({
-    behavior,
+    component,
     propName,
     sendAction,
     onNativeUpdate: () => setLastNativeUpdate(lastNativeUpdate + 1),
@@ -83,25 +84,19 @@ const LayoutInput = ({ behavior, propName, label, sendAction, type = 'number' })
   );
 };
 
-export default InspectorLayout = ({ body, circleShape, sendAction, sendActions }) => {
+export default InspectorLayout = ({ body }) => {
+  const component = useCoreState('EDITOR_SELECTED_COMPONENT:Body');
+  const sendAction = React.useCallback((...args) => sendBehaviorAction('Text', ...args), [
+    sendBehaviorAction,
+  ]);
+
   const { inspectorActions, isTextActorSelected } = useCardCreator();
   const hasBlueprint = (inspectorActions && inspectorActions.hasBlueprint) || false;
 
-  const onChangeCircleShape = React.useCallback(
-    (value) => {
-      if (value) {
-        return sendActions.CircleShape('add');
-      } else {
-        return sendActions.CircleShape('remove');
-      }
-    },
-    [sendActions.circleShape]
-  );
-
   const [visible, setVisibleAction] = useOptimisticBehaviorValue({
-    behavior: body,
+    behavior: component,
     propName: 'visible',
-    sendAction: sendActions.Body,
+    sendAction: sendAction,
   });
   const onChangeVisible = React.useCallback(
     (visible) => {
@@ -111,9 +106,9 @@ export default InspectorLayout = ({ body, circleShape, sendAction, sendActions }
   );
 
   const [relative, setRelativeAction] = useOptimisticBehaviorValue({
-    behavior: body,
+    behavior: component,
     propName: 'relativeToCamera',
-    sendAction: sendActions.Body,
+    sendAction: sendAction,
   });
   const onChangeRelative = React.useCallback(
     (relative) => {
@@ -126,46 +121,42 @@ export default InspectorLayout = ({ body, circleShape, sendAction, sendActions }
     <View style={styles.container}>
       <Text style={styles.label}>Layout</Text>
       <View style={styles.properties}>
-        {circleShape?.isActive ? (
+        <React.Fragment>
           <LayoutInput
-            behavior={circleShape}
-            propName="radius"
-            label="Radius"
-            sendAction={sendActions.CircleShape}
+            behavior={body}
+            component={component}
+            propName="widthScale"
+            label="Width Scale"
+            sendAction={sendAction}
           />
-        ) : (
-          <React.Fragment>
-            <LayoutInput
-              behavior={body}
-              propName="widthScale"
-              label="Width Scale"
-              sendAction={sendActions.Body}
-            />
-            <LayoutInput
-              behavior={body}
-              propName="heightScale"
-              label="Height Scale"
-              sendAction={sendActions.Body}
-            />
-          </React.Fragment>
-        )}
+          <LayoutInput
+            behavior={body}
+            component={component}
+            propName="heightScale"
+            label="Height Scale"
+            sendAction={sendAction}
+          />
+        </React.Fragment>
         <LayoutInput
           behavior={body}
+          component={component}
           propName="x"
           label="X Position"
-          sendAction={sendActions.Body}
+          sendAction={sendAction}
         />
         <LayoutInput
           behavior={body}
+          component={component}
           propName="y"
           label="Y Position"
-          sendAction={sendActions.Body}
+          sendAction={sendAction}
         />
         <LayoutInput
           behavior={body}
+          component={component}
           propName="angle"
           label="Rotation"
-          sendAction={sendActions.Body}
+          sendAction={sendAction}
         />
       </View>
       {hasBlueprint && (

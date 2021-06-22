@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { AddBehaviorSheet } from './components/AddBehaviorSheet';
 import { useCardCreator } from '../CreateCardContext';
+import { useCoreState } from '../../core/CoreEvents';
 import { SaveBlueprintSheet } from './components/SaveBlueprintSheet';
 
 import * as SceneCreatorConstants from '../SceneCreatorConstants';
@@ -32,7 +33,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const GeneralTab = ({ behaviors, sendActions, addChildSheet }) => {
+const GeneralTab = ({ behaviors, addChildSheet }) => {
   const { inspectorActions, isTextActorSelected } = useCardCreator();
   const hasBlueprint = (inspectorActions && inspectorActions.hasBlueprint) || false;
   return (
@@ -53,22 +54,14 @@ const GeneralTab = ({ behaviors, sendActions, addChildSheet }) => {
       )}
       {isTextActorSelected && (
         <React.Fragment>
-          <Inspector.TextContent text={behaviors.Text} sendAction={sendActions.Text} />
-          <Inspector.TextLayout text={behaviors.Text} sendAction={sendActions.Text} />
+          <Inspector.TextContent />
+          <Inspector.TextLayout />
         </React.Fragment>
       )}
-      {!isTextActorSelected && (
-        <Inspector.Drawing drawing2={behaviors.Drawing2} sendAction={sendActions.Drawing2} />
-      )}
-      <Inspector.Tags tags={behaviors.Tags} sendAction={sendActions.Tags} />
+      {false && !isTextActorSelected && <Inspector.Drawing drawing2={behaviors.Drawing2} />}
+      <Inspector.Tags tags={behaviors.Tags} />
 
-      {!isTextActorSelected && (
-        <Inspector.Layout
-          body={behaviors.Body}
-          circleShape={behaviors.CircleShape}
-          sendActions={sendActions}
-        />
-      )}
+      {!isTextActorSelected && <Inspector.Layout body={behaviors.Body} />}
     </React.Fragment>
   );
 };
@@ -143,7 +136,7 @@ const MovementTab = ({ behaviors, sendActions, addChildSheet }) => {
 };
 
 export const InspectorTabs = ({ selectedTab, addChildSheet }) => {
-  const { behaviors, behaviorActions: sendActions } = useCardCreator();
+  const behaviors = useCoreState('EDITOR_ALL_BEHAVIORS');
 
   if (!behaviors) {
     return <View />;
@@ -152,30 +145,16 @@ export const InspectorTabs = ({ selectedTab, addChildSheet }) => {
   let tabContents;
   switch (selectedTab) {
     case 'rules': {
-      tabContents = (
-        <Inspector.Rules
-          behaviors={behaviors}
-          sendActions={sendActions}
-          addChildSheet={addChildSheet}
-        />
-      );
+      tabContents = <Inspector.Rules behaviors={behaviors} addChildSheet={addChildSheet} />;
       break;
     }
     case 'movement': {
-      tabContents = (
-        <MovementTab
-          sendActions={sendActions}
-          behaviors={behaviors}
-          addChildSheet={addChildSheet}
-        />
-      );
+      tabContents = <MovementTab behaviors={behaviors} addChildSheet={addChildSheet} />;
       break;
     }
     case 'general':
     default: {
-      tabContents = (
-        <GeneralTab sendActions={sendActions} behaviors={behaviors} addChildSheet={addChildSheet} />
-      );
+      tabContents = <GeneralTab behaviors={behaviors} addChildSheet={addChildSheet} />;
     }
   }
 

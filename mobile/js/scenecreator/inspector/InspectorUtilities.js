@@ -51,7 +51,7 @@ export const useOptimisticBehaviorValue = ({ behavior, propName, sendAction, onN
   const [value, setValue] = React.useState(null);
   const [lastSentEventId, setLastSentEventId] = React.useState(null);
 
-  const luaValue = behavior?.properties[propName];
+  const luaValue = behavior?.props[propName];
   if (behavior && value !== luaValue) {
     if (lastSentEventId === null || behavior.lastReportedEventId === lastSentEventId) {
       setValue(luaValue);

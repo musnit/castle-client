@@ -26,8 +26,6 @@ import { PopoverProvider } from '../components/PopoverProvider';
 import { SheetProvider } from './SheetProvider';
 
 import {
-  getInspectorBehaviors,
-  getTextActorsData,
   getActiveTool,
   getInspectorTags,
   getInspectorActions,
@@ -97,6 +95,19 @@ const getExpressions = (root) => {
   return expressions;
 };
 
+// TODO: consolidate with PlayDeck
+const useCoreTextActors = () => {
+  const [textActors, setTextActors] = React.useState([]);
+  useListen({
+    eventName: 'TEXT_ACTORS_DATA',
+    handler: ({ data }) => {
+      const { textActors } = JSON.parse(data);
+      setTextActors(textActors);
+    },
+  });
+  return textActors;
+};
+
 export const CreateCardScreen = ({
   card,
   deck,
@@ -129,12 +140,12 @@ export const CreateCardScreen = ({
   const isPlaying =
     globalActions?.performing === undefined ? !initialIsEditing : globalActions.performing;
   const selectedActorId = globalActions?.selectedActorId;
+  const isTextActorSelected = globalActions?.isTextActorSelected;
   const hasSelection = selectedActorId !== undefined && activeSheet !== 'capturePreview';
-  const { behaviors, behaviorActions } = getInspectorBehaviors(root);
   const inspectorActions = getInspectorActions(root);
   const { activeToolData, activeToolAction } = getActiveTool(root);
-  const { textActors, isTextActorSelected } = getTextActorsData(root, isPlaying);
-  const { tagToActorIds } = getInspectorTags(behaviors?.Tags);
+  const textActors = useCoreTextActors();
+  // TODO: const { tagToActorIds } = getInspectorTags(behaviors?.Tags);
   const rules = getInspectorRules(root);
 
   // lua's behaviors can be "tools"
@@ -313,15 +324,17 @@ export const CreateCardScreen = ({
     textActors &&
     Object.keys(textActors).length;
 
+  // TODO: reduce this to only the following--
+  // - top level screen props (deck, card)
+  // - things from globalActions
   const contextValue = {
     deck,
     card,
+    isSceneLoaded,
     isPlaying,
     selectedActorId,
     hasSelection,
     isTextActorSelected,
-    behaviors,
-    behaviorActions,
     rules,
     library: getLibraryEntries(root),
     expressions: getExpressions(root),
@@ -331,7 +344,6 @@ export const CreateCardScreen = ({
     setShowingTextActors,
     variables: card.variables,
     onVariablesChange,
-    tagToActorIds,
     activeToolData,
     activeToolAction,
     saveAction,

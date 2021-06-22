@@ -2,8 +2,10 @@ import * as React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useCardCreator } from '../../CreateCardContext';
+import { useCoreState, sendBehaviorAction } from '../../../core/CoreEvents';
 import { BehaviorPropertyInputRow } from '../components/BehaviorPropertyInputRow';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
+
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -162,18 +164,23 @@ const EditArtButton = () => {
   );
 };
 
-export default InspectorDrawing = ({ drawing2, sendAction }) => {
+export default InspectorDrawing = ({ drawing2 }) => {
+  const component = useCoreState('EDITOR_SELECTED_COMPONENT:Drawing2');
+  const sendAction = React.useCallback((...args) => sendBehaviorAction('Drawing2', ...args), [
+    sendBehaviorAction,
+  ]);
+
   const { sendInspectorAction, applicableTools } = useCardCreator();
   const draw2Behavior = applicableTools.find((behavior) => behavior.name === 'Draw2');
 
   const [playMode, playModeSetValueAndSendAction] = useOptimisticBehaviorValue({
-    behavior: drawing2,
+    behavior: component,
     propName: 'playMode',
     sendAction,
   });
 
   const [initialFrame, initialFrameSetValueAndSendAction] = useOptimisticBehaviorValue({
-    behavior: drawing2,
+    behavior: component,
     propName: 'initialFrame',
     sendAction,
   });
@@ -214,8 +221,8 @@ export default InspectorDrawing = ({ drawing2, sendAction }) => {
 
   let frames = [];
 
-  if (drawing2?.properties?.base64PngFrames) {
-    for (let i = 0; i < drawing2.properties.base64PngFrames.numFrames; i++) {
+  if (component?.properties?.base64PngFrames) {
+    for (let i = 0; i < component.properties.base64PngFrames.numFrames; i++) {
       let isInitialFrame = initialFrame == i + 1;
 
       frames.push(
@@ -236,7 +243,7 @@ export default InspectorDrawing = ({ drawing2, sendAction }) => {
             <FastImage
               style={styles.image}
               source={{
-                uri: `data:image/png;base64,${drawing2.properties.base64PngFrames['frame' + i]}`,
+                uri: `data:image/png;base64,${component.properties.base64PngFrames['frame' + i]}`,
               }}
             />
 
@@ -299,6 +306,7 @@ export default InspectorDrawing = ({ drawing2, sendAction }) => {
 
       <BehaviorPropertyInputRow
         behavior={drawing2}
+        component={component}
         propName="framesPerSecond"
         label="Frames per second"
         sendAction={sendAction}

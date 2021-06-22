@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useCardCreator } from '../CreateCardContext';
-import { useGhostUI } from '../../ghost/GhostUI';
 import { CardCreatorBottomSheet } from '../sheets/CardCreatorBottomSheet';
 import { InspectorHeader } from './InspectorHeader';
 import { InspectorTabs } from './InspectorTabs';
@@ -24,8 +23,7 @@ const TAB_ITEMS = [
 ];
 
 export const InspectorSheet = ({ isOpen, addChildSheet, beltHeight }) => {
-  const { root } = useGhostUI();
-  const { isTextActorSelected } = useCardCreator();
+  const { isSceneLoaded, isTextActorSelected } = useCardCreator();
 
   const [selectedTab, setSelectedTab] = React.useState(TAB_ITEMS[0].value);
   const scrollViewRef = React.useRef(null);
@@ -54,7 +52,7 @@ export const InspectorSheet = ({ isOpen, addChildSheet, beltHeight }) => {
     setSelectedTab(TAB_ITEMS[0].value);
   }, [isTextActorSelected]);
 
-  if (root?.panes) {
+  if (isSceneLoaded) {
     const tabItems = TAB_ITEMS.filter((tab) => {
       // hide 'Movement' for text actors
       return !(isTextActorSelected && tab.value === 'movement');

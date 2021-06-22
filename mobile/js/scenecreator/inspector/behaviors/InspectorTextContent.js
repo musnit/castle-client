@@ -2,6 +2,7 @@ import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 import { InspectorTextInput } from '../components/InspectorTextInput';
+import { useCoreState, sendBehaviorAction } from '../../../core/CoreEvents';
 
 const styles = StyleSheet.create({
   container: {
@@ -16,9 +17,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export default InspectorTextContent = ({ text, sendAction }) => {
+export default InspectorTextContent = () => {
+  const textComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Text');
+  const sendAction = React.useCallback((...args) => sendBehaviorAction('Text', ...args), [
+    sendBehaviorAction,
+  ]);
+
   const [value, setValueAndSendAction] = useOptimisticBehaviorValue({
-    behavior: text,
+    behavior: textComponent,
     propName: 'content',
     sendAction,
   });

@@ -29,29 +29,6 @@ export const readableOperator = (o) => {
   return READABLE_OPERATORS[o] ?? o;
 };
 
-export const getInspectorBehaviors = (root) => {
-  if (!root || !root.panes || !root.panes['sceneCreatorInspector']) return {};
-  const element = root.panes['sceneCreatorInspector'];
-
-  let behaviors, sendActions;
-  if (element.children.count) {
-    behaviors = {};
-    sendActions = {};
-    Object.entries(element.children).forEach(([key, child]) => {
-      if (child.type === 'data') {
-        const data = child.props.data;
-        behaviors[data.name] = data;
-        behaviors[data.name].lastReportedEventId = child.lastReportedEventId;
-        sendActions[data.name] = (action, value) => sendDataPaneAction(element, action, value, key);
-      }
-    });
-  }
-  return {
-    behaviors,
-    behaviorActions: sendActions,
-  };
-};
-
 export const getInspectorTags = (tags) => ({ tagToActorIds: tags?.properties.tagToActorIds });
 
 export const getActiveTool = (root) => {
@@ -82,19 +59,6 @@ export const getActiveTool = (root) => {
   }
 
   return { activeToolData: null, activeToolActions: null };
-};
-
-export const getTextActorsData = (root, isPlaying) => {
-  let textActors, isTextActorSelected;
-  if (root && root.panes) {
-    const data = getPaneData(root.panes['sceneCreatorTextActors']);
-    if (data) {
-      textActors = data.textActors;
-      isTextActorSelected =
-        !isPlaying && Object.entries(textActors).some(([_, actor]) => actor.isSelected);
-    }
-  }
-  return { textActors, isTextActorSelected };
 };
 
 export const getInspectorActions = (root) => {
