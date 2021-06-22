@@ -91,7 +91,7 @@ export const BehaviorPropertyExpression = ({
               style={[SceneCreatorConstants.styles.button, styles.cell]}
               onPress={onChooseBehavior}>
               <Text style={[SceneCreatorConstants.styles.buttonLabel, { fontWeight: 'normal' }]}>
-                {selectedBehavior.propertySpecs[value.params.propertyName].label}
+                {selectedBehavior.propertySpecs[value.params.propertyName].attribs.label}
               </Text>
             </TouchableOpacity>
           </React.Fragment>

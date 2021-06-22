@@ -71,11 +71,11 @@ export const BehaviorPropertyRule = ({
   let propertySpec = behavior.propertySpecs[propertyName];
 
   // don't enforce absolute min/max when choosing a relative value
-  if (response.name === 'change behavior property' && propertySpec.props) {
+  if (response.name === 'change behavior property' && propertySpec.attribs) {
     propertySpec = {
       ...propertySpec,
-      props: {
-        ...propertySpec.props,
+      attribs: {
+        ...propertySpec.attribs,
         min: undefined,
         max: undefined,
       },
@@ -85,7 +85,7 @@ export const BehaviorPropertyRule = ({
   const onConfigureExpression = () => {
     addChildSheet({
       key: 'configureExpression',
-      label: propertySpec.label,
+      label: propertySpec.attribs.label,
       Component: ConfigureExpressionSheet,
       value: response.params.value,
       onChange,
@@ -100,7 +100,7 @@ export const BehaviorPropertyRule = ({
       {children}
       <View style={styles.inputRow}>
         <RuleParamInputRow
-          label={propertySpec.label}
+          label={propertySpec.attribs.label}
           paramSpec={propertySpec}
           value={response.params.value}
           setValue={onChange}

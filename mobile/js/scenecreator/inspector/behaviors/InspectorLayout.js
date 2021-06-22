@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
 const LayoutInput = ({ behavior, component, propName, label, sendAction, type = 'number' }) => {
   const [lastNativeUpdate, setLastNativeUpdate] = React.useState(0);
   const [value, sendValue] = useOptimisticBehaviorValue({
-    component,
+    behavior: component,
     propName,
     sendAction,
     onNativeUpdate: () => setLastNativeUpdate(lastNativeUpdate + 1),
@@ -71,13 +71,13 @@ const LayoutInput = ({ behavior, component, propName, label, sendAction, type = 
           value={value}
           lastNativeUpdate={lastNativeUpdate}
           onChange={onChange}
-          {...behavior.propertySpecs[propName].props}
+          {...behavior.propertySpecs[propName].attribs}
         />
       ) : (
         <InspectorCheckbox
           value={value}
           onChange={onChange}
-          {...behavior.propertySpecs[propName].props}
+          {...behavior.propertySpecs[propName].attribs}
         />
       )}
     </View>

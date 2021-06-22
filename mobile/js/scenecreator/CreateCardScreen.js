@@ -141,7 +141,7 @@ export const CreateCardScreen = ({
     globalActions?.performing === undefined ? !initialIsEditing : globalActions.performing;
   const selectedActorId = globalActions?.selectedActorId;
   const isTextActorSelected = globalActions?.isTextActorSelected;
-  const hasSelection = selectedActorId !== undefined && activeSheet !== 'capturePreview';
+  const hasSelection = selectedActorId >= 0 && activeSheet !== 'capturePreview';
   const inspectorActions = getInspectorActions(root);
   const { activeToolData, activeToolAction } = getActiveTool(root);
   const textActors = useCoreTextActors();

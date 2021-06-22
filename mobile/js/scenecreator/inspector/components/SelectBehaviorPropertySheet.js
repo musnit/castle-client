@@ -74,7 +74,7 @@ export const SelectBehaviorPropertySheet = ({
                   return isPropertyVisible(property) ? (
                     <Property
                       key={`behavior-property-${ii}`}
-                      name={property.label}
+                      name={property.attribs.label}
                       isFirst={index++ == 0}
                       onSelect={() => onSelect(behavior.behaviorId, propertyName)}
                     />

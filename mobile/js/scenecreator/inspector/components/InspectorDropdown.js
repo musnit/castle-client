@@ -123,8 +123,8 @@ export const DropdownItemsList = ({
 
 export const InspectorDropdown = ({ value, onChange, style, ...props }) => {
   let items;
-  if (props?.items) {
-    items = objectToArray(props.items ?? []).map((item) => ({ id: item, name: item }));
+  if (props?.allowedValues) {
+    items = objectToArray(props.allowedValues ?? []).map((item) => ({ id: item, name: item }));
   } else if (props?.labeledItems) {
     items = props.labeledItems;
   }

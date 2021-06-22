@@ -256,7 +256,7 @@ export const makeExpressionSummary = (expression, context, depth = 0) => {
       }
       if (selectedBehavior && selectedProperty) {
         const actorRef = makeActorRefSummary(expression.params.actorRef);
-        return `${actorRef}: ${selectedBehavior.displayName}: ${selectedProperty.label}`;
+        return `${actorRef}: ${selectedBehavior.displayName}: ${selectedProperty.attribs.label}`;
       }
     }
     case 'actor distance': {

@@ -55,7 +55,7 @@ export const BehaviorPropertyInputRow = ({
           lastNativeUpdate={lastNativeUpdate}
           value={displayValue(value)}
           onChange={onChange}
-          {...propertySpec.props}
+          {...propertySpec.attribs}
           {...props}
         />
       );
@@ -66,7 +66,7 @@ export const BehaviorPropertyInputRow = ({
           lastNativeUpdate={lastNativeUpdate}
           value={displayValue(value)}
           onChange={onChange}
-          {...propertySpec.props}
+          {...propertySpec.attribs}
           {...props}
         />
       );
@@ -77,7 +77,7 @@ export const BehaviorPropertyInputRow = ({
           lastNativeUpdate={lastNativeUpdate}
           value={value}
           onChange={onChange}
-          {...propertySpec.props}
+          {...propertySpec.attribs}
           {...props}
         />
       );

@@ -550,7 +550,7 @@ const SetBehavior = ({ response, context }) => {
       behaviorName = behavior.displayName;
       if (response.params?.propertyName) {
         let spec = behavior.propertySpecs[response.params.propertyName];
-        propertyName = spec.label ?? response.params.propertyName;
+        propertyName = spec.attribs.label ?? response.params.propertyName;
       }
     }
   }
