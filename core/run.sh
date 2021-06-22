@@ -140,6 +140,18 @@ case "$1" in
       binaries/ios
     ;;
 
+  # iOS Sim
+  ios-simulator-release)
+    $CMAKE -DIOS=ON -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_APPLE_ARCH_SYSROOTS="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/;/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/" -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" -H. -Bbuild/ios -GXcode
+    $CMAKE --build build/ios --config Release -- -sdk iphonesimulator
+    cp \
+      build/ios/Release-iphonesimulator/libsoloud.a \
+      build/ios/Release-iphonesimulator/libcastle-core.a \
+      build/ios/vendor/fmt/Release-iphonesimulator/libfmt.a \
+      build/ios/vendor/box2d/bin/Release/libbox2d.a \
+      binaries/ios
+    ;;
+
   # Web
   web-init)
     case $PLATFORM in
