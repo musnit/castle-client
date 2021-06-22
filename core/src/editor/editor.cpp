@@ -71,6 +71,7 @@ void Editor::draw() {
 struct EditorGlobalActionsEvent {
   PROP(bool, performing) = false;
   PROP(int, selectedActorId) = -1;
+  PROP(bool, isTextActorSelected) = false;
 
   struct ActionsAvailable {
     PROP(bool, onPlay) = true;
@@ -100,6 +101,11 @@ void Editor::sendGlobalActions() {
   EditorGlobalActionsEvent ev;
   if (selection.hasSelection()) {
     ev.selectedActorId = entt::to_integral(selection.firstSelectedActorId());
+    scene->getBehaviors().byName("Text", [&](auto &behavior) {
+      if (behavior.hasComponent(selection.firstSelectedActorId())) {
+        ev.isTextActorSelected = true;
+      }
+    });
   }
   bridge.sendEvent("EDITOR_GLOBAL_ACTIONS", ev);
 };
