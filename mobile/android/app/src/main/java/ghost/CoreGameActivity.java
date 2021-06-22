@@ -29,6 +29,11 @@ public class CoreGameActivity extends SDLActivity {
         };
     }
 
+    public static String deckId = "";
+
+    public static String getDeckId() {
+        return deckId;
+    }
 
     public static double ghostScreenScaling = 1;
 

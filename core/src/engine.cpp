@@ -26,6 +26,28 @@ JS_DEFINE(int, JS_isDebugEnabled, (),
 extern "C" double ghostScreenScaling; // Globally scales rendering and touch coordinates
 extern "C" bool ghostChildWindowCloseEventReceived; // Whether the OS tried to close the window
 
+//
+// Android bindings
+//
+
+#ifdef ANDROID
+#include <jni.h>
+
+double androidGetGhostScreenScaling() {
+  JNIEnv *env = (JNIEnv *)SDL_AndroidGetJNIEnv();
+  jclass activity = env->FindClass("ghost/CoreGameActivity");
+
+  jmethodID getGhostScreenScaling
+      = env->GetStaticMethodID(activity, "getGhostScreenScaling", "()D");
+  double screenScaling = (jdouble)env->CallStaticDoubleMethod(activity, getGhostScreenScaling);
+
+  env->DeleteLocalRef(activity);
+
+  return screenScaling;
+}
+
+#endif
+
 
 //
 // Pre-init
@@ -225,10 +247,7 @@ bool Engine::frame() {
     prevWindowHeight = h;
   }
 #elif __ANDROID__
-  {
-    // TODO: android
-    ghostScreenScaling = 1.0;
-  }
+  ghostScreenScaling = androidGetGhostScreenScaling();
 #else
   // Just set screen scaling based on window size in desktop
   {

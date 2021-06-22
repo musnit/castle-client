@@ -9,8 +9,6 @@ import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
-import org.love2d.android.GameActivity;
-
 import javax.annotation.Nullable;
 
 import xyz.castle.MainActivity;
@@ -31,18 +29,19 @@ public class GhostViewManager extends SimpleViewManager<ViewGroup> implements Li
     return MainActivity.recreateGameLayout(reactContext);
   }
 
-  @ReactProp(name = "uri")
-  public void setUri(ViewGroup view, @Nullable String uri) {
+  @ReactProp(name = "deckId")
+  public void setDeckId(ViewGroup view, @Nullable String deckId) {
+    CoreGameActivity.deckId = deckId;
   }
 
   @ReactProp(name = "screenScaling")
   public void setScreenScaling(ViewGroup view, double screenScaling) {
-    GameActivity.ghostScreenScaling = screenScaling;
+    CoreGameActivity.ghostScreenScaling = screenScaling;
   }
 
   @ReactProp(name = "applyScreenScaling")
   public void setScreenScaling(ViewGroup view, boolean applyScreenScaling) {
-    GameActivity.ghostApplyScreenScaling = applyScreenScaling;
+    CoreGameActivity.ghostApplyScreenScaling = applyScreenScaling;
   }
 
   @ReactProp(name = "paused")

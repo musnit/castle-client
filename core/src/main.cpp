@@ -20,11 +20,39 @@ void loop(F &&frame) {
 }
 
 #ifdef ANDROID
+#include <jni.h>
+
+std::string androidGetDeckId() {
+  JNIEnv *env = (JNIEnv *)SDL_AndroidGetJNIEnv();
+  jclass activity = env->FindClass("ghost/CoreGameActivity");
+
+  jmethodID methodHandle = env->GetStaticMethodID(activity, "getDeckId", "()Ljava/lang/String;");
+
+  jstring resultJString = (jstring)env->CallStaticObjectMethod(activity, methodHandle);
+  const char *utf = env->GetStringUTFChars(resultJString, 0);
+  std::string result;
+  if (utf) {
+    result = std::string(utf);
+    env->ReleaseStringUTFChars(resultJString, utf);
+  }
+
+  env->DeleteLocalRef(resultJString);
+  env->DeleteLocalRef(activity);
+
+  return result;
+}
+
 int SDL_main(int argc, char *argv[]) {
   Engine eng(false);
-  eng.loadSceneFromDeckId("ae5b8c7e-fd3a-4835-b972-fbf0bed2b81c");
+  std::string currentDeckId = "";
 
   loop([&]() {
+    std::string newDeckId = androidGetDeckId();
+    if (currentDeckId != newDeckId) {
+      currentDeckId = newDeckId;
+      eng.loadSceneFromDeckId(newDeckId.c_str());
+    }
+
     return eng.frame();
   });
   return 0;

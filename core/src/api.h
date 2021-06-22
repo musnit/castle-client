@@ -159,11 +159,12 @@ public:
       queryToPendingCallbacks.insert({ query, { callback } });
 
 #ifdef ANDROID
+      cacheLock.unlock();
       graphqlThread(query);
 #else
       std::thread { &API::graphqlThread, query }.detach();
-#endif
       cacheLock.unlock();
+#endif
     }
   }
 };
