@@ -280,6 +280,8 @@ private:
   json::Value write_(const std::string &s);
   json::Value write_(const PropId &propId);
   json::Value write_(const love::Colorf &c);
+  template<typename T>
+  json::Value write_(T *const p);
   template<typename T, size_t N>
   json::Value write_(const std::array<T, N> &a);
   template<typename T>
@@ -857,6 +859,15 @@ inline json::Value Writer::write_(const love::Colorf &c) {
   result.PushBack(json::Value(c.b), alloc);
   result.PushBack(json::Value(c.a), alloc);
   return result;
+}
+
+template<typename T>
+inline json::Value Writer::write_(T *const p) {
+  if (p) {
+    return write_((const T &)*p);
+  } else {
+    return json::Value(json::kNullType);
+  }
 }
 
 template<typename T, size_t N>

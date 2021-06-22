@@ -171,7 +171,7 @@ void Editor::sendAllBehaviors() {
 template<typename C>
 struct EditorSelectedComponentEvent {
   PROP(bool, isDisabled) = false;
-  typename C::Props &props;
+  PROP(typename C::Props *, props);
 };
 
 // send behavior property values for the selected actor's components
@@ -181,7 +181,7 @@ void Editor::sendSelectedComponent(int behaviorId) {
     auto component = behavior.maybeGetComponent(selection.firstSelectedActorId());
     if (component) {
       using ComponentType = std::remove_reference_t<decltype(*component)>;
-      EditorSelectedComponentEvent<ComponentType> ev { component->disabled, component->props };
+      EditorSelectedComponentEvent<ComponentType> ev { component->disabled, &component->props };
       std::string eventName = std::string("EDITOR_SELECTED_COMPONENT:") + BehaviorType::name;
       bridge.sendEvent(eventName.c_str(), ev);
     }
