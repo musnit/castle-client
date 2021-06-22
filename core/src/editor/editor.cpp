@@ -168,9 +168,10 @@ void Editor::sendAllBehaviors() {
    bridge.sendEvent("EDITOR_ALL_BEHAVIORS", ev);
 };
 
+template<typename C>
 struct EditorSelectedComponentEvent {
   PROP(bool, isDisabled) = false;
-  PROP(std::string, properties);
+  typename C::Props &props;
 };
 
 // send behavior property values for the selected actor's components
@@ -179,17 +180,8 @@ void Editor::sendSelectedComponent(int behaviorId) {
     using BehaviorType = std::remove_reference_t<decltype(behavior)>;
     auto component = behavior.maybeGetComponent(selection.firstSelectedActorId());
     if (component) {
-      EditorSelectedComponentEvent ev;
-      ev.isDisabled = component->disabled;
-
-      // TODO: maybe template the Event over this Component in order to embed props directly
-      Archive ar;
-      ar.write([&](Archive::Writer &writer) {
-        // writer.write(component->props);
-        writer.write((const decltype(component->props) &)component->props);
-      });
-      ev.properties = ar.toJson();
-
+      using ComponentType = std::remove_reference_t<decltype(*component)>;
+      EditorSelectedComponentEvent<ComponentType> ev { component->disabled, component->props };
       std::string eventName = std::string("EDITOR_SELECTED_COMPONENT:") + BehaviorType::name;
       bridge.sendEvent(eventName.c_str(), ev);
     }
