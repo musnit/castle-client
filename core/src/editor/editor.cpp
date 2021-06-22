@@ -113,14 +113,18 @@ void Editor::sendGlobalActions() {
 struct EditorAllBehaviorsEvent {
   struct Behavior {
     struct PropertySpec {
+      struct Attribs {
+        PROP(std::string, label);
+        PROP(float, min);
+        PROP(float, max);
+        PROP(bool, rulesGet);
+        PROP(bool, rulesSet);
+        PROP(std::vector<std::string>, allowedValues);
+      };
+
       PROP(std::string, name);
       PROP(std::string, type);
-      PROP(std::string, label);
-      PROP(float, min);
-      PROP(float, max);
-      PROP(bool, rulesGet);
-      PROP(bool, rulesSet);
-      PROP(std::vector<std::string>, allowedValues);
+      PROP(Attribs, attribs);
     };
     
     PROP(int, behaviorId);
@@ -152,17 +156,17 @@ void Editor::sendAllBehaviors() {
       EditorAllBehaviorsEvent::Behavior::PropertySpec spec;
       spec.name = Prop::name;
       spec.type = prop.getType();
-      spec.label = attribs.label_;
-      spec.min = attribs.min_;
-      spec.max = attribs.max_;
-      spec.rulesGet = attribs.rulesGet_;
-      spec.rulesSet = attribs.rulesSet_;
+      spec.attribs().label = attribs.label_;
+      spec.attribs().min = attribs.min_;
+      spec.attribs().max = attribs.max_;
+      spec.attribs().rulesGet = attribs.rulesGet_;
+      spec.attribs().rulesSet = attribs.rulesSet_;
       if (attribs.allowedValues_[0]) {
         for (auto &allowedValue : attribs.allowedValues_) {
           if (!allowedValue) {
             break;
           }
-          spec.allowedValues().push_back(allowedValue);
+          spec.attribs().allowedValues().push_back(allowedValue);
         }
       }
       
