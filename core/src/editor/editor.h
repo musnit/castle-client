@@ -25,6 +25,7 @@ public:
   Scene &getScene();
 
   Selection &getSelection();
+  void setSelectedComponentStateDirty(int behaviorId);
 
 private:
   Bridge &bridge;
@@ -61,3 +62,7 @@ inline Scene &Editor::getScene() {
 inline Selection &Editor::getSelection() {
   return selection;
 }
+
+inline void Editor::setSelectedComponentStateDirty(int behaviorId) {
+  selectedComponentStateDirty.insert(behaviorId);
+};

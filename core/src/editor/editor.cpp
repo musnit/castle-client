@@ -235,10 +235,14 @@ struct EditorModifyComponentReceiver {
     if (action == "set") {
       engine.getEditor().getScene().getBehaviors().byName(
           params.behaviorName().c_str(), [&](auto &behavior) {
+            using BehaviorType = std::remove_reference_t<decltype(behavior)>;
             auto actorId = engine.getEditor().getSelection().firstSelectedActorId();
             auto propId = Props::getId(params.propertyName().c_str());
             ExpressionValue value(params.value());
+
+            // TODO: undoable command
             behavior.setProperty(actorId, propId, value, false);
+            engine.getEditor().setSelectedComponentStateDirty(BehaviorType::behaviorId);
           });
     }
     // TODO: add, remove, enable, disable, swap
