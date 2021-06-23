@@ -31,8 +31,8 @@ case "$1" in
 
   # Format
   format)
-    $CLANG_FORMAT -i -style=file $(find src/ -type f)
-    $CLANG_FORMAT -i -style=file $(find ../love/src/modules/ghost/ -type f)
+    $CLANG_FORMAT --verbose -i -style=file $(find src/ -type f)
+    $CLANG_FORMAT --verbose -i -style=file $(find ../love/src/modules/ghost/ -type f)
     ;;
 
   # Format changed

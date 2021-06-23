@@ -9,7 +9,7 @@ public:
   Selection(const Selection &) = delete; // Prevent accidental copies
   const Selection &operator=(const Selection &) = delete;
 
-  Selection() {}
+  Selection() = default;
 
   void touchToSelect(Scene &scene);
 
@@ -17,7 +17,7 @@ public:
   bool isSelectionChanged();
   ActorIdSet &getSelectedActorIds();
   ActorId firstSelectedActorId();
-  
+
   void selectActor(ActorId actorId);
   void deselectActor(ActorId actorId);
   void deselectAllActors();

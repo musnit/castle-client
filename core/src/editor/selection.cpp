@@ -29,12 +29,13 @@ void Selection::touchToSelect(Scene &scene) {
     auto isShortPress = lv.timer.getTime() - touch.pressTime < 0.2;
 
     BodyBehavior::ActorsAtTouch hits;
-    bodyBehavior.forEachActorAtPoint(touch.pos.x, touch.pos.y, [&](ActorId actorId, const b2Fixture *fixture) {
-      if (std::find(hits.begin(), hits.end(), actorId) == hits.end()) {
-        hits.push_back(actorId);
-      }
-      return true;
-    });
+    bodyBehavior.forEachActorAtPoint(
+        touch.pos.x, touch.pos.y, [&](ActorId actorId, const b2Fixture *fixture) {
+          if (std::find(hits.begin(), hits.end(), actorId) == hits.end()) {
+            hits.push_back(actorId);
+          }
+          return true;
+        });
 
     // Press and move? Check at point and select if nothing already selected there.
     if (!touch.isUsed() && touch.movedNear && isShortPress) {

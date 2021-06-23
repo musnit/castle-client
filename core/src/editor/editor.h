@@ -38,7 +38,7 @@ private:
 
   // events and data
   void maybeSendData();
-  
+
   bool isEditorStateDirty;
   void sendGlobalActions();
 

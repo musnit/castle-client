@@ -25,7 +25,7 @@ struct BaseComponent {
   BaseComponent(BaseComponent &&) = default; // Allow moves
   BaseComponent &operator=(BaseComponent &&) = default;
 
-  BaseComponent() {}
+  BaseComponent() = default;
   bool disabled = true;
 };
 

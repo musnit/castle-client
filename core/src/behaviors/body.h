@@ -66,7 +66,7 @@ struct BodyComponent : BaseComponent {
          .rulesGet(false)
          .rulesSet(false)
          ); // `std::vector` rather than `SmallVector` because we
-                                               // rarely read this data at perform-time and it's big
+                                           // rarely read this data at perform-time and it's big
   } props;
 
   b2Body *body = nullptr;

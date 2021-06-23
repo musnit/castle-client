@@ -53,7 +53,7 @@ void Editor::update(double dt) {
         });
       }
     }
-    
+
     maybeSendData();
   }
 }
@@ -126,7 +126,7 @@ struct EditorAllBehaviorsEvent {
       PROP(std::string, type);
       PROP(Attribs, attribs);
     };
-    
+
     PROP(int, behaviorId);
     PROP(std::string, name);
     PROP(std::string, displayName);
@@ -169,13 +169,13 @@ void Editor::sendAllBehaviors() {
           spec.attribs().allowedValues().push_back(allowedValue);
         }
       }
-      
+
       elem.propertySpecs().push_back(spec);
     });
-    
+
     ev.behaviors().push_back(elem);
-   });
-   bridge.sendEvent("EDITOR_ALL_BEHAVIORS", ev);
+  });
+  bridge.sendEvent("EDITOR_ALL_BEHAVIORS", ev);
 };
 
 template<typename C>
@@ -230,14 +230,16 @@ struct EditorModifyComponentReceiver {
       Debug::log("Editor received unknown behavior action: {}", action);
       return;
     }
-    Debug::log("Editor: {}:{}:{} {}", params.behaviorName(), params.propertyName(), action, params.value());
+    Debug::log("Editor: {}:{}:{} {}", params.behaviorName(), params.propertyName(), action,
+        params.value());
     if (action == "set") {
-      engine.getEditor().getScene().getBehaviors().byName(params.behaviorName().c_str(), [&](auto &behavior) {
-        auto actorId = engine.getEditor().getSelection().firstSelectedActorId();
-        auto propId = Props::getId(params.propertyName().c_str());
-        ExpressionValue value(params.value());
-        behavior.setProperty(actorId, propId, value, false);
-      });
+      engine.getEditor().getScene().getBehaviors().byName(
+          params.behaviorName().c_str(), [&](auto &behavior) {
+            auto actorId = engine.getEditor().getSelection().firstSelectedActorId();
+            auto propId = Props::getId(params.propertyName().c_str());
+            ExpressionValue value(params.value());
+            behavior.setProperty(actorId, propId, value, false);
+          });
     }
     // TODO: add, remove, enable, disable, swap
   }

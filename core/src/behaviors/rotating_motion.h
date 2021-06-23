@@ -30,6 +30,6 @@ public:
 
   ExpressionValue handleGetProperty(
       ActorId actorId, const RotatingMotionComponent &component, PropId propId) const;
-  void handleSetProperty(
-      ActorId actorId, RotatingMotionComponent &component, PropId propId, const ExpressionValue &value);
+  void handleSetProperty(ActorId actorId, RotatingMotionComponent &component, PropId propId,
+      const ExpressionValue &value);
 };
