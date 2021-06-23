@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
 const LayoutInput = ({ behavior, component, propName, label, sendAction, type = 'number' }) => {
   const [lastNativeUpdate, setLastNativeUpdate] = React.useState(0);
   const [value, sendValue] = useOptimisticBehaviorValue({
-    behavior: component,
+    component,
     propName,
     sendAction,
     onNativeUpdate: () => setLastNativeUpdate(lastNativeUpdate + 1),
