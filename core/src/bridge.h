@@ -37,7 +37,7 @@ private:
 
 
   void sendEvent(const char *eventJson);
-
+  int lastEventIdSent = 0;
 
   template<typename T>
   friend struct BridgeRegistration; // To let it write to entries
@@ -75,6 +75,7 @@ void Bridge::sendEvent(const char *name, const T &params) {
   Archive archive;
   archive.write([&](Archive::Writer &writer) {
     writer.str("name", name);
+    writer.num("eventId", ++lastEventIdSent);
     writer.obj("params", [&]() {
       writer.write(params);
     });
