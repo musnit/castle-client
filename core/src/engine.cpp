@@ -119,7 +119,7 @@ Engine::Engine(bool isEditing_)
   // First timer step
   lv.timer.step();
   if (isEditing) {
-    editor = new Editor(bridge, lv);
+    editor = new Editor(bridge);
   }
 
   propAttribsDemo();

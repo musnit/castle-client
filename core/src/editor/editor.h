@@ -1,7 +1,6 @@
 #pragma once
 
 #include "precomp.h"
-#include "lv.h"
 #include "bridge.h"
 #include "scene.h"
 #include "variables.h"
@@ -14,7 +13,7 @@ public:
   Editor(const Editor &) = delete; // Prevent accidental copies
   const Editor &operator=(const Editor &) = delete;
 
-  explicit Editor(Bridge &bridge_, Lv &lv_);
+  explicit Editor(Bridge &bridge_);
 
   void update(double dt);
   void draw();
@@ -27,7 +26,6 @@ public:
 
 private:
   Bridge &bridge;
-  Lv &lv;
 
   Variables variables;
 

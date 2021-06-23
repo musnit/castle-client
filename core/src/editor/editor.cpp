@@ -2,9 +2,8 @@
 #include "archive.h"
 #include "behaviors/all.h"
 
-Editor::Editor(Bridge &bridge_, Lv &lv_)
-    : bridge(bridge_)
-    , lv(lv_) {
+Editor::Editor(Bridge &bridge_)
+    : bridge(bridge_) {
   isEditorStateDirty = true;
   isAllBehaviorsStateDirty = true;
 }
