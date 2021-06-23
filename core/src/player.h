@@ -35,9 +35,6 @@ private:
 
   Archive sceneArchive;
   std::unique_ptr<Scene> scene;
-
-  std::unique_ptr<love::Font> debugFont { lv.graphics.newDefaultFont(
-      22, love::TrueTypeRasterizer::HINTING_NORMAL) };
 };
 
 inline bool Player::hasScene() {

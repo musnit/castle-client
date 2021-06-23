@@ -320,6 +320,13 @@ void Engine::draw() {
 #ifdef CASTLE_ENABLE_TESTS
   tests.draw();
 #endif
+
+  // Debug messages
+  if (Debug::isEnabled) {
+    lv.graphics.setColor(love::Colorf(0, 0, 0, 1));
+    lv.graphics.print({ { Debug::getAndClearDisplay(), { 1, 1, 1, 1 } } }, debugFont.get(),
+        love::Matrix4(20, 20, 0, 1, 1, 0, 0, 0, 0));
+  }
 }
 
 

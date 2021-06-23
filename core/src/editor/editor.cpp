@@ -106,6 +106,7 @@ void Editor::draw() {
     lv.graphics.setLineWidth(2 * scene->getPixelScale());
     lv.graphics.setColor({ 0, 1, 0, 0.8 });
     for (auto actorId : selection.getSelectedActorIds()) {
+      Debug::display("selected actorId: {}", actorId);
       drawBodyOutline(actorId);
     }
 
