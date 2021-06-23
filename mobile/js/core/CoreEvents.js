@@ -131,6 +131,10 @@ export const useCoreState = (eventName) => {
 
 export const sendGlobalAction = (action) => sendAsync('EDITOR_GLOBAL_ACTION', { action });
 
-export const sendBehaviorAction = (name, action, value) => {
-  // TODO: impl for behavior actions
-};
+export const sendBehaviorAction = (behavior, action, property, value) =>
+  sendAsync('EDITOR_MODIFY_COMPONENT', {
+    behaviorName: behavior,
+    action,
+    propertyName: property,
+    value,
+  });

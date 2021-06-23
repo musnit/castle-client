@@ -57,7 +57,7 @@ const LayoutInput = ({ behavior, component, propName, label, sendAction, type = 
   const onChange = React.useCallback(
     (value) => {
       if (behavior.isActive) {
-        sendValue(`set:${propName}`, value);
+        sendValue('set', value);
       }
     },
     [behavior.isActive, sendValue]
@@ -86,7 +86,7 @@ const LayoutInput = ({ behavior, component, propName, label, sendAction, type = 
 
 export default InspectorLayout = ({ body }) => {
   const component = useCoreState('EDITOR_SELECTED_COMPONENT:Body');
-  const sendAction = React.useCallback((...args) => sendBehaviorAction('Text', ...args), [
+  const sendAction = React.useCallback((...args) => sendBehaviorAction('Body', ...args), [
     sendBehaviorAction,
   ]);
 
@@ -100,7 +100,7 @@ export default InspectorLayout = ({ body }) => {
   });
   const onChangeVisible = React.useCallback(
     (visible) => {
-      setVisibleAction('set:visible', visible);
+      setVisibleAction('set', visible);
     },
     [setVisibleAction]
   );
@@ -112,7 +112,7 @@ export default InspectorLayout = ({ body }) => {
   });
   const onChangeRelative = React.useCallback(
     (relative) => {
-      setRelativeAction('set:relativeToCamera', relative);
+      setRelativeAction('set', relative);
     },
     [setRelativeAction]
   );

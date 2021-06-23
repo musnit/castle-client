@@ -64,7 +64,8 @@ export const InspectorNumberInput = ({ value, lastNativeUpdate, onChange, ...pro
     const validatedInitialValue = validate(value);
     if (validatedInitialValue !== value) {
       setText(numberToText(validatedInitialValue, props.decimalDigits));
-      onChange(validatedInitialValue);
+      // TODO: fix validation in new engine
+      // onChange(validatedInitialValue);
     }
   }, []);
 

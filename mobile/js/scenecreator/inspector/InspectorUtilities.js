@@ -45,7 +45,7 @@ export const filterAvailableBehaviors = ({ allBehaviors, possibleBehaviors }) =>
  *         data for a single behavior.
  *  @param propName the property name to read from the behavior.
  *  @param sendAction a method to send actions (i.e. set prop, remove behavior) to this behavior
- *         in lua.
+ *         in the engine.
  */
 export const useOptimisticBehaviorValue = ({ behavior, propName, sendAction, onNativeUpdate }) => {
   const [value, setValue] = React.useState(null);
@@ -67,7 +67,7 @@ export const useOptimisticBehaviorValue = ({ behavior, propName, sendAction, onN
     if (actionValue === undefined) {
       actionValue = newValue;
     }
-    sendAction(action, actionValue);
+    sendAction(action, propName, actionValue);
   };
 
   return [value, setValueAndSendAction];
