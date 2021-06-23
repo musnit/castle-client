@@ -24,14 +24,14 @@ export default InspectorTextContent = () => {
   ]);
 
   const [value, setValueAndSendAction] = useOptimisticBehaviorValue({
-    behavior: textComponent,
+    component: textComponent,
     propName: 'content',
     sendAction,
   });
 
   const onChange = React.useCallback(
     (content) => {
-      setValueAndSendAction('set:content', content);
+      setValueAndSendAction('set', 'content', content);
     },
     [setValueAndSendAction]
   );

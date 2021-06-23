@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { AddBehaviorSheet } from './components/AddBehaviorSheet';
 import { useCardCreator } from '../CreateCardContext';
-import { useCoreState } from '../../core/CoreEvents';
+import { useCoreState, sendBehaviorAction } from '../../core/CoreEvents';
 import { SaveBlueprintSheet } from './components/SaveBlueprintSheet';
 
 import * as SceneCreatorConstants from '../SceneCreatorConstants';
@@ -66,7 +66,7 @@ const GeneralTab = ({ behaviors, addChildSheet }) => {
   );
 };
 
-const MovementTab = ({ behaviors, sendActions, addChildSheet }) => {
+const MovementTab = ({ behaviors, addChildSheet }) => {
   let movementBehaviors = InspectorUtilities.filterAvailableBehaviors({
     allBehaviors: behaviors,
     possibleBehaviors: Inspector.MotionBehaviors.reduce(
@@ -94,7 +94,7 @@ const MovementTab = ({ behaviors, sendActions, addChildSheet }) => {
               key: 'addBehavior',
               Component: AddBehaviorSheet,
               behaviors,
-              addBehavior: (key) => sendActions[key]('add'),
+              addBehavior: (behavior) => sendBehaviorAction(behavior, 'add'),
             })
           }>
           <MCIcon
@@ -113,12 +113,9 @@ const MovementTab = ({ behaviors, sendActions, addChildSheet }) => {
           </Text>
         </TouchableOpacity>
       </View>
-      <Inspector.Motion
-        moving={behaviors.Moving}
-        rotatingMotion={behaviors.RotatingMotion}
-        sendActions={sendActions}
-      />
-      {movementBehaviors &&
+      <Inspector.Motion moving={behaviors.Moving} rotatingMotion={behaviors.RotatingMotion} />
+      {false &&
+        movementBehaviors &&
         movementBehaviors
           .filter((name) => behaviors[name]?.isActive)
           .map((name) => {

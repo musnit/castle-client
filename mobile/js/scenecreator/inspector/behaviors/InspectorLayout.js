@@ -94,7 +94,7 @@ export default InspectorLayout = ({ body }) => {
   const hasBlueprint = (inspectorActions && inspectorActions.hasBlueprint) || false;
 
   const [visible, setVisibleAction] = useOptimisticBehaviorValue({
-    behavior: component,
+    component,
     propName: 'visible',
     sendAction: sendAction,
   });
@@ -106,7 +106,7 @@ export default InspectorLayout = ({ body }) => {
   );
 
   const [relative, setRelativeAction] = useOptimisticBehaviorValue({
-    behavior: component,
+    component,
     propName: 'relativeToCamera',
     sendAction: sendAction,
   });

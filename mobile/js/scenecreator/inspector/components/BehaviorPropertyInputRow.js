@@ -18,6 +18,7 @@ const styles = StyleSheet.create({
 
 export const BehaviorPropertyInputRow = ({
   behavior,
+  component,
   propName,
   label,
   sendAction,
@@ -31,7 +32,7 @@ export const BehaviorPropertyInputRow = ({
   const propertySpec = behavior.propertySpecs[propName];
   const [lastNativeUpdate, setLastNativeUpdate] = React.useState(1);
   const [value, sendValue] = useOptimisticBehaviorValue({
-    behavior,
+    component,
     propName,
     sendAction,
     onNativeUpdate: () => setLastNativeUpdate(lastNativeUpdate + 1),
@@ -40,7 +41,7 @@ export const BehaviorPropertyInputRow = ({
   const onChange = React.useCallback(
     (value) => {
       if (behavior.isActive) {
-        sendValue(`set:${propName}`, value);
+        sendValue('set', propName, value);
       }
     },
     [behavior.isActive, sendValue]
@@ -48,8 +49,10 @@ export const BehaviorPropertyInputRow = ({
 
   // TODO: merge with ParamInput component
   let input;
-  switch (propertySpec.method) {
-    case 'numberInput':
+  switch (propertySpec.type) {
+    case 'f':
+    case 'i':
+    case 'd':
       input = (
         <InspectorNumberInput
           lastNativeUpdate={lastNativeUpdate}
@@ -60,7 +63,7 @@ export const BehaviorPropertyInputRow = ({
         />
       );
       break;
-    case 'toggle':
+    case 'b':
       input = (
         <InspectorCheckbox
           lastNativeUpdate={lastNativeUpdate}
@@ -71,6 +74,7 @@ export const BehaviorPropertyInputRow = ({
         />
       );
       break;
+    // TODO: check propspec's allowedValues
     case 'dropdown':
       input = (
         <InspectorDropdown

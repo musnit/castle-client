@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BehaviorPropertyInputRow } from '../components/BehaviorPropertyInputRow';
+import { useCoreState, sendBehaviorAction } from '../../../core/CoreEvents';
 
 import * as Constants from '../../../Constants';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
@@ -54,9 +55,15 @@ const styles = StyleSheet.create({
   },
 });
 
-const BodyTypeControl = ({ moving, rotatingMotion, sendActions }) => {
-  const sendDynamicAction = sendActions.Moving;
-  const sendKinematicAction = sendActions.RotatingMotion;
+const BodyTypeControl = ({ moving, rotatingMotion }) => {
+  const sendDynamicAction = React.useCallback((...args) => sendBehaviorAction('Moving', ...args), [
+    sendBehaviorAction,
+  ]);
+  const sendFixedAction = React.useCallback(
+    (...args) => sendBehaviorAction('RotatingMotion', ...args),
+    [sendBehaviorAction]
+  );
+
   const items = [
     {
       name: 'None',
@@ -65,7 +72,7 @@ const BodyTypeControl = ({ moving, rotatingMotion, sendActions }) => {
         if (moving.isActive) {
           sendDynamicAction('remove');
         } else if (rotatingMotion.isActive) {
-          sendKinematicAction('remove');
+          sendFixedAction('remove');
         }
       },
     },
@@ -76,7 +83,7 @@ const BodyTypeControl = ({ moving, rotatingMotion, sendActions }) => {
         if (moving.isActive) {
           sendDynamicAction('swap', { name: 'RotatingMotion' });
         } else {
-          sendKinematicAction('add');
+          sendFixedAction('add');
         }
       },
     },
@@ -85,7 +92,7 @@ const BodyTypeControl = ({ moving, rotatingMotion, sendActions }) => {
       label: 'Moved by other forces',
       onSelect: () => {
         if (rotatingMotion.isActive) {
-          sendKinematicAction('swap', { name: 'Moving' });
+          sendFixedAction('swap', { name: 'Moving' });
         } else {
           sendDynamicAction('add');
         }
@@ -142,53 +149,59 @@ const BodyTypeControl = ({ moving, rotatingMotion, sendActions }) => {
   );
 };
 
-export default InspectorMotion = ({ moving, rotatingMotion, sendActions }) => {
-  let activeBehavior, activeBehaviorSendAction;
+export default InspectorMotion = ({ moving, rotatingMotion }) => {
+  let activeBehavior, activeBehaviorSendAction, activeComponent;
+  const movingComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Moving');
+  const rotatingMotionComponent = useCoreState('EDITOR_SELECTED_COMPONENT:RotatingMotion');
+
   let rotationPropertyName, rotatingPropSendAction, rotationPropertyDisplayValue;
   if (moving.isActive) {
     // dynamic body
     activeBehavior = moving;
-    activeBehaviorSendAction = sendActions.Moving;
+    activeComponent = movingComponent;
+    activeBehaviorSendAction = (...args) => sendBehaviorAction('Moving', ...args);
     rotatingPropSendAction = activeBehaviorSendAction;
     rotationPropertyName = 'angularVelocity';
   } else if (rotatingMotion.isActive) {
     // kinematic body
     activeBehavior = rotatingMotion;
+    activeComponent = rotatingMotionComponent;
 
-    // need to reconcile units because lua's rotating motion is expressed in full rotations
+    // need to reconcile units because engine's rotating motion is expressed in full rotations
     // per second, while moving is expressed in degrees
-    rotatingPropSendAction = (action, value) => sendActions.RotatingMotion(action, value / 360);
-    activeBehaviorSendAction = sendActions.RotatingMotion;
+    rotatingPropSendAction = (action, property, value) =>
+      sendBehaviorAction('RotatingMotion', action, property, value / 360);
+    activeBehaviorSendAction = (...args) => sendBehaviorAction('RotatingMotion', ...args);
     rotationPropertyName = 'rotationsPerSecond';
     rotationPropertyDisplayValue = (value) => value * 360;
   }
+
   return (
     <View style={SceneCreatorConstants.styles.behaviorContainer}>
       <Text style={SceneCreatorConstants.styles.behaviorHeader}>
         <Text style={SceneCreatorConstants.styles.behaviorHeaderName}>Motion</Text>
       </Text>
       <View style={SceneCreatorConstants.styles.behaviorProperties}>
-        <BodyTypeControl
-          moving={moving}
-          rotatingMotion={rotatingMotion}
-          sendActions={sendActions}
-        />
-        {activeBehavior ? (
+        <BodyTypeControl moving={moving} rotatingMotion={rotatingMotion} />
+        {activeBehavior && activeComponent ? (
           <React.Fragment>
             <BehaviorPropertyInputRow
               behavior={activeBehavior}
+              component={activeComponent}
               propName="vx"
               label="X velocity"
               sendAction={activeBehaviorSendAction}
             />
             <BehaviorPropertyInputRow
               behavior={activeBehavior}
+              component={activeComponent}
               propName="vy"
               label="Y velocity"
               sendAction={activeBehaviorSendAction}
             />
             <BehaviorPropertyInputRow
               behavior={activeBehavior}
+              component={activeComponent}
               propName={rotationPropertyName}
               label="Rotational velocity"
               sendAction={rotatingPropSendAction}
@@ -197,6 +210,7 @@ export default InspectorMotion = ({ moving, rotatingMotion, sendActions }) => {
             {activeBehavior == moving ? (
               <BehaviorPropertyInputRow
                 behavior={activeBehavior}
+                component={activeComponent}
                 propName="density"
                 label="Density"
                 sendAction={activeBehaviorSendAction}

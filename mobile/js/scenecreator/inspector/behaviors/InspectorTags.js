@@ -27,7 +27,7 @@ export default InspectorTags = ({ tags }) => {
 
   const context = useCardCreator();
   const [value, setValueAndSendAction] = useOptimisticBehaviorValue({
-    behavior: tagsComponent,
+    component: tagsComponent,
     propName: 'tagsString',
     sendAction,
   });
@@ -35,7 +35,7 @@ export default InspectorTags = ({ tags }) => {
   const onChange = React.useCallback(
     (tagsString) => {
       if (tags.isActive) {
-        setValueAndSendAction('set:tagsString', tagsString);
+        setValueAndSendAction('set', 'tagsString', tagsString);
       } else {
         console.warn(`Expect all actors to have Tags, but this actor did not`);
         setValueAndSendAction('add', tagsString, { tagsString });
