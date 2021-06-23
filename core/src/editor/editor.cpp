@@ -69,49 +69,46 @@ void Editor::draw() {
 
   // Bounding boxes
   {
-    lv.graphics.push(love::Graphics::STACK_ALL);
-    scene->applyViewTransform();
     const auto drawBodyOutline = [&](ActorId actorId) {
       if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
-        // Calculate bounding box by combining across fixtures
-        // PERF: Could cache bounding boxes in an editor-specific component?
-        b2AABB box {
-          { std::numeric_limits<float>::max(), std::numeric_limits<float>::max() },
-          { std::numeric_limits<float>::min(), std::numeric_limits<float>::min() },
-        };
-        for (auto fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()) {
-          box.Combine(fixture->GetAABB(0));
-        }
-        if (!box.IsValid()) {
-          return;
-        }
+        auto bounds = bodyBehavior.getEditorBounds(actorId);
+        auto info = bodyBehavior.getRenderInfo(actorId);
+
+        // Multiply here rather than use `love.graphics.scale` to keep line widths unscaled
+        bounds.minX() *= info.widthScale;
+        bounds.maxX() *= info.widthScale;
+        bounds.minY() *= info.heightScale;
+        bounds.maxY() *= info.heightScale;
 
         lv.graphics.push();
 
-        //auto [x, y] = body->GetPosition();
-        //lv.graphics.translate(x, y);
-        //lv.graphics.rotate(body->GetAngle());
+        auto [x, y] = body->GetPosition();
+        lv.graphics.translate(x, y);
+        lv.graphics.rotate(body->GetAngle());
 
-        auto size = box.upperBound - box.lowerBound;
-        lv.graphics.rectangle(
-            love::Graphics::DRAW_LINE, box.lowerBound.x, box.lowerBound.y, size.x, size.y);
+        lv.graphics.rectangle(love::Graphics::DRAW_LINE, bounds.minX(), bounds.minY(),
+            bounds.maxX() - bounds.minX(), bounds.maxY() - bounds.minY());
 
         lv.graphics.pop();
       }
     };
+
+    lv.graphics.push(love::Graphics::STACK_ALL);
+
+    scene->applyViewTransform();
+
     lv.graphics.setLineWidth(1.25f * scene->getPixelScale());
     lv.graphics.setColor({ 0.8, 0.8, 0.8, 0.8 });
-    auto count = 0;
     scene->forEachActor([&](ActorId actorId) {
-      ++count;
-      Debug::display("actorId: {}", actorId);
       drawBodyOutline(actorId);
     });
+
     lv.graphics.setLineWidth(2 * scene->getPixelScale());
     lv.graphics.setColor({ 0, 1, 0, 0.8 });
     for (auto actorId : selection.getSelectedActorIds()) {
       drawBodyOutline(actorId);
     }
+
     lv.graphics.pop();
   }
 }

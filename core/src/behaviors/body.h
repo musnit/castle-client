@@ -62,11 +62,19 @@ struct BodyComponent : BaseComponent {
       PROP(float, radius) = 0;
     };
     PROP(
-         std::vector<FixtureProps>, fixtures,
+         std::vector<FixtureProps>, fixtures, // `std::vector` rather than `SmallVector` because we
+                                              // rarely read this data at perform-time and it's big
          .rulesGet(false)
          .rulesSet(false)
-         ); // `std::vector` rather than `SmallVector` because we
-                                           // rarely read this data at perform-time and it's big
+         );
+
+    struct EditorBounds {
+      PROP(float, minX);
+      PROP(float, maxX);
+      PROP(float, minY);
+      PROP(float, maxY);
+    };
+    PROP(EditorBounds, editorBounds);
   } props;
 
   b2Body *body = nullptr;
@@ -117,6 +125,7 @@ public:
     float heightScale = 1;
   };
   RenderInfo getRenderInfo(ActorId actorId) const;
+  BodyComponent::Props::EditorBounds getEditorBounds(ActorId actorId) const;
 
 
   // Queries
@@ -191,6 +200,14 @@ inline BodyBehavior::RenderInfo BodyBehavior::getRenderInfo(ActorId actorId) con
       component->props.widthScale(),
       component->props.heightScale(),
     };
+  } else {
+    return {};
+  }
+}
+
+inline BodyComponent::Props::EditorBounds BodyBehavior::getEditorBounds(ActorId actorId) const {
+  if (auto component = maybeGetComponent(actorId)) {
+    return component->props.editorBounds();
   } else {
     return {};
   }
