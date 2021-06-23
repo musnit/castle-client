@@ -24,6 +24,8 @@ public:
   bool hasScene();
   Scene &getScene();
 
+  Selection &getSelection();
+
 private:
   Bridge &bridge;
 
@@ -54,4 +56,8 @@ inline bool Editor::hasScene() {
 
 inline Scene &Editor::getScene() {
   return *scene;
+}
+
+inline Selection &Editor::getSelection() {
+  return selection;
 }

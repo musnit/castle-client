@@ -1,4 +1,5 @@
 #include "editor.h"
+#include "engine.h"
 #include "archive.h"
 #include "behaviors/all.h"
 
@@ -196,6 +197,51 @@ void Editor::sendSelectedComponent(int behaviorId) {
     }
   });
 }
+
+struct EditorModifyComponentReceiver {
+  inline static const BridgeRegistration<EditorModifyComponentReceiver> registration {
+    "EDITOR_MODIFY_COMPONENT"
+  };
+
+  struct Params {
+    PROP(std::string, behaviorName);
+    PROP(
+         std::string, action,
+         .allowedValues("add", "remove", "set", "enable", "disable", "swap")
+         );
+    PROP(std::string, propertyName);
+    PROP(float, value); // TODO: other types besides float
+  } params;
+
+  void receive(Engine &engine) {
+    auto action = params.action();
+    auto attribs = std::remove_reference_t<decltype(params.action)>::attribs;
+    auto actionValid = false;
+    for (auto &allowedValue : attribs.allowedValues_) {
+      if (!allowedValue) {
+        break;
+      }
+      if (allowedValue == action) {
+        actionValid = true;
+        break;
+      }
+    }
+    if (!actionValid) {
+      Debug::log("Editor received unknown behavior action: {}", action);
+      return;
+    }
+    Debug::log("Editor: {}:{}:{} {}", params.behaviorName(), params.propertyName(), action, params.value());
+    if (action == "set") {
+      engine.getEditor().getScene().getBehaviors().byName(params.behaviorName().c_str(), [&](auto &behavior) {
+        auto actorId = engine.getEditor().getSelection().firstSelectedActorId();
+        auto propId = Props::getId(params.propertyName().c_str());
+        ExpressionValue value(params.value());
+        behavior.setProperty(actorId, propId, value, false);
+      });
+    }
+    // TODO: add, remove, enable, disable, swap
+  }
+};
 
 void Editor::maybeSendData() {
   if (isEditorStateDirty) {

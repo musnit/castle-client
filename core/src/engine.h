@@ -42,7 +42,7 @@ public:
   Bridge &getBridge();
 
   Scene &getScene();
-
+  Editor &getEditor();
 
 private:
   Bridge bridge { *this };
@@ -80,4 +80,8 @@ inline Bridge &Engine::getBridge() {
 
 inline Scene &Engine::getScene() {
   return player.getScene();
+}
+
+inline Editor &Engine::getEditor() {
+  return *editor;
 }
