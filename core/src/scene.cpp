@@ -334,18 +334,21 @@ void Scene::PhysicsContactListener::BeginContact(b2Contact *contact) {
 // Draw
 //
 
-void Scene::draw() const {
-  lv.graphics.clear(props.backgroundColor(), {}, {});
-
-  lv.graphics.push(love::Graphics::STACK_ALL);
-
-  // View transform
+void Scene::applyViewTransform() const {
   viewTransform.reset();
   viewTransform.scale(800.0f / viewWidth, 800.0f / viewWidth);
   auto viewYOffset = 0.5f * (props.coordinateSystemVersion() == 2 ? viewHeight : viewWidth);
   viewTransform.translate(0.5f * viewWidth, viewYOffset);
   viewTransform.translate(-cameraX, -cameraY);
   lv.graphics.applyTransform(&viewTransform);
+}
+
+void Scene::draw() const {
+  lv.graphics.clear(props.backgroundColor(), {}, {});
+
+  lv.graphics.push(love::Graphics::STACK_ALL);
+
+  applyViewTransform();
 
   // Scene
   forEachActorByDrawOrder([&](ActorId actorId) {

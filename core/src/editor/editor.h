@@ -28,6 +28,7 @@ public:
   void setSelectedComponentStateDirty(int behaviorId);
 
 private:
+  Lv &lv { Lv::getInstance() };
   Bridge &bridge;
 
   Variables variables;

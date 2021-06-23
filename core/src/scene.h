@@ -161,6 +161,7 @@ public:
   void updateGesture();
 
   void draw() const;
+  void applyViewTransform() const;
 
 
 private:

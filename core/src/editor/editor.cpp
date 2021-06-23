@@ -59,8 +59,60 @@ void Editor::update(double dt) {
 }
 
 void Editor::draw() {
-  if (scene) {
-    scene->draw();
+  if (!scene) {
+    return;
+  }
+
+  scene->draw();
+
+  auto &bodyBehavior = scene->getBehaviors().byType<BodyBehavior>();
+
+  // Bounding boxes
+  {
+    lv.graphics.push(love::Graphics::STACK_ALL);
+    scene->applyViewTransform();
+    const auto drawBodyOutline = [&](ActorId actorId) {
+      if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
+        // Calculate bounding box by combining across fixtures
+        // PERF: Could cache bounding boxes in an editor-specific component?
+        b2AABB box {
+          { std::numeric_limits<float>::max(), std::numeric_limits<float>::max() },
+          { std::numeric_limits<float>::min(), std::numeric_limits<float>::min() },
+        };
+        for (auto fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()) {
+          box.Combine(fixture->GetAABB(0));
+        }
+        if (!box.IsValid()) {
+          return;
+        }
+
+        lv.graphics.push();
+
+        //auto [x, y] = body->GetPosition();
+        //lv.graphics.translate(x, y);
+        //lv.graphics.rotate(body->GetAngle());
+
+        auto size = box.upperBound - box.lowerBound;
+        lv.graphics.rectangle(
+            love::Graphics::DRAW_LINE, box.lowerBound.x, box.lowerBound.y, size.x, size.y);
+
+        lv.graphics.pop();
+      }
+    };
+    lv.graphics.setLineWidth(1.25f * scene->getPixelScale());
+    lv.graphics.setColor({ 0.8, 0.8, 0.8, 0.8 });
+    auto count = 0;
+    scene->forEachActor([&](ActorId actorId) {
+      ++count;
+      Debug::display("actorId: {}", actorId);
+      drawBodyOutline(actorId);
+    });
+    lv.graphics.setLineWidth(2 * scene->getPixelScale());
+    lv.graphics.setColor({ 0, 1, 0, 0.8 });
+    for (auto actorId : selection.getSelectedActorIds()) {
+      drawBodyOutline(actorId);
+    }
+    lv.graphics.pop();
   }
 }
 
