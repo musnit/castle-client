@@ -5,6 +5,7 @@
 #include "scene.h"
 #include "variables.h"
 #include "selection.h"
+#include "grab.h"
 
 class Editor {
   // manages a scene instance that is being edited.
@@ -37,6 +38,13 @@ private:
   std::unique_ptr<Scene> scene;
 
   Selection selection;
+
+  enum class Tool {
+    Grab,
+    ScaleRotate,
+  };
+  Tool currentTool = Tool::Grab;
+  GrabTool grab { selection };
 
   // events and data
   void maybeSendData();

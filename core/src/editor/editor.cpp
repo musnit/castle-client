@@ -24,33 +24,50 @@ void Editor::readVariables(Reader &reader) {
 void Editor::update(double dt) {
   if (scene) {
     // TODO: Update scene when performing
-    /* if (scene->isRestartRequested()) {
-      sceneArchive.read([&](Reader &reader) {
-        reader.obj("snapshot", [&]() {
-          scene = std::make_unique<Scene>(bridge, variables, &reader);
+    {
+      /* if (scene->isRestartRequested()) {
+        sceneArchive.read([&](Reader &reader) {
+          reader.obj("snapshot", [&]() {
+            scene = std::make_unique<Scene>(bridge, variables, &reader);
+          });
         });
-      });
+      }
+
+      Debug::display("fps: {}", lv.timer.getFPS());
+      Debug::display("actors: {}", scene->numActors());
+
+      scene->update(dt); */
     }
 
-    Debug::display("fps: {}", lv.timer.getFPS());
-    Debug::display("actors: {}", scene->numActors());
+    // Non-performing update
+    {
+      // Need to tell scene to update gesture, since we didn't `scene->update()`
+      // TODO: Should gesture just be moved out of scene?
+      scene->updateGesture();
 
-    scene->update(dt); */
+      selection.touchToSelect(*scene);
 
-    // TODO: select when not performing
-    scene->updateGesture();
-    selection.touchToSelect(*scene);
-    if (selection.isSelectionChanged()) {
-      isEditorStateDirty = true;
-      isAllBehaviorsStateDirty = true;
-      if (selection.hasSelection()) {
-        auto selectedActorId = selection.firstSelectedActorId();
-        scene->getBehaviors().forEach([&](auto &behavior) {
-          if (behavior.hasComponent(selectedActorId)) {
-            auto behaviorId = std::remove_reference_t<decltype(behavior)>::behaviorId;
-            selectedComponentStateDirty.insert(behaviorId);
-          }
-        });
+      if (selection.isSelectionChanged()) {
+        isEditorStateDirty = true;
+        isAllBehaviorsStateDirty = true;
+        if (selection.hasSelection()) {
+          auto selectedActorId = selection.firstSelectedActorId();
+          scene->getBehaviors().forEach([&](auto &behavior) {
+            if (behavior.hasComponent(selectedActorId)) {
+              auto behaviorId = std::remove_reference_t<decltype(behavior)>::behaviorId;
+              selectedComponentStateDirty.insert(behaviorId);
+            }
+          });
+        }
+      }
+
+      // Update current tool
+      switch (currentTool) {
+      case Tool::Grab:
+        grab.update(*scene, dt);
+        break;
+      case Tool::ScaleRotate:
+        break;
       }
     }
 
@@ -111,6 +128,17 @@ void Editor::draw() {
     }
 
     lv.graphics.pop();
+  }
+
+  // Current tool overlay
+  {
+    switch (currentTool) {
+    case Tool::Grab:
+      grab.drawOverlay(*scene);
+      break;
+    case Tool::ScaleRotate:
+      break;
+    }
   }
 }
 

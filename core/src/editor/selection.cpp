@@ -1,8 +1,6 @@
 #include "selection.h"
 #include "behaviors/all.h"
 
-static const TouchToken selectTouchToken;
-
 void Selection::applySelection(Scene &scene) {
   for (auto actorId : selection) {
     if (!scene.hasActor(actorId)) {
@@ -48,7 +46,7 @@ void Selection::touchToSelect(Scene &scene) {
       }
       if (!touchesExistingSelection) {
         selectActorFromHits(hits);
-        touch.use(selectTouchToken);
+        touch.use(touchToken);
         applySelection(scene);
       }
     }
@@ -56,7 +54,7 @@ void Selection::touchToSelect(Scene &scene) {
     // Quick press and release without moving? Select!
     if (!touch.isUsed() && touch.released && !touch.movedNear && isShortPress) {
       selectActorFromHits(hits);
-      touch.use(selectTouchToken);
+      touch.use(touchToken);
       applySelection(scene);
     }
   });

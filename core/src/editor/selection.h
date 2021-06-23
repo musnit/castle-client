@@ -22,6 +22,8 @@ public:
   void deselectActor(ActorId actorId);
   void deselectAllActors();
 
+  inline static const TouchToken touchToken;
+
 private:
   Lv &lv { Lv::getInstance() };
   ActorIdSet selection;
