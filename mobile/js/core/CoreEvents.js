@@ -21,15 +21,19 @@ export async function sendAsync(name, params) {
 
 const eventEmitter = new NativeEventEmitter(NativeModules.CastleCoreBridge);
 eventEmitter.addListener('onReceiveEvent', (eventJson) => {
-  const { name, params } = JSON.parse(eventJson);
-  const listenerList = listenerLists[name];
+  const { name, eventId, params } = JSON.parse(eventJson);
+
+  // maybe transform and cache editor events
   let data = params;
   if (name.startsWith(CORE_STATE_PREFIX)) {
-    if (CoreStateTransform[name]) {
-      data = CoreStateTransform[name](params);
+    const constName = name.indexOf(':') >= 0 ? name.substring(0, name.indexOf(':')) : name;
+    if (CoreStateTransform[constName]) {
+      data = CoreStateTransform[constName](name, eventId, params);
     }
     setCoreStateCache(name, data);
   }
+
+  const listenerList = listenerLists[name];
   if (listenerList) {
     Object.values(listenerList).forEach((handler) => handler(data));
   }
