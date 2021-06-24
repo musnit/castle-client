@@ -32,16 +32,13 @@ void GrabTool::update(Scene &scene, double dt) {
       touch.forceUse(grabTouchToken);
     }
 
-    auto delta = b2Vec2 { touch.delta.x, touch.delta.y };
-
     // TODO: Quantize to grid
     // TODO: Undo / redo
 
     auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
     for (auto actorId : selection.getSelectedActorIds()) {
-      if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
-        body->SetTransform(body->GetPosition() + delta, body->GetAngle());
-      }
+      bodyBehavior.setProperty(actorId, Props::getId("x"), ExpressionValue(touch.delta.x), true);
+      bodyBehavior.setProperty(actorId, Props::getId("y"), ExpressionValue(touch.delta.y), true);
     }
   });
 }
