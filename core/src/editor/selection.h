@@ -15,6 +15,7 @@ public:
 
   bool hasSelection();
   bool isSelectionChanged();
+  void setSelectionChanged(bool selectionChanged);
   ActorIdSet &getSelectedActorIds();
   ActorId firstSelectedActorId();
 
@@ -50,6 +51,10 @@ inline bool Selection::hasSelection() {
 
 inline bool Selection::isSelectionChanged() {
   return selectionChanged;
+}
+
+inline void Selection::setSelectionChanged(bool selectionChanged_) {
+  selectionChanged = selectionChanged_;
 }
 
 inline void Selection::selectActor(ActorId actorId) {

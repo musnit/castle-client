@@ -43,6 +43,7 @@ public:
 
   Scene &getScene();
   Editor &getEditor();
+  bool getIsEditing();
 
 private:
   Bridge bridge { *this };
@@ -87,4 +88,8 @@ inline Scene &Engine::getScene() {
 
 inline Editor &Engine::getEditor() {
   return *editor;
+}
+
+inline bool Engine::getIsEditing() {
+  return isEditing;
 }

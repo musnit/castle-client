@@ -42,8 +42,10 @@ struct SelectActorReceiver {
   } params;
 
   void receive(Engine &engine) {
-    auto &textBehavior = engine.getScene().getBehaviors().byType<TextBehavior>();
-    textBehavior.clickedTextActorIdsQueue.push(params.actorId());
+    if (!engine.getIsEditing()) {
+      auto &textBehavior = engine.getScene().getBehaviors().byType<TextBehavior>();
+      textBehavior.clickedTextActorIdsQueue.push(params.actorId());
+    }
   }
 };
 

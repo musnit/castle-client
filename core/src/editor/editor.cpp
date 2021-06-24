@@ -56,6 +56,7 @@ void Editor::update(double dt) {
             selectedComponentStateDirty.insert(behaviorId);
           });
         }
+        selection.setSelectionChanged(false);
       }
 
       // Update current tool
@@ -371,4 +372,5 @@ void Editor::maybeSendData() {
     }
     selectedComponentStateDirty.clear();
   }
+  scene->getBehaviors().byType<TextBehavior>().maybeSendBridgeData();
 }

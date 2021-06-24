@@ -40,7 +40,7 @@ private:
   friend struct ShowResponse;
   friend struct HideResponse;
   friend struct HideTextResponse;
-
+  friend class Editor; // for sending text actors data to JS while editing
 
   std::string formatContent(const std::string &content) const;
 

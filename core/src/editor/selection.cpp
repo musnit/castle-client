@@ -1,5 +1,6 @@
 #include "selection.h"
 #include "behaviors/all.h"
+#include "engine.h"
 
 void Selection::applySelection(Scene &scene) {
   for (auto actorId : selection) {
@@ -21,7 +22,6 @@ void Selection::selectActorFromHits(const BodyBehavior::ActorsAtTouch &hits) {
 }
 
 void Selection::touchToSelect(Scene &scene) {
-  selectionChanged = false;
   scene.getGesture().withSingleTouch([&](const Touch &touch) {
     auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
     auto isShortPress = lv.timer.getTime() - touch.pressTime < 0.2;
@@ -59,3 +59,22 @@ void Selection::touchToSelect(Scene &scene) {
     }
   });
 }
+
+//
+// Events
+//
+
+struct SelectActorEditReceiver {
+  inline static const BridgeRegistration<SelectActorEditReceiver> registration { "SELECT_ACTOR" };
+
+  struct Params {
+    PROP(int, actorId) = -1;
+  } params;
+
+  void receive(Engine &engine) {
+    if (engine.getIsEditing()) {
+      engine.getEditor().getSelection().deselectAllActors();
+      engine.getEditor().getSelection().selectActor(ActorId(params.actorId()));
+    }
+  }
+};
