@@ -25,12 +25,7 @@ import { DrawingCardHeader, DRAWING_CARD_HEADER_HEIGHT } from './drawing/Drawing
 import { PopoverProvider } from '../components/PopoverProvider';
 import { SheetProvider } from './SheetProvider';
 
-import {
-  getActiveTool,
-  getInspectorTags,
-  getInspectorActions,
-  getInspectorRules,
-} from './SceneCreatorUtilities';
+import { getActiveTool, getInspectorTags, getInspectorRules } from './SceneCreatorUtilities';
 
 const TABLET_BELT_HEIGHT_MULTIPLIER = isTablet() ? 2 : 1;
 const MIN_BELT_HEIGHT = 1.2 * TABLET_BELT_HEIGHT_MULTIPLIER * 48;
@@ -142,7 +137,6 @@ export const CreateCardScreen = ({
   const selectedActorId = globalActions?.selectedActorId;
   const isTextActorSelected = globalActions?.isTextActorSelected;
   const hasSelection = selectedActorId >= 0 && activeSheet !== 'capturePreview';
-  const inspectorActions = getInspectorActions(root);
   const { activeToolData, activeToolAction } = getActiveTool(root);
   const textActors = useCoreTextActors();
   // TODO: const { tagToActorIds } = getInspectorTags(behaviors?.Tags);
@@ -350,7 +344,6 @@ export const CreateCardScreen = ({
     activeToolData,
     activeToolAction,
     saveAction,
-    ...inspectorActions,
   };
 
   // SafeAreaView doesn't respond to statusbar being hidden right now

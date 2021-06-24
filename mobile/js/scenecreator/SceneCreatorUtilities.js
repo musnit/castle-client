@@ -61,25 +61,6 @@ export const getActiveTool = (root) => {
   return { activeToolData: null, activeToolActions: null };
 };
 
-export const getInspectorActions = (root) => {
-  let inspectorActions,
-    sendInspectorAction,
-    applicableTools = [];
-  if (root && root.panes) {
-    const pane = root.panes.sceneCreatorInspectorActions;
-    if (pane) {
-      sendInspectorAction = (action, value) => sendDataPaneAction(pane, action, value);
-      inspectorActions = getPaneData(pane);
-      if (inspectorActions?.applicableTools) {
-        Object.values(inspectorActions.applicableTools).forEach((value) => {
-          applicableTools.push(value);
-        });
-      }
-    }
-  }
-  return { inspectorActions, sendInspectorAction, applicableTools };
-};
-
 export const getInspectorRules = (root) => {
   const element = root?.panes ? root.panes['sceneCreatorRules'] : null;
 

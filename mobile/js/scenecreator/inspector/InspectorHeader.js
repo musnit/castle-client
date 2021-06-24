@@ -7,6 +7,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useSession } from '../../Session';
+import { sendAsync } from '../../core/CoreEvents';
 
 import * as Constants from '../../Constants';
 import * as Clipboard from '../LibraryEntryClipboard';
@@ -102,13 +103,12 @@ const makeChangeOrderOptions = ({ isTextActorSelected, sendAction }) => {
 
 export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab }) => {
   const { showActionSheetWithOptions } = useActionSheet();
-  const {
-    inspectorActions: data,
-    sendInspectorAction: sendAction,
-    applicableTools,
-    isTextActorSelected,
-    deck,
-  } = useCardCreator();
+  const { isTextActorSelected, deck } = useCardCreator();
+
+  // TODO: new engine data
+  const data = {}; // previously `inspectorActions`
+  const applicableTools = null;
+  const sendAction = (action, ...args) => sendAsync('EDITOR_INSPECTOR_ACTION', { action, ...args });
 
   const changeSelectionOrder = React.useCallback(() => {
     const options = makeChangeOrderOptions({ isTextActorSelected, sendAction });
@@ -126,7 +126,7 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
     );
   }, [sendAction]);
 
-  const safeTitle = data ? data.title : '';
+  const safeTitle = data.title ?? '';
   const [isEditingTitle, setIsEditingTitle] = React.useState(false);
   const [titleInputValue, setTitleInputValue] = React.useState('');
   React.useEffect(() => {
