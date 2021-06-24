@@ -61,7 +61,6 @@ void RotatingMotionBehavior::handleSetProperty(ActorId actorId, RotatingMotionCo
     body->SetLinearVelocity({ body->GetLinearVelocity().x, value.as<float>() });
   } else if (propId == props.rotationsPerSecond.id) {
     body->SetAngularVelocity(float(2 * M_PI * value.as<double>()));
-  } else {
-    BaseBehavior::handleSetProperty(actorId, component, propId, value);
   }
+  BaseBehavior::handleSetProperty(actorId, component, propId, value);
 }
