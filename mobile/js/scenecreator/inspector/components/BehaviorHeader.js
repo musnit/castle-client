@@ -11,22 +11,23 @@ const styles = StyleSheet.create({
   },
   switch: {
     marginRight: 12,
-    transform: [{ scale: .9 }],
+    transform: [{ scale: 0.9 }],
   },
 });
 
-export const BehaviorHeader = ({ name, behavior, sendAction }) => {
+export const BehaviorHeader = ({ name, behavior, component, sendAction }) => {
   if (!behavior) return null;
   name = name ?? behavior.displayName;
   const onRemove = () => sendAction('remove');
 
   let disableBehaviorSwitch;
-  if (behavior.allowsDisableWithoutRemoval) {
+  // TODO: allowsDisableWithoutRemoval
+  if (component && (true || behavior.allowsDisableWithoutRemoval)) {
     const onChangeSwitch = (value) => sendAction(value ? 'enable' : 'disable');
     disableBehaviorSwitch = (
       <Switch
         style={styles.switch}
-        value={!behavior.isDisabled}
+        value={!component.isDisabled}
         onValueChange={onChangeSwitch}
         trackColor={{ true: '#000' }}
       />
