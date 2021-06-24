@@ -12,7 +12,7 @@ import * as Utilities from '../common/utilities';
 import Viewport from '../common/viewport';
 
 import * as GhostEvents from '../ghost/GhostEvents';
-import { useListen, useCoreState, sendGlobalAction } from '../core/CoreEvents';
+import { useListen, useCoreState, sendGlobalAction, sendAsync } from '../core/CoreEvents';
 
 import { CardScene } from '../game/CardScene';
 import { CardSceneLoading } from './CardSceneLoading';
@@ -179,11 +179,14 @@ export const CreateCardScreen = ({
     }
   }, [isSceneLoaded]);
 
-  const selectActor = React.useCallback((actorId) => {
-    GhostEvents.sendAsync('SELECT_ACTOR', {
-      actorId,
-    });
-  }, []);
+  const selectActor = React.useCallback(
+    (actorId) => {
+      sendAsync('SELECT_ACTOR', {
+        actorId,
+      });
+    },
+    [sendAsync]
+  );
 
   const maybeSaveAndGoToDeck = React.useCallback(async () => {
     // don't prompt on back button unless the card has changes and
