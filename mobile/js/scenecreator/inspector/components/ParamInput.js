@@ -18,12 +18,24 @@ export const ParamInput = ({
   ExpressionInputComponent = InspectorInlineExpressionInput,
   ...props
 }) => {
-  switch (paramSpec.method) {
-    case 'numberInput':
+  let { type } = paramSpec;
+  if (type === 'string' && paramSpec.attribs.allowedValues?.length) {
+    type = 'dropdown';
+  }
+
+  switch (type) {
+    case 'f':
+    case 'i':
+    case 'd':
       if (paramSpec.expression === false) {
         // expressions forbidden by paramSpec, only allow primitive number
         return (
-          <InspectorNumberInput value={value} onChange={setValue} {...paramSpec.props} {...props} />
+          <InspectorNumberInput
+            value={value}
+            onChange={setValue}
+            {...paramSpec.attribs}
+            {...props}
+          />
         );
       } else {
         // TODO: more expressions besides numeric
@@ -31,51 +43,56 @@ export const ParamInput = ({
           <ExpressionInputComponent
             value={value}
             onChange={setValue}
-            {...paramSpec.props}
+            {...paramSpec.attribs}
             {...props}
           />
         );
       }
-    case 'tagPicker':
+    case 'tagPicker': // TODO: tagPicker
       return (
-        <InspectorTagPicker value={value} onChange={setValue} {...paramSpec.props} {...props} />
+        <InspectorTagPicker value={value} onChange={setValue} {...paramSpec.attribs} {...props} />
       );
-    case 'toggle':
+    case 'b':
       return (
-        <InspectorCheckbox value={value} onChange={setValue} {...paramSpec.props} {...props} />
+        <InspectorCheckbox value={value} onChange={setValue} {...paramSpec.attribs} {...props} />
       );
-    case 'textInput':
-    case 'textArea':
+    case 'string':
+    case 'textArea': // TODO: textArea
       return (
         <InspectorTextInput
           optimistic
           value={value}
           onChangeText={setValue}
           multiline={paramSpec.method === 'textArea'}
-          {...paramSpec.props}
+          {...paramSpec.attribs}
           {...props}
         />
       );
     case 'dropdown':
-      if (paramSpec.props?.showVariablesItems) {
+      if (paramSpec.attribs?.showVariablesItems) {
         return (
           <InspectorVariablePicker
             value={value}
             onChange={setValue}
-            {...paramSpec.props}
+            {...paramSpec.attribs}
             {...props}
           />
         );
       } else {
         return (
-          <InspectorDropdown value={value} onChange={setValue} {...paramSpec.props} {...props} />
+          <InspectorDropdown value={value} onChange={setValue} {...paramSpec.attribs} {...props} />
         );
       }
-    case 'actorRef':
+    case 'actorRef': // TODO: actorRef
       return (
-        <InspectorActorRefInput value={value} onChange={setValue} {...paramSpec.props} {...props} />
+        <InspectorActorRefInput
+          value={value}
+          onChange={setValue}
+          {...paramSpec.attribs}
+          {...props}
+        />
       );
     default:
-      throw new Error(`Input type ${paramSpec.method} is not supported in ParamInput`);
+      throw new Error(`Input type ${paramSpec.type} is not supported in ParamInput`);
   }
 };
