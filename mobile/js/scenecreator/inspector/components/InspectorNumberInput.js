@@ -46,14 +46,15 @@ export const InspectorNumberInput = ({ value, lastNativeUpdate, onChange, ...pro
   const validate = React.useCallback(
     (value) => {
       let result = value;
-      if (props) {
+      // TODO: fix validation in new engine
+      /* if (props) {
         if (props.min !== undefined && value < props.min) {
           result = props.min;
         }
         if (props.max !== undefined && value > props.max) {
           result = props.max;
         }
-      }
+      } */
       return result;
     },
     [props]
@@ -64,8 +65,7 @@ export const InspectorNumberInput = ({ value, lastNativeUpdate, onChange, ...pro
     const validatedInitialValue = validate(value);
     if (validatedInitialValue !== value) {
       setText(numberToText(validatedInitialValue, props.decimalDigits));
-      // TODO: fix validation in new engine
-      // onChange(validatedInitialValue);
+      onChange(validatedInitialValue);
     }
   }, []);
 
