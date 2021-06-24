@@ -14,6 +14,10 @@ export default {
     }, {});
   },
   EDITOR_SELECTED_COMPONENT: (name, eventId, data) => {
+    if (data.componentNotFound) {
+      // sentinel sent from the engine when the selection no longer has a behavior
+      return null;
+    }
     return {
       ...data,
       lastReportedEventId: eventId,
