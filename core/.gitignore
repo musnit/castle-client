@@ -5,5 +5,3 @@ test-watch.json
 
 # emacs tags table
 TAGS
-
-binaries/ios/debug/*.a

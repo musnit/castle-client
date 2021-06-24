@@ -137,19 +137,8 @@ case "$1" in
       build/ios/Release-iphoneos/libcastle-core.a \
       build/ios/vendor/fmt/Release-iphoneos/libfmt.a \
       build/ios/vendor/box2d/bin/Release/libbox2d.a \
-      binaries/ios/release
+      binaries/ios
     ;;
-  ios-debug)
-    $CMAKE -DIOS=ON -DCMAKE_SYSTEM_NAME=iOS -H. -Bbuild/ios -GXcode
-    $CMAKE --build build/ios --config Debug
-    cp \
-      build/ios/Debug-iphoneos/libsoloud.a \
-      build/ios/Debug-iphoneos/libcastle-core.a \
-      build/ios/vendor/fmt/Release-iphoneos/libfmt.a \
-      build/ios/vendor/box2d/bin/Debug/libbox2d.a \
-      binaries/ios/debug
-    ;;
-
 
   # iOS Sim
   ios-simulator-release)
