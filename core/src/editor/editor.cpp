@@ -288,7 +288,9 @@ struct EditorModifyComponentReceiver {
          .allowedValues("add", "remove", "set", "enable", "disable", "swap")
          );
     PROP(std::string, propertyName);
-    PROP(float, value); // TODO: other types besides float
+    PROP(std::string, propertyType);
+    PROP(double, doubleValue);
+    PROP(std::string, stringValue);
   } params;
 
   void receive(Engine &engine) {
@@ -308,18 +310,27 @@ struct EditorModifyComponentReceiver {
       Debug::log("Editor received unknown behavior action: {}", action);
       return;
     }
-    Debug::log("Editor: {}:{}:{} {}", params.behaviorName(), params.propertyName(), action,
-        params.value());
     if (action == "set") {
       engine.getEditor().getScene().getBehaviors().byName(
           params.behaviorName().c_str(), [&](auto &behavior) {
             using BehaviorType = std::remove_reference_t<decltype(behavior)>;
             auto actorId = engine.getEditor().getSelection().firstSelectedActorId();
             auto propId = Props::getId(params.propertyName().c_str());
-            ExpressionValue value(params.value());
 
             // TODO: undoable command
-            behavior.setProperty(actorId, propId, value, false);
+            auto propType = params.propertyType();
+            if (propType == "string") {
+              ExpressionValue value(params.stringValue().c_str());
+              behavior.setProperty(actorId, propId, value, false);
+            } else if (propType == "d" || propType == "i" || propType == "b") {
+              ExpressionValue value((int)params.doubleValue());
+              behavior.setProperty(actorId, propId, value, false);
+            } else {
+              // fall back to double
+              ExpressionValue value(params.doubleValue());
+              behavior.setProperty(actorId, propId, value, false);
+            }
+
             engine.getEditor().setSelectedComponentStateDirty(BehaviorType::behaviorId);
           });
     }
