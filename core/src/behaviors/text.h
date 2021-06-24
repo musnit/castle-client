@@ -27,6 +27,7 @@ public:
   static constexpr auto name = "Text";
   static constexpr auto behaviorId = 19;
   static constexpr auto displayName = "Text";
+  static constexpr auto allowsDisableWithoutRemoval = false;
 
   using BaseBehavior::BaseBehavior;
 

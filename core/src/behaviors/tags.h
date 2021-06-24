@@ -63,6 +63,7 @@ public:
   static constexpr auto name = "Tags";
   static constexpr auto behaviorId = 17;
   static constexpr auto displayName = "Tags";
+  static constexpr auto allowsDisableWithoutRemoval = false;
 
   using BaseBehavior::BaseBehavior;
 

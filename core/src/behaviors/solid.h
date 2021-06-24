@@ -16,6 +16,7 @@ public:
   static constexpr auto name = "Solid";
   static constexpr auto behaviorId = 5;
   static constexpr auto displayName = "Solid";
+  static constexpr auto allowsDisableWithoutRemoval = true;
 
   using BaseBehavior::BaseBehavior;
 

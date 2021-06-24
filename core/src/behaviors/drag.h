@@ -24,6 +24,7 @@ public:
   static constexpr auto name = "Drag";
   static constexpr auto behaviorId = 15;
   static constexpr auto displayName = "Drag";
+  static constexpr auto allowsDisableWithoutRemoval = true;
 
   using BaseBehavior::BaseBehavior;
 

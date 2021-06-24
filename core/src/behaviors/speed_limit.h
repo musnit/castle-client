@@ -23,6 +23,7 @@ public:
   static constexpr auto name = "SpeedLimit";
   static constexpr auto behaviorId = 12;
   static constexpr auto displayName = "Speed Limit";
+  static constexpr auto allowsDisableWithoutRemoval = true;
 
   using BaseBehavior::BaseBehavior;
 

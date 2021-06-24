@@ -28,6 +28,7 @@ public:
   static constexpr auto name = "Slowdown";
   static constexpr auto behaviorId = 10;
   static constexpr auto displayName = "Slow Down";
+  static constexpr auto allowsDisableWithoutRemoval = true;
 
   using BaseBehavior::BaseBehavior;
 

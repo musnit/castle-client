@@ -208,6 +208,7 @@ struct EditorAllBehaviorsEvent {
     PROP(int, behaviorId);
     PROP(std::string, name);
     PROP(std::string, displayName);
+    PROP(bool, allowsDisableWithoutRemoval);
     PROP(bool, isActive) = false;
     PROP(std::vector<PropertySpec>, propertySpecs);
   };
@@ -222,6 +223,7 @@ void Editor::sendAllBehaviors() {
     elem.behaviorId = BehaviorType::behaviorId;
     elem.name = BehaviorType::name;
     elem.displayName = BehaviorType::displayName;
+    elem.allowsDisableWithoutRemoval = BehaviorType::allowsDisableWithoutRemoval;
     if (selection.hasSelection()) {
       elem.isActive = behavior.hasComponent(selection.firstSelectedActorId());
     }

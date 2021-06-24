@@ -33,6 +33,7 @@ public:
   static constexpr auto name = "Counter";
   static constexpr auto behaviorId = 18;
   static constexpr auto displayName = "Counter";
+  static constexpr auto allowsDisableWithoutRemoval = false;
 
   using BaseBehavior::BaseBehavior;
 

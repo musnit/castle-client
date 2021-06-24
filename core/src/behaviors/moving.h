@@ -33,6 +33,7 @@ public:
   static constexpr auto name = "Moving";
   static constexpr auto behaviorId = 7;
   static constexpr auto displayName = "Dynamic Motion";
+  static constexpr auto allowsDisableWithoutRemoval = false;
 
   using BaseBehavior::BaseBehavior;
 

@@ -34,6 +34,7 @@ public:
   static constexpr auto name = "Drawing2";
   static constexpr auto behaviorId = 20;
   static constexpr auto displayName = "Drawing";
+  static constexpr auto allowsDisableWithoutRemoval = false;
 
   using BaseBehavior::BaseBehavior;
 

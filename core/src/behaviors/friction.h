@@ -21,6 +21,7 @@ public:
   static constexpr auto name = "Friction";
   static constexpr auto behaviorId = 11;
   static constexpr auto displayName = "Friction";
+  static constexpr auto allowsDisableWithoutRemoval = true;
 
   using BaseBehavior::BaseBehavior;
 

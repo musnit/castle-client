@@ -17,6 +17,7 @@ public:
   static constexpr auto name = "Falling";
   static constexpr auto behaviorId = 8;
   static constexpr auto displayName = "Gravity";
+  static constexpr auto allowsDisableWithoutRemoval = true;
 
   using BaseBehavior::BaseBehavior;
 

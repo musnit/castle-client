@@ -31,6 +31,7 @@ public:
   static constexpr auto name = "Sliding";
   static constexpr auto behaviorId = 9;
   static constexpr auto displayName = "Axis Lock";
+  static constexpr auto allowsDisableWithoutRemoval = true;
 
   using BaseBehavior::BaseBehavior;
 

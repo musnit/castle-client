@@ -20,6 +20,7 @@ public:
   static constexpr auto name = "RotatingMotion";
   static constexpr auto behaviorId = 13;
   static constexpr auto displayName = "Fixed Motion";
+  static constexpr auto allowsDisableWithoutRemoval = false;
 
   using BaseBehavior::BaseBehavior;
 

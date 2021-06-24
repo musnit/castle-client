@@ -22,6 +22,7 @@ public:
   static constexpr auto name = "Bouncy";
   static constexpr auto behaviorId = 6;
   static constexpr auto displayName = "Bounce";
+  static constexpr auto allowsDisableWithoutRemoval = true;
 
   using BaseBehavior::BaseBehavior;
 

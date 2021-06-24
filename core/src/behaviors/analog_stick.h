@@ -32,6 +32,7 @@ public:
   static constexpr auto name = "AnalogStick";
   static constexpr auto behaviorId = 21;
   static constexpr auto displayName = "Analog Stick";
+  static constexpr auto allowsDisableWithoutRemoval = true;
 
   using BaseBehavior::BaseBehavior;
 

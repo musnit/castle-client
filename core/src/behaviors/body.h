@@ -86,6 +86,7 @@ public:
   static constexpr auto name = "Body";
   static constexpr auto behaviorId = 1;
   static constexpr auto displayName = "Layout";
+  static constexpr auto allowsDisableWithoutRemoval = false;
 
   using BaseBehavior::BaseBehavior;
 
