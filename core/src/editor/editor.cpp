@@ -51,12 +51,9 @@ void Editor::update(double dt) {
         isEditorStateDirty = true;
         isAllBehaviorsStateDirty = true;
         if (selection.hasSelection()) {
-          auto selectedActorId = selection.firstSelectedActorId();
           scene->getBehaviors().forEach([&](auto &behavior) {
-            if (behavior.hasComponent(selectedActorId)) {
-              auto behaviorId = std::remove_reference_t<decltype(behavior)>::behaviorId;
-              selectedComponentStateDirty.insert(behaviorId);
-            }
+            auto behaviorId = std::remove_reference_t<decltype(behavior)>::behaviorId;
+            selectedComponentStateDirty.insert(behaviorId);
           });
         }
       }
@@ -264,15 +261,22 @@ struct EditorSelectedComponentEvent {
   PROP(typename C::Props *, props);
 };
 
+struct EditorNoComponentEvent {
+  PROP(bool, componentNotFound) = true;
+};
+
 // send behavior property values for the selected actor's components
 void Editor::sendSelectedComponent(int behaviorId) {
   scene->getBehaviors().byId(behaviorId, [&](auto &behavior) {
     using BehaviorType = std::remove_reference_t<decltype(behavior)>;
     auto component = behavior.maybeGetComponent(selection.firstSelectedActorId());
+    std::string eventName = std::string("EDITOR_SELECTED_COMPONENT:") + BehaviorType::name;
     if (component) {
       using ComponentType = std::remove_reference_t<decltype(*component)>;
       EditorSelectedComponentEvent<ComponentType> ev { component->disabled, &component->props };
-      std::string eventName = std::string("EDITOR_SELECTED_COMPONENT:") + BehaviorType::name;
+      bridge.sendEvent(eventName.c_str(), ev);
+    } else {
+      EditorNoComponentEvent ev;
       bridge.sendEvent(eventName.c_str(), ev);
     }
   });
@@ -335,19 +339,20 @@ struct EditorModifyComponentReceiver {
               behavior.setProperty(actorId, propId, value, false);
             }
           } else if (action == "enable") {
-            engine.getEditor().getScene().getBehaviors().byName(
-                params.behaviorName().c_str(), [&](auto &behavior) {
-                  behavior.enableComponent(actorId);
-                });
+            behavior.enableComponent(actorId);
           } else if (action == "disable") {
-            engine.getEditor().getScene().getBehaviors().byName(
-                params.behaviorName().c_str(), [&](auto &behavior) {
-                  behavior.disableComponent(actorId);
-                });
+            behavior.disableComponent(actorId);
+          } else if (action == "add") {
+            behavior.addComponent(actorId);
+            behavior.enableComponent(actorId);
+            engine.getEditor().setAllBehaviorsStateDirty();
+          } else if (action == "remove") {
+            behavior.removeComponent(actorId);
+            engine.getEditor().setAllBehaviorsStateDirty();
           }
           engine.getEditor().setSelectedComponentStateDirty(BehaviorType::behaviorId);
         });
-    // TODO: add, remove, swap
+    // TODO: swap
   }
 };
 

@@ -26,6 +26,7 @@ public:
   Scene &getScene();
 
   Selection &getSelection();
+  void setAllBehaviorsStateDirty();
   void setSelectedComponentStateDirty(int behaviorId);
 
 private:
@@ -74,4 +75,8 @@ inline Selection &Editor::getSelection() {
 
 inline void Editor::setSelectedComponentStateDirty(int behaviorId) {
   selectedComponentStateDirty.insert(behaviorId);
-};
+}
+
+inline void Editor::setAllBehaviorsStateDirty() {
+  isAllBehaviorsStateDirty = true;
+}
