@@ -64,7 +64,7 @@ void Editor::update(double dt) {
       // Update current tool
       switch (currentTool) {
       case Tool::Grab:
-        grab.update(*scene, dt);
+        grab.update(*this, *scene, dt);
         break;
       case Tool::ScaleRotate:
         break;

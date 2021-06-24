@@ -1,7 +1,7 @@
 #include "grab.h"
 
 #include "behaviors/all.h"
-
+#include "editor.h"
 
 inline static const TouchToken grabTouchToken;
 
@@ -19,7 +19,7 @@ GrabTool::GrabTool(Selection &selection_)
 // Update
 //
 
-void GrabTool::update(Scene &scene, double dt) {
+void GrabTool::update(Editor &editor, Scene &scene, double dt) {
   scene.getGesture().withSingleTouch([&](const Touch &touch) {
     if (!touch.isUsed(grabTouchToken)) {
       // Not used by us yet, let's see if we can use it
@@ -40,6 +40,7 @@ void GrabTool::update(Scene &scene, double dt) {
       bodyBehavior.setProperty(actorId, Props::getId("x"), ExpressionValue(touch.delta.x), true);
       bodyBehavior.setProperty(actorId, Props::getId("y"), ExpressionValue(touch.delta.y), true);
     }
+    editor.setSelectedComponentStateDirty(BodyBehavior::behaviorId);
   });
 }
 

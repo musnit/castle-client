@@ -4,6 +4,7 @@
 
 #include "selection.h"
 
+class Editor;
 
 class GrabTool {
   // Tool that lets actors be moved around with touches and drags
@@ -14,7 +15,7 @@ public:
 
   explicit GrabTool(Selection &selection_);
 
-  void update(Scene &scene, double dt);
+  void update(Editor &editor, Scene &scene, double dt);
   void drawOverlay(Scene &scene) const;
 
 private:
