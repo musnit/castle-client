@@ -114,19 +114,12 @@ const MovementTab = ({ behaviors, addChildSheet }) => {
         </TouchableOpacity>
       </View>
       <Inspector.Motion moving={behaviors.Moving} rotatingMotion={behaviors.RotatingMotion} />
-      {false &&
-        movementBehaviors &&
+      {movementBehaviors &&
         movementBehaviors
           .filter((name) => behaviors[name]?.isActive)
           .map((name) => {
             let Component = Inspector[name] ?? Inspector.Behavior;
-            return (
-              <Component
-                key={`behavior-${name}`}
-                behavior={behaviors[name]}
-                sendAction={sendActions[name]}
-              />
-            );
+            return <Component key={`behavior-${name}`} behavior={behaviors[name]} />;
           })}
     </React.Fragment>
   );

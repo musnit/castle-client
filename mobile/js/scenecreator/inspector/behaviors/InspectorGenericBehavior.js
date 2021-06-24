@@ -15,7 +15,7 @@ export default InspectorGenericBehavior = ({ behavior, properties }) => {
   return (
     <View style={SceneCreatorConstants.styles.behaviorContainer}>
       <BehaviorHeader behavior={behavior} sendAction={sendAction} />
-      {properties?.length ? (
+      {component && properties?.length ? (
         <View style={SceneCreatorConstants.styles.behaviorProperties}>
           {properties.map((propName, ii) => (
             <BehaviorPropertyInputRow

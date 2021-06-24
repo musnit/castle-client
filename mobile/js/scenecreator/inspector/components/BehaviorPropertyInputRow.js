@@ -49,7 +49,12 @@ export const BehaviorPropertyInputRow = ({
 
   // TODO: merge with ParamInput component
   let input;
-  switch (propertySpec.type) {
+  let { type } = propertySpec;
+  if (type === 'string' && propertySpec.attribs.allowedValues?.length) {
+    type = 'dropdown';
+  }
+
+  switch (type) {
     case 'f':
     case 'i':
     case 'd':
@@ -74,7 +79,6 @@ export const BehaviorPropertyInputRow = ({
         />
       );
       break;
-    // TODO: check propspec's allowedValues
     case 'dropdown':
       input = (
         <InspectorDropdown
@@ -88,7 +92,7 @@ export const BehaviorPropertyInputRow = ({
       break;
     default:
       throw new Error(
-        `Input type ${propertySpec.method} is not supported in BehaviorPropertyInputRow`
+        `Input type ${propertySpec.type} is not supported in BehaviorPropertyInputRow`
       );
   }
 
