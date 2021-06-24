@@ -21,8 +21,7 @@ export const BehaviorHeader = ({ name, behavior, component, sendAction }) => {
   const onRemove = () => sendAction('remove');
 
   let disableBehaviorSwitch;
-  // TODO: allowsDisableWithoutRemoval
-  if (component && (true || behavior.allowsDisableWithoutRemoval)) {
+  if (component && behavior.allowsDisableWithoutRemoval) {
     const onChangeSwitch = (value) => sendAction(value ? 'enable' : 'disable');
     disableBehaviorSwitch = (
       <Switch
