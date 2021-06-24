@@ -64,6 +64,7 @@ void Player::tryLoadNextCard() {
 }
 
 void Player::readScene(Reader &reader) {
+  sceneArchive = Archive::fromJson(reader.toJson().c_str());
   scene = std::make_unique<Scene>(bridge, variables, &reader);
 }
 
@@ -83,9 +84,13 @@ void Player::update(double dt) {
   if (scene) {
     if (scene->isRestartRequested()) {
       sceneArchive.read([&](Reader &reader) {
-        reader.obj("snapshot", [&]() {
+        if (reader.has("snapshot")) {
+          reader.obj("snapshot", [&]() {
+            scene = std::make_unique<Scene>(bridge, variables, &reader);
+          });
+        } else {
           scene = std::make_unique<Scene>(bridge, variables, &reader);
-        });
+        }
       });
     }
 

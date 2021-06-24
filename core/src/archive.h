@@ -156,7 +156,7 @@ public:
                     // with a `T::read(Reader &reader)` method, or reflectable with props
 
   const json::Value *jsonValue(); // Return RapidJSON form of current value
-
+  const std::string toJson();
 
   // Fallback
 
@@ -672,6 +672,15 @@ void Reader::read(T &&v) {
 
 inline const json::Value *Reader::jsonValue() {
   return cur;
+}
+
+inline const std::string Reader::toJson() {
+  json::StringBuffer buffer;
+  json::PrettyWriter writer(buffer);
+  writer.SetIndent(' ', 2);
+  writer.SetFormatOptions(json::kFormatSingleLineArray);
+  cur->Accept(writer);
+  return std::string(buffer.GetString(), buffer.GetLength());
 }
 
 inline void Reader::setFallback(const json::Value *fallback_) {
