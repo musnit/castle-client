@@ -26,12 +26,13 @@ export default InspectorTextContent = () => {
   const [value, setValueAndSendAction] = useOptimisticBehaviorValue({
     component: textComponent,
     propName: 'content',
+    propType: 'string',
     sendAction,
   });
 
   const onChange = React.useCallback(
     (content) => {
-      setValueAndSendAction('set', 'content', content);
+      setValueAndSendAction('set', content);
     },
     [setValueAndSendAction]
   );

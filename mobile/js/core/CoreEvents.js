@@ -131,10 +131,22 @@ export const useCoreState = (eventName) => {
 
 export const sendGlobalAction = (action) => sendAsync('EDITOR_GLOBAL_ACTION', { action });
 
-export const sendBehaviorAction = (behavior, action, property, value) =>
-  sendAsync('EDITOR_MODIFY_COMPONENT', {
+export const sendBehaviorAction = (behavior, action, propertyName, propertyType, value) => {
+  let stringValue = '',
+    doubleValue = 0;
+  if (propertyType === 'string') {
+    stringValue = value;
+  } else if (propertyType == 'b') {
+    doubleValue = value ? 1 : 0;
+  } else {
+    doubleValue = value;
+  }
+  return sendAsync('EDITOR_MODIFY_COMPONENT', {
     behaviorName: behavior,
     action,
-    propertyName: property,
-    value,
+    propertyName,
+    propertyType,
+    stringValue,
+    doubleValue,
   });
+};

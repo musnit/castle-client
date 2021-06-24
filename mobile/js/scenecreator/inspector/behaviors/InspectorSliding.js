@@ -2,30 +2,38 @@ import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { BehaviorHeader } from '../components/BehaviorHeader';
 import { InspectorCheckbox } from '../components/InspectorCheckbox';
+import { useCoreState, sendBehaviorAction } from '../../../core/CoreEvents';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
+
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
-export default InspectorSliding = ({ behavior, sendAction }) => {
+export default InspectorSliding = ({ behavior }) => {
+  const component = useCoreState('EDITOR_SELECTED_COMPONENT:Sliding');
+  const sendAction = React.useCallback((...args) => sendBehaviorAction('Sliding', ...args), [
+    sendBehaviorAction,
+  ]);
   const [slidingDirection, sendSlidingDirection] = useOptimisticBehaviorValue({
-    behavior,
+    component,
     propName: 'direction',
+    propType: 'string',
     sendAction,
   });
   const [isRotationAllowed, sendIsRotationAllowed] = useOptimisticBehaviorValue({
-    behavior,
+    component,
     propName: 'isRotationAllowed',
+    propType: 'b',
     sendAction,
   });
 
   const composeSlidingDirection = (horiz, vert) => {
     if (horiz === vert) {
       if (horiz) {
-        sendSlidingDirection('set:direction', 'both');
+        sendSlidingDirection('set', 'both');
       } else {
-        sendSlidingDirection('set:direction', 'none');
+        sendSlidingDirection('set', 'none');
       }
     } else {
-      sendSlidingDirection('set:direction', horiz ? 'horizontal' : 'vertical');
+      sendSlidingDirection('set', horiz ? 'horizontal' : 'vertical');
     }
   };
 

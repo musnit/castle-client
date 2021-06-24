@@ -30,10 +30,12 @@ export const BehaviorPropertyInputRow = ({
   displayValue = displayValue ?? ((value) => value);
 
   const propertySpec = behavior.propertySpecs[propName];
+  const { type: propType } = propertySpec;
   const [lastNativeUpdate, setLastNativeUpdate] = React.useState(1);
   const [value, sendValue] = useOptimisticBehaviorValue({
     component,
     propName,
+    propType,
     sendAction,
     onNativeUpdate: () => setLastNativeUpdate(lastNativeUpdate + 1),
   });
@@ -49,7 +51,7 @@ export const BehaviorPropertyInputRow = ({
 
   // TODO: merge with ParamInput component
   let input;
-  let { type } = propertySpec;
+  let type = propType;
   if (type === 'string' && propertySpec.attribs.allowedValues?.length) {
     type = 'dropdown';
   }

@@ -29,13 +29,14 @@ export default InspectorTags = ({ tags }) => {
   const [value, setValueAndSendAction] = useOptimisticBehaviorValue({
     component: tagsComponent,
     propName: 'tagsString',
+    propType: 'string',
     sendAction,
   });
 
   const onChange = React.useCallback(
     (tagsString) => {
       if (tags.isActive) {
-        setValueAndSendAction('set', 'tagsString', tagsString);
+        setValueAndSendAction('set', tagsString);
       } else {
         console.warn(`Expect all actors to have Tags, but this actor did not`);
         setValueAndSendAction('add', tagsString, { tagsString });

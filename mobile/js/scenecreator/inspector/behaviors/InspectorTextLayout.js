@@ -26,12 +26,13 @@ export default InspectorTextLayout = () => {
   const [value, setValueAndSendAction] = useOptimisticBehaviorValue({
     component: textComponent,
     propName: 'visible',
+    propType: 'b',
     sendAction,
   });
 
   const onChange = React.useCallback(
     (visible) => {
-      setValueAndSendAction('set', 'visible', visible);
+      setValueAndSendAction('set', visible);
     },
     [setValueAndSendAction]
   );

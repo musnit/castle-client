@@ -43,10 +43,17 @@ export const filterAvailableBehaviors = ({ allBehaviors, possibleBehaviors }) =>
  *
  *  @param component a behavior component
  *  @param propName the property name to read from the behavior
+ *  @param propType the property type to send (matching the corresponding propertySpec)
  *  @param sendAction a method to send actions (i.e. set prop, remove behavior) to this behavior
  *         or component in the engine.
  */
-export const useOptimisticBehaviorValue = ({ component, propName, sendAction, onNativeUpdate }) => {
+export const useOptimisticBehaviorValue = ({
+  component,
+  propName,
+  propType,
+  sendAction,
+  onNativeUpdate,
+}) => {
   const [value, setValue] = React.useState(null);
   const [lastSentEventId, setLastSentEventId] = React.useState(null);
 
@@ -69,7 +76,7 @@ export const useOptimisticBehaviorValue = ({ component, propName, sendAction, on
     if (actionValue === undefined) {
       actionValue = newValue;
     }
-    sendAction(action, propName, actionValue);
+    sendAction(action, propName, propType, actionValue);
   };
 
   return [value, setValueAndSendAction];
