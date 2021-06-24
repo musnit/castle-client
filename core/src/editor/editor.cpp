@@ -310,11 +310,13 @@ struct EditorModifyComponentReceiver {
       Debug::log("Editor received unknown behavior action: {}", action);
       return;
     }
-    if (action == "set") {
-      engine.getEditor().getScene().getBehaviors().byName(
-          params.behaviorName().c_str(), [&](auto &behavior) {
-            using BehaviorType = std::remove_reference_t<decltype(behavior)>;
-            auto actorId = engine.getEditor().getSelection().firstSelectedActorId();
+
+    auto actorId = engine.getEditor().getSelection().firstSelectedActorId();
+    engine.getEditor().getScene().getBehaviors().byName(
+        params.behaviorName().c_str(), [&](auto &behavior) {
+          using BehaviorType = std::remove_reference_t<decltype(behavior)>;
+
+          if (action == "set") {
             auto propId = Props::getId(params.propertyName().c_str());
 
             // TODO: undoable command
@@ -330,11 +332,20 @@ struct EditorModifyComponentReceiver {
               ExpressionValue value(params.doubleValue());
               behavior.setProperty(actorId, propId, value, false);
             }
-
-            engine.getEditor().setSelectedComponentStateDirty(BehaviorType::behaviorId);
-          });
-    }
-    // TODO: add, remove, enable, disable, swap
+          } else if (action == "enable") {
+            engine.getEditor().getScene().getBehaviors().byName(
+                params.behaviorName().c_str(), [&](auto &behavior) {
+                  behavior.enableComponent(actorId);
+                });
+          } else if (action == "disable") {
+            engine.getEditor().getScene().getBehaviors().byName(
+                params.behaviorName().c_str(), [&](auto &behavior) {
+                  behavior.disableComponent(actorId);
+                });
+          }
+          engine.getEditor().setSelectedComponentStateDirty(BehaviorType::behaviorId);
+        });
+    // TODO: add, remove, swap
   }
 };
 
