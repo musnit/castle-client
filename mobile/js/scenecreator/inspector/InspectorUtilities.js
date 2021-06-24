@@ -47,15 +47,13 @@ export const filterAvailableBehaviors = ({ allBehaviors, possibleBehaviors }) =>
  *         or component in the engine.
  */
 export const useOptimisticBehaviorValue = ({ component, propName, sendAction, onNativeUpdate }) => {
-  if (!component || !component.props) {
-    throw new Error(
-      `useOptimisticBehaviorValue requires a valid behavior component, got ${component}`
-    );
-  }
   const [value, setValue] = React.useState(null);
   const [lastSentEventId, setLastSentEventId] = React.useState(null);
 
-  const nativeValue = component?.props[propName];
+  let nativeValue;
+  if (component) {
+    nativeValue = component?.props[propName];
+  }
   if (component && value !== nativeValue) {
     if (lastSentEventId === null || component.lastReportedEventId !== lastSentEventId) {
       setValue(nativeValue);
