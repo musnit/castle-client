@@ -126,6 +126,13 @@ export const useCoreState = (eventName) => {
       return setData(data);
     },
   });
+  React.useEffect(() => {
+    // if an event arrived after mounting, but before we finished adding the handler,
+    // send a one-off update
+    if (getCoreStateCache(eventName) !== data) {
+      setData(getCoreStateCache(eventName));
+    }
+  }, []);
   return data;
 };
 
