@@ -357,6 +357,25 @@ struct EditorModifyComponentReceiver {
   }
 };
 
+struct EditorInspectorActionReceiver {
+  inline static const BridgeRegistration<EditorInspectorActionReceiver> registration {
+    "EDITOR_INSPECTOR_ACTION"
+  };
+
+  struct Params {
+    PROP(std::string, action);
+  } params;
+
+  void receive(Engine &engine) {
+    auto action = params.action();
+
+    Debug::log("editor received inspector action: {}", action);
+    if (action == "closeInspector") {
+      engine.getEditor().getSelection().deselectAllActors();
+    }
+  }
+};
+
 void Editor::maybeSendData() {
   if (isEditorStateDirty) {
     sendGlobalActions();
