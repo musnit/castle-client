@@ -1,7 +1,6 @@
 package xyz.castle;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
@@ -10,7 +9,6 @@ import android.widget.FrameLayout;
 import org.love2d.android.GameActivity;
 
 import ghost.CoreGameActivity;
-import xyz.castle.api.SceneCreatorDownloader;
 
 public class MainActivity extends NavigationActivity {
 
@@ -28,10 +26,6 @@ public class MainActivity extends NavigationActivity {
             gameLayout.removeView(gameActivity.getView());
         }
 
-        gameActivity.resetNative();
-        gameActivity.startNative();
-        gameActivity.resume();
-
         gameLayout = new FrameLayout(context);
         gameLayout.addView(gameActivity.getView());
 
@@ -42,20 +36,23 @@ public class MainActivity extends NavigationActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        GameActivity.ghostRootUri = SCENE_CREATOR_USE_PROD_SCENE_CREATOR ? "" : SCENE_CREATOR_DEV_URI;
-        GameActivity.sceneCreatorApiVersion = SCENE_CREATOR_API_VERSION;
-        gameActivity = new CoreGameActivity();
-        gameActivity.setContexts(this, getApplicationContext());
-        //gameActivity.handleIntent(new Intent(this, GameActivity.class));
+        //GameActivity.ghostRootUri = SCENE_CREATOR_USE_PROD_SCENE_CREATOR ? "" : SCENE_CREATOR_DEV_URI;
+        //GameActivity.sceneCreatorApiVersion = SCENE_CREATOR_API_VERSION;
         GameActivity.setMetricsFromDisplay(getWindowManager().getDefaultDisplay());
+
+        gameActivity = new CoreGameActivity();
+        gameActivity.setContexts(this, this.getApplicationContext());
         gameActivity.loadLibraries();
+        CoreGameActivity.deckId = "";
+
+        gameActivity.resetNative();
+        gameActivity.startNative();
+        gameActivity.resume();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        SceneCreatorDownloader.download(this, SCENE_CREATOR_API_VERSION);
     }
 
     // System behavior for volume, camera, zoom buttons
