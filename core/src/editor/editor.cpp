@@ -9,6 +9,12 @@ Editor::Editor(Bridge &bridge_)
   isAllBehaviorsStateDirty = true;
 }
 
+void Editor::clearState() {
+  selection.deselectAllActors();
+  isEditorStateDirty = true;
+  isAllBehaviorsStateDirty = true;
+}
+
 void Editor::readScene(Reader &reader) {
   scene = std::make_unique<Scene>(bridge, variables, &reader);
   isEditorStateDirty = true;

@@ -16,6 +16,8 @@ public:
 
   explicit Editor(Bridge &bridge_);
 
+  void clearState();
+
   void update(double dt);
   void draw();
 
