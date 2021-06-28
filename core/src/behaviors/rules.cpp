@@ -806,6 +806,12 @@ void RulesBehavior::handlePreRemoveActor(ActorId actorId, RulesComponent &compon
 
 void RulesBehavior::handleReadComponent(
     ActorId actorId, RulesComponent &component, Reader &reader) {
+  if (getScene().getIsEditing()) {
+    // TODO: store json::value and allocator?
+    component.editData = std::make_unique<RulesEditData>();
+    component.editData->rulesJson = reader.toJson();
+    return;
+  }
   reader.each("rules", [&]() {
     // Response
     ResponseRef response = nullptr;

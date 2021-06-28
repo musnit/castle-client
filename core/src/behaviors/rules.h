@@ -112,9 +112,15 @@ private:
 // Behavior
 //
 
+struct RulesEditData {
+  std::string rulesJson;
+};
+
 struct RulesComponent : BaseComponent {
   struct Props {
   } props;
+
+  std::unique_ptr<RulesEditData> editData;
 };
 
 class RulesBehavior : public BaseBehavior<RulesBehavior, RulesComponent> {

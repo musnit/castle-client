@@ -7,8 +7,9 @@
 // Constructor, destructor
 //
 
-Scene::Scene(Bridge &bridge_, Variables &variables_, Reader *maybeReader)
-    : variables(variables_)
+Scene::Scene(Bridge &bridge_, Variables &variables_, bool isEditing_, Reader *maybeReader)
+    : isEditing(isEditing_)
+    , variables(variables_)
     , bridge(bridge_)
     , physicsContactListener(*this)
     , behaviors(std::make_unique<AllBehaviors>(*this)) {

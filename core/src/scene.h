@@ -28,7 +28,8 @@ public:
   Scene(const Scene &) = delete; // Prevent accidental copies
   const Scene &operator=(const Scene &) = delete;
 
-  explicit Scene(Bridge &bridge_, Variables &variables_, Reader *maybeReader = nullptr);
+  explicit Scene(
+      Bridge &bridge_, Variables &variables_, bool isEditing_, Reader *maybeReader = nullptr);
   ~Scene();
 
 
@@ -121,6 +122,10 @@ public:
   const Bridge &getBridge() const;
 
 
+  // Editing state - only settable in constructor
+  bool getIsEditing();
+
+
   // Sound
 
   Sound &getSound();
@@ -168,6 +173,7 @@ private:
   Lv &lv { Lv::getInstance() };
   Variables &variables;
   Bridge &bridge;
+  bool isEditing;
   Sound sound;
 
   entt::registry registry;
@@ -337,6 +343,10 @@ inline Bridge &Scene::getBridge() {
 
 inline const Bridge &Scene::getBridge() const {
   return bridge;
+}
+
+inline bool Scene::getIsEditing() {
+  return isEditing;
 }
 
 inline Sound &Scene::getSound() {

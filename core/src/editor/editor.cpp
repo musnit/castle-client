@@ -16,7 +16,7 @@ void Editor::clearState() {
 }
 
 void Editor::readScene(Reader &reader) {
-  scene = std::make_unique<Scene>(bridge, variables, &reader);
+  scene = std::make_unique<Scene>(bridge, variables, true, &reader);
   isEditorStateDirty = true;
   isAllBehaviorsStateDirty = true;
   Debug::log("editor: read scene");
@@ -34,7 +34,7 @@ void Editor::update(double dt) {
       /* if (scene->isRestartRequested()) {
         sceneArchive.read([&](Reader &reader) {
           reader.obj("snapshot", [&]() {
-            scene = std::make_unique<Scene>(bridge, variables, &reader);
+            scene = std::make_unique<Scene>(bridge, variables, true, &reader);
           });
         });
       }
@@ -268,25 +268,42 @@ struct EditorSelectedComponentEvent {
   PROP(typename C::Props *, props);
 };
 
+struct EditorSelectedRulesComponentEvent {
+  PROP(bool, isDisabled) = false;
+  PROP(std::string, rulesJson);
+};
+
 struct EditorNoComponentEvent {
   PROP(bool, componentNotFound) = true;
 };
 
 // send behavior property values for the selected actor's components
 void Editor::sendSelectedComponent(int behaviorId) {
-  scene->getBehaviors().byId(behaviorId, [&](auto &behavior) {
-    using BehaviorType = std::remove_reference_t<decltype(behavior)>;
-    auto component = behavior.maybeGetComponent(selection.firstSelectedActorId());
-    std::string eventName = std::string("EDITOR_SELECTED_COMPONENT:") + BehaviorType::name;
-    if (component) {
-      using ComponentType = std::remove_reference_t<decltype(*component)>;
-      EditorSelectedComponentEvent<ComponentType> ev { component->disabled, &component->props };
-      bridge.sendEvent(eventName.c_str(), ev);
-    } else {
-      EditorNoComponentEvent ev;
-      bridge.sendEvent(eventName.c_str(), ev);
+  if (behaviorId == RulesBehavior::behaviorId) {
+    auto &rulesBehavior = scene->getBehaviors().byType<RulesBehavior>();
+    RulesComponent *rulesComponent
+        = rulesBehavior.maybeGetComponent(selection.firstSelectedActorId());
+    // rules doesn't use Props, send raw rules json instead
+    EditorSelectedRulesComponentEvent ev { rulesComponent->disabled, "" };
+    if (rulesComponent->editData) {
+      ev.rulesJson = rulesComponent->editData->rulesJson;
     }
-  });
+    bridge.sendEvent("EDITOR_SELECTED_COMPONENT:Rules", ev);
+  } else {
+    scene->getBehaviors().byId(behaviorId, [&](auto &behavior) {
+      using BehaviorType = std::remove_reference_t<decltype(behavior)>;
+      auto component = behavior.maybeGetComponent(selection.firstSelectedActorId());
+      std::string eventName = std::string("EDITOR_SELECTED_COMPONENT:") + BehaviorType::name;
+      if (component) {
+        using ComponentType = std::remove_reference_t<decltype(*component)>;
+        EditorSelectedComponentEvent<ComponentType> ev { component->disabled, &component->props };
+        bridge.sendEvent(eventName.c_str(), ev);
+      } else {
+        EditorNoComponentEvent ev;
+        bridge.sendEvent(eventName.c_str(), ev);
+      }
+    });
+  }
 }
 
 struct EditorModifyComponentReceiver {
