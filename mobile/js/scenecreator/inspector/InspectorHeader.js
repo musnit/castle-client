@@ -151,7 +151,7 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
   const { userId: signedInUserId } = useSession();
   let canCopyBlueprint = false;
   if (deck) {
-    if (deck.accessPermissions == 'cloneable' || deck.creator.id == signedInUserId) {
+    if (deck.accessPermissions == 'cloneable' || deck.creator.userId == signedInUserId) {
       canCopyBlueprint = true;
     }
   } else {

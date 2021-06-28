@@ -18,9 +18,23 @@ export default {
       // sentinel sent from the engine when the selection no longer has a behavior
       return null;
     }
-    return {
+    const result = {
       ...data,
       lastReportedEventId: eventId,
     };
+    if (name === 'EDITOR_SELECTED_COMPONENT:Rules') {
+      // parse rules json
+
+      // TODO: sort by index?
+      /*
+        .map(([index, rule]) => ({ ...rule, index }))
+        .sort((a, b) => parseInt(b.index, 10) < parseInt(a.index, 10));
+      */
+
+      const rulesObj = JSON.parse(data.rulesJson);
+      result.rules = rulesObj.rules;
+      delete result.rulesJson;
+    }
+    return result;
   },
 };

@@ -66,6 +66,12 @@ const makeResponseRows = (rows, order, indent, { response, context }) => {
 };
 
 export const RulePreview = ({ rule }) => {
+  // TODO: render actual rule with context
+  return (
+    <View>
+      <Text style={styles.rowText}>{JSON.stringify(rule, null, 2)}</Text>
+    </View>
+  );
   const context = useCardCreator();
   let triggerCells = Triggers.makeCells({ trigger: rule.trigger, context, isPreview: true });
 

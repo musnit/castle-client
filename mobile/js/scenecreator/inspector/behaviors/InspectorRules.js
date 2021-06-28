@@ -3,7 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Counter } from './InspectorBehaviors';
 import { EditRuleSheet } from '../rules/EditRuleSheet';
 import { RulePreview } from '../rules/RulePreview';
-import { useCardCreator } from '../../CreateCardContext';
+import { useCoreState, sendBehaviorAction } from '../../../core/CoreEvents';
 
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
@@ -26,9 +26,17 @@ const styles = StyleSheet.create({
   },
 });
 
-export default InspectorRules = ({ behaviors, sendActions, addChildSheet }) => {
-  const { rules: rulesContext } = useCardCreator();
-  const { data: rulesData, sendAction: sendRuleAction, items: rulesItems } = rulesContext;
+export default InspectorRules = ({ behaviors, addChildSheet }) => {
+  const rulesData = {}; // TODO: possible triggers, responses, etc.
+  const rulesComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Rules');
+  const sendRuleAction = React.useCallback((...args) => sendBehaviorAction('Rules', ...args), [
+    sendBehaviorAction,
+  ]);
+  const counterComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Counter');
+  const sendCounterAction = React.useCallback((...args) => sendBehaviorAction('Counter', ...args), [
+    sendBehaviorAction,
+  ]);
+  const rulesItems = rulesComponent.rules;
 
   const rules = behaviors.Rules;
   const counter = behaviors.Counter;
@@ -87,10 +95,10 @@ export default InspectorRules = ({ behaviors, sendActions, addChildSheet }) => {
               <Text style={SceneCreatorConstants.styles.buttonLabel}>Paste rule</Text>
             </TouchableOpacity>
           ) : null}
-          {!counter.isActive ? (
+          {!counterComponent?.isActive ? (
             <TouchableOpacity
               style={[SceneCreatorConstants.styles.button, { marginLeft: 16 }]}
-              onPress={() => sendActions.Counter('add')}>
+              onPress={() => sendCounterAction('add')}>
               <Text style={SceneCreatorConstants.styles.buttonLabel}>Enable counter</Text>
             </TouchableOpacity>
           ) : null}
@@ -106,7 +114,7 @@ export default InspectorRules = ({ behaviors, sendActions, addChildSheet }) => {
           ))}
         </View>
       </View>
-      {counter?.isActive ? <Counter counter={counter} sendAction={sendActions.Counter} /> : null}
+      {counterComponent?.isActive ? <Counter counter={counter} /> : null}
     </React.Fragment>
   );
 };

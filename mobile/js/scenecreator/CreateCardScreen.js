@@ -25,7 +25,7 @@ import { DrawingCardHeader, DRAWING_CARD_HEADER_HEIGHT } from './drawing/Drawing
 import { PopoverProvider } from '../components/PopoverProvider';
 import { SheetProvider } from './SheetProvider';
 
-import { getActiveTool, getInspectorTags, getInspectorRules } from './SceneCreatorUtilities';
+import { getActiveTool, getInspectorTags } from './SceneCreatorUtilities';
 
 const TABLET_BELT_HEIGHT_MULTIPLIER = isTablet() ? 2 : 1;
 const MIN_BELT_HEIGHT = 1.2 * TABLET_BELT_HEIGHT_MULTIPLIER * 48;
@@ -140,7 +140,6 @@ export const CreateCardScreen = ({
   const { activeToolData, activeToolAction } = getActiveTool(root);
   const textActors = useCoreTextActors();
   // TODO: const { tagToActorIds } = getInspectorTags(behaviors?.Tags);
-  const rules = getInspectorRules(root);
 
   // lua's behaviors can be "tools"
   React.useEffect(() => {
@@ -332,7 +331,6 @@ export const CreateCardScreen = ({
     selectedActorId,
     hasSelection,
     isTextActorSelected,
-    rules,
     library: getLibraryEntries(root),
     expressions: getExpressions(root),
     transformAssetUri,
