@@ -11,7 +11,7 @@ struct CollideTrigger : BaseTrigger {
   inline static const RuleRegistration<CollideTrigger, BodyBehavior> registration { "collide" };
 
   struct Params {
-    PROP(Tag, tag);
+    PROP(Tag, tag, .label("collides with tag"));
   } params;
 
   inline static int nextId = 0;
@@ -89,7 +89,7 @@ struct IsCollidingResponse : BaseResponse {
   };
 
   struct Params {
-    PROP(Tag, tag);
+    PROP(Tag, tag, .label("colliding with tag"));
   } params;
 
   bool eval(RuleContext &ctx) override {

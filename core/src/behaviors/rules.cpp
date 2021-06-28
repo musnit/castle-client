@@ -30,15 +30,47 @@ struct CreateResponse : BaseResponse {
   inline static const RuleRegistration<CreateResponse, RulesBehavior> registration { "create" };
 
   struct Params {
-    PROP(std::string, entryId);
-    PROP(std::string, coordinateSystem) = "relative position";
-    PROP(ExpressionRef, xOffset) = 0;
-    PROP(ExpressionRef, yOffset) = 0;
-    PROP(ExpressionRef, xAbsolute) = 0;
-    PROP(ExpressionRef, yAbsolute) = 0;
-    PROP(ExpressionRef, angle) = 0;
+    PROP(
+         std::string, entryId,
+         .label("blueprint to create")
+         );
+    PROP(
+         std::string, coordinateSystem,
+         .label("coordinate system")
+         .allowedValues("relative position", "relative angle and distance", "absolute position")
+         )
+            = "relative position";
+    PROP(
+         ExpressionRef, xOffset,
+         .label("relative x position")
+         ) = 0;
+    PROP(
+         ExpressionRef, yOffset,
+         .label("relative y position")
+         ) = 0;
+    PROP(
+         ExpressionRef, xAbsolute,
+         .label("absolute x position")
+         ) = 0;
+    PROP(
+         ExpressionRef, yAbsolute,
+         .label("absolute y position")
+         ) = 0;
+    PROP(
+         ExpressionRef, angle,
+         .label("angle (degrees)")
+         ) = 0;
     PROP(ExpressionRef, distance) = 0;
-    PROP(std::string, depth) = "in front of all actors";
+    PROP(
+         std::string, depth,
+         .allowedValues(
+             "behind all actors",
+             "behind this actor",
+             "in front of this actor",
+             "in front of all actors"
+           )
+         )
+            = "in front of all actors";
   } params;
 
   void run(RuleContext &ctx) override {
@@ -124,7 +156,11 @@ struct CreateTextResponse : BaseResponse {
 
   struct Params {
     PROP(std::string, content);
-    PROP(std::string, action) = "dismiss";
+    PROP(
+         std::string, action,
+         .label("When tapped")
+         .allowedValues("none", "dismiss", "perform response")
+         ) = "dismiss";
     PROP(ResponseRef, body) = nullptr;
   } params;
 
@@ -234,7 +270,7 @@ struct EnableBehaviorResponse : BaseResponse {
   };
 
   struct Params {
-    PROP(int, behaviorId) = -1;
+    PROP(int, behaviorId, .label("behavior")) = -1;
   } params;
 
   void run(RuleContext &ctx) override {
@@ -250,7 +286,7 @@ struct DisableBehaviorResponse : BaseResponse {
   };
 
   struct Params {
-    PROP(int, behaviorId) = -1;
+    PROP(int, behaviorId, .label("behavior")) = -1;
   } params;
 
   void run(RuleContext &ctx) override {
@@ -266,9 +302,15 @@ struct SetBehaviorPropertyResponse : BaseResponse {
   };
 
   struct Params {
-    PROP(int, behaviorId) = -1;
-    PROP(PropId, propertyName);
-    PROP(ExpressionRef, value);
+    PROP(int, behaviorId, .label("behavior")) = -1;
+    PROP(
+         PropId, propertyName,
+         .label("parameter")
+         );
+    PROP(
+         ExpressionRef, value,
+         .label("set to")
+         );
     PROP(bool, relative) = false;
   } params;
 
@@ -348,7 +390,11 @@ struct RepeatResponse : BaseResponse {
   inline static const RuleRegistration<RepeatResponse, RulesBehavior> registration { "repeat" };
 
   struct Params {
-    PROP(ExpressionRef, count) = 3;
+    PROP(
+         ExpressionRef, count,
+         .label("repetitions")
+         .min(0)
+         ) = 3;
     PROP(ResponseRef, body) = nullptr;
   } params;
 
@@ -391,7 +437,12 @@ struct InfiniteRepeatResponse : BaseResponse {
   };
 
   struct Params {
-    PROP(double, interval) = 1;
+    PROP(
+         double, interval,
+         .label("interval (seconds")
+         .min(1/60)
+         .max(30)
+         ) = 1;
     PROP(ResponseRef, body) = nullptr;
   } params;
 
@@ -541,7 +592,12 @@ struct WaitResponse : BaseResponse {
   inline static const RuleRegistration<WaitResponse, RulesBehavior> registration { "wait" };
 
   struct Params {
-    PROP(ExpressionRef, duration) = 1;
+    PROP(
+         ExpressionRef, duration,
+         .label("duration (seconds")
+         .min(1/60)
+         .max(30)
+         ) = 1;
   } params;
 
   void run(RuleContext &ctx) override {
@@ -585,7 +641,12 @@ struct CoinFlipResponse : BaseResponse {
   };
 
   struct Params {
-    PROP(ExpressionRef, probability) = 0.5;
+    PROP(
+         ExpressionRef, probability,
+         .label("probability of heads")
+         .min(0)
+         .max(1)
+         ) = 0.5;
   } params;
 
   bool eval(RuleContext &ctx) override {
@@ -605,10 +666,23 @@ struct PlaySoundResponse : BaseResponse {
   };
 
   struct Params {
-    PROP(std::string, category);
-    PROP(int, seed);
-    PROP(int, mutationSeed) = 0;
-    PROP(int, mutationAmount) = 5;
+    PROP(
+         std::string, category,
+         .allowedValues("pickup", "laser", "explosion", "powerup", "hit", "jump", "blip", "random")
+         )
+            = "random";
+    PROP(
+         int, seed,
+         .label("random seed")
+         .min(0)
+         ) = 1337;
+    PROP(int, mutationSeed, .label("mutation seed")) = 0;
+    PROP(
+         int, mutationAmount,
+         .label("mutation amount")
+         .min(0)
+         .max(20)
+         ) = 5;
   } params;
 
   void run(RuleContext &ctx) override {
@@ -651,7 +725,10 @@ struct VariableChangesTrigger : BaseTrigger {
   };
 
   struct Params {
-    PROP(Variable, variableId);
+    PROP(
+         Variable, variableId,
+         .label("variable")
+         );
   } params;
 };
 
@@ -661,7 +738,10 @@ struct VariableReachesValueTrigger : BaseTrigger {
   };
 
   struct Params {
-    PROP(Variable, variableId);
+    PROP(
+         Variable, variableId,
+         .label("variable")
+         );
     PROP(std::string, comparison) = "equal";
     PROP(double, value) = 0;
   } params;

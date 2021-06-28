@@ -119,8 +119,16 @@ struct RuleEntryData {
   PROP(int, behaviorId);
 
   struct ParamSpec {
+    struct Attribs {
+      PROP(std::string, label);
+      PROP(float, min);
+      PROP(float, max);
+      PROP(std::vector<std::string>, allowedValues);
+    };
+
     PROP(std::string, name);
     PROP(std::string, type);
+    PROP(Attribs, attribs);
   };
   PROP(std::vector<ParamSpec>, paramSpecs);
   // TODO: category, description, returnType, triggerFilter, parentTypeFilter
@@ -541,12 +549,25 @@ RuleRegistration<T, Behavior>::RuleRegistration(const char *name, bool allowDupl
         data->behaviorId = Behavior::behaviorId;
       }
       if constexpr (Props::hasProps<typename T::Params>) {
+        // TODO: merge with paramSpec serialization in editor.cpp
         static typename T::Params params;
         Props::forEach(params, [&](auto &prop) {
           using Prop = std::remove_reference_t<decltype(prop)>;
+          constexpr auto &attribs = Prop::attribs;
           RuleEntryData::ParamSpec spec;
           spec.name = Prop::name;
           spec.type = prop.getType();
+          spec.attribs().label = attribs.label_;
+          spec.attribs().min = attribs.min_;
+          spec.attribs().max = attribs.max_;
+          if (attribs.allowedValues_[0]) {
+            for (auto &allowedValue : attribs.allowedValues_) {
+              if (!allowedValue) {
+                break;
+              }
+              spec.attribs().allowedValues().push_back(allowedValue);
+            }
+          }
           data->paramSpecs().push_back(spec);
         });
       }
