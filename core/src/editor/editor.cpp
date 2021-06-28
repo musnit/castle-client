@@ -7,18 +7,21 @@ Editor::Editor(Bridge &bridge_)
     : bridge(bridge_) {
   isEditorStateDirty = true;
   isAllBehaviorsStateDirty = true;
+  isRulesStateDirty = true;
 }
 
 void Editor::clearState() {
   selection.deselectAllActors();
   isEditorStateDirty = true;
   isAllBehaviorsStateDirty = true;
+  isRulesStateDirty = true;
 }
 
 void Editor::readScene(Reader &reader) {
   scene = std::make_unique<Scene>(bridge, variables, true, &reader);
   isEditorStateDirty = true;
   isAllBehaviorsStateDirty = true;
+  isRulesStateDirty = true;
   Debug::log("editor: read scene");
 }
 
@@ -399,6 +402,28 @@ struct EditorInspectorActionReceiver {
   }
 };
 
+struct EditorRulesDataEvent {
+  PROP(std::vector<RuleEntryData>, triggers);
+  PROP(std::vector<RuleEntryData>, responses);
+};
+
+void Editor::sendRulesData() {
+  EditorRulesDataEvent ev;
+
+  for (auto triggerWriter : RulesBehavior::triggerWriters) {
+    RuleEntryData data;
+    triggerWriter.write(triggerWriter.name, &data);
+    ev.triggers().push_back(data);
+  }
+  for (auto responseWriter : RulesBehavior::responseWriters) {
+    RuleEntryData data;
+    responseWriter.write(responseWriter.name, &data);
+    ev.responses().push_back(data);
+  }
+
+  bridge.sendEvent("EDITOR_RULES_DATA", ev);
+}
+
 void Editor::maybeSendData() {
   if (isEditorStateDirty) {
     sendGlobalActions();
@@ -407,6 +432,10 @@ void Editor::maybeSendData() {
   if (isAllBehaviorsStateDirty) {
     sendAllBehaviors();
     isAllBehaviorsStateDirty = false;
+  }
+  if (isRulesStateDirty) {
+    sendRulesData();
+    isRulesStateDirty = false;
   }
   if (!selectedComponentStateDirty.empty()) {
     for (auto behaviorId : selectedComponentStateDirty) {

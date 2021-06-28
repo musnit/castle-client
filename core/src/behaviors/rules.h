@@ -109,12 +109,27 @@ private:
 
 
 //
-// Behavior
-//
-
+// Editor-specific data
 struct RulesEditData {
   std::string rulesJson;
 };
+
+struct RuleEntryData {
+  PROP(std::string, name);
+  PROP(int, behaviorId);
+
+  struct ParamSpec {
+    PROP(std::string, name);
+    PROP(std::string, type);
+  };
+  PROP(std::vector<ParamSpec>, paramSpecs);
+  // TODO: category, description, returnType, triggerFilter, parentTypeFilter
+};
+
+
+//
+// Behavior
+//
 
 struct RulesComponent : BaseComponent {
   struct Props {
@@ -236,6 +251,17 @@ private:
 
   ResponseRef readResponse(Reader &reader);
   void readExpression(ExpressionRef &expr, Reader &reader);
+
+
+  // Serialization for editing
+  friend class Editor;
+
+  struct RuleEntryWriter {
+    std::string name;
+    void (*write)(std::string &name, RuleEntryData *data) = nullptr;
+  };
+  inline static std::vector<RuleEntryWriter> triggerWriters;
+  inline static std::vector<RuleEntryWriter> responseWriters;
 
 
   // Triggering
@@ -504,8 +530,34 @@ RuleRegistration<T, Behavior>::RuleRegistration(const char *name, bool allowDupl
                  "containing `struct` or `class`)");
   }
   registered = true;
+
+  RulesBehavior::RuleEntryWriter entry { std::string(name),
+    [](std::string &name, RuleEntryData *data) {
+      data->name = name;
+
+      if constexpr (std::is_base_of_v<BaseExpression, T>) {
+        data->behaviorId = -1; // expression
+      } else {
+        data->behaviorId = Behavior::behaviorId;
+      }
+      if constexpr (Props::hasProps<typename T::Params>) {
+        static typename T::Params params;
+        Props::forEach(params, [&](auto &prop) {
+          using Prop = std::remove_reference_t<decltype(prop)>;
+          RuleEntryData::ParamSpec spec;
+          spec.name = Prop::name;
+          spec.type = prop.getType();
+          data->paramSpecs().push_back(spec);
+        });
+      }
+    } };
+
   if constexpr (std::is_base_of_v<BaseTrigger, T>) {
     // This is a trigger type
+
+    // TODO: only if editing
+    RulesBehavior::triggerWriters.push_back(entry);
+
     RulesBehavior::triggerLoaders.push_back({
         entt::hashed_string(name),
         Behavior::behaviorId,
@@ -529,6 +581,10 @@ RuleRegistration<T, Behavior>::RuleRegistration(const char *name, bool allowDupl
     });
   } else if constexpr (std::is_base_of_v<BaseResponse, T>) {
     // This is a response type
+
+    // TODO: only if editing
+    RulesBehavior::responseWriters.push_back(entry);
+
     RulesBehavior::responseLoaders.push_back({
         entt::hashed_string(name),
         Behavior::behaviorId,

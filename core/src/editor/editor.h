@@ -58,6 +58,9 @@ private:
   bool isAllBehaviorsStateDirty;
   void sendAllBehaviors();
 
+  bool isRulesStateDirty; // TODO: should never dirty after first load
+  void sendRulesData();
+
   // behaviorId present indicates dirty state for selected actor
   std::set<int> selectedComponentStateDirty;
   void sendSelectedComponent(int behaviorId);

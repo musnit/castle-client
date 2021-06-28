@@ -93,6 +93,7 @@ struct Prop {
     return value;
   }
 
+  // TODO: cache
   std::string getType() {
     std::string rawType = typeid(Value).name();
     if (rawType.find("vector") != std::string::npos) {
@@ -101,6 +102,19 @@ struct Prop {
     }
     if (rawType.find("string") != std::string::npos) {
       return "string";
+    }
+    if (rawType.find("Variable") != std::string::npos) {
+      return "variable";
+    }
+    if (rawType.find("Tag") != std::string::npos) {
+      return "tag";
+    }
+    if (rawType.find("Expression") != std::string::npos) {
+      // TODO: distinguish between expression types, when we have non-numeric exprs
+      return "expression";
+    }
+    if (rawType.find("Props") != std::string::npos) {
+      return "property";
     }
     return rawType;
   }
