@@ -38,7 +38,7 @@ struct SetCounterResponse : BaseResponse {
   };
 
   struct Params {
-    PROP(ExpressionRef, setToValue) = 0;
+    PROP(ExpressionRef, setToValue, .label("set to value")) = 0;
     PROP(bool, relative) = false;
   } params;
 

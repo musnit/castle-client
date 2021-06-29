@@ -702,9 +702,8 @@ struct NoteResponse : BaseResponse {
   inline static const RuleRegistration<NoteResponse, RulesBehavior> registration { "note" };
 
   struct Params {
-#ifdef DEBUG_LOG_NOTE_RESPONSE
-    PROP(std::string, note); // Only needed if we're going to log notes, skip overhead otherwise
-#endif
+    // TODO: would be nice to skip loading this if we're not editing the scene
+    PROP(std::string, note);
   } params;
 
   void run(RuleContext &ctx) override {
@@ -778,7 +777,7 @@ struct ResetVariableResponse : BaseResponse {
   };
 
   struct Params {
-    PROP(Variable, variableId);
+    PROP(Variable, variableId, .label("variable"));
   } params;
 
   void run(RuleContext &ctx) override {
@@ -805,8 +804,8 @@ struct SetVariableResponse : BaseResponse {
   };
 
   struct Params {
-    PROP(Variable, variableId);
-    PROP(ExpressionRef, setToValue);
+    PROP(Variable, variableId, .label("variable"));
+    PROP(ExpressionRef, setToValue, .label("set to value"));
     PROP(bool, relative);
   } params;
 
@@ -828,7 +827,7 @@ struct VariableMeetsConditionResponse : BaseResponse {
   };
 
   struct Params {
-    PROP(Variable, variableId);
+    PROP(Variable, variableId, .label("variable"));
     PROP(std::string, comparison);
     PROP(ExpressionRef, value);
   } params;

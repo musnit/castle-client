@@ -85,7 +85,7 @@ struct SendPlayerToCardResponse : BaseResponse {
   };
 
   struct Params {
-    PROP(Card, card);
+    PROP(Card, card, .label("destination card"));
   } params;
 
   void run(RuleContext &ctx) override {
