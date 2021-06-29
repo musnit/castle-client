@@ -84,9 +84,6 @@ if(NOT MSVC)
     -pedantic-errors -Wall -Wextra -Wno-missing-braces
     -Wno-gnu-zero-variadic-macro-arguments -Wno-nested-anon-types -Wno-unused-parameter -Wno-pragma-pack
     -Wno-gnu-anonymous-struct)
-  if(WEB)
-    target_compile_options(castle-core PRIVATE -Wno-deprecated-copy)
-  endif()
   if(IOS)
     target_compile_options(castle-core PRIVATE -Wno-shorten-64-to-32)
   endif()

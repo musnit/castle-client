@@ -43,6 +43,12 @@ struct Vector2
 		: x(v.x), y(v.y)
 	{}
 
+	Vector2 &operator=(const Vector2 &v) {
+		x = v.x;
+		y = v.y;
+		return *this;
+	}
+
 	/**
 	 * Gets the length of the Vector.
 	 **/
