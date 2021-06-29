@@ -3,7 +3,17 @@
 #include "behaviors/all.h"
 #include "editor.h"
 
+
 inline static const TouchToken grabTouchToken;
+
+
+// TODO: Will be used in 'scale rotate' and 'add from blueprint' -- put it somewhere common
+static float quantize(float value, float divisor, float start = 0) {
+  if (divisor == 0) {
+    return value;
+  }
+  return divisor * std::floor(0.5f + (value - start) / divisor) + start;
+}
 
 
 //
@@ -32,13 +42,27 @@ void GrabTool::update(Editor &editor, Scene &scene, double dt) {
       touch.forceUse(grabTouchToken);
     }
 
-    // TODO: Quantize to grid
+    auto move = touch.delta;
+
+    if (gridEnabled) {
+      auto prevTouchPos = touch.pos - touch.delta;
+      love::Vector2 qPrevTouchPos {
+        quantize(prevTouchPos.x, gridSize, touch.initialPos.x),
+        quantize(prevTouchPos.y, gridSize, touch.initialPos.y),
+      };
+      love::Vector2 qTouchPos {
+        quantize(touch.pos.x, gridSize, touch.initialPos.x),
+        quantize(touch.pos.y, gridSize, touch.initialPos.y),
+      };
+      move = qTouchPos - qPrevTouchPos;
+    }
+
     // TODO: Undo / redo
 
     auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
     for (auto actorId : selection.getSelectedActorIds()) {
-      bodyBehavior.setProperty(actorId, Props::getId("x"), ExpressionValue(touch.delta.x), true);
-      bodyBehavior.setProperty(actorId, Props::getId("y"), ExpressionValue(touch.delta.y), true);
+      bodyBehavior.setProperty(actorId, decltype(BodyComponent::Props::x)::id, move.x, true);
+      bodyBehavior.setProperty(actorId, decltype(BodyComponent::Props::y)::id, move.y, true);
     }
     editor.setSelectedComponentStateDirty(BodyBehavior::behaviorId);
   });

@@ -20,4 +20,7 @@ public:
 
 private:
   Selection &selection;
+
+  bool gridEnabled = true;
+  float gridSize = 0.25;
 };
