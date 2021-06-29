@@ -9,6 +9,7 @@
 
 struct CollideTrigger : BaseTrigger {
   inline static const RuleRegistration<CollideTrigger, BodyBehavior> registration { "collide" };
+  static constexpr auto description = "When this collides with another actor";
 
   struct Params {
     PROP(Tag, tag, .label("collides with tag"));
@@ -32,6 +33,7 @@ struct CollideTriggerMarker {
 
 struct TapTrigger : BaseTrigger {
   inline static const RuleRegistration<TapTrigger, BodyBehavior> registration { "tap" };
+  static constexpr auto description = "When this is tapped";
 
   struct Params {
   } params;
@@ -39,6 +41,7 @@ struct TapTrigger : BaseTrigger {
 
 struct PressTrigger : BaseTrigger {
   inline static const RuleRegistration<PressTrigger, BodyBehavior> registration { "press" };
+  static constexpr auto description = "While this is pressed";
 
   struct Params {
   } params;
@@ -48,6 +51,7 @@ struct TouchDownTrigger : BaseTrigger {
   inline static const RuleRegistration<TouchDownTrigger, BodyBehavior> registration {
     "touch down"
   };
+  static constexpr auto description = "When a touch begins on this";
 
   struct Params {
   } params;
@@ -55,6 +59,7 @@ struct TouchDownTrigger : BaseTrigger {
 
 struct TouchUpTrigger : BaseTrigger {
   inline static const RuleRegistration<TouchUpTrigger, BodyBehavior> registration { "touch up" };
+  static constexpr auto description = "When a touch ends on this";
 
   struct Params {
   } params;
@@ -64,6 +69,7 @@ struct EnterCameraViewportTrigger : BaseTrigger {
   inline static const RuleRegistration<EnterCameraViewportTrigger, BodyBehavior> registration {
     "enter camera viewport"
   };
+  static constexpr auto description = "When this enters the camera viewport";
 
   struct Params {
   } params;
@@ -73,6 +79,7 @@ struct ExitCameraViewportTrigger : BaseTrigger {
   inline static const RuleRegistration<ExitCameraViewportTrigger, BodyBehavior> registration {
     "exit camera viewport"
   };
+  static constexpr auto description = "When this exits the camera viewport";
 
   struct Params {
   } params;
@@ -87,6 +94,7 @@ struct IsCollidingResponse : BaseResponse {
   inline static const RuleRegistration<IsCollidingResponse, BodyBehavior> registration {
     "is colliding"
   };
+  static constexpr auto description = "If this is colliding";
 
   struct Params {
     PROP(Tag, tag, .label("colliding with tag"));
@@ -117,6 +125,7 @@ struct FaceDirectionOfMotionResponse : BaseResponse {
   inline static const RuleRegistration<FaceDirectionOfMotionResponse, BodyBehavior> registration {
     "face direction of motion"
   };
+  static constexpr auto description = "Face direction of motion";
 
   struct Params {
   } params;
@@ -135,6 +144,7 @@ struct IsInCameraViewportResponse : BaseResponse {
   inline static const RuleRegistration<IsInCameraViewportResponse, BodyBehavior> registration {
     "is in camera viewport"
   };
+  static constexpr auto description = "If this is in the camera viewport";
 
   struct Params {
   } params;

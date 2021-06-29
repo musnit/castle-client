@@ -11,6 +11,7 @@ struct VelocityChangesTrigger : BaseTrigger {
   inline static const RuleRegistration<VelocityChangesTrigger, MovingBehavior> registration {
     "velocity changes"
   };
+  static constexpr auto description = "When velocity changes";
 
   struct Params {
   } params;
@@ -20,6 +21,7 @@ struct StopsMovingTrigger : BaseTrigger {
   inline static const RuleRegistration<StopsMovingTrigger, MovingBehavior> registration {
     "stops moving"
   };
+  static constexpr auto description = "When this stops moving";
 
   struct Params {
   } params;
@@ -34,6 +36,7 @@ struct MoveTowardOwnAngleResponse : BaseResponse {
   inline static const RuleRegistration<MoveTowardOwnAngleResponse, MovingBehavior> registration {
     "move toward own angle"
   };
+  static constexpr auto description = "Move toward my own angle";
 
   struct Params {
     PROP(ExpressionRef, speed) = 0;
@@ -58,6 +61,7 @@ struct MoveTowardActorResponse : BaseResponse {
   };
   inline static const RuleRegistration<MoveTowardActorResponse, RotatingMotionBehavior>
       registration2 { "move toward actor", true };
+  static constexpr auto description = "Move toward another actor";
 
   struct Params {
     PROP(Tag, tag);

@@ -56,6 +56,7 @@ struct SelectActorReceiver {
 
 struct TextTapTrigger : BaseTrigger {
   inline static const RuleRegistration<TextTapTrigger, TextBehavior> registration { "tap" };
+  static constexpr auto description = "When this is tapped";
 
   struct Params {
   } params;
@@ -83,6 +84,7 @@ struct SendPlayerToCardResponse : BaseResponse {
   inline static const RuleRegistration<SendPlayerToCardResponse, TextBehavior> registration {
     "send player to card"
   };
+  static constexpr auto description = "Send player to a different card";
 
   struct Params {
     PROP(Card, card, .label("destination card"));
@@ -99,6 +101,7 @@ struct SendPlayerToCardResponse : BaseResponse {
 
 struct ShowResponse : BaseResponse {
   inline static const RuleRegistration<ShowResponse, TextBehavior> registration { "show" };
+  static constexpr auto description = "Show this text (legacy)";
 
   struct Params {
   } params;
@@ -113,6 +116,7 @@ struct ShowResponse : BaseResponse {
 
 struct HideResponse : BaseResponse {
   inline static const RuleRegistration<HideResponse, TextBehavior> registration { "hide" };
+  static constexpr auto description = "Hide this text (legacy)";
 
   struct Params {
   } params;

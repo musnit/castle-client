@@ -11,6 +11,7 @@ struct AnimationEndTrigger : BaseTrigger {
   inline static const RuleRegistration<AnimationEndTrigger, Drawing2Behavior> registration {
     "animation end"
   };
+  static constexpr auto description = "When the animation ends";
 
   struct Params {
   } params;
@@ -20,6 +21,7 @@ struct AnimationLoopTrigger : BaseTrigger {
   inline static const RuleRegistration<AnimationLoopTrigger, Drawing2Behavior> registration {
     "animation loop"
   };
+  static constexpr auto description = "When the animation loops";
 
   struct Params {
   } params;
@@ -28,6 +30,7 @@ struct AnimationLoopTrigger : BaseTrigger {
 struct AnimationFrameChangesTrigger : BaseTrigger {
   inline static const RuleRegistration<AnimationFrameChangesTrigger, Drawing2Behavior>
       registration { "animation frame changes" };
+  static constexpr auto description = "When the animation frame changes";
 
   struct Params {
   } params;
@@ -36,6 +39,7 @@ struct AnimationFrameChangesTrigger : BaseTrigger {
 struct AnimationReachesFrameTrigger : BaseTrigger {
   inline static const RuleRegistration<AnimationReachesFrameTrigger, Drawing2Behavior>
       registration { "animation reaches frame" };
+  static constexpr auto description = "When the animation reaches a specific frame";
 
   struct Params {
     PROP(std::string, comparison) = "equal";
@@ -51,6 +55,7 @@ struct AnimationReachesFrameTrigger : BaseTrigger {
 struct AnimationFrameMeetsConditionResponse : BaseResponse {
   inline static const RuleRegistration<AnimationFrameMeetsConditionResponse, Drawing2Behavior>
       registration { "animation frame meets condition" };
+  static constexpr auto description = "If the animation frame meets a condition";
 
   struct Params {
     PROP(std::string, comparison) = "equal";

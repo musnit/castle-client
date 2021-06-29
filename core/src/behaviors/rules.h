@@ -117,6 +117,8 @@ struct RulesEditData {
 struct RuleEntryData {
   PROP(std::string, name);
   PROP(int, behaviorId);
+  PROP(std::string, behaviorName);
+  PROP(std::string, description);
 
   struct ParamSpec {
     struct Attribs {
@@ -131,7 +133,7 @@ struct RuleEntryData {
     PROP(Attribs, attribs);
   };
   PROP(std::vector<ParamSpec>, paramSpecs);
-  // TODO: category, description, returnType, triggerFilter, parentTypeFilter
+  // TODO: category, returnType, triggerFilter, parentTypeFilter
 };
 
 
@@ -547,6 +549,8 @@ RuleRegistration<T, Behavior>::RuleRegistration(const char *name, bool allowDupl
         data->behaviorId = -1; // expression
       } else {
         data->behaviorId = Behavior::behaviorId;
+        data->behaviorName = Behavior::name;
+        data->description = T::description;
       }
       if constexpr (Props::hasProps<typename T::Params>) {
         // TODO: merge with paramSpec serialization in editor.cpp

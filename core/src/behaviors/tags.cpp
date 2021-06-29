@@ -69,6 +69,7 @@ struct ReadableTagVector {
 
 struct GainTagTrigger : BaseTrigger {
   inline static const RuleRegistration<GainTagTrigger, TagsBehavior> registration { "gain tag" };
+  static constexpr auto description = "When this gains a tag";
 
   struct Params {
     PROP(Tag, tag);
@@ -77,6 +78,7 @@ struct GainTagTrigger : BaseTrigger {
 
 struct LoseTagTrigger : BaseTrigger {
   inline static const RuleRegistration<LoseTagTrigger, TagsBehavior> registration { "lose tag" };
+  static constexpr auto description = "When this loses a tag";
 
   struct Params {
     PROP(Tag, tag);
@@ -90,6 +92,7 @@ struct LoseTagTrigger : BaseTrigger {
 
 struct AddTagResponse : BaseResponse {
   inline static const RuleRegistration<AddTagResponse, TagsBehavior> registration { "add tag" };
+  static constexpr auto description = "Add tags to this actor";
 
   struct Params {
     PROP(ReadableTagVector, tag);
@@ -119,6 +122,7 @@ struct RemoveTagResponse : BaseResponse {
   inline static const RuleRegistration<RemoveTagResponse, TagsBehavior> registration {
     "remove tag"
   };
+  static constexpr auto description = "Remove tags from this actor";
 
   struct Params {
     PROP(ReadableTagVector, tag);
@@ -154,6 +158,7 @@ struct RemoveTagResponse : BaseResponse {
 
 struct HasTagResponse : BaseResponse {
   inline static const RuleRegistration<HasTagResponse, TagsBehavior> registration { "has tag" };
+  static constexpr auto description = "If this has a tag";
 
   struct Params {
     PROP(Tag, tag);

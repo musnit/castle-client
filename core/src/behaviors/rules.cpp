@@ -9,6 +9,7 @@
 
 struct CreateTrigger : BaseTrigger {
   inline static const RuleRegistration<CreateTrigger, RulesBehavior> registration { "create" };
+  static constexpr auto description = "When this is created";
 
   struct Params {
   } params;
@@ -16,6 +17,7 @@ struct CreateTrigger : BaseTrigger {
 
 struct DestroyTrigger : BaseTrigger {
   inline static const RuleRegistration<DestroyTrigger, RulesBehavior> registration { "destroy" };
+  static constexpr auto description = "When this is destroyed";
 
   struct Params {
   } params;
@@ -28,6 +30,7 @@ struct DestroyTrigger : BaseTrigger {
 
 struct CreateResponse : BaseResponse {
   inline static const RuleRegistration<CreateResponse, RulesBehavior> registration { "create" };
+  static constexpr auto description = "Create a new actor from blueprint";
 
   struct Params {
     PROP(
@@ -153,6 +156,7 @@ struct CreateTextResponse : BaseResponse {
   inline static const RuleRegistration<CreateTextResponse, RulesBehavior> registration {
     "create text"
   };
+  static constexpr auto description = "Create a text box";
 
   struct Params {
     PROP(std::string, content);
@@ -224,6 +228,7 @@ struct DestroyResponseMarker {
 
 struct DestroyResponse : BaseResponse {
   inline static const RuleRegistration<DestroyResponse, RulesBehavior> registration { "destroy" };
+  static constexpr auto description = "Destroy this actor";
 
   struct Params {
   } params;
@@ -246,6 +251,7 @@ struct HideTextResponse : BaseResponse {
   inline static const RuleRegistration<HideTextResponse, RulesBehavior> registration {
     "hide text"
   };
+  static constexpr auto description = "Hide all text boxes";
 
   struct Params {
   } params;
@@ -268,6 +274,7 @@ struct EnableBehaviorResponse : BaseResponse {
   inline static const RuleRegistration<EnableBehaviorResponse, RulesBehavior> registration {
     "enable behavior"
   };
+  static constexpr auto description = "Enable a behavior";
 
   struct Params {
     PROP(int, behaviorId, .label("behavior")) = -1;
@@ -284,6 +291,7 @@ struct DisableBehaviorResponse : BaseResponse {
   inline static const RuleRegistration<DisableBehaviorResponse, RulesBehavior> registration {
     "disable behavior"
   };
+  static constexpr auto description = "Disable a behavior";
 
   struct Params {
     PROP(int, behaviorId, .label("behavior")) = -1;
@@ -300,6 +308,7 @@ struct SetBehaviorPropertyResponse : BaseResponse {
   inline static const RuleRegistration<SetBehaviorPropertyResponse, RulesBehavior> registration {
     "set behavior property"
   };
+  static constexpr auto description = "Modify a property";
 
   struct Params {
     PROP(int, behaviorId, .label("behavior")) = -1;
@@ -345,6 +354,7 @@ struct RestartSceneResponse : BaseResponse {
   inline static const RuleRegistration<RestartSceneResponse, RulesBehavior> registration {
     "restart scene"
   };
+  static constexpr auto description = "Restart this card";
 
   struct Params {
   } params;
@@ -361,6 +371,7 @@ struct RestartSceneResponse : BaseResponse {
 
 struct IfResponse : BaseResponse {
   inline static const RuleRegistration<IfResponse, RulesBehavior> registration { "if" };
+  static constexpr auto description = "If a condition is met, run a response";
 
   struct Params {
     PROP(ResponseRef, condition) = nullptr;
@@ -388,6 +399,7 @@ struct IfResponse : BaseResponse {
 
 struct RepeatResponse : BaseResponse {
   inline static const RuleRegistration<RepeatResponse, RulesBehavior> registration { "repeat" };
+  static constexpr auto description = "Repeat N times";
 
   struct Params {
     PROP(
@@ -435,6 +447,7 @@ struct InfiniteRepeatResponse : BaseResponse {
   inline static const RuleRegistration<InfiniteRepeatResponse, RulesBehavior> registration {
     "infinite repeat"
   };
+  static constexpr auto description = "Repeat every N seconds";
 
   struct Params {
     PROP(
@@ -491,6 +504,7 @@ struct StopRepeatingResponse : BaseResponse {
   inline static const RuleRegistration<StopRepeatingResponse, RulesBehavior> registration {
     "stop repeating"
   };
+  static constexpr auto description = "Stop repeating";
 
   struct Params {
   } params;
@@ -504,6 +518,7 @@ struct StopRepeatingResponse : BaseResponse {
 
 struct ActOnResponse : BaseResponse {
   inline static const RuleRegistration<ActOnResponse, RulesBehavior> registration { "act on" };
+  static constexpr auto description = "Tell actors with a tag to perform a response";
 
   struct Params {
     PROP(Tag, tag);
@@ -552,6 +567,7 @@ struct ActOnOtherResponse : BaseResponse {
   inline static const RuleRegistration<ActOnOtherResponse, RulesBehavior> registration {
     "act on other"
   };
+  static constexpr auto description = "Tell the colliding actor to perform a response";
 
   struct Params {
     PROP(ResponseRef, body) = nullptr;
@@ -590,6 +606,7 @@ struct ActOnOtherResponse : BaseResponse {
 
 struct WaitResponse : BaseResponse {
   inline static const RuleRegistration<WaitResponse, RulesBehavior> registration { "wait" };
+  static constexpr auto description = "Wait before a response";
 
   struct Params {
     PROP(
@@ -618,6 +635,7 @@ struct WaitResponse : BaseResponse {
 struct ExpressionMeetsConditionResponse : BaseResponse {
   inline static const RuleRegistration<ExpressionMeetsConditionResponse, RulesBehavior>
       registration { "expression meets condition" };
+  static constexpr auto description = "If an expresssion meets a condition";
 
   struct Params {
     PROP(ExpressionRef, lhs) = 0;
@@ -639,6 +657,7 @@ struct CoinFlipResponse : BaseResponse {
   inline static const RuleRegistration<CoinFlipResponse, RulesBehavior> registration {
     "coin flip"
   };
+  static constexpr auto description = "If a coin flip shows heads";
 
   struct Params {
     PROP(
@@ -664,6 +683,7 @@ struct PlaySoundResponse : BaseResponse {
   inline static const RuleRegistration<PlaySoundResponse, RulesBehavior> registration {
     "play sound"
   };
+  static constexpr auto description = "Play a sound";
 
   struct Params {
     PROP(
@@ -700,6 +720,7 @@ struct PlaySoundResponse : BaseResponse {
 
 struct NoteResponse : BaseResponse {
   inline static const RuleRegistration<NoteResponse, RulesBehavior> registration { "note" };
+  static constexpr auto description = "Add a note to this rule";
 
   struct Params {
     // TODO: would be nice to skip loading this if we're not editing the scene
@@ -722,6 +743,7 @@ struct VariableChangesTrigger : BaseTrigger {
   inline static const RuleRegistration<VariableChangesTrigger, RulesBehavior> registration {
     "variable changes"
   };
+  static constexpr auto description = "When a variable changes";
 
   struct Params {
     PROP(
@@ -735,6 +757,7 @@ struct VariableReachesValueTrigger : BaseTrigger {
   inline static const RuleRegistration<VariableReachesValueTrigger, RulesBehavior> registration {
     "variable reaches value"
   };
+  static constexpr auto description = "When a variable reaches a value";
 
   struct Params {
     PROP(
@@ -775,6 +798,7 @@ struct ResetVariableResponse : BaseResponse {
   inline static const RuleRegistration<ResetVariableResponse, RulesBehavior> registration {
     "reset variable"
   };
+  static constexpr auto description = "Reset a variable to its initial value";
 
   struct Params {
     PROP(Variable, variableId, .label("variable"));
@@ -789,6 +813,7 @@ struct ResetAllVariablesResponse : BaseResponse {
   inline static const RuleRegistration<ResetAllVariablesResponse, RulesBehavior> registration {
     "reset all variables"
   };
+  static constexpr auto description = "Reset all variables to their initial values";
 
   struct Params {
   } params;
@@ -802,6 +827,7 @@ struct SetVariableResponse : BaseResponse {
   inline static const RuleRegistration<SetVariableResponse, RulesBehavior> registration {
     "set variable"
   };
+  static constexpr auto description = "Modify the value of a variable";
 
   struct Params {
     PROP(Variable, variableId, .label("variable"));
@@ -825,6 +851,7 @@ struct VariableMeetsConditionResponse : BaseResponse {
   inline static const RuleRegistration<VariableMeetsConditionResponse, RulesBehavior> registration {
     "variable meets condition"
   };
+  static constexpr auto description = "If a variable meets a condition";
 
   struct Params {
     PROP(Variable, variableId, .label("variable"));
@@ -848,6 +875,7 @@ struct FollowWithCameraResponse : BaseResponse {
   inline static const RuleRegistration<FollowWithCameraResponse, RulesBehavior> registration {
     "follow with camera"
   };
+  static constexpr auto description = "Follow this with the camera";
 
   struct Params {
   } params;

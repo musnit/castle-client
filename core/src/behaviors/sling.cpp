@@ -14,6 +14,7 @@ static const TouchToken slingTouchToken;
 
 struct SlingTrigger : BaseTrigger {
   inline static const RuleRegistration<SlingTrigger, SlingBehavior> registration { "sling" };
+  static constexpr auto description = "When this is slung";
 
   struct Params {
   } params;

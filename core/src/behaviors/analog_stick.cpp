@@ -16,6 +16,7 @@ struct AnalogStickBeginsTrigger : BaseTrigger {
   inline static const RuleRegistration<AnalogStickBeginsTrigger, AnalogStickBehavior> registration {
     "analog stick begins"
   };
+  static constexpr auto description = "When analog stick input begins";
 
   struct Params {
   } params;
@@ -25,6 +26,7 @@ struct AnalogStickEndsTrigger : BaseTrigger {
   inline static const RuleRegistration<AnalogStickEndsTrigger, AnalogStickBehavior> registration {
     "analog stick ends"
   };
+  static constexpr auto description = "When analog stick input ends";
 
   struct Params {
   } params;

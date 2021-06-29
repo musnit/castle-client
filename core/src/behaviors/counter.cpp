@@ -11,6 +11,7 @@ struct CounterChangesTrigger : BaseTrigger {
   inline static const RuleRegistration<CounterChangesTrigger, CounterBehavior> registration {
     "counter changes"
   };
+  static constexpr auto description = "When the actor's counter changes";
 
   struct Params {
   } params;
@@ -20,6 +21,7 @@ struct CounterReachesValueTrigger : BaseTrigger {
   inline static const RuleRegistration<CounterReachesValueTrigger, CounterBehavior> registration {
     "counter reaches value"
   };
+  static constexpr auto description = "When this actor's counter reaches a value";
 
   struct Params {
     PROP(std::string, comparison) = "equal";
@@ -36,6 +38,7 @@ struct SetCounterResponse : BaseResponse {
   inline static const RuleRegistration<SetCounterResponse, CounterBehavior> registration {
     "set counter"
   };
+  static constexpr auto description = "Modify the actor's counter";
 
   struct Params {
     PROP(ExpressionRef, setToValue, .label("set to value")) = 0;
@@ -69,6 +72,7 @@ struct SetCounterResponse : BaseResponse {
 struct CounterMeetsConditionResponse : BaseResponse {
   inline static const RuleRegistration<CounterMeetsConditionResponse, CounterBehavior>
       registration { "counter meets condition" };
+  static constexpr auto description = "If the actor's counter meets a condition";
 
   struct Params {
     PROP(std::string, comparison);
