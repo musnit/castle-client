@@ -282,31 +282,28 @@ struct EditorNoComponentEvent {
 
 // send behavior property values for the selected actor's components
 void Editor::sendSelectedComponent(int behaviorId) {
-  if (behaviorId == RulesBehavior::behaviorId) {
-    auto &rulesBehavior = scene->getBehaviors().byType<RulesBehavior>();
-    RulesComponent *rulesComponent
-        = rulesBehavior.maybeGetComponent(selection.firstSelectedActorId());
-    // rules doesn't use Props, send raw rules json instead
-    EditorSelectedRulesComponentEvent ev { rulesComponent->disabled, "" };
-    if (rulesComponent->editData) {
-      ev.rulesJson = rulesComponent->editData->rulesJson;
-    }
-    bridge.sendEvent("EDITOR_SELECTED_COMPONENT:Rules", ev);
-  } else {
-    scene->getBehaviors().byId(behaviorId, [&](auto &behavior) {
-      using BehaviorType = std::remove_reference_t<decltype(behavior)>;
-      auto component = behavior.maybeGetComponent(selection.firstSelectedActorId());
-      std::string eventName = std::string("EDITOR_SELECTED_COMPONENT:") + BehaviorType::name;
-      if (component) {
+  scene->getBehaviors().byId(behaviorId, [&](auto &behavior) {
+    using BehaviorType = std::remove_reference_t<decltype(behavior)>;
+    auto component = behavior.maybeGetComponent(selection.firstSelectedActorId());
+    std::string eventName = std::string("EDITOR_SELECTED_COMPONENT:") + BehaviorType::name;
+    if (component) {
+      if constexpr (std::is_same_v<RulesBehavior, BehaviorType>) {
+        // rules doesn't use Props, send raw rules json instead
+        EditorSelectedRulesComponentEvent ev { component->disabled, "" };
+        if (component->editData) {
+          ev.rulesJson = component->editData->rulesJson;
+        }
+        bridge.sendEvent("EDITOR_SELECTED_COMPONENT:Rules", ev);
+      } else {
         using ComponentType = std::remove_reference_t<decltype(*component)>;
         EditorSelectedComponentEvent<ComponentType> ev { component->disabled, &component->props };
         bridge.sendEvent(eventName.c_str(), ev);
-      } else {
-        EditorNoComponentEvent ev;
-        bridge.sendEvent(eventName.c_str(), ev);
       }
-    });
-  }
+    } else {
+      EditorNoComponentEvent ev;
+      bridge.sendEvent(eventName.c_str(), ev);
+    }
+  });
 }
 
 struct EditorModifyComponentReceiver {
