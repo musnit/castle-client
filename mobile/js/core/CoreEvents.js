@@ -21,7 +21,16 @@ export async function sendAsync(name, params) {
 
 const eventEmitter = new NativeEventEmitter(NativeModules.CastleCoreBridge);
 eventEmitter.addListener('onReceiveEvent', (eventJson) => {
-  const { name, eventId, params } = JSON.parse(eventJson);
+  let name, eventId, params;
+  try {
+    const event = JSON.parse(eventJson);
+    name = event.name;
+    eventId = event.eventId;
+    params = event.params;
+  } catch (e) {
+    console.log(`CoreEvents: parse error: ${eventJson}`);
+    return;
+  }
 
   // maybe transform and cache editor events
   let data = params;

@@ -4,6 +4,7 @@ import { Responses } from './Responses';
 import { Triggers } from './Triggers';
 import { useCardCreator } from '../../CreateCardContext';
 import { VectorIcon } from '../../../components/VectorIcon';
+import { useCoreState } from '../../../core/CoreEvents';
 
 const styles = StyleSheet.create({
   row: {
@@ -67,12 +68,19 @@ const makeResponseRows = (rows, order, indent, { response, context }) => {
 
 export const RulePreview = ({ rule }) => {
   // TODO: render actual rule with context
-  return (
-    <View>
-      <Text style={styles.rowText}>{JSON.stringify(rule, null, 2)}</Text>
-    </View>
-  );
-  const context = useCardCreator();
+  // TODO: rendering rules needs:
+  // - variables (makeExpressionSummary, formatVariableName and getVariableName)
+  // - behaviors (set, enable, disable behavior, makeExpressionSummary)
+  // - library (create only)
+  // - deck (send player to card only)
+  // -> maybe expose CoreEvents.getCoreStateCache at leaves when rendering rules
+  let context = useCardCreator();
+  context = {
+    ...context,
+    variables: {}, // TODO: variables
+    behaviors: useCoreState('EDITOR_ALL_BEHAVIORS'),
+    library: {}, // TODO: library
+  };
   let triggerCells = Triggers.makeCells({ trigger: rule.trigger, context, isPreview: true });
 
   let responseRows = [];
