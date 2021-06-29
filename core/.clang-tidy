@@ -7,29 +7,30 @@ Checks: "-*,\
   -performance-noexcept-move-constructor,\
   portability-*,\
   bugprone-*,\
-  -bugprone-macro-parentheses,\
-  -bugprone-infinite-loop,\
   -bugprone-exception-escape,\
+  -bugprone-infinite-loop,\
+  -bugprone-macro-parentheses,\
   misc-*,\
-  -misc-unused-parameters,\
   -misc-non-private-member-variables-in-classes,\
+  -misc-unused-parameters,\
   cppcoreguidelines-*,\
-  -cppcoreguidelines-macro-usage,\
-  -cppcoreguidelines-avoid-magic-numbers,\
-  -cppcoreguidelines-special-member-functions,\
-  -cppcoreguidelines-non-private-member-variables-in-classes,\
-  -cppcoreguidelines-avoid-non-const-global-variables,\
-  -cppcoreguidelines-pro-bounds-constant-array-index,\
-  -cppcoreguidelines-pro-type-cstyle-cast,\
-  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,\
-  -cppcoreguidelines-pro-type-const-cast,\
-  -cppcoreguidelines-pro-bounds-pointer-arithmetic,\
-  -cppcoreguidelines-pro-type-vararg,\
   -cppcoreguidelines-avoid-c-arrays,\
+  -cppcoreguidelines-avoid-magic-numbers,\
+  -cppcoreguidelines-avoid-non-const-global-variables,\
+  -cppcoreguidelines-macro-usage,\
+  -cppcoreguidelines-non-private-member-variables-in-classes,\
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,\
+  -cppcoreguidelines-pro-bounds-constant-array-index,\
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,\
+  -cppcoreguidelines-pro-type-const-cast,\
+  -cppcoreguidelines-pro-type-cstyle-cast,\
+  -cppcoreguidelines-pro-type-union-access,\
+  -cppcoreguidelines-pro-type-vararg,\
+  -cppcoreguidelines-special-member-functions,\
   google-explicit-constructor,\
   modernize-*,\
-  -modernize-deprecated-headers,\
   -modernize-avoid-c-arrays,\
+  -modernize-deprecated-headers,\
   -modernize-use-nodiscard,\
   -modernize-use-trailing-return-type"
 WarningsAsErrors: "*"

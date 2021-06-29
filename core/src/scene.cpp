@@ -338,8 +338,7 @@ void Scene::PhysicsContactListener::BeginContact(b2Contact *contact) {
 void Scene::applyViewTransform() const {
   viewTransform.reset();
   viewTransform.scale(800.0f / viewWidth, 800.0f / viewWidth);
-  auto viewYOffset = 0.5f * (props.coordinateSystemVersion() == 2 ? viewHeight : viewWidth);
-  viewTransform.translate(0.5f * viewWidth, viewYOffset);
+  viewTransform.translate(0.5f * viewWidth, getViewYOffset());
   viewTransform.translate(-cameraX, -cameraY);
   lv.graphics.applyTransform(&viewTransform);
 }

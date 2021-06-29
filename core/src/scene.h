@@ -97,6 +97,7 @@ public:
 
   const love::Transform &getViewTransform() const;
   love::Vector2 inverseViewTransformPoint(const love::Vector2 &point) const;
+  float getViewYOffset() const;
   float getViewScale() const;
   float getPixelScale() const;
 
@@ -307,6 +308,10 @@ inline const love::Transform &Scene::getViewTransform() const {
 
 inline love::Vector2 Scene::inverseViewTransformPoint(const love::Vector2 &point) const {
   return viewTransform.inverseTransformPoint(point);
+}
+
+inline float Scene::getViewYOffset() const {
+  return 0.5f * (props.coordinateSystemVersion() == 2 ? viewHeight : viewWidth);
 }
 
 inline float Scene::getViewScale() const {

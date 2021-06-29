@@ -6,6 +6,7 @@
 #include "variables.h"
 #include "selection.h"
 #include "grab.h"
+#include "grid.h"
 
 class Editor {
   // manages a scene instance that is being edited.
@@ -31,6 +32,8 @@ public:
   void setAllBehaviorsStateDirty();
   void setSelectedComponentStateDirty(int behaviorId);
 
+  Grid &getGrid();
+
 private:
   Lv &lv { Lv::getInstance() };
   Bridge &bridge;
@@ -41,13 +44,14 @@ private:
   std::unique_ptr<Scene> scene;
 
   Selection selection;
+  Grid grid;
 
   enum class Tool {
     Grab,
     ScaleRotate,
   };
   Tool currentTool = Tool::Grab;
-  GrabTool grab { selection };
+  GrabTool grab { *this, selection };
 
   // events and data
   void maybeSendData();
@@ -84,4 +88,8 @@ inline void Editor::setSelectedComponentStateDirty(int behaviorId) {
 
 inline void Editor::setAllBehaviorsStateDirty() {
   isAllBehaviorsStateDirty = true;
+}
+
+inline Grid &Editor::getGrid() {
+  return grid;
 }

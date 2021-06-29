@@ -7,21 +7,13 @@
 inline static const TouchToken grabTouchToken;
 
 
-// TODO: Will be used in 'scale rotate' and 'add from blueprint' -- put it somewhere common
-static float quantize(float value, float divisor, float start = 0) {
-  if (divisor == 0) {
-    return value;
-  }
-  return divisor * std::floor(0.5f + (value - start) / divisor) + start;
-}
-
-
 //
 // Constructor, destructor
 //
 
-GrabTool::GrabTool(Selection &selection_)
-    : selection(selection_) {
+GrabTool::GrabTool(Editor &editor_, Selection &selection_)
+    : editor(editor_)
+    , selection(selection_) {
 }
 
 
@@ -29,7 +21,7 @@ GrabTool::GrabTool(Selection &selection_)
 // Update
 //
 
-void GrabTool::update(Editor &editor, Scene &scene, double dt) {
+void GrabTool::update(Scene &scene, double dt) {
   scene.getGesture().withSingleTouch([&](const Touch &touch) {
     if (!touch.isUsed(grabTouchToken)) {
       // Not used by us yet, let's see if we can use it
@@ -47,12 +39,12 @@ void GrabTool::update(Editor &editor, Scene &scene, double dt) {
     if (gridEnabled) {
       auto prevTouchPos = touch.pos - touch.delta;
       love::Vector2 qPrevTouchPos {
-        quantize(prevTouchPos.x, gridSize, touch.initialPos.x),
-        quantize(prevTouchPos.y, gridSize, touch.initialPos.y),
+        Grid::quantize(prevTouchPos.x, gridSize, touch.initialPos.x),
+        Grid::quantize(prevTouchPos.y, gridSize, touch.initialPos.y),
       };
       love::Vector2 qTouchPos {
-        quantize(touch.pos.x, gridSize, touch.initialPos.x),
-        quantize(touch.pos.y, gridSize, touch.initialPos.y),
+        Grid::quantize(touch.pos.x, gridSize, touch.initialPos.x),
+        Grid::quantize(touch.pos.y, gridSize, touch.initialPos.y),
       };
       move = qTouchPos - qPrevTouchPos;
     }
@@ -74,5 +66,11 @@ void GrabTool::update(Editor &editor, Scene &scene, double dt) {
 //
 
 void GrabTool::drawOverlay(Scene &scene) const {
-  // TODO: Draw grid
+  if (gridEnabled && gridSize > 0) {
+    lv.graphics.setColor({ 0, 0, 0, 0.5 });
+    float viewWidth = 10.0;
+    // TODO: Use actual editor view position instead of `{ 0, 0 }`
+    editor.getGrid().draw(2 * gridSize, -1, scene.getViewScale(), { 0, 0 },
+        { 0.5f * viewWidth, scene.getViewYOffset() }, 2, false, 0);
+  }
 }
