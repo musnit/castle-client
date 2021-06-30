@@ -17,6 +17,7 @@ public:
 
   explicit Editor(Bridge &bridge_);
 
+  void editorJSLoaded();
   void clearState();
 
   void update(double dt);
@@ -62,7 +63,6 @@ private:
   bool isAllBehaviorsStateDirty;
   void sendAllBehaviors();
 
-  bool isRulesStateDirty; // TODO: should never dirty after first load
   void sendRulesData();
 
   // behaviorId present indicates dirty state for selected actor

@@ -7,7 +7,6 @@ Editor::Editor(Bridge &bridge_)
     : bridge(bridge_) {
   isEditorStateDirty = true;
   isAllBehaviorsStateDirty = true;
-  isRulesStateDirty = true;
   isVariablesStateDirty = true;
 }
 
@@ -15,7 +14,6 @@ void Editor::clearState() {
   selection.deselectAllActors();
   isEditorStateDirty = true;
   isAllBehaviorsStateDirty = true;
-  isRulesStateDirty = true;
   isVariablesStateDirty = true;
 }
 
@@ -23,7 +21,6 @@ void Editor::readScene(Reader &reader) {
   scene = std::make_unique<Scene>(bridge, variables, true, &reader);
   isEditorStateDirty = true;
   isAllBehaviorsStateDirty = true;
-  isRulesStateDirty = true;
   Debug::log("editor: read scene");
 }
 
@@ -155,6 +152,26 @@ void Editor::draw() {
 //
 // Events
 //
+
+struct EditorDidLoadReceiver {
+  inline static const BridgeRegistration<EditorDidLoadReceiver> registration { "EDITOR_JS_LOADED" };
+
+  struct Params {
+  } params;
+
+  void receive(Engine &engine) {
+    Debug::log("engine: js loaded");
+    engine.getEditor().editorJSLoaded();
+  }
+};
+
+void Editor::editorJSLoaded() {
+  // send static data which won't change after initial load
+  Debug::log("editor: send static data");
+  sendRulesData();
+
+  // TODO: send behavior specs here (split out component isActive prop)
+}
 
 struct EditorGlobalActionsEvent {
   PROP(bool, performing) = false;
@@ -450,10 +467,6 @@ void Editor::maybeSendData() {
   if (isAllBehaviorsStateDirty) {
     sendAllBehaviors();
     isAllBehaviorsStateDirty = false;
-  }
-  if (isRulesStateDirty) {
-    sendRulesData();
-    isRulesStateDirty = false;
   }
   if (isVariablesStateDirty) {
     sendVariablesData();
