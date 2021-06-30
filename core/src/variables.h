@@ -17,10 +17,11 @@ class Variables {
 
   struct MapElem {
     std::string name;
+    std::string variableId;
     ExpressionValue initialValue;
     ExpressionValue value = initialValue;
 
-    MapElem(std::string name_, ExpressionValue initialValue_);
+    MapElem(std::string name_, std::string variableId_, ExpressionValue initialValue_);
   };
   using Map = TokenMap<MapElem>;
 
@@ -32,6 +33,8 @@ public:
 
   Variables() = default;
   ~Variables() = default;
+
+  friend class Editor;
 
   struct Variable {
     // For storing variable references at runtime (eg. in rule elements or other behaviors). Enables
@@ -72,6 +75,8 @@ public:
   void resetAll();
   template<typename F>
   void forEach(F &&f) const; // `F` takes `(const char *name, const ExpressionValue &)`
+  template<typename F>
+  void forEachElem(F &&f) const; // `F` takes `(const Variables::MapElem &elem)`
 
 
 private:
@@ -89,8 +94,10 @@ using Variable = Variables::Variable;
 
 // Inlined implementations
 
-inline Variables::MapElem::MapElem(std::string name_, ExpressionValue initialValue_)
+inline Variables::MapElem::MapElem(
+    std::string name_, std::string variableId_, ExpressionValue initialValue_)
     : name(std::move(name_))
+    , variableId(std::move(variableId_))
     , initialValue(initialValue_) {
 }
 
@@ -133,5 +140,12 @@ template<typename F>
 void Variables::forEach(F &&f) const {
   map.forEach([&](Map::Token token, const MapElem &elem) {
     f(elem.name.c_str(), elem.value);
+  });
+}
+
+template<typename F>
+void Variables::forEachElem(F &&f) const {
+  map.forEach([&](Map::Token token, const MapElem &elem) {
+    f(elem);
   });
 }

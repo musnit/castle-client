@@ -30,7 +30,7 @@ void Variables::read(Reader &reader) {
     }
     auto name = std::string(*nameCStr);
     auto token = map.getToken(*variableId);
-    map.insert(token, MapElem(name, reader.num("initialValue", 0)));
+    map.insert(token, MapElem(name, std::string(*variableId), reader.num("initialValue", 0)));
     byName.insert_or_assign(std::move(name), Variable { token });
   });
 }

@@ -68,6 +68,9 @@ private:
   // behaviorId present indicates dirty state for selected actor
   std::set<int> selectedComponentStateDirty;
   void sendSelectedComponent(int behaviorId);
+
+  bool isVariablesStateDirty;
+  void sendVariablesData();
 };
 
 inline bool Editor::hasScene() {

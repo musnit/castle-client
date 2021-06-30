@@ -8,6 +8,7 @@ Editor::Editor(Bridge &bridge_)
   isEditorStateDirty = true;
   isAllBehaviorsStateDirty = true;
   isRulesStateDirty = true;
+  isVariablesStateDirty = true;
 }
 
 void Editor::clearState() {
@@ -15,6 +16,7 @@ void Editor::clearState() {
   isEditorStateDirty = true;
   isAllBehaviorsStateDirty = true;
   isRulesStateDirty = true;
+  isVariablesStateDirty = true;
 }
 
 void Editor::readScene(Reader &reader) {
@@ -28,6 +30,7 @@ void Editor::readScene(Reader &reader) {
 void Editor::readVariables(Reader &reader) {
   variables.read(reader);
   isEditorStateDirty = true;
+  isVariablesStateDirty = true;
 };
 
 void Editor::update(double dt) {
@@ -421,6 +424,24 @@ void Editor::sendRulesData() {
   bridge.sendEvent("EDITOR_RULES_DATA", ev);
 }
 
+struct EditorVariablesEvent {
+  struct VariableData {
+    PROP(std::string, variableId);
+    PROP(std::string, name);
+    PROP(double, initialValue);
+  };
+  PROP(std::vector<VariableData>, variables);
+};
+
+void Editor::sendVariablesData() {
+  EditorVariablesEvent ev;
+  variables.forEachElem([&](const Variables::MapElem &elem) {
+    EditorVariablesEvent::VariableData data { elem.variableId, elem.name, elem.value.as<double>() };
+    ev.variables().push_back(data);
+  });
+  bridge.sendEvent("EDITOR_VARIABLES", ev);
+}
+
 void Editor::maybeSendData() {
   if (isEditorStateDirty) {
     sendGlobalActions();
@@ -433,6 +454,10 @@ void Editor::maybeSendData() {
   if (isRulesStateDirty) {
     sendRulesData();
     isRulesStateDirty = false;
+  }
+  if (isVariablesStateDirty) {
+    sendVariablesData();
+    isVariablesStateDirty = false;
   }
   if (!selectedComponentStateDirty.empty()) {
     for (auto behaviorId : selectedComponentStateDirty) {
