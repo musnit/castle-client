@@ -161,9 +161,12 @@ export const CreateCardScreen = ({
   }, [hasSelection]);
 
   React.useEffect(() => {
-    // sync once on load, in case we already have something in JS clipboard
     if (isSceneLoaded) {
+      // sync once on load, in case we already have something in JS clipboard
       LibraryEntryClipboard.sync();
+
+      // request static data from engine
+      sendAsync('EDITOR_JS_LOADED', {});
     }
   }, [isSceneLoaded]);
 
