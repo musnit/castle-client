@@ -422,6 +422,7 @@ struct EditorInspectorActionReceiver {
 struct EditorRulesDataEvent {
   PROP(std::vector<RuleEntryData>, triggers);
   PROP(std::vector<RuleEntryData>, responses);
+  PROP(std::vector<RuleEntryData>, conditions);
 };
 
 void Editor::sendRulesData() {
@@ -435,7 +436,15 @@ void Editor::sendRulesData() {
   for (auto responseWriter : RulesBehavior::responseWriters) {
     RuleEntryData data;
     responseWriter.write(responseWriter.name, &data);
-    ev.responses().push_back(data);
+
+    // TODO: conditional responses should be converted into boolean expressions.
+    // for now, use kludge heuristic of looking for descriptions prefixed with 'If '
+    static auto conditionPrefix = std::string("If ");
+    if (data.description().compare(0, conditionPrefix.size(), conditionPrefix) == 0) {
+      ev.conditions().push_back(data);
+    } else {
+      ev.responses().push_back(data);
+    }
   }
 
   bridge.sendEvent("EDITOR_RULES_DATA", ev);
