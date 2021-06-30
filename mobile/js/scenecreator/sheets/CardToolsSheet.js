@@ -7,6 +7,7 @@ import { DeckVariables } from '../DeckVariables';
 import { SceneBackups } from '../SceneBackups';
 import { SegmentedNavigation } from '../../components/SegmentedNavigation';
 import { useCardCreator } from '../CreateCardContext';
+import { useCoreState } from '../../core/CoreEvents';
 import { CreateCardSettings } from './CreateCardSettingsSheet';
 
 const styles = StyleSheet.create({
@@ -50,14 +51,17 @@ const styles = StyleSheet.create({
 });
 
 export const CardToolsSheet = ({ isOpen, onClose, ...props }) => {
-  const {
-    card,
-    variables,
-    onVariablesChange: onChange,
-    onSelectBackupData,
-    saveAction,
-  } = useCardCreator();
+  const { card, onSelectBackupData, saveAction } = useCardCreator();
   const cardId = card?.cardId;
+
+  // TODO: change variables
+  const onVariablesChange = (newVariables) =>
+    console.log(`change variables: ${JSON.stringify(newVariables, null, 2)}`);
+  const variablesData = useCoreState('EDITOR_VARIABLES');
+  let variables;
+  if (variablesData) {
+    variables = variablesData.variables;
+  }
 
   let TAB_ITEMS = [
     {
@@ -83,7 +87,7 @@ export const CardToolsSheet = ({ isOpen, onClose, ...props }) => {
   const renderContent = !isOpen
     ? () => null
     : mode === 'variables'
-    ? () => <DeckVariables variables={variables} onChange={onChange} />
+    ? () => <DeckVariables variables={variables} onChange={onVariablesChange} />
     : mode === 'layout'
     ? () => <CreateCardSettings />
     : () => <SceneBackups cardId={cardId} onSelectSceneData={onSelectBackupData} />;

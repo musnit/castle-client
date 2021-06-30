@@ -108,14 +108,11 @@ export const CreateCardScreen = ({
   deck,
   initialIsEditing = true,
   loading,
-  deckState,
-  resetDeckState,
   goToDeck,
   goToCard,
   cardNeedsSave,
   saveAndGoToDeck,
   saveAndGoToCard,
-  onVariablesChange,
   onSceneMessage,
   onSceneRevertData,
   saveAction = 'none',
@@ -162,8 +159,6 @@ export const CreateCardScreen = ({
       setActiveSheet(null);
     }
   }, [hasSelection]);
-
-  React.useEffect(resetDeckState, [isPlaying]);
 
   React.useEffect(() => {
     // sync once on load, in case we already have something in JS clipboard
@@ -337,8 +332,6 @@ export const CreateCardScreen = ({
     onSelectBackupData,
     isShowingTextActors,
     setShowingTextActors,
-    variables: card.variables,
-    onVariablesChange,
     activeToolData,
     activeToolAction,
     saveAction,
@@ -374,7 +367,6 @@ export const CreateCardScreen = ({
                 card={card}
                 isEditable={true}
                 initialIsEditing={initialIsEditing}
-                deckState={deckState}
                 onMessage={onSceneMessage}
                 beltHeight={beltHeight}
                 beltHeightFraction={beltHeightFraction}

@@ -3,7 +3,6 @@ import { gql } from '@apollo/client';
 import { ReactNativeFile } from 'apollo-upload-client';
 import { withNavigation, withNavigationFocus } from '../ReactNavigation';
 import { CreateCardScreen } from './CreateCardScreen';
-import _ from 'lodash';
 
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
@@ -11,7 +10,6 @@ import * as GhostEvents from '../ghost/GhostEvents';
 import * as GhostUI from '../ghost/GhostUI';
 import * as LocalId from '../common/local-id';
 import * as Session from '../Session';
-import * as Utilities from '../common/utilities';
 
 const AUTOBACKUP_INTERVAL_MS = 2 * 60 * 1000;
 
@@ -19,7 +17,6 @@ class CreateCardScreenDataProvider extends React.Component {
   state = {
     deck: Constants.EMPTY_DECK,
     card: Constants.EMPTY_CARD,
-    deckState: { variables: [] },
     loading: false,
   };
 
@@ -110,18 +107,6 @@ class CreateCardScreenDataProvider extends React.Component {
         Amplitude.logEvent('START_CREATING_NEW_DECK', { deckId: deck.deckId });
       }
 
-      let deckState;
-      if (params.initialDeckState) {
-        card.variables = params.initialDeckState.variables;
-        deckState = params.initialDeckState;
-      } else {
-        // kludge: this allows us to check the screen's dirty state based on
-        // the card onChange callback everywhere (even when you modify variables, a
-        // property of the deck)
-        card.variables = deck.variables;
-        deckState = Utilities.makeInitialDeckState(card);
-      }
-
       if (!card.scene) {
         card.scene = Constants.EMPTY_CARD.scene;
       }
@@ -131,7 +116,6 @@ class CreateCardScreenDataProvider extends React.Component {
           {
             deck,
             card,
-            deckState,
           },
           async () => {
             const { card } = this.state;
@@ -157,24 +141,11 @@ class CreateCardScreenDataProvider extends React.Component {
       };
     });
 
-  _handleVariablesChange = async (changes) => {
-    await this._handleCardChange({
-      variables: changes,
-    });
-    // update deck variables state passed to scene
-    this.setState((state) => {
-      return {
-        ...state,
-        deckState: Utilities.makeInitialDeckState({
-          ...state.card,
-          variables: changes,
-        }),
-      };
-    });
+  _saveBackup = () => {
+    // TODO: support saving and backups
+    // TODO: read variables from engine
+    // Session.saveDeck(this.state.card, this.state.deck, this.state.card.variables, true);
   };
-
-  _saveBackup = () =>
-    Session.saveDeck(this.state.card, this.state.deck, this.state.card.variables, true);
 
   _updateScreenshot = async () => {
     let screenshotPromise = new Promise((resolve) => {
@@ -203,8 +174,9 @@ class CreateCardScreenDataProvider extends React.Component {
   };
 
   _save = async () => {
+    // TODO: support saving again
     await this.setState({ loading: true });
-    await this._updateScreenshot();
+    /* await this._updateScreenshot();
     const { card, deck } = await Session.saveDeck(
       this.state.card,
       this.state.deck,
@@ -216,7 +188,7 @@ class CreateCardScreenDataProvider extends React.Component {
     });
     if (!this._mounted) return;
     this.setState({ loading: false });
-    return { card, deck };
+    return { card, deck }; */
   };
 
   _goToDeck = (deckId = null) => {
@@ -229,7 +201,6 @@ class CreateCardScreenDataProvider extends React.Component {
         deckIdToEdit: deckId,
         cardIdToEdit: undefined,
         initialIsEditing: true,
-        initialDeckState: null,
       });
     } else {
       // there is no deck, go back to create index
@@ -251,7 +222,6 @@ class CreateCardScreenDataProvider extends React.Component {
         deckIdToEdit: this.state.deck.deckId,
         cardIdToEdit: nextCard.cardId,
         initialIsEditing: !isPlaying,
-        initialDeckState: isPlaying ? { ...this.state.deckState, setFromLua: undefined } : null,
       });
     }, 100);
   };
@@ -274,22 +244,6 @@ class CreateCardScreenDataProvider extends React.Component {
         });
         break;
       }
-      case 'CHANGE_DECK_STATE': {
-        let deckState = {
-          ...this.state.deckState,
-          ...message.data,
-        };
-
-        if (!_.isEqual(deckState, this.state.deckState)) {
-          this.setState({
-            deckState: {
-              ...deckState,
-              setFromLua: true,
-            },
-          });
-        }
-        break;
-      }
       case 'SCREENSHOT_DATA': {
         if (this._screenshotPromiseResolve) {
           this._screenshotPromiseResolve(message.data);
@@ -307,16 +261,8 @@ class CreateCardScreenDataProvider extends React.Component {
     });
   };
 
-  _resetDeckState = () =>
-    this.setState((state) => {
-      return {
-        ...state,
-        deckState: Utilities.makeInitialDeckState(state.card),
-      };
-    });
-
   render() {
-    const { deck, card, deckState, loading } = this.state;
+    const { deck, card, loading } = this.state;
 
     return (
       <GhostUI.FastDataProvider>
@@ -326,14 +272,11 @@ class CreateCardScreenDataProvider extends React.Component {
             card={card}
             initialIsEditing={this.props.initialIsEditing}
             loading={loading}
-            deckState={deckState}
-            resetDeckState={this._resetDeckState}
             goToDeck={this._goToDeck}
             goToCard={this._goToCard}
             cardNeedsSave={this._cardNeedsSave}
             saveAndGoToDeck={this._saveAndGoToDeck}
             saveAndGoToCard={this._saveAndGoToCard}
-            onVariablesChange={this._handleVariablesChange}
             onSceneMessage={this._handleSceneMessage}
             onSceneRevertData={this._handleSceneRevertData}
             saveAction="save"
