@@ -10,6 +10,7 @@ import { Responses } from './Responses';
 import { SetVariableResponse as SetVariable } from './SetVariableResponse';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 
+import RuleEntryMetadata from './RuleEntryMetadata';
 import RuleOptionsSheet from './RuleOptionsSheet';
 import RulePartPickerSheet from './RulePartPickerSheet';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
@@ -30,20 +31,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
 });
-
-const RESPONSE_CATEGORY_ORDER = [
-  'general',
-  'behavior',
-  'tell other actors',
-  'logic',
-  'state',
-  'visible',
-  'motion',
-  'sound',
-  'camera',
-  'meta',
-];
-const CONDITION_CATEGORY_ORDER = ['state', 'collision', 'random', 'camera', 'draw'];
 
 const _entryToResponse = (entry) => ({
   name: entry.name,
@@ -115,7 +102,7 @@ const If = ({ response, onChangeResponse, children, order, ...props }) => {
         entries: conditions,
         onSelectEntry: (entry) => handler(_entryToResponse(entry)),
         title: 'Select condition',
-        categoryOrder: CONDITION_CATEGORY_ORDER,
+        categoryOrder: RuleEntryMetadata.conditionCategoryOrder,
       }),
     [behaviors, conditions, addChildSheet]
   );
@@ -335,7 +322,7 @@ const Response = ({ response, onChangeResponse, order = 0, ...props }) => {
         triggerFilter,
         onSelectEntry: (entry) => handler(_entryToResponse(entry)),
         title: 'Select response',
-        categoryOrder: RESPONSE_CATEGORY_ORDER,
+        categoryOrder: RuleEntryMetadata.responseCategoryOrder,
       }),
     [addChildSheet, behaviors, response, responses, triggerFilter, parentType]
   );

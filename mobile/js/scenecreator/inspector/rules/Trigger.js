@@ -3,6 +3,7 @@ import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 import { ConfigureRuleEntry } from './ConfigureRuleEntry';
 import { getRuleRenderContext } from './RuleRenderContext';
 
+import RuleEntryMetadata from './RuleEntryMetadata';
 import RuleOptionsSheet from './RuleOptionsSheet';
 import RulePartPickerSheet from './RulePartPickerSheet';
 
@@ -15,8 +16,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
 });
-
-const TRIGGER_CATEGORY_ORDER = ['general', 'controls', 'state', 'motion', 'camera', 'draw'];
 
 const _entryToTrigger = (entry) => ({
   name: entry.name,
@@ -41,7 +40,7 @@ export const Trigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeT
         entries: triggers,
         onSelectEntry: (entry) => onChangeTrigger(_entryToTrigger(entry)),
         title: 'Select trigger',
-        categoryOrder: TRIGGER_CATEGORY_ORDER,
+        categoryOrder: RuleEntryMetadata.triggerCategoryOrder,
       }),
     [addChildSheet, behaviors, triggers, onChangeTrigger]
   );

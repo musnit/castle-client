@@ -1,3 +1,5 @@
+import RuleEntryMetadata from '../scenecreator/inspector/rules/RuleEntryMetadata';
+
 export default {
   EDITOR_ALL_BEHAVIORS: (name, eventId, data) => {
     // want a map of BehaviorName -> behavior object
@@ -39,5 +41,24 @@ export default {
   },
   EDITOR_VARIABLES: (name, eventId, data) => {
     return data?.variables;
+  },
+  EDITOR_RULES_DATA: (name, eventId, data) => {
+    // use RuleEntryMetadata to sort rule entries by UI category
+    let result = {};
+    const entriesToSort = ['triggers', 'responses', 'conditions'];
+    entriesToSort.forEach((entryType) => {
+      result[entryType] = {};
+      if (!data[entryType]) return;
+      data[entryType].forEach((entry) => {
+        const category = RuleEntryMetadata[entryType][entry.name]?.category;
+        if (category) {
+          if (!result[entryType][category]) {
+            result[entryType][category] = [];
+          }
+          result[entryType][category].push(entry);
+        }
+      });
+    });
+    return result;
   },
 };
