@@ -3,6 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { PopoverButton } from '../../../components/PopoverProvider';
 import { DropdownItemsList } from './InspectorDropdown';
 import { formatVariableName } from '../../SceneCreatorUtilities';
+import { useCoreState } from '../../../core/CoreEvents';
 
 import uuid from 'uuid/v4';
 
@@ -36,13 +37,16 @@ const styles = StyleSheet.create({
   },
 });
 
-export const InspectorVariablePicker = ({ value, onChange, style, context, ...props }) => {
-  const items = context.variables || [];
-  const { onVariablesChange } = context;
+export const InspectorVariablePicker = ({ value, onChange, style, ...props }) => {
+  // TODO: change variables
+  const onVariablesChange = (newVariables) =>
+    console.log(`change variables: ${JSON.stringify(newVariables, null, 2)}`);
+  const variables = useCoreState('EDITOR_VARIABLES');
+  const items = variables || [];
 
   let selectedItem;
   if (value && value !== 'none') {
-    selectedItem = items.find((item) => item.id === value);
+    selectedItem = items.find((item) => item.variableId === value);
   }
 
   const addVariable = React.useCallback(
@@ -68,7 +72,7 @@ export const InspectorVariablePicker = ({ value, onChange, style, context, ...pr
     items,
     selectedItem,
     height: 192,
-    onSelectItem: (item) => onChange(item.id),
+    onSelectItem: (item) => onChange(item.variableId),
     showAddItem: true,
     onAddItem: addVariable,
   };

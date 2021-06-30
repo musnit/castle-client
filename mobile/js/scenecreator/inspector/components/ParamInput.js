@@ -27,27 +27,20 @@ export const ParamInput = ({
     case 'f':
     case 'i':
     case 'd':
-      if (paramSpec.expression === false) {
-        // expressions forbidden by paramSpec, only allow primitive number
-        return (
-          <InspectorNumberInput
-            value={value}
-            onChange={setValue}
-            {...paramSpec.attribs}
-            {...props}
-          />
-        );
-      } else {
-        // TODO: more expressions besides numeric
-        return (
-          <ExpressionInputComponent
-            value={value}
-            onChange={setValue}
-            {...paramSpec.attribs}
-            {...props}
-          />
-        );
-      }
+      // expressions forbidden by paramSpec, only allow primitive number
+      return (
+        <InspectorNumberInput value={value} onChange={setValue} {...paramSpec.attribs} {...props} />
+      );
+    case 'expression':
+      // TODO: more expressions besides numeric
+      return (
+        <ExpressionInputComponent
+          value={value}
+          onChange={setValue}
+          {...paramSpec.attribs}
+          {...props}
+        />
+      );
     case 'tagPicker': // TODO: tagPicker
       return (
         <InspectorTagPicker value={value} onChange={setValue} {...paramSpec.attribs} {...props} />
@@ -68,21 +61,19 @@ export const ParamInput = ({
           {...props}
         />
       );
+    case 'variable':
+      return (
+        <InspectorVariablePicker
+          value={value}
+          onChange={setValue}
+          {...paramSpec.attribs}
+          {...props}
+        />
+      );
     case 'dropdown':
-      if (paramSpec.attribs?.showVariablesItems) {
-        return (
-          <InspectorVariablePicker
-            value={value}
-            onChange={setValue}
-            {...paramSpec.attribs}
-            {...props}
-          />
-        );
-      } else {
-        return (
-          <InspectorDropdown value={value} onChange={setValue} {...paramSpec.attribs} {...props} />
-        );
-      }
+      return (
+        <InspectorDropdown value={value} onChange={setValue} {...paramSpec.attribs} {...props} />
+      );
     case 'actorRef': // TODO: actorRef
       return (
         <InspectorActorRefInput

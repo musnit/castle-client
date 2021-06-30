@@ -29,7 +29,7 @@ const ACTOR_REF_KINDS = [
   },
 ];
 
-export const InspectorActorRefInput = ({ value, onChange, context, triggerFilter, ...props }) => {
+export const InspectorActorRefInput = ({ value, onChange, triggerFilter, ...props }) => {
   const kind = value?.kind;
   const onChangeKind = (kind) => onChange({ ...value, kind });
   const tag = value?.tag;
@@ -53,7 +53,6 @@ export const InspectorActorRefInput = ({ value, onChange, context, triggerFilter
           <InspectorTagPicker
             value={tag}
             onChange={onChangeTag}
-            context={context}
             style={[styles.cell, { alignItems: 'center' }]}
             singleSelect={true}
           />

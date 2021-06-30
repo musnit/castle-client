@@ -79,8 +79,9 @@ const RemoveTagButton = ({ tag, onPress, closePopover }) => (
 /**
  *  @prop value string of tags separated by spaces
  */
-export const InspectorTagPicker = ({ value, onChange, context, ...props }) => {
-  const { tagToActorIds } = context;
+export const InspectorTagPicker = ({ value, onChange, ...props }) => {
+  // TODO: tagToActorIds const { tagToActorIds } = context;
+  const tagToActorIds = null;
   const [components, setComponents] = React.useState([]);
   const [tagsToAdd, setTagsToAdd] = React.useState();
 

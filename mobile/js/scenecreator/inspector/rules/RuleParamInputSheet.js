@@ -3,8 +3,8 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
 import { ConfigureExpressionSheet } from '../expressions/ConfigureExpressionSheet';
+import { getRuleRenderContext } from './RuleRenderContext';
 import { RuleParamInputRow } from '../components/RuleParamInputRow';
-import { useCardCreator } from '../../CreateCardContext';
 
 import * as Constants from '../../../Constants';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
 });
 
 const EMPTY_PARAMSPEC = {
-  method: 'numberInput',
+  type: 'f',
   initialValue: 0,
 };
 
@@ -49,13 +49,15 @@ export default RuleParamInputSheet = ({
   onClose,
   addChildSheet,
 }) => {
-  const context = useCardCreator();
+  const context = getRuleRenderContext();
   const findParamSpec = (paramName) => {
-    if (paramName && entry.paramSpecs && entry.paramSpecs[paramName]) {
-      return entry.paramSpecs[paramName];
-    } else {
-      return EMPTY_PARAMSPEC;
+    if (paramName && entry.paramSpecs) {
+      const result = entry.paramSpecs.find((s) => s.name === paramName);
+      if (result) {
+        return result;
+      }
     }
+    return EMPTY_PARAMSPEC;
   };
 
   const [values, changeValues] = React.useReducer(
