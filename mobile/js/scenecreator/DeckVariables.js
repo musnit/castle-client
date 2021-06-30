@@ -140,7 +140,9 @@ export const DeckVariables = ({ variables, onChange }) => {
   );
   const addVariable = React.useCallback(() => {
     const existing = variables && variables.length ? variables : [];
-    return onChange([{ ...SceneCreatorConstants.EMPTY_VARIABLE, id: uuid() }].concat(existing));
+    return onChange(
+      [{ ...SceneCreatorConstants.EMPTY_VARIABLE, variableId: uuid() }].concat(existing)
+    );
   }, [variables, onChange]);
   const deleteVariable = React.useCallback(
     (index) =>
@@ -174,7 +176,7 @@ export const DeckVariables = ({ variables, onChange }) => {
       {variables &&
         variables.map((variable, ii) => (
           <VariableInput
-            key={`var-${ii}-${variable.id}`}
+            key={`var-${ii}-${variable.variableId}`}
             autoFocus={ii === 0 && variable.name.length === 0}
             onChange={(changes) => onChangeVariable(changes, ii)}
             onDelete={() => deleteVariable(ii)}

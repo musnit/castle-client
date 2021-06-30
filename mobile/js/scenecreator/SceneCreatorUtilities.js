@@ -8,7 +8,7 @@ export const getVariableName = (variableId, variables) => {
   let variableName = '(none)';
   if (variableId && variableId !== 'none') {
     if (variables) {
-      const selectedVar = variables.find((v) => v.id === variableId);
+      const selectedVar = variables.find((v) => v.variableId === variableId);
       if (selectedVar) {
         variableName = selectedVar.name;
       }
@@ -171,7 +171,9 @@ export const makeExpressionSummary = (expression, context, depth = 0) => {
     case 'variable': {
       let variableLabel;
       if (context?.variables) {
-        const variable = context.variables.find((v) => v.id === expression.params.variableId);
+        const variable = context.variables.find(
+          (v) => v.variableId === expression.params.variableId
+        );
         if (variable) {
           variableLabel = variable.name;
         }
