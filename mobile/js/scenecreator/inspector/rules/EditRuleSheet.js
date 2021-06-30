@@ -3,7 +3,7 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
 import { Rule } from './Rule';
-import { useCardCreator } from '../../CreateCardContext';
+import { useCoreState } from '../../../core/CoreEvents';
 
 import FeatherIcon from 'react-native-vector-icons/Feather';
 
@@ -52,8 +52,8 @@ export const EditRuleSheet = ({
   onClose,
   addChildSheet,
 }) => {
-  const { rules: rulesContext } = useCardCreator();
-  const { data, items } = rulesContext;
+  const rulesComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Rules');
+  const items = rulesComponent.rules;
   const rule = items.find((r) => r.index === ruleIndex);
   if (!rule) return null;
 

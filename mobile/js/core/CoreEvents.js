@@ -10,7 +10,7 @@ let nextListenerId = 1;
 const CORE_STATE_PREFIX = 'EDITOR_';
 let coreStateCache = {};
 const setCoreStateCache = (eventName, data) => (coreStateCache[eventName] = data);
-const getCoreStateCache = (eventName) => coreStateCache[eventName];
+export const getCoreStateCache = (eventName) => coreStateCache[eventName];
 const clearCoreStateCache = () => (coreStateCache = {});
 
 export async function sendAsync(name, params) {

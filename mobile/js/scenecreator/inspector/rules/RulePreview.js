@@ -2,9 +2,8 @@ import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Responses } from './Responses';
 import { Triggers } from './Triggers';
-import { useCardCreator } from '../../CreateCardContext';
 import { VectorIcon } from '../../../components/VectorIcon';
-import { useCoreState } from '../../../core/CoreEvents';
+import { getRuleRenderContext } from './RuleRenderContext';
 
 const styles = StyleSheet.create({
   row: {
@@ -67,20 +66,7 @@ const makeResponseRows = (rows, order, indent, { response, context }) => {
 };
 
 export const RulePreview = ({ rule }) => {
-  // TODO: render actual rule with context
-  // TODO: rendering rules needs:
-  // - variables (makeExpressionSummary, formatVariableName and getVariableName)
-  // - behaviors (set, enable, disable behavior, makeExpressionSummary)
-  // - library (create only)
-  // - deck (send player to card only)
-  // -> maybe expose CoreEvents.getCoreStateCache at leaves when rendering rules
-  let context = useCardCreator();
-  context = {
-    ...context,
-    variables: useCoreState('EDITOR_VARIABLES'),
-    behaviors: useCoreState('EDITOR_ALL_BEHAVIORS'),
-    library: {}, // TODO: library
-  };
+  const context = getRuleRenderContext();
   let triggerCells = Triggers.makeCells({ trigger: rule.trigger, context, isPreview: true });
 
   let responseRows = [];

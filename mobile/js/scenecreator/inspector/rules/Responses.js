@@ -8,6 +8,15 @@ import {
 import { makeCardPreviewTitle } from '../../../common/utilities';
 import { SOUND_CATEGORIES } from './PlaySoundResponse';
 
+/**
+ *  This file exports functions for rendering response cells.
+ *  Functions might expect the following params:
+ *    `response` - the raw response object
+ *    `context` - the result of `getRuleRenderContext()`
+ *    `isPreview` - whether we're rendering a non-interactable summary/preview of a rule
+ *  Functions return an array of cells to be consumed by `ConfigureRuleEntry` or `RulePreview`.
+ */
+
 const Empty = ({ order, isCondition, isPreview }) => {
   if (isPreview) {
     return [

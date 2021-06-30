@@ -5,6 +5,15 @@ import {
   readableOperator,
 } from '../../SceneCreatorUtilities';
 
+/**
+ *  This file exports functions for rendering trigger cells.
+ *  Functions might expect the following params:
+ *    `trigger` - the raw trigger object
+ *    `context` - the result of `getRuleRenderContext()`
+ *    `isPreview` - whether we're rendering a non-interactable summary/preview of a rule
+ *  Functions return an array of cells to be consumed by `ConfigureRuleEntry` or `RulePreview`.
+ */
+
 const withWhen = (tokens) => {
   tokens.unshift({
     type: 'text',

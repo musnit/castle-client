@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useCardCreator } from '../../CreateCardContext';
 import { BehaviorPropertyRule } from './BehaviorPropertyRule';
 import { ConfigureRuleEntry } from './ConfigureRuleEntry';
 import { getEntryByName } from '../InspectorUtilities';
+import { getRuleRenderContext } from './RuleRenderContext';
 import { makeResponseActions } from './ResponseActions';
 import { PlaySoundResponse as PlaySound } from './PlaySoundResponse';
 import { Responses } from './Responses';
@@ -433,7 +433,7 @@ const Response = ({ response, onChangeResponse, order = 0, ...props }) => {
 
 const ResponseWithContext = (props) => {
   // we'll be using <Response /> recursively, so only subscribe once at the top
-  const context = useCardCreator();
+  const context = getRuleRenderContext();
   return <Response context={context} {...props} />;
 };
 
