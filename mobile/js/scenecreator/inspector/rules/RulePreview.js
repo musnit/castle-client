@@ -77,7 +77,7 @@ export const RulePreview = ({ rule }) => {
   let context = useCardCreator();
   context = {
     ...context,
-    variables: {}, // TODO: variables
+    variables: useCoreState('EDITOR_VARIABLES'),
     behaviors: useCoreState('EDITOR_ALL_BEHAVIORS'),
     library: {}, // TODO: library
   };

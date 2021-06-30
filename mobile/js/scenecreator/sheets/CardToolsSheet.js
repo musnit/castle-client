@@ -57,11 +57,7 @@ export const CardToolsSheet = ({ isOpen, onClose, ...props }) => {
   // TODO: change variables
   const onVariablesChange = (newVariables) =>
     console.log(`change variables: ${JSON.stringify(newVariables, null, 2)}`);
-  const variablesData = useCoreState('EDITOR_VARIABLES');
-  let variables;
-  if (variablesData) {
-    variables = variablesData.variables;
-  }
+  const variables = useCoreState('EDITOR_VARIABLES');
 
   let TAB_ITEMS = [
     {

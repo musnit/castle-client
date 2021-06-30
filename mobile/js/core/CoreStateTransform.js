@@ -37,4 +37,7 @@ export default {
     }
     return result;
   },
+  EDITOR_VARIABLES: (name, eventId, data) => {
+    return data?.variables;
+  },
 };
