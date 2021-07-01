@@ -59,6 +59,18 @@ export default {
         }
       });
     });
+
+    result.expressions = {};
+    if (data.expressions) {
+      data.expressions.forEach((entry) => {
+        const category = RuleEntryMetadata.expressions[entry.name]?.category;
+        result.expressions[entry.name] = {
+          ...entry,
+          category,
+        };
+      });
+    }
+
     return result;
   },
 };

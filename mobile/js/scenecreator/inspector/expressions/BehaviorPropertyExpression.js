@@ -38,13 +38,12 @@ export const BehaviorPropertyExpression = ({
   onChange,
   showBehaviorPropertyPicker,
   triggerFilter,
-  context,
+  behaviors,
   ...props
 }) => {
-  const { behaviors } = context;
   let selectedBehavior;
   if (value.params?.behaviorId) {
-    const entry = Object.entries(context.behaviors).find(
+    const entry = Object.entries(behaviors).find(
       ([_, b]) => b.behaviorId === value.params.behaviorId
     );
     if (entry) {
@@ -110,7 +109,6 @@ export const BehaviorPropertyExpression = ({
         <InspectorActorRefInput
           value={value.params?.actorRef}
           onChange={setActorRef}
-          context={context}
           triggerFilter={triggerFilter}
         />
       </View>

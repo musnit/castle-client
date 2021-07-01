@@ -214,4 +214,93 @@ export default {
       category: 'draw',
     },
   },
+  expressions: {
+    number: {
+      category: 'values',
+    },
+    variable: {
+      category: 'values',
+    },
+    ['+']: {
+      category: 'arithmetic',
+    },
+    ['*']: {
+      category: 'arithmetic',
+    },
+    ['-']: {
+      category: 'arithmetic',
+    },
+    ['/']: {
+      category: 'arithmetic',
+    },
+    ['%']: {
+      category: 'arithmetic',
+    },
+    ['^']: {
+      category: 'arithmetic',
+    },
+    ['log']: {
+      category: 'arithmetic',
+    },
+    ['behavior property']: {
+      category: 'values',
+    },
+    ['counter value']: {
+      category: 'values',
+    },
+    ['actor distance']: {
+      category: 'spatial relationships',
+    },
+    ['actor angle']: {
+      category: 'spatial relationships',
+    },
+    ['angle of motion']: {
+      category: 'spatial relationships',
+    },
+    abs: {
+      category: 'functions',
+    },
+    floor: {
+      category: 'functions',
+    },
+    mix: {
+      category: 'functions',
+    },
+    clamp: {
+      category: 'functions',
+    },
+    ['number of actors']: {
+      category: 'functions',
+    },
+    sin: {
+      category: 'functions',
+    },
+    rad: {
+      category: 'functions',
+    },
+    time: {
+      category: 'functions',
+    },
+    min: {
+      category: 'choices',
+    },
+    max: {
+      category: 'choices',
+    },
+    choose: {
+      category: 'choices',
+    },
+    ['weighted choose']: {
+      category: 'choices',
+    },
+    random: {
+      category: 'randomness',
+    },
+    perlin: {
+      category: 'randomness',
+    },
+    gauss: {
+      category: 'randomness',
+    },
+  },
 };

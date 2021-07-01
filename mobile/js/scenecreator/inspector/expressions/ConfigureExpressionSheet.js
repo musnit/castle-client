@@ -7,7 +7,7 @@ import { ExpressionTypePickerSheet } from './ExpressionTypePickerSheet';
 import { ParamInput } from '../components/ParamInput';
 import { promoteToExpression } from '../../SceneCreatorUtilities';
 import { SelectBehaviorPropertySheet } from '../components/SelectBehaviorPropertySheet';
-import { useCardCreator } from '../../CreateCardContext';
+import { useCoreState } from '../../../core/CoreEvents';
 
 import * as Constants from '../../../Constants';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
@@ -124,7 +124,7 @@ const wrapExpression = ({ expression, expressions, wrappingType }) => {
 // TODO: use returnType to filter available expression types
 const InspectorExpressionInput = ({
   label,
-  context,
+  behaviors,
   expressions,
   value,
   onChange,
@@ -175,31 +175,23 @@ const InspectorExpressionInput = ({
     [onChangeExpressionType]
   );
 
-  const orderedParamSpecs = Object.entries(expressionParamSpecs).sort((a, b) => {
-    const [k1, spec1] = a;
-    const [k2, spec2] = b;
-    const order1 = spec1.order ?? 9999;
-    const order2 = spec2.order ?? 9999;
-    return order1 < order2 ? -1 : 1;
-  });
-
   const onSwapParams = React.useCallback(
     (firstParamIndex) => {
-      const [name1, spec1] = orderedParamSpecs[firstParamIndex];
-      const [name2, spec2] = orderedParamSpecs[firstParamIndex + 1];
-      const val1 = value.params[name1];
-      const val2 = value.params[name2];
+      const spec1 = expressionParamSpecs[firstParamIndex];
+      const spec2 = expressionParamSpecs[firstParamIndex + 1];
+      const val1 = value.params[spec1.name];
+      const val2 = value.params[spec2.name];
       onChange({
         ...value,
         params: {
           ...value.params,
-          [name1]: val2,
-          [name2]: val1,
+          [spec1.name]: val2,
+          [spec2.name]: val1,
         },
       });
       incrementLastNativeUpdate();
     },
-    [orderedParamSpecs, value]
+    [expressionParamSpecs, value]
   );
 
   return (
@@ -218,13 +210,14 @@ const InspectorExpressionInput = ({
             paramSpecs={expressionParamSpecs}
             value={value}
             onChange={onChange}
-            context={context}
+            behaviors={behaviors}
             showBehaviorPropertyPicker={showBehaviorPropertyPicker}
             triggerFilter={triggerFilter}
             style={styles.paramContainer}
           />
         ) : (
-          orderedParamSpecs.map(([name, spec], ii) => {
+          expressionParamSpecs.map((spec, ii) => {
+            const { name } = spec;
             const paramValue = value.params ? value.params[name] : value;
             const setValue = (paramValue) => onChangeParam(name, paramValue);
             const onConfigureExpression = () => {
@@ -255,12 +248,11 @@ const InspectorExpressionInput = ({
                     value={paramValue}
                     setValue={setValue}
                     expressions={expressions}
-                    context={context}
                     onConfigureExpression={onConfigureExpression}
                     lastNativeUpdate={lastNativeUpdate}
                   />
                 </View>
-                {orderedParamSpecs.length == 2 && ii < orderedParamSpecs.length - 1 ? (
+                {expressionParamSpecs.length == 2 && ii < expressionParamSpecs.length - 1 ? (
                   <View key={`swap-expression-param-${expressionType}-${ii}`} style={styles.swap}>
                     <View style={styles.swapLine} />
                     <View style={styles.swapButtonWrapper}>
@@ -301,7 +293,12 @@ export const ConfigureExpressionSheet = ({
   // to filter behaviors by the owning actor.
   useAllBehaviors = false,
 }) => {
-  const createCardContext = useCardCreator();
+  const rulesData = useCoreState('EDITOR_RULES_DATA');
+  let expressions;
+  if (rulesData) {
+    expressions = rulesData.expressions;
+  }
+  const behaviors = useCoreState('EDITOR_ALL_BEHAVIORS');
   const [value, setValue] = React.useState(promoteToExpression(initialValue));
 
   const showWrappingExpressionPicker = React.useCallback(
@@ -313,13 +310,13 @@ export const ConfigureExpressionSheet = ({
         onSelectExpressionType: (wrappingType) =>
           setValue(
             wrapExpression({
-              expressions: createCardContext.expressions,
+              expressions,
               expression: value,
               wrappingType,
             })
           ),
       }),
-    [value, createCardContext.expressions]
+    [value, expressions]
   );
 
   const showBehaviorPropertyPicker = React.useCallback(
@@ -331,13 +328,13 @@ export const ConfigureExpressionSheet = ({
       return addChildSheet({
         key: 'expressionBehaviorPropertyPicker',
         Component: SelectBehaviorPropertySheet,
-        behaviors: createCardContext.behaviors,
+        behaviors,
         useAllBehaviors: useAllBehaviors || childUseAllBehaviors,
         isPropertyVisible: (spec) => spec?.rules?.get === true,
         onSelectBehaviorProperty,
       });
     },
-    [createCardContext.behaviors, useAllBehaviors]
+    [behaviors, useAllBehaviors]
   );
 
   const renderContent = () => (
@@ -351,8 +348,8 @@ export const ConfigureExpressionSheet = ({
       </View>
       <InspectorExpressionInput
         depth={depth}
-        context={createCardContext}
-        expressions={createCardContext.expressions}
+        behaviors={behaviors}
+        expressions={expressions}
         value={value}
         onChange={setValue}
         showBehaviorPropertyPicker={showBehaviorPropertyPicker}
