@@ -1,11 +1,16 @@
+#include "expression.h"
 #include "behaviors/all.h"
 #include "variables.h"
+
+void ExpressionRegistrar::registerSceneExpressions() {
+}
 
 
 // Expressions whose results depend on scene state
 
 struct TimeExpression : BaseExpression {
   inline static const RuleRegistration<TimeExpression> registration { "time" };
+  static constexpr auto description = "Time elapsed since the card started";
 
   struct Params {
   } params;
@@ -17,9 +22,10 @@ struct TimeExpression : BaseExpression {
 
 struct VariableExpression : BaseExpression {
   inline static const RuleRegistration<VariableExpression> registration { "variable" };
+  static constexpr auto description = "the value of a variable";
 
   struct Params {
-    PROP(Variable, variableId);
+    PROP(Variable, variableId, .label("Variable name"));
   } params;
 
   ExpressionValue eval(RuleContext &ctx) override {
@@ -31,6 +37,7 @@ struct NumberOfActorsExpression : BaseExpression {
   inline static const RuleRegistration<NumberOfActorsExpression> registration {
     "number of actors"
   };
+  static constexpr auto description = "the number of actors with a tag";
 
   struct Params {
     PROP(Tag, tag);
@@ -104,11 +111,12 @@ struct BehaviorPropertyExpression : BaseExpression {
   inline static const RuleRegistration<BehaviorPropertyExpression> registration {
     "behavior property"
   };
+  static constexpr auto description = "the value of a behavior property";
 
   struct Params {
-    PROP(int, behaviorId) = -1;
-    PROP(PropId, propertyName);
-    PROP(ActorRef, actorRef);
+    PROP(int, behaviorId, .label("behavior")) = -1;
+    PROP(PropId, propertyName, .label("parameter"));
+    PROP(ActorRef, actorRef, .label("actor type"));
   } params;
 
   // Cache the call to `.getProperty` so we don't have to do the lookup by `behaviorId` every time
@@ -136,9 +144,10 @@ struct BehaviorPropertyExpression : BaseExpression {
 
 struct CounterValueExpression : BaseExpression {
   inline static const RuleRegistration<CounterValueExpression> registration { "counter value" };
+  static constexpr auto description = "the value of a counter";
 
   struct Params {
-    PROP(ActorRef, actorRef);
+    PROP(ActorRef, actorRef, .label("actor type"));
   } params;
 
   ExpressionValue eval(RuleContext &ctx) override {
@@ -152,10 +161,11 @@ struct CounterValueExpression : BaseExpression {
 
 struct ActorDistanceExpression : BaseExpression {
   inline static const RuleRegistration<ActorDistanceExpression> registration { "actor distance" };
+  static constexpr auto description = "the distance between two actors";
 
   struct Params {
-    PROP(ActorRef, fromActor);
-    PROP(ActorRef, toActor);
+    PROP(ActorRef, fromActor, .label("from actor"));
+    PROP(ActorRef, toActor, .label("to actor"));
   } params;
 
   ExpressionValue eval(RuleContext &ctx) override {
@@ -174,10 +184,11 @@ struct ActorDistanceExpression : BaseExpression {
 
 struct ActorAngleExpression : BaseExpression {
   inline static const RuleRegistration<ActorAngleExpression> registration { "actor angle" };
+  static constexpr auto description = "the angle from one actor to another (degrees)";
 
   struct Params {
-    PROP(ActorRef, fromActor);
-    PROP(ActorRef, toActor);
+    PROP(ActorRef, fromActor, .label("from actor"));
+    PROP(ActorRef, toActor, .label("to actor"));
   } params;
 
   ExpressionValue eval(RuleContext &ctx) override {
@@ -199,9 +210,10 @@ struct ActorAngleExpression : BaseExpression {
 
 struct AngleOfMotionExpression : BaseExpression {
   inline static const RuleRegistration<AngleOfMotionExpression> registration { "angle of motion" };
+  static constexpr auto description = "the angle of motion of an actor";
 
   struct Params {
-    PROP(ActorRef, actorRef);
+    PROP(ActorRef, actorRef, .label("actor type"));
   } params;
 
   ExpressionValue eval(RuleContext &ctx) override {

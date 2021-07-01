@@ -30,7 +30,6 @@ public:
   bool operator!=(const ExpressionValue &other) const;
   bool compare(const std::string &comparison, const ExpressionValue &other) const;
 
-
 private:
   std::variant<double, const char *> value = 0.0;
 };

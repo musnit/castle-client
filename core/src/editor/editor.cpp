@@ -438,6 +438,7 @@ struct EditorRulesDataEvent {
   PROP(std::vector<RuleEntryData>, triggers);
   PROP(std::vector<RuleEntryData>, responses);
   PROP(std::vector<RuleEntryData>, conditions);
+  PROP(std::vector<RuleEntryData>, expressions);
 };
 
 void Editor::sendRulesData() {
@@ -460,6 +461,11 @@ void Editor::sendRulesData() {
     } else {
       ev.responses().push_back(data);
     }
+  }
+  for (auto expressionWriter : RulesBehavior::expressionWriters) {
+    RuleEntryData data;
+    expressionWriter.write(expressionWriter.name, &data);
+    ev.expressions().push_back(data);
   }
 
   bridge.sendEvent("EDITOR_RULES_DATA", ev);

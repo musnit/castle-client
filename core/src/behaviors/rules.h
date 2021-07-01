@@ -133,7 +133,7 @@ struct RuleEntryData {
     PROP(Attribs, attribs);
   };
   PROP(std::vector<ParamSpec>, paramSpecs);
-  // TODO: category, returnType, triggerFilter, parentTypeFilter
+  // TODO: returnType, triggerFilter, parentTypeFilter
 };
 
 
@@ -280,6 +280,7 @@ private:
   };
   inline static std::vector<RuleEntryWriter> triggerWriters;
   inline static std::vector<RuleEntryWriter> responseWriters;
+  inline static std::vector<RuleEntryWriter> expressionWriters;
 
 
   // Triggering
@@ -552,13 +553,13 @@ RuleRegistration<T, Behavior>::RuleRegistration(const char *name, bool allowDupl
   RulesBehavior::RuleEntryWriter entry { std::string(name),
     [](std::string &name, RuleEntryData *data) {
       data->name = name;
+      data->description = T::description;
 
       if constexpr (std::is_base_of_v<BaseExpression, T>) {
         data->behaviorId = -1; // expression
       } else {
         data->behaviorId = Behavior::behaviorId;
         data->behaviorName = Behavior::name;
-        data->description = T::description;
       }
       if constexpr (Props::hasProps<typename T::Params>) {
         // TODO: merge with paramSpec serialization in editor.cpp
@@ -587,8 +588,6 @@ RuleRegistration<T, Behavior>::RuleRegistration(const char *name, bool allowDupl
 
   if constexpr (std::is_base_of_v<BaseTrigger, T>) {
     // This is a trigger type
-
-    // TODO: only if editing
     RulesBehavior::triggerWriters.push_back(entry);
 
     RulesBehavior::triggerLoaders.push_back({
@@ -614,8 +613,6 @@ RuleRegistration<T, Behavior>::RuleRegistration(const char *name, bool allowDupl
     });
   } else if constexpr (std::is_base_of_v<BaseResponse, T>) {
     // This is a response type
-
-    // TODO: only if editing
     RulesBehavior::responseWriters.push_back(entry);
 
     RulesBehavior::responseLoaders.push_back({
@@ -663,6 +660,7 @@ RuleRegistration<T, Behavior>::RuleRegistration(const char *name, bool allowDupl
     });
   } else if constexpr (std::is_base_of_v<BaseExpression, T>) {
     // This is an expression type
+    RulesBehavior::expressionWriters.push_back(entry);
     RulesBehavior::expressionLoaders.push_back({
         entt::hashed_string(name),
         [](ExpressionRef &expr, RulesBehavior &rulesBehavior, Reader &reader) {
@@ -696,5 +694,8 @@ RuleRegistration<T, Behavior>::RuleRegistration(const char *name, bool allowDupl
           });
         },
     });
+  } else {
+    // TODO: remove
+    // RulesBehavior::expressionWriters.push_back(entry);
   }
 }

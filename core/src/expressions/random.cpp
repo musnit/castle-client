@@ -1,15 +1,20 @@
+#include "expression.h"
 #include "behaviors/rules.h"
+
+void ExpressionRegistrar::registerRandomExpressions() {
+}
 
 
 // Expressions whose results involve random choices
 
 struct RandomExpression : BaseExpression {
   inline static const RuleRegistration<RandomExpression> registration { "random" };
+  static constexpr auto description = "a random number in a range";
 
   struct Params {
-    PROP(ExpressionRef, min) = 0;
-    PROP(ExpressionRef, max) = 1;
-    PROP(bool, discrete) = false;
+    PROP(ExpressionRef, min, .label("Minimum value")) = 0;
+    PROP(ExpressionRef, max, .label("Maximum value")) = 1;
+    PROP(bool, discrete, .label("Only choose whole numbers")) = false;
   } params;
 
   ExpressionValue eval(RuleContext &ctx) override {
@@ -25,6 +30,7 @@ struct RandomExpression : BaseExpression {
 
 struct PerlinExpression : BaseExpression {
   inline static const RuleRegistration<PerlinExpression> registration { "perlin" };
+  static constexpr auto description = "Perlin noise in 2 dimensions";
 
   struct Params {
     PROP(ExpressionRef, x) = 0;
@@ -38,10 +44,11 @@ struct PerlinExpression : BaseExpression {
 
 struct GaussExpression : BaseExpression {
   inline static const RuleRegistration<GaussExpression> registration { "gauss" };
+  static constexpr auto description = "a random number with a Gaussian distribution";
 
   struct Params {
-    PROP(ExpressionRef, mean) = 0;
-    PROP(ExpressionRef, sigma) = 0;
+    PROP(ExpressionRef, mean, .label("Mean")) = 0;
+    PROP(ExpressionRef, sigma, .label("Standard deviation")) = 1;
   } params;
 
   ExpressionValue eval(RuleContext &ctx) override {
@@ -53,10 +60,11 @@ struct GaussExpression : BaseExpression {
 
 struct ChooseExpression : BaseExpression {
   inline static const RuleRegistration<ChooseExpression> registration { "choose" };
+  static constexpr auto description = "choose";
 
   struct Params {
-    PROP(ExpressionRef, lhs) = 0;
-    PROP(ExpressionRef, rhs) = 1;
+    PROP(ExpressionRef, lhs, .label("First outcome")) = 0;
+    PROP(ExpressionRef, rhs, .label("Second outcome")) = 1;
   } params;
 
   ExpressionValue eval(RuleContext &ctx) override {
@@ -68,12 +76,13 @@ struct ChooseExpression : BaseExpression {
 
 struct WeightedChooseExpression : BaseExpression {
   inline static const RuleRegistration<WeightedChooseExpression> registration { "weighted choose" };
+  static constexpr auto description = "weighted choose";
 
   struct Params {
-    PROP(ExpressionRef, lhs) = 0;
-    PROP(ExpressionRef, rhs) = 1;
-    PROP(ExpressionRef, lhw) = 0.5;
-    PROP(ExpressionRef, rhw) = 0.5;
+    PROP(ExpressionRef, lhs, .label("First outcome")) = 0;
+    PROP(ExpressionRef, rhs, .label("Second outcome")) = 1;
+    PROP(ExpressionRef, lhw, .label("Weight of first outcome")) = 0.5;
+    PROP(ExpressionRef, rhw, .label("Weight of second outcome")) = 0.5;
   } params;
 
   ExpressionValue eval(RuleContext &ctx) override {

@@ -2,6 +2,7 @@
 
 #include "js.h"
 #include "api.h"
+#include "expressions/expression.h"
 
 
 //
@@ -122,6 +123,7 @@ Engine::Engine(bool isEditing_)
     editor = new Editor(bridge);
   }
 
+  ExpressionRegistrar::registerExpressions();
   propAttribsDemo();
 }
 

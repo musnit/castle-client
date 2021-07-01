@@ -1,4 +1,8 @@
+#include "expression.h"
 #include "behaviors/rules.h"
+
+void ExpressionRegistrar::registerMathExpressions() {
+}
 
 
 // Math expressions whose results are 'pure' functions of inputs -- i.e., no randomness or
@@ -6,6 +10,7 @@
 
 struct NumberExpression : BaseExpression {
   inline static const RuleRegistration<NumberExpression> registration { "number" };
+  static constexpr auto description = "a constant number";
 
   struct Params {
     PROP(double, value) = 0;
@@ -18,10 +23,11 @@ struct NumberExpression : BaseExpression {
 
 struct AddExpression : BaseExpression {
   inline static const RuleRegistration<AddExpression> registration { "+" };
+  static constexpr auto description = "add";
 
   struct Params {
-    PROP(ExpressionRef, lhs) = 0;
-    PROP(ExpressionRef, rhs) = 0;
+    PROP(ExpressionRef, lhs, .label("Left operand")) = 0;
+    PROP(ExpressionRef, rhs, .label("Right operand")) = 0;
   } params;
 
   ExpressionValue eval(RuleContext &ctx) override {
@@ -31,10 +37,11 @@ struct AddExpression : BaseExpression {
 
 struct SubtractExpression : BaseExpression {
   inline static const RuleRegistration<SubtractExpression> registration { "-" };
+  static constexpr auto description = "subtract";
 
   struct Params {
-    PROP(ExpressionRef, lhs) = 0;
-    PROP(ExpressionRef, rhs) = 0;
+    PROP(ExpressionRef, lhs, .label("Left operand")) = 0;
+    PROP(ExpressionRef, rhs, .label("Right operand")) = 0;
   } params;
 
   ExpressionValue eval(RuleContext &ctx) override {
@@ -44,10 +51,11 @@ struct SubtractExpression : BaseExpression {
 
 struct MultiplyExpression : BaseExpression {
   inline static const RuleRegistration<MultiplyExpression> registration { "*" };
+  static constexpr auto description = "multiply";
 
   struct Params {
-    PROP(ExpressionRef, lhs) = 1;
-    PROP(ExpressionRef, rhs) = 1;
+    PROP(ExpressionRef, lhs, .label("Left operand")) = 1;
+    PROP(ExpressionRef, rhs, .label("Right operand")) = 1;
   } params;
 
   ExpressionValue eval(RuleContext &ctx) override {
@@ -57,10 +65,11 @@ struct MultiplyExpression : BaseExpression {
 
 struct DivideExpression : BaseExpression {
   inline static const RuleRegistration<DivideExpression> registration { "/" };
+  static constexpr auto description = "divide";
 
   struct Params {
-    PROP(ExpressionRef, lhs) = 1;
-    PROP(ExpressionRef, rhs) = 1;
+    PROP(ExpressionRef, lhs, .label("Numerator")) = 1;
+    PROP(ExpressionRef, rhs, .label("Denominator")) = 1;
   } params;
 
   ExpressionValue eval(RuleContext &ctx) override {
@@ -72,10 +81,11 @@ struct DivideExpression : BaseExpression {
 
 struct ModExpression : BaseExpression {
   inline static const RuleRegistration<ModExpression> registration { "%" };
+  static constexpr auto description = "modulo";
 
   struct Params {
-    PROP(ExpressionRef, lhs) = 1;
-    PROP(ExpressionRef, rhs) = 1;
+    PROP(ExpressionRef, lhs, .label("Left operand")) = 1;
+    PROP(ExpressionRef, rhs, .label("Right operand")) = 1;
   } params;
 
   ExpressionValue eval(RuleContext &ctx) override {
@@ -88,10 +98,11 @@ struct ModExpression : BaseExpression {
 
 struct PowExpression : BaseExpression {
   inline static const RuleRegistration<PowExpression> registration { "^" };
+  static constexpr auto description = "power";
 
   struct Params {
-    PROP(ExpressionRef, lhs) = 1;
-    PROP(ExpressionRef, rhs) = 1;
+    PROP(ExpressionRef, lhs, .label("Base")) = 1;
+    PROP(ExpressionRef, rhs, .label("Exponent")) = 1;
   } params;
 
   ExpressionValue eval(RuleContext &ctx) override {
@@ -101,10 +112,11 @@ struct PowExpression : BaseExpression {
 
 struct LogExpression : BaseExpression {
   inline static const RuleRegistration<LogExpression> registration { "log" };
+  static constexpr auto description = "logarithm";
 
   struct Params {
-    PROP(ExpressionRef, base) = 2;
-    PROP(ExpressionRef, number) = 1;
+    PROP(ExpressionRef, base, .label("Base")) = 2;
+    PROP(ExpressionRef, number, .label("Number")) = 1;
   } params;
 
   ExpressionValue eval(RuleContext &ctx) override {
@@ -116,6 +128,7 @@ struct LogExpression : BaseExpression {
 
 struct AbsExpression : BaseExpression {
   inline static const RuleRegistration<AbsExpression> registration { "abs" };
+  static constexpr auto description = "absolute value";
 
   struct Params {
     PROP(ExpressionRef, number) = 0;
@@ -128,6 +141,7 @@ struct AbsExpression : BaseExpression {
 
 struct FloorExpression : BaseExpression {
   inline static const RuleRegistration<FloorExpression> registration { "floor" };
+  static constexpr auto description = "round down";
 
   struct Params {
     PROP(ExpressionRef, number) = 0;
@@ -140,11 +154,17 @@ struct FloorExpression : BaseExpression {
 
 struct MixExpression : BaseExpression {
   inline static const RuleRegistration<MixExpression> registration { "mix" };
+  static constexpr auto description = "mix two values";
 
   struct Params {
-    PROP(ExpressionRef, lhs) = 0;
-    PROP(ExpressionRef, rhs) = 1;
-    PROP(ExpressionRef, mix) = 0.5;
+    PROP(ExpressionRef, lhs, .label("First input")) = 0;
+    PROP(ExpressionRef, rhs, .label("Second input")) = 1;
+    PROP(
+         ExpressionRef, mix,
+         .label("Mix")
+         .min(0)
+         .max(1)
+         ) = 0.5;
   } params;
 
   ExpressionValue eval(RuleContext &ctx) override {
@@ -155,11 +175,12 @@ struct MixExpression : BaseExpression {
 
 struct ClampExpression : BaseExpression {
   inline static const RuleRegistration<ClampExpression> registration { "clamp" };
+  static constexpr auto description = "clamp a value between two bounds";
 
   struct Params {
-    PROP(ExpressionRef, number) = 0;
-    PROP(ExpressionRef, min) = 0;
-    PROP(ExpressionRef, max) = 1;
+    PROP(ExpressionRef, number, .label("Value to clamp")) = 0;
+    PROP(ExpressionRef, min, .label("Minimum value")) = 0;
+    PROP(ExpressionRef, max, .label("Maximum value")) = 1;
   } params;
 
   ExpressionValue eval(RuleContext &ctx) override {
@@ -172,9 +193,10 @@ struct ClampExpression : BaseExpression {
 
 struct SinExpression : BaseExpression {
   inline static const RuleRegistration<SinExpression> registration { "sin" };
+  static constexpr auto description = "sine";
 
   struct Params {
-    PROP(ExpressionRef, number) = 0;
+    PROP(ExpressionRef, number, .label("Number (radians)")) = 0;
   } params;
 
   ExpressionValue eval(RuleContext &ctx) override {
@@ -184,9 +206,10 @@ struct SinExpression : BaseExpression {
 
 struct RadExpression : BaseExpression {
   inline static const RuleRegistration<RadExpression> registration { "rad" };
+  static constexpr auto description = "Degrees to radians";
 
   struct Params {
-    PROP(ExpressionRef, number) = 0;
+    PROP(ExpressionRef, number, .label("Degrees")) = 0;
   } params;
 
   ExpressionValue eval(RuleContext &ctx) override {
@@ -196,10 +219,11 @@ struct RadExpression : BaseExpression {
 
 struct MinExpression : BaseExpression {
   inline static const RuleRegistration<MinExpression> registration { "min" };
+  static constexpr auto description = "minimum";
 
   struct Params {
-    PROP(ExpressionRef, lhs) = 0;
-    PROP(ExpressionRef, rhs) = 1;
+    PROP(ExpressionRef, lhs, .label("First input")) = 0;
+    PROP(ExpressionRef, rhs, .label("Second input")) = 1;
   } params;
 
   ExpressionValue eval(RuleContext &ctx) override {
@@ -209,10 +233,11 @@ struct MinExpression : BaseExpression {
 
 struct MaxExpression : BaseExpression {
   inline static const RuleRegistration<MaxExpression> registration { "max" };
+  static constexpr auto description = "maximum";
 
   struct Params {
-    PROP(ExpressionRef, lhs) = 0;
-    PROP(ExpressionRef, rhs) = 1;
+    PROP(ExpressionRef, lhs, .label("First input")) = 0;
+    PROP(ExpressionRef, rhs, .label("Second input")) = 1;
   } params;
 
   ExpressionValue eval(RuleContext &ctx) override {
