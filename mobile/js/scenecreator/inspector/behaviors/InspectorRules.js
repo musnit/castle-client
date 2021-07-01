@@ -32,6 +32,12 @@ export default InspectorRules = ({ behaviors, addChildSheet }) => {
   const sendRuleAction = React.useCallback((...args) => sendBehaviorAction('Rules', ...args), [
     sendBehaviorAction,
   ]);
+  const sendSetRules = React.useCallback(
+    (newRules) => {
+      sendRuleAction('set', 'rules', 'string', JSON.stringify({ rules: newRules }));
+    },
+    [sendRuleAction]
+  );
   const counterComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Counter');
   const sendCounterAction = React.useCallback((...args) => sendBehaviorAction('Counter', ...args), [
     sendBehaviorAction,
@@ -46,17 +52,17 @@ export default InspectorRules = ({ behaviors, addChildSheet }) => {
       const newRules = rulesItems.map((oldRule) => {
         return oldRule.index === newRule.index ? newRule : oldRule;
       });
-      sendRuleAction('change', newRules);
+      sendSetRules(newRules);
     },
-    [rulesItems, sendRuleAction]
+    [rulesItems, sendSetRules]
   );
 
   const onRemoveRule = React.useCallback(
     (rule) => {
       const newRules = rulesItems.filter((oldRule) => oldRule.index !== rule.index);
-      sendRuleAction('change', newRules);
+      sendSetRules(newRules);
     },
-    [rulesItems, sendRuleAction]
+    [rulesItems, sendSetRules]
   );
 
   const onCopyRule = React.useCallback((rule) => sendRuleAction('copy', [rule]), [sendRuleAction]);
@@ -74,9 +80,8 @@ export default InspectorRules = ({ behaviors, addChildSheet }) => {
         triggers: rulesData.triggers,
         responses: rulesData.responses,
         conditions: rulesData.conditions,
-        sendRuleAction,
       }),
-    [onChangeRule, rulesData, behaviors, sendRuleAction]
+    [onChangeRule, rulesData, behaviors]
   );
 
   return (

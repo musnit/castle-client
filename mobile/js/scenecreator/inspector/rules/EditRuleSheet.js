@@ -44,7 +44,6 @@ export const EditRuleSheet = ({
   triggers,
   responses,
   conditions,
-  sendRuleAction,
   onChangeRule,
   onRemoveRule,
   onCopyRule,
@@ -67,7 +66,6 @@ export const EditRuleSheet = ({
         triggers={triggers}
         responses={responses}
         conditions={conditions}
-        sendRuleAction={sendRuleAction}
       />
     </View>
   );

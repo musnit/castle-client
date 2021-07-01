@@ -17,7 +17,6 @@ export const Rule = ({
   conditions,
   addChildSheet,
   onChangeRule,
-  sendRuleAction,
 }) => {
   const onChangeTrigger = React.useCallback(
     (trigger) => {
@@ -57,7 +56,6 @@ export const Rule = ({
           responses={responses}
           conditions={conditions}
           onChangeResponse={onChangeResponse}
-          sendRuleAction={sendRuleAction}
         />
       </View>
     </View>
