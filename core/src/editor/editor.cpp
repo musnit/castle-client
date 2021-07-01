@@ -326,6 +326,15 @@ void Editor::sendSelectedComponent(int behaviorId) {
   });
 }
 
+void Editor::setSelectedRulesData(std::string &rulesJson) {
+  auto &behavior = getScene().getBehaviors().byType<RulesBehavior>();
+  auto actorId = getSelection().firstSelectedActorId();
+  auto component = behavior.maybeGetComponent(actorId);
+  if (component) {
+    component->editSetRulesJson(rulesJson);
+  }
+}
+
 struct EditorModifyComponentReceiver {
   inline static const BridgeRegistration<EditorModifyComponentReceiver> registration {
     "EDITOR_MODIFY_COMPONENT"
@@ -362,25 +371,31 @@ struct EditorModifyComponentReceiver {
     }
 
     auto actorId = engine.getEditor().getSelection().firstSelectedActorId();
+
     engine.getEditor().getScene().getBehaviors().byName(
         params.behaviorName().c_str(), [&](auto &behavior) {
           using BehaviorType = std::remove_reference_t<decltype(behavior)>;
 
+          // TODO: undoable command
           if (action == "set") {
-            auto propId = Props::getId(params.propertyName().c_str());
-
-            // TODO: undoable command
-            auto propType = params.propertyType();
-            if (propType == "string") {
-              ExpressionValue value(params.stringValue().c_str());
-              behavior.setProperty(actorId, propId, value, false);
-            } else if (propType == "d" || propType == "i" || propType == "b") {
-              ExpressionValue value((int)params.doubleValue());
-              behavior.setProperty(actorId, propId, value, false);
+            if constexpr (std::is_same_v<BehaviorType, RulesBehavior>) {
+              auto rulesJson = params.stringValue();
+              engine.getEditor().setSelectedRulesData(rulesJson);
             } else {
-              // fall back to double
-              ExpressionValue value(params.doubleValue());
-              behavior.setProperty(actorId, propId, value, false);
+              auto propId = Props::getId(params.propertyName().c_str());
+
+              auto propType = params.propertyType();
+              if (propType == "string") {
+                ExpressionValue value(params.stringValue().c_str());
+                behavior.setProperty(actorId, propId, value, false);
+              } else if (propType == "d" || propType == "i" || propType == "b") {
+                ExpressionValue value((int)params.doubleValue());
+                behavior.setProperty(actorId, propId, value, false);
+              } else {
+                // fall back to double
+                ExpressionValue value(params.doubleValue());
+                behavior.setProperty(actorId, propId, value, false);
+              }
             }
           } else if (action == "enable") {
             behavior.enableComponent(actorId);

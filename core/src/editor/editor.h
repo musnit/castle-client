@@ -32,6 +32,7 @@ public:
   Selection &getSelection();
   void setAllBehaviorsStateDirty();
   void setSelectedComponentStateDirty(int behaviorId);
+  void setSelectedRulesData(std::string &rulesJson);
 
   Grid &getGrid();
 
