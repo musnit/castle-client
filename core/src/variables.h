@@ -44,7 +44,9 @@ public:
 
     bool operator==(const Variable &other) const;
 
+  public:
     void read(Reader &reader);
+    void write(Writer &writer) const;
 
   private:
     friend class Variables;

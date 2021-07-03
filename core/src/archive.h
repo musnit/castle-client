@@ -240,9 +240,14 @@ public:
   template<typename T>
   void write(T &&v);
 
+  void setScene(Scene *scene_); // Associate with a scene so functions deep in a writing call stack
+                                // (eg. `Tag::write`) can retrieve the scene / behaviors to work on
+  Scene *getScene();
 
 private:
   friend class Archive;
+
+  Scene *scene = nullptr;
 
   json::Value *cur;
   json::Value::AllocatorType &alloc;
@@ -919,7 +924,7 @@ json::Value Writer::write_(T &&v) {
   if constexpr (std::is_invocable_v<T>) {
     v();
   } else if constexpr (hasWrite<T>) {
-    v.write_(*this);
+    v.write(*this);
   } else if constexpr (Props::hasProps<T>) { // Avoid iterating if no props inside
     Props::forEach(v, [&](auto &prop) {
       if constexpr (!Archive::skipProp<std::remove_reference_t<decltype(prop())>>) {
@@ -931,4 +936,12 @@ json::Value Writer::write_(T &&v) {
   }
   cur = parent;
   return child;
+}
+
+inline void Writer::setScene(Scene *scene_) {
+  scene = scene_;
+}
+
+inline Scene *Writer::getScene() {
+  return scene;
 }

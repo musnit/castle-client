@@ -4,6 +4,26 @@
 
 
 //
+// Serialization
+//
+
+void ExpressionRef::write(Writer &writer) const {
+  // for now assume constant
+  // TODO: eval `maybeExpression`
+  if (constant.is<double>()) {
+    writer.num("value", constant.as<double>());
+  } else {
+    writer.str("value", constant.as<const char *>());
+  }
+}
+
+void BaseResponse::write(Writer &writer) const {
+  // don't actually serialize responses here. Needed for ParamSpecs which refer to Responses
+  writer.obj("body", [&]() {
+  });
+}
+
+//
 // Lifecycle triggers
 //
 

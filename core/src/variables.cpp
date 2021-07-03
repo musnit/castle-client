@@ -2,6 +2,27 @@
 
 #include "behaviors/all.h"
 
+//
+// Serialization
+//
+
+void Variable::write(Writer &writer) const {
+  auto written = false;
+  if (auto scene = writer.getScene()) {
+    auto &variables = scene->getVariables();
+    if (auto elem = variables.map.lookup(token)) {
+      writer.str("id", elem->variableId);
+      writer.str("name", elem->name);
+      writer.num("initialValue", elem->initialValue.as<double>());
+      written = true;
+    }
+  }
+  if (!written) {
+    // TODO: better sentinel?
+    writer.boolean("none", true);
+  }
+}
+
 
 //
 // Reading

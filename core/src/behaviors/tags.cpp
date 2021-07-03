@@ -2,6 +2,24 @@
 
 #include "behaviors/all.h"
 
+//
+// Tag serialization
+//
+
+void Tag::write(Writer &writer) const {
+  auto written = false;
+  if (auto scene = writer.getScene()) {
+    auto &tagsBehavior = scene->getBehaviors().byType<TagsBehavior>();
+    if (auto result = tagsBehavior.getString(*this)) {
+      writer.str("tag", *result);
+      written = true;
+    }
+  }
+  if (!written) {
+    // TODO: better sentinel?
+    writer.boolean("none", true);
+  }
+}
 
 //
 // Tag reference reading

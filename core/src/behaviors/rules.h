@@ -32,6 +32,8 @@ struct ExpressionRef {
   template<typename T>
   T eval(RuleContext &ctx); // Falls back to constant if child expression returns wrong type
 
+public:
+  void write(Writer &writer) const;
 
 private:
   friend class RulesBehavior;
@@ -133,7 +135,14 @@ struct RuleEntryData {
     PROP(Attribs, attribs);
   };
   PROP(std::vector<ParamSpec>, paramSpecs);
+  PROP(std::string, initialParamsJson);
+
   // TODO: returnType, triggerFilter, parentTypeFilter
+};
+
+template<typename RuleEntry>
+struct RuleEntryInitialParams {
+  PROP(typename RuleEntry::Params *, initialParams);
 };
 
 
@@ -331,6 +340,9 @@ struct BaseResponse {
   // Evaluate as a boolean expression. Only exists to account for legacy responses with
   // `returnType = "boolean"` -- those should eventually just become actual expressions.
   virtual bool eval(RuleContext &ctx);
+
+public:
+  void write(Writer &writer) const;
 
 
 protected:
@@ -583,6 +595,13 @@ RuleRegistration<T, Behavior>::RuleRegistration(const char *name, bool allowDupl
           }
           data->paramSpecs().push_back(spec);
         });
+
+        RuleEntryInitialParams<T> initialParams { &params };
+        Archive archive;
+        archive.write([&](Archive::Writer &writer) {
+          writer.write(initialParams);
+        });
+        data->initialParamsJson = archive.toJson();
       }
     } };
 

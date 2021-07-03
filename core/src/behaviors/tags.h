@@ -28,7 +28,9 @@ struct Tag {
 
   bool operator==(const Tag &other) const;
 
+public:
   void read(Reader &reader);
+  void write(Writer &writer) const;
 
 private:
   friend class TagsBehavior;
