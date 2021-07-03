@@ -94,7 +94,8 @@ const makeEmptyExpression = ({ expressions, expressionType, blueprint = null }) 
     returnType: expression.returnType,
     params: {},
   };
-  Object.entries(expression.paramSpecs).forEach(([name, spec]) => {
+  expression.paramSpecs.forEach((spec) => {
+    const { name } = spec;
     if (blueprint?.params && blueprint.params[name]) {
       // try to map old params to new params if possible
       // TODO: we could also try to do this based on param order, not name
@@ -108,14 +109,14 @@ const makeEmptyExpression = ({ expressions, expressionType, blueprint = null }) 
 
 const wrapExpression = ({ expression, expressions, wrappingType }) => {
   let result = makeEmptyExpression({ expressions, expressionType: wrappingType });
-  let firstNumericParam = Object.entries(expressions[wrappingType].paramSpecs).find(
-    ([_, spec]) =>
+  let firstNumericParamSpec = expressions[wrappingType].paramSpecs.find(
+    (spec) =>
       (!spec.order || spec.order === 1) &&
       spec.method === 'numberInput' &&
       spec.expression !== false
   );
-  if (firstNumericParam) {
-    let [name, spec] = firstNumericParam;
+  if (firstNumericParamSpec) {
+    let { name } = firstNumericParamSpec;
     result.params[name] = expression;
   }
   return result;
@@ -207,7 +208,6 @@ const InspectorExpressionInput = ({
       <View style={styles.inset}>
         {expressionType === 'behavior property' ? (
           <BehaviorPropertyExpression
-            paramSpecs={expressionParamSpecs}
             value={value}
             onChange={onChange}
             behaviors={behaviors}
@@ -237,11 +237,11 @@ const InspectorExpressionInput = ({
                   key={`expression-param-${name}-${expressionType}`}>
                   {spec.method !== 'toggle' ? (
                     <View style={styles.paramLabelRow}>
-                      <Text style={styles.paramLabel}>{spec.label}</Text>
+                      <Text style={styles.paramLabel}>{spec.name}</Text>
                     </View>
                   ) : null}
                   <ParamInput
-                    label={spec.label}
+                    label={spec.name}
                     name={name}
                     paramSpec={spec}
                     style={styles.paramInput}
@@ -275,8 +275,8 @@ const InspectorExpressionInput = ({
 
 // does it have 1 or more numeric, expression-enabled parameters?
 const canExpressionHaveChildren = ([name, spec]) =>
-  Object.entries(spec.paramSpecs).filter(
-    ([k, paramSpec]) => paramSpec.method === 'numberInput' && paramSpec.expression !== false
+  spec.paramSpecs.filter(
+    (paramSpec) => paramSpec.method === 'numberInput' && paramSpec.expression !== false
   ).length > 0;
 
 export const ConfigureExpressionSheet = ({

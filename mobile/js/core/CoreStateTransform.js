@@ -1,5 +1,21 @@
 import RuleEntryMetadata from '../scenecreator/inspector/rules/RuleEntryMetadata';
 
+// interpret initial params from engine
+const parseInitialParamValue = (value) => {
+  if (typeof value === 'object' && value !== null) {
+    if (typeof value.value !== 'undefined') {
+      // expression
+      return value.value;
+    }
+    if (value.none === true) {
+      // sentinel for empty tag or variable
+      // TODO: think about this more
+      return '(none)';
+    }
+  }
+  return value;
+};
+
 export default {
   EDITOR_ALL_BEHAVIORS: (name, eventId, data) => {
     // want a map of BehaviorName -> behavior object
@@ -67,7 +83,22 @@ export default {
         result.expressions[entry.name] = {
           ...entry,
           category,
+          initialParamsJson: undefined,
         };
+        if (entry.paramSpecs.length) {
+          let initialParams;
+          try {
+            let initialParamsData = JSON.parse(entry.initialParamsJson);
+            initialParams = initialParamsData.initialParams;
+          } catch (_) {}
+          result.expressions[entry.name].paramSpecs = entry.paramSpecs.map((spec) => {
+            const initialValue = parseInitialParamValue(initialParams[spec.name]);
+            return {
+              ...spec,
+              initialValue,
+            };
+          });
+        }
       });
     }
 

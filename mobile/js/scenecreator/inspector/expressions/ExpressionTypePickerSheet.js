@@ -2,7 +2,9 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
-import { useCardCreator } from '../../CreateCardContext';
+import { useCoreState } from '../../../core/CoreEvents';
+
+import RuleEntryMetadata from '../rules/RuleEntryMetadata';
 
 import * as Constants from '../../../Constants';
 
@@ -29,15 +31,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const CATEGORY_ORDER = [
-  'values',
-  'choices',
-  'randomness',
-  'spatial relationships',
-  'arithmetic',
-  'functions',
-];
-
 const capitalizeFirst = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
 export const ExpressionTypePickerSheet = ({
@@ -47,7 +40,11 @@ export const ExpressionTypePickerSheet = ({
   addChildSheet,
   filterExpression = ([name, spec]) => true,
 }) => {
-  const { expressions } = useCardCreator();
+  const rulesData = useCoreState('EDITOR_RULES_DATA');
+  let expressions;
+  if (rulesData) {
+    expressions = rulesData.expressions;
+  }
   const [expressionCategories, setExpressionCategories] = React.useState(null);
   React.useEffect(() => {
     const filteredExpressions = Object.entries(expressions)
@@ -71,7 +68,7 @@ export const ExpressionTypePickerSheet = ({
   const renderContent = () => (
     <View style={styles.container}>
       {expressionCategories
-        ? CATEGORY_ORDER.map((category) => {
+        ? RuleEntryMetadata.expressionCategoryOrder.map((category) => {
             const entries = expressionCategories[category];
             return entries ? (
               <View key={`expression-category-${category}`} style={styles.category}>

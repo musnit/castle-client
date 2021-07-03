@@ -16,6 +16,14 @@ export default {
     'meta',
   ],
   conditionCategoryOrder: ['state', 'collision', 'random', 'camera', 'draw'],
+  expressionCategoryOrder: [
+    'values',
+    'choices',
+    'randomness',
+    'spatial relationships',
+    'arithmetic',
+    'functions',
+  ],
   triggers: {
     collide: {
       category: 'general',
