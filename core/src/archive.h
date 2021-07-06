@@ -294,6 +294,8 @@ private:
   template<typename T, unsigned N>
   json::Value write_(const SmallVector<T, N> &v);
   template<typename T>
+  json::Value write_(const std::unordered_map<std::string, T> &m);
+  template<typename T>
   json::Value write_(T &&v);
 };
 
@@ -900,6 +902,16 @@ inline json::Value Writer::write_(const std::vector<T> &v) {
   result.Reserve(v.size(), alloc);
   for (auto &elem : v) {
     result.PushBack(write_(elem), alloc);
+  }
+  return result;
+}
+
+template<typename T>
+inline json::Value Writer::write_(const std::unordered_map<std::string, T> &m) {
+  auto result = json::Value(json::kObjectType);
+  for (auto &pair : m) {
+    result.AddMember(
+        json::StringRef(pair.first.c_str(), pair.first.size()), write_(pair.second), alloc);
   }
   return result;
 }
