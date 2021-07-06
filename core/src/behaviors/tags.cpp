@@ -209,6 +209,29 @@ void TagsBehavior::handleDisableComponent(
 
 
 //
+// Handle set property
+//
+
+void TagsBehavior::handleSetProperty(
+    ActorId actorId, TagsComponent &component, PropId propId, const ExpressionValue &value) {
+  auto &props = component.props;
+  if (propId == props.tagsString.id) {
+    // clear old tags
+    for (auto tag : component.tags) {
+      removeFromMap(actorId, tag);
+    }
+
+    // add new tags
+    component.tags = parseTags(value.as<const char *>());
+    for (auto tag : component.tags) {
+      addToMap(actorId, tag);
+    }
+  }
+  BaseBehavior::handleSetProperty(actorId, component, propId, value);
+}
+
+
+//
 // Add, remove tags
 //
 

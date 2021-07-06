@@ -428,6 +428,10 @@ struct EditorModifyComponentReceiver {
             engine.getEditor().setAllBehaviorsStateDirty();
           }
           engine.getEditor().setSelectedComponentStateDirty(BehaviorType::behaviorId);
+          if constexpr (std::is_same_v<BehaviorType, TagsBehavior>) {
+            // extra dirty state on tags data
+            engine.getEditor().setTagsStateDirty();
+          }
         });
     // TODO: swap
   }

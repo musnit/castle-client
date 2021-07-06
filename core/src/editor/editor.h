@@ -35,6 +35,7 @@ public:
   void setAllBehaviorsStateDirty();
   void setSelectedComponentStateDirty(int behaviorId);
   void setSelectedRulesData(std::string &rulesJson);
+  void setTagsStateDirty();
 
   Commands &getCommands();
 
@@ -100,6 +101,10 @@ inline Selection &Editor::getSelection() {
 
 inline void Editor::setSelectedComponentStateDirty(int behaviorId) {
   selectedComponentStateDirty.insert(behaviorId);
+}
+
+inline void Editor::setTagsStateDirty() {
+  isTagsStateDirty = true;
 }
 
 inline void Editor::setEditorStateDirty() {

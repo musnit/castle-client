@@ -72,7 +72,8 @@ public:
 
   void handleEnableComponent(ActorId actorId, TagsComponent &component);
   void handleDisableComponent(ActorId actorId, TagsComponent &component, bool removeActor);
-
+  void handleSetProperty(
+      ActorId actorId, TagsComponent &component, PropId propId, const ExpressionValue &value);
 
   // string <-> `Tag`
 
