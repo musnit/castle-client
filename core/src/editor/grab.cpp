@@ -26,6 +26,10 @@ void GrabTool::update(double dt) {
   }
   auto &scene = editor.getScene();
 
+  if (!editor.getSelection().hasSelection()) {
+    return;
+  }
+
   scene.getGesture().withSingleTouch([&](const Touch &touch) {
     if (!touch.isUsed(grabTouchToken)) {
       // Not used by us yet, let's see if we can use it
@@ -89,8 +93,10 @@ void GrabTool::update(double dt) {
       }
       editor.setSelectedComponentStateDirty(BodyBehavior::behaviorId);
     };
+    Commands::Params commandParams;
+    commandParams.coalesce = true;
     editor.getCommands().execute(
-        "move", {},
+        "move", commandParams,
         [after = std::move(after)](Editor &editor, bool) {
           setPositions(editor, after);
         },

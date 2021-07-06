@@ -17,11 +17,14 @@ public:
 
   using Closure = std::function<void(Editor &editor, bool)>;
 
-  struct ExecuteParams {
+  struct Params {
     bool noSaveUndo = false;
+    bool coalesce = false;
+    bool coalesceLastOnly = true;
+    int behaviorId = -1;
   };
   void execute(
-      std::string description, ExecuteParams params, Closure doClosure, Closure undoClosure);
+      std::string description, Params params, Closure doClosure, Closure undoClosure);
 
   bool canUndo();
   void undo();
@@ -30,7 +33,9 @@ public:
 
 
 private:
+  Lv &lv { Lv::getInstance() };
   Editor &editor;
+  friend class Editor; // Temporary because it draws some debug info for us...
 
 
   enum Phase {
@@ -41,6 +46,8 @@ private:
 
   struct Command {
     std::string description;
+    double time;
+    int behaviorId;
     struct Entry {
       Closure closure {};
       SmallVector<ActorId, 2> selection;

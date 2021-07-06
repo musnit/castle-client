@@ -133,7 +133,7 @@ void Editor::draw() {
     lv.graphics.setLineWidth(2 * scene->getPixelScale());
     lv.graphics.setColor({ 0, 1, 0, 0.8 });
     for (auto actorId : selection.getSelectedActorIds()) {
-      Debug::display("selected actorId: {}", actorId);
+      Debug::display("selected actor {}", actorId);
       drawBodyOutline(actorId);
     }
 
@@ -150,6 +150,25 @@ void Editor::draw() {
       break;
     }
   }
+
+  // Debug commands
+  Debug::display("{} undos:", commands.undos.size());
+  for (auto &command : commands.undos) {
+    std::string selectionString;
+    for (auto actorId : command.entries[Commands::UNDO].selection) {
+      selectionString.append(fmt::format("{} ", entt::to_integral(actorId)));
+    }
+    Debug::display("  {} actor {}", command.description, selectionString);
+  }
+  Debug::display("{} redos:", commands.redos.size());
+  for (auto &command : commands.redos) {
+    std::string selectionString;
+    for (auto actorId : command.entries[Commands::DO].selection) {
+      selectionString.append(fmt::format("{} ", entt::to_integral(actorId)));
+    }
+    Debug::display("  {} actor {}", command.description, selectionString);
+  }
+
 }
 
 //

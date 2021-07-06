@@ -4,6 +4,7 @@
 
 
 constexpr auto maxUndos = 100;
+constexpr auto undoCoalesceInterval = 2.2;
 
 
 //
@@ -11,23 +12,55 @@ constexpr auto maxUndos = 100;
 //
 
 void Commands::execute(
-    std::string description, ExecuteParams params, Closure doClosure, Closure undoClosure) {
+    std::string description, Params params, Closure doClosure, Closure undoClosure) {
+  auto coalesced = false;
   {
-    Command command { std::move(description) };
+    Command command {
+      std::move(description),
+      lv.timer.getTime(),
+      params.behaviorId,
+    };
     command.entries[DO].closure = std::move(doClosure);
     command.entries[UNDO].closure = std::move(undoClosure);
 
+    // Execute command, tracking selections before and after. Keep selections list sorted so we can
+    // use equality to compare.
     for (auto actorId : editor.getSelection().getSelectedActorIds()) {
       command.entries[UNDO].selection.push_back(actorId);
     }
+    std::sort(command.entries[UNDO].selection.begin(), command.entries[UNDO].selection.end());
     executePhase(command, DO, true);
     for (auto actorId : editor.getSelection().getSelectedActorIds()) {
       command.entries[DO].selection.push_back(actorId);
     }
+    std::sort(command.entries[DO].selection.begin(), command.entries[DO].selection.end());
 
     if (!params.noSaveUndo) {
-      // TODO(nikki): Coalescing
-      undos.push_back(std::move(command));
+      // Coalesce with a previous command or add as a new one
+      if (params.coalesce) {
+        for (auto it = undos.rbegin(); it != undos.rend(); ++it) {
+          auto &prevCommand = *it;
+          if (command.time - prevCommand.time < undoCoalesceInterval
+              && prevCommand.behaviorId == command.behaviorId
+              && prevCommand.description == command.description
+              && prevCommand.entries[UNDO].selection == command.entries[UNDO].selection) {
+            // Found command to coalesce with -- use its undo entry and replace it
+            command.entries[UNDO] = std::move(prevCommand.entries[UNDO]);
+            prevCommand = std::move(command);
+            coalesced = true;
+            break;
+          }
+          if (params.coalesceLastOnly) {
+            break; // Only checking against the last command
+          }
+        }
+      }
+      if (!coalesced) {
+        // Didn't coalesce -- add at end
+        undos.push_back(std::move(command));
+      }
+
+      // Limit number of undos
       while (undos.size() > maxUndos) {
         undos.pop_front();
       }
@@ -39,7 +72,10 @@ void Commands::execute(
 
   // TODO(nikki): Clear notification
 
-  editor.setEditorStateDirty(); // `canUndo` or `canRedo` may have changed
+  if (!coalesced) {
+    editor.setEditorStateDirty(); // `canUndo` or `canRedo` may have changed -- avoid over-sending
+                                  // when coalescing though
+  }
 }
 
 void Commands::executePhase(Command &command, Phase phase, bool isLive) {
@@ -53,7 +89,8 @@ void Commands::executePhase(Command &command, Phase phase, bool isLive) {
       selection.selectActor(actorId);
     }
     for (auto actorId : selection.getSelectedActorIds()) {
-      if (std::find(entry.selection.begin(), entry.selection.end(), actorId) == entry.selection.end()) {
+      if (std::find(entry.selection.begin(), entry.selection.end(), actorId)
+          == entry.selection.end()) {
         selection.deselectActor(actorId);
       }
     }
