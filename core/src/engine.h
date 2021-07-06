@@ -87,6 +87,8 @@ inline Scene &Engine::getScene() {
 }
 
 inline Editor &Engine::getEditor() {
+  // TODO: Consider refactoring to `maybeGetEditor` that returns possibly `nullptr` to encourage
+  //       callsites to check
   return *editor;
 }
 

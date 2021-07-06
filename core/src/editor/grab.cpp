@@ -20,7 +20,12 @@ GrabTool::GrabTool(Editor &editor_)
 // Update
 //
 
-void GrabTool::update(Scene &scene, double dt) {
+void GrabTool::update(double dt) {
+  if (!editor.hasScene()) {
+    return;
+  }
+  auto &scene = editor.getScene();
+
   scene.getGesture().withSingleTouch([&](const Touch &touch) {
     if (!touch.isUsed(grabTouchToken)) {
       // Not used by us yet, let's see if we can use it
@@ -33,8 +38,8 @@ void GrabTool::update(Scene &scene, double dt) {
       touch.forceUse(grabTouchToken);
     }
 
-    auto move = touch.delta;
-
+    // Calculate position delta, quantizing to grid if it's enabled
+    auto delta = touch.delta;
     if (gridEnabled) {
       auto prevTouchPos = touch.pos - touch.delta;
       love::Vector2 qPrevTouchPos {
@@ -45,17 +50,53 @@ void GrabTool::update(Scene &scene, double dt) {
         Grid::quantize(touch.pos.x, gridSize, touch.initialPos.x),
         Grid::quantize(touch.pos.y, gridSize, touch.initialPos.y),
       };
-      move = qTouchPos - qPrevTouchPos;
+      delta = qTouchPos - qPrevTouchPos;
     }
-
-    // TODO: Undo / redo
+    if (delta == love::Vector2 { 0, 0 }) {
+      return;
+    }
 
     auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
+
+    // Setup lists of positions before and after the edit
+    struct ActorPosition {
+      ActorId actorId;
+      love::Vector2 pos;
+    };
+    SmallVector<ActorPosition, 2> before;
+    SmallVector<ActorPosition, 2> after;
     for (auto actorId : editor.getSelection().getSelectedActorIds()) {
-      bodyBehavior.setProperty(actorId, decltype(BodyComponent::Props::x)::id, move.x, true);
-      bodyBehavior.setProperty(actorId, decltype(BodyComponent::Props::y)::id, move.y, true);
+      // TODO(nikki): Static-typed property getter calls
+      love::Vector2 beforePos {
+        bodyBehavior.getProperty(actorId, decltype(BodyComponent::Props::x)::id).as<float>(),
+        bodyBehavior.getProperty(actorId, decltype(BodyComponent::Props::y)::id).as<float>(),
+      };
+      before.push_back({ actorId, beforePos });
+      after.push_back({ actorId, beforePos + delta });
     }
-    editor.setSelectedComponentStateDirty(BodyBehavior::behaviorId);
+
+    // TODO(nikki): Coalesce
+
+    // Execute command that sets to before or after positions based on undo / redo. Common code is
+    // factored out into `setPositions`.
+    static const auto setPositions = [](Editor &editor, const decltype(before) &positions) {
+      auto &scene = editor.getScene();
+      auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
+      for (auto &[actorId, pos] : positions) {
+        // TODO(nikki): Static-typed property setter calls
+        bodyBehavior.setProperty(actorId, decltype(BodyComponent::Props::x)::id, pos.x, false);
+        bodyBehavior.setProperty(actorId, decltype(BodyComponent::Props::y)::id, pos.y, false);
+      }
+      editor.setSelectedComponentStateDirty(BodyBehavior::behaviorId);
+    };
+    editor.getCommands().execute(
+        "move", {},
+        [after = std::move(after)](Editor &editor, bool) {
+          setPositions(editor, after);
+        },
+        [before = std::move(before)](Editor &editor, bool) {
+          setPositions(editor, before);
+        });
   });
 }
 
@@ -64,7 +105,12 @@ void GrabTool::update(Scene &scene, double dt) {
 // Draw
 //
 
-void GrabTool::drawOverlay(Scene &scene) const {
+void GrabTool::drawOverlay() const {
+  if (!editor.hasScene()) {
+    return;
+  }
+  auto &scene = editor.getScene();
+
   if (gridEnabled && gridSize > 0) {
     lv.graphics.setColor({ 0, 0, 0, 0.5 });
     float viewWidth = 10.0;

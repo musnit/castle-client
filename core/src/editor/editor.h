@@ -7,6 +7,7 @@
 #include "selection.h"
 #include "grab.h"
 #include "grid.h"
+#include "commands.h"
 
 class Editor {
   // manages a scene instance that is being edited.
@@ -30,13 +31,18 @@ public:
   Scene &getScene();
 
   Selection &getSelection();
+  void setEditorStateDirty();
   void setAllBehaviorsStateDirty();
   void setSelectedComponentStateDirty(int behaviorId);
   void setSelectedRulesData(std::string &rulesJson);
 
+  Commands &getCommands();
+
   Grid &getGrid();
 
 private:
+  friend struct EditorGlobalActionReceiver;
+
   Lv &lv { Lv::getInstance() };
   Bridge &bridge;
 
@@ -46,6 +52,7 @@ private:
   std::unique_ptr<Scene> scene;
 
   Selection selection;
+  Commands commands { *this };
   Grid grid;
 
   enum class Tool {
@@ -79,6 +86,8 @@ inline bool Editor::hasScene() {
 }
 
 inline Scene &Editor::getScene() {
+  // TODO: Consider refactoring to `maybeGetScene` that returns possibly `nullptr` to encourage
+  //       callsites to check
   return *scene;
 }
 
@@ -90,8 +99,16 @@ inline void Editor::setSelectedComponentStateDirty(int behaviorId) {
   selectedComponentStateDirty.insert(behaviorId);
 }
 
+inline void Editor::setEditorStateDirty() {
+  isEditorStateDirty = true;
+}
+
 inline void Editor::setAllBehaviorsStateDirty() {
   isAllBehaviorsStateDirty = true;
+}
+
+inline Commands &Editor::getCommands() {
+  return commands;
 }
 
 inline Grid &Editor::getGrid() {

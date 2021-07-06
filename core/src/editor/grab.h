@@ -2,7 +2,7 @@
 
 #include "precomp.h"
 
-#include "scene.h"
+#include "lv.h"
 
 
 class Editor;
@@ -14,8 +14,8 @@ public:
 
   explicit GrabTool(Editor &editor_);
 
-  void update(Scene &scene, double dt);
-  void drawOverlay(Scene &scene) const;
+  void update(double dt);
+  void drawOverlay() const;
 
 
 private:

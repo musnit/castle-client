@@ -71,7 +71,7 @@ void Editor::update(double dt) {
       // Update current tool
       switch (currentTool) {
       case Tool::Grab:
-        grab.update(*scene, dt);
+        grab.update(dt);
         break;
       case Tool::ScaleRotate:
         break;
@@ -141,7 +141,7 @@ void Editor::draw() {
   {
     switch (currentTool) {
     case Tool::Grab:
-      grab.drawOverlay(*scene);
+      grab.drawOverlay();
       break;
     case Tool::ScaleRotate:
       break;
@@ -181,6 +181,8 @@ struct EditorGlobalActionsEvent {
   struct ActionsAvailable {
     PROP(bool, onPlay) = true;
     PROP(bool, onRewind) = false;
+    PROP(bool, onUndo) = false;
+    PROP(bool, onRedo) = false;
   };
   PROP(ActionsAvailable, actionsAvailable);
 };
@@ -196,9 +198,18 @@ struct EditorGlobalActionReceiver {
 
   void receive(Engine &engine) {
     auto action = params.action();
+    if (!engine.getIsEditing()) {
+      return;
+    }
+    auto &editor = engine.getEditor();
 
     // TODO: expect keys from `ActionsAvailable`, e.g. onPlay, onRewind, onUndo...
     Debug::log("editor received global action: {}", action);
+    if (action == "onUndo") {
+      editor.commands.undo();
+    } else if (action == "onRedo") {
+      editor.commands.redo();
+    }
   }
 };
 
@@ -212,6 +223,10 @@ void Editor::sendGlobalActions() {
       }
     });
   }
+
+  ev.actionsAvailable().onUndo = commands.canUndo();
+  ev.actionsAvailable().onRedo = commands.canRedo();
+
   bridge.sendEvent("EDITOR_GLOBAL_ACTIONS", ev);
 };
 
