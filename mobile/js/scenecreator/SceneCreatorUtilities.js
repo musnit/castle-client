@@ -29,8 +29,6 @@ export const readableOperator = (o) => {
   return READABLE_OPERATORS[o] ?? o;
 };
 
-export const getInspectorTags = (tags) => ({ tagToActorIds: tags?.properties.tagToActorIds });
-
 export const getActiveTool = (root) => {
   if (!root || !root.panes || !root.panes['sceneCreatorTool']) {
     return { activeToolData: null, activeToolAction: null };

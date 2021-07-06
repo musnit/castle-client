@@ -2,6 +2,7 @@ import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { DropdownItemsList } from '../components/InspectorDropdown';
 import { PopoverButton } from '../../../components/PopoverProvider';
+import { useCoreState } from '../../../core/CoreEvents';
 
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Feather from 'react-native-vector-icons/Feather';
@@ -80,8 +81,11 @@ const RemoveTagButton = ({ tag, onPress, closePopover }) => (
  *  @prop value string of tags separated by spaces
  */
 export const InspectorTagPicker = ({ value, onChange, ...props }) => {
-  // TODO: tagToActorIds const { tagToActorIds } = context;
-  const tagToActorIds = null;
+  const tagsData = useCoreState('EDITOR_TAGS');
+  let tagToActorIds;
+  if (tagsData) {
+    tagToActorIds = tagsData.tagToActorIds;
+  }
   const [components, setComponents] = React.useState([]);
   const [tagsToAdd, setTagsToAdd] = React.useState();
 
