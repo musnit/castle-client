@@ -909,9 +909,8 @@ inline json::Value Writer::write_(const std::vector<T> &v) {
 template<typename T>
 inline json::Value Writer::write_(const std::unordered_map<std::string, T> &m) {
   auto result = json::Value(json::kObjectType);
-  for (auto &pair : m) {
-    result.AddMember(
-        json::StringRef(pair.first.c_str(), pair.first.size()), write_(pair.second), alloc);
+  for (auto &[key, value] : m) {
+    result.AddMember(makeStr(key), write_(value), alloc);
   }
   return result;
 }
