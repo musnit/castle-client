@@ -45,7 +45,15 @@ const styles = StyleSheet.create({
   },
 });
 
-const LayoutInput = ({ behavior, component, propName, label, sendAction, type = 'number' }) => {
+const LayoutInput = ({
+  behavior,
+  component,
+  propName,
+  label,
+  sendAction,
+  type = 'number',
+  ...props
+}) => {
   const [lastNativeUpdate, setLastNativeUpdate] = React.useState(0);
   const [value, sendValue] = useOptimisticBehaviorValue({
     component,
@@ -72,12 +80,14 @@ const LayoutInput = ({ behavior, component, propName, label, sendAction, type = 
           lastNativeUpdate={lastNativeUpdate}
           onChange={onChange}
           {...behavior.propertySpecs[propName].attribs}
+          {...props}
         />
       ) : (
         <InspectorCheckbox
           value={value}
           onChange={onChange}
           {...behavior.propertySpecs[propName].attribs}
+          {...props}
         />
       )}
     </View>
@@ -130,6 +140,8 @@ export default InspectorLayout = ({ body }) => {
             propName="widthScale"
             label="Width Scale"
             sendAction={sendAction}
+            decimalDigits={2}
+            step={0.25}
           />
           <LayoutInput
             behavior={body}
@@ -137,6 +149,8 @@ export default InspectorLayout = ({ body }) => {
             propName="heightScale"
             label="Height Scale"
             sendAction={sendAction}
+            decimalDigits={2}
+            step={0.25}
           />
         </React.Fragment>
         <LayoutInput

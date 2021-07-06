@@ -6,7 +6,7 @@ import { useCoreState, sendBehaviorAction } from '../../../core/CoreEvents';
 
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
-export default InspectorGenericBehavior = ({ behavior, properties }) => {
+export default InspectorGenericBehavior = ({ behavior, properties, propertyUIProps }) => {
   const component = useCoreState(`EDITOR_SELECTED_COMPONENT:${behavior.name}`);
   const sendAction = React.useCallback((...args) => sendBehaviorAction(behavior.name, ...args), [
     sendBehaviorAction,
@@ -17,16 +17,21 @@ export default InspectorGenericBehavior = ({ behavior, properties }) => {
       <BehaviorHeader behavior={behavior} component={component} sendAction={sendAction} />
       {component && properties?.length ? (
         <View style={SceneCreatorConstants.styles.behaviorProperties}>
-          {properties.map((propName, ii) => (
-            <BehaviorPropertyInputRow
-              key={`${behavior.name}-property-${ii}`}
-              behavior={behavior}
-              component={component}
-              propName={propName}
-              label={behavior.propertySpecs[propName].attribs.label}
-              sendAction={sendAction}
-            />
-          ))}
+          {properties.map((propName, ii) => {
+            const uiProps =
+              propertyUIProps && propertyUIProps[propName] ? propertyUIProps[propName] : {};
+            return (
+              <BehaviorPropertyInputRow
+                key={`${behavior.name}-property-${ii}`}
+                behavior={behavior}
+                component={component}
+                propName={propName}
+                label={behavior.propertySpecs[propName].attribs.label}
+                sendAction={sendAction}
+                {...uiProps}
+              />
+            );
+          })}
         </View>
       ) : null}
     </View>

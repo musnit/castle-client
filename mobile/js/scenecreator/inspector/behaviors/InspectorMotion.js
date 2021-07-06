@@ -213,6 +213,7 @@ export default InspectorMotion = ({ moving, rotatingMotion }) => {
                 component={activeComponent}
                 propName="density"
                 label="Density"
+                step={0.1}
                 sendAction={activeBehaviorSendAction}
               />
             ) : null}
