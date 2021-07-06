@@ -116,6 +116,9 @@ struct Prop {
     if (rawType.find("Props") != std::string::npos) {
       return "property";
     }
+    if (rawType.find("ActorRef") != std::string::npos) {
+      return "actorRef";
+    }
     return rawType;
   }
 
