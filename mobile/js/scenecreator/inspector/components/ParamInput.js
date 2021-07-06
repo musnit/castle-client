@@ -74,7 +74,7 @@ export const ParamInput = ({
       return (
         <InspectorDropdown value={value} onChange={setValue} {...paramSpec.attribs} {...props} />
       );
-    case 'actorRef': // TODO: actorRef
+    case 'actorRef':
       return (
         <InspectorActorRefInput
           value={value}

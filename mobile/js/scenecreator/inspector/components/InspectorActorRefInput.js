@@ -32,7 +32,13 @@ const ACTOR_REF_KINDS = [
 export const InspectorActorRefInput = ({ value, onChange, triggerFilter, ...props }) => {
   const kind = value?.kind;
   const onChangeKind = (kind) => onChange({ ...value, kind });
-  const tag = value?.tag;
+  let tag = value?.tag;
+
+  // TODO: better empty tag sentinel
+  if (typeof tag !== 'string' && typeof tag !== 'undefined') {
+    tag = undefined;
+  }
+
   const onChangeTag = (tag) => onChange({ ...value, tag });
 
   const kinds = ACTOR_REF_KINDS.filter(
