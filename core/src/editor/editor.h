@@ -53,7 +53,7 @@ private:
     ScaleRotate,
   };
   Tool currentTool = Tool::Grab;
-  GrabTool grab { *this, selection };
+  GrabTool grab { *this };
 
   // events and data
   void maybeSendData();

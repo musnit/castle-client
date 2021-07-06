@@ -11,9 +11,8 @@ inline static const TouchToken grabTouchToken;
 // Constructor, destructor
 //
 
-GrabTool::GrabTool(Editor &editor_, Selection &selection_)
-    : editor(editor_)
-    , selection(selection_) {
+GrabTool::GrabTool(Editor &editor_)
+    : editor(editor_) {
 }
 
 
@@ -52,7 +51,7 @@ void GrabTool::update(Scene &scene, double dt) {
     // TODO: Undo / redo
 
     auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
-    for (auto actorId : selection.getSelectedActorIds()) {
+    for (auto actorId : editor.getSelection().getSelectedActorIds()) {
       bodyBehavior.setProperty(actorId, decltype(BodyComponent::Props::x)::id, move.x, true);
       bodyBehavior.setProperty(actorId, decltype(BodyComponent::Props::y)::id, move.y, true);
     }
