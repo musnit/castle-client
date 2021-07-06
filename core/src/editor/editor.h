@@ -79,6 +79,9 @@ private:
 
   bool isVariablesStateDirty;
   void sendVariablesData();
+
+  bool isTagsStateDirty;
+  void sendTagsData();
 };
 
 inline bool Editor::hasScene() {

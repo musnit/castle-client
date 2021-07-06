@@ -8,6 +8,7 @@ Editor::Editor(Bridge &bridge_)
   isEditorStateDirty = true;
   isAllBehaviorsStateDirty = true;
   isVariablesStateDirty = true;
+  isTagsStateDirty = true;
 }
 
 void Editor::clearState() {
@@ -15,12 +16,14 @@ void Editor::clearState() {
   isEditorStateDirty = true;
   isAllBehaviorsStateDirty = true;
   isVariablesStateDirty = true;
+  isTagsStateDirty = true;
 }
 
 void Editor::readScene(Reader &reader) {
   scene = std::make_unique<Scene>(bridge, variables, true, &reader);
   isEditorStateDirty = true;
   isAllBehaviorsStateDirty = true;
+  isTagsStateDirty = true;
   Debug::log("editor: read scene");
 }
 
@@ -504,6 +507,25 @@ void Editor::sendVariablesData() {
   bridge.sendEvent("EDITOR_VARIABLES", ev);
 }
 
+// UI-specific global tags info
+struct EditorTagsEvent {
+  PROP((std::unordered_map<std::string, std::vector<int> >), tagToActorIds);
+};
+
+void Editor::sendTagsData() {
+  EditorTagsEvent ev;
+  auto &tagsBehavior = getScene().getBehaviors().byType<TagsBehavior>();
+  tagsBehavior.map.forEach([&](TagsMap::Token t, TagsMapElem &elem) {
+    auto tagString = tagsBehavior.map.getString(t);
+    std::vector<int> actorIds;
+    for (auto actorId : elem.actorIds) {
+      actorIds.push_back(entt::to_integral(actorId));
+    }
+    ev.tagToActorIds().emplace(*tagString, actorIds);
+  });
+  bridge.sendEvent("EDITOR_TAGS", ev);
+}
+
 void Editor::maybeSendData() {
   if (isEditorStateDirty) {
     sendGlobalActions();
@@ -516,6 +538,10 @@ void Editor::maybeSendData() {
   if (isVariablesStateDirty) {
     sendVariablesData();
     isVariablesStateDirty = false;
+  }
+  if (isTagsStateDirty) {
+    sendTagsData();
+    isTagsStateDirty = false;
   }
   if (!selectedComponentStateDirty.empty()) {
     for (auto behaviorId : selectedComponentStateDirty) {

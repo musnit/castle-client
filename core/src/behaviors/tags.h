@@ -97,6 +97,7 @@ private:
   friend struct AddTagResponse;
   friend struct RemoveTagResponse;
   friend struct BasicTagsTest; // Test accesses our components directly -- may remove that later
+  friend class Editor;
 
   TagsMap map;
 
