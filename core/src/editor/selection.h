@@ -18,6 +18,7 @@ public:
   void setSelectionChanged(bool selectionChanged);
   ActorIdSet &getSelectedActorIds();
   ActorId firstSelectedActorId();
+  bool isSelected(ActorId actorId);
 
   void selectActor(ActorId actorId);
   void deselectActor(ActorId actorId);
@@ -42,7 +43,11 @@ inline ActorId Selection::firstSelectedActorId() {
   if (hasSelection()) {
     return *(selection.begin());
   }
-  return entt::null;
+  return nullActor;
+}
+
+inline bool Selection::isSelected(ActorId actorId) {
+  return selection.contains(actorId);
 }
 
 inline bool Selection::hasSelection() {
@@ -58,20 +63,22 @@ inline void Selection::setSelectionChanged(bool selectionChanged_) {
 }
 
 inline void Selection::selectActor(ActorId actorId) {
-  selectionChanged = true;
   if (!selection.contains(actorId)) {
     selection.emplace(actorId);
+    selectionChanged = true;
   }
 }
 
 inline void Selection::deselectActor(ActorId actorId) {
-  selectionChanged = true;
   if (selection.contains(actorId)) {
     selection.remove(actorId);
+    selectionChanged = true;
   }
 }
 
 inline void Selection::deselectAllActors() {
-  selectionChanged = true;
-  selection.clear();
+  if (!selection.empty()) {
+    selection.clear();
+    selectionChanged = true;
+  }
 }

@@ -46,7 +46,20 @@ void Commands::executePhase(Command &command, Phase phase, bool isLive) {
   auto &entry = command.entries[phase];
   entry.closure(editor, isLive);
 
-  // TODO(nikki): Restore selections
+  // Restore selections
+  if (!isLive) {
+    auto &selection = editor.getSelection();
+    for (auto actorId : entry.selection) {
+      selection.selectActor(actorId);
+    }
+    for (auto actorId : selection.getSelectedActorIds()) {
+      if (std::find(entry.selection.begin(), entry.selection.end(), actorId) == entry.selection.end()) {
+        selection.deselectActor(actorId);
+      }
+    }
+
+    // TODO(nikki): Restore belt selection
+  }
 }
 
 
