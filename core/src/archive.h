@@ -150,6 +150,8 @@ public:
   void read(std::vector<T> &v);
   template<typename T, unsigned N>
   void read(SmallVector<T, N> &v);
+  template<typename T>
+  void read(std::optional<T> &o);
 
   template<typename T>
   void read(T &&v); // Read value into an existing object of custom type. Can be a function, a type
@@ -293,6 +295,8 @@ private:
   json::Value write_(const std::vector<T> &v);
   template<typename T, unsigned N>
   json::Value write_(const SmallVector<T, N> &v);
+  template<typename T>
+  json::Value write_(const std::optional<T> &o);
   template<typename T>
   json::Value write_(const std::unordered_map<std::string, T> &m);
   template<typename T>
@@ -653,6 +657,14 @@ void Reader::read(SmallVector<T, N> &v) {
 }
 
 template<typename T>
+void Reader::read(std::optional<T> &o) {
+  if (!cur->IsNull()) {
+    o = {};
+    read(*o);
+  }
+}
+
+template<typename T>
 void Reader::read(T &&v) {
   static_assert(std::is_invocable_v<T> || hasRead<T> || Props::isReflectable<T>,
       "read: this type is not readable");
@@ -923,6 +935,15 @@ inline json::Value Writer::write_(const SmallVector<T, N> &v) {
     result.PushBack(write_(elem), alloc);
   }
   return result;
+}
+
+template<typename T>
+inline json::Value Writer::write_(const std::optional<T> &o) {
+  if (o) {
+    return write_(*o);
+  } else {
+    return json::Value(json::kNullType);
+  }
 }
 
 template<typename T>
