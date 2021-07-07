@@ -423,13 +423,43 @@ struct EditorModifyComponentReceiver {
         } else {
           auto propId = Props::getId(params.propertyName().c_str());
           auto propType = params.propertyType();
+          auto description = "change " + params.propertyName();
+          Commands::Params commandParams;
+          commandParams.coalesce = true;
+          commandParams.coalesceLastOnly = false;
           if (propType == "string") {
-            ExpressionValue value(params.stringValue().c_str());
-            behavior.setProperty(actorId, propId, value, false);
+            auto oldValueCStr = behavior.getProperty(actorId, propId).template as<const char *>();
+            if (!oldValueCStr) {
+              oldValueCStr = "";
+            }
+            editor.getCommands().execute(
+                description, commandParams,
+                [actorId, propId, newValue = params.stringValue()](Editor &editor, bool) {
+                  auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
+                  behavior.setProperty(actorId, propId, newValue.c_str(), false);
+                  editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
+                },
+                [actorId, propId, oldValue = std::string(oldValueCStr)](Editor &editor, bool) {
+                  auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
+                  behavior.setProperty(actorId, propId, oldValue.c_str(), false);
+                  editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
+                });
           } else {
-            // fall back to double
-            ExpressionValue value(params.doubleValue());
-            behavior.setProperty(actorId, propId, value, false);
+            auto oldValue = behavior.getProperty(actorId, propId).template as<double>();
+            auto newValue = params.doubleValue();
+            Debug::log("{} {} {}", params.propertyName(), oldValue, newValue);
+            editor.getCommands().execute(
+                description, commandParams,
+                [actorId, propId, newValue](Editor &editor, bool) {
+                  auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
+                  behavior.setProperty(actorId, propId, newValue, false);
+                  editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
+                },
+                [actorId, propId, oldValue](Editor &editor, bool) {
+                  auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
+                  behavior.setProperty(actorId, propId, oldValue, false);
+                  editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
+                });
           }
         }
       } else if (action == "enable") {
