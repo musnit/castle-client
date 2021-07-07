@@ -3,12 +3,16 @@
 #include "archive.h"
 
 
+constexpr auto libraryEntryPoolChunkSize = 8 * 1024;
+
+
 //
 // Library entry constructor, destructor
 //
 
-LibraryEntry::LibraryEntry(json::Value jsonValue_)
-    : jsonValue(std::move(jsonValue_)) {
+LibraryEntry::LibraryEntry(const json::Value &jsonValue_, json::CrtAllocator &baseAlloc)
+    : alloc(libraryEntryPoolChunkSize, &baseAlloc)
+    , jsonValue(jsonValue_, alloc, true) {
 }
 
 
@@ -23,6 +27,6 @@ void Library::readEntry(Reader &reader) {
     return;
   }
   auto entryId = *maybeEntryId;
-  json::Value jsonValue(*reader.jsonValue(), alloc, true);
-  entries.insert_or_assign(entryId, LibraryEntry(std::move(jsonValue)));
+  entries.emplace(std::piecewise_construct, std::forward_as_tuple(entryId),
+      std::forward_as_tuple(*reader.jsonValue(), baseAlloc));
 }

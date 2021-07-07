@@ -11,8 +11,8 @@ class LibraryEntry {
 public:
   LibraryEntry(const LibraryEntry &) = delete; // Prevent accidental copies
   const LibraryEntry &operator=(const LibraryEntry &) = delete;
-  LibraryEntry(LibraryEntry &&) = default; // Allow moves
-  LibraryEntry &operator=(LibraryEntry &&) = default;
+
+  explicit LibraryEntry(const json::Value &jsonValue, json::CrtAllocator &baseAlloc);
 
   const json::Value &getJsonValue() const;
 
@@ -20,9 +20,12 @@ public:
 private:
   friend class Library;
 
-  json::Value jsonValue;
+  // Each library entry has its own memory pool so that the json values within a library entry are
+  // close together in memory and deallocated all at once when the library entry is dropped. The
+  // memory pool gets its memory from the library entry's containing `Library`'s `baseAlloc`.
+  json::MemoryPoolAllocator<json::CrtAllocator> alloc;
 
-  explicit LibraryEntry(json::Value jsonValue);
+  json::Value jsonValue;
 };
 
 class Library {
@@ -42,13 +45,14 @@ public:
   const LibraryEntry *maybeGetEntry(const char *entryId); // `nullptr` if not found
 
 
-  // Entry update
+  // Entry read / write
 
   void readEntry(Reader &reader); // Creates or updates existing entry based on `entryId` read
 
 
 private:
-  json::MemoryPoolAllocator<json::CrtAllocator> alloc;
+  json::CrtAllocator baseAlloc;
+
   std::unordered_map<std::string, LibraryEntry> entries;
 };
 
