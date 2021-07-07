@@ -80,6 +80,8 @@ void Commands::execute(
 
 void Commands::executePhase(Command &command, Phase phase, bool isLive) {
   auto &entry = command.entries[phase];
+
+  // Execute closure
   entry.closure(editor, isLive);
 
   // Restore selections

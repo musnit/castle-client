@@ -79,8 +79,6 @@ void GrabTool::update(double dt) {
       after.push_back({ actorId, beforePos + delta });
     }
 
-    // TODO(nikki): Coalesce
-
     // Execute command that sets to before or after positions based on undo / redo. Common code is
     // factored out into `setPositions`.
     static const auto setPositions = [](Editor &editor, const decltype(before) &positions) {
