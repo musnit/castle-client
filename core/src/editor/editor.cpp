@@ -408,6 +408,9 @@ struct EditorModifyComponentReceiver {
     auto &editor = engine.getEditor();
 
     auto actorId = editor.getSelection().firstSelectedActorId();
+    if (actorId == nullActor) {
+      return;
+    }
 
     editor.getScene().getBehaviors().byName(params.behaviorName().c_str(), [&](auto &behavior) {
       using BehaviorType = std::remove_reference_t<decltype(behavior)>;
@@ -419,13 +422,9 @@ struct EditorModifyComponentReceiver {
           editor.setSelectedRulesData(rulesJson);
         } else {
           auto propId = Props::getId(params.propertyName().c_str());
-
           auto propType = params.propertyType();
           if (propType == "string") {
             ExpressionValue value(params.stringValue().c_str());
-            behavior.setProperty(actorId, propId, value, false);
-          } else if (propType == "d" || propType == "i" || propType == "b") {
-            ExpressionValue value((int)params.doubleValue());
             behavior.setProperty(actorId, propId, value, false);
           } else {
             // fall back to double
