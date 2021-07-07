@@ -455,7 +455,7 @@ struct RepeatResponse : BaseResponse {
     }
 
     // Not in progress -- add ourselves to repeat stack
-    if (auto count = params.count().eval<int>(ctx); count > 0) {
+    if (auto count = std::max(0, params.count().eval<int>(ctx)); count > 0) {
       // We're about to do one repetition right away, so save `count - 1` to the stack
       ctx.repeatStack.push_back({ this, count - 1 });
       ctx.setNext(params.body());
@@ -473,7 +473,7 @@ struct InfiniteRepeatResponse : BaseResponse {
     PROP(
          double, interval,
          .label("interval (seconds")
-         .min(1/60)
+         .min(1 / 60.0)
          .max(30)
          ) = 1;
     PROP(ResponseRef, body) = nullptr;
@@ -628,12 +628,15 @@ struct WaitResponse : BaseResponse {
   inline static const RuleRegistration<WaitResponse, RulesBehavior> registration { "wait" };
   static constexpr auto description = "Wait before a response";
 
+  static constexpr double minDuration = 1 / 60.0;
+  static constexpr double maxDuration = 30;
+
   struct Params {
     PROP(
          ExpressionRef, duration,
          .label("duration (seconds")
-         .min(1/60)
-         .max(30)
+         .min(minDuration)
+         .max(maxDuration)
          ) = 1;
   } params;
 
@@ -641,7 +644,7 @@ struct WaitResponse : BaseResponse {
     if (next) {
       auto &scene = ctx.getScene();
       auto &rulesBehavior = scene.getBehaviors().byType<RulesBehavior>();
-      auto duration = params.duration().eval<double>(ctx);
+      auto duration = std::clamp(params.duration().eval<double>(ctx), minDuration, maxDuration);
       rulesBehavior.schedule(ctx.suspend(), scene.getPerformTime() + duration);
     }
   }
@@ -689,7 +692,7 @@ struct CoinFlipResponse : BaseResponse {
   } params;
 
   bool eval(RuleContext &ctx) override {
-    auto probability = params.probability().eval<double>(ctx);
+    auto probability = std::clamp(params.probability().eval<double>(ctx), 0.0, 1.0);
     return ctx.getScene().getRNG().random() < probability;
   }
 };
