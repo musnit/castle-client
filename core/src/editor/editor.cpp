@@ -479,8 +479,24 @@ struct EditorModifyComponentReceiver {
               editor.setAllBehaviorsStateDirty();
             });
       } else if (action == "remove") {
-        behavior.removeComponent(actorId);
-        editor.setAllBehaviorsStateDirty();
+        static auto description = std::string("remove ") + BehaviorType::displayName;
+        // TODO(nikki): Generate component blueprint to use in undo
+        editor.getCommands().execute(
+            description, {},
+            [actorId](Editor &editor, bool) {
+              auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
+              behavior.removeComponent(actorId);
+              editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
+              editor.setAllBehaviorsStateDirty();
+            },
+            [actorId](Editor &editor, bool) {
+              // TODO(nikki): Restore from component blueprint
+              auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
+              behavior.addComponent(actorId);
+              behavior.enableComponent(actorId);
+              editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
+              editor.setAllBehaviorsStateDirty();
+            });
       }
       editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
       if constexpr (std::is_same_v<BehaviorType, TagsBehavior>) {
