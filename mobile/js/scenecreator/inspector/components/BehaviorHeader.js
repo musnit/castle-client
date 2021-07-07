@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, Switch, View } from 'react-native';
+
 import FeatherIcon from 'react-native-vector-icons/Feather';
+import Metadata from '../../Metadata';
 
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
@@ -21,7 +23,7 @@ export const BehaviorHeader = ({ name, behavior, component, sendAction }) => {
   const onRemove = () => sendAction('remove');
 
   let disableBehaviorSwitch;
-  if (component && behavior.allowsDisableWithoutRemoval) {
+  if (component && Metadata.behaviors[behavior.name]?.allowsDisableWithoutRemoval) {
     const onChangeSwitch = (value) => sendAction(value ? 'enable' : 'disable');
     disableBehaviorSwitch = (
       <Switch

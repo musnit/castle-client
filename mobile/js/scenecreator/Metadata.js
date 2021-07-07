@@ -31,6 +31,7 @@ const data = {
   ],
   behaviors: {
     AnalogStick: {
+      allowsDisableWithoutRemoval: true,
       props: {
         speed: {
           step: 0.5,
@@ -41,13 +42,18 @@ const data = {
       },
     },
     Bouncy: {
+      allowsDisableWithoutRemoval: true,
       props: {
         bounciness: {
           step: 0.05,
         },
       },
     },
+    Drag: {
+      allowsDisableWithoutRemoval: true,
+    },
     Falling: {
+      allowsDisableWithoutRemoval: true,
       props: {
         gravity: {
           step: 0.5,
@@ -55,13 +61,18 @@ const data = {
       },
     },
     Friction: {
+      allowsDisableWithoutRemoval: true,
       props: {
         friction: {
           step: 0.05,
         },
       },
     },
+    Sliding: {
+      allowsDisableWithoutRemoval: true,
+    },
     Sling: {
+      allowsDisableWithoutRemoval: true,
       props: {
         speed: {
           step: 0.5,
@@ -69,11 +80,18 @@ const data = {
       },
     },
     Slowdown: {
+      allowsDisableWithoutRemoval: true,
       props: {
         rotationSlowdown: {
           step: 0.1,
         },
       },
+    },
+    Solid: {
+      allowsDisableWithoutRemoval: true,
+    },
+    SpeedLimit: {
+      allowsDisableWithoutRemoval: true,
     },
     Text: {
       props: {

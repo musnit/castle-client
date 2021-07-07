@@ -8,6 +8,8 @@ import {
 import { makeCardPreviewTitle } from '../../../common/utilities';
 import { SOUND_CATEGORIES } from './PlaySoundResponse';
 
+import Metadata from '../../Metadata';
+
 /**
  *  This file exports functions for rendering response cells.
  *  Functions might expect the following params:
@@ -628,7 +630,8 @@ const EnableBehavior = ({ response, context }) => {
     {
       type: 'selectBehaviorSheet',
       label: behaviorName ?? '(choose behavior)',
-      isBehaviorVisible: (behavior) => behavior.allowsDisableWithoutRemoval,
+      isBehaviorVisible: (behavior) =>
+        Metadata.behaviors[behavior.name]?.allowsDisableWithoutRemoval,
     },
   ];
 };
@@ -651,7 +654,8 @@ const DisableBehavior = ({ response, context }) => {
     {
       type: 'selectBehaviorSheet',
       label: behaviorName ?? '(choose behavior)',
-      isBehaviorVisible: (behavior) => behavior.allowsDisableWithoutRemoval,
+      isBehaviorVisible: (behavior) =>
+        Metadata.behaviors[behavior.name]?.allowsDisableWithoutRemoval,
     },
   ];
 };
