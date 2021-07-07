@@ -1,4 +1,4 @@
-import RuleEntryMetadata from '../scenecreator/inspector/rules/RuleEntryMetadata';
+import Metadata from '../scenecreator/Metadata';
 
 // interpret initial params from engine
 const parseInitialParamValue = (value) => {
@@ -59,14 +59,14 @@ export default {
     return data?.variables;
   },
   EDITOR_RULES_DATA: (name, eventId, data) => {
-    // use RuleEntryMetadata to sort rule entries by UI category
+    // use Metadata to sort rule entries by UI category
     let result = {};
     const entriesToSort = ['triggers', 'responses', 'conditions'];
     entriesToSort.forEach((entryType) => {
       result[entryType] = {};
       if (!data[entryType]) return;
       data[entryType].forEach((entry) => {
-        const category = RuleEntryMetadata[entryType][entry.name]?.category;
+        const category = Metadata[entryType][entry.name]?.category;
         if (category) {
           if (!result[entryType][category]) {
             result[entryType][category] = [];
@@ -79,7 +79,7 @@ export default {
     result.expressions = {};
     if (data.expressions) {
       data.expressions.forEach((entry) => {
-        const category = RuleEntryMetadata.expressions[entry.name]?.category;
+        const category = Metadata.expressions[entry.name]?.category;
         result.expressions[entry.name] = {
           ...entry,
           category,

@@ -461,6 +461,9 @@ const CreateText = ({ response, context }) => {
       actionLabel = '(choose action)';
   }
 
+  // TODO: truncate
+  const content = response.params?.content ?? '';
+
   return [
     {
       type: 'showEntryOptions',
@@ -470,7 +473,7 @@ const CreateText = ({ response, context }) => {
       type: 'selectParamSheet',
       paramNames,
       paramValues,
-      label: `"${response.params?.content}"`, // TODO: truncate
+      label: `"${content}"`,
     },
     {
       type: 'text',

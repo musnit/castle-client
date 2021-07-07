@@ -100,6 +100,7 @@ export const BehaviorPropertyRule = ({
       {children}
       <View style={styles.inputRow}>
         <RuleParamInputRow
+          entryPath={`${behavior.name}.entries.${response.name}.${propertyName}`}
           label={propertySpec.attribs.label}
           paramSpec={propertySpec}
           value={response.params.value}

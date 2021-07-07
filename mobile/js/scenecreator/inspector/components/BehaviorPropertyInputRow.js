@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
+import { getUIProps } from '../../Metadata';
 import { InspectorCheckbox } from './InspectorCheckbox';
 import { InspectorDropdown } from './InspectorDropdown';
 import { InspectorNumberInput } from './InspectorNumberInput';
@@ -56,6 +57,13 @@ export const BehaviorPropertyInputRow = ({
     type = 'dropdown';
   }
 
+  const entryPath = `${behavior.name}.properties.${propName}`;
+  const metadata = {
+    ...propertySpec.attribs,
+    ...getUIProps(entryPath),
+    ...props,
+  };
+
   switch (type) {
     case 'f':
     case 'i':
@@ -65,8 +73,7 @@ export const BehaviorPropertyInputRow = ({
           lastNativeUpdate={lastNativeUpdate}
           value={displayValue(value)}
           onChange={onChange}
-          {...propertySpec.attribs}
-          {...props}
+          {...metadata}
         />
       );
       break;
@@ -76,8 +83,7 @@ export const BehaviorPropertyInputRow = ({
           lastNativeUpdate={lastNativeUpdate}
           value={displayValue(value)}
           onChange={onChange}
-          {...propertySpec.attribs}
-          {...props}
+          {...metadata}
         />
       );
       break;
@@ -87,8 +93,7 @@ export const BehaviorPropertyInputRow = ({
           lastNativeUpdate={lastNativeUpdate}
           value={value}
           onChange={onChange}
-          {...propertySpec.attribs}
-          {...props}
+          {...metadata}
         />
       );
       break;

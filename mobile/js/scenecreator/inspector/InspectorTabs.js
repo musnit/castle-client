@@ -66,30 +66,6 @@ const GeneralTab = ({ behaviors, addChildSheet }) => {
   );
 };
 
-// not all behaviors have their own React component, many just fall back to `InspectorGenericBehavior`.
-// in some cases, pass extra ui props not provided by the engine's propertySpecs.
-const MOVEMENT_UI_GENERIC_BEHAVIOR_PROPS = {
-  AnalogStick: {
-    speed: { step: 0.5 },
-    turnFriction: { step: 0.1 },
-  },
-  Bouncy: {
-    bounciness: { step: 0.05 },
-  },
-  Falling: {
-    gravity: { step: 0.5 },
-  },
-  Friction: {
-    friction: { step: 0.05 },
-  },
-  Sling: {
-    speed: { step: 0.5 },
-  },
-  Slowdown: {
-    rotationSlowdown: { step: 0.1 },
-  },
-};
-
 const MovementTab = ({ behaviors, addChildSheet }) => {
   let movementBehaviors = InspectorUtilities.filterAvailableBehaviors({
     allBehaviors: behaviors,
@@ -143,16 +119,7 @@ const MovementTab = ({ behaviors, addChildSheet }) => {
           .filter((name) => behaviors[name]?.isActive)
           .map((name) => {
             let Component = Inspector[name] ?? Inspector.Behavior;
-            let propertyUIProps = Inspector[name]
-              ? undefined
-              : MOVEMENT_UI_GENERIC_BEHAVIOR_PROPS[name];
-            return (
-              <Component
-                key={`behavior-${name}`}
-                behavior={behaviors[name]}
-                propertyUIProps={propertyUIProps}
-              />
-            );
+            return <Component key={`behavior-${name}`} behavior={behaviors[name]} />;
           })}
     </React.Fragment>
   );

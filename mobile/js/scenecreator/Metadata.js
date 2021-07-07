@@ -1,7 +1,12 @@
 /**
- * Index of frontend-specific metadata for rules
+ *  This file is an index of frontend-specific metadata for rules, behaviors, and their props.
+ *  When possible, prefer to put UI props directly in React components.
+ *  This index is available for the many cases where we don't have a bespoke React component for
+ *  a particular object in the engine.
+ *
+ *  See also: `getUIProps(entryPath)`
  */
-export default {
+const data = {
   triggerCategoryOrder: ['general', 'controls', 'state', 'motion', 'camera', 'draw'],
   responseCategoryOrder: [
     'general',
@@ -24,6 +29,60 @@ export default {
     'arithmetic',
     'functions',
   ],
+  behaviors: {
+    AnalogStick: {
+      props: {
+        speed: {
+          step: 0.5,
+        },
+        turnFriction: {
+          step: 0.1,
+        },
+      },
+    },
+    Bouncy: {
+      props: {
+        bounciness: {
+          step: 0.05,
+        },
+      },
+    },
+    Falling: {
+      props: {
+        gravity: {
+          step: 0.5,
+        },
+      },
+    },
+    Friction: {
+      props: {
+        friction: {
+          step: 0.05,
+        },
+      },
+    },
+    Sling: {
+      props: {
+        speed: {
+          step: 0.5,
+        },
+      },
+    },
+    Slowdown: {
+      props: {
+        rotationSlowdown: {
+          step: 0.1,
+        },
+      },
+    },
+    Text: {
+      props: {
+        content: {
+          multiline: true,
+        },
+      },
+    },
+  },
   triggers: {
     collide: {
       category: 'general',
@@ -113,12 +172,22 @@ export default {
     },
     ['infinite repeat']: {
       category: 'logic',
+      props: {
+        interval: {
+          decimalDigits: 4,
+        },
+      },
     },
     ['stop repeating']: {
       category: 'logic',
     },
     wait: {
       category: 'logic',
+      props: {
+        duration: {
+          decimalDigits: 4,
+        },
+      },
     },
     ['set behavior property']: {
       category: 'behavior',
@@ -179,6 +248,11 @@ export default {
     },
     ['create text']: {
       category: 'general',
+      props: {
+        content: {
+          multiline: true,
+        },
+      },
     },
     destroy: {
       category: 'general',
@@ -194,11 +268,21 @@ export default {
     },
     note: {
       category: 'meta',
+      props: {
+        note: {
+          multiline: true,
+        },
+      },
     },
   },
   conditions: {
     ['coin flip']: {
       category: 'random',
+      props: {
+        probability: {
+          step: 0.1,
+        },
+      },
     },
     ['is colliding']: {
       category: 'collision',
@@ -311,4 +395,52 @@ export default {
       category: 'randomness',
     },
   },
+};
+
+export default data;
+
+/**
+ *  Look up UI props for an entry based on a path. Example paths are given in the code below.
+ */
+export const getUIProps = (entryPath) => {
+  if (entryPath) {
+    const components = entryPath.split('.');
+    if (components.length > 1) {
+      if (components[0] === 'Expression') {
+        // Expression.random.min
+        const name = components[1];
+        const paramName = components[2];
+        const expression = data.expressions[name];
+        if (expression) {
+          return expression.props ? expression.props[paramName] : null;
+        }
+      }
+      if (components[1] === 'entries') {
+        // Rules.entries.set variable.setToValue
+        // could be either a trigger or a response
+        const name = components[2];
+        const paramName = components[3];
+        if (data.triggers[name]) {
+          return data.triggers[name].props ? data.triggers[name].props[paramName] : null;
+        }
+        if (data.responses[name]) {
+          return data.responses[name].props ? data.responses[name].props[paramName] : null;
+        }
+        if (data.conditions[name]) {
+          return data.conditions[name].props ? data.conditions[name].props[paramName] : null;
+        }
+      }
+      if (components[1] === 'properties') {
+        // Body.properties.vx
+        const behaviorName = components[0];
+        const propertyName = components[2];
+        if (data.behaviors[behaviorName]) {
+          return data.behaviors[behaviorName].props
+            ? data.behaviors[behaviorName].props[propertyName]
+            : null;
+        }
+      }
+    }
+  }
+  return null;
 };

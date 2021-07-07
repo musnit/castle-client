@@ -2,11 +2,12 @@ import * as React from 'react';
 import { View } from 'react-native';
 import { BehaviorPropertyInputRow } from '../components/BehaviorPropertyInputRow';
 import { BehaviorHeader } from '../components/BehaviorHeader';
+import { getUIProps } from '../../Metadata';
 import { useCoreState, sendBehaviorAction } from '../../../core/CoreEvents';
 
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
-export default InspectorGenericBehavior = ({ behavior, properties, propertyUIProps }) => {
+export default InspectorGenericBehavior = ({ behavior, properties }) => {
   const component = useCoreState(`EDITOR_SELECTED_COMPONENT:${behavior.name}`);
   const sendAction = React.useCallback((...args) => sendBehaviorAction(behavior.name, ...args), [
     sendBehaviorAction,
@@ -18,8 +19,7 @@ export default InspectorGenericBehavior = ({ behavior, properties, propertyUIPro
       {component && properties?.length ? (
         <View style={SceneCreatorConstants.styles.behaviorProperties}>
           {properties.map((propName, ii) => {
-            const uiProps =
-              propertyUIProps && propertyUIProps[propName] ? propertyUIProps[propName] : {};
+            const uiProps = getUIProps(`${behavior.name}.properties.${propName}`);
             return (
               <BehaviorPropertyInputRow
                 key={`${behavior.name}-property-${ii}`}

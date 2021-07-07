@@ -3,7 +3,7 @@ import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 import { ConfigureRuleEntry } from './ConfigureRuleEntry';
 import { getRuleRenderContext } from './RuleRenderContext';
 
-import RuleEntryMetadata from './RuleEntryMetadata';
+import Metadata from '../../Metadata';
 import RuleOptionsSheet from './RuleOptionsSheet';
 import RulePartPickerSheet from './RulePartPickerSheet';
 
@@ -40,7 +40,7 @@ export const Trigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeT
         entries: triggers,
         onSelectEntry: (entry) => onChangeTrigger(_entryToTrigger(entry)),
         title: 'Select trigger',
-        categoryOrder: RuleEntryMetadata.triggerCategoryOrder,
+        categoryOrder: Metadata.triggerCategoryOrder,
       }),
     [addChildSheet, behaviors, triggers, onChangeTrigger]
   );

@@ -10,7 +10,7 @@ import { Responses } from './Responses';
 import { SetVariableResponse as SetVariable } from './SetVariableResponse';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 
-import RuleEntryMetadata from './RuleEntryMetadata';
+import Metadata from '../../Metadata';
 import RuleOptionsSheet from './RuleOptionsSheet';
 import RulePartPickerSheet from './RulePartPickerSheet';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
@@ -102,7 +102,7 @@ const If = ({ response, onChangeResponse, children, order, ...props }) => {
         entries: conditions,
         onSelectEntry: (entry) => handler(_entryToResponse(entry)),
         title: 'Select condition',
-        categoryOrder: RuleEntryMetadata.conditionCategoryOrder,
+        categoryOrder: Metadata.conditionCategoryOrder,
       }),
     [behaviors, conditions, addChildSheet]
   );
@@ -322,7 +322,7 @@ const Response = ({ response, onChangeResponse, order = 0, ...props }) => {
         triggerFilter,
         onSelectEntry: (entry) => handler(_entryToResponse(entry)),
         title: 'Select response',
-        categoryOrder: RuleEntryMetadata.responseCategoryOrder,
+        categoryOrder: Metadata.responseCategoryOrder,
       }),
     [addChildSheet, behaviors, response, responses, triggerFilter, parentType]
   );

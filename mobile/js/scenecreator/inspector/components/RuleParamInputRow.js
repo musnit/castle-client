@@ -17,14 +17,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export const RuleParamInputRow = ({ label, paramSpec, style, ...props }) => {
+export const RuleParamInputRow = ({ entryPath, label, paramSpec, style, ...props }) => {
   const paramLabel = paramSpec?.label ?? label;
   if (paramSpec.method === 'toggle') {
     // special-case-toggle: compact the UI onto a single row
     return (
       <View style={[styles.container, style]}>
         <View style={styles.inputRow}>
-          <ParamInput paramSpec={paramSpec} {...props} label={paramLabel} />
+          <ParamInput entryPath={entryPath} paramSpec={paramSpec} {...props} label={paramLabel} />
         </View>
       </View>
     );
@@ -35,7 +35,7 @@ export const RuleParamInputRow = ({ label, paramSpec, style, ...props }) => {
           <Text style={styles.inputLabel}>{paramLabel}</Text>
         </View>
         <View style={styles.inputRow}>
-          <ParamInput paramSpec={paramSpec} {...props} />
+          <ParamInput entryPath={entryPath} paramSpec={paramSpec} {...props} />
         </View>
       </View>
     );

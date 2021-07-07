@@ -4,7 +4,7 @@ import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
 import { useCoreState } from '../../../core/CoreEvents';
 
-import RuleEntryMetadata from '../rules/RuleEntryMetadata';
+import Metadata from '../../Metadata';
 
 import * as Constants from '../../../Constants';
 
@@ -68,7 +68,7 @@ export const ExpressionTypePickerSheet = ({
   const renderContent = () => (
     <View style={styles.container}>
       {expressionCategories
-        ? RuleEntryMetadata.expressionCategoryOrder.map((category) => {
+        ? Metadata.expressionCategoryOrder.map((category) => {
             const entries = expressionCategories[category];
             return entries ? (
               <View key={`expression-category-${category}`} style={styles.category}>

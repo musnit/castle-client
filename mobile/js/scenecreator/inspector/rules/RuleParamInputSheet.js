@@ -50,6 +50,8 @@ export default RuleParamInputSheet = ({
   addChildSheet,
 }) => {
   const context = getRuleRenderContext();
+  const entryPathPrefix = `${entry.behaviorName}.entries.${entry.name}`;
+
   const findParamSpec = (paramName) => {
     if (paramName && entry.paramSpecs) {
       const result = entry.paramSpecs.find((s) => s.name === paramName);
@@ -94,9 +96,11 @@ export default RuleParamInputSheet = ({
         const paramSpec = findParamSpec(paramName);
         const value = values[paramName];
         const setValue = (value) => changeValues({ paramName, value });
+        const entryPath = `${entryPathPrefix}.${paramName}`;
         return (
           <View key={`param-${ii}`} style={styles.inputs}>
             <RuleParamInputRow
+              entryPath={entryPath}
               label={paramName}
               context={context}
               paramSpec={paramSpec}
