@@ -462,9 +462,22 @@ struct EditorModifyComponentReceiver {
               editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
             });
       } else if (action == "add") {
-        behavior.addComponent(actorId);
-        behavior.enableComponent(actorId);
-        editor.setAllBehaviorsStateDirty();
+        static auto description = std::string("add ") + BehaviorType::displayName;
+        editor.getCommands().execute(
+            description, {},
+            [actorId](Editor &editor, bool) {
+              auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
+              behavior.addComponent(actorId);
+              behavior.enableComponent(actorId);
+              editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
+              editor.setAllBehaviorsStateDirty();
+            },
+            [actorId](Editor &editor, bool) {
+              auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
+              behavior.removeComponent(actorId);
+              editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
+              editor.setAllBehaviorsStateDirty();
+            });
       } else if (action == "remove") {
         behavior.removeComponent(actorId);
         editor.setAllBehaviorsStateDirty();
