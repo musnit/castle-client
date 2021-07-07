@@ -168,7 +168,6 @@ void Editor::draw() {
     }
     Debug::display("  {} actor {}", command.description, selectionString);
   }
-
 }
 
 //
@@ -406,52 +405,76 @@ struct EditorModifyComponentReceiver {
       Debug::log("Editor received unknown behavior action: {}", action);
       return;
     }
+    auto &editor = engine.getEditor();
 
-    auto actorId = engine.getEditor().getSelection().firstSelectedActorId();
+    auto actorId = editor.getSelection().firstSelectedActorId();
 
-    engine.getEditor().getScene().getBehaviors().byName(
-        params.behaviorName().c_str(), [&](auto &behavior) {
-          using BehaviorType = std::remove_reference_t<decltype(behavior)>;
+    editor.getScene().getBehaviors().byName(params.behaviorName().c_str(), [&](auto &behavior) {
+      using BehaviorType = std::remove_reference_t<decltype(behavior)>;
 
-          // TODO: undoable command
-          if (action == "set") {
-            if constexpr (std::is_same_v<BehaviorType, RulesBehavior>) {
-              auto rulesJson = params.stringValue();
-              engine.getEditor().setSelectedRulesData(rulesJson);
-            } else {
-              auto propId = Props::getId(params.propertyName().c_str());
+      // TODO: undoable command
+      if (action == "set") {
+        if constexpr (std::is_same_v<BehaviorType, RulesBehavior>) {
+          auto rulesJson = params.stringValue();
+          editor.setSelectedRulesData(rulesJson);
+        } else {
+          auto propId = Props::getId(params.propertyName().c_str());
 
-              auto propType = params.propertyType();
-              if (propType == "string") {
-                ExpressionValue value(params.stringValue().c_str());
-                behavior.setProperty(actorId, propId, value, false);
-              } else if (propType == "d" || propType == "i" || propType == "b") {
-                ExpressionValue value((int)params.doubleValue());
-                behavior.setProperty(actorId, propId, value, false);
-              } else {
-                // fall back to double
-                ExpressionValue value(params.doubleValue());
-                behavior.setProperty(actorId, propId, value, false);
-              }
-            }
-          } else if (action == "enable") {
-            behavior.enableComponent(actorId);
-          } else if (action == "disable") {
-            behavior.disableComponent(actorId);
-          } else if (action == "add") {
-            behavior.addComponent(actorId);
-            behavior.enableComponent(actorId);
-            engine.getEditor().setAllBehaviorsStateDirty();
-          } else if (action == "remove") {
-            behavior.removeComponent(actorId);
-            engine.getEditor().setAllBehaviorsStateDirty();
+          auto propType = params.propertyType();
+          if (propType == "string") {
+            ExpressionValue value(params.stringValue().c_str());
+            behavior.setProperty(actorId, propId, value, false);
+          } else if (propType == "d" || propType == "i" || propType == "b") {
+            ExpressionValue value((int)params.doubleValue());
+            behavior.setProperty(actorId, propId, value, false);
+          } else {
+            // fall back to double
+            ExpressionValue value(params.doubleValue());
+            behavior.setProperty(actorId, propId, value, false);
           }
-          engine.getEditor().setSelectedComponentStateDirty(BehaviorType::behaviorId);
-          if constexpr (std::is_same_v<BehaviorType, TagsBehavior>) {
-            // extra dirty state on tags data
-            engine.getEditor().setTagsStateDirty();
-          }
-        });
+        }
+      } else if (action == "enable") {
+        static auto description = std::string("enable ") + BehaviorType::displayName;
+        editor.getCommands().execute(
+            description, {},
+            [actorId](Editor &editor, bool) {
+              auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
+              behavior.enableComponent(actorId);
+              editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
+            },
+            [actorId](Editor &editor, bool) {
+              auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
+              behavior.disableComponent(actorId);
+              editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
+            });
+      } else if (action == "disable") {
+        static auto description = std::string("disable ") + BehaviorType::displayName;
+        editor.getCommands().execute(
+            description, {},
+            [actorId](Editor &editor, bool) {
+              auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
+              behavior.disableComponent(actorId);
+              editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
+            },
+            [actorId](Editor &editor, bool) {
+              auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
+              behavior.enableComponent(actorId);
+              editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
+            });
+      } else if (action == "add") {
+        behavior.addComponent(actorId);
+        behavior.enableComponent(actorId);
+        editor.setAllBehaviorsStateDirty();
+      } else if (action == "remove") {
+        behavior.removeComponent(actorId);
+        editor.setAllBehaviorsStateDirty();
+      }
+      editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
+      if constexpr (std::is_same_v<BehaviorType, TagsBehavior>) {
+        // extra dirty state on tags data
+        editor.setTagsStateDirty();
+      }
+    });
     // TODO: swap
   }
 };
