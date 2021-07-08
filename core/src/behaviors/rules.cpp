@@ -634,7 +634,7 @@ struct WaitResponse : BaseResponse {
   struct Params {
     PROP(
          ExpressionRef, duration,
-         .label("duration (seconds")
+         .label("duration (seconds)")
          .min(minDuration)
          .max(maxDuration)
          ) = 1;
