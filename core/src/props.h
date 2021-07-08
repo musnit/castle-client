@@ -106,6 +106,9 @@ struct Prop {
     if (rawType.find("Variable") != std::string::npos) {
       return "variable";
     }
+    if (rawType.find("TagVector") != std::string::npos) {
+      return "tags";
+    }
     if (rawType.find("Tag") != std::string::npos) {
       return "tag";
     }
