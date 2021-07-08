@@ -26,6 +26,17 @@ const styles = StyleSheet.create({
   },
 });
 
+const EMPTY_RULE = {
+  trigger: {
+    name: 'none',
+    behaviorId: null,
+  },
+  response: {
+    name: 'none',
+    behaviorId: null,
+  },
+};
+
 export default InspectorRules = ({ behaviors, addChildSheet }) => {
   const rulesData = useCoreState('EDITOR_RULES_DATA');
   const rulesComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Rules');
@@ -56,6 +67,11 @@ export default InspectorRules = ({ behaviors, addChildSheet }) => {
     },
     [rulesItems, sendSetRules]
   );
+
+  const onAddRule = React.useCallback(() => {
+    const newRules = rulesItems ? rulesItems.concat([EMPTY_RULE]) : [EMPTY_RULE];
+    sendSetRules(newRules);
+  }, [rulesItems, sendSetRules]);
 
   const onRemoveRule = React.useCallback(
     (rule) => {
@@ -88,9 +104,7 @@ export default InspectorRules = ({ behaviors, addChildSheet }) => {
     <React.Fragment>
       <View style={styles.container}>
         <View style={styles.actionsContainer}>
-          <TouchableOpacity
-            style={SceneCreatorConstants.styles.button}
-            onPress={() => sendRuleAction('add')}>
+          <TouchableOpacity style={SceneCreatorConstants.styles.button} onPress={onAddRule}>
             <Text style={SceneCreatorConstants.styles.buttonLabel}>Add rule</Text>
           </TouchableOpacity>
           {rulesData && !rulesData.isClipboardEmpty ? (
