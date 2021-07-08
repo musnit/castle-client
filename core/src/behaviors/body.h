@@ -12,6 +12,11 @@ enum class BodyLayer {
 };
 
 struct BodyComponent : BaseComponent {
+  static constexpr double minBodySize = 0.25;
+  static constexpr double maxBodySize = 40;
+  static constexpr double minBodyScale = -maxBodySize;
+  static constexpr double maxBodyScale = maxBodySize;
+
   struct Props {
     PROP(float, x, .label("X Position")) = 0;
     PROP(float, y, .label("Y Position")) = 0;
@@ -20,17 +25,31 @@ struct BodyComponent : BaseComponent {
     PROP(
          float, width,
          .label("Width")
+         .min(minBodySize)
+         .max(maxBodySize)
          .rulesGet(false)
          .rulesSet(false)
          ) = 1;
     PROP(
          float, height,
          .label("Height")
+         .min(minBodySize)
+         .max(maxBodySize)
          .rulesGet(false)
          .rulesSet(false)
          ) = 1;
-    PROP(float, widthScale, .label("Width Scale")) = 0.1;
-    PROP(float, heightScale, .label("Height Scale")) = 0.1;
+    PROP(
+         float, widthScale,
+         .min(minBodyScale)
+         .max(maxBodyScale)
+         .label("Width Scale")
+         ) = 0.1;
+    PROP(
+         float, heightScale,
+         .min(minBodyScale)
+         .max(maxBodyScale)
+         .label("Height Scale")
+         ) = 0.1;
 
     // NOTE: Skipping because it's never `true`
     // PROP(bool, bullet) = false;
