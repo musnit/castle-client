@@ -20,8 +20,8 @@ struct PropAttribs {
   ATTRIB(bool, rulesGet, true);
   ATTRIB(bool, rulesSet, true);
   ATTRIB(const char *, label, "");
-  ATTRIB(float, min, std::numeric_limits<float>::min());
-  ATTRIB(float, max, std::numeric_limits<float>::max());
+  ATTRIB(std::optional<float>, min, std::nullopt);
+  ATTRIB(std::optional<float>, max, std::nullopt);
 
   static constexpr auto maxNumAllowedValues = 16;
   const char *allowedValues_[maxNumAllowedValues] = { nullptr };

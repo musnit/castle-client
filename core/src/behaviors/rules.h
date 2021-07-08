@@ -125,8 +125,8 @@ struct RuleEntryData {
   struct ParamSpec {
     struct Attribs {
       PROP(std::string, label);
-      PROP(float, min);
-      PROP(float, max);
+      PROP(std::optional<float>, min);
+      PROP(std::optional<float>, max);
       PROP(std::vector<std::string>, allowedValues);
     };
 

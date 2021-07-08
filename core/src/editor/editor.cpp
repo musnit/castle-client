@@ -256,8 +256,8 @@ struct EditorAllBehaviorsEvent {
     struct PropertySpec {
       struct Attribs {
         PROP(std::string, label);
-        PROP(float, min);
-        PROP(float, max);
+        PROP(std::optional<float>, min);
+        PROP(std::optional<float>, max);
         PROP(bool, rulesGet);
         PROP(bool, rulesSet);
         PROP(std::vector<std::string>, allowedValues);
