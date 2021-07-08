@@ -21,8 +21,9 @@ const _entryToTrigger = (entry) => ({
   name: entry.name,
   behaviorId: entry.behaviorId,
   params: entry.paramSpecs
-    ? Object.entries(entry.paramSpecs).reduce((params, [key, spec]) => {
-        params[key] = spec.initialValue;
+    ? entry.paramSpecs.reduce((params, spec) => {
+        const { name } = spec;
+        params[name] = spec.initialValue;
         return params;
       }, {})
     : {},
