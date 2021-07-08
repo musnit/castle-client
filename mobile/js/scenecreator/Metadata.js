@@ -181,6 +181,7 @@ const data = {
     },
     ['act on other']: {
       category: 'tell other actors',
+      triggerFilter: { collide: true },
     },
     if: {
       category: 'logic',
@@ -198,6 +199,7 @@ const data = {
     },
     ['stop repeating']: {
       category: 'logic',
+      parentTypeFilter: { repeat: true },
     },
     wait: {
       category: 'logic',
@@ -233,6 +235,7 @@ const data = {
     },
     ['send player to card']: {
       category: 'general',
+      triggerFilter: { tap: true },
     },
     ['restart scene']: {
       category: 'general',

@@ -66,12 +66,16 @@ export default {
       result[entryType] = {};
       if (!data[entryType]) return;
       data[entryType].forEach((entry) => {
-        const category = Metadata[entryType][entry.name]?.category;
-        if (category) {
+        const metadata = Metadata[entryType][entry.name];
+        if (metadata) {
+          const { category } = metadata;
           if (!result[entryType][category]) {
             result[entryType][category] = [];
           }
-          result[entryType][category].push(entry);
+          result[entryType][category].push({
+            ...entry,
+            ...metadata,
+          });
         }
       });
     });
