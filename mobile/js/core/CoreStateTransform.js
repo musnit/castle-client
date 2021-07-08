@@ -16,6 +16,25 @@ const parseInitialParamValue = (value) => {
   return value;
 };
 
+const addInitialParamValues = (entry) => {
+  if (entry.paramSpecs?.length) {
+    let initialParams;
+    try {
+      let initialParamsData = JSON.parse(entry.initialParamsJson);
+      initialParams = initialParamsData.initialParams;
+    } catch (_) {
+      initialParams = {};
+    }
+    entry.paramSpecs = entry.paramSpecs.map((spec) => {
+      const initialValue = parseInitialParamValue(initialParams[spec.name]);
+      return {
+        ...spec,
+        initialValue,
+      };
+    });
+  }
+};
+
 export default {
   EDITOR_ALL_BEHAVIORS: (name, eventId, data) => {
     // want a map of BehaviorName -> behavior object
@@ -72,10 +91,12 @@ export default {
           if (!result[entryType][category]) {
             result[entryType][category] = [];
           }
-          result[entryType][category].push({
+          const fullEntry = {
             ...entry,
             ...metadata,
-          });
+          };
+          addInitialParamValues(fullEntry);
+          result[entryType][category].push(fullEntry);
         }
       });
     });
@@ -89,20 +110,7 @@ export default {
           category,
           initialParamsJson: undefined,
         };
-        if (entry.paramSpecs.length) {
-          let initialParams;
-          try {
-            let initialParamsData = JSON.parse(entry.initialParamsJson);
-            initialParams = initialParamsData.initialParams;
-          } catch (_) {}
-          result.expressions[entry.name].paramSpecs = entry.paramSpecs.map((spec) => {
-            const initialValue = parseInitialParamValue(initialParams[spec.name]);
-            return {
-              ...spec,
-              initialValue,
-            };
-          });
-        }
+        addInitialParamValues(result.expressions[entry.name]);
       });
     }
 
