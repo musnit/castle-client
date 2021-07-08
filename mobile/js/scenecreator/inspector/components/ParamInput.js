@@ -41,6 +41,8 @@ export const ParamInput = ({
       // TODO: more expressions besides numeric
       return <ExpressionInputComponent value={value} onChange={setValue} {...metadata} />;
     case 'tag':
+      return <InspectorTagPicker value={value} singleSelect onChange={setValue} {...metadata} />;
+    case 'tags':
       return <InspectorTagPicker value={value} onChange={setValue} {...metadata} />;
     case 'b':
       return <InspectorCheckbox value={value} onChange={setValue} {...metadata} />;
