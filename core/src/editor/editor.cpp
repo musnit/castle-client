@@ -362,12 +362,26 @@ void Editor::sendSelectedComponent(int behaviorId) {
   });
 }
 
-void Editor::setSelectedRulesData(std::string &rulesJson) {
+const char *Editor::getRulesData(ActorId actorId) {
   auto &behavior = getScene().getBehaviors().byType<RulesBehavior>();
-  auto actorId = getSelection().firstSelectedActorId();
+  auto component = behavior.maybeGetComponent(actorId);
+  if (component && component->editData) {
+    return component->editData->rulesJson.c_str();
+  }
+  return "";
+}
+
+void Editor::setRulesData(ActorId actorId, const char *rulesJson) {
+  auto &behavior = getScene().getBehaviors().byType<RulesBehavior>();
   auto component = behavior.maybeGetComponent(actorId);
   if (component) {
-    component->editSetRulesJson(rulesJson);
+    if (rulesJson) {
+      auto jsonString = std::string(rulesJson);
+      component->editSetRulesJson(jsonString);
+    } else {
+      auto jsonString = std::string("");
+      component->editSetRulesJson(jsonString);
+    }
   }
 }
 
@@ -415,18 +429,26 @@ struct EditorModifyComponentReceiver {
     editor.getScene().getBehaviors().byName(params.behaviorName().c_str(), [&](auto &behavior) {
       using BehaviorType = std::remove_reference_t<decltype(behavior)>;
 
-      // TODO: undoable command
       if (action == "set") {
+        Commands::Params commandParams;
+        commandParams.coalesce = true;
+        commandParams.coalesceLastOnly = false;
         if constexpr (std::is_same_v<BehaviorType, RulesBehavior>) {
-          auto rulesJson = params.stringValue();
-          editor.setSelectedRulesData(rulesJson);
+          auto oldValueCStr = editor.getRulesData(actorId);
+          editor.getCommands().execute(
+              "change rules", commandParams,
+              [actorId, newRulesJson = params.stringValue()](Editor &editor, bool) {
+                editor.setRulesData(actorId, newRulesJson.c_str());
+                editor.setSelectedComponentStateDirty(RulesBehavior::behaviorId);
+              },
+              [actorId, oldRulesJson = std::string(oldValueCStr)](Editor &editor, bool) {
+                editor.setRulesData(actorId, oldRulesJson.c_str());
+                editor.setSelectedComponentStateDirty(RulesBehavior::behaviorId);
+              });
         } else {
           auto propId = Props::getId(params.propertyName().c_str());
           auto propType = params.propertyType();
           auto description = "change " + params.propertyName();
-          Commands::Params commandParams;
-          commandParams.coalesce = true;
-          commandParams.coalesceLastOnly = false;
           if (propType == "string") {
             auto oldValueCStr = behavior.getProperty(actorId, propId).template as<const char *>();
             if (!oldValueCStr) {

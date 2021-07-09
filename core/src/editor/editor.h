@@ -34,7 +34,8 @@ public:
   void setEditorStateDirty();
   void setAllBehaviorsStateDirty();
   void setSelectedComponentStateDirty(int behaviorId);
-  void setSelectedRulesData(std::string &rulesJson);
+  void setRulesData(ActorId actorId, const char *rulesJson);
+  const char *getRulesData(ActorId actorId);
   void setTagsStateDirty();
 
   Commands &getCommands();
