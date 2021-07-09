@@ -434,14 +434,28 @@ struct EditorModifyComponentReceiver {
         commandParams.coalesce = true;
         commandParams.coalesceLastOnly = false;
         if constexpr (std::is_same_v<BehaviorType, RulesBehavior>) {
+          bool oldHasComponent = behavior.hasComponent(actorId);
           auto oldValueCStr = editor.getRulesData(actorId);
           editor.getCommands().execute(
               "change rules", commandParams,
-              [actorId, newRulesJson = params.stringValue()](Editor &editor, bool) {
+              [actorId, oldHasComponent, newRulesJson = params.stringValue()](
+                  Editor &editor, bool) {
+                auto &rulesBehavior = editor.getScene().getBehaviors().byType<RulesBehavior>();
+                if (!oldHasComponent) {
+                  rulesBehavior.addComponent(actorId);
+                  rulesBehavior.enableComponent(actorId);
+                  editor.setAllBehaviorsStateDirty();
+                }
                 editor.setRulesData(actorId, newRulesJson.c_str());
                 editor.setSelectedComponentStateDirty(RulesBehavior::behaviorId);
               },
-              [actorId, oldRulesJson = std::string(oldValueCStr)](Editor &editor, bool) {
+              [actorId, oldHasComponent, oldRulesJson = std::string(oldValueCStr)](
+                  Editor &editor, bool) {
+                auto &rulesBehavior = editor.getScene().getBehaviors().byType<RulesBehavior>();
+                if (!oldHasComponent) {
+                  rulesBehavior.removeComponent(actorId);
+                  editor.setAllBehaviorsStateDirty();
+                }
                 editor.setRulesData(actorId, oldRulesJson.c_str());
                 editor.setSelectedComponentStateDirty(RulesBehavior::behaviorId);
               });
