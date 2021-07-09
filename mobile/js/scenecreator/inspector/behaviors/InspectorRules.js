@@ -5,6 +5,7 @@ import { EditRuleSheet } from '../rules/EditRuleSheet';
 import { RulePreview } from '../rules/RulePreview';
 import { useCoreState, sendBehaviorAction } from '../../../core/CoreEvents';
 
+import * as RulesClipboard from '../rules/RulesClipboard';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
 const styles = StyleSheet.create({
@@ -53,7 +54,7 @@ export default InspectorRules = ({ behaviors, addChildSheet }) => {
   const sendCounterAction = React.useCallback((...args) => sendBehaviorAction('Counter', ...args), [
     sendBehaviorAction,
   ]);
-  const rulesItems = rulesComponent.rules;
+  const rulesItems = rulesComponent?.rules ?? [];
 
   const rules = behaviors.Rules;
   const counter = behaviors.Counter;
@@ -81,7 +82,7 @@ export default InspectorRules = ({ behaviors, addChildSheet }) => {
     [rulesItems, sendSetRules]
   );
 
-  const onCopyRule = React.useCallback((rule) => sendRuleAction('copy', [rule]), [sendRuleAction]);
+  const onCopyRule = React.useCallback((rule) => RulesClipboard.copyRule(rule));
 
   const onPressRule = React.useCallback(
     (ruleIndex) =>
@@ -107,10 +108,10 @@ export default InspectorRules = ({ behaviors, addChildSheet }) => {
           <TouchableOpacity style={SceneCreatorConstants.styles.button} onPress={onAddRule}>
             <Text style={SceneCreatorConstants.styles.buttonLabel}>Add rule</Text>
           </TouchableOpacity>
-          {rulesData && !rulesData.isClipboardEmpty ? (
+          {rulesData && !RulesClipboard.isEmpty() ? (
             <TouchableOpacity
               style={[SceneCreatorConstants.styles.button, { marginLeft: 16 }]}
-              onPress={() => sendRuleAction('paste')}>
+              onPress={() => sendSetRules(RulesClipboard.paste(rulesItems))}>
               <Text style={SceneCreatorConstants.styles.buttonLabel}>Paste rule</Text>
             </TouchableOpacity>
           ) : null}

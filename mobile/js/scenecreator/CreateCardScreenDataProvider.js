@@ -9,6 +9,7 @@ import * as Constants from '../Constants';
 import * as GhostEvents from '../ghost/GhostEvents';
 import * as GhostUI from '../ghost/GhostUI';
 import * as LocalId from '../common/local-id';
+import * as RulesClipboard from './inspector/rules/RulesClipboard';
 import * as Session from '../Session';
 
 const AUTOBACKUP_INTERVAL_MS = 2 * 60 * 1000;
@@ -22,6 +23,7 @@ class CreateCardScreenDataProvider extends React.Component {
 
   componentDidMount() {
     this._mounted = true;
+    RulesClipboard.clear();
     this._update(null, this.props);
   }
 
