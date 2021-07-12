@@ -141,7 +141,7 @@ case "$1" in
     ;;
 
   # iOS Sim
-  ios-simulator-release)
+  ios-simulator-debug)
     $CMAKE -DIOS=ON -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_APPLE_ARCH_SYSROOTS="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/;/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/" -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" -H. -Bbuild/ios -GXcode
     $CMAKE --build build/ios --config Debug -- -sdk iphonesimulator
     cp \
