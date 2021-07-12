@@ -58,9 +58,8 @@ Make sure to also keep the '../castle-www' directory up to date with git and
 
 ### Mobile
 
-Core isn't set up for a mobile build yet. Coming soon! It'll probably be
-included as a dependency built with native iOS and Android projects in
-'../mobile'.
+- `./run.sh ios-release` - builds core for iOS, Release, device only. The binaries are copied to `binaries/ios` and picked up by the Xcode project at `../mobile/ios`.
+- `./run.sh ios-simulator-debug` - builds core for iOS, with debug symbols, simulator only.
 
 ### Desktop
 
