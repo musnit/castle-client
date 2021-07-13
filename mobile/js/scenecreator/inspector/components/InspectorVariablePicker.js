@@ -3,7 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { PopoverButton } from '../../../components/PopoverProvider';
 import { DropdownItemsList } from './InspectorDropdown';
 import { formatVariableName } from '../../SceneCreatorUtilities';
-import { useCoreState } from '../../../core/CoreEvents';
+import { sendAsync, useCoreState } from '../../../core/CoreEvents';
 
 import uuid from 'uuid/v4';
 
@@ -38,9 +38,6 @@ const styles = StyleSheet.create({
 });
 
 export const InspectorVariablePicker = ({ value, onChange, style, ...props }) => {
-  // TODO: change variables
-  const onVariablesChange = (newVariables) =>
-    console.log(`change variables: ${JSON.stringify(newVariables, null, 2)}`);
   const variables = useCoreState('EDITOR_VARIABLES');
   const items = variables || [];
 
@@ -56,15 +53,17 @@ export const InspectorVariablePicker = ({ value, onChange, style, ...props }) =>
         if (!name?.length) {
           return;
         }
-        const existing = items?.length ? items : [];
         const newVariableId = uuid();
-        onVariablesChange(
-          [{ ...SceneCreatorConstants.EMPTY_VARIABLE, name, id: newVariableId }].concat(existing)
-        );
+        sendAsync('EDITOR_CHANGE_VARIABLES', {
+          action: 'add',
+          ...SceneCreatorConstants.EMPTY_VARIABLE,
+          name,
+          variableId: newVariableId,
+        });
         onChange(newVariableId);
       }
     },
-    [items, onChange, onVariablesChange]
+    [items, onChange, sendAsync]
   );
 
   const popover = {

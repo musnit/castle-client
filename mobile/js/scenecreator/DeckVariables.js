@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { InspectorNumberInput } from './inspector/components/InspectorNumberInput';
+import { useCoreState, sendAsync } from '../core/CoreEvents';
 
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import uuid from 'uuid/v4';
@@ -128,22 +129,30 @@ const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) 
   );
 };
 
-export const DeckVariables = ({ variables, onChange }) => {
+export const DeckVariables = () => {
   const { showActionSheetWithOptions } = useActionSheet();
+  const variables = useCoreState('EDITOR_VARIABLES');
 
   const onChangeVariable = React.useCallback(
-    (changes, index) =>
-      onChange(
-        variables.map((variable, ii) => (ii == index ? { ...variable, ...changes } : variable))
-      ),
-    [variables, onChange]
+    (changes, index) => {
+      const variable = variables[index];
+      sendAsync('EDITOR_CHANGE_VARIABLES', {
+        action: 'update',
+        ...variable,
+        ...changes,
+      });
+    },
+    [variables, sendAsync]
   );
-  const addVariable = React.useCallback(() => {
-    const existing = variables && variables.length ? variables : [];
-    return onChange(
-      [{ ...SceneCreatorConstants.EMPTY_VARIABLE, variableId: uuid() }].concat(existing)
-    );
-  }, [variables, onChange]);
+  const addVariable = React.useCallback(
+    () =>
+      sendAsync('EDITOR_CHANGE_VARIABLES', {
+        action: 'add',
+        ...SceneCreatorConstants.EMPTY_VARIABLE,
+        variableId: uuid(),
+      }),
+    [sendAsync]
+  );
   const deleteVariable = React.useCallback(
     (index) =>
       showActionSheetWithOptions(
@@ -155,11 +164,14 @@ export const DeckVariables = ({ variables, onChange }) => {
         },
         async (buttonIndex) => {
           if (buttonIndex === 0) {
-            onChange(variables.filter((variable, ii) => ii !== index));
+            sendAsync('EDITOR_CHANGE_VARIABLES', {
+              action: 'remove',
+              variableId: variables[index].variableId,
+            });
           }
         }
       ),
-    [variables, onChange]
+    [variables]
   );
 
   return (

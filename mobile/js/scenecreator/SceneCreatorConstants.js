@@ -74,9 +74,7 @@ export const styles = {
 };
 
 export const EMPTY_VARIABLE = {
-  id: 0,
+  variableId: 0,
   name: '',
-  type: 'number',
   initialValue: 0,
-  value: 0,
 };
