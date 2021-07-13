@@ -4,6 +4,7 @@
 #include "bridge.h"
 #include "scene.h"
 #include "variables.h"
+#include "edit_variables.h"
 #include "selection.h"
 #include "grab.h"
 #include "grid.h"
@@ -49,6 +50,7 @@ private:
   Bridge &bridge;
 
   Variables variables;
+  EditVariables editVariables;
 
   Archive sceneArchive;
   std::unique_ptr<Scene> scene;

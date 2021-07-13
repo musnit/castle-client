@@ -28,7 +28,7 @@ void Editor::readScene(Reader &reader) {
 }
 
 void Editor::readVariables(Reader &reader) {
-  variables.read(reader);
+  editVariables.read(reader);
   isEditorStateDirty = true;
   isVariablesStateDirty = true;
 };
@@ -640,8 +640,9 @@ struct EditorVariablesEvent {
 
 void Editor::sendVariablesData() {
   EditorVariablesEvent ev;
-  variables.forEachElem([&](const Variables::MapElem &elem) {
-    EditorVariablesEvent::VariableData data { elem.variableId, elem.name, elem.value.as<double>() };
+  editVariables.forEach([&](const EditVariables::Variable &elem) {
+    EditorVariablesEvent::VariableData data { elem.variableId, elem.name,
+      elem.initialValue.as<double>() };
     ev.variables().push_back(data);
   });
   bridge.sendEvent("EDITOR_VARIABLES", ev);
