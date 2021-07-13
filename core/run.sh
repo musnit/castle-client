@@ -147,9 +147,9 @@ case "$1" in
     cp \
       build/ios/Debug-iphonesimulator/libsoloud.a \
       build/ios/Debug-iphonesimulator/libcastle-core.a \
-      build/ios/vendor/fmt/Debug-iphonesimulator/libfmtd.a \
       build/ios/vendor/box2d/bin/Debug/libbox2d.a \
       binaries/ios
+    cp build/ios/vendor/fmt/Debug-iphonesimulator/libfmtd.a binaries/ios/libfmt.a
     ;;
 
   # Web
