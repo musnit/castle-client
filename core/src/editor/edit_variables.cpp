@@ -20,3 +20,12 @@ void EditVariables::read(Reader &reader) {
     variables.emplace(variableId, Variable(name, variableId, reader.num("initialValue", 0)));
   });
 }
+
+bool EditVariables::update(std::string variableId, std::string name, ExpressionValue initialValue) {
+  auto maybeVariable = get(variableId);
+  if (maybeVariable) {
+    remove(variableId);
+  }
+  add(name, variableId, initialValue);
+  return true;
+}

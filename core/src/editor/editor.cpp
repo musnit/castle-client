@@ -629,6 +629,33 @@ void Editor::sendRulesData() {
   bridge.sendEvent("EDITOR_RULES_DATA", ev);
 }
 
+struct EditorChangeVariablesReceiver {
+  inline static const BridgeRegistration<EditorChangeVariablesReceiver> registration {
+    "EDITOR_CHANGE_VARIABLES"
+  };
+
+  struct Params {
+    PROP(std::string, action);
+    PROP(std::string, variableId);
+    PROP(std::string, name);
+    PROP(double, initialValue);
+  } params;
+
+  void receive(Engine &engine) {
+    auto action = params.action();
+    if (action == "add") {
+      engine.getEditor().getVariables().add(
+          params.name(), params.variableId(), params.initialValue());
+    } else if (action == "remove") {
+      engine.getEditor().getVariables().remove(params.variableId());
+    } else if (action == "update") {
+      engine.getEditor().getVariables().update(
+          params.variableId(), params.name(), params.initialValue());
+    }
+    engine.getEditor().setVariablesStateDirty();
+  }
+};
+
 struct EditorVariablesEvent {
   struct VariableData {
     PROP(std::string, variableId);

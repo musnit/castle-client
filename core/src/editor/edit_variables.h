@@ -37,6 +37,7 @@ public:
   std::optional<Variable> get(std::string &variableId);
   bool add(std::string name, std::string variableId, ExpressionValue initialValue);
   bool remove(std::string variableId);
+  bool update(std::string variableId, std::string name, ExpressionValue initialValue);
 
   template<typename F>
   void forEach(F &&f) const; // `F` takes `(const EditVariables::Variable &elem)`

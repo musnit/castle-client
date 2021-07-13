@@ -38,8 +38,10 @@ public:
   void setRulesData(ActorId actorId, const char *rulesJson);
   const char *getRulesData(ActorId actorId);
   void setTagsStateDirty();
+  void setVariablesStateDirty();
 
   Commands &getCommands();
+  EditVariables &getVariables();
 
   Grid &getGrid();
 
@@ -110,6 +112,10 @@ inline void Editor::setTagsStateDirty() {
   isTagsStateDirty = true;
 }
 
+inline void Editor::setVariablesStateDirty() {
+  isVariablesStateDirty = true;
+}
+
 inline void Editor::setEditorStateDirty() {
   isEditorStateDirty = true;
 }
@@ -120,6 +126,10 @@ inline void Editor::setAllBehaviorsStateDirty() {
 
 inline Commands &Editor::getCommands() {
   return commands;
+}
+
+inline EditVariables &Editor::getVariables() {
+  return editVariables;
 }
 
 inline Grid &Editor::getGrid() {
