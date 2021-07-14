@@ -82,7 +82,9 @@ export const CreateCardSettings = () => {
           <Text style={styles.numberLabel}>Card background color</Text>
           <ColorPicker
             value={settingsData.sceneProperties.backgroundColor}
-            setValue={(color) => sendAction({ action: 'setBackgroundColor', colorValue: color })}
+            setValue={(color) =>
+              sendAction({ type: 'scene', action: 'setBackgroundColor', colorValue: color })
+            }
           />
         </View>
       </View>
@@ -94,33 +96,43 @@ export const CreateCardSettings = () => {
         />
       </View>
       <View style={styles.settingsRow}>
-        <ToggleWithValue
-          toggleLabel="Layout grid snap"
-          valueLabel="Grid size"
-          enabled={settingsData.dragGridEnabled}
-          value={settingsData.dragGridSize}
-          onChangeEnabled={(value) => sendAction('setDragGridEnabled', value)}
-          onChangeValue={(value) => sendAction('setDragGridSize', value)}
-          valueProps={{ min: 0, step: 0.5 }}
-        />
-        <ToggleWithValue
-          toggleLabel="Resize grid snap"
-          valueLabel="Grid size"
-          enabled={settingsData.scaleGridEnabled}
-          value={settingsData.scaleGridSize}
-          onChangeEnabled={(value) => sendAction('setScaleGridEnabled', value)}
-          onChangeValue={(value) => sendAction('setScaleGridSize', value)}
-          valueProps={{ min: 0, step: 0.5 }}
-        />
-        <ToggleWithValue
-          toggleLabel="Rotation snap"
-          valueLabel="Increment"
-          enabled={settingsData.rotateIncrementEnabled}
-          value={settingsData.rotateIncrementDegrees}
-          onChangeEnabled={(value) => sendAction('setRotateIncrementEnabled', value)}
-          onChangeValue={(value) => sendAction('setRotateIncrementDegrees', value)}
-          valueProps={{ min: 0, step: 5 }}
-        />
+        {settingsData.grabToolProperties ? (
+          <ToggleWithValue
+            toggleLabel="Layout grid snap"
+            valueLabel="Grid size"
+            enabled={settingsData.grabToolProperties.gridEnabled}
+            value={settingsData.grabToolProperties.gridSize}
+            onChangeEnabled={(value) =>
+              sendAction({ type: 'grab', action: 'setGridEnabled', doubleValue: value ? 1 : 0 })
+            }
+            onChangeValue={(value) =>
+              sendAction({ type: 'grab', action: 'setGridSize', doubleValue: value })
+            }
+            valueProps={{ min: 0, step: 0.5 }}
+          />
+        ) : null}
+        {settingsData.scaleRotateProperties ? (
+          <>
+            <ToggleWithValue
+              toggleLabel="Resize grid snap"
+              valueLabel="Grid size"
+              enabled={settingsData.scaleGridEnabled}
+              value={settingsData.scaleGridSize}
+              onChangeEnabled={(value) => sendAction('setScaleGridEnabled', value)}
+              onChangeValue={(value) => sendAction('setScaleGridSize', value)}
+              valueProps={{ min: 0, step: 0.5 }}
+            />
+            <ToggleWithValue
+              toggleLabel="Rotation snap"
+              valueLabel="Increment"
+              enabled={settingsData.rotateIncrementEnabled}
+              value={settingsData.rotateIncrementDegrees}
+              onChangeEnabled={(value) => sendAction('setRotateIncrementEnabled', value)}
+              onChangeValue={(value) => sendAction('setRotateIncrementDegrees', value)}
+              valueProps={{ min: 0, step: 5 }}
+            />
+          </>
+        ) : null}
       </View>
     </View>
   );
