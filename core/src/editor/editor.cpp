@@ -6,19 +6,19 @@
 Editor::Editor(Bridge &bridge_)
     : bridge(bridge_) {
   isEditorStateDirty = true;
-  isAllBehaviorsStateDirty = true;
+  isSelectedActorStateDirty = true;
 }
 
 void Editor::clearState() {
   selection.deselectAllActors();
   isEditorStateDirty = true;
-  isAllBehaviorsStateDirty = true;
+  isSelectedActorStateDirty = true;
 }
 
 void Editor::readScene(Reader &reader) {
   scene = std::make_unique<Scene>(bridge, variables, true, &reader);
   isEditorStateDirty = true;
-  isAllBehaviorsStateDirty = true;
+  isSelectedActorStateDirty = true;
   Debug::log("editor: read scene");
 }
 
@@ -55,7 +55,7 @@ void Editor::update(double dt) {
 
       if (selection.isSelectionChanged()) {
         isEditorStateDirty = true;
-        isAllBehaviorsStateDirty = true;
+        isSelectedActorStateDirty = true;
         if (selection.hasSelection()) {
           scene->getBehaviors().forEach([&](auto &behavior) {
             auto behaviorId = std::remove_reference_t<decltype(behavior)>::behaviorId;
@@ -184,10 +184,11 @@ void Editor::editorJSLoaded() {
   // send static data which won't change after initial load
   Debug::log("editor: send static data");
   sendRulesData();
+  sendAllBehaviorsData();
 
+  // send initial data that will only change rarely
   sendSceneSettings();
   sendVariablesData();
-  // TODO: send behavior specs here (split out component isActive prop)
 }
 
 struct EditorGlobalActionsEvent {
@@ -247,6 +248,26 @@ void Editor::sendGlobalActions() {
   bridge.sendEvent("EDITOR_GLOBAL_ACTIONS", ev);
 };
 
+struct EditorSelectedActorEvent {
+  struct Behavior {
+    PROP(bool, isActive) = false;
+  };
+  PROP((std::unordered_map<std::string, Behavior>), behaviors);
+};
+
+void Editor::sendSelectedActorData() {
+  EditorSelectedActorEvent ev;
+  scene->getBehaviors().forEach([&](auto &behavior) {
+    using BehaviorType = std::remove_reference_t<decltype(behavior)>;
+    EditorSelectedActorEvent::Behavior elem;
+    if (selection.hasSelection()) {
+      elem.isActive = behavior.hasComponent(selection.firstSelectedActorId());
+    }
+    ev.behaviors().emplace(BehaviorType::name, elem);
+  });
+  bridge.sendEvent("EDITOR_SELECTED_ACTOR", ev);
+}
+
 struct EditorAllBehaviorsEvent {
   struct Behavior {
     struct PropertySpec {
@@ -268,13 +289,12 @@ struct EditorAllBehaviorsEvent {
     PROP(std::string, name);
     PROP(std::string, displayName);
     PROP(bool, allowsDisableWithoutRemoval);
-    PROP(bool, isActive) = false;
     PROP(std::vector<PropertySpec>, propertySpecs);
   };
   PROP(std::vector<Behavior>, behaviors);
 };
 
-void Editor::sendAllBehaviors() {
+void Editor::sendAllBehaviorsData() {
   EditorAllBehaviorsEvent ev;
   scene->getBehaviors().forEach([&](auto &behavior) {
     using BehaviorType = std::remove_reference_t<decltype(behavior)>;
@@ -283,9 +303,6 @@ void Editor::sendAllBehaviors() {
     elem.name = BehaviorType::name;
     elem.displayName = BehaviorType::displayName;
     elem.allowsDisableWithoutRemoval = BehaviorType::allowsDisableWithoutRemoval;
-    if (selection.hasSelection()) {
-      elem.isActive = behavior.hasComponent(selection.firstSelectedActorId());
-    }
 
     static typename BehaviorType::ComponentType emptyComponent;
     Props::forEach(emptyComponent.props, [&](auto &prop) {
@@ -440,7 +457,7 @@ struct EditorModifyComponentReceiver {
                 if (!oldHasComponent) {
                   rulesBehavior.addComponent(actorId);
                   rulesBehavior.enableComponent(actorId);
-                  editor.setAllBehaviorsStateDirty();
+                  editor.setSelectedActorStateDirty();
                 }
                 editor.setRulesData(actorId, newRulesJson.c_str());
                 editor.setSelectedComponentStateDirty(RulesBehavior::behaviorId);
@@ -450,7 +467,7 @@ struct EditorModifyComponentReceiver {
                 auto &rulesBehavior = editor.getScene().getBehaviors().byType<RulesBehavior>();
                 if (!oldHasComponent) {
                   rulesBehavior.removeComponent(actorId);
-                  editor.setAllBehaviorsStateDirty();
+                  editor.setSelectedActorStateDirty();
                 }
                 editor.setRulesData(actorId, oldRulesJson.c_str());
                 editor.setSelectedComponentStateDirty(RulesBehavior::behaviorId);
@@ -531,13 +548,13 @@ struct EditorModifyComponentReceiver {
               behavior.addComponent(actorId);
               behavior.enableComponent(actorId);
               editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
-              editor.setAllBehaviorsStateDirty();
+              editor.setSelectedActorStateDirty();
             },
             [actorId](Editor &editor, bool) {
               auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
               behavior.removeComponent(actorId);
               editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
-              editor.setAllBehaviorsStateDirty();
+              editor.setSelectedActorStateDirty();
             });
       } else if (action == "remove") {
         static auto description = std::string("remove ") + BehaviorType::displayName;
@@ -548,7 +565,7 @@ struct EditorModifyComponentReceiver {
               auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
               behavior.removeComponent(actorId);
               editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
-              editor.setAllBehaviorsStateDirty();
+              editor.setSelectedActorStateDirty();
             },
             [actorId](Editor &editor, bool) {
               // TODO(nikki): Restore from component blueprint
@@ -556,7 +573,7 @@ struct EditorModifyComponentReceiver {
               behavior.addComponent(actorId);
               behavior.enableComponent(actorId);
               editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
-              editor.setAllBehaviorsStateDirty();
+              editor.setSelectedActorStateDirty();
             });
       }
       editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
@@ -737,9 +754,9 @@ void Editor::maybeSendData() {
     sendGlobalActions();
     isEditorStateDirty = false;
   }
-  if (isAllBehaviorsStateDirty) {
-    sendAllBehaviors();
-    isAllBehaviorsStateDirty = false;
+  if (isSelectedActorStateDirty) {
+    sendSelectedActorData();
+    isSelectedActorStateDirty = false;
   }
   if (!selectedComponentStateDirty.empty()) {
     for (auto behaviorId : selectedComponentStateDirty) {

@@ -33,7 +33,7 @@ public:
 
   Selection &getSelection();
   void setEditorStateDirty();
-  void setAllBehaviorsStateDirty();
+  void setSelectedActorStateDirty();
   void setSelectedComponentStateDirty(int behaviorId);
   void setRulesData(ActorId actorId, const char *rulesJson);
   const char *getRulesData(ActorId actorId);
@@ -76,9 +76,10 @@ private:
   bool isEditorStateDirty;
   void sendGlobalActions();
 
-  bool isAllBehaviorsStateDirty;
-  void sendAllBehaviors();
+  bool isSelectedActorStateDirty;
+  void sendSelectedActorData();
 
+  void sendAllBehaviorsData();
   void sendRulesData();
 
   // behaviorId present indicates dirty state for selected actor
@@ -108,8 +109,8 @@ inline void Editor::setEditorStateDirty() {
   isEditorStateDirty = true;
 }
 
-inline void Editor::setAllBehaviorsStateDirty() {
-  isAllBehaviorsStateDirty = true;
+inline void Editor::setSelectedActorStateDirty() {
+  isSelectedActorStateDirty = true;
 }
 
 inline Commands &Editor::getCommands() {
