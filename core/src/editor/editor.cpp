@@ -7,30 +7,24 @@ Editor::Editor(Bridge &bridge_)
     : bridge(bridge_) {
   isEditorStateDirty = true;
   isAllBehaviorsStateDirty = true;
-  isVariablesStateDirty = true;
-  isTagsStateDirty = true;
 }
 
 void Editor::clearState() {
   selection.deselectAllActors();
   isEditorStateDirty = true;
   isAllBehaviorsStateDirty = true;
-  isVariablesStateDirty = true;
-  isTagsStateDirty = true;
 }
 
 void Editor::readScene(Reader &reader) {
   scene = std::make_unique<Scene>(bridge, variables, true, &reader);
   isEditorStateDirty = true;
   isAllBehaviorsStateDirty = true;
-  isTagsStateDirty = true;
   Debug::log("editor: read scene");
 }
 
 void Editor::readVariables(Reader &reader) {
   editVariables.read(reader);
   isEditorStateDirty = true;
-  isVariablesStateDirty = true;
 };
 
 void Editor::update(double dt) {
@@ -192,6 +186,7 @@ void Editor::editorJSLoaded() {
   sendRulesData();
 
   sendSceneSettings();
+  sendVariablesData();
   // TODO: send behavior specs here (split out component isActive prop)
 }
 
@@ -567,7 +562,7 @@ struct EditorModifyComponentReceiver {
       editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
       if constexpr (std::is_same_v<BehaviorType, TagsBehavior>) {
         // extra dirty state on tags data
-        editor.setTagsStateDirty();
+        editor.sendTagsData();
       }
     });
     // TODO: swap
@@ -695,7 +690,7 @@ struct EditorChangeVariablesReceiver {
       engine.getEditor().getVariables().update(
           params.variableId(), params.name(), params.initialValue());
     }
-    engine.getEditor().setVariablesStateDirty();
+    engine.getEditor().sendVariablesData();
   }
 };
 
@@ -745,14 +740,6 @@ void Editor::maybeSendData() {
   if (isAllBehaviorsStateDirty) {
     sendAllBehaviors();
     isAllBehaviorsStateDirty = false;
-  }
-  if (isVariablesStateDirty) {
-    sendVariablesData();
-    isVariablesStateDirty = false;
-  }
-  if (isTagsStateDirty) {
-    sendTagsData();
-    isTagsStateDirty = false;
   }
   if (!selectedComponentStateDirty.empty()) {
     for (auto behaviorId : selectedComponentStateDirty) {

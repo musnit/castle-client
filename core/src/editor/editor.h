@@ -37,8 +37,8 @@ public:
   void setSelectedComponentStateDirty(int behaviorId);
   void setRulesData(ActorId actorId, const char *rulesJson);
   const char *getRulesData(ActorId actorId);
-  void setTagsStateDirty();
-  void setVariablesStateDirty();
+  void sendTagsData();
+  void sendVariablesData();
   void sendSceneSettings();
 
   Commands &getCommands();
@@ -84,12 +84,6 @@ private:
   // behaviorId present indicates dirty state for selected actor
   std::set<int> selectedComponentStateDirty;
   void sendSelectedComponent(int behaviorId);
-
-  bool isVariablesStateDirty;
-  void sendVariablesData();
-
-  bool isTagsStateDirty;
-  void sendTagsData();
 };
 
 inline bool Editor::hasScene() {
@@ -108,14 +102,6 @@ inline Selection &Editor::getSelection() {
 
 inline void Editor::setSelectedComponentStateDirty(int behaviorId) {
   selectedComponentStateDirty.insert(behaviorId);
-}
-
-inline void Editor::setTagsStateDirty() {
-  isTagsStateDirty = true;
-}
-
-inline void Editor::setVariablesStateDirty() {
-  isVariablesStateDirty = true;
 }
 
 inline void Editor::setEditorStateDirty() {
