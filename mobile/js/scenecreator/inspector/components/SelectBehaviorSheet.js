@@ -2,6 +2,8 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
+import { useCoreState } from '../../../core/CoreEvents';
+
 import * as Inspector from '../behaviors/InspectorBehaviors';
 import * as Constants from '../../../Constants';
 
@@ -67,8 +69,10 @@ export const SelectBehaviorSheet = ({
   isBehaviorVisible = (behavior) => true,
   onSelectBehavior,
 }) => {
+  const selectedActorData = useCoreState('EDITOR_SELECTED_ACTOR');
   const filterBehavior = (behavior) =>
-    (useAllBehaviors || behavior.isActive) && isBehaviorVisible(behavior);
+    (useAllBehaviors || selectedActorData.behaviors[behavior.name].isActive) &&
+    isBehaviorVisible(behavior);
   const onPressAdd = (key) => {
     onSelectBehavior(behaviors[key]);
     onClose();

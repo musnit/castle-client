@@ -67,8 +67,10 @@ const GeneralTab = ({ behaviors, addChildSheet }) => {
 };
 
 const MovementTab = ({ behaviors, addChildSheet }) => {
+  const selectedActorData = useCoreState('EDITOR_SELECTED_ACTOR');
   let movementBehaviors = InspectorUtilities.filterAvailableBehaviors({
     allBehaviors: behaviors,
+    selectedActorData,
     possibleBehaviors: Inspector.MotionBehaviors.reduce(
       (behaviors, group) => behaviors.concat(group.behaviors),
       []
@@ -113,10 +115,14 @@ const MovementTab = ({ behaviors, addChildSheet }) => {
           </Text>
         </TouchableOpacity>
       </View>
-      <Inspector.Motion moving={behaviors.Moving} rotatingMotion={behaviors.RotatingMotion} />
+      <Inspector.Motion
+        moving={behaviors.Moving}
+        rotatingMotion={behaviors.RotatingMotion}
+        selectedActorData={selectedActorData}
+      />
       {movementBehaviors &&
         movementBehaviors
-          .filter((name) => behaviors[name]?.isActive)
+          .filter((name) => selectedActorData.behaviors[name]?.isActive)
           .map((name) => {
             let Component = Inspector[name] ?? Inspector.Behavior;
             return <Component key={`behavior-${name}`} behavior={behaviors[name]} />;

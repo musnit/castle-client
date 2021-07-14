@@ -64,11 +64,9 @@ const LayoutInput = ({
 
   const onChange = React.useCallback(
     (value) => {
-      if (behavior.isActive) {
-        sendValue('set', value);
-      }
+      sendValue('set', value);
     },
-    [behavior.isActive, sendValue]
+    [sendValue]
   );
 
   return (

@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
+import { useCoreState } from '../../../core/CoreEvents';
 
 const styles = StyleSheet.create({
   container: {},
@@ -45,6 +46,7 @@ export const SelectBehaviorPropertySheet = ({
   onClose,
   isPropertyVisible = (propertySpec) => true,
 }) => {
+  const selectedActorData = useCoreState('EDITOR_SELECTED_ACTOR');
   const onSelect = (behaviorId, propertyName) => {
     onSelectBehaviorProperty(behaviorId, propertyName);
     onClose();
@@ -56,7 +58,7 @@ export const SelectBehaviorPropertySheet = ({
   Object.entries(behaviors).forEach(([behaviorName, behavior]) => {
     const properties = Object.keys(behavior.propertySpecs);
     isBehaviorVisible[behaviorName] =
-      (useAllBehaviors || behavior.isActive) &&
+      (useAllBehaviors || selectedActorData.behaviors[behavior.name].isActive) &&
       properties.some((name) => isPropertyVisible(behavior.propertySpecs[name]));
   });
 

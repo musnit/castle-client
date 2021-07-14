@@ -43,11 +43,9 @@ export const BehaviorPropertyInputRow = ({
 
   const onChange = React.useCallback(
     (value) => {
-      if (behavior.isActive) {
-        sendValue('set', propName, value);
-      }
+      sendValue('set', propName, value);
     },
-    [behavior.isActive, sendValue]
+    [sendValue]
   );
 
   // TODO: merge with ParamInput component

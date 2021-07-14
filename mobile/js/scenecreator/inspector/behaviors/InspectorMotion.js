@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const BodyTypeControl = ({ moving, rotatingMotion }) => {
+const BodyTypeControl = ({ isMovingActive, isRotatingMotionActive }) => {
   const sendDynamicAction = React.useCallback((...args) => sendBehaviorAction('Moving', ...args), [
     sendBehaviorAction,
   ]);
@@ -69,9 +69,9 @@ const BodyTypeControl = ({ moving, rotatingMotion }) => {
       name: 'None',
       label: 'Does not move',
       onSelect: () => {
-        if (moving.isActive) {
+        if (isMovingActive) {
           sendDynamicAction('remove');
-        } else if (rotatingMotion.isActive) {
+        } else if (isRotatingMotionActive) {
           sendFixedAction('remove');
         }
       },
@@ -80,7 +80,7 @@ const BodyTypeControl = ({ moving, rotatingMotion }) => {
       name: 'Fixed',
       label: 'Moves at a constant rate',
       onSelect: () => {
-        if (moving.isActive) {
+        if (isMovingActive) {
           sendDynamicAction('swap', { name: 'RotatingMotion' });
         } else {
           sendFixedAction('add');
@@ -91,7 +91,7 @@ const BodyTypeControl = ({ moving, rotatingMotion }) => {
       name: 'Dynamic',
       label: 'Moved by other forces',
       onSelect: () => {
-        if (rotatingMotion.isActive) {
+        if (isRotatingMotionActive) {
           sendFixedAction('swap', { name: 'Moving' });
         } else {
           sendDynamicAction('add');
@@ -100,7 +100,7 @@ const BodyTypeControl = ({ moving, rotatingMotion }) => {
     },
   ];
 
-  const selectedItemIndex = moving.isActive ? 2 : rotatingMotion.isActive ? 1 : 0;
+  const selectedItemIndex = isMovingActive ? 2 : isRotatingMotionActive ? 1 : 0;
   const onChange = (index) => {
     if (index !== selectedItemIndex) {
       items[index].onSelect();
@@ -149,20 +149,22 @@ const BodyTypeControl = ({ moving, rotatingMotion }) => {
   );
 };
 
-export default InspectorMotion = ({ moving, rotatingMotion }) => {
+export default InspectorMotion = ({ moving, rotatingMotion, selectedActorData }) => {
   let activeBehavior, activeBehaviorSendAction, activeComponent;
   const movingComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Moving');
   const rotatingMotionComponent = useCoreState('EDITOR_SELECTED_COMPONENT:RotatingMotion');
+  const isMovingActive = selectedActorData.behaviors.Moving?.isActive;
+  const isRotatingMotionActive = selectedActorData.behaviors.RotatingMotion?.isActive;
 
   let rotationPropertyName, rotatingPropSendAction, rotationPropertyDisplayValue;
-  if (moving.isActive) {
+  if (isMovingActive) {
     // dynamic body
     activeBehavior = moving;
     activeComponent = movingComponent;
     activeBehaviorSendAction = (...args) => sendBehaviorAction('Moving', ...args);
     rotatingPropSendAction = activeBehaviorSendAction;
     rotationPropertyName = 'angularVelocity';
-  } else if (rotatingMotion.isActive) {
+  } else if (isRotatingMotionActive) {
     // kinematic body
     activeBehavior = rotatingMotion;
     activeComponent = rotatingMotionComponent;
@@ -182,7 +184,10 @@ export default InspectorMotion = ({ moving, rotatingMotion }) => {
         <Text style={SceneCreatorConstants.styles.behaviorHeaderName}>Motion</Text>
       </Text>
       <View style={SceneCreatorConstants.styles.behaviorProperties}>
-        <BodyTypeControl moving={moving} rotatingMotion={rotatingMotion} />
+        <BodyTypeControl
+          isMovingActive={isMovingActive}
+          isRotatingMotionActive={isRotatingMotionActive}
+        />
         {activeBehavior && activeComponent ? (
           <React.Fragment>
             <BehaviorPropertyInputRow

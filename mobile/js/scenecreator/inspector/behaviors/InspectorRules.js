@@ -44,6 +44,8 @@ export default InspectorRules = ({ behaviors, addChildSheet }) => {
   const sendRuleAction = React.useCallback((...args) => sendBehaviorAction('Rules', ...args), [
     sendBehaviorAction,
   ]);
+  const selectedActorData = useCoreState('EDITOR_SELECTED_ACTOR');
+  const isCounterActive = selectedActorData.behaviors.Counter.isActive;
   const sendSetRules = React.useCallback(
     (newRules) => {
       sendRuleAction('set', 'rules', 'string', JSON.stringify({ rules: newRules }));
@@ -115,7 +117,7 @@ export default InspectorRules = ({ behaviors, addChildSheet }) => {
               <Text style={SceneCreatorConstants.styles.buttonLabel}>Paste rule</Text>
             </TouchableOpacity>
           ) : null}
-          {!counterComponent?.isActive ? (
+          {!isCounterActive ? (
             <TouchableOpacity
               style={[SceneCreatorConstants.styles.button, { marginLeft: 16 }]}
               onPress={() => sendCounterAction('add')}>
@@ -134,7 +136,7 @@ export default InspectorRules = ({ behaviors, addChildSheet }) => {
           ))}
         </View>
       </View>
-      {counterComponent?.isActive ? <Counter counter={counter} /> : null}
+      {isCounterActive ? <Counter counter={counter} /> : null}
     </React.Fragment>
   );
 };

@@ -99,13 +99,12 @@ const If = ({ response, onChangeResponse, children, order, ...props }) => {
       addChildSheet({
         key: 'rulePartPicker',
         Component: RulePartPickerSheet,
-        behaviors,
         entries: conditions,
         onSelectEntry: (entry) => handler(_entryToResponse(entry)),
         title: 'Select condition',
         categoryOrder: Metadata.conditionCategoryOrder,
       }),
-    [behaviors, conditions, addChildSheet]
+    [conditions, addChildSheet]
   );
 
   const onChangeParams = React.useCallback(

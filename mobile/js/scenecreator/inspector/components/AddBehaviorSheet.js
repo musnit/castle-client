@@ -2,6 +2,8 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
+import { useCoreState } from '../../../core/CoreEvents';
+
 import * as Inspector from '../behaviors/InspectorBehaviors';
 import * as Constants from '../../../Constants';
 
@@ -58,8 +60,8 @@ const styles = StyleSheet.create({
   },
 });
 
-const AddBehavior = ({ behavior, onAdd, disabled }) => {
-  if (!behavior || behavior.isActive) {
+const AddBehavior = ({ behavior, onAdd, disabled, isActive }) => {
+  if (!behavior || isActive) {
     // already added
     return null;
   }
@@ -83,6 +85,7 @@ const EmptyState = () => (
 );
 
 export const AddBehaviorSheet = ({ isOpen, onClose, context, behaviors, addBehavior }) => {
+  const selectedActorData = useCoreState('EDITOR_SELECTED_ACTOR');
   const onPressAdd = (key) => {
     addBehavior(key);
     onClose();
@@ -92,7 +95,9 @@ export const AddBehaviorSheet = ({ isOpen, onClose, context, behaviors, addBehav
   let isSheetEmpty = true;
   let isGroupVisible = {};
   Inspector.MotionBehaviors.forEach((group) => {
-    isGroupVisible[group.label] = group.behaviors.some((behavior) => !behaviors[behavior].isActive);
+    isGroupVisible[group.label] = group.behaviors.some(
+      (behavior) => !selectedActorData.behaviors[behavior].isActive
+    );
     if (isGroupVisible[group.label]) {
       isSheetEmpty = false;
     }
@@ -106,7 +111,10 @@ export const AddBehaviorSheet = ({ isOpen, onClose, context, behaviors, addBehav
         {Inspector.MotionBehaviors.filter((group) => isGroupVisible[group.label]).map(
           (group, ii) => {
             let isGroupEnabled = true;
-            if (group.dependencies.indexOf('Moving') !== -1 && !behaviors.Moving.isActive) {
+            if (
+              group.dependencies.indexOf('Moving') !== -1 &&
+              !selectedActorData.behaviors.Moving.isActive
+            ) {
               // TODO: someday we may want a more general dependency check here
               isGroupEnabled = false;
             }
@@ -127,6 +135,7 @@ export const AddBehaviorSheet = ({ isOpen, onClose, context, behaviors, addBehav
                   <AddBehavior
                     key={`add-behavior-${key}`}
                     behavior={behaviors[key]}
+                    isActive={selectedActorData.behaviors[behaviors[key].name].isActive}
                     onAdd={() => onPressAdd(key)}
                     disabled={!isGroupEnabled}
                   />

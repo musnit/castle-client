@@ -29,7 +29,7 @@ const _entryToTrigger = (entry) => ({
     : {},
 });
 
-export const Trigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeTrigger }) => {
+export const Trigger = ({ trigger, addChildSheet, triggers, onChangeTrigger }) => {
   const context = getRuleRenderContext();
 
   const onShowTriggerPicker = React.useCallback(
@@ -37,13 +37,12 @@ export const Trigger = ({ trigger, behaviors, addChildSheet, triggers, onChangeT
       addChildSheet({
         key: 'rulePartPicker',
         Component: RulePartPickerSheet,
-        behaviors,
         entries: triggers,
         onSelectEntry: (entry) => onChangeTrigger(_entryToTrigger(entry)),
         title: 'Select trigger',
         categoryOrder: Metadata.triggerCategoryOrder,
       }),
-    [addChildSheet, behaviors, triggers, onChangeTrigger]
+    [addChildSheet, triggers, onChangeTrigger]
   );
 
   const onShowRuleOptions = React.useCallback(

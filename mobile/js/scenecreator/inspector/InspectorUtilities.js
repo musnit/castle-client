@@ -16,14 +16,18 @@ export const getEntryByName = (entryName, entries) => {
   return null;
 };
 
-export const filterAvailableBehaviors = ({ allBehaviors, possibleBehaviors }) => {
+export const filterAvailableBehaviors = ({
+  allBehaviors,
+  possibleBehaviors,
+  selectedActorData,
+}) => {
   let results = [];
   possibleBehaviors.forEach((possible) => {
     let available = true;
     if (allBehaviors[possible]?.dependencies) {
       for (let ii = 0; ii < allBehaviors[possible].dependencies.length; ii++) {
         const dep = allBehaviors[possible].dependencies[ii].name;
-        if (!allBehaviors[dep]?.isActive) {
+        if (!selectedActorData.behaviors[dep]?.isActive) {
           available = false;
           break;
         }

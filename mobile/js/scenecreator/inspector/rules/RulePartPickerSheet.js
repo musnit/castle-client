@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
+import { useCoreState } from '../../../core/CoreEvents';
 
 const styles = StyleSheet.create({
   container: {},
@@ -38,7 +39,6 @@ const AddPart = ({ isFirst, entry, onAdd }) => {
 };
 
 export default RulePartPickerSheet = ({
-  behaviors,
   isOpen,
   onClose,
   entries,
@@ -48,6 +48,7 @@ export default RulePartPickerSheet = ({
   categoryOrder = null,
   parentType,
 }) => {
+  const selectedActorData = useCoreState('EDITOR_SELECTED_ACTOR');
   const onPressAdd = (entry) => {
     onSelectEntry(entry);
     onClose();
@@ -57,7 +58,7 @@ export default RulePartPickerSheet = ({
   // filter by actor's behaviors, and by trigger if applicable
   const isEntryVisible = (entry) => {
     return (
-      (!behaviors || behaviors[entry.behaviorName]?.isActive) &&
+      (!selectedActorData || selectedActorData.behaviors[entry.behaviorName]?.isActive) &&
       (!entry.triggerFilter || entry.triggerFilter[triggerFilter]) &&
       (!entry.parentTypeFilter || entry.parentTypeFilter[parentType])
     );

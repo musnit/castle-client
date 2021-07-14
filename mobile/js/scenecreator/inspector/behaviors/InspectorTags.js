@@ -35,14 +35,14 @@ export default InspectorTags = ({ tags }) => {
 
   const onChange = React.useCallback(
     (tagsString) => {
-      if (tags.isActive) {
+      if (tagsComponent) {
         setValueAndSendAction('set', tagsString);
       } else {
         console.warn(`Expect all actors to have Tags, but this actor did not`);
         setValueAndSendAction('add', tagsString, { tagsString });
       }
     },
-    [tags.isActive, sendAction, setValueAndSendAction]
+    [tagsComponent, sendAction, setValueAndSendAction]
   );
 
   return (
