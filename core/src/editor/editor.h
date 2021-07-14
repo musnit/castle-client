@@ -39,6 +39,7 @@ public:
   const char *getRulesData(ActorId actorId);
   void setTagsStateDirty();
   void setVariablesStateDirty();
+  void sendSceneSettings();
 
   Commands &getCommands();
   EditVariables &getVariables();

@@ -191,6 +191,7 @@ void Editor::editorJSLoaded() {
   Debug::log("editor: send static data");
   sendRulesData();
 
+  sendSceneSettings();
   // TODO: send behavior specs here (split out component isActive prop)
 }
 
@@ -628,6 +629,39 @@ void Editor::sendRulesData() {
 
   bridge.sendEvent("EDITOR_RULES_DATA", ev);
 }
+
+struct EditorChangeSceneSettingsReceiver {
+  inline static const BridgeRegistration<EditorChangeSceneSettingsReceiver> registration {
+    "EDITOR_CHANGE_SCENE_SETTINGS"
+  };
+
+  struct Params {
+    PROP(std::string, action);
+    PROP(love::Colorf, colorValue);
+    PROP(double, doubleValue);
+  } params;
+
+  void receive(Engine &engine) {
+    auto action = params.action();
+    if (action == "setBackgroundColor") {
+      auto colorValue = params.colorValue();
+      engine.getEditor().getScene().props.backgroundColor().set(
+          colorValue.r, colorValue.g, colorValue.b, colorValue.a);
+    }
+    engine.getEditor().sendSceneSettings();
+  }
+};
+
+struct EditorSceneSettingsEvent {
+  PROP(Scene::Props *, sceneProperties);
+  // TODO: settings for tools, such as grid for grab tool
+};
+
+void Editor::sendSceneSettings() {
+  EditorSceneSettingsEvent ev;
+  ev.sceneProperties = &getScene().props;
+  bridge.sendEvent("EDITOR_SCENE_SETTINGS", ev);
+};
 
 struct EditorChangeVariablesReceiver {
   inline static const BridgeRegistration<EditorChangeVariablesReceiver> registration {
