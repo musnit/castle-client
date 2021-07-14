@@ -4,7 +4,6 @@ import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useCoreState, sendGlobalAction } from '../../core/CoreEvents';
 import { useFastDataMemo } from '../../ghost/GhostUI';
-import { useCardCreator } from '../../scenecreator/CreateCardContext';
 import { SegmentedNavigation } from '../../components/SegmentedNavigation';
 import * as Constants from '../../Constants';
 import { DrawingCardBottomActions } from './DrawingCardBottomActions';

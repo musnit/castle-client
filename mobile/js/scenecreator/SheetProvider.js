@@ -80,7 +80,7 @@ const sheetStackReducer = (prevStacks, action) => {
 };
 
 export const SheetProvider = ({ activeSheet, setActiveSheet, isShowingDraw, beltHeight }) => {
-  const { root, transformAssetUri } = useGhostUI();
+  const { root } = useGhostUI();
   const { isPlaying, hasSelection } = useCardCreator();
   const insets = useSafeAreaInsets();
 

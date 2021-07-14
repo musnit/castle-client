@@ -3,7 +3,6 @@ import { Keyboard, View, PixelRatio, StyleSheet, Text } from 'react-native';
 import { useSafeAreaInsets, SafeAreaView } from 'react-native-safe-area-context';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { isTablet } from 'react-native-device-info';
-import * as GhostUI from '../ghost/GhostUI';
 
 import * as Constants from '../Constants';
 import * as LibraryEntryClipboard from './LibraryEntryClipboard';
@@ -24,8 +23,6 @@ import { DrawingCardHeader, DRAWING_CARD_HEADER_HEIGHT } from './drawing/Drawing
 
 import { PopoverProvider } from '../components/PopoverProvider';
 import { SheetProvider } from './SheetProvider';
-
-import { getActiveTool } from './SceneCreatorUtilities';
 
 const TABLET_BELT_HEIGHT_MULTIPLIER = isTablet() ? 2 : 1;
 const MIN_BELT_HEIGHT = 1.2 * TABLET_BELT_HEIGHT_MULTIPLIER * 48;
@@ -62,34 +59,6 @@ const styles = StyleSheet.create({
   },
 });
 
-// TODO: find a cleaner way to get these
-const getLibraryEntries = (root) => {
-  const element = root?.panes ? root.panes['sceneCreatorBlueprints'] : null;
-  if (!element) return null;
-
-  let blueprintsData;
-  if (element.children.count) {
-    Object.entries(element.children).forEach(([key, child]) => {
-      if (child.type === 'data') {
-        blueprintsData = child.props.data;
-      }
-    });
-  }
-
-  return blueprintsData?.library;
-};
-
-const getExpressions = (root) => {
-  const element = root?.panes ? root.panes['sceneCreatorExpressions'] : null;
-  if (!element) return null;
-
-  let expressions;
-  if (element.children.count) {
-    expressions = element.children.data?.props?.data?.expressions;
-  }
-  return expressions;
-};
-
 // TODO: consolidate with PlayDeck
 const useCoreTextActors = () => {
   const [textActors, setTextActors] = React.useState([]);
@@ -123,9 +92,8 @@ export const CreateCardScreen = ({
   React.useEffect(Keyboard.dismiss, [activeSheet]);
 
   const [isShowingTextActors, setShowingTextActors] = React.useState(true);
-  const [isShowingDraw, setIsShowingDraw] = React.useState(false);
+  const [isShowingDraw, setIsShowingDraw] = React.useState(false); // TODO: show drawing
 
-  const { root, transformAssetUri } = GhostUI.useGhostUI();
   const globalActions = useCoreState('EDITOR_GLOBAL_ACTIONS');
 
   const isSceneLoaded = !!globalActions;
@@ -134,23 +102,7 @@ export const CreateCardScreen = ({
   const selectedActorId = globalActions?.selectedActorId;
   const isTextActorSelected = globalActions?.isTextActorSelected;
   const hasSelection = selectedActorId >= 0 && activeSheet !== 'capturePreview';
-  const { activeToolData, activeToolAction } = getActiveTool(root);
   const textActors = useCoreTextActors();
-
-  // lua's behaviors can be "tools"
-  React.useEffect(() => {
-    if (globalActions?.activeToolBehaviorId) {
-      const activeToolBehavior = globalActions.tools.find(
-        (behavior) => behavior.behaviorId === globalActions.activeToolBehaviorId
-      );
-      // show/hide new draw tool
-      if (activeToolBehavior && activeToolBehavior.name == 'Draw2') {
-        setIsShowingDraw(true);
-      } else {
-        setIsShowingDraw(false);
-      }
-    }
-  }, [globalActions?.activeToolBehaviorId]);
 
   React.useEffect(() => {
     if (hasSelection) {
@@ -317,9 +269,6 @@ export const CreateCardScreen = ({
     textActors &&
     Object.keys(textActors).length;
 
-  // TODO: reduce this to only the following--
-  // - top level screen props (deck, card)
-  // - things from globalActions
   const contextValue = {
     deck,
     card,
@@ -328,14 +277,10 @@ export const CreateCardScreen = ({
     selectedActorId,
     hasSelection,
     isTextActorSelected,
-    library: getLibraryEntries(root),
-    expressions: getExpressions(root),
-    transformAssetUri,
+    library: null, // TODO: library
     onSelectBackupData,
     isShowingTextActors,
     setShowingTextActors,
-    activeToolData,
-    activeToolAction,
     saveAction,
   };
 
