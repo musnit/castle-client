@@ -15,6 +15,13 @@ GrabTool::GrabTool(Editor &editor_)
     : editor(editor_) {
 }
 
+void GrabTool::changeSettings(std::string action, double value) {
+  if (action == "setGridEnabled") {
+    props.gridEnabled() = (bool)value;
+  } else if (action == "setGridSize") {
+    props.gridSize() = value;
+  }
+}
 
 //
 // Update
@@ -44,7 +51,8 @@ void GrabTool::update(double dt) {
 
     // Calculate position delta, quantizing to grid if it's enabled
     auto delta = touch.delta;
-    if (gridEnabled) {
+    if (props.gridEnabled()) {
+      auto gridSize = props.gridSize();
       auto prevTouchPos = touch.pos - touch.delta;
       love::Vector2 qPrevTouchPos {
         Grid::quantize(prevTouchPos.x, gridSize, touch.initialPos.x),
@@ -115,7 +123,8 @@ void GrabTool::drawOverlay() const {
   }
   auto &scene = editor.getScene();
 
-  if (gridEnabled && gridSize > 0) {
+  auto gridSize = props.gridSize();
+  if (props.gridEnabled() && gridSize > 0) {
     lv.graphics.setColor({ 0, 0, 0, 0.5 });
     float viewWidth = 10.0;
     // TODO: Use actual editor view position instead of `{ 0, 0 }`

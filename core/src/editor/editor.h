@@ -45,6 +45,7 @@ public:
   EditVariables &getVariables();
 
   Grid &getGrid();
+  GrabTool &getGrabTool();
 
 private:
   friend struct EditorGlobalActionReceiver;
@@ -135,4 +136,8 @@ inline EditVariables &Editor::getVariables() {
 
 inline Grid &Editor::getGrid() {
   return grid;
+}
+
+inline GrabTool &Editor::getGrabTool() {
+  return grab;
 }

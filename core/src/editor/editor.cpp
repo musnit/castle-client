@@ -636,30 +636,39 @@ struct EditorChangeSceneSettingsReceiver {
   };
 
   struct Params {
+    PROP(std::string, type);
     PROP(std::string, action);
     PROP(love::Colorf, colorValue);
     PROP(double, doubleValue);
   } params;
 
   void receive(Engine &engine) {
+    auto type = params.type();
     auto action = params.action();
-    if (action == "setBackgroundColor") {
-      auto colorValue = params.colorValue();
-      engine.getEditor().getScene().props.backgroundColor().set(
-          colorValue.r, colorValue.g, colorValue.b, colorValue.a);
+    if (type == "scene") {
+      if (action == "setBackgroundColor") {
+        auto colorValue = params.colorValue();
+        engine.getEditor().getScene().props.backgroundColor().set(
+            colorValue.r, colorValue.g, colorValue.b, colorValue.a);
+      }
+    } else if (type == "grab") {
+      engine.getEditor().getGrabTool().changeSettings(action, params.doubleValue());
     }
+    // TODO: ScaleRotate settings
     engine.getEditor().sendSceneSettings();
   }
 };
 
 struct EditorSceneSettingsEvent {
   PROP(Scene::Props *, sceneProperties);
-  // TODO: settings for tools, such as grid for grab tool
+  PROP(GrabTool::Props *, grabToolProperties);
+  // TODO: ScaleRotate properties
 };
 
 void Editor::sendSceneSettings() {
   EditorSceneSettingsEvent ev;
   ev.sceneProperties = &getScene().props;
+  ev.grabToolProperties = &grab.props;
   bridge.sendEvent("EDITOR_SCENE_SETTINGS", ev);
 };
 
