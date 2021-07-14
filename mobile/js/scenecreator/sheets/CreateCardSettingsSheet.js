@@ -4,10 +4,10 @@ import { InspectorCheckbox } from '../inspector/components/InspectorCheckbox';
 import { InspectorNumberInput } from '../inspector/components/InspectorNumberInput';
 import { sendDataPaneAction } from '../../ghost/GhostUI';
 import { useCardCreator } from '../CreateCardContext';
+import { useCoreState, sendAsync } from '../../core/CoreEvents';
 
 import { BottomSheet } from '../../components/BottomSheet';
 import { BottomSheetHeader } from '../../components/BottomSheetHeader';
-import { useGhostUI } from '../../ghost/GhostUI';
 
 import ColorPicker from '../inspector/components/ColorPicker';
 
@@ -69,20 +69,11 @@ const ToggleWithValue = ({
 
 export const CreateCardSettings = () => {
   const { isShowingTextActors, setShowingTextActors } = useCardCreator();
-  const { root } = useGhostUI();
-  const element = root.panes['sceneCreatorSettings'];
 
-  if (!element) return null;
+  const settingsData = useCoreState('EDITOR_SCENE_SETTINGS');
+  const sendAction = (...args) => sendAsync('EDITOR_CHANGE_SCENE_SETTINGS', ...args);
 
-  let settingsData, sendAction;
-  if (element.children.count) {
-    Object.entries(element.children).forEach(([key, child]) => {
-      if (child.type === 'data') {
-        settingsData = child.props.data;
-        sendAction = (action, value) => sendDataPaneAction(element, action, value);
-      }
-    });
-  }
+  if (!settingsData) return null;
 
   return (
     <View>
@@ -91,7 +82,7 @@ export const CreateCardSettings = () => {
           <Text style={styles.numberLabel}>Card background color</Text>
           <ColorPicker
             value={settingsData.sceneProperties.backgroundColor}
-            setValue={(color) => sendAction('set:backgroundColor', color)}
+            setValue={(color) => sendAction({ action: 'setBackgroundColor', colorValue: color })}
           />
         </View>
       </View>
@@ -135,14 +126,13 @@ export const CreateCardSettings = () => {
   );
 };
 
-export const CreateCardSettingsSheet = ({ isOpen, onClose, element, ...props }) => {
+export const CreateCardSettingsSheet = ({ isOpen, onClose, ...props }) => {
   const { isShowingTextActors, setShowingTextActors } = useCardCreator();
 
   const renderHeader = () => <BottomSheetHeader title="Layout" onClose={onClose} />;
   const renderContent = () =>
     !isOpen ? null : (
       <CreateCardSettings
-        element={element}
         isShowingTextActors={isShowingTextActors}
         setShowingTextActors={setShowingTextActors}
       />

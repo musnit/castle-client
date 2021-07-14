@@ -122,17 +122,24 @@ const ColorPicker64Popover = ({ valueHex, setValueFromStr, closePopover }) => {
 
 const ColorPicker = ({ value, setValue }) => {
   let valueStr, valueHex;
-  if (value) {
+  if (value.r) {
+    // TODO: phase out rgb color objects
     const r255 = 255 * value.r;
     const g255 = 255 * value.g;
     const b255 = 255 * value.b;
+    valueStr = `rgb(${r255}, ${g255}, ${b255})`;
+    valueHex = '#' + tinycolor(valueStr).toHex();
+  } else {
+    const r255 = 255 * value[0];
+    const g255 = 255 * value[1];
+    const b255 = 255 * value[2];
     valueStr = `rgb(${r255}, ${g255}, ${b255})`;
     valueHex = '#' + tinycolor(valueStr).toHex();
   }
 
   const setValueFromStr = (newValueStr) => {
     const rgba = tinycolor(newValueStr).toRgb();
-    setValue({ r: rgba.r / 255.0, g: rgba.g / 255.0, b: rgba.b / 255.0, a: rgba.a });
+    setValue([rgba.r / 255.0, rgba.g / 255.0, rgba.b / 255.0, rgba.a]);
   };
 
   const popover = {
