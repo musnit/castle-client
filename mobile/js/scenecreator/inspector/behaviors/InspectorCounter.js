@@ -19,14 +19,14 @@ export default InspectorCounter = ({ counter }) => {
         component={component}
         sendAction={sendAction}
       />
-      <View style={SceneCreatorConstants.styles.behaviorProperties}>
+      <View style={SceneCreatorConstants.styles.behaviorPropertySpecs}>
         <BehaviorPropertyInputRow
           behavior={counter}
           component={component}
           propName="value"
           label="Initial value"
-          min={counter.properties.minValue}
-          max={counter.properties.maxValue}
+          min={counter.propertySpecs.minValue}
+          max={counter.propertySpecs.maxValue}
           sendAction={sendAction}
         />
         <BehaviorPropertyInputRow
@@ -34,7 +34,7 @@ export default InspectorCounter = ({ counter }) => {
           component={component}
           propName="minValue"
           label="Minimum value"
-          max={counter.properties.maxValue}
+          max={counter.propertySpecs.maxValue}
           sendAction={sendAction}
         />
         <BehaviorPropertyInputRow
@@ -42,7 +42,7 @@ export default InspectorCounter = ({ counter }) => {
           component={component}
           propName="maxValue"
           label="Maximum value"
-          min={counter.properties.minValue}
+          min={counter.propertySpecs.minValue}
           sendAction={sendAction}
         />
       </View>
