@@ -9,6 +9,8 @@ import { InspectorTagPicker } from './InspectorTagPicker';
 import { InspectorTextInput } from './InspectorTextInput';
 import { InspectorVariablePicker } from './InspectorVariablePicker';
 
+import * as SceneCreatorUtilities from '../../SceneCreatorUtilities';
+
 // given a paramSpec,
 // render the correct input
 
@@ -59,6 +61,15 @@ export const ParamInput = ({
       );
     case 'variable':
       return <InspectorVariablePicker value={value} onChange={setValue} {...metadata} />;
+    case 'comparison':
+      return (
+        <InspectorDropdown
+          value={value}
+          onChange={setValue}
+          {...metadata}
+          allowedValues={SceneCreatorUtilities.getComparisonOperators()}
+        />
+      );
     case 'dropdown':
       return <InspectorDropdown value={value} onChange={setValue} {...metadata} />;
     case 'actorRef':

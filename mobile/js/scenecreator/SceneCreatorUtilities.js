@@ -17,7 +17,7 @@ export const getVariableName = (variableId, variables) => {
   return variableName;
 };
 
-const READABLE_OPERATORS = {
+const COMPARISON_OPERATORS = {
   equal: 'equals',
   'not equal': 'does not equal',
   'greater than': 'is greater than',
@@ -25,9 +25,12 @@ const READABLE_OPERATORS = {
   'less than': 'is less than',
   'less or equal': 'is less than or equal to',
 };
+
 export const readableOperator = (o) => {
-  return READABLE_OPERATORS[o] ?? o;
+  return COMPARISON_OPERATORS[o] ?? o;
 };
+
+export const getComparisonOperators = () => Object.keys(COMPARISON_OPERATORS);
 
 export const promoteToExpression = (initialValue) => {
   const initialType = typeof initialValue;
