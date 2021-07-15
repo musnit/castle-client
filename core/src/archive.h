@@ -236,6 +236,15 @@ public:
   void obj(F &&f); // Enter the sub-object once created
 
 
+  // Overwrite element at current position with a new value.
+
+  void setBoolean(bool val);
+  void setNum(int val);
+  void setNum(double val);
+  template<typename V>
+  void setStr(V &&val);
+
+
   // Write a value of custom type. Can be a function, a type with a `T::write(Writer &writer)`
   // method, or reflectable with props
 
@@ -752,6 +761,10 @@ inline void Writer::boolean(bool val) {
   cur->PushBack(val, alloc);
 }
 
+inline void Writer::setBoolean(bool val) {
+  *cur = json::Value(val);
+}
+
 template<typename K>
 void Writer::num(K &&key, int val) {
   cur->AddMember(makeStr(std::forward<K>(key)), json::Value(val), alloc);
@@ -759,6 +772,10 @@ void Writer::num(K &&key, int val) {
 
 inline void Writer::num(int val) {
   cur->PushBack(val, alloc);
+}
+
+inline void Writer::setNum(int val) {
+  *cur = json::Value(val);
 }
 
 template<typename K>
@@ -770,6 +787,10 @@ inline void Writer::num(double val) {
   cur->PushBack(val, alloc);
 }
 
+inline void Writer::setNum(double val) {
+  *cur = json::Value(val);
+}
+
 template<typename K, typename V>
 void Writer::str(K &&key, V &&val) {
   cur->AddMember(makeStr(std::forward<K>(key)), makeStr(std::forward<V>(val)), alloc);
@@ -778,6 +799,11 @@ void Writer::str(K &&key, V &&val) {
 template<typename V>
 void Writer::str(V &&val) {
   cur->PushBack(makeStr(std::forward<V>(val)), alloc);
+}
+
+template<typename V>
+void Writer::setStr(V &&val) {
+  *cur = makeStr(std::forward<V>(val));
 }
 
 template<typename K, typename F>
