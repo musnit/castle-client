@@ -42,7 +42,7 @@ struct AnimationReachesFrameTrigger : BaseTrigger {
   static constexpr auto description = "When the animation reaches a specific frame";
 
   struct Params {
-    PROP(std::string, comparison) = "equal";
+    PROP(ExpressionComparison, comparison);
     PROP(int, frame) = 1;
   } params;
 };
@@ -58,7 +58,7 @@ struct AnimationFrameMeetsConditionResponse : BaseResponse {
   static constexpr auto description = "If the animation frame meets a condition";
 
   struct Params {
-    PROP(std::string, comparison) = "equal";
+    PROP(ExpressionComparison, comparison);
     PROP(ExpressionRef, frame) = 1;
   } params;
 
@@ -70,7 +70,7 @@ struct AnimationFrameMeetsConditionResponse : BaseResponse {
       auto frame = ExpressionValue(drawData->modFrameIndex(params.frame().eval(ctx).as<int>() - 1));
       auto &animProps = component->animationComponentProperties;
       auto currentFrame = drawData->modFrameIndex(animProps.currentFrame);
-      return ExpressionValue(currentFrame).compare(comparison, frame);
+      return comparison.compare(ExpressionValue(currentFrame), frame);
     }
     return false;
   }
@@ -224,6 +224,6 @@ void Drawing2Behavior::fireChangeFrameTriggers(
   rulesBehavior.fireIf<AnimationReachesFrameTrigger>(
       actorId, {}, [&](const AnimationReachesFrameTrigger &trigger) {
         auto triggerFrame = ExpressionValue(drawData->modFrameIndex(trigger.params.frame() - 1));
-        return currentFrame.compare(trigger.params.comparison(), triggerFrame);
+        return trigger.params.comparison().compare(currentFrame, triggerFrame);
       });
 }

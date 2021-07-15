@@ -103,6 +103,9 @@ struct Prop {
     if (rawType.find("string") != std::string::npos) {
       return "string";
     }
+    if (rawType.find("Comparison") != std::string::npos) {
+      return "comparison";
+    }
     if (rawType.find("Variable") != std::string::npos) {
       return "variable";
     }

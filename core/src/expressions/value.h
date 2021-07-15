@@ -1,9 +1,9 @@
 #pragma once
 
 #include "precomp.h"
+#include "archive.h"
 
 #include "props.h"
-
 
 class ExpressionValue {
   // Contains the result of a rule expression, which is dynamically typed. Has methods to check the
@@ -28,10 +28,34 @@ public:
 
   bool operator==(const ExpressionValue &other) const;
   bool operator!=(const ExpressionValue &other) const;
-  bool compare(const std::string &comparison, const ExpressionValue &other) const;
 
 private:
+  friend struct ExpressionComparison;
+
   std::variant<double, const char *> value = 0.0;
+};
+
+
+struct ExpressionComparison {
+  ExpressionComparison() = default;
+
+public:
+  void read(Reader &reader);
+  void write(Writer &writer) const;
+
+  bool compare(const ExpressionValue &lhs, const ExpressionValue &rhs) const;
+
+  enum struct Comparison {
+    Equal,
+    NotEqual,
+    LessOrEqual,
+    LessThan,
+    GreaterOrEqual,
+    GreaterThan,
+  };
+
+private:
+  Comparison comparison = Comparison::Equal;
 };
 
 
@@ -91,31 +115,76 @@ inline bool ExpressionValue::operator!=(const ExpressionValue &other) const {
   return !(*this == other);
 }
 
-inline bool ExpressionValue::compare(
-    const std::string &comparison, const ExpressionValue &other) const {
-  if (std::holds_alternative<double>(value) && std::holds_alternative<double>(other.value)) {
-    auto num = std::get<double>(value), otherNum = std::get<double>(other.value);
-    switch (comparison[0]) {
+inline void ExpressionComparison::read(Reader &reader) {
+  if (auto str = reader.str()) {
+    auto comparisonStr = std::string(*str);
+    switch (comparisonStr[0]) {
     case 'e': { // "equal"
-      return num == otherNum;
+      comparison = Comparison::Equal;
     }
     case 'n': { // "not equal"
-      return num != otherNum;
+      comparison = Comparison::NotEqual;
     }
     case 'l': {
-      if (comparison[5] == 'o') { // "less or equal"
-        return num <= otherNum;
+      if (comparisonStr[5] == 'o') { // "less or equal"
+        comparison = Comparison::LessOrEqual;
       } else { // "less than"
-        return num < otherNum;
+        comparison = Comparison::LessThan;
       }
     }
     case 'g': {
-      if (comparison[8] == 'o') { // "greater or equal"
-        return num >= otherNum;
+      if (comparisonStr[8] == 'o') { // "greater or equal"
+        comparison = Comparison::GreaterOrEqual;
       } else { // "greater"
-        return num > otherNum;
+        comparison = Comparison::GreaterThan;
       }
     }
+    }
+  }
+}
+
+inline void ExpressionComparison::write(Writer &writer) const {
+  std::string comparisonStr;
+  switch (comparison) {
+  case Comparison::Equal:
+    comparisonStr = "equal";
+    break;
+  case Comparison::NotEqual:
+    comparisonStr = "not equal";
+    break;
+  case Comparison::LessOrEqual:
+    comparisonStr = "less or equal";
+    break;
+  case Comparison::LessThan:
+    comparisonStr = "less than";
+    break;
+  case Comparison::GreaterOrEqual:
+    comparisonStr = "greater or equal";
+    break;
+  case Comparison::GreaterThan:
+    comparisonStr = "greater than";
+    break;
+  }
+  writer.setStr(comparisonStr);
+}
+
+inline bool ExpressionComparison::compare(
+    const ExpressionValue &lhs, const ExpressionValue &rhs) const {
+  if (std::holds_alternative<double>(lhs.value) && std::holds_alternative<double>(rhs.value)) {
+    auto lNum = std::get<double>(lhs.value), rNum = std::get<double>(rhs.value);
+    switch (comparison) {
+    case Comparison::Equal:
+      return lNum == rNum;
+    case Comparison::NotEqual:
+      return lNum != rNum;
+    case Comparison::LessOrEqual:
+      return lNum <= rNum;
+    case Comparison::LessThan:
+      return lNum < rNum;
+    case Comparison::GreaterOrEqual:
+      return lNum >= rNum;
+    case Comparison::GreaterThan:
+      return lNum > rNum;
     }
   }
   return false;

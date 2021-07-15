@@ -24,7 +24,7 @@ struct CounterReachesValueTrigger : BaseTrigger {
   static constexpr auto description = "When this actor's counter reaches a value";
 
   struct Params {
-    PROP(std::string, comparison) = "equal";
+    PROP(ExpressionComparison, comparison);
     PROP(double, value) = 0;
   } params;
 };
@@ -63,7 +63,7 @@ struct SetCounterResponse : BaseResponse {
       rulesBehavior.fire<CounterChangesTrigger>(actorId, {});
       rulesBehavior.fireIf<CounterReachesValueTrigger>(
           actorId, {}, [&](const CounterReachesValueTrigger &trigger) {
-            return newExprValue.compare(trigger.params.comparison(), trigger.params.value());
+            return trigger.params.comparison().compare(newExprValue, trigger.params.value());
           });
     }
   }
@@ -75,7 +75,7 @@ struct CounterMeetsConditionResponse : BaseResponse {
   static constexpr auto description = "If the actor's counter meets a condition";
 
   struct Params {
-    PROP(std::string, comparison);
+    PROP(ExpressionComparison, comparison);
     PROP(ExpressionRef, value);
   } params;
 
@@ -83,7 +83,7 @@ struct CounterMeetsConditionResponse : BaseResponse {
     auto value = params.value().eval(ctx);
     auto &counterBehavior = ctx.getScene().getBehaviors().byType<CounterBehavior>();
     if (auto component = counterBehavior.maybeGetComponent(ctx.actorId)) {
-      return ExpressionValue(component->props.value()).compare(params.comparison(), value);
+      return params.comparison().compare(ExpressionValue(component->props.value()), value);
     }
     return false;
   }

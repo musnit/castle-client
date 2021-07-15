@@ -662,12 +662,12 @@ struct ExpressionMeetsConditionResponse : BaseResponse {
 
   struct Params {
     PROP(ExpressionRef, lhs) = 0;
-    PROP(std::string, comparison) = "equal";
+    PROP(ExpressionComparison, comparison);
     PROP(ExpressionRef, rhs) = 0;
   } params;
 
   bool eval(RuleContext &ctx) override {
-    return params.lhs().eval(ctx).compare(params.comparison(), params.rhs().eval(ctx));
+    return params.comparison().compare(params.lhs().eval(ctx), params.rhs().eval(ctx));
   }
 };
 
@@ -787,7 +787,7 @@ struct VariableReachesValueTrigger : BaseTrigger {
          Variable, variableId,
          .label("variable")
          );
-    PROP(std::string, comparison) = "equal";
+    PROP(ExpressionComparison, comparison);
     PROP(double, value) = 0;
   } params;
 };
@@ -803,7 +803,7 @@ void RulesBehavior::fireVariablesTriggers(Variable variable, const ExpressionVal
   fireAllIf<VariableReachesValueTrigger>(
       {}, [&](ActorId actorId, const VariableReachesValueTrigger &trigger) {
         return trigger.params.variableId() == variable
-            && value.compare(trigger.params.comparison(), trigger.params.value());
+            && trigger.params.comparison().compare(value, trigger.params.value());
       });
 }
 
@@ -878,14 +878,14 @@ struct VariableMeetsConditionResponse : BaseResponse {
 
   struct Params {
     PROP(Variable, variableId, .label("variable"));
-    PROP(std::string, comparison);
+    PROP(ExpressionComparison, comparison);
     PROP(ExpressionRef, value);
   } params;
 
   bool eval(RuleContext &ctx) override {
     auto &variables = ctx.getScene().getVariables();
     auto value = params.value().eval(ctx);
-    return variables.get(params.variableId()).compare(params.comparison(), value);
+    return params.comparison().compare(variables.get(params.variableId()), value);
   }
 };
 
@@ -1092,7 +1092,7 @@ void RulesBehavior::handlePerform(double dt) {
     fireAllIf<VariableReachesValueTrigger, VariableReachesValueTriggerOnAddMarker>(
         {}, [&](ActorId actorId, const VariableReachesValueTrigger &trigger) {
           auto &currValue = variables.get(trigger.params.variableId());
-          return currValue.compare(trigger.params.comparison(), trigger.params.value());
+          return trigger.params.comparison().compare(currValue, trigger.params.value());
         });
     registry.clear<VariableReachesValueTriggerOnAddMarker>();
   }
