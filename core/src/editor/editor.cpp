@@ -627,7 +627,8 @@ void Editor::sendRulesData() {
     // TODO: conditional responses should be converted into boolean expressions.
     // for now, use kludge heuristic of looking for descriptions prefixed with 'If '
     static auto conditionPrefix = std::string("If ");
-    if (data.description().compare(0, conditionPrefix.size(), conditionPrefix) == 0) {
+    if (data.description().compare(0, conditionPrefix.size(), conditionPrefix) == 0
+        && data.description().find("condition is met") == std::string::npos) {
       ev.conditions().push_back(data);
     } else {
       ev.responses().push_back(data);
