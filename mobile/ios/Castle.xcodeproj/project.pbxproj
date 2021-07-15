@@ -83,7 +83,6 @@
 		B55942172534C97A00BD34E7 /* CastleNotificationService.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B559420F2534C97A00BD34E7 /* CastleNotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B55942292534CC0200BD34E7 /* CastleNotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = B55942272534CC0200BD34E7 /* CastleNotificationService.m */; };
 		B5942AB52627646B003CF6DB /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B5942AAD2627646B003CF6DB /* BootSplash.storyboard */; };
-		B5E6E25F25D452580059479D /* scene_creator.love in Resources */ = {isa = PBXBuildFile; fileRef = B5E6E25E25D452500059479D /* scene_creator.love */; };
 		B75D12A12F9E5D8776A933D2 /* libPods-Castle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 580488360D0E6A5C5C50B415 /* libPods-Castle.a */; };
 		CD0A84C8B8A44D86830CD6A6 /* RTAliasGrotesk-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = A753A21E42DB46D99AD060DF /* RTAliasGrotesk-Regular.otf */; };
 /* End PBXBuildFile section */
@@ -258,7 +257,6 @@
 		B55942282534CC0200BD34E7 /* CastleNotificationService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CastleNotificationService.h; sourceTree = "<group>"; };
 		B55A282F24F43BCC00A95D42 /* GhostChannels.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GhostChannels.h; sourceTree = "<group>"; };
 		B5942AAD2627646B003CF6DB /* BootSplash.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = BootSplash.storyboard; path = castle/BootSplash.storyboard; sourceTree = "<group>"; };
-		B5E6E25E25D452500059479D /* scene_creator.love */ = {isa = PBXFileReference; lastKnownFileType = file; name = scene_creator.love; path = ../scene_creator.love; sourceTree = "<group>"; };
 		BDA1BD867AE232F85BAD0D0B /* libPods-Castle-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Castle-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1DF76557142480ED55F211A /* Pods-CastleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CastleTests.debug.xcconfig"; path = "Target Support Files/Pods-CastleTests/Pods-CastleTests.debug.xcconfig"; sourceTree = "<group>"; };
 		E4E5BC502DF005B700F3E5D1 /* Pods-Castle-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Castle-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-Castle-tvOSTests/Pods-Castle-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -396,7 +394,6 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				B5E6E25E25D452500059479D /* scene_creator.love */,
 				A14FE3F62355D0C8003B7EA0 /* package.love */,
 				A14FE3B92355CE21003B7EA0 /* ghost-extensions */,
 				A14FE3952355CA7B003B7EA0 /* liblove.xcodeproj */,
@@ -606,7 +603,6 @@
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				A14FE3872355C97F003B7EA0 /* Create temporary '.love' package */,
-				B5E6E25225D44FB30059479D /* Create temporary scene creator package */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				A14FE3882355C9B8003B7EA0 /* Remove temporary '.love' package */,
 				1B1082991574591082E9CFD6 /* [CP] Copy Pods Resources */,
@@ -724,7 +720,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B5E6E25F25D452580059479D /* scene_creator.love in Resources */,
 				A14FE3F72355D0C8003B7EA0 /* package.love in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				752DFF0FA2404564937762CE /* RTAliasGrotesk-Bold.otf in Resources */,
@@ -885,25 +880,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm \"${SRCROOT}\"/../package.love\nrm \"${SRCROOT}\"/../scene_creator.love\n";
-		};
-		B5E6E25225D44FB30059479D /* Create temporary scene creator package */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Create temporary scene creator package";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "SCENE_CREATOR_API_VERSION=$(/usr/libexec/PlistBuddy -c \"Print :SceneCreatorApiVersion\" \"${SRCROOT}/castle/Info.plist\")\n\"${SRCROOT}\"/../tools/bundle-scene-creator.sh --remote $SCENE_CREATOR_API_VERSION \"${SRCROOT}\"/../scene_creator.love\n\n# uncomment below for local version\n# $SRCROOT/../tools/bundle-scene-creator.sh --local \"${SRCROOT}\"/../../../scene-creator \"${SRCROOT}\"/../scene_creator.love\n";
+			shellScript = "rm \"${SRCROOT}\"/../package.love\n";
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
 			isa = PBXShellScriptBuildPhase;
