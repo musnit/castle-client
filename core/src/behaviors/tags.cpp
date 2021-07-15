@@ -11,13 +11,12 @@ void Tag::write(Writer &writer) const {
   if (auto scene = writer.getScene()) {
     auto &tagsBehavior = scene->getBehaviors().byType<TagsBehavior>();
     if (auto result = tagsBehavior.getString(*this)) {
-      writer.str("tag", *result);
+      writer.setStr(*result);
       written = true;
     }
   }
   if (!written) {
-    // TODO: better sentinel?
-    writer.boolean("none", true);
+    writer.setStr("");
   }
 }
 
