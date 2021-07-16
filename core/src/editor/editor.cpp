@@ -335,11 +335,36 @@ void Editor::sendAllBehaviorsData() {
   bridge.sendEvent("EDITOR_ALL_BEHAVIORS", ev);
 };
 
-template<typename C>
+template<typename Behavior, typename Component>
 struct EditorSelectedComponentEvent {
-  PROP(bool, isDisabled) = false;
-  PROP(typename C::Props *, props);
+  ActorId actorId;
+  Component *component;
+
+  void write(Writer &writer) const;
 };
+
+template<typename Behavior, typename Component>
+void EditorSelectedComponentEvent<Behavior, Component>::write(Writer &writer) const {
+  if (component) {
+    auto &behavior = writer.getScene()->getBehaviors().byType<Behavior>();
+    writer.obj([&]() {
+      Props::forEach(component->props, [&](auto &prop) {
+        if constexpr (!Archive::skipProp<std::remove_reference_t<decltype(prop())>>) {
+          using Prop = std::remove_reference_t<decltype(prop)>;
+          using PropValue = std::remove_reference_t<decltype(prop())>;
+          constexpr auto propName = Prop::name;
+          if constexpr (std::is_arithmetic_v<PropValue>) {
+            // use behavior's getter when possible
+            writer.setMember(
+                std::string(propName), behavior.handleGetProperty(actorId, *component, prop.id));
+          } else {
+            writer.setMember(std::string(propName), prop());
+          }
+        }
+      });
+    });
+  }
+}
 
 struct EditorSelectedRulesComponentEvent {
   PROP(bool, isDisabled) = false;
@@ -353,8 +378,9 @@ struct EditorNoComponentEvent {
 // send behavior property values for the selected actor's components
 void Editor::sendSelectedComponent(int behaviorId) {
   scene->getBehaviors().byId(behaviorId, [&](auto &behavior) {
+    auto actorId = selection.firstSelectedActorId();
     using BehaviorType = std::remove_reference_t<decltype(behavior)>;
-    auto component = behavior.maybeGetComponent(selection.firstSelectedActorId());
+    auto component = behavior.maybeGetComponent(actorId);
     std::string eventName = std::string("EDITOR_SELECTED_COMPONENT:") + BehaviorType::name;
     if (component) {
       if constexpr (std::is_same_v<RulesBehavior, BehaviorType>) {
@@ -366,7 +392,7 @@ void Editor::sendSelectedComponent(int behaviorId) {
         bridge.sendEvent("EDITOR_SELECTED_COMPONENT:Rules", ev);
       } else {
         using ComponentType = std::remove_reference_t<decltype(*component)>;
-        EditorSelectedComponentEvent<ComponentType> ev { component->disabled, &component->props };
+        EditorSelectedComponentEvent<BehaviorType, ComponentType> ev { actorId, component };
         bridge.sendEvent(eventName.c_str(), ev);
       }
     } else {
