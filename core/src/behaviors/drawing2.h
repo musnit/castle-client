@@ -8,11 +8,32 @@
 
 struct Drawing2Component : BaseComponent {
   struct Props {
+    PROP(
+         float, currentFrame,
+         .label("Current frame")
+         ) = 1;
+    PROP(
+         float, framesPerSecond,
+         .min(-30)
+         .max(30)
+         .label("Frames per second")
+         ) = 4;
+    PROP(
+         std::string, playMode,
+         .label("Play mode")
+         ) = "still";
+    PROP(
+         float, loopStartFrame,
+         .label("Loop start frame")
+         ) = -1;
+    PROP(
+         float, loopEndFrame,
+         .label("Loop end frame")
+         ) = -1;
   } props;
 
   std::string hash;
   std::shared_ptr<love::DrawData> drawData;
-  love::AnimationComponentProperties animationComponentProperties;
   love::AnimationState animationState;
 };
 

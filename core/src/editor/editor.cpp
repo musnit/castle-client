@@ -72,6 +72,9 @@ void Editor::update(double dt) {
         break;
       case Tool::ScaleRotate:
         break;
+      case Tool::Draw:
+        drawTool.update(dt);
+        break;
       }
     }
 
@@ -80,6 +83,12 @@ void Editor::update(double dt) {
 }
 
 void Editor::draw() {
+  bool isDrawEditorActive = currentTool == Tool::Draw;
+  if (isDrawEditorActive) {
+    drawTool.drawOverlay();
+    return;
+  }
+
   if (!scene) {
     return;
   }
@@ -142,6 +151,8 @@ void Editor::draw() {
       break;
     case Tool::ScaleRotate:
       break;
+    case Tool::Draw:
+      break;
     }
   }
 
@@ -199,6 +210,7 @@ struct EditorGlobalActionsEvent {
   PROP(int, selectedActorId) = -1;
   PROP(bool, isTextActorSelected) = false;
   PROP(bool, isBlueprintSelected) = false;
+  PROP(bool, isDrawEditorActive) = false;
 
   struct ActionsAvailable {
     PROP(bool, onPlay) = true;
@@ -231,6 +243,12 @@ struct EditorGlobalActionReceiver {
       editor->commands.undo();
     } else if (action == "onRedo") {
       editor->commands.redo();
+    } else if (action == "useDrawTool") {
+      editor->currentTool = Editor::Tool::Draw;
+      editor->isEditorStateDirty = true;
+    } else if (action == "useGrabTool") {
+      editor->currentTool = Editor::Tool::Grab;
+      editor->isEditorStateDirty = true;
     }
   }
 };
@@ -249,6 +267,7 @@ void Editor::sendGlobalActions() {
 
   ev.actionsAvailable().onUndo = commands.canUndo();
   ev.actionsAvailable().onRedo = commands.canRedo();
+  ev.isDrawEditorActive = currentTool == Tool::Draw;
 
   bridge.sendEvent("EDITOR_GLOBAL_ACTIONS", ev);
 };
@@ -951,3 +970,20 @@ void Editor::maybeSendData() {
   }
   scene->getBehaviors().byType<TextBehavior>().maybeSendBridgeData();
 }
+
+struct DrawToolSelectSubtoolReceiver {
+  inline static const BridgeRegistration<DrawToolSelectSubtoolReceiver> registration {
+    "DRAW_TOOL_SELECT_SUBTOOL"
+  };
+
+  struct Params {
+    PROP(std::string, category);
+    PROP(std::string, name);
+  } params;
+
+  void receive(Engine &engine) {
+    auto editor = engine.maybeGetEditor();
+    editor->drawTool.selectedSubtools[params.category()] = params.name();
+    editor->drawTool.sendDrawToolEvent();
+  }
+};

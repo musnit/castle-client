@@ -7,6 +7,7 @@
 #include "edit_variables.h"
 #include "selection.h"
 #include "grab.h"
+#include "draw_tool.h"
 #include "grid.h"
 #include "commands.h"
 
@@ -45,11 +46,11 @@ public:
 
   Grid &getGrid();
   GrabTool &getGrabTool();
-
   Bridge &getBridge();
 
 private:
   friend struct EditorGlobalActionReceiver;
+  friend struct DrawToolSelectSubtoolReceiver;
 
   Lv &lv { Lv::getInstance() };
   Bridge &bridge;
@@ -67,9 +68,11 @@ private:
   enum class Tool {
     Grab,
     ScaleRotate,
+    Draw,
   };
   Tool currentTool = Tool::Grab;
   GrabTool grab { *this };
+  DrawTool drawTool { *this };
 
   // events and data
   void maybeSendData();

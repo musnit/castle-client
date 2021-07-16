@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useCardCreator } from '../../CreateCardContext';
-import { useCoreState, sendBehaviorAction } from '../../../core/CoreEvents';
+import { useCoreState, sendBehaviorAction, sendGlobalAction } from '../../../core/CoreEvents';
 import { BehaviorPropertyInputRow } from '../components/BehaviorPropertyInputRow';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 
@@ -121,7 +121,11 @@ const EditArtButton = () => {
     behaviorActions,
   } = useCardCreator();
 
-  const draw1Behavior = applicableTools.find((behavior) => behavior.name === 'Draw');
+  onPress = () => {
+    sendGlobalAction('useDrawTool');
+  };
+
+  /*const draw1Behavior = applicableTools.find((behavior) => behavior.name === 'Draw');
   const draw2Behavior = applicableTools.find((behavior) => behavior.name === 'Draw2');
 
   let onPress;
@@ -155,7 +159,7 @@ const EditArtButton = () => {
   } else {
     console.warn(`Tried to render InspectorDrawing for an actor that has no drawing`);
     onPress = () => {};
-  }
+  }*/
 
   return (
     <TouchableOpacity onPress={onPress} style={[styles.frameContainer, styles.frameContainerNew]}>
@@ -170,8 +174,16 @@ export default InspectorDrawing = ({ drawing2 }) => {
     sendBehaviorAction,
   ]);
 
-  const { sendInspectorAction, applicableTools } = useCardCreator();
-  const draw2Behavior = applicableTools.find((behavior) => behavior.name === 'Draw2');
+  /*return (
+    <BehaviorPropertyInputRow
+      behavior={drawing2}
+      component={component}
+      propName="framesPerSecond"
+      label="Frames per second"
+      decimalDigits={0}
+      sendAction={sendAction}
+    />
+  );*/
 
   const [playMode, playModeSetValueAndSendAction] = useOptimisticBehaviorValue({
     behavior: component,
@@ -231,10 +243,10 @@ export default InspectorDrawing = ({ drawing2 }) => {
           style={[styles.frameContainer, isInitialFrame && styles.frameContainerSelected]}
           onPress={() => {
             if (isInitialFrame) {
-              sendInspectorAction('setActiveToolWithOptions', {
+              /*sendInspectorAction('setActiveToolWithOptions', {
                 id: draw2Behavior.behaviorId,
                 selectedFrame: i + 1,
-              });
+              });*/
             } else {
               initialFrameSetValueAndSendAction('set:initialFrame', i + 1);
             }
@@ -260,10 +272,10 @@ export default InspectorDrawing = ({ drawing2 }) => {
             <TouchableOpacity
               style={styles.frameEditArtContainer}
               onPress={() => {
-                sendInspectorAction('setActiveToolWithOptions', {
+                /*sendInspectorAction('setActiveToolWithOptions', {
                   id: draw2Behavior.behaviorId,
                   selectedFrame: i + 1,
-                });
+                });*/
               }}>
               <MCIcon name="pencil-outline" size={20} color="#000" />
             </TouchableOpacity>
@@ -279,7 +291,7 @@ export default InspectorDrawing = ({ drawing2 }) => {
 
       <ScrollView horizontal style={{ flexDirection: 'row', marginBottom: 20 }}>
         {frames}
-        {/* <EditArtButton /> */}
+        <EditArtButton />
       </ScrollView>
 
       <View style={styles.segmentedControl}>

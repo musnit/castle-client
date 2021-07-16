@@ -2,7 +2,7 @@ import React from 'react';
 import { StatusBar, StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useCoreState, sendGlobalAction } from '../../core/CoreEvents';
+import { useCoreState, sendGlobalAction, sendAsync } from '../../core/CoreEvents';
 import { useFastDataMemo } from '../../ghost/GhostUI';
 import { SegmentedNavigation } from '../../components/SegmentedNavigation';
 import * as Constants from '../../Constants';
@@ -70,189 +70,210 @@ const styles = StyleSheet.create({
   },
 });
 
-export const DrawingCardHeader = useFastDataMemo(
-  'draw-tools',
-  ({ fastData, fastAction, onPressBack }) => {
-    const globalActions = useCoreState('EDITOR_GLOBAL_ACTIONS');
+export const DrawingCardHeader = ({ onPressBack }) => {
+  const globalActions = useCoreState('EDITOR_GLOBAL_ACTIONS');
+  const drawToolState = useCoreState('EDITOR_DRAW_TOOL');
 
-    if (!fastData.selectedSubtools) {
-      return null;
-    }
+  // TODO
+  let fastAction = () => {};
 
-    let undoButton, redoButton;
-    if (globalActions) {
-      const data = globalActions;
+  if (!drawToolState || !drawToolState.selectedSubtools) {
+    return null;
+  }
 
-      undoButton = (
-        <TouchableOpacity
-          style={styles.action}
-          disabled={!data.actionsAvailable.onUndo}
-          onPress={() => sendGlobalAction('onUndo')}>
-          <MCIcon
-            name="undo-variant"
-            size={26}
-            color={data.actionsAvailable.onUndo ? '#fff' : '#666'}
-          />
-        </TouchableOpacity>
-      );
+  let undoButton, redoButton;
+  if (globalActions) {
+    const data = globalActions;
 
-      redoButton = (
-        <TouchableOpacity
-          style={styles.action}
-          disabled={!data.actionsAvailable.onRedo}
-          onPress={() => sendGlobalAction('onRedo')}>
-          <MCIcon
-            name="redo-variant"
-            size={26}
-            color={data.actionsAvailable.onRedo ? '#fff' : '#666'}
-          />
-        </TouchableOpacity>
-      );
-    }
+    undoButton = (
+      <TouchableOpacity
+        style={styles.action}
+        disabled={!data.actionsAvailable.onUndo}
+        onPress={() => sendGlobalAction('onUndo')}>
+        <MCIcon
+          name="undo-variant"
+          size={26}
+          color={data.actionsAvailable.onUndo ? '#fff' : '#666'}
+        />
+      </TouchableOpacity>
+    );
 
-    const isArtworkActive = fastData.selectedSubtools.root == 'artwork';
-    const currentDrawingToolGroup = isArtworkActive
-      ? fastData.selectedSubtools.artwork
-      : fastData.selectedSubtools.collision;
-
-    const MODE_ITEMS = [
-      {
-        name: 'Artwork',
-        value: 'artwork',
-      },
-      {
-        name: 'Collision Shape',
-        value: 'collision',
-      },
-    ];
-
-    // Only hide status bar on iOS because adjustResize breaks when android is in fullscreen.
-    // This breaks keyboard avoiding for popovers. See https://issuetracker.google.com/issues/36911528
-    return (
-      <View style={styles.container}>
-        <View style={styles.topContainer}>
-          <StatusBar hidden={Platform.OS != 'android'} />
-          <TouchableOpacity style={styles.back} onPress={onPressBack}>
-            <MCIcon name="arrow-left" size={32} color="#fff" />
-          </TouchableOpacity>
-          <View style={styles.actionsContainer}>
-            {undoButton}
-            {redoButton}
-            <TouchableOpacity
-              style={styles.action}
-              onPressIn={() => {
-                fastAction('onViewInContext', 'true');
-              }}
-              onPressOut={() => {
-                fastAction('onViewInContext', 'false');
-              }}>
-              <MCIcon
-                name={Constants.iOS ? 'image-frame' : 'image-filter-frames'}
-                size={24}
-                color={'#fff'}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View style={styles.navigation}>
-          <SegmentedNavigation
-            items={MODE_ITEMS}
-            selectedItem={isArtworkActive ? MODE_ITEMS[0] : MODE_ITEMS[1]}
-            onSelectItem={(item) => fastAction('onSelectSubtool', 'root:' + item.value)}
-          />
-        </View>
-
-        <View style={styles.toolGroups}>
-          <TouchableOpacity
-            style={styles.toolGroup}
-            onPress={() => {
-              if (isArtworkActive) {
-                fastAction('onSelectSubtool', 'artwork:artwork_draw');
-              } else {
-                fastAction('onSelectSubtool', 'collision:collision_draw');
-              }
-            }}>
-            <View style={styles.toolGroupIcon}>
-              <MCIcon
-                name="pencil-outline"
-                size={36}
-                color={
-                  currentDrawingToolGroup == 'artwork_draw' ||
-                  currentDrawingToolGroup == 'collision_draw'
-                    ? '#fff'
-                    : '#888'
-                }
-              />
-            </View>
-          </TouchableOpacity>
-
-          {isArtworkActive ? (
-            <TouchableOpacity
-              style={styles.toolGroup}
-              onPress={() => {
-                fastAction('onSelectSubtool', 'artwork:fill');
-              }}>
-              <View style={styles.toolGroupIcon}>
-                <MCIcon
-                  name="format-color-fill"
-                  size={38}
-                  color={currentDrawingToolGroup == 'fill' ? '#fff' : '#888'}
-                  style={{ marginTop: 9 }}
-                />
-              </View>
-            </TouchableOpacity>
-          ) : null}
-
-          <TouchableOpacity
-            style={styles.toolGroup}
-            onPress={() => {
-              if (isArtworkActive) {
-                fastAction('onSelectSubtool', 'artwork:artwork_move');
-              } else {
-                fastAction('onSelectSubtool', 'collision:collision_move');
-              }
-            }}>
-            <View style={styles.toolGroupIcon}>
-              <Icon
-                name="pan-tool"
-                size={28}
-                color={
-                  currentDrawingToolGroup == 'artwork_move' ||
-                  currentDrawingToolGroup == 'collision_move'
-                    ? '#fff'
-                    : '#888'
-                }
-              />
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.toolGroup}
-            onPress={() => {
-              if (isArtworkActive) {
-                fastAction('onSelectSubtool', 'artwork:artwork_erase');
-              } else {
-                fastAction('onSelectSubtool', 'collision:collision_erase');
-              }
-            }}>
-            <View style={styles.toolGroupIcon}>
-              <MCIcon
-                name="eraser"
-                size={36}
-                color={
-                  currentDrawingToolGroup == 'artwork_erase' ||
-                  currentDrawingToolGroup == 'collision_erase'
-                    ? '#fff'
-                    : '#888'
-                }
-                style={{ marginTop: 3 }}
-              />
-            </View>
-          </TouchableOpacity>
-        </View>
-        <DrawingCardBottomActions />
-      </View>
+    redoButton = (
+      <TouchableOpacity
+        style={styles.action}
+        disabled={!data.actionsAvailable.onRedo}
+        onPress={() => sendGlobalAction('onRedo')}>
+        <MCIcon
+          name="redo-variant"
+          size={26}
+          color={data.actionsAvailable.onRedo ? '#fff' : '#666'}
+        />
+      </TouchableOpacity>
     );
   }
-);
+
+  const isArtworkActive = drawToolState.selectedSubtools.root == 'artwork';
+  const currentDrawingToolGroup = isArtworkActive
+    ? drawToolState.selectedSubtools.artwork
+    : drawToolState.selectedSubtools.collision;
+
+  const MODE_ITEMS = [
+    {
+      name: 'Artwork',
+      value: 'artwork',
+    },
+    {
+      name: 'Collision Shape',
+      value: 'collision',
+    },
+  ];
+
+  // Only hide status bar on iOS because adjustResize breaks when android is in fullscreen.
+  // This breaks keyboard avoiding for popovers. See https://issuetracker.google.com/issues/36911528
+  return (
+    <View style={styles.container}>
+      <View style={styles.topContainer}>
+        <StatusBar hidden={Platform.OS != 'android'} />
+        <TouchableOpacity style={styles.back} onPress={onPressBack}>
+          <MCIcon name="arrow-left" size={32} color="#fff" />
+        </TouchableOpacity>
+        <View style={styles.actionsContainer}>
+          {undoButton}
+          {redoButton}
+          <TouchableOpacity
+            style={styles.action}
+            onPressIn={() => {
+              fastAction('onViewInContext', 'true');
+            }}
+            onPressOut={() => {
+              fastAction('onViewInContext', 'false');
+            }}>
+            <MCIcon
+              name={Constants.iOS ? 'image-frame' : 'image-filter-frames'}
+              size={24}
+              color={'#fff'}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={styles.navigation}>
+        <SegmentedNavigation
+          items={MODE_ITEMS}
+          selectedItem={isArtworkActive ? MODE_ITEMS[0] : MODE_ITEMS[1]}
+          onSelectItem={(item) =>
+            sendAsync('DRAW_TOOL_SELECT_SUBTOOL', { category: 'root', name: item.value })
+          }
+        />
+      </View>
+
+      <View style={styles.toolGroups}>
+        <TouchableOpacity
+          style={styles.toolGroup}
+          onPress={() => {
+            if (isArtworkActive) {
+              sendAsync('DRAW_TOOL_SELECT_SUBTOOL', { category: 'artwork', name: 'artwork_draw' });
+            } else {
+              sendAsync('DRAW_TOOL_SELECT_SUBTOOL', {
+                category: 'collision',
+                name: 'collision_draw',
+              });
+            }
+          }}>
+          <View style={styles.toolGroupIcon}>
+            <MCIcon
+              name="pencil-outline"
+              size={36}
+              color={
+                currentDrawingToolGroup == 'artwork_draw' ||
+                currentDrawingToolGroup == 'collision_draw'
+                  ? '#fff'
+                  : '#888'
+              }
+            />
+          </View>
+        </TouchableOpacity>
+
+        {isArtworkActive ? (
+          <TouchableOpacity
+            style={styles.toolGroup}
+            onPress={() => {
+              sendAsync('DRAW_TOOL_SELECT_SUBTOOL', {
+                category: 'artwork',
+                name: 'fill',
+              });
+            }}>
+            <View style={styles.toolGroupIcon}>
+              <MCIcon
+                name="format-color-fill"
+                size={38}
+                color={currentDrawingToolGroup == 'fill' ? '#fff' : '#888'}
+                style={{ marginTop: 9 }}
+              />
+            </View>
+          </TouchableOpacity>
+        ) : null}
+
+        <TouchableOpacity
+          style={styles.toolGroup}
+          onPress={() => {
+            if (isArtworkActive) {
+              sendAsync('DRAW_TOOL_SELECT_SUBTOOL', {
+                category: 'artwork',
+                name: 'artwork_move',
+              });
+            } else {
+              sendAsync('DRAW_TOOL_SELECT_SUBTOOL', {
+                category: 'collision',
+                name: 'collision_move',
+              });
+            }
+          }}>
+          <View style={styles.toolGroupIcon}>
+            <Icon
+              name="pan-tool"
+              size={28}
+              color={
+                currentDrawingToolGroup == 'artwork_move' ||
+                currentDrawingToolGroup == 'collision_move'
+                  ? '#fff'
+                  : '#888'
+              }
+            />
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.toolGroup}
+          onPress={() => {
+            if (isArtworkActive) {
+              sendAsync('DRAW_TOOL_SELECT_SUBTOOL', {
+                category: 'artwork',
+                name: 'artwork_erase',
+              });
+            } else {
+              sendAsync('DRAW_TOOL_SELECT_SUBTOOL', {
+                category: 'collision',
+                name: 'collision_erase',
+              });
+            }
+          }}>
+          <View style={styles.toolGroupIcon}>
+            <MCIcon
+              name="eraser"
+              size={36}
+              color={
+                currentDrawingToolGroup == 'artwork_erase' ||
+                currentDrawingToolGroup == 'collision_erase'
+                  ? '#fff'
+                  : '#888'
+              }
+              style={{ marginTop: 3 }}
+            />
+          </View>
+        </TouchableOpacity>
+      </View>
+      <DrawingCardBottomActions />
+    </View>
+  );
+};

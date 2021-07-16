@@ -2,6 +2,42 @@
 
 #include "behaviors/all.h"
 
+void getAnimationComponentProperties(
+    const Drawing2Component &component, love::AnimationComponentProperties &properties) {
+  auto playMode = component.props.playMode();
+  if (playMode[0] == 's') { // "still"
+    properties.playing = false;
+    properties.loop = false;
+  } else if (playMode[0] == 'p') { // "play once"
+    properties.playing = true;
+    properties.loop = false;
+  } else { // "loop"
+    properties.playing = true;
+    properties.loop = true;
+  }
+
+  properties.framesPerSecond = component.props.framesPerSecond();
+  properties.loopStartFrame.value = int(std::round(component.props.loopStartFrame()));
+  properties.loopEndFrame.value = int(std::round(component.props.loopEndFrame()));
+  properties.currentFrame.value = int(std::round(component.props.currentFrame()));
+}
+
+
+void applyAnimationComponentProperties(
+    Drawing2Component &component, love::AnimationComponentProperties &properties) {
+  if (!properties.playing && !properties.loop) {
+    component.props.playMode() = "still";
+  } else if (properties.playing && !properties.loop) {
+    component.props.playMode() = "play once";
+  } else {
+    component.props.playMode() = "loop";
+  }
+
+  component.props.framesPerSecond() = properties.framesPerSecond;
+  component.props.loopStartFrame() = properties.loopStartFrame.value;
+  component.props.loopEndFrame() = properties.loopEndFrame.value;
+  component.props.currentFrame() = properties.currentFrame.value;
+}
 
 //
 // Triggers
@@ -68,7 +104,8 @@ struct AnimationFrameMeetsConditionResponse : BaseResponse {
     if (auto component = drawing2Behavior.maybeGetComponent(ctx.actorId)) {
       auto drawData = component->drawData.get();
       auto frame = ExpressionValue(drawData->modFrameIndex(params.frame().eval(ctx).as<int>() - 1));
-      auto &animProps = component->animationComponentProperties;
+      love::AnimationComponentProperties animProps;
+      getAnimationComponentProperties(*component, animProps);
       auto currentFrame = drawData->modFrameIndex(animProps.currentFrame);
       return comparison.compare(ExpressionValue(currentFrame), frame);
     }
@@ -85,8 +122,6 @@ void Drawing2Behavior::handleReadComponent(
     ActorId actorId, Drawing2Component &component, Reader &reader) {
   component.hash = reader.str("hash", "");
 
-  component.animationComponentProperties.read(reader);
-
   if (auto found = drawDataCache.find(component.hash); found == drawDataCache.end()) {
     reader.obj("drawData", [&]() {
       component.drawData = std::make_shared<love::DrawData>(reader);
@@ -100,7 +135,11 @@ void Drawing2Behavior::handleReadComponent(
 void Drawing2Behavior::handleWriteComponent(
     ActorId actorId, const Drawing2Component &component, Writer &writer) const {
   writer.str("hash", component.hash);
-  component.animationComponentProperties.write(writer);
+
+  love::AnimationComponentProperties animProps;
+  getAnimationComponentProperties(component, animProps);
+
+  animProps.write(writer);
   writer.obj("drawData", *component.drawData);
 }
 
@@ -112,8 +151,14 @@ void Drawing2Behavior::handlePerform(double dt) {
   auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
   forEachEnabledComponent([&](ActorId actorId, Drawing2Component &component) {
     auto drawData = component.drawData.get();
-    auto &animProps = component.animationComponentProperties;
+
+    love::AnimationComponentProperties animProps;
+    getAnimationComponentProperties(component, animProps);
+
     auto result = drawData->runAnimation(component.animationState, animProps, float(dt));
+
+    applyAnimationComponentProperties(component, animProps);
+
     if (result.loop) {
       rulesBehavior.fire<AnimationLoopTrigger>(actorId, {});
     }
@@ -147,7 +192,10 @@ void Drawing2Behavior::handleDrawComponent(
       lv.graphics.scale(info.widthScale, info.heightScale);
 
       lv.graphics.setColor(love::Colorf(1, 1, 1, 1));
-      component.drawData->render(component.animationComponentProperties);
+
+      love::AnimationComponentProperties animProps;
+      getAnimationComponentProperties(component, animProps);
+      component.drawData->render(animProps);
 
       lv.graphics.pop();
     }
@@ -161,7 +209,9 @@ void Drawing2Behavior::handleDrawComponent(
 
 ExpressionValue Drawing2Behavior::handleGetProperty(
     ActorId actorId, const Drawing2Component &component, PropId propId) const {
-  auto &animProps = component.animationComponentProperties;
+  love::AnimationComponentProperties animProps;
+  getAnimationComponentProperties(component, animProps);
+
   if (propId == decltype(DrawingAnimationProps::currentFrame)::id) {
     return animProps.currentFrame.value;
   } else if (propId == decltype(DrawingAnimationProps::playMode)::id) {
@@ -186,7 +236,9 @@ ExpressionValue Drawing2Behavior::handleGetProperty(
 
 void Drawing2Behavior::handleSetProperty(
     ActorId actorId, Drawing2Component &component, PropId propId, const ExpressionValue &value) {
-  auto &animProps = component.animationComponentProperties;
+  love::AnimationComponentProperties animProps;
+  getAnimationComponentProperties(component, animProps);
+
   if (propId == decltype(DrawingAnimationProps::currentFrame)::id) {
     animProps.currentFrame.value = int(std::round(value.as<double>()));
     fireChangeFrameTriggers(actorId, component);
@@ -210,9 +262,11 @@ void Drawing2Behavior::handleSetProperty(
     animProps.loopStartFrame.value = int(std::round(value.as<double>()));
   } else if (propId == decltype(DrawingAnimationProps::loopEndFrame)::id) {
     animProps.loopEndFrame.value = int(std::round(value.as<double>()));
-  } else {
-    BaseBehavior::handleSetProperty(actorId, component, propId, value);
   }
+
+  applyAnimationComponentProperties(component, animProps);
+
+  BaseBehavior::handleSetProperty(actorId, component, propId, value);
 }
 
 
@@ -224,7 +278,10 @@ void Drawing2Behavior::fireChangeFrameTriggers(
     ActorId actorId, const Drawing2Component &component) {
   auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
   auto drawData = component.drawData.get();
-  auto &animProps = component.animationComponentProperties;
+
+  love::AnimationComponentProperties animProps;
+  getAnimationComponentProperties(component, animProps);
+
   rulesBehavior.fire<AnimationFrameChangesTrigger>(actorId, {});
   auto currentFrame = ExpressionValue(drawData->modFrameIndex(animProps.currentFrame));
   rulesBehavior.fireIf<AnimationReachesFrameTrigger>(

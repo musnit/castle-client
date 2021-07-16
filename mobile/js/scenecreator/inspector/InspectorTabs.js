@@ -59,7 +59,7 @@ const GeneralTab = ({ behaviors, addChildSheet }) => {
           <Inspector.TextLayout />
         </React.Fragment>
       )}
-      {false && !isTextActorSelected && <Inspector.Drawing drawing2={behaviors.Drawing2} />}
+      {!isTextActorSelected && <Inspector.Drawing drawing2={behaviors.Drawing2} />}
       <Inspector.Tags tags={behaviors.Tags} />
 
       {!isTextActorSelected && <Inspector.Layout body={behaviors.Body} />}

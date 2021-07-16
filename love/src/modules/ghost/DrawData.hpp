@@ -71,6 +71,18 @@ namespace ghost {
     std::vector<std::unique_ptr<DrawDataLayer>> layers;
     bool _layerDataChanged;
 
+    DrawData(std::shared_ptr<DrawData> other) {
+      Archive archive;
+      archive.write([&](Archive::Writer &w) {
+        other->write(w);
+      });
+
+      archive.read([&](Archive::Reader &r) {
+        read(r);
+      });
+      _layerDataChanged = true;
+    }
+
     DrawData(lua_State *L, int index) {
       read(L, index);
 

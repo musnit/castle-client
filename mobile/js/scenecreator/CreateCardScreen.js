@@ -92,7 +92,6 @@ export const CreateCardScreen = ({
   React.useEffect(Keyboard.dismiss, [activeSheet]);
 
   const [isShowingTextActors, setShowingTextActors] = React.useState(true);
-  const [isShowingDraw, setIsShowingDraw] = React.useState(false); // TODO: show drawing
 
   const globalActions = useCoreState('EDITOR_GLOBAL_ACTIONS');
 
@@ -102,6 +101,7 @@ export const CreateCardScreen = ({
   const { selectedActorId, isTextActorSelected, isBlueprintSelected } = globalActions || {};
   const hasSelection = selectedActorId >= 0 && activeSheet !== 'capturePreview';
   const textActors = useCoreTextActors();
+  const isShowingDraw = globalActions?.isDrawEditorActive;
 
   React.useEffect(() => {
     // when changing between selected or unselected, close sheets
@@ -295,7 +295,7 @@ export const CreateCardScreen = ({
         <SafeAreaView style={Constants.styles.container}>
           {isShowingDraw ? (
             /* TODO: delete DrawingCardHeader, move these to CreateCardOverlay */
-            <DrawingCardHeader onPressBack={() => sendGlobalAction('resetActiveTool')} />
+            <DrawingCardHeader onPressBack={() => sendGlobalAction('useGrabTool')} />
           ) : (
             <CreateCardHeader
               card={card}

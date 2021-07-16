@@ -89,13 +89,13 @@ public:
   const Gesture &getGesture() const;
 
 
-protected:
   // Own component data
 
   Component *maybeGetComponent(ActorId actorId); // Shortlived -- data may move on adding / removing
                                                  // components. Returns `nullptr` if not present.
   const Component *maybeGetComponent(ActorId actorId) const;
 
+protected:
   template<typename F>
   void forEachEnabledComponent(F &&f); // `f` takes `(ActorId, Component &)` or (Component &)
   template<typename F>
