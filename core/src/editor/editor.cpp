@@ -189,6 +189,7 @@ void Editor::editorJSLoaded() {
   // send initial data that will only change rarely
   sendSceneSettings();
   sendVariablesData();
+  sendTagsData();
 }
 
 struct EditorGlobalActionsEvent {
