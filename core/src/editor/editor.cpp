@@ -408,7 +408,7 @@ struct EditorModifyComponentReceiver {
     PROP(std::string, behaviorName);
     PROP(
          std::string, action,
-         .allowedValues("add", "remove", "set", "enable", "disable", "swap")
+         .allowedValues("add", "remove", "set", "enable", "disable", "swapMotion")
          );
     PROP(std::string, propertyName);
     PROP(std::string, propertyType);
@@ -576,6 +576,62 @@ struct EditorModifyComponentReceiver {
               editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
               editor.setSelectedActorStateDirty();
             });
+      } else if (action == "swapMotion") {
+        // swap is just add+remove in the same command.
+        // this is only used when changing between Motion behaviors.
+        // TODO: merge motion behaviors, then we don't need this anymore.
+        if constexpr (std::is_same_v<BehaviorType, MovingBehavior>) {
+          static auto description = std::string("change dynamic motion to fixed motion");
+          editor.getCommands().execute(
+              description, {},
+              [actorId](Editor &editor, bool) {
+                auto &oldBehavior = editor.getScene().getBehaviors().byType<BehaviorType>();
+                auto &newBehavior
+                    = editor.getScene().getBehaviors().byType<RotatingMotionBehavior>();
+                oldBehavior.removeComponent(actorId);
+                newBehavior.addComponent(actorId);
+                newBehavior.enableComponent(actorId);
+                editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
+                editor.setSelectedComponentStateDirty(RotatingMotionBehavior::behaviorId);
+                editor.setSelectedActorStateDirty();
+              },
+              [actorId](Editor &editor, bool) {
+                auto &oldBehavior = editor.getScene().getBehaviors().byType<BehaviorType>();
+                auto &newBehavior
+                    = editor.getScene().getBehaviors().byType<RotatingMotionBehavior>();
+                newBehavior.removeComponent(actorId);
+                oldBehavior.addComponent(actorId);
+                oldBehavior.enableComponent(actorId);
+                editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
+                editor.setSelectedComponentStateDirty(RotatingMotionBehavior::behaviorId);
+                editor.setSelectedActorStateDirty();
+              });
+        }
+        if constexpr (std::is_same_v<BehaviorType, RotatingMotionBehavior>) {
+          static auto description = std::string("change fixed motion to dynamic motion");
+          editor.getCommands().execute(
+              description, {},
+              [actorId](Editor &editor, bool) {
+                auto &oldBehavior = editor.getScene().getBehaviors().byType<BehaviorType>();
+                auto &newBehavior = editor.getScene().getBehaviors().byType<MovingBehavior>();
+                oldBehavior.removeComponent(actorId);
+                newBehavior.addComponent(actorId);
+                newBehavior.enableComponent(actorId);
+                editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
+                editor.setSelectedComponentStateDirty(MovingBehavior::behaviorId);
+                editor.setSelectedActorStateDirty();
+              },
+              [actorId](Editor &editor, bool) {
+                auto &oldBehavior = editor.getScene().getBehaviors().byType<BehaviorType>();
+                auto &newBehavior = editor.getScene().getBehaviors().byType<MovingBehavior>();
+                newBehavior.removeComponent(actorId);
+                oldBehavior.addComponent(actorId);
+                oldBehavior.enableComponent(actorId);
+                editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
+                editor.setSelectedComponentStateDirty(MovingBehavior::behaviorId);
+                editor.setSelectedActorStateDirty();
+              });
+        }
       }
       editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
       if constexpr (std::is_same_v<BehaviorType, TagsBehavior>) {
@@ -583,7 +639,6 @@ struct EditorModifyComponentReceiver {
         editor.sendTagsData();
       }
     });
-    // TODO: swap
   }
 };
 
