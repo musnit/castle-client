@@ -29,6 +29,23 @@ const data = {
     'arithmetic',
     'functions',
   ],
+  addMotionBehaviors: [
+    {
+      label: 'Collisions',
+      dependencies: ['Body'],
+      behaviors: ['Solid', 'Bouncy', 'Friction'],
+    },
+    {
+      label: 'Physics',
+      dependencies: ['Body', 'Moving'],
+      behaviors: ['Sliding', 'Falling', 'SpeedLimit', 'Slowdown'],
+    },
+    {
+      label: 'Controls',
+      dependencies: ['Body', 'Moving'],
+      behaviors: ['AnalogStick', 'Drag', 'Sling'],
+    },
+  ],
   behaviors: {
     AnalogStick: {
       allowsDisableWithoutRemoval: true,

@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Counter } from './InspectorBehaviors';
 import { EditRuleSheet } from '../rules/EditRuleSheet';
 import { RulePreview } from '../rules/RulePreview';
 import { useCoreState, sendBehaviorAction } from '../../../core/CoreEvents';
 
 import * as RulesClipboard from '../rules/RulesClipboard';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
+
+import Counter from './InspectorCounter';
 
 const styles = StyleSheet.create({
   container: {},

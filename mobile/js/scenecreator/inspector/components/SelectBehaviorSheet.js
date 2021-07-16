@@ -4,7 +4,7 @@ import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
 import { useCoreState } from '../../../core/CoreEvents';
 
-import * as Inspector from '../behaviors/InspectorBehaviors';
+import Metadata from '../../Metadata';
 import * as Constants from '../../../Constants';
 
 const styles = StyleSheet.create({
@@ -81,7 +81,7 @@ export const SelectBehaviorSheet = ({
 
   let isSheetEmpty = true;
   let isGroupVisible = {};
-  Inspector.MotionBehaviors.forEach((group) => {
+  Metadata.addMotionBehaviors.forEach((group) => {
     isGroupVisible[group.label] = group.behaviors.some((key) => filterBehavior(behaviors[key]));
     if (isGroupVisible[group.label]) {
       isSheetEmpty = false;
@@ -93,8 +93,9 @@ export const SelectBehaviorSheet = ({
       <EmptyState />
     ) : (
       <View style={styles.container}>
-        {Inspector.MotionBehaviors.filter((group) => isGroupVisible[group.label]).map(
-          (group, ii) => {
+        {Metadata.addMotionBehaviors
+          .filter((group) => isGroupVisible[group.label])
+          .map((group, ii) => {
             let index = 0;
             return (
               <View key={`group-${ii}`} style={styles.group}>
@@ -113,8 +114,7 @@ export const SelectBehaviorSheet = ({
                 )}
               </View>
             );
-          }
-        )}
+          })}
       </View>
     );
 

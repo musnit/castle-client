@@ -11,6 +11,7 @@ import * as Inspector from './behaviors/InspectorBehaviors';
 import * as InspectorUtilities from './InspectorUtilities';
 
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Metadata from '../Metadata';
 
 const styles = StyleSheet.create({
   actionsContainer: {
@@ -71,7 +72,7 @@ const MovementTab = ({ behaviors, addChildSheet }) => {
   let movementBehaviors = InspectorUtilities.filterAvailableBehaviors({
     allBehaviors: behaviors,
     selectedActorData,
-    possibleBehaviors: Inspector.MotionBehaviors.reduce(
+    possibleBehaviors: Metadata.addMotionBehaviors.reduce(
       (behaviors, group) => behaviors.concat(group.behaviors),
       []
     ),

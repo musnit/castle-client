@@ -4,8 +4,9 @@ import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
 import { useCoreState } from '../../../core/CoreEvents';
 
-import * as Inspector from '../behaviors/InspectorBehaviors';
 import * as Constants from '../../../Constants';
+
+import Metadata from '../../Metadata';
 
 const styles = StyleSheet.create({
   container: {},
@@ -94,7 +95,7 @@ export const AddBehaviorSheet = ({ isOpen, onClose, context, behaviors, addBehav
 
   let isSheetEmpty = true;
   let isGroupVisible = {};
-  Inspector.MotionBehaviors.forEach((group) => {
+  Metadata.addMotionBehaviors.forEach((group) => {
     isGroupVisible[group.label] = group.behaviors.some(
       (behavior) => !selectedActorData.behaviors[behavior].isActive
     );
@@ -108,8 +109,9 @@ export const AddBehaviorSheet = ({ isOpen, onClose, context, behaviors, addBehav
       <EmptyState />
     ) : (
       <View style={styles.container}>
-        {Inspector.MotionBehaviors.filter((group) => isGroupVisible[group.label]).map(
-          (group, ii) => {
+        {Metadata.addMotionBehaviors
+          .filter((group) => isGroupVisible[group.label])
+          .map((group, ii) => {
             let isGroupEnabled = true;
             if (
               group.dependencies.indexOf('Moving') !== -1 &&
@@ -142,8 +144,7 @@ export const AddBehaviorSheet = ({ isOpen, onClose, context, behaviors, addBehav
                 ))}
               </View>
             );
-          }
-        )}
+          })}
       </View>
     );
 
