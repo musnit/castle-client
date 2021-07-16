@@ -81,7 +81,7 @@ const BodyTypeControl = ({ isMovingActive, isRotatingMotionActive }) => {
       label: 'Moves at a constant rate',
       onSelect: () => {
         if (isMovingActive) {
-          sendDynamicAction('swap', { name: 'RotatingMotion' });
+          sendDynamicAction('swapMotion');
         } else {
           sendFixedAction('add');
         }
@@ -92,7 +92,7 @@ const BodyTypeControl = ({ isMovingActive, isRotatingMotionActive }) => {
       label: 'Moved by other forces',
       onSelect: () => {
         if (isRotatingMotionActive) {
-          sendFixedAction('swap', { name: 'Moving' });
+          sendFixedAction('swapMotion');
         } else {
           sendDynamicAction('add');
         }
