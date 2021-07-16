@@ -243,6 +243,8 @@ public:
   void setNum(double val);
   template<typename V>
   void setStr(V &&val);
+  template<typename K, typename V>
+  void write(K &&key, const V &val);
 
 
   // Write a value of custom type. Can be a function, a type with a `T::write(Writer &writer)`
@@ -804,6 +806,11 @@ void Writer::str(V &&val) {
 template<typename V>
 void Writer::setStr(V &&val) {
   *cur = makeStr(std::forward<V>(val));
+}
+
+template<typename K, typename V>
+void Writer::write(K &&key, const V &val) {
+  cur->AddMember(makeStr(std::forward<K>(key)), write_(val), alloc);
 }
 
 template<typename K, typename F>
