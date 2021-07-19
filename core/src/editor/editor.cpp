@@ -290,9 +290,9 @@ struct EditorAllBehaviorsEvent {
     PROP(std::string, name);
     PROP(std::string, displayName);
     PROP(bool, allowsDisableWithoutRemoval);
-    PROP(std::vector<PropertySpec>, propertySpecs);
+    PROP((std::unordered_map<std::string, PropertySpec>), propertySpecs);
   };
-  PROP(std::vector<Behavior>, behaviors);
+  PROP((std::unordered_map<std::string, Behavior>), behaviors);
 };
 
 void Editor::sendAllBehaviorsData() {
@@ -327,10 +327,10 @@ void Editor::sendAllBehaviorsData() {
         }
       }
 
-      elem.propertySpecs().push_back(spec);
+      elem.propertySpecs().emplace(Prop::name, spec);
     });
 
-    ev.behaviors().push_back(elem);
+    ev.behaviors().emplace(BehaviorType::name, elem);
   });
   bridge.sendEvent("EDITOR_ALL_BEHAVIORS", ev);
 };
