@@ -231,10 +231,8 @@ const InspectorExpressionInput = ({
               });
             };
             return (
-              <>
-                <View
-                  style={styles.paramContainer}
-                  key={`expression-param-${name}-${expressionType}`}>
+              <React.Fragment key={`expression-param-${name}-${expressionType}`}>
+                <View style={styles.paramContainer}>
                   {spec.method !== 'toggle' ? (
                     <View style={styles.paramLabelRow}>
                       <Text style={styles.paramLabel}>{name}</Text>
@@ -265,7 +263,7 @@ const InspectorExpressionInput = ({
                     </View>
                   </View>
                 ) : null}
-              </>
+              </React.Fragment>
             );
           })
         )}
