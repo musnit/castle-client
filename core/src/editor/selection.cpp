@@ -78,3 +78,18 @@ struct SelectActorEditReceiver {
     }
   }
 };
+
+struct SelectBlueprintReceiver {
+  inline static const BridgeRegistration<SelectBlueprintReceiver> registration {
+    "SELECT_BLUEPRINT"
+  };
+
+  struct Params {
+  } params;
+
+  void receive(Engine &engine) {
+    if (engine.getIsEditing()) {
+      engine.getEditor().getSelection().setBlueprintSelected(true);
+    }
+  }
+};

@@ -24,6 +24,9 @@ public:
   void deselectActor(ActorId actorId);
   void deselectAllActors();
 
+  bool isBlueprintSelected();
+  void setBlueprintSelected(bool selected);
+
   inline static const TouchToken touchToken;
 
 private:
@@ -33,6 +36,7 @@ private:
   void applySelection(Scene &scene);
   void selectActorFromHits(const BodyBehavior::ActorsAtTouch &hits);
   bool selectionChanged = false;
+  bool blueprintSelected = false;
 };
 
 inline ActorIdSet &Selection::getSelectedActorIds() {
@@ -79,6 +83,15 @@ inline void Selection::deselectActor(ActorId actorId) {
 inline void Selection::deselectAllActors() {
   if (!selection.empty()) {
     selection.clear();
+    blueprintSelected = false;
     selectionChanged = true;
   }
+}
+
+inline bool Selection::isBlueprintSelected() {
+  return blueprintSelected;
+}
+
+inline void Selection::setBlueprintSelected(bool selected) {
+  blueprintSelected = selected;
 }

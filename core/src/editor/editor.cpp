@@ -196,6 +196,7 @@ struct EditorGlobalActionsEvent {
   PROP(bool, performing) = false;
   PROP(int, selectedActorId) = -1;
   PROP(bool, isTextActorSelected) = false;
+  PROP(bool, isBlueprintSelected) = false;
 
   struct ActionsAvailable {
     PROP(bool, onPlay) = true;
@@ -236,6 +237,7 @@ void Editor::sendGlobalActions() {
   EditorGlobalActionsEvent ev;
   if (selection.hasSelection()) {
     ev.selectedActorId = entt::to_integral(selection.firstSelectedActorId());
+    ev.isBlueprintSelected = selection.isBlueprintSelected();
     scene->getBehaviors().byName("Text", [&](auto &behavior) {
       if (behavior.hasComponent(selection.firstSelectedActorId())) {
         ev.isTextActorSelected = true;
