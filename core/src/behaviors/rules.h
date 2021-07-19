@@ -180,6 +180,7 @@ public:
   void handlePreRemoveActor(ActorId actorId, RulesComponent &component);
 
   void handleReadComponent(ActorId actorId, RulesComponent &component, Reader &reader);
+  void handleWriteComponent(ActorId actorId, const RulesComponent &component, Writer &writer) const;
 
   void handlePerform(double dt);
 

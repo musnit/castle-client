@@ -39,6 +39,7 @@ public:
   using BaseBehavior::BaseBehavior;
 
   void handleReadComponent(ActorId actorId, Drawing2Component &component, Reader &reader);
+  void handleWriteComponent(ActorId actorId, const Drawing2Component &component, Writer &writer) const;
   void handlePerform(double dt);
   void handleDrawComponent(ActorId actorId, const Drawing2Component &component) const;
 

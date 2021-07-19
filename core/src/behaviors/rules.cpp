@@ -1061,6 +1061,10 @@ void RulesBehavior::readExpression(ExpressionRef &expr, Reader &reader) {
   }
 }
 
+void RulesBehavior::handleWriteComponent(
+    ActorId actorId, const RulesComponent &component, Writer &writer) const {
+}
+
 
 //
 // Perform

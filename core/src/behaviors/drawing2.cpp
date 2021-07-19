@@ -97,6 +97,12 @@ void Drawing2Behavior::handleReadComponent(
   }
 }
 
+void Drawing2Behavior::handleWriteComponent(
+    ActorId actorId, const Drawing2Component &component, Writer &writer) const {
+  writer.str("hash", component.hash);
+  component.animationComponentProperties.write(writer);
+  writer.obj("drawData", *component.drawData);
+}
 
 //
 // Perform

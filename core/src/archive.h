@@ -201,6 +201,11 @@ class Writer {
   // the writer case, enterable sub-values are created using the `.arr` or `.obj` methods.
 
 public:
+  // Constructor
+
+  explicit Writer(json::Value &cur_, json::Value::AllocatorType &alloc_);
+
+
   // These methods all use templates for the string types to cover `const char *`, `std::string` and
   // also `const char [N]`. That last one is the type of constant string literals (like `"hello"`)
   // in C++, and is specialized here to avoid needing to dynamically allocate memory to copy them
@@ -264,8 +269,6 @@ private:
 
   json::Value *cur;
   json::Value::AllocatorType &alloc;
-
-  explicit Writer(json::Value &cur_, json::Value::AllocatorType &alloc_);
 
   // Detection of string literals
   template<typename T>

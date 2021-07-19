@@ -52,6 +52,8 @@ public:
   ActorId indexActor(int index) const; // Order maintained as long as actors not added / removed.
                                        // `nullActor` if out of bounds.
 
+  void writeActor(ActorId actorId, Writer &writer) const;
+
 
   // Draw order
   struct DrawOrder {

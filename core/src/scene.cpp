@@ -251,6 +251,23 @@ void Scene::ensureDrawOrderSort() const {
   }
 }
 
+void Scene::writeActor(ActorId actorId, Writer &writer) const {
+  writer.obj("components", [&]() {
+    getBehaviors().forEach([&](auto &behavior) {
+      if (auto component = behavior.maybeGetComponent(actorId)) {
+        using Behavior = std::remove_reference_t<decltype(behavior)>;
+        writer.obj(Behavior::name, [&]() {
+          writer.write(component->props);
+          if constexpr (Handlers::hasWriteComponent<decltype(behavior)>) {
+            behavior.handleWriteComponent(actorId, *component, writer);
+          }
+          writer.boolean("disabled", component->disabled);
+        });
+      }
+    });
+  });
+}
+
 
 //
 // Update

@@ -690,6 +690,40 @@ struct EditorInspectorActionReceiver {
     Debug::log("editor received inspector action: {}", action);
     if (action == "closeInspector") {
       engine.getEditor().getSelection().deselectAllActors();
+      return;
+    }
+
+    auto &editor = engine.getEditor();
+    auto actorId = editor.getSelection().firstSelectedActorId();
+    if (actorId == nullActor) {
+      return;
+    }
+
+    if (action == "deleteSelection") {
+      // TODO: Save and restore `actorId`
+      // TODO: Save and restore `parentEntryId`
+      // TODO: Save and restore draw order
+      auto &scene = editor.getScene();
+      auto archive = std::make_shared<Archive>();
+      archive->write([&](Writer &writer) {
+        scene.writeActor(actorId, writer);
+      });
+      Debug::log("bp: {}", archive->toJson());
+      editor.getCommands().execute(
+          "delete", {},
+          [actorId](Editor &editor, bool) {
+            auto &scene = editor.getScene();
+            editor.getSelection().deselectActor(actorId);
+            scene.removeActor(actorId);
+          },
+          [archive = std::move(archive)](Editor &editor, bool) {
+            auto &scene = editor.getScene();
+            archive->read([&](Reader &reader) {
+              Scene::ActorDesc actorDesc;
+              actorDesc.reader = &reader;
+              scene.addActor(actorDesc);
+            });
+          });
     }
   }
 };

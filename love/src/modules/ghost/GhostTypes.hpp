@@ -444,6 +444,13 @@ namespace ghost {
       loopStartFrame.value = -1;
       loopEndFrame.value = -1;
     }
+
+    void write(Archive::Writer &writer) const {
+      writer.boolean("playing", playing);
+      writer.num("framesPerSecond", framesPerSecond);
+      writer.num("initialFrame", currentFrame.value);
+      writer.boolean("loop", loop);
+    }
   };
 
   class ToveMeshHolder {};

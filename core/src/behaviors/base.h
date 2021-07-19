@@ -143,6 +143,7 @@ DEFINE_HANDLER(PreRemoveActor);
 
 // Read, write
 DEFINE_HANDLER(ReadComponent);
+DEFINE_HANDLER(WriteComponent);
 
 // Perform
 DEFINE_HANDLER(Perform);
