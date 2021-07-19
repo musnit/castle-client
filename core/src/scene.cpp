@@ -8,9 +8,9 @@
 //
 
 Scene::Scene(Bridge &bridge_, Variables &variables_, bool isEditing_, Reader *maybeReader)
-    : isEditing(isEditing_)
-    , variables(variables_)
+    : variables(variables_)
     , bridge(bridge_)
+    , isEditing(isEditing_)
     , physicsContactListener(*this)
     , behaviors(std::make_unique<AllBehaviors>(*this)) {
   // Link to variables
