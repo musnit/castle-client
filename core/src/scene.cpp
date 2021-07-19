@@ -211,6 +211,12 @@ ActorId Scene::addActor(const ActorDesc &params) {
   return actorId;
 }
 
+ActorId Scene::generateActorId() {
+  auto result = registry.create();
+  registry.destroy(result);
+  return result;
+}
+
 void Scene::removeActor(ActorId actorId) {
   if (!hasActor(actorId)) {
     Debug::log("removeActor: no such actor");

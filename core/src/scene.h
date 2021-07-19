@@ -44,6 +44,7 @@ public:
     ActorId drawOrderRelativeTo = nullActor;
   };
   ActorId addActor(const ActorDesc &params);
+  ActorId generateActorId();
   void removeActor(ActorId actorId);
   bool hasActor(ActorId actorId) const; // Whether `actorId` exists. Always `false` for `nullActor`.
                                         // may move as actors are added / removed.

@@ -111,6 +111,7 @@ private:
   friend class Scene;
   friend class Snapshot;
   friend class Editor;
+  friend struct EditorInspectorActionReceiver;
 
   Scene &scene;
   entt::basic_view<entt::entity, entt::exclude_t<>, Component> componentView

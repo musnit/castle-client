@@ -709,7 +709,6 @@ struct EditorInspectorActionReceiver {
       archive->write([&](Writer &writer) {
         scene.writeActor(actorId, writer);
       });
-      Debug::log("bp: {}", archive->toJson());
       editor.getCommands().execute(
           "delete", {},
           [actorId](Editor &editor, bool) {
@@ -725,6 +724,57 @@ struct EditorInspectorActionReceiver {
               actorDesc.reader = &reader;
               scene.addActor(actorDesc);
             });
+          });
+    } else if (action == "duplicateSelection") {
+      // Generate new actor id now to keep it stable across undos and redos
+      auto &scene = editor.getScene();
+      auto newActorId = scene.generateActorId();
+      editor.getCommands().execute(
+          "duplicate", {},
+          [actorId, newActorId](Editor &editor, bool) {
+            // TODO: Copy `parentEntryId`
+
+            auto &scene = editor.getScene();
+
+            // Write actor to archive, nudging position a bit and then restoring it
+            float oldX = 0, oldY = 0;
+            auto maybeBodyComponent
+                = scene.getBehaviors().byType<BodyBehavior>().maybeGetComponent(actorId);
+            if (maybeBodyComponent) {
+              oldX = maybeBodyComponent->props.x();
+              oldY = maybeBodyComponent->props.y();
+              maybeBodyComponent->props.x() += 0.5;
+              maybeBodyComponent->props.y() += 0.5;
+            }
+            Archive archive;
+            archive.write([&](Writer &writer) {
+              scene.writeActor(actorId, writer);
+            });
+            if (maybeBodyComponent) {
+              maybeBodyComponent->props.x() = oldX;
+              maybeBodyComponent->props.y() = oldY;
+            }
+
+            // Read from archive to create new actor. Its draw order should be right in front of the
+            // original one.
+            archive.read([&](Reader &reader) {
+              Scene::ActorDesc actorDesc;
+              actorDesc.requestedActorId = newActorId;
+              actorDesc.drawOrderRelativity = Scene::ActorDesc::FrontOf;
+              actorDesc.drawOrderRelativeTo = actorId;
+              actorDesc.reader = &reader;
+              scene.addActor(actorDesc);
+              scene.ensureDrawOrderSort();
+            });
+
+            // Select new actor
+            editor.getSelection().deselectActor(actorId);
+            editor.getSelection().selectActor(newActorId);
+          },
+          [newActorId](Editor &editor, bool) {
+            // Remove new actor
+            auto &scene = editor.getScene();
+            scene.removeActor(newActorId);
           });
     }
   }
