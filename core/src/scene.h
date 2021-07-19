@@ -36,6 +36,7 @@ public:
   // Actor management
 
   struct ActorDesc {
+    ActorId requestedActorId = nullActor;
     Reader *reader = nullptr;
     const char *parentEntryId = nullptr;
     enum DrawOrderRelativity { BehindAll, Behind, FrontOf, FrontOfAll };

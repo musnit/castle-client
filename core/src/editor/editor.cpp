@@ -700,7 +700,6 @@ struct EditorInspectorActionReceiver {
     }
 
     if (action == "deleteSelection") {
-      // TODO: Save and restore `actorId`
       // TODO: Save and restore `parentEntryId`
       // TODO: Save and restore draw order
       auto &scene = editor.getScene();
@@ -716,10 +715,11 @@ struct EditorInspectorActionReceiver {
             editor.getSelection().deselectActor(actorId);
             scene.removeActor(actorId);
           },
-          [archive = std::move(archive)](Editor &editor, bool) {
+          [actorId, archive = std::move(archive)](Editor &editor, bool) {
             auto &scene = editor.getScene();
             archive->read([&](Reader &reader) {
               Scene::ActorDesc actorDesc;
+              actorDesc.requestedActorId = actorId;
               actorDesc.reader = &reader;
               scene.addActor(actorDesc);
             });

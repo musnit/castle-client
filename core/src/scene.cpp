@@ -95,7 +95,8 @@ ActorId Scene::addActor(const ActorDesc &params) {
   }
 
   // Actor
-  auto actorId = registry.create();
+  auto actorId = params.requestedActorId != nullActor ? registry.create(params.requestedActorId)
+                                                      : registry.create();
 
   // Draw order
   DrawOrder drawOrder;
