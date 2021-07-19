@@ -79,7 +79,7 @@ export default RuleParamInputSheet = ({
     addChildSheet({
       key: 'configureExpression',
       Component: ConfigureExpressionSheet,
-      label: paramSpec.label,
+      label: paramSpec.attribs?.label ?? paramSpec.name,
       triggerFilter,
       value,
       onChange,
@@ -101,7 +101,7 @@ export default RuleParamInputSheet = ({
           <View key={`param-${ii}`} style={styles.inputs}>
             <RuleParamInputRow
               entryPath={entryPath}
-              label={paramName}
+              label={paramSpec.attribs.label ?? paramSpec.name}
               context={context}
               paramSpec={paramSpec}
               value={value}
@@ -125,8 +125,8 @@ export default RuleParamInputSheet = ({
   if (!title) {
     let firstParamName = paramNames[0];
     let paramSpec = findParamSpec(paramNames[0]);
-    if (paramSpec && paramSpec.label) {
-      firstParamName = paramSpec.label;
+    if (paramSpec && paramSpec.attribs?.label) {
+      firstParamName = paramSpec.attribs.label;
     }
     title = `Edit ${firstParamName}`;
   }
