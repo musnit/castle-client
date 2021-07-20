@@ -703,24 +703,39 @@ struct EditorInspectorActionReceiver {
 
     if (action == "deleteSelection") {
       // TODO: Save and restore `parentEntryId`
-      // TODO: Save and restore draw order
+
       auto &scene = editor.getScene();
+
+      // Get current draw order value so we can restore it on undo
+      scene.ensureDrawOrderSort();
+      std::optional<int> drawOrderRelativeToValue;
+      if (auto drawOrder = scene.maybeGetDrawOrder(actorId)) {
+        drawOrderRelativeToValue = drawOrder->value;
+      }
+
+      // Save actor to archive so we can restore it on undo
       auto archive = std::make_shared<Archive>();
       archive->write([&](Writer &writer) {
         scene.writeActor(actorId, writer);
       });
+
       editor.getCommands().execute(
           "delete", {},
           [actorId](Editor &editor, bool) {
+            // Deselect and remove actor
             auto &scene = editor.getScene();
             editor.getSelection().deselectActor(actorId);
             scene.removeActor(actorId);
           },
-          [actorId, archive = std::move(archive)](Editor &editor, bool) {
+          [actorId, drawOrderRelativeToValue, archive = std::move(archive)](Editor &editor, bool) {
+            // Read actor back. Draw order should be right behind current actor with old value.
             auto &scene = editor.getScene();
+            scene.ensureDrawOrderSort();
             archive->read([&](Reader &reader) {
               Scene::ActorDesc actorDesc;
               actorDesc.requestedActorId = actorId;
+              actorDesc.drawOrderRelativeToValue = drawOrderRelativeToValue;
+              actorDesc.drawOrderRelativity = Scene::ActorDesc::Behind;
               actorDesc.reader = &reader;
               scene.addActor(actorDesc);
             });
@@ -761,7 +776,7 @@ struct EditorInspectorActionReceiver {
               Scene::ActorDesc actorDesc;
               actorDesc.requestedActorId = newActorId;
               actorDesc.drawOrderRelativity = Scene::ActorDesc::FrontOf;
-              actorDesc.drawOrderRelativeTo = actorId;
+              actorDesc.drawOrderRelativeToActor = actorId;
               actorDesc.reader = &reader;
               scene.addActor(actorDesc);
               scene.ensureDrawOrderSort();

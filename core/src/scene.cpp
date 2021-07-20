@@ -102,7 +102,10 @@ ActorId Scene::addActor(const ActorDesc &params) {
   DrawOrder drawOrder;
   auto drawOrderRelativity = params.drawOrderRelativity;
   if (drawOrderRelativity == ActorDesc::Behind || drawOrderRelativity == ActorDesc::FrontOf) {
-    if (auto otherDrawOrder = maybeGetDrawOrder(params.drawOrderRelativeTo)) {
+    if (params.drawOrderRelativeToValue) {
+      // Relative to given direct draw order value -- tie break is set later below
+      drawOrder.value = *params.drawOrderRelativeToValue;
+    } else if (auto otherDrawOrder = maybeGetDrawOrder(params.drawOrderRelativeToActor)) {
       // Relative to found given actor -- tie break is set later below
       drawOrder.value = otherDrawOrder->value;
     } else {

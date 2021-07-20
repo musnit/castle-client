@@ -114,7 +114,7 @@ struct CreateResponse : BaseResponse {
     if (auto &depth = params.depth(); depth[0] == 'b') {
       if (depth[7] == 't') {
         // Behind this
-        newActorDesc.drawOrderRelativeTo = creatorActorId;
+        newActorDesc.drawOrderRelativeToActor = creatorActorId;
         newActorDesc.drawOrderRelativity = Scene::ActorDesc::Behind;
       } else {
         // Behind all
@@ -123,7 +123,7 @@ struct CreateResponse : BaseResponse {
     } else {
       if (depth[12] == 't') {
         // Front of this
-        newActorDesc.drawOrderRelativeTo = creatorActorId;
+        newActorDesc.drawOrderRelativeToActor = creatorActorId;
         newActorDesc.drawOrderRelativity = Scene::ActorDesc::FrontOf;
       } else {
         // Front of all

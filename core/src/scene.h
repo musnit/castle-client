@@ -41,7 +41,8 @@ public:
     const char *parentEntryId = nullptr;
     enum DrawOrderRelativity { BehindAll, Behind, FrontOf, FrontOfAll };
     DrawOrderRelativity drawOrderRelativity = FrontOfAll;
-    ActorId drawOrderRelativeTo = nullActor;
+    ActorId drawOrderRelativeToActor = nullActor;
+    std::optional<int> drawOrderRelativeToValue;
   };
   ActorId addActor(const ActorDesc &params);
   ActorId generateActorId();
