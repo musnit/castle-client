@@ -594,20 +594,43 @@ struct EditorModifyComponentReceiver {
             });
       } else if (action == "remove") {
         static auto description = std::string("remove ") + BehaviorType::displayName;
-        // TODO(nikki): Generate component blueprint to use in undo
+
+        // Save component data to archive so we can restore it on undo
+        auto disabled = false;
+        auto archive = std::make_shared<Archive>();
+        if (auto component = behavior.maybeGetComponent(actorId)) {
+          disabled = component->disabled;
+          archive->write([&](Writer &writer) {
+            writer.write(component->props);
+            if constexpr (Handlers::hasWriteComponent<decltype(behavior)>) {
+              behavior.handleWriteComponent(actorId, *component, writer);
+            }
+          });
+        }
+
         editor.getCommands().execute(
             description, {},
             [actorId](Editor &editor, bool) {
+              // Remove component
               auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
               behavior.removeComponent(actorId);
               editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
               editor.setSelectedActorStateDirty();
             },
-            [actorId](Editor &editor, bool) {
-              // TODO(nikki): Restore from component blueprint
+            [actorId, disabled, archive = std::move(archive)](Editor &editor, bool) {
+              // Add component and restore data from archive
               auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
-              behavior.addComponent(actorId);
-              behavior.enableComponent(actorId);
+              auto &component = behavior.addComponent(actorId);
+              component.disabled = disabled;
+              archive->read([&](Reader &reader) {
+                reader.read(component.props);
+                if constexpr (Handlers::hasReadComponent<decltype(behavior)>) {
+                  behavior.handleReadComponent(actorId, component, reader);
+                }
+              });
+              if (!disabled) {
+                behavior.enableComponent(actorId);
+              }
               editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
               editor.setSelectedActorStateDirty();
             });

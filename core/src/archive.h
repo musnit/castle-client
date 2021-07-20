@@ -256,7 +256,7 @@ public:
   // method, or reflectable with props
 
   template<typename T>
-  void write(T &&v);
+  void write(const T &v);
 
   void setScene(Scene *scene_); // Associate with a scene so functions deep in a writing call stack
                                 // (eg. `Tag::write`) can retrieve the scene / behaviors to work on
@@ -857,8 +857,8 @@ void Writer::obj(F &&f) {
 }
 
 template<typename T>
-void Writer::write(T &&v) {
-  *cur = write_(std::forward<T>(v));
+void Writer::write(const T &v) {
+  *cur = write_(v);
 }
 
 inline Writer::Writer(json::Value &cur_, json::Value::AllocatorType &alloc_)
