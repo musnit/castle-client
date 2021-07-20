@@ -218,16 +218,18 @@ void MovingBehavior::handleSetProperty(
   }
   auto &props = component.props;
   if (propId == props.vx.id) {
-    body->SetLinearVelocity({ value.as<float>(), body->GetLinearVelocity().y });
+    props.vx() = value.as<float>();
+    body->SetLinearVelocity({ props.vx(), body->GetLinearVelocity().y });
   } else if (propId == props.vy.id) {
-    body->SetLinearVelocity({ body->GetLinearVelocity().x, value.as<float>() });
+    props.vy() = value.as<float>();
+    body->SetLinearVelocity({ body->GetLinearVelocity().x, props.vy() });
   } else if (propId == props.angularVelocity.id) {
-    body->SetAngularVelocity(float(value.as<double>() * M_PI / 180));
+    props.angularVelocity() = float(value.as<double>() * M_PI / 180);
+    body->SetAngularVelocity(props.angularVelocity());
   } else if (propId == props.density.id) {
     props.density() = value.as<float>();
     handleUpdateComponentFixtures(actorId, component, body);
   }
-  BaseBehavior::handleSetProperty(actorId, component, propId, value);
 }
 
 

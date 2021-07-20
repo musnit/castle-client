@@ -390,18 +390,21 @@ void BodyBehavior::handleSetProperty(
   auto &props = component.props;
   if (propId == props.x.id) {
     auto newX = value.as<float>();
+    props.x() = newX;
     if (component.layer == BodyLayer::Camera) {
       newX += getScene().getCameraPosition().x;
     }
     body->SetTransform({ newX, body->GetPosition().y }, body->GetAngle());
   } else if (propId == props.y.id) {
     auto newY = value.as<float>();
+    props.y() = newY;
     if (component.layer == BodyLayer::Camera) {
       newY += getScene().getCameraPosition().y;
     }
     body->SetTransform({ body->GetPosition().x, newY }, body->GetAngle());
   } else if (propId == props.angle.id) {
-    body->SetTransform(body->GetPosition(), float(value.as<double>() * M_PI / 180));
+    props.angle() = float(value.as<double>() * M_PI / 180);
+    body->SetTransform(body->GetPosition(), props.angle());
   } else if (propId == props.widthScale.id) {
     props.widthScale() = value.as<float>() / 10;
     recreateFixtures(actorId, component, true); // PERF: Mark dirty and do this at end of frame?
@@ -409,7 +412,6 @@ void BodyBehavior::handleSetProperty(
     props.heightScale() = value.as<float>() / 10;
     recreateFixtures(actorId, component, true); // PERF: Mark dirty and do this at end of frame?
   }
-  BaseBehavior::handleSetProperty(actorId, component, propId, value);
 }
 
 void BodyBehavior::setPosition(ActorId actorId, b2Vec2 pos) {
