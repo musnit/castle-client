@@ -59,72 +59,13 @@ const styles = StyleSheet.create({
   },
 });
 
-const makeChangeOrderOptions = ({ isTextActorSelected, sendAction }) => {
-  if (isTextActorSelected) {
-    return [
-      {
-        name: 'Move to Top',
-        action: () => sendAction('moveSelectionToBack'),
-      },
-      {
-        name: 'Move Up',
-        action: () => sendAction('moveSelectionBackward'),
-      },
-      {
-        name: 'Move Down',
-        action: () => sendAction('moveSelectionForward'),
-      },
-      {
-        name: 'Move to Bottom',
-        action: () => sendAction('moveSelectionToFront'),
-      },
-    ];
-  } else {
-    return [
-      {
-        name: 'Bring to Front',
-        action: () => sendAction('moveSelectionToFront'),
-      },
-      {
-        name: 'Bring Forward',
-        action: () => sendAction('moveSelectionForward'),
-      },
-      {
-        name: 'Send Backward',
-        action: () => sendAction('moveSelectionBackward'),
-      },
-      {
-        name: 'Send to Back',
-        action: () => sendAction('moveSelectionToBack'),
-      },
-    ];
-  }
-};
-
 export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab }) => {
-  const { showActionSheetWithOptions } = useActionSheet();
-  const { isTextActorSelected, deck } = useCardCreator();
+  const { deck } = useCardCreator();
 
   // TODO: new engine data
   const data = {}; // previously `inspectorActions`
   const applicableTools = null;
   const sendAction = (action, ...args) => sendAsync('EDITOR_INSPECTOR_ACTION', { action, ...args });
-
-  const changeSelectionOrder = React.useCallback(() => {
-    const options = makeChangeOrderOptions({ isTextActorSelected, sendAction });
-    showActionSheetWithOptions(
-      {
-        title: 'Change order',
-        options: options.map((option) => option.name).concat(['Cancel']),
-        cancelButtonIndex: options.length,
-      },
-      (buttonIndex) => {
-        if (buttonIndex < options.length) {
-          return options[buttonIndex].action();
-        }
-      }
-    );
-  }, [sendAction]);
 
   const safeTitle = data.title ?? '';
   const [isEditingTitle, setIsEditingTitle] = React.useState(false);
@@ -217,15 +158,6 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
           ) : null}
           <View style={styles.actions}>
             {scaleRotateButton}
-            {!data.isBlueprint ? (
-              <TouchableOpacity style={styles.actionButton} onPress={changeSelectionOrder}>
-                {isTextActorSelected ? (
-                  <Icon name="swap-vert" size={24} color="#000" />
-                ) : (
-                  <FeatherIcon name="layers" size={22} color="#000" />
-                )}
-              </TouchableOpacity>
-            ) : null}
             {true || data.isBlueprint ? ( // Leaving this here to allow skipping actor duplicate button...
               <TouchableOpacity
                 style={styles.actionButton}

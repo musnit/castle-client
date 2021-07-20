@@ -18,7 +18,7 @@ import { CardSceneLoading } from './CardSceneLoading';
 import { CardText } from '../components/CardText';
 import { CreateCardContext } from './CreateCardContext';
 import { CreateCardHeader, CARD_HEADER_HEIGHT } from './CreateCardHeader';
-import { CreateCardFooter, getFooterHeight } from './CreateCardFooter';
+import { CreateCardOverlay } from './overlay/CreateCardOverlay';
 import { DrawingCardHeader, DRAWING_CARD_HEADER_HEIGHT } from './drawing/DrawingCardHeader';
 
 import { PopoverProvider } from '../components/PopoverProvider';
@@ -99,8 +99,7 @@ export const CreateCardScreen = ({
   const isSceneLoaded = !!globalActions;
   const isPlaying =
     globalActions?.performing === undefined ? !initialIsEditing : globalActions.performing;
-  const selectedActorId = globalActions?.selectedActorId;
-  const isTextActorSelected = globalActions?.isTextActorSelected;
+  const { selectedActorId, isTextActorSelected, isBlueprintSelected } = globalActions || {};
   const hasSelection = selectedActorId >= 0 && activeSheet !== 'capturePreview';
   const textActors = useCoreTextActors();
 
@@ -242,9 +241,7 @@ export const CreateCardScreen = ({
   let cardFitStyles = null;
   const insets = useSafeAreaInsets();
   const headerHeight = isShowingDraw ? DRAWING_CARD_HEADER_HEIGHT : CARD_HEADER_HEIGHT;
-  const footerHeight = getFooterHeight({ isShowingDraw });
-  const maxCardHeight =
-    100 * Viewport.vh - headerHeight - footerHeight - insets.top - insets.bottom;
+  const maxCardHeight = 100 * Viewport.vh - headerHeight - insets.top - insets.bottom;
   let beltHeight = maxCardHeight - (Viewport.vw * 100) / Constants.CARD_RATIO;
   beltHeight = Math.floor(Math.min(Math.max(MIN_BELT_HEIGHT, beltHeight), MAX_BELT_HEIGHT));
   const beltHeightFraction = beltHeight / maxCardHeight;
@@ -277,6 +274,7 @@ export const CreateCardScreen = ({
     selectedActorId,
     hasSelection,
     isTextActorSelected,
+    isBlueprintSelected,
     library: null, // TODO: library
     onSelectBackupData,
     isShowingTextActors,
@@ -291,6 +289,7 @@ export const CreateCardScreen = ({
       <PopoverProvider>
         <SafeAreaView style={Constants.styles.container}>
           {isShowingDraw ? (
+            /* TODO: delete DrawingCardHeader, move these to CreateCardOverlay */
             <DrawingCardHeader onPressBack={() => sendGlobalAction('resetActiveTool')} />
           ) : (
             <CreateCardHeader
@@ -339,6 +338,11 @@ export const CreateCardScreen = ({
                   </View>
                 </View>
               ) : null}
+              <CreateCardOverlay
+                activeSheet={activeSheet}
+                isShowingDraw={isShowingDraw}
+                beltHeight={beltHeight}
+              />
               {isSceneLoaded ? null : <CardSceneLoading />}
             </View>
           </View>

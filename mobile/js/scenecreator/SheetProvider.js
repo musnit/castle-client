@@ -81,7 +81,7 @@ const sheetStackReducer = (prevStacks, action) => {
 
 export const SheetProvider = ({ activeSheet, setActiveSheet, isShowingDraw, beltHeight }) => {
   const { root } = useGhostUI();
-  const { isPlaying, hasSelection } = useCardCreator();
+  const { isPlaying, hasSelection, isBlueprintSelected } = useCardCreator();
   const insets = useSafeAreaInsets();
 
   const [sheetStacks, updateSheetStacks] = React.useReducer(sheetStackReducer, {});
@@ -97,14 +97,10 @@ export const SheetProvider = ({ activeSheet, setActiveSheet, isShowingDraw, belt
         if (!isPlaying) {
           if (activeSheet) {
             isOpen = key === activeSheet;
-          } else {
-            // if no sheets are open, but an actor is selected, fall back to inspector
-            isOpen = hasSelection && key === 'sceneCreatorInspector';
           }
-        }
-
-        if (isShowingDraw) {
-          isOpen = key === 'drawingLayers';
+          if (isShowingDraw) {
+            isOpen = key === 'drawingLayers';
+          }
         }
 
         const stack = sheetStacks[key] ?? [sheet];
