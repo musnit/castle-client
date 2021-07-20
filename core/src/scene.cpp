@@ -134,6 +134,11 @@ ActorId Scene::addActor(const ActorDesc &params) {
   registry.emplace<DrawOrder>(actorId, drawOrder);
   needDrawOrderSort = true;
 
+  // Track parent entry id
+  if (params.parentEntryId) {
+    setParentEntryId(actorId, params.parentEntryId);
+  }
+
   // Components reading code that's called below
   std::optional<Reader> maybeFallbackComponentsReader;
   const auto readComponents = [&](Reader &reader) {

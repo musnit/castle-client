@@ -59,17 +59,27 @@ public:
 
 
   // Draw order
+
   struct DrawOrder {
     int value = -1;
     int tieBreak = 0;
     bool operator<(const DrawOrder &other) const;
   };
-  inline static const DrawOrder minDrawOrder { -1, 0 };
+  static constexpr DrawOrder minDrawOrder { -1, 0 };
   const DrawOrder *maybeGetDrawOrder(ActorId actorId) const; // `nullptr` if invalid. Shortlived,
                                                              // may move as actors added / removed.
   void ensureDrawOrderSort() const;
   template<typename F>
   void forEachActorByDrawOrder(F &&f) const; // `f` must take `(ActorId)`
+
+
+  // Parent entry
+
+  struct ParentEntryIdData {
+    std::string parentEntryId;
+  };
+  const char *maybeGetParentEntryId(ActorId actorId) const; // `nullptr` if no parent entry
+  void setParentEntryId(ActorId actorId, const char *newParentEntryId); // Set `nullptr` to remove
 
 
   // Behaviors
@@ -193,6 +203,9 @@ private:
   mutable int nextDrawOrderTieBreak = initialDrawOrderTieBreak; // Start near max, move toward zero
   mutable bool needDrawOrderSort = false;
 
+  entt::basic_view<entt::entity, entt::exclude_t<>, ParentEntryIdData> parentEntryIdView
+      = registry.view<ParentEntryIdData>();
+
   struct PhysicsContactListener : b2ContactListener {
     Scene &scene;
     explicit PhysicsContactListener(Scene &scene_);
@@ -265,6 +278,22 @@ template<typename F>
 inline void Scene::forEachActorByDrawOrder(F &&f) const {
   ensureDrawOrderSort();
   forEachActor(std::forward<F>(f));
+}
+
+inline const char *Scene::maybeGetParentEntryId(ActorId actorId) const {
+  if (registry.valid(actorId) && parentEntryIdView.contains(actorId)) {
+    return std::get<0>(parentEntryIdView.get(actorId)).parentEntryId.c_str();
+  } else {
+    return nullptr;
+  }
+}
+
+inline void Scene::setParentEntryId(ActorId actorId, const char *newParentEntryId) {
+  if (newParentEntryId) {
+    registry.get_or_emplace<ParentEntryIdData>(actorId).parentEntryId = newParentEntryId;
+  } else {
+    registry.remove_if_exists<ParentEntryIdData>(actorId);
+  }
 }
 
 inline AllBehaviors &Scene::getBehaviors() {

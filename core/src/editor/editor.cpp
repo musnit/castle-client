@@ -532,7 +532,6 @@ struct EditorModifyComponentReceiver {
           } else {
             auto oldValue = behavior.getProperty(actorId, propId).template as<double>();
             auto newValue = params.doubleValue();
-            Debug::log("{} {} {}", params.propertyName(), oldValue, newValue);
             editor.getCommands().execute(
                 description, commandParams,
                 [actorId, propId, newValue](Editor &editor, bool) {
@@ -729,11 +728,15 @@ struct EditorInspectorActionReceiver {
 
       auto &scene = editor.getScene();
 
-      // Get current draw order value so we can restore it on undo
+      // Get current draw order and parent entry id values to restore on undo
       scene.ensureDrawOrderSort();
       std::optional<int> drawOrderRelativeToValue;
       if (auto drawOrder = scene.maybeGetDrawOrder(actorId)) {
         drawOrderRelativeToValue = drawOrder->value;
+      }
+      std::optional<std::string> parentEntryId;
+      if (auto parentEntryIdCStr = scene.maybeGetParentEntryId(actorId)) {
+        parentEntryId = parentEntryIdCStr;
       }
 
       // Save actor to archive so we can restore it on undo
@@ -750,16 +753,20 @@ struct EditorInspectorActionReceiver {
             editor.getSelection().deselectActor(actorId);
             scene.removeActor(actorId);
           },
-          [actorId, drawOrderRelativeToValue, archive = std::move(archive)](Editor &editor, bool) {
+          [actorId, drawOrderRelativeToValue, parentEntryId, archive = std::move(archive)](
+              Editor &editor, bool) {
             // Read actor back. Draw order should be right behind current actor with old value.
             auto &scene = editor.getScene();
             scene.ensureDrawOrderSort();
             archive->read([&](Reader &reader) {
               Scene::ActorDesc actorDesc;
               actorDesc.requestedActorId = actorId;
+              actorDesc.reader = &reader;
+              if (parentEntryId) {
+                actorDesc.parentEntryId = parentEntryId->c_str();
+              }
               actorDesc.drawOrderRelativeToValue = drawOrderRelativeToValue;
               actorDesc.drawOrderRelativity = Scene::ActorDesc::Behind;
-              actorDesc.reader = &reader;
               scene.addActor(actorDesc);
             });
           });
@@ -770,8 +777,6 @@ struct EditorInspectorActionReceiver {
       editor.getCommands().execute(
           "duplicate", {},
           [actorId, newActorId](Editor &editor, bool) {
-            // TODO: Copy `parentEntryId`
-
             auto &scene = editor.getScene();
 
             // Write actor to archive, nudging position a bit and then restoring it
@@ -798,9 +803,10 @@ struct EditorInspectorActionReceiver {
             archive.read([&](Reader &reader) {
               Scene::ActorDesc actorDesc;
               actorDesc.requestedActorId = newActorId;
+              actorDesc.reader = &reader;
+              actorDesc.parentEntryId = scene.maybeGetParentEntryId(actorId);
               actorDesc.drawOrderRelativity = Scene::ActorDesc::FrontOf;
               actorDesc.drawOrderRelativeToActor = actorId;
-              actorDesc.reader = &reader;
               scene.addActor(actorDesc);
               scene.ensureDrawOrderSort();
             });
