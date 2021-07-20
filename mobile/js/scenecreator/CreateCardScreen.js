@@ -104,11 +104,16 @@ export const CreateCardScreen = ({
   const textActors = useCoreTextActors();
 
   React.useEffect(() => {
-    if (hasSelection) {
-      // when going from no selection to selection, close any other sheets
-      setActiveSheet(null);
-    }
+    // when changing between selected or unselected, close sheets
+    setActiveSheet(null);
   }, [hasSelection]);
+
+  React.useEffect(() => {
+    // when selecting a blueprint, open blueprint inspector
+    if (isBlueprintSelected) {
+      setActiveSheet('sceneCreatorInspector');
+    }
+  }, [isBlueprintSelected, setActiveSheet]);
 
   React.useEffect(() => {
     if (isSceneLoaded) {
