@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const CreateCardOverlay = ({ activeSheet, isShowingDraw, beltHeight }) => {
+export const CreateCardOverlay = ({ activeSheet, setActiveSheet, isShowingDraw, beltHeight }) => {
   const { hasSelection } = useCardCreator();
   if (isShowingDraw) {
     // TODO: draw overlay tools
@@ -27,7 +27,7 @@ export const CreateCardOverlay = ({ activeSheet, isShowingDraw, beltHeight }) =>
         <View style={[styles.container, { bottom: beltHeight }]} pointerEvents="box-none">
           <OverlaySelectionActions />
           <View pointerEvents="box-none">
-            <OverlayLayout />
+            <OverlayLayout setActiveSheet={setActiveSheet} />
             <OverlayBlueprint />
           </View>
         </View>

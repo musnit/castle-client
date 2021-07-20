@@ -5,6 +5,7 @@ import { CapturePreviewSheet } from './sheets/CapturePreviewSheet';
 import { CardToolsSheet } from './sheets/CardToolsSheet';
 import { CreateCardSettingsSheet } from './sheets/CreateCardSettingsSheet';
 import { InspectorSheet } from './inspector/InspectorSheet';
+import { InstanceSheet } from './inspector/instance/InstanceSheet';
 import { DrawingLayersSheet } from './sheets/DrawingLayersSheet';
 import { SheetBackgroundOverlay } from '../components/SheetBackgroundOverlay';
 import { useCardCreator } from './CreateCardContext';
@@ -25,6 +26,10 @@ const ROOT_SHEETS = [
   {
     key: 'sceneCreatorBlueprints',
     Component: BlueprintsSheet,
+  },
+  {
+    key: 'sceneCreatorInstance',
+    Component: InstanceSheet,
   },
   {
     key: 'sceneCreatorInspector',

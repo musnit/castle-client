@@ -3,6 +3,8 @@ import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 import { InspectorNumberInput } from '../components/InspectorNumberInput';
 import { InspectorCheckbox } from '../components/InspectorCheckbox';
+import { SaveBlueprintButton } from '../components/SaveBlueprintButton';
+import { useCardCreator } from '../../CreateCardContext';
 import { useCoreState, sendBehaviorAction } from '../../../core/CoreEvents';
 
 const styles = StyleSheet.create({
@@ -17,6 +19,10 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     fontSize: 16,
   },
+  properties: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
   row: {
     paddingRight: 16,
     marginBottom: 16,
@@ -29,6 +35,12 @@ const styles = StyleSheet.create({
   inputLabel: {
     paddingBottom: 4,
     fontSize: 16,
+  },
+  applyLayoutChangesContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 10,
+    paddingBottom: 16,
   },
 });
 
@@ -79,51 +91,73 @@ const LayoutInput = ({
   );
 };
 
-export default InspectorLayout = ({ body }) => {
+export const InstanceLayout = () => {
+  const { hasSelection } = useCardCreator();
+
+  // TODO: inspectorActions data
+  const inspectorActions = { hasBlueprint: true };
+
+  const behaviors = useCoreState('EDITOR_ALL_BEHAVIORS');
+  const { Body: body } = behaviors || {};
   const component = useCoreState('EDITOR_SELECTED_COMPONENT:Body');
   const sendAction = React.useCallback((...args) => sendBehaviorAction('Body', ...args), [
     sendBehaviorAction,
   ]);
+  const hasBlueprint = (inspectorActions && inspectorActions.hasBlueprint) || false;
 
-  const [visible, setVisibleAction] = useOptimisticBehaviorValue({
-    component,
-    propName: 'visible',
-    propType: 'b',
-    sendAction: sendAction,
-  });
-  const onChangeVisible = React.useCallback(
-    (visible) => {
-      setVisibleAction('set', visible);
-    },
-    [setVisibleAction]
-  );
-
-  const [relative, setRelativeAction] = useOptimisticBehaviorValue({
-    component,
-    propName: 'relativeToCamera',
-    propType: 'b',
-    sendAction: sendAction,
-  });
-  const onChangeRelative = React.useCallback(
-    (relative) => {
-      setRelativeAction('set', relative);
-    },
-    [setRelativeAction]
-  );
+  if (!hasSelection || !body || !component) return null;
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>TODO: Blueprint Layout</Text>
-      <View style={styles.row}>
-        <InspectorCheckbox
-          value={relative}
-          onChange={onChangeRelative}
-          label="Relative to camera"
+      <Text style={styles.label}>Layout</Text>
+      <View style={styles.properties}>
+        <React.Fragment>
+          <LayoutInput
+            behavior={body}
+            component={component}
+            propName="widthScale"
+            label="Width Scale"
+            sendAction={sendAction}
+            decimalDigits={2}
+            step={0.25}
+          />
+          <LayoutInput
+            behavior={body}
+            component={component}
+            propName="heightScale"
+            label="Height Scale"
+            sendAction={sendAction}
+            decimalDigits={2}
+            step={0.25}
+          />
+        </React.Fragment>
+        <LayoutInput
+          behavior={body}
+          component={component}
+          propName="x"
+          label="X Position"
+          sendAction={sendAction}
+        />
+        <LayoutInput
+          behavior={body}
+          component={component}
+          propName="y"
+          label="Y Position"
+          sendAction={sendAction}
+        />
+        <LayoutInput
+          behavior={body}
+          component={component}
+          propName="angle"
+          label="Rotation"
+          sendAction={sendAction}
         />
       </View>
-      <View style={styles.row}>
-        <InspectorCheckbox value={visible} onChange={onChangeVisible} label="Visible" />
-      </View>
+      {hasBlueprint && (
+        <View style={styles.applyLayoutChangesContainer}>
+          <SaveBlueprintButton label="Apply layout changes to blueprint" />
+        </View>
+      )}
     </View>
   );
 };

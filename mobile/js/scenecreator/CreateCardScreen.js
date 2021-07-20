@@ -345,6 +345,7 @@ export const CreateCardScreen = ({
               ) : null}
               <CreateCardOverlay
                 activeSheet={activeSheet}
+                setActiveSheet={setActiveSheet}
                 isShowingDraw={isShowingDraw}
                 beltHeight={beltHeight}
               />
