@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { InspectorBlueprintActions } from '../inspector/InspectorBlueprintActions';
 import { sendAsync } from '../../core/CoreEvents';
 
 const styles = StyleSheet.create({
@@ -39,10 +40,13 @@ const styles = StyleSheet.create({
 export const OverlayBlueprint = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.behaviorName}>Blueprint goes here</Text>
-      <Pressable style={styles.editButton} onPress={() => sendAsync('SELECT_BLUEPRINT')}>
-        <Text style={styles.editLabel}>Edit</Text>
-      </Pressable>
+      <Text style={styles.behaviorName}>Blueprint</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <InspectorBlueprintActions />
+        <Pressable style={styles.editButton} onPress={() => sendAsync('SELECT_BLUEPRINT')}>
+          <Text style={styles.editLabel}>Edit</Text>
+        </Pressable>
+      </View>
     </View>
   );
 };

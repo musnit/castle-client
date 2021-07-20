@@ -78,6 +78,10 @@ const makeChangeOrderOptions = ({ isTextActorSelected, sendAction }) => {
 };
 
 export const OverlaySelectionActions = () => {
+  // TODO: applicableTools was previously derived from inspector actions
+  const applicableTools = null,
+    data = {};
+
   const { isTextActorSelected } = useCardCreator();
   const sendAction = React.useCallback(
     (action, ...args) => sendAsync('EDITOR_INSPECTOR_ACTION', { action, ...args }),
@@ -101,6 +105,22 @@ export const OverlaySelectionActions = () => {
     );
   }, [sendAction]);
 
+  let scaleRotateAction;
+  if (applicableTools) {
+    // TODO: restore ScaleRotate
+    const grabBehavior = applicableTools.find((behavior) => behavior.name === 'Grab');
+    const scaleRotateBehavior = applicableTools.find((behavior) => behavior.name === 'ScaleRotate');
+
+    if (scaleRotateBehavior) {
+      const isScaleRotatedSelected = data.activeToolBehaviorId === scaleRotateBehavior.behaviorId;
+      scaleRotateAction = () =>
+        sendAction(
+          'setActiveTool',
+          isScaleRotatedSelected ? grabBehavior.behaviorId : scaleRotateBehavior.behaviorId
+        );
+    }
+  }
+
   return (
     <View style={styles.container}>
       <View style={[styles.close, styles.button]}>
@@ -109,6 +129,9 @@ export const OverlaySelectionActions = () => {
         </Pressable>
       </View>
       <View style={styles.toolbar}>
+        <Pressable style={styles.button} onPress={scaleRotateAction}>
+          <Icon name="crop-rotate" size={18} color="#000" />
+        </Pressable>
         <Pressable style={styles.button} onPress={changeSelectionOrder}>
           {isTextActorSelected ? (
             <Icon name="swap-vert" size={18} color="#000" />
