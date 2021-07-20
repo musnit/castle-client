@@ -1156,11 +1156,21 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					../../love/src,
+					../../love/src/libraries,
+					../../love/src/modules,
 					"../../ghost-extensions/SDL2-2.0.8/include",
 					../../openssl/include,
 					../../love/platform/xcode/ios/include/luajit,
 					"../../ghost-extensions/tove2d/src/thirdparty/fp16/include",
 					../../core/src,
+					../../core/vendor/fmt/include,
+					../../core/vendor/entt/src,
+					../../core/vendor/rapidjson/include,
+					"../../core/vendor/freetype-2.10.0/include",
+					../../core/vendor,
+					../../core/vendor/tove2d/src/thirdparty/fp16/include,
+					../../core/vendor/soloud20200207/include,
+					../../core/vendor/soloud20200207/src/backend/miniaudio,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LIBRARY_SEARCH_PATHS = (
