@@ -94,4 +94,5 @@ inline bool Selection::isBlueprintSelected() {
 
 inline void Selection::setBlueprintSelected(bool selected) {
   blueprintSelected = selected;
+  selectionChanged = true;
 }
