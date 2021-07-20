@@ -7,31 +7,37 @@ import { useCardCreator } from '../CreateCardContext';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
+import * as Constants from '../../Constants';
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    height: 36,
   },
   close: {
-    height: 36,
     borderRadius: 6,
-    backgroundColor: '#fff',
-    borderColor: '#000',
+    backgroundColor: Constants.colors.white,
+    borderColor: Constants.colors.black,
     borderWidth: 1,
+    ...Constants.styles.dropShadow,
   },
   toolbar: {
-    height: 36,
-    borderRadius: 4,
-    backgroundColor: '#fff',
-    borderColor: '#000',
+    borderRadius: 6,
+    backgroundColor: Constants.colors.white,
+    borderColor: Constants.colors.black,
     borderWidth: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    ...Constants.styles.dropShadow,
   },
   button: {
     width: 36,
+    height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+    borderRightWidth: 1,
+    borderColor: Constants.colors.black,
   },
 });
 
@@ -142,7 +148,9 @@ export const OverlaySelectionActions = () => {
         <Pressable style={styles.button} onPress={() => sendAction('duplicateSelection')}>
           <FeatherIcon name="copy" size={18} color="#000" />
         </Pressable>
-        <Pressable style={styles.button} onPress={() => sendAction('deleteSelection')}>
+        <Pressable
+          style={[styles.button, { borderRightWidth: 0 }]}
+          onPress={() => sendAction('deleteSelection')}>
           <FeatherIcon name="trash-2" size={18} color="#000" />
         </Pressable>
       </View>
