@@ -22,7 +22,7 @@ public:
   const Engine &operator=(const Engine &) = delete;
 
   explicit Engine(bool isEditing);
-  ~Engine();
+
 
   // Main loop
 
@@ -67,7 +67,7 @@ private:
       22, love::TrueTypeRasterizer::HINTING_NORMAL) };
 
   Player player { bridge, lv };
-  Editor *editor;
+  std::unique_ptr<Editor> editor;
   bool isEditing = false;
 
   void update(double dt);

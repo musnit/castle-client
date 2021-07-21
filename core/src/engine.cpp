@@ -81,16 +81,10 @@ Engine::Engine(bool isEditing_)
   // First timer step
   lv.timer.step();
   if (isEditing) {
-    editor = new Editor(bridge);
+    editor = std::make_unique<Editor>(bridge);
   }
 
   ExpressionRegistrar::registerExpressions();
-}
-
-Engine::~Engine() {
-  if (isEditing) {
-    delete editor;
-  }
 }
 
 
