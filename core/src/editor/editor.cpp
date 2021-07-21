@@ -934,14 +934,58 @@ struct EditorChangeVariablesReceiver {
     auto action = params.action();
     auto editor = engine.maybeGetEditor();
 
+    Commands::Params commandParams;
+    commandParams.coalesce = true;
+    commandParams.coalesceLastOnly = false;
+
+    auto variableId = params.variableId();
+    auto name = params.name();
+    auto initialValue = params.initialValue();
+
     if (action == "add") {
-      editor->getVariables().add(params.name(), params.variableId(), params.initialValue());
+      editor->getCommands().execute(
+          "add variable", commandParams,
+          [variableId, name, initialValue](Editor &editor, bool) {
+            editor.getVariables().add(name, variableId, initialValue);
+            editor.sendVariablesData();
+          },
+          [variableId](Editor &editor, bool) {
+            editor.getVariables().remove(variableId);
+            editor.sendVariablesData();
+          });
     } else if (action == "remove") {
-      editor->getVariables().remove(params.variableId());
+      auto existing = editor->getVariables().get(variableId);
+      if (existing) {
+        auto oldName = existing->name;
+        auto oldInitialValue = existing->initialValue;
+        editor->getCommands().execute(
+            "remove variable", commandParams,
+            [variableId](Editor &editor, bool) {
+              editor.getVariables().remove(variableId);
+              editor.sendVariablesData();
+            },
+            [variableId, oldName, oldInitialValue](Editor &editor, bool) {
+              editor.getVariables().add(oldName, variableId, oldInitialValue);
+              editor.sendVariablesData();
+            });
+      }
     } else if (action == "update") {
-      editor->getVariables().update(params.variableId(), params.name(), params.initialValue());
+      auto existing = editor->getVariables().get(variableId);
+      if (existing) {
+        auto oldName = existing->name;
+        auto oldInitialValue = existing->initialValue;
+        editor->getCommands().execute(
+            "change variable", commandParams,
+            [variableId, name, initialValue](Editor &editor, bool) {
+              editor.getVariables().update(variableId, name, initialValue);
+              editor.sendVariablesData();
+            },
+            [variableId, oldName, oldInitialValue](Editor &editor, bool) {
+              editor.getVariables().update(variableId, oldName, oldInitialValue);
+              editor.sendVariablesData();
+            });
+      }
     }
-    editor->sendVariablesData();
   }
 };
 
