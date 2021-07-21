@@ -73,8 +73,8 @@ struct SelectActorEditReceiver {
 
   void receive(Engine &engine) {
     if (engine.getIsEditing()) {
-      engine.getEditor().getSelection().deselectAllActors();
-      engine.getEditor().getSelection().selectActor(ActorId(params.actorId()));
+      engine.maybeGetEditor()->getSelection().deselectAllActors();
+      engine.maybeGetEditor()->getSelection().selectActor(ActorId(params.actorId()));
     }
   }
 };
@@ -89,7 +89,7 @@ struct SelectBlueprintReceiver {
 
   void receive(Engine &engine) {
     if (engine.getIsEditing()) {
-      engine.getEditor().getSelection().setBlueprintSelected(true);
+      engine.maybeGetEditor()->getSelection().setBlueprintSelected(true);
     }
   }
 };

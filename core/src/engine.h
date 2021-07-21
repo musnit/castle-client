@@ -42,7 +42,7 @@ public:
   Bridge &getBridge();
 
   Scene &getScene();
-  Editor &getEditor();
+  Editor *maybeGetEditor();
   bool getIsEditing();
 
 private:
@@ -86,10 +86,8 @@ inline Scene &Engine::getScene() {
   return player.getScene();
 }
 
-inline Editor &Engine::getEditor() {
-  // TODO: Consider refactoring to `maybeGetEditor` that returns possibly `nullptr` to encourage
-  //       callsites to check
-  return *editor;
+inline Editor *Engine::maybeGetEditor() {
+  return (editor) ? &(*editor) : nullptr;
 }
 
 inline bool Engine::getIsEditing() {

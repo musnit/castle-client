@@ -176,7 +176,9 @@ struct EditorDidLoadReceiver {
 
   void receive(Engine &engine) {
     Debug::log("engine: js loaded");
-    engine.getEditor().editorJSLoaded();
+    if (engine.getIsEditing()) {
+      engine.maybeGetEditor()->editorJSLoaded();
+    }
   }
 };
 
@@ -221,14 +223,14 @@ struct EditorGlobalActionReceiver {
     if (!engine.getIsEditing()) {
       return;
     }
-    auto &editor = engine.getEditor();
+    auto editor = engine.maybeGetEditor();
 
     // TODO: expect keys from `ActionsAvailable`, e.g. onPlay, onRewind, onUndo...
     Debug::log("editor received global action: {}", action);
     if (action == "onUndo") {
-      editor.commands.undo();
+      editor->commands.undo();
     } else if (action == "onRedo") {
-      editor.commands.redo();
+      editor->commands.redo();
     }
   }
 };
@@ -452,6 +454,9 @@ struct EditorModifyComponentReceiver {
   } params;
 
   void receive(Engine &engine) {
+    if (!engine.getIsEditing()) {
+      return;
+    }
     auto action = params.action();
     auto attribs = std::remove_reference_t<decltype(params.action)>::attribs;
     auto actionValid = false;
@@ -468,14 +473,14 @@ struct EditorModifyComponentReceiver {
       Debug::log("Editor received unknown behavior action: {}", action);
       return;
     }
-    auto &editor = engine.getEditor();
+    auto editor = engine.maybeGetEditor();
 
-    auto actorId = editor.getSelection().firstSelectedActorId();
+    auto actorId = editor->getSelection().firstSelectedActorId();
     if (actorId == nullActor) {
       return;
     }
 
-    editor.getScene().getBehaviors().byName(params.behaviorName().c_str(), [&](auto &behavior) {
+    editor->getScene().getBehaviors().byName(params.behaviorName().c_str(), [&](auto &behavior) {
       using BehaviorType = std::remove_reference_t<decltype(behavior)>;
 
       if (action == "set") {
@@ -484,8 +489,8 @@ struct EditorModifyComponentReceiver {
         commandParams.coalesceLastOnly = false;
         if constexpr (std::is_same_v<BehaviorType, RulesBehavior>) {
           bool oldHasComponent = behavior.hasComponent(actorId);
-          auto oldValueCStr = editor.getRulesData(actorId);
-          editor.getCommands().execute(
+          auto oldValueCStr = editor->getRulesData(actorId);
+          editor->getCommands().execute(
               "change rules", commandParams,
               [actorId, oldHasComponent, newRulesJson = params.stringValue()](
                   Editor &editor, bool) {
@@ -517,7 +522,7 @@ struct EditorModifyComponentReceiver {
             if (!oldValueCStr) {
               oldValueCStr = "";
             }
-            editor.getCommands().execute(
+            editor->getCommands().execute(
                 description, commandParams,
                 [actorId, propId, newValue = params.stringValue()](Editor &editor, bool) {
                   auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
@@ -532,7 +537,7 @@ struct EditorModifyComponentReceiver {
           } else {
             auto oldValue = behavior.getProperty(actorId, propId).template as<double>();
             auto newValue = params.doubleValue();
-            editor.getCommands().execute(
+            editor->getCommands().execute(
                 description, commandParams,
                 [actorId, propId, newValue](Editor &editor, bool) {
                   auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
@@ -548,7 +553,7 @@ struct EditorModifyComponentReceiver {
         }
       } else if (action == "enable") {
         static auto description = std::string("enable ") + BehaviorType::displayName;
-        editor.getCommands().execute(
+        editor->getCommands().execute(
             description, {},
             [actorId](Editor &editor, bool) {
               auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
@@ -562,7 +567,7 @@ struct EditorModifyComponentReceiver {
             });
       } else if (action == "disable") {
         static auto description = std::string("disable ") + BehaviorType::displayName;
-        editor.getCommands().execute(
+        editor->getCommands().execute(
             description, {},
             [actorId](Editor &editor, bool) {
               auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
@@ -576,7 +581,7 @@ struct EditorModifyComponentReceiver {
             });
       } else if (action == "add") {
         static auto description = std::string("add ") + BehaviorType::displayName;
-        editor.getCommands().execute(
+        editor->getCommands().execute(
             description, {},
             [actorId](Editor &editor, bool) {
               auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
@@ -607,7 +612,7 @@ struct EditorModifyComponentReceiver {
           });
         }
 
-        editor.getCommands().execute(
+        editor->getCommands().execute(
             description, {},
             [actorId](Editor &editor, bool) {
               // Remove component
@@ -639,7 +644,7 @@ struct EditorModifyComponentReceiver {
         // TODO: merge motion behaviors, then we don't need this anymore.
         if constexpr (std::is_same_v<BehaviorType, MovingBehavior>) {
           static auto description = std::string("change dynamic motion to fixed motion");
-          editor.getCommands().execute(
+          editor->getCommands().execute(
               description, {},
               [actorId](Editor &editor, bool) {
                 auto &oldBehavior = editor.getScene().getBehaviors().byType<BehaviorType>();
@@ -666,7 +671,7 @@ struct EditorModifyComponentReceiver {
         }
         if constexpr (std::is_same_v<BehaviorType, RotatingMotionBehavior>) {
           static auto description = std::string("change fixed motion to dynamic motion");
-          editor.getCommands().execute(
+          editor->getCommands().execute(
               description, {},
               [actorId](Editor &editor, bool) {
                 auto &oldBehavior = editor.getScene().getBehaviors().byType<BehaviorType>();
@@ -690,10 +695,10 @@ struct EditorModifyComponentReceiver {
               });
         }
       }
-      editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
+      editor->setSelectedComponentStateDirty(BehaviorType::behaviorId);
       if constexpr (std::is_same_v<BehaviorType, TagsBehavior>) {
         // extra dirty state on tags data
-        editor.sendTagsData();
+        editor->sendTagsData();
       }
     });
   }
@@ -709,16 +714,19 @@ struct EditorInspectorActionReceiver {
   } params;
 
   void receive(Engine &engine) {
+    if (!engine.getIsEditing()) {
+      return;
+    }
     auto action = params.action();
+    auto editor = engine.maybeGetEditor();
 
     Debug::log("editor received inspector action: {}", action);
     if (action == "closeInspector") {
-      engine.getEditor().getSelection().deselectAllActors();
+      editor->getSelection().deselectAllActors();
       return;
     }
 
-    auto &editor = engine.getEditor();
-    auto actorId = editor.getSelection().firstSelectedActorId();
+    auto actorId = editor->getSelection().firstSelectedActorId();
     if (actorId == nullActor) {
       return;
     }
@@ -726,7 +734,7 @@ struct EditorInspectorActionReceiver {
     if (action == "deleteSelection") {
       // TODO: Save and restore `parentEntryId`
 
-      auto &scene = editor.getScene();
+      auto &scene = editor->getScene();
 
       // Get current draw order and parent entry id values to restore on undo
       scene.ensureDrawOrderSort();
@@ -745,7 +753,7 @@ struct EditorInspectorActionReceiver {
         scene.writeActor(actorId, writer);
       });
 
-      editor.getCommands().execute(
+      editor->getCommands().execute(
           "delete", {},
           [actorId](Editor &editor, bool) {
             // Deselect and remove actor
@@ -772,9 +780,9 @@ struct EditorInspectorActionReceiver {
           });
     } else if (action == "duplicateSelection") {
       // Generate new actor id now to keep it stable across undos and redos
-      auto &scene = editor.getScene();
+      auto &scene = editor->getScene();
       auto newActorId = scene.generateActorId();
-      editor.getCommands().execute(
+      editor->getCommands().execute(
           "duplicate", {},
           [actorId, newActorId](Editor &editor, bool) {
             auto &scene = editor.getScene();
@@ -875,19 +883,22 @@ struct EditorChangeSceneSettingsReceiver {
   } params;
 
   void receive(Engine &engine) {
+    if (!engine.getIsEditing()) {
+      return;
+    }
     auto type = params.type();
     auto action = params.action();
     if (type == "scene") {
       if (action == "setBackgroundColor") {
         auto colorValue = params.colorValue();
-        engine.getEditor().getScene().props.backgroundColor().set(
+        engine.maybeGetEditor()->getScene().props.backgroundColor().set(
             colorValue.r, colorValue.g, colorValue.b, colorValue.a);
       }
     } else if (type == "grab") {
-      engine.getEditor().getGrabTool().changeSettings(action, params.doubleValue());
+      engine.maybeGetEditor()->getGrabTool().changeSettings(action, params.doubleValue());
     }
     // TODO: ScaleRotate settings
-    engine.getEditor().sendSceneSettings();
+    engine.maybeGetEditor()->sendSceneSettings();
   }
 };
 
@@ -917,17 +928,20 @@ struct EditorChangeVariablesReceiver {
   } params;
 
   void receive(Engine &engine) {
-    auto action = params.action();
-    if (action == "add") {
-      engine.getEditor().getVariables().add(
-          params.name(), params.variableId(), params.initialValue());
-    } else if (action == "remove") {
-      engine.getEditor().getVariables().remove(params.variableId());
-    } else if (action == "update") {
-      engine.getEditor().getVariables().update(
-          params.variableId(), params.name(), params.initialValue());
+    if (!engine.getIsEditing()) {
+      return;
     }
-    engine.getEditor().sendVariablesData();
+    auto action = params.action();
+    auto editor = engine.maybeGetEditor();
+
+    if (action == "add") {
+      editor->getVariables().add(params.name(), params.variableId(), params.initialValue());
+    } else if (action == "remove") {
+      editor->getVariables().remove(params.variableId());
+    } else if (action == "update") {
+      editor->getVariables().update(params.variableId(), params.name(), params.initialValue());
+    }
+    editor->sendVariablesData();
   }
 };
 

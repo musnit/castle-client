@@ -301,7 +301,7 @@ struct ClearSceneReceiver {
     Debug::log("core: received CLEAR_SCENE");
     if (engine.getIsEditing()) {
       // TODO: maybe destroy editor, recreate on next editing mount
-      engine.getEditor().clearState();
+      engine.maybeGetEditor()->clearState();
     }
   }
 };
