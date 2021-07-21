@@ -22,7 +22,7 @@ public:
     PROP(float, gridSize) = 0.25;
   } props;
 
-  void changeSettings(std::string action, double value);
+  void changeSettings(const std::string &action, double value);
 
 private:
   Lv &lv { Lv::getInstance() };

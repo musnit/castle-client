@@ -15,11 +15,11 @@ GrabTool::GrabTool(Editor &editor_)
     : editor(editor_) {
 }
 
-void GrabTool::changeSettings(std::string action, double value) {
+void GrabTool::changeSettings(const std::string &action, double value) {
   if (action == "setGridEnabled") {
     props.gridEnabled() = (bool)value;
   } else if (action == "setGridSize") {
-    props.gridSize() = value;
+    props.gridSize() = float(value);
   }
 }
 
