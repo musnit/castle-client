@@ -87,7 +87,7 @@ inline Scene &Engine::getScene() {
 }
 
 inline Editor *Engine::maybeGetEditor() {
-  return (editor) ? &(*editor) : nullptr;
+  return editor.get();
 }
 
 inline bool Engine::getIsEditing() {
