@@ -38,7 +38,6 @@ export const InspectorBlueprintActions = () => {
     canCopyBlueprint = true;
   }
 
-  // TODO: move scalerotate to other component
   return (
     <View style={styles.container}>
       <Pressable style={styles.actionButton} onPress={() => sendAction('deleteSelection')}>

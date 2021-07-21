@@ -19,7 +19,6 @@ import { CardText } from '../components/CardText';
 import { CreateCardContext } from './CreateCardContext';
 import { CreateCardHeader, CARD_HEADER_HEIGHT } from './CreateCardHeader';
 import { CreateCardOverlay } from './overlay/CreateCardOverlay';
-import { DrawingCardHeader, DRAWING_CARD_HEADER_HEIGHT } from './drawing/DrawingCardHeader';
 
 import { PopoverProvider } from '../components/PopoverProvider';
 import { SheetProvider } from './SheetProvider';
@@ -243,27 +242,13 @@ export const CreateCardScreen = ({
     justifyContent: isTextActorSelected ? 'flex-start' : 'flex-end',
   };
 
-  let cardFitStyles = null;
   const insets = useSafeAreaInsets();
-  const headerHeight = isShowingDraw ? DRAWING_CARD_HEADER_HEIGHT : CARD_HEADER_HEIGHT;
+  const headerHeight = CARD_HEADER_HEIGHT;
   const maxCardHeight = 100 * Viewport.vh - headerHeight - insets.top - insets.bottom;
   let beltHeight = maxCardHeight - (Viewport.vw * 100) / Constants.CARD_RATIO;
   beltHeight = Math.floor(Math.min(Math.max(MIN_BELT_HEIGHT, beltHeight), MAX_BELT_HEIGHT));
   const beltHeightFraction = beltHeight / maxCardHeight;
-
-  if (isShowingDraw) {
-    if ((Viewport.vw * 100) / maxCardHeight > 0.91) {
-      cardFitStyles = {
-        aspectRatio: 0.91,
-        width: undefined,
-        height: maxCardHeight,
-      };
-    } else {
-      cardFitStyles = { aspectRatio: 0.91, width: '100%' };
-    }
-  } else {
-    cardFitStyles = { width: '100%', height: maxCardHeight };
-  }
+  const cardFitStyles = { width: '100%', height: maxCardHeight };
 
   const isCardTextVisible =
     (isShowingTextActors || isPlaying) &&
@@ -293,21 +278,16 @@ export const CreateCardScreen = ({
     <CreateCardContext.Provider value={contextValue}>
       <PopoverProvider>
         <SafeAreaView style={Constants.styles.container}>
-          {isShowingDraw ? (
-            /* TODO: delete DrawingCardHeader, move these to CreateCardOverlay */
-            <DrawingCardHeader onPressBack={() => sendGlobalAction('useGrabTool')} />
-          ) : (
-            <CreateCardHeader
-              card={card}
-              isEditable
-              mode={activeSheet}
-              onChangeMode={setActiveSheet}
-              onPressBack={maybeSaveAndGoToDeck}
-              onSave={saveAndGoToDeck}
-              creatorUsername={deck?.creator?.username}
-              saveAction={saveAction}
-            />
-          )}
+          <CreateCardHeader
+            card={card}
+            isEditable
+            mode={activeSheet}
+            onChangeMode={setActiveSheet}
+            onPressBack={maybeSaveAndGoToDeck}
+            onSave={saveAndGoToDeck}
+            creatorUsername={deck?.creator?.username}
+            saveAction={saveAction}
+          />
           <View style={styles.cardBody}>
             <View style={[styles.card, cardBackgroundStyles, cardFitStyles]}>
               <CardScene

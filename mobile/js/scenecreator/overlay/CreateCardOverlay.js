@@ -2,8 +2,9 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useCardCreator } from '../CreateCardContext';
 import { OverlaySelectionActions } from './OverlaySelectionActions';
-import { OverlayLayout } from './OverlayLayout';
 import { OverlayBlueprint } from './OverlayBlueprint';
+import { OverlayDrawing } from './OverlayDrawing';
+import { OverlayLayout } from './OverlayLayout';
 
 const styles = StyleSheet.create({
   container: {
@@ -19,7 +20,11 @@ const styles = StyleSheet.create({
 export const CreateCardOverlay = ({ activeSheet, setActiveSheet, isShowingDraw, beltHeight }) => {
   const { hasSelection } = useCardCreator();
   if (isShowingDraw) {
-    // TODO: draw overlay tools
+    return (
+      <View style={styles.container} pointerEvents="box-none">
+        <OverlayDrawing />
+      </View>
+    );
   } else {
     // tools for normal scene/grid editing
     if (hasSelection && !activeSheet) {

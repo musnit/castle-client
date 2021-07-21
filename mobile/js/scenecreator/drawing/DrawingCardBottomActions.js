@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react';
 import { PixelRatio, StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 import { useCardCreator } from '../../scenecreator/CreateCardContext';
-import ColorPicker from '../../scenecreator/inspector/components/ColorPicker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import tinycolor from 'tinycolor2';
@@ -19,12 +18,6 @@ const styles = StyleSheet.create({
 
   containerCentered: {
     justifyContent: 'center',
-  },
-
-  colorPickers: {
-    flexDirection: 'row',
-    paddingLeft: 8,
-    paddingVertical: 2,
   },
 
   subtools: {
@@ -83,23 +76,6 @@ export const DrawingCardBottomActions = () => {
 
     return (
       <View style={[styles.container, showColorPicker ? null : styles.containerCentered]}>
-        {showColorPicker ? (
-          <View style={styles.colorPickers}>
-            <View style={styles.colorPicker}>
-              <ColorPicker
-                value={{
-                  r: drawToolState.color[0],
-                  g: drawToolState.color[1],
-                  b: drawToolState.color[2],
-                }}
-                setValue={(color) => {
-                  fastAction('updateColor', color);
-                }}
-              />
-            </View>
-          </View>
-        ) : null}
-
         <View style={styles.subtools}>
           {currentDrawingToolGroup == 'artwork_draw' ? (
             <Fragment>
