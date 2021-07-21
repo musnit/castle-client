@@ -38,7 +38,6 @@ public:
   void setRulesData(ActorId actorId, const char *rulesJson);
   const char *getRulesData(ActorId actorId);
   void sendTagsData();
-  void sendVariablesData();
   void sendSceneSettings();
 
   Commands &getCommands();
@@ -46,6 +45,8 @@ public:
 
   Grid &getGrid();
   GrabTool &getGrabTool();
+
+  Bridge &getBridge();
 
 private:
   friend struct EditorGlobalActionReceiver;
@@ -127,4 +128,8 @@ inline Grid &Editor::getGrid() {
 
 inline GrabTool &Editor::getGrabTool() {
   return grab;
+}
+
+inline Bridge &Editor::getBridge() {
+  return bridge;
 }

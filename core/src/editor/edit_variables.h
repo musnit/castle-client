@@ -5,6 +5,8 @@
 #include "expressions/value.h"
 #include "archive.h"
 
+class Bridge;
+
 class EditVariables {
   // Manages editor state of deck-level variables.
   // Unlike `Variables`, allows removal and renaming of variables, but doesn't run any Rules
@@ -41,6 +43,8 @@ public:
 
   template<typename F>
   void forEach(F &&f) const; // `F` takes `(const EditVariables::Variable &elem)`
+
+  void sendVariablesData(Bridge &bridge);
 
 private:
   // id -> variable
