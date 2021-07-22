@@ -113,6 +113,7 @@ public:
   std::optional<double> num(const char *key);
   const char *str(const char *key, const char *def);
   std::optional<const char *> str(const char *key);
+  std::pair<std::optional<const char *>, int> strAndLength(const char *key);
   template<typename F>
   void arr(const char *key, F &&f); // Enter the sub-array at key if found
   template<typename F>
@@ -495,6 +496,15 @@ inline std::optional<const char *> Reader::str(const char *key) {
     }
   }
   return std::nullopt;
+}
+
+inline std::pair<std::optional<const char *>, int> Reader::strAndLength(const char *key) {
+  if (cur->IsObject()) {
+    if (auto mem = find(key); mem != cur->MemberEnd() && mem->value.IsString()) {
+      return { mem->value.GetString(), mem->value.GetStringLength() };
+    }
+  }
+  return { std::nullopt, 0 };
 }
 
 template<typename F>

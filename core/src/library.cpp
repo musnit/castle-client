@@ -21,13 +21,13 @@ LibraryEntry::LibraryEntry(const json::Value &jsonValue_, json::CrtAllocator &ba
 //
 
 love::Image *LibraryEntry::getPreviewImage() const {
-  Lv &lv = Lv::getInstance();
+  auto &lv = Lv::getInstance();
   if (!previewImageGenerated) {
     read([&](Reader &reader) {
-      if (auto base64Png = reader.str("base64Png")) {
+      if (auto [base64Png, base64PngLength] = reader.strAndLength("base64Png"); base64Png) {
         size_t decodedLen = 0;
-        char *decoded = love::data::decode(
-            love::data::ENCODE_BASE64, *base64Png, std::strlen(*base64Png), decodedLen);
+        auto decoded = love::data::decode(
+            love::data::ENCODE_BASE64, *base64Png, base64PngLength, decodedLen);
         auto byteData
             = std::unique_ptr<love::ByteData>(lv.data.newByteData(decoded, decodedLen, true));
         previewImageData.reset(lv.image.newImageData(byteData.get()));
