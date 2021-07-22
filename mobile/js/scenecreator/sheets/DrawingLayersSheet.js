@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { useCoreState, sendAsync } from '../../core/CoreEvents';
 import { useFastDataMemo } from '../../ghost/GhostUI';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import _ from 'lodash';
@@ -120,12 +121,32 @@ const styles = StyleSheet.create({
 
 const ICON_SIZE = 22;
 
-const LayerRow = ({ layer, index, showLayerActionSheet }) => {
+const CollisionRow = ({ isSelected, onSelect }) => {
   return (
     <View style={styles.layerRow}>
-      <TouchableOpacity
-        style={styles.firstCell}
-        onPress={() => layer.fastAction('onSelectLayer', layer.id)}>
+      <TouchableOpacity style={styles.firstCell} onPress={() => onSelect(!isSelected)}>
+        <MCIcon name="eye-outline" size={ICON_SIZE} color="#000" />
+        <View style={styles.layerTitle}>
+          <Text style={[styles.layerTitleText, { fontWeight: isSelected ? 'bold' : 'normal' }]}>
+            Collision
+          </Text>
+        </View>
+        <View style={styles.layerMenuButton}>
+          <MCIcon name={'dots-horizontal'} size={ICON_SIZE} color={'#000'} />
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity style={[styles.cell, styles.cellBottomBorder, styles.cellRightBorder]}>
+        {/* TODO: preview of collision shape */}
+        <View style={{ width: 50, height: 50 }} />
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+const LayerRow = ({ layer, index, isCollisionActive, onSelectLayer, showLayerActionSheet }) => {
+  return (
+    <View style={styles.layerRow}>
+      <TouchableOpacity style={styles.firstCell} onPress={() => onSelectLayer({ layer })}>
         <TouchableOpacity
           onPress={() =>
             layer.fastAction('onSetLayerIsVisible', {
@@ -140,7 +161,11 @@ const LayerRow = ({ layer, index, showLayerActionSheet }) => {
           />
         </TouchableOpacity>
         <View style={styles.layerTitle}>
-          <Text style={[styles.layerTitleText, layer.isSelected && { fontWeight: 'bold' }]}>
+          <Text
+            style={[
+              styles.layerTitleText,
+              { fontWeight: layer.isSelected && !isCollisionActive ? 'bold' : 'normal' },
+            ]}>
             {layer.title}
           </Text>
         </View>
@@ -160,11 +185,7 @@ const LayerRow = ({ layer, index, showLayerActionSheet }) => {
                 layerId: layer.id,
                 frame: idx + 1,
               })
-          : () =>
-              layer.fastAction('onSelectLayerAndFrame', {
-                layerId: layer.id,
-                frame: idx + 1,
-              });
+          : () => onSelectLayer({ layer, frame: idx + 1 });
 
         let cellStyle = [styles.cell];
         let isLastCell = idx === layer.frames.length - 1;
@@ -216,6 +237,39 @@ const LayerRow = ({ layer, index, showLayerActionSheet }) => {
 };
 
 const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) => {
+  const drawToolState = useCoreState('EDITOR_DRAW_TOOL') || {};
+
+  const isCollisionActive = drawToolState.selectedSubtools?.root === 'collision';
+  const onSelectCollision = React.useCallback(
+    (isSelected) => {
+      if (isSelected != isCollisionActive) {
+        sendAsync('DRAW_TOOL_SELECT_SUBTOOL', {
+          category: 'root',
+          name: isSelected ? 'collision' : 'artwork',
+        });
+      }
+    },
+    [sendAsync, isCollisionActive]
+  );
+
+  const onSelectLayer = useCallback(
+    ({ layer, frame }) => {
+      // unselect collision if selected
+      onSelectCollision(false);
+
+      // select layer
+      if (frame) {
+        return layer.fastAction('onSelectLayer', layer.id);
+      } else {
+        return layer.fastAction('onSelectLayerAndFrame', {
+          layerId: layer.id,
+          frame,
+        });
+      }
+    },
+    [sendAsync, onSelectCollision]
+  );
+
   const { showActionSheetWithOptions } = useActionSheet();
   const [stateLayers, setStateLayers] = React.useState([]);
   const [stateSelectedFrame, setStateSelectedFrame] = React.useState(1);
@@ -463,13 +517,16 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
           {stateLayers.map((layer, idx) => {
             return (
               <LayerRow
-                key={idx}
+                key={`layer-${idx}`}
                 index={idx}
                 layer={layer}
                 showLayerActionSheet={showLayerActionSheet}
+                onSelectLayer={onSelectLayer}
+                isCollisionActive={isCollisionActive}
               />
             );
           })}
+          <CollisionRow onSelect={onSelectCollision} isSelected={isCollisionActive} />
         </View>
       </ScrollView>
     </ScrollView>

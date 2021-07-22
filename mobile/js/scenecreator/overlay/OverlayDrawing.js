@@ -140,9 +140,6 @@ export const OverlayDrawing = () => {
   const currentDrawingToolGroup = drawToolState.selectedSubtools[rootToolCategory];
   const { color } = drawToolState;
 
-  // TODO: to swap between artwork and collision:
-  // sendAsync('DRAW_TOOL_SELECT_SUBTOOL', { category: 'root', name: item.currentDrawingToolGroup })
-
   const showColorPicker =
     currentDrawingToolGroup == 'artwork_draw' || currentDrawingToolGroup == 'fill';
 
