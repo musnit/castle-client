@@ -204,9 +204,8 @@ export const OverlayDrawingSubtools = ({ currentToolGroup }) => {
     [sendAsync]
   );
 
-  // TODO: drawToolState
-  // const currentSubtool = drawToolState.selectedSubtools[currentToolGroup];
-  const currentSubtool = 'pencil_no_grid';
+  if (!drawToolState) return null;
+  const currentSubtool = drawToolState.selectedSubtools[currentToolGroup];
 
   switch (currentToolGroup) {
     case 'artwork_draw':

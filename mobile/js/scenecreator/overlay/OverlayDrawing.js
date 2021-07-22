@@ -47,97 +47,101 @@ const styles = StyleSheet.create({
     borderRightWidth: 1,
     borderColor: Constants.colors.black,
   },
+  emptyColorPicker: {
+    width: 36,
+    height: '100%',
+  },
 });
 
-const ArtworkTools = ({ currentDrawingToolGroup }) => {
-  const selectSubtool = React.useCallback(
-    (name) => sendAsync('DRAW_TOOL_SELECT_SUBTOOL', { category: 'artwork', name }),
-    [sendAsync]
-  );
-  return (
-    <>
-      <Pressable style={styles.button} onPress={() => selectSubtool('artwork_draw')}>
-        <MCIcon
-          name="pencil-outline"
-          size={22}
-          color={currentDrawingToolGroup == 'artwork_draw' ? '#fff' : '#000'}
-        />
-      </Pressable>
-      <Pressable style={styles.button} onPress={() => selectSubtool('fill')}>
-        <MCIcon
-          name="format-color-fill"
-          size={22}
-          color={currentDrawingToolGroup == 'fill' ? '#fff' : '#000'}
-        />
-      </Pressable>
-      <Pressable style={styles.button} onPress={() => selectSubtool('artwork_move')}>
-        <Icon
-          name="pan-tool"
-          size={18}
-          color={currentDrawingToolGroup == 'artwork_move' ? '#fff' : '#000'}
-        />
-      </Pressable>
-      <Pressable style={styles.button} onPress={() => selectSubtool('artwork_erase')}>
-        <MCIcon
-          name="eraser"
-          size={22}
-          color={currentDrawingToolGroup == 'artwork_erase' ? '#fff' : '#000'}
-        />
-      </Pressable>
-    </>
-  );
+const makeButtonStyles = (value, name) => {
+  return value == name ? [styles.button, { backgroundColor: '#000' }] : [styles.button];
 };
 
-const CollisionTools = ({ currentDrawingToolGroup }) => {
-  const selectSubtool = React.useCallback(
-    (name) => sendAsync('DRAW_TOOL_SELECT_SUBTOOL', { category: 'collision', name }),
-    [sendAsync]
+const makeIconColor = (value, name) => {
+  return value == name ? '#fff' : '#000';
+};
+
+const TOOL_GROUPS = {
+  artwork: [
+    {
+      name: 'artwork_draw',
+      IconComponent: MCIcon,
+      icon: 'pencil-outline',
+    },
+    {
+      name: 'fill',
+      IconComponent: MCIcon,
+      icon: 'format-color-fill',
+    },
+    {
+      name: 'artwork_move',
+      IconComponent: Icon,
+      icon: 'pan-tool',
+    },
+    {
+      name: 'artwork_erase',
+      IconComponent: MCIcon,
+      icon: 'eraser',
+    },
+  ],
+  collision: [
+    {
+      name: 'collision_draw',
+      IconComponent: MCIcon,
+      icon: 'pencil-outline',
+    },
+    {
+      name: 'collision_move',
+      IconComponent: Icon,
+      icon: 'pan-tool',
+    },
+    {
+      name: 'collision_erase',
+      IconComponent: MCIcon,
+      name: 'eraser',
+    },
+  ],
+};
+
+const ToolGroups = ({ category, value }) => {
+  const onChange = React.useCallback(
+    (name) => sendAsync('DRAW_TOOL_SELECT_SUBTOOL', { category, name }),
+    [sendAsync, category]
   );
+  const groups = TOOL_GROUPS[category];
   return (
     <>
-      <Pressable style={styles.button} onPress={() => selectSubtool('collision_draw')}>
-        <MCIcon
-          name="pencil-outline"
-          size={22}
-          color={currentDrawingToolGroup == 'collision_draw' ? '#fff' : '#000'}
-        />
-      </Pressable>
-      <Pressable style={styles.button} onPress={() => selectSubtool('collision_move')}>
-        <Icon
-          name="pan-tool"
-          size={18}
-          color={currentDrawingToolGroup == 'collision_move' ? '#fff' : '#000'}
-        />
-      </Pressable>
-      <Pressable style={styles.button} onPress={() => selectSubtool('collision_erase')}>
-        <MCIcon
-          name="eraser"
-          size={22}
-          color={currentDrawingToolGroup == 'collision_erase' ? '#fff' : '#000'}
-        />
-      </Pressable>
+      {groups.map((tool, ii) => {
+        const { name, IconComponent, icon } = tool;
+        return (
+          <Pressable
+            key={`toolgroup-${category}-${ii}`}
+            style={[
+              ...makeButtonStyles(value, name),
+              { borderRightWidth: ii === groups.length - 1 ? 0 : 1 },
+            ]}
+            onPress={() => onChange(name)}>
+            <IconComponent name={icon} size={22} color={makeIconColor(value, name)} />
+          </Pressable>
+        );
+      })}
     </>
   );
 };
 
 export const OverlayDrawing = () => {
   const drawToolState = useCoreState('EDITOR_DRAW_TOOL');
+  if (!drawToolState) return null;
 
   // TODO
   let fastAction = () => {};
 
-  // TODO: proper drawToolState
-  /* const isArtworkActive = drawToolState.selectedSubtools.root == 'artwork';
-  const currentDrawingToolGroup = isArtworkActive
-    ? drawToolState.selectedSubtools.artwork
-    : drawToolState.selectedSubtools.collision;
-const { color } = drawToolState;  */
-  const isArtworkActive = true;
-  const currentDrawingToolGroup = 'artwork_draw';
-  const color = [0, 0, 0];
+  const rootToolCategory = drawToolState.selectedSubtools.root;
+  const currentDrawingToolGroup = drawToolState.selectedSubtools[rootToolCategory];
+  const { color } = drawToolState;
 
   // TODO: to swap between artwork and collision:
-  // sendAsync('DRAW_TOOL_SELECT_SUBTOOL', { category: 'root', name: item.value })
+  // sendAsync('DRAW_TOOL_SELECT_SUBTOOL', { category: 'root', name: item.currentDrawingToolGroup })
 
   const showColorPicker =
     currentDrawingToolGroup == 'artwork_draw' || currentDrawingToolGroup == 'fill';
@@ -151,14 +155,10 @@ const { color } = drawToolState;  */
           </Pressable>
         </View>
         <View style={styles.toolbar}>
-          {isArtworkActive ? (
-            <ArtworkTools currentDrawingToolGroup={currentDrawingToolGroup} />
-          ) : (
-            <CollisionTools currentDrawingToolGroup={currentDrawingToolGroup} />
-          )}
+          <ToolGroups category={rootToolCategory} value={currentDrawingToolGroup} />
         </View>
-        <View style={styles.toolbar}>
-          {showColorPicker ? (
+        {showColorPicker ? (
+          <View style={styles.toolbar}>
             <View style={styles.button}>
               <ColorPicker
                 value={color}
@@ -167,8 +167,10 @@ const { color } = drawToolState;  */
                 }}
               />
             </View>
-          ) : null}
-        </View>
+          </View>
+        ) : (
+          <View pointerEvents="none" style={styles.emptyColorPicker} />
+        )}
       </View>
       <View style={styles.middleContainer} pointerEvents="box-none">
         <View style={styles.rightContainer}>
