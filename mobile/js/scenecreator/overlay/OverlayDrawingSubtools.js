@@ -13,7 +13,6 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    borderBottomWidth: 1,
     borderColor: Constants.colors.black,
   },
   eraseIconContainer: {
@@ -40,11 +39,10 @@ const EraseIcon = ({ size, color }) => (
       style={{
         width: size,
         height: size,
-        backgroundColor: 'white',
+        backgroundColor: color,
         borderRadius: size,
-        borderWidth: 2,
-        borderColor: color,
-      }}></View>
+      }}
+    />
   </View>
 );
 
@@ -100,9 +98,9 @@ const DRAW_SUBTOOLS = {
       icon: 'content-cut',
     },
     {
-      name: 'erase_small',
+      name: 'erase_large',
       IconComponent: EraseIcon,
-      size: 7,
+      size: 22,
     },
     {
       name: 'erase_medium',
@@ -110,9 +108,9 @@ const DRAW_SUBTOOLS = {
       size: 16,
     },
     {
-      name: 'erase_large',
+      name: 'erase_small',
       IconComponent: EraseIcon,
-      size: 22,
+      size: 7,
     },
   ],
   collision_draw: [
@@ -160,10 +158,7 @@ const DrawSubtools = ({ category, value, onChange }) => {
         return (
           <Pressable
             key={`subtool-${category}-${ii}`}
-            style={[
-              ...makeButtonStyles(value, name),
-              { borderBottomWidth: ii === subtools.length - 1 ? 0 : 1 },
-            ]}
+            style={makeButtonStyles(value, name)}
             onPress={() => onChange(category, name)}>
             <IconComponent
               name={icon}

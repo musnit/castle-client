@@ -44,7 +44,6 @@ const styles = StyleSheet.create({
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRightWidth: 1,
     borderColor: Constants.colors.black,
   },
   emptyColorPicker: {
@@ -98,7 +97,7 @@ const TOOL_GROUPS = {
     {
       name: 'collision_erase',
       IconComponent: MCIcon,
-      name: 'eraser',
+      icon: 'eraser',
     },
   ],
 };
@@ -116,10 +115,7 @@ const ToolGroups = ({ category, value }) => {
         return (
           <Pressable
             key={`toolgroup-${category}-${ii}`}
-            style={[
-              ...makeButtonStyles(value, name),
-              { borderRightWidth: ii === groups.length - 1 ? 0 : 1 },
-            ]}
+            style={makeButtonStyles(value, name)}
             onPress={() => onChange(name)}>
             <IconComponent name={icon} size={22} color={makeIconColor(value, name)} />
           </Pressable>
