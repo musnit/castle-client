@@ -65,6 +65,9 @@ void Editor::update(double dt) {
         selection.setSelectionChanged(false);
       }
 
+      // Update belt -- do this before tools to allow it to steal touches
+      belt.update(dt);
+
       // Update current tool
       switch (currentTool) {
       case Tool::Grab:
@@ -155,6 +158,9 @@ void Editor::draw() {
       break;
     }
   }
+
+  // Belt
+  belt.drawOverlay();
 
   // Debug commands
   Debug::display("{} undos:", commands.undos.size());

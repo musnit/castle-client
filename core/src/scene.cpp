@@ -184,20 +184,20 @@ ActorId Scene::addActor(const ActorDesc &params) {
 
   // Find parent components reader
   if (maybeParentEntry) {
-    auto &parentJson = maybeParentEntry->getJsonValue();
-    Reader parentReader(parentJson);
-    parentReader.obj("actorBlueprint", [&]() {
-      parentReader.obj("components", [&]() {
-        // PERF: We can cache the component reader in the `LibraryEntry` to reuse the reader lookup
-        //       cache when we add one
-        if (params.reader) {
-          // Have an actor reader, just set the parent reader to fallback to
-          maybeFallbackComponentsReader = Reader(*parentReader.jsonValue());
-        } else {
-          // No actor reader given, read directly from parent
-          parentReader.setScene(this); // New reader so make sure to associate with scene
-          readComponents(parentReader);
-        }
+    maybeParentEntry->read([&](Reader &parentReader) {
+      parentReader.obj("actorBlueprint", [&]() {
+        parentReader.obj("components", [&]() {
+          // PERF: We can cache the component reader in the `LibraryEntry` to reuse the reader
+          //       lookup cache when we add one
+          if (params.reader) {
+            // Have an actor reader, just set the parent reader to fallback to
+            maybeFallbackComponentsReader = Reader(*parentReader.jsonValue());
+          } else {
+            // No actor reader given, read directly from parent
+            parentReader.setScene(this); // New reader so make sure to associate with scene
+            readComponents(parentReader);
+          }
+        });
       });
     });
   }

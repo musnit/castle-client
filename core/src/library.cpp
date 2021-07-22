@@ -7,7 +7,7 @@ constexpr auto libraryEntryPoolChunkSize = 8 * 1024;
 
 
 //
-// Library entry constructor, destructor
+// Entry constructor, destructor
 //
 
 LibraryEntry::LibraryEntry(const json::Value &jsonValue_, json::CrtAllocator &baseAlloc)
@@ -17,7 +17,33 @@ LibraryEntry::LibraryEntry(const json::Value &jsonValue_, json::CrtAllocator &ba
 
 
 //
-// Entry update
+// Entry preview image
+//
+
+love::Image *LibraryEntry::getPreviewImage() const {
+  Lv &lv = Lv::getInstance();
+  if (!previewImageGenerated) {
+    read([&](Reader &reader) {
+      if (auto base64Png = reader.str("base64Png")) {
+        size_t decodedLen = 0;
+        char *decoded = love::data::decode(
+            love::data::ENCODE_BASE64, *base64Png, std::strlen(*base64Png), decodedLen);
+        auto byteData
+            = std::unique_ptr<love::ByteData>(lv.data.newByteData(decoded, decodedLen, true));
+        previewImageData.reset(lv.image.newImageData(byteData.get()));
+        love::Image::Slices slices(love::TEXTURE_2D);
+        slices.set(0, 0, previewImageData.get());
+        previewImage.reset(lv.graphics.newImage(slices, {}));
+      }
+    });
+    previewImageGenerated = true;
+  }
+  return previewImage.get();
+}
+
+
+//
+// Entry reading
 //
 
 void Library::readEntry(Reader &reader) {

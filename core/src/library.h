@@ -2,8 +2,9 @@
 
 #include "precomp.h"
 
+#include "lv.h"
+#include "archive.h"
 
-class Reader;
 
 class LibraryEntry {
   // An asset in the library. Right now actor blueprints are pretty much the only asset type.
@@ -14,7 +15,10 @@ public:
 
   explicit LibraryEntry(const json::Value &jsonValue, json::CrtAllocator &baseAlloc);
 
-  const json::Value &getJsonValue() const;
+  template<typename F>
+  void read(F &&f) const;
+
+  love::Image *getPreviewImage() const;
 
 
 private:
@@ -26,6 +30,10 @@ private:
   json::MemoryPoolAllocator<json::CrtAllocator> alloc;
 
   json::Value jsonValue;
+
+  mutable bool previewImageGenerated = false;
+  mutable std::unique_ptr<love::ImageData> previewImageData;
+  mutable std::unique_ptr<love::Image> previewImage;
 };
 
 class Library {
@@ -44,6 +52,9 @@ public:
 
   const LibraryEntry *maybeGetEntry(const char *entryId); // `nullptr` if not found
 
+  template<typename F>
+  void forEachEntry(F &&f); // `F` takes `(LibraryEntry &)`
+
 
   // Entry read / write
 
@@ -59,8 +70,12 @@ private:
 
 // Inline implementations
 
-inline const json::Value &LibraryEntry::getJsonValue() const {
-  return jsonValue;
+template<typename F>
+void LibraryEntry::read(F &&f) const {
+  if (jsonValue.IsObject()) {
+    Reader reader(jsonValue);
+    f(reader);
+  }
 }
 
 inline const LibraryEntry *Library::maybeGetEntry(const char *entryId) {
@@ -68,4 +83,11 @@ inline const LibraryEntry *Library::maybeGetEntry(const char *entryId) {
     return &found->second;
   }
   return nullptr;
+}
+
+template<typename F>
+void Library::forEachEntry(F &&f) {
+  for (auto &[entryId, entry] : entries) {
+    f(entry);
+  }
 }

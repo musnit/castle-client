@@ -10,6 +10,7 @@
 #include "draw_tool.h"
 #include "grid.h"
 #include "commands.h"
+#include "belt.h"
 
 class Editor {
   // manages a scene instance that is being edited.
@@ -64,6 +65,7 @@ private:
   Selection selection;
   Commands commands { *this };
   Grid grid;
+  Belt belt { *this };
 
   enum class Tool {
     Grab,
