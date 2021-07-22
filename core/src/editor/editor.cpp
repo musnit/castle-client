@@ -13,6 +13,7 @@ void Editor::clearState() {
   selection.deselectAllActors();
   isEditorStateDirty = true;
   isSelectedActorStateDirty = true;
+  currentTool = Tool::Grab;
 }
 
 void Editor::readScene(Reader &reader) {
