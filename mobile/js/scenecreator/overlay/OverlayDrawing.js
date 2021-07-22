@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useCoreState, sendGlobalAction, sendAsync } from '../../core/CoreEvents';
+import { OverlayDrawingSubtools } from './OverlayDrawingSubtools';
 
 import ColorPicker from '../inspector/components/ColorPicker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -9,10 +10,18 @@ import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as Constants from '../../Constants';
 
 const styles = StyleSheet.create({
-  container: {
+  topContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     height: 36,
+  },
+  middleContainer: {
+    marginTop: 8,
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+  },
+  rightContainer: {
+    width: 36,
   },
   close: {
     borderRadius: 6,
@@ -134,31 +143,40 @@ const { color } = drawToolState;  */
     currentDrawingToolGroup == 'artwork_draw' || currentDrawingToolGroup == 'fill';
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.close, styles.button]}>
-        <Pressable onPress={() => sendGlobalAction('useGrabTool')}>
-          <Icon name="close" size={28} color="#000" />
-        </Pressable>
+    <>
+      <View style={styles.topContainer}>
+        <View style={[styles.close, styles.button]}>
+          <Pressable onPress={() => sendGlobalAction('useGrabTool')}>
+            <Icon name="close" size={28} color="#000" />
+          </Pressable>
+        </View>
+        <View style={styles.toolbar}>
+          {isArtworkActive ? (
+            <ArtworkTools currentDrawingToolGroup={currentDrawingToolGroup} />
+          ) : (
+            <CollisionTools currentDrawingToolGroup={currentDrawingToolGroup} />
+          )}
+        </View>
+        <View style={styles.toolbar}>
+          {showColorPicker ? (
+            <View style={styles.button}>
+              <ColorPicker
+                value={color}
+                setValue={(color) => {
+                  fastAction('updateColor', color);
+                }}
+              />
+            </View>
+          ) : null}
+        </View>
       </View>
-      <View style={styles.toolbar}>
-        {isArtworkActive ? (
-          <ArtworkTools currentDrawingToolGroup={currentDrawingToolGroup} />
-        ) : (
-          <CollisionTools currentDrawingToolGroup={currentDrawingToolGroup} />
-        )}
-      </View>
-      <View style={styles.toolbar}>
-        {showColorPicker ? (
-          <View style={styles.button}>
-            <ColorPicker
-              value={color}
-              setValue={(color) => {
-                fastAction('updateColor', color);
-              }}
-            />
+      <View style={styles.middleContainer} pointerEvents="box-none">
+        <View style={styles.rightContainer}>
+          <View style={[styles.toolbar, { flexDirection: 'column' }]}>
+            <OverlayDrawingSubtools currentToolGroup={currentDrawingToolGroup} />
           </View>
-        ) : null}
+        </View>
       </View>
-    </View>
+    </>
   );
 };
