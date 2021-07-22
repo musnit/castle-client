@@ -46,10 +46,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderColor: Constants.colors.black,
   },
-  emptyColorPicker: {
-    width: 36,
-    height: '100%',
-  },
 });
 
 const makeButtonStyles = (value, name) => {
@@ -139,6 +135,11 @@ export const OverlayDrawing = () => {
   const showColorPicker =
     currentDrawingToolGroup == 'artwork_draw' || currentDrawingToolGroup == 'fill';
 
+  const setViewInContext = React.useCallback(
+    (viewInContext) => fastAction('onViewInContext', viewInContext),
+    [fastAction]
+  );
+
   return (
     <>
       <View style={styles.topContainer}>
@@ -150,23 +151,29 @@ export const OverlayDrawing = () => {
         <View style={styles.toolbar}>
           <ToolGroups category={rootToolCategory} value={currentDrawingToolGroup} />
         </View>
-        {showColorPicker ? (
-          <View style={styles.toolbar}>
-            <View style={styles.button}>
-              <ColorPicker
-                value={color}
-                setValue={(color) => {
-                  fastAction('updateColor', color);
-                }}
-              />
-            </View>
-          </View>
-        ) : (
-          <View pointerEvents="none" style={styles.emptyColorPicker} />
-        )}
+        <View style={styles.toolbar}>
+          <Pressable
+            style={styles.button}
+            onPressIn={() => setViewInContext(true)}
+            onPressOut={() => setViewInContext(false)}>
+            <Icon name="landscape" size={24} />
+          </Pressable>
+        </View>
       </View>
       <View style={styles.middleContainer} pointerEvents="box-none">
         <View style={styles.rightContainer}>
+          {showColorPicker ? (
+            <View style={[styles.toolbar, { marginBottom: 8 }]}>
+              <View style={[styles.button, { width: '100%', height: 36 }]}>
+                <ColorPicker
+                  value={color}
+                  setValue={(color) => {
+                    fastAction('updateColor', color);
+                  }}
+                />
+              </View>
+            </View>
+          ) : null}
           <View style={[styles.toolbar, { flexDirection: 'column' }]}>
             <OverlayDrawingSubtools currentToolGroup={currentDrawingToolGroup} />
           </View>
