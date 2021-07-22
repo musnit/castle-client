@@ -123,6 +123,8 @@ endif()
 
 # Add debug info in non-MSVC desktop release builds
 if((NOT IOS) AND (NOT ANDROID) AND (NOT WEB) AND (NOT MSVC))
+  target_compile_options(castle-core PRIVATE -O0)
+  target_link_options(castle-core PRIVATE -O0)
   target_compile_options(castle-core PRIVATE -g)
   target_link_options(castle-core PRIVATE -g)
   add_compile_options(-g)
