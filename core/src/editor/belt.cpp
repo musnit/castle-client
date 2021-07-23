@@ -160,8 +160,8 @@ void Belt::update(double dtDouble) {
     }
 
     // Snap to nearest element
-    // TODO(nikki): Only snap when non-empty selection
     if (!rubberbanding && !dragging) {
+      // TODO(nikki): Only snap when belt selection active
       constexpr auto thresholdVX = 200;
       if (auto cursorVXLen = std::abs(cursorVX); cursorVXLen <= thresholdVX) {
         auto nearestElemX = (elemSize + elemGap) * std::round(cursorX / (elemSize + elemGap));
@@ -248,6 +248,42 @@ void Belt::drawOverlay() const {
 
     ++elemIndex;
   });
+
+  // Selection box
+  {
+    // TODO(nikki): Only draw box when belt selection active
+    // TODO(nikki): Draw light box when actor also selected
+    lv.graphics.setColor({ 0, 0, 0, 0.78 });
+    lv.graphics.setLineWidth(2.6f * float(lv.graphics.getScreenDPIScale()));
+    auto boxSize = 1.08f * elemSize;
+    lv.graphics.rectangle(love::Graphics::DRAW_LINE, 0.5f * windowWidth - 0.5f * boxSize,
+        elemsY - 0.5f * boxSize, boxSize, boxSize, 0.04f * boxSize, 0.04f * boxSize);
+  }
+
+  // New blueprint button
+  {
+    auto buttonX = 0.5f * windowWidth - (elemSize + elemGap) - cursorX;
+
+    // Circle
+    auto buttonRadius = 0.7f * 0.5f * elemSize;
+    lv.graphics.setColor({ 0, 0, 0, 0.78 });
+    lv.graphics.circle(love::Graphics::DRAW_FILL, buttonX, elemsY, buttonRadius);
+
+    // Plus
+    auto plusRadius = 0.5f * buttonRadius;
+    lv.graphics.setColor({ 1, 1, 1, 1 });
+    lv.graphics.setLineWidth(0.04f * elemSize);
+    std::array horizontal {
+      love::Vector2(buttonX - plusRadius, elemsY),
+      love::Vector2(buttonX + plusRadius, elemsY),
+    };
+    lv.graphics.polyline(horizontal.data(), horizontal.size());
+    std::array vertical {
+      love::Vector2(buttonX, elemsY - plusRadius),
+      love::Vector2(buttonX, elemsY + plusRadius),
+    };
+    lv.graphics.polyline(vertical.data(), vertical.size());
+  }
 
   lv.graphics.pop();
 }
