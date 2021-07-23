@@ -4,6 +4,7 @@
 #include "props.h"
 
 #include "lv.h"
+#include "draw_subtools/draw_subtool_interface.h"
 
 class Editor;
 
@@ -18,6 +19,8 @@ public:
   void drawOverlay() const;
 
   void sendDrawToolEvent();
+
+  void addTempPathData(love::PathData *pathData);
 
 private:
   friend struct DrawToolSelectSubtoolReceiver;
@@ -35,4 +38,10 @@ private:
   float viewWidth;
   float viewX;
   float viewY;
+  std::vector<std::unique_ptr<DrawSubtool>> subtools;
+  bool isPlayingAnimation;
+  std::unique_ptr<love::ToveGraphicsHolder> tempGraphics;
+
+  void resetTempGraphics();
+  DrawSubtool &getCurrentSubtool();
 };

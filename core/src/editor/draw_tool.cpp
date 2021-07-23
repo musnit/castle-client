@@ -3,6 +3,26 @@
 #include "archive.h"
 #include "behaviors/all.h"
 #include "editor.h"
+#include "engine.h"
+
+#include "draw_subtools/draw_freehand_subtool.h"
+
+struct DrawToolSelectSubtoolReceiver {
+  inline static const BridgeRegistration<DrawToolSelectSubtoolReceiver> registration {
+    "DRAW_TOOL_SELECT_SUBTOOL"
+  };
+
+  struct Params {
+    PROP(std::string, category);
+    PROP(std::string, name);
+  } params;
+
+  void receive(Engine &engine) {
+    auto editor = engine.maybeGetEditor();
+    editor->drawTool.selectedSubtools[params.category()] = params.name();
+    editor->drawTool.sendDrawToolEvent();
+  }
+};
 
 struct DrawToolEvent {
   PROP((std::unordered_map<std::string, std::string>), selectedSubtools);
@@ -22,6 +42,37 @@ void DrawTool::sendDrawToolEvent() {
   ev.color().push_back(0.0);
 
   editor.getBridge().sendEvent("EDITOR_DRAW_TOOL", ev);
+}
+
+DrawSubtool &DrawTool::getCurrentSubtool() {
+  std::string currentCategory = "root";
+  std::string currentName = selectedSubtools[currentCategory];
+
+  while (selectedSubtools.find(currentName) != selectedSubtools.end()) {
+    currentCategory = currentName;
+    currentName = selectedSubtools[currentName];
+  }
+
+  for (size_t i = 0; i < subtools.size(); i++) {
+    if (subtools[i]->category() == currentCategory && subtools[i]->name() == currentName) {
+      return *subtools[i];
+    }
+  }
+
+  return *subtools[0];
+}
+
+void DrawTool::resetTempGraphics() {
+  tempGraphics = std::make_unique<love::ToveGraphicsHolder>();
+}
+
+void DrawTool::addTempPathData(love::PathData *pathData) {
+  if (!pathData->color) {
+    pathData->color = drawData->color;
+  }
+
+  drawData->updatePathDataRendering(pathData);
+  tempGraphics->addPath(pathData->tovePath);
 }
 
 //
@@ -44,6 +95,15 @@ DrawTool::DrawTool(Editor &editor_)
   viewY = 0;
 
   isDrawToolEventDirty = true;
+  isPlayingAnimation = false;
+
+  subtools.push_back(std::make_unique<DrawFreehandSubtool>());
+
+  for (size_t i = 0; i < subtools.size(); i++) {
+    subtools[i]->setDrawTool(this);
+  }
+
+  resetTempGraphics();
 }
 
 //
@@ -75,7 +135,44 @@ void DrawTool::update(double dt) {
     drawData = std::make_shared<love::DrawData>(componentDrawData);
   }
 
-  if (scene.getGesture().getCount() == 2) {
+  const Gesture &gesture = scene.getGesture();
+
+  if (gesture.getCount() == 1 && gesture.getMaxCount() == 1) {
+    if (!isPlayingAnimation) {
+      gesture.withSingleTouch([&](const Touch &touch) {
+        love::Vector2 originalTouchPosition = { touch.screenPos.x, touch.screenPos.y };
+        auto transformedTouchPosition = viewTransform.inverseTransformPoint(originalTouchPosition);
+        auto [roundedX, roundedY] = drawData->roundGlobalCoordinatesToGrid(
+            transformedTouchPosition.x, transformedTouchPosition.y);
+        auto [clampedX, clampedY] = drawData->roundGlobalCoordinatesToGrid(
+            transformedTouchPosition.x, transformedTouchPosition.y);
+
+        DrawSubtoolTouch childTouchData(touch);
+        childTouchData.touchX = transformedTouchPosition.x;
+        childTouchData.touchY = transformedTouchPosition.y;
+        childTouchData.roundedX = roundedX;
+        childTouchData.roundedY = roundedY;
+        childTouchData.clampedX = clampedX;
+        childTouchData.clampedY = clampedY;
+
+        DrawSubtool &subtool = getCurrentSubtool();
+        if (touch.pressed) {
+          // drawData->unlinkCurrentCell();
+        }
+
+        subtool.onTouch(childTouchData);
+        if (touch.released) {
+          subtool.hasTouch = false;
+          // loadLastSave();
+        } else {
+          subtool.hasTouch = true;
+        }
+      });
+    }
+  }
+
+  if (gesture.getCount() == 2) {
+    // TODO: pan
   }
 }
 
@@ -113,6 +210,11 @@ void DrawTool::drawOverlay() const {
   lv.graphics.setColor({ 1, 1, 1, 1 });
 
   drawData->render(std::nullopt);
+
+  if (tempGraphics) {
+    tempGraphics->update();
+    tempGraphics->draw();
+  }
 
   lv.graphics.pop();
 }

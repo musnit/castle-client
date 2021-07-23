@@ -557,6 +557,14 @@ namespace ghost {
       updateTriangles();
     }
 
+    void update() {
+      if (toveMesh.ptr) {
+        TesselatorTessGraphics(toveTess, toveGraphics, toveMesh, 15);
+
+        getToveMesh();
+      }
+    }
+
     void draw() {
       if (toveMesh.ptr == NULL) {
         ConfigureShaderCode(TOVE_GLSL3, 2);

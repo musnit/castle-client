@@ -978,20 +978,3 @@ void Editor::maybeSendData() {
   }
   scene->getBehaviors().byType<TextBehavior>().maybeSendBridgeData();
 }
-
-struct DrawToolSelectSubtoolReceiver {
-  inline static const BridgeRegistration<DrawToolSelectSubtoolReceiver> registration {
-    "DRAW_TOOL_SELECT_SUBTOOL"
-  };
-
-  struct Params {
-    PROP(std::string, category);
-    PROP(std::string, name);
-  } params;
-
-  void receive(Engine &engine) {
-    auto editor = engine.maybeGetEditor();
-    editor->drawTool.selectedSubtools[params.category()] = params.name();
-    editor->drawTool.sendDrawToolEvent();
-  }
-};
