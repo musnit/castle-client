@@ -73,6 +73,7 @@ void Library::markOrderDirty() {
 
 void Library::ensureOrder() {
   if (orderDirty) {
+    order.clear();
     order.reserve(entries.size());
     for (auto &[entryId, entry] : entries) {
       order.push_back(&entry);
