@@ -11,12 +11,18 @@ void Selection::applySelection(Scene &scene) {
 }
 
 void Selection::selectActorFromHits(const BodyBehavior::ActorsAtTouch &hits) {
-  // TODO: prioritize draw order, belt
-  // for now just pick first choice
+  ActorId pick = nullActor;
+  if (auto nHits = int(hits.size()); nHits > 0) {
+    for (auto i = nHits - 1; i >= 0; --i) {
+      auto nextI = i == 0 ? nHits - 1 : i - 1;
+      if (isSelected(hits[i])) {
+        pick = hits[nextI];
+      }
+    }
+    pick = pick != nullActor ? pick : hits.back();
+  }
   deselectAllActors();
-  if (hits.size() > 0) {
-    Debug::log("select actor");
-    auto pick = hits.front();
+  if (pick != nullActor) {
     selectActor(pick);
   }
 }
@@ -26,6 +32,7 @@ void Selection::touchToSelect(Scene &scene) {
     auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
     auto isShortPress = lv.timer.getTime() - touch.pressTime < 0.2;
 
+    // Get hits sorted in selection order
     BodyBehavior::ActorsAtTouch hits;
     bodyBehavior.forEachActorAtPoint(
         touch.pos.x, touch.pos.y, [&](ActorId actorId, const b2Fixture *fixture) {
@@ -34,9 +41,24 @@ void Selection::touchToSelect(Scene &scene) {
           }
           return true;
         });
+    std::sort(hits.begin(), hits.end(), [&](ActorId a, ActorId b) {
+      // TODO(nikki): Prefer actors associated with currently selected belt entry
+      auto maybeDrawOrderA = scene.maybeGetDrawOrder(a);
+      auto maybeDrawOrderB = scene.maybeGetDrawOrder(b);
+      if (maybeDrawOrderA && !maybeDrawOrderB) {
+        return true;
+      }
+      if (maybeDrawOrderB && !maybeDrawOrderA) {
+        return false;
+      }
+      return *maybeDrawOrderA < *maybeDrawOrderB;
+    });
 
     // Press and move? Check at point and select if nothing already selected there.
     if (!touch.isUsed() && touch.movedNear && isShortPress) {
+      // TODO: This should maybe use `touch.initialPos` vs. `touch.pos` since user meant to select
+      //       where the touch started dragging, not where it is now (may have left actor bounds).
+      //       `touch.initialPos` is what we used in Lua too.
       auto touchesExistingSelection = false;
       for (auto actorId : hits) {
         if (selection.contains(actorId)) {
