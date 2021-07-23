@@ -33,6 +33,7 @@ void Belt::update(double dtDouble) {
     return;
   }
   auto dt = float(dtDouble); // We mostly use `float`s, this avoids conversion warnings
+  dt *= 1.6; // Make belt snappier. Resorted to making time faster after tuning constants...
 
   // Get scene data
   auto &scene = editor.getScene();
