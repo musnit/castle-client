@@ -179,8 +179,13 @@ void Belt::update(double dtDouble) {
     // Don't have a target element
     targetIndex = -1;
 
+    // If selection active, update based on cursor position
     if (selectedEntryId) {
-      // TODO(nikki): Update selected entry id based on cursor position
+      auto cursorElemIndex = int(std::round(cursorX / (elemSize + elemGap)));
+      if (auto cursorEntry = library.indexEntry(cursorElemIndex)) {
+        // TODO(nikki): Enable highlight if entry changed
+        selectedEntryId = cursorEntry->getEntryId(); // TODO(nikki): Avoid unnecessary copying
+      }
     }
 
     // Strong rubber band on ends
@@ -260,6 +265,9 @@ void Belt::update(double dtDouble) {
 //
 
 void Belt::drawOverlay() const {
+  Debug::display(
+      "belt selected entry id: {}", selectedEntryId ? selectedEntryId->c_str() : "(none)");
+
   if (!editor.hasScene()) {
     return;
   }
