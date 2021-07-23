@@ -38,4 +38,15 @@ std::optional<PathsList> getRectangleShape(float x1, float y1, float x2, float y
   }
   return std::nullopt;
 }
+
+std::optional<PathsList> getRightTriangleShape(float x1, float y1, float x2, float y2) {
+  float x3 = x1, y3 = y2;
+  auto isColinear = floatEquals((x2 - x1) * (y3 - y1), (x3 - x1) * (y2 - y1));
+  if (!isColinear && isPointInBounds(x1, y1) && isPointInBounds(x2, y2)
+      && isPointInBounds(x3, y3)) {
+    float points[] = { x1, y1, x2, y2, x3, y3 };
+    return pointsToPaths(points, 6);
+  }
+  return std::nullopt;
+}
 }

@@ -102,6 +102,7 @@ DrawTool::DrawTool(Editor &editor_)
   subtools.push_back(std::make_unique<DrawFreehandSubtool>(*this));
   subtools.push_back(std::make_unique<DrawLineSubtool>(*this));
   subtools.push_back(std::make_unique<DrawShapeSubtool>(*this, DrawShapeSubtool::Shape::Rectangle));
+  subtools.push_back(std::make_unique<DrawShapeSubtool>(*this, DrawShapeSubtool::Shape::Triangle));
 
   resetTempGraphics();
 }

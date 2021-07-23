@@ -53,11 +53,24 @@ public:
     c.data[2] = 0.0;
     c.data[3] = 1.0;
 
-    auto shape = DrawUtil::getRectangleShape(
-        initialCoord.x, initialCoord.y, touch.roundedX, touch.roundedY);
-    if (shape) {
-      for (int ii = 0; ii < shape->length; ii++) {
-        auto &path = shape->paths[ii];
+    auto paths = std::make_optional<DrawUtil::PathsList>();
+    switch (shape) {
+    case Shape::Rectangle:
+      paths = DrawUtil::getRectangleShape(
+          initialCoord.x, initialCoord.y, touch.roundedX, touch.roundedY);
+      break;
+    case Shape::Circle:
+      // TODO: circle
+      break;
+    case Shape::Triangle:
+      paths = DrawUtil::getRightTriangleShape(
+          initialCoord.x, initialCoord.y, touch.roundedX, touch.roundedY);
+      break;
+    }
+
+    if (paths) {
+      for (int ii = 0; ii < paths->length; ii++) {
+        auto &path = paths->paths[ii];
         path.color = c;
         path.isTransparent = false;
       }
@@ -65,14 +78,18 @@ public:
 
     if (touch.touch.released) {
       // TODO: commit path data
-      for (int ii = 0; ii < shape->length; ii++) {
-        drawTool.addTempPathData(shape->paths + ii);
+      if (paths) {
+        for (int ii = 0; ii < paths->length; ii++) {
+          drawTool.addTempPathData(paths->paths + ii);
+        }
       }
     } else {
-      // repeatedly clear and draw the updated shape as we drag the touch around
+      // repeatedly clear and draw the updated paths as we drag the touch around
       drawTool.resetTempGraphics();
-      for (int ii = 0; ii < shape->length; ii++) {
-        drawTool.addTempPathData(shape->paths + ii);
+      if (paths) {
+        for (int ii = 0; ii < paths->length; ii++) {
+          drawTool.addTempPathData(paths->paths + ii);
+        }
       }
     }
   }
