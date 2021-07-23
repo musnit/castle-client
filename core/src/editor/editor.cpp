@@ -29,61 +29,62 @@ void Editor::readVariables(Reader &reader) {
 };
 
 void Editor::update(double dt) {
-  if (scene) {
-    // TODO: Update scene when performing
-    {
-      /* if (scene->isRestartRequested()) {
-        sceneArchive.read([&](Reader &reader) {
-          reader.obj("snapshot", [&]() {
-            scene = std::make_unique<Scene>(bridge, variables, true, &reader);
-          });
+  if (!scene) {
+    return;
+  }
+  // TODO: Update scene when performing
+  {
+    /* if (scene->isRestartRequested()) {
+      sceneArchive.read([&](Reader &reader) {
+        reader.obj("snapshot", [&]() {
+          scene = std::make_unique<Scene>(bridge, variables, true, &reader);
+        });
+      });
+    }
+
+    Debug::display("fps: {}", lv.timer.getFPS());
+    Debug::display("actors: {}", scene->numActors());
+
+    scene->update(dt); */
+  }
+
+  // Non-performing update
+  {
+    // Need to tell scene to update gesture, since we didn't `scene->update()`
+    // TODO: Should gesture just be moved out of scene?
+    scene->updateGesture();
+
+    selection.touchToSelect(*scene);
+
+    if (selection.isSelectionChanged()) {
+      isEditorStateDirty = true;
+      isSelectedActorStateDirty = true;
+      if (selection.hasSelection()) {
+        scene->getBehaviors().forEach([&](auto &behavior) {
+          auto behaviorId = std::remove_reference_t<decltype(behavior)>::behaviorId;
+          selectedComponentStateDirty.insert(behaviorId);
         });
       }
-
-      Debug::display("fps: {}", lv.timer.getFPS());
-      Debug::display("actors: {}", scene->numActors());
-
-      scene->update(dt); */
+      selection.setSelectionChanged(false);
     }
 
-    // Non-performing update
-    {
-      // Need to tell scene to update gesture, since we didn't `scene->update()`
-      // TODO: Should gesture just be moved out of scene?
-      scene->updateGesture();
+    // Update belt -- do this before tools to allow it to steal touches
+    belt.update(dt);
 
-      selection.touchToSelect(*scene);
-
-      if (selection.isSelectionChanged()) {
-        isEditorStateDirty = true;
-        isSelectedActorStateDirty = true;
-        if (selection.hasSelection()) {
-          scene->getBehaviors().forEach([&](auto &behavior) {
-            auto behaviorId = std::remove_reference_t<decltype(behavior)>::behaviorId;
-            selectedComponentStateDirty.insert(behaviorId);
-          });
-        }
-        selection.setSelectionChanged(false);
-      }
-
-      // Update belt -- do this before tools to allow it to steal touches
-      belt.update(dt);
-
-      // Update current tool
-      switch (currentTool) {
-      case Tool::Grab:
-        grab.update(dt);
-        break;
-      case Tool::ScaleRotate:
-        break;
-      case Tool::Draw:
-        drawTool.update(dt);
-        break;
-      }
+    // Update current tool
+    switch (currentTool) {
+    case Tool::Grab:
+      grab.update(dt);
+      break;
+    case Tool::ScaleRotate:
+      break;
+    case Tool::Draw:
+      drawTool.update(dt);
+      break;
     }
-
-    maybeSendData();
   }
+
+  maybeSendData();
 }
 
 void Editor::draw() {
@@ -262,6 +263,9 @@ struct EditorGlobalActionReceiver {
 };
 
 void Editor::sendGlobalActions() {
+  if (!scene) {
+    return;
+  }
   EditorGlobalActionsEvent ev;
   if (selection.hasSelection()) {
     ev.selectedActorId = entt::to_integral(selection.firstSelectedActorId());
@@ -288,6 +292,9 @@ struct EditorSelectedActorEvent {
 };
 
 void Editor::sendSelectedActorData() {
+  if (!scene) {
+    return;
+  }
   EditorSelectedActorEvent ev;
   scene->getBehaviors().forEach([&](auto &behavior) {
     using BehaviorType = std::remove_reference_t<decltype(behavior)>;
@@ -327,6 +334,9 @@ struct EditorAllBehaviorsEvent {
 };
 
 void Editor::sendAllBehaviorsData() {
+  if (!scene) {
+    return;
+  }
   EditorAllBehaviorsEvent ev;
   scene->getBehaviors().forEach([&](auto &behavior) {
     using BehaviorType = std::remove_reference_t<decltype(behavior)>;
@@ -415,6 +425,9 @@ struct EditorNoComponentEvent {
 
 // send behavior property values for the selected actor's components
 void Editor::sendSelectedComponent(int behaviorId) {
+  if (!scene) {
+    return;
+  }
   scene->getBehaviors().byId(behaviorId, [&](auto &behavior) {
     auto actorId = selection.firstSelectedActorId();
     using BehaviorType = std::remove_reference_t<decltype(behavior)>;
@@ -962,6 +975,9 @@ void Editor::sendTagsData() {
 }
 
 void Editor::maybeSendData() {
+  if (!scene) {
+    return;
+  }
   if (isEditorStateDirty) {
     sendGlobalActions();
     isEditorStateDirty = false;
