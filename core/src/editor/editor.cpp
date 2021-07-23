@@ -980,17 +980,20 @@ void Editor::maybeSendData() {
     return;
   }
   if (isEditorStateDirty) {
+    Debug::display("sent global actions");
     sendGlobalActions();
     isEditorStateDirty = false;
   }
   if (isSelectedActorStateDirty) {
     sendSelectedActorData();
+    Debug::display("sent selected actor data");
     isSelectedActorStateDirty = false;
   }
   if (!selectedComponentStateDirty.empty()) {
     for (auto behaviorId : selectedComponentStateDirty) {
       sendSelectedComponent(behaviorId);
     }
+    Debug::display("sent selected component");
     selectedComponentStateDirty.clear();
   }
   scene->getBehaviors().byType<TextBehavior>().maybeSendBridgeData();
