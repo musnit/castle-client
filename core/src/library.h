@@ -31,6 +31,8 @@ private:
 
   json::Value jsonValue;
 
+  std::string title;
+
   mutable bool previewImageGenerated = false;
   mutable std::unique_ptr<love::ImageData> previewImageData;
   mutable std::unique_ptr<love::Image> previewImage;
@@ -51,9 +53,10 @@ public:
   // Entry access
 
   const LibraryEntry *maybeGetEntry(const char *entryId); // `nullptr` if not found
-
   template<typename F>
-  void forEachEntry(F &&f); // `F` takes `(LibraryEntry &)`
+  void forEachEntry(F &&f); // `F` takes `(LibraryEntry &)`, iterates in order
+  int numEntries() const;
+  const LibraryEntry *indexEntry(int index); // `nullptr` if out of bounds
 
 
   // Entry read / write
@@ -65,6 +68,12 @@ private:
   json::CrtAllocator baseAlloc;
 
   std::unordered_map<std::string, LibraryEntry> entries;
+  std::vector<LibraryEntry *> order;
+  bool orderDirty = true;
+
+
+  void markOrderDirty();
+  void ensureOrder();
 };
 
 
@@ -87,7 +96,20 @@ inline const LibraryEntry *Library::maybeGetEntry(const char *entryId) {
 
 template<typename F>
 void Library::forEachEntry(F &&f) {
-  for (auto &[entryId, entry] : entries) {
-    f(entry);
+  ensureOrder();
+  for (auto entry : order) {
+    f(*entry);
   }
+}
+
+inline const LibraryEntry *Library::indexEntry(int index) {
+  ensureOrder();
+  if (0 <= index && index < int(order.size())) {
+    return order[index];
+  }
+  return nullptr;
+}
+
+inline int Library::numEntries() const {
+  return int(entries.size());
 }
