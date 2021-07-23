@@ -55,8 +55,7 @@ void Belt::update(double dtDouble) {
     cursorX = initialCursorX;
   }
 
-  // Save previous X and VX
-  // auto prevCursorX = cursorX;
+  // Save velocity at start of frame
   auto prevCursorVX = cursorVX;
 
   // Read touch input
@@ -251,8 +250,6 @@ void Belt::update(double dtDouble) {
       cursorVX = 0.8f * cursorVX + 0.2f * prevCursorVX;
     }
   }
-
-  // TODO(nikki): Haptics
 
   // TODO(nikki): Disable highlight when not selecting blueprint
 
