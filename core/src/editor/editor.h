@@ -62,10 +62,10 @@ private:
   Archive sceneArchive;
   std::unique_ptr<Scene> scene;
 
-  Selection selection;
+  Belt belt { *this };
+  Selection selection { belt };
   Commands commands { *this };
   Grid grid;
-  Belt belt { *this };
 
   enum class Tool {
     Grab,

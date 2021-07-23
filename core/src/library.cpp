@@ -10,9 +10,11 @@ constexpr auto libraryEntryPoolChunkSize = 8 * 1024;
 // Entry constructor, destructor
 //
 
-LibraryEntry::LibraryEntry(const json::Value &jsonValue_, json::CrtAllocator &baseAlloc)
+LibraryEntry::LibraryEntry(
+    const char *entryId_, const json::Value &jsonValue_, json::CrtAllocator &baseAlloc)
     : alloc(libraryEntryPoolChunkSize, &baseAlloc)
-    , jsonValue(jsonValue_, alloc, true) {
+    , jsonValue(jsonValue_, alloc, true)
+    , entryId(entryId_) {
   read([&](Reader &reader) {
     title = reader.str("title", "");
   });
@@ -57,7 +59,7 @@ void Library::readEntry(Reader &reader) {
   }
   auto entryId = *maybeEntryId;
   entries.emplace(std::piecewise_construct, std::forward_as_tuple(entryId),
-      std::forward_as_tuple(*reader.jsonValue(), baseAlloc));
+      std::forward_as_tuple(entryId, *reader.jsonValue(), baseAlloc));
   markOrderDirty();
 }
 

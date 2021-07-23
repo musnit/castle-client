@@ -3,13 +3,16 @@
 #include "precomp.h"
 #include "scene.h"
 #include "behaviors/body.h"
+#include "belt.h"
+
+class Editor;
 
 class Selection {
 public:
   Selection(const Selection &) = delete; // Prevent accidental copies
   const Selection &operator=(const Selection &) = delete;
 
-  Selection() = default;
+  explicit Selection(Belt &belt_);
 
   void touchToSelect(Scene &scene);
 
@@ -22,7 +25,7 @@ public:
 
   void selectActor(ActorId actorId);
   void deselectActor(ActorId actorId);
-  void deselectAllActors();
+  void deselectAllActors(bool deselectBelt = true);
 
   bool isBlueprintSelected();
   void setBlueprintSelected(bool selected);
@@ -31,6 +34,7 @@ public:
 
 private:
   Lv &lv { Lv::getInstance() };
+  Belt &belt;
   ActorIdSet selection;
 
   void applySelection(Scene &scene);
@@ -38,6 +42,10 @@ private:
   bool selectionChanged = false;
   bool blueprintSelected = false;
 };
+
+inline Selection::Selection(Belt &belt_)
+    : belt(belt_) {
+}
 
 inline ActorIdSet &Selection::getSelectedActorIds() {
   return selection;
@@ -80,7 +88,10 @@ inline void Selection::deselectActor(ActorId actorId) {
   }
 }
 
-inline void Selection::deselectAllActors() {
+inline void Selection::deselectAllActors(bool deselectBelt) {
+  if (deselectBelt) {
+    belt.deselect();
+  }
   if (!selection.empty()) {
     selection.clear();
     blueprintSelected = false;

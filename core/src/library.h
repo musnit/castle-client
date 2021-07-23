@@ -13,7 +13,10 @@ public:
   LibraryEntry(const LibraryEntry &) = delete; // Prevent accidental copies
   const LibraryEntry &operator=(const LibraryEntry &) = delete;
 
-  explicit LibraryEntry(const json::Value &jsonValue, json::CrtAllocator &baseAlloc);
+  explicit LibraryEntry(
+      const char *entryId_, const json::Value &jsonValue, json::CrtAllocator &baseAlloc);
+
+  const std::string &getEntryId() const;
 
   template<typename F>
   void read(F &&f) const;
@@ -31,6 +34,7 @@ private:
 
   json::Value jsonValue;
 
+  std::string entryId;
   std::string title;
 
   mutable bool previewImageGenerated = false;
@@ -78,6 +82,10 @@ private:
 
 
 // Inline implementations
+
+inline const std::string &LibraryEntry::getEntryId() const {
+  return entryId;
+}
 
 template<typename F>
 void LibraryEntry::read(F &&f) const {

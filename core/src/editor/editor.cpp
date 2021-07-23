@@ -11,6 +11,7 @@ Editor::Editor(Bridge &bridge_)
 
 void Editor::clearState() {
   selection.deselectAllActors();
+  belt.deselect();
   isEditorStateDirty = true;
   isSelectedActorStateDirty = true;
   currentTool = Tool::Grab;

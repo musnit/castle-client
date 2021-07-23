@@ -15,6 +15,8 @@ public:
 
   explicit Belt(Editor &editor_);
 
+  void deselect();
+
   void update(double dt);
   void drawOverlay() const;
 
@@ -33,13 +35,25 @@ private:
   float cursorX = 0;
   float cursorVX = 0;
 
+  std::optional<std::string> selectedEntryId;
+
+  int targetIndex = -1;
+
   SmallVector<float, 5> dragVXs;
 
   struct TouchData {
     // Extra data we add to touches
+    float initialScrollVX = 0; // The belt scroll velocity right before this touch began
     bool neverPlace = false; // Whether to never allow placing actors from this touch
   };
 
 
   float getElementX(int index) const;
 };
+
+
+// Inlined implementations
+
+inline void Belt::deselect() {
+  selectedEntryId = {};
+}

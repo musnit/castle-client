@@ -55,16 +55,12 @@ void Belt::update(double dtDouble) {
     cursorX = initialCursorX;
   }
 
-  // Animation state
-  auto dragging = false; // Whether being actively dragged left or right to scroll
-  auto targeting = false; // Whether scrolling to a targetted element
-  auto skipApplyVel = false; // Whether to skip applying velocity
-
   // Save previous X and VX
   // auto prevCursorX = cursorX;
   auto prevCursorVX = cursorVX;
 
   // Read touch input
+  auto dragging = false; // Whether being actively dragged left or right to scroll
   auto &gesture = scene.getGesture();
   gesture.withSingleTouch([&](const Touch &touch) {
     auto touchInBelt = top <= touch.screenPos.y && touch.screenPos.y <= bottom;
@@ -82,17 +78,49 @@ void Belt::update(double dtDouble) {
 
     // Get belt data for touch
     auto maybeTouchData = gesture.maybeGetData<TouchData>(touch.id);
-    auto touchData = maybeTouchData ? *maybeTouchData : TouchData();
+    auto touchData = maybeTouchData ? *maybeTouchData : TouchData { cursorVX };
 
     // Touching belt deselects actors
-    selection.deselectAllActors();
+    selection.deselectAllActors(false);
 
     // Find coordinates of touch in belt-space
     auto touchBeltX = touch.screenPos.x - 0.5f * windowWidth + cursorX;
     auto touchElemIndex = int(std::round(touchBeltX / (elemSize + elemGap)));
 
-    // TODO(nikki): Press: cancel target
-    // TODO(nikki): Tap: track new target
+    // Cancel previous target on touch press, track new target on tap
+    if (touch.pressed) {
+      targetIndex = -1;
+    }
+    if (touch.released && !touch.movedNear && lv.timer.getTime() - touch.pressTime < 0.2) {
+      if (std::abs(touchData.initialScrollVX) > elemSize / 1.2f) {
+        // Scrolling pretty fast when touch began. Likely the user just wanted to stop the scroll
+        // and didn't actually explicitly tap on a particular element. So don't select anything if
+        // selection isn't currently active. If selection is active, target element under cursor
+        // rather than element under touch.
+        if (selectedEntryId) {
+          auto cursorElemIndex = int(std::round(cursorX / (elemSize + elemGap)));
+          auto cursorElemX = (elemSize + elemGap) * float(cursorElemIndex);
+          if (cursorElemX < cursorX && touchData.initialScrollVX > 0) {
+            ++cursorElemIndex;
+          } else if (cursorElemX > cursorX && touchData.initialScrollVX < 0) {
+            --cursorElemIndex;
+          }
+          targetIndex = std::min(std::max(0, cursorElemIndex), numElems - 1);
+        }
+      } else {
+        // Scrolling slow, assume user meant to tap on the particular element under touch
+        if (0 <= touchElemIndex && touchElemIndex < numElems) {
+          targetIndex = touchElemIndex;
+        } else {
+          targetIndex = -1;
+        }
+        if (touchElemIndex == -1) {
+          // Tapped one element before first one: the new blueprint button
+          // TODO(nikki): Add new blueprint
+        }
+      }
+    }
+
     // TODO(nikki): Enable highlight
 
     // TODO(nikki): Track placing info
@@ -101,10 +129,9 @@ void Belt::update(double dtDouble) {
     {
       dragging = true;
 
-      // Directly move belt by dragged amount, don't apply velocity
+      // Directly move belt by dragged amount
       auto dx = -touch.screenDelta.x;
       cursorX += dx;
-      skipApplyVel = true;
 
       // Keep track of last 3 drag velocities and use max to smooth things out
       dragVXs.push_back(dx / dt);
@@ -131,11 +158,31 @@ void Belt::update(double dtDouble) {
   });
   // TODO(nikki): Clear placing info if not placing
 
-  // TODO(nikki): Scroll to target
-  // TODO(nikki): Update currently selected entry id
+  if (auto maybeTargetEntry = library.indexEntry(targetIndex)) {
+    // Have a target element
 
-  // Apply non-targeting physics
-  if (!targeting) {
+    // Select target
+    selectedEntryId = maybeTargetEntry->getEntryId(); // TODO(nikki): Avoid unnecessary copying
+
+    // Scroll to target
+    auto targetElemX = float(targetIndex) * (elemSize + elemGap);
+    if (std::abs(targetElemX - cursorX) <= 3) {
+      // Reached target
+      targetIndex = -1;
+      cursorX = targetElemX;
+      cursorVX = 0;
+    } else {
+      // Rubber band to target
+      cursorX = 0.4f * targetElemX + 0.6f * cursorX;
+    }
+  } else {
+    // Don't have a target element
+    targetIndex = -1;
+
+    if (selectedEntryId) {
+      // TODO(nikki): Update selected entry id based on cursor position
+    }
+
     // Strong rubber band on ends
     auto rubberbanding = false;
     if (!dragging) {
@@ -160,8 +207,7 @@ void Belt::update(double dtDouble) {
     }
 
     // Snap to nearest element
-    if (!rubberbanding && !dragging) {
-      // TODO(nikki): Only snap when belt selection active
+    if (selectedEntryId && !rubberbanding && !dragging) {
       constexpr auto thresholdVX = 200;
       if (auto cursorVXLen = std::abs(cursorVX); cursorVXLen <= thresholdVX) {
         auto nearestElemX = (elemSize + elemGap) * std::round(cursorX / (elemSize + elemGap));
@@ -182,8 +228,8 @@ void Belt::update(double dtDouble) {
       }
     }
 
-    // Apply velocity
-    if (!skipApplyVel) {
+    // Apply velocity unless directly dragged
+    if (!dragging) {
       cursorX += cursorVX * dt;
     }
 
@@ -250,8 +296,7 @@ void Belt::drawOverlay() const {
   });
 
   // Selection box
-  {
-    // TODO(nikki): Only draw box when belt selection active
+  if (selectedEntryId) {
     // TODO(nikki): Draw light box when actor also selected
     lv.graphics.setColor({ 0, 0, 0, 0.78 });
     lv.graphics.setLineWidth(2.6f * float(lv.graphics.getScreenDPIScale()));
