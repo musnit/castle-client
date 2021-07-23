@@ -7,6 +7,7 @@
 
 #include "draw_subtools/draw_freehand_subtool.h"
 #include "draw_subtools/draw_line_subtool.h"
+#include "draw_subtools/draw_shape_subtool.h"
 
 struct DrawToolSelectSubtoolReceiver {
   inline static const BridgeRegistration<DrawToolSelectSubtoolReceiver> registration {
@@ -100,6 +101,7 @@ DrawTool::DrawTool(Editor &editor_)
 
   subtools.push_back(std::make_unique<DrawFreehandSubtool>(*this));
   subtools.push_back(std::make_unique<DrawLineSubtool>(*this));
+  subtools.push_back(std::make_unique<DrawShapeSubtool>(*this, DrawShapeSubtool::Shape::Rectangle));
 
   resetTempGraphics();
 }
