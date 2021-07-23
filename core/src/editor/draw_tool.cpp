@@ -6,6 +6,7 @@
 #include "engine.h"
 
 #include "draw_subtools/draw_freehand_subtool.h"
+#include "draw_subtools/draw_line_subtool.h"
 
 struct DrawToolSelectSubtoolReceiver {
   inline static const BridgeRegistration<DrawToolSelectSubtoolReceiver> registration {
@@ -98,6 +99,7 @@ DrawTool::DrawTool(Editor &editor_)
   isPlayingAnimation = false;
 
   subtools.push_back(std::make_unique<DrawFreehandSubtool>(*this));
+  subtools.push_back(std::make_unique<DrawLineSubtool>(*this));
 
   resetTempGraphics();
 }
@@ -159,6 +161,7 @@ void DrawTool::update(double dt) {
         subtool.onTouch(childTouchData);
         if (touch.released) {
           subtool.hasTouch = false;
+          subtool.onReset();
           // loadLastSave();
         } else {
           subtool.hasTouch = true;

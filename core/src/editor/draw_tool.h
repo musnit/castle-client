@@ -20,6 +20,7 @@ public:
 
   void sendDrawToolEvent();
 
+  void resetTempGraphics();
   void addTempPathData(love::PathData *pathData);
 
 private:
@@ -42,6 +43,5 @@ private:
   bool isPlayingAnimation;
   std::unique_ptr<love::ToveGraphicsHolder> tempGraphics;
 
-  void resetTempGraphics();
   DrawSubtool &getCurrentSubtool();
 };
