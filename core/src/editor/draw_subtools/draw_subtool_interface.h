@@ -22,17 +22,19 @@ public:
 
 class DrawSubtool {
 public:
+  explicit DrawSubtool(DrawTool &drawTool_)
+      : drawTool(drawTool_) {
+  }
+  virtual ~DrawSubtool() {
+  }
+
   virtual std::string category() = 0;
   virtual std::string name() = 0;
   virtual void onReset() = 0;
   virtual void onTouch(DrawSubtoolTouch &touch) = 0;
 
-
-  void setDrawTool(DrawTool *drawTool_) {
-    drawTool = drawTool_;
-  }
   bool hasTouch;
 
 protected:
-  DrawTool *drawTool;
+  DrawTool &drawTool;
 };

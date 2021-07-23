@@ -5,6 +5,12 @@
 
 class DrawFreehandSubtool : public DrawSubtool {
 public:
+  explicit DrawFreehandSubtool(DrawTool &drawTool_)
+      : DrawSubtool(drawTool_) {
+  }
+  ~DrawFreehandSubtool() {
+  }
+
   std::string category() {
     return "artwork_draw";
   }
@@ -32,7 +38,7 @@ public:
     pathData->isFreehand = true;
     pathData->isTransparent = false;
 
-    drawTool->addTempPathData(pathData);
+    drawTool.addTempPathData(pathData);
 
     initialCoord.x = touch.touchX;
     initialCoord.y = touch.touchY;

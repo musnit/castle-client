@@ -97,11 +97,7 @@ DrawTool::DrawTool(Editor &editor_)
   isDrawToolEventDirty = true;
   isPlayingAnimation = false;
 
-  subtools.push_back(std::make_unique<DrawFreehandSubtool>());
-
-  for (size_t i = 0; i < subtools.size(); i++) {
-    subtools[i]->setDrawTool(this);
-  }
+  subtools.push_back(std::make_unique<DrawFreehandSubtool>(*this));
 
   resetTempGraphics();
 }
