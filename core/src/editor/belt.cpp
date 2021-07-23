@@ -55,9 +55,6 @@ void Belt::update(double dtDouble) {
     cursorX = initialCursorX;
   }
 
-  // Animation constants
-  constexpr float decelX = 2200;
-
   // Animation state
   auto dragging = false; // Whether being actively dragged left or right to scroll
   auto targeting = false; // Whether scrolling to a targetted element
@@ -162,7 +159,28 @@ void Belt::update(double dtDouble) {
       }
     }
 
-    // TODO(nikki): Snap cursor to nearest elem
+    // Snap to nearest element
+    // TODO(nikki): Only snap when non-empty selection
+    if (!rubberbanding && !dragging) {
+      constexpr auto thresholdVX = 200;
+      if (auto cursorVXLen = std::abs(cursorVX); cursorVXLen <= thresholdVX) {
+        auto nearestElemX = (elemSize + elemGap) * std::round(cursorX / (elemSize + elemGap));
+        if (cursorVXLen > 0.7 * thresholdVX) {
+          // Don't 'pull back' if we're moving forward fast enough
+          if (nearestElemX < cursorX && cursorVX > 0) {
+            nearestElemX = std::max(cursorX, nearestElemX + 0.8f * (elemSize + elemGap));
+          }
+          if (nearestElemX > cursorX && cursorVX < 0) {
+            nearestElemX = std::min(cursorX, nearestElemX - 0.8f * (elemSize + elemGap));
+          }
+        }
+
+        // Apply an acceleration toward nearest element, but damp the velocity change
+        auto accel = 0.7f * thresholdVX * (nearestElemX - cursorX);
+        auto newVX = cursorVX + accel * std::min(dt, 0.038f);
+        cursorVX = 0.85f * newVX + 0.15f * cursorVX;
+      }
+    }
 
     // Apply velocity
     if (!skipApplyVel) {
@@ -170,10 +188,11 @@ void Belt::update(double dtDouble) {
     }
 
     // Deceleration, stopping at proper zero if we get there
+    constexpr float decel = 2200;
     if (cursorVX > 0) {
-      cursorVX = std::max(0.0f, cursorVX - decelX * dt);
+      cursorVX = std::max(0.0f, cursorVX - decel * dt);
     } else if (cursorVX < 0) {
-      cursorVX = std::min(0.0f, cursorVX + decelX * dt);
+      cursorVX = std::min(0.0f, cursorVX + decel * dt);
     }
 
     // Smooth out velocity artifacts
