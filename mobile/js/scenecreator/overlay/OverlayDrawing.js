@@ -168,7 +168,7 @@ export const OverlayDrawing = () => {
                 <ColorPicker
                   value={color}
                   setValue={(color) => {
-                    fastAction('updateColor', color);
+                    sendAsync('DRAW_TOOL_SELECT_COLOR', { color });
                   }}
                 />
               </View>
