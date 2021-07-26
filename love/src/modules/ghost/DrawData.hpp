@@ -137,6 +137,15 @@ namespace ghost {
       });
     }
 
+    std::string serialize() {
+      Archive archive;
+      archive.write([&](Archive::Writer &w) {
+        write(w);
+      });
+
+      return archive.toJson();
+    }
+
     void write(Archive::Writer &archive) {
       archive.arr("color", color);
       archive.arr("lineColor", lineColor);
@@ -202,6 +211,7 @@ namespace ghost {
     void updateBounds();
     Bounds getBounds(int frame);
     bool arePathDatasFloodFillable(PathData pd1, PathData pd2);
+    void updateFramePreview();
     AnimationState newAnimationState();
     int getNumFrames();
     int modFrameIndex(int value);
@@ -217,6 +227,7 @@ namespace ghost {
     void preload();
     void render(std::optional<AnimationComponentProperties> componentProperties);
     bool isPointInBounds(Point point);
+    void touchLayerData();
   };
 
 }

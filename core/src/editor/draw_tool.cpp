@@ -64,8 +64,16 @@ DrawSubtool &DrawTool::getCurrentSubtool() {
   return *subtools[0];
 }
 
+//
+// Subtool functions
+//
+
 void DrawTool::resetTempGraphics() {
   tempGraphics = std::make_unique<love::ToveGraphicsHolder>();
+}
+
+void DrawTool::clearTempGraphics() {
+  tempGraphics = NULL;
 }
 
 void DrawTool::addTempPathData(love::PathData *pathData) {
@@ -76,6 +84,23 @@ void DrawTool::addTempPathData(love::PathData *pathData) {
   drawData->updatePathDataRendering(pathData);
   tempGraphics->addPath(pathData->tovePath);
 }
+
+love::DrawDataFrame *DrawTool::drawDataFrame() {
+  return drawData->currentLayerFrame();
+}
+
+void DrawTool::saveDrawing(std::string commandDescription) {
+  drawData->updateFramePreview();
+
+  auto &scene = editor.getScene();
+  auto &drawBehavior = scene.getBehaviors().byType<Drawing2Behavior>();
+  auto actorId = editor.getSelection().firstSelectedActorId();
+  auto component = drawBehavior.maybeGetComponent(actorId);
+
+
+  auto newDrawData = drawData->serialize();
+}
+
 
 //
 // Constructor, destructor

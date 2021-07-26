@@ -608,17 +608,18 @@ namespace ghost {
     }
     return data;
   }
-
-  TYPE DrawData::touchLayerData() {
+*/
+  void DrawData::touchLayerData() {
     _layerDataChanged = true;
-  }*/
-  /*
+  }
+  
 
-  TYPE DrawData::updateFramePreview() {
+  void DrawData::updateFramePreview() {
     touchLayerData();
-    currentLayerFrame().base64Png = currentLayerFrame().renderPreviewPng();
+    currentLayerFrame()->base64Png = currentLayerFrame()->renderPreviewPng(-1);
   }
 
+/*
   TYPE DrawData::unlinkCurrentCell() {
     if (!selectedLayer().frames[selectedFrame].isLinked) {
           return;

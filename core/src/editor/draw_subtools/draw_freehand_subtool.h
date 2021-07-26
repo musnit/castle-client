@@ -22,7 +22,7 @@ public:
   void onReset() {
   }
 
-  void onTouch(DrawSubtoolTouch &touch) {
+  void onTouch(DrawSubtoolTouch &touchData) {
     love::ghost::PathData *pathData = new love::PathData();
 
     love::ghost::Color c;
@@ -33,15 +33,20 @@ public:
 
     pathData->color = c;
     pathData->points.push_back(love::ghost::Point(initialCoord.x, initialCoord.y));
-    pathData->points.push_back(love::ghost::Point(touch.touchX, touch.touchY));
+    pathData->points.push_back(love::ghost::Point(touchData.touchX, touchData.touchY));
     pathData->style = 1;
     pathData->isFreehand = true;
     pathData->isTransparent = false;
 
     drawTool.addTempPathData(pathData);
 
-    initialCoord.x = touch.touchX;
-    initialCoord.y = touch.touchY;
+    initialCoord.x = touchData.touchX;
+    initialCoord.y = touchData.touchY;
+
+    if (touchData.touch.released) {
+      drawTool->saveDrawing("freehand pencil");
+    } else {
+    }
   }
 
 private:

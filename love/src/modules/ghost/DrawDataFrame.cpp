@@ -55,7 +55,8 @@ namespace ghost {
       fillImageData = std::unique_ptr<image::ImageData>(imageModule->newImageData(byteData.get()));
     }
 
-    // base64Png = renderPreviewPng();
+    // TODO: only in editor
+    // base64Png = renderPreviewPng(-1);
   }
 
   bool DrawDataFrame::arePathDatasMergable(PathData pd1, PathData pd2) {
@@ -489,50 +490,62 @@ namespace ghost {
       quad->setTexture(nullptr);
     }
   }
-  /*
 
-
-  TYPE DrawDataFrame::renderPreviewPng(TYPE size) {
+  std::optional<std::string> DrawDataFrame::renderPreviewPng(int size) {
     if (isLinked) {
-          return null;
+          return std::nullopt;
     }
-    if (!size) {
+    if (size <= 0) {
           size = 256;
     }
-    auto previewCanvas = love.graphics.newCanvas(size, size, {
-          dpiscale = 1;
-          msaa = 4;
+
+    auto previewCanvas = std::unique_ptr<graphics::Canvas>(newCanvas(size, size));
+    
+    renderToCanvas(previewCanvas.get(), [this, size]() {
+      auto pathBounds = getPathDataBounds(std::nullopt);
+      float width = pathBounds.maxX - pathBounds.minX;
+      float height = pathBounds.maxY - pathBounds.minY;
+
+      float maxDimension = width;
+      if (height > maxDimension) {
+        maxDimension = height;
+      }
+
+      float widthPadding = (maxDimension - width) / 2.0;
+      float heightPadding = (maxDimension - height) / 2.0;
+
+      float padding = maxDimension * 0.025;
+
+      graphics::Graphics *graphicsModule
+          = Module::getInstance<graphics::Graphics>(Module::M_GRAPHICS);
+      graphicsModule->push(graphics::Graphics::STACK_TRANSFORM);
+      graphicsModule->origin();
+      graphicsModule->scale(size / (maxDimension * 1.05));
+      graphicsModule->translate((padding - pathBounds.minX) + widthPadding, (padding - pathBounds.minY) + heightPadding);
+      graphicsModule->clear(Colorf(0.0f, 0.0f, 0.0f, 0.0f), 0, 1.0);
+
+      Colorf color;
+      color.r = 1.0;
+      color.g = 1.0;
+      color.b = 1.0;
+      color.a = 1.0;
+      graphicsModule->setColor(color);
+
+      renderFill();
+      graphics()->draw();
+      graphicsModule->pop();
     });
-    previewCanvas.renderTo(undefined);
-   / *
-   TYPE DrawDataFrame::function() {
-     auto pathBounds = getPathDataBounds();
-     auto width = pathBounds.maxX - pathBounds.minX;
-     auto height = pathBounds.maxY - pathBounds.minY;
-     auto maxDimension = width;
-     if (height > maxDimension) {
-           maxDimension = height;
-     }
-     auto widthPadding = (maxDimension - width) / 2;
-     auto heightPadding = (maxDimension - height) / 2;
-     auto padding = maxDimension * 0.025;
-     love.graphics.push("all");
-     love.graphics.origin();
-     love.graphics.scale(size / (maxDimension * 1.05));
-     love.graphics.translate((padding - pathBounds.minX) + widthPadding, (padding - pathBounds.minY)
-  + heightPadding); love.graphics.clear(0, 0, 0, 0); love.graphics.setColor(1, 1, 1, 1);
-     renderFill();
-     graphics().draw();
-     love.graphics.pop();
-   }
 
-   * /
-
-
-
-    auto fileData = previewCanvas.newImageData().encode("png");
-    return love.data.encode("string", "base64", fileData.getString());
-  }*/
+    image::Image *imageModule = Module::getInstance<image::Image>(Module::M_IMAGE);
+    Rect rect = {0, 0, previewCanvas->getPixelWidth(), previewCanvas->getPixelHeight()};
+    love::image::ImageData * imageData = previewCanvas->newImageData(imageModule, 0, 0, rect);
+    love::filesystem::FileData * fileData = imageData->encode(love::image::FormatHandler::EncodedFormat::ENCODED_PNG, "Image.png", false);
+    const char * fileDataString = (const char *) fileData->getData();
+    size_t fileDataSize = fileData->getSize();
+    size_t dstlen = 0;
+    char * result = data::encode(data::ENCODE_BASE64, fileDataString, fileDataSize, dstlen, 0);
+    return std::string(result);
+  }
 
 
 }

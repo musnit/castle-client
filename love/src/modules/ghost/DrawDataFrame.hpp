@@ -33,6 +33,7 @@ namespace ghost {
     std::unique_ptr<graphics::Image> fillImage;
     std::unique_ptr<graphics::Canvas> pathsCanvas;
     std::optional<std::string> fillPng;
+    std::optional<std::string> base64Png;
 
     void read(lua_State *L, int index) {
       GHOST_READ_BOOL(isLinked, false)
@@ -83,6 +84,7 @@ namespace ghost {
     void resetGraphics();
     ToveGraphicsHolder *graphics();
     void renderFill();
+    std::optional<std::string> renderPreviewPng(int size);
 
     graphics::Image *imageDataToImage(image::ImageData *);
     image::ImageData *getFillImageDataSizedToPathBounds();

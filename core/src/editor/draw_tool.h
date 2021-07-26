@@ -10,6 +10,8 @@ class Editor;
 
 class DrawTool {
 public:
+  std::shared_ptr<love::DrawData> drawData;
+
   DrawTool(const DrawTool &) = delete; // Prevent accidental copies
   const DrawTool &operator=(const DrawTool &) = delete;
 
@@ -20,8 +22,12 @@ public:
 
   void sendDrawToolEvent();
 
+  // Subtool functions
   void resetTempGraphics();
+  void clearTempGraphics();
   void addTempPathData(love::PathData *pathData);
+  love::DrawDataFrame *drawDataFrame();
+  void saveDrawing(std::string commandDescription);
 
   love::DrawData &getDrawData();
 
@@ -36,7 +42,6 @@ private:
 
   std::unordered_map<std::string, std::string> selectedSubtools;
   std::string lastHash;
-  std::shared_ptr<love::DrawData> drawData;
   mutable love::Transform viewTransform;
   float viewWidth;
   float viewX;
