@@ -174,9 +174,7 @@ export const OverlayDrawing = () => {
               </View>
             </View>
           ) : null}
-          <View style={[styles.toolbar, { flexDirection: 'column' }]}>
-            <OverlayDrawingSubtools currentToolGroup={currentDrawingToolGroup} />
-          </View>
+          <OverlayDrawingSubtools currentToolGroup={currentDrawingToolGroup} />
         </View>
       </View>
     </>

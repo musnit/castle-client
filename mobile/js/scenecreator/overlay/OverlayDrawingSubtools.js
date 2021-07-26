@@ -8,6 +8,15 @@ import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const styles = StyleSheet.create({
+  toolbar: {
+    borderRadius: 6,
+    backgroundColor: Constants.colors.white,
+    borderColor: Constants.colors.black,
+    borderWidth: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    ...Constants.styles.dropShadow,
+  },
   button: {
     height: 36,
     width: '100%',
@@ -152,7 +161,7 @@ const DRAW_SUBTOOLS = {
 const DrawSubtools = ({ category, value, onChange }) => {
   const subtools = DRAW_SUBTOOLS[category] || [];
   return (
-    <>
+    <View style={styles.toolbar}>
       {subtools.map((tool, ii) => {
         const { name, IconComponent, icon, size } = tool;
         return (
@@ -168,23 +177,35 @@ const DrawSubtools = ({ category, value, onChange }) => {
           </Pressable>
         );
       })}
-    </>
+    </View>
   );
 };
 
 const EraseSubtools = ({ value, onChange }) => {
-  // const onClearArtwork = () => fastAction('onClearArtwork');
+  // TODO: const onClearArtwork = () => fastAction('onClearArtwork');
+  const onClearArtwork = () => {};
   return (
     <>
-      {/* TODO: 'clear all artwork' button of some kind */}
       <DrawSubtools category="artwork_erase" value={value} onChange={onChange} />
+      <View style={[styles.toolbar, { marginTop: 8 }]}>
+        <Pressable style={styles.button} onPress={onClearArtwork}>
+          <MCIcon name="trash-can-outline" size={ICON_SIZE} color="#000" />
+        </Pressable>
+      </View>
     </>
   );
 };
 
 const CollisionEraseSubtools = () => {
-  // const onClearCollisionShapes = () => fastAction('onClearCollisionShapes');
-  // TODO: 'clear all collision shapes' button of some kind
+  // TODO: const onClearCollisionShapes = () => fastAction('onClearCollisionShapes');
+  const onClearCollisionShapes = () => {};
+  return (
+    <View style={styles.toolbar}>
+      <Pressable style={styles.button} onPress={onClearCollisionShapes}>
+        <MCIcon name="trash-can-outline" size={ICON_SIZE} color="#000" />
+      </Pressable>
+    </View>
+  );
   return null;
 };
 
