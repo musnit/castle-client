@@ -108,6 +108,23 @@ void DrawTool::saveDrawing(std::string commandDescription) {
 
 DrawTool::DrawTool(Editor &editor_)
     : editor(editor_) {
+  resetState();
+
+  subtools.push_back(std::make_unique<DrawFreehandSubtool>(*this));
+  subtools.push_back(std::make_unique<DrawLineSubtool>(*this));
+  subtools.push_back(std::make_unique<DrawShapeSubtool>(*this, DrawShapeSubtool::Shape::Rectangle));
+  subtools.push_back(std::make_unique<DrawShapeSubtool>(*this, DrawShapeSubtool::Shape::Circle));
+  subtools.push_back(std::make_unique<DrawShapeSubtool>(*this, DrawShapeSubtool::Shape::Triangle));
+}
+
+void DrawTool::resetState() {
+  viewWidth = 10;
+  viewX = 0;
+  viewY = 0;
+
+  isDrawToolEventDirty = true;
+  isPlayingAnimation = false;
+
   selectedSubtools["root"] = "artwork";
   selectedSubtools["artwork"] = "artwork_draw";
   selectedSubtools["artwork_draw"] = "pencil_no_grid";
@@ -116,19 +133,6 @@ DrawTool::DrawTool(Editor &editor_)
   selectedSubtools["collision"] = "collision_draw";
   selectedSubtools["collision_draw"] = "rectangle";
   selectedSubtools["collision_move"] = "move";
-
-  viewWidth = 10;
-  viewX = 0;
-  viewY = 0;
-
-  isDrawToolEventDirty = true;
-  isPlayingAnimation = false;
-
-  subtools.push_back(std::make_unique<DrawFreehandSubtool>(*this));
-  subtools.push_back(std::make_unique<DrawLineSubtool>(*this));
-  subtools.push_back(std::make_unique<DrawShapeSubtool>(*this, DrawShapeSubtool::Shape::Rectangle));
-  subtools.push_back(std::make_unique<DrawShapeSubtool>(*this, DrawShapeSubtool::Shape::Circle));
-  subtools.push_back(std::make_unique<DrawShapeSubtool>(*this, DrawShapeSubtool::Shape::Triangle));
 
   resetTempGraphics();
 }

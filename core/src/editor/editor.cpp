@@ -15,6 +15,7 @@ void Editor::clearState() {
   isEditorStateDirty = true;
   isSelectedActorStateDirty = true;
   currentTool = Tool::Grab;
+  drawTool.resetState();
 }
 
 void Editor::readScene(Reader &reader) {

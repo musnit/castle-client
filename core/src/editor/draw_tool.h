@@ -17,6 +17,7 @@ public:
 
   explicit DrawTool(Editor &editor_);
 
+  void resetState();
   void update(double dt);
   void drawOverlay() const;
 
