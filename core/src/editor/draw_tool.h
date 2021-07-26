@@ -34,6 +34,7 @@ public:
 
 private:
   friend struct DrawToolSelectSubtoolReceiver;
+  friend struct DrawToolSelectColorReceiver;
 
   bool isDrawToolEventDirty;
 
@@ -47,6 +48,7 @@ private:
   float viewWidth;
   float viewX;
   float viewY;
+  love::Colorf color;
   std::vector<std::unique_ptr<DrawSubtool>> subtools;
   bool isPlayingAnimation;
   std::unique_ptr<love::ToveGraphicsHolder> tempGraphics;

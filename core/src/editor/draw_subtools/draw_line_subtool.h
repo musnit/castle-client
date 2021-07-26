@@ -31,14 +31,6 @@ public:
     }
 
     love::ghost::PathData *pathData = new love::PathData();
-
-    love::ghost::Color c;
-    c.data[0] = 1.0;
-    c.data[1] = 0.0;
-    c.data[2] = 0.0;
-    c.data[3] = 1.0;
-
-    pathData->color = c;
     pathData->points.push_back(love::ghost::Point(initialCoord.x, initialCoord.y));
     pathData->points.push_back(love::ghost::Point(touch.roundedX, touch.roundedY));
     pathData->style = 1;

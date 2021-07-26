@@ -46,13 +46,6 @@ public:
       isGestureStarted = true;
     }
 
-    // TODO: actual color
-    love::ghost::Color c;
-    c.data[0] = 1.0;
-    c.data[1] = 0.0;
-    c.data[2] = 0.0;
-    c.data[3] = 1.0;
-
     auto paths = std::make_optional<DrawUtil::PathsList>();
     switch (shape) {
     case Shape::Rectangle:
@@ -75,7 +68,6 @@ public:
     if (paths) {
       for (int ii = 0; ii < paths->length; ii++) {
         auto &path = paths->paths[ii];
-        path.color = c;
         path.isTransparent = false;
       }
     }

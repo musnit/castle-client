@@ -52,6 +52,7 @@ public:
 private:
   friend struct EditorGlobalActionReceiver;
   friend struct DrawToolSelectSubtoolReceiver;
+  friend struct DrawToolSelectColorReceiver;
 
   Lv &lv { Lv::getInstance() };
   Bridge &bridge;

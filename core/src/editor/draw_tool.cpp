@@ -9,6 +9,10 @@
 #include "draw_subtools/draw_line_subtool.h"
 #include "draw_subtools/draw_shape_subtool.h"
 
+//
+// Events
+//
+
 struct DrawToolSelectSubtoolReceiver {
   inline static const BridgeRegistration<DrawToolSelectSubtoolReceiver> registration {
     "DRAW_TOOL_SELECT_SUBTOOL"
@@ -26,9 +30,27 @@ struct DrawToolSelectSubtoolReceiver {
   }
 };
 
+struct DrawToolSelectColorReceiver {
+  inline static const BridgeRegistration<DrawToolSelectColorReceiver> registration {
+    "DRAW_TOOL_SELECT_COLOR"
+  };
+
+  struct Params {
+    PROP(love::Colorf, color);
+  } params;
+
+  void receive(Engine &engine) {
+    auto editor = engine.maybeGetEditor();
+    if (!editor)
+      return;
+    editor->drawTool.color = params.color();
+    editor->drawTool.sendDrawToolEvent();
+  }
+};
+
 struct DrawToolEvent {
   PROP((std::unordered_map<std::string, std::string>), selectedSubtools);
-  PROP(std::vector<float>, color);
+  PROP(love::Colorf, color);
 };
 
 void DrawTool::sendDrawToolEvent() {
@@ -38,11 +60,7 @@ void DrawTool::sendDrawToolEvent() {
     ev.selectedSubtools()[entry.first] = entry.second;
   }
 
-  // TODO
-  ev.color().push_back(255.0);
-  ev.color().push_back(0.0);
-  ev.color().push_back(0.0);
-
+  ev.color() = color;
   editor.getBridge().sendEvent("EDITOR_DRAW_TOOL", ev);
 }
 
@@ -78,7 +96,13 @@ void DrawTool::clearTempGraphics() {
 
 void DrawTool::addTempPathData(love::PathData *pathData) {
   if (!pathData->color) {
-    pathData->color = drawData->color;
+    // TODO: why does love::ghost::Color exist
+    love::ghost::Color c;
+    c.data[0] = color.r;
+    c.data[1] = color.g;
+    c.data[2] = color.b;
+    c.data[3] = color.a;
+    pathData->color = c;
   }
 
   drawData->updatePathDataRendering(pathData);
@@ -121,6 +145,7 @@ void DrawTool::resetState() {
   viewWidth = 10;
   viewX = 0;
   viewY = 0;
+  color = love::Colorf(1, 1, 0, 1);
 
   isDrawToolEventDirty = true;
   isPlayingAnimation = false;
