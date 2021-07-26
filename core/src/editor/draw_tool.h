@@ -23,6 +23,8 @@ public:
   void resetTempGraphics();
   void addTempPathData(love::PathData *pathData);
 
+  love::DrawData &getDrawData();
+
 private:
   friend struct DrawToolSelectSubtoolReceiver;
 
@@ -45,3 +47,7 @@ private:
 
   DrawSubtool &getCurrentSubtool();
 };
+
+inline love::DrawData &DrawTool::getDrawData() {
+  return *drawData;
+}

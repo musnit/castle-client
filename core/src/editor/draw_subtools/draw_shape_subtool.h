@@ -59,9 +59,13 @@ public:
       paths = DrawUtil::getRectangleShape(
           initialCoord.x, initialCoord.y, touch.roundedX, touch.roundedY);
       break;
-    case Shape::Circle:
-      // TODO: circle
+    case Shape::Circle: {
+      auto roundUnitX = DrawUtil::unit(touch.touchX - initialCoord.x);
+      auto roundUnitY = DrawUtil::unit(touch.touchY - initialCoord.y);
+      paths = DrawUtil::getCircleShapeRoundToGrid(drawTool.getDrawData(), initialCoord.x,
+          initialCoord.y, touch.roundedX, touch.roundedY, roundUnitX, roundUnitY);
       break;
+    }
     case Shape::Triangle:
       paths = DrawUtil::getRightTriangleShape(
           initialCoord.x, initialCoord.y, touch.roundedX, touch.roundedY);
