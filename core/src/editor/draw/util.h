@@ -1,3 +1,5 @@
+#pragma once
+
 namespace DrawUtil {
 struct PathsList {
   love::PathData *paths;
@@ -88,5 +90,15 @@ std::optional<PathsList> getCircleShapeRoundToGrid(love::DrawData &drawData, flo
     return paths;
   }
   return std::nullopt;
+}
+
+bool pathIntersectsCircle(love::PathData &path, float x, float y, float radius) {
+  for (auto &toveSubpath : path.toveSubpaths) {
+    auto nearest = SubpathNearest(toveSubpath, x, y, 1e-4, radius);
+    if (nearest.t >= 0) {
+      return true;
+    }
+  }
+  return false;
 }
 }
