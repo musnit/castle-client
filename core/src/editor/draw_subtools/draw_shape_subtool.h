@@ -90,6 +90,9 @@ public:
     }
   }
 
+  void drawOverlay(Lv &lv) {
+  }
+
 private:
   bool isGestureStarted = false;
   love::Vector2 initialCoord;

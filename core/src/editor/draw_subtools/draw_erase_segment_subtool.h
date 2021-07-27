@@ -22,10 +22,12 @@ public:
   }
 
   void onReset() {
+    hasTouch = false;
     didChange = false;
   }
 
   void onTouch(DrawSubtoolTouch &touch) {
+    hasTouch = true;
     lastTouchCoord.x = touch.touchX;
     lastTouchCoord.y = touch.touchY;
 
@@ -60,7 +62,17 @@ public:
     }
   }
 
+  void drawOverlay(Lv &lv) {
+    if (hasTouch) {
+      lv.graphics.setColor({ 1, 1, 1, 0.3 });
+      auto radius = 1.0f; // TODO: radius
+      lv.graphics.circle(
+          love::Graphics::DrawMode::DRAW_FILL, lastTouchCoord.x, lastTouchCoord.y, radius);
+    }
+  }
+
 private:
   love::Vector2 lastTouchCoord;
+  bool hasTouch = false;
   bool didChange = false;
 };

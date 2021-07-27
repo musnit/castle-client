@@ -2,6 +2,7 @@
 
 #include "precomp.h"
 #include "gesture.h"
+#include "lv.h"
 
 class DrawTool;
 
@@ -32,6 +33,7 @@ public:
   virtual std::string name() = 0;
   virtual void onReset() = 0;
   virtual void onTouch(DrawSubtoolTouch &touch) = 0;
+  virtual void drawOverlay(Lv &lv) = 0;
 
   bool hasTouch;
 

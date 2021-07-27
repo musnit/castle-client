@@ -19,7 +19,7 @@ public:
 
   void resetState();
   void update(double dt);
-  void drawOverlay() const;
+  void drawOverlay();
 
   void sendDrawToolEvent();
 

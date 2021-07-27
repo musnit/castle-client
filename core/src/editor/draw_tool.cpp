@@ -242,7 +242,7 @@ void DrawTool::update(double dt) {
 
 #define VIEW_HEIGHT_TO_WIDTH_RATIO (7.0 / 5.0)
 
-void DrawTool::drawOverlay() const {
+void DrawTool::drawOverlay() {
   /*if (!editor.hasScene()) {
     return;
   }
@@ -274,6 +274,8 @@ void DrawTool::drawOverlay() const {
     tempGraphics->update();
     tempGraphics->draw();
   }
+
+  getCurrentSubtool().drawOverlay(lv);
 
   lv.graphics.pop();
 }

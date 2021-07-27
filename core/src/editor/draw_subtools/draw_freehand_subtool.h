@@ -41,6 +41,9 @@ public:
     }
   }
 
+  void drawOverlay(Lv &lv) {
+  }
+
 private:
   love::Vector2 initialCoord;
   // currentPathData
