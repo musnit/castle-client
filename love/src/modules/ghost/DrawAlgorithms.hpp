@@ -24,7 +24,6 @@ namespace ghost {
     static bool optionalCoordinatesEqual(std::optional<Point> c1, std::optional<Point> c2);
     static bool floatEquals(float f1, float f2);
     static int floatUnit(float f);
-    static float pointsDistance(Point p1, Point p2);
     static std::optional<std::pair<float, float>> rayRayIntersection(
         float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4);
     static float normalizeRadianAngle(float angle);

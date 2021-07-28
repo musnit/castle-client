@@ -71,10 +71,6 @@ namespace ghost {
     }
   }
 
-  float DrawAlgorithms::pointsDistance(Point p1, Point p2) {
-    return sqrt(pow(p2.x - p1.x, 2) + pow(p2.y - p1.y, 2));
-  }
-
   std::optional<std::pair<float, float>> DrawAlgorithms::rayRayIntersection(
       float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
     auto denom = ((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4));

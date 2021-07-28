@@ -3,6 +3,7 @@
 #include "precomp.h"
 #include "draw_subtool_interface.h"
 #include "../draw/util.h"
+#include "../draw/subpath_intersections.h"
 
 class DrawEraseSubtool : public DrawSubtool {
 public:
@@ -139,9 +140,8 @@ private:
         // both points are in circle, can erase this segment completely
       } else {
         love::Point center(centerX, centerY);
-        auto intersections = DrawUtil::subpathDataIntersection(
-            love::Subpath::SubpathArc(center, radius, 0, 2.0 * M_PI),
-            love::Subpath::SubpathLine(p1, p2));
+        auto intersections = DrawSubpathIntersections::lineArc(love::Subpath::SubpathLine(p1, p2),
+            love::Subpath::SubpathArc(center, radius, 0, 2.0 * M_PI));
         if (intersections.size() > 0) {
           if (isP1InCircle) {
             addReplacementPathData(pathsToAdd, pathDataToReplace, intersections[0], p2);
