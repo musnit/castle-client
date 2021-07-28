@@ -4,6 +4,7 @@
 
 #include "behaviors/base.h"
 #include "props.h"
+#include "editor/draw/physics_body_data.h"
 
 
 struct Drawing2Component : BaseComponent {
@@ -34,6 +35,7 @@ struct Drawing2Component : BaseComponent {
 
   std::string hash;
   std::shared_ptr<love::DrawData> drawData;
+  std::shared_ptr<PhysicsBodyData> physicsBodyData;
   love::AnimationState animationState;
 };
 
@@ -60,7 +62,8 @@ public:
   using BaseBehavior::BaseBehavior;
 
   void handleReadComponent(ActorId actorId, Drawing2Component &component, Reader &reader);
-  void handleWriteComponent(ActorId actorId, const Drawing2Component &component, Writer &writer) const;
+  void handleWriteComponent(
+      ActorId actorId, const Drawing2Component &component, Writer &writer) const;
   void handlePerform(double dt);
   void handleDrawComponent(ActorId actorId, const Drawing2Component &component) const;
 

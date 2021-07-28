@@ -5,12 +5,14 @@
 
 #include "lv.h"
 #include "draw_subtools/draw_subtool_interface.h"
+#include "editor/draw/physics_body_data.h"
 
 class Editor;
 
 class DrawTool {
 public:
   std::shared_ptr<love::DrawData> drawData;
+  std::shared_ptr<PhysicsBodyData> physicsBodyData;
 
   DrawTool(const DrawTool &) = delete; // Prevent accidental copies
   const DrawTool &operator=(const DrawTool &) = delete;

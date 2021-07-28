@@ -189,8 +189,8 @@ void DrawTool::update(double dt) {
   auto hash = component->hash;
 
   if (lastHash != hash) {
-    auto componentDrawData = component->drawData;
-    drawData = std::make_shared<love::DrawData>(componentDrawData);
+    drawData = std::make_shared<love::DrawData>(component->drawData);
+    physicsBodyData = std::make_shared<PhysicsBodyData>(component->physicsBodyData);
   }
 
   const Gesture &gesture = scene.getGesture();
@@ -276,6 +276,8 @@ void DrawTool::drawOverlay() {
   }
 
   getCurrentSubtool().drawOverlay(lv);
+
+  physicsBodyData->render();
 
   lv.graphics.pop();
 }

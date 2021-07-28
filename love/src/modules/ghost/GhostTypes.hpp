@@ -277,10 +277,11 @@ namespace ghost {
     }
 
     ~PathData() {
-      for (auto &subpath : toveSubpaths) {
+		// TODO: saveDrawing->renderPreviewPng->getPathDataBounds calls this twice for some reason
+      /*for (auto &subpath : toveSubpaths) {
         ReleaseSubpath(subpath);
       }
-      ReleasePath(tovePath);
+      ReleasePath(tovePath);*/
     }
 
     void read(lua_State *L, int index) {

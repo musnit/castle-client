@@ -130,6 +130,10 @@ void Drawing2Behavior::handleReadComponent(
   } else {
     component.drawData = found->second;
   }
+
+  reader.obj("physicsBodyData", [&]() {
+    component.physicsBodyData = std::make_shared<PhysicsBodyData>(reader);
+  });
 }
 
 void Drawing2Behavior::handleWriteComponent(

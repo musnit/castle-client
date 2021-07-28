@@ -518,7 +518,7 @@ namespace ghost {
 
       graphics::Graphics *graphicsModule
           = Module::getInstance<graphics::Graphics>(Module::M_GRAPHICS);
-      graphicsModule->push(graphics::Graphics::STACK_TRANSFORM);
+      graphicsModule->push(graphics::Graphics::STACK_ALL);
       graphicsModule->origin();
       graphicsModule->scale(size / (maxDimension * 1.05));
       graphicsModule->translate((padding - pathBounds.minX) + widthPadding, (padding - pathBounds.minY) + heightPadding);
