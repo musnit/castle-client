@@ -59,7 +59,8 @@ public:
         // TODO: commit changes
       }
     } else {
-      for (auto index : pathIndicesToRemove) {
+      for (auto iter = pathIndicesToRemove.rbegin(); iter != pathIndicesToRemove.rend(); iter++) {
+        auto index = *iter;
         pathDataList->erase(pathDataList->begin() + index);
         didChange = true;
       }

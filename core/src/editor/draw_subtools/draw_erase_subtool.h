@@ -88,9 +88,9 @@ public:
       }
     } else {
       didChange = pathIndicesToRemove.size() > 0;
-      for (auto index : pathIndicesToRemove) {
-        // TODO: this causes the app to crash when rendering the draw data frame
-        // pathDataList->erase(pathDataList->begin() + index);
+      for (auto iter = pathIndicesToRemove.rbegin(); iter != pathIndicesToRemove.rend(); iter++) {
+        auto index = *iter;
+        pathDataList->erase(pathDataList->begin() + index);
       }
       for (auto pathDataPtr : pathsToAdd) {
         drawTool.addTempPathData(pathDataPtr);
