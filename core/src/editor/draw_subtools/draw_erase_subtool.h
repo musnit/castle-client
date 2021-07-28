@@ -139,8 +139,9 @@ private:
         // both points are in circle, can erase this segment completely
       } else {
         love::Point center(centerX, centerY);
-        auto intersections = DrawUtil::subpathDataIntersection(love::Subpath::SubpathLine(p1, p2),
-            love::Subpath::SubpathArc(center, radius, 0, 2.0 * M_PI));
+        auto intersections = DrawUtil::subpathDataIntersection(
+            love::Subpath::SubpathArc(center, radius, 0, 2.0 * M_PI),
+            love::Subpath::SubpathLine(p1, p2));
         if (intersections.size() > 0) {
           if (isP1InCircle) {
             addReplacementPathData(pathsToAdd, pathDataToReplace, intersections[0], p2);
