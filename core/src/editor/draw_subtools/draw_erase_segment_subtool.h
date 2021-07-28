@@ -21,6 +21,11 @@ public:
     return "erase_segment";
   }
 
+  float getRadius() {
+    // TODO: scale by draw tool's view scale
+    return 1.0f;
+  }
+
   void onReset() {
     hasTouch = false;
     didChange = false;
@@ -31,8 +36,7 @@ public:
     lastTouchCoord.x = touch.touchX;
     lastTouchCoord.y = touch.touchY;
 
-    // TODO: scale by draw tool's view scale
-    auto radius = 1.0f;
+    auto radius = getRadius();
 
     std::vector<int> pathIndicesToRemove;
     auto pathDataList = drawTool.getDrawData().currentPathDataList();
@@ -65,7 +69,7 @@ public:
   void drawOverlay(Lv &lv) {
     if (hasTouch) {
       lv.graphics.setColor({ 1, 1, 1, 0.3 });
-      auto radius = 1.0f; // TODO: radius
+      auto radius = getRadius();
       lv.graphics.circle(
           love::Graphics::DrawMode::DRAW_FILL, lastTouchCoord.x, lastTouchCoord.y, radius);
     }

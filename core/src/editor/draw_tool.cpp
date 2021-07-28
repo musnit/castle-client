@@ -8,6 +8,7 @@
 #include "draw_subtools/draw_freehand_subtool.h"
 #include "draw_subtools/draw_line_subtool.h"
 #include "draw_subtools/draw_shape_subtool.h"
+#include "draw_subtools/draw_erase_subtool.h"
 #include "draw_subtools/draw_erase_segment_subtool.h"
 
 //
@@ -140,6 +141,8 @@ DrawTool::DrawTool(Editor &editor_)
   subtools.push_back(std::make_unique<DrawShapeSubtool>(*this, DrawShapeSubtool::Shape::Rectangle));
   subtools.push_back(std::make_unique<DrawShapeSubtool>(*this, DrawShapeSubtool::Shape::Circle));
   subtools.push_back(std::make_unique<DrawShapeSubtool>(*this, DrawShapeSubtool::Shape::Triangle));
+  subtools.push_back(std::make_unique<DrawEraseSubtool>(*this, DrawEraseSubtool::Size::Medium));
+  // TODO: other sizes of eraser
   subtools.push_back(std::make_unique<DrawEraseSegmentSubtool>(*this));
 }
 

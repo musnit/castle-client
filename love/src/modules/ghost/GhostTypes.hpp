@@ -160,6 +160,14 @@ namespace ghost {
         , y(y) {
     }
 
+    bool operator==(const Point &other) {
+      return x == other.x && y == other.y;
+    }
+
+    float distance(const Point &other) {
+      return sqrt(pow(other.x - x, 2) + pow(other.y - y, 2));
+    }
+
     void read(lua_State *L, int index) {
       GHOST_READ_NUMBER(x, 0)
       GHOST_READ_NUMBER(y, 0)
@@ -195,6 +203,24 @@ namespace ghost {
     float endAngle;
 
     Subpath() {
+    }
+
+    static Subpath SubpathLine(Point &p1, Point &p2) {
+      Subpath result;
+      result.p1 = p1;
+      result.p2 = p2;
+      result.type = SubpathType::line;
+      return result;
+    }
+
+    static Subpath SubpathArc(Point &center, float radius, float startAngle, float endAngle) {
+      Subpath result;
+      result.center = center;
+      result.radius = radius;
+      result.startAngle = startAngle;
+      result.endAngle = endAngle;
+      result.type = SubpathType::arc;
+      return result;
     }
 
     Subpath(lua_State *L, int index) {
@@ -274,6 +300,14 @@ namespace ghost {
 
     PathData() {
       tovePath.ptr = NULL;
+    }
+
+    void copyAttributes(const PathData &other) {
+      style = other.style;
+      isFreehand = other.isFreehand;
+      color = other.color;
+      isTransparent = other.isTransparent;
+      // don't copy geometry data such as points
     }
 
     ~PathData() {

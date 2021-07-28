@@ -21,23 +21,6 @@ namespace ghost {
 
 #define instance() (Module::getInstance<Ghost>(Module::M_GHOST))
 
-  int w_subpathDataIntersection(lua_State *L) {
-    Subpath s1(L, 1);
-    Subpath s2(L, 2);
-
-    std::vector<Point> results = DrawAlgorithms::subpathDataIntersection(s1, s2);
-
-    lua_createtable(L, results.size(), 0);
-
-    for (size_t i = 0; i < results.size(); i++) {
-      lua_pushnumber(L, i + 1);
-      results[i].write(L);
-      lua_settable(L, -3);
-    }
-
-    return 1;
-  }
-
   int w_loadDrawData(lua_State *L) {
     StrongRef<DrawData> i;
     DrawData *d = new DrawData(L, 1);
@@ -87,9 +70,8 @@ namespace ghost {
     return luax_register_type(L, &DrawData::type, w_DrawData_functions, nullptr);
   }
 
-  static const luaL_Reg functions[] = { { "subpathDataIntersection", w_subpathDataIntersection },
-    { "loadDrawData", w_loadDrawData }, { "loadDrawDataFromString", w_loadDrawDataFromString },
-    { 0, 0 } };
+  static const luaL_Reg functions[] = { { "loadDrawData", w_loadDrawData },
+    { "loadDrawDataFromString", w_loadDrawDataFromString }, { 0, 0 } };
 
   static const lua_CFunction types[] = { luaopen_drawdata, 0 };
 
