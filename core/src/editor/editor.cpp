@@ -10,6 +10,7 @@ Editor::Editor(Bridge &bridge_)
 }
 
 void Editor::clearState() {
+  editMode = EditMode::Default;
   selection.deselectAllActors();
   belt.deselect();
   isEditorStateDirty = true;
@@ -56,31 +57,37 @@ void Editor::update(double dt) {
     // TODO: Should gesture just be moved out of scene?
     scene->updateGesture();
 
-    selection.touchToSelect(*scene);
+    switch (editMode) {
+    case EditMode::Default: {
+      selection.touchToSelect(*scene);
 
-    if (selection.isSelectionChanged()) {
-      isEditorStateDirty = true;
-      isSelectedActorStateDirty = true;
-      if (selection.hasSelection()) {
-        scene->getBehaviors().forEach([&](auto &behavior) {
-          auto behaviorId = std::remove_reference_t<decltype(behavior)>::behaviorId;
-          selectedComponentStateDirty.insert(behaviorId);
-        });
+      if (selection.isSelectionChanged()) {
+        isEditorStateDirty = true;
+        isSelectedActorStateDirty = true;
+        if (selection.hasSelection()) {
+          scene->getBehaviors().forEach([&](auto &behavior) {
+            auto behaviorId = std::remove_reference_t<decltype(behavior)>::behaviorId;
+            selectedComponentStateDirty.insert(behaviorId);
+          });
+        }
+        selection.setSelectionChanged(false);
       }
-      selection.setSelectionChanged(false);
+
+      // Update belt -- do this before tools to allow it to steal touches
+      belt.update(dt);
+
+      // Update current tool
+      switch (currentTool) {
+      case Tool::Grab:
+        grab.update(dt);
+        break;
+      case Tool::ScaleRotate:
+        break;
+      }
+
+      break; // EditMode::Default
     }
-
-    // Update belt -- do this before tools to allow it to steal touches
-    belt.update(dt);
-
-    // Update current tool
-    switch (currentTool) {
-    case Tool::Grab:
-      grab.update(dt);
-      break;
-    case Tool::ScaleRotate:
-      break;
-    case Tool::Draw:
+    case EditMode::Draw:
       drawTool.update(dt);
       break;
     }
@@ -90,13 +97,12 @@ void Editor::update(double dt) {
 }
 
 void Editor::draw() {
-  bool isDrawEditorActive = currentTool == Tool::Draw;
-  if (isDrawEditorActive) {
-    drawTool.drawOverlay();
+  if (!scene) {
     return;
   }
 
-  if (!scene) {
+  if (editMode == EditMode::Draw) {
+    drawTool.drawOverlay();
     return;
   }
 
@@ -157,8 +163,6 @@ void Editor::draw() {
       grab.drawOverlay();
       break;
     case Tool::ScaleRotate:
-      break;
-    case Tool::Draw:
       break;
     }
   }
@@ -221,7 +225,7 @@ struct EditorGlobalActionsEvent {
   PROP(int, selectedActorId) = -1;
   PROP(bool, isTextActorSelected) = false;
   PROP(bool, isBlueprintSelected) = false;
-  PROP(bool, isDrawEditorActive) = false;
+  PROP(std::string, editMode);
 
   struct ActionsAvailable {
     PROP(bool, onPlay) = true;
@@ -239,6 +243,7 @@ struct EditorGlobalActionReceiver {
 
   struct Params {
     PROP(std::string, action);
+    PROP(std::string, value);
   } params;
 
   void receive(Engine &engine) {
@@ -254,11 +259,14 @@ struct EditorGlobalActionReceiver {
       editor->commands.undo();
     } else if (action == "onRedo") {
       editor->commands.redo();
-    } else if (action == "useDrawTool") {
-      editor->currentTool = Editor::Tool::Draw;
-      editor->isEditorStateDirty = true;
-    } else if (action == "useGrabTool") {
-      editor->currentTool = Editor::Tool::Grab;
+    } else if (action == "setMode") {
+      auto newMode = params.value();
+      if (newMode == "draw") {
+        editor->editMode = Editor::EditMode::Draw;
+      } else if (newMode == "default") {
+        editor->editMode = Editor::EditMode::Default;
+        editor->currentTool = Editor::Tool::Grab;
+      }
       editor->isEditorStateDirty = true;
     }
   }
@@ -281,7 +289,14 @@ void Editor::sendGlobalActions() {
 
   ev.actionsAvailable().onUndo = commands.canUndo();
   ev.actionsAvailable().onRedo = commands.canRedo();
-  ev.isDrawEditorActive = currentTool == Tool::Draw;
+  switch (editMode) {
+  case EditMode::Default:
+    ev.editMode = "default";
+    break;
+  case EditMode::Draw:
+    ev.editMode = "draw";
+    break;
+  }
 
   bridge.sendEvent("EDITOR_GLOBAL_ACTIONS", ev);
 };

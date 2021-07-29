@@ -49,6 +49,13 @@ public:
   GrabTool &getGrabTool();
   Bridge &getBridge();
 
+  // top-level editor mode
+  enum class EditMode {
+    Default, // arrange actors and inspect their behaviors/properties
+    Draw, // edit an actor's drawing
+  };
+  EditMode getEditMode();
+
 private:
   friend struct EditorGlobalActionReceiver;
   friend struct DrawToolSelectSubtoolReceiver;
@@ -63,18 +70,23 @@ private:
   Archive sceneArchive;
   std::unique_ptr<Scene> scene;
 
+  Commands commands { *this };
+  EditMode editMode = EditMode::Default;
+
+  // 'Default'-mode members
   Belt belt { *this };
   Selection selection { belt };
-  Commands commands { *this };
   Grid grid;
 
   enum class Tool {
     Grab,
     ScaleRotate,
-    Draw,
   };
+
   Tool currentTool = Tool::Grab;
   GrabTool grab { *this };
+
+  // 'Draw'-mode members
   DrawTool drawTool { *this };
 
   // events and data
@@ -138,4 +150,8 @@ inline GrabTool &Editor::getGrabTool() {
 
 inline Bridge &Editor::getBridge() {
   return bridge;
+}
+
+inline Editor::EditMode Editor::getEditMode() {
+  return editMode;
 }
