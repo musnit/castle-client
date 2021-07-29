@@ -100,7 +100,7 @@ export const CreateCardScreen = ({
   const { selectedActorId, isTextActorSelected, isBlueprintSelected } = globalActions || {};
   const hasSelection = selectedActorId >= 0 && activeSheet !== 'capturePreview';
   const textActors = useCoreTextActors();
-  const isShowingDraw = globalActions?.isDrawEditorActive;
+  const editMode = globalActions?.editMode;
 
   React.useEffect(() => {
     // when changing between selected or unselected, close sheets
@@ -252,7 +252,7 @@ export const CreateCardScreen = ({
 
   const isCardTextVisible =
     (isShowingTextActors || isPlaying) &&
-    !isShowingDraw &&
+    editMode == 'default' &&
     textActors &&
     Object.keys(textActors).length;
 
@@ -326,7 +326,7 @@ export const CreateCardScreen = ({
               <CreateCardOverlay
                 activeSheet={activeSheet}
                 setActiveSheet={setActiveSheet}
-                isShowingDraw={isShowingDraw}
+                editMode={editMode}
                 beltHeight={beltHeight}
               />
               {isSceneLoaded ? null : <CardSceneLoading />}
@@ -336,7 +336,7 @@ export const CreateCardScreen = ({
         <SheetProvider
           activeSheet={activeSheet}
           setActiveSheet={setActiveSheet}
-          isShowingDraw={isShowingDraw}
+          editMode={editMode}
           beltHeight={beltHeight}
         />
       </PopoverProvider>

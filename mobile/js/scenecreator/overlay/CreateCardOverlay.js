@@ -17,9 +17,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export const CreateCardOverlay = ({ activeSheet, setActiveSheet, isShowingDraw, beltHeight }) => {
+export const CreateCardOverlay = ({ activeSheet, setActiveSheet, editMode, beltHeight }) => {
   const { hasSelection } = useCardCreator();
-  if (isShowingDraw) {
+  if (editMode === 'draw') {
     return (
       <View style={styles.container} pointerEvents="box-none">
         <OverlayDrawing />

@@ -84,7 +84,7 @@ const sheetStackReducer = (prevStacks, action) => {
   return result;
 };
 
-export const SheetProvider = ({ activeSheet, setActiveSheet, isShowingDraw, beltHeight }) => {
+export const SheetProvider = ({ activeSheet, setActiveSheet, editMode, beltHeight }) => {
   const { root } = useGhostUI();
   const { isPlaying, hasSelection, isBlueprintSelected } = useCardCreator();
   const insets = useSafeAreaInsets();
@@ -103,7 +103,7 @@ export const SheetProvider = ({ activeSheet, setActiveSheet, isShowingDraw, belt
           if (activeSheet) {
             isOpen = key === activeSheet;
           }
-          if (isShowingDraw) {
+          if (editMode === 'draw') {
             isOpen = key === 'drawingLayers';
           }
         }

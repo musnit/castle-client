@@ -121,9 +121,9 @@ const EditArtButton = () => {
     behaviorActions,
   } = useCardCreator();
 
-  onPress = () => {
-    sendGlobalAction('useDrawTool');
-  };
+  const onPress = React.useCallback(() => {
+    sendGlobalAction('setMode', 'draw');
+  }, [sendGlobalAction]);
 
   /*const draw1Behavior = applicableTools.find((behavior) => behavior.name === 'Draw');
   const draw2Behavior = applicableTools.find((behavior) => behavior.name === 'Draw2');

@@ -145,7 +145,8 @@ export const useCoreState = (eventName) => {
   return data;
 };
 
-export const sendGlobalAction = (action) => sendAsync('EDITOR_GLOBAL_ACTION', { action });
+export const sendGlobalAction = (action, value) =>
+  sendAsync('EDITOR_GLOBAL_ACTION', { action, value });
 
 export const sendBehaviorAction = (behavior, action, propertyName, propertyType, value) => {
   let stringValue = '',

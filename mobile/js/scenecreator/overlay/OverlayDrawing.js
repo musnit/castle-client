@@ -122,11 +122,17 @@ const ToolGroups = ({ category, value }) => {
 };
 
 export const OverlayDrawing = () => {
-  const drawToolState = useCoreState('EDITOR_DRAW_TOOL');
-  if (!drawToolState) return null;
+  const drawToolState = useCoreState('EDITOR_DRAW_TOOL') || {};
 
   // TODO
   let fastAction = () => {};
+
+  const setViewInContext = React.useCallback(
+    (viewInContext) => fastAction('onViewInContext', viewInContext),
+    [fastAction]
+  );
+
+  if (!drawToolState.selectedSubtools) return null;
 
   const rootToolCategory = drawToolState.selectedSubtools.root;
   const currentDrawingToolGroup = drawToolState.selectedSubtools[rootToolCategory];
@@ -135,16 +141,11 @@ export const OverlayDrawing = () => {
   const showColorPicker =
     currentDrawingToolGroup == 'artwork_draw' || currentDrawingToolGroup == 'fill';
 
-  const setViewInContext = React.useCallback(
-    (viewInContext) => fastAction('onViewInContext', viewInContext),
-    [fastAction]
-  );
-
   return (
     <>
       <View style={styles.topContainer}>
         <View style={[styles.close, styles.button]}>
-          <Pressable onPress={() => sendGlobalAction('useGrabTool')}>
+          <Pressable onPress={() => sendGlobalAction('setMode', 'default')}>
             <Icon name="close" size={28} color="#000" />
           </Pressable>
         </View>
