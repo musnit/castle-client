@@ -29,7 +29,7 @@ private:
   love::Vector2 translate;
   float scale;
 
-  // contraints - min/max
+  // constraints - min/max
   love::Vector2 clampViewWidth;
   love::Vector2 clampViewX;
   love::Vector2 clampViewY;

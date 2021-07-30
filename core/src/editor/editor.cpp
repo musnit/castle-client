@@ -996,7 +996,6 @@ void Editor::maybeSendData() {
     return;
   }
   if (isEditorStateDirty) {
-    Debug::display("sent global actions");
     sendGlobalActions();
     isEditorStateDirty = false;
   }

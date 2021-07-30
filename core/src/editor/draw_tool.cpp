@@ -84,6 +84,10 @@ DrawSubtool &DrawTool::getCurrentSubtool() {
   return *subtools[0];
 }
 
+float DrawTool::getZoomAmount() {
+  return viewWidth / DRAW_DEFAULT_VIEW_WIDTH;
+}
+
 //
 // Subtool functions
 //
@@ -152,7 +156,7 @@ DrawTool::DrawTool(Editor &editor_)
 }
 
 void DrawTool::resetState() {
-  viewWidth = 10;
+  viewWidth = DRAW_DEFAULT_VIEW_WIDTH;
   viewPosition.x = 0;
   viewPosition.y = 0;
   color = love::Colorf(1, 1, 0, 1);

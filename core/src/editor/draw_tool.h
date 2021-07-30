@@ -38,6 +38,7 @@ public:
   void saveDrawing(std::string commandDescription);
 
   love::DrawData &getDrawData();
+  float getZoomAmount();
 
 private:
   friend struct DrawToolSelectSubtoolReceiver;

@@ -22,8 +22,7 @@ public:
   }
 
   float getRadius() {
-    // TODO: scale by draw tool's view scale
-    return 1.0f;
+    return 1.0f * drawTool.getZoomAmount();
   }
 
   void onReset() {

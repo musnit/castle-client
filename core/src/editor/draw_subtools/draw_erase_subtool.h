@@ -37,15 +37,19 @@ public:
   }
 
   float getRadius() {
-    // TODO: scale by draw tool's view scale
+    float radius;
     switch (size) {
     case Size::Small:
-      return 0.8f;
+      radius = 0.8f;
+      break;
     case Size::Medium:
-      return 1.4f;
+      radius = 1.4f;
+      break;
     case Size::Large:
-      return 2.5f;
+      radius = 2.5f;
+      break;
     }
+    return radius * drawTool.getZoomAmount();
   }
 
   void onReset() {
