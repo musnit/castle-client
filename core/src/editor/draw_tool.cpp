@@ -136,6 +136,10 @@ DrawTool::DrawTool(Editor &editor_)
     : editor(editor_) {
   resetState();
 
+  love::Vector2 clampViewWidth(DRAW_MIN_VIEW_WIDTH, DRAW_MAX_VIEW_WIDTH);
+  love::Vector2 clampViewPos(-DRAW_MAX_SIZE, DRAW_MAX_SIZE);
+  panZoom.setConstraints(clampViewWidth, clampViewPos, clampViewPos);
+
   subtools.push_back(std::make_unique<DrawFreehandSubtool>(*this));
   subtools.push_back(std::make_unique<DrawLineSubtool>(*this));
   subtools.push_back(std::make_unique<DrawShapeSubtool>(*this, DrawShapeSubtool::Shape::Rectangle));
@@ -149,8 +153,8 @@ DrawTool::DrawTool(Editor &editor_)
 
 void DrawTool::resetState() {
   viewWidth = 10;
-  viewX = 0;
-  viewY = 0;
+  viewPosition.x = 0;
+  viewPosition.y = 0;
   color = love::Colorf(1, 1, 0, 1);
 
   isDrawToolEventDirty = true;
@@ -198,6 +202,7 @@ void DrawTool::update(double dt) {
   }
 
   const Gesture &gesture = scene.getGesture();
+  DrawSubtool &subtool = getCurrentSubtool();
 
   if (gesture.getCount() == 1 && gesture.getMaxCount() == 1) {
     if (!isPlayingAnimation) {
@@ -217,7 +222,6 @@ void DrawTool::update(double dt) {
         childTouchData.clampedX = clampedX;
         childTouchData.clampedY = clampedY;
 
-        DrawSubtool &subtool = getCurrentSubtool();
         if (touch.pressed) {
           // drawData->unlinkCurrentCell();
         }
@@ -232,10 +236,20 @@ void DrawTool::update(double dt) {
         }
       });
     }
+  } else if (gesture.getCount() == 2) {
+    if (subtool.hasTouch) {
+      subtool.hasTouch = false;
+      subtool.onReset();
+      // loadLastSave();
+    }
+    panZoom.update(gesture, viewTransform);
+    auto newView = panZoom.apply(viewPosition, viewWidth);
+    viewPosition = newView.first;
+    viewWidth = newView.second;
   }
 
-  if (gesture.getCount() == 2) {
-    // TODO: pan
+  if (gesture.getCount() != 2 && panZoom.isActive()) {
+    panZoom.clear();
   }
 }
 
@@ -263,7 +277,7 @@ void DrawTool::drawOverlay() {
 
   viewTransform.reset();
   viewTransform.scale(windowWidth / viewWidth, windowWidth / viewWidth);
-  viewTransform.translate(-viewX, -viewY);
+  viewTransform.translate(-viewPosition.x, -viewPosition.y);
   viewTransform.translate(0.5 * viewWidth, topOffset);
   lv.graphics.applyTransform(&viewTransform);
 

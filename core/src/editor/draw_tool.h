@@ -6,8 +6,13 @@
 #include "lv.h"
 #include "draw_subtools/draw_subtool_interface.h"
 #include "editor/draw/physics_body_data.h"
+#include "gesture_pan_zoom.h"
 
 class Editor;
+
+#define DRAW_DEFAULT_VIEW_WIDTH 10.0
+#define DRAW_MIN_VIEW_WIDTH 1.0
+#define DRAW_MAX_VIEW_WIDTH 25.0
 
 class DrawTool {
 public:
@@ -48,14 +53,15 @@ private:
   std::string lastHash;
   mutable love::Transform viewTransform;
   float viewWidth;
-  float viewX;
-  float viewY;
+  love::Vector2 viewPosition;
+
   love::Colorf color;
   std::vector<std::unique_ptr<DrawSubtool>> subtools;
   bool isPlayingAnimation;
   std::unique_ptr<love::ToveGraphicsHolder> tempGraphics;
 
   DrawSubtool &getCurrentSubtool();
+  GesturePanZoom panZoom;
 };
 
 inline love::DrawData &DrawTool::getDrawData() {

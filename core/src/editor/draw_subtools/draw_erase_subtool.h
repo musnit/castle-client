@@ -49,12 +49,10 @@ public:
   }
 
   void onReset() {
-    hasTouch = false;
     didChange = false;
   }
 
   void onTouch(DrawSubtoolTouch &touch) {
-    hasTouch = true;
     lastTouchCoord.x = touch.touchX;
     lastTouchCoord.y = touch.touchY;
 
@@ -111,7 +109,6 @@ public:
 private:
   Size size;
   love::Vector2 lastTouchCoord;
-  bool hasTouch = false;
   bool didChange = false;
 
   inline bool isPointInCircle(love::Point &p, float centerX, float centerY, float radius) {
