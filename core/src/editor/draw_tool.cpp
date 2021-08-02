@@ -10,6 +10,7 @@
 #include "draw_subtools/draw_shape_subtool.h"
 #include "draw_subtools/draw_erase_subtool.h"
 #include "draw_subtools/draw_erase_segment_subtool.h"
+#include "draw/util.h"
 
 //
 // Events
@@ -115,6 +116,29 @@ void DrawTool::addTempPathData(love::PathData *pathData) {
   tempGraphics->addPath(pathData->tovePath);
 }
 
+void DrawTool::addTempPathData(std::shared_ptr<love::PathData> pathData) {
+  addTempPathData(pathData.get());
+}
+
+void DrawTool::addPathData(std::shared_ptr<love::PathData> pathData) {
+  if (DrawUtil::floatEquals(pathData->points[0].x, pathData->points[1].x)
+      && DrawUtil::floatEquals(pathData->points[0].y, pathData->points[1].y)) {
+    return;
+  }
+
+  if (!pathData->color) {
+    // TODO: why does love::ghost::Color exist
+    love::ghost::Color c;
+    c.data[0] = color.r;
+    c.data[1] = color.g;
+    c.data[2] = color.b;
+    c.data[3] = color.a;
+    pathData->color = c;
+  }
+
+  drawData->currentPathDataList()->push_back(*pathData);
+}
+
 love::DrawDataFrame *DrawTool::drawDataFrame() {
   return drawData->currentLayerFrame();
 }
@@ -127,8 +151,40 @@ void DrawTool::saveDrawing(std::string commandDescription) {
   auto actorId = editor.getSelection().firstSelectedActorId();
   auto component = drawBehavior.maybeGetComponent(actorId);
 
-
   auto newDrawData = drawData->serialize();
+  auto newPhysicsBodyData = physicsBodyData->serialize();
+  auto newHash = drawBehavior.hash(newDrawData, newPhysicsBodyData);
+  lastHash = newHash;
+
+  auto oldDrawData = component->drawData->serialize();
+  auto oldPhysicsBodyData = component->physicsBodyData->serialize();
+  auto oldHash = component->hash;
+
+  static const auto setDrawingProps
+      = [](Editor &editor, ActorId actorId, const std::string &drawData,
+            const std::string &physicsBodyData, const std::string &hash) {
+          auto &scene = editor.getScene();
+          auto &drawBehavior = scene.getBehaviors().byType<Drawing2Behavior>();
+          auto component = drawBehavior.maybeGetComponent(actorId);
+
+          component->drawData = std::make_shared<love::DrawData>(drawData);
+          component->physicsBodyData = std::make_shared<PhysicsBodyData>(physicsBodyData);
+          component->hash = hash;
+
+          editor.setSelectedComponentStateDirty(Drawing2Behavior::behaviorId);
+        };
+
+  Commands::Params commandParams;
+  editor.getCommands().execute(
+      commandDescription, commandParams,
+      [actorId, newDrawData = std::move(newDrawData),
+          newPhysicsBodyData = std::move(newPhysicsBodyData), newHash](Editor &editor, bool) {
+        setDrawingProps(editor, actorId, newDrawData, newPhysicsBodyData, newHash);
+      },
+      [actorId, oldDrawData = std::move(oldDrawData),
+          oldPhysicsBodyData = std::move(oldPhysicsBodyData), oldHash](Editor &editor, bool) {
+        setDrawingProps(editor, actorId, oldDrawData, oldPhysicsBodyData, oldHash);
+      });
 }
 
 

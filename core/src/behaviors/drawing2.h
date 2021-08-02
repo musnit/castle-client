@@ -72,6 +72,8 @@ public:
   void handleSetProperty(
       ActorId actorId, Drawing2Component &component, PropId propId, const ExpressionValue &value);
 
+  std::string hash(std::string drawData, std::string physicsBodyData);
+
 private:
   friend struct AnimationFrameMeetsConditionResponse;
 

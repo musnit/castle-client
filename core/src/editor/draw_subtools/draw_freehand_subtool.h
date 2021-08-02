@@ -23,12 +23,14 @@ public:
   }
 
   void onTouch(DrawSubtoolTouch &touchData) {
-    love::ghost::PathData *pathData = new love::PathData();
+    std::shared_ptr<love::ghost::PathData> pathData = std::make_shared<love::PathData>();
     pathData->points.push_back(love::ghost::Point(initialCoord.x, initialCoord.y));
     pathData->points.push_back(love::ghost::Point(touchData.touchX, touchData.touchY));
     pathData->style = 1;
     pathData->isFreehand = true;
     pathData->isTransparent = false;
+
+    currentPathDataList.push_back(pathData);
 
     drawTool.addTempPathData(pathData);
 
@@ -36,7 +38,14 @@ public:
     initialCoord.y = touchData.touchY;
 
     if (touchData.touch.released) {
+      for (size_t i = 0; i < currentPathDataList.size(); i++) {
+        drawTool.addPathData(currentPathDataList[i]);
+      }
+      currentPathDataList.clear();
+
       drawTool.saveDrawing("freehand pencil");
+
+      drawTool.clearTempGraphics();
     } else {
     }
   }
@@ -46,6 +55,7 @@ public:
 
 private:
   love::Vector2 initialCoord;
+  std::vector<std::shared_ptr<love::ghost::PathData>> currentPathDataList;
   // currentPathData
   // currentPathDataList
 };

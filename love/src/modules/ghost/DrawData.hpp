@@ -93,6 +93,16 @@ namespace ghost {
       */
     }
 
+    DrawData(const std::string &json) {
+      auto archive = Archive::fromJson(json.c_str());
+
+      archive.read([&](Archive::Reader &r) {
+        read(r);
+      });
+
+      _layerDataChanged = true;
+    }
+
     DrawData(Archive::Reader &archive) {
       read(archive);
 

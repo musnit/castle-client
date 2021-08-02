@@ -118,6 +118,15 @@ struct AnimationFrameMeetsConditionResponse : BaseResponse {
 // Read, write
 //
 
+std::string Drawing2Behavior::hash(std::string drawData, std::string physicsBodyData) {
+  auto hash = std::hash<std::string> {}(drawData + physicsBodyData);
+
+  char str[256];
+  snprintf(str, sizeof str, "%zu", hash);
+
+  return std::string(str);
+}
+
 void Drawing2Behavior::handleReadComponent(
     ActorId actorId, Drawing2Component &component, Reader &reader) {
   component.hash = reader.str("hash", "");

@@ -211,6 +211,15 @@ public:
     read(archive);
   }
 
+
+  PhysicsBodyData(const std::string &json) {
+    auto archive = Archive::fromJson(json.c_str());
+
+    archive.read([&](Archive::Reader &r) {
+      read(r);
+    });
+  }
+
   PhysicsBodyData(std::shared_ptr<PhysicsBodyData> other) {
     Archive archive;
     archive.write([&](Archive::Writer &w) {
@@ -247,6 +256,15 @@ public:
     archive.num("scale", scale);
     archive.num("version", version);
     archive.boolean("zeroShapesInV1", zeroShapesInV1);
+  }
+
+  std::string serialize() {
+    Archive archive;
+    archive.write([&](Archive::Writer &w) {
+      write(w);
+    });
+
+    return archive.toJson();
   }
 
   void render() {
