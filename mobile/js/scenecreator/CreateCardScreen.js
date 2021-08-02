@@ -1,5 +1,5 @@
 import React from 'react';
-import { Keyboard, View, PixelRatio, StyleSheet, Text } from 'react-native';
+import { Keyboard, View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets, SafeAreaView } from 'react-native-safe-area-context';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { isTablet } from 'react-native-device-info';
@@ -124,14 +124,11 @@ export const CreateCardScreen = ({
     }
   }, [isSceneLoaded]);
 
-  const selectActor = React.useCallback(
-    (actorId) => {
-      sendAsync('SELECT_ACTOR', {
-        actorId,
-      });
-    },
-    [sendAsync]
-  );
+  const selectActor = React.useCallback((actorId) => {
+    sendAsync('SELECT_ACTOR', {
+      actorId,
+    });
+  }, []);
 
   const maybeSaveAndGoToDeck = React.useCallback(async () => {
     // don't prompt on back button unless the card has changes and
@@ -145,9 +142,9 @@ export const CreateCardScreen = ({
           cancelButtonIndex: 2,
         },
         (buttonIndex) => {
-          if (buttonIndex == 0) {
+          if (buttonIndex === 0) {
             return saveAndGoToDeck();
-          } else if (buttonIndex == 1) {
+          } else if (buttonIndex === 1) {
             return goToDeck();
           }
         }
@@ -175,7 +172,7 @@ export const CreateCardScreen = ({
               cancelButtonIndex: 1,
             },
             (buttonIndex) => {
-              if (buttonIndex == 0) {
+              if (buttonIndex === 0) {
                 return saveAndGoToCard(nextCard, isPlaying);
               }
             }
@@ -189,7 +186,7 @@ export const CreateCardScreen = ({
               cancelButtonIndex: 1,
             },
             (buttonIndex) => {
-              if (buttonIndex == 0) {
+              if (buttonIndex === 0) {
                 return goToCard(nextCard, isPlaying);
               }
             }
@@ -197,7 +194,7 @@ export const CreateCardScreen = ({
         }
       }
     },
-    [cardNeedsSave, saveAndGoToCard, goToCard, isPlaying]
+    [deck, cardNeedsSave, saveAndGoToCard, goToCard, isPlaying]
   );
 
   const onSelectBackupData = React.useCallback(
@@ -252,7 +249,7 @@ export const CreateCardScreen = ({
 
   const isCardTextVisible =
     (isShowingTextActors || isPlaying) &&
-    editMode == 'default' &&
+    editMode === 'default' &&
     textActors &&
     Object.keys(textActors).length;
 

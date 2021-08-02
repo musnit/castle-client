@@ -6,12 +6,11 @@ import { useActionSheet } from '@expo/react-native-action-sheet';
 import * as Constants from '../Constants';
 import { CreateCardCaptureActions } from './CreateCardCaptureActions';
 
-import FastImage from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SLIcon from 'react-native-vector-icons/SimpleLineIcons';
 
-export const CARD_HEADER_HEIGHT = 54;
+export const CARD_HEADER_HEIGHT = 50;
 
 const styles = StyleSheet.create({
   container: {
@@ -20,6 +19,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    backgroundColor: Constants.colors.white,
     paddingRight: 8,
     borderBottomWidth: 1,
     borderColor: Constants.colors.grayOnBlackBorder,
@@ -70,21 +70,21 @@ export const CreateCardHeader = ({
         cancelButtonIndex: 1,
       },
       (buttonIndex) => {
-        if (buttonIndex == 0) {
+        if (buttonIndex === 0) {
           return onSave();
         }
       }
     );
-  }, [onSave, creatorUsername]);
+  }, [showActionSheetWithOptions, onSave, creatorUsername]);
 
   // Only hide status bar on iOS because adjustResize breaks when android is in fullscreen.
   // This breaks keyboard avoiding for popovers. See https://issuetracker.google.com/issues/36911528
   return (
     <View style={styles.container}>
-      <StatusBar hidden={Platform.OS != 'android'} />
+      <StatusBar hidden={Platform.OS !== 'android'} />
       {!data?.performing ? (
         <TouchableOpacity style={styles.back} onPress={onPressBack}>
-          <Icon name="close" size={32} color="#fff" />
+          <Icon name="arrow-back" size={32} color="#000" />
         </TouchableOpacity>
       ) : null}
       {data ? (
@@ -96,14 +96,14 @@ export const CreateCardHeader = ({
           {data.performing ? (
             <Fragment>
               <TouchableOpacity style={styles.action} onPress={() => sendGlobalAction('onRewind')}>
-                <SLIcon name="control-start" size={22} color="#fff" />
+                <SLIcon name="control-start" size={22} color="#000" />
               </TouchableOpacity>
               <CreateCardCaptureActions />
             </Fragment>
           ) : (
             <Fragment>
               <TouchableOpacity style={styles.action} onPress={() => sendGlobalAction('onPlay')}>
-                <SLIcon name="control-play" size={22} color="#fff" />
+                <SLIcon name="control-play" size={22} color="#000" />
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.action}
@@ -112,7 +112,7 @@ export const CreateCardHeader = ({
                 <MCIcon
                   name="undo-variant"
                   size={26}
-                  color={data.actionsAvailable.onUndo ? '#fff' : '#666'}
+                  color={data.actionsAvailable.onUndo ? '#000' : '#666'}
                 />
               </TouchableOpacity>
               <TouchableOpacity
@@ -122,14 +122,14 @@ export const CreateCardHeader = ({
                 <MCIcon
                   name="redo-variant"
                   size={26}
-                  color={data.actionsAvailable.onRedo ? '#fff' : '#666'}
+                  color={data.actionsAvailable.onRedo ? '#000' : '#666'}
                 />
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.action}
                 disabled={data.performing}
                 onPress={() => onChangeMode(mode === 'variables' ? null : 'variables')}>
-                <SLIcon name="settings" size={23} color="#fff" />
+                <SLIcon name="settings" size={23} color="#000" />
               </TouchableOpacity>
             </Fragment>
           )}
@@ -137,7 +137,9 @@ export const CreateCardHeader = ({
       ) : null}
       {!data?.performing ? (
         saveAction === 'save' ? (
-          <TouchableOpacity style={Constants.styles.primaryButton} onPress={onSave}>
+          <TouchableOpacity
+            style={[Constants.styles.primaryButton, Constants.styles.buttonOnWhite]}
+            onPress={onSave}>
             <Text style={Constants.styles.primaryButtonLabel}>Done</Text>
           </TouchableOpacity>
         ) : saveAction === 'clone' ? (
