@@ -16,6 +16,7 @@ public:
   explicit Belt(Editor &editor_);
 
   void deselect();
+  void updateSelection(bool forceGhostActorSelection = false);
 
   void update(double dt);
   void drawOverlay() const;
@@ -46,6 +47,9 @@ private:
     float initialScrollVX = 0; // The belt scroll velocity right before this touch began
     bool neverPlace = false; // Whether to never allow placing actors from this touch
   };
+
+  static constexpr double minGhostSelectPeriod = 0.2;
+  double lastGhostSelectTime = lv.timer.getTime() - minGhostSelectPeriod - 0.1;
 
 
   float getElementX(int index) const;

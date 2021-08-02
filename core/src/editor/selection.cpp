@@ -2,6 +2,26 @@
 #include "behaviors/all.h"
 #include "engine.h"
 
+inline void Selection::deselectAllActors(bool deselectBelt) {
+  if (deselectBelt) {
+    belt.deselect();
+  }
+  if (!selection.empty()) {
+    if (deselectBelt) {
+      selection.clear();
+    } else {
+      auto &scene = editor.getScene();
+      for (auto actorId : selection) {
+        if (!scene.isGhost(actorId)) {
+          selection.remove(actorId);
+        }
+      }
+    }
+    blueprintSelected = false;
+    selectionChanged = true;
+  }
+}
+
 void Selection::applySelection(Scene &scene) {
   for (auto actorId : selection) {
     if (!scene.hasActor(actorId)) {

@@ -143,14 +143,20 @@ void Editor::draw() {
     lv.graphics.setLineWidth(1.25f * scene->getPixelScale());
     lv.graphics.setColor({ 0.8, 0.8, 0.8, 0.8 });
     scene->forEachActor([&](ActorId actorId) {
-      drawBodyOutline(actorId);
+      if (!scene->isGhost(actorId)) {
+        drawBodyOutline(actorId);
+      }
     });
 
     lv.graphics.setLineWidth(2 * scene->getPixelScale());
     lv.graphics.setColor({ 0, 1, 0, 0.8 });
     for (auto actorId : selection.getSelectedActorIds()) {
-      Debug::display("selected actor {}", actorId);
-      drawBodyOutline(actorId);
+      if (!scene->isGhost(actorId)) {
+        Debug::display("selected actor {}", actorId);
+        drawBodyOutline(actorId);
+      } else {
+        Debug::display("selected ghost actor {}", actorId);
+      }
     }
 
     lv.graphics.pop();

@@ -4,6 +4,7 @@
 #include "scene.h"
 #include "behaviors/body.h"
 #include "belt.h"
+#include "scene.h"
 
 class Editor;
 
@@ -12,7 +13,7 @@ public:
   Selection(const Selection &) = delete; // Prevent accidental copies
   const Selection &operator=(const Selection &) = delete;
 
-  explicit Selection(Belt &belt_);
+  explicit Selection(Editor &editor_, Belt &belt_);
 
   void touchToSelect(Scene &scene);
 
@@ -34,6 +35,7 @@ public:
 
 private:
   Lv &lv { Lv::getInstance() };
+  Editor &editor;
   Belt &belt;
   ActorIdSet selection;
 
@@ -43,8 +45,9 @@ private:
   bool blueprintSelected = false;
 };
 
-inline Selection::Selection(Belt &belt_)
-    : belt(belt_) {
+inline Selection::Selection(Editor &editor_, Belt &belt_)
+    : editor(editor_)
+    , belt(belt_) {
 }
 
 inline ActorIdSet &Selection::getSelectedActorIds() {
@@ -84,17 +87,6 @@ inline void Selection::selectActor(ActorId actorId) {
 inline void Selection::deselectActor(ActorId actorId) {
   if (selection.contains(actorId)) {
     selection.remove(actorId);
-    selectionChanged = true;
-  }
-}
-
-inline void Selection::deselectAllActors(bool deselectBelt) {
-  if (deselectBelt) {
-    belt.deselect();
-  }
-  if (!selection.empty()) {
-    selection.clear();
-    blueprintSelected = false;
     selectionChanged = true;
   }
 }

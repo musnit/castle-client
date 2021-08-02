@@ -4,6 +4,7 @@
 
 #include "lv.h"
 #include "archive.h"
+#include "scene.h"
 
 
 class LibraryEntry {
@@ -13,8 +14,8 @@ public:
   LibraryEntry(const LibraryEntry &) = delete; // Prevent accidental copies
   const LibraryEntry &operator=(const LibraryEntry &) = delete;
 
-  explicit LibraryEntry(
-      const char *entryId_, const json::Value &jsonValue, json::CrtAllocator &baseAlloc);
+  explicit LibraryEntry(Scene &scene_, const char *entryId_, const json::Value &jsonValue,
+      json::CrtAllocator &baseAlloc);
 
   const std::string &getEntryId() const;
 
@@ -23,8 +24,12 @@ public:
 
   love::Image *getPreviewImage() const;
 
+  ActorId getGhostActorId();
+
 
 private:
+  Scene &scene;
+
   friend class Library;
 
   // Each library entry has its own memory pool so that the json values within a library entry are
@@ -40,6 +45,9 @@ private:
   mutable bool previewImageGenerated = false;
   mutable std::unique_ptr<love::ImageData> previewImageData;
   mutable std::unique_ptr<love::Image> previewImage;
+
+  bool ghostActorCreated = false;
+  ActorId ghostActorId = nullActor;
 };
 
 class Library {
@@ -51,12 +59,12 @@ public:
   Library(const Library &) = delete; // Prevent accidental copies
   const Library &operator=(const Library &) = delete;
 
-  Library() = default;
+  explicit Library(Scene &scene_);
 
 
   // Entry access
 
-  const LibraryEntry *maybeGetEntry(const char *entryId); // `nullptr` if not found
+  LibraryEntry *maybeGetEntry(const char *entryId); // `nullptr` if not found
   template<typename F>
   void forEachEntry(F &&f); // `F` takes `(LibraryEntry &)`, iterates in order
   int numEntries() const;
@@ -69,6 +77,8 @@ public:
 
 
 private:
+  Scene &scene;
+
   json::CrtAllocator baseAlloc;
 
   std::unordered_map<std::string, LibraryEntry> entries;
@@ -83,6 +93,10 @@ private:
 
 // Inline implementations
 
+inline Library::Library(Scene &scene_)
+    : scene(scene_) {
+}
+
 inline const std::string &LibraryEntry::getEntryId() const {
   return entryId;
 }
@@ -95,7 +109,7 @@ void LibraryEntry::read(F &&f) const {
   }
 }
 
-inline const LibraryEntry *Library::maybeGetEntry(const char *entryId) {
+inline LibraryEntry *Library::maybeGetEntry(const char *entryId) {
   if (auto found = entries.find(entryId); found != entries.end()) {
     return &found->second;
   }

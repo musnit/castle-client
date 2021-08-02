@@ -75,7 +75,7 @@ private:
 
   // 'Default'-mode members
   Belt belt { *this };
-  Selection selection { belt };
+  Selection selection { *this, belt };
   Grid grid;
 
   enum class Tool {

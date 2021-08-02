@@ -2,6 +2,8 @@
 
 #include "behaviors/all.h"
 
+#include "library.h"
+
 
 //
 // Constructor, destructor
@@ -12,7 +14,8 @@ Scene::Scene(Bridge &bridge_, Variables &variables_, bool isEditing_, Reader *ma
     , bridge(bridge_)
     , isEditing(isEditing_)
     , physicsContactListener(*this)
-    , behaviors(std::make_unique<AllBehaviors>(*this)) {
+    , behaviors(std::make_unique<AllBehaviors>(*this))
+    , library(std::make_unique<Library>(*this)) {
   // Link to variables
   variables.linkScene(this);
 
@@ -50,7 +53,7 @@ void Scene::read(Reader &reader) {
 
   // Library
   reader.each("library", [&]() {
-    library.readEntry(reader);
+    library->readEntry(reader);
   });
 
   // Actors
@@ -88,7 +91,7 @@ ActorId Scene::addActor(const ActorDesc &params) {
   // Find parent entry
   const LibraryEntry *maybeParentEntry = nullptr;
   if (params.parentEntryId) {
-    maybeParentEntry = library.maybeGetEntry(params.parentEntryId);
+    maybeParentEntry = library->maybeGetEntry(params.parentEntryId);
     if (!maybeParentEntry && !params.reader) {
       return nullActor; // Parent entry requested but doesn't exist, and we also have no actor data
     }
@@ -137,6 +140,11 @@ ActorId Scene::addActor(const ActorDesc &params) {
   // Track parent entry id
   if (params.parentEntryId) {
     setParentEntryId(actorId, params.parentEntryId);
+  }
+
+  // Track ghost-ness
+  if (params.isGhost) {
+    registry.emplace<Ghost>(actorId);
   }
 
   // Components reading code that's called below

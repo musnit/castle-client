@@ -237,21 +237,24 @@ template<typename F>
 void BodyBehavior::forEachActorAtBoundingBox(
     float minX, float minY, float maxX, float maxY, F &&f) const {
   struct Callback : b2QueryCallback {
+    const Scene &scene;
     const BodyBehavior &bodyBehavior;
     const F f;
 
-    Callback(const BodyBehavior &bodyBehavior_, F &&f_)
-        : bodyBehavior(bodyBehavior_)
+    Callback(const Scene &scene_, const BodyBehavior &bodyBehavior_, F &&f_)
+        : scene(scene_)
+        , bodyBehavior(bodyBehavior_)
         , f(std::forward<F>(f_)) {
     }
 
     bool ReportFixture(b2Fixture *fixture) final {
-      if (auto actorId = bodyBehavior.maybeGetActorId(fixture->GetBody()); actorId != nullActor) {
+      if (auto actorId = bodyBehavior.maybeGetActorId(fixture->GetBody());
+          actorId != nullActor && !scene.isGhost(actorId)) {
         return f(actorId, (const b2Fixture *)fixture);
       }
       return true;
     }
-  } cb(*this, std::forward<F>(f));
+  } cb(getScene(), *this, std::forward<F>(f));
   getScene().getPhysicsWorld().QueryAABB(&cb, { { minX, minY }, { maxX, maxY } });
 }
 

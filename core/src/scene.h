@@ -3,7 +3,6 @@
 #include "precomp.h"
 
 #include "lv.h"
-#include "library.h"
 #include "props.h"
 #include "gesture.h"
 #include "variables.h"
@@ -12,6 +11,7 @@
 
 
 class AllBehaviors; // Forward declaration otherwise this would be circular...
+class Library;
 
 using ActorId = entt::entity; // Is unique throughout a `Scene`'s lifetime, never recycled
 constexpr auto nullActor = entt::null; // An `ActorId`-compatible sentinel value
@@ -43,6 +43,7 @@ public:
     DrawOrderRelativity drawOrderRelativity = FrontOfAll;
     ActorId drawOrderRelativeToActor = nullActor;
     std::optional<int> drawOrderRelativeToValue;
+    bool isGhost = false;
   };
   ActorId addActor(const ActorDesc &params);
   ActorId generateActorId();
@@ -80,6 +81,13 @@ public:
   };
   const char *maybeGetParentEntryId(ActorId actorId) const; // `nullptr` if no parent entry
   void setParentEntryId(ActorId actorId, const char *newParentEntryId); // Set `nullptr` to remove
+
+
+  // Ghost
+
+  struct Ghost {};
+  bool isGhost(ActorId actorId) const; // Whether given actor is a ghost (invisible actor created to
+                                       // inspect uninstantiated blueprints selected in belt)
 
 
   // Behaviors
@@ -206,6 +214,8 @@ private:
   entt::basic_view<entt::entity, entt::exclude_t<>, ParentEntryIdData> parentEntryIdView
       = registry.view<ParentEntryIdData>();
 
+  entt::basic_view<entt::entity, entt::exclude_t<>, Ghost> ghostView = registry.view<Ghost>();
+
   struct PhysicsContactListener : b2ContactListener {
     Scene &scene;
     explicit PhysicsContactListener(Scene &scene_);
@@ -218,7 +228,7 @@ private:
 
   std::unique_ptr<AllBehaviors> behaviors;
 
-  Library library; // Library instance maintained at scene level for now
+  std::unique_ptr<Library> library; // Library instance maintained at scene level for now
 
   float viewWidth = 10.0, viewHeight = 7.0f * viewWidth / 5.0f;
   mutable love::Transform viewTransform;
@@ -248,7 +258,9 @@ inline bool Scene::hasActor(ActorId actorId) const {
 template<typename F>
 void Scene::forEachActor(F &&f) const {
   drawOrderView.each([&](ActorId actorId, const DrawOrder &order) {
-    f(actorId);
+    if (!isGhost(actorId)) {
+      f(actorId);
+    }
   });
 }
 
@@ -289,11 +301,17 @@ inline const char *Scene::maybeGetParentEntryId(ActorId actorId) const {
 }
 
 inline void Scene::setParentEntryId(ActorId actorId, const char *newParentEntryId) {
-  if (newParentEntryId) {
-    registry.get_or_emplace<ParentEntryIdData>(actorId).parentEntryId = newParentEntryId;
-  } else {
-    registry.remove_if_exists<ParentEntryIdData>(actorId);
+  if (registry.valid(actorId)) {
+    if (newParentEntryId) {
+      registry.get_or_emplace<ParentEntryIdData>(actorId).parentEntryId = newParentEntryId;
+    } else {
+      registry.remove_if_exists<ParentEntryIdData>(actorId);
+    }
   }
+}
+
+inline bool Scene::isGhost(ActorId actorId) const {
+  return registry.valid(actorId) && ghostView.contains(actorId);
 }
 
 inline AllBehaviors &Scene::getBehaviors() {
@@ -329,11 +347,11 @@ inline const entt::registry &Scene::getEntityRegistry() const {
 }
 
 inline Library &Scene::getLibrary() {
-  return library;
+  return *library;
 }
 
 inline const Library &Scene::getLibrary() const {
-  return library;
+  return *library;
 }
 
 inline const love::Transform &Scene::getViewTransform() const {

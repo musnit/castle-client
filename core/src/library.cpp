@@ -10,9 +10,10 @@ constexpr auto libraryEntryPoolChunkSize = 8 * 1024;
 // Entry constructor, destructor
 //
 
-LibraryEntry::LibraryEntry(
-    const char *entryId_, const json::Value &jsonValue_, json::CrtAllocator &baseAlloc)
-    : alloc(libraryEntryPoolChunkSize, &baseAlloc)
+LibraryEntry::LibraryEntry(Scene &scene_, const char *entryId_, const json::Value &jsonValue_,
+    json::CrtAllocator &baseAlloc)
+    : scene(scene_)
+    , alloc(libraryEntryPoolChunkSize, &baseAlloc)
     , jsonValue(jsonValue_, alloc, true)
     , entryId(entryId_) {
   read([&](Reader &reader) {
@@ -48,6 +49,22 @@ love::Image *LibraryEntry::getPreviewImage() const {
 
 
 //
+// Entry ghost actor
+//
+
+ActorId LibraryEntry::getGhostActorId() {
+  if (!ghostActorCreated) {
+    Scene::ActorDesc actorDesc;
+    actorDesc.parentEntryId = entryId.c_str();
+    actorDesc.isGhost = true;
+    ghostActorId = scene.addActor(actorDesc);
+    ghostActorCreated = true;
+  }
+  return ghostActorId;
+}
+
+
+//
 // Entry reading
 //
 
@@ -59,7 +76,7 @@ void Library::readEntry(Reader &reader) {
   }
   auto entryId = *maybeEntryId;
   entries.emplace(std::piecewise_construct, std::forward_as_tuple(entryId),
-      std::forward_as_tuple(entryId, *reader.jsonValue(), baseAlloc));
+      std::forward_as_tuple(scene, entryId, *reader.jsonValue(), baseAlloc));
   markOrderDirty();
 }
 

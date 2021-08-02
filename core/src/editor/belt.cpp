@@ -2,6 +2,7 @@
 
 #include "behaviors/all.h"
 #include "editor.h"
+#include "library.h"
 
 
 static const TouchToken beltTouchToken;
@@ -26,6 +27,83 @@ Belt::Belt(Editor &editor_)
 
 float Belt::getElementX(int index) const {
   return float(index) * (elemSize + elemGap);
+}
+
+void Belt::updateSelection(bool forceGhostActorSelection) {
+  auto currTime = lv.timer.getTime();
+  auto &scene = editor.getScene();
+  auto &library = scene.getLibrary();
+  auto &selection = editor.getSelection();
+  auto &selectedActorIds = selection.getSelectedActorIds();
+
+  // Update `selectedEntryId` based on selected non-ghost actors
+  if (!selectedActorIds.empty()) {
+    // No work to do if already selected some selected actor's blueprint
+    auto alreadySelected = false;
+    if (selectedEntryId) {
+      for (auto actorId : selectedActorIds) {
+        if (auto parentEntryId = scene.maybeGetParentEntryId(actorId)) {
+          if (parentEntryId == *selectedEntryId) {
+            alreadySelected = true;
+            break;
+          }
+        }
+      }
+    }
+    if (!alreadySelected) {
+      // Find a selected non-ghost actor
+      for (auto actorId : selectedActorIds) {
+        if (!scene.isGhost(actorId)) {
+          if (auto parentEntryId = scene.maybeGetParentEntryId(actorId)) {
+            // Select its blueprint and target it
+            selectedEntryId = parentEntryId;
+            auto elemIndex = 0;
+            library.forEachEntry([&](const LibraryEntry &entry) {
+              if (entry.getEntryId() == *selectedEntryId) {
+                targetIndex = elemIndex;
+              }
+              ++elemIndex;
+            });
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  // Ensure all ghost actors are created
+  library.forEachEntry([&](LibraryEntry &entry) {
+    entry.getGhostActorId();
+  });
+
+  // Select ghost actor based on `selectedEntryId`
+  if (selectedEntryId) {
+    // Don't select actors too rapidly
+    if (forceGhostActorSelection || std::abs(cursorVX) < 10
+        || currTime - lastGhostSelectTime > minGhostSelectPeriod) {
+      // Don't need to select a ghost if some non-ghost actor is selected
+      auto nonGhostActorSelected = false;
+      for (auto actorId : editor.getSelection().getSelectedActorIds()) {
+        if (!scene.isGhost(actorId)) {
+          nonGhostActorSelected = true;
+          break;
+        }
+      }
+      if (!nonGhostActorSelected) {
+        // Find ghost actor of selected entry, deselect all and select it if not already selected
+        if (auto selectedEntry = library.maybeGetEntry(selectedEntryId->c_str())) {
+          auto ghostActorId = selectedEntry->getGhostActorId();
+          if (!selectedActorIds.contains(ghostActorId)) {
+            auto savedSelectedEntryId = selectedEntryId; // Save and restore across deselect all
+            selection.deselectAllActors();
+            selectedEntryId = savedSelectedEntryId;
+            selection.selectActor(ghostActorId);
+            lastGhostSelectTime = currTime;
+          }
+        }
+      }
+    }
+  }
 }
 
 void Belt::update(double dtDouble) {
@@ -252,6 +330,8 @@ void Belt::update(double dtDouble) {
   }
 
   // TODO(nikki): Disable highlight when not selecting blueprint
+
+  updateSelection();
 
   firstFrame = false;
 }
