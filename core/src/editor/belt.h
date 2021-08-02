@@ -26,6 +26,8 @@ private:
 
   Editor &editor;
 
+  std::optional<std::string> selectedEntryId;
+
   bool firstFrame = true;
 
   float height = 0;
@@ -34,8 +36,6 @@ private:
 
   float cursorX = 0;
   float cursorVX = 0;
-
-  std::optional<std::string> selectedEntryId;
 
   int targetIndex = -1;
 

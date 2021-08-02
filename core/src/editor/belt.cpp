@@ -282,23 +282,25 @@ void Belt::drawOverlay() const {
   auto elemsY = top + 0.5f * height;
 
   // Each element
-  auto elemIndex = 0;
-  library.forEachEntry([&](const LibraryEntry &entry) {
-    auto elemX = getElementX(elemIndex);
+  {
+    auto elemIndex = 0;
+    library.forEachEntry([&](const LibraryEntry &entry) {
+      auto elemX = getElementX(elemIndex);
 
-    auto x = 0.5f * windowWidth + elemX - cursorX;
-    auto y = elemsY;
+      auto x = 0.5f * windowWidth + elemX - cursorX;
+      auto y = elemsY;
 
-    if (auto image = entry.getPreviewImage()) {
-      auto imgW = float(image->getWidth());
-      auto imgH = float(image->getHeight());
-      auto scale = std::min(elemSize / imgW, elemSize / imgH);
-      image->draw(
-          &lv.graphics, love::Matrix4(x, y, 0, scale, scale, 0.5f * imgW, 0.5f * imgH, 0, 0));
-    }
+      if (auto image = entry.getPreviewImage()) {
+        auto imgW = float(image->getWidth());
+        auto imgH = float(image->getHeight());
+        auto scale = std::min(elemSize / imgW, elemSize / imgH);
+        image->draw(
+            &lv.graphics, love::Matrix4(x, y, 0, scale, scale, 0.5f * imgW, 0.5f * imgH, 0, 0));
+      }
 
-    ++elemIndex;
-  });
+      ++elemIndex;
+    });
+  }
 
   // Selection box
   if (selectedEntryId) {
