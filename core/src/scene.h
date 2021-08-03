@@ -56,7 +56,7 @@ public:
   ActorId indexActor(int index) const; // Order maintained as long as actors not added / removed.
                                        // `nullActor` if out of bounds.
 
-  void writeActor(ActorId actorId, Writer &writer) const;
+  void writeActor(ActorId actorId, Writer &writer, bool skipInheritedProperties = true) const;
 
 
   // Draw order

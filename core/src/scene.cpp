@@ -274,20 +274,36 @@ void Scene::ensureDrawOrderSort() const {
   }
 }
 
-void Scene::writeActor(ActorId actorId, Writer &writer) const {
+void Scene::writeActor(ActorId actorId, Writer &writer, bool skipInheritedProperties) const {
   writer.obj("components", [&]() {
-    getBehaviors().forEach([&](auto &behavior) {
-      if (auto component = behavior.maybeGetComponent(actorId)) {
-        using Behavior = std::remove_reference_t<decltype(behavior)>;
-        writer.obj(Behavior::name, [&]() {
-          writer.write(component->props);
-          if constexpr (Handlers::hasWriteComponent<decltype(behavior)>) {
-            behavior.handleWriteComponent(actorId, *component, writer);
-          }
-          writer.boolean("disabled", component->disabled);
+    if (skipInheritedProperties) {
+      // TODO: More generalized system for saying which properties are inherited and which aren't
+      //       (eg. add an attribute in `PropAttribs`). For now just specialcasing to layout
+      //       properties as non-inherited.
+      auto maybeBodyComponent = getBehaviors().byType<BodyBehavior>().maybeGetComponent(actorId);
+      if (maybeBodyComponent) {
+        writer.obj("Body", [&]() {
+          writer.num("x", maybeBodyComponent->props.x());
+          writer.num("y", maybeBodyComponent->props.y());
+          writer.num("angle", maybeBodyComponent->props.angle());
+          writer.num("widthScale", maybeBodyComponent->props.widthScale());
+          writer.num("heightScale", maybeBodyComponent->props.heightScale());
         });
       }
-    });
+    } else {
+      getBehaviors().forEach([&](auto &behavior) {
+        if (auto component = behavior.maybeGetComponent(actorId)) {
+          using Behavior = std::remove_reference_t<decltype(behavior)>;
+          writer.obj(Behavior::name, [&]() {
+            writer.write(component->props);
+            if constexpr (Handlers::hasWriteComponent<decltype(behavior)>) {
+              behavior.handleWriteComponent(actorId, *component, writer);
+            }
+            writer.boolean("disabled", component->disabled);
+          });
+        }
+      });
+    }
   });
 }
 

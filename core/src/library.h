@@ -14,23 +14,25 @@ public:
   LibraryEntry(const LibraryEntry &) = delete; // Prevent accidental copies
   const LibraryEntry &operator=(const LibraryEntry &) = delete;
 
-  explicit LibraryEntry(Scene &scene_, const char *entryId_, const json::Value &jsonValue,
+  explicit LibraryEntry(Library &library_, const char *entryId_, const json::Value &jsonValue,
       json::CrtAllocator &baseAlloc);
-
-  const std::string &getEntryId() const;
+  ~LibraryEntry();
 
   template<typename F>
   void read(F &&f) const;
 
+  const std::string &getEntryId() const;
+  const std::string &getTitle() const;
+
+  std::pair<std::optional<const char *>, int> getBase64Png() const;
   love::Image *getPreviewImage() const;
 
   ActorId getGhostActorId();
 
 
 private:
-  Scene &scene;
-
   friend class Library;
+  Library &library;
 
   // Each library entry has its own memory pool so that the json values within a library entry are
   // close together in memory and deallocated all at once when the library entry is dropped. The
@@ -77,6 +79,8 @@ public:
 
 
 private:
+  friend class LibraryEntry;
+
   Scene &scene;
 
   json::CrtAllocator baseAlloc;
@@ -84,6 +88,8 @@ private:
   std::unordered_map<std::string, LibraryEntry> entries;
   std::vector<LibraryEntry *> order;
   bool orderDirty = true;
+
+  std::unordered_map<std::string, ActorId> ghostActorIds;
 
 
   void markOrderDirty();
@@ -99,6 +105,18 @@ inline Library::Library(Scene &scene_)
 
 inline const std::string &LibraryEntry::getEntryId() const {
   return entryId;
+}
+
+inline const std::string &LibraryEntry::getTitle() const {
+  return title;
+}
+
+inline std::pair<std::optional<const char *>, int> LibraryEntry::getBase64Png() const {
+  std::pair<std::optional<const char *>, int> result;
+  read([&](Reader &reader) {
+    result = reader.strAndLength("base64Png");
+  });
+  return result;
 }
 
 template<typename F>

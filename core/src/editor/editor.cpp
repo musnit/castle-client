@@ -2,6 +2,7 @@
 #include "engine.h"
 #include "archive.h"
 #include "behaviors/all.h"
+#include "library.h"
 
 Editor::Editor(Bridge &bridge_)
     : bridge(bridge_) {
@@ -193,6 +194,85 @@ void Editor::draw() {
     }
     Debug::display("  {} actor {}", command.description, selectionString);
   }
+}
+
+void Editor::updateBlueprint(ActorId actorId, UpdateBlueprintParams params) {
+  auto &library = scene->getLibrary();
+
+  // Get current entry
+  std::string entryId;
+  {
+    auto entryIdCStr = scene->maybeGetParentEntryId(actorId);
+    if (!entryIdCStr) {
+      Debug::log("editor: tried to update blueprint from actor without parent entry id");
+      return;
+    }
+    entryId = entryIdCStr;
+    // Memory at `entryIdCstr` can be released by library entry update, so end scope here
+  }
+
+  // Create new entry JSON, zeroing-out position and restoring it
+  Archive entryArchive;
+  {
+    float oldX = 0, oldY = 0;
+    auto maybeBodyComponent
+        = scene->getBehaviors().byType<BodyBehavior>().maybeGetComponent(actorId);
+    if (maybeBodyComponent) {
+      oldX = maybeBodyComponent->props.x();
+      oldY = maybeBodyComponent->props.y();
+      maybeBodyComponent->props.x() = 0;
+      maybeBodyComponent->props.y() = 0;
+    }
+    auto oldEntry = library.maybeGetEntry(entryId.c_str());
+    entryArchive.write([&](Writer &writer) {
+      writer.str("entryId", entryId);
+      writer.str("entryType", "actorBlueprint");
+      writer.str("title", params.newTitle ? params.newTitle : oldEntry ? oldEntry->getTitle() : "");
+      writer.obj("actorBlueprint", [&]() {
+        scene->writeActor(actorId, writer, false);
+      });
+      if (oldEntry) {
+        if (auto [base64Png, base64PngLength] = oldEntry->getBase64Png(); base64Png) {
+          writer.str("base64Png", *base64Png);
+        }
+      }
+    });
+    if (maybeBodyComponent) {
+      maybeBodyComponent->props.x() = oldX;
+      maybeBodyComponent->props.y() = oldY;
+    }
+    // Memory at `maybeBodyComponent` and `oldEntry` can be released by library entry update, so end
+    // scope here
+  }
+
+  // Save new entry to library. This destroys and re-creates the associated ghost actor too.
+  entryArchive.read([&](Reader &reader) {
+    library.readEntry(reader);
+  });
+
+  // Update all other non-ghost actors that have this entry
+  scene->forEachActor([&](ActorId otherActorId) {
+    if (otherActorId != actorId && scene->maybeGetParentEntryId(otherActorId) == entryId) {
+      // Write actor, remove and read back -- new entry properties will be used when reading
+      Archive actorArchive;
+      actorArchive.write([&](Writer &writer) {
+        scene->writeActor(otherActorId, writer);
+      });
+      actorArchive.read([&](Reader &reader) {
+        Scene::ActorDesc actorDesc;
+        actorDesc.requestedActorId = otherActorId;
+        actorDesc.reader = &reader;
+        actorDesc.parentEntryId = entryId.c_str(); // PERF: Could point to entry in `ActorDesc`,
+                                                   //       avoid library lookup
+        if (auto drawOrder = scene->maybeGetDrawOrder(otherActorId)) {
+          actorDesc.drawOrderRelativeToValue = drawOrder->value;
+          actorDesc.drawOrderRelativity = Scene::ActorDesc::Behind;
+        }
+        scene->removeActor(otherActorId);
+        scene->addActor(actorDesc);
+      });
+    }
+  });
 }
 
 //
@@ -564,6 +644,7 @@ struct EditorModifyComponentReceiver {
                   editor.setSelectedActorStateDirty();
                 }
                 editor.setRulesData(actorId, newRulesJson.c_str());
+                editor.updateBlueprint(actorId, {});
                 editor.setSelectedComponentStateDirty(RulesBehavior::behaviorId);
               },
               [actorId, oldHasComponent, oldRulesJson = std::string(oldValueCStr)](
@@ -574,9 +655,12 @@ struct EditorModifyComponentReceiver {
                   editor.setSelectedActorStateDirty();
                 }
                 editor.setRulesData(actorId, oldRulesJson.c_str());
+                editor.updateBlueprint(actorId, {});
                 editor.setSelectedComponentStateDirty(RulesBehavior::behaviorId);
               });
         } else {
+          // TODO: Skip `updateBlueprint` if property is non-inherited, once we start tracking that
+          //       in `PropAttribs`
           auto propId = Props::getId(params.propertyName().c_str());
           auto propType = params.propertyType();
           auto description = "change " + params.propertyName();
@@ -590,11 +674,13 @@ struct EditorModifyComponentReceiver {
                 [actorId, propId, newValue = params.stringValue()](Editor &editor, bool) {
                   auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
                   behavior.setProperty(actorId, propId, newValue.c_str(), false);
+                  editor.updateBlueprint(actorId, {});
                   editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
                 },
                 [actorId, propId, oldValue = std::string(oldValueCStr)](Editor &editor, bool) {
                   auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
                   behavior.setProperty(actorId, propId, oldValue.c_str(), false);
+                  editor.updateBlueprint(actorId, {});
                   editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
                 });
           } else {
@@ -605,11 +691,13 @@ struct EditorModifyComponentReceiver {
                 [actorId, propId, newValue](Editor &editor, bool) {
                   auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
                   behavior.setProperty(actorId, propId, newValue, false);
+                  editor.updateBlueprint(actorId, {});
                   editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
                 },
                 [actorId, propId, oldValue](Editor &editor, bool) {
                   auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
                   behavior.setProperty(actorId, propId, oldValue, false);
+                  editor.updateBlueprint(actorId, {});
                   editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
                 });
           }
@@ -621,11 +709,13 @@ struct EditorModifyComponentReceiver {
             [actorId](Editor &editor, bool) {
               auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
               behavior.enableComponent(actorId);
+              editor.updateBlueprint(actorId, {});
               editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
             },
             [actorId](Editor &editor, bool) {
               auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
               behavior.disableComponent(actorId);
+              editor.updateBlueprint(actorId, {});
               editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
             });
       } else if (action == "disable") {
@@ -635,11 +725,13 @@ struct EditorModifyComponentReceiver {
             [actorId](Editor &editor, bool) {
               auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
               behavior.disableComponent(actorId);
+              editor.updateBlueprint(actorId, {});
               editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
             },
             [actorId](Editor &editor, bool) {
               auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
               behavior.enableComponent(actorId);
+              editor.updateBlueprint(actorId, {});
               editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
             });
       } else if (action == "add") {
@@ -650,12 +742,14 @@ struct EditorModifyComponentReceiver {
               auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
               behavior.addComponent(actorId);
               behavior.enableComponent(actorId);
+              editor.updateBlueprint(actorId, {});
               editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
               editor.setSelectedActorStateDirty();
             },
             [actorId](Editor &editor, bool) {
               auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
               behavior.removeComponent(actorId);
+              editor.updateBlueprint(actorId, {});
               editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
               editor.setSelectedActorStateDirty();
             });
@@ -681,6 +775,7 @@ struct EditorModifyComponentReceiver {
               // Remove component
               auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
               behavior.removeComponent(actorId);
+              editor.updateBlueprint(actorId, {});
               editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
               editor.setSelectedActorStateDirty();
             },
@@ -698,6 +793,7 @@ struct EditorModifyComponentReceiver {
               if (!disabled) {
                 behavior.enableComponent(actorId);
               }
+              editor.updateBlueprint(actorId, {});
               editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
               editor.setSelectedActorStateDirty();
             });
@@ -716,6 +812,7 @@ struct EditorModifyComponentReceiver {
                 oldBehavior.removeComponent(actorId);
                 newBehavior.addComponent(actorId);
                 newBehavior.enableComponent(actorId);
+                editor.updateBlueprint(actorId, {});
                 editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
                 editor.setSelectedComponentStateDirty(RotatingMotionBehavior::behaviorId);
                 editor.setSelectedActorStateDirty();
@@ -727,6 +824,7 @@ struct EditorModifyComponentReceiver {
                 newBehavior.removeComponent(actorId);
                 oldBehavior.addComponent(actorId);
                 oldBehavior.enableComponent(actorId);
+                editor.updateBlueprint(actorId, {});
                 editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
                 editor.setSelectedComponentStateDirty(RotatingMotionBehavior::behaviorId);
                 editor.setSelectedActorStateDirty();
@@ -742,6 +840,7 @@ struct EditorModifyComponentReceiver {
                 oldBehavior.removeComponent(actorId);
                 newBehavior.addComponent(actorId);
                 newBehavior.enableComponent(actorId);
+                editor.updateBlueprint(actorId, {});
                 editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
                 editor.setSelectedComponentStateDirty(MovingBehavior::behaviorId);
                 editor.setSelectedActorStateDirty();
@@ -752,6 +851,7 @@ struct EditorModifyComponentReceiver {
                 newBehavior.removeComponent(actorId);
                 oldBehavior.addComponent(actorId);
                 oldBehavior.enableComponent(actorId);
+                editor.updateBlueprint(actorId, {});
                 editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
                 editor.setSelectedComponentStateDirty(MovingBehavior::behaviorId);
                 editor.setSelectedActorStateDirty();

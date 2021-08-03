@@ -10,15 +10,21 @@ constexpr auto libraryEntryPoolChunkSize = 8 * 1024;
 // Entry constructor, destructor
 //
 
-LibraryEntry::LibraryEntry(Scene &scene_, const char *entryId_, const json::Value &jsonValue_,
+LibraryEntry::LibraryEntry(Library &library_, const char *entryId_, const json::Value &jsonValue_,
     json::CrtAllocator &baseAlloc)
-    : scene(scene_)
+    : library(library_)
     , alloc(libraryEntryPoolChunkSize, &baseAlloc)
     , jsonValue(jsonValue_, alloc, true)
     , entryId(entryId_) {
   read([&](Reader &reader) {
     title = reader.str("title", "");
   });
+}
+
+LibraryEntry::~LibraryEntry() {
+  if (library.scene.hasActor(ghostActorId)) {
+    library.scene.removeActor(ghostActorId);
+  }
 }
 
 
@@ -55,9 +61,15 @@ love::Image *LibraryEntry::getPreviewImage() const {
 ActorId LibraryEntry::getGhostActorId() {
   if (!ghostActorCreated) {
     Scene::ActorDesc actorDesc;
+    if (auto found = library.ghostActorIds.find(entryId); found != library.ghostActorIds.end()) {
+      actorDesc.requestedActorId = found->second;
+    }
     actorDesc.parentEntryId = entryId.c_str();
     actorDesc.isGhost = true;
-    ghostActorId = scene.addActor(actorDesc);
+    ghostActorId = library.scene.addActor(actorDesc);
+    if (ghostActorId != actorDesc.requestedActorId) {
+      library.ghostActorIds[entryId] = ghostActorId;
+    }
     ghostActorCreated = true;
   }
   return ghostActorId;
@@ -75,8 +87,9 @@ void Library::readEntry(Reader &reader) {
     return;
   }
   auto entryId = *maybeEntryId;
+  entries.erase(entryId);
   entries.emplace(std::piecewise_construct, std::forward_as_tuple(entryId),
-      std::forward_as_tuple(scene, entryId, *reader.jsonValue(), baseAlloc));
+      std::forward_as_tuple(*this, entryId, *reader.jsonValue(), baseAlloc));
   markOrderDirty();
 }
 

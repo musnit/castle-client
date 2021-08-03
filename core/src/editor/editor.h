@@ -56,6 +56,11 @@ public:
   };
   EditMode getEditMode();
 
+  struct UpdateBlueprintParams {
+    const char *newTitle = nullptr;
+  };
+  void updateBlueprint(ActorId actorId, UpdateBlueprintParams params);
+
 private:
   friend struct EditorGlobalActionReceiver;
   friend struct DrawToolSelectSubtoolReceiver;
