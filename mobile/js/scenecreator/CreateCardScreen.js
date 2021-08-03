@@ -1,6 +1,6 @@
 import React from 'react';
 import { Keyboard, View, StyleSheet } from 'react-native';
-import { useSafeAreaInsets, SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { isTablet } from 'react-native-device-info';
 
@@ -269,12 +269,14 @@ export const CreateCardScreen = ({
     saveAction,
   };
 
-  // SafeAreaView doesn't respond to statusbar being hidden right now
-  // https://github.com/facebook/react-native/pull/20999
   return (
     <CreateCardContext.Provider value={contextValue}>
       <PopoverProvider>
-        <SafeAreaView style={Constants.styles.container}>
+        <View
+          style={[
+            Constants.styles.container,
+            { paddingTop: insets.top, paddingBottom: insets.bottom },
+          ]}>
           <CreateCardHeader
             card={card}
             isEditable
@@ -329,7 +331,7 @@ export const CreateCardScreen = ({
               {isSceneLoaded ? null : <CardSceneLoading />}
             </View>
           </View>
-        </SafeAreaView>
+        </View>
         <SheetProvider
           activeSheet={activeSheet}
           setActiveSheet={setActiveSheet}
