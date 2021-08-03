@@ -301,7 +301,7 @@ export const CreateCardScreen = ({
               />
               {isCardTextVisible ? (
                 <View
-                  style={[styles.textActorsContainer, { marginTop: beltHeight }]}
+                  style={[styles.textActorsContainer, { marginBottom: beltHeight }]}
                   pointerEvents="box-none">
                   <View
                     pointerEvents="box-none"
