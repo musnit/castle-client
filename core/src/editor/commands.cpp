@@ -97,7 +97,27 @@ void Commands::executePhase(Command &command, Phase phase, bool isLive) {
       }
     }
 
-    // TODO(nikki): Restore belt selection
+    // Update belt selection
+    auto &belt = editor.getBelt();
+    auto &scene = editor.getScene();
+    belt.deselect();
+    belt.updateSelection(true); // Ensure ghost actors are created
+    if (!entry.selection.empty()) {
+      auto allGhosts = true;
+      for (auto actorId : entry.selection) {
+        if (!scene.isGhost(actorId)) {
+          allGhosts = false;
+        }
+      }
+      if (allGhosts) {
+        for (auto actorId : entry.selection) {
+          if (auto parentEntryId = scene.maybeGetParentEntryId(actorId)) {
+            belt.select(parentEntryId);
+          }
+        }
+      }
+      belt.updateSelection(true); // Select ghost actor based on selected entry id
+    }
   }
 }
 

@@ -2,7 +2,7 @@
 #include "behaviors/all.h"
 #include "engine.h"
 
-inline void Selection::deselectAllActors(bool deselectBelt) {
+void Selection::deselectAllActors(bool deselectBelt) {
   if (deselectBelt) {
     belt.deselect();
   }

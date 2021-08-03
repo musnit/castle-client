@@ -33,6 +33,8 @@ public:
   bool hasScene();
   Scene &getScene();
 
+  Belt &getBelt();
+
   Selection &getSelection();
   void setEditorStateDirty();
   void setSelectedActorStateDirty();
@@ -119,6 +121,10 @@ inline Scene &Editor::getScene() {
   // TODO: Consider refactoring to `maybeGetScene` that returns possibly `nullptr` to encourage
   //       callsites to check
   return *scene;
+}
+
+inline Belt &Editor::getBelt() {
+  return belt;
 }
 
 inline Selection &Editor::getSelection() {

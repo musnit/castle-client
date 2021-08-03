@@ -16,6 +16,7 @@ public:
   explicit Belt(Editor &editor_);
 
   void deselect();
+  void select(std::string entryId);
   void updateSelection(bool forceGhostActorSelection = false);
 
   void update(double dt);

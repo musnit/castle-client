@@ -29,6 +29,17 @@ float Belt::getElementX(int index) const {
   return float(index) * (elemSize + elemGap);
 }
 
+void Belt::select(std::string entryId) {
+  selectedEntryId = std::move(entryId);
+  auto elemIndex = 0;
+  editor.getScene().getLibrary().forEachEntry([&](const LibraryEntry &entry) {
+    if (entry.getEntryId() == *selectedEntryId) {
+      targetIndex = elemIndex;
+    }
+    ++elemIndex;
+  });
+}
+
 void Belt::updateSelection(bool forceGhostActorSelection) {
   auto currTime = lv.timer.getTime();
   auto &scene = editor.getScene();
@@ -55,15 +66,7 @@ void Belt::updateSelection(bool forceGhostActorSelection) {
       for (auto actorId : selectedActorIds) {
         if (!scene.isGhost(actorId)) {
           if (auto parentEntryId = scene.maybeGetParentEntryId(actorId)) {
-            // Select its blueprint and target it
-            selectedEntryId = parentEntryId;
-            auto elemIndex = 0;
-            library.forEachEntry([&](const LibraryEntry &entry) {
-              if (entry.getEntryId() == *selectedEntryId) {
-                targetIndex = elemIndex;
-              }
-              ++elemIndex;
-            });
+            select(parentEntryId);
             break;
           }
         }
