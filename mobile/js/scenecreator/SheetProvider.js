@@ -9,7 +9,6 @@ import { InstanceSheet } from './inspector/instance/InstanceSheet';
 import { DrawingLayersSheet } from './sheets/DrawingLayersSheet';
 import { SheetBackgroundOverlay } from '../components/SheetBackgroundOverlay';
 import { useCardCreator } from './CreateCardContext';
-import { useGhostUI } from '../ghost/GhostUI';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Viewport from '../common/viewport';
@@ -85,8 +84,7 @@ const sheetStackReducer = (prevStacks, action) => {
 };
 
 export const SheetProvider = ({ activeSheet, setActiveSheet, editMode, beltHeight }) => {
-  const { root } = useGhostUI();
-  const { isPlaying, hasSelection, isBlueprintSelected } = useCardCreator();
+  const { isPlaying } = useCardCreator();
   const insets = useSafeAreaInsets();
 
   const [sheetStacks, updateSheetStacks] = React.useReducer(sheetStackReducer, {});
@@ -119,15 +117,11 @@ export const SheetProvider = ({ activeSheet, setActiveSheet, editMode, beltHeigh
           const maybeOverlay =
             stackIndex == 0 ? null : <SheetBackgroundOverlay onPress={closeLastSheet} />;
 
-          // some sheets are provided by Ghost ToolUI elements.
-          const ghostPaneElement = root?.panes ? root.panes[key] : null;
-
           sheetProps = {
             ...sheetProps,
             isOpen,
             addChildSheet,
             onClose: closeLastSheet,
-            element: ghostPaneElement,
             snapPoints: sheetProps.makeSnapPoints
               ? sheetProps.makeSnapPoints({ insets })
               : sheetProps.snapPoints,
