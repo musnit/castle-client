@@ -365,7 +365,7 @@ void Editor::sendGlobalActions() {
   EditorGlobalActionsEvent ev;
   if (selection.hasSelection()) {
     ev.selectedActorId = entt::to_integral(selection.firstSelectedActorId());
-    ev.isBlueprintSelected = selection.isBlueprintSelected();
+    ev.isBlueprintSelected = selection.isGhostActorsSelected();
     scene->getBehaviors().byName("Text", [&](auto &behavior) {
       if (behavior.hasComponent(selection.firstSelectedActorId())) {
         ev.isTextActorSelected = true;

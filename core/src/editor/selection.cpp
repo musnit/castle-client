@@ -1,6 +1,7 @@
 #include "selection.h"
 #include "behaviors/all.h"
 #include "engine.h"
+#include "library.h"
 
 void Selection::deselectAllActors(bool deselectBelt) {
   if (deselectBelt) {
@@ -17,7 +18,6 @@ void Selection::deselectAllActors(bool deselectBelt) {
         }
       }
     }
-    blueprintSelected = false;
     selectionChanged = true;
   }
 }
@@ -26,6 +26,33 @@ void Selection::applySelection(Scene &scene) {
   for (auto actorId : selection) {
     if (!scene.hasActor(actorId)) {
       deselectActor(actorId);
+    }
+  }
+}
+
+bool Selection::isGhostActorsSelected() {
+  auto &scene = editor.getScene();
+  for (auto actorId : selection) {
+    if (!scene.isGhost(actorId)) {
+      // we have some non-ghost actor in the selection
+      return false;
+    }
+  }
+  return hasSelection();
+}
+
+void Selection::selectGhostActorForActor(ActorId actorId) {
+  auto &scene = editor.getScene();
+  if (!scene.isGhost(actorId)) {
+    if (auto parentEntryId = scene.maybeGetParentEntryId(actorId)) {
+      auto &library = scene.getLibrary();
+      if (auto selectedEntry = library.maybeGetEntry(parentEntryId)) {
+        auto ghostActorId = selectedEntry->getGhostActorId();
+        if (!selection.contains(ghostActorId)) {
+          selection.clear();
+          selectActor(ghostActorId);
+        }
+      }
     }
   }
 }
@@ -131,7 +158,11 @@ struct SelectBlueprintReceiver {
 
   void receive(Engine &engine) {
     if (engine.getIsEditing()) {
-      engine.maybeGetEditor()->getSelection().setBlueprintSelected(true);
+      auto &selection = engine.maybeGetEditor()->getSelection();
+      if (selection.hasSelection()) {
+        auto actorId = selection.firstSelectedActorId();
+        selection.selectGhostActorForActor(actorId);
+      }
     }
   }
 };
