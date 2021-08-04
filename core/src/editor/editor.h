@@ -72,6 +72,7 @@ public:
 
 private:
   friend struct EditorGlobalActionReceiver;
+  friend struct EditorInspectorActionReceiver;
   friend struct DrawToolSelectSubtoolReceiver;
   friend struct DrawToolSelectColorReceiver;
 
@@ -88,6 +89,8 @@ private:
   EditMode editMode = EditMode::Default;
 
   // 'Default'-mode members
+  bool isInspectorOpen = false;
+
   Belt belt { *this };
   Selection selection { *this, belt };
   Grid grid;

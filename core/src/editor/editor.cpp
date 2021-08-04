@@ -11,6 +11,7 @@ Editor::Editor(Bridge &bridge_)
 }
 
 void Editor::clearState() {
+  isInspectorOpen = false;
   editMode = EditMode::Default;
   selection.deselectAllActors();
   belt.deselect();
@@ -75,6 +76,8 @@ void Editor::update(double dt) {
             auto behaviorId = std::remove_reference_t<decltype(behavior)>::behaviorId;
             selectedComponentStateDirty.insert(behaviorId);
           });
+        } else {
+          isInspectorOpen = false;
         }
         selection.setSelectionChanged(false);
       }
@@ -316,6 +319,7 @@ struct EditorGlobalActionsEvent {
   PROP(int, selectedActorId) = -1;
   PROP(bool, isTextActorSelected) = false;
   PROP(bool, isBlueprintSelected) = false;
+  PROP(bool, isInspectorOpen) = false;
   PROP(std::string, editMode);
 
   struct ActionsAvailable {
@@ -371,6 +375,7 @@ void Editor::sendGlobalActions() {
   if (selection.hasSelection()) {
     ev.selectedActorId = entt::to_integral(selection.firstSelectedActorId());
     ev.isBlueprintSelected = selection.isGhostActorsSelected();
+    ev.isInspectorOpen = isInspectorOpen;
     scene->getBehaviors().byName("Text", [&](auto &behavior) {
       if (behavior.hasComponent(selection.firstSelectedActorId())) {
         ev.isTextActorSelected = true;
@@ -889,7 +894,23 @@ struct EditorInspectorActionReceiver {
     auto editor = engine.maybeGetEditor();
 
     Debug::log("editor received inspector action: {}", action);
+    if (action == "openInspector") {
+      auto &selection = editor->getSelection();
+      if (selection.hasSelection()) {
+        if (!selection.isGhostActorsSelected()) {
+          // auto-select blueprint for selected actor
+          auto actorId = selection.firstSelectedActorId();
+          selection.selectGhostActorForActor(actorId);
+        } else {
+          // selection didn't change, but need to send missing components now
+          // TODO: BEN
+        }
+        editor->isInspectorOpen = true;
+      }
+      return;
+    }
     if (action == "closeInspector") {
+      editor->isInspectorOpen = false;
       editor->getSelection().deselectAllActors();
       return;
     }
@@ -1116,6 +1137,7 @@ void Editor::maybeSendData() {
   }
   if (!selectedComponentStateDirty.empty()) {
     for (auto behaviorId : selectedComponentStateDirty) {
+      // TODO: only send certain components unless inspector is open
       sendSelectedComponent(behaviorId);
     }
     selectedComponentStateDirty.clear();
