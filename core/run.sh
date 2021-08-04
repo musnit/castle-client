@@ -128,7 +128,7 @@ case "$1" in
     $CMAKE --build build/xcode
     ;;
 
-  # Mobile
+  # iOS - device release
   ios-release)
     $CMAKE -DIOS=ON -DCMAKE_SYSTEM_NAME=iOS -H. -Bbuild/ios -GXcode
     $CMAKE --build build/ios --config Release
@@ -140,7 +140,19 @@ case "$1" in
       binaries/ios
     ;;
 
-  # iOS Sim
+  # iOS - device debug
+  ios-debug)
+    $CMAKE -DIOS=ON -DCMAKE_SYSTEM_NAME=iOS -H. -Bbuild/ios -GXcode
+    $CMAKE --build build/ios --config Debug
+    cp \
+      build/ios/Debug-iphoneos/libsoloud.a \
+      build/ios/Debug-iphoneos/libcastle-core.a \
+      build/ios/vendor/box2d/bin/Debug/libbox2d.a \
+      binaries/ios
+    cp build/ios/vendor/fmt/Debug-iphoneos/libfmtd.a binaries/ios/libfmt.a
+    ;;
+
+  # iOS - simulator debug
   ios-simulator-debug)
     $CMAKE -DIOS=ON -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_APPLE_ARCH_SYSROOTS="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/;/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/" -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" -H. -Bbuild/ios -GXcode
     $CMAKE --build build/ios --config Debug -- -sdk iphonesimulator
