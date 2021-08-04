@@ -86,9 +86,12 @@ void Commands::executePhase(Command &command, Phase phase, bool isLive) {
 
   // Restore selections
   if (!isLive) {
+    auto &scene = editor.getScene();
     auto &selection = editor.getSelection();
     for (auto actorId : entry.selection) {
-      selection.selectActor(actorId);
+      if (scene.hasActor(actorId)) {
+        selection.selectActor(actorId);
+      }
     }
     for (auto actorId : selection.getSelectedActorIds()) {
       if (std::find(entry.selection.begin(), entry.selection.end(), actorId)
@@ -99,7 +102,6 @@ void Commands::executePhase(Command &command, Phase phase, bool isLive) {
 
     // Update belt selection
     auto &belt = editor.getBelt();
-    auto &scene = editor.getScene();
     belt.deselect();
     belt.updateSelection(true); // Ensure ghost actors are created
     if (!entry.selection.empty()) {

@@ -224,6 +224,11 @@ ActorId Scene::addActor(const ActorDesc &params) {
   }
 #endif
 
+  // Set position
+  if (params.pos) {
+    getBehaviors().byType<BodyBehavior>().setPosition(actorId, { params.pos->x, params.pos->y });
+  }
+
   return actorId;
 }
 

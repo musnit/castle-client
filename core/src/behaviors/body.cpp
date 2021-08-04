@@ -421,6 +421,8 @@ void BodyBehavior::setPosition(ActorId actorId, b2Vec2 pos) {
 }
 
 void BodyBehavior::setPosition(ActorId actorId, BodyComponent &component, b2Vec2 pos) {
+  component.props.x() = pos.x;
+  component.props.y() = pos.y;
   if (auto body = component.body) {
     body->SetTransform(pos, body->GetAngle());
     getBehaviors().forEach([&](auto &behavior) {

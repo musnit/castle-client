@@ -246,20 +246,16 @@ void Belt::update(double dtDouble) {
         // TODO(nikki): Skip if inspector sheet maximized
         if (touch.screenPos.y < top - 2 * height) {
           if (auto entry = library.indexEntry(placing->elemIndex)) {
-            // Add actor to scene
+            // Add actor to scene -- grab tool will move it immediately so move back by touch delta,
+            // also snap to grid initially
             Scene::ActorDesc actorDesc;
             actorDesc.parentEntryId = entry->getEntryId().c_str();
+            auto pos = touch.pos - touch.delta;
+            auto &grabTool = editor.getGrabTool();
+            pos.x = Grid::quantize(pos.x, grabTool.props.gridSize());
+            pos.y = Grid::quantize(pos.y, grabTool.props.gridSize());
+            actorDesc.pos = pos;
             auto actorId = scene.addActor(actorDesc);
-
-            // Position at touch -- grab tool will move it immediately so move back by touch delta
-            auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
-            if (bodyBehavior.hasComponent(actorId)) {
-              auto pos = touch.pos - touch.delta;
-              bodyBehavior.setProperty(
-                  actorId, decltype(BodyComponent::Props::x)::id, pos.x, false);
-              bodyBehavior.setProperty(
-                  actorId, decltype(BodyComponent::Props::y)::id, pos.y, false);
-            }
 
             // Select actor and switch to grab tool
             selection.deselectAllActors();

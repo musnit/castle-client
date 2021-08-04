@@ -44,6 +44,7 @@ public:
     ActorId drawOrderRelativeToActor = nullActor;
     std::optional<int> drawOrderRelativeToValue;
     bool isGhost = false;
+    std::optional<love::Vector2> pos;
   };
   ActorId addActor(const ActorDesc &params);
   ActorId generateActorId();
