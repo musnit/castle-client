@@ -47,10 +47,20 @@ private:
     // Extra data we add to touches
     float initialScrollVX = 0; // The belt scroll velocity right before this touch began
     bool neverPlace = false; // Whether to never allow placing actors from this touch
+    int pressedElemIndex = -1; // Index of element the touch began on
+    love::Vector2 pressedElemDelta = { 0, 0 }; // Relative position from touch to above element
+    bool placing = false; // Whether placing has started using this touch
+    bool placed = false; // Whether placing was started and finished using this touch
   };
 
   static constexpr double minGhostSelectPeriod = 0.2;
   double lastGhostSelectTime = lv.timer.getTime() - minGhostSelectPeriod - 0.1;
+
+  struct Placing {
+    int elemIndex = -1;
+    love::Vector2 pos = { 0, 0 };
+  };
+  std::optional<Placing> placing;
 
 
   float getElementX(int index) const;

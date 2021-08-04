@@ -142,7 +142,10 @@ void Belt::update(double dtDouble) {
   // Read touch input
   auto dragging = false; // Whether being actively dragged left or right to scroll
   auto &gesture = scene.getGesture();
+  auto haveTouch = false;
   gesture.withSingleTouch([&](const Touch &touch) {
+    haveTouch = true;
+
     auto touchInBelt = top <= touch.screenPos.y && touch.screenPos.y <= bottom;
 
     // Check if we are using or can use this touch
@@ -161,7 +164,9 @@ void Belt::update(double dtDouble) {
     auto touchData = maybeTouchData ? *maybeTouchData : TouchData { cursorVX };
 
     // Touching belt deselects actors
-    selection.deselectAllActors(false);
+    if (touch.pressed) {
+      selection.deselectAllActors(false);
+    }
 
     // Find coordinates of touch in belt-space
     auto touchBeltX = touch.screenPos.x - 0.5f * windowWidth + cursorX;
@@ -203,10 +208,48 @@ void Belt::update(double dtDouble) {
 
     // TODO(nikki): Enable highlight
 
-    // TODO(nikki): Track placing info
+    // Placing logic
+    {
+      // Track which element touch began on -- we'll use it if this turns into a placing touch
+      if (touch.pressed) {
+        if (0 <= touchElemIndex && touchElemIndex < numElems) {
+          touchData.pressedElemIndex = touchElemIndex;
+          touchData.pressedElemDelta = {
+            getElementX(touchElemIndex) - touchBeltX,
+            top + 0.5f * height - touch.screenPos.y,
+          };
+        }
+      }
+
+      // Start placing if the touch began on an element and it's a long-ish vertical drag
+      if (!touchData.neverPlace && !touchData.placing && touchData.pressedElemIndex >= 0) {
+        auto totalDelta = touch.screenPos - touch.initialScreenPos;
+        auto isLong = totalDelta.getLengthSquare() > 0.25 * elemSize * 0.25 * elemSize;
+        auto isVertical = touch.screenPos.y < top - 0.6 * height
+            || std::abs(totalDelta.y) > 1.5 * std::abs(totalDelta.x);
+        if (isLong && isVertical) {
+          touchData.placing = true;
+          placing = { touchData.pressedElemIndex };
+        }
+      }
+
+      // Actually placing
+      if (placing) {
+        // Slow down scroll real quick
+        cursorVX = 0.2f * cursorVX;
+
+        // Update position of placed element
+        placing->pos = touch.screenPos + touchData.pressedElemDelta;
+
+        // TODO(nikki): Add actor (no command) when dragged far enough into scene
+      }
+
+      // TODO(nikki): Undo placing if dragged back into belt
+      // TODO(nikki): Command with final placed actor location
+    }
 
     // Dragging to scroll if not placing
-    {
+    if (!(touchData.placing || touchData.placed)) {
       dragging = true;
 
       // Directly move belt by dragged amount
@@ -226,17 +269,18 @@ void Belt::update(double dtDouble) {
       }
 
       // If touch moves far enough along X without exiting belt, never place from the touch
-      if (touchInBelt && std::abs(touch.screenPos.x - touch.initialScreenPos.x) > 1.2 * elemSize) {
+      if (touchInBelt && std::abs(touch.screenPos.x - touch.initialScreenPos.x) > 0.8 * elemSize) {
         touchData.neverPlace = true;
       }
     }
 
-    // TODO(nikki): Placing logic
-
     // Put belt data back in touch
     gesture.setData<TouchData>(touch.id, touchData);
   });
-  // TODO(nikki): Clear placing info if not placing
+  if (!haveTouch) {
+    // Clear placing state on touch release
+    placing = {};
+  }
 
   if (auto maybeTargetEntry = library.indexEntry(targetIndex)) {
     // Have a target element
@@ -364,25 +408,30 @@ void Belt::drawOverlay() const {
 
   auto elemsY = top + 0.5f * height;
 
-  // Each element
+  // Elements
   {
-    auto elemIndex = 0;
-    library.forEachEntry([&](const LibraryEntry &entry) {
-      auto elemX = getElementX(elemIndex);
-
-      auto x = 0.5f * windowWidth + elemX - cursorX;
-      auto y = elemsY;
-
+    const auto drawElem = [&](const LibraryEntry &entry, const love::Vector2 &pos) {
       if (auto image = entry.getPreviewImage()) {
         auto imgW = float(image->getWidth());
         auto imgH = float(image->getHeight());
         auto scale = std::min(elemSize / imgW, elemSize / imgH);
-        image->draw(
-            &lv.graphics, love::Matrix4(x, y, 0, scale, scale, 0.5f * imgW, 0.5f * imgH, 0, 0));
+        image->draw(&lv.graphics,
+            love::Matrix4(pos.x, pos.y, 0, scale, scale, 0.5f * imgW, 0.5f * imgH, 0, 0));
       }
-
+    };
+    auto elemIndex = 0;
+    library.forEachEntry([&](const LibraryEntry &entry) {
+      if (!(placing && placing->elemIndex == elemIndex)) {
+        auto elemX = getElementX(elemIndex);
+        drawElem(entry, { 0.5f * windowWidth + elemX - cursorX, elemsY });
+      }
       ++elemIndex;
     });
+    if (placing) {
+      if (auto entry = library.indexEntry(placing->elemIndex)) {
+        drawElem(*entry, { placing->pos.x, placing->pos.y });
+      }
+    }
   }
 
   // Selection box
@@ -421,4 +470,15 @@ void Belt::drawOverlay() const {
   }
 
   lv.graphics.pop();
+
+  // Draw touches for debugging
+  constexpr bool drawTouches = true;
+  if constexpr (drawTouches) {
+    lv.graphics.push(love::Graphics::STACK_ALL);
+    lv.graphics.setColor({ 1, 0, 1, 0.5 });
+    scene.getGesture().forEachTouch([&](const Touch &touch) {
+      lv.graphics.circle(love::Graphics::DRAW_FILL, touch.screenPos.x, touch.screenPos.y, 20);
+    });
+    lv.graphics.pop();
+  }
 }
