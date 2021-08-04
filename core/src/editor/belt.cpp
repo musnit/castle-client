@@ -264,7 +264,7 @@ void Belt::update(double dtDouble) {
             selection.deselectAllActors();
             selection.selectActor(actorId);
             editor.setCurrentTool(Editor::Tool::Grab);
-            touch.forceUse(GrabTool::touchToken);
+            touch.forceUse(placedTouchToken);
           }
 
           // Clear placing state

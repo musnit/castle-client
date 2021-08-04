@@ -4,6 +4,9 @@
 #include "editor.h"
 
 
+inline static const TouchToken grabTouchToken;
+
+
 //
 // Constructor, destructor
 //
@@ -35,7 +38,7 @@ void GrabTool::update(double dt) {
   }
 
   scene.getGesture().withSingleTouch([&](const Touch &touch) {
-    if (!touch.isUsed(touchToken)) {
+    if (!touch.isUsed(grabTouchToken) && !touch.isUsed(Belt::placedTouchToken)) {
       // Not used by us yet, let's see if we can use it
       if (touch.isUsed() && !touch.isUsed(Selection::touchToken)) {
         return; // Bail if used by anything other than selection
@@ -43,7 +46,7 @@ void GrabTool::update(double dt) {
       if (!touch.movedNear) {
         return; // Need to move at least a bit
       }
-      touch.forceUse(touchToken);
+      touch.forceUse(grabTouchToken);
     }
 
     // Calculate position delta, quantizing to grid if it's enabled
@@ -96,16 +99,23 @@ void GrabTool::update(double dt) {
       }
       editor.setSelectedComponentStateDirty(BodyBehavior::behaviorId);
     };
-    Commands::Params commandParams;
-    commandParams.coalesce = true;
-    editor.getCommands().execute(
-        "move", commandParams,
-        [after = std::move(after)](Editor &editor, bool) {
-          setPositions(editor, after);
-        },
-        [before = std::move(before)](Editor &editor, bool) {
-          setPositions(editor, before);
-        });
+    if (!touch.isUsed(Belt::placedTouchToken)) {
+      // Not a placing touch -- regular move
+      Commands::Params commandParams;
+      commandParams.coalesce = true;
+      editor.getCommands().execute(
+          "move", commandParams,
+          [after = std::move(after)](Editor &editor, bool) {
+            setPositions(editor, after);
+          },
+          [before = std::move(before)](Editor &editor, bool) {
+            setPositions(editor, before);
+          });
+    } else {
+      // Placing touch -- don't save undos during gesture, just save one final command on release
+      // that adds actor at final position
+      setPositions(editor, after);
+    }
   });
 }
 

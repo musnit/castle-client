@@ -4,6 +4,7 @@
 #include "props.h"
 
 #include "lv.h"
+#include "gesture.h"
 
 
 class Editor;
@@ -22,6 +23,7 @@ public:
   void update(double dt);
   void drawOverlay() const;
 
+  inline static const TouchToken placedTouchToken; // Actor being grabbed after placing
 
 private:
   Lv &lv { Lv::getInstance() };
