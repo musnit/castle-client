@@ -250,6 +250,7 @@ export const CreateCardScreen = ({
   const isCardTextVisible =
     (isShowingTextActors || isPlaying) &&
     editMode === 'default' &&
+    !(hasSelection && !isInspectorOpen) && // TODO: how to select text blueprint?
     textActors &&
     Object.keys(textActors).length;
 
