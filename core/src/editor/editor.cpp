@@ -37,6 +37,10 @@ void Editor::update(double dt) {
   if (!scene) {
     return;
   }
+
+  Debug::display("fps: {}", lv.timer.getFPS());
+  Debug::display("actors: {}", scene->numActors());
+
   // TODO: Update scene when performing
   {
     /* if (scene->isRestartRequested()) {
