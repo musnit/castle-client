@@ -30,7 +30,9 @@ export const InspectorBlueprintActions = () => {
 
   const { userId: signedInUserId } = useSession();
   let canCopyBlueprint = false;
-  if (deck) {
+
+  // we could have Constants.EMPTY_DECK until data is fetched
+  if (deck?.creator) {
     if (deck.accessPermissions == 'cloneable' || deck.creator.userId == signedInUserId) {
       canCopyBlueprint = true;
     }
