@@ -4,9 +4,6 @@
 #include "editor.h"
 
 
-inline static const TouchToken grabTouchToken;
-
-
 //
 // Constructor, destructor
 //
@@ -38,7 +35,7 @@ void GrabTool::update(double dt) {
   }
 
   scene.getGesture().withSingleTouch([&](const Touch &touch) {
-    if (!touch.isUsed(grabTouchToken)) {
+    if (!touch.isUsed(touchToken)) {
       // Not used by us yet, let's see if we can use it
       if (touch.isUsed() && !touch.isUsed(Selection::touchToken)) {
         return; // Bail if used by anything other than selection
@@ -46,7 +43,7 @@ void GrabTool::update(double dt) {
       if (!touch.movedNear) {
         return; // Need to move at least a bit
       }
-      touch.forceUse(grabTouchToken);
+      touch.forceUse(touchToken);
     }
 
     // Calculate position delta, quantizing to grid if it's enabled

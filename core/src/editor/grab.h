@@ -1,9 +1,10 @@
 #pragma once
 
 #include "precomp.h"
-#include "props.h"
 
 #include "lv.h"
+#include "props.h"
+#include "gesture.h"
 
 class Editor;
 
@@ -23,6 +24,8 @@ public:
   } props;
 
   void changeSettings(const std::string &action, double value);
+
+  inline static const TouchToken touchToken;
 
 private:
   Lv &lv { Lv::getInstance() };

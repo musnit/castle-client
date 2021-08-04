@@ -58,6 +58,13 @@ public:
   };
   EditMode getEditMode();
 
+  enum class Tool {
+    Grab,
+    ScaleRotate,
+  };
+  Tool getCurrentTool() const;
+  void setCurrentTool(Tool tool);
+
   struct UpdateBlueprintParams {
     const char *newTitle = nullptr;
   };
@@ -84,11 +91,6 @@ private:
   Belt belt { *this };
   Selection selection { *this, belt };
   Grid grid;
-
-  enum class Tool {
-    Grab,
-    ScaleRotate,
-  };
 
   Tool currentTool = Tool::Grab;
   GrabTool grab { *this };
@@ -165,4 +167,12 @@ inline Bridge &Editor::getBridge() {
 
 inline Editor::EditMode Editor::getEditMode() {
   return editMode;
+}
+
+inline Editor::Tool Editor::getCurrentTool() const {
+  return currentTool;
+}
+
+inline void Editor::setCurrentTool(Tool tool) {
+  currentTool = tool;
 }

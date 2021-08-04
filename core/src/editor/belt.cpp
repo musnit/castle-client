@@ -131,7 +131,7 @@ void Belt::update(double dtDouble) {
   elemSize = height - 30;
 
   // Initial cursor position
-  float initialCursorX = -(elemSize + elemGap);
+  auto initialCursorX = -(elemSize + elemGap);
   if (firstFrame) {
     cursorX = initialCursorX;
   }
@@ -222,7 +222,8 @@ void Belt::update(double dtDouble) {
       }
 
       // Start placing if the touch began on an element and it's a long-ish vertical drag
-      if (!touchData.neverPlace && !touchData.placing && touchData.pressedElemIndex >= 0) {
+      if (!touchData.placed && !touchData.neverPlace && !touchData.placing
+          && touchData.pressedElemIndex >= 0) {
         auto totalDelta = touch.screenPos - touch.initialScreenPos;
         auto isLong = totalDelta.getLengthSquare() > 0.25 * elemSize * 0.25 * elemSize;
         auto isVertical = touch.screenPos.y < top - 0.6 * height
@@ -241,7 +242,36 @@ void Belt::update(double dtDouble) {
         // Update position of placed element
         placing->pos = touch.screenPos + touchData.pressedElemDelta;
 
-        // TODO(nikki): Add actor (no command) when dragged far enough into scene
+        // Add actor if dragged far enough into scene
+        // TODO(nikki): Skip if inspector sheet maximized
+        if (touch.screenPos.y < top - 2 * height) {
+          if (auto entry = library.indexEntry(placing->elemIndex)) {
+            // Add actor to scene
+            Scene::ActorDesc actorDesc;
+            actorDesc.parentEntryId = entry->getEntryId().c_str();
+            auto actorId = scene.addActor(actorDesc);
+
+            // Position at touch
+            auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
+            if (bodyBehavior.hasComponent(actorId)) {
+              bodyBehavior.setProperty(
+                  actorId, decltype(BodyComponent::Props::x)::id, touch.pos.x, false);
+              bodyBehavior.setProperty(
+                  actorId, decltype(BodyComponent::Props::y)::id, touch.pos.y, false);
+            }
+
+            // Select actor and switch to grab tool
+            selection.deselectAllActors();
+            selection.selectActor(actorId);
+            editor.setCurrentTool(Editor::Tool::Grab);
+            touch.forceUse(GrabTool::touchToken);
+          }
+
+          // Clear placing state
+          touchData.placing = false;
+          touchData.placed = true;
+          placing = {};
+        }
       }
 
       // TODO(nikki): Undo placing if dragged back into belt
@@ -472,7 +502,7 @@ void Belt::drawOverlay() const {
   lv.graphics.pop();
 
   // Draw touches for debugging
-  constexpr bool drawTouches = true;
+  constexpr auto drawTouches = true;
   if constexpr (drawTouches) {
     lv.graphics.push(love::Graphics::STACK_ALL);
     lv.graphics.setColor({ 1, 0, 1, 0.5 });
