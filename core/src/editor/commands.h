@@ -23,13 +23,13 @@ public:
     bool coalesceLastOnly = true;
     int behaviorId = -1;
   };
-  void execute(
-      std::string description, Params params, Closure doClosure, Closure undoClosure);
+  void execute(std::string description, Params params, Closure doClosure, Closure undoClosure);
 
   bool canUndo();
   void undo();
   bool canRedo();
   void redo();
+  void clear();
 
 
 private:
@@ -84,4 +84,9 @@ inline bool Commands::canRedo() {
 
 inline void Commands::redo() {
   undoOrRedo(DO, redos, undos);
+}
+
+inline void Commands::clear() {
+  undos.clear();
+  redos.clear();
 }
