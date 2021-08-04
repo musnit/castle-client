@@ -146,7 +146,7 @@ void Belt::update(double dtDouble) {
   gesture.withSingleTouch([&](const Touch &touch) {
     haveTouch = true;
 
-    auto touchInBelt = top <= touch.screenPos.y && touch.screenPos.y <= bottom;
+    auto touchInBelt = isInside(touch);
 
     // Check if we are using or can use this touch
     if (!touch.isUsed(beltTouchToken)) {

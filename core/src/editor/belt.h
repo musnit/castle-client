@@ -24,6 +24,7 @@ public:
   void drawOverlay() const;
 
   inline static const TouchToken placedTouchToken; // Actor being grabbed after placing
+  bool isInside(const Touch &touch) const;
 
 private:
   Lv &lv { Lv::getInstance() };
@@ -73,4 +74,8 @@ private:
 
 inline void Belt::deselect() {
   selectedEntryId = {};
+}
+
+inline bool Belt::isInside(const Touch &touch) const {
+  return top <= touch.screenPos.y && touch.screenPos.y <= bottom;
 }

@@ -114,26 +114,35 @@ void GrabTool::update(double dt) {
           });
     } else {
       // Placing new actor from belt -- don't save undos during gesture, just save one final command
-      // on release that adds actor at final position
-      setPositions(editor, after);
-      if (touch.released && !after.empty()) {
-        auto actorId = after[0].actorId;
-        auto entryId = std::string(scene.maybeGetParentEntryId(actorId));
-        auto pos = after[0].pos;
-        scene.removeActor(actorId);
-        editor.getCommands().execute(
-            "add", {},
-            [actorId, entryId, pos](Editor &editor, bool) {
-              Scene::ActorDesc actorDesc;
-              actorDesc.requestedActorId = actorId;
-              actorDesc.parentEntryId = entryId.c_str();
-              actorDesc.pos = pos;
-              editor.getScene().addActor(actorDesc);
-            },
-            [actorId](Editor &editor, bool) {
-              editor.getSelection().deselectActor(actorId);
-              editor.getScene().removeActor(actorId);
-            });
+      // on release that adds actor at final position. Also cancel the whole process if dragged back
+      // into the belt.
+      if (!editor.getBelt().isInside(touch)) {
+        setPositions(editor, after);
+        if (touch.released && !after.empty()) {
+          auto actorId = after[0].actorId;
+          auto entryId = std::string(scene.maybeGetParentEntryId(actorId));
+          auto pos = after[0].pos;
+          scene.removeActor(actorId);
+          editor.getCommands().execute(
+              "add", {},
+              [actorId, entryId, pos](Editor &editor, bool) {
+                Scene::ActorDesc actorDesc;
+                actorDesc.requestedActorId = actorId;
+                actorDesc.parentEntryId = entryId.c_str();
+                actorDesc.pos = pos;
+                editor.getScene().addActor(actorDesc);
+              },
+              [actorId](Editor &editor, bool) {
+                editor.getSelection().deselectActor(actorId);
+                editor.getScene().removeActor(actorId);
+              });
+        }
+      } else {
+        // Dragged back into belt -- cancel
+        for (auto [actorId, pos] : after) {
+          scene.removeActor(actorId);
+        }
+        editor.getSelection().deselectAllActors();
       }
     }
   });
