@@ -33,13 +33,15 @@ public:
   // Subtool functions
   void resetTempGraphics();
   void clearTempGraphics();
+  void addTempPathData(love::PathData pathData);
   void addTempPathData(love::PathData *pathData);
   void addTempPathData(std::shared_ptr<love::PathData> pathData);
   void addPathData(std::shared_ptr<love::PathData> pathData);
-  love::DrawDataFrame *drawDataFrame();
+  void addPathData(love::PathData pathData);
   void saveDrawing(std::string commandDescription);
 
   love::DrawData &getDrawData();
+  love::DrawDataFrame &getDrawDataFrame();
   float getZoomAmount();
 
 private:
@@ -69,4 +71,8 @@ private:
 
 inline love::DrawData &DrawTool::getDrawData() {
   return *drawData;
+}
+
+inline love::DrawDataFrame &DrawTool::getDrawDataFrame() {
+  return *drawData->currentLayerFrame();
 }

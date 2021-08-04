@@ -160,6 +160,11 @@ namespace ghost {
         , y(y) {
     }
 
+    Point(const Point &p1) {
+      x = p1.x;
+      y = p1.y;
+    }
+
     bool operator==(const Point &other) {
       return x == other.x && y == other.y;
     }
@@ -248,6 +253,17 @@ namespace ghost {
 
   struct Color {
     float data[4];
+  
+    Color() {
+      data[0] = data[1] = data[2] = data[3] = 0.0;
+    }
+
+    Color(const Color &p1) {
+      data[0] = p1.data[0];
+      data[1] = p1.data[1];
+      data[2] = p1.data[2];
+      data[3] = p1.data[3];
+    }
 
     void read(Archive::Reader &obj) {
       data[0] = obj.num((unsigned int)0, 1.0);
@@ -299,6 +315,21 @@ namespace ghost {
     std::vector<ToveSubpathRef> toveSubpaths;
 
     PathData() {
+      tovePath.ptr = NULL;
+    }
+
+    PathData(const PathData &p1) {
+      points.clear();
+      for (size_t i = 0; i < p1.points.size(); i++) {
+        points.push_back(p1.points[i]);
+      }
+
+      style = p1.style;
+      bendPoint = p1.bendPoint;
+      isFreehand = p1.isFreehand;
+      color = p1.color;
+      isTransparent = p1.isTransparent;
+
       tovePath.ptr = NULL;
     }
 

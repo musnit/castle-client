@@ -97,8 +97,19 @@ void DrawTool::resetTempGraphics() {
   tempGraphics = std::make_unique<love::ToveGraphicsHolder>();
 }
 
-void DrawTool::clearTempGraphics() {
-  tempGraphics = NULL;
+void DrawTool::addTempPathData(love::PathData pathData) {
+  if (!pathData.color) {
+    // TODO: why does love::ghost::Color exist
+    love::ghost::Color c;
+    c.data[0] = color.r;
+    c.data[1] = color.g;
+    c.data[2] = color.b;
+    c.data[3] = color.a;
+    pathData.color = c;
+  }
+
+  drawData->updatePathDataRendering(&pathData);
+  tempGraphics->addPath(pathData.tovePath);
 }
 
 void DrawTool::addTempPathData(love::PathData *pathData) {
@@ -139,8 +150,23 @@ void DrawTool::addPathData(std::shared_ptr<love::PathData> pathData) {
   drawData->currentPathDataList()->push_back(*pathData);
 }
 
-love::DrawDataFrame *DrawTool::drawDataFrame() {
-  return drawData->currentLayerFrame();
+void DrawTool::addPathData(love::PathData pathData) {
+  if (DrawUtil::floatEquals(pathData.points[0].x, pathData.points[1].x)
+      && DrawUtil::floatEquals(pathData.points[0].y, pathData.points[1].y)) {
+    return;
+  }
+
+  if (!pathData.color) {
+    // TODO: why does love::ghost::Color exist
+    love::ghost::Color c;
+    c.data[0] = color.r;
+    c.data[1] = color.g;
+    c.data[2] = color.b;
+    c.data[3] = color.a;
+    pathData.color = c;
+  }
+
+  drawData->currentPathDataList()->push_back(pathData);
 }
 
 void DrawTool::saveDrawing(std::string commandDescription) {
@@ -177,12 +203,10 @@ void DrawTool::saveDrawing(std::string commandDescription) {
   Commands::Params commandParams;
   editor.getCommands().execute(
       commandDescription, commandParams,
-      [actorId, newDrawData = std::move(newDrawData),
-          newPhysicsBodyData = std::move(newPhysicsBodyData), newHash](Editor &editor, bool) {
+      [actorId, newDrawData, newPhysicsBodyData, newHash](Editor &editor, bool) {
         setDrawingProps(editor, actorId, newDrawData, newPhysicsBodyData, newHash);
       },
-      [actorId, oldDrawData = std::move(oldDrawData),
-          oldPhysicsBodyData = std::move(oldPhysicsBodyData), oldHash](Editor &editor, bool) {
+      [actorId, oldDrawData, oldPhysicsBodyData, oldHash](Editor &editor, bool) {
         setDrawingProps(editor, actorId, oldDrawData, oldPhysicsBodyData, oldHash);
       });
 }
@@ -257,6 +281,7 @@ void DrawTool::update(double dt) {
   auto hash = component->hash;
 
   if (lastHash != hash) {
+    lastHash = hash;
     drawData = std::make_shared<love::DrawData>(component->drawData);
     physicsBodyData = std::make_shared<PhysicsBodyData>(component->physicsBodyData);
   }

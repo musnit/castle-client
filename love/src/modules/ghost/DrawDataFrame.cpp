@@ -12,7 +12,7 @@
 #include "data/DataModule.h"
 #include "filesystem/Filesystem.h"
 
-#define DEBUG_FILL_IMAGE_SIZE false
+#define DEBUG_FILL_IMAGE_SIZE true
 
 namespace love {
 namespace ghost {
@@ -52,7 +52,7 @@ namespace ghost {
           dataModule->newByteData(fileDataString, fileDataStringLen, true));
 
       image::Image *imageModule = Module::getInstance<image::Image>(Module::M_IMAGE);
-      fillImageData = std::unique_ptr<image::ImageData>(imageModule->newImageData(byteData.get()));
+      fillImageData = std::shared_ptr<image::ImageData>(imageModule->newImageData(byteData.get()));
     }
 
     // TODO: only in editor
@@ -209,17 +209,17 @@ namespace ghost {
 
     image::Image *instance = Module::getInstance<image::Image>(Module::M_IMAGE);
     if (fillImageData == NULL) {
-      fillImageData = std::unique_ptr<image::ImageData>(
+      fillImageData = std::shared_ptr<image::ImageData>(
           instance->newImageData(width, height, PIXELFORMAT_RGBA8));
     } else if (fillImageData->getWidth() != width || fillImageData->getHeight() != height) {
-      auto newFillImageData = std::unique_ptr<image::ImageData>(
+      auto newFillImageData = std::shared_ptr<image::ImageData>(
           instance->newImageData(width, height, PIXELFORMAT_RGBA8));
       // sourceX, sourceY, sourceWidth, sourceHeight, destX, destY
       newFillImageData->copyImageData(fillImageData.get(), 0, 0,
           fillImageBounds.maxX - fillImageBounds.minX, fillImageBounds.maxY - fillImageBounds.minY,
           fillImageBounds.minX - pathBounds.minX, fillImageBounds.minY - pathBounds.minY);
-      fillImageData->release();
-      fillImageData = std::move(newFillImageData);
+      //fillImageData->release();
+	  fillImageData = newFillImageData;
     }
     fillImageBounds.set(pathBounds);
     return fillImageData.get();
@@ -262,7 +262,7 @@ namespace ghost {
         fillImage->replacePixels(fillImageData.get(), 0, 0, 0, 0, false);
         return;
       }
-      fillImage->release();
+      //fillImage->release();
     }
     fillImage = std::unique_ptr<graphics::Image>(imageDataToImage(fillImageData.get()));
   }
@@ -272,9 +272,9 @@ namespace ghost {
       return;
     }
     if (fillImageData->isEmpty()) {
-      fillImageData->release();
+      //fillImageData->release();
       if (fillImage != NULL) {
-        fillImage->release();
+        //fillImage->release();
       }
       fillImageData = NULL;
       fillImage = NULL;
@@ -290,15 +290,21 @@ namespace ghost {
       // sourceX, sourceY, sourceWidth, sourceHeight, destX, destY
       newFillImageData->copyImageData(fillImageData.get(), minX, minY, width, height, 0, 0);
       if (DEBUG_FILL_IMAGE_SIZE) {
-        /*for (size_t x = 0; x < width - 1; x++) {
-              newFillImageData->setPixel(x, 0, 1, 0, 0, 1);
+        image::Pixel p;
+        p.rgba8[0] = 1.0;
+        p.rgba8[1] = 0.0;
+        p.rgba8[2] = 0.0;
+        p.rgba8[3] = 1.0;
+
+        for (size_t x = 0; x < width - 1; x++) {
+              newFillImageData->setPixel(x, 0, p);
         }
         for (size_t y = 0; y < height - 1; y++) {
-              newFillImageData->setPixel(0, y, 1, 0, 0, 1);
-        }*/
+              newFillImageData->setPixel(0, y, p);
+        }
       }
-      fillImageData->release();
-      fillImageData = std::unique_ptr<image::ImageData>(newFillImageData);
+      //fillImageData->release();
+      fillImageData = std::shared_ptr<image::ImageData>(newFillImageData);
       fillImageBounds.minX = fillImageBounds.minX + minX;
       fillImageBounds.minY = fillImageBounds.minY + minY;
       fillImageBounds.maxX = fillImageBounds.maxX + minX;
@@ -406,7 +412,7 @@ namespace ghost {
     if (pathsCanvas == NULL || pathsCanvas->getWidth() != width
         || pathsCanvas->getHeight() != height) {
       if (pathsCanvas != NULL) {
-        pathsCanvas->release();
+        //pathsCanvas->release();
       }
       pathsCanvas = std::unique_ptr<graphics::Canvas>(newCanvas(width, height));
     }

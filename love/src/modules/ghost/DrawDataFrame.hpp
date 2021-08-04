@@ -29,7 +29,7 @@ namespace ghost {
     bool _graphicsNeedsReset = true;
     std::unique_ptr<ToveGraphicsHolder> _graphics;
     DrawData *_parent;
-    std::unique_ptr<image::ImageData> fillImageData;
+    std::shared_ptr<image::ImageData> fillImageData;
     std::unique_ptr<graphics::Image> fillImage;
     std::unique_ptr<graphics::Canvas> pathsCanvas;
     std::optional<std::string> fillPng;
@@ -69,8 +69,13 @@ namespace ghost {
       });
 
       archive.obj("fillImageBounds", fillImageBounds);
-      if (fillPng) {
-        archive.str("fillPng", *fillPng);
+      if (fillImageData) {
+        love::filesystem::FileData * fileData = fillImageData->encode(love::image::FormatHandler::EncodedFormat::ENCODED_PNG, "Image.png", false);
+        const char * fileDataString = (const char *) fileData->getData();
+        size_t fileDataSize = fileData->getSize();
+        size_t dstlen = 0;
+        char * result = data::encode(data::ENCODE_BASE64, fileDataString, fileDataSize, dstlen, 0);
+        archive.str("fillPng", std::string(result));
       }
     }
 
