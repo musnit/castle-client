@@ -122,7 +122,7 @@ void GrabTool::update(double dt) {
         auto pos = after[0].pos;
         scene.removeActor(actorId);
         editor.getCommands().execute(
-            "add actor", {},
+            "add", {},
             [actorId, entryId, pos](Editor &editor, bool) {
               Scene::ActorDesc actorDesc;
               actorDesc.requestedActorId = actorId;
@@ -131,6 +131,7 @@ void GrabTool::update(double dt) {
               editor.getScene().addActor(actorDesc);
             },
             [actorId](Editor &editor, bool) {
+              editor.getSelection().deselectActor(actorId);
               editor.getScene().removeActor(actorId);
             });
       }
