@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
 });
 
 export const CreateCardOverlay = ({ activeSheet, setActiveSheet, editMode, beltHeight }) => {
-  const { hasSelection } = useCardCreator();
+  const { hasSelection, isBlueprintSelected } = useCardCreator();
   if (editMode === 'draw') {
     return (
       <View style={styles.container} pointerEvents="box-none">
@@ -32,7 +32,7 @@ export const CreateCardOverlay = ({ activeSheet, setActiveSheet, editMode, beltH
         <View style={[styles.container, { bottom: beltHeight }]} pointerEvents="box-none">
           <OverlaySelectionActions />
           <View pointerEvents="box-none">
-            <OverlayLayout setActiveSheet={setActiveSheet} />
+            {!isBlueprintSelected ? <OverlayLayout setActiveSheet={setActiveSheet} /> : null}
             <OverlayBlueprint />
           </View>
         </View>
