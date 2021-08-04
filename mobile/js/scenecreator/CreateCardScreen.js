@@ -97,7 +97,8 @@ export const CreateCardScreen = ({
   const isSceneLoaded = !!globalActions;
   const isPlaying =
     globalActions?.performing === undefined ? !initialIsEditing : globalActions.performing;
-  const { selectedActorId, isTextActorSelected, isBlueprintSelected } = globalActions || {};
+  const { selectedActorId, isTextActorSelected, isBlueprintSelected, isInspectorOpen } =
+    globalActions || {};
   const hasSelection = selectedActorId >= 0 && activeSheet !== 'capturePreview';
   const textActors = useCoreTextActors();
   const editMode = globalActions?.editMode;
@@ -108,11 +109,10 @@ export const CreateCardScreen = ({
   }, [hasSelection]);
 
   React.useEffect(() => {
-    // when selecting a blueprint, open blueprint inspector
-    if (isBlueprintSelected) {
+    if (isInspectorOpen) {
       setActiveSheet('sceneCreatorInspector');
     }
-  }, [isBlueprintSelected, setActiveSheet]);
+  }, [isInspectorOpen, setActiveSheet]);
 
   React.useEffect(() => {
     if (isSceneLoaded) {

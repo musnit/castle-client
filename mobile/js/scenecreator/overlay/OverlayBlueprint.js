@@ -38,12 +38,14 @@ const styles = StyleSheet.create({
 });
 
 export const OverlayBlueprint = () => {
+  const sendInspectorAction = (action, ...args) =>
+    sendAsync('EDITOR_INSPECTOR_ACTION', { action, ...args });
   return (
     <View style={styles.container}>
       <Text style={styles.behaviorName}>Blueprint</Text>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <InspectorBlueprintActions />
-        <Pressable style={styles.editButton} onPress={() => sendAsync('SELECT_BLUEPRINT')}>
+        <Pressable style={styles.editButton} onPress={() => sendInspectorAction('openInspector')}>
           <Text style={styles.editLabel}>Edit</Text>
         </Pressable>
       </View>
