@@ -251,13 +251,14 @@ void Belt::update(double dtDouble) {
             actorDesc.parentEntryId = entry->getEntryId().c_str();
             auto actorId = scene.addActor(actorDesc);
 
-            // Position at touch
+            // Position at touch -- grab tool will move it immediately so move back by touch delta
             auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
             if (bodyBehavior.hasComponent(actorId)) {
+              auto pos = touch.pos - touch.delta;
               bodyBehavior.setProperty(
-                  actorId, decltype(BodyComponent::Props::x)::id, touch.pos.x, false);
+                  actorId, decltype(BodyComponent::Props::x)::id, pos.x, false);
               bodyBehavior.setProperty(
-                  actorId, decltype(BodyComponent::Props::y)::id, touch.pos.y, false);
+                  actorId, decltype(BodyComponent::Props::y)::id, pos.y, false);
             }
 
             // Select actor and switch to grab tool
