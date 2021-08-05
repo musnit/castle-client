@@ -40,8 +40,6 @@ public:
     if (pathDataList) {
       int index = 0;
       for (auto &pathData : *pathDataList) {
-        // TODO: shouldn't need to call `updatePathDataRendering` here
-        drawTool.getDrawData().updatePathDataRendering(&pathData);
         if (DrawUtil::pathIntersectsCircle(pathData, touch.touchX, touch.touchY, radius)) {
           pathIndicesToRemove.push_back(index);
         }
@@ -53,13 +51,19 @@ public:
 
     if (touch.touch.released) {
       if (didChange) {
-        // TODO: commit changes
+        // TODO: drawDataFrame resetFill
+        // TODO: drawData updateBounds
+        drawTool.saveDrawing("erase");
+        drawTool.resetTempGraphics();
       }
     } else {
       for (auto iter = pathIndicesToRemove.rbegin(); iter != pathIndicesToRemove.rend(); iter++) {
         auto index = *iter;
         pathDataList->erase(pathDataList->begin() + index);
         didChange = true;
+      }
+      if (didChange) {
+        drawTool.getDrawDataFrame().resetGraphics();
       }
     }
   }

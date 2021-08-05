@@ -35,7 +35,7 @@ public:
   virtual void onTouch(DrawSubtoolTouch &touch) = 0;
   virtual void drawOverlay(Lv &lv) = 0;
 
-  bool hasTouch;
+  bool hasTouch = false;
 
 protected:
   DrawTool &drawTool;
