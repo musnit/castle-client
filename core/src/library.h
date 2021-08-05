@@ -19,7 +19,8 @@ public:
   ~LibraryEntry();
 
   template<typename F>
-  void read(F &&f) const;
+  void read(F &&f) const; // `f` must be `(Reader &)`, gets called with a reader of our JSON
+  void write(Writer &writer) const; // Overwrites current value at writer with our JSON
 
   const std::string &getEntryId() const;
   const std::string &getTitle() const;
@@ -71,6 +72,7 @@ public:
   void forEachEntry(F &&f); // `F` takes `(LibraryEntry &)`, iterates in order
   int numEntries() const;
   const LibraryEntry *indexEntry(int index); // `nullptr` if out of bounds
+  void removeEntry(const char *entryId); // Does nothing if not found
 
 
   // Entry read / write
@@ -127,6 +129,10 @@ void LibraryEntry::read(F &&f) const {
   }
 }
 
+inline void LibraryEntry::write(Writer &writer) const {
+  writer.setValue(jsonValue);
+}
+
 inline LibraryEntry *Library::maybeGetEntry(const char *entryId) {
   if (auto found = entries.find(entryId); found != entries.end()) {
     return &found->second;
@@ -142,6 +148,10 @@ void Library::forEachEntry(F &&f) {
   }
 }
 
+inline int Library::numEntries() const {
+  return int(entries.size());
+}
+
 inline const LibraryEntry *Library::indexEntry(int index) {
   ensureOrder();
   if (0 <= index && index < int(order.size())) {
@@ -150,6 +160,7 @@ inline const LibraryEntry *Library::indexEntry(int index) {
   return nullptr;
 }
 
-inline int Library::numEntries() const {
-  return int(entries.size());
+inline void Library::removeEntry(const char *entryId) {
+  entries.erase(entryId);
+  markOrderDirty();
 }

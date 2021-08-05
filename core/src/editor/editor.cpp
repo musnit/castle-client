@@ -919,104 +919,152 @@ struct EditorInspectorActionReceiver {
     if (actorId == nullActor) {
       return;
     }
+    auto &scene = editor->getScene();
+    auto &library = scene.getLibrary();
 
     if (action == "deleteSelection") {
-      // TODO: Save and restore `parentEntryId`
-
-      auto &scene = editor->getScene();
-
-      // Get current draw order and parent entry id values to restore on undo
-      scene.ensureDrawOrderSort();
-      std::optional<int> drawOrderRelativeToValue;
-      if (auto drawOrder = scene.maybeGetDrawOrder(actorId)) {
-        drawOrderRelativeToValue = drawOrder->value;
-      }
-      std::optional<std::string> parentEntryId;
-      if (auto parentEntryIdCStr = scene.maybeGetParentEntryId(actorId)) {
-        parentEntryId = parentEntryIdCStr;
-      }
-
-      // Save actor to archive so we can restore it on undo
-      auto archive = std::make_shared<Archive>();
-      archive->write([&](Writer &writer) {
-        scene.writeActor(actorId, writer);
-      });
-
-      editor->getCommands().execute(
-          "delete", {},
-          [actorId](Editor &editor, bool) {
-            // Deselect and remove actor
-            auto &scene = editor.getScene();
-            editor.getSelection().deselectActor(actorId);
-            scene.removeActor(actorId);
-          },
-          [actorId, drawOrderRelativeToValue, parentEntryId, archive = std::move(archive)](
-              Editor &editor, bool) {
-            // Read actor back. Draw order should be right behind current actor with old value.
-            auto &scene = editor.getScene();
-            scene.ensureDrawOrderSort();
-            archive->read([&](Reader &reader) {
-              Scene::ActorDesc actorDesc;
-              actorDesc.requestedActorId = actorId;
-              actorDesc.reader = &reader;
-              if (parentEntryId) {
-                actorDesc.parentEntryId = parentEntryId->c_str();
+      if (scene.isGhost(actorId)) {
+        // Deleting a blueprint
+        if (auto entryIdCStr = scene.maybeGetParentEntryId(actorId)) {
+          // Don't delete if we have non-ghost actors with this entry
+          auto haveActorsWithEntry = false;
+          scene.forEachActor([&](ActorId otherActorId) {
+            if (!haveActorsWithEntry) {
+              if (auto otherEntryIdCStr = scene.maybeGetParentEntryId(otherActorId)) {
+                if (!std::strcmp(entryIdCStr, otherEntryIdCStr)) {
+                  haveActorsWithEntry = true;
+                }
               }
-              actorDesc.drawOrderRelativeToValue = drawOrderRelativeToValue;
-              actorDesc.drawOrderRelativity = Scene::ActorDesc::Behind;
-              scene.addActor(actorDesc);
-            });
+            }
           });
-    } else if (action == "duplicateSelection") {
-      // Generate new actor id now to keep it stable across undos and redos
-      auto &scene = editor->getScene();
-      auto newActorId = scene.generateActorId();
-      editor->getCommands().execute(
-          "duplicate", {},
-          [actorId, newActorId](Editor &editor, bool) {
-            auto &scene = editor.getScene();
-
-            // Write actor to archive, nudging position a bit and then restoring it
-            float oldX = 0, oldY = 0;
-            auto maybeBodyComponent
-                = scene.getBehaviors().byType<BodyBehavior>().maybeGetComponent(actorId);
-            if (maybeBodyComponent) {
-              oldX = maybeBodyComponent->props.x();
-              oldY = maybeBodyComponent->props.y();
-              maybeBodyComponent->props.x() += 0.5;
-              maybeBodyComponent->props.y() += 0.5;
+          if (!haveActorsWithEntry) {
+            if (auto entry = library.maybeGetEntry(entryIdCStr)) {
+              // Save entry to archive so we can restore it on undo
+              auto archive = std::make_shared<Archive>();
+              archive->write([&](Writer &writer) {
+                entry->write(writer);
+              });
+              auto entryId = std::string(entryIdCStr);
+              editor->getCommands().execute(
+                  "delete blueprint", {},
+                  [actorId, entryId](Editor &editor, bool) {
+                    editor.getSelection().deselectActor(actorId);
+                    editor.getBelt().deselect();
+                    auto &scene = editor.getScene();
+                    scene.removeActor(actorId);
+                    scene.getLibrary().removeEntry(entryId.c_str());
+                  },
+                  [entryId, archive = std::move(archive)](Editor &editor, bool) {
+                    auto &scene = editor.getScene();
+                    archive->read([&](Reader &reader) {
+                      scene.getLibrary().readEntry(reader);
+                    });
+                  });
             }
-            Archive archive;
-            archive.write([&](Writer &writer) {
-              scene.writeActor(actorId, writer);
-            });
-            if (maybeBodyComponent) {
-              maybeBodyComponent->props.x() = oldX;
-              maybeBodyComponent->props.y() = oldY;
-            }
+          }
+        }
+      } else {
+        // Deleting an actor
 
-            // Read from archive to create new actor. Its draw order should be right in front of the
-            // original one.
-            archive.read([&](Reader &reader) {
-              Scene::ActorDesc actorDesc;
-              actorDesc.requestedActorId = newActorId;
-              actorDesc.reader = &reader;
-              actorDesc.parentEntryId = scene.maybeGetParentEntryId(actorId);
-              actorDesc.drawOrderRelativity = Scene::ActorDesc::FrontOf;
-              actorDesc.drawOrderRelativeToActor = actorId;
-              scene.addActor(actorDesc);
+        // Get current draw order and parent entry id values to restore on undo
+        scene.ensureDrawOrderSort();
+        std::optional<int> drawOrderRelativeToValue;
+        if (auto drawOrder = scene.maybeGetDrawOrder(actorId)) {
+          drawOrderRelativeToValue = drawOrder->value;
+        }
+        std::optional<std::string> parentEntryId;
+        if (auto parentEntryIdCStr = scene.maybeGetParentEntryId(actorId)) {
+          parentEntryId = parentEntryIdCStr;
+        }
+
+        // Save actor to archive so we can restore it on undo
+        auto archive = std::make_shared<Archive>();
+        archive->write([&](Writer &writer) {
+          scene.writeActor(actorId, writer);
+        });
+
+        editor->getCommands().execute(
+            "delete", {},
+            [actorId](Editor &editor, bool) {
+              // Deselect and remove actor
+              auto &scene = editor.getScene();
+              editor.getSelection().deselectActor(actorId);
+              scene.removeActor(actorId);
+            },
+            [actorId, drawOrderRelativeToValue, parentEntryId, archive = std::move(archive)](
+                Editor &editor, bool) {
+              // Read actor back. Draw order should be right behind current actor with old value.
+              auto &scene = editor.getScene();
               scene.ensureDrawOrderSort();
+              archive->read([&](Reader &reader) {
+                Scene::ActorDesc actorDesc;
+                actorDesc.requestedActorId = actorId;
+                actorDesc.reader = &reader;
+                if (parentEntryId) {
+                  actorDesc.parentEntryId = parentEntryId->c_str();
+                }
+                actorDesc.drawOrderRelativeToValue = drawOrderRelativeToValue;
+                actorDesc.drawOrderRelativity = Scene::ActorDesc::Behind;
+                scene.addActor(actorDesc);
+              });
             });
+      }
+    } else if (action == "duplicateSelection") {
+      if (scene.isGhost(actorId)) {
+        // Duplicating an blueprint
 
-            // Select new actor
-            editor.getSelection().deselectActor(actorId);
-            editor.getSelection().selectActor(newActorId);
-          },
-          [newActorId](Editor &editor, bool) {
-            // Remove new actor
-            auto &scene = editor.getScene();
-            scene.removeActor(newActorId);
-          });
+      } else {
+        // Duplicating an actor
+
+        // Generate new actor id now to keep it stable across undos and redos
+        auto newActorId = scene.generateActorId();
+        editor->getCommands().execute(
+            "duplicate", {},
+            [actorId, newActorId](Editor &editor, bool) {
+              auto &scene = editor.getScene();
+
+              // Write actor to archive, nudging position a bit and then restoring it
+              float oldX = 0, oldY = 0;
+              auto maybeBodyComponent
+                  = scene.getBehaviors().byType<BodyBehavior>().maybeGetComponent(actorId);
+              if (maybeBodyComponent) {
+                oldX = maybeBodyComponent->props.x();
+                oldY = maybeBodyComponent->props.y();
+                maybeBodyComponent->props.x() += 0.5;
+                maybeBodyComponent->props.y() += 0.5;
+              }
+              Archive archive;
+              archive.write([&](Writer &writer) {
+                scene.writeActor(actorId, writer);
+              });
+              if (maybeBodyComponent) {
+                maybeBodyComponent->props.x() = oldX;
+                maybeBodyComponent->props.y() = oldY;
+              }
+
+              // Read from archive to create new actor. Its draw order should be right in front of
+              // the original one.
+              archive.read([&](Reader &reader) {
+                Scene::ActorDesc actorDesc;
+                actorDesc.requestedActorId = newActorId;
+                actorDesc.reader = &reader;
+                actorDesc.parentEntryId = scene.maybeGetParentEntryId(actorId);
+                actorDesc.drawOrderRelativity = Scene::ActorDesc::FrontOf;
+                actorDesc.drawOrderRelativeToActor = actorId;
+                scene.addActor(actorDesc);
+                scene.ensureDrawOrderSort();
+              });
+
+              // Select new actor
+              editor.getSelection().deselectActor(actorId);
+              editor.getSelection().selectActor(newActorId);
+            },
+            [newActorId](Editor &editor, bool) {
+              // Remove new actor
+              auto &scene = editor.getScene();
+              scene.removeActor(newActorId);
+            });
+      }
     }
   }
 };

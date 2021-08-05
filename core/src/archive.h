@@ -249,6 +249,7 @@ public:
   void setNum(double val);
   template<typename V>
   void setStr(V &&val);
+  void setValue(const json::Value &val);
   template<typename K, typename V>
   void write(K &&key, const V &val);
 
@@ -819,6 +820,10 @@ void Writer::str(V &&val) {
 template<typename V>
 void Writer::setStr(V &&val) {
   *cur = makeStr(std::forward<V>(val));
+}
+
+inline void Writer::setValue(const json::Value &val) {
+  cur->CopyFrom(val, alloc);
 }
 
 template<typename K, typename V>
