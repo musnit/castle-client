@@ -986,9 +986,9 @@ struct EditorInspectorActionReceiver {
         editor->getCommands().execute(
             "delete", {},
             [actorId](Editor &editor, bool) {
-              // Deselect and remove actor
+              // Deselect all and remove actor
               auto &scene = editor.getScene();
-              editor.getSelection().deselectActor(actorId);
+              editor.getSelection().deselectAllActors();
               scene.removeActor(actorId);
             },
             [actorId, drawOrderRelativeToValue, parentEntryId, archive = std::move(archive)](
