@@ -34,8 +34,7 @@ public:
   void resetTempGraphics();
   void clearTempGraphics();
   void addTempPathData(love::PathData pathData);
-  void addTempPathData(love::PathData *pathData);
-  void addTempPathData(std::shared_ptr<love::PathData> pathData);
+
   void addPathData(std::shared_ptr<love::PathData> pathData);
   void addPathData(love::PathData pathData);
   void saveDrawing(std::string commandDescription);

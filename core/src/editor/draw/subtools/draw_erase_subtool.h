@@ -63,7 +63,7 @@ public:
     auto radius = getRadius();
 
     std::vector<int> pathIndicesToRemove;
-    std::vector<love::PathData *> pathsToAdd; // TODO: unique_ptr
+    std::vector<love::PathData> pathsToAdd;
 
     auto pathDataList = drawTool.getDrawData().currentPathDataList();
     if (pathDataList) {
@@ -87,7 +87,10 @@ public:
 
     if (touch.touch.released) {
       if (didChange) {
-        // TODO: commit changes
+        // TODO: drawDataFrame resetFill
+        // TODO: drawData updateBounds
+        drawTool.saveDrawing("erase");
+        drawTool.resetTempGraphics();
       }
     } else {
       didChange = pathIndicesToRemove.size() > 0;
@@ -95,8 +98,11 @@ public:
         auto index = *iter;
         pathDataList->erase(pathDataList->begin() + index);
       }
-      for (auto pathDataPtr : pathsToAdd) {
-        drawTool.addTempPathData(pathDataPtr);
+      for (auto pathData : pathsToAdd) {
+        drawTool.addTempPathData(pathData);
+      }
+      if (didChange) {
+        drawTool.getDrawDataFrame().resetGraphics();
       }
     }
   }
@@ -120,17 +126,16 @@ private:
     return sqrt(dx * dx + dy * dy) < radius;
   }
 
-  void addReplacementPathData(std::vector<love::PathData *> *pathsToAdd,
+  void addReplacementPathData(std::vector<love::PathData> *pathsToAdd,
       love::PathData &pathDataToReplace, love::Point &p1, love::Point &p2) {
-    // TODO: unique_ptr
-    auto newPath = new love::PathData();
-    newPath->copyAttributes(pathDataToReplace);
-    newPath->points.push_back(p1);
-    newPath->points.push_back(p2);
+    love::PathData newPath;
+    newPath.copyAttributes(pathDataToReplace);
+    newPath.points.push_back(p1);
+    newPath.points.push_back(p2);
     pathsToAdd->push_back(newPath);
   }
 
-  void maybeAddReplacementPaths(std::vector<love::PathData *> *pathsToAdd,
+  void maybeAddReplacementPaths(std::vector<love::PathData> *pathsToAdd,
       love::PathData &pathDataToReplace, float centerX, float centerY, float radius) {
     for (int ii = 0, n = pathDataToReplace.points.size(); ii < n - 1; ii += 2) {
       auto p1 = pathDataToReplace.points[ii];

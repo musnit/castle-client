@@ -112,25 +112,6 @@ void DrawTool::addTempPathData(love::PathData pathData) {
   tempGraphics->addPath(pathData.tovePath);
 }
 
-void DrawTool::addTempPathData(love::PathData *pathData) {
-  if (!pathData->color) {
-    // TODO: why does love::ghost::Color exist
-    love::ghost::Color c;
-    c.data[0] = color.r;
-    c.data[1] = color.g;
-    c.data[2] = color.b;
-    c.data[3] = color.a;
-    pathData->color = c;
-  }
-
-  drawData->updatePathDataRendering(pathData);
-  tempGraphics->addPath(pathData->tovePath);
-}
-
-void DrawTool::addTempPathData(std::shared_ptr<love::PathData> pathData) {
-  addTempPathData(pathData.get());
-}
-
 void DrawTool::addPathData(std::shared_ptr<love::PathData> pathData) {
   if (DrawUtil::floatEquals(pathData->points[0].x, pathData->points[1].x)
       && DrawUtil::floatEquals(pathData->points[0].y, pathData->points[1].y)) {
