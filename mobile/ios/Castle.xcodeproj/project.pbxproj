@@ -1101,6 +1101,8 @@
 					../../core/vendor/tove2d/src/thirdparty/fp16/include,
 					../../core/vendor/soloud20200207/include,
 					../../core/vendor/soloud20200207/src/backend/miniaudio,
+					../../core/vendor/stduuid/gsl,
+					../../core/vendor/stduuid/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LIBRARY_SEARCH_PATHS = (
@@ -1171,6 +1173,8 @@
 					../../core/vendor/tove2d/src/thirdparty/fp16/include,
 					../../core/vendor/soloud20200207/include,
 					../../core/vendor/soloud20200207/src/backend/miniaudio,
+					../../core/vendor/stduuid/gsl,
+					../../core/vendor/stduuid/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LIBRARY_SEARCH_PATHS = (

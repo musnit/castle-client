@@ -725,3 +725,6 @@ else()
   target_sources(soloud PRIVATE ${SOLOUD_SRC}/backend/miniaudio/soloud_miniaudio.cpp)
 endif()
 target_link_libraries(castle-core PRIVATE soloud)
+
+# stduuid
+target_include_directories(castle-core PRIVATE vendor/stduuid/gsl vendor/stduuid/include)

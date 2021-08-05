@@ -250,9 +250,13 @@ public:
   template<typename V>
   void setStr(V &&val);
   void setValue(const json::Value &val);
+
   template<typename K, typename V>
   void write(K &&key, const V &val);
 
+  template<typename K, typename F>
+  void overwrite(K &&key, F &&f); // Set child with given name as current so it can be overwritten,
+                                  // or add new object child if doesn't exist
 
   // Write a value of custom type. Can be a function, a type with a `T::write(Writer &writer)`
   // method, or reflectable with props
@@ -829,6 +833,26 @@ inline void Writer::setValue(const json::Value &val) {
 template<typename K, typename V>
 void Writer::write(K &&key, const V &val) {
   cur->AddMember(makeStr(std::forward<K>(key)), write_(val), alloc);
+}
+
+template<typename K, typename F>
+void Writer::overwrite(K &&key, F &&f) {
+  if (cur->IsObject()) {
+    auto keyStr = makeStr(key);
+    if (auto mem = cur->FindMember(keyStr); mem != cur->MemberEnd()) {
+      auto parent = cur;
+      cur = &mem->value;
+      runLambdaOrCallWrite(std::forward<F>(f));
+      cur = parent;
+    } else {
+      auto parent = cur;
+      auto child = json::Value(json::kObjectType);
+      cur = &child;
+      runLambdaOrCallWrite(std::forward<F>(f));
+      cur = parent;
+      cur->AddMember(std::move(keyStr), child, alloc);
+    }
+  }
 }
 
 template<typename K, typename F>

@@ -904,6 +904,9 @@ struct EditorInspectorActionReceiver {
         } else {
           // selection didn't change, but need to send missing components now
           // TODO: BEN
+          auto actorId = selection.firstSelectedActorId();
+          selection.deselectAllActors();
+          selection.selectActor(actorId);
         }
         editor->isInspectorOpen = true;
       }
@@ -947,12 +950,9 @@ struct EditorInspectorActionReceiver {
               auto entryId = std::string(entryIdCStr);
               editor->getCommands().execute(
                   "delete blueprint", {},
-                  [actorId, entryId](Editor &editor, bool) {
-                    editor.getSelection().deselectActor(actorId);
-                    editor.getBelt().deselect();
-                    auto &scene = editor.getScene();
-                    scene.removeActor(actorId);
-                    scene.getLibrary().removeEntry(entryId.c_str());
+                  [entryId](Editor &editor, bool) {
+                    editor.getSelection().deselectAllActors();
+                    editor.getScene().getLibrary().removeEntry(entryId.c_str());
                   },
                   [entryId, archive = std::move(archive)](Editor &editor, bool) {
                     auto &scene = editor.getScene();
@@ -1011,13 +1011,40 @@ struct EditorInspectorActionReceiver {
       }
     } else if (action == "duplicateSelection") {
       if (scene.isGhost(actorId)) {
-        // Duplicating an blueprint
-
+        // Duplicating a blueprint
+        if (auto oldEntryIdCstr = scene.maybeGetParentEntryId(actorId)) {
+          auto oldEntryId = std::string(oldEntryIdCstr);
+          auto newEntryId = Library::generateEntryId(); // Keep stable across undo / redo
+          editor->getCommands().execute(
+              "duplicate blueprint", {},
+              [oldEntryId, newEntryId](Editor &editor, bool) {
+                auto &library = editor.getScene().getLibrary();
+                if (auto oldEntry = library.maybeGetEntry(oldEntryId.c_str())) {
+                  // Write entry to archive, change some fields, then read back. A new entry will be
+                  // created because we set a new entry id in the archive before reading.
+                  Archive archive;
+                  archive.write([&](Writer &writer) {
+                    oldEntry->write(writer);
+                    writer.overwrite("entryId", [&]() {
+                      writer.setStr(newEntryId);
+                    });
+                  });
+                  archive.read([&](Reader &reader) {
+                    library.readEntry(reader);
+                  });
+                  editor.getSelection().deselectAllActors();
+                  auto &belt = editor.getBelt();
+                  belt.select(newEntryId);
+                }
+              },
+              [newEntryId](Editor &editor, bool) {
+                editor.getSelection().deselectAllActors();
+                editor.getScene().getLibrary().removeEntry(newEntryId.c_str());
+              });
+        }
       } else {
         // Duplicating an actor
-
-        // Generate new actor id now to keep it stable across undos and redos
-        auto newActorId = scene.generateActorId();
+        auto newActorId = scene.generateActorId(); // Keep stable across undo / redo
         editor->getCommands().execute(
             "duplicate", {},
             [actorId, newActorId](Editor &editor, bool) {

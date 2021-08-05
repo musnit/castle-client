@@ -65,6 +65,11 @@ public:
   explicit Library(Scene &scene_);
 
 
+  // Entry ids
+
+  static std::string generateEntryId();
+
+
   // Entry access
 
   LibraryEntry *maybeGetEntry(const char *entryId); // `nullptr` if not found

@@ -77,6 +77,19 @@ ActorId LibraryEntry::getGhostActorId() {
 
 
 //
+// Entry id
+//
+
+std::string Library::generateEntryId() {
+  static std::random_device rd;
+  static uuids::basic_uuid_random_generator gen(rd);
+  auto result = uuids::to_string(gen());
+  Debug::log("generated entry id: {}", result);
+  return result;
+}
+
+
+//
 // Entry reading
 //
 
