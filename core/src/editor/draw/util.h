@@ -2,20 +2,16 @@
 #include "lv.h"
 
 namespace DrawUtil {
-struct PathsList {
-  love::PathData *paths;
-  int length;
-};
 
-PathsList pointsToPaths(float *points, int length);
+void makePathsFromPoints(love::PathData *paths, float *points, int numPoints);
 bool isPointInBounds(float x, float y);
 bool floatEquals(float a, float b);
 float unit(float f);
 bool areAnglesEqual(float a1, float a2);
 
-std::optional<PathsList> getRectangleShape(float x1, float y1, float x2, float y2);
-std::optional<PathsList> getRightTriangleShape(float x1, float y1, float x2, float y2);
-std::optional<PathsList> getCircleShapeRoundToGrid(love::DrawData &drawData, float x1, float y1,
+bool getRectangleShape(love::PathData *paths, float x1, float y1, float x2, float y2);
+bool getRightTriangleShape(love::PathData *paths, float x1, float y1, float x2, float y2);
+bool getCircleShapeRoundToGrid(love::DrawData &drawData, love::PathData *paths, float x1, float y1,
     float x2, float y2, float roundUnitX, float roundUnitY);
 
 bool pathIntersectsCircle(love::PathData &path, float x, float y, float radius);

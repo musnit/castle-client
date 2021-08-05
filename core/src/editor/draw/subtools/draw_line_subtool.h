@@ -30,15 +30,17 @@ public:
       isGestureStarted = true;
     }
 
-    love::ghost::PathData *pathData = new love::PathData();
-    pathData->points.push_back(love::ghost::Point(initialCoord.x, initialCoord.y));
-    pathData->points.push_back(love::ghost::Point(touch.roundedX, touch.roundedY));
-    pathData->style = 1;
-    pathData->isTransparent = false;
+    love::PathData pathData;
+    pathData.points.push_back(love::ghost::Point(initialCoord.x, initialCoord.y));
+    pathData.points.push_back(love::ghost::Point(touch.roundedX, touch.roundedY));
+    pathData.style = 1;
+    pathData.isTransparent = false;
 
     if (touch.touch.released) {
-      // TODO: commit path data
-      drawTool.addTempPathData(pathData);
+      drawTool.addPathData(pathData);
+      drawTool.getDrawDataFrame().resetGraphics();
+      drawTool.saveDrawing("line segment");
+      drawTool.resetTempGraphics();
     } else {
       // repeatedly clear and draw the updated segment as we drag the touch around
       drawTool.resetTempGraphics();
