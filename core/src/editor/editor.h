@@ -7,7 +7,7 @@
 #include "edit_variables.h"
 #include "selection.h"
 #include "grab.h"
-#include "draw_tool.h"
+#include "draw/draw_tool.h"
 #include "grid.h"
 #include "commands.h"
 #include "belt.h"

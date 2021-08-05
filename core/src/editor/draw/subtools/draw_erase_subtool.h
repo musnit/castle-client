@@ -2,8 +2,8 @@
 
 #include "precomp.h"
 #include "draw_subtool_interface.h"
-#include "../draw/util.h"
-#include "../draw/subpath_intersections.h"
+#include "editor/draw/util.h"
+#include "editor/draw/subpath_intersections.h"
 
 class DrawEraseSubtool : public DrawSubtool {
 public:

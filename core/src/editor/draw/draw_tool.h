@@ -4,9 +4,9 @@
 #include "props.h"
 
 #include "lv.h"
-#include "draw_subtools/draw_subtool_interface.h"
+#include "subtools/draw_subtool_interface.h"
 #include "editor/draw/physics_body_data.h"
-#include "gesture_pan_zoom.h"
+#include "../gesture_pan_zoom.h"
 
 class Editor;
 

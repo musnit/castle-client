@@ -2,15 +2,15 @@
 
 #include "archive.h"
 #include "behaviors/all.h"
-#include "editor.h"
+#include "editor/editor.h"
 #include "engine.h"
 
-#include "draw_subtools/draw_freehand_subtool.h"
-#include "draw_subtools/draw_line_subtool.h"
-#include "draw_subtools/draw_shape_subtool.h"
-#include "draw_subtools/draw_erase_subtool.h"
-#include "draw_subtools/draw_erase_segment_subtool.h"
-#include "draw/util.h"
+#include "subtools/draw_freehand_subtool.h"
+#include "subtools/draw_line_subtool.h"
+#include "subtools/draw_shape_subtool.h"
+#include "subtools/draw_erase_subtool.h"
+#include "subtools/draw_erase_segment_subtool.h"
+#include "util.h"
 
 //
 // Events

@@ -2,7 +2,7 @@
 
 #include "precomp.h"
 #include "draw_subtool_interface.h"
-#include "../draw/util.h"
+#include "editor/draw/util.h"
 
 class DrawEraseSegmentSubtool : public DrawSubtool {
 public:
