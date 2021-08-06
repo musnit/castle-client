@@ -82,6 +82,9 @@ struct DrawLayersEvent {
     PROP((std::vector<Frame>), frames);
   };
 
+  PROP(int, numFrames);
+  PROP(love::DrawDataLayerId, selectedLayerId);
+  PROP(int, selectedFrameIndex);
   PROP((std::vector<Layer>), layers);
 };
 
@@ -105,8 +108,15 @@ void DrawTool::sendLayersEvent() {
       layerData.frames().push_back(frameData);
     }
 
+    if (ii == 0) {
+      ev.numFrames = layer->frames.size();
+    }
+
     ev.layers().push_back(layerData);
   }
+
+  ev.selectedLayerId = drawData->selectedLayerId;
+  ev.selectedFrameIndex = drawData->selectedFrame.value;
 
   editor.getBridge().sendEvent("EDITOR_DRAW_LAYERS", ev);
 }
