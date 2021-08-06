@@ -69,8 +69,6 @@ public:
     if (pathDataList) {
       int index = 0;
       for (auto &pathData : *pathDataList) {
-        // TODO: shouldn't need to call `updatePathDataRendering` here
-        drawTool.getDrawData().updatePathDataRendering(&pathData);
         if (DrawUtil::pathIntersectsCircle(pathData, touch.touchX, touch.touchY, radius)) {
           // remove the intersecting path, then maybe replace it
           pathIndicesToRemove.push_back(index);
@@ -99,7 +97,9 @@ public:
         pathDataList->erase(pathDataList->begin() + index);
       }
       for (auto pathData : pathsToAdd) {
-        drawTool.addTempPathData(pathData);
+        // we may need to test the new paths for erasure later in this same gesture,
+        // so add them to the final draw data
+        drawTool.addPathData(pathData);
       }
       if (didChange) {
         drawTool.getDrawDataFrame().resetGraphics();
