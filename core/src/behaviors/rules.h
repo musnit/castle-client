@@ -111,7 +111,9 @@ private:
 
 
 //
-// Editor-specific data
+// Editing
+//
+
 struct RulesEditData {
   std::string rulesJson;
 };
@@ -138,11 +140,6 @@ struct RuleEntryData {
   PROP(std::string, initialParamsJson);
 
   // TODO: returnType, triggerFilter, parentTypeFilter
-};
-
-template<typename RuleEntry>
-struct RuleEntryInitialParams {
-  PROP(typename RuleEntry::Params *, initialParams);
 };
 
 
@@ -597,10 +594,9 @@ RuleRegistration<T, Behavior>::RuleRegistration(const char *name, bool allowDupl
           data->paramSpecs().push_back(spec);
         });
 
-        RuleEntryInitialParams<T> initialParams { &params };
         Archive archive;
         archive.write([&](Archive::Writer &writer) {
-          writer.write(initialParams);
+          writer.write("initialParams", params);
         });
         data->initialParamsJson = archive.toJson();
       }
