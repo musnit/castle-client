@@ -39,8 +39,6 @@ public:
   void setEditorStateDirty();
   void setSelectedActorStateDirty();
   void setSelectedComponentStateDirty(int behaviorId);
-  void setRulesData(ActorId actorId, const char *rulesJson);
-  const char *getRulesData(ActorId actorId);
   void sendTagsData();
   void sendSceneSettings();
 

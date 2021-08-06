@@ -566,29 +566,6 @@ void Editor::sendSelectedComponent(int behaviorId) {
   });
 }
 
-const char *Editor::getRulesData(ActorId actorId) {
-  auto &behavior = getScene().getBehaviors().byType<RulesBehavior>();
-  auto component = behavior.maybeGetComponent(actorId);
-  if (component && component->editData) {
-    return component->editData->rulesJson.c_str();
-  }
-  return "";
-}
-
-void Editor::setRulesData(ActorId actorId, const char *rulesJson) {
-  auto &behavior = getScene().getBehaviors().byType<RulesBehavior>();
-  auto component = behavior.maybeGetComponent(actorId);
-  if (component) {
-    if (rulesJson) {
-      auto jsonString = std::string(rulesJson);
-      component->editSetRulesJson(jsonString);
-    } else {
-      auto jsonString = std::string("");
-      component->editSetRulesJson(jsonString);
-    }
-  }
-}
-
 struct EditorModifyComponentReceiver {
   inline static const BridgeRegistration<EditorModifyComponentReceiver> registration {
     "EDITOR_MODIFY_COMPONENT"
@@ -641,31 +618,44 @@ struct EditorModifyComponentReceiver {
         commandParams.coalesce = true;
         commandParams.coalesceLastOnly = false;
         if constexpr (std::is_same_v<BehaviorType, RulesBehavior>) {
-          bool oldHasComponent = behavior.hasComponent(actorId);
-          auto oldValueCStr = editor->getRulesData(actorId);
+          auto component = behavior.maybeGetComponent(actorId);
+          auto oldHasComponent = component != nullptr;
+          auto oldRulesJson = std::string(
+              component && component->editData ? component->editData->rulesJson.c_str() : "");
           editor->getCommands().execute(
               "change rules", commandParams,
               [actorId, oldHasComponent, newRulesJson = params.stringValue()](
                   Editor &editor, bool) {
                 auto &rulesBehavior = editor.getScene().getBehaviors().byType<RulesBehavior>();
-                if (!oldHasComponent) {
+                if (!rulesBehavior.hasComponent(actorId)) {
                   rulesBehavior.addComponent(actorId);
                   rulesBehavior.enableComponent(actorId);
                   editor.setSelectedActorStateDirty();
                 }
-                editor.setRulesData(actorId, newRulesJson.c_str());
-                editor.updateBlueprint(actorId, {});
+                if (auto component = rulesBehavior.maybeGetComponent(actorId)) {
+                  if (!component->editData) {
+                    component->editData = std::make_unique<RulesEditData>();
+                  }
+                  component->editData->rulesJson = newRulesJson;
+                }
+                // editor.updateBlueprint(actorId, {});
                 editor.setSelectedComponentStateDirty(RulesBehavior::behaviorId);
               },
-              [actorId, oldHasComponent, oldRulesJson = std::string(oldValueCStr)](
+              [actorId, oldHasComponent, oldRulesJson = std::move(oldRulesJson)](
                   Editor &editor, bool) {
                 auto &rulesBehavior = editor.getScene().getBehaviors().byType<RulesBehavior>();
-                if (!oldHasComponent) {
+                if (oldHasComponent) {
+                  if (auto component = rulesBehavior.maybeGetComponent(actorId)) {
+                    if (!component->editData) {
+                      component->editData = std::make_unique<RulesEditData>();
+                    }
+                    component->editData->rulesJson = oldRulesJson;
+                  }
+                } else {
                   rulesBehavior.removeComponent(actorId);
                   editor.setSelectedActorStateDirty();
                 }
-                editor.setRulesData(actorId, oldRulesJson.c_str());
-                editor.updateBlueprint(actorId, {});
+                // editor.updateBlueprint(actorId, {});
                 editor.setSelectedComponentStateDirty(RulesBehavior::behaviorId);
               });
         } else {

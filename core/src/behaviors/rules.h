@@ -151,16 +151,8 @@ struct RulesComponent : BaseComponent {
   struct Props {
   } props;
 
-  void editSetRulesJson(std::string &rulesJson);
-  std::unique_ptr<RulesEditData> editData;
+  std::unique_ptr<RulesEditData> editData; // `nullptr` during gameplay, only set when editing
 };
-
-inline void RulesComponent::editSetRulesJson(std::string &rulesJson) {
-  if (!editData) {
-    editData = std::make_unique<RulesEditData>();
-  }
-  editData->rulesJson = rulesJson;
-}
 
 class RulesBehavior : public BaseBehavior<RulesBehavior, RulesComponent> {
 public:
