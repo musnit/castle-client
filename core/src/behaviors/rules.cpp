@@ -937,9 +937,8 @@ void RulesBehavior::handlePreRemoveActor(ActorId actorId, RulesComponent &compon
 void RulesBehavior::handleReadComponent(
     ActorId actorId, RulesComponent &component, Reader &reader) {
   if (getScene().getIsEditing()) {
-    // TODO: store json::value and allocator?
     component.editData = std::make_unique<RulesEditData>();
-    component.editData->rulesJson = reader.toJson();
+    component.editData->set(*reader.jsonValue());
     return;
   }
   reader.each("rules", [&]() {

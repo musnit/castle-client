@@ -114,11 +114,9 @@ private:
 // Editing
 //
 
-struct RulesEditData {
-  std::string rulesJson;
-};
-
 struct RuleEntryData {
+  // Schema information that is sent to JS once so it knows what rule entry types are available
+
   PROP(std::string, name);
   PROP(int, behaviorId);
   PROP(std::string, behaviorName);
@@ -140,6 +138,21 @@ struct RuleEntryData {
   PROP(std::string, initialParamsJson);
 
   // TODO: returnType, triggerFilter, parentTypeFilter
+};
+
+struct RulesEditData {
+  // In edit mode, rules data is stored directly as JSON and not parsed into runtime rule entries
+  // (the various `*Response` and `*Expression`) types
+
+  json::Value value { json::kObjectType };
+
+  inline static json::CrtAllocator baseAlloc;
+  inline static constexpr auto chunkSize = 1024;
+  json::MemoryPoolAllocator<json::CrtAllocator> alloc { chunkSize, &baseAlloc };
+
+  void set(const json::Value &newValue) {
+    value.CopyFrom(newValue, alloc);
+  }
 };
 
 
