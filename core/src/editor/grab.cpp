@@ -81,7 +81,6 @@ void GrabTool::update(double dt) {
     SmallVector<ActorPosition, 2> before;
     SmallVector<ActorPosition, 2> after;
     for (auto actorId : selection.getSelectedActorIds()) {
-      // TODO(nikki): Static-typed property getter calls
       love::Vector2 beforePos {
         bodyBehavior.getProperty(actorId, decltype(BodyComponent::Props::x)::id).as<float>(),
         bodyBehavior.getProperty(actorId, decltype(BodyComponent::Props::y)::id).as<float>(),

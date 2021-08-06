@@ -270,9 +270,6 @@ void Belt::update(double dtDouble) {
           placing = {};
         }
       }
-
-      // TODO(nikki): Undo placing if dragged back into belt
-      // TODO(nikki): Command with final placed actor location
     }
 
     // Dragging to scroll if not placing
