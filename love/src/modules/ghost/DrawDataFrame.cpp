@@ -13,6 +13,7 @@
 #include "filesystem/Filesystem.h"
 
 #define DEBUG_FILL_IMAGE_SIZE true
+#define DEBUG_UPDATE_FLOOD_FILL 0
 
 namespace love {
 namespace ghost {
@@ -48,11 +49,10 @@ namespace ghost {
       fileDataString = data::decode(format, fillPng->c_str(), fillPng->length(), fileDataStringLen);
 
       data::DataModule *dataModule = Module::getInstance<data::DataModule>(Module::M_DATA);
-      auto byteData = std::unique_ptr<data::ByteData>(
-          dataModule->newByteData(fileDataString, fileDataStringLen, true));
+      auto byteData = dataModule->newByteData(fileDataString, fileDataStringLen, true);
 
       image::Image *imageModule = Module::getInstance<image::Image>(Module::M_IMAGE);
-      fillImageData = std::shared_ptr<image::ImageData>(imageModule->newImageData(byteData.get()));
+      fillImageData = imageModule->newImageData(byteData);
     }
 
     // TODO: only in editor
@@ -209,20 +209,19 @@ namespace ghost {
 
     image::Image *instance = Module::getInstance<image::Image>(Module::M_IMAGE);
     if (fillImageData == NULL) {
-      fillImageData = std::shared_ptr<image::ImageData>(
-          instance->newImageData(width, height, PIXELFORMAT_RGBA8));
+      fillImageData = instance->newImageData(width, height, PIXELFORMAT_RGBA8);
     } else if (fillImageData->getWidth() != width || fillImageData->getHeight() != height) {
-      auto newFillImageData = std::shared_ptr<image::ImageData>(
-          instance->newImageData(width, height, PIXELFORMAT_RGBA8));
+      auto newFillImageData = instance->newImageData(width, height, PIXELFORMAT_RGBA8);
       // sourceX, sourceY, sourceWidth, sourceHeight, destX, destY
-      newFillImageData->copyImageData(fillImageData.get(), 0, 0,
+      newFillImageData->copyImageData(fillImageData, 0, 0,
           fillImageBounds.maxX - fillImageBounds.minX, fillImageBounds.maxY - fillImageBounds.minY,
           fillImageBounds.minX - pathBounds.minX, fillImageBounds.minY - pathBounds.minY);
-      //fillImageData->release();
+	  // TODO: why does this cause a memory issue?
+	  //delete fillImageData;
 	  fillImageData = newFillImageData;
     }
     fillImageBounds.set(pathBounds);
-    return fillImageData.get();
+    return fillImageData;
   }
 
   graphics::Image *DrawDataFrame::imageDataToImage(image::ImageData *imageData) {
@@ -243,13 +242,13 @@ namespace ghost {
 
   graphics::Image *DrawDataFrame::getFillImage() {
     if (fillImage != NULL) {
-      return fillImage.get();
+      return fillImage;
     }
     if (fillImageData == NULL) {
       return NULL;
     }
-    fillImage = std::unique_ptr<graphics::Image>(imageDataToImage(fillImageData.get()));
-    return fillImage.get();
+    fillImage = imageDataToImage(fillImageData);
+    return fillImage;
   }
 
   void DrawDataFrame::updateFillImageWithFillImageData() {
@@ -259,12 +258,12 @@ namespace ghost {
     if (fillImage != NULL) {
       if (fillImage->getWidth() == fillImageData->getWidth()
           && fillImage->getHeight() == fillImageData->getHeight()) {
-        fillImage->replacePixels(fillImageData.get(), 0, 0, 0, 0, false);
+        fillImage->replacePixels(fillImageData, 0, 0, 0, 0, false);
         return;
       }
-      //fillImage->release();
+		delete fillImage;
     }
-    fillImage = std::unique_ptr<graphics::Image>(imageDataToImage(fillImageData.get()));
+    fillImage = imageDataToImage(fillImageData);
   }
 
   void DrawDataFrame::compressFillCanvas() {
@@ -272,9 +271,9 @@ namespace ghost {
       return;
     }
     if (fillImageData->isEmpty()) {
-      //fillImageData->release();
+		delete fillImageData;
       if (fillImage != NULL) {
-        //fillImage->release();
+        delete fillImage;
       }
       fillImageData = NULL;
       fillImage = NULL;
@@ -288,7 +287,7 @@ namespace ghost {
       image::Image *instance = Module::getInstance<image::Image>(Module::M_IMAGE);
       auto newFillImageData = instance->newImageData(width, height, PIXELFORMAT_RGBA8);
       // sourceX, sourceY, sourceWidth, sourceHeight, destX, destY
-      newFillImageData->copyImageData(fillImageData.get(), minX, minY, width, height, 0, 0);
+      newFillImageData->copyImageData(fillImageData, minX, minY, width, height, 0, 0);
       if (DEBUG_FILL_IMAGE_SIZE) {
         image::Pixel p;
         p.rgba8[0] = 1.0;
@@ -303,8 +302,8 @@ namespace ghost {
               newFillImageData->setPixel(0, y, p);
         }
       }
-      //fillImageData->release();
-      fillImageData = std::shared_ptr<image::ImageData>(newFillImageData);
+		delete fillImageData;
+      fillImageData = newFillImageData;
       fillImageBounds.minX = fillImageBounds.minX + minX;
       fillImageBounds.minY = fillImageBounds.minY + minY;
       fillImageBounds.maxX = fillImageBounds.maxX + minX;
@@ -320,7 +319,7 @@ namespace ghost {
 
   bool DrawDataFrame::floodFill(float x, float y) {
     updatePathsCanvas();
-    auto pathsImageData = std::unique_ptr<image::ImageData>(canvasToImageData(pathsCanvas.get()));
+    auto pathsImageData = canvasToImageData(pathsCanvas);
     getFillImageDataSizedToPathBounds();
     fillImageData->getFormat();
     image::Pixel p;
@@ -332,7 +331,7 @@ namespace ghost {
 
     auto pixelCount = getFillImageDataSizedToPathBounds()->floodFill(
         floor((x * parent()->fillPixelsPerUnit) - fillImageBounds.minX),
-        floor((y * parent()->fillPixelsPerUnit) - fillImageBounds.minY), pathsImageData.get(), p);
+        floor((y * parent()->fillPixelsPerUnit) - fillImageBounds.minY), pathsImageData, p);
     compressFillCanvas();
     updateFillImageWithFillImageData();
     return pixelCount > 0;
@@ -340,7 +339,7 @@ namespace ghost {
 
   bool DrawDataFrame::floodClear(float x, float y, float radius) {
     updatePathsCanvas();
-    auto pathsImageData = canvasToImageData(pathsCanvas.get());
+    auto pathsImageData = canvasToImageData(pathsCanvas);
     auto pixelCount = getFillImageDataSizedToPathBounds()->floodFillErase(
         floor((x * parent()->fillPixelsPerUnit) - fillImageBounds.minX),
         floor((y * parent()->fillPixelsPerUnit) - fillImageBounds.minY),
@@ -353,8 +352,8 @@ namespace ghost {
   void DrawDataFrame::resetFill() {
     cleanUpPaths();
     updatePathsCanvas();
-    auto pathsImageData = canvasToImageData(pathsCanvas.get());
-    getFillImageDataSizedToPathBounds()->updateFloodFillForNewPaths(pathsImageData);
+    auto pathsImageData = canvasToImageData(pathsCanvas);
+    getFillImageDataSizedToPathBounds()->updateFloodFillForNewPaths(pathsImageData, DEBUG_UPDATE_FLOOD_FILL);
     compressFillCanvas();
     updateFillImageWithFillImageData();
   }
@@ -412,19 +411,19 @@ namespace ghost {
     if (pathsCanvas == NULL || pathsCanvas->getWidth() != width
         || pathsCanvas->getHeight() != height) {
       if (pathsCanvas != NULL) {
-        //pathsCanvas->release();
+        delete pathsCanvas;
       }
-      pathsCanvas = std::unique_ptr<graphics::Canvas>(newCanvas(width, height));
+      pathsCanvas = newCanvas(width, height);
     }
 
-    renderToCanvas(pathsCanvas.get(), [bounds, this]() {
+    renderToCanvas(pathsCanvas, [bounds, this]() {
       graphics::Graphics *graphicsModule
           = Module::getInstance<graphics::Graphics>(Module::M_GRAPHICS);
 
       graphicsModule->push(graphics::Graphics::STACK_TRANSFORM);
       graphicsModule->origin();
       graphicsModule->translate(-bounds.minX, -bounds.minY);
-      graphicsModule->scale(parent()->fillPixelsPerUnit);
+      graphicsModule->scale(parent()->fillPixelsPerUnit, parent()->fillPixelsPerUnit);
 
       graphics::OptionalColorf clearColor(Colorf(0.0f, 0.0f, 0.0f, 0.0f));
       OptionalInt stencil(0);
@@ -452,12 +451,12 @@ namespace ghost {
 
       _graphicsNeedsReset = false;
       cleanUpPaths();
-      _graphics = std::make_unique<ToveGraphicsHolder>();
+      _graphics = new ToveGraphicsHolder();
       for (size_t i = 0; i < pathDataList.size(); i++) {
         _graphics->addPath(pathDataList[i].tovePath);
       }
     }
-    return _graphics.get();
+    return _graphics;
   }
 
   void DrawDataFrame::renderFill() {
@@ -487,8 +486,8 @@ namespace ghost {
           { 1, 1, 1, 1, { 0xff, 0xff, 0xff, 0xff } },
           { 0, 1, 0, 1, { 0xff, 0xff, 0xff, 0xff } },
         };
-        return std::unique_ptr<love::graphics::Mesh>(graphicsModule->newMesh(quadVerts,
-            love::graphics::PRIMITIVE_TRIANGLE_FAN, love::graphics::vertex::USAGE_STATIC));
+        return graphicsModule->newMesh(quadVerts,
+            love::graphics::PRIMITIVE_TRIANGLE_FAN, love::graphics::vertex::USAGE_STATIC);
       }();
       quad->setTexture(fillImage);
       auto iw = fillImage->getWidth(), ih = fillImage->getHeight();
@@ -505,9 +504,9 @@ namespace ghost {
           size = 256;
     }
 
-    auto previewCanvas = std::unique_ptr<graphics::Canvas>(newCanvas(size, size));
+    auto previewCanvas = newCanvas(size, size);
     
-    renderToCanvas(previewCanvas.get(), [this, size]() {
+    renderToCanvas(previewCanvas, [this, size]() {
       auto pathBounds = getPathDataBounds(std::nullopt);
       float width = pathBounds.maxX - pathBounds.minX;
       float height = pathBounds.maxY - pathBounds.minY;
@@ -526,7 +525,7 @@ namespace ghost {
           = Module::getInstance<graphics::Graphics>(Module::M_GRAPHICS);
       graphicsModule->push(graphics::Graphics::STACK_ALL);
       graphicsModule->origin();
-      graphicsModule->scale(size / (maxDimension * 1.05));
+      graphicsModule->scale(size / (maxDimension * 1.05), size / (maxDimension * 1.05));
       graphicsModule->translate((padding - pathBounds.minX) + widthPadding, (padding - pathBounds.minY) + heightPadding);
       graphicsModule->clear(Colorf(0.0f, 0.0f, 0.0f, 0.0f), 0, 1.0);
 

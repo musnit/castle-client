@@ -27,11 +27,11 @@ namespace ghost {
     PathDataList pathDataList;
     Bounds fillImageBounds;
     bool _graphicsNeedsReset = true;
-    std::unique_ptr<ToveGraphicsHolder> _graphics;
+    ToveGraphicsHolder *_graphics;
     DrawData *_parent;
-    std::shared_ptr<image::ImageData> fillImageData;
-    std::unique_ptr<graphics::Image> fillImage;
-    std::unique_ptr<graphics::Canvas> pathsCanvas;
+    image::ImageData *fillImageData;
+    graphics::Image *fillImage;
+    graphics::Canvas *pathsCanvas;
     std::optional<std::string> fillPng;
     std::optional<std::string> base64Png;
 
@@ -92,7 +92,7 @@ namespace ghost {
     std::optional<std::string> renderPreviewPng(int size);
 
     graphics::Image *imageDataToImage(image::ImageData *);
-    image::ImageData *getFillImageDataSizedToPathBounds();
+	image::ImageData *getFillImageDataSizedToPathBounds();
     graphics::Image *getFillImage();
     void updateFillImageWithFillImageData();
     void compressFillCanvas();

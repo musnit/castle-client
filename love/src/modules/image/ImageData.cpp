@@ -671,7 +671,11 @@ int ImageData::floodFillTest2(int x, int y, ImageData *paths, int* pixels)
 	return 0;
 }
 
-void ImageData::updateFloodFillForNewPaths(ImageData *paths)
+void ImageData::updateFloodFillForNewPaths(ImageData *paths) {
+	updateFloodFillForNewPaths(paths, 0);
+}
+
+void ImageData::updateFloodFillForNewPaths(ImageData *paths, int debug)
 {
 	Lock lock(mutex);
 	Lock lock2(paths->mutex);
@@ -797,13 +801,35 @@ void ImageData::updateFloodFillForNewPaths(ImageData *paths)
 		}
 	}
 	
+	if (debug == 1) {
+		int i = 0;
+		for (auto const& region : regionToPixel) {
+			Pixel * pixel = new Pixel;
+			pixel->rgba8[0] = 0;
+			pixel->rgba8[1] = 0;
+			pixel->rgba8[2] = 0;
+			pixel->rgba8[i % 3] = 255;
+			pixel->rgba8[3] = 255;
+			regionToPixel[region.first] = pixel;
+			i++;
+		}
+	}
+	
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {
-			uint8 region = pixels[y * width + x];
-			Pixel *pixel = regionToPixel[region];
-			
-			unsigned char *pixeldata = data + ((y * width + x) * pixelsize);
-			memcpy(pixeldata, pixel, pixelsize);
+			if (debug == 2) {
+				Pixel pathP;
+				paths->getPixel(x, y, pathP);
+
+				unsigned char *pixeldata = data + ((y * width + x) * pixelsize);
+				memcpy(pixeldata, &pathP, pixelsize);
+			} else {
+				uint8 region = pixels[y * width + x];
+				Pixel *pixel = regionToPixel[region];
+				
+				unsigned char *pixeldata = data + ((y * width + x) * pixelsize);
+				memcpy(pixeldata, pixel, pixelsize);
+			}
 		}
 	}
 

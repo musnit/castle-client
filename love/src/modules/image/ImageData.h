@@ -101,6 +101,7 @@ public:
 	bool isAlphaSet(const Pixel &p);
 	bool arePixelsEqual(const Pixel &p1, const Pixel &p2);
 	void updateFloodFillForNewPaths(ImageData *paths);
+	void updateFloodFillForNewPaths(ImageData *paths, int debug);
 	bool isEmpty();
 	void getBounds(int *);
 	void copyImageData(ImageData *, int, int, int, int, int, int);

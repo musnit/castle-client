@@ -44,8 +44,7 @@ public:
       currentPathDataList.clear();
 
       drawTool.getDrawDataFrame().resetGraphics();
-      // TODO: this is causing memory issues
-      // drawTool.getDrawDataFrame().resetFill();
+      drawTool.getDrawDataFrame().resetFill();
       drawTool.saveDrawing("freehand pencil");
 
       drawTool.resetTempGraphics();
