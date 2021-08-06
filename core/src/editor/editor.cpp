@@ -644,7 +644,7 @@ struct EditorModifyComponentReceiver {
                     component->editData->set(*reader.jsonValue());
                   });
                 }
-                // editor.updateBlueprint(actorId, {});
+                editor.updateBlueprint(actorId, {});
                 editor.setSelectedComponentStateDirty(RulesBehavior::behaviorId);
               },
               [actorId, oldHasComponent, oldData = std::move(oldData)](Editor &editor, bool) {
@@ -660,7 +660,7 @@ struct EditorModifyComponentReceiver {
                   rulesBehavior.removeComponent(actorId);
                   editor.setSelectedActorStateDirty();
                 }
-                // editor.updateBlueprint(actorId, {});
+                editor.updateBlueprint(actorId, {});
                 editor.setSelectedComponentStateDirty(RulesBehavior::behaviorId);
               });
         } else {
