@@ -143,7 +143,15 @@ const CollisionRow = ({ isSelected, onSelect }) => {
   );
 };
 
-const LayerRow = ({ layer, index, isCollisionActive, onSelectLayer, showLayerActionSheet }) => {
+const LayerRow = ({
+  layer,
+  index,
+  isCollisionActive,
+  isSelected,
+  selectedFrameIndex,
+  onSelectLayer,
+  showLayerActionSheet,
+}) => {
   return (
     <View style={styles.layerRow}>
       <TouchableOpacity style={styles.firstCell} onPress={() => onSelectLayer({ layer })}>
@@ -164,7 +172,7 @@ const LayerRow = ({ layer, index, isCollisionActive, onSelectLayer, showLayerAct
           <Text
             style={[
               styles.layerTitleText,
-              { fontWeight: layer.isSelected && !isCollisionActive ? 'bold' : 'normal' },
+              { fontWeight: isSelected && !isCollisionActive ? 'bold' : 'normal' },
             ]}>
             {layer.title}
           </Text>
@@ -176,7 +184,7 @@ const LayerRow = ({ layer, index, isCollisionActive, onSelectLayer, showLayerAct
         </TouchableOpacity>
       </TouchableOpacity>
       {layer.frames.map((frame, idx) => {
-        let isSelected = layer.selectedFrame == idx + 1 && layer.isSelected;
+        let isSelected = selectedFrameIndex == idx + 1 && layer.isSelected;
         let isMenuAvailable = isSelected;
         let onPress = isMenuAvailable
           ? () =>
@@ -236,8 +244,20 @@ const LayerRow = ({ layer, index, isCollisionActive, onSelectLayer, showLayerAct
   );
 };
 
-const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) => {
+const DrawingLayers = () => {
+  const { layers, selectedLayerId, selectedFrameIndex } = useCoreState('EDITOR_DRAW_LAYERS') || {
+    selectedFrameIndex: 1,
+  };
   const drawToolState = useCoreState('EDITOR_DRAW_TOOL') || {};
+  const fastAction = () => {}; // TODO: actions
+  const fastData = {}; // TODO: further draw tool state
+  /*
+TODO:
+        let layer = newLayers[i];
+        layer.fastAction = fastAction;
+        layer.showCellActionSheet = showCellActionSheet;
+        layer.showLayerActionSheet = showLayerActionSheet;
+*/
 
   const isCollisionActive = drawToolState.selectedSubtools?.root === 'collision';
   const onSelectCollision = React.useCallback(
@@ -271,8 +291,6 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
   );
 
   const { showActionSheetWithOptions } = useActionSheet();
-  const [stateLayers, setStateLayers] = React.useState([]);
-  const [stateSelectedFrame, setStateSelectedFrame] = React.useState(1);
 
   const showCellActionSheet = useCallback(
     (args) => {
@@ -347,7 +365,7 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
         options.push({
           name: 'Move Up',
           action: () => {
-            let ids = stateLayers.map((layer) => layer.id);
+            let ids = layers.map((layer) => layer.id);
             ids.splice(args.index, 1);
             ids.splice(args.index - 1, 0, args.layerId);
 
@@ -356,11 +374,11 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
         });
       }
 
-      if (args.index < stateLayers.length - 1) {
+      if (args.index < layers.length - 1) {
         options.push({
           name: 'Move Down',
           action: () => {
-            let ids = stateLayers.map((layer) => layer.id);
+            let ids = layers.map((layer) => layer.id);
             ids.splice(args.index, 1);
             ids.splice(args.index + 1, 0, args.layerId);
 
@@ -383,40 +401,8 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
         }
       );
     },
-    [stateLayers]
+    [layers]
   );
-
-  useEffect(() => {
-    if (fastData.layers) {
-      let newLayers = JSON.parse(JSON.stringify(fastData.layers));
-      if (!Array.isArray(newLayers)) {
-        newLayers = Object.values(newLayers);
-      }
-
-      newLayers.sort((a, b) => b.order - a.order);
-
-      for (let i = 0; i < newLayers.length; i++) {
-        let layer = newLayers[i];
-        layer.isSelected = layer.id === fastData.selectedLayerId;
-        layer.fastAction = fastAction;
-        layer.showCellActionSheet = showCellActionSheet;
-        layer.showLayerActionSheet = showLayerActionSheet;
-        layer.selectedFrame = fastData.selectedFrame;
-
-        if (!Array.isArray(layer.frames)) {
-          layer.frames = Object.values(layer.frames);
-        }
-
-        layer.frames.sort((a, b) => a.order - b.order);
-      }
-
-      setStateLayers(newLayers);
-    }
-  }, [fastData]);
-
-  useEffect(() => {
-    setStateSelectedFrame(fastData.selectedFrame);
-  }, [fastData.selectedFrame]);
 
   const onAddLayer = useCallback(() => fastAction('onAddLayer'), []);
   const onAddFrame = useCallback(() => fastAction('onAddFrame'), []);
@@ -476,32 +462,33 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
                 <Text style={styles.addLayerText}>Add Layer</Text>
               </View>
             </TouchableOpacity>
-            {stateLayers.length > 0 &&
-              stateLayers[0].frames.map((frame, idx) => {
-                let isSelected = stateSelectedFrame == idx + 1;
-                let onPress = isSelected
-                  ? () => showFrameActionSheet(idx + 1)
-                  : () => fastAction('onSelectFrame', idx + 1);
+            {layers?.length > 0
+              ? layers[0].frames.map((frame, idx) => {
+                  let isSelected = selectedFrameIndex == idx + 1;
+                  let onPress = isSelected
+                    ? () => showFrameActionSheet(idx + 1)
+                    : () => fastAction('onSelectFrame', idx + 1);
 
-                return (
-                  <TouchableOpacity
-                    onPress={onPress}
-                    style={[styles.cell, styles.cellLeftBorder, styles.cellBottomBorder]}
-                    key={idx}>
-                    <Text
-                      style={[
-                        isSelected && { fontWeight: 'bold', paddingTop: 12, paddingBottom: 2 },
-                        { fontSize: 16 },
-                      ]}>
-                      {idx + 1}
-                    </Text>
+                  return (
+                    <TouchableOpacity
+                      onPress={onPress}
+                      style={[styles.cell, styles.cellLeftBorder, styles.cellBottomBorder]}
+                      key={idx}>
+                      <Text
+                        style={[
+                          isSelected && { fontWeight: 'bold', paddingTop: 12, paddingBottom: 2 },
+                          { fontSize: 16 },
+                        ]}>
+                        {idx + 1}
+                      </Text>
 
-                    {isSelected && (
-                      <MCIcon name={'dots-horizontal'} size={ICON_SIZE} color={'#000'} />
-                    )}
-                  </TouchableOpacity>
-                );
-              })}
+                      {isSelected && (
+                        <MCIcon name={'dots-horizontal'} size={ICON_SIZE} color={'#000'} />
+                      )}
+                    </TouchableOpacity>
+                  );
+                })
+              : null}
             <TouchableOpacity
               onPress={onAddFrame}
               style={[
@@ -514,38 +501,33 @@ const DrawingLayers = useFastDataMemo('draw-layers', ({ fastData, fastAction }) 
               <Text style={{ letterSpacing: 0.5, paddingTop: 1 }}>FRAME</Text>
             </TouchableOpacity>
           </View>
-          {stateLayers.map((layer, idx) => {
-            return (
-              <LayerRow
-                key={`layer-${idx}`}
-                index={idx}
-                layer={layer}
-                showLayerActionSheet={showLayerActionSheet}
-                onSelectLayer={onSelectLayer}
-                isCollisionActive={isCollisionActive}
-              />
-            );
-          })}
+          {layers?.length
+            ? layers.map((layer, idx) => {
+                return (
+                  <LayerRow
+                    key={`layer-${idx}`}
+                    index={idx}
+                    layer={layer}
+                    isSelected={layer.id === selectedLayerId}
+                    selectedFrameIndex={selectedFrameIndex}
+                    showLayerActionSheet={showLayerActionSheet}
+                    onSelectLayer={onSelectLayer}
+                    isCollisionActive={isCollisionActive}
+                  />
+                );
+              })
+            : null}
           <CollisionRow onSelect={onSelectCollision} isSelected={isCollisionActive} />
         </View>
       </ScrollView>
     </ScrollView>
   );
-});
+};
 
-const DrawingLayersHeader = useFastDataMemo('draw-layers', ({ fastData, fastAction }) => {
-  const [numFrames, setNumFrames] = React.useState(1);
-
-  useEffect(() => {
-    if (fastData.layers) {
-      let newLayers = JSON.parse(JSON.stringify(fastData.layers));
-      if (!Array.isArray(newLayers)) {
-        newLayers = Object.values(newLayers);
-      }
-
-      setNumFrames(Object.values(newLayers[0].frames).length);
-    }
-  }, [fastData]);
+const DrawingLayersHeader = () => {
+  const { numFrames } = useCoreState('EDITOR_DRAW_LAYERS') || {};
+  const fastAction = () => {}; // TODO: actions
+  const fastData = {}; // TODO: further draw tool state
 
   return (
     <View style={styles.header}>
@@ -589,7 +571,7 @@ const DrawingLayersHeader = useFastDataMemo('draw-layers', ({ fastData, fastActi
       )}
     </View>
   );
-});
+};
 
 export const DrawingLayersSheet = ({ isOpen, onClose, ...props }) => {
   const renderHeader = () => <DrawingLayersHeader style={{ flex: 1 }} />;
