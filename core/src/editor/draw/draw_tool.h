@@ -29,6 +29,7 @@ public:
   void drawOverlay();
 
   void sendDrawToolEvent();
+  void sendLayersEvent();
 
   // Subtool functions
   void resetTempGraphics();

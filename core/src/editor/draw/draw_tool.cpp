@@ -67,6 +67,54 @@ void DrawTool::sendDrawToolEvent() {
   editor.getBridge().sendEvent("EDITOR_DRAW_TOOL", ev);
 }
 
+struct DrawLayersEvent {
+  struct Frame {
+    PROP(int, order);
+    PROP(bool, isLinked);
+    // TODO: base64png
+  };
+
+  struct Layer {
+    PROP(love::DrawDataLayerId, id);
+    PROP(std::string, title);
+    PROP(int, order);
+    PROP(bool, isVisible);
+    PROP((std::vector<Frame>), frames);
+  };
+
+  PROP((std::vector<Layer>), layers);
+};
+
+void DrawTool::sendLayersEvent() {
+  if (!drawData) {
+    return;
+  }
+
+  DrawLayersEvent ev;
+
+  for (int ii = 0, nn = drawData->layers.size(); ii < nn; ii++) {
+    auto &layer = drawData->layers[ii];
+    DrawLayersEvent::Layer layerData { layer->id, layer->title, ii, layer->isVisible };
+
+    for (int jj = 0, mm = layer->frames.size(); jj < mm; jj++) {
+      auto &frame = layer->frames[jj];
+      DrawLayersEvent::Frame frameData {
+        jj, frame->isLinked,
+        // TODO: base64png
+      };
+      layerData.frames().push_back(frameData);
+    }
+
+    ev.layers().push_back(layerData);
+  }
+
+  editor.getBridge().sendEvent("EDITOR_DRAW_LAYERS", ev);
+}
+
+//
+// Subtool functions
+//
+
 DrawSubtool &DrawTool::getCurrentSubtool() {
   std::string currentCategory = "root";
   std::string currentName = selectedSubtools[currentCategory];
@@ -88,10 +136,6 @@ DrawSubtool &DrawTool::getCurrentSubtool() {
 float DrawTool::getZoomAmount() {
   return viewWidth / DRAW_DEFAULT_VIEW_WIDTH;
 }
-
-//
-// Subtool functions
-//
 
 void DrawTool::resetTempGraphics() {
   tempGraphics = std::make_unique<love::ToveGraphicsHolder>();
@@ -265,6 +309,9 @@ void DrawTool::update(double dt) {
     lastHash = hash;
     drawData = std::make_shared<love::DrawData>(component->drawData);
     physicsBodyData = std::make_shared<PhysicsBodyData>(component->physicsBodyData);
+
+    // TODO: send elsewhere
+    sendLayersEvent();
   }
 
   const Gesture &gesture = scene.getGesture();
