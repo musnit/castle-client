@@ -137,7 +137,7 @@ private:
 
   void maybeAddReplacementPaths(std::vector<love::PathData> *pathsToAdd,
       love::PathData &pathDataToReplace, float centerX, float centerY, float radius) {
-    for (int ii = 0, n = pathDataToReplace.points.size(); ii < n - 1; ii += 2) {
+    for (int ii = 0, n = pathDataToReplace.points.size(); ii < n - 1; ii++) {
       auto p1 = pathDataToReplace.points[ii];
       auto p2 = pathDataToReplace.points[ii + 1];
       auto isP1InCircle = isPointInCircle(p1, centerX, centerY, radius);
