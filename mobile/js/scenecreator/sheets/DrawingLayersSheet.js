@@ -151,15 +151,16 @@ const LayerRow = ({
   selectedFrameIndex,
   onSelectLayer,
   showLayerActionSheet,
+  sendLayerAction,
 }) => {
   return (
     <View style={styles.layerRow}>
       <TouchableOpacity style={styles.firstCell} onPress={() => onSelectLayer({ layer })}>
         <TouchableOpacity
           onPress={() =>
-            layer.fastAction('onSetLayerIsVisible', {
+            sendLayerAction('setLayerIsVisible', {
               layerId: layer.id,
-              isVisible: !layer.isVisible,
+              doubleValue: layer.isVisible ? 0 : 1,
             })
           }>
           <MCIcon
@@ -254,7 +255,6 @@ const DrawingLayers = () => {
   /*
 TODO:
         let layer = newLayers[i];
-        layer.fastAction = fastAction;
         layer.showCellActionSheet = showCellActionSheet;
         layer.showLayerActionSheet = showLayerActionSheet;
 */
@@ -272,22 +272,26 @@ TODO:
     [sendAsync, isCollisionActive]
   );
 
+  const sendLayerAction = useCallback(
+    (action, params) => {
+      sendAsync('DRAW_TOOL_LAYER_ACTION', { action, ...params });
+    },
+    [sendAsync]
+  );
+
   const onSelectLayer = useCallback(
     ({ layer, frame }) => {
       // unselect collision if selected
       onSelectCollision(false);
 
       // select layer
-      if (frame) {
-        return layer.fastAction('onSelectLayer', layer.id);
+      if (frame == 1) {
+        return sendLayerAction('selectLayer', { layerId: layer.id });
       } else {
-        return layer.fastAction('onSelectLayerAndFrame', {
-          layerId: layer.id,
-          frame,
-        });
+        return sendLayerAction('selectLayerAndFrame', { layerId: layer.id, frameIndex: frame });
       }
     },
-    [sendAsync, onSelectCollision]
+    [sendLayerAction, onSelectCollision]
   );
 
   const { showActionSheetWithOptions } = useActionSheet();
@@ -513,6 +517,7 @@ TODO:
                     showLayerActionSheet={showLayerActionSheet}
                     onSelectLayer={onSelectLayer}
                     isCollisionActive={isCollisionActive}
+                    sendLayerAction={sendLayerAction}
                   />
                 );
               })
