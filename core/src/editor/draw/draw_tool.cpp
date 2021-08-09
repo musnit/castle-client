@@ -121,6 +121,46 @@ void DrawTool::sendLayersEvent() {
   editor.getBridge().sendEvent("EDITOR_DRAW_LAYERS", ev);
 }
 
+struct DrawToolLayerActionReceiver {
+  inline static const BridgeRegistration<DrawToolLayerActionReceiver> registration {
+    "DRAW_TOOL_LAYER_ACTION"
+  };
+
+  struct Params {
+    PROP(love::DrawDataLayerId, layerId);
+    PROP(int, frameIndex);
+    PROP(std::string, action);
+    PROP(double, doubleValue);
+    PROP(std::string, stringValue);
+  } params;
+
+  void receive(Engine &engine) {
+    auto editor = engine.maybeGetEditor();
+    if (!editor)
+      return;
+
+    auto &drawTool = editor->drawTool;
+    if (!drawTool.drawData)
+      return;
+
+    auto action = params.action();
+    if (action == "selectLayer") {
+      // TODO: setIsPlayingAnimation(false)
+      drawTool.drawData->selectedLayerId = params.layerId();
+      drawTool.saveDrawing("select layer");
+    } else if (action == "selectLayerAndFrame") {
+      // TODO: setIsPlayingAnimation(false)
+      drawTool.drawData->selectedLayerId = params.layerId();
+      drawTool.drawData->selectedFrame.value = params.frameIndex();
+      drawTool.saveDrawing("select cell");
+    } else if (action == "setLayerIsVisible") {
+      auto layer = drawTool.drawData->layerForId(params.layerId());
+      layer->isVisible = params.doubleValue();
+    }
+    drawTool.sendLayersEvent();
+  }
+};
+
 //
 // Subtool functions
 //

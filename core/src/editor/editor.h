@@ -73,6 +73,7 @@ private:
   friend struct EditorInspectorActionReceiver;
   friend struct DrawToolSelectSubtoolReceiver;
   friend struct DrawToolSelectColorReceiver;
+  friend struct DrawToolLayerActionReceiver;
 
   Lv &lv { Lv::getInstance() };
   Bridge &bridge;
