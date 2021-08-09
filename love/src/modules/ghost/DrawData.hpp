@@ -69,7 +69,6 @@ namespace ghost {
     DrawDataLayerId selectedLayerId;
     OneIndexFrame selectedFrame;
     std::vector<std::unique_ptr<DrawDataLayer>> layers;
-    bool _layerDataChanged;
 
     DrawData(std::shared_ptr<DrawData> other) {
       Archive archive;
@@ -80,14 +79,10 @@ namespace ghost {
       archive.read([&](Archive::Reader &r) {
         read(r);
       });
-      _layerDataChanged = true;
     }
 
     DrawData(lua_State *L, int index) {
       read(L, index);
-
-      _layerDataChanged = true;
-
       /*ToveSubpathRef subpath = NewSubpath();
       TovePathRef path = NewPath(null);
       */
@@ -99,15 +94,10 @@ namespace ghost {
       archive.read([&](Archive::Reader &r) {
         read(r);
       });
-
-      _layerDataChanged = true;
     }
 
     DrawData(Archive::Reader &archive) {
       read(archive);
-
-      _layerDataChanged = true;
-
       /*ToveSubpathRef subpath = NewSubpath();
       TovePathRef path = NewPath(null);*/
     }
@@ -237,7 +227,8 @@ namespace ghost {
     void preload();
     void render(std::optional<AnimationComponentProperties> componentProperties);
     bool isPointInBounds(Point point);
-    void touchLayerData();
+
+    void addLayer(std::string title, DrawDataLayerId id);
   };
 
 }

@@ -609,176 +609,167 @@ namespace ghost {
     return data;
   }
 */
-  void DrawData::touchLayerData() {
-    _layerDataChanged = true;
+
+  void DrawData::addLayer(std::string title, DrawDataLayerId id) {
+    auto newLayer = std::make_unique<DrawDataLayer>(title, id);
+    numTotalLayers++;
+
+    auto frameCount = layers.size() > 0 ? layers[0]->frames.size() : 1;
+    for (int i = 0; i < frameCount; i++) {
+      auto newFrame = std::make_unique<DrawDataFrame>(i > 0);
+      newLayer->frames.push_back(std::move(newFrame));
+    }
+
+    selectedLayerId = newLayer->id;
+    newLayer->setParent(this);
+    layers.push_back(std::move(newLayer));
   }
-  
+
 
   void DrawData::updateFramePreview() {
-    touchLayerData();
     currentLayerFrame()->base64Png = currentLayerFrame()->renderPreviewPng(-1);
   }
 
-/*
-  TYPE DrawData::unlinkCurrentCell() {
-    if (!selectedLayer().frames[selectedFrame].isLinked) {
-          return;
+  /*
+    TYPE DrawData::unlinkCurrentCell() {
+      if (!selectedLayer().frames[selectedFrame].isLinked) {
+            return;
+      }
+      setCellLinked(selectedLayerId, selectedFrame, false);
     }
-    setCellLinked(selectedLayerId, selectedFrame, false);
-  }
 
-  TYPE DrawData::selectLayer(TYPE layerId) {
-    selectedLayerId = layerId;
-    touchLayerData();
-  }
+    TYPE DrawData::selectLayer(TYPE layerId) {
+      selectedLayerId = layerId;
+      touchLayerData();
+    }
 
-  TYPE DrawData::selectFrame(TYPE frame) {
-    selectedFrame = frame;
-    touchLayerData();
-  }
+    TYPE DrawData::selectFrame(TYPE frame) {
+      selectedFrame = frame;
+      touchLayerData();
+    }
 
-  TYPE DrawData::deleteLayer(TYPE layerId) {
-    auto layerIndex = 1;
-    for (int i = 0; i < layers.length; i++) {
-          if (layers[i].id == layerId) {
-            layerIndex = i;
-          }
+    TYPE DrawData::deleteLayer(TYPE layerId) {
+      auto layerIndex = 1;
+      for (int i = 0; i < layers.length; i++) {
+            if (layers[i].id == layerId) {
+              layerIndex = i;
+            }
+      }
+      table.remove(layers, layerIndex);
+      if (layers.length == 0) {
+            addLayer();
+            return;
+      }
+      if (selectedLayerId == layerId) {
+            selectedLayerId = layers[0].id;
+            if (layerIndex <= layers.length) {
+              selectedLayerId = layers[layerIndex].id;
+            } else if (layerIndex > 1) {
+              selectedLayerId = layers[layerIndex - 1].id;
+            }
+      }
+      touchLayerData();
     }
-    table.remove(layers, layerIndex);
-    if (layers.length == 0) {
-          addLayer();
-          return;
-    }
-    if (selectedLayerId == layerId) {
-          selectedLayerId = layers[0].id;
-          if (layerIndex <= layers.length) {
-            selectedLayerId = layers[layerIndex].id;
-          } else if (layerIndex > 1) {
-            selectedLayerId = layers[layerIndex - 1].id;
-          }
-    }
-    touchLayerData();
-  }
 
-  TYPE DrawData::deleteFrame(TYPE frame) {
-    framesBounds = [];
-    for (int i = 0; i < layers.length; i++) {
-          table.remove(layers[i].frames, frame);
+    TYPE DrawData::deleteFrame(TYPE frame) {
+      framesBounds = [];
+      for (int i = 0; i < layers.length; i++) {
+            table.remove(layers[i].frames, frame);
+      }
+      if (layers[0].frames.length == 0) {
+            addFrame();
+            return;
+      }
+      if (selectedFrame > layers[0].frames.length) {
+            selectedFrame = layers[0].frames.length;
+      }
+      touchLayerData();
     }
-    if (layers[0].frames.length == 0) {
-          addFrame();
-          return;
-    }
-    if (selectedFrame > layers[0].frames.length) {
-          selectedFrame = layers[0].frames.length;
-    }
-    touchLayerData();
-  }
 
-  TYPE DrawData::reorderLayers(TYPE layerIds) {
-    auto layerIdToLayer = [];
-    for (int i = 0; i < layers.length; i++) {
-          layerIdToLayer[layers[i].id] = layers[i];
+    TYPE DrawData::reorderLayers(TYPE layerIds) {
+      auto layerIdToLayer = [];
+      for (int i = 0; i < layers.length; i++) {
+            layerIdToLayer[layers[i].id] = layers[i];
+      }
+      layers = [];
+      for (int i = layerIds.length; i < 0; i += -1) {
+            layers.push_back(layerIdToLayer[layerIds[i]]);
+      }
+      touchLayerData();
     }
-    layers = [];
-    for (int i = layerIds.length; i < 0; i += -1) {
-          layers.push_back(layerIdToLayer[layerIds[i]]);
-    }
-    touchLayerData();
-  }
 
-  TYPE DrawData::setLayerIsVisible(TYPE layerId, TYPE isVisible) {
-    layerForId(layerId).isVisible = isVisible;
-    touchLayerData();
-  }
-
-  TYPE DrawData::function() {
-    return self;
-  }
-
-  TYPE DrawData::_newFrame(TYPE isLinked) {
-    auto newFrame = {
-          isLinked = isLinked;
-          pathDataList = [];
-          fillImageBounds = {
-            maxX = 0;
-            maxY = 0;
-            minX = 0;
-            minY = 0;
-          }
+    TYPE DrawData::setLayerIsVisible(TYPE layerId, TYPE isVisible) {
+      layerForId(layerId).isVisible = isVisible;
+      touchLayerData();
     }
-    setmetatable(newFrame, {
-          __index = DrawDataFrame;
-    });
-    newFrame.parent = undefined;
-    return newFrame;
-  }
 
-  TYPE DrawData::setCellLinked(TYPE layerId, TYPE frame, TYPE isLinked) {
-    if (frame < 2) {
-          return;
+    TYPE DrawData::function() {
+      return self;
     }
-    if (layerForId(layerId).frames[frame].isLinked == isLinked) {
-          return;
-    }
-    if (isLinked) {
-          layerForId(layerId).frames[frame] = _newFrame(isLinked);
-    } else {
-          auto data = copyCell(layerId, frame);
-          pasteCell(layerId, frame, data);
-    }
-    touchLayerData();
-  }
 
-  TYPE DrawData::copyCell(TYPE layerId, TYPE frame) {
-    auto realFrame = getRealFrameIndexForLayerId(layerId, frame);
-    auto oldFrame = layerForId(layerId).frames[realFrame];
-    return util.deepCopyTable(oldFrame.serialize());
-  }
-
-  TYPE DrawData::function() {
-    return self;
-  }
-
-  TYPE DrawData::pasteCell(TYPE layerId, TYPE frame, TYPE newFrame) {
-    setmetatable(newFrame, {
-          __index = DrawDataFrame;
-    });
-    newFrame.parent = undefined;
-    newFrame.deserializePathDataList();
-    newFrame.deserializeFillAndPreview();
-    layerForId(layerId).frames[frame] = newFrame;
-    touchLayerData();
-  }
-
-  TYPE DrawData::addLayer() {
-    numTotalLayers = numTotalLayers + 1;
-    auto newLayer = {
-          title = "Layer " + numTotalLayers;
-          id = "layer" + numTotalLayers;
-          isVisible = true;
-          frames = [];
+    TYPE DrawData::_newFrame(TYPE isLinked) {
+      auto newFrame = {
+            isLinked = isLinked;
+            pathDataList = [];
+            fillImageBounds = {
+              maxX = 0;
+              maxY = 0;
+              minX = 0;
+              minY = 0;
+            }
+      }
+      setmetatable(newFrame, {
+            __index = DrawDataFrame;
+      });
+      newFrame.parent = undefined;
+      return newFrame;
     }
-    auto frameCount = 1;
-    if (layers.length > 0) {
-          frameCount = layers[0].frames.length;
-    }
-    for (int i = 0; i < frameCount; i++) {
-          newLayer.frames.push_back(_newFrame(i > 1));
-    }
-    layers.push_back(newLayer);
-    selectedLayerId = newLayer.id;
-    touchLayerData();
-  }
 
-  TYPE DrawData::addFrame() {
-    auto isLinked = layers[0].frames.length > 0;
-    for (int l = 0; l < layers.length; l++) {
-          layers[l].frames.push_back(_newFrame(isLinked));
+    TYPE DrawData::setCellLinked(TYPE layerId, TYPE frame, TYPE isLinked) {
+      if (frame < 2) {
+            return;
+      }
+      if (layerForId(layerId).frames[frame].isLinked == isLinked) {
+            return;
+      }
+      if (isLinked) {
+            layerForId(layerId).frames[frame] = _newFrame(isLinked);
+      } else {
+            auto data = copyCell(layerId, frame);
+            pasteCell(layerId, frame, data);
+      }
+      touchLayerData();
     }
-    selectedFrame = layers[0].frames.length;
-    touchLayerData();
-  }*/
+
+    TYPE DrawData::copyCell(TYPE layerId, TYPE frame) {
+      auto realFrame = getRealFrameIndexForLayerId(layerId, frame);
+      auto oldFrame = layerForId(layerId).frames[realFrame];
+      return util.deepCopyTable(oldFrame.serialize());
+    }
+
+    TYPE DrawData::function() {
+      return self;
+    }
+
+    TYPE DrawData::pasteCell(TYPE layerId, TYPE frame, TYPE newFrame) {
+      setmetatable(newFrame, {
+            __index = DrawDataFrame;
+      });
+      newFrame.parent = undefined;
+      newFrame.deserializePathDataList();
+      newFrame.deserializeFillAndPreview();
+      layerForId(layerId).frames[frame] = newFrame;
+      touchLayerData();
+    }
+
+    TYPE DrawData::addFrame() {
+      auto isLinked = layers[0].frames.length > 0;
+      for (int l = 0; l < layers.length; l++) {
+            layers[l].frames.push_back(_newFrame(isLinked));
+      }
+      selectedFrame = layers[0].frames.length;
+      touchLayerData();
+    }*/
 
   AnimationState DrawData::newAnimationState() {
     AnimationState state;

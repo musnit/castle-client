@@ -253,7 +253,7 @@ namespace ghost {
 
   struct Color {
     float data[4];
-  
+
     Color() {
       data[0] = data[1] = data[2] = data[3] = 0.0;
     }
@@ -342,7 +342,7 @@ namespace ghost {
     }
 
     ~PathData() {
-		// TODO: saveDrawing->renderPreviewPng->getPathDataBounds calls this twice for some reason
+      // TODO: saveDrawing->renderPreviewPng->getPathDataBounds calls this twice for some reason
       /*for (auto &subpath : toveSubpaths) {
         ReleaseSubpath(subpath);
       }
@@ -437,7 +437,7 @@ namespace ghost {
   };
 
   struct Bounds {
-    float minX, maxX, minY, maxY;
+    float minX = 0, maxX = 0, minY = 0, maxY = 0;
 
     void read(lua_State *L, int index) {
       GHOST_READ_NUMBER(minX, 0)

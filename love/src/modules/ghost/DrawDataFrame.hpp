@@ -35,6 +35,11 @@ namespace ghost {
     std::optional<std::string> fillPng;
     std::optional<std::string> base64Png;
 
+    DrawDataFrame() = default;
+    DrawDataFrame(bool isLinked_)
+        : isLinked(isLinked_) {
+    }
+
     void read(lua_State *L, int index) {
       GHOST_READ_BOOL(isLinked, false)
       GHOST_READ_VECTOR(pathDataList, PathData)
@@ -70,11 +75,12 @@ namespace ghost {
 
       archive.obj("fillImageBounds", fillImageBounds);
       if (fillImageData) {
-        love::filesystem::FileData * fileData = fillImageData->encode(love::image::FormatHandler::EncodedFormat::ENCODED_PNG, "Image.png", false);
-        const char * fileDataString = (const char *) fileData->getData();
+        love::filesystem::FileData *fileData = fillImageData->encode(
+            love::image::FormatHandler::EncodedFormat::ENCODED_PNG, "Image.png", false);
+        const char *fileDataString = (const char *)fileData->getData();
         size_t fileDataSize = fileData->getSize();
         size_t dstlen = 0;
-        char * result = data::encode(data::ENCODE_BASE64, fileDataString, fileDataSize, dstlen, 0);
+        char *result = data::encode(data::ENCODE_BASE64, fileDataString, fileDataSize, dstlen, 0);
         archive.str("fillPng", std::string(result));
       }
     }
@@ -92,7 +98,7 @@ namespace ghost {
     std::optional<std::string> renderPreviewPng(int size);
 
     graphics::Image *imageDataToImage(image::ImageData *);
-	image::ImageData *getFillImageDataSizedToPathBounds();
+    image::ImageData *getFillImageDataSizedToPathBounds();
     graphics::Image *getFillImage();
     void updateFillImageWithFillImageData();
     void compressFillCanvas();
@@ -120,8 +126,14 @@ namespace ghost {
   struct DrawDataLayer {
     std::string title;
     DrawDataLayerId id;
-    bool isVisible;
+    bool isVisible = true;
     std::vector<std::unique_ptr<DrawDataFrame>> frames;
+
+    DrawDataLayer() = default;
+    DrawDataLayer(std::string title_, DrawDataLayerId id_)
+        : title(title_)
+        , id(id_) {
+    }
 
     void read(lua_State *L, int index) {
       GHOST_READ_STRING(title)
