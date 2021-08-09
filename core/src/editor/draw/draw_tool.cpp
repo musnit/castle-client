@@ -156,6 +156,8 @@ struct DrawToolLayerActionReceiver {
     } else if (action == "setLayerIsVisible") {
       auto layer = drawTool.drawData->layerForId(params.layerId());
       layer->isVisible = params.doubleValue();
+    } else if (action == "addLayer") {
+      drawTool.makeNewLayer();
     }
     drawTool.sendLayersEvent();
   }
@@ -329,6 +331,13 @@ void DrawTool::resetState() {
   selectedSubtools["collision_move"] = "move";
 
   resetTempGraphics();
+}
+
+void DrawTool::makeNewLayer() {
+  if (drawData) {
+    auto newLayerNum = drawData->numTotalLayers + 1;
+    drawData->addLayer(fmt::format("Layer {}", newLayerNum), fmt::format("layer{}", newLayerNum));
+  }
 }
 
 //

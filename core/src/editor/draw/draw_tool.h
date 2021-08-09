@@ -47,6 +47,7 @@ public:
 private:
   friend struct DrawToolSelectSubtoolReceiver;
   friend struct DrawToolSelectColorReceiver;
+  friend struct DrawToolLayerActionReceiver;
 
   bool isDrawToolEventDirty;
 
@@ -67,6 +68,8 @@ private:
 
   DrawSubtool &getCurrentSubtool();
   GesturePanZoom panZoom;
+
+  void makeNewLayer();
 };
 
 inline love::DrawData &DrawTool::getDrawData() {
