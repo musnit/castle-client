@@ -365,26 +365,14 @@ TODO:
       if (index > 0) {
         options.push({
           name: 'Move Up',
-          action: () => {
-            let ids = layers.map((layer) => layer.id);
-            ids.splice(index, 1);
-            ids.splice(index - 1, 0, layerId);
-
-            fastAction('onReorderLayers', ids);
-          },
+          action: () => sendLayerAction('setLayerOrder', { layerId, doubleValue: index - 1 }),
         });
       }
 
       if (index < layers.length - 1) {
         options.push({
           name: 'Move Down',
-          action: () => {
-            let ids = layers.map((layer) => layer.id);
-            ids.splice(index, 1);
-            ids.splice(index + 1, 0, layerId);
-
-            fastAction('onReorderLayers', ids);
-          },
+          action: () => sendLayerAction('setLayerOrder', { layerId, doubleValue: index + 1 }),
         });
       }
 
@@ -402,7 +390,7 @@ TODO:
         }
       );
     },
-    [sendLayerAction]
+    [sendLayerAction, layers?.length]
   );
 
   const onAddLayer = useCallback(() => sendLayerAction('addLayer'), [sendLayerAction]);
