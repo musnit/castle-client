@@ -394,42 +394,43 @@ TODO:
   );
 
   const onAddLayer = useCallback(() => sendLayerAction('addLayer'), [sendLayerAction]);
-  const onAddFrame = useCallback(() => fastAction('onAddFrame'), []);
-  const showFrameActionSheet = useCallback((frame) => {
-    let options = [
-      {
-        name: 'Add Frame After',
-        action: () => {
-          fastAction('onAddFrameAtPosition', frame);
-        },
-      },
-    ];
-
-    if (frame > 1) {
-      options = [
+  const onAddFrame = useCallback(() => sendLayerAction('addFrame'), [sendLayerAction]);
+  const showFrameActionSheet = useCallback(
+    (frame) => {
+      let options = [
         {
-          name: 'Delete Frame',
+          name: 'Add Frame After',
           action: () => {
-            fastAction('onDeleteFrame', frame);
+            fastAction('onAddFrameAtPosition', frame);
           },
         },
-        ...options,
       ];
-    }
 
-    showActionSheetWithOptions(
-      {
-        title: 'Frame Options',
-        options: options.map((option) => option.name).concat(['Cancel']),
-        cancelButtonIndex: options.length,
-      },
-      (buttonIndex) => {
-        if (buttonIndex < options.length) {
-          return options[buttonIndex].action();
-        }
+      if (frame > 1) {
+        options = [
+          {
+            name: 'Delete Frame',
+            action: () => sendLayerAction('deleteFrame', { frameIndex: frame }),
+          },
+          ...options,
+        ];
       }
-    );
-  }, []);
+
+      showActionSheetWithOptions(
+        {
+          title: 'Frame Options',
+          options: options.map((option) => option.name).concat(['Cancel']),
+          cancelButtonIndex: options.length,
+        },
+        (buttonIndex) => {
+          if (buttonIndex < options.length) {
+            return options[buttonIndex].action();
+          }
+        }
+      );
+    },
+    [sendLayerAction]
+  );
 
   return (
     <ScrollView
