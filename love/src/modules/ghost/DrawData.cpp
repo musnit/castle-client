@@ -612,7 +612,6 @@ namespace ghost {
 
   void DrawData::addLayer(std::string title, DrawDataLayerId id) {
     auto newLayer = std::make_unique<DrawDataLayer>(title, id);
-    numTotalLayers++;
 
     auto frameCount = layers.size() > 0 ? layers[0]->frames.size() : 1;
     for (int i = 0; i < frameCount; i++) {
@@ -625,6 +624,31 @@ namespace ghost {
     layers.push_back(std::move(newLayer));
   }
 
+  bool DrawData::deleteLayer(DrawDataLayerId id) {
+    int indexToRemove = -1;
+    for (int ii = 0; ii < layers.size(); ii++) {
+      if (layers[ii]->id == id) {
+        indexToRemove = ii;
+        break;
+      }
+    }
+    if (indexToRemove >= 0) {
+      layers.erase(layers.begin() + indexToRemove);
+      if (selectedLayerId == id) {
+        if (indexToRemove < getNumLayers()) {
+          selectedLayerId = layers[indexToRemove]->id;
+        } else if (indexToRemove > 0) {
+          selectedLayerId = layers[indexToRemove - 1]->id;
+        } else if (getNumLayers() > 0) {
+          selectedLayerId = layers[0]->id;
+        } else {
+          selectedLayerId = "";
+        }
+      }
+      return true;
+    }
+    return false;
+  }
 
   void DrawData::updateFramePreview() {
     currentLayerFrame()->base64Png = currentLayerFrame()->renderPreviewPng(-1);
@@ -645,29 +669,6 @@ namespace ghost {
 
     TYPE DrawData::selectFrame(TYPE frame) {
       selectedFrame = frame;
-      touchLayerData();
-    }
-
-    TYPE DrawData::deleteLayer(TYPE layerId) {
-      auto layerIndex = 1;
-      for (int i = 0; i < layers.length; i++) {
-            if (layers[i].id == layerId) {
-              layerIndex = i;
-            }
-      }
-      table.remove(layers, layerIndex);
-      if (layers.length == 0) {
-            addLayer();
-            return;
-      }
-      if (selectedLayerId == layerId) {
-            selectedLayerId = layers[0].id;
-            if (layerIndex <= layers.length) {
-              selectedLayerId = layers[layerIndex].id;
-            } else if (layerIndex > 1) {
-              selectedLayerId = layers[layerIndex - 1].id;
-            }
-      }
       touchLayerData();
     }
 
@@ -698,31 +699,8 @@ namespace ghost {
       touchLayerData();
     }
 
-    TYPE DrawData::setLayerIsVisible(TYPE layerId, TYPE isVisible) {
-      layerForId(layerId).isVisible = isVisible;
-      touchLayerData();
-    }
-
     TYPE DrawData::function() {
       return self;
-    }
-
-    TYPE DrawData::_newFrame(TYPE isLinked) {
-      auto newFrame = {
-            isLinked = isLinked;
-            pathDataList = [];
-            fillImageBounds = {
-              maxX = 0;
-              maxY = 0;
-              minX = 0;
-              minY = 0;
-            }
-      }
-      setmetatable(newFrame, {
-            __index = DrawDataFrame;
-      });
-      newFrame.parent = undefined;
-      return newFrame;
     }
 
     TYPE DrawData::setCellLinked(TYPE layerId, TYPE frame, TYPE isLinked) {

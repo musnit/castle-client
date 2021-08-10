@@ -64,7 +64,6 @@ namespace ghost {
     float scale;
     int version;
     float fillPixelsPerUnit;
-    int numTotalLayers;
     std::vector<std::optional<Bounds>> framesBounds;
     DrawDataLayerId selectedLayerId;
     OneIndexFrame selectedFrame;
@@ -116,7 +115,7 @@ namespace ghost {
       scale = archive.num("scale", 10);
       version = archive.num("version", 3);
       fillPixelsPerUnit = archive.num("fillPixelsPerUnit", 25.6);
-      numTotalLayers = archive.num("numTotalLayers", 1);
+      // int numTotalLayers = archive.num("numTotalLayers", 1);
       archive.arr("framesBounds", [&]() {
         for (auto i = 0; i < archive.size(); i++) {
           Bounds bounds;
@@ -153,7 +152,7 @@ namespace ghost {
       archive.num("scale", scale);
       archive.num("version", version);
       archive.num("fillPixelsPerUnit", fillPixelsPerUnit);
-      archive.num("numTotalLayers", numTotalLayers);
+      archive.num("numTotalLayers", getNumLayers());
       archive.arr("framesBounds", [&]() {
         for (size_t i = 0; i < framesBounds.size(); i++) {
           archive.obj(*framesBounds[i]);
@@ -169,6 +168,7 @@ namespace ghost {
     }
 
     void read(lua_State *L, int index) {
+      int numTotalLayers;
       GHOST_READ_STRUCT(color)
       GHOST_READ_STRUCT(lineColor)
       GHOST_READ_NUMBER(gridSize, 0.71428571428571)
@@ -186,6 +186,10 @@ namespace ghost {
       for (size_t i = 0; i < layers.size(); i++) {
         layers[i]->setParent(this);
       }
+    }
+
+    int getNumLayers() {
+      return layers.size();
     }
 
     float gridCellSize();
@@ -229,6 +233,7 @@ namespace ghost {
     bool isPointInBounds(Point point);
 
     void addLayer(std::string title, DrawDataLayerId id);
+    bool deleteLayer(DrawDataLayerId id);
   };
 
 }
