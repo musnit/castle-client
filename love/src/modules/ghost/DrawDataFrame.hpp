@@ -27,11 +27,11 @@ namespace ghost {
     PathDataList pathDataList;
     Bounds fillImageBounds;
     bool _graphicsNeedsReset = true;
-    ToveGraphicsHolder *_graphics;
-    DrawData *_parent;
-    image::ImageData *fillImageData;
-    graphics::Image *fillImage;
-    graphics::Canvas *pathsCanvas;
+    ToveGraphicsHolder *_graphics = NULL;
+    DrawData *_parent = NULL;
+    image::ImageData *fillImageData = NULL;
+    graphics::Image *fillImage = NULL;
+    graphics::Canvas *pathsCanvas = NULL;
     std::optional<std::string> fillPng;
     std::optional<std::string> base64Png;
 
