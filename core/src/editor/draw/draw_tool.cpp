@@ -158,6 +158,10 @@ struct DrawToolLayerActionReceiver {
       layer->isVisible = params.doubleValue();
     } else if (action == "addLayer") {
       drawTool.makeNewLayer();
+      drawTool.saveDrawing("add layer");
+    } else if (action == "deleteLayer") {
+      drawTool.deleteLayerAndValidate(params.layerId());
+      drawTool.saveDrawing("delete layer");
     }
     drawTool.sendLayersEvent();
   }
@@ -335,8 +339,16 @@ void DrawTool::resetState() {
 
 void DrawTool::makeNewLayer() {
   if (drawData) {
-    auto newLayerNum = drawData->numTotalLayers + 1;
+    auto newLayerNum = drawData->getNumLayers() + 1;
     drawData->addLayer(fmt::format("Layer {}", newLayerNum), fmt::format("layer{}", newLayerNum));
+  }
+}
+
+void DrawTool::deleteLayerAndValidate(love::DrawDataLayerId layerId) {
+  if (drawData) {
+    if (drawData->deleteLayer(layerId) && drawData->getNumLayers() == 0) {
+      makeNewLayer();
+    }
   }
 }
 

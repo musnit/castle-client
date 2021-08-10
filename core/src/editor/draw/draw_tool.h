@@ -70,6 +70,7 @@ private:
   GesturePanZoom panZoom;
 
   void makeNewLayer();
+  void deleteLayerAndValidate(love::DrawDataLayerId layerId);
 };
 
 inline love::DrawData &DrawTool::getDrawData() {
