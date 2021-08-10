@@ -256,7 +256,6 @@ const DrawingLayers = () => {
 TODO:
         let layer = newLayers[i];
         layer.showCellActionSheet = showCellActionSheet;
-        layer.showLayerActionSheet = showLayerActionSheet;
 */
 
   const isCollisionActive = drawToolState.selectedSubtools?.root === 'collision';
@@ -355,36 +354,34 @@ TODO:
   );
 
   const showLayerActionSheet = useCallback(
-    (args) => {
+    ({ layerId, index }) => {
       let options = [
         {
           name: 'Delete',
-          action: () => {
-            fastAction('onDeleteLayer', args.layerId);
-          },
+          action: () => sendLayerAction('deleteLayer', { layerId }),
         },
       ];
 
-      if (args.index > 0) {
+      if (index > 0) {
         options.push({
           name: 'Move Up',
           action: () => {
             let ids = layers.map((layer) => layer.id);
-            ids.splice(args.index, 1);
-            ids.splice(args.index - 1, 0, args.layerId);
+            ids.splice(index, 1);
+            ids.splice(index - 1, 0, layerId);
 
             fastAction('onReorderLayers', ids);
           },
         });
       }
 
-      if (args.index < layers.length - 1) {
+      if (index < layers.length - 1) {
         options.push({
           name: 'Move Down',
           action: () => {
             let ids = layers.map((layer) => layer.id);
-            ids.splice(args.index, 1);
-            ids.splice(args.index + 1, 0, args.layerId);
+            ids.splice(index, 1);
+            ids.splice(index + 1, 0, layerId);
 
             fastAction('onReorderLayers', ids);
           },
@@ -405,10 +402,10 @@ TODO:
         }
       );
     },
-    [layers]
+    [sendLayerAction]
   );
 
-  const onAddLayer = useCallback(() => fastAction('onAddLayer'), []);
+  const onAddLayer = useCallback(() => sendLayerAction('addLayer'), [sendLayerAction]);
   const onAddFrame = useCallback(() => fastAction('onAddFrame'), []);
   const showFrameActionSheet = useCallback((frame) => {
     let options = [
