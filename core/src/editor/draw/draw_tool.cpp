@@ -165,6 +165,12 @@ struct DrawToolLayerActionReceiver {
     } else if (action == "setLayerOrder") {
       drawTool.drawData->setLayerOrder(params.layerId(), params.doubleValue());
       drawTool.saveDrawing("reorder layer");
+    } else if (action == "addFrame") {
+      drawTool.drawData->addFrame();
+      drawTool.saveDrawing("add frame");
+    } else if (action == "deleteFrame") {
+      drawTool.drawData->deleteFrame(params.frameIndex());
+      drawTool.saveDrawing("delete frame");
     }
     drawTool.sendLayersEvent();
   }

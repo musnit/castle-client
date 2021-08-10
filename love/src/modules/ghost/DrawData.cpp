@@ -499,41 +499,17 @@ namespace ghost {
     framesBounds = [bounds];
     bounds = null;
   }*/
-  /*
-  TYPE DrawData::getLayerData() {
-    if (_layerDataChanged) {
-          _layerDataChanged = false;
-          auto data = {
-            selectedLayerId = selectedLayerId;
-            selectedFrame = selectedFrame;
-            layers = [];
-          }
-          for (int l = 0; l < layers.length; l++) {
-            auto layer = layers[l];
-            auto layerData = {
-                  title = layer.title;
-                  id = layer.id;
-                  order = l;
-                  isVisible = layer.isVisible;
-                  frames = [];
-            }
-            for (int f = 0; f < layer.frames.length; f++) {
-                  auto frame = layer.frames[f];
-                  auto frameData = {
-                    order = f;
-                    isLinked = frame.isLinked;
-                    base64Png = frame.base64Png;
-                  }
-                  layerData.frames["frame" + f] = frameData;
-            }
-            data.layers[layer.id] = layerData;
-          }
-          _layerData = data;
-    }
-    return _layerData;
-  }*/
 
-  void DrawData::updateBounds() {
+  void DrawData::clearBounds() {
+    framesBounds.clear();
+    if (getNumLayers()) {
+      for (int ii = 0, numFrames = layers[0]->frames.size(); ii < numFrames; ii++) {
+        framesBounds.push_back(std::nullopt);
+      }
+    }
+  }
+
+  void DrawData::updateSelectedFrameBounds() {
     framesBounds[selectedFrame.value - 1] = std::nullopt;
   }
 
@@ -664,6 +640,35 @@ namespace ghost {
     // TODO: support arbitrary moves
   }
 
+  void DrawData::addFrame() {
+    if (getNumLayers()) {
+      auto isLinked = layers[0]->frames.size() > 0;
+      for (auto &layer : layers) {
+        auto newFrame = std::make_unique<DrawDataFrame>(isLinked);
+        layer->frames.push_back(std::move(newFrame));
+      }
+      selectedFrame.setFromZeroIndex(layers[0]->frames.size() - 1);
+    }
+  }
+
+  bool DrawData::deleteFrame(OneIndexFrame frameIndex) {
+    clearBounds();
+    auto zeroIndexFrame = frameIndex.toZeroIndex();
+    if (getNumLayers()) {
+      for (auto &layer : layers) {
+        layer->frames.erase(layer->frames.begin() + zeroIndexFrame);
+      }
+      if (layers[0]->frames.empty()) {
+        addFrame();
+      }
+      if (selectedFrame.toZeroIndex() >= layers[0]->frames.size()) {
+        selectedFrame.setFromZeroIndex(layers[0]->frames.size() - 1);
+      }
+      return true;
+    }
+    return false;
+  }
+
   void DrawData::updateFramePreview() {
     currentLayerFrame()->base64Png = currentLayerFrame()->renderPreviewPng(-1);
   }
@@ -683,21 +688,6 @@ namespace ghost {
 
     TYPE DrawData::selectFrame(TYPE frame) {
       selectedFrame = frame;
-      touchLayerData();
-    }
-
-    TYPE DrawData::deleteFrame(TYPE frame) {
-      framesBounds = [];
-      for (int i = 0; i < layers.length; i++) {
-            table.remove(layers[i].frames, frame);
-      }
-      if (layers[0].frames.length == 0) {
-            addFrame();
-            return;
-      }
-      if (selectedFrame > layers[0].frames.length) {
-            selectedFrame = layers[0].frames.length;
-      }
       touchLayerData();
     }
 
@@ -739,15 +729,6 @@ namespace ghost {
       newFrame.deserializePathDataList();
       newFrame.deserializeFillAndPreview();
       layerForId(layerId).frames[frame] = newFrame;
-      touchLayerData();
-    }
-
-    TYPE DrawData::addFrame() {
-      auto isLinked = layers[0].frames.length > 0;
-      for (int l = 0; l < layers.length; l++) {
-            layers[l].frames.push_back(_newFrame(isLinked));
-      }
-      selectedFrame = layers[0].frames.length;
       touchLayerData();
     }*/
 

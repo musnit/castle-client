@@ -212,7 +212,8 @@ namespace ghost {
     DrawDataLayer *layerForId(DrawDataLayerId id);
     DrawDataFrame *currentLayerFrame();
     PathDataList *currentPathDataList();
-    void updateBounds();
+    void clearBounds();
+    void updateSelectedFrameBounds();
     Bounds getBounds(int frame);
     bool arePathDatasFloodFillable(PathData pd1, PathData pd2);
     void updateFramePreview();
@@ -235,6 +236,9 @@ namespace ghost {
     void addLayer(std::string title, DrawDataLayerId id);
     bool deleteLayer(DrawDataLayerId id);
     void setLayerOrder(DrawDataLayerId id, int newIndexInLayers);
+
+    void addFrame();
+    bool deleteFrame(OneIndexFrame frameIndex);
   };
 
 }

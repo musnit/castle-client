@@ -480,7 +480,16 @@ namespace ghost {
   };
 
   struct OneIndexFrame {
-    int value;
+    int value = 1;
+
+    OneIndexFrame() = default;
+    OneIndexFrame(int &intValue)
+        : value(intValue) {
+    }
+
+    void operator=(const int &intValue) {
+      value = intValue;
+    }
 
     int toZeroIndex() {
       return value - 1;
