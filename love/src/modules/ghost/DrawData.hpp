@@ -234,6 +234,7 @@ namespace ghost {
 
     void addLayer(std::string title, DrawDataLayerId id);
     bool deleteLayer(DrawDataLayerId id);
+    void setLayerOrder(DrawDataLayerId id, int newIndexInLayers);
   };
 
 }

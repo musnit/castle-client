@@ -162,6 +162,9 @@ struct DrawToolLayerActionReceiver {
     } else if (action == "deleteLayer") {
       drawTool.deleteLayerAndValidate(params.layerId());
       drawTool.saveDrawing("delete layer");
+    } else if (action == "setLayerOrder") {
+      drawTool.drawData->setLayerOrder(params.layerId(), params.doubleValue());
+      drawTool.saveDrawing("reorder layer");
     }
     drawTool.sendLayersEvent();
   }

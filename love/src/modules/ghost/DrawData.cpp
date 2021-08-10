@@ -650,6 +650,20 @@ namespace ghost {
     return false;
   }
 
+  void DrawData::setLayerOrder(DrawDataLayerId id, int newIndexInLayers) {
+    int indexToMove = -1;
+    for (int ii = 0; ii < layers.size(); ii++) {
+      if (layers[ii]->id == id) {
+        indexToMove = ii;
+        break;
+      }
+    }
+    if (newIndexInLayers == indexToMove - 1 || newIndexInLayers == indexToMove + 1) {
+      std::iter_swap(layers.begin() + indexToMove, layers.begin() + newIndexInLayers);
+    }
+    // TODO: support arbitrary moves
+  }
+
   void DrawData::updateFramePreview() {
     currentLayerFrame()->base64Png = currentLayerFrame()->renderPreviewPng(-1);
   }
@@ -683,18 +697,6 @@ namespace ghost {
       }
       if (selectedFrame > layers[0].frames.length) {
             selectedFrame = layers[0].frames.length;
-      }
-      touchLayerData();
-    }
-
-    TYPE DrawData::reorderLayers(TYPE layerIds) {
-      auto layerIdToLayer = [];
-      for (int i = 0; i < layers.length; i++) {
-            layerIdToLayer[layers[i].id] = layers[i];
-      }
-      layers = [];
-      for (int i = layerIds.length; i < 0; i += -1) {
-            layers.push_back(layerIdToLayer[layerIds[i]]);
       }
       touchLayerData();
     }
@@ -994,79 +996,6 @@ namespace ghost {
     return point.x >= -DRAW_MAX_SIZE && point.x <= DRAW_MAX_SIZE && point.y >= -DRAW_MAX_SIZE
         && point.y <= DRAW_MAX_SIZE;
   }
-  /*
-  TYPE DrawData::_pointsToPaths(TYPE points) {
-    auto paths = [];
-    for (int i = 0; i < points.length; i += 2) {
-          auto nextI = i + 2;
-          if (nextI > points.length) {
-            nextI = nextI - points.length;
-          }
-          paths.push_back({
-            points = Point(Point(points[i], points[i + 1]), Point(points[nextI], points[nextI +
-  1])); style = 1;
-          });
-    }
-    return paths;
-  }
-
-  TYPE DrawData::getRectangleShape(TYPE p1, TYPE p2) {
-    if (isPointInBounds(p1) && isPointInBounds(p2) && !floatEquals(p1.x, p2.x) && !floatEquals(p1.y,
-  p2.y)) { return _pointsToPaths([p1.x, p1.y, p1.x, p2.y, p2.x, p2.y, p2.x, p1.y]); } else { return
-  null;
-    }
-  }
-
-  TYPE DrawData::getTriangleShape(TYPE p1, TYPE p2, TYPE p3) {
-    if (!p3) {
-          p3 = Point(p1.x, p2.y);
-    }
-    auto isColinear = abs(((p2.x - p1.x) * (p3.y - p1.y)) - ((p3.x - p1.x) * (p2.y - p1.y))) < 0.01;
-    if (isPointInBounds(p1) && isPointInBounds(p2) && isPointInBounds(p3) && isColinear == false) {
-          return _pointsToPaths([p1.x, p1.y, p2.x, p2.y, p3.x, p3.y]);
-    } else {
-          return null;
-    }
-  }
-
-  TYPE DrawData::getCircleShape(TYPE p1, TYPE p2, TYPE roundFn, TYPE roundDistFn, TYPE roundDx, TYPE
-  roundDy) { auto shape = { x = (p1.x + p2.x) / 2; y = (p1.y + p2.y) / 2; radius = sqrt(pow(p2.x -
-  p1.x, 2) + pow(p2.y - p1.y, 2)) / 2;
-    }
-    if (!roundDx) {
-          roundDx = -1;
-    }
-    if (!roundDy) {
-          roundDy = 0;
-    }
-    auto leftX = shape.x + (roundDx * shape.radius);
-    auto leftY = shape.y + (roundDy * shape.radius);
-    // number of variables and initializers are not equal
-    leftX = roundFn(leftX, leftY);
-    shape.radius = roundDistFn(shape.radius);
-    shape.x = leftX - (roundDx * shape.radius);
-    shape.y = leftY - (roundDy * shape.radius);
-    auto topPoint = Point(shape.x, shape.y - shape.radius);
-    auto bottomPoint = Point(shape.x, shape.y + shape.radius);
-    auto rightPoint = Point(shape.x + shape.radius, shape.y);
-    auto leftPoint = Point(shape.x - shape.radius, shape.y);
-    if (isPointInBounds(topPoint) && isPointInBounds(bottomPoint) && isPointInBounds(leftPoint) &&
-  isPointInBounds(rightPoint) && shape.radius > 0) { return [{ points = Point(topPoint, rightPoint);
-            style = 2;
-          }, {
-            points = Point(rightPoint, bottomPoint);
-            style = 3;
-          }, {
-            points = Point(bottomPoint, leftPoint);
-            style = 3;
-          }, {
-            points = Point(leftPoint, topPoint);
-            style = 2;
-          }];
-    } else {
-          return null;
-    }
-  }*/
 
 }
 }
