@@ -85,6 +85,7 @@ struct DrawLayersEvent {
   PROP(int, numFrames);
   PROP(love::DrawDataLayerId, selectedLayerId);
   PROP(int, selectedFrameIndex);
+  PROP(bool, canPasteCell);
   PROP((std::vector<Layer>), layers);
 };
 
@@ -117,6 +118,7 @@ void DrawTool::sendLayersEvent() {
 
   ev.selectedLayerId = drawData->selectedLayerId;
   ev.selectedFrameIndex = drawData->selectedFrame.value;
+  ev.canPasteCell = copiedLayerId != "" && copiedFrameIndex.value > 0;
 
   editor.getBridge().sendEvent("EDITOR_DRAW_LAYERS", ev);
 }
@@ -171,6 +173,12 @@ struct DrawToolLayerActionReceiver {
     } else if (action == "deleteFrame") {
       drawTool.drawData->deleteFrame(params.frameIndex());
       drawTool.saveDrawing("delete frame");
+    } else if (action == "copyCell") {
+      drawTool.copiedLayerId = params.layerId();
+      drawTool.copiedFrameIndex = params.frameIndex();
+    } else if (action == "pasteCell") {
+      drawTool.drawData->copyCell(
+          drawTool.copiedLayerId, drawTool.copiedFrameIndex, params.layerId(), params.frameIndex());
     }
     drawTool.sendLayersEvent();
   }
@@ -343,6 +351,9 @@ void DrawTool::resetState() {
   selectedSubtools["collision"] = "collision_draw";
   selectedSubtools["collision_draw"] = "rectangle";
   selectedSubtools["collision_move"] = "move";
+
+  copiedLayerId = "";
+  copiedFrameIndex.value = 0;
 
   resetTempGraphics();
 }

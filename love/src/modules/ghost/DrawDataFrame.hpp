@@ -40,6 +40,18 @@ namespace ghost {
         : isLinked(isLinked_) {
     }
 
+    DrawDataFrame(const DrawDataFrame &other) {
+      isLinked = other.isLinked;
+      for (auto &otherPathData : other.pathDataList) {
+        pathDataList.push_back(PathData(otherPathData));
+      }
+      fillImageBounds.set(other.fillImageBounds);
+      fillPng = other.fillPng;
+      setParent(other._parent);
+
+      deserializeFillAndPreview();
+    }
+
     void read(lua_State *L, int index) {
       GHOST_READ_BOOL(isLinked, false)
       GHOST_READ_VECTOR(pathDataList, PathData)

@@ -71,6 +71,10 @@ private:
 
   void makeNewLayer();
   void deleteLayerAndValidate(love::DrawDataLayerId layerId);
+
+  // for 'copy cell'
+  love::DrawDataLayerId copiedLayerId;
+  love::OneIndexFrame copiedFrameIndex;
 };
 
 inline love::DrawData &DrawTool::getDrawData() {

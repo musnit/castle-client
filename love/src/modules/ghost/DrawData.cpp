@@ -673,6 +673,16 @@ namespace ghost {
     currentLayerFrame()->base64Png = currentLayerFrame()->renderPreviewPng(-1);
   }
 
+  void DrawData::copyCell(DrawDataLayerId sourceLayerId, OneIndexFrame sourceFrameIndex,
+      DrawDataLayerId destLayerId, OneIndexFrame destFrameIndex) {
+    auto sourceLayer = layerForId(sourceLayerId), destLayer = layerForId(destLayerId);
+    if (sourceFrameIndex.toZeroIndex() < sourceLayer->frames.size()
+        && destFrameIndex.toZeroIndex() < destLayer->frames.size()) {
+      auto &oldFrame = sourceLayer->frames[sourceFrameIndex.toZeroIndex()];
+      destLayer->frames[destFrameIndex.toZeroIndex()] = std::make_unique<DrawDataFrame>(*oldFrame);
+    }
+  }
+
   /*
     TYPE DrawData::unlinkCurrentCell() {
       if (!selectedLayer().frames[selectedFrame].isLinked) {

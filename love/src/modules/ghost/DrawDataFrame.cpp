@@ -216,9 +216,9 @@ namespace ghost {
       newFillImageData->copyImageData(fillImageData, 0, 0,
           fillImageBounds.maxX - fillImageBounds.minX, fillImageBounds.maxY - fillImageBounds.minY,
           fillImageBounds.minX - pathBounds.minX, fillImageBounds.minY - pathBounds.minY);
-	  // TODO: why does this cause a memory issue?
-	  //delete fillImageData;
-	  fillImageData = newFillImageData;
+      // TODO: why does this cause a memory issue?
+      // delete fillImageData;
+      fillImageData = newFillImageData;
     }
     fillImageBounds.set(pathBounds);
     return fillImageData;
@@ -261,7 +261,7 @@ namespace ghost {
         fillImage->replacePixels(fillImageData, 0, 0, 0, 0, false);
         return;
       }
-		delete fillImage;
+      delete fillImage;
     }
     fillImage = imageDataToImage(fillImageData);
   }
@@ -271,7 +271,7 @@ namespace ghost {
       return;
     }
     if (fillImageData->isEmpty()) {
-		delete fillImageData;
+      delete fillImageData;
       if (fillImage != NULL) {
         delete fillImage;
       }
@@ -296,13 +296,13 @@ namespace ghost {
         p.rgba8[3] = 1.0;
 
         for (size_t x = 0; x < width - 1; x++) {
-              newFillImageData->setPixel(x, 0, p);
+          newFillImageData->setPixel(x, 0, p);
         }
         for (size_t y = 0; y < height - 1; y++) {
-              newFillImageData->setPixel(0, y, p);
+          newFillImageData->setPixel(0, y, p);
         }
       }
-		delete fillImageData;
+      delete fillImageData;
       fillImageData = newFillImageData;
       fillImageBounds.minX = fillImageBounds.minX + minX;
       fillImageBounds.minY = fillImageBounds.minY + minY;
@@ -353,7 +353,8 @@ namespace ghost {
     cleanUpPaths();
     updatePathsCanvas();
     auto pathsImageData = canvasToImageData(pathsCanvas);
-    getFillImageDataSizedToPathBounds()->updateFloodFillForNewPaths(pathsImageData, DEBUG_UPDATE_FLOOD_FILL);
+    getFillImageDataSizedToPathBounds()->updateFloodFillForNewPaths(
+        pathsImageData, DEBUG_UPDATE_FLOOD_FILL);
     compressFillCanvas();
     updateFillImageWithFillImageData();
   }
@@ -446,6 +447,7 @@ namespace ghost {
   ToveGraphicsHolder *DrawDataFrame::graphics() {
     if (_graphicsNeedsReset || _graphics == NULL) {
       if (_graphics != NULL) {
+        // TODO: don't leak _graphics
         _graphics = nullptr;
       }
 
@@ -486,8 +488,8 @@ namespace ghost {
           { 1, 1, 1, 1, { 0xff, 0xff, 0xff, 0xff } },
           { 0, 1, 0, 1, { 0xff, 0xff, 0xff, 0xff } },
         };
-        return graphicsModule->newMesh(quadVerts,
-            love::graphics::PRIMITIVE_TRIANGLE_FAN, love::graphics::vertex::USAGE_STATIC);
+        return graphicsModule->newMesh(quadVerts, love::graphics::PRIMITIVE_TRIANGLE_FAN,
+            love::graphics::vertex::USAGE_STATIC);
       }();
       quad->setTexture(fillImage);
       auto iw = fillImage->getWidth(), ih = fillImage->getHeight();
@@ -498,14 +500,14 @@ namespace ghost {
 
   std::optional<std::string> DrawDataFrame::renderPreviewPng(int size) {
     if (isLinked) {
-          return std::nullopt;
+      return std::nullopt;
     }
     if (size <= 0) {
-          size = 256;
+      size = 256;
     }
 
     auto previewCanvas = newCanvas(size, size);
-    
+
     renderToCanvas(previewCanvas, [this, size]() {
       auto pathBounds = getPathDataBounds(std::nullopt);
       float width = pathBounds.maxX - pathBounds.minX;
@@ -526,7 +528,8 @@ namespace ghost {
       graphicsModule->push(graphics::Graphics::STACK_ALL);
       graphicsModule->origin();
       graphicsModule->scale(size / (maxDimension * 1.05), size / (maxDimension * 1.05));
-      graphicsModule->translate((padding - pathBounds.minX) + widthPadding, (padding - pathBounds.minY) + heightPadding);
+      graphicsModule->translate(
+          (padding - pathBounds.minX) + widthPadding, (padding - pathBounds.minY) + heightPadding);
       graphicsModule->clear(Colorf(0.0f, 0.0f, 0.0f, 0.0f), 0, 1.0);
 
       Colorf color;
@@ -542,13 +545,14 @@ namespace ghost {
     });
 
     image::Image *imageModule = Module::getInstance<image::Image>(Module::M_IMAGE);
-    Rect rect = {0, 0, previewCanvas->getPixelWidth(), previewCanvas->getPixelHeight()};
-    love::image::ImageData * imageData = previewCanvas->newImageData(imageModule, 0, 0, rect);
-    love::filesystem::FileData * fileData = imageData->encode(love::image::FormatHandler::EncodedFormat::ENCODED_PNG, "Image.png", false);
-    const char * fileDataString = (const char *) fileData->getData();
+    Rect rect = { 0, 0, previewCanvas->getPixelWidth(), previewCanvas->getPixelHeight() };
+    love::image::ImageData *imageData = previewCanvas->newImageData(imageModule, 0, 0, rect);
+    love::filesystem::FileData *fileData = imageData->encode(
+        love::image::FormatHandler::EncodedFormat::ENCODED_PNG, "Image.png", false);
+    const char *fileDataString = (const char *)fileData->getData();
     size_t fileDataSize = fileData->getSize();
     size_t dstlen = 0;
-    char * result = data::encode(data::ENCODE_BASE64, fileDataString, fileDataSize, dstlen, 0);
+    char *result = data::encode(data::ENCODE_BASE64, fileDataString, fileDataSize, dstlen, 0);
     return std::string(result);
   }
 
