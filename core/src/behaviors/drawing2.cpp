@@ -153,7 +153,14 @@ void Drawing2Behavior::handleWriteComponent(
   getAnimationComponentProperties(component, animProps);
 
   animProps.write(writer);
-  writer.obj("drawData", *component.drawData);
+
+  writer.obj("drawData", [&]() {
+    component.drawData->write(writer);
+  });
+
+  writer.obj("physicsBodyData", [&]() {
+    component.physicsBodyData->write(writer);
+  });
 }
 
 //

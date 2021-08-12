@@ -287,6 +287,7 @@ void DrawTool::saveDrawing(std::string commandDescription) {
           component->physicsBodyData = std::make_shared<PhysicsBodyData>(physicsBodyData);
           component->hash = hash;
 
+          editor.updateBlueprint(actorId, {});
           editor.setSelectedComponentStateDirty(Drawing2Behavior::behaviorId);
         };
 
@@ -383,6 +384,10 @@ void DrawTool::update(double dt) {
   auto &drawBehavior = scene.getBehaviors().byType<Drawing2Behavior>();
   auto actorId = editor.getSelection().firstSelectedActorId();
   auto component = drawBehavior.maybeGetComponent(actorId);
+  if (!component) {
+    return;
+  }
+
   auto hash = component->hash;
 
   if (lastHash != hash) {
