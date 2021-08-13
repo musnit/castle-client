@@ -151,6 +151,7 @@ const LayerRow = ({
   selectedFrameIndex,
   onSelectLayer,
   showLayerActionSheet,
+  showCellActionSheet,
   sendLayerAction,
 }) => {
   return (
@@ -185,11 +186,11 @@ const LayerRow = ({
         </TouchableOpacity>
       </TouchableOpacity>
       {layer.frames.map((frame, idx) => {
-        let isSelected = selectedFrameIndex == idx + 1 && layer.isSelected;
-        let isMenuAvailable = isSelected;
+        let isFrameSelected = selectedFrameIndex == idx + 1 && isSelected;
+        let isMenuAvailable = isFrameSelected;
         let onPress = isMenuAvailable
           ? () =>
-              layer.showCellActionSheet({
+              showCellActionSheet({
                 isLinked: frame.isLinked,
                 layerId: layer.id,
                 frame: idx + 1,
@@ -199,7 +200,7 @@ const LayerRow = ({
         let cellStyle = [styles.cell];
         let isLastCell = idx === layer.frames.length - 1;
 
-        if (isSelected) {
+        if (isFrameSelected) {
           cellStyle.push(styles.cellSelected);
         } else {
           cellStyle.push(styles.cellBottomBorder);
@@ -246,17 +247,14 @@ const LayerRow = ({
 };
 
 const DrawingLayers = () => {
-  const { layers, selectedLayerId, selectedFrameIndex } = useCoreState('EDITOR_DRAW_LAYERS') || {
+  const { layers, selectedLayerId, selectedFrameIndex, canPasteCell } = useCoreState(
+    'EDITOR_DRAW_LAYERS'
+  ) || {
     selectedFrameIndex: 1,
   };
   const drawToolState = useCoreState('EDITOR_DRAW_TOOL') || {};
   const fastAction = () => {}; // TODO: actions
   const fastData = {}; // TODO: further draw tool state
-  /*
-TODO:
-        let layer = newLayers[i];
-        layer.showCellActionSheet = showCellActionSheet;
-*/
 
   const isCollisionActive = drawToolState.selectedSubtools?.root === 'collision';
   const onSelectCollision = React.useCallback(
@@ -284,7 +282,7 @@ TODO:
       onSelectCollision(false);
 
       // select layer
-      if (frame == 1) {
+      if (!frame) {
         return sendLayerAction('selectLayer', { layerId: layer.id });
       } else {
         return sendLayerAction('selectLayerAndFrame', { layerId: layer.id, frameIndex: frame });
@@ -296,40 +294,30 @@ TODO:
   const { showActionSheetWithOptions } = useActionSheet();
 
   const showCellActionSheet = useCallback(
-    (args) => {
+    ({ frame, layerId, isLinked }) => {
       let options = [
         {
           name: 'Copy',
-          action: () => {
-            fastAction('onCopyCell', {
-              frame: args.frame,
-              layerId: args.layerId,
-            });
-          },
+          action: () => sendLayerAction('copyCell', { frameIndex: frame, layerId }),
         },
       ];
 
-      if (fastData.canPaste) {
+      if (canPasteCell) {
         options.push({
           name: 'Paste',
-          action: () => {
-            fastAction('onPasteCell', {
-              frame: args.frame,
-              layerId: args.layerId,
-            });
-          },
+          action: () => sendLayerAction('pasteCell', { frameIndex: frame, layerId }),
         });
       }
 
-      if (args.frame > 1) {
+      if (frame > 1) {
         options = [
           {
-            name: args.isLinked ? 'Unlink' : 'Link',
+            name: isLinked ? 'Unlink' : 'Link',
             action: () => {
               fastAction('onSetCellLinked', {
-                frame: args.frame,
-                layerId: args.layerId,
-                isLinked: !args.isLinked,
+                frame,
+                layerId,
+                isLinked,
               });
             },
           },
@@ -350,7 +338,7 @@ TODO:
         }
       );
     },
-    [fastData.canPaste]
+    [canPasteCell, sendLayerAction]
   );
 
   const showLayerActionSheet = useCallback(
@@ -501,6 +489,7 @@ TODO:
                     isSelected={layer.id === selectedLayerId}
                     selectedFrameIndex={selectedFrameIndex}
                     showLayerActionSheet={showLayerActionSheet}
+                    showCellActionSheet={showCellActionSheet}
                     onSelectLayer={onSelectLayer}
                     isCollisionActive={isCollisionActive}
                     sendLayerAction={sendLayerAction}
