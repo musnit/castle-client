@@ -193,11 +193,11 @@ namespace ghost {
     }
 
     float gridCellSize();
-    std::tuple<int, int> globalToGridCoordinates(float x, float y);
-    std::tuple<int, int> gridToGlobalCoordinates(float x, float y);
-    std::tuple<int, int> roundGlobalDiffCoordinatesToGrid(float x, float y);
-    std::tuple<int, int> roundGlobalCoordinatesToGrid(float x, float y);
-    std::tuple<int, int> clampGlobalCoordinates(float x, float y);
+    std::tuple<float, float> globalToGridCoordinates(float x, float y);
+    std::tuple<float, float> gridToGlobalCoordinates(float x, float y);
+    std::tuple<float, float> roundGlobalDiffCoordinatesToGrid(float x, float y);
+    std::tuple<float, float> roundGlobalCoordinatesToGrid(float x, float y);
+    std::tuple<float, float> clampGlobalCoordinates(float x, float y);
     float roundGlobalDistanceToGrid(float d);
     void makeSubpathsFromSubpathData(PathData *pathData);
     void addLineSubpathData(PathData *pathData, float p1x, float p1y, float p2x, float p2y);

@@ -18,35 +18,35 @@ namespace ghost {
     return gridSize;
   }
 
-  std::tuple<int, int> DrawData::globalToGridCoordinates(float x, float y) {
+  std::tuple<float, float> DrawData::globalToGridCoordinates(float x, float y) {
     float gridX = x / gridCellSize();
-    auto gridY = y / gridCellSize();
+    float gridY = y / gridCellSize();
     return { gridX, gridY };
   }
 
-  std::tuple<int, int> DrawData::gridToGlobalCoordinates(float x, float y) {
+  std::tuple<float, float> DrawData::gridToGlobalCoordinates(float x, float y) {
     auto globalX = x * gridCellSize();
     auto globalY = y * gridCellSize();
     return { globalX, globalY };
   }
 
-  std::tuple<int, int> DrawData::roundGlobalDiffCoordinatesToGrid(float x, float y) {
+  std::tuple<float, float> DrawData::roundGlobalDiffCoordinatesToGrid(float x, float y) {
     auto [gridX, gridY] = globalToGridCoordinates(x, y);
-    gridX = floor(gridX + 0.5);
-    gridY = floor(gridY + 0.5);
+    gridX = round(gridX);
+    gridY = round(gridY);
     return gridToGlobalCoordinates(gridX, gridY);
   }
 
-  std::tuple<int, int> DrawData::roundGlobalCoordinatesToGrid(float x, float y) {
+  std::tuple<float, float> DrawData::roundGlobalCoordinatesToGrid(float x, float y) {
     auto [gridX, gridY] = globalToGridCoordinates(x, y);
-    gridX = floor(gridX + 0.5);
-    gridY = floor(gridY + 0.5);
+    gridX = round(gridX);
+    gridY = round(gridY);
 
     auto [resultX, resultY] = gridToGlobalCoordinates(gridX, gridY);
     return clampGlobalCoordinates(resultX, resultY);
   }
 
-  std::tuple<int, int> DrawData::clampGlobalCoordinates(float x, float y) {
+  std::tuple<float, float> DrawData::clampGlobalCoordinates(float x, float y) {
     if (x < -DRAW_MAX_SIZE) {
       x = -DRAW_MAX_SIZE;
     } else if (x > DRAW_MAX_SIZE) {
