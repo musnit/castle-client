@@ -7,7 +7,7 @@ constexpr auto libraryEntryPoolChunkSize = 8 * 1024;
 
 
 //
-// Entry constructor, destructor
+// LibraryEntry
 //
 
 LibraryEntry::LibraryEntry(Library &library_, const char *entryId_, const json::Value &jsonValue_,
@@ -26,11 +26,6 @@ LibraryEntry::~LibraryEntry() {
     library.scene.removeActor(ghostActorId);
   }
 }
-
-
-//
-// Entry preview image
-//
 
 love::Image *LibraryEntry::getPreviewImage() const {
   auto &lv = Lv::getInstance();
@@ -53,11 +48,6 @@ love::Image *LibraryEntry::getPreviewImage() const {
   return previewImage.get();
 }
 
-
-//
-// Entry ghost actor
-//
-
 ActorId LibraryEntry::getGhostActorId() {
   if (!ghostActorCreated) {
     Scene::ActorDesc actorDesc;
@@ -77,7 +67,7 @@ ActorId LibraryEntry::getGhostActorId() {
 
 
 //
-// Entry id
+// Library
 //
 
 std::string Library::generateEntryId() {
@@ -87,11 +77,6 @@ std::string Library::generateEntryId() {
   Debug::log("generated entry id: {}", result);
   return result;
 }
-
-
-//
-// Entry reading
-//
 
 void Library::readEntry(Reader &reader) {
   auto maybeEntryId = reader.str("entryId");
@@ -106,10 +91,11 @@ void Library::readEntry(Reader &reader) {
   markOrderDirty();
 }
 
-
-//
-// Entry order
-//
+void Library::ensureGhostActorsExist() {
+  forEachEntry([&](LibraryEntry &entry) {
+    entry.getGhostActorId();
+  });
+}
 
 void Library::markOrderDirty() {
   order.clear(); // To avoid accidental access to stale `LibraryEntry *`s in `order`

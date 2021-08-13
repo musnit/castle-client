@@ -64,6 +64,9 @@ void Editor::update(double dt) {
     // TODO: Should gesture just be moved out of scene?
     scene->updateGesture();
 
+    // Make sure ghost actors exist before tools look for them
+    scene->getLibrary().ensureGhostActorsExist();
+
     switch (editMode) {
     case EditMode::Default: {
       selection.touchToSelect(*scene);

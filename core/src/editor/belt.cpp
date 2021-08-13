@@ -74,11 +74,6 @@ void Belt::updateSelection(bool forceGhostActorSelection) {
     }
   }
 
-  // Ensure all ghost actors are created
-  library.forEachEntry([&](LibraryEntry &entry) {
-    entry.getGhostActorId();
-  });
-
   // Select ghost actor based on `selectedEntryId`
   if (selectedEntryId) {
     // Don't select actors too rapidly

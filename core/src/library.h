@@ -85,6 +85,11 @@ public:
   void readEntry(Reader &reader); // Creates or updates existing entry based on `entryId` read
 
 
+  // Ghost actors
+
+  void ensureGhostActorsExist();
+
+
 private:
   friend class LibraryEntry;
 
