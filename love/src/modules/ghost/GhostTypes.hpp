@@ -152,17 +152,11 @@ namespace ghost {
     float x;
     float y;
 
-    Point() {
-    }
+    Point() = default;
 
     Point(float x, float y)
         : x(x)
         , y(y) {
-    }
-
-    Point(const Point &p1) {
-      x = p1.x;
-      y = p1.y;
     }
 
     bool operator==(const Point &other) {
@@ -252,18 +246,7 @@ namespace ghost {
   };
 
   struct Color {
-    float data[4];
-
-    Color() {
-      data[0] = data[1] = data[2] = data[3] = 0.0;
-    }
-
-    Color(const Color &p1) {
-      data[0] = p1.data[0];
-      data[1] = p1.data[1];
-      data[2] = p1.data[2];
-      data[3] = p1.data[3];
-    }
+    float data[4] { 0, 0, 0, 0 };
 
     void read(Archive::Reader &obj) {
       data[0] = obj.num((unsigned int)0, 1.0);
