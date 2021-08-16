@@ -1,9 +1,7 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { useCoreState, sendAsync } from '../../core/CoreEvents';
-import { useFastDataMemo } from '../../ghost/GhostUI';
 import { useActionSheet } from '@expo/react-native-action-sheet';
-import _ from 'lodash';
 
 import { BottomSheet } from '../../components/BottomSheet';
 
@@ -254,7 +252,6 @@ const DrawingLayers = () => {
   };
   const drawToolState = useCoreState('EDITOR_DRAW_TOOL') || {};
   const fastAction = () => {}; // TODO: actions
-  const fastData = {}; // TODO: further draw tool state
 
   const isCollisionActive = drawToolState.selectedSubtools?.root === 'collision';
   const onSelectCollision = React.useCallback(
@@ -387,9 +384,7 @@ const DrawingLayers = () => {
       let options = [
         {
           name: 'Add Frame After',
-          action: () => {
-            fastAction('onAddFrameAtPosition', frame);
-          },
+          action: () => sendLayerAction('addFrame', { frameIndex: frame + 1 }),
         },
       ];
 
