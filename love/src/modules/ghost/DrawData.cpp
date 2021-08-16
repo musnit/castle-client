@@ -683,64 +683,23 @@ namespace ghost {
     }
   }
 
-  /*
-    TYPE DrawData::unlinkCurrentCell() {
-      if (!selectedLayer().frames[selectedFrame].isLinked) {
-            return;
-      }
-      setCellLinked(selectedLayerId, selectedFrame, false);
+  void DrawData::setCellLinked(DrawDataLayerId layerId, OneIndexFrame frameIndex, bool isLinked) {
+    if (frameIndex.value < 2) {
+      return;
     }
-
-    TYPE DrawData::selectLayer(TYPE layerId) {
-      selectedLayerId = layerId;
-      touchLayerData();
+    auto layer = layerForId(layerId);
+    if (layer->frames[frameIndex.toZeroIndex()]->isLinked == isLinked) {
+      return;
     }
-
-    TYPE DrawData::selectFrame(TYPE frame) {
-      selectedFrame = frame;
-      touchLayerData();
+    if (isLinked) {
+      auto newFrame = std::make_unique<DrawDataFrame>(true);
+      layer->frames[frameIndex.toZeroIndex()] = std::move(newFrame);
+    } else {
+      OneIndexFrame realFrameIndex;
+      realFrameIndex.setFromZeroIndex(getRealFrameIndexForLayerId(layerId, frameIndex));
+      copyCell(layerId, realFrameIndex, layerId, frameIndex);
     }
-
-    TYPE DrawData::function() {
-      return self;
-    }
-
-    TYPE DrawData::setCellLinked(TYPE layerId, TYPE frame, TYPE isLinked) {
-      if (frame < 2) {
-            return;
-      }
-      if (layerForId(layerId).frames[frame].isLinked == isLinked) {
-            return;
-      }
-      if (isLinked) {
-            layerForId(layerId).frames[frame] = _newFrame(isLinked);
-      } else {
-            auto data = copyCell(layerId, frame);
-            pasteCell(layerId, frame, data);
-      }
-      touchLayerData();
-    }
-
-    TYPE DrawData::copyCell(TYPE layerId, TYPE frame) {
-      auto realFrame = getRealFrameIndexForLayerId(layerId, frame);
-      auto oldFrame = layerForId(layerId).frames[realFrame];
-      return util.deepCopyTable(oldFrame.serialize());
-    }
-
-    TYPE DrawData::function() {
-      return self;
-    }
-
-    TYPE DrawData::pasteCell(TYPE layerId, TYPE frame, TYPE newFrame) {
-      setmetatable(newFrame, {
-            __index = DrawDataFrame;
-      });
-      newFrame.parent = undefined;
-      newFrame.deserializePathDataList();
-      newFrame.deserializeFillAndPreview();
-      layerForId(layerId).frames[frame] = newFrame;
-      touchLayerData();
-    }*/
+  }
 
   AnimationState DrawData::newAnimationState() {
     AnimationState state;

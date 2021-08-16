@@ -179,6 +179,8 @@ struct DrawToolLayerActionReceiver {
     } else if (action == "pasteCell") {
       drawTool.drawData->copyCell(
           drawTool.copiedLayerId, drawTool.copiedFrameIndex, params.layerId(), params.frameIndex());
+    } else if (action == "setCellLinked") {
+      drawTool.drawData->setCellLinked(params.layerId(), params.frameIndex(), params.doubleValue());
     }
     drawTool.sendLayersEvent();
   }

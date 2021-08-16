@@ -241,6 +241,7 @@ namespace ghost {
     bool deleteFrame(OneIndexFrame frameIndex);
     void copyCell(DrawDataLayerId sourceLayerId, OneIndexFrame sourceFrameIndex,
         DrawDataLayerId destLayerId, OneIndexFrame destFrameIndex);
+    void setCellLinked(DrawDataLayerId layerId, OneIndexFrame frameIndex, bool isLinked);
   };
 
 }
