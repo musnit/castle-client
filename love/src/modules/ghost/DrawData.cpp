@@ -791,22 +791,6 @@ namespace ghost {
     return result;
   }
   /*
-  TYPE DrawData::stepBackward() {
-    selectedFrame = selectedFrame - 1;
-    if (selectedFrame < 1) {
-          selectedFrame = layers[0].frames.length;
-    }
-    touchLayerData();
-  }
-
-  TYPE DrawData::stepForward() {
-    selectedFrame = selectedFrame + 1;
-    if (selectedFrame > layers[0].frames.length) {
-          selectedFrame = 1;
-    }
-    touchLayerData();
-  }
-
   TYPE DrawData::clearFrame() {
     auto realFrame = getRealFrameIndexForLayerId(selectedLayer().id, selectedFrame);
     selectedLayer().frames[realFrame] = _newFrame(false);

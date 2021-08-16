@@ -155,6 +155,18 @@ struct DrawToolLayerActionReceiver {
       drawTool.drawData->selectedLayerId = params.layerId();
       drawTool.drawData->selectedFrame.value = params.frameIndex();
       drawTool.saveDrawing("select cell");
+    } else if (action == "stepBackward") {
+      auto newFrameIndex = drawTool.drawData->selectedFrame.value - 1;
+      if (newFrameIndex < 1) {
+        newFrameIndex = drawTool.drawData->getNumFrames();
+      }
+      drawTool.drawData->selectedFrame.value = newFrameIndex;
+    } else if (action == "stepForward") {
+      auto newFrameIndex = drawTool.drawData->selectedFrame.value + 1;
+      if (newFrameIndex > drawTool.drawData->getNumFrames()) {
+        newFrameIndex = 1;
+      }
+      drawTool.drawData->selectedFrame.value = newFrameIndex;
     } else if (action == "setLayerIsVisible") {
       auto layer = drawTool.drawData->layerForId(params.layerId());
       layer->isVisible = params.doubleValue();
