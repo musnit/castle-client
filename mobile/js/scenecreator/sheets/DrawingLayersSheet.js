@@ -313,13 +313,12 @@ const DrawingLayers = () => {
         options = [
           {
             name: isLinked ? 'Unlink' : 'Link',
-            action: () => {
-              fastAction('onSetCellLinked', {
-                frame,
+            action: () =>
+              sendLayerAction('setCellLinked', {
+                frameIndex: frame,
                 layerId,
-                isLinked,
-              });
-            },
+                doubleValue: isLinked ? 0 : 1,
+              }),
           },
           ...options,
         ];
