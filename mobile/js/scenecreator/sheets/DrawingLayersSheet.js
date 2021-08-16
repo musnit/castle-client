@@ -244,7 +244,7 @@ const LayerRow = ({
   );
 };
 
-const DrawingLayers = () => {
+const DrawingLayers = ({ sendLayerAction }) => {
   const { layers, selectedLayerId, selectedFrameIndex, canPasteCell } = useCoreState(
     'EDITOR_DRAW_LAYERS'
   ) || {
@@ -264,13 +264,6 @@ const DrawingLayers = () => {
       }
     },
     [sendAsync, isCollisionActive]
-  );
-
-  const sendLayerAction = useCallback(
-    (action, params) => {
-      sendAsync('DRAW_TOOL_LAYER_ACTION', { action, ...params });
-    },
-    [sendAsync]
   );
 
   const onSelectLayer = useCallback(
@@ -498,7 +491,7 @@ const DrawingLayers = () => {
   );
 };
 
-const DrawingLayersHeader = () => {
+const DrawingLayersHeader = ({ sendLayerAction }) => {
   const { numFrames } = useCoreState('EDITOR_DRAW_LAYERS') || {};
   const fastAction = () => {}; // TODO: actions
   const fastData = {}; // TODO: further draw tool state
@@ -524,7 +517,7 @@ const DrawingLayersHeader = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.headerControl}
-            onPress={() => fastAction('onStepBackward')}>
+            onPress={() => sendLayerAction('stepBackward')}>
             <FeatherIcon name={'skip-back'} size={ICON_SIZE} color={'#000'} />
           </TouchableOpacity>
           <TouchableOpacity
@@ -538,7 +531,7 @@ const DrawingLayersHeader = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.headerControl}
-            onPress={() => fastAction('onStepForward')}>
+            onPress={() => sendLayerAction('stepForward')}>
             <FeatherIcon name={'skip-forward'} size={ICON_SIZE} color={'#000'} />
           </TouchableOpacity>
         </View>
@@ -548,8 +541,16 @@ const DrawingLayersHeader = () => {
 };
 
 export const DrawingLayersSheet = ({ isOpen, onClose, ...props }) => {
-  const renderHeader = () => <DrawingLayersHeader style={{ flex: 1 }} />;
-  const renderContent = () => (!isOpen ? null : <DrawingLayers style={{ flex: 1 }} />);
+  const sendLayerAction = useCallback(
+    (action, params) => {
+      sendAsync('DRAW_TOOL_LAYER_ACTION', { action, ...params });
+    },
+    [sendAsync]
+  );
+
+  const renderHeader = () => <DrawingLayersHeader sendLayerAction={sendLayerAction} />;
+  const renderContent = () =>
+    !isOpen ? null : <DrawingLayers sendLayerAction={sendLayerAction} />;
 
   return (
     <BottomSheet
