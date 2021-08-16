@@ -641,13 +641,26 @@ namespace ghost {
   }
 
   void DrawData::addFrame() {
+    OneIndexFrame lastFrameIndex;
+    lastFrameIndex.setFromZeroIndex(layers[0]->frames.size());
+    addFrame(lastFrameIndex);
+  }
+
+  void DrawData::addFrame(OneIndexFrame frameIndex) {
     if (getNumLayers()) {
       auto isLinked = layers[0]->frames.size() > 0;
+      auto zeroFrameIndex = frameIndex.toZeroIndex();
       for (auto &layer : layers) {
         auto newFrame = std::make_unique<DrawDataFrame>(isLinked);
-        layer->frames.push_back(std::move(newFrame));
+        if (zeroFrameIndex >= layer->frames.size()) {
+          layer->frames.push_back(std::move(newFrame));
+        } else {
+          // can't use frames->insert() without freeing the std::unique reference on the moved elems
+          layer->frames.push_back(std::move(newFrame));
+          std::iter_swap(layer->frames.begin() + zeroFrameIndex, layer->frames.rbegin());
+        }
       }
-      selectedFrame.setFromZeroIndex(layers[0]->frames.size() - 1);
+      selectedFrame.setFromZeroIndex(zeroFrameIndex);
     }
   }
 
@@ -791,16 +804,6 @@ namespace ghost {
     if (selectedFrame > layers[0].frames.length) {
           selectedFrame = 1;
     }
-    touchLayerData();
-  }
-
-  TYPE DrawData::addFrameAtPosition(TYPE position) {
-    framesBounds = [];
-    auto isLinked = layers[0].frames.length > 0;
-    for (int l = 0; l < layers.length; l++) {
-          table.insert(layers[l].frames, position + 1, _newFrame(isLinked));
-    }
-    selectedFrame = layers[0].frames.length;
     touchLayerData();
   }
 

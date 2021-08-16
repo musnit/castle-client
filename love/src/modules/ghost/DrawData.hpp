@@ -238,6 +238,7 @@ namespace ghost {
     void setLayerOrder(DrawDataLayerId id, int newIndexInLayers);
 
     void addFrame();
+    void addFrame(OneIndexFrame frameIndex);
     bool deleteFrame(OneIndexFrame frameIndex);
     void copyCell(DrawDataLayerId sourceLayerId, OneIndexFrame sourceFrameIndex,
         DrawDataLayerId destLayerId, OneIndexFrame destFrameIndex);

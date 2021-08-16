@@ -168,7 +168,13 @@ struct DrawToolLayerActionReceiver {
       drawTool.drawData->setLayerOrder(params.layerId(), params.doubleValue());
       drawTool.saveDrawing("reorder layer");
     } else if (action == "addFrame") {
-      drawTool.drawData->addFrame();
+      auto frameIndexToAdd = params.frameIndex();
+      if (frameIndexToAdd > 0) {
+        love::OneIndexFrame index(frameIndexToAdd);
+        drawTool.drawData->addFrame(index);
+      } else {
+        drawTool.drawData->addFrame();
+      }
       drawTool.saveDrawing("add frame");
     } else if (action == "deleteFrame") {
       drawTool.drawData->deleteFrame(params.frameIndex());
