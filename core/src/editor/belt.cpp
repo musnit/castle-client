@@ -196,7 +196,10 @@ void Belt::update(double dtDouble) {
         }
         if (touchElemIndex == -1) {
           // Tapped one element before first one: the new blueprint button
-          // TODO(nikki): Add new blueprint
+          struct ShowNewBlueprintSheetEvent {
+          } ev;
+          selection.deselectAllActors();
+          editor.getBridge().sendEvent("SHOW_NEW_BLUEPRINT_SHEET", ev);
         }
       }
     }

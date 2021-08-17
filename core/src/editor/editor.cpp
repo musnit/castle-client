@@ -631,7 +631,7 @@ struct EditorModifyComponentReceiver {
           auto newData = std::make_shared<Archive>(Archive::fromJson(params.stringValue().c_str()));
           editor->getCommands().execute(
               "change rules", commandParams,
-              [actorId, oldHasComponent, newData = std::move(newData)](Editor &editor, bool) {
+              [actorId, newData = std::move(newData)](Editor &editor, bool) {
                 auto &rulesBehavior = editor.getScene().getBehaviors().byType<RulesBehavior>();
                 if (!rulesBehavior.hasComponent(actorId)) {
                   rulesBehavior.addComponent(actorId);

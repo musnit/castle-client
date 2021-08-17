@@ -10,6 +10,8 @@ import { BottomSheet } from '../../components/BottomSheet';
 import * as Clipboard from '../LibraryEntryClipboard';
 import { useGhostUI } from '../../ghost/GhostUI';
 
+import NewBlueprintSheetData from './NewBlueprintSheetData.json';
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
@@ -125,9 +127,10 @@ const PasteFromClipboardSection = ({ onPress }) => {
   }, [entry]);
 
   const { root } = useGhostUI();
-  const numActorsUsingClipboardEntry =
-    root?.panes['sceneCreatorBlueprints'].children?.data?.props?.data
-      ?.numActorsUsingClipboardEntry || 0;
+  const numActorsUsingClipboardEntry = 0;
+  //const numActorsUsingClipboardEntry =
+  //  root?.panes['sceneCreatorBlueprints'].children?.data?.props?.data
+  //    ?.numActorsUsingClipboardEntry || 0;
 
   if (!entry) {
     return null;
@@ -165,16 +168,14 @@ const PasteFromClipboardSection = ({ onPress }) => {
   );
 };
 
+const entries = NewBlueprintSheetData.templates.map((entry, i) => ({
+  index: i,
+  entry,
+}));
+
 export const NewBlueprintSheet = ({ element, isOpen, onClose, ...props }) => {
-  const data = element?.children?.data?.props?.data?.templates.map((entry, i) => ({
-    index: i,
-    entry,
-  }));
-  if (!data) {
-    return null;
-  }
-  const blanks = data.filter(({ entry }) => entry.isBlank);
-  const templates = data.filter(({ entry }) => !entry.isBlank);
+  const blanks = entries.filter(({ entry }) => entry.isBlank);
+  const templates = entries.filter(({ entry }) => !entry.isBlank);
 
   const renderHeader = () => <BottomSheetHeader title="Add a new blueprint" onClose={onClose} />;
 

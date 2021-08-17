@@ -218,7 +218,7 @@ export const CreateCardScreen = ({
     },
   });
 
-  GhostEvents.useListen({
+  useListen({
     eventName: 'SHOW_NEW_BLUEPRINT_SHEET',
     handler: () => {
       setActiveSheet('sceneCreatorNewBlueprint');
