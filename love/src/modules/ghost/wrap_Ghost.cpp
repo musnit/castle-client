@@ -21,57 +21,13 @@ namespace ghost {
 
 #define instance() (Module::getInstance<Ghost>(Module::M_GHOST))
 
-  int w_loadDrawData(lua_State *L) {
-    StrongRef<DrawData> i;
-    DrawData *d = new DrawData(L, 1);
-
-    i.set(d);
-
-    luax_pushtype(L, i);
-
-    return 1;
-  }
-
-  int w_loadDrawDataFromString(lua_State *L) {
-    const char *json = luaL_checkstring(L, 1);
-
-    StrongRef<DrawData> i;
-    DrawData *d;
-
-    Archive archive = Archive::fromJson(json);
-    archive.read([&](Archive::Reader &r) {
-      d = new DrawData(r);
-    });
-
-    i.set(d);
-    luax_pushtype(L, i);
-
-    // test writing
-    Archive archive2;
-    archive2.write([&](Archive::Writer &w) {
-      d->write(w);
-    });
-
-    std::string output = archive2.toJson();
-
-    return 1;
-  }
-
-  int w_DrawData_render(lua_State *L) {
-    DrawData *d = luax_checktype<DrawData>(L, 1);
-    d->render(std::nullopt);
-
-    return 0;
-  }
-
-  static const luaL_Reg w_DrawData_functions[] = { { "render", w_DrawData_render }, { 0, 0 } };
+  static const luaL_Reg w_DrawData_functions[] = { { 0, 0 } };
 
   static int luaopen_drawdata(lua_State *L) {
     return luax_register_type(L, &DrawData::type, w_DrawData_functions, nullptr);
   }
 
-  static const luaL_Reg functions[] = { { "loadDrawData", w_loadDrawData },
-    { "loadDrawDataFromString", w_loadDrawDataFromString }, { 0, 0 } };
+  static const luaL_Reg functions[] = { { 0, 0 } };
 
   static const lua_CFunction types[] = { luaopen_drawdata, 0 };
 

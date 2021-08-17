@@ -52,15 +52,6 @@ namespace ghost {
       deserializeFillAndPreview();
     }
 
-    void read(lua_State *L, int index) {
-      GHOST_READ_BOOL(isLinked, false)
-      GHOST_READ_VECTOR(pathDataList, PathData)
-      GHOST_READ_STRUCT(fillImageBounds)
-      GHOST_READ_STRING(fillPng)
-
-      deserializeFillAndPreview();
-    }
-
     void read(Archive::Reader &archive) {
       isLinked = archive.boolean("isLinked", false);
       archive.arr("pathDataList", [&]() {
@@ -145,13 +136,6 @@ namespace ghost {
     DrawDataLayer(std::string title_, DrawDataLayerId id_)
         : title(title_)
         , id(id_) {
-    }
-
-    void read(lua_State *L, int index) {
-      GHOST_READ_STRING(title)
-      GHOST_READ_STRING(id)
-      GHOST_READ_BOOL(isVisible, true)
-      GHOST_READ_POINTER_VECTOR(frames, DrawDataFrame)
     }
 
     void read(Archive::Reader &archive) {

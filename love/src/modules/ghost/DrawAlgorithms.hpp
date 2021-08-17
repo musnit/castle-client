@@ -19,7 +19,7 @@ namespace ghost {
 
   class DrawAlgorithms {
   public:
-    static bool colorsEqual(std::optional<Color> a1, std::optional<Color> a2);
+    static bool colorsEqual(std::optional<love::Colorf> a1, std::optional<love::Colorf> a2);
     static bool coordinatesEqual(Point c1, Point c2);
     static bool optionalCoordinatesEqual(std::optional<Point> c1, std::optional<Point> c2);
     static bool floatEquals(float f1, float f2);

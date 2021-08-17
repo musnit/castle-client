@@ -271,11 +271,11 @@ namespace ghost {
     TovePathRef path = NewPath(NULL);
     if (pathData->color) {
       auto col = NewColor(
-          pathData->color->data[0], pathData->color->data[1], pathData->color->data[2], 1);
+          pathData->color->r, pathData->color->g, pathData->color->b, 1);
       PathSetLineColor(path, col);
       ReleasePaint(col);
     } else {
-      auto col = NewColor(lineColor.data[0], lineColor.data[1], lineColor.data[2], 1);
+      auto col = NewColor(lineColor.r, lineColor.g, lineColor.b, 1);
       PathSetLineColor(path, col);
       ReleasePaint(col);
     }
@@ -528,7 +528,7 @@ namespace ghost {
     return *bounds;
   }
 
-  bool DrawData::arePathDatasFloodFillable(PathData pd1, PathData pd2) {
+  bool DrawData::arePathDatasFloodFillable(PathData &pd1, PathData &pd2) {
     if (!DrawAlgorithms::coordinatesEqual(pd1.points[pd1.points.size() - 1], pd2.points[0])) {
       return false;
     }

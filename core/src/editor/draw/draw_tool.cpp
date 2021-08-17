@@ -10,6 +10,7 @@
 #include "subtools/draw_shape_subtool.h"
 #include "subtools/draw_erase_subtool.h"
 #include "subtools/draw_erase_segment_subtool.h"
+#include "subtools/draw_fill_subtool.h"
 #include "util.h"
 
 //
@@ -46,8 +47,9 @@ struct DrawToolSelectColorReceiver {
     auto editor = engine.maybeGetEditor();
     if (!editor)
       return;
-    editor->drawTool.color = params.color();
+    editor->drawTool.drawData->color = params.color();
     editor->drawTool.sendDrawToolEvent();
+    editor->drawTool.saveDrawing("update color");
   }
 };
 
@@ -63,7 +65,7 @@ void DrawTool::sendDrawToolEvent() {
     ev.selectedSubtools()[entry.first] = entry.second;
   }
 
-  ev.color() = color;
+  ev.color() = drawData->color;
   editor.getBridge().sendEvent("EDITOR_DRAW_TOOL", ev);
 }
 
@@ -236,13 +238,7 @@ void DrawTool::resetTempGraphics() {
 
 void DrawTool::addTempPathData(love::PathData pathData) {
   if (!pathData.color) {
-    // TODO: why does love::ghost::Color exist
-    love::ghost::Color c;
-    c.data[0] = color.r;
-    c.data[1] = color.g;
-    c.data[2] = color.b;
-    c.data[3] = color.a;
-    pathData.color = c;
+    pathData.color = drawData->color;
   }
 
   drawData->updatePathDataRendering(&pathData);
@@ -256,13 +252,7 @@ void DrawTool::addPathData(std::shared_ptr<love::PathData> pathData) {
   }
 
   if (!pathData->color) {
-    // TODO: why does love::ghost::Color exist
-    love::ghost::Color c;
-    c.data[0] = color.r;
-    c.data[1] = color.g;
-    c.data[2] = color.b;
-    c.data[3] = color.a;
-    pathData->color = c;
+    pathData->color = drawData->color;
   }
 
   drawData->currentPathDataList()->push_back(*pathData);
@@ -275,13 +265,7 @@ void DrawTool::addPathData(love::PathData pathData) {
   }
 
   if (!pathData.color) {
-    // TODO: why does love::ghost::Color exist
-    love::ghost::Color c;
-    c.data[0] = color.r;
-    c.data[1] = color.g;
-    c.data[2] = color.b;
-    c.data[3] = color.a;
-    pathData.color = c;
+    pathData.color = drawData->color;
   }
 
   drawData->currentPathDataList()->push_back(pathData);
@@ -352,13 +336,13 @@ DrawTool::DrawTool(Editor &editor_)
   subtools.push_back(std::make_unique<DrawEraseSubtool>(*this, DrawEraseSubtool::Size::Medium));
   subtools.push_back(std::make_unique<DrawEraseSubtool>(*this, DrawEraseSubtool::Size::Large));
   subtools.push_back(std::make_unique<DrawEraseSegmentSubtool>(*this));
+  subtools.push_back(std::make_unique<DrawFillSubtool>(*this));
 }
 
 void DrawTool::resetState() {
   viewWidth = DRAW_DEFAULT_VIEW_WIDTH;
   viewPosition.x = 0;
   viewPosition.y = 0;
-  color = love::Colorf(1, 1, 0, 1);
 
   isDrawToolEventDirty = true;
   isPlayingAnimation = false;
@@ -407,11 +391,6 @@ void DrawTool::update(double dt) {
     return;
   }
 
-  if (isDrawToolEventDirty) {
-    isDrawToolEventDirty = false;
-    sendDrawToolEvent();
-  }
-
   auto &drawBehavior = scene.getBehaviors().byType<Drawing2Behavior>();
   auto actorId = editor.getSelection().firstSelectedActorId();
   auto component = drawBehavior.maybeGetComponent(actorId);
@@ -428,6 +407,12 @@ void DrawTool::update(double dt) {
 
     // TODO: send elsewhere
     sendLayersEvent();
+    sendDrawToolEvent();
+  }
+
+  if (isDrawToolEventDirty) {
+    isDrawToolEventDirty = false;
+    sendDrawToolEvent();
   }
 
   const Gesture &gesture = scene.getGesture();

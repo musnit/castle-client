@@ -11,7 +11,7 @@
 namespace love {
 namespace ghost {
 
-  bool DrawAlgorithms::colorsEqual(std::optional<Color> a1, std::optional<Color> a2) {
+  bool DrawAlgorithms::colorsEqual(std::optional<love::Colorf> a1, std::optional<love::Colorf> a2) {
     if (!a1 && !a2) {
       return true;
     }
@@ -22,10 +22,17 @@ namespace ghost {
     auto c1 = *a1;
     auto c2 = *a2;
 
-    for (size_t i = 0; i < 4; i++) {
-      if (!DrawAlgorithms::floatEquals(c1.data[i], c2.data[i])) {
-        return false;
-      }
+    if (!DrawAlgorithms::floatEquals(c1.r, c2.r)) {
+      return false;
+    }
+    if (!DrawAlgorithms::floatEquals(c1.g, c2.g)) {
+      return false;
+    }
+    if (!DrawAlgorithms::floatEquals(c1.b, c2.b)) {
+      return false;
+    }
+    if (!DrawAlgorithms::floatEquals(c1.a, c2.a)) {
+      return false;
     }
     return true;
   }

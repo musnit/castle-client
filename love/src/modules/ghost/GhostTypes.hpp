@@ -167,11 +167,6 @@ namespace ghost {
       return sqrt(pow(other.x - x, 2) + pow(other.y - y, 2));
     }
 
-    void read(lua_State *L, int index) {
-      GHOST_READ_NUMBER(x, 0)
-      GHOST_READ_NUMBER(y, 0)
-    }
-
     void read(Archive::Reader &archive) {
       x = archive.num("x", 0);
       y = archive.num("y", 0);
@@ -180,13 +175,6 @@ namespace ghost {
     void write(Archive::Writer &archive) {
       archive.num("x", x);
       archive.num("y", y);
-    }
-
-    void write(lua_State *L) {
-      lua_createtable(L, 0, 2);
-
-      GHOST_WRITE_NUMBER(x)
-      GHOST_WRITE_NUMBER(y)
     }
   };
 
@@ -221,68 +209,6 @@ namespace ghost {
       result.type = SubpathType::arc;
       return result;
     }
-
-    Subpath(lua_State *L, int index) {
-      read(L, index);
-    }
-
-    void read(lua_State *L, int index) {
-      lua_pushstring(L, "type");
-      lua_gettable(L, index);
-      std::string t = lua_tostring(L, -1);
-      if (t == "line") {
-        type = line;
-      } else {
-        type = arc;
-      }
-
-      GHOST_READ_STRUCT(p1)
-      GHOST_READ_STRUCT(p2)
-      GHOST_READ_STRUCT(center)
-      GHOST_READ_NUMBER(radius, 0)
-      GHOST_READ_NUMBER(startAngle, 0)
-      GHOST_READ_NUMBER(endAngle, 0)
-    }
-  };
-
-  struct Color {
-    float data[4] { 0, 0, 0, 0 };
-
-    void read(Archive::Reader &obj) {
-      data[0] = obj.num((unsigned int)0, 1.0);
-      data[1] = obj.num(1, 1.0);
-      data[2] = obj.num(2, 1.0);
-      data[3] = obj.num(3, 1.0);
-    }
-
-    void write(Archive::Writer &archive) {
-      archive.num(data[0]);
-      archive.num(data[1]);
-      archive.num(data[2]);
-      archive.num(data[3]);
-    }
-
-    void read(lua_State *L, int index) {
-      lua_pushnumber(L, 1);
-      lua_gettable(L, index);
-      data[0] = lua_tonumber(L, -1);
-
-      lua_pushnumber(L, 2);
-      lua_gettable(L, index);
-      data[1] = lua_tonumber(L, -1);
-
-      lua_pushnumber(L, 3);
-      lua_gettable(L, index);
-      data[2] = lua_tonumber(L, -1);
-
-      lua_pushnumber(L, 4);
-      lua_gettable(L, index);
-      if (lua_isnumber(L, -1)) {
-        data[3] = lua_tonumber(L, -1);
-      } else {
-        data[3] = 1.0;
-      }
-    }
   };
 
   struct PathData {
@@ -290,7 +216,7 @@ namespace ghost {
     int style;
     std::optional<Point> bendPoint;
     bool isFreehand;
-    std::optional<Color> color;
+    std::optional<love::Colorf> color;
     bool isTransparent;
 
     std::vector<Subpath> subpathDataList;
@@ -332,40 +258,6 @@ namespace ghost {
       ReleasePath(tovePath);*/
     }
 
-    void read(lua_State *L, int index) {
-
-      /*GHOST_READ_VECTOR(points, Point)
-      GHOST_READ_INT(style, 1)
-      GHOST_READ_OPTIONAL_STRUCT(bendPoint, Point)
-      GHOST_READ_BOOL(isFreehand, false)
-      GHOST_READ_OPTIONAL_STRUCT(color, Color)
-      GHOST_READ_BOOL(isTransparent, false)*/
-
-      std::vector<float> p;
-      GHOST_READ_FLOAT_VECTOR(p)
-      for (size_t i = 0; i < p.size(); i += 2) {
-        points.push_back(Point(p[i], p[i + 1]));
-      }
-
-      int s;
-      GHOST_READ_INT(s, 1)
-      style = s;
-
-      std::optional<Point> bp;
-      GHOST_READ_OPTIONAL_STRUCT(bp, Point)
-      bendPoint = bp;
-
-      bool f;
-      GHOST_READ_BOOL(f, false)
-      isFreehand = f;
-
-      std::optional<Color> c;
-      GHOST_READ_OPTIONAL_STRUCT(c, Color)
-      color = c;
-
-      GHOST_READ_BOOL(isTransparent, false)
-    }
-
     void read(Archive::Reader &archive) {
       archive.arr("p", [&]() {
         points.resize(archive.size() / 2);
@@ -385,8 +277,11 @@ namespace ghost {
       isFreehand = archive.boolean("f", false);
 
       if (archive.has("c")) {
-        Color c;
-        archive.arr("c", c);
+        love::Colorf c;
+        archive.arr("c", [&]() {
+          c.set(archive.num((unsigned int)0, 1.0), archive.num(1, 1.0), archive.num(2, 1.0), archive.num(3, 1.0));
+        });
+
         color = c;
       }
 
@@ -410,7 +305,12 @@ namespace ghost {
       archive.boolean("f", isFreehand);
 
       if (color) {
-        archive.arr("c", *color);
+        archive.arr("c", [&]() {
+          archive.num(color->r);
+          archive.num(color->g);
+          archive.num(color->b);
+          archive.num(color->a);
+        });
       }
 
       if (isTransparent) {
@@ -421,13 +321,6 @@ namespace ghost {
 
   struct Bounds {
     float minX = 0, maxX = 0, minY = 0, maxY = 0;
-
-    void read(lua_State *L, int index) {
-      GHOST_READ_NUMBER(minX, 0)
-      GHOST_READ_NUMBER(maxX, 0)
-      GHOST_READ_NUMBER(minY, 0)
-      GHOST_READ_NUMBER(maxY, 0)
-    }
 
     void read(Archive::Reader &archive) {
       minX = archive.num("minX", 0);

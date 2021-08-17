@@ -61,7 +61,6 @@ private:
   float viewWidth;
   love::Vector2 viewPosition;
 
-  love::Colorf color;
   std::vector<std::unique_ptr<DrawSubtool>> subtools;
   bool isPlayingAnimation;
   std::unique_ptr<love::ToveGraphicsHolder> tempGraphics;

@@ -323,10 +323,10 @@ namespace ghost {
     getFillImageDataSizedToPathBounds();
     fillImageData->getFormat();
     image::Pixel p;
-    p.rgba8[0] = parent()->color.data[0];
-    p.rgba8[1] = parent()->color.data[1];
-    p.rgba8[2] = parent()->color.data[2];
-    p.rgba8[3] = 1.0;
+    p.rgba8[0] = parent()->color.r * 255.0;
+    p.rgba8[1] = parent()->color.g * 255.0;
+    p.rgba8[2] = parent()->color.b * 255.0;
+    p.rgba8[3] = 255.0;
 
 
     auto pixelCount = getFillImageDataSizedToPathBounds()->floodFill(

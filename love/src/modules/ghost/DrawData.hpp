@@ -58,8 +58,8 @@ namespace ghost {
   public:
     static love::Type type;
 
-    Color color;
-    Color lineColor;
+    love::Colorf color;
+    love::Colorf lineColor;
     float gridSize;
     float scale;
     int version;
@@ -78,13 +78,6 @@ namespace ghost {
       archive.read([&](Archive::Reader &r) {
         read(r);
       });
-    }
-
-    DrawData(lua_State *L, int index) {
-      read(L, index);
-      /*ToveSubpathRef subpath = NewSubpath();
-      TovePathRef path = NewPath(null);
-      */
     }
 
     DrawData(const std::string &json) {
@@ -109,8 +102,19 @@ namespace ghost {
     }*/
 
     void read(Archive::Reader &archive) {
-      archive.arr("color", color);
-      archive.arr("lineColor", lineColor);
+      love::Colorf c;
+      archive.arr("color", [&]() {
+        c.set(archive.num((unsigned int)0, 1.0), archive.num(1, 1.0), archive.num(2, 1.0), archive.num(3, 1.0));
+      });
+      color = c;
+
+      love::Colorf c2;
+      archive.arr("lineColor", [&]() {
+        c2.set(archive.num((unsigned int)0, 1.0), archive.num(1, 1.0), archive.num(2, 1.0), archive.num(3, 1.0));
+      });
+      lineColor = c2;
+
+
       gridSize = archive.num("gridSize", 0.71428571428571);
       scale = archive.num("scale", 10);
       version = archive.num("version", 3);
@@ -146,8 +150,18 @@ namespace ghost {
     }
 
     void write(Archive::Writer &archive) {
-      archive.arr("color", color);
-      archive.arr("lineColor", lineColor);
+      archive.arr("color", [&]() {
+        archive.num(color.r);
+        archive.num(color.g);
+        archive.num(color.b);
+        archive.num(color.a);
+      });
+      archive.arr("lineColor", [&]() {
+        archive.num(lineColor.r);
+        archive.num(lineColor.g);
+        archive.num(lineColor.b);
+        archive.num(lineColor.a);
+      });
       archive.num("gridSize", gridSize);
       archive.num("scale", scale);
       archive.num("version", version);
@@ -165,27 +179,6 @@ namespace ghost {
           archive.obj(*layers[i]);
         }
       });
-    }
-
-    void read(lua_State *L, int index) {
-      int numTotalLayers;
-      GHOST_READ_STRUCT(color)
-      GHOST_READ_STRUCT(lineColor)
-      GHOST_READ_NUMBER(gridSize, 0.71428571428571)
-      GHOST_READ_NUMBER(scale, 10)
-      GHOST_READ_INT(version, 3)
-      GHOST_READ_NUMBER(fillPixelsPerUnit, 25.6)
-      GHOST_READ_INT(numTotalLayers, 1)
-      GHOST_READ_VECTOR(framesBounds, Bounds)
-      GHOST_READ_STRING(selectedLayerId)
-      int selectedFrameValue;
-      GHOST_READ_INT_2(selectedFrameValue, selectedFrame, 1)
-      selectedFrame.value = selectedFrameValue;
-      GHOST_READ_POINTER_VECTOR(layers, DrawDataLayer)
-
-      for (size_t i = 0; i < layers.size(); i++) {
-        layers[i]->setParent(this);
-      }
     }
 
     int getNumLayers() {
@@ -215,7 +208,7 @@ namespace ghost {
     void clearBounds();
     void updateSelectedFrameBounds();
     Bounds getBounds(int frame);
-    bool arePathDatasFloodFillable(PathData pd1, PathData pd2);
+    bool arePathDatasFloodFillable(PathData &pd1, PathData &pd2);
     void updateFramePreview();
     AnimationState newAnimationState();
     int getNumFrames();

@@ -314,7 +314,6 @@ void Editor::editorJSLoaded() {
   sendSceneSettings();
   getVariables().sendVariablesData(getBridge());
   sendTagsData();
-  drawTool.sendDrawToolEvent();
 }
 
 struct EditorGlobalActionsEvent {
