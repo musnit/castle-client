@@ -88,6 +88,7 @@ struct DrawLayersEvent {
   PROP(love::DrawDataLayerId, selectedLayerId);
   PROP(int, selectedFrameIndex);
   PROP(bool, canPasteCell);
+  PROP(bool, isOnionSkinningEnabled);
   PROP((std::vector<Layer>), layers);
 };
 
@@ -121,6 +122,7 @@ void DrawTool::sendLayersEvent() {
   ev.selectedLayerId = drawData->selectedLayerId;
   ev.selectedFrameIndex = drawData->selectedFrame.value;
   ev.canPasteCell = copiedLayerId != "" && copiedFrameIndex.value > 0;
+  ev.isOnionSkinningEnabled = isOnionSkinningEnabled;
 
   editor.getBridge().sendEvent("EDITOR_DRAW_LAYERS", ev);
 }
@@ -201,6 +203,8 @@ struct DrawToolLayerActionReceiver {
           drawTool.copiedLayerId, drawTool.copiedFrameIndex, params.layerId(), params.frameIndex());
     } else if (action == "setCellLinked") {
       drawTool.drawData->setCellLinked(params.layerId(), params.frameIndex(), params.doubleValue());
+    } else if (action == "enableOnionSkinning") {
+      drawTool.isOnionSkinningEnabled = params.doubleValue();
     }
     drawTool.sendLayersEvent();
   }
@@ -339,6 +343,12 @@ DrawTool::DrawTool(Editor &editor_)
   subtools.push_back(std::make_unique<DrawFillSubtool>(*this));
 }
 
+DrawTool::~DrawTool() {
+  if (onionSkinningCanvas) {
+    delete onionSkinningCanvas;
+  }
+}
+
 void DrawTool::resetState() {
   viewWidth = DRAW_DEFAULT_VIEW_WIDTH;
   viewPosition.x = 0;
@@ -359,6 +369,8 @@ void DrawTool::resetState() {
   copiedLayerId = "";
   copiedFrameIndex.value = 0;
 
+  isOnionSkinningEnabled = false;
+
   resetTempGraphics();
 }
 
@@ -375,6 +387,44 @@ void DrawTool::deleteLayerAndValidate(love::DrawDataLayerId layerId) {
       makeNewLayer();
     }
   }
+}
+
+
+//
+// Onion skinning
+//
+
+void DrawTool::makeOnionSkinningCanvas() {
+  if (onionSkinningCanvas) {
+    delete onionSkinningCanvas;
+    onionSkinningCanvas = nullptr;
+  }
+  onionSkinningCanvas = love::DrawDataFrame::newCanvas(512, 512);
+}
+
+void DrawTool::renderOnionSkinning() {
+  if (!drawData) {
+    return;
+  }
+  if (!onionSkinningCanvas) {
+    makeOnionSkinningCanvas();
+  }
+  love::DrawDataFrame::renderToCanvas(onionSkinningCanvas, [this]() {
+    lv.graphics.push(love::Graphics::STACK_ALL);
+    lv.graphics.origin();
+    lv.graphics.scale(512.0f / (DRAW_MAX_SIZE * 2.0f), 512.0f / (DRAW_MAX_SIZE * 2.0f));
+    lv.graphics.translate(DRAW_MAX_SIZE, DRAW_MAX_SIZE);
+    lv.graphics.clear(love::Colorf(0, 0, 0, 1), {}, {});
+    lv.graphics.setColor({ 1, 1, 1, 1 });
+    drawData->renderOnionSkinning();
+    lv.graphics.pop();
+  });
+
+  lv.graphics.setColor({ 1, 1, 1, 0.4 });
+  float scale = (DRAW_MAX_SIZE * 2.0) / 512.0;
+  love::Matrix4 m(-DRAW_MAX_SIZE, -DRAW_MAX_SIZE, 0, scale, scale, 0, 0, 0, 0);
+  onionSkinningCanvas->draw(&lv.graphics, onionSkinningCanvas->getQuad(), m);
+  lv.graphics.setColor({ 1, 1, 1, 1 });
 }
 
 //
@@ -505,6 +555,10 @@ void DrawTool::drawOverlay() {
   if (tempGraphics) {
     tempGraphics->update();
     tempGraphics->draw();
+  }
+
+  if (isOnionSkinningEnabled) {
+    renderOnionSkinning();
   }
 
   getCurrentSubtool().drawOverlay(lv);

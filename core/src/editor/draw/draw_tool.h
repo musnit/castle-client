@@ -23,6 +23,7 @@ public:
   const DrawTool &operator=(const DrawTool &) = delete;
 
   explicit DrawTool(Editor &editor_);
+  ~DrawTool();
 
   void resetState();
   void update(double dt);
@@ -74,6 +75,11 @@ private:
   // for 'copy cell'
   love::DrawDataLayerId copiedLayerId;
   love::OneIndexFrame copiedFrameIndex;
+
+  bool isOnionSkinningEnabled = false;
+  love::graphics::Canvas *onionSkinningCanvas = nullptr;
+  void makeOnionSkinningCanvas();
+  void renderOnionSkinning();
 };
 
 inline love::DrawData &DrawTool::getDrawData() {

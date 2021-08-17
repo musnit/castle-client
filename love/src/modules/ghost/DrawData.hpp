@@ -223,7 +223,9 @@ namespace ghost {
         AnimationComponentProperties &componentProperties, float dt);
     ToveGraphicsHolder *graphics();
     void preload();
+    void renderFrameIndex(int frameIdx /* zero index */);
     void render(std::optional<AnimationComponentProperties> componentProperties);
+    void renderOnionSkinning();
     bool isPointInBounds(Point point);
 
     void addLayer(std::string title, DrawDataLayerId id);

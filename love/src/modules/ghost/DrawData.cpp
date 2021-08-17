@@ -804,11 +804,7 @@ namespace ghost {
     graphics();
   }
 
-  void DrawData::render(std::optional<AnimationComponentProperties> componentProperties) {
-    int frameIdx = selectedFrame.value - 1;
-    if (componentProperties) {
-      frameIdx = modFrameIndex(componentProperties->currentFrame);
-    }
+  void DrawData::renderFrameIndex(int frameIdx /* zero index */) {
     for (size_t l = 0; l < layers.size(); l++) {
       if (layers[l]->isVisible) {
         auto realFrame = getRealFrameIndexForLayerId(layers[l]->id, frameIdx);
@@ -818,22 +814,21 @@ namespace ghost {
       }
     }
   }
-  /*
-  TYPE DrawData::renderOnionSkinning() {
-    auto frame = selectedFrame - 1;
-    if (frame < 1) {
-          frame = layers[0].frames.length;
+
+  void DrawData::render(std::optional<AnimationComponentProperties> componentProperties) {
+    int frameIdx = selectedFrame.toZeroIndex();
+    if (componentProperties) {
+      frameIdx = modFrameIndex(componentProperties->currentFrame);
     }
-    for (int l = 0; l < layers.length; l++) {
-          auto layer = layers[l];
-          if (layer.isVisible) {
-            auto realFrame = getRealFrameIndexForLayerId(layer.id, frame);
-            auto frame = layer.frames[realFrame];
-            frame.renderFill();
-            frame.graphics().draw();
-          }
-    }
+    renderFrameIndex(frameIdx);
   }
+
+  void DrawData::renderOnionSkinning() {
+    int prevFrameIdx = modFrameIndex(selectedFrame.toZeroIndex() - 1);
+    renderFrameIndex(prevFrameIdx);
+  }
+
+  /*
 
   TYPE DrawData::renderForTool(TYPE animationState, TYPE tempTranslateX, TYPE tempTranslateY, TYPE
   tempGraphics) { auto frameIdx = selectedFrame; if (animationState) { frameIdx =

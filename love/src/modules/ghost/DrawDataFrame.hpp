@@ -88,6 +88,10 @@ namespace ghost {
       }
     }
 
+    // canvas helpers
+    static graphics::Canvas *newCanvas(int width, int height);
+    static void renderToCanvas(graphics::Canvas *canvas, const std::function<void()> &lambda);
+
     void deserializePathDataList();
     bool arePathDatasMergable(PathData pd1, PathData pd2);
     float round(float num, int numDecimalPlaces);
@@ -112,8 +116,6 @@ namespace ghost {
     void deserializeFillAndPreview();
 
     image::ImageData *canvasToImageData(graphics::Canvas *canvas);
-    graphics::Canvas *newCanvas(int width, int height);
-    void renderToCanvas(graphics::Canvas *canvas, const std::function<void()> &lambda);
 
     DrawData *parent() {
       return _parent;
