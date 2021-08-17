@@ -492,7 +492,7 @@ const DrawingLayers = ({ sendLayerAction }) => {
 };
 
 const DrawingLayersHeader = ({ sendLayerAction }) => {
-  const { numFrames } = useCoreState('EDITOR_DRAW_LAYERS') || {};
+  const { numFrames, isOnionSkinningEnabled } = useCoreState('EDITOR_DRAW_LAYERS') || {};
   const fastAction = () => {}; // TODO: actions
   const fastData = {}; // TODO: further draw tool state
 
@@ -507,10 +507,12 @@ const DrawingLayersHeader = ({ sendLayerAction }) => {
           <TouchableOpacity
             style={styles.headerControl}
             onPress={() =>
-              fastAction('onSetIsOnionSkinningEnabled', !fastData.isOnionSkinningEnabled)
+              sendLayerAction('enableOnionSkinning', {
+                doubleValue: isOnionSkinningEnabled ? 0 : 1,
+              })
             }>
             <MCIcon
-              name={fastData.isOnionSkinningEnabled ? 'eye-outline' : 'eye-off-outline'}
+              name={isOnionSkinningEnabled ? 'eye-outline' : 'eye-off-outline'}
               size={ICON_SIZE}
               color={'#000'}
             />
