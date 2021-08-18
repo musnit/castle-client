@@ -279,7 +279,8 @@ namespace ghost {
       if (archive.has("c")) {
         love::Colorf c;
         archive.arr("c", [&]() {
-          c.set(archive.num((unsigned int)0, 1.0), archive.num(1, 1.0), archive.num(2, 1.0), archive.num(3, 1.0));
+          c.set(archive.num((unsigned int)0, 1.0), archive.num(1, 1.0), archive.num(2, 1.0),
+              archive.num(3, 1.0));
         });
 
         color = c;
@@ -355,51 +356,30 @@ namespace ghost {
     }
   };
 
-  struct OneIndexFrame {
-    int value = 1;
-
-    OneIndexFrame() = default;
-    OneIndexFrame(int &intValue)
-        : value(intValue) {
-    }
-
-    void operator=(const int &intValue) {
-      value = intValue;
-    }
-
-    int toZeroIndex() {
-      return value - 1;
-    }
-
-    void setFromZeroIndex(int v) {
-      value = v + 1;
-    }
-  };
-
   class AnimationComponentProperties {
   public:
     bool playing;
     float framesPerSecond;
-    OneIndexFrame loopStartFrame;
-    OneIndexFrame loopEndFrame;
-    OneIndexFrame currentFrame;
+    int loopStartFrame;
+    int loopEndFrame;
+    int currentFrame;
     bool loop;
 
     void read(Archive::Reader &archive) {
       playing = archive.boolean("playing", false);
       framesPerSecond = archive.num("framesPerSecond", 4);
-      currentFrame.value = archive.num("initialFrame", 1);
+      currentFrame = archive.numMinusOne("initialFrame", 1);
       loop = archive.boolean("loop", false);
 
       // these can only be set from "set property" responses
-      loopStartFrame.value = -1;
-      loopEndFrame.value = -1;
+      loopStartFrame = -1;
+      loopEndFrame = -1;
     }
 
     void write(Archive::Writer &writer) const {
       writer.boolean("playing", playing);
       writer.num("framesPerSecond", framesPerSecond);
-      writer.num("initialFrame", currentFrame.value);
+      writer.numPlusOne("initialFrame", currentFrame);
       writer.boolean("loop", loop);
     }
   };

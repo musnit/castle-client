@@ -66,7 +66,7 @@ namespace ghost {
     float fillPixelsPerUnit;
     std::vector<std::optional<Bounds>> framesBounds;
     DrawDataLayerId selectedLayerId;
-    OneIndexFrame selectedFrame;
+    int selectedFrame;
     std::vector<std::unique_ptr<DrawDataLayer>> layers;
 
     DrawData(std::shared_ptr<DrawData> other) {
@@ -104,13 +104,15 @@ namespace ghost {
     void read(Archive::Reader &archive) {
       love::Colorf c;
       archive.arr("color", [&]() {
-        c.set(archive.num((unsigned int)0, 1.0), archive.num(1, 1.0), archive.num(2, 1.0), archive.num(3, 1.0));
+        c.set(archive.num((unsigned int)0, 1.0), archive.num(1, 1.0), archive.num(2, 1.0),
+            archive.num(3, 1.0));
       });
       color = c;
 
       love::Colorf c2;
       archive.arr("lineColor", [&]() {
-        c2.set(archive.num((unsigned int)0, 1.0), archive.num(1, 1.0), archive.num(2, 1.0), archive.num(3, 1.0));
+        c2.set(archive.num((unsigned int)0, 1.0), archive.num(1, 1.0), archive.num(2, 1.0),
+            archive.num(3, 1.0));
       });
       lineColor = c2;
 
@@ -129,7 +131,7 @@ namespace ghost {
       });
       // TODO: default this to first layer on the server
       selectedLayerId = archive.str("selectedLayerId", "");
-      selectedFrame.value = archive.num("selectedFrame", 1);
+      selectedFrame = archive.numMinusOne("selectedFrame", 1);
       archive.arr("layers", [&]() {
         for (auto i = 0; i < archive.size(); i++) {
           auto layer = std::make_unique<DrawDataLayer>();
@@ -173,7 +175,7 @@ namespace ghost {
         }
       });
       archive.str("selectedLayerId", selectedLayerId);
-      archive.num("selectedFrame", selectedFrame.value);
+      archive.numPlusOne("selectedFrame", selectedFrame);
       archive.arr("layers", [&]() {
         for (size_t i = 0; i < layers.size(); i++) {
           archive.obj(*layers[i]);
@@ -201,7 +203,6 @@ namespace ghost {
     void updatePathDataRendering(PathData *pathData);
     DrawDataLayer *selectedLayer();
     int getRealFrameIndexForLayerId(DrawDataLayerId layerId, int frame);
-    int getRealFrameIndexForLayerId(DrawDataLayerId layerId, OneIndexFrame frame);
     DrawDataLayer *layerForId(DrawDataLayerId id);
     DrawDataFrame *currentLayerFrame();
     PathDataList *currentPathDataList();
@@ -213,7 +214,6 @@ namespace ghost {
     AnimationState newAnimationState();
     int getNumFrames();
     int modFrameIndex(int value);
-    int modFrameIndex(OneIndexFrame frame);
     struct RunAnimationResult {
       bool loop = false;
       bool end = false;
@@ -233,11 +233,11 @@ namespace ghost {
     void setLayerOrder(DrawDataLayerId id, int newIndexInLayers);
 
     void addFrame();
-    void addFrame(OneIndexFrame frameIndex);
-    bool deleteFrame(OneIndexFrame frameIndex);
-    void copyCell(DrawDataLayerId sourceLayerId, OneIndexFrame sourceFrameIndex,
-        DrawDataLayerId destLayerId, OneIndexFrame destFrameIndex);
-    void setCellLinked(DrawDataLayerId layerId, OneIndexFrame frameIndex, bool isLinked);
+    void addFrame(int frameIndex);
+    bool deleteFrame(int frameIndex);
+    void copyCell(DrawDataLayerId sourceLayerId, int sourceFrameIndex, DrawDataLayerId destLayerId,
+        int destFrameIndex);
+    void setCellLinked(DrawDataLayerId layerId, int frameIndex, bool isLinked);
   };
 
 }

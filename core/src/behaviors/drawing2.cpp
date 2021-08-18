@@ -17,9 +17,9 @@ void getAnimationComponentProperties(
   }
 
   properties.framesPerSecond = component.props.framesPerSecond();
-  properties.loopStartFrame.value = int(std::round(component.props.loopStartFrame()));
-  properties.loopEndFrame.value = int(std::round(component.props.loopEndFrame()));
-  properties.currentFrame.value = int(std::round(component.props.currentFrame()));
+  properties.loopStartFrame = int(std::round(component.props.loopStartFrame()));
+  properties.loopEndFrame = int(std::round(component.props.loopEndFrame()));
+  properties.currentFrame = int(std::round(component.props.currentFrame()));
 }
 
 
@@ -34,9 +34,9 @@ void applyAnimationComponentProperties(
   }
 
   component.props.framesPerSecond() = properties.framesPerSecond;
-  component.props.loopStartFrame() = properties.loopStartFrame.value;
-  component.props.loopEndFrame() = properties.loopEndFrame.value;
-  component.props.currentFrame() = properties.currentFrame.value;
+  component.props.loopStartFrame() = properties.loopStartFrame;
+  component.props.loopEndFrame() = properties.loopEndFrame;
+  component.props.currentFrame() = properties.currentFrame;
 }
 
 //
@@ -233,7 +233,7 @@ ExpressionValue Drawing2Behavior::handleGetProperty(
   getAnimationComponentProperties(component, animProps);
 
   if (propId == decltype(DrawingAnimationProps::currentFrame)::id) {
-    return animProps.currentFrame.value;
+    return animProps.currentFrame + 1;
   } else if (propId == decltype(DrawingAnimationProps::playMode)::id) {
     if (!animProps.playing) {
       return "still";
@@ -246,9 +246,9 @@ ExpressionValue Drawing2Behavior::handleGetProperty(
   } else if (propId == decltype(DrawingAnimationProps::framesPerSecond)::id) {
     return animProps.framesPerSecond;
   } else if (propId == decltype(DrawingAnimationProps::loopStartFrame)::id) {
-    return animProps.loopStartFrame.value;
+    return animProps.loopStartFrame + 1;
   } else if (propId == decltype(DrawingAnimationProps::loopEndFrame)::id) {
-    return animProps.loopEndFrame.value;
+    return animProps.loopEndFrame + 1;
   } else {
     return BaseBehavior::handleGetProperty(actorId, component, propId);
   }
@@ -260,7 +260,8 @@ void Drawing2Behavior::handleSetProperty(
   getAnimationComponentProperties(component, animProps);
 
   if (propId == decltype(DrawingAnimationProps::currentFrame)::id) {
-    animProps.currentFrame.value = int(std::round(value.as<double>()));
+    // the rule contains a 1-indexed frame
+    animProps.currentFrame = int(std::round(value.as<double>())) - 1;
     fireChangeFrameTriggers(actorId, component);
   } else if (propId == decltype(DrawingAnimationProps::playMode)::id) {
     if (value.is<const char *>()) {
@@ -279,9 +280,11 @@ void Drawing2Behavior::handleSetProperty(
   } else if (propId == decltype(DrawingAnimationProps::framesPerSecond)::id) {
     animProps.framesPerSecond = value.as<float>();
   } else if (propId == decltype(DrawingAnimationProps::loopStartFrame)::id) {
-    animProps.loopStartFrame.value = int(std::round(value.as<double>()));
+    // the rule contains a 1-indexed frame
+    animProps.loopStartFrame = int(std::round(value.as<double>())) - 1;
   } else if (propId == decltype(DrawingAnimationProps::loopEndFrame)::id) {
-    animProps.loopEndFrame.value = int(std::round(value.as<double>()));
+    // the rule contains a 1-indexed frame
+    animProps.loopEndFrame = int(std::round(value.as<double>())) - 1;
   }
 
   applyAnimationComponentProperties(component, animProps);

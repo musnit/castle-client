@@ -270,8 +270,7 @@ namespace ghost {
     }
     TovePathRef path = NewPath(NULL);
     if (pathData->color) {
-      auto col = NewColor(
-          pathData->color->r, pathData->color->g, pathData->color->b, 1);
+      auto col = NewColor(pathData->color->r, pathData->color->g, pathData->color->b, 1);
       PathSetLineColor(path, col);
       ReleasePaint(col);
     } else {
@@ -299,18 +298,6 @@ namespace ghost {
 
   DrawDataLayer *DrawData::selectedLayer() {
     return layerForId(selectedLayerId);
-  }
-
-  int DrawData::getRealFrameIndexForLayerId(DrawDataLayerId layerId, OneIndexFrame oneIndexFrame) {
-    auto layer = layerForId(layerId);
-    int frame = modFrameIndex(oneIndexFrame);
-    while (frame >= 0) {
-      if (!layer->frames[frame]->isLinked) {
-        return frame;
-      }
-      frame = frame - 1;
-    }
-    return frame;
   }
 
   int DrawData::getRealFrameIndexForLayerId(DrawDataLayerId layerId, int frame) {
@@ -510,7 +497,7 @@ namespace ghost {
   }
 
   void DrawData::updateSelectedFrameBounds() {
-    framesBounds[selectedFrame.value - 1] = std::nullopt;
+    framesBounds[selectedFrame] = std::nullopt;
   }
 
   Bounds DrawData::getBounds(int frame) {
@@ -641,41 +628,37 @@ namespace ghost {
   }
 
   void DrawData::addFrame() {
-    OneIndexFrame lastFrameIndex;
-    lastFrameIndex.setFromZeroIndex(layers[0]->frames.size());
-    addFrame(lastFrameIndex);
+    addFrame(layers[0]->frames.size());
   }
 
-  void DrawData::addFrame(OneIndexFrame frameIndex) {
+  void DrawData::addFrame(int frameIndex) {
     if (getNumLayers()) {
       auto isLinked = layers[0]->frames.size() > 0;
-      auto zeroFrameIndex = frameIndex.toZeroIndex();
       for (auto &layer : layers) {
         auto newFrame = std::make_unique<DrawDataFrame>(isLinked);
-        if (zeroFrameIndex >= layer->frames.size()) {
+        if (frameIndex >= layer->frames.size()) {
           layer->frames.push_back(std::move(newFrame));
         } else {
           // can't use frames->insert() without freeing the std::unique reference on the moved elems
           layer->frames.push_back(std::move(newFrame));
-          std::iter_swap(layer->frames.begin() + zeroFrameIndex, layer->frames.rbegin());
+          std::iter_swap(layer->frames.begin() + frameIndex, layer->frames.rbegin());
         }
       }
-      selectedFrame.setFromZeroIndex(zeroFrameIndex);
+      selectedFrame = frameIndex;
     }
   }
 
-  bool DrawData::deleteFrame(OneIndexFrame frameIndex) {
+  bool DrawData::deleteFrame(int frameIndex) {
     clearBounds();
-    auto zeroIndexFrame = frameIndex.toZeroIndex();
     if (getNumLayers()) {
       for (auto &layer : layers) {
-        layer->frames.erase(layer->frames.begin() + zeroIndexFrame);
+        layer->frames.erase(layer->frames.begin() + frameIndex);
       }
       if (layers[0]->frames.empty()) {
         addFrame();
       }
-      if (selectedFrame.toZeroIndex() >= layers[0]->frames.size()) {
-        selectedFrame.setFromZeroIndex(layers[0]->frames.size() - 1);
+      if (selectedFrame >= layers[0]->frames.size()) {
+        selectedFrame = layers[0]->frames.size() - 1;
       }
       return true;
     }
@@ -686,30 +669,29 @@ namespace ghost {
     currentLayerFrame()->base64Png = currentLayerFrame()->renderPreviewPng(-1);
   }
 
-  void DrawData::copyCell(DrawDataLayerId sourceLayerId, OneIndexFrame sourceFrameIndex,
-      DrawDataLayerId destLayerId, OneIndexFrame destFrameIndex) {
+  void DrawData::copyCell(DrawDataLayerId sourceLayerId, int sourceFrameIndex,
+      DrawDataLayerId destLayerId, int destFrameIndex) {
     auto sourceLayer = layerForId(sourceLayerId), destLayer = layerForId(destLayerId);
-    if (sourceFrameIndex.toZeroIndex() < sourceLayer->frames.size()
-        && destFrameIndex.toZeroIndex() < destLayer->frames.size()) {
-      auto &oldFrame = sourceLayer->frames[sourceFrameIndex.toZeroIndex()];
-      destLayer->frames[destFrameIndex.toZeroIndex()] = std::make_unique<DrawDataFrame>(*oldFrame);
+    if (sourceFrameIndex < sourceLayer->frames.size()
+        && destFrameIndex < destLayer->frames.size()) {
+      auto &oldFrame = sourceLayer->frames[sourceFrameIndex];
+      destLayer->frames[destFrameIndex] = std::make_unique<DrawDataFrame>(*oldFrame);
     }
   }
 
-  void DrawData::setCellLinked(DrawDataLayerId layerId, OneIndexFrame frameIndex, bool isLinked) {
-    if (frameIndex.value < 2) {
+  void DrawData::setCellLinked(DrawDataLayerId layerId, int frameIndex, bool isLinked) {
+    if (frameIndex < 1) {
       return;
     }
     auto layer = layerForId(layerId);
-    if (layer->frames[frameIndex.toZeroIndex()]->isLinked == isLinked) {
+    if (layer->frames[frameIndex]->isLinked == isLinked) {
       return;
     }
     if (isLinked) {
       auto newFrame = std::make_unique<DrawDataFrame>(true);
-      layer->frames[frameIndex.toZeroIndex()] = std::move(newFrame);
+      layer->frames[frameIndex] = std::move(newFrame);
     } else {
-      OneIndexFrame realFrameIndex;
-      realFrameIndex.setFromZeroIndex(getRealFrameIndexForLayerId(layerId, frameIndex));
+      int realFrameIndex = getRealFrameIndexForLayerId(layerId, frameIndex);
       copyCell(layerId, realFrameIndex, layerId, frameIndex);
     }
   }
@@ -733,10 +715,6 @@ namespace ghost {
     return value;
   }
 
-  int DrawData::modFrameIndex(OneIndexFrame frame) {
-    return modFrameIndex(frame.value - 1);
-  }
-
   DrawData::RunAnimationResult DrawData::runAnimation(
       AnimationState &animationState, AnimationComponentProperties &componentProperties, float dt) {
     RunAnimationResult result;
@@ -747,11 +725,11 @@ namespace ghost {
     auto secondsPerFrame = 1 / componentProperties.framesPerSecond;
     if (animationState.animationFrameTime > abs(secondsPerFrame)) {
       animationState.animationFrameTime = animationState.animationFrameTime - abs(secondsPerFrame);
-      auto firstFrame = componentProperties.loopStartFrame.toZeroIndex();
+      auto firstFrame = componentProperties.loopStartFrame;
       if (firstFrame < 0 || firstFrame >= getNumFrames()) {
         firstFrame = 0;
       }
-      auto lastFrame = componentProperties.loopEndFrame.toZeroIndex();
+      auto lastFrame = componentProperties.loopEndFrame;
       if (lastFrame < 0 || lastFrame >= getNumFrames()) {
         lastFrame = getNumFrames() - 1;
       }
@@ -759,7 +737,7 @@ namespace ghost {
       if (secondsPerFrame > 0) {
         if (currentFrame == lastFrame) {
           if (componentProperties.loop) {
-            componentProperties.currentFrame.setFromZeroIndex(firstFrame);
+            componentProperties.currentFrame = firstFrame;
             result.changed = true;
             result.loop = true;
           } else {
@@ -768,13 +746,13 @@ namespace ghost {
             result.end = true;
           }
         } else {
-          componentProperties.currentFrame.setFromZeroIndex(currentFrame + 1);
+          componentProperties.currentFrame = currentFrame + 1;
           result.changed = true;
         }
       } else {
         if (currentFrame == firstFrame) {
           if (componentProperties.loop) {
-            componentProperties.currentFrame.setFromZeroIndex(lastFrame);
+            componentProperties.currentFrame = lastFrame;
             result.changed = true;
             result.loop = true;
           } else {
@@ -783,7 +761,7 @@ namespace ghost {
             result.end = true;
           }
         } else {
-          componentProperties.currentFrame.setFromZeroIndex(currentFrame - 1);
+          componentProperties.currentFrame = currentFrame - 1;
           result.changed = true;
         }
       }
@@ -804,7 +782,7 @@ namespace ghost {
     graphics();
   }
 
-  void DrawData::renderFrameIndex(int frameIdx /* zero index */) {
+  void DrawData::renderFrameIndex(int frameIdx) {
     for (size_t l = 0; l < layers.size(); l++) {
       if (layers[l]->isVisible) {
         auto realFrame = getRealFrameIndexForLayerId(layers[l]->id, frameIdx);
@@ -816,7 +794,7 @@ namespace ghost {
   }
 
   void DrawData::render(std::optional<AnimationComponentProperties> componentProperties) {
-    int frameIdx = selectedFrame.toZeroIndex();
+    int frameIdx = selectedFrame;
     if (componentProperties) {
       frameIdx = modFrameIndex(componentProperties->currentFrame);
     }
@@ -824,7 +802,7 @@ namespace ghost {
   }
 
   void DrawData::renderOnionSkinning() {
-    int prevFrameIdx = modFrameIndex(selectedFrame.toZeroIndex() - 1);
+    int prevFrameIdx = modFrameIndex(selectedFrame - 1);
     renderFrameIndex(prevFrameIdx);
   }
 

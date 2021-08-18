@@ -121,8 +121,8 @@ void DrawTool::sendLayersEvent() {
   }
 
   ev.selectedLayerId = drawData->selectedLayerId;
-  ev.selectedFrameIndex = drawData->selectedFrame.value;
-  ev.canPasteCell = copiedLayerId != "" && copiedFrameIndex.value > 0;
+  ev.selectedFrameIndex = drawData->selectedFrame;
+  ev.canPasteCell = copiedLayerId != "" && copiedFrameIndex >= 0;
   ev.isOnionSkinningEnabled = isOnionSkinningEnabled;
 
   editor.getBridge().sendEvent("EDITOR_DRAW_LAYERS", ev);
@@ -158,20 +158,20 @@ struct DrawToolLayerActionReceiver {
     } else if (action == "selectLayerAndFrame") {
       // TODO: setIsPlayingAnimation(false)
       drawTool.drawData->selectedLayerId = params.layerId();
-      drawTool.drawData->selectedFrame.value = params.frameIndex();
+      drawTool.drawData->selectedFrame = params.frameIndex();
       drawTool.saveDrawing("select cell");
     } else if (action == "stepBackward") {
-      auto newFrameIndex = drawTool.drawData->selectedFrame.value - 1;
-      if (newFrameIndex < 1) {
-        newFrameIndex = drawTool.drawData->getNumFrames();
+      auto newFrameIndex = drawTool.drawData->selectedFrame - 1;
+      if (newFrameIndex < 0) {
+        newFrameIndex = drawTool.drawData->getNumFrames() - 1;
       }
-      drawTool.drawData->selectedFrame.value = newFrameIndex;
+      drawTool.drawData->selectedFrame = newFrameIndex;
     } else if (action == "stepForward") {
-      auto newFrameIndex = drawTool.drawData->selectedFrame.value + 1;
-      if (newFrameIndex > drawTool.drawData->getNumFrames()) {
-        newFrameIndex = 1;
+      auto newFrameIndex = drawTool.drawData->selectedFrame + 1;
+      if (newFrameIndex >= drawTool.drawData->getNumFrames()) {
+        newFrameIndex = 0;
       }
-      drawTool.drawData->selectedFrame.value = newFrameIndex;
+      drawTool.drawData->selectedFrame = newFrameIndex;
     } else if (action == "setLayerIsVisible") {
       auto layer = drawTool.drawData->layerForId(params.layerId());
       layer->isVisible = params.doubleValue();
@@ -186,9 +186,8 @@ struct DrawToolLayerActionReceiver {
       drawTool.saveDrawing("reorder layer");
     } else if (action == "addFrame") {
       auto frameIndexToAdd = params.frameIndex();
-      if (frameIndexToAdd > 0) {
-        love::OneIndexFrame index(frameIndexToAdd);
-        drawTool.drawData->addFrame(index);
+      if (frameIndexToAdd >= 0) {
+        drawTool.drawData->addFrame(frameIndexToAdd);
       } else {
         drawTool.drawData->addFrame();
       }
@@ -374,7 +373,7 @@ void DrawTool::resetState() {
   selectedSubtools["collision_move"] = "move";
 
   copiedLayerId = "";
-  copiedFrameIndex.value = 0;
+  copiedFrameIndex = -1;
 
   isOnionSkinningEnabled = false;
 

@@ -184,16 +184,16 @@ const LayerRow = ({
         </TouchableOpacity>
       </TouchableOpacity>
       {layer.frames.map((frame, idx) => {
-        let isFrameSelected = selectedFrameIndex == idx + 1 && isSelected;
+        let isFrameSelected = selectedFrameIndex == idx && isSelected;
         let isMenuAvailable = isFrameSelected;
         let onPress = isMenuAvailable
           ? () =>
               showCellActionSheet({
                 isLinked: frame.isLinked,
                 layerId: layer.id,
-                frame: idx + 1,
+                frame: idx,
               })
-          : () => onSelectLayer({ layer, frame: idx + 1 });
+          : () => onSelectLayer({ layer, frame: idx });
 
         let cellStyle = [styles.cell];
         let isLastCell = idx === layer.frames.length - 1;
@@ -371,7 +371,9 @@ const DrawingLayers = ({ sendLayerAction }) => {
   );
 
   const onAddLayer = useCallback(() => sendLayerAction('addLayer'), [sendLayerAction]);
-  const onAddFrame = useCallback(() => sendLayerAction('addFrame'), [sendLayerAction]);
+  const onAddFrame = useCallback(() => sendLayerAction('addFrame', { frameIndex: -1 }), [
+    sendLayerAction,
+  ]);
   const showFrameActionSheet = useCallback(
     (frame) => {
       let options = [
@@ -429,10 +431,10 @@ const DrawingLayers = ({ sendLayerAction }) => {
             </TouchableOpacity>
             {layers?.length > 0
               ? layers[0].frames.map((frame, idx) => {
-                  let isSelected = selectedFrameIndex == idx + 1;
+                  let isSelected = selectedFrameIndex == idx;
                   let onPress = isSelected
-                    ? () => showFrameActionSheet(idx + 1)
-                    : () => fastAction('onSelectFrame', idx + 1);
+                    ? () => showFrameActionSheet(idx)
+                    : () => fastAction('onSelectFrame', idx);
 
                   return (
                     <TouchableOpacity

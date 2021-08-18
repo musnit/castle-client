@@ -110,6 +110,7 @@ public:
   bool boolean(const char *key, bool def);
   std::optional<bool> boolean(const char *key);
   double num(const char *key, double def);
+  double numMinusOne(const char *key, double def);
   std::optional<double> num(const char *key);
   const char *str(const char *key, const char *def);
   std::optional<const char *> str(const char *key);
@@ -221,6 +222,8 @@ public:
   void num(K &&key, int val);
   template<typename K>
   void num(K &&key, double val);
+  template<typename K>
+  void numPlusOne(K &&key, double val);
   template<typename K, typename V>
   void str(K &&key, V &&val);
   template<typename K, typename F>
@@ -474,6 +477,17 @@ inline double Reader::num(const char *key, double def) {
     }
   }
   return def;
+}
+
+// for reading 1-index numbers into 0-index data structures
+// TODO: remove this after we migrate away from 1-indexed scene format
+inline double Reader::numMinusOne(const char *key, double def) {
+  if (cur->IsObject()) {
+    if (auto mem = find(key); mem != cur->MemberEnd() && mem->value.IsNumber()) {
+      return mem->value.GetDouble() - 1;
+    }
+  }
+  return def - 1;
 }
 
 inline std::optional<double> Reader::num(const char *key) {
@@ -801,6 +815,13 @@ inline void Writer::setNum(int val) {
 template<typename K>
 void Writer::num(K &&key, double val) {
   cur->AddMember(makeStr(std::forward<K>(key)), json::Value(val), alloc);
+}
+
+// write value + 1. for supporting cases when the archive format is 1-indexed
+// TODO: remove this after we migrate away from 1-indexed scene format
+template<typename K>
+void Writer::numPlusOne(K &&key, double val) {
+  cur->AddMember(makeStr(std::forward<K>(key)), json::Value(val + 1), alloc);
 }
 
 inline void Writer::num(double val) {

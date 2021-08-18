@@ -75,7 +75,7 @@ private:
 
   // for 'copy cell'
   love::DrawDataLayerId copiedLayerId;
-  love::OneIndexFrame copiedFrameIndex;
+  int copiedFrameIndex;
 
   bool isOnionSkinningEnabled = false;
   love::graphics::Canvas *onionSkinningCanvas = nullptr;
