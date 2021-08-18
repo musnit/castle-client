@@ -83,6 +83,11 @@ void Bridge::sendEvent(const char *name, const T &params) {
   sendEvent(archive.toJson().c_str());
 }
 
+template<typename T, typename = void>
+static constexpr auto hasParamsMember = false;
+template<typename T>
+static constexpr auto hasParamsMember<T, std::void_t<decltype(std::declval<T>().params)>> = true;
+
 template<typename T>
 BridgeRegistration<T>::BridgeRegistration(const char *name) {
   Bridge::receiverEntries.push_back({
@@ -90,7 +95,11 @@ BridgeRegistration<T>::BridgeRegistration(const char *name) {
       [](Engine &engine, Reader &reader) {
         T receiver;
         reader.obj("params", [&]() {
-          reader.read(receiver.params);
+          if constexpr (hasParamsMember<T>) {
+            reader.read(receiver.params);
+          } else {
+            receiver.read(reader);
+          }
         });
         receiver.receive(engine);
       },

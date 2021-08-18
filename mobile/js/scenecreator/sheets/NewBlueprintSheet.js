@@ -4,7 +4,7 @@ import FastImage from 'react-native-fast-image';
 
 import { BottomSheetHeader } from '../../components/BottomSheetHeader';
 import * as Constants from '../../Constants';
-import * as GhostEvents from '../../ghost/GhostEvents';
+import * as CoreEvents from '../../core/CoreEvents';
 
 import { BottomSheet } from '../../components/BottomSheet';
 import * as Clipboard from '../LibraryEntryClipboard';
@@ -195,7 +195,7 @@ export const NewBlueprintSheet = ({ element, isOpen, onClose, ...props }) => {
                   key={index}
                   entry={entry}
                   onPress={() => {
-                    GhostEvents.sendAsync('NEW_BLUEPRINT', { templateIndex: index });
+                    CoreEvents.sendAsync('EDITOR_NEW_BLUEPRINT', { entry });
                     onClose();
                   }}
                 />
@@ -213,7 +213,7 @@ export const NewBlueprintSheet = ({ element, isOpen, onClose, ...props }) => {
                 key={index}
                 entry={entry}
                 onPress={() => {
-                  GhostEvents.sendAsync('NEW_BLUEPRINT', { templateIndex: index });
+                  CoreEvents.sendAsync('EDITOR_NEW_BLUEPRINT', { entry });
                   onClose();
                 }}
               />

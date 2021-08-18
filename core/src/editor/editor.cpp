@@ -1216,3 +1216,48 @@ void Editor::maybeSendData() {
   }
   scene->getBehaviors().byType<TextBehavior>().maybeSendBridgeData();
 }
+
+struct EditorNewBlueprintReceiver {
+  inline static const BridgeRegistration<EditorNewBlueprintReceiver> registration {
+    "EDITOR_NEW_BLUEPRINT"
+  };
+
+  std::string newEntryId = Library::generateEntryId();
+  std::shared_ptr<Archive> archive = std::make_shared<Archive>();
+
+  void read(Reader &reader) {
+    reader.obj("entry", [&]() {
+      archive->write([&](Writer &writer) {
+        writer.setValue(*reader.jsonValue());
+        writer.overwrite("entryId", [&]() {
+          writer.setStr(newEntryId);
+        });
+      });
+    });
+  }
+
+  void receive(Engine &engine) {
+    if (!engine.getIsEditing()) {
+      return;
+    }
+    auto editor = engine.maybeGetEditor();
+    if (!editor) {
+      return;
+    }
+    editor->getCommands().execute(
+        "add blueprint", {},
+        [newEntryId = newEntryId, archive = std::move(archive)](Editor &editor, bool) {
+          auto &library = editor.getScene().getLibrary();
+          archive->read([&](Reader &reader) {
+            library.readEntry(reader);
+          });
+          editor.getSelection().deselectAllActors();
+          auto &belt = editor.getBelt();
+          belt.select(newEntryId);
+        },
+        [newEntryId = newEntryId](Editor &editor, bool) {
+          editor.getSelection().deselectAllActors();
+          editor.getScene().getLibrary().removeEntry(newEntryId.c_str());
+        });
+  }
+};
