@@ -131,6 +131,10 @@ void Drawing2Behavior::handleReadComponent(
     ActorId actorId, Drawing2Component &component, Reader &reader) {
   component.hash = reader.str("hash", "");
 
+  love::AnimationComponentProperties animProps;
+  animProps.read(reader);
+  applyAnimationComponentProperties(component, animProps);
+
   if (auto found = drawDataCache.find(component.hash); found == drawDataCache.end()) {
     reader.obj("drawData", [&]() {
       component.drawData = std::make_shared<love::DrawData>(reader);
