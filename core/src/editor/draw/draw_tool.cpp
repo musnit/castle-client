@@ -12,6 +12,7 @@
 #include "subtools/draw_erase_segment_subtool.h"
 #include "subtools/draw_fill_subtool.h"
 #include "subtools/collision_shape_subtool.h"
+#include "subtools/draw_move_all_subtool.h"
 #include "util.h"
 
 //
@@ -238,7 +239,7 @@ float DrawTool::getZoomAmount() {
 }
 
 void DrawTool::resetTempGraphics() {
-  tempGraphics = std::make_unique<love::ToveGraphicsHolder>();
+  tempGraphics = std::make_shared<love::ToveGraphicsHolder>();
 }
 
 void DrawTool::addTempPathData(love::PathData pathData) {
@@ -248,6 +249,11 @@ void DrawTool::addTempPathData(love::PathData pathData) {
 
   drawData->updatePathDataRendering(&pathData);
   tempGraphics->addPath(pathData.tovePath);
+}
+
+void DrawTool::setTempTranslation(float x, float y) {
+  tempTranslateX = x;
+  tempTranslateY = y;
 }
 
 void DrawTool::addPathData(std::shared_ptr<love::PathData> pathData) {
@@ -342,6 +348,7 @@ DrawTool::DrawTool(Editor &editor_)
   subtools.push_back(std::make_unique<DrawEraseSubtool>(*this, DrawEraseSubtool::Size::Large));
   subtools.push_back(std::make_unique<DrawEraseSegmentSubtool>(*this));
   subtools.push_back(std::make_unique<DrawFillSubtool>(*this));
+  subtools.push_back(std::make_unique<DrawMoveAllSubtool>(*this));
   subtools.push_back(
       std::make_unique<CollisionShapeSubtool>(*this, CollisionShapeSubtool::Shape::Rectangle));
   subtools.push_back(
@@ -360,6 +367,8 @@ void DrawTool::resetState() {
   viewWidth = DRAW_DEFAULT_VIEW_WIDTH;
   viewPosition.x = 0;
   viewPosition.y = 0;
+  tempTranslateX = 0;
+  tempTranslateY = 0;
 
   isDrawToolEventDirty = true;
   isPlayingAnimation = false;
@@ -557,12 +566,11 @@ void DrawTool::drawOverlay() {
 
   lv.graphics.setColor({ 1, 1, 1, 1 });
 
-  drawData->render(std::nullopt);
-
   if (tempGraphics) {
     tempGraphics->update();
-    tempGraphics->draw();
   }
+
+  drawData->renderForTool(std::nullopt, tempTranslateX, tempTranslateY, tempGraphics);
 
   if (isOnionSkinningEnabled) {
     renderOnionSkinning();

@@ -132,7 +132,7 @@ namespace ghost {
     std::string title;
     DrawDataLayerId id;
     bool isVisible = true;
-    std::vector<std::unique_ptr<DrawDataFrame>> frames;
+    std::vector<std::shared_ptr<DrawDataFrame>> frames;
 
     DrawDataLayer() = default;
     DrawDataLayer(std::string title_, DrawDataLayerId id_)
@@ -146,7 +146,7 @@ namespace ghost {
       isVisible = archive.boolean("isVisible", true);
       archive.arr("frames", [&]() {
         for (auto i = 0; i < archive.size(); i++) {
-          auto frame = std::make_unique<DrawDataFrame>();
+          auto frame = std::make_shared<DrawDataFrame>();
           archive.obj(i, *frame);
           frames.push_back(std::move(frame));
         }

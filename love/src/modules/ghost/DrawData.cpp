@@ -587,11 +587,11 @@ namespace ghost {
 */
 
   void DrawData::addLayer(std::string title, DrawDataLayerId id) {
-    auto newLayer = std::make_unique<DrawDataLayer>(title, id);
+    auto newLayer = std::make_shared<DrawDataLayer>(title, id);
 
     auto frameCount = layers.size() > 0 ? layers[0]->frames.size() : 1;
     for (int i = 0; i < frameCount; i++) {
-      auto newFrame = std::make_unique<DrawDataFrame>(i > 0);
+      auto newFrame = std::make_shared<DrawDataFrame>(i > 0);
       newLayer->frames.push_back(std::move(newFrame));
     }
 
@@ -651,7 +651,7 @@ namespace ghost {
       auto isLinked = layers[0]->frames.size() > 0;
       auto zeroFrameIndex = frameIndex.toZeroIndex();
       for (auto &layer : layers) {
-        auto newFrame = std::make_unique<DrawDataFrame>(isLinked);
+        auto newFrame = std::make_shared<DrawDataFrame>(isLinked);
         if (zeroFrameIndex >= layer->frames.size()) {
           layer->frames.push_back(std::move(newFrame));
         } else {
@@ -692,7 +692,7 @@ namespace ghost {
     if (sourceFrameIndex.toZeroIndex() < sourceLayer->frames.size()
         && destFrameIndex.toZeroIndex() < destLayer->frames.size()) {
       auto &oldFrame = sourceLayer->frames[sourceFrameIndex.toZeroIndex()];
-      destLayer->frames[destFrameIndex.toZeroIndex()] = std::make_unique<DrawDataFrame>(*oldFrame);
+      destLayer->frames[destFrameIndex.toZeroIndex()] = std::make_shared<DrawDataFrame>(*oldFrame);
     }
   }
 
@@ -705,7 +705,7 @@ namespace ghost {
       return;
     }
     if (isLinked) {
-      auto newFrame = std::make_unique<DrawDataFrame>(true);
+      auto newFrame = std::make_shared<DrawDataFrame>(true);
       layer->frames[frameIndex.toZeroIndex()] = std::move(newFrame);
     } else {
       OneIndexFrame realFrameIndex;
@@ -827,34 +827,39 @@ namespace ghost {
     int prevFrameIdx = modFrameIndex(selectedFrame.toZeroIndex() - 1);
     renderFrameIndex(prevFrameIdx);
   }
-
-  /*
-
-  TYPE DrawData::renderForTool(TYPE animationState, TYPE tempTranslateX, TYPE tempTranslateY, TYPE
-  tempGraphics) { auto frameIdx = selectedFrame; if (animationState) { frameIdx =
-  animationState.currentFrame;
+  
+  void DrawData::renderForTool(std::optional<AnimationComponentProperties> componentProperties, float tempTranslateX, float tempTranslateY, std::shared_ptr<ToveGraphicsHolder> tempGraphics) {
+    int frameIdx = selectedFrame.toZeroIndex();
+    if (componentProperties) {
+      frameIdx = modFrameIndex(componentProperties->currentFrame);
     }
-    for (int l = 0; l < layers.length; l++) {
+  
+    for (size_t l = 0; l < layers.size(); l++) {
           auto layer = layers[l];
-          auto realFrame = getRealFrameIndexForLayerId(layer.id, frameIdx);
-          auto frame = layers[l].frames[realFrame];
-          if (layer.isVisible) {
-            if (layer.id == selectedLayerId) {
-                  love.graphics.push();
-                  love.graphics.translate(tempTranslateX, tempTranslateY);
-                  frame.renderFill();
-                  frame.graphics().draw();
-                  love.graphics.pop();
-                  if (tempGraphics != null) {
-                    tempGraphics.draw();
+          auto realFrame = getRealFrameIndexForLayerId(layer->id, frameIdx);
+          auto frame = layers[l]->frames[realFrame];
+          if (layer->isVisible) {
+            if (layer->id == selectedLayerId) {
+              graphics::Graphics *graphicsModule
+                = Module::getInstance<graphics::Graphics>(Module::M_GRAPHICS);
+
+                  graphicsModule->push(graphics::Graphics::STACK_TRANSFORM);
+                  graphicsModule->translate(tempTranslateX, tempTranslateY);
+                  frame->renderFill();
+                  frame->graphics()->draw();
+                  graphicsModule->pop();
+                  if (tempGraphics) {
+                    tempGraphics->draw();
                   }
             } else {
-                  frame.renderFill();
-                  frame.graphics().draw();
+                  frame->renderFill();
+                  frame->graphics()->draw();
             }
           }
     }
   }
+
+  /*
 
   TYPE DrawData::renderPreviewPngForFrames(TYPE size) {
     auto results = {

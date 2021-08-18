@@ -36,6 +36,7 @@ public:
   void resetTempGraphics();
   void clearTempGraphics();
   void addTempPathData(love::PathData pathData);
+  void setTempTranslation(float x, float y);
 
   void addPathData(std::shared_ptr<love::PathData> pathData);
   void addPathData(love::PathData pathData);
@@ -52,6 +53,8 @@ private:
   friend struct DrawToolLayerActionReceiver;
 
   bool isDrawToolEventDirty;
+  float tempTranslateX;
+  float tempTranslateY;
 
   Lv &lv { Lv::getInstance() };
 
@@ -65,7 +68,7 @@ private:
 
   std::vector<std::unique_ptr<DrawSubtool>> subtools;
   bool isPlayingAnimation;
-  std::unique_ptr<love::ToveGraphicsHolder> tempGraphics;
+  std::shared_ptr<love::ToveGraphicsHolder> tempGraphics;
 
   DrawSubtool &getCurrentSubtool();
   GesturePanZoom panZoom;

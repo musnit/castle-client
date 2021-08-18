@@ -67,7 +67,7 @@ namespace ghost {
     std::vector<std::optional<Bounds>> framesBounds;
     DrawDataLayerId selectedLayerId;
     OneIndexFrame selectedFrame;
-    std::vector<std::unique_ptr<DrawDataLayer>> layers;
+    std::vector<std::shared_ptr<DrawDataLayer>> layers;
 
     DrawData(std::shared_ptr<DrawData> other) {
       Archive archive;
@@ -132,7 +132,7 @@ namespace ghost {
       selectedFrame.value = archive.num("selectedFrame", 1);
       archive.arr("layers", [&]() {
         for (auto i = 0; i < archive.size(); i++) {
-          auto layer = std::make_unique<DrawDataLayer>();
+          auto layer = std::make_shared<DrawDataLayer>();
           archive.obj(i, *layer);
           layer->setParent(this);
           layers.push_back(std::move(layer));
@@ -206,7 +206,7 @@ namespace ghost {
     DrawDataFrame *currentLayerFrame();
     PathDataList *currentPathDataList();
     void clearBounds();
-    void updateSelectedFrameBounds();
+    void updateSelectedFrameBounds(); // updateBounds()
     Bounds getBounds(int frame);
     bool arePathDatasFloodFillable(PathData &pd1, PathData &pd2);
     void updateFramePreview();
@@ -225,6 +225,7 @@ namespace ghost {
     void preload();
     void renderFrameIndex(int frameIdx /* zero index */);
     void render(std::optional<AnimationComponentProperties> componentProperties);
+    void renderForTool(std::optional<AnimationComponentProperties> componentProperties, float tempTranslateX, float tempTranslateY, std::shared_ptr<ToveGraphicsHolder> tempGraphics);
     void renderOnionSkinning();
     bool isPointInBounds(Point point);
 
