@@ -1222,19 +1222,21 @@ struct EditorNewBlueprintReceiver {
     "EDITOR_NEW_BLUEPRINT"
   };
 
-  std::string newEntryId = Library::generateEntryId();
-  std::shared_ptr<Archive> archive = std::make_shared<Archive>();
+  struct Params {
+    std::string newEntryId = Library::generateEntryId();
+    std::shared_ptr<Archive> archive = std::make_shared<Archive>();
 
-  void read(Reader &reader) {
-    reader.obj("entry", [&]() {
-      archive->write([&](Writer &writer) {
-        writer.setValue(*reader.jsonValue());
-        writer.overwrite("entryId", [&]() {
-          writer.setStr(newEntryId);
+    void read(Reader &reader) {
+      reader.obj("entry", [&]() {
+        archive->write([&](Writer &writer) {
+          writer.setValue(*reader.jsonValue());
+          writer.overwrite("entryId", [&]() {
+            writer.setStr(newEntryId);
+          });
         });
       });
-    });
-  }
+    }
+  } params;
 
   void receive(Engine &engine) {
     if (!engine.getIsEditing()) {
@@ -1246,7 +1248,8 @@ struct EditorNewBlueprintReceiver {
     }
     editor->getCommands().execute(
         "add blueprint", {},
-        [newEntryId = newEntryId, archive = std::move(archive)](Editor &editor, bool) {
+        [newEntryId = params.newEntryId, archive = std::move(params.archive)](
+            Editor &editor, bool) {
           auto &library = editor.getScene().getLibrary();
           archive->read([&](Reader &reader) {
             library.readEntry(reader);
@@ -1255,7 +1258,7 @@ struct EditorNewBlueprintReceiver {
           auto &belt = editor.getBelt();
           belt.select(newEntryId);
         },
-        [newEntryId = newEntryId](Editor &editor, bool) {
+        [newEntryId = params.newEntryId](Editor &editor, bool) {
           editor.getSelection().deselectAllActors();
           editor.getScene().getLibrary().removeEntry(newEntryId.c_str());
         });
