@@ -856,7 +856,7 @@ public:
 	const Matrix4 &getProjection() const;
 
 	void rotate(float r);
-	void scale(float x, float y = 1.0f);
+	void scale(float x, float y /* = 1.0f /// XXX(Castle): removing unintuitive default */);
 	void translate(float x, float y);
 	void shear(float kx, float ky);
 	void origin();
