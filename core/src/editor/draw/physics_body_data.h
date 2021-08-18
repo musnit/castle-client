@@ -198,6 +198,27 @@ private:
     *leftoverAmount = currentDist - totalLength;
   }
 
+  bool isPointInBounds(const love::Vector2 &point) {
+    return point.x >= -DRAW_MAX_SIZE and point.x <= DRAW_MAX_SIZE and point.y >= -DRAW_MAX_SIZE
+        and point.y <= DRAW_MAX_SIZE;
+  }
+
+  bool isShapeInBounds(const PhysicsBodyDataShape &shape) {
+    switch (shape.type) {
+    case CollisionShapeType::Rectangle:
+      return isPointInBounds(shape.p1) && isPointInBounds(shape.p2);
+    case CollisionShapeType::Triangle:
+      return isPointInBounds(shape.p1) && isPointInBounds(shape.p2) && isPointInBounds(shape.p3);
+    case CollisionShapeType::Circle:
+      return isPointInBounds(love::Vector2(shape.x + shape.radius, shape.y))
+          && isPointInBounds(love::Vector2(shape.x, shape.y + shape.radius))
+          && isPointInBounds(love::Vector2(shape.x, shape.y - shape.radius))
+          && isPointInBounds(love::Vector2(shape.x - shape.radius, shape.y));
+    }
+
+    return false;
+  }
+
 public:
   std::vector<PhysicsBodyDataShape> shapes;
   std::optional<PhysicsBodyDataShape> tempShape;
@@ -280,5 +301,72 @@ public:
     }
 
     lv.graphics.pop();
+  }
+
+  bool commitTempShape() {
+    if (tempShape) {
+      shapes.push_back(*tempShape);
+      tempShape = std::nullopt;
+      return true;
+    }
+
+    return false;
+  }
+
+  std::optional<PhysicsBodyDataShape> getRectangleShape(
+      const love::Vector2 &p1, const love::Vector2 &p2) {
+    PhysicsBodyDataShape shape;
+    shape.type = CollisionShapeType::Rectangle;
+    shape.p1 = p1;
+    shape.p2 = p2;
+
+    if (isShapeInBounds(shape)) {
+      return shape;
+    } else {
+      return std::nullopt;
+    }
+  }
+
+  std::optional<PhysicsBodyDataShape> getTriangleShape(
+      const love::Vector2 &p1, const love::Vector2 &p2) {
+    love::Vector2 p3 = { p1.x, p2.y };
+
+    PhysicsBodyDataShape shape;
+    shape.type = CollisionShapeType::Triangle;
+    shape.p1 = p1;
+    shape.p2 = p2;
+    shape.p3 = p3;
+
+    bool isColinear = fabs((p2.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (p2.y - p1.y)) < 0.01;
+
+    if (isShapeInBounds(shape) && !isColinear) {
+      return shape;
+    } else {
+      return std::nullopt;
+    }
+  }
+
+  std::optional<PhysicsBodyDataShape> getCircleShape(const love::Vector2 &p1,
+      const love::Vector2 &p2, love::DrawData *drawData, int roundDx, int roundDy) {
+    PhysicsBodyDataShape shape;
+    shape.type = CollisionShapeType::Circle;
+    shape.x = (p1.x + p2.x) / 2.0;
+    shape.y = (p1.y + p2.y) / 2.0;
+    shape.radius = sqrtf(powf(p2.x - p1.x, 2.0) + powf(p2.y - p1.y, 2.0)) / 2.0;
+
+    float leftX = shape.x + roundDx * shape.radius;
+    float leftY = shape.y + roundDy * shape.radius;
+
+    auto [leftXRounded, leftYRounded] = drawData->roundGlobalCoordinatesToGrid(leftX, leftY);
+
+    shape.radius = drawData->roundGlobalDistanceToGrid(shape.radius);
+    shape.x = leftXRounded - roundDx * shape.radius;
+    shape.y = leftYRounded - roundDy * shape.radius;
+
+    if (isShapeInBounds(shape) && shape.radius > 0.0) {
+      return shape;
+    } else {
+      return std::nullopt;
+    }
   }
 };

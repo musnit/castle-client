@@ -43,6 +43,7 @@ public:
 
   love::DrawData &getDrawData();
   love::DrawDataFrame &getDrawDataFrame();
+  PhysicsBodyData &getPhysicsBodyData();
   float getZoomAmount();
 
 private:
@@ -88,4 +89,8 @@ inline love::DrawData &DrawTool::getDrawData() {
 
 inline love::DrawDataFrame &DrawTool::getDrawDataFrame() {
   return *drawData->currentLayerFrame();
+}
+
+inline PhysicsBodyData &DrawTool::getPhysicsBodyData() {
+  return *physicsBodyData;
 }

@@ -3,6 +3,7 @@
 #include "precomp.h"
 
 #include <modules/ghost/DrawData.hpp>
+#include <modules/ghost/DrawAlgorithms.hpp>
 
 
 namespace love {
