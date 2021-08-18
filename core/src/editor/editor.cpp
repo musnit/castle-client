@@ -956,6 +956,7 @@ struct EditorInspectorActionReceiver {
                     archive->read([&](Reader &reader) {
                       scene.getLibrary().readEntry(reader);
                     });
+                    editor.getBelt().select(entryId.c_str());
                   });
             }
           }
@@ -1030,8 +1031,7 @@ struct EditorInspectorActionReceiver {
                     library.readEntry(reader);
                   });
                   editor.getSelection().deselectAllActors();
-                  auto &belt = editor.getBelt();
-                  belt.select(newEntryId);
+                  editor.getBelt().select(newEntryId);
                 }
               },
               [newEntryId](Editor &editor, bool) {
