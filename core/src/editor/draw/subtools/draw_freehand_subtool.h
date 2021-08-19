@@ -2,6 +2,7 @@
 
 #include "precomp.h"
 #include "draw_subtool_interface.h"
+#include "editor/draw/util.h"
 
 class DrawFreehandSubtool : public DrawSubtool {
 public:
@@ -20,35 +21,67 @@ public:
   }
 
   void onReset() {
+    isGestureStarted = false;
+    currentPathData = std::nullopt;
+    currentPathDataList.clear();
   }
 
-  void onTouch(DrawSubtoolTouch &touchData) {
-    love::ghost::PathData pathData;
-    pathData.points.push_back(love::ghost::Point(initialCoord.x, initialCoord.y));
-    pathData.points.push_back(love::ghost::Point(touchData.touchX, touchData.touchY));
-    pathData.style = 1;
-    pathData.isFreehand = true;
-    pathData.isTransparent = false;
+  void onTouch(DrawSubtoolTouch &touch) {
+    if (!isGestureStarted) {
+      isGestureStarted = true;
 
-    currentPathDataList.push_back(pathData);
+      initialCoord.x = touch.clampedX;
+      initialCoord.y = touch.clampedY;
+      currentPathData = std::nullopt;
+      currentPathDataList.clear();
+    }
 
-    drawTool.addTempPathData(pathData);
+    love::Point newCoord(touch.clampedX, touch.clampedY);
 
-    initialCoord.x = touchData.touchX;
-    initialCoord.y = touchData.touchY;
+    currentPathData = love::PathData();
+    currentPathData->points.push_back(initialCoord);
+    currentPathData->points.push_back(newCoord);
+    currentPathData->style = 1;
+    currentPathData->isFreehand = true;
+    currentPathData->isTransparent = false;
 
-    if (touchData.touch.released) {
+    float dist = sqrtf(
+        powf(initialCoord.x - touch.clampedX, 2.0) + powf(initialCoord.y - touch.clampedY, 2.0));
+    if (dist > 0.2) {
+      initialCoord = newCoord;
+      currentPathDataList.push_back(*currentPathData);
+      currentPathData = std::nullopt;
+    }
+
+    if (touch.touch.released) {
+      if (currentPathData
+          && (!DrawUtil::floatEquals(currentPathData->points[0].x, currentPathData->points[1].x)
+              || !DrawUtil::floatEquals(
+                  currentPathData->points[0].y, currentPathData->points[1].y))) {
+        currentPathDataList.push_back(*currentPathData);
+      }
+
       for (size_t i = 0; i < currentPathDataList.size(); i++) {
+        currentPathDataList[i].tovePath.ptr = NULL;
         drawTool.addPathData(currentPathDataList[i]);
       }
-      currentPathDataList.clear();
 
       drawTool.getDrawDataFrame().resetGraphics();
       drawTool.getDrawDataFrame().resetFill();
+      drawTool.getDrawData().updateSelectedFrameBounds();
       drawTool.saveDrawing("freehand pencil");
 
-      drawTool.resetTempGraphics();
+      drawTool.clearTempGraphics();
     } else {
+      drawTool.resetTempGraphics();
+
+      for (size_t i = 0; i < currentPathDataList.size(); i++) {
+        drawTool.addTempPathData(currentPathDataList[i]);
+      }
+
+      if (currentPathData) {
+        drawTool.addTempPathData(*currentPathData);
+      }
     }
   }
 
@@ -56,8 +89,8 @@ public:
   }
 
 private:
-  love::Vector2 initialCoord;
-  std::vector<love::ghost::PathData> currentPathDataList;
-  // currentPathData
-  // currentPathDataList
+  love::Point initialCoord;
+  std::optional<love::PathData> currentPathData;
+  std::vector<love::PathData> currentPathDataList;
+  bool isGestureStarted = false;
 };

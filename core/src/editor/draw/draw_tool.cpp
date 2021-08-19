@@ -506,7 +506,7 @@ void DrawTool::update(double dt) {
         auto transformedTouchPosition = viewTransform.inverseTransformPoint(originalTouchPosition);
         auto [roundedX, roundedY] = drawData->roundGlobalCoordinatesToGrid(
             transformedTouchPosition.x, transformedTouchPosition.y);
-        auto [clampedX, clampedY] = drawData->roundGlobalCoordinatesToGrid(
+        auto [clampedX, clampedY] = drawData->clampGlobalCoordinates(
             transformedTouchPosition.x, transformedTouchPosition.y);
 
         DrawSubtoolTouch childTouchData(touch);
