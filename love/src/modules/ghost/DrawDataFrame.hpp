@@ -37,11 +37,12 @@ namespace ghost {
 
     DrawDataFrame() = default;
     DrawDataFrame(bool isLinked_, DrawData *parent_)
-        : isLinked(isLinked_), _parent(parent_) {
-        fillImageBounds.maxX = 0;
-        fillImageBounds.maxY = 0;
-        fillImageBounds.minX = 0;
-        fillImageBounds.minY = 0;
+        : isLinked(isLinked_)
+        , _parent(parent_) {
+      fillImageBounds.maxX = 0;
+      fillImageBounds.maxY = 0;
+      fillImageBounds.minX = 0;
+      fillImageBounds.minY = 0;
     }
 
     DrawDataFrame(const DrawDataFrame &other) {
