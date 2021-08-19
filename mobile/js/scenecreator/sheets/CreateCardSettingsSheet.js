@@ -2,7 +2,6 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { InspectorCheckbox } from '../inspector/components/InspectorCheckbox';
 import { InspectorNumberInput } from '../inspector/components/InspectorNumberInput';
-import { sendDataPaneAction } from '../../ghost/GhostUI';
 import { useCardCreator } from '../CreateCardContext';
 import { useCoreState, sendAsync } from '../../core/CoreEvents';
 

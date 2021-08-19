@@ -2,7 +2,6 @@ import React from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
-import { sendDataPaneAction, useGhostUI } from '../../../ghost/GhostUI';
 
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 import * as Constants from '../../../Constants';
@@ -130,19 +129,9 @@ const SaveBlueprintForm = ({
 };
 
 export const SaveBlueprintSheet = ({ isOpen, onClose, context }) => {
-  let data, sendAction;
-
-  const { root } = useGhostUI();
-  const element = root?.panes ? root.panes['sceneCreatorBlueprints'] : null;
-  if (element?.children.count) {
-    Object.entries(element.children).forEach(([key, child]) => {
-      if (child.type === 'data') {
-        data = child.props.data;
-        data.lastReportedEventId = child.lastReportedEventId;
-        sendAction = (action, value) => sendDataPaneAction(element, action, value, key);
-      }
-    });
-  }
+  // TODO: restore
+  const data = {};
+  const sendAction = () => {};
 
   const renderHeader = () => <BottomSheetHeader title="Save blueprint" onClose={onClose} />;
 

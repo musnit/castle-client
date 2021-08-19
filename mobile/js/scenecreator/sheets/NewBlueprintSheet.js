@@ -8,7 +8,6 @@ import * as CoreEvents from '../../core/CoreEvents';
 
 import { BottomSheet } from '../../components/BottomSheet';
 import * as Clipboard from '../LibraryEntryClipboard';
-import { useGhostUI } from '../../ghost/GhostUI';
 
 import NewBlueprintSheetData from './NewBlueprintSheetData.json';
 
@@ -126,11 +125,10 @@ const PasteFromClipboardSection = ({ onPress }) => {
     Clipboard.pasteBlueprint(entry);
   }, [entry]);
 
-  const { root } = useGhostUI();
-  const numActorsUsingClipboardEntry = 0;
-  //const numActorsUsingClipboardEntry =
+  // TODO: restore clipboard
   //  root?.panes['sceneCreatorBlueprints'].children?.data?.props?.data
   //    ?.numActorsUsingClipboardEntry || 0;
+  const numActorsUsingClipboardEntry = 0;
 
   if (!entry) {
     return null;

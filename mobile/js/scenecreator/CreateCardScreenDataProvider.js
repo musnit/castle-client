@@ -7,7 +7,6 @@ import { CreateCardScreen } from './CreateCardScreen';
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 import * as GhostEvents from '../ghost/GhostEvents';
-import * as GhostUI from '../ghost/GhostUI';
 import * as LocalId from '../common/local-id';
 import * as RulesClipboard from './inspector/rules/RulesClipboard';
 import * as Session from '../Session';
@@ -268,24 +267,20 @@ class CreateCardScreenDataProvider extends React.Component {
     const { deck, card, loading } = this.state;
 
     return (
-      <GhostUI.FastDataProvider>
-        <GhostUI.Provider>
-          <CreateCardScreen
-            deck={deck}
-            card={card}
-            initialIsEditing={this.props.initialIsEditing}
-            loading={loading}
-            goToDeck={this._goToDeck}
-            goToCard={this._goToCard}
-            cardNeedsSave={this._cardNeedsSave}
-            saveAndGoToDeck={this._saveAndGoToDeck}
-            saveAndGoToCard={this._saveAndGoToCard}
-            onSceneMessage={this._handleSceneMessage}
-            onSceneRevertData={this._handleSceneRevertData}
-            saveAction="save"
-          />
-        </GhostUI.Provider>
-      </GhostUI.FastDataProvider>
+      <CreateCardScreen
+        deck={deck}
+        card={card}
+        initialIsEditing={this.props.initialIsEditing}
+        loading={loading}
+        goToDeck={this._goToDeck}
+        goToCard={this._goToCard}
+        cardNeedsSave={this._cardNeedsSave}
+        saveAndGoToDeck={this._saveAndGoToDeck}
+        saveAndGoToCard={this._saveAndGoToCard}
+        onSceneMessage={this._handleSceneMessage}
+        onSceneRevertData={this._handleSceneRevertData}
+        saveAction="save"
+      />
     );
   }
 }

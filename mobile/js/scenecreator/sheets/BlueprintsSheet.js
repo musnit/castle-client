@@ -3,7 +3,6 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { BottomSheetHeader } from '../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from './CardCreatorBottomSheet';
-import { sendDataPaneAction, useGhostUI } from '../../ghost/GhostUI';
 
 import * as Clipboard from '../LibraryEntryClipboard';
 import * as Constants from '../../Constants';
@@ -157,20 +156,9 @@ const PasteFromClipboardRow = ({ onPaste, numActorsUsingClipboardEntry }) => {
 };
 
 export const BlueprintsSheet = ({ element, isOpen, onClose, title, onSelectBlueprint, isRule }) => {
-  if (!element) {
-    return null;
-  }
-
-  let blueprintsData, sendAction;
-  if (element.children.count) {
-    Object.entries(element.children).forEach(([key, child]) => {
-      if (child.type === 'data') {
-        const data = child.props.data;
-        blueprintsData = data;
-        sendAction = (action, value) => sendDataPaneAction(element, action, value, key);
-      }
-    });
-  }
+  // TODO: restore
+  const blueprintsData = {};
+  const sendAction = () => {};
 
   if (!onSelectBlueprint) {
     onSelectBlueprint = (entryId) => sendAction('addBlueprintToScene', entryId);
@@ -185,7 +173,7 @@ export const BlueprintsSheet = ({ element, isOpen, onClose, title, onSelectBluep
         onClose();
       }
     },
-    [sendAction, blueprintsData, onClose]
+    [blueprintsData, onClose]
   );
 
   const pasteBlueprint = React.useCallback(
@@ -240,7 +228,8 @@ export const BlueprintsSheet = ({ element, isOpen, onClose, title, onSelectBluep
 
 // needed when the blueprints sheet is used outside of the CardCreatorSheetManager root sheets
 export const RuleBlueprintsSheet = (props) => {
-  const { root } = useGhostUI();
-  const element = root?.panes ? root.panes['sceneCreatorBlueprints'] : null;
+  // TODO: provide data
+  // const element = root?.panes ? root.panes['sceneCreatorBlueprints'] : null;
+  const element = {};
   return <BlueprintsSheet {...props} element={element} isRule />;
 };

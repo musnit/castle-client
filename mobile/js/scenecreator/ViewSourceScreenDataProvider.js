@@ -6,7 +6,6 @@ import _ from 'lodash';
 
 import * as Constants from '../Constants';
 import * as GhostEvents from '../ghost/GhostEvents';
-import * as GhostUI from '../ghost/GhostUI';
 import * as LocalId from '../common/local-id';
 import * as Session from '../Session';
 import * as Utilities from '../common/utilities';
@@ -252,26 +251,22 @@ class ViewSourceScreenDataProvider extends React.Component {
   render() {
     const { deck, card, deckState, loading } = this.state;
     return (
-      <GhostUI.FastDataProvider>
-        <GhostUI.Provider>
-          <CreateCardScreen
-            deck={deck}
-            card={card}
-            loading={loading}
-            deckState={deckState}
-            resetDeckState={this._resetDeckState}
-            goToDeck={this._goToDeck}
-            goToCard={this._goToCard}
-            cardNeedsSave={this._cardNeedsSave}
-            saveAndGoToDeck={this._saveAndGoToDeck}
-            saveAndGoToCard={this._saveAndGoToCard}
-            onVariablesChange={this._handleVariablesChange}
-            onSceneMessage={this._handleSceneMessage}
-            onSceneRevertData={this._handleSceneRevertData}
-            saveAction={deck.accessPermissions === 'cloneable' ? 'clone' : 'none'}
-          />
-        </GhostUI.Provider>
-      </GhostUI.FastDataProvider>
+      <CreateCardScreen
+        deck={deck}
+        card={card}
+        loading={loading}
+        deckState={deckState}
+        resetDeckState={this._resetDeckState}
+        goToDeck={this._goToDeck}
+        goToCard={this._goToCard}
+        cardNeedsSave={this._cardNeedsSave}
+        saveAndGoToDeck={this._saveAndGoToDeck}
+        saveAndGoToCard={this._saveAndGoToCard}
+        onVariablesChange={this._handleVariablesChange}
+        onSceneMessage={this._handleSceneMessage}
+        onSceneRevertData={this._handleSceneRevertData}
+        saveAction={deck.accessPermissions === 'cloneable' ? 'clone' : 'none'}
+      />
     );
   }
 }

@@ -1,5 +1,3 @@
-import { getPaneData, sendDataPaneAction } from '../ghost/GhostUI';
-
 export const formatVariableName = (name) => `\$${name}`;
 
 export const formatTag = (tag) => `#${tag}`;

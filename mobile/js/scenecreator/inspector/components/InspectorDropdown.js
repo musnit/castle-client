@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { InspectorTextInput } from './InspectorTextInput';
-import { objectToArray } from '../../../ghost/GhostUI';
 import { PopoverButton } from '../../../components/PopoverProvider';
 import * as Constants from '../../../Constants';
 
@@ -124,7 +123,7 @@ export const DropdownItemsList = ({
 export const InspectorDropdown = ({ value, onChange, style, ...props }) => {
   let items;
   if (props?.allowedValues) {
-    items = objectToArray(props.allowedValues ?? []).map((item) => ({ id: item, name: item }));
+    items = props.allowedValues.map((item) => ({ id: item, name: item }));
   } else if (props?.labeledItems) {
     items = props.labeledItems;
   }

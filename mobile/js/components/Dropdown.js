@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { objectToArray } from '../ghost/GhostUI';
 import { PopoverButton } from './PopoverProvider';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -58,7 +57,7 @@ export const DropdownItemsList = ({ items, selectedItem, onSelectItem, closePopo
 export const Dropdown = ({ value, onChange, style, children, ...props }) => {
   let items;
   if (props?.items) {
-    items = objectToArray(props.items ?? []).map((item) => ({ id: item, name: item }));
+    items = props.items.map((item) => ({ id: item, name: item }));
   } else if (props?.labeledItems) {
     items = props.labeledItems;
   }
