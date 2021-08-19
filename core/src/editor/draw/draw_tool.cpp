@@ -75,7 +75,7 @@ struct DrawLayersEvent {
   struct Frame {
     PROP(int, order);
     PROP(bool, isLinked);
-    // TODO: base64png
+    PROP(std::optional<std::string>, base64Png);
   };
 
   struct Layer {
@@ -107,10 +107,10 @@ void DrawTool::sendLayersEvent() {
 
     for (int jj = 0, mm = layer->frames.size(); jj < mm; jj++) {
       auto &frame = layer->frames[jj];
-      DrawLayersEvent::Frame frameData {
-        jj, frame->isLinked,
-        // TODO: base64png
-      };
+      if (!frame->base64Png) {
+        frame->base64Png = frame->renderPreviewPng(-1);
+      }
+      DrawLayersEvent::Frame frameData { jj, frame->isLinked, frame->base64Png };
       layerData.frames().push_back(frameData);
     }
 
@@ -167,15 +167,18 @@ struct DrawToolLayerActionReceiver {
         newFrameIndex = drawTool.drawData->getNumFrames();
       }
       drawTool.drawData->selectedFrame.value = newFrameIndex;
+      drawTool.saveDrawing("step backward");
     } else if (action == "stepForward") {
       auto newFrameIndex = drawTool.drawData->selectedFrame.value + 1;
       if (newFrameIndex > drawTool.drawData->getNumFrames()) {
         newFrameIndex = 1;
       }
       drawTool.drawData->selectedFrame.value = newFrameIndex;
+      drawTool.saveDrawing("step forward");
     } else if (action == "setLayerIsVisible") {
       auto layer = drawTool.drawData->layerForId(params.layerId());
       layer->isVisible = params.doubleValue();
+      drawTool.saveDrawing("set layer visibility");
     } else if (action == "addLayer") {
       drawTool.makeNewLayer();
       drawTool.saveDrawing("add layer");
@@ -200,15 +203,18 @@ struct DrawToolLayerActionReceiver {
     } else if (action == "copyCell") {
       drawTool.copiedLayerId = params.layerId();
       drawTool.copiedFrameIndex = params.frameIndex();
+      drawTool.sendLayersEvent();
     } else if (action == "pasteCell") {
       drawTool.drawData->copyCell(
           drawTool.copiedLayerId, drawTool.copiedFrameIndex, params.layerId(), params.frameIndex());
+      drawTool.saveDrawing("paste cell");
     } else if (action == "setCellLinked") {
       drawTool.drawData->setCellLinked(params.layerId(), params.frameIndex(), params.doubleValue());
+      drawTool.saveDrawing("set cell linked");
     } else if (action == "enableOnionSkinning") {
       drawTool.isOnionSkinningEnabled = params.doubleValue();
+      drawTool.sendLayersEvent();
     }
-    drawTool.sendLayersEvent();
   }
 };
 
@@ -323,6 +329,9 @@ void DrawTool::saveDrawing(std::string commandDescription) {
       [actorId, oldDrawData, oldPhysicsBodyData, oldHash](Editor &editor, bool) {
         setDrawingProps(editor, actorId, oldDrawData, oldPhysicsBodyData, oldHash);
       });
+
+  // TODO: only send changed frame, not all layers/frames
+  sendLayersEvent();
 }
 
 

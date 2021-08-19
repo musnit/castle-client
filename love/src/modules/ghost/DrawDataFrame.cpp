@@ -39,7 +39,7 @@ namespace ghost {
     pathDataList = newPathDataList;*/
   }
 
-  void DrawDataFrame::deserializeFillAndPreview() {
+  void DrawDataFrame::deserializeFill() {
     if (fillPng && fillPng->length() > 0) {
       // data::ContainerType ctype = data::CONTAINER_STRING;
       data::EncodeFormat format = data::ENCODE_BASE64;
@@ -54,9 +54,6 @@ namespace ghost {
       image::Image *imageModule = Module::getInstance<image::Image>(Module::M_IMAGE);
       fillImageData = imageModule->newImageData(byteData);
     }
-
-    // TODO: only in editor
-    // base64Png = renderPreviewPng(-1);
   }
 
   bool DrawDataFrame::arePathDatasMergable(PathData pd1, PathData pd2) {

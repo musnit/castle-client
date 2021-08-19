@@ -49,7 +49,7 @@ namespace ghost {
       fillPng = other.fillPng;
       setParent(other._parent);
 
-      deserializeFillAndPreview();
+      deserializeFill();
     }
 
     void read(Archive::Reader &archive) {
@@ -65,7 +65,7 @@ namespace ghost {
       archive.obj("fillImageBounds", fillImageBounds);
       fillPng = archive.str("fillPng", "");
 
-      deserializeFillAndPreview();
+      deserializeFill();
     }
 
     void write(Archive::Writer &archive) {
@@ -113,7 +113,7 @@ namespace ghost {
     bool floodClear(float x, float y, float radius);
     void resetFill();
     void updatePathsCanvas();
-    void deserializeFillAndPreview();
+    void deserializeFill();
 
     image::ImageData *canvasToImageData(graphics::Canvas *canvas);
 
