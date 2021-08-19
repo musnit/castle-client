@@ -13,6 +13,7 @@
 #include "subtools/draw_fill_subtool.h"
 #include "subtools/collision_shape_subtool.h"
 #include "subtools/draw_move_all_subtool.h"
+#include "subtools/draw_move_subtool.h"
 #include "util.h"
 
 //
@@ -244,6 +245,10 @@ float DrawTool::getZoomAmount() {
   return viewWidth / DRAW_DEFAULT_VIEW_WIDTH;
 }
 
+void DrawTool::clearTempGraphics() {
+  tempGraphics = std::make_shared<love::ToveGraphicsHolder>();
+}
+
 void DrawTool::resetTempGraphics() {
   tempGraphics = std::make_shared<love::ToveGraphicsHolder>();
 }
@@ -358,6 +363,7 @@ DrawTool::DrawTool(Editor &editor_)
   subtools.push_back(std::make_unique<DrawEraseSegmentSubtool>(*this));
   subtools.push_back(std::make_unique<DrawFillSubtool>(*this));
   subtools.push_back(std::make_unique<DrawMoveAllSubtool>(*this));
+  subtools.push_back(std::make_unique<DrawMoveSubtool>(*this));
   subtools.push_back(
       std::make_unique<CollisionShapeSubtool>(*this, CollisionShapeSubtool::Shape::Rectangle));
   subtools.push_back(

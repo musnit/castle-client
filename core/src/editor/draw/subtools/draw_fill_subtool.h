@@ -38,7 +38,10 @@ public:
       for (size_t i = 0; i < pathDataList->size(); i++) {
         if (DrawUtil::pathIntersectsCircle(
                 (*pathDataList)[i], touch.touchX, touch.touchY, radius)) {
-          pathIndicesToFill.insert(i);
+          if (!love::DrawAlgorithms::colorsEqual(
+                  drawTool.getDrawData().color, (*pathDataList)[i].color)) {
+            pathIndicesToFill.insert(i);
+          }
         }
       }
 
