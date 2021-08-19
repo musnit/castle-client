@@ -182,8 +182,9 @@ const DrawSubtools = ({ category, value, onChange }) => {
 };
 
 const EraseSubtools = ({ value, onChange }) => {
-  // TODO: const onClearArtwork = () => fastAction('onClearArtwork');
-  const onClearArtwork = () => {};
+  const onClearArtwork = () => {
+    sendAsync('DRAW_TOOL_CLEAR_ARTWORK');
+  };
   return (
     <>
       <DrawSubtools category="artwork_erase" value={value} onChange={onChange} />

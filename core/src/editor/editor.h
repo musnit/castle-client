@@ -74,6 +74,7 @@ private:
   friend struct DrawToolSelectSubtoolReceiver;
   friend struct DrawToolSelectColorReceiver;
   friend struct DrawToolLayerActionReceiver;
+  friend struct DrawToolClearArtworkReceiver;
 
   Lv &lv { Lv::getInstance() };
   Bridge &bridge;

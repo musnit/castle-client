@@ -591,7 +591,7 @@ namespace ghost {
 
     auto frameCount = layers.size() > 0 ? layers[0]->frames.size() : 1;
     for (int i = 0; i < frameCount; i++) {
-      auto newFrame = std::make_shared<DrawDataFrame>(i > 0);
+      auto newFrame = std::make_shared<DrawDataFrame>(i > 0, this);
       newLayer->frames.push_back(std::move(newFrame));
     }
 
@@ -651,7 +651,7 @@ namespace ghost {
       auto isLinked = layers[0]->frames.size() > 0;
       auto zeroFrameIndex = frameIndex.toZeroIndex();
       for (auto &layer : layers) {
-        auto newFrame = std::make_shared<DrawDataFrame>(isLinked);
+        auto newFrame = std::make_shared<DrawDataFrame>(isLinked, this);
         if (zeroFrameIndex >= layer->frames.size()) {
           layer->frames.push_back(std::move(newFrame));
         } else {
@@ -662,10 +662,12 @@ namespace ghost {
       }
       selectedFrame.setFromZeroIndex(zeroFrameIndex);
     }
+
+    // TODO: clear bounds isn't really necessary, just need to make sure the bounds are the correct length
+    clearBounds();
   }
 
   bool DrawData::deleteFrame(OneIndexFrame frameIndex) {
-    clearBounds();
     auto zeroIndexFrame = frameIndex.toZeroIndex();
     if (getNumLayers()) {
       for (auto &layer : layers) {
@@ -677,8 +679,12 @@ namespace ghost {
       if (selectedFrame.toZeroIndex() >= layers[0]->frames.size()) {
         selectedFrame.setFromZeroIndex(layers[0]->frames.size() - 1);
       }
+
+      clearBounds();
       return true;
     }
+
+    clearBounds();
     return false;
   }
 
@@ -705,13 +711,18 @@ namespace ghost {
       return;
     }
     if (isLinked) {
-      auto newFrame = std::make_shared<DrawDataFrame>(true);
+      auto newFrame = std::make_shared<DrawDataFrame>(true, this);
       layer->frames[frameIndex.toZeroIndex()] = std::move(newFrame);
     } else {
       OneIndexFrame realFrameIndex;
       realFrameIndex.setFromZeroIndex(getRealFrameIndexForLayerId(layerId, frameIndex));
       copyCell(layerId, realFrameIndex, layerId, frameIndex);
     }
+  }
+
+  void DrawData::clearFrame() {
+    auto realFrame = getRealFrameIndexForLayerId(selectedLayer()->id, selectedFrame);
+    selectedLayer()->frames[realFrame] = std::move(std::make_shared<DrawDataFrame>(false, this));
   }
 
   AnimationState DrawData::newAnimationState() {
@@ -790,11 +801,6 @@ namespace ghost {
     }
     return result;
   }
-  /*
-  TYPE DrawData::clearFrame() {
-    auto realFrame = getRealFrameIndexForLayerId(selectedLayer().id, selectedFrame);
-    selectedLayer().frames[realFrame] = _newFrame(false);
-  }*/
 
   ToveGraphicsHolder *DrawData::graphics() {
     return currentLayerFrame()->graphics();

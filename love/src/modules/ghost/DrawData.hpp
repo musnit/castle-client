@@ -239,6 +239,7 @@ namespace ghost {
     void copyCell(DrawDataLayerId sourceLayerId, OneIndexFrame sourceFrameIndex,
         DrawDataLayerId destLayerId, OneIndexFrame destFrameIndex);
     void setCellLinked(DrawDataLayerId layerId, OneIndexFrame frameIndex, bool isLinked);
+    void clearFrame();
   };
 
 }

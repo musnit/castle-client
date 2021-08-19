@@ -51,6 +51,7 @@ private:
   friend struct DrawToolSelectSubtoolReceiver;
   friend struct DrawToolSelectColorReceiver;
   friend struct DrawToolLayerActionReceiver;
+  friend struct DrawToolClearArtworkReceiver;
 
   bool isDrawToolEventDirty;
   float tempTranslateX;

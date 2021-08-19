@@ -220,6 +220,23 @@ struct DrawToolLayerActionReceiver {
   }
 };
 
+struct DrawToolClearArtworkReceiver {
+  inline static const BridgeRegistration<DrawToolClearArtworkReceiver> registration {
+    "DRAW_TOOL_CLEAR_ARTWORK"
+  };
+
+  struct Params {
+  } params;
+
+  void receive(Engine &engine) {
+    auto editor = engine.maybeGetEditor();
+    if (!editor)
+      return;
+    editor->drawTool.getDrawData().clearFrame();
+    editor->drawTool.saveDrawing("clear all artwork");
+  }
+};
+
 //
 // Subtool functions
 //
