@@ -14,6 +14,7 @@
 #include "subtools/collision_shape_subtool.h"
 #include "subtools/draw_move_all_subtool.h"
 #include "subtools/draw_move_subtool.h"
+#include "subtools/draw_bend_subtool.h"
 #include "util.h"
 
 //
@@ -364,6 +365,7 @@ DrawTool::DrawTool(Editor &editor_)
   subtools.push_back(std::make_unique<DrawFillSubtool>(*this));
   subtools.push_back(std::make_unique<DrawMoveAllSubtool>(*this));
   subtools.push_back(std::make_unique<DrawMoveSubtool>(*this));
+  subtools.push_back(std::make_unique<DrawBendSubtool>(*this));
   subtools.push_back(
       std::make_unique<CollisionShapeSubtool>(*this, CollisionShapeSubtool::Shape::Rectangle));
   subtools.push_back(
