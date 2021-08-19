@@ -81,12 +81,15 @@ public:
       }
     }
 
-    // TODO: check for clearing flood fill
+    if (drawTool.getDrawDataFrame().floodClear(touch.touchX, touch.touchY, getRadius())) {
+      didChange = true;
+    }
 
     if (touch.touch.released) {
       if (didChange) {
-        // TODO: drawDataFrame resetFill
-        // TODO: drawData updateBounds
+        drawTool.getDrawDataFrame().resetGraphics();
+        drawTool.getDrawDataFrame().resetFill();
+        drawTool.getDrawData().updateSelectedFrameBounds();
         drawTool.saveDrawing("erase");
         drawTool.resetTempGraphics();
       }

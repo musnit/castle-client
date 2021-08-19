@@ -81,6 +81,8 @@ public:
           drawTool.addPathData(paths[ii]);
         }
         drawTool.getDrawDataFrame().resetGraphics();
+        drawTool.getDrawDataFrame().resetFill();
+        drawTool.getDrawData().updateSelectedFrameBounds();
         drawTool.saveDrawing("shape");
       }
       drawTool.resetTempGraphics();

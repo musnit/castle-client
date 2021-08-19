@@ -39,6 +39,8 @@ public:
     if (touch.touch.released) {
       drawTool.addPathData(pathData);
       drawTool.getDrawDataFrame().resetGraphics();
+      drawTool.getDrawDataFrame().resetFill();
+      drawTool.getDrawData().updateSelectedFrameBounds();
       drawTool.saveDrawing("line segment");
       drawTool.resetTempGraphics();
     } else {
