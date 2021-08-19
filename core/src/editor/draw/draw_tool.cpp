@@ -11,10 +11,11 @@
 #include "subtools/draw_erase_subtool.h"
 #include "subtools/draw_erase_segment_subtool.h"
 #include "subtools/draw_fill_subtool.h"
-#include "subtools/collision_shape_subtool.h"
 #include "subtools/draw_move_all_subtool.h"
 #include "subtools/draw_move_subtool.h"
 #include "subtools/draw_bend_subtool.h"
+#include "subtools/collision_shape_subtool.h"
+#include "subtools/collision_erase_subtool.h"
 #include "util.h"
 
 //
@@ -406,6 +407,7 @@ DrawTool::DrawTool(Editor &editor_)
       std::make_unique<CollisionShapeSubtool>(*this, CollisionShapeSubtool::Shape::Circle));
   subtools.push_back(
       std::make_unique<CollisionShapeSubtool>(*this, CollisionShapeSubtool::Shape::Triangle));
+  subtools.push_back(std::make_unique<CollisionEraseSubtool>(*this));
 }
 
 DrawTool::~DrawTool() {

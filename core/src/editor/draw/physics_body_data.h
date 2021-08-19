@@ -86,7 +86,7 @@ private:
   }
 
   template<unsigned N>
-  void _pointsForShape(PhysicsBodyDataShape &shape, SmallVector<love::Vector2, N> &points) {
+  void _pointsForShape(const PhysicsBodyDataShape &shape, SmallVector<love::Vector2, N> &points) {
     if (shape.type == CollisionShapeType::Circle) {
       size_t numPoints = 30;
       float angle = 0.0;
@@ -217,6 +217,42 @@ private:
     }
 
     return false;
+  }
+
+  bool isBetweenNumbers(float x, float n1, float n2) {
+    float low = fminf(n1, n2);
+    float high = fmaxf(n1, n2);
+    return x >= low && x <= high;
+  }
+
+  float signForTriangleTest(love::Vector2 &p1, love::Vector2 &p2, love::Vector2 &p3) {
+    return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
+  }
+
+  bool isPointInShape(love::Vector2 &point, const PhysicsBodyDataShape &shape) {
+    switch (shape.type) {
+    case CollisionShapeType::Rectangle: {
+      return isBetweenNumbers(point.x, shape.p1.x, shape.p2.x)
+          && isBetweenNumbers(point.y, shape.p1.y, shape.p2.y);
+    }
+    case CollisionShapeType::Circle: {
+      float dist = sqrtf(powf(point.x - shape.x, 2.0) + powf(point.y - shape.y, 2.0));
+      return dist <= shape.radius;
+    }
+    case CollisionShapeType::Triangle: {
+      SmallVector<love::Vector2, 3> points;
+      _pointsForShape(shape, points);
+
+      float d1 = signForTriangleTest(point, points[0], points[1]);
+      float d2 = signForTriangleTest(point, points[1], points[2]);
+      float d3 = signForTriangleTest(point, points[2], points[0]);
+
+      bool hasNeg = d1 < 0 || d2 < 0 || d3 < 0;
+      bool hasPos = d1 > 0 || d2 > 0 || d3 > 0;
+
+      return !(hasNeg && hasPos);
+    }
+    }
   }
 
 public:
@@ -376,6 +412,22 @@ public:
       return shape;
     } else {
       return std::nullopt;
+    }
+  }
+
+  int getShapeIdxAtPoint(love::Vector2 &point) {
+    for (size_t i = 0; i < shapes.size(); i++) {
+      if (isPointInShape(point, shapes[i])) {
+        return i;
+      }
+    }
+
+    return -1;
+  }
+
+  void removeShapeAtIndex(int index) {
+    if (index >= 0) {
+      shapes.erase(shapes.begin() + index);
     }
   }
 };
