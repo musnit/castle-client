@@ -237,6 +237,23 @@ struct DrawToolClearArtworkReceiver {
   }
 };
 
+struct DrawToolClearCollisionShapesReceiver {
+  inline static const BridgeRegistration<DrawToolClearCollisionShapesReceiver> registration {
+    "DRAW_TOOL_CLEAR_COLLISION_SHAPES"
+  };
+
+  struct Params {
+  } params;
+
+  void receive(Engine &engine) {
+    auto editor = engine.maybeGetEditor();
+    if (!editor)
+      return;
+    editor->drawTool.physicsBodyData = std::make_shared<PhysicsBodyData>();
+    editor->drawTool.saveDrawing("clear all collision shapes");
+  }
+};
+
 //
 // Subtool functions
 //
@@ -407,7 +424,7 @@ void DrawTool::resetState() {
   isDrawToolEventDirty = true;
   isPlayingAnimation = false;
 
-  selectedSubtools["root"] = "artwork";
+  selectedSubtools["root"] = "collision"; //"artwork";
   selectedSubtools["artwork"] = "artwork_draw";
   selectedSubtools["artwork_draw"] = "pencil_no_grid";
   selectedSubtools["artwork_move"] = "move";

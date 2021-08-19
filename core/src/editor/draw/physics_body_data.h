@@ -228,6 +228,15 @@ public:
   float tempTranslateX;
   float tempTranslateY;
 
+  PhysicsBodyData() {
+    scale = 10;
+    version = 2;
+    zeroShapesInV1 = false;
+
+    tempTranslateX = 0.0;
+    tempTranslateY = 0.0;
+  }
+
   PhysicsBodyData(Archive::Reader &archive) {
     read(archive);
   }

@@ -198,8 +198,9 @@ const EraseSubtools = ({ value, onChange }) => {
 };
 
 const CollisionEraseSubtools = () => {
-  // TODO: const onClearCollisionShapes = () => fastAction('onClearCollisionShapes');
-  const onClearCollisionShapes = () => {};
+  const onClearCollisionShapes = () => {
+    sendAsync('DRAW_TOOL_CLEAR_COLLISION_SHAPES');
+  };
   return (
     <View style={styles.toolbar}>
       <Pressable style={styles.button} onPress={onClearCollisionShapes}>
