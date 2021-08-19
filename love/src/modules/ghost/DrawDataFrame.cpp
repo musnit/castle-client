@@ -495,6 +495,19 @@ namespace ghost {
     }
   }
 
+  std::string DrawDataFrame::encodeBase64Png(graphics::Canvas *canvas) {
+    image::Image *imageModule = Module::getInstance<image::Image>(Module::M_IMAGE);
+    Rect rect = { 0, 0, canvas->getPixelWidth(), canvas->getPixelHeight() };
+    love::image::ImageData *imageData = canvas->newImageData(imageModule, 0, 0, rect);
+    love::filesystem::FileData *fileData = imageData->encode(
+        love::image::FormatHandler::EncodedFormat::ENCODED_PNG, "Image.png", false);
+    const char *fileDataString = (const char *)fileData->getData();
+    size_t fileDataSize = fileData->getSize();
+    size_t dstlen = 0;
+    char *result = data::encode(data::ENCODE_BASE64, fileDataString, fileDataSize, dstlen, 0);
+    return std::string(result);
+  }
+
   std::optional<std::string> DrawDataFrame::renderPreviewPng(int size) {
     if (isLinked) {
       return std::nullopt;
@@ -541,17 +554,9 @@ namespace ghost {
       graphicsModule->pop();
     });
 
-    image::Image *imageModule = Module::getInstance<image::Image>(Module::M_IMAGE);
-    Rect rect = { 0, 0, previewCanvas->getPixelWidth(), previewCanvas->getPixelHeight() };
-    love::image::ImageData *imageData = previewCanvas->newImageData(imageModule, 0, 0, rect);
-    love::filesystem::FileData *fileData = imageData->encode(
-        love::image::FormatHandler::EncodedFormat::ENCODED_PNG, "Image.png", false);
-    const char *fileDataString = (const char *)fileData->getData();
-    size_t fileDataSize = fileData->getSize();
-    size_t dstlen = 0;
-    char *result = data::encode(data::ENCODE_BASE64, fileDataString, fileDataSize, dstlen, 0);
+    auto result = encodeBase64Png(previewCanvas);
     delete previewCanvas;
-    return std::string(result);
+    return result;
   }
 
 

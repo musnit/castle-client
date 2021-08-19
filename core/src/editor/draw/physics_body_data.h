@@ -263,6 +263,7 @@ public:
   bool zeroShapesInV1;
   float tempTranslateX;
   float tempTranslateY;
+  std::optional<std::string> base64Png;
 
   PhysicsBodyData() {
     scale = 10;
@@ -332,6 +333,9 @@ public:
 
     return archive.toJson();
   }
+
+  std::string renderPreviewPng();
+  void updatePreview();
 
   void render() {
     lv.graphics.push(love::Graphics::STACK_ALL);

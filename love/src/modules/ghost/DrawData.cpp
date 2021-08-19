@@ -550,42 +550,6 @@ namespace ghost {
     }
   }*/
 
-  /*
-  TYPE DrawData::serialize() {
-    for (int i = 0; i < getNumFrames(); i++) {
-          getBounds(i);
-    }
-    auto data = {
-          pathDataList = [];
-          color = color;
-          lineColor = lineColor;
-          gridSize = gridSize;
-          scale = scale;
-          version = version;
-          fillPixelsPerUnit = fillPixelsPerUnit;
-          numTotalLayers = numTotalLayers;
-          layers = [];
-          framesBounds = framesBounds;
-          selectedLayerId = selectedLayerId;
-          selectedFrame = selectedFrame;
-    }
-    for (int l = 0; l < layers.length; l++) {
-          auto layerData = {
-            title = layers[l].title;
-            id = layers[l].id;
-            isVisible = layers[l].isVisible;
-            frames = [];
-          }
-          for (int f = 0; f < layers[l].frames.length; f++) {
-            auto frame = layers[l].frames[f];
-            layerData.frames.push_back(frame.serialize());
-          }
-          data.layers.push_back(layerData);
-    }
-    return data;
-  }
-*/
-
   void DrawData::addLayer(std::string title, DrawDataLayerId id) {
     auto newLayer = std::make_shared<DrawDataLayer>(title, id);
 

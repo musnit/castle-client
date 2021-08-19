@@ -96,6 +96,7 @@ namespace ghost {
     // canvas helpers
     static graphics::Canvas *newCanvas(int width, int height);
     static void renderToCanvas(graphics::Canvas *canvas, const std::function<void()> &lambda);
+    static std::string encodeBase64Png(graphics::Canvas *canvas);
 
     void deserializePathDataList();
     bool arePathDatasMergable(PathData pd1, PathData pd2);

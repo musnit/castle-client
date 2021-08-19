@@ -95,6 +95,8 @@ struct DrawLayersEvent {
   PROP(bool, canPasteCell);
   PROP(bool, isOnionSkinningEnabled);
   PROP((std::vector<Layer>), layers);
+
+  PROP(std::optional<std::string>, collisionBase64Png);
 };
 
 void DrawTool::sendLayersEvent() {
@@ -128,6 +130,11 @@ void DrawTool::sendLayersEvent() {
   ev.selectedFrameIndex = drawData->selectedFrame.value;
   ev.canPasteCell = copiedLayerId != "" && copiedFrameIndex.value > 0;
   ev.isOnionSkinningEnabled = isOnionSkinningEnabled;
+
+  if (!physicsBodyData->base64Png) {
+    physicsBodyData->updatePreview();
+  }
+  ev.collisionBase64Png = physicsBodyData->base64Png;
 
   editor.getBridge().sendEvent("EDITOR_DRAW_LAYERS", ev);
 }
@@ -331,6 +338,7 @@ void DrawTool::addPathData(love::PathData pathData) {
 
 void DrawTool::saveDrawing(std::string commandDescription) {
   drawData->updateFramePreview();
+  physicsBodyData->updatePreview();
 
   auto &scene = editor.getScene();
   auto &drawBehavior = scene.getBehaviors().byType<Drawing2Behavior>();
@@ -631,6 +639,7 @@ void DrawTool::drawOverlay() {
 
   getCurrentSubtool().drawOverlay(lv);
 
+  lv.graphics.setColor({ 0, 0, 0, 1 });
   physicsBodyData->render();
 
   lv.graphics.pop();
