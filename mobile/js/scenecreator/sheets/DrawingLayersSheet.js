@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
 
 const ICON_SIZE = 22;
 
-const CollisionRow = ({ isSelected, onSelect }) => {
+const CollisionRow = ({ isSelected, onSelect, previewPng }) => {
   return (
     <View style={styles.layerRow}>
       <TouchableOpacity style={styles.firstCell} onPress={() => onSelect(!isSelected)}>
@@ -134,8 +134,7 @@ const CollisionRow = ({ isSelected, onSelect }) => {
         </View>
       </TouchableOpacity>
       <TouchableOpacity style={[styles.cell, styles.cellBottomBorder, styles.cellRightBorder]}>
-        {/* TODO: preview of collision shape */}
-        <View style={{ width: 50, height: 50 }} />
+        <FastImage source={{ uri: `data:image/png;base64,${previewPng}` }} style={styles.image} />
       </TouchableOpacity>
     </View>
   );
@@ -245,9 +244,13 @@ const LayerRow = ({
 };
 
 const DrawingLayers = ({ sendLayerAction }) => {
-  const { layers, selectedLayerId, selectedFrameIndex, canPasteCell } = useCoreState(
-    'EDITOR_DRAW_LAYERS'
-  ) || {
+  const {
+    layers,
+    selectedLayerId,
+    selectedFrameIndex,
+    canPasteCell,
+    collisionBase64Png,
+  } = useCoreState('EDITOR_DRAW_LAYERS') || {
     selectedFrameIndex: 1,
   };
   const drawToolState = useCoreState('EDITOR_DRAW_TOOL') || {};
@@ -484,7 +487,11 @@ const DrawingLayers = ({ sendLayerAction }) => {
                 );
               })
             : null}
-          <CollisionRow onSelect={onSelectCollision} isSelected={isCollisionActive} />
+          <CollisionRow
+            onSelect={onSelectCollision}
+            isSelected={isCollisionActive}
+            previewPng={collisionBase64Png}
+          />
         </View>
       </ScrollView>
     </ScrollView>
