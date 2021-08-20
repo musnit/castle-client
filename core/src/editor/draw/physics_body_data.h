@@ -270,6 +270,16 @@ private:
     }
   }
 
+  int numberSign(float n) {
+    if (n < 0) {
+      return -1;
+    } else if (n > 0) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+
 public:
   std::vector<PhysicsBodyDataShape> shapes;
   std::optional<PhysicsBodyDataShape> tempShape;
@@ -435,7 +445,7 @@ public:
   }
 
   int getShapeIdxAtPoint(love::Vector2 &point) {
-    for (size_t i = 0; i < shapes.size(); i++) {
+    for (int i = shapes.size() - 1; i >= 0; i--) {
       if (isPointInShape(point, shapes[i])) {
         return i;
       }
@@ -444,10 +454,14 @@ public:
     return -1;
   }
 
-  void removeShapeAtIndex(int index) {
+  std::optional<PhysicsBodyDataShape> removeShapeAtIndex(int index) {
     if (index >= 0) {
+      PhysicsBodyDataShape result = shapes[index];
       shapes.erase(shapes.begin() + index);
+      return result;
     }
+
+    return std::nullopt;
   }
 
   love::Bounds getBounds() {
@@ -508,5 +522,39 @@ public:
     }
 
     return shape;
+  }
+
+  PhysicsBodyDataShape moveShapeBy(
+      PhysicsBodyDataShape shape, float diffX, float diffY, float cellSize) {
+    float currXDiff = 0.0;
+    float currYDiff = 0.0;
+    float incrementX = cellSize * numberSign(diffX);
+    float incrementY = cellSize * numberSign(diffY);
+
+    if (fabs(incrementX) > 0.0) {
+      while (fabs(currXDiff) < fabs(diffX)) {
+        currXDiff += incrementX;
+        auto tempResult = moveShapeByIgnoreBounds(shape, currXDiff, currYDiff);
+
+        if (!isShapeInBounds(tempResult)) {
+          currXDiff -= incrementX;
+          break;
+        }
+      }
+    }
+
+    if (fabs(incrementY) > 0.0) {
+      while (fabs(currYDiff) < fabs(diffY)) {
+        currYDiff += incrementY;
+        auto tempResult = moveShapeByIgnoreBounds(shape, currXDiff, currYDiff);
+
+        if (!isShapeInBounds(tempResult)) {
+          currYDiff -= incrementY;
+          break;
+        }
+      }
+    }
+
+    return moveShapeByIgnoreBounds(shape, currXDiff, currYDiff);
   }
 };

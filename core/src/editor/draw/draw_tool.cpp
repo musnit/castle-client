@@ -17,6 +17,7 @@
 #include "subtools/collision_shape_subtool.h"
 #include "subtools/collision_erase_subtool.h"
 #include "subtools/collision_move_all_subtool.h"
+#include "subtools/collision_move_subtool.h"
 #include "util.h"
 
 //
@@ -418,6 +419,7 @@ DrawTool::DrawTool(Editor &editor_)
       std::make_unique<CollisionShapeSubtool>(*this, CollisionShapeSubtool::Shape::Triangle));
   subtools.push_back(std::make_unique<CollisionEraseSubtool>(*this));
   subtools.push_back(std::make_unique<CollisionMoveAllSubtool>(*this));
+  subtools.push_back(std::make_unique<CollisionMoveSubtool>(*this));
 }
 
 DrawTool::~DrawTool() {
