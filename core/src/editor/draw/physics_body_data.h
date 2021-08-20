@@ -77,6 +77,21 @@ class PhysicsBodyData {
 private:
   Lv &lv { Lv::getInstance() };
 
+  void addPointToBounds(love::Bounds &bounds, love::Vector2 p) {
+    if (p.x < bounds.minX) {
+      bounds.minX = p.x;
+    }
+    if (p.y < bounds.minY) {
+      bounds.minY = p.y;
+    }
+    if (p.x > bounds.maxX) {
+      bounds.maxX = p.x;
+    }
+    if (p.y > bounds.maxY) {
+      bounds.maxY = p.y;
+    }
+  }
+
   void _drawShape(PhysicsBodyDataShape &shape) {
     lv.graphics.setLineWidth(0.06);
 
@@ -433,5 +448,65 @@ public:
     if (index >= 0) {
       shapes.erase(shapes.begin() + index);
     }
+  }
+
+  love::Bounds getBounds() {
+    love::Bounds bounds;
+    bounds.minX = DRAW_MAX_SIZE;
+    bounds.minY = DRAW_MAX_SIZE;
+    bounds.maxX = -DRAW_MAX_SIZE;
+    bounds.maxY = -DRAW_MAX_SIZE;
+
+    for (size_t i = 0; i < shapes.size(); i++) {
+      auto &shape = shapes[i];
+      if (shape.type == CollisionShapeType::Circle) {
+        addPointToBounds(bounds, love::Vector2(shape.x + shape.radius, shape.y));
+        addPointToBounds(bounds, love::Vector2(shape.x, shape.y + shape.radius));
+        addPointToBounds(bounds, love::Vector2(shape.x - shape.radius, shape.y));
+        addPointToBounds(bounds, love::Vector2(shape.x, shape.y - shape.radius));
+      } else {
+        SmallVector<love::Vector2, 4> points;
+        _pointsForShape(shape, points);
+        for (size_t j = 0; j < points.size(); j++) {
+          addPointToBounds(bounds, points[j]);
+        }
+      }
+    }
+
+    return bounds;
+  }
+
+  void setTempTranslation(float x, float y) {
+    tempTranslateX = x;
+    tempTranslateY = y;
+  }
+
+  PhysicsBodyDataShape moveShapeByIgnoreBounds(
+      PhysicsBodyDataShape shape, float diffX, float diffY) {
+    switch (shape.type) {
+    case CollisionShapeType::Rectangle: {
+      shape.p1.x += diffX;
+      shape.p2.x += diffX;
+      shape.p1.y += diffY;
+      shape.p2.y += diffY;
+      break;
+    }
+    case CollisionShapeType::Triangle: {
+      shape.p1.x += diffX;
+      shape.p2.x += diffX;
+      shape.p3.x += diffX;
+      shape.p1.y += diffY;
+      shape.p2.y += diffY;
+      shape.p3.y += diffY;
+      break;
+    }
+    case CollisionShapeType::Circle: {
+      shape.x += diffX;
+      shape.y += diffY;
+      break;
+    }
+    }
+
+    return shape;
   }
 };
