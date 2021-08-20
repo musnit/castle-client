@@ -37,6 +37,7 @@ public:
   void clearTempGraphics();
   void addTempPathData(love::PathData pathData);
   void setTempTranslation(float x, float y);
+  float getPixelScale();
 
   void addPathData(std::shared_ptr<love::PathData> pathData);
   void addPathData(love::PathData pathData);

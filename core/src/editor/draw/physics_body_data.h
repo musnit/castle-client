@@ -6,6 +6,13 @@
 
 enum class CollisionShapeType { Rectangle, Triangle, Circle };
 
+struct PhysicsBodyDataHandle {
+  float x;
+  float y;
+  float oppositeX;
+  float oppositeY;
+};
+
 struct PhysicsBodyDataShape {
   love::Vector2 p1;
   love::Vector2 p2;
@@ -280,6 +287,19 @@ private:
     }
   }
 
+  love::Vector2 centerOfShape(PhysicsBodyDataShape &shape) {
+    switch (shape.type) {
+    case CollisionShapeType::Circle:
+      return love::Vector2(shape.x, shape.y);
+    case CollisionShapeType::Rectangle:
+      return love::Vector2((shape.p1.x + shape.p2.x) / 2.0, (shape.p1.y + shape.p2.y) / 2.0);
+    case CollisionShapeType::Triangle: {
+      return love::Vector2((shape.p1.x + shape.p2.x + shape.p3.x) / 3.0,
+          (shape.p1.y + shape.p2.y + shape.p3.y) / 3.0);
+    }
+    }
+  }
+
 public:
   std::vector<PhysicsBodyDataShape> shapes;
   std::optional<PhysicsBodyDataShape> tempShape;
@@ -401,9 +421,13 @@ public:
     }
   }
 
-  std::optional<PhysicsBodyDataShape> getTriangleShape(
-      const love::Vector2 &p1, const love::Vector2 &p2) {
-    love::Vector2 p3 = { p1.x, p2.y };
+  std::optional<PhysicsBodyDataShape> getTriangleShape(const love::Vector2 &p1,
+      const love::Vector2 &p2, const std::optional<love::Vector2> &optionalP3) {
+    love::Vector2 p3(p1.x, p2.y);
+    if (optionalP3) {
+      p3.x = optionalP3->x;
+      p3.y = optionalP3->y;
+    }
 
     PhysicsBodyDataShape shape;
     shape.type = CollisionShapeType::Triangle;
@@ -452,6 +476,14 @@ public:
     }
 
     return -1;
+  }
+
+  std::optional<PhysicsBodyDataShape> getShapeAtIndex(int index) {
+    if (index < 0 || index >= shapes.size()) {
+      return std::nullopt;
+    }
+
+    return shapes[index];
   }
 
   std::optional<PhysicsBodyDataShape> removeShapeAtIndex(int index) {
@@ -556,5 +588,39 @@ public:
     }
 
     return moveShapeByIgnoreBounds(shape, currXDiff, currYDiff);
+  }
+
+  template<unsigned N>
+  void getHandlesForShape(
+      PhysicsBodyDataShape &shape, SmallVector<PhysicsBodyDataHandle, N> &handles) {
+    SmallVector<love::Vector2, 4> points;
+
+    if (shape.type == CollisionShapeType::Circle) {
+      points.push_back(love::Vector2(shape.x + shape.radius, shape.y));
+      points.push_back(love::Vector2(shape.x, shape.y + shape.radius));
+      points.push_back(love::Vector2(shape.x - shape.radius, shape.y));
+      points.push_back(love::Vector2(shape.x, shape.y - shape.radius));
+    } else {
+      _pointsForShape(shape, points);
+    }
+
+    love::Vector2 center = centerOfShape(shape);
+
+    for (int i = 0; i < points.size(); i++) {
+      PhysicsBodyDataHandle handle;
+      handle.x = points[i].x;
+      handle.y = points[i].y;
+      handle.oppositeX = handle.x - (handle.x - center.x) * 2.0;
+      handle.oppositeY = handle.y - (handle.y - center.y) * 2.0;
+      handles.push_back(std::move(handle));
+    }
+  }
+
+  void updateShapeAtIdx(int idx, PhysicsBodyDataShape &shape) {
+    shapes[idx] = shape;
+  }
+
+  int getNumShapes() {
+    return shapes.size();
   }
 };

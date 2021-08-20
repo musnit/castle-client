@@ -18,6 +18,7 @@
 #include "subtools/collision_erase_subtool.h"
 #include "subtools/collision_move_all_subtool.h"
 #include "subtools/collision_move_subtool.h"
+#include "subtools/collision_scale_subtool.h"
 #include "util.h"
 
 //
@@ -312,6 +313,10 @@ void DrawTool::setTempTranslation(float x, float y) {
   tempTranslateY = y;
 }
 
+float DrawTool::getPixelScale() {
+  return editor.getScene().getPixelScale();
+}
+
 void DrawTool::addPathData(std::shared_ptr<love::PathData> pathData) {
   if (DrawUtil::floatEquals(pathData->points[0].x, pathData->points[1].x)
       && DrawUtil::floatEquals(pathData->points[0].y, pathData->points[1].y)) {
@@ -420,6 +425,7 @@ DrawTool::DrawTool(Editor &editor_)
   subtools.push_back(std::make_unique<CollisionEraseSubtool>(*this));
   subtools.push_back(std::make_unique<CollisionMoveAllSubtool>(*this));
   subtools.push_back(std::make_unique<CollisionMoveSubtool>(*this));
+  subtools.push_back(std::make_unique<CollisionScaleSubtool>(*this));
 }
 
 DrawTool::~DrawTool() {
@@ -438,7 +444,7 @@ void DrawTool::resetState() {
   isDrawToolEventDirty = true;
   isPlayingAnimation = false;
 
-  selectedSubtools["root"] = "collision"; //"artwork";
+  selectedSubtools["root"] = "artwork";
   selectedSubtools["artwork"] = "artwork_draw";
   selectedSubtools["artwork_draw"] = "pencil_no_grid";
   selectedSubtools["artwork_move"] = "move";
@@ -641,10 +647,11 @@ void DrawTool::drawOverlay() {
     renderOnionSkinning();
   }
 
-  getCurrentSubtool().drawOverlay(lv);
-
-  lv.graphics.setColor({ 0, 0, 0, 1 });
+  // lv.graphics.setColor({ 0, 0, 0, 1 });
+  lv.graphics.setColor({ 1, 1, 1, 1 });
   physicsBodyData->render();
+
+  getCurrentSubtool().drawOverlay(lv);
 
   lv.graphics.pop();
 }

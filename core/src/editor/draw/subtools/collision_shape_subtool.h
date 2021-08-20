@@ -63,7 +63,8 @@ public:
       break;
     }
     case Shape::Triangle:
-      shape = drawTool.getPhysicsBodyData().getTriangleShape(initialCoord, roundedCoord);
+      shape = drawTool.getPhysicsBodyData().getTriangleShape(
+          initialCoord, roundedCoord, std::nullopt);
       break;
     }
 
