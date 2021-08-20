@@ -518,6 +518,33 @@ void DrawTool::renderOnionSkinning() {
 // Update
 //
 
+void DrawTool::loadLastSave() {
+  auto &scene = editor.getScene();
+  if (!editor.getSelection().hasSelection()) {
+    return;
+  }
+
+  auto &drawBehavior = scene.getBehaviors().byType<Drawing2Behavior>();
+  auto actorId = editor.getSelection().firstSelectedActorId();
+  auto component = drawBehavior.maybeGetComponent(actorId);
+  if (!component) {
+    return;
+  }
+
+  auto hash = component->hash;
+
+  lastHash = hash;
+  drawData = std::make_shared<love::DrawData>(component->drawData);
+  physicsBodyData = std::make_shared<PhysicsBodyData>(component->physicsBodyData);
+
+  // TODO: send elsewhere
+  sendLayersEvent();
+  sendDrawToolEvent();
+
+  // TODO: hasResetViewWidth
+  // TODO: _toolOptions
+}
+
 void DrawTool::update(double dt) {
   if (!editor.hasScene()) {
     return;
@@ -536,15 +563,8 @@ void DrawTool::update(double dt) {
   }
 
   auto hash = component->hash;
-
   if (lastHash != hash) {
-    lastHash = hash;
-    drawData = std::make_shared<love::DrawData>(component->drawData);
-    physicsBodyData = std::make_shared<PhysicsBodyData>(component->physicsBodyData);
-
-    // TODO: send elsewhere
-    sendLayersEvent();
-    sendDrawToolEvent();
+    loadLastSave();
   }
 
   if (isDrawToolEventDirty) {
@@ -574,6 +594,7 @@ void DrawTool::update(double dt) {
         childTouchData.clampedY = clampedY;
 
         if (touch.pressed) {
+          // TODO
           // drawData->unlinkCurrentCell();
         }
 
@@ -581,7 +602,8 @@ void DrawTool::update(double dt) {
         if (touch.released) {
           subtool.hasTouch = false;
           subtool.onReset();
-          // loadLastSave();
+          // TODO: do we need this call?
+          loadLastSave();
         } else {
           subtool.hasTouch = true;
         }
@@ -591,7 +613,7 @@ void DrawTool::update(double dt) {
     if (subtool.hasTouch) {
       subtool.hasTouch = false;
       subtool.onReset();
-      // loadLastSave();
+      loadLastSave();
     }
     panZoom.update(gesture, viewTransform);
     auto newView = panZoom.apply(viewPosition, viewWidth);

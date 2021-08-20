@@ -479,7 +479,7 @@ public:
   }
 
   std::optional<PhysicsBodyDataShape> getShapeAtIndex(int index) {
-    if (index < 0 || index >= shapes.size()) {
+    if (index < 0 || index >= (int)shapes.size()) {
       return std::nullopt;
     }
 
@@ -606,7 +606,7 @@ public:
 
     love::Vector2 center = centerOfShape(shape);
 
-    for (int i = 0; i < points.size(); i++) {
+    for (size_t i = 0; i < points.size(); i++) {
       PhysicsBodyDataHandle handle;
       handle.x = points[i].x;
       handle.y = points[i].y;

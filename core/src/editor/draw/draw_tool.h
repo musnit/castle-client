@@ -87,6 +87,7 @@ private:
   love::graphics::Canvas *onionSkinningCanvas = nullptr;
   void makeOnionSkinningCanvas();
   void renderOnionSkinning();
+  void loadLastSave();
 };
 
 inline love::DrawData &DrawTool::getDrawData() {

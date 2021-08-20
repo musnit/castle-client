@@ -44,7 +44,7 @@ public:
       for (int i = pathDataList.size() - 1; i >= 0; i--) {
         auto &pathData = pathDataList[i];
         if (!pathData.isFreehand) {
-          for (int p = 0; p < pathData.points.size(); p++) {
+          for (size_t p = 0; p < pathData.points.size(); p++) {
             float distance = sqrtf(powf(touch.touchX - pathData.points[p].x, 2.0)
                 + powf(touch.touchY - pathData.points[p].y, 2.0));
 
@@ -94,7 +94,7 @@ public:
       }
     }
 
-    for (int i = 0; i < grabbedPaths.size(); i++) {
+    for (size_t i = 0; i < grabbedPaths.size(); i++) {
       grabbedPaths[i].pathData.points[grabbedPaths[i].grabPointIndex].x = touch.roundedX;
       grabbedPaths[i].pathData.points[grabbedPaths[i].grabPointIndex].y = touch.roundedY;
 
@@ -103,7 +103,7 @@ public:
 
     if (touch.touch.released) {
       if (grabbedPaths.size() > 0) {
-        for (int i = 0; i < grabbedPaths.size(); i++) {
+        for (size_t i = 0; i < grabbedPaths.size(); i++) {
           drawTool.addPathData(grabbedPaths[i].pathData);
         }
 
@@ -118,7 +118,7 @@ public:
     } else {
       drawTool.resetTempGraphics();
 
-      for (int i = 0; i < grabbedPaths.size(); i++) {
+      for (size_t i = 0; i < grabbedPaths.size(); i++) {
         drawTool.addTempPathData(grabbedPaths[i].pathData);
       }
     }
@@ -130,7 +130,7 @@ public:
     auto pathDataList = drawTool.getDrawData().currentPathDataList();
     for (auto &pathData : *pathDataList) {
       if (!pathData.isFreehand) {
-        for (int p = 0; p < pathData.points.size(); p++) {
+        for (size_t p = 0; p < pathData.points.size(); p++) {
           points.push_back(love::Vector2(pathData.points[p].x, pathData.points[p].y));
         }
       }

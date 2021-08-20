@@ -42,7 +42,7 @@ public:
         if (scaleRotateShape) {
           SmallVector<PhysicsBodyDataHandle, 4> handles;
           drawTool.getPhysicsBodyData().getHandlesForShape(*scaleRotateShape, handles);
-          for (int i = 0; i < handles.size(); i++) {
+          for (size_t i = 0; i < handles.size(); i++) {
             float distance = sqrtf(
                 powf(touch.touchX - handles[i].x, 2.0) + powf(touch.touchY - handles[i].y, 2.0));
             if (distance < handleTouchRadius) {
@@ -50,7 +50,7 @@ public:
 
               if (scaleRotateShape->type == CollisionShapeType::Triangle) {
                 otherPoints.clear();
-                for (int j = 0; j < handles.size(); j++) {
+                for (size_t j = 0; j < handles.size(); j++) {
                   if (j != i) {
                     otherPoints.push_back(love::Vector2(handles[j].x, handles[j].y));
                   }
@@ -127,7 +127,7 @@ public:
     if (scaleRotateShape) {
       SmallVector<PhysicsBodyDataHandle, 4> handles;
       drawTool.getPhysicsBodyData().getHandlesForShape(*scaleRotateShape, handles);
-      for (int i = 0; i < handles.size(); i++) {
+      for (size_t i = 0; i < handles.size(); i++) {
         lv.graphics.circle(love::Graphics::DrawMode::DRAW_FILL, handles[i].x, handles[i].y,
             HANDLE_DRAW_RADIUS * drawTool.getPixelScale());
       }

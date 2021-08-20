@@ -60,7 +60,7 @@ public:
             pathIndicesToFill.insert(j);
           }
 
-          for (int j = i + 1; j < pathDataList->size(); j++) {
+          for (size_t j = i + 1; j < pathDataList->size(); j++) {
             if (pathIndicesToFill.find(j) != pathIndicesToFill.end()) {
               break;
             }
