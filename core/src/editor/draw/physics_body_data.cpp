@@ -26,3 +26,105 @@ std::string PhysicsBodyData::renderPreviewPng() {
 void PhysicsBodyData::updatePreview() {
   base64Png = renderPreviewPng();
 }
+
+void PhysicsBodyData::makeShader() {
+  static const char vert[] = R"(
+    vec4 position(mat4 transformProjection, vec4 vertexPosition) {
+      return transformProjection * vertexPosition;
+    }
+  )";
+  static const char frag[] = R"(
+    uniform float lineSpacing;
+    uniform float lineRadius;
+
+    vec4 effect(vec4 color, Image tex, vec2 texCoords, vec2 screenCoords) {
+      float modxy = mod(screenCoords.x + screenCoords.y, lineSpacing);
+      float diagonal = smoothstep(lineRadius - 0.5, lineRadius + 0.5, modxy);
+      return vec4(color.rgb, (1.0 - diagonal) * color.a);
+    }
+  )";
+  shader.reset(
+      lv.graphics.newShader(lv.wrapVertexShaderCode(vert), lv.wrapFragmentShaderCode(frag)));
+
+  auto dpiScale = float(lv.graphics.getScreenDPIScale());
+  {
+    auto info = shader->getUniformInfo("lineSpacing");
+    info->floats[0] = dpiScale * 24;
+    shader->updateUniform(info, 1);
+  }
+  {
+    auto info = shader->getUniformInfo("lineRadius");
+    info->floats[0] = dpiScale * 6;
+    shader->updateUniform(info, 1);
+  }
+}
+
+void PhysicsBodyData::drawShape(PhysicsBodyDataShape &shape, love::Graphics::DrawMode mode) {
+  if (shape.type == CollisionShapeType::Circle) {
+    lv.graphics.circle(mode, shape.x, shape.y, shape.radius);
+    return;
+  }
+
+  love::Vector2 p1 = shape.p1;
+  love::Vector2 p2 = shape.p2;
+
+  if (p1.x > p2.x) {
+    love::Vector2 t = p2;
+    p2 = p1;
+    p1 = t;
+  }
+
+  if (shape.type == CollisionShapeType::Rectangle) {
+    auto minX = p1.x;
+    auto minY = std::fmin(p1.y, p2.y);
+    lv.graphics.rectangle(mode, minX, minY, std::fabsf(p2.x - p1.x), std::fabsf(p2.y - p1.y));
+  } else if (shape.type == CollisionShapeType::Triangle) {
+    love::Vector2 coords[4];
+    love::Vector2 p3 = shape.p3;
+    bool isCounterclockwise = (p2.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (p2.y - p1.y) > 0;
+    if (isCounterclockwise) {
+      coords[0] = { p1.x, p1.y };
+      coords[1] = { p2.x, p2.y };
+      coords[2] = { p3.x, p3.y };
+      coords[3] = { p1.x, p1.y };
+    } else {
+      coords[0] = { p3.x, p3.y };
+      coords[1] = { p2.x, p2.y };
+      coords[2] = { p1.x, p1.y };
+      coords[3] = { p3.x, p3.y };
+    }
+    lv.graphics.polygon(mode, coords, 4);
+  }
+}
+
+void PhysicsBodyData::render() {
+  if (!shader) {
+    // build lazily because we never need to render in play mode
+    makeShader();
+  }
+
+  lv.graphics.push(love::Graphics::STACK_ALL);
+
+  // render diagonal line shaderfills of all shapes
+  lv.graphics.setShader(shader.get());
+  lv.graphics.translate(tempTranslateX, tempTranslateY);
+
+  for (auto &shape : shapes) {
+    drawShape(shape, love::Graphics::DRAW_FILL);
+  }
+  if (tempShape) {
+    drawShape(*tempShape, love::Graphics::DRAW_FILL);
+  }
+
+  // render outlines, no shader
+  lv.graphics.setShader();
+  lv.graphics.setLineWidth(0.1);
+  for (auto &shape : shapes) {
+    drawShape(shape, love::Graphics::DRAW_LINE);
+  }
+  if (tempShape) {
+    drawShape(*tempShape, love::Graphics::DRAW_LINE);
+  }
+
+  lv.graphics.pop();
+}

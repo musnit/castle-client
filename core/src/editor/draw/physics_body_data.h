@@ -98,14 +98,8 @@ private:
       bounds.maxY = p.y;
     }
   }
-
-  void _drawShape(PhysicsBodyDataShape &shape) {
-    lv.graphics.setLineWidth(0.06);
-
-    SmallVector<love::Vector2, 30> points;
-    _pointsForShape(shape, points);
-    _drawDashedPoints(points);
-  }
+  
+  void drawShape(PhysicsBodyDataShape &shape, love::Graphics::DrawMode mode);
 
   template<unsigned N>
   void _pointsForShape(const PhysicsBodyDataShape &shape, SmallVector<love::Vector2, N> &points) {
@@ -150,74 +144,6 @@ private:
         points.push_back({ p1.x, p1.y });
       }
     }
-  }
-
-  template<unsigned N>
-  void _drawDashedPoints(SmallVector<love::Vector2, N> &points) {
-    bool startsWithDash = true;
-    float leftoverAmount = 0.0;
-
-    for (size_t i = 0; i < points.size(); i++) {
-      size_t next = i + 1;
-      if (next >= points.size()) {
-        next = next - points.size();
-      }
-
-      _drawDashedLine(points[i], points[next], &startsWithDash, &leftoverAmount);
-    }
-  }
-
-  void _drawDashedLine(
-      love::Vector2 p1, love::Vector2 p2, bool *startsWithDash, float *leftoverAmount) {
-    const float DASH_LENGTH = 0.3;
-    const float BLANK_LENGTH = 0.3;
-
-    float totalLength = sqrt(pow(p2.x - p1.x, 2.0) + pow(p2.y - p1.y, 2.0));
-    love::Vector2 unitVec = { p2.x - p1.x, p2.y - p1.y };
-    float l = sqrt(unitVec.x * unitVec.x + unitVec.y * unitVec.y);
-    unitVec.x /= l;
-    unitVec.y /= l;
-
-    float currentDist = 0.0;
-    bool isDash = *startsWithDash;
-
-    while (currentDist < totalLength) {
-      float currentSegmentLength;
-
-      if (*leftoverAmount > 0) {
-        currentSegmentLength = *leftoverAmount;
-        *leftoverAmount = 0.0;
-      } else {
-        if (isDash) {
-          currentSegmentLength = DASH_LENGTH;
-        } else {
-          currentSegmentLength = BLANK_LENGTH;
-        }
-      }
-
-      float drawCurrentSegmentLength = currentSegmentLength;
-      bool cutOffSegment = false;
-      if (drawCurrentSegmentLength + currentDist > totalLength) {
-        drawCurrentSegmentLength = totalLength - currentDist;
-        cutOffSegment = true;
-      }
-
-      if (isDash) {
-        love::Vector2 points[2]
-            = { { p1.x + unitVec.x * currentDist, p1.y + unitVec.y * currentDist },
-                { p1.x + unitVec.x * (currentDist + drawCurrentSegmentLength),
-                    p1.y + unitVec.y * (currentDist + drawCurrentSegmentLength) } };
-        lv.graphics.polyline(points, 2);
-      }
-
-      if (!cutOffSegment) {
-        isDash = !isDash;
-      }
-      currentDist = currentDist + currentSegmentLength;
-    }
-
-    *startsWithDash = isDash;
-    *leftoverAmount = currentDist - totalLength;
   }
 
   bool isPointInBounds(const love::Vector2 &point) {
@@ -309,6 +235,7 @@ public:
   float tempTranslateX;
   float tempTranslateY;
   std::optional<std::string> base64Png;
+  std::unique_ptr<love::Shader> shader;
 
   PhysicsBodyData() {
     scale = 10;
@@ -381,21 +308,8 @@ public:
 
   std::string renderPreviewPng();
   void updatePreview();
-
-  void render() {
-    lv.graphics.push(love::Graphics::STACK_ALL);
-    lv.graphics.translate(tempTranslateX, tempTranslateY);
-
-    for (size_t i = 0; i < shapes.size(); i++) {
-      _drawShape(shapes[i]);
-    }
-
-    if (tempShape) {
-      _drawShape(*tempShape);
-    }
-
-    lv.graphics.pop();
-  }
+  void makeShader();
+  void render();
 
   bool commitTempShape() {
     if (tempShape) {
