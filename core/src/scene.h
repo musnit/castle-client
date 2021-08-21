@@ -33,6 +33,11 @@ public:
   ~Scene();
 
 
+  // Read / write
+
+  void write(Writer &writer) const;
+
+
   // Actor management
 
   struct ActorDesc {

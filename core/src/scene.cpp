@@ -82,6 +82,37 @@ void Scene::read(Reader &reader) {
   });
 }
 
+void Scene::write(Writer &writer) const {
+  // Library
+  writer.arr("library", [&]() {
+    library->forEachEntry([&](LibraryEntry &entry) {
+      writer.obj([&]() {
+        entry.write(writer);
+      });
+    });
+  });
+
+  // Actors
+  writer.arr("actors", [&]() {
+    forEachActorByDrawOrder([&](ActorId actorId) {
+      writer.obj([&]() {
+        writer.str("actorId", std::to_string(entt::to_integral(actorId)));
+        if (auto parentEntryId = maybeGetParentEntryId(actorId)) {
+          writer.str("parentEntryId", parentEntryId);
+        }
+        writer.obj("bp", [&]() {
+          writeActor(actorId, writer);
+        });
+      });
+    });
+  });
+
+  // Scene-level props
+  writer.obj("sceneProperties", [&]() {
+    writer.write(props);
+  });
+}
+
 
 //
 // Actor management

@@ -31,11 +31,15 @@ public:
 
   friend class Editor;
 
-  // Read
+
+  // Read / write
 
   void read(Reader &reader); // Removes all existing variables and reads new ones
+  void write(Writer &writer) const;
+
 
   // Get or update variables
+
   std::optional<Variable> get(std::string &variableId);
   bool add(std::string name, std::string variableId, ExpressionValue initialValue);
   bool remove(std::string variableId);

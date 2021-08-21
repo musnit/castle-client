@@ -13,7 +13,7 @@ public:
   Player(const Player &) = delete; // Prevent accidental copies
   const Player &operator=(const Player &) = delete;
 
-  explicit Player(Bridge &bridge_, Lv &lv_);
+  explicit Player(Bridge &bridge_);
 
   void update(double dt);
   void draw();
@@ -25,8 +25,8 @@ public:
   Scene &getScene();
 
 private:
+  Lv &lv { Lv::getInstance() };
   Bridge &bridge;
-  Lv &lv;
 
   void tryLoadVariables();
   void tryLoadNextCard();

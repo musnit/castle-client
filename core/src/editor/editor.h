@@ -11,6 +11,7 @@
 #include "grid.h"
 #include "commands.h"
 #include "belt.h"
+#include "player.h"
 
 class Editor {
   // manages a scene instance that is being edited.
@@ -80,11 +81,12 @@ private:
   Lv &lv { Lv::getInstance() };
   Bridge &bridge;
 
-  Variables variables;
+  Variables variables; // Stub empty instance that we can pass to our edited scene
   EditVariables editVariables;
 
-  Archive sceneArchive;
-  std::unique_ptr<Scene> scene;
+  bool playing = false;
+  std::unique_ptr<Scene> scene; // The edited version of the scene, non-`null` once data is loaded
+  std::unique_ptr<Player> player; // Only non-`null` when playing
 
   Commands commands { *this };
   EditMode editMode = EditMode::Default;

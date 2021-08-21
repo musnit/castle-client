@@ -39,29 +39,13 @@ void Editor::update(double dt) {
     return;
   }
 
-  Debug::display("fps: {}", lv.timer.getFPS());
-  Debug::display("actors: {}", scene->numActors());
-
-  // TODO: Update scene when performing
-  {
-    /* if (scene->isRestartRequested()) {
-      sceneArchive.read([&](Reader &reader) {
-        reader.obj("snapshot", [&]() {
-          scene = std::make_unique<Scene>(bridge, variables, true, &reader);
-        });
-      });
-    }
-
+  if (playing && player) {
+    player->update(dt);
+  } else {
     Debug::display("fps: {}", lv.timer.getFPS());
     Debug::display("actors: {}", scene->numActors());
 
-    scene->update(dt); */
-  }
-
-  // Non-performing update
-  {
     // Need to tell scene to update gesture, since we didn't `scene->update()`
-    // TODO: Should gesture just be moved out of scene?
     scene->updateGesture();
 
     // Make sure ghost actors exist before tools look for them
@@ -113,97 +97,101 @@ void Editor::draw() {
     return;
   }
 
-  if (editMode == EditMode::Draw) {
-    drawTool.drawOverlay();
-    return;
-  }
+  if (playing && player) {
+    player->draw();
+  } else {
+    if (editMode == EditMode::Draw) {
+      drawTool.drawOverlay();
+      return;
+    }
 
-  scene->draw();
+    scene->draw();
 
-  auto &bodyBehavior = scene->getBehaviors().byType<BodyBehavior>();
+    auto &bodyBehavior = scene->getBehaviors().byType<BodyBehavior>();
 
-  // Bounding boxes
-  {
-    const auto drawBodyOutline = [&](ActorId actorId) {
-      if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
-        auto bounds = bodyBehavior.getEditorBounds(actorId);
-        auto info = bodyBehavior.getRenderInfo(actorId);
+    // Bounding boxes
+    {
+      const auto drawBodyOutline = [&](ActorId actorId) {
+        if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
+          auto bounds = bodyBehavior.getEditorBounds(actorId);
+          auto info = bodyBehavior.getRenderInfo(actorId);
 
-        // Multiply here rather than use `love.graphics.scale` to keep line widths unscaled
-        bounds.minX() *= info.widthScale;
-        bounds.maxX() *= info.widthScale;
-        bounds.minY() *= info.heightScale;
-        bounds.maxY() *= info.heightScale;
+          // Multiply here rather than use `love.graphics.scale` to keep line widths unscaled
+          bounds.minX() *= info.widthScale;
+          bounds.maxX() *= info.widthScale;
+          bounds.minY() *= info.heightScale;
+          bounds.maxY() *= info.heightScale;
 
-        lv.graphics.push();
+          lv.graphics.push();
 
-        auto [x, y] = body->GetPosition();
-        lv.graphics.translate(x, y);
-        lv.graphics.rotate(body->GetAngle());
+          auto [x, y] = body->GetPosition();
+          lv.graphics.translate(x, y);
+          lv.graphics.rotate(body->GetAngle());
 
-        lv.graphics.rectangle(love::Graphics::DRAW_LINE, bounds.minX(), bounds.minY(),
-            bounds.maxX() - bounds.minX(), bounds.maxY() - bounds.minY());
+          lv.graphics.rectangle(love::Graphics::DRAW_LINE, bounds.minX(), bounds.minY(),
+              bounds.maxX() - bounds.minX(), bounds.maxY() - bounds.minY());
 
-        lv.graphics.pop();
+          lv.graphics.pop();
+        }
+      };
+
+      lv.graphics.push(love::Graphics::STACK_ALL);
+
+      scene->applyViewTransform();
+
+      lv.graphics.setLineWidth(1.25f * scene->getPixelScale());
+      lv.graphics.setColor({ 0.8, 0.8, 0.8, 0.8 });
+      scene->forEachActor([&](ActorId actorId) {
+        if (!scene->isGhost(actorId)) {
+          drawBodyOutline(actorId);
+        }
+      });
+
+      lv.graphics.setLineWidth(2 * scene->getPixelScale());
+      lv.graphics.setColor({ 0, 1, 0, 0.8 });
+      for (auto actorId : selection.getSelectedActorIds()) {
+        if (!scene->isGhost(actorId)) {
+          Debug::display("selected actor {}", actorId);
+          drawBodyOutline(actorId);
+        } else {
+          Debug::display("selected ghost actor {}", actorId);
+        }
       }
-    };
 
-    lv.graphics.push(love::Graphics::STACK_ALL);
+      lv.graphics.pop();
+    }
 
-    scene->applyViewTransform();
-
-    lv.graphics.setLineWidth(1.25f * scene->getPixelScale());
-    lv.graphics.setColor({ 0.8, 0.8, 0.8, 0.8 });
-    scene->forEachActor([&](ActorId actorId) {
-      if (!scene->isGhost(actorId)) {
-        drawBodyOutline(actorId);
-      }
-    });
-
-    lv.graphics.setLineWidth(2 * scene->getPixelScale());
-    lv.graphics.setColor({ 0, 1, 0, 0.8 });
-    for (auto actorId : selection.getSelectedActorIds()) {
-      if (!scene->isGhost(actorId)) {
-        Debug::display("selected actor {}", actorId);
-        drawBodyOutline(actorId);
-      } else {
-        Debug::display("selected ghost actor {}", actorId);
+    // Current tool overlay
+    {
+      switch (currentTool) {
+      case Tool::Grab:
+        grab.drawOverlay();
+        break;
+      case Tool::ScaleRotate:
+        break;
       }
     }
 
-    lv.graphics.pop();
-  }
+    // Belt
+    belt.drawOverlay();
 
-  // Current tool overlay
-  {
-    switch (currentTool) {
-    case Tool::Grab:
-      grab.drawOverlay();
-      break;
-    case Tool::ScaleRotate:
-      break;
+    // Debug commands
+    Debug::display("{} undos:", commands.undos.size());
+    for (auto &command : commands.undos) {
+      std::string selectionString;
+      for (auto actorId : command.entries[Commands::UNDO].selection) {
+        selectionString.append(fmt::format("{} ", entt::to_integral(actorId)));
+      }
+      Debug::display("  {} actor {}", command.description, selectionString);
     }
-  }
-
-  // Belt
-  belt.drawOverlay();
-
-  // Debug commands
-  Debug::display("{} undos:", commands.undos.size());
-  for (auto &command : commands.undos) {
-    std::string selectionString;
-    for (auto actorId : command.entries[Commands::UNDO].selection) {
-      selectionString.append(fmt::format("{} ", entt::to_integral(actorId)));
+    Debug::display("{} redos:", commands.redos.size());
+    for (auto &command : commands.redos) {
+      std::string selectionString;
+      for (auto actorId : command.entries[Commands::DO].selection) {
+        selectionString.append(fmt::format("{} ", entt::to_integral(actorId)));
+      }
+      Debug::display("  {} actor {}", command.description, selectionString);
     }
-    Debug::display("  {} actor {}", command.description, selectionString);
-  }
-  Debug::display("{} redos:", commands.redos.size());
-  for (auto &command : commands.redos) {
-    std::string selectionString;
-    for (auto actorId : command.entries[Commands::DO].selection) {
-      selectionString.append(fmt::format("{} ", entt::to_integral(actorId)));
-    }
-    Debug::display("  {} actor {}", command.description, selectionString);
   }
 }
 
@@ -349,10 +337,48 @@ struct EditorGlobalActionReceiver {
       return;
     }
     auto editor = engine.maybeGetEditor();
+    if (!editor) {
+      return;
+    }
 
     // TODO: expect keys from `ActionsAvailable`, e.g. onPlay, onRewind, onUndo...
     Debug::log("editor received global action: {}", action);
-    if (action == "onUndo") {
+    if (action == "onPlay") {
+      if (editor->hasScene()) {
+        if (!editor->playing) {
+          // Play
+          editor->player = std::make_unique<Player>(editor->getBridge());
+          {
+            Archive archive;
+            archive.write([&](Writer &writer) {
+              writer.arr("variables", [&]() {
+                editor->getVariables().write(writer);
+              });
+            });
+            archive.read([&](Reader &reader) {
+              reader.arr("variables", [&]() {
+                editor->player->readVariables(reader);
+              });
+            });
+          }
+          {
+            auto &scene = editor->getScene();
+            Archive archive;
+            archive.write([&](Writer &writer) {
+              scene.write(writer);
+            });
+            archive.read([&](Reader &reader) {
+              editor->player->readScene(reader);
+            });
+          }
+          editor->playing = true;
+        } else {
+          // Stop
+          editor->playing = false;
+          editor->player.reset();
+        }
+      }
+    } else if (action == "onUndo") {
       editor->commands.undo();
     } else if (action == "onRedo") {
       editor->commands.redo();

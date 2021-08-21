@@ -66,7 +66,7 @@ private:
   std::unique_ptr<love::Font> debugFont { lv.graphics.newDefaultFont(
       22, love::TrueTypeRasterizer::HINTING_NORMAL) };
 
-  Player player { bridge, lv };
+  Player player { bridge };
   std::unique_ptr<Editor> editor;
   bool isEditing = false;
 

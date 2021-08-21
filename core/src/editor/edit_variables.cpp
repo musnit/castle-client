@@ -2,7 +2,7 @@
 #include "engine.h"
 
 //
-// Reading
+// Read / write
 //
 
 void EditVariables::read(Reader &reader) {
@@ -19,6 +19,16 @@ void EditVariables::read(Reader &reader) {
     auto name = std::string(*nameCStr);
     auto variableId = std::string(*variableIdCStr);
     variables.emplace(variableId, Variable(name, variableId, reader.num("initialValue", 0)));
+  });
+}
+
+void EditVariables::write(Writer &writer) const {
+  forEach([&](const Variable &variable) {
+    writer.obj([&]() {
+      writer.str("id", variable.variableId);
+      writer.str("name", variable.name);
+      writer.num("initialValue", variable.initialValue.as<double>());
+    });
   });
 }
 

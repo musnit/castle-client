@@ -31,9 +31,8 @@ JS_DEFINE(char *, JS_getNextCardSceneData, (), {
 // Constructor, destructor
 //
 
-Player::Player(Bridge &bridge_, Lv &lv_)
-    : bridge(bridge_)
-    , lv(lv_) {
+Player::Player(Bridge &bridge_)
+    : bridge(bridge_) {
 }
 
 void Player::tryLoadVariables() {
