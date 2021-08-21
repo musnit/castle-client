@@ -345,39 +345,37 @@ struct EditorGlobalActionReceiver {
     Debug::log("editor received global action: {}", action);
     if (action == "onPlay") {
       if (editor->hasScene()) {
-        if (!editor->playing) {
-          // Play
-          editor->player = std::make_unique<Player>(editor->getBridge());
-          {
-            Archive archive;
-            archive.write([&](Writer &writer) {
-              writer.arr("variables", [&]() {
-                editor->getVariables().write(writer);
-              });
+        editor->player = std::make_unique<Player>(editor->getBridge());
+        {
+          Archive archive;
+          archive.write([&](Writer &writer) {
+            writer.arr("variables", [&]() {
+              editor->getVariables().write(writer);
             });
-            archive.read([&](Reader &reader) {
-              reader.arr("variables", [&]() {
-                editor->player->readVariables(reader);
-              });
+          });
+          archive.read([&](Reader &reader) {
+            reader.arr("variables", [&]() {
+              editor->player->readVariables(reader);
             });
-          }
-          {
-            auto &scene = editor->getScene();
-            Archive archive;
-            archive.write([&](Writer &writer) {
-              scene.write(writer);
-            });
-            archive.read([&](Reader &reader) {
-              editor->player->readScene(reader);
-            });
-          }
-          editor->playing = true;
-        } else {
-          // Stop
-          editor->playing = false;
-          editor->player.reset();
+          });
         }
+        {
+          auto &scene = editor->getScene();
+          Archive archive;
+          archive.write([&](Writer &writer) {
+            scene.write(writer);
+          });
+          archive.read([&](Reader &reader) {
+            editor->player->readScene(reader);
+          });
+        }
+        editor->playing = true;
+        editor->isEditorStateDirty = true;
       }
+    } else if (action == "onRewind") {
+      editor->playing = false;
+      editor->player.reset();
+      editor->isEditorStateDirty = true;
     } else if (action == "onUndo") {
       editor->commands.undo();
     } else if (action == "onRedo") {
@@ -400,26 +398,30 @@ void Editor::sendGlobalActions() {
     return;
   }
   EditorGlobalActionsEvent ev;
-  if (selection.hasSelection()) {
-    ev.selectedActorId = entt::to_integral(selection.firstSelectedActorId());
-    ev.isBlueprintSelected = selection.isGhostActorsSelected();
-    ev.isInspectorOpen = isInspectorOpen;
-    scene->getBehaviors().byName("Text", [&](auto &behavior) {
-      if (behavior.hasComponent(selection.firstSelectedActorId())) {
-        ev.isTextActorSelected = true;
-      }
-    });
-  }
+  if (playing && player) {
+    ev.performing = true;
+  } else {
+    if (selection.hasSelection()) {
+      ev.selectedActorId = entt::to_integral(selection.firstSelectedActorId());
+      ev.isBlueprintSelected = selection.isGhostActorsSelected();
+      ev.isInspectorOpen = isInspectorOpen;
+      scene->getBehaviors().byName("Text", [&](auto &behavior) {
+        if (behavior.hasComponent(selection.firstSelectedActorId())) {
+          ev.isTextActorSelected = true;
+        }
+      });
+    }
 
-  ev.actionsAvailable().onUndo = commands.canUndo();
-  ev.actionsAvailable().onRedo = commands.canRedo();
-  switch (editMode) {
-  case EditMode::Default:
-    ev.editMode = "default";
-    break;
-  case EditMode::Draw:
-    ev.editMode = "draw";
-    break;
+    ev.actionsAvailable().onUndo = commands.canUndo();
+    ev.actionsAvailable().onRedo = commands.canRedo();
+    switch (editMode) {
+    case EditMode::Default:
+      ev.editMode = "default";
+      break;
+    case EditMode::Draw:
+      ev.editMode = "draw";
+      break;
+    }
   }
 
   bridge.sendEvent("EDITOR_GLOBAL_ACTIONS", ev);
