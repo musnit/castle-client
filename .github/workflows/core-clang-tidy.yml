@@ -20,5 +20,5 @@ jobs:
         scandir: './core'
         builddir: 'build'
         excludedirs: 'vendor'
-        extensions: 'c,h,C,H,cpp,hpp,cc,hh,c++,h++,cxx,hxx'
+        extensions: 'cpp'
         cmakeoptions: '-DCMAKE_EXPORT_COMPILE_COMMANDS=ON'
