@@ -7,14 +7,15 @@ on:
     branches: [ master ]
 
 jobs:
-  checkout-and-check-formatting:
+  checkout-and-run-clang-tidy:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Checkout submodules
+      run: git submodule update --init --recursive
     - name: Run clang-tidy
       uses: HorstBaerbel/action-clang-tidy@1.2
-      # These are optional (defaults displayed)
       with:
         scandir: './core'
         builddir: 'build'
