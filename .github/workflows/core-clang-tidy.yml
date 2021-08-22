@@ -21,4 +21,4 @@ jobs:
         builddir: 'build'
         excludedirs: 'vendor'
         extensions: 'c,h,C,H,cpp,hpp,cc,hh,c++,h++,cxx,hxx'
-        cmakeoptions: ''
+        cmakeoptions: '-DCMAKE_EXPORT_COMPILE_COMMANDS=ON'
