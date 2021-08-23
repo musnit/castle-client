@@ -174,6 +174,10 @@ struct DrawToolLayerActionReceiver {
       drawTool.drawData->selectedLayerId = params.layerId();
       drawTool.drawData->selectedFrame.value = params.frameIndex();
       drawTool.saveDrawing("select cell");
+    } else if (action == "selectFrame") {
+      // TODO: setIsPlayingAnimation(false)
+      drawTool.drawData->selectedFrame.value = params.frameIndex();
+      drawTool.saveDrawing("select frame");
     } else if (action == "stepBackward") {
       auto newFrameIndex = drawTool.drawData->selectedFrame.value - 1;
       if (newFrameIndex < 1) {
