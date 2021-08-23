@@ -479,7 +479,7 @@ void DrawTool::makeNewLayer() {
   }
 }
 
-void DrawTool::deleteLayerAndValidate(love::DrawDataLayerId layerId) {
+void DrawTool::deleteLayerAndValidate(const love::DrawDataLayerId &layerId) {
   if (drawData) {
     if (drawData->deleteLayer(layerId) && drawData->getNumLayers() == 0) {
       makeNewLayer();
@@ -642,8 +642,6 @@ void DrawTool::update(double dt) {
 // Draw
 //
 
-#define VIEW_HEIGHT_TO_WIDTH_RATIO (7.0 / 5.0)
-
 void DrawTool::drawOverlay() {
   /*if (!editor.hasScene()) {
     return;
@@ -653,16 +651,17 @@ void DrawTool::drawOverlay() {
   lv.graphics.push(love::Graphics::STACK_ALL);
 
 
+  constexpr auto viewHeightToWidthRatio = 7.0f / 5.0f;
   float windowWidth = 800.0f;
   // CreateCardHeader.js height is 50 and overlay top bar height is 44
   float topOffset
-      = 0.5 * (viewWidth * VIEW_HEIGHT_TO_WIDTH_RATIO - ((50 + 44) / (windowWidth / viewWidth)));
+      = 0.5f * (viewWidth * viewHeightToWidthRatio - ((50 + 44) / (windowWidth / viewWidth)));
 
 
   viewTransform.reset();
   viewTransform.scale(windowWidth / viewWidth, windowWidth / viewWidth);
   viewTransform.translate(-viewPosition.x, -viewPosition.y);
-  viewTransform.translate(0.5 * viewWidth, topOffset);
+  viewTransform.translate(0.5f * viewWidth, topOffset);
   lv.graphics.applyTransform(&viewTransform);
 
 

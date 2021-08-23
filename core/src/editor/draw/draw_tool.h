@@ -77,7 +77,7 @@ private:
   GesturePanZoom panZoom;
 
   void makeNewLayer();
-  void deleteLayerAndValidate(love::DrawDataLayerId layerId);
+  void deleteLayerAndValidate(const love::DrawDataLayerId &layerId);
 
   // for 'copy cell'
   love::DrawDataLayerId copiedLayerId;

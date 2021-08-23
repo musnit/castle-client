@@ -15,7 +15,7 @@ jobs:
     - name: Checkout submodules
       run: git submodule update --init --recursive
     - name: Run clang-tidy
-      uses: castle-xyz/action-clang-tidy@d2bcb78bd21b2443f9cb83c9390ea401b735547e
+      uses: castle-xyz/action-clang-tidy@46ecdff52ec092653e89034006b38ac3490e7c28
       with:
         scandir: './core'
         builddir: 'build'
