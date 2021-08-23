@@ -1,7 +1,7 @@
+#if __ANDROID__
+
 #include "api.h"
 #include <jni.h>
-
-#ifdef __ANDROID
 
 std::string API::postRequest(const std::string &body) {
   JNIEnv *oldEnv = (JNIEnv *)SDL_AndroidGetJNIEnv();
