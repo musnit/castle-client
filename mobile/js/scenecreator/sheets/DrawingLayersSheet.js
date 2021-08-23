@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
 
 const ICON_SIZE = 22;
 
-const CollisionRow = ({ isSelected, onSelect, previewPng, numFrames }) => {
+const CollisionRow = ({ isSelected, onSelect, previewPng, numFrames, isVisible, setVisible }) => {
   let placeholderFrames = [];
   if (numFrames > 1) {
     for (let ii = 1; ii < numFrames; ii++) {
@@ -146,7 +146,13 @@ const CollisionRow = ({ isSelected, onSelect, previewPng, numFrames }) => {
   return (
     <Pressable style={styles.layerRow} onPress={() => onSelect(!isSelected)}>
       <View style={styles.firstCell}>
-        <MCIcon name="eye-outline" size={ICON_SIZE} color="#000" />
+        <Pressable onPress={() => setVisible(!isVisible)}>
+          <MCIcon
+            name={isVisible ? 'eye-outline' : 'eye-off-outline'}
+            size={ICON_SIZE}
+            color="#000"
+          />
+        </Pressable>
         <View style={styles.layerTitle}>
           <Text style={[styles.layerTitleText, { fontWeight: isSelected ? 'bold' : 'normal' }]}>
             Collision
@@ -291,6 +297,7 @@ const DrawingLayers = ({ sendLayerAction }) => {
     selectedFrameIndex,
     canPasteCell,
     collisionBase64Png,
+    isCollisionVisible,
   } = useCoreState('EDITOR_DRAW_LAYERS') || {
     selectedFrameIndex: 1,
   };
@@ -532,6 +539,10 @@ const DrawingLayers = ({ sendLayerAction }) => {
             isSelected={isCollisionActive}
             previewPng={collisionBase64Png}
             numFrames={layers?.length ? layers[0].frames.length : 0}
+            isVisible={isCollisionVisible}
+            setVisible={(visible) =>
+              sendLayerAction('setCollisionIsVisible', { doubleValue: visible ? 1 : 0 })
+            }
           />
         </View>
       </ScrollView>
