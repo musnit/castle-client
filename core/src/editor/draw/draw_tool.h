@@ -83,10 +83,12 @@ private:
   love::DrawDataLayerId copiedLayerId;
   love::OneIndexFrame copiedFrameIndex;
 
+  bool isCollisionVisible = true;
   bool isOnionSkinningEnabled = false;
   love::graphics::Canvas *onionSkinningCanvas = nullptr;
   void makeOnionSkinningCanvas();
   void renderOnionSkinning();
+
   void loadLastSave();
 };
 

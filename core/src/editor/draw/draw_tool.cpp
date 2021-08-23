@@ -100,6 +100,7 @@ struct DrawLayersEvent {
   PROP((std::vector<Layer>), layers);
 
   PROP(std::optional<std::string>, collisionBase64Png);
+  PROP(bool, isCollisionVisible);
 };
 
 void DrawTool::sendLayersEvent() {
@@ -138,6 +139,7 @@ void DrawTool::sendLayersEvent() {
     physicsBodyData->updatePreview();
   }
   ev.collisionBase64Png = physicsBodyData->base64Png;
+  ev.isCollisionVisible = isCollisionVisible;
 
   editor.getBridge().sendEvent("EDITOR_DRAW_LAYERS", ev);
 }
@@ -196,6 +198,9 @@ struct DrawToolLayerActionReceiver {
       auto layer = drawTool.drawData->layerForId(params.layerId());
       layer->isVisible = params.doubleValue();
       drawTool.saveDrawing("set layer visibility");
+    } else if (action == "setCollisionIsVisible") {
+      drawTool.isCollisionVisible = params.doubleValue();
+      drawTool.sendLayersEvent();
     } else if (action == "addLayer") {
       drawTool.makeNewLayer();
       drawTool.saveDrawing("add layer");
@@ -461,6 +466,7 @@ void DrawTool::resetState() {
   copiedFrameIndex.value = 0;
 
   isOnionSkinningEnabled = false;
+  isCollisionVisible = true;
 
   resetTempGraphics();
 }
@@ -665,7 +671,7 @@ void DrawTool::drawOverlay() {
     tempGraphics->update();
   }
 
-  if (selectedSubtools["root"] != "collision") {
+  if (selectedSubtools["root"] != "collision" && isCollisionVisible) {
     lv.graphics.setColor({ 0, 0, 0, 1 });
     physicsBodyData->render();
   }
@@ -677,7 +683,7 @@ void DrawTool::drawOverlay() {
     renderOnionSkinning();
   }
 
-  if (selectedSubtools["root"] == "collision") {
+  if (selectedSubtools["root"] == "collision" && isCollisionVisible) {
     // draw collision in front iff editing collision
     lv.graphics.setColor({ 0, 0, 0, 1 });
     physicsBodyData->render();
