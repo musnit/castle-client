@@ -39,7 +39,7 @@ void PhysicsBodyData::makeShader() {
 
     vec4 effect(vec4 color, Image tex, vec2 texCoords, vec2 screenCoords) {
       float modxy = mod(screenCoords.x + screenCoords.y, lineSpacing);
-      float diagonal = smoothstep(lineRadius - 0.5, lineRadius + 0.5, modxy);
+      float diagonal = smoothstep(0.0, lineRadius, abs(modxy - lineRadius));
       return vec4(color.rgb, (1.0 - diagonal) * color.a);
     }
   )";
