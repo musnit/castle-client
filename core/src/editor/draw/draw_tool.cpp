@@ -643,9 +643,9 @@ void DrawTool::drawOverlay() {
 
 
   float windowWidth = 800.0f;
-  // DrawingCardHeader.js height is 180 and DrawingCardBottomActions.js height is 80
+  // CreateCardHeader.js height is 50 and overlay top bar height is 44
   float topOffset
-      = 0.5 * (viewWidth * VIEW_HEIGHT_TO_WIDTH_RATIO - ((200 + 64) / (windowWidth / viewWidth)));
+      = 0.5 * (viewWidth * VIEW_HEIGHT_TO_WIDTH_RATIO - ((50 + 44) / (windowWidth / viewWidth)));
 
 
   viewTransform.reset();
@@ -655,7 +655,7 @@ void DrawTool::drawOverlay() {
   lv.graphics.applyTransform(&viewTransform);
 
 
-  lv.graphics.clear(love::Colorf(0, 0, 0, 1), {}, {});
+  lv.graphics.clear(love::Colorf(0.73, 0.73, 0.73, 1), {}, {});
 
   lv.graphics.setColor({ 1, 1, 1, 1 });
 
@@ -669,8 +669,7 @@ void DrawTool::drawOverlay() {
     renderOnionSkinning();
   }
 
-  // lv.graphics.setColor({ 0, 0, 0, 1 });
-  lv.graphics.setColor({ 1, 1, 1, 1 });
+  lv.graphics.setColor({ 0, 0, 0, 1 });
   physicsBodyData->render();
 
   getCurrentSubtool().drawOverlay(lv);
