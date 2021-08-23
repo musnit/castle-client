@@ -73,6 +73,7 @@ public:
       ActorId actorId, Drawing2Component &component, PropId propId, const ExpressionValue &value);
 
   std::string hash(std::string drawData, std::string physicsBodyData);
+  PhysicsBodyData *maybeGetPhysicsBodyData(ActorId actorId);
 
 private:
   friend struct AnimationFrameMeetsConditionResponse;
@@ -84,3 +85,10 @@ private:
 
   void fireChangeFrameTriggers(ActorId actorId, const Drawing2Component &component);
 };
+
+inline PhysicsBodyData *Drawing2Behavior::maybeGetPhysicsBodyData(ActorId actorId) {
+  if (auto component = maybeGetComponent(actorId)) {
+    return component->physicsBodyData.get();
+  }
+  return nullptr;
+}

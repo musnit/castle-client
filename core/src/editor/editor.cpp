@@ -108,6 +108,7 @@ void Editor::draw() {
     scene->draw();
 
     auto &bodyBehavior = scene->getBehaviors().byType<BodyBehavior>();
+    auto &drawingBehavior = scene->getBehaviors().byType<Drawing2Behavior>();
 
     // Bounding boxes
     {
@@ -134,6 +135,22 @@ void Editor::draw() {
           lv.graphics.pop();
         }
       };
+      const auto drawCollisionShapes = [&](ActorId actorId) {
+        if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
+          auto info = bodyBehavior.getRenderInfo(actorId);
+          lv.graphics.push();
+
+          auto [x, y] = body->GetPosition();
+          lv.graphics.translate(x, y);
+          lv.graphics.rotate(body->GetAngle());
+          lv.graphics.scale(info.widthScale, info.heightScale);
+          if (auto physicsBodyData = drawingBehavior.maybeGetPhysicsBodyData(actorId)) {
+            physicsBodyData->render();
+          }
+
+          lv.graphics.pop();
+        }
+      };
 
       lv.graphics.push(love::Graphics::STACK_ALL);
 
@@ -155,6 +172,13 @@ void Editor::draw() {
           drawBodyOutline(actorId);
         } else {
           Debug::display("selected ghost actor {}", actorId);
+        }
+      }
+
+      lv.graphics.setColor({ 0, 0, 0, 1 });
+      for (auto actorId : selection.getSelectedActorIds()) {
+        if (!scene->isGhost(actorId)) {
+          drawCollisionShapes(actorId);
         }
       }
 
