@@ -119,10 +119,34 @@ const styles = StyleSheet.create({
 
 const ICON_SIZE = 22;
 
-const CollisionRow = ({ isSelected, onSelect, previewPng }) => {
+const CollisionRow = ({ isSelected, onSelect, previewPng, numFrames }) => {
+  let placeholderFrames = [];
+  if (numFrames > 1) {
+    for (let ii = 1; ii < numFrames; ii++) {
+      const isLastFrame = ii == numFrames - 1;
+      placeholderFrames.push(
+        <View
+          key={`placeholder-${ii}`}
+          style={[
+            styles.cell,
+            styles.cellBottomBorder,
+            isLastFrame ? styles.cellRightBorder : undefined,
+          ]}>
+          <FastImage
+            style={styles.linkedImage}
+            source={
+              isLastFrame
+                ? require('../../../assets/images/arrow2.png')
+                : require('../../../assets/images/arrow1.png')
+            }
+          />
+        </View>
+      );
+    }
+  }
   return (
-    <View style={styles.layerRow}>
-      <TouchableOpacity style={styles.firstCell} onPress={() => onSelect(!isSelected)}>
+    <TouchableOpacity style={styles.layerRow} onPress={() => onSelect(!isSelected)}>
+      <View style={styles.firstCell}>
         <MCIcon name="eye-outline" size={ICON_SIZE} color="#000" />
         <View style={styles.layerTitle}>
           <Text style={[styles.layerTitleText, { fontWeight: isSelected ? 'bold' : 'normal' }]}>
@@ -132,11 +156,18 @@ const CollisionRow = ({ isSelected, onSelect, previewPng }) => {
         <View style={styles.layerMenuButton}>
           <MCIcon name={'dots-horizontal'} size={ICON_SIZE} color={'#000'} />
         </View>
-      </TouchableOpacity>
-      <TouchableOpacity style={[styles.cell, styles.cellBottomBorder, styles.cellRightBorder]}>
+      </View>
+      <View
+        style={[
+          styles.cell,
+          styles.cellLeftBorder,
+          styles.cellBottomBorder,
+          numFrames < 2 ? styles.cellRightBorder : undefined,
+        ]}>
         <FastImage source={{ uri: `data:image/png;base64,${previewPng}` }} style={styles.image} />
-      </TouchableOpacity>
-    </View>
+      </View>
+      {placeholderFrames}
+    </TouchableOpacity>
   );
 };
 
@@ -183,7 +214,7 @@ const LayerRow = ({
         </TouchableOpacity>
       </TouchableOpacity>
       {layer.frames.map((frame, idx) => {
-        let isFrameSelected = selectedFrameIndex == idx + 1 && isSelected;
+        let isFrameSelected = selectedFrameIndex == idx + 1 && isSelected && !isCollisionActive;
         let isMenuAvailable = isFrameSelected;
         let onPress = isMenuAvailable
           ? () =>
@@ -491,6 +522,7 @@ const DrawingLayers = ({ sendLayerAction }) => {
             onSelect={onSelectCollision}
             isSelected={isCollisionActive}
             previewPng={collisionBase64Png}
+            numFrames={layers?.length ? layers[0].frames.length : 0}
           />
         </View>
       </ScrollView>
