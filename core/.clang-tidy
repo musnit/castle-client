@@ -3,6 +3,9 @@ Checks: "-*,\
   clang-diagnostic-*,\
   -clang-diagnostic-pragma-pack,\
   clang-analyzer-*,\
+  -clang-analyzer-cplusplus.PlacementNew,\
+  -clang-analyzer-core.UndefinedBinaryOperatorResult,\
+  -clang-analyzer-core.uninitialized.Assign,\
   performance-*,\
   -performance-noexcept-move-constructor,\
   portability-*,\
