@@ -661,20 +661,27 @@ void DrawTool::drawOverlay() {
 
   lv.graphics.clear(love::Colorf(0.73, 0.73, 0.73, 1), {}, {});
 
-  lv.graphics.setColor({ 1, 1, 1, 1 });
-
   if (tempGraphics) {
     tempGraphics->update();
   }
 
+  if (selectedSubtools["root"] != "collision") {
+    lv.graphics.setColor({ 0, 0, 0, 1 });
+    physicsBodyData->render();
+  }
+
+  lv.graphics.setColor({ 1, 1, 1, 1 });
   drawData->renderForTool(std::nullopt, tempTranslateX, tempTranslateY, tempGraphics);
 
   if (isOnionSkinningEnabled) {
     renderOnionSkinning();
   }
 
-  lv.graphics.setColor({ 0, 0, 0, 1 });
-  physicsBodyData->render();
+  if (selectedSubtools["root"] == "collision") {
+    // draw collision in front iff editing collision
+    lv.graphics.setColor({ 0, 0, 0, 1 });
+    physicsBodyData->render();
+  }
 
   getCurrentSubtool().drawOverlay(lv);
 
