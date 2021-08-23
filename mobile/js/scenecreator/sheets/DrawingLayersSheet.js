@@ -1,14 +1,13 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { useCoreState, sendAsync } from '../../core/CoreEvents';
+import React, { useCallback } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
-
 import { BottomSheet } from '../../components/BottomSheet';
+import { ScrollView } from 'react-native-gesture-handler';
+import { useCoreState, sendAsync } from '../../core/CoreEvents';
 
 import FastImage from 'react-native-fast-image';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FeatherIcon from 'react-native-vector-icons/Feather';
-import { ScrollView } from 'react-native-gesture-handler';
 
 const styles = StyleSheet.create({
   container: {
@@ -123,7 +122,7 @@ const CollisionRow = ({ isSelected, onSelect, previewPng, numFrames }) => {
   let placeholderFrames = [];
   if (numFrames > 1) {
     for (let ii = 1; ii < numFrames; ii++) {
-      const isLastFrame = ii == numFrames - 1;
+      const isLastFrame = ii === numFrames - 1;
       placeholderFrames.push(
         <View
           key={`placeholder-${ii}`}
@@ -145,7 +144,7 @@ const CollisionRow = ({ isSelected, onSelect, previewPng, numFrames }) => {
     }
   }
   return (
-    <TouchableOpacity style={styles.layerRow} onPress={() => onSelect(!isSelected)}>
+    <Pressable style={styles.layerRow} onPress={() => onSelect(!isSelected)}>
       <View style={styles.firstCell}>
         <MCIcon name="eye-outline" size={ICON_SIZE} color="#000" />
         <View style={styles.layerTitle}>
@@ -167,7 +166,54 @@ const CollisionRow = ({ isSelected, onSelect, previewPng, numFrames }) => {
         <FastImage source={{ uri: `data:image/png;base64,${previewPng}` }} style={styles.image} />
       </View>
       {placeholderFrames}
-    </TouchableOpacity>
+    </Pressable>
+  );
+};
+
+const FrameCell = ({ frames, frame, idx, onPress, isSelected }) => {
+  let cellStyle = [styles.cell];
+  let isLastCell = idx === frames.length - 1;
+
+  if (isSelected) {
+    cellStyle.push(styles.cellSelected);
+  } else {
+    cellStyle.push(styles.cellBottomBorder);
+
+    if (!frame.isLinked) {
+      cellStyle.push(styles.cellLeftBorder);
+    }
+
+    if (isLastCell) {
+      cellStyle.push(styles.cellRightBorder);
+    }
+  }
+
+  let isLastLink = isLastCell || !frames[idx + 1].isLinked;
+
+  return (
+    <Pressable onPress={onPress} style={cellStyle}>
+      {frame.isLinked ? (
+        <FastImage
+          style={styles.linkedImage}
+          source={
+            isLastLink
+              ? require('../../../assets/images/arrow2.png')
+              : require('../../../assets/images/arrow1.png')
+          }
+        />
+      ) : (
+        <FastImage
+          source={{ uri: `data:image/png;base64,${frame.base64Png}` }}
+          style={styles.image}
+        />
+      )}
+
+      {isSelected && (
+        <View style={styles.cellMenuButton}>
+          <MCIcon name={'dots-horizontal'} size={ICON_SIZE} color={'#fff'} />
+        </View>
+      )}
+    </Pressable>
   );
 };
 
@@ -184,8 +230,8 @@ const LayerRow = ({
 }) => {
   return (
     <View style={styles.layerRow}>
-      <TouchableOpacity style={styles.firstCell} onPress={() => onSelectLayer({ layer })}>
-        <TouchableOpacity
+      <Pressable style={styles.firstCell} onPress={() => onSelectLayer({ layer })}>
+        <Pressable
           onPress={() =>
             sendLayerAction('setLayerIsVisible', {
               layerId: layer.id,
@@ -197,7 +243,7 @@ const LayerRow = ({
             size={ICON_SIZE}
             color={'#000'}
           />
-        </TouchableOpacity>
+        </Pressable>
         <View style={styles.layerTitle}>
           <Text
             style={[
@@ -207,16 +253,15 @@ const LayerRow = ({
             {layer.title}
           </Text>
         </View>
-        <TouchableOpacity onPress={() => showLayerActionSheet({ layerId: layer.id, index })}>
+        <Pressable onPress={() => showLayerActionSheet({ layerId: layer.id, index })}>
           <View style={styles.layerMenuButton}>
             <MCIcon name={'dots-horizontal'} size={ICON_SIZE} color={'#000'} />
           </View>
-        </TouchableOpacity>
-      </TouchableOpacity>
+        </Pressable>
+      </Pressable>
       {layer.frames.map((frame, idx) => {
-        let isFrameSelected = selectedFrameIndex == idx + 1 && isSelected && !isCollisionActive;
-        let isMenuAvailable = isFrameSelected;
-        let onPress = isMenuAvailable
+        let isFrameSelected = selectedFrameIndex === idx + 1 && isSelected && !isCollisionActive;
+        let onPress = isFrameSelected
           ? () =>
               showCellActionSheet({
                 isLinked: frame.isLinked,
@@ -224,50 +269,15 @@ const LayerRow = ({
                 frame: idx + 1,
               })
           : () => onSelectLayer({ layer, frame: idx + 1 });
-
-        let cellStyle = [styles.cell];
-        let isLastCell = idx === layer.frames.length - 1;
-
-        if (isFrameSelected) {
-          cellStyle.push(styles.cellSelected);
-        } else {
-          cellStyle.push(styles.cellBottomBorder);
-
-          if (!frame.isLinked) {
-            cellStyle.push(styles.cellLeftBorder);
-          }
-
-          if (isLastCell) {
-            cellStyle.push(styles.cellRightBorder);
-          }
-        }
-
-        let isLastLink = isLastCell || !layer.frames[idx + 1].isLinked;
-
         return (
-          <TouchableOpacity onPress={onPress} key={idx} style={cellStyle}>
-            {frame.isLinked ? (
-              <FastImage
-                style={styles.linkedImage}
-                source={
-                  isLastLink
-                    ? require('../../../assets/images/arrow2.png')
-                    : require('../../../assets/images/arrow1.png')
-                }
-              />
-            ) : (
-              <FastImage
-                source={{ uri: `data:image/png;base64,${frame.base64Png}` }}
-                style={styles.image}
-              />
-            )}
-
-            {isMenuAvailable && (
-              <View style={styles.cellMenuButton}>
-                <MCIcon name={'dots-horizontal'} size={ICON_SIZE} color={'#fff'} />
-              </View>
-            )}
-          </TouchableOpacity>
+          <FrameCell
+            key={`frame-${idx}`}
+            frame={frame}
+            idx={idx}
+            frames={layer.frames}
+            onPress={onPress}
+            isSelected={isFrameSelected}
+          />
         );
       })}
     </View>
@@ -285,19 +295,18 @@ const DrawingLayers = ({ sendLayerAction }) => {
     selectedFrameIndex: 1,
   };
   const drawToolState = useCoreState('EDITOR_DRAW_TOOL') || {};
-  const fastAction = () => {}; // TODO: actions
 
   const isCollisionActive = drawToolState.selectedSubtools?.root === 'collision';
   const onSelectCollision = React.useCallback(
     (isSelected) => {
-      if (isSelected != isCollisionActive) {
+      if (isSelected !== isCollisionActive) {
         sendAsync('DRAW_TOOL_SELECT_SUBTOOL', {
           category: 'root',
           name: isSelected ? 'collision' : 'artwork',
         });
       }
     },
-    [sendAsync, isCollisionActive]
+    [isCollisionActive]
   );
 
   const onSelectLayer = useCallback(
@@ -361,7 +370,7 @@ const DrawingLayers = ({ sendLayerAction }) => {
         }
       );
     },
-    [canPasteCell, sendLayerAction]
+    [canPasteCell, sendLayerAction, showActionSheetWithOptions]
   );
 
   const showLayerActionSheet = useCallback(
@@ -401,7 +410,7 @@ const DrawingLayers = ({ sendLayerAction }) => {
         }
       );
     },
-    [sendLayerAction, layers?.length]
+    [sendLayerAction, layers?.length, showActionSheetWithOptions]
   );
 
   const onAddLayer = useCallback(() => sendLayerAction('addLayer'), [sendLayerAction]);
@@ -438,7 +447,7 @@ const DrawingLayers = ({ sendLayerAction }) => {
         }
       );
     },
-    [sendLayerAction]
+    [sendLayerAction, showActionSheetWithOptions]
   );
 
   return (
@@ -455,21 +464,21 @@ const DrawingLayers = ({ sendLayerAction }) => {
         showsHorizontalScrollIndicator={false}>
         <View style={{ flex: 1 }}>
           <View style={styles.layerRow}>
-            <TouchableOpacity onPress={onAddLayer} style={styles.firstCell}>
+            <Pressable onPress={onAddLayer} style={styles.firstCell}>
               <View style={styles.addLayerButton}>
                 <MCIcon name={'plus'} size={ICON_SIZE} color={'#000'} />
                 <Text style={styles.addLayerText}>Add Layer</Text>
               </View>
-            </TouchableOpacity>
+            </Pressable>
             {layers?.length > 0
               ? layers[0].frames.map((frame, idx) => {
-                  let isSelected = selectedFrameIndex == idx + 1;
+                  let isSelected = selectedFrameIndex === idx + 1;
                   let onPress = isSelected
                     ? () => showFrameActionSheet(idx + 1)
-                    : () => fastAction('onSelectFrame', idx + 1);
+                    : () => sendLayerAction('selectFrame', { frameIndex: idx + 1 });
 
                   return (
-                    <TouchableOpacity
+                    <Pressable
                       onPress={onPress}
                       style={[styles.cell, styles.cellLeftBorder, styles.cellBottomBorder]}
                       key={idx}>
@@ -484,11 +493,11 @@ const DrawingLayers = ({ sendLayerAction }) => {
                       {isSelected && (
                         <MCIcon name={'dots-horizontal'} size={ICON_SIZE} color={'#000'} />
                       )}
-                    </TouchableOpacity>
+                    </Pressable>
                   );
                 })
               : null}
-            <TouchableOpacity
+            <Pressable
               onPress={onAddFrame}
               style={[
                 styles.cell,
@@ -496,9 +505,9 @@ const DrawingLayers = ({ sendLayerAction }) => {
                 styles.cellBottomBorder,
                 styles.cellRightBorder,
               ]}>
-              <MCIcon name={'plus'} size={ICON_SIZE} color={'#000'} style={{ marginTop: 5 }} />
+              <MCIcon name="plus" size={ICON_SIZE} color="#000" style={{ marginTop: 5 }} />
               <Text style={{ letterSpacing: 0.5, paddingTop: 1 }}>FRAME</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
           {layers?.length
             ? layers.map((layer, idx) => {
@@ -533,7 +542,7 @@ const DrawingLayers = ({ sendLayerAction }) => {
 const DrawingLayersHeader = ({ sendLayerAction }) => {
   const { numFrames, isOnionSkinningEnabled } = useCoreState('EDITOR_DRAW_LAYERS') || {};
   const fastAction = () => {}; // TODO: actions
-  const fastData = {}; // TODO: further draw tool state
+  const isPlayingAnimation = false; // TODO: derive from EDITOR_DRAW_LAYERS
 
   return (
     <View style={styles.header}>
@@ -543,7 +552,7 @@ const DrawingLayersHeader = ({ sendLayerAction }) => {
       </View>
       {numFrames > 1 && (
         <View style={styles.headerControls}>
-          <TouchableOpacity
+          <Pressable
             style={styles.headerControl}
             onPress={() =>
               sendLayerAction('enableOnionSkinning', {
@@ -553,28 +562,24 @@ const DrawingLayersHeader = ({ sendLayerAction }) => {
             <MCIcon
               name={isOnionSkinningEnabled ? 'eye-outline' : 'eye-off-outline'}
               size={ICON_SIZE}
-              color={'#000'}
+              color="#000"
             />
-          </TouchableOpacity>
-          <TouchableOpacity
+          </Pressable>
+          <Pressable style={styles.headerControl} onPress={() => sendLayerAction('stepBackward')}>
+            <FeatherIcon name="skip-back" size={ICON_SIZE} color="#000" />
+          </Pressable>
+          <Pressable
             style={styles.headerControl}
-            onPress={() => sendLayerAction('stepBackward')}>
-            <FeatherIcon name={'skip-back'} size={ICON_SIZE} color={'#000'} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.headerControl}
-            onPress={() => fastAction('onSetIsPlayingAnimation', !fastData.isPlayingAnimation)}>
+            onPress={() => fastAction('onSetIsPlayingAnimation', !isPlayingAnimation)}>
             <FeatherIcon
-              name={fastData.isPlayingAnimation ? 'pause' : 'play'}
+              name={isPlayingAnimation ? 'pause' : 'play'}
               size={ICON_SIZE}
-              color={'#000'}
+              color="#000"
             />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.headerControl}
-            onPress={() => sendLayerAction('stepForward')}>
-            <FeatherIcon name={'skip-forward'} size={ICON_SIZE} color={'#000'} />
-          </TouchableOpacity>
+          </Pressable>
+          <Pressable style={styles.headerControl} onPress={() => sendLayerAction('stepForward')}>
+            <FeatherIcon name="skip-forward" size={ICON_SIZE} color="#000" />
+          </Pressable>
         </View>
       )}
     </View>
@@ -583,10 +588,8 @@ const DrawingLayersHeader = ({ sendLayerAction }) => {
 
 export const DrawingLayersSheet = ({ isOpen, onClose, ...props }) => {
   const sendLayerAction = useCallback(
-    (action, params) => {
-      sendAsync('DRAW_TOOL_LAYER_ACTION', { action, ...params });
-    },
-    [sendAsync]
+    (action, params) => sendAsync('DRAW_TOOL_LAYER_ACTION', { action, ...params }),
+    []
   );
 
   const renderHeader = () => <DrawingLayersHeader sendLayerAction={sendLayerAction} />;
