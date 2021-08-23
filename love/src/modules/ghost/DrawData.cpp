@@ -564,7 +564,7 @@ namespace ghost {
     layers.push_back(std::move(newLayer));
   }
 
-  bool DrawData::deleteLayer(DrawDataLayerId id) {
+  bool DrawData::deleteLayer(const DrawDataLayerId &id) {
     int indexToRemove = -1;
     for (int ii = 0; ii < layers.size(); ii++) {
       if (layers[ii]->id == id) {
@@ -590,7 +590,7 @@ namespace ghost {
     return false;
   }
 
-  void DrawData::setLayerOrder(DrawDataLayerId id, int newIndexInLayers) {
+  void DrawData::setLayerOrder(const DrawDataLayerId &id, int newIndexInLayers) {
     int indexToMove = -1;
     for (int ii = 0; ii < layers.size(); ii++) {
       if (layers[ii]->id == id) {

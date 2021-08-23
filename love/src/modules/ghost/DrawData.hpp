@@ -230,8 +230,8 @@ namespace ghost {
     bool isPointInBounds(Point point);
 
     void addLayer(std::string title, DrawDataLayerId id);
-    bool deleteLayer(DrawDataLayerId id);
-    void setLayerOrder(DrawDataLayerId id, int newIndexInLayers);
+    bool deleteLayer(const DrawDataLayerId &id);
+    void setLayerOrder(const DrawDataLayerId &id, int newIndexInLayers);
 
     void addFrame();
     void addFrame(OneIndexFrame frameIndex);

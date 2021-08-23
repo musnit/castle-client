@@ -12,7 +12,7 @@ private:
   inline static std::unordered_map<std::string, std::string> cachedResponses;
   inline static std::unordered_map<std::string, std::string> cachedCards;
 
-  static std::string postRequest(std::string);
+  static std::string postRequest(const std::string &);
 
   static void graphqlThread(const std::string &query) {
     Archive requestBodyArchive;

@@ -8,17 +8,17 @@ class DrawTool;
 
 class DrawSubtoolTouch {
 public:
-  DrawSubtoolTouch(const Touch &touch_)
+  explicit DrawSubtoolTouch(const Touch &touch_)
       : touch(touch_) {
   }
 
   const Touch &touch;
-  float touchX;
-  float touchY;
-  float roundedX;
-  float roundedY;
-  float clampedX;
-  float clampedY;
+  float touchX = 0;
+  float touchY = 0;
+  float roundedX = 0;
+  float roundedY = 0;
+  float clampedX = 0;
+  float clampedY = 0;
 };
 
 class DrawSubtool {
@@ -26,8 +26,7 @@ public:
   explicit DrawSubtool(DrawTool &drawTool_)
       : drawTool(drawTool_) {
   }
-  virtual ~DrawSubtool() {
-  }
+  virtual ~DrawSubtool() = default;
 
   virtual std::string category() = 0;
   virtual std::string name() = 0;

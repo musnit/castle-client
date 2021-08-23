@@ -35,7 +35,7 @@ void GesturePanZoom::update(const Gesture &gesture, love::Transform &currentView
     auto viewScale = currentViewTransform.getMatrix().getElements()[0]; // Assuming no rotation
     translate = (screenCenter - prevScreenCenter) / viewScale;
 
-    float prevScreenPinchLength;
+    float prevScreenPinchLength = 0;
     if (gestureStarted) {
       auto initialScreenPinchLength
           = (touch1->initialScreenPos - touch2->initialScreenPos).getLength();

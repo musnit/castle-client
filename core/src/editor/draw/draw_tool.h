@@ -10,9 +10,9 @@
 
 class Editor;
 
-#define DRAW_DEFAULT_VIEW_WIDTH 10.0
-#define DRAW_MIN_VIEW_WIDTH 1.0
-#define DRAW_MAX_VIEW_WIDTH 25.0
+#define DRAW_DEFAULT_VIEW_WIDTH 10.0f
+#define DRAW_MIN_VIEW_WIDTH 1.0f
+#define DRAW_MAX_VIEW_WIDTH 25.0f
 
 class DrawTool {
 public:
@@ -39,7 +39,7 @@ public:
   void setTempTranslation(float x, float y);
   float getPixelScale();
 
-  void addPathData(std::shared_ptr<love::PathData> pathData);
+  void addPathData(const std::shared_ptr<love::PathData> &pathData);
   void addPathData(love::PathData pathData);
   void saveDrawing(std::string commandDescription);
 
@@ -55,9 +55,9 @@ private:
   friend struct DrawToolClearArtworkReceiver;
   friend struct DrawToolClearCollisionShapesReceiver;
 
-  bool isDrawToolEventDirty;
-  float tempTranslateX;
-  float tempTranslateY;
+  bool isDrawToolEventDirty = false;
+  float tempTranslateX = 0;
+  float tempTranslateY = 0;
 
   Lv &lv { Lv::getInstance() };
 
@@ -66,11 +66,11 @@ private:
   std::unordered_map<std::string, std::string> selectedSubtools;
   std::string lastHash;
   mutable love::Transform viewTransform;
-  float viewWidth;
+  float viewWidth = 800;
   love::Vector2 viewPosition;
 
   std::vector<std::unique_ptr<DrawSubtool>> subtools;
-  bool isPlayingAnimation;
+  bool isPlayingAnimation = false;
   std::shared_ptr<love::ToveGraphicsHolder> tempGraphics;
 
   DrawSubtool &getCurrentSubtool();

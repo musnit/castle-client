@@ -11,7 +11,7 @@ std::string PhysicsBodyData::renderPreviewPng() {
     auto maxDimension = std::fmaxf(width, height);
     lv.graphics.push(love::Graphics::STACK_ALL);
     lv.graphics.origin();
-    lv.graphics.scale(size / maxDimension, size / maxDimension);
+    lv.graphics.scale(float(size) / maxDimension, float(size) / maxDimension);
     lv.graphics.clear(love::Colorf(1, 1, 1, 1), {}, {});
     lv.graphics.setColor({ 0, 0, 0, 1 });
     lv.graphics.translate(DRAW_MAX_SIZE, DRAW_MAX_SIZE);
@@ -77,7 +77,7 @@ void PhysicsBodyData::drawShape(PhysicsBodyDataShape &shape, love::Graphics::Dra
   if (shape.type == CollisionShapeType::Rectangle) {
     auto minX = p1.x;
     auto minY = std::fmin(p1.y, p2.y);
-    lv.graphics.rectangle(mode, minX, minY, std::fabsf(p2.x - p1.x), std::fabsf(p2.y - p1.y));
+    lv.graphics.rectangle(mode, minX, minY, std::abs(p2.x - p1.x), std::abs(p2.y - p1.y));
   } else if (shape.type == CollisionShapeType::Triangle) {
     love::Vector2 coords[4];
     love::Vector2 p3 = shape.p3;

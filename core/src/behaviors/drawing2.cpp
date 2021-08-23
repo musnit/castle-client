@@ -118,7 +118,7 @@ struct AnimationFrameMeetsConditionResponse : BaseResponse {
 // Read, write
 //
 
-std::string Drawing2Behavior::hash(std::string drawData, std::string physicsBodyData) {
+std::string Drawing2Behavior::hash(const std::string &drawData, const std::string &physicsBodyData) {
   auto hash = std::hash<std::string> {}(drawData + physicsBodyData);
 
   char str[256];

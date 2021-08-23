@@ -1,9 +1,7 @@
 #include "util.h"
 
 void DrawUtil::makePathsFromPoints(love::PathData *paths, float *points, int numPoints) {
-  auto numPaths = numPoints / 2;
   int pathIndex = 0;
-
   for (int i = 0; i < numPoints; i += 2) {
     auto nextI = i + 2;
     if (nextI >= numPoints) {
@@ -11,8 +9,8 @@ void DrawUtil::makePathsFromPoints(love::PathData *paths, float *points, int num
     }
     paths[pathIndex].style = 1;
     paths[pathIndex].points.clear();
-    paths[pathIndex].points.push_back({ points[i], points[i + 1] });
-    paths[pathIndex].points.push_back({ points[nextI], points[nextI + 1] });
+    paths[pathIndex].points.emplace_back(points[i], points[i + 1]);
+    paths[pathIndex].points.emplace_back(points[nextI], points[nextI + 1]);
     pathIndex++;
   }
 }
@@ -43,8 +41,8 @@ bool DrawUtil::getRightTriangleShape(
 bool DrawUtil::getCircleShapeRoundToGrid(love::DrawData &drawData, love::PathData *paths, float x1,
     float y1, float x2, float y2, float roundUnitX, float roundUnitY) {
   // circle between p1 and p2, not rounded to grid
-  float centerX = (x1 + x2) / 2.0, centerY = (y1 + y2) / 2.0,
-        radius = sqrt(pow(x2 - x1, 2.0) + pow(y2 - y1, 2.0)) / 2.0;
+  float centerX = (x1 + x2) / 2.0f, centerY = (y1 + y2) / 2.0f,
+        radius = sqrt(pow(x2 - x1, 2.0f) + pow(y2 - y1, 2.0f)) / 2.0f;
 
   auto roundedStartPoint = drawData.roundGlobalCoordinatesToGrid(
       centerX - roundUnitX * radius, centerY - roundUnitY * radius);

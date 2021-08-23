@@ -1155,12 +1155,12 @@ struct EditorRulesDataEvent {
 void Editor::sendRulesData() {
   EditorRulesDataEvent ev;
 
-  for (auto triggerWriter : RulesBehavior::triggerWriters) {
+  for (auto &triggerWriter : RulesBehavior::triggerWriters) {
     RuleEntryData data;
     triggerWriter.write(triggerWriter.name, &data);
     ev.triggers().push_back(data);
   }
-  for (auto responseWriter : RulesBehavior::responseWriters) {
+  for (auto &responseWriter : RulesBehavior::responseWriters) {
     RuleEntryData data;
     responseWriter.write(responseWriter.name, &data);
 
@@ -1174,7 +1174,7 @@ void Editor::sendRulesData() {
       ev.responses().push_back(data);
     }
   }
-  for (auto expressionWriter : RulesBehavior::expressionWriters) {
+  for (auto &expressionWriter : RulesBehavior::expressionWriters) {
     RuleEntryData data;
     expressionWriter.write(expressionWriter.name, &data);
     ev.expressions().push_back(data);

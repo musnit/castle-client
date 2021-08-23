@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
 
 #ifndef __EMSCRIPTEN__
   // Load from file on desktop
-  const char *scenePath = nullptr;
+  static const char *scenePath = nullptr;
   if (!eng.hasInitialDeck()) {
 #ifdef LOVE_MACOSX
     constexpr auto defaultScenePath = "../../../test-watch.json";

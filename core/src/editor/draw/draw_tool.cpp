@@ -69,7 +69,7 @@ struct DrawToolEvent {
 void DrawTool::sendDrawToolEvent() {
   DrawToolEvent ev;
 
-  for (auto entry : selectedSubtools) {
+  for (auto &entry : selectedSubtools) {
     ev.selectedSubtools()[entry.first] = entry.second;
   }
 
@@ -89,7 +89,7 @@ struct DrawLayersEvent {
     PROP(std::string, title);
     PROP(int, order);
     PROP(bool, isVisible);
-    PROP((std::vector<Frame>), frames);
+    PROP((std::vector<Frame>), frames) {};
   };
 
   PROP(int, numFrames);
@@ -110,11 +110,11 @@ void DrawTool::sendLayersEvent() {
 
   DrawLayersEvent ev;
 
-  for (int ii = 0, nn = drawData->layers.size(); ii < nn; ii++) {
+  for (int ii = 0, nn = int(drawData->layers.size()); ii < nn; ii++) {
     auto &layer = drawData->layers[ii];
     DrawLayersEvent::Layer layerData { layer->id, layer->title, ii, layer->isVisible };
 
-    for (int jj = 0, mm = layer->frames.size(); jj < mm; jj++) {
+    for (int jj = 0, mm = int(layer->frames.size()); jj < mm; jj++) {
       auto &frame = layer->frames[jj];
       if (!frame->base64Png) {
         frame->base64Png = frame->renderPreviewPng(-1);
@@ -196,10 +196,10 @@ struct DrawToolLayerActionReceiver {
       drawTool.saveDrawing("step forward");
     } else if (action == "setLayerIsVisible") {
       auto layer = drawTool.drawData->layerForId(params.layerId());
-      layer->isVisible = params.doubleValue();
+      layer->isVisible = bool(params.doubleValue());
       drawTool.saveDrawing("set layer visibility");
     } else if (action == "setCollisionIsVisible") {
-      drawTool.isCollisionVisible = params.doubleValue();
+      drawTool.isCollisionVisible = bool(params.doubleValue());
       drawTool.sendLayersEvent();
     } else if (action == "addLayer") {
       drawTool.makeNewLayer();
@@ -208,7 +208,7 @@ struct DrawToolLayerActionReceiver {
       drawTool.deleteLayerAndValidate(params.layerId());
       drawTool.saveDrawing("delete layer");
     } else if (action == "setLayerOrder") {
-      drawTool.drawData->setLayerOrder(params.layerId(), params.doubleValue());
+      drawTool.drawData->setLayerOrder(params.layerId(), int(params.doubleValue()));
       drawTool.saveDrawing("reorder layer");
     } else if (action == "addFrame") {
       auto frameIndexToAdd = params.frameIndex();
@@ -231,10 +231,11 @@ struct DrawToolLayerActionReceiver {
           drawTool.copiedLayerId, drawTool.copiedFrameIndex, params.layerId(), params.frameIndex());
       drawTool.saveDrawing("paste cell");
     } else if (action == "setCellLinked") {
-      drawTool.drawData->setCellLinked(params.layerId(), params.frameIndex(), params.doubleValue());
+      drawTool.drawData->setCellLinked(
+          params.layerId(), params.frameIndex(), bool(params.doubleValue()));
       drawTool.saveDrawing("set cell linked");
     } else if (action == "enableOnionSkinning") {
-      drawTool.isOnionSkinningEnabled = params.doubleValue();
+      drawTool.isOnionSkinningEnabled = bool(params.doubleValue());
       drawTool.sendLayersEvent();
     }
   }
@@ -287,9 +288,9 @@ DrawSubtool &DrawTool::getCurrentSubtool() {
     currentName = selectedSubtools[currentName];
   }
 
-  for (size_t i = 0; i < subtools.size(); i++) {
-    if (subtools[i]->category() == currentCategory && subtools[i]->name() == currentName) {
-      return *subtools[i];
+  for (auto &subtool : subtools) {
+    if (subtool->category() == currentCategory && subtool->name() == currentName) {
+      return *subtool;
     }
   }
 
@@ -297,7 +298,7 @@ DrawSubtool &DrawTool::getCurrentSubtool() {
 }
 
 float DrawTool::getZoomAmount() {
-  return viewWidth / DRAW_DEFAULT_VIEW_WIDTH;
+  return float(viewWidth) / DRAW_DEFAULT_VIEW_WIDTH;
 }
 
 void DrawTool::clearTempGraphics() {
@@ -326,7 +327,7 @@ float DrawTool::getPixelScale() {
   return editor.getScene().getPixelScale();
 }
 
-void DrawTool::addPathData(std::shared_ptr<love::PathData> pathData) {
+void DrawTool::addPathData(const std::shared_ptr<love::PathData> &pathData) {
   if (DrawUtil::floatEquals(pathData->points[0].x, pathData->points[1].x)
       && DrawUtil::floatEquals(pathData->points[0].y, pathData->points[1].y)) {
     return;
@@ -387,7 +388,7 @@ void DrawTool::saveDrawing(std::string commandDescription) {
 
   Commands::Params commandParams;
   editor.getCommands().execute(
-      commandDescription, commandParams,
+      std::move(commandDescription), commandParams,
       [actorId, newDrawData, newPhysicsBodyData, newHash](Editor &editor, bool) {
         setDrawingProps(editor, actorId, newDrawData, newPhysicsBodyData, newHash);
       },

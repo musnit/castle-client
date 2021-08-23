@@ -92,10 +92,13 @@ void Selection::touchToSelect(Scene &scene) {
       // TODO(nikki): Prefer actors associated with currently selected belt entry
       auto maybeDrawOrderA = scene.maybeGetDrawOrder(a);
       auto maybeDrawOrderB = scene.maybeGetDrawOrder(b);
-      if (maybeDrawOrderA && !maybeDrawOrderB) {
+      if (!maybeDrawOrderA && !maybeDrawOrderB) {
         return true;
       }
-      if (maybeDrawOrderB && !maybeDrawOrderA) {
+      if (!maybeDrawOrderB) {
+        return true;
+      }
+      if (!maybeDrawOrderA) {
         return false;
       }
       return *maybeDrawOrderA < *maybeDrawOrderB;

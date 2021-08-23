@@ -37,7 +37,7 @@ bool EditVariables::update(std::string variableId, std::string name, ExpressionV
   if (maybeVariable) {
     remove(variableId);
   }
-  add(name, variableId, initialValue);
+  add(std::move(name), variableId, initialValue);
   return true;
 }
 

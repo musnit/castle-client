@@ -56,8 +56,8 @@ void Commands::execute(
         }
       }
       if (!coalesced) {
-        // Didn't coalesce -- add at end
-        undos.push_back(std::move(command));
+        // Didn't coalesce -- add at end -- `coalesced` is true if moved-from above
+        undos.push_back(std::move(command)); // NOLINT(bugprone-use-after-move)
       }
 
       // Limit number of undos

@@ -72,7 +72,7 @@ public:
   void handleSetProperty(
       ActorId actorId, Drawing2Component &component, PropId propId, const ExpressionValue &value);
 
-  std::string hash(std::string drawData, std::string physicsBodyData);
+  std::string hash(const std::string &drawData, const std::string &physicsBodyData);
   PhysicsBodyData *maybeGetPhysicsBodyData(ActorId actorId);
 
 private:

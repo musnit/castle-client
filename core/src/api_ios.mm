@@ -7,7 +7,7 @@
 
 @implementation APIIos
 
-std::string API::postRequest(std::string body) {
+std::string API::postRequest(const std::string &body) {
   NSString *result = [APIIos iosPostRequest:[NSString stringWithUTF8String:body.c_str()]];
   return std::string([result UTF8String]);
 }

@@ -42,7 +42,7 @@ public:
 
   std::optional<Variable> get(std::string &variableId);
   bool add(std::string name, std::string variableId, ExpressionValue initialValue);
-  bool remove(std::string variableId);
+  bool remove(const std::string &variableId);
   bool update(std::string variableId, std::string name, ExpressionValue initialValue);
 
   template<typename F>
@@ -74,13 +74,13 @@ inline bool EditVariables::add(
     std::string name, std::string variableId, ExpressionValue initialValue) {
   auto existing = get(variableId);
   if (!existing) {
-    variables.emplace(variableId, EditVariables::Variable(name, variableId, initialValue));
+    variables.emplace(variableId, EditVariables::Variable(std::move(name), variableId, initialValue));
     return true;
   }
   return false;
 }
 
-inline bool EditVariables::remove(std::string variableId) {
+inline bool EditVariables::remove(const std::string &variableId) {
   return (variables.erase(variableId) == 1);
 }
 

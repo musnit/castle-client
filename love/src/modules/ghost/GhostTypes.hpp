@@ -19,8 +19,8 @@
 #include "data/DataModule.h"
 #include "archive.h"
 
-#define DRAW_MAX_SIZE 10.0
-#define DRAW_LINE_WIDTH 0.2
+#define DRAW_MAX_SIZE 10.0f
+#define DRAW_LINE_WIDTH 0.2f
 
 #define GHOST_READ_NUMBER(arg, default)                                                            \
   lua_pushstring(L, #arg);                                                                         \

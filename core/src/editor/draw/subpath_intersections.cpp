@@ -4,10 +4,10 @@
 std::vector<love::Point> DrawSubpathIntersections::lineLine(love::Subpath s1, love::Subpath s2) {
   std::vector<love::Point> results;
   if (s1.p1 == s2.p1 || s1.p1 == s2.p2) {
-    results.push_back(love::Point(s1.p1.x, s1.p1.y));
+    results.emplace_back(s1.p1.x, s1.p1.y);
     return results;
   } else if (s1.p2 == s2.p1 || s1.p2 == s2.p2) {
-    results.push_back(love::Point(s1.p2.x, s1.p2.y));
+    results.emplace_back(s1.p2.x, s1.p2.y);
     return results;
   }
   auto x1 = s1.p1.x;
@@ -30,7 +30,7 @@ std::vector<love::Point> DrawSubpathIntersections::lineLine(love::Subpath s1, lo
   if (u < 0 || u > 1) {
     return results;
   }
-  results.push_back(love::Point(x1 + (t * (x2 - x1)), y1 + (t * (y2 - y1))));
+  results.emplace_back(love::Point(x1 + (t * (x2 - x1)), y1 + (t * (y2 - y1))));
   return results;
 }
 
@@ -51,32 +51,31 @@ std::vector<love::Point> DrawSubpathIntersections::arcArc(love::Subpath s1, love
     // TODO: should we handle if the lines completely overlap?
     if (DrawUtil::areAnglesEqual(s1.startAngle, s2.endAngle)
         || DrawUtil::areAnglesEqual(s1.startAngle, s2.startAngle)) {
-      tempResults.push_back(love::Point(s1.center.x + (cos(s1.startAngle) * s1.radius),
+      tempResults.emplace_back(love::Point(s1.center.x + (cos(s1.startAngle) * s1.radius),
           s1.center.y + (sin(s1.startAngle) * s1.radius)));
     } else if (DrawUtil::areAnglesEqual(s1.endAngle, s2.endAngle)
         || DrawUtil::areAnglesEqual(s1.endAngle, s2.startAngle)) {
-      tempResults.push_back(love::Point(s1.center.x + (cos(s1.endAngle) * s1.radius),
+      tempResults.emplace_back(love::Point(s1.center.x + (cos(s1.endAngle) * s1.radius),
           s1.center.y + (sin(s1.endAngle) * s1.radius)));
     } else {
       return results;
     }
   } else {
-    auto a = ((pow(s1.radius, 2) - pow(s2.radius, 2)) + pow(d, 2)) / (2 * d);
+    auto a = float(((pow(s1.radius, 2) - pow(s2.radius, 2)) + pow(d, 2)) / (2 * d));
     // h will be 0 if they intersect at only one point
-    auto h = sqrt(pow(s1.radius, 2) - pow(a, 2));
+    auto h = float(sqrt(pow(s1.radius, 2) - pow(a, 2)));
     auto p2 = love::Point(s1.center.x + ((a * (s2.center.x - s1.center.x)) / d),
         s1.center.y + ((a * (s2.center.y - s1.center.y)) / d));
     if (h > -0.0001 && h < 0.0001) {
       tempResults.push_back(p2);
     } else {
-      tempResults.push_back(love::Point(p2.x + ((h * (s2.center.y - s1.center.y)) / d),
+      tempResults.emplace_back(love::Point(p2.x + ((h * (s2.center.y - s1.center.y)) / d),
           p2.y - ((h * (s2.center.x - s1.center.x)) / d)));
-      tempResults.push_back(love::Point(p2.x - ((h * (s2.center.y - s1.center.y)) / d),
+      tempResults.emplace_back(love::Point(p2.x - ((h * (s2.center.y - s1.center.y)) / d),
           p2.y + ((h * (s2.center.x - s1.center.x)) / d)));
     }
   }
-  for (size_t i = 0; i < tempResults.size(); i++) {
-    auto tempResult = tempResults[i];
+  for (auto &tempResult : tempResults) {
     auto angle1 = atan2(tempResult.y - s1.center.y, tempResult.x - s1.center.x);
     auto angle2 = atan2(tempResult.y - s2.center.y, tempResult.x - s2.center.x);
     auto angle1Passed = false;
@@ -91,7 +90,7 @@ std::vector<love::Point> DrawSubpathIntersections::arcArc(love::Subpath s1, love
       }
     }
     if (angle1Passed && angle2Passed) {
-      results.push_back(love::Point(tempResult.x, tempResult.y));
+      results.emplace_back(love::Point(tempResult.x, tempResult.y));
     }
   }
   return results;
@@ -122,9 +121,9 @@ std::vector<love::Point> DrawSubpathIntersections::lineArc(love::Subpath s1, lov
   } else if (discriminant < angleDelta && discriminant > -angleDelta) {
     auto resultX = (D * dy) / (dr * dr);
     auto resultY = (-D * dx) / (dr * dr);
-    tempResults.push_back(love::Point(resultX, resultY));
+    tempResults.emplace_back(love::Point(resultX, resultY));
   } else {
-    auto sgnDy = 1;
+    float sgnDy = 1;
     if (dy < 0) {
       sgnDy = -1;
     }
@@ -132,14 +131,13 @@ std::vector<love::Point> DrawSubpathIntersections::lineArc(love::Subpath s1, lov
     auto resultY1 = ((-D * dx) + (abs(dy) * sqrt(discriminant))) / (dr * dr);
     auto resultX2 = ((D * dy) - ((sgnDy * dx) * sqrt(discriminant))) / (dr * dr);
     auto resultY2 = ((-D * dx) - (abs(dy) * sqrt(discriminant))) / (dr * dr);
-    tempResults.push_back(love::Point(resultX1, resultY1));
-    tempResults.push_back(love::Point(resultX2, resultY2));
+    tempResults.emplace_back(love::Point(resultX1, resultY1));
+    tempResults.emplace_back(love::Point(resultX2, resultY2));
   }
   // make sure the points are inside the line segment
   std::vector<love::Point> tempResults2;
   auto delta = 0.00001;
-  for (size_t i = 0; i < tempResults.size(); i++) {
-    auto tempResult = tempResults[i];
+  for (auto &tempResult : tempResults) {
     auto minx = fmin(x1, x2) - delta;
     auto maxx = fmax(x1, x2) + delta;
     auto miny = fmin(y1, y2) - delta;
@@ -150,9 +148,7 @@ std::vector<love::Point> DrawSubpathIntersections::lineArc(love::Subpath s1, lov
     }
   }
   // check to make sure the points are actually in this part of the arc
-  for (size_t i = 0; i < tempResults2.size(); i++) {
-    auto tempResult = tempResults2[i];
-
+  for (auto &tempResult : tempResults2) {
     // atan2 has a different range in c++ vs lua, so this angle check was breaking
     // we only use this for the eraser which is just a circle for now, so don't nee to fix
     // auto angle = atan2(tempResult.y, tempResult.x);
@@ -164,7 +160,7 @@ std::vector<love::Point> DrawSubpathIntersections::lineArc(love::Subpath s1, lov
     // for (int j = -1; j < 1; j++) {
     // auto add = (2 * M_PI) * j;
     // if ((angle + add) >= s2.startAngle && (angle + add) <= s2.endAngle) {
-    results.push_back(love::Point(tempResult.x + s2.center.x, tempResult.y + s2.center.y));
+    results.emplace_back(love::Point(tempResult.x + s2.center.x, tempResult.y + s2.center.y));
     // break;
     //}
     //}
