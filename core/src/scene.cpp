@@ -106,6 +106,7 @@ void Scene::write(Writer &writer) const {
       });
     });
   });
+  writer.boolean("actorBlueprintInherit", true); // Lua client checks for this
 
   // Scene-level props
   writer.obj("sceneProperties", [&]() {

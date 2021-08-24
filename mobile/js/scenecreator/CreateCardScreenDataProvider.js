@@ -114,6 +114,7 @@ class CreateCardScreenDataProvider extends React.Component {
       }
 
       if (this._mounted) {
+        //console.log(`initial card: ${JSON.stringify(card, null, 2)}`);
         this.setState(
           {
             deck,
@@ -176,9 +177,8 @@ class CreateCardScreenDataProvider extends React.Component {
   };
 
   _save = async () => {
-    // TODO: support saving again
-    await this.setState({ loading: true });
-    /* await this._updateScreenshot();
+    // TODO: Implement screenshots in C++
+    //await this._updateScreenshot();
     const { card, deck } = await Session.saveDeck(
       this.state.card,
       this.state.deck,
@@ -190,7 +190,7 @@ class CreateCardScreenDataProvider extends React.Component {
     });
     if (!this._mounted) return;
     this.setState({ loading: false });
-    return { card, deck }; */
+    return { card, deck };
   };
 
   _goToDeck = (deckId = null) => {
@@ -241,6 +241,7 @@ class CreateCardScreenDataProvider extends React.Component {
   _handleSceneMessage = (message) => {
     switch (message.messageType) {
       case 'UPDATE_SCENE': {
+        //console.log(`new scene data: ${JSON.stringify(message.data, null, 2)}`);
         this._handleCardChange({
           changedSceneData: message.data,
         });

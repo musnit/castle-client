@@ -87,6 +87,8 @@ void Editor::update(double dt) {
       drawTool.update(dt);
       break;
     }
+
+    updateAutoSave(dt);
   }
 
   maybeSendData();
@@ -297,6 +299,35 @@ void Editor::updateBlueprint(ActorId actorId, UpdateBlueprintParams params) {
     }
   });
 }
+
+
+//
+// Saving
+//
+
+void Editor::updateAutoSave(double dt) {
+  if (autoSaveCountdown > 0) {
+    autoSaveCountdown -= float(dt);
+    if (autoSaveCountdown <= 0) {
+      autoSaveCountdown = 0;
+      save();
+    }
+  }
+}
+
+void Editor::save() {
+  if (scene) {
+    bridge.sendEvent("SCENE_MESSAGE", [&](Writer &writer) {
+      writer.str("messageType", "UPDATE_SCENE");
+      writer.obj("data", [&]() {
+        writer.obj("snapshot", [&]() {
+          scene->write(writer);
+        });
+      });
+    });
+  }
+}
+
 
 //
 // Events

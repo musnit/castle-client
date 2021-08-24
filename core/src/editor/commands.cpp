@@ -121,6 +121,8 @@ void Commands::executePhase(Command &command, Phase phase, bool isLive) {
       belt.updateSelection(true); // Select ghost actor based on selected entry id
     }
   }
+
+  editor.triggerAutoSave();
 }
 
 

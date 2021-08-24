@@ -96,48 +96,13 @@ export const GameView = ({
 
   // TODO: migrate these events to core engine
   useListen({
-    eventName: 'GHOST_MESSAGE',
+    eventName: 'SCENE_MESSAGE',
     handler: (params) => {
       if (onMessage) {
         onMessage(params);
       }
     },
   });
-
-  useListen({
-    eventName: 'GHOST_BACK',
-    handler: (params) => {
-      if (onPressBack) {
-        onPressBack();
-      }
-    },
-  });
-
-  useListen({
-    eventName: 'GHOST_ERROR',
-    handler: ({ error, stacktrace }) => {
-      if (!__DEV__) {
-        Sentry.captureMessage(`lua error: ${error}\n${stacktrace}`);
-      }
-    },
-  });
-
-  if (FORWARD_LUA_LOGS) {
-    // This is a constant, so it's ok to wrap hooks in it
-    useListen({
-      eventName: 'GHOST_PRINT',
-      handler: (args) => {
-        console.log('LUA: ', args.join(' '));
-      },
-    });
-
-    useListen({
-      eventName: 'GHOST_ERROR',
-      handler: ({ error, stacktrace }) => {
-        console.log(`LUA ERROR: ${error}\n${stacktrace}`);
-      },
-    });
-  }
 
   const [landscape, setLandscape] = useState(false);
   const setOrientation = React.useCallback(

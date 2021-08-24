@@ -205,11 +205,13 @@ export const CreateCardScreen = ({
     [onSceneRevertData, setActiveSheet]
   );
 
+  // TODO: Wire up to new engine
   GhostEvents.useListen({
     eventName: 'NAVIGATE_TO_CARD',
     handler: ({ card }) => maybeSaveAndGoToCard(card),
   });
 
+  // TODO: Wire up to new engine
   GhostEvents.useListen({
     eventName: 'GHOST_CAPTURE_PENDING',
     handler: async () => {
@@ -228,6 +230,7 @@ export const CreateCardScreen = ({
   if (Constants.Android) {
     // after the game loads, it listens for keyboard events and
     // causes react native's back button event to fail
+    // TODO: Wire up to new engine
     GhostEvents.useListen({
       eventName: 'CASTLE_SYSTEM_BACK_BUTTON',
       handler: maybeSaveAndGoToDeck,

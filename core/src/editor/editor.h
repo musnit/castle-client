@@ -69,6 +69,8 @@ public:
   };
   void updateBlueprint(ActorId actorId, UpdateBlueprintParams params);
 
+  void triggerAutoSave();
+
 private:
   friend struct EditorGlobalActionReceiver;
   friend struct EditorInspectorActionReceiver;
@@ -119,6 +121,11 @@ private:
   // behaviorId present indicates dirty state for selected actor
   std::set<int> selectedComponentStateDirty;
   void sendSelectedComponent(int behaviorId);
+
+  float autoSaveCountdown = 0; // If `> 0`, auto-save after this much time in seconds
+  void updateAutoSave(double dt);
+
+  void save();
 };
 
 inline bool Editor::hasScene() {
@@ -181,4 +188,8 @@ inline Editor::Tool Editor::getCurrentTool() const {
 
 inline void Editor::setCurrentTool(Tool tool) {
   currentTool = tool;
+}
+
+inline void Editor::triggerAutoSave() {
+  autoSaveCountdown = 0.2;
 }
