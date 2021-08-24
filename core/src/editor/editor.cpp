@@ -93,6 +93,9 @@ void Editor::update(double dt) {
     updateAutoSave(dt);
   }
 
+  // Make sure ghost actors exist before sending new data, because current tool's update()
+  // may have modified actors
+  scene->getLibrary().ensureGhostActorsExist();
   maybeSendData();
 }
 
