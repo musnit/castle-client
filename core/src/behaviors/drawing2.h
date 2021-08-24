@@ -51,6 +51,17 @@ struct DrawingAnimationProps {
   PROP(int, loopEndFrame);
 };
 
+// editor-only cache
+struct DrawingEditorDataCache {
+  struct Item {
+    std::vector<std::string> base64PngFrames;
+  };
+
+  // component hash -> Item
+  // TODO: use LRU eviction
+  std::unordered_map<std::string, Item> items;
+};
+
 class Drawing2Behavior : public BaseBehavior<Drawing2Behavior, Drawing2Component> {
 
 public:
@@ -74,6 +85,15 @@ public:
 
   std::string hash(const std::string &drawData, const std::string &physicsBodyData);
   PhysicsBodyData *maybeGetPhysicsBodyData(ActorId actorId);
+
+  // editor only: send drawing frames over bridge
+  struct EditorSelectedDrawingFramesEvent {
+    PROP(std::vector<std::string> *, base64PngFrames);
+  };
+  void writeBase64PngFrames(
+      const Drawing2Component &component, EditorSelectedDrawingFramesEvent *ev);
+  void clearEditorDataCache();
+  std::unique_ptr<DrawingEditorDataCache> editorDataCache;
 
 private:
   friend struct AnimationFrameMeetsConditionResponse;

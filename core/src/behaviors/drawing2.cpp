@@ -118,7 +118,8 @@ struct AnimationFrameMeetsConditionResponse : BaseResponse {
 // Read, write
 //
 
-std::string Drawing2Behavior::hash(const std::string &drawData, const std::string &physicsBodyData) {
+std::string Drawing2Behavior::hash(
+    const std::string &drawData, const std::string &physicsBodyData) {
   auto hash = std::hash<std::string> {}(drawData + physicsBodyData);
 
   char str[256];
@@ -313,4 +314,35 @@ void Drawing2Behavior::fireChangeFrameTriggers(
         auto triggerFrame = ExpressionValue(drawData->modFrameIndex(trigger.params.frame() - 1));
         return trigger.params.comparison().compare(currentFrame, triggerFrame);
       });
+}
+
+
+//
+// Editor-only state
+//
+
+void Drawing2Behavior::writeBase64PngFrames(
+    const Drawing2Component &component, EditorSelectedDrawingFramesEvent *ev) {
+  if (!editorDataCache) {
+    editorDataCache = std::make_unique<DrawingEditorDataCache>();
+  }
+  if (editorDataCache->items.find(component.hash) == editorDataCache->items.end()) {
+    DrawingEditorDataCache::Item item;
+    for (int frameIdx = 0; frameIdx < component.drawData->getNumFrames(); frameIdx++) {
+      auto maybeBase64Png = component.drawData->renderPreviewPng(frameIdx, -1);
+      if (maybeBase64Png) {
+        item.base64PngFrames.push_back(maybeBase64Png.value());
+      } else {
+        item.base64PngFrames.push_back("");
+      }
+    }
+    editorDataCache->items.emplace(component.hash, item);
+  }
+  ev->base64PngFrames = &(editorDataCache->items[component.hash].base64PngFrames);
+}
+
+void Drawing2Behavior::clearEditorDataCache() {
+  if (editorDataCache) {
+    editorDataCache->items.clear();
+  }
 }

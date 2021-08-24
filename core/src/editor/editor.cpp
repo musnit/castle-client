@@ -20,6 +20,8 @@ void Editor::clearState() {
   currentTool = Tool::Grab;
   drawTool.resetState();
   commands.clear();
+  auto &drawingBehavior = scene->getBehaviors().byType<Drawing2Behavior>();
+  drawingBehavior.clearEditorDataCache();
 }
 
 void Editor::readScene(Reader &reader) {
@@ -630,6 +632,9 @@ void Editor::sendSelectedComponent(int behaviorId) {
     auto actorId = selection.firstSelectedActorId();
     using BehaviorType = std::remove_reference_t<decltype(behavior)>;
     auto component = behavior.maybeGetComponent(actorId);
+
+    // TODO: specialize per behavior with a handler
+
     std::string eventName = std::string("EDITOR_SELECTED_COMPONENT:") + BehaviorType::name;
     if (component) {
       if constexpr (std::is_same_v<RulesBehavior, BehaviorType>) {
@@ -646,6 +651,14 @@ void Editor::sendSelectedComponent(int behaviorId) {
         EditorSelectedComponentEvent<BehaviorType, ComponentType> ev { actorId, component, *scene };
         bridge.sendEvent(eventName.c_str(), ev);
       }
+
+      if constexpr (std::is_same_v<Drawing2Behavior, BehaviorType>) {
+        // TODO: fold into behavior's handler
+        Drawing2Behavior::EditorSelectedDrawingFramesEvent ev;
+        behavior.writeBase64PngFrames(*component, &ev);
+        bridge.sendEvent("EDITOR_SELECTED_DRAWING_FRAMES", ev);
+      }
+
     } else {
       EditorNoComponentEvent ev;
       bridge.sendEvent(eventName.c_str(), ev);
