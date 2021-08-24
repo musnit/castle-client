@@ -541,13 +541,7 @@ namespace ghost {
       graphicsModule->translate(
           (padding - pathBounds.minX) + widthPadding, (padding - pathBounds.minY) + heightPadding);
       graphicsModule->clear(Colorf(0.0f, 0.0f, 0.0f, 0.0f), 0, 1.0);
-
-      Colorf color;
-      color.r = 1.0;
-      color.g = 1.0;
-      color.b = 1.0;
-      color.a = 1.0;
-      graphicsModule->setColor(color);
+      graphicsModule->setColor({ 1.0, 1.0, 1.0, 1.0 });
 
       renderFill();
       graphics()->draw();

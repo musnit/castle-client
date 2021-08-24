@@ -104,13 +104,15 @@ namespace ghost {
     void read(Archive::Reader &archive) {
       love::Colorf c;
       archive.arr("color", [&]() {
-        c.set(archive.num((unsigned int)0, 1.0), archive.num(1, 1.0), archive.num(2, 1.0), archive.num(3, 1.0));
+        c.set(archive.num((unsigned int)0, 1.0), archive.num(1, 1.0), archive.num(2, 1.0),
+            archive.num(3, 1.0));
       });
       color = c;
 
       love::Colorf c2;
       archive.arr("lineColor", [&]() {
-        c2.set(archive.num((unsigned int)0, 1.0), archive.num(1, 1.0), archive.num(2, 1.0), archive.num(3, 1.0));
+        c2.set(archive.num((unsigned int)0, 1.0), archive.num(1, 1.0), archive.num(2, 1.0),
+            archive.num(3, 1.0));
       });
       lineColor = c2;
 
@@ -224,8 +226,11 @@ namespace ghost {
     ToveGraphicsHolder *graphics();
     void preload();
     void renderFrameIndex(int frameIdx /* zero index */);
+    std::optional<std::string> renderPreviewPng(int frameIdx, int size);
     void render(std::optional<AnimationComponentProperties> componentProperties);
-    void renderForTool(std::optional<AnimationComponentProperties> componentProperties, float tempTranslateX, float tempTranslateY, std::shared_ptr<ToveGraphicsHolder> tempGraphics);
+    void renderForTool(std::optional<AnimationComponentProperties> componentProperties,
+        float tempTranslateX, float tempTranslateY,
+        std::shared_ptr<ToveGraphicsHolder> tempGraphics);
     void renderOnionSkinning();
     bool isPointInBounds(Point point);
 

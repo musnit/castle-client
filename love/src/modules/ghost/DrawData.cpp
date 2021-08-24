@@ -270,8 +270,7 @@ namespace ghost {
     }
     TovePathRef path = NewPath(NULL);
     if (pathData->color) {
-      auto col = NewColor(
-          pathData->color->r, pathData->color->g, pathData->color->b, 1);
+      auto col = NewColor(pathData->color->r, pathData->color->g, pathData->color->b, 1);
       PathSetLineColor(path, col);
       ReleasePaint(col);
     } else {
@@ -627,7 +626,8 @@ namespace ghost {
       selectedFrame.setFromZeroIndex(zeroFrameIndex);
     }
 
-    // TODO: clear bounds isn't really necessary, just need to make sure the bounds are the correct length
+    // TODO: clear bounds isn't really necessary, just need to make sure the bounds are the correct
+    // length
     clearBounds();
   }
 
@@ -797,49 +797,82 @@ namespace ghost {
     int prevFrameIdx = modFrameIndex(selectedFrame.toZeroIndex() - 1);
     renderFrameIndex(prevFrameIdx);
   }
-  
-  void DrawData::renderForTool(std::optional<AnimationComponentProperties> componentProperties, float tempTranslateX, float tempTranslateY, std::shared_ptr<ToveGraphicsHolder> tempGraphics) {
+
+  void DrawData::renderForTool(std::optional<AnimationComponentProperties> componentProperties,
+      float tempTranslateX, float tempTranslateY,
+      std::shared_ptr<ToveGraphicsHolder> tempGraphics) {
     int frameIdx = selectedFrame.toZeroIndex();
     if (componentProperties) {
       frameIdx = modFrameIndex(componentProperties->currentFrame);
     }
-  
-    for (size_t l = 0; l < layers.size(); l++) {
-          auto layer = layers[l];
-          auto realFrame = getRealFrameIndexForLayerId(layer->id, frameIdx);
-          auto frame = layers[l]->frames[realFrame];
-          if (layer->isVisible) {
-            if (layer->id == selectedLayerId) {
-              graphics::Graphics *graphicsModule
-                = Module::getInstance<graphics::Graphics>(Module::M_GRAPHICS);
 
-                  graphicsModule->push(graphics::Graphics::STACK_TRANSFORM);
-                  graphicsModule->translate(tempTranslateX, tempTranslateY);
-                  frame->renderFill();
-                  frame->graphics()->draw();
-                  graphicsModule->pop();
-                  if (tempGraphics) {
-                    tempGraphics->draw();
-                  }
-            } else {
-                  frame->renderFill();
-                  frame->graphics()->draw();
-            }
+    for (size_t l = 0; l < layers.size(); l++) {
+      auto layer = layers[l];
+      auto realFrame = getRealFrameIndexForLayerId(layer->id, frameIdx);
+      auto frame = layers[l]->frames[realFrame];
+      if (layer->isVisible) {
+        if (layer->id == selectedLayerId) {
+          graphics::Graphics *graphicsModule
+              = Module::getInstance<graphics::Graphics>(Module::M_GRAPHICS);
+
+          graphicsModule->push(graphics::Graphics::STACK_TRANSFORM);
+          graphicsModule->translate(tempTranslateX, tempTranslateY);
+          frame->renderFill();
+          frame->graphics()->draw();
+          graphicsModule->pop();
+          if (tempGraphics) {
+            tempGraphics->draw();
           }
+        } else {
+          frame->renderFill();
+          frame->graphics()->draw();
+        }
+      }
     }
+  }
+
+  std::optional<std::string> DrawData::renderPreviewPng(int frameIdx, int size) {
+    if (size <= 0) {
+      size = 256;
+    }
+
+    auto previewCanvas = DrawDataFrame::newCanvas(size, size);
+
+    DrawDataFrame::renderToCanvas(previewCanvas, [this, frameIdx, size]() {
+      auto pathBounds = getBounds(frameIdx);
+      float width = pathBounds.maxX - pathBounds.minX;
+      float height = pathBounds.maxY - pathBounds.minY;
+
+      float maxDimension = width;
+      if (height > maxDimension) {
+        maxDimension = height;
+      }
+
+      float widthPadding = (maxDimension - width) / 2.0;
+      float heightPadding = (maxDimension - height) / 2.0;
+
+      float padding = maxDimension * 0.025;
+
+      graphics::Graphics *graphicsModule
+          = Module::getInstance<graphics::Graphics>(Module::M_GRAPHICS);
+      graphicsModule->push(graphics::Graphics::STACK_ALL);
+      graphicsModule->origin();
+      graphicsModule->scale(size / (maxDimension * 1.05), size / (maxDimension * 1.05));
+      graphicsModule->translate(
+          (padding - pathBounds.minX) + widthPadding, (padding - pathBounds.minY) + heightPadding);
+      graphicsModule->clear(Colorf(0.0f, 0.0f, 0.0f, 0.0f), 0, 1.0);
+      graphicsModule->setColor({ 1.0, 1.0, 1.0, 1.0 });
+
+      renderFrameIndex(frameIdx);
+      graphicsModule->pop();
+    });
+
+    auto result = DrawDataFrame::encodeBase64Png(previewCanvas);
+    delete previewCanvas;
+    return result;
   }
 
   /*
-
-  TYPE DrawData::renderPreviewPngForFrames(TYPE size) {
-    auto results = {
-          numFrames = layers[0].frames.length;
-    }
-    for (int i = 0; i < layers[0].frames.length; i++) {
-          results["frame" + (i - 1)] = renderPreviewPng(i, size);
-    }
-    return results;
-  }
 
   TYPE DrawData::function() {
     auto pathBounds = getBounds(frame);
@@ -860,19 +893,6 @@ namespace ghost {
           currentFrame = frame;
     });
     love.graphics.pop();
-  }
-
-  TYPE DrawData::renderPreviewPng(TYPE frame, TYPE size) {
-    if (!size) {
-          size = 256;
-    }
-    auto previewCanvas = love.graphics.newCanvas(size, size, {
-          dpiscale = 1;
-          msaa = 4;
-    });
-    previewCanvas.renderTo(undefined);
-    auto fileData = previewCanvas.newImageData().encode("png");
-    return love.data.encode("string", "base64", fileData.getString());
   }
 
   TYPE DrawData::clearGraphics() {
