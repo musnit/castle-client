@@ -317,16 +317,23 @@ void Editor::updateAutoSave(double dt) {
   }
 }
 
+struct EditorSceneMessageEvent {
+  PROP(std::string, messageType);
+  PROP(std::string, data);
+};
+
 void Editor::save() {
   if (scene) {
-    bridge.sendEvent("SCENE_MESSAGE", [&](Writer &writer) {
-      writer.str("messageType", "UPDATE_SCENE");
-      writer.obj("data", [&]() {
-        writer.obj("snapshot", [&]() {
-          scene->write(writer);
-        });
+    EditorSceneMessageEvent ev;
+    ev.messageType = "UPDATE_SCENE";
+    Archive archive;
+    archive.write([&](Writer &writer) {
+      writer.obj("snapshot", [&]() {
+        scene->write(writer);
       });
     });
+    ev.data = archive.toJson();
+    bridge.sendEvent("SCENE_MESSAGE", ev);
   }
 }
 

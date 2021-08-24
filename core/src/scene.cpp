@@ -84,9 +84,9 @@ void Scene::read(Reader &reader) {
 
 void Scene::write(Writer &writer) const {
   // Library
-  writer.arr("library", [&]() {
+  writer.obj("library", [&]() {
     library->forEachEntry([&](LibraryEntry &entry) {
-      writer.obj([&]() {
+      writer.obj(entry.getEntryId(), [&]() {
         entry.write(writer);
       });
     });

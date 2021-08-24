@@ -955,12 +955,13 @@ inline json::Value Writer::write_(const PropId &propId) {
 }
 
 inline json::Value Writer::write_(const love::Colorf &c) {
-  auto result = json::Value(json::kArrayType);
-  result.Reserve(4, alloc);
-  result.PushBack(json::Value(c.r), alloc);
-  result.PushBack(json::Value(c.g), alloc);
-  result.PushBack(json::Value(c.b), alloc);
-  result.PushBack(json::Value(c.a), alloc);
+  // TODO: Switch to packed array format after compatibility with old Lua clients no longer matters
+  auto result = json::Value(json::kObjectType);
+  result.MemberReserve(4, alloc);
+  result.AddMember("r", json::Value(c.r), alloc);
+  result.AddMember("g", json::Value(c.g), alloc);
+  result.AddMember("b", json::Value(c.b), alloc);
+  result.AddMember("a", json::Value(c.a), alloc);
   return result;
 }
 
