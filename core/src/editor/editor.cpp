@@ -1255,11 +1255,21 @@ struct EditorChangeSceneSettingsReceiver {
     }
     auto type = params.type();
     auto action = params.action();
+    auto editor = engine.maybeGetEditor();
     if (type == "scene") {
       if (action == "setBackgroundColor") {
         auto colorValue = params.colorValue();
-        engine.maybeGetEditor()->getScene().props.backgroundColor().set(
-            colorValue.r, colorValue.g, colorValue.b, colorValue.a);
+        auto oldColorValue = editor->getScene().props.backgroundColor();
+        editor->getCommands().execute(
+            "set background color", {},
+            [colorValue](Editor &editor, bool) {
+              editor.getScene().props.backgroundColor().set(
+                  colorValue.r, colorValue.g, colorValue.b, colorValue.a);
+            },
+            [oldColorValue](Editor &editor, bool) {
+              editor.getScene().props.backgroundColor().set(
+                  oldColorValue.r, oldColorValue.g, oldColorValue.b, oldColorValue.a);
+            });
       }
     } else if (type == "grab") {
       engine.maybeGetEditor()->getGrabTool().changeSettings(action, params.doubleValue());
