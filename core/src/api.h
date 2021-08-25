@@ -76,8 +76,7 @@ public:
         false);
   }
 
-  static void loadCard(
-      const std::string &cardId, const std::function<void(Reader &)> &snapshotCallback) {
+  static void loadCard(const std::string &cardId, bool useCache, const std::function<void(Reader &)> &snapshotCallback) {
     if (cachedCards.find(cardId) != cachedCards.end()) {
       auto archive = Archive::fromJson(cachedCards[cardId].c_str());
       archive.read([&](Reader &reader) {
@@ -99,13 +98,13 @@ public:
               });
             });
           },
-          true);
+          useCache);
     }
 
     preloadNextCards(cardId);
   }
 
-  static void loadDeck(const std::string &deckId,
+  static void loadDeck(const std::string &deckId, bool useCache,
       const std::function<void(Reader &)> &variablesCallBack,
       const std::function<void(Reader &)> &snapshotCallback) {
     graphql(
@@ -129,7 +128,7 @@ public:
             });
           });
         },
-        true);
+        useCache);
   }
 
   static void graphql(const std::string &query, const std::function<void(bool, Reader &)> &callback,

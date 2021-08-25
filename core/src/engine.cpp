@@ -133,6 +133,7 @@ void Engine::loadSceneFromFile(const char *path) {
 void Engine::loadSceneFromDeckId(const char *deckId) {
   API::loadDeck(
       deckId,
+      !isEditing, // don't use cache when editing
       [=](Reader &reader) {
         if (isEditing) {
           editor->readVariables(reader);
@@ -152,15 +153,17 @@ void Engine::loadSceneFromDeckId(const char *deckId) {
 }
 
 void Engine::loadSceneFromCardId(const char *cardId) {
-  API::loadCard(cardId, [=](Reader &reader) {
-    if (isEditing) {
-      editor->readScene(reader);
-    } else {
-      player.readScene(reader);
-    }
-    SceneLoadedEvent event;
-    getBridge().sendEvent("SCENE_LOADED", event);
-  });
+  API::loadCard(cardId,
+      !isEditing, // don't use cache when editing
+      [=](Reader &reader) {
+        if (isEditing) {
+          editor->readScene(reader);
+        } else {
+          player.readScene(reader);
+        }
+        SceneLoadedEvent event;
+        getBridge().sendEvent("SCENE_LOADED", event);
+      });
 }
 
 //
