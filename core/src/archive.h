@@ -687,8 +687,10 @@ void Reader::read(SmallVector<T, N> &v) {
 
 template<typename T>
 void Reader::read(std::optional<T> &o) {
-  if (!cur->IsNull()) {
-    o = {};
+  if (cur->IsNull()) {
+    o = std::nullopt;
+  } else {
+    o.emplace();
     read(*o);
   }
 }
