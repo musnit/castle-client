@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const EditArtButton = () => {
+const EditArtButton = ({ onPress }) => {
   const { showActionSheetWithOptions } = useActionSheet();
   const {
     inspectorActions: data,
@@ -120,46 +120,6 @@ const EditArtButton = () => {
     applicableTools,
     behaviorActions,
   } = useCardCreator();
-
-  const onPress = React.useCallback(() => {
-    sendGlobalAction('setMode', 'draw');
-  }, [sendGlobalAction]);
-
-  /*const draw1Behavior = applicableTools.find((behavior) => behavior.name === 'Draw');
-  const draw2Behavior = applicableTools.find((behavior) => behavior.name === 'Draw2');
-
-  let onPress;
-
-  if (draw1Behavior) {
-    // TODO: eventually we can remove this legacy draw1 migration case
-    onPress = () =>
-      showActionSheetWithOptions(
-        {
-          title: 'Migrate to new draw tool?',
-          message:
-            'This action will discard the legacy drawing for this actor and enable the newer drawing tool.',
-          options: ['Continue', 'Cancel'],
-          cancelButtonIndex: 1,
-        },
-        async (buttonIndex) => {
-          if (buttonIndex == 0) {
-            if (draw2Behavior) {
-              // actor already has draw2, just remove draw1
-              behaviorActions.Drawing('remove');
-            } else {
-              // swap draw1 for draw2
-              behaviorActions.Drawing('swap', { name: 'Drawing2' });
-            }
-          }
-        }
-      );
-  } else if (draw2Behavior) {
-    onPress = () =>
-      sendAction('setActiveToolWithOptions', { id: draw2Behavior.behaviorId, addNewFrame: true });
-  } else {
-    console.warn(`Tried to render InspectorDrawing for an actor that has no drawing`);
-    onPress = () => {};
-  }*/
 
   return (
     <TouchableOpacity onPress={onPress} style={[styles.frameContainer, styles.frameContainerNew]}>
@@ -170,6 +130,7 @@ const EditArtButton = () => {
 
 export default InspectorDrawing = ({ drawing2 }) => {
   const component = useCoreState('EDITOR_SELECTED_COMPONENT:Drawing2');
+  const framePreviews = useCoreState('EDITOR_SELECTED_DRAWING_FRAMES');
   const sendAction = React.useCallback((...args) => sendBehaviorAction('Drawing2', ...args), [
     sendBehaviorAction,
   ]);
@@ -231,31 +192,32 @@ export default InspectorDrawing = ({ drawing2 }) => {
     }
   };
 
+  // TODO: actions to set initial frame, open at frame, add frame
+  const openDrawTool = React.useCallback(() => {
+    sendGlobalAction('setMode', 'draw');
+  }, [sendGlobalAction]);
+
+  if (!component) {
+    // actor doesn't have Drawing2
+    return null;
+  }
+
   let frames = [];
 
-  if (component?.properties?.base64PngFrames) {
-    for (let i = 0; i < component.properties.base64PngFrames.numFrames; i++) {
+  if (framePreviews?.base64PngFrames?.length) {
+    for (let i = 0; i < framePreviews.base64PngFrames.length; i++) {
       let isInitialFrame = initialFrame == i + 1;
 
       frames.push(
         <TouchableOpacity
           key={i}
           style={[styles.frameContainer, isInitialFrame && styles.frameContainerSelected]}
-          onPress={() => {
-            if (isInitialFrame) {
-              /*sendInspectorAction('setActiveToolWithOptions', {
-                id: draw2Behavior.behaviorId,
-                selectedFrame: i + 1,
-              });*/
-            } else {
-              initialFrameSetValueAndSendAction('set:initialFrame', i + 1);
-            }
-          }}>
+          onPress={openDrawTool}>
           <View style={{ flex: 1, backgroundColor: '#0001', borderRadius: 1 }}>
             <FastImage
               style={styles.image}
               source={{
-                uri: `data:image/png;base64,${component.properties.base64PngFrames['frame' + i]}`,
+                uri: `data:image/png;base64,${framePreviews.base64PngFrames[i]}`,
               }}
             />
 
@@ -291,7 +253,7 @@ export default InspectorDrawing = ({ drawing2 }) => {
 
       <ScrollView horizontal style={{ flexDirection: 'row', marginBottom: 20 }}>
         {frames}
-        <EditArtButton />
+        <EditArtButton onPress={openDrawTool} />
       </ScrollView>
 
       <View style={styles.segmentedControl}>
