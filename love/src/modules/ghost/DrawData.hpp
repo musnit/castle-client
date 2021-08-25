@@ -122,12 +122,10 @@ namespace ghost {
       version = archive.num("version", 3);
       fillPixelsPerUnit = archive.num("fillPixelsPerUnit", 25.6);
       // int numTotalLayers = archive.num("numTotalLayers", 1);
-      archive.arr("framesBounds", [&]() {
-        for (auto i = 0; i < archive.size(); i++) {
-          Bounds bounds;
-          archive.obj(i, bounds);
-          framesBounds.push_back(bounds);
-        }
+      archive.each("framesBounds", [&]() {
+        std::optional<Bounds> bounds;
+        archive.read(bounds);
+        framesBounds.push_back(bounds);
       });
       // TODO: default this to first layer on the server
       selectedLayerId = archive.str("selectedLayerId", "");
@@ -170,8 +168,10 @@ namespace ghost {
       archive.num("fillPixelsPerUnit", fillPixelsPerUnit);
       archive.num("numTotalLayers", getNumLayers());
       archive.arr("framesBounds", [&]() {
-        for (size_t i = 0; i < framesBounds.size(); i++) {
-          archive.obj(*framesBounds[i]);
+        for (auto &bounds : framesBounds) {
+          archive.obj([&]() {
+            archive.write(bounds);
+          });
         }
       });
       archive.str("selectedLayerId", selectedLayerId);

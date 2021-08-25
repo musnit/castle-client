@@ -513,7 +513,7 @@ namespace ghost {
   }
 
   Bounds DrawData::getBounds(int frame) {
-    if (framesBounds[frame]) {
+    if (framesBounds[frame].has_value()) {
       return *framesBounds[frame];
     }
     std::optional<Bounds> bounds = std::nullopt;
