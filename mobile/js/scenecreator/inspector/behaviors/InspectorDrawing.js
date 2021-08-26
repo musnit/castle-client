@@ -127,10 +127,10 @@ const items = [
   },
 ];
 
-const EditArtButton = ({ onPress }) => {
+const AddFrameButton = ({ onPress }) => {
   return (
     <TouchableOpacity onPress={onPress} style={[styles.frameContainer, styles.frameContainerNew]}>
-      <Text style={{ fontSize: 48, color: '#888' }}>+</Text>
+      <MCIcon name="plus" size={40} color="#888" />
     </TouchableOpacity>
   );
 };
@@ -211,6 +211,14 @@ export default InspectorDrawing = ({ drawing2 }) => {
     [openDrawTool]
   );
 
+  const openDrawToolAtNewFrame = React.useCallback(() => {
+    sendAsync('DRAW_TOOL_LAYER_ACTION', {
+      action: 'addFrame',
+      frameIndex: 0, // adds new frame at the end
+    });
+    openDrawTool();
+  }, [openDrawTool]);
+
   if (!component) {
     // actor doesn't have Drawing2
     return null;
@@ -237,7 +245,7 @@ export default InspectorDrawing = ({ drawing2 }) => {
               );
             })
           : null}
-        <EditArtButton onPress={openDrawTool} />
+        <AddFrameButton onPress={openDrawToolAtNewFrame} />
       </ScrollView>
 
       <View style={styles.segmentedControl}>
