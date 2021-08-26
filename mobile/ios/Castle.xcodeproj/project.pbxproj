@@ -12,6 +12,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		752DFF0FA2404564937762CE /* RTAliasGrotesk-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 0C7DDD807F684FD0A7E4CD7E /* RTAliasGrotesk-Bold.otf */; };
 		91395EB8240DE6A700ECBCF9 /* GhostPushNotifications.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91395EB7240DE6A700ECBCF9 /* GhostPushNotifications.mm */; };
+		91CCEBA726D6FC0D00C6B016 /* API_ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91CCEBA626D6FC0C00C6B016 /* API_ios.mm */; };
 		A12CFEE723CC30F600D721BC /* references.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A12CFEDF23CC30F600D721BC /* references.cpp */; };
 		A12CFEE823CC30F600D721BC /* warn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A12CFEE023CC30F600D721BC /* warn.cpp */; };
 		A12CFEE923CC30F600D721BC /* subpath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A12CFEE123CC30F600D721BC /* subpath.cpp */; };
@@ -163,6 +164,8 @@
 		91395EAF24084E2D00ECBCF9 /* Castle.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Castle.entitlements; path = Castle/Castle.entitlements; sourceTree = "<group>"; };
 		91395EB7240DE6A700ECBCF9 /* GhostPushNotifications.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = GhostPushNotifications.mm; sourceTree = "<group>"; };
 		91395EB924170C5900ECBCF9 /* GhostPushNotifications.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GhostPushNotifications.h; sourceTree = "<group>"; };
+		91CCEBA626D6FC0C00C6B016 /* API_ios.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = API_ios.mm; sourceTree = "<group>"; };
+		91CCEBB326D7082500C6B016 /* API_ios.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = API_ios.h; sourceTree = "<group>"; };
 		A12CFEDF23CC30F600D721BC /* references.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = references.cpp; path = "../../ghost-extensions/tove2d/src/cpp/references.cpp"; sourceTree = "<group>"; };
 		A12CFEE023CC30F600D721BC /* warn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = warn.cpp; path = "../../ghost-extensions/tove2d/src/cpp/warn.cpp"; sourceTree = "<group>"; };
 		A12CFEE123CC30F600D721BC /* subpath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = subpath.cpp; path = "../../ghost-extensions/tove2d/src/cpp/subpath.cpp"; sourceTree = "<group>"; };
@@ -346,6 +349,8 @@
 				13B07FB71A68108700A75B9A /* main.m */,
 				91395EB924170C5900ECBCF9 /* GhostPushNotifications.h */,
 				91395EB7240DE6A700ECBCF9 /* GhostPushNotifications.mm */,
+				91CCEBB326D7082500C6B016 /* API_ios.h */,
+				91CCEBA626D6FC0C00C6B016 /* API_ios.mm */,
 			);
 			name = Castle;
 			sourceTree = "<group>";
@@ -914,6 +919,7 @@
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				A12CFEFA23CC313100D721BC /* mesh.cpp in Sources */,
 				A12CFEEC23CC30F600D721BC /* version.cpp in Sources */,
+				91CCEBA726D6FC0D00C6B016 /* API_ios.mm in Sources */,
 				A14FE3C22355CE74003B7EA0 /* lmarshal.c in Sources */,
 				A1CCBA1623551869009F4DDD /* GhostChannels.mm in Sources */,
 				A14FE3E12355CEF0003B7EA0 /* config.c in Sources */,

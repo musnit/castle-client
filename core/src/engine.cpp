@@ -226,6 +226,9 @@ bool Engine::frame() {
   // Process bridge
   bridge.flushPendingReceives();
 
+  // Process API callbacks
+  API::runCallbacks();
+
   // Step timer and run update with the resulting `dt`
   update(lv.timer.step());
 

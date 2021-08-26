@@ -4,6 +4,11 @@
 #include "archive.h"
 #include <thread>
 
+namespace CastleAPI {
+void postRequest(const std::string &body,
+    const std::function<void(bool, std::string)> callback); // Implemented in API_ios.mm
+}
+
 class API {
 private:
   inline static std::mutex cacheLock;
@@ -11,8 +16,7 @@ private:
       queryToPendingCallbacks;
   inline static std::unordered_map<std::string, std::string> cachedResponses;
   inline static std::unordered_map<std::string, std::string> cachedCards;
-
-  static std::string postRequest(const std::string &);
+  inline static std::unordered_map<std::string, std::string> completedRequests;
 
   static void graphqlThread(const std::string &query) {
     Archive requestBodyArchive;
@@ -25,21 +29,9 @@ private:
     std::string requestBody = requestBodyArchive.toJson();
 
     // TODO: error handling
-    std::string result = postRequest(requestBody);
-
-    cacheLock.lock();
-
-    cachedResponses[query] = result;
-    auto callbacks = queryToPendingCallbacks[query];
-    queryToPendingCallbacks.erase(query);
-    cacheLock.unlock();
-
-    for (auto const &callback : callbacks) {
-      auto archive = Archive::fromJson(result.c_str());
-      archive.read([&](Reader &reader) {
-        callback(true, reader);
-      });
-    }
+    CastleAPI::postRequest(requestBody, [=](bool success, std::string result) {
+      completedRequests[query] = result;
+    });
   }
 
   static std::string deckQuery(const std::string &deckId) {
@@ -76,7 +68,8 @@ public:
         false);
   }
 
-  static void loadCard(const std::string &cardId, bool useCache, const std::function<void(Reader &)> &snapshotCallback) {
+  static void loadCard(const std::string &cardId, bool useCache,
+      const std::function<void(Reader &)> &snapshotCallback) {
     if (cachedCards.find(cardId) != cachedCards.end()) {
       auto archive = Archive::fromJson(cachedCards[cardId].c_str());
       archive.read([&](Reader &reader) {
@@ -165,5 +158,25 @@ public:
       cacheLock.unlock();
 #endif
     }
+  }
+
+  static void runCallbacks() {
+    for (const auto &[query, result] : completedRequests) {
+      cacheLock.lock();
+
+      cachedResponses[query] = result;
+      auto callbacks = queryToPendingCallbacks[query];
+      queryToPendingCallbacks.erase(query);
+      cacheLock.unlock();
+
+      for (auto const &callback : callbacks) {
+        auto archive = Archive::fromJson(result.c_str());
+        archive.read([&](Reader &reader) {
+          callback(true, reader);
+        });
+      }
+    }
+
+    completedRequests.clear();
   }
 };

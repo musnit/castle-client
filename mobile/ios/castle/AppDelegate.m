@@ -23,6 +23,7 @@
 #include "GhostPushNotifications.h"
 #include "GhostView.h"
 #include "GhostChannels.h"
+#include "API_ios.h"
 
 #import "../../../ghost-extensions/SDL2-2.0.8/src/video/uikit/SDL_uikitappdelegate.h"
 
@@ -62,6 +63,7 @@ int SDL_main(int argc, char *argv[]) {
 
   self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
   self.rctBridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+  [APIIos setRctBridge:self.rctBridge];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:self.rctBridge
                                                    moduleName:@"Castle"
                                             initialProperties:initialProps];
