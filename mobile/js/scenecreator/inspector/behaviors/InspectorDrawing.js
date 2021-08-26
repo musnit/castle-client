@@ -1,8 +1,12 @@
 import * as React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useActionSheet } from '@expo/react-native-action-sheet';
+import { Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useCardCreator } from '../../CreateCardContext';
-import { useCoreState, sendBehaviorAction, sendGlobalAction } from '../../../core/CoreEvents';
+import {
+  useCoreState,
+  sendAsync,
+  sendBehaviorAction,
+  sendGlobalAction,
+} from '../../../core/CoreEvents';
 import { BehaviorPropertyInputRow } from '../components/BehaviorPropertyInputRow';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 
@@ -113,7 +117,6 @@ const styles = StyleSheet.create({
 });
 
 const EditArtButton = ({ onPress }) => {
-  const { showActionSheetWithOptions } = useActionSheet();
   const {
     inspectorActions: data,
     sendInspectorAction: sendAction,
@@ -127,6 +130,35 @@ const EditArtButton = ({ onPress }) => {
     </TouchableOpacity>
   );
 };
+
+const FramePreview = ({ frameOneIndex, base64Png, isInitialFrame, onPressFrame, onPressEdit }) => (
+  <Pressable style={styles.frameContainer} onPress={() => onPressFrame(frameOneIndex)}>
+    <View style={{ flex: 1, backgroundColor: '#0001', borderRadius: 1 }}>
+      <FastImage
+        style={styles.image}
+        source={{
+          uri: `data:image/png;base64,${base64Png}`,
+        }}
+      />
+
+      {isInitialFrame ? (
+        <View style={styles.frameIndexContainerSelected}>
+          <Icon name="check" size={20} color="#fff" />
+        </View>
+      ) : (
+        <View style={styles.frameIndexContainer}>
+          <Text style={{ fontWeight: '500' }}>{frameOneIndex}</Text>
+        </View>
+      )}
+
+      <TouchableOpacity
+        style={styles.frameEditArtContainer}
+        onPress={() => onPressEdit(frameOneIndex)}>
+        <MCIcon name="pencil-outline" size={20} color="#000" />
+      </TouchableOpacity>
+    </View>
+  </Pressable>
+);
 
 export default InspectorDrawing = ({ drawing2 }) => {
   const component = useCoreState('EDITOR_SELECTED_COMPONENT:Drawing2');
@@ -147,16 +179,22 @@ export default InspectorDrawing = ({ drawing2 }) => {
   );*/
 
   const [playMode, playModeSetValueAndSendAction] = useOptimisticBehaviorValue({
-    behavior: component,
+    component,
     propName: 'playMode',
+    propType: 'string',
     sendAction,
   });
 
-  const [initialFrame, initialFrameSetValueAndSendAction] = useOptimisticBehaviorValue({
-    behavior: component,
+  const [initialFrame, setInitialFrameAction] = useOptimisticBehaviorValue({
+    component,
     propName: 'initialFrame',
+    propType: 'i',
     sendAction,
   });
+  const setInitialFrame = React.useCallback(
+    (frameIndex) => setInitialFrameAction('set', frameIndex),
+    [setInitialFrameAction]
+  );
 
   const items = [
     {
@@ -197,54 +235,20 @@ export default InspectorDrawing = ({ drawing2 }) => {
     sendGlobalAction('setMode', 'draw');
   }, [sendGlobalAction]);
 
+  const openDrawToolAtFrame = React.useCallback(
+    (frameOneIndex) => {
+      sendAsync('DRAW_TOOL_LAYER_ACTION', {
+        action: 'selectFrame',
+        frameIndex: frameOneIndex,
+      });
+      openDrawTool();
+    },
+    [openDrawTool]
+  );
+
   if (!component) {
     // actor doesn't have Drawing2
     return null;
-  }
-
-  let frames = [];
-
-  if (framePreviews?.base64PngFrames?.length) {
-    for (let i = 0; i < framePreviews.base64PngFrames.length; i++) {
-      let isInitialFrame = initialFrame == i + 1;
-
-      frames.push(
-        <TouchableOpacity
-          key={i}
-          style={[styles.frameContainer, isInitialFrame && styles.frameContainerSelected]}
-          onPress={openDrawTool}>
-          <View style={{ flex: 1, backgroundColor: '#0001', borderRadius: 1 }}>
-            <FastImage
-              style={styles.image}
-              source={{
-                uri: `data:image/png;base64,${framePreviews.base64PngFrames[i]}`,
-              }}
-            />
-
-            {isInitialFrame ? (
-              <View style={styles.frameIndexContainerSelected}>
-                <Icon name="check" size={20} color="#fff" />
-              </View>
-            ) : (
-              <View style={styles.frameIndexContainer}>
-                <Text style={{ fontWeight: '500' }}>{i + 1}</Text>
-              </View>
-            )}
-
-            <TouchableOpacity
-              style={styles.frameEditArtContainer}
-              onPress={() => {
-                /*sendInspectorAction('setActiveToolWithOptions', {
-                  id: draw2Behavior.behaviorId,
-                  selectedFrame: i + 1,
-                });*/
-              }}>
-              <MCIcon name="pencil-outline" size={20} color="#000" />
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
-      );
-    }
   }
 
   return (
@@ -252,7 +256,22 @@ export default InspectorDrawing = ({ drawing2 }) => {
       <Text style={styles.label}>Artwork</Text>
 
       <ScrollView horizontal style={{ flexDirection: 'row', marginBottom: 20 }}>
-        {frames}
+        {framePreviews?.base64PngFrames?.length
+          ? framePreviews.base64PngFrames.map((base64Png, ii) => {
+              let isInitialFrame = initialFrame == ii + 1;
+              const onPressFrame = isInitialFrame ? openDrawToolAtFrame : setInitialFrame;
+              return (
+                <FramePreview
+                  key={`frame-${ii}`}
+                  frameOneIndex={ii + 1}
+                  base64Png={base64Png}
+                  isInitialFrame={isInitialFrame}
+                  onPressFrame={onPressFrame}
+                  onPressEdit={openDrawToolAtFrame}
+                />
+              );
+            })
+          : null}
         <EditArtButton onPress={openDrawTool} />
       </ScrollView>
 
