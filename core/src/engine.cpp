@@ -134,35 +134,44 @@ void Engine::loadSceneFromDeckId(const char *deckId) {
   API::loadDeck(
       deckId,
       !isEditing, // don't use cache when editing
-      [=](Reader &reader) {
-        if (isEditing) {
-          editor->readVariables(reader);
-        } else {
-          player.readVariables(reader);
+      [=](APIResponse &response) {
+        if (response.success) {
+          auto reader = response.reader;
+          if (isEditing) {
+            editor->readVariables(reader);
+          } else {
+            player.readVariables(reader);
+          }
         }
       },
-      [=](Reader &reader) {
-        if (isEditing) {
-          editor->readScene(reader);
-        } else {
-          player.readScene(reader);
+      [=](APIResponse &response) {
+        if (response.success) {
+          auto reader = response.reader;
+          if (isEditing) {
+            editor->readScene(reader);
+          } else {
+            player.readScene(reader);
+          }
+          SceneLoadedEvent event;
+          getBridge().sendEvent("SCENE_LOADED", event);
         }
-        SceneLoadedEvent event;
-        getBridge().sendEvent("SCENE_LOADED", event);
       });
 }
 
 void Engine::loadSceneFromCardId(const char *cardId) {
   API::loadCard(cardId,
       !isEditing, // don't use cache when editing
-      [=](Reader &reader) {
-        if (isEditing) {
-          editor->readScene(reader);
-        } else {
-          player.readScene(reader);
+      [=](APIResponse &response) {
+        if (response.success) {
+          auto reader = response.reader;
+          if (isEditing) {
+            editor->readScene(reader);
+          } else {
+            player.readScene(reader);
+          }
+          SceneLoadedEvent event;
+          getBridge().sendEvent("SCENE_LOADED", event);
         }
-        SceneLoadedEvent event;
-        getBridge().sendEvent("SCENE_LOADED", event);
       });
 }
 

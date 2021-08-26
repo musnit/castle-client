@@ -4,9 +4,9 @@
 #ifndef API_ios_h
 #define API_ios_h
 
-@interface APIIos : NSObject
+@interface APIIos : NSObject<NSURLConnectionDelegate>
 + (void)setRctBridge:(RCTBridge *)rctBridge;
-+ (void)iosPostRequest:(NSString *)postBody withCallback:(void (^)(NSString *))callback;
++ (void)iosPostRequest:(NSString *)postBody withCallback:(void (^)(NSString *, NSString *))callback;
 @end
 
 #endif /* API_ios_h */

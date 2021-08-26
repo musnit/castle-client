@@ -10,7 +10,7 @@ static RCTBridge *sRctBridge;
   sRctBridge = rctBridge;
 }
 
-+ (void)iosPostRequest:(NSString *)postBody withCallback:(void (^)(NSString *))callback {
++ (void)iosPostRequest:(NSString *)postBody withCallback:(void (^)(NSString *, NSString *))callback {
   RNCAsyncStorage *asyncStorageModule = [sRctBridge moduleForClass:[RNCAsyncStorage class]];
   NSArray *asyncStorageKeys = @[@"AUTH_TOKEN"];
   dispatch_async([asyncStorageModule methodQueue], ^{
@@ -38,19 +38,33 @@ static RCTBridge *sRctBridge;
 
       NSData *requestBodyData = [postBody dataUsingEncoding:NSUTF8StringEncoding];
       request.HTTPBody = requestBodyData;
-
-      NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
-      callback([[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+      
+      NSURLSession *session = [NSURLSession sharedSession];
+      [[session dataTaskWithRequest:request
+                completionHandler:^(NSData *data,
+                                    NSURLResponse *response,
+                                    NSError *error) {
+        if (data == nil) {
+          callback([error localizedDescription], NULL);
+        } else {
+          callback(NULL, [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+        }
+      }] resume];
     }];
   });
 }
 @end
 
 namespace CastleAPI {
-void postRequest(const std::string &body, const std::function<void(bool, std::string)> callback) {
-  [APIIos iosPostRequest:[NSString stringWithUTF8String:body.c_str()] withCallback:^(NSString *result) {
-    std::string resultString = std::string([result UTF8String]);
-    callback(true, resultString);
+void postRequest(const std::string &body, const std::function<void(bool, std::string, std::string)> callback) {
+  [APIIos iosPostRequest:[NSString stringWithUTF8String:body.c_str()] withCallback:^(NSString *error, NSString *result) {
+    if (result) {
+      std::string resultString = std::string([result UTF8String]);
+      callback(true, "", resultString);
+    } else {
+      std::string errorString = std::string([error UTF8String]);
+      callback(false, errorString, "");
+    }
   }];
 }
 }
