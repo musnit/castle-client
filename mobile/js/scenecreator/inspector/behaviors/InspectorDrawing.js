@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useCardCreator } from '../../CreateCardContext';
 import {
   useCoreState,
   sendAsync,
@@ -111,19 +110,24 @@ const styles = StyleSheet.create({
     color: Constants.colors.white,
     fontWeight: 'bold',
   },
-  inputContainer: {
-    flexDirection: 'row',
-  },
 });
 
-const EditArtButton = ({ onPress }) => {
-  const {
-    inspectorActions: data,
-    sendInspectorAction: sendAction,
-    applicableTools,
-    behaviorActions,
-  } = useCardCreator();
+const items = [
+  {
+    name: 'Still',
+    value: 'still',
+  },
+  {
+    name: 'Play Once',
+    value: 'play once',
+  },
+  {
+    name: 'Loop',
+    value: 'loop',
+  },
+];
 
+const EditArtButton = ({ onPress }) => {
   return (
     <TouchableOpacity onPress={onPress} style={[styles.frameContainer, styles.frameContainerNew]}>
       <Text style={{ fontSize: 48, color: '#888' }}>+</Text>
@@ -163,27 +167,23 @@ const FramePreview = ({ frameOneIndex, base64Png, isInitialFrame, onPressFrame, 
 export default InspectorDrawing = ({ drawing2 }) => {
   const component = useCoreState('EDITOR_SELECTED_COMPONENT:Drawing2');
   const framePreviews = useCoreState('EDITOR_SELECTED_DRAWING_FRAMES');
-  const sendAction = React.useCallback((...args) => sendBehaviorAction('Drawing2', ...args), [
-    sendBehaviorAction,
-  ]);
+  const sendAction = React.useCallback((...args) => sendBehaviorAction('Drawing2', ...args), []);
 
-  /*return (
-    <BehaviorPropertyInputRow
-      behavior={drawing2}
-      component={component}
-      propName="framesPerSecond"
-      label="Frames per second"
-      decimalDigits={0}
-      sendAction={sendAction}
-    />
-  );*/
-
-  const [playMode, playModeSetValueAndSendAction] = useOptimisticBehaviorValue({
+  const [playMode, setPlayMode] = useOptimisticBehaviorValue({
     component,
     propName: 'playMode',
     propType: 'string',
     sendAction,
   });
+  const selectedItemIndex = items.findIndex((item) => playMode === item.value);
+  const onChangePlayMode = React.useCallback(
+    (index) => {
+      if (index !== selectedItemIndex) {
+        setPlayMode('set', items[index].value);
+      }
+    },
+    [setPlayMode, selectedItemIndex]
+  );
 
   const [initialFrame, setInitialFrameAction] = useOptimisticBehaviorValue({
     component,
@@ -196,44 +196,9 @@ export default InspectorDrawing = ({ drawing2 }) => {
     [setInitialFrameAction]
   );
 
-  const items = [
-    {
-      name: 'Still',
-      onSelect: () => {
-        playModeSetValueAndSendAction('set:playMode', 'still');
-      },
-    },
-    {
-      name: 'Play Once',
-      onSelect: () => {
-        playModeSetValueAndSendAction('set:playMode', 'play once');
-      },
-    },
-    {
-      name: 'Loop',
-      onSelect: () => {
-        playModeSetValueAndSendAction('set:playMode', 'loop');
-      },
-    },
-  ];
-
-  let selectedItemIndex = 0;
-  if (playMode == 'play once') {
-    selectedItemIndex = 1;
-  } else if (playMode == 'loop') {
-    selectedItemIndex = 2;
-  }
-
-  const onChange = (index) => {
-    if (index !== selectedItemIndex) {
-      items[index].onSelect();
-    }
-  };
-
-  // TODO: actions to set initial frame, open at frame, add frame
   const openDrawTool = React.useCallback(() => {
     sendGlobalAction('setMode', 'draw');
-  }, [sendGlobalAction]);
+  }, []);
 
   const openDrawToolAtFrame = React.useCallback(
     (frameOneIndex) => {
@@ -258,7 +223,7 @@ export default InspectorDrawing = ({ drawing2 }) => {
       <ScrollView horizontal style={{ flexDirection: 'row', marginBottom: 20 }}>
         {framePreviews?.base64PngFrames?.length
           ? framePreviews.base64PngFrames.map((base64Png, ii) => {
-              let isInitialFrame = initialFrame == ii + 1;
+              let isInitialFrame = initialFrame === ii + 1;
               const onPressFrame = isInitialFrame ? openDrawToolAtFrame : setInitialFrame;
               return (
                 <FramePreview
@@ -279,7 +244,7 @@ export default InspectorDrawing = ({ drawing2 }) => {
         {items.map((item, ii) => (
           <TouchableOpacity
             key={`item-${ii}`}
-            onPress={() => onChange(ii)}
+            onPress={() => onChangePlayMode(ii)}
             style={[
               styles.segmentedControlItem,
               ii === selectedItemIndex ? styles.segmentedControlItemSelected : null,
