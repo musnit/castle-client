@@ -169,17 +169,24 @@ struct DrawToolLayerActionReceiver {
     auto action = params.action();
     if (action == "selectLayer") {
       // TODO: setIsPlayingAnimation(false)
-      drawTool.drawData->selectedLayerId = params.layerId();
-      drawTool.saveDrawing("select layer");
+      if (drawTool.drawData->selectedLayerId != params.layerId()) {
+        drawTool.drawData->selectedLayerId = params.layerId();
+        drawTool.saveDrawing("select layer");
+      }
     } else if (action == "selectLayerAndFrame") {
       // TODO: setIsPlayingAnimation(false)
-      drawTool.drawData->selectedLayerId = params.layerId();
-      drawTool.drawData->selectedFrame.value = params.frameIndex();
-      drawTool.saveDrawing("select cell");
+      if (drawTool.drawData->selectedLayerId != params.layerId()
+          && drawTool.drawData->selectedFrame.value != params.frameIndex()) {
+        drawTool.drawData->selectedLayerId = params.layerId();
+        drawTool.drawData->selectedFrame.value = params.frameIndex();
+        drawTool.saveDrawing("select cell");
+      }
     } else if (action == "selectFrame") {
       // TODO: setIsPlayingAnimation(false)
-      drawTool.drawData->selectedFrame.value = params.frameIndex();
-      drawTool.saveDrawing("select frame");
+      if (drawTool.drawData->selectedFrame.value != params.frameIndex()) {
+        drawTool.drawData->selectedFrame.value = params.frameIndex();
+        drawTool.saveDrawing("select frame");
+      }
     } else if (action == "stepBackward") {
       auto newFrameIndex = drawTool.drawData->selectedFrame.value - 1;
       if (newFrameIndex < 1) {
