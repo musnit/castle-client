@@ -10,6 +10,10 @@
 struct Drawing2Component : BaseComponent {
   struct Props {
     PROP(
+         float, initialFrame,
+         .label("Initial frame")
+         ) = 1;
+    PROP(
          float, currentFrame,
          .label("Current frame")
          ) = 1;

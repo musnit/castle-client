@@ -279,7 +279,8 @@ namespace ghost {
       if (archive.has("c")) {
         love::Colorf c;
         archive.arr("c", [&]() {
-          c.set(archive.num((unsigned int)0, 1.0), archive.num(1, 1.0), archive.num(2, 1.0), archive.num(3, 1.0));
+          c.set(archive.num((unsigned int)0, 1.0), archive.num(1, 1.0), archive.num(2, 1.0),
+              archive.num(3, 1.0));
         });
 
         color = c;
@@ -399,8 +400,8 @@ namespace ghost {
     void write(Archive::Writer &writer) const {
       writer.boolean("playing", playing);
       writer.num("framesPerSecond", framesPerSecond);
-      writer.num("initialFrame", currentFrame.value);
       writer.boolean("loop", loop);
+      // don't write `initialFrame` - allow parent Drawing2 component to write it
     }
   };
 
