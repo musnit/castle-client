@@ -538,6 +538,36 @@ void DrawTool::renderOnionSkinning() {
 // Update
 //
 
+void DrawTool::onSetActive() {
+  viewPosition.x = 0;
+  viewPosition.y = 0;
+  viewWidth = DRAW_DEFAULT_VIEW_WIDTH;
+  didBecomeActive = true;
+}
+
+void DrawTool::fitViewWidth() {
+  if (!drawData) {
+    return;
+  }
+  auto bounds = drawData->getBounds(drawData->selectedFrame.value - 1);
+  float maxBound = 1.0f;
+  if (std::abs(bounds.minX) > maxBound) {
+    maxBound = std::abs(bounds.minX);
+  }
+  if (std::abs(bounds.maxX) > maxBound) {
+    maxBound = std::abs(bounds.maxX);
+  }
+  if (std::abs(bounds.minY) > maxBound) {
+    maxBound = std::abs(bounds.minY);
+  }
+  if (std::abs(bounds.maxY) > maxBound) {
+    maxBound = std::abs(bounds.maxY);
+  }
+  if (maxBound > 1.0f) {
+    viewWidth = maxBound * 2.0f;
+  }
+}
+
 void DrawTool::loadLastSave() {
   auto &scene = editor.getScene();
   if (!editor.getSelection().hasSelection()) {
@@ -561,7 +591,6 @@ void DrawTool::loadLastSave() {
   sendLayersEvent();
   sendDrawToolEvent();
 
-  // TODO: hasResetViewWidth
   // TODO: _toolOptions
 }
 
@@ -585,6 +614,11 @@ void DrawTool::update(double dt) {
   auto hash = component->hash;
   if (lastHash != hash) {
     loadLastSave();
+  }
+
+  if (didBecomeActive) {
+    didBecomeActive = false;
+    fitViewWidth();
   }
 
   if (isDrawToolEventDirty) {

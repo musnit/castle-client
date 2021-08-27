@@ -26,6 +26,7 @@ public:
   ~DrawTool();
 
   void resetState();
+  void onSetActive();
   void update(double dt);
   void drawOverlay();
 
@@ -56,6 +57,7 @@ private:
   friend struct DrawToolClearCollisionShapesReceiver;
 
   bool isDrawToolEventDirty = false;
+  bool didBecomeActive = false;
   float tempTranslateX = 0;
   float tempTranslateY = 0;
 
@@ -66,7 +68,7 @@ private:
   std::unordered_map<std::string, std::string> selectedSubtools;
   std::string lastHash;
   mutable love::Transform viewTransform;
-  float viewWidth = 800;
+  float viewWidth = DRAW_DEFAULT_VIEW_WIDTH;
   love::Vector2 viewPosition;
 
   std::vector<std::unique_ptr<DrawSubtool>> subtools;
@@ -90,6 +92,7 @@ private:
   void renderOnionSkinning();
 
   void loadLastSave();
+  void fitViewWidth();
 };
 
 inline love::DrawData &DrawTool::getDrawData() {

@@ -470,6 +470,7 @@ struct EditorGlobalActionReceiver {
       auto newMode = params.value();
       if (newMode == "draw") {
         editor->editMode = Editor::EditMode::Draw;
+        editor->drawTool.onSetActive();
       } else if (newMode == "default") {
         editor->editMode = Editor::EditMode::Default;
         editor->currentTool = Editor::Tool::Grab;
