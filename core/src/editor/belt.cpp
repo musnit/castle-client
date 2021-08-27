@@ -432,7 +432,7 @@ void Belt::drawOverlay() const {
 
   // Elements
   {
-    const auto drawElem = [&](const LibraryEntry &entry, const love::Vector2 &pos) {
+    const auto drawElem = [&](const LibraryEntry &entry, love::Vector2 pos) {
       if (auto image = entry.getPreviewImage()) {
         auto imgW = float(image->getWidth());
         auto imgH = float(image->getHeight());

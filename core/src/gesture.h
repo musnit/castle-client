@@ -59,8 +59,8 @@ private:
   inline static uint64_t nextOrder = 0;
   uint64_t order = nextOrder++;
 
-  Touch(TouchId id_, const love::Vector2 &screenPos_, const love::Vector2 &pos_,
-      const love::Vector2 &cameraPos_, double pressTime_, love::int64 loveTouchId_,
+  Touch(TouchId id_, love::Vector2 screenPos_, love::Vector2 pos_,
+      love::Vector2 cameraPos_, double pressTime_, love::int64 loveTouchId_,
       bool isMouse_); // Private so only `Gesture` can create
 };
 
@@ -129,8 +129,8 @@ private:
 
 // Inlined implementations
 
-inline Touch::Touch(TouchId id_, const love::Vector2 &screenPos_, const love::Vector2 &pos_,
-    const love::Vector2 &cameraPos_, double pressTime_, love::int64 loveTouchId_, bool isMouse_)
+inline Touch::Touch(TouchId id_, love::Vector2 screenPos_, love::Vector2 pos_,
+    love::Vector2 cameraPos_, double pressTime_, love::int64 loveTouchId_, bool isMouse_)
     : id(id_)
     , screenPos(screenPos_)
     , pos(pos_)

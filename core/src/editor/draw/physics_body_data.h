@@ -146,7 +146,7 @@ private:
     }
   }
 
-  bool isPointInBounds(const love::Vector2 &point) {
+  bool isPointInBounds(love::Vector2 point) {
     return point.x >= -DRAW_MAX_SIZE and point.x <= DRAW_MAX_SIZE and point.y >= -DRAW_MAX_SIZE
         and point.y <= DRAW_MAX_SIZE;
   }
@@ -322,7 +322,7 @@ public:
   }
 
   std::optional<PhysicsBodyDataShape> getRectangleShape(
-      const love::Vector2 &p1, const love::Vector2 &p2) {
+      love::Vector2 p1, love::Vector2 p2) {
     PhysicsBodyDataShape shape;
     shape.type = CollisionShapeType::Rectangle;
     shape.p1 = p1;
@@ -335,8 +335,8 @@ public:
     }
   }
 
-  std::optional<PhysicsBodyDataShape> getTriangleShape(const love::Vector2 &p1,
-      const love::Vector2 &p2, const std::optional<love::Vector2> &optionalP3) {
+  std::optional<PhysicsBodyDataShape> getTriangleShape(love::Vector2 p1,
+      love::Vector2 p2, const std::optional<love::Vector2> &optionalP3) {
     love::Vector2 p3(p1.x, p2.y);
     if (optionalP3) {
       p3.x = optionalP3->x;
@@ -358,8 +358,8 @@ public:
     }
   }
 
-  std::optional<PhysicsBodyDataShape> getCircleShape(const love::Vector2 &p1,
-      const love::Vector2 &p2, love::DrawData *drawData, int roundDx, int roundDy) {
+  std::optional<PhysicsBodyDataShape> getCircleShape(love::Vector2 p1,
+      love::Vector2 p2, love::DrawData *drawData, int roundDx, int roundDy) {
     PhysicsBodyDataShape shape;
     shape.type = CollisionShapeType::Circle;
     shape.x = (p1.x + p2.x) / 2.0;

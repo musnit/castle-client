@@ -130,7 +130,7 @@ public:
   // View, camera
 
   const love::Transform &getViewTransform() const;
-  love::Vector2 inverseViewTransformPoint(const love::Vector2 &point) const;
+  love::Vector2 inverseViewTransformPoint(love::Vector2 point) const;
   float getViewYOffset() const;
   float getViewScale() const;
   float getPixelScale() const;
@@ -407,7 +407,7 @@ inline const love::Transform &Scene::getViewTransform() const {
   return viewTransform;
 }
 
-inline love::Vector2 Scene::inverseViewTransformPoint(const love::Vector2 &point) const {
+inline love::Vector2 Scene::inverseViewTransformPoint(love::Vector2 point) const {
   return viewTransform.inverseTransformPoint(point);
 }
 

@@ -50,8 +50,8 @@ static float luaMod(float lhs, float rhs) {
   return rhs != 0 ? lhs - std::floor(lhs / rhs) * rhs : 0;
 }
 
-void Grid::draw(float gridCellSize, float gridSize, float viewScale, const love::Vector2 &view,
-    const love::Vector2 &offset, float dotRadius, bool highlightAxes, float axesAlpha) const {
+void Grid::draw(float gridCellSize, float gridSize, float viewScale, love::Vector2 view,
+    love::Vector2 offset, float dotRadius, bool highlightAxes, float axesAlpha) const {
   if (gridCellSize > 0) {
     lv.graphics.push(love::Graphics::STACK_ALL);
 

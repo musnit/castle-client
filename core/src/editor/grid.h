@@ -16,8 +16,8 @@ public:
   static float quantize(float value, float divisor, float start = 0);
 
 
-  void draw(float gridCellSize, float gridSize, float viewScale, const love::Vector2 &view,
-      const love::Vector2 &offset, float dotRadius, bool highlightAxes, float axesAlpha) const;
+  void draw(float gridCellSize, float gridSize, float viewScale, love::Vector2 view,
+      love::Vector2 offset, float dotRadius, bool highlightAxes, float axesAlpha) const;
 
 
 private:
