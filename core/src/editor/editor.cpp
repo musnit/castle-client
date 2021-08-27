@@ -498,7 +498,14 @@ struct EditorSelectedActorEvent {
   struct Behavior {
     PROP(bool, isActive) = false;
   };
+
+  struct LibraryEntry {
+    PROP(std::string, title);
+    PROP(std::string, base64Png);
+  };
+
   PROP((std::unordered_map<std::string, Behavior>), behaviors);
+  PROP(LibraryEntry, libraryEntry);
 };
 
 void Editor::sendSelectedActorData() {
@@ -514,6 +521,17 @@ void Editor::sendSelectedActorData() {
     }
     ev.behaviors().emplace(BehaviorType::name, elem);
   });
+
+  if (auto entryId = scene->maybeGetParentEntryId(selection.firstSelectedActorId())) {
+    auto &library = scene->getLibrary();
+    if (auto entry = library.maybeGetEntry(entryId)) {
+      ev.libraryEntry().title = entry->getTitle();
+      if (auto [base64Png, base64PngLength] = entry->getBase64Png(); base64Png) {
+        ev.libraryEntry().base64Png = std::string(*base64Png);
+      }
+    }
+  }
+
   bridge.sendEvent("EDITOR_SELECTED_ACTOR", ev);
 }
 
