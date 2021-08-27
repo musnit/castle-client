@@ -76,7 +76,12 @@ private:
   std::shared_ptr<love::ToveGraphicsHolder> tempGraphics;
 
   DrawSubtool &getCurrentSubtool();
-  GesturePanZoom panZoom;
+  GesturePanZoom panZoom {
+    DRAW_MIN_VIEW_WIDTH,
+    DRAW_MAX_VIEW_WIDTH,
+    { -DRAW_MAX_SIZE, -DRAW_MAX_SIZE },
+    { DRAW_MAX_SIZE, DRAW_MAX_SIZE },
+  };
 
   void makeNewLayer();
   void deleteLayerAndValidate(const love::DrawDataLayerId &layerId);

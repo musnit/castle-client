@@ -53,23 +53,13 @@ std::pair<love::Vector2, float> GesturePanZoom::apply(
   auto clampedTranslate = translate;
   float finalViewWidth = currentViewWidth;
   if (scale != 0) {
-    finalViewWidth = fmax(clampViewWidth.x, fmin(clampViewWidth.y, scale * currentViewWidth));
+    finalViewWidth = std::clamp(scale * currentViewWidth, minWidth, maxWidth);
     auto clampedScale = finalViewWidth / currentViewWidth;
     clampedTranslate = translate - (center - currentViewPosition) * (1.0f - clampedScale);
   }
   auto finalPosition = currentViewPosition - clampedTranslate;
-  if (finalPosition.x < clampViewX.x) {
-    finalPosition.x = clampViewX.x;
-  }
-  if (finalPosition.x > clampViewX.y) {
-    finalPosition.x = clampViewX.y;
-  }
-  if (finalPosition.y < clampViewY.x) {
-    finalPosition.y = clampViewY.x;
-  }
-  if (finalPosition.y > clampViewY.y) {
-    finalPosition.y = clampViewY.y;
-  }
+  finalPosition.x = std::clamp(finalPosition.x, viewMin.x, viewMax.x);
+  finalPosition.y = std::clamp(finalPosition.y, viewMin.y, viewMax.y);
   return std::pair<love::Vector2, float>(finalPosition, finalViewWidth);
 }
 

@@ -418,10 +418,6 @@ DrawTool::DrawTool(Editor &editor_)
     : editor(editor_) {
   resetState();
 
-  love::Vector2 clampViewWidth(DRAW_MIN_VIEW_WIDTH, DRAW_MAX_VIEW_WIDTH);
-  love::Vector2 clampViewPos(-DRAW_MAX_SIZE, DRAW_MAX_SIZE);
-  panZoom.setConstraints(clampViewWidth, clampViewPos, clampViewPos);
-
   subtools.push_back(std::make_unique<DrawFreehandSubtool>(*this));
   subtools.push_back(std::make_unique<DrawLineSubtool>(*this));
   subtools.push_back(std::make_unique<DrawShapeSubtool>(*this, DrawShapeSubtool::Shape::Rectangle));

@@ -5,7 +5,7 @@
 
 class GesturePanZoom {
 public:
-  GesturePanZoom() = default;
+  GesturePanZoom(float minWidth, float maxWidth, love::Vector2 viewMin, love::Vector2 viewMax);
 
   bool isActive();
   void update(const Gesture &gesture, love::Transform &currentViewTransform);
@@ -21,23 +21,24 @@ public:
   void clear();
 
 private:
-  bool hasGesture;
+  bool hasGesture = false;
   TouchId touch1Id = entt::null, touch2Id = entt::null;
 
   // current gesture state
   love::Vector2 center;
   love::Vector2 translate;
-  float scale;
+  float scale = 1;
 
-  // constraints - min/max
-  love::Vector2 clampViewWidth;
-  love::Vector2 clampViewX;
-  love::Vector2 clampViewY;
+  // constraints
+  float minWidth, maxWidth;
+  love::Vector2 viewMin;
+  love::Vector2 viewMax;
 };
 
-inline void GesturePanZoom::setConstraints(
-    love::Vector2 &clampViewWidth_, love::Vector2 &clampViewX_, love::Vector2 &clampViewY_) {
-  clampViewWidth = clampViewWidth_;
-  clampViewX = clampViewX_;
-  clampViewY = clampViewY_;
+inline GesturePanZoom::GesturePanZoom(
+    float minWidth_, float maxWidth_, love::Vector2 viewMin_, love::Vector2 viewMax_)
+    : minWidth(minWidth_)
+    , maxWidth(maxWidth_)
+    , viewMin(viewMin_)
+    , viewMax(viewMax_) {
 }
