@@ -1081,36 +1081,79 @@ struct EditorChangeDrawOrderReceiver {
     }
 
     // Forward / backward
-    enum MoveOneDir { Forward, Backward };
-    const auto moveOne = [](Editor &editor, ActorId actorId, MoveOneDir dir) {
+    enum MoveDir { Forward, Backward };
+    static const auto moveInDir = [](Editor &editor, ActorId actorId, const MoveDir dir) {
       auto &scene = editor.getScene();
-      scene.ensureDrawOrderSort();
-      Scene::DrawOrderParams drawOrderParams;
-      if (dir == Forward) {
+      auto maybeDrawOrder = scene.maybeGetDrawOrder(actorId);
+      if (!maybeDrawOrder) {
+        return;
       }
-      if (dir == Backward) {
-      }
-      scene.setDrawOrder(actorId, drawOrderParams);
-      scene.ensureDrawOrderSort();
-    };
+      auto currDrawOrderValue = maybeDrawOrder->value;
 
-    //} else if (params.change() == "back") {
-    //  drawOrderParams.relativity = Scene::DrawOrderParams::BehindAll;
-    //} else if (params.change() == "forward") {
-    //  if (auto order = scene.maybeGetDrawOrder(actorId)) {
-    //    if (order->value < scene.numActors()) {
-    //      drawOrderParams.relativeToValue = order->value + 2;
-    //      drawOrderParams.relativity = Scene::DrawOrderParams::Behind;
-    //    }
-    //  }
-    //} else if (params.change() == "backward") {
-    //  if (auto order = scene.maybeGetDrawOrder(actorId)) {
-    //    if (order->value > 1) {
-    //      drawOrderParams.relativeToValue = order->value - 2;
-    //      drawOrderParams.relativity = Scene::DrawOrderParams::FrontOf;
-    //    }
-    //  }
-    //}
+      // Find next draw order in move direction among actors we're overlapping with
+      int foundDrawOrderValue = -1;
+      scene.ensureDrawOrderSort(); // Ensure order is compact before
+      auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
+      if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
+        for (auto fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()) {
+          auto bb = fixture->GetAABB(0);
+          bodyBehavior.forEachActorAtBoundingBox(bb.lowerBound.x, bb.lowerBound.y, bb.upperBound.x,
+              bb.upperBound.y, [&](ActorId otherActorId, const b2Fixture *) {
+                if (actorId != otherActorId) {
+                  if (auto otherDrawOrder = scene.maybeGetDrawOrder(otherActorId)) {
+                    auto otherDrawOrderValue = otherDrawOrder->value;
+                    if (dir == Forward) {
+                      // Find lowest draw order greater than us
+                      if (otherDrawOrderValue > currDrawOrderValue
+                          && (foundDrawOrderValue == -1
+                              || otherDrawOrderValue < foundDrawOrderValue)) {
+                        foundDrawOrderValue = otherDrawOrderValue;
+                      }
+                    } else {
+                      // Find greatest draw order less than us
+                      if (otherDrawOrderValue < currDrawOrderValue
+                          && (foundDrawOrderValue == -1
+                              || otherDrawOrderValue > foundDrawOrderValue)) {
+                        foundDrawOrderValue = otherDrawOrderValue;
+                      }
+                    }
+                  }
+                }
+                return true;
+              });
+        }
+      }
+
+      if (foundDrawOrderValue != -1) {
+        Scene::DrawOrderParams params;
+        params.relativeToValue = foundDrawOrderValue;
+        if (dir == Forward) {
+          params.relativity = Scene::DrawOrderParams::FrontOf; // In front of actor in front of us
+        } else {
+          params.relativity = Scene::DrawOrderParams::Behind; // Behind actor behind us
+        }
+        scene.setDrawOrder(actorId, params);
+      }
+    };
+    if (params.change() == "forward") {
+      editor->getCommands().execute(
+          "move forward", {},
+          [actorId](Editor &editor, bool) {
+            moveInDir(editor, actorId, Forward);
+          },
+          [actorId](Editor &editor, bool) {
+            moveInDir(editor, actorId, Backward);
+          });
+    } else if (params.change() == "backward") {
+      editor->getCommands().execute(
+          "move backward", {},
+          [actorId](Editor &editor, bool) {
+            moveInDir(editor, actorId, Backward);
+          },
+          [actorId](Editor &editor, bool) {
+            moveInDir(editor, actorId, Forward);
+          });
+    }
   }
 };
 
