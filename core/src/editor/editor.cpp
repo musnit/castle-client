@@ -1038,30 +1038,79 @@ struct EditorChangeDrawOrderReceiver {
       return; // Need a non-ghost selection
     }
     auto actorId = selection.firstSelectedActorId();
-    scene.ensureDrawOrderSort(); // Do this once first to make sure the order is compact and we
-                                 // use correct values for backward / forward
-    Scene::DrawOrderParams drawOrderParams;
-    if (params.change() == "front") {
-      drawOrderParams.relativity = Scene::DrawOrderParams::FrontOfAll;
-    } else if (params.change() == "back") {
-      drawOrderParams.relativity = Scene::DrawOrderParams::BehindAll;
-    } else if (params.change() == "forward") {
-      if (auto order = scene.maybeGetDrawOrder(actorId)) {
-        if (order->value < scene.numActors()) {
-          drawOrderParams.relativeToValue = order->value + 2;
-          drawOrderParams.relativity = Scene::DrawOrderParams::Behind;
-        }
+
+    // Front / back
+    auto front = params.change() == "front";
+    auto back = params.change() == "back";
+    if (front || back) {
+      auto maybeDrawOrder = scene.maybeGetDrawOrder(actorId);
+      if (!maybeDrawOrder) {
+        return;
       }
-    } else if (params.change() == "backward") {
-      if (auto order = scene.maybeGetDrawOrder(actorId)) {
-        if (order->value > 1) {
-          drawOrderParams.relativeToValue = order->value - 2;
-          drawOrderParams.relativity = Scene::DrawOrderParams::FrontOf;
-        }
+      auto currDrawOrderValue = maybeDrawOrder->value;
+      if (front) {
+        editor->getCommands().execute(
+            "move to front", {},
+            [actorId](Editor &editor, bool) {
+              Scene::DrawOrderParams params;
+              params.relativity = Scene::DrawOrderParams::FrontOfAll;
+              editor.getScene().setDrawOrder(actorId, params);
+            },
+            [actorId, currDrawOrderValue](Editor &editor, bool) {
+              Scene::DrawOrderParams params;
+              params.relativeToValue = currDrawOrderValue;
+              params.relativity = Scene::DrawOrderParams::Behind;
+              editor.getScene().setDrawOrder(actorId, params);
+            });
+      } else {
+        editor->getCommands().execute(
+            "move to back", {},
+            [actorId](Editor &editor, bool) {
+              Scene::DrawOrderParams params;
+              params.relativity = Scene::DrawOrderParams::BehindAll;
+              editor.getScene().setDrawOrder(actorId, params);
+            },
+            [actorId, currDrawOrderValue](Editor &editor, bool) {
+              Scene::DrawOrderParams params;
+              params.relativeToValue = currDrawOrderValue;
+              params.relativity = Scene::DrawOrderParams::FrontOf;
+              editor.getScene().setDrawOrder(actorId, params);
+            });
       }
+      return;
     }
-    scene.setDrawOrder(actorId, drawOrderParams);
-    scene.ensureDrawOrderSort(); // Now sort again to apply new order
+
+    // Forward / backward
+    enum MoveOneDir { Forward, Backward };
+    const auto moveOne = [](Editor &editor, ActorId actorId, MoveOneDir dir) {
+      auto &scene = editor.getScene();
+      scene.ensureDrawOrderSort();
+      Scene::DrawOrderParams drawOrderParams;
+      if (dir == Forward) {
+      }
+      if (dir == Backward) {
+      }
+      scene.setDrawOrder(actorId, drawOrderParams);
+      scene.ensureDrawOrderSort();
+    };
+
+    //} else if (params.change() == "back") {
+    //  drawOrderParams.relativity = Scene::DrawOrderParams::BehindAll;
+    //} else if (params.change() == "forward") {
+    //  if (auto order = scene.maybeGetDrawOrder(actorId)) {
+    //    if (order->value < scene.numActors()) {
+    //      drawOrderParams.relativeToValue = order->value + 2;
+    //      drawOrderParams.relativity = Scene::DrawOrderParams::Behind;
+    //    }
+    //  }
+    //} else if (params.change() == "backward") {
+    //  if (auto order = scene.maybeGetDrawOrder(actorId)) {
+    //    if (order->value > 1) {
+    //      drawOrderParams.relativeToValue = order->value - 2;
+    //      drawOrderParams.relativity = Scene::DrawOrderParams::FrontOf;
+    //    }
+    //  }
+    //}
   }
 };
 
