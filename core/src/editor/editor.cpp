@@ -262,8 +262,20 @@ void Editor::updateBlueprint(ActorId actorId, UpdateBlueprintParams params) {
         scene->writeActor(actorId, writer, false);
       });
       if (oldEntry) {
-        if (auto [base64Png, base64PngLength] = oldEntry->getBase64Png(); base64Png) {
-          writer.str("base64Png", *base64Png);
+        if (params.updateBase64Png) {
+          if (auto drawingComponent
+              = scene->getBehaviors().byType<Drawing2Behavior>().maybeGetComponent(actorId)) {
+            auto initialFrameZeroIndex = drawingComponent->props.initialFrame() - 1;
+            if (auto base64Png
+                = drawingComponent->drawData->renderPreviewPng(initialFrameZeroIndex, -1);
+                base64Png) {
+              writer.str("base64Png", base64Png.value().c_str());
+            }
+          }
+        } else {
+          if (auto [base64Png, base64PngLength] = oldEntry->getBase64Png(); base64Png) {
+            writer.str("base64Png", *base64Png);
+          }
         }
       }
     });

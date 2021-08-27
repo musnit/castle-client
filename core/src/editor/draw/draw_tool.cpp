@@ -389,7 +389,9 @@ void DrawTool::saveDrawing(std::string commandDescription) {
           component->physicsBodyData = std::make_shared<PhysicsBodyData>(physicsBodyData);
           component->hash = hash;
 
-          editor.updateBlueprint(actorId, {});
+          Editor::UpdateBlueprintParams updateBlueprintParams;
+          updateBlueprintParams.updateBase64Png = true;
+          editor.updateBlueprint(actorId, updateBlueprintParams);
           editor.setSelectedComponentStateDirty(Drawing2Behavior::behaviorId);
         };
 
