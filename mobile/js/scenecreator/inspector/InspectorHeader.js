@@ -56,7 +56,7 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
     <View pointerEvents={isOpen ? 'auto' : 'none'}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <InspectorBlueprintHeader />
+          <InspectorBlueprintHeader isEditable />
           <InspectorBlueprintActions />
         </View>
         <TouchableOpacity style={styles.closeButton} onPress={() => sendAction('closeInspector')}>
