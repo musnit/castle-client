@@ -241,7 +241,7 @@ class CreateCardScreenDataProvider extends React.Component {
   _handleSceneMessage = (message) => {
     switch (message.messageType) {
       case 'UPDATE_SCENE': {
-        //console.log(`new scene data: ${JSON.stringify(message.data, null, 2)}`);
+        //console.log(`new scene data: ${message.data}`);
         this._handleCardChange({
           changedSceneData: message.data,
         });

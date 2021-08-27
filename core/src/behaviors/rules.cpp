@@ -114,20 +114,20 @@ struct CreateResponse : BaseResponse {
     if (auto &depth = params.depth(); depth[0] == 'b') {
       if (depth[7] == 't') {
         // Behind this
-        newActorDesc.drawOrderRelativeToActor = creatorActorId;
-        newActorDesc.drawOrderRelativity = Scene::ActorDesc::Behind;
+        newActorDesc.drawOrderParams.relativeToActor = creatorActorId;
+        newActorDesc.drawOrderParams.relativity = Scene::DrawOrderParams::Behind;
       } else {
         // Behind all
-        newActorDesc.drawOrderRelativity = Scene::ActorDesc::BehindAll;
+        newActorDesc.drawOrderParams.relativity = Scene::DrawOrderParams::BehindAll;
       }
     } else {
       if (depth[12] == 't') {
         // Front of this
-        newActorDesc.drawOrderRelativeToActor = creatorActorId;
-        newActorDesc.drawOrderRelativity = Scene::ActorDesc::FrontOf;
+        newActorDesc.drawOrderParams.relativeToActor = creatorActorId;
+        newActorDesc.drawOrderParams.relativity = Scene::DrawOrderParams::FrontOf;
       } else {
         // Front of all
-        newActorDesc.drawOrderRelativity = Scene::ActorDesc::FrontOfAll;
+        newActorDesc.drawOrderParams.relativity = Scene::DrawOrderParams::FrontOfAll;
       }
     }
 

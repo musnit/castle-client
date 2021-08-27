@@ -138,40 +138,7 @@ ActorId Scene::addActor(const ActorDesc &params) {
                                                       : registry.create();
 
   // Draw order
-  DrawOrder drawOrder;
-  auto drawOrderRelativity = params.drawOrderRelativity;
-  if (drawOrderRelativity == ActorDesc::Behind || drawOrderRelativity == ActorDesc::FrontOf) {
-    if (params.drawOrderRelativeToValue) {
-      // Relative to given direct draw order value -- tie break is set later below
-      drawOrder.value = *params.drawOrderRelativeToValue;
-    } else if (auto otherDrawOrder = maybeGetDrawOrder(params.drawOrderRelativeToActor)) {
-      // Relative to found given actor -- tie break is set later below
-      drawOrder.value = otherDrawOrder->value;
-    } else {
-      // Front of all if given actor not found
-      drawOrderRelativity = ActorDesc::FrontOfAll;
-    }
-  }
-  if (drawOrderRelativity == ActorDesc::BehindAll) {
-    // Behind all means in front of the 'back' sentinel value
-    drawOrder.value = backDrawOrder;
-    drawOrderRelativity = ActorDesc::FrontOf;
-  }
-  if (drawOrderRelativity == ActorDesc::FrontOfAll) {
-    // Front of all means behind the 'front' sentinel value
-    drawOrder.value = frontDrawOrder;
-    drawOrderRelativity = ActorDesc::Behind;
-  }
-  if (drawOrderRelativity == ActorDesc::Behind) {
-    // Next negative tie break closer to zero
-    drawOrder.tieBreak = -(nextDrawOrderTieBreak--);
-  }
-  if (drawOrderRelativity == ActorDesc::FrontOf) {
-    // Next positive tie break closer to zero
-    drawOrder.tieBreak = nextDrawOrderTieBreak--;
-  }
-  registry.emplace<DrawOrder>(actorId, drawOrder);
-  needDrawOrderSort = true;
+  setDrawOrder(actorId, params.drawOrderParams);
 
   // Track parent entry id
   if (params.parentEntryId) {

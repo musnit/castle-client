@@ -38,16 +38,36 @@ public:
   void write(Writer &writer) const;
 
 
+  // Draw order
+
+  struct DrawOrder {
+    int value = -1;
+    int tieBreak = 0;
+    bool operator<(const DrawOrder &other) const;
+  };
+  static constexpr DrawOrder minDrawOrder { -1, 0 };
+  const DrawOrder *maybeGetDrawOrder(ActorId actorId) const; // `nullptr` if invalid. Shortlived,
+                                                             // may move as actors added / removed.
+  void ensureDrawOrderSort() const;
+  template<typename F>
+  void forEachActorByDrawOrder(F &&f) const; // `f` must take `(ActorId)`
+
+  struct DrawOrderParams {
+    enum Relativity { BehindAll, Behind, FrontOf, FrontOfAll };
+    Relativity relativity = FrontOfAll;
+    ActorId relativeToActor = nullActor;
+    std::optional<int> relativeToValue;
+  };
+  void setDrawOrder(ActorId actorId, DrawOrderParams params);
+
+
   // Actor management
 
   struct ActorDesc {
     ActorId requestedActorId = nullActor;
     Reader *reader = nullptr;
     const char *parentEntryId = nullptr;
-    enum DrawOrderRelativity { BehindAll, Behind, FrontOf, FrontOfAll };
-    DrawOrderRelativity drawOrderRelativity = FrontOfAll;
-    ActorId drawOrderRelativeToActor = nullActor;
-    std::optional<int> drawOrderRelativeToValue;
+    DrawOrderParams drawOrderParams = {};
     bool isGhost = false;
     std::optional<love::Vector2> pos;
   };
@@ -63,21 +83,6 @@ public:
                                        // `nullActor` if out of bounds.
 
   void writeActor(ActorId actorId, Writer &writer, bool skipInheritedProperties = true) const;
-
-
-  // Draw order
-
-  struct DrawOrder {
-    int value = -1;
-    int tieBreak = 0;
-    bool operator<(const DrawOrder &other) const;
-  };
-  static constexpr DrawOrder minDrawOrder { -1, 0 };
-  const DrawOrder *maybeGetDrawOrder(ActorId actorId) const; // `nullptr` if invalid. Shortlived,
-                                                             // may move as actors added / removed.
-  void ensureDrawOrderSort() const;
-  template<typename F>
-  void forEachActorByDrawOrder(F &&f) const; // `f` must take `(ActorId)`
 
 
   // Parent entry
@@ -296,6 +301,44 @@ template<typename F>
 inline void Scene::forEachActorByDrawOrder(F &&f) const {
   ensureDrawOrderSort();
   forEachActor(std::forward<F>(f));
+}
+
+inline void Scene::setDrawOrder(ActorId actorId, DrawOrderParams params) {
+  DrawOrder drawOrder;
+  auto drawOrderRelativity = params.relativity;
+  if (drawOrderRelativity == DrawOrderParams::Behind
+      || drawOrderRelativity == DrawOrderParams::FrontOf) {
+    if (params.relativeToValue) {
+      // Relative to given direct draw order value -- tie break is set later below
+      drawOrder.value = *params.relativeToValue;
+    } else if (auto otherDrawOrder = maybeGetDrawOrder(params.relativeToActor)) {
+      // Relative to found given actor -- tie break is set later below
+      drawOrder.value = otherDrawOrder->value;
+    } else {
+      // Front of all if given actor not found
+      drawOrderRelativity = DrawOrderParams::FrontOfAll;
+    }
+  }
+  if (drawOrderRelativity == DrawOrderParams::BehindAll) {
+    // Behind all means in front of the 'back' sentinel value
+    drawOrder.value = backDrawOrder;
+    drawOrderRelativity = DrawOrderParams::FrontOf;
+  }
+  if (drawOrderRelativity == DrawOrderParams::FrontOfAll) {
+    // Front of all means behind the 'front' sentinel value
+    drawOrder.value = frontDrawOrder;
+    drawOrderRelativity = DrawOrderParams::Behind;
+  }
+  if (drawOrderRelativity == DrawOrderParams::Behind) {
+    // Next negative tie break closer to zero
+    drawOrder.tieBreak = -(nextDrawOrderTieBreak--);
+  }
+  if (drawOrderRelativity == DrawOrderParams::FrontOf) {
+    // Next positive tie break closer to zero
+    drawOrder.tieBreak = nextDrawOrderTieBreak--;
+  }
+  registry.emplace_or_replace<DrawOrder>(actorId, drawOrder);
+  needDrawOrderSort = true;
 }
 
 inline const char *Scene::maybeGetParentEntryId(ActorId actorId) const {

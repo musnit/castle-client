@@ -295,8 +295,8 @@ void Editor::updateBlueprint(ActorId actorId, UpdateBlueprintParams params) {
         actorDesc.parentEntryId = entryId.c_str(); // PERF: Could point to entry in `ActorDesc`,
                                                    //       avoid library lookup
         if (auto drawOrder = scene->maybeGetDrawOrder(otherActorId)) {
-          actorDesc.drawOrderRelativeToValue = drawOrder->value;
-          actorDesc.drawOrderRelativity = Scene::ActorDesc::Behind;
+          actorDesc.drawOrderParams.relativeToValue = drawOrder->value;
+          actorDesc.drawOrderParams.relativity = Scene::DrawOrderParams::Behind;
         }
         scene->removeActor(otherActorId);
         scene->addActor(actorDesc);
@@ -980,6 +980,53 @@ struct EditorModifyComponentReceiver {
   }
 };
 
+struct EditorChangeDrawOrderReceiver {
+  inline static const BridgeRegistration<EditorChangeDrawOrderReceiver> registration {
+    "EDITOR_CHANGE_DRAW_ORDER"
+  };
+
+  struct Params {
+    PROP(std::string, change);
+  } params;
+
+  void receive(Engine &engine) {
+    auto editor = engine.maybeGetEditor();
+    if (!editor || !editor->hasScene()) {
+      return;
+    }
+    auto &scene = editor->getScene();
+    auto &selection = editor->getSelection();
+    if (!selection.hasSelection() || selection.isGhostActorsSelected()) {
+      return; // Need a non-ghost selection
+    }
+    auto actorId = selection.firstSelectedActorId();
+    scene.ensureDrawOrderSort(); // Do this once first to make sure the order is compact and we
+                                 // use correct values for backward / forward
+    Scene::DrawOrderParams drawOrderParams;
+    if (params.change() == "front") {
+      drawOrderParams.relativity = Scene::DrawOrderParams::FrontOfAll;
+    } else if (params.change() == "back") {
+      drawOrderParams.relativity = Scene::DrawOrderParams::BehindAll;
+    } else if (params.change() == "forward") {
+      if (auto order = scene.maybeGetDrawOrder(actorId)) {
+        if (order->value < scene.numActors()) {
+          drawOrderParams.relativeToValue = order->value + 2;
+          drawOrderParams.relativity = Scene::DrawOrderParams::Behind;
+        }
+      }
+    } else if (params.change() == "backward") {
+      if (auto order = scene.maybeGetDrawOrder(actorId)) {
+        if (order->value > 1) {
+          drawOrderParams.relativeToValue = order->value - 2;
+          drawOrderParams.relativity = Scene::DrawOrderParams::FrontOf;
+        }
+      }
+    }
+    scene.setDrawOrder(actorId, drawOrderParams);
+    scene.ensureDrawOrderSort(); // Now sort again to apply new order
+  }
+};
+
 struct EditorInspectorActionReceiver {
   inline static const BridgeRegistration<EditorInspectorActionReceiver> registration {
     "EDITOR_INSPECTOR_ACTION"
@@ -1107,8 +1154,8 @@ struct EditorInspectorActionReceiver {
                 if (parentEntryId) {
                   actorDesc.parentEntryId = parentEntryId->c_str();
                 }
-                actorDesc.drawOrderRelativeToValue = drawOrderRelativeToValue;
-                actorDesc.drawOrderRelativity = Scene::ActorDesc::Behind;
+                actorDesc.drawOrderParams.relativeToValue = drawOrderRelativeToValue;
+                actorDesc.drawOrderParams.relativity = Scene::DrawOrderParams::Behind;
                 scene.addActor(actorDesc);
               });
             });
@@ -1179,8 +1226,8 @@ struct EditorInspectorActionReceiver {
                 actorDesc.requestedActorId = newActorId;
                 actorDesc.reader = &reader;
                 actorDesc.parentEntryId = scene.maybeGetParentEntryId(actorId);
-                actorDesc.drawOrderRelativity = Scene::ActorDesc::FrontOf;
-                actorDesc.drawOrderRelativeToActor = actorId;
+                actorDesc.drawOrderParams.relativity = Scene::DrawOrderParams::FrontOf;
+                actorDesc.drawOrderParams.relativeToActor = actorId;
                 scene.addActor(actorDesc);
                 scene.ensureDrawOrderSort();
               });

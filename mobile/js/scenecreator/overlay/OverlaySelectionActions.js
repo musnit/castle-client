@@ -46,38 +46,38 @@ const makeChangeOrderOptions = ({ isTextActorSelected, sendAction }) => {
     return [
       {
         name: 'Move to Top',
-        action: () => sendAction('moveSelectionToBack'),
+        action: () => sendAction({ eventName: 'EDITOR_CHANGE_TEXT_ORDER', change: 'top' }),
       },
       {
         name: 'Move Up',
-        action: () => sendAction('moveSelectionBackward'),
+        action: () => sendAction({ eventName: 'EDITOR_CHANGE_TEXT_ORDER', change: 'up' }),
       },
       {
         name: 'Move Down',
-        action: () => sendAction('moveSelectionForward'),
+        action: () => sendAction({ eventName: 'EDITOR_CHANGE_TEXT_ORDER', change: 'down' }),
       },
       {
         name: 'Move to Bottom',
-        action: () => sendAction('moveSelectionToFront'),
+        action: () => sendAction({ eventName: 'EDITOR_CHANGE_TEXT_ORDER', change: 'bottom' }),
       },
     ];
   } else {
     return [
       {
         name: 'Bring to Front',
-        action: () => sendAction('moveSelectionToFront'),
+        action: () => sendAction({ eventName: 'EDITOR_CHANGE_DRAW_ORDER', change: 'front' }),
       },
       {
         name: 'Bring Forward',
-        action: () => sendAction('moveSelectionForward'),
+        action: () => sendAction({ eventName: 'EDITOR_CHANGE_DRAW_ORDER', change: 'forward' }),
       },
       {
         name: 'Send Backward',
-        action: () => sendAction('moveSelectionBackward'),
+        action: () => sendAction({ eventName: 'EDITOR_CHANGE_DRAW_ORDER', change: 'backward' }),
       },
       {
         name: 'Send to Back',
-        action: () => sendAction('moveSelectionToBack'),
+        action: () => sendAction({ eventName: 'EDITOR_CHANGE_DRAW_ORDER', change: 'back' }),
       },
     ];
   }
@@ -90,7 +90,14 @@ export const OverlaySelectionActions = () => {
 
   const { isTextActorSelected } = useCardCreator();
   const sendAction = React.useCallback(
-    (action, ...args) => sendAsync('EDITOR_INSPECTOR_ACTION', { action, ...args }),
+    (action, ...args) => {
+      if (typeof action === 'string') {
+        sendAsync('EDITOR_INSPECTOR_ACTION', { action, ...args });
+      } else if (action.eventName) {
+        const { eventName, ...params } = action;
+        sendAsync(eventName, params);
+      }
+    },
     [sendAsync]
   );
   const { showActionSheetWithOptions } = useActionSheet();
