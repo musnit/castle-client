@@ -342,9 +342,7 @@ inline Archive Archive::fromJson(const char *json) {
 
 inline std::string Archive::toJson() {
   json::StringBuffer buffer;
-  json::PrettyWriter writer(buffer);
-  writer.SetIndent(' ', 2);
-  writer.SetFormatOptions(json::kFormatSingleLineArray);
+  json::Writer writer(buffer);
   root.Accept(writer);
   return std::string(buffer.GetString(), buffer.GetLength());
 }
@@ -726,9 +724,7 @@ inline const json::Value *Reader::jsonValue() {
 
 inline const std::string Reader::toJson() {
   json::StringBuffer buffer;
-  json::PrettyWriter writer(buffer);
-  writer.SetIndent(' ', 2);
-  writer.SetFormatOptions(json::kFormatSingleLineArray);
+  json::Writer writer(buffer);
   cur->Accept(writer);
   return std::string(buffer.GetString(), buffer.GetLength());
 }
