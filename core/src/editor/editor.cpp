@@ -1071,6 +1071,7 @@ struct EditorInspectorActionReceiver {
 
   struct Params {
     PROP(std::string, action);
+    PROP(std::string, stringValue);
   } params;
 
   void receive(Engine &engine) {
@@ -1111,6 +1112,13 @@ struct EditorInspectorActionReceiver {
     }
     auto &scene = editor->getScene();
     auto &library = scene.getLibrary();
+
+    if (action == "updateSelectionTitle") {
+      Editor::UpdateBlueprintParams updateBlueprintParams;
+      updateBlueprintParams.newTitle = params.stringValue().c_str();
+      editor->updateBlueprint(actorId, updateBlueprintParams);
+      return;
+    }
 
     if (action == "deleteSelection") {
       if (scene.isGhost(actorId)) {
