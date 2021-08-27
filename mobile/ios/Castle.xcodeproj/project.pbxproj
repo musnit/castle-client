@@ -13,6 +13,7 @@
 		752DFF0FA2404564937762CE /* RTAliasGrotesk-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 0C7DDD807F684FD0A7E4CD7E /* RTAliasGrotesk-Bold.otf */; };
 		91395EB8240DE6A700ECBCF9 /* GhostPushNotifications.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91395EB7240DE6A700ECBCF9 /* GhostPushNotifications.mm */; };
 		91CCEBA726D6FC0D00C6B016 /* API_ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91CCEBA626D6FC0C00C6B016 /* API_ios.mm */; };
+		A101D72026D9ABD200A515E6 /* src in Resources */ = {isa = PBXBuildFile; fileRef = A101D71F26D9ABD200A515E6 /* src */; };
 		A12CFEE723CC30F600D721BC /* references.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A12CFEDF23CC30F600D721BC /* references.cpp */; };
 		A12CFEE823CC30F600D721BC /* warn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A12CFEE023CC30F600D721BC /* warn.cpp */; };
 		A12CFEE923CC30F600D721BC /* subpath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A12CFEE123CC30F600D721BC /* subpath.cpp */; };
@@ -166,6 +167,7 @@
 		91395EB924170C5900ECBCF9 /* GhostPushNotifications.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GhostPushNotifications.h; sourceTree = "<group>"; };
 		91CCEBA626D6FC0C00C6B016 /* API_ios.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = API_ios.mm; sourceTree = "<group>"; };
 		91CCEBB326D7082500C6B016 /* API_ios.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = API_ios.h; sourceTree = "<group>"; };
+		A101D71F26D9ABD200A515E6 /* src */ = {isa = PBXFileReference; lastKnownFileType = folder; name = src; path = ../../../core/src; sourceTree = "<group>"; };
 		A12CFEDF23CC30F600D721BC /* references.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = references.cpp; path = "../../ghost-extensions/tove2d/src/cpp/references.cpp"; sourceTree = "<group>"; };
 		A12CFEE023CC30F600D721BC /* warn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = warn.cpp; path = "../../ghost-extensions/tove2d/src/cpp/warn.cpp"; sourceTree = "<group>"; };
 		A12CFEE123CC30F600D721BC /* subpath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = subpath.cpp; path = "../../ghost-extensions/tove2d/src/cpp/subpath.cpp"; sourceTree = "<group>"; };
@@ -401,6 +403,7 @@
 			children = (
 				A14FE3F62355D0C8003B7EA0 /* package.love */,
 				A14FE3B92355CE21003B7EA0 /* ghost-extensions */,
+				A101D71726D9AB3F00A515E6 /* core-src-for-debugging */,
 				A14FE3952355CA7B003B7EA0 /* liblove.xcodeproj */,
 				A14FE3892355CA44003B7EA0 /* SDL.xcodeproj */,
 				13B07FAE1A68108700A75B9A /* Castle */,
@@ -439,6 +442,14 @@
 				16D68450ECD63C37DADEDCAB /* Pods-CastleTests.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		A101D71726D9AB3F00A515E6 /* core-src-for-debugging */ = {
+			isa = PBXGroup;
+			children = (
+				A101D71F26D9ABD200A515E6 /* src */,
+			);
+			path = "core-src-for-debugging";
 			sourceTree = "<group>";
 		};
 		A12CFED723CC305400D721BC /* tove2d */ = {
@@ -728,6 +739,7 @@
 				A14FE3F72355D0C8003B7EA0 /* package.love in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				752DFF0FA2404564937762CE /* RTAliasGrotesk-Bold.otf in Resources */,
+				A101D72026D9ABD200A515E6 /* src in Resources */,
 				CD0A84C8B8A44D86830CD6A6 /* RTAliasGrotesk-Regular.otf in Resources */,
 				B5942AB52627646B003CF6DB /* BootSplash.storyboard in Resources */,
 			);
