@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { InspectorBlueprintActions } from '../inspector/InspectorBlueprintActions';
+import { InspectorBlueprintHeader } from '../inspector/components/InspectorBlueprintHeader';
 import { sendAsync } from '../../core/CoreEvents';
 
 const styles = StyleSheet.create({
@@ -16,11 +17,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  behaviorName: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
   },
   editButton: {
     borderColor: '#000',
@@ -42,7 +38,7 @@ export const OverlayBlueprint = () => {
     sendAsync('EDITOR_INSPECTOR_ACTION', { action, ...args });
   return (
     <View style={styles.container}>
-      <Text style={styles.behaviorName}>Blueprint</Text>
+      <InspectorBlueprintHeader />
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <InspectorBlueprintActions />
         <Pressable style={styles.editButton} onPress={() => sendInspectorAction('openInspector')}>
