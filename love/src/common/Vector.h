@@ -39,15 +39,16 @@ struct Vector2
 		: x(x), y(y)
 	{}
 
-	Vector2(const Vector2 &v)
-		: x(v.x), y(v.y)
-	{}
-
-	Vector2 &operator=(const Vector2 &v) {
-		x = v.x;
-		y = v.y;
-		return *this;
-	}
+	// XXX(Castle): Use compiler-generated copy operations instead...
+	//Vector2(const Vector2 &v)
+	//  : x(v.x), y(v.y)
+	//{}
+  //
+	//Vector2 &operator=(const Vector2 &v) {
+	//  x = v.x;
+	//  y = v.y;
+	//  return *this;
+	//}
 
 	/**
 	 * Gets the length of the Vector.
