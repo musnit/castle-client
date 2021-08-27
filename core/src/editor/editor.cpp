@@ -315,6 +315,13 @@ void Editor::updateBlueprint(ActorId actorId, UpdateBlueprintParams params) {
       });
     }
   });
+
+  if (params.newTitle || params.updateBase64Png) {
+    // if we updated the selected actor, need to send new data to JS
+    if (getSelection().isSelected(actorId)) {
+      isSelectedActorStateDirty = true;
+    }
+  }
 }
 
 
