@@ -14,7 +14,7 @@ class AllBehaviors; // Forward declaration otherwise this would be circular...
 class Library;
 
 using ActorId = entt::entity; // Is unique throughout a `Scene`'s lifetime, never recycled
-constexpr auto nullActor = entt::null; // An `ActorId`-compatible sentinel value
+constexpr ActorId nullActor = entt::null; // An `ActorId`-compatible sentinel value
 using ActorIdSet = entt::sparse_set; // Good for fast membership checks and maintaining a set of
                                      // `ActorId`s over a long time (eg. in `TagsBehavior`). Might
                                      // take up a lot of memory / may have heavy lifecycle cost.

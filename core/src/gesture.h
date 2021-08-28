@@ -6,7 +6,7 @@
 
 
 using TouchId = entt::entity; // Is unique throughout a `Scene`s lifetime, never recycled
-constexpr auto nullTouch = entt::null; // A `TouchId`-compatible sentinel value
+constexpr TouchId nullTouch = entt::null; // A `TouchId`-compatible sentinel value
 
 struct TouchToken {
   // A token to identify the purpose of a touch. Helps prevent overloading a single touch for

@@ -58,7 +58,7 @@ void Selection::selectGhostActorForActor(ActorId actorId) {
 }
 
 void Selection::selectActorFromHits(const BodyBehavior::ActorsAtTouch &hits) {
-  ActorId pick = nullActor;
+  auto pick = nullActor;
   if (auto nHits = int(hits.size()); nHits > 0) {
     for (auto i = nHits - 1; i >= 0; --i) {
       auto nextI = i == 0 ? nHits - 1 : i - 1;

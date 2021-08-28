@@ -73,7 +73,7 @@ struct ActorRef {
         if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
           // Current actor has a body -- return closest with tag
           auto pos = body->GetPosition();
-          ActorId closestActorId = nullActor;
+          auto closestActorId = nullActor;
           auto closestSqDist = std::numeric_limits<float>::max();
           tagsBehavior.forEachActorWithTag(tag(), [&](ActorId taggedActorId) {
             if (taggedActorId != actorId) {
