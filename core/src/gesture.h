@@ -102,6 +102,8 @@ public:
   template<typename T, typename... Args>
   void setData(TouchId touchId, Args &&...args) const;
   template<typename T>
+  bool hasData(TouchId touchId) const; // Shortlived -- may move when added to other touches
+  template<typename T>
   T *maybeGetData(TouchId touchId) const; // Shortlived -- may move when added to other touches
 
 
@@ -202,6 +204,11 @@ void Gesture::setData(TouchId touchId, Args &&...args) const {
     const_cast<entt::registry &>(registry).emplace_or_replace<T>(
         touchId, std::forward<Args>(args)...);
   }
+}
+
+template<typename T>
+bool Gesture::hasData(TouchId touchId) const {
+  return hasTouch(touchId) && registry.has<T>(touchId);
 }
 
 template<typename T>

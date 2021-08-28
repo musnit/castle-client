@@ -137,7 +137,10 @@ public:
 
   void setCameraTarget(ActorId target);
   love::Vector2 getCameraPosition() const;
+  void setCameraPosition(love::Vector2 pos);
   love::Vector2 getCameraSize() const;
+  static constexpr float defaultViewWidth = 10;
+  void setViewWidth(float newViewWidth);
 
 
   // Gesture
@@ -241,7 +244,7 @@ private:
 
   std::unique_ptr<Library> library; // Library instance maintained at scene level for now
 
-  float viewWidth = 10.0, viewHeight = 7.0f * viewWidth / 5.0f;
+  float viewWidth = defaultViewWidth;
   mutable love::Transform viewTransform;
   mutable float cameraX = 0, cameraY = 0;
   mutable ActorId cameraTarget = nullActor;
@@ -412,7 +415,7 @@ inline love::Vector2 Scene::inverseViewTransformPoint(love::Vector2 point) const
 }
 
 inline float Scene::getViewYOffset() const {
-  return 0.5f * (props.coordinateSystemVersion() == 2 ? viewHeight : viewWidth);
+  return 0.5f * (props.coordinateSystemVersion() == 2 ? getCameraSize().y : viewWidth);
 }
 
 inline float Scene::getViewScale() const {
@@ -431,8 +434,17 @@ inline love::Vector2 Scene::getCameraPosition() const {
   return { cameraX, cameraY };
 }
 
+inline void Scene::setCameraPosition(love::Vector2 pos){
+  cameraX = pos.x;
+  cameraY = pos.y;
+}
+
 inline love::Vector2 Scene::getCameraSize() const {
-  return { viewWidth, viewHeight };
+  return { viewWidth, 7.0f * viewWidth / 5.0f };
+}
+
+inline void Scene::setViewWidth(float newViewWidth) {
+  viewWidth = newViewWidth;
 }
 
 inline Variables &Scene::getVariables() {
