@@ -6,6 +6,7 @@
 #include "lv.h"
 #include "subtools/draw_subtool_interface.h"
 #include "editor/draw/physics_body_data.h"
+#include "editor/grid.h"
 #include "../gesture_pan_zoom.h"
 
 class Editor;
@@ -82,6 +83,7 @@ private:
     { -DRAW_MAX_SIZE, -DRAW_MAX_SIZE },
     { DRAW_MAX_SIZE, DRAW_MAX_SIZE },
   };
+  Grid grid;
 
   void makeNewLayer();
   void deleteLayerAndValidate(const love::DrawDataLayerId &layerId);

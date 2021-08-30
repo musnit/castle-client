@@ -15,10 +15,9 @@ Grid::Grid() {
     uniform float gridCellSize;
     uniform float gridSize;
     uniform float dotRadius;
-    uniform float axesAlpha;
     uniform vec2 offset;
     uniform vec2 viewOffset;
-    uniform bool highlightAxes;
+    uniform bool onlyAxes;
 
     vec4 effect(vec4 color, Image tex, vec2 texCoords, vec2 screenCoords) {
       vec2 f = mod(screenCoords + offset + dotRadius, gridCellSize);
@@ -30,8 +29,12 @@ Grid::Grid() {
         discard;
       }
 
-      if (highlightAxes && (abs(distToAxis.x) < dotRadius || abs(distToAxis.y) < dotRadius)) {
-        return vec4(color.rgb, s * axesAlpha);
+      if (onlyAxes) {
+        if (abs(distToAxis.x) < dotRadius || abs(distToAxis.y) < dotRadius) {
+          return vec4(color.rgb, s * color.a);
+        } else {
+          discard;
+        }
       } else {
         return vec4(color.rgb, s * color.a);
       }
@@ -51,7 +54,7 @@ static float luaMod(float lhs, float rhs) {
 }
 
 void Grid::draw(float gridCellSize, float gridSize, float viewScale, love::Vector2 view,
-    love::Vector2 offset, float dotRadius, bool highlightAxes, float axesAlpha) const {
+    love::Vector2 offset, float dotRadius, bool onlyAxes) const {
   if (gridCellSize > 0) {
     lv.graphics.push(love::Graphics::STACK_ALL);
 
@@ -88,13 +91,8 @@ void Grid::draw(float gridCellSize, float gridSize, float viewScale, love::Vecto
       shader->updateUniform(info, 2);
     }
     {
-      auto info = shader->getUniformInfo("highlightAxes");
-      info->ints[0] = highlightAxes ? 1 : 0;
-      shader->updateUniform(info, 1);
-    }
-    {
-      auto info = shader->getUniformInfo("axesAlpha");
-      info->floats[0] = axesAlpha;
+      auto info = shader->getUniformInfo("onlyAxes");
+      info->ints[0] = onlyAxes ? 1 : 0;
       shader->updateUniform(info, 1);
     }
     lv.graphics.setShader(shader.get());

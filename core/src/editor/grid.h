@@ -17,8 +17,7 @@ public:
 
 
   void draw(float gridCellSize, float gridSize, float viewScale, love::Vector2 view,
-      love::Vector2 offset, float dotRadius, bool highlightAxes, float axesAlpha) const;
-
+      love::Vector2 offset, float dotRadius, bool onlyAxes) const;
 
 private:
   Lv &lv { Lv::getInstance() };
