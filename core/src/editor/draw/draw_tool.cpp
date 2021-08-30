@@ -562,6 +562,16 @@ void DrawTool::fitViewWidth() {
   if (maxBound > 1.0f) {
     viewWidth = maxBound * 2.0f;
   }
+
+  // zoom out slightly more to allow a bit of buffer around the drawing
+  viewWidth *= 1.1f;
+
+  if (viewWidth < DRAW_MIN_VIEW_WIDTH) {
+    viewWidth = DRAW_MIN_VIEW_WIDTH;
+  }
+  if (viewWidth > DRAW_MAX_VIEW_WIDTH) {
+    viewWidth = DRAW_MAX_VIEW_WIDTH;
+  }
 }
 
 void DrawTool::loadLastSave() {
