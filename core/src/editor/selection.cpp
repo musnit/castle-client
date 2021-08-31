@@ -157,14 +157,20 @@ struct SelectBlueprintReceiver {
   };
 
   struct Params {
+    PROP(int, actorId) = -1;
   } params;
 
   void receive(Engine &engine) {
     if (engine.getIsEditing()) {
       auto &selection = engine.maybeGetEditor()->getSelection();
-      if (selection.hasSelection()) {
+      if (selection.hasSelection() && params.actorId() < 0) {
+        // no actor id provided, 'upgrade' existing selection
         auto actorId = selection.firstSelectedActorId();
         selection.selectGhostActorForActor(actorId);
+      } else if (params.actorId() > -1) {
+        // select blueprint for provided actor id
+        selection.selectGhostActorForActor(ActorId(params.actorId()));
+        engine.maybeGetEditor()->isInspectorOpen = true;
       }
     }
   }

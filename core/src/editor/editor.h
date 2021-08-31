@@ -71,6 +71,7 @@ public:
   void updateBlueprint(ActorId actorId, UpdateBlueprintParams params);
 
   void triggerAutoSave();
+  bool isInspectorOpen = false;
 
 private:
   friend struct EditorGlobalActionReceiver;
@@ -95,8 +96,6 @@ private:
   EditMode editMode = EditMode::Default;
 
   // 'Default'-mode members
-  bool isInspectorOpen = false;
-
   Belt belt { *this };
   Selection selection { *this, belt };
   Grid grid;
