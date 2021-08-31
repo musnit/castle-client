@@ -162,6 +162,6 @@ void GrabTool::drawOverlay() const {
   if (props.gridEnabled() && gridSize > 0) {
     lv.graphics.setColor({ 0, 0, 0, 0.5 });
     editor.getGrid().draw(2 * gridSize, -1, scene.getViewScale(), scene.getCameraPosition(),
-        { scene.getCameraSize().x, scene.getViewYOffset() }, 2, false);
+        { 0.5f * scene.getCameraSize().x, scene.getViewYOffset() }, 2, false);
   }
 }

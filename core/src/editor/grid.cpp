@@ -81,14 +81,14 @@ void Grid::draw(float gridCellSize, float gridSize, float viewScale, love::Vecto
       auto info = shader->getUniformInfo("offset");
       info->floats[0] = dpiScale * (luaMod(view.x, gridCellSize) - offset.x) * viewScale;
       info->floats[1] = dpiScale * (luaMod(view.y, gridCellSize) - offset.y) * viewScale;
-      shader->updateUniform(info, 2);
+      shader->updateUniform(info, 1);
     }
     {
       auto viewOffset = (offset - view) * dpiScale * viewScale;
       auto info = shader->getUniformInfo("viewOffset");
       info->floats[0] = viewOffset.x;
       info->floats[1] = viewOffset.y;
-      shader->updateUniform(info, 2);
+      shader->updateUniform(info, 1);
     }
     {
       auto info = shader->getUniformInfo("onlyAxes");
