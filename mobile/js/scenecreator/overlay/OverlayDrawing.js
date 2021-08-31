@@ -124,6 +124,18 @@ const ToolGroups = ({ category, value }) => {
 export const OverlayDrawing = () => {
   const drawToolState = useCoreState('EDITOR_DRAW_TOOL') || {};
 
+  // for david to experiment with grid settings
+  // TODO: remove
+  React.useEffect(() => {
+    sendAsync('DRAW_TOOL_TEMP_GRID_SETTINGS', {
+      backgroundColor: [0.73, 0.73, 0.73, 1],
+      gridColor: [0, 0, 0, 1],
+      axisColor: [1, 1, 1, 1],
+      gridDotRadius: 4,
+      isGridForeground: false,
+    });
+  }, []);
+
   // TODO
   let fastAction = () => {};
 
