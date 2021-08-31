@@ -183,9 +183,34 @@ struct TextActorsDataEvent {
   PROP(std::string, data) = "";
 };
 
-void TextBehavior::maybeSendBridgeData() {
+bool TextBehavior::hasTapTrigger(ActorId actorId) {
   auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
+  if (getScene().getIsEditing()) {
+    // can't query `rulesBehavior.hasTrigger` because we don't build trigger components at edit-time
+    if (auto component = rulesBehavior.maybeGetComponent(actorId); component) {
+      Reader reader(component->editData->value);
+      auto found = false;
+      reader.each("rules", [&]() {
+        reader.obj("trigger", [&]() {
+          if (auto nameCStr = reader.str("name", "")) {
+            if (auto behaviorId = reader.num("behaviorId", -1)) {
+              if (std::strcmp(nameCStr, "tap") == 0
+                  && (int)behaviorId == TextBehavior::behaviorId) {
+                found = true;
+              }
+            }
+          }
+        });
+      });
+      return found;
+    }
+  } else {
+    return rulesBehavior.hasTrigger<TextTapTrigger>(actorId);
+  }
+  return false;
+}
 
+void TextBehavior::maybeSendBridgeData() {
   Archive archive;
   archive.write([&](Archive::Writer &writer) {
     writer.arr("textActors", [&]() {
@@ -195,7 +220,7 @@ void TextBehavior::maybeSendBridgeData() {
             writer.num("actorId", (int)entt::to_integral(actorId));
             writer.str("content", formatContent(component.props.content()));
             writer.num("order", component.props.order());
-            writer.boolean("hasTapTrigger", rulesBehavior.hasTrigger<TextTapTrigger>(actorId));
+            writer.boolean("hasTapTrigger", hasTapTrigger(actorId));
             writer.boolean("visible", component.props.visible());
           });
         }

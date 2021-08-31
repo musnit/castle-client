@@ -45,5 +45,6 @@ private:
   std::string formatContent(const std::string &content) const;
 
   std::string lastDataSent;
+  bool hasTapTrigger(ActorId actorId);
   void maybeSendBridgeData();
 };
