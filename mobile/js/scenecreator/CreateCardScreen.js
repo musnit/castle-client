@@ -130,6 +130,12 @@ export const CreateCardScreen = ({
     });
   }, []);
 
+  // never select text actor instance, just skip straight to blueprint
+  const selectTextActor = React.useCallback(
+    (actorId) => sendAsync('SELECT_BLUEPRINT', { actorId }),
+    []
+  );
+
   const maybeSaveAndGoToDeck = React.useCallback(async () => {
     // don't prompt on back button unless the card has changes and
     // we're in the card creator
@@ -320,7 +326,7 @@ export const CreateCardScreen = ({
                       visible={isCardTextVisible}
                       textActors={textActors}
                       card={card}
-                      onSelect={selectActor}
+                      onSelect={selectTextActor}
                       isEditable={!isPlaying}
                     />
                   </View>
