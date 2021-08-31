@@ -8,10 +8,16 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
+    flexShrink: 1,
   },
   image: {
     width: 24,
     height: 24,
+    flexShrink: 0,
+  },
+  titleContainer: {
+    width: '100%',
+    flexShrink: 1,
   },
   title: {
     marginLeft: 8,
@@ -53,19 +59,24 @@ export const InspectorBlueprintHeader = ({ isEditable }) => {
 
   return (
     <View style={styles.container}>
-      <FastImage
-        style={styles.image}
-        source={{ uri: `data:image/png;base64,${libraryEntry.base64Png}` }}
-      />
+      {libraryEntry.base64Png ? (
+        <FastImage
+          style={styles.image}
+          source={{ uri: `data:image/png;base64,${libraryEntry.base64Png}` }}
+        />
+      ) : null}
       {!isEditingTitle ? (
-        <Pressable onPress={onStartEditingTitle} disabled={!isEditable}>
+        <Pressable
+          style={styles.titleContainer}
+          onPress={onStartEditingTitle}
+          disabled={!isEditable}>
           <Text style={styles.title} numberOfLines={1} ellipsizeMode="middle">
             {libraryEntry.title}
           </Text>
         </Pressable>
       ) : (
         <TextInput
-          style={styles.titleInput}
+          style={[styles.titleContainer, styles.titleInput]}
           value={titleInputValue}
           onChangeText={(newValue) => setTitleInputValue(newValue)}
           onBlur={onEndEditingTitle}
