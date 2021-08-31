@@ -190,13 +190,15 @@ void TextBehavior::maybeSendBridgeData() {
   archive.write([&](Archive::Writer &writer) {
     writer.arr("textActors", [&]() {
       forEachEnabledComponent([&](ActorId actorId, TextComponent &component) {
-        writer.obj([&]() {
-          writer.num("actorId", (int)entt::to_integral(actorId));
-          writer.str("content", formatContent(component.props.content()));
-          writer.num("order", component.props.order());
-          writer.boolean("hasTapTrigger", rulesBehavior.hasTrigger<TextTapTrigger>(actorId));
-          writer.boolean("visible", component.props.visible());
-        });
+        if (!getScene().isGhost(actorId)) {
+          writer.obj([&]() {
+            writer.num("actorId", (int)entt::to_integral(actorId));
+            writer.str("content", formatContent(component.props.content()));
+            writer.num("order", component.props.order());
+            writer.boolean("hasTapTrigger", rulesBehavior.hasTrigger<TextTapTrigger>(actorId));
+            writer.boolean("visible", component.props.visible());
+          });
+        }
       });
     });
   });
