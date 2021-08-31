@@ -333,7 +333,7 @@ void Drawing2Behavior::writeBase64PngFrames(
       if (maybeBase64Png) {
         item.base64PngFrames.push_back(maybeBase64Png.value());
       } else {
-        item.base64PngFrames.push_back("");
+        item.base64PngFrames.emplace_back();
       }
     }
     editorDataCache->items.emplace(component.hash, item);

@@ -725,7 +725,7 @@ void DrawTool::drawOverlay() {
     // TODO: final colors
     lv.graphics.setColor({ 0.4, 0.4, 0.4, 1 });
     auto gridCellSize = drawData->gridCellSize();
-    love::Vector2 gridOffset(0.5 * viewWidth, topOffset);
+    love::Vector2 gridOffset(0.5f * viewWidth, topOffset);
     grid.draw(gridCellSize, DRAW_MAX_SIZE + gridCellSize * 0.5f, windowWidth / viewWidth,
         viewPosition, gridOffset, 4, false);
 
