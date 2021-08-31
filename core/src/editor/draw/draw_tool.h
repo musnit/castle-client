@@ -56,6 +56,7 @@ private:
   friend struct DrawToolLayerActionReceiver;
   friend struct DrawToolClearArtworkReceiver;
   friend struct DrawToolClearCollisionShapesReceiver;
+  friend struct DrawToolTmpGridSettingsReceiver;
 
   bool isDrawToolEventDirty = false;
   bool didBecomeActive = false;
@@ -84,6 +85,7 @@ private:
     { DRAW_MAX_SIZE, DRAW_MAX_SIZE },
   };
   Grid grid;
+  void drawGrid(float windowWidth, float topOffset);
 
   void makeNewLayer();
   void deleteLayerAndValidate(const love::DrawDataLayerId &layerId);
@@ -100,6 +102,13 @@ private:
 
   void loadLastSave();
   void fitViewWidth();
+
+  // TODO: delete these: for grid color testing
+  love::Colorf tmpBackgroundColor { 0.73, 0.73, 0.73, 1 };
+  love::Colorf tmpGridColor { 0, 0, 0, 1 };
+  love::Colorf tmpAxisColor { 1, 1, 1, 1 };
+  float tmpGridDotRadius = 4;
+  bool tmpIsGridForeground = false;
 };
 
 inline love::DrawData &DrawTool::getDrawData() {

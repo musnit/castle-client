@@ -282,6 +282,32 @@ struct DrawToolClearCollisionShapesReceiver {
   }
 };
 
+struct DrawToolTmpGridSettingsReceiver {
+  inline static const BridgeRegistration<DrawToolTmpGridSettingsReceiver> registration {
+    "DRAW_TOOL_TEMP_GRID_SETTINGS"
+  };
+
+  struct Params {
+    PROP(love::Colorf, backgroundColor);
+    PROP(love::Colorf, gridColor);
+    PROP(love::Colorf, axisColor);
+    PROP(float, gridDotRadius) = 4;
+    PROP(bool, isGridForeground) = false;
+  } params;
+
+  void receive(Engine &engine) {
+    auto editor = engine.maybeGetEditor();
+    if (!editor)
+      return;
+
+    editor->drawTool.tmpBackgroundColor = params.backgroundColor();
+    editor->drawTool.tmpGridColor = params.gridColor();
+    editor->drawTool.tmpAxisColor = params.axisColor();
+    editor->drawTool.tmpGridDotRadius = params.gridDotRadius();
+    editor->drawTool.tmpIsGridForeground = params.isGridForeground();
+  }
+};
+
 //
 // Subtool functions
 //
@@ -691,6 +717,19 @@ void DrawTool::update(double dt) {
 // Draw
 //
 
+void DrawTool::drawGrid(float windowWidth, float topOffset) {
+  // TODO: final colors
+  lv.graphics.setColor(tmpGridColor);
+  auto gridCellSize = drawData->gridCellSize();
+  love::Vector2 gridOffset(0.5f * viewWidth, topOffset);
+  grid.draw(gridCellSize, DRAW_MAX_SIZE + gridCellSize * 0.5f, windowWidth / viewWidth,
+      viewPosition, gridOffset, tmpGridDotRadius, false);
+
+  lv.graphics.setColor(tmpAxisColor);
+  grid.draw(gridCellSize, DRAW_MAX_SIZE + gridCellSize * 0.5f, windowWidth / viewWidth,
+      viewPosition, gridOffset, tmpGridDotRadius, true);
+};
+
 void DrawTool::drawOverlay() {
   /*if (!editor.hasScene()) {
     return;
@@ -714,24 +753,14 @@ void DrawTool::drawOverlay() {
   lv.graphics.applyTransform(&viewTransform);
 
 
-  lv.graphics.clear(love::Colorf(0.73, 0.73, 0.73, 1), {}, {});
+  lv.graphics.clear(tmpBackgroundColor, {}, {});
 
   if (tempGraphics) {
     tempGraphics->update();
   }
 
-  {
-    // draw grid
-    // TODO: final colors
-    lv.graphics.setColor({ 0.4, 0.4, 0.4, 1 });
-    auto gridCellSize = drawData->gridCellSize();
-    love::Vector2 gridOffset(0.5f * viewWidth, topOffset);
-    grid.draw(gridCellSize, DRAW_MAX_SIZE + gridCellSize * 0.5f, windowWidth / viewWidth,
-        viewPosition, gridOffset, 4, false);
-
-    lv.graphics.setColor({ 0, 0, 0, 1 });
-    grid.draw(gridCellSize, DRAW_MAX_SIZE + gridCellSize * 0.5f, windowWidth / viewWidth,
-        viewPosition, gridOffset, 4, true);
+  if (!tmpIsGridForeground) {
+    drawGrid(windowWidth, topOffset);
   }
 
   if (selectedSubtools["root"] != "collision" && isCollisionVisible) {
@@ -753,6 +782,10 @@ void DrawTool::drawOverlay() {
   }
 
   getCurrentSubtool().drawOverlay(lv);
+
+  if (tmpIsGridForeground) {
+    drawGrid(windowWidth, topOffset);
+  }
 
   lv.graphics.pop();
 }
