@@ -551,9 +551,8 @@ const DrawingLayers = ({ sendLayerAction }) => {
 };
 
 const DrawingLayersHeader = ({ sendLayerAction }) => {
-  const { numFrames, isOnionSkinningEnabled } = useCoreState('EDITOR_DRAW_LAYERS') || {};
-  const fastAction = () => {}; // TODO: actions
-  const isPlayingAnimation = false; // TODO: derive from EDITOR_DRAW_LAYERS
+  const { numFrames, isOnionSkinningEnabled, isPlayingAnimation } =
+    useCoreState('EDITOR_DRAW_LAYERS') || {};
 
   return (
     <View style={styles.header}>
@@ -581,7 +580,9 @@ const DrawingLayersHeader = ({ sendLayerAction }) => {
           </Pressable>
           <Pressable
             style={styles.headerControl}
-            onPress={() => fastAction('onSetIsPlayingAnimation', !isPlayingAnimation)}>
+            onPress={() =>
+              sendLayerAction('setIsPlayingAnimation', { doubleValue: isPlayingAnimation ? 0 : 1 })
+            }>
             <FeatherIcon
               name={isPlayingAnimation ? 'pause' : 'play'}
               size={ICON_SIZE}
