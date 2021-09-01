@@ -794,12 +794,11 @@ namespace ghost {
     renderFrameIndex(selectedFrame.toZeroIndex() - 1);
   }
 
-  void DrawData::renderForTool(std::optional<AnimationComponentProperties> componentProperties,
-      float tempTranslateX, float tempTranslateY,
+  void DrawData::renderForTool(int maybeFrameIndex, float tempTranslateX, float tempTranslateY,
       std::shared_ptr<ToveGraphicsHolder> tempGraphics) {
     int frameIdx = selectedFrame.toZeroIndex();
-    if (componentProperties) {
-      frameIdx = modFrameIndex(componentProperties->currentFrame);
+    if (maybeFrameIndex >= 0) {
+      frameIdx = maybeFrameIndex;
     }
 
     for (size_t l = 0; l < layers.size(); l++) {

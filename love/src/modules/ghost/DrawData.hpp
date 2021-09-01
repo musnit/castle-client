@@ -228,8 +228,7 @@ namespace ghost {
     void renderFrameIndex(int frameIdx /* zero index */);
     std::optional<std::string> renderPreviewPng(int frameIdx, int size);
     void render();
-    void renderForTool(std::optional<AnimationComponentProperties> componentProperties,
-        float tempTranslateX, float tempTranslateY,
+    void renderForTool(int maybeFrameIndex, float tempTranslateX, float tempTranslateY,
         std::shared_ptr<ToveGraphicsHolder> tempGraphics);
     void renderOnionSkinning();
     bool isPointInBounds(Point point);

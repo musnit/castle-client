@@ -50,6 +50,9 @@ public:
   PhysicsBodyData &getPhysicsBodyData();
   float getZoomAmount();
   bool isViewInContextEnabled();
+  void setIsPlayingAnimation(bool isPlayingAnimation);
+  bool getIsPlayingAnimation();
+  int getCurrentAnimationFrame();
 
 private:
   friend struct DrawToolSelectSubtoolReceiver;
@@ -77,6 +80,8 @@ private:
 
   std::vector<std::unique_ptr<DrawSubtool>> subtools;
   bool isPlayingAnimation = false;
+  love::AnimationState animationState;
+  love::AnimationComponentProperties animationProperties;
   std::shared_ptr<love::ToveGraphicsHolder> tempGraphics;
 
   DrawSubtool &getCurrentSubtool();
@@ -128,4 +133,12 @@ inline PhysicsBodyData &DrawTool::getPhysicsBodyData() {
 
 inline bool DrawTool::isViewInContextEnabled() {
   return viewInContext;
+}
+
+inline bool DrawTool::getIsPlayingAnimation() {
+  return isPlayingAnimation;
+}
+
+inline int DrawTool::getCurrentAnimationFrame() {
+  return animationProperties.currentFrame.toZeroIndex();
 }

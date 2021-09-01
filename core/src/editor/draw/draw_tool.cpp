@@ -114,6 +114,7 @@ struct DrawLayersEvent {
   PROP(int, selectedFrameIndex);
   PROP(bool, canPasteCell);
   PROP(bool, isOnionSkinningEnabled);
+  PROP(bool, isPlayingAnimation);
   PROP((std::vector<Layer>), layers);
 
   PROP(std::optional<std::string>, collisionBase64Png);
@@ -151,6 +152,7 @@ void DrawTool::sendLayersEvent() {
   ev.selectedFrameIndex = drawData->selectedFrame.value;
   ev.canPasteCell = copiedLayerId != "" && copiedFrameIndex.value > 0;
   ev.isOnionSkinningEnabled = isOnionSkinningEnabled;
+  ev.isPlayingAnimation = isPlayingAnimation;
 
   if (!physicsBodyData->base64Png) {
     physicsBodyData->updatePreview();
@@ -185,13 +187,13 @@ struct DrawToolLayerActionReceiver {
 
     auto action = params.action();
     if (action == "selectLayer") {
-      // TODO: setIsPlayingAnimation(false)
+      drawTool.setIsPlayingAnimation(false);
       if (drawTool.drawData->selectedLayerId != params.layerId()) {
         drawTool.drawData->selectedLayerId = params.layerId();
         drawTool.saveDrawing("select layer");
       }
     } else if (action == "selectLayerAndFrame") {
-      // TODO: setIsPlayingAnimation(false)
+      drawTool.setIsPlayingAnimation(false);
       if (drawTool.drawData->selectedLayerId != params.layerId()
           && drawTool.drawData->selectedFrame.value != params.frameIndex()) {
         drawTool.drawData->selectedLayerId = params.layerId();
@@ -199,7 +201,7 @@ struct DrawToolLayerActionReceiver {
         drawTool.saveDrawing("select cell");
       }
     } else if (action == "selectFrame") {
-      // TODO: setIsPlayingAnimation(false)
+      drawTool.setIsPlayingAnimation(false);
       if (drawTool.drawData->selectedFrame.value != params.frameIndex()) {
         drawTool.drawData->selectedFrame.value = params.frameIndex();
         drawTool.saveDrawing("select frame");
@@ -260,6 +262,9 @@ struct DrawToolLayerActionReceiver {
       drawTool.saveDrawing("set cell linked");
     } else if (action == "enableOnionSkinning") {
       drawTool.isOnionSkinningEnabled = bool(params.doubleValue());
+      drawTool.sendLayersEvent();
+    } else if (action == "setIsPlayingAnimation") {
+      drawTool.setIsPlayingAnimation(bool(params.doubleValue()));
       drawTool.sendLayersEvent();
     }
   }
@@ -403,6 +408,20 @@ void DrawTool::addPathData(love::PathData pathData) {
   drawData->currentPathDataList()->push_back(pathData);
 }
 
+void DrawTool::setIsPlayingAnimation(bool isPlayingAnimation_) {
+  isPlayingAnimation = isPlayingAnimation_;
+  if (isPlayingAnimation) {
+    auto &drawBehavior = editor.getScene().getBehaviors().byType<Drawing2Behavior>();
+    auto actorId = editor.getSelection().firstSelectedActorId();
+    if (auto component = drawBehavior.maybeGetComponent(actorId); component) {
+      Drawing2Behavior::getAnimationComponentProperties(*component, animationProperties);
+    }
+    animationState.animationFrameTime = 0.0f;
+    animationProperties.playing = true;
+    animationProperties.loop = true;
+  }
+}
+
 void DrawTool::saveDrawing(std::string commandDescription) {
   drawData->updateFramePreview();
   physicsBodyData->updatePreview();
@@ -517,6 +536,7 @@ void DrawTool::resetState() {
   isOnionSkinningEnabled = false;
   isCollisionVisible = true;
   viewInContext = false;
+  setIsPlayingAnimation(false);
 
   resetTempGraphics();
 }
@@ -671,6 +691,10 @@ void DrawTool::update(double dt) {
     fitViewWidth();
   }
 
+  if (isPlayingAnimation) {
+    drawData->runAnimation(animationState, animationProperties, dt);
+  }
+
   if (isDrawToolEventDirty) {
     isDrawToolEventDirty = false;
     sendDrawToolEvent();
@@ -787,7 +811,8 @@ void DrawTool::drawOverlay() {
   }
 
   lv.graphics.setColor({ 1, 1, 1, 1 });
-  drawData->renderForTool(std::nullopt, tempTranslateX, tempTranslateY, tempGraphics);
+  int overrideFrameIndex = isPlayingAnimation ? getCurrentAnimationFrame() : -1;
+  drawData->renderForTool(overrideFrameIndex, tempTranslateX, tempTranslateY, tempGraphics);
 
   if (isOnionSkinningEnabled) {
     renderOnionSkinning();
