@@ -201,12 +201,11 @@ void Editor::draw() {
 
   if (playing && player) {
     player->draw();
-  } else {
-    if (editMode == EditMode::Draw) {
-      drawTool.drawOverlay();
-      return;
-    }
+    return;
+  }
 
+  switch (editMode) {
+  case EditMode::Default: {
     scene->draw();
 
     auto &bodyBehavior = scene->getBehaviors().byType<BodyBehavior>();
@@ -318,6 +317,16 @@ void Editor::draw() {
       }
       Debug::display("  {} actor {}", command.description, selectionString);
     }
+    break; // EditMode::Default
+  }
+  case EditMode::Draw: {
+    if (drawTool.isViewInContextEnabled()) {
+      scene->draw();
+    } else {
+      drawTool.drawOverlay();
+    }
+    break;
+  }
   }
 }
 

@@ -61,6 +61,23 @@ struct DrawToolSelectColorReceiver {
   }
 };
 
+struct DrawToolViewInContextReceiver {
+  inline static const BridgeRegistration<DrawToolViewInContextReceiver> registration {
+    "DRAW_TOOL_VIEW_IN_CONTEXT"
+  };
+
+  struct Params {
+    PROP(bool, enabled) = false;
+  } params;
+
+  void receive(Engine &engine) {
+    auto editor = engine.maybeGetEditor();
+    if (!editor)
+      return;
+    editor->drawTool.viewInContext = params.enabled();
+  }
+};
+
 struct DrawToolEvent {
   PROP((std::unordered_map<std::string, std::string>), selectedSubtools);
   PROP(love::Colorf, color);
@@ -499,6 +516,7 @@ void DrawTool::resetState() {
 
   isOnionSkinningEnabled = false;
   isCollisionVisible = true;
+  viewInContext = false;
 
   resetTempGraphics();
 }

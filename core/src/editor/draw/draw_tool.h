@@ -49,6 +49,7 @@ public:
   love::DrawDataFrame &getDrawDataFrame();
   PhysicsBodyData &getPhysicsBodyData();
   float getZoomAmount();
+  bool isViewInContextEnabled();
 
 private:
   friend struct DrawToolSelectSubtoolReceiver;
@@ -56,6 +57,7 @@ private:
   friend struct DrawToolLayerActionReceiver;
   friend struct DrawToolClearArtworkReceiver;
   friend struct DrawToolClearCollisionShapesReceiver;
+  friend struct DrawToolViewInContextReceiver;
   friend struct DrawToolTmpGridSettingsReceiver;
 
   bool isDrawToolEventDirty = false;
@@ -95,6 +97,7 @@ private:
   love::OneIndexFrame copiedFrameIndex;
 
   bool isCollisionVisible = true;
+  bool viewInContext = false;
   bool isOnionSkinningEnabled = false;
   love::graphics::Canvas *onionSkinningCanvas = nullptr;
   void makeOnionSkinningCanvas();
@@ -121,4 +124,8 @@ inline love::DrawDataFrame &DrawTool::getDrawDataFrame() {
 
 inline PhysicsBodyData &DrawTool::getPhysicsBodyData() {
   return *physicsBodyData;
+}
+
+inline bool DrawTool::isViewInContextEnabled() {
+  return viewInContext;
 }

@@ -81,6 +81,7 @@ private:
   friend struct DrawToolLayerActionReceiver;
   friend struct DrawToolClearArtworkReceiver;
   friend struct DrawToolClearCollisionShapesReceiver;
+  friend struct DrawToolViewInContextReceiver;
   friend struct DrawToolTmpGridSettingsReceiver;
 
   Lv &lv { Lv::getInstance() };
