@@ -49,11 +49,11 @@ const styles = StyleSheet.create({
 });
 
 const makeButtonStyles = (value, name) => {
-  return value == name ? [styles.button, { backgroundColor: '#000' }] : [styles.button];
+  return value === name ? [styles.button, { backgroundColor: '#000' }] : [styles.button];
 };
 
 const makeIconColor = (value, name) => {
-  return value == name ? '#fff' : '#000';
+  return value === name ? '#fff' : '#000';
 };
 
 const TOOL_GROUPS = {
@@ -101,7 +101,7 @@ const TOOL_GROUPS = {
 const ToolGroups = ({ category, value }) => {
   const onChange = React.useCallback(
     (name) => sendAsync('DRAW_TOOL_SELECT_SUBTOOL', { category, name }),
-    [sendAsync, category]
+    [category]
   );
   const groups = TOOL_GROUPS[category];
   return (
@@ -136,12 +136,9 @@ export const OverlayDrawing = () => {
     });
   }, []);
 
-  // TODO
-  let fastAction = () => {};
-
   const setViewInContext = React.useCallback(
-    (viewInContext) => fastAction('onViewInContext', viewInContext),
-    [fastAction]
+    (enabled) => sendAsync('DRAW_TOOL_VIEW_IN_CONTEXT', { enabled }),
+    []
   );
 
   if (!drawToolState.selectedSubtools) return null;
@@ -151,7 +148,7 @@ export const OverlayDrawing = () => {
   const { color } = drawToolState;
 
   const showColorPicker =
-    currentDrawingToolGroup == 'artwork_draw' || currentDrawingToolGroup == 'fill';
+    currentDrawingToolGroup === 'artwork_draw' || currentDrawingToolGroup === 'fill';
 
   return (
     <>
