@@ -407,7 +407,7 @@ void Scene::applyViewTransform() const {
   lv.graphics.applyTransform(&viewTransform);
 }
 
-void Scene::draw() const {
+void Scene::draw(std::optional<SceneDrawingOptions> options) const {
   lv.graphics.clear(props.backgroundColor(), {}, {});
 
   lv.graphics.push(love::Graphics::STACK_ALL);
@@ -419,7 +419,7 @@ void Scene::draw() const {
     getBehaviors().forEach([&](auto &behavior) {
       if constexpr (Handlers::hasDrawComponent<decltype(behavior)>) {
         if (auto component = behavior.maybeGetComponent(actorId)) {
-          behavior.handleDrawComponent(actorId, *component);
+          behavior.handleDrawComponent(actorId, *component, options);
         }
       }
     });

@@ -80,7 +80,8 @@ public:
   void handleWriteComponent(
       ActorId actorId, const Drawing2Component &component, Writer &writer) const;
   void handlePerform(double dt);
-  void handleDrawComponent(ActorId actorId, const Drawing2Component &component) const;
+  void handleDrawComponent(ActorId actorId, const Drawing2Component &component,
+      std::optional<SceneDrawingOptions> options) const;
 
   ExpressionValue handleGetProperty(
       ActorId actorId, const Drawing2Component &component, PropId propId) const;
@@ -89,6 +90,9 @@ public:
 
   std::string hash(const std::string &drawData, const std::string &physicsBodyData);
   PhysicsBodyData *maybeGetPhysicsBodyData(ActorId actorId);
+
+  static void getAnimationComponentProperties(
+      const Drawing2Component &component, love::AnimationComponentProperties &properties);
 
   // editor only: send drawing frames over bridge
   struct EditorSelectedDrawingFramesEvent {

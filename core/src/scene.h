@@ -19,6 +19,11 @@ using ActorIdSet = entt::sparse_set; // Good for fast membership checks and main
                                      // `ActorId`s over a long time (eg. in `TagsBehavior`). Might
                                      // take up a lot of memory / may have heavy lifecycle cost.
 
+struct SceneDrawingOptions {
+  ActorId editorDrawingActorId = nullActor;
+  int editorDrawingAnimationFrame = -1;
+};
+
 class Scene {
   // Maintains the runtime state of a single Castle scene. This involves managing actor creation and
   // destruction, draw orders, managing behavior instances and the membership of actors in
@@ -203,7 +208,7 @@ public:
   void update(double dt);
   void updateGesture();
 
-  void draw() const;
+  void draw(std::optional<SceneDrawingOptions> options = std::nullopt) const;
   void applyViewTransform() const;
 
 
@@ -434,7 +439,7 @@ inline love::Vector2 Scene::getCameraPosition() const {
   return { cameraX, cameraY };
 }
 
-inline void Scene::setCameraPosition(love::Vector2 pos){
+inline void Scene::setCameraPosition(love::Vector2 pos) {
   cameraX = pos.x;
   cameraY = pos.y;
 }

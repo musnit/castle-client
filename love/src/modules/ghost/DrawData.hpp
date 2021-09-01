@@ -227,7 +227,7 @@ namespace ghost {
     void preload();
     void renderFrameIndex(int frameIdx /* zero index */);
     std::optional<std::string> renderPreviewPng(int frameIdx, int size);
-    void render(std::optional<AnimationComponentProperties> componentProperties);
+    void render();
     void renderForTool(std::optional<AnimationComponentProperties> componentProperties,
         float tempTranslateX, float tempTranslateY,
         std::shared_ptr<ToveGraphicsHolder> tempGraphics);

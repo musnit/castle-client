@@ -24,7 +24,8 @@ public:
 
   using BaseBehavior::BaseBehavior;
 
-  void handleDrawComponent(ActorId actorId, const DebugDrawComponent &component) const;
+  void handleDrawComponent(ActorId actorId, const DebugDrawComponent &component,
+      std::optional<SceneDrawingOptions> options) const;
 
 private:
   Lv &lv { Lv::getInstance() };

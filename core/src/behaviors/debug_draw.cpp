@@ -7,8 +7,8 @@
 // Draw
 //
 
-void DebugDrawBehavior::handleDrawComponent(
-    ActorId actorId, const DebugDrawComponent &component) const {
+void DebugDrawBehavior::handleDrawComponent(ActorId actorId, const DebugDrawComponent &component,
+    std::optional<SceneDrawingOptions> options) const {
   if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId)) {
     lv.graphics.push();
     auto [x, y] = body->GetPosition();

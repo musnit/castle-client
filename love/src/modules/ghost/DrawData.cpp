@@ -775,6 +775,7 @@ namespace ghost {
   }
 
   void DrawData::renderFrameIndex(int frameIdx /* zero index */) {
+    frameIdx = modFrameIndex(frameIdx);
     for (size_t l = 0; l < layers.size(); l++) {
       if (layers[l]->isVisible) {
         auto realFrame = getRealFrameIndexForLayerId(layers[l]->id, frameIdx);
@@ -785,17 +786,12 @@ namespace ghost {
     }
   }
 
-  void DrawData::render(std::optional<AnimationComponentProperties> componentProperties) {
-    int frameIdx = selectedFrame.toZeroIndex();
-    if (componentProperties) {
-      frameIdx = modFrameIndex(componentProperties->currentFrame);
-    }
-    renderFrameIndex(frameIdx);
+  void DrawData::render() {
+    renderFrameIndex(selectedFrame.toZeroIndex());
   }
 
   void DrawData::renderOnionSkinning() {
-    int prevFrameIdx = modFrameIndex(selectedFrame.toZeroIndex() - 1);
-    renderFrameIndex(prevFrameIdx);
+    renderFrameIndex(selectedFrame.toZeroIndex() - 1);
   }
 
   void DrawData::renderForTool(std::optional<AnimationComponentProperties> componentProperties,

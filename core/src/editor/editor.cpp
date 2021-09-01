@@ -321,7 +321,11 @@ void Editor::draw() {
   }
   case EditMode::Draw: {
     if (drawTool.isViewInContextEnabled()) {
-      scene->draw();
+      SceneDrawingOptions options {
+        selection.firstSelectedActorId(), // actor being edited by draw tool
+        1 // TODO: actual animation state
+      };
+      scene->draw(options);
     } else {
       drawTool.drawOverlay();
     }

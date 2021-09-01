@@ -2,7 +2,7 @@
 
 #include "behaviors/all.h"
 
-void getAnimationComponentProperties(
+void Drawing2Behavior::getAnimationComponentProperties(
     const Drawing2Component &component, love::AnimationComponentProperties &properties) {
   auto playMode = component.props.playMode();
   if (playMode[0] == 's') { // "still"
@@ -105,7 +105,7 @@ struct AnimationFrameMeetsConditionResponse : BaseResponse {
       auto drawData = component->drawData.get();
       auto frame = ExpressionValue(drawData->modFrameIndex(params.frame().eval(ctx).as<int>() - 1));
       love::AnimationComponentProperties animProps;
-      getAnimationComponentProperties(*component, animProps);
+      Drawing2Behavior::getAnimationComponentProperties(*component, animProps);
       auto currentFrame = drawData->modFrameIndex(animProps.currentFrame);
       return comparison.compare(ExpressionValue(currentFrame), frame);
     }
@@ -201,8 +201,8 @@ void Drawing2Behavior::handlePerform(double dt) {
 // Draw
 //
 
-void Drawing2Behavior::handleDrawComponent(
-    ActorId actorId, const Drawing2Component &component) const {
+void Drawing2Behavior::handleDrawComponent(ActorId actorId, const Drawing2Component &component,
+    std::optional<SceneDrawingOptions> options) const {
   if (!component.drawData) {
     return;
   }
@@ -218,9 +218,24 @@ void Drawing2Behavior::handleDrawComponent(
 
       lv.graphics.setColor(love::Colorf(1, 1, 1, 1));
 
+      int frameIndex;
       love::AnimationComponentProperties animProps;
       getAnimationComponentProperties(component, animProps);
-      component.drawData->render(animProps);
+      frameIndex = animProps.currentFrame.toZeroIndex();
+
+      // maybe override the drawn frame from options (for editor's view in context)
+      if (options && options->editorDrawingActorId != nullActor) {
+        auto &scene = getScene();
+        if (strcmp(scene.maybeGetParentEntryId(actorId),
+                scene.maybeGetParentEntryId(options->editorDrawingActorId))
+            == 0) {
+          if (options->editorDrawingAnimationFrame >= 0) {
+            frameIndex = options->editorDrawingAnimationFrame;
+          }
+        }
+      }
+
+      component.drawData->renderFrameIndex(frameIndex);
 
       lv.graphics.pop();
     }
