@@ -602,7 +602,24 @@ void DrawTool::onSetActive() {
   viewPosition.x = 0;
   viewPosition.y = 0;
   viewWidth = DRAW_DEFAULT_VIEW_WIDTH;
-  didBecomeActive = true;
+
+  auto &scene = editor.getScene();
+  if (!editor.getSelection().hasSelection()) {
+    return;
+  }
+  auto &drawBehavior = scene.getBehaviors().byType<Drawing2Behavior>();
+  auto actorId = editor.getSelection().firstSelectedActorId();
+  auto component = drawBehavior.maybeGetComponent(actorId);
+  if (!component) {
+    return;
+  }
+
+  auto hash = component->hash;
+  if (lastHash != hash) {
+    loadLastSave();
+  }
+
+  fitViewWidth();
 }
 
 void DrawTool::fitViewWidth() {
@@ -660,8 +677,6 @@ void DrawTool::loadLastSave() {
   // TODO: send elsewhere
   sendLayersEvent();
   sendDrawToolEvent();
-
-  // TODO: _toolOptions
 }
 
 void DrawTool::update(double dt) {
@@ -684,11 +699,6 @@ void DrawTool::update(double dt) {
   auto hash = component->hash;
   if (lastHash != hash) {
     loadLastSave();
-  }
-
-  if (didBecomeActive) {
-    didBecomeActive = false;
-    fitViewWidth();
   }
 
   if (isPlayingAnimation) {
