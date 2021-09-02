@@ -26,7 +26,8 @@ public class API {
                 .url(API_HOST)
                 .post(body)
                 .addHeader("X-Platform", "mobile")
-                .addHeader("X-Enable-Scene-Creator-Migrations", "true");
+                .addHeader("X-Enable-Scene-Creator-Migrations", "true")
+                .addHeader("X-Scene-Creator-Version", MainActivity.SCENE_CREATOR_API_VERSION);
 
         try {
             Response response = client.newCall(builder.build()).execute();
