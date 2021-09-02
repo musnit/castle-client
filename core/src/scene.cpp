@@ -79,10 +79,6 @@ void Scene::read(Reader &reader) {
   // Scene-level props
   reader.obj("sceneProperties", [&]() {
     reader.read(props);
-    Debug::log("read scene props");
-    auto bgColorValue = props.backgroundColor();
-    Debug::log("scene background color: {}, {}, {}, {}", bgColorValue.r, bgColorValue.g,
-        bgColorValue.b, bgColorValue.a);
   });
 }
 
