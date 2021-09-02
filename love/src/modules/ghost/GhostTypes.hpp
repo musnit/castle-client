@@ -330,7 +330,7 @@ namespace ghost {
       maxY = archive.num("maxY", 0);
     }
 
-    void write(Archive::Writer &archive) {
+    void write(Archive::Writer &archive) const {
       archive.num("minX", minX);
       archive.num("maxX", maxX);
       archive.num("minY", minY);
