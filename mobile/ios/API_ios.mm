@@ -31,7 +31,6 @@ static RCTBridge *sRctBridge;
       request.HTTPMethod = @"POST";
 
       [request setValue:@"application/json; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
-      [request setValue:@"true" forHTTPHeaderField:@"X-Enable-Scene-Creator-Migrations"];
       [request setValue:[GhostView sceneCreatorApiVersion] forHTTPHeaderField:@"X-Scene-Creator-Version"];
       
       if (authToken) {
