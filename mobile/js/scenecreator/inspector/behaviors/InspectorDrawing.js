@@ -202,21 +202,25 @@ export default InspectorDrawing = ({ drawing2 }) => {
 
   const openDrawToolAtFrame = React.useCallback(
     (frameOneIndex) => {
-      sendAsync('DRAW_TOOL_LAYER_ACTION', {
-        action: 'selectFrame',
-        frameIndex: frameOneIndex,
-      });
       openDrawTool();
+      requestAnimationFrame(() =>
+        sendAsync('DRAW_TOOL_LAYER_ACTION', {
+          action: 'selectFrame',
+          frameIndex: frameOneIndex,
+        })
+      );
     },
     [openDrawTool]
   );
 
   const openDrawToolAtNewFrame = React.useCallback(() => {
-    sendAsync('DRAW_TOOL_LAYER_ACTION', {
-      action: 'addFrame',
-      frameIndex: 0, // adds new frame at the end
-    });
     openDrawTool();
+    requestAnimationFrame(() =>
+      sendAsync('DRAW_TOOL_LAYER_ACTION', {
+        action: 'addFrame',
+        frameIndex: 0, // adds new frame at the end
+      })
+    );
   }, [openDrawTool]);
 
   if (!component) {
