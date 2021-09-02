@@ -208,7 +208,8 @@ void Drawing2Behavior::handleDrawComponent(ActorId actorId, const Drawing2Compon
   }
 
   if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId)) {
-    if (auto info = getBehaviors().byType<BodyBehavior>().getRenderInfo(actorId); info.visible) {
+    if (auto info = getBehaviors().byType<BodyBehavior>().getRenderInfo(actorId);
+        info.visible || (options && options->drawInvisibleActors)) {
       lv.graphics.push();
 
       auto [x, y] = body->GetPosition();

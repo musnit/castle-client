@@ -206,7 +206,9 @@ void Editor::draw() {
 
   switch (editMode) {
   case EditMode::Default: {
-    scene->draw();
+    SceneDrawingOptions options;
+    options.drawInvisibleActors = true;
+    scene->draw(options);
 
     auto &bodyBehavior = scene->getBehaviors().byType<BodyBehavior>();
     auto &drawingBehavior = scene->getBehaviors().byType<Drawing2Behavior>();
@@ -322,6 +324,7 @@ void Editor::draw() {
   case EditMode::Draw: {
     if (drawTool.isViewInContextEnabled()) {
       SceneDrawingOptions options;
+      options.drawInvisibleActors = true;
       if (drawTool.getIsPlayingAnimation()) {
         // actor being edited by draw tool
         options.editorDrawingActorId = selection.firstSelectedActorId();
