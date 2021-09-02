@@ -110,24 +110,32 @@ export const CreateCardSettings = () => {
             valueProps={{ min: 0, step: 0.5 }}
           />
         ) : null}
-        {settingsData.scaleRotateProperties ? (
+        {settingsData.scaleRotateToolProperties ? (
           <>
             <ToggleWithValue
               toggleLabel="Resize grid snap"
               valueLabel="Grid size"
-              enabled={settingsData.scaleGridEnabled}
-              value={settingsData.scaleGridSize}
-              onChangeEnabled={(value) => sendAction('setScaleGridEnabled', value)}
-              onChangeValue={(value) => sendAction('setScaleGridSize', value)}
+              enabled={settingsData.scaleRotateToolProperties.gridEnabled}
+              value={settingsData.scaleRotateToolProperties.gridSize}
+              onChangeEnabled={(value) =>
+                sendAction({ type: 'scale_rotate', action: 'setGridEnabled', doubleValue: value ? 1 : 0 })
+              }
+              onChangeValue={(value) =>
+                sendAction({ type: 'scale_rotate', action: 'setGridSize', doubleValue: value })
+              }
               valueProps={{ min: 0, step: 0.5 }}
             />
             <ToggleWithValue
               toggleLabel="Rotation snap"
               valueLabel="Increment"
-              enabled={settingsData.rotateIncrementEnabled}
-              value={settingsData.rotateIncrementDegrees}
-              onChangeEnabled={(value) => sendAction('setRotateIncrementEnabled', value)}
-              onChangeValue={(value) => sendAction('setRotateIncrementDegrees', value)}
+              enabled={settingsData.scaleRotateToolProperties.rotateIncrementEnabled}
+              value={settingsData.scaleRotateToolProperties.rotateIncrementDegrees}
+              onChangeEnabled={(value) =>
+                sendAction({ type: 'scale_rotate', action: 'setRotateIncrementEnabled', doubleValue: value ? 1 : 0 })
+              }
+              onChangeValue={(value) =>
+                sendAction({ type: 'scale_rotate', action: 'setRotateIncrementDegrees', doubleValue: value })
+              }
               valueProps={{ min: 0, step: 5 }}
             />
           </>

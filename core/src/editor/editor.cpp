@@ -153,6 +153,8 @@ void Editor::update(double dt) {
       selection.touchToSelect(*scene);
 
       if (selection.isSelectionChanged()) {
+        setCurrentTool(Tool::Grab);
+
         isEditorStateDirty = true;
         isSelectedActorStateDirty = true;
         if (selection.hasSelection()) {
@@ -175,6 +177,7 @@ void Editor::update(double dt) {
         grab.update(dt);
         break;
       case Tool::ScaleRotate:
+        scaleRotate.update(dt);
         break;
       }
 
@@ -295,6 +298,7 @@ void Editor::draw() {
         grab.drawOverlay();
         break;
       case Tool::ScaleRotate:
+        scaleRotate.drawOverlay();
         break;
       }
     }
@@ -1314,6 +1318,13 @@ struct EditorInspectorActionReceiver {
     auto editor = engine.maybeGetEditor();
 
     Debug::log("editor received inspector action: {}", action);
+
+    if (action == "toggleScaleRotate") {
+      editor->setCurrentTool(editor->getCurrentTool() != Editor::Tool::ScaleRotate
+              ? Editor::Tool::ScaleRotate
+              : Editor::Tool::Grab);
+    }
+
     if (action == "openInspector") {
       auto &selection = editor->getSelection();
       if (selection.hasSelection()) {
@@ -1597,8 +1608,9 @@ struct EditorChangeSceneSettingsReceiver {
       }
     } else if (type == "grab") {
       engine.maybeGetEditor()->getGrabTool().changeSettings(action, params.doubleValue());
+    } else if (type == "scale_rotate") {
+      engine.maybeGetEditor()->getScaleRotateTool().changeSettings(action, params.doubleValue());
     }
-    // TODO: ScaleRotate settings
     engine.maybeGetEditor()->sendSceneSettings();
   }
 };
@@ -1606,13 +1618,14 @@ struct EditorChangeSceneSettingsReceiver {
 struct EditorSceneSettingsEvent {
   PROP(Scene::Props *, sceneProperties);
   PROP(GrabTool::Props *, grabToolProperties);
-  // TODO: ScaleRotate properties
+  PROP(ScaleRotateTool::Props *, scaleRotateToolProperties);
 };
 
 void Editor::sendSceneSettings() {
   EditorSceneSettingsEvent ev;
   ev.sceneProperties = &getScene().props;
   ev.grabToolProperties = &grab.props;
+  ev.scaleRotateToolProperties = &scaleRotate.props;
   bridge.sendEvent("EDITOR_SCENE_SETTINGS", ev);
 };
 

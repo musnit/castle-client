@@ -84,10 +84,6 @@ const makeChangeOrderOptions = ({ isTextActorSelected, sendAction }) => {
 };
 
 export const OverlaySelectionActions = () => {
-  // TODO: applicableTools was previously derived from inspector actions
-  const applicableTools = null,
-    data = {};
-
   const { isTextActorSelected } = useCardCreator();
   const sendAction = React.useCallback(
     (action, ...args) => {
@@ -118,21 +114,9 @@ export const OverlaySelectionActions = () => {
     );
   }, [sendAction]);
 
-  let scaleRotateAction;
-  if (applicableTools) {
-    // TODO: restore ScaleRotate
-    const grabBehavior = applicableTools.find((behavior) => behavior.name === 'Grab');
-    const scaleRotateBehavior = applicableTools.find((behavior) => behavior.name === 'ScaleRotate');
-
-    if (scaleRotateBehavior) {
-      const isScaleRotatedSelected = data.activeToolBehaviorId === scaleRotateBehavior.behaviorId;
-      scaleRotateAction = () =>
-        sendAction(
-          'setActiveTool',
-          isScaleRotatedSelected ? grabBehavior.behaviorId : scaleRotateBehavior.behaviorId
-        );
-    }
-  }
+  const scaleRotateAction = () => {
+    sendAction('toggleScaleRotate');
+  };
 
   return (
     <View style={styles.container} pointerEvents="box-none">

@@ -7,6 +7,7 @@
 #include "edit_variables.h"
 #include "selection.h"
 #include "grab.h"
+#include "scale_rotate.h"
 #include "draw/draw_tool.h"
 #include "grid.h"
 #include "commands.h"
@@ -49,6 +50,7 @@ public:
 
   Grid &getGrid();
   GrabTool &getGrabTool();
+  ScaleRotateTool &getScaleRotateTool();
   Bridge &getBridge();
 
   // top-level editor mode
@@ -106,6 +108,7 @@ private:
 
   Tool currentTool = Tool::Grab;
   GrabTool grab { *this };
+  ScaleRotateTool scaleRotate { *this };
 
   // 'Draw'-mode members
   DrawTool drawTool { *this };
@@ -179,6 +182,10 @@ inline Grid &Editor::getGrid() {
 
 inline GrabTool &Editor::getGrabTool() {
   return grab;
+}
+
+inline ScaleRotateTool &Editor::getScaleRotateTool() {
+  return scaleRotate;
 }
 
 inline Bridge &Editor::getBridge() {
