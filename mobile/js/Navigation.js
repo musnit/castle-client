@@ -42,7 +42,7 @@ LogBox.ignoreLogs([
   "Accessing the 'state' property of the 'route' object is not supported. If you want to get the focused route name, use the 'getFocusedRouteNameFromRoute' helper instead: https://reactnavigation.org/docs/screen-options-resolution/#setting-parent-screen-options-based-on-child-navigators-state",
 ]);
 
-const ICON_SIZE = 28;
+const ICON_SIZE = 30;
 
 // App UI layout
 
@@ -209,8 +209,8 @@ const TabNavigator = () => {
                 <FastImage
                   tintColor={color}
                   style={{
-                    width: ICON_SIZE + 2,
-                    height: ICON_SIZE + 2,
+                    width: ICON_SIZE,
+                    height: ICON_SIZE,
                   }}
                   source={require('../assets/images/BottomTabs-explore.png')}
                 />
