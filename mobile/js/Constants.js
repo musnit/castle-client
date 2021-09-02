@@ -22,6 +22,7 @@ export const colors = {
   grayOnWhiteBorder: '#ccc',
   grayOnBlackBorder: '#444',
   white: '#fff',
+  halfWhite: '#fff9',
   skeletonBG: '#262626',
   skeletonText: '#595959',
 };

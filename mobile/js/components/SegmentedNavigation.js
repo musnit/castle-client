@@ -9,23 +9,30 @@ const darkBackgroundStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingBottom: 8,
   },
   item: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: 12,
+    paddingTop: 4,
+    paddingBottom: 12,
+    // backgroundColor: '#555',
   },
-  selectedItem: {
+  label: {
     paddingBottom: 6,
-    borderBottomWidth: 2,
-    borderColor: Constants.colors.white,
+    borderColor: 'transparent',
+    borderBottomWidth: 3,
+    // backgroundColor: '#777',
+  },
+  selectedLabel: {
+    borderColor: '#fff',
   },
   name: {
-    fontSize: 16,
-    color: Constants.colors.grayText,
+    fontSize: 14,
+    color: Constants.colors.halfWhite,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   selectedName: {
     color: Constants.colors.white,
@@ -37,8 +44,8 @@ const darkBackgroundStyles = StyleSheet.create({
     backgroundColor: Constants.colors.white,
     borderRadius: 5,
     position: 'absolute',
-    right: 2,
-    top: 7,
+    right: -10,
+    top: -2,
   },
 });
 
@@ -90,14 +97,16 @@ export const SegmentedNavigation = (props) => {
           key={item.value}
           style={[styles.item, item === selectedItem ? styles.selectedItem : null]}
           onPress={() => onSelectItem(item)}>
-          {item.icon ? (
-            <MCIcon name={item.icon} size={24} color={item === selectedItem ? '#fff' : '#ccc'} />
-          ) : (
-            <Text style={[styles.name, item === selectedItem ? styles.selectedName : null]}>
-              {item.name}
-            </Text>
-          )}
-          {item.indicator ? <View style={styles.indicator} /> : null}
+          <View style={[styles.label, item === selectedItem ? styles.selectedLabel : null]}>
+            {item.icon ? (
+              <MCIcon name={item.icon} size={24} color={item === selectedItem ? '#fff' : '#ccc'} />
+            ) : (
+              <Text style={[styles.name, item === selectedItem ? styles.selectedName : null]}>
+                {item.name}
+              </Text>
+            )}
+            {item.indicator ? <View style={styles.indicator} /> : null}
+          </View>
         </Pressable>
       ))}
     </View>
