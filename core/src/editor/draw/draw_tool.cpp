@@ -195,7 +195,7 @@ struct DrawToolLayerActionReceiver {
     } else if (action == "selectLayerAndFrame") {
       drawTool.setIsPlayingAnimation(false);
       if (drawTool.drawData->selectedLayerId != params.layerId()
-          && drawTool.drawData->selectedFrame.value != params.frameIndex()) {
+          || drawTool.drawData->selectedFrame.value != params.frameIndex()) {
         drawTool.drawData->selectedLayerId = params.layerId();
         drawTool.drawData->selectedFrame.value = params.frameIndex();
         drawTool.saveDrawing("select cell");
