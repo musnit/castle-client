@@ -33,29 +33,28 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Constants.colors.black,
   },
-  header: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderBottomWidth: 1,
-    borderColor: Constants.colors.grayOnBlackBorder,
-    paddingTop: 16,
+  tabTitle: {
+    padding: 16,
+    paddingBottom: 0,
   },
-  sectionTitle: {
-    color: Constants.colors.white,
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginVertical: 8,
+  tabTitleText: {
+    fontSize: 32,
+    fontFamily: 'Basteleur-Bold',
+    color: '#fff',
   },
   sectionHeader: {
     paddingHorizontal: 16,
-    paddingTop: 24,
-    paddingBottom: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingTop: 28,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: Constants.colors.grayOnBlackBorder,
+    marginBottom: 8,
   },
   sectionLabel: {
-    color: '#ccc',
+    color: Constants.colors.white,
     textTransform: 'uppercase',
+    fontSize: 14,
+    letterSpacing: 0.5,
   },
   notif: {
     paddingHorizontal: 16,
@@ -105,8 +104,8 @@ const notifBodyStyles = StyleSheet.create({
 });
 
 const STATUS_HEADERS = {
-  unseen: 'New',
-  seen: 'Earlier',
+  unseen: 'New since last visit',
+  seen: 'Previously viewed',
 };
 
 // TODO: swap out for different reaction types
@@ -335,7 +334,9 @@ const NotificationsScreenAuthenticated = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <ScreenHeader title="Notifications" />
+      <View style={styles.tabTitle}>
+        <Text style={styles.tabTitleText}>Notifications</Text>
+      </View>
       {orderedNotifs.length > 0 && (
         <FlatList
           data={orderedNotifs}

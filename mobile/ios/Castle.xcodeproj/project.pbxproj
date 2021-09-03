@@ -10,7 +10,6 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		752DFF0FA2404564937762CE /* RTAliasGrotesk-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 0C7DDD807F684FD0A7E4CD7E /* RTAliasGrotesk-Bold.otf */; };
 		91395EB8240DE6A700ECBCF9 /* GhostPushNotifications.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91395EB7240DE6A700ECBCF9 /* GhostPushNotifications.mm */; };
 		91CCEBA726D6FC0D00C6B016 /* API_ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91CCEBA626D6FC0C00C6B016 /* API_ios.mm */; };
 		A12CFEE723CC30F600D721BC /* references.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A12CFEDF23CC30F600D721BC /* references.cpp */; };
@@ -85,7 +84,7 @@
 		B55942292534CC0200BD34E7 /* CastleNotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = B55942272534CC0200BD34E7 /* CastleNotificationService.m */; };
 		B5942AB52627646B003CF6DB /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B5942AAD2627646B003CF6DB /* BootSplash.storyboard */; };
 		B75D12A12F9E5D8776A933D2 /* libPods-Castle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 580488360D0E6A5C5C50B415 /* libPods-Castle.a */; };
-		CD0A84C8B8A44D86830CD6A6 /* RTAliasGrotesk-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = A753A21E42DB46D99AD060DF /* RTAliasGrotesk-Regular.otf */; };
+		FD974DF143C544B1A8CBD6AB /* Basteleur-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = DF503A7241834DF1A0DA901E /* Basteleur-Bold.otf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -144,7 +143,6 @@
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* CastleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CastleTests.m; sourceTree = "<group>"; };
-		0C7DDD807F684FD0A7E4CD7E /* RTAliasGrotesk-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "RTAliasGrotesk-Bold.otf"; path = "../assets/fonts/RTAliasGrotesk-Bold.otf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Castle.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Castle.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Castle/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = Castle/AppDelegate.m; sourceTree = "<group>"; };
@@ -252,7 +250,6 @@
 		A1E695ED26708E2D00711D05 /* CastleCoreBridge.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CastleCoreBridge.mm; sourceTree = "<group>"; };
 		A1F8359F2661964000E65FE9 /* CastleCoreView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CastleCoreView.mm; sourceTree = "<group>"; };
 		A1FA18C22365168600E2ACFE /* GhostInputZone.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GhostInputZone.mm; sourceTree = "<group>"; };
-		A753A21E42DB46D99AD060DF /* RTAliasGrotesk-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "RTAliasGrotesk-Regular.otf"; path = "../assets/fonts/RTAliasGrotesk-Regular.otf"; sourceTree = "<group>"; };
 		B51813EE2527916C00C315C9 /* GhostAppState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GhostAppState.h; sourceTree = "<group>"; };
 		B51813F62527916C00C315C9 /* GhostAppState.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GhostAppState.mm; sourceTree = "<group>"; };
 		B559420F2534C97A00BD34E7 /* CastleNotificationService.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CastleNotificationService.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -266,6 +263,7 @@
 		E4E5BC502DF005B700F3E5D1 /* Pods-Castle-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Castle-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-Castle-tvOSTests/Pods-Castle-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
+		DF503A7241834DF1A0DA901E /* Basteleur-Bold.otf */ = {isa = PBXFileReference; name = "Basteleur-Bold.otf"; path = "../assets/fonts/Basteleur-Bold.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -599,8 +597,7 @@
 		F290EE920FCD404AA685C745 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				0C7DDD807F684FD0A7E4CD7E /* RTAliasGrotesk-Bold.otf */,
-				A753A21E42DB46D99AD060DF /* RTAliasGrotesk-Regular.otf */,
+				DF503A7241834DF1A0DA901E /* Basteleur-Bold.otf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -737,9 +734,8 @@
 			files = (
 				A14FE3F72355D0C8003B7EA0 /* package.love in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				752DFF0FA2404564937762CE /* RTAliasGrotesk-Bold.otf in Resources */,
-				CD0A84C8B8A44D86830CD6A6 /* RTAliasGrotesk-Regular.otf in Resources */,
 				B5942AB52627646B003CF6DB /* BootSplash.storyboard in Resources */,
+				FD974DF143C544B1A8CBD6AB /* Basteleur-Bold.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
