@@ -257,7 +257,7 @@ void Editor::draw() {
 
       lv.graphics.push(love::Graphics::STACK_ALL);
 
-      scene->applyViewTransform();
+      scene->applyViewTransform(800.0f);
 
       lv.graphics.setLineWidth(1.25f * scene->getPixelScale());
       lv.graphics.setColor({ 0.8, 0.8, 0.8, 0.8 });
@@ -501,6 +501,32 @@ void Editor::editorJSLoaded() {
   sendSceneSettings();
   getVariables().sendVariablesData(getBridge());
   sendTagsData();
+}
+
+struct EditorRequestScreenshotReceiver {
+  inline static const BridgeRegistration<EditorRequestScreenshotReceiver> registration {
+    "REQUEST_SCREENSHOT"
+  };
+
+  struct Params {
+  } params;
+  void receive(Engine &engine) {
+    auto editor = engine.maybeGetEditor();
+    if (!editor)
+      return;
+
+    editor->sendScreenshot();
+  }
+};
+
+void Editor::sendScreenshot() {
+  if (!screenshot) {
+    screenshot = std::make_unique<Screenshot>(1350);
+  }
+  EditorSceneMessageEvent ev;
+  ev.messageType = "SCREENSHOT_DATA";
+  ev.data = screenshot->getBase64Screenshot(&getScene());
+  bridge.sendEvent("SCENE_MESSAGE", ev);
 }
 
 struct EditorGlobalActionsEvent {

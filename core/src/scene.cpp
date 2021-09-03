@@ -395,9 +395,9 @@ void Scene::PhysicsContactListener::BeginContact(b2Contact *contact) {
 // Draw
 //
 
-void Scene::applyViewTransform() const {
+void Scene::applyViewTransform(float windowWidth) const {
   viewTransform.reset();
-  viewTransform.scale(800.0f / viewWidth, 800.0f / viewWidth);
+  viewTransform.scale(windowWidth / viewWidth, windowWidth / viewWidth);
   viewTransform.translate(0.5f * viewWidth, getViewYOffset());
   viewTransform.translate(-cameraX, -cameraY);
   lv.graphics.applyTransform(&viewTransform);
@@ -408,7 +408,11 @@ void Scene::draw(std::optional<SceneDrawingOptions> options) const {
 
   lv.graphics.push(love::Graphics::STACK_ALL);
 
-  applyViewTransform();
+  float windowWidth = 800.0f;
+  if (options && options->windowWidth > 0.0f) {
+    windowWidth = options->windowWidth;
+  }
+  applyViewTransform(windowWidth);
 
   // Scene
   forEachActorByDrawOrder([&](ActorId actorId) {

@@ -12,6 +12,7 @@
 #include "commands.h"
 #include "belt.h"
 #include "player.h"
+#include "screenshot.h"
 
 class Editor {
   // manages a scene instance that is being edited.
@@ -83,6 +84,7 @@ private:
   friend struct DrawToolClearCollisionShapesReceiver;
   friend struct DrawToolViewInContextReceiver;
   friend struct DrawToolTmpGridSettingsReceiver;
+  friend struct EditorRequestScreenshotReceiver;
 
   Lv &lv { Lv::getInstance() };
   Bridge &bridge;
@@ -123,6 +125,9 @@ private:
   // behaviorId present indicates dirty state for selected actor
   std::set<int> selectedComponentStateDirty;
   void sendSelectedComponent(int behaviorId);
+
+  std::unique_ptr<Screenshot> screenshot;
+  void sendScreenshot();
 
   float autoSaveCountdown = 0; // If `> 0`, auto-save after this much time in seconds
   void updateAutoSave(double dt);

@@ -23,6 +23,7 @@ struct SceneDrawingOptions {
   bool drawInvisibleActors = false;
   ActorId editorDrawingActorId = nullActor;
   int editorDrawingAnimationFrame = -1;
+  float windowWidth = 0.0f;
 };
 
 class Scene {
@@ -210,7 +211,7 @@ public:
   void updateGesture();
 
   void draw(std::optional<SceneDrawingOptions> options = std::nullopt) const;
-  void applyViewTransform() const;
+  void applyViewTransform(float windowWidth) const;
 
 
 private:
