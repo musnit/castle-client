@@ -58,8 +58,6 @@
 	<string>100</string>
 	<key>UIAppFonts</key>
 	<array>
-		<string>RTAliasGrotesk-Bold.otf</string>
-		<string>RTAliasGrotesk-Regular.otf</string>
 		<string>AntDesign.ttf</string>
 		<string>Entypo.ttf</string>
 		<string>EvilIcons.ttf</string>
