@@ -4,6 +4,7 @@ import { ConfigureExpressionSheet } from '../expressions/ConfigureExpressionShee
 import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import { RuleParamInputRow } from '../components/RuleParamInputRow';
 import { useCardCreator } from '../../CreateCardContext';
+
 import * as Constants from '../../../Constants';
 
 const styles = StyleSheet.create({
@@ -25,11 +26,11 @@ export const BehaviorPropertyRule = ({
   response,
   onChangeResponse,
   addChildSheet,
+  behaviors,
   useAllBehaviors,
   children,
 }) => {
   const context = useCardCreator();
-  const { behaviors, behaviorActions } = context;
   const [lastNativeUpdate, setLastNativeUpdate] = React.useState(0);
   React.useEffect(() => setLastNativeUpdate(lastNativeUpdate + 1), [response?.params?.value]);
 

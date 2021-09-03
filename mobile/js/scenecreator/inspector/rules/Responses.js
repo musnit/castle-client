@@ -588,7 +588,7 @@ const SetBehavior = ({ response, context }) => {
     {
       type: behaviorName ? 'selectBehaviorPropertySheet' : 'selectBehaviorPropertySheetPlaceholder',
       label: behaviorName ?? 'Select property',
-      isPropertyVisible: (spec) => spec?.rules?.set === true,
+      isPropertyVisible: (spec) => spec?.attribs?.rulesSet === true,
     },
     {
       type: 'text',
