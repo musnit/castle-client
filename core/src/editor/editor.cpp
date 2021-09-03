@@ -150,6 +150,16 @@ void Editor::update(double dt) {
 
     switch (editMode) {
     case EditMode::Default: {
+      // Pre-update current tool (let it steal touches)
+      switch (currentTool) {
+      case Tool::Grab:
+        //grab.preUpdate(dt);
+        break;
+      case Tool::ScaleRotate:
+        scaleRotate.preUpdate(dt);
+        break;
+      }
+
       selection.touchToSelect(*scene);
 
       if (selection.isSelectionChanged()) {

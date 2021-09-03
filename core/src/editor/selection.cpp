@@ -76,6 +76,10 @@ void Selection::selectActorFromHits(const BodyBehavior::ActorsAtTouch &hits) {
 
 void Selection::touchToSelect(Scene &scene) {
   scene.getGesture().withSingleTouch([&](const Touch &touch) {
+    if (touch.isUsed()) {
+      return;
+    }
+
     auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
     auto isShortPress = lv.timer.getTime() - touch.pressTime < 0.2;
 
@@ -105,7 +109,7 @@ void Selection::touchToSelect(Scene &scene) {
     });
 
     // Press and move? Check at point and select if nothing already selected there.
-    if (!touch.isUsed() && touch.movedNear && isShortPress) {
+    if (touch.movedNear && isShortPress) {
       // TODO: This should maybe use `touch.initialPos` vs. `touch.pos` since user meant to select
       //       where the touch started dragging, not where it is now (may have left actor bounds).
       //       `touch.initialPos` is what we used in Lua too.
@@ -124,7 +128,7 @@ void Selection::touchToSelect(Scene &scene) {
     }
 
     // Quick press and release without moving? Select!
-    if (!touch.isUsed() && touch.released && !touch.movedNear && isShortPress) {
+    if (touch.released && !touch.movedNear && isShortPress) {
       selectActorFromHits(hits);
       touch.use(touchToken);
       applySelection(scene);

@@ -51,6 +51,8 @@ std::optional<ScaleRotateTool::Handles> ScaleRotateTool::getHandles() const {
 
   Handles handles;
 
+  handles.actorId = actorId;
+
   handles.drawRadius = 10 * scene.getPixelScale();
 
   // Body dimensions
@@ -95,28 +97,98 @@ std::optional<ScaleRotateTool::Handles> ScaleRotateTool::getHandles() const {
 // Update
 //
 
-void ScaleRotateTool::update(double dt) {
+struct RotateMarker {}; // Marks a touch as used for rotation
+
+void ScaleRotateTool::preUpdate(double dt) {
   if (!editor.hasScene()) {
     return;
   }
   auto &scene = editor.getScene();
-  auto &selection = editor.getSelection();
-
-  if (!selection.hasSelection()) {
+  auto handles = getHandles();
+  if (!handles) {
     return;
   }
-
-  scene.getGesture().withSingleTouch([&](const Touch &touch) {
+  auto touchRadius = 30 * scene.getPixelScale();
+  auto &gesture = scene.getGesture();
+  gesture.withSingleTouch([&](TouchId touchId, const Touch &touch) {
     auto fromBelt = touch.isUsed(Belt::placedTouchToken);
     if (!touch.isUsed(scaleRotateTouchToken) && !fromBelt) {
       // Not used by us yet, let's see if we can use it
       if (touch.isUsed() && !touch.isUsed(Selection::touchToken)) {
         return; // Bail if used by anything other than selection
       }
-      if (!touch.movedNear) {
-        return; // Need to move at least a bit
+      auto &rotateHandle = handles->rotate;
+      auto rotateHandleSqDist = (rotateHandle.pos - touch.pos).getLengthSquare();
+      if (rotateHandleSqDist < touchRadius * touchRadius) {
+        touch.forceUse(scaleRotateTouchToken);
+        gesture.setData<RotateMarker>(touchId);
       }
-      touch.forceUse(scaleRotateTouchToken);
+    }
+  });
+}
+
+void ScaleRotateTool::update(double dt) {
+  if (!editor.hasScene()) {
+    return;
+  }
+  auto &scene = editor.getScene();
+
+  auto handles = getHandles();
+  if (!handles) {
+    return;
+  }
+  auto actorId = handles->actorId;
+
+  auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
+  auto body = bodyBehavior.maybeGetPhysicsBody(actorId);
+  if (!body) {
+    return;
+  }
+
+  auto &gesture = scene.getGesture();
+  gesture.withSingleTouch([&](TouchId touchId, const Touch &touch) {
+    if (!touch.isUsed(scaleRotateTouchToken)) {
+      return;
+    }
+    if (!touch.movedNear) {
+      return;
+    }
+
+    // Rotation
+    auto &rotateHandle = handles->rotate;
+    if (gesture.hasData<RotateMarker>(touchId)) {
+      auto angle = (touch.pos - rotateHandle.pivot).getAngle();
+      auto prevAngle = (touch.pos - touch.delta - rotateHandle.pivot).getAngle();
+
+      if (props.rotateIncrementEnabled()) {
+        auto increment = float(props.rotateIncrementDegrees() * M_PI / 180);
+        auto initialAngle = (touch.initialPos - rotateHandle.pivot).getAngle();
+        angle = Grid::quantize(angle, increment, initialAngle);
+        prevAngle = Grid::quantize(prevAngle, increment, initialAngle);
+      }
+
+      auto rotation = angle - prevAngle;
+      auto oldBodyAngle = body->GetAngle();
+      auto newBodyAngle = oldBodyAngle + rotation;
+      Commands::Params commandParams;
+      commandParams.coalesce = true;
+      editor.getCommands().execute(
+          "rotate", commandParams,
+          [actorId, newBodyAngle](Editor &editor, bool) {
+            auto &bodyBehavior = editor.getScene().getBehaviors().byType<BodyBehavior>();
+            if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
+              bodyBehavior.setProperty(actorId, decltype(BodyComponent::Props::angle)::id,
+                  newBodyAngle * 180 / M_PI, false);
+            }
+          },
+          [actorId, oldBodyAngle](Editor &editor, bool) {
+            auto &bodyBehavior = editor.getScene().getBehaviors().byType<BodyBehavior>();
+            if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
+              bodyBehavior.setProperty(actorId, decltype(BodyComponent::Props::angle)::id,
+                  oldBodyAngle * 180 / M_PI, false);
+            }
+          });
+      return; // Did rotation, don't scale
     }
   });
 }
@@ -139,10 +211,10 @@ void ScaleRotateTool::drawOverlay() const {
         { 0.5f * scene.getCameraSize().x, scene.getViewYOffset() }, 2, false);
   }
 
-  lv.graphics.push(love::Graphics::STACK_ALL);
-  lv.graphics.setColor({ 0, 1, 0, 0.8 });
-
   if (auto handles = getHandles()) {
+    lv.graphics.push(love::Graphics::STACK_ALL);
+    lv.graphics.setColor({ 0, 1, 0, 0.8 });
+
     // Scale handles
     for (auto &scaleHandle : handles->scale) {
       lv.graphics.circle(
@@ -185,7 +257,7 @@ void ScaleRotateTool::drawOverlay() const {
       drawArrowLine(arcRadius + arrowRadius, angle - arcAngle, angle - arcAngle + arrowAngle);
       drawArrowLine(arcRadius - arrowRadius, angle - arcAngle, angle - arcAngle + arrowAngle);
     }
-  }
 
-  lv.graphics.pop();
+    lv.graphics.pop();
+  }
 }

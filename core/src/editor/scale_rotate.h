@@ -4,6 +4,7 @@
 #include "props.h"
 
 #include "lv.h"
+#include "scene.h"
 
 class Editor;
 
@@ -14,6 +15,7 @@ public:
 
   explicit ScaleRotateTool(Editor &editor_);
 
+  void preUpdate(double dt);
   void update(double dt);
   void drawOverlay() const;
 
@@ -41,6 +43,7 @@ private:
     love::Vector2 pivot;
   };
   struct Handles {
+    ActorId actorId = nullActor;
     std::array<ScaleHandle, 8> scale;
     RotateHandle rotate;
     float drawRadius = 1;

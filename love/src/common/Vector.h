@@ -78,6 +78,10 @@ struct Vector2
 	 **/
 	Vector2 getNormal(float scale) const;
 
+	inline float getAngle() const {
+		return std::atan2(y, x);
+	}
+
 	static inline float dot(const Vector2 &a, const Vector2 &b);
 	static inline float cross(const Vector2 &a, const Vector2 &b);
 
