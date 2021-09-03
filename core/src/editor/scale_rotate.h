@@ -30,4 +30,20 @@ private:
   Lv &lv { Lv::getInstance() };
 
   Editor &editor;
+
+
+  struct ScaleHandle {
+    enum Type { Corner, Width, Height } type = Corner;
+    love::Vector2 pos;
+  };
+  struct RotateHandle {
+    love::Vector2 pos;
+    love::Vector2 pivot;
+  };
+  struct Handles {
+    std::array<ScaleHandle, 8> scale;
+    RotateHandle rotate;
+    float drawRadius = 1;
+  };
+  std::optional<Handles> getHandles() const;
 };

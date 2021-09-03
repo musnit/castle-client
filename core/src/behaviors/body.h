@@ -6,6 +6,10 @@
 #include "props.h"
 
 
+love::Vector2 convert(b2Vec2 v);
+b2Vec2 convert(love::Vector2 v);
+
+
 enum class BodyLayer {
   Main,
   Camera,
@@ -193,6 +197,14 @@ private:
 
 
 // Inline implementations
+
+inline love::Vector2 convert(b2Vec2 v) {
+  return { v.x, v.y };
+}
+
+inline b2Vec2 convert(love::Vector2 v) {
+  return { v.x, v.y };
+}
 
 inline b2Body *BodyBehavior::maybeGetPhysicsBody(ActorId actorId) {
   if (auto component = maybeGetComponent(actorId)) {

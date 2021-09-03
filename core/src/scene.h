@@ -147,6 +147,7 @@ public:
   void setCameraPosition(love::Vector2 pos);
   love::Vector2 getCameraSize() const;
   static constexpr float defaultViewWidth = 10;
+  float getCameraZoom() const;
   void setViewWidth(float newViewWidth);
 
 
@@ -448,6 +449,10 @@ inline void Scene::setCameraPosition(love::Vector2 pos) {
 
 inline love::Vector2 Scene::getCameraSize() const {
   return { viewWidth, 7.0f * viewWidth / 5.0f };
+}
+
+inline float Scene::getCameraZoom() const {
+  return viewWidth / defaultViewWidth;
 }
 
 inline void Scene::setViewWidth(float newViewWidth) {

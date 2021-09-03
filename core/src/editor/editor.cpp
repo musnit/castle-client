@@ -262,6 +262,13 @@ void Editor::draw() {
 
       scene->applyViewTransform(800.0f);
 
+      lv.graphics.setColor({ 0, 0, 0, 1 });
+      for (auto actorId : selection.getSelectedActorIds()) {
+        if (!scene->isGhost(actorId)) {
+          drawCollisionShapes(actorId);
+        }
+      }
+
       lv.graphics.setLineWidth(1.25f * scene->getPixelScale());
       lv.graphics.setColor({ 0.8, 0.8, 0.8, 0.8 });
       scene->forEachActor([&](ActorId actorId) {
@@ -281,26 +288,19 @@ void Editor::draw() {
         }
       }
 
-      lv.graphics.setColor({ 0, 0, 0, 1 });
-      for (auto actorId : selection.getSelectedActorIds()) {
-        if (!scene->isGhost(actorId)) {
-          drawCollisionShapes(actorId);
+      // Current tool overlay
+      {
+        switch (currentTool) {
+        case Tool::Grab:
+          grab.drawOverlay();
+          break;
+        case Tool::ScaleRotate:
+          scaleRotate.drawOverlay();
+          break;
         }
       }
 
       lv.graphics.pop();
-    }
-
-    // Current tool overlay
-    {
-      switch (currentTool) {
-      case Tool::Grab:
-        grab.drawOverlay();
-        break;
-      case Tool::ScaleRotate:
-        scaleRotate.drawOverlay();
-        break;
-      }
     }
 
     // Belt

@@ -131,6 +131,14 @@ struct Vector2
 
 }; // Vector2
 
+inline Vector2 operator*(float s, Vector2 v) {
+	return v * s;
+}
+
+inline Vector2 operator*(Vector2 s, Vector2 v) {
+	return { s.x * v.x, s.y * v.y };
+}
+
 
 struct Vector3
 {
