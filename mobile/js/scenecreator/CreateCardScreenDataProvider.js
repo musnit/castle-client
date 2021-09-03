@@ -3,6 +3,7 @@ import { gql } from '@apollo/client';
 import { ReactNativeFile } from 'apollo-upload-client';
 import { withNavigation, withNavigationFocus } from '../ReactNavigation';
 import { CreateCardScreen } from './CreateCardScreen';
+import { sendAsync } from '../core/CoreEvents';
 
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
@@ -154,7 +155,7 @@ class CreateCardScreenDataProvider extends React.Component {
     let screenshotPromise = new Promise((resolve) => {
       this._screenshotPromiseResolve = resolve;
     });
-    await GhostEvents.sendAsync('REQUEST_SCREENSHOT');
+    await sendAsync('REQUEST_SCREENSHOT');
 
     try {
       let screenshotData = await Promise.race([
@@ -177,8 +178,7 @@ class CreateCardScreenDataProvider extends React.Component {
   };
 
   _save = async () => {
-    // TODO: Implement screenshots in C++
-    //await this._updateScreenshot();
+    await this._updateScreenshot();
     const { card, deck } = await Session.saveDeck(
       this.state.card,
       this.state.deck,
