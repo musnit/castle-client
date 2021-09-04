@@ -135,7 +135,7 @@ export const OverlaySelectionActions = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} pointerEvents="box-none">
       <View style={[styles.close, styles.button]}>
         <Pressable onPress={() => sendAction('closeInspector')}>
           <Icon name="close" size={28} color="#000" />
