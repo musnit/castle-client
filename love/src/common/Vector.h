@@ -82,6 +82,11 @@ struct Vector2
 		return std::atan2(y, x);
 	}
 
+	inline Vector2 getRotated(float angle) const {
+		auto c = std::cos(angle), s = std::sin(angle);
+		return { c * x - s * y, s * x + c * y };
+	}
+
 	static inline float dot(const Vector2 &a, const Vector2 &b);
 	static inline float cross(const Vector2 &a, const Vector2 &b);
 
@@ -141,6 +146,10 @@ inline Vector2 operator*(float s, Vector2 v) {
 
 inline Vector2 operator*(Vector2 s, Vector2 v) {
 	return { s.x * v.x, s.y * v.y };
+}
+
+inline Vector2 operator/(Vector2 s, Vector2 v) {
+	return { s.x / v.x, s.y / v.y };
 }
 
 

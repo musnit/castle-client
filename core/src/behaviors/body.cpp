@@ -435,6 +435,14 @@ void BodyBehavior::setPosition(ActorId actorId, BodyComponent &component, b2Vec2
   }
 }
 
+void BodyBehavior::setScale(ActorId actorId, float widthScale, float heightScale) {
+  if (auto component = maybeGetComponent(actorId)) {
+    component->props.widthScale() = widthScale;
+    component->props.heightScale() = heightScale;
+    recreateFixtures(actorId, *component, true);
+  }
+}
+
 
 //
 // Fixtures

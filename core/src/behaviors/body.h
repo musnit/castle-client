@@ -16,10 +16,10 @@ enum class BodyLayer {
 };
 
 struct BodyComponent : BaseComponent {
-  static constexpr double minBodySize = 0.25;
-  static constexpr double maxBodySize = 40;
-  static constexpr double minBodyScale = -maxBodySize;
-  static constexpr double maxBodyScale = maxBodySize;
+  static constexpr float minBodySize = 0.25;
+  static constexpr float maxBodySize = 40;
+  static constexpr float minBodyScale = -maxBodySize;
+  static constexpr float maxBodyScale = maxBodySize;
 
   struct Props {
     PROP(float, x, .label("X Position")) = 0;
@@ -139,6 +139,7 @@ public:
 
   void setPosition(ActorId actorId, b2Vec2 pos); // Use this instead of `SetTransform` when setting
                                                  // body position -- notifies other behaviors
+  void setScale(ActorId actorId, float widthScale, float heightScale);
 
 
   // Information needed for rendering

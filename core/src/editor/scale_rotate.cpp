@@ -59,11 +59,11 @@ std::optional<ScaleRotateTool::Handles> ScaleRotateTool::getHandles() const {
   auto bounds = bodyBehavior.getEditorBounds(actorId);
   love::Vector2 boundsMin { bounds.minX(), bounds.minY() };
   love::Vector2 boundsMax { bounds.maxX(), bounds.maxY() };
-  auto size = boundsMax - boundsMin;
-  auto center = boundsMin + 0.5 * size;
+  auto boundsSize = boundsMax - boundsMin;
   auto renderInfo = bodyBehavior.getRenderInfo(actorId);
   love::Vector2 scale { renderInfo.widthScale, renderInfo.heightScale };
-  auto scaledSize = scale * size;
+  auto size = scale * boundsSize;
+  auto center = scale * boundsMin + 0.5 * size;
 
   // Scale handles
   auto scaleHandleI = 0;
@@ -78,15 +78,15 @@ std::optional<ScaleRotateTool::Handles> ScaleRotateTool::getHandles() const {
         } else if (i == 0 && j != 0) {
           scaleHandle.type = ScaleHandle::Height;
         }
-        scaleHandle.pos = convert(
-            body->GetWorldPoint(convert(center + 0.5 * love::Vector2 { i, j } * scaledSize)));
+        scaleHandle.pos
+            = convert(body->GetWorldPoint(convert(center + 0.5 * love::Vector2 { i, j } * size)));
       }
     }
   }
 
   // Rotate handle
-  auto rotateHandleY = std::max(0.0f, bounds.minY()) - 8 * handles.drawRadius;
-  handles.rotate.pos = convert(body->GetWorldPoint({ 0, rotateHandleY }));
+  auto minY = std::min(0.0f, renderInfo.heightScale * bounds.minY());
+  handles.rotate.pos = convert(body->GetWorldPoint({ 0, minY - 8 * handles.drawRadius }));
   handles.rotate.pivot = convert(body->GetPosition());
 
   return handles;
@@ -97,7 +97,10 @@ std::optional<ScaleRotateTool::Handles> ScaleRotateTool::getHandles() const {
 // Update
 //
 
-struct RotateMarker {}; // Marks a touch as used for rotation
+struct ScaleMarker { // Marks touch as used for scale
+  int handleIndex = 0;
+};
+struct RotateMarker {}; // Marks touch as used for rotation
 
 void ScaleRotateTool::preUpdate(double dt) {
   if (!editor.hasScene()) {
@@ -111,12 +114,19 @@ void ScaleRotateTool::preUpdate(double dt) {
   auto touchRadius = 30 * scene.getPixelScale();
   auto &gesture = scene.getGesture();
   gesture.withSingleTouch([&](TouchId touchId, const Touch &touch) {
-    auto fromBelt = touch.isUsed(Belt::placedTouchToken);
-    if (!touch.isUsed(scaleRotateTouchToken) && !fromBelt) {
-      // Not used by us yet, let's see if we can use it
-      if (touch.isUsed() && !touch.isUsed(Selection::touchToken)) {
-        return; // Bail if used by anything other than selection
+    if (!touch.isUsed()) {
+      // Scale
+      auto scaleHandleIndex = 0;
+      for (auto &scaleHandle : handles->scale) {
+        auto scaleHandleSqDist = (scaleHandle.pos - touch.pos).getLengthSquare();
+        if (scaleHandleSqDist < touchRadius * touchRadius) {
+          touch.forceUse(scaleRotateTouchToken);
+          gesture.setData<ScaleMarker>(touchId, scaleHandleIndex);
+        }
+        ++scaleHandleIndex;
       }
+
+      // Rotate
       auto &rotateHandle = handles->rotate;
       auto rotateHandleSqDist = (rotateHandle.pos - touch.pos).getLengthSquare();
       if (rotateHandleSqDist < touchRadius * touchRadius) {
@@ -154,9 +164,65 @@ void ScaleRotateTool::update(double dt) {
       return;
     }
 
-    // Rotation
-    auto &rotateHandle = handles->rotate;
-    if (gesture.hasData<RotateMarker>(touchId)) {
+    if (auto scaleMarker = gesture.maybeGetData<ScaleMarker>(touchId)) { // Scale
+      auto &scaleHandle = handles->scale[scaleMarker->handleIndex];
+
+      auto localHandlePos = convert(body->GetLocalPoint(convert(scaleHandle.pos)));
+      auto localOppositeHandlePos = -localHandlePos;
+      auto localTouchPos = convert(body->GetLocalPoint(convert(touch.pos)));
+      auto touchSize = localTouchPos - localOppositeHandlePos;
+      touchSize.x = std::abs(touchSize.x);
+      touchSize.y = std::abs(touchSize.y);
+      if (props.gridEnabled()) {
+        touchSize.x = Grid::quantize(touchSize.x, props.gridSize());
+        touchSize.y = Grid::quantize(touchSize.y, props.gridSize());
+      }
+      touchSize.x = std::clamp(touchSize.x, BodyComponent::minBodySize, BodyComponent::maxBodySize);
+      touchSize.y = std::clamp(touchSize.y, BodyComponent::minBodySize, BodyComponent::maxBodySize);
+
+      auto bounds = bodyBehavior.getEditorBounds(actorId);
+      love::Vector2 boundsMin { bounds.minX(), bounds.minY() };
+      love::Vector2 boundsMax { bounds.maxX(), bounds.maxY() };
+      auto boundsSize = boundsMax - boundsMin;
+      auto renderInfo = bodyBehavior.getRenderInfo(actorId);
+      love::Vector2 oldScale { renderInfo.widthScale, renderInfo.heightScale };
+      auto size = oldScale * boundsSize;
+
+      auto newSize = size;
+      if (scaleHandle.type == ScaleHandle::Corner) {
+        newSize = size * std::max(touchSize.x / size.x, touchSize.y / size.y);
+      } else if (scaleHandle.type == ScaleHandle::Width) {
+        newSize.x = touchSize.x;
+      } else if (scaleHandle.type == ScaleHandle::Height) {
+        newSize.y = touchSize.y;
+      }
+
+      auto scaleFactor = newSize / size;
+
+      auto newScale = oldScale * scaleFactor;
+      auto localNewPos = -localOppositeHandlePos * scaleFactor + localOppositeHandlePos;
+      auto worldNewPos = convert(body->GetWorldPoint(convert(localNewPos)));
+      auto worldOldPos = convert(body->GetPosition());
+      Commands::Params commandParams;
+      commandParams.coalesce = true;
+      editor.getCommands().execute(
+          "resize", commandParams,
+          [actorId, worldNewPos, newScale](Editor &editor, bool) {
+            auto &bodyBehavior = editor.getScene().getBehaviors().byType<BodyBehavior>();
+            if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
+              bodyBehavior.setPosition(actorId, convert(worldNewPos));
+              bodyBehavior.setScale(actorId, newScale.x, newScale.y);
+            }
+          },
+          [actorId, worldOldPos, oldScale](Editor &editor, bool) {
+            auto &bodyBehavior = editor.getScene().getBehaviors().byType<BodyBehavior>();
+            if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
+              bodyBehavior.setPosition(actorId, convert(worldOldPos));
+              bodyBehavior.setScale(actorId, oldScale.x, oldScale.y);
+            }
+          });
+    } else if (gesture.hasData<RotateMarker>(touchId)) { // Rotate
+      auto &rotateHandle = handles->rotate;
       auto angle = (touch.pos - rotateHandle.pivot).getAngle();
       auto prevAngle = (touch.pos - touch.delta - rotateHandle.pivot).getAngle();
 
@@ -188,7 +254,6 @@ void ScaleRotateTool::update(double dt) {
                   oldBodyAngle * 180 / M_PI, false);
             }
           });
-      return; // Did rotation, don't scale
     }
   });
 }
