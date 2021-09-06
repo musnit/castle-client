@@ -219,10 +219,9 @@ void Drawing2Behavior::handleDrawComponent(ActorId actorId, const Drawing2Compon
 
       lv.graphics.setColor(love::Colorf(1, 1, 1, 1));
 
-      int frameIndex;
       love::AnimationComponentProperties animProps;
       getAnimationComponentProperties(component, animProps);
-      frameIndex = animProps.currentFrame.toZeroIndex();
+      auto frameIndex = animProps.currentFrame.toZeroIndex();
 
       // maybe override the drawn frame from options (for editor's view in context)
       if (options && options->editorDrawingActorId != nullActor) {

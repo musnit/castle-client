@@ -67,8 +67,8 @@ std::optional<ScaleRotateTool::Handles> ScaleRotateTool::getHandles() const {
 
   // Scale handles
   auto scaleHandleI = 0;
-  for (float i = -1; i <= 1; ++i) {
-    for (float j = -1; j <= 1; ++j) {
+  for (int i = -1; i <= 1; ++i) {
+    for (int j = -1; j <= 1; ++j) {
       if (scaleHandleI < int(handles.scale.size()) && !(i == 0 && j == 0)) {
         auto &scaleHandle = handles.scale[scaleHandleI++];
         if (i != 0 && j != 0) {
@@ -78,8 +78,8 @@ std::optional<ScaleRotateTool::Handles> ScaleRotateTool::getHandles() const {
         } else if (i == 0 && j != 0) {
           scaleHandle.type = ScaleHandle::Height;
         }
-        scaleHandle.pos
-            = convert(body->GetWorldPoint(convert(center + 0.5 * love::Vector2 { i, j } * size)));
+        auto offset = 0.5 * love::Vector2 { float(i), float(j) } * size;
+        scaleHandle.pos = convert(body->GetWorldPoint(convert(center + offset)));
       }
     }
   }

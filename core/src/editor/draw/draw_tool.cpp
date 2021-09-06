@@ -702,7 +702,7 @@ void DrawTool::update(double dt) {
   }
 
   if (isPlayingAnimation) {
-    drawData->runAnimation(animationState, animationProperties, dt);
+    drawData->runAnimation(animationState, animationProperties, float(dt));
   }
 
   if (isDrawToolEventDirty) {
