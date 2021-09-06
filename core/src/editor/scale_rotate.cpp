@@ -115,23 +115,30 @@ void ScaleRotateTool::preUpdate(double dt) {
   auto &gesture = scene.getGesture();
   gesture.withSingleTouch([&](TouchId touchId, const Touch &touch) {
     if (!touch.isUsed()) {
-      // Scale
+      auto closestScaleHandleSqDist = std::numeric_limits<float>::max();
+      auto closestScaleHandleIndex = -1;
+
       auto scaleHandleIndex = 0;
       for (auto &scaleHandle : handles->scale) {
         auto scaleHandleSqDist = (scaleHandle.pos - touch.pos).getLengthSquare();
-        if (scaleHandleSqDist < touchRadius * touchRadius) {
-          touch.forceUse(scaleRotateTouchToken);
-          gesture.setData<ScaleMarker>(touchId, scaleHandleIndex);
+        if (scaleHandleSqDist < touchRadius * touchRadius
+            && scaleHandleSqDist < closestScaleHandleSqDist) {
+          closestScaleHandleSqDist = scaleHandleSqDist;
+          closestScaleHandleIndex = scaleHandleIndex;
         }
         ++scaleHandleIndex;
       }
 
-      // Rotate
       auto &rotateHandle = handles->rotate;
       auto rotateHandleSqDist = (rotateHandle.pos - touch.pos).getLengthSquare();
-      if (rotateHandleSqDist < touchRadius * touchRadius) {
-        touch.forceUse(scaleRotateTouchToken);
+
+      if (rotateHandleSqDist < touchRadius * touchRadius
+          && rotateHandleSqDist < closestScaleHandleSqDist) {
+        touch.use(scaleRotateTouchToken);
         gesture.setData<RotateMarker>(touchId);
+      } else if (closestScaleHandleIndex != -1) {
+        touch.use(scaleRotateTouchToken);
+        gesture.setData<ScaleMarker>(touchId, closestScaleHandleIndex);
       }
     }
   });
