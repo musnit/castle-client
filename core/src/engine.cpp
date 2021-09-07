@@ -80,6 +80,10 @@ Engine::Engine(bool isEditing_)
     : isEditing(isEditing_) {
   // First timer step
   lv.timer.step();
+
+  // Set love identity (needed for filesystem calls to work)
+  lv.filesystem.setIdentity("Castle", true);
+
   if (isEditing) {
     editor = std::make_unique<Editor>(bridge);
   }
