@@ -95,7 +95,9 @@ namespace ghost {
 
     // canvas helpers
     static graphics::Canvas *newCanvas(int width, int height);
+    static love::image::ImageData *newImageData(graphics::Canvas *canvas);
     static void renderToCanvas(graphics::Canvas *canvas, const std::function<void()> &lambda);
+    static std::string encodeBase64Png(love::image::ImageData *imageData);
     static std::string encodeBase64Png(graphics::Canvas *canvas);
 
     void deserializePathDataList();
