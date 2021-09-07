@@ -35,7 +35,9 @@ const styles = StyleSheet.create({
   },
   tabTitle: {
     padding: 16,
-    paddingBottom: 0,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: Constants.colors.grayOnBlackBorder,
   },
   tabTitleText: {
     fontSize: 32,
@@ -43,12 +45,8 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   sectionHeader: {
-    paddingHorizontal: 16,
-    paddingTop: 28,
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: Constants.colors.grayOnBlackBorder,
-    marginBottom: 8,
+    padding: 16,
+    paddingBottom: 8,
   },
   sectionLabel: {
     color: Constants.colors.white,
@@ -58,7 +56,7 @@ const styles = StyleSheet.create({
   },
   notif: {
     paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingVertical: 12,
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
