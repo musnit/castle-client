@@ -34,13 +34,10 @@ const styles = StyleSheet.create({
   },
   tabTitleText: {
     fontSize: 32,
+    lineHeight: 36,
     fontFamily: 'Basteleur-Bold',
     color: '#fff',
     flex: 1,
-  },
-  tabTitleAction: {
-    position: 'relative',
-    bottom: -4,
   },
   gridContainer: {
     paddingTop: 16,

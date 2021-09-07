@@ -41,6 +41,7 @@ const styles = StyleSheet.create({
   },
   tabTitleText: {
     fontSize: 32,
+    lineHeight: 36,
     fontFamily: 'Basteleur-Bold',
     color: '#fff',
   },
