@@ -9,13 +9,13 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
   },
   body: {
-    color: Constants.colors.grayText,
+    color: Constants.colors.white,
     fontSize: 16,
-    lineHeight: 22,
+    lineHeight: 20,
   },
   username: {
-    color: '#fff',
     paddingHorizontal: 4,
+    fontWeight: 'bold',
   },
   row: {
     paddingTop: 12,
@@ -89,42 +89,18 @@ const UsersList = ({ users }) => {
   }
 };
 
-export const ProfileConnections = ({ followersCount, connections }) => {
-  // nobody in common, just say "N followers"
-  if (!connections?.length) {
-    return (
-      <View style={styles.row}>
-        <Text style={styles.body}>
-          {followersCount} {followersCount === 1 ? 'follower' : 'followers'}
-        </Text>
-      </View>
-    );
-  }
-
-  // this person has very few total followers. Only mention the ones we know,
-  // i.e. "Followed by alice and bob"
-  if (followersCount < 3) {
+export const ProfileConnections = ({ connections }) => {
+  if (connections.length) {
     return (
       <View style={styles.row}>
         <UserAvatars users={connections} />
         <View style={styles.text}>
           <Text style={styles.body}>
-            Followed by <UsersList users={connections} />
+            Followed by <UsersList users={connections} /> you know
           </Text>
         </View>
       </View>
     );
   }
-
-  // this person has many followers and we know some of them
-  return (
-    <View style={styles.row}>
-      <UserAvatars users={connections} />
-      <View style={styles.text}>
-        <Text style={styles.body}>
-          Followed by {followersCount} people, including <UsersList users={connections} /> you know
-        </Text>
-      </View>
-    </View>
-  );
+  return null;
 };

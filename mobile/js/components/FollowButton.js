@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { toggleFollowUser } from '../Session';
 
 import * as Constants from '../Constants';
@@ -8,14 +8,14 @@ const styles = StyleSheet.create({
   followButton: {
     backgroundColor: Constants.colors.white,
     borderRadius: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 6,
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'row',
   },
-  followLabel: {
-    fontWeight: 'bold',
+  followButtonLabel: {
     fontSize: 16,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
   },
 });
 
@@ -36,7 +36,12 @@ export const FollowButton = ({ user, onPress, style }) => {
   }
   return (
     <TouchableOpacity style={[styles.followButton, style]} onPress={onPressFollow}>
-      <Text style={styles.followLabel}>{optimisticFollowing ? 'Following' : 'Follow'}</Text>
+      <Text style={styles.followButtonLabel}>{optimisticFollowing ? 'Following' : 'Follow'}</Text>
+      {user.followersCount ? (
+        <View style={{ borderLeftWidth: 1, borderColor: '#000' }}>
+          <Text style={[styles.followButtonLabel, {paddingHorizontal: 8}]}>{user.followersCount}</Text>
+        </View>
+      ) : null}
     </TouchableOpacity>
   );
 };

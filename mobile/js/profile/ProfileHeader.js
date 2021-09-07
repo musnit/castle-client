@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
   username: {
     fontSize: 20,
     color: Constants.colors.white,
+    fontWeight: 'bold',
   },
   profileItem: {
     flexDirection: 'row',
@@ -36,7 +37,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   followedBy: {
-    marginLeft: 16,
     borderRadius: 4,
     borderWidth: 1,
     borderColor: Constants.colors.white,
@@ -144,19 +144,24 @@ export const ProfileHeader = ({ user, isMe, isAnonymous, onRefresh, loading, err
       {user && !error ? (
         <>
           {!isMe ? (
+            <>
+              <View style={styles.profileRow}>
+                {!isAnonymous ? <FollowButton user={user} onPress={onRefresh} /> : null}
+                {user.connections.includes('followedBy') ? (
+                  <View style={[styles.followedBy, {marginLeft: 12}]}>
+                    <Text style={styles.followedByLabel}>Follows You</Text>
+                  </View>
+                ) : null}
+              </View>
+              <ProfileConnections connections={user?.connectionsYouKnow} />
+            </>
+          ) : 
             <View style={styles.profileRow}>
-              {!isAnonymous ? <FollowButton user={user} onPress={onRefresh} /> : null}
-              {user.connections.includes('followedBy') ? (
-                <View style={styles.followedBy}>
-                  <Text style={styles.followedByLabel}>Follows You</Text>
-                </View>
-              ) : null}
+              <View style={styles.followedBy}>
+                <Text style={styles.followedByLabel}>{user?.followersCount} Followers</Text>
+              </View>
             </View>
-          ) : null}
-          <ProfileConnections
-            followersCount={user?.followersCount}
-            connections={user?.connectionsYouKnow}
-          />
+          }
           {user?.badges?.length ? (
             <View style={styles.profileRow}>
               {user.badges.map((badge, ii) => (

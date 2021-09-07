@@ -84,7 +84,6 @@ const styles = StyleSheet.create({
     marginLeft: 16,
     borderRadius: 2,
   },
-  smallFollowButton: { padding: 6 },
   reactionSticker: { position: 'absolute', right: -14, bottom: -8, width: 32, height: 32 },
 });
 
@@ -166,7 +165,7 @@ const NotificationItem = ({ notification, navigateToUser, navigateToDeck, naviga
             />
           ) : null}
           {user && type === 'follow' ? (
-            <FollowButton user={user} style={styles.smallFollowButton} />
+            <FollowButton user={user} style={{  marginLeft: 8, }} />
           ) : null}
           {type === 'reaction' ? (
             <FastImage style={styles.reactionSticker} source={REACTION_IMAGE_FIRE} />
