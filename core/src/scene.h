@@ -182,7 +182,7 @@ public:
 
   struct Props {
     PROP(love::Colorf, backgroundColor) = { 227 / 255.0, 230 / 255.0, 252 / 255.0, 1 };
-    PROP(int, coordinateSystemVersion) = 0;
+    PROP(int, coordinateSystemVersion) = 2;
   } props;
 
 
