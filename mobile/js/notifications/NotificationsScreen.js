@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   sectionLabel: {
-    color: Constants.colors.white,
+    color: Constants.colors.grayText,
     textTransform: 'uppercase',
     fontSize: 14,
     letterSpacing: 0.5,
