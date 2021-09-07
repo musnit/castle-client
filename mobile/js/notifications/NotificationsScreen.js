@@ -26,7 +26,7 @@ import * as Utilities from '../common/utilities';
 
 import FastImage from 'react-native-fast-image';
 
-const NOTIF_HEIGHT = 56;
+const NOTIF_HEIGHT = 60;
 
 const styles = StyleSheet.create({
   container: {
