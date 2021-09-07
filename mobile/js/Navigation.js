@@ -270,6 +270,8 @@ const TabNavigator = () => {
                 style={{
                   width: ICON_SIZE,
                   height: ICON_SIZE,
+                  position: 'relative',
+                  top: -1,
                 }}
                 source={require('../assets/images/BottomTabs-profile.png')}
               />
