@@ -136,7 +136,7 @@ void Editor::update(double dt) {
   if (playing && player) {
     player->update(dt);
     if (capture) {
-      capture->update(&getScene(), getBridge(), dt);
+      capture->update(&player->getScene(), getBridge(), dt);
     }
   } else {
     Debug::display("fps: {}", lv.timer.getFPS());
