@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StatusBar, ScrollView } from 'react-native';
+import { StatusBar, ScrollView, View, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SearchInput } from './SearchInput';
 import { SearchResults } from './SearchResults';
@@ -12,6 +12,29 @@ import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 
 const REFETCH_FEED_INTERVAL_MS = 60 * 1000;
+
+const styles = StyleSheet.create({
+  tabTitle: {
+    height: 64,
+    padding: 16,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: Constants.colors.grayOnBlackBorder,
+    flexDirection: 'row',
+    // backgroundColor: '#00f',
+  },
+  tabTitleText: {
+    // backgroundColor: '#0f0',
+    fontSize: 32,
+    lineHeight: 36,
+    fontFamily: 'Basteleur-Bold',
+    color: '#fff',
+    flex: 1,
+  },
+  tabTitleAction: {
+    flex: 0,
+  },
+});
 
 export const ExploreScreen = ({ route }) => {
   useNavigation();
@@ -85,12 +108,20 @@ export const ExploreScreen = ({ route }) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['top']}>
-      <SearchInput
-        onFocus={onStartSearch}
-        onCancel={onCancelSearch}
-        value={searchQuery}
-        onChangeText={onChangeSearchQuery}
-      />
+      <View style={styles.tabTitle}>
+        {!isSearching ? (
+          <Text style={styles.tabTitleText}>Explore</Text>
+        ) : null }
+        <View style={[styles.tabTitleAction, isSearching ? { flex: 1 } : null]}>
+          <SearchInput
+            onFocus={onStartSearch}
+            onCancel={onCancelSearch}
+            value={searchQuery}
+            onChangeText={onChangeSearchQuery}
+          />
+        </View>
+      </View>
+
       {isSearching ? (
         <SearchResults query={searchQuery} initialResults={preloadSearchResults} />
       ) : (

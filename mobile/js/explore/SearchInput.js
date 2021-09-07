@@ -9,32 +9,30 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 18,
-    borderBottomWidth: 1,
-    borderColor: Constants.colors.grayOnBlackBorder,
   },
   inputWrapper: {
     borderWidth: 1,
-    borderRadius: 6,
-    borderColor: Constants.colors.white,
+    borderRadius: 4,
+    borderColor: Constants.colors.grayOnBlackBorder,
     flexDirection: 'row',
     alignItems: 'center',
-    flexShrink: 1,
   },
   searchIcon: {
     paddingLeft: 6,
   },
   input: {
     color: Constants.colors.white,
-    padding: 8,
-    width: '100%',
+    paddingVertical: 6,
+    paddingLeft: 6,
+    paddingRight: 10,
+    fontSize: 16,
   },
   cancelButton: {
-    flexShrink: 0,
     paddingLeft: 16,
   },
   cancel: {
     color: Constants.colors.white,
+    fontSize: 16,
   },
 });
 
@@ -72,13 +70,13 @@ export const SearchInput = ({ onFocus, onCancel, ...props }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.inputWrapper}>
+      <View style={[styles.inputWrapper, isFocused ? { flex: 1 } : null]}>
         <Feather name="search" color={Constants.colors.white} size={20} style={styles.searchIcon} />
         <TextInput
           ref={textInputRef}
           style={styles.input}
           autoCapitalize="none"
-          placeholder="Search for people..."
+          placeholder="Find people..."
           placeholderTextColor={Constants.colors.white}
           onFocus={onTextInputFocus}
           onBlur={onTextInputBlur}
