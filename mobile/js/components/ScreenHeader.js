@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     color: Constants.colors.white,
+    fontFamily: 'Basteleur-Bold',
     fontSize: 20,
     marginVertical: 16,
   },
