@@ -6,7 +6,7 @@ export const Android = Platform.OS === 'android';
 export const CARD_RATIO = 5 / 7;
 export const CARD_BORDER_RADIUS = 12;
 export const CARD_SMALL_BORDER_RADIUS = 6;
-export const GRID_PADDING = 8;
+export const GRID_PADDING = 12;
 export const FEED_HEADER_HEIGHT = 48;
 export const FEED_ITEM_HEADER_HEIGHT = 48;
 
