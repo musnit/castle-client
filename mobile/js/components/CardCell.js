@@ -131,7 +131,7 @@ export const CardCell = ({
   creator,
   isInitialCard,
   visibility,
-  playCount,
+  showVisibility,
   previewVideo,
   previewVideoPaused,
   inGrid,
@@ -161,7 +161,7 @@ export const CardCell = ({
             {title && <Text style={styles.metaTitle}>{title}</Text>}
           </View>
         ) : null}
-        {visibility ? (
+        {showVisibility ? (
           <View style={styles.visibility}>
             <Icon
               size={16}

@@ -76,6 +76,7 @@ const EditDeckCell = (props) => {
         card={deck.initialCard}
         onPress={onPress}
         visibility={deck.visibility}
+        showVisibility={true}
         playCount={deck.playCount}
         inGrid={true}
       />
