@@ -8,18 +8,27 @@ import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 16,
-    marginBottom: 16,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: Constants.colors.grayOnBlackBorder,
   },
   rowHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
     paddingHorizontal: 16,
-    paddingBottom: 8,
+    paddingBottom: 12,
   },
   title: {
     color: Constants.colors.white,
     fontSize: 16,
+    fontWeight: 'bold',
+  },
+  viewAll: {
+    color: Constants.colors.grayText,
+    textTransform: 'uppercase',
+    fontSize: 14,
+    letterSpacing: 0.5,
   },
   itemCard: {
     aspectRatio: Constants.CARD_RATIO,
@@ -27,7 +36,7 @@ const styles = StyleSheet.create({
     width: 100,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 8,
+    marginRight: 12,
   },
   skeletonRowHeader: {
     backgroundColor: Constants.colors.skeletonText,
@@ -50,7 +59,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const ExploreRow = ({ feed }) => {
+export const ExploreRow = ({ feed, last }) => {
   const { navigate } = useNavigation();
 
   const onPressDeck = React.useCallback(
@@ -95,10 +104,10 @@ export const ExploreRow = ({ feed }) => {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, last ? { borderBottomWidth: 0 } : null]}>
       <Pressable onPress={onPressTitle} style={styles.rowHeader}>
         <Text style={styles.title}>{feed.title}</Text>
-        <Icon size={24} name="chevron-right" color="#fff" />
+        <Text style={styles.viewAll}>View All</Text>
       </Pressable>
       <FlatList
         data={feed.decks}

@@ -21,10 +21,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: Constants.colors.grayOnBlackBorder,
     flexDirection: 'row',
-    // backgroundColor: '#00f',
   },
   tabTitleText: {
-    // backgroundColor: '#0f0',
     fontSize: 32,
     lineHeight: 36,
     fontFamily: 'Basteleur-Bold',
@@ -133,7 +131,7 @@ export const ExploreScreen = ({ route }) => {
               <SkeletonExploreRow />
             </>
           )}
-          {feeds && feeds.map((feed) => <ExploreRow feed={feed} key={feed.feedId} />)}
+          {feeds && feeds.map((feed, i) => <ExploreRow feed={feed} key={feed.feedId} last={(i === feeds.length - 1) ? true : false} />)}
         </ScrollView>
       )}
     </SafeAreaView>
