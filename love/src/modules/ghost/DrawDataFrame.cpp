@@ -505,6 +505,7 @@ namespace ghost {
     size_t fileDataSize = fileData->getSize();
     size_t dstlen = 0;
     char *result = data::encode(data::ENCODE_BASE64, fileDataString, fileDataSize, dstlen, 0);
+    delete imageData;
     return std::string(result);
   }
 
