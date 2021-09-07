@@ -12,7 +12,7 @@ Screenshot::~Screenshot() {
   }
 }
 
-std::string Screenshot::getBase64Screenshot(Scene *scene) {
+void Screenshot::renderScreenshotToCanvas(Scene *scene) {
   if (!canvas) {
     constexpr auto viewHeightToWidthRatio = 7.0f / 5.0f;
     canvas = love::DrawDataFrame::newCanvas(
@@ -21,5 +21,14 @@ std::string Screenshot::getBase64Screenshot(Scene *scene) {
   love::DrawDataFrame::renderToCanvas(canvas, [scene, this]() {
     scene->draw(drawingOptions);
   });
+}
+
+std::string Screenshot::getBase64Screenshot(Scene *scene) {
+  renderScreenshotToCanvas(scene);
   return love::DrawDataFrame::encodeBase64Png(canvas);
+}
+
+love::image::ImageData *Screenshot::getScreenshotImageData(Scene *scene) {
+  renderScreenshotToCanvas(scene);
+  return love::DrawDataFrame::newImageData(canvas);
 }

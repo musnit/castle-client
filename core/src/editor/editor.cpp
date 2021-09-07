@@ -22,6 +22,9 @@ void Editor::clearState() {
   commands.clear();
   auto &drawingBehavior = scene->getBehaviors().byType<Drawing2Behavior>();
   drawingBehavior.clearEditorDataCache();
+  if (capture) {
+    capture = nullptr;
+  }
 }
 
 void Editor::readScene(Reader &reader) {
@@ -132,6 +135,9 @@ void Editor::update(double dt) {
 
   if (playing && player) {
     player->update(dt);
+    if (capture) {
+      capture->update(&getScene(), getBridge(), dt);
+    }
   } else {
     Debug::display("fps: {}", lv.timer.getFPS());
     Debug::display("actors: {}", scene->numActors());
@@ -153,7 +159,7 @@ void Editor::update(double dt) {
       // Pre-update current tool (let it steal touches)
       switch (currentTool) {
       case Tool::Grab:
-        //grab.preUpdate(dt);
+        // grab.preUpdate(dt);
         break;
       case Tool::ScaleRotate:
         scaleRotate.preUpdate(dt);
@@ -556,6 +562,7 @@ struct EditorGlobalActionsEvent {
     PROP(bool, onRewind) = false;
     PROP(bool, onUndo) = false;
     PROP(bool, onRedo) = false;
+    PROP(bool, startCapture) = false;
   };
   PROP(ActionsAvailable, actionsAvailable);
 };
@@ -580,7 +587,6 @@ struct EditorGlobalActionReceiver {
       return;
     }
 
-    // TODO: expect keys from `ActionsAvailable`, e.g. onPlay, onRewind, onUndo...
     Debug::log("editor received global action: {}", action);
     if (action == "onPlay") {
       if (editor->hasScene()) {
@@ -629,6 +635,15 @@ struct EditorGlobalActionReceiver {
         editor->currentTool = Editor::Tool::Grab;
       }
       editor->isEditorStateDirty = true;
+    } else if (action == "startCapture") {
+      if (!editor->capture) {
+        editor->capture = std::make_unique<Capture>(512, 12, 24);
+      }
+      editor->capture->start();
+    } else if (action == "clearCapture") {
+      if (editor->capture) {
+        editor->capture->clear();
+      }
     }
   }
 };
@@ -640,6 +655,7 @@ void Editor::sendGlobalActions() {
   EditorGlobalActionsEvent ev;
   if (playing && player) {
     ev.performing = true;
+    ev.actionsAvailable().startCapture = !capture || !capture->isCapturing();
   } else {
     if (selection.hasSelection()) {
       ev.selectedActorId = entt::to_integral(selection.firstSelectedActorId());

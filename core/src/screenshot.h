@@ -11,9 +11,11 @@ public:
   ~Screenshot();
 
   std::string getBase64Screenshot(Scene *scene);
+  love::image::ImageData *getScreenshotImageData(Scene *scene);
 
 private:
   Lv &lv { Lv::getInstance() };
   SceneDrawingOptions drawingOptions;
   love::graphics::Canvas *canvas = nullptr;
+  void renderScreenshotToCanvas(Scene *scene);
 };

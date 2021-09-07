@@ -14,6 +14,7 @@
 #include "belt.h"
 #include "player.h"
 #include "screenshot.h"
+#include "capture.h"
 
 class Editor {
   // manages a scene instance that is being edited.
@@ -130,6 +131,7 @@ private:
   void sendSelectedComponent(int behaviorId);
 
   std::unique_ptr<Screenshot> screenshot;
+  std::unique_ptr<Capture> capture;
   void sendScreenshot();
 
   float autoSaveCountdown = 0; // If `> 0`, auto-save after this much time in seconds
