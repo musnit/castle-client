@@ -17,7 +17,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLazyQuery, gql } from '@apollo/client';
 import { useSession } from '../Session';
 
-import Icon from 'react-native-vector-icons/AntDesign';
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import AntIcon from 'react-native-vector-icons/AntDesign';
 
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
@@ -47,23 +48,31 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
-  header: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderBottomWidth: 1,
-    borderColor: Constants.colors.grayOnBlackBorder,
-    paddingTop: 16,
+  deckStats: {
+    paddingTop: 6,
+    paddingBottom: 4,
+    backgroundColor: '#000',
+    flexDirection: 'row',
   },
-  sectionTitle: {
-    color: Constants.colors.white,
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginVertical: 8,
+  deckStatsColumn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  playCountLabel: {
+    color: Constants.colors.grayText,
+    fontSize: 12,
+    marginLeft: 2,
   },
 });
 
 const EditDeckCell = (props) => {
   const { deck, onPress } = props;
+  let fire;
+  if (deck.reactions?.length) {
+    fire = deck.reactions.find((reaction) => reaction.reactionId === Constants.reactionIds.fire);
+  }
+
   return (
     <View style={[Constants.styles.gridItem, { width: '33.3%' }]}>
       <CardCell
@@ -73,6 +82,18 @@ const EditDeckCell = (props) => {
         playCount={deck.playCount}
         inGrid={true}
       />
+      <View style={styles.deckStats}>
+        <View style={styles.deckStatsColumn}>
+          <MCIcon size={16} name='play' color={Constants.colors.grayText} />
+          <Text style={styles.playCountLabel}>{deck.playCount || '--'}</Text>
+        </View>
+        {fire ? (
+          <View style={styles.deckStatsColumn}>
+            <MCIcon size={16} name='fire' color={Constants.colors.grayText} />
+            <Text style={styles.playCountLabel}>{fire?.count || '--'}</Text>
+          </View>
+        ) : null}
+      </View>
     </View>
   );
 };
@@ -119,6 +140,9 @@ const CreateScreenAuthenticated = () => {
                 url
                 smallUrl
               }
+            }
+            reactions {
+              reactionId
             }
           }
         }
@@ -177,7 +201,7 @@ const CreateScreenAuthenticated = () => {
                 { isFullscreen: true }
               );
             }}>
-              <Icon size={16} color='#000' name='plus' style={Constants.styles.primaryButtonIconLeft} />
+              <AntIcon size={16} color='#000' name='plus' style={Constants.styles.primaryButtonIconLeft} />
             <Text style={Constants.styles.primaryButtonLabel}>New Deck</Text>
           </TouchableOpacity>
         </View>

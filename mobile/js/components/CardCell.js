@@ -48,33 +48,15 @@ const styles = StyleSheet.create({
   visibility: {
     ...Constants.styles.dropShadow,
     position: 'absolute',
-    top: 8,
-    left: 8,
+    top: 4,
+    left: 4,
     width: 26,
     height: 26,
-    borderRadius: 15,
-    backgroundColor: '#fff',
+    borderRadius: 4,
+    backgroundColor: '#000',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  playCount: {
-    ...Constants.styles.dropShadow,
-    position: 'absolute',
-    top: 8,
-    left: 8,
-    borderRadius: 15,
-    paddingVertical: 4,
-    paddingLeft: 3,
-    paddingRight: 6,
-    backgroundColor: '#fff',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  playCountLabel: {
-    color: '#000',
-    fontWeight: 'bold',
-  },
+  }
 });
 
 const initialCardStyles = StyleSheet.create({
@@ -179,21 +161,15 @@ export const CardCell = ({
             {title && <Text style={styles.metaTitle}>{title}</Text>}
           </View>
         ) : null}
-        {visibility && visibility !== 'public' ? (
+        {visibility ? (
           <View style={styles.visibility}>
             <Icon
               size={16}
               name={
-                visibility === 'private' ? 'lock' : visibility === 'unlisted' ? 'link' : 'share'
+                visibility === 'private' ? 'lock' : visibility === 'unlisted' ? 'link' : 'public'
               }
-              color="#000"
+              color="#fff"
             />
-          </View>
-        ) : null}
-        {visibility !== 'private' && playCount !== undefined ? (
-          <View style={{ ...styles.playCount, left: visibility === 'unlisted' ? 44 : 8 }}>
-            <Icon size={16} name="play-arrow" color="#000" />
-            <Text style={styles.playCountLabel}>{playCount}</Text>
           </View>
         ) : null}
         {isInitialCard && <InitialCardIndicator inGrid={inGrid} />}
