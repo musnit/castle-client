@@ -11,21 +11,36 @@ import {
 } from 'react-native';
 import { AuthPrompt } from '../auth/AuthPrompt';
 import { CardCell } from '../components/CardCell';
-import { CommonActions, useNavigation, useFocusEffect } from '../ReactNavigation';
+import { useNavigation, useFocusEffect } from '../ReactNavigation';
 import { EmptyFeed } from '../home/EmptyFeed';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ScreenHeader } from '../components/ScreenHeader';
 import { useLazyQuery, gql } from '@apollo/client';
 import { useSession } from '../Session';
 
-import FastImage from 'react-native-fast-image';
-import Viewport from '../common/viewport';
+import Icon from 'react-native-vector-icons/AntDesign';
 
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 import * as LocalId from '../common/local-id';
 
 const styles = StyleSheet.create({
+  tabTitle: {
+    padding: 16,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: Constants.colors.grayOnBlackBorder,
+    flexDirection: 'row',
+  },
+  tabTitleText: {
+    fontSize: 32,
+    fontFamily: 'Basteleur-Bold',
+    color: '#fff',
+    flex: 1,
+  },
+  tabTitleAction: {
+    position: 'relative',
+    bottom: -4,
+  },
   gridContainer: {
     paddingTop: 16,
     paddingLeft: Constants.GRID_PADDING,
@@ -147,22 +162,40 @@ const CreateScreenAuthenticated = () => {
 
   return (
     <SafeAreaView style={Constants.styles.container} edges={['top']}>
-      <ScreenHeader title="Your Decks" />
+      <View style={styles.tabTitle}>
+        <Text style={styles.tabTitleText}>Create</Text>
+        <View style={styles.tabTitleAction}>
+          <TouchableOpacity
+            style={Constants.styles.primaryButton}
+            onPress={() => {
+              navigation.push(
+                'CreateDeck',
+                {
+                  deckIdToEdit: LocalId.makeId(),
+                  cardIdToEdit: LocalId.makeId(),
+                },
+                { isFullscreen: true }
+              );
+            }}>
+              <Icon size={16} color='#000' name='plus' style={Constants.styles.primaryButtonIconLeft} />
+            <Text style={Constants.styles.primaryButtonLabel}>New Deck</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
 
       {decks && decks.length === 0 && (
         <View style={Constants.styles.empty}>
-          <Text style={Constants.styles.emptyTitle}>No decks yet</Text>
+          <Text style={Constants.styles.emptyTitle}>No decks... yet!</Text>
           <Text style={Constants.styles.emptyText}>
-            Create your first deck by tapping the plus button below, or remix an existing deck.
+            Create your first deck by tapping the button above, or remix an existing deck.
           </Text>
           <Text style={[Constants.styles.emptyText, { marginTop: 16 }]}>
             Want help or inspiration?{' '}
             <Text
               style={{ color: '#fff' }}
               onPress={() => Linking.openURL(Constants.DISCORD_INVITE_LINK)}>
-              Join our Discord
+              Join our Discord!
             </Text>
-            !
           </Text>
         </View>
       )}
@@ -191,27 +224,6 @@ const CreateScreenAuthenticated = () => {
           </ScrollView>
         )
       )}
-      <TouchableOpacity
-        style={Constants.styles.floatingActionButton}
-        onPress={() => {
-          navigation.push(
-            'CreateDeck',
-            {
-              deckIdToEdit: LocalId.makeId(),
-              cardIdToEdit: LocalId.makeId(),
-            },
-            { isFullscreen: true }
-          );
-        }}>
-        <FastImage
-          tintColor="#000"
-          style={{
-            width: 28,
-            height: 28,
-          }}
-          source={require('../../assets/images/BottomTabs-create.png')}
-        />
-      </TouchableOpacity>
     </SafeAreaView>
   );
 };

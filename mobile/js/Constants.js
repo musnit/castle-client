@@ -64,7 +64,7 @@ export const styles = {
   primaryButton: {
     borderRadius: 4,
     paddingVertical: 6,
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
     backgroundColor: '#fff',
     flexDirection: 'row',
     alignItems: 'center',
@@ -73,12 +73,10 @@ export const styles = {
   primaryButtonLabel: {
     color: '#000',
     fontSize: 16,
-    fontWeight: 'bold',
   },
   primaryButtonIconLeft: {
-    marginLeft: -3,
-    marginRight: 4,
-    marginBottom: -1,
+    marginLeft: -2,
+    marginRight: 6,
   },
   primaryButtonIconRight: {
     marginRight: -5,
@@ -167,18 +165,14 @@ export const styles = {
   empty: {
     width: '100%',
     padding: 16,
-    paddingTop: 60,
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingTop: 32,
   },
   emptyTitle: {
-    textAlign: 'center',
-    color: colors.grayText,
+    color: colors.white,
     fontSize: 20,
     marginBottom: 16,
   },
   emptyText: {
-    textAlign: 'center',
     color: colors.grayText,
     fontSize: 16,
     lineHeight: 24,
