@@ -217,9 +217,8 @@ export const CreateCardScreen = ({
     handler: ({ card }) => maybeSaveAndGoToCard(card),
   });
 
-  // TODO: Wire up to new engine
-  GhostEvents.useListen({
-    eventName: 'GHOST_CAPTURE_PENDING',
+  useListen({
+    eventName: 'CAPTURE_PENDING',
     handler: async () => {
       await sendGlobalAction('onRewind');
       setActiveSheet('capturePreview');

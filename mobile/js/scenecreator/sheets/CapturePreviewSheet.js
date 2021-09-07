@@ -6,9 +6,9 @@ import { BottomSheetHeader } from '../../components/BottomSheetHeader';
 import { sendGlobalAction } from '../../core/CoreEvents';
 import { useCardCreator } from '../CreateCardContext';
 import { uploadDeckPreview, useSession } from '../../Session';
+import { useListen } from '../../core/CoreEvents';
 
 import * as Constants from '../../Constants';
-import * as GhostEvents from '../../ghost/GhostEvents';
 
 import FastImage from 'react-native-fast-image';
 import Viewport from '../../common/viewport';
@@ -184,8 +184,8 @@ export const CapturePreviewSheet = ({ onClose, ...props }) => {
     }
   }, [isOpen]);
 
-  GhostEvents.useListen({
-    eventName: 'GHOST_CAPTURE',
+  useListen({
+    eventName: 'CAPTURE_FINISHED',
     handler: async (data) => {
       setLastCaptureData(data);
       sendGlobalAction('clearCapture'); // free capture buffer

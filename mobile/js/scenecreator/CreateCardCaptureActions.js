@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useCardCreator } from './CreateCardContext';
 import { useCoreState, sendGlobalAction } from '../core/CoreEvents';
 import { useSession } from '../Session';
@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   statusText: {
-    color: '#fff',
+    color: '#000',
     fontSize: 16,
     lineHeight: 22,
     marginRight: 12,
@@ -113,13 +113,13 @@ export const CreateCardCaptureActions = () => {
   return (
     <View style={styles.actions}>
       {recordState.status === 'ready' ? (
-        <TouchableOpacity
+        <Pressable
           style={styles.status}
           disabled={!data.actionsAvailable.startCapture}
           onPress={startCapture}>
           <Text style={styles.statusText}>Record Preview</Text>
-          <RecordIcon color={data.actionsAvailable.startCapture ? '#fff' : '#666'} />
-        </TouchableOpacity>
+          <RecordIcon color={data.actionsAvailable.startCapture ? '#000' : '#666'} />
+        </Pressable>
       ) : recordState.status === 'countdown' ? (
         <View style={styles.status}>
           <Text style={styles.statusText}>Recording begins in {recordState.countdown}...</Text>
