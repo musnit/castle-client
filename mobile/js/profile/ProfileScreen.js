@@ -141,14 +141,9 @@ export const ProfileScreen = ({ userId, route }) => {
       loading={query.loading}
       error={error}
       onRefresh={onRefresh}
+      onPressSettings={() => {setSettingsSheet(true)}}
     />
   );
-
-  const RightButtonComponent = isMe ? (
-    <Pressable style={Constants.styles.siteHeaderButton} onPress={() => setSettingsSheet(true)}>
-      {({ pressed }) => <MCIcon name="settings" size={24} color={pressed ? '#666' : '#fff'} />}
-    </Pressable>
-  ) : null;
 
   if (isMe && isAnonymous) {
     return (
@@ -164,8 +159,7 @@ export const ProfileScreen = ({ userId, route }) => {
       <>
         <SafeAreaView edges={['top', 'left', 'right']}>
           <ScreenHeader
-            title={user ? '@' + user.username : 'Profile'}
-            RightButtonComponent={RightButtonComponent}
+            title={'Profile'}
           />
           {error ? (
             <EmptyFeed error={error} onRefresh={onRefresh} />

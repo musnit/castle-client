@@ -1,11 +1,12 @@
 import React from 'react';
-import { Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Linking, StyleSheet, Text, Pressable, View } from 'react-native';
 import { FollowButton } from '../components/FollowButton';
 import { ProfileBadge } from './ProfileBadge';
 import { ProfileConnections } from './ProfileConnections';
 import { UserAvatar } from '../components/UserAvatar';
 
 import Entypo from 'react-native-vector-icons/Entypo';
+import Feather from 'react-native-vector-icons/Feather';
 
 import * as Constants from '../Constants';
 import * as Utilities from '../common/utilities';
@@ -29,10 +30,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: Constants.colors.white,
   },
-  profileItems: { marginTop: 8 },
   profileItem: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginTop: 8,
   },
   followedBy: {
     marginLeft: 16,
@@ -97,7 +98,7 @@ const ProfileLoadingSkeleton = () => (
   </View>
 );
 
-export const ProfileHeader = ({ user, isMe, isAnonymous, onRefresh, loading, error }) => {
+export const ProfileHeader = ({ user, isMe, isAnonymous, onRefresh, loading, error, onPressSettings }) => {
   let linksItems = makeProfileLinks({ user });
 
   return (
@@ -110,27 +111,32 @@ export const ProfileHeader = ({ user, isMe, isAnonymous, onRefresh, loading, err
           <ProfileLoadingSkeleton />
         ) : (
           <View style={styles.right}>
-            <Text style={styles.username}>@{user?.username}</Text>
+            <Text style={styles.username}>{user?.username}</Text>
             <View style={styles.profileItems}>
               {linksItems.length > 0
                 ? linksItems.map((item, ii) => {
                     const Icon = item.iconType;
                     return (
-                      <TouchableOpacity
+                      <Pressable
                         key={`link-item-${ii}`}
-                        style={[
-                          styles.profileItem,
-                          { marginBottom: ii < linksItems.length - 1 ? 8 : 0 },
-                        ]}
+                        style={styles.profileItem}
                         onPress={item.onPress}>
                         <Icon name={item.icon} color="#aaa" size={14} style={{ marginRight: 8 }} />
                         <Text style={{ fontSize: 16, color: Constants.colors.grayText }}>
                           {item.label}
                         </Text>
-                      </TouchableOpacity>
+                      </Pressable>
                     );
                   })
                 : null}
+                {isMe ? (
+                <Pressable style={styles.profileItem} onPress={onPressSettings}>
+                  <Feather name='settings' color='#aaa' size={14} style={{ marginRight: 8 }} />
+                  <Text style={{ fontSize: 16, color: Constants.colors.grayText }}>
+                    Settings
+                  </Text>
+                </Pressable>
+                ) : null}
             </View>
           </View>
         )}
