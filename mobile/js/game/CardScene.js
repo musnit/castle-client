@@ -18,7 +18,13 @@ const styles = StyleSheet.create({
 
 export const CardScene = ({
   deck,
+
+  // whether to init the engine with a blank scene
   isNewScene,
+
+  // if provided, engine uses this instead of performing a network request for the deck/card/variables
+  initialSnapshotJson,
+
   style,
   interactionEnabled = true,
   initialIsEditing = false,
@@ -52,6 +58,7 @@ export const CardScene = ({
     setInitialParams(
       JSON.stringify({
         deckId: deck?.deckId,
+        initialSnapshotJson,
         isEditing: initialIsEditing,
         isEditable,
         isDebug: !!__DEV__,
@@ -59,7 +66,14 @@ export const CardScene = ({
         isNewScene,
       })
     );
-  }, [initialIsEditing, isEditable, beltHeightFraction, deck?.deckId, isNewScene]);
+  }, [
+    initialIsEditing,
+    isEditable,
+    beltHeightFraction,
+    deck?.deckId,
+    isNewScene,
+    initialSnapshotJson,
+  ]);
 
   return (
     <View style={style}>

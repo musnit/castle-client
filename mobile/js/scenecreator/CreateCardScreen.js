@@ -76,6 +76,7 @@ export const CreateCardScreen = ({
   deck,
   isNewScene = false,
   initialIsEditing = true,
+  initialSnapshotJson = null,
   loading,
   goToDeck,
   goToCard,
@@ -300,11 +301,11 @@ export const CreateCardScreen = ({
           <View style={styles.cardBody}>
             <View style={[styles.card, cardBackgroundStyles, cardFitStyles]}>
               <CardScene
+                key={`card-scene-${card?.cardId}`}
                 deck={deck}
+                initialSnapshotJson={initialSnapshotJson}
                 interactionEnabled={true}
-                key={`card-scene-${card.scene && card.scene.sceneId}`}
                 style={styles.scene}
-                card={card}
                 isNewScene={isNewScene}
                 isEditable={true}
                 initialIsEditing={initialIsEditing}

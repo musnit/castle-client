@@ -20,6 +20,9 @@ class CreateCardScreenDataProvider extends React.Component {
     card: Constants.EMPTY_CARD,
     isNewScene: false,
     loading: false,
+    // maintain separately from card/deck state because we only want it to affect initial engine
+    // load
+    initialSnapshotJson: null,
   };
 
   componentDidMount() {
@@ -115,14 +118,27 @@ class CreateCardScreenDataProvider extends React.Component {
         card.scene = Constants.EMPTY_CARD.scene;
       }
 
+      // used by the engine instead of manually reloading the scene data.
+      // especially important when cardIdToEdit is different than the deck's top card.
+      const initialSnapshotJson = {
+        variables: deck.variables,
+        sceneData: {
+          ...card.scene.data,
+        },
+      };
+
       if (this._mounted) {
-        //console.log(`initial card: ${JSON.stringify(card, null, 2)}`);
         this.setState(
           {
             deck,
             card,
             isNewScene: card.scene.data.empty === true,
+            initialSnapshotJson: JSON.stringify(initialSnapshotJson),
           },
+
+          // TODO: we can remove this event (and probably remove `initialIsEditing` everywhere)
+          // because it's only used when moving between cards, which should be handled
+          // purely engine-side from now on
           async () => {
             const { card } = this.state;
             GhostEvents.sendAsync('SCENE_CREATOR_EDITING', {
@@ -220,6 +236,8 @@ class CreateCardScreenDataProvider extends React.Component {
     }
   };
 
+  // TODO: maybe remove this completely? and let engine handle moving to the card,
+  // and maybe just notify JS that the movement happened
   _goToCard = (nextCard, isPlaying) => {
     setTimeout(() => {
       this.props.navigation.navigate('CreateDeck', {
@@ -267,13 +285,14 @@ class CreateCardScreenDataProvider extends React.Component {
   };
 
   render() {
-    const { deck, card, isNewScene, loading } = this.state;
+    const { deck, card, isNewScene, initialSnapshotJson, loading } = this.state;
 
     return (
       <CreateCardScreen
         deck={deck}
         card={card}
         isNewScene={isNewScene}
+        initialSnapshotJson={initialSnapshotJson}
         initialIsEditing={this.props.initialIsEditing}
         loading={loading}
         goToDeck={this._goToDeck}
