@@ -105,11 +105,13 @@ struct SceneLoadedEvent {
 
 void Engine::setInitialParams(const char *initialParamsJson) {
   const char *deckId;
+  const char *initialSnapshotJson;
   auto isNewScene = false;
   auto archive = Archive::fromJson(initialParamsJson);
   archive.read([&](Reader &reader) {
     isEditing = reader.boolean("isEditing", false);
     deckId = reader.str("deckId", nullptr);
+    initialSnapshotJson = reader.str("initialSnapshotJson", nullptr);
     isNewScene = reader.boolean("isNewScene", false);
     // TODO: beltHeightFraction is provided here
   });
@@ -118,8 +120,17 @@ void Engine::setInitialParams(const char *initialParamsJson) {
   }
   if (isEditing && isNewScene) {
     editor->loadEmptyScene();
-    SceneLoadedEvent event;
-    getBridge().sendEvent("SCENE_LOADED", event);
+
+    // maybe still load snapshot variables
+    if (initialSnapshotJson) {
+      loadSceneFromJson(initialSnapshotJson, true);
+    } else {
+      SceneLoadedEvent event;
+      getBridge().sendEvent("SCENE_LOADED", event);
+    }
+  } else if (initialSnapshotJson) {
+    // no network request, expect all needed data from json blob
+    loadSceneFromJson(initialSnapshotJson, false);
   } else if (deckId) {
     loadSceneFromDeckId(deckId);
   }
@@ -148,6 +159,32 @@ void Engine::loadSceneFromFile(const char *path) {
         });
       });
     });
+  });
+}
+
+void Engine::loadSceneFromJson(const char *json, bool skipScene) {
+  auto archive = Archive::fromJson(json);
+  archive.read([&](Reader &reader) {
+    reader.arr("variables", [&]() {
+      if (isEditing) {
+        editor->readVariables(reader);
+      } else {
+        player.readVariables(reader);
+      }
+    });
+    if (!skipScene) {
+      reader.obj("sceneData", [&]() {
+        reader.obj("snapshot", [&]() {
+          if (isEditing) {
+            editor->readScene(reader);
+          } else {
+            player.readScene(reader);
+          }
+        });
+      });
+    }
+    SceneLoadedEvent event;
+    getBridge().sendEvent("SCENE_LOADED", event);
   });
 }
 
@@ -195,6 +232,7 @@ void Engine::loadSceneFromCardId(const char *cardId) {
         }
       });
 }
+
 
 //
 // Frame

@@ -38,6 +38,7 @@ public:
   void loadSceneFromFile(const char *path);
   void loadSceneFromDeckId(const char *deckId);
   void loadSceneFromCardId(const char *cardId);
+  void loadSceneFromJson(const char *json, bool skipScene);
 
 
   // Bridge access
