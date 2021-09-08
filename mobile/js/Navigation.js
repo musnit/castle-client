@@ -222,21 +222,24 @@ const TabNavigator = () => {
       <Tab.Screen
         name="Create"
         component={CreateNavigator}
-        options={({ route }) => ({
-          tabBarVisible: !route.state || route.state.index == 0,
-          tabBarIcon: ({ focused, color }) => {
-            return (
-              <FastImage
-                tintColor={color}
-                style={{
-                  width: ICON_SIZE,
-                  height: ICON_SIZE,
-                }}
-                source={require('../assets/images/BottomTabs-create.png')}
-              />
-            );
-          },
-        })}
+        options={({ route }) => {
+          let isEditing = route?.state?.routes[1]?.params?.cardIdToEdit;
+          return {
+            tabBarVisible: !route.state || route.state.index == 0 || !isEditing,
+            tabBarIcon: ({ focused, color }) => {
+              return (
+                <FastImage
+                  tintColor={color}
+                  style={{
+                    width: ICON_SIZE,
+                    height: ICON_SIZE,
+                  }}
+                  source={require('../assets/images/BottomTabs-create.png')}
+                />
+              );
+            },
+          };
+        }}
       />
       <Tab.Screen
         name="Notifications"
