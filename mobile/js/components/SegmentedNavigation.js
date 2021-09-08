@@ -14,7 +14,7 @@ const darkBackgroundStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 10,
+    paddingHorizontal: 8,
     paddingTop: 4,
   },
   label: {
@@ -37,13 +37,15 @@ const darkBackgroundStyles = StyleSheet.create({
     fontWeight: 'bold',
   },
   indicator: {
-    width: 8,
-    height: 8,
-    borderRadius: 8,
+    width: 10,
+    height: 10,
+    borderRadius: 9,
+    borderColor: '#000',
+    borderWidth: 1,
     backgroundColor: Constants.colors.white,
     position: 'absolute',
-    right: -8,
-    top: -1,
+    right: -10,
+    top: -2,
   },
 });
 
@@ -85,7 +87,7 @@ const lightBackgroundStyles = StyleSheet.create({
 });
 
 export const SegmentedNavigation = (props) => {
-  const { items, selectedItem, onSelectItem, isLightBackground } = props;
+  const { items, selectedItem, onSelectItem, isLightBackground, compact } = props;
   const styles = isLightBackground ? lightBackgroundStyles : darkBackgroundStyles;
 
   return (
@@ -93,7 +95,7 @@ export const SegmentedNavigation = (props) => {
       {items.map((item) => (
         <Pressable
           key={item.value}
-          style={[styles.item, item === selectedItem ? styles.selectedItem : null]}
+          style={[styles.item, { paddingHorizontal: compact ? 8 : 12 }, item === selectedItem ? styles.selectedItem : null]}
           onPress={() => onSelectItem(item)}>
           <View style={[styles.label, item === selectedItem ? styles.selectedLabel : null]}>
             {item.icon ? (

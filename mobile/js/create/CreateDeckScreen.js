@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     paddingTop: 8,
-    paddingLeft: 6,
+    paddingLeft: 8,
     paddingRight: 16,
     borderBottomWidth: 1,
     borderBottomColor: Constants.colors.grayOnBlackBorder,
@@ -471,6 +471,7 @@ export const CreateDeckScreen = (props) => {
                     mode: item.value,
                     deckId: deck.deckId,
                   })}
+                  compact={true}
                 />
               </View>
               <View style={styles.settingsColumn}>
