@@ -74,6 +74,7 @@ const useCoreTextActors = () => {
 export const CreateCardScreen = ({
   card,
   deck,
+  isNewScene = false,
   initialIsEditing = true,
   loading,
   goToDeck,
@@ -304,6 +305,7 @@ export const CreateCardScreen = ({
                 key={`card-scene-${card.scene && card.scene.sceneId}`}
                 style={styles.scene}
                 card={card}
+                isNewScene={isNewScene}
                 isEditable={true}
                 initialIsEditing={initialIsEditing}
                 onMessage={onSceneMessage}

@@ -18,6 +18,7 @@ class CreateCardScreenDataProvider extends React.Component {
   state = {
     deck: Constants.EMPTY_DECK,
     card: Constants.EMPTY_CARD,
+    isNewScene: false,
     loading: false,
   };
 
@@ -120,6 +121,7 @@ class CreateCardScreenDataProvider extends React.Component {
           {
             deck,
             card,
+            isNewScene: card.scene.data.empty === true,
           },
           async () => {
             const { card } = this.state;
@@ -265,12 +267,13 @@ class CreateCardScreenDataProvider extends React.Component {
   };
 
   render() {
-    const { deck, card, loading } = this.state;
+    const { deck, card, isNewScene, loading } = this.state;
 
     return (
       <CreateCardScreen
         deck={deck}
         card={card}
+        isNewScene={isNewScene}
         initialIsEditing={this.props.initialIsEditing}
         loading={loading}
         goToDeck={this._goToDeck}

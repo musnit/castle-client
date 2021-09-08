@@ -18,6 +18,7 @@ const styles = StyleSheet.create({
 
 export const CardScene = ({
   deck,
+  isNewScene,
   style,
   interactionEnabled = true,
   initialIsEditing = false,
@@ -55,9 +56,10 @@ export const CardScene = ({
         isEditable,
         isDebug: !!__DEV__,
         beltHeightFraction,
+        isNewScene,
       })
     );
-  }, [initialIsEditing, isEditable, beltHeightFraction, deck?.deckId]);
+  }, [initialIsEditing, isEditable, beltHeightFraction, deck?.deckId, isNewScene]);
 
   return (
     <View style={style}>
