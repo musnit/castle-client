@@ -46,6 +46,19 @@ export const CardScene = ({
     return () => clearTimeout(timeout);
   }, [deck?.deckId]);
 
+  const [initialParams, setInitialParams] = useState('');
+  useEffect(() => {
+    setInitialParams(
+      JSON.stringify({
+        deckId: deck?.deckId,
+        isEditing: initialIsEditing,
+        isEditable,
+        isDebug: !!__DEV__,
+        beltHeightFraction,
+      })
+    );
+  }, [initialIsEditing, isEditable, beltHeightFraction, deck?.deckId]);
+
   return (
     <View style={style}>
       {deck?.deckId ? (
@@ -53,18 +66,7 @@ export const CardScene = ({
           {shouldDisplay && (
             <GameView
               key={`game-view-${deck.deckId}-${reloadCount}`}
-              deckId={deck.deckId}
-              extras={{
-                initialParams: JSON.stringify({
-                  isEditing: initialIsEditing,
-                  isEditable,
-                  isDebug: !!__DEV__,
-                  beltHeightFraction,
-                }),
-              }}
-              isEditable={isEditable}
-              headerVisible={false}
-              onPressReload={onPressReload}
+              initialParams={initialParams}
               onMessage={onMessage}
               onLoaded={onLoaded}
               paused={paused}

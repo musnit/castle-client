@@ -11,8 +11,6 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
 });
 
-const FORWARD_LUA_LOGS = false;
-
 // Read dimensions settings into the `{ width, height, upscaling, downscaling }`
 // format for the native view
 const computeDimensionsSettings = ({ metadata }) => {
@@ -69,17 +67,7 @@ const computeDimensionsSettings = ({ metadata }) => {
   return dimensionsSettings;
 };
 
-export const GameView = ({
-  deckId,
-  extras,
-  windowed,
-  onPressReload,
-  onPressBack,
-  onMessage,
-  onLoaded,
-  paused,
-  isEditable,
-}) => {
+export const GameView = ({ deckId, initialParams, onMessage, onLoaded, paused }) => {
   const dimensionsSettings = computeDimensionsSettings({
     metadata: {
       dimensions: 800,
@@ -94,7 +82,6 @@ export const GameView = ({
     return () => engineDidUnmount(id);
   }, []);
 
-  // TODO: migrate these events to core engine
   useListen({
     eventName: 'SCENE_MESSAGE',
     handler: (params) => {
@@ -104,29 +91,18 @@ export const GameView = ({
     },
   });
 
-  const [landscape, setLandscape] = useState(false);
-  const setOrientation = React.useCallback(
-    ({
-      nativeEvent: {
-        layout: { width, height },
-      },
-    }) => setLandscape(width > height),
-    []
-  );
-
   useListen({
     eventName: 'SCENE_LOADED',
     handler: onLoaded,
   });
 
   return (
-    <View style={styles.container} onLayout={setOrientation}>
+    <View style={styles.container}>
       <CastleCoreView
-        deckId={deckId}
+        initialParams={initialParams}
         style={styles.container}
         dimensionsSettings={dimensionsSettings}
         paused={paused}
-        isEditable={isEditable}
       />
     </View>
   );
