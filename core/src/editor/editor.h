@@ -33,6 +33,7 @@ public:
 
   void readScene(Reader &reader);
   void readVariables(Reader &reader);
+  void loadEmptyScene();
 
   bool hasScene();
   Scene &getScene();

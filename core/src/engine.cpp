@@ -86,23 +86,6 @@ Engine::Engine() {
   ExpressionRegistrar::registerExpressions();
 }
 
-void Engine::setInitialParams(const char *initialParamsJson) {
-  const char *deckId;
-  auto archive = Archive::fromJson(initialParamsJson);
-  archive.read([&](Reader &reader) {
-    isEditing = reader.boolean("isEditing", false);
-    deckId = reader.str("deckId", nullptr);
-    // TODO: beltHeightFraction is provided here
-  });
-  Debug::log("load engine initial params: is editing? {}, deck id? {}", isEditing, deckId);
-  if (isEditing) {
-    editor = std::make_unique<Editor>(bridge);
-  }
-  if (deckId) {
-    loadSceneFromDeckId(deckId);
-  }
-}
-
 
 //
 // Deck / scene management
@@ -119,6 +102,28 @@ bool Engine::hasInitialDeck() const {
 struct SceneLoadedEvent {
   PROP(int, status) = 0;
 };
+
+void Engine::setInitialParams(const char *initialParamsJson) {
+  const char *deckId;
+  auto isNewScene = false;
+  auto archive = Archive::fromJson(initialParamsJson);
+  archive.read([&](Reader &reader) {
+    isEditing = reader.boolean("isEditing", false);
+    deckId = reader.str("deckId", nullptr);
+    isNewScene = reader.boolean("isNewScene", false);
+    // TODO: beltHeightFraction is provided here
+  });
+  if (isEditing) {
+    editor = std::make_unique<Editor>(bridge);
+  }
+  if (isEditing && isNewScene) {
+    editor->loadEmptyScene();
+    SceneLoadedEvent event;
+    getBridge().sendEvent("SCENE_LOADED", event);
+  } else if (deckId) {
+    loadSceneFromDeckId(deckId);
+  }
+}
 
 void Engine::loadSceneFromFile(const char *path) {
   auto archive = Archive::fromFile(path);

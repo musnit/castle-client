@@ -25,6 +25,8 @@ void Editor::clearState() {
   if (capture) {
     capture = nullptr;
   }
+  scene = nullptr;
+  editVariables.clear();
 }
 
 void Editor::readScene(Reader &reader) {
@@ -38,6 +40,14 @@ void Editor::readVariables(Reader &reader) {
   editVariables.read(reader);
   isEditorStateDirty = true;
 };
+
+void Editor::loadEmptyScene() {
+  editVariables.clear();
+  scene = std::make_unique<Scene>(bridge, variables, true);
+  isEditorStateDirty = true;
+  isSelectedActorStateDirty = true;
+  Debug::log("editor: init empty scene");
+}
 
 // Keeping this as a free function to make it easier to reuse later
 static void twoFingerPan(const Gesture &gesture, const love::Transform &viewTransform,
