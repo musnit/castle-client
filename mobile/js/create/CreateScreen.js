@@ -16,6 +16,7 @@ import { EmptyFeed } from '../home/EmptyFeed';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLazyQuery, gql } from '@apollo/client';
 import { useSession } from '../Session';
+import { SegmentedNavigation } from '../components/SegmentedNavigation';
 
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
@@ -39,8 +40,15 @@ const styles = StyleSheet.create({
     color: '#fff',
     flex: 1,
   },
+  navWrapper: {
+    backgroundColor: '#000',
+    marginTop: -1, // hide the border built into ScreenHeader
+    paddingHorizontal: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: Constants.colors.grayOnBlackBorder,
+  },
   gridContainer: {
-    paddingTop: 16,
+    paddingTop: Constants.GRID_PADDING * 2,
     paddingLeft: Constants.GRID_PADDING,
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -178,6 +186,31 @@ const CreateScreenAuthenticated = () => {
     />
   );
 
+  const [filter, setFilter] = React.useState('recent');
+
+  const TAB_ITEMS = [
+    {
+      name: 'Recent',
+      value: 'recent',
+    },
+    {
+      name: 'Private',
+      value: 'private',
+    },
+    {
+      name: 'Unlisted',
+      value: 'unlisted',
+    },
+    {
+      name: 'Public',
+      value: 'public',
+    },
+    {
+      name: 'Recovered',
+      value: 'recovered',
+    },
+  ];
+
   return (
     <SafeAreaView style={Constants.styles.container} edges={['top']}>
       <View style={styles.tabTitle}>
@@ -199,6 +232,16 @@ const CreateScreenAuthenticated = () => {
             <Text style={Constants.styles.primaryButtonLabel}>New Deck</Text>
           </TouchableOpacity>
         </View>
+      </View>
+      <View style={styles.navWrapper}>
+        <ScrollView horizontal>
+          <SegmentedNavigation
+            items={TAB_ITEMS}
+            onSelectItem={(item) => setFilter(item.value)}
+            selectedItem={TAB_ITEMS.find((item) => item.value === filter)}
+            compact={true}
+          />
+        </ScrollView>
       </View>
 
       {decks && decks.length === 0 && (
