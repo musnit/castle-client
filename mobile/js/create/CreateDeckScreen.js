@@ -16,6 +16,7 @@ import { SheetBackgroundOverlay } from '../components/SheetBackgroundOverlay';
 import { useQuery, useMutation, gql } from '@apollo/client';
 import { useNavigation, useFocusEffect } from '../ReactNavigation';
 import { useActionSheet } from '@expo/react-native-action-sheet';
+import { SegmentedNavigation } from '../components/SegmentedNavigation';
 
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as LocalId from '../common/local-id';
@@ -24,37 +25,66 @@ import * as Utilities from '../common/utilities';
 
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import FeatherIcon from 'react-native-vector-icons/Feather';
 import FastImage from 'react-native-fast-image';
 
 import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
   settingsRow: {
+    backgroundColor: '#000',
+    marginTop: -1, // hide the border built into ScreenHeader
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
-    padding: 16,
-    paddingBottom: 0,
+    paddingTop: 8,
+    paddingLeft: 6,
+    paddingRight: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: Constants.colors.grayOnBlackBorder,
   },
-  layoutPicker: {
+  settingsColumn: {
     flexDirection: 'row',
   },
-  layoutButton: {
-    margin: 6,
-  },
-  playCount: {
+  settingItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 16,
+    marginLeft: 12,
+    paddingTop: 2,
   },
-  playCountLabel: {
-    color: '#888',
-    fontWeight: 'bold',
+  settingItemLabel: {
+    color: Constants.colors.grayText,
+    fontSize: 14,
     marginLeft: 2,
   },
+  addCard: {
+    position: 'absolute',
+    right: 16,
+    bottom: 16,
+    width: 60,
+    height: 84,
+    borderRadius: 4,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.6,
+    shadowRadius: 5,
+    elevation: 1,
+  },
   addCardIcon: {
-    height: 48,
-    width: 48,
+    height: 22,
+    width: 22,
+    marginTop: 6,
+    marginBottom: 8,
+  },
+  addCardLabel: {
+    textAlign: 'center',
+    textTransform: 'uppercase',
+    fontSize: 14,
+    letterSpacing: 0.5,
   },
   loading: {
     alignItems: 'center',
@@ -76,6 +106,9 @@ const DECK_FRAGMENT = `
   }
   visibility
   playCount
+  reactions {
+    count
+  }
   accessPermissions
   commentsEnabled
   parentDeckId
@@ -384,9 +417,20 @@ export const CreateDeckScreen = (props) => {
     [setDeck, saveDeck, deck, deckId]
   );
 
+  const TAB_ITEMS = [
+    {
+      name: 'Detail',
+      value: 'carousel',
+    },
+    {
+      name: 'Grid',
+      value: 'grid',
+    },
+  ];
+
   return (
     <React.Fragment>
-      <SafeAreaView style={Constants.styles.container}>
+      <SafeAreaView style={Constants.styles.container} edges={['top']}>
         <ScreenHeader
           title="Deck"
           onBackButtonPress={_goBack}
@@ -419,39 +463,32 @@ export const CreateDeckScreen = (props) => {
         ) : (
           <>
             <View style={styles.settingsRow}>
-              <View style={styles.layoutPicker}>
-                <Pressable
-                  style={styles.layoutButton}
-                  onPress={() =>
-                    setViewMode({
-                      mode: 'carousel',
-                      deckId: deck.deckId,
-                    })
-                  }
-                  hitSlop={{ top: 2, left: 2, bottom: 2, right: 2 }}>
-                  <Icon
-                    name="view-carousel"
-                    size={24}
-                    color={viewMode === 'carousel' ? '#fff' : '#888'}
-                  />
-                </Pressable>
-                <Pressable
-                  style={styles.layoutButton}
-                  onPress={() => setViewMode({ mode: 'grid', deckId: deck.deckId })}
-                  hitSlop={{ top: 2, left: 2, bottom: 2, right: 2 }}>
-                  <Icon name="apps" size={24} color={viewMode === 'grid' ? '#fff' : '#888'} />
-                </Pressable>
+              <View style={styles.settingsColumn}>
+                <SegmentedNavigation
+                  items={TAB_ITEMS}
+                  selectedItem={TAB_ITEMS.find((item) => item.value === viewMode)}
+                  onSelectItem={(item) => setViewMode({
+                    mode: item.value,
+                    deckId: deck.deckId,
+                  })}
+                />
               </View>
-              <View style={styles.layoutPicker}>
-                {deck && deck.visibility === 'public' && deck.playCount ? (
-                  <View style={styles.playCount}>
-                    <Icon name="play-arrow" size={24} color="#888" />
-                    <Text style={styles.playCountLabel}>{deck.playCount}</Text>
+              <View style={styles.settingsColumn}>
+                {deck && deck.playCount ? (
+                  <View style={styles.settingItem}>
+                    <MCIcon name="play" size={16} color="#888" />
+                    <Text style={styles.settingItemLabel}>{deck.playCount}</Text>
                   </View>
                 ) : null}
-                <Pressable onPress={openSettingsSheet}>
+                {deck && deck.reactions?.length ? (
+                  <View style={styles.settingItem}>
+                    <MCIcon name="fire" size={16} color="#888" />
+                    <Text style={styles.settingItemLabel}>{deck.reactions[0].count}</Text>
+                  </View>
+                ) : null}
+                <Pressable onPress={openSettingsSheet} style={styles.settingItem}>
                   {({ pressed }) => (
-                    <Icon name="settings" size={24} color={pressed ? '#333' : '#888'} />
+                    <FeatherIcon name="settings" size={16} color={pressed ? '#333' : '#888'} />
                   )}
                 </Pressable>
               </View>
@@ -463,12 +500,13 @@ export const CreateDeckScreen = (props) => {
               mode={viewMode}
             />
             <TouchableOpacity
-              style={Constants.styles.floatingActionButton}
+              style={styles.addCard}
               onPress={onPressNewCard}>
               <FastImage
                 style={styles.addCardIcon}
                 source={require('../../assets/images/create-card.png')}
               />
+              <Text style={styles.addCardLabel}>Add Card</Text>
             </TouchableOpacity>
           </>
         )}

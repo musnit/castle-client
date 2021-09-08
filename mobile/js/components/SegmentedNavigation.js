@@ -14,10 +14,8 @@ const darkBackgroundStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
     paddingTop: 4,
-    paddingBottom: 12,
-    // backgroundColor: '#555',
   },
   label: {
     paddingBottom: 6,
@@ -39,13 +37,13 @@ const darkBackgroundStyles = StyleSheet.create({
     fontWeight: 'bold',
   },
   indicator: {
-    width: 9,
-    height: 9,
+    width: 8,
+    height: 8,
+    borderRadius: 8,
     backgroundColor: Constants.colors.white,
-    borderRadius: 5,
     position: 'absolute',
-    right: -10,
-    top: -2,
+    right: -8,
+    top: -1,
   },
 });
 

@@ -30,6 +30,7 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     justifyContent: 'center',
+    paddingBottom: 12,
   },
   elevatedHeader: {
     position: 'absolute',

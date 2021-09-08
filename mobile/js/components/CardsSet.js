@@ -28,9 +28,11 @@ if (CAROUSEL_HEIGHT > Viewport.vh * 75) {
   CAROUSEL_LEFT_PAD = (Viewport.vw * 100 - CAROUSEL_ITEM_WIDTH) / 2;
 }
 
+let CONTAINER_TOP_PADDING = Constants.GRID_PADDING * 2;
+
 const styles = StyleSheet.create({
   gridContainer: {
-    paddingTop: Constants.GRID_PADDING,
+    paddingTop: CONTAINER_TOP_PADDING,
     paddingLeft: Constants.GRID_PADDING,
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -41,7 +43,8 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 14,
-    paddingVertical: 4,
+    paddingTop: 6,
+    paddingBottom: 4,
   },
   newCard: {
     borderRadius: 8,
@@ -62,23 +65,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     width: 32,
     height: 32,
-    borderRadius: 16,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#000',
     alignItems: 'center',
     justifyContent: 'center',
     ...Constants.styles.dropShadow,
   },
-  cardOptionsLabel: {
-    fontWeight: 'bold',
-    fontSize: 18,
-    marginTop: -9,
-  },
   cardOptionsCarousel: {
-    top: 16,
-    right: 16,
+    bottom: 12,
+    right: 12,
   },
   cardOptionsGrid: {
-    bottom: 56,
-    right: 16,
+    width: 24,
+    height: 24,
+    bottom: 4,
+    right: 4,
   },
   carouselItem: {
     width: CAROUSEL_ITEM_WIDTH,
@@ -130,28 +132,30 @@ const CardsGrid = ({
       {cards &&
         cards.map((card) => (
           <View style={[Constants.styles.gridItem, styles.cellContainer]} key={card.cardId}>
-            <CardCell
-              card={card}
-              onPress={() => onPress(card)}
-              isInitialCard={cards.length > 1 && initialCard && initialCard.cardId === card.cardId}
-              inGrid={true}
-            />
+            <View>
+              <CardCell
+                card={card}
+                onPress={() => onPress(card)}
+                isInitialCard={cards.length > 1 && initialCard && initialCard.cardId === card.cardId}
+                inGrid={true}
+              />
+              {onShowCardOptions && (
+                <TouchableOpacity
+                  style={[styles.cardOptions, styles.cardOptionsGrid]}
+                  onPress={() => onShowCardOptions(card)}>
+                  <Feather name='more-horizontal' size={16} color={'#000'} />
+                </TouchableOpacity>
+              )}
+            </View>
             <Text
               style={[
                 styles.cardTitle,
                 {
-                  color: lightBackground ? '#000' : '#fff',
+                  color: lightBackground ? '#000' : Constants.colors.grayText,
                 },
               ]}>
               {titles ? titles[card.cardId] : Utilities.makeCardPreviewTitle(card)}
             </Text>
-            {onShowCardOptions && (
-              <TouchableOpacity
-                style={[styles.cardOptions, styles.cardOptionsGrid]}
-                onPress={() => onShowCardOptions(card)}>
-                <Text style={styles.cardOptionsLabel}>...</Text>
-              </TouchableOpacity>
-            )}
           </View>
         ))}
     </ScrollView>
@@ -193,7 +197,7 @@ const CardsCarousel = ({ cards, titles, initialCard, onPress, onShowCardOptions 
               <TouchableOpacity
                 style={[styles.cardOptions, styles.cardOptionsCarousel]}
                 onPress={() => onShowCardOptions(card)}>
-                <Text style={styles.cardOptionsLabel}>...</Text>
+                <Feather name='more-horizontal' size={22} color={'#000'} />
               </TouchableOpacity>
             ) : null}
           </View>
@@ -208,7 +212,7 @@ const CardsCarousel = ({ cards, titles, initialCard, onPress, onShowCardOptions 
 
   return (
     <FlatList
-      contentContainerStyle={{ height: CAROUSEL_HEIGHT, paddingTop: 16 }}
+      contentContainerStyle={{ height: CAROUSEL_HEIGHT, paddingTop: CONTAINER_TOP_PADDING }}
       horizontal
       data={paddedCards}
       renderItem={renderItem}

@@ -61,23 +61,27 @@ const styles = StyleSheet.create({
 
 const initialCardStyles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    left: 16,
-    top: 16,
     backgroundColor: '#fff',
-    borderRadius: 3,
-    padding: 8,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#000',
+    ...Constants.styles.dropShadow,
   },
   label: {
     color: '#000',
-    fontWeight: '700',
+    fontSize: 14,
+    letterSpacing: 0.5,
     textTransform: 'uppercase',
   },
 });
 
 const InitialCardIndicator = ({ inGrid }) => (
-  <View style={{ ...initialCardStyles.container, top: inGrid ? 8 : 16, left: inGrid ? 8 : 16 }}>
-    <Text style={initialCardStyles.label}>Top Card</Text>
+  <View style={[initialCardStyles.container, {
+    top: inGrid ? 4 : 12,
+    left: inGrid ? 4 : 12,
+    padding: inGrid ? 4 : 8,
+    }]}>
+    <Text style={[initialCardStyles.label, { fontSize: inGrid? 12 : 14 }]}>Top Card</Text>
   </View>
 );
 

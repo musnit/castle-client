@@ -65,10 +65,6 @@ const styles = StyleSheet.create({
 
 const EditDeckCell = (props) => {
   const { deck, onPress } = props;
-  let fire;
-  if (deck.reactions?.length) {
-    fire = deck.reactions.find((reaction) => reaction.reactionId === Constants.reactionIds.fire);
-  }
 
   return (
     <View style={[Constants.styles.gridItem, { width: '33.3%' }]}>
@@ -85,10 +81,10 @@ const EditDeckCell = (props) => {
           <MCIcon size={16} name='play' color={Constants.colors.grayText} />
           <Text style={styles.playCountLabel}>{deck.playCount || '--'}</Text>
         </View>
-        {fire ? (
+        {deck.reactions?.length ? (
           <View style={styles.deckStatsColumn}>
             <MCIcon size={16} name='fire' color={Constants.colors.grayText} />
-            <Text style={styles.playCountLabel}>{fire?.count || '--'}</Text>
+            <Text style={styles.playCountLabel}>{deck.reactions[0].count}</Text>
           </View>
         ) : null}
       </View>
@@ -140,7 +136,7 @@ const CreateScreenAuthenticated = () => {
               }
             }
             reactions {
-              reactionId
+              count
             }
           }
         }
