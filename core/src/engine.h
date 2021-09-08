@@ -21,7 +21,10 @@ public:
   Engine(const Engine &) = delete; // Prevent accidental copies
   const Engine &operator=(const Engine &) = delete;
 
-  explicit Engine(bool isEditing);
+  explicit Engine();
+
+  // expect to set once per engine use, e.g. on mount
+  void setInitialParams(const char *initialParamsJson);
 
 
   // Main loop

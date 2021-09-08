@@ -76,19 +76,31 @@ Engine::PreInit::PreInit() {
 // Constructor, destructor
 //
 
-Engine::Engine(bool isEditing_)
-    : isEditing(isEditing_) {
+Engine::Engine() {
   // First timer step
   lv.timer.step();
 
   // Set love identity (needed for filesystem calls to work)
   lv.filesystem.setIdentity("Castle", true);
 
+  ExpressionRegistrar::registerExpressions();
+}
+
+void Engine::setInitialParams(const char *initialParamsJson) {
+  const char *deckId;
+  auto archive = Archive::fromJson(initialParamsJson);
+  archive.read([&](Reader &reader) {
+    isEditing = reader.boolean("isEditing", false);
+    deckId = reader.str("deckId", nullptr);
+    // TODO: beltHeightFraction is provided here
+  });
+  Debug::log("load engine initial params: is editing? {}, deck id? {}", isEditing, deckId);
   if (isEditing) {
     editor = std::make_unique<Editor>(bridge);
   }
-
-  ExpressionRegistrar::registerExpressions();
+  if (deckId) {
+    loadSceneFromDeckId(deckId);
+  }
 }
 
 

@@ -17,7 +17,7 @@ bool isEngineInitialized() {
 }
 
 Engine &getEngine() {
-  static Engine engine(true);
+  static Engine engine;
   engineInitialized = true;
   return engine;
 }
@@ -85,11 +85,6 @@ static bool paused = false;
   CastleCore::getEngine().frame();
 }
 
-- (void)setDeckId:(NSString *)deckId {
-  const char *deckIdCStr = [deckId cStringUsingEncoding:NSUTF8StringEncoding];
-  CastleCore::getEngine().loadSceneFromDeckId(deckIdCStr);
-}
-
 extern double ghostScreenScaling;
 extern bool ghostApplyScreenScaling;
 
@@ -103,6 +98,15 @@ extern bool ghostApplyScreenScaling;
 
 - (void)setPaused:(BOOL)paused_ {
   paused = paused_;
+}
+
+- (void)setInitialParams:(NSString *)initialParams {
+  static NSString *lastInitialParams;
+  if (initialParams && ![lastInitialParams isEqualToString:initialParams]) {
+    lastInitialParams = initialParams;
+    const char *initialParamsCStr = [initialParams UTF8String];
+    CastleCore::getEngine().setInitialParams(initialParamsCStr);
+  }
 }
 
 - (void)sdlViewAddNotificationReceived:(NSNotification *)notification {
@@ -147,7 +151,7 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-RCT_EXPORT_VIEW_PROPERTY(deckId, NSString);
+RCT_EXPORT_VIEW_PROPERTY(initialParams, NSString);
 RCT_EXPORT_VIEW_PROPERTY(screenScaling, double);
 RCT_EXPORT_VIEW_PROPERTY(applyScreenScaling, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(paused, BOOL);

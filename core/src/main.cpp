@@ -43,7 +43,7 @@ std::string androidGetDeckId() {
 }
 
 int SDL_main(int argc, char *argv[]) {
-  Engine eng(false);
+  Engine eng;
   std::string currentDeckId = "";
 
   loop([&]() {
@@ -62,7 +62,7 @@ int SDL_main(int argc, char *argv[]) {
 // Main web and desktop entrypoint
 #undef main // SDL does some weird stuff overriding `main` with a macro...
 int main(int argc, char *argv[]) {
-  Engine eng(false);
+  Engine eng;
 
 #ifndef __EMSCRIPTEN__
   // Load from file on desktop
