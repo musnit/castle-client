@@ -223,7 +223,10 @@ const TabNavigator = () => {
         name="Create"
         component={CreateNavigator}
         options={({ route }) => {
-          let isEditing = route?.state?.routes[1]?.params?.cardIdToEdit;
+          let isEditing = false;
+          if (route?.state?.routes && route?.state?.routes.length > 1) {
+            isEditing = route?.state?.routes[1]?.params?.cardIdToEdit;
+          }
           return {
             tabBarVisible: !route.state || route.state.index == 0 || !isEditing,
             tabBarIcon: ({ focused, color }) => {
