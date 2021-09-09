@@ -3,6 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { BottomSheetHeader } from '../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from './CardCreatorBottomSheet';
+import { useCoreState } from '../../core/CoreEvents'
 
 import * as Clipboard from '../LibraryEntryClipboard';
 import * as Constants from '../../Constants';
@@ -155,14 +156,8 @@ const PasteFromClipboardRow = ({ onPaste, numActorsUsingClipboardEntry }) => {
   );
 };
 
-export const BlueprintsSheet = ({ element, isOpen, onClose, title, onSelectBlueprint, isRule }) => {
-  // TODO: restore
-  const blueprintsData = {};
-  const sendAction = () => {};
-
-  if (!onSelectBlueprint) {
-    onSelectBlueprint = (entryId) => sendAction('addBlueprintToScene', entryId);
-  }
+export const BlueprintsSheet = ({ isOpen, onClose, title, onSelectBlueprint, isRule }) => {
+  const blueprintsData = useCoreState('EDITOR_LIBRARY');
 
   const copyBlueprint = React.useCallback(
     (entryId) => {
@@ -176,26 +171,12 @@ export const BlueprintsSheet = ({ element, isOpen, onClose, title, onSelectBluep
     [blueprintsData, onClose]
   );
 
-  const pasteBlueprint = React.useCallback(
-    (entry) => {
-      sendAction('pasteBlueprint', entry);
-      onClose();
-    },
-    [sendAction, onClose]
-  );
-
   const renderHeader = () => <BottomSheetHeader title={title ?? 'Blueprints'} onClose={onClose} />;
 
   const renderContent = () => (
     <View style={styles.container}>
       {!isOpen ? null : (
         <>
-          {!isRule ? (
-            <PasteFromClipboardRow
-              onPaste={pasteBlueprint}
-              numActorsUsingClipboardEntry={blueprintsData?.numActorsUsingClipboardEntry}
-            />
-          ) : null}
           {orderedEntries(blueprintsData?.library).map((entry, ii) => {
             if (entry.entryType === 'actorBlueprint') {
               return (
@@ -228,8 +209,5 @@ export const BlueprintsSheet = ({ element, isOpen, onClose, title, onSelectBluep
 
 // needed when the blueprints sheet is used outside of the CardCreatorSheetManager root sheets
 export const RuleBlueprintsSheet = (props) => {
-  // TODO: provide data
-  // const element = root?.panes ? root.panes['sceneCreatorBlueprints'] : null;
-  const element = {};
-  return <BlueprintsSheet {...props} element={element} isRule />;
+  return <BlueprintsSheet {...props} isRule />;
 };

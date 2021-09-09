@@ -13,11 +13,12 @@ export const getRuleRenderContext = () => {
   // expect the data not to change.
   const variables = getCoreStateCache('EDITOR_VARIABLES');
   const behaviors = getCoreStateCache('EDITOR_ALL_BEHAVIORS');
+  const library = getCoreStateCache('EDITOR_LIBRARY')?.library;
 
   return {
     deck,
     variables,
     behaviors,
-    library: {}, // TODO: library (needed for Create response)
+    library,
   };
 };

@@ -85,11 +85,7 @@ void Scene::read(Reader &reader) {
 void Scene::write(Writer &writer) const {
   // Library
   writer.obj("library", [&]() {
-    library->forEachEntry([&](LibraryEntry &entry) {
-      writer.obj(entry.getEntryId(), [&]() {
-        entry.write(writer);
-      });
-    });
+    library->write(writer);
   });
 
   // Actors

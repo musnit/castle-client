@@ -121,6 +121,8 @@ private:
   bool isEditorStateDirty;
   void sendGlobalActions();
 
+  void sendLibrary();
+
   bool isSelectedActorStateDirty;
   void sendSelectedActorData();
 

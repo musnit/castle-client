@@ -88,7 +88,7 @@ void Library::readEntry(Reader &reader) {
   entries.erase(entryId);
   entries.emplace(std::piecewise_construct, std::forward_as_tuple(entryId),
       std::forward_as_tuple(*this, entryId, *reader.jsonValue(), baseAlloc));
-  markOrderDirty();
+  markDirty();
 }
 
 void Library::ensureGhostActorsExist() {
@@ -97,9 +97,10 @@ void Library::ensureGhostActorsExist() {
   });
 }
 
-void Library::markOrderDirty() {
+void Library::markDirty() {
   order.clear(); // To avoid accidental access to stale `LibraryEntry *`s in `order`
   orderDirty = true;
+  editorNeedsSend = true;
 }
 
 void Library::ensureOrder() {

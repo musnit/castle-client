@@ -80,14 +80,20 @@ public:
   void removeEntry(const char *entryId); // Does nothing if not found
 
 
-  // Entry read / write
+  // Read / write
 
   void readEntry(Reader &reader); // Creates or updates existing entry based on `entryId` read
+
+  void write(Writer &writer) const;
 
 
   // Ghost actors
 
   void ensureGhostActorsExist();
+
+
+  // For editor to track library-data-needs-send status
+  bool editorNeedsSend = true;
 
 
 private:
@@ -104,7 +110,9 @@ private:
   std::unordered_map<std::string, ActorId> ghostActorIds;
 
 
-  void markOrderDirty();
+  void markDirty();
+
+
   void ensureOrder();
 };
 
@@ -172,5 +180,13 @@ inline const LibraryEntry *Library::indexEntry(int index) {
 
 inline void Library::removeEntry(const char *entryId) {
   entries.erase(entryId);
-  markOrderDirty();
+  markDirty();
+}
+
+inline void Library::write(Writer &writer) const {
+  const_cast<Library &>(*this).forEachEntry([&](const LibraryEntry &entry) {
+    writer.obj(entry.getEntryId(), [&]() {
+      entry.write(writer);
+    });
+  });
 }

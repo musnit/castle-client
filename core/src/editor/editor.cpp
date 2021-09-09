@@ -693,6 +693,16 @@ void Editor::sendGlobalActions() {
   bridge.sendEvent("EDITOR_GLOBAL_ACTIONS", ev);
 };
 
+void Editor::sendLibrary() {
+  if (scene) {
+    bridge.sendEvent("EDITOR_LIBRARY", [&](Writer &writer) {
+      writer.obj("library", [&]() {
+        scene->getLibrary().write(writer);
+      });
+    });
+  }
+}
+
 struct EditorSelectedActorEvent {
   struct Behavior {
     PROP(bool, isActive) = false;
@@ -1691,6 +1701,10 @@ void Editor::maybeSendData() {
   if (isEditorStateDirty) {
     sendGlobalActions();
     isEditorStateDirty = false;
+  }
+  if (auto &library = scene->getLibrary(); library.editorNeedsSend) {
+    sendLibrary();
+    library.editorNeedsSend = false;
   }
   if (isSelectedActorStateDirty) {
     sendSelectedActorData();
