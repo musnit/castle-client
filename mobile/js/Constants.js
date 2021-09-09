@@ -108,7 +108,7 @@ export const styles = {
   buttonLarge: {
     paddingTop: 8,
     paddingBottom: 8,
-    width: 250,
+    width: 220,
   },
   buttonLargeLabel: {
     fontSize: 20,
