@@ -25,6 +25,9 @@ class CreateCardScreenDataProvider extends React.Component {
     initialSnapshotJson: null,
   };
 
+  // doesn't need to be react-stateful
+  _variables = [];
+
   componentDidMount() {
     this._mounted = true;
     RulesClipboard.clear();
@@ -128,6 +131,7 @@ class CreateCardScreenDataProvider extends React.Component {
       };
 
       if (this._mounted) {
+        this._variables = deck.variables;
         this.setState(
           {
             deck,
@@ -163,10 +167,13 @@ class CreateCardScreenDataProvider extends React.Component {
       };
     });
 
+  _handleVariablesChange = (variables) => {
+    this._variables = variables;
+  };
+
   _saveBackup = () => {
     // TODO: support saving and backups
-    // TODO: read variables from engine
-    // Session.saveDeck(this.state.card, this.state.deck, this.state.card.variables, true);
+    // Session.saveDeck(this.state.card, this.state.deck, this._variables, true);
   };
 
   _updateScreenshot = async () => {
@@ -200,7 +207,7 @@ class CreateCardScreenDataProvider extends React.Component {
     const { card, deck } = await Session.saveDeck(
       this.state.card,
       this.state.deck,
-      this.state.card.variables
+      this._variables
     );
     Amplitude.logEventWithProperties('SAVE_DECK', {
       deckId: deck.deckId,
@@ -301,6 +308,7 @@ class CreateCardScreenDataProvider extends React.Component {
         saveAndGoToDeck={this._saveAndGoToDeck}
         saveAndGoToCard={this._saveAndGoToCard}
         onSceneMessage={this._handleSceneMessage}
+        onVariablesChange={this._handleVariablesChange}
         onSceneRevertData={this._handleSceneRevertData}
         saveAction="save"
       />

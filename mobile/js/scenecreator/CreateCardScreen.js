@@ -84,6 +84,7 @@ export const CreateCardScreen = ({
   saveAndGoToDeck,
   saveAndGoToCard,
   onSceneMessage,
+  onVariablesChange,
   onSceneRevertData,
   saveAction = 'none',
 }) => {
@@ -231,6 +232,24 @@ export const CreateCardScreen = ({
     eventName: 'SHOW_NEW_BLUEPRINT_SHEET',
     handler: () => {
       setActiveSheet('sceneCreatorNewBlueprint');
+    },
+  });
+
+  useListen({
+    eventName: 'EDITOR_VARIABLES',
+    handler: (variables) => {
+      if (variables) {
+        // map bridge format to save format
+        onVariablesChange(
+          variables.map((variable) => ({
+            ...variable,
+            id: variable.variableId,
+            variableId: undefined,
+          }))
+        );
+      } else {
+        onVariablesChange(variables);
+      }
     },
   });
 
