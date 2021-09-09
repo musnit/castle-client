@@ -50,7 +50,6 @@ const styles = StyleSheet.create({
 });
 
 export const CreateCardHeader = ({
-  card,
   isEditable,
   onPressBack,
   mode,

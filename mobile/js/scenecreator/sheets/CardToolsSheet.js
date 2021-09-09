@@ -50,8 +50,7 @@ const styles = StyleSheet.create({
 });
 
 export const CardToolsSheet = ({ isOpen, onClose, ...props }) => {
-  const { card, onSelectBackupData, saveAction } = useCardCreator();
-  const cardId = card?.cardId;
+  const { cardId, onSelectBackupData, saveAction } = useCardCreator();
 
   let TAB_ITEMS = [
     {

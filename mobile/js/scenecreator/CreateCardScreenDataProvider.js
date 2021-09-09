@@ -268,7 +268,6 @@ class CreateCardScreenDataProvider extends React.Component {
   _handleSceneMessage = (message) => {
     switch (message.messageType) {
       case 'UPDATE_SCENE': {
-        //console.log(`new scene data: ${message.data}`);
         this._handleCardChange({
           changedSceneData: message.data,
         });
@@ -297,7 +296,7 @@ class CreateCardScreenDataProvider extends React.Component {
     return (
       <CreateCardScreen
         deck={deck}
-        card={card}
+        cardId={card.cardId}
         isNewScene={isNewScene}
         initialSnapshotJson={initialSnapshotJson}
         initialIsEditing={this.props.initialIsEditing}

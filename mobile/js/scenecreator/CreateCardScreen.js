@@ -72,8 +72,8 @@ const useCoreTextActors = () => {
 };
 
 export const CreateCardScreen = ({
-  card,
   deck,
+  cardId,
   isNewScene = false,
   initialIsEditing = true,
   initialSnapshotJson = null,
@@ -264,7 +264,7 @@ export const CreateCardScreen = ({
   }
 
   const cardBackgroundStyles = {
-    backgroundColor: card.backgroundImage ? '#000' : '#f2f2f2',
+    backgroundColor: '#f2f2f2',
     justifyContent: isTextActorSelected ? 'flex-start' : 'flex-end',
   };
 
@@ -285,7 +285,7 @@ export const CreateCardScreen = ({
 
   const contextValue = {
     deck,
-    card,
+    cardId,
     isSceneLoaded,
     isPlaying,
     selectedActorId,
@@ -308,7 +308,6 @@ export const CreateCardScreen = ({
             { paddingTop: insets.top, paddingBottom: insets.bottom },
           ]}>
           <CreateCardHeader
-            card={card}
             isEditable
             mode={activeSheet}
             onChangeMode={setActiveSheet}
@@ -320,7 +319,7 @@ export const CreateCardScreen = ({
           <View style={styles.cardBody}>
             <View style={[styles.card, cardBackgroundStyles, cardFitStyles]}>
               <CardScene
-                key={`card-scene-${card?.cardId}`}
+                key={`card-scene-${cardId}`}
                 deck={deck}
                 initialSnapshotJson={initialSnapshotJson}
                 interactionEnabled={true}
@@ -346,7 +345,6 @@ export const CreateCardScreen = ({
                       disabled={loading}
                       visible={isCardTextVisible}
                       textActors={textActors}
-                      card={card}
                       onSelect={selectTextActor}
                       isEditable={!isPlaying}
                     />
