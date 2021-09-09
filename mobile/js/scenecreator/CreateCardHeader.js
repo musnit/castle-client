@@ -76,11 +76,9 @@ export const CreateCardHeader = ({
     );
   }, [showActionSheetWithOptions, onSave, creatorUsername]);
 
-  // Only hide status bar on iOS because adjustResize breaks when android is in fullscreen.
-  // This breaks keyboard avoiding for popovers. See https://issuetracker.google.com/issues/36911528
   return (
     <View style={styles.container}>
-      <StatusBar hidden={Platform.OS !== 'android'} />
+      <StatusBar barStyle="dark-content" />
       {!data?.performing ? (
         <TouchableOpacity style={styles.back} onPress={onPressBack}>
           <Icon name="arrow-back" size={32} color="#000" />

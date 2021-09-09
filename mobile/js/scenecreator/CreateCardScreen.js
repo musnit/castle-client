@@ -303,10 +303,12 @@ export const CreateCardScreen = ({
     <CreateCardContext.Provider value={contextValue}>
       <PopoverProvider>
         <View
-          style={[
-            Constants.styles.container,
-            { paddingTop: insets.top, paddingBottom: insets.bottom },
-          ]}>
+          style={{
+            flex: 1,
+            backgroundColor: '#fff',
+            paddingTop: insets.top,
+            paddingBottom: insets.bottom,
+          }}>
           <CreateCardHeader
             isEditable
             mode={activeSheet}
