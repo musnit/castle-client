@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
   link: {
     fontSize: 16,
     color: Constants.colors.grayText,
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
   },
 });
 

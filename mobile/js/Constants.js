@@ -84,7 +84,7 @@ export const styles = {
     marginBottom: -1,
   },
   secondaryButton: {
-    borderRadius: 6,
+    borderRadius: 4,
     paddingTop: 4,
     paddingBottom: 6,
     paddingHorizontal: 12,
@@ -99,7 +99,6 @@ export const styles = {
     color: '#fff',
     fontSize: 16,
     lineHeight: 22,
-    fontWeight: 'bold',
   },
   secondaryButtonIconLeft: {
     marginLeft: -5,
@@ -107,8 +106,8 @@ export const styles = {
     marginBottom: -1,
   },
   buttonLarge: {
-    paddingTop: 10,
-    paddingBottom: 10,
+    paddingTop: 8,
+    paddingBottom: 8,
     width: 250,
   },
   buttonLargeLabel: {

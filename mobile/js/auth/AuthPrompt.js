@@ -24,11 +24,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
     color: Constants.colors.white,
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: 8,
   },
   message: {
     fontSize: 16,
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
 export const AuthPrompt = ({ title, message }) => {
   const { navigate } = useNavigation();
 
-  const imageHeight = 200;
+  const imageHeight = 160;
   const imageWidth = imageHeight * 12.352657005; // Original dimensions are 3435x278
   const transitionDelta = (imageWidth - Viewport.vw * 100) / 2;
 
@@ -90,11 +90,11 @@ export const AuthPrompt = ({ title, message }) => {
       <View style={styles.topSection}>
         <FastImage
           style={{
-            width: 50,
+            width: 70,
             aspectRatio: 1,
-            marginBottom: 25,
+            marginBottom: 32,
           }}
-          source={require('../../assets/images/castle-icon-onblack.png')}
+          source={require('../../assets/images/castle-icon.png')}
         />
         <Text style={styles.title}>{title ? title : 'Castle'}</Text>
         <Text style={styles.message}>
@@ -106,14 +106,13 @@ export const AuthPrompt = ({ title, message }) => {
           style={{
             width: imageWidth,
             height: imageHeight,
-            marginTop: 40,
-            marginBottom: 40,
+            marginVertical: 48,
           }}
           source={require('../../assets/images/deck-carousel.png')}
         />
       </Animated.View>
       <View style={styles.bottomSection}>
-        <View style={{ flexGrow: 1 }}>
+        <View style={{ flexGrow: 1, paddingBottom: 16 }}>
           <TouchableOpacity
             style={{
               ...Constants.styles.primaryButton,
@@ -134,7 +133,7 @@ export const AuthPrompt = ({ title, message }) => {
             </Text>
           </TouchableOpacity>
         </View>
-        <View style={{ flexGrow: 0, paddingBottom: 16 }}>
+        <View style={{ flexGrow: 0 }}>
           <MiscLinks />
         </View>
       </View>
