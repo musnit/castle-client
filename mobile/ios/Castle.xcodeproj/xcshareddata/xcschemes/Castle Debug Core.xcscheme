@@ -5,6 +5,24 @@
    <BuildAction
       parallelizeBuildables = "NO"
       buildImplicitDependencies = "YES">
+      <PreActions>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Run Script"
+               scriptText = "rm -rf ${INTERMEDIATES_OUTPUT_DIR}&#10;mkdir -p ${INTERMEDIATES_OUTPUT_DIR}&#10;echo CASTLE_DEBUG_CORE_SCHEME &gt; ${SCHEME_FILE}&#10;">
+               <EnvironmentBuildable>
+                  <BuildableReference
+                     BuildableIdentifier = "primary"
+                     BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
+                     BuildableName = "Castle.app"
+                     BlueprintName = "Castle"
+                     ReferencedContainer = "container:Castle.xcodeproj">
+                  </BuildableReference>
+               </EnvironmentBuildable>
+            </ActionContent>
+         </ExecutionAction>
+      </PreActions>
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
@@ -90,24 +108,6 @@
       debugServiceExtension = "internal"
       enableGPUFrameCaptureMode = "3"
       allowLocationSimulation = "YES">
-      <PreActions>
-         <ExecutionAction
-            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
-            <ActionContent
-               title = "Run Script"
-               scriptText = "# Uncommenting the next line will write this script output to a log&#10;# exec &gt; ${PROJECT_DIR}/prebuild.log 2&gt;&amp;1&#10;&#10;eval &quot;$(/opt/homebrew/bin/brew shellenv)&quot;&#10;&#10;cd ${PROJECT_DIR}&#10;cd ../../core&#10;./run.sh ios-debug&#10;">
-               <EnvironmentBuildable>
-                  <BuildableReference
-                     BuildableIdentifier = "primary"
-                     BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-                     BuildableName = "Castle.app"
-                     BlueprintName = "Castle"
-                     ReferencedContainer = "container:Castle.xcodeproj">
-                  </BuildableReference>
-               </EnvironmentBuildable>
-            </ActionContent>
-         </ExecutionAction>
-      </PreActions>
       <BuildableProductRunnable
          runnableDebuggingMode = "0">
          <BuildableReference
