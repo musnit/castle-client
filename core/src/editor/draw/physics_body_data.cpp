@@ -128,3 +128,28 @@ void PhysicsBodyData::render() {
 
   lv.graphics.pop();
 }
+
+std::vector<FixtureProps> PhysicsBodyData::getFixturesForBody() {
+  std::vector<FixtureProps> result;
+
+  for (size_t i = 0; i < shapes.size(); i++) {
+    auto &shape = shapes[i];
+    FixtureProps fixture;
+    if (shape.type == CollisionShapeType::Circle) {
+      fixture.shapeType() = "circle";
+      fixture.x() = shape.x;
+      fixture.y() = shape.y;
+      fixture.radius() = shape.radius;
+    } else {
+      SmallVector<love::Vector2, 4> points;
+      _pointsForShape(shape, points);
+      for (size_t j = 0; j < points.size(); j++) {
+        fixture.points().push_back(points[j].x);
+        fixture.points().push_back(points[j].y);
+      }
+    }
+    result.push_back(fixture);
+  }
+
+  return result;
+}

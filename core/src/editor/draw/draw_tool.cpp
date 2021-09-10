@@ -444,12 +444,22 @@ void DrawTool::saveDrawing(std::string commandDescription) {
       = [](Editor &editor, ActorId actorId, const std::string &drawData,
             const std::string &physicsBodyData, const std::string &hash) {
           auto &scene = editor.getScene();
-          auto &drawBehavior = scene.getBehaviors().byType<Drawing2Behavior>();
-          auto component = drawBehavior.maybeGetComponent(actorId);
 
-          component->drawData = std::make_shared<love::DrawData>(drawData);
-          component->physicsBodyData = std::make_shared<PhysicsBodyData>(physicsBodyData);
-          component->hash = hash;
+          auto &drawBehavior = scene.getBehaviors().byType<Drawing2Behavior>();
+          auto drawComponent = drawBehavior.maybeGetComponent(actorId);
+          drawComponent->drawData = std::make_shared<love::DrawData>(drawData);
+          drawComponent->physicsBodyData = std::make_shared<PhysicsBodyData>(physicsBodyData);
+          drawComponent->hash = hash;
+
+          auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
+          auto bodyComponent = bodyBehavior.maybeGetComponent(actorId);
+          auto drawDataBounds = drawComponent->drawData->getBounds(drawComponent->props.initialFrame() - 1);
+          auto physicsBodyBounds = drawComponent->physicsBodyData->getBounds();
+          bodyComponent->props.editorBounds().minX = fmin(drawDataBounds.minX, physicsBodyBounds.minX);
+          bodyComponent->props.editorBounds().maxX = fmax(drawDataBounds.maxX, physicsBodyBounds.maxX);
+          bodyComponent->props.editorBounds().minY = fmin(drawDataBounds.minY, physicsBodyBounds.minY);
+          bodyComponent->props.editorBounds().maxY = fmax(drawDataBounds.maxY, physicsBodyBounds.maxY);
+          bodyBehavior.setFixturesFromDrawing(actorId, drawComponent->physicsBodyData->getFixturesForBody());
 
           Editor::UpdateBlueprintParams updateBlueprintParams;
           updateBlueprintParams.updateBase64Png = true;

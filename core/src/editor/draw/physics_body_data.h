@@ -4,6 +4,14 @@
 #include "props.h"
 #include "lv.h"
 
+struct FixtureProps {
+  PROP(std::string, shapeType) = "polygon";
+  PROP((SmallVector<float, 8>), points);
+  PROP(float, x) = 0;
+  PROP(float, y) = 0;
+  PROP(float, radius) = 0;
+};
+
 enum class CollisionShapeType { Rectangle, Triangle, Circle };
 
 struct PhysicsBodyDataHandle {
@@ -537,4 +545,6 @@ public:
   int getNumShapes() {
     return shapes.size();
   }
+
+  std::vector<FixtureProps> getFixturesForBody();
 };

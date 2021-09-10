@@ -2,6 +2,7 @@
 
 #include "behaviors/all.h"
 
+#define EDITOR_BOUNDS_MIN_SIZE 0.5
 
 //
 // Triggers
@@ -461,55 +462,73 @@ void BodyBehavior::recreateFixtures(ActorId actorId, BodyComponent &component, b
     fixture = next;
   }
 
-  // Create new fixtures
-  auto widthScale = component.props.widthScale(), heightScale = component.props.heightScale();
-  for (auto &fixture : component.props.fixtures()) {
-    if (fixture.shapeType() == "circle") {
-      if (abs(abs(widthScale) - abs(heightScale)) < 0.002) {
-        // Uniformly-scaled circle
-        b2CircleShape shape;
-        shape.m_p = { widthScale * fixture.x(), heightScale * fixture.y() };
-        shape.m_radius = widthScale * fixture.radius();
-        addFixture(component, &shape);
-      } else {
-        // Non-uniformly scaled circle -- approximate with a polygon
-        auto x = fixture.x(), y = fixture.y();
-        auto radius = fixture.radius();
+  if (getScene().getIsEditing()) {
+    auto bounds = getScaledEditorBounds(actorId, component, true);
+    std::array<b2Vec2, 4> points;
+
+    points[0].x = bounds.centerX - bounds.width / 2.0;
+    points[0].y = bounds.centerY - bounds.height / 2.0;
+    points[1].x = bounds.centerX + bounds.width / 2.0;
+    points[1].y = bounds.centerY - bounds.height / 2.0;
+    points[2].x = bounds.centerX + bounds.width / 2.0;
+    points[2].y = bounds.centerY + bounds.height / 2.0;
+    points[3].x = bounds.centerX - bounds.width / 2.0;
+    points[3].y = bounds.centerY + bounds.height / 2.0;
+
+    b2PolygonShape shape;
+    shape.Set(points.data(), 4);
+    addFixture(component, &shape);
+  } else {
+    // Create new fixtures
+    auto widthScale = component.props.widthScale(), heightScale = component.props.heightScale();
+    for (auto &fixture : component.props.fixtures()) {
+      if (fixture.shapeType() == "circle") {
+        if (abs(abs(widthScale) - abs(heightScale)) < 0.002) {
+          // Uniformly-scaled circle
+          b2CircleShape shape;
+          shape.m_p = { widthScale * fixture.x(), heightScale * fixture.y() };
+          shape.m_radius = widthScale * fixture.radius();
+          addFixture(component, &shape);
+        } else {
+          // Non-uniformly scaled circle -- approximate with a polygon
+          auto x = fixture.x(), y = fixture.y();
+          auto radius = fixture.radius();
+          std::array<b2Vec2, 8> points;
+          auto angle = 0.0f;
+          for (auto i = 0; i < 8; ++i) {
+            auto dX = radius * cos(angle), dY = radius * sin(angle);
+            points[i] = { widthScale * (x + dX), heightScale * (y + dY) };
+            angle -= 2 * M_PI / 8;
+          }
+          b2PolygonShape shape;
+          shape.Set(points.data(), 8);
+          addFixture(component, &shape);
+        }
+      } else if (fixture.shapeType() == "polygon") {
+        // Polygon with given points
+        auto pointsProps = fixture.points();
         std::array<b2Vec2, 8> points;
-        auto angle = 0.0f;
-        for (auto i = 0; i < 8; ++i) {
-          auto dX = radius * cos(angle), dY = radius * sin(angle);
-          points[i] = { widthScale * (x + dX), heightScale * (y + dY) };
-          angle -= 2 * M_PI / 8;
+        auto nPoints = std::min(int(pointsProps.size() / 2), 8);
+        for (auto i = 0; i < nPoints; ++i) {
+          points[i].x = widthScale * pointsProps[2 * i];
+          points[i].y = heightScale * pointsProps[2 * i + 1];
         }
         b2PolygonShape shape;
-        shape.Set(points.data(), 8);
+        shape.Set(points.data(), nPoints);
         addFixture(component, &shape);
       }
-    } else if (fixture.shapeType() == "polygon") {
-      // Polygon with given points
-      auto pointsProps = fixture.points();
-      std::array<b2Vec2, 8> points;
-      auto nPoints = std::min(int(pointsProps.size() / 2), 8);
-      for (auto i = 0; i < nPoints; ++i) {
-        points[i].x = widthScale * pointsProps[2 * i];
-        points[i].y = heightScale * pointsProps[2 * i + 1];
-      }
-      b2PolygonShape shape;
-      shape.Set(points.data(), nPoints);
-      addFixture(component, &shape);
     }
-  }
 
-  // Notify behaviors that update fixtures
-  if (notify) {
-    getBehaviors().forEach([&](auto &behavior) {
-      if constexpr (Handlers::hasUpdateComponentFixtures<decltype(behavior)>) {
-        if (auto component = behavior.maybeGetComponent(actorId)) {
-          behavior.handleUpdateComponentFixtures(actorId, *component, body);
+    // Notify behaviors that update fixtures
+    if (notify) {
+      getBehaviors().forEach([&](auto &behavior) {
+        if constexpr (Handlers::hasUpdateComponentFixtures<decltype(behavior)>) {
+          if (auto component = behavior.maybeGetComponent(actorId)) {
+            behavior.handleUpdateComponentFixtures(actorId, *component, body);
+          }
         }
-      }
-    });
+      });
+    }
   }
 }
 
@@ -528,4 +547,39 @@ b2Fixture *BodyBehavior::addFixture(BodyComponent &component, b2Shape *shape) {
 
   fixtureDef.shape = shape;
   return component.body->CreateFixture(&fixtureDef);
+}
+
+void BodyBehavior::setFixturesFromDrawing(ActorId actorId, std::vector<FixtureProps> fixtures) {
+  if (auto component = maybeGetComponent(actorId)) {
+    component->props.fixtures() = fixtures;
+
+    recreateFixtures(actorId, *component, true);
+  }
+}
+
+ScaledEditorBounds BodyBehavior::getScaledEditorBounds(ActorId actorId, BodyComponent &component, bool enforceMinimumSize) {
+  ScaledEditorBounds result;
+  auto &editorBounds = component.props.editorBounds();
+
+  result.minX = editorBounds.minX() * component.props.widthScale();
+  result.maxX = editorBounds.maxX() * component.props.widthScale();
+  result.minY = editorBounds.minY() * component.props.heightScale();
+  result.maxY = editorBounds.maxY() * component.props.heightScale();
+
+  result.centerX = (result.maxX + result.minX) / 2.0;
+  result.centerY = (result.maxY + result.minY) / 2.0;
+
+  result.width = fabs(result.maxX - result.minX);
+  result.height = fabs(result.maxY - result.minY);
+
+  if (enforceMinimumSize) {
+    if (result.width < EDITOR_BOUNDS_MIN_SIZE) {
+      result.width = EDITOR_BOUNDS_MIN_SIZE;
+    }
+    if (result.height < EDITOR_BOUNDS_MIN_SIZE) {
+      result.height = EDITOR_BOUNDS_MIN_SIZE;
+    }
+  }
+
+  return result;
 }

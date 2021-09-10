@@ -4,6 +4,7 @@
 
 #include "behaviors/base.h"
 #include "props.h"
+#include "editor/draw/physics_body_data.h"
 
 
 love::Vector2 convert(b2Vec2 v);
@@ -13,6 +14,17 @@ b2Vec2 convert(love::Vector2 v);
 enum class BodyLayer {
   Main,
   Camera,
+};
+
+struct ScaledEditorBounds {
+  float minX;
+  float maxX;
+  float minY;
+  float maxY;
+  float centerX;
+  float centerY;
+  float width;
+  float height;
 };
 
 struct BodyComponent : BaseComponent {
@@ -77,13 +89,6 @@ struct BodyComponent : BaseComponent {
          .rulesSet(false)
          ) = "main";
 
-    struct FixtureProps {
-      PROP(std::string, shapeType) = "polygon";
-      PROP((SmallVector<float, 8>), points);
-      PROP(float, x) = 0;
-      PROP(float, y) = 0;
-      PROP(float, radius) = 0;
-    };
     PROP(
          std::vector<FixtureProps>, fixtures, // `std::vector` rather than `SmallVector` because we
                                               // rarely read this data at perform-time and it's big
@@ -140,6 +145,10 @@ public:
   void setPosition(ActorId actorId, b2Vec2 pos); // Use this instead of `SetTransform` when setting
                                                  // body position -- notifies other behaviors
   void setScale(ActorId actorId, float widthScale, float heightScale);
+
+  // Fixtures
+  void setFixturesFromDrawing(ActorId actorId, std::vector<FixtureProps> fixtures);
+  ScaledEditorBounds getScaledEditorBounds(ActorId actorId, BodyComponent &component, bool enforceMinimumSize);
 
 
   // Information needed for rendering
