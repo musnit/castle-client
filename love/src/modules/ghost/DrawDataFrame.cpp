@@ -12,7 +12,7 @@
 #include "data/DataModule.h"
 #include "filesystem/Filesystem.h"
 
-#define DEBUG_FILL_IMAGE_SIZE true
+#define DEBUG_FILL_IMAGE_SIZE false
 #define DEBUG_UPDATE_FLOOD_FILL 0
 
 namespace love {
@@ -253,11 +253,11 @@ namespace ghost {
       return;
     }
     if (fillImage != NULL) {
-      if (fillImage->getWidth() == fillImageData->getWidth()
+      /*if (fillImage->getWidth() == fillImageData->getWidth()
           && fillImage->getHeight() == fillImageData->getHeight()) {
         fillImage->replacePixels(fillImageData, 0, 0, 0, 0, false);
         return;
-      }
+      }*/
       delete fillImage;
     }
     fillImage = imageDataToImage(fillImageData);
@@ -299,7 +299,7 @@ namespace ghost {
           newFillImageData->setPixel(0, y, p);
         }
       }
-      delete fillImageData;
+      // delete fillImageData;
       fillImageData = newFillImageData;
       fillImageBounds.minX = fillImageBounds.minX + minX;
       fillImageBounds.minY = fillImageBounds.minY + minY;
