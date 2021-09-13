@@ -17,16 +17,17 @@ const AUTOBACKUP_INTERVAL_MS = 2 * 60 * 1000;
 class CreateCardScreenDataProvider extends React.Component {
   state = {
     deck: Constants.EMPTY_DECK,
-    card: Constants.EMPTY_CARD,
-    isNewScene: false,
+    cardId: null,
     loading: false,
-    // maintain separately from card/deck state because we only want it to affect initial engine
-    // load
-    initialSnapshotJson: null,
   };
 
   // doesn't need to be react-stateful
   _variables = [];
+  _isNewScene = false;
+  _changedSceneData = null;
+  _changedBackgroundImage = null;
+  _initialSnapshotJson = null;
+  _isCardChanged = false;
 
   componentDidMount() {
     this._mounted = true;
@@ -132,42 +133,27 @@ class CreateCardScreenDataProvider extends React.Component {
 
       if (this._mounted) {
         this._variables = deck.variables;
-        this.setState(
-          {
-            deck,
-            card,
-            isNewScene: card.scene.data.empty === true,
-            initialSnapshotJson: JSON.stringify(initialSnapshotJson),
-          },
+        this._isNewScene = card.scene.data.empty === true;
+        this._initialSnapshotJson = JSON.stringify(initialSnapshotJson);
+        this._isCardChanged = false;
 
-          // TODO: we can remove this event (and probably remove `initialIsEditing` everywhere)
-          // because it's only used when moving between cards, which should be handled
-          // purely engine-side from now on
-          async () => {
-            const { card } = this.state;
-            GhostEvents.sendAsync('SCENE_CREATOR_EDITING', {
-              isEditing: params.initialIsEditing === false ? false : true,
-            });
-          }
-        );
+        this.setState({
+          deck,
+          cardId: card.cardId,
+          loading: false,
+        });
         this._backupInterval = setInterval(this._saveBackup, AUTOBACKUP_INTERVAL_MS);
       }
     }
   };
 
-  _handleCardChange = (changes) =>
-    this.setState((state) => {
-      return {
-        ...state,
-        card: {
-          ...state.card,
-          isChanged: true,
-          ...changes,
-        },
-      };
-    });
+  _handleSceneDataChange = (changedSceneData) => {
+    this._isCardChanged = true;
+    this._changedSceneData = changedSceneData;
+  };
 
   _handleVariablesChange = (variables) => {
+    this._isCardChanged = true;
     this._variables = variables;
   };
 
@@ -192,9 +178,7 @@ class CreateCardScreenDataProvider extends React.Component {
 
       const backgroundImage = await Session.uploadBase64(screenshotData);
       if (this._mounted && backgroundImage) {
-        return this._handleCardChange({
-          backgroundImage,
-        });
+        this._changedBackgroundImage = backgroundImage;
       }
     } catch (e) {
       // screenshot didn't happen in time
@@ -204,11 +188,12 @@ class CreateCardScreenDataProvider extends React.Component {
 
   _save = async () => {
     await this._updateScreenshot();
-    const { card, deck } = await Session.saveDeck(
-      this.state.card,
-      this.state.deck,
-      this._variables
-    );
+    const cardFragment = {
+      cardId: this.state.cardId,
+      changedSceneData: this._changedSceneData,
+      backgroundImage: this._changedBackgroundImage,
+    };
+    const { card, deck } = await Session.saveDeck(cardFragment, this.state.deck, this._variables);
     Amplitude.logEventWithProperties('SAVE_DECK', {
       deckId: deck.deckId,
       cardId: card.cardId,
@@ -243,8 +228,6 @@ class CreateCardScreenDataProvider extends React.Component {
     }
   };
 
-  // TODO: maybe remove this completely? and let engine handle moving to the card,
-  // and maybe just notify JS that the movement happened
   _goToCard = (nextCard, isPlaying) => {
     setTimeout(() => {
       this.props.navigation.navigate('CreateDeck', {
@@ -259,18 +242,19 @@ class CreateCardScreenDataProvider extends React.Component {
     const result = await this._save();
     if (!this._mounted || !result) return;
     const { card, deck } = result;
-    await this.setState({ card, deck });
+    await this.setState({
+      deck,
+      cardId: card.cardId,
+    });
     this._goToCard(nextCard, isPlaying);
   };
 
-  _cardNeedsSave = () => this.state.card?.isChanged;
+  _cardNeedsSave = () => this._isCardChanged;
 
   _handleSceneMessage = (message) => {
     switch (message.messageType) {
       case 'UPDATE_SCENE': {
-        this._handleCardChange({
-          changedSceneData: message.data,
-        });
+        this._handleSceneDataChange(message.data);
         break;
       }
       case 'SCREENSHOT_DATA': {
@@ -291,14 +275,14 @@ class CreateCardScreenDataProvider extends React.Component {
   };
 
   render() {
-    const { deck, card, isNewScene, initialSnapshotJson, loading } = this.state;
+    const { deck, cardId, loading } = this.state;
 
     return (
       <CreateCardScreen
         deck={deck}
-        cardId={card.cardId}
-        isNewScene={isNewScene}
-        initialSnapshotJson={initialSnapshotJson}
+        cardId={cardId}
+        isNewScene={this._isNewScene}
+        initialSnapshotJson={this._initialSnapshotJson}
         initialIsEditing={this.props.initialIsEditing}
         loading={loading}
         goToDeck={this._goToDeck}

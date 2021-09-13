@@ -569,16 +569,7 @@ export const saveDeck = async (
     title: card.title,
     backgroundImageFileId: card.backgroundImage ? card.backgroundImage.fileId : undefined,
     sceneData: card.changedSceneData ? card.changedSceneData : card.scene.data,
-    blocks: card.blocks
-      ? card.blocks.map((block) => {
-          return {
-            type: block.type,
-            destinationCardId: block.destinationCardId,
-            title: block.title,
-            metadata: block.metadata,
-          };
-        })
-      : [],
+    blocks: [], // TODO: server requires this legacy field, would like to remove it
     makeInitialCard: card.makeInitialCard || undefined,
   };
   if (variables) {

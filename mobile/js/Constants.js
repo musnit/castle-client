@@ -180,7 +180,6 @@ export const styles = {
 
 export const EMPTY_CARD = {
   title: '',
-  blocks: [],
   scene: {
     sceneId: Math.floor(Math.random() * 100000),
     data: { empty: true },
