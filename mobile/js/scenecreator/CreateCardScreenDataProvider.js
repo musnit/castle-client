@@ -158,8 +158,12 @@ class CreateCardScreenDataProvider extends React.Component {
   };
 
   _saveBackup = () => {
-    // TODO: support saving and backups
-    // Session.saveDeck(this.state.card, this.state.deck, this._variables, true);
+    const cardFragment = {
+      cardId: this.state.cardId,
+      changedSceneData: this._changedSceneData,
+      backgroundImage: this._changedBackgroundImage,
+    };
+    Session.saveDeck(cardFragment, this.state.deck, this._variables, true);
   };
 
   _updateScreenshot = async () => {
