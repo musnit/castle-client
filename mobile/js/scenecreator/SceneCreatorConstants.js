@@ -24,23 +24,29 @@ export const Colors = {
   },
 };
 
+const boxShadow = {
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 1 },
+  shadowOpacity: 0.25,
+  shadowRadius: 0,
+  elevation: Constants.iOS ? 1 : undefined,
+};
+
 export const styles = {
+  boxShadow: {
+    ...boxShadow,
+  },
   button: {
+    ...boxShadow,
     backgroundColor: '#fff',
     borderWidth: 1,
     borderBottomWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.25,
-    shadowRadius: 0,
-    elevation: Constants.iOS ? 1 : undefined,
     borderColor: '#000',
     borderRadius: 4,
     paddingHorizontal: 8,
-    paddingVertical: 6,
+    paddingVertical: 4,
   },
   buttonLabel: {
-    fontWeight: 'bold',
     fontSize: 16,
   },
   behaviorContainer: {

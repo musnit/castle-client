@@ -37,8 +37,6 @@ const styles = StyleSheet.create({
     height: 38,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRightWidth: 1,
-    borderColor: Constants.colors.black,
   },
 });
 

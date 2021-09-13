@@ -9,10 +9,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flexShrink: 1,
+    paddingLeft: 2,
   },
   image: {
-    width: 24,
-    height: 24,
+    width: 28,
+    aspectRatio: 1,
     flexShrink: 0,
   },
   titleContainer: {

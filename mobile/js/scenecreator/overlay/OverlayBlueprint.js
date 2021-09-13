@@ -4,32 +4,19 @@ import { InspectorBlueprintActions } from '../inspector/InspectorBlueprintAction
 import { InspectorBlueprintHeader } from '../inspector/components/InspectorBlueprintHeader';
 import { sendAsync } from '../../core/CoreEvents';
 
+import * as SceneCreatorConstants from '../SceneCreatorConstants';
+
 const styles = StyleSheet.create({
   container: {
-    height: 36,
-    borderRadius: 6,
+    borderRadius: SceneCreatorConstants.OVERLAY_BORDER_RADIUS,
     borderColor: '#000',
     borderWidth: 1,
     backgroundColor: '#fff',
     width: '100%',
-    marginBottom: 8,
-    paddingHorizontal: 8,
+    padding: 7,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  editButton: {
-    borderColor: '#000',
-    borderWidth: 1,
-    borderBottomWidth: 1.5,
-    borderRadius: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  editLabel: {
-    fontSize: 12,
   },
 });
 
@@ -41,8 +28,10 @@ export const OverlayBlueprint = () => {
       <InspectorBlueprintHeader />
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <InspectorBlueprintActions />
-        <Pressable style={styles.editButton} onPress={() => sendInspectorAction('openInspector')}>
-          <Text style={styles.editLabel}>Edit</Text>
+        <Pressable
+          style={[SceneCreatorConstants.styles.button, { marginLeft: 6 }]}
+          onPress={() => sendInspectorAction('openInspector')}>
+          <Text style={SceneCreatorConstants.styles.buttonLabel}>Edit</Text>
         </Pressable>
       </View>
     </View>

@@ -5,15 +5,14 @@ import { InspectorBlueprintHeader } from './components/InspectorBlueprintHeader'
 import { SegmentedNavigation } from '../../components/SegmentedNavigation';
 import { sendAsync } from '../../core/CoreEvents';
 
-import Icon from 'react-native-vector-icons/MaterialIcons';
-
 import * as Constants from '../../Constants';
+const CastleIcon = Constants.CastleIcon;
 
 const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 4,
+    paddingTop: 12,
   },
   headerLeft: {
     paddingLeft: 16,
@@ -60,7 +59,7 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
           <InspectorBlueprintActions />
         </View>
         <TouchableOpacity style={styles.closeButton} onPress={() => sendAction('closeInspector')}>
-          <Icon name="close" size={32} color="#000" />
+          <CastleIcon name="close" size={22} color="#000" />
         </TouchableOpacity>
       </View>
       <View style={styles.navigation}>

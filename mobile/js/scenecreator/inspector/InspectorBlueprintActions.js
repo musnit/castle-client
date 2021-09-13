@@ -11,7 +11,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   actionButton: {
-    padding: 8,
+    padding: 6,
+  },
+  actionButtonLabel: {
+    fontSize: 14,
   },
 });
 
@@ -43,15 +46,15 @@ export const InspectorBlueprintActions = () => {
   return (
     <View style={styles.container}>
       <Pressable style={styles.actionButton} onPress={() => sendAction('deleteSelection')}>
-        <Text>Delete</Text>
+        <Text style={styles.actionButtonLabel}>Delete</Text>
       </Pressable>
       {data.isBlueprint && canCopyBlueprint ? (
         <Pressable style={styles.actionButton} onPress={() => copyBlueprint()}>
-          <Text>Copy</Text>
+          <Text style={styles.actionButtonLabel}>Copy</Text>
         </Pressable>
       ) : null}
       <Pressable style={styles.actionButton} onPress={() => sendAction('duplicateSelection')}>
-        <Text>Fork</Text>
+        <Text style={styles.actionButtonLabel}>Fork</Text>
       </Pressable>
     </View>
   );
