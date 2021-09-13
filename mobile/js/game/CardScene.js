@@ -62,18 +62,10 @@ export const CardScene = ({
         isEditing: initialIsEditing,
         isEditable,
         isDebug: !!__DEV__,
-        beltHeightFraction,
         isNewScene,
       })
     );
-  }, [
-    initialIsEditing,
-    isEditable,
-    beltHeightFraction,
-    deck?.deckId,
-    isNewScene,
-    initialSnapshotJson,
-  ]);
+  }, [initialIsEditing, isEditable, deck?.deckId, isNewScene, initialSnapshotJson]);
 
   return (
     <View style={style}>
@@ -83,6 +75,7 @@ export const CardScene = ({
             <GameView
               key={`game-view-${deck.deckId}-${reloadCount}`}
               initialParams={initialParams}
+              beltHeightFraction={beltHeightFraction}
               onMessage={onMessage}
               onLoaded={onLoaded}
               paused={paused}

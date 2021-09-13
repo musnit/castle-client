@@ -26,6 +26,9 @@ public:
   // expect to set once per engine use, e.g. on mount
   void setInitialParams(const char *initialParamsJson);
 
+  // may get sent multiple times per session from JS as UI layout changes
+  void setBeltHeightFraction(double beltHeightFraction);
+
 
   // Main loop
 

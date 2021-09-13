@@ -113,7 +113,6 @@ void Engine::setInitialParams(const char *initialParamsJson) {
     deckId = reader.str("deckId", nullptr);
     initialSnapshotJson = reader.str("initialSnapshotJson", nullptr);
     isNewScene = reader.boolean("isNewScene", false);
-    // TODO: beltHeightFraction is provided here
   });
   if (isEditing) {
     editor = std::make_unique<Editor>(bridge);
@@ -134,6 +133,10 @@ void Engine::setInitialParams(const char *initialParamsJson) {
   } else if (deckId) {
     loadSceneFromDeckId(deckId);
   }
+}
+
+void Engine::setBeltHeightFraction(double beltHeightFraction) {
+  // TODO: use this
 }
 
 void Engine::loadSceneFromFile(const char *path) {

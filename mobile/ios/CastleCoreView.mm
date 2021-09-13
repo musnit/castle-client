@@ -100,13 +100,17 @@ extern bool ghostApplyScreenScaling;
   paused = paused_;
 }
 
+/**
+ Setting initial params will cause the Engine to reset its state and load the card/deck/snapshot provided in `initialParams`.
+ Therefore we should avoid changing this value while the Engine is mounted.
+ */
 - (void)setInitialParams:(NSString *)initialParams {
-  static NSString *lastInitialParams;
-  if (initialParams && ![lastInitialParams isEqualToString:initialParams]) {
-    lastInitialParams = initialParams;
-    const char *initialParamsCStr = [initialParams UTF8String];
-    CastleCore::getEngine().setInitialParams(initialParamsCStr);
-  }
+  const char *initialParamsCStr = [initialParams UTF8String];
+  CastleCore::getEngine().setInitialParams(initialParamsCStr);
+}
+
+- (void)setBeltHeightFraction:(double)beltHeightFraction {
+  CastleCore::getEngine().setBeltHeightFraction(beltHeightFraction);
 }
 
 - (void)sdlViewAddNotificationReceived:(NSNotification *)notification {
@@ -152,6 +156,7 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_EXPORT_VIEW_PROPERTY(initialParams, NSString);
+RCT_EXPORT_VIEW_PROPERTY(beltHeightFraction, double);
 RCT_EXPORT_VIEW_PROPERTY(screenScaling, double);
 RCT_EXPORT_VIEW_PROPERTY(applyScreenScaling, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(paused, BOOL);

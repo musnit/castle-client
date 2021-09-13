@@ -67,7 +67,14 @@ const computeDimensionsSettings = ({ metadata }) => {
   return dimensionsSettings;
 };
 
-export const GameView = ({ deckId, initialParams, onMessage, onLoaded, paused }) => {
+export const GameView = ({
+  deckId,
+  initialParams,
+  onMessage,
+  onLoaded,
+  paused,
+  beltHeightFraction,
+}) => {
   const dimensionsSettings = computeDimensionsSettings({
     metadata: {
       dimensions: 800,
@@ -103,6 +110,7 @@ export const GameView = ({ deckId, initialParams, onMessage, onLoaded, paused })
         style={styles.container}
         dimensionsSettings={dimensionsSettings}
         paused={paused}
+        beltHeightFraction={beltHeightFraction}
       />
     </View>
   );
