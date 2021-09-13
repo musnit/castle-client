@@ -4,11 +4,13 @@ import { useCoreState, sendGlobalAction } from '../core/CoreEvents';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 
 import * as Constants from '../Constants';
+import * as SceneCreatorConstants from './SceneCreatorConstants';
 import { CreateCardCaptureActions } from './CreateCardCaptureActions';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SLIcon from 'react-native-vector-icons/SimpleLineIcons';
+const CastleIcon = SceneCreatorConstants.CastleIcon;
 
 export const CARD_HEADER_HEIGHT = 50;
 
@@ -25,11 +27,10 @@ const styles = StyleSheet.create({
     borderColor: Constants.colors.grayOnBlackBorder,
   },
   back: {
-    flexShrink: 0,
-    width: 66,
+    width: 67,
     alignItems: 'flex-start',
     justifyContent: 'center',
-    paddingLeft: 11,
+    paddingLeft: 16,
   },
   actionsContainer: {
     width: '100%',
@@ -81,7 +82,7 @@ export const CreateCardHeader = ({
       <StatusBar barStyle="dark-content" />
       {!data?.performing ? (
         <TouchableOpacity style={styles.back} onPress={onPressBack}>
-          <Icon name="arrow-back" size={32} color="#000" />
+          <CastleIcon name="back" size={22} color="#000" />
         </TouchableOpacity>
       ) : null}
       {data ? (
@@ -93,40 +94,40 @@ export const CreateCardHeader = ({
           {data.performing ? (
             <Fragment>
               <TouchableOpacity style={styles.action} onPress={() => sendGlobalAction('onRewind')}>
-                <SLIcon name="control-start" size={22} color="#000" />
+                <CastleIcon name="play" size={22} color="#000" />
               </TouchableOpacity>
               <CreateCardCaptureActions />
             </Fragment>
           ) : (
             <Fragment>
               <TouchableOpacity style={styles.action} onPress={() => sendGlobalAction('onPlay')}>
-                <SLIcon name="control-play" size={22} color="#000" />
+                <CastleIcon name="play" size={22} color="#000" />
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.action}
                 disabled={!data.actionsAvailable.onUndo}
                 onPress={() => sendGlobalAction('onUndo')}>
-                <MCIcon
-                  name="undo-variant"
-                  size={26}
-                  color={data.actionsAvailable.onUndo ? '#000' : '#666'}
+                <CastleIcon
+                  name="undo"
+                  size={22}
+                  color={data.actionsAvailable.onUndo ? '#000' : Constants.colors.grayText}
                 />
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.action}
                 disabled={!data.actionsAvailable.onRedo}
                 onPress={() => sendGlobalAction('onRedo')}>
-                <MCIcon
-                  name="redo-variant"
-                  size={26}
-                  color={data.actionsAvailable.onRedo ? '#000' : '#666'}
+                <CastleIcon
+                  name="redo"
+                  size={22}
+                  color={data.actionsAvailable.onRedo ? '#000' : Constants.colors.grayText}
                 />
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.action}
                 disabled={data.performing}
                 onPress={() => onChangeMode(mode === 'variables' ? null : 'variables')}>
-                <SLIcon name="settings" size={23} color="#000" />
+                <CastleIcon name="settings" size={22} color="#000" />
               </TouchableOpacity>
             </Fragment>
           )}
@@ -134,9 +135,7 @@ export const CreateCardHeader = ({
       ) : null}
       {!data?.performing ? (
         saveAction === 'save' ? (
-          <TouchableOpacity
-            style={[Constants.styles.primaryButton, Constants.styles.buttonOnWhite]}
-            onPress={onSave}>
+          <TouchableOpacity style={[SceneCreatorConstants.styles.button]} onPress={onSave}>
             <Text style={Constants.styles.primaryButtonLabel}>Done</Text>
           </TouchableOpacity>
         ) : saveAction === 'clone' ? (

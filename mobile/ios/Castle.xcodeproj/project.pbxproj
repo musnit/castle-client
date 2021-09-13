@@ -84,6 +84,7 @@
 		B55942292534CC0200BD34E7 /* CastleNotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = B55942272534CC0200BD34E7 /* CastleNotificationService.m */; };
 		B5942AB52627646B003CF6DB /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B5942AAD2627646B003CF6DB /* BootSplash.storyboard */; };
 		B75D12A12F9E5D8776A933D2 /* libPods-Castle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 580488360D0E6A5C5C50B415 /* libPods-Castle.a */; };
+		B8018AF726EFCB6400137649 /* CastleIcon.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B8018AEF26EFCB6400137649 /* CastleIcon.ttf */; };
 		FD974DF143C544B1A8CBD6AB /* Basteleur-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = DF503A7241834DF1A0DA901E /* Basteleur-Bold.otf */; };
 /* End PBXBuildFile section */
 
@@ -258,6 +259,7 @@
 		B55942282534CC0200BD34E7 /* CastleNotificationService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CastleNotificationService.h; sourceTree = "<group>"; };
 		B55A282F24F43BCC00A95D42 /* GhostChannels.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GhostChannels.h; sourceTree = "<group>"; };
 		B5942AAD2627646B003CF6DB /* BootSplash.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = BootSplash.storyboard; path = castle/BootSplash.storyboard; sourceTree = "<group>"; };
+		B8018AEF26EFCB6400137649 /* CastleIcon.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = CastleIcon.ttf; path = ../assets/fonts/CastleIcon.ttf; sourceTree = "<group>"; };
 		BDA1BD867AE232F85BAD0D0B /* libPods-Castle-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Castle-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1DF76557142480ED55F211A /* Pods-CastleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CastleTests.debug.xcconfig"; path = "Target Support Files/Pods-CastleTests/Pods-CastleTests.debug.xcconfig"; sourceTree = "<group>"; };
 		DF503A7241834DF1A0DA901E /* Basteleur-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Basteleur-Bold.otf"; path = "../assets/fonts/Basteleur-Bold.otf"; sourceTree = "<group>"; };
@@ -597,6 +599,7 @@
 		F290EE920FCD404AA685C745 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				B8018AEF26EFCB6400137649 /* CastleIcon.ttf */,
 				DF503A7241834DF1A0DA901E /* Basteleur-Bold.otf */,
 			);
 			name = Resources;
@@ -736,6 +739,7 @@
 				A14FE3F72355D0C8003B7EA0 /* package.love in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				B5942AB52627646B003CF6DB /* BootSplash.storyboard in Resources */,
+				B8018AF726EFCB6400137649 /* CastleIcon.ttf in Resources */,
 				FD974DF143C544B1A8CBD6AB /* Basteleur-Bold.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

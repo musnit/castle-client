@@ -1,5 +1,10 @@
 import * as Constants from '../Constants';
 
+import { createIconSetFromIcoMoon } from 'react-native-vector-icons';
+import icoMoonConfig from '../../assets/icoMoonConfig.json';
+
+export const CastleIcon = createIconSetFromIcoMoon(icoMoonConfig, 'CastleIcon', 'CastleIcon.ttf');
+
 export const Colors = {
   background: '#fff',
   text: '#222',
@@ -24,8 +29,14 @@ export const Colors = {
 
 export const styles = {
   button: {
+    backgroundColor: '#fff',
     borderWidth: 1,
-    borderBottomWidth: 2,
+    borderBottomWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.25,
+    shadowRadius: 0,
+    elevation: Constants.iOS ? 1 : undefined,
     borderColor: '#000',
     borderRadius: 4,
     paddingHorizontal: 8,
