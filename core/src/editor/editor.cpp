@@ -326,6 +326,16 @@ void Editor::draw() {
         }
       }
 
+      // Card-size outline
+      {
+        lv.graphics.setLineWidth(2 * scene->getPixelScale());
+        lv.graphics.setColor({ 0, 0, 0, 0.75 });
+
+        auto cardSize = scene->getDefaultCameraSize();
+        lv.graphics.rectangle(love::Graphics::DRAW_LINE, -0.5f * cardSize.x,
+            -scene->getDefaultViewYOffset(), cardSize.x, cardSize.y, 0.225f, 0.225f, 8);
+      }
+
       lv.graphics.pop();
     }
 

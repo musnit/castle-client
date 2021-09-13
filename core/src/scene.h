@@ -139,6 +139,7 @@ public:
   const love::Transform &getViewTransform() const;
   love::Vector2 inverseViewTransformPoint(love::Vector2 point) const;
   float getViewYOffset() const;
+  float getDefaultViewYOffset() const;
   float getViewScale() const;
   float getPixelScale() const;
 
@@ -147,6 +148,7 @@ public:
   void setCameraPosition(love::Vector2 pos);
   love::Vector2 getCameraSize() const;
   static constexpr float defaultViewWidth = 10;
+  love::Vector2 getDefaultCameraSize() const;
   float getCameraZoom() const;
   void setViewWidth(float newViewWidth);
 
@@ -252,7 +254,7 @@ private:
 
   std::unique_ptr<Library> library; // Library instance maintained at scene level for now
 
-  float viewWidth = defaultViewWidth;
+  float viewWidth = 1.5 * defaultViewWidth;
   mutable love::Transform viewTransform;
   mutable float cameraX = 0, cameraY = 0;
   mutable ActorId cameraTarget = nullActor;
@@ -426,6 +428,10 @@ inline float Scene::getViewYOffset() const {
   return 0.5f * (props.coordinateSystemVersion() == 2 ? getCameraSize().y : viewWidth);
 }
 
+inline float Scene::getDefaultViewYOffset() const {
+  return 0.5f * (props.coordinateSystemVersion() == 2 ? getDefaultCameraSize().y : defaultViewWidth);
+}
+
 inline float Scene::getViewScale() const {
   return viewTransform.getMatrix().getElements()[0]; // Assuming no rotation
 }
@@ -450,6 +456,10 @@ inline void Scene::setCameraPosition(love::Vector2 pos) {
 inline love::Vector2 Scene::getCameraSize() const {
   return { viewWidth, 7.0f * viewWidth / 5.0f };
 }
+
+inline love::Vector2 Scene::getDefaultCameraSize() const {
+  return { defaultViewWidth, 7.0f * defaultViewWidth / 5.0f };
+};
 
 inline float Scene::getCameraZoom() const {
   return viewWidth / defaultViewWidth;
