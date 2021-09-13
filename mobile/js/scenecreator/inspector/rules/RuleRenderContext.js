@@ -11,7 +11,7 @@ export const getRuleRenderContext = () => {
   // NOTE: we could convert these to `useCoreState` if we want to re-render when the data changes,
   // but in these cases we either expect to produce renders for more specific reasons, or we
   // expect the data not to change.
-  const variables = getCoreStateCache('EDITOR_VARIABLES');
+  const variables = getCoreStateCache('EDITOR_VARIABLES')?.variables;
   const behaviors = getCoreStateCache('EDITOR_ALL_BEHAVIORS');
   const library = getCoreStateCache('EDITOR_LIBRARY')?.library;
 

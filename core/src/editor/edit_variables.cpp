@@ -77,11 +77,11 @@ struct EditorChangeVariablesReceiver {
           "add variable", commandParams,
           [variableId, name, initialValue](Editor &editor, bool) {
             editor.getVariables().add(name, variableId, initialValue);
-            editor.getVariables().sendVariablesData(editor.getBridge());
+            editor.getVariables().sendVariablesData(editor.getBridge(), true);
           },
           [variableId](Editor &editor, bool) {
             editor.getVariables().remove(variableId);
-            editor.getVariables().sendVariablesData(editor.getBridge());
+            editor.getVariables().sendVariablesData(editor.getBridge(), true);
           });
     } else if (action == "remove") {
       auto existing = editor->getVariables().get(variableId);
@@ -92,11 +92,11 @@ struct EditorChangeVariablesReceiver {
             "remove variable", commandParams,
             [variableId](Editor &editor, bool) {
               editor.getVariables().remove(variableId);
-              editor.getVariables().sendVariablesData(editor.getBridge());
+              editor.getVariables().sendVariablesData(editor.getBridge(), true);
             },
             [variableId, oldName, oldInitialValue](Editor &editor, bool) {
               editor.getVariables().add(oldName, variableId, oldInitialValue);
-              editor.getVariables().sendVariablesData(editor.getBridge());
+              editor.getVariables().sendVariablesData(editor.getBridge(), true);
             });
       }
     } else if (action == "update") {
@@ -108,11 +108,11 @@ struct EditorChangeVariablesReceiver {
             "change variable", commandParams,
             [variableId, name, initialValue](Editor &editor, bool) {
               editor.getVariables().update(variableId, name, initialValue);
-              editor.getVariables().sendVariablesData(editor.getBridge());
+              editor.getVariables().sendVariablesData(editor.getBridge(), true);
             },
             [variableId, oldName, oldInitialValue](Editor &editor, bool) {
               editor.getVariables().update(variableId, oldName, oldInitialValue);
-              editor.getVariables().sendVariablesData(editor.getBridge());
+              editor.getVariables().sendVariablesData(editor.getBridge(), true);
             });
       }
     }
@@ -126,14 +126,16 @@ struct EditorVariablesEvent {
     PROP(double, initialValue);
   };
   PROP(std::vector<VariableData>, variables);
+  PROP(bool, isChanged);
 };
 
-void EditVariables::sendVariablesData(Bridge &bridge) {
+void EditVariables::sendVariablesData(Bridge &bridge, bool isChanged) {
   EditorVariablesEvent ev;
   forEach([&](const EditVariables::Variable &elem) {
     EditorVariablesEvent::VariableData data { elem.variableId, elem.name,
       elem.initialValue.as<double>() };
     ev.variables().push_back(data);
   });
+  ev.isChanged = isChanged;
   bridge.sendEvent("EDITOR_VARIABLES", ev);
 }

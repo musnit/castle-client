@@ -237,18 +237,19 @@ export const CreateCardScreen = ({
 
   useListen({
     eventName: 'EDITOR_VARIABLES',
-    handler: (variables) => {
-      if (variables) {
+    handler: (data) => {
+      if (data.variables) {
         // map bridge format to save format
         onVariablesChange(
-          variables.map((variable) => ({
+          data.variables.map((variable) => ({
             ...variable,
             id: variable.variableId,
             variableId: undefined,
-          }))
+          })),
+          data.isChanged
         );
       } else {
-        onVariablesChange(variables);
+        onVariablesChange(data.variables, data.isChanged);
       }
     },
   });

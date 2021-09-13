@@ -152,8 +152,8 @@ class CreateCardScreenDataProvider extends React.Component {
     this._changedSceneData = changedSceneData;
   };
 
-  _handleVariablesChange = (variables) => {
-    this._isCardChanged = true;
+  _handleVariablesChange = (variables, isChanged) => {
+    this._isCardChanged = isChanged;
     this._variables = variables;
   };
 

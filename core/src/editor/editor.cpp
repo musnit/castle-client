@@ -529,7 +529,7 @@ void Editor::editorJSLoaded() {
 
   // send initial data that will only change rarely
   sendSceneSettings();
-  getVariables().sendVariablesData(getBridge());
+  getVariables().sendVariablesData(getBridge(), false);
   sendTagsData();
 }
 

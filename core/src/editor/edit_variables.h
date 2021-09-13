@@ -49,7 +49,7 @@ public:
   template<typename F>
   void forEach(F &&f) const; // `F` takes `(const EditVariables::Variable &elem)`
 
-  void sendVariablesData(Bridge &bridge);
+  void sendVariablesData(Bridge &bridge, bool isChanged);
 
 private:
   // id -> variable

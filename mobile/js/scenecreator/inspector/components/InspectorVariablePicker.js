@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
 });
 
 export const InspectorVariablePicker = ({ value, onChange, style, ...props }) => {
-  const variables = useCoreState('EDITOR_VARIABLES');
+  const variables = useCoreState('EDITOR_VARIABLES')?.variables;
   const items = variables || [];
 
   let selectedItem;

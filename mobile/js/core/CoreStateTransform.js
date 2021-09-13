@@ -63,9 +63,6 @@ export default {
     }
     return result;
   },
-  EDITOR_VARIABLES: (name, eventId, data) => {
-    return data?.variables;
-  },
   EDITOR_RULES_DATA: (name, eventId, data) => {
     // use Metadata to sort rule entries by UI category
     let result = {};

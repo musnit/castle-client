@@ -131,7 +131,7 @@ const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) 
 
 export const DeckVariables = () => {
   const { showActionSheetWithOptions } = useActionSheet();
-  const variables = useCoreState('EDITOR_VARIABLES');
+  const variables = useCoreState('EDITOR_VARIABLES')?.variables;
 
   const onChangeVariable = React.useCallback(
     (changes, index) => {
