@@ -9,6 +9,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import * as Constants from '../../Constants';
 import * as SceneCreatorConstants from '../SceneCreatorConstants';
+const CastleIcon = Constants.CastleIcon;
 
 const styles = StyleSheet.create({
   container: {
@@ -122,7 +123,7 @@ export const OverlaySelectionActions = () => {
     <View style={styles.container} pointerEvents="box-none">
       <View style={[styles.close, styles.button]}>
         <Pressable onPress={() => sendAction('closeInspector')}>
-          <SceneCreatorConstants.CastleIcon name="close" size={22} color="#000" />
+          <CastleIcon name="close" size={22} color="#000" />
         </Pressable>
       </View>
       <View style={styles.toolbar}>

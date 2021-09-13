@@ -10,7 +10,7 @@ import { CreateCardCaptureActions } from './CreateCardCaptureActions';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SLIcon from 'react-native-vector-icons/SimpleLineIcons';
-const CastleIcon = SceneCreatorConstants.CastleIcon;
+const CastleIcon = Constants.CastleIcon;
 
 export const CARD_HEADER_HEIGHT = 50;
 

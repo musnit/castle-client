@@ -299,3 +299,7 @@ export const COMMENTS_LIST_FRAGMENT = `
 export const reactionIds = {
   fire: 'fire',
 };
+
+import { createIconSetFromIcoMoon } from 'react-native-vector-icons';
+import icoMoonConfig from '../assets/icoMoonConfig.json';
+export const CastleIcon = createIconSetFromIcoMoon(icoMoonConfig, 'CastleIcon', 'CastleIcon.ttf');
