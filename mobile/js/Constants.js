@@ -19,10 +19,12 @@ export const colors = {
   black: '#000',
   tapHighlight: '#111',
   grayText: '#888',
+  grayOnWhiteText: '#aaa',
+  grayOnBlackText: '#777',
   grayOnWhiteBorder: '#ccc',
   grayOnBlackBorder: '#444',
   white: '#fff',
-  halfWhite: '#fff9',
+  halfWhite: '#fff7',
   skeletonBG: '#262626',
   skeletonText: '#595959',
 };
