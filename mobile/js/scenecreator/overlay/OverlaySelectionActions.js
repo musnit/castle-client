@@ -8,22 +8,22 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import * as Constants from '../../Constants';
+import * as SceneCreatorConstants from '../SceneCreatorConstants';
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    height: 36,
   },
   close: {
-    borderRadius: 6,
+    borderRadius: SceneCreatorConstants.OVERLAY_BORDER_RADIUS,
     backgroundColor: Constants.colors.white,
     borderColor: Constants.colors.black,
     borderWidth: 1,
     ...Constants.styles.dropShadow,
   },
   toolbar: {
-    borderRadius: 6,
+    borderRadius: SceneCreatorConstants.OVERLAY_BORDER_RADIUS,
     backgroundColor: Constants.colors.white,
     borderColor: Constants.colors.black,
     borderWidth: 1,
@@ -32,8 +32,8 @@ const styles = StyleSheet.create({
     ...Constants.styles.dropShadow,
   },
   button: {
-    width: 36,
-    height: '100%',
+    width: 38,
+    height: 38,
     alignItems: 'center',
     justifyContent: 'center',
     borderRightWidth: 1,
@@ -122,27 +122,27 @@ export const OverlaySelectionActions = () => {
     <View style={styles.container} pointerEvents="box-none">
       <View style={[styles.close, styles.button]}>
         <Pressable onPress={() => sendAction('closeInspector')}>
-          <Icon name="close" size={28} color="#000" />
+          <SceneCreatorConstants.CastleIcon name="close" size={22} color="#000" />
         </Pressable>
       </View>
       <View style={styles.toolbar}>
         <Pressable style={styles.button} onPress={scaleRotateAction}>
-          <Icon name="crop-rotate" size={18} color="#000" />
+          <Icon name="crop-rotate" size={20} color="#000" />
         </Pressable>
         <Pressable style={styles.button} onPress={changeSelectionOrder}>
           {isTextActorSelected ? (
-            <Icon name="swap-vert" size={18} color="#000" />
+            <Icon name="swap-vert" size={20} color="#000" />
           ) : (
-            <FeatherIcon name="layers" size={18} color="#000" />
+            <FeatherIcon name="layers" size={20} color="#000" />
           )}
         </Pressable>
         <Pressable style={styles.button} onPress={() => sendAction('duplicateSelection')}>
-          <FeatherIcon name="copy" size={18} color="#000" />
+          <FeatherIcon name="copy" size={20} color="#000" />
         </Pressable>
         <Pressable
           style={[styles.button, { borderRightWidth: 0 }]}
           onPress={() => sendAction('deleteSelection')}>
-          <FeatherIcon name="trash-2" size={18} color="#000" />
+          <FeatherIcon name="trash-2" size={20} color="#000" />
         </Pressable>
       </View>
     </View>

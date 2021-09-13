@@ -2,8 +2,9 @@ import * as Constants from '../Constants';
 
 import { createIconSetFromIcoMoon } from 'react-native-vector-icons';
 import icoMoonConfig from '../../assets/icoMoonConfig.json';
-
 export const CastleIcon = createIconSetFromIcoMoon(icoMoonConfig, 'CastleIcon', 'CastleIcon.ttf');
+
+export const OVERLAY_BORDER_RADIUS = 8;
 
 export const Colors = {
   background: '#fff',
