@@ -187,6 +187,8 @@ public:
     PROP(int, coordinateSystemVersion) = 2;
   } props;
 
+  bool isBackgroundDark() const;
+
 
   // Time
 
@@ -254,7 +256,7 @@ private:
 
   std::unique_ptr<Library> library; // Library instance maintained at scene level for now
 
-  float viewWidth = 1.5 * defaultViewWidth;
+  float viewWidth = defaultViewWidth;
   mutable love::Transform viewTransform;
   mutable float cameraX = 0, cameraY = 0;
   mutable ActorId cameraTarget = nullActor;
@@ -429,7 +431,8 @@ inline float Scene::getViewYOffset() const {
 }
 
 inline float Scene::getDefaultViewYOffset() const {
-  return 0.5f * (props.coordinateSystemVersion() == 2 ? getDefaultCameraSize().y : defaultViewWidth);
+  return 0.5f
+      * (props.coordinateSystemVersion() == 2 ? getDefaultCameraSize().y : defaultViewWidth);
 }
 
 inline float Scene::getViewScale() const {
@@ -495,6 +498,12 @@ inline Sound &Scene::getSound() {
 
 inline const Sound &Scene::getSound() const {
   return sound;
+}
+
+inline bool Scene::isBackgroundDark() const {
+  auto col = props.backgroundColor();
+  auto brightness = (299 * col.r + 587 * col.g + 114 * col.b) / 1000;
+  return brightness < 0.5;
 }
 
 inline const Gesture &Scene::getGesture() const {

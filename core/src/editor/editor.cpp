@@ -329,7 +329,11 @@ void Editor::draw() {
       // Card-size outline
       {
         lv.graphics.setLineWidth(2 * scene->getPixelScale());
-        lv.graphics.setColor({ 0, 0, 0, 0.75 });
+        if (scene->isBackgroundDark()) {
+          lv.graphics.setColor({ 1, 1, 1, 0.75 });
+        } else {
+          lv.graphics.setColor({ 0, 0, 0, 0.75 });
+        }
 
         auto cardSize = scene->getDefaultCameraSize();
         lv.graphics.rectangle(love::Graphics::DRAW_LINE, -0.5f * cardSize.x,
