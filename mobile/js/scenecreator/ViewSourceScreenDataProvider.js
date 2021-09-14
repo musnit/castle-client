@@ -1,22 +1,25 @@
 import React from 'react';
 import { withNavigation, withNavigationFocus } from '../ReactNavigation';
 import { CreateCardScreen } from './CreateCardScreen';
-
-import _ from 'lodash';
+import { sendAsync } from '../core/CoreEvents';
 
 import * as Constants from '../Constants';
-import * as GhostEvents from '../ghost/GhostEvents';
 import * as LocalId from '../common/local-id';
 import * as Session from '../Session';
-import * as Utilities from '../common/utilities';
 
 class ViewSourceScreenDataProvider extends React.Component {
   state = {
     deck: Constants.EMPTY_DECK,
-    card: Constants.EMPTY_CARD,
-    deckState: { variables: [] },
+    cardId: null,
     loading: false,
   };
+
+  // doesn't need to be react-stateful
+  _variables = [];
+  _changedSceneData = null;
+  _changedBackgroundImage = null;
+  _initialSnapshotJson = null;
+  _isCardChanged = false;
 
   componentDidMount() {
     this._mounted = true;
@@ -66,62 +69,45 @@ class ViewSourceScreenDataProvider extends React.Component {
         throw new Error(`Unable to fetch existing deck or card: ${e}`);
       }
 
-      // kludge: this allows us to check the screen's dirty state based on
-      // the card onChange callback everywhere (even when you modify variables, a
-      // property of the deck)
-      card.variables = deck.variables;
+      // used by the engine instead of manually reloading the scene data.
+      // especially important when cardIdToEdit is different than the deck's top card.
+      const initialSnapshotJson = {
+        variables: deck.variables,
+        sceneData: {
+          ...card.scene.data,
+        },
+      };
 
       if (this._mounted) {
-        this.setState(
-          {
-            deck,
-            card,
-            deckState: Utilities.makeInitialDeckState(card),
-          },
-          async () => {
-            const { card } = this.state;
-            GhostEvents.sendAsync('SCENE_CREATOR_EDITING', {
-              isEditing: true,
-            });
-          }
-        );
+        this._variables = deck.variables;
+        this._isNewScene = card.scene.data.empty === true;
+        this._initialSnapshotJson = JSON.stringify(initialSnapshotJson);
+        this._isCardChanged = false;
+
+        this.setState({
+          deck,
+          cardId: card.cardId,
+          loading: false,
+        });
       }
     }
   };
 
-  _handleCardChange = (changes) =>
-    this.setState((state) => {
-      return {
-        ...state,
-        card: {
-          ...state.card,
-          isChanged: true,
-          ...changes,
-        },
-      };
-    });
+  _handleSceneDataChange = (changedSceneData) => {
+    this._isCardChanged = true;
+    this._changedSceneData = changedSceneData;
+  };
 
-  _handleVariablesChange = (changes) => {
-    this._handleCardChange({
-      variables: changes,
-    });
-    // update deck variables state passed to scene
-    this.setState((state) => {
-      return {
-        ...state,
-        deckState: Utilities.makeInitialDeckState({
-          ...state.card,
-          variables: changes,
-        }),
-      };
-    });
+  _handleVariablesChange = (variables, isChanged) => {
+    this._isCardChanged = isChanged;
+    this._variables = variables;
   };
 
   _updateScreenshot = async () => {
     let screenshotPromise = new Promise((resolve) => {
       this._screenshotPromiseResolve = resolve;
     });
-    await GhostEvents.sendAsync('REQUEST_SCREENSHOT');
+    await sendAsync('REQUEST_SCREENSHOT');
 
     try {
       let screenshotData = await Promise.race([
@@ -133,9 +119,7 @@ class ViewSourceScreenDataProvider extends React.Component {
 
       const backgroundImage = await Session.uploadBase64(screenshotData);
       if (this._mounted && backgroundImage) {
-        return this._handleCardChange({
-          backgroundImage,
-        });
+        this._changedBackgroundImage = backgroundImage;
       }
     } catch (e) {
       // screenshot didn't happen in time
@@ -160,19 +144,27 @@ class ViewSourceScreenDataProvider extends React.Component {
   // saving from the view source screen creates a clone of the deck.
   _saveAndGoToDeck = async () => {
     await this.setState({ loading: true });
-    if (this.state.card.isChanged) {
+    if (this._isCardChanged) {
       await this._updateScreenshot();
     }
+    const cardFragment = {
+      cardId: this.state.cardId,
+      changedSceneData: this._changedSceneData,
+      backgroundImage: this._changedBackgroundImage,
+    };
     const { card, deck } = await Session.saveDeck(
-      this.state.card,
+      cardFragment,
       this.state.deck,
-      this.state.card.variables,
+      this._variables,
       false,
-      this.state.card.cardId // parent card to clone from
+      this.state.cardId // parent card to clone from
     );
 
     if (!this._mounted) return;
     await this.setState({ loading: false });
+
+    // reset to top of current nav stack in order to unmount the view source editor
+    await this.props.navigation.popToTop();
 
     // specify both the outer tab (Create) and the inner screen (CreateDeck)
     // because we don't know whether we are already on the Create tab
@@ -198,30 +190,12 @@ class ViewSourceScreenDataProvider extends React.Component {
     throw new Error(`Not implemented for ViewSourceScreen`);
   };
 
-  _cardNeedsSave = () => this.state.card?.isChanged;
+  _cardNeedsSave = () => this._isCardChanged;
 
   _handleSceneMessage = (message) => {
     switch (message.messageType) {
       case 'UPDATE_SCENE': {
-        this._handleCardChange({
-          changedSceneData: message.data,
-        });
-        break;
-      }
-      case 'CHANGE_DECK_STATE': {
-        let deckState = {
-          ...this.state.deckState,
-          ...message.data,
-        };
-
-        if (!_.isEqual(deckState, this.state.deckState)) {
-          this.setState({
-            deckState: {
-              ...deckState,
-              setFromLua: true,
-            },
-          });
-        }
+        this._handleSceneDataChange(message.data);
         break;
       }
       case 'SCREENSHOT_DATA': {
@@ -240,30 +214,23 @@ class ViewSourceScreenDataProvider extends React.Component {
     throw new Error(`Not implemented for ViewSourceScreen`);
   };
 
-  _resetDeckState = () =>
-    this.setState((state) => {
-      return {
-        ...state,
-        deckState: Utilities.makeInitialDeckState(state.card),
-      };
-    });
-
   render() {
-    const { deck, card, deckState, loading } = this.state;
+    const { deck, cardId, loading } = this.state;
     return (
       <CreateCardScreen
         deck={deck}
-        card={card}
+        cardId={cardId}
+        isNewScene={false}
+        initialSnapshotJson={this._initialSnapshotJson}
+        initialIsEditing={this.props.initialIsEditing}
         loading={loading}
-        deckState={deckState}
-        resetDeckState={this._resetDeckState}
         goToDeck={this._goToDeck}
         goToCard={this._goToCard}
         cardNeedsSave={this._cardNeedsSave}
         saveAndGoToDeck={this._saveAndGoToDeck}
         saveAndGoToCard={this._saveAndGoToCard}
-        onVariablesChange={this._handleVariablesChange}
         onSceneMessage={this._handleSceneMessage}
+        onVariablesChange={this._handleVariablesChange}
         onSceneRevertData={this._handleSceneRevertData}
         saveAction={deck.accessPermissions === 'cloneable' ? 'clone' : 'none'}
       />

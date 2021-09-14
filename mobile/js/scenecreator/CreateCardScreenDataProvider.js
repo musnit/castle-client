@@ -1,13 +1,11 @@
 import React from 'react';
 import { gql } from '@apollo/client';
-import { ReactNativeFile } from 'apollo-upload-client';
 import { withNavigation, withNavigationFocus } from '../ReactNavigation';
 import { CreateCardScreen } from './CreateCardScreen';
 import { sendAsync } from '../core/CoreEvents';
 
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
-import * as GhostEvents from '../ghost/GhostEvents';
 import * as LocalId from '../common/local-id';
 import * as RulesClipboard from './inspector/rules/RulesClipboard';
 import * as Session from '../Session';
