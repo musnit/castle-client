@@ -25,6 +25,7 @@ class CreateCardScreenDataProvider extends React.Component {
   _changedSceneData = null;
   _changedBackgroundImage = null;
   _initialSnapshotJson = null;
+  _initialIsEditing = true; // TODO: use?
   _isCardChanged = false;
 
   componentDidMount() {
@@ -80,9 +81,6 @@ class CreateCardScreenDataProvider extends React.Component {
               throw new Error(
                 `Tried to edit card id ${params.cardIdToEdit}, but deck ${params.deckIdToEdit} does not contain any such card`
               );
-            }
-            if (deck.initialCard && deck.initialCard.cardId === card.cardId) {
-              card.makeInitialCard = true;
             }
           }
         } catch (e) {
@@ -156,11 +154,7 @@ class CreateCardScreenDataProvider extends React.Component {
   };
 
   _saveBackup = () => {
-    const cardFragment = {
-      cardId: this.state.cardId,
-      changedSceneData: this._changedSceneData,
-      backgroundImage: this._changedBackgroundImage,
-    };
+    const cardFragment = this._makeCardSaveFragment();
     Session.saveDeck(cardFragment, this.state.deck, this._variables, true);
   };
 
@@ -188,13 +182,21 @@ class CreateCardScreenDataProvider extends React.Component {
     return false;
   };
 
-  _save = async () => {
-    await this._updateScreenshot();
+  _makeCardSaveFragment = () => {
     const cardFragment = {
       cardId: this.state.cardId,
       changedSceneData: this._changedSceneData,
       backgroundImage: this._changedBackgroundImage,
     };
+    if (this.state.deck.initialCard && this.state.deck.initialCard.cardId === this.state.cardId) {
+      cardFragment.makeInitialCard = true;
+    }
+    return cardFragment;
+  };
+
+  _save = async () => {
+    await this._updateScreenshot();
+    const cardFragment = this._makeCardSaveFragment();
     const { card, deck } = await Session.saveDeck(cardFragment, this.state.deck, this._variables);
     Amplitude.logEventWithProperties('SAVE_DECK', {
       deckId: deck.deckId,
@@ -230,14 +232,28 @@ class CreateCardScreenDataProvider extends React.Component {
     }
   };
 
-  _goToCard = (nextCard, isPlaying) => {
-    setTimeout(() => {
-      this.props.navigation.navigate('CreateDeck', {
-        deckIdToEdit: this.state.deck.deckId,
-        cardIdToEdit: nextCard.cardId,
-        initialIsEditing: !isPlaying,
-      });
-    }, 100);
+  _goToCard = (nextCardParam, isPlaying) => {
+    const { cardId } = nextCardParam;
+    if (!cardId) return;
+
+    // we already fetched the whole deck - assemble new snapshot representing next card
+    let nextCard = Constants.EMPTY_CARD;
+    if (!LocalId.isLocalId(nextCard.cardId)) {
+      nextCard = this.state.deck.cards.find((card) => card.cardId == cardId);
+    }
+    if (isPlaying) {
+      // TODO: send initial playing flag
+    }
+    const nextSnapshotJson = {
+      variables: this._variables, // engine will ignore if already playing
+      sceneData: {
+        ...nextCard.scene.data,
+      },
+    };
+    this._initialSnapshotJson = JSON.stringify(nextSnapshotJson);
+    this._isNewScene = nextCard.scene.data.empty === true;
+    this._isCardChanged = false;
+    this.setState({ cardId: nextCard.cardId });
   };
 
   _saveAndGoToCard = async (nextCard, isPlaying) => {
@@ -294,7 +310,7 @@ class CreateCardScreenDataProvider extends React.Component {
         cardId={cardId}
         isNewScene={this._isNewScene}
         initialSnapshotJson={this._initialSnapshotJson}
-        initialIsEditing={this.props.initialIsEditing}
+        initialIsEditing={this._initialIsEditing}
         loading={loading}
         goToDeck={this._goToDeck}
         goToCard={this._goToCard}

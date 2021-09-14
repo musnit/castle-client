@@ -18,18 +18,11 @@ const CreateDeckContent = ({ deckId, cardId, ...props }) => {
 export const CreateDeckNavigator = (props) => {
   const navigation = useNavigation();
 
-  let deckId,
-    cardId,
-    initialDeckState,
-    initialIsEditing = true;
+  let deckId, cardId;
   if (props.route && props.route.params) {
     const { params } = props.route;
     deckId = params.deckIdToEdit;
     cardId = params.cardIdToEdit;
-    initialDeckState = params.initialDeckState;
-    if (params.initialIsEditing === false) {
-      initialIsEditing = params.initialIsEditing;
-    }
   }
 
   React.useEffect(() => {
@@ -38,12 +31,5 @@ export const CreateDeckNavigator = (props) => {
     }
   }, [deckId]);
 
-  return (
-    <CreateDeckContent
-      deckId={deckId}
-      cardId={cardId}
-      initialIsEditing={initialIsEditing}
-      {...props}
-    />
-  );
+  return <CreateDeckContent deckId={deckId} cardId={cardId} {...props} />;
 };

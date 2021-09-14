@@ -133,8 +133,8 @@ export const CreateCardScreen = ({
     });
   }, []);
 
-  // never select text actor instance, just skip straight to blueprint
-  const selectTextActor = React.useCallback(
+  // used for text - never select text actor instance, just skip straight to blueprint
+  const selectBlueprint = React.useCallback(
     (actorId) => sendAsync('SELECT_BLUEPRINT', { actorId }),
     []
   );
@@ -214,10 +214,9 @@ export const CreateCardScreen = ({
     [onSceneRevertData, setActiveSheet]
   );
 
-  // TODO: Wire up to new engine
-  GhostEvents.useListen({
+  useListen({
     eventName: 'NAVIGATE_TO_CARD',
-    handler: ({ card }) => maybeSaveAndGoToCard(card),
+    handler: (card) => maybeSaveAndGoToCard(card),
   });
 
   useListen({
@@ -348,7 +347,7 @@ export const CreateCardScreen = ({
                       disabled={loading}
                       visible={isCardTextVisible}
                       textActors={textActors}
-                      onSelect={selectTextActor}
+                      onSelect={isPlaying ? selectActor : selectBlueprint}
                       isEditable={!isPlaying}
                     />
                   </View>

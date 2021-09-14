@@ -59,7 +59,7 @@ export const CardScene = ({
       JSON.stringify({
         deckId: deck?.deckId,
         initialSnapshotJson,
-        isEditing: initialIsEditing,
+        initialIsEditing,
         isEditable,
         isDebug: !!__DEV__,
         isNewScene,
