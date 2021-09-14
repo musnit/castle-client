@@ -271,11 +271,20 @@ class CreateCardScreenDataProvider extends React.Component {
     }
   };
 
-  _handleSceneRevertData = (data) => {
+  _handleSceneRevertData = async (data) => {
     // data is a JS object with a `snapshot` key at the top level
-    GhostEvents.sendAsync('LOAD_SNAPSHOT', {
-      data,
+    await this.setState({ loading: true });
+    this._variables = this.state.deck.variables;
+    this._isNewScene = false;
+    this._isCardChanged = true;
+    this._initialSnapshotJson = JSON.stringify({
+      variables: this._variables,
+      sceneData: {
+        ...data,
+      },
     });
+    // rerender CreateCardScreen with new params
+    await this.setState({ loading: false });
   };
 
   render() {
