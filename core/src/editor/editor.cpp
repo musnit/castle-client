@@ -694,14 +694,15 @@ void Editor::sendGlobalActions() {
 
     ev.actionsAvailable().onUndo = commands.canUndo();
     ev.actionsAvailable().onRedo = commands.canRedo();
-    switch (editMode) {
-    case EditMode::Default:
-      ev.editMode = "default";
-      break;
-    case EditMode::Draw:
-      ev.editMode = "draw";
-      break;
-    }
+  }
+
+  switch (editMode) {
+  case EditMode::Default:
+    ev.editMode = "default";
+    break;
+  case EditMode::Draw:
+    ev.editMode = "draw";
+    break;
   }
 
   bridge.sendEvent("EDITOR_GLOBAL_ACTIONS", ev);
