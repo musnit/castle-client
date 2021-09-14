@@ -132,8 +132,7 @@ void PhysicsBodyData::render() {
 std::vector<FixtureProps> PhysicsBodyData::getFixturesForBody() {
   std::vector<FixtureProps> result;
 
-  for (size_t i = 0; i < shapes.size(); i++) {
-    auto &shape = shapes[i];
+  for (auto &shape : shapes) {
     FixtureProps fixture;
     if (shape.type == CollisionShapeType::Circle) {
       fixture.shapeType() = "circle";

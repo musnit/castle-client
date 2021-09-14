@@ -466,14 +466,14 @@ void BodyBehavior::recreateFixtures(ActorId actorId, BodyComponent &component, b
     auto bounds = getScaledEditorBounds(actorId, component, true);
     std::array<b2Vec2, 4> points;
 
-    points[0].x = bounds.centerX - bounds.width / 2.0;
-    points[0].y = bounds.centerY - bounds.height / 2.0;
-    points[1].x = bounds.centerX + bounds.width / 2.0;
-    points[1].y = bounds.centerY - bounds.height / 2.0;
-    points[2].x = bounds.centerX + bounds.width / 2.0;
-    points[2].y = bounds.centerY + bounds.height / 2.0;
-    points[3].x = bounds.centerX - bounds.width / 2.0;
-    points[3].y = bounds.centerY + bounds.height / 2.0;
+    points[0].x = bounds.centerX - bounds.width / 2.0f;
+    points[0].y = bounds.centerY - bounds.height / 2.0f;
+    points[1].x = bounds.centerX + bounds.width / 2.0f;
+    points[1].y = bounds.centerY - bounds.height / 2.0f;
+    points[2].x = bounds.centerX + bounds.width / 2.0f;
+    points[2].y = bounds.centerY + bounds.height / 2.0f;
+    points[3].x = bounds.centerX - bounds.width / 2.0f;
+    points[3].y = bounds.centerY + bounds.height / 2.0f;
 
     b2PolygonShape shape;
     shape.Set(points.data(), 4);
@@ -551,14 +551,14 @@ b2Fixture *BodyBehavior::addFixture(BodyComponent &component, b2Shape *shape) {
 
 void BodyBehavior::setFixturesFromDrawing(ActorId actorId, std::vector<FixtureProps> fixtures) {
   if (auto component = maybeGetComponent(actorId)) {
-    component->props.fixtures() = fixtures;
+    component->props.fixtures() = std::move(fixtures);
 
     recreateFixtures(actorId, *component, true);
   }
 }
 
 ScaledEditorBounds BodyBehavior::getScaledEditorBounds(ActorId actorId, BodyComponent &component, bool enforceMinimumSize) {
-  ScaledEditorBounds result;
+  ScaledEditorBounds result {};
   auto &editorBounds = component.props.editorBounds();
 
   result.minX = editorBounds.minX() * component.props.widthScale();
@@ -566,8 +566,8 @@ ScaledEditorBounds BodyBehavior::getScaledEditorBounds(ActorId actorId, BodyComp
   result.minY = editorBounds.minY() * component.props.heightScale();
   result.maxY = editorBounds.maxY() * component.props.heightScale();
 
-  result.centerX = (result.maxX + result.minX) / 2.0;
-  result.centerY = (result.maxY + result.minY) / 2.0;
+  result.centerX = (result.maxX + result.minX) / 2.0f;
+  result.centerY = (result.maxY + result.minY) / 2.0f;
 
   result.width = fabs(result.maxX - result.minX);
   result.height = fabs(result.maxY - result.minY);

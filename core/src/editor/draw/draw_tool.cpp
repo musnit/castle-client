@@ -453,7 +453,7 @@ void DrawTool::saveDrawing(std::string commandDescription) {
 
           auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
           auto bodyComponent = bodyBehavior.maybeGetComponent(actorId);
-          auto drawDataBounds = drawComponent->drawData->getBounds(drawComponent->props.initialFrame() - 1);
+          auto drawDataBounds = drawComponent->drawData->getBounds(int(drawComponent->props.initialFrame() - 1));
           auto physicsBodyBounds = drawComponent->physicsBodyData->getBounds();
           bodyComponent->props.editorBounds().minX = fmin(drawDataBounds.minX, physicsBodyBounds.minX);
           bodyComponent->props.editorBounds().maxX = fmax(drawDataBounds.maxX, physicsBodyBounds.maxX);
