@@ -59,7 +59,14 @@ const useDimensions = ({ settings }) => {
   return { screenScaling, applyScreenScaling, width, height, onLayoutContainer };
 };
 
-const CastleCoreView = ({ deckId, initialParams, style, dimensionsSettings, paused }) => {
+const CastleCoreView = ({
+  deckId,
+  initialParams,
+  style,
+  dimensionsSettings,
+  paused,
+  beltHeightFraction,
+}) => {
   const dimensionsHook = useDimensions({ settings: dimensionsSettings });
 
   return (
@@ -85,6 +92,7 @@ const CastleCoreView = ({ deckId, initialParams, style, dimensionsSettings, paus
             applyScreenScaling={dimensionsHook.applyScreenScaling}
             paused={paused}
             initialParams={initialParams}
+            beltHeightFraction={beltHeightFraction}
           />
         </View>
       ) : null}

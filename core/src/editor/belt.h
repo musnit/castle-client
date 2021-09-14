@@ -26,6 +26,8 @@ public:
   inline static const TouchToken placedTouchToken; // Actor being grabbed after placing
   bool isInside(const Touch &touch) const;
 
+  inline static float heightFraction = 0.102; // Static to allow setting before instance initialized
+
 private:
   Lv &lv { Lv::getInstance() };
 

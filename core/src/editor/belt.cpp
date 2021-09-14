@@ -7,8 +7,6 @@
 
 static const TouchToken beltTouchToken;
 
-static constexpr float beltHeightFraction = 0.10588235294117648; // TODO: Get from JS
-
 static constexpr float elemGap = 20;
 
 
@@ -120,7 +118,7 @@ void Belt::update(double dtDouble) {
   // Basic layout
   auto windowWidth = float(lv.graphics.getWidth());
   auto windowHeight = float(lv.graphics.getHeight());
-  height = beltHeightFraction * windowHeight;
+  height = heightFraction * windowHeight;
   bottom = windowHeight;
   top = bottom - height;
   elemSize = height - 30;

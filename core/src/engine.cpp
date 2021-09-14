@@ -136,7 +136,7 @@ void Engine::setInitialParams(const char *initialParamsJson) {
 }
 
 void Engine::setBeltHeightFraction(double beltHeightFraction) {
-  // TODO: use this
+  Belt::heightFraction = float(beltHeightFraction);
 }
 
 void Engine::loadSceneFromFile(const char *path) {
