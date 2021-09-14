@@ -45,6 +45,14 @@ struct SelectActorReceiver {
     if (!engine.getIsEditing()) {
       auto &textBehavior = engine.getScene().getBehaviors().byType<TextBehavior>();
       textBehavior.clickedTextActorIdsQueue.push(params.actorId());
+    } else if (engine.maybeGetEditor()->getIsPlaying()) {
+      // same thing, but scene is derived from editor's player
+      auto &textBehavior = engine.maybeGetEditor()
+                               ->maybeGetPlayer()
+                               ->getScene()
+                               .getBehaviors()
+                               .byType<TextBehavior>();
+      textBehavior.clickedTextActorIdsQueue.push(params.actorId());
     }
   }
 };

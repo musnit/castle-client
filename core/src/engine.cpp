@@ -318,9 +318,7 @@ bool Engine::frame() {
 //
 
 void Engine::update(double dt) {
-  if (isEditing) {
-    // TODO: switching cards in editor?
-  } else {
+  if (!isEditing) {
     if (player.hasScene() && player.getScene().getNextCardId()) {
       loadSceneFromCardId(player.getScene().getNextCardId()->c_str());
       player.getScene().setNextCardId(std::nullopt);

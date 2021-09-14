@@ -138,6 +138,10 @@ static void twoFingerPan(const Gesture &gesture, const love::Transform &viewTran
   }
 }
 
+struct NavigateToCardEvent {
+  PROP(std::string, cardId);
+};
+
 void Editor::update(double dt) {
   if (!scene) {
     return;
@@ -145,6 +149,14 @@ void Editor::update(double dt) {
 
   if (playing && player) {
     player->update(dt);
+
+    if (auto nextCardId = player->getScene().getNextCardId(); nextCardId) {
+      // don't load the new card here, send to the UI to possibly save previous editor state first
+      NavigateToCardEvent ev { *nextCardId };
+      getBridge().sendEvent("NAVIGATE_TO_CARD", ev);
+      player->getScene().setNextCardId(std::nullopt);
+    }
+
     if (capture) {
       capture->update(&player->getScene(), getBridge(), dt);
     }

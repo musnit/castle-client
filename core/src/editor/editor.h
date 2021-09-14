@@ -37,6 +37,8 @@ public:
 
   bool hasScene();
   Scene &getScene();
+  bool getIsPlaying();
+  Player *maybeGetPlayer();
 
   Belt &getBelt();
 
@@ -211,4 +213,12 @@ inline void Editor::setCurrentTool(Tool tool) {
 
 inline void Editor::triggerAutoSave() {
   autoSaveCountdown = 0.2;
+}
+
+inline bool Editor::getIsPlaying() {
+  return playing;
+}
+
+inline Player *Editor::maybeGetPlayer() {
+  return player.get();
 }
