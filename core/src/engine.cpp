@@ -109,7 +109,7 @@ void Engine::setInitialParams(const char *initialParamsJson) {
   auto isNewScene = false;
   auto archive = Archive::fromJson(initialParamsJson);
   archive.read([&](Reader &reader) {
-    isEditing = reader.boolean("isEditing", false);
+    isEditing = reader.boolean("isEditable", false);
     deckId = reader.str("deckId", nullptr);
     initialSnapshotJson = reader.str("initialSnapshotJson", nullptr);
     isNewScene = reader.boolean("isNewScene", false);
