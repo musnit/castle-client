@@ -30,6 +30,8 @@ public:
 
   ActorId getGhostActorId();
 
+  void disambiguateTitle();
+
 
 private:
   friend class Library;

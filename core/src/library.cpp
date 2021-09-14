@@ -19,6 +19,7 @@ LibraryEntry::LibraryEntry(Library &library_, const char *entryId_, const json::
   read([&](Reader &reader) {
     title = reader.str("title", "");
   });
+  disambiguateTitle();
 }
 
 LibraryEntry::~LibraryEntry() {
@@ -63,6 +64,43 @@ ActorId LibraryEntry::getGhostActorId() {
     ghostActorCreated = true;
   }
   return ghostActorId;
+}
+
+void LibraryEntry::disambiguateTitle() {
+  auto newTitle = title;
+  const auto newTitleClashes = [&]() {
+    // PERF: Store `titleHash` in entry to speed up this linear scan?
+    for (auto &[entryId, entry] : library.entries) {
+      if (&entry != this && entry.title == newTitle) {
+        return true;
+      }
+    }
+    return false;
+  };
+  if (!newTitleClashes()) {
+    return;
+  }
+  auto newTitlePrefix = newTitle;
+  while (newTitlePrefix.size() > 1 && std::isdigit(newTitlePrefix.back())) {
+    newTitlePrefix.pop_back();
+  }
+  if (newTitlePrefix.empty()) {
+    newTitlePrefix = "Object ";
+  }
+  if (newTitlePrefix.back() != ' ') {
+    newTitlePrefix.push_back(' ');
+  }
+  auto newTitleSuffix = 1;
+  do {
+    ++newTitleSuffix;
+    newTitle = newTitlePrefix + std::to_string(newTitleSuffix);
+  } while (newTitleClashes());
+  if (newTitle == title) {
+    return;
+  }
+  title = newTitle;
+  jsonValue["title"] = json::Value().SetString(
+      newTitle.c_str(), static_cast<unsigned int>(newTitle.size()), alloc);
 }
 
 
