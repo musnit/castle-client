@@ -82,6 +82,8 @@ class ViewSourceScreenDataProvider extends React.Component {
         this._variables = deck.variables;
         this._isNewScene = card.scene.data.empty === true;
         this._initialSnapshotJson = JSON.stringify(initialSnapshotJson);
+        this._changedSceneData = card.scene.data; // set initial data in case we save with no changes
+        this._changedBackgroundImage = card.backgroundImage;
         this._isCardChanged = false;
 
         this.setState({
