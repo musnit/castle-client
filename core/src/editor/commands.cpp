@@ -70,7 +70,7 @@ void Commands::execute(
 
   redos.clear();
 
-  // TODO(nikki): Clear notification
+  notify("");
 
   if (!coalesced) {
     editor.setEditorStateDirty(); // `canUndo` or `canRedo` may have changed -- avoid over-sending
@@ -135,9 +135,27 @@ void Commands::undoOrRedo(Phase phase, std::deque<Command> &from, std::deque<Com
     auto command = std::move(from.back());
     from.pop_back();
     executePhase(command, phase, false);
-    // TODO(nikki): Notify
+    if (phase == DO) {
+      notify("redid: " + command.description);
+    } else if (phase == UNDO) {
+      notify("undid: " + command.description);
+    }
     to.push_back(std::move(command));
 
     editor.setEditorStateDirty(); // `canUndo` or `canRedo` may have changed
   }
+}
+
+
+//
+// Notification
+//
+
+struct EditorCommandNotifyEvent {
+  PROP(std::string, message);
+};
+
+void Commands::notify(std::string message) {
+  EditorCommandNotifyEvent ev { std::move(message) };
+  editor.getBridge().sendEvent("EDITOR_COMMAND_NOTIFY", ev);
 }

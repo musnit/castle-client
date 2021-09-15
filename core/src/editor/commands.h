@@ -61,6 +61,9 @@ private:
   void executePhase(Command &command, Phase phase, bool isLive);
 
   void undoOrRedo(Phase phase, std::deque<Command> &from, std::deque<Command> &to);
+
+
+  void notify(std::string message);
 };
 
 
