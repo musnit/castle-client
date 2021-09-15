@@ -96,7 +96,7 @@ export const CardText = (props) => {
         }
         return a.order - b.order;
       })
-      .filter((actor) => actor.visible);
+      .filter((actor) => actor.visible || props.isEditable);
   }
 
   return (
