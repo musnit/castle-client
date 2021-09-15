@@ -240,7 +240,7 @@ class CreateCardScreenDataProvider extends React.Component {
 
     // we already fetched the whole deck - assemble new snapshot representing next card
     let nextCard = Constants.EMPTY_CARD;
-    if (!LocalId.isLocalId(nextCard.cardId)) {
+    if (!LocalId.isLocalId(cardId)) {
       nextCard = this.state.deck.cards.find((card) => card.cardId == cardId);
     }
     const nextSnapshotJson = {

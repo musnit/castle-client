@@ -80,7 +80,6 @@ class ViewSourceScreenDataProvider extends React.Component {
 
       if (this._mounted) {
         this._variables = deck.variables;
-        this._isNewScene = card.scene.data.empty === true;
         this._initialSnapshotJson = JSON.stringify(initialSnapshotJson);
         this._changedSceneData = card.scene.data; // set initial data in case we save with no changes
         this._changedBackgroundImage = card.backgroundImage;
@@ -179,13 +178,33 @@ class ViewSourceScreenDataProvider extends React.Component {
     });
   };
 
-  _goToCard = (nextCard) => {
-    setTimeout(() => {
-      this.props.navigation.navigate('ViewSource', {
-        deckIdToEdit: this.state.deck.deckId,
-        cardIdToEdit: nextCard.cardId,
-      });
-    }, 100);
+  _goToCard = (nextCardParam, isPlaying) => {
+    const { cardId } = nextCardParam;
+    if (!cardId || LocalId.isLocalId(cardId)) return;
+
+    // we already fetched the whole deck - assemble new snapshot representing next card
+    let nextCard = this.state.deck.cards.find((card) => card.cardId == cardId);
+    if (!nextCard) {
+      throw new Error(`Unable to fetch existing card id: ${cardId}`);
+    }
+    const nextSnapshotJson = {
+      variables: this._variables, // engine will ignore if already playing
+      sceneData: {
+        ...nextCard.scene.data,
+      },
+    };
+    if (isPlaying) {
+      // playing - just send snapshot directly to existing editor->player->scene,
+      // do not change editor's scene or JS state
+      sendAsync('LOAD_SNAPSHOT', { snapshotJson: JSON.stringify(nextSnapshotJson) });
+    } else {
+      // editing - actually re-init editor with new scene
+      this._initialSnapshotJson = JSON.stringify(nextSnapshotJson);
+      this._changedBackgroundImage = null;
+      this._changedSceneData = nextCard.scene.data;
+      this._isCardChanged = false;
+      this.setState({ cardId: nextCard.cardId });
+    }
   };
 
   _saveAndGoToCard = async (nextCard) => {
