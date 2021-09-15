@@ -27,7 +27,6 @@ export const CardScene = ({
 
   style,
   interactionEnabled = true,
-  initialIsEditing = false,
   isEditable = false,
   onMessage,
   paused = false,
@@ -59,13 +58,12 @@ export const CardScene = ({
       JSON.stringify({
         deckId: deck?.deckId,
         initialSnapshotJson,
-        initialIsEditing,
         isEditable,
         isDebug: !!__DEV__,
         isNewScene,
       })
     );
-  }, [initialIsEditing, isEditable, deck?.deckId, isNewScene, initialSnapshotJson]);
+  }, [isEditable, deck?.deckId, isNewScene, initialSnapshotJson]);
 
   return (
     <View style={style}>

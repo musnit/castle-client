@@ -25,7 +25,6 @@ class CreateCardScreenDataProvider extends React.Component {
   _changedSceneData = null;
   _changedBackgroundImage = null;
   _initialSnapshotJson = null;
-  _initialIsEditing = true; // TODO: use?
   _isCardChanged = false;
 
   componentDidMount() {
@@ -220,7 +219,6 @@ class CreateCardScreenDataProvider extends React.Component {
       this.props.navigation.navigate('CreateDeck', {
         deckIdToEdit: deckId,
         cardIdToEdit: undefined,
-        initialIsEditing: true,
       });
     } else {
       // there is no deck, go back to create index
@@ -245,19 +243,25 @@ class CreateCardScreenDataProvider extends React.Component {
     if (!LocalId.isLocalId(nextCard.cardId)) {
       nextCard = this.state.deck.cards.find((card) => card.cardId == cardId);
     }
-    if (isPlaying) {
-      // TODO: send initial playing flag
-    }
     const nextSnapshotJson = {
       variables: this._variables, // engine will ignore if already playing
       sceneData: {
         ...nextCard.scene.data,
       },
     };
-    this._initialSnapshotJson = JSON.stringify(nextSnapshotJson);
-    this._isNewScene = nextCard.scene.data.empty === true;
-    this._isCardChanged = false;
-    this.setState({ cardId: nextCard.cardId });
+    if (isPlaying) {
+      // playing - just send snapshot directly to existing editor->player->scene,
+      // do not change editor's scene or JS state
+      sendAsync('LOAD_SNAPSHOT', { snapshotJson: JSON.stringify(nextSnapshotJson) });
+    } else {
+      // editing - actually re-init editor with new scene
+      this._initialSnapshotJson = JSON.stringify(nextSnapshotJson);
+      this._isNewScene = nextCard.scene.data.empty === true;
+      this._changedBackgroundImage = null;
+      this._changedSceneData = nextCard.scene.data;
+      this._isCardChanged = false;
+      this.setState({ cardId: nextCard.cardId });
+    }
   };
 
   _saveAndGoToCard = async (nextCard, isPlaying) => {
@@ -294,6 +298,8 @@ class CreateCardScreenDataProvider extends React.Component {
     await this.setState({ loading: true });
     this._variables = this.state.deck.variables;
     this._isNewScene = false;
+    this._changedSceneData = data;
+    this._changedBackgroundImage = null;
     this._isCardChanged = true;
     this._initialSnapshotJson = JSON.stringify({
       variables: this._variables,
@@ -314,7 +320,6 @@ class CreateCardScreenDataProvider extends React.Component {
         cardId={cardId}
         isNewScene={this._isNewScene}
         initialSnapshotJson={this._initialSnapshotJson}
-        initialIsEditing={this._initialIsEditing}
         loading={loading}
         goToDeck={this._goToDeck}
         goToCard={this._goToCard}

@@ -224,7 +224,6 @@ class ViewSourceScreenDataProvider extends React.Component {
         cardId={cardId}
         isNewScene={false}
         initialSnapshotJson={this._initialSnapshotJson}
-        initialIsEditing={this.props.initialIsEditing}
         loading={loading}
         goToDeck={this._goToDeck}
         goToCard={this._goToCard}

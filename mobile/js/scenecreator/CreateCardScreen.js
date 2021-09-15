@@ -75,7 +75,6 @@ export const CreateCardScreen = ({
   deck,
   cardId,
   isNewScene = false,
-  initialIsEditing = true,
   initialSnapshotJson = null,
   loading,
   goToDeck,
@@ -98,8 +97,7 @@ export const CreateCardScreen = ({
   const globalActions = useCoreState('EDITOR_GLOBAL_ACTIONS');
 
   const isSceneLoaded = !!globalActions;
-  const isPlaying =
-    globalActions?.performing === undefined ? !initialIsEditing : globalActions.performing;
+  const isPlaying = globalActions?.performing === undefined ? false : globalActions.performing;
   const { selectedActorId, isTextActorSelected, isBlueprintSelected, isInspectorOpen } =
     globalActions || {};
   const hasSelection = selectedActorId >= 0 && activeSheet !== 'capturePreview';
@@ -168,8 +166,8 @@ export const CreateCardScreen = ({
       if (!Utilities.canGoToCard(nextCard, isPlaying)) {
         return;
       }
-      if (!cardNeedsSave() || saveAction === 'none') {
-        // no changes, or unable to save
+      if (isPlaying || !cardNeedsSave() || saveAction === 'none') {
+        // playing, or no changes, or unable to save
         return goToCard(nextCard, isPlaying);
       } else {
         const title = Utilities.makeCardPreviewTitle(nextCard, deck);
@@ -328,7 +326,6 @@ export const CreateCardScreen = ({
                 style={styles.scene}
                 isNewScene={isNewScene}
                 isEditable={true}
-                initialIsEditing={initialIsEditing}
                 onMessage={onSceneMessage}
                 beltHeight={beltHeight}
                 beltHeightFraction={beltHeightFraction}
