@@ -39,6 +39,7 @@ public:
   Scene &getScene();
   bool getIsPlaying();
   Player *maybeGetPlayer();
+  void maybeLoadPlayerSnapshot(const char *json);
 
   Belt &getBelt();
 

@@ -559,6 +559,37 @@ void Editor::editorJSLoaded() {
   sendTagsData();
 }
 
+struct EditorLoadSnapshotReceiver {
+  inline static const BridgeRegistration<EditorLoadSnapshotReceiver> registration {
+    "LOAD_SNAPSHOT"
+  };
+  struct Params {
+    PROP(std::string, snapshotJson);
+  } params;
+
+  void receive(Engine &engine) {
+    auto editor = engine.maybeGetEditor();
+    if (editor) {
+      editor->maybeLoadPlayerSnapshot(params.snapshotJson().c_str());
+    }
+  }
+};
+
+void Editor::maybeLoadPlayerSnapshot(const char *json) {
+  // this is only used when the editor is already playing; it doesn't affect the scene being edited
+  if (playing && player) {
+    auto archive = Archive::fromJson(json);
+    archive.read([&](Reader &reader) {
+      // don't read variables, maintain existing deck state
+      reader.obj("sceneData", [&]() {
+        reader.obj("snapshot", [&]() {
+          player->readScene(reader);
+        });
+      });
+    });
+  }
+}
+
 struct EditorRequestScreenshotReceiver {
   inline static const BridgeRegistration<EditorRequestScreenshotReceiver> registration {
     "REQUEST_SCREENSHOT"
