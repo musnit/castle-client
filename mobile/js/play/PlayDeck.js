@@ -43,26 +43,30 @@ const recordDeckPlay = (deckId, cardId) =>
   });
 
 export const PlayDeck = ({ deck, visibility, route, paused }) => {
+  const playingCardId = React.useRef(deck.initialCard?.cardId);
+  useListen({
+    eventName: 'DID_NAVIGATE_TO_CARD',
+    handler: ({ cardId }) => (playingCardId.current = cardId),
+  });
+
   React.useEffect(() => {
     Amplitude.logEventWithProperties('VIEW_PLAY_DECK', { deckId: deck.deckId, visibility });
 
     return () => {
-      // TODO: can't record deck play until we have card id from the engine
-      // recordDeckPlay(deckId, cardIdRef.current);
+      recordDeckPlay(deck.deckId, playingCardId.current);
     };
   }, [deck.deckId, visibility]);
 
-  // TODO: can't record deck play until we have card id from the engine
-  /* React.useEffect(() => {
-    recordDeckPlay(deckId, cardState.cardId);
+  React.useEffect(() => {
+    recordDeckPlay(deck.deckId, playingCardId.current);
     let interval = setInterval(() => {
-      recordDeckPlay(deckId, cardState.cardId);
+      recordDeckPlay(deck.deckId, playingCardId.current);
     }, 10 * 1000);
 
     return () => {
       clearInterval(interval);
     };
-    }, [cardState.cardId]); */
+  }, [playingCardId.current]);
 
   const [textActors, setTextActors] = React.useState([]);
   useListen({
