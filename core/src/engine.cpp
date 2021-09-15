@@ -317,11 +317,24 @@ bool Engine::frame() {
 // Update
 //
 
+struct DidNavigateToCardEvent {
+  PROP(std::string, cardId);
+};
+
 void Engine::update(double dt) {
   if (!isEditing) {
-    if (player.hasScene() && player.getScene().getNextCardId()) {
-      loadSceneFromCardId(player.getScene().getNextCardId()->c_str());
-      player.getScene().setNextCardId(std::nullopt);
+    if (player.hasScene()) {
+      if (auto nextCardId = player.getScene().getNextCardId(); nextCardId) {
+        // load next card
+        loadSceneFromCardId(nextCardId->c_str());
+
+        // notify the UI that we moved
+        // DID_NAVIGATE_TO_CARD distinguishes from editor's NAVIGATE_TO_CARD
+        DidNavigateToCardEvent ev { *nextCardId };
+        getBridge().sendEvent("DID_NAVIGATE_TO_CARD", ev);
+
+        player.getScene().setNextCardId(std::nullopt);
+      }
     }
   }
 
