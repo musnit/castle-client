@@ -15,6 +15,7 @@
 #include "player.h"
 #include "screenshot.h"
 #include "capture.h"
+#include "library_clipboard.h"
 
 class Editor {
   // manages a scene instance that is being edited.
@@ -56,6 +57,7 @@ public:
   Grid &getGrid();
   GrabTool &getGrabTool();
   ScaleRotateTool &getScaleRotateTool();
+  LibraryClipboard &getLibraryClipboard();
   Bridge &getBridge();
 
   // top-level editor mode
@@ -111,6 +113,7 @@ private:
   Belt belt { *this };
   Selection selection { *this, belt };
   Grid grid;
+  LibraryClipboard libraryClipboard;
 
   Tool currentTool = Tool::Grab;
   GrabTool grab { *this };
@@ -223,4 +226,8 @@ inline bool Editor::getIsPlaying() {
 
 inline Player *Editor::maybeGetPlayer() {
   return player.get();
+}
+
+inline LibraryClipboard &Editor::getLibraryClipboard() {
+  return libraryClipboard;
 }

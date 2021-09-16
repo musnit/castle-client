@@ -193,6 +193,9 @@ void Editor::update(double dt) {
       if (selection.isSelectionChanged()) {
         setCurrentTool(Tool::Grab);
 
+        // update 'number of actors using clipboard'
+        getLibraryClipboard().sendClipboardData(getBridge());
+
         isEditorStateDirty = true;
         isSelectedActorStateDirty = true;
         if (selection.hasSelection()) {
@@ -563,6 +566,7 @@ void Editor::editorJSLoaded() {
   sendSceneSettings();
   getVariables().sendVariablesData(getBridge(), false);
   sendTagsData();
+  getLibraryClipboard().sendClipboardData(getBridge());
 }
 
 struct EditorLoadSnapshotReceiver {
