@@ -119,15 +119,17 @@ const BlankTemplateItem = ({ entry, onPress }) => {
 };
 
 const PasteFromClipboardSection = ({ onPress }) => {
+  // TODO: restore clipboard
+  //  root?.panes['sceneCreatorBlueprints'].children?.data?.props?.data
+  //    ?.numActorsUsingClipboardEntry || 0;
+  return null;
+
   const entry = Clipboard.getLibraryEntryClipboard();
 
   const pasteBlueprint = React.useCallback(() => {
     Clipboard.pasteBlueprint(entry);
   }, [entry]);
 
-  // TODO: restore clipboard
-  //  root?.panes['sceneCreatorBlueprints'].children?.data?.props?.data
-  //    ?.numActorsUsingClipboardEntry || 0;
   const numActorsUsingClipboardEntry = 0;
 
   if (!entry) {
