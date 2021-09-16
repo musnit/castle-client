@@ -5,7 +5,6 @@ import { useActionSheet } from '@expo/react-native-action-sheet';
 import { isTablet } from 'react-native-device-info';
 
 import * as Constants from '../Constants';
-import * as LibraryEntryClipboard from './LibraryEntryClipboard';
 import * as Utilities from '../common/utilities';
 
 import Viewport from '../common/viewport';
@@ -117,9 +116,6 @@ export const CreateCardScreen = ({
 
   React.useEffect(() => {
     if (isSceneLoaded) {
-      // sync once on load, in case we already have something in JS clipboard
-      LibraryEntryClipboard.sync();
-
       // request static data from engine
       sendAsync('EDITOR_JS_LOADED', {});
     }

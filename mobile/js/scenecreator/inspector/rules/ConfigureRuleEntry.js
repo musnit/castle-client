@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { RuleBlueprintsSheet } from '../../sheets/BlueprintsSheet';
+import { RuleBlueprintsSheet } from '../../sheets/RuleBlueprintsSheet';
 import { SelectBehaviorPropertySheet } from '../components/SelectBehaviorPropertySheet';
 import { SelectBehaviorSheet } from '../components/SelectBehaviorSheet';
 import { CardDestinationPickerSheet } from '../../sheets/CardDestinationPickerSheet';

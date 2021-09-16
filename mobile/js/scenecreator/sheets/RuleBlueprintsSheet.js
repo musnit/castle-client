@@ -3,9 +3,8 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { BottomSheetHeader } from '../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from './CardCreatorBottomSheet';
-import { useCoreState } from '../../core/CoreEvents'
+import { useCoreState } from '../../core/CoreEvents';
 
-import * as Clipboard from '../LibraryEntryClipboard';
 import * as Constants from '../../Constants';
 
 import FastImage from 'react-native-fast-image';
@@ -102,7 +101,7 @@ const orderedEntries = (library, type = 'actorBlueprint') => {
   return entries;
 };
 
-const BlueprintItem = ({ entry, onPress, isRule, onPressCopy }) => {
+const BlueprintItem = ({ entry, onPress, onPressCopy }) => {
   return (
     <TouchableOpacity style={styles.itemContainer} onPress={onPress}>
       <View style={[styles.preview, entry.base64Png ? null : { backgroundColor: '#ddd' }]}>
@@ -117,59 +116,12 @@ const BlueprintItem = ({ entry, onPress, isRule, onPressCopy }) => {
         <Text style={styles.title}>{entry.title}</Text>
         <Text style={styles.description}>{entry.description}</Text>
       </View>
-      {!entry.isCore && !isRule ? (
-        <TouchableOpacity style={styles.copyButton} onPress={() => onPressCopy(entry.entryId)}>
-          <Feather name="copy" size={24} color="#000" />
-        </TouchableOpacity>
-      ) : null}
     </TouchableOpacity>
   );
 };
 
-const PasteFromClipboardRow = ({ onPaste, numActorsUsingClipboardEntry }) => {
-  const entry = Clipboard.getLibraryEntryClipboard();
-  if (!entry) return null;
-  return (
-    <TouchableOpacity
-      style={[styles.itemContainer, styles.pasteContainer]}
-      onPress={() => onPaste(entry)}>
-      <View style={styles.pasteButton}>
-        <View style={entry.base64Png ? null : { backgroundColor: '#ddd' }}>
-          {entry.base64Png ? (
-            <FastImage
-              source={{ uri: `data:image/png;base64,${entry.base64Png}` }}
-              style={styles.pasteImage}
-            />
-          ) : null}
-        </View>
-        <View style={styles.pasteDescription}>
-          <Text style={styles.pasteTitle}>Paste {entry.title}</Text>
-          {numActorsUsingClipboardEntry ? (
-            <Text style={styles.pasteSubtitle}>
-              Overrides {numActorsUsingClipboardEntry}{' '}
-              {numActorsUsingClipboardEntry === 1 ? 'actor' : 'actors'} in this card
-            </Text>
-          ) : null}
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-};
-
-export const BlueprintsSheet = ({ isOpen, onClose, title, onSelectBlueprint, isRule }) => {
+export const RuleBlueprintsSheet = ({ isOpen, onClose, title, onSelectBlueprint }) => {
   const blueprintsData = useCoreState('EDITOR_LIBRARY');
-
-  const copyBlueprint = React.useCallback(
-    (entryId) => {
-      const library = blueprintsData?.library;
-      if (library) {
-        const entry = library[entryId];
-        Clipboard.setLibraryEntryAsClipboard(entry);
-        onClose();
-      }
-    },
-    [blueprintsData, onClose]
-  );
 
   const renderHeader = () => <BottomSheetHeader title={title ?? 'Blueprints'} onClose={onClose} />;
 
@@ -187,8 +139,6 @@ export const BlueprintsSheet = ({ isOpen, onClose, title, onSelectBlueprint, isR
                     onSelectBlueprint(entry.entryId);
                     onClose();
                   }}
-                  onPressCopy={copyBlueprint}
-                  isRule={isRule}
                 />
               );
             } else return null;
@@ -205,9 +155,4 @@ export const BlueprintsSheet = ({ isOpen, onClose, title, onSelectBlueprint, isR
       renderContent={renderContent}
     />
   );
-};
-
-// needed when the blueprints sheet is used outside of the CardCreatorSheetManager root sheets
-export const RuleBlueprintsSheet = (props) => {
-  return <BlueprintsSheet {...props} isRule />;
 };

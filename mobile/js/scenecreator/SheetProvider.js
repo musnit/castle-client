@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { BlueprintsSheet } from './sheets/BlueprintsSheet';
 import { NewBlueprintSheet } from './sheets/NewBlueprintSheet';
 import { CapturePreviewSheet } from './sheets/CapturePreviewSheet';
 import { CardToolsSheet } from './sheets/CardToolsSheet';
@@ -21,10 +20,6 @@ const ROOT_SHEETS = [
     key: 'sceneCreatorNewBlueprint',
     Component: NewBlueprintSheet,
     makeSnapPoints: ({ insets }) => [FULL_SHEET_HEIGHT * 0.75, FULL_SHEET_HEIGHT - insets.top],
-  },
-  {
-    key: 'sceneCreatorBlueprints',
-    Component: BlueprintsSheet,
   },
   {
     key: 'sceneCreatorInstance',
