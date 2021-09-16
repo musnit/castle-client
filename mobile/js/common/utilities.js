@@ -295,7 +295,8 @@ export const getCardBackgroundColor = (card) => {
   } else {
     backgroundColor = base.darken(15).toRgbString();
   }
-  return backgroundColor;
+  // return backgroundColor;
+  return '#000';
 };
 
 export const getNotificationType = (n) => {
