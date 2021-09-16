@@ -89,7 +89,11 @@ public:
   ActorId indexActor(int index) const; // Order maintained as long as actors not added / removed.
                                        // `nullActor` if out of bounds.
 
-  void writeActor(ActorId actorId, Writer &writer, bool skipInheritedProperties = true) const;
+  struct WriteActorParams {
+    bool inheritedProperties = false;
+    bool layoutProperties = true;
+  };
+  void writeActor(ActorId actorId, Writer &writer, WriteActorParams) const;
 
 
   // Parent entry

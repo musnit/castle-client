@@ -262,6 +262,10 @@ void ScaleRotateTool::update(double dt) {
             }
           });
     }
+
+    if (touch.released) {
+      editor.updateBlueprint(actorId, {});
+    }
   });
 }
 

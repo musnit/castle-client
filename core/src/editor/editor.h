@@ -75,6 +75,7 @@ public:
   struct UpdateBlueprintParams {
     const char *newTitle = nullptr;
     bool updateBase64Png = false;
+    bool applyLayout = false;
   };
   void updateBlueprint(ActorId actorId, UpdateBlueprintParams params);
 

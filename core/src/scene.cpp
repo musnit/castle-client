@@ -97,7 +97,7 @@ void Scene::write(Writer &writer) const {
           writer.str("parentEntryId", parentEntryId);
         }
         writer.obj("bp", [&]() {
-          writeActor(actorId, writer);
+          writeActor(actorId, writer, {});
         });
       });
     });
@@ -274,9 +274,9 @@ void Scene::ensureDrawOrderSort() const {
   }
 }
 
-void Scene::writeActor(ActorId actorId, Writer &writer, bool skipInheritedProperties) const {
+void Scene::writeActor(ActorId actorId, Writer &writer, WriteActorParams params) const {
   writer.obj("components", [&]() {
-    if (skipInheritedProperties) {
+    if (!params.inheritedProperties) {
       // TODO: More generalized system for saying which properties are inherited and which aren't
       //       (eg. add an attribute in `PropAttribs`). For now just specialcasing to layout
       //       properties as non-inherited.
@@ -285,9 +285,11 @@ void Scene::writeActor(ActorId actorId, Writer &writer, bool skipInheritedProper
         writer.obj("Body", [&]() {
           writer.num("x", maybeBodyComponent->props.x());
           writer.num("y", maybeBodyComponent->props.y());
-          writer.num("angle", maybeBodyComponent->props.angle());
-          writer.num("widthScale", maybeBodyComponent->props.widthScale());
-          writer.num("heightScale", maybeBodyComponent->props.heightScale());
+          if (params.layoutProperties) {
+            writer.num("angle", maybeBodyComponent->props.angle());
+            writer.num("widthScale", maybeBodyComponent->props.widthScale());
+            writer.num("heightScale", maybeBodyComponent->props.heightScale());
+          }
         });
       }
     } else {

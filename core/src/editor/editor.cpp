@@ -428,13 +428,16 @@ void Editor::updateBlueprint(ActorId actorId, UpdateBlueprintParams params) {
       writer.str("entryType", "actorBlueprint");
       writer.str("title", params.newTitle ? params.newTitle : oldEntry ? oldEntry->getTitle() : "");
       writer.obj("actorBlueprint", [&]() {
-        scene->writeActor(actorId, writer, false);
+        // Write inherited properties too since we want to save everything to the blueprint
+        Scene::WriteActorParams params;
+        params.inheritedProperties = true;
+        scene->writeActor(actorId, writer, params);
       });
       if (oldEntry) {
         if (params.updateBase64Png) {
           if (auto drawingComponent
               = scene->getBehaviors().byType<Drawing2Behavior>().maybeGetComponent(actorId)) {
-            auto initialFrameZeroIndex = drawingComponent->props.initialFrame() - 1;
+            auto initialFrameZeroIndex = int(drawingComponent->props.initialFrame()) - 1;
             if (auto base64Png
                 = drawingComponent->drawData->renderPreviewPng(initialFrameZeroIndex, -1);
                 base64Png) {
@@ -467,7 +470,10 @@ void Editor::updateBlueprint(ActorId actorId, UpdateBlueprintParams params) {
       // Write actor, remove and read back -- new entry properties will be used when reading
       Archive actorArchive;
       actorArchive.write([&](Writer &writer) {
-        scene->writeActor(otherActorId, writer);
+        // If applying layout, don't save actor's layout properties -- it'll use the blueprint's
+        Scene::WriteActorParams writeParams;
+        writeParams.layoutProperties = !params.applyLayout;
+        scene->writeActor(otherActorId, writer, writeParams);
       });
       actorArchive.read([&](Reader &reader) {
         Scene::ActorDesc actorDesc;
@@ -1265,6 +1271,30 @@ struct EditorModifyComponentReceiver {
   }
 };
 
+struct EditorApplyLayoutToBlueprintReceiver {
+  inline static const BridgeRegistration<EditorApplyLayoutToBlueprintReceiver> registration {
+    "EDITOR_APPLY_LAYOUT_TO_BLUEPRINT"
+  };
+
+  struct Params {
+  } params;
+
+  void receive(Engine &engine) {
+    auto editor = engine.maybeGetEditor();
+    if (!editor || !editor->hasScene()) {
+      return;
+    }
+    auto &selection = editor->getSelection();
+    if (!selection.hasSelection() || selection.isGhostActorsSelected()) {
+      return; // Need a non-ghost selection
+    }
+    auto actorId = selection.firstSelectedActorId();
+    Editor::UpdateBlueprintParams params;
+    params.applyLayout = true;
+    editor->updateBlueprint(actorId, params);
+  }
+};
+
 struct EditorChangeDrawOrderReceiver {
   inline static const BridgeRegistration<EditorChangeDrawOrderReceiver> registration {
     "EDITOR_CHANGE_DRAW_ORDER"
@@ -1523,7 +1553,7 @@ struct EditorInspectorActionReceiver {
         // Save actor to archive so we can restore it on undo
         auto archive = std::make_shared<Archive>();
         archive->write([&](Writer &writer) {
-          scene.writeActor(actorId, writer);
+          scene.writeActor(actorId, writer, {});
         });
 
         editor->getCommands().execute(
@@ -1604,7 +1634,7 @@ struct EditorInspectorActionReceiver {
               }
               Archive archive;
               archive.write([&](Writer &writer) {
-                scene.writeActor(actorId, writer);
+                scene.writeActor(actorId, writer, {});
               });
               if (maybeBodyComponent) {
                 maybeBodyComponent->props.x() = oldX;
