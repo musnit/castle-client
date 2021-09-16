@@ -104,8 +104,8 @@ struct SceneLoadedEvent {
 };
 
 void Engine::setInitialParams(const char *initialParamsJson) {
-  const char *deckId;
-  const char *initialSnapshotJson;
+  const char *deckId = nullptr;
+  const char *initialSnapshotJson = nullptr;
   auto isNewScene = false;
   auto archive = Archive::fromJson(initialParamsJson);
   archive.read([&](Reader &reader) {
