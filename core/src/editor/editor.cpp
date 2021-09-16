@@ -161,8 +161,8 @@ void Editor::update(double dt) {
       capture->update(&player->getScene(), getBridge(), dt);
     }
   } else {
-    Debug::display("fps: {}", lv.timer.getFPS());
-    Debug::display("actors: {}", scene->numActors());
+    // Debug::display("fps: {}", lv.timer.getFPS());
+    // Debug::display("actors: {}", scene->numActors());
 
     // Need to tell scene to update gesture, since we didn't `scene->update()`
     scene->updateGesture();
@@ -322,10 +322,10 @@ void Editor::draw() {
       lv.graphics.setColor({ 0, 1, 0, 0.8 });
       for (auto actorId : selection.getSelectedActorIds()) {
         if (!scene->isGhost(actorId)) {
-          Debug::display("selected actor {}", actorId);
+          // Debug::display("selected actor {}", actorId);
           drawBodyOutline(actorId);
         } else {
-          Debug::display("selected ghost actor {}", actorId);
+          // Debug::display("selected ghost actor {}", actorId);
         }
       }
 
@@ -362,21 +362,21 @@ void Editor::draw() {
     belt.drawOverlay();
 
     // Debug commands
-    Debug::display("{} undos:", commands.undos.size());
+    // Debug::display("{} undos:", commands.undos.size());
     for (auto &command : commands.undos) {
       std::string selectionString;
       for (auto actorId : command.entries[Commands::UNDO].selection) {
         selectionString.append(fmt::format("{} ", entt::to_integral(actorId)));
       }
-      Debug::display("  {} actor {}", command.description, selectionString);
+      // Debug::display("  {} actor {}", command.description, selectionString);
     }
-    Debug::display("{} redos:", commands.redos.size());
+    // Debug::display("{} redos:", commands.redos.size());
     for (auto &command : commands.redos) {
       std::string selectionString;
       for (auto actorId : command.entries[Commands::DO].selection) {
         selectionString.append(fmt::format("{} ", entt::to_integral(actorId)));
       }
-      Debug::display("  {} actor {}", command.description, selectionString);
+      // Debug::display("  {} actor {}", command.description, selectionString);
     }
     break; // EditMode::Default
   }
