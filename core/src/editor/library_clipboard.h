@@ -14,7 +14,7 @@ public:
   std::optional<std::string> getCurrentEntryId();
   void copyLibraryEntry(LibraryEntry *entry);
 
-  void sendClipboardData(Bridge &bridge);
+  void sendClipboardData(Bridge &bridge, Scene &scene);
 
 private:
   std::optional<std::string> currentEntryId;
