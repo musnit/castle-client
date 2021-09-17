@@ -70,7 +70,7 @@ void Commands::execute(
 
   redos.clear();
 
-  notify("");
+  notify("", "");
 
   if (!coalesced) {
     editor.setEditorStateDirty(); // `canUndo` or `canRedo` may have changed -- avoid over-sending
@@ -136,9 +136,9 @@ void Commands::undoOrRedo(Phase phase, std::deque<Command> &from, std::deque<Com
     from.pop_back();
     executePhase(command, phase, false);
     if (phase == DO) {
-      notify("redid: " + command.description);
+      notify("redo", command.description);
     } else if (phase == UNDO) {
-      notify("undid: " + command.description);
+      notify("undo", command.description);
     }
     to.push_back(std::move(command));
 
@@ -152,10 +152,11 @@ void Commands::undoOrRedo(Phase phase, std::deque<Command> &from, std::deque<Com
 //
 
 struct EditorCommandNotifyEvent {
+  PROP(std::string, type);
   PROP(std::string, message);
 };
 
-void Commands::notify(std::string message) {
-  EditorCommandNotifyEvent ev { std::move(message) };
+void Commands::notify(std::string type, std::string message) {
+  EditorCommandNotifyEvent ev { std::move(type), std::move(message) };
   editor.getBridge().sendEvent("EDITOR_COMMAND_NOTIFY", ev);
 }

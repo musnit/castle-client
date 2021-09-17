@@ -15,6 +15,7 @@ import { useListen, useCoreState, sendGlobalAction, sendAsync } from '../core/Co
 import { CardScene } from '../game/CardScene';
 import { CardSceneLoading } from './CardSceneLoading';
 import { CardText } from '../components/CardText';
+import { CommandsOverlay } from './overlay/CommandsOverlay';
 import { CreateCardContext } from './CreateCardContext';
 import { CreateCardHeader, CARD_HEADER_HEIGHT } from './CreateCardHeader';
 import { CreateCardOverlay } from './overlay/CreateCardOverlay';
@@ -352,6 +353,7 @@ export const CreateCardScreen = ({
                 editMode={editMode}
                 beltHeight={beltHeight}
               />
+              <CommandsOverlay />
               {isSceneLoaded ? null : <CardSceneLoading />}
             </View>
           </View>

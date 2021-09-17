@@ -63,7 +63,7 @@ private:
   void undoOrRedo(Phase phase, std::deque<Command> &from, std::deque<Command> &to);
 
 
-  void notify(std::string message);
+  void notify(std::string type, std::string message);
 };
 
 
