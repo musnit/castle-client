@@ -1,6 +1,7 @@
 #include "rules.h"
 
 #include "behaviors/all.h"
+#include "engine.h"
 
 
 //
@@ -731,6 +732,23 @@ struct PlaySoundResponse : BaseResponse {
   void run(RuleContext &ctx) override {
     auto &sound = ctx.getScene().getSound();
     sound.play(params.category(), params.seed(), params.mutationSeed(), params.mutationAmount());
+  }
+};
+
+struct EditorChangeSoundReceiver {
+  inline static const BridgeRegistration<EditorChangeSoundReceiver> registration {
+    "EDITOR_CHANGE_SOUND"
+  };
+
+  PlaySoundResponse::Params params;
+
+  void receive(Engine &engine) {
+    if (!engine.getIsEditing())
+      return;
+
+    auto &sound = engine.maybeGetEditor()->getScene().getSound();
+    sound.play(params.category(), params.seed(), params.mutationSeed(), params.mutationAmount());
+    // TODO: maybe clear unused sounds
   }
 };
 

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { InspectorNumberInput } from '../components/InspectorNumberInput';
+import { sendAsync } from '../../../core/CoreEvents';
 
 import * as Constants from '../../../Constants';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
@@ -111,22 +112,16 @@ export const SOUND_CATEGORIES = [
   },
 ];
 
-export const PlaySoundResponse = ({
-  response,
-  onChangeResponse,
-  children,
-  sendRuleAction,
-  ...props
-}) => {
+export const PlaySoundResponse = ({ response, onChangeResponse, children, ...props }) => {
   const [lastNativeUpdate, incrementLastNativeUpdate] = React.useReducer((state) => state + 1, 0);
   React.useEffect(incrementLastNativeUpdate, [response.params]);
 
   const onChangeSound = React.useCallback(
     (response) => {
       onChangeResponse(response);
-      sendRuleAction('changeSound', response.params);
+      sendAsync('EDITOR_CHANGE_SOUND', response.params);
     },
-    [onChangeResponse, sendRuleAction]
+    [onChangeResponse]
   );
 
   const onChangeCategory = (index) =>
@@ -163,7 +158,7 @@ export const PlaySoundResponse = ({
         <View style={styles.playButtonContainer}>
           <TouchableOpacity
             style={styles.playButton}
-            onPress={() => sendRuleAction('changeSound', response.params)}>
+            onPress={() => sendAsync('EDITOR_CHANGE_SOUND', response.params)}>
             <Entypo
               name="controller-play"
               size={36}
