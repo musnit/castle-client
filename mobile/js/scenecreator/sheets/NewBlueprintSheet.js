@@ -1,14 +1,13 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
-
+import { BottomSheet } from '../../components/BottomSheet';
 import { BottomSheetHeader } from '../../components/BottomSheetHeader';
+import { sendAsync, useCoreState } from '../../core/CoreEvents';
+
 import * as Constants from '../../Constants';
 import * as CoreEvents from '../../core/CoreEvents';
 
-import { BottomSheet } from '../../components/BottomSheet';
-import * as Clipboard from '../LibraryEntryClipboard';
-
+import FastImage from 'react-native-fast-image';
 import NewBlueprintSheetData from './NewBlueprintSheetData.json';
 
 const styles = StyleSheet.create({
@@ -119,22 +118,16 @@ const BlankTemplateItem = ({ entry, onPress }) => {
 };
 
 const PasteFromClipboardSection = ({ onPress }) => {
-  // TODO: restore clipboard
-  //  root?.panes['sceneCreatorBlueprints'].children?.data?.props?.data
-  //    ?.numActorsUsingClipboardEntry || 0;
-  return null;
+  const pasteBlueprint = React.useCallback(() => sendAsync('PASTE_BLUEPRINT', {}), []);
 
-  const entry = Clipboard.getLibraryEntryClipboard();
-
-  const pasteBlueprint = React.useCallback(() => {
-    Clipboard.pasteBlueprint(entry);
-  }, [entry]);
-
-  const numActorsUsingClipboardEntry = 0;
-
-  if (!entry) {
-    return null;
-  }
+  const clipboard = useCoreState('EDITOR_BLUEPRINT_CLIPBOARD_DATA');
+  let entry;
+  try {
+    if (clipboard?.entryJson) {
+      entry = JSON.parse(clipboard.entryJson);
+    }
+  } catch (_) {}
+  if (!entry) return null;
 
   return (
     <>
@@ -156,10 +149,10 @@ const PasteFromClipboardSection = ({ onPress }) => {
         </View>
         <View style={styles.meta}>
           <Text style={styles.title}>{entry.title}</Text>
-          {numActorsUsingClipboardEntry ? (
+          {clipboard.numActorsUsingEntry ? (
             <Text style={styles.description}>
-              Overrides {numActorsUsingClipboardEntry}{' '}
-              {numActorsUsingClipboardEntry === 1 ? 'actor' : 'actors'} in this card
+              Overrides {clipboard.numActorsUsingEntry}{' '}
+              {clipboard.numActorsUsingEntry === 1 ? 'actor' : 'actors'} in this card
             </Text>
           ) : null}
         </View>

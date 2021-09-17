@@ -4,8 +4,6 @@ import { useSession } from '../../Session';
 import { useCardCreator } from '../CreateCardContext';
 import { sendAsync } from '../../core/CoreEvents';
 
-import * as Clipboard from '../LibraryEntryClipboard';
-
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
@@ -27,9 +25,7 @@ export const InspectorBlueprintActions = () => {
   const data = { isBlueprint: true }; // previously `inspectorActions`
   const sendAction = (action, ...args) => sendAsync('EDITOR_INSPECTOR_ACTION', { action, ...args });
 
-  const copyBlueprint = React.useCallback(() => {
-    Clipboard.copySelectedBlueprint();
-  }, []);
+  const copyBlueprint = React.useCallback(() => sendAsync('COPY_SELECTED_BLUEPRINT'), []);
 
   const { userId: signedInUserId } = useSession();
   let canCopyBlueprint = false;
