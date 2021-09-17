@@ -133,6 +133,9 @@ void Engine::setInitialParams(const char *initialParamsJson) {
   } else if (deckId) {
     loadSceneFromDeckId(deckId);
   }
+  if (isEditing) {
+    getLibraryClipboard().sendClipboardData(editor->getBridge(), editor->getScene());
+  }
 }
 
 void Engine::setBeltHeightFraction(double beltHeightFraction) {

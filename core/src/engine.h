@@ -9,6 +9,7 @@
 #include "bridge.h"
 #include "player.h"
 #include "editor/editor.h"
+#include "editor/library_clipboard.h"
 
 class Engine {
   // The top-level instance of Castle core. There should just be one of these for the entire
@@ -51,6 +52,7 @@ public:
   Scene &getScene();
   Editor *maybeGetEditor();
   bool getIsEditing();
+  LibraryClipboard &getLibraryClipboard();
 
 private:
   Bridge bridge { *this };
@@ -76,6 +78,7 @@ private:
   Player player { bridge };
   std::unique_ptr<Editor> editor;
   bool isEditing = false;
+  LibraryClipboard libraryClipboard; // persistent for engine instance lifetime
 
   void update(double dt);
 
@@ -99,4 +102,8 @@ inline Editor *Engine::maybeGetEditor() {
 
 inline bool Engine::getIsEditing() {
   return isEditing;
+}
+
+inline LibraryClipboard &Engine::getLibraryClipboard() {
+  return libraryClipboard;
 }

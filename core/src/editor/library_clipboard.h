@@ -4,6 +4,8 @@
 #include "library.h"
 #include "bridge.h"
 
+class Editor;
+
 class LibraryClipboard {
 public:
   LibraryClipboard(const LibraryClipboard &) = delete;
@@ -13,6 +15,7 @@ public:
   bool hasEntry();
   std::optional<std::string> getCurrentEntryId();
   void copyLibraryEntry(LibraryEntry *entry);
+  void pasteCurrentEntry(Editor *editor);
 
   void sendClipboardData(Bridge &bridge, Scene &scene);
 

@@ -193,9 +193,6 @@ void Editor::update(double dt) {
       if (selection.isSelectionChanged()) {
         setCurrentTool(Tool::Grab);
 
-        // update 'number of actors using clipboard'
-        getLibraryClipboard().sendClipboardData(getBridge(), getScene());
-
         isEditorStateDirty = true;
         isSelectedActorStateDirty = true;
         if (selection.hasSelection()) {
@@ -468,8 +465,21 @@ void Editor::updateBlueprint(ActorId actorId, UpdateBlueprintParams params) {
   });
 
   // Update all other non-ghost actors that have this entry
+  updateActorsWithEntryId(entryId, params, actorId);
+
+  if (params.newTitle || params.updateBase64Png) {
+    // if we updated the selected actor, need to send new data to JS
+    if (getSelection().isSelected(actorId)) {
+      isSelectedActorStateDirty = true;
+    }
+  }
+}
+
+void Editor::updateActorsWithEntryId(
+    std::string entryId, UpdateBlueprintParams params, ActorId skipActorId) {
   scene->forEachActor([&](ActorId otherActorId) {
-    if (otherActorId != actorId && scene->maybeGetParentEntryId(otherActorId) == entryId) {
+    if ((skipActorId == nullActor || otherActorId != skipActorId)
+        && scene->maybeGetParentEntryId(otherActorId) == entryId) {
       // Write actor, remove and read back -- new entry properties will be used when reading
       Archive actorArchive;
       actorArchive.write([&](Writer &writer) {
@@ -493,13 +503,6 @@ void Editor::updateBlueprint(ActorId actorId, UpdateBlueprintParams params) {
       });
     }
   });
-
-  if (params.newTitle || params.updateBase64Png) {
-    // if we updated the selected actor, need to send new data to JS
-    if (getSelection().isSelected(actorId)) {
-      isSelectedActorStateDirty = true;
-    }
-  }
 }
 
 
@@ -566,7 +569,6 @@ void Editor::editorJSLoaded() {
   sendSceneSettings();
   getVariables().sendVariablesData(getBridge(), false);
   sendTagsData();
-  getLibraryClipboard().sendClipboardData(getBridge(), getScene());
 }
 
 struct EditorLoadSnapshotReceiver {

@@ -24,8 +24,8 @@ struct LibraryClipboardCopyReceiver {
       if (auto entryIdCStr = scene.maybeGetParentEntryId(actorId)) {
         auto &library = scene.getLibrary();
         if (auto entry = library.maybeGetEntry(entryIdCStr)) {
-          editor->getLibraryClipboard().copyLibraryEntry(entry);
-          editor->getLibraryClipboard().sendClipboardData(editor->getBridge(), editor->getScene());
+          engine.getLibraryClipboard().copyLibraryEntry(entry);
+          engine.getLibraryClipboard().sendClipboardData(editor->getBridge(), editor->getScene());
         }
       }
     }
@@ -44,10 +44,93 @@ void LibraryClipboard::copyLibraryEntry(LibraryEntry *entry) {
   currentEntryJson = archive.toJson();
 }
 
-// TODO: paste
-// listen for PASTE_BLUEPRINT
-// if entryId already exists, override that blueprint and update actors
-// otherwise just add this entryId to the library/belt
+struct LibraryClipboardPasteReceiver {
+  inline static const BridgeRegistration<LibraryClipboardPasteReceiver> registration {
+    "PASTE_BLUEPRINT"
+  };
+
+  struct Params {
+  } params;
+
+  void receive(Engine &engine) {
+    auto editor = engine.maybeGetEditor();
+    if (!editor)
+      return;
+
+    engine.getLibraryClipboard().pasteCurrentEntry(editor);
+  }
+};
+
+void LibraryClipboard::pasteCurrentEntry(Editor *editor) {
+  if (!hasEntry()) {
+    return;
+  }
+
+  auto &library = editor->getScene().getLibrary();
+  auto entryId = *currentEntryId;
+  auto entryJson = *currentEntryJson;
+  auto oldEntry = library.maybeGetEntry(entryId.c_str());
+
+  if (!oldEntry) {
+    // add new entry from clipboard
+    editor->getCommands().execute(
+        "add blueprint from clipboard", {},
+        [entryJson](Editor &editor, bool) {
+          auto &library = editor.getScene().getLibrary();
+          auto archive = Archive::fromJson(entryJson.c_str());
+          archive.read([&](Reader &reader) {
+            library.readEntry(reader);
+          });
+        },
+        [entryId](Editor &editor, bool) {
+          auto &library = editor.getScene().getLibrary();
+          library.removeEntry(entryId.c_str());
+        });
+  } else {
+    // update existing entry from clipboard
+    Archive archive;
+    archive.write([&](Writer &writer) {
+      oldEntry->write(writer);
+    });
+    auto oldEntryJson = archive.toJson();
+
+    editor->getCommands().execute(
+        "update blueprint from clipboard", {},
+        [entryId, entryJson](Editor &editor, bool) {
+          auto &library = editor.getScene().getLibrary();
+          auto archive = Archive::fromJson(entryJson.c_str());
+          archive.read([&](Reader &reader) {
+            library.readEntry(reader);
+          });
+          editor.updateActorsWithEntryId(entryId, {});
+        },
+        [entryId, oldEntryJson](Editor &editor, bool) {
+          auto &library = editor.getScene().getLibrary();
+          auto archive = Archive::fromJson(oldEntryJson.c_str());
+          archive.read([&](Reader &reader) {
+            library.readEntry(reader);
+          });
+          editor.updateActorsWithEntryId(entryId, {});
+        });
+  }
+}
+
+struct LibraryClipboardSendDataReceiver {
+  inline static const BridgeRegistration<LibraryClipboardSendDataReceiver> registration {
+    "REQUEST_BLUEPRINT_CLIPBOARD_DATA"
+  };
+
+  struct Params {
+  } params;
+
+  void receive(Engine &engine) {
+    auto editor = engine.maybeGetEditor();
+    if (!editor)
+      return;
+
+    engine.getLibraryClipboard().sendClipboardData(editor->getBridge(), editor->getScene());
+  }
+};
 
 struct LibraryClipboardDataEvent {
   PROP(bool, hasEntry) = false;

@@ -118,6 +118,9 @@ const BlankTemplateItem = ({ entry, onPress }) => {
 };
 
 const PasteFromClipboardSection = ({ onPress }) => {
+  React.useEffect(() => {
+    sendAsync('REQUEST_BLUEPRINT_CLIPBOARD_DATA');
+  }, []);
   const pasteBlueprint = React.useCallback(() => sendAsync('PASTE_BLUEPRINT', {}), []);
 
   const clipboard = useCoreState('EDITOR_BLUEPRINT_CLIPBOARD_DATA');
