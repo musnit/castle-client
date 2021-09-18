@@ -129,7 +129,7 @@ export default InspectorRules = ({ behaviors, addChildSheet }) => {
         <View style={{ flexDirection: 'column-reverse' }}>
           {rulesItems.map((rule, ii) => (
             <TouchableOpacity
-              onPress={() => onPressRule(rule.index)}
+              onPress={() => onPressRule(ii)}
               key={`rule-${rule.trigger?.name}-${rule.response?.name}-${ii}`}
               style={styles.rulePreviewButton}>
               <RulePreview rule={rule} />
