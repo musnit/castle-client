@@ -52,6 +52,9 @@ const styles = StyleSheet.create({
   },
 });
 
+// don't use `toFixed` because we only want decimals if necessary
+const formatLayoutProp = (number) => Math.round(number * 100) / 100;
+
 export const OverlayLayout = ({ setActiveSheet }) => {
   const component = useCoreState('EDITOR_SELECTED_COMPONENT:Body');
   if (!component) return null;
@@ -61,10 +64,14 @@ export const OverlayLayout = ({ setActiveSheet }) => {
       <Text style={styles.behaviorName}>Layout</Text>
       <View style={styles.right}>
         <View style={styles.componentPreview}>
-          <Text style={styles.componentPreviewText}>X: {component.props.x}</Text>
-          <Text style={styles.componentPreviewText}>Y: {component.props.y}</Text>
-          <Text style={styles.componentPreviewText}>W: {component.props.widthScale}</Text>
-          <Text style={styles.componentPreviewText}>H: {component.props.heightScale}</Text>
+          <Text style={styles.componentPreviewText}>X: {formatLayoutProp(component.props.x)}</Text>
+          <Text style={styles.componentPreviewText}>Y: {formatLayoutProp(component.props.y)}</Text>
+          <Text style={styles.componentPreviewText}>
+            W: {formatLayoutProp(component.props.widthScale)}
+          </Text>
+          <Text style={styles.componentPreviewText}>
+            H: {formatLayoutProp(component.props.heightScale)}
+          </Text>
         </View>
         <Pressable style={styles.editButton} onPress={() => setActiveSheet('sceneCreatorInstance')}>
           <FeatherIcon name="edit-2" size={14} />
