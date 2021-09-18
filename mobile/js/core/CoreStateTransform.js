@@ -94,9 +94,9 @@ export default {
         result.expressions[entry.name] = {
           ...entry,
           category,
-          initialParamsJson: undefined,
         };
         addInitialParamValues(result.expressions[entry.name]);
+        result.expressions[entry.name].initialParamsJson = undefined;
       });
     }
 

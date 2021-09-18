@@ -36,7 +36,7 @@ export const InspectorInlineExpressionInput = ({
 }) => {
   let input;
   let propsWithoutStyle = { ...props, style: undefined };
-  if (!value.expressionType) {
+  if (!value?.expressionType) {
     // primitive number
     input = <InspectorNumberInput value={value} onChange={onChange} {...propsWithoutStyle} />;
   } else if (value.expressionType === 'number') {
