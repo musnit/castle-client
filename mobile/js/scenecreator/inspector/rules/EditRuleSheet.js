@@ -59,7 +59,7 @@ export const EditRuleSheet = ({
     <View style={styles.container}>
       <Rule
         rule={rule}
-        onChangeRule={onChangeRule}
+        onChangeRule={(newRule) => onChangeRule(newRule, ruleIndex)}
         addChildSheet={addChildSheet}
         behaviors={behaviors}
         triggers={triggers}

@@ -63,9 +63,9 @@ export default InspectorRules = ({ behaviors, addChildSheet }) => {
   const counter = behaviors.Counter;
 
   const onChangeRule = React.useCallback(
-    (newRule) => {
-      const newRules = rulesItems.map((oldRule) => {
-        return oldRule.index === newRule.index ? newRule : oldRule;
+    (newRule, index) => {
+      const newRules = rulesItems.map((oldRule, ii) => {
+        return ii === index ? newRule : oldRule;
       });
       sendSetRules(newRules);
     },
