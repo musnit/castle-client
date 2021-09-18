@@ -43,7 +43,7 @@ export const BehaviorPropertyInputRow = ({
 
   const onChange = React.useCallback(
     (value) => {
-      sendValue('set', propName, value);
+      sendValue('set', value);
     },
     [sendValue]
   );
