@@ -69,18 +69,23 @@ export const BehaviorPropertyRule = ({
     return children;
   }
 
-  let propertySpec = behavior.propertySpecs[propertyName];
+  let propertySpec = { ...behavior.propertySpecs[propertyName] };
 
   // don't enforce absolute min/max when choosing a relative value
   if (response.name === 'change behavior property' && propertySpec.attribs) {
-    propertySpec = {
-      ...propertySpec,
-      attribs: {
-        ...propertySpec.attribs,
-        min: undefined,
-        max: undefined,
-      },
+    propertySpec.attribs = {
+      ...propertySpec.attribs,
+      min: undefined,
+      max: undefined,
     };
+  }
+
+  let isRelativeProperty = false;
+  if (propertySpec.type === 'f' || propertySpec.type === 'i' || propertySpec.type === 'd') {
+    // allow expressions and relative set on all numeric behavior properties
+    // TODO: are there any that actually shouldn't be an expression here?
+    isRelativeProperty = true;
+    propertySpec.type = 'expression';
   }
 
   const onConfigureExpression = () => {
@@ -93,8 +98,6 @@ export const BehaviorPropertyRule = ({
       useAllBehaviors,
     });
   };
-
-  const isRelativeProperty = propertySpec.method === 'numberInput';
 
   return (
     <View>
