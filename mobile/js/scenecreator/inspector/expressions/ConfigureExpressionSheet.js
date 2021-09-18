@@ -329,7 +329,7 @@ export const ConfigureExpressionSheet = ({
         Component: SelectBehaviorPropertySheet,
         behaviors,
         useAllBehaviors: useAllBehaviors || childUseAllBehaviors,
-        isPropertyVisible: (spec) => spec?.rules?.get === true,
+        isPropertyVisible: (spec) => spec?.attribs?.rulesGet === true,
         onSelectBehaviorProperty,
       });
     },
