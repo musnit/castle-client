@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { canParamBePromotedToExpression } from '../../SceneCreatorUtilities';
 import { ConfigureExpressionSheet } from '../expressions/ConfigureExpressionSheet';
 import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import { RuleParamInputRow } from '../components/RuleParamInputRow';
@@ -81,9 +82,7 @@ export const BehaviorPropertyRule = ({
   }
 
   let isRelativeProperty = false;
-  if (propertySpec.type === 'f' || propertySpec.type === 'i' || propertySpec.type === 'd') {
-    // allow expressions and relative set on all numeric behavior properties
-    // TODO: are there any that actually shouldn't be an expression here?
+  if (canParamBePromotedToExpression(propertySpec)) {
     isRelativeProperty = true;
     propertySpec.type = 'expression';
   }

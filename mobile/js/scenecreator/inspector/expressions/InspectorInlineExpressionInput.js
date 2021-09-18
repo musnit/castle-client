@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { getRuleRenderContext } from '../rules/RuleRenderContext';
 import { InspectorNumberInput } from '../components/InspectorNumberInput';
 import { makeExpressionSummary } from '../../SceneCreatorUtilities';
+
 import FastImage from 'react-native-fast-image';
 
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -57,7 +59,7 @@ export const InspectorInlineExpressionInput = ({
     );
   } else {
     // no inline edit, just preview
-    input = <Text>{makeExpressionSummary(value, props.context)}</Text>;
+    input = <Text>{makeExpressionSummary(value, getRuleRenderContext())}</Text>;
   }
   return (
     <View style={[styles.container, props.style]}>

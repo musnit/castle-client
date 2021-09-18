@@ -1,3 +1,7 @@
+export const canParamBePromotedToExpression = (paramSpec) =>
+  (paramSpec.type === 'f' || paramSpec.type === 'i' || paramSpec.type === 'd') &&
+  paramSpec.attribs.expression !== false;
+
 export const formatVariableName = (name) => `\$${name}`;
 
 export const formatTag = (tag) => `#${tag}`;
@@ -160,7 +164,7 @@ export const makeExpressionSummary = (expression, context, depth = 0) => {
       const { behaviors } = context;
       let selectedBehavior, selectedProperty;
       if (expression.params?.behaviorId) {
-        const entry = Object.entries(context.behaviors).find(
+        const entry = Object.entries(behaviors).find(
           ([_, b]) => b.behaviorId === expression.params.behaviorId
         );
         if (entry) {

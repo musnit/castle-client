@@ -5,7 +5,7 @@ import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
 import { ExpressionTypePickerSheet } from './ExpressionTypePickerSheet';
 import { ParamInput } from '../components/ParamInput';
-import { promoteToExpression } from '../../SceneCreatorUtilities';
+import { promoteToExpression, canParamBePromotedToExpression } from '../../SceneCreatorUtilities';
 import { SelectBehaviorPropertySheet } from '../components/SelectBehaviorPropertySheet';
 import { useCoreState } from '../../../core/CoreEvents';
 
@@ -274,9 +274,7 @@ const InspectorExpressionInput = ({
 
 // does it have 1 or more numeric, expression-enabled parameters?
 const canExpressionHaveChildren = ([name, spec]) =>
-  spec.paramSpecs.filter(
-    (paramSpec) => paramSpec.method === 'numberInput' && paramSpec.expression !== false
-  ).length > 0;
+  spec.paramSpecs.filter(canParamBePromotedToExpression).length > 0;
 
 export const ConfigureExpressionSheet = ({
   value: initialValue,
