@@ -77,6 +77,9 @@ public:
   std::string wrapVertexShaderCode(const char *code);
   std::string wrapFragmentShaderCode(const char *code);
 
+  template<typename F>
+  void renderTo(love::Canvas *canvas, F &&f);
+
 
 private:
   Lv &lv { *this };
@@ -92,4 +95,12 @@ private:
 
 inline Lv &Lv::getInstance() {
   return *instance;
+}
+
+template<typename F>
+void Lv::renderTo(love::Canvas *canvas, F &&f) {
+  auto prevCanvas = lv.graphics.getCanvas();
+  lv.graphics.setCanvas(canvas, false);
+  f();
+  lv.graphics.setCanvas(prevCanvas);
 }

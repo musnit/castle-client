@@ -21,6 +21,7 @@ public:
   void updateSelection(bool forceGhostActorSelection = false);
 
   void update(double dt);
+  void drawHighlight() const;
   void drawOverlay() const;
 
   inline static const TouchToken placedTouchToken; // Actor being grabbed after placing
@@ -66,6 +67,16 @@ private:
     love::Vector2 pos = { 0, 0 };
   };
   std::optional<Placing> placing;
+
+
+  //bool highlightEnabled = false;
+
+  std::unique_ptr<love::Shader> highlightShader;
+  std::unique_ptr<love::Shader> outlineShader;
+  std::unique_ptr<love::Shader> outlineThickeningShader;
+
+  mutable std::unique_ptr<love::Canvas> highlightCanvas;
+  mutable std::unique_ptr<love::Canvas> highlightCanvas2;
 
 
   float getElementX(int index) const;

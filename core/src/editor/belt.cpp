@@ -16,6 +16,70 @@ static constexpr float elemGap = 20;
 
 Belt::Belt(Editor &editor_)
     : editor(editor_) {
+  static const char vert[] = R"(
+    vec4 position(mat4 transformProjection, vec4 vertexPosition) {
+      return transformProjection * vertexPosition;
+    }
+  )";
+  {
+    static const char frag[] = R"(
+      vec4 effect(vec4 color, Image texture, vec2 texCoords, vec2 screenCoords) {
+          color = Texel(texture, texCoords);
+          if (color.a == 0.0) {
+              //#define DIAGS
+              #ifdef DIAGS
+                  float xPix = texCoords.x * love_ScreenSize.x;
+                  float yPix = texCoords.y * love_ScreenSize.y;
+                  float diag = (xPix + yPix) / 20.0;
+                  float f = abs(diag - floor(diag) - 0.5);
+                  float c = 0.3 + f * 0.4;
+                  color = vec4(c, c, c, 1.0);
+              #else
+                  color = vec4(0.35, 0.35, 0.35, 1.0);
+              #endif
+          } else {
+              color = vec4(1.0, 1.0, 1.0, 1.0);
+          }
+          return color;
+      }
+    )";
+    highlightShader.reset(
+        lv.graphics.newShader(lv.wrapVertexShaderCode(vert), lv.wrapFragmentShaderCode(frag)));
+  }
+  {
+    static const char frag[] = R"(
+      vec4 effect(vec4 color, Image texture, vec2 texCoords, vec2 screenCoords) {
+          vec4 c = Texel(texture, texCoords);
+          if (c.a == 0.0) {
+              float l = Texel(texture, vec2(texCoords.x - 1.0 / love_ScreenSize.x, texCoords.y)).a - c.a;
+              float r = Texel(texture, vec2(texCoords.x + 1.0 / love_ScreenSize.x, texCoords.y)).a - c.a;
+              float u = Texel(texture, vec2(texCoords.x, texCoords.y - 1.0 / love_ScreenSize.y)).a - c.a;
+              float d = Texel(texture, vec2(texCoords.x, texCoords.y + 1.0 / love_ScreenSize.y)).a - c.a;
+              float m = max(max(abs(l), abs(r)), max(abs(u), abs(d)));
+              return vec4(m, m, m, 1.0);
+          } else {
+              return vec4(0.0, 0.0, 0.0, 1.0);
+          }
+      }
+    )";
+    outlineShader.reset(
+        lv.graphics.newShader(lv.wrapVertexShaderCode(vert), lv.wrapFragmentShaderCode(frag)));
+  }
+  {
+    static const char frag[] = R"(
+      vec4 effect(vec4 color, Image texture, vec2 texCoords, vec2 screenCoords) {
+          float c = Texel(texture, texCoords).r;
+          float l = Texel(texture, vec2(texCoords.x - 1.0 / love_ScreenSize.x, texCoords.y)).r;
+          float r = Texel(texture, vec2(texCoords.x + 1.0 / love_ScreenSize.x, texCoords.y)).r;
+          float u = Texel(texture, vec2(texCoords.x, texCoords.y - 1.0 / love_ScreenSize.y)).r;
+          float d = Texel(texture, vec2(texCoords.x, texCoords.y + 1.0 / love_ScreenSize.y)).r;
+          float m = max(c, max(max(l, r), max(u, d)));
+          return vec4(m, m, m, 1.0);
+      }
+    )";
+    outlineThickeningShader.reset(
+        lv.graphics.newShader(lv.wrapVertexShaderCode(vert), lv.wrapFragmentShaderCode(frag)));
+  }
 }
 
 
@@ -407,6 +471,89 @@ void Belt::update(double dtDouble) {
 //
 // Draw
 //
+
+void Belt::drawHighlight() const {
+  if (!selectedEntryId) {
+    return;
+  }
+  if (!editor.hasScene()) {
+    return;
+  }
+  auto &scene = editor.getScene();
+
+  auto &selection = editor.getSelection();
+  auto &selectedActorIds = selection.getSelectedActorIds();
+  for (auto actorId : selectedActorIds) {
+    if (!scene.isGhost(actorId)) {
+      return;
+    }
+  }
+
+  if (!highlightCanvas || !highlightCanvas2) {
+    love::Canvas::Settings settings;
+    settings.width = lv.graphics.getWidth();
+    settings.height = lv.graphics.getHeight();
+    settings.dpiScale = 1;
+    settings.msaa = 4;
+    highlightCanvas.reset(lv.graphics.newCanvas(settings));
+    highlightCanvas2.reset(lv.graphics.newCanvas(settings));
+  }
+
+  lv.renderTo(highlightCanvas.get(), [&]() {
+    lv.graphics.clear(love::Colorf(0, 0, 0, 0), {}, {});
+    SceneDrawingOptions options;
+    options.drawInvisibleActors = true;
+    scene.forEachActorByDrawOrder([&](ActorId actorId) {
+      if (auto parentEntryId = scene.maybeGetParentEntryId(actorId);
+          parentEntryId && selectedEntryId == parentEntryId) {
+        scene.getBehaviors().forEach([&](auto &behavior) {
+          if constexpr (Handlers::hasDrawComponent<decltype(behavior)>) {
+            if (auto component = behavior.maybeGetComponent(actorId)) {
+              behavior.handleDrawComponent(actorId, *component, options);
+            }
+          }
+        });
+      }
+    });
+  });
+
+  lv.graphics.push();
+  lv.graphics.origin();
+
+  // Associated actors as transparent overlay (to make obscured ones visible)
+  lv.graphics.push(love::Graphics::STACK_ALL);
+  lv.graphics.setColor({ 1, 1, 1, 0.7 });
+  highlightCanvas->draw(&lv.graphics, highlightCanvas->getQuad(), {});
+  lv.graphics.pop();
+
+  // Associated actors through highlight shader (to darken other actors)
+  lv.graphics.push(love::Graphics::STACK_ALL);
+  lv.graphics.setBlendMode(
+      love::Graphics::BLEND_MULTIPLY, love::Graphics::BLENDALPHA_PREMULTIPLIED);
+  lv.graphics.setShader(highlightShader.get());
+  highlightCanvas->draw(&lv.graphics, highlightCanvas->getQuad(), {});
+  lv.graphics.pop();
+
+  // Glow
+  lv.renderTo(highlightCanvas2.get(), [&]() {
+    lv.graphics.push(love::Graphics::STACK_ALL);
+    lv.graphics.setShader(outlineShader.get());
+    highlightCanvas->draw(&lv.graphics, highlightCanvas->getQuad(), {});
+    lv.graphics.pop();
+  });
+  lv.renderTo(highlightCanvas.get(), [&]() {
+    lv.graphics.push(love::Graphics::STACK_ALL);
+    lv.graphics.setShader(outlineThickeningShader.get());
+    highlightCanvas2->draw(&lv.graphics, highlightCanvas2->getQuad(), {});
+    lv.graphics.pop();
+  });
+  lv.graphics.push(love::Graphics::STACK_ALL);
+  lv.graphics.setBlendMode(love::Graphics::BLEND_ADD, love::Graphics::BLENDALPHA_MULTIPLY);
+  highlightCanvas->draw(&lv.graphics, highlightCanvas->getQuad(), {});
+  lv.graphics.pop();
+
+  lv.graphics.pop();
+}
 
 void Belt::drawOverlay() const {
   Debug::display(

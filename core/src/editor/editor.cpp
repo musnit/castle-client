@@ -352,6 +352,9 @@ void Editor::draw() {
             -scene->getDefaultViewYOffset(), cardSize.x, cardSize.y, 0.225f, 0.225f, 8);
       }
 
+      // Belt highlight
+      belt.drawHighlight();
+
       lv.graphics.pop();
     }
 
