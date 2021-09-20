@@ -73,13 +73,13 @@ const styles = StyleSheet.create({
     ...Constants.styles.dropShadow,
   },
   cardOptionsCarousel: {
-    bottom: 12,
+    top: 12,
     right: 12,
   },
   cardOptionsGrid: {
     width: 24,
     height: 24,
-    bottom: 4,
+    top: 4,
     right: 4,
   },
   carouselItem: {
@@ -136,14 +136,16 @@ const CardsGrid = ({
               <CardCell
                 card={card}
                 onPress={() => onPress(card)}
-                isInitialCard={cards.length > 1 && initialCard && initialCard.cardId === card.cardId}
+                isInitialCard={
+                  cards.length > 1 && initialCard && initialCard.cardId === card.cardId
+                }
                 inGrid={true}
               />
               {onShowCardOptions && (
                 <TouchableOpacity
                   style={[styles.cardOptions, styles.cardOptionsGrid]}
                   onPress={() => onShowCardOptions(card)}>
-                  <Feather name='more-horizontal' size={16} color={'#000'} />
+                  <Feather name="more-horizontal" size={16} color={'#000'} />
                 </TouchableOpacity>
               )}
             </View>
@@ -197,7 +199,7 @@ const CardsCarousel = ({ cards, titles, initialCard, onPress, onShowCardOptions 
               <TouchableOpacity
                 style={[styles.cardOptions, styles.cardOptionsCarousel]}
                 onPress={() => onShowCardOptions(card)}>
-                <Feather name='more-horizontal' size={22} color={'#000'} />
+                <Feather name="more-horizontal" size={22} color={'#000'} />
               </TouchableOpacity>
             ) : null}
           </View>

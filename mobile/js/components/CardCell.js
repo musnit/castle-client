@@ -56,11 +56,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
     alignItems: 'center',
     justifyContent: 'center',
-  }
+  },
 });
 
 const initialCardStyles = StyleSheet.create({
   container: {
+    position: 'absolute',
     backgroundColor: '#fff',
     borderRadius: 4,
     borderWidth: 1,
@@ -76,12 +77,17 @@ const initialCardStyles = StyleSheet.create({
 });
 
 const InitialCardIndicator = ({ inGrid }) => (
-  <View style={[initialCardStyles.container, {
-    top: inGrid ? 4 : 12,
-    left: inGrid ? 4 : 12,
-    padding: inGrid ? 4 : 8,
-    }]}>
-    <Text style={[initialCardStyles.label, { fontSize: inGrid? 12 : 14 }]}>Top Card</Text>
+  <View
+    style={[
+      initialCardStyles.container,
+      {
+        bottom: inGrid ? 4 : 12,
+        left: inGrid ? 4 : 12,
+        paddingVertical: inGrid ? 4 : 6,
+        paddingHorizontal: inGrid ? 6 : 8,
+      },
+    ]}>
+    <Text style={[initialCardStyles.label, { fontSize: inGrid ? 12 : 15 }]}>Top Card</Text>
   </View>
 );
 
