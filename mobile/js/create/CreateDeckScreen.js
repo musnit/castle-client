@@ -38,9 +38,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    paddingTop: 8,
-    paddingLeft: 8,
-    paddingRight: 16,
+    padding: 8,
+    paddingBottom: 0,
     borderBottomWidth: 1,
     borderBottomColor: Constants.colors.grayOnBlackBorder,
   },
@@ -50,8 +49,8 @@ const styles = StyleSheet.create({
   settingItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 12,
-    paddingTop: 2,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
   },
   settingItemLabel: {
     color: Constants.colors.grayText,
@@ -467,10 +466,12 @@ export const CreateDeckScreen = (props) => {
                 <SegmentedNavigation
                   items={TAB_ITEMS}
                   selectedItem={TAB_ITEMS.find((item) => item.value === viewMode)}
-                  onSelectItem={(item) => setViewMode({
-                    mode: item.value,
-                    deckId: deck.deckId,
-                  })}
+                  onSelectItem={(item) =>
+                    setViewMode({
+                      mode: item.value,
+                      deckId: deck.deckId,
+                    })
+                  }
                   compact={true}
                 />
               </View>
@@ -500,9 +501,7 @@ export const CreateDeckScreen = (props) => {
               onPress={_navigateToCreateCard}
               mode={viewMode}
             />
-            <TouchableOpacity
-              style={styles.addCard}
-              onPress={onPressNewCard}>
+            <TouchableOpacity style={styles.addCard} onPress={onPressNewCard}>
               <FastImage
                 style={styles.addCardIcon}
                 source={require('../../assets/images/create-card.png')}
