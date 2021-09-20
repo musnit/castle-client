@@ -121,9 +121,11 @@ inline void ExpressionComparison::read(Reader &reader) {
     switch (comparisonStr[0]) {
     case 'e': { // "equal"
       comparison = Comparison::Equal;
+      break;
     }
     case 'n': { // "not equal"
       comparison = Comparison::NotEqual;
+      break;
     }
     case 'l': {
       if (comparisonStr[5] == 'o') { // "less or equal"
@@ -131,6 +133,7 @@ inline void ExpressionComparison::read(Reader &reader) {
       } else { // "less than"
         comparison = Comparison::LessThan;
       }
+      break;
     }
     case 'g': {
       if (comparisonStr[8] == 'o') { // "greater or equal"
@@ -138,6 +141,7 @@ inline void ExpressionComparison::read(Reader &reader) {
       } else { // "greater"
         comparison = Comparison::GreaterThan;
       }
+      break;
     }
     }
   }
