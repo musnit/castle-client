@@ -57,7 +57,12 @@ export default InspectorRules = ({ behaviors, addChildSheet }) => {
   const sendCounterAction = React.useCallback((...args) => sendBehaviorAction('Counter', ...args), [
     sendBehaviorAction,
   ]);
-  const rulesItems = rulesComponent?.rules ?? [];
+
+  let rulesItems = rulesComponent?.rules ?? [];
+  if (!Array.isArray(rulesItems)) {
+    // some legacy scene json contains `rules: {}`
+    rulesItems = [];
+  }
 
   const rules = behaviors.Rules;
   const counter = behaviors.Counter;
