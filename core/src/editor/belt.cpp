@@ -409,8 +409,8 @@ void Belt::update(double dtDouble) {
 //
 
 void Belt::drawOverlay() const {
-  /* Debug::display(
-     "belt selected entry id: {}", selectedEntryId ? selectedEntryId->c_str() : "(none)"); */
+  Debug::display(
+      "belt selected entry id: {}", selectedEntryId ? selectedEntryId->c_str() : "(none)");
 
   if (!editor.hasScene()) {
     return;

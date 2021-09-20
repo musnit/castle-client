@@ -1129,7 +1129,7 @@ void RulesBehavior::handlePerform(double dt) {
   // `current`. We don't run contexts directly from `scheduleds` because they could schedule new
   // contexts when run, which would modify `scheduleds` and invalidate the iteration.
   auto performTime = scene.getPerformTime();
-  // Debug::display("scheduled: {}", scheduleds.size());
+  Debug::display("scheduled: {}", scheduleds.size());
   scheduleds.erase(std::remove_if(scheduleds.begin(), scheduleds.end(),
                        [&](Scheduled &scheduled) {
                          if (performTime >= scheduled.performTime) {
@@ -1139,7 +1139,7 @@ void RulesBehavior::handlePerform(double dt) {
                          return false;
                        }),
       scheduleds.end());
-  // Debug::display("current: {}", current.size());
+  Debug::display("current: {}", current.size());
   for (auto &ctx : current) {
     ctx.run();
   }
