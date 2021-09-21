@@ -7,7 +7,7 @@
 namespace CastleAPI {
 void postRequest(const std::string &body,
     const std::function<void(bool, std::string, std::string)>
-        callback); // Implemented in API_ios.mm
+        callback); // Implemented in platform-specific files
 }
 
 struct APIResponse {

@@ -54,9 +54,13 @@ endif()
 # Sources
 file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS src/*.cpp)
 
-list(REMOVE_ITEM MY_SOURCES "${CMAKE_SOURCE_DIR}/src/api_android.cpp")
+list(REMOVE_ITEM MY_SOURCES
+  "${CMAKE_SOURCE_DIR}/src/api_android.cpp" "${CMAKE_SOURCE_DIR}/src/api_web.cpp")
 if(ANDROID)
   list(APPEND MY_SOURCES "${CMAKE_SOURCE_DIR}/src/api_android.cpp")
+endif()
+if(WEB)
+  list(APPEND MY_SOURCES "${CMAKE_SOURCE_DIR}/src/api_web.cpp")
 endif()
 
 if(LIB)
