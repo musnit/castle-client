@@ -54,6 +54,8 @@ struct TagsComponent : BaseComponent {
     PROP(
          std::string, tagsString,
          .label("tags")
+         .rulesGet(false)
+         .rulesSet(false)
          ); // Single string of all tags separated by whitespace
   } props;
 

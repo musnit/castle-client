@@ -102,7 +102,7 @@ struct BodyComponent : BaseComponent {
       PROP(float, minY);
       PROP(float, maxY);
     };
-    PROP(EditorBounds, editorBounds);
+    PROP(EditorBounds, editorBounds, .rulesGet(false) .rulesSet(false));
   } props;
 
   b2Body *body = nullptr;
