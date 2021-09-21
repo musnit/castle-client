@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
 
 export const RuleParamInputRow = ({ entryPath, label, paramSpec, style, ...props }) => {
   const paramLabel = paramSpec?.label ?? label;
-  if (paramSpec.method === 'toggle') {
+  if (paramSpec.type === 'b') {
     // special-case-toggle: compact the UI onto a single row
     return (
       <View style={[styles.container, style]}>

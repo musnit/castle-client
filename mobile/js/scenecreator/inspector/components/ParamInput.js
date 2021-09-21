@@ -55,7 +55,7 @@ export const ParamInput = ({
           optimistic
           value={value}
           onChangeText={setValue}
-          multiline={paramSpec.method === 'textArea'}
+          multiline={type === 'textArea'}
           {...metadata}
         />
       );
