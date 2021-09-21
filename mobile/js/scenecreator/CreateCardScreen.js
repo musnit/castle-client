@@ -9,7 +9,6 @@ import * as Utilities from '../common/utilities';
 
 import Viewport from '../common/viewport';
 
-import * as GhostEvents from '../ghost/GhostEvents';
 import { useListen, useCoreState, sendGlobalAction, sendAsync } from '../core/CoreEvents';
 
 import { CardScene } from '../game/CardScene';
@@ -251,8 +250,8 @@ export const CreateCardScreen = ({
   if (Constants.Android) {
     // after the game loads, it listens for keyboard events and
     // causes react native's back button event to fail
-    // TODO: Wire up to new engine
-    GhostEvents.useListen({
+    // TODO: android: Wire up to new engine
+    useListen({
       eventName: 'CASTLE_SYSTEM_BACK_BUTTON',
       handler: maybeSaveAndGoToDeck,
     });

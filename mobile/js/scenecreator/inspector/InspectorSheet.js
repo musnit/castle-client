@@ -3,7 +3,7 @@ import { useCardCreator } from '../CreateCardContext';
 import { CardCreatorBottomSheet } from '../sheets/CardCreatorBottomSheet';
 import { InspectorHeader } from './InspectorHeader';
 import { InspectorTabs } from './InspectorTabs';
-import * as GhostEvents from '../../ghost/GhostEvents';
+import { sendAsync } from '../../core/CoreEvents';
 
 import * as Constants from '../../Constants';
 
@@ -42,9 +42,11 @@ export const InspectorSheet = ({ isOpen, addChildSheet, beltHeight }) => {
   );
 
   const onSnap = React.useCallback((i) => {
-    GhostEvents.sendAsync('SCENE_CREATOR_INSPECTOR_SHEET_MAXIMIZED', {
-      isMaximized: i == 2,
-    });
+    if (Constants.Android) {
+      sendAsync('SCENE_CREATOR_INSPECTOR_SHEET_MAXIMIZED', {
+        isMaximized: i == 2,
+      });
+    }
   }, []);
 
   useEffect(() => {

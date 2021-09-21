@@ -1,6 +1,6 @@
 import React from 'react';
 import { BackHandler, Platform } from 'react-native';
-import { useListen } from '../ghost/GhostEvents';
+import { useListen } from '../core/CoreEvents';
 import { useFocusEffect } from '../ReactNavigation';
 
 export const useGameViewAndroidBackHandler = Platform.select({

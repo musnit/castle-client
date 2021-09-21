@@ -13,7 +13,6 @@ import { RootNavigator } from './Navigation';
 import { AndroidNavigationContext } from './ReactNavigation';
 import BootSplash from 'react-native-bootsplash';
 import { DeckRemixesScreen } from './play/DeckRemixesScreen';
-import * as GhostEvents from './ghost/GhostEvents';
 import * as CoreEvents from './core/CoreEvents';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableAndroidFontFix } from './AndroidFontFix';
@@ -74,15 +73,13 @@ const MainProvider = (props) => {
     <View style={{ flex: 1 }}>
       <Session.Provider>
         <CoreEvents.Provider>
-          <GhostEvents.Provider>
-            <ApolloProvider client={Session.apolloClient}>
-              <ActionSheetProvider>
-                <SafeAreaProvider>
-                  <Main />
-                </SafeAreaProvider>
-              </ActionSheetProvider>
-            </ApolloProvider>
-          </GhostEvents.Provider>
+          <ApolloProvider client={Session.apolloClient}>
+            <ActionSheetProvider>
+              <SafeAreaProvider>
+                <Main />
+              </SafeAreaProvider>
+            </ActionSheetProvider>
+          </ApolloProvider>
         </CoreEvents.Provider>
       </Session.Provider>
     </View>
@@ -123,15 +120,13 @@ if (Platform.OS === 'android') {
           }}>
           <Session.Provider>
             <CoreEvents.Provider>
-              <GhostEvents.Provider>
-                <ApolloProvider client={Session.apolloClient}>
-                  <ActionSheetProvider>
-                    <SafeAreaProvider>
-                      <WaitForSession>{React.Children.only(props.children)}</WaitForSession>
-                    </SafeAreaProvider>
-                  </ActionSheetProvider>
-                </ApolloProvider>
-              </GhostEvents.Provider>
+              <ApolloProvider client={Session.apolloClient}>
+                <ActionSheetProvider>
+                  <SafeAreaProvider>
+                    <WaitForSession>{React.Children.only(props.children)}</WaitForSession>
+                  </SafeAreaProvider>
+                </ActionSheetProvider>
+              </ApolloProvider>
             </CoreEvents.Provider>
           </Session.Provider>
         </AndroidNavigationContext.Provider>
