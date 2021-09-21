@@ -23,6 +23,7 @@
 #include "GhostPushNotifications.h"
 #include "GhostChannels.h"
 #include "API_ios.h"
+#include "CastleCoreView.h"
 
 #import "../../../ghost-extensions/SDL2-2.0.8/src/video/uikit/SDL_uikitappdelegate.h"
 
@@ -200,7 +201,7 @@ int SDL_main(int argc, char *argv[]) {
 
 - (void)applicationWillResignActive:(UIApplication *)application {
   [self.sdlDelegate applicationWillResignActive:application];
-  // TODO: BEN [CastleCoreView sharedView].displayLink.paused = YES;
+  [CastleCoreView sharedCastleCoreView].displayLink.paused = YES;
   [self _emitAppStateEvent];
   if (self.rctBridge) {
     GhostChannels *channelsModule = [self.rctBridge moduleForName:@"GhostChannels"];
@@ -222,7 +223,7 @@ int SDL_main(int argc, char *argv[]) {
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
   [self.sdlDelegate applicationDidBecomeActive:application];
-  // TODO: BEN [CastleCoreView sharedView].displayLink.paused = NO;
+  [CastleCoreView sharedCastleCoreView].displayLink.paused = NO;
   [self _emitAppStateEvent];
   if (self.rctBridge) {
     GhostChannels *channelsModule = [self.rctBridge moduleForName:@"GhostChannels"];
