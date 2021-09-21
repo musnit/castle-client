@@ -44,7 +44,6 @@ void DragBehavior::handlePerform(double dt) {
     }
     if (touch.pressed) {
       // Find topmost actor at point
-      auto hitActorId = nullActor;
       DragComponent *hitComponent = nullptr;
       const b2Body *hitBody = nullptr;
       auto maxDrawOrder = Scene::minDrawOrder;
@@ -53,7 +52,6 @@ void DragBehavior::handlePerform(double dt) {
           if (auto drawOrder = scene.maybeGetDrawOrder(actorId);
               drawOrder && maxDrawOrder < *drawOrder) {
             if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
-              hitActorId = actorId;
               hitComponent = component;
               hitBody = body;
               maxDrawOrder = *drawOrder;
