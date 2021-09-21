@@ -3,7 +3,7 @@
 
 #import <React/RCTBridgeModule.h>
 
-#import "GhostView.h"
+#import "CastleCoreView.h"
 
 @interface CastleNativeUtils : NSObject <RCTBridgeModule>
 
@@ -20,8 +20,8 @@ RCT_EXPORT_MODULE()
 #else
   NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
   NSString *receiptURLString = [receiptURL path];
-  BOOL isRunningSandboxBuild =
-      ([receiptURLString rangeOfString:@"sandboxReceipt"].location != NSNotFound);
+  BOOL isRunningSandboxBuild
+      = ([receiptURLString rangeOfString:@"sandboxReceipt"].location != NSNotFound);
   if (isRunningSandboxBuild) {
     installSource = @"sandbox";
   } else {
@@ -30,7 +30,7 @@ RCT_EXPORT_MODULE()
 #endif
   return @{
     @"installSource" : installSource,
-    @"sceneCreatorApiVersion" : [GhostView sceneCreatorApiVersion],
+    @"sceneCreatorApiVersion" : [CastleCoreView sceneCreatorApiVersion],
   };
 }
 

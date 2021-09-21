@@ -8,7 +8,6 @@ extern "C" {
 
 #include "AppDelegate.h"
 #include "GhostChannels.h"
-#include "GhostView.h"
 #include "modules/thread/Channel.h"
 
 @interface GhostChannels ()

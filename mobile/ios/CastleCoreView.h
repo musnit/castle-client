@@ -26,6 +26,7 @@ Engine &getEngine();
 @property (nonatomic, strong) CADisplayLink *displayLink;
 
 + (instancetype)sharedCastleCoreView;
++ (NSString *)sceneCreatorApiVersion;
 - (void)setPaused:(BOOL)paused;
 
 @end

@@ -21,7 +21,6 @@
 #include "RNBootSplash.h"
 #include "GhostAppState.h"
 #include "GhostPushNotifications.h"
-#include "GhostView.h"
 #include "GhostChannels.h"
 #include "API_ios.h"
 
@@ -83,11 +82,6 @@ int SDL_main(int argc, char *argv[]) {
   [self.sdlDelegate hideLaunchScreen];
   SDL_SetMainReady();
   SDL_iPhoneSetEventPump(SDL_FALSE);
-
-  // GhostView
-#ifndef USE_CORE
-  [GhostView sharedGhostView];
-#endif
 
   UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
   center.delegate = self;
@@ -206,9 +200,7 @@ int SDL_main(int argc, char *argv[]) {
 
 - (void)applicationWillResignActive:(UIApplication *)application {
   [self.sdlDelegate applicationWillResignActive:application];
-#ifndef USE_CORE
-  [GhostView sharedGhostView].displayLink.paused = YES;
-#endif
+  // TODO: BEN [CastleCoreView sharedView].displayLink.paused = YES;
   [self _emitAppStateEvent];
   if (self.rctBridge) {
     GhostChannels *channelsModule = [self.rctBridge moduleForName:@"GhostChannels"];
@@ -230,9 +222,7 @@ int SDL_main(int argc, char *argv[]) {
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
   [self.sdlDelegate applicationDidBecomeActive:application];
-#ifndef USE_CORE
-  [GhostView sharedGhostView].displayLink.paused = NO;
-#endif
+  // TODO: BEN [CastleCoreView sharedView].displayLink.paused = NO;
   [self _emitAppStateEvent];
   if (self.rctBridge) {
     GhostChannels *channelsModule = [self.rctBridge moduleForName:@"GhostChannels"];

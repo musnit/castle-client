@@ -1,7 +1,7 @@
 #import "API_ios.h"
 #include <RNCAsyncStorage/RNCAsyncStorage.h>
 #include <string>
-#import "GhostView.h"
+#import "CastleCoreView.h"
 
 static RCTBridge *sRctBridge;
 
@@ -31,7 +31,7 @@ static RCTBridge *sRctBridge;
       request.HTTPMethod = @"POST";
 
       [request setValue:@"application/json; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
-      [request setValue:[GhostView sceneCreatorApiVersion] forHTTPHeaderField:@"X-Scene-Creator-Version"];
+      [request setValue:[CastleCoreView sceneCreatorApiVersion] forHTTPHeaderField:@"X-Scene-Creator-Version"];
       
       if (authToken) {
         [request setValue:authToken forHTTPHeaderField:@"X-Auth-Token"];
