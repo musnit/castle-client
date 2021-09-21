@@ -81,12 +81,11 @@ void GrabTool::update(double dt) {
     SmallVector<ActorPosition, 2> before;
     SmallVector<ActorPosition, 2> after;
     for (auto actorId : selection.getSelectedActorIds()) {
-      love::Vector2 beforePos {
-        bodyBehavior.getProperty(actorId, decltype(BodyComponent::Props::x)::id).as<float>(),
-        bodyBehavior.getProperty(actorId, decltype(BodyComponent::Props::y)::id).as<float>(),
-      };
-      before.push_back({ actorId, beforePos });
-      after.push_back({ actorId, beforePos + delta });
+      if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
+        auto beforePos = convert(body->GetPosition());
+        before.push_back({ actorId, beforePos });
+        after.push_back({ actorId, beforePos + delta });
+      }
     }
 
     // Execute command that sets to before or after positions based on undo / redo. Common code is
