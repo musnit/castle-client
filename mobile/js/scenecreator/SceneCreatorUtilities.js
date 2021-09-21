@@ -1,6 +1,8 @@
+export const isParamNumeric = (paramSpec) =>
+  paramSpec.type === 'f' || paramSpec.type === 'i' || paramSpec.type === 'd';
+
 export const canParamBePromotedToExpression = (paramSpec) =>
-  (paramSpec.type === 'f' || paramSpec.type === 'i' || paramSpec.type === 'd') &&
-  paramSpec.attribs.expression !== false;
+  isParamNumeric(paramSpec) && paramSpec.attribs.expression !== false;
 
 export const formatVariableName = (name) => `\$${name}`;
 

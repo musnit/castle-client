@@ -5,7 +5,11 @@ import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
 import { ExpressionTypePickerSheet } from './ExpressionTypePickerSheet';
 import { ParamInput } from '../components/ParamInput';
-import { promoteToExpression, canParamBePromotedToExpression } from '../../SceneCreatorUtilities';
+import {
+  isParamNumeric,
+  promoteToExpression,
+  canParamBePromotedToExpression,
+} from '../../SceneCreatorUtilities';
 import { SelectBehaviorPropertySheet } from '../components/SelectBehaviorPropertySheet';
 import { useCoreState } from '../../../core/CoreEvents';
 
@@ -110,10 +114,7 @@ const makeEmptyExpression = ({ expressions, expressionType, blueprint = null }) 
 const wrapExpression = ({ expression, expressions, wrappingType }) => {
   let result = makeEmptyExpression({ expressions, expressionType: wrappingType });
   let firstNumericParamSpec = expressions[wrappingType].paramSpecs.find(
-    (spec) =>
-      (!spec.order || spec.order === 1) &&
-      spec.method === 'numberInput' &&
-      spec.expression !== false
+    (spec) => (!spec.order || spec.order === 1) && isParamNumeric(spec) && spec.expression !== false
   );
   if (firstNumericParamSpec) {
     let { name } = firstNumericParamSpec;
@@ -230,17 +231,18 @@ const InspectorExpressionInput = ({
                 onChange: setValue,
               });
             };
+            const label = spec.attribs?.label ?? spec.name;
             return (
               <React.Fragment key={`expression-param-${name}-${expressionType}`}>
                 <View style={styles.paramContainer}>
-                  {spec.method !== 'toggle' ? (
+                  {spec.type !== 'b' ? (
                     <View style={styles.paramLabelRow}>
-                      <Text style={styles.paramLabel}>{name}</Text>
+                      <Text style={styles.paramLabel}>{label}</Text>
                     </View>
                   ) : null}
                   <ParamInput
                     entryPath={`Expression.${expressionType}.${name}`}
-                    label={spec.name}
+                    label={label}
                     name={name}
                     paramSpec={spec}
                     style={styles.paramInput}
