@@ -2,15 +2,24 @@
 
 #include "behaviors/all.h"
 
-
-//
-// Enable, disable
-//
-
-void SlidingBehavior::handleEnableComponent(ActorId actorId, SlidingComponent &component) {
+void SlidingBehavior::cleanUpJoint(SlidingComponent &component) {
   auto &world = getScene().getPhysicsWorld();
+  if (component.anchorBody) {
+    world.DestroyBody(component.anchorBody);
+    component.anchorBody = nullptr;
 
+    // Body destruction destroys attached joints
+    component.joint = nullptr;
+  } else if (component.joint) {
+    world.DestroyJoint(component.joint);
+    component.joint = nullptr;
+  }
+}
+
+void SlidingBehavior::updateJoint(ActorId actorId, SlidingComponent &component) {
+  cleanUpJoint(component);
   if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId)) {
+    auto &world = getScene().getPhysicsWorld();
     auto pos = body->GetPosition();
     b2BodyDef anchorBodyDef;
     anchorBodyDef.position = pos;
@@ -29,6 +38,16 @@ void SlidingBehavior::handleEnableComponent(ActorId actorId, SlidingComponent &c
           component.anchorBody, body, pos, direction == "horizontal" ? b2Vec2(1, 0) : b2Vec2(0, 1));
       component.joint = world.CreateJoint(&jointDef);
     }
+  }
+}
+
+//
+// Enable, disable
+//
+
+void SlidingBehavior::handleEnableComponent(ActorId actorId, SlidingComponent &component) {
+  updateJoint(actorId, component);
+  if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId)) {
     if (component.props.isRotationAllowed()) {
       body->SetFixedRotation(false);
     } else {
@@ -41,14 +60,10 @@ void SlidingBehavior::handleEnableComponent(ActorId actorId, SlidingComponent &c
 void SlidingBehavior::handleDisableComponent(
     ActorId actorId, SlidingComponent &component, bool removeActor) {
   if (!removeActor) {
+    cleanUpJoint(component);
     if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId)) {
-      if (component.joint) {
-        // Body destruction destroys attached joints, so check make sure to have checked that
-        getScene().getPhysicsWorld().DestroyJoint(component.joint);
-      }
       body->SetFixedRotation(false);
     }
-    component.joint = nullptr;
   }
 }
 
@@ -65,8 +80,11 @@ void SlidingBehavior::handleSetProperty(
   }
   auto &props = component.props;
   if (propId == props.direction.id) {
-    // NOTE: 'Moves horizontally' / 'Moves vertically' options aren't available in 'Axis Lock'
-    //       property setter rules so ignoring this for now...
+    const char *cStrValue = value.as<const char *>();
+    if (strcmp(cStrValue, component.props.direction().c_str()) != 0) {
+      component.props.direction() = cStrValue;
+      updateJoint(actorId, component);
+    }
   } else if (propId == props.isRotationAllowed.id) {
     auto disallowRotation = value.as<int>() == 0;
     if (disallowRotation) {

@@ -44,4 +44,8 @@ public:
 
   friend class BodyBehavior;
   void handleUpdateComponentPosition(ActorId actorId, SlidingComponent &component, b2Body *body);
+
+private:
+  void cleanUpJoint(SlidingComponent &component);
+  void updateJoint(ActorId actorId, SlidingComponent &component);
 };
