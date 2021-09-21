@@ -516,34 +516,36 @@ const DrawingLayers = ({ sendLayerAction }) => {
               <Text style={{ letterSpacing: 0.5, paddingTop: 1 }}>FRAME</Text>
             </Pressable>
           </View>
-          {layers?.length
-            ? layers.map((layer, idx) => {
-                return (
-                  <LayerRow
-                    key={`layer-${idx}`}
-                    index={idx}
-                    layer={layer}
-                    isSelected={layer.id === selectedLayerId}
-                    selectedFrameIndex={selectedFrameIndex}
-                    showLayerActionSheet={showLayerActionSheet}
-                    showCellActionSheet={showCellActionSheet}
-                    onSelectLayer={onSelectLayer}
-                    isCollisionActive={isCollisionActive}
-                    sendLayerAction={sendLayerAction}
-                  />
-                );
-              })
-            : null}
-          <CollisionRow
-            onSelect={onSelectCollision}
-            isSelected={isCollisionActive}
-            previewPng={collisionBase64Png}
-            numFrames={layers?.length ? layers[0].frames.length : 0}
-            isVisible={isCollisionVisible}
-            setVisible={(visible) =>
-              sendLayerAction('setCollisionIsVisible', { doubleValue: visible ? 1 : 0 })
-            }
-          />
+          <View style={{ flexDirection: 'column-reverse' }}>
+            <CollisionRow
+              onSelect={onSelectCollision}
+              isSelected={isCollisionActive}
+              previewPng={collisionBase64Png}
+              numFrames={layers?.length ? layers[0].frames.length : 0}
+              isVisible={isCollisionVisible}
+              setVisible={(visible) =>
+                sendLayerAction('setCollisionIsVisible', { doubleValue: visible ? 1 : 0 })
+              }
+            />
+            {layers?.length
+              ? layers.map((layer, idx) => {
+                  return (
+                    <LayerRow
+                      key={`layer-${idx}`}
+                      index={idx}
+                      layer={layer}
+                      isSelected={layer.id === selectedLayerId}
+                      selectedFrameIndex={selectedFrameIndex}
+                      showLayerActionSheet={showLayerActionSheet}
+                      showCellActionSheet={showCellActionSheet}
+                      onSelectLayer={onSelectLayer}
+                      isCollisionActive={isCollisionActive}
+                      sendLayerAction={sendLayerAction}
+                    />
+                  );
+                })
+              : null}
+          </View>
         </View>
       </ScrollView>
     </ScrollView>
