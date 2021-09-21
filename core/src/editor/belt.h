@@ -69,7 +69,7 @@ private:
   std::optional<Placing> placing;
 
 
-  //bool highlightEnabled = false;
+  bool highlightEnabled = false;
 
   std::unique_ptr<love::Shader> highlightShader;
   std::unique_ptr<love::Shader> outlineShader;

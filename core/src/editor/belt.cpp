@@ -97,6 +97,7 @@ void Belt::select(std::string entryId) {
   editor.getScene().getLibrary().forEachEntry([&](const LibraryEntry &entry) {
     if (entry.getEntryId() == *selectedEntryId) {
       targetIndex = elemIndex;
+      highlightEnabled = true;
     }
     ++elemIndex;
   });
@@ -264,9 +265,10 @@ void Belt::update(double dtDouble) {
           editor.getBridge().sendEvent("SHOW_NEW_BLUEPRINT_SHEET", ev);
         }
       }
+      if (targetIndex != -1) {
+        highlightEnabled = true; // Enable highlight if we targeted something
+      }
     }
-
-    // TODO(nikki): Enable highlight
 
     // Placing logic
     {
@@ -391,8 +393,10 @@ void Belt::update(double dtDouble) {
     if (selectedEntryId) {
       auto cursorElemIndex = int(std::round(cursorX / (elemSize + elemGap)));
       if (auto cursorEntry = library.indexEntry(cursorElemIndex)) {
-        // TODO(nikki): Enable highlight if entry changed
-        selectedEntryId = cursorEntry->getEntryId(); // TODO(nikki): Avoid unnecessary copying
+        if (selectedEntryId != cursorEntry->getEntryId()) {
+          highlightEnabled = true;
+          selectedEntryId = cursorEntry->getEntryId(); // TODO(nikki): Avoid unnecessary copying
+        }
       }
     }
 
@@ -460,9 +464,19 @@ void Belt::update(double dtDouble) {
     }
   }
 
-  // TODO(nikki): Disable highlight when not selecting blueprint
-
   updateSelection();
+
+  // Disable highlight when no entry selected, or if some non-ghost actor is selected
+  if (!selectedEntryId) {
+    highlightEnabled = false;
+  } else {
+    for (auto actorId : selection.getSelectedActorIds()) {
+      if (!scene.isGhost(actorId)) {
+        highlightEnabled = false;
+        break;
+      }
+    }
+  }
 
   firstFrame = false;
 }
@@ -473,21 +487,13 @@ void Belt::update(double dtDouble) {
 //
 
 void Belt::drawHighlight() const {
-  if (!selectedEntryId) {
+  if (!highlightEnabled || !selectedEntryId) {
     return;
   }
   if (!editor.hasScene()) {
     return;
   }
   auto &scene = editor.getScene();
-
-  auto &selection = editor.getSelection();
-  auto &selectedActorIds = selection.getSelectedActorIds();
-  for (auto actorId : selectedActorIds) {
-    if (!scene.isGhost(actorId)) {
-      return;
-    }
-  }
 
   if (!highlightCanvas || !highlightCanvas2) {
     love::Canvas::Settings settings;
