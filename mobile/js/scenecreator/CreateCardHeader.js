@@ -94,7 +94,7 @@ export const CreateCardHeader = ({
           {data.performing ? (
             <Fragment>
               <TouchableOpacity style={styles.action} onPress={() => sendGlobalAction('onRewind')}>
-                <CastleIcon name="play" size={22} color="#000" />
+                <CastleIcon name="rewind" size={22} color="#000" />
               </TouchableOpacity>
               <CreateCardCaptureActions />
             </Fragment>
