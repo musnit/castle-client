@@ -4,10 +4,9 @@ import { useCoreState, sendGlobalAction, sendAsync } from '../../core/CoreEvents
 import { OverlayDrawingSubtools } from './OverlayDrawingSubtools';
 
 import ColorPicker from '../inspector/components/ColorPicker';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as Constants from '../../Constants';
+const CastleIcon = Constants.CastleIcon;
 
 const styles = StyleSheet.create({
   topContainer: {
@@ -20,9 +19,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'flex-end',
   },
-  rightContainer: {
-    width: 36,
-  },
   close: {
     borderRadius: 6,
     backgroundColor: Constants.colors.white,
@@ -32,6 +28,7 @@ const styles = StyleSheet.create({
   },
   toolbar: {
     borderRadius: 6,
+    overflow: 'hidden',
     backgroundColor: Constants.colors.white,
     borderColor: Constants.colors.black,
     borderWidth: 1,
@@ -41,10 +38,9 @@ const styles = StyleSheet.create({
   },
   button: {
     width: 36,
-    height: '100%',
+    aspectRatio: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    borderColor: Constants.colors.black,
   },
 });
 
@@ -60,40 +56,40 @@ const TOOL_GROUPS = {
   artwork: [
     {
       name: 'artwork_draw',
-      IconComponent: MCIcon,
-      icon: 'pencil-outline',
+      IconComponent: CastleIcon,
+      icon: 'draw',
     },
     {
       name: 'fill',
-      IconComponent: MCIcon,
-      icon: 'format-color-fill',
+      IconComponent: CastleIcon,
+      icon: 'fill',
     },
     {
       name: 'artwork_move',
-      IconComponent: Icon,
-      icon: 'pan-tool',
+      IconComponent: CastleIcon,
+      icon: 'grab',
     },
     {
       name: 'artwork_erase',
-      IconComponent: MCIcon,
-      icon: 'eraser',
+      IconComponent: CastleIcon,
+      icon: 'erase',
     },
   ],
   collision: [
     {
       name: 'collision_draw',
-      IconComponent: MCIcon,
-      icon: 'pencil-outline',
+      IconComponent: CastleIcon,
+      icon: 'draw',
     },
     {
       name: 'collision_move',
-      IconComponent: Icon,
-      icon: 'pan-tool',
+      IconComponent: CastleIcon,
+      icon: 'grab',
     },
     {
       name: 'collision_erase',
-      IconComponent: MCIcon,
-      icon: 'eraser',
+      IconComponent: CastleIcon,
+      icon: 'erase',
     },
   ],
 };
@@ -155,7 +151,7 @@ export const OverlayDrawing = () => {
       <View style={styles.topContainer}>
         <View style={[styles.close, styles.button]}>
           <Pressable onPress={() => sendGlobalAction('setMode', 'default')}>
-            <Icon name="close" size={28} color="#000" />
+            <CastleIcon name="close" size={22} color="#000" />
           </Pressable>
         </View>
         <View style={styles.toolbar}>
@@ -166,7 +162,7 @@ export const OverlayDrawing = () => {
             style={styles.button}
             onPressIn={() => setViewInContext(true)}
             onPressOut={() => setViewInContext(false)}>
-            <Icon name="landscape" size={24} />
+            <CastleIcon name="view-context" size={22} />
           </Pressable>
         </View>
       </View>
@@ -174,7 +170,7 @@ export const OverlayDrawing = () => {
         <View style={styles.rightContainer}>
           {showColorPicker ? (
             <View style={[styles.toolbar, { marginBottom: 8 }]}>
-              <View style={[styles.button, { width: '100%', height: 36 }]}>
+              <View style={styles.button}>
                 <ColorPicker
                   value={color}
                   setValue={(color) => {

@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { useCoreState, sendGlobalAction, sendAsync } from '../../core/CoreEvents';
 
 import * as Constants from '../../Constants';
+const CastleIcon = Constants.CastleIcon;
 
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -10,6 +11,7 @@ import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 const styles = StyleSheet.create({
   toolbar: {
     borderRadius: 6,
+    overflow: 'hidden',
     backgroundColor: Constants.colors.white,
     borderColor: Constants.colors.black,
     borderWidth: 1,
@@ -19,7 +21,7 @@ const styles = StyleSheet.create({
   },
   button: {
     height: 36,
-    width: '100%',
+    aspectRatio: 1,
     alignItems: 'center',
     justifyContent: 'center',
     borderColor: Constants.colors.black,
@@ -32,7 +34,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const ICON_SIZE = 20;
+const ICON_SIZE = 22;
 
 const makeButtonStyles = (value, name) => {
   return value == name ? [styles.button, { backgroundColor: '#000' }] : [styles.button];
@@ -59,28 +61,28 @@ const DRAW_SUBTOOLS = {
   artwork_draw: [
     {
       name: 'pencil_no_grid',
-      IconComponent: MaterialIcon,
-      icon: 'gesture',
+      IconComponent: CastleIcon,
+      icon: 'draw-freehand',
     },
     {
       name: 'line',
-      IconComponent: MCIcon,
-      icon: 'vector-line',
+      IconComponent: CastleIcon,
+      icon: 'draw-line',
     },
     {
       name: 'rectangle',
-      IconComponent: MCIcon,
-      icon: 'square-outline',
+      IconComponent: CastleIcon,
+      icon: 'draw-rectangle',
     },
     {
       name: 'circle',
-      IconComponent: MCIcon,
-      icon: 'circle-outline',
+      IconComponent: CastleIcon,
+      icon: 'draw-ellipse',
     },
     {
       name: 'triangle',
-      IconComponent: MCIcon,
-      icon: 'triangle-outline',
+      IconComponent: CastleIcon,
+      icon: 'draw-triangle',
     },
   ],
   artwork_move: [

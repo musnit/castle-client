@@ -5,16 +5,10 @@ import tinycolor from 'tinycolor2';
 
 const styles = StyleSheet.create({
   button: {
-    borderWidth: 2,
-    backgroundColor: '#eee',
-    borderColor: '#eee',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: 32,
+    height: 32,
     borderRadius: 4,
     overflow: 'hidden',
-  },
-  buttonSelected: {
-    backgroundColor: '#cde1ff',
   },
   picker: {
     padding: 4,
@@ -151,11 +145,8 @@ const ColorPicker = ({ value, setValue }) => {
   };
 
   return (
-    <PopoverButton
-      style={styles.button}
-      activeStyle={{ ...styles.button, ...styles.buttonSelected }}
-      popover={popover}>
-      <View style={{ width: 28, height: 28, backgroundColor: valueStr }} />
+    <PopoverButton style={styles.button} activeStyle={styles.button} popover={popover}>
+      <View style={{ width: '100%', height: '100%', backgroundColor: valueStr }} />
     </PopoverButton>
   );
 };
