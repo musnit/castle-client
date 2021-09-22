@@ -64,6 +64,7 @@ public:
           || !DrawUtil::floatEquals(clampedDiff.y, 0.0)) {
         auto pathDataList = drawTool.getDrawData().currentPathDataList();
         for (auto &pathData : *pathDataList) {
+          ReleasePath(pathData.tovePath);
           pathData.tovePath.ptr = NULL;
 
           for (size_t i = 0; i < pathData.points.size(); i++) {

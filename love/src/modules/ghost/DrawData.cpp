@@ -342,162 +342,6 @@ namespace ghost {
   PathDataList *DrawData::currentPathDataList() {
     return &currentLayerFrame()->pathDataList;
   }
-  /*
-  TYPE DrawData::new(TYPE obj) {
-    if (!obj || obj == null) {
-          obj = {
-            version = 2;
-          }
-    }
-    auto newObj = {
-          _graphics = null;
-          _graphicsNeedsReset = true;
-          pathDataList = obj.pathDataList || [];
-          color = obj.color || obj.fillColor || [hexStringToRgb("f9a31b")];
-          lineColor = obj.lineColor || [hexStringToRgb("f9a31b")];
-          gridSize = obj.gridSize || 0.71428571428571;
-          scale = obj.scale || DRAW_DATA_SCALE;
-          pathsCanvas = null;
-          fillImageData = null;
-          fillImage = null;
-          fillImageBounds = obj.fillImageBounds || {
-            maxX = 0;
-            maxY = 0;
-            minX = 0;
-            minY = 0;
-          }
-          fillCanvasSize = obj.fillCanvasSize || FILL_CANVAS_SIZE;
-          fillPng = obj.fillPng || null;
-          version = obj.version || null;
-          fillPixelsPerUnit = obj.fillPixelsPerUnit || 25.6;
-          bounds = obj.bounds || null;
-          framesBounds = obj.framesBounds || [];
-          layers = obj.layers || [];
-          numTotalLayers = obj.numTotalLayers || 1;
-          selectedLayerId = obj.selectedLayerId || null;
-          selectedFrame = obj.selectedFrame || 1;
-          _layerDataChanged = true;
-          _layerData = null;
-    }
-    printObject(newObj);
-    love.ghost.loadDrawData(newObj);
-    for (int l = 0; l < newObj.layers.length; l++) {
-          for (int f = 0; f < newObj.layers[l].frames.length; f++) {
-            auto frame = newObj.layers[l].frames[f];
-            frame.pathsCanvas = null;
-            frame.fillImageData = null;
-            frame.fillImage = null;
-          }
-    }
-    newObj = util.deepCopyTable(newObj);
-    setmetatable(newObj, self);
-    __index = self;
-    newObj.migrateV1ToV2();
-    newObj.migrateV2ToV3();
-    newObj.clearGraphics();
-    setmetatable(newObj, self);
-    __index = self;
-    for (int l = 0; l < newObj.layers.length; l++) {
-          auto layer = newObj.layers[l];
-          if (layer.isVisible == null) {
-            layer.isVisible = true;
-          }
-          if (!layer.id) {
-            layer.id = "layer" + l;
-          }
-          for (int f = 0; f < newObj.layers[l].frames.length; f++) {
-            auto frame = newObj.layers[l].frames[f];
-            setmetatable(frame, {
-                  __index = DrawDataFrame;
-            });
-            frame.parent = undefined;
-            frame.deserializePathDataList();
-          }
-    }
-    if (newObj.selectedLayerId == null) {
-          newObj.selectedLayerId = newObj.layers[0].id;
-    }
-    newObj.graphics();
-    for (int l = 0; l < newObj.layers.length; l++) {
-          for (int f = 0; f < newObj.layers[l].frames.length; f++) {
-            auto frame = newObj.layers[l].frames[f];
-            frame.deserializeFillAndPreview();
-          }
-    }
-    return newObj;
-  }
-
-  TYPE DrawData::migrateV1ToV2() {
-    if (version != null && version >= 2) {
-          return;
-    }
-    version = 2;
-    gridSize = scale / (gridSize - 1);
-    bounds = {
-          minX = -scale / 2;
-          minY = -scale / 2;
-          maxX = scale / 2;
-          maxY = scale / 2;
-    }
-    fillImageBounds = {
-          minX = (fillPixelsPerUnit * -scale) / 2;
-          minY = (fillPixelsPerUnit * -scale) / 2;
-          maxX = (fillPixelsPerUnit * scale) / 2;
-          maxY = (fillPixelsPerUnit * scale) / 2;
-    }
-    for (int i = 0; i < pathDataList.length; i++) {
-          auto pathData = pathDataList[i];
-          for (int j = 0; j < pathData.points.length; j++) {
-            pathData.points[j].x = pathData.points[j].x - (scale / 2);
-            pathData.points[j].y = pathData.points[j].y - (scale / 2);
-          }
-          if (pathData.bendPoint) {
-            pathData.bendPoint.x = pathData.bendPoint.x - (scale / 2);
-            pathData.bendPoint.y = pathData.bendPoint.y - (scale / 2);
-          }
-    }
-    auto boundsPathData1 = [];
-    boundsPathData1.points = Point(Point(-scale / 2, -scale / 2), Point(-scale / 2, -scale / 2));
-    boundsPathData1.style = -1;
-    boundsPathData1.isFreehand = true;
-    boundsPathData1.isTransparent = true;
-    auto boundsPathData2 = [];
-    boundsPathData2.points = Point(Point(scale / 2, scale / 2), Point(scale / 2, scale / 2));
-    boundsPathData2.style = -1;
-    boundsPathData2.isFreehand = true;
-    boundsPathData2.isTransparent = true;
-    pathDataList.push_back(boundsPathData1);
-    pathDataList.push_back(boundsPathData2);
-  }
-
-  TYPE DrawData::migrateV2ToV3() {
-    if (version >= 3 && layers.length > 0) {
-          return;
-    }
-    version = 3;
-    frames = 1;
-    layers = [{
-          title = "Layer 1";
-          frames = [util.deepCopyTable({
-            pathDataList = pathDataList;
-            pathsCanvas = pathsCanvas;
-            fillImageData = fillImageData;
-            fillImage = fillImage;
-            fillImageBounds = fillImageBounds;
-            fillCanvasSize = fillCanvasSize;
-            fillPng = fillPng;
-          })];
-    }];
-    pathDataList = null;
-    pathsCanvas = null;
-    fillImageData = null;
-    fillImage = null;
-    fillImageBounds = null;
-    fillCanvasSize = null;
-    fillPng = null;
-    framesBounds = [bounds];
-    bounds = null;
-  }*/
 
   void DrawData::clearBounds() {
     framesBounds.clear();
@@ -528,6 +372,9 @@ namespace ghost {
   }
 
   bool DrawData::arePathDatasFloodFillable(PathData &pd1, PathData &pd2) {
+	if (pd1.points.size() == 0 || pd2.points.size() == 0) {
+	  return false;
+	}
     if (!DrawAlgorithms::coordinatesEqual(pd1.points[pd1.points.size() - 1], pd2.points[0])) {
       return false;
     }
@@ -866,53 +713,6 @@ namespace ghost {
     delete previewCanvas;
     return result;
   }
-
-  /*
-
-  TYPE DrawData::function() {
-    auto pathBounds = getBounds(frame);
-    auto width = pathBounds.maxX - pathBounds.minX;
-    auto height = pathBounds.maxY - pathBounds.minY;
-    auto maxDimension = width;
-    if (height > maxDimension) {
-          maxDimension = height;
-    }
-    auto widthPadding = (maxDimension - width) / 2;
-    auto heightPadding = (maxDimension - height) / 2;
-    auto padding = maxDimension * 0.025;
-    love.graphics.push("all");
-    love.graphics.origin();
-    love.graphics.scale(size / (maxDimension * 1.05));
-    love.graphics.translate((padding - pathBounds.minX) + widthPadding, (padding - pathBounds.minY)
-  + heightPadding); love.graphics.clear(0, 0, 0, 0); love.graphics.setColor(1, 1, 1, 1); render({
-          currentFrame = frame;
-    });
-    love.graphics.pop();
-  }
-
-  TYPE DrawData::clearGraphics() {
-    for (int l = 0; l < layers.length; l++) {
-          for (int f = 0; f < layers[l].frames.length; f++) {
-            auto frame = layers[l].frames[f];
-            frame._graphics = null;
-            frame._graphicsNeedsReset = true;
-            for (int i = 0; i < frame.pathDataList.length; i++) {
-                  frame.pathDataList[i].tovePath = null;
-                  frame.pathDataList[i].subpathDataList = null;
-            }
-          }
-    }
-  }
-
-  TYPE DrawData::updateColor(TYPE r, TYPE g, TYPE b) {
-    if (r == color[0] && g == color[1] && b == color[2]) {
-          return false;
-    }
-    color[0] = r;
-    color[1] = g;
-    color[2] = b;
-    return true;
-  }*/
 
   bool DrawData::isPointInBounds(Point point) {
     return point.x >= -DRAW_MAX_SIZE && point.x <= DRAW_MAX_SIZE && point.y >= -DRAW_MAX_SIZE

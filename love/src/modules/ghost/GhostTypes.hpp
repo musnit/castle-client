@@ -242,6 +242,10 @@ namespace ghost {
       tovePath.ptr = NULL;
     }
 
+    bool isValid() const {
+      return points.size() >= 2;
+    }
+
     void copyAttributes(const PathData &other) {
       style = other.style;
       isFreehand = other.isFreehand;
@@ -251,11 +255,18 @@ namespace ghost {
     }
 
     ~PathData() {
-      // TODO: saveDrawing->renderPreviewPng->getPathDataBounds calls this twice for some reason
-      /*for (auto &subpath : toveSubpaths) {
-        ReleaseSubpath(subpath);
+      if (tovePath.ptr) {
+        // TODO: uncommenting this breaks the eraser tool in some decks (try erasing the bottom of the gem blueprint)
+        // For some reason, two different PathDatas have the same value for tovePath.ptr.
+        /*for (auto &subpath : toveSubpaths) {
+			if (subpath.ptr) {
+          ReleaseSubpath(subpath);
+				subpath.ptr = NULL;
+			}
+        }
+        ReleasePath(tovePath);
+        tovePath.ptr = NULL;*/
       }
-      ReleasePath(tovePath);*/
     }
 
     void read(Archive::Reader &archive) {

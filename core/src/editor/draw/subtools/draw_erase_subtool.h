@@ -94,7 +94,9 @@ public:
         drawTool.resetTempGraphics();
       }
     } else {
-      didChange = pathIndicesToRemove.size() > 0;
+        if (pathIndicesToRemove.size() > 0) {
+            didChange = true;
+        }
       for (auto iter = pathIndicesToRemove.rbegin(); iter != pathIndicesToRemove.rend(); iter++) {
         auto index = *iter;
         pathDataList->erase(pathDataList->begin() + index);

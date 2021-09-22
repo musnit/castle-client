@@ -840,6 +840,8 @@ void ImageData::updateFloodFillForNewPaths(ImageData *paths, int debug)
 	for (std::map<int, std::map<int, int> *>::iterator it = regionToPixelCounts.begin(); it != regionToPixelCounts.end(); ++it) {
 		delete it->second;
 	}
+
+	delete pixels;
 }
 
 void ImageData::paste(ImageData *src, int dx, int dy, int sx, int sy, int sw, int sh)

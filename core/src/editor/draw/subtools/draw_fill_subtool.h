@@ -46,6 +46,8 @@ public:
       }
 
       for (size_t i = 0; i < pathDataList->size(); i++) {
+        // if i is in pathIndicesToFill, move in both directions from i
+        // until you hit an index that's already filled
         if (pathIndicesToFill.find(i) != pathIndicesToFill.end()) {
           for (int j = i - 1; j >= 0; j--) {
             if (pathIndicesToFill.find(j) != pathIndicesToFill.end()) {
@@ -78,6 +80,7 @@ public:
       for (size_t i = 0; i < pathDataList->size(); i++) {
         if (pathIndicesToFill.find(i) != pathIndicesToFill.end()) {
           auto &pathData = (*pathDataList)[i];
+          ReleasePath(pathData.tovePath);
           pathData.tovePath.ptr = NULL;
           pathData.color = drawTool.getDrawData().color;
           filledPath = true;

@@ -48,7 +48,9 @@ namespace ghost {
     DrawDataFrame(const DrawDataFrame &other) {
       isLinked = other.isLinked;
       for (auto &otherPathData : other.pathDataList) {
-        pathDataList.push_back(PathData(otherPathData));
+        if (otherPathData.isValid()) {
+          pathDataList.push_back(PathData(otherPathData));
+        }
       }
       fillImageBounds.set(other.fillImageBounds);
       fillPng = other.fillPng;
@@ -57,13 +59,34 @@ namespace ghost {
       deserializeFill();
     }
 
+    ~DrawDataFrame() {
+      if (_graphics) {
+        delete _graphics;
+      }
+
+      if (fillImageData) {
+        fillImageData->release();
+      }
+
+      if (fillImage) {
+        fillImage->release();
+      }
+
+      if (pathsCanvas) {
+        pathsCanvas->release();
+      }
+    }
+
     void read(Archive::Reader &archive) {
       isLinked = archive.boolean("isLinked", false);
       archive.arr("pathDataList", [&]() {
         for (auto i = 0; i < archive.size(); i++) {
           PathData pathData;
           archive.obj(i, pathData);
-          pathDataList.push_back(pathData);
+
+          if (pathData.isValid()) {
+            pathDataList.push_back(pathData);
+          }
         }
       });
 
@@ -77,7 +100,9 @@ namespace ghost {
       archive.boolean("isLinked", isLinked);
       archive.arr("pathDataList", [&]() {
         for (size_t i = 0; i < pathDataList.size(); i++) {
-          archive.obj(pathDataList[i]);
+          if (pathDataList[i].isValid()) {
+            archive.obj(pathDataList[i]);
+          }
         }
       });
 
@@ -90,6 +115,8 @@ namespace ghost {
         size_t dstlen = 0;
         char *result = data::encode(data::ENCODE_BASE64, fileDataString, fileDataSize, dstlen, 0);
         archive.str("fillPng", std::string(result));
+        delete result;
+        fileData->release();
       }
     }
 
@@ -100,7 +127,6 @@ namespace ghost {
     static std::string encodeBase64Png(love::image::ImageData *imageData);
     static std::string encodeBase64Png(graphics::Canvas *canvas);
 
-    void deserializePathDataList();
     bool arePathDatasMergable(PathData pd1, PathData pd2);
     float round(float num, int numDecimalPlaces);
     std::vector<float> roundFloatArray(std::vector<float> a);

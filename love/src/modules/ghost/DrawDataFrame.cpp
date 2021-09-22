@@ -18,27 +18,6 @@
 namespace love {
 namespace ghost {
 
-
-  void DrawDataFrame::deserializePathDataList() {
-    /*auto newPathDataList = [];
-    for (size_t i = 0; i < pathDataList.size(); i++) {
-          auto pathData = pathDataList[i];
-          if (pathData.points.size() > 2) {
-            auto pathData = util.deepCopyTable(pathData);
-            pathData.subpathDataList = null;
-            pathData.tovePath = null;
-            for (size_t j = 1; j < pathData.points.size() - 1; j++) {
-                  auto newPathData = util.deepCopyTable(pathData);
-                  newPathData.points = util.deepCopyTable(Point(pathData.points[j],
-    pathData.points[j + 1])); newPathDataList.push_back(newPathData);
-            }
-          } else {
-            newPathDataList.push_back(pathData);
-          }
-    }
-    pathDataList = newPathDataList;*/
-  }
-
   void DrawDataFrame::deserializeFill() {
     if (fillPng && fillPng->length() > 0) {
       // data::ContainerType ctype = data::CONTAINER_STRING;
@@ -53,6 +32,8 @@ namespace ghost {
 
       image::Image *imageModule = Module::getInstance<image::Image>(Module::M_IMAGE);
       fillImageData = imageModule->newImageData(byteData);
+
+      byteData->release(); // this also deletes fileDataString
     }
   }
 
@@ -86,41 +67,6 @@ namespace ghost {
     }
     return a;
   }
-  /*
-  TYPE DrawDataFrame::serialize() {
-    auto frameData = {
-          isLinked = isLinked;
-          pathDataList = [];
-          fillImageBounds = fillImageBounds;
-          fillCanvasSize = fillCanvasSize;
-    }
-    auto lastSerializedPathData = null;
-    for (size_t i = 0; i < pathDataList.size(); i++) {
-          auto pathData = pathDataList[i];
-          auto serializedPathData = {
-            points = util.deepCopyTable(pathData.points);
-            style = pathData.style;
-            bendPoint = roundFloatArray(pathData.bendPoint);
-            isFreehand = pathData.isFreehand;
-            color = roundFloatArray(pathData.color);
-            isTransparent = pathData.isTransparent;
-          }
-          for (size_t j = 1; j < serializedPathData.points.size(); j++) {
-            serializedPathData.points[j].x = round(serializedPathData.points[j].x, 4);
-            serializedPathData.points[j].y = round(serializedPathData.points[j].y, 4);
-          }
-          if (lastSerializedPathData != null && arePathDatasMergable(lastSerializedPathData,
-  serializedPathData)) { lastSerializedPathData.points.push_back(serializedPathData.points[2]); }
-  else { frameData.pathDataList.push_back(serializedPathData); lastSerializedPathData =
-  serializedPathData;
-          }
-    }
-    if (fillImageData) {
-          auto fileData = fillImageData.encode("png");
-          frameData.fillPng = love.data.encode("string", "base64", fileData.getString());
-    }
-    return frameData;
-  }*/
 
   void DrawDataFrame::cleanUpPaths() {
     for (size_t i = 0; i < pathDataList.size(); i++) {
@@ -213,8 +159,7 @@ namespace ghost {
       newFillImageData->copyImageData(fillImageData, 0, 0,
           fillImageBounds.maxX - fillImageBounds.minX, fillImageBounds.maxY - fillImageBounds.minY,
           fillImageBounds.minX - pathBounds.minX, fillImageBounds.minY - pathBounds.minY);
-      // TODO: why does this cause a memory issue?
-      // delete fillImageData;
+      fillImageData->release();
       fillImageData = newFillImageData;
     }
     fillImageBounds.set(pathBounds);
@@ -268,9 +213,9 @@ namespace ghost {
       return;
     }
     if (fillImageData->isEmpty()) {
-      delete fillImageData;
+      fillImageData->release();
       if (fillImage != NULL) {
-        delete fillImage;
+        fillImage->release();
       }
       fillImageData = NULL;
       fillImage = NULL;
@@ -299,7 +244,7 @@ namespace ghost {
           newFillImageData->setPixel(0, y, p);
         }
       }
-      // delete fillImageData;
+      fillImageData->release();
       fillImageData = newFillImageData;
       fillImageBounds.minX = fillImageBounds.minX + minX;
       fillImageBounds.minY = fillImageBounds.minY + minY;
@@ -329,6 +274,7 @@ namespace ghost {
     auto pixelCount = getFillImageDataSizedToPathBounds()->floodFill(
         floor((x * parent()->fillPixelsPerUnit) - fillImageBounds.minX),
         floor((y * parent()->fillPixelsPerUnit) - fillImageBounds.minY), pathsImageData, p);
+    pathsImageData->release();
     compressFillCanvas();
     updateFillImageWithFillImageData();
     return pixelCount > 0;
@@ -341,6 +287,7 @@ namespace ghost {
         floor((x * parent()->fillPixelsPerUnit) - fillImageBounds.minX),
         floor((y * parent()->fillPixelsPerUnit) - fillImageBounds.minY),
         floor(radius * parent()->fillPixelsPerUnit), pathsImageData);
+    pathsImageData->release();
     compressFillCanvas();
     updateFillImageWithFillImageData();
     return pixelCount > 0;
@@ -352,6 +299,7 @@ namespace ghost {
     auto pathsImageData = canvasToImageData(pathsCanvas);
     getFillImageDataSizedToPathBounds()->updateFloodFillForNewPaths(
         pathsImageData, DEBUG_UPDATE_FLOOD_FILL);
+    pathsImageData->release();
     compressFillCanvas();
     updateFillImageWithFillImageData();
   }
@@ -444,7 +392,7 @@ namespace ghost {
   ToveGraphicsHolder *DrawDataFrame::graphics() {
     if (_graphicsNeedsReset || _graphics == NULL) {
       if (_graphics != NULL) {
-        // TODO: don't leak _graphics
+        delete _graphics;
         _graphics = nullptr;
       }
 
@@ -507,8 +455,11 @@ namespace ghost {
     const char *fileDataString = (const char *)fileData->getData();
     size_t fileDataSize = fileData->getSize();
     size_t dstlen = 0;
-    char *result = data::encode(data::ENCODE_BASE64, fileDataString, fileDataSize, dstlen, 0);
-    return std::string(result);
+    char *cStrResult = data::encode(data::ENCODE_BASE64, fileDataString, fileDataSize, dstlen, 0);
+    fileData->release();
+    auto result = std::string(cStrResult);
+    delete cStrResult;
+    return result;
   }
 
   std::string DrawDataFrame::encodeBase64Png(graphics::Canvas *canvas) {
