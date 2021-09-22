@@ -27,9 +27,6 @@ Once you have the app running, shake the device to open the React Native develop
 
 # Releases
 
-- Run `tools/set-scene-creator-api-version.sh` with something other than `dev`, corresponding to the lua release channel you'd like this build to use. This will modify native config files for iOS and Android. You can commit this change to a release branch, but not to master.
-- Publish `scene-creator` to the release channel chosen for this build.
-
 ## iOS (Testflight)
 
 - Make sure `fastlane` is up to date: `bundle update fastlane` from this directory. (You need the `bundler` gem.)
