@@ -186,6 +186,7 @@ void BodyBehavior::handleEnableComponent(ActorId actorId, BodyComponent &compone
   // Layer
   switch (component.props.layerName()[0]) {
   case 'c': { // "camera"
+    component.props.relativeToCamera() = true;
     component.layer = BodyLayer::Camera;
     scene.getEntityRegistry().emplace<CameraLayerMarker>(actorId);
     break;
@@ -412,6 +413,18 @@ void BodyBehavior::handleSetProperty(
   } else if (propId == props.heightScale.id) {
     props.heightScale() = value.as<float>() / 10;
     recreateFixtures(actorId, component, true); // PERF: Mark dirty and do this at end of frame?
+  } else if (propId == props.relativeToCamera.id) {
+    if (value.as<bool>()) {
+      props.relativeToCamera() = true;
+      props.layerName() = "camera";
+      component.layer = BodyLayer::Camera;
+      getScene().getEntityRegistry().emplace_or_replace<CameraLayerMarker>(actorId);
+    } else {
+      props.relativeToCamera() = false;
+      props.layerName() = "main";
+      component.layer = BodyLayer::Main;
+      getScene().getEntityRegistry().remove_if_exists<CameraLayerMarker>(actorId);
+    }
   } else {
     BaseBehavior::handleSetProperty(actorId, component, propId, value);
   }

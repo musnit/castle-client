@@ -84,6 +84,12 @@ struct BodyComponent : BaseComponent {
     // PROP((std::array<float, 4>), massData) = { 0.0f, 0.0f, 0.0f, 0.0f };
 
     PROP(
+         bool, relativeToCamera,
+         .rulesGet(false)
+         .rulesSet(false)
+         ) = false;
+
+    PROP(
          std::string, layerName,
          .rulesGet(false)
          .rulesSet(false)
@@ -148,7 +154,8 @@ public:
 
   // Fixtures
   void setFixturesFromDrawing(ActorId actorId, std::vector<FixtureProps> fixtures);
-  ScaledEditorBounds getScaledEditorBounds(ActorId actorId, BodyComponent &component, bool enforceMinimumSize);
+  ScaledEditorBounds getScaledEditorBounds(
+      ActorId actorId, BodyComponent &component, bool enforceMinimumSize);
 
 
   // Information needed for rendering
