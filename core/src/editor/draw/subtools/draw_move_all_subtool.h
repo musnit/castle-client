@@ -62,7 +62,7 @@ public:
     if (touch.touch.released) {
       if (!DrawUtil::floatEquals(clampedDiff.x, 0.0)
           || !DrawUtil::floatEquals(clampedDiff.y, 0.0)) {
-        auto pathDataList = drawTool.getDrawData().currentPathDataList();
+        auto pathDataList = drawTool.selectedFramePathDataList();
         for (auto &pathData : *pathDataList) {
           ReleasePath(pathData.tovePath);
           pathData.tovePath.ptr = NULL;
@@ -91,7 +91,7 @@ public:
             = drawTool.getDrawDataFrame().fillImageBounds.maxY
             + drawTool.getDrawData().fillPixelsPerUnit * clampedDiff.y;
 
-        drawTool.getDrawData().updateSelectedFrameBounds();
+        drawTool.dirtySelectedFrameBounds();
         drawTool.getDrawDataFrame().resetGraphics();
         drawTool.saveDrawing("move all");
       }

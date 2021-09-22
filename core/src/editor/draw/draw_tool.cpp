@@ -147,8 +147,8 @@ void DrawTool::sendLayersEvent() {
     ev.layers().push_back(layerData);
   }
 
-  ev.selectedLayerId = drawData->selectedLayerId;
-  ev.selectedFrameIndex = drawData->selectedFrame.value;
+  ev.selectedLayerId = selectedLayerId;
+  ev.selectedFrameIndex = selectedFrameIndex.value;
   ev.canPasteCell = copiedLayerId != "" && copiedFrameIndex.value > 0;
   ev.isOnionSkinningEnabled = isOnionSkinningEnabled;
   ev.isPlayingAnimation = isPlayingAnimation;
@@ -187,38 +187,38 @@ struct DrawToolLayerActionReceiver {
     auto action = params.action();
     if (action == "selectLayer") {
       drawTool.setIsPlayingAnimation(false);
-      if (drawTool.drawData->selectedLayerId != params.layerId()) {
-        drawTool.drawData->selectedLayerId = params.layerId();
-        drawTool.saveDrawing("select layer");
+      if (drawTool.selectedLayerId != params.layerId()) {
+        drawTool.selectedLayerId = params.layerId();
+        drawTool.sendLayersEvent();
       }
     } else if (action == "selectLayerAndFrame") {
       drawTool.setIsPlayingAnimation(false);
-      if (drawTool.drawData->selectedLayerId != params.layerId()
-          || drawTool.drawData->selectedFrame.value != params.frameIndex()) {
-        drawTool.drawData->selectedLayerId = params.layerId();
-        drawTool.drawData->selectedFrame.value = params.frameIndex();
-        drawTool.saveDrawing("select cell");
+      if (drawTool.selectedLayerId != params.layerId()
+          || drawTool.selectedFrameIndex.value != params.frameIndex()) {
+        drawTool.selectedLayerId = params.layerId();
+        drawTool.selectedFrameIndex.value = params.frameIndex();
+        drawTool.sendLayersEvent();
       }
     } else if (action == "selectFrame") {
       drawTool.setIsPlayingAnimation(false);
-      if (drawTool.drawData->selectedFrame.value != params.frameIndex()) {
-        drawTool.drawData->selectedFrame.value = params.frameIndex();
-        drawTool.saveDrawing("select frame");
+      if (drawTool.selectedFrameIndex.value != params.frameIndex()) {
+        drawTool.selectedFrameIndex.value = params.frameIndex();
+        drawTool.sendLayersEvent();
       }
     } else if (action == "stepBackward") {
-      auto newFrameIndex = drawTool.drawData->selectedFrame.value - 1;
+      auto newFrameIndex = drawTool.selectedFrameIndex.value - 1;
       if (newFrameIndex < 1) {
         newFrameIndex = drawTool.drawData->getNumFrames();
       }
-      drawTool.drawData->selectedFrame.value = newFrameIndex;
-      drawTool.saveDrawing("step backward");
+      drawTool.selectedFrameIndex.value = newFrameIndex;
+      drawTool.sendLayersEvent();
     } else if (action == "stepForward") {
-      auto newFrameIndex = drawTool.drawData->selectedFrame.value + 1;
+      auto newFrameIndex = drawTool.selectedFrameIndex.value + 1;
       if (newFrameIndex > drawTool.drawData->getNumFrames()) {
         newFrameIndex = 1;
       }
-      drawTool.drawData->selectedFrame.value = newFrameIndex;
-      drawTool.saveDrawing("step forward");
+      drawTool.selectedFrameIndex.value = newFrameIndex;
+      drawTool.sendLayersEvent();
     } else if (action == "setLayerIsVisible") {
       auto layer = drawTool.drawData->layerForId(params.layerId());
       layer->isVisible = bool(params.doubleValue());
@@ -240,12 +240,18 @@ struct DrawToolLayerActionReceiver {
       if (frameIndexToAdd > 0) {
         love::OneIndexFrame index(frameIndexToAdd);
         drawTool.drawData->addFrame(index);
+        drawTool.selectedFrameIndex.value = index.value;
       } else {
         drawTool.drawData->addFrame();
+        drawTool.selectedFrameIndex.value = drawTool.drawData->getNumFrames();
       }
       drawTool.saveDrawing("add frame");
     } else if (action == "deleteFrame") {
       drawTool.drawData->deleteFrame(params.frameIndex());
+      auto numFrames = drawTool.drawData->getNumFrames();
+      if (drawTool.selectedFrameIndex.toZeroIndex() >= numFrames) {
+        drawTool.selectedFrameIndex.setFromZeroIndex(numFrames - 1);
+      }
       drawTool.saveDrawing("delete frame");
     } else if (action == "copyCell") {
       drawTool.copiedLayerId = params.layerId();
@@ -281,8 +287,9 @@ struct DrawToolClearArtworkReceiver {
     auto editor = engine.maybeGetEditor();
     if (!editor)
       return;
-    editor->drawTool.getDrawData().clearFrame();
-    editor->drawTool.saveDrawing("clear all artwork");
+    auto &drawTool = editor->drawTool;
+    drawTool.getDrawData().clearFrame(drawTool.selectedLayerId, drawTool.selectedFrameIndex);
+    drawTool.saveDrawing("clear all artwork");
   }
 };
 
@@ -391,7 +398,7 @@ void DrawTool::addPathData(const std::shared_ptr<love::PathData> &pathData) {
     pathData->color = selectedColor;
   }
 
-  drawData->currentPathDataList()->push_back(*pathData);
+  selectedFramePathDataList()->push_back(*pathData);
 }
 
 void DrawTool::addPathData(love::PathData pathData) {
@@ -404,7 +411,7 @@ void DrawTool::addPathData(love::PathData pathData) {
     pathData.color = selectedColor;
   }
 
-  drawData->currentPathDataList()->push_back(pathData);
+  selectedFramePathDataList()->push_back(pathData);
 }
 
 void DrawTool::setIsPlayingAnimation(bool isPlayingAnimation_) {
@@ -422,7 +429,7 @@ void DrawTool::setIsPlayingAnimation(bool isPlayingAnimation_) {
 }
 
 void DrawTool::saveDrawing(std::string commandDescription) {
-  drawData->updateFramePreview();
+  drawData->updateFramePreview(selectedLayerId, selectedFrameIndex);
   physicsBodyData->updatePreview();
 
   auto &scene = editor.getScene();
@@ -525,6 +532,9 @@ DrawTool::~DrawTool() {
 
 void DrawTool::resetState() {
   selectedColor = love::Colorf(249.0f / 255.0f, 163.0f / 255.0f, 27.0f / 255.0f, 1.0f);
+  selectedLayerId = "";
+  selectedFrameIndex = 1;
+
   viewWidth = DRAW_DEFAULT_VIEW_WIDTH;
   viewPosition.x = 0;
   viewPosition.y = 0;
@@ -557,14 +567,27 @@ void DrawTool::resetState() {
 void DrawTool::makeNewLayer() {
   if (drawData) {
     auto newLayerNum = drawData->getNumLayers() + 1;
-    drawData->addLayer(fmt::format("Layer {}", newLayerNum), fmt::format("layer{}", newLayerNum));
+    love::DrawDataLayerId newLayerId = fmt::format("layer{}", newLayerNum);
+    drawData->addLayer(fmt::format("Layer {}", newLayerNum), newLayerId);
+    selectedLayerId = newLayerId;
   }
 }
 
 void DrawTool::deleteLayerAndValidate(const love::DrawDataLayerId &layerId) {
   if (drawData) {
-    if (drawData->deleteLayer(layerId) && drawData->getNumLayers() == 0) {
+    int indexRemoved = drawData->deleteLayer(layerId);
+    if (drawData->getNumLayers() == 0) {
       makeNewLayer();
+    } else if (indexRemoved >= 0 && selectedLayerId == layerId) {
+      if (indexRemoved < drawData->getNumLayers()) {
+        selectedLayerId = drawData->layers[indexRemoved]->id;
+      } else if (indexRemoved > 0) {
+        selectedLayerId = drawData->layers[indexRemoved - 1]->id;
+      } else if (drawData->getNumLayers() > 0) {
+        selectedLayerId = drawData->layers[0]->id;
+      } else {
+        selectedLayerId = "";
+      }
     }
   }
 }
@@ -596,7 +619,7 @@ void DrawTool::renderOnionSkinning() {
     lv.graphics.translate(DRAW_MAX_SIZE, DRAW_MAX_SIZE);
     lv.graphics.clear(love::Colorf(0, 0, 0, 1), {}, {});
     lv.graphics.setColor({ 1, 1, 1, 1 });
-    drawData->renderOnionSkinning();
+    drawData->renderFrameIndex(selectedFrameIndex.toZeroIndex() - 1);
     lv.graphics.pop();
   });
 
@@ -615,6 +638,8 @@ void DrawTool::onSetActive() {
   viewPosition.x = 0;
   viewPosition.y = 0;
   viewWidth = DRAW_DEFAULT_VIEW_WIDTH;
+  selectedLayerId = "";
+  selectedFrameIndex.setFromZeroIndex(0);
 
   auto &scene = editor.getScene();
   if (!editor.getSelection().hasSelection()) {
@@ -630,6 +655,8 @@ void DrawTool::onSetActive() {
   auto hash = component->hash;
   if (lastHash != hash || !drawData) {
     loadLastSave();
+  } else {
+    selectFirstLayerAndFrame();
   }
 
   fitViewWidth();
@@ -639,7 +666,7 @@ void DrawTool::fitViewWidth() {
   if (!drawData) {
     return;
   }
-  auto bounds = drawData->getBounds(drawData->selectedFrame.value - 1);
+  auto bounds = drawData->getBounds(selectedFrameIndex.toZeroIndex());
   float maxBound = 1.0f;
   if (std::abs(bounds.minX) > maxBound) {
     maxBound = std::abs(bounds.minX);
@@ -687,9 +714,28 @@ void DrawTool::loadLastSave() {
     lastHash = hash;
     drawData = std::make_shared<love::DrawData>(component->drawData);
     physicsBodyData = std::make_shared<PhysicsBodyData>(component->physicsBodyData);
-    sendLayersEvent();
+    selectFirstLayerAndFrame();
     sendDrawToolEvent();
   }
+}
+
+void DrawTool::selectFirstLayerAndFrame() {
+  if (drawData && selectedLayerId == "") {
+    if (drawData->getNumLayers() > 0) {
+      selectedLayerId = drawData->layers[drawData->getNumLayers() - 1]->id;
+    }
+    selectedFrameIndex.setFromZeroIndex(0);
+  }
+
+  sendLayersEvent();
+}
+
+love::PathDataList *DrawTool::selectedFramePathDataList() {
+  return &getDrawDataFrame().pathDataList;
+}
+
+void DrawTool::dirtySelectedFrameBounds() {
+  drawData->updateFrameBounds(selectedFrameIndex);
 }
 
 void DrawTool::update(double dt) {
@@ -834,8 +880,12 @@ void DrawTool::drawOverlay() {
   }
 
   lv.graphics.setColor({ 1, 1, 1, 1 });
-  int overrideFrameIndex = isPlayingAnimation ? getCurrentAnimationFrame() : -1;
-  drawData->renderForTool(overrideFrameIndex, tempTranslateX, tempTranslateY, tempGraphics);
+  love::OneIndexFrame frameIndexToRender = selectedFrameIndex;
+  if (isPlayingAnimation) {
+    frameIndexToRender.setFromZeroIndex(getCurrentAnimationFrame());
+  }
+  drawData->renderForTool(
+      selectedLayerId, selectedFrameIndex, tempTranslateX, tempTranslateY, tempGraphics);
 
   if (isOnionSkinningEnabled) {
     renderOnionSkinning();

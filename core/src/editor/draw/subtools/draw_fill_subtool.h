@@ -33,7 +33,7 @@ public:
     auto radius = getRadius();
     bool filledPath = false;
 
-    auto pathDataList = drawTool.getDrawData().currentPathDataList();
+    auto pathDataList = drawTool.selectedFramePathDataList();
     if (pathDataList) {
       for (size_t i = 0; i < pathDataList->size(); i++) {
         if (DrawUtil::pathIntersectsCircle(

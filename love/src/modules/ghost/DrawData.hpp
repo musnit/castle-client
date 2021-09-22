@@ -33,8 +33,12 @@ namespace ghost {
     int version;
     float fillPixelsPerUnit;
     std::vector<std::optional<Bounds>> framesBounds;
-    DrawDataLayerId selectedLayerId;
-    OneIndexFrame selectedFrame;
+
+    // `selectedLayerId` and `selectedFrame` are no longer used, this state is maintained by the
+    // editor
+    __attribute__((deprecated)) DrawDataLayerId selectedLayerId;
+    __attribute__((deprecated)) OneIndexFrame selectedFrame;
+
     std::vector<std::shared_ptr<DrawDataLayer>> layers;
 
     DrawData(std::shared_ptr<DrawData> other) {
@@ -98,9 +102,11 @@ namespace ghost {
         archive.read(bounds);
         framesBounds.push_back(bounds);
       });
-      // TODO: default this to first layer on the server
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
       selectedLayerId = archive.str("selectedLayerId", "");
       selectedFrame.value = archive.num("selectedFrame", 1);
+#pragma GCC diagnostic pop
       archive.arr("layers", [&]() {
         for (auto i = 0; i < archive.size(); i++) {
           auto layer = std::make_shared<DrawDataLayer>();
@@ -124,7 +130,7 @@ namespace ghost {
       archive.arr("color", [&]() {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-		  // TODO: we're still writing this to provide backwards-compat with old scenes
+        // TODO: we're still writing this to provide backwards-compat with old scenes
         archive.num(color.r);
         archive.num(color.g);
         archive.num(color.b);
@@ -149,8 +155,11 @@ namespace ghost {
           });
         }
       });
-      archive.str("selectedLayerId", selectedLayerId);
-      archive.num("selectedFrame", selectedFrame.value);
+
+      // TODO: we're still writing these to provide backwards-compat with old scenes
+      archive.str("selectedLayerId", "layer1");
+      archive.num("selectedFrame", 1);
+
       archive.arr("layers", [&]() {
         for (size_t i = 0; i < layers.size(); i++) {
           archive.obj(*layers[i]);
@@ -176,17 +185,14 @@ namespace ghost {
     void drawEndOfArc(PathData *pathData, float p1x, float p1y, float p2x, float p2y);
     void addSubpathDataForPoints(PathData *pathData, Point p1, Point p2);
     void updatePathDataRendering(PathData *pathData);
-    DrawDataLayer *selectedLayer();
     int getRealFrameIndexForLayerId(DrawDataLayerId layerId, int frame);
     int getRealFrameIndexForLayerId(DrawDataLayerId layerId, OneIndexFrame frame);
     DrawDataLayer *layerForId(DrawDataLayerId id);
-    DrawDataFrame *currentLayerFrame();
-    PathDataList *currentPathDataList();
     void clearBounds();
-    void updateSelectedFrameBounds(); // updateBounds()
+    void updateFrameBounds(OneIndexFrame frameIndex);
     Bounds getBounds(int frame);
     bool arePathDatasFloodFillable(PathData &pd1, PathData &pd2);
-    void updateFramePreview();
+    void updateFramePreview(DrawDataLayerId layerId, OneIndexFrame frameIndex);
     AnimationState newAnimationState();
     int getNumFrames();
     int modFrameIndex(int value);
@@ -198,18 +204,17 @@ namespace ghost {
     };
     RunAnimationResult runAnimation(AnimationState &animationState,
         AnimationComponentProperties &componentProperties, float dt);
-    ToveGraphicsHolder *graphics();
-    void preload();
     void renderFrameIndex(int frameIdx /* zero index */);
     std::optional<std::string> renderPreviewPng(int frameIdx, int size);
-    void render();
-    void renderForTool(int maybeFrameIndex, float tempTranslateX, float tempTranslateY,
-        std::shared_ptr<ToveGraphicsHolder> tempGraphics);
-    void renderOnionSkinning();
+    void renderForTool(DrawDataLayerId layerId, OneIndexFrame frameIndex, float tempTranslateX,
+        float tempTranslateY, std::shared_ptr<ToveGraphicsHolder> tempGraphics);
     bool isPointInBounds(Point point);
 
     void addLayer(std::string title, DrawDataLayerId id);
-    bool deleteLayer(const DrawDataLayerId &id);
+
+    // return the index removed, or -1 if not removed
+    int deleteLayer(const DrawDataLayerId &id);
+
     void setLayerOrder(const DrawDataLayerId &id, int newIndexInLayers);
 
     void addFrame();
@@ -218,7 +223,7 @@ namespace ghost {
     void copyCell(DrawDataLayerId sourceLayerId, OneIndexFrame sourceFrameIndex,
         DrawDataLayerId destLayerId, OneIndexFrame destFrameIndex);
     void setCellLinked(DrawDataLayerId layerId, OneIndexFrame frameIndex, bool isLinked);
-    void clearFrame();
+    void clearFrame(DrawDataLayerId layerId, OneIndexFrame frameIndex);
   };
 
 }

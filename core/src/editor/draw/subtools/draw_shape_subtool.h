@@ -82,7 +82,7 @@ public:
         }
         drawTool.getDrawDataFrame().resetGraphics();
         drawTool.getDrawDataFrame().resetFill();
-        drawTool.getDrawData().updateSelectedFrameBounds();
+        drawTool.dirtySelectedFrameBounds();
         drawTool.saveDrawing("shape");
       }
       drawTool.resetTempGraphics();

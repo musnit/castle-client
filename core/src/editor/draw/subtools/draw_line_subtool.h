@@ -40,7 +40,7 @@ public:
       drawTool.addPathData(pathData);
       drawTool.getDrawDataFrame().resetGraphics();
       drawTool.getDrawDataFrame().resetFill();
-      drawTool.getDrawData().updateSelectedFrameBounds();
+      drawTool.dirtySelectedFrameBounds();
       drawTool.saveDrawing("line segment");
       drawTool.resetTempGraphics();
     } else {

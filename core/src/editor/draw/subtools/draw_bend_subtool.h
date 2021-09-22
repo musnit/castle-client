@@ -35,7 +35,7 @@ public:
       initialCoord.y = touch.touchY;
       isUsingBendPoint = false;
 
-      auto &pathDataList = *(drawTool.getDrawData().currentPathDataList());
+      auto &pathDataList = *(drawTool.selectedFramePathDataList());
       for (int i = pathDataList.size() - 1; i >= 0; i--) {
         auto &pathData = pathDataList[i];
         if (!pathData.isFreehand
@@ -83,7 +83,7 @@ public:
 
         drawTool.getDrawDataFrame().resetGraphics();
         drawTool.getDrawDataFrame().resetFill();
-        drawTool.getDrawData().updateSelectedFrameBounds();
+        drawTool.dirtySelectedFrameBounds();
         drawTool.saveDrawing("bend");
       }
 

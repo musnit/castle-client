@@ -296,10 +296,6 @@ namespace ghost {
     makeSubpathsFromSubpathData(pathData);
   }
 
-  DrawDataLayer *DrawData::selectedLayer() {
-    return layerForId(selectedLayerId);
-  }
-
   int DrawData::getRealFrameIndexForLayerId(DrawDataLayerId layerId, OneIndexFrame oneIndexFrame) {
     auto layer = layerForId(layerId);
     int frame = modFrameIndex(oneIndexFrame);
@@ -334,15 +330,6 @@ namespace ghost {
     throw;
   }
 
-  DrawDataFrame *DrawData::currentLayerFrame() {
-    auto realFrame = getRealFrameIndexForLayerId(selectedLayer()->id, selectedFrame);
-    return selectedLayer()->frames[realFrame].get();
-  }
-
-  PathDataList *DrawData::currentPathDataList() {
-    return &currentLayerFrame()->pathDataList;
-  }
-
   void DrawData::clearBounds() {
     framesBounds.clear();
     if (getNumLayers()) {
@@ -352,8 +339,8 @@ namespace ghost {
     }
   }
 
-  void DrawData::updateSelectedFrameBounds() {
-    framesBounds[selectedFrame.value - 1] = std::nullopt;
+  void DrawData::updateFrameBounds(OneIndexFrame frameIndex) {
+    framesBounds[frameIndex.toZeroIndex()] = std::nullopt;
   }
 
   Bounds DrawData::getBounds(int frame) {
@@ -405,12 +392,11 @@ namespace ghost {
       newLayer->frames.push_back(std::move(newFrame));
     }
 
-    selectedLayerId = newLayer->id;
     newLayer->setParent(this);
     layers.push_back(std::move(newLayer));
   }
 
-  bool DrawData::deleteLayer(const DrawDataLayerId &id) {
+  int DrawData::deleteLayer(const DrawDataLayerId &id) {
     int indexToRemove = -1;
     for (int ii = 0; ii < layers.size(); ii++) {
       if (layers[ii]->id == id) {
@@ -420,20 +406,8 @@ namespace ghost {
     }
     if (indexToRemove >= 0) {
       layers.erase(layers.begin() + indexToRemove);
-      if (selectedLayerId == id) {
-        if (indexToRemove < getNumLayers()) {
-          selectedLayerId = layers[indexToRemove]->id;
-        } else if (indexToRemove > 0) {
-          selectedLayerId = layers[indexToRemove - 1]->id;
-        } else if (getNumLayers() > 0) {
-          selectedLayerId = layers[0]->id;
-        } else {
-          selectedLayerId = "";
-        }
-      }
-      return true;
     }
-    return false;
+    return indexToRemove;
   }
 
   void DrawData::setLayerOrder(const DrawDataLayerId &id, int newIndexInLayers) {
@@ -470,7 +444,6 @@ namespace ghost {
           std::iter_swap(layer->frames.begin() + zeroFrameIndex, layer->frames.rbegin());
         }
       }
-      selectedFrame.setFromZeroIndex(zeroFrameIndex);
     }
 
     // TODO: clear bounds isn't really necessary, just need to make sure the bounds are the correct
@@ -487,10 +460,6 @@ namespace ghost {
       if (layers[0]->frames.empty()) {
         addFrame();
       }
-      if (selectedFrame.toZeroIndex() >= layers[0]->frames.size()) {
-        selectedFrame.setFromZeroIndex(layers[0]->frames.size() - 1);
-      }
-
       clearBounds();
       return true;
     }
@@ -499,8 +468,9 @@ namespace ghost {
     return false;
   }
 
-  void DrawData::updateFramePreview() {
-    currentLayerFrame()->base64Png = currentLayerFrame()->renderPreviewPng(-1);
+  void DrawData::updateFramePreview(DrawDataLayerId layerId, OneIndexFrame frameIndex) {
+    auto frame = layerForId(layerId)->frames[frameIndex.toZeroIndex()];
+    frame->base64Png = frame->renderPreviewPng(-1);
   }
 
   void DrawData::copyCell(DrawDataLayerId sourceLayerId, OneIndexFrame sourceFrameIndex,
@@ -531,9 +501,11 @@ namespace ghost {
     }
   }
 
-  void DrawData::clearFrame() {
-    auto realFrame = getRealFrameIndexForLayerId(selectedLayer()->id, selectedFrame);
-    selectedLayer()->frames[realFrame] = std::move(std::make_shared<DrawDataFrame>(false, this));
+  void DrawData::clearFrame(DrawDataLayerId layerId, OneIndexFrame frameIndex) {
+    auto realFrame = getRealFrameIndexForLayerId(layerId, frameIndex);
+    auto selectedLayer = layerForId(layerId);
+    auto emptyFrame = std::make_shared<DrawDataFrame>(false, this);
+    selectedLayer->frames[realFrame] = std::move(emptyFrame);
   }
 
   AnimationState DrawData::newAnimationState() {
@@ -613,14 +585,6 @@ namespace ghost {
     return result;
   }
 
-  ToveGraphicsHolder *DrawData::graphics() {
-    return currentLayerFrame()->graphics();
-  }
-
-  void DrawData::preload() {
-    graphics();
-  }
-
   void DrawData::renderFrameIndex(int frameIdx /* zero index */) {
     frameIdx = modFrameIndex(frameIdx);
     for (size_t l = 0; l < layers.size(); l++) {
@@ -633,27 +597,17 @@ namespace ghost {
     }
   }
 
-  void DrawData::render() {
-    renderFrameIndex(selectedFrame.toZeroIndex());
-  }
-
-  void DrawData::renderOnionSkinning() {
-    renderFrameIndex(selectedFrame.toZeroIndex() - 1);
-  }
-
-  void DrawData::renderForTool(int maybeFrameIndex, float tempTranslateX, float tempTranslateY,
+  void DrawData::renderForTool(DrawDataLayerId layerId, OneIndexFrame frameIndex,
+      float tempTranslateX, float tempTranslateY,
       std::shared_ptr<ToveGraphicsHolder> tempGraphics) {
-    int frameIdx = selectedFrame.toZeroIndex();
-    if (maybeFrameIndex >= 0) {
-      frameIdx = maybeFrameIndex;
-    }
+    int frameIdx = frameIndex.toZeroIndex();
 
     for (size_t l = 0; l < layers.size(); l++) {
       auto layer = layers[l];
       auto realFrame = getRealFrameIndexForLayerId(layer->id, frameIdx);
       auto frame = layers[l]->frames[realFrame];
       if (layer->isVisible) {
-        if (layer->id == selectedLayerId) {
+        if (layer->id == layerId) {
           graphics::Graphics *graphicsModule
               = Module::getInstance<graphics::Graphics>(Module::M_GRAPHICS);
 

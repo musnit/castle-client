@@ -65,7 +65,7 @@ public:
     std::vector<int> pathIndicesToRemove;
     std::vector<love::PathData> pathsToAdd;
 
-    auto pathDataList = drawTool.getDrawData().currentPathDataList();
+    auto pathDataList = drawTool.selectedFramePathDataList();
     if (pathDataList) {
       int index = 0;
       for (auto &pathData : *pathDataList) {
@@ -89,7 +89,7 @@ public:
       if (didChange) {
         drawTool.getDrawDataFrame().resetGraphics();
         drawTool.getDrawDataFrame().resetFill();
-        drawTool.getDrawData().updateSelectedFrameBounds();
+        drawTool.dirtySelectedFrameBounds();
         drawTool.saveDrawing("erase");
         drawTool.resetTempGraphics();
       }

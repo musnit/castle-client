@@ -69,7 +69,7 @@ public:
 
       drawTool.getDrawDataFrame().resetGraphics();
       drawTool.getDrawDataFrame().resetFill();
-      drawTool.getDrawData().updateSelectedFrameBounds();
+      drawTool.dirtySelectedFrameBounds();
       drawTool.saveDrawing("freehand pencil");
 
       drawTool.clearTempGraphics();

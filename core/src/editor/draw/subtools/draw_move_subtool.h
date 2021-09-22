@@ -40,7 +40,7 @@ public:
     if (!isGestureStarted) {
       isGestureStarted = true;
 
-      auto &pathDataList = *(drawTool.getDrawData().currentPathDataList());
+      auto &pathDataList = *(drawTool.selectedFramePathDataList());
       for (int i = pathDataList.size() - 1; i >= 0; i--) {
         auto &pathData = pathDataList[i];
         if (!pathData.isFreehand) {
@@ -58,7 +58,7 @@ public:
       }
 
       if (grabbedPaths.size() == 0) {
-        auto &pathDataList = *(drawTool.getDrawData().currentPathDataList());
+        auto &pathDataList = *(drawTool.selectedFramePathDataList());
         for (int i = pathDataList.size() - 1; i >= 0; i--) {
           auto &pathData = pathDataList[i];
           if (!pathData.isFreehand) {
@@ -110,7 +110,7 @@ public:
 
         drawTool.getDrawDataFrame().resetGraphics();
         drawTool.getDrawDataFrame().resetFill();
-        drawTool.getDrawData().updateSelectedFrameBounds();
+        drawTool.dirtySelectedFrameBounds();
         drawTool.saveDrawing("move");
       }
 
@@ -128,7 +128,7 @@ public:
   void drawOverlay(Lv &lv) {
     std::vector<love::Vector2> points;
 
-    auto pathDataList = drawTool.getDrawData().currentPathDataList();
+    auto pathDataList = drawTool.selectedFramePathDataList();
     for (auto &pathData : *pathDataList) {
       if (!pathData.isFreehand) {
         for (size_t p = 0; p < pathData.points.size(); p++) {

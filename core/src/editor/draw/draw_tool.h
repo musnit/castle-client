@@ -55,6 +55,11 @@ public:
   int getCurrentAnimationFrame();
 
   love::Colorf selectedColor;
+  love::DrawDataLayerId selectedLayerId;
+  love::OneIndexFrame selectedFrameIndex;
+
+  love::PathDataList *selectedFramePathDataList();
+  void dirtySelectedFrameBounds();
 
 private:
   friend struct DrawToolSelectSubtoolReceiver;
@@ -108,6 +113,7 @@ private:
   love::graphics::Canvas *onionSkinningCanvas = nullptr;
   void makeOnionSkinningCanvas();
   void renderOnionSkinning();
+  void selectFirstLayerAndFrame();
 
   void loadLastSave();
   void fitViewWidth();
@@ -125,7 +131,7 @@ inline love::DrawData &DrawTool::getDrawData() {
 }
 
 inline love::DrawDataFrame &DrawTool::getDrawDataFrame() {
-  return *drawData->currentLayerFrame();
+  return *(drawData->layerForId(selectedLayerId)->frames[selectedFrameIndex.toZeroIndex()]);
 }
 
 inline PhysicsBodyData &DrawTool::getPhysicsBodyData() {
