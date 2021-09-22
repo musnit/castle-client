@@ -57,6 +57,7 @@ public:
   love::Colorf selectedColor;
   love::DrawDataLayerId selectedLayerId;
   love::OneIndexFrame selectedFrameIndex;
+  void validateSelection();
 
   love::PathDataList *selectedFramePathDataList();
   void dirtySelectedFrameBounds();

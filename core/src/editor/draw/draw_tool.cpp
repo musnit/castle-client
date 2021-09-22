@@ -248,10 +248,7 @@ struct DrawToolLayerActionReceiver {
       drawTool.saveDrawing("add frame");
     } else if (action == "deleteFrame") {
       drawTool.drawData->deleteFrame(params.frameIndex());
-      auto numFrames = drawTool.drawData->getNumFrames();
-      if (drawTool.selectedFrameIndex.toZeroIndex() >= numFrames) {
-        drawTool.selectedFrameIndex.setFromZeroIndex(numFrames - 1);
-      }
+      drawTool.validateSelection();
       drawTool.saveDrawing("delete frame");
     } else if (action == "copyCell") {
       drawTool.copiedLayerId = params.layerId();
@@ -439,7 +436,7 @@ void DrawTool::saveDrawing(std::string commandDescription) {
 
   auto newDrawData = drawData->serialize();
   auto newPhysicsBodyData = physicsBodyData->serialize();
-  auto newHash = drawBehavior.hash(drawData->serialize(), newPhysicsBodyData);
+  auto newHash = drawBehavior.hash(newDrawData, newPhysicsBodyData);
   lastHash = newHash;
 
   auto oldDrawData = component->drawData->serialize();
@@ -714,19 +711,39 @@ void DrawTool::loadLastSave() {
     lastHash = hash;
     drawData = std::make_shared<love::DrawData>(component->drawData);
     physicsBodyData = std::make_shared<PhysicsBodyData>(component->physicsBodyData);
-    selectFirstLayerAndFrame();
+    if (selectedLayerId == "") {
+      selectFirstLayerAndFrame();
+    } else {
+      validateSelection();
+    }
     sendDrawToolEvent();
   }
 }
 
 void DrawTool::selectFirstLayerAndFrame() {
-  if (drawData && selectedLayerId == "") {
+  if (drawData) {
     if (drawData->getNumLayers() > 0) {
       selectedLayerId = drawData->layers[drawData->getNumLayers() - 1]->id;
     }
     selectedFrameIndex.setFromZeroIndex(0);
   }
 
+  sendLayersEvent();
+}
+
+void DrawTool::validateSelection() {
+  auto numFrames = drawData->getNumFrames();
+  if (selectedFrameIndex.toZeroIndex() >= numFrames) {
+    selectedFrameIndex.setFromZeroIndex(numFrames - 1);
+  }
+  auto existingLayer = drawData->layerForId(selectedLayerId);
+  if (!existingLayer) {
+    if (drawData->getNumLayers() == 0) {
+      makeNewLayer();
+    } else {
+      selectedLayerId = drawData->layers[0]->id;
+    }
+  }
   sendLayersEvent();
 }
 
@@ -885,7 +902,7 @@ void DrawTool::drawOverlay() {
     frameIndexToRender.setFromZeroIndex(getCurrentAnimationFrame());
   }
   drawData->renderForTool(
-      selectedLayerId, selectedFrameIndex, tempTranslateX, tempTranslateY, tempGraphics);
+      selectedLayerId, frameIndexToRender, tempTranslateX, tempTranslateY, tempGraphics);
 
   if (isOnionSkinningEnabled) {
     renderOnionSkinning();

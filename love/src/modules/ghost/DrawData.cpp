@@ -326,8 +326,7 @@ namespace ghost {
         return layers[i].get();
       }
     }
-
-    throw;
+    return nullptr;
   }
 
   void DrawData::clearBounds() {
@@ -359,9 +358,9 @@ namespace ghost {
   }
 
   bool DrawData::arePathDatasFloodFillable(PathData &pd1, PathData &pd2) {
-	if (pd1.points.size() == 0 || pd2.points.size() == 0) {
-	  return false;
-	}
+    if (pd1.points.size() == 0 || pd2.points.size() == 0) {
+      return false;
+    }
     if (!DrawAlgorithms::coordinatesEqual(pd1.points[pd1.points.size() - 1], pd2.points[0])) {
       return false;
     }
