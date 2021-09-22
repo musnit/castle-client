@@ -229,6 +229,8 @@ void MovingBehavior::handleSetProperty(
   } else if (propId == props.density.id) {
     props.density() = value.as<float>();
     handleUpdateComponentFixtures(actorId, component, body);
+  } else {
+    BaseBehavior::handleSetProperty(actorId, component, propId, value);
   }
 }
 

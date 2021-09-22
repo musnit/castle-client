@@ -412,6 +412,8 @@ void BodyBehavior::handleSetProperty(
   } else if (propId == props.heightScale.id) {
     props.heightScale() = value.as<float>() / 10;
     recreateFixtures(actorId, component, true); // PERF: Mark dirty and do this at end of frame?
+  } else {
+    BaseBehavior::handleSetProperty(actorId, component, propId, value);
   }
 }
 
@@ -557,7 +559,8 @@ void BodyBehavior::setFixturesFromDrawing(ActorId actorId, std::vector<FixturePr
   }
 }
 
-ScaledEditorBounds BodyBehavior::getScaledEditorBounds(ActorId actorId, BodyComponent &component, bool enforceMinimumSize) {
+ScaledEditorBounds BodyBehavior::getScaledEditorBounds(
+    ActorId actorId, BodyComponent &component, bool enforceMinimumSize) {
   ScaledEditorBounds result {};
   auto &editorBounds = component.props.editorBounds();
 
