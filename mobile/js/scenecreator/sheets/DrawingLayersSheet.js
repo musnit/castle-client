@@ -39,10 +39,12 @@ const styles = StyleSheet.create({
   },
   headingLabel: {
     color: '#000',
+    fontSize: 14,
     fontWeight: 'bold',
-    fontSize: 16,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
     width: '100%',
-    marginTop: 2,
+    marginTop: 4,
   },
   layerRow: {
     height: 64,
