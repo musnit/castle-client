@@ -39,7 +39,7 @@ public:
         if (DrawUtil::pathIntersectsCircle(
                 (*pathDataList)[i], touch.touchX, touch.touchY, radius)) {
           if (!love::DrawAlgorithms::colorsEqual(
-                  drawTool.getDrawData().color, (*pathDataList)[i].color)) {
+                  drawTool.selectedColor, (*pathDataList)[i].color)) {
             pathIndicesToFill.insert(i);
           }
         }
@@ -82,7 +82,7 @@ public:
           auto &pathData = (*pathDataList)[i];
           ReleasePath(pathData.tovePath);
           pathData.tovePath.ptr = NULL;
-          pathData.color = drawTool.getDrawData().color;
+          pathData.color = drawTool.selectedColor;
           filledPath = true;
         }
       }
@@ -94,7 +94,8 @@ public:
     } else {
       // don't allow filling both path and fill in the same frame.
       // makes it easier to fill only a path
-      if (drawTool.getDrawDataFrame().floodFill(touch.touchX, touch.touchY)) {
+      if (drawTool.getDrawDataFrame().floodFill(
+              touch.touchX, touch.touchY, drawTool.selectedColor)) {
         didChange = true;
       }
     }

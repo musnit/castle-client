@@ -54,6 +54,8 @@ public:
   bool getIsPlayingAnimation();
   int getCurrentAnimationFrame();
 
+  love::Colorf selectedColor;
+
 private:
   friend struct DrawToolSelectSubtoolReceiver;
   friend struct DrawToolSelectColorReceiver;

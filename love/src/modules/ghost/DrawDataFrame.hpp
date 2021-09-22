@@ -143,7 +143,7 @@ namespace ghost {
     graphics::Image *getFillImage();
     void updateFillImageWithFillImageData();
     void compressFillCanvas();
-    bool floodFill(float x, float y);
+    bool floodFill(float x, float y, Colorf color);
     bool floodClear(float x, float y, float radius);
     void resetFill();
     void updatePathsCanvas();

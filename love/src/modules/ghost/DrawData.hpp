@@ -22,11 +22,11 @@ namespace love {
 namespace ghost {
 
   class DrawData : public Object {
-
   public:
     static love::Type type;
 
-    love::Colorf color;
+    // `color` is no longer used in the editor, which maintains its own selected color state
+    __attribute__((deprecated)) love::Colorf color;
     love::Colorf lineColor;
     float gridSize;
     float scale;
@@ -75,7 +75,10 @@ namespace ghost {
         c.set(archive.num((unsigned int)0, 1.0), archive.num(1, 1.0), archive.num(2, 1.0),
             archive.num(3, 1.0));
       });
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
       color = c;
+#pragma GCC diagnostic pop
 
       love::Colorf c2;
       archive.arr("lineColor", [&]() {
@@ -119,10 +122,14 @@ namespace ghost {
 
     void write(Archive::Writer &archive) {
       archive.arr("color", [&]() {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+		  // TODO: we're still writing this to provide backwards-compat with old scenes
         archive.num(color.r);
         archive.num(color.g);
         archive.num(color.b);
         archive.num(color.a);
+#pragma GCC diagnostic pop
       });
       archive.arr("lineColor", [&]() {
         archive.num(lineColor.r);

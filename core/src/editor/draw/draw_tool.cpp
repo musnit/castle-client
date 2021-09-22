@@ -55,9 +55,8 @@ struct DrawToolSelectColorReceiver {
     auto editor = engine.maybeGetEditor();
     if (!editor)
       return;
-    editor->drawTool.drawData->color = params.color();
+    editor->drawTool.selectedColor = params.color();
     editor->drawTool.sendDrawToolEvent();
-    editor->drawTool.saveDrawing("update color");
   }
 };
 
@@ -90,7 +89,7 @@ void DrawTool::sendDrawToolEvent() {
     ev.selectedSubtools()[entry.first] = entry.second;
   }
 
-  ev.color() = drawData->color;
+  ev.color() = selectedColor;
   editor.getBridge().sendEvent("EDITOR_DRAW_TOOL", ev);
 }
 
@@ -366,7 +365,7 @@ void DrawTool::resetTempGraphics() {
 
 void DrawTool::addTempPathData(love::PathData pathData) {
   if (!pathData.color) {
-    pathData.color = drawData->color;
+    pathData.color = selectedColor;
   }
 
   drawData->updatePathDataRendering(&pathData);
@@ -389,7 +388,7 @@ void DrawTool::addPathData(const std::shared_ptr<love::PathData> &pathData) {
   }
 
   if (!pathData->color) {
-    pathData->color = drawData->color;
+    pathData->color = selectedColor;
   }
 
   drawData->currentPathDataList()->push_back(*pathData);
@@ -402,7 +401,7 @@ void DrawTool::addPathData(love::PathData pathData) {
   }
 
   if (!pathData.color) {
-    pathData.color = drawData->color;
+    pathData.color = selectedColor;
   }
 
   drawData->currentPathDataList()->push_back(pathData);
@@ -433,7 +432,7 @@ void DrawTool::saveDrawing(std::string commandDescription) {
 
   auto newDrawData = drawData->serialize();
   auto newPhysicsBodyData = physicsBodyData->serialize();
-  auto newHash = drawBehavior.hash(newDrawData, newPhysicsBodyData);
+  auto newHash = drawBehavior.hash(drawData->serialize(), newPhysicsBodyData);
   lastHash = newHash;
 
   auto oldDrawData = component->drawData->serialize();
@@ -525,6 +524,7 @@ DrawTool::~DrawTool() {
 }
 
 void DrawTool::resetState() {
+  selectedColor = love::Colorf(249.0f / 255.0f, 163.0f / 255.0f, 27.0f / 255.0f, 1.0f);
   viewWidth = DRAW_DEFAULT_VIEW_WIDTH;
   viewPosition.x = 0;
   viewPosition.y = 0;
@@ -683,13 +683,13 @@ void DrawTool::loadLastSave() {
 
   auto hash = component->hash;
 
-  lastHash = hash;
-  drawData = std::make_shared<love::DrawData>(component->drawData);
-  physicsBodyData = std::make_shared<PhysicsBodyData>(component->physicsBodyData);
-
-  // TODO: send elsewhere
-  sendLayersEvent();
-  sendDrawToolEvent();
+  if (lastHash != hash) {
+    lastHash = hash;
+    drawData = std::make_shared<love::DrawData>(component->drawData);
+    physicsBodyData = std::make_shared<PhysicsBodyData>(component->physicsBodyData);
+    sendLayersEvent();
+    sendDrawToolEvent();
+  }
 }
 
 void DrawTool::update(double dt) {

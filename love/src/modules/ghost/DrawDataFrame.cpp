@@ -259,15 +259,15 @@ namespace ghost {
     return canvas->newImageData(instance, 0, 0, rect);
   }
 
-  bool DrawDataFrame::floodFill(float x, float y) {
+  bool DrawDataFrame::floodFill(float x, float y, Colorf color) {
     updatePathsCanvas();
     auto pathsImageData = canvasToImageData(pathsCanvas);
     getFillImageDataSizedToPathBounds();
     fillImageData->getFormat();
     image::Pixel p;
-    p.rgba8[0] = parent()->color.r * 255.0;
-    p.rgba8[1] = parent()->color.g * 255.0;
-    p.rgba8[2] = parent()->color.b * 255.0;
+    p.rgba8[0] = color.r * 255.0;
+    p.rgba8[1] = color.g * 255.0;
+    p.rgba8[2] = color.b * 255.0;
     p.rgba8[3] = 255.0;
 
 
