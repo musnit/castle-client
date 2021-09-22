@@ -215,9 +215,9 @@ namespace ghost {
     std::vector<Point> points;
     int style;
     std::optional<Point> bendPoint;
-    bool isFreehand;
+    bool isFreehand = false;
     std::optional<love::Colorf> color;
-    bool isTransparent;
+    bool isTransparent = false;
 
     std::vector<Subpath> subpathDataList;
     TovePathRef tovePath;
