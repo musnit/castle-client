@@ -86,12 +86,12 @@ const EditDeckCell = (props) => {
       />
       <View style={styles.deckStats}>
         <View style={styles.deckStatsColumn}>
-          <MCIcon size={16} name='play' color={Constants.colors.grayText} />
+          <MCIcon size={16} name="play" color={Constants.colors.grayText} />
           <Text style={styles.playCountLabel}>{deck.playCount || '--'}</Text>
         </View>
         {deck.reactions?.length ? (
           <View style={styles.deckStatsColumn}>
-            <MCIcon size={16} name='fire' color={Constants.colors.grayText} />
+            <MCIcon size={16} name="fire" color={Constants.colors.grayText} />
             <Text style={styles.playCountLabel}>{deck.reactions[0].count}</Text>
           </View>
         ) : null}
@@ -228,12 +228,17 @@ const CreateScreenAuthenticated = () => {
                 { isFullscreen: true }
               );
             }}>
-              <AntIcon size={16} color='#000' name='plus' style={Constants.styles.primaryButtonIconLeft} />
+            <AntIcon
+              size={16}
+              color="#000"
+              name="plus"
+              style={Constants.styles.primaryButtonIconLeft}
+            />
             <Text style={Constants.styles.primaryButtonLabel}>New Deck</Text>
           </TouchableOpacity>
         </View>
       </View>
-      <View style={styles.navWrapper}>
+      {/* <View style={styles.navWrapper}>
         <ScrollView horizontal>
           <SegmentedNavigation
             items={TAB_ITEMS}
@@ -242,7 +247,7 @@ const CreateScreenAuthenticated = () => {
             compact={true}
           />
         </ScrollView>
-      </View>
+      </View> */}
 
       {decks && decks.length === 0 && (
         <View style={Constants.styles.empty}>
