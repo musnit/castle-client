@@ -3,6 +3,7 @@
 #include "js.h"
 #include "api.h"
 #include "expressions/expression.h"
+#include "sound.h"
 
 
 //
@@ -393,6 +394,7 @@ struct ClearSceneReceiver {
     if (engine.getIsEditing()) {
       // TODO: maybe destroy editor, recreate on next editing mount
       engine.maybeGetEditor()->clearState();
+      Sound::clearCache();
     }
   }
 };

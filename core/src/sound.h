@@ -20,4 +20,7 @@ public:
   ~Sound() = default;
 
   void play(const std::string &category, int seed, int mutationSeed, int mutationAmount);
+  static void clearCache() {
+    sfxrSounds.clear();
+  }
 };
