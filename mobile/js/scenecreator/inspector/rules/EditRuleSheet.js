@@ -70,9 +70,9 @@ export const EditRuleSheet = ({
   );
 
   const onRemove = React.useCallback(() => {
-    onRemoveRule(rule);
+    onRemoveRule(rule, ruleIndex);
     onClose();
-  }, [onRemoveRule, onClose, rule]);
+  }, [onRemoveRule, onClose, rule, ruleIndex]);
 
   const onCopy = React.useCallback(() => {
     onCopyRule(rule);

@@ -83,8 +83,8 @@ export default InspectorRules = ({ behaviors, addChildSheet }) => {
   }, [rulesItems, sendSetRules]);
 
   const onRemoveRule = React.useCallback(
-    (rule) => {
-      const newRules = rulesItems.filter((oldRule) => oldRule.index !== rule.index);
+    (rule, index) => {
+      const newRules = rulesItems.filter((oldRule, ii) => ii != index);
       sendSetRules(newRules);
     },
     [rulesItems, sendSetRules]
