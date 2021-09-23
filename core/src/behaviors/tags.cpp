@@ -69,6 +69,22 @@ TagVector TagsBehavior::parseTags(const char *str) {
 struct ReadableTagVector {
   TagVector vec;
 
+  void write(Writer &writer) const {
+    std::stringstream ss;
+    if (auto scene = writer.getScene()) {
+      auto &tagsBehavior = scene->getBehaviors().byType<TagsBehavior>();
+      for (auto &tag : vec) {
+        if (auto result = tagsBehavior.getString(tag)) {
+          if (ss.gcount() > 0) {
+            ss << " ";
+          }
+          ss << *result;
+        }
+      }
+    }
+    writer.setStr(ss.str());
+  }
+
   void read(Reader &reader) {
     if (auto scene = reader.getScene()) {
       if (auto str = reader.str()) {
