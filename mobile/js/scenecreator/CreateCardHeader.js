@@ -110,7 +110,7 @@ export const CreateCardHeader = ({
                 <CastleIcon
                   name="undo"
                   size={22}
-                  color={data.actionsAvailable.onUndo ? '#000' : Constants.colors.grayOnWhiteText}
+                  color={data.actionsAvailable.onUndo ? '#000' : Constants.colors.grayOnWhiteIcon}
                 />
               </TouchableOpacity>
               <TouchableOpacity
@@ -120,7 +120,7 @@ export const CreateCardHeader = ({
                 <CastleIcon
                   name="redo"
                   size={22}
-                  color={data.actionsAvailable.onRedo ? '#000' : Constants.colors.grayOnWhiteText}
+                  color={data.actionsAvailable.onRedo ? '#000' : Constants.colors.grayOnWhiteIcon}
                 />
               </TouchableOpacity>
               <TouchableOpacity
