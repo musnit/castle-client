@@ -155,19 +155,13 @@ export const EditLayout = ({ isEditingBlueprint }) => {
 };
 
 export const InstanceLayout = () => {
-  // TODO: inspectorActions data
-  const inspectorActions = { hasBlueprint: true };
-  const hasBlueprint = (inspectorActions && inspectorActions.hasBlueprint) || false;
-
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Layout</Text>
       <EditLayout isEditingBlueprint={false} />
-      {hasBlueprint && (
-        <View style={styles.applyLayoutChangesContainer}>
-          <SaveBlueprintButton label="Apply layout changes to blueprint" />
-        </View>
-      )}
+      <View style={styles.applyLayoutChangesContainer}>
+        <SaveBlueprintButton label="Apply layout changes to blueprint" />
+      </View>
     </View>
   );
 };
