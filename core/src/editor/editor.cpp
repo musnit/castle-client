@@ -1572,8 +1572,8 @@ struct EditorInspectorActionReceiver {
                   for (auto iter = deletedInstanceActorIds.rbegin();
                        iter != deletedInstanceActorIds.rend(); iter++) {
                     const ActorId instanceActorId = *iter;
-                    auto instanceArchive = deletedInstanceArchives.at(instanceActorId);
-                    auto instanceDrawOrder = deletedInstanceDrawOrders.at(instanceActorId);
+                    auto &instanceArchive = deletedInstanceArchives.at(instanceActorId);
+                    auto &instanceDrawOrder = deletedInstanceDrawOrders.at(instanceActorId);
                     instanceArchive->read([&](Reader &reader) {
                       Scene::ActorDesc actorDesc;
                       actorDesc.requestedActorId = instanceActorId;
