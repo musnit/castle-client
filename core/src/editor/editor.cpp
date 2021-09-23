@@ -1509,44 +1509,86 @@ struct EditorInspectorActionReceiver {
     if (action == "deleteSelection") {
       if (scene.isGhost(actorId)) {
         // Deleting a blueprint
+
+        // first accumulate all instances that use the blueprint
+        std::unordered_map<ActorId, std::shared_ptr<Archive>> deletedInstanceArchives;
+        std::unordered_map<ActorId, std::optional<int>> deletedInstanceDrawOrders;
+        std::vector<ActorId> deletedInstanceActorIds;
+        scene.ensureDrawOrderSort();
+
         if (auto entryIdCStr = scene.maybeGetParentEntryId(actorId)) {
-          // Don't delete if we have non-ghost actors with this entry
           auto haveActorsWithEntry = false;
           scene.forEachActor([&](ActorId otherActorId) {
             if (!haveActorsWithEntry) {
               if (auto otherEntryIdCStr = scene.maybeGetParentEntryId(otherActorId)) {
                 if (!std::strcmp(entryIdCStr, otherEntryIdCStr)) {
-                  haveActorsWithEntry = true;
+
+                  std::optional<int> drawOrderRelativeToValue;
+                  if (auto drawOrder = scene.maybeGetDrawOrder(otherActorId)) {
+                    drawOrderRelativeToValue = drawOrder->value;
+                  }
+                  deletedInstanceDrawOrders.emplace(otherActorId, drawOrderRelativeToValue);
+
+                  auto instanceArchive = std::make_shared<Archive>();
+                  instanceArchive->write([&](Writer &writer) {
+                    scene.writeActor(otherActorId, writer, {});
+                  });
+                  deletedInstanceArchives.emplace(otherActorId, instanceArchive);
+                  deletedInstanceActorIds.push_back(otherActorId);
                 }
               }
             }
           });
-          if (!haveActorsWithEntry) {
-            if (auto entry = library.maybeGetEntry(entryIdCStr)) {
-              // Save entry to archive so we can restore it on undo
-              auto archive = std::make_shared<Archive>();
-              archive->write([&](Writer &writer) {
-                entry->write(writer);
-              });
-              auto entryId = std::string(entryIdCStr);
-              editor->getCommands().execute(
-                  "delete blueprint", {},
-                  [entryId](Editor &editor, bool) {
-                    editor.getSelection().deselectAllActors();
-                    editor.getScene().getLibrary().removeEntry(entryId.c_str());
-                  },
-                  [entryId, archive = std::move(archive)](Editor &editor, bool) {
-                    auto &scene = editor.getScene();
-                    archive->read([&](Reader &reader) {
-                      scene.getLibrary().readEntry(reader);
-                    });
-                    editor.getBelt().select(entryId.c_str());
+
+          // delete all instances, then delete actual blueprint
+          if (auto entry = library.maybeGetEntry(entryIdCStr)) {
+            // Save entry to archive so we can restore it on undo
+            auto archive = std::make_shared<Archive>();
+            archive->write([&](Writer &writer) {
+              entry->write(writer);
+            });
+            auto entryId = std::string(entryIdCStr);
+            editor->getCommands().execute(
+                "delete blueprint", {},
+                [entryId, deletedInstanceActorIds](Editor &editor, bool) {
+                  auto &scene = editor.getScene();
+                  editor.getSelection().deselectAllActors();
+
+                  for (auto &actorId : deletedInstanceActorIds) {
+                    scene.removeActor(actorId);
+                  }
+
+                  editor.getScene().getLibrary().removeEntry(entryId.c_str());
+                },
+                [entryId, archive = std::move(archive), deletedInstanceActorIds,
+                    deletedInstanceDrawOrders, deletedInstanceArchives](Editor &editor, bool) {
+                  auto &scene = editor.getScene();
+                  archive->read([&](Reader &reader) {
+                    scene.getLibrary().readEntry(reader);
                   });
-            }
+                  editor.getBelt().select(entryId.c_str());
+
+                  scene.ensureDrawOrderSort();
+                  for (auto iter = deletedInstanceActorIds.rbegin();
+                       iter != deletedInstanceActorIds.rend(); iter++) {
+                    const ActorId instanceActorId = *iter;
+                    auto instanceArchive = deletedInstanceArchives.at(instanceActorId);
+                    auto instanceDrawOrder = deletedInstanceDrawOrders.at(instanceActorId);
+                    instanceArchive->read([&](Reader &reader) {
+                      Scene::ActorDesc actorDesc;
+                      actorDesc.requestedActorId = instanceActorId;
+                      actorDesc.reader = &reader;
+                      actorDesc.parentEntryId = entryId.c_str();
+                      actorDesc.drawOrderParams.relativeToValue = instanceDrawOrder;
+                      actorDesc.drawOrderParams.relativity = Scene::DrawOrderParams::Behind;
+                      scene.addActor(actorDesc);
+                    });
+                  }
+                });
           }
         }
       } else {
-        // Deleting an actor
+        // Deleting a single actor instance
 
         // Get current draw order and parent entry id values to restore on undo
         scene.ensureDrawOrderSort();
