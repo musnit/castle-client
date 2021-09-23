@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import * as SceneCreatorConstants from '../scenecreator/SceneCreatorConstants';
+import { CastleIcon } from '../Constants';
 
 const styles = StyleSheet.create({
   header: {
@@ -11,14 +11,14 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 16,
   },
   back: {
     flexShrink: 0,
     width: 60,
     alignItems: 'flex-start',
     justifyContent: 'center',
-    paddingLeft: 12,
+    paddingLeft: 16,
   },
   done: {
     ...SceneCreatorConstants.styles.button,
@@ -46,8 +46,10 @@ const styles = StyleSheet.create({
   },
   headingLabel: {
     color: '#000',
-    fontWeight: '700',
-    fontSize: 16,
+    textTransform: 'uppercase',
+    fontSize: 14,
+    letterSpacing: 0.5,
+    fontWeight: 'bold',
     width: '100%',
     textAlign: 'center',
   },
@@ -63,7 +65,7 @@ export const BottomSheetHeader = ({
 }) => (
   <View style={styles.header}>
     <TouchableOpacity style={styles.back} onPress={onClose}>
-      <Icon name="close" size={32} color="#000" />
+      <CastleIcon name="close" size={22} color="#000" />
     </TouchableOpacity>
     <View style={[styles.headingContainer, onDone || renderActions ? null : styles.centerHeading]}>
       <Text style={styles.headingLabel}>{title}</Text>
