@@ -1,6 +1,5 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { InspectorBlueprintActions } from '../inspector/InspectorBlueprintActions';
 import { InspectorBlueprintHeader } from '../inspector/components/InspectorBlueprintHeader';
 import { sendAsync } from '../../core/CoreEvents';
 
@@ -27,11 +26,10 @@ export const OverlayBlueprint = () => {
     <View style={styles.container}>
       <InspectorBlueprintHeader />
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <InspectorBlueprintActions />
         <Pressable
           style={[SceneCreatorConstants.styles.button, { marginLeft: 6 }]}
           onPress={() => sendInspectorAction('openInspector')}>
-          <Text style={SceneCreatorConstants.styles.buttonLabel}>Edit</Text>
+          <Text style={SceneCreatorConstants.styles.buttonLabel}>Edit Blueprint</Text>
         </Pressable>
       </View>
     </View>
