@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
+import { EditLayout } from '../instance/InstanceLayout';
 import { InspectorNumberInput } from '../components/InspectorNumberInput';
 import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import { useCoreState, sendBehaviorAction } from '../../../core/CoreEvents';
@@ -113,7 +114,7 @@ export default InspectorLayout = ({ body }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>TODO: Blueprint Layout</Text>
+      <EditLayout isEditingBlueprint />
       <View style={styles.row}>
         <InspectorCheckbox
           value={relative}
