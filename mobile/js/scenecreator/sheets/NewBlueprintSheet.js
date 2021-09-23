@@ -18,39 +18,44 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     padding: 16,
-    paddingVertical: 8,
+    paddingVertical: 12,
     flexDirection: 'row',
   },
   preview: {
     width: 64,
     height: 64,
-    borderRadius: 3,
+    marginTop: 1,
     marginRight: 16,
-    flexShrink: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0001',
-    padding: 8,
   },
   meta: {
     flexShrink: 1,
     justifyContent: 'center',
   },
+  pasteLabel: {
+    textTransform: 'uppercase',
+    fontSize: 14,
+    lineHeight: 22,
+    letterSpacing: 0.5,
+    color: Constants.colors.grayOnWhiteText,
+  },
   title: {
     fontWeight: 'bold',
     fontSize: 16,
-    lineHeight: 21,
+    lineHeight: 22,
   },
   description: {
     fontSize: 16,
-    lineHeight: 21,
+    lineHeight: 22,
   },
   image: {
     width: 56,
     height: 56,
   },
   sectionHeaderSeparator: {
-    paddingTop: 10,
+    paddingTop: 4,
+    marginBottom: 4,
     borderColor: Constants.colors.grayOnWhiteBorder,
     borderBottomWidth: 1,
   },
@@ -95,23 +100,8 @@ const TemplateItem = ({ entry, onPress }) => {
       </View>
       <View style={styles.meta}>
         <Text style={styles.title}>{entry.title}</Text>
-        {!entry.isBlank ? <Text style={styles.description}>{entry.description}</Text> : null}
-      </View>
-    </TouchableOpacity>
-  );
-};
-
-const BlankTemplateItem = ({ entry, onPress }) => {
-  return (
-    <TouchableOpacity style={styles.blankItemContainer} onPress={onPress}>
-      {entry.base64Png ? (
-        <FastImage
-          source={{ uri: `data:image/png;base64,${entry.base64Png}` }}
-          style={styles.blankImage}
-        />
-      ) : null}
-      <View style={styles.blankMeta}>
-        <Text style={styles.blankTitle}>{entry.title}</Text>
+        {/* {!entry.isBlank ? <Text style={styles.description}>{entry.description}</Text> : null} */}
+        <Text style={styles.description}>{entry.description}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -134,8 +124,6 @@ const PasteFromClipboardSection = ({ onPress }) => {
 
   return (
     <>
-      <View style={styles.sectionHeaderSeparator} />
-      <Text style={styles.sectionHeaderText}>PASTE FROM CLIPBOARD</Text>
       <TouchableOpacity
         style={styles.itemContainer}
         onPress={() => {
@@ -151,6 +139,7 @@ const PasteFromClipboardSection = ({ onPress }) => {
           ) : null}
         </View>
         <View style={styles.meta}>
+          <Text style={styles.pasteLabel}>Paste from clipboard</Text>
           <Text style={styles.title}>{entry.title}</Text>
           {clipboard.numActorsUsingEntry ? (
             <Text style={styles.description}>
@@ -160,6 +149,7 @@ const PasteFromClipboardSection = ({ onPress }) => {
           ) : null}
         </View>
       </TouchableOpacity>
+      <View style={styles.sectionHeaderSeparator} />
     </>
   );
 };
@@ -173,7 +163,7 @@ export const NewBlueprintSheet = ({ element, isOpen, onClose, ...props }) => {
   const blanks = entries.filter(({ entry }) => entry.isBlank);
   const templates = entries.filter(({ entry }) => !entry.isBlank);
 
-  const renderHeader = () => <BottomSheetHeader title="Add a new blueprint" onClose={onClose} />;
+  const renderHeader = () => <BottomSheetHeader title="Add a blueprint" onClose={onClose} />;
 
   const renderContent = () => {
     if (!isOpen) {
@@ -182,26 +172,22 @@ export const NewBlueprintSheet = ({ element, isOpen, onClose, ...props }) => {
 
     return (
       <>
-        <Text style={styles.sectionHeaderText}>CREATE A BLANK BLUEPRINT</Text>
-        <View style={styles.blankSection}>
-          {blanks.map(({ entry, index }) => {
-            if (entry.entryType === 'actorBlueprint') {
-              return (
-                <BlankTemplateItem
-                  key={index}
-                  entry={entry}
-                  onPress={() => {
-                    CoreEvents.sendAsync('EDITOR_NEW_BLUEPRINT', { entry });
-                    onClose();
-                  }}
-                />
-              );
-            }
-          })}
-        </View>
-        <PasteFromClipboardSection onPress={onClose} />
+        {blanks.map(({ entry, index }) => {
+          if (entry.entryType === 'actorBlueprint') {
+            return (
+              <TemplateItem
+                key={index}
+                entry={entry}
+                onPress={() => {
+                  CoreEvents.sendAsync('EDITOR_NEW_BLUEPRINT', { entry });
+                  onClose();
+                }}
+              />
+            );
+          }
+        })}
         <View style={styles.sectionHeaderSeparator} />
-        <Text style={styles.sectionHeaderText}>START FROM A TEMPLATE</Text>
+        <PasteFromClipboardSection onPress={onClose} />
         {templates.map(({ entry, index }) => {
           if (entry.entryType === 'actorBlueprint') {
             return (
