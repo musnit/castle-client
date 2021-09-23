@@ -317,14 +317,14 @@ const Response = ({ response, onChangeResponse, order = 0, ...props }) => {
         parentType,
         key: 'rulePartPicker',
         Component: RulePartPickerSheet,
-        behaviors: props.useAllBehaviors ? null : behaviors,
+        useAllBehaviors: props.useAllBehaviors,
         entries: responses,
         triggerFilter,
         onSelectEntry: (entry) => handler(_entryToResponse(entry)),
         title: 'Select response',
         categoryOrder: Metadata.responseCategoryOrder,
       }),
-    [addChildSheet, behaviors, response, responses, triggerFilter, parentType]
+    [addChildSheet, props.useAllBehaviors, response, responses, triggerFilter, parentType]
   );
 
   const onChangeParams = React.useCallback(

@@ -252,7 +252,6 @@ const data = {
     },
     ['send player to card']: {
       category: 'general',
-      triggerFilter: { tap: true },
     },
     ['restart scene']: {
       category: 'general',
