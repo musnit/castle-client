@@ -99,57 +99,69 @@ export const EditLayout = ({ isEditingBlueprint }) => {
   const behaviors = useCoreState('EDITOR_ALL_BEHAVIORS');
   const { Body: body } = behaviors || {};
   const component = useCoreState('EDITOR_SELECTED_COMPONENT:Body');
-  const sendAction = React.useCallback((...args) => sendBehaviorAction('Body', ...args), [
-    sendBehaviorAction,
-  ]);
+  const sendAction = React.useCallback(
+    (...args) => sendBehaviorAction('Body', ...args),
+    [sendBehaviorAction]
+  );
   if (!hasSelection || !body || !component) return null;
   return (
-    <View style={styles.properties}>
-      <React.Fragment>
-        <LayoutInput
-          behavior={body}
-          component={component}
-          propName="widthScale"
-          label="Width Scale"
-          sendAction={sendAction}
-          decimalDigits={2}
-          step={0.25}
-        />
-        <LayoutInput
-          behavior={body}
-          component={component}
-          propName="heightScale"
-          label="Height Scale"
-          sendAction={sendAction}
-          decimalDigits={2}
-          step={0.25}
-        />
-      </React.Fragment>
-      {!isEditingBlueprint ? (
-        <>
+    <View>
+      <View style={styles.properties}>
+        <React.Fragment>
           <LayoutInput
             behavior={body}
             component={component}
-            propName="x"
-            label="X Position"
+            propName="widthScale"
+            label="Width Scale"
             sendAction={sendAction}
+            decimalDigits={2}
+            step={0.25}
           />
           <LayoutInput
             behavior={body}
             component={component}
-            propName="y"
-            label="Y Position"
+            propName="heightScale"
+            label="Height Scale"
             sendAction={sendAction}
+            decimalDigits={2}
+            step={0.25}
           />
-        </>
-      ) : null}
-      <LayoutInput
-        behavior={body}
-        component={component}
-        propName="angle"
-        label="Rotation"
-        sendAction={sendAction}
-      />
+        </React.Fragment>
+        {!isEditingBlueprint ? (
+          <>
+            <LayoutInput
+              behavior={body}
+              component={component}
+              propName="x"
+              label="X Position"
+              sendAction={sendAction}
+            />
+            <LayoutInput
+              behavior={body}
+              component={component}
+              propName="y"
+              label="Y Position"
+              sendAction={sendAction}
+            />
+          </>
+        ) : null}
+        <LayoutInput
+          behavior={body}
+          component={component}
+          propName="angle"
+          label="Rotation"
+          sendAction={sendAction}
+        />
+      </View>
+      <View style={styles.applyLayoutChangesContainer}>
+        <SaveBlueprintButton
+          label={
+            isEditingBlueprint
+              ? 'Apply layout changes to actors'
+              : 'Apply layout changes to blueprint'
+          }
+        />
+      </View>
     </View>
   );
 };
@@ -159,9 +171,6 @@ export const InstanceLayout = () => {
     <View style={styles.container}>
       <Text style={styles.label}>Layout</Text>
       <EditLayout isEditingBlueprint={false} />
-      <View style={styles.applyLayoutChangesContainer}>
-        <SaveBlueprintButton label="Apply layout changes to blueprint" />
-      </View>
     </View>
   );
 };

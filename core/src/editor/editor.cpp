@@ -1294,7 +1294,7 @@ struct EditorApplyLayoutToBlueprintReceiver {
       return;
     }
     auto &selection = editor->getSelection();
-    if (!selection.hasSelection() || selection.isGhostActorsSelected()) {
+    if (!selection.hasSelection()) {
       return; // Need a non-ghost selection
     }
     auto actorId = selection.firstSelectedActorId();
