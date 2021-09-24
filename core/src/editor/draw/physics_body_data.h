@@ -107,7 +107,7 @@ private:
     }
   }
   
-  void drawShape(PhysicsBodyDataShape &shape, love::Graphics::DrawMode mode);
+  void drawShape(PhysicsBodyDataShape &shape, love::Vector2 scale, love::Graphics::DrawMode mode);
 
   template<unsigned N>
   void _pointsForShape(const PhysicsBodyDataShape &shape, SmallVector<love::Vector2, N> &points) {
@@ -317,7 +317,7 @@ public:
   std::string renderPreviewPng();
   void updatePreview();
   void makeShader();
-  void render();
+  void render(love::Vector2 scale = { 1, 1 });
 
   bool commitTempShape() {
     if (tempShape) {

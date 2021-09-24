@@ -256,7 +256,7 @@ void Editor::draw() {
 
     // Bounding boxes
     {
-      const auto drawBodyOutline = [&](ActorId actorId) {
+      const auto drawBoundingBox = [&](ActorId actorId) {
         if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
           auto bounds = bodyBehavior.getEditorBounds(actorId);
           auto info = bodyBehavior.getRenderInfo(actorId);
@@ -287,9 +287,8 @@ void Editor::draw() {
           auto [x, y] = body->GetPosition();
           lv.graphics.translate(x, y);
           lv.graphics.rotate(body->GetAngle());
-          lv.graphics.scale(info.widthScale, info.heightScale);
           if (auto physicsBodyData = drawingBehavior.maybeGetPhysicsBodyData(actorId)) {
-            physicsBodyData->render();
+            physicsBodyData->render({ info.widthScale, info.heightScale });
           }
 
           lv.graphics.pop();
@@ -300,6 +299,7 @@ void Editor::draw() {
 
       scene->applyViewTransform(800.0f);
 
+      lv.graphics.setLineWidth(1.2f * scene->getPixelScale());
       lv.graphics.setColor({ 0, 0, 0, 1 });
       for (auto actorId : selection.getSelectedActorIds()) {
         if (!scene->isGhost(actorId)) {
@@ -311,7 +311,7 @@ void Editor::draw() {
       lv.graphics.setColor({ 0.8, 0.8, 0.8, 0.8 });
       scene->forEachActor([&](ActorId actorId) {
         if (!scene->isGhost(actorId)) {
-          drawBodyOutline(actorId);
+          drawBoundingBox(actorId);
         }
       });
 
@@ -320,7 +320,7 @@ void Editor::draw() {
       for (auto actorId : selection.getSelectedActorIds()) {
         if (!scene->isGhost(actorId)) {
           Debug::display("selected actor {}", actorId);
-          drawBodyOutline(actorId);
+          drawBoundingBox(actorId);
         } else {
           Debug::display("selected ghost actor {}", actorId);
         }

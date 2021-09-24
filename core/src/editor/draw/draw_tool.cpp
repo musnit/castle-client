@@ -882,6 +882,7 @@ void DrawTool::drawOverlay() {
 
 
   lv.graphics.clear(tmpBackgroundColor, {}, {});
+  lv.graphics.setLineWidth(0.1);
 
   if (tempGraphics) {
     tempGraphics->update();

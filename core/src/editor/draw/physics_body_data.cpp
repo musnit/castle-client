@@ -15,6 +15,7 @@ std::string PhysicsBodyData::renderPreviewPng() {
     lv.graphics.clear(love::Colorf(1, 1, 1, 1), {}, {});
     lv.graphics.setColor({ 0, 0, 0, 1 });
     lv.graphics.translate(DRAW_MAX_SIZE, DRAW_MAX_SIZE);
+    lv.graphics.setLineWidth(0.1);
     render();
     lv.graphics.pop();
   });
@@ -39,7 +40,7 @@ void PhysicsBodyData::makeShader() {
 
     vec4 effect(vec4 color, Image tex, vec2 texCoords, vec2 screenCoords) {
       float modxy = mod(screenCoords.x + screenCoords.y, lineSpacing);
-      float diagonal = smoothstep(0.0, lineRadius, abs(modxy - lineRadius));
+      float diagonal = smoothstep(0.4 * lineRadius, lineRadius, abs(modxy - lineRadius));
       return vec4(color.rgb, (1.0 - diagonal) * color.a);
     }
   )";
@@ -59,14 +60,15 @@ void PhysicsBodyData::makeShader() {
   }
 }
 
-void PhysicsBodyData::drawShape(PhysicsBodyDataShape &shape, love::Graphics::DrawMode mode) {
+void PhysicsBodyData::drawShape(
+    PhysicsBodyDataShape &shape, love::Vector2 scale, love::Graphics::DrawMode mode) {
   if (shape.type == CollisionShapeType::Circle) {
-    lv.graphics.circle(mode, shape.x, shape.y, shape.radius);
+    lv.graphics.circle(mode, scale.x * shape.x, scale.y * shape.y, shape.radius);
     return;
   }
 
-  love::Vector2 p1 = shape.p1;
-  love::Vector2 p2 = shape.p2;
+  love::Vector2 p1 = scale * shape.p1;
+  love::Vector2 p2 = scale * shape.p2;
 
   if (p1.x > p2.x) {
     love::Vector2 t = p2;
@@ -97,7 +99,7 @@ void PhysicsBodyData::drawShape(PhysicsBodyDataShape &shape, love::Graphics::Dra
   }
 }
 
-void PhysicsBodyData::render() {
+void PhysicsBodyData::render(love::Vector2 scale) {
   if (!shader) {
     // build lazily because we never need to render in play mode
     makeShader();
@@ -110,20 +112,19 @@ void PhysicsBodyData::render() {
   lv.graphics.translate(tempTranslateX, tempTranslateY);
 
   for (auto &shape : shapes) {
-    drawShape(shape, love::Graphics::DRAW_FILL);
+    drawShape(shape, scale, love::Graphics::DRAW_FILL);
   }
   if (tempShape) {
-    drawShape(*tempShape, love::Graphics::DRAW_FILL);
+    drawShape(*tempShape, scale, love::Graphics::DRAW_FILL);
   }
 
   // render outlines, no shader
   lv.graphics.setShader();
-  lv.graphics.setLineWidth(0.1);
   for (auto &shape : shapes) {
-    drawShape(shape, love::Graphics::DRAW_LINE);
+    drawShape(shape, scale, love::Graphics::DRAW_LINE);
   }
   if (tempShape) {
-    drawShape(*tempShape, love::Graphics::DRAW_LINE);
+    drawShape(*tempShape, scale, love::Graphics::DRAW_LINE);
   }
 
   lv.graphics.pop();
