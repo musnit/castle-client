@@ -604,8 +604,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Castle" */;
 			buildPhases = (
-				916D3E6226EC10EC009CD238 /* ShellScript */,
 				4CE6B7EFDC4887E01DB21039 /* [CP] Check Pods Manifest.lock */,
+				916D3E6226EC10EC009CD238 /* ShellScript */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
