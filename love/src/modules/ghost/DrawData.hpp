@@ -148,10 +148,15 @@ namespace ghost {
       archive.num("version", version);
       archive.num("fillPixelsPerUnit", fillPixelsPerUnit);
       archive.num("numTotalLayers", getNumLayers());
+
+      for (size_t i = 0; i < framesBounds.size(); i++) {
+        getBounds(i);
+      }
+
       archive.arr("framesBounds", [&]() {
         for (auto &bounds : framesBounds) {
           archive.obj([&]() {
-            archive.write(bounds);
+            archive.write(*bounds);
           });
         }
       });
