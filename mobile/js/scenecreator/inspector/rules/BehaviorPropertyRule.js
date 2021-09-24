@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { canParamBePromotedToExpression } from '../../SceneCreatorUtilities';
+import { isParamNumeric } from '../../SceneCreatorUtilities';
 import { ConfigureExpressionSheet } from '../expressions/ConfigureExpressionSheet';
 import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import { RuleParamInputRow } from '../components/RuleParamInputRow';
@@ -82,7 +82,7 @@ export const BehaviorPropertyRule = ({
   }
 
   let isRelativeProperty = false;
-  if (canParamBePromotedToExpression(propertySpec)) {
+  if (isParamNumeric(propertySpec)) {
     isRelativeProperty = true;
     propertySpec.type = 'expression';
   }
