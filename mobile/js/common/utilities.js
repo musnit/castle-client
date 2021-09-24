@@ -141,39 +141,6 @@ export const launchImageLibrary = (callback, opts) =>
 
 export const launchCamera = (callback, opts) => launchImagePicker('launchCamera', callback, opts);
 
-const stringAsSearchInvariant = (string) => string.toLowerCase().trim();
-
-export const cardMatchesSearchQuery = (card, searchQuery) => {
-  if (!card) return false;
-  if (!searchQuery) return true;
-
-  const query = stringAsSearchInvariant(searchQuery);
-  const title = card.title ? stringAsSearchInvariant(makeCardPreviewTitle(card)) : '';
-
-  if (title.startsWith(query)) return true;
-
-  const components = title.split(/[\s\-]/);
-  for (let ii = 0; ii < components.length; ii++) {
-    if (components[ii].startsWith(query)) {
-      return true;
-    }
-  }
-  return false;
-};
-
-export const makeInitialDeckState = (deck, resetValue = true) => {
-  return {
-    variables: deck.variables
-      ? deck.variables.map((variable) => {
-          return {
-            ...variable,
-            value: resetValue ? variable.initialValue : variable.value,
-          };
-        })
-      : [],
-  };
-};
-
 export const useKeyboard = (config = {}) => {
   const [keyboardState, setKeyboardState] = React.useState({ visible: false, height: 0 });
 
