@@ -39,6 +39,14 @@ const EMPTY_RULE = {
   },
 };
 
+function removeEmpty(obj) {
+  return Object.fromEntries(
+    Object.entries(obj)
+      .filter(([_, v]) => v != null)
+      .map(([k, v]) => [k, v === Object(v) ? removeEmpty(v) : v])
+  );
+}
+
 export default InspectorRules = ({ behaviors, addChildSheet }) => {
   const rulesData = useCoreState('EDITOR_RULES_DATA');
   const rulesComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Rules');
@@ -49,6 +57,10 @@ export default InspectorRules = ({ behaviors, addChildSheet }) => {
   const isCounterActive = selectedActorData.behaviors.Counter.isActive;
   const sendSetRules = React.useCallback(
     (newRules) => {
+      // The old editor can't handle "null"s. Sometimes the rules code would add `"else": null` without this.
+      for (let i = 0; i < newRules.length; i++) {
+        newRules[i] = removeEmpty(newRules[i]);
+      }
       sendRuleAction('set', 'rules', 'string', JSON.stringify({ rules: newRules }));
     },
     [sendRuleAction]
