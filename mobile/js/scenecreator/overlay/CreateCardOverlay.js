@@ -18,7 +18,11 @@ const styles = StyleSheet.create({
 });
 
 export const CreateCardOverlay = ({ activeSheet, setActiveSheet, editMode, beltHeight }) => {
-  const { hasSelection, isBlueprintSelected } = useCardCreator();
+  const { isPlaying, hasSelection, isBlueprintSelected } = useCardCreator();
+  if (isPlaying) {
+    return null;
+  }
+
   if (editMode === 'draw') {
     return (
       <View style={styles.container} pointerEvents="box-none">
