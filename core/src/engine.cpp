@@ -60,7 +60,9 @@ Engine::PreInit::PreInit() {
 #ifdef __EMSCRIPTEN__
   Debug::isEnabled = JS_isDebugEnabled();
 #else
-  Debug::isEnabled = false;
+#ifndef NDEBUG
+  Debug::isEnabled = true;
+#endif
 #endif
 
   // SDL parameters. In pre-init so we can still eg. refresh the page using keyboard if tests fail.
