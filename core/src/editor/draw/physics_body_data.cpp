@@ -63,7 +63,8 @@ void PhysicsBodyData::makeShader() {
 void PhysicsBodyData::drawShape(
     PhysicsBodyDataShape &shape, love::Vector2 scale, love::Graphics::DrawMode mode) {
   if (shape.type == CollisionShapeType::Circle) {
-    lv.graphics.circle(mode, scale.x * shape.x, scale.y * shape.y, shape.radius);
+    lv.graphics.ellipse(
+        mode, scale.x * shape.x, scale.y * shape.y, scale.x * shape.radius, scale.y * shape.radius);
     return;
   }
 
