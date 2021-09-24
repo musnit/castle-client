@@ -1544,9 +1544,10 @@ struct EditorInspectorActionReceiver {
           // selection didn't change, but need to send missing components now
           // TODO: BEN
           auto actorId = selection.firstSelectedActorId();
-          selection.deselectAllActors();
+          selection.deselectAllActors(false);
           selection.selectActor(actorId);
         }
+        editor->getBelt().enableHighlight();
         editor->isInspectorOpen = true;
       }
       return;

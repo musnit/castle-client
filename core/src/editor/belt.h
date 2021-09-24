@@ -20,6 +20,8 @@ public:
   void select(std::string entryId);
   void updateSelection(bool forceGhostActorSelection = false);
 
+  void enableHighlight();
+
   void update(double dt);
   void drawHighlight() const;
   void drawOverlay() const;
@@ -87,6 +89,10 @@ private:
 
 inline void Belt::deselect() {
   selectedEntryId = {};
+}
+
+inline void Belt::enableHighlight() {
+  highlightEnabled = true;
 }
 
 inline bool Belt::isInside(const Touch &touch) const {
