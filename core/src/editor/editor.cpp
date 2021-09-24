@@ -200,6 +200,9 @@ void Editor::update(double dt) {
             auto behaviorId = std::remove_reference_t<decltype(behavior)>::behaviorId;
             selectedComponentStateDirty.insert(behaviorId);
           });
+          if (!selection.isGhostActorsSelected() && isInspectorOpen) {
+            isInspectorOpen = false;
+          }
         } else {
           isInspectorOpen = false;
         }

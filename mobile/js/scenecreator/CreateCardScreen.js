@@ -111,8 +111,10 @@ export const CreateCardScreen = ({
   React.useEffect(() => {
     if (isInspectorOpen) {
       setActiveSheet('sceneCreatorInspector');
+    } else if (!isInspectorOpen && activeSheet === 'sceneCreatorInspector') {
+      setActiveSheet(null);
     }
-  }, [isInspectorOpen, setActiveSheet]);
+  }, [isInspectorOpen, activeSheet, setActiveSheet]);
 
   React.useEffect(() => {
     if (isSceneLoaded) {
