@@ -479,7 +479,7 @@ void Editor::updateBlueprint(ActorId actorId, UpdateBlueprintParams params) {
 }
 
 void Editor::updateActorsWithEntryId(
-    std::string entryId, UpdateBlueprintParams params, ActorId skipActorId) {
+    const std::string &entryId, UpdateBlueprintParams params, ActorId skipActorId) {
   scene->forEachActor([&](ActorId otherActorId) {
     if ((skipActorId == nullActor || otherActorId != skipActorId)
         && scene->maybeGetParentEntryId(otherActorId) == entryId) {
@@ -1293,14 +1293,79 @@ struct EditorApplyLayoutToBlueprintReceiver {
     if (!editor || !editor->hasScene()) {
       return;
     }
+    auto &scene = editor->getScene();
+    auto &library = scene.getLibrary();
     auto &selection = editor->getSelection();
     if (!selection.hasSelection()) {
       return; // Need a non-ghost selection
     }
     auto actorId = selection.firstSelectedActorId();
-    Editor::UpdateBlueprintParams params;
-    params.applyLayout = true;
-    editor->updateBlueprint(actorId, params);
+
+    auto entryIdCStr = scene.maybeGetParentEntryId(actorId);
+    if (!entryIdCStr) {
+      return;
+    }
+    auto entryId = std::string(entryIdCStr);
+    auto entry = library.maybeGetEntry(entryId.c_str());
+    if (!entry) {
+      return;
+    }
+
+    auto archive = std::make_shared<Archive>();
+    archive->write([&](Writer &writer) {
+      writer.obj("entry", [&]() {
+        entry->write(writer);
+      });
+      writer.arr("actors", [&]() {
+        scene.forEachActor([&](ActorId otherActorId) {
+          if (auto otherEntryId = scene.maybeGetParentEntryId(otherActorId);
+              otherEntryId && otherEntryId == entryId) {
+            writer.obj([&]() {
+              writer.num("actorId", int(entt::to_integral(otherActorId)));
+              writer.obj("bp", [&]() {
+                scene.writeActor(otherActorId, writer, {});
+              });
+            });
+          }
+        });
+      });
+    });
+
+    editor->getCommands().execute(
+        "apply layout changes", {},
+        [actorId](Editor &editor, bool) {
+          Editor::UpdateBlueprintParams params;
+          params.applyLayout = true;
+          editor.updateBlueprint(actorId, params);
+        },
+        [archive = std::move(archive), entryId = std::move(entryId)](Editor &editor, bool) {
+          auto &scene = editor.getScene();
+          auto &library = scene.getLibrary();
+          archive->read([&](Reader &reader) {
+            reader.obj("entry", [&]() {
+              library.readEntry(reader);
+            });
+            reader.each("actors", [&]() {
+              auto maybeOtherActorId = reader.num("actorId");
+              if (!maybeOtherActorId) {
+                return;
+              }
+              auto otherActorId = ActorId(*maybeOtherActorId);
+              reader.obj("bp", [&]() {
+                Scene::ActorDesc actorDesc;
+                actorDesc.requestedActorId = otherActorId;
+                actorDesc.reader = &reader;
+                actorDesc.parentEntryId = entryId.c_str();
+                if (auto drawOrder = scene.maybeGetDrawOrder(otherActorId)) {
+                  actorDesc.drawOrderParams.relativeToValue = drawOrder->value;
+                  actorDesc.drawOrderParams.relativity = Scene::DrawOrderParams::Behind;
+                }
+                scene.removeActor(otherActorId);
+                scene.addActor(actorDesc);
+              });
+            });
+          });
+        });
   }
 };
 

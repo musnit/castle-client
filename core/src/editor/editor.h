@@ -79,7 +79,7 @@ public:
   };
   void updateBlueprint(ActorId actorId, UpdateBlueprintParams params);
   void updateActorsWithEntryId(
-      std::string entryId, UpdateBlueprintParams params, ActorId skipActorId = nullActor);
+      const std::string &entryId, UpdateBlueprintParams params, ActorId skipActorId = nullActor);
 
   void triggerAutoSave();
   bool isInspectorOpen = false;
