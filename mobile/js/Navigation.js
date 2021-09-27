@@ -15,6 +15,7 @@ import { HomeScreen } from './home/HomeScreen';
 import { ExploreScreen } from './explore/ExploreScreen';
 import { ExploreFeed } from './explore/ExploreFeed';
 import { NotificationsScreen } from './notifications/NotificationsScreen';
+import { NuxScreen } from './nux/NuxScreen';
 import { PlayDeckScreen } from './play/PlayDeckScreen';
 import { ProfileScreen } from './profile/ProfileScreen';
 import { ShareDeckScreen } from './share/ShareDeckScreen';
@@ -296,6 +297,12 @@ const InitialAuthNavigator = () => (
   </Stack.Navigator>
 );
 
+const NuxNavigator = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="NuxScreen" component={NuxScreen} />
+  </Stack.Navigator>
+);
+
 const AuthNavigator = () => (
   <Stack.Navigator
     screenOptions={({ navigation }) => ({
@@ -357,7 +364,7 @@ const MainAppNavigator = () => (
 );
 
 export const RootNavigator = () => {
-  const { isSignedIn, isAnonymous } = useSession();
+  const { isSignedIn, isAnonymous, isNuxCompleted } = useSession();
 
   // fetch notifs when we first notice a signed in user (including every app InitialAuth)
   React.useEffect(() => {
@@ -378,12 +385,23 @@ export const RootNavigator = () => {
     )
   );
 
+  let navigator;
+  if (isSignedIn) {
+    if (!isNuxCompleted) {
+      navigator = <NuxNavigator />;
+    } else {
+      navigator = <MainAppNavigator />;
+    }
+  } else {
+    navigator = <InitialAuthNavigator />;
+  }
+
   return (
     <NavigationContainer
       theme={NavigationTheme}
       ref={navRefCallback}
       onStateChange={onNavigationStateChange}>
-      {isSignedIn ? <MainAppNavigator /> : <InitialAuthNavigator />}
+      {navigator}
     </NavigationContainer>
   );
 };

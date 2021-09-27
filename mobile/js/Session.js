@@ -18,7 +18,8 @@ import * as EventEmitter from './EventEmitter';
 
 let gAuthToken,
   gUserId,
-  gIsAnonymous = false;
+  gIsAnonymous = false,
+  gIsNuxCompleted = false;
 let gNotificationState = {};
 const TEST_AUTH_TOKEN = null;
 
@@ -68,6 +69,8 @@ export async function loadAuthTokenAsync() {
   } else {
     gAuthToken = await CastleAsyncStorage.getItem('AUTH_TOKEN');
     gUserId = await CastleAsyncStorage.getItem('USER_ID');
+    const isNuxCompletedStorageValue = await CastleAsyncStorage.getItem('IS_NUX_COMPLETED');
+    gIsNuxCompleted = isNuxCompletedStorageValue === 'true' || isNuxCompletedStorageValue === true;
     const isAnonStorageValue = await CastleAsyncStorage.getItem('USER_IS_ANONYMOUS');
     gIsAnonymous = isAnonStorageValue === 'true' || isAnonStorageValue === true;
     Amplitude.setUserId(gUserId);
@@ -90,6 +93,7 @@ export class Provider extends React.Component {
       signInAsAnonymousUserAsync: this.signInAsAnonymousUserAsync,
       markNotificationsReadAsync: this.markNotificationsReadAsync,
       markFollowingFeedRead: this.markFollowingFeedRead,
+      setIsNuxCompleted: this.setIsNuxCompleted,
       ...gNotificationState,
     };
   }
@@ -104,6 +108,7 @@ export class Provider extends React.Component {
           authToken: gAuthToken,
           isSignedIn: !!gAuthToken,
           isAnonymous: gIsAnonymous,
+          isNuxCompleted: gIsNuxCompleted,
           userId: gUserId,
           initialized: true,
         });
@@ -127,6 +132,12 @@ export class Provider extends React.Component {
     EventEmitter.removeListener(this._notificationsListener);
   }
 
+  setIsNuxCompleted = async (isNuxCompleted) => {
+    gIsNuxCompleted = !!isNuxCompleted;
+    await CastleAsyncStorage.setItem('IS_NUX_COMPLETED', gIsNuxCompleted.toString());
+    return this.setState({ isNuxCompleted: gIsNuxCompleted });
+  };
+
   useNewAuthTokenAsync = async ({ userId, token, isAnonymous, isAdmin }) => {
     if (!TEST_AUTH_TOKEN) {
       apolloClient.resetStore();
@@ -134,6 +145,8 @@ export class Provider extends React.Component {
       gUserId = userId;
       gIsAnonymous = !!isAnonymous;
       notifLastFetchTime = null; // want to reload notifs for new user
+
+      // don't reset nux state here (logging in/out doesn't affect this)
 
       if (token) {
         await CastleAsyncStorage.setItem('AUTH_TOKEN', token);
