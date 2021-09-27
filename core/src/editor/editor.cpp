@@ -22,6 +22,8 @@ void Editor::clearState() {
   commands.clear();
   auto &drawingBehavior = scene->getBehaviors().byType<Drawing2Behavior>();
   drawingBehavior.clearEditorDataCache();
+  auto &textBehavior = scene->getBehaviors().byType<TextBehavior>();
+  textBehavior.resetState();
   if (capture) {
     capture = nullptr;
   }
@@ -235,7 +237,7 @@ void Editor::update(double dt) {
   // Make sure ghost actors exist before sending new data, because current tool's update()
   // may have modified actors
   scene->getLibrary().ensureGhostActorsExist();
-  maybeSendData();
+  maybeSendData(dt);
 }
 
 void Editor::draw() {
@@ -1902,7 +1904,7 @@ void Editor::sendTagsData() {
   bridge.sendEvent("EDITOR_TAGS", ev);
 }
 
-void Editor::maybeSendData() {
+void Editor::maybeSendData(double dt) {
   if (!scene) {
     return;
   }
@@ -1925,7 +1927,7 @@ void Editor::maybeSendData() {
     }
     selectedComponentStateDirty.clear();
   }
-  scene->getBehaviors().byType<TextBehavior>().maybeSendBridgeData();
+  scene->getBehaviors().byType<TextBehavior>().maybeSendBridgeData(dt);
 }
 
 struct EditorNewBlueprintReceiver {

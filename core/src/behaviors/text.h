@@ -33,6 +33,7 @@ public:
 
   void handleReadComponent(ActorId actorId, TextComponent &component, Reader &reader);
   void handlePerform(double dt);
+  void resetState();
 
   std::queue<int> clickedTextActorIdsQueue;
 
@@ -45,6 +46,9 @@ private:
   std::string formatContent(const std::string &content) const;
 
   std::string lastDataSent;
+  double timeSinceSentBridgeData = 0;
+  static constexpr auto bridgeUpdateInterval = 0.2;
+
   bool hasTapTrigger(ActorId actorId);
-  void maybeSendBridgeData();
+  void maybeSendBridgeData(double dt);
 };

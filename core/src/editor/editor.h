@@ -122,7 +122,7 @@ private:
   DrawTool drawTool { *this };
 
   // events and data
-  void maybeSendData();
+  void maybeSendData(double dt);
 
   bool isEditorStateDirty;
   void sendGlobalActions();

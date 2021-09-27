@@ -180,7 +180,7 @@ void TextBehavior::handlePerform(double dt) {
     }
   }
 
-  maybeSendBridgeData();
+  maybeSendBridgeData(dt);
 }
 
 //
@@ -218,34 +218,43 @@ bool TextBehavior::hasTapTrigger(ActorId actorId) {
   return false;
 }
 
-void TextBehavior::maybeSendBridgeData() {
+void TextBehavior::resetState() {
+  lastDataSent = "";
+  timeSinceSentBridgeData = 0;
+}
+
+void TextBehavior::maybeSendBridgeData(double dt) {
   Archive archive;
-  archive.write([&](Archive::Writer &writer) {
-    writer.arr("textActors", [&]() {
-      forEachEnabledComponent([&](ActorId actorId, TextComponent &component) {
-        if (!getScene().isGhost(actorId)) {
-          writer.obj([&]() {
-            writer.num("actorId", (int)entt::to_integral(actorId));
-            writer.str("content", formatContent(component.props.content()));
-            writer.num("order", component.props.order());
-            writer.boolean("hasTapTrigger", hasTapTrigger(actorId));
-            writer.boolean("visible", component.props.visible());
-          });
-        }
+  timeSinceSentBridgeData += dt;
+  if (lastDataSent == "" || timeSinceSentBridgeData >= TextBehavior::bridgeUpdateInterval) {
+    timeSinceSentBridgeData = 0;
+    archive.write([&](Archive::Writer &writer) {
+      writer.arr("textActors", [&]() {
+        forEachEnabledComponent([&](ActorId actorId, TextComponent &component) {
+          if (!getScene().isGhost(actorId)) {
+            writer.obj([&]() {
+              writer.num("actorId", (int)entt::to_integral(actorId));
+              writer.str("content", formatContent(component.props.content()));
+              writer.num("order", component.props.order());
+              writer.boolean("hasTapTrigger", hasTapTrigger(actorId));
+              writer.boolean("visible", component.props.visible());
+            });
+          }
+        });
       });
     });
-  });
 
-  auto output = archive.toJson();
-  if (lastDataSent.compare(output) != 0) {
+    auto output = archive.toJson();
+    if (lastDataSent.compare(output) != 0) {
 #ifdef __EMSCRIPTEN__
-    JS_updateTextActors(output.c_str(), output.length());
+      JS_updateTextActors(output.c_str(), output.length());
 #else
-    TextActorsDataEvent textActorsData;
-    textActorsData.data = output;
-    getScene().getBridge().sendEvent("TEXT_ACTORS_DATA", textActorsData);
+      TextActorsDataEvent textActorsData;
+      textActorsData.data = output;
+      getScene().getBridge().sendEvent("TEXT_ACTORS_DATA", textActorsData);
 #endif
-    lastDataSent = output;
+      lastDataSent = output;
+    }
   }
 }
 
