@@ -52,8 +52,8 @@ public:
   void sendVariablesData(Bridge &bridge, bool isChanged);
 
 private:
-  // id -> variable
-  std::unordered_map<std::string, Variable> variables;
+  // use a vector so that the order stays consistent in the editor
+  std::vector<Variable> variables;
 };
 
 
@@ -65,8 +65,10 @@ inline EditVariables::Variable::Variable(
 }
 
 inline std::optional<EditVariables::Variable> EditVariables::get(std::string &variableId) {
-  if (auto found = variables.find(variableId); found != variables.end()) {
-    return found->second;
+  for (auto &variable : variables) {
+    if (variable.variableId == variableId) {
+      return variable;
+    }
   }
   return std::nullopt;
 }
@@ -75,15 +77,20 @@ inline bool EditVariables::add(
     std::string name, std::string variableId, ExpressionValue initialValue) {
   auto existing = get(variableId);
   if (!existing) {
-    variables.emplace(
-        variableId, EditVariables::Variable(std::move(name), variableId, initialValue));
+    variables.emplace_back(EditVariables::Variable(std::move(name), variableId, initialValue));
     return true;
   }
   return false;
 }
 
 inline bool EditVariables::remove(const std::string &variableId) {
-  return (variables.erase(variableId) == 1);
+  for (auto iter = variables.begin(); iter != variables.end(); iter++) {
+    if (iter->variableId == variableId) {
+      variables.erase(iter);
+      return true;
+    }
+  }
+  return false;
 }
 
 inline void EditVariables::clear() {
@@ -92,7 +99,7 @@ inline void EditVariables::clear() {
 
 template<typename F>
 void EditVariables::forEach(F &&f) const {
-  for (auto &[variableId, variable] : variables) {
+  for (auto &variable : variables) {
     f(variable);
   }
 }

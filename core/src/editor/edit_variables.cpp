@@ -18,7 +18,7 @@ void EditVariables::read(Reader &reader) {
     }
     auto name = std::string(*nameCStr);
     auto variableId = std::string(*variableIdCStr);
-    variables.emplace(variableId, Variable(name, variableId, reader.num("initialValue", 0)));
+    variables.emplace_back(Variable(name, variableId, reader.num("initialValue", 0)));
   });
 }
 
