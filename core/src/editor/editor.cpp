@@ -365,24 +365,6 @@ void Editor::draw() {
 
     // Belt
     belt.drawOverlay();
-
-    // Debug commands
-    Debug::display("{} undos:", commands.undos.size());
-    for (auto &command : commands.undos) {
-      std::string selectionString;
-      for (auto actorId : command.entries[Commands::UNDO].selection) {
-        selectionString.append(fmt::format("{} ", entt::to_integral(actorId)));
-      }
-      Debug::display("  {} actor {}", command.description, selectionString);
-    }
-    Debug::display("{} redos:", commands.redos.size());
-    for (auto &command : commands.redos) {
-      std::string selectionString;
-      for (auto actorId : command.entries[Commands::DO].selection) {
-        selectionString.append(fmt::format("{} ", entt::to_integral(actorId)));
-      }
-      Debug::display("  {} actor {}", command.description, selectionString);
-    }
     break; // EditMode::Default
   }
   case EditMode::Draw: {
