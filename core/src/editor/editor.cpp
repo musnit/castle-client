@@ -1892,6 +1892,7 @@ void Editor::maybeSendData(double dt) {
   }
   if (isEditorStateDirty) {
     sendGlobalActions();
+    scene->getBehaviors().byType<TextBehavior>().resetState();
     isEditorStateDirty = false;
   }
   if (auto &library = scene->getLibrary(); library.editorNeedsSend) {
