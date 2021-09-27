@@ -2,6 +2,7 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { PlayDeck } from '../play/PlayDeck';
 import { useQuery, gql } from '@apollo/client';
+import { useListen } from '../core/CoreEvents';
 import { useSession } from '../Session';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -49,6 +50,7 @@ const styles = StyleSheet.create({
 export const NuxScreen = () => {
   const { setIsNuxCompleted } = useSession();
 
+  const [currentCardId, setCurrentCardId] = React.useState();
   const [nuxInfo, setNuxInfo] = React.useState();
   const loadNuxInfo = useQuery(
     gql`
@@ -66,15 +68,25 @@ export const NuxScreen = () => {
   React.useEffect(() => {
     if (!loadNuxInfo.loading && !loadNuxInfo.error && loadNuxInfo.data) {
       setNuxInfo(loadNuxInfo.data.nuxInfo);
+      setCurrentCardId(loadNuxInfo.data.nuxInfo.deck.initialCard?.cardId);
     }
   }, [loadNuxInfo.loading, loadNuxInfo.error, loadNuxInfo.data]);
+
+  useListen({
+    eventName: 'DID_NAVIGATE_TO_CARD',
+    handler: ({ cardId }) => setCurrentCardId(cardId),
+  });
 
   return (
     <View style={styles.container}>
       <View style={styles.topRow}>
-        <Pressable style={styles.back} onPress={() => setIsNuxCompleted(true)}>
-          {({ pressed }) => <Icon name="arrow-back" color={pressed ? '#ccc' : '#fff'} size={32} />}
-        </Pressable>
+        {nuxInfo?.finalCardId && currentCardId === nuxInfo.finalCardId ? (
+          <Pressable style={styles.back} onPress={() => setIsNuxCompleted(true)}>
+            {({ pressed }) => (
+              <Icon name="arrow-back" color={pressed ? '#ccc' : '#fff'} size={32} />
+            )}
+          </Pressable>
+        ) : null}
       </View>
       <View style={styles.itemCard}>
         <View style={styles.absoluteFill}>
