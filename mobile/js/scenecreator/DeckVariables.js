@@ -185,16 +185,18 @@ export const DeckVariables = () => {
         <Text style={[styles.label, { width: '50%' }]}>Name</Text>
         <Text style={[styles.label, { width: '50%' }]}>Initial Value</Text>
       </View>
-      {variables &&
-        variables.map((variable, ii) => (
-          <VariableInput
-            key={`var-${ii}-${variable.variableId}`}
-            autoFocus={ii === 0 && variable.name.length === 0}
-            onChange={(changes) => onChangeVariable(changes, ii)}
-            onDelete={() => deleteVariable(ii)}
-            {...variable}
-          />
-        ))}
+      <View style={{ flexDirection: 'column-reverse' }}>
+        {variables &&
+          variables.map((variable, ii) => (
+            <VariableInput
+              key={`var-${ii}-${variable.variableId}`}
+              autoFocus={ii === 0 && variable.name.length === 0}
+              onChange={(changes) => onChangeVariable(changes, ii)}
+              onDelete={() => deleteVariable(ii)}
+              {...variable}
+            />
+          ))}
+      </View>
       <View style={styles.explainer}>
         <FeatherIcon name="book-open" size={18} color="#888" style={styles.explainerIcon} />
         <Text style={styles.explainerText}>
