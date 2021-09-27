@@ -170,14 +170,14 @@ void Editor::update(double dt) {
     // Make sure ghost actors exist before tools look for them
     scene->getLibrary().ensureGhostActorsExist();
 
-    auto viewPos = scene->getCameraPosition();
-    auto viewWidth = scene->getCameraSize().x;
-    twoFingerPan(scene->getGesture(), scene->getViewTransform(), viewPos, viewWidth);
-    scene->setCameraPosition(viewPos);
-    scene->setViewWidth(viewWidth);
-
     switch (editMode) {
     case EditMode::Default: {
+      auto viewPos = scene->getCameraPosition();
+      auto viewWidth = scene->getCameraSize().x;
+      twoFingerPan(scene->getGesture(), scene->getViewTransform(), viewPos, viewWidth);
+      scene->setCameraPosition(viewPos);
+      scene->setViewWidth(viewWidth);
+
       // Pre-update current tool (let it steal touches)
       switch (currentTool) {
       case Tool::Grab:
