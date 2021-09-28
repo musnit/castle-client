@@ -2,10 +2,12 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { PlayDeck } from '../play/PlayDeck';
 import { useQuery, gql } from '@apollo/client';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useListen } from '../core/CoreEvents';
 import { useSession } from '../Session';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import Viewport from '../common/viewport';
 
 import * as Constants from '../Constants';
 
@@ -47,6 +49,9 @@ const styles = StyleSheet.create({
   },
 });
 
+const CARD_MAX_HEIGHT = Viewport.vh * 100 - Constants.FEED_ITEM_HEADER_HEIGHT - 64;
+const isFitWidth = Viewport.vw * 100 * (1.0 / Constants.CARD_RATIO) <= CARD_MAX_HEIGHT;
+
 export const NuxScreen = () => {
   const { setIsNuxCompleted } = useSession();
 
@@ -77,8 +82,18 @@ export const NuxScreen = () => {
     handler: ({ cardId }) => setCurrentCardId(cardId),
   });
 
+  // if on a stubby screen such as an ipad, do 100% height instead of 100% width
+  const cardStyles = isFitWidth
+    ? styles.itemCard
+    : {
+        ...styles.itemCard,
+        width: undefined,
+        height: '100%',
+        flexShrink: 1,
+      };
+
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.topRow}>
         {nuxInfo?.finalCardId && currentCardId === nuxInfo.finalCardId ? (
           <Pressable style={styles.back} onPress={() => setIsNuxCompleted(true)}>
@@ -88,7 +103,7 @@ export const NuxScreen = () => {
           </Pressable>
         ) : null}
       </View>
-      <View style={styles.itemCard}>
+      <View style={cardStyles}>
         <View style={styles.absoluteFill}>
           {nuxInfo?.deck ? <PlayDeck deck={nuxInfo.deck} /> : null}
         </View>
@@ -96,6 +111,6 @@ export const NuxScreen = () => {
       <Pressable onPress={() => setIsNuxCompleted(true)}>
         <Text style={styles.label}>Skip</Text>
       </Pressable>
-    </View>
+    </SafeAreaView>
   );
 };
