@@ -36,6 +36,13 @@ const styles = StyleSheet.create({
     width: '100%',
     overflow: 'hidden',
   },
+  cardPlayBase: {
+    flex: 1,
+    width: '100%',
+    maxWidth: '100%',
+    backgroundColor: 'red',
+    overflow: 'hidden',
+  },
   scene: {
     position: 'absolute',
     width: '100%',
@@ -260,8 +267,9 @@ export const CreateCardScreen = ({
   }
 
   const cardBackgroundStyles = {
-    backgroundColor: '#f2f2f2',
-    justifyContent: isTextActorSelected ? 'flex-start' : 'flex-end',
+    backgroundColor: isPlaying ? 'black' : '#f2f2f2',
+    justifyContent: 'center',
+    alignItems: 'center',
   };
 
   const insets = useSafeAreaInsets();
@@ -316,38 +324,50 @@ export const CreateCardScreen = ({
           />
           <View style={styles.cardBody}>
             <View style={[styles.card, cardBackgroundStyles, cardFitStyles]}>
-              <CardScene
-                key={`card-scene-${cardId}`}
-                deck={deck}
-                initialSnapshotJson={initialSnapshotJson}
-                interactionEnabled={true}
-                style={styles.scene}
-                isNewScene={isNewScene}
-                isEditable={true}
-                onMessage={onSceneMessage}
-                beltHeight={beltHeight}
-                beltHeightFraction={beltHeightFraction}
-              />
-              {isCardTextVisible ? (
-                <View
-                  style={[styles.textActorsContainer, { marginBottom: beltHeight }]}
-                  pointerEvents="box-none">
+              <View
+                style={[
+                  styles.cardPlayBase,
+                  isPlaying
+                    ? {
+                        maxHeight: (100 * Viewport.vw) / Constants.CARD_RATIO,
+                        aspectRatio: Constants.CARD_RATIO,
+                        borderRadius: Constants.CARD_BORDER_RADIUS,
+                      }
+                    : {},
+                ]}>
+                <CardScene
+                  key={`card-scene-${cardId}`}
+                  deck={deck}
+                  initialSnapshotJson={initialSnapshotJson}
+                  interactionEnabled={true}
+                  style={styles.scene}
+                  isNewScene={isNewScene}
+                  isEditable={true}
+                  onMessage={onSceneMessage}
+                  beltHeight={beltHeight}
+                  beltHeightFraction={beltHeightFraction}
+                />
+                {isCardTextVisible ? (
                   <View
-                    pointerEvents="box-none"
-                    style={[
-                      styles.textActorsAspectRatio,
-                      { justifyContent: isTextActorSelected ? 'flex-start' : 'flex-end' },
-                    ]}>
-                    <CardText
-                      disabled={loading}
-                      visible={isCardTextVisible}
-                      textActors={textActors}
-                      onSelect={isPlaying ? selectActor : selectBlueprint}
-                      isEditable={!isPlaying}
-                    />
+                    style={[styles.textActorsContainer, isPlaying ? {} : { marginBottom: beltHeight }]}
+                    pointerEvents="box-none">
+                    <View
+                      pointerEvents="box-none"
+                      style={[
+                        styles.textActorsAspectRatio,
+                        { justifyContent: isTextActorSelected ? 'flex-start' : 'flex-end' },
+                      ]}>
+                      <CardText
+                        disabled={loading}
+                        visible={isCardTextVisible}
+                        textActors={textActors}
+                        onSelect={isPlaying ? selectActor : selectBlueprint}
+                        isEditable={!isPlaying}
+                      />
+                    </View>
                   </View>
-                </View>
-              ) : null}
+                ) : null}
+              </View>
               <CreateCardOverlay
                 activeSheet={activeSheet}
                 setActiveSheet={setActiveSheet}
