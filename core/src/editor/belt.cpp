@@ -643,15 +643,4 @@ void Belt::drawOverlay() const {
   }
 
   lv.graphics.pop();
-
-  // Draw touches for debugging
-  constexpr auto drawTouches = true;
-  if constexpr (drawTouches) {
-    lv.graphics.push(love::Graphics::STACK_ALL);
-    lv.graphics.setColor({ 1, 0, 1, 0.5 });
-    scene.getGesture().forEachTouch([&](const Touch &touch) {
-      lv.graphics.circle(love::Graphics::DRAW_FILL, touch.screenPos.x, touch.screenPos.y, 20);
-    });
-    lv.graphics.pop();
-  }
 }
