@@ -2,6 +2,7 @@ import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { CardCell } from '../components/CardCell';
 import { useNavigation } from '../ReactNavigation';
+import { useQuery, gql } from '@apollo/client';
 
 import * as Constants from '../Constants';
 import * as LocalId from '../common/local-id';
@@ -48,7 +49,31 @@ const KitDeckCell = ({ deck, onPress }) => {
 
 export const CreateChooseKitScreen = () => {
   const { navigate } = useNavigation();
-  const decks = null; // TODO: fetch kit decks
+
+  let decks = null;
+  const fetchKitDecks = useQuery(
+    gql`
+      query {
+        kitDecks {
+          id
+          deckId
+          initialCard {
+            id
+            cardId
+            backgroundColor
+            backgroundImage {
+              url
+              smallUrl
+            }
+          }
+        }
+      }
+    `
+  );
+
+  if (!fetchKitDecks.loading && !fetchKitDecks.error && fetchKitDecks.data) {
+    decks = fetchKitDecks.data.kitDecks;
+  }
 
   const onPressBlankDeck = () =>
     navigate(
