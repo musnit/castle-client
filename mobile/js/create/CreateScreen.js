@@ -23,7 +23,6 @@ import AntIcon from 'react-native-vector-icons/AntDesign';
 
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
-import * as LocalId from '../common/local-id';
 
 const styles = StyleSheet.create({
   tabTitle: {
@@ -117,8 +116,31 @@ export const CreateScreen = () => {
   }
 };
 
+const TAB_ITEMS = [
+  {
+    name: 'Recent',
+    value: 'recent',
+  },
+  {
+    name: 'Private',
+    value: 'private',
+  },
+  {
+    name: 'Unlisted',
+    value: 'unlisted',
+  },
+  {
+    name: 'Public',
+    value: 'public',
+  },
+  {
+    name: 'Recovered',
+    value: 'recovered',
+  },
+];
+
 const CreateScreenAuthenticated = () => {
-  const navigation = useNavigation();
+  const { push, navigate } = useNavigation();
   const [decks, setDecks] = React.useState(undefined);
   const [error, setError] = React.useState(undefined);
   const [fetchDecks, query] = useLazyQuery(
@@ -186,48 +208,24 @@ const CreateScreenAuthenticated = () => {
     />
   );
 
-  const [filter, setFilter] = React.useState('recent');
+  const onPressCreateDeck = React.useCallback(() => {
+    if (Constants.iOS) {
+      // use native modal on iOS
+      navigate('ModalCreateDeckNavigator', { screen: 'CreateChooseKitScreen' });
+    } else {
+      // use separate root navigator on Android
+      navigate('CreateChooseKitScreen', {}, { isFullscreen: true });
+    }
+  }, [navigate]);
 
-  const TAB_ITEMS = [
-    {
-      name: 'Recent',
-      value: 'recent',
-    },
-    {
-      name: 'Private',
-      value: 'private',
-    },
-    {
-      name: 'Unlisted',
-      value: 'unlisted',
-    },
-    {
-      name: 'Public',
-      value: 'public',
-    },
-    {
-      name: 'Recovered',
-      value: 'recovered',
-    },
-  ];
+  const [filter, setFilter] = React.useState('recent');
 
   return (
     <SafeAreaView style={Constants.styles.container} edges={['top']}>
       <View style={styles.tabTitle}>
         <Text style={styles.tabTitleText}>Create</Text>
         <View style={styles.tabTitleAction}>
-          <TouchableOpacity
-            style={Constants.styles.primaryButton}
-            onPress={() => {
-              navigation.push(
-                'CreateDeck',
-                {
-                  deckIdToEdit: LocalId.makeId(),
-                  cardIdToEdit: LocalId.makeId(),
-                },
-                { isFullscreen: true }
-              );
-            }}>
+          <TouchableOpacity style={Constants.styles.primaryButton} onPress={onPressCreateDeck}>
             <AntIcon
               size={16}
               color="#000"
@@ -277,7 +275,7 @@ const CreateScreenAuthenticated = () => {
                   key={deck.deckId}
                   deck={deck}
                   onPress={() => {
-                    navigation.push(
+                    push(
                       'CreateDeck',
                       {
                         deckIdToEdit: deck.deckId,

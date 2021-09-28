@@ -9,6 +9,7 @@ import { useSession, maybeFetchNotificationsAsync, setNotifBadge } from './Sessi
 import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './auth/AuthScreens';
 import { InitialAuthScreen } from './auth/InitialAuthScreen';
 import { CreateScreen } from './create/CreateScreen';
+import { CreateChooseKitScreen } from './create/CreateChooseKitScreen';
 import { CreateDeckNavigator } from './create/CreateDeckNavigator';
 import { useAppState } from './ghost/GhostAppState';
 import { HomeScreen } from './home/HomeScreen';
@@ -303,6 +304,25 @@ const NuxNavigator = () => (
   </Stack.Navigator>
 );
 
+const ModalCreateDeckNavigator = () => (
+  <Stack.Navigator
+    screenOptions={({ navigation }) => ({
+      headerTintColor: '#fff',
+      headerLeft: () => (
+        <Icon name="close" size={24} color="#fff" onPress={() => navigation.pop()} />
+      ),
+      headerStyle: {
+        backgroundColor: '#000',
+      },
+    })}>
+    <Stack.Screen
+      name="CreateChooseKitScreen"
+      component={CreateChooseKitScreen}
+      options={{ title: 'Choose Your Deck' }}
+    />
+  </Stack.Navigator>
+);
+
 const AuthNavigator = () => (
   <Stack.Navigator
     screenOptions={({ navigation }) => ({
@@ -360,6 +380,7 @@ const MainAppNavigator = () => (
     }}>
     <Stack.Screen name="TabNavigator" component={TabNavigator} />
     <Stack.Screen name="AuthNavigator" component={AuthNavigator} />
+    <Stack.Screen name="ModalCreateDeckNavigator" component={ModalCreateDeckNavigator} />
   </Stack.Navigator>
 );
 
