@@ -225,7 +225,7 @@ void MovingBehavior::handleSetProperty(
     body->SetLinearVelocity({ body->GetLinearVelocity().x, props.vy() });
   } else if (propId == props.angularVelocity.id) {
     props.angularVelocity() = float(value.as<double>());
-    body->SetAngularVelocity(props.angularVelocity() * M_PI / 180);
+    body->SetAngularVelocity(float(props.angularVelocity() * M_PI / 180));
   } else if (propId == props.density.id) {
     props.density() = value.as<float>();
     handleUpdateComponentFixtures(actorId, component, body);
