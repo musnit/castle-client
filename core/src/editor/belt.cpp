@@ -305,8 +305,7 @@ void Belt::update(double dtDouble) {
         placing->pos = touch.screenPos + touchData.pressedElemDelta;
 
         // Add actor if dragged far enough into scene
-        // TODO(nikki): Skip if inspector sheet maximized
-        if (touch.screenPos.y < top - 2 * height) {
+        if (touch.screenPos.y < top - 1.2 * height) {
           if (auto entry = library.indexEntry(placing->elemIndex)) {
             // Add actor to scene -- grab tool will move it immediately so move back by touch delta,
             // also snap to grid initially
