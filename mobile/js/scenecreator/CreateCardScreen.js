@@ -43,6 +43,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'red',
     overflow: 'hidden',
   },
+  cardPlayAspectRatio: {
+    maxHeight: (100 * Viewport.vw) / Constants.CARD_RATIO,
+    aspectRatio: Constants.CARD_RATIO,
+    borderRadius: Constants.CARD_BORDER_RADIUS,
+  },
   scene: {
     position: 'absolute',
     width: '100%',
@@ -324,17 +329,7 @@ export const CreateCardScreen = ({
           />
           <View style={styles.cardBody}>
             <View style={[styles.card, cardBackgroundStyles, cardFitStyles]}>
-              <View
-                style={[
-                  styles.cardPlayBase,
-                  isPlaying
-                    ? {
-                        maxHeight: (100 * Viewport.vw) / Constants.CARD_RATIO,
-                        aspectRatio: Constants.CARD_RATIO,
-                        borderRadius: Constants.CARD_BORDER_RADIUS,
-                      }
-                    : {},
-                ]}>
+              <View style={[styles.cardPlayBase, isPlaying ? styles.cardPlayAspectRatio : null]}>
                 <CardScene
                   key={`card-scene-${cardId}`}
                   deck={deck}
@@ -349,7 +344,10 @@ export const CreateCardScreen = ({
                 />
                 {isCardTextVisible ? (
                   <View
-                    style={[styles.textActorsContainer, isPlaying ? {} : { marginBottom: beltHeight }]}
+                    style={[
+                      styles.textActorsContainer,
+                      isPlaying ? null : { marginBottom: beltHeight },
+                    ]}
                     pointerEvents="box-none">
                     <View
                       pointerEvents="box-none"
