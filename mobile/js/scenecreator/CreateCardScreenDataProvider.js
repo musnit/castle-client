@@ -70,6 +70,8 @@ class CreateCardScreenDataProvider extends React.Component {
         cardId: params.cardIdToEdit,
       };
 
+      const kitDeckId = params.kitDeckId;
+
       if (!LocalId.isLocalId(params.deckIdToEdit)) {
         try {
           deck = await Session.getDeckById(params.deckIdToEdit);
@@ -111,6 +113,22 @@ class CreateCardScreenDataProvider extends React.Component {
         }
         deck.deckId = params.deckIdToEdit;
         Amplitude.logEvent('START_CREATING_NEW_DECK', { deckId: deck.deckId });
+      }
+
+      if (kitDeckId) {
+        // when starting with a kit deck, use local deck/card id, but clone the scene data
+        // and variables from the kit deck
+        if (!LocalId.isLocalId(params.deckIdToEdit) || !LocalId.isLocalId(params.cardIdToEdit)) {
+          throw new Error(
+            `'kitDeckId' must be combined with local (unsaved) deck and card ids to edit`
+          );
+        }
+        const kitDeck = await Session.getDeckById(kitDeckId);
+        const kitInitialCard = kitDeck.cards.find(
+          (card) => card.cardId === kitDeck.initialCard.cardId
+        );
+        deck.variables = kitDeck.variables;
+        card.scene.data = kitInitialCard.scene.data;
       }
 
       if (!card.scene) {

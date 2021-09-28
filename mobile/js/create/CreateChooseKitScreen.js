@@ -42,7 +42,7 @@ const BlankDeckCell = ({ onPress }) => {
 const KitDeckCell = ({ deck, onPress }) => {
   return (
     <View style={[Constants.styles.gridItem, { width: '33.3%' }]}>
-      <CardCell card={deck.initialCard} onPress={onPress} inGrid={true} />
+      <CardCell card={deck.initialCard} onPress={() => onPress(deck)} inGrid={true} />
     </View>
   );
 };
@@ -85,11 +85,24 @@ export const CreateChooseKitScreen = () => {
       { isFullscreen: true }
     );
 
+  const onPressKitDeck = ({ deckId }) =>
+    navigate(
+      'CreateDeck',
+      {
+        deckIdToEdit: LocalId.makeId(),
+        cardIdToEdit: LocalId.makeId(),
+        kitDeckId: deckId,
+      },
+      { isFullscreen: true }
+    );
+
   return (
     <ScrollView contentContainerStyle={styles.gridContainer}>
       <BlankDeckCell onPress={onPressBlankDeck} />
       {decks
-        ? decks.map((deck) => <KitDeckCell key={`create-kit-${deck.deckId}`} deck={deck} />)
+        ? decks.map((deck) => (
+            <KitDeckCell key={`create-kit-${deck.deckId}`} deck={deck} onPress={onPressKitDeck} />
+          ))
         : null}
     </ScrollView>
   );
