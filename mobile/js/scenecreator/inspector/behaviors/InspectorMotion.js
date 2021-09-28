@@ -171,8 +171,8 @@ export default InspectorMotion = ({ moving, rotatingMotion, selectedActorData })
 
     // need to reconcile units because engine's rotating motion is expressed in full rotations
     // per second, while moving is expressed in degrees
-    rotatingPropSendAction = (action, property, value) =>
-      sendBehaviorAction('RotatingMotion', action, property, value / 360);
+    rotatingPropSendAction = (action, property, type, value) =>
+      sendBehaviorAction('RotatingMotion', action, property, type, value / 360);
     activeBehaviorSendAction = (...args) => sendBehaviorAction('RotatingMotion', ...args);
     rotationPropertyName = 'rotationsPerSecond';
     rotationPropertyDisplayValue = (value) => value * 360;
