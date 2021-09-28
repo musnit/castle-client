@@ -16,6 +16,8 @@ import * as LocalId from './common/local-id';
 import * as PushNotifications from './PushNotifications';
 import * as EventEmitter from './EventEmitter';
 
+const SKIP_NUX = false;
+
 let gAuthToken,
   gUserId,
   gIsAnonymous = false,
@@ -60,6 +62,11 @@ PushNotifications.addTokenListener(async (token) => {
 });
 
 export async function loadAuthTokenAsync() {
+  if (SKIP_NUX) {
+    gIsNuxCompleted = true;
+    await CastleAsyncStorage.setItem('IS_NUX_COMPLETED', gIsNuxCompleted.toString());
+  }
+
   if (gAuthToken) {
     return;
   }
