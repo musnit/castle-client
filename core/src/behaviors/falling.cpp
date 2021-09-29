@@ -38,7 +38,9 @@ void FallingBehavior::handleSetProperty(
   if (propId == props.gravity.id) {
     auto gravity = value.as<float>();
     props.gravity() = gravity;
-    body->SetGravityScale(gravity);
+    if (!component.disabled) {
+      body->SetGravityScale(gravity);
+    }
   } else {
     BaseBehavior::handleSetProperty(actorId, component, propId, value);
   }
