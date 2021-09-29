@@ -52,19 +52,23 @@ void SlowdownBehavior::handleDisableComponent(
 
 void SlowdownBehavior::handleSetProperty(
     ActorId actorId, SlowdownComponent &component, PropId propId, const ExpressionValue &value) {
-  auto joint = component.joint;
-  if (!joint) {
-    return;
-  }
-  auto &props = component.props;
-  if (propId == props.motionSlowdown.id) {
-    auto motionSlowdown = value.as<float>();
-    props.motionSlowdown() = motionSlowdown;
-    joint->SetMaxForce(maxForceForMotionSlowdown(motionSlowdown));
-  } else if (propId == props.rotationSlowdown.id) {
-    auto rotationSlowdown = value.as<float>();
-    props.rotationSlowdown() = rotationSlowdown;
-    joint->SetMaxTorque(maxTorqueForRotationSlowdown(rotationSlowdown));
+  if (!component.disabled) {
+    auto joint = component.joint;
+    if (!joint) {
+      return;
+    }
+    auto &props = component.props;
+    if (propId == props.motionSlowdown.id) {
+      auto motionSlowdown = value.as<float>();
+      props.motionSlowdown() = motionSlowdown;
+      joint->SetMaxForce(maxForceForMotionSlowdown(motionSlowdown));
+    } else if (propId == props.rotationSlowdown.id) {
+      auto rotationSlowdown = value.as<float>();
+      props.rotationSlowdown() = rotationSlowdown;
+      joint->SetMaxTorque(maxTorqueForRotationSlowdown(rotationSlowdown));
+    } else {
+      BaseBehavior::handleSetProperty(actorId, component, propId, value);
+    }
   } else {
     BaseBehavior::handleSetProperty(actorId, component, propId, value);
   }
