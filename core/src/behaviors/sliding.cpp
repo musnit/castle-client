@@ -83,14 +83,19 @@ void SlidingBehavior::handleSetProperty(
     const char *cStrValue = value.as<const char *>();
     if (strcmp(cStrValue, component.props.direction().c_str()) != 0) {
       component.props.direction() = cStrValue;
-      updateJoint(actorId, component);
+      if (!component.disabled) {
+        updateJoint(actorId, component);
+      }
     }
   } else if (propId == props.isRotationAllowed.id) {
     auto disallowRotation = value.as<int>() == 0;
-    if (disallowRotation) {
-      body->SetAngularVelocity(0);
+    component.props.isRotationAllowed() = disallowRotation;
+    if (!component.disabled) {
+      if (disallowRotation) {
+        body->SetAngularVelocity(0);
+      }
+      body->SetFixedRotation(disallowRotation);
     }
-    body->SetFixedRotation(disallowRotation);
   } else {
     BaseBehavior::handleSetProperty(actorId, component, propId, value);
   }
