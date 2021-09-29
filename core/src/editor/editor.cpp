@@ -614,7 +614,20 @@ void Editor::sendScreenshot() {
   }
   EditorSceneMessageEvent ev;
   ev.messageType = "SCREENSHOT_DATA";
+
+  // don't use scene camera for screenshot
+  auto &scene = getScene();
+  auto oldCameraPosition = scene.getCameraPosition();
+  auto oldViewWidth = scene.getViewWidth();
+  scene.setCameraPosition({ 0, 0 });
+  scene.setViewWidth(Scene::defaultViewWidth);
+
   ev.data = screenshot->getBase64Screenshot(&getScene());
+
+  // restore scene camera
+  scene.setCameraPosition(oldCameraPosition);
+  scene.setViewWidth(oldViewWidth);
+
   bridge.sendEvent("SCENE_MESSAGE", ev);
 }
 

@@ -155,6 +155,7 @@ public:
   love::Vector2 getDefaultCameraSize() const;
   float getCameraZoom() const;
   void setViewWidth(float newViewWidth);
+  float getViewWidth();
 
 
   // Gesture
@@ -474,6 +475,10 @@ inline float Scene::getCameraZoom() const {
 
 inline void Scene::setViewWidth(float newViewWidth) {
   viewWidth = newViewWidth;
+}
+
+inline float Scene::getViewWidth() {
+  return viewWidth;
 }
 
 inline Variables &Scene::getVariables() {
