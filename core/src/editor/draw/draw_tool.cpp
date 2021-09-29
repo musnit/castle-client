@@ -808,8 +808,8 @@ void DrawTool::update(double dt) {
         childTouchData.clampedY = clampedY;
 
         if (touch.pressed) {
-          // TODO
-          // drawData->unlinkCurrentCell();
+          // always unlink current cell if you try to draw on it
+          drawData->setCellLinked(selectedLayerId, selectedFrameIndex, false);
         }
 
         subtool.onTouch(childTouchData);
