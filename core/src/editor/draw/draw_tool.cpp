@@ -789,6 +789,18 @@ void DrawTool::update(double dt) {
   const Gesture &gesture = scene.getGesture();
   DrawSubtool &subtool = getCurrentSubtool();
 
+  const auto endSubtoolTouch = [this](DrawSubtool &subtool) {
+    subtool.hasTouch = false;
+    subtool.onReset();
+    // TODO: do we need this call?
+    loadLastSave();
+
+    auto currentLayer = drawData->layerForId(selectedLayerId);
+    if (!currentLayer->isVisible) {
+      editor.getCommands().notify("alert", "Edited an invisible layer!");
+    }
+  };
+
   if (gesture.getCount() == 1 && gesture.getMaxCount() == 1) {
     if (!isPlayingAnimation) {
       gesture.withSingleTouch([&](const Touch &touch) {
@@ -814,10 +826,7 @@ void DrawTool::update(double dt) {
 
         subtool.onTouch(childTouchData);
         if (touch.released) {
-          subtool.hasTouch = false;
-          subtool.onReset();
-          // TODO: do we need this call?
-          loadLastSave();
+          endSubtoolTouch(subtool);
         } else {
           subtool.hasTouch = true;
         }
@@ -825,9 +834,7 @@ void DrawTool::update(double dt) {
     }
   } else if (gesture.getCount() == 2) {
     if (subtool.hasTouch) {
-      subtool.hasTouch = false;
-      subtool.onReset();
-      loadLastSave();
+      endSubtoolTouch(subtool);
     }
     panZoom.update(gesture, viewTransform);
     auto newView = panZoom.apply(viewPosition, viewWidth);

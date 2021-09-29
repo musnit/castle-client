@@ -31,6 +31,7 @@ public:
   void redo();
   void clear();
 
+  void notify(std::string type, std::string message);
 
 private:
   Lv &lv { Lv::getInstance() };
@@ -61,9 +62,6 @@ private:
   void executePhase(Command &command, Phase phase, bool isLive);
 
   void undoOrRedo(Phase phase, std::deque<Command> &from, std::deque<Command> &to);
-
-
-  void notify(std::string type, std::string message);
 };
 
 

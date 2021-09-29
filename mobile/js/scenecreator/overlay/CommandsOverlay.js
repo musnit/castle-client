@@ -31,6 +31,12 @@ const styles = StyleSheet.create({
   },
 });
 
+const typeLabels = {
+  undo: 'undid',
+  redo: 'redid',
+  alert: 'notice',
+};
+
 export const CommandsOverlay = () => {
   const { type, message } = useCoreState('EDITOR_COMMAND_NOTIFY') || {};
   if (!type?.length) return null;
@@ -39,7 +45,7 @@ export const CommandsOverlay = () => {
     <View style={styles.container} pointerEvents="none">
       <View style={styles.body}>
         <Text style={styles.messageLabel}>
-          <Text style={styles.typeLabel}>{type === 'undo' ? 'undid' : 'redid'}:</Text> {message}
+          <Text style={styles.typeLabel}>{typeLabels[type] ?? 'notice'}:</Text> {message}
         </Text>
       </View>
     </View>
