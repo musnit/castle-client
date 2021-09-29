@@ -29,14 +29,18 @@ void FrictionBehavior::handleDisableComponent(
 
 void FrictionBehavior::handleSetProperty(
     ActorId actorId, FrictionComponent &component, PropId propId, const ExpressionValue &value) {
-  auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId);
-  if (!body) {
-    return;
-  }
-  auto &props = component.props;
-  if (propId == props.friction.id) {
-    props.friction() = value.as<float>();
-    handleUpdateComponentFixtures(actorId, component, body);
+  if (!component.disabled) {
+    auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId);
+    if (!body) {
+      return;
+    }
+    auto &props = component.props;
+    if (propId == props.friction.id) {
+      props.friction() = value.as<float>();
+      handleUpdateComponentFixtures(actorId, component, body);
+    } else {
+      BaseBehavior::handleSetProperty(actorId, component, propId, value);
+    }
   } else {
     BaseBehavior::handleSetProperty(actorId, component, propId, value);
   }
