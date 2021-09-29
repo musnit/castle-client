@@ -50,20 +50,24 @@ ExpressionValue RotatingMotionBehavior::handleGetProperty(
 
 void RotatingMotionBehavior::handleSetProperty(ActorId actorId, RotatingMotionComponent &component,
     PropId propId, const ExpressionValue &value) {
-  auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId);
-  if (!body) {
-    return;
-  }
-  auto &props = component.props;
-  if (propId == props.vx.id) {
-    props.vx() = value.as<float>();
-    body->SetLinearVelocity({ props.vx(), body->GetLinearVelocity().y });
-  } else if (propId == props.vy.id) {
-    props.vy() = value.as<float>();
-    body->SetLinearVelocity({ body->GetLinearVelocity().x, props.vy() });
-  } else if (propId == props.rotationsPerSecond.id) {
-    props.rotationsPerSecond() = value.as<float>();
-    body->SetAngularVelocity(float(2 * M_PI * props.rotationsPerSecond()));
+  if (!component.disabled) {
+    auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId);
+    if (!body) {
+      return;
+    }
+    auto &props = component.props;
+    if (propId == props.vx.id) {
+      props.vx() = value.as<float>();
+      body->SetLinearVelocity({ props.vx(), body->GetLinearVelocity().y });
+    } else if (propId == props.vy.id) {
+      props.vy() = value.as<float>();
+      body->SetLinearVelocity({ body->GetLinearVelocity().x, props.vy() });
+    } else if (propId == props.rotationsPerSecond.id) {
+      props.rotationsPerSecond() = value.as<float>();
+      body->SetAngularVelocity(float(2 * M_PI * props.rotationsPerSecond()));
+    } else {
+      BaseBehavior::handleSetProperty(actorId, component, propId, value);
+    }
   } else {
     BaseBehavior::handleSetProperty(actorId, component, propId, value);
   }
