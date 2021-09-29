@@ -83,7 +83,7 @@ void PhysicsBodyData::drawShape(
     lv.graphics.rectangle(mode, minX, minY, std::abs(p2.x - p1.x), std::abs(p2.y - p1.y));
   } else if (shape.type == CollisionShapeType::Triangle) {
     love::Vector2 coords[4];
-    love::Vector2 p3 = shape.p3;
+    love::Vector2 p3 = scale * shape.p3;
     bool isCounterclockwise = (p2.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (p2.y - p1.y) > 0;
     if (isCounterclockwise) {
       coords[0] = { p1.x, p1.y };
