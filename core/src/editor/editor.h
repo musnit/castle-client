@@ -121,6 +121,9 @@ private:
   // 'Draw'-mode members
   DrawTool drawTool { *this };
 
+  bool defaultViewApplied = false;
+  std::pair<float, float> getDefaultView(); // Width and y offset -- could refactor into a struct
+
   // events and data
   void maybeSendData(double dt);
 

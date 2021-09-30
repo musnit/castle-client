@@ -51,12 +51,32 @@ void Editor::loadEmptyScene() {
   Debug::log("editor: init empty scene");
 }
 
+std::pair<float, float> Editor::getDefaultView() {
+  if (!scene) {
+    return { 10, 0 };
+  }
+  auto beltHeight = belt.getHeight();
+  constexpr float padding = 0;
+  constexpr float baseViewWidth = 10;
+  constexpr float minWidth = baseViewWidth + padding;
+  constexpr float minHeight = baseViewWidth * 7.0f / 5.0f + padding;
+  auto screenWidth = float(lv.graphics.getWidth());
+  auto screenHeight = float(lv.graphics.getHeight()) - beltHeight;
+  if (screenWidth / screenHeight < minWidth / minHeight) {
+    return { minWidth, 0 };
+  } else {
+    auto defaultWidth = minHeight * screenWidth / screenHeight;
+    auto defaultHeight = defaultWidth * minHeight / minWidth;
+    return { defaultWidth, 0.5 * (defaultHeight - minHeight) };
+  }
+}
+
 // Keeping this as a free function to make it easier to reuse later
 static void twoFingerPan(const Gesture &gesture, const love::Transform &viewTransform,
-    love::Vector2 &viewPos, float &viewWidth) {
-  constexpr float defaultViewWidth = 10;
-  constexpr float minViewWidth = defaultViewWidth / 10;
-  constexpr float maxViewWidth = defaultViewWidth * 4;
+    love::Vector2 &viewPos, float &viewWidth, std::pair<float, float> defaultView) {
+  auto [defaultWidth, defaultYOffset] = defaultView;
+  auto minViewWidth = defaultWidth / 10;
+  auto maxViewWidth = defaultWidth * 4;
 
   // Check for and find two touches
   if (gesture.getMaxCount() != 2) {
@@ -94,7 +114,7 @@ static void twoFingerPan(const Gesture &gesture, const love::Transform &viewTran
   struct Zooming {}; // Marks a touch as being used for zooming
   auto touch1Zooming = gesture.hasData<Zooming>(touchId1);
   auto touch2Zooming = gesture.hasData<Zooming>(touchId2);
-  auto closeToDefault = viewWidth == defaultViewWidth
+  auto closeToDefault = viewWidth == defaultWidth
       && std::abs(initialPinchLength - pinchLength) <= 0.175 * initialPinchLength;
   if (touch1Zooming || touch2Zooming || !closeToDefault) {
     // If close to 1:1, require a stronger pinch to zoom if not already zooming
@@ -112,8 +132,8 @@ static void twoFingerPan(const Gesture &gesture, const love::Transform &viewTran
   if (scale) {
     auto prevViewWidth = viewWidth;
     viewWidth = std::clamp(*scale * viewWidth, minViewWidth, maxViewWidth);
-    if (std::abs(viewWidth - defaultViewWidth) < 0.1 * defaultViewWidth) {
-      viewWidth = defaultViewWidth;
+    if (std::abs(viewWidth - defaultWidth) < 0.1 * defaultWidth) {
+      viewWidth = defaultWidth;
     }
     scale = viewWidth / prevViewWidth; // Recompute to account for clamping
     auto center = const_cast<love::Transform &>(viewTransform).inverseTransformPoint(screenCenter);
@@ -127,12 +147,13 @@ static void twoFingerPan(const Gesture &gesture, const love::Transform &viewTran
   if (!(touch1DisablePan || touch2DisablePan)) {
     auto prevViewPos = viewPos;
     viewPos -= move;
-    if (viewWidth == defaultViewWidth) { // Snap to center only when 1:1 zoom
-      auto prevDistFromCenter = prevViewPos.getLength();
-      auto distFromCenter = viewPos.getLength();
+    if (viewWidth == defaultWidth) { // Snap to center only when 1:1 zoom
+      love::Vector2 center { 0, defaultYOffset };
+      auto prevDistFromCenter = (prevViewPos - center).getLength();
+      auto distFromCenter = (viewPos - center).getLength();
       if (distFromCenter < prevDistFromCenter && distFromCenter < 0.2) {
         // Snap if panned toward and close to center, disable panning for rest of gesture
-        viewPos = { 0, 0 };
+        viewPos = center;
         gesture.setData<DisablePan>(touchId1);
         gesture.setData<DisablePan>(touchId2);
       }
@@ -176,7 +197,8 @@ void Editor::update(double dt) {
     case EditMode::Default: {
       auto viewPos = scene->getCameraPosition();
       auto viewWidth = scene->getCameraSize().x;
-      twoFingerPan(scene->getGesture(), scene->getViewTransform(), viewPos, viewWidth);
+      twoFingerPan(
+          scene->getGesture(), scene->getViewTransform(), viewPos, viewWidth, getDefaultView());
       scene->setCameraPosition(viewPos);
       scene->setViewWidth(viewWidth);
 
@@ -243,6 +265,13 @@ void Editor::update(double dt) {
 void Editor::draw() {
   if (!scene) {
     return;
+  }
+
+  if (!defaultViewApplied) {
+    auto [defaultWidth, defaultYOffset] = getDefaultView();
+    scene->setCameraPosition({ 0, defaultYOffset });
+    scene->setViewWidth(defaultWidth);
+    defaultViewApplied = true;
   }
 
   if (playing && player) {

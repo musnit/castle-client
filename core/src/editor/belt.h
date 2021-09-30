@@ -30,6 +30,7 @@ public:
   bool isInside(const Touch &touch) const;
 
   inline static float heightFraction = 0.102; // Static to allow setting before instance initialized
+  float getHeight();
 
 private:
   Lv &lv { Lv::getInstance() };
@@ -97,4 +98,8 @@ inline void Belt::enableHighlight() {
 
 inline bool Belt::isInside(const Touch &touch) const {
   return top <= touch.screenPos.y && touch.screenPos.y <= bottom;
+}
+
+inline float Belt::getHeight() {
+  return height;
 }
