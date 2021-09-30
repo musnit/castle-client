@@ -116,12 +116,7 @@ export const CreateCardScreen = ({
   const editMode = globalActions?.editMode;
 
   React.useEffect(() => {
-    // when changing between selected or unselected, close sheets
-    setActiveSheet(null);
-  }, [hasSelection]);
-
-  React.useEffect(() => {
-    if (isInspectorOpen) {
+    if (isInspectorOpen && !activeSheet) {
       setActiveSheet('sceneCreatorInspector');
     } else if (!isInspectorOpen && activeSheet === 'sceneCreatorInspector') {
       setActiveSheet(null);
@@ -169,7 +164,7 @@ export const CreateCardScreen = ({
     } else {
       return goToDeck();
     }
-  }, [cardNeedsSave, saveAndGoToDeck, goToDeck]);
+  }, [cardNeedsSave, saveAndGoToDeck, goToDeck, saveAction, showActionSheetWithOptions]);
 
   const maybeSaveAndGoToCard = React.useCallback(
     async (nextCard) => {
@@ -211,7 +206,15 @@ export const CreateCardScreen = ({
         }
       }
     },
-    [deck, cardNeedsSave, saveAndGoToCard, goToCard, isPlaying]
+    [
+      deck,
+      cardNeedsSave,
+      saveAndGoToCard,
+      goToCard,
+      isPlaying,
+      saveAction,
+      showActionSheetWithOptions,
+    ]
   );
 
   const onSelectBackupData = React.useCallback(
@@ -242,6 +245,8 @@ export const CreateCardScreen = ({
     // wait for the selection to clear and close any inspector/overlay before showing the new sheet
     handler: () => setTimeout(() => setActiveSheet('sceneCreatorNewBlueprint'), 0.125),
   });
+
+  const onPressSettings = React.useCallback(() => setActiveSheet('variables'), [setActiveSheet]);
 
   useListen({
     eventName: 'EDITOR_VARIABLES',
@@ -302,7 +307,6 @@ export const CreateCardScreen = ({
     hasSelection,
     isTextActorSelected,
     isBlueprintSelected,
-    library: null, // TODO: library
     onSelectBackupData,
     isShowingTextActors,
     setShowingTextActors,
@@ -321,8 +325,7 @@ export const CreateCardScreen = ({
           }}>
           <CreateCardHeader
             isEditable
-            mode={activeSheet}
-            onChangeMode={setActiveSheet}
+            onPressSettings={onPressSettings}
             onPressBack={maybeSaveAndGoToDeck}
             onSave={saveAndGoToDeck}
             creatorUsername={deck?.creator?.username}

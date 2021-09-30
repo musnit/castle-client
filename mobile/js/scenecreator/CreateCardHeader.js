@@ -53,8 +53,7 @@ const styles = StyleSheet.create({
 export const CreateCardHeader = ({
   isEditable,
   onPressBack,
-  mode,
-  onChangeMode,
+  onPressSettings,
   onSave,
   creatorUsername,
   saveAction,
@@ -126,7 +125,7 @@ export const CreateCardHeader = ({
               <TouchableOpacity
                 style={styles.action}
                 disabled={data.performing}
-                onPress={() => onChangeMode(mode === 'variables' ? null : 'variables')}>
+                onPress={onPressSettings}>
                 <CastleIcon name="settings" size={22} color="#000" />
               </TouchableOpacity>
             </Fragment>
