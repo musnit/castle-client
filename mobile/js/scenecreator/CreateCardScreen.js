@@ -237,9 +237,10 @@ export const CreateCardScreen = ({
 
   useListen({
     eventName: 'SHOW_NEW_BLUEPRINT_SHEET',
-    handler: () => {
-      setActiveSheet('sceneCreatorNewBlueprint');
-    },
+
+    // c++ also clears the current selection when sending this event.
+    // wait for the selection to clear and close any inspector/overlay before showing the new sheet
+    handler: () => setTimeout(() => setActiveSheet('sceneCreatorNewBlueprint'), 0.125),
   });
 
   useListen({
