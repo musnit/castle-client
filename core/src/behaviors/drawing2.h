@@ -26,6 +26,7 @@ struct Drawing2Component : BaseComponent {
     PROP(
          std::string, playMode,
          .label("Play mode")
+         .allowedValues("still", "play once", "loop")
          ) = "still";
     PROP(
          float, loopStartFrame,
@@ -49,7 +50,7 @@ struct DrawingAnimationProps {
   DrawingAnimationProps() = delete;
 
   PROP(int, currentFrame);
-  PROP(std::string, playMode);
+  PROP(std::string, playMode) = "still";
   PROP(float, framesPerSecond);
   PROP(int, loopStartFrame);
   PROP(int, loopEndFrame);
