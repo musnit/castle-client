@@ -813,6 +813,7 @@ struct EditorSelectedActorEvent {
   struct LibraryEntry {
     PROP(std::string, title);
     PROP(std::string, base64Png);
+    PROP(int, numActorsWithEntry);
   };
 
   PROP((std::unordered_map<std::string, Behavior>), behaviors);
@@ -841,6 +842,15 @@ void Editor::sendSelectedActorData() {
         ev.libraryEntry().base64Png = std::string(*base64Png);
       }
     }
+    auto numActorsWithEntry = 0;
+    scene->forEachActor([&](ActorId otherActorId) {
+      if (auto otherEntryIdCStr = scene->maybeGetParentEntryId(otherActorId)) {
+        if (!std::strcmp(entryId, otherEntryIdCStr)) {
+          numActorsWithEntry++;
+        }
+      }
+    });
+    ev.libraryEntry().numActorsWithEntry = numActorsWithEntry;
   }
 
   bridge.sendEvent("EDITOR_SELECTED_ACTOR", ev);
@@ -1612,25 +1622,22 @@ struct EditorInspectorActionReceiver {
         scene.ensureDrawOrderSort();
 
         if (auto entryIdCStr = scene.maybeGetParentEntryId(actorId)) {
-          auto haveActorsWithEntry = false;
           scene.forEachActor([&](ActorId otherActorId) {
-            if (!haveActorsWithEntry) {
-              if (auto otherEntryIdCStr = scene.maybeGetParentEntryId(otherActorId)) {
-                if (!std::strcmp(entryIdCStr, otherEntryIdCStr)) {
+            if (auto otherEntryIdCStr = scene.maybeGetParentEntryId(otherActorId)) {
+              if (!std::strcmp(entryIdCStr, otherEntryIdCStr)) {
 
-                  std::optional<int> drawOrderRelativeToValue;
-                  if (auto drawOrder = scene.maybeGetDrawOrder(otherActorId)) {
-                    drawOrderRelativeToValue = drawOrder->value;
-                  }
-                  deletedInstanceDrawOrders.emplace(otherActorId, drawOrderRelativeToValue);
-
-                  auto instanceArchive = std::make_shared<Archive>();
-                  instanceArchive->write([&](Writer &writer) {
-                    scene.writeActor(otherActorId, writer, {});
-                  });
-                  deletedInstanceArchives.emplace(otherActorId, instanceArchive);
-                  deletedInstanceActorIds.push_back(otherActorId);
+                std::optional<int> drawOrderRelativeToValue;
+                if (auto drawOrder = scene.maybeGetDrawOrder(otherActorId)) {
+                  drawOrderRelativeToValue = drawOrder->value;
                 }
+                deletedInstanceDrawOrders.emplace(otherActorId, drawOrderRelativeToValue);
+
+                auto instanceArchive = std::make_shared<Archive>();
+                instanceArchive->write([&](Writer &writer) {
+                  scene.writeActor(otherActorId, writer, {});
+                });
+                deletedInstanceArchives.emplace(otherActorId, instanceArchive);
+                deletedInstanceActorIds.push_back(otherActorId);
               }
             }
           });
