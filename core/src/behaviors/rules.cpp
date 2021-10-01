@@ -384,8 +384,8 @@ struct Card {
   std::string cardId;
 };
 
-struct SendPlayerToCardResponse : BaseResponse {
-  inline static const RuleRegistration<SendPlayerToCardResponse, RulesBehavior> registration {
+struct RulesSendPlayerToCardResponse : BaseResponse {
+  inline static const RuleRegistration<RulesSendPlayerToCardResponse, RulesBehavior> registration {
     "send player to card"
   };
   static constexpr auto description = "Send player to a different card";
