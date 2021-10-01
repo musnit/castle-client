@@ -119,6 +119,10 @@ public:
 
 	const char *getName() const override;
 
+	SDL_Window *getSDLWindow() {
+		return window;
+	}
+
 private:
 
 	void close(bool allowExceptions);

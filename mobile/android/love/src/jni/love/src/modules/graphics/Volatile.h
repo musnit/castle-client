@@ -41,7 +41,7 @@ class Volatile
 private:
 
 	// A list of all Volatile object currently alive.
-	static std::list<Volatile *> all;
+	inline static std::list<Volatile *> all;
 
 public:
 

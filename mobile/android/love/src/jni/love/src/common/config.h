@@ -39,6 +39,10 @@
 #endif
 #if defined(__ANDROID__)
 #	define LOVE_ANDROID 1
+#endif	
+#if defined(__EMSCRIPTEN__)
+#  define LOVE_EMSCRIPTEN 1
+#  define LOVE_LINUX 1     // Love's Linux code is probably the variant most compatible with Emscripten
 #endif
 #if defined(__APPLE__)
 #	include <TargetConditionals.h>
@@ -46,6 +50,7 @@
 #		define LOVE_IOS 1
 #	elif TARGET_OS_MAC
 #		define LOVE_MACOSX 1
+#       define LOVE_NO_MODPLUG 1
 #	endif
 #endif
 #if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
@@ -114,7 +119,9 @@
 #ifndef LOVE_WINDOWS_UWP
 #	define LOVE_LEGENDARY_CONSOLE_IO_HACK
 #endif // LOVE_WINDOWS_UWP
+#ifndef NOMINMAX
 #	define NOMINMAX
+#endif // NOMINMAX
 #endif
 
 #if defined(LOVE_MACOSX) || defined(LOVE_IOS)
@@ -164,7 +171,7 @@
 #endif
 
 // Check we have a sane configuration
-#if !defined(LOVE_WINDOWS) && !defined(LOVE_LINUX) && !defined(LOVE_IOS) && !defined(LOVE_MACOSX) && !defined(LOVE_ANDROID)
+#if !defined(LOVE_WINDOWS) && !defined(LOVE_LINUX) && !defined(LOVE_IOS) && !defined(LOVE_MACOSX) && !defined(LOVE_ANDROID) && !defined(LOVE_EMSCRIPTEN)
 #	error Could not detect target platform
 #endif
 #if !defined(LOVE_LITTLE_ENDIAN) && !defined(LOVE_BIG_ENDIAN)

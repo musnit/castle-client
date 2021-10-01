@@ -56,6 +56,9 @@ Exception::Exception(const char *fmt, ...)
 
 		delete[] buffer;
 	}
+#if defined(LOVE_EMSCRIPTEN)
+	printf("exception: %s\n", buffer);
+#endif
 	message = std::string(buffer);
 	delete[] buffer;
 }

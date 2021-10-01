@@ -58,22 +58,24 @@ float DistanceJoint::getLength() const
 
 void DistanceJoint::setFrequency(float hz)
 {
-	joint->SetFrequency(hz);
+//	joint->SetFrequency(hz);
 }
 
 float DistanceJoint::getFrequency() const
 {
-	return joint->GetFrequency();
+	return 0;
+//	return joint->GetFrequency();
 }
 
 void DistanceJoint::setDampingRatio(float d)
 {
-	joint->SetDampingRatio(d);
+//	joint->SetDampingRatio(d);
 }
 
 float DistanceJoint::getDampingRatio() const
 {
-	return joint->GetDampingRatio();
+	return 0;
+//	return joint->GetDampingRatio();
 }
 
 

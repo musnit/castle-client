@@ -337,11 +337,15 @@ std::string getExecutablePath()
 	}
 }
 
-void vibrate()
+void vibrate(double seconds)
 {
 	@autoreleasepool
 	{
-		AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
+		if (@available(iOS 13.0, *)) {
+			static UIImpactFeedbackGenerator *feedbackGenerator = [[UIImpactFeedbackGenerator alloc] init];
+			[feedbackGenerator impactOccurredWithIntensity:seconds];
+		}
+//		AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
 	}
 }
 

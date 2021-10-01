@@ -26,7 +26,7 @@ namespace graphics
 {
 
 // Static members.
-std::list<Volatile *> Volatile::all;
+//std::list<Volatile *> Volatile::all;
 
 Volatile::Volatile()
 {

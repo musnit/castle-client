@@ -418,6 +418,7 @@ function love.init()
 			thread = true,
 			window = true,
 			video = true,
+			ghost = true,
 		},
 		audio = {
 			mixwithsystem = true, -- Only relevant for Android / iOS.
@@ -485,6 +486,7 @@ function love.init()
 		"graphics",
 		"math",
 		"physics",
+		"ghost",
 	} do
 		if c.modules[v] then
 			require("love." .. v)

@@ -19,8 +19,8 @@
 #include "data/DataModule.h"
 #include "archive.h"
 
-#define DRAW_MAX_SIZE 10.0
-#define DRAW_LINE_WIDTH 0.2
+#define DRAW_MAX_SIZE 10.0f
+#define DRAW_LINE_WIDTH 0.2f
 
 #define GHOST_READ_NUMBER(arg, default)                                                            \
   lua_pushstring(L, #arg);                                                                         \
@@ -152,17 +152,19 @@ namespace ghost {
     float x;
     float y;
 
-    Point() {
-    }
+    Point() = default;
 
     Point(float x, float y)
         : x(x)
         , y(y) {
     }
 
-    void read(lua_State *L, int index) {
-      GHOST_READ_NUMBER(x, 0)
-      GHOST_READ_NUMBER(y, 0)
+    bool operator==(const Point &other) {
+      return x == other.x && y == other.y;
+    }
+
+    float distance(const Point &other) {
+      return sqrt(pow(other.x - x, 2) + pow(other.y - y, 2));
     }
 
     void read(Archive::Reader &archive) {
@@ -173,13 +175,6 @@ namespace ghost {
     void write(Archive::Writer &archive) {
       archive.num("x", x);
       archive.num("y", y);
-    }
-
-    void write(lua_State *L) {
-      lua_createtable(L, 0, 2);
-
-      GHOST_WRITE_NUMBER(x)
-      GHOST_WRITE_NUMBER(y)
     }
   };
 
@@ -197,66 +192,22 @@ namespace ghost {
     Subpath() {
     }
 
-    Subpath(lua_State *L, int index) {
-      read(L, index);
+    static Subpath SubpathLine(Point &p1, Point &p2) {
+      Subpath result;
+      result.p1 = p1;
+      result.p2 = p2;
+      result.type = SubpathType::line;
+      return result;
     }
 
-    void read(lua_State *L, int index) {
-      lua_pushstring(L, "type");
-      lua_gettable(L, index);
-      std::string t = lua_tostring(L, -1);
-      if (t == "line") {
-        type = line;
-      } else {
-        type = arc;
-      }
-
-      GHOST_READ_STRUCT(p1)
-      GHOST_READ_STRUCT(p2)
-      GHOST_READ_STRUCT(center)
-      GHOST_READ_NUMBER(radius, 0)
-      GHOST_READ_NUMBER(startAngle, 0)
-      GHOST_READ_NUMBER(endAngle, 0)
-    }
-  };
-
-  struct Color {
-    float data[4];
-
-    void read(Archive::Reader &obj) {
-      data[0] = obj.num((unsigned int)0, 1.0);
-      data[1] = obj.num(1, 1.0);
-      data[2] = obj.num(2, 1.0);
-      data[3] = obj.num(3, 1.0);
-    }
-
-    void write(Archive::Writer &archive) {
-      archive.num(data[0]);
-      archive.num(data[1]);
-      archive.num(data[2]);
-      archive.num(data[3]);
-    }
-
-    void read(lua_State *L, int index) {
-      lua_pushnumber(L, 1);
-      lua_gettable(L, index);
-      data[0] = lua_tonumber(L, -1);
-
-      lua_pushnumber(L, 2);
-      lua_gettable(L, index);
-      data[1] = lua_tonumber(L, -1);
-
-      lua_pushnumber(L, 3);
-      lua_gettable(L, index);
-      data[2] = lua_tonumber(L, -1);
-
-      lua_pushnumber(L, 4);
-      lua_gettable(L, index);
-      if (lua_isnumber(L, -1)) {
-        data[3] = lua_tonumber(L, -1);
-      } else {
-        data[3] = 1.0;
-      }
+    static Subpath SubpathArc(Point &center, float radius, float startAngle, float endAngle) {
+      Subpath result;
+      result.center = center;
+      result.radius = radius;
+      result.startAngle = startAngle;
+      result.endAngle = endAngle;
+      result.type = SubpathType::arc;
+      return result;
     }
   };
 
@@ -264,9 +215,9 @@ namespace ghost {
     std::vector<Point> points;
     int style;
     std::optional<Point> bendPoint;
-    bool isFreehand;
-    std::optional<Color> color;
-    bool isTransparent;
+    bool isFreehand = false;
+    std::optional<love::Colorf> color;
+    bool isTransparent = false;
 
     std::vector<Subpath> subpathDataList;
     TovePathRef tovePath;
@@ -276,45 +227,46 @@ namespace ghost {
       tovePath.ptr = NULL;
     }
 
-    ~PathData() {
-      for (auto &subpath : toveSubpaths) {
-        ReleaseSubpath(subpath);
+    PathData(const PathData &p1) {
+      points.clear();
+      for (size_t i = 0; i < p1.points.size(); i++) {
+        points.push_back(p1.points[i]);
       }
-      ReleasePath(tovePath);
+
+      style = p1.style;
+      bendPoint = p1.bendPoint;
+      isFreehand = p1.isFreehand;
+      color = p1.color;
+      isTransparent = p1.isTransparent;
+
+      tovePath.ptr = NULL;
     }
 
-    void read(lua_State *L, int index) {
+    bool isValid() const {
+      return points.size() >= 2;
+    }
 
-      /*GHOST_READ_VECTOR(points, Point)
-      GHOST_READ_INT(style, 1)
-      GHOST_READ_OPTIONAL_STRUCT(bendPoint, Point)
-      GHOST_READ_BOOL(isFreehand, false)
-      GHOST_READ_OPTIONAL_STRUCT(color, Color)
-      GHOST_READ_BOOL(isTransparent, false)*/
+    void copyAttributes(const PathData &other) {
+      style = other.style;
+      isFreehand = other.isFreehand;
+      color = other.color;
+      isTransparent = other.isTransparent;
+      // don't copy geometry data such as points
+    }
 
-      std::vector<float> p;
-      GHOST_READ_FLOAT_VECTOR(p)
-      for (size_t i = 0; i < p.size(); i += 2) {
-        points.push_back(Point(p[i], p[i + 1]));
+    ~PathData() {
+      if (tovePath.ptr) {
+        // TODO: uncommenting this breaks the eraser tool in some decks (try erasing the bottom of the gem blueprint)
+        // For some reason, two different PathDatas have the same value for tovePath.ptr.
+        /*for (auto &subpath : toveSubpaths) {
+			if (subpath.ptr) {
+          ReleaseSubpath(subpath);
+				subpath.ptr = NULL;
+			}
+        }
+        ReleasePath(tovePath);
+        tovePath.ptr = NULL;*/
       }
-
-      int s;
-      GHOST_READ_INT(s, 1)
-      style = s;
-
-      std::optional<Point> bp;
-      GHOST_READ_OPTIONAL_STRUCT(bp, Point)
-      bendPoint = bp;
-
-      bool f;
-      GHOST_READ_BOOL(f, false)
-      isFreehand = f;
-
-      std::optional<Color> c;
-      GHOST_READ_OPTIONAL_STRUCT(c, Color)
-      color = c;
-
-      GHOST_READ_BOOL(isTransparent, false)
     }
 
     void read(Archive::Reader &archive) {
@@ -336,8 +288,12 @@ namespace ghost {
       isFreehand = archive.boolean("f", false);
 
       if (archive.has("c")) {
-        Color c;
-        archive.arr("c", c);
+        love::Colorf c;
+        archive.arr("c", [&]() {
+          c.set(archive.num((unsigned int)0, 1.0), archive.num(1, 1.0), archive.num(2, 1.0),
+              archive.num(3, 1.0));
+        });
+
         color = c;
       }
 
@@ -361,7 +317,12 @@ namespace ghost {
       archive.boolean("f", isFreehand);
 
       if (color) {
-        archive.arr("c", *color);
+        archive.arr("c", [&]() {
+          archive.num(color->r);
+          archive.num(color->g);
+          archive.num(color->b);
+          archive.num(color->a);
+        });
       }
 
       if (isTransparent) {
@@ -371,14 +332,7 @@ namespace ghost {
   };
 
   struct Bounds {
-    float minX, maxX, minY, maxY;
-
-    void read(lua_State *L, int index) {
-      GHOST_READ_NUMBER(minX, 0)
-      GHOST_READ_NUMBER(maxX, 0)
-      GHOST_READ_NUMBER(minY, 0)
-      GHOST_READ_NUMBER(maxY, 0)
-    }
+    float minX = 0, maxX = 0, minY = 0, maxY = 0;
 
     void read(Archive::Reader &archive) {
       minX = archive.num("minX", 0);
@@ -387,7 +341,7 @@ namespace ghost {
       maxY = archive.num("maxY", 0);
     }
 
-    void write(Archive::Writer &archive) {
+    void write(Archive::Writer &archive) const {
       archive.num("minX", minX);
       archive.num("maxX", maxX);
       archive.num("minY", minY);
@@ -414,7 +368,16 @@ namespace ghost {
   };
 
   struct OneIndexFrame {
-    int value;
+    int value = 1;
+
+    OneIndexFrame() = default;
+    OneIndexFrame(int &intValue)
+        : value(intValue) {
+    }
+
+    void operator=(const int &intValue) {
+      value = intValue;
+    }
 
     int toZeroIndex() {
       return value - 1;
@@ -443,6 +406,13 @@ namespace ghost {
       // these can only be set from "set property" responses
       loopStartFrame.value = -1;
       loopEndFrame.value = -1;
+    }
+
+    void write(Archive::Writer &writer) const {
+      writer.boolean("playing", playing);
+      writer.num("framesPerSecond", framesPerSecond);
+      writer.boolean("loop", loop);
+      // don't write `initialFrame` - allow parent Drawing2 component to write it
     }
   };
 
@@ -548,6 +518,14 @@ namespace ghost {
 
       updateVertices();
       updateTriangles();
+    }
+
+    void update() {
+      if (toveMesh.ptr) {
+        TesselatorTessGraphics(toveTess, toveGraphics, toveMesh, 15);
+
+        getToveMesh();
+      }
     }
 
     void draw() {

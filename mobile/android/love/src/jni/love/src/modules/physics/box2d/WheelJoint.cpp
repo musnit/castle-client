@@ -57,7 +57,8 @@ float WheelJoint::getJointTranslation() const
 
 float WheelJoint::getJointSpeed() const
 {
-	return Physics::scaleUp(joint->GetJointSpeed());
+	return 0;
+//	return Physics::scaleUp(joint->GetJointSpeed());
 }
 
 void WheelJoint::setMotorEnabled(bool enable)
@@ -97,22 +98,24 @@ float WheelJoint::getMotorTorque(float inv_dt) const
 
 void WheelJoint::setSpringFrequency(float hz)
 {
-	joint->SetSpringFrequencyHz(hz);
+//	joint->SetSpringFrequencyHz(hz);
 }
 
 float WheelJoint::getSpringFrequency() const
 {
-	return joint->GetSpringFrequencyHz();
+	return 0;
+//	return joint->GetSpringFrequencyHz();
 }
 
 void WheelJoint::setSpringDampingRatio(float ratio)
 {
-	joint->SetSpringDampingRatio(ratio);
+//	joint->SetSpringDampingRatio(ratio);
 }
 
 float WheelJoint::getSpringDampingRatio() const
 {
-	return joint->GetSpringDampingRatio();
+	return 0;
+//	return joint->GetSpringDampingRatio();
 }
 
 int WheelJoint::getAxis(lua_State *L)

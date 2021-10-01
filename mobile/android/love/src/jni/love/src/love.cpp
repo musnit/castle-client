@@ -44,10 +44,6 @@ extern "C" {
 #include "common/ios.h"
 #endif
 
-#ifdef LOVE_ANDROID
-#include "common/android.h"
-#endif
-
 #ifdef LOVE_WINDOWS
 extern "C"
 {
@@ -78,19 +74,19 @@ static void get_app_arguments(int argc, char **argv, int &new_argc, char **&new_
 			temp_argv.push_back(std::string(argv[i]));
 	}
 
-#ifdef LOVE_MACOSX
-	// Check for a drop file string, if the app wasn't launched in a terminal.
-	// Checking for the terminal is a pretty big hack, but works around an issue
-	// where OS X will switch Spaces if the terminal launching love is in its
-	// own full-screen Space.
-	std::string dropfilestr;
-	if (!isatty(STDIN_FILENO))
-		dropfilestr = love::macosx::checkDropEvents();
-
-	if (!dropfilestr.empty())
-		temp_argv.insert(temp_argv.begin() + 1, dropfilestr);
-	else
-#endif
+//#ifdef LOVE_MACOSX
+//	// Check for a drop file string, if the app wasn't launched in a terminal.
+//	// Checking for the terminal is a pretty big hack, but works around an issue
+//	// where OS X will switch Spaces if the terminal launching love is in its
+//	// own full-screen Space.
+//	std::string dropfilestr;
+//	if (!isatty(STDIN_FILENO))
+//		dropfilestr = love::macosx::checkDropEvents();
+//
+//	if (!dropfilestr.empty())
+//		temp_argv.insert(temp_argv.begin() + 1, dropfilestr);
+//	else
+//#endif
 	{
 		// If it exists, add the love file in love.app/Contents/Resources/ to argv.
 		std::string loveResourcesPath;
@@ -214,38 +210,12 @@ static DoneAction runlove(int argc, char **argv, int &retval)
 	lua_pushstring(L, "love.boot");
 	lua_call(L, 1, 1);
 
-    // XXX(Ghost): if Ghost `uri` is set, set it as the global variable `GHOST_ROOT_URI`
-    const char *uri = love::android::getGhostRootUri();
-    if (uri) {
-        lua_pushstring(L, uri);
-        lua_setglobal(L, "GHOST_ROOT_URI");
-    }
-
-	const char *channel = love::android::getCastleReactNativeChannel();
-	if (channel) {
-		lua_pushstring(L, channel);
-		lua_setglobal(L, "CASTLE_REACT_NATIVE_CHANNEL");
-	}
-
-        const char *sceneCreatorApiVersion = love::android::getSceneCreatorApiVersion();
-	if (sceneCreatorApiVersion) {
-		lua_pushstring(L, sceneCreatorApiVersion);
-		lua_setglobal(L, "SCENE_CREATOR_API_VERSION");
-	}
-
-    // Turn the returned boot function into a coroutine and call it until done.
+	// Turn the returned boot function into a coroutine and call it until done.
 	lua_newthread(L);
 	lua_pushvalue(L, -2);
 	int stackpos = lua_gettop(L);
-	while (lua_resume(L, 0) == LUA_YIELD) {
-		extern double ghostScreenScaling;
-		extern bool ghostApplyScreenScaling;
-
-		ghostScreenScaling = love::android::getGhostScreenScaling();
-		ghostApplyScreenScaling = love::android::getGhostApplyScreenScaling();
-
+	while (lua_resume(L, 0) == LUA_YIELD)
 		lua_pop(L, lua_gettop(L) - stackpos);
-	}
 
 	retval = 0;
 	DoneAction done = DONE_QUIT;
@@ -271,7 +241,11 @@ static DoneAction runlove(int argc, char **argv, int &retval)
 	return done;
 }
 
+#ifdef LOVE_MACOSX
+int mainUNUSED(int argc, char **argv)
+#else
 int main(int argc, char **argv)
+#endif
 {
 	if (strcmp(LOVE_VERSION_STRING, love_version()) != 0)
 	{

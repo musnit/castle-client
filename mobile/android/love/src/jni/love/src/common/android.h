@@ -68,15 +68,6 @@ bool createStorageDirectories();
 
 bool hasBackgroundMusic();
 
-/*
- * XXX(Ghost): Ghost additions
- */
-const char *getGhostRootUri();
-const char *getCastleReactNativeChannel();
-const char *getSceneCreatorApiVersion();
-double getGhostScreenScaling();
-bool getGhostApplyScreenScaling();
-
 } // android
 } // love
 

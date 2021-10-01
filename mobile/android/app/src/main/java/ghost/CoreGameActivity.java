@@ -32,7 +32,7 @@ public class CoreGameActivity extends SDLActivity {
     public static String deckId = "";
 
     public static String getDeckId() {
-        return deckId;
+        return "kXT4UwhSk"; //deckId
     }
 
     public static double ghostScreenScaling = 1;

@@ -16,6 +16,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import xyz.castle.CastleSharedPreferences;
+import xyz.castle.MainActivity;
 import xyz.castle.ViewUtils;
 
 public class API {

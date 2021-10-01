@@ -22,70 +22,46 @@ namespace love {
 namespace ghost {
 
   class DrawData : public Object {
-    /*
-     local newObj = {
-             _graphics = nil,
-             _graphicsNeedsReset = true,
-             pathDataList = obj.pathDataList or {},
-             color = obj.color or obj.fillColor or {hexStringToRgb("f9a31b")},
-             lineColor = obj.lineColor or {hexStringToRgb("f9a31b")},
-             gridSize = obj.gridSize or 0.71428571428571,
-             scale = obj.scale or DRAW_DATA_SCALE,
-             pathsCanvas = nil,
-             fillImageData = nil,
-             fillImage = nil,
-             fillImageBounds = obj.fillImageBounds or {
-                     maxX = 0,
-                     maxY = 0,
-                     minX = 0,
-                     minY = 0
-             },
-             fillCanvasSize = obj.fillCanvasSize or FILL_CANVAS_SIZE,
-             fillPng = obj.fillPng or nil,
-             version = obj.version or nil,
-             fillPixelsPerUnit = obj.fillPixelsPerUnit or 25.6,
-             bounds = obj.bounds or nil,
-             framesBounds = obj.framesBounds or {},
-             layers = obj.layers or {},
-             numTotalLayers = obj.numTotalLayers or 1,
-             selectedLayerId = obj.selectedLayerId or nil,
-             selectedFrame = obj.selectedFrame or 1,
-             _layerDataChanged = true,
-             _layerData = nil,
-     }
-
-     */
   public:
     static love::Type type;
 
-    Color color;
-    Color lineColor;
+    // `color` is no longer used in the editor, which maintains its own selected color state
+    __attribute__((deprecated)) love::Colorf color;
+    love::Colorf lineColor;
     float gridSize;
     float scale;
     int version;
     float fillPixelsPerUnit;
-    int numTotalLayers;
     std::vector<std::optional<Bounds>> framesBounds;
-    DrawDataLayerId selectedLayerId;
-    OneIndexFrame selectedFrame;
-    std::vector<std::unique_ptr<DrawDataLayer>> layers;
-    bool _layerDataChanged;
 
-    DrawData(lua_State *L, int index) {
-      read(L, index);
+    // `selectedLayerId` and `selectedFrame` are no longer used, this state is maintained by the
+    // editor
+    __attribute__((deprecated)) DrawDataLayerId selectedLayerId;
+    __attribute__((deprecated)) OneIndexFrame selectedFrame;
 
-      _layerDataChanged = true;
+    std::vector<std::shared_ptr<DrawDataLayer>> layers;
 
-      /*ToveSubpathRef subpath = NewSubpath();
-      TovePathRef path = NewPath(null);
-      */
+    DrawData(std::shared_ptr<DrawData> other) {
+      Archive archive;
+      archive.write([&](Archive::Writer &w) {
+        other->write(w);
+      });
+
+      archive.read([&](Archive::Reader &r) {
+        read(r);
+      });
+    }
+
+    DrawData(const std::string &json) {
+      auto archive = Archive::fromJson(json.c_str());
+
+      archive.read([&](Archive::Reader &r) {
+        read(r);
+      });
     }
 
     DrawData(Archive::Reader &archive) {
       read(archive);
-
-      _layerDataChanged = true;
-
       /*ToveSubpathRef subpath = NewSubpath();
       TovePathRef path = NewPath(null);*/
     }
@@ -98,26 +74,42 @@ namespace ghost {
     }*/
 
     void read(Archive::Reader &archive) {
-      archive.arr("color", color);
-      archive.arr("lineColor", lineColor);
+      love::Colorf c;
+      archive.arr("color", [&]() {
+        c.set(archive.num((unsigned int)0, 1.0), archive.num(1, 1.0), archive.num(2, 1.0),
+            archive.num(3, 1.0));
+      });
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+      color = c;
+#pragma GCC diagnostic pop
+
+      love::Colorf c2;
+      archive.arr("lineColor", [&]() {
+        c2.set(archive.num((unsigned int)0, 1.0), archive.num(1, 1.0), archive.num(2, 1.0),
+            archive.num(3, 1.0));
+      });
+      lineColor = c2;
+
+
       gridSize = archive.num("gridSize", 0.71428571428571);
       scale = archive.num("scale", 10);
       version = archive.num("version", 3);
       fillPixelsPerUnit = archive.num("fillPixelsPerUnit", 25.6);
-      numTotalLayers = archive.num("numTotalLayers", 1);
-      archive.arr("framesBounds", [&]() {
-        for (auto i = 0; i < archive.size(); i++) {
-          Bounds bounds;
-          archive.obj(i, bounds);
-          framesBounds.push_back(bounds);
-        }
+      // int numTotalLayers = archive.num("numTotalLayers", 1);
+      archive.each("framesBounds", [&]() {
+        std::optional<Bounds> bounds;
+        archive.read(bounds);
+        framesBounds.push_back(bounds);
       });
-      // TODO: default this to first layer on the server
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
       selectedLayerId = archive.str("selectedLayerId", "");
       selectedFrame.value = archive.num("selectedFrame", 1);
+#pragma GCC diagnostic pop
       archive.arr("layers", [&]() {
         for (auto i = 0; i < archive.size(); i++) {
-          auto layer = std::make_unique<DrawDataLayer>();
+          auto layer = std::make_shared<DrawDataLayer>();
           archive.obj(i, *layer);
           layer->setParent(this);
           layers.push_back(std::move(layer));
@@ -125,21 +117,54 @@ namespace ghost {
       });
     }
 
+    std::string serialize() {
+      Archive archive;
+      archive.write([&](Archive::Writer &w) {
+        write(w);
+      });
+
+      return archive.toJson();
+    }
+
     void write(Archive::Writer &archive) {
-      archive.arr("color", color);
-      archive.arr("lineColor", lineColor);
+      archive.arr("color", [&]() {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        // TODO: we're still writing this to provide backwards-compat with old scenes
+        archive.num(color.r);
+        archive.num(color.g);
+        archive.num(color.b);
+        archive.num(color.a);
+#pragma GCC diagnostic pop
+      });
+      archive.arr("lineColor", [&]() {
+        archive.num(lineColor.r);
+        archive.num(lineColor.g);
+        archive.num(lineColor.b);
+        archive.num(lineColor.a);
+      });
       archive.num("gridSize", gridSize);
       archive.num("scale", scale);
       archive.num("version", version);
       archive.num("fillPixelsPerUnit", fillPixelsPerUnit);
-      archive.num("numTotalLayers", numTotalLayers);
+      archive.num("numTotalLayers", getNumLayers());
+
+      for (size_t i = 0; i < framesBounds.size(); i++) {
+        getBounds(i);
+      }
+
       archive.arr("framesBounds", [&]() {
-        for (size_t i = 0; i < framesBounds.size(); i++) {
-          archive.obj(*framesBounds[i]);
+        for (auto &bounds : framesBounds) {
+          archive.obj([&]() {
+            archive.write(*bounds);
+          });
         }
       });
-      archive.str("selectedLayerId", selectedLayerId);
-      archive.num("selectedFrame", selectedFrame.value);
+
+      // TODO: we're still writing these to provide backwards-compat with old scenes
+      archive.str("selectedLayerId", "layer1");
+      archive.num("selectedFrame", 1);
+
       archive.arr("layers", [&]() {
         for (size_t i = 0; i < layers.size(); i++) {
           archive.obj(*layers[i]);
@@ -147,32 +172,16 @@ namespace ghost {
       });
     }
 
-    void read(lua_State *L, int index) {
-      GHOST_READ_STRUCT(color)
-      GHOST_READ_STRUCT(lineColor)
-      GHOST_READ_NUMBER(gridSize, 0.71428571428571)
-      GHOST_READ_NUMBER(scale, 10)
-      GHOST_READ_INT(version, 3)
-      GHOST_READ_NUMBER(fillPixelsPerUnit, 25.6)
-      GHOST_READ_INT(numTotalLayers, 1)
-      GHOST_READ_VECTOR(framesBounds, Bounds)
-      GHOST_READ_STRING(selectedLayerId)
-      int selectedFrameValue;
-      GHOST_READ_INT_2(selectedFrameValue, selectedFrame, 1)
-      selectedFrame.value = selectedFrameValue;
-      GHOST_READ_POINTER_VECTOR(layers, DrawDataLayer)
-
-      for (size_t i = 0; i < layers.size(); i++) {
-        layers[i]->setParent(this);
-      }
+    int getNumLayers() {
+      return layers.size();
     }
 
     float gridCellSize();
-    std::tuple<int, int> globalToGridCoordinates(float x, float y);
-    std::tuple<int, int> gridToGlobalCoordinates(float x, float y);
-    std::tuple<int, int> roundGlobalDiffCoordinatesToGrid(float x, float y);
-    std::tuple<int, int> roundGlobalCoordinatesToGrid(float x, float y);
-    std::tuple<int, int> clampGlobalCoordinates(float x, float y);
+    std::tuple<float, float> globalToGridCoordinates(float x, float y);
+    std::tuple<float, float> gridToGlobalCoordinates(float x, float y);
+    std::tuple<float, float> roundGlobalDiffCoordinatesToGrid(float x, float y);
+    std::tuple<float, float> roundGlobalCoordinatesToGrid(float x, float y);
+    std::tuple<float, float> clampGlobalCoordinates(float x, float y);
     float roundGlobalDistanceToGrid(float d);
     void makeSubpathsFromSubpathData(PathData *pathData);
     void addLineSubpathData(PathData *pathData, float p1x, float p1y, float p2x, float p2y);
@@ -181,15 +190,14 @@ namespace ghost {
     void drawEndOfArc(PathData *pathData, float p1x, float p1y, float p2x, float p2y);
     void addSubpathDataForPoints(PathData *pathData, Point p1, Point p2);
     void updatePathDataRendering(PathData *pathData);
-    DrawDataLayer *selectedLayer();
     int getRealFrameIndexForLayerId(DrawDataLayerId layerId, int frame);
     int getRealFrameIndexForLayerId(DrawDataLayerId layerId, OneIndexFrame frame);
     DrawDataLayer *layerForId(DrawDataLayerId id);
-    DrawDataFrame *currentLayerFrame();
-    PathDataList *currentPathDataList();
-    void updateBounds();
+    void clearBounds();
+    void updateFrameBounds(OneIndexFrame frameIndex);
     Bounds getBounds(int frame);
-    bool arePathDatasFloodFillable(PathData pd1, PathData pd2);
+    bool arePathDatasFloodFillable(PathData &pd1, PathData &pd2);
+    void updateFramePreview(DrawDataLayerId layerId, OneIndexFrame frameIndex);
     AnimationState newAnimationState();
     int getNumFrames();
     int modFrameIndex(int value);
@@ -201,10 +209,26 @@ namespace ghost {
     };
     RunAnimationResult runAnimation(AnimationState &animationState,
         AnimationComponentProperties &componentProperties, float dt);
-    ToveGraphicsHolder *graphics();
-    void preload();
-    void render(std::optional<AnimationComponentProperties> componentProperties);
+    void renderFrameIndex(int frameIdx /* zero index */);
+    std::optional<std::string> renderPreviewPng(int frameIdx, int size);
+    void renderForTool(DrawDataLayerId layerId, OneIndexFrame frameIndex, float tempTranslateX,
+        float tempTranslateY, std::shared_ptr<ToveGraphicsHolder> tempGraphics);
     bool isPointInBounds(Point point);
+
+    void addLayer(std::string title, DrawDataLayerId id);
+
+    // return the index removed, or -1 if not removed
+    int deleteLayer(const DrawDataLayerId &id);
+
+    void setLayerOrder(const DrawDataLayerId &id, int newIndexInLayers);
+
+    void addFrame();
+    void addFrame(OneIndexFrame frameIndex);
+    bool deleteFrame(OneIndexFrame frameIndex);
+    void copyCell(DrawDataLayerId sourceLayerId, OneIndexFrame sourceFrameIndex,
+        DrawDataLayerId destLayerId, OneIndexFrame destFrameIndex);
+    void setCellLinked(DrawDataLayerId layerId, OneIndexFrame frameIndex, bool isLinked);
+    void clearFrame(DrawDataLayerId layerId, OneIndexFrame frameIndex);
   };
 
 }

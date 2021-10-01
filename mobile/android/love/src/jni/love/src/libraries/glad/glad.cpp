@@ -1,7 +1,4 @@
 #include <string.h>
-#include "glad.hpp"
-
-namespace glad {
 
 
 #ifdef GLAD_USE_SDL
@@ -12,6 +9,10 @@ namespace glad {
 #else
 #include <assert.h>
 #endif
+
+#include "glad.hpp"
+
+namespace glad {
 
 bool gladLoadGL(void) {
 #ifdef GLAD_USE_SDL
@@ -7243,10 +7244,17 @@ static void find_core(void) {
 	if (strstr(v, "OpenGL ES ") == v) {
 		major = v[10] - '0'; minor = v[12] - '0'; gles = true;
 	}
-
-	major = 2;
-  	minor = 0;
-
+  // CASTLE: Force GLES2 (WebGL 1) compatibility
+#ifdef __APPLE__
+	#include "TargetConditionals.h"
+#endif
+#if !TARGET_OS_OSX
+  major = 2;
+  minor = 0;
+#endif
+#ifdef __EMSCRIPTEN__
+  gles = true;
+#endif
 	GLVersion.major = major; GLVersion.minor = minor; GLVersion.gles = gles;
 	GLAD_VERSION_1_0 = gles == 0 && ((major == 1 && minor >= 0) || major > 1);
 	GLAD_VERSION_1_1 = gles == 0 && ((major == 1 && minor >= 1) || major > 1);

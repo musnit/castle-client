@@ -3,7 +3,10 @@
 #include "api.h"
 #include <jni.h>
 
-std::string API::postRequest(const std::string &body) {
+
+namespace CastleAPI {
+void postRequest(const std::string &body, const std::function<void(bool, std::string, std::string)>
+        callback) {
   JNIEnv *oldEnv = (JNIEnv *)SDL_AndroidGetJNIEnv();
   JavaVM *jvm;
   oldEnv->GetJavaVM(&jvm);
@@ -16,8 +19,8 @@ std::string API::postRequest(const std::string &body) {
   jmethodID methodHandle = env->GetStaticMethodID(
       activity, "jniPostRequest", "(Ljava/lang/String;)Ljava/lang/String;");
 
-  jstring str1 = env->NewStringUTF(body.c_str());
-  jstring resultJString = (jstring)env->CallStaticObjectMethod(activity, methodHandle, str1);
+  jstring bodyJString = env->NewStringUTF(body.c_str());
+  jstring resultJString = (jstring)env->CallStaticObjectMethod(activity, methodHandle, bodyJString);
   const char *utf = env->GetStringUTFChars(resultJString, 0);
   std::string result;
   if (utf) {
@@ -28,7 +31,8 @@ std::string API::postRequest(const std::string &body) {
   env->DeleteLocalRef(resultJString);
   env->DeleteLocalRef(activity);
 
-  return result;
+  callback(true, "", result);
+}
 }
 
 #endif

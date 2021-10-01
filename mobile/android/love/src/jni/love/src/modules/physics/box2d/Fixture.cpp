@@ -47,7 +47,8 @@ Fixture::Fixture(Body *body, Shape *shape, float density)
 	udata->ref = nullptr;
 	b2FixtureDef def;
 	def.shape = shape->shape;
-	def.userData = (void *)udata;
+	def.userData.pointer = (uintptr_t)(void *)udata;
+//	def.userData = (void *)udata;
 	def.density = density;
 	fixture = body->body->CreateFixture(&def);
 	this->retain();
@@ -57,7 +58,8 @@ Fixture::Fixture(Body *body, Shape *shape, float density)
 Fixture::Fixture(b2Fixture *f)
 	: fixture(f)
 {
-	udata = (fixtureudata *)f->GetUserData();
+	udata = (fixtureudata *)(uintptr_t)f->GetUserData().pointer;
+//	udata = (fixtureudata *)f->GetUserData();
 	body = (Body *)Memoizer::find(f->GetBody());
 	if (!body)
 		body = new Body(f->GetBody());
@@ -275,7 +277,8 @@ int Fixture::setUserData(lua_State *L)
 	if (udata == nullptr)
 	{
 		udata = new fixtureudata();
-		fixture->SetUserData((void *) udata);
+		fixture->GetUserData().pointer = (uintptr_t)(void *)udata;
+//		fixture->SetUserData((void *) udata);
 	}
 
 	if(!udata->ref)

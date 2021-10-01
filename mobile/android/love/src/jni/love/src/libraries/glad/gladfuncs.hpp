@@ -68,7 +68,11 @@ inline void glReadBuffer(GLenum src) { fp_glReadBuffer(src); }
 inline void glReadPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, void* pixels) { fp_glReadPixels(x, y, width, height, format, type, pixels); }
 inline void glGetBooleanv(GLenum pname, GLboolean* data) { fp_glGetBooleanv(pname, data); }
 inline void glGetDoublev(GLenum pname, GLdouble* data) { fp_glGetDoublev(pname, data); }
+#ifdef ENABLE_GL_GET_ERROR
 inline GLenum glGetError() { return fp_glGetError(); }
+#else
+inline GLenum glGetError() { return GL_NO_ERROR; }
+#endif
 inline void glGetFloatv(GLenum pname, GLfloat* data) { fp_glGetFloatv(pname, data); }
 inline void glGetIntegerv(GLenum pname, GLint* data) { fp_glGetIntegerv(pname, data); }
 inline const GLubyte* glGetString(GLenum name) { return fp_glGetString(name); }

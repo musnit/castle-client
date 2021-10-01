@@ -27,20 +27,54 @@ namespace ghost {
     PathDataList pathDataList;
     Bounds fillImageBounds;
     bool _graphicsNeedsReset = true;
-    std::unique_ptr<ToveGraphicsHolder> _graphics;
-    DrawData *_parent;
-    std::unique_ptr<image::ImageData> fillImageData;
-    std::unique_ptr<graphics::Image> fillImage;
-    std::unique_ptr<graphics::Canvas> pathsCanvas;
+    ToveGraphicsHolder *_graphics = NULL;
+    DrawData *_parent = NULL;
+    image::ImageData *fillImageData = NULL;
+    graphics::Image *fillImage = NULL;
+    graphics::Canvas *pathsCanvas = NULL;
     std::optional<std::string> fillPng;
+    std::optional<std::string> base64Png;
 
-    void read(lua_State *L, int index) {
-      GHOST_READ_BOOL(isLinked, false)
-      GHOST_READ_VECTOR(pathDataList, PathData)
-      GHOST_READ_STRUCT(fillImageBounds)
-      GHOST_READ_STRING(fillPng)
+    DrawDataFrame() = default;
+    DrawDataFrame(bool isLinked_, DrawData *parent_)
+        : isLinked(isLinked_)
+        , _parent(parent_) {
+      fillImageBounds.maxX = 0;
+      fillImageBounds.maxY = 0;
+      fillImageBounds.minX = 0;
+      fillImageBounds.minY = 0;
+    }
 
-      deserializeFillAndPreview();
+    DrawDataFrame(const DrawDataFrame &other) {
+      isLinked = other.isLinked;
+      for (auto &otherPathData : other.pathDataList) {
+        if (otherPathData.isValid()) {
+          pathDataList.push_back(PathData(otherPathData));
+        }
+      }
+      fillImageBounds.set(other.fillImageBounds);
+      fillPng = other.fillPng;
+      setParent(other._parent);
+
+      deserializeFill();
+    }
+
+    ~DrawDataFrame() {
+      if (_graphics) {
+        delete _graphics;
+      }
+
+      if (fillImageData) {
+        fillImageData->release();
+      }
+
+      if (fillImage) {
+        fillImage->release();
+      }
+
+      if (pathsCanvas) {
+        pathsCanvas->release();
+      }
     }
 
     void read(Archive::Reader &archive) {
@@ -49,31 +83,50 @@ namespace ghost {
         for (auto i = 0; i < archive.size(); i++) {
           PathData pathData;
           archive.obj(i, pathData);
-          pathDataList.push_back(pathData);
+
+          if (pathData.isValid()) {
+            pathDataList.push_back(pathData);
+          }
         }
       });
 
       archive.obj("fillImageBounds", fillImageBounds);
       fillPng = archive.str("fillPng", "");
 
-      deserializeFillAndPreview();
+      deserializeFill();
     }
 
     void write(Archive::Writer &archive) {
       archive.boolean("isLinked", isLinked);
       archive.arr("pathDataList", [&]() {
         for (size_t i = 0; i < pathDataList.size(); i++) {
-          archive.obj(pathDataList[i]);
+          if (pathDataList[i].isValid()) {
+            archive.obj(pathDataList[i]);
+          }
         }
       });
 
       archive.obj("fillImageBounds", fillImageBounds);
-      if (fillPng) {
-        archive.str("fillPng", *fillPng);
+      if (fillImageData) {
+        love::filesystem::FileData *fileData = fillImageData->encode(
+            love::image::FormatHandler::EncodedFormat::ENCODED_PNG, "Image.png", false);
+        const char *fileDataString = (const char *)fileData->getData();
+        size_t fileDataSize = fileData->getSize();
+        size_t dstlen = 0;
+        char *result = data::encode(data::ENCODE_BASE64, fileDataString, fileDataSize, dstlen, 0);
+        archive.str("fillPng", std::string(result));
+        delete result;
+        fileData->release();
       }
     }
 
-    void deserializePathDataList();
+    // canvas helpers
+    static graphics::Canvas *newCanvas(int width, int height);
+    static love::image::ImageData *newImageData(graphics::Canvas *canvas);
+    static void renderToCanvas(graphics::Canvas *canvas, const std::function<void()> &lambda);
+    static std::string encodeBase64Png(love::image::ImageData *imageData);
+    static std::string encodeBase64Png(graphics::Canvas *canvas);
+
     bool arePathDatasMergable(PathData pd1, PathData pd2);
     float round(float num, int numDecimalPlaces);
     std::vector<float> roundFloatArray(std::vector<float> a);
@@ -83,21 +136,20 @@ namespace ghost {
     void resetGraphics();
     ToveGraphicsHolder *graphics();
     void renderFill();
+    std::optional<std::string> renderPreviewPng(int size);
 
     graphics::Image *imageDataToImage(image::ImageData *);
     image::ImageData *getFillImageDataSizedToPathBounds();
     graphics::Image *getFillImage();
     void updateFillImageWithFillImageData();
     void compressFillCanvas();
-    bool floodFill(float x, float y);
+    bool floodFill(float x, float y, Colorf color);
     bool floodClear(float x, float y, float radius);
     void resetFill();
     void updatePathsCanvas();
-    void deserializeFillAndPreview();
+    void deserializeFill();
 
     image::ImageData *canvasToImageData(graphics::Canvas *canvas);
-    graphics::Canvas *newCanvas(int width, int height);
-    void renderToCanvas(graphics::Canvas *canvas, const std::function<void()> &lambda);
 
     DrawData *parent() {
       return _parent;
@@ -113,14 +165,13 @@ namespace ghost {
   struct DrawDataLayer {
     std::string title;
     DrawDataLayerId id;
-    bool isVisible;
-    std::vector<std::unique_ptr<DrawDataFrame>> frames;
+    bool isVisible = true;
+    std::vector<std::shared_ptr<DrawDataFrame>> frames;
 
-    void read(lua_State *L, int index) {
-      GHOST_READ_STRING(title)
-      GHOST_READ_STRING(id)
-      GHOST_READ_BOOL(isVisible, true)
-      GHOST_READ_POINTER_VECTOR(frames, DrawDataFrame)
+    DrawDataLayer() = default;
+    DrawDataLayer(std::string title_, DrawDataLayerId id_)
+        : title(title_)
+        , id(id_) {
     }
 
     void read(Archive::Reader &archive) {
@@ -129,7 +180,7 @@ namespace ghost {
       isVisible = archive.boolean("isVisible", true);
       archive.arr("frames", [&]() {
         for (auto i = 0; i < archive.size(); i++) {
-          auto frame = std::make_unique<DrawDataFrame>();
+          auto frame = std::make_shared<DrawDataFrame>();
           archive.obj(i, *frame);
           frames.push_back(std::move(frame));
         }

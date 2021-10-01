@@ -49,39 +49,39 @@ void ChainShape::setNextVertex(float x, float y)
 {
 	b2Vec2 v(x, y);
 	b2ChainShape *c = (b2ChainShape *)shape;
-	c->SetNextVertex(Physics::scaleDown(v));
+//	c->SetNextVertex(Physics::scaleDown(v));
 }
 
 void ChainShape::setNextVertex()
 {
 	b2ChainShape *c = (b2ChainShape *)shape;
-	c->m_hasNextVertex = false;
+//	c->m_hasNextVertex = false;
 }
 
 void ChainShape::setPreviousVertex(float x, float y)
 {
 	b2Vec2 v(x, y);
 	b2ChainShape *c = (b2ChainShape *)shape;
-	c->SetPrevVertex(Physics::scaleDown(v));
+//	c->SetPrevVertex(Physics::scaleDown(v));
 }
 
 void ChainShape::setPreviousVertex()
 {
 	b2ChainShape *c = (b2ChainShape *)shape;
-	c->m_hasPrevVertex = false;
+//	c->m_hasPrevVertex = false;
 }
 
 bool ChainShape::getNextVertex(float &x, float &y) const
 {
 	b2ChainShape *c = (b2ChainShape *)shape;
 
-	if (c->m_hasNextVertex)
-	{
-		b2Vec2 v = Physics::scaleUp(c->m_nextVertex);
-		x = v.x;
-		y = v.y;
-		return true;
-	}
+//	if (c->m_hasNextVertex)
+//	{
+//		b2Vec2 v = Physics::scaleUp(c->m_nextVertex);
+//		x = v.x;
+//		y = v.y;
+//		return true;
+//	}
 
 	return false;
 }
@@ -90,13 +90,13 @@ bool ChainShape::getPreviousVertex(float &x, float &y) const
 {
 	b2ChainShape *c = (b2ChainShape *)shape;
 
-	if (c->m_hasPrevVertex)
-	{
-		b2Vec2 v = Physics::scaleUp(c->m_prevVertex);
-		x = v.x;
-		y = v.y;
-		return true;
-	}
+//	if (c->m_hasPrevVertex)
+//	{
+//		b2Vec2 v = Physics::scaleUp(c->m_prevVertex);
+//		x = v.x;
+//		y = v.y;
+//		return true;
+//	}
 
 	return false;
 }

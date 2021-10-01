@@ -121,7 +121,7 @@ Mesh::~Mesh()
 {
 	delete vbo;
 	delete ibo;
-	delete vertexScratchBuffer;
+	delete[] vertexScratchBuffer;
 
 	for (const auto &attrib : attachedAttributes)
 	{

@@ -99,7 +99,7 @@ bool System::openURL(const std::string &url) const
 
 	return love::android::openURL(url);
 
-#elif defined(LOVE_LINUX)
+#elif defined(LOVE_LINUX) && !defined(LOVE_EMSCRIPTEN)
 
 	pid_t pid;
 	const char *argv[] = {"xdg-open", url.c_str(), nullptr};
@@ -152,7 +152,7 @@ void System::vibrate(double seconds) const
 #ifdef LOVE_ANDROID
 	love::android::vibrate(seconds);
 #elif defined(LOVE_IOS)
-	love::ios::vibrate();
+	love::ios::vibrate(seconds);
 #else
 	LOVE_UNUSED(seconds);
 #endif
