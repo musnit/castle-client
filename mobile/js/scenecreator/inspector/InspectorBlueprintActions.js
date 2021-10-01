@@ -1,8 +1,9 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSession } from '../../Session';
+import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useCardCreator } from '../CreateCardContext';
-import { sendAsync } from '../../core/CoreEvents';
+import { useCoreState, sendAsync } from '../../core/CoreEvents';
 
 const styles = StyleSheet.create({
   container: {
@@ -16,13 +17,12 @@ const styles = StyleSheet.create({
   },
 });
 
-// TODO: this component was derived from the old InspectorHeader,
-// but the actions here should only apply to blueprints, not individual instances
 export const InspectorBlueprintActions = () => {
   const { deck } = useCardCreator();
+  const { showActionSheetWithOptions } = useActionSheet();
 
-  // TODO: new engine data
-  const data = { isBlueprint: true }; // previously `inspectorActions`
+  const selectedActorData = useCoreState('EDITOR_SELECTED_ACTOR');
+  const libraryEntry = selectedActorData?.libraryEntry || { numActorsWithEntry: 0 };
   const sendAction = (action, ...args) => sendAsync('EDITOR_INSPECTOR_ACTION', { action, ...args });
 
   const copyBlueprint = React.useCallback(() => sendAsync('COPY_SELECTED_BLUEPRINT'), []);
@@ -39,12 +39,36 @@ export const InspectorBlueprintActions = () => {
     canCopyBlueprint = true;
   }
 
+  const maybeDeleteBlueprint = React.useCallback(() => {
+    if (libraryEntry.numActorsWithEntry > 0) {
+      // blueprint has instances in scene, prompt before deleting
+      showActionSheetWithOptions(
+        {
+          title: `Delete this blueprint and ${libraryEntry.numActorsWithEntry} instance${
+            libraryEntry.numActorsWithEntry === 1 ? '' : 's'
+          } in the scene?`,
+          options: ['Delete blueprint and instances', 'Cancel'],
+          cancelButtonIndex: 1,
+          destructiveButtonIndex: 0,
+        },
+        (buttonIndex) => {
+          if (buttonIndex === 0) {
+            sendAction('deleteSelection');
+          }
+        }
+      );
+    } else {
+      // no instances in scene, just delete blueprint
+      sendAction('deleteSelection');
+    }
+  }, [showActionSheetWithOptions, libraryEntry, sendAction]);
+
   return (
     <View style={styles.container}>
-      <Pressable style={styles.actionButton} onPress={() => sendAction('deleteSelection')}>
+      <Pressable style={styles.actionButton} onPress={maybeDeleteBlueprint}>
         <Text style={styles.actionButtonLabel}>Delete</Text>
       </Pressable>
-      {data.isBlueprint && canCopyBlueprint ? (
+      {canCopyBlueprint ? (
         <Pressable style={styles.actionButton} onPress={() => copyBlueprint()}>
           <Text style={styles.actionButtonLabel}>Copy</Text>
         </Pressable>
