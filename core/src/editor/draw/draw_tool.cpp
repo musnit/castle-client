@@ -563,7 +563,22 @@ void DrawTool::resetState() {
 
 void DrawTool::makeNewLayer() {
   if (drawData) {
-    auto newLayerNum = drawData->getNumLayers() + 1;
+    // find highest integer in an existing layer id, add one
+    auto highestLayerId = 0;
+    static std::regex pattern("layer(\\d+)");
+    for (auto &layer : drawData->layers) {
+      const std::string layerId = layer->id;
+      auto it = layerId.begin(), end = layerId.end();
+      for (std::smatch match; std::regex_search(it, end, match, pattern); it = match[0].second) {
+        auto indexStr = match.str(1);
+        auto index = std::stoi(indexStr);
+        if (index > highestLayerId) {
+          highestLayerId = index;
+        }
+      }
+    }
+
+    auto newLayerNum = highestLayerId + 1;
     love::DrawDataLayerId newLayerId = fmt::format("layer{}", newLayerNum);
     drawData->addLayer(fmt::format("Layer {}", newLayerNum), newLayerId);
     selectedLayerId = newLayerId;
