@@ -382,7 +382,7 @@ namespace ghost {
     }
   }*/
 
-  void DrawData::addLayer(std::string title, DrawDataLayerId id) {
+  void DrawData::addLayer(std::string title, DrawDataLayerId id, int order) {
     auto newLayer = std::make_shared<DrawDataLayer>(title, id);
 
     auto frameCount = layers.size() > 0 ? layers[0]->frames.size() : 1;
@@ -393,6 +393,9 @@ namespace ghost {
 
     newLayer->setParent(this);
     layers.push_back(std::move(newLayer));
+    if (order > -1 && order < layers.size() - 1) {
+      std::iter_swap(layers.begin() + order, layers.rbegin());
+    }
   }
 
   int DrawData::deleteLayer(const DrawDataLayerId &id) {

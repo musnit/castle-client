@@ -578,9 +578,17 @@ void DrawTool::makeNewLayer() {
       }
     }
 
+    auto newLayerOrder = -1;
+    for (auto ii = 0; ii < drawData->layers.size(); ii++) {
+      if (drawData->layers[ii]->id == selectedLayerId) {
+        newLayerOrder = ii + 1;
+        break;
+      }
+    }
+
     auto newLayerNum = highestLayerId + 1;
     love::DrawDataLayerId newLayerId = fmt::format("layer{}", newLayerNum);
-    drawData->addLayer(fmt::format("Layer {}", newLayerNum), newLayerId);
+    drawData->addLayer(fmt::format("Layer {}", newLayerNum), newLayerId, newLayerOrder);
     selectedLayerId = newLayerId;
   }
 }

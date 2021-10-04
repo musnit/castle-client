@@ -215,7 +215,7 @@ namespace ghost {
         float tempTranslateY, std::shared_ptr<ToveGraphicsHolder> tempGraphics);
     bool isPointInBounds(Point point);
 
-    void addLayer(std::string title, DrawDataLayerId id);
+    void addLayer(std::string title, DrawDataLayerId id, int order = -1);
 
     // return the index removed, or -1 if not removed
     int deleteLayer(const DrawDataLayerId &id);
