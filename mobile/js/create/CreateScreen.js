@@ -17,6 +17,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLazyQuery, gql } from '@apollo/client';
 import { useSession } from '../Session';
 import { SegmentedNavigation } from '../components/SegmentedNavigation';
+import { UnsavedCardsList } from './UnsavedCardsList';
 
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
@@ -69,6 +70,66 @@ const styles = StyleSheet.create({
     marginLeft: 2,
   },
 });
+
+const EditDecksList = ({ fetchDecks, refreshing, filteredDecks, error }) => {
+  const { push } = useNavigation();
+  const refreshControl = (
+    <RefreshControl
+      refreshing={refreshing}
+      onRefresh={fetchDecks}
+      tintColor="#fff"
+      colors={['#fff', '#ccc']}
+    />
+  );
+
+  if (filteredDecks?.length === 0) {
+    return (
+      <View style={Constants.styles.empty}>
+        <Text style={Constants.styles.emptyTitle}>No decks... yet!</Text>
+        <Text style={Constants.styles.emptyText}>
+          Create your first deck by tapping the button above, or remix an existing deck.
+        </Text>
+        <Text style={[Constants.styles.emptyText, { marginTop: 16 }]}>
+          Want help or inspiration?{' '}
+          <Text
+            style={{ color: '#fff' }}
+            onPress={() => Linking.openURL(Constants.DISCORD_INVITE_LINK)}>
+            Join our Discord!
+          </Text>
+        </Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return <EmptyFeed error={error} onRefresh={fetchDecks} />;
+  }
+
+  if (!filteredDecks || filteredDecks.length > 0) {
+    return (
+      <ScrollView contentContainerStyle={styles.gridContainer} refreshControl={refreshControl}>
+        {filteredDecks
+          ? filteredDecks.map((deck) => (
+              <EditDeckCell
+                key={deck.deckId}
+                deck={deck}
+                onPress={() => {
+                  push(
+                    'CreateDeck',
+                    {
+                      deckIdToEdit: deck.deckId,
+                    },
+                    { isFullscreen: true }
+                  );
+                }}
+              />
+            ))
+          : null}
+      </ScrollView>
+    );
+  }
+  return null;
+};
 
 const EditDeckCell = (props) => {
   const { deck, onPress } = props;
@@ -140,7 +201,7 @@ const TAB_ITEMS = [
 ];
 
 const CreateScreenAuthenticated = () => {
-  const { push, navigate } = useNavigation();
+  const { navigate } = useNavigation();
   const [decks, setDecks] = React.useState();
   const [error, setError] = React.useState();
   const [filter, setFilter] = React.useState('recent');
@@ -202,31 +263,28 @@ const CreateScreenAuthenticated = () => {
   }, [query.called, query.loading, query.error, query.data]);
 
   React.useEffect(() => {
-    switch (filter) {
-      case 'private':
-      case 'unlisted':
-      case 'public':
-        setFilteredDecks(decks.filter((d) => d.visibility === filter));
-        break;
-      case 'recovered':
-        // use different view for this tab
-        setFilteredDecks();
-        break;
-      case 'recent':
-      default:
-        setFilteredDecks(decks.sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified)));
-        break;
+    if (decks?.length) {
+      switch (filter) {
+        case 'private':
+        case 'unlisted':
+        case 'public':
+          setFilteredDecks(decks.filter((d) => d.visibility === filter));
+          break;
+        case 'recovered':
+          // use different view for this tab
+          setFilteredDecks();
+          break;
+        case 'recent':
+        default:
+          setFilteredDecks(
+            decks.sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified))
+          );
+          break;
+      }
+    } else {
+      setFilteredDecks();
     }
   }, [decks, filter, setFilteredDecks]);
-
-  const refreshControl = (
-    <RefreshControl
-      refreshing={query.loading}
-      onRefresh={fetchDecks}
-      tintColor="#fff"
-      colors={['#fff', '#ccc']}
-    />
-  );
 
   const onPressCreateDeck = React.useCallback(() => {
     if (Constants.iOS) {
@@ -237,6 +295,13 @@ const CreateScreenAuthenticated = () => {
       navigate('CreateChooseKitScreen', {}, { isFullscreen: true });
     }
   }, [navigate]);
+
+  const onUnsavedCardRestored = React.useCallback(() => {
+    // after restoring an unsaved card, go back to recent tab and refetch decks,
+    // assuming the restored card caused a deck to be newly visible here
+    setFilter('recent');
+    fetchDecks();
+  }, [setFilter, fetchDecks]);
 
   return (
     <SafeAreaView style={Constants.styles.container} edges={['top']}>
@@ -264,48 +329,15 @@ const CreateScreenAuthenticated = () => {
           />
         </ScrollView>
       </View>
-
-      {filteredDecks?.length === 0 ? (
-        <View style={Constants.styles.empty}>
-          <Text style={Constants.styles.emptyTitle}>No decks... yet!</Text>
-          <Text style={Constants.styles.emptyText}>
-            Create your first deck by tapping the button above, or remix an existing deck.
-          </Text>
-          <Text style={[Constants.styles.emptyText, { marginTop: 16 }]}>
-            Want help or inspiration?{' '}
-            <Text
-              style={{ color: '#fff' }}
-              onPress={() => Linking.openURL(Constants.DISCORD_INVITE_LINK)}>
-              Join our Discord!
-            </Text>
-          </Text>
-        </View>
-      ) : null}
-
-      {error ? (
-        <EmptyFeed error={error} onRefresh={fetchDecks} />
+      {filter === 'recovered' ? (
+        <UnsavedCardsList onCardChosen={onUnsavedCardRestored} />
       ) : (
-        (!filteredDecks || filteredDecks.length > 0) && (
-          <ScrollView contentContainerStyle={styles.gridContainer} refreshControl={refreshControl}>
-            {filteredDecks
-              ? filteredDecks.map((deck) => (
-                  <EditDeckCell
-                    key={deck.deckId}
-                    deck={deck}
-                    onPress={() => {
-                      push(
-                        'CreateDeck',
-                        {
-                          deckIdToEdit: deck.deckId,
-                        },
-                        { isFullscreen: true }
-                      );
-                    }}
-                  />
-                ))
-              : null}
-          </ScrollView>
-        )
+        <EditDecksList
+          fetchDecks={fetchDecks}
+          refreshing={query.loading}
+          filteredDecks={filteredDecks}
+          error={error}
+        />
       )}
     </SafeAreaView>
   );
