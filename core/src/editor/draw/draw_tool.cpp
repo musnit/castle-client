@@ -579,7 +579,7 @@ void DrawTool::makeNewLayer() {
     }
 
     auto newLayerOrder = -1;
-    for (auto ii = 0; ii < drawData->layers.size(); ii++) {
+    for (auto ii = 0; ii < int(drawData->layers.size()); ii++) {
       if (drawData->layers[ii]->id == selectedLayerId) {
         newLayerOrder = ii + 1;
         break;
