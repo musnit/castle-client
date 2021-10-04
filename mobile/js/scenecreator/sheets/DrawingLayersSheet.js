@@ -146,7 +146,7 @@ const CollisionRow = ({ isSelected, onSelect, previewPng, numFrames, isVisible, 
     }
   }
   return (
-    <Pressable style={styles.layerRow} onPress={() => onSelect(!isSelected)}>
+    <Pressable style={styles.layerRow} onPress={() => onSelect(true)}>
       <View style={styles.firstCell}>
         <Pressable onPress={() => setVisible(!isVisible)}>
           <MCIcon
@@ -161,7 +161,8 @@ const CollisionRow = ({ isSelected, onSelect, previewPng, numFrames, isVisible, 
           </Text>
         </View>
         <View style={styles.layerMenuButton}>
-          <MCIcon name={'dots-horizontal'} size={ICON_SIZE} color={'#000'} />
+          {/* ellipsis button is currently not used for collision */}
+          <MCIcon name={'dots-horizontal'} size={ICON_SIZE} color={'#fff'} />
         </View>
       </View>
       <View
