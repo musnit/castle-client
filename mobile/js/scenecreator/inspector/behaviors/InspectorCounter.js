@@ -8,9 +8,10 @@ import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
 export default InspectorCounter = ({ counter }) => {
   const component = useCoreState('EDITOR_SELECTED_COMPONENT:Counter');
-  const sendAction = React.useCallback((...args) => sendBehaviorAction('Counter', ...args), [
-    sendBehaviorAction,
-  ]);
+  const sendAction = React.useCallback(
+    (...args) => sendBehaviorAction('Counter', ...args),
+    [sendBehaviorAction]
+  );
   return (
     <View style={SceneCreatorConstants.styles.behaviorContainer}>
       <BehaviorHeader
@@ -19,7 +20,7 @@ export default InspectorCounter = ({ counter }) => {
         component={component}
         sendAction={sendAction}
       />
-      <View style={SceneCreatorConstants.styles.behaviorPropertySpecs}>
+      <View style={[SceneCreatorConstants.styles.behaviorPropertySpecs, { paddingHorizontal: 16 }]}>
         <BehaviorPropertyInputRow
           behavior={counter}
           component={component}
