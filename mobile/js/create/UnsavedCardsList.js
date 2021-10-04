@@ -118,8 +118,8 @@ export const UnsavedCardsList = ({ onCardChosen }) => {
   return (
     <ScrollView contentContainerStyle={styles.container} refreshControl={refreshControl}>
       {cards?.length
-        ? cards.map((card) => (
-            <View style={styles.row}>
+        ? cards.map((card, ii) => (
+            <View style={styles.row} key={`card-${ii}`}>
               <Text style={styles.cardLabel}>{formatDate(card.updatedTime)}</Text>
               <Pressable style={styles.restoreButton} onPress={() => onPressCard(card.cardId)}>
                 <Text style={styles.restoreButtonLabel}>Restore</Text>
