@@ -814,6 +814,10 @@ void DrawTool::update(double dt) {
 
   const auto endSubtoolTouch = [this](DrawSubtool &subtool) {
     subtool.hasTouch = false;
+
+    // remove any partial gesture (e.g. first touch of 2-finger pan)
+    resetTempGraphics();
+
     subtool.onReset();
     // TODO: do we need this call?
     loadLastSave();
