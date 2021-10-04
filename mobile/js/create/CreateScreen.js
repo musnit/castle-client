@@ -141,8 +141,10 @@ const TAB_ITEMS = [
 
 const CreateScreenAuthenticated = () => {
   const { push, navigate } = useNavigation();
-  const [decks, setDecks] = React.useState(undefined);
-  const [error, setError] = React.useState(undefined);
+  const [decks, setDecks] = React.useState();
+  const [error, setError] = React.useState();
+  const [filter, setFilter] = React.useState('recent');
+  const [filteredDecks, setFilteredDecks] = React.useState();
   const [fetchDecks, query] = useLazyQuery(
     gql`
       query Me {
@@ -188,7 +190,7 @@ const CreateScreenAuthenticated = () => {
       if (query.data) {
         const decks = query.data.me.decks;
         if (decks) {
-          setDecks(decks.sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified)));
+          setDecks(decks);
         }
         setError(undefined);
       } else if (query.error) {
@@ -198,6 +200,24 @@ const CreateScreenAuthenticated = () => {
       setError(undefined);
     }
   }, [query.called, query.loading, query.error, query.data]);
+
+  React.useEffect(() => {
+    switch (filter) {
+      case 'private':
+      case 'unlisted':
+      case 'public':
+        setFilteredDecks(decks.filter((d) => d.visibility === filter));
+        break;
+      case 'recovered':
+        // use different view for this tab
+        setFilteredDecks();
+        break;
+      case 'recent':
+      default:
+        setFilteredDecks(decks.sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified)));
+        break;
+    }
+  }, [decks, filter, setFilteredDecks]);
 
   const refreshControl = (
     <RefreshControl
@@ -218,8 +238,6 @@ const CreateScreenAuthenticated = () => {
     }
   }, [navigate]);
 
-  const [filter, setFilter] = React.useState('recent');
-
   return (
     <SafeAreaView style={Constants.styles.container} edges={['top']}>
       <View style={styles.tabTitle}>
@@ -236,7 +254,7 @@ const CreateScreenAuthenticated = () => {
           </TouchableOpacity>
         </View>
       </View>
-      {/* <View style={styles.navWrapper}>
+      <View style={styles.navWrapper}>
         <ScrollView horizontal>
           <SegmentedNavigation
             items={TAB_ITEMS}
@@ -245,9 +263,9 @@ const CreateScreenAuthenticated = () => {
             compact={true}
           />
         </ScrollView>
-      </View> */}
+      </View>
 
-      {decks && decks.length === 0 && (
+      {filteredDecks?.length === 0 ? (
         <View style={Constants.styles.empty}>
           <Text style={Constants.styles.emptyTitle}>No decks... yet!</Text>
           <Text style={Constants.styles.emptyText}>
@@ -262,29 +280,30 @@ const CreateScreenAuthenticated = () => {
             </Text>
           </Text>
         </View>
-      )}
+      ) : null}
 
       {error ? (
         <EmptyFeed error={error} onRefresh={fetchDecks} />
       ) : (
-        (!decks || decks.length > 0) && (
+        (!filteredDecks || filteredDecks.length > 0) && (
           <ScrollView contentContainerStyle={styles.gridContainer} refreshControl={refreshControl}>
-            {decks &&
-              decks.map((deck) => (
-                <EditDeckCell
-                  key={deck.deckId}
-                  deck={deck}
-                  onPress={() => {
-                    push(
-                      'CreateDeck',
-                      {
-                        deckIdToEdit: deck.deckId,
-                      },
-                      { isFullscreen: true }
-                    );
-                  }}
-                />
-              ))}
+            {filteredDecks
+              ? filteredDecks.map((deck) => (
+                  <EditDeckCell
+                    key={deck.deckId}
+                    deck={deck}
+                    onPress={() => {
+                      push(
+                        'CreateDeck',
+                        {
+                          deckIdToEdit: deck.deckId,
+                        },
+                        { isFullscreen: true }
+                      );
+                    }}
+                  />
+                ))
+              : null}
           </ScrollView>
         )
       )}
