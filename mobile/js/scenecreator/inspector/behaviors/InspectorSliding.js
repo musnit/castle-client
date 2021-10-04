@@ -9,9 +9,10 @@ import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
 export default InspectorSliding = ({ behavior }) => {
   const component = useCoreState('EDITOR_SELECTED_COMPONENT:Sliding');
-  const sendAction = React.useCallback((...args) => sendBehaviorAction('Sliding', ...args), [
-    sendBehaviorAction,
-  ]);
+  const sendAction = React.useCallback(
+    (...args) => sendBehaviorAction('Sliding', ...args),
+    [sendBehaviorAction]
+  );
   const [slidingDirection, sendSlidingDirection] = useOptimisticBehaviorValue({
     component,
     propName: 'direction',
@@ -65,7 +66,7 @@ export default InspectorSliding = ({ behavior }) => {
         />
         <InspectorCheckbox
           value={isRotationAllowed}
-          onChange={(value) => sendIsRotationAllowed('set:isRotationAllowed', value)}
+          onChange={(value) => sendIsRotationAllowed('set', value)}
           label="Rotates"
           style={{ marginBottom: 12 }}
         />
