@@ -104,6 +104,17 @@ export const UnsavedCardsList = ({ onCardChosen }) => {
     />
   );
 
+  if (cards?.length === 0) {
+    return (
+      <View style={Constants.styles.empty}>
+        <Text style={Constants.styles.emptyTitle}>Nothing here 🎉</Text>
+        <Text style={Constants.styles.emptyText}>
+          If you accidentally lost unsaved cards, they would appear here.
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.container} refreshControl={refreshControl}>
       {cards?.length
