@@ -64,17 +64,5 @@ platform :ios do
     upload_to_testflight(
         username: "ben@castle.xyz"
     )
-    set_app_version_on_server
+    # set_app_version_on_server
   end
-
-  lane :app_store do
-    upload_to_app_store(
-      # TODO: maybe 'force'
-      username: "ben@castle.xyz",
-      skip_screenshots: true,
-      submit_for_review: false,
-      metadata_path: "./fastlane/metadata"
-    )
-    # do not set_app_version_on_server: wait until apple approval
-  end
-end
