@@ -89,7 +89,7 @@ void SlidingBehavior::handleSetProperty(
     }
   } else if (propId == props.isRotationAllowed.id) {
     auto disallowRotation = value.as<int>() == 0;
-    component.props.isRotationAllowed() = disallowRotation;
+    component.props.isRotationAllowed() = !disallowRotation;
     if (!component.disabled) {
       if (disallowRotation) {
         body->SetAngularVelocity(0);
