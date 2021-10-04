@@ -393,14 +393,14 @@ const DrawingLayers = ({ sendLayerAction }) => {
 
       if (index > 0) {
         options.push({
-          name: 'Move Up',
+          name: 'Move Down',
           action: () => sendLayerAction('setLayerOrder', { layerId, doubleValue: index - 1 }),
         });
       }
 
       if (index < layers.length - 1) {
         options.push({
-          name: 'Move Down',
+          name: 'Move Up',
           action: () => sendLayerAction('setLayerOrder', { layerId, doubleValue: index + 1 }),
         });
       }
