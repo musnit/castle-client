@@ -7,7 +7,6 @@ import {
   Keyboard,
   TextInput,
   Platform,
-  NativeModules,
   Alert,
 } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
@@ -60,7 +59,7 @@ const updateUserAsync = async ({ user }) => {
     if (uploadedFile?.fileId) {
       await Session.apolloClient.mutate({
         mutation: gql`
-          mutation($userId: ID!, $photoFileId: ID!) {
+          mutation ($userId: ID!, $photoFileId: ID!) {
             updateUser(userId: $userId, user: { photoFileId: $photoFileId }) {
               userId
             }
@@ -107,8 +106,6 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
     const { navigatorWindowHeight } = React.useContext(AndroidNavigationContext);
     SHEET_HEIGHT = navigatorWindowHeight - 100;
   }
-
-  const installSource = NativeModules.CastleNativeUtils.getConstants().installSource;
 
   const insets = useSafeAreaInsets();
   const [user, changeUser] = React.useReducer(
@@ -175,42 +172,6 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
     }
     setLoading(false);
   }, [setResetPassword, setLoading, user.username]);
-
-  const [experimentalFeaturesChannel, setExperimentalFeaturesChannel] = React.useState('default');
-  React.useEffect(() => {
-    (async () => {
-      const channel = await NativeModules.CastleNativeUtils.getReactNativeChannel();
-      setExperimentalFeaturesChannel(channel || 'default');
-    })();
-  }, []);
-  const { showActionSheetWithOptions } = useActionSheet();
-  const onPressExperimentalFeatures = React.useCallback(async () => {
-    const result = await Session.apolloClient.query({
-      query: gql`
-        query GetReactNativeChannels {
-          getReactNativeChannels
-        }
-      `,
-      fetchPolicy: 'no-cache',
-    });
-    const options = ['default'];
-    if (result.data && result.data.getReactNativeChannels) {
-      options.push(...result.data.getReactNativeChannels);
-    }
-    options.push('Cancel');
-    const cancelButtonIndex = options.length - 1;
-    showActionSheetWithOptions({ options, cancelButtonIndex }, async (buttonIndex) => {
-      if (buttonIndex !== cancelButtonIndex) {
-        await NativeModules.CastleNativeUtils.setReactNativeChannel(options[buttonIndex]);
-        const channel = await NativeModules.CastleNativeUtils.getReactNativeChannel();
-        setExperimentalFeaturesChannel(channel || 'default');
-        Alert.alert(
-          'Channel changed',
-          'The app must be exited and restarted to see experimental feature changes.'
-        );
-      }
-    });
-  }, []);
 
   const renderHeader = () => (
     <BottomSheetHeader
@@ -309,25 +270,6 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
           </View>
         </View>
       </View>
-      <View style={[styles.section]}>
-        {me.isReactNativeChannelsEnabled && installSource !== 'appstore' ? (
-          <View style={styles.row}>
-            <View>
-              <Text style={Constants.styles.textInputLabelOnWhite}>Experimental features</Text>
-            </View>
-            <View style={{ alignItems: 'flex-start' }}>
-              <TouchableOpacity
-                onPress={onPressExperimentalFeatures}
-                style={Constants.styles.buttonOnWhite}
-                disabled={loading}>
-                <Text style={Constants.styles.buttonLabelOnWhite}>
-                  Channel: {experimentalFeaturesChannel}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        ) : null}
-      </View>
       <View style={{ paddingVertical: 15, alignItems: 'center' }}>
         <MiscLinks />
       </View>
@@ -335,21 +277,19 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
   );
 
   return (
-    <Fragment>
-      <BottomSheet
-        snapPoints={[SHEET_HEIGHT]}
-        isOpen={isOpen}
-        renderHeader={renderHeader}
-        renderContent={renderContent}
-        onOpenEnd={Keyboard.dismiss}
-        onCloseEnd={Keyboard.dismiss}
-        style={{
-          backgroundColor: '#fff',
-          borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,
-          borderTopRightRadius: Constants.CARD_BORDER_RADIUS,
-          ...Constants.styles.dropShadowUp,
-        }}
-      />
-    </Fragment>
+    <BottomSheet
+      snapPoints={[SHEET_HEIGHT]}
+      isOpen={isOpen}
+      renderHeader={renderHeader}
+      renderContent={renderContent}
+      onOpenEnd={Keyboard.dismiss}
+      onCloseEnd={Keyboard.dismiss}
+      style={{
+        backgroundColor: '#fff',
+        borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,
+        borderTopRightRadius: Constants.CARD_BORDER_RADIUS,
+        ...Constants.styles.dropShadowUp,
+      }}
+    />
   );
 };

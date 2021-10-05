@@ -269,7 +269,6 @@ export const USER_PROFILE_FRAGMENT = `
   decks {
     ${FEED_ITEM_DECK_FRAGMENT}
   }
-  isReactNativeChannelsEnabled
 `;
 
 export const COMMENT_FRAGMENT = `
