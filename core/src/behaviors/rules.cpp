@@ -395,11 +395,7 @@ struct RulesSendPlayerToCardResponse : BaseResponse {
   } params;
 
   void run(RuleContext &ctx) override {
-#ifdef __EMSCRIPTEN__
-    JS_navigateToCardId(params.card().cardId.c_str(), params.card().cardId.length());
-#else
     ctx.getScene().setNextCardId(params.card().cardId);
-#endif
   }
 };
 

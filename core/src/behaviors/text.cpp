@@ -24,9 +24,6 @@ JS_DEFINE(int, JS_getClickedTextActorId, (), {
   }
 });
 
-JS_DEFINE(int, JS_navigateToCardId, (const char *cardId, int cardIdLen),
-    { Castle.navigateToCardId(UTF8ToString(cardId, cardIdLen)); });
-
 // JS_DEFINE(int, JS_preloadCardId, (const char *cardId, int cardIdLen),
 //    { Castle.preloadCardId(UTF8ToString(cardId, cardIdLen)); });
 
@@ -99,11 +96,7 @@ struct SendPlayerToCardResponse : BaseResponse {
   } params;
 
   void run(RuleContext &ctx) override {
-#ifdef __EMSCRIPTEN__
-    JS_navigateToCardId(params.card().cardId.c_str(), params.card().cardId.length());
-#else
     ctx.getScene().setNextCardId(params.card().cardId);
-#endif
   }
 };
 

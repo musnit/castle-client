@@ -1,8 +1,8 @@
 #include "scene.h"
 
 #include "behaviors/all.h"
-
 #include "library.h"
+#include "js.h"
 
 
 //
@@ -431,4 +431,21 @@ void Scene::draw(std::optional<SceneDrawingOptions> options) const {
   });
 
   lv.graphics.pop();
+}
+
+//
+// Card navigation
+//
+
+JS_DEFINE(int, JS_navigateToCardId, (const char *cardId, int cardIdLen),
+    { Castle.navigateToCardId(UTF8ToString(cardId, cardIdLen)); });
+
+void Scene::setNextCardId(std::optional<std::string> value) {
+#ifdef __EMSCRIPTEN__
+  if (value) {
+    JS_navigateToCardId(value->c_str(), value->length());
+  }
+#else
+  nextCardId = value;
+#endif
 }

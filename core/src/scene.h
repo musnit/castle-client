@@ -535,10 +535,6 @@ inline bool Scene::isRestartRequested() const {
   return restartRequested;
 }
 
-inline void Scene::setNextCardId(std::optional<std::string> value) {
-  nextCardId = value;
-}
-
 inline std::optional<std::string> Scene::getNextCardId() {
   return nextCardId;
 }
