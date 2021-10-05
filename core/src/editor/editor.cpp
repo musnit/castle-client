@@ -1605,9 +1605,27 @@ struct EditorInspectorActionReceiver {
     auto &library = scene.getLibrary();
 
     if (action == "updateSelectionTitle") {
-      Editor::UpdateBlueprintParams updateBlueprintParams;
-      updateBlueprintParams.newTitle = params.stringValue().c_str();
-      editor->updateBlueprint(actorId, updateBlueprintParams);
+      if (auto entryIdCstr = scene.maybeGetParentEntryId(actorId)) {
+        if (auto entry = library.maybeGetEntry(entryIdCstr)) {
+          auto entryId = std::string(entryIdCstr);
+          auto oldTitle = entry->getTitle();
+          static const auto setTitle = [](Editor &editor, ActorId actorId,
+                                           const std::string &entryId, const std::string &title) {
+            Editor::UpdateBlueprintParams updateBlueprintParams;
+            updateBlueprintParams.newTitle = title.c_str();
+            editor.updateBlueprint(actorId, updateBlueprintParams);
+            editor.getBelt().select(entryId);
+          };
+          editor->getCommands().execute(
+              "change title", {},
+              [actorId, entryId, newTitle = params.stringValue()](Editor &editor, bool) {
+                setTitle(editor, actorId, entryId, newTitle);
+              },
+              [actorId, entryId, oldTitle = std::move(oldTitle)](Editor &editor, bool) {
+                setTitle(editor, actorId, entryId, oldTitle);
+              });
+        }
+      }
       return;
     }
 
