@@ -1,28 +1,15 @@
-import React, { Fragment, useState } from 'react';
-import {
-  StyleSheet,
-  Switch,
-  Text,
-  View,
-  TouchableOpacity,
-  TextInput,
-  Platform,
-  NativeModules,
-  Alert,
-} from 'react-native';
+import React from 'react';
+import { StyleSheet, Switch, Text, View, Platform } from 'react-native';
 
-import { gql } from '@apollo/client';
-import Viewport from '../common/viewport';
-
+import { gql, useLazyQuery, useMutation } from '@apollo/client';
+import { AndroidNavigationContext } from '../ReactNavigation';
 import { BottomSheetHeader } from '../components/BottomSheetHeader';
 import { BottomSheet } from '../components/BottomSheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { UserAvatar } from '../components/UserAvatar';
 
 import * as Constants from '../Constants';
-import * as Session from '../Session';
-import * as Utilities from '../common/utilities';
-import { AndroidNavigationContext } from '../ReactNavigation';
+
+import Viewport from '../common/viewport';
 
 let SHEET_HEIGHT = 100 * Viewport.vh - 100;
 const TAB_BAR_HEIGHT = 49;
@@ -56,39 +43,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const DUMMY_SETTINGS = [
-  {
-    type: 'comment_deck',
-    description: 'When somone comments on a deck I created',
-    notify: 'all',
-  },
-  {
-    type: 'comment_reply',
-    description: 'When someone replies to my comment',
-    notify: 'all',
-  },
-  {
-    type: 'follow',
-    description: 'When someone follows me',
-    notify: 'all',
-  },
-  {
-    type: 'new_deck',
-    description: 'When someone I follow posts a new deck',
-    notify: 'all',
-  },
-  {
-    type: 'play_deck',
-    description: 'When someone plays a deck I created',
-    notify: 'none',
-  },
-  {
-    type: 'react_deck',
-    description: 'When someone reacts to a deck I created',
-    notify: 'all',
-  },
-];
-
 export const NotificationsSettingsSheet = ({ me = {}, isOpen, onClose }) => {
   if (Platform.OS === 'android') {
     const { navigatorWindowHeight } = React.useContext(AndroidNavigationContext);
@@ -96,31 +50,94 @@ export const NotificationsSettingsSheet = ({ me = {}, isOpen, onClose }) => {
   }
 
   const insets = useSafeAreaInsets();
-  const [loading, setLoading] = useState(false);
+
+  const [preferences, changePreferences] = React.useReducer((preferences, action) => {
+    if (action.action === 'set') {
+      return action.preferences;
+    } else if (action.action === 'update') {
+      const { type, status } = action;
+      return preferences.map((p) => (p.type === type ? { ...p, status } : p));
+    } else if (action.action === 'reset') {
+      return null;
+    }
+    return preferences;
+  }, null);
+
+  const [getNotificationPreferences, query] = useLazyQuery(
+    gql`
+      query {
+        notificationPreferences {
+          type
+          description
+          status
+        }
+      }
+    `
+  );
+
+  const [updateNotificationPreference] = useMutation(
+    gql`
+      mutation UpdateNotificationPreference(
+        $type: String!
+        $status: NotificationPreferenceStatus!
+      ) {
+        updateNotificationPreference(type: $type, status: $status) {
+          status
+        }
+      }
+    `
+  );
 
   React.useEffect(() => {
     if (isOpen) {
-      setLoading(false);
-      // changeUser(me);
-      // TODO: load initial state
+      getNotificationPreferences({ fetchPolicy: 'no-cache' });
     }
-  }, [isOpen]);
+  }, [isOpen, getNotificationPreferences]);
 
-  const renderHeader = () => (
-    <BottomSheetHeader title="Settings" onClose={onClose} loading={loading} />
+  React.useEffect(() => {
+    if (query.called && !query.loading) {
+      if (query.data) {
+        changePreferences({ action: 'set', preferences: query.data.notificationPreferences });
+      } else {
+        changePreferences({ action: 'reset' });
+      }
+    }
+  }, [query.called, query.loading, query.error, query.data, changePreferences]);
+
+  const onChangePreference = React.useCallback(
+    ({ type, status }) => {
+      // optimistically change UI
+      changePreferences({ action: 'update', type, status });
+
+      // set on server
+      updateNotificationPreference({
+        variables: { type, status },
+      });
+    },
+    [changePreferences, updateNotificationPreference]
   );
+
+  const renderHeader = () => <BottomSheetHeader title="Settings" onClose={onClose} />;
 
   const renderContent = () => (
     <View style={{ paddingBottom: TAB_BAR_HEIGHT + insets.bottom }}>
       <View style={[styles.section]}>
         <Text style={styles.heading}>Send a push notification...</Text>
-        {!isOpen
+        {!isOpen || !preferences?.length
           ? null
-          : DUMMY_SETTINGS.map((setting) => (
-              <View style={styles.row}>
+          : preferences.map((setting) => (
+              <View style={styles.row} key={setting.type}>
                 <Text style={styles.description}>{setting.description}</Text>
                 <View style={styles.toggle}>
-                  <Switch value={setting.notify === 'all'} onValueChange={() => {}} />
+                  <Switch
+                    value={setting.status === 'enabled'}
+                    onValueChange={(enabled) =>
+                      onChangePreference({
+                        type: setting.type,
+                        status: enabled ? 'enabled' : 'disabled',
+                      })
+                    }
+                  />
                 </View>
               </View>
             ))}
