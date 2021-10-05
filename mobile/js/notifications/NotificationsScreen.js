@@ -6,11 +6,13 @@ import {
   StyleSheet,
   Text,
   TouchableHighlight,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { AuthPrompt } from '../auth/AuthPrompt';
 import { FollowButton } from '../components/FollowButton';
 import { MessageBody } from '../components/MessageBody';
+import { NotificationsSettingsSheet } from './NotificationsSettingsSheet';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { toRecentDate } from '../common/date-utilities';
@@ -25,6 +27,7 @@ import * as PushNotifications from '../PushNotifications';
 import * as Utilities from '../common/utilities';
 
 import FastImage from 'react-native-fast-image';
+import Feather from 'react-native-vector-icons/Feather';
 
 const NOTIF_HEIGHT = 60;
 
@@ -38,12 +41,18 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
     borderBottomWidth: 1,
     borderBottomColor: Constants.colors.grayOnBlackBorder,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   tabTitleText: {
     fontSize: 32,
     lineHeight: 36,
     fontFamily: 'Basteleur-Bold',
     color: '#fff',
+  },
+  settingsButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   sectionHeader: {
     padding: 16,
@@ -136,10 +145,10 @@ const NotificationItem = ({ notification, navigateToUser, navigateToDeck, naviga
       navigateToUser(user);
     }
   }, [type, notification, user, navigateToUser, navigateToDeck]);
-  const navigateToAllUsers = React.useCallback(() => navigateToUserList(notification.users), [
-    notification?.users,
-    navigateToUserList,
-  ]);
+  const navigateToAllUsers = React.useCallback(
+    () => navigateToUserList(notification.users),
+    [notification?.users, navigateToUserList]
+  );
   return (
     <TouchableHighlight onPress={onPress} underlayColor={Constants.colors.tapHighlight}>
       <View style={styles.notif}>
@@ -165,7 +174,7 @@ const NotificationItem = ({ notification, navigateToUser, navigateToDeck, naviga
             />
           ) : null}
           {user && type === 'follow' ? (
-            <FollowButton user={user} style={{  marginLeft: 8, }} />
+            <FollowButton user={user} style={{ marginLeft: 8 }} />
           ) : null}
           {type === 'reaction' ? (
             <FastImage style={styles.reactionSticker} source={REACTION_IMAGE_FIRE} />
@@ -202,6 +211,7 @@ const NotificationsScreenAuthenticated = () => {
   const [refresh, setRefresh] = React.useState(false);
   const { notifications, markNotificationsReadAsync, isAnonymous } = useSession();
   const isFocused = useIsFocused();
+  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
 
   // Clear the notif badge on tab focus, mark notifs as read on blur
   // Also clear notif badge on blur in case push notifs come in while the user is on the notifs tab
@@ -331,40 +341,49 @@ const NotificationsScreenAuthenticated = () => {
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.tabTitle}>
-        <Text style={styles.tabTitleText}>Notifications</Text>
-      </View>
-      {orderedNotifs.length > 0 && (
-        <FlatList
-          data={orderedNotifs}
-          contentContainerStyle={styles.scrollView}
-          renderItem={renderItem}
-          keyExtractor={(item, index) => item.notificationId}
-          showsVerticalScrollIndicator={false}
-          refreshControl={refreshControl}
-          getItemLayout={(data, index) => ({
-            length: NOTIF_HEIGHT,
-            offset: NOTIF_HEIGHT * index,
-            index,
-          })}
-        />
-      )}
-      {notifications && notifications.length === 0 && (
-        <View style={Constants.styles.empty}>
-          <Text style={Constants.styles.emptyTitle}>No notifications yet</Text>
-          <Text style={Constants.styles.emptyText}>
-            You'll get notified about new followers or activity on your decks.
-          </Text>
+    <>
+      <SafeAreaView style={styles.container} edges={['top']}>
+        <View style={styles.tabTitle}>
+          <Text style={styles.tabTitleText}>Notifications</Text>
+          <TouchableOpacity style={styles.settingsButton} onPress={() => setIsSettingsOpen(true)}>
+            <Feather name="settings" color="#aaa" size={24} style={{ marginRight: 8 }} />
+          </TouchableOpacity>
         </View>
-      )}
-      {!notifications && (
-        // Check notifications rather than orderedNotifs because orderedNotifs takes a few frames
-        // to be created, and we don't want this text to flash for frame
-        <View style={Constants.styles.empty}>
-          {refresh && <Text style={Constants.styles.emptyText}>Loading...</Text>}
-        </View>
-      )}
-    </SafeAreaView>
+        {orderedNotifs.length > 0 && (
+          <FlatList
+            data={orderedNotifs}
+            contentContainerStyle={styles.scrollView}
+            renderItem={renderItem}
+            keyExtractor={(item, index) => item.notificationId}
+            showsVerticalScrollIndicator={false}
+            refreshControl={refreshControl}
+            getItemLayout={(data, index) => ({
+              length: NOTIF_HEIGHT,
+              offset: NOTIF_HEIGHT * index,
+              index,
+            })}
+          />
+        )}
+        {notifications && notifications.length === 0 && (
+          <View style={Constants.styles.empty}>
+            <Text style={Constants.styles.emptyTitle}>No notifications yet</Text>
+            <Text style={Constants.styles.emptyText}>
+              You'll get notified about new followers or activity on your decks.
+            </Text>
+          </View>
+        )}
+        {!notifications && (
+          // Check notifications rather than orderedNotifs because orderedNotifs takes a few frames
+          // to be created, and we don't want this text to flash for frame
+          <View style={Constants.styles.empty}>
+            {refresh && <Text style={Constants.styles.emptyText}>Loading...</Text>}
+          </View>
+        )}
+      </SafeAreaView>
+      <NotificationsSettingsSheet
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+      />
+    </>
   );
 };
