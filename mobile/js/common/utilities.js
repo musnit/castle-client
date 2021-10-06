@@ -192,8 +192,8 @@ export const canonizeUserProvidedUrl = (urlStr) => {
 
     componentsToDisplay.set('protocol', '');
     urlToDisplay = componentsToDisplay.href;
-    if (urlToDisplay.indexOf('//') === 0) {
-      urlToDisplay = urlToDisplay.substring(2);
+    while (urlToDisplay.slice(0, 1) === '/') {
+      urlToDisplay = urlToDisplay.substring(1);
     }
     if (urlToDisplay.slice(-1) == '/') {
       urlToDisplay = urlToDisplay.substring(0, urlToDisplay.length - 1);
