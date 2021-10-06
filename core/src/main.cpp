@@ -22,38 +22,26 @@ void loop(F &&frame) {
 #ifdef ANDROID
 #include <jni.h>
 
-std::string androidGetDeckId() {
-  JNIEnv *env = (JNIEnv *)SDL_AndroidGetJNIEnv();
-  jclass activity = env->FindClass("ghost/CoreGameActivity");
+static Engine &getEngine() {
+  static Engine engine;
+  return engine;
+}
 
-  jmethodID methodHandle = env->GetStaticMethodID(activity, "getDeckId", "()Ljava/lang/String;");
+static const char * newInitialParams = NULL;
 
-  jstring resultJString = (jstring)env->CallStaticObjectMethod(activity, methodHandle);
-  const char *utf = env->GetStringUTFChars(resultJString, 0);
-  std::string result;
-  if (utf) {
-    result = std::string(utf);
-    env->ReleaseStringUTFChars(resultJString, utf);
-  }
-
-  env->DeleteLocalRef(resultJString);
-  env->DeleteLocalRef(activity);
-
-  return result;
+extern "C" void Java_ghost_CoreGameActivity_castleCoreViewSetInitialParams(JNIEnv* env, jobject thiz, jstring initialParamsJString) {
+    newInitialParams = env->GetStringUTFChars(initialParamsJString, 0);
 }
 
 int SDL_main(int argc, char *argv[]) {
-  Engine eng;
-  std::string currentDeckId = "";
-
   loop([&]() {
-    std::string newDeckId = androidGetDeckId();
-    if (currentDeckId != newDeckId) {
-      currentDeckId = newDeckId;
-      eng.loadSceneFromDeckId(newDeckId.c_str());
-    }
+      if (newInitialParams) {
+          getEngine().setInitialParams(newInitialParams);
+          newInitialParams = NULL;
+      }
 
-    return eng.frame();
+
+    return getEngine().frame();
   });
   return 0;
 }

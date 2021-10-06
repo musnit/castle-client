@@ -1942,7 +1942,7 @@ int Android_JNI_ShowMessageBox(const SDL_MessageBoxData *messageboxdata, int *bu
 
     clazz = (*env)->GetObjectClass(env, context);
 
-    mid = (*env)->GetMethodID(env, clazz,
+    /*mid = (*env)->GetMethodID(env, clazz,
         "messageboxShowMessageBox", "(ILjava/lang/String;Ljava/lang/String;[I[I[Ljava/lang/String;[I)I");
     *buttonid = (*env)->CallIntMethod(env, context, mid,
         messageboxdata->flags,
@@ -1951,7 +1951,7 @@ int Android_JNI_ShowMessageBox(const SDL_MessageBoxData *messageboxdata, int *bu
         button_flags,
         button_ids,
         button_texts,
-        colors);
+        colors);*/
 
     (*env)->DeleteLocalRef(env, context);
     (*env)->DeleteLocalRef(env, clazz);

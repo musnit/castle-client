@@ -29,9 +29,14 @@ public class GhostViewManager extends SimpleViewManager<ViewGroup> implements Li
     return MainActivity.recreateGameLayout(reactContext);
   }
 
-  @ReactProp(name = "deckId")
-  public void setDeckId(ViewGroup view, @Nullable String deckId) {
-    CoreGameActivity.deckId = deckId;
+  @ReactProp(name = "initialParams")
+  public void setInitialParams(ViewGroup view, @Nullable String initialParams) {
+    CoreGameActivity.castleCoreViewSetInitialParams(initialParams);
+  }
+
+  @ReactProp(name = "beltHeightFraction")
+  public void setBeltHeightFraction(ViewGroup view, double beltHeightFraction) {
+
   }
 
   @ReactProp(name = "screenScaling")

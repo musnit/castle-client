@@ -43,7 +43,6 @@ public class MainActivity extends NavigationActivity {
         gameActivity = new CoreGameActivity();
         gameActivity.setContexts(this, this.getApplicationContext());
         gameActivity.loadLibraries();
-        CoreGameActivity.deckId = "";
 
         gameActivity.resetNative();
         gameActivity.startNative();

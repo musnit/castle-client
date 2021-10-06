@@ -29,12 +29,6 @@ public class CoreGameActivity extends SDLActivity {
         };
     }
 
-    public static String deckId = "";
-
-    public static String getDeckId() {
-        return "kXT4UwhSk"; //deckId
-    }
-
     public static double ghostScreenScaling = 1;
 
     public static double getGhostScreenScaling() {
@@ -46,4 +40,6 @@ public class CoreGameActivity extends SDLActivity {
     public static boolean getGhostApplyScreenScaling() {
         return ghostApplyScreenScaling;
     }
+
+    public static native void castleCoreViewSetInitialParams(String s);
 }
