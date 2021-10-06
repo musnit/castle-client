@@ -105,8 +105,7 @@ private:
   void deleteLayerAndValidate(const love::DrawDataLayerId &layerId);
 
   // for 'copy cell'
-  love::DrawDataLayerId copiedLayerId;
-  love::OneIndexFrame copiedFrameIndex;
+  std::unique_ptr<love::DrawDataFrame> copiedFrame;
 
   bool isCollisionVisible = true;
   bool viewInContext = false;

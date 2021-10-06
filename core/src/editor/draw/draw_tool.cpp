@@ -149,7 +149,7 @@ void DrawTool::sendLayersEvent() {
 
   ev.selectedLayerId = selectedLayerId;
   ev.selectedFrameIndex = selectedFrameIndex.value;
-  ev.canPasteCell = copiedLayerId != "" && copiedFrameIndex.value > 0;
+  ev.canPasteCell = copiedFrame != nullptr;
   ev.isOnionSkinningEnabled = isOnionSkinningEnabled;
   ev.isPlayingAnimation = isPlayingAnimation;
 
@@ -251,13 +251,17 @@ struct DrawToolLayerActionReceiver {
       drawTool.validateSelection();
       drawTool.saveDrawing("delete frame");
     } else if (action == "copyCell") {
-      drawTool.copiedLayerId = params.layerId();
-      drawTool.copiedFrameIndex = params.frameIndex();
-      drawTool.sendLayersEvent();
+      auto sourceLayer = drawTool.drawData->layerForId(drawTool.selectedLayerId);
+      if (sourceLayer) {
+        auto &sourceFrame = sourceLayer->frames[drawTool.selectedFrameIndex.toZeroIndex()];
+        drawTool.copiedFrame = std::make_unique<love::DrawDataFrame>(*sourceFrame);
+        drawTool.sendLayersEvent();
+      }
     } else if (action == "pasteCell") {
-      drawTool.drawData->copyCell(
-          drawTool.copiedLayerId, drawTool.copiedFrameIndex, params.layerId(), params.frameIndex());
-      drawTool.saveDrawing("paste cell");
+      if (drawTool.copiedFrame) {
+        drawTool.drawData->copyCell(*drawTool.copiedFrame, params.layerId(), params.frameIndex());
+        drawTool.saveDrawing("paste cell");
+      }
     } else if (action == "setCellLinked") {
       drawTool.drawData->setCellLinked(
           params.layerId(), params.frameIndex(), bool(params.doubleValue()));
@@ -550,8 +554,7 @@ void DrawTool::resetState() {
   selectedSubtools["collision_draw"] = "rectangle";
   selectedSubtools["collision_move"] = "move";
 
-  copiedLayerId = "";
-  copiedFrameIndex.value = 0;
+  // don't reset `copiedFrame`
 
   isOnionSkinningEnabled = false;
   isCollisionVisible = true;
