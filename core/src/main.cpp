@@ -29,7 +29,7 @@ static Engine &getEngine() {
 
 static const char * newInitialParams = NULL;
 
-extern "C" void Java_ghost_CoreGameActivity_castleCoreViewSetInitialParams(JNIEnv* env, jobject thiz, jstring initialParamsJString) {
+extern "C" void Java_ghost_CoreGameActivity_castleCoreViewSetInitialParams(JNIEnv* env, jclass thiz, jstring initialParamsJString) {
     newInitialParams = env->GetStringUTFChars(initialParamsJString, 0);
 }
 

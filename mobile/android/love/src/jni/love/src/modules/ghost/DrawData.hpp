@@ -161,8 +161,8 @@ namespace ghost {
         }
       });
 
-      // TODO: we're still writing these to provide backwards-compat with old scenes
-      archive.str("selectedLayerId", "layer1");
+      // TODO: we're still writing selectedFrame to provide backwards-compat with old scenes.
+      // don't write `selectedLayerId` at all, server migration will pick a value if needed
       archive.num("selectedFrame", 1);
 
       archive.arr("layers", [&]() {
@@ -225,6 +225,8 @@ namespace ghost {
     void addFrame();
     void addFrame(OneIndexFrame frameIndex);
     bool deleteFrame(OneIndexFrame frameIndex);
+    void copyCell(
+        DrawDataFrame &sourceFrame, DrawDataLayerId destLayerId, OneIndexFrame destFrameIndex);
     void copyCell(DrawDataLayerId sourceLayerId, OneIndexFrame sourceFrameIndex,
         DrawDataLayerId destLayerId, OneIndexFrame destFrameIndex);
     void setCellLinked(DrawDataLayerId layerId, OneIndexFrame frameIndex, bool isLinked);

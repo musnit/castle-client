@@ -1062,12 +1062,13 @@ void Window::DPIToWindowCoords(double *x, double *y) const
 
 double Window::getDPIScale() const
 {
-#ifdef LOVE_ANDROID
-	return love::android::getScreenScale();
-#else
 	// XXX(Ghost): Apply scaling factors
 	auto screenScaling = (ghostApplyScreenScaling ? ghostScreenScaling : 1);
 	auto globalScaling = (ghostApplyGlobalScaling ? ghostGlobalScaling : 1);
+
+#ifdef LOVE_ANDROID
+	return screenScaling * globalScaling * love::android::getScreenScale();
+#else
 	return screenScaling * globalScaling * (double) pixelHeight / (double) windowHeight;
 #endif
 }

@@ -475,10 +475,19 @@ namespace ghost {
     frame->base64Png = frame->renderPreviewPng(-1);
   }
 
+  void DrawData::copyCell(
+      DrawDataFrame &sourceFrame, DrawDataLayerId destLayerId, OneIndexFrame destFrameIndex) {
+    auto destLayer = layerForId(destLayerId);
+    if (destLayer && destFrameIndex.toZeroIndex() < destLayer->frames.size()) {
+      destLayer->frames[destFrameIndex.toZeroIndex()]
+          = std::make_shared<DrawDataFrame>(sourceFrame);
+    }
+  }
+
   void DrawData::copyCell(DrawDataLayerId sourceLayerId, OneIndexFrame sourceFrameIndex,
       DrawDataLayerId destLayerId, OneIndexFrame destFrameIndex) {
     auto sourceLayer = layerForId(sourceLayerId), destLayer = layerForId(destLayerId);
-    if (sourceFrameIndex.toZeroIndex() < sourceLayer->frames.size()
+    if (sourceLayer && destLayer && sourceFrameIndex.toZeroIndex() < sourceLayer->frames.size()
         && destFrameIndex.toZeroIndex() < destLayer->frames.size()) {
       auto &oldFrame = sourceLayer->frames[sourceFrameIndex.toZeroIndex()];
       destLayer->frames[destFrameIndex.toZeroIndex()] = std::make_shared<DrawDataFrame>(*oldFrame);
