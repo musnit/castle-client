@@ -12,6 +12,7 @@ class ViewSourceScreenDataProvider extends React.Component {
     deck: Constants.EMPTY_DECK,
     cardId: null,
     loading: false,
+    isCardChanged: true,
   };
 
   // doesn't need to be react-stateful
@@ -19,7 +20,6 @@ class ViewSourceScreenDataProvider extends React.Component {
   _changedSceneData = null;
   _changedBackgroundImage = null;
   _initialSnapshotJson = null;
-  _isCardChanged = false;
 
   componentDidMount() {
     this._mounted = true;
@@ -83,25 +83,25 @@ class ViewSourceScreenDataProvider extends React.Component {
         this._initialSnapshotJson = JSON.stringify(initialSnapshotJson);
         this._changedSceneData = card.scene.data; // set initial data in case we save with no changes
         this._changedBackgroundImage = card.backgroundImage;
-        this._isCardChanged = false;
 
         this.setState({
           deck,
           cardId: card.cardId,
           loading: false,
+          isCardChanged: true,
         });
       }
     }
   };
 
   _handleSceneDataChange = (changedSceneData) => {
-    this._isCardChanged = true;
     this._changedSceneData = changedSceneData;
+    this.setState({ isCardChanged: true });
   };
 
   _handleVariablesChange = (variables, isChanged) => {
-    this._isCardChanged = isChanged;
     this._variables = variables;
+    this.setState({ isCardChanged: true });
   };
 
   _updateScreenshot = async () => {
@@ -145,7 +145,7 @@ class ViewSourceScreenDataProvider extends React.Component {
   // saving from the view source screen creates a clone of the deck.
   _saveAndGoToDeck = async () => {
     await this.setState({ loading: true });
-    if (this._isCardChanged) {
+    if (this.state.isCardChanged) {
       await this._updateScreenshot();
     }
     const cardFragment = {
@@ -202,8 +202,7 @@ class ViewSourceScreenDataProvider extends React.Component {
       this._initialSnapshotJson = JSON.stringify(nextSnapshotJson);
       this._changedBackgroundImage = null;
       this._changedSceneData = nextCard.scene.data;
-      this._isCardChanged = false;
-      this.setState({ cardId: nextCard.cardId });
+      this.setState({ cardId: nextCard.cardId, isCardChanged: true });
     }
   };
 
@@ -211,7 +210,7 @@ class ViewSourceScreenDataProvider extends React.Component {
     throw new Error(`Not implemented for ViewSourceScreen`);
   };
 
-  _cardNeedsSave = () => this._isCardChanged;
+  _cardNeedsSave = () => this.state.isCardChanged;
 
   _handleSceneMessage = (message) => {
     switch (message.messageType) {
@@ -236,7 +235,7 @@ class ViewSourceScreenDataProvider extends React.Component {
   };
 
   render() {
-    const { deck, cardId, loading } = this.state;
+    const { deck, cardId, loading, isCardChanged } = this.state;
     return (
       <CreateCardScreen
         deck={deck}
@@ -246,7 +245,7 @@ class ViewSourceScreenDataProvider extends React.Component {
         loading={loading}
         goToDeck={this._goToDeck}
         goToCard={this._goToCard}
-        cardNeedsSave={this._cardNeedsSave}
+        cardNeedsSave={isCardChanged}
         saveAndGoToDeck={this._saveAndGoToDeck}
         saveAndGoToCard={this._saveAndGoToCard}
         onSceneMessage={this._handleSceneMessage}

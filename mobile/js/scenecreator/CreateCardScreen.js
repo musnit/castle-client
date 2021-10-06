@@ -91,6 +91,8 @@ export const CreateCardScreen = ({
   goToDeck,
   goToCard,
   cardNeedsSave,
+  isCardChanged,
+  saveDeck,
   saveAndGoToDeck,
   saveAndGoToCard,
   onSceneMessage,
@@ -327,7 +329,10 @@ export const CreateCardScreen = ({
             isEditable
             onPressSettings={onPressSettings}
             onPressBack={maybeSaveAndGoToDeck}
-            onSave={saveAndGoToDeck}
+            isCardChanged={isCardChanged}
+            onSaveAndGoToDeck={saveAndGoToDeck}
+            loading={loading}
+            onSave={saveDeck}
             creatorUsername={deck?.creator?.username}
             saveAction={saveAction}
           />

@@ -17,6 +17,7 @@ class CreateCardScreenDataProvider extends React.Component {
     deck: Constants.EMPTY_DECK,
     cardId: null,
     loading: false,
+    isCardChanged: false,
   };
 
   // doesn't need to be react-stateful
@@ -25,7 +26,6 @@ class CreateCardScreenDataProvider extends React.Component {
   _changedSceneData = null;
   _changedBackgroundImage = null;
   _initialSnapshotJson = null;
-  _isCardChanged = false;
 
   componentDidMount() {
     this._mounted = true;
@@ -150,12 +150,12 @@ class CreateCardScreenDataProvider extends React.Component {
         this._initialSnapshotJson = JSON.stringify(initialSnapshotJson);
         this._changedSceneData = card.scene.data; // set initial data in case we save with no changes
         this._changedBackgroundImage = card.backgroundImage;
-        this._isCardChanged = false;
 
         this.setState({
           deck,
           cardId: card.cardId,
           loading: false,
+          isCardChanged: false,
         });
         this._backupInterval = setInterval(this._saveBackup, AUTOBACKUP_INTERVAL_MS);
       }
@@ -163,17 +163,17 @@ class CreateCardScreenDataProvider extends React.Component {
   };
 
   _handleSceneDataChange = (changedSceneData) => {
-    this._isCardChanged = true;
     this._changedSceneData = changedSceneData;
+    this.setState({ isCardChanged: true });
   };
 
   _handleVariablesChange = (variables, isChanged) => {
-    this._isCardChanged = isChanged;
     this._variables = variables;
+    this.setState({ isCardChanged: isChanged });
   };
 
   _saveBackup = () => {
-    if (this._isCardChanged) {
+    if (this.state.isCardChanged) {
       const cardFragment = this._makeCardSaveFragment();
       Session.saveDeck(cardFragment, this.state.deck, this._variables, true);
     }
@@ -216,7 +216,10 @@ class CreateCardScreenDataProvider extends React.Component {
   };
 
   _save = async () => {
-    await this._updateScreenshot();
+    await this.setState({ loading: true });
+    if (this.state.isCardChanged) {
+      await this._updateScreenshot();
+    }
     const cardFragment = this._makeCardSaveFragment();
     const { card, deck } = await Session.saveDeck(cardFragment, this.state.deck, this._variables);
     Amplitude.logEventWithProperties('SAVE_DECK', {
@@ -224,7 +227,7 @@ class CreateCardScreenDataProvider extends React.Component {
       cardId: card.cardId,
     });
     if (!this._mounted) return;
-    this.setState({ loading: false });
+    this.setState({ loading: false, isCardChanged: false });
     return { card, deck };
   };
 
@@ -277,8 +280,7 @@ class CreateCardScreenDataProvider extends React.Component {
       this._isNewScene = nextCard.scene.data.empty === true;
       this._changedBackgroundImage = null;
       this._changedSceneData = nextCard.scene.data;
-      this._isCardChanged = false;
-      this.setState({ cardId: nextCard.cardId });
+      this.setState({ cardId: nextCard.cardId, isCardChanged: false });
     }
   };
 
@@ -293,7 +295,7 @@ class CreateCardScreenDataProvider extends React.Component {
     this._goToCard(nextCard, isPlaying);
   };
 
-  _cardNeedsSave = () => this._isCardChanged;
+  _cardNeedsSave = () => this.state.isCardChanged;
 
   _handleSceneMessage = (message) => {
     switch (message.messageType) {
@@ -318,7 +320,6 @@ class CreateCardScreenDataProvider extends React.Component {
     this._isNewScene = false;
     this._changedSceneData = data;
     this._changedBackgroundImage = null;
-    this._isCardChanged = true;
     this._initialSnapshotJson = JSON.stringify({
       variables: this._variables,
       sceneData: {
@@ -326,11 +327,11 @@ class CreateCardScreenDataProvider extends React.Component {
       },
     });
     // rerender CreateCardScreen with new params
-    await this.setState({ loading: false });
+    await this.setState({ loading: false, isCardChanged: true });
   };
 
   render() {
-    const { deck, cardId, loading } = this.state;
+    const { deck, cardId, loading, isCardChanged } = this.state;
 
     return (
       <CreateCardScreen
@@ -341,6 +342,8 @@ class CreateCardScreenDataProvider extends React.Component {
         loading={loading}
         goToDeck={this._goToDeck}
         goToCard={this._goToCard}
+        isCardChanged={isCardChanged}
+        saveDeck={this._save}
         cardNeedsSave={this._cardNeedsSave}
         saveAndGoToDeck={this._saveAndGoToDeck}
         saveAndGoToCard={this._saveAndGoToCard}

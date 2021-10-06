@@ -1,5 +1,13 @@
 import React, { Fragment } from 'react';
-import { StatusBar, StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native';
+import {
+  ActivityIndicator,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Platform,
+} from 'react-native';
 import { useCoreState, sendGlobalAction } from '../core/CoreEvents';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 
@@ -55,6 +63,9 @@ export const CreateCardHeader = ({
   onPressBack,
   onPressSettings,
   onSave,
+  onSaveAndGoToDeck,
+  isCardChanged,
+  loading,
   creatorUsername,
   saveAction,
 }) => {
@@ -70,11 +81,11 @@ export const CreateCardHeader = ({
       },
       (buttonIndex) => {
         if (buttonIndex === 0) {
-          return onSave();
+          return onSaveAndGoToDeck();
         }
       }
     );
-  }, [showActionSheetWithOptions, onSave, creatorUsername]);
+  }, [showActionSheetWithOptions, onSaveAndGoToDeck, creatorUsername]);
 
   return (
     <View style={styles.container}>
@@ -134,8 +145,24 @@ export const CreateCardHeader = ({
       ) : null}
       {!data?.performing ? (
         saveAction === 'save' ? (
-          <TouchableOpacity style={[SceneCreatorConstants.styles.button]} onPress={onSave}>
-            <Text style={Constants.styles.primaryButtonLabel}>Done</Text>
+          <TouchableOpacity
+            style={[
+              SceneCreatorConstants.styles.button,
+              isCardChanged ? null : { borderColor: '#888' },
+            ]}
+            onPress={onSave}
+            disabled={!isCardChanged}>
+            {loading ? (
+              <ActivityIndicator />
+            ) : (
+              <Text
+                style={[
+                  Constants.styles.primaryButtonLabel,
+                  isCardChanged ? null : { color: '#888' },
+                ]}>
+                Save
+              </Text>
+            )}
           </TouchableOpacity>
         ) : saveAction === 'clone' ? (
           <TouchableOpacity style={Constants.styles.primaryButton} onPress={maybeClone}>
