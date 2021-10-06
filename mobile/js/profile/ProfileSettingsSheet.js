@@ -202,6 +202,7 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
             value={user.username}
             editable={!loading}
             autoCapitalize="none"
+            autoCorrect={false}
             onChangeText={(username) => changeUser({ username })}
             style={Constants.styles.textInputOnWhite}
             placeholderTextColor={Constants.colors.grayText}
@@ -212,6 +213,8 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
           <TextInput
             value={user.websiteUrl}
             editable={!loading}
+            autoCapitalize="none"
+            autoCorrect={false}
             onChangeText={(websiteUrl) => changeUser({ websiteUrl })}
             style={Constants.styles.textInputOnWhite}
             placeholder="http://geocities.com"
@@ -223,6 +226,8 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
           <TextInput
             value={user.twitterUsername}
             editable={!loading}
+            autoCapitalize="none"
+            autoCorrect={false}
             onChangeText={(twitterUsername) => changeUser({ twitterUsername })}
             style={Constants.styles.textInputOnWhite}
             placeholder="Your Twitter username"
@@ -234,6 +239,8 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
           <TextInput
             value={user.itchUsername}
             editable={!loading}
+            autoCapitalize="none"
+            autoCorrect={false}
             onChangeText={(itchUsername) => changeUser({ itchUsername })}
             style={Constants.styles.textInputOnWhite}
             placeholder="Your itch username"
