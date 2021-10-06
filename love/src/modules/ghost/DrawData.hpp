@@ -161,8 +161,8 @@ namespace ghost {
         }
       });
 
-      // TODO: we're still writing these to provide backwards-compat with old scenes
-      archive.str("selectedLayerId", "layer1");
+      // TODO: we're still writing selectedFrame to provide backwards-compat with old scenes.
+      // don't write `selectedLayerId` at all, server migration will pick a value if needed
       archive.num("selectedFrame", 1);
 
       archive.arr("layers", [&]() {
