@@ -245,7 +245,9 @@ class ViewSourceScreenDataProvider extends React.Component {
         loading={loading}
         goToDeck={this._goToDeck}
         goToCard={this._goToCard}
-        cardNeedsSave={isCardChanged}
+        cardNeedsSave={this._cardNeedsSave}
+        isCardChanged={isCardChanged}
+        saveDeck={this._saveAndGoToDeck}
         saveAndGoToDeck={this._saveAndGoToDeck}
         saveAndGoToCard={this._saveAndGoToCard}
         onSceneMessage={this._handleSceneMessage}
