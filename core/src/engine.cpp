@@ -242,6 +242,16 @@ void Engine::loadSceneFromCardId(const char *cardId) {
       });
 }
 
+struct AndroidBackPressedEvent {};
+
+void Engine::androidHandleBackPressed() {
+#ifdef ANDROID
+  if (androidBackButtonHandlers.size() == 0) {
+    AndroidBackPressedEvent event;
+    getBridge().sendEvent("CASTLE_SYSTEM_BACK_BUTTON", event);
+  }
+#endif
+}
 
 //
 // Frame
@@ -349,6 +359,18 @@ void Engine::update(double dt) {
   } else {
     player.update(dt);
   }
+
+#ifdef ANDROID
+  static bool isBackDown = false;
+  if (lv.keyboard.isDown({love::keyboard::Keyboard::Key::KEY_APP_BACK})) {
+      isBackDown = true;
+  } else {
+      if (isBackDown) {
+          isBackDown = false;
+          androidHandleBackPressed();
+      }
+  }
+#endif
 
 #ifdef CASTLE_ENABLE_TESTS
   tests.update(dt);

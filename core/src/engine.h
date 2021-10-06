@@ -83,6 +83,9 @@ private:
   void update(double dt);
 
   void draw();
+
+  void androidHandleBackPressed();
+  std::vector<std::function<bool()>> androidBackButtonHandlers;
 };
 
 

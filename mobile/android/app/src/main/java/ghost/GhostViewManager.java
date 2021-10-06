@@ -36,7 +36,7 @@ public class GhostViewManager extends SimpleViewManager<ViewGroup> implements Li
 
   @ReactProp(name = "beltHeightFraction")
   public void setBeltHeightFraction(ViewGroup view, double beltHeightFraction) {
-
+    CoreGameActivity.castleCoreViewSetBeltHeightFraction(beltHeightFraction);
   }
 
   @ReactProp(name = "screenScaling")
