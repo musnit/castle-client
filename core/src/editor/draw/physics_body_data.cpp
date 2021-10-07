@@ -107,6 +107,7 @@ void PhysicsBodyData::render(love::Vector2 scale) {
   }
 
   lv.graphics.push(love::Graphics::STACK_ALL);
+  lv.graphics.setLineJoin(love::Graphics::LINE_JOIN_BEVEL);
 
   // render diagonal line shaderfills of all shapes
   lv.graphics.setShader(shader.get());
