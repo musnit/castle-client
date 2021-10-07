@@ -640,14 +640,14 @@ namespace ghost {
     }
   }
 
-  std::optional<std::string> DrawData::renderPreviewPng(int frameIdx, int size) {
+  std::unique_ptr<graphics::Canvas> DrawData::renderPreviewCanvas(int frameIdx, int size) {
     if (size <= 0) {
       size = 256;
     }
 
-    auto previewCanvas = DrawDataFrame::newCanvas(size, size);
+    auto previewCanvas = std::unique_ptr<graphics::Canvas>(DrawDataFrame::newCanvas(size, size));
 
-    DrawDataFrame::renderToCanvas(previewCanvas, [this, frameIdx, size]() {
+    DrawDataFrame::renderToCanvas(previewCanvas.get(), [this, frameIdx, size]() {
       auto pathBounds = getBounds(frameIdx);
       float width = pathBounds.maxX - pathBounds.minX;
       float height = pathBounds.maxY - pathBounds.minY;
@@ -676,9 +676,12 @@ namespace ghost {
       graphicsModule->pop();
     });
 
-    auto result = DrawDataFrame::encodeBase64Png(previewCanvas);
-    delete previewCanvas;
-    return result;
+    return previewCanvas;
+  }
+
+  std::optional<std::string> DrawData::renderPreviewPng(int frameIdx, int size) {
+    auto canvas = renderPreviewCanvas(frameIdx, size);
+    return DrawDataFrame::encodeBase64Png(canvas.get());
   }
 
   bool DrawData::isPointInBounds(Point point) {

@@ -1,6 +1,7 @@
 #include "library.h"
 
 #include "archive.h"
+#include "behaviors/all.h"
 
 
 constexpr auto libraryEntryPoolChunkSize = 8 * 1024;
@@ -39,11 +40,28 @@ love::Image *LibraryEntry::getPreviewImage() const {
         auto byteData
             = std::unique_ptr<love::ByteData>(lv.data.newByteData(decoded, decodedLen, true));
         previewImageData.reset(lv.image.newImageData(byteData.get()));
-        love::Image::Slices slices(love::TEXTURE_2D);
-        slices.set(0, 0, previewImageData.get());
-        previewImage.reset(lv.graphics.newImage(slices, {}));
+      } else {
+        Scene::ActorDesc tempActorDesc;
+        tempActorDesc.parentEntryId = entryId.c_str();
+        auto tempActorId = library.scene.addActor(tempActorDesc);
+        if (auto drawingComponent
+            = library.scene.getBehaviors().byType<Drawing2Behavior>().maybeGetComponent(
+                tempActorId)) {
+          auto initialFrameZeroIndex = int(drawingComponent->props.initialFrame()) - 1;
+          if (auto previewCanvas
+              = drawingComponent->drawData->renderPreviewCanvas(initialFrameZeroIndex, -1)) {
+            previewImageData.reset(previewCanvas->newImageData(&lv.image, 0, 0,
+                { 0, 0, previewCanvas->getPixelWidth(), previewCanvas->getPixelHeight() }));
+          }
+        }
+        library.scene.removeActor(tempActorId);
       }
     });
+    if (previewImageData) {
+      love::Image::Slices slices(love::TEXTURE_2D);
+      slices.set(0, 0, previewImageData.get());
+      previewImage.reset(lv.graphics.newImage(slices, {}));
+    }
     previewImageGenerated = true;
   }
   return previewImage.get();
