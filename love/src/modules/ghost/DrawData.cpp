@@ -443,7 +443,9 @@ namespace ghost {
         } else {
           // can't use frames->insert() without freeing the std::unique reference on the moved elems
           layer->frames.push_back(std::move(newFrame));
-          std::iter_swap(layer->frames.begin() + zeroFrameIndex, layer->frames.rbegin());
+          for (int ii = zeroFrameIndex; ii < layer->frames.size() - 1; ii++) {
+            std::iter_swap(layer->frames.begin() + ii, layer->frames.rbegin());
+          }
         }
       }
     }
