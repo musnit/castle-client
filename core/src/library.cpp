@@ -44,6 +44,7 @@ love::Image *LibraryEntry::getPreviewImage() const {
         Scene::ActorDesc tempActorDesc;
         tempActorDesc.parentEntryId = entryId.c_str();
         auto tempActorId = library.scene.addActor(tempActorDesc);
+        auto &textBehavior = library.scene.getBehaviors().byType<TextBehavior>();
         if (auto drawingComponent
             = library.scene.getBehaviors().byType<Drawing2Behavior>().maybeGetComponent(
                 tempActorId)) {
@@ -53,6 +54,59 @@ love::Image *LibraryEntry::getPreviewImage() const {
             previewImageData.reset(previewCanvas->newImageData(&lv.image, 0, 0,
                 { 0, 0, previewCanvas->getPixelWidth(), previewCanvas->getPixelHeight() }));
           }
+        } else if (auto textComponent = textBehavior.maybeGetComponent(tempActorId)) {
+          auto tappable = textBehavior.hasTapTrigger(tempActorId);
+          if (!library.textPreviewCanvas) {
+            love::Canvas::Settings settings;
+            settings.width = int(library.textPreviewCanvasSize);
+            settings.height = int(library.textPreviewCanvasSize);
+            settings.dpiScale = 1;
+            settings.msaa = 4;
+            library.textPreviewCanvas.reset(lv.graphics.newCanvas(settings));
+          }
+          lv.renderTo(library.textPreviewCanvas.get(), [&]() {
+            lv.graphics.push(love::Graphics::STACK_ALL);
+            lv.graphics.origin();
+            lv.graphics.clear(love::Colorf(0, 0, 0, 0), {}, {});
+            if (tappable) {
+              lv.graphics.setColor({ 0, 0, 0, 1 });
+            } else {
+              lv.graphics.setColor({ 1, 1, 1, 1 });
+            }
+            lv.graphics.rectangle(love::Graphics::DRAW_FILL, 0, 0, library.textPreviewCanvasSize,
+                library.textPreviewCanvasSize, 0.8f * library.textPreviewOffset,
+                0.8f * library.textPreviewOffset, 4);
+            lv.graphics.setFont(library.textPreviewFont.get());
+            if (auto &text = textComponent->props.content(); !text.empty()) {
+              auto textColor = tappable ? love::Colorf(1, 1, 1, 1) : love::Colorf(0, 0, 0, 1);
+              lv.graphics.setColor(textColor);
+              std::vector<std::string> lines;
+              library.textPreviewFont->getWrap(
+                  { { text, { 1, 1, 1, 1 } } }, library.textPreviewSize, lines);
+              for (auto i = 0; i < 4; ++i) {
+                if (i >= int(lines.size())) {
+                  break;
+                }
+                lv.graphics.print({ { lines[i], textColor } }, library.textPreviewFont.get(),
+                    love::Matrix4(library.textPreviewOffset,
+                        library.textPreviewOffset + library.textPreviewFontHeight * float(i), 0, 1,
+                        1, 0, 0, 0, 0));
+              }
+            }
+            lv.graphics.setLineWidth(3);
+            if (tappable) {
+              lv.graphics.setColor({ 1, 1, 1, 1 });
+            } else {
+              lv.graphics.setColor({ 0, 0, 0, 1 });
+            }
+            lv.graphics.rectangle(love::Graphics::DRAW_LINE, 2, 2,
+                library.textPreviewCanvasSize - 4, library.textPreviewCanvasSize - 4,
+                0.8f * library.textPreviewOffset, 0.8f * library.textPreviewOffset, 4);
+            lv.graphics.pop();
+          });
+          previewImageData.reset(library.textPreviewCanvas->newImageData(&lv.image, 0, 0,
+              { 0, 0, library.textPreviewCanvas->getPixelWidth(),
+                  library.textPreviewCanvas->getPixelHeight() }));
         }
         library.scene.removeActor(tempActorId);
       }

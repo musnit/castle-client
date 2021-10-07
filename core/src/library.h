@@ -99,6 +99,7 @@ public:
 
 
 private:
+  Lv &lv { Lv::getInstance() };
   friend class LibraryEntry;
 
   Scene &scene;
@@ -110,6 +111,14 @@ private:
   bool orderDirty = true;
 
   std::unordered_map<std::string, ActorId> ghostActorIds;
+
+  std::unique_ptr<love::Canvas> textPreviewCanvas;
+  std::unique_ptr<love::Font> textPreviewFont = std::unique_ptr<love::Font>(
+      lv.graphics.newDefaultFont(32, love::TrueTypeRasterizer::HINTING_NORMAL));
+  float textPreviewFontHeight = textPreviewFont->getHeight();
+  float textPreviewOffset = 0.3f * textPreviewFontHeight;
+  float textPreviewSize = 4 * textPreviewFontHeight;
+  float textPreviewCanvasSize = textPreviewSize + 2 * textPreviewOffset;
 
 
   void markDirty();

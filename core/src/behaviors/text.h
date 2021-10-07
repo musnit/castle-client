@@ -37,6 +37,8 @@ public:
 
   std::queue<int> clickedTextActorIdsQueue;
 
+  bool hasTapTrigger(ActorId actorId);
+
 private:
   friend struct ShowResponse;
   friend struct HideResponse;
@@ -49,6 +51,5 @@ private:
   double timeSinceSentBridgeData = 0;
   static constexpr auto bridgeUpdateInterval = 0.2;
 
-  bool hasTapTrigger(ActorId actorId);
   void maybeSendBridgeData(double dt);
 };
