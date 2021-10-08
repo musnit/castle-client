@@ -3,6 +3,7 @@
 #include "precomp.h"
 #include "props.h"
 #include "lv.h"
+#include "util.h"
 
 struct FixtureProps {
   PROP(std::string, shapeType) = "polygon";
@@ -106,7 +107,7 @@ private:
       bounds.maxY = p.y;
     }
   }
-  
+
   void drawShape(PhysicsBodyDataShape &shape, love::Vector2 scale, love::Graphics::DrawMode mode);
 
   template<unsigned N>
@@ -329,22 +330,22 @@ public:
     return false;
   }
 
-  std::optional<PhysicsBodyDataShape> getRectangleShape(
-      love::Vector2 p1, love::Vector2 p2) {
+  std::optional<PhysicsBodyDataShape> getRectangleShape(love::Vector2 p1, love::Vector2 p2) {
     PhysicsBodyDataShape shape;
     shape.type = CollisionShapeType::Rectangle;
     shape.p1 = p1;
     shape.p2 = p2;
 
-    if (isShapeInBounds(shape)) {
+    if (isShapeInBounds(shape) && !DrawUtil::floatEquals(p1.x, p2.x)
+        && !DrawUtil::floatEquals(p1.y, p2.y)) {
       return shape;
     } else {
       return std::nullopt;
     }
   }
 
-  std::optional<PhysicsBodyDataShape> getTriangleShape(love::Vector2 p1,
-      love::Vector2 p2, const std::optional<love::Vector2> &optionalP3) {
+  std::optional<PhysicsBodyDataShape> getTriangleShape(
+      love::Vector2 p1, love::Vector2 p2, const std::optional<love::Vector2> &optionalP3) {
     love::Vector2 p3(p1.x, p2.y);
     if (optionalP3) {
       p3.x = optionalP3->x;
@@ -366,8 +367,8 @@ public:
     }
   }
 
-  std::optional<PhysicsBodyDataShape> getCircleShape(love::Vector2 p1,
-      love::Vector2 p2, love::DrawData *drawData, int roundDx, int roundDy) {
+  std::optional<PhysicsBodyDataShape> getCircleShape(
+      love::Vector2 p1, love::Vector2 p2, love::DrawData *drawData, int roundDx, int roundDy) {
     PhysicsBodyDataShape shape;
     shape.type = CollisionShapeType::Circle;
     shape.x = (p1.x + p2.x) / 2.0;
