@@ -381,7 +381,7 @@ export const CreateCardScreen = ({
                 editMode={editMode}
                 beltHeight={beltHeight}
               />
-              <CommandsOverlay />
+              <CommandsOverlay visible={!isPlaying} />
               {isSceneLoaded ? null : <CardSceneLoading />}
             </View>
           </View>

@@ -37,9 +37,10 @@ const typeLabels = {
   alert: 'notice',
 };
 
-export const CommandsOverlay = () => {
+export const CommandsOverlay = ({ visible }) => {
   const { type, message } = useCoreState('EDITOR_COMMAND_NOTIFY') || {};
   if (!type?.length) return null;
+  if (!visible) return null;
 
   return (
     <View style={styles.container} pointerEvents="none">
