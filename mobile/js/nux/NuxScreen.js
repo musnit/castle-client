@@ -92,10 +92,12 @@ export const NuxScreen = () => {
         flexShrink: 1,
       };
 
+  const reachedLastCard = nuxInfo?.finalCardId && currentCardId === nuxInfo.finalCardId;
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topRow}>
-        {nuxInfo?.finalCardId && currentCardId === nuxInfo.finalCardId ? (
+        {reachedLastCard ? (
           <Pressable style={styles.back} onPress={() => setIsNuxCompleted(true)}>
             {({ pressed }) => (
               <Icon name="arrow-back" color={pressed ? '#ccc' : '#fff'} size={32} />
@@ -109,7 +111,7 @@ export const NuxScreen = () => {
         </View>
       </View>
       <Pressable onPress={() => setIsNuxCompleted(true)}>
-        <Text style={styles.label}>Skip</Text>
+        <Text style={styles.label}>{reachedLastCard ? 'Done' : 'Skip'}</Text>
       </Pressable>
     </SafeAreaView>
   );
