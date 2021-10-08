@@ -60,13 +60,14 @@ void Selection::selectGhostActorForActor(ActorId actorId) {
 void Selection::selectActorFromHits(const BodyBehavior::ActorsAtTouch &hits) {
   auto pick = nullActor;
   if (auto nHits = int(hits.size()); nHits > 0) {
+    // Start by tentatively picking the topmost actor. Then, for any actor that is selected, pick
+    // the next one instead. If the last one is selected, don't pick anything.
+    pick = hits.back();
     for (auto i = nHits - 1; i >= 0; --i) {
-      auto nextI = i == 0 ? nHits - 1 : i - 1;
       if (isSelected(hits[i])) {
-        pick = hits[nextI];
+        pick = i == 0 ? nullActor : hits[i - 1];
       }
     }
-    pick = pick != nullActor ? pick : hits.back();
   }
   deselectAllActors();
   if (pick != nullActor) {
