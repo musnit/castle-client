@@ -200,7 +200,7 @@ private:
 
   void recreateFixtures(ActorId actorId, BodyComponent &component, bool notify);
   b2Fixture *addFixture(BodyComponent &component, b2Shape *shape);
-
+  static bool isDegeneratePoly(const b2Vec2 *vertices, int32 count);
 
   // Viewport
 

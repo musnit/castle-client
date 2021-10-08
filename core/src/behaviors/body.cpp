@@ -464,6 +464,36 @@ void BodyBehavior::setScale(ActorId actorId, float widthScale, float heightScale
 // Fixtures
 //
 
+// copied from `b2PolygonShape::Set` so we can avoid creating degenerate polygons
+// instead of hitting the internal box2d assert and silently failing.
+bool BodyBehavior::isDegeneratePoly(const b2Vec2 *vertices, int32 count) {
+  int32 n = b2Min(count, b2_maxPolygonVertices);
+
+  b2Vec2 ps[b2_maxPolygonVertices];
+  int32 tempCount = 0;
+  for (int32 i = 0; i < n; ++i) {
+    b2Vec2 v = vertices[i];
+
+    bool unique = true;
+    for (int32 j = 0; j < tempCount; ++j) {
+      if (b2DistanceSquared(v, ps[j]) < ((0.5f * b2_linearSlop) * (0.5f * b2_linearSlop))) {
+        unique = false;
+        break;
+      }
+    }
+
+    if (unique) {
+      ps[tempCount++] = v;
+    }
+  }
+
+  n = tempCount;
+  if (n < 3) {
+    return true;
+  }
+  return false;
+}
+
 void BodyBehavior::recreateFixtures(ActorId actorId, BodyComponent &component, bool notify) {
   auto body = component.body;
   if (!body) {
@@ -528,9 +558,11 @@ void BodyBehavior::recreateFixtures(ActorId actorId, BodyComponent &component, b
           points[i].x = widthScale * pointsProps[2 * i];
           points[i].y = heightScale * pointsProps[2 * i + 1];
         }
-        b2PolygonShape shape;
-        shape.Set(points.data(), nPoints);
-        addFixture(component, &shape);
+        if (!isDegeneratePoly(points.data(), nPoints)) {
+          b2PolygonShape shape;
+          shape.Set(points.data(), nPoints);
+          addFixture(component, &shape);
+        }
       }
     }
 
