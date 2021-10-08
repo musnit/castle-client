@@ -66,3 +66,4 @@ platform :ios do
     )
     # set_app_version_on_server
   end
+end
