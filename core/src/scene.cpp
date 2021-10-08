@@ -446,6 +446,6 @@ void Scene::setNextCardId(std::optional<std::string> value) {
     JS_navigateToCardId(value->c_str(), value->length());
   }
 #else
-  nextCardId = value;
+  nextCardId = std::move(value);
 #endif
 }
