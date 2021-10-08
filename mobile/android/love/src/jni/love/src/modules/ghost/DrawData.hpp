@@ -210,6 +210,7 @@ namespace ghost {
     RunAnimationResult runAnimation(AnimationState &animationState,
         AnimationComponentProperties &componentProperties, float dt);
     void renderFrameIndex(int frameIdx /* zero index */);
+    std::unique_ptr<graphics::Canvas> renderPreviewCanvas(int frameIdx, int size);
     std::optional<std::string> renderPreviewPng(int frameIdx, int size);
     void renderForTool(DrawDataLayerId layerId, OneIndexFrame frameIndex, float tempTranslateX,
         float tempTranslateY, std::shared_ptr<ToveGraphicsHolder> tempGraphics);
