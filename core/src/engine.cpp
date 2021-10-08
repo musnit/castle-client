@@ -127,8 +127,7 @@ void Engine::setInitialParams(const char *initialParamsJson) {
     if (initialSnapshotJson) {
       loadSceneFromJson(initialSnapshotJson, true);
     } else {
-      SceneLoadedEvent event;
-      getBridge().sendEvent("SCENE_LOADED", event);
+      pendingSceneLoadedEvent = true;
     }
   } else if (initialSnapshotJson) {
     // no network request, expect all needed data from json blob
@@ -163,8 +162,7 @@ void Engine::loadSceneFromFile(const char *path) {
           } else {
             player.readScene(reader);
           }
-          SceneLoadedEvent event;
-          getBridge().sendEvent("SCENE_LOADED", event);
+          pendingSceneLoadedEvent = true;
         });
       });
     });
@@ -192,8 +190,7 @@ void Engine::loadSceneFromJson(const char *json, bool skipScene) {
         });
       });
     }
-    SceneLoadedEvent event;
-    getBridge().sendEvent("SCENE_LOADED", event);
+    pendingSceneLoadedEvent = true;
   });
 }
 
@@ -219,8 +216,7 @@ void Engine::loadSceneFromDeckId(const char *deckId) {
           } else {
             player.readScene(reader);
           }
-          SceneLoadedEvent event;
-          getBridge().sendEvent("SCENE_LOADED", event);
+          pendingSceneLoadedEvent = true;
         }
       });
 }
@@ -236,8 +232,7 @@ void Engine::loadSceneFromCardId(const char *cardId) {
           } else {
             player.readScene(reader);
           }
-          SceneLoadedEvent event;
-          getBridge().sendEvent("SCENE_LOADED", event);
+          pendingSceneLoadedEvent = true;
         }
       });
 }
@@ -362,13 +357,13 @@ void Engine::update(double dt) {
 
 #ifdef ANDROID
   static bool isBackDown = false;
-  if (lv.keyboard.isDown({love::keyboard::Keyboard::Key::KEY_APP_BACK})) {
-      isBackDown = true;
+  if (lv.keyboard.isDown({ love::keyboard::Keyboard::Key::KEY_APP_BACK })) {
+    isBackDown = true;
   } else {
-      if (isBackDown) {
-          isBackDown = false;
-          androidHandleBackPressed();
-      }
+    if (isBackDown) {
+      isBackDown = false;
+      androidHandleBackPressed();
+    }
   }
 #endif
 
@@ -398,6 +393,12 @@ void Engine::draw() {
     lv.graphics.setColor(love::Colorf(1, 0, 0, 1));
     lv.graphics.print({ { Debug::getAndClearDisplay(), { 1, 1, 1, 1 } } }, debugFont.get(),
         love::Matrix4(20, 20, 0, 1, 1, 0, 0, 0, 0));
+  }
+
+  if (pendingSceneLoadedEvent) {
+    pendingSceneLoadedEvent = false;
+    SceneLoadedEvent event;
+    getBridge().sendEvent("SCENE_LOADED", event);
   }
 }
 

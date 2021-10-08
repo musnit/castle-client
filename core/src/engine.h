@@ -61,6 +61,7 @@ private:
   [[maybe_unused]] bool prevWindowFocused = true;
   [[maybe_unused]] int prevWindowWidth = 0, prevWindowHeight = 0;
   bool shouldQuit = false;
+  bool pendingSceneLoadedEvent = false;
 
   struct PreInit {
     // Allows us to run some early initialization steps before the rest of the
