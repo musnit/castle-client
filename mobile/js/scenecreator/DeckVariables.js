@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { InspectorNumberInput } from './inspector/components/InspectorNumberInput';
+import { InspectorTextInput } from './inspector/components/InspectorTextInput';
 import { useCoreState, sendAsync } from '../core/CoreEvents';
 
 import FeatherIcon from 'react-native-vector-icons/Feather';
@@ -42,6 +43,11 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 16,
     lineHeight: 20,
+  },
+  noBorder: {
+    borderWidth: 0,
+    borderTopWidth: 0,
+    padding: 0,
   },
   labels: {
     flexDirection: 'row',
@@ -100,8 +106,9 @@ const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) 
     <View style={styles.variableInputContainer}>
       <View style={{ flexDirection: 'row', alignItems: 'center', width: '50%' }}>
         <Text style={styles.variablePrefix}>$</Text>
-        <TextInput
-          style={[styles.input, styles.variableName]}
+        <InspectorTextInput
+          optimistic
+          style={[styles.input, styles.noBorder, styles.variableName]}
           placeholderTextColor="#666"
           autoCapitalize="none"
           autoCompleteType="off"
@@ -110,7 +117,6 @@ const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) 
           {...nameInputProps}
         />
       </View>
-      {/* <Text style={[styles.variableType, { width: '32%' }]}>{type}</Text> */}
       <InspectorNumberInput
         style={[styles.input, { width: '50%', paddingRight: 28 }]}
         placeholderTextColor="#666"
