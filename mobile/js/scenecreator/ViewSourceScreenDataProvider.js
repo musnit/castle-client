@@ -167,8 +167,10 @@ class ViewSourceScreenDataProvider extends React.Component {
     // reset to top of current nav stack in order to unmount the view source editor
     await this.props.navigation.popToTop();
 
-    // specify both the outer tab (Create) and the inner screen (CreateDeck)
-    // because we don't know whether we are already on the Create tab
+    // ensure we're at the root/default screen of the Create tab
+    await this.props.navigation.navigate('Create');
+
+    // push the new deck onto Create stack
     this.props.navigation.navigate('Create', {
       screen: 'CreateDeck',
       params: {
