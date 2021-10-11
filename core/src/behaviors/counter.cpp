@@ -25,7 +25,7 @@ struct CounterReachesValueTrigger : BaseTrigger {
 
   struct Params {
     PROP(ExpressionComparison, comparison);
-    PROP(double, value) = 0;
+    PROP(ExpressionRef, value) = 0;
   } params;
 };
 
@@ -63,7 +63,8 @@ struct SetCounterResponse : BaseResponse {
       rulesBehavior.fire<CounterChangesTrigger>(actorId, {});
       rulesBehavior.fireIf<CounterReachesValueTrigger>(
           actorId, {}, [&](const CounterReachesValueTrigger &trigger) {
-            return trigger.params.comparison().compare(newExprValue, trigger.params.value());
+            return trigger.params.comparison().compare(
+                newExprValue, rulesBehavior.evalIndependent(trigger.params.value()));
           });
     }
   }

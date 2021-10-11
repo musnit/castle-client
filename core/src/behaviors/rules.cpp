@@ -834,7 +834,7 @@ struct VariableReachesValueTrigger : BaseTrigger {
          .label("variable")
          );
     PROP(ExpressionComparison, comparison);
-    PROP(double, value) = 0;
+    PROP(ExpressionRef, value) = 0;
   } params;
 };
 
@@ -849,7 +849,7 @@ void RulesBehavior::fireVariablesTriggers(Variable variable, const ExpressionVal
   fireAllIf<VariableReachesValueTrigger>(
       {}, [&](ActorId actorId, const VariableReachesValueTrigger &trigger) {
         return trigger.params.variableId() == variable
-            && trigger.params.comparison().compare(value, trigger.params.value());
+            && trigger.params.comparison().compare(value, evalIndependent(trigger.params.value()));
       });
 }
 
@@ -1021,7 +1021,7 @@ void RulesBehavior::handleReadComponent(
           for (auto &loader : triggerLoaders) {
             if (loader.behaviorId == *behaviorId && nameHash == loader.nameHs.value()
                 && !std::strcmp(*name, loader.nameHs.data())) {
-              loader.read(getScene(), actorId, response, reader);
+              loader.read(*this, actorId, response, reader);
               return;
             }
           }
@@ -1144,7 +1144,8 @@ void RulesBehavior::handlePerform(double dt) {
     fireAllIf<VariableReachesValueTrigger, VariableReachesValueTriggerOnAddMarker>(
         {}, [&](ActorId actorId, const VariableReachesValueTrigger &trigger) {
           auto &currValue = variables.get(trigger.params.variableId());
-          return trigger.params.comparison().compare(currValue, trigger.params.value());
+          return trigger.params.comparison().compare(
+              currValue, evalIndependent(trigger.params.value()));
         });
     registry.clear<VariableReachesValueTriggerOnAddMarker>();
   }

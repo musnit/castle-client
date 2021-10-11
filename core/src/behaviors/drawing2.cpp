@@ -79,7 +79,7 @@ struct AnimationReachesFrameTrigger : BaseTrigger {
 
   struct Params {
     PROP(ExpressionComparison, comparison);
-    PROP(int, frame) = 1;
+    PROP(ExpressionRef, frame) = 1;
   } params;
 };
 
@@ -326,8 +326,9 @@ void Drawing2Behavior::fireChangeFrameTriggers(
   auto currentFrame = ExpressionValue(drawData->modFrameIndex(animProps.currentFrame));
   rulesBehavior.fireIf<AnimationReachesFrameTrigger>(
       actorId, {}, [&](const AnimationReachesFrameTrigger &trigger) {
-        auto triggerFrame = ExpressionValue(drawData->modFrameIndex(trigger.params.frame() - 1));
-        return trigger.params.comparison().compare(currentFrame, triggerFrame);
+        auto frame = rulesBehavior.evalIndependent(trigger.params.frame()).as<int>();
+        auto modFrame = ExpressionValue(drawData->modFrameIndex(frame - 1));
+        return trigger.params.comparison().compare(currentFrame, modFrame);
       });
 }
 

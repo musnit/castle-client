@@ -223,6 +223,11 @@ public:
   int getDestroyResponseIndex(); // Index for 'destroy' response to use in 'create text' rules
 
 
+  // Expression evaluation
+
+  ExpressionValue evalIndependent(ExpressionRef expr); // Prefer `expr.eval(ctx)`
+
+
 private:
   // Using a pool allocator for rule nodes (responses and expressions) since we'll be allocating a
   // lot of small objects and visiting them somewhat in order when running. Also keep track of the
@@ -262,7 +267,9 @@ private:
   struct TriggerLoader {
     entt::hashed_string nameHs;
     int behaviorId = -1;
-    void (*read)(Scene &scene, ActorId actorId, ResponseRef response, Reader &reader) = nullptr;
+    void (*read)(
+        RulesBehavior &rulesBehavior, ActorId actorId, ResponseRef response, Reader &reader)
+        = nullptr;
   };
   inline static std::vector<TriggerLoader> triggerLoaders;
 
@@ -529,6 +536,11 @@ inline ResponseRef RulesBehavior::getResponse(int index) {
   return nullptr;
 }
 
+inline ExpressionValue RulesBehavior::evalIndependent(ExpressionRef expr) {
+  RuleContext ctx(nullptr, nullActor, {}, getScene());
+  return expr.eval(ctx);
+}
+
 inline bool BaseResponse::eval(RuleContext &ctx) {
   return false;
 }
@@ -614,22 +626,39 @@ RuleRegistration<T, Behavior>::RuleRegistration(const char *name, bool allowDupl
     RulesBehavior::triggerLoaders.push_back({
         entt::hashed_string(name),
         Behavior::behaviorId,
-        [](Scene &scene, ActorId actorId, ResponseRef response, Reader &reader) {
+        [](RulesBehavior &rulesBehavior, ActorId actorId, ResponseRef response, Reader &reader) {
           // Add a `TriggerComponent<T>` entry for this rule
           auto &component
-              = scene.getEntityRegistry()
+              = rulesBehavior.getScene()
+                    .getEntityRegistry()
                     .template get_or_emplace<RulesBehavior::TriggerComponent<T>>(actorId);
           component.entries.emplace_back();
           auto &entry = component.entries.back();
           entry.response = response;
 
-          // Read params
-          if constexpr (Props::hasProps<typename T::Params>) {
-            // Reflected props
-            reader.obj("params", [&]() {
-              reader.read(entry.trigger.params);
-            });
-          }
+          reader.obj("params", [&]() {
+            // Reflect on `params`
+            if constexpr (Props::hasProps<typename T::Params>) {
+              reader.each([&](const char *key) {
+                const auto keyHash = entt::hashed_string(key).value();
+                Props::forEach(entry.trigger.params, [&](auto &prop) {
+                  using Prop = std::remove_reference_t<decltype(prop)>;
+                  constexpr auto propNameHash = Prop::nameHash; // Ensure compile-time constants
+                  constexpr auto propName = Prop::name;
+                  if (keyHash == propNameHash && key == propName) {
+                    if constexpr (std::is_same_v<ExpressionRef,
+                                      std::remove_reference_t<decltype(prop())>>) {
+                      // Child expression
+                      rulesBehavior.readExpression(prop(), reader);
+                    } else {
+                      // Regular prop
+                      reader.read(prop());
+                    }
+                  }
+                });
+              });
+            }
+          });
         },
     });
   } else if constexpr (std::is_base_of_v<BaseResponse, T>) {
