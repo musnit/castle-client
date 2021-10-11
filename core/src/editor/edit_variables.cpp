@@ -33,11 +33,18 @@ void EditVariables::write(Writer &writer) const {
 }
 
 bool EditVariables::update(std::string variableId, std::string name, ExpressionValue initialValue) {
-  auto maybeVariable = get(variableId);
-  if (maybeVariable) {
-    remove(variableId);
+  bool found = false;
+  for (int ii = 0, nn = int(variables.size()); ii < nn; ii++) {
+    auto &variable = variables[ii];
+    if (variable.variableId == variableId) {
+      found = true;
+      variables[ii] = EditVariables::Variable(std::move(name), variableId, initialValue);
+      break;
+    }
   }
-  add(std::move(name), variableId, initialValue);
+  if (!found) {
+    add(std::move(name), variableId, initialValue);
+  }
   return true;
 }
 
