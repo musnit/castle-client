@@ -9,7 +9,7 @@
     "prettier": "pretty-quick --staged"
   },
   "dependencies": {
-    "@apollo/client": "^3.3.14",
+    "@apollo/client": "^3.4.16",
     "@expo/react-native-action-sheet": "^3.8.0",
     "@react-native-community/async-storage": "^1.6.2",
     "@react-navigation/bottom-tabs": "^5.11.2",
