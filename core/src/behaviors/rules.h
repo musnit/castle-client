@@ -257,6 +257,9 @@ private:
                                     // Stored as a member so we can reuse its memory.
   bool firstFrame = true; // Whether we're on the first performance frame
 
+  RuleContext independent { nullptr, nullActor, {}, getScene() }; // For evaluating expressions
+                                                                  // independently from any actor
+
 
   // Loaders (maps from names to read functions for rule types, filled by `RuleRegistration` when
   // the application starts)
@@ -537,8 +540,7 @@ inline ResponseRef RulesBehavior::getResponse(int index) {
 }
 
 inline ExpressionValue RulesBehavior::evalIndependent(ExpressionRef expr) {
-  RuleContext ctx(nullptr, nullActor, {}, getScene());
-  return expr.eval(ctx);
+  return expr.eval(independent);
 }
 
 inline bool BaseResponse::eval(RuleContext &ctx) {
