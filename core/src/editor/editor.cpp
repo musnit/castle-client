@@ -1977,7 +1977,9 @@ void Editor::maybeSendData(double dt) {
     }
     selectedComponentStateDirty.clear();
   }
-  scene->getBehaviors().byType<TextBehavior>().maybeSendBridgeData(dt);
+  if (!playing) {
+    scene->getBehaviors().byType<TextBehavior>().maybeSendBridgeData(dt);
+  }
 }
 
 struct EditorNewBlueprintReceiver {
