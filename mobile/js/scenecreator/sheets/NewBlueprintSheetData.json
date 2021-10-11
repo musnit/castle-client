@@ -25,10 +25,10 @@
             "widthScale": 0.1,
             "heightScale": 0.1,
             "editorBounds": {
-              "minX": 1000000,
-              "maxX": -1000000,
-              "minY": 1000000,
-              "maxY": -1000000
+              "minX": -5,
+              "maxX": 5,
+              "minY": -5,
+              "maxY": 5
             }
           },
           "Tags": {
