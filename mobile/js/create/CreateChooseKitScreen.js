@@ -6,6 +6,7 @@ import { useQuery, gql } from '@apollo/client';
 
 import * as Constants from '../Constants';
 import * as LocalId from '../common/local-id';
+import { ScreenHeader } from '../components/ScreenHeader';
 
 const styles = StyleSheet.create({
   gridContainer: {
@@ -97,13 +98,16 @@ export const CreateChooseKitScreen = () => {
     );
 
   return (
-    <ScrollView contentContainerStyle={styles.gridContainer}>
-      <BlankDeckCell onPress={onPressBlankDeck} />
-      {decks
-        ? decks.map((deck) => (
-            <KitDeckCell key={`create-kit-${deck.deckId}`} deck={deck} onPress={onPressKitDeck} />
-          ))
-        : null}
-    </ScrollView>
+    <>
+      {Platform.OS === 'android' && <ScreenHeader title="Choose Your Deck" />}
+      <ScrollView contentContainerStyle={styles.gridContainer}>
+        <BlankDeckCell onPress={onPressBlankDeck} />
+        {decks
+          ? decks.map((deck) => (
+              <KitDeckCell key={`create-kit-${deck.deckId}`} deck={deck} onPress={onPressKitDeck} />
+            ))
+          : null}
+      </ScrollView>
+    </>
   );
 };
