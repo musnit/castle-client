@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: 'transparent',
     alignItems: 'center',
-    paddingTop: 96,
+    paddingTop: 16,
   },
   body: {
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
