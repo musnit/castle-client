@@ -667,6 +667,7 @@ struct EditorGlobalActionsEvent {
   PROP(bool, isBlueprintSelected) = false;
   PROP(bool, isInspectorOpen) = false;
   PROP(std::string, editMode);
+  PROP(std::string, defaultModeCurrentTool);
 
   struct ActionsAvailable {
     PROP(bool, onPlay) = true;
@@ -784,9 +785,19 @@ void Editor::sendGlobalActions() {
   }
 
   switch (editMode) {
-  case EditMode::Default:
+  case EditMode::Default: {
     ev.editMode = "default";
+    auto defaultModeCurrentTool = getCurrentTool();
+    switch (defaultModeCurrentTool) {
+    case Tool::Grab:
+      ev.defaultModeCurrentTool = "grab";
+      break;
+    case Tool::ScaleRotate:
+      ev.defaultModeCurrentTool = "scaleRotate";
+      break;
+    }
     break;
+  }
   case EditMode::Draw:
     ev.editMode = "draw";
     break;
@@ -1566,10 +1577,13 @@ struct EditorInspectorActionReceiver {
 
     Debug::log("editor received inspector action: {}", action);
 
-    if (action == "toggleScaleRotate") {
-      editor->setCurrentTool(editor->getCurrentTool() != Editor::Tool::ScaleRotate
-              ? Editor::Tool::ScaleRotate
-              : Editor::Tool::Grab);
+    if (action == "setDefaultModeCurrentTool") {
+      if (params.stringValue() == "grab") {
+        editor->setCurrentTool(Editor::Tool::Grab);
+      } else if (params.stringValue() == "scaleRotate") {
+        editor->setCurrentTool(Editor::Tool::ScaleRotate);
+      }
+      editor->isEditorStateDirty = true;
     }
 
     if (action == "openInspector") {
