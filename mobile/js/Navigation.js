@@ -41,7 +41,7 @@ const Tab = createBottomTabNavigator();
 // so just suppress these warnings.
 // see further discussion: https://github.com/react-navigation/react-navigation/issues/9056
 LogBox.ignoreLogs([
-  "Accessing the 'state' property of the 'route' object is not supported. If you want to get the focused route name, use the 'getFocusedRouteNameFromRoute' helper instead: https://reactnavigation.org/docs/screen-options-resolution/#setting-parent-screen-options-based-on-child-navigators-state",
+  "Accessing the 'state' property of the 'route' object is not supported. If you want to get the focused route name, use the 'getFocusedRouteNameFromRoute' helper instead: https://reactnavigation.org/docs/5.x/screen-options-resolution/#setting-parent-screen-options-based-on-child-navigators-state",
 ]);
 
 const ICON_SIZE = 28;
