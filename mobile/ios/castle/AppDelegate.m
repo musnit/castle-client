@@ -192,13 +192,6 @@ int SDL_main(int argc, char *argv[]) {
   [self.sdlDelegate applicationDidReceiveMemoryWarning:application];
 }
 
-- (void)application:(UIApplication *)application
-    didChangeStatusBarOrientation:
-        (UIInterfaceOrientation)oldStatusBarOrientation {
-  [self.sdlDelegate application:application
-      didChangeStatusBarOrientation:oldStatusBarOrientation];
-}
-
 - (void)applicationWillResignActive:(UIApplication *)application {
   [self.sdlDelegate applicationWillResignActive:application];
   [CastleCoreView sharedCastleCoreView].displayLink.paused = YES;

@@ -162,7 +162,7 @@
 		91395EB924170C5900ECBCF9 /* GhostPushNotifications.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GhostPushNotifications.h; sourceTree = "<group>"; };
 		91CCEBA626D6FC0C00C6B016 /* API_ios.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = API_ios.mm; sourceTree = "<group>"; };
 		91CCEBB326D7082500C6B016 /* API_ios.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = API_ios.h; sourceTree = "<group>"; };
-		A101D71F26D9ABD200A515E6 /* src */ = {isa = PBXFileReference; lastKnownFileType = folder; name = src; path = "../../core/src"; sourceTree = SOURCE_ROOT; };
+		A101D71F26D9ABD200A515E6 /* src */ = {isa = PBXFileReference; lastKnownFileType = folder; name = src; path = ../../core/src; sourceTree = SOURCE_ROOT; };
 		A12CFEDF23CC30F600D721BC /* references.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = references.cpp; path = "../../ghost-extensions/tove2d/src/cpp/references.cpp"; sourceTree = "<group>"; };
 		A12CFEE023CC30F600D721BC /* warn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = warn.cpp; path = "../../ghost-extensions/tove2d/src/cpp/warn.cpp"; sourceTree = "<group>"; };
 		A12CFEE123CC30F600D721BC /* subpath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = subpath.cpp; path = "../../ghost-extensions/tove2d/src/cpp/subpath.cpp"; sourceTree = "<group>"; };
@@ -1094,7 +1094,7 @@
 					../../core/vendor/stduuid/gsl,
 					../../core/vendor/stduuid/include,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LIBRARY_SEARCH_PATHS = (
 					../../openssl/lib/iOS,
 					../../core/binaries/ios,
@@ -1166,7 +1166,7 @@
 					../../core/vendor/stduuid/gsl,
 					../../core/vendor/stduuid/include,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LIBRARY_SEARCH_PATHS = (
 					../../openssl/lib/iOS,
 					../../core/binaries/ios,
