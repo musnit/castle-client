@@ -172,6 +172,11 @@ extern int SDL_AppleTVRemoteOpenedAsJoystick;
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
     for (UITouch *touch in touches) {
+        // XXX(Castle): Tell gesture recognizers to not delay touch end events
+        for (UIGestureRecognizer *recognizer in touch.gestureRecognizers) {
+            recognizer.delaysTouchesEnded = NO;
+        }
+
         float pressure = [self pressureForTouch:touch];
 
         if (!firstFingerDown) {
