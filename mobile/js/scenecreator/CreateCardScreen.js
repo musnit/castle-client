@@ -126,6 +126,23 @@ export const CreateCardScreen = ({
   }, [isInspectorOpen, activeSheet, setActiveSheet]);
 
   React.useEffect(() => {
+    if (
+      hasSelection &&
+      globalActions?.defaultModeCurrentTool === 'scaleRotate' &&
+      activeSheet !== 'sceneCreatorInstance'
+    ) {
+      setActiveSheet('sceneCreatorInstance');
+    } else if (
+      activeSheet === 'sceneCreatorInstance' &&
+      (!hasSelection || globalActions?.defaultModeCurrentTool !== 'scaleRotate')
+    ) {
+      // if we exited scale-rotate tool via deselection or changing selection or changing tool,
+      // close corresponding layout sheet
+      setActiveSheet();
+    }
+  }, [activeSheet, setActiveSheet, hasSelection, globalActions?.defaultModeCurrentTool]);
+
+  React.useEffect(() => {
     if (isSceneLoaded) {
       // request static data from engine
       sendAsync('EDITOR_JS_LOADED', {});

@@ -101,13 +101,19 @@ export const OverlaySelectionActions = () => {
   );
 
   const changeOrderOptions = makeChangeOrderOptions({ isTextActorSelected, sendAction });
+  const onSelectGrab = React.useCallback(() => {
+    sendAction('setDefaultModeCurrentTool', { stringValue: 'grab' });
+  }, [sendAction]);
+  const onSelectScaleRotate = React.useCallback(() => {
+    sendAction('setDefaultModeCurrentTool', { stringValue: 'scaleRotate' });
+  }, [sendAction]);
 
   return (
     <View style={styles.container} pointerEvents="box-none">
       <View style={styles.toolbar}>
         <Pressable
           style={[styles.button, currentTool === 'grab' ? { backgroundColor: '#000' } : null]}
-          onPress={() => sendAction('setDefaultModeCurrentTool', { stringValue: 'grab' })}>
+          onPress={onSelectGrab}>
           <MCIcon
             name="cursor-default"
             size={22}
@@ -119,7 +125,7 @@ export const OverlaySelectionActions = () => {
             styles.button,
             currentTool === 'scaleRotate' ? { backgroundColor: '#000' } : null,
           ]}
-          onPress={() => sendAction('setDefaultModeCurrentTool', { stringValue: 'scaleRotate' })}>
+          onPress={onSelectScaleRotate}>
           <Icon
             name="crop-rotate"
             size={22}

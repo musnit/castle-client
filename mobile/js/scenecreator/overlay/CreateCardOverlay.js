@@ -30,14 +30,15 @@ export const CreateCardOverlay = ({ activeSheet, setActiveSheet, editMode, beltH
     );
   } else {
     // tools for normal scene/grid editing
-    // TODO: setActiveSheet('sceneCreatorInstance') opens layout sheet
-    if (hasSelection && !activeSheet) {
+    if (hasSelection) {
       return (
         <View style={[styles.container, { bottom: beltHeight }]} pointerEvents="box-none">
           {!isBlueprintSelected ? <OverlaySelectionActions /> : <View />}
-          <View pointerEvents="box-none">
-            <OverlayBlueprint />
-          </View>
+          {!activeSheet ? (
+            <View pointerEvents="box-none">
+              <OverlayBlueprint />
+            </View>
+          ) : null}
         </View>
       );
     }
