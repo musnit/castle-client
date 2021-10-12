@@ -4,6 +4,7 @@ import { useCardCreator } from '../CreateCardContext';
 import { OverlaySelectionActions } from './OverlaySelectionActions';
 import { OverlayBlueprint } from './OverlayBlueprint';
 import { OverlayDrawing } from './OverlayDrawing';
+import { OverlayDrawingFramePicker } from './OverlayDrawingFramePicker';
 
 const styles = StyleSheet.create({
   container: {
@@ -36,6 +37,7 @@ export const CreateCardOverlay = ({ activeSheet, setActiveSheet, editMode, beltH
           {!isBlueprintSelected ? <OverlaySelectionActions /> : <View />}
           {!activeSheet ? (
             <View pointerEvents="box-none">
+              {!isBlueprintSelected ? <OverlayDrawingFramePicker /> : null}
               <OverlayBlueprint />
             </View>
           ) : null}
