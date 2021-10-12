@@ -219,6 +219,7 @@ void ScaleRotateTool::update(double dt) {
             if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
               bodyBehavior.setPosition(actorId, convert(worldNewPos));
               bodyBehavior.setScale(actorId, newScale.x, newScale.y);
+              editor.setSelectedComponentStateDirty(BodyBehavior::behaviorId);
             }
           },
           [actorId, worldOldPos, oldScale](Editor &editor, bool) {
@@ -226,6 +227,7 @@ void ScaleRotateTool::update(double dt) {
             if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
               bodyBehavior.setPosition(actorId, convert(worldOldPos));
               bodyBehavior.setScale(actorId, oldScale.x, oldScale.y);
+              editor.setSelectedComponentStateDirty(BodyBehavior::behaviorId);
             }
           });
     } else if (gesture.hasData<RotateMarker>(touchId)) { // Rotate
@@ -252,6 +254,7 @@ void ScaleRotateTool::update(double dt) {
             if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
               bodyBehavior.setProperty(actorId, decltype(BodyComponent::Props::angle)::id,
                   newBodyAngle * 180 / M_PI, false);
+              editor.setSelectedComponentStateDirty(BodyBehavior::behaviorId);
             }
           },
           [actorId, oldBodyAngle](Editor &editor, bool) {
@@ -259,6 +262,7 @@ void ScaleRotateTool::update(double dt) {
             if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
               bodyBehavior.setProperty(actorId, decltype(BodyComponent::Props::angle)::id,
                   oldBodyAngle * 180 / M_PI, false);
+              editor.setSelectedComponentStateDirty(BodyBehavior::behaviorId);
             }
           });
     }
