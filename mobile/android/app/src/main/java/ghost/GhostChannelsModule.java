@@ -243,4 +243,9 @@ public class GhostChannelsModule extends ReactContextBaseJavaModule {
   void setIsPopoverOpen(boolean isOpen) {
     MainActivity.isPopoverOpen = isOpen;
   }
+
+  @ReactMethod
+  void markNuxComplete() {
+    CastleSharedPreferences.markNuxComplete();
+  }
 }

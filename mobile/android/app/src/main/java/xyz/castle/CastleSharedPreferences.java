@@ -15,7 +15,12 @@ public class CastleSharedPreferences {
         }
     }
 
+    public static class NuxCompleteEvent {
+
+    }
+
     private static final String AUTH_TOKEN_KEY = "AUTH_TOKEN";
+    private static final String IS_NUX_COMPLETED_KEY = "IS_NUX_COMPLETED";
 
     private static SharedPreferences sharedPreferences;
 
@@ -49,5 +54,14 @@ public class CastleSharedPreferences {
 
     public static String getAuthToken() {
         return get(AUTH_TOKEN_KEY);
+    }
+
+    public static boolean getIsNuxComplete() {
+        return get(IS_NUX_COMPLETED_KEY, "false").equals("true");
+    }
+
+    public static void markNuxComplete() {
+        set(IS_NUX_COMPLETED_KEY, "true");
+        EventBus.getDefault().post(new NuxCompleteEvent());
     }
 }

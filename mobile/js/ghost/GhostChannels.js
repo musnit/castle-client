@@ -127,3 +127,7 @@ export const saveSmartLockCredentials = (username, password, profilePictureUrl) 
 export const setIsPopoverOpen = (isOpen) => {
   return NativeModules.GhostChannels.setIsPopoverOpen(isOpen);
 };
+
+export const markNuxComplete = () => {
+  return NativeModules.GhostChannels.markNuxComplete();
+};

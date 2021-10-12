@@ -121,11 +121,23 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
         new CastleNavigationScreen("LoginStack", (Activity activity) -> (new CastleStackNavigator(this, "LoginScreen"))).register();
 
         new CastleNavigationScreen("InitialAuthStack", (Activity activity) -> (new CastleStackNavigator(this, "InitialAuthScreen"))).register();
+        new CastleNavigationScreen("NuxStack", (Activity activity) -> (new CastleStackNavigator(this, "NuxScreen"))).register();
 
         String authToken = CastleSharedPreferences.getAuthToken();
         boolean isLoggedIn = authToken != null && authToken.length() > 0;
 
-        navigator = new CastleSwapNavigator(this, isLoggedIn ? "LoggedInRootStack" : "InitialAuthStack");
+        String mainNavigatorType = "";
+        if (isLoggedIn) {
+            if (CastleSharedPreferences.getIsNuxComplete()) {
+                mainNavigatorType = "LoggedInRootStack";
+            } else {
+                mainNavigatorType = "NuxStack";
+            }
+        } else {
+           mainNavigatorType = "InitialAuthStack";
+        }
+
+        navigator = new CastleSwapNavigator(this, mainNavigatorType);
         navigator.setId("Root");
         navigator.bindViews(null, 0, 0);
 
@@ -253,8 +265,17 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
         if (event.token == null) {
             navigator.navigate("InitialAuthStack");
         } else {
-            navigator.navigate("LoggedInRootStack");
+            if (CastleSharedPreferences.getIsNuxComplete()) {
+                navigator.navigate("LoggedInRootStack");
+            } else {
+                navigator.navigate("NuxStack");
+            }
         }
+    };
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(CastleSharedPreferences.NuxCompleteEvent event) {
+        navigator.navigate("LoggedInRootStack");
     };
 
     public static class RNEvent {

@@ -27,6 +27,7 @@ import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './auth/A
 import { CreateScreen } from './create/CreateScreen';
 import { CreateDeckNavigator } from './create/CreateDeckNavigator';
 import { InitialAuthScreen } from './auth/InitialAuthScreen';
+import { NuxScreen } from './nux/NuxScreen';
 import { ViewSourceNavigator } from './create/ViewSourceNavigator';
 import { ShareDeckScreen } from './share/ShareDeckScreen';
 import { NotificationsScreen } from './notifications/NotificationsScreen';
@@ -220,6 +221,7 @@ if (Platform.OS === 'android') {
   );
   AppRegistry.registerComponent('ExploreFeed', WrapComponent(ExploreFeed));
   AppRegistry.registerComponent('InitialAuthScreen', WrapComponent(InitialAuthScreen));
+  AppRegistry.registerComponent('NuxScreen', WrapComponent(NuxScreen));
   AppRegistry.registerComponent('LoginScreen', WrapComponent(LoginScreen));
   AppRegistry.registerComponent('CreateAccountScreen', WrapComponent(CreateAccountScreen));
   AppRegistry.registerComponent('ForgotPasswordScreen', WrapComponent(ForgotPasswordScreen));

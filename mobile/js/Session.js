@@ -141,6 +141,9 @@ export class Provider extends React.Component {
 
   setIsNuxCompleted = async (isNuxCompleted) => {
     gIsNuxCompleted = !!isNuxCompleted;
+    if (Platform.OS === 'android') {
+      GhostChannels.markNuxComplete();
+    }
     await CastleAsyncStorage.setItem('IS_NUX_COMPLETED', gIsNuxCompleted.toString());
     return this.setState({ isNuxCompleted: gIsNuxCompleted });
   };
