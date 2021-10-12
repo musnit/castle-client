@@ -4,7 +4,6 @@ import { useCardCreator } from '../CreateCardContext';
 import { OverlaySelectionActions } from './OverlaySelectionActions';
 import { OverlayBlueprint } from './OverlayBlueprint';
 import { OverlayDrawing } from './OverlayDrawing';
-import { OverlayLayout } from './OverlayLayout';
 
 const styles = StyleSheet.create({
   container: {
@@ -31,12 +30,12 @@ export const CreateCardOverlay = ({ activeSheet, setActiveSheet, editMode, beltH
     );
   } else {
     // tools for normal scene/grid editing
+    // TODO: setActiveSheet('sceneCreatorInstance') opens layout sheet
     if (hasSelection && !activeSheet) {
       return (
         <View style={[styles.container, { bottom: beltHeight }]} pointerEvents="box-none">
           {!isBlueprintSelected ? <OverlaySelectionActions /> : <View />}
           <View pointerEvents="box-none">
-            {!isBlueprintSelected ? <OverlayLayout setActiveSheet={setActiveSheet} /> : null}
             <OverlayBlueprint />
           </View>
         </View>

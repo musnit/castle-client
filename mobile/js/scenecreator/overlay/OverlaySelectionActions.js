@@ -1,11 +1,12 @@
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { sendAsync } from '../../core/CoreEvents';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useCardCreator } from '../CreateCardContext';
+import { useCoreState, sendAsync } from '../../core/CoreEvents';
 
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as Constants from '../../Constants';
 import * as SceneCreatorConstants from '../SceneCreatorConstants';
@@ -15,21 +16,22 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-  close: {
-    borderRadius: SceneCreatorConstants.OVERLAY_BORDER_RADIUS,
-    backgroundColor: Constants.colors.white,
-    borderColor: Constants.colors.black,
-    borderWidth: 1,
-    ...Constants.styles.dropShadow,
+    alignItems: 'flex-start',
   },
   toolbar: {
     borderRadius: SceneCreatorConstants.OVERLAY_BORDER_RADIUS,
     backgroundColor: Constants.colors.white,
     borderColor: Constants.colors.black,
     borderWidth: 1,
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
+    ...Constants.styles.dropShadow,
+  },
+  singleButton: {
+    borderRadius: SceneCreatorConstants.OVERLAY_BORDER_RADIUS,
+    backgroundColor: Constants.colors.white,
+    borderColor: Constants.colors.black,
+    borderWidth: 1,
     ...Constants.styles.dropShadow,
   },
   button: {
@@ -83,9 +85,12 @@ const makeChangeOrderOptions = ({ isTextActorSelected, sendAction }) => {
 };
 
 export const OverlaySelectionActions = () => {
+  const globalActions = useCoreState('EDITOR_GLOBAL_ACTIONS');
+  const currentTool = globalActions?.defaultModeCurrentTool ?? 'grab';
+
   const { isTextActorSelected } = useCardCreator();
   const sendAction = React.useCallback(
-    (action, ...args) => {
+    (action, args) => {
       if (typeof action === 'string') {
         sendAsync('EDITOR_INSPECTOR_ACTION', { action, ...args });
       } else if (action.eventName) {
@@ -113,36 +118,52 @@ export const OverlaySelectionActions = () => {
     );
   }, [sendAction]);
 
-  const scaleRotateAction = () => {
-    sendAction('toggleScaleRotate');
-  };
-
   return (
     <View style={styles.container} pointerEvents="box-none">
-      <View style={[styles.close, styles.button]}>
-        <Pressable onPress={() => sendAction('closeInspector')}>
-          <CastleIcon name="close" size={22} color="#000" />
+      <View style={styles.toolbar}>
+        <Pressable
+          style={[styles.button, currentTool === 'grab' ? { backgroundColor: '#000' } : null]}
+          onPress={() => sendAction('setDefaultModeCurrentTool', { stringValue: 'grab' })}>
+          <MCIcon
+            name="cursor-default"
+            size={22}
+            color={currentTool === 'grab' ? '#fff' : '#000'}
+          />
+        </Pressable>
+        <Pressable
+          style={[
+            styles.button,
+            currentTool === 'scaleRotate' ? { backgroundColor: '#000' } : null,
+          ]}
+          onPress={() => sendAction('setDefaultModeCurrentTool', { stringValue: 'scaleRotate' })}>
+          <Icon
+            name="crop-rotate"
+            size={22}
+            color={currentTool === 'scaleRotate' ? '#fff' : '#000'}
+          />
         </Pressable>
       </View>
       <View style={styles.toolbar}>
-        <Pressable style={styles.button} onPress={scaleRotateAction}>
-          <Icon name="crop-rotate" size={20} color="#000" />
-        </Pressable>
-        <Pressable style={styles.button} onPress={changeSelectionOrder}>
-          {isTextActorSelected ? (
-            <Icon name="swap-vert" size={20} color="#000" />
-          ) : (
-            <FeatherIcon name="layers" size={20} color="#000" />
-          )}
-        </Pressable>
-        <Pressable style={styles.button} onPress={() => sendAction('duplicateSelection')}>
-          <FeatherIcon name="copy" size={20} color="#000" />
-        </Pressable>
-        <Pressable
-          style={[styles.button, { borderRightWidth: 0 }]}
-          onPress={() => sendAction('deleteSelection')}>
-          <FeatherIcon name="trash-2" size={20} color="#000" />
-        </Pressable>
+        {currentTool === 'grab' ? (
+          <>
+            <Pressable style={styles.button} onPress={() => sendAction('duplicateSelection')}>
+              <FeatherIcon name="copy" size={20} color="#000" />
+            </Pressable>
+            <Pressable
+              style={[styles.button, { borderRightWidth: 0 }]}
+              onPress={() => sendAction('deleteSelection')}>
+              <FeatherIcon name="trash-2" size={20} color="#000" />
+            </Pressable>
+          </>
+        ) : (
+          <Pressable style={styles.button} onPress={changeSelectionOrder}>
+            {isTextActorSelected ? (
+              <Icon name="swap-vert" size={20} color="#000" />
+            ) : (
+              <FeatherIcon name="layers" size={20} color="#000" />
+            )}
+          </Pressable>
+        )}
       </View>
     </View>
   );
