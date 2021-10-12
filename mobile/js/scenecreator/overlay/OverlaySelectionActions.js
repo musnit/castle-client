@@ -1,6 +1,5 @@
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useCardCreator } from '../CreateCardContext';
 import { useCoreState, sendAsync } from '../../core/CoreEvents';
 
@@ -10,7 +9,6 @@ import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as Constants from '../../Constants';
 import * as SceneCreatorConstants from '../SceneCreatorConstants';
-const CastleIcon = Constants.CastleIcon;
 
 const styles = StyleSheet.create({
   container: {
@@ -33,6 +31,7 @@ const styles = StyleSheet.create({
     borderColor: Constants.colors.black,
     borderWidth: 1,
     ...Constants.styles.dropShadow,
+    marginBottom: 8,
   },
   button: {
     width: 38,
@@ -44,43 +43,43 @@ const styles = StyleSheet.create({
 
 const makeChangeOrderOptions = ({ isTextActorSelected, sendAction }) => {
   if (isTextActorSelected) {
-    return [
-      {
+    return {
+      front: {
         name: 'Move to Top',
         action: () => sendAction({ eventName: 'EDITOR_CHANGE_TEXT_ORDER', change: 'top' }),
       },
-      {
+      forward: {
         name: 'Move Up',
         action: () => sendAction({ eventName: 'EDITOR_CHANGE_TEXT_ORDER', change: 'up' }),
       },
-      {
+      backward: {
         name: 'Move Down',
         action: () => sendAction({ eventName: 'EDITOR_CHANGE_TEXT_ORDER', change: 'down' }),
       },
-      {
+      back: {
         name: 'Move to Bottom',
         action: () => sendAction({ eventName: 'EDITOR_CHANGE_TEXT_ORDER', change: 'bottom' }),
       },
-    ];
+    };
   } else {
-    return [
-      {
+    return {
+      front: {
         name: 'Bring to Front',
         action: () => sendAction({ eventName: 'EDITOR_CHANGE_DRAW_ORDER', change: 'front' }),
       },
-      {
+      forward: {
         name: 'Bring Forward',
         action: () => sendAction({ eventName: 'EDITOR_CHANGE_DRAW_ORDER', change: 'forward' }),
       },
-      {
+      backward: {
         name: 'Send Backward',
         action: () => sendAction({ eventName: 'EDITOR_CHANGE_DRAW_ORDER', change: 'backward' }),
       },
-      {
+      back: {
         name: 'Send to Back',
         action: () => sendAction({ eventName: 'EDITOR_CHANGE_DRAW_ORDER', change: 'back' }),
       },
-    ];
+    };
   }
 };
 
@@ -100,23 +99,8 @@ export const OverlaySelectionActions = () => {
     },
     [sendAsync]
   );
-  const { showActionSheetWithOptions } = useActionSheet();
 
-  const changeSelectionOrder = React.useCallback(() => {
-    const options = makeChangeOrderOptions({ isTextActorSelected, sendAction });
-    showActionSheetWithOptions(
-      {
-        title: 'Change order',
-        options: options.map((option) => option.name).concat(['Cancel']),
-        cancelButtonIndex: options.length,
-      },
-      (buttonIndex) => {
-        if (buttonIndex < options.length) {
-          return options[buttonIndex].action();
-        }
-      }
-    );
-  }, [sendAction]);
+  const changeOrderOptions = makeChangeOrderOptions({ isTextActorSelected, sendAction });
 
   return (
     <View style={styles.container} pointerEvents="box-none">
@@ -143,26 +127,43 @@ export const OverlaySelectionActions = () => {
           />
         </Pressable>
       </View>
-      <View style={styles.toolbar}>
+      <View style={{ flexDirection: 'column' }}>
         {currentTool === 'grab' ? (
           <>
-            <Pressable style={styles.button} onPress={() => sendAction('duplicateSelection')}>
+            <Pressable
+              style={[styles.button, styles.singleButton]}
+              onPress={() => sendAction('duplicateSelection')}>
               <FeatherIcon name="copy" size={20} color="#000" />
             </Pressable>
             <Pressable
-              style={[styles.button, { borderRightWidth: 0 }]}
+              style={[styles.button, styles.singleButton]}
               onPress={() => sendAction('deleteSelection')}>
               <FeatherIcon name="trash-2" size={20} color="#000" />
             </Pressable>
           </>
         ) : (
-          <Pressable style={styles.button} onPress={changeSelectionOrder}>
-            {isTextActorSelected ? (
-              <Icon name="swap-vert" size={20} color="#000" />
-            ) : (
-              <FeatherIcon name="layers" size={20} color="#000" />
-            )}
-          </Pressable>
+          <>
+            <Pressable
+              style={[styles.button, styles.singleButton]}
+              onPress={changeOrderOptions.front.action}>
+              <MCIcon name="arrow-collapse-up" size={20} color="#000" />
+            </Pressable>
+            <Pressable
+              style={[styles.button, styles.singleButton]}
+              onPress={changeOrderOptions.forward.action}>
+              <MCIcon name="arrow-up" size={20} color="#000" />
+            </Pressable>
+            <Pressable
+              style={[styles.button, styles.singleButton]}
+              onPress={changeOrderOptions.backward.action}>
+              <MCIcon name="arrow-down" size={20} color="#000" />
+            </Pressable>
+            <Pressable
+              style={[styles.button, styles.singleButton]}
+              onPress={changeOrderOptions.back.action}>
+              <MCIcon name="arrow-collapse-down" size={20} color="#000" />
+            </Pressable>
+          </>
         )}
       </View>
     </View>
