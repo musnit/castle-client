@@ -280,8 +280,9 @@ void Scene::writeActor(ActorId actorId, Writer &writer, WriteActorParams params)
       // TODO: More generalized system for saying which properties are inherited and which aren't
       //       (eg. add an attribute in `PropAttribs`). For now just specialcasing to layout
       //       properties as non-inherited.
-      auto maybeBodyComponent = getBehaviors().byType<BodyBehavior>().maybeGetComponent(actorId);
-      if (maybeBodyComponent) {
+      if (auto maybeBodyComponent
+          = getBehaviors().byType<BodyBehavior>().maybeGetComponent(actorId);
+          maybeBodyComponent) {
         writer.obj("Body", [&]() {
           writer.num("x", maybeBodyComponent->props.x());
           writer.num("y", maybeBodyComponent->props.y());
@@ -290,6 +291,13 @@ void Scene::writeActor(ActorId actorId, Writer &writer, WriteActorParams params)
             writer.num("widthScale", maybeBodyComponent->props.widthScale());
             writer.num("heightScale", maybeBodyComponent->props.heightScale());
           }
+        });
+      }
+      if (auto maybeDrawing2Component
+          = getBehaviors().byType<Drawing2Behavior>().maybeGetComponent(actorId);
+          maybeDrawing2Component) {
+        writer.obj("Drawing2", [&]() {
+          writer.num("initialFrame", maybeDrawing2Component->props.initialFrame());
         });
       }
     } else {
