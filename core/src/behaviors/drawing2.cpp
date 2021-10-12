@@ -279,7 +279,11 @@ void Drawing2Behavior::handleSetProperty(
   love::AnimationComponentProperties animProps;
   getAnimationComponentProperties(component, animProps);
 
-  if (propId == decltype(DrawingAnimationProps::currentFrame)::id) {
+  if (propId == decltype(Drawing2Component::Props::initialFrame)::id) {
+    component.props.initialFrame() = float(std::round(value.as<double>()));
+    component.props.currentFrame() = component.props.initialFrame();
+    animProps.currentFrame.value = int(component.props.initialFrame());
+  } else if (propId == decltype(DrawingAnimationProps::currentFrame)::id) {
     animProps.currentFrame.value = int(std::round(value.as<double>()));
     fireChangeFrameTriggers(actorId, component);
   } else if (propId == decltype(DrawingAnimationProps::playMode)::id) {
