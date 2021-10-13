@@ -1069,6 +1069,7 @@ struct EditorModifyComponentReceiver {
     if (actorId == nullActor) {
       return;
     }
+    auto isGhost = editor->getSelection().isGhostActorsSelected();
 
     editor->getScene().getBehaviors().byName(params.behaviorName().c_str(), [&](auto &behavior) {
       using BehaviorType = std::remove_reference_t<decltype(behavior)>;
@@ -1122,11 +1123,25 @@ struct EditorModifyComponentReceiver {
                 editor.setSelectedComponentStateDirty(RulesBehavior::behaviorId);
               });
         } else {
-          // TODO: Skip `updateBlueprint` if property is non-inherited, once we start tracking that
-          //       in `PropAttribs`
           auto propId = Props::getId(params.propertyName().c_str());
           auto propType = params.propertyType();
           auto description = "change " + params.propertyName();
+          auto updateBlueprint = true;
+          if (!isGhost) {
+            if constexpr (std::is_same_v<BehaviorType, BodyBehavior>) {
+              updateBlueprint = !(propId == decltype(BodyComponent::Props::x)::id
+                  || propId == decltype(BodyComponent::Props::y)::id
+                  || propId == decltype(BodyComponent::Props::angle)::id
+                  || propId == decltype(BodyComponent::Props::widthScale)::id
+                  || propId == decltype(BodyComponent::Props::heightScale)::id);
+            } else if constexpr (std::is_same_v<BehaviorType, Drawing2Behavior>) {
+              updateBlueprint = !(propId == decltype(Drawing2Component::Props::initialFrame)::id);
+            }
+          }
+          auto updateBase64Png = false;
+          if constexpr (std::is_same_v<BehaviorType, Drawing2Behavior>) {
+            updateBase64Png = (propId == decltype(Drawing2Component::Props::initialFrame)::id);
+          }
           if (propType == "string") {
             auto oldValueCStr = behavior.getProperty(actorId, propId).template as<const char *>();
             if (!oldValueCStr) {
@@ -1134,16 +1149,26 @@ struct EditorModifyComponentReceiver {
             }
             editor->getCommands().execute(
                 description, commandParams,
-                [actorId, propId, newValue = params.stringValue()](Editor &editor, bool) {
+                [actorId, propId, newValue = params.stringValue(), updateBlueprint,
+                    updateBase64Png](Editor &editor, bool) {
                   auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
                   behavior.setProperty(actorId, propId, newValue.c_str(), false);
-                  editor.updateBlueprint(actorId, {});
+                  if (updateBlueprint) {
+                    Editor::UpdateBlueprintParams params;
+                    params.updateBase64Png = updateBase64Png;
+                    editor.updateBlueprint(actorId, params);
+                  }
                   editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
                 },
-                [actorId, propId, oldValue = std::string(oldValueCStr)](Editor &editor, bool) {
+                [actorId, propId, oldValue = std::string(oldValueCStr), updateBlueprint,
+                    updateBase64Png](Editor &editor, bool) {
                   auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
                   behavior.setProperty(actorId, propId, oldValue.c_str(), false);
-                  editor.updateBlueprint(actorId, {});
+                  if (updateBlueprint) {
+                    Editor::UpdateBlueprintParams params;
+                    params.updateBase64Png = updateBase64Png;
+                    editor.updateBlueprint(actorId, params);
+                  }
                   editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
                 });
           } else {
@@ -1151,16 +1176,26 @@ struct EditorModifyComponentReceiver {
             auto newValue = params.doubleValue();
             editor->getCommands().execute(
                 description, commandParams,
-                [actorId, propId, newValue](Editor &editor, bool) {
+                [actorId, propId, newValue, updateBlueprint, updateBase64Png](
+                    Editor &editor, bool) {
                   auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
                   behavior.setProperty(actorId, propId, newValue, false);
-                  editor.updateBlueprint(actorId, {});
+                  if (updateBlueprint) {
+                    Editor::UpdateBlueprintParams params;
+                    params.updateBase64Png = updateBase64Png;
+                    editor.updateBlueprint(actorId, params);
+                  }
                   editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
                 },
-                [actorId, propId, oldValue](Editor &editor, bool) {
+                [actorId, propId, oldValue, updateBlueprint, updateBase64Png](
+                    Editor &editor, bool) {
                   auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
                   behavior.setProperty(actorId, propId, oldValue, false);
-                  editor.updateBlueprint(actorId, {});
+                  if (updateBlueprint) {
+                    Editor::UpdateBlueprintParams params;
+                    params.updateBase64Png = updateBase64Png;
+                    editor.updateBlueprint(actorId, params);
+                  }
                   editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
                 });
           }
