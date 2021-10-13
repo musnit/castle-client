@@ -528,11 +528,11 @@ void BodyBehavior::recreateFixtures(ActorId actorId, BodyComponent &component, b
     auto widthScale = component.props.widthScale(), heightScale = component.props.heightScale();
     for (auto &fixture : component.props.fixtures()) {
       if (fixture.shapeType() == "circle") {
-        if (abs(abs(widthScale) - abs(heightScale)) < 0.002) {
+        if (std::abs(std::abs(widthScale) - std::abs(heightScale)) < 0.002) {
           // Uniformly-scaled circle
           b2CircleShape shape;
           shape.m_p = { widthScale * fixture.x(), heightScale * fixture.y() };
-          shape.m_radius = widthScale * fixture.radius();
+          shape.m_radius = std::abs(widthScale) * fixture.radius();
           addFixture(component, &shape);
         } else {
           // Non-uniformly scaled circle -- approximate with a polygon
