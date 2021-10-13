@@ -122,7 +122,7 @@ export const NotificationsSettingsSheet = ({ me = {}, isOpen, onClose }) => {
   const renderContent = () => (
     <View style={{ paddingBottom: TAB_BAR_HEIGHT + insets.bottom }}>
       <View style={[styles.section]}>
-        <Text style={styles.heading}>Send a push notification...</Text>
+        <Text style={styles.heading}>Send me push notifications for...</Text>
         {!isOpen || !preferences?.length
           ? null
           : preferences.map((setting) => (

@@ -27,7 +27,6 @@ import * as PushNotifications from '../PushNotifications';
 import * as Utilities from '../common/utilities';
 
 import FastImage from 'react-native-fast-image';
-import Feather from 'react-native-vector-icons/Feather';
 
 const NOTIF_HEIGHT = 60;
 
@@ -346,7 +345,12 @@ const NotificationsScreenAuthenticated = () => {
         <View style={styles.tabTitle}>
           <Text style={styles.tabTitleText}>Notifications</Text>
           <TouchableOpacity style={styles.settingsButton} onPress={() => setIsSettingsOpen(true)}>
-            <Feather name="settings" color="#aaa" size={24} style={{ marginRight: 8 }} />
+            <Constants.CastleIcon
+              name="settings"
+              color={Constants.colors.grayOnBlackText}
+              size={22}
+              style={{ marginRight: 2 }}
+            />
           </TouchableOpacity>
         </View>
         {orderedNotifs.length > 0 && (
