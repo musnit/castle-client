@@ -32,20 +32,16 @@ void EditVariables::write(Writer &writer) const {
   });
 }
 
-bool EditVariables::update(std::string variableId, std::string name, ExpressionValue initialValue) {
-  bool found = false;
-  for (int ii = 0, nn = int(variables.size()); ii < nn; ii++) {
-    auto &variable = variables[ii];
+void EditVariables::update(
+    const std::string &variableId, std::string name, ExpressionValue initialValue) {
+  for (auto &variable : variables) {
     if (variable.variableId == variableId) {
-      found = true;
-      variables[ii] = EditVariables::Variable(std::move(name), variableId, initialValue);
-      break;
+      variable = EditVariables::Variable(std::move(name), variableId, initialValue);
+      return;
     }
   }
-  if (!found) {
-    add(std::move(name), variableId, initialValue);
-  }
-  return true;
+  add(std::move(name), variableId, initialValue);
+  return;
 }
 
 //
