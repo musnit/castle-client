@@ -11,11 +11,12 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 16,
+    paddingVertical: 8,
   },
   back: {
     flexShrink: 0,
     width: 60,
+    height: 40,
     alignItems: 'flex-start',
     justifyContent: 'center',
     paddingLeft: 16,
