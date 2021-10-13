@@ -3,6 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { CardCell } from '../components/CardCell';
 import { useNavigation } from '../ReactNavigation';
 import { useQuery, gql } from '@apollo/client';
+import FastImage from 'react-native-fast-image';
 
 import * as Constants from '../Constants';
 import * as LocalId from '../common/local-id';
@@ -18,15 +19,26 @@ const styles = StyleSheet.create({
   blankDeckCell: {
     width: '100%',
     aspectRatio: Constants.CARD_RATIO,
-    borderRadius: 4,
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  label: {
+  textContainer: {
+    padding: 8,
+  },
+  text: {
     color: '#fff',
     fontSize: 16,
+    lineHeight: 22,
+    textAlign: 'center',
+  },
+  deckTitle: {
+    color: '#fff',
+    fontSize: 16,
+    textAlign: 'center',
+    marginTop: 8,
   },
 });
 
@@ -34,8 +46,15 @@ const BlankDeckCell = ({ onPress }) => {
   return (
     <Pressable style={[Constants.styles.gridItem, { width: '33.3%' }]} onPress={onPress}>
       <View style={styles.blankDeckCell}>
-        <Text style={styles.label}>Blank</Text>
+        <FastImage
+          style={{
+            width: '100%',
+            height: '100%',
+          }}
+          source={require('../../assets/images/CreateChooseKitScreen-blank.png')}
+        />
       </View>
+      <Text style={styles.deckTitle}>Blank</Text>
     </Pressable>
   );
 };
@@ -44,6 +63,7 @@ const KitDeckCell = ({ deck, onPress }) => {
   return (
     <View style={[Constants.styles.gridItem, { width: '33.3%' }]}>
       <CardCell card={deck.initialCard} onPress={() => onPress(deck)} inGrid={true} />
+      <Text style={styles.deckTitle}>{deck.title}</Text>
     </View>
   );
 };
@@ -58,6 +78,7 @@ export const CreateChooseKitScreen = () => {
         kitDecks {
           id
           deckId
+          title
           initialCard {
             id
             cardId
@@ -99,7 +120,13 @@ export const CreateChooseKitScreen = () => {
 
   return (
     <>
-      {Platform.OS === 'android' && <ScreenHeader title="Choose Your Deck" />}
+      {Platform.OS === 'android' && <ScreenHeader title="New Deck" />}
+      <View style={styles.textContainer}>
+        <Text style={styles.text}>
+          Start with a blank canvas{'\n'}
+          or build with a kit?
+        </Text>
+      </View>
       <ScrollView contentContainerStyle={styles.gridContainer}>
         <BlankDeckCell onPress={onPressBlankDeck} />
         {decks

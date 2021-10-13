@@ -29,6 +29,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as DeepLinks from './DeepLinks';
 import * as GhostChannels from './ghost/GhostChannels';
 import * as PushNotifications from './PushNotifications';
+import * as Constants from './Constants';
 
 import FastImage from 'react-native-fast-image';
 
@@ -309,16 +310,26 @@ const ModalCreateDeckNavigator = () => (
     screenOptions={({ navigation }) => ({
       headerTintColor: '#fff',
       headerLeft: () => (
-        <Icon name="close" size={24} color="#fff" onPress={() => navigation.pop()} />
+        <Constants.CastleIcon
+          name="close"
+          size={24}
+          color="#fff"
+          onPress={() => navigation.pop()}
+        />
       ),
       headerStyle: {
         backgroundColor: '#000',
+        justifyContent: 'center',
+      },
+      headerTitleStyle: {
+        fontFamily: 'Basteleur-Bold',
+        fontSize: 20,
       },
     })}>
     <Stack.Screen
       name="CreateChooseKitScreen"
       component={CreateChooseKitScreen}
-      options={{ title: 'Choose Your Deck' }}
+      options={{ title: 'New Deck' }}
     />
   </Stack.Navigator>
 );
