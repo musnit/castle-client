@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { requireNativeComponent, View, Platform, TouchableOpacity } from 'react-native';
 
 // Implemented by 'CastleCoreView.mm' / 'CastleCoreViewManager.java'.
@@ -69,6 +69,18 @@ const CastleCoreView = ({
 }) => {
   const dimensionsHook = useDimensions({ settings: dimensionsSettings });
 
+  // On android we need to force a resize, to trigger Graphics::setViewportSize and update
+  // Love's dimensions. Otherwise, opening a deck on the feed and then opening a deck in the
+  // editor makes the editor deck get pushed down because the height isn't correct
+  const [height, setHeight] = useState(Platform.OS === 'android' ? '99%' : '100%');
+  if (Platform.OS === 'android') {
+    React.useEffect(() => {
+      setTimeout(() => {
+        setHeight('100%');
+      }, 100);
+    }, []);
+  }
+
   return (
     // Letterbox the game view
     <View
@@ -87,7 +99,7 @@ const CastleCoreView = ({
             height: dimensionsHook.height,
           }}>
           <NativeCastleCoreView
-            style={{ width: '100%', height: '100%' }}
+            style={{ width: '100%', height: height }}
             screenScaling={dimensionsHook.screenScaling}
             applyScreenScaling={dimensionsHook.applyScreenScaling}
             paused={paused}
