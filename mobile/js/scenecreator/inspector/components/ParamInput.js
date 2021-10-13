@@ -33,6 +33,12 @@ export const ParamInput = ({
     ...props,
   };
 
+  if (metadata.expression === false && type === 'expression') {
+    // we explicitly disallow expressions for this param, regardless of
+    // what type is provided at the engine level
+    type = 'd';
+  }
+
   switch (type) {
     case 'f':
     case 'i':

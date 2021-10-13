@@ -157,12 +157,22 @@ const data = {
     },
     ['variable reaches value']: {
       category: 'state',
+      props: {
+        value: {
+          expression: false,
+        },
+      },
     },
     ['variable changes']: {
       category: 'state',
     },
     ['counter reaches value']: {
       category: 'state',
+      props: {
+        value: {
+          expression: false,
+        },
+      },
     },
     ['counter changes']: {
       category: 'state',
@@ -187,6 +197,11 @@ const data = {
     },
     ['animation reaches frame']: {
       category: 'draw',
+      props: {
+        frame: {
+          expression: false,
+        },
+      },
     },
     ['animation frame changes']: {
       category: 'draw',
