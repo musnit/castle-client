@@ -10,7 +10,7 @@ const PARTY_START = new Date('2021-10-27T09:00:00.000-07:00');
 const PARTY_END = new Date('2021-10-31T23:59:00.000-07:00');
 
 const isBeforeParty = PARTY_START - new Date() > 0;
-const isDuringParty = PARTY_START - new Date() < 0 && PARTY_END - new Date() > 0;
+export const isDuringParty = PARTY_START - new Date() < 0 && PARTY_END - new Date() > 0;
 const isAfterParty = PARTY_END - new Date() < 0;
 
 let daysLeft = 0;
