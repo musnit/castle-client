@@ -402,13 +402,13 @@ export const CreateCardScreen = ({
               {isSceneLoaded ? null : <CardSceneLoading />}
             </View>
           </View>
+          <SheetProvider
+            activeSheet={activeSheet}
+            setActiveSheet={setActiveSheet}
+            editMode={editMode}
+            beltHeight={beltHeight}
+          />
         </View>
-        <SheetProvider
-          activeSheet={activeSheet}
-          setActiveSheet={setActiveSheet}
-          editMode={editMode}
-          beltHeight={beltHeight}
-        />
       </PopoverProvider>
     </CreateCardContext.Provider>
   );
