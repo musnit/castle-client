@@ -212,6 +212,9 @@ void Editor::update(double dt) {
         break;
       }
 
+      // Update belt -- do this before tools to allow it to steal touches
+      belt.update(dt);
+
       selection.touchToSelect(*scene);
 
       if (selection.isSelectionChanged()) {
@@ -232,9 +235,6 @@ void Editor::update(double dt) {
         }
         selection.setSelectionChanged(false);
       }
-
-      // Update belt -- do this before tools to allow it to steal touches
-      belt.update(dt);
 
       // Update current tool
       switch (currentTool) {

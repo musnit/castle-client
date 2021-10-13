@@ -5,6 +5,16 @@
 
 constexpr float touchMoveFarThreshold = 35;
 
+// Called from 'Event.cpp' in Love. Helps track touches that are pressed and released within the
+// same frame, which `lv.touches.getTouches()` misses.
+static std::optional<love::Touch::TouchInfo> extraTouch;
+extern "C" void Castle_clearExtraTouch() {
+  extraTouch.reset();
+}
+extern "C" void Castle_trackExtraTouch(love::Touch::TouchInfo touch) {
+  extraTouch = touch;
+}
+
 
 //
 // Update
@@ -26,6 +36,19 @@ void Gesture::update() {
     double x = 0, y = 0;
     lv.mouse.getPosition(x, y);
     updateTouch(float(x), float(y), 0, true);
+  }
+
+  // Add "extra touch" (instant press-release from SDL) if we missed it
+  if (extraTouch) {
+    auto foundExtraTouch = false;
+    touchView.each([&](Touch &touch) {
+      if (!touch.isMouse && touch.loveTouchId == extraTouch->id) {
+        foundExtraTouch = true;
+      }
+    });
+    if (!foundExtraTouch) {
+      updateTouch(float(extraTouch->x), float(extraTouch->y), extraTouch->id, false);
+    }
   }
 
   // Mark newly released touches
