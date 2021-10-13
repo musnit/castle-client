@@ -18,9 +18,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   label: {
-    color: '#fff',
-    lineHeight: 32,
-    padding: 8,
+    fontFamily: 'Basteleur-Bold',
+    fontSize: 16,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    padding: 12,
+    marginTop: 8,
   },
   itemCard: {
     aspectRatio: Constants.CARD_RATIO,
@@ -96,22 +99,19 @@ export const NuxScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.topRow}>
-        {reachedLastCard ? (
-          <Pressable style={styles.back} onPress={() => setIsNuxCompleted(true)}>
-            {({ pressed }) => (
-              <Icon name="arrow-back" color={pressed ? '#ccc' : '#fff'} size={32} />
-            )}
-          </Pressable>
-        ) : null}
-      </View>
       <View style={cardStyles}>
         <View style={styles.absoluteFill}>
           {nuxInfo?.deck ? <PlayDeck deck={nuxInfo.deck} /> : null}
         </View>
       </View>
       <Pressable onPress={() => setIsNuxCompleted(true)}>
-        <Text style={styles.label}>{reachedLastCard ? 'Done' : 'Skip'}</Text>
+        <Text
+          style={[
+            styles.label,
+            { color: reachedLastCard ? Constants.colors.white : Constants.colors.grayOnBlackText },
+          ]}>
+          {reachedLastCard ? 'Continue' : 'Skip Intro'}
+        </Text>
       </Pressable>
     </SafeAreaView>
   );
