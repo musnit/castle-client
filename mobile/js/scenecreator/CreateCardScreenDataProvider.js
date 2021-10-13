@@ -46,15 +46,15 @@ class CreateCardScreenDataProvider extends React.Component {
   }
 
   _update = async (prevProps, props) => {
-    const prevDeckIdToEdit =
-      prevProps && prevProps.route.params ? prevProps.route.params.deckIdToEdit : undefined;
-    const prevCardIdToEdit =
-      prevProps && prevProps.route.params ? prevProps.route.params.cardIdToEdit : undefined;
+    const prevDeckIdToEdit = prevProps?.route.params?.deckIdToEdit ?? undefined;
+    const prevCardIdToEdit = prevProps?.route.params?.cardIdToEdit ?? undefined;
+    const prevKitDeckId = prevProps?.route.params?.kitDeckId ?? undefined;
     const params = props.route.params || {};
     if (
       !prevProps ||
       prevDeckIdToEdit !== params.deckIdToEdit ||
       prevCardIdToEdit !== params.cardIdToEdit ||
+      prevKitDeckId !== params.kitDeckId ||
       (props.isFocused && !prevProps.isFocused)
     ) {
       if (!params.deckIdToEdit || !params.cardIdToEdit) {
@@ -62,11 +62,11 @@ class CreateCardScreenDataProvider extends React.Component {
       }
 
       let deck = {
-        ...Constants.EMPTY_DECK,
+        ...JSON.parse(JSON.stringify(Constants.EMPTY_DECK)),
         deckId: params.deckIdToEdit,
       };
       let card = {
-        ...Constants.EMPTY_CARD,
+        ...JSON.parse(JSON.stringify(Constants.EMPTY_CARD)),
         cardId: params.cardIdToEdit,
       };
 
@@ -132,8 +132,9 @@ class CreateCardScreenDataProvider extends React.Component {
       }
 
       if (!card.scene) {
-        card.scene = Constants.EMPTY_CARD.scene;
+        card.scene = JSON.parse(JSON.stringify(Constants.EMPTY_CARD.scene));
       }
+      const isNewScene = card.scene.data.empty === true;
 
       // used by the engine instead of manually reloading the scene data.
       // especially important when cardIdToEdit is different than the deck's top card.
@@ -142,11 +143,12 @@ class CreateCardScreenDataProvider extends React.Component {
         sceneData: {
           ...card.scene.data,
         },
+        isNewScene,
       };
 
       if (this._mounted) {
         this._variables = deck.variables;
-        this._isNewScene = card.scene.data.empty === true;
+        this._isNewScene = isNewScene;
         this._initialSnapshotJson = JSON.stringify(initialSnapshotJson);
         this._changedSceneData = card.scene.data; // set initial data in case we save with no changes
         this._changedBackgroundImage = card.backgroundImage;
