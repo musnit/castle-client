@@ -15,6 +15,10 @@ const styles = StyleSheet.create({
   actionButtonLabel: {
     fontSize: 14,
   },
+  actionButtonPressed: {
+    backgroundColor: '#ddd',
+    borderRadius: 4,
+  },
 });
 
 export const InspectorBlueprintActions = () => {
@@ -69,7 +73,12 @@ export const InspectorBlueprintActions = () => {
         <Text style={styles.actionButtonLabel}>Delete</Text>
       </Pressable>
       {canCopyBlueprint ? (
-        <Pressable style={styles.actionButton} onPress={() => copyBlueprint()}>
+        <Pressable
+          style={({ pressed }) => [
+            styles.actionButton,
+            pressed ? styles.actionButtonPressed : null,
+          ]}
+          onPress={() => copyBlueprint()}>
           <Text style={styles.actionButtonLabel}>Copy</Text>
         </Pressable>
       ) : null}
