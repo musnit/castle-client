@@ -221,7 +221,7 @@ struct CreateTextResponse : BaseResponse {
                 if (params.action()[0] == 'p' && body) {
                   // "perform response" body
                   writer.num("index", rulesBehavior.getResponseIndex(body));
-                } else {
+                } else if (params.action()[0] == 'd') {
                   // "dismiss"
                   writer.num("index", rulesBehavior.getDestroyResponseIndex());
                 }
