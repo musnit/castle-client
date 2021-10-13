@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useQuery, useMutation, gql } from '@apollo/client';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import * as Constants from '../Constants';
 
@@ -10,23 +11,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#666',
+    borderBottomColor: Constants.colors.grayOnBlackBorder,
     alignItems: 'center',
     justifyContent: 'space-between',
   },
   cardLabel: {
     color: '#fff',
-  },
-  restoreButton: {
-    padding: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 3,
-    borderWidth: 1,
-    borderColor: '#fff',
-  },
-  restoreButtonLabel: {
-    color: '#fff',
+    fontSize: 16,
   },
 });
 
@@ -121,8 +112,8 @@ export const UnsavedCardsList = ({ onCardChosen }) => {
         ? cards.map((card, ii) => (
             <View style={styles.row} key={`card-${ii}`}>
               <Text style={styles.cardLabel}>{formatDate(card.updatedTime)}</Text>
-              <Pressable style={styles.restoreButton} onPress={() => onPressCard(card.cardId)}>
-                <Text style={styles.restoreButtonLabel}>Restore</Text>
+              <Pressable onPress={() => onPressCard(card.cardId)}>
+                <Icon name="restore" size={24} color={Constants.colors.grayOnBlackText} />
               </Pressable>
             </View>
           ))
