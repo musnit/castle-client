@@ -226,8 +226,8 @@ namespace ghost {
     void addFrame();
     void addFrame(OneIndexFrame frameIndex);
     bool deleteFrame(OneIndexFrame frameIndex);
-    void copyCell(
-        DrawDataFrame &sourceFrame, DrawDataLayerId destLayerId, OneIndexFrame destFrameIndex);
+    void copyCell(std::shared_ptr<DrawDataFrame> sourceFrame, DrawDataLayerId destLayerId,
+        OneIndexFrame destFrameIndex);
     void copyCell(DrawDataLayerId sourceLayerId, OneIndexFrame sourceFrameIndex,
         DrawDataLayerId destLayerId, OneIndexFrame destFrameIndex);
     void setCellLinked(DrawDataLayerId layerId, OneIndexFrame frameIndex, bool isLinked);

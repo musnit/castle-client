@@ -45,19 +45,7 @@ namespace ghost {
       fillImageBounds.minY = 0;
     }
 
-    DrawDataFrame(const DrawDataFrame &other) {
-      isLinked = other.isLinked;
-      for (auto &otherPathData : other.pathDataList) {
-        if (otherPathData.isValid()) {
-          pathDataList.push_back(PathData(otherPathData));
-        }
-      }
-      fillImageBounds.set(other.fillImageBounds);
-      fillPng = other.fillPng;
-      setParent(other._parent);
-
-      deserializeFill();
-    }
+    DrawDataFrame(const DrawDataFrame &other) = delete;
 
     ~DrawDataFrame() {
       if (_graphics) {
