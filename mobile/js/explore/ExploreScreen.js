@@ -5,6 +5,7 @@ import { SearchInput } from './SearchInput';
 import { SearchResults } from './SearchResults';
 import { ExploreRow, SkeletonExploreRow } from './ExploreRow';
 import { useFocusEffect, useNavigation } from '../ReactNavigation';
+import { HalloweenPromo } from './HalloweenParty';
 
 import { useLazyQuery, gql } from '@apollo/client';
 
@@ -107,9 +108,7 @@ export const ExploreScreen = ({ route }) => {
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['top']}>
       <View style={styles.tabTitle}>
-        {!isSearching ? (
-          <Text style={styles.tabTitleText}>Explore</Text>
-        ) : null }
+        {!isSearching ? <Text style={styles.tabTitleText}>Explore</Text> : null}
         <View style={[styles.tabTitleAction, isSearching ? { flex: 1 } : null]}>
           <SearchInput
             onFocus={onStartSearch}
@@ -124,6 +123,7 @@ export const ExploreScreen = ({ route }) => {
         <SearchResults query={searchQuery} initialResults={preloadSearchResults} />
       ) : (
         <ScrollView>
+          <HalloweenPromo />
           {!feeds && (
             <>
               <SkeletonExploreRow />
@@ -131,7 +131,14 @@ export const ExploreScreen = ({ route }) => {
               <SkeletonExploreRow />
             </>
           )}
-          {feeds && feeds.map((feed, i) => <ExploreRow feed={feed} key={feed.feedId} last={(i === feeds.length - 1) ? true : false} />)}
+          {feeds &&
+            feeds.map((feed, i) => (
+              <ExploreRow
+                feed={feed}
+                key={feed.feedId}
+                last={i === feeds.length - 1 ? true : false}
+              />
+            ))}
         </ScrollView>
       )}
     </SafeAreaView>
