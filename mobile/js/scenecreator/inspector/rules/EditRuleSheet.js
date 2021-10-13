@@ -8,9 +8,7 @@ import { useCoreState } from '../../../core/CoreEvents';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-  },
+  container: {},
   actions: {
     flexDirection: 'row',
     alignItems: 'center',
