@@ -62,14 +62,12 @@ const styles = StyleSheet.create({
 const initialCardStyles = StyleSheet.create({
   container: {
     position: 'absolute',
-    backgroundColor: '#fff',
+    backgroundColor: '#000',
     borderRadius: 4,
-    borderWidth: 1,
-    borderColor: '#000',
     ...Constants.styles.dropShadow,
   },
   label: {
-    color: '#000',
+    color: '#fff',
     fontSize: 14,
     letterSpacing: 0.5,
     textTransform: 'uppercase',
