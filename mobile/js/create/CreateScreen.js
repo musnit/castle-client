@@ -21,11 +21,18 @@ import { UnsavedCardsList } from './UnsavedCardsList';
 
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
+import FastImage from 'react-native-fast-image';
 
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
+  newDeckIcon: {
+    width: 16,
+    height: 16,
+    marginLeft: -2,
+    marginRight: 6,
+  },
   tabTitle: {
     padding: 16,
     paddingBottom: 12,
@@ -309,11 +316,9 @@ const CreateScreenAuthenticated = () => {
         <Text style={styles.tabTitleText}>Create</Text>
         <View style={styles.tabTitleAction}>
           <TouchableOpacity style={Constants.styles.primaryButton} onPress={onPressCreateDeck}>
-            <AntIcon
-              size={16}
-              color="#000"
-              name="plus"
-              style={Constants.styles.primaryButtonIconLeft}
+            <FastImage
+              style={styles.newDeckIcon}
+              source={require('../../assets/images/create-card.png')}
             />
             <Text style={Constants.styles.primaryButtonLabel}>New Deck</Text>
           </TouchableOpacity>
