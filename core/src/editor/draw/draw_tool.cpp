@@ -149,7 +149,7 @@ void DrawTool::sendLayersEvent() {
 
   ev.selectedLayerId = selectedLayerId;
   ev.selectedFrameIndex = selectedFrameIndex.value;
-  ev.canPasteCell = copiedFrame != nullptr;
+  ev.canPasteCell = copiedFrameData != "";
   ev.isOnionSkinningEnabled = isOnionSkinningEnabled;
   ev.isPlayingAnimation = isPlayingAnimation;
 
@@ -254,12 +254,21 @@ struct DrawToolLayerActionReceiver {
       auto sourceLayer = drawTool.drawData->layerForId(drawTool.selectedLayerId);
       if (sourceLayer) {
         auto &sourceFrame = sourceLayer->frames[drawTool.selectedFrameIndex.toZeroIndex()];
-        drawTool.copiedFrame = std::make_unique<love::DrawDataFrame>(*sourceFrame);
+        Archive frameArchive;
+        frameArchive.write([&](Writer &writer) {
+          sourceFrame->write(writer);
+        });
+        drawTool.copiedFrameData = frameArchive.toJson();
         drawTool.sendLayersEvent();
       }
     } else if (action == "pasteCell") {
-      if (drawTool.copiedFrame) {
-        drawTool.drawData->copyCell(*drawTool.copiedFrame, params.layerId(), params.frameIndex());
+      if (drawTool.copiedFrameData != "") {
+        auto newFrame = std::make_shared<love::DrawDataFrame>();
+        auto frameArchive = Archive::fromJson(drawTool.copiedFrameData.c_str());
+        frameArchive.read([&](Reader &reader) {
+          reader.read(*newFrame);
+        });
+        drawTool.drawData->copyCell(std::move(newFrame), params.layerId(), params.frameIndex());
         drawTool.saveDrawing("paste cell");
       }
     } else if (action == "setCellLinked") {

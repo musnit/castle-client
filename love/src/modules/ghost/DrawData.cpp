@@ -477,12 +477,12 @@ namespace ghost {
     frame->base64Png = frame->renderPreviewPng(-1);
   }
 
-  void DrawData::copyCell(
-      DrawDataFrame &sourceFrame, DrawDataLayerId destLayerId, OneIndexFrame destFrameIndex) {
+  void DrawData::copyCell(std::shared_ptr<DrawDataFrame> sourceFrame, DrawDataLayerId destLayerId,
+      OneIndexFrame destFrameIndex) {
     auto destLayer = layerForId(destLayerId);
     if (destLayer && destFrameIndex.toZeroIndex() < destLayer->frames.size()) {
-      destLayer->frames[destFrameIndex.toZeroIndex()]
-          = std::make_shared<DrawDataFrame>(sourceFrame);
+      sourceFrame->setParent(this);
+      destLayer->frames[destFrameIndex.toZeroIndex()] = std::move(sourceFrame);
     }
   }
 
@@ -492,7 +492,19 @@ namespace ghost {
     if (sourceLayer && destLayer && sourceFrameIndex.toZeroIndex() < sourceLayer->frames.size()
         && destFrameIndex.toZeroIndex() < destLayer->frames.size()) {
       auto &oldFrame = sourceLayer->frames[sourceFrameIndex.toZeroIndex()];
-      destLayer->frames[destFrameIndex.toZeroIndex()] = std::make_shared<DrawDataFrame>(*oldFrame);
+      auto newFrame = std::make_shared<DrawDataFrame>();
+
+      Archive oldArchive;
+      oldArchive.write([&](Writer &writer) {
+        oldFrame->write(writer);
+      });
+      auto newFrameArchive = Archive::fromJson(oldArchive.toJson().c_str());
+      newFrameArchive.read([&](Reader &reader) {
+        reader.read(*newFrame);
+      });
+      newFrame->setParent(this);
+
+      destLayer->frames[destFrameIndex.toZeroIndex()] = std::move(newFrame);
     }
   }
 
