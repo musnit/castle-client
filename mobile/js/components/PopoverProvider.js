@@ -12,7 +12,6 @@ import {
 import { useKeyboard } from '../common/utilities';
 
 import Viewport from '../common/viewport';
-import FastImage from 'react-native-fast-image';
 
 import * as GhostChannels from '../ghost/GhostChannels';
 
@@ -51,13 +50,6 @@ const styles = StyleSheet.create({
   empty: {
     padding: 16,
   },
-  carat: {
-    position: 'absolute',
-    width: 25,
-    height: 16,
-    marginLeft: -12.5,
-    marginTop: -4,
-  },
 });
 
 const PopoverContext = React.createContext({});
@@ -76,25 +68,6 @@ const EMPTY_POPOVER = {
   Component: PopoverEmptyContents,
 };
 
-const Carat = ({ style, invertY }) => {
-  const imageStyles = { width: 25, height: 16 };
-  if (invertY) {
-    imageStyles.transform = [{ translateY: -POPOVER_MARGIN + 6 }];
-  }
-  return (
-    <View style={[styles.carat, style]}>
-      <FastImage
-        style={imageStyles}
-        source={
-          invertY
-            ? require('../../assets/images/popover-carat-inverted.png')
-            : require('../../assets/images/popover-carat.png')
-        }
-      />
-    </View>
-  );
-};
-
 const measurePopover = ({
   anchorTop,
   anchorLeft,
@@ -109,33 +82,20 @@ const measurePopover = ({
   // horizontally center the popover above the calling element
   let popoverLeft = anchorLeft + anchorWidth * 0.5 - width * 0.5;
   let popoverTop = anchorTop - height - POPOVER_MARGIN;
-  let caratLeft = width * 0.5;
-  let caratTop = height;
-  let invertCaratY = false;
 
   // constrain to screen
   if (popoverLeft < POPOVER_MARGIN) {
-    caratLeft += popoverLeft - POPOVER_MARGIN;
     popoverLeft = POPOVER_MARGIN;
   } else if (popoverLeft > vw * 100 - width - POPOVER_MARGIN) {
-    caratLeft += popoverLeft - (vw * 100 - width - POPOVER_MARGIN);
     popoverLeft = vw * 100 - width - POPOVER_MARGIN;
   }
   if (popoverTop < POPOVER_MARGIN * 2) {
     // if we extend above the top of the screen, reverse orientation
     popoverTop = anchorTop + anchorHeight + POPOVER_MARGIN;
-    caratTop = 0;
-    invertCaratY = true;
   } else if (popoverTop + height > availScreenHeight) {
     popoverTop = availScreenHeight - height - POPOVER_MARGIN;
   }
-  if (caratLeft < POPOVER_MARGIN + 3) {
-    caratLeft = POPOVER_MARGIN + 3;
-  }
-  if (caratLeft + 25 > vw * 100 - POPOVER_MARGIN - 3) {
-    caratLeft = vw * 100 - POPOVER_MARGIN - 3 - 25;
-  }
-  return { left: popoverLeft, top: popoverTop, caratLeft, caratTop, invertCaratY };
+  return { left: popoverLeft, top: popoverTop };
 };
 
 const Popover = () => {
@@ -161,7 +121,7 @@ const Popover = () => {
         );
       });
     } else if (x !== undefined && y !== undefined) {
-      setMeasurements({ left: x, top: y, caratLeft: width * 0.5, caratTop: height });
+      setMeasurements({ left: x, top: y });
     }
   }, [measureRef, x, y, keyboardState]);
 
@@ -186,10 +146,6 @@ const Popover = () => {
           },
         ]}>
         <Component closePopover={closePopover} {...props} />
-        <Carat
-          style={{ left: measurements.caratLeft, top: measurements.caratTop }}
-          invertY={measurements.invertCaratY}
-        />
       </Animated.View>
     </React.Fragment>
   );
