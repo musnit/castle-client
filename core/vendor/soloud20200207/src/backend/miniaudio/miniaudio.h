@@ -20817,7 +20817,11 @@ ma_result ma_context_init__coreaudio(const ma_context_config* pConfig, ma_contex
 
         ma_assert(pAudioSession != NULL);
 
-        if (pConfig->coreaudio.sessionCategory == ma_ios_session_category_default) {
+        // XXX(castle): enforce ambient audio category
+        // ma_ios_session_category category = pConfig->coreaudio.sessionCategory;
+        ma_ios_session_category category = ma_ios_session_category_ambient;
+
+        if (category == ma_ios_session_category_default) {
             /*
             I'm going to use trial and error to determine our default session category. First we'll try PlayAndRecord. If that fails
             we'll try Playback and if that fails we'll try record. If all of these fail we'll just not set the category.
@@ -20836,8 +20840,8 @@ ma_result ma_context_init__coreaudio(const ma_context_config* pConfig, ma_contex
                 /* Leave as default? */
             }
         } else {
-            if (pConfig->coreaudio.sessionCategory != ma_ios_session_category_none) {
-                if (![pAudioSession setCategory: ma_to_AVAudioSessionCategory(pConfig->coreaudio.sessionCategory) withOptions:options error:nil]) {
+            if (category != ma_ios_session_category_none) {
+                if (![pAudioSession setCategory: ma_to_AVAudioSessionCategory(category) withOptions:options error:nil]) {
                     return MA_INVALID_OPERATION;    /* Failed to set session category. */
                 }
             }
