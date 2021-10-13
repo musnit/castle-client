@@ -122,6 +122,8 @@ const CardArtwork = ({ card, previewVideo, previewVideoPaused }) => {
           source={{ uri: previewVideo.url }}
           repeat={true}
           muted={true}
+          mixWithOthers="mix"
+          ignoreSilentSwitch="obey"
           onLoad={onVideoLoad}
           paused={previewVideoPaused ?? false}
         />
