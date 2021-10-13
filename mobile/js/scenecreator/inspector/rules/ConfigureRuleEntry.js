@@ -16,15 +16,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   select: {
+    ...Constants.styles.dropShadow,
+    backgroundColor: '#fff',
     marginRight: 8,
     padding: 8,
-    paddingVertical: 5,
+    paddingVertical: 4,
     borderRadius: 4,
     borderWidth: 1,
-    borderBottomWidth: 2,
+    borderBottomWidth: 1,
     borderColor: '#000',
   },
   placeholder: {
+    shadowOpacity: 0,
     borderColor: '#aaa',
     borderBottomWidth: 1,
   },
@@ -33,7 +36,6 @@ const styles = StyleSheet.create({
   },
   selectText: {
     fontSize: 16,
-    fontWeight: 'bold',
   },
   placeholderText: {
     fontSize: 16,

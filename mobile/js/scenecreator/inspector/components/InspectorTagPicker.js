@@ -20,7 +20,8 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 4,
     borderWidth: 1,
-    borderBottomWidth: 2,
+    backgroundColor: '#fff',
+    ...Constants.styles.dropShadow,
     borderColor: '#000',
     marginRight: 8,
     marginBottom: 8,
@@ -28,7 +29,6 @@ const styles = StyleSheet.create({
   tagCellLabel: {
     paddingLeft: 4,
     fontSize: 16,
-    fontWeight: 'bold',
   },
   addTagCell: {
     backgroundColor: '#fff',

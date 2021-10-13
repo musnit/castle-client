@@ -8,7 +8,6 @@ import { useCoreState } from '../../core/CoreEvents';
 import * as Constants from '../../Constants';
 
 import FastImage from 'react-native-fast-image';
-import Feather from 'react-native-vector-icons/Feather';
 
 const styles = StyleSheet.create({
   container: {},
@@ -40,39 +39,6 @@ const styles = StyleSheet.create({
   image: {
     width: 64,
     height: 64,
-  },
-  copyButton: {
-    padding: 16,
-    flexShrink: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pasteContainer: {
-    justifyContent: 'center',
-  },
-  pasteButton: {
-    borderWidth: 1,
-    borderBottomWidth: 2,
-    borderColor: Constants.colors.black,
-    borderRadius: 4,
-    padding: 12,
-    flexDirection: 'row',
-  },
-  pasteImage: {
-    width: 42,
-    height: 42,
-  },
-  pasteDescription: {
-    paddingLeft: 12,
-    justifyContent: 'center',
-  },
-  pasteTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  pasteSubtitle: {
-    fontSize: 16,
-    marginTop: 4,
   },
 });
 

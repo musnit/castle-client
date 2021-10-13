@@ -24,20 +24,12 @@ export const Colors = {
   },
 };
 
-const boxShadow = {
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 1 },
-  shadowOpacity: 0.25,
-  shadowRadius: 0,
-  elevation: Constants.iOS ? 1 : undefined,
-};
-
 export const styles = {
   boxShadow: {
-    ...boxShadow,
+    ...Constants.styles.dropShadow,
   },
   button: {
-    ...boxShadow,
+    ...Constants.styles.dropShadow,
     backgroundColor: '#fff',
     borderWidth: 1,
     borderBottomWidth: 1,
@@ -50,10 +42,11 @@ export const styles = {
     fontSize: 16,
   },
   behaviorContainer: {
+    backgroundColor: '#fff',
+    ...Constants.styles.dropShadow,
     marginHorizontal: 16,
     marginVertical: 8,
     borderWidth: 1,
-    borderBottomWidth: 2,
     borderRadius: 6,
     borderColor: Constants.colors.black,
   },

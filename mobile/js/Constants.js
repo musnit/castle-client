@@ -127,15 +127,18 @@ export const styles = {
     paddingRight: GRID_PADDING,
     paddingBottom: GRID_PADDING,
   },
-  textInputOnWhite: {
+  textInputWrapperOnWhite: {
     borderWidth: 1,
-    borderTopWidth: 2,
     borderRadius: 4,
     color: '#000',
-    borderColor: '#333',
+    borderColor: '#000',
+  },
+  textInputOnWhite: {
     paddingHorizontal: 8,
-    paddingVertical: 6,
+    paddingVertical: 5,
     fontSize: 16,
+    borderTopWidth: 1,
+    borderColor: 'rgba(0, 0, 0, .25)',
   },
   textInputLabelOnWhite: {
     fontSize: 16,
@@ -143,14 +146,18 @@ export const styles = {
   },
   buttonOnWhite: {
     borderWidth: 1,
-    borderBottomWidth: 2,
     borderColor: '#000',
     borderRadius: 4,
     paddingHorizontal: 8,
-    paddingVertical: 6,
+    paddingVertical: 5,
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.25,
+    shadowRadius: 0,
+    elevation: iOS ? 1 : undefined,
   },
   buttonLabelOnWhite: {
-    fontWeight: 'bold',
     fontSize: 16,
   },
   siteHeaderButton: {

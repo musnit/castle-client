@@ -16,7 +16,6 @@ const styles = StyleSheet.create({
   box: {
     backgroundColor: '#fff',
     borderWidth: 1,
-    borderBottomWidth: 2,
     borderColor: '#000',
     borderRadius: 4,
     padding: 8,
@@ -24,6 +23,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
+    backgroundColor: '#fff',
+    ...Constants.styles.dropShadow,
   },
   activeBox: {
     borderBottomWidth: 1,
@@ -59,10 +60,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderBottomWidth: 2,
     borderColor: '#000',
     marginLeft: 4,
     borderRadius: 4,
+    backgroundColor: '#fff',
+    ...Constants.styles.dropShadow,
   },
 });
 

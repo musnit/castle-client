@@ -7,6 +7,7 @@ import { sendAsync, useCoreState } from '../../../core/CoreEvents';
 
 import uuid from 'uuid/v4';
 
+import * as Constants from '../../../Constants';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
 const styles = StyleSheet.create({
@@ -18,7 +19,6 @@ const styles = StyleSheet.create({
   box: {
     backgroundColor: '#fff',
     borderWidth: 1,
-    borderBottomWidth: 2,
     borderColor: '#000',
     borderRadius: 4,
     padding: 8,
@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
+    ...Constants.styles.dropShadow,
   },
   activeBox: {
     borderBottomWidth: 1,

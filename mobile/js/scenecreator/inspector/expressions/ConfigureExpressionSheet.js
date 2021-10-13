@@ -49,9 +49,10 @@ const styles = StyleSheet.create({
   paramContainer: {
     marginVertical: 8,
     borderWidth: 1,
-    borderBottomWidth: 2,
     borderRadius: 6,
     borderColor: Constants.colors.black,
+    backgroundColor: '#fff',
+    ...Constants.styles.dropShadow,
   },
   paramLabel: {
     fontSize: 16,

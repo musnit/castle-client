@@ -3,10 +3,9 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { getRuleRenderContext } from '../rules/RuleRenderContext';
 import { InspectorNumberInput } from '../components/InspectorNumberInput';
 import { makeExpressionSummary } from '../../SceneCreatorUtilities';
+import * as Constants from '../../../Constants';
 
 import FastImage from 'react-native-fast-image';
-
-import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const styles = StyleSheet.create({
   container: {
@@ -17,12 +16,13 @@ const styles = StyleSheet.create({
     width: 28,
     aspectRatio: 1,
     borderWidth: 1,
-    borderBottomWidth: 2,
     borderColor: '#000',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 6,
     borderRadius: 100,
+    backgroundColor: '#fff',
+    ...Constants.styles.dropShadow,
   },
 });
 

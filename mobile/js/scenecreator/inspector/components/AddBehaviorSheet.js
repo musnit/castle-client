@@ -39,11 +39,12 @@ const styles = StyleSheet.create({
   },
   addButton: {
     borderWidth: 1,
-    borderBottomWidth: 2,
     borderColor: Constants.colors.black,
     borderRadius: 6,
     padding: 12,
     marginBottom: 16,
+    backgroundColor: '#fff',
+    ...Constants.styles.dropShadow,
   },
   addButtonDisabled: {
     borderColor: Constants.colors.grayText,

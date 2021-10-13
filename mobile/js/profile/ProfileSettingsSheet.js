@@ -198,54 +198,62 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
         </View>
         <View style={styles.row}>
           <Text style={Constants.styles.textInputLabelOnWhite}>Username</Text>
-          <TextInput
-            value={user.username}
-            editable={!loading}
-            autoCapitalize="none"
-            autoCorrect={false}
-            onChangeText={(username) => changeUser({ username })}
-            style={Constants.styles.textInputOnWhite}
-            placeholderTextColor={Constants.colors.grayText}
-          />
+          <View style={Constants.styles.textInputWrapperOnWhite}>
+            <TextInput
+              value={user.username}
+              editable={!loading}
+              autoCapitalize="none"
+              autoCorrect={false}
+              onChangeText={(username) => changeUser({ username })}
+              style={Constants.styles.textInputOnWhite}
+              placeholderTextColor={Constants.colors.grayText}
+            />
+          </View>
         </View>
         <View style={styles.row}>
           <Text style={Constants.styles.textInputLabelOnWhite}>Link</Text>
-          <TextInput
-            value={user.websiteUrl}
-            editable={!loading}
-            autoCapitalize="none"
-            autoCorrect={false}
-            onChangeText={(websiteUrl) => changeUser({ websiteUrl })}
-            style={Constants.styles.textInputOnWhite}
-            placeholder="http://geocities.com"
-            placeholderTextColor={Constants.colors.grayText}
-          />
+          <View style={Constants.styles.textInputWrapperOnWhite}>
+            <TextInput
+              value={user.websiteUrl}
+              editable={!loading}
+              autoCapitalize="none"
+              autoCorrect={false}
+              onChangeText={(websiteUrl) => changeUser({ websiteUrl })}
+              style={Constants.styles.textInputOnWhite}
+              placeholder="http://geocities.com"
+              placeholderTextColor={Constants.colors.grayText}
+            />
+          </View>
         </View>
         <View style={styles.row}>
           <Text style={Constants.styles.textInputLabelOnWhite}>Twitter</Text>
-          <TextInput
-            value={user.twitterUsername}
-            editable={!loading}
-            autoCapitalize="none"
-            autoCorrect={false}
-            onChangeText={(twitterUsername) => changeUser({ twitterUsername })}
-            style={Constants.styles.textInputOnWhite}
-            placeholder="Your Twitter username"
-            placeholderTextColor={Constants.colors.grayText}
-          />
+          <View style={Constants.styles.textInputWrapperOnWhite}>
+            <TextInput
+              value={user.twitterUsername}
+              editable={!loading}
+              autoCapitalize="none"
+              autoCorrect={false}
+              onChangeText={(twitterUsername) => changeUser({ twitterUsername })}
+              style={Constants.styles.textInputOnWhite}
+              placeholder="Your Twitter username"
+              placeholderTextColor={Constants.colors.grayText}
+            />
+          </View>
         </View>
         <View style={styles.row}>
           <Text style={Constants.styles.textInputLabelOnWhite}>Itch</Text>
-          <TextInput
-            value={user.itchUsername}
-            editable={!loading}
-            autoCapitalize="none"
-            autoCorrect={false}
-            onChangeText={(itchUsername) => changeUser({ itchUsername })}
-            style={Constants.styles.textInputOnWhite}
-            placeholder="Your itch username"
-            placeholderTextColor={Constants.colors.grayText}
-          />
+          <View style={Constants.styles.textInputWrapperOnWhite}>
+            <TextInput
+              value={user.itchUsername}
+              editable={!loading}
+              autoCapitalize="none"
+              autoCorrect={false}
+              onChangeText={(itchUsername) => changeUser({ itchUsername })}
+              style={Constants.styles.textInputOnWhite}
+              placeholder="Your itch username"
+              placeholderTextColor={Constants.colors.grayText}
+            />
+          </View>
         </View>
       </View>
       <View style={[styles.section]}>

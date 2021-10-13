@@ -12,9 +12,11 @@ const styles = StyleSheet.create({
   inputRow: {
     marginTop: 16,
     borderWidth: 1,
-    borderBottomWidth: 2,
+    borderBottomWidth: 1,
     borderColor: '#000',
     borderRadius: 6,
+    backgroundColor: '#fff',
+    ...Constants.styles.dropShadow,
   },
   relativeRow: {
     padding: 12,

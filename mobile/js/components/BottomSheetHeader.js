@@ -29,7 +29,6 @@ const styles = StyleSheet.create({
     width: 60,
   },
   doneText: {
-    fontWeight: 'bold',
     fontSize: 16,
   },
   headingContainer: {

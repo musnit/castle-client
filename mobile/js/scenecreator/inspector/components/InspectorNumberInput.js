@@ -18,12 +18,13 @@ const styles = StyleSheet.create({
     width: 28,
     aspectRatio: 1,
     borderWidth: 1,
-    borderBottomWidth: 2,
     borderColor: '#000',
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 6,
     borderRadius: 100,
+    backgroundColor: '#fff',
+    ...Constants.styles.dropShadow,
   },
 });
 

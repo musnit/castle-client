@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, Text, Pressable, View } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import * as Constants from '../../../Constants';
 
 const styles = StyleSheet.create({
   container: {
@@ -11,7 +12,7 @@ const styles = StyleSheet.create({
   box: {
     backgroundColor: '#fff',
     borderWidth: 1,
-    borderBottomWidth: 2,
+    ...Constants.styles.dropShadow,
     borderColor: '#000',
     borderRadius: 3,
     width: 32,

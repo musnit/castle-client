@@ -7,28 +7,23 @@ import { getRuleRenderContext } from './RuleRenderContext';
 import { RuleParamInputRow } from '../components/RuleParamInputRow';
 
 import * as Constants from '../../../Constants';
-import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
 const styles = StyleSheet.create({
   container: {
     padding: 16,
   },
-  description: {
-    paddingBottom: 16,
-  },
   descriptionText: {
     fontSize: 16,
   },
   inputs: {
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderColor: Constants.colors.grayOnWhiteBorder,
+    paddingTop: 16,
   },
   inputRow: {
     borderWidth: 1,
-    borderBottomWidth: 2,
     borderRadius: 6,
     borderColor: Constants.colors.black,
+    backgroundColor: '#fff',
+    ...Constants.styles.dropShadow,
   },
 });
 

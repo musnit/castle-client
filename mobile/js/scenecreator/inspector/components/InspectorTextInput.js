@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, TextInput } from 'react-native';
+import { TextInput, View } from 'react-native';
 
 import * as Constants from '../../../Constants';
 
@@ -26,11 +26,13 @@ export const InspectorTextInput = ({ style, optimistic, ...props }) => {
   }
 
   return (
-    <TextInput
-      style={[Constants.styles.textInputOnWhite, style]}
-      placeholderTextColor={Constants.colors.grayText}
-      {...props}
-      {...maybeOptimisticProps}
-    />
+    <View style={[Constants.styles.textInputWrapperOnWhite, style]}>
+      <TextInput
+        style={Constants.styles.textInputOnWhite}
+        placeholderTextColor={Constants.colors.grayText}
+        {...props}
+        {...maybeOptimisticProps}
+      />
+    </View>
   );
 };

@@ -28,7 +28,8 @@ const styles = StyleSheet.create({
     height: 72,
     padding: 4,
     borderWidth: 1,
-    borderBottomWidth: 2,
+    backgroundColor: '#fff',
+    ...Constants.styles.dropShadow,
     borderRadius: 4,
     borderColor: '#000',
     marginRight: 10,
@@ -37,7 +38,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderColor: '#aaa',
-    borderBottomWidth: 1,
+    shadowOpacity: 0,
   },
   image: {
     flex: 1,
@@ -88,7 +89,8 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     borderColor: Constants.colors.black,
     borderWidth: 1,
-    borderBottomWidth: 2,
+    backgroundColor: '#fff',
+    ...Constants.styles.dropShadow,
     marginBottom: 20,
   },
   segmentedControlLabels: {
@@ -232,7 +234,7 @@ export default InspectorDrawing = ({ drawing2 }) => {
     <View style={styles.container}>
       <Text style={styles.label}>Artwork</Text>
 
-      <ScrollView horizontal style={{ flexDirection: 'row', marginBottom: 20 }}>
+      <ScrollView horizontal style={{ flexDirection: 'row', marginBottom: 20, paddingBottom: 1 }}>
         {framePreviews?.base64PngFrames?.length
           ? framePreviews.base64PngFrames.map((base64Png, ii) => {
               let isInitialFrame = initialFrame === ii + 1;

@@ -18,7 +18,8 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     borderColor: Constants.colors.black,
     borderWidth: 1,
-    borderBottomWidth: 2,
+    backgroundColor: '#fff',
+    ...Constants.styles.dropShadow,
     marginBottom: 8,
   },
   segmentedControlLabels: {
@@ -56,9 +57,10 @@ const styles = StyleSheet.create({
 });
 
 const BodyTypeControl = ({ isMovingActive, isRotatingMotionActive }) => {
-  const sendDynamicAction = React.useCallback((...args) => sendBehaviorAction('Moving', ...args), [
-    sendBehaviorAction,
-  ]);
+  const sendDynamicAction = React.useCallback(
+    (...args) => sendBehaviorAction('Moving', ...args),
+    [sendBehaviorAction]
+  );
   const sendFixedAction = React.useCallback(
     (...args) => sendBehaviorAction('RotatingMotion', ...args),
     [sendBehaviorAction]

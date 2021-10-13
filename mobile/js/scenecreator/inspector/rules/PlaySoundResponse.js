@@ -25,13 +25,14 @@ const styles = StyleSheet.create({
   },
   playButton: {
     borderWidth: 1,
-    borderBottomWidth: 2,
     borderColor: Constants.colors.black,
     width: '100%',
     aspectRatio: 1,
     borderRadius: 128,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#fff',
+    ...Constants.styles.dropShadow,
   },
   controls: {
     alignItems: 'flex-start',
@@ -50,7 +51,8 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     borderColor: Constants.colors.black,
     borderWidth: 1,
-    borderBottomWidth: 2,
+    backgroundColor: '#fff',
+    ...Constants.styles.dropShadow,
     marginBottom: 8,
   },
   segmentedControlItem: {
