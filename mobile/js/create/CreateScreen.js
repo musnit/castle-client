@@ -89,7 +89,7 @@ const EditDecksList = ({ fetchDecks, refreshing, filteredDecks, error }) => {
     />
   );
 
-  if (filteredDecks?.length === 0) {
+  if (!filteredDecks || filteredDecks?.length === 0) {
     return (
       <View style={Constants.styles.empty}>
         <Text style={Constants.styles.emptyTitle}>No decks... yet!</Text>
