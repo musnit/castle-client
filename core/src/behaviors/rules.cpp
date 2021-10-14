@@ -450,11 +450,14 @@ struct RepeatResponse : BaseResponse {
   inline static const RuleRegistration<RepeatResponse, RulesBehavior> registration { "repeat" };
   static constexpr auto description = "Repeat N times";
 
+  static constexpr auto maxCount = 5000;
+
   struct Params {
     PROP(
          ExpressionRef, count,
          .label("repetitions")
          .min(0)
+         .max(maxCount)
          ) = 3;
     PROP(ResponseRef, body) = nullptr;
   } params;
@@ -486,7 +489,7 @@ struct RepeatResponse : BaseResponse {
     // Not in progress -- add ourselves to repeat stack
     if (auto count = std::max(0, params.count().eval<int>(ctx)); count > 0) {
       // We're about to do one repetition right away, so save `count - 1` to the stack
-      ctx.repeatStack.push_back({ this, count - 1 });
+      ctx.repeatStack.push_back({ this, std::min(count, maxCount) - 1 });
       ctx.setNext(params.body());
     }
   }
