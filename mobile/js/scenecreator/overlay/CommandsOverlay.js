@@ -9,12 +9,14 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: 'transparent',
     alignItems: 'center',
-    paddingTop: 16,
   },
   body: {
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    paddingHorizontal: 8,
-    borderRadius: 3,
+    paddingTop: 5,
+    paddingHorizontal: 9,
+    paddingBottom: 7,
+    borderBottomLeftRadius: 4,
+    borderBottomRightRadius: 4,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -27,7 +29,6 @@ const styles = StyleSheet.create({
   messageLabel: {
     fontSize: 14,
     color: '#fff',
-    lineHeight: 24,
   },
 });
 
@@ -46,7 +47,7 @@ export const CommandsOverlay = ({ visible }) => {
     <View style={styles.container} pointerEvents="none">
       <View style={styles.body}>
         <Text style={styles.messageLabel}>
-          <Text style={styles.typeLabel}>{typeLabels[type] ?? 'notice'}:</Text> {message}
+          <Text style={styles.typeLabel}>{typeLabels[type] ?? 'notice'}</Text> {message}
         </Text>
       </View>
     </View>
