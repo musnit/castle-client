@@ -110,7 +110,9 @@ export const SheetProvider = ({ activeSheet, setActiveSheet, editMode, beltHeigh
 
           const closeLastSheet = stackIndex == 0 ? closeRootSheet : closeChildSheet;
           const maybeOverlay =
-            stackIndex == 0 ? null : <SheetBackgroundOverlay onPress={closeLastSheet} />;
+            stackIndex == 0 || isPlaying ? null : (
+              <SheetBackgroundOverlay onPress={closeLastSheet} />
+            );
 
           sheetProps = {
             ...sheetProps,
