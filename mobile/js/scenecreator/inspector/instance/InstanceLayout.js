@@ -9,8 +9,6 @@ import { useCoreState, sendBehaviorAction } from '../../../core/CoreEvents';
 
 const styles = StyleSheet.create({
   container: {
-    borderTopWidth: 1,
-    borderColor: '#ccc',
     padding: 16,
     paddingRight: 0,
   },
@@ -169,7 +167,6 @@ export const EditLayout = ({ isEditingBlueprint }) => {
 export const InstanceLayout = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Layout</Text>
       <EditLayout isEditingBlueprint={false} />
     </View>
   );

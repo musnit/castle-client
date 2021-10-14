@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
 import { InstanceLayout } from './InstanceLayout';
 
-export const InstanceSheet = ({ isOpen, addChildSheet, onClose }) => {
-  const renderHeader = () => <BottomSheetHeader title="Layout" onClose={onClose} />;
+export const InstanceSheet = ({ isOpen }) => {
+  const renderHeader = () => <BottomSheetHeader title="Layout" closeable={false} />;
   const renderContent = () => <InstanceLayout />;
 
   return (
@@ -12,6 +12,7 @@ export const InstanceSheet = ({ isOpen, addChildSheet, onClose }) => {
       isOpen={isOpen}
       renderHeader={renderHeader}
       renderContent={renderContent}
+      snapPoints={[200, 400]}
     />
   );
 };

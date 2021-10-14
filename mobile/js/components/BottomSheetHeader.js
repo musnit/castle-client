@@ -62,11 +62,16 @@ export const BottomSheetHeader = ({
   doneLabel,
   renderActions,
   loading,
+  closeable = true,
 }) => (
   <View style={styles.header}>
-    <TouchableOpacity style={styles.back} onPress={onClose}>
-      <CastleIcon name="close" size={22} color="#000" />
-    </TouchableOpacity>
+    {closeable ? (
+      <TouchableOpacity style={styles.back} onPress={onClose}>
+        <CastleIcon name="close" size={22} color="#000" />
+      </TouchableOpacity>
+    ) : (
+      <View style={styles.back} />
+    )}
     <View style={[styles.headingContainer, onDone || renderActions ? null : styles.centerHeading]}>
       <Text style={styles.headingLabel}>{title}</Text>
     </View>
