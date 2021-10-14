@@ -90,7 +90,7 @@ export const OverlayDrawingFramePicker = () => {
     return null;
   }
 
-  const FRAME_LIMIT = 5;
+  const FRAME_LIMIT = 8;
   let exceedsLimit = framePreviews?.base64PngFrames?.length > FRAME_LIMIT;
 
   return (
