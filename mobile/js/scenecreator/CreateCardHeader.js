@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
   Platform,
+  Pressable,
 } from 'react-native';
 import { useCoreState, sendGlobalAction } from '../core/CoreEvents';
 import { useActionSheet } from '@expo/react-native-action-sheet';
@@ -145,31 +146,28 @@ export const CreateCardHeader = ({
       ) : null}
       {!data?.performing ? (
         saveAction === 'save' ? (
-          <TouchableOpacity
-            style={[
+          <Pressable
+            style={({ pressed }) => [
               SceneCreatorConstants.styles.button,
-              isCardChanged ? null : { borderColor: '#888' },
+              { width: 56 },
+              isCardChanged && !loading && !pressed ? null : { opacity: 0.33, shadowOpacity: 0 },
             ]}
             onPress={onSave}
             disabled={!isCardChanged}>
             {loading ? (
               <ActivityIndicator />
             ) : (
-              <Text
-                style={[
-                  Constants.styles.primaryButtonLabel,
-                  isCardChanged ? null : { color: '#888' },
-                ]}>
+              <Text style={[Constants.styles.primaryButtonLabel, { textAlign: 'center' }]}>
                 Save
               </Text>
             )}
-          </TouchableOpacity>
+          </Pressable>
         ) : saveAction === 'clone' ? (
           <TouchableOpacity style={Constants.styles.primaryButton} onPress={maybeClone}>
             <Text style={Constants.styles.primaryButtonLabel}>Remix</Text>
           </TouchableOpacity>
         ) : (
-          <View pointerEvents="none" style={{ width: 64 }} />
+          <View pointerEvents="none" style={{ width: 56 }} />
         )
       ) : null}
     </View>
