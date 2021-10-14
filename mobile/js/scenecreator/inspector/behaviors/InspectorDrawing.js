@@ -18,8 +18,6 @@ import * as Constants from '../../../Constants';
 
 const styles = StyleSheet.create({
   container: {
-    borderTopWidth: 1,
-    borderColor: '#ccc',
     padding: 16,
     flex: 1,
   },
@@ -91,7 +89,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     backgroundColor: '#fff',
     ...Constants.styles.dropShadow,
-    marginBottom: 20,
   },
   segmentedControlLabels: {
     flexDirection: 'row',
@@ -99,10 +96,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   segmentedControlItem: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 4,
-    borderColor: Constants.colors.black,
+    paddingVertical: 4,
     fontSize: 16,
   },
   segmentedControlItemSelected: {
@@ -110,7 +107,6 @@ const styles = StyleSheet.create({
   },
   segmentedControlLabelSelected: {
     color: Constants.colors.white,
-    fontWeight: 'bold',
   },
 });
 
@@ -120,7 +116,7 @@ const items = [
     value: 'still',
   },
   {
-    name: 'Play Once',
+    name: 'Once',
     value: 'play once',
   },
   {
@@ -254,26 +250,29 @@ export default InspectorDrawing = ({ drawing2 }) => {
         <AddFrameButton onPress={openDrawToolAtNewFrame} />
       </ScrollView>
 
-      <View style={styles.segmentedControl}>
-        {items.map((item, ii) => (
-          <TouchableOpacity
-            key={`item-${ii}`}
-            onPress={() => onChangePlayMode(ii)}
-            style={[
-              styles.segmentedControlItem,
-              ii === selectedItemIndex ? styles.segmentedControlItemSelected : null,
-              { width: `${(1 / items.length) * 100}%` },
-              ii > 0 ? { borderLeftWidth: 1 } : null,
-            ]}>
-            <Text
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+        <View style={{ width: '50%' }}>
+          <Text style={{ fontSize: 16 }}>Animation</Text>
+        </View>
+        <View style={[styles.segmentedControl, { width: '50%' }]}>
+          {items.map((item, ii) => (
+            <TouchableOpacity
+              key={`item-${ii}`}
+              onPress={() => onChangePlayMode(ii)}
               style={[
                 styles.segmentedControlItem,
-                ii === selectedItemIndex ? styles.segmentedControlLabelSelected : null,
+                ii === selectedItemIndex ? styles.segmentedControlItemSelected : null,
               ]}>
-              {item.name}
-            </Text>
-          </TouchableOpacity>
-        ))}
+              <Text
+                style={[
+                  styles.segmentedControlItem,
+                  ii === selectedItemIndex ? styles.segmentedControlLabelSelected : null,
+                ]}>
+                {item.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
 
       <BehaviorPropertyInputRow
