@@ -168,6 +168,7 @@ export default RuleOptionsSheet = ({
       isOpen={isOpen}
       renderHeader={renderHeader}
       renderContent={renderContent}
+      snapPoints={[100, 450]}
     />
   );
 };
