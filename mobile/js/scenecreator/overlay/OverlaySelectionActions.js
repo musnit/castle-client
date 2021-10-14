@@ -2,6 +2,7 @@ import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useCardCreator } from '../CreateCardContext';
 import { useCoreState, sendAsync } from '../../core/CoreEvents';
+import { OverlayDrawingFramePicker } from './OverlayDrawingFramePicker';
 
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -110,28 +111,31 @@ export const OverlaySelectionActions = () => {
 
   return (
     <View style={styles.container} pointerEvents="box-none">
-      <View style={styles.toolbar}>
-        <Pressable
-          style={[styles.button, currentTool === 'grab' ? { backgroundColor: '#000' } : null]}
-          onPress={onSelectGrab}>
-          <FeatherIcon
-            name="mouse-pointer"
-            size={22}
-            color={currentTool === 'grab' ? '#fff' : '#000'}
-          />
-        </Pressable>
-        <Pressable
-          style={[
-            styles.button,
-            currentTool === 'scaleRotate' ? { backgroundColor: '#000' } : null,
-          ]}
-          onPress={onSelectScaleRotate}>
-          <Icon
-            name="crop-rotate"
-            size={22}
-            color={currentTool === 'scaleRotate' ? '#fff' : '#000'}
-          />
-        </Pressable>
+      <View style={{ flexDirection: 'column' }}>
+        <View style={styles.toolbar}>
+          <Pressable
+            style={[styles.button, currentTool === 'grab' ? { backgroundColor: '#000' } : null]}
+            onPress={onSelectGrab}>
+            <FeatherIcon
+              name="mouse-pointer"
+              size={22}
+              color={currentTool === 'grab' ? '#fff' : '#000'}
+            />
+          </Pressable>
+          <Pressable
+            style={[
+              styles.button,
+              currentTool === 'scaleRotate' ? { backgroundColor: '#000' } : null,
+            ]}
+            onPress={onSelectScaleRotate}>
+            <Icon
+              name="crop-rotate"
+              size={22}
+              color={currentTool === 'scaleRotate' ? '#fff' : '#000'}
+            />
+          </Pressable>
+        </View>
+        <OverlayDrawingFramePicker />
       </View>
       <View style={{ flexDirection: 'column' }}>
         {currentTool === 'grab' ? (
