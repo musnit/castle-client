@@ -4,6 +4,7 @@ import { useActionSheet } from '@expo/react-native-action-sheet';
 import { BottomSheet } from '../../components/BottomSheet';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useCoreState, sendAsync } from '../../core/CoreEvents';
+import * as Constants from '../../Constants';
 
 import FastImage from 'react-native-fast-image';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -12,8 +13,11 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
-    borderTopLeftRadius: 6,
-    borderTopRightRadius: 6,
+    borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,
+    borderTopRightRadius: Constants.CARD_BORDER_RADIUS,
+    borderWidth: 1,
+    borderBottomWidth: 0,
+    borderColor: '#000',
   },
   header: {
     padding: 8,
@@ -25,6 +29,7 @@ const styles = StyleSheet.create({
   },
   headerControls: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   headerControl: {
     padding: 10,
@@ -590,7 +595,7 @@ const DrawingLayersHeader = ({ sendLayerAction }) => {
             }>
             <FeatherIcon
               name={isPlayingAnimation ? 'pause' : 'play'}
-              size={ICON_SIZE}
+              size={ICON_SIZE - 2}
               color="#000"
             />
           </Pressable>
