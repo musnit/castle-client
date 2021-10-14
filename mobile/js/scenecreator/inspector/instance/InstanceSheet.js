@@ -13,6 +13,7 @@ export const InstanceSheet = ({ isOpen }) => {
       renderHeader={renderHeader}
       renderContent={renderContent}
       snapPoints={[200, 400]}
+      initialSnap={0}
     />
   );
 };
