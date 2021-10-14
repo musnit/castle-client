@@ -22,7 +22,7 @@ const TAB_ITEMS = [
   },
 ];
 
-export const InspectorSheet = ({ isOpen, addChildSheet, beltHeight }) => {
+export const InspectorSheet = ({ isOpen, addChildSheet }) => {
   const { isSceneLoaded, isTextActorSelected } = useCardCreator();
 
   const [selectedTab, setSelectedTab] = React.useState(TAB_ITEMS[0].value);
@@ -82,7 +82,7 @@ export const InspectorSheet = ({ isOpen, addChildSheet, beltHeight }) => {
         renderContent={renderContent}
         scrollViewRef={scrollViewRef}
         persistLastSnapWhenOpened
-        extraTopInset={beltHeight}
+        extraTopInset={8}
         onSnap={onSnap}
       />
     );
