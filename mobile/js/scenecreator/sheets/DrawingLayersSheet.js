@@ -621,6 +621,7 @@ export const DrawingLayersSheet = ({ isOpen, onClose, ...props }) => {
   return (
     <BottomSheet
       isOpen={isOpen}
+      initialSnap={1}
       useViewInsteadOfScrollview
       renderContent={renderContent}
       renderHeader={renderHeader}
