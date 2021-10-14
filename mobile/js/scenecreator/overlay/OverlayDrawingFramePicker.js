@@ -21,6 +21,7 @@ const styles = StyleSheet.create({
     borderColor: '#000',
     borderRadius: SceneCreatorConstants.OVERLAY_BORDER_RADIUS,
     marginTop: 8,
+    overflow: 'hidden',
   },
   frameContainer: {
     width: 38,
