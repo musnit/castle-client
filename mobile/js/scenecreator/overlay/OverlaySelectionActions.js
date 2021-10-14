@@ -114,8 +114,8 @@ export const OverlaySelectionActions = () => {
         <Pressable
           style={[styles.button, currentTool === 'grab' ? { backgroundColor: '#000' } : null]}
           onPress={onSelectGrab}>
-          <MCIcon
-            name="cursor-default"
+          <FeatherIcon
+            name="mouse-pointer"
             size={22}
             color={currentTool === 'grab' ? '#fff' : '#000'}
           />
