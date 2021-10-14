@@ -221,7 +221,15 @@ void Library::ensureOrder() {
       order.push_back(&entry);
     }
     std::sort(order.begin(), order.end(), [&](const LibraryEntry *a, const LibraryEntry *b) {
-      return a->title < b->title;
+      std::string lowerTitleA = a->title;
+      for (auto &c : lowerTitleA) {
+        c = char(std::tolower(c));
+      }
+      std::string lowerTitleB = b->title;
+      for (auto &c : lowerTitleB) {
+        c = char(std::tolower(c));
+      }
+      return lowerTitleA < lowerTitleB;
     });
     orderDirty = false;
   }
