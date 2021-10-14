@@ -82,9 +82,10 @@ const LayoutInput = ({
 
 export default InspectorLayout = ({ body }) => {
   const component = useCoreState('EDITOR_SELECTED_COMPONENT:Body');
-  const sendAction = React.useCallback((...args) => sendBehaviorAction('Body', ...args), [
-    sendBehaviorAction,
-  ]);
+  const sendAction = React.useCallback(
+    (...args) => sendBehaviorAction('Body', ...args),
+    [sendBehaviorAction]
+  );
 
   const [visible, setVisibleAction] = useOptimisticBehaviorValue({
     component,
@@ -114,6 +115,7 @@ export default InspectorLayout = ({ body }) => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.label}>Layout</Text>
       <EditLayout isEditingBlueprint />
       <View style={styles.row}>
         <InspectorCheckbox
