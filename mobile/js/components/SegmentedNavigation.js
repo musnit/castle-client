@@ -14,14 +14,12 @@ const darkBackgroundStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 8,
     paddingTop: 4,
   },
   label: {
     paddingBottom: 6,
     borderColor: 'transparent',
     borderBottomWidth: 3,
-    // backgroundColor: '#777',
   },
   selectedLabel: {
     borderColor: '#fff',
@@ -57,17 +55,21 @@ const lightBackgroundStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingTop: 4,
   },
-  selectedItem: {
-    paddingBottom: 5,
+  label: {
+    paddingBottom: 6,
+    borderColor: 'transparent',
     borderBottomWidth: 3,
-    borderColor: Constants.colors.black,
+  },
+  selectedLabel: {
+    borderColor: '#000',
   },
   name: {
-    fontSize: 16,
-    color: Constants.colors.grayText,
+    fontSize: 14,
+    color: Constants.colors.grayOnWhiteText,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   selectedName: {
     color: Constants.colors.black,
@@ -76,11 +78,11 @@ const lightBackgroundStyles = StyleSheet.create({
   indicator: {
     width: 9,
     height: 9,
+    borderRadius: 9,
     backgroundColor: Constants.colors.black,
-    borderRadius: 5,
     position: 'absolute',
-    right: 2,
-    top: 7,
+    right: -10,
+    top: -2,
   },
 });
 

@@ -42,9 +42,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   navigation: {
-    paddingTop: 12,
+    paddingTop: 16,
+    paddingLeft: 8,
     borderBottomWidth: 1,
     borderBottomColor: Constants.colors.grayOnWhiteBorder,
+    flexDirection: 'row',
   },
 });
 
@@ -64,11 +66,11 @@ export const InspectorHeader = ({ isOpen, tabItems, selectedTab, setSelectedTab 
       </View>
       <View style={styles.navigation}>
         <SegmentedNavigation
-          style={styles.navigation}
           items={tabItems}
           selectedItem={tabItems.find((i) => i.value === selectedTab)}
           onSelectItem={(item) => setSelectedTab(item.value)}
           isLightBackground
+          compact={true}
         />
       </View>
     </View>
