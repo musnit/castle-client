@@ -14,7 +14,6 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
     paddingRight: 16,
   },
-  keyCell: { fontWeight: 'bold' },
   noteCell: { fontStyle: 'italic', color: '#333' },
   newLineIcon: {
     marginHorizontal: 2,

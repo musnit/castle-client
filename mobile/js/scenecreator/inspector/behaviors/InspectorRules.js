@@ -6,6 +6,7 @@ import { useCoreState, sendBehaviorAction } from '../../../core/CoreEvents';
 
 import * as RulesClipboard from '../rules/RulesClipboard';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
+import * as Constants from '../../../Constants';
 
 import Counter from './InspectorCounter';
 
@@ -20,11 +21,14 @@ const styles = StyleSheet.create({
   rulePreviewButton: {
     marginHorizontal: 16,
     marginVertical: 8,
-    padding: 16,
+    paddingTop: 12,
+    paddingHorizontal: 16,
     paddingBottom: 8,
-    borderColor: '#ccc',
+    borderColor: '#000',
     borderWidth: 1,
-    borderRadius: 3,
+    borderRadius: 4,
+    backgroundColor: '#fff',
+    ...Constants.styles.dropShadow,
   },
 });
 
@@ -50,9 +54,10 @@ function removeEmpty(obj) {
 export default InspectorRules = ({ behaviors, addChildSheet }) => {
   const rulesData = useCoreState('EDITOR_RULES_DATA');
   const rulesComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Rules');
-  const sendRuleAction = React.useCallback((...args) => sendBehaviorAction('Rules', ...args), [
-    sendBehaviorAction,
-  ]);
+  const sendRuleAction = React.useCallback(
+    (...args) => sendBehaviorAction('Rules', ...args),
+    [sendBehaviorAction]
+  );
   const selectedActorData = useCoreState('EDITOR_SELECTED_ACTOR');
   const isCounterActive = selectedActorData.behaviors.Counter.isActive;
   const sendSetRules = React.useCallback(
@@ -66,9 +71,10 @@ export default InspectorRules = ({ behaviors, addChildSheet }) => {
     [sendRuleAction]
   );
   const counterComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Counter');
-  const sendCounterAction = React.useCallback((...args) => sendBehaviorAction('Counter', ...args), [
-    sendBehaviorAction,
-  ]);
+  const sendCounterAction = React.useCallback(
+    (...args) => sendBehaviorAction('Counter', ...args),
+    [sendBehaviorAction]
+  );
 
   let rulesItems = rulesComponent?.rules ?? [];
   if (!Array.isArray(rulesItems)) {
