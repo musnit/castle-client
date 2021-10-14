@@ -35,18 +35,31 @@ const styles = StyleSheet.create({
   },
 });
 
-const FramePreview = ({ frameOneIndex, base64Png, isInitialFrame, onPressFrame }) => (
-  <Pressable
-    style={[styles.frameContainer, isInitialFrame ? styles.frameContainerInitial : null]}
-    onPress={() => onPressFrame(frameOneIndex)}>
-    <FastImage
-      style={styles.image}
-      source={{
-        uri: `data:image/png;base64,${base64Png}`,
-      }}
-    />
-  </Pressable>
-);
+const FramePreview = ({ frameOneIndex, base64Png, isInitialFrame, onPressFrame }) => {
+  if (isInitialFrame) {
+    return (
+      <View style={[styles.frameContainer, styles.frameContainerInitial]}>
+        <FastImage
+          style={styles.image}
+          source={{
+            uri: `data:image/png;base64,${base64Png}`,
+          }}
+        />
+      </View>
+    );
+  } else {
+    return (
+      <Pressable style={styles.frameContainer} onPress={() => onPressFrame(frameOneIndex)}>
+        <FastImage
+          style={styles.image}
+          source={{
+            uri: `data:image/png;base64,${base64Png}`,
+          }}
+        />
+      </Pressable>
+    );
+  }
+};
 
 export const OverlayDrawingFramePicker = () => {
   const component = useCoreState('EDITOR_SELECTED_COMPONENT:Drawing2');
@@ -98,15 +111,13 @@ export const OverlayDrawingFramePicker = () => {
       {framePreviews?.base64PngFrames?.length
         ? framePreviews.base64PngFrames.slice(0, FRAME_LIMIT).map((base64Png, ii) => {
             let isInitialFrame = initialFrame === ii + 1;
-            const onPressFrame = isInitialFrame ? openDrawToolAtFrame : setInitialFrame;
             return (
               <FramePreview
                 key={`frame-${ii}`}
                 frameOneIndex={ii + 1}
                 base64Png={base64Png}
                 isInitialFrame={isInitialFrame}
-                onPressFrame={onPressFrame}
-                onPressEdit={openDrawToolAtFrame}
+                onPressFrame={setInitialFrame}
               />
             );
           })
