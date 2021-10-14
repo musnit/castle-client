@@ -6,6 +6,7 @@ import * as Amplitude from 'expo-analytics-amplitude';
 
 let gListenerId = 0;
 let gInitialData = null;
+let gClickedData = null;
 const gReceivedListeners = {};
 const gClickedListeners = {};
 
@@ -27,6 +28,7 @@ eventEmitter.addListener('CastlePushNotificationReceived', (event) => {
 
 eventEmitter.addListener('CastlePushNotificationClicked', (event) => {
   let dataString = event.dataString;
+  setClickedData(dataString);
   let data = _parsePushDataString(dataString);
 
   Amplitude.logEventWithProperties('OPEN_PUSH_NOTIFICATION', {
@@ -47,6 +49,18 @@ export const getInitialData = () => {
 
 export const clearInitialData = () => {
   gInitialData = null;
+};
+
+export const setClickedData = (dataString) => {
+  gClickedData = _parsePushDataString(dataString);
+};
+
+export const getClickedData = () => {
+  return gClickedData;
+};
+
+export const clearClickedData = () => {
+  gClickedData = null;
 };
 
 export const addReceivedListener = (listener) => {

@@ -212,6 +212,57 @@ const NotificationsScreenAuthenticated = () => {
   const isFocused = useIsFocused();
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
 
+  const navigateToUser = React.useCallback(
+    (user) =>
+      navigate(
+        'Profile',
+        { userId: user.userId },
+        {
+          isFullscreen: true,
+        }
+      ),
+    [navigate]
+  );
+  const navigateToUserList = React.useCallback(
+    (users) =>
+      navigate(
+        'UserList',
+        { users },
+        {
+          isFullscreen: true,
+        }
+      ),
+    []
+  );
+  const navigateToDeck = React.useCallback(
+    (deck) =>
+      navigate(
+        'PlayDeck',
+        {
+          decks: [deck],
+          title: 'Notifications',
+        },
+        {
+          isFullscreen: true,
+        }
+      ),
+    []
+  );
+
+  const handlePushNotificationClicked = React.useCallback(
+    (notifications, data) => {
+      if (data.type === 'suggested_deck' && data.notificationId) {
+        const notificationTapped = notifications.find(
+          (n) => n.notificationId.toString() === data.notificationId.toString()
+        );
+        if (notificationTapped?.deck) {
+          requestAnimationFrame(() => navigateToDeck(notificationTapped.deck));
+        }
+      }
+    },
+    [navigateToDeck]
+  );
+
   // Clear the notif badge on tab focus, mark notifs as read on blur
   // Also clear notif badge on blur in case push notifs come in while the user is on the notifs tab
   useFocusEffect(
@@ -249,6 +300,19 @@ const NotificationsScreenAuthenticated = () => {
           return a.status === 'seen' ? 1 : -1;
         })
       );
+
+      // if we opened the app from a notification and it corresponds to a notification
+      // that we just loaded, maybe navigate automatically
+      const pushNotificationInitialData = PushNotifications.getInitialData();
+      if (pushNotificationInitialData) {
+        handlePushNotificationClicked(notifications, pushNotificationInitialData);
+        PushNotifications.clearInitialData();
+      }
+      const pushNotificationClickedData = PushNotifications.getClickedData();
+      if (pushNotificationClickedData) {
+        handlePushNotificationClicked(notifications, pushNotificationClickedData);
+        PushNotifications.clearClickedData();
+      }
     } else {
       setOrderedNotifs([]);
     }
@@ -270,43 +334,6 @@ const NotificationsScreenAuthenticated = () => {
     } catch (_) {}
     setRefresh(false);
   }, []);
-
-  const navigateToUser = React.useCallback(
-    (user) =>
-      navigate(
-        'Profile',
-        { userId: user.userId },
-        {
-          isFullscreen: true,
-        }
-      ),
-    [navigate]
-  );
-  const navigateToUserList = React.useCallback(
-    (users) =>
-      navigate(
-        'UserList',
-        { users },
-        {
-          isFullscreen: true,
-        }
-      ),
-    []
-  );
-  const navigateToDeck = React.useCallback(
-    (deck) =>
-      navigate(
-        'PlayDeck',
-        {
-          decks: [deck],
-          title: 'Notifications',
-        },
-        {
-          isFullscreen: true,
-        }
-      ),
-    []
-  );
 
   const renderItem = React.useCallback(
     ({ item, index }) => {
