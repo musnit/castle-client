@@ -124,10 +124,10 @@ export const OverlayDrawing = () => {
   // TODO: remove
   React.useEffect(() => {
     sendAsync('DRAW_TOOL_TEMP_GRID_SETTINGS', {
-      backgroundColor: [0.73, 0.73, 0.73, 1],
-      gridColor: [0, 0, 0, 1],
+      backgroundColor: [0.8, 0.8, 0.8, 1],
+      gridColor: [0, 0, 0, 0.4],
       axisColor: [1, 1, 1, 1],
-      gridDotRadius: 4,
+      gridDotRadius: 3.5,
       isGridForeground: false,
     });
   }, []);
