@@ -116,7 +116,7 @@ export const HalloweenPromo = () => {
             <>
               <Text style={styles.counterNumber}>{daysLeft}</Text>
               <View>
-                <Text style={styles.counterText}>days until</Text>
+                <Text style={styles.counterText}>day{daysLeft === 1 ? '' : 's'} until</Text>
                 <Text style={styles.counterText}>the party</Text>
               </View>
             </>
