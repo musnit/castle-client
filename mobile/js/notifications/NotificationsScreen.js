@@ -251,7 +251,7 @@ const NotificationsScreenAuthenticated = () => {
 
   const handlePushNotificationClicked = React.useCallback(
     (notifications, data) => {
-      if (data.type === 'suggested_deck' && data.notificationId) {
+      if ((data.type === 'new_deck' || data.type === 'suggested_deck') && data.notificationId) {
         const notificationTapped = notifications.find(
           (n) => n.notificationId.toString() === data.notificationId.toString()
         );
