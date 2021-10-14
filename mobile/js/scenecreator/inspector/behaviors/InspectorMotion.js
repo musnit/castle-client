@@ -31,8 +31,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 4,
-    borderColor: Constants.colors.black,
     fontSize: 16,
+    flex: 1,
   },
   segmentedControlItemSelected: {
     backgroundColor: Constants.colors.black,
@@ -119,8 +119,6 @@ const BodyTypeControl = ({ isMovingActive, isRotatingMotionActive }) => {
             style={[
               styles.segmentedControlItem,
               ii === selectedItemIndex ? styles.segmentedControlItemSelected : null,
-              { width: `${(1 / items.length) * 100}%` },
-              ii > 0 ? { borderLeftWidth: 1 } : null,
             ]}>
             <Text
               style={[
