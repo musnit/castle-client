@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingTop: 12,
+    paddingTop: 14,
   },
   headerLeft: {
     paddingLeft: 16,
@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: Constants.colors.grayOnWhiteBorder,
     flexDirection: 'row',
+    marginBottom: 8,
   },
 });
 
