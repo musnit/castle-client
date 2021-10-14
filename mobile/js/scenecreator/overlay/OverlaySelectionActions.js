@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     ...Constants.styles.dropShadow,
+    overflow: 'hidden',
   },
   singleButton: {
     borderRadius: SceneCreatorConstants.OVERLAY_BORDER_RADIUS,
