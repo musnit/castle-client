@@ -9,15 +9,15 @@ import * as Constants from '../../Constants';
 const CastleIcon = Constants.CastleIcon;
 
 const styles = StyleSheet.create({
-  topContainer: {
+  container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    height: 36,
   },
-  middleContainer: {
-    marginTop: 8,
-    flexDirection: 'column',
-    alignItems: 'flex-end',
+  leftContainer: {
+    width: 36,
+  },
+  rightContainer: {
+    width: 36,
   },
   close: {
     borderRadius: 6,
@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
     borderColor: Constants.colors.black,
     borderWidth: 1,
     ...Constants.styles.dropShadow,
+    marginBottom: 8,
   },
   toolbar: {
     borderRadius: 6,
@@ -32,9 +33,10 @@ const styles = StyleSheet.create({
     backgroundColor: Constants.colors.white,
     borderColor: Constants.colors.black,
     borderWidth: 1,
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
     ...Constants.styles.dropShadow,
+    marginBottom: 8,
   },
   button: {
     width: 36,
@@ -147,8 +149,8 @@ export const OverlayDrawing = () => {
     currentDrawingToolGroup === 'artwork_draw' || currentDrawingToolGroup === 'fill';
 
   return (
-    <>
-      <View style={styles.topContainer}>
+    <View style={styles.container} pointerEvents="box-none">
+      <View style={styles.leftContainer}>
         <View style={[styles.close, styles.button]}>
           <Pressable onPress={() => sendGlobalAction('setMode', 'default')}>
             <CastleIcon name="close" size={22} color="#000" />
@@ -166,23 +168,21 @@ export const OverlayDrawing = () => {
           </Pressable>
         </View>
       </View>
-      <View style={styles.middleContainer} pointerEvents="box-none">
-        <View style={styles.rightContainer}>
-          {showColorPicker ? (
-            <View style={[styles.toolbar, { marginBottom: 8 }]}>
-              <View style={styles.button}>
-                <ColorPicker
-                  value={color}
-                  setValue={(color) => {
-                    sendAsync('DRAW_TOOL_SELECT_COLOR', { color });
-                  }}
-                />
-              </View>
+      <View style={styles.rightContainer}>
+        {showColorPicker ? (
+          <View style={styles.toolbar}>
+            <View style={styles.button}>
+              <ColorPicker
+                value={color}
+                setValue={(color) => {
+                  sendAsync('DRAW_TOOL_SELECT_COLOR', { color });
+                }}
+              />
             </View>
-          ) : null}
-          <OverlayDrawingSubtools currentToolGroup={currentDrawingToolGroup} />
-        </View>
+          </View>
+        ) : null}
+        <OverlayDrawingSubtools currentToolGroup={currentDrawingToolGroup} />
       </View>
-    </>
+    </View>
   );
 };
