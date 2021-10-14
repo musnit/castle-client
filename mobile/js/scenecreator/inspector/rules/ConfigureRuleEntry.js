@@ -7,6 +7,7 @@ import { SelectBehaviorSheet } from '../components/SelectBehaviorSheet';
 import { CardDestinationPickerSheet } from '../../sheets/CardDestinationPickerSheet';
 import RuleParamInputSheet from './RuleParamInputSheet';
 import * as Constants from '../../../Constants';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 
 const styles = StyleSheet.create({
   cell: {
@@ -40,6 +41,13 @@ const styles = StyleSheet.create({
   placeholderText: {
     fontSize: 16,
     color: Constants.colors.grayText,
+  },
+  noteText: {
+    fontFamily: 'Menlo',
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#666',
+    fontStyle: 'italic',
   },
 });
 
@@ -130,6 +138,7 @@ export const ConfigureRuleEntry = ({
     selectBehaviorPropertySheet: showBehaviorPropertyPicker,
     selectBehaviorPropertySheetPlaceholder: showBehaviorPropertyPicker,
     selectBehaviorSheet: showBehaviorPicker,
+    selectNoteSheet: showEditParamSheetForCell,
   };
 
   return (
@@ -173,6 +182,24 @@ export const ConfigureRuleEntry = ({
                 style={[styles.cell, styles.select, styles.placeholder]}
                 onPress={() => onPressCell[cell.type](cell)}>
                 <Text style={[styles.placeholderText]}>{cell.label}</Text>
+              </TouchableOpacity>
+            );
+          }
+          case 'selectNoteSheet': {
+            return (
+              <TouchableOpacity
+                key={key}
+                style={[styles.cell, styles.select]}
+                onPress={() => onPressCell[cell.type](cell)}>
+                <Text style={[styles.selectText, styles.noteText]}>
+                  <FontAwesomeIcon
+                    name="sticky-note-o"
+                    size={16}
+                    color="#000"
+                    style={{ letterSpacing: 4 }}
+                  />
+                  {cell.label}
+                </Text>
               </TouchableOpacity>
             );
           }

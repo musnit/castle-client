@@ -11,10 +11,19 @@ const styles = StyleSheet.create({
   },
   rowText: {
     fontSize: 16,
+    lineHeight: 20,
     paddingBottom: 8,
     paddingRight: 16,
   },
-  noteCell: { fontStyle: 'italic', color: '#333' },
+  keyCell: {
+    fontWeight: '600',
+  },
+  noteCell: {
+    fontFamily: 'Menlo',
+    fontSize: 14,
+    color: '#666',
+    fontStyle: 'italic',
+  },
   newLineIcon: {
     marginHorizontal: 2,
     color: '#aaa',
@@ -108,8 +117,8 @@ export const RulePreview = ({ rule }) => {
                 return `${cell.label} `;
               } else if (cell.type === 'icon') {
                 return (
-                  <Text key={key}>
-                    <VectorIcon family={cell.family} name={cell.icon} size={16} color="#000" />{' '}
+                  <Text key={key} style={{ letterSpacing: 1 }}>
+                    <VectorIcon family={cell.family} name={cell.icon} size={16} color="#666" />{' '}
                   </Text>
                 );
               } else if (row.isNote) {

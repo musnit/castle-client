@@ -960,17 +960,23 @@ const Note = ({ response, isPreview }) => {
       icon: 'sticky-note-o',
     },
     {
-      type: response.params?.note?.length ? 'selectParamSheet' : 'selectParamSheetPlaceholder',
+      type: response.params?.note?.length ? 'selectNoteSheet' : 'selectParamSheetPlaceholder',
       paramName: 'note',
       paramValue: response.params?.note,
-      label: response.params?.note?.length ? response.params.note : '(empty)',
+      label: response.params?.note?.length ? response.params.note : 'Add note',
     },
   ];
   if (!isPreview) {
-    cells.unshift({
-      type: 'showEntryOptions',
-      label: 'Note: ',
-    });
+    cells.unshift(
+      {
+        type: 'showEntryOptions',
+        label: 'Note',
+      },
+      {
+        type: 'text',
+        label: 'about this rule:',
+      }
+    );
   }
   return cells;
 };
