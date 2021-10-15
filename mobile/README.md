@@ -9,6 +9,7 @@
 
 - Remove the `ndk.dir` field from local.properties if you added it for the React Native setup.
 - Install NDK version `22.1.7171670` and CMake version `3.18.1` from the Android SDK manager.
+- If you hit a similar error to this: `> Could not find tools.jar. Please check that /Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home contains a valid JDK installation.` it may be related to updating to macOS big sur, and you should follow [this](https://stackoverflow.com/questions/64968851/could-not-find-tools-jar-please-check-that-library-internet-plug-ins-javaapple).
 
 # Running
 
