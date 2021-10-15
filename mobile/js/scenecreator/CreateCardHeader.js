@@ -90,7 +90,12 @@ export const CreateCardHeader = ({
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      {/*
+SafeArea tracks StatusBar height inconsistently on android between devices, messing up the scene height.
+So just hide the StatusBar on Android.
+https://github.com/th3rdwave/react-native-safe-area-context/issues/124
+       */}
+      <StatusBar barStyle="dark-content" hidden={Constants.Android} />
       {!data?.performing ? (
         <TouchableOpacity style={styles.back} onPress={onPressBack}>
           <CastleIcon name="back" size={22} color="#000" />
