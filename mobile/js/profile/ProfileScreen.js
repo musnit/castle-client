@@ -46,7 +46,7 @@ const ProfileDecksGrid = ({ user, refreshing, onRefresh, error, isMe, ...props }
   const decks = user?.decks.filter((deck) => deck.visibility === 'public');
   const { push } = useNavigation();
   const insets = useSafeAreaInsets();
-  const paddingBottom = Constants.iOS ? insets.bottom : insets.bottom + 50; // account for android native tab bar
+  const paddingBottom = insets.bottom + (Constants.Android ? 50 : 66); // account for native tab bar
 
   const scrollViewRef = React.useRef(null);
   useScrollToTop(scrollViewRef);
@@ -141,7 +141,9 @@ export const ProfileScreen = ({ userId, route }) => {
       loading={query.loading}
       error={error}
       onRefresh={onRefresh}
-      onPressSettings={() => {setSettingsSheet(true)}}
+      onPressSettings={() => {
+        setSettingsSheet(true);
+      }}
     />
   );
 
@@ -158,9 +160,7 @@ export const ProfileScreen = ({ userId, route }) => {
     return (
       <>
         <SafeAreaView edges={['top', 'left', 'right']}>
-          <ScreenHeader
-            title={'Profile'}
-          />
+          <ScreenHeader title={'Profile'} />
           {error ? (
             <EmptyFeed error={error} onRefresh={onRefresh} />
           ) : (
