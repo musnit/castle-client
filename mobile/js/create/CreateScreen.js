@@ -89,7 +89,11 @@ const EditDecksList = ({ fetchDecks, refreshing, filteredDecks, error }) => {
     />
   );
 
-  if (!filteredDecks || filteredDecks?.length === 0) {
+  if (error) {
+    return <EmptyFeed error={error} onRefresh={fetchDecks} />;
+  }
+
+  if (!refreshing && filteredDecks?.length === 0) {
     return (
       <View style={Constants.styles.empty}>
         <Text style={Constants.styles.emptyTitle}>No decks... yet!</Text>
@@ -106,10 +110,6 @@ const EditDecksList = ({ fetchDecks, refreshing, filteredDecks, error }) => {
         </Text>
       </View>
     );
-  }
-
-  if (error) {
-    return <EmptyFeed error={error} onRefresh={fetchDecks} />;
   }
 
   if (!filteredDecks || filteredDecks.length > 0) {
@@ -167,6 +167,26 @@ const EditDeckCell = (props) => {
   );
 };
 
+const filterDecks = (decks, filter) => {
+  if (decks?.length) {
+    switch (filter) {
+      case 'private':
+      case 'unlisted':
+      case 'public':
+        return decks.filter((d) => d.visibility === filter);
+      case 'recovered':
+        // use different view for this tab
+        return [];
+        break;
+      case 'recent':
+      default:
+        return decks.sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified));
+    }
+  } else {
+    return [];
+  }
+};
+
 export const CreateScreen = () => {
   const { isAnonymous } = useSession();
 
@@ -209,10 +229,30 @@ const TAB_ITEMS = [
 
 const CreateScreenAuthenticated = () => {
   const { navigate } = useNavigation();
-  const [decks, setDecks] = React.useState();
+
+  // maintain decks, filter, and filtered decks atomically
+  // so there isn't a flicker between setting decks and computing filtered decks
+  const [decks, setDecks] = React.useReducer(
+    (state, action) => {
+      switch (action.type) {
+        case 'all':
+          return {
+            ...state,
+            decks: action.decks,
+            filteredDecks: filterDecks(action.decks, state.filter),
+          };
+        case 'filter':
+          return {
+            ...state,
+            filter: action.filter,
+            filteredDecks: filterDecks(state.decks, action.filter),
+          };
+      }
+    },
+    { filter: 'recent', decks: undefined, filteredDecks: undefined }
+  );
+
   const [error, setError] = React.useState();
-  const [filter, setFilter] = React.useState('recent');
-  const [filteredDecks, setFilteredDecks] = React.useState();
   const [fetchDecks, query] = useLazyQuery(
     gql`
       query Me {
@@ -258,7 +298,9 @@ const CreateScreenAuthenticated = () => {
       if (query.data) {
         const decks = query.data.me.decks;
         if (decks) {
-          setDecks(decks);
+          setDecks({ type: 'all', decks });
+        } else {
+          setDecks({ type: 'all', decks: [] });
         }
         setError(undefined);
       } else if (query.error) {
@@ -268,30 +310,6 @@ const CreateScreenAuthenticated = () => {
       setError(undefined);
     }
   }, [query.called, query.loading, query.error, query.data]);
-
-  React.useEffect(() => {
-    if (decks?.length) {
-      switch (filter) {
-        case 'private':
-        case 'unlisted':
-        case 'public':
-          setFilteredDecks(decks.filter((d) => d.visibility === filter));
-          break;
-        case 'recovered':
-          // use different view for this tab
-          setFilteredDecks();
-          break;
-        case 'recent':
-        default:
-          setFilteredDecks(
-            decks.sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified))
-          );
-          break;
-      }
-    } else {
-      setFilteredDecks();
-    }
-  }, [decks, filter, setFilteredDecks]);
 
   const onPressCreateDeck = React.useCallback(() => {
     if (Constants.iOS) {
@@ -306,9 +324,9 @@ const CreateScreenAuthenticated = () => {
   const onUnsavedCardRestored = React.useCallback(() => {
     // after restoring an unsaved card, go back to recent tab and refetch decks,
     // assuming the restored card caused a deck to be newly visible here
-    setFilter('recent');
+    setDecks({ type: 'filter', filter: 'recent' });
     fetchDecks();
-  }, [setFilter, fetchDecks]);
+  }, [setDecks, fetchDecks]);
 
   return (
     <SafeAreaView style={Constants.styles.container} edges={['top']}>
@@ -328,19 +346,19 @@ const CreateScreenAuthenticated = () => {
         <ScrollView horizontal>
           <SegmentedNavigation
             items={TAB_ITEMS}
-            onSelectItem={(item) => setFilter(item.value)}
-            selectedItem={TAB_ITEMS.find((item) => item.value === filter)}
+            onSelectItem={(item) => setDecks({ type: 'filter', filter: item.value })}
+            selectedItem={TAB_ITEMS.find((item) => item.value === decks.filter)}
             compact={true}
           />
         </ScrollView>
       </View>
-      {filter === 'recovered' ? (
+      {decks.filter === 'recovered' ? (
         <UnsavedCardsList onCardChosen={onUnsavedCardRestored} />
       ) : (
         <EditDecksList
           fetchDecks={fetchDecks}
           refreshing={query.loading}
-          filteredDecks={filteredDecks}
+          filteredDecks={decks.filteredDecks}
           error={error}
         />
       )}
