@@ -9,15 +9,27 @@ mkdir build
 
 pushd ../android > /dev/null
 
-./gradlew bundleRelease
+echo "Building..."
+
+# https://github.com/invertase/react-native-notifee/issues/151#issuecomment-696910951
+# must use :app: prefix because of this android bug...
+./gradlew :app:bundleRelease
 cp app/build/outputs/bundle/release/app-release.aab ../tools/build
+
+echo "Done building"
 
 popd > /dev/null
 
-java -jar bundletool-all-1.5.0.jar build-apks --connected-device --bundle=build/app-release.aab --output=build/aab-apk.apks
+echo "Running build-apks..."
+java -jar bundletool-all-1.5.0.jar build-apks --connected-device --bundle=build/app-release.aab --output=build/aab-apk.apks --ks ../android/app/debug.keystore --ks-key-alias androiddebugkey --ks-pass pass:android
+
+echo "Uninstalling old app..."
 adb uninstall xyz.castle
+
+echo "Installing new app..."
 java -jar bundletool-all-1.5.0.jar install-apks --apks=build/aab-apk.apks
 
-echo "Upload build/app-release.aab to Google Play"
+echo ""
+echo "After testing, upload build/app-release.aab to Google Play"
 
 popd > /dev/null
