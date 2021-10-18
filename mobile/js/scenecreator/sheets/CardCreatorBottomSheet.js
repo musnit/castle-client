@@ -29,7 +29,7 @@ export const CardCreatorBottomSheet = React.memo(({ element, headerHeight = 64, 
       380 // middle snap should sit above the keyboard on small screens
     ),
 
-    SCREEN_HEIGHT - (CARD_HEADER_HEIGHT + insets.top + (props.extraTopInset || 0)),
+    SCREEN_HEIGHT - (CARD_HEADER_HEIGHT + insets.top + (props.extraTopInset || 0)) - 8,
   ];
 
   return (
