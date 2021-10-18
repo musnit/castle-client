@@ -197,6 +197,33 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
         }
     }
 
+    private void openDeckId(String deckId) {
+        navigator.enableOverlay();
+
+        API.getInstance().graphql(GraphQLOperation.Query("deck")
+                        .variable("deckId", "ID!", deckId)
+                        .fields(API.DECK_FIELD_LIST)
+                        .field("cards", API.CARD_FIELD_LIST)
+                , new API.GraphQLResponseHandler() {
+                    @Override
+                    public void success(API.GraphQLResult result) {
+                        navigateToDeck(result.object());
+
+                        ViewUtils.runOnUiThread(() -> {
+                            navigator.disableOverlay();
+                        });
+                    }
+
+                    @Override
+                    public void failure(Exception e) {
+                        // not a big deal, just don't get the deep link
+                        ViewUtils.runOnUiThread(() -> {
+                            navigator.disableOverlay();
+                        });
+                    }
+                });
+    }
+
     private boolean handleDeepLink(Intent intent) {
         String action = intent.getAction();
         Uri uri = intent.getData();
@@ -207,31 +234,7 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
             String path = uri.getPath();
             if (path.startsWith("/d/")) {
                 String deckId = path.substring(3);
-
-                navigator.enableOverlay();
-
-                API.getInstance().graphql(GraphQLOperation.Query("deck")
-                        .variable("deckId", "ID!", deckId)
-                        .fields(API.DECK_FIELD_LIST)
-                        .field("cards", API.CARD_FIELD_LIST)
-                        , new API.GraphQLResponseHandler() {
-                            @Override
-                            public void success(API.GraphQLResult result) {
-                                navigateToDeck(result.object());
-
-                                ViewUtils.runOnUiThread(() -> {
-                                    navigator.disableOverlay();
-                                });
-                            }
-
-                            @Override
-                            public void failure(Exception e) {
-                                // not a big deal, just don't get the deep link
-                                ViewUtils.runOnUiThread(() -> {
-                                    navigator.disableOverlay();
-                                });
-                            }
-                        });
+                openDeckId(deckId);
 
                 return true;
             }
@@ -244,6 +247,20 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
         Bundle extras = intent.getExtras();
         if (extras != null && extras.containsKey(CastleFirebaseMessagingService.NOTIFICATION_DATA_KEY)) {
             String dataString = extras.getString(CastleFirebaseMessagingService.NOTIFICATION_DATA_KEY);
+
+            try {
+                JSONObject data = new JSONObject(dataString);
+                if (data.has("type") && data.has("deckId")) {
+                    String type = data.getString("type");
+                    String deckId = data.getString("deckId");
+                    if (type.equals("new_deck") || type.equals("suggested_deck")) {
+                        openDeckId(deckId);
+                        // don't need to switch to notifications tab or inform js that notification was received
+                        return;
+                    }
+                }
+            } catch (JSONException e) {}
+
             if (initialLoad) {
                 CastleReactView.addGlobalReactOpt("initialPushNotificationDataString", dataString);
             } else {
