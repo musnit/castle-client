@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { InspectorTextInput } from './InspectorTextInput';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import * as Constants from '../../../Constants';
 
@@ -107,13 +106,13 @@ export const InspectorNumberInput = ({ value, lastNativeUpdate, onChange, ...pro
             style={[styles.button, styles.minusButton]}
             onPress={onMinus}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <FontAwesome name="minus" size={14} color="#000" />
+            <Constants.CastleIcon name={'minus'} color="#000" size={14} />
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.button, styles.plusButton]}
             onPress={onPlus}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <FontAwesome name="plus" size={14} color="#000" />
+            <Constants.CastleIcon name={'plus'} color="#000" size={14} />
           </TouchableOpacity>
         </React.Fragment>
       ) : null}

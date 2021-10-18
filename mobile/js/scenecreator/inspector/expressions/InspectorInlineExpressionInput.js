@@ -7,8 +7,6 @@ import { makeExpressionSummary } from '../../SceneCreatorUtilities';
 import * as Constants from '../../../Constants';
 import * as Utilities from '../../../common/utilities';
 
-import FastImage from 'react-native-fast-image';
-
 Utilities.preloadImageRequires([require('../../../../assets/images/expression.png')]);
 
 const styles = StyleSheet.create({
@@ -71,13 +69,7 @@ export const InspectorInlineExpressionInput = ({
         style={styles.button}
         onPress={onConfigureExpression}
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-        <FastImage
-          style={{
-            width: 16,
-            height: 16,
-          }}
-          source={require('../../../../assets/images/expression.png')}
-        />
+        <Constants.CastleIcon name={'expression'} color="#000" size={17} />
       </TouchableOpacity>
       <View style={{ flexShrink: 1 }}>{input}</View>
     </View>
