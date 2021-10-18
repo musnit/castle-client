@@ -4,11 +4,18 @@ import { useActionSheet } from '@expo/react-native-action-sheet';
 import { BottomSheet } from '../../components/BottomSheet';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useCoreState, sendAsync } from '../../core/CoreEvents';
+
 import * as Constants from '../../Constants';
+import * as Utilities from '../../common/utilities';
 
 import FastImage from 'react-native-fast-image';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FeatherIcon from 'react-native-vector-icons/Feather';
+
+Utilities.preloadImageRequires([
+  require('../../../assets/images/arrow2.png'),
+  require('../../../assets/images/arrow1.png'),
+]);
 
 const styles = StyleSheet.create({
   container: {

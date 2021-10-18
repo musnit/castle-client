@@ -3,9 +3,13 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { getRuleRenderContext } from '../rules/RuleRenderContext';
 import { InspectorNumberInput } from '../components/InspectorNumberInput';
 import { makeExpressionSummary } from '../../SceneCreatorUtilities';
+
 import * as Constants from '../../../Constants';
+import * as Utilities from '../../../common/utilities';
 
 import FastImage from 'react-native-fast-image';
+
+Utilities.preloadImageRequires([require('../../../../assets/images/expression.png')]);
 
 const styles = StyleSheet.create({
   container: {
