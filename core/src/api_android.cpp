@@ -5,8 +5,8 @@
 
 
 namespace CastleAPI {
-void postRequest(const std::string &body, const std::function<void(bool, std::string, std::string)>
-        callback) {
+void postRequest(
+    const std::string &body, const std::function<void(bool, std::string, std::string)> callback) {
   JNIEnv *oldEnv = (JNIEnv *)SDL_AndroidGetJNIEnv();
   JavaVM *jvm;
   oldEnv->GetJavaVM(&jvm);
@@ -31,7 +31,11 @@ void postRequest(const std::string &body, const std::function<void(bool, std::st
   env->DeleteLocalRef(resultJString);
   env->DeleteLocalRef(activity);
 
-  callback(true, "", result);
+  if (result == "error") {
+    callback(false, "error", "");
+  } else {
+    callback(true, "", result);
+  }
 }
 }
 
