@@ -8,31 +8,29 @@ import { SocialCount } from '../components/SocialCount';
 import { UserAvatar } from '../components/UserAvatar';
 
 import * as Constants from '../Constants';
+const CastleIcon = Constants.CastleIcon;
 import * as Session from '../Session';
 
-import Feather from 'react-native-vector-icons/Feather';
-import FastImage from 'react-native-fast-image';
 import { TouchableNativeFeedback as PressableRNGH } from 'react-native-gesture-handler';
 
 // required because android Pressable doesn't receive touches outside parent container
 // waiting for merge: https://github.com/facebook/react-native/pull/29039
 const Pressable = Constants.iOS ? PressableRN : PressableRNGH;
 
-const AVATAR_SIZE = 32;
+const ICON_SIZE = 30;
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 8,
-    paddingLeft: 16,
-    paddingRight: 8,
+    paddingTop: 8,
+    paddingHorizontal: 16,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   background: {
     position: 'absolute',
     left: 0,
     right: 0,
-    height: 80,
+    height: 90,
   },
   left: {
     flexDirection: 'row',
@@ -45,14 +43,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   avatar: {
-    width: AVATAR_SIZE,
-    height: AVATAR_SIZE,
+    width: ICON_SIZE,
+    height: ICON_SIZE,
   },
   username: {
     color: '#fff',
-    fontWeight: '700',
+    fontWeight: '600',
     fontSize: 16,
-    marginLeft: 8,
+    marginLeft: 10,
     ...Constants.styles.textShadow,
   },
   parentAttrib: {
@@ -60,15 +58,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   remixIcon: {
-    marginLeft: 8,
+    marginLeft: 10,
     ...Constants.styles.textShadow,
   },
-  commentButton: {
-    marginRight: 8,
+  deckAction: {
+    minWidth: 28,
+    minHeight: 28,
+    alignItems: 'center',
+    marginLeft: 20,
   },
-  commentIcon: {
-    width: 56,
-    height: 56,
+  deckActionIcon: {
+    ...Constants.styles.textShadow,
   },
 });
 
@@ -110,6 +110,13 @@ export const PlayDeckFooter = ({ deck, isPlaying, onPressComments }) => {
     }).start();
   }, [isPlaying]);
 
+  const onPressRemix = () => {
+    return push('DeckRemixes', {
+      deck: deck,
+      isFullscreen: true,
+    });
+  };
+
   return (
     <View style={styles.container} pointerEvents="box-none">
       <Animated.View
@@ -117,7 +124,7 @@ export const PlayDeckFooter = ({ deck, isPlaying, onPressComments }) => {
         pointerEvents="none">
         <LinearGradient
           // Background Linear Gradient
-          colors={['transparent', 'rgba(0, 0, 0, 0.3)', 'rgba(0,0,0,0.7)']}
+          colors={['transparent', 'rgba(0, 0, 0, 0.5)', 'rgba(0,0,0,0.9)']}
           style={[styles.background]}
         />
       </Animated.View>
@@ -132,7 +139,7 @@ export const PlayDeckFooter = ({ deck, isPlaying, onPressComments }) => {
         </Pressable>
         {deck.parentDeckId && deck.parentDeck && (
           <View style={styles.parentAttrib}>
-            <Feather name="refresh-cw" color="#fff" size={14} style={styles.remixIcon} />
+            <CastleIcon name="remix" color="#fff" size={14} style={styles.remixIcon} />
             <Pressable onPress={navigateToParent}>
               <Text numberOfLines={1} style={styles.username}>
                 {deck.parentDeck?.creator?.username}
@@ -141,14 +148,19 @@ export const PlayDeckFooter = ({ deck, isPlaying, onPressComments }) => {
           </View>
         )}
       </View>
-      <Pressable style={styles.commentButton} onPress={onPressComments}>
-        <FastImage
-          style={styles.commentIcon}
-          source={require('../../assets/images/emoji/comment.png')}
-        />
+      {deck?.childDecksCount > 0 && (
+        <Pressable style={styles.deckAction} onPress={onPressRemix}>
+          <CastleIcon name="remix" color="#fff" size={ICON_SIZE} style={styles.deckActionIcon} />
+          <SocialCount count={deck.childDecksCount} />
+        </Pressable>
+      )}
+      <Pressable style={styles.deckAction} onPress={onPressComments}>
+        <CastleIcon name="comment" color="#fff" size={ICON_SIZE} style={styles.deckActionIcon} />
         <SocialCount count={deck.comments?.count} />
       </Pressable>
-      <ReactionButton deck={deck} />
+      <View style={styles.deckAction}>
+        <ReactionButton deck={deck} iconSize={ICON_SIZE} />
+      </View>
     </View>
   );
 };

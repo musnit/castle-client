@@ -8,7 +8,6 @@ import * as Session from '../Session';
 import * as Utilities from '../common/utilities';
 
 import debounce from 'lodash.debounce';
-import FastImage from 'react-native-fast-image';
 
 import { TouchableNativeFeedback as PressableRNGH } from 'react-native-gesture-handler';
 
@@ -16,11 +15,6 @@ import { TouchableNativeFeedback as PressableRNGH } from 'react-native-gesture-h
 // waiting for merge: https://github.com/facebook/react-native/pull/29039
 const Pressable = Constants.iOS ? PressableRN : PressableRNGH;
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-
-Utilities.preloadImageRequires([
-  require('../../assets/images/emoji/fire-selected.png'),
-  require('../../assets/images/emoji/fire.png'),
-]);
 
 const SPRING_CONFIG = {
   tension: 100,
@@ -31,14 +25,7 @@ const SPRING_CONFIG = {
 
 const styles = StyleSheet.create({
   container: {
-    width: 56,
-    height: 56,
     alignItems: 'center',
-    justifyContent: 'center',
-  },
-  image: {
-    width: 56,
-    height: 56,
   },
 });
 
@@ -51,7 +38,7 @@ const makeOptimisticCount = (initial, optimistic) => {
 const toggleReaction = async ({ reactionId, deck, enabled }) => {
   const result = await Session.apolloClient.mutate({
     mutation: gql`
-      mutation($reactionId: ID!, $deckId: ID!, $enabled: Boolean!) {
+      mutation ($reactionId: ID!, $deckId: ID!, $enabled: Boolean!) {
         toggleReaction(reactionId: $reactionId, deckId: $deckId, enabled: $enabled) {
           id
           reactionId
@@ -92,7 +79,7 @@ const toggleReaction = async ({ reactionId, deck, enabled }) => {
 
 const toggleReactionDebounce = debounce(toggleReaction, 100);
 
-export const ReactionButton = ({ deck }) => {
+export const ReactionButton = ({ deck, iconSize = 22 }) => {
   let deckId, reactions;
   if (deck) {
     deckId = deck.deckId;
@@ -124,17 +111,12 @@ export const ReactionButton = ({ deck }) => {
   }, [deck]);
 
   return (
-    <View>
-      <AnimatedPressable
-        onPress={onPress}
-        style={[styles.container, { transform: [{ scale: buttonScale }] }]}>
-        <FastImage
-          style={styles.image}
-          source={
-            isSelected
-              ? require('../../assets/images/emoji/fire-selected.png')
-              : require('../../assets/images/emoji/fire.png')
-          }
+    <View style={styles.container}>
+      <AnimatedPressable onPress={onPress} style={{ transform: [{ scale: buttonScale }] }}>
+        <Constants.CastleIcon
+          name={isSelected ? 'fire-on' : 'fire-off'}
+          color="#fff"
+          size={iconSize}
         />
       </AnimatedPressable>
       <SocialCount

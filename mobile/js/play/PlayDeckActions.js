@@ -5,11 +5,10 @@ import { shareDeck } from '../common/utilities';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useNavigation } from '../ReactNavigation';
 
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import Feather from 'react-native-vector-icons/Feather';
-import Ionicon from 'react-native-vector-icons/Ionicons';
-
 import * as Constants from '../Constants';
+const CastleIcon = Constants.CastleIcon;
+
+const ICON_SIZE = 22;
 
 const styles = StyleSheet.create({
   container: {
@@ -21,17 +20,9 @@ const styles = StyleSheet.create({
     borderTopRightRadius: Constants.CARD_BORDER_RADIUS,
     overflow: 'hidden',
   },
-  containerSkeleton: {
-    paddingHorizontal: 12,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  back: {
-    marginRight: 12,
   },
   rightButton: {
     minWidth: 28,
@@ -41,20 +32,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginLeft: 16,
   },
-  rightButtonCount: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginLeft: 8,
-  },
-  rightButtonIcon: {
-    ...Constants.styles.textShadow,
-  },
 });
-
-export const PlayDeckActionsSkeleton = () => {
-  return <View style={[styles.container, styles.containerSkeleton]} />;
-};
 
 export const PlayDeckActions = ({
   deck,
@@ -149,23 +127,18 @@ export const PlayDeckActions = ({
     [deck?.deckId, onBlockUser, onReportDeck]
   );
 
-  const onPressRemix = () => {
-    return push('DeckRemixes', {
-      deck: deck,
-      isFullscreen: true,
-    });
-  };
-
   return (
     <Animated.View
       style={{
         ...styles.container,
-        paddingHorizontal: 12,
+        paddingHorizontal: 16,
         opacity: playingTransition,
       }}>
       <View style={styles.row}>
         <Pressable style={styles.back} onPress={onPressBack}>
-          {({ pressed }) => <Icon name="arrow-back" color={pressed ? '#ccc' : '#fff'} size={32} />}
+          {({ pressed }) => (
+            <CastleIcon name="back" color={pressed ? '#ccc' : '#fff'} size={ICON_SIZE} />
+          )}
         </Pressable>
       </View>
       <View style={styles.row} pointerEvents={disabled ? 'none' : 'auto'}>
@@ -173,25 +146,14 @@ export const PlayDeckActions = ({
           style={styles.rightButton}
           labeledItems={dropdownItems}
           onChange={onSelectDropdownAction}>
-          <Feather name="more-horizontal" color="#fff" size={24} style={styles.rightButtonIcon} />
+          <CastleIcon name="overflow" color="#fff" size={ICON_SIZE} />
         </Dropdown>
-        {deck?.childDecksCount > 0 && (
-          <Pressable style={styles.rightButton} onPress={onPressRemix}>
-            {({ pressed }) => (
-              <>
-                <Ionicon name="ios-shuffle" color={pressed ? '#ccc' : '#fff'} size={32} />
-                <Text style={styles.rightButtonCount}>{deck.childDecksCount}</Text>
-              </>
-            )}
-          </Pressable>
-        )}
         <Pressable style={styles.rightButton} onPress={() => shareDeck(deck)}>
           {({ pressed }) => (
-            <Feather
-              name={Constants.iOS ? 'share' : 'share-2'}
+            <CastleIcon
+              name={Constants.iOS ? 'share-ios' : 'share-android'}
               color={pressed ? '#ccc' : '#fff'}
-              size={24}
-              style={styles.rightButtonIcon}
+              size={ICON_SIZE}
             />
           )}
         </Pressable>

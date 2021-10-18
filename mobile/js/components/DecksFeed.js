@@ -176,14 +176,8 @@ const CurrentDeckCell = ({
   }, [onRefreshFeed, deck]);
 
   const playingFooterY = playingTransition.interpolate({
-    inputRange: [0, 1.01],
-    outputRange: [
-      0,
-      // Vertically center the footer in the gap between the bottom of the card and the insets
-      DECK_FEED_ITEM_FOOTER +
-        (vh * 100 - getItemHeight({ isPlaying: true }) - insets.top - insets.bottom) / 2 -
-        DECK_FEED_ITEM_FOOTER / 2,
-    ],
+    inputRange: [0, 1],
+    outputRange: [0, vh * 100 - getItemHeight({ isPlaying: true }) - insets.top - insets.bottom],
   });
 
   const onHardwareBackPress = React.useCallback(() => {
