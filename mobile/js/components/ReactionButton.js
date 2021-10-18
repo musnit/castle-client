@@ -27,6 +27,9 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
   },
+  deckActionIcon: {
+    ...Constants.styles.textShadow,
+  },
 });
 
 const makeOptimisticCount = (initial, optimistic) => {
@@ -117,6 +120,7 @@ export const ReactionButton = ({ deck, iconSize = 22 }) => {
           name={isSelected ? 'fire-on' : 'fire-off'}
           color="#fff"
           size={iconSize}
+          style={styles.deckActionIcon}
         />
       </AnimatedPressable>
       <SocialCount
