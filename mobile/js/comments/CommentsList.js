@@ -13,43 +13,41 @@ import * as Constants from '../Constants';
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingTop: 24,
   },
   commentContainer: {
     flexDirection: 'row',
-    maxWidth: '90%',
-    flexShrink: 1,
+    marginTop: 20,
   },
   authorAvatar: {
-    width: 24,
-    height: 24,
-    marginRight: 8,
-    marginTop: 8,
+    width: 34,
+    height: 34,
+    marginTop: 2,
+    marginRight: 12,
   },
-  commentBubble: {
-    backgroundColor: '#f1f1f1',
-    borderRadius: 15,
-    paddingVertical: 2,
-    paddingHorizontal: 12,
-    marginBottom: 8,
-  },
-  commentMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  commentDate: {
-    color: '#666',
-    fontSize: 12,
+  commentAuthorText: {
+    fontWeight: '600',
+    fontSize: 13,
   },
   commentBody: {
-    paddingBottom: 8,
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    marginVertical: 5,
   },
-  authorUsername: {
-    fontWeight: 'bold',
-    marginRight: 4,
-    lineHeight: 32,
+  commentActions: {
+    flexDirection: 'row',
+  },
+  commentDate: {
+    color: '#888',
+    fontSize: 13,
+  },
+  commentAction: {
+    color: '#888',
+    fontSize: 13,
+    fontWeight: '600',
+    marginLeft: 12,
+  },
+  commentMenu: {
+    marginLeft: 12,
   },
   repliesContainer: {
     flexDirection: 'column-reverse',
@@ -65,14 +63,17 @@ const styles = StyleSheet.create({
 
 const commentBodyStyles = StyleSheet.create({
   text: {
+    fontSize: 15,
+    lineHeight: 20,
     color: '#000',
   },
   highlight: {
-    color: '#000',
-    fontWeight: 'bold',
+    fontSize: 15,
+    color: '#888',
   },
   link: {
-    color: '#000',
+    fontSize: 15,
+    color: '#888',
     textDecorationLine: 'underline',
   },
 });
@@ -93,34 +94,53 @@ const Comment = ({
   parentCommentId,
   navigateToUser,
   showCommentActions,
+  setReplyingToComment,
 }) => {
+  const onReply = ({ isReply, setReplyingToComment }) => {
+    if (!isReply) {
+      setReplyingToComment(comment);
+    } else {
+      // reply-to-reply needs parent comment id because we only go one-deep on threads
+      setReplyingToComment({ ...comment, parentCommentId });
+    }
+  };
+
   return (
     <View style={[styles.commentContainer]}>
       <Pressable onPress={() => navigateToUser(comment.fromUser)}>
         <UserAvatar url={comment.fromUser.photo?.url} style={styles.authorAvatar} />
       </Pressable>
-      <View>
-        <Pressable
-          style={styles.commentBubble}
-          onPress={() => showCommentActions({ comment, isReply, parentCommentId })}>
-          <View style={styles.commentMeta}>
-            <Pressable onPress={() => navigateToUser(comment.fromUser)}>
-              <Text style={styles.authorUsername}>{comment.fromUser.username}</Text>
-            </Pressable>
-            <Text style={styles.commentDate}>{toRecentDate(comment.createdTime)}</Text>
-          </View>
-          <View style={styles.commentBody}>
-            {comment.isDeleted ? (
-              <Text style={styles.commentUnavailableLabel}>This comment was deleted</Text>
-            ) : (
-              <MessageBody
-                body={comment.body}
-                styles={commentBodyStyles}
-                navigateToUser={navigateToUser}
-              />
-            )}
-          </View>
-        </Pressable>
+      <View style={{ flex: 1 }}>
+        <View style={styles.commentAuthor}>
+          <Pressable onPress={() => navigateToUser(comment.fromUser)}>
+            <Text style={styles.commentAuthorText}>{comment.fromUser.username}</Text>
+          </Pressable>
+        </View>
+        <View style={styles.commentBody}>
+          {comment.isDeleted ? (
+            <Text style={styles.commentUnavailableLabel}>This comment was deleted</Text>
+          ) : (
+            <MessageBody
+              body={comment.body}
+              styles={commentBodyStyles}
+              navigateToUser={navigateToUser}
+            />
+          )}
+        </View>
+        <View style={styles.commentActions}>
+          <Text style={styles.commentDate}>{toRecentDate(comment.createdTime)}</Text>
+          <Pressable onPress={() => onReply({ isReply, setReplyingToComment })}>
+            <Text style={styles.commentAction}>Reply</Text>
+          </Pressable>
+          <Pressable onPress={() => showCommentActions({ comment, isReply, parentCommentId })}>
+            <Constants.CastleIcon
+              name="overflow"
+              size={18}
+              color="#888"
+              style={styles.commentMenu}
+            />
+          </Pressable>
+        </View>
         {comment.childComments?.comments?.length ? (
           <CommentReplies
             parentCommentId={comment.commentId}
@@ -220,7 +240,7 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
   );
 
   const showCommentActions = React.useCallback(
-    ({ comment, isReply, parentCommentId }) => {
+    ({ comment }) => {
       if (isAnonymous || comment.isDeleted) {
         return;
       }
@@ -267,18 +287,6 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
             ),
         });
       }
-      if (!isReply) {
-        options.unshift({
-          name: 'Reply',
-          action: () => setReplyingToComment(comment),
-        });
-      } else {
-        // reply-to-reply needs parent comment id because we only go one-deep on threads
-        options.unshift({
-          name: 'Reply',
-          action: () => setReplyingToComment({ ...comment, parentCommentId }),
-        });
-      }
       return showActionSheetWithOptions(
         {
           title: `@${comment.fromUser.username}'s comment`,
@@ -312,6 +320,7 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
           comment={comment}
           navigateToUser={navigateToUser}
           showCommentActions={showCommentActions}
+          setReplyingToComment={setReplyingToComment}
         />
       );
     },

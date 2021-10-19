@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { AutocompleteTextInput } from '../components/AutocompleteTextInput';
 
-import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { CastleIcon } from '../Constants';
 
 const styles = StyleSheet.create({
   container: {
@@ -13,30 +13,39 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 8,
+    paddingBottom: 4,
   },
   textInput: {
     width: '100%',
     flexShrink: 1,
     paddingTop: 10,
     paddingBottom: 10,
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     backgroundColor: '#f1f1f1',
-    borderRadius: 20,
+    borderRadius: 4,
   },
   submitButton: {
     padding: 8,
     marginLeft: 8,
   },
+  submitButtonText: {
+    color: '#000',
+    fontWeight: '600',
+    fontSize: 15,
+  },
   replyingToRow: {
     flexDirection: 'row',
     paddingTop: 12,
+    paddingBottom: 4,
     paddingHorizontal: 12,
+    alignItems: 'center',
   },
   replyingToLabel: {
     color: '#888',
+    fontSize: 15,
   },
   clearReplyButton: {
-    marginRight: 4,
+    marginRight: 12,
   },
 });
 
@@ -90,7 +99,7 @@ export const CommentInput = ({ onAddComment, replyingToComment, clearReplyingToC
             style={styles.clearReplyButton}
             onPress={clearReplyingToComment}
             hitSlop={{ top: 4, left: 4, right: 4, bottom: 4 }}>
-            <MCIcon name="close" color="#888" size={16} />
+            <CastleIcon name="close" color="#888" size={18} />
           </Pressable>
           <Text style={styles.replyingToLabel}>
             Replying to @{replyingToComment.fromUser.username}
@@ -110,7 +119,7 @@ export const CommentInput = ({ onAddComment, replyingToComment, clearReplyingToC
           style={styles.submitButton}
           onPress={() => addComment(value)}
           disabled={!value || value.length === 0}>
-          <MCIcon name="send" color={value?.length > 0 ? '#000' : '#999'} size={24} />
+          <Text style={styles.submitButtonText}>Post</Text>
         </Pressable>
       </View>
     </View>
