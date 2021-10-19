@@ -135,7 +135,7 @@ export const styles = {
   },
   textInputOnWhite: {
     paddingHorizontal: 8,
-    paddingVertical: 5,
+    paddingVertical: 4,
     fontSize: 16,
     borderTopWidth: 1,
     borderColor: 'rgba(0, 0, 0, .25)',
