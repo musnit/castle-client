@@ -188,22 +188,67 @@ struct DrawToolLayerActionReceiver {
     if (action == "selectLayer") {
       drawTool.setIsPlayingAnimation(false);
       if (drawTool.selectedLayerId != params.layerId()) {
-        drawTool.selectedLayerId = params.layerId();
-        drawTool.sendLayersEvent();
+        auto newLayerId = params.layerId();
+        auto oldLayerId = drawTool.selectedLayerId;
+        Commands::Params commandParams;
+        commandParams.coalesce = true;
+        editor->getCommands().execute(
+            "select layer", commandParams,
+            [newLayerId](Editor &editor, bool) {
+              auto &drawTool = editor.drawTool;
+              drawTool.selectedLayerId = newLayerId;
+              drawTool.sendLayersEvent();
+            },
+            [oldLayerId](Editor &editor, bool) {
+              auto &drawTool = editor.drawTool;
+              drawTool.selectedLayerId = oldLayerId;
+              drawTool.sendLayersEvent();
+            });
       }
     } else if (action == "selectLayerAndFrame") {
       drawTool.setIsPlayingAnimation(false);
       if (drawTool.selectedLayerId != params.layerId()
           || drawTool.selectedFrameIndex.value != params.frameIndex()) {
-        drawTool.selectedLayerId = params.layerId();
-        drawTool.selectedFrameIndex.value = params.frameIndex();
-        drawTool.sendLayersEvent();
+        auto newFrameIndex = params.frameIndex();
+        auto newLayerId = params.layerId();
+        auto oldFrameIndex = drawTool.selectedFrameIndex.value;
+        auto oldLayerId = drawTool.selectedLayerId;
+        Commands::Params commandParams;
+        commandParams.coalesce = true;
+        editor->getCommands().execute(
+            "select cell", commandParams,
+            [newFrameIndex, newLayerId](Editor &editor, bool) {
+              auto &drawTool = editor.drawTool;
+              drawTool.selectedFrameIndex.value = newFrameIndex;
+              drawTool.selectedLayerId = newLayerId;
+              drawTool.sendLayersEvent();
+            },
+            [oldFrameIndex, oldLayerId](Editor &editor, bool) {
+              auto &drawTool = editor.drawTool;
+              drawTool.selectedFrameIndex.value = oldFrameIndex;
+              drawTool.selectedLayerId = oldLayerId;
+              drawTool.sendLayersEvent();
+            });
       }
     } else if (action == "selectFrame") {
       drawTool.setIsPlayingAnimation(false);
       if (drawTool.selectedFrameIndex.value != params.frameIndex()) {
-        drawTool.selectedFrameIndex.value = params.frameIndex();
-        drawTool.sendLayersEvent();
+        auto newFrameIndex = params.frameIndex();
+        auto oldFrameIndex = drawTool.selectedFrameIndex.value;
+        Commands::Params commandParams;
+        commandParams.coalesce = true;
+        editor->getCommands().execute(
+            "select frame", commandParams,
+            [newFrameIndex](Editor &editor, bool) {
+              auto &drawTool = editor.drawTool;
+              drawTool.selectedFrameIndex.value = newFrameIndex;
+              drawTool.sendLayersEvent();
+            },
+            [oldFrameIndex](Editor &editor, bool) {
+              auto &drawTool = editor.drawTool;
+              drawTool.selectedFrameIndex.value = oldFrameIndex;
+              drawTool.sendLayersEvent();
+            });
       }
     } else if (action == "stepBackward") {
       auto newFrameIndex = drawTool.selectedFrameIndex.value - 1;
