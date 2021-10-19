@@ -12,10 +12,10 @@ const styles = StyleSheet.create({
   },
   refreshButton: {
     borderWidth: 1,
-    borderBottomWidth: 2,
     borderColor: '#fff',
     borderRadius: 4,
-    padding: 16,
+    paddingVertical: 7,
+    paddingHorizontal: 10,
     marginVertical: 64,
   },
   refreshText: {
@@ -43,7 +43,12 @@ const formatError = (error) => {
 };
 
 export const EmptyFeed = ({ message, error, onRefresh }) => (
-  <View style={{ ...Constants.styles.empty, marginTop: Constants.FEED_HEADER_HEIGHT }}>
+  <View
+    style={{
+      ...Constants.styles.empty,
+      marginTop: Constants.FEED_HEADER_HEIGHT,
+      alignItems: 'center',
+    }}>
     <Text style={Constants.styles.emptyText}>{message}</Text>
     {error ? <Text style={styles.error}>{formatError(error)}</Text> : null}
     {onRefresh ? (
