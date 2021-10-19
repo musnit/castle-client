@@ -38,16 +38,12 @@ const styles = StyleSheet.create({
   variableName: {
     flexGrow: 1,
     fontWeight: '700',
+    marginRight: 16,
   },
   input: {
     color: '#000',
     fontSize: 16,
     lineHeight: 20,
-  },
-  noBorder: {
-    borderWidth: 0,
-    borderTopWidth: 0,
-    padding: 0,
   },
   labels: {
     flexDirection: 'row',
@@ -108,7 +104,7 @@ const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) 
         <Text style={styles.variablePrefix}>$</Text>
         <InspectorTextInput
           optimistic
-          style={[styles.input, styles.noBorder, styles.variableName]}
+          style={[styles.input, styles.variableName]}
           placeholderTextColor="#666"
           autoCapitalize="none"
           autoCompleteType="off"
@@ -212,8 +208,8 @@ export const DeckVariables = () => {
       <View style={styles.explainer}>
         <FeatherIcon name="book-open" size={18} color="#888" style={styles.explainerIcon} />
         <Text style={styles.explainerText}>
-          You can display the current value of a variable in a text box with the notation{' '}
-          <Text style={{ fontFamily: 'Menlo' }}>$variableName</Text>.
+          You can display the current value of a variable by writing{' '}
+          <Text style={{ fontFamily: 'Menlo' }}>$variableName</Text> in a text box.
         </Text>
       </View>
     </View>
