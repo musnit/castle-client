@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { BottomSheet } from '../../components/BottomSheet';
 import { DeckVariables } from '../DeckVariables';
@@ -8,6 +7,7 @@ import { SceneBackups } from '../SceneBackups';
 import { SegmentedNavigation } from '../../components/SegmentedNavigation';
 import { useCardCreator } from '../CreateCardContext';
 import { CreateCardSettings } from './CreateCardSettingsSheet';
+import { CastleIcon } from './../../Constants';
 
 const styles = StyleSheet.create({
   container: {
@@ -85,7 +85,7 @@ export const CardToolsSheet = ({ isOpen, onClose, ...props }) => {
     <View style={styles.header}>
       <View style={styles.headerTopRow}>
         <TouchableOpacity style={styles.back} onPress={onClose}>
-          <Icon name="close" size={32} color="#000" />
+          <CastleIcon name="close" size={22} color="#000" />
         </TouchableOpacity>
         <View style={styles.headingContainer}>
           <Text style={styles.headingLabel}>Tools</Text>
@@ -97,6 +97,7 @@ export const CardToolsSheet = ({ isOpen, onClose, ...props }) => {
           onSelectItem={(item) => setMode(item.value)}
           selectedItem={TAB_ITEMS.find((item) => item.value === mode)}
           isLightBackground
+          compact
         />
       </View>
     </View>
