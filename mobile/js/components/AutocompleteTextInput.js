@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
 const autocompleteUsers = (text) =>
   Session.apolloClient.query({
     query: gql`
-      query($text: String!) {
+      query ($text: String!) {
         exploreSearch(text: $text) {
           users {
             userId

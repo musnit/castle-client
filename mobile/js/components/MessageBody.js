@@ -89,7 +89,7 @@ export const MessageBody = ({
     return null;
   }
   return (
-    <Text>
+    <Text style={{ flex: 1, flexWrap: 'wrap' }}>
       {body.message.map((token, ii) => (
         <BodyToken
           key={`token-${ii}`}
