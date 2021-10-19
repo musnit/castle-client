@@ -70,7 +70,7 @@ const RemoveTagButton = ({ tag, onPress, closePopover }) => (
       onPress(tag);
       closePopover();
     }}>
-    <Feather name="trash-2" size={20} color="#000" />
+    <Constants.CastleIcon name="trash" size={22} color="#000" />
     <Text style={styles.removeLabel}>
       Remove <Text style={{ fontWeight: 'bold' }}>{tag}</Text>
     </Text>

@@ -144,12 +144,12 @@ export const OverlaySelectionActions = () => {
             <Pressable
               style={[styles.button, styles.singleButton]}
               onPress={() => sendAction('duplicateSelection')}>
-              <FeatherIcon name="copy" size={20} color="#000" />
+              <Constants.CastleIcon name="clone" size={22} color="#000" />
             </Pressable>
             <Pressable
               style={[styles.button, styles.singleButton]}
               onPress={() => sendAction('deleteSelection')}>
-              <FeatherIcon name="trash-2" size={20} color="#000" />
+              <Constants.CastleIcon name="trash" size={22} color="#000" />
             </Pressable>
           </>
         ) : (

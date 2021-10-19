@@ -5,7 +5,8 @@ import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
 import { Rule } from './Rule';
 import { useCoreState } from '../../../core/CoreEvents';
 
-import FeatherIcon from 'react-native-vector-icons/Feather';
+import * as Constants from '../../../Constants';
+const CastleIcon = Constants.CastleIcon;
 
 const styles = StyleSheet.create({
   container: {},
@@ -27,10 +28,10 @@ const RuleHeaderActions = ({ onRemoveRule, onCopyRule }) => {
   return (
     <View style={styles.actions}>
       <TouchableOpacity style={styles.actionButton} onPress={onCopyRule}>
-        <FeatherIcon name="clipboard" size={22} color="#000" />
+        <CastleIcon name="clipboard" size={22} color="#000" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.actionButton} onPress={onRemoveRule}>
-        <FeatherIcon name="trash-2" size={22} color="#000" />
+        <CastleIcon name="trash" size={22} color="#000" />
       </TouchableOpacity>
     </View>
   );

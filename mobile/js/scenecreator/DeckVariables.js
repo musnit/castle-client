@@ -128,7 +128,7 @@ const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) 
       />
       <View style={{ width: 20, position: 'absolute', right: 0 }}>
         <TouchableOpacity onPress={onDelete}>
-          <FeatherIcon name="trash-2" size={20} color="#000" />
+          <Constants.CastleIcon name="trash" size={22} color="#000" />
         </TouchableOpacity>
       </View>
     </View>

@@ -33,7 +33,7 @@ export const InspectorCheckbox = ({ value, label, onChange, style, ...props }) =
     <View style={[styles.container, style]} {...props}>
       <Text style={styles.label}>{label}</Text>
       <Pressable onPress={onPress} style={styles.box}>
-        {value ? <FontAwesome name="check" size={18} color="#000" /> : null}
+        {value ? <Constants.CastleIcon name="checkmark" size={22} color="#000" /> : null}
       </Pressable>
     </View>
   );
