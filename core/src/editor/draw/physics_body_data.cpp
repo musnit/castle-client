@@ -51,12 +51,12 @@ void PhysicsBodyData::makeShader() {
   auto dpiScale = float(lv.graphics.getScreenDPIScale());
   {
     auto info = shader->getUniformInfo("lineSpacing");
-    info->floats[0] = dpiScale * 24;
+    info->floats[0] = dpiScale * 12;
     shader->updateUniform(info, 1);
   }
   {
     auto info = shader->getUniformInfo("lineRadius");
-    info->floats[0] = dpiScale * 6;
+    info->floats[0] = dpiScale * 2;
     shader->updateUniform(info, 1);
   }
 }
