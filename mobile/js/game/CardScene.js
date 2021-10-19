@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { StyleSheet, View, TouchableWithoutFeedback } from 'react-native';
+import { PixelRatio, StyleSheet, View, TouchableWithoutFeedback } from 'react-native';
 import { GameLoading } from './GameLoading';
 import { GameView } from './GameView';
 import * as Constants from '../Constants';
@@ -58,6 +58,7 @@ export const CardScene = ({
       JSON.stringify({
         deckId: deck?.deckId,
         initialSnapshotJson,
+        pixelRatio: PixelRatio.get(),
         isEditable,
         isDebug: !!__DEV__,
         isNewScene,
