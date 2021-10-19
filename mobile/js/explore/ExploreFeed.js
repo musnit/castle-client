@@ -61,6 +61,13 @@ export const ExploreFeed = ({ route }) => {
     }, [feedId])
   );
 
+  const onEndReached = React.useCallback(() => {
+    if (!query.loading && decks?.length) {
+      const lastModifiedBefore = decks[decks.length - 1].lastModified;
+      onRefresh(lastModifiedBefore);
+    }
+  }, [query.loading, decks, onRefresh]);
+
   React.useEffect(() => {
     if (query.called && !query.loading && !query.error && query.data) {
       if (lastFetched.lastModifiedBefore) {
@@ -86,6 +93,8 @@ export const ExploreFeed = ({ route }) => {
           scrollViewRef={scrollViewRef}
           refreshing={lastFetched.time && query.loading}
           onRefresh={onRefresh}
+          onEndReached={onEndReached}
+          onEndReachedThreshold={0.15}
           onPressDeck={(deck, index) =>
             navigate(
               'PlayDeck',
