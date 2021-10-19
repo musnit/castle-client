@@ -92,7 +92,7 @@ export const HalloweenPromo = () => {
       <View style={styles.banner}>
         <FastImage
           style={styles.candle}
-          source={require('../../assets/images/halloween/candle.png')}
+          source={require('../../assets/images/halloween/candle.gif')}
         />
         <FastImage
           resizeMode={'contain'}
@@ -101,7 +101,7 @@ export const HalloweenPromo = () => {
         />
         <FastImage
           style={styles.candle}
-          source={require('../../assets/images/halloween/candle.png')}
+          source={require('../../assets/images/halloween/candle.gif')}
         />
       </View>
       <View style={styles.center}>
@@ -156,12 +156,12 @@ export const HalloweenPromo = () => {
       <View style={styles.banner}>
         <FastImage
           style={styles.candle}
-          source={require('../../assets/images/halloween/candle.png')}
+          source={require('../../assets/images/halloween/candle.gif')}
         />
         <Text style={styles.date}>October 27–31, 2021</Text>
         <FastImage
           style={styles.candle}
-          source={require('../../assets/images/halloween/candle.png')}
+          source={require('../../assets/images/halloween/candle.gif')}
         />
       </View>
     </View>

@@ -41,9 +41,9 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 8,
   },
   candle: {
-    width: 28,
-    height: 28,
-    margin: 4,
+    width: 20,
+    height: 20,
+    margin: 8,
   },
 });
 
@@ -163,12 +163,12 @@ const ColorPicker64Popover = ({ valueHex, setValueFromStr, closePopover }) => {
         <View style={styles.halloweenPicker}>
           <FastImage
             style={styles.candle}
-            source={require('../../../../assets/images/halloween/candle.png')}
+            source={require('../../../../assets/images/halloween/candle.gif')}
           />
           {halloween_swatches}
           <FastImage
             style={[styles.candle, { transform: [{ scaleX: -1 }] }]}
-            source={require('../../../../assets/images/halloween/candle.png')}
+            source={require('../../../../assets/images/halloween/candle.gif')}
           />
         </View>
       ) : null}
