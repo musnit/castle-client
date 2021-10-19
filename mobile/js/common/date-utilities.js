@@ -88,8 +88,8 @@ export const toRecentDate = (date) => {
       : seconds < MONTH
       ? [Math.round(seconds / WEEK), 'w']
       : seconds < YEAR
-      ? [Math.round(seconds / MONTH), ' month']
-      : [Math.round(seconds / YEAR), ' year'];
+      ? [Math.round(seconds / MONTH), 'mo']
+      : [Math.round(seconds / YEAR), 'yr'];
 
   unit = pluralizeDateUnit(unit, value);
 
