@@ -350,7 +350,7 @@ void Editor::draw() {
       });
 
       lv.graphics.setLineWidth(2 * scene->getPixelScale());
-      lv.graphics.setColor({ 0, 1, 0, 0.8 });
+      lv.graphics.setColor({ 0, 0, 0, 1 });
       for (auto actorId : selection.getSelectedActorIds()) {
         if (!scene->isGhost(actorId)) {
           Debug::display("selected actor {}", actorId);

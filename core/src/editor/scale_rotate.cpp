@@ -293,13 +293,6 @@ void ScaleRotateTool::drawOverlay() const {
 
   if (auto handles = getHandles()) {
     lv.graphics.push(love::Graphics::STACK_ALL);
-    lv.graphics.setColor({ 0, 1, 0, 0.8 });
-
-    // Scale handles
-    for (auto &scaleHandle : handles->scale) {
-      lv.graphics.circle(
-          love::Graphics::DRAW_FILL, scaleHandle.pos.x, scaleHandle.pos.y, handles->drawRadius);
-    }
 
     // Rotate handle
     {
@@ -316,26 +309,26 @@ void ScaleRotateTool::drawOverlay() const {
       lv.graphics.circle(love::Graphics::DRAW_LINE, rotateHandle.pivot.x, rotateHandle.pivot.y,
           centerCircleRadius);
 
-      auto arcRadius = 1.0f * zoom;
-      auto arcAngle = 0.7f;
-      auto arcCenter = rotateHandle.pos + arcRadius * dir;
-      auto angle = std::atan2(-dir.y, -dir.x);
-      lv.graphics.arc(love::Graphics::DRAW_LINE, love::Graphics::ARC_OPEN, arcCenter.x, arcCenter.y,
-          arcRadius, angle - arcAngle, angle + arcAngle, 10);
+      lv.graphics.setColor({ 1, 1, 1, 1 });
+      lv.graphics.circle(
+          love::Graphics::DRAW_FILL, rotateHandle.pos.x, rotateHandle.pos.y, handles->drawRadius);
+      lv.graphics.setColor({ 0, 0, 0, 1 });
+      lv.graphics.circle(
+          love::Graphics::DRAW_LINE, rotateHandle.pos.x, rotateHandle.pos.y, handles->drawRadius);
+    }
 
-      auto arrowAngle = 0.15f;
-      auto arrowRadius = 0.15f * zoom;
-      const auto drawArrowLine = [&](float endRadius, float startAngle, float endAngle) {
-        std::array line {
-          arcCenter + arcRadius * love::Vector2 { std::cos(startAngle), std::sin(startAngle) },
-          arcCenter + endRadius * love::Vector2 { std::cos(endAngle), std::sin(endAngle) },
-        };
-        lv.graphics.polyline(line.data(), line.size());
-      };
-      drawArrowLine(arcRadius + arrowRadius, angle + arcAngle, angle + arcAngle - arrowAngle);
-      drawArrowLine(arcRadius - arrowRadius, angle + arcAngle, angle + arcAngle - arrowAngle);
-      drawArrowLine(arcRadius + arrowRadius, angle - arcAngle, angle - arcAngle + arrowAngle);
-      drawArrowLine(arcRadius - arrowRadius, angle - arcAngle, angle - arcAngle + arrowAngle);
+    lv.graphics.setColor({ 1, 1, 1, 1 });
+
+    // Scale handles
+    for (auto &scaleHandle : handles->scale) {
+      lv.graphics.circle(
+          love::Graphics::DRAW_FILL, scaleHandle.pos.x, scaleHandle.pos.y, handles->drawRadius);
+    }
+
+    lv.graphics.setColor({ 0, 0, 0, 1 });
+    for (auto &scaleHandle : handles->scale) {
+      lv.graphics.circle(
+          love::Graphics::DRAW_LINE, scaleHandle.pos.x, scaleHandle.pos.y, handles->drawRadius);
     }
 
     lv.graphics.pop();
