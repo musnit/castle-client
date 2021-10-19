@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 4,
   },
   back: {
     flexShrink: 0,
