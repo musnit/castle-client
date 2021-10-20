@@ -145,6 +145,7 @@ public:
   float getViewYOffset() const;
   float getDefaultViewYOffset() const;
   float getViewScale() const;
+  inline static float uiPixelRatio = 3; // From React Native. Default of 3 is based on iPhone XS.
   float getPixelScale() const;
 
   void setCameraTarget(ActorId target);
@@ -445,7 +446,7 @@ inline float Scene::getViewScale() const {
 }
 
 inline float Scene::getPixelScale() const {
-  return float(lv.window.getDPIScale() / getViewScale());
+  return float(lv.window.getDPIScale() / getViewScale()) * uiPixelRatio / 3;
 }
 
 inline void Scene::setCameraTarget(ActorId target) {

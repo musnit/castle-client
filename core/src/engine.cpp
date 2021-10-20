@@ -116,6 +116,7 @@ void Engine::setInitialParams(const char *initialParamsJson) {
     deckId = reader.str("deckId", nullptr);
     initialSnapshotJson = reader.str("initialSnapshotJson", nullptr);
     isNewScene = reader.boolean("isNewScene", false);
+    Scene::uiPixelRatio = float(reader.num("pixelRatio", Scene::uiPixelRatio));
   });
   if (isEditing) {
     editor = std::make_unique<Editor>(bridge);
