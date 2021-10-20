@@ -87,19 +87,6 @@ export default InspectorLayout = ({ body }) => {
     [sendBehaviorAction]
   );
 
-  const [visible, setVisibleAction] = useOptimisticBehaviorValue({
-    component,
-    propName: 'visible',
-    propType: 'b',
-    sendAction: sendAction,
-  });
-  const onChangeVisible = React.useCallback(
-    (visible) => {
-      setVisibleAction('set', visible);
-    },
-    [setVisibleAction]
-  );
-
   const [relative, setRelativeAction] = useOptimisticBehaviorValue({
     component,
     propName: 'relativeToCamera',
@@ -123,9 +110,6 @@ export default InspectorLayout = ({ body }) => {
           onChange={onChangeRelative}
           label="Relative to camera"
         />
-      </View>
-      <View style={styles.row}>
-        <InspectorCheckbox value={visible} onChange={onChangeVisible} label="Visible" />
       </View>
     </View>
   );

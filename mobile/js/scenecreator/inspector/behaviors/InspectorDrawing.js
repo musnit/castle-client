@@ -7,6 +7,7 @@ import {
   sendGlobalAction,
 } from '../../../core/CoreEvents';
 import { BehaviorPropertyInputRow } from '../components/BehaviorPropertyInputRow';
+import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -221,6 +222,25 @@ export default InspectorDrawing = ({ drawing2 }) => {
     );
   }, [openDrawTool]);
 
+  // visible is part of Body, but we put it in the Drawing UI
+  const bodyComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Body');
+  const sendBodyAction = React.useCallback(
+    (...args) => sendBehaviorAction('Body', ...args),
+    [sendBehaviorAction]
+  );
+  const [visible, setVisibleAction] = useOptimisticBehaviorValue({
+    component: bodyComponent,
+    propName: 'visible',
+    propType: 'b',
+    sendAction: sendBodyAction,
+  });
+  const onChangeVisible = React.useCallback(
+    (visible) => {
+      setVisibleAction('set', visible);
+    },
+    [setVisibleAction]
+  );
+
   if (!component) {
     // actor doesn't have Drawing2
     return null;
@@ -283,6 +303,9 @@ export default InspectorDrawing = ({ drawing2 }) => {
         decimalDigits={0}
         sendAction={sendAction}
       />
+      {bodyComponent ? (
+        <InspectorCheckbox value={visible} onChange={onChangeVisible} label="Visible" />
+      ) : null}
     </View>
   );
 };
