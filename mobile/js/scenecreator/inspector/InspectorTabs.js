@@ -33,8 +33,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const GeneralTab = ({ behaviors, addChildSheet }) => {
-  const { isTextActorSelected } = useCardCreator();
+const GeneralTab = ({ behaviors, addChildSheet, isTextActorSelected }) => {
   return (
     <React.Fragment>
       {isTextActorSelected && (
@@ -118,8 +117,9 @@ const MovementTab = ({ behaviors, addChildSheet }) => {
 
 export const InspectorTabs = ({ selectedTab, addChildSheet }) => {
   const behaviors = useCoreState('EDITOR_ALL_BEHAVIORS');
+  const { isTextActorSelected, isBlueprintSelected } = useCardCreator();
 
-  if (!behaviors) {
+  if (!behaviors || !isBlueprintSelected) {
     return <View />;
   }
 
@@ -135,7 +135,13 @@ export const InspectorTabs = ({ selectedTab, addChildSheet }) => {
     }
     case 'general':
     default: {
-      tabContents = <GeneralTab behaviors={behaviors} addChildSheet={addChildSheet} />;
+      tabContents = (
+        <GeneralTab
+          behaviors={behaviors}
+          addChildSheet={addChildSheet}
+          isTextActorSelected={isTextActorSelected}
+        />
+      );
     }
   }
 
