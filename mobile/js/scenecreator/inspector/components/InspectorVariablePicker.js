@@ -70,6 +70,7 @@ export const InspectorVariablePicker = ({ value, onChange, style, ...props }) =>
   const popover = {
     Component: DropdownItemsList,
     items,
+    reverse: true,
     selectedItem,
     height: 192,
     onSelectItem: (item) => onChange(item.variableId),

@@ -74,35 +74,37 @@ export const DropdownItemsList = ({
   onSelectItem,
   showAddItem,
   onAddItem,
+  reverse,
   closePopover,
 }) => {
   const [addItemValue, setAddItemValue] = React.useState();
+  const addItem = (
+    <View key="add-item" style={styles.addItemRow}>
+      <InspectorTextInput
+        value={addItemValue}
+        onChangeText={setAddItemValue}
+        autoCapitalize="none"
+        style={styles.addItemInput}
+        placeholder="Add new..."
+        returnKeyType="go"
+        onSubmitEditing={() => {
+          onAddItem(addItemValue);
+          closePopover();
+        }}
+      />
+      <TouchableOpacity
+        style={styles.addItemSubmit}
+        onPress={() => {
+          onAddItem(addItemValue);
+          closePopover();
+        }}>
+        <Icon name="add" size={18} color="#000" />
+      </TouchableOpacity>
+    </View>
+  );
   return (
-    <ScrollView>
-      {showAddItem ? (
-        <View key="add-item" style={styles.addItemRow}>
-          <InspectorTextInput
-            value={addItemValue}
-            onChangeText={setAddItemValue}
-            autoCapitalize="none"
-            style={styles.addItemInput}
-            placeholder="Add new..."
-            returnKeyType="go"
-            onSubmitEditing={() => {
-              onAddItem(addItemValue);
-              closePopover();
-            }}
-          />
-          <TouchableOpacity
-            style={styles.addItemSubmit}
-            onPress={() => {
-              onAddItem(addItemValue);
-              closePopover();
-            }}>
-            <Icon name="add" size={18} color="#000" />
-          </TouchableOpacity>
-        </View>
-      ) : null}
+    <ScrollView contentContainerStyle={reverse ? { flexDirection: 'column-reverse' } : null}>
+      {showAddItem && !reverse ? addItem : null}
       {items &&
         items.map((item, ii) => (
           <TouchableOpacity
@@ -118,6 +120,7 @@ export const DropdownItemsList = ({
             <Text style={item === selectedItem ? styles.selectedItemText : null}>{item.name}</Text>
           </TouchableOpacity>
         ))}
+      {showAddItem && reverse ? addItem : null}
     </ScrollView>
   );
 };
