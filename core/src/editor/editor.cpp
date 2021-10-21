@@ -215,30 +215,26 @@ void Editor::update(double dt) {
       // Update belt -- do this before tools to allow it to steal touches
       belt.update(dt);
 
-      selection.touchToSelect(*scene);
-
-      if (selection.isSelectionChanged()) {
-        setCurrentTool(Tool::Grab);
-
-        isEditorStateDirty = true;
-        isSelectedActorStateDirty = true;
-        if (selection.hasSelection()) {
-          scene->getBehaviors().forEach([&](auto &behavior) {
-            auto behaviorId = std::remove_reference_t<decltype(behavior)>::behaviorId;
-            selectedComponentStateDirty.insert(behaviorId);
-          });
-          if (!selection.isGhostActorsSelected() && isInspectorOpen) {
-            isInspectorOpen = false;
-          }
-        } else {
-          isInspectorOpen = false;
-        }
-        selection.setSelectionChanged(false);
-      }
-
       // Update current tool
       switch (currentTool) {
       case Tool::Grab:
+        selection.touchToSelect(*scene);
+        if (selection.isSelectionChanged()) {
+          isEditorStateDirty = true;
+          isSelectedActorStateDirty = true;
+          if (selection.hasSelection()) {
+            scene->getBehaviors().forEach([&](auto &behavior) {
+              auto behaviorId = std::remove_reference_t<decltype(behavior)>::behaviorId;
+              selectedComponentStateDirty.insert(behaviorId);
+            });
+            if (!selection.isGhostActorsSelected() && isInspectorOpen) {
+              isInspectorOpen = false;
+            }
+          } else {
+            isInspectorOpen = false;
+          }
+          selection.setSelectionChanged(false);
+        }
         grab.update(dt);
         break;
       case Tool::ScaleRotate:

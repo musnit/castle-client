@@ -4,6 +4,7 @@
 #include "props.h"
 
 #include "lv.h"
+#include "gesture.h"
 
 class Editor;
 
@@ -14,6 +15,7 @@ public:
 
   explicit GrabTool(Editor &editor_);
 
+  void applyTouch(const Touch &touch, bool fromBelt = false);
   void update(double dt);
   void drawOverlay() const;
 
