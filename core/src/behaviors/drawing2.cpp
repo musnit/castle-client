@@ -130,19 +130,24 @@ std::string Drawing2Behavior::hash(
 
 void Drawing2Behavior::handleReadComponent(
     ActorId actorId, Drawing2Component &component, Reader &reader) {
-  component.hash = reader.str("hash", "");
-
   love::AnimationComponentProperties animProps;
   animProps.read(reader);
   applyAnimationComponentProperties(component, animProps);
 
-  if (auto found = drawDataCache.find(component.hash); found == drawDataCache.end()) {
+  component.hash = reader.str("hash", "");
+  if (!component.hash.empty()) {
+    if (auto found = drawDataCache.find(component.hash); found != drawDataCache.end()) {
+      component.drawData = found->second;
+    } else {
+      reader.obj("drawData", [&]() {
+        component.drawData = std::make_shared<love::DrawData>(reader);
+        drawDataCache.insert_or_assign(component.hash, component.drawData);
+      });
+    }
+  } else {
     reader.obj("drawData", [&]() {
       component.drawData = std::make_shared<love::DrawData>(reader);
-      drawDataCache.insert_or_assign(component.hash, component.drawData);
     });
-  } else {
-    component.drawData = found->second;
   }
 
   reader.obj("physicsBodyData", [&]() {
