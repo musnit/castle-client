@@ -55,7 +55,9 @@ platform :ios do
      	provisioningProfiles: { 
           "xyz.castle.castle" => "xyz.castle.castle AppStore 1598649932",
           "xyz.castle.castle.CastleNotificationService" => "xyz.castle.castle.CastleNotificationService AppSto",
-        }
+        },
+        # https://developer.apple.com/forums/thread/690647
+        manageAppVersionAndBuildNumber: false,
       }
     )
   end
