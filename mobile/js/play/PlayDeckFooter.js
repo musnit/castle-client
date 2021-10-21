@@ -6,12 +6,14 @@ import { useNavigation } from '../ReactNavigation';
 import { ReactionButton } from '../components/ReactionButton';
 import { SocialCount } from '../components/SocialCount';
 import { UserAvatar } from '../components/UserAvatar';
+import { TouchableNativeFeedback as PressableRNGH } from 'react-native-gesture-handler';
+
+import tinycolor from 'tinycolor2';
 
 import * as Constants from '../Constants';
-const CastleIcon = Constants.CastleIcon;
 import * as Session from '../Session';
 
-import { TouchableNativeFeedback as PressableRNGH } from 'react-native-gesture-handler';
+const CastleIcon = Constants.CastleIcon;
 
 // required because android Pressable doesn't receive touches outside parent container
 // waiting for merge: https://github.com/facebook/react-native/pull/29039
@@ -21,16 +23,21 @@ const ICON_SIZE = 34;
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 4,
+    paddingTop: 44,
     paddingHorizontal: 16,
+    paddingBottom: 14,
     flexDirection: 'row',
     alignItems: 'flex-start',
+    borderBottomLeftRadius: Constants.CARD_BORDER_RADIUS,
+    borderBottomRightRadius: Constants.CARD_BORDER_RADIUS,
+    overflow: 'hidden',
   },
   background: {
     position: 'absolute',
+    top: 0,
     left: 0,
     right: 0,
-    height: 90,
+    bottom: -20,
   },
   left: {
     flexDirection: 'row',
@@ -117,6 +124,15 @@ export const PlayDeckFooter = ({ deck, isPlaying, onPressComments }) => {
     });
   };
 
+  let endColor = deck.initialCard.backgroundColor;
+  if (tinycolor(endColor).getBrightness() > 180) {
+    if (endColor == '#babef6') {
+      endColor = tinycolor(endColor).darken(20).desaturate(30).toHexString();
+    } else {
+      endColor = tinycolor(endColor).darken(30).desaturate(30).toHexString();
+    }
+  }
+
   return (
     <View style={styles.container} pointerEvents="box-none">
       <Animated.View
@@ -124,7 +140,8 @@ export const PlayDeckFooter = ({ deck, isPlaying, onPressComments }) => {
         pointerEvents="none">
         <LinearGradient
           // Background Linear Gradient
-          colors={['transparent', 'rgba(0, 0, 0, 0.5)', 'rgba(0,0,0,0.9)']}
+          colors={[endColor + '00', endColor + 'bb', endColor]}
+          locations={[0, 0.2, 0.5]}
           style={[styles.background]}
         />
       </Animated.View>

@@ -20,7 +20,7 @@ import { sendAsync } from '../core/CoreEvents';
 const { vw, vh } = Viewport;
 
 const DECK_FEED_ITEM_MARGIN = 0;
-const DECK_FEED_ITEM_FOOTER = 72;
+const DECK_FEED_ITEM_FOOTER = 110;
 
 // Determines how much horizontal padding to add to each card to ensure proper spacing.
 // Design goal is for the selected card to be entirely visible as well as the top
