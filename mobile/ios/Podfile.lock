@@ -303,9 +303,9 @@ PODS:
   - RNScreens (3.8.0):
     - React-Core
     - React-RCTImage
-  - RNSentry (2.4.0):
+  - RNSentry (3.1.1):
     - React-Core
-    - Sentry (= 6.1.4)
+    - Sentry (= 7.3.0)
   - RNVectorIcons (6.6.0):
     - React
   - SDWebImage (5.11.1):
@@ -314,9 +314,9 @@ PODS:
   - SDWebImageWebPCoder (0.8.4):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
-  - Sentry (6.1.4):
-    - Sentry/Core (= 6.1.4)
-  - Sentry/Core (6.1.4)
+  - Sentry (7.3.0):
+    - Sentry/Core (= 7.3.0)
+  - Sentry/Core (7.3.0)
   - SPTPersistentCache (1.1.0)
   - UMBarCodeScannerInterface (5.0.0)
   - UMCameraInterface (5.0.0)
@@ -586,11 +586,11 @@ SPEC CHECKSUMS:
   RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
   RNReanimated: 514a11da3a2bcc6c3dfd9de32b38e2b9bf101926
   RNScreens: 6e1ea5787989f92b0671049b808aef64fa1ef98c
-  RNSentry: b0d55027200c96f52e26b9bfb20296d47fc5051d
+  RNSentry: 49abc89b0190b4c8afe0fa5d065f98e36cb53233
   RNVectorIcons: 0bb4def82230be1333ddaeee9fcba45f0b288ed4
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
-  Sentry: 9d055e2de30a77685e86b219acf02e59b82091fc
+  Sentry: 9a4e621430e2dae4477d791f2f7e905720b6efbf
   SPTPersistentCache: df36ea46762d7cf026502bbb86a8b79d0080dff4
   UMBarCodeScannerInterface: 550e7ffd7a789289260bde3d547be29407e75437
   UMCameraInterface: 51e4568d64e77615557afaad9a3acdaad5d32d9f

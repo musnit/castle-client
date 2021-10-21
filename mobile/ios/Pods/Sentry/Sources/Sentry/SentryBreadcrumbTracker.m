@@ -4,9 +4,10 @@
 #import "SentryDefines.h"
 #import "SentryHub.h"
 #import "SentryLog.h"
-#import "SentrySDK.h"
+#import "SentrySDK+Private.h"
 #import "SentryScope.h"
 #import "SentrySwizzle.h"
+#import "SentryUIViewControllerSanitizer.h"
 
 #if SENTRY_HAS_UIKIT
 #    import <UIKit/UIKit.h>
@@ -24,6 +25,14 @@
     [self trackApplicationUIKitNotifications];
 }
 
+- (void)stop
+{
+    // This is a noop because the notifications are registered via blocks and monkey patching
+    // which are both super hard to clean up.
+    // Either way, all these are guarded by checking the client of the current hub, which
+    // we remove when uninstalling the SDK.
+}
+
 - (void)trackApplicationUIKitNotifications
 {
 #if SENTRY_HAS_UIKIT
@@ -37,7 +46,7 @@
 #else
     [SentryLog logWithMessage:@"NO UIKit, OSX and Catalyst -> [SentryBreadcrumbTracker "
                               @"trackApplicationUIKitNotifications] does nothing."
-                     andLevel:kSentryLogLevelDebug];
+                     andLevel:kSentryLevelDebug];
 #endif
 
     // not available for macOS
@@ -121,7 +130,7 @@
     SentrySwizzleInstanceMethod(UIApplication.class, selector, SentrySWReturnType(BOOL),
         SentrySWArguments(SEL action, id target, id sender, UIEvent * event), SentrySWReplacement({
             if (nil != [SentrySDK.currentHub getClient]) {
-                NSDictionary *data = [NSDictionary new];
+                NSDictionary *data = nil;
                 for (UITouch *touch in event.allTouches) {
                     if (touch.phase == UITouchPhaseCancelled || touch.phase == UITouchPhaseEnded) {
                         data = @ { @"view" : [NSString stringWithFormat:@"%@", touch.view] };
@@ -141,7 +150,7 @@
 #else
     [SentryLog logWithMessage:@"NO UIKit -> [SentryBreadcrumbTracker "
                               @"swizzleSendAction] does nothing."
-                     andLevel:kSentryLogLevelDebug];
+                     andLevel:kSentryLevelDebug];
 #endif
 }
 
@@ -162,7 +171,7 @@
                 SentryBreadcrumb *crumb = [[SentryBreadcrumb alloc] initWithLevel:kSentryLevelInfo
                                                                          category:@"ui.lifecycle"];
                 crumb.type = @"navigation";
-                NSString *viewControllerName = [SentryBreadcrumbTracker
+                NSString *viewControllerName = [SentryUIViewControllerSanitizer
                     sanitizeViewControllerName:[NSString stringWithFormat:@"%@", self]];
                 crumb.data = @ { @"screen" : viewControllerName };
 
@@ -179,35 +188,8 @@
 #else
     [SentryLog logWithMessage:@"NO UIKit -> [SentryBreadcrumbTracker "
                               @"swizzleViewDidAppear] does nothing."
-                     andLevel:kSentryLogLevelDebug];
+                     andLevel:kSentryLevelDebug];
 #endif
-}
-
-+ (NSRegularExpression *)viewControllerRegex
-{
-    static dispatch_once_t onceTokenRegex;
-    static NSRegularExpression *regex = nil;
-    dispatch_once(&onceTokenRegex, ^{
-        NSString *pattern = @"[<.](\\w+)";
-        regex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:nil];
-    });
-    return regex;
-}
-
-+ (NSString *)sanitizeViewControllerName:(NSString *)controller
-{
-    NSRange searchedRange = NSMakeRange(0, [controller length]);
-    NSArray *matches = [[self.class viewControllerRegex] matchesInString:controller
-                                                                 options:0
-                                                                   range:searchedRange];
-    NSMutableArray *strings = [NSMutableArray array];
-    for (NSTextCheckingResult *match in matches) {
-        [strings addObject:[controller substringWithRange:[match rangeAtIndex:1]]];
-    }
-    if ([strings count] > 0) {
-        return [strings componentsJoinedByString:@"."];
-    }
-    return controller;
 }
 
 @end

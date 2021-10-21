@@ -9,6 +9,7 @@
 #import "SentrySdkInfo.h"
 #import "SentrySerialization.h"
 #import "SentrySession.h"
+#import "SentryTransaction.h"
 #import "SentryUserFeedback.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -27,9 +28,29 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithId:(SentryId *_Nullable)eventId andSdkInfo:(SentrySdkInfo *_Nullable)sdkInfo
 {
+    return [self initWithId:eventId sdkInfo:sdkInfo traceState:nil];
+}
+
+- (instancetype)initWithId:(nullable SentryId *)eventId
+                traceState:(nullable SentryTraceState *)traceState
+{
+    SentrySdkInfo *sdkInfo = [[SentrySdkInfo alloc] initWithName:SentryMeta.sdkName
+                                                      andVersion:SentryMeta.versionString];
+
+    self = [self initWithId:eventId sdkInfo:sdkInfo traceState:traceState];
+
+    return self;
+}
+
+- (instancetype)initWithId:(nullable SentryId *)eventId
+                   sdkInfo:(nullable SentrySdkInfo *)sdkInfo
+                traceState:(nullable SentryTraceState *)traceState
+{
+
     if (self = [super init]) {
         _eventId = eventId;
         _sdkInfo = sdkInfo;
+        _traceState = traceState;
     }
 
     return self;
@@ -124,10 +145,15 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    return [self
-        initWithHeader:[[SentryEnvelopeItemHeader alloc] initWithType:SentryEnvelopeItemTypeEvent
-                                                               length:json.length]
-                  data:json];
+    // event.type can be nil and the server infers error if there's a stack trace, otherwise
+    // default. In any case in the envelope type it should be event. Except for transactions
+    NSString *envelopeType = [event.type isEqualToString:SentryEnvelopeItemTypeTransaction]
+        ? SentryEnvelopeItemTypeTransaction
+        : SentryEnvelopeItemTypeEvent;
+
+    return [self initWithHeader:[[SentryEnvelopeItemHeader alloc] initWithType:envelopeType
+                                                                        length:json.length]
+                           data:json];
 }
 
 - (instancetype)initWithSession:(SentrySession *)session
@@ -144,15 +170,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithUserFeedback:(SentryUserFeedback *)userFeedback
 {
-
     NSError *error = nil;
     NSData *json = [NSJSONSerialization dataWithJSONObject:[userFeedback serialize]
                                                    options:0
                                                      error:&error];
 
     if (nil != error) {
-        [SentryLog logWithMessage:@"Couldn't serialize user feedback."
-                         andLevel:kSentryLogLevelError];
+        [SentryLog logWithMessage:@"Couldn't serialize user feedback." andLevel:kSentryLevelError];
         json = [NSData new];
     }
 
@@ -174,7 +198,7 @@ NS_ASSUME_NONNULL_BEGIN
                                            @"the maximum allowed attachment size of %lu bytes.",
                           attachment.filename, (unsigned long)attachment.data.length,
                           (unsigned long)maxAttachmentSize];
-            [SentryLog logWithMessage:message andLevel:kSentryLogLevelDebug];
+            [SentryLog logWithMessage:message andLevel:kSentryLevelDebug];
 
             return nil;
         }
@@ -191,7 +215,7 @@ NS_ASSUME_NONNULL_BEGIN
             NSString *message = [NSString
                 stringWithFormat:@"Couldn't check file size of attachment with path: %@. Error: %@",
                 attachment.path, error.localizedDescription];
-            [SentryLog logWithMessage:message andLevel:kSentryLogLevelError];
+            [SentryLog logWithMessage:message andLevel:kSentryLevelError];
 
             return nil;
         }
@@ -204,7 +228,7 @@ NS_ASSUME_NONNULL_BEGIN
                     @"Dropping attachment, because the size of the it located at '%@' with %llu "
                     @"bytes is bigger than the maximum allowed attachment size of %lu bytes.",
                 attachment.path, fileSize, (unsigned long)maxAttachmentSize];
-            [SentryLog logWithMessage:message andLevel:kSentryLogLevelDebug];
+            [SentryLog logWithMessage:message andLevel:kSentryLevelDebug];
             return nil;
         }
 
@@ -212,7 +236,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (nil == data) {
-        [SentryLog logWithMessage:@"Couldn't init Attachment." andLevel:kSentryLogLevelError];
+        [SentryLog logWithMessage:@"Couldn't init Attachment." andLevel:kSentryLevelError];
         return nil;
     }
 
