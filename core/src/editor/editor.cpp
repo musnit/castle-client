@@ -404,6 +404,9 @@ void Editor::draw() {
         // actor being edited by draw tool
         options.editorDrawingActorId = selection.firstSelectedActorId();
         options.editorDrawingAnimationFrame = drawTool.getCurrentAnimationFrame();
+      } else {
+        options.editorDrawingActorId = selection.firstSelectedActorId();
+        options.editorDrawingAnimationFrame = drawTool.selectedFrameIndex.toZeroIndex();
       }
       scene->draw(options);
     } else {
