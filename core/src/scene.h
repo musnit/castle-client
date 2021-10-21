@@ -74,6 +74,7 @@ public:
     ActorId requestedActorId = nullActor;
     Reader *reader = nullptr;
     const char *parentEntryId = nullptr;
+    bool inherit = true; // `false` when loading old scenes that stored data duplicated on actors
     DrawOrderParams drawOrderParams = {};
     bool isGhost = false;
     std::optional<love::Vector2> pos;

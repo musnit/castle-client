@@ -57,6 +57,7 @@ void Scene::read(Reader &reader) {
   });
 
   // Actors
+  auto inherit = reader.boolean("actorBlueprintInherit", false);
   reader.each("actors", [&]() {
     // Legacy actor ID
     auto maybeActorIdStr = reader.str("actorId");
@@ -72,6 +73,7 @@ void Scene::read(Reader &reader) {
       ActorDesc actorDesc;
       actorDesc.reader = &reader;
       actorDesc.parentEntryId = maybeParentEntryId;
+      actorDesc.inherit = inherit;
       addActor(actorDesc);
     });
   });
@@ -146,12 +148,15 @@ ActorId Scene::addActor(const ActorDesc &params) {
   std::optional<Reader> maybeFallbackComponentsReader;
   const auto readComponents = [&](Reader &reader) {
     // Fallback to blueprint's components
-    if (maybeFallbackComponentsReader) {
+    if (params.inherit && maybeFallbackComponentsReader) {
       reader.setFallback(maybeFallbackComponentsReader->jsonValue());
     }
 
     // Load each component
     reader.each([&](const char *behaviorName) {
+      if (reader.jsonValue()->GetType() != json::kObjectType) {
+        return;
+      }
       auto found = false;
       getBehaviors().byName(behaviorName, [&](auto &behavior) {
         // We found a behavior with this name
