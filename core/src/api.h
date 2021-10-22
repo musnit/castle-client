@@ -8,6 +8,7 @@ namespace CastleAPI {
 void postRequest(const std::string &body,
     const std::function<void(bool, std::string, std::string)>
         callback); // Implemented in platform-specific files
+void pollForResponses();
 }
 
 struct APIResponse {
@@ -227,6 +228,8 @@ public:
   }
 
   static void runCallbacks() {
+    CastleAPI::pollForResponses();
+
     for (const auto &[query, result] : completedRequests) {
       cacheLock.lock();
 

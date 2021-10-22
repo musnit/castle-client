@@ -2,11 +2,15 @@
 
 package xyz.castle.api;
 
+import android.util.Pair;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -21,7 +25,9 @@ import xyz.castle.ViewUtils;
 
 public class API {
 
-    public static String jniPostRequest(final String postBody) {
+    private static Queue<Pair<Integer, String>> jniResponses = new LinkedList<>();
+
+    public static void jniPostRequest(final String postBody, final int requestId) {
         RequestBody body = RequestBody.create(JSON, postBody);
         Request.Builder builder = new Request.Builder()
                 .url(API_HOST)
@@ -29,11 +35,28 @@ public class API {
                 .addHeader("X-Platform", "mobile")
                 .addHeader("X-Scene-Creator-Version", MainActivity.SCENE_CREATOR_API_VERSION);
 
-        try {
-            Response response = client.newCall(builder.build()).execute();
-            return response.body().string();
-        } catch (IOException e) {
-            return "error";
+        client.newCall(builder.build()).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                jniResponses.add(Pair.create(requestId, "error"));
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    jniResponses.add(Pair.create(requestId, response.body().string()));
+                } catch (IOException e) {
+                    jniResponses.add(Pair.create(requestId, "error"));
+                }
+            }
+        });
+    }
+
+    public static Pair<Integer, String> jniPollForResponses() {
+        if (jniResponses.size() > 0) {
+            return jniResponses.remove();
+        } else {
+            return Pair.create(-1, "error");
         }
     }
 
