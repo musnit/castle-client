@@ -39,7 +39,6 @@ const styles = StyleSheet.create({
   },
   segmentedControlLabelSelected: {
     color: Constants.colors.white,
-    fontWeight: 'bold',
   },
   segmentedControlLabel: {
     alignItems: 'center',

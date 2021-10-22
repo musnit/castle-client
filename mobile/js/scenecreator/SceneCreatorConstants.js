@@ -57,7 +57,7 @@ export const styles = {
     alignItems: 'center',
   },
   behaviorHeaderName: {
-    fontWeight: 'bold',
+    fontWeight: '600',
     fontSize: 16,
   },
   behaviorHeaderRemoveButton: {

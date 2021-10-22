@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   label: {
-    fontWeight: 'bold',
+    fontWeight: '600',
     paddingBottom: 16,
     fontSize: 16,
   },
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 4,
+    paddingVertical: 3,
     fontSize: 16,
   },
   segmentedControlItemSelected: {

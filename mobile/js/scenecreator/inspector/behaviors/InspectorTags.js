@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   label: {
-    fontWeight: 'bold',
+    fontWeight: '600',
     paddingBottom: 16,
     fontSize: 16,
   },
@@ -20,9 +20,10 @@ const styles = StyleSheet.create({
 
 export default InspectorTags = ({ tags }) => {
   const tagsComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Tags');
-  const sendAction = React.useCallback((...args) => sendBehaviorAction('Tags', ...args), [
-    sendBehaviorAction,
-  ]);
+  const sendAction = React.useCallback(
+    (...args) => sendBehaviorAction('Tags', ...args),
+    [sendBehaviorAction]
+  );
 
   const [value, setValueAndSendAction] = useOptimisticBehaviorValue({
     component: tagsComponent,

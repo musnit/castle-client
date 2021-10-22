@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   label: {
-    fontWeight: 'bold',
+    fontWeight: '600',
     paddingBottom: 16,
     fontSize: 16,
   },
@@ -19,9 +19,10 @@ const styles = StyleSheet.create({
 
 export default InspectorTextLayout = () => {
   const textComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Text');
-  const sendAction = React.useCallback((...args) => sendBehaviorAction('Text', ...args), [
-    sendBehaviorAction,
-  ]);
+  const sendAction = React.useCallback(
+    (...args) => sendBehaviorAction('Text', ...args),
+    [sendBehaviorAction]
+  );
 
   const [value, setValueAndSendAction] = useOptimisticBehaviorValue({
     component: textComponent,

@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     paddingRight: 0,
   },
   label: {
-    fontWeight: 'bold',
+    fontWeight: '600',
     paddingBottom: 16,
     fontSize: 16,
   },
