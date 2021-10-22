@@ -447,9 +447,7 @@ inline float Scene::getViewScale() const {
 }
 
 inline float Scene::getPixelScale() const {
-  auto graphicsDpi = lv.graphics.getScreenDPIScale();
-  auto windowDpi = lv.window.getDPIScale();
-  return float((graphicsDpi * graphicsDpi / windowDpi) * (uiPixelRatio / 3) / getViewScale());
+  return float(lv.window.getDPIScale() / getViewScale()) * uiPixelRatio / 3;
 }
 
 inline void Scene::setCameraTarget(ActorId target) {
