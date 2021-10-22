@@ -21,6 +21,7 @@ import { CreateCardOverlay } from './overlay/CreateCardOverlay';
 
 import { PopoverProvider } from '../components/PopoverProvider';
 import { SheetProvider } from './SheetProvider';
+import { useGameViewAndroidBackHandler } from '../common/GameViewAndroidBackHandler';
 
 const TABLET_BELT_HEIGHT_MULTIPLIER = isTablet() ? 2 : 1;
 const MIN_BELT_HEIGHT = 1.2 * TABLET_BELT_HEIGHT_MULTIPLIER * 48;
@@ -116,6 +117,17 @@ export const CreateCardScreen = ({
   const hasSelection = selectedActorId >= 0 && activeSheet !== 'capturePreview';
   const textActors = useCoreTextActors();
   const editMode = globalActions?.editMode;
+
+  const onHardwareBackPress = React.useCallback(() => {
+    if (activeSheet) {
+      setActiveSheet(null);
+    } else {
+      maybeSaveAndGoToDeck();
+    }
+
+    return true;
+  }, [activeSheet]);
+  useGameViewAndroidBackHandler({ onHardwareBackPress });
 
   React.useEffect(() => {
     if (isInspectorOpen && !activeSheet) {
@@ -285,16 +297,6 @@ export const CreateCardScreen = ({
       }
     },
   });
-
-  if (Constants.Android) {
-    // after the game loads, it listens for keyboard events and
-    // causes react native's back button event to fail
-    // TODO: android: Wire up to new engine
-    useListen({
-      eventName: 'CASTLE_SYSTEM_BACK_BUTTON',
-      handler: maybeSaveAndGoToDeck,
-    });
-  }
 
   const cardBackgroundStyles = {
     backgroundColor: isPlaying ? 'black' : '#f2f2f2',

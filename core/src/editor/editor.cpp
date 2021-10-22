@@ -10,6 +10,35 @@ Editor::Editor(Bridge &bridge_)
   isSelectedActorStateDirty = true;
 }
 
+bool Editor::androidHandleBackPressed() {
+  if (playing) {
+    playing = false;
+    player.reset();
+    isEditorStateDirty = true;
+    return true;
+  }
+
+  if (editMode == EditMode::Draw) {
+    editMode = EditMode::Default;
+    currentTool = Tool::Grab;
+    isEditorStateDirty = true;
+    return true;
+  }
+
+  if (isInspectorOpen) {
+    isInspectorOpen = false;
+    isEditorStateDirty = true;
+    return true;
+  }
+
+  if (getSelection().hasSelection()) {
+    getSelection().deselectAllActors();
+    return true;
+  }
+
+  return false;
+}
+
 void Editor::clearState() {
   isInspectorOpen = false;
   editMode = EditMode::Default;

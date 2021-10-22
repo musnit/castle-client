@@ -242,10 +242,14 @@ struct AndroidBackPressedEvent {};
 
 void Engine::androidHandleBackPressed() {
 #ifdef ANDROID
-  if (androidBackButtonHandlers.size() == 0) {
-    AndroidBackPressedEvent event;
-    getBridge().sendEvent("CASTLE_SYSTEM_BACK_BUTTON", event);
+  if (isEditing) {
+    if (editor->androidHandleBackPressed()) {
+      return;
+    }
   }
+
+  AndroidBackPressedEvent event;
+  getBridge().sendEvent("CASTLE_SYSTEM_BACK_BUTTON", event);
 #endif
 }
 

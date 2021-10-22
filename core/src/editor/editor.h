@@ -83,6 +83,7 @@ public:
 
   void triggerAutoSave();
   bool isInspectorOpen = false;
+  bool androidHandleBackPressed();
 
 private:
   friend struct EditorGlobalActionReceiver;
