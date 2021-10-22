@@ -23,6 +23,7 @@ const ICON_SIZE = 34;
 
 const styles = StyleSheet.create({
   container: {
+    height: 110,
     paddingTop: 44,
     paddingHorizontal: 16,
     paddingBottom: 14,
