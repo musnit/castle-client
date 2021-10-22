@@ -96,6 +96,15 @@ export default RuleOptionsSheet = ({
         },
       },
       {
+        name: 'Wrap in tell',
+        icon: 'radio-tower',
+        shouldDisplay: () => true,
+        action: () => {
+          actions.wrapInActOn();
+          onClose();
+        },
+      },
+      {
         name: 'Repeat N times',
         icon: 'repeat-once',
         shouldDisplay: () => true,

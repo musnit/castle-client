@@ -83,6 +83,17 @@ const wrapInCondition = (response) => {
   };
 };
 
+// wrap in 'act on': change myself into 'act on' and change params.body to myself
+const wrapInActOn = (response) => {
+  return {
+    name: 'act on',
+    behaviorId: RULES_BEHAVIOR_ID,
+    params: {
+      body: { ...response },
+    },
+  };
+};
+
 const wrapInRepeat = (response) => {
   return {
     name: 'repeat',
@@ -124,6 +135,7 @@ export const makeResponseActions = (response, onChangeResponse) => {
     replace: (newResponse) => onChangeResponse(replace(response, newResponse)),
     insertBefore: (newResponse) => onChangeResponse(insertBefore(response, newResponse)),
     wrapInCondition: () => onChangeResponse(wrapInCondition(response)),
+    wrapInActOn: () => onChangeResponse(wrapInActOn(response)),
     wrapInRepeat: () => onChangeResponse(wrapInRepeat(response)),
     wrapInInfiniteRepeat: () => onChangeResponse(wrapInInfiniteRepeat(response)),
   };
