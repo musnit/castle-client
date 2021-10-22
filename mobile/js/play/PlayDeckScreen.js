@@ -28,7 +28,10 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
   const deckId = deck?.deckId;
 
   const { pop } = useNavigation();
-  const onHardwareBackPress = React.useCallback(() => pop(), [pop]);
+  const onHardwareBackPress = React.useCallback(() => {
+    pop();
+    return true;
+  }, [pop]);
   useGameViewAndroidBackHandler({ onHardwareBackPress });
 
   useFocusEffect(

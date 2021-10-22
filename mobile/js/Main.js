@@ -36,6 +36,7 @@ import { UserListScreen } from './components/UserListScreen';
 
 import * as Session from './Session';
 import * as PushNotifications from './PushNotifications';
+import * as GameViewAndroidBackHandler from './common/GameViewAndroidBackHandler';
 
 let bootSplashHidden = false;
 
@@ -105,6 +106,8 @@ if (Platform.OS === 'android') {
         />
       );
     }
+
+    GameViewAndroidBackHandler.listen();
 
     return React.Children.only(props.children);
   };

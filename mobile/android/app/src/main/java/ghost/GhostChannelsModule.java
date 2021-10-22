@@ -143,6 +143,8 @@ public class GhostChannelsModule extends ReactContextBaseJavaModule {
     getCurrentActivity().runOnUiThread(() -> {
       CastleNavigator.castleNavigatorForId("Root").handleBack();
 
+      // TODO: this break if you do Feed -> Game -> Profile -> Game and then back out,
+      // the tab bar shows over the game
       EventBus.getDefault().post(new NavigationActivity.ShowTabBarEvent());
     });
   }
