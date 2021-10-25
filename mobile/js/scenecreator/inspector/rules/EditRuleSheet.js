@@ -52,6 +52,21 @@ export const EditRuleSheet = ({
 }) => {
   const rulesComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Rules');
   const rule = rulesComponent ? rulesComponent.rules[ruleIndex] : null;
+
+  const onRemove = React.useCallback(() => {
+    if (rule) {
+      onRemoveRule(rule, ruleIndex);
+      onClose();
+    }
+  }, [onRemoveRule, onClose, rule, ruleIndex]);
+
+  const onCopy = React.useCallback(() => {
+    if (rule) {
+      onCopyRule(rule);
+      onClose();
+    }
+  }, [onCopyRule, onClose, rule]);
+
   if (!rule) return null;
 
   const renderContent = () => (
@@ -67,16 +82,6 @@ export const EditRuleSheet = ({
       />
     </View>
   );
-
-  const onRemove = React.useCallback(() => {
-    onRemoveRule(rule, ruleIndex);
-    onClose();
-  }, [onRemoveRule, onClose, rule, ruleIndex]);
-
-  const onCopy = React.useCallback(() => {
-    onCopyRule(rule);
-    onClose();
-  }, [onCopyRule, onClose, rule]);
 
   const renderHeaderActions = () => (
     <RuleHeaderActions onRemoveRule={onRemove} onCopyRule={onCopy} />
