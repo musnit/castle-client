@@ -51,7 +51,7 @@ export const EditRuleSheet = ({
   addChildSheet,
 }) => {
   const rulesComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Rules');
-  const rule = rulesComponent.rules[ruleIndex];
+  const rule = rulesComponent ? rulesComponent.rules[ruleIndex] : null;
   if (!rule) return null;
 
   const renderContent = () => (
