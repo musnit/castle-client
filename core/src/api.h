@@ -5,9 +5,11 @@
 #include <thread>
 
 namespace CastleAPI {
-void postRequest(const std::string &body,
+void graphqlPostRequest(const std::string &body,
     const std::function<void(bool, std::string, std::string)>
         callback); // Implemented in platform-specific files
+void getRequest(
+    const std::string &url, const std::function<void(bool, std::string, std::string)> callback);
 }
 
 struct APIResponse {
@@ -57,12 +59,15 @@ private:
 
   inline static std::mutex cacheLock;
   inline static std::unordered_map<std::string, std::list<std::function<void(APIResponse &)>>>
-      queryToPendingCallbacks;
+      urlToPendingCallbacks;
   inline static std::unordered_map<std::string, APICacheResponse> cachedResponses;
-  inline static std::unordered_map<std::string, APICacheResponse> cachedCards;
+  // These are requests that just finished and have pending callbacks. Once the callbacks
+  // are handled they'll be moved to cachedResponses
   inline static std::unordered_map<std::string, APICacheResponse> completedRequests;
+  inline static std::unordered_map<std::string, std::string> cardIdToSceneDataUrl;
 
-  static void graphqlThread(const std::string &query) {
+  static void graphqlThread(
+      const std::string &query, const std::function<void(APIResponse &)> &callback) {
     Archive requestBodyArchive;
     requestBodyArchive.write([&](Archive::Writer &writer) {
       writer.obj("variables", [&]() {
@@ -73,30 +78,38 @@ private:
     std::string requestBody = requestBodyArchive.toJson();
 
     // TODO: error handling
-    CastleAPI::postRequest(requestBody, [=](bool success, std::string error, std::string result) {
-      completedRequests[query] = APICacheResponse(success, error, result);
+    CastleAPI::graphqlPostRequest(
+        requestBody, [=](bool success, std::string error, std::string result) {
+          APICacheResponse(success, error, result).loadAPIResponse(callback);
+        });
+  }
+
+  static void getThread(const std::string &url) {
+    // TODO: error handling
+    CastleAPI::getRequest(url, [=](bool success, std::string error, std::string result) {
+      completedRequests[url] = APICacheResponse(success, error, result);
     });
   }
 
   static std::string deckQuery(const std::string &deckId) {
     return "{\n  deck(deckId: \"" + deckId
         + "\") {\n    variables\n    initialCard {\n     "
-          " cardId\n    sceneData\n    }\n  }\n}\n";
+          " cardId\n    sceneDataUrl\n    }\n  }\n}\n";
   }
 
 public:
-  static void preloadDeck(const std::string &deckId) {
-    graphql(
-        deckQuery(deckId),
+  static void preloadDeck(const std::string &deckId, const std::string &variables, const std::string &initialCardId, const std::string &initialCardSceneDataUrl) {
+    loadDeck(
+        deckId, variables.c_str(), initialCardId.c_str(), initialCardSceneDataUrl.c_str(), true,
         [=](APIResponse &response) {
         },
-        false);
+        [=](APIResponse &response) {
+        });
   }
 
   static void preloadNextCards(const std::string &cardId) {
-    graphql(
-        "{\n  card(cardId: \"" + cardId
-            + "\") {\n    nextCards {\n      cardId\n      sceneDataString\n    }\n  }\n}\n",
+    graphql("{\n  card(cardId: \"" + cardId
+            + "\") {\n    nextCards {\n      cardId\n      sceneDataUrl\n    }\n  }\n}\n",
         [=](APIResponse &response) {
           if (response.success) {
             auto &reader = response.reader;
@@ -104,142 +117,158 @@ public:
               reader.obj("card", [&]() {
                 reader.each("nextCards", [&]() {
                   std::string cardId = reader.str("cardId", "");
-                  std::string sceneDataString = reader.str("sceneDataString", "");
+                  std::string sceneDataUrl = reader.str("sceneDataUrl", "");
 
-                  cachedCards[cardId] = APICacheResponse(true, "", sceneDataString);
+                  cardIdToSceneDataUrl[cardId] = sceneDataUrl;
+                  get(sceneDataUrl, [=](APIResponse &sceneDataResponse) {
+                  });
                 });
               });
             });
           }
-        },
-        false);
+        });
+  }
+
+  static void loadSceneData(
+      const std::string &sceneDataUrl, const std::function<void(APIResponse &)> &snapshotCallback) {
+    get(sceneDataUrl, [=](APIResponse &sceneDataResponse) {
+      if (sceneDataResponse.success) {
+        auto &sceneDataReader = sceneDataResponse.reader;
+        sceneDataReader.obj("snapshot", [&]() {
+          APIResponse snapshotResponse(true, "", sceneDataReader);
+          snapshotCallback(snapshotResponse);
+        });
+      } else {
+        snapshotCallback(sceneDataResponse);
+      }
+    });
   }
 
   static void loadCard(const std::string &cardId, bool useCache,
       const std::function<void(APIResponse &)> &snapshotCallback) {
-    if (cachedCards.find(cardId) != cachedCards.end()) {
-      if (cachedCards[cardId].success) {
-        auto archive = Archive::fromJson(cachedCards[cardId].result.c_str());
-        archive.read([&](Reader &reader) {
-          reader.obj("snapshot", [&]() {
-            APIResponse snapshotResponse(true, "", reader);
-            snapshotCallback(snapshotResponse);
-          });
-        });
-      } else {
-        // cachedCards[cardId] has the error information already, so just use it directly
-        cachedCards[cardId].loadAPIResponse(snapshotCallback);
-      }
+    if (useCache && cardIdToSceneDataUrl.find(cardId) != cardIdToSceneDataUrl.end()) {
+      std::string sceneDataUrl = cardIdToSceneDataUrl[cardId];
+      loadSceneData(sceneDataUrl, snapshotCallback);
+      preloadNextCards(cardId);
     } else {
-      graphql(
-          "{\n  card(cardId: \"" + std::string(cardId) + "\") {\n    sceneData\n  }\n}\n",
+      graphql("{\n  card(cardId: \"" + std::string(cardId) + "\") {\n    sceneDataUrl\n  }\n}\n",
           [=](APIResponse &response) {
             if (response.success) {
               auto &reader = response.reader;
               reader.obj("data", [&]() {
                 reader.obj("card", [&]() {
-                  reader.obj("sceneData", [&]() {
-                    reader.obj("snapshot", [&]() {
-                      APIResponse snapshotResponse(true, "", reader);
-                      snapshotCallback(snapshotResponse);
-                    });
-                  });
+                  auto sceneDataUrl = reader.str("sceneDataUrl", "");
+                  cardIdToSceneDataUrl[cardId] = sceneDataUrl;
+                  loadSceneData(sceneDataUrl, snapshotCallback);
+                  preloadNextCards(cardId);
                 });
               });
             } else {
               // response has the error information already, so just use it directly
               snapshotCallback(response);
             }
-          },
-          useCache);
+          });
     }
-
-    preloadNextCards(cardId);
   }
 
-  static void loadDeck(const std::string &deckId, bool useCache,
-      const std::function<void(APIResponse &)> &variablesCallBack,
+  static void loadDeck(const std::string &deckId, const char *variables, const char *initialCardId, const char *initialCardSceneDataUrl, bool useCache,
+      const std::function<void(APIResponse &)> &variablesCallback,
       const std::function<void(APIResponse &)> &snapshotCallback) {
-    graphql(
-        deckQuery(deckId),
-        [=](APIResponse &response) {
-          if (response.success) {
-            auto &reader = response.reader;
-            reader.obj("data", [&]() {
-              reader.obj("deck", [&]() {
-                reader.arr("variables", [&]() {
-                  APIResponse variablesResponse(true, "", reader);
-                  variablesCallBack(variablesResponse);
-                });
-                reader.obj("initialCard", [&]() {
-                  reader.obj("sceneData", [&]() {
-                    reader.obj("snapshot", [&]() {
-                      APIResponse snapshotResponse(true, "", reader);
-                      snapshotCallback(snapshotResponse);
-                    });
-                  });
+    if (variables && initialCardId && initialCardSceneDataUrl) {
+      cardIdToSceneDataUrl[initialCardId] = initialCardSceneDataUrl;
+      loadSceneData(initialCardSceneDataUrl, snapshotCallback);
 
-                  std::string cardId = reader.str("cardId", "");
-                  preloadNextCards(cardId);
-                });
+      auto archive = Archive::fromJson(variables);
+      archive.read([&](Reader &reader) {
+        reader.arr("variables", [&]() {
+          APIResponse variablesResponse(true, "", reader);
+          variablesCallback(variablesResponse);
+        });
+      });
+    } else {
+      graphql(deckQuery(deckId), [=](APIResponse &response) {
+        if (response.success) {
+          auto &reader = response.reader;
+          reader.obj("data", [&]() {
+            reader.obj("deck", [&]() {
+              reader.arr("variables", [&]() {
+                APIResponse variablesResponse(true, "", reader);
+                variablesCallback(variablesResponse);
+              });
+              reader.obj("initialCard", [&]() {
+                auto sceneDataUrl = reader.str("sceneDataUrl", "");
+                std::string cardId = reader.str("cardId", "");
+                cardIdToSceneDataUrl[cardId] = sceneDataUrl;
+                loadSceneData(sceneDataUrl, snapshotCallback);
+
+                preloadNextCards(cardId);
               });
             });
-          } else {
-            // response has the error information already, so just use it directly
-            variablesCallBack(response);
-            snapshotCallback(response);
-          }
-        },
-        useCache);
+          });
+        } else {
+          // response has the error information already, so just use it directly
+          variablesCallback(response);
+          snapshotCallback(response);
+        }
+      });
+    }
   }
 
   static void graphql(
-      const std::string &query, const std::function<void(APIResponse &)> &callback, bool useCache) {
+      const std::string &query, const std::function<void(APIResponse &)> &callback) {
+#ifdef ANDROID
+    graphqlThread(query, callback);
+#else
+    std::thread { &API::graphqlThread, query, callback }.detach();
+#endif
+  }
+
+  static void get(const std::string &url, const std::function<void(APIResponse &)> &callback) {
     bool usingCache = false;
-    if (useCache) {
-      if (cachedResponses.find(query) != cachedResponses.end()) {
-        cachedResponses[query].loadAPIResponse(callback);
+    if (cachedResponses.find(url) != cachedResponses.end()) {
+      cachedResponses[url].loadAPIResponse(callback);
 
+      usingCache = true;
+    } else {
+      cacheLock.lock();
+      if (urlToPendingCallbacks.find(url) != urlToPendingCallbacks.end()) {
+        urlToPendingCallbacks[url].push_back(callback);
         usingCache = true;
-      } else {
-        cacheLock.lock();
-        if (queryToPendingCallbacks.find(query) != queryToPendingCallbacks.end()) {
-          queryToPendingCallbacks[query].push_back(callback);
-          usingCache = true;
-        }
-        cacheLock.unlock();
       }
+      cacheLock.unlock();
     }
-
 
     if (!usingCache) {
       cacheLock.lock();
-      queryToPendingCallbacks.insert({ query, { callback } });
+      urlToPendingCallbacks.insert({ url, { callback } });
 
 #ifdef ANDROID
       cacheLock.unlock();
-      graphqlThread(query);
+      getThread(url);
 #else
-      std::thread { &API::graphqlThread, query }.detach();
+      std::thread { &API::getThread, url }.detach();
       cacheLock.unlock();
 #endif
     }
   }
 
   static void runCallbacks() {
-    for (const auto &[query, result] : completedRequests) {
+    for (auto it = completedRequests.cbegin(); it != completedRequests.cend();) {
+      auto url = it->first;
+      auto result = it->second;
+
       cacheLock.lock();
 
-      cachedResponses[query] = result;
-      auto callbacks = queryToPendingCallbacks[query];
-      queryToPendingCallbacks.erase(query);
+      cachedResponses[url] = result;
+      auto callbacks = urlToPendingCallbacks[url];
+      urlToPendingCallbacks.erase(url);
       cacheLock.unlock();
 
       for (auto const &callback : callbacks) {
         result.loadAPIResponse(callback);
       }
-    }
 
-    completedRequests.clear();
+      completedRequests.erase(it++);
+    }
   }
 };

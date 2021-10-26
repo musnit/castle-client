@@ -79,9 +79,11 @@ export const CreateChooseKitScreen = () => {
           id
           deckId
           title
+          variables
           initialCard {
             id
             cardId
+            sceneDataUrl
             backgroundColor
             backgroundImage {
               url

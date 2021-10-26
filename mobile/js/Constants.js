@@ -223,6 +223,7 @@ export const FEED_ITEM_DECK_FRAGMENT = `
   initialCard {
     id
     cardId
+    sceneDataUrl
     title
     backgroundColor
     backgroundImage {

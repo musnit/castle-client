@@ -465,6 +465,7 @@ export const resetPasswordAsync = async ({ username }) => {
 export const CARD_FRAGMENT = `
   id
   cardId
+  sceneDataUrl
   title
   lastModified
   backgroundImage {
@@ -484,6 +485,7 @@ const DECK_FRAGMENT = `
   initialCard {
     id
     cardId
+    sceneDataUrl
   }
   creator {
     userId

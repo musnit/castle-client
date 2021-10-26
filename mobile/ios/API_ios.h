@@ -6,7 +6,9 @@
 
 @interface APIIos : NSObject
 + (void)setRctBridge:(RCTBridge *)rctBridge;
-+ (void)iosPostRequest:(NSString *)postBody withCallback:(void (^)(NSString *, NSString *))callback;
++ (void)iosGraphqlPostRequest:(NSString *)postBody
+                 withCallback:(void (^)(NSString *, NSString *))callback;
++ (void)iosGetRequest:(NSString *)url withCallback:(void (^)(NSString *, NSString *))callback;
 @end
 
 #endif /* API_ios_h */

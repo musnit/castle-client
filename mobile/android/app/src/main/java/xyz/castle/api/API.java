@@ -27,13 +27,35 @@ public class API {
 
     public static native void networkRequestCompleted(String response, int requestId);
 
-    public static void jniPostRequest(final String postBody, final int requestId) {
+    public static void jniGraphqlPostRequest(final String postBody, final int requestId) {
         RequestBody body = RequestBody.create(JSON, postBody);
         Request.Builder builder = new Request.Builder()
                 .url(API_HOST)
                 .post(body)
                 .addHeader("X-Platform", "mobile")
                 .addHeader("X-Scene-Creator-Version", MainActivity.SCENE_CREATOR_API_VERSION);
+
+        client.newCall(builder.build()).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                networkRequestCompleted("error", requestId);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    networkRequestCompleted(response.body().string(), requestId);
+                } catch (IOException e) {
+                    networkRequestCompleted("error", requestId);
+                }
+            }
+        });
+    }
+
+    public static void jniGetRequest(final String url, final int requestId) {
+        Request.Builder builder = new Request.Builder()
+                .url(url)
+                .get();
 
         client.newCall(builder.build()).enqueue(new Callback() {
             @Override

@@ -40,7 +40,7 @@ public:
 
   bool hasInitialDeck() const;
   void loadSceneFromFile(const char *path);
-  void loadSceneFromDeckId(const char *deckId);
+  void loadSceneFromDeckId(const char *deckId, const char *variables, const char *initialCardId, const char *initialCardSceneDataUrl);
   void loadSceneFromCardId(const char *cardId);
   void loadSceneFromJson(const char *json, bool skipScene);
 

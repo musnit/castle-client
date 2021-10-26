@@ -8,7 +8,7 @@ namespace CastleAPI {
 static int requestId = 0;
 static std::map<int, const std::function<void(bool, std::string, std::string)>> activeRequests;
 
-void postRequest(
+void graphqlPostRequest(
     const std::string &body, const std::function<void(bool, std::string, std::string)> callback) {
   JNIEnv *oldEnv = (JNIEnv *)SDL_AndroidGetJNIEnv();
   JavaVM *jvm;
@@ -20,13 +20,36 @@ void postRequest(
   jclass activity = env->FindClass("xyz/castle/api/API");
 
   jmethodID methodHandle
-      = env->GetStaticMethodID(activity, "jniPostRequest", "(Ljava/lang/String;I)V");
+      = env->GetStaticMethodID(activity, "jniGraphqlPostRequest", "(Ljava/lang/String;I)V");
 
   jstring bodyJString = env->NewStringUTF(body.c_str());
   int currentRequestId = requestId++;
   activeRequests.insert(std::pair<int, const std::function<void(bool, std::string, std::string)>>(
       currentRequestId, callback));
   env->CallStaticVoidMethod(activity, methodHandle, bodyJString, currentRequestId);
+
+  env->DeleteLocalRef(activity);
+}
+
+void getRequest(
+    const std::string &url, const std::function<void(bool, std::string, std::string)> callback) {
+  JNIEnv *oldEnv = (JNIEnv *)SDL_AndroidGetJNIEnv();
+  JavaVM *jvm;
+  oldEnv->GetJavaVM(&jvm);
+
+  JNIEnv *env;
+  jvm->AttachCurrentThread(&env, NULL);
+
+  jclass activity = env->FindClass("xyz/castle/api/API");
+
+  jmethodID methodHandle
+      = env->GetStaticMethodID(activity, "jniGetRequest", "(Ljava/lang/String;I)V");
+
+  jstring urlJString = env->NewStringUTF(url.c_str());
+  int currentRequestId = requestId++;
+  activeRequests.insert(std::pair<int, const std::function<void(bool, std::string, std::string)>>(
+      currentRequestId, callback));
+  env->CallStaticVoidMethod(activity, methodHandle, urlJString, currentRequestId);
 
   env->DeleteLocalRef(activity);
 }
@@ -54,7 +77,7 @@ extern "C" JNIEXPORT void JNICALL Java_xyz_castle_api_API_networkRequestComplete
     CastleAPI::activeRequests.erase(requestId);
   }
 
-  env->DeleteLocalRef(jresultString);
+  // env->DeleteLocalRef(jresultString);
 }
 
 #endif

@@ -266,9 +266,11 @@ const CreateScreenAuthenticated = () => {
             visibility
             lastModified
             playCount
+            variables
             initialCard {
               id
               cardId
+              sceneDataUrl
               title
               backgroundImage {
                 url

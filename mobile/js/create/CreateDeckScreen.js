@@ -118,9 +118,11 @@ const DECK_FRAGMENT = `
     }
   }
   previewVideo { url }
+  variables
   cards {
     id
     cardId
+    sceneDataUrl
     title
     lastModified
     backgroundColor
@@ -136,6 +138,7 @@ const DECK_FRAGMENT = `
   initialCard {
     id
     cardId
+    sceneDataUrl
   }
 `;
 

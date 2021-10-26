@@ -17,6 +17,7 @@ const DECK_FRAGMENT = `
   deckId
   title
   accessPermissions
+  variables
   creator {
     username
   }
@@ -30,6 +31,7 @@ const DECK_FRAGMENT = `
   cards {
     id
     cardId
+    sceneDataUrl
     title
     lastModified
     backgroundImage {
@@ -45,6 +47,7 @@ const DECK_FRAGMENT = `
   initialCard {
     id
     cardId
+    sceneDataUrl
   }
 `;
 
