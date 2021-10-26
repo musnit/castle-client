@@ -3,7 +3,6 @@
 #include "api.h"
 #include <jni.h>
 
-
 namespace CastleAPI {
 
 static int requestId = 0;
@@ -31,48 +30,31 @@ void postRequest(
 
   env->DeleteLocalRef(activity);
 }
+}
 
-void pollForResponses() {
-  JNIEnv *env = (JNIEnv *)SDL_AndroidGetJNIEnv();
+// From JS
+extern "C" JNIEXPORT void JNICALL Java_xyz_castle_api_API_networkRequestCompleted(
+    JNIEnv *env, jclass clazz, jstring jresultString, jint jrequestId) {
+  int requestId = (int)jrequestId;
 
-  jclass activity = env->FindClass("xyz/castle/api/API");
+  const char *utf = env->GetStringUTFChars(jresultString, 0);
+  std::string result;
+  if (utf) {
+    result = std::string(utf);
+    env->ReleaseStringUTFChars(jresultString, utf);
+  }
 
-  jmethodID methodHandle
-      = env->GetStaticMethodID(activity, "jniPollForResponses", "()Landroid/util/Pair;");
-  jobject jpair = env->CallStaticObjectMethod(activity, methodHandle);
-  jclass pairClass = env->FindClass("android/util/Pair");
-  jfieldID first = env->GetFieldID(pairClass, "first", "Ljava/lang/Object;");
-  jfieldID second = env->GetFieldID(pairClass, "second", "Ljava/lang/Object;");
-
-  jobject jrequestId = env->GetObjectField(jpair, first);
-  jstring jresultString = (jstring)env->GetObjectField(jpair, second);
-
-  jclass integerClass = env->FindClass("java/lang/Integer");
-  jmethodID intValueMethod = env->GetMethodID(integerClass, "intValue", "()I");
-  int requestId = env->CallIntMethod(jrequestId, intValueMethod);
-
-  if (requestId != -1) {
-    const char *utf = env->GetStringUTFChars(jresultString, 0);
-    std::string result;
-    if (utf) {
-      result = std::string(utf);
-      env->ReleaseStringUTFChars(jresultString, utf);
+  if (CastleAPI::activeRequests[requestId]) {
+    if (result == "error") {
+      CastleAPI::activeRequests[requestId](false, "error", "");
+    } else {
+      CastleAPI::activeRequests[requestId](true, "", result);
     }
 
-    if (activeRequests[requestId]) {
-      if (result == "error") {
-        activeRequests[requestId](false, "error", "");
-      } else {
-        activeRequests[requestId](true, "", result);
-      }
-
-      activeRequests.erase(requestId);
-    }
+    CastleAPI::activeRequests.erase(requestId);
   }
 
   env->DeleteLocalRef(jresultString);
-  env->DeleteLocalRef(activity);
-}
 }
 
 #endif

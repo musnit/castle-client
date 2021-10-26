@@ -68,7 +68,4 @@ void postRequest(const std::string &body, const std::function<void(bool, std::st
     }
   }];
 }
-
-void pollForResponses() {
-}
 }

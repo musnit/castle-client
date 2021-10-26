@@ -25,7 +25,7 @@ import xyz.castle.ViewUtils;
 
 public class API {
 
-    private static Queue<Pair<Integer, String>> jniResponses = new LinkedList<>();
+    public static native void networkRequestCompleted(String response, int requestId);
 
     public static void jniPostRequest(final String postBody, final int requestId) {
         RequestBody body = RequestBody.create(JSON, postBody);
@@ -38,28 +38,19 @@ public class API {
         client.newCall(builder.build()).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                jniResponses.add(Pair.create(requestId, "error"));
+                networkRequestCompleted("error", requestId);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 try {
-                    jniResponses.add(Pair.create(requestId, response.body().string()));
+                    networkRequestCompleted(response.body().string(), requestId);
                 } catch (IOException e) {
-                    jniResponses.add(Pair.create(requestId, "error"));
+                    networkRequestCompleted("error", requestId);
                 }
             }
         });
     }
-
-    public static Pair<Integer, String> jniPollForResponses() {
-        if (jniResponses.size() > 0) {
-            return jniResponses.remove();
-        } else {
-            return Pair.create(-1, "error");
-        }
-    }
-
 
     public static final FieldList CARD_FIELD_LIST = new FieldList()
             .add("id")
