@@ -22,7 +22,7 @@ struct CollideTrigger : BaseTrigger {
 
 struct CollideTriggerMarker {
   // Counts the number of physics contacts currently relevant to an <actor, trigger, other actor>
-  // combination. The trigger is fired only when the contact count goes from 0 to 1. Prevents firing
+  // combination. The trigger is fired only when the contact count goes from 0 to 1. Prevents
   // over-firing triggers when actors have multiple collision shapes.
 
   struct Entry {
@@ -387,6 +387,7 @@ void BodyBehavior::handleEndPhysicsContact(b2Contact *contact) {
   visit(actorId1, actorId2);
   visit(actorId2, actorId1);
 }
+
 
 //
 // Getters, setters
