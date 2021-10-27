@@ -19,7 +19,6 @@ import { sendAsync } from '../core/CoreEvents';
 
 const { vw, vh } = Viewport;
 
-const DECK_FEED_ITEM_MARGIN = 0;
 const DECK_FEED_ITEM_FOOTER = 110;
 
 // Determines how much horizontal padding to add to each card to ensure proper spacing.
@@ -27,8 +26,8 @@ const DECK_FEED_ITEM_FOOTER = 110;
 // half of the next card's header.
 const getItemHorzPadding = ({ isPlaying = false } = {}) => {
   const availHeight = isPlaying
-    ? vh * 100 - Constants.FEED_HEADER_HEIGHT - DECK_FEED_ITEM_FOOTER - 32
-    : vh * 100 - Constants.FEED_HEADER_HEIGHT - DECK_FEED_ITEM_MARGIN - 140;
+    ? vh * 100 - Constants.FEED_ITEM_HEADER_HEIGHT - DECK_FEED_ITEM_FOOTER - 32
+    : vh * 100 - Constants.FEED_ITEM_HEADER_HEIGHT - 140;
   const maxWidth = availHeight * Constants.CARD_RATIO;
   const padding = (vw * 100 - maxWidth) / 2;
   return padding > 0 ? padding : 0;
@@ -37,12 +36,12 @@ const getItemHorzPadding = ({ isPlaying = false } = {}) => {
 const getItemHeight = ({ isPlaying = false } = {}) => {
   return (
     (1 / Constants.CARD_RATIO) * (100 * vw - getItemHorzPadding({ isPlaying }) * 2) + // height of preview
-    DECK_FEED_ITEM_MARGIN + // margin between items
-    Constants.FEED_ITEM_HEADER_HEIGHT
-  ); // height of the creator header
+    Constants.FEED_ITEM_HEADER_HEIGHT // height of the actions header (back/ellipsis/share)
+  );
 };
 
-const DECK_FEED_ITEM_DEFAULT_HEIGHT = getItemHeight();
+// on some iPads this resolves to a decimal like 883.999 which causes offset issues when scrolling
+const DECK_FEED_ITEM_DEFAULT_HEIGHT = Math.ceil(getItemHeight());
 
 const SPRING_CONFIG = {
   tension: 100,
@@ -62,7 +61,6 @@ const styles = StyleSheet.create({
   itemContainer: {
     width: '100%',
     alignItems: 'center',
-    marginBottom: DECK_FEED_ITEM_MARGIN,
     paddingHorizontal: getItemHorzPadding(),
   },
   itemCard: {
@@ -79,7 +77,7 @@ const styles = StyleSheet.create({
   itemHeader: {
     position: 'absolute',
     width: '100%',
-    height: Constants.FEED_ITEM_HEADER_HEIGHT + Constants.CARD_BORDER_RADIUS,
+    height: Constants.FEED_ITEM_HEADER_HEIGHT,
     borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,
     borderTopRightRadius: Constants.CARD_BORDER_RADIUS,
   },
