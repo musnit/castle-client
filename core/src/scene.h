@@ -253,6 +253,7 @@ private:
     Scene &scene;
     explicit PhysicsContactListener(Scene &scene_);
     void BeginContact(b2Contact *contact) override;
+    void EndContact(b2Contact *contact) override;
   } physicsContactListener; // Must outlive `physicsWorld` below
   b2World physicsWorld { b2Vec2(0, 9.8) };
   b2Body *physicsBackgroundBody = nullptr;

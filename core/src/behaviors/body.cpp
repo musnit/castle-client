@@ -21,13 +21,14 @@ struct CollideTrigger : BaseTrigger {
 };
 
 struct CollideTriggerMarker {
-  // Added to an actor when a collision trigger is fired on it to track and prevent firing the same
-  // trigger multiple times for the same other actor. All markers are removed after the physics step
-  // so new collisions can be registered again.
+  // Counts the number of physics contacts currently relevant to an <actor, trigger, other actor>
+  // combination. The trigger is fired only when the contact count goes from 0 to 1. Prevents firing
+  // over-firing triggers when actors have multiple collision shapes.
 
   struct Entry {
-    int triggerId; // Matches `CollideTrigger::id` for the trigger we're marking
-    ActorId otherActorId;
+    int triggerId = -1; // Matches `CollideTrigger::id` for the trigger we're marking
+    int contactCount = 0;
+    ActorId otherActorId = nullActor;
   };
   SmallVector<Entry, 4> entries;
 };
@@ -215,9 +216,6 @@ void BodyBehavior::handlePerform(double dt) {
   auto &registry = scene.getEntityRegistry();
   auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
 
-  // Clear collide trigger markers so new collide triggers can be fired
-  registry.clear<CollideTriggerMarker>();
-
   // Touch hit tracking and triggers
   {
     auto &gesture = getGesture();
@@ -315,32 +313,33 @@ void BodyBehavior::handlePerformCamera(float deltaX, float deltaY) {
 //
 
 void BodyBehavior::handleBeginPhysicsContact(b2Contact *contact) {
-  // Get the actor ids involved
   auto body1 = contact->GetFixtureA()->GetBody();
   auto body2 = contact->GetFixtureB()->GetBody();
   auto actorId1 = maybeGetActorId(body1);
   auto actorId2 = maybeGetActorId(body2);
 
-  // Fire triggers, using markers to deduplicate
   auto &registry = getScene().getEntityRegistry();
   auto &tagsBehavior = getBehaviors().byType<TagsBehavior>();
   auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
+
+  // Fire begin triggers
   const auto visit = [&](ActorId actorId, ActorId otherActorId) {
     RuleContextExtras extras;
     extras.otherActorId = otherActorId;
     rulesBehavior.fireIf<CollideTrigger>(actorId, extras, [&](const CollideTrigger &trigger) {
-      auto tag = trigger.params.tag();
-      if (!tagsBehavior.hasTag(otherActorId, tag)) {
+      if (!tagsBehavior.hasTag(otherActorId, trigger.params.tag())) {
         return false; // Tag didn't match
       }
       auto triggerId = trigger.id;
       auto &marker = registry.get_or_emplace<CollideTriggerMarker>(actorId);
       for (auto &entry : marker.entries) {
         if (entry.triggerId == triggerId && entry.otherActorId == otherActorId) {
-          return false; // Already marked for this trigger and other actor
+          // Already have an entry for this trigger and other actor -- increment count, don't fire
+          ++entry.contactCount;
+          return false;
         }
       }
-      marker.entries.push_back({ triggerId, otherActorId });
+      marker.entries.push_back({ triggerId, 1, otherActorId }); // First contact -- fire
       return true;
     });
   };
@@ -348,6 +347,46 @@ void BodyBehavior::handleBeginPhysicsContact(b2Contact *contact) {
   visit(actorId2, actorId1);
 }
 
+void BodyBehavior::handleEndPhysicsContact(b2Contact *contact) {
+  auto body1 = contact->GetFixtureA()->GetBody();
+  auto body2 = contact->GetFixtureB()->GetBody();
+  auto actorId1 = maybeGetActorId(body1);
+  auto actorId2 = maybeGetActorId(body2);
+
+  auto &registry = getScene().getEntityRegistry();
+  auto &tagsBehavior = getBehaviors().byType<TagsBehavior>();
+  auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
+
+  // Decrement count for begin triggers -- we use `fireIf` but always return `false`, just as a way
+  // to iterate triggers...
+  const auto visit = [&](ActorId actorId, ActorId otherActorId) {
+    RuleContextExtras extras;
+    extras.otherActorId = otherActorId;
+    rulesBehavior.fireIf<CollideTrigger>(actorId, extras, [&](const CollideTrigger &trigger) {
+      if (!tagsBehavior.hasTag(otherActorId, trigger.params.tag())) {
+        return false; // Tag didn't match
+      }
+      auto triggerId = trigger.id;
+      if (registry.has<CollideTriggerMarker>(actorId)) {
+        auto &marker = registry.get<CollideTriggerMarker>(actorId);
+        auto removeIfResult = std::remove_if(
+            marker.entries.begin(), marker.entries.end(), [&](CollideTriggerMarker::Entry &entry) {
+              if (entry.triggerId == triggerId && entry.otherActorId == otherActorId) {
+                --entry.contactCount;
+              }
+              return entry.contactCount <= 0;
+            });
+        marker.entries.erase(removeIfResult, marker.entries.end());
+        if (marker.entries.empty()) {
+          registry.remove<CollideTriggerMarker>(actorId);
+        }
+      }
+      return false;
+    });
+  };
+  visit(actorId1, actorId2);
+  visit(actorId2, actorId1);
+}
 
 //
 // Getters, setters

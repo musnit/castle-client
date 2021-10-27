@@ -401,6 +401,14 @@ void Scene::PhysicsContactListener::BeginContact(b2Contact *contact) {
   });
 }
 
+void Scene::PhysicsContactListener::EndContact(b2Contact *contact) {
+  scene.getBehaviors().forEach([&](auto &behavior) {
+    if constexpr (Handlers::hasEndPhysicsContact<decltype(behavior)>) {
+      behavior.handleEndPhysicsContact(contact);
+    }
+  });
+}
+
 
 //
 // Draw

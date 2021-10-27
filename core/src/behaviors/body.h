@@ -132,6 +132,7 @@ public:
   void handlePerformCamera(float deltaX, float deltaY);
 
   void handleBeginPhysicsContact(b2Contact *contact);
+  void handleEndPhysicsContact(b2Contact *contact);
 
   ExpressionValue handleGetProperty(
       ActorId actorId, const BodyComponent &component, PropId propId) const;
