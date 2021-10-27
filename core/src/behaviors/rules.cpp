@@ -690,7 +690,7 @@ struct WaitResponse : BaseResponse {
 struct ExpressionMeetsConditionResponse : BaseResponse {
   inline static const RuleRegistration<ExpressionMeetsConditionResponse, RulesBehavior>
       registration { "expression meets condition" };
-  static constexpr auto description = "If an expresssion meets a condition";
+  static constexpr auto description = "If an expression meets a condition";
 
   struct Params {
     PROP(ExpressionRef, lhs) = 0;
