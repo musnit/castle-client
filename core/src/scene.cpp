@@ -434,15 +434,27 @@ void Scene::draw(std::optional<SceneDrawingOptions> options) const {
   applyViewTransform(windowWidth);
 
   // Scene
+  auto numDrawable = 0, numDrawn = 0;
   forEachActorByDrawOrder([&](ActorId actorId) {
+    auto drawable = false, drawn = false;
     getBehaviors().forEach([&](auto &behavior) {
       if constexpr (Handlers::hasDrawComponent<decltype(behavior)>) {
         if (auto component = behavior.maybeGetComponent(actorId)) {
-          behavior.handleDrawComponent(actorId, *component, options);
+          drawable = true;
+          if (behavior.handleDrawComponent(actorId, *component, options)) {
+            drawn = true;
+          }
         }
+      }
+      if (drawable) {
+        ++numDrawable;
+      }
+      if (drawn) {
+        ++numDrawn;
       }
     });
   });
+  Debug::display("{} drawable, {} drawn", numDrawable, numDrawn);
 
   // Overlays
   getBehaviors().forEach([&](auto &behavior) {

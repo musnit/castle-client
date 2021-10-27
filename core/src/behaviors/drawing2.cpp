@@ -206,45 +206,62 @@ void Drawing2Behavior::handlePerform(double dt) {
 // Draw
 //
 
-void Drawing2Behavior::handleDrawComponent(ActorId actorId, const Drawing2Component &component,
+bool Drawing2Behavior::handleDrawComponent(ActorId actorId, const Drawing2Component &component,
     std::optional<SceneDrawingOptions> options) const {
   if (!component.drawData) {
-    return;
+    return false;
   }
 
+  auto drawn = false;
+  auto &scene = getScene();
+  auto cameraPos = scene.getCameraPosition();
+  auto halfCameraSize = 0.5 * scene.getCameraSize();
+  constexpr auto sqrt2 = 1.42; // Upper bound
   if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId)) {
     if (auto info = getBehaviors().byType<BodyBehavior>().getRenderInfo(actorId);
         info.visible || (options && options->drawInvisibleActors)) {
-      lv.graphics.push();
-
+      // Do an upper bound test if we're camera-visible and reject if not. We don't need an exact
+      // transformation: we use the maximum scale in either direction and the `sqrt2` factor
+      // accounts for rotation.
       auto [x, y] = body->GetPosition();
-      lv.graphics.translate(x, y);
-      lv.graphics.rotate(body->GetAngle());
-      lv.graphics.scale(info.widthScale, info.heightScale);
+      auto maxScale = std::max(info.widthScale, info.heightScale);
+      auto maxHalfSize = sqrt2 * (DRAW_MAX_SIZE + 0.5 * DRAW_LINE_WIDTH) * maxScale;
+      if (std::abs(x - cameraPos.x) <= halfCameraSize.x + maxHalfSize
+          && std::abs(y - cameraPos.y) <= halfCameraSize.y + maxHalfSize) {
+        drawn = true;
 
-      lv.graphics.setColor(love::Colorf(1, 1, 1, 1));
+        lv.graphics.push();
 
-      love::AnimationComponentProperties animProps;
-      getAnimationComponentProperties(component, animProps);
-      auto frameIndex = animProps.currentFrame.toZeroIndex();
+        lv.graphics.translate(x, y);
+        lv.graphics.rotate(body->GetAngle());
+        lv.graphics.scale(info.widthScale, info.heightScale);
 
-      // maybe override the drawn frame from options (for editor's view in context)
-      if (options && options->editorDrawingActorId != nullActor) {
-        auto &scene = getScene();
-        if (strcmp(scene.maybeGetParentEntryId(actorId),
-                scene.maybeGetParentEntryId(options->editorDrawingActorId))
-            == 0) {
-          if (options->editorDrawingAnimationFrame >= 0) {
-            frameIndex = options->editorDrawingAnimationFrame;
+        lv.graphics.setColor(love::Colorf(1, 1, 1, 1));
+
+        love::AnimationComponentProperties animProps;
+        getAnimationComponentProperties(component, animProps);
+        auto frameIndex = animProps.currentFrame.toZeroIndex();
+
+        // maybe override the drawn frame from options (for editor's view in context)
+        if (options && options->editorDrawingActorId != nullActor) {
+          auto &scene = getScene();
+          if (strcmp(scene.maybeGetParentEntryId(actorId),
+                  scene.maybeGetParentEntryId(options->editorDrawingActorId))
+              == 0) {
+            if (options->editorDrawingAnimationFrame >= 0) {
+              frameIndex = options->editorDrawingAnimationFrame;
+            }
           }
         }
+
+        component.drawData->renderFrameIndex(frameIndex);
+
+        lv.graphics.pop();
       }
-
-      component.drawData->renderFrameIndex(frameIndex);
-
-      lv.graphics.pop();
     }
   }
+
+  return drawn;
 }
 
 

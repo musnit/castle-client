@@ -81,7 +81,7 @@ public:
   void handleWriteComponent(
       ActorId actorId, const Drawing2Component &component, Writer &writer) const;
   void handlePerform(double dt);
-  void handleDrawComponent(ActorId actorId, const Drawing2Component &component,
+  bool handleDrawComponent(ActorId actorId, const Drawing2Component &component,
       std::optional<SceneDrawingOptions> options) const;
 
   ExpressionValue handleGetProperty(
