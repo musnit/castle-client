@@ -84,6 +84,7 @@ const UsersList = ({ users }) => {
         <React.Fragment>
           <User user={users[0]} />, <User user={users[1]} />,{' and '}
           <Text style={styles.username}>{users.length - 2} others</Text>
+          <Text> you know</Text>
         </React.Fragment>
       );
   }
@@ -96,7 +97,7 @@ export const ProfileConnections = ({ connections }) => {
         <UserAvatars users={connections} />
         <View style={styles.text}>
           <Text style={styles.body}>
-            Followed by <UsersList users={connections} /> you know
+            Followed by <UsersList users={connections} />
           </Text>
         </View>
       </View>
