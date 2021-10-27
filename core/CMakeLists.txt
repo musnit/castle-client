@@ -111,8 +111,8 @@ if(WEB)
     target_link_options(castle-core PRIVATE "SHELL:-g4 --source-map-base file://${CMAKE_BINARY_DIR}/ -fsanitize=leak")
   else()
     target_link_options(castle-core PRIVATE -O0) # Makes link step much faster
-    target_compile_options(castle-core PRIVATE "SHELL:--profiling")
-    target_link_options(castle-core PRIVATE "SHELL:--profiling")
+    #target_compile_options(castle-core PRIVATE "SHELL:--profiling") # Increases build size, use only for local testing
+    #target_link_options(castle-core PRIVATE "SHELL:--profiling")
   endif()
 endif()
 
