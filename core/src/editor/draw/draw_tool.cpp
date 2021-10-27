@@ -787,17 +787,15 @@ void DrawTool::loadLastSave() {
 
   auto hash = component->hash;
 
-  if (lastHash != hash || !drawData) {
-    lastHash = hash;
-    drawData = std::make_shared<love::DrawData>(component->drawData);
-    physicsBodyData = std::make_shared<PhysicsBodyData>(component->physicsBodyData);
-    if (selectedLayerId == "") {
-      selectFirstLayerAndFrame();
-    } else {
-      validateSelection();
-    }
-    sendDrawToolEvent();
+  lastHash = hash;
+  drawData = std::make_shared<love::DrawData>(component->drawData);
+  physicsBodyData = std::make_shared<PhysicsBodyData>(component->physicsBodyData);
+  if (selectedLayerId == "") {
+    selectFirstLayerAndFrame();
+  } else {
+    validateSelection();
   }
+  sendDrawToolEvent();
 }
 
 void DrawTool::selectFirstLayerAndFrame() {
