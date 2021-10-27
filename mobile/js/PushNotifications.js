@@ -41,6 +41,9 @@ eventEmitter.addListener('CastlePushNotificationClicked', (event) => {
 
 export const setInitialData = (dataString) => {
   gInitialData = _parsePushDataString(dataString);
+  Amplitude.logEventWithProperties('OPEN_PUSH_NOTIFICATION', {
+    type: gInitialData?.type, // category of notif, e.g. 'play_deck'
+  });
 };
 
 export const getInitialData = () => {
