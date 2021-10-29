@@ -317,8 +317,57 @@ struct DrawToolLayerActionReceiver {
         drawTool.saveDrawing("paste cell");
       }
     } else if (action == "setCellLinked") {
-      drawTool.drawData->setCellLinked(
-          params.layerId(), params.frameIndex(), bool(params.doubleValue()));
+      // TODO: calling drawData->setCellLinked crashes on android
+      // this code is copied from DrawData and works when it's in this file but not
+      // when it's in DrawData
+
+      /*drawTool.drawData->setCellLinked(
+          params.layerId(), params.frameIndex(), bool(params.doubleValue()));*/
+
+      love::DrawDataLayerId layerId = params.layerId();
+      love::OneIndexFrame frameIndex = params.frameIndex();
+      bool isLinked = bool(params.doubleValue());
+
+      if (frameIndex.value < 2) {
+        return;
+      }
+      auto layer = drawTool.drawData->layerForId(layerId);
+      if (layer->frames[frameIndex.toZeroIndex()]->isLinked == isLinked) {
+        return;
+      }
+      if (isLinked) {
+        auto newFrame = std::make_shared<love::DrawDataFrame>(true, drawTool.drawData.get());
+        layer->frames[frameIndex.toZeroIndex()] = std::move(newFrame);
+      } else {
+        love::OneIndexFrame realFrameIndex;
+        realFrameIndex.setFromZeroIndex(drawTool.drawData->getRealFrameIndexForLayerId(layerId, frameIndex));
+        //copyCell(layerId, realFrameIndex, layerId, frameIndex);
+
+        love::DrawDataLayerId sourceLayerId = layerId;
+        love::OneIndexFrame sourceFrameIndex = realFrameIndex;
+        love::DrawDataLayerId destLayerId = layerId;
+        love::OneIndexFrame destFrameIndex = frameIndex;
+
+        auto sourceLayer = drawTool.drawData->layerForId(sourceLayerId), destLayer = drawTool.drawData->layerForId(destLayerId);
+        if (sourceLayer && destLayer && sourceFrameIndex.toZeroIndex() < sourceLayer->frames.size()
+            && destFrameIndex.toZeroIndex() < destLayer->frames.size()) {
+          auto &oldFrame = sourceLayer->frames[sourceFrameIndex.toZeroIndex()];
+          auto newFrame = std::make_shared<love::DrawDataFrame>();
+
+          Archive oldArchive;
+          oldArchive.write([&](Writer &writer) {
+            oldFrame->write(writer);
+          });
+          auto newFrameArchive = Archive::fromJson(oldArchive.toJson().c_str());
+          newFrameArchive.read([&](Reader &reader) {
+            newFrame->read(reader);
+          });
+          newFrame->setParent(drawTool.drawData.get());
+
+          destLayer->frames[destFrameIndex.toZeroIndex()] = std::move(newFrame);
+        }
+      }
+
       drawTool.saveDrawing("set cell linked");
     } else if (action == "enableOnionSkinning") {
       drawTool.isOnionSkinningEnabled = bool(params.doubleValue());
