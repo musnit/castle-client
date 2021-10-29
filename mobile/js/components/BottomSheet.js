@@ -7,6 +7,7 @@ import {
   requireNativeComponent,
   ScrollView,
   DeviceEventEmitter,
+  BackHandler
 } from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -284,6 +285,23 @@ const BottomSheetAndroid = ({
       notifySnap(0);
     }
   }, [isOpen, notifySnap, containerHeight]);
+
+  let runHardwareBackPressEvent = React.useCallback(() => {
+    if (isOpen && onClose) {
+      onClose();
+      return true;
+    }
+
+    return false;
+  }, [isOpen]);
+
+  React.useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', runHardwareBackPressEvent);
+
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', runHardwareBackPressEvent);
+    }
+  });
 
   // onCloseEnd, onOpenEnds aren't implemented yet, but they're not used for anything other than
   // closing the keyboard which the native component already handles

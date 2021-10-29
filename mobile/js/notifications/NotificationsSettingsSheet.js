@@ -151,6 +151,7 @@ export const NotificationsSettingsSheet = ({ me = {}, isOpen, onClose }) => {
       isOpen={isOpen}
       renderHeader={renderHeader}
       renderContent={renderContent}
+      onClose={onClose}
       style={{
         backgroundColor: '#fff',
         borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,

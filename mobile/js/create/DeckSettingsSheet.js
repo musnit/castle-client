@@ -33,6 +33,7 @@ export const DeckSettingsSheet = ({ isOpen, onClose, ...props }) => {
       renderContent={renderContent}
       onOpenEnd={Keyboard.dismiss}
       onCloseEnd={Keyboard.dismiss}
+      onClose={onClose}
       style={{
         backgroundColor: '#fff',
         borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,

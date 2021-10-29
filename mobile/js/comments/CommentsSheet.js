@@ -139,6 +139,7 @@ export const CommentsSheet = ({ isOpen, onClose, deck, isFullScreen, ...props })
       isOpen={isOpen}
       renderHeader={renderHeader}
       renderContent={renderContent}
+      onClose={onClose}
       onOpenEnd={Keyboard.dismiss}
       onCloseEnd={Keyboard.dismiss}
       style={{

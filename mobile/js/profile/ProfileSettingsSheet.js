@@ -299,6 +299,7 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
       renderContent={renderContent}
       onOpenEnd={Keyboard.dismiss}
       onCloseEnd={Keyboard.dismiss}
+      onClose={onClose}
       style={{
         backgroundColor: '#fff',
         borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,
