@@ -40,8 +40,11 @@ const getItemHeight = ({ isPlaying = false } = {}) => {
   );
 };
 
-// on some iPads this resolves to a decimal like 883.999 which causes offset issues when scrolling
-const DECK_FEED_ITEM_DEFAULT_HEIGHT = Math.ceil(getItemHeight());
+// on some iPads this resolves to a decimal like 883.999 which causes offset issues when scrolling.
+// however, we don't want to round on Android because that inexplicably messes up the listview
+const DECK_FEED_ITEM_DEFAULT_HEIGHT = Constants.Android
+  ? getItemHeight()
+  : Math.ceil(getItemHeight());
 
 const SPRING_CONFIG = {
   tension: 100,
