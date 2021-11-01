@@ -16,7 +16,7 @@ export const ExploreFeed = ({ route }) => {
 
   const [lastFetched, setLastFetched] = React.useState({
     time: undefined,
-    lastModifiedBefore: undefined,
+    lastDeckId: undefined,
   });
   const [decks, changeDecks] = React.useReducer((decks, action) => {
     switch (action.type) {
@@ -41,14 +41,14 @@ export const ExploreFeed = ({ route }) => {
   );
 
   const onRefresh = React.useCallback(
-    (lastModifiedBefore) => {
+    (lastDeck) => {
       fetchDecks({
         variables: {
           feedId,
-          lastModifiedBefore,
+          lastModifiedBefore: lastDeck?.lastModified,
         },
       });
-      setLastFetched({ time: Date.now(), lastModifiedBefore });
+      setLastFetched({ time: Date.now(), lastDeckId: lastDeck?.deckId });
     },
     [fetchDecks, setLastFetched, feedId]
   );
@@ -63,22 +63,23 @@ export const ExploreFeed = ({ route }) => {
 
   const onEndReached = React.useCallback(() => {
     if (!query.loading && decks?.length) {
-      const lastModifiedBefore = decks[decks.length - 1].lastModified;
-      onRefresh(lastModifiedBefore);
+      const lastDeck = decks[decks.length - 1];
+      onRefresh(lastDeck);
     }
   }, [query.loading, decks, onRefresh]);
 
   React.useEffect(() => {
     if (query.called && !query.loading && !query.error && query.data) {
-      if (lastFetched.lastModifiedBefore) {
+      const decks = query.data.paginateFeed;
+      if (lastFetched.lastDeckId && decks[decks.length - 1].deckId !== lastFetched.lastDeckId) {
         // append next page
-        changeDecks({ type: 'append', decks: query.data.paginateFeed });
+        changeDecks({ type: 'append', decks });
       } else {
         // clean refresh
-        changeDecks({ type: 'set', decks: query.data.paginateFeed });
+        changeDecks({ type: 'set', decks });
       }
     }
-  }, [query.called, query.loading, query.error, query.data, lastFetched.lastModifiedBefore]);
+  }, [query.called, query.loading, query.error, query.data, lastFetched.lastDeckId]);
 
   const scrollViewRef = React.useRef(null);
   useScrollToTop(scrollViewRef);
