@@ -3,7 +3,6 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-nativ
 import { gql, useQuery } from '@apollo/client';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import uuid from 'uuid/v4';
 
 import * as Constants from '../Constants';
 import * as Session from '../Session';

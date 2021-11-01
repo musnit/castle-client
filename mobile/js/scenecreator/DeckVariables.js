@@ -6,7 +6,9 @@ import { InspectorTextInput } from './inspector/components/InspectorTextInput';
 import { useCoreState, sendAsync } from '../core/CoreEvents';
 
 import FeatherIcon from 'react-native-vector-icons/Feather';
-import uuid from 'uuid/v4';
+
+import 'react-native-get-random-values'; // required for uuid
+import { v4 as uuidv4 } from 'uuid';
 
 import * as SceneCreatorConstants from './SceneCreatorConstants';
 import * as Constants from '../Constants';
@@ -151,7 +153,7 @@ export const DeckVariables = () => {
       sendAsync('EDITOR_CHANGE_VARIABLES', {
         action: 'add',
         ...SceneCreatorConstants.EMPTY_VARIABLE,
-        variableId: uuid(),
+        variableId: uuidv4(),
       }),
     [sendAsync]
   );

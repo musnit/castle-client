@@ -5,7 +5,8 @@ import { DropdownItemsList } from './InspectorDropdown';
 import { formatVariableName } from '../../SceneCreatorUtilities';
 import { sendAsync, useCoreState } from '../../../core/CoreEvents';
 
-import uuid from 'uuid/v4';
+import 'react-native-get-random-values'; // required for uuid
+import { v4 as uuidv4 } from 'uuid';
 
 import * as Constants from '../../../Constants';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
@@ -54,7 +55,7 @@ export const InspectorVariablePicker = ({ value, onChange, style, ...props }) =>
         if (!name?.length) {
           return;
         }
-        const newVariableId = uuid();
+        const newVariableId = uuidv4();
         sendAsync('EDITOR_CHANGE_VARIABLES', {
           action: 'add',
           ...SceneCreatorConstants.EMPTY_VARIABLE,
