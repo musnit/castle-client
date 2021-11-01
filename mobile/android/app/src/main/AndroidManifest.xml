@@ -56,7 +56,6 @@
                     android:host="s.castle.xyz" />
             </intent-filter>
         </activity>
-        <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" android:theme="@android:style/Theme.DeviceDefault.Light"/>
 
         <activity
             android:name="org.love2d.android.GameActivity"
