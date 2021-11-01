@@ -1,0 +1,6 @@
+module Pods_Castle {
+  umbrella header "Pods-Castle-umbrella.h"
+
+  export *
+  module * { export * }
+}

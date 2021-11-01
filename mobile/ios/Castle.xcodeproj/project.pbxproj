@@ -78,6 +78,7 @@
 		A1F835A02661964000E65FE9 /* CastleCoreView.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1F8359F2661964000E65FE9 /* CastleCoreView.mm */; };
 		A1FA18C32365168600E2ACFE /* GhostInputZone.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1FA18C22365168600E2ACFE /* GhostInputZone.mm */; };
 		B51813F72527916C00C315C9 /* GhostAppState.mm in Sources */ = {isa = PBXBuildFile; fileRef = B51813F62527916C00C315C9 /* GhostAppState.mm */; };
+		B53B4A2E27309BA500F7C7D3 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = B53B4A2D27309BA500F7C7D3 /* File.swift */; };
 		B55942172534C97A00BD34E7 /* CastleNotificationService.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B559420F2534C97A00BD34E7 /* CastleNotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B55942292534CC0200BD34E7 /* CastleNotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = B55942272534CC0200BD34E7 /* CastleNotificationService.m */; };
 		B5942AB52627646B003CF6DB /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B5942AAD2627646B003CF6DB /* BootSplash.storyboard */; };
@@ -248,6 +249,8 @@
 		A1FA18C22365168600E2ACFE /* GhostInputZone.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GhostInputZone.mm; sourceTree = "<group>"; };
 		B51813EE2527916C00C315C9 /* GhostAppState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GhostAppState.h; sourceTree = "<group>"; };
 		B51813F62527916C00C315C9 /* GhostAppState.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GhostAppState.mm; sourceTree = "<group>"; };
+		B53B4A2C27309BA500F7C7D3 /* Castle-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Castle-Bridging-Header.h"; sourceTree = "<group>"; };
+		B53B4A2D27309BA500F7C7D3 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		B559420F2534C97A00BD34E7 /* CastleNotificationService.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CastleNotificationService.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B55942142534C97A00BD34E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B55942272534CC0200BD34E7 /* CastleNotificationService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CastleNotificationService.m; sourceTree = "<group>"; };
@@ -345,6 +348,8 @@
 				91395EB7240DE6A700ECBCF9 /* GhostPushNotifications.mm */,
 				91CCEBB326D7082500C6B016 /* API_ios.h */,
 				91CCEBA626D6FC0C00C6B016 /* API_ios.mm */,
+				B53B4A2D27309BA500F7C7D3 /* File.swift */,
+				B53B4A2C27309BA500F7C7D3 /* Castle-Bridging-Header.h */,
 			);
 			name = Castle;
 			sourceTree = "<group>";
@@ -614,6 +619,7 @@
 				1B1082991574591082E9CFD6 /* [CP] Copy Pods Resources */,
 				B55942182534C97A00BD34E7 /* Embed App Extensions */,
 				7E8E071F9E7D48CB901E090C /* Upload Debug Symbols to Sentry */,
+				16A2949BF3C145D480B67529 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -653,6 +659,7 @@
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = CUW59GZ74D;
+						LastSwiftMigration = 1300;
 					};
 					B559420E2534C97A00BD34E7 = {
 						CreatedOnToolsVersion = 12.0;
@@ -756,6 +763,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "export SENTRY_PROPERTIES=sentry.properties\nexport EXTRA_PACKAGER_ARGS=\"--sourcemap-output $DERIVED_FILE_DIR/main.jsbundle.map\"\n\n# https://docs.sentry.io/clients/react-native/manual-setup/#bundle-react-native-code-and-images-1\n# Setup nvm and set node\n[ -z \"$NVM_DIR\" ] && export NVM_DIR=\"$HOME/.nvm\"\n\nif [[ -s \"$HOME/.nvm/nvm.sh\" ]]; then\n. \"$HOME/.nvm/nvm.sh\"\nelif [[ -x \"$(command -v brew)\" && -s \"$(brew --prefix nvm)/nvm.sh\" ]]; then\n. \"$(brew --prefix nvm)/nvm.sh\"\nfi\n\n# Set up the nodenv node version manager if present\nif [[ -x \"$HOME/.nodenv/bin/nodenv\" ]]; then\neval \"$(\"$HOME/.nodenv/bin/nodenv\" init -)\"\nfi\n\n# Trying notion\nif [ -z \"$NODE_BINARY\" ]; then\nif [[ -s \"$HOME/.notion/bin/node\" ]]; then\nexport NODE_BINARY=\"$HOME/.notion/bin/node\"\nfi\nfi\n\n[ -z \"$NODE_BINARY\" ] && export NODE_BINARY=\"node\"\n\nif [ \\\"${CONFIGURATION}\\\" = \\\"Debug\\\" ]; then\n  export SKIP_BUNDLING=1\nfi\n\n$NODE_BINARY ../node_modules/@sentry/cli/bin/sentry-cli react-native xcode \\\n  ../node_modules/react-native/scripts/react-native-xcode.sh\n\n";
+		};
+		16A2949BF3C145D480B67529 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Castle/Pods-Castle-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL/OpenSSL.framework/OpenSSL",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OpenSSL.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Castle/Pods-Castle-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 		1B1082991574591082E9CFD6 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -925,6 +950,7 @@
 				A12CFF0023CC314E00D721BC /* curve_data.cpp in Sources */,
 				A14FE3E02355CEF0003B7EA0 /* context.c in Sources */,
 				A12CFEED23CC30F600D721BC /* nsvg.cpp in Sources */,
+				B53B4A2E27309BA500F7C7D3 /* File.swift in Sources */,
 				A14FE3C72355CE94003B7EA0 /* sqlite3.c in Sources */,
 				A12CFEF723CC313100D721BC /* partition.cpp in Sources */,
 				A12CFEF823CC313100D721BC /* triangles.cpp in Sources */,
@@ -965,6 +991,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CASTLE_DISPLAY_NAME = "Castle Debug";
 				CASTLE_URL_SCHEME = castled;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = Castle/Castle.entitlements;
 				CURRENT_PROJECT_VERSION = 4;
@@ -984,6 +1011,9 @@
 				SCHEME_FILE = "${INTERMEDIATES_OUTPUT_DIR}current_scheme.txt";
 				STRIP_INSTALLED_PRODUCT = NO;
 				STRIP_STYLE = "non-global";
+				SWIFT_OBJC_BRIDGING_HEADER = "Castle-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -996,6 +1026,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CASTLE_DISPLAY_NAME = Castle;
 				CASTLE_URL_SCHEME = castle;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = Castle/Castle.entitlements;
 				CURRENT_PROJECT_VERSION = 4;
@@ -1015,6 +1046,8 @@
 				SCHEME_FILE = "${INTERMEDIATES_OUTPUT_DIR}current_scheme.txt";
 				STRIP_INSTALLED_PRODUCT = NO;
 				STRIP_STYLE = "non-global";
+				SWIFT_OBJC_BRIDGING_HEADER = "Castle-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};

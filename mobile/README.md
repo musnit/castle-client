@@ -26,6 +26,13 @@
 
 Once you have the app running, shake the device to open the React Native developer menu and select 'Enable Live Reload'. Then, you should be able to modify any of the files under 'js/' and save to trigger a reload of the app that picks up your changes!
 
+# Optional: Using Flipper
+
+- [Install Flipper desktop app](https://fbflipper.com/docs/getting-started/index/)
+- Inside Flipper preferences, make sure Android SDK path matches the one in your bash profile
+- [Install idb](https://fbidb.io/docs/installation/)
+- Inside Flipper preferences, make sure `idb` path is correct
+
 # Releases
 
 ## iOS (Testflight)
