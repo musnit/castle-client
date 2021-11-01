@@ -23,7 +23,7 @@ import * as LocalId from '../common/local-id';
 import * as Session from '../Session';
 import * as Utilities from '../common/utilities';
 
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FeatherIcon from 'react-native-vector-icons/Feather';

@@ -11,7 +11,7 @@
   "dependencies": {
     "@apollo/client": "^3.4.16",
     "@expo/react-native-action-sheet": "^3.8.0",
-    "@react-native-community/async-storage": "^1.6.2",
+    "@react-native-async-storage/async-storage": "^1.14.1",
     "@react-navigation/bottom-tabs": "^5.11.15",
     "@react-navigation/compat": "^5.3.20",
     "@react-navigation/native": "^5.9.8",
