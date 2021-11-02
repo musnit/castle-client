@@ -340,17 +340,18 @@ struct DrawToolLayerActionReceiver {
         layer->frames[frameIndex.toZeroIndex()] = std::move(newFrame);
       } else {
         love::OneIndexFrame realFrameIndex;
-        realFrameIndex.setFromZeroIndex(drawTool.drawData->getRealFrameIndexForLayerId(layerId, frameIndex));
-        //copyCell(layerId, realFrameIndex, layerId, frameIndex);
+        realFrameIndex.setFromZeroIndex(
+            drawTool.drawData->getRealFrameIndexForLayerId(layerId, frameIndex));
+        // copyCell(layerId, realFrameIndex, layerId, frameIndex);
 
-        love::DrawDataLayerId sourceLayerId = layerId;
         love::OneIndexFrame sourceFrameIndex = realFrameIndex;
-        love::DrawDataLayerId destLayerId = layerId;
         love::OneIndexFrame destFrameIndex = frameIndex;
 
-        auto sourceLayer = drawTool.drawData->layerForId(sourceLayerId), destLayer = drawTool.drawData->layerForId(destLayerId);
-        if (sourceLayer && destLayer && sourceFrameIndex.toZeroIndex() < sourceLayer->frames.size()
-            && destFrameIndex.toZeroIndex() < destLayer->frames.size()) {
+        auto sourceLayer = drawTool.drawData->layerForId(layerId),
+             destLayer = drawTool.drawData->layerForId(layerId);
+        if (sourceLayer && destLayer
+            && sourceFrameIndex.toZeroIndex() < (int)sourceLayer->frames.size()
+            && destFrameIndex.toZeroIndex() < (int)destLayer->frames.size()) {
           auto &oldFrame = sourceLayer->frames[sourceFrameIndex.toZeroIndex()];
           auto newFrame = std::make_shared<love::DrawDataFrame>();
 

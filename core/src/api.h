@@ -98,7 +98,8 @@ private:
   }
 
 public:
-  static void preloadDeck(const std::string &deckId, const std::string &variables, const std::string &initialCardId, const std::string &initialCardSceneDataUrl) {
+  static void preloadDeck(const std::string &deckId, const std::string &variables,
+      const std::string &initialCardId, const std::string &initialCardSceneDataUrl) {
     loadDeck(
         deckId, variables.c_str(), initialCardId.c_str(), initialCardSceneDataUrl.c_str(), true,
         [=](APIResponse &response) {
@@ -171,7 +172,8 @@ public:
     }
   }
 
-  static void loadDeck(const std::string &deckId, const char *variables, const char *initialCardId, const char *initialCardSceneDataUrl, bool useCache,
+  static void loadDeck(const std::string &deckId, const char *variables, const char *initialCardId,
+      const char *initialCardSceneDataUrl, bool useCache,
       const std::function<void(APIResponse &)> &variablesCallback,
       const std::function<void(APIResponse &)> &snapshotCallback) {
     if (variables && initialCardId && initialCardSceneDataUrl) {

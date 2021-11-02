@@ -136,7 +136,7 @@ void AnalogStickBehavior::handleDrawOverlay() const {
       if (dragLen > maxDrawDragLength) {
         // Clamp drag and touch to max draw drag length
         drag *= maxDrawDragLength / dragLen;
-        //dragLen = maxDrawDragLength;
+        // dragLen = maxDrawDragLength;
         clampedTouchPos = center + drag;
       }
 

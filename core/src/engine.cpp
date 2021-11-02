@@ -201,12 +201,10 @@ void Engine::loadSceneFromJson(const char *json, bool skipScene) {
   });
 }
 
-void Engine::loadSceneFromDeckId(const char *deckId, const char *variables, const char *initialCardId, const char *initialCardSceneDataUrl) {
+void Engine::loadSceneFromDeckId(const char *deckId, const char *variables,
+    const char *initialCardId, const char *initialCardSceneDataUrl) {
   API::loadDeck(
-      deckId,
-      variables,
-      initialCardId,
-      initialCardSceneDataUrl,
+      deckId, variables, initialCardId, initialCardSceneDataUrl,
       !isEditing, // don't use cache when editing
       [=](APIResponse &response) {
         if (response.success) {
@@ -450,6 +448,7 @@ struct PreloadDeckReceiver {
   } params;
 
   void receive(Engine &engine) {
-    API::preloadDeck(params.deckId(), params.deckVariables(), params.initialCardId(), params.initialCardSceneDataUrl());
+    API::preloadDeck(params.deckId(), params.deckVariables(), params.initialCardId(),
+        params.initialCardSceneDataUrl());
   }
 };

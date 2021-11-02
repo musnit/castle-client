@@ -256,13 +256,14 @@ namespace ghost {
 
     ~PathData() {
       if (tovePath.ptr) {
-        // TODO: uncommenting this breaks the eraser tool in some decks (try erasing the bottom of the gem blueprint)
-        // For some reason, two different PathDatas have the same value for tovePath.ptr.
+        // TODO: uncommenting this breaks the eraser tool in some decks (try erasing the bottom of
+        // the gem blueprint) For some reason, two different PathDatas have the same value for
+        // tovePath.ptr.
         /*for (auto &subpath : toveSubpaths) {
-			if (subpath.ptr) {
+                        if (subpath.ptr) {
           ReleaseSubpath(subpath);
-				subpath.ptr = NULL;
-			}
+                                subpath.ptr = NULL;
+                        }
         }
         ReleasePath(tovePath);
         tovePath.ptr = NULL;*/
