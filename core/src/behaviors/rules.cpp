@@ -795,8 +795,9 @@ struct NoteResponse : BaseResponse {
   static constexpr auto description = "Add a note to this rule";
 
   struct Params {
-    // TODO: would be nice to skip loading this if we're not editing the scene
-    PROP(std::string, note);
+#ifdef DEBUG_LOG_NOTE_RESPONSE
+    PROP(std::string, note); // Don't need to actually load this, doesn't get used for gameplay
+#endif
   } params;
 
   void run(RuleContext &ctx) override {
