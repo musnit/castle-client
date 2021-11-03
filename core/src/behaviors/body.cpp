@@ -229,11 +229,11 @@ void BodyBehavior::handlePerform(double dt) {
           }
         });
 
-    // Use `fireAllIf` just to find actors with `CollideTrigger`s, but then call the
-    // `CollideTrigger` directly with `fireIf` inside since each could be called multiple times and
-    // we need to pass different extras each time...
+    // Find and fire relevant triggers, updating active-ness of markers too
     rulesBehavior.fireAllIf<CollideTrigger, BodyComponent>(
         {}, [&](ActorId actorId, const CollideTrigger &trigger, const BodyComponent &component) {
+          // Returning `false` from this since we just use it to find triggers -- we'll actually do
+          // the triggering with `fireIf` inside the spatial query
           auto body = component.body;
           if (!body || body->GetType() == b2_dynamicBody) {
             return false;
@@ -244,6 +244,7 @@ void BodyBehavior::handlePerform(double dt) {
             auto shape = fixture->GetShape();
             forEachActorAtBoundingBox(bb.lowerBound.x, bb.lowerBound.y, bb.upperBound.x,
                 bb.upperBound.y, [&](ActorId otherActorId, const b2Fixture *otherFixture) {
+                  // Returning `true` here always because we need to visit all possible collisions
                   if (actorId == otherActorId) {
                     return true;
                   }
@@ -256,7 +257,7 @@ void BodyBehavior::handlePerform(double dt) {
                   }
                   auto otherShape = otherFixture->GetShape();
                   if (!b2TestOverlap(shape, 0, otherShape, 0, body->GetTransform(),
-                          otherFixture->GetBody()->GetTransform())) {
+                          otherBody->GetTransform())) {
                     return true;
                   }
                   auto triggerId = trigger.id;
@@ -410,8 +411,8 @@ struct DynamicCollideTriggerMarker {
 
   struct Entry {
     int triggerId = -1; // Matches `CollideTrigger::id` for the trigger we're marking
-    int contactCount = 0;
     ActorId otherActorId = nullActor;
+    int contactCount = 0;
   };
   SmallVector<Entry, 4> entries;
 };
@@ -443,7 +444,7 @@ void BodyBehavior::handleBeginPhysicsContact(b2Contact *contact) {
           return false;
         }
       }
-      marker.entries.push_back({ triggerId, 1, otherActorId }); // First contact -- fire
+      marker.entries.push_back({ triggerId, otherActorId, 1 }); // First contact -- fire
       return true;
     });
   };
@@ -464,9 +465,7 @@ void BodyBehavior::handleEndPhysicsContact(b2Contact *contact) {
   // Decrement count for begin triggers -- we use `fireIf` but always return `false`, just as a way
   // to iterate triggers...
   const auto visit = [&](ActorId actorId, ActorId otherActorId) {
-    RuleContextExtras extras;
-    extras.otherActorId = otherActorId;
-    rulesBehavior.fireIf<CollideTrigger>(actorId, extras, [&](const CollideTrigger &trigger) {
+    rulesBehavior.fireIf<CollideTrigger>(actorId, {}, [&](const CollideTrigger &trigger) {
       if (!tagsBehavior.hasTag(otherActorId, trigger.params.tag())) {
         return false; // Tag didn't match
       }
