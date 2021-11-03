@@ -5,7 +5,6 @@ import { SearchInput } from './SearchInput';
 import { SearchResults } from './SearchResults';
 import { ExploreRow, SkeletonExploreRow } from './ExploreRow';
 import { useFocusEffect, useNavigation } from '../ReactNavigation';
-import { HalloweenPromo } from './HalloweenParty';
 
 import { useLazyQuery, gql } from '@apollo/client';
 
@@ -123,7 +122,6 @@ export const ExploreScreen = ({ route }) => {
         <SearchResults query={searchQuery} initialResults={preloadSearchResults} />
       ) : (
         <ScrollView>
-          <HalloweenPromo />
           {!feeds && (
             <>
               <SkeletonExploreRow />

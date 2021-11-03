@@ -3,7 +3,6 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { PopoverButton } from '../../../components/PopoverProvider';
 import tinycolor from 'tinycolor2';
 import FastImage from 'react-native-fast-image';
-import { isDuringParty } from '../../../explore/HalloweenParty';
 
 const styles = StyleSheet.create({
   button: {
@@ -29,21 +28,6 @@ const styles = StyleSheet.create({
     margin: -2,
     zIndex: 2,
     borderRadius: 4,
-  },
-  halloweenPicker: {
-    marginTop: 4,
-    paddingVertical: 4,
-    marginHorizontal: -4,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#000',
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8,
-  },
-  candle: {
-    width: 20,
-    height: 20,
-    margin: 8,
   },
 });
 
@@ -110,17 +94,6 @@ const colors = [
   '#423934',
 ];
 
-const halloweenColors = [
-  '#7cfc9c',
-  '#e74ae8',
-  '#4646f5',
-  '#98fcf8',
-  '#f6cb57',
-  '#ed6e6f',
-  '#9740c3',
-  '#332d3f',
-];
-
 const ColorPicker64Popover = ({ valueHex, setValueFromStr, closePopover }) => {
   var swatches = [];
   for (let i = 0; i < colors.length; i++) {
@@ -139,41 +112,7 @@ const ColorPicker64Popover = ({ valueHex, setValueFromStr, closePopover }) => {
     );
   }
 
-  var halloween_swatches = [];
-  for (let i = 0; i < halloweenColors.length; i++) {
-    halloween_swatches.push(
-      <TouchableOpacity
-        key={`halloween-color-${i}`}
-        onPress={() => {
-          setValueFromStr(halloweenColors[i]);
-          closePopover();
-        }}
-        style={[
-          styles.swatch,
-          { backgroundColor: halloweenColors[i] },
-          halloweenColors[i] == valueHex ? styles.swatchSelected : null,
-        ]}></TouchableOpacity>
-    );
-  }
-
-  return (
-    <View style={styles.picker}>
-      {swatches}
-      {isDuringParty ? (
-        <View style={styles.halloweenPicker}>
-          <FastImage
-            style={styles.candle}
-            source={require('../../../../assets/images/halloween/candle.gif')}
-          />
-          {halloween_swatches}
-          <FastImage
-            style={[styles.candle, { transform: [{ scaleX: -1 }] }]}
-            source={require('../../../../assets/images/halloween/candle.gif')}
-          />
-        </View>
-      ) : null}
-    </View>
-  );
+  return <View style={styles.picker}>{swatches}</View>;
 };
 
 const ColorPicker = ({ value, setValue }) => {
@@ -199,9 +138,6 @@ const ColorPicker = ({ value, setValue }) => {
   };
 
   let popoverHeight = 32 * 6 + 12; // swatch height * number of rows + padding
-  if (isDuringParty) {
-    popoverHeight = popoverHeight + 32 + 8; // swatch height + special padding
-  }
 
   const popover = {
     Component: ColorPicker64Popover,
