@@ -20,6 +20,7 @@ public:
   void draw();
 
   void readScene(Reader &reader, std::optional<std::string> deckId);
+  void readScene(const std::string &readerJson, std::optional<std::string> deckId);
   void readVariables(Reader &reader);
   Variables &getVariables();
   bool hasScene();

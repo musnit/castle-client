@@ -78,7 +78,7 @@ public:
   const Gesture &operator=(const Gesture &) = delete;
   Gesture(Gesture &&) = default; // Allow move-construction
 
-  explicit Gesture(Scene &scene_);
+  explicit Gesture(Scene *scene_);
 
 
   // Queries
@@ -114,7 +114,7 @@ public:
 
 private:
   Lv &lv { Lv::getInstance() };
-  Scene &scene;
+  Scene *scene;
 
   entt::registry registry; // This is separate from the `Scene`'s actor registry. Each entity here
                            // represents a touch. This allows attaching extra data as components.
@@ -162,7 +162,7 @@ inline bool Touch::isUsed(const TouchToken &token) const {
   return tokenId == token.id;
 }
 
-inline Gesture::Gesture(Scene &scene_)
+inline Gesture::Gesture(Scene *scene_)
     : scene(scene_) {
 }
 

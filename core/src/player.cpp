@@ -86,6 +86,14 @@ void Player::readScene(Reader &reader, std::optional<std::string> deckId_) {
   scene = std::make_unique<Scene>(bridge, variables, sound, clock, deckId, false, &reader);
 }
 
+void Player::readScene(const std::string &readerJson, std::optional<std::string> deckId_) {
+  sceneArchive = Archive::fromJson(readerJson.c_str());
+  deckId = deckId_;
+  sceneArchive.read([&](Reader &reader) {
+    scene = std::make_unique<Scene>(bridge, variables, sound, clock, deckId, false, &reader);
+  });
+}
+
 void Player::readVariables(Reader &reader) {
   variables.read(reader);
 };

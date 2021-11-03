@@ -10,6 +10,7 @@
 #include "player.h"
 #include "editor/editor.h"
 #include "editor/library_clipboard.h"
+#include "feed/feed.h"
 
 class Engine {
   // The top-level instance of Castle core. There should just be one of these for the entire
@@ -82,6 +83,7 @@ private:
 
   Player player { bridge };
   std::unique_ptr<Editor> editor;
+  std::unique_ptr<Feed> feed;
   bool isEditing = false;
   LibraryClipboard libraryClipboard; // persistent for engine instance lifetime
 
