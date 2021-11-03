@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import { AppUpdateNotice } from '../components/AppUpdateNotice';
 import { DecksFeed } from '../components/DecksFeed';
+import { NativeDecksFeed } from '../components/NativeDecksFeed';
 import { EmptyFeed } from './EmptyFeed';
 import { useLazyQuery, useMutation, gql } from '@apollo/client';
 import { useNavigation, useFocusEffect } from '../ReactNavigation';
@@ -9,6 +10,7 @@ import uniqby from 'lodash.uniqby';
 import * as Constants from '../Constants';
 
 const REFETCH_FEED_INTERVAL_MS = 60 * 60 * 1000;
+const USE_NATIVE_FEED = true;
 
 export const FeaturedDecks = ({ focused, deckId, onPressComments, isCommentsOpen }) => {
   const { navigate } = useNavigation();
@@ -111,7 +113,7 @@ export const FeaturedDecks = ({ focused, deckId, onPressComments, isCommentsOpen
       {error ? (
         <EmptyFeed error={error} onRefresh={onRefresh} />
       ) : (
-        <DecksFeed
+        USE_NATIVE_FEED ? <NativeDecksFeed decks={decks}/> : <DecksFeed
           decks={decks}
           isPlaying={deckId !== undefined}
           onDeckFocused={onDeckFocused}
