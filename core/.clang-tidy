@@ -10,7 +10,9 @@ Checks: "-*,\
   -performance-noexcept-move-constructor,\
   portability-*,\
   bugprone-*,\
+  -bugprone-easily-swappable-parameters,\
   -bugprone-exception-escape,\
+  -bugprone-implicit-widening-of-multiplication-result,\
   -bugprone-infinite-loop,\
   -bugprone-macro-parentheses,\
   misc-*,\
