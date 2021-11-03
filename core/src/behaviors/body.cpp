@@ -4,6 +4,7 @@
 
 #define EDITOR_BOUNDS_MIN_SIZE 0.5
 
+
 //
 // Triggers
 //
@@ -18,19 +19,6 @@ struct CollideTrigger : BaseTrigger {
 
   inline static int nextId = 0;
   int id = nextId++; // Associates with `CollideTriggerMarker`
-};
-
-struct CollideTriggerMarker {
-  // Counts the number of physics contacts currently relevant to an <actor, trigger, other actor>
-  // combination. The trigger is fired only when the contact count goes from 0 to 1. Prevents
-  // over-firing triggers when actors have multiple collision shapes.
-
-  struct Entry {
-    int triggerId = -1; // Matches `CollideTrigger::id` for the trigger we're marking
-    int contactCount = 0;
-    ActorId otherActorId = nullActor;
-  };
-  SmallVector<Entry, 4> entries;
 };
 
 struct TapTrigger : BaseTrigger {
@@ -216,6 +204,108 @@ void BodyBehavior::handlePerform(double dt) {
   auto &registry = scene.getEntityRegistry();
   auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
 
+  // Collision triggers where neither actor is dynamic (Box2D doesn't fire contact events for them)
+  {
+    auto &tagsBehavior = getBehaviors().byType<TagsBehavior>();
+
+    struct NonDynamicCollideTriggerMarker {
+      // Marks a trigger as having been fired for an <actor, trigger, other actor> combination.
+      // Neither actor has a dynamic body. The trigger is fired only when an entry is newly added.
+      // Prevents over-firing triggers.
+
+      struct Entry {
+        int triggerId = -1; // Matches `CollideTrigger::id` for the trigger we're marking
+        ActorId otherActorId = nullActor;
+        bool active = true;
+      };
+      SmallVector<Entry, 4> entries;
+    };
+
+    // Set leftover markers as inactive -- they'll be updated to active if visited below
+    registry.view<NonDynamicCollideTriggerMarker>().each(
+        [&](NonDynamicCollideTriggerMarker &marker) {
+          for (auto &entry : marker.entries) {
+            entry.active = false;
+          }
+        });
+
+    // Use `fireAllIf` just to find actors with `CollideTrigger`s, but then call the
+    // `CollideTrigger` directly with `fireIf` inside since each could be called multiple times and
+    // we need to pass different extras each time...
+    rulesBehavior.fireAllIf<CollideTrigger, BodyComponent>(
+        {}, [&](ActorId actorId, const CollideTrigger &trigger, const BodyComponent &component) {
+          auto body = component.body;
+          if (!body || body->GetType() == b2_dynamicBody) {
+            return false;
+          }
+          auto &tag = trigger.params.tag();
+          for (auto fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()) {
+            auto bb = fixture->GetAABB(0);
+            auto shape = fixture->GetShape();
+            forEachActorAtBoundingBox(bb.lowerBound.x, bb.lowerBound.y, bb.upperBound.x,
+                bb.upperBound.y, [&](ActorId otherActorId, const b2Fixture *otherFixture) {
+                  if (actorId == otherActorId) {
+                    return true;
+                  }
+                  auto otherBody = otherFixture->GetBody();
+                  if (otherBody->GetType() == b2_dynamicBody) {
+                    return true;
+                  }
+                  if (!tagsBehavior.hasTag(otherActorId, tag)) {
+                    return true;
+                  }
+                  auto otherShape = otherFixture->GetShape();
+                  if (!b2TestOverlap(shape, 0, otherShape, 0, body->GetTransform(),
+                          otherFixture->GetBody()->GetTransform())) {
+                    return true;
+                  }
+                  auto triggerId = trigger.id;
+                  auto &marker = registry.get_or_emplace<NonDynamicCollideTriggerMarker>(actorId);
+                  for (auto &entry : marker.entries) {
+                    if (entry.triggerId == triggerId && entry.otherActorId == otherActorId) {
+                      // Already marked for trigger and other actor -- set as active, don't fire
+                      entry.active = true;
+                      return true;
+                    }
+                  }
+                  marker.entries.push_back({ triggerId, otherActorId }); // Not marked yet -- fire!
+                  RuleContextExtras extras;
+                  extras.otherActorId = otherActorId;
+                  rulesBehavior.fireIf<CollideTrigger>(
+                      actorId, extras, [&](const CollideTrigger &candidateTrigger) {
+                        return candidateTrigger.id == triggerId;
+                      });
+                  return true;
+                });
+          }
+          return false;
+        });
+
+    // Remove markers that are still not active
+    registry.view<NonDynamicCollideTriggerMarker>().each(
+        [&](ActorId actorId, NonDynamicCollideTriggerMarker &marker) {
+          auto removeIfResult = std::remove_if(marker.entries.begin(), marker.entries.end(),
+              [&](NonDynamicCollideTriggerMarker::Entry &entry) {
+                return !entry.active;
+              });
+          marker.entries.erase(removeIfResult, marker.entries.end());
+          if (marker.entries.empty()) {
+            registry.remove<NonDynamicCollideTriggerMarker>(actorId);
+          }
+        });
+
+    // Debug-display markers
+    constexpr auto debugDisplay = false;
+    if constexpr (debugDisplay) {
+      registry.view<NonDynamicCollideTriggerMarker>().each(
+          [&](ActorId actorId, NonDynamicCollideTriggerMarker &marker) {
+            for (auto &entry : marker.entries) {
+              Debug::display("actors {} and {}", actorId, entry.otherActorId);
+            }
+          });
+    }
+  }
+
   // Touch hit tracking and triggers
   {
     auto &gesture = getGesture();
@@ -312,6 +402,20 @@ void BodyBehavior::handlePerformCamera(float deltaX, float deltaY) {
 // Physics contact
 //
 
+struct DynamicCollideTriggerMarker {
+  // Counts the number of physics contacts currently relevant to an <actor, trigger, other actor>
+  // combination. At least one of the actors has a dynamic body (Box2D doesn't generate contacts
+  // otherwise). The trigger is fired only when the contact count goes from 0 to 1. Prevents
+  // over-firing triggers when actors have multiple collision shapes.
+
+  struct Entry {
+    int triggerId = -1; // Matches `CollideTrigger::id` for the trigger we're marking
+    int contactCount = 0;
+    ActorId otherActorId = nullActor;
+  };
+  SmallVector<Entry, 4> entries;
+};
+
 void BodyBehavior::handleBeginPhysicsContact(b2Contact *contact) {
   auto body1 = contact->GetFixtureA()->GetBody();
   auto body2 = contact->GetFixtureB()->GetBody();
@@ -331,7 +435,7 @@ void BodyBehavior::handleBeginPhysicsContact(b2Contact *contact) {
         return false; // Tag didn't match
       }
       auto triggerId = trigger.id;
-      auto &marker = registry.get_or_emplace<CollideTriggerMarker>(actorId);
+      auto &marker = registry.get_or_emplace<DynamicCollideTriggerMarker>(actorId);
       for (auto &entry : marker.entries) {
         if (entry.triggerId == triggerId && entry.otherActorId == otherActorId) {
           // Already have an entry for this trigger and other actor -- increment count, don't fire
@@ -367,10 +471,10 @@ void BodyBehavior::handleEndPhysicsContact(b2Contact *contact) {
         return false; // Tag didn't match
       }
       auto triggerId = trigger.id;
-      if (registry.has<CollideTriggerMarker>(actorId)) {
-        auto &marker = registry.get<CollideTriggerMarker>(actorId);
-        auto removeIfResult = std::remove_if(
-            marker.entries.begin(), marker.entries.end(), [&](CollideTriggerMarker::Entry &entry) {
+      if (registry.has<DynamicCollideTriggerMarker>(actorId)) {
+        auto &marker = registry.get<DynamicCollideTriggerMarker>(actorId);
+        auto removeIfResult = std::remove_if(marker.entries.begin(), marker.entries.end(),
+            [&](DynamicCollideTriggerMarker::Entry &entry) {
               if (entry.triggerId == triggerId && entry.otherActorId == otherActorId) {
                 --entry.contactCount;
               }
@@ -378,7 +482,7 @@ void BodyBehavior::handleEndPhysicsContact(b2Contact *contact) {
             });
         marker.entries.erase(removeIfResult, marker.entries.end());
         if (marker.entries.empty()) {
-          registry.remove<CollideTriggerMarker>(actorId);
+          registry.remove<DynamicCollideTriggerMarker>(actorId);
         }
       }
       return false;
