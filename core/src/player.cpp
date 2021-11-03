@@ -76,6 +76,13 @@ void Player::readScene(Reader &reader) {
   scene = std::make_unique<Scene>(bridge, variables, sound, clock, false, &reader);
 }
 
+void Player::readScene(const std::string &readerJson) {
+  sceneArchive = Archive::fromJson(readerJson.c_str());
+  sceneArchive.read([&](Reader &reader) {
+    scene = std::make_unique<Scene>(bridge, variables, sound, clock, false, &reader);
+  });
+}
+
 void Player::readVariables(Reader &reader) {
   variables.read(reader);
 };

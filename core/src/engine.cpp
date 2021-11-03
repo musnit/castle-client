@@ -113,6 +113,7 @@ void Engine::setInitialParams(const char *initialParamsJson) {
   const char *initialSnapshotJson = nullptr;
   const char *initialCardId = nullptr;
   const char *initialCardSceneDataUrl = nullptr;
+  auto useNativeFeed = false;
   auto isNewScene = false;
   auto archive = Archive::fromJson(initialParamsJson);
   archive.read([&](Reader &reader) {
@@ -127,6 +128,7 @@ void Engine::setInitialParams(const char *initialParamsJson) {
     reader.obj("textOverlayStyle", [&]() {
       reader.read(TextBehavior::overlayStyle);
     });
+    useNativeFeed = reader.boolean("useNativeFeed", false);
   });
   if (isEditing) {
     editor = std::make_unique<Editor>(bridge);
@@ -145,6 +147,9 @@ void Engine::setInitialParams(const char *initialParamsJson) {
     loadSceneFromJson(initialSnapshotJson, false);
   } else if (deckId) {
     loadSceneFromDeckId(deckId, deckVariables, initialCardId, initialCardSceneDataUrl);
+  } else if (useNativeFeed) {
+    feed = std::make_unique<Feed>(bridge);
+    feed->fetchInitialDecks();
   }
   if (isEditing) {
     getLibraryClipboard().sendClipboardData(editor->getBridge(), editor->getScene());
@@ -384,7 +389,11 @@ void Engine::update(double dt) {
   if (isEditing) {
     editor->update(dt);
   } else {
-    player.update(dt);
+    if (feed) {
+      feed->update(dt);
+    } else {
+      player.update(dt);
+    }
   }
 
 #ifdef CASTLE_ENABLE_TESTS
@@ -401,7 +410,11 @@ void Engine::draw() {
   if (isEditing) {
     editor->draw();
   } else {
-    player.draw();
+    if (feed) {
+      feed->draw();
+    } else {
+      player.draw();
+    }
   }
 
 #ifdef CASTLE_ENABLE_TESTS

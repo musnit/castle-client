@@ -287,7 +287,7 @@ private:
   mutable float cameraX = 0, cameraY = 0;
   mutable ActorId cameraTarget = nullActor;
 
-  Gesture gesture { *this };
+  Gesture gesture { this };
 
   double performTime = 0;
 
