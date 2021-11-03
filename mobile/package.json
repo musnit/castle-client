@@ -25,7 +25,7 @@
     "lodash.throttle": "^4.1.1",
     "md5": "^2.2.1",
     "react": "17.0.1",
-    "react-native": "0.64.2",
+    "react-native": "github:castle-xyz/react-native#0.64.2-castle-patch-podspec",
     "react-native-bootsplash": "^3.2.0",
     "react-native-device-info": "^8.4.0",
     "react-native-dotenv": "^2.4.0",
