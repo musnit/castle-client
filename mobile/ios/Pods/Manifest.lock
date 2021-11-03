@@ -585,7 +585,7 @@ SPEC CHECKSUMS:
   EXLinearGradient: f9ea3259f096b27008860ca50764184225dc71c9
   EXPermissions: 9bc08859a675d291e89be9a0870155c27c16ac35
   FBLazyVector: e686045572151edef46010a6f819ade377dfeb4b
-  FBReactNativeSpec: c9e70a3aaa0ffc1ec8a91be2962532bdfb2d6992
+  FBReactNativeSpec: 6baddc2c2b39d192b96965ec745b4d6628e62b2e
   glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
   libwebp: 98a37e597e40bfdb4c911fc98f2c53d0b12d05fc
   RCT-Folly: ec7a233ccc97cc556cf7237f0db1ff65b986f27c
