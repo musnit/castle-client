@@ -5,6 +5,15 @@
 #include "player.h"
 #include "gesture.h"
 
+struct FeedItem {
+  std::string deckJson;
+  std::unique_ptr<Player> player;
+  std::unique_ptr<love::graphics::Canvas> canvas;
+  bool isLoaded;
+  bool hasRunUpdate;
+  bool hasRendered;
+};
+
 class Feed {
   // manages a scene instance that is being edited.
 
@@ -22,7 +31,6 @@ public:
 private:
   Lv &lv { Lv::getInstance() };
   Bridge &bridge;
-  love::graphics::Canvas *gameCanvas = nullptr;
   mutable love::Transform viewTransform;
 
   std::unique_ptr<Gesture> gesture;
@@ -30,12 +38,11 @@ private:
   float lastTouchPosition = 0.0;
   float yOffset = 0.0;
 
-  std::vector<std::string> decks;
-  std::vector<std::unique_ptr<Player>> players;
+  std::vector<FeedItem> decks;
 
   int getCurrentIndex();
   void loadDeckAtIndex(int i);
-  void renderCardAtPosition(int idx, float position);
+  void renderCardAtPosition(int idx, float position, bool isActive);
   love::graphics::Canvas *newCanvas(int width, int height);
   void renderToCanvas(love::graphics::Canvas *canvas, const std::function<void()> &lambda);
 };
