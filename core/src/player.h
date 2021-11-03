@@ -19,6 +19,7 @@ public:
   void draw();
 
   void readScene(Reader &reader);
+  void readScene(const std::string &readerJson);
   void readVariables(Reader &reader);
   Variables &getVariables();
   bool hasScene();

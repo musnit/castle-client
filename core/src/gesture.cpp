@@ -90,8 +90,8 @@ void Gesture::update() {
 
 void Gesture::updateTouch(float screenX, float screenY, love::int64 loveTouchId, bool isMouse) {
   auto screenPos = love::Vector2(screenX, screenY);
-  auto pos = scene.inverseViewTransformPoint(screenPos);
-  auto cameraPos = pos - scene.getCameraPosition();
+  auto pos = scene ? scene->inverseViewTransformPoint(screenPos) : screenPos;
+  auto cameraPos = scene ? pos - scene->getCameraPosition() : screenPos;
 
   // Assuming a small number of simultaneous touches so this nested loop is fine
   auto found = false;
