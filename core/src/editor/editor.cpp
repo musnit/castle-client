@@ -258,6 +258,7 @@ void Editor::update(double dt) {
             isInspectorOpen = false;
           }
         } else {
+          setCurrentTool(Tool::Grab);
           isInspectorOpen = false;
         }
         selection.setSelectionChanged(false);
