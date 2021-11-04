@@ -213,19 +213,27 @@ bool Drawing2Behavior::handleDrawComponent(ActorId actorId, const Drawing2Compon
   }
 
   auto drawn = false;
-  auto &scene = getScene();
-  auto cameraPos = scene.getCameraPosition();
-  auto halfCameraSize = 0.5 * scene.getCameraSize();
-  constexpr auto sqrt2 = 1.42; // Upper bound
   if (auto body = getBehaviors().byType<BodyBehavior>().maybeGetPhysicsBody(actorId)) {
     if (auto info = getBehaviors().byType<BodyBehavior>().getRenderInfo(actorId);
         info.visible || (options && options->drawInvisibleActors)) {
+      auto [x, y] = body->GetPosition();
+
       // Do an upper bound test if we're camera-visible and reject if not. We don't need an exact
       // transformation: we use the maximum scale in either direction and the `sqrt2` factor
       // accounts for rotation.
-      auto [x, y] = body->GetPosition();
+
+      constexpr auto sqrt2 = 1.42; // Upper bound
       auto maxScale = std::max(info.widthScale, info.heightScale);
       auto maxHalfSize = sqrt2 * (DRAW_MAX_SIZE + 0.5 * DRAW_LINE_WIDTH) * maxScale;
+
+      auto &scene = getScene();
+      auto cameraPos = scene.getCameraPosition();
+      auto halfCameraSize = 0.5 * scene.getCameraSize();
+      auto oldHalfCameraHeight = halfCameraSize.y; // Adjust for larger aspect ratio when editing
+      halfCameraSize.y
+          = halfCameraSize.x * float(lv.graphics.getHeight()) / float(lv.graphics.getWidth());
+      cameraPos.y += halfCameraSize.y - oldHalfCameraHeight;
+
       if (std::abs(x - cameraPos.x) <= halfCameraSize.x + maxHalfSize
           && std::abs(y - cameraPos.y) <= halfCameraSize.y + maxHalfSize) {
         drawn = true;
