@@ -35,6 +35,14 @@ private:
 
   std::unique_ptr<Gesture> gesture;
   bool hasTouch = false;
+  bool ignoreCurrentTouch = false;
+  float touchVelocity = 0.0;
+  float touchStartYOffset = 0.0;
+  float touchDuration = 0.0;
+  bool isAnimating = false;
+  float animateFromYOffset = 0.0;
+  float animateToYOffset = 0.0;
+  float animationTimeElapsed = 0.0;
   float lastTouchPosition = 0.0;
   float yOffset = 0.0;
 

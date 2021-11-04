@@ -9,6 +9,15 @@
 #define CARD_WIDTH 800
 #define CARD_HEIGHT 1120
 #define FEED_ITEM_HEIGHT (CARD_HEIGHT + 200)
+#define ANIMATION_TIME 0.2
+
+float cubicEaseInOut(float p) {
+  return 3.0 * p * p - 2.0 * p * p * p;
+}
+
+float smoothstep(float a, float b, float t) {
+  return (b - a) * cubicEaseInOut(t) + a;
+}
 
 Feed::Feed(Bridge &bridge_)
     : bridge(bridge_) {
@@ -36,25 +45,63 @@ void Feed::update(double dt) {
 
   if (gesture) {
     gesture->update();
+    gesture->withSingleTouch([&](const Touch &touch) {
+      if (touch.pressed) {
+        ignoreCurrentTouch = touch.screenPos.x > 50 && touch.screenPos.x < CARD_WIDTH - 50
+            && touch.screenPos.y > 150 && touch.screenPos.y < CARD_HEIGHT - 50;
+      }
 
-    if (gesture->getCount() == 1) {
-      gesture->withSingleTouch([&](const Touch &touch) {
-        if (!hasTouch) {
-          hasTouch = true;
+      if (ignoreCurrentTouch) {
+        return;
+      }
+
+      isAnimating = false;
+
+      if (!hasTouch) {
+        hasTouch = true;
+        touchStartYOffset = yOffset;
+        touchVelocity = 0.0;
+        touchDuration = 0.0;
+      } else {
+        touchVelocity = (touch.screenPos.y - lastTouchPosition) * 0.3 + touchVelocity * 0.7;
+        yOffset += touch.screenPos.y - lastTouchPosition;
+      }
+
+      lastTouchPosition = touch.screenPos.y;
+      touchDuration += dt;
+
+      if (touch.released) {
+        hasTouch = false;
+        isAnimating = true;
+        animateFromYOffset = yOffset;
+        animationTimeElapsed = 0.0;
+        if (fabs(touchVelocity) > 20.0) {
+          if (touchVelocity > 0) {
+            animateToYOffset = (round(touchStartYOffset / FEED_ITEM_HEIGHT) + 1) * FEED_ITEM_HEIGHT;
+          } else {
+            animateToYOffset = (round(touchStartYOffset / FEED_ITEM_HEIGHT) - 1) * FEED_ITEM_HEIGHT;
+          }
+        } else if (touchDuration < 0.2 && touch.screenPos.y > CARD_HEIGHT && !touch.movedNear) {
+          animateToYOffset = (round(touchStartYOffset / FEED_ITEM_HEIGHT) - 1) * FEED_ITEM_HEIGHT;
         } else {
-          yOffset += touch.screenPos.y - lastTouchPosition;
+          animateToYOffset
+              = round((yOffset - FEED_ITEM_HEIGHT * 0.1) / FEED_ITEM_HEIGHT) * FEED_ITEM_HEIGHT;
         }
+      }
+    });
+  }
 
-        lastTouchPosition = touch.screenPos.y;
-
-        if (touch.released) {
-          hasTouch = false;
-        }
-      });
+  if (isAnimating) {
+    yOffset
+        = smoothstep(animateFromYOffset, animateToYOffset, animationTimeElapsed / ANIMATION_TIME);
+    animationTimeElapsed += dt;
+    if (animationTimeElapsed >= ANIMATION_TIME) {
+      isAnimating = false;
+      yOffset = animateToYOffset;
     }
   }
 
-  if (!hasTouch) {
+  if (!hasTouch && !isAnimating) {
     int idx = getCurrentIndex();
     if (idx < (int)decks.size() && decks[idx].player) {
       decks[idx].player->update(dt);
@@ -74,7 +121,7 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
     return;
   }
 
-  if (!hasTouch) {
+  if (!hasTouch && !isAnimating) {
     loadDeckAtIndex(idx);
   }
 
@@ -100,7 +147,7 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
   lv.graphics.push(love::Graphics::STACK_ALL);
 
   if (shouldDraw) {
-    renderToCanvas(decks[idx].canvas.get(), [=]() {
+    renderToCanvas(decks[idx].canvas.get(), [&]() {
       lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0 });
       decks[idx].player->draw();
     });
@@ -130,10 +177,12 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
 
 void Feed::draw() {
   int idx = getCurrentIndex();
+  // float padding = (FEED_ITEM_HEIGHT - CARD_HEIGHT) / 2.0;
+  float padding = 0.0;
 
-  renderCardAtPosition(idx - 1, yOffset + FEED_ITEM_HEIGHT * (idx - 1), false);
-  renderCardAtPosition(idx, yOffset + FEED_ITEM_HEIGHT * idx, !hasTouch);
-  renderCardAtPosition(idx + 1, yOffset + FEED_ITEM_HEIGHT * (idx + 1), false);
+  renderCardAtPosition(idx - 1, yOffset + FEED_ITEM_HEIGHT * (idx - 1) + padding, false);
+  renderCardAtPosition(idx, yOffset + FEED_ITEM_HEIGHT * idx + padding, !hasTouch && !isAnimating);
+  renderCardAtPosition(idx + 1, yOffset + FEED_ITEM_HEIGHT * (idx + 1) + padding, false);
 }
 
 void Feed::loadDecks(const char *decksJson) {
