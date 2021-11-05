@@ -54,7 +54,10 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
           isPlaying={true}
           onPressDeck={({ deckId }) => {
             if (deckId) {
-              throw new Error(`Changing deckId from PlayDeckScreen is not yet supported`);
+              // don't throw: this can happen if we render a singleton DecksFeed
+              // via PlayDeckScreen, and the user manages to tap before the `ready` flag is set,
+              // which should just be a no-op while we wait for the deck to mount
+              console.warn(`Changing deckId from PlayDeckScreen is not yet supported`);
             }
             pop();
           }}
