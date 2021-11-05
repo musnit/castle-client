@@ -11,6 +11,7 @@ import {
   canParamBePromotedToExpression,
 } from '../../SceneCreatorUtilities';
 import { SelectBehaviorPropertySheet } from '../components/SelectBehaviorPropertySheet';
+import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useCoreState } from '../../../core/CoreEvents';
 
 import * as Constants from '../../../Constants';
@@ -299,7 +300,18 @@ export const ConfigureExpressionSheet = ({
     expressions = rulesData.expressions;
   }
   const behaviors = useCoreState('EDITOR_ALL_BEHAVIORS');
-  const [value, setValue] = React.useState(promoteToExpression(initialValue));
+
+  // wrap `setValue` in a setter which also flags `changed` to true
+  const [value, setValueState] = React.useState(promoteToExpression(initialValue));
+  const [isChanged, setIsChanged] = React.useState(false);
+  const setValue = React.useCallback(
+    (v) => {
+      setIsChanged(true);
+      setValueState(v);
+    },
+    [setIsChanged, setValueState]
+  );
+  const { showActionSheetWithOptions } = useActionSheet();
 
   const showWrappingExpressionPicker = React.useCallback(
     () =>
@@ -365,8 +377,28 @@ export const ConfigureExpressionSheet = ({
     onClose();
   }, [onClose, value]);
 
+  const maybeClose = React.useCallback(() => {
+    if (isChanged) {
+      showActionSheetWithOptions(
+        {
+          title: `Close sheet and discard changes?`,
+          options: ['Close', 'Cancel'],
+          destructiveButtonIndex: 0,
+          cancelButtonIndex: 1,
+        },
+        (buttonIndex) => {
+          if (buttonIndex === 0) {
+            onClose();
+          }
+        }
+      );
+    } else {
+      onClose();
+    }
+  }, [showActionSheetWithOptions, isChanged, onClose]);
+
   const renderHeader = () => (
-    <BottomSheetHeader title={`Modify ${label}`} onClose={onClose} onDone={onDone} />
+    <BottomSheetHeader title={`Modify ${label}`} onClose={maybeClose} onDone={onDone} />
   );
 
   return (
