@@ -115,7 +115,7 @@ const MovementTab = ({ behaviors, addChildSheet }) => {
   );
 };
 
-export const InspectorTabs = ({ selectedTab, addChildSheet }) => {
+export const InspectorTabs = React.memo(({ selectedTab, addChildSheet }) => {
   const behaviors = useCoreState('EDITOR_ALL_BEHAVIORS');
   const { isTextActorSelected, isBlueprintSelected } = useCardCreator();
 
@@ -146,4 +146,4 @@ export const InspectorTabs = ({ selectedTab, addChildSheet }) => {
   }
 
   return tabContents;
-};
+});
