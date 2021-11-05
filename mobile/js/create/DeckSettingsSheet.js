@@ -20,7 +20,7 @@ export const DeckSettingsSheet = ({ isOpen, onClose, ...props }) => {
   const renderHeader = () => <BottomSheetHeader title="Deck Settings" onClose={onClose} />;
 
   const renderContent = () => (
-    <View style={{ paddingBottom: TAB_BAR_HEIGHT + insets.bottom }}>
+    <View style={{ paddingBottom: TAB_BAR_HEIGHT + insets.bottom, alignItems: 'center' }}>
       <ConfigureDeck {...props} />
     </View>
   );
