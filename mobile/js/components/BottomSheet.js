@@ -7,7 +7,7 @@ import {
   requireNativeComponent,
   ScrollView,
   DeviceEventEmitter,
-  BackHandler
+  BackHandler,
 } from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -178,30 +178,26 @@ const BottomSheetIOS = ({
 
   return (
     <Animated.View style={[styles.container, { transform: [{ translateY: snapY }] }, style]}>
-      {/* inner view constrains the height of the scrollview to the bottom of the screen. */}
-      <View style={{ height: containerHeight }}>
-        <PanGestureHandler
-          onGestureEvent={onPanGestureEvent}
-          onHandlerStateChange={onPanStateChange}>
-          <Animated.View>{renderHeader()}</Animated.View>
-        </PanGestureHandler>
-        {useViewInsteadOfScrollview ? (
-          <View ref={scrollViewRef} key={contentKey} style={styles.content}>
-            {renderContent()}
-            <View style={{ paddingBottom: insets.bottom }} />
-          </View>
-        ) : (
-          <KeyboardAwareScrollView
-            ref={scrollViewRef}
-            key={contentKey}
-            style={styles.content}
-            enableOnAndroid={true}
-            keyboardShouldPersistTaps="handled">
-            {renderContent()}
-            <View style={{ paddingBottom: insets.bottom }} />
-          </KeyboardAwareScrollView>
-        )}
-      </View>
+      <PanGestureHandler onGestureEvent={onPanGestureEvent} onHandlerStateChange={onPanStateChange}>
+        <Animated.View>{renderHeader()}</Animated.View>
+      </PanGestureHandler>
+      {useViewInsteadOfScrollview ? (
+        <View ref={scrollViewRef} key={contentKey} style={styles.content}>
+          {renderContent()}
+          <View style={{ paddingBottom: insets.bottom }} />
+        </View>
+      ) : (
+        <KeyboardAwareScrollView
+          ref={scrollViewRef}
+          key={contentKey}
+          style={styles.content}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled">
+          {renderContent()}
+          {/* Bottom padding constrains the height of the scrollview to the visible height of the sheet.  */}
+          <View style={{ paddingBottom: insets.bottom + (screenHeight - containerHeight) }} />
+        </KeyboardAwareScrollView>
+      )}
     </Animated.View>
   );
 };
@@ -300,7 +296,7 @@ const BottomSheetAndroid = ({
 
     return () => {
       BackHandler.removeEventListener('hardwareBackPress', runHardwareBackPressEvent);
-    }
+    };
   });
 
   // onCloseEnd, onOpenEnds aren't implemented yet, but they're not used for anything other than

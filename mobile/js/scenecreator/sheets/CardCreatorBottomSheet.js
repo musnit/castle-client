@@ -37,7 +37,6 @@ export const CardCreatorBottomSheet = React.memo(({ element, headerHeight = 64, 
       snapPoints={snapPoints}
       initialSnap={1}
       headerHeight={headerHeight}
-      onOpenEnd={Keyboard.dismiss}
       onCloseEnd={Keyboard.dismiss}
       style={{
         backgroundColor: '#fff',
