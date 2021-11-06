@@ -264,6 +264,7 @@ export const DecksFeed = ({
   onPressDeck,
   onPressComments,
   isCommentsOpen,
+  onDeckFocused,
   ...props
 }) => {
   const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
@@ -346,6 +347,9 @@ export const DecksFeed = ({
     ({ index, deck }) => {
       if (!isPlaying) {
         Amplitude.logEventWithProperties('VIEW_FEED_ITEM', { index, deckId: deck?.deckId });
+        if (onDeckFocused) {
+          onDeckFocused({deckId: deck?.deckId});
+        }
       }
     },
     [isPlaying]

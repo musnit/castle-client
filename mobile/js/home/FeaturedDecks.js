@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { AppUpdateNotice } from '../components/AppUpdateNotice';
 import { DecksFeed } from '../components/DecksFeed';
 import { EmptyFeed } from './EmptyFeed';
-import { useLazyQuery, gql } from '@apollo/client';
+import { useLazyQuery, useMutation, gql } from '@apollo/client';
 import { useNavigation, useFocusEffect } from '../ReactNavigation';
 
 import * as Constants from '../Constants';
@@ -14,22 +14,49 @@ export const FeaturedDecks = ({ focused, deckId, onPressComments, isCommentsOpen
   const [lastFetched, setLastFetched] = React.useState({
     time: undefined,
   });
-  const [decks, setDecks] = React.useState(undefined);
+  const [sessionId, setSessionId] = React.useState(undefined);
+  const [decks, changeDecks] = React.useReducer((decks, action) => {
+    switch (action.type) {
+      case 'set':
+        return action.decks;
+      case 'append':
+        return decks.concat(action.decks);
+      default:
+        throw new Error(`Unrecognized decks action: ${action.type}`);
+    }
+  }, undefined);
   const [error, setError] = React.useState(undefined);
   const [fetchDecks, query] = useLazyQuery(
     gql`
-      query FeaturedFeed {
-        featuredFeed {
-          ${Constants.FEED_ITEM_DECK_FRAGMENT}
+      query InfiniteFeed($sessionId: ID) {
+        infiniteFeed(sessionId: $sessionId) {
+          sessionId
+          decks {
+            ${Constants.FEED_ITEM_DECK_FRAGMENT}
+          }
         }
       }
-    `
+    `,
+    { fetchPolicy: 'no-cache' }
+  );
+
+  const [markDeckViewFocused, markDeckViewFocusedQuery] = useMutation(
+    gql`
+      mutation markDeckViewFocused($deckId: ID!, $sessionId: ID!) {
+        markDeckViewFocused(deckId: $deckId, sessionId: $sessionId)
+      }
+    `,
+    { fetchPolicy: 'no-cache' }
   );
 
   const onRefresh = React.useCallback(() => {
-    fetchDecks();
+    fetchDecks({
+      variables: {
+        sessionId,
+      },
+    });
     setLastFetched({ time: Date.now() });
-  }, [fetchDecks, setLastFetched]);
+  }, [fetchDecks, setLastFetched, sessionId]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -42,10 +69,35 @@ export const FeaturedDecks = ({ focused, deckId, onPressComments, isCommentsOpen
     }, [lastFetched.time, deckId, onRefresh])
   );
 
+  const onEndReached = React.useCallback(() => {
+    if (!query.loading && decks?.length) {
+      onRefresh();
+    }
+  }, [query.loading, decks, onRefresh]);
+
+  const onDeckFocused = React.useCallback(
+    ({ deckId }) => {
+      // TODO: why isn't this getting new sessionId?
+      /*
+      markDeckViewFocused({
+        variables: {
+          deckId,
+          sessionId,
+        },
+      });*/
+    },
+    [markDeckViewFocused, sessionId]
+  );
+
   React.useEffect(() => {
     if (query.called && !query.loading) {
       if (query.data) {
-        setDecks(query.data.featuredFeed);
+        setSessionId(query.data.infiniteFeed.sessionId);
+        if (decks) {
+          changeDecks({ type: 'append', decks: query.data.infiniteFeed.decks });
+        } else {
+          changeDecks({ type: 'set', decks: query.data.infiniteFeed.decks });
+        }
         setError(undefined);
       } else if (query.error) {
         setError(query.error);
@@ -63,6 +115,7 @@ export const FeaturedDecks = ({ focused, deckId, onPressComments, isCommentsOpen
         <DecksFeed
           decks={decks}
           isPlaying={deckId !== undefined}
+          onDeckFocused={onDeckFocused}
           onPressDeck={({ deckId }) =>
             navigate('HomeScreen', {
               deckId,
@@ -72,6 +125,7 @@ export const FeaturedDecks = ({ focused, deckId, onPressComments, isCommentsOpen
           isCommentsOpen={isCommentsOpen}
           refreshing={!!(lastFetched.time && query.loading && decks?.length)}
           onRefresh={onRefresh}
+          onEndReached={onEndReached}
         />
       )}
       <AppUpdateNotice />
