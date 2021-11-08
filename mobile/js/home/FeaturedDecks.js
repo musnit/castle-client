@@ -13,6 +13,10 @@ const REFETCH_FEED_INTERVAL_MS = 60 * 60 * 1000;
 const USE_NATIVE_FEED = true;
 
 export const FeaturedDecks = ({ focused, deckId, onPressComments, isCommentsOpen }) => {
+  if (USE_NATIVE_FEED) {
+    return <NativeDecksFeed />;
+  }
+
   const { navigate } = useNavigation();
   const [lastFetched, setLastFetched] = React.useState({
     time: undefined,
@@ -113,7 +117,7 @@ export const FeaturedDecks = ({ focused, deckId, onPressComments, isCommentsOpen
       {error ? (
         <EmptyFeed error={error} onRefresh={onRefresh} />
       ) : (
-        USE_NATIVE_FEED ? <NativeDecksFeed decks={decks}/> : <DecksFeed
+        <DecksFeed
           decks={decks}
           isPlaying={deckId !== undefined}
           onDeckFocused={onDeckFocused}

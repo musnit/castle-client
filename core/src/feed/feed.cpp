@@ -38,58 +38,51 @@ int Feed::getCurrentIndex() {
 void Feed::update(double dt) {
   Debug::display("fps: {}", lv.timer.getFPS());
 
-  // TODO: make scene optional in gesture constructor
-  if (!gesture && decks.size() > 0 && decks[0].player && decks[0].player->hasScene()) {
-    gesture = std::make_unique<Gesture>(decks[0].player->getScene());
-  }
+  gesture.update();
+  gesture.withSingleTouch([&](const Touch &touch) {
+    if (touch.pressed) {
+      ignoreCurrentTouch = touch.screenPos.x > 50 && touch.screenPos.x < CARD_WIDTH - 50
+          && touch.screenPos.y > 150 && touch.screenPos.y < CARD_HEIGHT - 50;
+    }
 
-  if (gesture) {
-    gesture->update();
-    gesture->withSingleTouch([&](const Touch &touch) {
-      if (touch.pressed) {
-        ignoreCurrentTouch = touch.screenPos.x > 50 && touch.screenPos.x < CARD_WIDTH - 50
-            && touch.screenPos.y > 150 && touch.screenPos.y < CARD_HEIGHT - 50;
-      }
+    if (ignoreCurrentTouch) {
+      return;
+    }
 
-      if (ignoreCurrentTouch) {
-        return;
-      }
+    isAnimating = false;
 
-      isAnimating = false;
+    if (!hasTouch) {
+      hasTouch = true;
+      touchStartYOffset = yOffset;
+      touchVelocity = 0.0;
+      touchDuration = 0.0;
+    } else {
+      touchVelocity = (touch.screenPos.y - lastTouchPosition) * 0.3 + touchVelocity * 0.7;
+      yOffset += touch.screenPos.y - lastTouchPosition;
+    }
 
-      if (!hasTouch) {
-        hasTouch = true;
-        touchStartYOffset = yOffset;
-        touchVelocity = 0.0;
-        touchDuration = 0.0;
-      } else {
-        touchVelocity = (touch.screenPos.y - lastTouchPosition) * 0.3 + touchVelocity * 0.7;
-        yOffset += touch.screenPos.y - lastTouchPosition;
-      }
+    lastTouchPosition = touch.screenPos.y;
+    touchDuration += dt;
 
-      lastTouchPosition = touch.screenPos.y;
-      touchDuration += dt;
-
-      if (touch.released) {
-        hasTouch = false;
-        isAnimating = true;
-        animateFromYOffset = yOffset;
-        animationTimeElapsed = 0.0;
-        if (fabs(touchVelocity) > 20.0) {
-          if (touchVelocity > 0) {
-            animateToYOffset = (round(touchStartYOffset / FEED_ITEM_HEIGHT) + 1) * FEED_ITEM_HEIGHT;
-          } else {
-            animateToYOffset = (round(touchStartYOffset / FEED_ITEM_HEIGHT) - 1) * FEED_ITEM_HEIGHT;
-          }
-        } else if (touchDuration < 0.2 && touch.screenPos.y > CARD_HEIGHT && !touch.movedNear) {
-          animateToYOffset = (round(touchStartYOffset / FEED_ITEM_HEIGHT) - 1) * FEED_ITEM_HEIGHT;
+    if (touch.released) {
+      hasTouch = false;
+      isAnimating = true;
+      animateFromYOffset = yOffset;
+      animationTimeElapsed = 0.0;
+      if (fabs(touchVelocity) > 20.0) {
+        if (touchVelocity > 0) {
+          animateToYOffset = (round(touchStartYOffset / FEED_ITEM_HEIGHT) + 1) * FEED_ITEM_HEIGHT;
         } else {
-          animateToYOffset
-              = round((yOffset - FEED_ITEM_HEIGHT * 0.1) / FEED_ITEM_HEIGHT) * FEED_ITEM_HEIGHT;
+          animateToYOffset = (round(touchStartYOffset / FEED_ITEM_HEIGHT) - 1) * FEED_ITEM_HEIGHT;
         }
+      } else if (touchDuration < 0.2 && touch.screenPos.y > CARD_HEIGHT && !touch.movedNear) {
+        animateToYOffset = (round(touchStartYOffset / FEED_ITEM_HEIGHT) - 1) * FEED_ITEM_HEIGHT;
+      } else {
+        animateToYOffset
+            = round((yOffset - FEED_ITEM_HEIGHT * 0.1) / FEED_ITEM_HEIGHT) * FEED_ITEM_HEIGHT;
       }
-    });
-  }
+    }
+  });
 
   if (isAnimating) {
     yOffset
@@ -103,7 +96,7 @@ void Feed::update(double dt) {
 
   if (!hasTouch && !isAnimating) {
     int idx = getCurrentIndex();
-    if (idx < (int)decks.size() && decks[idx].player) {
+    if (idx >= 0 && idx < (int)decks.size() && decks[idx].player) {
       decks[idx].player->update(dt);
     }
 
@@ -112,6 +105,10 @@ void Feed::update(double dt) {
         decks[i].player->update(dt);
         decks[i].hasRunUpdate = true;
       }
+    }
+
+    if (decks.size() > 0 && idx > decks.size() - 2) {
+      fetchMoreDecks();
     }
   }
 }
@@ -183,25 +180,87 @@ void Feed::draw() {
   renderCardAtPosition(idx - 1, yOffset + FEED_ITEM_HEIGHT * (idx - 1) + padding, false);
   renderCardAtPosition(idx, yOffset + FEED_ITEM_HEIGHT * idx + padding, !hasTouch && !isAnimating);
   renderCardAtPosition(idx + 1, yOffset + FEED_ITEM_HEIGHT * (idx + 1) + padding, false);
+
+  for (int i = 0; i <= idx - 2; i++) {
+    unloadDeckAtIndex(i);
+  }
+
+  for (int i = idx + 2; i < (int)decks.size(); i++) {
+    unloadDeckAtIndex(i);
+  }
 }
 
-void Feed::loadDecks(const char *decksJson) {
-  auto archive = Archive::fromJson(decksJson);
-  archive.read([&](Reader &reader) {
-    reader.arr("decks", [&]() {
-      reader.each([&]() {
-        FeedItem feedItem;
-        feedItem.deckJson = *reader.str();
-        feedItem.isLoaded = false;
-        feedItem.hasRunUpdate = false;
-        feedItem.hasRendered = false;
-        decks.push_back(std::move(feedItem));
-      });
-    });
-  });
+void Feed::fetchInitialDecks() {
+  fetchingDecks = true;
+  API::graphql("{\n  infiniteFeed {\n    sessionId\n    decks {\n      deckId\n      variables\n   "
+               "   initialCard {\n        sceneDataUrl\n      }\n    }\n  }\n}",
+      [=](APIResponse &response) {
+        if (response.success) {
+          auto &reader = response.reader;
 
-  loadDeckAtIndex(0);
-  loadDeckAtIndex(1);
+          reader.obj("data", [&]() {
+            reader.obj("infiniteFeed", [&]() {
+              sessionId = reader.str("sessionId", "");
+
+              reader.arr("decks", [&]() {
+                reader.each([&]() {
+                  std::string deckId = reader.str("deckId", "");
+
+                  FeedItem feedItem;
+                  feedItem.deckJson = reader.toJson();
+                  feedItem.isLoaded = false;
+                  feedItem.hasRunUpdate = false;
+                  feedItem.hasRendered = false;
+                  deckIds.insert(deckId);
+                  decks.push_back(std::move(feedItem));
+                });
+              });
+            });
+          });
+
+          loadDeckAtIndex(0);
+          loadDeckAtIndex(1);
+          fetchingDecks = false;
+        }
+      });
+}
+
+void Feed::fetchMoreDecks() {
+  if (fetchingDecks) {
+    return;
+  }
+
+  fetchingDecks = true;
+  API::graphql("{\n  infiniteFeed(sessionId: \"" + sessionId
+          + "\") {\n    decks {\n      deckId\n      variables\n      initialCard {\n        "
+            "sceneDataUrl\n      }\n    }\n  }\n}",
+      [=](APIResponse &response) {
+        if (response.success) {
+          auto &reader = response.reader;
+
+          reader.obj("data", [&]() {
+            reader.obj("infiniteFeed", [&]() {
+              reader.arr("decks", [&]() {
+                reader.each([&]() {
+                  std::string deckId = reader.str("deckId", "");
+
+                  if (deckIds.find(deckId) == deckIds.end()) {
+                    FeedItem feedItem;
+                    feedItem.deckJson = reader.toJson();
+                    feedItem.isLoaded = false;
+                    feedItem.hasRunUpdate = false;
+                    feedItem.hasRendered = false;
+                    deckIds.insert(deckId);
+                    decks.push_back(std::move(feedItem));
+                  }
+                });
+              });
+            });
+          });
+        }
+
+        fetchingDecks = false;
+      });
 }
 
 void Feed::loadDeckAtIndex(int i) {
@@ -237,6 +296,27 @@ void Feed::loadDeckAtIndex(int i) {
     });
   });
   t.detach();
+}
+
+void Feed::unloadDeckAtIndex(int i) {
+  if (i >= (int)decks.size() || i < 0) {
+    return;
+  }
+
+  if (!decks[i].player) {
+    return;
+  }
+
+  // don't unload a deck that's in the middle of loading
+  if (!decks[i].isLoaded || !decks[i].hasRunUpdate || !decks[i].hasRendered) {
+    return;
+  }
+
+  decks[i].isLoaded = false;
+  decks[i].hasRunUpdate = false;
+  decks[i].hasRendered = false;
+  decks[i].player.reset();
+  decks[i].canvas.reset();
 }
 
 love::graphics::Canvas *Feed::newCanvas(int width, int height) {

@@ -112,7 +112,7 @@ void Engine::setInitialParams(const char *initialParamsJson) {
   const char *initialSnapshotJson = nullptr;
   const char *initialCardId = nullptr;
   const char *initialCardSceneDataUrl = nullptr;
-  const char *decks = nullptr;
+  auto useNativeFeed = false;
   auto isNewScene = false;
   auto archive = Archive::fromJson(initialParamsJson);
   archive.read([&](Reader &reader) {
@@ -124,7 +124,7 @@ void Engine::setInitialParams(const char *initialParamsJson) {
     initialSnapshotJson = reader.str("initialSnapshotJson", nullptr);
     isNewScene = reader.boolean("isNewScene", false);
     Scene::uiPixelRatio = float(reader.num("pixelRatio", Scene::uiPixelRatio));
-    decks = reader.str("decks", nullptr);
+    useNativeFeed = reader.boolean("useNativeFeed", false);
   });
   if (isEditing) {
     editor = std::make_unique<Editor>(bridge);
@@ -143,9 +143,9 @@ void Engine::setInitialParams(const char *initialParamsJson) {
     loadSceneFromJson(initialSnapshotJson, false);
   } else if (deckId) {
     loadSceneFromDeckId(deckId, deckVariables, initialCardId, initialCardSceneDataUrl);
-  } else if (decks) {
+  } else if (useNativeFeed) {
     feed = std::make_unique<Feed>(bridge);
-    feed->loadDecks(decks);
+    feed->fetchInitialDecks();
   }
   if (isEditing) {
     getLibraryClipboard().sendClipboardData(editor->getBridge(), editor->getScene());
