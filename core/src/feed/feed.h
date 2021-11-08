@@ -12,6 +12,8 @@ struct FeedItem {
   bool isLoaded;
   bool hasRunUpdate;
   bool hasRendered;
+  bool shouldFocus;
+  float focusPercent;
 };
 
 class Feed {
@@ -34,7 +36,9 @@ private:
   mutable love::Transform viewTransform;
 
   Gesture gesture { nullptr };
+  std::unique_ptr<love::Shader> shader;
   bool hasTouch = false;
+  bool deckIsFocused = false;
   bool ignoreCurrentTouch = false;
   float touchVelocity = 0.0;
   float touchStartYOffset = 0.0;
@@ -46,11 +50,13 @@ private:
   float animationTimeElapsed = 0.0;
   float lastTouchPosition = 0.0;
   float yOffset = 0.0;
+  float elapsedTime = 0.0;
 
   std::set<std::string> deckIds;
   std::vector<FeedItem> decks;
   std::string sessionId;
 
+  void makeShader();
   void fetchMoreDecks();
   int getCurrentIndex();
   void loadDeckAtIndex(int i);
