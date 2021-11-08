@@ -23,6 +23,7 @@
     "graphql": "^14.5.8",
     "lodash.debounce": "^4.0.8",
     "lodash.throttle": "^4.1.1",
+    "lodash.uniqby": "^4.7.0",
     "md5": "^2.2.1",
     "react": "17.0.1",
     "react-native": "github:castle-xyz/react-native#0.64.2-castle-patch-podspec",

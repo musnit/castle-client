@@ -4,6 +4,7 @@ import { DecksFeed } from '../components/DecksFeed';
 import { EmptyFeed } from './EmptyFeed';
 import { useLazyQuery, useMutation, gql } from '@apollo/client';
 import { useNavigation, useFocusEffect } from '../ReactNavigation';
+import uniqby from 'lodash.uniqby';
 
 import * as Constants from '../Constants';
 
@@ -20,7 +21,7 @@ export const FeaturedDecks = ({ focused, deckId, onPressComments, isCommentsOpen
       case 'set':
         return action.decks;
       case 'append':
-        return decks.concat(action.decks);
+        return uniqby(decks.concat(action.decks), 'deckId');
       default:
         throw new Error(`Unrecognized decks action: ${action.type}`);
     }
