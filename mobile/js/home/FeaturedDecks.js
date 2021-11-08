@@ -77,14 +77,12 @@ export const FeaturedDecks = ({ focused, deckId, onPressComments, isCommentsOpen
 
   const onDeckFocused = React.useCallback(
     ({ deckId }) => {
-      // TODO: why isn't this getting new sessionId?
-      /*
       markDeckViewFocused({
         variables: {
           deckId,
           sessionId,
         },
-      });*/
+      });
     },
     [markDeckViewFocused, sessionId]
   );

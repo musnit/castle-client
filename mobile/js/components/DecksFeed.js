@@ -343,24 +343,27 @@ export const DecksFeed = ({
     [currentCardIndex, isPlaying, paused, props?.onRefresh, onPressComments, isCommentsOpen]
   );
 
-  const logScrollToDeck = React.useCallback(
-    ({ index, deck }) => {
+  // FlatList doesn't allow changing `onViewableItemsChanged` so we need to use a ref and
+  // rebuild manually when dependencies change.
+  const logScrollToDeck = React.useRef();
+  React.useEffect(() => {
+    logScrollToDeck.current = debounce(({ index, deck }) => {
       if (!isPlaying) {
         Amplitude.logEventWithProperties('VIEW_FEED_ITEM', { index, deckId: deck?.deckId });
         if (onDeckFocused) {
-          onDeckFocused({deckId: deck?.deckId});
+          onDeckFocused({ deckId: deck?.deckId });
         }
       }
-    },
-    [isPlaying]
-  );
-  const debounceLogScrollToDeck = debounce(({ ...args }) => logScrollToDeck(args), 500);
+    }, 500);
+  }, [isPlaying, onDeckFocused]);
 
   const viewabilityConfig = React.useRef({ itemVisiblePercentThreshold: 90 }).current;
   const onViewableItemsChanged = React.useRef(({ viewableItems }) => {
     if (viewableItems.length > 0) {
       setCurrentCardIndex(viewableItems[0].index);
-      debounceLogScrollToDeck({ index: viewableItems[0].index, deck: viewableItems[0].item });
+      if (logScrollToDeck.current) {
+        logScrollToDeck.current({ index: viewableItems[0].index, deck: viewableItems[0].item });
+      }
     }
   });
 
