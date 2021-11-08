@@ -394,7 +394,9 @@ namespace ghost {
     newLayer->setParent(this);
     layers.push_back(std::move(newLayer));
     if (order > -1 && order < layers.size() - 1) {
-      std::iter_swap(layers.begin() + order, layers.rbegin());
+      for (int ii = order; ii < layers.size() - 1; ii++) {
+        std::iter_swap(layers.begin() + ii, layers.rbegin());
+      }
     }
   }
 
