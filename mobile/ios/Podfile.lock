@@ -1,4 +1,7 @@
 PODS:
+  - Adjust (4.29.5):
+    - Adjust/Core (= 4.29.5)
+  - Adjust/Core (4.29.5)
   - Amplitude (6.0.0)
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.6)
@@ -230,6 +233,9 @@ PODS:
     - React-jsi (= 0.64.2)
     - React-perflogger (= 0.64.2)
   - React-jsinspector (0.64.2)
+  - react-native-adjust (4.29.4):
+    - Adjust (= 4.29.5)
+    - React
   - react-native-get-random-values (1.7.0):
     - React-Core
   - react-native-image-picker (3.8.1):
@@ -383,6 +389,7 @@ DEPENDENCIES:
   - React-jsi (from `../node_modules/react-native/ReactCommon/jsi`)
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
+  - react-native-adjust (from `../node_modules/react-native-adjust`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
@@ -426,6 +433,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - Adjust
     - Amplitude
     - boost-for-react-native
     - DVAssetLoaderDelegate
@@ -484,6 +492,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsiexecutor"
   React-jsinspector:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
+  react-native-adjust:
+    :path: "../node_modules/react-native-adjust"
   react-native-get-random-values:
     :path: "../node_modules/react-native-get-random-values"
   react-native-image-picker:
@@ -574,6 +584,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
+  Adjust: 5cab100ac05eebde8141b48a2acffd6b5ce0564b
   Amplitude: cc34fcd8dfffc3470bc2e05f3a4abb0178f6d963
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
@@ -599,6 +610,7 @@ SPEC CHECKSUMS:
   React-jsi: 67747b9722f6dab2ffe15b011bcf6b3f2c3f1427
   React-jsiexecutor: 80c46bd381fd06e418e0d4f53672dc1d1945c4c3
   React-jsinspector: cc614ec18a9ca96fd275100c16d74d62ee11f0ae
+  react-native-adjust: 437fc17a2dc0d2531cfd1422e3cbd8dd7da82127
   react-native-get-random-values: 237bffb1c7e05fb142092681531810a29ba53015
   react-native-image-picker: 31971f6184e7c1dcb4fc1f122e1ba2c3fb11ef1e
   react-native-safe-area-context: 584dc04881deb49474363f3be89e4ca0e854c057
@@ -644,4 +656,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 4d82067e2e7f45d53f5c259f85d6a113dd8cd4cc
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.11.2

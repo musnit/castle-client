@@ -1,0 +1,32 @@
+{
+  "name": "react-native-adjust",
+  "version": "4.29.4",
+  "summary": "Adjust React Native SDK",
+  "description": "react-native-adjust",
+  "license": "MIT",
+  "authors": "Adjust GmbH",
+  "homepage": "https://github.com/adjust/react_native_sdk",
+  "source": {
+    "git": "git://github.com/adjust/react_native_sdk.git",
+    "tag": "4.29.4"
+  },
+  "requires_arc": true,
+  "platforms": {
+    "ios": "8.0"
+  },
+  "preserve_paths": [
+    "LICENSE",
+    "README.md",
+    "package.json",
+    "index.js"
+  ],
+  "source_files": "ios/*.{h,m}",
+  "dependencies": {
+    "Adjust": [
+      "4.29.5"
+    ],
+    "React": [
+
+    ]
+  }
+}

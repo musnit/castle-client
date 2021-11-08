@@ -80,6 +80,7 @@
 		B51813F72527916C00C315C9 /* GhostAppState.mm in Sources */ = {isa = PBXBuildFile; fileRef = B51813F62527916C00C315C9 /* GhostAppState.mm */; };
 		B55942172534C97A00BD34E7 /* CastleNotificationService.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B559420F2534C97A00BD34E7 /* CastleNotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B55942292534CC0200BD34E7 /* CastleNotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = B55942272534CC0200BD34E7 /* CastleNotificationService.m */; };
+		B56CFBE7273AE2AC0015B910 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B56CFBDF273AE2AC0015B910 /* StoreKit.framework */; };
 		B5942AB52627646B003CF6DB /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B5942AAD2627646B003CF6DB /* BootSplash.storyboard */; };
 		B75D12A12F9E5D8776A933D2 /* libPods-Castle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 580488360D0E6A5C5C50B415 /* libPods-Castle.a */; };
 		B8018AF726EFCB6400137649 /* CastleIcon.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B8018AEF26EFCB6400137649 /* CastleIcon.ttf */; };
@@ -253,6 +254,7 @@
 		B55942272534CC0200BD34E7 /* CastleNotificationService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CastleNotificationService.m; sourceTree = "<group>"; };
 		B55942282534CC0200BD34E7 /* CastleNotificationService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CastleNotificationService.h; sourceTree = "<group>"; };
 		B55A282F24F43BCC00A95D42 /* GhostChannels.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GhostChannels.h; sourceTree = "<group>"; };
+		B56CFBDF273AE2AC0015B910 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		B5942AAD2627646B003CF6DB /* BootSplash.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = BootSplash.storyboard; path = castle/BootSplash.storyboard; sourceTree = "<group>"; };
 		B8018AEF26EFCB6400137649 /* CastleIcon.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = CastleIcon.ttf; path = ../assets/fonts/CastleIcon.ttf; sourceTree = "<group>"; };
 		BDA1BD867AE232F85BAD0D0B /* libPods-Castle-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Castle-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -271,6 +273,7 @@
 				A1376B3226717D3B0095021E /* libbox2d.a in Frameworks */,
 				A1376B3326717D3B0095021E /* libcastle-core.a in Frameworks */,
 				A1376B3426717D3B0095021E /* libfmt.a in Frameworks */,
+				B56CFBE7273AE2AC0015B910 /* StoreKit.framework in Frameworks */,
 				A1376B3526717D3B0095021E /* libsoloud.a in Frameworks */,
 				A14FE3AE2355CC0E003B7EA0 /* libssl.a in Frameworks */,
 				A14FE3AB2355CBE3003B7EA0 /* libbz2.tbd in Frameworks */,
@@ -352,6 +355,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B56CFBDF273AE2AC0015B910 /* StoreKit.framework */,
 				A1376B2E26717D3B0095021E /* libbox2d.a */,
 				A1376B2F26717D3B0095021E /* libcastle-core.a */,
 				A1376B3026717D3B0095021E /* libfmt.a */,
@@ -1053,7 +1057,7 @@
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "arm64 ";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -1133,7 +1137,7 @@
 				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "arm64 ";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
