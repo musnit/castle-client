@@ -9,6 +9,7 @@ import { InMemoryCache } from '@apollo/client/cache';
 import { onError } from '@apollo/client/link/error';
 import { createUploadLink, ReactNativeFile } from 'apollo-upload-client';
 
+import * as AdjustEvents from './common/AdjustEvents';
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from './Constants';
 import * as GhostChannels from './ghost/GhostChannels';
@@ -254,6 +255,7 @@ export class Provider extends React.Component {
 
       await this.useNewAuthTokenAsync(result.data.signup);
       Amplitude.logEvent('SIGN_UP'); // user id already set for amplitude
+      AdjustEvents.trackEvent(AdjustEvents.tokens.SIGN_UP);
     }
   };
 
@@ -368,9 +370,8 @@ export const apolloClient = new ApolloClient({
               headers['X-OS'] = Platform.OS;
               headers['X-Build-Version-Code'] = ExpoConstants.nativeBuildVersion;
               headers['X-Build-Version-Name'] = ExpoConstants.nativeAppVersion;
-              headers[
-                'X-Scene-Creator-Version'
-              ] = NativeModules.CastleNativeUtils.getConstants().sceneCreatorApiVersion;
+              headers['X-Scene-Creator-Version'] =
+                NativeModules.CastleNativeUtils.getConstants().sceneCreatorApiVersion;
               if (Constants.iOS) {
                 const installSource = NativeModules.CastleNativeUtils.getConstants().installSource;
                 headers['X-Install-Source'] = installSource;
@@ -794,7 +795,7 @@ export const uploadBase64 = async (data) => {
 export const toggleFollowUser = async (userId, follow) => {
   const result = await apolloClient.mutate({
     mutation: gql`
-      mutation($userId: ID!, $follow: Boolean!) {
+      mutation ($userId: ID!, $follow: Boolean!) {
         toggleFollowUser(userId: $userId, follow: $follow) {
           userId
           connections
@@ -809,7 +810,7 @@ export const toggleFollowUser = async (userId, follow) => {
 export const blockUser = async (userId, isBlocked) => {
   const result = await apolloClient.mutate({
     mutation: gql`
-      mutation($userId: ID!, $isBlocked: Boolean!) {
+      mutation ($userId: ID!, $isBlocked: Boolean!) {
         blockUser(userId: $userId, isBlocked: $isBlocked) {
           userId
           isBlocked
@@ -824,7 +825,7 @@ export const blockUser = async (userId, isBlocked) => {
 export const reportDeck = async (deckId) => {
   const result = await apolloClient.mutate({
     mutation: gql`
-      mutation($deckId: ID!) {
+      mutation ($deckId: ID!) {
         reportDeck(deckId: $deckId) {
           deckId
         }
@@ -838,7 +839,7 @@ export const reportDeck = async (deckId) => {
 export const createShortLink = async (url) => {
   const result = await apolloClient.mutate({
     mutation: gql`
-      mutation($url: String!) {
+      mutation ($url: String!) {
         createShortLink(url: $url) {
           url
         }
