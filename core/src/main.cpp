@@ -76,26 +76,26 @@ int main(int argc, char *argv[]) {
 
   loop([&]() {
 #ifndef __EMSCRIPTEN__
-    // Reload scene from file if it changed
-    if (scenePath) {
-      static const auto getLastWriteTime = [&]() {
-        auto ftime = std::filesystem::last_write_time(scenePath);
-        return ftime.time_since_epoch().count();
-      };
-      static auto writeTime = getLastWriteTime();
-      static auto frame = 0;
-      frame++;
-      if (frame >= 10) {
-        frame = 0;
-        auto newWriteTime = getLastWriteTime();
-        if (newWriteTime != writeTime) {
-          writeTime = newWriteTime;
-          eng.loadSceneFromFile(scenePath);
-        }
+  // Reload scene from file if it changed
+  // TODO: last_write_time is not linking on android
+  /*if (scenePath) {
+    static const auto getLastWriteTime = [&]() {
+      auto ftime = std::filesystem::last_write_time(scenePath);
+      return ftime.time_since_epoch().count();
+    };
+    static auto writeTime = getLastWriteTime();
+    static auto frame = 0;
+    frame++;
+    if (frame >= 10) {
+      frame = 0;
+      auto newWriteTime = getLastWriteTime();
+      if (newWriteTime != writeTime) {
+        writeTime = newWriteTime;
+        eng.loadSceneFromFile(scenePath);
       }
     }
+  }*/
 #endif
-
     return eng.frame();
   });
   return 0;

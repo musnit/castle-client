@@ -3,15 +3,11 @@ package xyz.castle;
 import androidx.annotation.Nullable;
 import ghost.CastleNativeSettingsModule;
 import xyz.castle.api.ReactNativeDownloader;
-import xyz.castle.generated.BasePackageList;
 
 import android.content.Context;
 import android.app.Application;
 
 import org.love2d.android.GameActivity;
-import org.unimodules.adapters.react.ModuleRegistryAdapter;
-import org.unimodules.adapters.react.ReactModuleRegistryProvider;
-import org.unimodules.core.interfaces.SingletonModule;
 
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
@@ -28,7 +24,6 @@ import ghost.GhostPackage;
 import com.brentvatne.react.ReactVideoPackage;
 
 public class MainApplication extends Application implements ReactApplication {
-  private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(new BasePackageList().getPackageList(), Arrays.<SingletonModule>asList());
 
   private ReactNativeHost mReactNativeHost;
   private ReactGateway reactGateway;
@@ -68,12 +63,6 @@ public class MainApplication extends Application implements ReactApplication {
                       // packages.add(new MyReactNativePackage());
                       packages.add(new GhostPackage());
                       packages.add(new ReactVideoPackage());
-
-                      // Add unimodules
-                      List<ReactPackage> unimodules = Arrays.<ReactPackage>asList(
-                              new ModuleRegistryAdapter(mModuleRegistryProvider)
-                      );
-                      packages.addAll(unimodules);
 
                       return packages;
                   }

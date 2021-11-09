@@ -1,5 +1,10 @@
 package ghost;
 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.util.Log;
+
 import java.util.Map;
 import java.util.HashMap;
 
@@ -23,10 +28,29 @@ public class CastleNativeSettingsModule extends ReactContextBaseJavaModule {
 
     public static final String REACT_NATIVE_CHANNEL_KEY = "REACT_NATIVE_CHANNEL";
 
+    private static long getLongVersionCode(PackageInfo info) {
+        if (Build.VERSION.SDK_INT >= 28) {
+            return info.getLongVersionCode();
+        }
+        return info.versionCode;
+    }
+
     @Override
     public Map<String, Object> getConstants() {
         final Map<String, Object> constants = new HashMap<>();
         constants.put("sceneCreatorApiVersion", MainActivity.SCENE_CREATOR_API_VERSION);
+
+        PackageManager packageManager = getReactApplicationContext().getPackageManager();
+        try {
+          PackageInfo pInfo = packageManager.getPackageInfo(getReactApplicationContext().getPackageName(), 0);
+          constants.put("nativeAppVersion", pInfo.versionName);
+
+          int versionCode = (int)getLongVersionCode(pInfo);
+          constants.put("nativeBuildVersion", Integer.toString(versionCode));
+        } catch (PackageManager.NameNotFoundException e) {
+          Log.e("CastleNativeUtils", "Exception: ", e);
+        }
+
         return constants;
     }
 

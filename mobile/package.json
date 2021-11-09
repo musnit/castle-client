@@ -25,7 +25,7 @@
     "lodash.uniqby": "^4.7.0",
     "md5": "^2.2.1",
     "react": "17.0.1",
-    "react-native": "github:castle-xyz/react-native#0.64.2-castle-patch-podspec",
+    "react-native": "0.64.2",
     "react-native-adjust": "^4.29.4",
     "react-native-bootsplash": "^3.2.0",
     "react-native-device-info": "^8.4.0",
