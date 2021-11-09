@@ -97,7 +97,7 @@ void Feed::update(double dt) {
         }
       } else {
         animateToYOffset
-            = round((yOffset - FEED_ITEM_HEIGHT * 0.1) / FEED_ITEM_HEIGHT) * FEED_ITEM_HEIGHT;
+            = round((yOffset - FEED_ITEM_HEIGHT * 0.4) / FEED_ITEM_HEIGHT) * FEED_ITEM_HEIGHT;
       }
     }
   });
