@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Animated, StatusBar, StyleSheet, View } from 'react-native';
+import { Amplitude } from '@amplitude/react-native';
 import { CommentsSheet } from '../comments/CommentsSheet';
 import { FeaturedDecks } from './FeaturedDecks';
 import { FollowingDecks } from './FollowingDecks';
@@ -10,7 +11,6 @@ import { SegmentedNavigation } from '../components/SegmentedNavigation';
 import { useSession } from '../Session';
 import { useFocusEffect, useNavigation } from '../ReactNavigation';
 
-import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 
 const SPRING_CONFIG = {
@@ -89,7 +89,7 @@ export const HomeScreen = ({ route }) => {
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
-      Amplitude.logEventWithProperties('VIEW_HOME', { mode });
+      Amplitude.getInstance().logEvent('VIEW_HOME', { mode });
     }, [mode])
   );
 

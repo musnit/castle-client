@@ -1,1 +1,1 @@
-../../../Amplitude/Sources/Amplitude/AMPIdentify.h
+../../../Amplitude/Sources/Amplitude/Public/AMPIdentify.h

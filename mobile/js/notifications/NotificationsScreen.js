@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import { AuthPrompt } from '../auth/AuthPrompt';
+import { Amplitude } from '@amplitude/react-native';
 import { FollowButton } from '../components/FollowButton';
 import { MessageBody } from '../components/MessageBody';
 import { NotificationsSettingsSheet } from './NotificationsSettingsSheet';
@@ -21,7 +22,6 @@ import { useNavigation, useFocusEffect, useIsFocused } from '../ReactNavigation'
 import { useSession, maybeFetchNotificationsAsync, setNotifBadge } from '../Session';
 import { UserAvatar } from '../components/UserAvatar';
 
-import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 import * as PushNotifications from '../PushNotifications';
 import * as Utilities from '../common/utilities';
@@ -189,7 +189,7 @@ export const NotificationsScreen = () => {
 
   useFocusEffect(
     React.useCallback(() => {
-      Amplitude.logEvent('VIEW_NOTIFICATIONS');
+      Amplitude.getInstance().logEvent('VIEW_NOTIFICATIONS');
     }, [])
   );
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Image, Keyboard, Share } from 'react-native';
+import { Amplitude } from '@amplitude/react-native';
 import { gql } from '@apollo/client';
 import { launchImageLibrary as ImagePickerLaunchImageLibrary } from 'react-native-image-picker';
 import { ReactNativeFile } from 'apollo-upload-client';
@@ -9,7 +10,6 @@ import FastImage from 'react-native-fast-image';
 import shortid from 'shortid';
 import Url from 'url-parse';
 
-import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 import * as Session from '../Session';
 import * as LocalId from './local-id';
@@ -235,7 +235,7 @@ export const shareDeck = async (deck) => {
   try {
     const result = await Share.share(params);
     if (result?.action === sharedAction) {
-      Amplitude.logEventWithProperties('SHARE_DECK', {
+      Amplitude.getInstance().logEvent('SHARE_DECK', {
         deckId: deck.deckId,
         cxshid,
         activityType: result.activityType,

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { StatusBar, ScrollView, View, StyleSheet, Text } from 'react-native';
+import { Amplitude } from '@amplitude/react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SearchInput } from './SearchInput';
 import { SearchResults } from './SearchResults';
@@ -8,7 +9,6 @@ import { useFocusEffect, useNavigation } from '../ReactNavigation';
 
 import { useLazyQuery, gql } from '@apollo/client';
 
-import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 
 const REFETCH_FEED_INTERVAL_MS = 60 * 1000;
@@ -73,7 +73,7 @@ export const ExploreScreen = ({ route }) => {
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
-      Amplitude.logEvent('VIEW_EXPLORE');
+      Amplitude.getInstance().logEvent('VIEW_EXPLORE');
     }, [])
   );
 

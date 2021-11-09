@@ -1,1 +1,1 @@
-../../../Amplitude/Sources/Amplitude/AMPRevenue.h
+../../../Amplitude/Sources/Amplitude/Public/AMPRevenue.h

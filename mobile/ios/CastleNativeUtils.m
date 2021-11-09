@@ -30,6 +30,8 @@ RCT_EXPORT_MODULE()
 #endif
   return @{
     @"installSource" : installSource,
+    @"nativeBuildVersion": [[NSBundle mainBundle].infoDictionary valueForKey:@"CFBundleVersion"],
+    @"nativeAppVersion": [[NSBundle mainBundle].infoDictionary valueForKey:@"CFBundleShortVersionString"],
     @"sceneCreatorApiVersion" : [CastleCoreView sceneCreatorApiVersion],
   };
 }

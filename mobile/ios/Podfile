@@ -1,7 +1,6 @@
 platform :ios, '12.1'
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
-require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
 
 inhibit_all_warnings!
 
@@ -22,7 +21,6 @@ target 'Castle' do
   pod 'react-native-video', :path => '../node_modules/react-native-video', :subspecs => ['Video', 'VideoCaching']
   
   use_native_modules!
-  use_unimodules!
 end
 
 post_install do |installer|

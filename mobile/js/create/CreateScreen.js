@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { Amplitude } from '@amplitude/react-native';
 import { AuthPrompt } from '../auth/AuthPrompt';
 import { CardCell } from '../components/CardCell';
 import { useNavigation, useFocusEffect } from '../ReactNavigation';
@@ -23,7 +24,6 @@ import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import FastImage from 'react-native-fast-image';
 
-import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
@@ -290,7 +290,7 @@ const CreateScreenAuthenticated = () => {
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
-      Amplitude.logEvent('VIEW_CREATE');
+      Amplitude.getInstance().logEvent('VIEW_CREATE');
       fetchDecks();
     }, [])
   );

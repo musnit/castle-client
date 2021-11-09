@@ -10,6 +10,7 @@ import {
   Platform,
   DeviceEventEmitter,
 } from 'react-native';
+import { Amplitude } from '@amplitude/react-native';
 import { useNavigation } from '../ReactNavigation';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
@@ -18,7 +19,6 @@ import { navigateToUri } from '../DeepLinks';
 
 import { ScreenHeader } from '../components/ScreenHeader';
 
-import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 import * as GhostChannels from '../ghost/GhostChannels';
 
@@ -263,7 +263,7 @@ const CreateAccountForm = ({ route }) => {
   const pwInput = React.useRef();
 
   useEffect(() => {
-    Amplitude.logEvent('VIEW_SIGN_UP');
+    Amplitude.getInstance().logEvent('VIEW_SIGN_UP');
   }, []);
 
   const onPressLogin = () => {

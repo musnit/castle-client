@@ -1,1 +1,1 @@
-../../../Amplitude/Sources/Amplitude/AMPTrackingOptions.h
+../../../Amplitude/Sources/Amplitude/Public/AMPTrackingOptions.h

@@ -22,13 +22,26 @@
 //
 
 #import <Foundation/Foundation.h>
+#if !TARGET_OS_OSX && !TARGET_OS_WATCH
+#import <UIKit/UIKit.h>
+#endif
 
 @interface AMPUtils : NSObject
 
-+ (NSString*)generateUUID;
-+ (id)makeJSONSerializable:(id) obj;
-+ (BOOL)isEmptyString:(NSString*) str;
-+ (NSDictionary*)validateGroups:(NSDictionary*) obj;
-+ (NSString*)platformDataDirectory;
++ (NSString *)generateUUID;
++ (id)makeJSONSerializable:(id)obj;
++ (BOOL)isEmptyString:(NSString *)str;
++ (NSDictionary *)validateGroups:(NSDictionary *)obj;
++ (NSString *)platformDataDirectory;
+
+#if !TARGET_OS_OSX && !TARGET_OS_WATCH
++ (UIApplication *)getSharedApplication;
+#endif
+
+#if TARGET_OS_IOS || TARGET_OS_MACCATALYST
++ (NSInteger)barBottomOffset;
++ (CGFloat)statusBarHeight;
++ (UIWindow *)getKeyWindow;
+#endif
 
 @end

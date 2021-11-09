@@ -1,0 +1,27 @@
+{
+  "name": "amplitude-react-native",
+  "version": "2.6.0",
+  "summary": "Official React Native SDK",
+  "homepage": "https://github.com/amplitude/Amplitude-ReactNative#readme",
+  "license": "MIT",
+  "authors": "Amplitude Inc. <sdk.dev@amplitude.com> (https://github.com/amplitude)",
+  "swift_versions": "5.0",
+  "platforms": {
+    "ios": "10.0",
+    "tvos": "10.0"
+  },
+  "source": {
+    "git": "https://github.com/amplitude/Amplitude-ReactNative.git",
+    "tag": "2.6.0"
+  },
+  "source_files": "ios/**/*.{h,m,mm,swift}",
+  "dependencies": {
+    "React-Core": [
+
+    ],
+    "Amplitude": [
+      "8.5.0"
+    ]
+  },
+  "swift_version": "5.0"
+}

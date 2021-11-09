@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Pressable, StatusBar } from 'react-native';
+import { Amplitude } from '@amplitude/react-native';
 import { AuthPrompt } from '../auth/AuthPrompt';
 import { DecksGrid } from '../components/DecksGrid';
 import { EmptyFeed } from '../home/EmptyFeed';
@@ -13,7 +14,6 @@ import { ProfileHeader } from './ProfileHeader';
 import { ProfileSettingsSheet } from './ProfileSettingsSheet';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 
 const useProfileQuery = (userId) => {
@@ -115,7 +115,7 @@ export const ProfileScreen = ({ userId, route }) => {
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
-      Amplitude.logEventWithProperties('VIEW_PROFILE', { userId, isOwnProfile: isMe });
+      Amplitude.getInstance().logEvent('VIEW_PROFILE', { userId, isOwnProfile: isMe });
 
       if (
         !(lastFetchTime.current && Date.now() - lastFetchTime.current < REFETCH_PROFILE_INTERVAL_MS)

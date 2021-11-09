@@ -1,10 +1,10 @@
 import React from 'react';
+import { Amplitude } from '@amplitude/react-native';
 import { gql } from '@apollo/client';
 import { withNavigation, withNavigationFocus } from '../ReactNavigation';
 import { CreateCardScreen } from './CreateCardScreen';
 import { sendAsync } from '../core/CoreEvents';
 
-import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 import * as LocalId from '../common/local-id';
 import * as RulesClipboard from './inspector/rules/RulesClipboard';
@@ -112,7 +112,7 @@ class CreateCardScreenDataProvider extends React.Component {
           throw new Error(`Unable to fetch logged in creator: ${e}`);
         }
         deck.deckId = params.deckIdToEdit;
-        Amplitude.logEventWithProperties('START_CREATING_NEW_DECK', { deckId: deck.deckId });
+        Amplitude.getInstance().logEvent('START_CREATING_NEW_DECK', { deckId: deck.deckId });
       }
 
       if (kitDeckId) {
@@ -224,7 +224,7 @@ class CreateCardScreenDataProvider extends React.Component {
     }
     const cardFragment = this._makeCardSaveFragment();
     const { card, deck } = await Session.saveDeck(cardFragment, this.state.deck, this._variables);
-    Amplitude.logEventWithProperties('SAVE_DECK', {
+    Amplitude.getInstance().logEvent('SAVE_DECK', {
       deckId: deck.deckId,
       cardId: card.cardId,
     });

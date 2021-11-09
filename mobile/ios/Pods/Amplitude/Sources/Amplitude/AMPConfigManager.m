@@ -23,10 +23,12 @@
 
 #import "AMPConfigManager.h"
 #import "AMPConstants.h"
+#import "AMPServerZone.h"
+#import "AMPServerZoneUtil.h"
 
-@interface AMPConfigManager()
+@interface AMPConfigManager ()
 
-@property (nonatomic, strong, readwrite) NSString* ingestionEndpoint;
+@property (nonatomic, strong, readwrite) NSString *ingestionEndpoint;
 
 @end
 
@@ -48,8 +50,8 @@
     return self;
 }
 
-- (void)refresh:(void(^)(void))completionHandler {
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:kAMPDyanmicConfigUrl]];
+- (void)refresh:(void(^)(void))completionHandler serverZone:(AMPServerZone)serverZone {
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[AMPServerZoneUtil getDynamicConfigApi:serverZone]]];
 
     NSURLSession *session = [NSURLSession sharedSession];
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request
@@ -61,7 +63,7 @@
             if (urlString) {
                 NSString *ingestionEndpoint = [NSString stringWithFormat:@"https://%@", urlString];
                 
-                NSURL *url = [NSURL URLWithString: ingestionEndpoint];
+                NSURL *url = [NSURL URLWithString:ingestionEndpoint];
                 if (url && url.scheme && url.host) {
                     self.ingestionEndpoint = ingestionEndpoint;
                 }

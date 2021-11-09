@@ -1,1 +1,1 @@
-../../../Amplitude/Sources/Amplitude/Amplitude.h
+../../../Amplitude/Sources/Amplitude/Public/Amplitude.h

@@ -28,7 +28,9 @@
 #import <sys/sysctl.h>
 #import <sys/types.h>
 
-#if !TARGET_OS_OSX
+#if TARGET_OS_WATCH
+#import <WatchKit/WatchKit.h>
+#elif !TARGET_OS_OSX
 #import <UIKit/UIKit.h>
 #else
 #import <Cocoa/Cocoa.h>
@@ -44,11 +46,11 @@
 #endif
 #endif
 
-@interface AMPDeviceInfo()
+@interface AMPDeviceInfo ()
 @end
 
 @implementation AMPDeviceInfo {
-    NSObject* networkInfo;
+    NSObject *networkInfo;
 }
 
 @synthesize appVersion = _appVersion;
@@ -57,23 +59,24 @@
 @synthesize carrier = _carrier;
 @synthesize country = _country;
 @synthesize language = _language;
-@synthesize advertiserID = _advertiserID;
 @synthesize vendorID = _vendorID;
 
-- (NSString*)appVersion {
+- (NSString *)appVersion {
     if (!_appVersion) {
         _appVersion = [[[NSBundle mainBundle] infoDictionary] valueForKey:@"CFBundleShortVersionString"];
     }
     return _appVersion;
 }
 
-- (NSString*)osName {
+- (NSString *)osName {
     return kAMPOSName;
 }
 
-- (NSString*)osVersion {
+- (NSString *)osVersion {
     if (!_osVersion) {
-        #if !TARGET_OS_OSX
+        #if TARGET_OS_WATCH
+        _osVersion = [[WKInterfaceDevice currentDevice] systemVersion];
+        #elif !TARGET_OS_OSX
         _osVersion = [[UIDevice currentDevice] systemVersion];
         #else
         NSOperatingSystemVersion systemVersion = [[NSProcessInfo processInfo] operatingSystemVersion];
@@ -86,18 +89,18 @@
     return _osVersion;
 }
 
-- (NSString*)manufacturer {
+- (NSString *)manufacturer {
     return @"Apple";
 }
 
-- (NSString*)model {
+- (NSString *)model {
     if (!_model) {
         _model = [AMPDeviceInfo getDeviceModel];
     }
     return _model;
 }
 
-- (NSString*)carrier {
+- (NSString *)carrier {
     if (!_carrier) {
         Class CTTelephonyNetworkInfo = NSClassFromString(@"CTTelephonyNetworkInfo");
         SEL subscriberCellularProvider = NSSelectorFromString(@"subscriberCellularProvider");
@@ -109,7 +112,7 @@
             if (imp1) {
                 carrier = imp1(networkInfo, subscriberCellularProvider);
             }
-            NSString* (*imp2)(id, SEL) = (NSString* (*)(id, SEL))[carrier methodForSelector:carrierName];
+            NSString *(*imp2)(id, SEL) = (NSString *(*)(id, SEL))[carrier methodForSelector:carrierName];
             if (imp2) {
                 _carrier = imp2(carrier, carrierName);
             }
@@ -122,47 +125,25 @@
     return _carrier;
 }
 
-- (NSString*)country {
+- (NSString *)country {
     if (!_country) {
-        _country = [[NSLocale localeWithLocaleIdentifier:@"en_US"] displayNameForKey: NSLocaleCountryCode
-                                                                               value: [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode]];
+        _country = [[NSLocale localeWithLocaleIdentifier:@"en_US"] displayNameForKey:NSLocaleCountryCode
+                                                                               value:[[NSLocale currentLocale] objectForKey:NSLocaleCountryCode]];
     }
     return _country;
 }
 
-- (NSString*)language {
+- (NSString *)language {
     if (!_language) {
-        _language = [[NSLocale localeWithLocaleIdentifier:@"en_US"] displayNameForKey: NSLocaleLanguageCode
-                                                                                value: [[NSLocale preferredLanguages] objectAtIndex:0]];
+        _language = [[NSLocale localeWithLocaleIdentifier:@"en_US"] displayNameForKey:NSLocaleLanguageCode
+                                                                                value:[[NSLocale preferredLanguages] objectAtIndex:0]];
     }
     return _language;
 }
 
-- (NSString*)advertiserID {
-#if AMPLITUDE_IDFA_TRACKING
-    if (!_advertiserID) {
-#if !TARGET_OS_OSX
-        if ([[[UIDevice currentDevice] systemVersion] floatValue] >= (float) 6.0) {
-#endif
-            NSString *advertiserId = [AMPDeviceInfo getAdvertiserID:5];
-            if (advertiserId != nil &&
-                ![advertiserId isEqualToString:@"00000000-0000-0000-0000-000000000000"]) {
-                _advertiserID = advertiserId;
-            }
-        }
-#if !TARGET_OS_OSX
-    }
-#endif
-    return _advertiserID;
-
-#else
-    return nil;
-#endif
-}
-
-- (NSString*)vendorID {
+- (NSString *)vendorID {
     if (!_vendorID) {
-#if !TARGET_OS_OSX
+#if !TARGET_OS_OSX && !TARGET_OS_WATCH
         if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 6.0) {
 #endif
             NSString *identifierForVendor = [AMPDeviceInfo getVendorID:5];
@@ -171,46 +152,22 @@
                 _vendorID = identifierForVendor;
             }
         }
-#if !TARGET_OS_OSX
+#if !TARGET_OS_OSX && !TARGET_OS_WATCH
     }
 #endif
     return _vendorID;
 }
 
-+ (NSString*)getAdvertiserID:(int) maxAttempts {
-#if AMPLITUDE_IDFA_TRACKING
-    Class ASIdentifierManager = NSClassFromString(@"ASIdentifierManager");
-    SEL sharedManager = NSSelectorFromString(@"sharedManager");
-    SEL advertisingIdentifier = NSSelectorFromString(@"advertisingIdentifier");
-    if (ASIdentifierManager && sharedManager && advertisingIdentifier) {
-        id (*imp1)(id, SEL) = (id (*)(id, SEL))[ASIdentifierManager methodForSelector:sharedManager];
-        id manager = nil;
-        NSUUID *adid = nil;
-        NSString *identifier = nil;
-        if (imp1) {
-            manager = imp1(ASIdentifierManager, sharedManager);
-        }
-        NSUUID* (*imp2)(id, SEL) = (NSUUID* (*)(id, SEL))[manager methodForSelector:advertisingIdentifier];
-        if (imp2) {
-            adid = imp2(manager, advertisingIdentifier);
-        }
-        if (adid) {
-            identifier = [adid UUIDString];
-        }
-        if (identifier == nil && maxAttempts > 0) {
-            // Try again every 5 seconds
-            [NSThread sleepForTimeInterval:5.0];
-            return [AMPDeviceInfo getAdvertiserID:maxAttempts - 1];
-        } else {
-            return identifier;
-        }
++ (NSString *)getVendorID:(int)maxAttempts {
+#if TARGET_OS_WATCH
+    NSString *identifier;
+    if (@available(watchOS 6.2, *)) {
+        identifier = [[[WKInterfaceDevice currentDevice] identifierForVendor] UUIDString];
+    } else {
+        // Identifier for vendor is not available on this version.
+        identifier = [[NSUUID UUID] UUIDString];
     }
-#endif
-    return nil;
-}
-
-+ (NSString*)getVendorID:(int) maxAttempts {
-#if !TARGET_OS_OSX
+#elif !TARGET_OS_OSX
     NSString *identifier = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
 #else
     NSString *identifier = [self getMacAddress];
@@ -224,13 +181,13 @@
     }
 }
 
-+ (NSString*)generateUUID {
++ (NSString *)generateUUID {
     // Add "R" at the end of the ID to distinguish it from advertiserId
     NSString *result = [[AMPUtils generateUUID] stringByAppendingString:@"R"];
     return result;
 }
 
-+ (NSString*)getPlatformString {
++ (NSString *)getPlatformString {
 #if !TARGET_OS_OSX
     const char *sysctl_name = "hw.machine";
 #else
@@ -245,7 +202,7 @@
     return platform;
 }
 
-+ (NSString*)getDeviceModel {
++ (NSString *)getDeviceModel {
     NSString *platform = [self getPlatformString];
     // == iPhone ==
     // iPhone 1
@@ -383,6 +340,30 @@
     // iPad Mini 5
     if ([platform isEqualToString:@"iPad11,1"])      return @"iPad Mini 5";
     if ([platform isEqualToString:@"iPad11,2"])      return @"iPad Mini 5";
+
+    // == Apple Watch ==
+    if ([platform isEqualToString:@"Watch1,1"])     return @"Apple Watch 38mm";
+    if ([platform isEqualToString:@"Watch1,2"])     return @"Apple Watch 42mm";
+    if ([platform isEqualToString:@"Watch2,3"])     return @"Apple Watch Series 2 38mm";
+    if ([platform isEqualToString:@"Watch2,4"])     return @"Apple Watch Series 2 42mm";
+    if ([platform isEqualToString:@"Watch2,6"])     return @"Apple Watch Series 1 38mm";
+    if ([platform isEqualToString:@"Watch2,7"])     return @"Apple Watch Series 1 42mm";
+    if ([platform isEqualToString:@"Watch3,1"])     return @"Apple Watch Series 3 38mm Cellular";
+    if ([platform isEqualToString:@"Watch3,2"])     return @"Apple Watch Series 3 42mm Cellular";
+    if ([platform isEqualToString:@"Watch3,3"])     return @"Apple Watch Series 3 38mm";
+    if ([platform isEqualToString:@"Watch3,4"])     return @"Apple Watch Series 3 42mm";
+    if ([platform isEqualToString:@"Watch4,1"])     return @"Apple Watch Series 4 40mm";
+    if ([platform isEqualToString:@"Watch4,2"])     return @"Apple Watch Series 4 44mm";
+    if ([platform isEqualToString:@"Watch4,3"])     return @"Apple Watch Series 4 40mm Cellular";
+    if ([platform isEqualToString:@"Watch4,4"])     return @"Apple Watch Series 4 44mm Cellular";
+    if ([platform isEqualToString:@"Watch5,1"])     return @"Apple Watch Series 5 40mm";
+    if ([platform isEqualToString:@"Watch5,2"])     return @"Apple Watch Series 5 44mm";
+    if ([platform isEqualToString:@"Watch5,3"])     return @"Apple Watch Series 5 40mm Cellular";
+    if ([platform isEqualToString:@"Watch5,4"])     return @"Apple Watch Series 5 44mm Cellular";
+    if ([platform isEqualToString:@"Watch6,1"])     return @"Apple Watch Series 6 40mm";
+    if ([platform isEqualToString:@"Watch6,2"])     return @"Apple Watch Series 6 44mm";
+    if ([platform isEqualToString:@"Watch6,3"])     return @"Apple Watch Series 6 40mm Cellular";
+    if ([platform isEqualToString:@"Watch6,4"])     return @"Apple Watch Series 6 44mm Cellular";
     
     // == Others ==
     if ([platform isEqualToString:@"i386"])         return @"Simulator";
@@ -447,10 +428,10 @@
     }
 
     // Map msgbuffer to interface message structure
-    interfaceMsgStruct = (struct if_msghdr *) msgBuffer;
+    interfaceMsgStruct = (struct if_msghdr *)msgBuffer;
 
     // Map to link-level socket structure
-    socketStruct = (struct sockaddr_dl *) (interfaceMsgStruct + 1);
+    socketStruct = (struct sockaddr_dl *)(interfaceMsgStruct + 1);
 
     // Copy link layer address data in socket structure to an array
     memcpy(&macAddress, socketStruct->sdl_data + socketStruct->sdl_nlen, 6);

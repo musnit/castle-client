@@ -1,10 +1,9 @@
 import React from 'react';
+import { Amplitude } from '@amplitude/react-native';
 import { CreateDeckScreen } from './CreateDeckScreen';
 import { useNavigation } from '../ReactNavigation';
 
 import CreateCardScreen from '../scenecreator/CreateCardScreenDataProvider';
-
-import * as Amplitude from 'expo-analytics-amplitude';
 
 // switches between card creator and deck creator
 const CreateDeckContent = ({ deckId, cardId, ...props }) => {
@@ -27,7 +26,7 @@ export const CreateDeckNavigator = (props) => {
 
   React.useEffect(() => {
     if (deckId) {
-      Amplitude.logEventWithProperties('VIEW_CREATE_DECK', { deckId });
+      Amplitude.getInstance().logEvent('VIEW_CREATE_DECK', { deckId });
     }
   }, [deckId]);
 

@@ -1,0 +1,1 @@
+../../../../../node_modules/@amplitude/react-native/ios/AmplitudeReactNative-Bridging-Header.h

@@ -1,11 +1,11 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { Amplitude } from '@amplitude/react-native';
 import { CardScene } from '../game/CardScene';
 import { CardText } from '../components/CardText';
 import { gql } from '@apollo/client';
 import { sendAsync, useListen } from '../core/CoreEvents';
 
-import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 import * as Session from '../Session';
 
@@ -50,7 +50,7 @@ export const PlayDeck = ({ deck, visibility, route, paused }) => {
   });
 
   React.useEffect(() => {
-    Amplitude.logEventWithProperties('VIEW_PLAY_DECK', { deckId: deck.deckId, visibility });
+    Amplitude.getInstance().logEventWithProperties('VIEW_PLAY_DECK', { deckId: deck.deckId, visibility });
 
     return () => {
       recordDeckPlay(deck.deckId, playingCardId.current);

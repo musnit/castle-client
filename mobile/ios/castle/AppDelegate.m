@@ -12,10 +12,6 @@
 #import <React/RCTRootView.h>
 #import <React/RCTLinkingManager.h>
 
-#import <UMCore/UMModuleRegistry.h>
-#import <UMReactNativeAdapter/UMNativeModulesProxy.h>
-#import <UMReactNativeAdapter/UMModuleRegistryAdapter.h>
-
 #include <SDL.h>
 
 #include "RNBootSplash.h"
@@ -61,7 +57,6 @@ int SDL_main(int argc, char *argv[]) {
     initialProps[@"initialPushNotificationDataString"] = dataString;
   }
 
-  self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
   self.rctBridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
   [APIIos setRctBridge:self.rctBridge];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:self.rctBridge
@@ -132,13 +127,14 @@ int SDL_main(int argc, char *argv[]) {
   });
 }
 
-- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
+/* - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
+ // TODO: DELETE
   NSArray<id<RCTBridgeModule>> *extraModules = [_moduleRegistryAdapter extraModulesForBridge:bridge];
   // You can inject any extra modules that you would like here, more information at:
   // https://facebook.github.io/react-native/docs/native-modules-ios.html#dependency-injection
   return extraModules;
-}
+} */
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {

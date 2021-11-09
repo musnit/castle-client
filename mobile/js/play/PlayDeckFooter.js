@@ -1,13 +1,13 @@
 import React from 'react';
 import { Animated, Pressable as PressableRN, StyleSheet, Text, View } from 'react-native';
 import { gql } from '@apollo/client';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '../ReactNavigation';
 import { ReactionButton } from '../components/ReactionButton';
 import { SocialCount } from '../components/SocialCount';
 import { UserAvatar } from '../components/UserAvatar';
 import { TouchableNativeFeedback as PressableRNGH } from 'react-native-gesture-handler';
 
+import LinearGradient from 'react-native-linear-gradient';
 import tinycolor from 'tinycolor2';
 
 import * as Constants from '../Constants';

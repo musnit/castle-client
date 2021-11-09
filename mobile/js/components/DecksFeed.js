@@ -1,5 +1,6 @@
 import React from 'react';
 import { Animated, FlatList, InteractionManager, StyleSheet, View } from 'react-native';
+import { Amplitude } from '@amplitude/react-native';
 import { CardCell } from './CardCell';
 import { PlayDeckActions } from '../play/PlayDeckActions';
 import { PlayDeckFooter } from '../play/PlayDeckFooter';
@@ -12,7 +13,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import debounce from 'lodash.debounce';
 import Viewport from '../common/viewport';
 
-import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 import * as Utilities from '../common/utilities';
 import { sendAsync } from '../core/CoreEvents';
@@ -349,7 +349,7 @@ export const DecksFeed = ({
   React.useEffect(() => {
     logScrollToDeck.current = debounce(({ index, deck }) => {
       if (!isPlaying) {
-        Amplitude.logEventWithProperties('VIEW_FEED_ITEM', { index, deckId: deck?.deckId });
+        Amplitude.getInstance().logEvent('VIEW_FEED_ITEM', { index, deckId: deck?.deckId });
         if (onDeckFocused) {
           onDeckFocused({ deckId: deck?.deckId });
         }

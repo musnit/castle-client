@@ -1,11 +1,11 @@
 import React from 'react';
+import { Amplitude } from '@amplitude/react-native';
 import { DecksGrid } from '../components/DecksGrid';
 import { useLazyQuery, gql } from '@apollo/client';
 import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
 
-import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from '../Constants';
 
 export const ExploreFeed = ({ route }) => {
@@ -57,7 +57,7 @@ export const ExploreFeed = ({ route }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      Amplitude.logEvent('VIEW_EXPLORE_FEED', { feedId });
+      Amplitude.getInstance().logEvent('VIEW_EXPLORE_FEED', { feedId });
     }, [feedId])
   );
 

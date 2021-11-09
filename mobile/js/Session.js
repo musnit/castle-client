@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { Amplitude } from '@amplitude/react-native';
 import debounce from 'lodash.debounce';
 import FastImage from 'react-native-fast-image';
-import ExpoConstants from 'expo-constants';
 import { CastleAsyncStorage } from './common/CastleAsyncStorage';
 import { NativeModules, Platform } from 'react-native';
 import { gql, ApolloClient, ApolloLink, Observable } from '@apollo/client';
@@ -10,7 +10,6 @@ import { onError } from '@apollo/client/link/error';
 import { createUploadLink, ReactNativeFile } from 'apollo-upload-client';
 
 import * as AdjustEvents from './common/AdjustEvents';
-import * as Amplitude from 'expo-analytics-amplitude';
 import * as Constants from './Constants';
 import * as GhostChannels from './ghost/GhostChannels';
 import * as LocalId from './common/local-id';
@@ -81,7 +80,7 @@ export async function loadAuthTokenAsync() {
     gIsNuxCompleted = isNuxCompletedStorageValue === 'true' || isNuxCompletedStorageValue === true;
     const isAnonStorageValue = await CastleAsyncStorage.getItem('USER_IS_ANONYMOUS');
     gIsAnonymous = isAnonStorageValue === 'true' || isAnonStorageValue === true;
-    Amplitude.setUserId(gUserId);
+    Amplitude.getInstance().setUserId(gUserId);
   }
 }
 
@@ -164,8 +163,8 @@ export class Provider extends React.Component {
         await CastleAsyncStorage.setItem('USER_ID', userId);
         await CastleAsyncStorage.setItem('USER_IS_ANONYMOUS', gIsAnonymous.toString());
 
-        Amplitude.setUserId(gUserId);
-        Amplitude.setUserProperties({
+        Amplitude.getInstance().setUserId(gUserId);
+        Amplitude.getInstance().setUserProperties({
           isAnonymous: gIsAnonymous,
           isAdmin: isAdmin === true ? isAdmin : undefined,
         });
@@ -174,8 +173,8 @@ export class Provider extends React.Component {
         await CastleAsyncStorage.removeItem('USER_ID');
         await CastleAsyncStorage.removeItem('USER_IS_ANONYMOUS');
         await PushNotifications.clearTokenAsync();
-        Amplitude.setUserId(null);
-        Amplitude.clearUserProperties();
+        Amplitude.getInstance().setUserId(null);
+        Amplitude.getInstance().clearUserProperties();
         setNotifBadge(0);
       }
     }
@@ -214,7 +213,7 @@ export class Provider extends React.Component {
       }
 
       await this.useNewAuthTokenAsync(result.data.login);
-      Amplitude.logEvent('SIGN_IN'); // user id already set for amplitude
+      Amplitude.getInstance().logEvent('SIGN_IN'); // user id already set for amplitude
     }
   };
 
@@ -226,7 +225,7 @@ export class Provider extends React.Component {
         }
       `,
     });
-    Amplitude.logEvent('SIGN_OUT'); // user id is still set in amplitude
+    Amplitude.getInstance().logEvent('SIGN_OUT'); // user id is still set in amplitude
     await this.useNewAuthTokenAsync({}); // clear user id
   };
 
@@ -254,7 +253,7 @@ export class Provider extends React.Component {
       }
 
       await this.useNewAuthTokenAsync(result.data.signup);
-      Amplitude.logEvent('SIGN_UP'); // user id already set for amplitude
+      Amplitude.getInstance().logEvent('SIGN_UP'); // user id already set for amplitude
       AdjustEvents.trackEvent(AdjustEvents.tokens.SIGN_UP);
     }
   };
@@ -368,8 +367,8 @@ export const apolloClient = new ApolloClient({
               const headers = {};
               headers['X-Platform'] = 'mobile';
               headers['X-OS'] = Platform.OS;
-              headers['X-Build-Version-Code'] = ExpoConstants.nativeBuildVersion;
-              headers['X-Build-Version-Name'] = ExpoConstants.nativeAppVersion;
+              headers['X-Build-Version-Code'] = NativeModules.CastleNativeUtils.getConstants().nativeBuildVersion;
+              headers['X-Build-Version-Name'] = NativeModules.CastleNativeUtils.getConstants().nativeAppVersion;
               headers['X-Scene-Creator-Version'] =
                 NativeModules.CastleNativeUtils.getConstants().sceneCreatorApiVersion;
               if (Constants.iOS) {

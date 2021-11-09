@@ -18,7 +18,6 @@ import { useNavigation, useFocusEffect } from '../ReactNavigation';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { SegmentedNavigation } from '../components/SegmentedNavigation';
 
-import * as Amplitude from 'expo-analytics-amplitude';
 import * as LocalId from '../common/local-id';
 import * as Session from '../Session';
 import * as Utilities from '../common/utilities';
