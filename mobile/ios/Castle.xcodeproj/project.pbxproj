@@ -78,6 +78,7 @@
 		A1F835A02661964000E65FE9 /* CastleCoreView.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1F8359F2661964000E65FE9 /* CastleCoreView.mm */; };
 		A1FA18C32365168600E2ACFE /* GhostInputZone.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1FA18C22365168600E2ACFE /* GhostInputZone.mm */; };
 		B51813F72527916C00C315C9 /* GhostAppState.mm in Sources */ = {isa = PBXBuildFile; fileRef = B51813F62527916C00C315C9 /* GhostAppState.mm */; };
+		B51FE1F0273C7C8600D8218D /* CastleAdjust.m in Sources */ = {isa = PBXBuildFile; fileRef = B51FE1EF273C7C8600D8218D /* CastleAdjust.m */; };
 		B55942172534C97A00BD34E7 /* CastleNotificationService.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B559420F2534C97A00BD34E7 /* CastleNotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B55942292534CC0200BD34E7 /* CastleNotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = B55942272534CC0200BD34E7 /* CastleNotificationService.m */; };
 		B56CFBE7273AE2AC0015B910 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B56CFBDF273AE2AC0015B910 /* StoreKit.framework */; };
@@ -249,6 +250,7 @@
 		A1FA18C22365168600E2ACFE /* GhostInputZone.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GhostInputZone.mm; sourceTree = "<group>"; };
 		B51813EE2527916C00C315C9 /* GhostAppState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GhostAppState.h; sourceTree = "<group>"; };
 		B51813F62527916C00C315C9 /* GhostAppState.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GhostAppState.mm; sourceTree = "<group>"; };
+		B51FE1EF273C7C8600D8218D /* CastleAdjust.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CastleAdjust.m; sourceTree = "<group>"; };
 		B559420F2534C97A00BD34E7 /* CastleNotificationService.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CastleNotificationService.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B55942142534C97A00BD34E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B55942272534CC0200BD34E7 /* CastleNotificationService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CastleNotificationService.m; sourceTree = "<group>"; };
@@ -327,6 +329,7 @@
 		13B07FAE1A68108700A75B9A /* Castle */ = {
 			isa = PBXGroup;
 			children = (
+				B51FE1EF273C7C8600D8218D /* CastleAdjust.m */,
 				A1E695ED26708E2D00711D05 /* CastleCoreBridge.mm */,
 				A1E695EC267043CB00711D05 /* CastleCoreView.h */,
 				A1F8359F2661964000E65FE9 /* CastleCoreView.mm */,
@@ -971,6 +974,7 @@
 				A14FE3C72355CE94003B7EA0 /* sqlite3.c in Sources */,
 				A12CFEF723CC313100D721BC /* partition.cpp in Sources */,
 				A12CFEF823CC313100D721BC /* triangles.cpp in Sources */,
+				B51FE1F0273C7C8600D8218D /* CastleAdjust.m in Sources */,
 				A12CFEFF23CC314E00D721BC /* geometry_feed.cpp in Sources */,
 				A12CFEF623CC313100D721BC /* meshifier.cpp in Sources */,
 				A1F835A02661964000E65FE9 /* CastleCoreView.mm in Sources */,
