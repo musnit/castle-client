@@ -33,6 +33,8 @@ public:
 
   void handleReadComponent(ActorId actorId, TextComponent &component, Reader &reader);
   void handlePerform(double dt);
+  bool handleDrawComponent(ActorId actorId, const TextComponent &component,
+      std::optional<SceneDrawingOptions> options) const;
 
   std::queue<int> clickedTextActorIdsQueue;
 
@@ -43,6 +45,11 @@ private:
   friend struct HideResponse;
   friend struct HideTextResponse;
   friend class Editor; // for sending text actors data to JS while editing
+
+  Lv &lv { Lv::getInstance() };
+
+  std::unique_ptr<love::Font> textPreviewFont = std::unique_ptr<love::Font>(
+      lv.graphics.newDefaultFont(2, love::TrueTypeRasterizer::HINTING_NORMAL));
 
   std::string formatContent(const std::string &content) const;
 };

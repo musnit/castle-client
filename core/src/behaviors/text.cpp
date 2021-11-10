@@ -131,6 +131,46 @@ void TextBehavior::handleReadComponent(ActorId actorId, TextComponent &component
 void TextBehavior::handlePerform(double dt) {
 }
 
+bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &component,
+    std::optional<SceneDrawingOptions> options) const {
+  // TODO: Reject if outside camera bounds. Similar to Drawing2 -- move that into Body and reuse
+
+  auto &bodyBehavior = getBehaviors().byType<BodyBehavior>();
+  if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
+    if (auto info = getBehaviors().byType<BodyBehavior>().getRenderInfo(actorId);
+        info.visible || (options && options->drawInvisibleActors)) {
+      auto [x, y] = body->GetPosition();
+
+      auto bounds = bodyBehavior.getEditorBounds(actorId);
+
+      lv.graphics.push(love::Graphics::STACK_ALL);
+
+      lv.graphics.setColor(love::Colorf(1, 1, 1, 1));
+
+      // Move to and rotate around position
+      lv.graphics.translate(x, y);
+      lv.graphics.rotate(body->GetAngle());
+
+      // Downscale since fonts are large
+      constexpr float downscale = 0.08;
+      lv.graphics.scale(downscale, downscale);
+      bounds.minX() *= info.widthScale / downscale;
+      bounds.maxX() *= info.widthScale / downscale;
+      bounds.minY() *= info.heightScale / downscale;
+      bounds.maxY() *= info.heightScale / downscale;
+
+      // Draw
+      auto wrap = bounds.maxX() - bounds.minX();
+      lv.graphics.printf({ { component.props.content(), { 0, 0, 0, 1 } } }, wrap,
+          love::Font::ALIGN_LEFT, love::Matrix4(bounds.minX(), bounds.minY(), 0, 1, 1, 0, 0, 0, 0));
+
+      lv.graphics.pop();
+    }
+  }
+
+  return true;
+}
+
 
 //
 // Content formatting
