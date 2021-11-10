@@ -8,7 +8,6 @@ import {
   PixelRatio,
 } from 'react-native';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
-import { Adjust, AdjustConfig } from 'react-native-adjust';
 import { ApolloProvider } from '@apollo/client';
 import { RootNavigator } from './Navigation';
 import { AndroidNavigationContext } from './ReactNavigation';
@@ -35,8 +34,6 @@ import { ShareDeckScreen } from './share/ShareDeckScreen';
 import { NotificationsScreen } from './notifications/NotificationsScreen';
 import { UserListScreen } from './components/UserListScreen';
 
-import { ADJUST_APP_TOKEN } from '@env';
-
 import * as Session from './Session';
 import * as PushNotifications from './PushNotifications';
 import * as GameViewAndroidBackHandler from './common/GameViewAndroidBackHandler';
@@ -48,15 +45,6 @@ enableAndroidFontFix();
 
 const Main = () => {
   const { initialized } = Session.useSession();
-
-  useEffect(() => {
-    const adjustConfig = new AdjustConfig(
-      ADJUST_APP_TOKEN,
-      __DEV__ ? AdjustConfig.EnvironmentSandbox : AdjustConfig.EnvironmentProduction
-    );
-    Adjust.create(adjustConfig);
-    return () => Adjust.componentWillUnmount();
-  }, []);
 
   // Session not yet initialized? Just show a loading screen...
   if (!initialized) {
