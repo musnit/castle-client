@@ -18,13 +18,25 @@
 - Make sure Xcode is up to date and Xcode Command Line Tools are installed
 - `npx react-native start` in this directory to start the packager
 - Open `Castle.xcworkspace` in Xcode (not the Xcode Project)
-- Run Debug target on Simulator or device to automatically load dev bundle from the packager
+- Run on arm device (if you want to use x86 simulator, you'll need to set up `../core`)
 
 ## Android
 
 - `./run_android`
 
 Once you have the app running, shake the device to open the React Native developer menu and select 'Enable Live Reload'. Then, you should be able to modify any of the files under 'js/' and save to trigger a reload of the app that picks up your changes!
+
+# Changing dependencies
+
+## JS
+
+- (Nov 2021) Use npm 7 because at the moment npm 8 is breaking our Android install: `npm i -g npm@7`
+
+## iOS
+
+- Install cocoapods from homebrew (ensures it works on M1)
+- (Nov 2021) To install pods, use `tools/rn-pod-install.sh` to avoid an issue with React Native 0.64 podspec generation. Do not use `pod install` by itself.
+- Commit the contents of `ios/Pods`
 
 # Releases
 
