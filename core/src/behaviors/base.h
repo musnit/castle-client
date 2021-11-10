@@ -337,9 +337,11 @@ ExpressionValue BaseBehavior<Derived, Component>::handleGetProperty(
   ExpressionValue result;
   Props::forEach(component.props, [&](auto &prop) {
     if (propId == prop.id) {
-      using PropValue = std::remove_reference_t<decltype(prop())>;
+      using PropValue = std::remove_cv_t<std::remove_reference_t<decltype(prop())>>;
       if constexpr (std::is_arithmetic_v<PropValue>) {
         result = ExpressionValue(prop());
+      } else if constexpr (std::is_same_v<std::string, PropValue>) {
+        result = ExpressionValue(prop().c_str());
       }
     }
   });
