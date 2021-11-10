@@ -29,7 +29,7 @@ public:
   static constexpr auto displayName = "Text";
   static constexpr auto allowsDisableWithoutRemoval = false;
 
-  using BaseBehavior::BaseBehavior;
+  explicit TextBehavior(Scene &scene_);
 
   void handleReadComponent(ActorId actorId, TextComponent &component, Reader &reader);
   void handlePerform(double dt);
@@ -48,8 +48,7 @@ private:
 
   Lv &lv { Lv::getInstance() };
 
-  std::unique_ptr<love::Font> textPreviewFont = std::unique_ptr<love::Font>(
-      lv.graphics.newDefaultFont(2, love::TrueTypeRasterizer::HINTING_NORMAL));
+  std::unique_ptr<love::Font> font;
 
   std::string formatContent(const std::string &content) const;
 };

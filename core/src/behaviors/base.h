@@ -44,7 +44,7 @@ public:
   BaseBehavior(BaseBehavior &&) = default; // Allow moves
   BaseBehavior &operator=(BaseBehavior &&) = default;
 
-  BaseBehavior(Scene &scene_) // NOLINT(google-explicit-constructor)
+  explicit BaseBehavior(Scene &scene_)
       : scene(scene_) {
   }
 
