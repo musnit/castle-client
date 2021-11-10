@@ -1,4 +1,7 @@
 PODS:
+  - Adjust (4.29.6):
+    - Adjust/Core (= 4.29.6)
+  - Adjust/Core (4.29.6)
   - Amplitude (8.5.0)
   - amplitude-react-native (2.6.0):
     - Amplitude (= 8.5.0)
@@ -334,6 +337,7 @@ PODS:
   - Yoga (1.14.0)
 
 DEPENDENCIES:
+  - Adjust (~> 4.29.2)
   - "amplitude-react-native (from `../node_modules/@amplitude/react-native`)"
   - BVLinearGradient (from `../node_modules/react-native-linear-gradient`)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
@@ -384,6 +388,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - Adjust
     - Amplitude
     - boost-for-react-native
     - DVAssetLoaderDelegate
@@ -482,6 +487,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
+  Adjust: 94f1c99429fb2a7ebe530294fd66a88d63a54922
   Amplitude: ef9ed339ddd33c9183edf63fa4bbaa86cf873321
   amplitude-react-native: fa5e830e59fd8ed440a74d58fd72ad4b37e7c946
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
@@ -534,6 +540,6 @@ SPEC CHECKSUMS:
   SPTPersistentCache: df36ea46762d7cf026502bbb86a8b79d0080dff4
   Yoga: 575c581c63e0d35c9a83f4b46d01d63abc1100ac
 
-PODFILE CHECKSUM: 89c817d86f1164775625d490cbc4ac65b45d4baa
+PODFILE CHECKSUM: 32182cdc29520fb509b9afddf25744b05fe5726b
 
 COCOAPODS: 1.11.2

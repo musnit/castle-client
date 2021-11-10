@@ -609,7 +609,8 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Castle" */;
 			buildPhases = (
 				4CE6B7EFDC4887E01DB21039 /* [CP] Check Pods Manifest.lock */,
-				916D3E6226EC10EC009CD238 /* ShellScript */,
+				916D3E6226EC10EC009CD238 /* Build Core if using Debug Core Scheme */,
+				B51FE1ED273C722E00D8218D /* Copy Adjust App Token */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
@@ -618,6 +619,7 @@
 				1B1082991574591082E9CFD6 /* [CP] Copy Pods Resources */,
 				B55942182534C97A00BD34E7 /* Embed App Extensions */,
 				7E8E071F9E7D48CB901E090C /* Upload Debug Symbols to Sentry */,
+				B51FE1EE273C769600D8218D /* Clean Up Adjust */,
 			);
 			buildRules = (
 			);
@@ -849,7 +851,7 @@
 			shellPath = /bin/sh;
 			shellScript = "if [ \"${CONFIGURATION}\" = \"Debug\" ]; then\n  exit 0\nfi\n\n# First set the path to sentry.properties\nexport SENTRY_PROPERTIES=sentry.properties\n\n# Setup nvm and set node\n[ -z \"$NVM_DIR\" ] && export NVM_DIR=\"$HOME/.nvm\"\n\nif [[ -s \"$HOME/.nvm/nvm.sh\" ]]; then\n. \"$HOME/.nvm/nvm.sh\"\nelif [[ -x \"$(command -v brew)\" && -s \"$(brew --prefix nvm)/nvm.sh\" ]]; then\n. \"$(brew --prefix nvm)/nvm.sh\"\nfi\n\n# Set up the nodenv node version manager if present\nif [[ -x \"$HOME/.nodenv/bin/nodenv\" ]]; then\neval \"$(\"$HOME/.nodenv/bin/nodenv\" init -)\"\nfi\n\n# Trying notion\nif [ -z \"$NODE_BINARY\" ]; then\nif [[ -s \"$HOME/.notion/bin/node\" ]]; then\nexport NODE_BINARY=\"$HOME/.notion/bin/node\"\nfi\nfi\n\n[ -z \"$NODE_BINARY\" ] && export NODE_BINARY=\"node\"\n\n# Run sentry cli script to upload debug symbols\n$NODE_BINARY ../node_modules/@sentry/cli/bin/sentry-cli upload-dsym\n";
 		};
-		916D3E6226EC10EC009CD238 /* ShellScript */ = {
+		916D3E6226EC10EC009CD238 /* Build Core if using Debug Core Scheme */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -858,6 +860,7 @@
 			);
 			inputPaths = (
 			);
+			name = "Build Core if using Debug Core Scheme";
 			outputFileListPaths = (
 			);
 			outputPaths = (
@@ -865,6 +868,42 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its\n# Uncommenting the next line will write this script output to a log\n# exec > ${PROJECT_DIR}/prebuild.log 2>&1\n\nSCHEME_NAME=`cat ${SCHEME_FILE}`\nif [ \"$SCHEME_NAME\" != \"CASTLE_DEBUG_CORE_SCHEME\" ]; then\n  exit 0\nfi\n\neval \"$(/opt/homebrew/bin/brew shellenv)\"\n\ncd ${PROJECT_DIR}\ncd ../../core\n./run.sh ios-debug\n";
+		};
+		B51FE1ED273C722E00D8218D /* Copy Adjust App Token */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Adjust App Token";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "ADJUST_APP_TOKEN=$(sed -rn 's/ADJUST_APP_TOKEN=\"(.+)\"/\\1/gp' \"${PROJECT_DIR}/../../../ghost-secret/mobile/.env\")\n/usr/libexec/PlistBuddy -c \"Delete :AdjustAppToken\" castle/Info.plist\n/usr/libexec/PlistBuddy -c \"Add :AdjustAppToken string ${ADJUST_APP_TOKEN}\" castle/Info.plist\n";
+		};
+		B51FE1EE273C769600D8218D /* Clean Up Adjust */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Clean Up Adjust";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/libexec/PlistBuddy -c \"Delete :AdjustAppToken\" castle/Info.plist\n";
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
 			isa = PBXShellScriptBuildPhase;

@@ -12,6 +12,7 @@
 #import <React/RCTRootView.h>
 #import <React/RCTLinkingManager.h>
 
+#import <Adjust/Adjust.h>
 #include <SDL.h>
 
 #include "RNBootSplash.h"
@@ -50,6 +51,8 @@ int SDL_main(int argc, char *argv[]) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [self initAdjust];
+  
   NSMutableDictionary *initialProps = [NSMutableDictionary dictionary];
   NSDictionary *notification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
   NSString *dataString = [notification valueForKey:@"dataString"];
@@ -83,6 +86,17 @@ int SDL_main(int argc, char *argv[]) {
   center.delegate = self;
 
   return YES;
+}
+
+- (void)initAdjust {
+  NSString *adjustAppToken = [[NSBundle mainBundle].infoDictionary objectForKey:@"AdjustAppToken"];
+#ifdef DEBUG
+  NSString *environment = ADJEnvironmentSandbox;
+#else
+  NSString *environment = ADJEnvironmentProduction;
+#endif
+  ADJConfig *adjustConfig = [ADJConfig configWithAppToken:adjustAppToken environment:environment];
+  [Adjust appDidLaunch:adjustConfig];
 }
 
 - (BOOL)isAppUpdated

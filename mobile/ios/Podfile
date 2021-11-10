@@ -19,6 +19,10 @@ target 'Castle' do
 
   # Explicitly provide rn-video in order to get caching subspec
   pod 'react-native-video', :path => '../node_modules/react-native-video', :subspecs => ['Video', 'VideoCaching']
+
+  # use Adjust standard iOS package rather than adjust-react-native
+  # because we need native integration on android
+  pod 'Adjust', '~> 4.29.2'
   
   use_native_modules!
 end
