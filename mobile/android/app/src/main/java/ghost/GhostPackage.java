@@ -18,7 +18,8 @@ public class GhostPackage implements ReactPackage {
         new CastleCoreBridgeModule(reactContext),
         new GhostChannelsModule(reactContext),
         new GhostPushNotificationsModule(reactContext),
-        new CastleNativeSettingsModule(reactContext));
+        new CastleNativeSettingsModule(reactContext),
+        new CastleAdjustModule(reactContext));
   }
 
   @Override
