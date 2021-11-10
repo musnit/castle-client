@@ -1,13 +1,13 @@
 {
   "name": "RNSentry",
-  "version": "3.2.1",
+  "version": "3.2.3",
   "license": "MIT",
   "summary": "Official Sentry SDK for react-native",
   "authors": "Sentry",
   "homepage": "https://github.com/getsentry/sentry-react-native",
   "source": {
     "git": "https://github.com/getsentry/sentry-react-native.git",
-    "tag": "3.2.1"
+    "tag": "3.2.3"
   },
   "platforms": {
     "ios": "8.0",
@@ -20,7 +20,7 @@
 
     ],
     "Sentry": [
-      "7.4.8"
+      "7.5.1"
     ]
   },
   "source_files": "ios/RNSentry.{h,m}",

@@ -1,7 +1,4 @@
 PODS:
-  - Adjust (4.29.5):
-    - Adjust/Core (= 4.29.5)
-  - Adjust/Core (4.29.5)
   - Amplitude (8.5.0)
   - amplitude-react-native (2.6.0):
     - Amplitude (= 8.5.0)
@@ -222,9 +219,6 @@ PODS:
     - React-jsi (= 0.64.2)
     - React-perflogger (= 0.64.2)
   - React-jsinspector (0.64.2)
-  - react-native-adjust (4.29.4):
-    - Adjust (= 4.29.5)
-    - React
   - react-native-get-random-values (1.7.0):
     - React-Core
   - react-native-image-picker (3.8.1):
@@ -307,9 +301,9 @@ PODS:
     - React-perflogger (= 0.64.2)
   - RNBootSplash (3.2.6):
     - React-Core
-  - RNCAsyncStorage (1.14.1):
+  - RNCAsyncStorage (1.15.11):
     - React-Core
-  - RNDeviceInfo (8.4.4):
+  - RNDeviceInfo (8.4.5):
     - React-Core
   - RNFastImage (8.5.11):
     - React-Core
@@ -322,9 +316,9 @@ PODS:
   - RNScreens (3.9.0):
     - React-Core
     - React-RCTImage
-  - RNSentry (3.2.1):
+  - RNSentry (3.2.3):
     - React-Core
-    - Sentry (= 7.4.8)
+    - Sentry (= 7.5.1)
   - RNVectorIcons (7.1.0):
     - React
   - SDWebImage (5.11.1):
@@ -333,9 +327,9 @@ PODS:
   - SDWebImageWebPCoder (0.8.4):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
-  - Sentry (7.4.8):
-    - Sentry/Core (= 7.4.8)
-  - Sentry/Core (7.4.8)
+  - Sentry (7.5.1):
+    - Sentry/Core (= 7.5.1)
+  - Sentry/Core (7.5.1)
   - SPTPersistentCache (1.1.0)
   - Yoga (1.14.0)
 
@@ -359,7 +353,6 @@ DEPENDENCIES:
   - React-jsi (from `../node_modules/react-native/ReactCommon/jsi`)
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
-  - react-native-adjust (from `../node_modules/react-native-adjust`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
@@ -391,7 +384,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - Adjust
     - Amplitude
     - boost-for-react-native
     - DVAssetLoaderDelegate
@@ -436,8 +428,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsiexecutor"
   React-jsinspector:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
-  react-native-adjust:
-    :path: "../node_modules/react-native-adjust"
   react-native-get-random-values:
     :path: "../node_modules/react-native-get-random-values"
   react-native-image-picker:
@@ -492,7 +482,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  Adjust: 5cab100ac05eebde8141b48a2acffd6b5ce0564b
   Amplitude: ef9ed339ddd33c9183edf63fa4bbaa86cf873321
   amplitude-react-native: fa5e830e59fd8ed440a74d58fd72ad4b37e7c946
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
@@ -514,7 +503,6 @@ SPEC CHECKSUMS:
   React-jsi: 67747b9722f6dab2ffe15b011bcf6b3f2c3f1427
   React-jsiexecutor: 80c46bd381fd06e418e0d4f53672dc1d1945c4c3
   React-jsinspector: cc614ec18a9ca96fd275100c16d74d62ee11f0ae
-  react-native-adjust: 437fc17a2dc0d2531cfd1422e3cbd8dd7da82127
   react-native-get-random-values: 237bffb1c7e05fb142092681531810a29ba53015
   react-native-image-picker: 31971f6184e7c1dcb4fc1f122e1ba2c3fb11ef1e
   react-native-safe-area-context: 584dc04881deb49474363f3be89e4ca0e854c057
@@ -532,17 +520,17 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: a9904c6d0218fb9f8b19d6dd88607225927668f9
   ReactCommon: 149906e01aa51142707a10665185db879898e966
   RNBootSplash: 51eef7e143faeab63f81ddbb7c1de38b8fba66ed
-  RNCAsyncStorage: fe58eec522885718d6b297b7b658bf87d7ca557b
-  RNDeviceInfo: 98cc93d4b3b09b33e784b751f04d414065a61fd4
+  RNCAsyncStorage: eb05c0284dd6b50b32f92fad55e2a41e03358c43
+  RNDeviceInfo: ec64a28e7ddf30399f34c04708fdf702560d083a
   RNFastImage: 1f2cab428712a4baaf78d6169eaec7f622556dd7
   RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
   RNReanimated: 514a11da3a2bcc6c3dfd9de32b38e2b9bf101926
   RNScreens: 4d79118be80f79fa1f4aa131909a1d6e86280af3
-  RNSentry: 791f73292501ed1b2e95e62e9388b68fcc13261d
+  RNSentry: 97bc62fa65b7d663daee16fbf9771470852217cf
   RNVectorIcons: bc69e6a278b14842063605de32bec61f0b251a59
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
-  Sentry: df92b78ba4ab86cf2a47ff4cdc07758a5ce18f03
+  Sentry: 0718c3ad7a08e1107599610795adaf08864102f3
   SPTPersistentCache: df36ea46762d7cf026502bbb86a8b79d0080dff4
   Yoga: 575c581c63e0d35c9a83f4b46d01d63abc1100ac
 

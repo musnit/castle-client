@@ -5,7 +5,6 @@
 #import "SentrySDK+Private.h"
 #import "SentryScope.h"
 #import "SentrySpanId.h"
-#import "SentrySwizzle.h"
 #import "SentryUIViewControllerSanitizer.h"
 #import <objc/runtime.h>
 
@@ -121,7 +120,7 @@ SentryUIViewControllerPerformanceTracker ()
                    callbackToOrigin:(void (^)(void))callbackToOrigin
 {
     [self finishTransaction:controller
-                     status:kSentrySpanStatusUndefined
+                     status:kSentrySpanStatusOk
             lifecycleMethod:@"viewDidAppear"
            callbackToOrigin:callbackToOrigin];
 }
