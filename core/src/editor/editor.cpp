@@ -90,8 +90,6 @@ void Editor::clearState() {
   commands.clear();
   auto &drawingBehavior = scene->getBehaviors().byType<Drawing2Behavior>();
   drawingBehavior.clearEditorDataCache();
-  auto &textBehavior = scene->getBehaviors().byType<TextBehavior>();
-  textBehavior.resetState();
   if (capture) {
     capture = nullptr;
   }
@@ -2072,7 +2070,6 @@ void Editor::maybeSendData(double dt) {
   }
   if (isEditorStateDirty) {
     sendGlobalActions();
-    scene->getBehaviors().byType<TextBehavior>().resetState();
     isEditorStateDirty = false;
   }
   if (auto &library = scene->getLibrary(); library.editorNeedsSend) {
@@ -2089,9 +2086,6 @@ void Editor::maybeSendData(double dt) {
       sendSelectedComponent(behaviorId);
     }
     selectedComponentStateDirty.clear();
-  }
-  if (!playing) {
-    scene->getBehaviors().byType<TextBehavior>().maybeSendBridgeData(dt);
   }
 }
 

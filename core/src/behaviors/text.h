@@ -33,7 +33,6 @@ public:
 
   void handleReadComponent(ActorId actorId, TextComponent &component, Reader &reader);
   void handlePerform(double dt);
-  void resetState();
 
   std::queue<int> clickedTextActorIdsQueue;
 
@@ -46,10 +45,4 @@ private:
   friend class Editor; // for sending text actors data to JS while editing
 
   std::string formatContent(const std::string &content) const;
-
-  std::string lastDataSent;
-  double timeSinceSentBridgeData = 0;
-  static constexpr auto bridgeUpdateInterval = 0.2;
-
-  void maybeSendBridgeData(double dt);
 };
