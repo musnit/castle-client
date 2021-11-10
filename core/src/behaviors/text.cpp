@@ -7,6 +7,39 @@
 
 
 //
+// Embedded font data
+//
+
+struct EmbeddedFontData : love::Data {
+  unsigned char *data;
+  int size;
+
+  template<int N>
+  explicit EmbeddedFontData(unsigned char (&xxdData)[N])
+      : data(xxdData)
+      , size(sizeof(xxdData)) {
+  }
+
+  EmbeddedFontData(unsigned char *data_, int size_)
+      : data(data_)
+      , size(size_) {
+  }
+
+  Data *clone() const override {
+    return new EmbeddedFontData(data, size);
+  }
+
+  void *getData() const override {
+    return data;
+  }
+
+  size_t getSize() const override {
+    return size;
+  }
+};
+
+
+//
 // Triggers
 //
 
@@ -106,6 +139,24 @@ struct HideResponse : BaseResponse {
 
 
 //
+// Constructor, destructor
+//
+
+#include "data/comic.ttf.h"
+
+TextBehavior::TextBehavior(Scene &scene_)
+    : BaseBehavior(scene_) {
+  {
+    love::StrongRef data(new EmbeddedFontData(comic_ttf), love::Acquire::NORETAIN);
+    love::StrongRef rasterizer(
+        lv.font.newTrueTypeRasterizer(data, 10, love::TrueTypeRasterizer::HINTING_NORMAL),
+        love::Acquire::NORETAIN);
+    font.reset(lv.graphics.newFont(rasterizer));
+  }
+}
+
+
+//
 // Read, write
 //
 
@@ -161,6 +212,7 @@ bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &com
 
       // Draw
       auto wrap = bounds.maxX() - bounds.minX();
+      lv.graphics.setFont(font.get());
       lv.graphics.printf({ { component.props.content(), { 0, 0, 0, 1 } } }, wrap,
           love::Font::ALIGN_LEFT, love::Matrix4(bounds.minX(), bounds.minY(), 0, 1, 1, 0, 0, 0, 0));
 
