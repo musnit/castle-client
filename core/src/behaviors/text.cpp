@@ -7,55 +7,6 @@
 
 
 //
-// Web bindings
-//
-
-JS_DEFINE(int, JS_updateTextActors, (const char *msg, int msgLen), {
-  if (Castle.updateTextActors) {
-    Castle.updateTextActors(UTF8ToString(msg, msgLen));
-  }
-});
-
-JS_DEFINE(int, JS_getClickedTextActorId, (), {
-  if (Castle.clickedTextActorIdsQueue.length > 0) {
-    return Castle.clickedTextActorIdsQueue.shift();
-  } else {
-    return -1;
-  }
-});
-
-// JS_DEFINE(int, JS_preloadCardId, (const char *cardId, int cardIdLen),
-//    { Castle.preloadCardId(UTF8ToString(cardId, cardIdLen)); });
-
-//
-// React native bindings
-//
-
-struct SelectActorReceiver {
-  inline static const BridgeRegistration<SelectActorReceiver> registration { "SELECT_ACTOR" };
-
-  struct Params {
-    PROP(int, actorId) = -1;
-  } params;
-
-  void receive(Engine &engine) {
-    if (!engine.getIsEditing()) {
-      auto &textBehavior = engine.getScene().getBehaviors().byType<TextBehavior>();
-      textBehavior.clickedTextActorIdsQueue.push(params.actorId());
-    } else if (engine.maybeGetEditor()->getIsPlaying()) {
-      // same thing, but scene is derived from editor's player
-      auto &textBehavior = engine.maybeGetEditor()
-                               ->maybeGetPlayer()
-                               ->getScene()
-                               .getBehaviors()
-                               .byType<TextBehavior>();
-      textBehavior.clickedTextActorIdsQueue.push(params.actorId());
-    }
-  }
-};
-
-
-//
 // Triggers
 //
 
@@ -66,6 +17,29 @@ struct TextTapTrigger : BaseTrigger {
   struct Params {
   } params;
 };
+
+bool TextBehavior::hasTapTrigger(ActorId actorId) {
+  auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
+  if (getScene().getIsEditing()) {
+    // can't query `rulesBehavior.hasTrigger` because we don't build trigger components at edit-time
+    if (auto component = rulesBehavior.maybeGetComponent(actorId); component) {
+      Reader reader(component->editData->value);
+      auto found = false;
+      reader.each("rules", [&]() {
+        reader.obj("trigger", [&]() {
+          if (reader.num("behaviorId", -1) == TextBehavior::behaviorId
+              && std::strcmp(reader.str("name", ""), "tap") == 0) {
+            found = true;
+          }
+        });
+      });
+      return found;
+    }
+  } else {
+    return rulesBehavior.hasTrigger<TextTapTrigger>(actorId);
+  }
+  return false;
+}
 
 
 //
@@ -155,101 +129,8 @@ void TextBehavior::handleReadComponent(ActorId actorId, TextComponent &component
 //
 
 void TextBehavior::handlePerform(double dt) {
-  auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
-  while (true) {
-#ifdef __EMSCRIPTEN__
-    if (auto actorIdInt = JS_getClickedTextActorId(); actorIdInt >= 0) {
-#else
-    if (!clickedTextActorIdsQueue.empty()) {
-      auto actorIdInt = clickedTextActorIdsQueue.front();
-      clickedTextActorIdsQueue.pop();
-#endif
-      auto actorId = ActorId(actorIdInt);
-      if (auto component = maybeGetComponent(actorId); component && !component->disabled) {
-        rulesBehavior.fire<TextTapTrigger>(actorId, {});
-      }
-    } else {
-      break;
-    }
-  }
-
-  maybeSendBridgeData(dt);
 }
 
-//
-// Data
-//
-
-struct TextActorsDataEvent {
-  PROP(std::string, data) = "";
-};
-
-bool TextBehavior::hasTapTrigger(ActorId actorId) {
-  auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
-  if (getScene().getIsEditing()) {
-    // can't query `rulesBehavior.hasTrigger` because we don't build trigger components at edit-time
-    if (auto component = rulesBehavior.maybeGetComponent(actorId); component) {
-      Reader reader(component->editData->value);
-      auto found = false;
-      reader.each("rules", [&]() {
-        reader.obj("trigger", [&]() {
-          if (auto nameCStr = reader.str("name", "")) {
-            if (auto behaviorId = reader.num("behaviorId", -1)) {
-              if (std::strcmp(nameCStr, "tap") == 0
-                  && (int)behaviorId == TextBehavior::behaviorId) {
-                found = true;
-              }
-            }
-          }
-        });
-      });
-      return found;
-    }
-  } else {
-    return rulesBehavior.hasTrigger<TextTapTrigger>(actorId);
-  }
-  return false;
-}
-
-void TextBehavior::resetState() {
-  lastDataSent = "";
-  timeSinceSentBridgeData = 0;
-}
-
-void TextBehavior::maybeSendBridgeData(double dt) {
-  Archive archive;
-  timeSinceSentBridgeData += dt;
-  if (lastDataSent == "" || timeSinceSentBridgeData >= TextBehavior::bridgeUpdateInterval) {
-    timeSinceSentBridgeData = 0;
-    archive.write([&](Archive::Writer &writer) {
-      writer.arr("textActors", [&]() {
-        forEachEnabledComponent([&](ActorId actorId, TextComponent &component) {
-          if (!getScene().isGhost(actorId)) {
-            writer.obj([&]() {
-              writer.num("actorId", (int)entt::to_integral(actorId));
-              writer.str("content", formatContent(component.props.content()));
-              writer.num("order", component.props.order());
-              writer.boolean("hasTapTrigger", hasTapTrigger(actorId));
-              writer.boolean("visible", component.props.visible());
-            });
-          }
-        });
-      });
-    });
-
-    auto output = archive.toJson();
-    if (lastDataSent.compare(output) != 0) {
-#ifdef __EMSCRIPTEN__
-      JS_updateTextActors(output.c_str(), output.length());
-#else
-      TextActorsDataEvent textActorsData;
-      textActorsData.data = output;
-      getScene().getBridge().sendEvent("TEXT_ACTORS_DATA", textActorsData);
-#endif
-      lastDataSent = output;
-    }
-  }
-}
 
 //
 // Content formatting
