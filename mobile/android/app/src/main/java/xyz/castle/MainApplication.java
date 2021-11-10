@@ -1,14 +1,20 @@
 package xyz.castle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ghost.CastleNativeSettingsModule;
 import xyz.castle.api.ReactNativeDownloader;
 
+import android.app.Activity;
 import android.content.Context;
 import android.app.Application;
+import android.os.Bundle;
 
 import org.love2d.android.GameActivity;
 
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustConfig;
+import com.adjust.sdk.LogLevel;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
@@ -21,6 +27,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import ghost.GhostPackage;
+import xyz.castle.generated.CastleSecret;
+
 import com.brentvatne.react.ReactVideoPackage;
 
 public class MainApplication extends Application implements ReactApplication {
@@ -36,6 +44,12 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
+
+      String environment = BuildConfig.DEBUG ? AdjustConfig.ENVIRONMENT_SANDBOX : AdjustConfig.ENVIRONMENT_PRODUCTION;
+      AdjustConfig config = new AdjustConfig(this, CastleSecret.ADJUST_APP_TOKEN, environment);
+      config.setLogLevel(LogLevel.WARN);
+      Adjust.onCreate(config);
+      registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
 
       CastleSharedPreferences.initialize(this);
       String channel = CastleNativeSettingsModule.reactNativeChannel();
@@ -117,4 +131,41 @@ public class MainApplication extends Application implements ReactApplication {
       }
     }
   }
+
+    private static final class AdjustLifecycleCallbacks implements ActivityLifecycleCallbacks {
+        @Override
+        public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
+
+        }
+
+        @Override
+        public void onActivityStarted(@NonNull Activity activity) {
+
+        }
+
+        @Override
+        public void onActivityResumed(Activity activity) {
+            Adjust.onResume();
+        }
+
+        @Override
+        public void onActivityPaused(Activity activity) {
+            Adjust.onPause();
+        }
+
+        @Override
+        public void onActivityStopped(@NonNull Activity activity) {
+
+        }
+
+        @Override
+        public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {
+
+        }
+
+        @Override
+        public void onActivityDestroyed(@NonNull Activity activity) {
+
+        }
+    }
 }

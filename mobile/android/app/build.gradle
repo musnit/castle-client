@@ -263,6 +263,11 @@ dependencies {
     implementation "com.google.android.material:material:1.1.0-beta01"
     implementation 'androidx.constraintlayout:constraintlayout:1.1.2'
     implementation 'com.google.android.gms:play-services-auth:18.1.0'
+
+    // Adjust
+    implementation 'com.adjust.sdk:adjust-android:4.28.2'
+    implementation 'com.android.installreferrer:installreferrer:2.2'
+    implementation 'com.google.android.gms:play-services-ads-identifier:17.0.1'
 }
 
 // Run this once to be able to run the application with BUCK
@@ -271,5 +276,12 @@ task copyDownloadableDepsToLibs(type: Copy) {
     from configurations.compile
     into 'libs'
 }
+
+task copyFiles(type: Copy) {
+    from file("${projectDir}/../../../../ghost-secret/mobile/CastleSecret.java")
+    into file("${projectDir}/src/main/java/xyz/castle/generated/")
+}
+
+preBuild.dependsOn(copyFiles)
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
