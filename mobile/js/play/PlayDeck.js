@@ -50,7 +50,7 @@ export const PlayDeck = ({ deck, visibility, route, paused }) => {
   });
 
   React.useEffect(() => {
-    Amplitude.getInstance().logEventWithProperties('VIEW_PLAY_DECK', { deckId: deck.deckId, visibility });
+    Amplitude.getInstance().logEvent('VIEW_PLAY_DECK', { deckId: deck.deckId, visibility });
 
     return () => {
       recordDeckPlay(deck.deckId, playingCardId.current);
