@@ -124,6 +124,9 @@ private:
   love::Colorf tmpAxisColor { 1, 1, 1, 1 };
   float tmpGridDotRadius = 4;
   bool tmpIsGridForeground = false;
+
+  std::unique_ptr<love::Image> tmpLoadedImage;
+  void loadImage(std::string uri);
 };
 
 inline love::DrawData &DrawTool::getDrawData() {

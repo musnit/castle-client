@@ -1,8 +1,9 @@
 import React, { useCallback } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { useActionSheet } from '@expo/react-native-action-sheet';
 import { BottomSheet } from '../../components/BottomSheet';
+import { launchImageLibrary } from '../../common/utilities';
 import { ScrollView } from 'react-native-gesture-handler';
+import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useCoreState, sendAsync } from '../../core/CoreEvents';
 
 import * as Constants from '../../Constants';
@@ -131,6 +132,28 @@ const styles = StyleSheet.create({
 });
 
 const ICON_SIZE = 22;
+
+const SelectImageButton = ({ sendLayerAction }) => {
+  const selectImage = React.useCallback(
+    () =>
+      launchImageLibrary(
+        ({ uri }) => {
+          sendLayerAction('importImage', { stringValue: uri });
+        },
+        { noUpload: true }
+      ),
+    [sendLayerAction]
+  );
+
+  return (
+    <Pressable onPress={selectImage} style={styles.firstCell}>
+      <View style={styles.addLayerButton}>
+        <MCIcon name={'image'} size={ICON_SIZE} color={'#000'} />
+        <Text style={styles.addLayerText}>Add Image</Text>
+      </View>
+    </Pressable>
+  );
+};
 
 const CollisionRow = ({ isSelected, onSelect, previewPng, numFrames, isVisible, setVisible }) => {
   let placeholderFrames = [];
@@ -486,12 +509,13 @@ const DrawingLayers = ({ sendLayerAction }) => {
         showsHorizontalScrollIndicator={false}>
         <View style={{ flex: 1 }}>
           <View style={styles.layerRow}>
-            <Pressable onPress={onAddLayer} style={styles.firstCell}>
+            <SelectImageButton sendLayerAction={sendLayerAction} />
+            {/* <Pressable onPress={onAddLayer} style={styles.firstCell}>
               <View style={styles.addLayerButton}>
                 <MCIcon name={'plus'} size={ICON_SIZE} color={'#000'} />
                 <Text style={styles.addLayerText}>Add Layer</Text>
               </View>
-            </Pressable>
+            </Pressable> */}
             {layers?.length > 0
               ? layers[0].frames.map((frame, idx) => {
                   let isSelected = selectedFrameIndex === idx + 1;

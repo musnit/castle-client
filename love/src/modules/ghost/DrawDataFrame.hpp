@@ -126,7 +126,7 @@ namespace ghost {
     void renderFill();
     std::optional<std::string> renderPreviewPng(int size);
 
-    graphics::Image *imageDataToImage(image::ImageData *);
+    static graphics::Image *imageDataToImage(image::ImageData *);
     image::ImageData *getFillImageDataSizedToPathBounds();
     graphics::Image *getFillImage();
     void updateFillImageWithFillImageData();
