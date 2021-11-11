@@ -94,6 +94,7 @@ const MainProvider = (props) => {
 if (Platform.OS === 'android') {
   const WaitForSession = (props) => {
     const { initialized } = Session.useSession();
+    GameViewAndroidBackHandler.listen();
 
     // Session not yet initialized? Just show a loading screen...
     if (!initialized) {
@@ -108,8 +109,6 @@ if (Platform.OS === 'android') {
         />
       );
     }
-
-    GameViewAndroidBackHandler.listen();
 
     return React.Children.only(props.children);
   };

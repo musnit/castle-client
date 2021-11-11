@@ -81,10 +81,10 @@ export const HomeScreen = ({ route }) => {
     deckId = route.params.deckId;
   }
 
-  React.useEffect(() => setItems(makeItems({ newFollowingDecks, isAnonymous })), [
-    newFollowingDecks,
-    isAnonymous,
-  ]);
+  React.useEffect(
+    () => setItems(makeItems({ newFollowingDecks, isAnonymous })),
+    [newFollowingDecks, isAnonymous]
+  );
 
   useFocusEffect(
     React.useCallback(() => {
@@ -148,6 +148,7 @@ export const HomeScreen = ({ route }) => {
         {selectedItem.item({
           deckId,
           onPressComments: openComments,
+          onCloseComments: closeComments,
           isCommentsOpen: commentsState.isOpen,
         })}
         <CommentsSheet

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Animated, FlatList, InteractionManager, StyleSheet, View } from 'react-native';
+import { Animated, FlatList, InteractionManager, StyleSheet, View, Platform } from 'react-native';
 import { Amplitude } from '@amplitude/react-native';
 import { CardCell } from './CardCell';
 import { PlayDeckActions } from '../play/PlayDeckActions';
@@ -126,6 +126,8 @@ const CurrentDeckCell = ({
   isMe = false,
   isAnonymous = false,
   onPressComments = () => {},
+  onCloseComments = () => {},
+  isCommentsOpen,
 }) => {
   const initialCard = deck?.initialCard;
   const [ready, setReady] = React.useState(false);
@@ -187,12 +189,17 @@ const CurrentDeckCell = ({
   });
 
   const onHardwareBackPress = React.useCallback(() => {
+    if (isCommentsOpen) {
+      onCloseComments();
+      return true;
+    }
+
     if (isPlaying) {
       onPressBack();
       return true;
     }
     return false;
-  }, [isPlaying, onPressBack]);
+  }, [isPlaying, onPressBack, isCommentsOpen, onCloseComments]);
   useGameViewAndroidBackHandler({ onHardwareBackPress });
 
   if (!initialCard) return null;
@@ -263,6 +270,7 @@ export const DecksFeed = ({
   isPlaying,
   onPressDeck,
   onPressComments,
+  onCloseComments,
   isCommentsOpen,
   onDeckFocused,
   ...props
@@ -311,8 +319,11 @@ export const DecksFeed = ({
             isPlaying={isPlaying}
             onPressDeck={onPressDeck}
             onPressComments={() => onPressComments({ deck })}
+            onCloseComments={onCloseComments}
+            isCommentsOpen={isCommentsOpen}
             playingTransition={playingTransition}
-            paused={paused || isCommentsOpen}
+            // On Android we can't pause while comments are open or else the back button won't work
+            paused={Platform.OS === 'android' ? paused : paused || isCommentsOpen}
             isMe={deck?.creator?.userId === signedInUserId}
             isAnonymous={isAnonymous}
             onRefreshFeed={props.onRefresh}

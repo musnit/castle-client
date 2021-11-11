@@ -9,9 +9,11 @@ function runHardwareBackPressEvent() {
   for (let i = listenerList.length - 1; i >= 0; i--) {
     let listener = listenerList[i];
     if (listener()) {
-      break;
+      return true;
     }
   }
+
+  return false;
 }
 
 export const listen = Platform.select({
@@ -22,14 +24,14 @@ export const listen = Platform.select({
 
       return () => {
         BackHandler.removeEventListener('hardwareBackPress', runHardwareBackPressEvent);
-      }
+      };
     });
 
     useListen({
       eventName: 'CASTLE_SYSTEM_BACK_BUTTON',
       handler: runHardwareBackPressEvent,
     });
-  }
+  },
 });
 
 export const useGameViewAndroidBackHandler = Platform.select({
@@ -41,8 +43,8 @@ export const useGameViewAndroidBackHandler = Platform.select({
         listenerList.push(onHardwareBackPress);
 
         return () => {
-          listenerList = listenerList.filter(item => item !== onHardwareBackPress)
-        }
+          listenerList = listenerList.filter((item) => item !== onHardwareBackPress);
+        };
       }, [onHardwareBackPress])
     );
   },

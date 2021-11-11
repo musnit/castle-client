@@ -27,13 +27,6 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
   const deck = decks?.length ? decks[0] : null;
   const deckId = deck?.deckId;
 
-  const { pop } = useNavigation();
-  const onHardwareBackPress = React.useCallback(() => {
-    pop();
-    return true;
-  }, [pop]);
-  useGameViewAndroidBackHandler({ onHardwareBackPress });
-
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
@@ -45,6 +38,18 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
   const closeComments = React.useCallback(() => setIsCommentsVisible(false), []);
 
   React.useEffect(closeComments, [decks]);
+
+  const { pop } = useNavigation();
+  const onHardwareBackPress = React.useCallback(() => {
+    if (isCommentsVisible) {
+      closeComments();
+      return true;
+    }
+
+    pop();
+    return true;
+  }, [pop, isCommentsVisible, closeComments]);
+  useGameViewAndroidBackHandler({ onHardwareBackPress });
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -62,6 +67,7 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
             pop();
           }}
           onPressComments={openComments}
+          onCloseComments={closeComments}
           isCommentsOpen={isCommentsVisible}
         />
         <CommentsSheet
