@@ -7,6 +7,8 @@ import {
   Dimensions,
   PixelRatio,
 } from 'react-native';
+// https://github.com/software-mansion/react-native-gesture-handler/issues/320#issuecomment-443815828
+import 'react-native-gesture-handler';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { ApolloProvider } from '@apollo/client';
 import { RootNavigator } from './Navigation';
