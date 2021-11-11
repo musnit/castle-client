@@ -19,7 +19,17 @@ struct TextComponent : BaseComponent {
          .rulesGet(false)
          ) = true;
     PROP(int, order) = -1;
+    PROP(
+         std::string, fontName,
+         .label("Font")
+         .rulesGet(false)
+         .rulesSet(false)
+         .allowedValues("Comic Sans", "Roboto")
+         )
+            = "Roboto";
   } props;
+
+  love::Font *font = nullptr;
 };
 
 class TextBehavior : public BaseBehavior<TextBehavior, TextComponent> {
@@ -36,7 +46,8 @@ public:
   bool handleDrawComponent(ActorId actorId, const TextComponent &component,
       std::optional<SceneDrawingOptions> options) const;
 
-  std::queue<int> clickedTextActorIdsQueue;
+  void handleSetProperty(
+      ActorId actorId, TextComponent &component, PropId propId, const ExpressionValue &value);
 
   bool hasTapTrigger(ActorId actorId);
 
@@ -48,7 +59,10 @@ private:
 
   Lv &lv { Lv::getInstance() };
 
-  std::unique_ptr<love::Font> font;
+  std::unique_ptr<love::Font> defaultFont;
+  std::unordered_map<std::string, std::unique_ptr<love::Font>> fonts;
+
+  void updateFont(TextComponent &component);
 
   std::string formatContent(const std::string &content) const;
 };
