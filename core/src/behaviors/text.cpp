@@ -5,6 +5,8 @@
 #include "js.h"
 #include "engine.h"
 
+#include "data/fonts.h"
+
 
 //
 // Embedded font data
@@ -142,17 +144,23 @@ struct HideResponse : BaseResponse {
 // Constructor, destructor
 //
 
-#include "data/comic.ttf.h"
-
 TextBehavior::TextBehavior(Scene &scene_)
     : BaseBehavior(scene_) {
-  {
-    love::StrongRef data(new EmbeddedFontData(comic_ttf), love::Acquire::NORETAIN);
-    love::StrongRef rasterizer(
-        lv.font.newTrueTypeRasterizer(data, 10, love::TrueTypeRasterizer::HINTING_NORMAL),
+  constexpr auto defaultFontSize = 10;
+
+  defaultFont.reset(
+      lv.graphics.newDefaultFont(defaultFontSize, love::TrueTypeRasterizer::HINTING_NORMAL));
+
+  const auto loadFont = [&](const std::string &name, auto &xxdData) {
+    love::StrongRef data(new EmbeddedFontData(xxdData), love::Acquire::NORETAIN);
+    love::StrongRef rasterizer(lv.font.newTrueTypeRasterizer(
+                                   data, defaultFontSize, love::TrueTypeRasterizer::HINTING_NORMAL),
         love::Acquire::NORETAIN);
-    font.reset(lv.graphics.newFont(rasterizer));
-  }
+    fonts[name] = std::unique_ptr<love::Font>(lv.graphics.newFont(rasterizer));
+  };
+
+  loadFont("Comic Sans", comic_ttf);
+  loadFont("Roboto", roboto_ttf);
 }
 
 
@@ -172,6 +180,8 @@ void TextBehavior::handleReadComponent(ActorId actorId, TextComponent &component
 
     component.props.order() = maxExistingOrder + 1;
   }
+
+  updateFont(component);
 }
 
 
@@ -212,7 +222,11 @@ bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &com
 
       // Draw
       auto wrap = bounds.maxX() - bounds.minX();
-      lv.graphics.setFont(font.get());
+      if (component.font) {
+        lv.graphics.setFont(component.font);
+      } else {
+        lv.graphics.setFont(defaultFont.get());
+      }
       lv.graphics.printf({ { component.props.content(), { 0, 0, 0, 1 } } }, wrap,
           love::Font::ALIGN_LEFT, love::Matrix4(bounds.minX(), bounds.minY(), 0, 1, 1, 0, 0, 0, 0));
 
@@ -221,6 +235,33 @@ bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &com
   }
 
   return true;
+}
+
+
+//
+// Getters, setters
+//
+
+void TextBehavior::handleSetProperty(
+    ActorId actorId, TextComponent &component, PropId propId, const ExpressionValue &value) {
+  auto &props = component.props;
+  if (propId == props.fontName.id) {
+    const char *cStrValue = value.as<const char *>();
+    if (strcmp(cStrValue, component.props.fontName().c_str()) != 0) {
+      component.props.fontName() = cStrValue;
+      updateFont(component);
+    }
+  } else {
+    BaseBehavior::handleSetProperty(actorId, component, propId, value);
+  }
+}
+
+void TextBehavior::updateFont(TextComponent &component) {
+  if (auto found = fonts.find(component.props.fontName()); found != fonts.end()) {
+    component.font = found->second.get();
+  } else {
+    component.font = defaultFont.get();
+  }
 }
 
 

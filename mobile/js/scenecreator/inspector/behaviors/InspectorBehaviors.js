@@ -7,6 +7,5 @@ export { default as Motion } from './InspectorMotion';
 export { default as Rules } from './InspectorRules';
 export { default as Sliding } from './InspectorSliding';
 export { default as Tags } from './InspectorTags';
-export { default as TextContent } from './InspectorTextContent';
-export { default as TextLayout } from './InspectorTextLayout';
+export { default as Text } from './InspectorText';
 export { default as Sharing } from './InspectorSharing';
