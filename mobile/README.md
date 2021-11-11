@@ -45,18 +45,21 @@ Once you have the app running, shake the device to open the React Native develop
 If it's your first time doing a release from this machine:
 
 - Ensure you're signed in to the Castle team in Xcode.
-- Ensure `username` in `Fastfile` is the apple id you intend to use.
-- Manually download our provisioning profile for `xyz.castle.castle.CastleNotificationService` from the Apple Developer website or through Xcode.
-- If `fastlane` automatically creates a new certificate for some reason, you'll need to add that cert to the `CastleNotificationService` provisioning profile and download it again.
-- Fastlane will make you generate an app-specific password (and it will provide instructions for that).
+- Install the `bundler` gem if you don't have it.
+- Generate an app-specific password on your Apple id. If you don't know how, Fastlane will prompt you with instructions later.
 
 On all releases:
 
 - If this is the first time uploading a build since last app store approval, bump the app's minor version for both the `Castle` target and the `CastleNotificationService` target. The versions must match. You can ignore the Build number because we'll set this automatically.
-- Make sure `fastlane` is up to date: `bundle update fastlane` from this directory. (You need the `bundler` gem.) You can commit the changes to `Gemfile.lock`.
-- Run `./tools/upload-ios-build.sh beta` to upload a build.
-- Fastlane will download the needed certs, build the app, upload it to Apple, wait for it to "process", and then automatically release it to just employees via TestFlight.
+- Run `./tools/upload-ios-build.sh [your apple id]`, which wraps Fastlane.
+- Fastlane will download the needed certs, build the app, upload it to Apple, wait for it to "process", and then automatically release it to just the Castle team via TestFlight.
+- You can commit the changes to `Gemfile.lock`, discard the rest.
 - To submit to Apple Review, you can select the build you just uploaded from App Store Connect.
+
+Troubleshooting:
+
+- If you hit provisioning errors: Manually download our provisioning profile for `xyz.castle.castle.CastleNotificationService` from the Apple Developer website or through Xcode. (Fastlane will take care of the rest, but not this one.)
+- If `fastlane` automatically creates a new certificate for some reason: You'll need to use the Apple Developer website to add that new cert to the `CastleNotificationService` provisioning profile and download the profile again.
 - Although we have a circleci config for fastlane, it doesn't work right now.
 
 ### Android Play Store

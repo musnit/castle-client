@@ -41,12 +41,12 @@ platform :ios do
     set_bundle_version_from_commit_count
   end
 
-  before_each do
+  before_each do |lane, options|
     get_certificates(
-        username: "ben@castle.xyz"
+        username: options[:username]
     )
     get_provisioning_profile(
-        username: "ben@castle.xyz"
+        username: options[:username]
     )
     build_app(
       scheme: "Castle",
@@ -62,9 +62,9 @@ platform :ios do
     )
   end
   
-  lane :beta do
+  lane :beta do |options|
     upload_to_testflight(
-        username: "ben@castle.xyz"
+        username: options[:username]
     )
     # set_app_version_on_server
   end
