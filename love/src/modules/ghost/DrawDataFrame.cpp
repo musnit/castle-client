@@ -189,7 +189,7 @@ namespace ghost {
     if (fillImageData == NULL) {
       return NULL;
     }
-    fillImage = imageDataToImage(fillImageData);
+    fillImage = DrawDataFrame::imageDataToImage(fillImageData);
     return fillImage;
   }
 
@@ -205,7 +205,7 @@ namespace ghost {
       }*/
       delete fillImage;
     }
-    fillImage = imageDataToImage(fillImageData);
+    fillImage = DrawDataFrame::imageDataToImage(fillImageData);
   }
 
   void DrawDataFrame::compressFillCanvas() {

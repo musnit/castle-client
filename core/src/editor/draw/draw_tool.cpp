@@ -376,6 +376,9 @@ struct DrawToolLayerActionReceiver {
     } else if (action == "setIsPlayingAnimation") {
       drawTool.setIsPlayingAnimation(bool(params.doubleValue()));
       drawTool.sendLayersEvent();
+    } else if (action == "importImage") {
+      auto uri = params.stringValue();
+      drawTool.loadImage(uri);
     }
   }
 };
@@ -665,6 +668,8 @@ void DrawTool::resetState() {
   viewInContext = false;
   setIsPlayingAnimation(false);
 
+  tmpLoadedImage = nullptr;
+
   resetTempGraphics();
 }
 
@@ -883,6 +888,19 @@ void DrawTool::dirtySelectedFrameBounds() {
   drawData->updateFrameBounds(selectedFrameIndex);
 }
 
+void DrawTool::loadImage(std::string uri) {
+  // if uri begins with `file://` then physfs will reject it
+  if (uri.rfind("file://", 0) == 0) {
+    uri = uri.substr(7);
+  }
+
+  // TODO: resize if too large
+  love::filesystem::File *file = lv.filesystem.newFile(uri.c_str());
+  love::filesystem::FileData *data = file->read();
+  love::image::ImageData imageData(data);
+  tmpLoadedImage.reset(love::DrawDataFrame::imageDataToImage(&imageData));
+}
+
 void DrawTool::update(double dt) {
   if (!editor.hasScene()) {
     return;
@@ -1058,6 +1076,16 @@ void DrawTool::drawOverlay() {
 
   if (tmpIsGridForeground) {
     drawGrid(windowWidth, topOffset);
+  }
+
+  if (tmpLoadedImage) {
+    love::Vector2 pos(0, 0);
+    auto size = 8.0f;
+    auto imgW = float(tmpLoadedImage->getWidth());
+    auto imgH = float(tmpLoadedImage->getHeight());
+    auto scale = std::min(size / imgW, size / imgH);
+    tmpLoadedImage->draw(
+        &lv.graphics, love::Matrix4(pos.x, pos.y, 0, scale, scale, 0.5f * imgW, 0.5f * imgH, 0, 0));
   }
 
   lv.graphics.pop();
