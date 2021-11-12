@@ -263,9 +263,6 @@ void TextBehavior::handleDrawOverlay() const {
     return;
   }
 
-  // Transform for camera-relative
-  lv.graphics.push(love::Graphics::STACK_ALL);
-
   // Draw bottom to top
   constexpr float margin = 0.2; // Gap around box, between boxes
   constexpr float padding = 0.2; // Gap between text and box edge
@@ -278,6 +275,7 @@ void TextBehavior::handleDrawOverlay() const {
   auto y = cameraPos.y + 0.5f * cameraSize.y;
   auto font = defaultFont.get();
   auto fontHeight = font->getHeight();
+  lv.graphics.push(love::Graphics::STACK_ALL);
   lv.graphics.setFont(font);
   for (auto [actorId, component] : elems) {
     // Compute height
@@ -302,7 +300,6 @@ void TextBehavior::handleDrawOverlay() const {
         love::Font::ALIGN_LEFT, love::Matrix4(0, 0, 0, 1, 1, 0, 0, 0, 0));
     lv.graphics.pop();
   }
-
   lv.graphics.pop();
 }
 
