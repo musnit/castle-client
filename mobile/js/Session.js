@@ -776,6 +776,31 @@ export const uploadDeckPreview = async ({ deckId, framePaths }) => {
   return result?.data?.uploadDeckPreview;
 };
 
+export const uploadAudioFile = async (filePath) => {
+  const name = filePath.match(/[^/]*$/)[0] || '';
+  const file = new ReactNativeFile({
+    uri: filePath,
+    name,
+    type: 'audio/mpeg',
+  });
+
+  const result = await apolloClient.mutate({
+    mutation: gql`
+      mutation uploadAudioFile($file: Upload!) {
+        uploadAudioFile(file: $file) {
+          fileId
+          url
+        }
+      }
+    `,
+    variables: {
+      file,
+    },
+    fetchPolicy: 'no-cache',
+  });
+  return result?.data?.uploadAudioFile;
+};
+
 export const uploadBase64 = async (data) => {
   const result = await apolloClient.mutate({
     mutation: gql`

@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
 import { InspectorNumberInput } from '../components/InspectorNumberInput';
+import { InspectorTextInput } from '../components/InspectorTextInput';
 import { sendAsync } from '../../../core/CoreEvents';
 
 import * as Constants from '../../../Constants';
@@ -8,6 +9,13 @@ import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
 import Entypo from 'react-native-vector-icons/Entypo';
 import Feather from 'react-native-vector-icons/Feather';
+
+import AudioRecorderPlayer from 'react-native-audio-recorder-player';
+import Permissions from 'react-native-permissions';
+import { uploadAudioFile } from '../../../Session';
+
+const audioRecorderPlayer = new AudioRecorderPlayer();
+const RECORD_MAX_MS = 10000;
 
 const styles = StyleSheet.create({
   container: {
@@ -77,7 +85,24 @@ const styles = StyleSheet.create({
     marginTop: 6,
     marginBottom: 2,
   },
+  recordButton: {
+    width: 100,
+    height: 50,
+    marginRight: 20,
+    backgroundColor: '#ccc',
+  },
 });
+
+export const SOUND_TYPES = [
+  {
+    name: 'effect',
+    description: 'Effect',
+  },
+  {
+    name: 'recording',
+    description: 'Recording',
+  },
+];
 
 export const SOUND_CATEGORIES = [
   {
@@ -114,17 +139,9 @@ export const SOUND_CATEGORIES = [
   },
 ];
 
-export const PlaySoundResponse = ({ response, onChangeResponse, children, ...props }) => {
+const SoundEffect = ({ onChangeSound, response, onChangeResponse, children, ...props }) => {
   const [lastNativeUpdate, incrementLastNativeUpdate] = React.useReducer((state) => state + 1, 0);
   React.useEffect(incrementLastNativeUpdate, [response.params]);
-
-  const onChangeSound = React.useCallback(
-    (response) => {
-      onChangeResponse(response);
-      sendAsync('EDITOR_CHANGE_SOUND', response.params);
-    },
-    [onChangeResponse]
-  );
 
   const onChangeCategory = (index) =>
     onChangeSound({
@@ -153,85 +170,268 @@ export const PlaySoundResponse = ({ response, onChangeResponse, children, ...pro
   const selectedCategoryIndex = response.params?.category
     ? SOUND_CATEGORIES.findIndex((c) => c.name === response.params.category)
     : 0;
+
   return (
-    <React.Fragment>
-      {children}
-      <View style={[SceneCreatorConstants.styles.button, styles.container]}>
-        <View style={styles.playButtonContainer}>
-          <TouchableOpacity
-            style={styles.playButton}
-            onPress={() => sendAsync('EDITOR_CHANGE_SOUND', response.params)}>
-            <Entypo
-              name="controller-play"
-              size={36}
-              color="#000"
-              style={{ marginLeft: 6, marginTop: 3 }}
-            />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.controls}>
-          <View style={styles.segmentedControl}>
-            {SOUND_CATEGORIES.map((category, ii) => (
-              <TouchableOpacity
-                key={`item-${ii}`}
-                onPress={() => onChangeCategory(ii)}
+    <View style={[SceneCreatorConstants.styles.button, styles.container]}>
+      <View style={styles.playButtonContainer}>
+        <TouchableOpacity
+          style={styles.playButton}
+          onPress={() => sendAsync('EDITOR_CHANGE_SOUND', response.params)}>
+          <Entypo
+            name="controller-play"
+            size={36}
+            color="#000"
+            style={{ marginLeft: 6, marginTop: 3 }}
+          />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.controls}>
+        <View style={styles.segmentedControl}>
+          {SOUND_CATEGORIES.map((category, ii) => (
+            <TouchableOpacity
+              key={`item-${ii}`}
+              onPress={() => onChangeCategory(ii)}
+              style={[
+                styles.segmentedControlItem,
+                ii === selectedCategoryIndex ? styles.segmentedControlItemSelected : null,
+                ii > 0 ? { borderLeftWidth: 1 } : null,
+              ]}>
+              <Feather
+                name={category.icon}
                 style={[
                   styles.segmentedControlItem,
-                  ii === selectedCategoryIndex ? styles.segmentedControlItemSelected : null,
-                  ii > 0 ? { borderLeftWidth: 1 } : null,
-                ]}>
-                <Feather
-                  name={category.icon}
-                  style={[
-                    styles.segmentedControlItem,
-                    ii === selectedCategoryIndex ? styles.segmentedControlLabelSelected : null,
-                  ]}
+                  ii === selectedCategoryIndex ? styles.segmentedControlLabelSelected : null,
+                ]}
+              />
+            </TouchableOpacity>
+          ))}
+        </View>
+        <View style={styles.soundInputsRow}>
+          <View style={{ maxWidth: '40%', marginRight: 8, flexShrink: 1 }}>
+            <View style={{ flexDirection: 'row' }}>
+              <View style={{ flexShrink: 1, marginRight: 8 }}>
+                <InspectorNumberInput
+                  hideIncrements
+                  lastNativeUpdate={lastNativeUpdate}
+                  placeholder="Seed"
+                  value={response.params?.seed}
+                  onChange={onChangeSeed}
                 />
+              </View>
+              <TouchableOpacity
+                style={[SceneCreatorConstants.styles.button, styles.shuffleButton]}
+                onPress={() => onChangeSeed(Math.floor(Math.random() * Math.floor(9999)))}>
+                <Feather name="refresh-cw" style={styles.soundInputsRandomize} />
               </TouchableOpacity>
-            ))}
+            </View>
+            <Text style={styles.soundInputsLabel}>Coarse</Text>
           </View>
-          <View style={styles.soundInputsRow}>
-            <View style={{ maxWidth: '40%', marginRight: 8, flexShrink: 1 }}>
-              <View style={{ flexDirection: 'row' }}>
-                <View style={{ flexShrink: 1, marginRight: 8 }}>
-                  <InspectorNumberInput
-                    hideIncrements
-                    lastNativeUpdate={lastNativeUpdate}
-                    placeholder="Seed"
-                    value={response.params?.seed}
-                    onChange={onChangeSeed}
-                  />
-                </View>
-                <TouchableOpacity
-                  style={[SceneCreatorConstants.styles.button, styles.shuffleButton]}
-                  onPress={() => onChangeSeed(Math.floor(Math.random() * Math.floor(9999)))}>
-                  <Feather name="refresh-cw" style={styles.soundInputsRandomize} />
-                </TouchableOpacity>
+          <View style={{ maxWidth: '40%', flexShrink: 1 }}>
+            <View style={{ flexDirection: 'row' }}>
+              <View style={{ flexShrink: 1, marginRight: 8 }}>
+                <InspectorNumberInput
+                  hideIncrements
+                  lastNativeUpdate={lastNativeUpdate}
+                  placeholder="Mutation"
+                  value={response.params?.mutationSeed}
+                  onChange={onChangeMutation}
+                />
               </View>
-              <Text style={styles.soundInputsLabel}>Coarse</Text>
+              <TouchableOpacity
+                style={[SceneCreatorConstants.styles.button, styles.shuffleButton]}
+                onPress={() => onChangeMutation(Math.floor(Math.random() * Math.floor(9999)))}>
+                <Feather name="refresh-cw" style={styles.soundInputsRandomize} />
+              </TouchableOpacity>
             </View>
-            <View style={{ maxWidth: '40%', flexShrink: 1 }}>
-              <View style={{ flexDirection: 'row' }}>
-                <View style={{ flexShrink: 1, marginRight: 8 }}>
-                  <InspectorNumberInput
-                    hideIncrements
-                    lastNativeUpdate={lastNativeUpdate}
-                    placeholder="Mutation"
-                    value={response.params?.mutationSeed}
-                    onChange={onChangeMutation}
-                  />
-                </View>
-                <TouchableOpacity
-                  style={[SceneCreatorConstants.styles.button, styles.shuffleButton]}
-                  onPress={() => onChangeMutation(Math.floor(Math.random() * Math.floor(9999)))}>
-                  <Feather name="refresh-cw" style={styles.soundInputsRandomize} />
-                </TouchableOpacity>
-              </View>
-              <Text style={styles.soundInputsLabel}>Fine</Text>
-            </View>
+            <Text style={styles.soundInputsLabel}>Fine</Text>
           </View>
         </View>
       </View>
+    </View>
+  );
+};
+
+const SoundRecording = ({ onChangeSound, response, onChangeResponse, children, ...props }) => {
+  const [state, setState] = React.useState('ready');
+
+  const onChangeUrl = (url) =>
+    onChangeSound({
+      ...response,
+      params: {
+        ...response.params,
+        url,
+      },
+    });
+
+  const onChangeSoundId = (soundId) => {
+    onChangeUrl(`https://audio.castle.xyz/${soundId}.mp3`);
+  };
+
+  const onStopRecord = React.useCallback(async () => {
+    setState('processing');
+    try {
+      const result = await audioRecorderPlayer.stopRecorder();
+      audioRecorderPlayer.removeRecordBackListener();
+
+      let uploadResult = await uploadAudioFile(result);
+      onChangeUrl(uploadResult.url);
+    } catch (e) {
+      console.error(`error processing audio: ${e}`);
+    }
+    setState('ready');
+  }, [setState]);
+
+  const onPermissionsError = React.useCallback(async () => {
+    Alert.alert(
+      'Permissions Error',
+      `Please enable the ${
+        Platform.OS === 'android' ? 'record audio' : 'microphone'
+      } permission for Castle to use this feature`
+    );
+  });
+
+  const onStartRecord = React.useCallback(async () => {
+    try {
+      let permissions;
+      if (Platform.OS === 'android') {
+        permissions = [
+          Permissions.PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE,
+          Permissions.PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE,
+          Permissions.PERMISSIONS.ANDROID.RECORD_AUDIO,
+        ];
+      } else {
+        permissions = [Permissions.PERMISSIONS.IOS.MICROPHONE];
+      }
+
+      const grants = await Permissions.requestMultiple(permissions);
+
+      for (let permission in grants) {
+        if (grants[permission] !== Permissions.RESULTS.GRANTED) {
+          onPermissionsError();
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn(err);
+      onPermissionsError();
+      return;
+    }
+
+    setState('recording');
+
+    await audioRecorderPlayer.startRecorder();
+    audioRecorderPlayer.addRecordBackListener((e) => {
+      if (e.currentPosition > RECORD_MAX_MS) {
+        onStopRecord();
+      }
+
+      return;
+    });
+  }, [setState, onStopRecord, onPermissionsError]);
+
+  const onPlayAudio = React.useCallback(async () => {
+    sendAsync('EDITOR_PREVIEW_SOUND', response.params);
+  }, [response.params]);
+
+  const soundId = response.params?.url
+    ? response.params?.url.split('audio.castle.xyz/')[1].split('.mp3')[0]
+    : '';
+
+  return (
+    <View style={[SceneCreatorConstants.styles.button, styles.container]}>
+      {state === 'ready' && (
+        <TouchableOpacity style={styles.recordButton} onPress={() => onStartRecord()}>
+          <Text>Record</Text>
+        </TouchableOpacity>
+      )}
+
+      {state === 'recording' && (
+        <TouchableOpacity style={styles.recordButton} onPress={() => onStopRecord()}>
+          <Text>Stop Recording</Text>
+        </TouchableOpacity>
+      )}
+
+      {state === 'processing' && (
+        <View style={styles.recordButton}>
+          <Text>Processing...</Text>
+        </View>
+      )}
+
+      {state === 'ready' && (
+        <TouchableOpacity style={styles.recordButton} onPress={() => onPlayAudio()}>
+          <Text>Play</Text>
+        </TouchableOpacity>
+      )}
+
+      <InspectorTextInput value={soundId} onChangeText={onChangeSoundId} placeholder="Sound id" />
+    </View>
+  );
+};
+
+export const PlaySoundResponse = ({ response, onChangeResponse, children, ...props }) => {
+  const onChangeSound = React.useCallback(
+    (response) => {
+      onChangeResponse(response);
+      sendAsync('EDITOR_CHANGE_SOUND', response.params);
+    },
+    [onChangeResponse]
+  );
+
+  const onChangeType = (index) =>
+    onChangeSound({
+      ...response,
+      params: {
+        ...response.params,
+        type: SOUND_TYPES[index].name,
+      },
+    });
+
+  const selectedTypeIndex = response.params?.type
+    ? SOUND_TYPES.findIndex((c) => c.name === response.params.type)
+    : 0;
+
+  return (
+    <React.Fragment>
+      {children}
+
+      <View style={styles.controls}>
+        <View style={styles.segmentedControl}>
+          {SOUND_TYPES.map((category, ii) => (
+            <TouchableOpacity
+              key={`item-${ii}`}
+              onPress={() => onChangeType(ii)}
+              style={[
+                styles.segmentedControlItem,
+                ii === selectedTypeIndex ? styles.segmentedControlItemSelected : null,
+                ii > 0 ? { borderLeftWidth: 1 } : null,
+              ]}>
+              <Text
+                style={[
+                  styles.segmentedControlItem,
+                  ii === selectedTypeIndex ? styles.segmentedControlLabelSelected : null,
+                ]}>
+                {category.description}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+
+      {response.params?.type === 'effect' ? (
+        <SoundEffect
+          onChangeSound={onChangeSound}
+          response={response}
+          onChangeResponse={onChangeResponse}
+          {...props}
+        />
+      ) : (
+        <SoundRecording
+          onChangeSound={onChangeSound}
+          response={response}
+          onChangeResponse={onChangeResponse}
+          {...props}
+        />
+      )}
     </React.Fragment>
   );
 };

@@ -742,6 +742,11 @@ struct PlaySoundResponse : BaseResponse {
 
   struct Params {
     PROP(
+         std::string, type,
+         .allowedValues("effect", "recording")
+         ) = "effect";
+    PROP(std::string, url);
+    PROP(
          std::string, category,
          .allowedValues("pickup", "laser", "explosion", "powerup", "hit", "jump", "blip", "random")
          )
@@ -762,7 +767,14 @@ struct PlaySoundResponse : BaseResponse {
 
   void run(RuleContext &ctx) override {
     auto &sound = ctx.getScene().getSound();
-    sound.play(params.category(), params.seed(), params.mutationSeed(), params.mutationAmount());
+    sound.play(params.type(), params.url(), params.category(), params.seed(), params.mutationSeed(),
+        params.mutationAmount());
+  }
+
+  void init(Scene &scene) {
+    auto &sound = scene.getSound();
+    sound.preload(params.type(), params.url(), params.category(), params.seed(),
+        params.mutationSeed(), params.mutationAmount());
   }
 };
 
@@ -777,9 +789,29 @@ struct EditorChangeSoundReceiver {
     if (!engine.getIsEditing())
       return;
 
+    if (params.type() == "effect") {
+      auto &sound = engine.maybeGetEditor()->getScene().getSound();
+      sound.play(params.type(), params.url(), params.category(), params.seed(),
+          params.mutationSeed(), params.mutationAmount());
+      // TODO: maybe clear unused sounds
+    }
+  }
+};
+
+struct EditorPreviewSoundReceiver {
+  inline static const BridgeRegistration<EditorPreviewSoundReceiver> registration {
+    "EDITOR_PREVIEW_SOUND"
+  };
+
+  PlaySoundResponse::Params params;
+
+  void receive(Engine &engine) {
+    if (!engine.getIsEditing())
+      return;
+
     auto &sound = engine.maybeGetEditor()->getScene().getSound();
-    sound.play(params.category(), params.seed(), params.mutationSeed(), params.mutationAmount());
-    // TODO: maybe clear unused sounds
+    sound.play(params.type(), params.url(), params.category(), params.seed(), params.mutationSeed(),
+        params.mutationAmount());
   }
 };
 

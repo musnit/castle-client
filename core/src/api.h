@@ -10,6 +10,8 @@ void graphqlPostRequest(const std::string &body,
         callback); // Implemented in platform-specific files
 void getRequest(
     const std::string &url, const std::function<void(bool, std::string, std::string)> callback);
+void getDataRequest(const std::string &url,
+    const std::function<void(bool, std::string, unsigned char *, unsigned long)> callback);
 }
 
 struct APIResponse {
@@ -21,6 +23,20 @@ struct APIResponse {
       : success(success)
       , error(error)
       , reader(reader) {
+  }
+};
+
+struct APIDataResponse {
+  bool success;
+  std::string error;
+  unsigned char *data;
+  unsigned long length;
+
+  APIDataResponse(bool success, std::string error, unsigned char *data, unsigned long length)
+      : success(success)
+      , error(error)
+      , data(data)
+      , length(length) {
   }
 };
 
@@ -81,6 +97,15 @@ private:
     CastleAPI::graphqlPostRequest(
         requestBody, [=](bool success, std::string error, std::string result) {
           APICacheResponse(success, error, result).loadAPIResponse(callback);
+        });
+  }
+
+  static void getDataThread(
+      const std::string &url, const std::function<void(APIDataResponse &)> &callback) {
+    CastleAPI::getDataRequest(
+        url, [=](bool success, std::string error, unsigned char *result, unsigned long length) {
+          APIDataResponse response(success, error, result, length);
+          callback(response);
         });
   }
 
@@ -222,6 +247,17 @@ public:
     graphqlThread(query, callback);
 #else
     std::thread { &API::graphqlThread, query, callback }.detach();
+#endif
+  }
+
+  static void getData(
+      const std::string &url, const std::function<void(APIDataResponse &)> &callback) {
+#ifdef ANDROID
+    cacheLock.unlock();
+    getDataThread(url, callback);
+#else
+    std::thread { &API::getDataThread, url, callback }.detach();
+    cacheLock.unlock();
 #endif
   }
 

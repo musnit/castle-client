@@ -25,6 +25,9 @@ target 'Castle' do
   pod 'Adjust', '~> 4.29.2'
   
   use_native_modules!
+
+  permissions_path = '../node_modules/react-native-permissions/ios'
+  pod 'Permission-Microphone', :path => "#{permissions_path}/Microphone"
 end
 
 post_install do |installer|

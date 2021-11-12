@@ -52,6 +52,8 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>$(PRODUCT_NAME) would like access to your microphone to record an audio snippet</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>$(PRODUCT_NAME) would like access to your photo gallery to choose an avatar</string>
 	<key>SceneCreatorApiVersion</key>

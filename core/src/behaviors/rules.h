@@ -374,6 +374,7 @@ private:
 
   // Run the response. Just runs this response and not next ones. Implemented in concrete types.
   virtual void run(RuleContext &ctx);
+  void init(Scene &scene) {};
 };
 
 
@@ -707,6 +708,8 @@ RuleRegistration<T, Behavior>::RuleRegistration(const char *name, bool allowDupl
               response->next = rulesBehavior.readResponse(reader);
             });
           });
+
+          response->init(rulesBehavior.getScene());
           return response;
         },
     });

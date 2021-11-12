@@ -922,24 +922,30 @@ const FaceDirectionOfMotion = () => {
 };
 
 const PlaySound = ({ response }) => {
-  let soundCategory = SOUND_CATEGORIES.find((c) => c.name === response.params.category);
-  if (!soundCategory) {
-    soundCategory = SOUND_CATEGORIES[SOUND_CATEGORIES.length - 1];
+  let soundType = response.params.type;
+
+  if (soundType === 'effect') {
+    let soundCategory = SOUND_CATEGORIES.find((c) => c.name === response.params.category);
+    if (!soundCategory) {
+      soundCategory = SOUND_CATEGORIES[SOUND_CATEGORIES.length - 1];
+    }
+    return [
+      { type: 'showEntryOptions', label: 'Play sound effect' },
+      {
+        type: 'icon',
+        isPreview: true,
+        family: 'Feather',
+        icon: soundCategory.icon,
+      },
+      {
+        type: 'emphasis',
+        isPreview: true,
+        label: `${response.params.seed ?? 0}, ${response.params.mutationSeed ?? 0}`,
+      },
+    ];
+  } else {
+    return [{ type: 'showEntryOptions', label: 'Play sound recording' }];
   }
-  return [
-    { type: 'showEntryOptions', label: 'Play sound effect' },
-    {
-      type: 'icon',
-      isPreview: true,
-      family: 'Feather',
-      icon: soundCategory.icon,
-    },
-    {
-      type: 'emphasis',
-      isPreview: true,
-      label: `${response.params.seed ?? 0}, ${response.params.mutationSeed ?? 0}`,
-    },
-  ];
 };
 
 const IsInCameraViewport = () => {

@@ -687,6 +687,10 @@ set(SOLOUD_SRC vendor/soloud20200207/src)
 target_sources(soloud PRIVATE
   ${SOLOUD_SRC}/audiosource/noise/soloud_noise.cpp
   ${SOLOUD_SRC}/audiosource/sfxr/soloud_sfxr.cpp
+  ${SOLOUD_SRC}/audiosource/wav/dr_impl.cpp
+  ${SOLOUD_SRC}/audiosource/wav/soloud_wav.cpp
+  ${SOLOUD_SRC}/audiosource/wav/soloud_wavstream.cpp
+  ${SOLOUD_SRC}/audiosource/wav/stb_vorbis.c
   ${SOLOUD_SRC}/c_api/soloud_c.cpp
   ${SOLOUD_SRC}/core/soloud_audiosource.cpp
   ${SOLOUD_SRC}/core/soloud_bus.cpp

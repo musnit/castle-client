@@ -75,6 +75,27 @@ static RCTBridge *sRctBridge;
     }
   }] resume];
 }
+
++ (void)iosGetDataRequest:(NSString *)url withCallback:(void (^)(NSString *, NSData *))callback
+{
+  NSMutableURLRequest *request =
+      [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
+  request.HTTPMethod = @"GET";
+
+  [request setValue:@"application/json; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
+
+  NSURLSession *session = [NSURLSession sharedSession];
+  [[session dataTaskWithRequest:request
+            completionHandler:^(NSData *data,
+                                NSURLResponse *response,
+                                NSError *error) {
+    if (data == nil) {
+      callback([error localizedDescription], NULL);
+    } else {
+      callback(NULL, data);
+    }
+  }] resume];
+}
 @end
 
 namespace CastleAPI {
@@ -98,6 +119,17 @@ void getRequest(const std::string &url, const std::function<void(bool, std::stri
     } else {
       std::string errorString = std::string([error UTF8String]);
       callback(false, errorString, "");
+    }
+  }];
+}
+
+void getDataRequest(const std::string &url, const std::function<void(bool, std::string, unsigned char *, unsigned long)> callback) {
+  [APIIos iosGetDataRequest:[NSString stringWithUTF8String:url.c_str()] withCallback:^(NSString *error, NSData *result) {
+    if (result) {
+      callback(true, "", (unsigned char*) [result bytes], [result length]);
+    } else {
+      std::string errorString = std::string([error UTF8String]);
+      callback(false, errorString, NULL, 0);
     }
   }];
 }
