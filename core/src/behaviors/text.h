@@ -45,6 +45,7 @@ public:
   void handlePerform(double dt);
   bool handleDrawComponent(ActorId actorId, const TextComponent &component,
       std::optional<SceneDrawingOptions> options) const;
+  void handleDrawOverlay() const;
 
   void handleSetProperty(
       ActorId actorId, TextComponent &component, PropId propId, const ExpressionValue &value);
