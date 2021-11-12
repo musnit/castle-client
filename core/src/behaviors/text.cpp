@@ -192,10 +192,13 @@ void TextBehavior::handleReadComponent(ActorId actorId, TextComponent &component
 void TextBehavior::handlePerform(double dt) {
 }
 
+
+//
+// Draw
+//
+
 bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &component,
     std::optional<SceneDrawingOptions> options) const {
-  // TODO: Reject if outside camera bounds. Similar to Drawing2 -- move that into Body and reuse
-
   auto &bodyBehavior = getBehaviors().byType<BodyBehavior>();
   if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
     if (auto info = getBehaviors().byType<BodyBehavior>().getRenderInfo(actorId);
@@ -235,6 +238,72 @@ bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &com
   }
 
   return true;
+}
+
+void TextBehavior::handleDrawOverlay() const {
+  // Draw texts without bodies as overlays along bottom of screen
+
+  // Collect in reverse order, because we draw bottom to top
+  auto &bodyBehavior = getBehaviors().byType<BodyBehavior>();
+  struct Elem {
+    ActorId actorId;
+    const TextComponent *component;
+  };
+  SmallVector<Elem, 16> elems;
+  forEachEnabledComponent([&](ActorId actorId, const TextComponent &component) {
+    if (bodyBehavior.hasComponent(actorId)) {
+      return;
+    }
+    elems.push_back({ actorId, &component });
+  });
+  std::sort(elems.begin(), elems.end(), [&](const Elem &a, const Elem &b) {
+    return a.component->props.order() > b.component->props.order();
+  });
+  if (elems.empty()) {
+    return;
+  }
+
+  // Transform for camera-relative
+  lv.graphics.push(love::Graphics::STACK_ALL);
+
+  // Draw bottom to top
+  constexpr float margin = 0.2; // Gap around box, between boxes
+  constexpr float padding = 0.2; // Gap between text and box edge
+  auto &scene = getScene();
+  auto cameraPos = scene.getCameraPosition();
+  auto cameraSize = scene.getCameraSize();
+  auto x = cameraPos.x - 0.5f * cameraSize.x + margin;
+  auto boxWidth = cameraSize.x - 2 * margin;
+  auto textWidth = boxWidth - 2 * padding;
+  auto y = cameraPos.y + 0.5f * cameraSize.y;
+  auto font = defaultFont.get();
+  auto fontHeight = font->getHeight();
+  lv.graphics.setFont(font);
+  for (auto [actorId, component] : elems) {
+    // Compute height
+    constexpr float downscale = 0.024;
+    auto &content = component->props.content();
+    std::vector<std::string> lines;
+    font->getWrap({ { content, { 1, 1, 1, 1 } } }, textWidth / downscale, lines);
+    auto textHeight = downscale * fontHeight * float(lines.size());
+    auto boxHeight = 2 * padding + textHeight;
+
+    // Move up by box height, draw box
+    y -= margin + boxHeight;
+    lv.graphics.setColor({ 0, 0, 0, 1 });
+    lv.graphics.rectangle(love::Graphics::DRAW_FILL, x, y, boxWidth, boxHeight, 0.1, 0.1, 6);
+
+    // Draw text
+    lv.graphics.push();
+    lv.graphics.translate(x + padding, y + padding);
+    lv.graphics.scale(downscale, downscale);
+    lv.graphics.setColor({ 1, 1, 1, 1 });
+    lv.graphics.printf({ { content, { 1, 1, 1, 1 } } }, textWidth / downscale,
+        love::Font::ALIGN_LEFT, love::Matrix4(0, 0, 0, 1, 1, 0, 0, 0, 0));
+    lv.graphics.pop();
+  }
+
+  lv.graphics.pop();
 }
 
 
