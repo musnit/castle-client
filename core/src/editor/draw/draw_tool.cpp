@@ -4,6 +4,7 @@
 #include "behaviors/all.h"
 #include "editor/editor.h"
 #include "engine.h"
+#include "image_processing.h"
 
 #include "subtools/draw_freehand_subtool.h"
 #include "subtools/draw_line_subtool.h"
@@ -668,7 +669,9 @@ void DrawTool::resetState() {
   viewInContext = false;
   setIsPlayingAnimation(false);
 
-  tmpLoadedImage = nullptr;
+  if (tmpLoadedImage) {
+    tmpLoadedImage = nullptr;
+  }
 
   resetTempGraphics();
 }
@@ -894,11 +897,12 @@ void DrawTool::loadImage(std::string uri) {
     uri = uri.substr(7);
   }
 
-  // TODO: resize if too large
   love::filesystem::File *file = lv.filesystem.newFile(uri.c_str());
   love::filesystem::FileData *data = file->read();
-  love::image::ImageData imageData(data);
-  tmpLoadedImage.reset(love::DrawDataFrame::imageDataToImage(&imageData));
+  auto imageData = new love::image::ImageData(data);
+  imageData = ImageProcessing::fitToMaxSize(imageData, 512);
+  tmpLoadedImage.reset(love::DrawDataFrame::imageDataToImage(imageData));
+  file->release();
 }
 
 void DrawTool::update(double dt) {
@@ -1079,6 +1083,7 @@ void DrawTool::drawOverlay() {
   }
 
   if (tmpLoadedImage) {
+    lv.graphics.setColor({ 1, 1, 1, 1 });
     love::Vector2 pos(0, 0);
     auto size = 8.0f;
     auto imgW = float(tmpLoadedImage->getWidth());
