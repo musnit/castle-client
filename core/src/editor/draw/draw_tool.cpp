@@ -902,6 +902,7 @@ void DrawTool::loadImage(std::string uri) {
   auto imageData = new love::image::ImageData(data);
   imageData = ImageProcessing::fitToMaxSize(imageData, 512);
   ImageProcessing::kMeans(imageData, 6, 8);
+  ImageProcessing::randomPaletteSwap(imageData);
   // ImageProcessing::testOnlyRedChannel(imageData);
   tmpLoadedImage.reset(love::DrawDataFrame::imageDataToImage(imageData));
   file->release();
