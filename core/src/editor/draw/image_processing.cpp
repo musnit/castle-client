@@ -307,3 +307,60 @@ void ImageProcessing::randomPaletteSwap(love::image::ImageData *data) {
     }
   }
 }
+
+float GAUSSIAN_KERNEL[3][3] = {
+  { 0.0625f, 0.125f, 0.0625f },
+  { 0.125f, 0.25f, 0.0125f },
+  { 0.0625f, 0.125f, 0.0625f },
+};
+
+void copyRegionOverflowZero(love::image::ImageData *src, int srcWidth, int srcHeight,
+    love::image::Pixel *dst, int x, int y, int w, int h) {
+  auto pixelSize = src->getPixelSize();
+  for (int srcY = y, dstY = 0; srcY < y + h; srcY++, dstY++) {
+    for (int srcX = x, dstX = 0; srcX < x + w; srcX++, dstX++) {
+      love::image::Pixel *dstPixel = dst + (dstY * w + dstX);
+      if (srcY < 0 || srcX < 0 || srcY >= srcHeight || srcX >= srcWidth) {
+        memset(dstPixel, 0, pixelSize);
+      } else {
+        src->getPixel(srcX, srcY, *dstPixel);
+      }
+    }
+  }
+}
+
+void convolve(love::image::Pixel *inBuf, float *kernel, int w, int h, love::PixelFormat format,
+    love::image::Pixel &outPixel) {
+  float rgba[4];
+  float sums[3] = { 0.0f, 0.0f, 0.0f };
+
+  for (auto y = 0; y < w; y++) {
+    for (auto x = 0; x < h; x++) {
+      love::image::Pixel *pixel = inBuf + (y * w + x);
+      getRGBAFloat(*pixel, format, rgba);
+      for (int i = 0; i < 3; i++) {
+        sums[i] += rgba[i] * kernel[y * w + x];
+      }
+    }
+  }
+
+  for (int i = 0; i < 3; i++) {
+    setChannel(outPixel, i, sums[i], format);
+  }
+  setChannel(outPixel, 3, 255.0f, format);
+}
+
+void ImageProcessing::gaussianBlur(love::image::ImageData *data) {
+  auto width = data->getWidth(), height = data->getHeight();
+  auto format = data->getFormat();
+
+  love::image::Pixel buf[9];
+  love::image::Pixel outPixel;
+  for (auto y = 0; y < height; y++) {
+    for (auto x = 0; x < width; x++) {
+      copyRegionOverflowZero(data, width, height, buf, x - 1, y - 1, 3, 3);
+      convolve(buf, (float *)GAUSSIAN_KERNEL, 3, 3, format, outPixel);
+      data->setPixel(x, y, outPixel);
+    }
+  }
+}
