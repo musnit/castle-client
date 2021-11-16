@@ -8,6 +8,7 @@
 #include "editor/draw/physics_body_data.h"
 #include "editor/grid.h"
 #include "../gesture_pan_zoom.h"
+#include "image_importer.h"
 
 class Editor;
 
@@ -125,8 +126,7 @@ private:
   float tmpGridDotRadius = 4;
   bool tmpIsGridForeground = false;
 
-  std::unique_ptr<love::Image> tmpLoadedImage;
-  void loadImage(std::string uri);
+  ImageImporter imageImporter;
 };
 
 inline love::DrawData &DrawTool::getDrawData() {
