@@ -4,7 +4,6 @@
 #include "behaviors/all.h"
 #include "editor/editor.h"
 #include "engine.h"
-#include "image_processing.h"
 
 #include "subtools/draw_freehand_subtool.h"
 #include "subtools/draw_line_subtool.h"
@@ -81,6 +80,7 @@ struct DrawToolViewInContextReceiver {
 struct DrawToolEvent {
   PROP((std::unordered_map<std::string, std::string>), selectedSubtools);
   PROP(love::Colorf, color);
+  PROP(bool, isImportingImage) = false;
 };
 
 void DrawTool::sendDrawToolEvent() {
@@ -91,6 +91,7 @@ void DrawTool::sendDrawToolEvent() {
   }
 
   ev.color() = selectedColor;
+  ev.isImportingImage() = imageImporter.isImportingImage;
   editor.getBridge().sendEvent("EDITOR_DRAW_TOOL", ev);
 }
 
@@ -379,7 +380,10 @@ struct DrawToolLayerActionReceiver {
       drawTool.sendLayersEvent();
     } else if (action == "importImage") {
       auto uri = params.stringValue();
-      drawTool.loadImage(uri);
+      drawTool.imageImporter.importImage(uri);
+
+      // indicate to ui that import started
+      drawTool.sendDrawToolEvent();
     }
   }
 };
@@ -669,10 +673,7 @@ void DrawTool::resetState() {
   viewInContext = false;
   setIsPlayingAnimation(false);
 
-  if (tmpLoadedImage) {
-    tmpLoadedImage = nullptr;
-  }
-
+  imageImporter.reset();
   resetTempGraphics();
 }
 
@@ -891,28 +892,6 @@ void DrawTool::dirtySelectedFrameBounds() {
   drawData->updateFrameBounds(selectedFrameIndex);
 }
 
-void DrawTool::loadImage(std::string uri) {
-  // if uri begins with `file://` then physfs will reject it
-  if (uri.rfind("file://", 0) == 0) {
-    uri = uri.substr(7);
-  }
-
-  love::filesystem::File *file = lv.filesystem.newFile(uri.c_str());
-  love::filesystem::FileData *data = file->read();
-  auto imageData = new love::image::ImageData(data);
-  imageData = ImageProcessing::fitToMaxSize(imageData, 512);
-  ImageProcessing::gaussianBlur(imageData);
-  ImageProcessing::kMeans(imageData, 4, 4);
-  ImageProcessing::randomPaletteSwap(imageData);
-  // ImageProcessing::testOnlyRedChannel(imageData);
-  auto loadedImage = love::DrawDataFrame::imageDataToImage(imageData);
-  love::graphics::Texture::Filter filter { love::graphics::Texture::FILTER_LINEAR,
-    love::graphics::Texture::FILTER_LINEAR, love::graphics::Texture::FILTER_NONE, 1.0f };
-  loadedImage->setFilter(filter);
-  tmpLoadedImage.reset(loadedImage);
-  file->release();
-}
-
 void DrawTool::update(double dt) {
   if (!editor.hasScene()) {
     return;
@@ -1085,21 +1064,10 @@ void DrawTool::drawOverlay() {
   }
 
   getCurrentSubtool().drawOverlay(lv);
+  imageImporter.draw();
 
   if (tmpIsGridForeground) {
     drawGrid(windowWidth, topOffset);
-  }
-
-  if (tmpLoadedImage) {
-    // lv.graphics.reset();
-    lv.graphics.setColor({ 1, 1, 1, 1 });
-    love::Vector2 pos(0, 0);
-    auto size = 12.0f;
-    auto imgW = float(tmpLoadedImage->getWidth());
-    auto imgH = float(tmpLoadedImage->getHeight());
-    auto scale = std::min(size / imgW, size / imgH);
-    tmpLoadedImage->draw(
-        &lv.graphics, love::Matrix4(pos.x, pos.y, 0, scale, scale, 0.5f * imgW, 0.5f * imgH, 0, 0));
   }
 
   lv.graphics.pop();
