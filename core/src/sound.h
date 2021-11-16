@@ -23,13 +23,14 @@ public:
 
   void preload(const std::string &type, const std::string &url, const std::string &category,
       int seed, int mutationSeed, int mutationAmount);
-  void play(const std::string &type, const std::string &url, const std::string &category, int seed,
-      int mutationSeed, int mutationAmount);
+  void play(const std::string &type, float playbackRate, const std::string &url,
+      const std::string &category, int seed, int mutationSeed, int mutationAmount);
   static void clearCache() {
     sfxrSounds.clear();
   }
 
 private:
-  void playRecording(const std::string &url);
-  void playEffect(const std::string &category, int seed, int mutationSeed, int mutationAmount);
+  void playRecording(float playbackRate, const std::string &url);
+  void playEffect(float playbackRate, const std::string &category, int seed, int mutationSeed,
+      int mutationAmount);
 };

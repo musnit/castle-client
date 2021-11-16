@@ -27,16 +27,20 @@ void Sound::preload(const std::string &type, const std::string &url, const std::
 }
 
 
-void Sound::play(const std::string &type, const std::string &url, const std::string &category,
-    int seed, int mutationSeed, int mutationAmount) {
+void Sound::play(const std::string &type, float playbackRate, const std::string &url,
+    const std::string &category, int seed, int mutationSeed, int mutationAmount) {
+  if (playbackRate <= 0.0) {
+    return;
+  }
+
   if (type == "effect") {
-    playEffect(category, seed, mutationSeed, mutationAmount);
+    playEffect(playbackRate, category, seed, mutationSeed, mutationAmount);
   } else {
-    playRecording(url);
+    playRecording(playbackRate, url);
   }
 }
 
-void Sound::playRecording(const std::string &url) {
+void Sound::playRecording(float playbackRate, const std::string &url) {
   if (url == "") {
     return;
   }
@@ -48,15 +52,17 @@ void Sound::playRecording(const std::string &url) {
       sound->loadMem(response.data, response.length, true, true);
       Sound::urlSounds.insert(std::make_pair(url, std::move(sound)));
 
-      Sound::soloud.play(*urlSounds[url]);
+      int handle = Sound::soloud.play(*urlSounds[url]);
+      soloud.setRelativePlaySpeed(handle, playbackRate);
     });
   } else {
-    Sound::soloud.play(*urlSounds[url]);
+    int handle = Sound::soloud.play(*urlSounds[url]);
+    soloud.setRelativePlaySpeed(handle, playbackRate);
   }
 }
 
-void Sound::playEffect(
-    const std::string &category, int seed, int mutationSeed, int mutationAmount) {
+void Sound::playEffect(float playbackRate, const std::string &category, int seed, int mutationSeed,
+    int mutationAmount) {
   std::string key = "category: " + category + " seed:" + std::to_string(seed) + " mutationSeed:"
       + std::to_string(mutationSeed) + " mutationAmount:" + std::to_string(mutationAmount);
 
@@ -90,6 +96,6 @@ void Sound::playEffect(
     Sound::sfxrSounds.insert(std::make_pair(key, std::move(sound)));
   }
 
-
-  Sound::soloud.play(*Sound::sfxrSounds[key]);
+  int handle = Sound::soloud.play(*Sound::sfxrSounds[key]);
+  soloud.setRelativePlaySpeed(handle, playbackRate);
 }

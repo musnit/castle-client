@@ -2,6 +2,8 @@ import * as React from 'react';
 import { Platform, StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
 import { InspectorNumberInput } from '../components/InspectorNumberInput';
 import { InspectorTextInput } from '../components/InspectorTextInput';
+import { InspectorInlineExpressionInput } from '../expressions/InspectorInlineExpressionInput';
+import { ConfigureExpressionSheet } from '../expressions/ConfigureExpressionSheet';
 import { sendAsync } from '../../../core/CoreEvents';
 
 import * as Constants from '../../../Constants';
@@ -368,7 +370,13 @@ const SoundRecording = ({ onChangeSound, response, onChangeResponse, children, .
   );
 };
 
-export const PlaySoundResponse = ({ response, onChangeResponse, children, ...props }) => {
+export const PlaySoundResponse = ({
+  response,
+  onChangeResponse,
+  children,
+  addChildSheet,
+  ...props
+}) => {
   const onChangeSound = React.useCallback(
     (response) => {
       onChangeResponse(response);
@@ -385,6 +393,27 @@ export const PlaySoundResponse = ({ response, onChangeResponse, children, ...pro
         type: SOUND_TYPES[index].name,
       },
     });
+
+  const onChangePlaybackRate = (playbackRate) => {
+    onChangeSound({
+      ...response,
+      params: {
+        ...response.params,
+        playbackRate,
+      },
+    });
+  }
+
+  const onConfigureExpression = () => {
+    addChildSheet({
+      key: 'configureExpression',
+      label: 'Playback Rate',
+      Component: ConfigureExpressionSheet,
+      value: response.params?.playbackRate,
+      onChange: onChangePlaybackRate,
+      useAllBehaviors: false,
+    });
+  };
 
   const selectedTypeIndex = response.params?.type
     ? SOUND_TYPES.findIndex((c) => c.name === response.params.type)
@@ -432,6 +461,13 @@ export const PlaySoundResponse = ({ response, onChangeResponse, children, ...pro
           {...props}
         />
       )}
+
+      <InspectorInlineExpressionInput
+        step={0.1}
+        onConfigureExpression={onConfigureExpression}
+        value={response.params?.playbackRate}
+        onChange={onChangePlaybackRate}
+      />
     </React.Fragment>
   );
 };

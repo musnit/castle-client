@@ -69,6 +69,7 @@ public:
   RuleContext &operator=(const RuleContext &) = delete;
   RuleContext(RuleContext &&) = default; // Allow moves
   RuleContext &operator=(RuleContext &&) = default;
+  RuleContext(ResponseRef next_, ActorId actorId_, RuleContextExtras extras_, Scene &scene_);
 
 
   ActorId actorId; // Actor on whom the response should act
@@ -103,8 +104,6 @@ private:
   ResponseRef next = nullptr;
 
   Scene *scene;
-
-  RuleContext(ResponseRef next_, ActorId actorId_, RuleContextExtras extras_, Scene &scene_);
 
   void run();
 };

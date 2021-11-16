@@ -740,11 +740,19 @@ struct PlaySoundResponse : BaseResponse {
   };
   static constexpr auto description = "Play a sound";
 
+  static constexpr double minPlaybackRate = 0.0;
+  static constexpr double maxPlaybackRate = 10.0;
+
   struct Params {
     PROP(
          std::string, type,
          .allowedValues("effect", "recording")
          ) = "effect";
+    PROP(
+        ExpressionRef, playbackRate,
+        .min(minPlaybackRate)
+        .max(maxPlaybackRate)
+        ) = 1;
     PROP(std::string, recordingUrl) = "";
     PROP(
          std::string, category,
@@ -767,7 +775,9 @@ struct PlaySoundResponse : BaseResponse {
 
   void run(RuleContext &ctx) override {
     auto &sound = ctx.getScene().getSound();
-    sound.play(params.type(), params.recordingUrl(), params.category(), params.seed(),
+    auto playbackRate
+        = std::clamp(params.playbackRate().eval<double>(ctx), minPlaybackRate, maxPlaybackRate);
+    sound.play(params.type(), playbackRate, params.recordingUrl(), params.category(), params.seed(),
         params.mutationSeed(), params.mutationAmount());
   }
 
@@ -790,9 +800,12 @@ struct EditorChangeSoundReceiver {
       return;
 
     if (params.type() == "effect") {
-      auto &sound = engine.maybeGetEditor()->getScene().getSound();
-      sound.play(params.type(), params.recordingUrl(), params.category(), params.seed(),
-          params.mutationSeed(), params.mutationAmount());
+      auto &scene = engine.maybeGetEditor()->getScene();
+      auto &sound = scene.getSound();
+      RuleContext independent { nullptr, nullActor, {}, scene };
+      sound.play(params.type(), params.playbackRate().eval<double>(independent),
+          params.recordingUrl(), params.category(), params.seed(), params.mutationSeed(),
+          params.mutationAmount());
       // TODO: maybe clear unused sounds
     }
   }
@@ -809,9 +822,12 @@ struct EditorPreviewSoundReceiver {
     if (!engine.getIsEditing())
       return;
 
-    auto &sound = engine.maybeGetEditor()->getScene().getSound();
-    sound.play(params.type(), params.recordingUrl(), params.category(), params.seed(),
-        params.mutationSeed(), params.mutationAmount());
+    auto &scene = engine.maybeGetEditor()->getScene();
+    auto &sound = scene.getSound();
+    RuleContext independent { nullptr, nullActor, {}, scene };
+    sound.play(params.type(), params.playbackRate().eval<double>(independent),
+        params.recordingUrl(), params.category(), params.seed(), params.mutationSeed(),
+        params.mutationAmount());
   }
 };
 
