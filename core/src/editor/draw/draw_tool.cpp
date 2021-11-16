@@ -381,8 +381,9 @@ struct DrawToolLayerActionReceiver {
     } else if (action == "importImage") {
       auto uri = params.stringValue();
       drawTool.imageImporter.importImage(uri);
-
-      // indicate to ui that import started
+      drawTool.sendDrawToolEvent(); // indicate to ui that import started
+    } else if (action == "cancelImportImage") {
+      drawTool.imageImporter.reset();
       drawTool.sendDrawToolEvent();
     }
   }

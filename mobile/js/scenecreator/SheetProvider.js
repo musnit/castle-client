@@ -3,9 +3,10 @@ import { NewBlueprintSheet } from './sheets/NewBlueprintSheet';
 import { CapturePreviewSheet } from './sheets/CapturePreviewSheet';
 import { CardToolsSheet } from './sheets/CardToolsSheet';
 import { CreateCardSettingsSheet } from './sheets/CreateCardSettingsSheet';
+import { DrawingImportImageSheet } from './sheets/DrawingImportImageSheet';
+import { DrawingLayersSheet } from './sheets/DrawingLayersSheet';
 import { InspectorSheet } from './inspector/InspectorSheet';
 import { InstanceSheet } from './inspector/instance/InstanceSheet';
-import { DrawingLayersSheet } from './sheets/DrawingLayersSheet';
 import { SheetBackgroundOverlay } from '../components/SheetBackgroundOverlay';
 import { useCardCreator } from './CreateCardContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -48,6 +49,10 @@ const ROOT_SHEETS = [
     key: 'drawingLayers',
     Component: DrawingLayersSheet,
     makeSnapPoints: ({ insets }) => [90, 285, Viewport.vh * 100 - insets.top - 100],
+  },
+  {
+    key: 'drawingImportImage',
+    Component: DrawingImportImageSheet,
   },
 ];
 
