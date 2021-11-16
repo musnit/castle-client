@@ -83,7 +83,7 @@ export const SheetProvider = ({ activeSheet, setActiveSheet, editMode, beltHeigh
   const insets = useSafeAreaInsets();
 
   const [sheetStacks, updateSheetStacks] = React.useReducer(sheetStackReducer, {});
-  const closeRootSheet = () => setActiveSheet(null);
+  const closeRootSheet = () => setActiveSheet({ default: null });
 
   return (
     <React.Fragment>
@@ -93,11 +93,8 @@ export const SheetProvider = ({ activeSheet, setActiveSheet, editMode, beltHeigh
 
         // all sheets are closed when playing
         if (!isPlaying) {
-          if (activeSheet) {
-            isOpen = key === activeSheet;
-          }
-          if (editMode === 'draw') {
-            isOpen = key === 'drawingLayers';
+          if (activeSheet[editMode]) {
+            isOpen = key === activeSheet[editMode];
           }
         }
 

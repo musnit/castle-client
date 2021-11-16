@@ -103,8 +103,15 @@ export const CreateCardScreen = ({
 }) => {
   const { showActionSheetWithOptions } = useActionSheet();
 
-  const [activeSheet, setActiveSheet] = React.useState(null);
-  React.useEffect(Keyboard.dismiss, [activeSheet]);
+  // activeSheet maps from `editMode` to sheet key
+  const [activeSheet, setActiveSheet] = React.useReducer(
+    (state, action) => ({
+      ...state,
+      ...action,
+    }),
+    { default: null, draw: 'drawingLayers' }
+  );
+  React.useEffect(Keyboard.dismiss, [activeSheet.default]);
 
   const [isShowingTextActors, setShowingTextActors] = React.useState(true);
 
@@ -114,45 +121,45 @@ export const CreateCardScreen = ({
   const isPlaying = globalActions?.performing === undefined ? false : globalActions.performing;
   const { selectedActorId, isTextActorSelected, isBlueprintSelected, isInspectorOpen } =
     globalActions || {};
-  const hasSelection = selectedActorId >= 0 && activeSheet !== 'capturePreview';
+  const hasSelection = selectedActorId >= 0 && activeSheet.default !== 'capturePreview';
   const textActors = useCoreTextActors();
   const editMode = globalActions?.editMode;
 
   const onHardwareBackPress = React.useCallback(() => {
-    if (activeSheet) {
-      setActiveSheet(null);
+    if (activeSheet.default) {
+      setActiveSheet({ default: null });
     } else {
       maybeSaveAndGoToDeck();
     }
 
     return true;
-  }, [activeSheet]);
+  }, [activeSheet.default]);
   useGameViewAndroidBackHandler({ onHardwareBackPress });
 
   React.useEffect(() => {
-    if (isInspectorOpen && !activeSheet) {
-      setActiveSheet('sceneCreatorInspector');
-    } else if (!isInspectorOpen && activeSheet === 'sceneCreatorInspector') {
-      setActiveSheet(null);
+    if (isInspectorOpen && !activeSheet.default) {
+      setActiveSheet({ default: 'sceneCreatorInspector' });
+    } else if (!isInspectorOpen && activeSheet.default === 'sceneCreatorInspector') {
+      setActiveSheet({ default: null });
     }
-  }, [isInspectorOpen, activeSheet, setActiveSheet]);
+  }, [isInspectorOpen, activeSheet.default, setActiveSheet]);
 
   React.useEffect(() => {
     if (
       hasSelection &&
       globalActions?.defaultModeCurrentTool === 'scaleRotate' &&
-      activeSheet !== 'sceneCreatorInstance'
+      activeSheet.default !== 'sceneCreatorInstance'
     ) {
-      setActiveSheet('sceneCreatorInstance');
+      setActiveSheet({ default: 'sceneCreatorInstance' });
     } else if (
-      activeSheet === 'sceneCreatorInstance' &&
+      activeSheet.default === 'sceneCreatorInstance' &&
       (!hasSelection || globalActions?.defaultModeCurrentTool !== 'scaleRotate')
     ) {
       // if we exited scale-rotate tool via deselection or changing selection or changing tool,
       // close corresponding layout sheet
-      setActiveSheet();
+      setActiveSheet({ default: null });
     }
-  }, [activeSheet, setActiveSheet, hasSelection, globalActions?.defaultModeCurrentTool]);
+  }, [activeSheet.default, setActiveSheet, hasSelection, globalActions?.defaultModeCurrentTool]);
 
   React.useEffect(() => {
     if (isSceneLoaded) {
@@ -250,7 +257,7 @@ export const CreateCardScreen = ({
 
   const onSelectBackupData = React.useCallback(
     (data) => {
-      setActiveSheet(null);
+      setActiveSheet({ default: null });
       onSceneRevertData(data);
     },
     [onSceneRevertData, setActiveSheet]
@@ -265,7 +272,7 @@ export const CreateCardScreen = ({
     eventName: 'CAPTURE_PENDING',
     handler: async () => {
       await sendGlobalAction('onRewind');
-      setActiveSheet('capturePreview');
+      setActiveSheet({ default: 'capturePreview' });
     },
   });
 
@@ -274,10 +281,13 @@ export const CreateCardScreen = ({
 
     // c++ also clears the current selection when sending this event.
     // wait for the selection to clear and close any inspector/overlay before showing the new sheet
-    handler: () => setTimeout(() => setActiveSheet('sceneCreatorNewBlueprint'), 0.125),
+    handler: () => setTimeout(() => setActiveSheet({ default: 'sceneCreatorNewBlueprint' }), 0.125),
   });
 
-  const onPressSettings = React.useCallback(() => setActiveSheet('variables'), [setActiveSheet]);
+  const onPressSettings = React.useCallback(
+    () => setActiveSheet({ default: 'variables' }),
+    [setActiveSheet]
+  );
 
   useListen({
     eventName: 'EDITOR_VARIABLES',
