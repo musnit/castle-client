@@ -902,10 +902,14 @@ void DrawTool::loadImage(std::string uri) {
   auto imageData = new love::image::ImageData(data);
   imageData = ImageProcessing::fitToMaxSize(imageData, 512);
   ImageProcessing::gaussianBlur(imageData);
-  ImageProcessing::kMeans(imageData, 6, 4);
+  ImageProcessing::kMeans(imageData, 4, 4);
   ImageProcessing::randomPaletteSwap(imageData);
   // ImageProcessing::testOnlyRedChannel(imageData);
-  tmpLoadedImage.reset(love::DrawDataFrame::imageDataToImage(imageData));
+  auto loadedImage = love::DrawDataFrame::imageDataToImage(imageData);
+  love::graphics::Texture::Filter filter { love::graphics::Texture::FILTER_LINEAR,
+    love::graphics::Texture::FILTER_LINEAR, love::graphics::Texture::FILTER_NONE, 1.0f };
+  loadedImage->setFilter(filter);
+  tmpLoadedImage.reset(loadedImage);
   file->release();
 }
 
@@ -1087,9 +1091,10 @@ void DrawTool::drawOverlay() {
   }
 
   if (tmpLoadedImage) {
+    // lv.graphics.reset();
     lv.graphics.setColor({ 1, 1, 1, 1 });
     love::Vector2 pos(0, 0);
-    auto size = 8.0f;
+    auto size = 12.0f;
     auto imgW = float(tmpLoadedImage->getWidth());
     auto imgH = float(tmpLoadedImage->getHeight());
     auto scale = std::min(size / imgW, size / imgH);
