@@ -4,7 +4,17 @@ love::image::ImageData *ImageProcessing::fitToMaxSize(love::image::ImageData *da
   auto img = love::DrawDataFrame::imageDataToImage(data);
   auto width = img->getWidth(), height = img->getHeight();
   auto scale = std::min(1.0f, std::min(float(maxSize) / width, float(maxSize) / height));
+
+  // love::graphics::Texture::Filter f = img->getFilter();
+  // f.min = graphics::Texture::FILTER_LINEAR;
+  // f.mag = graphics::Texture::FILTER_LINEAR;
+  love::graphics::Texture::Filter filter { love::graphics::Texture::FILTER_LINEAR,
+    love::graphics::Texture::FILTER_LINEAR, love::graphics::Texture::FILTER_NONE, 1.0f };
+  img->setFilter(filter);
+
   auto resizeCanvas = love::DrawDataFrame::newCanvas(width * scale, height * scale);
+  resizeCanvas->setFilter(filter);
+
   love::DrawDataFrame::renderToCanvas(resizeCanvas, [img, scale]() {
     auto &lv = Lv::getInstance();
     lv.graphics.push(love::Graphics::STACK_ALL);
@@ -354,13 +364,19 @@ void ImageProcessing::gaussianBlur(love::image::ImageData *data) {
   auto width = data->getWidth(), height = data->getHeight();
   auto format = data->getFormat();
 
+  // don't blur in-place, or you introduce artifacts and periodicity
+  auto outData = new love::image::ImageData(width, height, format);
+
   love::image::Pixel buf[9];
   love::image::Pixel outPixel;
   for (auto y = 0; y < height; y++) {
     for (auto x = 0; x < width; x++) {
       copyRegionOverflowZero(data, width, height, buf, x - 1, y - 1, 3, 3);
       convolve(buf, (float *)GAUSSIAN_KERNEL, 3, 3, format, outPixel);
-      data->setPixel(x, y, outPixel);
+      outData->setPixel(x, y, outPixel);
     }
   }
+
+  data->paste(outData, 0, 0, 0, 0, width, height);
+  outData->release();
 }
