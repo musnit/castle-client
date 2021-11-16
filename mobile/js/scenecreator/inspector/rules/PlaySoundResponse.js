@@ -254,17 +254,17 @@ const SoundEffect = ({ onChangeSound, response, onChangeResponse, children, ...p
 const SoundRecording = ({ onChangeSound, response, onChangeResponse, children, ...props }) => {
   const [state, setState] = React.useState('ready');
 
-  const onChangeUrl = (url) =>
+  const onChangeRecordingUrl = (recordingUrl) =>
     onChangeSound({
       ...response,
       params: {
         ...response.params,
-        url,
+        recordingUrl,
       },
     });
 
   const onChangeSoundId = (soundId) => {
-    onChangeUrl(`https://audio.castle.xyz/${soundId}.mp3`);
+    onChangeRecordingUrl(`https://audio.castle.xyz/${soundId}.mp3`);
   };
 
   const onStopRecord = React.useCallback(async () => {
@@ -274,7 +274,7 @@ const SoundRecording = ({ onChangeSound, response, onChangeResponse, children, .
       audioRecorderPlayer.removeRecordBackListener();
 
       let uploadResult = await uploadAudioFile(result);
-      onChangeUrl(uploadResult.url);
+      onChangeRecordingUrl(uploadResult.url);
     } catch (e) {
       console.error(`error processing audio: ${e}`);
     }
@@ -333,8 +333,8 @@ const SoundRecording = ({ onChangeSound, response, onChangeResponse, children, .
     sendAsync('EDITOR_PREVIEW_SOUND', response.params);
   }, [response.params]);
 
-  const soundId = response.params?.url
-    ? response.params?.url.split('audio.castle.xyz/')[1].split('.mp3')[0]
+  const soundId = response.params?.recordingUrl
+    ? response.params?.recordingUrl.split('audio.castle.xyz/')[1].split('.mp3')[0]
     : '';
 
   return (

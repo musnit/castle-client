@@ -745,7 +745,7 @@ struct PlaySoundResponse : BaseResponse {
          std::string, type,
          .allowedValues("effect", "recording")
          ) = "effect";
-    PROP(std::string, url);
+    PROP(std::string, recordingUrl) = "";
     PROP(
          std::string, category,
          .allowedValues("pickup", "laser", "explosion", "powerup", "hit", "jump", "blip", "random")
@@ -767,13 +767,13 @@ struct PlaySoundResponse : BaseResponse {
 
   void run(RuleContext &ctx) override {
     auto &sound = ctx.getScene().getSound();
-    sound.play(params.type(), params.url(), params.category(), params.seed(), params.mutationSeed(),
-        params.mutationAmount());
+    sound.play(params.type(), params.recordingUrl(), params.category(), params.seed(),
+        params.mutationSeed(), params.mutationAmount());
   }
 
   void init(Scene &scene) {
     auto &sound = scene.getSound();
-    sound.preload(params.type(), params.url(), params.category(), params.seed(),
+    sound.preload(params.type(), params.recordingUrl(), params.category(), params.seed(),
         params.mutationSeed(), params.mutationAmount());
   }
 };
@@ -791,7 +791,7 @@ struct EditorChangeSoundReceiver {
 
     if (params.type() == "effect") {
       auto &sound = engine.maybeGetEditor()->getScene().getSound();
-      sound.play(params.type(), params.url(), params.category(), params.seed(),
+      sound.play(params.type(), params.recordingUrl(), params.category(), params.seed(),
           params.mutationSeed(), params.mutationAmount());
       // TODO: maybe clear unused sounds
     }
@@ -810,8 +810,8 @@ struct EditorPreviewSoundReceiver {
       return;
 
     auto &sound = engine.maybeGetEditor()->getScene().getSound();
-    sound.play(params.type(), params.url(), params.category(), params.seed(), params.mutationSeed(),
-        params.mutationAmount());
+    sound.play(params.type(), params.recordingUrl(), params.category(), params.seed(),
+        params.mutationSeed(), params.mutationAmount());
   }
 };
 

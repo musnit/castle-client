@@ -11,6 +11,10 @@ Sound::Sound() {
 void Sound::preload(const std::string &type, const std::string &url, const std::string &category,
     int seed, int mutationSeed, int mutationAmount) {
   if (type == "recording") {
+    if (url == "") {
+      return;
+    }
+
     if (Sound::urlSounds.find(url) == Sound::urlSounds.end()) {
       API::getData(url, [=](APIDataResponse &response) {
         std::unique_ptr<SoLoud::WavStream> sound = std::make_unique<SoLoud::WavStream>();
@@ -33,6 +37,10 @@ void Sound::play(const std::string &type, const std::string &url, const std::str
 }
 
 void Sound::playRecording(const std::string &url) {
+  if (url == "") {
+    return;
+  }
+
   if (Sound::urlSounds.find(url) == Sound::urlSounds.end()) {
     API::getData(url, [=](APIDataResponse &response) {
       std::unique_ptr<SoLoud::WavStream> sound = std::make_unique<SoLoud::WavStream>();
