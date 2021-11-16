@@ -119,7 +119,7 @@ const ToolGroups = ({ category, value }) => {
   );
 };
 
-export const OverlayDrawing = () => {
+export const OverlayDrawing = ({ setActiveSheet }) => {
   const drawToolState = useCoreState('EDITOR_DRAW_TOOL') || {};
 
   // for david to experiment with grid settings
@@ -138,6 +138,14 @@ export const OverlayDrawing = () => {
     (enabled) => sendAsync('DRAW_TOOL_VIEW_IN_CONTEXT', { enabled }),
     []
   );
+
+  React.useEffect(() => {
+    if (drawToolState.isImportingImage) {
+      setActiveSheet({ draw: 'drawingImportImage' });
+    } else {
+      setActiveSheet({ draw: 'drawingLayers' });
+    }
+  }, [setActiveSheet, drawToolState.isImportingImage]);
 
   if (!drawToolState.selectedSubtools) return null;
 

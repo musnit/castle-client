@@ -1,5 +1,8 @@
 #include "image_importer.h"
 #include "image_processing.h"
+#include "engine.h"
+#include "editor/editor.h"
+#include "draw_tool.h"
 
 void ImageImporter::reset() {
   if (isImportingImage) {
@@ -7,6 +10,7 @@ void ImageImporter::reset() {
     importedImageOriginalData = nullptr;
     isImportingImage = false;
   }
+  numColors = 4;
 }
 
 void ImageImporter::importImage(std::string uri) {
@@ -22,9 +26,16 @@ void ImageImporter::importImage(std::string uri) {
   file->release();
   imageData = ImageProcessing::fitToMaxSize(imageData, 512);
   importedImageOriginalData.reset(imageData);
-  generateImportedImageFilteredPreview(importedImageOriginalData.get());
+  regeneratePreview();
 
   isImportingImage = true;
+  sendEvent();
+}
+
+void ImageImporter::regeneratePreview() {
+  if (importedImageOriginalData) {
+    generateImportedImageFilteredPreview(importedImageOriginalData.get());
+  }
 }
 
 void ImageImporter::generateImportedImageFilteredPreview(love::image::ImageData *original) {
@@ -35,7 +46,7 @@ void ImageImporter::generateImportedImageFilteredPreview(love::image::ImageData 
   // make a copy of the data which will be owned by the preview image, don't change original
   love::image::ImageData *imageData = original->clone();
   ImageProcessing::gaussianBlur(imageData);
-  ImageProcessing::kMeans(imageData, 4, 4);
+  ImageProcessing::kMeans(imageData, numColors, 4);
   ImageProcessing::randomPaletteSwap(imageData);
   // ImageProcessing::testOnlyRedChannel(imageData);
   auto loadedImage = love::DrawDataFrame::imageDataToImage(imageData);
@@ -44,6 +55,57 @@ void ImageImporter::generateImportedImageFilteredPreview(love::image::ImageData 
   loadedImage->setFilter(filter);
   importedImageFilteredPreview.reset(loadedImage);
 }
+
+//
+// Events
+//
+
+struct ImageImporterEvent {
+  PROP(int, numColors);
+};
+
+void ImageImporter::sendEvent() {
+  ImageImporterEvent ev;
+  ev.numColors() = numColors;
+  drawTool.editor.getBridge().sendEvent("EDITOR_IMPORT_IMAGE", ev);
+}
+
+struct ImportImageActionReceiver {
+  inline static const BridgeRegistration<ImportImageActionReceiver> registration {
+    "IMPORT_IMAGE_ACTION"
+  };
+
+  struct Params {
+    PROP(std::string, action);
+    PROP(double, value);
+  } params;
+
+  void receive(Engine &engine) {
+    auto editor = engine.maybeGetEditor();
+    if (!editor)
+      return;
+
+    auto &importer = editor->drawTool.imageImporter;
+    auto action = params.action();
+
+    if (action == "setNumColors") {
+      auto value = uint8(params.value());
+      if (value < 2) {
+        value = 2;
+      }
+      if (value > 8) {
+        value = 8;
+      }
+      importer.numColors = value;
+      importer.regeneratePreview();
+      importer.sendEvent();
+    }
+  }
+};
+
+//
+// Draw
+//
 
 void ImageImporter::draw() {
   if (importedImageFilteredPreview) {

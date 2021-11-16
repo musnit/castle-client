@@ -63,7 +63,10 @@ public:
   love::PathDataList *selectedFramePathDataList();
   void dirtySelectedFrameBounds();
 
+  ImageImporter imageImporter { *this };
+
 private:
+  friend class ImageImporter;
   friend struct DrawToolSelectSubtoolReceiver;
   friend struct DrawToolSelectColorReceiver;
   friend struct DrawToolLayerActionReceiver;
@@ -125,8 +128,6 @@ private:
   love::Colorf tmpAxisColor { 1, 1, 1, 1 };
   float tmpGridDotRadius = 4;
   bool tmpIsGridForeground = false;
-
-  ImageImporter imageImporter;
 };
 
 inline love::DrawData &DrawTool::getDrawData() {
