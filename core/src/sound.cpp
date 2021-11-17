@@ -36,7 +36,7 @@ void Sound::play(const std::string &type, float playbackRate, const std::string 
     return;
   }
 
-  if (type == "effect") {
+  if (type == "synthesis") {
     playEffect(playbackRate, category, seed, mutationSeed, mutationAmount);
   } else {
     auto url = type == "recording" ? recordingUrl : uploadUrl;

@@ -802,7 +802,7 @@ struct EditorChangeSoundReceiver {
     if (!engine.getIsEditing())
       return;
 
-    if (params.type() == "effect") {
+    if (params.type() == "synthesis") {
       auto &scene = engine.maybeGetEditor()->getScene();
       auto &sound = scene.getSound();
       RuleContext independent { nullptr, nullActor, {}, scene };
