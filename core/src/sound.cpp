@@ -8,9 +8,11 @@ Sound::Sound() {
   }
 }
 
-void Sound::preload(const std::string &type, const std::string &url, const std::string &category,
-    int seed, int mutationSeed, int mutationAmount) {
-  if (type == "recording") {
+void Sound::preload(const std::string &type, const std::string &recordingUrl,
+    const std::string &uploadUrl, const std::string &category, int seed, int mutationSeed,
+    int mutationAmount) {
+  if (type == "recording" || type == "upload") {
+    auto url = type == "recording" ? recordingUrl : uploadUrl;
     if (url == "") {
       return;
     }
@@ -27,8 +29,9 @@ void Sound::preload(const std::string &type, const std::string &url, const std::
 }
 
 
-void Sound::play(const std::string &type, float playbackRate, const std::string &url,
-    const std::string &category, int seed, int mutationSeed, int mutationAmount) {
+void Sound::play(const std::string &type, float playbackRate, const std::string &recordingUrl,
+    const std::string &uploadUrl, const std::string &category, int seed, int mutationSeed,
+    int mutationAmount) {
   if (playbackRate <= 0.0) {
     return;
   }
@@ -36,11 +39,12 @@ void Sound::play(const std::string &type, float playbackRate, const std::string 
   if (type == "effect") {
     playEffect(playbackRate, category, seed, mutationSeed, mutationAmount);
   } else {
-    playRecording(playbackRate, url);
+    auto url = type == "recording" ? recordingUrl : uploadUrl;
+    playUrl(playbackRate, url);
   }
 }
 
-void Sound::playRecording(float playbackRate, const std::string &url) {
+void Sound::playUrl(float playbackRate, const std::string &url) {
   if (url == "") {
     return;
   }
@@ -53,11 +57,11 @@ void Sound::playRecording(float playbackRate, const std::string &url) {
       Sound::urlSounds.insert(std::make_pair(url, std::move(sound)));
 
       int handle = Sound::soloud.play(*urlSounds[url]);
-      soloud.setRelativePlaySpeed(handle, playbackRate);
+      Sound::soloud.setRelativePlaySpeed(handle, playbackRate);
     });
   } else {
     int handle = Sound::soloud.play(*urlSounds[url]);
-    soloud.setRelativePlaySpeed(handle, playbackRate);
+    Sound::soloud.setRelativePlaySpeed(handle, playbackRate);
   }
 }
 
@@ -97,5 +101,5 @@ void Sound::playEffect(float playbackRate, const std::string &category, int seed
   }
 
   int handle = Sound::soloud.play(*Sound::sfxrSounds[key]);
-  soloud.setRelativePlaySpeed(handle, playbackRate);
+  Sound::soloud.setRelativePlaySpeed(handle, playbackRate);
 }

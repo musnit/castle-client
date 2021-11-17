@@ -746,7 +746,7 @@ struct PlaySoundResponse : BaseResponse {
   struct Params {
     PROP(
          std::string, type,
-         .allowedValues("effect", "recording")
+         .allowedValues("effect", "recording", "upload")
          ) = "effect";
     PROP(
         ExpressionRef, playbackRate,
@@ -754,6 +754,7 @@ struct PlaySoundResponse : BaseResponse {
         .max(maxPlaybackRate)
         ) = 1;
     PROP(std::string, recordingUrl) = "";
+    PROP(std::string, uploadUrl) = "";
     PROP(
          std::string, category,
          .allowedValues("pickup", "laser", "explosion", "powerup", "hit", "jump", "blip", "random")
@@ -777,14 +778,14 @@ struct PlaySoundResponse : BaseResponse {
     auto &sound = ctx.getScene().getSound();
     auto playbackRate
         = std::clamp(params.playbackRate().eval<double>(ctx), minPlaybackRate, maxPlaybackRate);
-    sound.play(params.type(), playbackRate, params.recordingUrl(), params.category(), params.seed(),
-        params.mutationSeed(), params.mutationAmount());
+    sound.play(params.type(), playbackRate, params.recordingUrl(), params.uploadUrl(),
+        params.category(), params.seed(), params.mutationSeed(), params.mutationAmount());
   }
 
   void init(Scene &scene) {
     auto &sound = scene.getSound();
-    sound.preload(params.type(), params.recordingUrl(), params.category(), params.seed(),
-        params.mutationSeed(), params.mutationAmount());
+    sound.preload(params.type(), params.recordingUrl(), params.uploadUrl(), params.category(),
+        params.seed(), params.mutationSeed(), params.mutationAmount());
   }
 };
 
@@ -804,8 +805,8 @@ struct EditorChangeSoundReceiver {
       auto &sound = scene.getSound();
       RuleContext independent { nullptr, nullActor, {}, scene };
       sound.play(params.type(), params.playbackRate().eval<double>(independent),
-          params.recordingUrl(), params.category(), params.seed(), params.mutationSeed(),
-          params.mutationAmount());
+          params.recordingUrl(), params.uploadUrl(), params.category(), params.seed(),
+          params.mutationSeed(), params.mutationAmount());
       // TODO: maybe clear unused sounds
     }
   }
@@ -826,8 +827,8 @@ struct EditorPreviewSoundReceiver {
     auto &sound = scene.getSound();
     RuleContext independent { nullptr, nullActor, {}, scene };
     sound.play(params.type(), params.playbackRate().eval<double>(independent),
-        params.recordingUrl(), params.category(), params.seed(), params.mutationSeed(),
-        params.mutationAmount());
+        params.recordingUrl(), params.uploadUrl(), params.category(), params.seed(),
+        params.mutationSeed(), params.mutationAmount());
   }
 };
 

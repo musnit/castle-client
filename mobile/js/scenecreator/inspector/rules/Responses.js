@@ -943,8 +943,10 @@ const PlaySound = ({ response }) => {
         label: `${response.params.seed ?? 0}, ${response.params.mutationSeed ?? 0}`,
       },
     ];
-  } else {
+  } else if (soundType === 'recording') {
     return [{ type: 'showEntryOptions', label: 'Play sound recording' }];
+  } else {
+    return [{ type: 'showEntryOptions', label: 'Play sound upload' }];
   }
 };
 

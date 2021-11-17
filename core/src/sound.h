@@ -21,16 +21,19 @@ public:
   Sound();
   ~Sound() = default;
 
-  void preload(const std::string &type, const std::string &url, const std::string &category,
-      int seed, int mutationSeed, int mutationAmount);
-  void play(const std::string &type, float playbackRate, const std::string &url,
-      const std::string &category, int seed, int mutationSeed, int mutationAmount);
+  void preload(const std::string &type, const std::string &recordingUrl,
+      const std::string &uploadUrl, const std::string &category, int seed, int mutationSeed,
+      int mutationAmount);
+  void play(const std::string &type, float playbackRate, const std::string &recordingUrl,
+      const std::string &uploadUrl, const std::string &category, int seed, int mutationSeed,
+      int mutationAmount);
   static void clearCache() {
     sfxrSounds.clear();
+    soloud.stopAll();
   }
 
 private:
-  void playRecording(float playbackRate, const std::string &url);
+  void playUrl(float playbackRate, const std::string &url);
   void playEffect(float playbackRate, const std::string &category, int seed, int mutationSeed,
       int mutationAmount);
 };
