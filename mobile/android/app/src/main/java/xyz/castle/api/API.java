@@ -117,7 +117,10 @@ public class API {
             .add("deckId")
             .add("initialCard", new FieldList("id", "cardId", "backgroundColor", "sceneDataUrl"))
             .add("creator", CREATOR_FIELD_LIST)
-            .add("variables");
+            .add("variables")
+            .add("reactions", new FieldList("id", "reactionId", "count", "isCurrentUserToggled"))
+            .add("comments", new FieldList("threadId", "count"))
+            .add("commentsEnabled");
 
     private static final FieldList INITIAL_CARD_FIELD_LIST = new FieldList()
             .add("id")
