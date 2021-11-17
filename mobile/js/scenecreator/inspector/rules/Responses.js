@@ -923,14 +923,29 @@ const FaceDirectionOfMotion = () => {
 
 const PlaySound = ({ response }) => {
   let soundType = response.params.type;
+  let cells = [
+    { type: 'showEntryOptions', label: 'Play sound' },
+    {
+      type: 'selectParamSheet',
+      label: response.params.type,
+      paramName: 'type',
+      paramValue: response.params.type,
+    },
+    { type: 'text', label: 'at rate' },
+    {
+      type: 'selectParamSheet',
+      label: response.params.playbackRate,
+      paramName: 'playbackRate',
+      paramValue: response.params.playbackRate,
+    },
+  ];
 
-  if (soundType === 'effect') {
+  if (soundType === 'synthesis') {
     let soundCategory = SOUND_CATEGORIES.find((c) => c.name === response.params.category);
     if (!soundCategory) {
       soundCategory = SOUND_CATEGORIES[SOUND_CATEGORIES.length - 1];
     }
-    return [
-      { type: 'showEntryOptions', label: 'Play sound effect' },
+    return cells.concat([
       {
         type: 'icon',
         isPreview: true,
@@ -942,11 +957,9 @@ const PlaySound = ({ response }) => {
         isPreview: true,
         label: `${response.params.seed ?? 0}, ${response.params.mutationSeed ?? 0}`,
       },
-    ];
-  } else if (soundType === 'recording') {
-    return [{ type: 'showEntryOptions', label: 'Play sound recording' }];
+    ]);
   } else {
-    return [{ type: 'showEntryOptions', label: 'Play sound upload' }];
+    return cells;
   }
 };
 

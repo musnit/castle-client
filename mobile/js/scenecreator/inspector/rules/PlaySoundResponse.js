@@ -97,21 +97,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export const SOUND_TYPES = [
-  {
-    name: 'effect',
-    description: 'Effect',
-  },
-  {
-    name: 'recording',
-    description: 'Recording',
-  },
-  {
-    name: 'upload',
-    description: 'Upload',
-  },
-];
-
 export const SOUND_CATEGORIES = [
   {
     name: 'pickup',
@@ -406,11 +391,8 @@ const SoundUpload = ({ onChangeSound, response, onChangeResponse, children, ...p
       if (DocumentPicker.isCancel(err)) {
         // User cancelled
       } else {
-        console.log(err)
-        Alert.alert(
-          'Upload Error',
-          `Error uploading audio file. Please try again.`
-        );
+        console.log(err);
+        Alert.alert('Upload Error', `Error uploading audio file. Please try again.`);
       }
     }
 
@@ -450,6 +432,12 @@ const SoundUpload = ({ onChangeSound, response, onChangeResponse, children, ...p
   );
 };
 
+const SOUND_COMPONENTS = {
+  synthesis: SoundEffect,
+  recording: SoundRecording,
+  upload: SoundUpload,
+};
+
 export const PlaySoundResponse = ({
   response,
   onChangeResponse,
@@ -464,101 +452,19 @@ export const PlaySoundResponse = ({
     },
     [onChangeResponse]
   );
-
-  const onChangeType = (index) =>
-    onChangeSound({
-      ...response,
-      params: {
-        ...response.params,
-        type: SOUND_TYPES[index].name,
-      },
-    });
-
-  const onChangePlaybackRate = (playbackRate) => {
-    onChangeSound({
-      ...response,
-      params: {
-        ...response.params,
-        playbackRate,
-      },
-    });
-  };
-
-  const onConfigureExpression = () => {
-    addChildSheet({
-      key: 'configureExpression',
-      label: 'Playback Rate',
-      Component: ConfigureExpressionSheet,
-      value: response.params?.playbackRate,
-      onChange: onChangePlaybackRate,
-      useAllBehaviors: false,
-    });
-  };
-
-  const selectedTypeIndex = response.params?.type
-    ? SOUND_TYPES.findIndex((c) => c.name === response.params.type)
-    : 0;
+  const SoundComponent = SOUND_COMPONENTS[response.params?.type];
 
   return (
-    <React.Fragment>
+    <>
       {children}
-
-      <View style={styles.controls}>
-        <View style={styles.segmentedControl}>
-          {SOUND_TYPES.map((category, ii) => (
-            <TouchableOpacity
-              key={`item-${ii}`}
-              onPress={() => onChangeType(ii)}
-              style={[
-                styles.segmentedControlItem,
-                ii === selectedTypeIndex ? styles.segmentedControlItemSelected : null,
-                ii > 0 ? { borderLeftWidth: 1 } : null,
-              ]}>
-              <Text
-                style={[
-                  styles.segmentedControlItem,
-                  ii === selectedTypeIndex ? styles.segmentedControlLabelSelected : null,
-                ]}>
-                {category.description}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
-
-      {response.params?.type === 'effect' && (
-        <SoundEffect
+      {SoundComponent ? (
+        <SoundComponent
           onChangeSound={onChangeSound}
           response={response}
           onChangeResponse={onChangeResponse}
           {...props}
         />
-      )}
-
-      {response.params?.type === 'recording' && (
-        <SoundRecording
-          onChangeSound={onChangeSound}
-          response={response}
-          onChangeResponse={onChangeResponse}
-          {...props}
-        />
-      )}
-
-      {response.params?.type === 'upload' && (
-        <SoundUpload
-          onChangeSound={onChangeSound}
-          response={response}
-          onChangeResponse={onChangeResponse}
-          {...props}
-        />
-      )}
-
-      <InspectorInlineExpressionInput
-        step={0.1}
-        onConfigureExpression={onConfigureExpression}
-        value={response.params?.playbackRate}
-        onChange={onChangePlaybackRate}
-      />
-    </React.Fragment>
+      ) : null}
+    </>
   );
 };

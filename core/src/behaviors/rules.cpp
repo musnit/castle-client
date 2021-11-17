@@ -746,10 +746,12 @@ struct PlaySoundResponse : BaseResponse {
   struct Params {
     PROP(
          std::string, type,
-         .allowedValues("effect", "recording", "upload")
-         ) = "effect";
+         .label("sound type")
+         .allowedValues("synthesis", "recording", "upload")
+         ) = "synthesis";
     PROP(
         ExpressionRef, playbackRate,
+        .label("playback rate")
         .min(minPlaybackRate)
         .max(maxPlaybackRate)
         ) = 1;
