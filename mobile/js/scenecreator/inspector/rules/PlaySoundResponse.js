@@ -1,5 +1,13 @@
 import * as React from 'react';
-import { Platform, StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
+import {
+  ActivityIndicator,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Alert,
+} from 'react-native';
 import { InspectorNumberInput } from '../components/InspectorNumberInput';
 import { InspectorTextInput } from '../components/InspectorTextInput';
 import { InspectorInlineExpressionInput } from '../expressions/InspectorInlineExpressionInput';
@@ -27,7 +35,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderRadius: 6,
   },
-  playButtonContainer: {
+  bigPlayButtonContainer: {
     paddingLeft: 4,
     paddingRight: 12,
     width: 72,
@@ -35,7 +43,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  playButton: {
+  bigPlayButton: {
     borderWidth: 1,
     borderColor: Constants.colors.black,
     width: '100%',
@@ -45,6 +53,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#fff',
     ...Constants.styles.dropShadow,
+  },
+  playButtonContainer: {
+    paddingRight: 8,
+    paddingVertical: 4,
+    width: 64,
+    flexShrink: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  playButton: {
+    borderWidth: 1,
+    borderColor: Constants.colors.black,
+    width: '100%',
+    aspectRatio: 1,
+    borderRadius: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+    ...Constants.styles.dropShadow,
+  },
+  playButtonDisabled: {
+    borderColor: Constants.colors.grayOnWhiteBorder,
   },
   controls: {
     alignItems: 'flex-start',
@@ -89,12 +119,10 @@ const styles = StyleSheet.create({
     marginTop: 6,
     marginBottom: 2,
   },
-  recordButton: {
-    width: 100,
-    height: 50,
-    marginRight: 20,
-    backgroundColor: '#ccc',
+  chooseFileButton: {
+    marginRight: 12,
   },
+  soundIdInput: { minWidth: 72, flexShrink: 1, marginRight: 12 },
 });
 
 export const SOUND_CATEGORIES = [
@@ -132,6 +160,61 @@ export const SOUND_CATEGORIES = [
   },
 ];
 
+const BigPlayButton = ({ onPress, disabled }) => (
+  <View style={styles.bigPlayButtonContainer}>
+    <TouchableOpacity
+      style={[styles.bigPlayButton, disabled ? styles.playButtonDisabled : null]}
+      onPress={onPress}
+      disabled={disabled}>
+      <Entypo
+        name="controller-play"
+        size={36}
+        color={disabled ? '#aaa' : '#000'}
+        style={{ marginLeft: 5, marginTop: 2 }}
+      />
+    </TouchableOpacity>
+  </View>
+);
+
+const PlayButton = ({ onPress, disabled }) => (
+  <View style={styles.playButtonContainer}>
+    <TouchableOpacity
+      style={[styles.playButton, disabled ? styles.playButtonDisabled : null]}
+      onPress={onPress}
+      disabled={disabled}>
+      <Entypo
+        name="controller-play"
+        size={36}
+        color={disabled ? '#aaa' : '#000'}
+        style={{ marginLeft: 5, marginTop: 2 }}
+      />
+    </TouchableOpacity>
+  </View>
+);
+
+const RecordStopButton = ({ onPress, isRecording, disabled }) => (
+  <View style={styles.playButtonContainer}>
+    <TouchableOpacity
+      style={[styles.playButton, disabled ? styles.playButtonDisabled : null]}
+      onPress={onPress}
+      disabled={disabled}>
+      <Entypo
+        name={isRecording ? 'controller-stop' : 'controller-record'}
+        size={36}
+        color={disabled ? '#aaa' : '#000'}
+        style={{ marginLeft: 2, marginTop: 1 }}
+      />
+    </TouchableOpacity>
+  </View>
+);
+
+const AudioActivityIndicator = ({ label }) => (
+  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+    <ActivityIndicator style={{ marginRight: 8 }} />
+    <Text style={{ fontSize: 16 }}>{label}</Text>
+  </View>
+);
+
 const SoundEffect = ({ onChangeSound, response, onChangeResponse, children, ...props }) => {
   const [lastNativeUpdate, incrementLastNativeUpdate] = React.useReducer((state) => state + 1, 0);
   React.useEffect(incrementLastNativeUpdate, [response.params]);
@@ -166,18 +249,7 @@ const SoundEffect = ({ onChangeSound, response, onChangeResponse, children, ...p
 
   return (
     <View style={[SceneCreatorConstants.styles.button, styles.container]}>
-      <View style={styles.playButtonContainer}>
-        <TouchableOpacity
-          style={styles.playButton}
-          onPress={() => sendAsync('EDITOR_CHANGE_SOUND', response.params)}>
-          <Entypo
-            name="controller-play"
-            size={36}
-            color="#000"
-            style={{ marginLeft: 6, marginTop: 3 }}
-          />
-        </TouchableOpacity>
-      </View>
+      <BigPlayButton onPress={() => sendAsync('EDITOR_CHANGE_SOUND', response.params)} />
       <View style={styles.controls}>
         <View style={styles.segmentedControl}>
           {SOUND_CATEGORIES.map((category, ii) => (
@@ -247,18 +319,24 @@ const SoundEffect = ({ onChangeSound, response, onChangeResponse, children, ...p
 const SoundRecording = ({ onChangeSound, response, onChangeResponse, children, ...props }) => {
   const [state, setState] = React.useState('ready');
 
-  const onChangeRecordingUrl = (recordingUrl) =>
-    onChangeSound({
-      ...response,
-      params: {
-        ...response.params,
-        recordingUrl,
-      },
-    });
+  const onChangeRecordingUrl = React.useCallback(
+    (recordingUrl) =>
+      onChangeSound({
+        ...response,
+        params: {
+          ...response.params,
+          recordingUrl,
+        },
+      }),
+    [onChangeSound, response]
+  );
 
-  const onChangeSoundId = (soundId) => {
-    onChangeRecordingUrl(`https://audio.castle.xyz/${soundId}.mp3`);
-  };
+  const onChangeSoundId = React.useCallback(
+    (soundId) => {
+      onChangeRecordingUrl(`https://audio.castle.xyz/${soundId}.mp3`);
+    },
+    [onChangeRecordingUrl]
+  );
 
   const onStopRecord = React.useCallback(async () => {
     setState('processing');
@@ -328,35 +406,25 @@ const SoundRecording = ({ onChangeSound, response, onChangeResponse, children, .
 
   const soundId = response.params?.recordingUrl
     ? response.params?.recordingUrl.split('audio.castle.xyz/')[1].split('.mp3')[0]
-    : '';
+    : null;
 
   return (
-    <View style={[SceneCreatorConstants.styles.button, styles.container]}>
-      {state === 'ready' && (
-        <TouchableOpacity style={styles.recordButton} onPress={() => onStartRecord()}>
-          <Text>Record</Text>
-        </TouchableOpacity>
-      )}
-
-      {state === 'recording' && (
-        <TouchableOpacity style={styles.recordButton} onPress={() => onStopRecord()}>
-          <Text>Stop Recording</Text>
-        </TouchableOpacity>
-      )}
-
-      {state === 'processing' && (
-        <View style={styles.recordButton}>
-          <Text>Processing...</Text>
-        </View>
-      )}
-
-      {state === 'ready' && (
-        <TouchableOpacity style={styles.recordButton} onPress={() => onPlayAudio()}>
-          <Text>Play</Text>
-        </TouchableOpacity>
-      )}
-
-      <InspectorTextInput value={soundId} onChangeText={onChangeSoundId} placeholder="Sound id" />
+    <View style={[SceneCreatorConstants.styles.button, styles.container, { alignItems: 'center' }]}>
+      <PlayButton onPress={onPlayAudio} disabled={state !== 'ready' || !soundId} />
+      <RecordStopButton
+        onPress={state === 'ready' ? onStartRecord : onStopRecord}
+        isRecording={state === 'recording'}
+        disabled={state === 'processing'}
+      />
+      <InspectorTextInput
+        value={soundId}
+        onChangeText={onChangeSoundId}
+        placeholder="Sound id"
+        style={styles.soundIdInput}
+      />
+      {state === 'recording' || state === 'processing' ? (
+        <AudioActivityIndicator label={state === 'recording' ? 'Recording...' : 'Processing...'} />
+      ) : null}
     </View>
   );
 };
@@ -364,18 +432,24 @@ const SoundRecording = ({ onChangeSound, response, onChangeResponse, children, .
 const SoundUpload = ({ onChangeSound, response, onChangeResponse, children, ...props }) => {
   const [state, setState] = React.useState('ready');
 
-  const onChangeUploadUrl = (uploadUrl) =>
-    onChangeSound({
-      ...response,
-      params: {
-        ...response.params,
-        uploadUrl,
-      },
-    });
+  const onChangeUploadUrl = React.useCallback(
+    (uploadUrl) =>
+      onChangeSound({
+        ...response,
+        params: {
+          ...response.params,
+          uploadUrl,
+        },
+      }),
+    [response, onChangeSound]
+  );
 
-  const onChangeSoundId = (soundId) => {
-    onChangeUploadUrl(`https://audio.castle.xyz/${soundId}.mp3`);
-  };
+  const onChangeSoundId = React.useCallback(
+    (soundId) => {
+      onChangeUploadUrl(`https://audio.castle.xyz/${soundId}.mp3`);
+    },
+    [onChangeUploadUrl]
+  );
 
   const onStartUpload = React.useCallback(async () => {
     setState('processing');
@@ -406,28 +480,34 @@ const SoundUpload = ({ onChangeSound, response, onChangeResponse, children, ...p
   const soundId = response.params?.uploadUrl
     ? response.params?.uploadUrl.split('audio.castle.xyz/')[1].split('.mp3')[0]
     : '';
+  const chooseFileDisabled = state !== 'ready';
 
   return (
-    <View style={[SceneCreatorConstants.styles.button, styles.container]}>
-      {state === 'ready' && (
-        <TouchableOpacity style={styles.recordButton} onPress={() => onStartUpload()}>
-          <Text>Select File</Text>
-        </TouchableOpacity>
-      )}
-
-      {state === 'processing' && (
-        <View style={styles.recordButton}>
-          <Text>Processing...</Text>
-        </View>
-      )}
-
-      {state === 'ready' && (
-        <TouchableOpacity style={styles.recordButton} onPress={() => onPlayAudio()}>
-          <Text>Play</Text>
-        </TouchableOpacity>
-      )}
-
-      <InspectorTextInput value={soundId} onChangeText={onChangeSoundId} placeholder="Sound id" />
+    <View style={[SceneCreatorConstants.styles.button, styles.container, { alignItems: 'center' }]}>
+      <PlayButton onPress={onPlayAudio} disabled={state !== 'ready' || !soundId} />
+      <TouchableOpacity
+        style={[
+          SceneCreatorConstants.styles.button,
+          styles.chooseFileButton,
+          chooseFileDisabled ? { borderColor: '#ccc' } : null,
+        ]}
+        onPress={onStartUpload}
+        disabled={chooseFileDisabled}>
+        <Text
+          style={[
+            SceneCreatorConstants.styles.buttonLabel,
+            chooseFileDisabled ? { color: '#666' } : null,
+          ]}>
+          {soundId ? 'Change File' : 'Choose File'}
+        </Text>
+      </TouchableOpacity>
+      <InspectorTextInput
+        value={soundId}
+        onChangeText={onChangeSoundId}
+        placeholder="Sound id"
+        style={styles.soundIdInput}
+      />
+      {state === 'processing' ? <AudioActivityIndicator label="Processing..." /> : null}
     </View>
   );
 };
