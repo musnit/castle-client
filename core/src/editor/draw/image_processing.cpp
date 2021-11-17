@@ -217,80 +217,13 @@ void ImageProcessing::testOnlyRedChannel(love::image::ImageData *data) {
   }
 }
 
-std::array<int, 60> PALETTE = {
-  0x3b1725,
-  0x73172d,
-  0xb4202a,
-  0xdf3e23,
-  0xfa6a0a,
-  0xf9a31b,
-  0xffd541,
-  0xfffc40,
-  0xd6f264,
-  0x9cdb43,
-  0x59c135,
-  0x14a02e,
-  0x1a7a3e,
-  0x24523b,
-  0x122020,
-  0x143464,
-  0x285cc4,
-  0x249fde,
-  0x20d6c7,
-  0xa6fcdb,
-  0xfef3c0,
-  0xfad6b8,
-  0xf5a097,
-  0xe86a73,
-  0xbc4a9b,
-  0x793a80,
-  0x403353,
-  0x242234,
-  0x322b28,
-  0x71413b,
-  0xbb7547,
-  0xdba463,
-  0xf4d29c,
-  0xdae0ea,
-  0xb3b9d1,
-  0x8b93af,
-  0x6d758d,
-  0x4a5462,
-  0x333941,
-  0x422433,
-  0x5b3138,
-  0x8e5252,
-  0xba756a,
-  0xe9b5a3,
-  0xe3e6ff,
-  0xb9bffb,
-  0x849be4,
-  0x588dbe,
-  0x477d85,
-  0x23674e,
-  0x328464,
-  0x5daf8d,
-  0x92dcba,
-  0xcdf7e2,
-  0xe4d2aa,
-  0xc7b08b,
-  0xa08662,
-  0x796755,
-  0x5a4e44,
-  0x423934,
-};
-
-void ImageProcessing::randomPaletteSwap(love::image::ImageData *data) {
+void ImageProcessing::paletteSwap(love::image::ImageData *data, std::array<int, 60> &palette) {
   auto width = data->getWidth(), height = data->getHeight();
   auto format = data->getFormat();
 
   love::image::Pixel p;
   int nextPaletteIndex = 0;
   std::unordered_map<int, love::image::Pixel> swaps;
-
-  // shuffle palette
-  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-  std::shuffle(PALETTE.begin(), PALETTE.end(), std::default_random_engine(seed));
 
   for (auto y = 0; y < height; y++) {
     for (auto x = 0; x < width; x++) {
@@ -301,7 +234,7 @@ void ImageProcessing::randomPaletteSwap(love::image::ImageData *data) {
       auto found = swaps.find(hash);
       if (found == swaps.end()) {
         love::image::Pixel swap;
-        auto hexValue = PALETTE[nextPaletteIndex];
+        auto hexValue = palette[nextPaletteIndex];
         setChannel(swap, 0, ((hexValue >> 16) & 0xFF), format);
         setChannel(swap, 1, ((hexValue >> 8) & 0xFF), format);
         setChannel(swap, 2, ((hexValue >> 0) & 0xFF), format);
@@ -309,7 +242,7 @@ void ImageProcessing::randomPaletteSwap(love::image::ImageData *data) {
         swaps.emplace(hash, swap);
 
         nextPaletteIndex++;
-        nextPaletteIndex = nextPaletteIndex % 9;
+        nextPaletteIndex = nextPaletteIndex % palette.size();
       }
 
       // replace with mapping
