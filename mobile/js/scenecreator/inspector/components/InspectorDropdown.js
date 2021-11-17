@@ -129,7 +129,8 @@ export const InspectorDropdown = ({ value, onChange, style, ...props }) => {
   let items;
   if (props?.allowedValues) {
     items = props.allowedValues.map((item) => ({ id: item, name: item }));
-  } else if (props?.labeledItems) {
+  }
+  if (props?.labeledItems) {
     items = props.labeledItems;
   }
   let selectedItem;

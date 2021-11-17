@@ -291,6 +291,24 @@ const data = {
     },
     ['play sound']: {
       category: 'sound',
+      props: {
+        type: {
+          labeledItems: [
+            {
+              id: 'sfxr',
+              name: 'generated effect',
+            },
+            {
+              id: 'microphone',
+              name: 'recorded from my microphone',
+            },
+            {
+              id: 'library',
+              name: 'from my files',
+            },
+          ],
+        },
+      },
     },
     ['follow with camera']: {
       category: 'camera',

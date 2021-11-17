@@ -11,8 +11,8 @@ Sound::Sound() {
 void Sound::preload(const std::string &type, const std::string &recordingUrl,
     const std::string &uploadUrl, const std::string &category, int seed, int mutationSeed,
     int mutationAmount) {
-  if (type == "recording" || type == "upload") {
-    auto url = type == "recording" ? recordingUrl : uploadUrl;
+  if (type == "microphone" || type == "library") {
+    auto url = type == "microhone" ? recordingUrl : uploadUrl;
     if (url == "") {
       return;
     }
@@ -36,10 +36,10 @@ void Sound::play(const std::string &type, float playbackRate, const std::string 
     return;
   }
 
-  if (type == "synthesis") {
+  if (type == "sfxr") {
     playEffect(playbackRate, category, seed, mutationSeed, mutationAmount);
   } else {
-    auto url = type == "recording" ? recordingUrl : uploadUrl;
+    auto url = type == "microphone" ? recordingUrl : uploadUrl;
     playUrl(playbackRate, url);
   }
 }

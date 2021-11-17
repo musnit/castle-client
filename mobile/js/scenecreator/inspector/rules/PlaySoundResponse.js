@@ -433,9 +433,9 @@ const SoundUpload = ({ onChangeSound, response, onChangeResponse, children, ...p
 };
 
 const SOUND_COMPONENTS = {
-  synthesis: SoundEffect,
-  recording: SoundRecording,
-  upload: SoundUpload,
+  sfxr: SoundEffect,
+  microphone: SoundRecording,
+  library: SoundUpload,
 };
 
 export const PlaySoundResponse = ({

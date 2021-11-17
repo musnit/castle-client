@@ -923,11 +923,12 @@ const FaceDirectionOfMotion = () => {
 
 const PlaySound = ({ response }) => {
   let soundType = response.params.type;
+  const typeItems = Metadata.responses['play sound'].props.type.labeledItems;
   let cells = [
     { type: 'showEntryOptions', label: 'Play sound' },
     {
       type: 'selectParamSheet',
-      label: response.params.type,
+      label: typeItems.find((item) => item.id === response.params.type).name,
       paramName: 'type',
       paramValue: response.params.type,
     },

@@ -747,8 +747,8 @@ struct PlaySoundResponse : BaseResponse {
     PROP(
          std::string, type,
          .label("sound type")
-         .allowedValues("synthesis", "recording", "upload")
-         ) = "synthesis";
+         .allowedValues("sfxr", "microphone", "library")
+         ) = "sfxr";
     PROP(
         ExpressionRef, playbackRate,
         .label("playback rate")
@@ -802,7 +802,7 @@ struct EditorChangeSoundReceiver {
     if (!engine.getIsEditing())
       return;
 
-    if (params.type() == "synthesis") {
+    if (params.type() == "sfxr") {
       auto &scene = engine.maybeGetEditor()->getScene();
       auto &sound = scene.getSound();
       RuleContext independent { nullptr, nullActor, {}, scene };
