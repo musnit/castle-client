@@ -100,6 +100,7 @@ public class API {
     public static final FieldList CARD_FIELD_LIST = new FieldList()
             .add("id")
             .add("cardId")
+            .add("sceneDataUrl")
             .add("title")
             .add("updatedTime")
             .add("backgroundImage", new FieldList("fileId", "url"))
@@ -114,13 +115,14 @@ public class API {
     public static final FieldList DECK_FIELD_LIST = new FieldList()
             .add("id")
             .add("deckId")
-            .add("initialCard", new FieldList("id", "cardId"))
+            .add("initialCard", new FieldList("id", "cardId", "backgroundColor", "sceneDataUrl"))
             .add("creator", CREATOR_FIELD_LIST)
             .add("variables");
 
     private static final FieldList INITIAL_CARD_FIELD_LIST = new FieldList()
             .add("id")
             .add("cardId")
+            .add("sceneDataUrl")
             .add("title")
             .add("backgroundImage", new FieldList("url", "smallUrl", "privateCardUrl", "overlayUrl", "primaryColor"));
 
