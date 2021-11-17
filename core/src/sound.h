@@ -32,6 +32,10 @@ public:
     soloud.stopAll();
   }
 
+  static void stopAll() {
+    soloud.stopAll();
+  }
+
 private:
   void playUrl(float playbackRate, const std::string &url);
   void playEffect(float playbackRate, const std::string &category, int seed, int mutationSeed,

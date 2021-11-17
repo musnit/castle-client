@@ -3,6 +3,7 @@
 #include "archive.h"
 #include "behaviors/all.h"
 #include "library.h"
+#include "sound.h"
 
 Editor::Editor(Bridge &bridge_)
     : bridge(bridge_) {
@@ -732,6 +733,7 @@ struct EditorGlobalActionReceiver {
 
     Debug::log("editor received global action: {}", action);
     if (action == "onPlay") {
+      Sound::stopAll();
       if (editor->hasScene()) {
         editor->player = std::make_unique<Player>(editor->getBridge());
         {
@@ -761,6 +763,7 @@ struct EditorGlobalActionReceiver {
         editor->isEditorStateDirty = true;
       }
     } else if (action == "onRewind") {
+      Sound::stopAll();
       editor->playing = false;
       editor->player.reset();
       editor->isEditorStateDirty = true;
