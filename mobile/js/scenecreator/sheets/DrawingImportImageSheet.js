@@ -1,11 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Pressable, Text, View } from 'react-native';
 import { BottomSheet } from '../../components/BottomSheet';
 import { BottomSheetHeader } from '../../components/BottomSheetHeader';
 import { InspectorNumberInput } from '../inspector/components/InspectorNumberInput';
 import { useCoreState, sendAsync } from '../../core/CoreEvents';
 
 import * as Constants from '../../Constants';
+import * as SceneCreatorConstants from '../SceneCreatorConstants';
 
 const styles = StyleSheet.create({
   container: {
@@ -17,6 +18,7 @@ const styles = StyleSheet.create({
     borderColor: '#000',
   },
   importSettings: {
+    paddingTop: 16,
     paddingHorizontal: 16,
   },
   row: {
@@ -38,7 +40,19 @@ const ImportImage = ({ importData, sendAction }) => {
     <View style={styles.importSettings}>
       <View style={styles.row}>
         <View>
-          <Text style={styles.label}>Number of colors</Text>
+          <Text style={styles.label}>Pre-blur (0-3, more is slower)</Text>
+        </View>
+        <InspectorNumberInput
+          style={{ maxWidth: '25%' }}
+          onChange={(value) => sendAction('setNumBlurs', { value })}
+          value={importData.numBlurs}
+          min={0}
+          max={3}
+        />
+      </View>
+      <View style={styles.row}>
+        <View>
+          <Text style={styles.label}>Number of colors (2-8)</Text>
         </View>
         <InspectorNumberInput
           style={{ maxWidth: '25%' }}
@@ -47,6 +61,13 @@ const ImportImage = ({ importData, sendAction }) => {
           min={2}
           max={8}
         />
+      </View>
+      <View style={styles.row}>
+        <Pressable
+          style={SceneCreatorConstants.styles.button}
+          onPress={() => sendAction('swapColors')}>
+          <Text style={SceneCreatorConstants.styles.buttonLabel}>New random colors</Text>
+        </Pressable>
       </View>
     </View>
   );

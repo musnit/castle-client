@@ -25,7 +25,9 @@ private:
   DrawTool &drawTool;
 
   void sendEvent();
+  void shufflePalette();
 
+  uint8 numBlurs = 1;
   uint8 numColors = 4;
 
   std::unique_ptr<love::image::ImageData> importedImageOriginalData;
