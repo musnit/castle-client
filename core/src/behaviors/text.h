@@ -55,7 +55,7 @@ struct TextComponent : BaseComponent {
             "Zarathustra Regular"
            )
          )
-            = "Roboto";
+            = "Norm Regular";
   } props;
 
   love::Font *font = nullptr;
