@@ -118,12 +118,6 @@ public class GhostChannelsModule extends ReactContextBaseJavaModule {
       } else {
         CastleNavigator.castleNavigatorForId(navigatorId).navigate(screenType, navigationScreenOptions);
       }
-
-      if ("HomeScreen".equals(screenType) && navigationScreenOptions != null && navigationScreenOptions.contains("deckId")) {
-        EventBus.getDefault().post(new NavigationActivity.HideTabBarEvent());
-      } else {
-        EventBus.getDefault().post(new NavigationActivity.ShowTabBarEvent());
-      }
     });
   }
 
@@ -142,10 +136,6 @@ public class GhostChannelsModule extends ReactContextBaseJavaModule {
   void navigateBack() {
     getCurrentActivity().runOnUiThread(() -> {
       CastleNavigator.castleNavigatorForId("Root").handleBack();
-
-      // TODO: this break if you do Feed -> Game -> Profile -> Game and then back out,
-      // the tab bar shows over the game
-      EventBus.getDefault().post(new NavigationActivity.ShowTabBarEvent());
     });
   }
 
@@ -153,8 +143,6 @@ public class GhostChannelsModule extends ReactContextBaseJavaModule {
   void navigatePopToTop() {
     getCurrentActivity().runOnUiThread(() -> {
       CastleNavigator.castleNavigatorForId("Root").popToTop();
-
-      EventBus.getDefault().post(new NavigationActivity.ShowTabBarEvent());
     });
   }
 

@@ -131,6 +131,7 @@ public class CastleNavigationScreen {
                 }
             }
 
+            boolean isLeaf = false;
             if (reactComponentName != null) {
                 if (castleReactView == null) {
                     castleReactView = new CastleReactView(activity, id, reactComponentName);
@@ -152,6 +153,7 @@ public class CastleNavigationScreen {
                 viewToAdd = castleReactView;
 
                 gCurrentBoundViewId = id;
+                isLeaf = true;
             } else if (navigatorFactory != null || navigator != null){
                 if (navigator == null) {
                     navigator = navigatorFactory.inflate(activity);
@@ -170,6 +172,7 @@ public class CastleNavigationScreen {
 
                 viewToAdd = nativeView;
                 gCurrentBoundViewId = id;
+                isLeaf = true;
             }
 
             if (viewToAdd != null) {
@@ -184,6 +187,14 @@ public class CastleNavigationScreen {
                     layout.removeAllViews();
                     viewToAdd.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                     layout.addView(viewToAdd);
+                }
+            }
+
+            if (isLeaf) {
+                if ("HomeScreen".equals(screenType) && navigationScreenOptions != null && navigationScreenOptions.contains("deckId")) {
+                    EventBus.getDefault().post(new NavigationActivity.HideTabBarEvent());
+                } else {
+                    EventBus.getDefault().post(new NavigationActivity.ShowTabBarEvent());
                 }
             }
         }

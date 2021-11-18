@@ -245,6 +245,7 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
 
     private void handlePushNotification(Intent intent, boolean initialLoad) {
         Bundle extras = intent.getExtras();
+        boolean isOpeningDeck = false;
         if (extras != null && extras.containsKey(CastleFirebaseMessagingService.NOTIFICATION_DATA_KEY)) {
             String dataString = extras.getString(CastleFirebaseMessagingService.NOTIFICATION_DATA_KEY);
 
@@ -255,8 +256,7 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
                     String deckId = data.getString("deckId");
                     if (type.equals("new_deck") || type.equals("suggested_deck")) {
                         openDeckId(deckId);
-                        // don't need to switch to notifications tab or inform js that notification was received
-                        return;
+                        isOpeningDeck = true;
                     }
                 }
             } catch (JSONException e) {}
@@ -269,8 +269,9 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
                 onRNEvent(new RNEvent("CastlePushNotificationClicked", payload));
             }
 
-            if (mainTabNavigator != null && notificationsTab != null) {
+            if (mainTabNavigator != null && notificationsTab != null && !isOpeningDeck) {
                 ViewUtils.runOnUiThread(() -> {
+                    CastleNavigator.castleNavigatorForId("LoggedInRootStack").popToTop();
                     mainTabNavigator.switchToTab(notificationsTab.id);
                 });
             }
