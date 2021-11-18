@@ -256,7 +256,7 @@ bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &com
       } else {
         lv.graphics.setFont(defaultFont.get());
       }
-      lv.graphics.printf({ { component.props.content(), { 0, 0, 0, 1 } } }, wrap,
+      lv.graphics.printf({ { formatContent(component.props.content()), { 0, 0, 0, 1 } } }, wrap,
           love::Font::ALIGN_LEFT, love::Matrix4(bounds.minX(), bounds.minY(), 0, 1, 1, 0, 0, 0, 0));
 
       lv.graphics.pop();
@@ -306,9 +306,9 @@ void TextBehavior::handleDrawOverlay() const {
   for (auto [actorId, component] : elems) {
     // Compute height
     constexpr float downscale = 0.024;
-    auto &content = component->props.content();
+    auto formatted = formatContent(component->props.content());
     std::vector<std::string> lines;
-    font->getWrap({ { content, { 1, 1, 1, 1 } } }, textWidth / downscale, lines);
+    font->getWrap({ { formatted, { 1, 1, 1, 1 } } }, textWidth / downscale, lines);
     auto textHeight = downscale * fontHeight * float(lines.size());
     auto boxHeight = 2 * padding + textHeight;
 
@@ -322,7 +322,7 @@ void TextBehavior::handleDrawOverlay() const {
     lv.graphics.translate(x + padding, y + padding);
     lv.graphics.scale(downscale, downscale);
     lv.graphics.setColor({ 1, 1, 1, 1 });
-    lv.graphics.printf({ { content, { 1, 1, 1, 1 } } }, textWidth / downscale,
+    lv.graphics.printf({ { std::move(formatted), { 1, 1, 1, 1 } } }, textWidth / downscale,
         love::Font::ALIGN_LEFT, love::Matrix4(0, 0, 0, 1, 1, 0, 0, 0, 0));
     lv.graphics.pop();
   }
