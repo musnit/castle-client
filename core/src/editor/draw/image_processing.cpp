@@ -18,6 +18,7 @@ love::image::ImageData *ImageProcessing::fitToMaxSize(love::image::ImageData *da
   love::DrawDataFrame::renderToCanvas(resizeCanvas, [img, scale]() {
     auto &lv = Lv::getInstance();
     lv.graphics.push(love::Graphics::STACK_ALL);
+    lv.graphics.clear(love::Colorf(0, 0, 0, 0), {}, {});
     lv.graphics.setColor({ 1, 1, 1, 1 });
 
     img->draw(&lv.graphics, love::Matrix4(0, 0, 0, scale, scale, 0, 0, 0, 0));
@@ -110,11 +111,7 @@ bool setChannel(love::image::Pixel &p, int channel, float val, love::PixelFormat
   }
 }
 
-float distanceSquared(love::image::Pixel &p1, love::image::Pixel &p2, love::PixelFormat format) {
-  float rgba1[4];
-  getRGBAFloat(p1, format, rgba1);
-  float rgba2[4];
-  getRGBAFloat(p2, format, rgba2);
+float distanceSquared(float *rgba1, float *rgba2) {
   float sum = 0.0f;
   for (auto ii = 0; ii < 3; ii++) { // ignore alpha
     sum += std::powf(rgba1[ii] - rgba2[ii], 2.0f);
@@ -142,22 +139,32 @@ void ImageProcessing::kMeans(love::image::ImageData *data, uint8 k, int numItera
     memset(clusterSize, 0, sizeof(int) * k);
 
     // assign each pixel to the segment with the nearest mean
+    love::image::Pixel p;
+    float rgba1[4];
+    float rgba2[4];
     for (auto y = 0; y < height; y++) {
       for (auto x = 0; x < width; x++) {
-        love::image::Pixel p;
         data->getPixel(x, y, p);
-        float minDist = std::numeric_limits<float>::max();
-        uint8 closestCluster = k;
-        for (uint8 cluster = 0; cluster < k; cluster++) {
-          auto dist = distanceSquared(p, means[cluster], format);
-          if (dist < minDist) {
-            minDist = dist;
-            closestCluster = cluster;
+        getRGBAFloat(p, format, rgba1);
+
+        if (rgba1[3] < 2.56f) {
+          // near-transparent, always group in special k+1 cluster regardless of color
+          whichCluster[y * width + x] = k;
+        } else {
+          float minDist = std::numeric_limits<float>::max();
+          uint8 closestCluster = k;
+          for (uint8 cluster = 0; cluster < k; cluster++) {
+            getRGBAFloat(means[cluster], format, rgba2);
+            auto dist = distanceSquared(rgba1, rgba2);
+            if (dist < minDist) {
+              minDist = dist;
+              closestCluster = cluster;
+            }
           }
+          whichCluster[y * width + x] = closestCluster;
+          sumPixel(p, clusterSum + closestCluster * 3, format, false);
+          clusterSize[closestCluster]++;
         }
-        whichCluster[y * width + x] = closestCluster;
-        sumPixel(p, clusterSum + closestCluster * 3, format, false);
-        clusterSize[closestCluster]++;
       }
     }
 
@@ -167,15 +174,23 @@ void ImageProcessing::kMeans(love::image::ImageData *data, uint8 k, int numItera
         float mean = clusterSum[cluster * 3 + i] / float(clusterSize[cluster]);
         setChannel(means[cluster], i, mean, format);
       }
-      // TODO: preserve original image alpha
       setChannel(means[cluster], 3, 255.0f, format);
     }
   }
 
+  love::image::Pixel zero;
+  memset(&zero, 0, data->getPixelSize());
+
   // replace pixels with the mean of their assigned segment
   for (auto y = 0; y < height; y++) {
     for (auto x = 0; x < width; x++) {
-      data->setPixel(x, y, means[whichCluster[y * width + x]]);
+      auto cluster = whichCluster[y * width + x];
+      if (cluster == k) {
+        // expect cluster == k for transparent pixels
+        data->setPixel(x, y, zero);
+      } else {
+        data->setPixel(x, y, means[cluster]);
+      }
     }
   }
 
@@ -222,6 +237,7 @@ void ImageProcessing::paletteSwap(love::image::ImageData *data, std::array<int, 
   auto format = data->getFormat();
 
   love::image::Pixel p;
+  float rgba[4];
   int nextPaletteIndex = 0;
   std::unordered_map<int, love::image::Pixel> swaps;
 
@@ -231,6 +247,7 @@ void ImageProcessing::paletteSwap(love::image::ImageData *data, std::array<int, 
 
       // if never seen before, map to next color in palette
       int hash = data->getPixelHash(p);
+      getRGBAFloat(p, format, rgba);
       auto found = swaps.find(hash);
       if (found == swaps.end()) {
         love::image::Pixel swap;
@@ -247,6 +264,11 @@ void ImageProcessing::paletteSwap(love::image::ImageData *data, std::array<int, 
 
       // replace with mapping
       data->setPixel(x, y, swaps[hash]);
+
+      // maintain original alpha
+      love::image::Pixel *dest = (love::image::Pixel *)((uint8 *)data->getData()
+          + ((y * width + x) * data->getPixelSize()));
+      setChannel(*dest, 3, rgba[3], format);
     }
   }
 }
@@ -276,6 +298,8 @@ void convolve(love::image::Pixel *inBuf, float *kernel, int w, int h, love::Pixe
     love::image::Pixel &outPixel) {
   float rgba[4];
   float sums[3] = { 0.0f, 0.0f, 0.0f };
+  float outAlpha = 255.0f;
+  int cx = w / 2, cy = h / 2;
 
   for (auto y = 0; y < w; y++) {
     for (auto x = 0; x < h; x++) {
@@ -284,13 +308,17 @@ void convolve(love::image::Pixel *inBuf, float *kernel, int w, int h, love::Pixe
       for (int i = 0; i < 3; i++) {
         sums[i] += rgba[i] * kernel[y * w + x];
       }
+      if (x == cx && y == cy) {
+        outAlpha = rgba[3];
+      }
     }
   }
+
 
   for (int i = 0; i < 3; i++) {
     setChannel(outPixel, i, sums[i], format);
   }
-  setChannel(outPixel, 3, 255.0f, format);
+  setChannel(outPixel, 3, outAlpha, format);
 }
 
 void ImageProcessing::gaussianBlur(love::image::ImageData *data) {
