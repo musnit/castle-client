@@ -279,17 +279,14 @@ float GAUSSIAN_KERNEL[3][3] = {
   { 0.0625f, 0.125f, 0.0625f },
 };
 
-void copyRegionOverflowZero(love::image::ImageData *src, int srcWidth, int srcHeight,
+void copyRegionOverflowClamp(love::image::ImageData *src, int srcWidth, int srcHeight,
     love::image::Pixel *dst, int x, int y, int w, int h) {
-  auto pixelSize = src->getPixelSize();
   for (int srcY = y, dstY = 0; srcY < y + h; srcY++, dstY++) {
     for (int srcX = x, dstX = 0; srcX < x + w; srcX++, dstX++) {
       love::image::Pixel *dstPixel = dst + (dstY * w + dstX);
-      if (srcY < 0 || srcX < 0 || srcY >= srcHeight || srcX >= srcWidth) {
-        memset(dstPixel, 0, pixelSize);
-      } else {
-        src->getPixel(srcX, srcY, *dstPixel);
-      }
+      int overflowX = std::max(0, std::min(srcWidth - 1, srcX));
+      int overflowY = std::max(0, std::min(srcHeight - 1, srcY));
+      src->getPixel(overflowX, overflowY, *dstPixel);
     }
   }
 }
@@ -332,7 +329,7 @@ void ImageProcessing::gaussianBlur(love::image::ImageData *data) {
   love::image::Pixel outPixel;
   for (auto y = 0; y < height; y++) {
     for (auto x = 0; x < width; x++) {
-      copyRegionOverflowZero(data, width, height, buf, x - 1, y - 1, 3, 3);
+      copyRegionOverflowClamp(data, width, height, buf, x - 1, y - 1, 3, 3);
       convolve(buf, (float *)GAUSSIAN_KERNEL, 3, 3, format, outPixel);
       outData->setPixel(x, y, outPixel);
     }
