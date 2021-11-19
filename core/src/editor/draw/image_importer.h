@@ -30,8 +30,8 @@ private:
   uint8 numBlurs = 1;
   uint8 numColors = 4;
 
-  std::unique_ptr<love::image::ImageData> importedImageOriginalData;
-  std::unique_ptr<love::Image> importedImageFilteredPreview;
+  love::image::ImageData *importedImageOriginalData;
+  love::Image *importedImageFilteredPreview;
 };
 
 inline ImageImporter::ImageImporter(DrawTool &drawTool_)

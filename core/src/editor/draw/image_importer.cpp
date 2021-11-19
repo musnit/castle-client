@@ -68,11 +68,15 @@ std::array<int, std::size_t(60)> PALETTE = {
 };
 
 void ImageImporter::reset() {
-  if (isImportingImage) {
-    importedImageFilteredPreview = nullptr;
+  if (importedImageOriginalData) {
+    // TODO: is love deleting these somewhere?
     importedImageOriginalData = nullptr;
-    isImportingImage = false;
   }
+  if (importedImageFilteredPreview) {
+    // TODO: is love deleting these somewhere?
+    importedImageFilteredPreview = nullptr;
+  }
+  isImportingImage = false;
   numBlurs = 1;
   numColors = 4;
 }
@@ -89,7 +93,8 @@ void ImageImporter::importImage(std::string uri) {
   auto imageData = new love::image::ImageData(data);
   file->release();
   imageData = ImageProcessing::fitToMaxSize(imageData, 512);
-  importedImageOriginalData.reset(imageData);
+  // TODO: is love freeing the previous value?
+  importedImageOriginalData = imageData;
   shufflePalette();
   regeneratePreview();
 
@@ -99,7 +104,7 @@ void ImageImporter::importImage(std::string uri) {
 
 void ImageImporter::regeneratePreview() {
   if (importedImageOriginalData) {
-    generateImportedImageFilteredPreview(importedImageOriginalData.get());
+    generateImportedImageFilteredPreview(importedImageOriginalData);
   }
 }
 
@@ -126,7 +131,8 @@ void ImageImporter::generateImportedImageFilteredPreview(love::image::ImageData 
   love::graphics::Texture::Filter filter { love::graphics::Texture::FILTER_LINEAR,
     love::graphics::Texture::FILTER_LINEAR, love::graphics::Texture::FILTER_NONE, 1.0f };
   loadedImage->setFilter(filter);
-  importedImageFilteredPreview.reset(loadedImage);
+  // TODO: is love freeing the previous value?
+  importedImageFilteredPreview = loadedImage;
 }
 
 //
