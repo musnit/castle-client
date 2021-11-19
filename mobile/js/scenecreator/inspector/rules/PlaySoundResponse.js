@@ -454,6 +454,7 @@ class SoundRecording extends React.Component {
           disabled={state === 'processing'}
         />
         <InspectorTextInput
+          optimistic
           value={soundId}
           onChangeText={this.onChangeSoundId}
           placeholder="Sound id"
@@ -542,6 +543,7 @@ const SoundUpload = ({ onChangeSound, response, onChangeResponse, children, ...p
         </Text>
       </TouchableOpacity>
       <InspectorTextInput
+        optimistic
         value={soundId}
         onChangeText={onChangeSoundId}
         placeholder="Sound id"

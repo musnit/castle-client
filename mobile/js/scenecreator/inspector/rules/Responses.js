@@ -924,11 +924,25 @@ const FaceDirectionOfMotion = () => {
 const PlaySound = ({ response }) => {
   let soundType = response.params.type;
   const typeItems = Metadata.responses['play sound'].props.type.labeledItems;
+  let typeLabel = typeItems
+    ? typeItems.find((item) => item.id === response.params.type)?.name
+    : null;
+  let soundId = null;
+  if (response.params?.type === 'microphone') {
+    soundId = response.params?.recordingUrl
+      ? response.params?.recordingUrl.split('audio.castle.xyz/')[1].split('.mp3')[0]
+      : null;
+  } else if (response.params?.type === 'library') {
+    soundId = response.params?.uploadUrl
+      ? response.params?.uploadUrl.split('audio.castle.xyz/')[1].split('.mp3')[0]
+      : null;
+  }
   let cells = [
     { type: 'showEntryOptions', label: 'Play sound' },
+    { type: 'text', label: soundId ?? '', isPreview: true },
     {
       type: 'selectParamSheet',
-      label: typeItems.find((item) => item.id === response.params.type).name,
+      label: typeLabel,
       paramName: 'type',
       paramValue: response.params.type,
     },
@@ -941,7 +955,7 @@ const PlaySound = ({ response }) => {
     },
   ];
 
-  if (soundType === 'synthesis') {
+  if (soundType === 'sfxr') {
     let soundCategory = SOUND_CATEGORIES.find((c) => c.name === response.params.category);
     if (!soundCategory) {
       soundCategory = SOUND_CATEGORIES[SOUND_CATEGORIES.length - 1];
