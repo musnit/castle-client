@@ -316,53 +316,80 @@ const SoundEffect = ({ onChangeSound, response, onChangeResponse, children, ...p
   );
 };
 
-const SoundRecording = ({ onChangeSound, response, onChangeResponse, children, ...props }) => {
-  const [state, setState] = React.useState('ready');
-  const componentWillUnmount = React.useRef(false);
+class SoundRecording extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      state: 'ready',
+    };
+  }
 
-  const onChangeRecordingUrl = React.useCallback(
-    (recordingUrl) =>
-      onChangeSound({
-        ...response,
-        params: {
-          ...response.params,
-          recordingUrl,
-        },
-      }),
-    [onChangeSound, response]
-  );
+  async componentWillUnmount() {
+    let { state } = this.state;
 
-  const onChangeSoundId = React.useCallback(
-    (soundId) => {
-      onChangeRecordingUrl(`https://audio.castle.xyz/${soundId}.mp3`);
-    },
-    [onChangeRecordingUrl]
-  );
+    if (state === 'recording') {
+      audioRecorderPlayer.stopRecorder();
+      audioRecorderPlayer.removeRecordBackListener();
+    }
 
-  const onStopRecord = React.useCallback(async () => {
-    setState('processing');
+    this._closed = true;
+  }
+
+  onChangeRecordingUrl = async (recordingUrl) => {
+    let { onChangeSound, response } = this.props;
+
+    onChangeSound({
+      ...response,
+      params: {
+        ...response.params,
+        recordingUrl,
+      },
+    });
+  };
+
+  onChangeSoundId = async (soundId) => {
+    this.onChangeRecordingUrl(`https://audio.castle.xyz/${soundId}.mp3`);
+  };
+
+  onStopRecord = async () => {
+    this.setState({
+      state: 'processing',
+    });
+
     try {
       const result = await audioRecorderPlayer.stopRecorder();
       audioRecorderPlayer.removeRecordBackListener();
 
+      if (this._closed) {
+        return;
+      }
+
       let uploadResult = await uploadAudioFile(result, true);
-      onChangeRecordingUrl(uploadResult.url);
+
+      if (this._closed) {
+        return;
+      }
+
+      this.onChangeRecordingUrl(uploadResult.url);
     } catch (e) {
       console.error(`error processing audio: ${e}`);
     }
-    setState('ready');
-  }, [setState]);
 
-  const onPermissionsError = React.useCallback(async () => {
+    this.setState({
+      state: 'ready',
+    });
+  };
+
+  onPermissionsError = async () => {
     Alert.alert(
       'Permissions Error',
       `Please enable the ${
         Platform.OS === 'android' ? 'record audio' : 'microphone'
       } permission for Castle to use this feature`
     );
-  });
+  };
 
-  const onStartRecord = React.useCallback(async () => {
+  onStartRecord = async () => {
     try {
       let permissions;
       if (Platform.OS === 'android') {
@@ -385,69 +412,62 @@ const SoundRecording = ({ onChangeSound, response, onChangeResponse, children, .
       }
     } catch (err) {
       console.warn(err);
-      onPermissionsError();
+      this.onPermissionsError();
       return;
     }
 
-    setState('recording');
+    this.setState({
+      state: 'recording',
+    });
 
     await audioRecorderPlayer.startRecorder();
     audioRecorderPlayer.addRecordBackListener((e) => {
       if (e.currentPosition > RECORD_MAX_MS) {
-        onStopRecord();
+        this.onStopRecord();
       }
 
       return;
     });
-  }, [setState, onStopRecord, onPermissionsError]);
+  };
 
-  React.useEffect(() => {
-    return () => {
-      componentWillUnmount.current = true;
-    };
-  }, []);
+  onPlayAudio = async () => {
+    let { response } = this.props;
 
-  React.useEffect(() => {
-    return () => {
-      if (componentWillUnmount.current) {
-        if (state === 'recording') {
-          audioRecorderPlayer.stopRecorder();
-          audioRecorderPlayer.removeRecordBackListener();
-        }
-
-        setState('closed');
-      }
-    };
-  }, [state, setState]);
-
-  const onPlayAudio = React.useCallback(async () => {
     sendAsync('EDITOR_PREVIEW_SOUND', response.params);
-  }, [response.params]);
+  };
 
-  const soundId = response.params?.recordingUrl
-    ? response.params?.recordingUrl.split('audio.castle.xyz/')[1].split('.mp3')[0]
-    : null;
+  render() {
+    let { response } = this.props;
+    let { state } = this.state;
 
-  return (
-    <View style={[SceneCreatorConstants.styles.button, styles.container, { alignItems: 'center' }]}>
-      <PlayButton onPress={onPlayAudio} disabled={state !== 'ready' || !soundId} />
-      <RecordStopButton
-        onPress={state === 'ready' ? onStartRecord : onStopRecord}
-        isRecording={state === 'recording'}
-        disabled={state === 'processing'}
-      />
-      <InspectorTextInput
-        value={soundId}
-        onChangeText={onChangeSoundId}
-        placeholder="Sound id"
-        style={styles.soundIdInput}
-      />
-      {state === 'recording' || state === 'processing' ? (
-        <AudioActivityIndicator label={state === 'recording' ? 'Recording...' : 'Processing...'} />
-      ) : null}
-    </View>
-  );
-};
+    const soundId = response.params?.recordingUrl
+      ? response.params?.recordingUrl.split('audio.castle.xyz/')[1].split('.mp3')[0]
+      : null;
+
+    return (
+      <View
+        style={[SceneCreatorConstants.styles.button, styles.container, { alignItems: 'center' }]}>
+        <PlayButton onPress={this.onPlayAudio} disabled={state !== 'ready' || !soundId} />
+        <RecordStopButton
+          onPress={state === 'ready' ? this.onStartRecord : this.onStopRecord}
+          isRecording={state === 'recording'}
+          disabled={state === 'processing'}
+        />
+        <InspectorTextInput
+          value={soundId}
+          onChangeText={this.onChangeSoundId}
+          placeholder="Sound id"
+          style={styles.soundIdInput}
+        />
+        {state === 'recording' || state === 'processing' ? (
+          <AudioActivityIndicator
+            label={state === 'recording' ? 'Recording...' : 'Processing...'}
+          />
+        ) : null}
+      </View>
+    );
+  }
+}
 
 const SoundUpload = ({ onChangeSound, response, onChangeResponse, children, ...props }) => {
   const [state, setState] = React.useState('ready');
