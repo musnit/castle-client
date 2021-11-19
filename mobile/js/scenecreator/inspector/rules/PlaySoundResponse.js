@@ -318,6 +318,7 @@ const SoundEffect = ({ onChangeSound, response, onChangeResponse, children, ...p
 
 const SoundRecording = ({ onChangeSound, response, onChangeResponse, children, ...props }) => {
   const [state, setState] = React.useState('ready');
+  const componentWillUnmount = React.useRef(false);
 
   const onChangeRecordingUrl = React.useCallback(
     (recordingUrl) =>
@@ -344,7 +345,7 @@ const SoundRecording = ({ onChangeSound, response, onChangeResponse, children, .
       const result = await audioRecorderPlayer.stopRecorder();
       audioRecorderPlayer.removeRecordBackListener();
 
-      let uploadResult = await uploadAudioFile(result);
+      let uploadResult = await uploadAudioFile(result, true);
       onChangeRecordingUrl(uploadResult.url);
     } catch (e) {
       console.error(`error processing audio: ${e}`);
@@ -399,6 +400,25 @@ const SoundRecording = ({ onChangeSound, response, onChangeResponse, children, .
       return;
     });
   }, [setState, onStopRecord, onPermissionsError]);
+
+  React.useEffect(() => {
+    return () => {
+      componentWillUnmount.current = true;
+    };
+  }, []);
+
+  React.useEffect(() => {
+    return () => {
+      if (componentWillUnmount.current) {
+        if (state === 'recording') {
+          audioRecorderPlayer.stopRecorder();
+          audioRecorderPlayer.removeRecordBackListener();
+        }
+
+        setState('closed');
+      }
+    };
+  }, [state, setState]);
 
   const onPlayAudio = React.useCallback(async () => {
     sendAsync('EDITOR_PREVIEW_SOUND', response.params);
@@ -459,7 +479,7 @@ const SoundUpload = ({ onChangeSound, response, onChangeResponse, children, ...p
         type: [DocumentPicker.types.audio],
       });
 
-      let uploadResult = await uploadAudioFile(res[0].uri);
+      let uploadResult = await uploadAudioFile(res[0].uri, false);
       onChangeUploadUrl(uploadResult.url);
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
