@@ -68,6 +68,16 @@ Troubleshooting:
 - Bump versionCode and versionName in `android/app/build.gradle`
 - `cd tools`
 - `./build-android-prod.sh` will generate a .aab file at tools/build/app-release.aab and also install it to the connected android device for testing
+
+- QA Checklist:
+  - Cold boot with nux deck
+  - Log in
+  - Sign up
+  - Open deck from deep link (cold boot)
+  - Open deck from deep link (app already open)
+  - Open deck from push notification (cold boot)
+  - Open deck from push notification (app already open)
+
 - Upload to open testing https://play.google.com/console/u/1/developers/6774483098390213048/app/4973889594505423194/tracks/open-testing. Make sure to update the release notes.
 - Wait until it's reviewed, then go to https://play.google.com/console/u/1/developers/6774483098390213048/app/4973889594505423194/publishing to publish
 - Once it's ready for full release, go to https://play.google.com/console/u/1/developers/6774483098390213048/app/4973889594505423194/tracks/open-testing and do "Promote release"

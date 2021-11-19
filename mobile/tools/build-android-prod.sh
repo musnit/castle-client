@@ -25,6 +25,7 @@ java -jar bundletool-all-1.5.0.jar build-apks --connected-device --bundle=build/
 
 echo "Uninstalling old app..."
 adb uninstall xyz.castle
+adb uninstall xyz.castle.debug
 
 echo "Installing new app..."
 java -jar bundletool-all-1.5.0.jar install-apks --apks=build/aab-apk.apks
