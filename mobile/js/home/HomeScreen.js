@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Animated, StatusBar, StyleSheet, View } from 'react-native';
+import { Animated, StatusBar, StyleSheet, View, Platform } from 'react-native';
 import { Amplitude } from '@amplitude/react-native';
 import { CommentsSheet } from '../comments/CommentsSheet';
 import { FeaturedDecks } from './FeaturedDecks';
@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SegmentedNavigation } from '../components/SegmentedNavigation';
 import { useSession } from '../Session';
 import { useFocusEffect, useNavigation } from '../ReactNavigation';
+import * as PushNotifications from '../PushNotifications';
 
 import * as Constants from '../Constants';
 
@@ -129,6 +130,15 @@ export const HomeScreen = ({ route }) => {
     []
   );
   const closeComments = React.useCallback(() => setCommentsState({ type: 'close' }), []);
+
+  if (Platform.OS === 'android') {
+    React.useEffect(() => {
+      // android doesn't show a permissions alert when requesting a token, so do this asap
+      if (!isAnonymous) {
+        PushNotifications.requestTokenAsync();
+      }
+    }, [isAnonymous]);
+  }
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
