@@ -260,21 +260,27 @@ namespace ghost {
   }
 
   bool DrawDataFrame::floodFill(float x, float y, Colorf color) {
-    updatePathsCanvas();
-    auto pathsImageData = canvasToImageData(pathsCanvas);
-    resizeFillImageDataToPathBounds();
-    fillImageData->getFormat();
     image::Pixel p;
     p.rgba8[0] = color.r * 255.0;
     p.rgba8[1] = color.g * 255.0;
     p.rgba8[2] = color.b * 255.0;
     p.rgba8[3] = 255.0;
 
+    // TODO: why was this here? fillImageData->getFormat();
     auto fillPixelsPerUnit = parentLayer()->parent()->fillPixelsPerUnit;
-    auto pixelCount
-        = fillImageData->floodFill(floor((x * fillPixelsPerUnit) - fillImageBounds.minX),
-            floor((y * fillPixelsPerUnit) - fillImageBounds.minY), pathsImageData, p);
-    pathsImageData->release();
+    int pixelCount = 0;
+
+    if (parentLayer()->isBitmap) {
+      pixelCount = fillImageData->floodFill(floor((x * fillPixelsPerUnit) - fillImageBounds.minX),
+          floor((y * fillPixelsPerUnit) - fillImageBounds.minY), nullptr, p);
+    } else {
+      updatePathsCanvas();
+      auto pathsImageData = canvasToImageData(pathsCanvas);
+      resizeFillImageDataToPathBounds();
+      pixelCount = fillImageData->floodFill(floor((x * fillPixelsPerUnit) - fillImageBounds.minX),
+          floor((y * fillPixelsPerUnit) - fillImageBounds.minY), pathsImageData, p);
+      pathsImageData->release();
+    }
     compressFillCanvas();
     updateFillImageWithFillImageData();
     return pixelCount > 0;
