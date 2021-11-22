@@ -503,10 +503,12 @@ int ImageData::floodFillTest(int x, int y, ImageData *paths, const Pixel &p)
 		return 1;
 	}
 
-	Pixel pathP;
-	paths->getPixel(x, y, pathP);
-	if (paths->isAlphaSet(pathP)) {
-		return 2;
+	if (paths) {
+		Pixel pathP;
+		paths->getPixel(x, y, pathP);
+		if (paths->isAlphaSet(pathP)) {
+			return 2;
+		}
 	}
 
 	return 0;
@@ -602,7 +604,13 @@ int ImageData::floodFillErase(int x, int y, int radius, ImageData *paths)
 int ImageData::internalFloodFill(int x, int y, ImageData *paths, const Pixel &p)
 {
 	Lock lock(mutex);
-	Lock lock2(paths->mutex);
+	thread::EmptyLock lock2;
+	if (paths && paths != this) {
+		lock2.setLock(paths->mutex);
+	}
+	
+	Pixel regionInitialPixel;
+	getPixel(x, y, regionInitialPixel);
 
 	std::queue<flood_pixel_t> pixelQueue;
 	flood_pixel_t startPixel;
@@ -618,7 +626,10 @@ int ImageData::internalFloodFill(int x, int y, ImageData *paths, const Pixel &p)
 		flood_pixel_t currentPixel = pixelQueue.front();
 		pixelQueue.pop();
 
-		if (floodFillTest(currentPixel.x, currentPixel.y, paths, p) == 0) {
+		// 1 means: my color at this position is the same
+		// 2 means: there is a path at this position
+		// 0 means: neither
+		if (floodFillTest(currentPixel.x, currentPixel.y, paths, p) == 0 && floodFillTest(currentPixel.x, currentPixel.y, paths, regionInitialPixel) == 1) {
 			unsigned char *pixeldata = data + ((currentPixel.y * width + currentPixel.x) * pixelsize);
 			count++;
 			memcpy(pixeldata, &p, pixelsize);
@@ -635,14 +646,16 @@ int ImageData::internalFloodFill(int x, int y, ImageData *paths, const Pixel &p)
 					newPixel.y = currentPixel.y + dy;
 
 					if (!inside(newPixel.x, newPixel.y)) {
-						return -1;
+						skip = true;
 					}
 
 					if (!skip) {
 						int testResult = floodFillTest(newPixel.x, newPixel.y, paths, p);
-						if (testResult == 0) {
+						if (testResult == 0 && floodFillTest(newPixel.x, newPixel.y, paths, regionInitialPixel) == 1) {
+							// found a pixel that is different from our fill pixel, but the same as the region color, continue filling
 							pixelQueue.push(newPixel);
 						} else if (testResult == 2) {
+							// found a path, treat this as a boundary and stop
 							unsigned char *pixeldata = data + ((newPixel.y * width + newPixel.x) * pixelsize);
 							count++;
 							memcpy(pixeldata, &p, pixelsize);
