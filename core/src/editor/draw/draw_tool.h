@@ -64,6 +64,7 @@ public:
   void dirtySelectedFrameBounds();
 
   ImageImporter imageImporter { *this };
+  void confirmImportImage();
 
 private:
   friend class ImageImporter;
@@ -106,6 +107,7 @@ private:
   void drawGrid(float windowWidth, float topOffset);
 
   void makeNewLayer();
+  void makeNewLayerFromImageImporter();
   void deleteLayerAndValidate(const love::DrawDataLayerId &layerId);
 
   // for 'copy cell'

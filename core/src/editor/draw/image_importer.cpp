@@ -72,6 +72,10 @@ void ImageImporter::reset() {
     // TODO: is love deleting these somewhere?
     importedImageOriginalData = nullptr;
   }
+  if (importedImageFilteredData) {
+    // TODO: is love deleting these somewhere?
+    importedImageFilteredData = nullptr;
+  }
   if (importedImageFilteredPreview) {
     // TODO: is love deleting these somewhere?
     importedImageFilteredPreview = nullptr;
@@ -87,12 +91,16 @@ void ImageImporter::importImage(std::string uri) {
     uri = uri.substr(7);
   }
 
+  auto defaultFillPixelsPerUnit = 25.6f;
+  auto maxImageSize = DRAW_MAX_SIZE * 2.0f * defaultFillPixelsPerUnit;
+  int imageSize = int(maxImageSize * imageScale);
+
   // decode original data and downsize, generate initial preview
   love::filesystem::File *file = lv.filesystem.newFile(uri.c_str());
   love::filesystem::FileData *data = file->read();
   auto imageData = new love::image::ImageData(data);
   file->release();
-  imageData = ImageProcessing::fitToMaxSize(imageData, 512);
+  imageData = ImageProcessing::fitToMaxSize(imageData, imageSize);
   // TODO: is love freeing the previous value?
   importedImageOriginalData = imageData;
   shufflePalette();
@@ -127,6 +135,7 @@ void ImageImporter::generateImportedImageFilteredPreview(love::image::ImageData 
   ImageProcessing::kMeans(imageData, numColors, 4);
   ImageProcessing::paletteSwap(imageData, PALETTE);
   // ImageProcessing::testOnlyRedChannel(imageData);
+  importedImageFilteredData = imageData;
   auto loadedImage = love::DrawDataFrame::imageDataToImage(imageData);
   love::graphics::Texture::Filter filter { love::graphics::Texture::FILTER_LINEAR,
     love::graphics::Texture::FILTER_LINEAR, love::graphics::Texture::FILTER_NONE, 1.0f };
@@ -206,7 +215,7 @@ void ImageImporter::draw() {
   if (importedImageFilteredPreview) {
     lv.graphics.setColor({ 1, 1, 1, 1 });
     love::Vector2 pos(0, 0);
-    auto size = 12.0f;
+    auto size = DRAW_MAX_SIZE * 2.0f;
     auto imgW = float(importedImageFilteredPreview->getWidth());
     auto imgH = float(importedImageFilteredPreview->getHeight());
     auto scale = std::min(size / imgW, size / imgH);

@@ -70,7 +70,7 @@ namespace ghost {
 
   void DrawDataFrame::cleanUpPaths() {
     for (size_t i = 0; i < pathDataList.size(); i++) {
-      parent()->updatePathDataRendering(&pathDataList[i]);
+      parentLayer()->parent()->updatePathDataRendering(&pathDataList[i]);
     }
   }
 
@@ -127,10 +127,11 @@ namespace ghost {
   Bounds DrawDataFrame::getPathDataBoundsInPixelCoordinates() {
     auto bounds = getPathDataBounds(std::nullopt);
     Bounds newBounds;
-    newBounds.minX = floor(bounds.minX * parent()->fillPixelsPerUnit);
-    newBounds.minY = floor(bounds.minY * parent()->fillPixelsPerUnit);
-    newBounds.maxX = ceil(bounds.maxX * parent()->fillPixelsPerUnit);
-    newBounds.maxY = ceil(bounds.maxY * parent()->fillPixelsPerUnit);
+    auto fillPixelsPerUnit = parentLayer()->parent()->fillPixelsPerUnit;
+    newBounds.minX = floor(bounds.minX * fillPixelsPerUnit);
+    newBounds.minY = floor(bounds.minY * fillPixelsPerUnit);
+    newBounds.maxX = ceil(bounds.maxX * fillPixelsPerUnit);
+    newBounds.maxY = ceil(bounds.maxY * fillPixelsPerUnit);
     return newBounds;
   }
 
@@ -138,7 +139,7 @@ namespace ghost {
     _graphicsNeedsReset = true;
   }
 
-  image::ImageData *DrawDataFrame::getFillImageDataSizedToPathBounds() {
+  void DrawDataFrame::resizeFillImageDataToPathBounds() {
     auto pathBounds = getPathDataBoundsInPixelCoordinates();
     auto width = pathBounds.maxX - pathBounds.minX;
     auto height = pathBounds.maxY - pathBounds.minY;
@@ -163,7 +164,6 @@ namespace ghost {
       fillImageData = newFillImageData;
     }
     fillImageBounds.set(pathBounds);
-    return fillImageData;
   }
 
   graphics::Image *DrawDataFrame::imageDataToImage(image::ImageData *imageData) {
@@ -262,7 +262,7 @@ namespace ghost {
   bool DrawDataFrame::floodFill(float x, float y, Colorf color) {
     updatePathsCanvas();
     auto pathsImageData = canvasToImageData(pathsCanvas);
-    getFillImageDataSizedToPathBounds();
+    resizeFillImageDataToPathBounds();
     fillImageData->getFormat();
     image::Pixel p;
     p.rgba8[0] = color.r * 255.0;
@@ -270,10 +270,10 @@ namespace ghost {
     p.rgba8[2] = color.b * 255.0;
     p.rgba8[3] = 255.0;
 
-
-    auto pixelCount = getFillImageDataSizedToPathBounds()->floodFill(
-        floor((x * parent()->fillPixelsPerUnit) - fillImageBounds.minX),
-        floor((y * parent()->fillPixelsPerUnit) - fillImageBounds.minY), pathsImageData, p);
+    auto fillPixelsPerUnit = parentLayer()->parent()->fillPixelsPerUnit;
+    auto pixelCount
+        = fillImageData->floodFill(floor((x * fillPixelsPerUnit) - fillImageBounds.minX),
+            floor((y * fillPixelsPerUnit) - fillImageBounds.minY), pathsImageData, p);
     pathsImageData->release();
     compressFillCanvas();
     updateFillImageWithFillImageData();
@@ -283,10 +283,12 @@ namespace ghost {
   bool DrawDataFrame::floodClear(float x, float y, float radius) {
     updatePathsCanvas();
     auto pathsImageData = canvasToImageData(pathsCanvas);
-    auto pixelCount = getFillImageDataSizedToPathBounds()->floodFillErase(
-        floor((x * parent()->fillPixelsPerUnit) - fillImageBounds.minX),
-        floor((y * parent()->fillPixelsPerUnit) - fillImageBounds.minY),
-        floor(radius * parent()->fillPixelsPerUnit), pathsImageData);
+    auto fillPixelsPerUnit = parentLayer()->parent()->fillPixelsPerUnit;
+    resizeFillImageDataToPathBounds();
+    auto pixelCount
+        = fillImageData->floodFillErase(floor((x * fillPixelsPerUnit) - fillImageBounds.minX),
+            floor((y * fillPixelsPerUnit) - fillImageBounds.minY),
+            floor(radius * fillPixelsPerUnit), pathsImageData);
     pathsImageData->release();
     compressFillCanvas();
     updateFillImageWithFillImageData();
@@ -296,10 +298,12 @@ namespace ghost {
   void DrawDataFrame::resetFill() {
     cleanUpPaths();
     updatePathsCanvas();
-    auto pathsImageData = canvasToImageData(pathsCanvas);
-    getFillImageDataSizedToPathBounds()->updateFloodFillForNewPaths(
-        pathsImageData, DEBUG_UPDATE_FLOOD_FILL);
-    pathsImageData->release();
+    if (!parentLayer()->isBitmap) {
+      auto pathsImageData = canvasToImageData(pathsCanvas);
+      resizeFillImageDataToPathBounds();
+      fillImageData->updateFloodFillForNewPaths(pathsImageData, DEBUG_UPDATE_FLOOD_FILL);
+      pathsImageData->release();
+    }
     compressFillCanvas();
     updateFillImageWithFillImageData();
   }
@@ -366,10 +370,11 @@ namespace ghost {
       graphics::Graphics *graphicsModule
           = Module::getInstance<graphics::Graphics>(Module::M_GRAPHICS);
 
+      auto fillPixelsPerUnit = parentLayer()->parent()->fillPixelsPerUnit;
       graphicsModule->push(graphics::Graphics::STACK_TRANSFORM);
       graphicsModule->origin();
       graphicsModule->translate(-bounds.minX, -bounds.minY);
-      graphicsModule->scale(parent()->fillPixelsPerUnit, parent()->fillPixelsPerUnit);
+      graphicsModule->scale(fillPixelsPerUnit, fillPixelsPerUnit);
 
       graphics::OptionalColorf clearColor(Colorf(0.0f, 0.0f, 0.0f, 0.0f));
       OptionalInt stencil(0);
@@ -412,11 +417,12 @@ namespace ghost {
       graphics::Graphics *graphicsModule
           = Module::getInstance<graphics::Graphics>(Module::M_GRAPHICS);
 
-      float x = fillImageBounds.minX / parent()->fillPixelsPerUnit;
-      float y = fillImageBounds.minY / parent()->fillPixelsPerUnit;
+      auto fillPixelsPerUnit = parentLayer()->parent()->fillPixelsPerUnit;
+      float x = fillImageBounds.minX / fillPixelsPerUnit;
+      float y = fillImageBounds.minY / fillPixelsPerUnit;
       float a = 0.0;
-      float sx = 1 / parent()->fillPixelsPerUnit;
-      float sy = 1 / parent()->fillPixelsPerUnit;
+      float sx = 1 / fillPixelsPerUnit;
+      float sy = 1 / fillPixelsPerUnit;
 
       // Avoid using `love::graphics::Graphics::draw` directly since it needs to stream vertex
       // information, which doesn't perform well on WebGL -- we'll just keep and use our own static

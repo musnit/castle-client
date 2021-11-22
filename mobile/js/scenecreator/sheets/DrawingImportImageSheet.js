@@ -83,9 +83,14 @@ export const DrawingImportImageSheet = ({ isOpen, ...props }) => {
     () => sendAsync('DRAW_TOOL_LAYER_ACTION', { action: 'cancelImportImage' }),
     []
   );
+  const confirmImport = React.useCallback(
+    () => sendAsync('DRAW_TOOL_LAYER_ACTION', { action: 'confirmImportImage' }),
+    []
+  );
 
-  // TODO: done
-  const renderHeader = () => <BottomSheetHeader title="Import Image" onClose={cancelImport} />;
+  const renderHeader = () => (
+    <BottomSheetHeader title="Import Image" onClose={cancelImport} onDone={confirmImport} />
+  );
   const renderContent = () =>
     !isOpen ? null : <ImportImage sendAction={sendImportAction} importData={importData} />;
 
