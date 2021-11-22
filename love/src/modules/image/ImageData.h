@@ -31,6 +31,13 @@
 #include "ImageDataBase.h"
 #include "FormatHandler.h"
 
+#include <queue>
+
+struct flood_pixel_t {
+	int x;
+	int y;
+};
+
 using love::thread::Mutex;
 
 namespace love
@@ -149,7 +156,8 @@ private:
 	int floodFillTest(int x, int y, ImageData *paths, const Pixel &p);
 	int floodFillTest2(int x, int y, ImageData *paths, int * pixels);
 	void clearPixel(Pixel &p);
-	int internalFloodFill(int x, int y, ImageData *paths, const Pixel &p);
+	int floodFillColorAtPoint(int x, int y, ImageData *paths, const Pixel &p);
+	int runFloodFill(std::queue<flood_pixel_t> &pixelQueue, ImageData *paths, const Pixel &fillPixel, const Pixel &regionInitialPixel);
 
 	// The actual data.
 	unsigned char *data = nullptr;
