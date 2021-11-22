@@ -287,15 +287,24 @@ namespace ghost {
   }
 
   bool DrawDataFrame::floodClear(float x, float y, float radius) {
-    updatePathsCanvas();
-    auto pathsImageData = canvasToImageData(pathsCanvas);
     auto fillPixelsPerUnit = parentLayer()->parent()->fillPixelsPerUnit;
-    resizeFillImageDataToPathBounds();
-    auto pixelCount
-        = fillImageData->floodFillErase(floor((x * fillPixelsPerUnit) - fillImageBounds.minX),
-            floor((y * fillPixelsPerUnit) - fillImageBounds.minY),
-            floor(radius * fillPixelsPerUnit), pathsImageData);
-    pathsImageData->release();
+    int pixelCount = 0;
+
+    if (parentLayer()->isBitmap) {
+      pixelCount
+          = fillImageData->floodFillErase(floor((x * fillPixelsPerUnit) - fillImageBounds.minX),
+              floor((y * fillPixelsPerUnit) - fillImageBounds.minY),
+              floor(radius * fillPixelsPerUnit), nullptr);
+    } else {
+      updatePathsCanvas();
+      auto pathsImageData = canvasToImageData(pathsCanvas);
+      resizeFillImageDataToPathBounds();
+      pixelCount
+          = fillImageData->floodFillErase(floor((x * fillPixelsPerUnit) - fillImageBounds.minX),
+              floor((y * fillPixelsPerUnit) - fillImageBounds.minY),
+              floor(radius * fillPixelsPerUnit), pathsImageData);
+      pathsImageData->release();
+    }
     compressFillCanvas();
     updateFillImageWithFillImageData();
     return pixelCount > 0;

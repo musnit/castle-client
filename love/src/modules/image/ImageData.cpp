@@ -21,7 +21,6 @@
 #include "ImageData.h"
 #include "Image.h"
 #include "filesystem/Filesystem.h"
-#include <queue>
 #include <map>
 #include <set>
 #include <math.h>
@@ -288,11 +287,6 @@ void ImageData::getPixel(int x, int y, Pixel &p) const
 	memcpy(&p, data + ((y * width + x) * pixelsize), pixelsize);
 }
 
-struct flood_pixel_t {
-	int x;
-	int y;
-};
-
 bool ImageData::isAlphaSet(const Pixel &p)
 {
 	switch (format)
@@ -520,11 +514,11 @@ int ImageData::floodFill(int x, int y, ImageData *paths, const Pixel &p)
 		return 0;
 	}
 	
-	int result = internalFloodFill(x, y, paths, p);
+	int result = floodFillColorAtPoint(x, y, paths, p);
 	if (result == -1) {
 		Pixel clearP;
 		clearPixel(clearP);
-		internalFloodFill(x, y, paths, clearP);
+		floodFillColorAtPoint(x, y, paths, clearP);
 
 		return 0;
 	}
@@ -556,52 +550,12 @@ int ImageData::floodFillErase(int x, int y, int radius, ImageData *paths)
 		}
 	}
 
-	int count = 0;
-	size_t pixelsize = getPixelSize();
-
-	while (!pixelQueue.empty()) {
-		flood_pixel_t currentPixel = pixelQueue.front();
-		pixelQueue.pop();
-
-		if (floodFillTest(currentPixel.x, currentPixel.y, paths, clearP) == 0) {
-			unsigned char *pixeldata = data + ((currentPixel.y * width + currentPixel.x) * pixelsize);
-			count++;
-			memcpy(pixeldata, &clearP, pixelsize);
-
-			for (int dx = -1; dx <= 1; dx++) {
-				for (int dy = -1; dy <= 1; dy++) {
-					bool skip = false;
-					if (dx == 0 && dy == 0) {
-						skip = true;
-					}
-
-					flood_pixel_t newPixel;
-					newPixel.x = currentPixel.x + dx;
-					newPixel.y = currentPixel.y + dy;
-
-					if (!inside(newPixel.x, newPixel.y)) {
-						return -1;
-					}
-
-					if (!skip) {
-						int testResult = floodFillTest(newPixel.x, newPixel.y, paths, clearP);
-						if (testResult == 0) {
-							pixelQueue.push(newPixel);
-						} else if (testResult == 2) {
-							unsigned char *pixeldata = data + ((newPixel.y * width + newPixel.x) * pixelsize);
-							count++;
-							memcpy(pixeldata, &clearP, pixelsize);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	return count;
+	Pixel regionInitialPixel;
+	getPixel(x, y, regionInitialPixel);
+	return runFloodFill(pixelQueue, paths, clearP, regionInitialPixel);
 }
 
-int ImageData::internalFloodFill(int x, int y, ImageData *paths, const Pixel &p)
+int ImageData::floodFillColorAtPoint(int x, int y, ImageData *paths, const Pixel &p)
 {
 	Lock lock(mutex);
 	thread::EmptyLock lock2;
@@ -616,10 +570,13 @@ int ImageData::internalFloodFill(int x, int y, ImageData *paths, const Pixel &p)
 	flood_pixel_t startPixel;
 	startPixel.x = x;
 	startPixel.y = y;
-	int count = 0;
 
 	pixelQueue.push(startPixel);
+	return runFloodFill(pixelQueue, paths, p, regionInitialPixel);
+}
 
+int ImageData::runFloodFill(std::queue<flood_pixel_t> &pixelQueue, ImageData *paths, const Pixel &fillPixel, const Pixel &regionInitialPixel) {
+	int count = 0;
 	size_t pixelsize = getPixelSize();
 
 	while (!pixelQueue.empty()) {
@@ -629,10 +586,10 @@ int ImageData::internalFloodFill(int x, int y, ImageData *paths, const Pixel &p)
 		// 1 means: my color at this position is the same
 		// 2 means: there is a path at this position
 		// 0 means: neither
-		if (floodFillTest(currentPixel.x, currentPixel.y, paths, p) == 0 && floodFillTest(currentPixel.x, currentPixel.y, paths, regionInitialPixel) == 1) {
+		if (floodFillTest(currentPixel.x, currentPixel.y, paths, fillPixel) == 0 && floodFillTest(currentPixel.x, currentPixel.y, paths, regionInitialPixel) == 1) {
 			unsigned char *pixeldata = data + ((currentPixel.y * width + currentPixel.x) * pixelsize);
 			count++;
-			memcpy(pixeldata, &p, pixelsize);
+			memcpy(pixeldata, &fillPixel, pixelsize);
 
 			for (int dx = -1; dx <= 1; dx++) {
 				for (int dy = -1; dy <= 1; dy++) {
@@ -650,7 +607,7 @@ int ImageData::internalFloodFill(int x, int y, ImageData *paths, const Pixel &p)
 					}
 
 					if (!skip) {
-						int testResult = floodFillTest(newPixel.x, newPixel.y, paths, p);
+						int testResult = floodFillTest(newPixel.x, newPixel.y, paths, fillPixel);
 						if (testResult == 0 && floodFillTest(newPixel.x, newPixel.y, paths, regionInitialPixel) == 1) {
 							// found a pixel that is different from our fill pixel, but the same as the region color, continue filling
 							pixelQueue.push(newPixel);
@@ -658,14 +615,13 @@ int ImageData::internalFloodFill(int x, int y, ImageData *paths, const Pixel &p)
 							// found a path, treat this as a boundary and stop
 							unsigned char *pixeldata = data + ((newPixel.y * width + newPixel.x) * pixelsize);
 							count++;
-							memcpy(pixeldata, &p, pixelsize);
+							memcpy(pixeldata, &fillPixel, pixelsize);
 						}
 					}
 				}
 			}
 		}
 	}
-
 	return count;
 }
 
