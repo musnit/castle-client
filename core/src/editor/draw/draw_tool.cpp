@@ -338,7 +338,7 @@ struct DrawToolLayerActionReceiver {
         return;
       }
       if (isLinked) {
-        auto newFrame = std::make_shared<love::DrawDataFrame>(true, drawTool.drawData.get());
+        auto newFrame = std::make_shared<love::DrawDataFrame>(true, layer);
         layer->frames[frameIndex.toZeroIndex()] = std::move(newFrame);
       } else {
         love::OneIndexFrame realFrameIndex;
@@ -365,7 +365,7 @@ struct DrawToolLayerActionReceiver {
           newFrameArchive.read([&](Reader &reader) {
             newFrame->read(reader);
           });
-          newFrame->setParent(drawTool.drawData.get());
+          newFrame->setParentLayer(destLayer);
 
           destLayer->frames[destFrameIndex.toZeroIndex()] = std::move(newFrame);
         }
@@ -384,6 +384,10 @@ struct DrawToolLayerActionReceiver {
       drawTool.sendDrawToolEvent(); // indicate to ui that import started
     } else if (action == "cancelImportImage") {
       drawTool.imageImporter.reset();
+      drawTool.sendDrawToolEvent();
+    } else if (action == "confirmImportImage") {
+      drawTool.makeNewLayerFromImageImporter();
+      drawTool.saveDrawing("import image to layer");
       drawTool.sendDrawToolEvent();
     }
   }
@@ -891,6 +895,30 @@ love::PathDataList *DrawTool::selectedFramePathDataList() {
 
 void DrawTool::dirtySelectedFrameBounds() {
   drawData->updateFrameBounds(selectedFrameIndex);
+}
+
+void DrawTool::makeNewLayerFromImageImporter() {
+  if (imageImporter.isImportingImage) {
+    makeNewLayer();
+
+    // flag this layer as bitmap-only
+    drawData->layerForId(selectedLayerId)->isBitmap = true;
+
+    // selected frame's bitmap is image importer's data
+    auto &selectedFrame = getDrawDataFrame();
+    selectedFrame.fillImageData = imageImporter.getFilteredImageData();
+    selectedFrame.fillImageData->retain();
+
+    // initially center the bitmap
+    auto width = selectedFrame.fillImageData->getWidth(),
+         height = selectedFrame.fillImageData->getHeight();
+    selectedFrame.fillImageBounds.minX = -(width / 2);
+    selectedFrame.fillImageBounds.minY = -(height / 2);
+    selectedFrame.fillImageBounds.maxX = width / 2;
+    selectedFrame.fillImageBounds.maxY = height / 2;
+
+    imageImporter.reset();
+  }
 }
 
 void DrawTool::update(double dt) {

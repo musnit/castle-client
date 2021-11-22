@@ -20,6 +20,7 @@ namespace love {
 namespace ghost {
 
   class DrawData;
+  struct DrawDataLayer;
 
   class DrawDataFrame {
   public:
@@ -28,7 +29,7 @@ namespace ghost {
     Bounds fillImageBounds;
     bool _graphicsNeedsReset = true;
     ToveGraphicsHolder *_graphics = NULL;
-    DrawData *_parent = NULL;
+    DrawDataLayer *_parentLayer = NULL;
     image::ImageData *fillImageData = NULL;
     graphics::Image *fillImage = NULL;
     graphics::Canvas *pathsCanvas = NULL;
@@ -36,9 +37,9 @@ namespace ghost {
     std::optional<std::string> base64Png;
 
     DrawDataFrame() = default;
-    DrawDataFrame(bool isLinked_, DrawData *parent_)
+    DrawDataFrame(bool isLinked_, DrawDataLayer *parentLayer_)
         : isLinked(isLinked_)
-        , _parent(parent_) {
+        , _parentLayer(parentLayer_) {
       fillImageBounds.maxX = 0;
       fillImageBounds.maxY = 0;
       fillImageBounds.minX = 0;
@@ -127,7 +128,7 @@ namespace ghost {
     std::optional<std::string> renderPreviewPng(int size);
 
     static graphics::Image *imageDataToImage(image::ImageData *);
-    image::ImageData *getFillImageDataSizedToPathBounds();
+    void resizeFillImageDataToPathBounds();
     graphics::Image *getFillImage();
     void updateFillImageWithFillImageData();
     void compressFillCanvas();
@@ -139,12 +140,12 @@ namespace ghost {
 
     image::ImageData *canvasToImageData(graphics::Canvas *canvas);
 
-    DrawData *parent() {
-      return _parent;
+    DrawDataLayer *parentLayer() {
+      return _parentLayer;
     }
 
-    void setParent(DrawData *d) {
-      _parent = d;
+    void setParentLayer(DrawDataLayer *l) {
+      _parentLayer = l;
     }
   };
 
@@ -154,6 +155,8 @@ namespace ghost {
     std::string title;
     DrawDataLayerId id;
     bool isVisible = true;
+    bool isBitmap = false;
+    DrawData *_parent = NULL;
     std::vector<std::shared_ptr<DrawDataFrame>> frames;
 
     DrawDataLayer() = default;
@@ -166,6 +169,7 @@ namespace ghost {
       title = archive.str("title", "");
       id = archive.str("id", "");
       isVisible = archive.boolean("isVisible", true);
+      isBitmap = archive.boolean("isBitmap", false);
       archive.arr("frames", [&]() {
         for (auto i = 0; i < archive.size(); i++) {
           auto frame = std::make_shared<DrawDataFrame>();
@@ -179,6 +183,7 @@ namespace ghost {
       archive.str("title", title);
       archive.str("id", id);
       archive.boolean("isVisible", isVisible);
+      archive.boolean("isBitmap", isBitmap);
       archive.arr("frames", [&]() {
         for (size_t i = 0; i < frames.size(); i++) {
           archive.obj(*frames[i]);
@@ -186,9 +191,14 @@ namespace ghost {
       });
     }
 
+    DrawData *parent() {
+      return _parent;
+    }
+
     void setParent(DrawData *d) {
-      for (size_t i = 0; i < frames.size(); i++) {
-        frames[i]->setParent(d);
+      _parent = d;
+      for (auto &frame : frames) {
+        frame->setParentLayer(this);
       }
     }
   };

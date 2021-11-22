@@ -15,6 +15,7 @@ public:
   void importImage(std::string uri);
   void generateImportedImageFilteredPreview(love::image::ImageData *original);
   void regeneratePreview();
+  love::image::ImageData *getFilteredImageData();
   void reset();
   void draw();
 
@@ -27,13 +28,22 @@ private:
   void sendEvent();
   void shufflePalette();
 
+  float imageScale = 1.0f;
   uint8 numBlurs = 1;
   uint8 numColors = 4;
 
   love::image::ImageData *importedImageOriginalData;
+  love::image::ImageData *importedImageFilteredData;
   love::Image *importedImageFilteredPreview;
 };
 
 inline ImageImporter::ImageImporter(DrawTool &drawTool_)
     : drawTool(drawTool_) {
+}
+
+inline love::image::ImageData *ImageImporter::getFilteredImageData() {
+  if (!importedImageFilteredPreview) {
+    regeneratePreview();
+  }
+  return importedImageFilteredData;
 }
