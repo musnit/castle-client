@@ -841,7 +841,7 @@ void ImageData::updateFloodFillForNewPaths(ImageData *paths, int debug)
 		delete it->second;
 	}
 
-	delete pixels;
+	delete[] pixels;
 }
 
 void ImageData::paste(ImageData *src, int dx, int dy, int sx, int sy, int sw, int sh)
