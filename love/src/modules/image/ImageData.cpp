@@ -530,6 +530,12 @@ int ImageData::floodFillErase(int x, int y, int radius, ImageData *paths)
 {
 	Pixel clearP;
 	clearPixel(clearP);
+	Pixel regionInitialPixel;
+	bool hasInitialPixel = false;
+	if (inside(x,y)) {
+		hasInitialPixel = true;
+		getPixel(x, y, regionInitialPixel);
+	}
 	
 	std::queue<flood_pixel_t> pixelQueue;
 	
@@ -546,12 +552,17 @@ int ImageData::floodFillErase(int x, int y, int radius, ImageData *paths)
 				p.y = py;
 
 				pixelQueue.push(p);
+				if (!hasInitialPixel) {
+					hasInitialPixel = true;
+					getPixel(px, py, regionInitialPixel);
+				}
 			}
 		}
 	}
 
-	Pixel regionInitialPixel;
-	getPixel(x, y, regionInitialPixel);
+	if (!hasInitialPixel) {
+		return 0;
+	}
 	return runFloodFill(pixelQueue, paths, clearP, regionInitialPixel);
 }
 
@@ -561,6 +572,10 @@ int ImageData::floodFillColorAtPoint(int x, int y, ImageData *paths, const Pixel
 	thread::EmptyLock lock2;
 	if (paths && paths != this) {
 		lock2.setLock(paths->mutex);
+	}
+	
+	if (!inside(x, y)) {
+		return 0;
 	}
 	
 	Pixel regionInitialPixel;
