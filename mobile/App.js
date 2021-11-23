@@ -10,6 +10,7 @@ import * as Sentry from '@sentry/react-native';
 Sentry.init({
   dsn: SENTRY_DSN,
   environment: __DEV__ ? 'debug' : 'release',
+  ignoreErrors: ['Network request failed'],
 });
 
 if (AMPLITUDE_KEY) {
