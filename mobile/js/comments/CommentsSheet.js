@@ -19,10 +19,6 @@ import Viewport from '../common/viewport';
 const TAB_BAR_HEIGHT = 49;
 const SHEET_HEADER_HEIGHT = 62;
 
-const needsTabBarPadding = ({ navigationIndex }) => {
-  return Constants.iOS && navigationIndex === 0;
-};
-
 const needsTabBarHeight = ({ isFullScreen }) => {
   return Constants.Android && !isFullScreen;
 };
@@ -94,11 +90,6 @@ export const CommentsSheet = ({ isOpen, onClose, deck, isFullScreen, ...props })
     [addComment, deck]
   );
 
-  let paddingBottomIOS = 0;
-  if (needsTabBarPadding({ navigationIndex })) {
-    paddingBottomIOS += TAB_BAR_HEIGHT;
-  }
-
   const renderContentInner = () => (
     <>
       <CommentsList
@@ -127,7 +118,6 @@ export const CommentsSheet = ({ isOpen, onClose, deck, isFullScreen, ...props })
             style={{ flex: 1 }}>
             {renderContentInner()}
           </KeyboardAvoidingView>
-          <View style={{ height: paddingBottomIOS }} />
         </View>
       );
 
