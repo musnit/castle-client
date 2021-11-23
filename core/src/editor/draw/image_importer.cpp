@@ -85,22 +85,24 @@ void ImageImporter::reset() {
   numColors = 4;
 }
 
+int getMaxImageSize() {
+  auto defaultFillPixelsPerUnit = 25.6f;
+  auto maxImageSize = DRAW_MAX_SIZE * 2.0f * defaultFillPixelsPerUnit;
+  return int(maxImageSize);
+}
+
 void ImageImporter::importImage(std::string uri) {
   // if uri begins with `file://` then physfs will reject it
   if (uri.rfind("file://", 0) == 0) {
     uri = uri.substr(7);
   }
 
-  auto defaultFillPixelsPerUnit = 25.6f;
-  auto maxImageSize = DRAW_MAX_SIZE * 2.0f * defaultFillPixelsPerUnit;
-  int imageSize = int(maxImageSize * imageScale);
-
   // decode original data and downsize, generate initial preview
   love::filesystem::File *file = lv.filesystem.newFile(uri.c_str());
   love::filesystem::FileData *data = file->read();
   auto imageData = new love::image::ImageData(data);
   file->release();
-  imageData = ImageProcessing::fitToMaxSize(imageData, imageSize);
+  imageData = ImageProcessing::fitToMaxSize(imageData, getMaxImageSize());
   // TODO: is love freeing the previous value?
   importedImageOriginalData = imageData;
   shufflePalette();
@@ -129,17 +131,21 @@ void ImageImporter::generateImportedImageFilteredPreview(love::image::ImageData 
 
   // make a copy of the data which will be owned by the preview image, don't change original
   love::image::ImageData *imageData = original->clone();
+
+  if (imageScale < 1.0f && imageScale > 0.0f) {
+    imageData = ImageProcessing::fitToMaxSize(imageData, int(getMaxImageSize() * imageScale));
+  }
+
   for (uint8 ii = 0; ii < numBlurs; ii++) {
     ImageProcessing::gaussianBlur(imageData);
   }
   ImageProcessing::kMeans(imageData, numColors, 4);
   ImageProcessing::paletteSwap(imageData, PALETTE);
   // ImageProcessing::testOnlyRedChannel(imageData);
+
   importedImageFilteredData = imageData;
   auto loadedImage = love::DrawDataFrame::imageDataToImage(imageData);
-  love::graphics::Texture::Filter filter { love::graphics::Texture::FILTER_LINEAR,
-    love::graphics::Texture::FILTER_LINEAR, love::graphics::Texture::FILTER_NONE, 1.0f };
-  loadedImage->setFilter(filter);
+
   // TODO: is love freeing the previous value?
   importedImageFilteredPreview = loadedImage;
 }
@@ -151,12 +157,14 @@ void ImageImporter::generateImportedImageFilteredPreview(love::image::ImageData 
 struct ImageImporterEvent {
   PROP(int, numColors);
   PROP(int, numBlurs);
+  PROP(float, imageScale);
 };
 
 void ImageImporter::sendEvent() {
   ImageImporterEvent ev;
   ev.numColors() = numColors;
   ev.numBlurs() = numBlurs;
+  ev.imageScale() = imageScale;
   drawTool.editor.getBridge().sendEvent("EDITOR_IMPORT_IMAGE", ev);
 }
 
@@ -200,6 +208,17 @@ struct ImportImageActionReceiver {
       importer.numBlurs = value;
       importer.regeneratePreview();
       importer.sendEvent();
+    } else if (action == "setImageScale") {
+      auto value = float(params.value());
+      if (value <= 0.0f) {
+        value = 0.05f;
+      }
+      if (value > 1.0f) {
+        value = 1.0f;
+      }
+      importer.imageScale = value;
+      importer.regeneratePreview();
+      importer.sendEvent();
     } else if (action == "swapColors") {
       importer.shufflePalette();
       importer.regeneratePreview();
@@ -215,7 +234,7 @@ void ImageImporter::draw() {
   if (importedImageFilteredPreview) {
     lv.graphics.setColor({ 1, 1, 1, 1 });
     love::Vector2 pos(0, 0);
-    auto size = DRAW_MAX_SIZE * 2.0f;
+    auto size = DRAW_MAX_SIZE * 2.0f * imageScale;
     auto imgW = float(importedImageFilteredPreview->getWidth());
     auto imgH = float(importedImageFilteredPreview->getHeight());
     auto scale = std::min(size / imgW, size / imgH);
