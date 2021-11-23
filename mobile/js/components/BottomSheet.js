@@ -184,7 +184,8 @@ const BottomSheetIOS = ({
       {useViewInsteadOfScrollview ? (
         <View ref={scrollViewRef} key={contentKey} style={styles.content}>
           {renderContent()}
-          <View style={{ paddingBottom: insets.bottom }} />
+          {/* Bottom padding constrains the height of the scrollview to the visible height of the sheet.  */}
+          <View style={{ paddingBottom: insets.bottom + (screenHeight - containerHeight) }} />
         </View>
       ) : (
         <KeyboardAwareScrollView
