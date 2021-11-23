@@ -96,7 +96,7 @@ export default RuleParamInputSheet = ({
           <View key={`param-${ii}`} style={styles.inputs}>
             <RuleParamInputRow
               entryPath={entryPath}
-              label={paramSpec.attribs.label ?? paramSpec.name}
+              label={paramSpec.attribs?.label ?? paramSpec.name}
               context={context}
               paramSpec={paramSpec}
               value={value}
