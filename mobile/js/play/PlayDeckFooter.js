@@ -125,7 +125,7 @@ export const PlayDeckFooter = ({ deck, isPlaying, onPressComments }) => {
     });
   };
 
-  let endColor = deck.initialCard.backgroundColor;
+  let endColor = deck.initialCard.backgroundColor ?? '#3b1725';
   if (tinycolor(endColor).getBrightness() > 180) {
     if (endColor == '#babef6') {
       endColor = tinycolor(endColor).darken(20).desaturate(30).toHexString();
@@ -141,7 +141,7 @@ export const PlayDeckFooter = ({ deck, isPlaying, onPressComments }) => {
         pointerEvents="none">
         <LinearGradient
           // Background Linear Gradient
-          colors={[endColor + '00', endColor + 'bb', endColor]}
+          colors={[`${endColor}00`, `${endColor}bb`, endColor]}
           locations={[0, 0.2, 0.5]}
           style={[styles.background]}
         />
