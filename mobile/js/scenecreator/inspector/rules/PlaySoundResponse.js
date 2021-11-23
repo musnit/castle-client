@@ -574,7 +574,8 @@ export const PlaySoundResponse = ({
     },
     [onChangeResponse]
   );
-  const SoundComponent = SOUND_COMPONENTS[response.params?.type];
+  const soundType = response.params?.type ?? 'sfxr';
+  const SoundComponent = SOUND_COMPONENTS[soundType];
 
   return (
     <>

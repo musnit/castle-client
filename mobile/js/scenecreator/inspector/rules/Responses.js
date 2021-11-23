@@ -922,17 +922,15 @@ const FaceDirectionOfMotion = () => {
 };
 
 const PlaySound = ({ response }) => {
-  let soundType = response.params.type;
+  let soundType = response.params.type ?? 'sfxr';
   const typeItems = Metadata.responses['play sound'].props.type.labeledItems;
-  let typeLabel = typeItems
-    ? typeItems.find((item) => item.id === response.params.type)?.name
-    : null;
+  let typeLabel = typeItems ? typeItems.find((item) => item.id === soundType)?.name : null;
   let soundId = null;
-  if (response.params?.type === 'microphone') {
+  if (soundType === 'microphone') {
     soundId = response.params?.recordingUrl
       ? response.params?.recordingUrl.split('audio.castle.xyz/')[1].split('.mp3')[0]
       : null;
-  } else if (response.params?.type === 'library') {
+  } else if (soundType === 'library') {
     soundId = response.params?.uploadUrl
       ? response.params?.uploadUrl.split('audio.castle.xyz/')[1].split('.mp3')[0]
       : null;
@@ -944,12 +942,12 @@ const PlaySound = ({ response }) => {
       type: 'selectParamSheet',
       label: typeLabel,
       paramName: 'type',
-      paramValue: response.params.type,
+      paramValue: soundType,
     },
     { type: 'text', label: 'at rate' },
     {
       type: 'selectParamSheet',
-      label: response.params.playbackRate,
+      label: response.params.playbackRate ?? '1',
       paramName: 'playbackRate',
       paramValue: response.params.playbackRate,
     },
