@@ -43,7 +43,7 @@ const ImportImage = ({ importData, sendAction }) => {
           <Text style={styles.label}>Pre-blur (0-3, more is slower)</Text>
         </View>
         <InspectorNumberInput
-          style={{ maxWidth: '25%' }}
+          style={{ maxWidth: '50%' }}
           onChange={(value) => sendAction('setNumBlurs', { value })}
           value={importData.numBlurs}
           min={0}
@@ -55,11 +55,24 @@ const ImportImage = ({ importData, sendAction }) => {
           <Text style={styles.label}>Number of colors (2-8)</Text>
         </View>
         <InspectorNumberInput
-          style={{ maxWidth: '25%' }}
+          style={{ maxWidth: '50%' }}
           onChange={(value) => sendAction('setNumColors', { value })}
           value={importData.numColors}
           min={2}
           max={8}
+        />
+      </View>
+      <View style={styles.row}>
+        <View>
+          <Text style={styles.label}>Scale</Text>
+        </View>
+        <InspectorNumberInput
+          style={{ maxWidth: '50%' }}
+          onChange={(value) => sendAction('setImageScale', { value })}
+          value={importData.imageScale}
+          step={0.05}
+          min={0.05}
+          max={1}
         />
       </View>
       <View style={styles.row}>
