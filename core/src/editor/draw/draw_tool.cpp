@@ -107,6 +107,7 @@ struct DrawLayersEvent {
     PROP(std::string, title);
     PROP(int, order);
     PROP(bool, isVisible);
+    PROP(bool, isBitmap);
     PROP((std::vector<Frame>), frames) {};
   };
 
@@ -131,7 +132,8 @@ void DrawTool::sendLayersEvent() {
 
   for (int ii = 0, nn = int(drawData->layers.size()); ii < nn; ii++) {
     auto &layer = drawData->layers[ii];
-    DrawLayersEvent::Layer layerData { layer->id, layer->title, ii, layer->isVisible };
+    DrawLayersEvent::Layer layerData { layer->id, layer->title, ii, layer->isVisible,
+      layer->isBitmap };
 
     for (int jj = 0, mm = int(layer->frames.size()); jj < mm; jj++) {
       auto &frame = layer->frames[jj];
@@ -192,19 +194,36 @@ struct DrawToolLayerActionReceiver {
       if (drawTool.selectedLayerId != params.layerId()) {
         auto newLayerId = params.layerId();
         auto oldLayerId = drawTool.selectedLayerId;
+
+        // set and restore subtool if switching to/from bitmap layer and curr. tool is not allowed
+        auto oldArtworkSubtool = drawTool.selectedSubtools["artwork"];
+        std::string newArtworkSubtool = oldArtworkSubtool;
+        if (drawTool.drawData->layerForId(newLayerId)->isBitmap
+            && drawTool.selectedSubtools["artwork"] == "artwork_draw") {
+          newArtworkSubtool = "fill";
+        }
+
         Commands::Params commandParams;
         commandParams.coalesce = true;
         editor->getCommands().execute(
             "select layer", commandParams,
-            [newLayerId](Editor &editor, bool) {
+            [newLayerId, newArtworkSubtool](Editor &editor, bool) {
               auto &drawTool = editor.drawTool;
               drawTool.selectedLayerId = newLayerId;
               drawTool.sendLayersEvent();
+              if (drawTool.selectedSubtools["artwork"] != newArtworkSubtool) {
+                drawTool.selectedSubtools["artwork"] = newArtworkSubtool;
+                drawTool.sendDrawToolEvent();
+              }
             },
-            [oldLayerId](Editor &editor, bool) {
+            [oldLayerId, oldArtworkSubtool](Editor &editor, bool) {
               auto &drawTool = editor.drawTool;
               drawTool.selectedLayerId = oldLayerId;
               drawTool.sendLayersEvent();
+              if (drawTool.selectedSubtools["artwork"] != oldArtworkSubtool) {
+                drawTool.selectedSubtools["artwork"] = oldArtworkSubtool;
+                drawTool.sendDrawToolEvent();
+              }
             });
       }
     } else if (action == "selectLayerAndFrame") {
