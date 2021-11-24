@@ -101,6 +101,11 @@ const TOOL_GROUPS = {
       icon: 'fill',
     },
     {
+      name: 'move_all',
+      IconComponent: CastleIcon,
+      icon: 'grab',
+    },
+    {
       name: 'bitmap_erase',
       IconComponent: CastleIcon,
       icon: 'erase',

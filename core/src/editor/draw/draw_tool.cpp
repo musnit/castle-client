@@ -634,7 +634,7 @@ DrawTool::DrawTool(Editor &editor_)
   subtools.push_back(std::make_unique<DrawEraseSubtool>(*this, DrawEraseSubtool::Size::Large));
   subtools.push_back(std::make_unique<DrawEraseSegmentSubtool>(*this));
   subtools.push_back(std::make_unique<DrawFillSubtool>(*this));
-  subtools.push_back(std::make_unique<DrawMoveAllSubtool>(*this));
+  subtools.push_back(std::make_unique<DrawMoveAllSubtool>(*this, false));
   subtools.push_back(std::make_unique<DrawMoveSubtool>(*this));
   subtools.push_back(std::make_unique<DrawBendSubtool>(*this));
   subtools.push_back(
@@ -655,6 +655,7 @@ DrawTool::DrawTool(Editor &editor_)
       std::make_unique<BitmapEraseBrushSubtool>(*this, BitmapEraseBrushSubtool::Size::Medium));
   subtools.push_back(
       std::make_unique<BitmapEraseBrushSubtool>(*this, BitmapEraseBrushSubtool::Size::Large));
+  subtools.push_back(std::make_unique<DrawMoveAllSubtool>(*this, true));
 }
 
 DrawTool::~DrawTool() {

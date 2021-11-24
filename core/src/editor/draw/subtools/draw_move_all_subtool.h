@@ -6,15 +6,20 @@
 
 class DrawMoveAllSubtool : public DrawSubtool {
 public:
-  explicit DrawMoveAllSubtool(DrawTool &drawTool_)
+  explicit DrawMoveAllSubtool(DrawTool &drawTool_, bool isBitmap_)
       : DrawSubtool(drawTool_) {
+    isBitmap = isBitmap_;
   }
 
   ~DrawMoveAllSubtool() {
   }
 
   std::string category() {
-    return "artwork_move";
+    if (isBitmap) {
+      return "bitmap";
+    } else {
+      return "artwork_move";
+    }
   }
 
   std::string name() {
@@ -111,4 +116,5 @@ private:
   love::Vector2 clampedDiff;
   love::Bounds bounds;
   bool isGestureStarted = false;
+  bool isBitmap = false;
 };
