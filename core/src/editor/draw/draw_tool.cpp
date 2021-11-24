@@ -21,6 +21,7 @@
 #include "subtools/collision_scale_subtool.h"
 #include "subtools/bitmap_fill_subtool.h"
 #include "subtools/bitmap_erase_fill_subtool.h"
+#include "subtools/bitmap_erase_brush_subtool.h"
 #include "util.h"
 
 //
@@ -648,6 +649,12 @@ DrawTool::DrawTool(Editor &editor_)
   subtools.push_back(std::make_unique<CollisionScaleSubtool>(*this));
   subtools.push_back(std::make_unique<BitmapFillSubtool>(*this));
   subtools.push_back(std::make_unique<BitmapEraseFillSubtool>(*this));
+  subtools.push_back(
+      std::make_unique<BitmapEraseBrushSubtool>(*this, BitmapEraseBrushSubtool::Size::Small));
+  subtools.push_back(
+      std::make_unique<BitmapEraseBrushSubtool>(*this, BitmapEraseBrushSubtool::Size::Medium));
+  subtools.push_back(
+      std::make_unique<BitmapEraseBrushSubtool>(*this, BitmapEraseBrushSubtool::Size::Large));
 }
 
 DrawTool::~DrawTool() {

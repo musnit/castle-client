@@ -158,6 +158,28 @@ const DRAW_SUBTOOLS = {
       icon: 'cursor-move',
     },
   ],
+  bitmap_erase: [
+    {
+      name: 'erase_fill',
+      IconComponent: MCIcon,
+      icon: 'content-cut',
+    },
+    {
+      name: 'erase_brush_large',
+      IconComponent: EraseIcon,
+      size: 22,
+    },
+    {
+      name: 'erase_brush_medium',
+      IconComponent: EraseIcon,
+      size: 16,
+    },
+    {
+      name: 'erase_brush_small',
+      IconComponent: EraseIcon,
+      size: 7,
+    },
+  ],
 };
 
 const DrawSubtools = ({ category, value, onChange }) => {
@@ -232,6 +254,7 @@ export const OverlayDrawingSubtools = ({ currentToolGroup }) => {
     case 'artwork_move':
     case 'collision_draw':
     case 'collision_move':
+    case 'bitmap_erase':
       return (
         <DrawSubtools category={currentToolGroup} value={currentSubtool} onChange={selectSubtool} />
       );
