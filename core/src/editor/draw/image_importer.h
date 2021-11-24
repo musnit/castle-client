@@ -2,6 +2,7 @@
 
 #include "precomp.h"
 #include "lv.h"
+#include "palette_provider.h"
 
 class DrawTool;
 
@@ -26,8 +27,8 @@ private:
   DrawTool &drawTool;
 
   void sendEvent();
-  void shufflePalette();
 
+  std::unique_ptr<PaletteProvider> palette;
   float imageScale = 1.0f;
   uint8 numBlurs = 1;
   uint8 numColors = 4;
