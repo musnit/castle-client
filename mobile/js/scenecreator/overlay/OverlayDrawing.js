@@ -60,7 +60,6 @@ const TOOL_GROUPS = {
       name: 'artwork_draw',
       IconComponent: CastleIcon,
       icon: 'draw',
-      isVector: true,
     },
     {
       name: 'fill',
@@ -83,7 +82,6 @@ const TOOL_GROUPS = {
       name: 'collision_draw',
       IconComponent: CastleIcon,
       icon: 'draw',
-      isVector: true,
     },
     {
       name: 'collision_move',
@@ -96,30 +94,31 @@ const TOOL_GROUPS = {
       icon: 'erase',
     },
   ],
+  bitmap: [
+    {
+      name: 'fill',
+      IconComponent: CastleIcon,
+      icon: 'fill',
+    },
+    {
+      name: 'bitmap_erase',
+      IconComponent: CastleIcon,
+      icon: 'erase',
+    },
+  ],
 };
 
 const ToolGroups = ({ category, value }) => {
-  const { layers, selectedLayerId, selectedFrameIndex } = useCoreState('EDITOR_DRAW_LAYERS') || {};
   const onChange = React.useCallback(
     (name) => sendAsync('DRAW_TOOL_SELECT_SUBTOOL', { category, name }),
     [category]
   );
   const groups = TOOL_GROUPS[category];
 
-  let isSelectedLayerBitmap = false;
-  if (layers && selectedLayerId) {
-    const selectedLayer = layers.find((layer) => layer.id === selectedLayerId);
-    if (selectedLayer) {
-      isSelectedLayerBitmap = selectedLayer.isBitmap;
-    }
-  }
   return (
     <>
       {groups.map((tool, ii) => {
         const { name, IconComponent, icon } = tool;
-        if (isSelectedLayerBitmap && tool.isVector) {
-          return null;
-        }
         return (
           <Pressable
             key={`toolgroup-${category}-${ii}`}

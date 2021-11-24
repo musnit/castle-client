@@ -19,6 +19,8 @@
 #include "subtools/collision_move_all_subtool.h"
 #include "subtools/collision_move_subtool.h"
 #include "subtools/collision_scale_subtool.h"
+#include "subtools/bitmap_fill_subtool.h"
+#include "subtools/bitmap_erase_fill_subtool.h"
 #include "util.h"
 
 //
@@ -195,35 +197,19 @@ struct DrawToolLayerActionReceiver {
         auto newLayerId = params.layerId();
         auto oldLayerId = drawTool.selectedLayerId;
 
-        // set and restore subtool if switching to/from bitmap layer and curr. tool is not allowed
-        auto oldArtworkSubtool = drawTool.selectedSubtools["artwork"];
-        std::string newArtworkSubtool = oldArtworkSubtool;
-        if (drawTool.drawData->layerForId(newLayerId)->isBitmap
-            && drawTool.selectedSubtools["artwork"] == "artwork_draw") {
-          newArtworkSubtool = "fill";
-        }
-
         Commands::Params commandParams;
         commandParams.coalesce = true;
         editor->getCommands().execute(
             "select layer", commandParams,
-            [newLayerId, newArtworkSubtool](Editor &editor, bool) {
+            [newLayerId](Editor &editor, bool) {
               auto &drawTool = editor.drawTool;
               drawTool.selectedLayerId = newLayerId;
               drawTool.sendLayersEvent();
-              if (drawTool.selectedSubtools["artwork"] != newArtworkSubtool) {
-                drawTool.selectedSubtools["artwork"] = newArtworkSubtool;
-                drawTool.sendDrawToolEvent();
-              }
             },
-            [oldLayerId, oldArtworkSubtool](Editor &editor, bool) {
+            [oldLayerId](Editor &editor, bool) {
               auto &drawTool = editor.drawTool;
               drawTool.selectedLayerId = oldLayerId;
               drawTool.sendLayersEvent();
-              if (drawTool.selectedSubtools["artwork"] != oldArtworkSubtool) {
-                drawTool.selectedSubtools["artwork"] = oldArtworkSubtool;
-                drawTool.sendDrawToolEvent();
-              }
             });
       }
     } else if (action == "selectLayerAndFrame") {
@@ -295,6 +281,7 @@ struct DrawToolLayerActionReceiver {
     } else if (action == "addLayer") {
       drawTool.makeNewLayer();
       drawTool.saveDrawing("add layer");
+      drawTool.sendDrawToolEvent(); // subtool may have changed
     } else if (action == "deleteLayer") {
       drawTool.deleteLayerAndValidate(params.layerId());
       drawTool.saveDrawing("delete layer");
@@ -659,6 +646,8 @@ DrawTool::DrawTool(Editor &editor_)
   subtools.push_back(std::make_unique<CollisionMoveAllSubtool>(*this));
   subtools.push_back(std::make_unique<CollisionMoveSubtool>(*this));
   subtools.push_back(std::make_unique<CollisionScaleSubtool>(*this));
+  subtools.push_back(std::make_unique<BitmapFillSubtool>(*this));
+  subtools.push_back(std::make_unique<BitmapEraseFillSubtool>(*this));
 }
 
 DrawTool::~DrawTool() {
@@ -689,6 +678,8 @@ void DrawTool::resetState() {
   selectedSubtools["collision"] = "collision_draw";
   selectedSubtools["collision_draw"] = "rectangle";
   selectedSubtools["collision_move"] = "move";
+  selectedSubtools["bitmap"] = "fill";
+  selectedSubtools["bitmap_erase"] = "erase_fill";
 
   // don't reset `copiedFrame`
 
@@ -730,6 +721,7 @@ void DrawTool::makeNewLayer() {
     love::DrawDataLayerId newLayerId = fmt::format("layer{}", newLayerNum);
     drawData->addLayer(fmt::format("Layer {}", newLayerNum), newLayerId, newLayerOrder);
     selectedLayerId = newLayerId;
+    selectedSubtools["root"] = "artwork";
   }
 }
 
@@ -749,6 +741,12 @@ void DrawTool::deleteLayerAndValidate(const love::DrawDataLayerId &layerId) {
         selectedLayerId = "";
       }
     }
+    if (auto layer = drawData->layerForId(selectedLayerId); layer && layer->isBitmap) {
+      selectedSubtools["root"] = "bitmap";
+    } else {
+      selectedSubtools["root"] = "artwork";
+    }
+    sendDrawToolEvent();
   }
 }
 
@@ -905,7 +903,13 @@ void DrawTool::validateSelection() {
       selectedLayerId = drawData->layers[0]->id;
     }
   }
+  if (auto layer = drawData->layerForId(selectedLayerId); layer && layer->isBitmap) {
+    selectedSubtools["root"] = "bitmap";
+  } else {
+    selectedSubtools["root"] = "artwork";
+  }
   sendLayersEvent();
+  sendDrawToolEvent();
 }
 
 love::PathDataList *DrawTool::selectedFramePathDataList() {
@@ -919,6 +923,7 @@ void DrawTool::dirtySelectedFrameBounds() {
 void DrawTool::makeNewLayerFromImageImporter() {
   if (imageImporter.isImportingImage) {
     makeNewLayer();
+    selectedSubtools["root"] = "bitmap";
 
     // flag this layer as bitmap-only
     drawData->layerForId(selectedLayerId)->isBitmap = true;
