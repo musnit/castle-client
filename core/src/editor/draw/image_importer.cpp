@@ -4,69 +4,6 @@
 #include "editor/editor.h"
 #include "draw_tool.h"
 
-std::array<int, std::size_t(60)> PALETTE = {
-  0x3b1725,
-  0x73172d,
-  0xb4202a,
-  0xdf3e23,
-  0xfa6a0a,
-  0xf9a31b,
-  0xffd541,
-  0xfffc40,
-  0xd6f264,
-  0x9cdb43,
-  0x59c135,
-  0x14a02e,
-  0x1a7a3e,
-  0x24523b,
-  0x122020,
-  0x143464,
-  0x285cc4,
-  0x249fde,
-  0x20d6c7,
-  0xa6fcdb,
-  0xfef3c0,
-  0xfad6b8,
-  0xf5a097,
-  0xe86a73,
-  0xbc4a9b,
-  0x793a80,
-  0x403353,
-  0x242234,
-  0x322b28,
-  0x71413b,
-  0xbb7547,
-  0xdba463,
-  0xf4d29c,
-  0xdae0ea,
-  0xb3b9d1,
-  0x8b93af,
-  0x6d758d,
-  0x4a5462,
-  0x333941,
-  0x422433,
-  0x5b3138,
-  0x8e5252,
-  0xba756a,
-  0xe9b5a3,
-  0xe3e6ff,
-  0xb9bffb,
-  0x849be4,
-  0x588dbe,
-  0x477d85,
-  0x23674e,
-  0x328464,
-  0x5daf8d,
-  0x92dcba,
-  0xcdf7e2,
-  0xe4d2aa,
-  0xc7b08b,
-  0xa08662,
-  0x796755,
-  0x5a4e44,
-  0x423934,
-};
-
 void ImageImporter::reset() {
   if (importedImageOriginalData) {
     // TODO: is love deleting these somewhere?
@@ -105,7 +42,6 @@ void ImageImporter::importImage(std::string uri) {
   imageData = ImageProcessing::fitToMaxSize(imageData, getMaxImageSize());
   // TODO: is love freeing the previous value?
   importedImageOriginalData = imageData;
-  shufflePalette();
   regeneratePreview();
 
   isImportingImage = true;
@@ -118,12 +54,6 @@ void ImageImporter::regeneratePreview() {
   }
 }
 
-void ImageImporter::shufflePalette() {
-  // shuffle palette
-  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-  std::shuffle(PALETTE.begin(), PALETTE.end(), std::default_random_engine(seed));
-}
-
 void ImageImporter::generateImportedImageFilteredPreview(love::image::ImageData *original) {
   if (!original) {
     return;
@@ -131,6 +61,10 @@ void ImageImporter::generateImportedImageFilteredPreview(love::image::ImageData 
 
   // make a copy of the data which will be owned by the preview image, don't change original
   love::image::ImageData *imageData = original->clone();
+  if (!palette) {
+    palette = std::make_unique<SimilarLuminancePaletteProvider>();
+  }
+  palette->reset();
 
   if (imageScale < 1.0f && imageScale > 0.0f) {
     imageData = ImageProcessing::fitToMaxSize(imageData, int(getMaxImageSize() * imageScale));
@@ -140,7 +74,7 @@ void ImageImporter::generateImportedImageFilteredPreview(love::image::ImageData 
     ImageProcessing::gaussianBlur(imageData);
   }
   ImageProcessing::kMeans(imageData, numColors, 4);
-  ImageProcessing::paletteSwap(imageData, PALETTE);
+  ImageProcessing::paletteSwap(imageData, *palette);
   // ImageProcessing::testOnlyRedChannel(imageData);
 
   importedImageFilteredData = imageData;
@@ -220,7 +154,6 @@ struct ImportImageActionReceiver {
       importer.regeneratePreview();
       importer.sendEvent();
     } else if (action == "swapColors") {
-      importer.shufflePalette();
       importer.regeneratePreview();
     }
   }

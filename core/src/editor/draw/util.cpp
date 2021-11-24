@@ -90,3 +90,48 @@ bool DrawUtil::areAnglesEqual(float a1, float a2) {
   }
   return false;
 }
+
+bool DrawUtil::getRGBAFloat(love::image::Pixel &p, love::PixelFormat format, float *out) {
+  switch (format) {
+  case love::PixelFormat::PIXELFORMAT_RGBA8:
+    out[0] = float(p.rgba8[0]);
+    out[1] = float(p.rgba8[1]);
+    out[2] = float(p.rgba8[2]);
+    out[3] = float(p.rgba8[3]);
+    return true;
+  case love::PixelFormat::PIXELFORMAT_RGBA16:
+    out[0] = float(p.rgba16[0]);
+    out[1] = float(p.rgba16[1]);
+    out[2] = float(p.rgba16[2]);
+    out[3] = float(p.rgba16[3]);
+    return true;
+  case love::PixelFormat::PIXELFORMAT_RGBA16F:
+    out[0] = float(p.rgba16f[0]);
+    out[1] = float(p.rgba16f[1]);
+    out[2] = float(p.rgba16f[2]);
+    out[3] = float(p.rgba16f[3]);
+    return true;
+  case love::PixelFormat::PIXELFORMAT_RGBA32F:
+    out[0] = float(p.rgba32f[0]);
+    out[1] = float(p.rgba32f[1]);
+    out[2] = float(p.rgba32f[2]);
+    out[3] = float(p.rgba32f[3]);
+    return true;
+  default:
+    return false;
+  }
+}
+
+float DrawUtil::distanceSquared(float *rgba1, float *rgba2) {
+  float sum = 0.0f;
+  for (auto ii = 0; ii < 3; ii++) { // ignore alpha
+    sum += std::powf(rgba1[ii] - rgba2[ii], 2.0f);
+  }
+  return sum;
+}
+
+void DrawUtil::hexToRGBFloat(int hexValue, float *out) {
+  out[0] = ((hexValue >> 16) & 0xFF);
+  out[1] = ((hexValue >> 8) & 0xFF);
+  out[2] = ((hexValue >> 0) & 0xFF);
+}

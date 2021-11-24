@@ -1,4 +1,5 @@
 #include "image_processing.h"
+#include "util.h"
 
 love::image::ImageData *ImageProcessing::fitToMaxSize(love::image::ImageData *data, int maxSize) {
   auto img = love::DrawDataFrame::imageDataToImage(data);
@@ -28,37 +29,6 @@ love::image::ImageData *ImageProcessing::fitToMaxSize(love::image::ImageData *da
   auto result = love::DrawDataFrame::newImageData(resizeCanvas);
   resizeCanvas->release();
   return result;
-}
-
-bool getRGBAFloat(love::image::Pixel &p, love::PixelFormat format, float *out) {
-  switch (format) {
-  case love::PixelFormat::PIXELFORMAT_RGBA8:
-    out[0] = float(p.rgba8[0]);
-    out[1] = float(p.rgba8[1]);
-    out[2] = float(p.rgba8[2]);
-    out[3] = float(p.rgba8[3]);
-    return true;
-  case love::PixelFormat::PIXELFORMAT_RGBA16:
-    out[0] = float(p.rgba16[0]);
-    out[1] = float(p.rgba16[1]);
-    out[2] = float(p.rgba16[2]);
-    out[3] = float(p.rgba16[3]);
-    return true;
-  case love::PixelFormat::PIXELFORMAT_RGBA16F:
-    out[0] = float(p.rgba16f[0]);
-    out[1] = float(p.rgba16f[1]);
-    out[2] = float(p.rgba16f[2]);
-    out[3] = float(p.rgba16f[3]);
-    return true;
-  case love::PixelFormat::PIXELFORMAT_RGBA32F:
-    out[0] = float(p.rgba32f[0]);
-    out[1] = float(p.rgba32f[1]);
-    out[2] = float(p.rgba32f[2]);
-    out[3] = float(p.rgba32f[3]);
-    return true;
-  default:
-    return false;
-  }
 }
 
 bool sumPixel(love::image::Pixel &p, float *sum, love::PixelFormat format, bool includeAlpha) {
@@ -111,14 +81,6 @@ bool setChannel(love::image::Pixel &p, int channel, float val, love::PixelFormat
   }
 }
 
-float distanceSquared(float *rgba1, float *rgba2) {
-  float sum = 0.0f;
-  for (auto ii = 0; ii < 3; ii++) { // ignore alpha
-    sum += std::powf(rgba1[ii] - rgba2[ii], 2.0f);
-  }
-  return sum;
-}
-
 void ImageProcessing::kMeans(love::image::ImageData *data, uint8 k, int numIterations) {
   auto width = data->getWidth(), height = data->getHeight();
   auto format = data->getFormat();
@@ -145,7 +107,7 @@ void ImageProcessing::kMeans(love::image::ImageData *data, uint8 k, int numItera
     for (auto y = 0; y < height; y++) {
       for (auto x = 0; x < width; x++) {
         data->getPixel(x, y, p);
-        getRGBAFloat(p, format, rgba1);
+        DrawUtil::getRGBAFloat(p, format, rgba1);
 
         if (rgba1[3] < 2.56f) {
           // near-transparent, always group in special k+1 cluster regardless of color
@@ -154,8 +116,8 @@ void ImageProcessing::kMeans(love::image::ImageData *data, uint8 k, int numItera
           float minDist = std::numeric_limits<float>::max();
           uint8 closestCluster = k;
           for (uint8 cluster = 0; cluster < k; cluster++) {
-            getRGBAFloat(means[cluster], format, rgba2);
-            auto dist = distanceSquared(rgba1, rgba2);
+            DrawUtil::getRGBAFloat(means[cluster], format, rgba2);
+            auto dist = DrawUtil::distanceSquared(rgba1, rgba2);
             if (dist < minDist) {
               minDist = dist;
               closestCluster = cluster;
@@ -232,13 +194,12 @@ void ImageProcessing::testOnlyRedChannel(love::image::ImageData *data) {
   }
 }
 
-void ImageProcessing::paletteSwap(love::image::ImageData *data, std::array<int, 60> &palette) {
+void ImageProcessing::paletteSwap(love::image::ImageData *data, PaletteProvider &palette) {
   auto width = data->getWidth(), height = data->getHeight();
   auto format = data->getFormat();
 
   love::image::Pixel p;
   float rgba[4];
-  int nextPaletteIndex = 0;
   std::unordered_map<int, love::image::Pixel> swaps;
 
   for (auto y = 0; y < height; y++) {
@@ -247,19 +208,16 @@ void ImageProcessing::paletteSwap(love::image::ImageData *data, std::array<int, 
 
       // if never seen before, map to next color in palette
       int hash = data->getPixelHash(p);
-      getRGBAFloat(p, format, rgba);
+      DrawUtil::getRGBAFloat(p, format, rgba);
       auto found = swaps.find(hash);
       if (found == swaps.end()) {
         love::image::Pixel swap;
-        auto hexValue = palette[nextPaletteIndex];
+        auto hexValue = palette.nextColor(p, format);
         setChannel(swap, 0, ((hexValue >> 16) & 0xFF), format);
         setChannel(swap, 1, ((hexValue >> 8) & 0xFF), format);
         setChannel(swap, 2, ((hexValue >> 0) & 0xFF), format);
         setChannel(swap, 3, 255.0f, format);
         swaps.emplace(hash, swap);
-
-        nextPaletteIndex++;
-        nextPaletteIndex = nextPaletteIndex % palette.size();
       }
 
       // replace with mapping
@@ -301,7 +259,7 @@ void convolve(love::image::Pixel *inBuf, float *kernel, int w, int h, love::Pixe
   for (auto y = 0; y < w; y++) {
     for (auto x = 0; x < h; x++) {
       love::image::Pixel *pixel = inBuf + (y * w + x);
-      getRGBAFloat(*pixel, format, rgba);
+      DrawUtil::getRGBAFloat(*pixel, format, rgba);
       for (int i = 0; i < 3; i++) {
         sums[i] += rgba[i] * kernel[y * w + x];
       }

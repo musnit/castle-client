@@ -14,6 +14,10 @@ bool getRightTriangleShape(love::PathData *paths, float x1, float y1, float x2, 
 bool getCircleShapeRoundToGrid(love::DrawData &drawData, love::PathData *paths, float x1, float y1,
     float x2, float y2, float roundUnitX, float roundUnitY);
 
+bool getRGBAFloat(love::image::Pixel &p, love::PixelFormat format, float *out);
+float distanceSquared(float *rgba1, float *rgba2); // ignores alpha
+void hexToRGBFloat(int hexColor, float *out);
+
 bool pathIntersectsCircle(love::PathData &path, float x, float y, float radius);
 }
 
