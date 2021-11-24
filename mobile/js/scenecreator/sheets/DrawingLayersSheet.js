@@ -343,13 +343,11 @@ const DrawingLayers = ({ sendLayerAction }) => {
 
   const isCollisionActive = drawToolState.selectedSubtools?.root === 'collision';
   const onSelectCollision = React.useCallback(
-    (isSelected) => {
-      if (isSelected !== isCollisionActive) {
-        sendAsync('DRAW_TOOL_SELECT_SUBTOOL', {
-          category: 'root',
-          name: isSelected ? 'collision' : 'artwork',
-        });
-      }
+    (isSelected, isLayerBitmap) => {
+      sendAsync('DRAW_TOOL_SELECT_SUBTOOL', {
+        category: 'root',
+        name: isSelected ? 'collision' : isLayerBitmap ? 'bitmap' : 'artwork',
+      });
     },
     [isCollisionActive]
   );
@@ -357,7 +355,7 @@ const DrawingLayers = ({ sendLayerAction }) => {
   const onSelectLayer = useCallback(
     ({ layer, frame }) => {
       // unselect collision if selected
-      onSelectCollision(false);
+      onSelectCollision(false, layer.isBitmap);
 
       // select layer
       if (!frame) {
