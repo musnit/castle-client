@@ -81,7 +81,7 @@ public:
         }
       }
 
-      didChange = pixelCount > 0;
+      didChange = didChange || pixelCount > 0;
     }
 
     if (touch.touch.released) {
