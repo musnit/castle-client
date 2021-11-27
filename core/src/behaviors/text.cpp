@@ -5,41 +5,6 @@
 #include "js.h"
 #include "engine.h"
 
-#include "data/fonts.h"
-
-
-//
-// Embedded font data
-//
-
-struct EmbeddedFontData : love::Data {
-  unsigned char *data;
-  int size;
-
-  template<int N>
-  explicit EmbeddedFontData(unsigned char (&xxdData)[N])
-      : data(xxdData)
-      , size(sizeof(xxdData)) {
-  }
-
-  EmbeddedFontData(unsigned char *data_, int size_)
-      : data(data_)
-      , size(size_) {
-  }
-
-  Data *clone() const override {
-    return new EmbeddedFontData(data, size);
-  }
-
-  void *getData() const override {
-    return data;
-  }
-
-  size_t getSize() const override {
-    return size;
-  }
-};
-
 
 //
 // Triggers
@@ -146,47 +111,7 @@ struct HideResponse : BaseResponse {
 
 TextBehavior::TextBehavior(Scene &scene_)
     : BaseBehavior(scene_) {
-  constexpr auto defaultFontSize = 10;
-
-  defaultFont.reset(
-      lv.graphics.newDefaultFont(defaultFontSize, love::TrueTypeRasterizer::HINTING_NORMAL));
-
-  const auto loadFont = [&](const std::string &name, auto &xxdData) {
-    love::StrongRef data(new EmbeddedFontData(xxdData), love::Acquire::NORETAIN);
-    love::StrongRef rasterizer(lv.font.newTrueTypeRasterizer(
-                                   data, defaultFontSize, love::TrueTypeRasterizer::HINTING_NORMAL),
-        love::Acquire::NORETAIN);
-    fonts[name] = std::unique_ptr<love::Font>(lv.graphics.newFont(rasterizer));
-  };
-
-  loadFont("3270Condensed Condensed", __3270Condensed_Condensed_ttf);
-  loadFont("Abibas Medium", Abibas_Medium_ttf);
-  loadFont("AstralMono Regular", AstralMono_Regular_ttf);
-  loadFont("Avara Bold", Avara_Bold_ttf);
-  loadFont("Avara BoldItalic", Avara_BoldItalic_ttf);
-  loadFont("Betatron Regular", Betatron_Regular_ttf);
-  loadFont("Blocus Regular", Blocus_Regular_ttf);
-  loadFont("BreiteGrotesk Regular", BreiteGrotesk_Regular_ttf);
-  loadFont("Chicagoland Medium", Chicagoland_Medium_ttf);
-  loadFont("ComicNeue Bold", ComicNeue_Bold_ttf);
-  loadFont("ComicNeueAngular Bold", ComicNeueAngular_Bold_ttf);
-  loadFont("Compagnon Bold", Compagnon_Bold_ttf);
-  loadFont("Compagnon Medium", Compagnon_Medium_ttf);
-  loadFont("Compagnon Roman", Compagnon_Roman_ttf);
-  loadFont("DagsenOutline Black", DagsenOutline_Black_ttf);
-  loadFont("Glacier Bold", Glacier_Bold_ttf);
-  loadFont("HappyTimesAtTheIKOB Regular", HappyTimesAtTheIKOB_Regular_ttf);
-  loadFont("HelicoCentrica Roman", HelicoCentrica_Roman_ttf);
-  loadFont("Norm Medium", Norm_Medium_ttf);
-  loadFont("Norm Regular", Norm_Regular_ttf);
-  loadFont("Outward Block", Outward_Block_ttf);
-  loadFont("Piazzolla Medium", Piazzolla_Medium_ttf);
-  loadFont("SnapitMono Regular", SnapitMono_Regular_ttf);
-  loadFont("SpaceGrotesk Regular", SpaceGrotesk_Regular_ttf);
-  loadFont("StandardGraf Regular", StandardGraf_Regular_ttf);
-  loadFont("Syne Extra", Syne_Extra_ttf);
-  loadFont("YatraOne Regular", YatraOne_Regular_ttf);
-  loadFont("Zarathustra Regular", Zarathustra_Regular_ttf);
+  loadFonts();
 }
 
 
@@ -215,7 +140,46 @@ void TextBehavior::handleReadComponent(ActorId actorId, TextComponent &component
 // Perform
 //
 
-void TextBehavior::handlePerform(double dt) {
+void TextBehavior::handlePrePerform() {
+  // Fire tap triggers
+  auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
+  auto &bodyBehavior = getBehaviors().byType<BodyBehavior>();
+  auto currTime = lv.timer.getTime();
+  auto fired = false; // Fire on at most one actor
+  getGesture().forEachTouch([&](TouchId touchId, const Touch &touch) {
+    if (fired) {
+      return;
+    }
+    if (touch.isUsed() && !touch.isUsed(TextBehavior::overlayTouchToken)) {
+      return;
+    }
+    auto tapped = touch.released && !touch.movedFar && currTime - touch.pressTime < 0.3;
+    if (!(touch.pressed || tapped)) {
+      return;
+    }
+    rulesBehavior.fireAllIf<TextTapTrigger, TextComponent>(
+        {}, [&](ActorId actorId, const TextTapTrigger &trigger, const TextComponent &component) {
+          if (fired) {
+            return false;
+          }
+          if (bodyBehavior.hasComponent(actorId)) {
+            return false; // Skip if has Body since Body handles its own taps
+          }
+          if (!component.touchRectangle) {
+            return false;
+          }
+          auto &rect = *component.touchRectangle;
+          auto inRect = rect.min.x <= touch.pos.x && touch.pos.x <= rect.max.x
+              && rect.min.y <= touch.pos.y && touch.pos.y <= rect.max.y;
+          if (inRect) {
+            touch.use(TextBehavior::overlayTouchToken);
+            if (tapped) {
+              fired = true;
+            }
+          }
+          return fired;
+        });
+  });
 }
 
 
@@ -278,7 +242,7 @@ void TextBehavior::handleDrawOverlay() const {
   SmallVector<Elem, 16> elems;
   forEachEnabledComponent([&](ActorId actorId, const TextComponent &component) {
     if (bodyBehavior.hasComponent(actorId)) {
-      return;
+      return; // Skip if has body
     }
     elems.push_back({ actorId, &component });
   });
@@ -325,6 +289,12 @@ void TextBehavior::handleDrawOverlay() const {
     lv.graphics.printf({ { std::move(formatted), { 1, 1, 1, 1 } } }, textWidth / downscale,
         love::Font::ALIGN_LEFT, love::Matrix4(0, 0, 0, 1, 1, 0, 0, 0, 0));
     lv.graphics.pop();
+
+    // Save touch rectangle
+    component->touchRectangle = {
+      { x, y },
+      { x + boxWidth, y + boxHeight },
+    };
   }
   lv.graphics.pop();
 }
