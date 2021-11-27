@@ -58,6 +58,11 @@ struct TextComponent : BaseComponent {
             = "Norm Regular";
   } props;
 
+  struct TouchRectangle {
+    love::Vector2 min { 0, 0 };
+    love::Vector2 max { 0, 0 };
+  };
+  mutable std::optional<TouchRectangle> touchRectangle;
   love::Font *font = nullptr;
 };
 
@@ -71,7 +76,7 @@ public:
   explicit TextBehavior(Scene &scene_);
 
   void handleReadComponent(ActorId actorId, TextComponent &component, Reader &reader);
-  void handlePerform(double dt);
+  void handlePrePerform();
   bool handleDrawComponent(ActorId actorId, const TextComponent &component,
       std::optional<SceneDrawingOptions> options) const;
   void handleDrawOverlay() const;
@@ -80,6 +85,8 @@ public:
       ActorId actorId, TextComponent &component, PropId propId, const ExpressionValue &value);
 
   bool hasTapTrigger(ActorId actorId);
+
+  inline static const TouchToken overlayTouchToken;
 
 private:
   friend struct ShowResponse;
@@ -92,6 +99,7 @@ private:
   std::unique_ptr<love::Font> defaultFont;
   std::unordered_map<std::string, std::unique_ptr<love::Font>> fonts;
 
+  void loadFonts();
   void updateFont(TextComponent &component);
 
   std::string formatContent(const std::string &content) const;

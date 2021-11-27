@@ -148,6 +148,7 @@ DEFINE_HANDLER(ReadComponent);
 DEFINE_HANDLER(WriteComponent);
 
 // Perform
+DEFINE_HANDLER(PrePerform);
 DEFINE_HANDLER(Perform);
 DEFINE_HANDLER(PerformCamera);
 

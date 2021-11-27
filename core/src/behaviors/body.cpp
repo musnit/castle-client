@@ -312,6 +312,9 @@ void BodyBehavior::handlePerform(double dt) {
     auto &gesture = getGesture();
     auto currTime = lv.timer.getTime();
     gesture.forEachTouch([&](TouchId touchId, const Touch &touch) {
+      if (touch.isUsed(TextBehavior::overlayTouchToken)) {
+        return;
+      }
       auto &prevHits = getActorsAtTouch(touchId);
       ActorsAtTouch currHits;
       forEachActorAtPoint(touch.pos.x, touch.pos.y, [&](ActorId actorId, const b2Fixture *fixture) {
