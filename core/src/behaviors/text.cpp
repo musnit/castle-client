@@ -162,6 +162,9 @@ void TextBehavior::handlePrePerform() {
           if (fired) {
             return false;
           }
+          if (!component.props.visible()) {
+            return false;
+          }
           if (bodyBehavior.hasComponent(actorId)) {
             return false; // Skip if has Body since Body handles its own taps
           }
@@ -189,6 +192,9 @@ void TextBehavior::handlePrePerform() {
 
 bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &component,
     std::optional<SceneDrawingOptions> options) const {
+  if (!component.props.visible()) {
+    return false;
+  }
   auto &bodyBehavior = getBehaviors().byType<BodyBehavior>();
   if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
     if (auto info = getBehaviors().byType<BodyBehavior>().getRenderInfo(actorId);
@@ -241,6 +247,9 @@ void TextBehavior::handleDrawOverlay() const {
   };
   SmallVector<Elem, 16> elems;
   forEachEnabledComponent([&](ActorId actorId, const TextComponent &component) {
+    if (!component.props.visible()) {
+      return;
+    }
     if (bodyBehavior.hasComponent(actorId)) {
       return; // Skip if has body
     }
