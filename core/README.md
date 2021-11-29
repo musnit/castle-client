@@ -56,6 +56,14 @@ make sure it's done building, and refresh your browser to see the updates!
 Make sure to also keep the '../castle-www' directory up to date with git and
 `npm i`.
 
+#### Debugging
+
+Uncomment these lines in CMakeLists.txt to get stacktraces.
+```
+    #target_compile_options(castle-core PRIVATE "SHELL:--profiling") # Increases build size, use only for local testing
+    #target_link_options(castle-core PRIVATE "SHELL:--profiling")
+```
+
 ### Mobile
 
 - `./run.sh ios-release` - builds core for iOS, Release, device only. The binaries are copied to `binaries/ios` and picked up by the Xcode project at `../mobile/ios`.

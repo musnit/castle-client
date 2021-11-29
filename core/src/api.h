@@ -252,7 +252,7 @@ public:
 
   static void getData(
       const std::string &url, const std::function<void(APIDataResponse &)> &callback) {
-#ifdef ANDROID
+#if defined(ANDROID) || defined(__EMSCRIPTEN__)
     cacheLock.unlock();
     getDataThread(url, callback);
 #else

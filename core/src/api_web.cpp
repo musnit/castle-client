@@ -1,8 +1,17 @@
 #ifdef __EMSCRIPTEN__
 
 #include "api.h"
+#include "js.h"
+
+JS_DEFINE(int, JS_dataRequest, (int requestId, const char *url, int urlLen),
+    { Castle.dataRequest(requestId, UTF8ToString(url, urlLen)); });
 
 namespace CastleAPI {
+
+static int requestId = 0;
+static std::map<int, const std::function<void(bool, std::string, unsigned char *, unsigned long)>>
+    activeDataRequests;
+
 void graphqlPostRequest(
     const std::string &body, const std::function<void(bool, std::string, std::string)> callback) {
 }
@@ -13,7 +22,26 @@ void getRequest(
 
 void getDataRequest(const std::string &url,
     const std::function<void(bool, std::string, unsigned char *, unsigned long)> callback) {
+  int currentRequestId = requestId++;
+  activeDataRequests.insert(
+      std::pair<int, const std::function<void(bool, std::string, unsigned char *, unsigned long)>>(
+          currentRequestId, callback));
+
+  JS_dataRequest(currentRequestId, url.c_str(), url.length());
 }
+}
+
+extern "C" void jsDataRequestCompleted(
+    int requestId, int success, unsigned char *data, int length) {
+  if (CastleAPI::activeDataRequests[requestId]) {
+    if (success) {
+      CastleAPI::activeDataRequests[requestId](true, "", data, (unsigned long)length);
+    } else {
+      CastleAPI::activeDataRequests[requestId](false, "error", nullptr, 0);
+    }
+
+    CastleAPI::activeDataRequests.erase(requestId);
+  }
 }
 
 #endif

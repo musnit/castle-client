@@ -29,14 +29,21 @@ public:
       int mutationAmount);
   static void clearCache() {
     sfxrSounds.clear();
-    soloud.stopAll();
+    urlSounds.clear();
+
+    if (hasInitializedSoloud) {
+      soloud.stopAll();
+    }
   }
 
   static void stopAll() {
-    soloud.stopAll();
+    if (hasInitializedSoloud) {
+      soloud.stopAll();
+    }
   }
 
 private:
+  void initialize();
   void playUrl(float playbackRate, const std::string &url);
   void playEffect(float playbackRate, const std::string &category, int seed, int mutationSeed,
       int mutationAmount);
