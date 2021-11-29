@@ -278,7 +278,7 @@ void TextBehavior::handleDrawOverlay() const {
   lv.graphics.setFont(font);
   for (auto [actorId, component] : elems) {
     // Compute height
-    constexpr float downscale = 0.024;
+    constexpr float downscale = 0.0342;
     auto formatted = formatContent(component->props.content());
     std::vector<std::string> lines;
     font->getWrap({ { formatted, { 1, 1, 1, 1 } } }, textWidth / downscale, lines);
