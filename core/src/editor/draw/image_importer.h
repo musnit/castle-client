@@ -27,8 +27,10 @@ private:
   DrawTool &drawTool;
 
   void sendEvent();
+  void makePaletteProvider();
 
   std::unique_ptr<PaletteProvider> palette;
+  std::string paletteProviderType = "luminance";
   float imageScale = 1.0f;
   uint8 numBlurs = 1;
   uint8 numColors = 4;

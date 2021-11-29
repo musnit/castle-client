@@ -54,6 +54,14 @@ void ImageImporter::regeneratePreview() {
   }
 }
 
+void ImageImporter::makePaletteProvider() {
+  if (paletteProviderType == "luminance") {
+    palette = std::make_unique<SimilarLuminancePaletteProvider>();
+  } else {
+    palette = std::make_unique<RandomPaletteProvider>();
+  }
+}
+
 void ImageImporter::generateImportedImageFilteredPreview(love::image::ImageData *original) {
   if (!original) {
     return;
@@ -62,7 +70,7 @@ void ImageImporter::generateImportedImageFilteredPreview(love::image::ImageData 
   // make a copy of the data which will be owned by the preview image, don't change original
   love::image::ImageData *imageData = original->clone();
   if (!palette) {
-    palette = std::make_unique<SimilarLuminancePaletteProvider>();
+    makePaletteProvider();
   }
   palette->reset();
 
@@ -154,6 +162,16 @@ struct ImportImageActionReceiver {
       importer.regeneratePreview();
       importer.sendEvent();
     } else if (action == "swapColors") {
+      int providerType = int(params.value());
+      std::string oldProviderType = importer.paletteProviderType;
+      if (providerType == 0) {
+        importer.paletteProviderType = "random";
+      } else if (providerType == 1) {
+        importer.paletteProviderType = "luminance";
+      }
+      if (oldProviderType != importer.paletteProviderType) {
+        importer.makePaletteProvider();
+      }
       importer.regeneratePreview();
     }
   }

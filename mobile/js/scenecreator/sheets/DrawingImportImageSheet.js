@@ -43,7 +43,7 @@ const ImportImage = ({ importData, sendAction }) => {
           <Text style={styles.label}>Pre-blur (0-3, more is slower)</Text>
         </View>
         <InspectorNumberInput
-          style={{ maxWidth: '50%' }}
+          style={{ maxWidth: '40%' }}
           onChange={(value) => sendAction('setNumBlurs', { value })}
           value={importData.numBlurs}
           min={0}
@@ -55,7 +55,7 @@ const ImportImage = ({ importData, sendAction }) => {
           <Text style={styles.label}>Number of colors (2-8)</Text>
         </View>
         <InspectorNumberInput
-          style={{ maxWidth: '50%' }}
+          style={{ maxWidth: '40%' }}
           onChange={(value) => sendAction('setNumColors', { value })}
           value={importData.numColors}
           min={2}
@@ -67,7 +67,7 @@ const ImportImage = ({ importData, sendAction }) => {
           <Text style={styles.label}>Scale</Text>
         </View>
         <InspectorNumberInput
-          style={{ maxWidth: '50%' }}
+          style={{ maxWidth: '40%' }}
           onChange={(value) => sendAction('setImageScale', { value })}
           value={importData.imageScale}
           step={0.05}
@@ -78,8 +78,17 @@ const ImportImage = ({ importData, sendAction }) => {
       <View style={styles.row}>
         <Pressable
           style={SceneCreatorConstants.styles.button}
-          onPress={() => sendAction('swapColors')}>
-          <Text style={SceneCreatorConstants.styles.buttonLabel}>New random colors</Text>
+          onPress={() => sendAction('swapColors', { value: 1 })}>
+          <Text style={SceneCreatorConstants.styles.buttonLabel}>
+            New colors (similar luminance)
+          </Text>
+        </Pressable>
+      </View>
+      <View style={styles.row}>
+        <Pressable
+          style={SceneCreatorConstants.styles.button}
+          onPress={() => sendAction('swapColors', { value: 0 })}>
+          <Text style={SceneCreatorConstants.styles.buttonLabel}>New colors (full random)</Text>
         </Pressable>
       </View>
     </View>
@@ -111,7 +120,6 @@ export const DrawingImportImageSheet = ({ isOpen, ...props }) => {
     <BottomSheet
       isOpen={isOpen}
       initialSnap={1}
-      useViewInsteadOfScrollview
       renderContent={renderContent}
       renderHeader={renderHeader}
       style={styles.container}
