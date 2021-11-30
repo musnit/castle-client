@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Pressable, Text, View } from 'react-native';
 import { BottomSheet } from '../../components/BottomSheet';
 import { BottomSheetHeader } from '../../components/BottomSheetHeader';
 import { InspectorNumberInput } from '../inspector/components/InspectorNumberInput';
@@ -35,6 +35,13 @@ const styles = StyleSheet.create({
 const ImportImage = ({ importData, sendAction }) => {
   if (!importData) {
     return null;
+  }
+  if (importData.loading) {
+    return (
+      <View style={styles.importSettings}>
+        <ActivityIndicator />
+      </View>
+    );
   }
   return (
     <View style={styles.importSettings}>
@@ -123,7 +130,12 @@ export const DrawingImportImageSheet = ({ isOpen, ...props }) => {
   );
 
   const renderHeader = () => (
-    <BottomSheetHeader title="Import Image" onClose={cancelImport} onDone={confirmImport} />
+    <BottomSheetHeader
+      title="Import Image"
+      onClose={cancelImport}
+      onDone={confirmImport}
+      loading={importData?.loading}
+    />
   );
   const renderContent = () =>
     !isOpen ? null : <ImportImage sendAction={sendImportAction} importData={importData} />;
