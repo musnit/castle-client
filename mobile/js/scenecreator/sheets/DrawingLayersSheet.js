@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   headerControl: {
-    padding: 10,
+    padding: 8,
   },
   image: {
     width: 50,
@@ -79,6 +79,8 @@ const styles = StyleSheet.create({
   addLayerButton: {
     flexDirection: 'row',
     alignItems: 'center',
+    paddingHorizontal: 4,
+    borderRadius: 3,
   },
   layerTitle: {
     flexGrow: 1,
@@ -144,8 +146,13 @@ const SelectImageButton = ({ sendLayerAction }) => {
   );
 
   return (
-    <Pressable onPress={selectImage} style={styles.addLayerButton}>
-      <MCIcon name={'image'} size={32} color={'#000'} />
+    <Pressable
+      onPress={selectImage}
+      style={({ pressed }) => [
+        styles.addLayerButton,
+        { backgroundColor: pressed ? '#ddd' : 'transparent' },
+      ]}>
+      <MCIcon name="image" size={28} color="#000" />
     </Pressable>
   );
 };
@@ -585,13 +592,17 @@ const DrawingLayersHeader = ({ sendLayerAction }) => {
   return (
     <View style={styles.header}>
       <View style={styles.headerLeft}>
-        <Pressable onPress={onAddLayer} style={styles.addLayerButton}>
-          <MCIcon name={'plus'} size={32} color="#000" />
+        <Pressable
+          onPress={onAddLayer}
+          style={({ pressed }) => [
+            styles.addLayerButton,
+            { backgroundColor: pressed ? '#ddd' : 'transparent' },
+          ]}>
+          <MCIcon name="plus" size={28} color="#000" />
         </Pressable>
         <SelectImageButton sendLayerAction={sendLayerAction} />
       </View>
       <View style={{ flexDirection: 'row', flexShrink: 1, padding: 8 }}>
-        <FeatherIcon name="layers" size={22} color="#000" style={{ marginRight: 12 }} />
         <Text style={styles.headingLabel}>Layers</Text>
       </View>
       {numFrames > 1 ? (
