@@ -34,6 +34,7 @@ private:
   float imageScale = 1.0f;
   uint8 numBlurs = 1;
   uint8 numColors = 4;
+  uint8 minEqualNeighbors = 0;
 
   love::image::ImageData *importedImageOriginalData;
   love::image::ImageData *importedImageFilteredData;

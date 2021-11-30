@@ -296,3 +296,101 @@ void ImageProcessing::gaussianBlur(love::image::ImageData *data) {
   data->paste(outData, 0, 0, 0, 0, width, height);
   outData->release();
 }
+
+int pixelRGBA8ToHex(love::image::Pixel &p) {
+  return ((p.rgba8[0] & 0xff) << 16) + ((p.rgba8[1] & 0xff) << 8) + (p.rgba8[2] & 0xff);
+}
+
+void compareNeighbors(love::image::Pixel &p, love::image::ImageData *data, int nx, int ny,
+    uint8 *numNeighborsEqual, std::unordered_map<int, int> &neighborColors) {
+  love::image::Pixel neighborPixel;
+  *numNeighborsEqual = 0;
+  data->getPixel(nx, ny, neighborPixel);
+  if (data->arePixelsEqual(p, neighborPixel)) {
+    (*numNeighborsEqual)++;
+  }
+  auto neighborHex = pixelRGBA8ToHex(neighborPixel);
+  if (neighborColors.find(neighborHex) == neighborColors.end()) {
+    neighborColors.emplace(neighborHex, 1);
+  } else {
+    neighborColors[neighborHex]++;
+  }
+}
+
+int findMostCommonNeighbor(std::unordered_map<int, int> &neighborColors) {
+  int mostCommonNeighborHex = 0;
+  int highestNeighborCount = 0;
+  for (auto it = neighborColors.begin(); it != neighborColors.end(); it++) {
+    auto neighborHex = it->first, neighborCount = it->second;
+    if (neighborCount > highestNeighborCount) {
+      mostCommonNeighborHex = neighborHex;
+      highestNeighborCount = neighborCount;
+    }
+  }
+  return mostCommonNeighborHex;
+}
+
+void ImageProcessing::removeIslands(love::image::ImageData *data, uint8 minEqualNeighbors) {
+  if (minEqualNeighbors < 1) {
+    // noop, all pixels have at least zero equal neighbors
+    return;
+  }
+  auto width = data->getWidth(), height = data->getHeight();
+  auto format = data->getFormat();
+
+  auto numNeighborsEqual = new uint8[width * height];
+  auto mostCommonNeighbor = new love::image::ImageData(width, height, format);
+
+  love::image::Pixel currentPixel;
+  love::image::Pixel outPixel;
+  float outRgb[3];
+  setChannel(outPixel, 3, 255.0f, format);
+  std::unordered_map<int, int> neighborColors;
+  for (auto y = 0; y < height; y++) {
+    for (auto x = 0; x < width; x++) {
+      neighborColors.clear();
+      data->getPixel(x, y, currentPixel);
+
+      // for each neighbor, get the pixel color; if same, increment same-neighbors;
+      // populate map of neighbor color counts
+      for (int dy = -1; dy <= 1; dy++) {
+        for (int dx = -1; dx <= 1; dx++) {
+          bool skip = false;
+          if (dy == 0 && dx == 0) {
+            skip = true;
+          } else if (!data->inside(x + dx, y + dy)) {
+            skip = true;
+          }
+          if (!skip) {
+            compareNeighbors(currentPixel, data, x + dx, y + dy,
+                numNeighborsEqual + (y * width + x), neighborColors);
+          }
+        }
+      }
+
+      // find the most common neighbor pixel color
+      if (numNeighborsEqual[y * width + x] < minEqualNeighbors) {
+        int mostCommonNeighborHex = findMostCommonNeighbor(neighborColors);
+        DrawUtil::hexToRGBFloat(mostCommonNeighborHex, outRgb);
+        setChannel(outPixel, 0, outRgb[0], format);
+        setChannel(outPixel, 1, outRgb[1], format);
+        setChannel(outPixel, 2, outRgb[2], format);
+        mostCommonNeighbor->setPixel(x, y, outPixel);
+      }
+    }
+  }
+
+  love::image::Pixel subPixel;
+  for (auto y = 0; y < height; y++) {
+    for (auto x = 0; x < width; x++) {
+      // if this pixel has numNeighborsEqual below threshold, replace with most common neighbor
+      if (numNeighborsEqual[y * width + x] < minEqualNeighbors) {
+        mostCommonNeighbor->getPixel(x, y, subPixel);
+        data->setPixel(x, y, subPixel);
+      }
+    }
+  }
+
+  delete[] numNeighborsEqual;
+  mostCommonNeighbor->release();
+}

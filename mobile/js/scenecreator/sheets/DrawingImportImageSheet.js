@@ -64,6 +64,18 @@ const ImportImage = ({ importData, sendAction }) => {
       </View>
       <View style={styles.row}>
         <View>
+          <Text style={styles.label}>Minimum equal neighbors</Text>
+        </View>
+        <InspectorNumberInput
+          style={{ maxWidth: '40%' }}
+          onChange={(value) => sendAction('setMinEqualNeighbors', { value })}
+          value={importData.minEqualNeighbors}
+          min={0}
+          max={3}
+        />
+      </View>
+      <View style={styles.row}>
+        <View>
           <Text style={styles.label}>Scale</Text>
         </View>
         <InspectorNumberInput

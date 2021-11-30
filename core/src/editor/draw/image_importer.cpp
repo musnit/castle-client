@@ -20,6 +20,9 @@ void ImageImporter::reset() {
   isImportingImage = false;
   numBlurs = 1;
   numColors = 4;
+  imageScale = 1.0f;
+  paletteProviderType = "luminance";
+  minEqualNeighbors = 0;
 }
 
 int getMaxImageSize() {
@@ -82,6 +85,7 @@ void ImageImporter::generateImportedImageFilteredPreview(love::image::ImageData 
     ImageProcessing::gaussianBlur(imageData);
   }
   ImageProcessing::kMeans(imageData, numColors, 4);
+  ImageProcessing::removeIslands(imageData, minEqualNeighbors);
   ImageProcessing::paletteSwap(imageData, *palette);
   // ImageProcessing::testOnlyRedChannel(imageData);
 
@@ -100,6 +104,7 @@ struct ImageImporterEvent {
   PROP(int, numColors);
   PROP(int, numBlurs);
   PROP(float, imageScale);
+  PROP(int, minEqualNeighbors);
 };
 
 void ImageImporter::sendEvent() {
@@ -107,6 +112,7 @@ void ImageImporter::sendEvent() {
   ev.numColors() = numColors;
   ev.numBlurs() = numBlurs;
   ev.imageScale() = imageScale;
+  ev.minEqualNeighbors() = minEqualNeighbors;
   drawTool.editor.getBridge().sendEvent("EDITOR_IMPORT_IMAGE", ev);
 }
 
@@ -159,6 +165,17 @@ struct ImportImageActionReceiver {
         value = 1.0f;
       }
       importer.imageScale = value;
+      importer.regeneratePreview();
+      importer.sendEvent();
+    } else if (action == "setMinEqualNeighbors") {
+      auto value = int(params.value());
+      if (value <= 0) {
+        value = 0;
+      }
+      if (value > 3) {
+        value = 3;
+      }
+      importer.minEqualNeighbors = value;
       importer.regeneratePreview();
       importer.sendEvent();
     } else if (action == "swapColors") {
