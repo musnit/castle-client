@@ -11,6 +11,7 @@ public:
   explicit ImageImporter(DrawTool &drawTool_);
   ImageImporter(const ImageImporter &) = delete;
   const ImageImporter &operator=(const ImageImporter &) = delete;
+  ~ImageImporter();
 
   bool isImportingImage = false;
   void importImage(std::string uri);
@@ -18,6 +19,7 @@ public:
   void regeneratePreview();
   love::image::ImageData *getFilteredImageData();
   void reset();
+  void update(double dt);
   void draw();
 
 private:
@@ -39,6 +41,22 @@ private:
   love::image::ImageData *importedImageOriginalData;
   love::image::ImageData *importedImageFilteredData;
   love::Image *importedImageFilteredPreview;
+
+  class FilterThread : public love::thread::Threadable {
+  public:
+    FilterThread(ImageImporter *owner_, love::image::ImageData *imageData);
+    virtual ~FilterThread();
+    void threadFunction();
+
+  private:
+    ImageImporter *owner;
+    love::image::ImageData *imageData;
+  };
+
+  bool loading = false;
+  bool hasNewFilteredData = false;
+  FilterThread *filterThread = nullptr;
+  void imageFilterFinished(love::image::ImageData *data);
 };
 
 inline ImageImporter::ImageImporter(DrawTool &drawTool_)

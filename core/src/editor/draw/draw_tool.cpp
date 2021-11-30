@@ -979,6 +979,10 @@ void DrawTool::update(double dt) {
     drawData->runAnimation(animationState, animationProperties, float(dt));
   }
 
+  if (imageImporter.isImportingImage) {
+    imageImporter.update(dt);
+  }
+
   if (isDrawToolEventDirty) {
     isDrawToolEventDirty = false;
     sendDrawToolEvent();

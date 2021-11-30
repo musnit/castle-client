@@ -4,7 +4,44 @@
 #include "editor/editor.h"
 #include "draw_tool.h"
 
+int getMaxImageSize() {
+  auto defaultFillPixelsPerUnit = 25.6f;
+  auto maxImageSize = DRAW_MAX_SIZE * 2.0f * defaultFillPixelsPerUnit;
+  return int(maxImageSize);
+}
+
+ImageImporter::FilterThread::FilterThread(ImageImporter *owner_, love::image::ImageData *imageData_)
+    : owner(owner_) {
+  threadName = "ImageImporterFilter";
+  imageData = imageData_;
+}
+
+ImageImporter::FilterThread::~FilterThread() {
+}
+
+void ImageImporter::FilterThread::threadFunction() {
+  for (uint8 ii = 0; ii < owner->numBlurs; ii++) {
+    ImageProcessing::gaussianBlur(imageData);
+  }
+  ImageProcessing::kMeans(imageData, owner->numColors, 4);
+  ImageProcessing::removeIslands(imageData, owner->minEqualNeighbors);
+  ImageProcessing::paletteSwap(imageData, *(owner->palette));
+  // ImageProcessing::testOnlyRedChannel(imageData);
+
+  owner->imageFilterFinished(imageData);
+  imageData = nullptr;
+}
+
+ImageImporter::~ImageImporter() {
+  reset();
+}
+
 void ImageImporter::reset() {
+  if (filterThread) {
+    filterThread->wait();
+    // TODO: is love deleting these somewhere?
+    filterThread = nullptr;
+  }
   if (importedImageOriginalData) {
     // TODO: is love deleting these somewhere?
     importedImageOriginalData = nullptr;
@@ -17,18 +54,13 @@ void ImageImporter::reset() {
     // TODO: is love deleting these somewhere?
     importedImageFilteredPreview = nullptr;
   }
+  loading = false;
   isImportingImage = false;
   numBlurs = 1;
   numColors = 4;
   imageScale = 1.0f;
   paletteProviderType = "luminance";
   minEqualNeighbors = 0;
-}
-
-int getMaxImageSize() {
-  auto defaultFillPixelsPerUnit = 25.6f;
-  auto maxImageSize = DRAW_MAX_SIZE * 2.0f * defaultFillPixelsPerUnit;
-  return int(maxImageSize);
 }
 
 void ImageImporter::importImage(std::string uri) {
@@ -70,30 +102,31 @@ void ImageImporter::generateImportedImageFilteredPreview(love::image::ImageData 
     return;
   }
 
-  // make a copy of the data which will be owned by the preview image, don't change original
-  love::image::ImageData *imageData = original->clone();
   if (!palette) {
     makePaletteProvider();
   }
   palette->reset();
 
+  if (filterThread) {
+    filterThread->wait();
+    // TODO: is love deleting these somewhere?
+    filterThread = nullptr;
+  }
+
+  auto imageData = original->clone();
   if (imageScale < 1.0f && imageScale > 0.0f) {
     imageData = ImageProcessing::fitToMaxSize(imageData, int(getMaxImageSize() * imageScale));
   }
 
-  for (uint8 ii = 0; ii < numBlurs; ii++) {
-    ImageProcessing::gaussianBlur(imageData);
-  }
-  ImageProcessing::kMeans(imageData, numColors, 4);
-  ImageProcessing::removeIslands(imageData, minEqualNeighbors);
-  ImageProcessing::paletteSwap(imageData, *palette);
-  // ImageProcessing::testOnlyRedChannel(imageData);
+  filterThread = new FilterThread(this, imageData);
+  filterThread->start();
+  loading = true;
+  sendEvent();
+}
 
+void ImageImporter::imageFilterFinished(love::image::ImageData *imageData) {
   importedImageFilteredData = imageData;
-  auto loadedImage = love::DrawDataFrame::imageDataToImage(imageData);
-
-  // TODO: is love freeing the previous value?
-  importedImageFilteredPreview = loadedImage;
+  hasNewFilteredData = true;
 }
 
 //
@@ -101,6 +134,7 @@ void ImageImporter::generateImportedImageFilteredPreview(love::image::ImageData 
 //
 
 struct ImageImporterEvent {
+  PROP(bool, loading) = false;
   PROP(int, numColors);
   PROP(int, numBlurs);
   PROP(float, imageScale);
@@ -109,6 +143,7 @@ struct ImageImporterEvent {
 
 void ImageImporter::sendEvent() {
   ImageImporterEvent ev;
+  ev.loading() = loading;
   ev.numColors() = numColors;
   ev.numBlurs() = numBlurs;
   ev.imageScale() = imageScale;
@@ -193,6 +228,21 @@ struct ImportImageActionReceiver {
     }
   }
 };
+
+void ImageImporter::update(double dt) {
+  if (hasNewFilteredData) {
+    // new filtered data may have been set by the filter runner on another thread.
+    // `imageDataToImage` only works on the main thread
+    auto loadedImage = love::DrawDataFrame::imageDataToImage(importedImageFilteredData);
+
+    // TODO: is love freeing the previous value?
+    importedImageFilteredPreview = loadedImage;
+
+    hasNewFilteredData = false;
+    loading = false;
+    sendEvent();
+  }
+}
 
 //
 // Draw
