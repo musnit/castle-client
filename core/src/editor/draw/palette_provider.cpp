@@ -67,6 +67,9 @@ std::array<int, std::size_t(60)> CASTLE_PALETTE = {
 void PaletteProvider::reset() {
 }
 
+void PaletteProvider::init() {
+}
+
 //
 // RandomPaletteProvider: shuffle castle palette and cycle through it
 //
@@ -74,10 +77,10 @@ void PaletteProvider::reset() {
 RandomPaletteProvider::RandomPaletteProvider() {
   // copy so we can shuffle ours
   palette = CASTLE_PALETTE;
-  reset();
+  init();
 }
 
-void RandomPaletteProvider::reset() {
+void RandomPaletteProvider::init() {
   unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
   std::shuffle(palette.begin(), palette.end(), std::default_random_engine(seed));
 }
@@ -105,7 +108,7 @@ void NearestGreedyPaletteProvider::reset() {
 int NearestGreedyPaletteProvider::nextColor(love::image::Pixel &inPixel, love::PixelFormat format) {
   if (colorUsed.size() == CASTLE_PALETTE.size()) {
     // all colors were used, start over
-    colorUsed.clear();
+    reset();
   }
 
   float inRgba[4];
@@ -150,21 +153,24 @@ SimilarLuminancePaletteProvider::SimilarLuminancePaletteProvider() {
   }
 
   palette = CASTLE_PALETTE; // copy so we can shuffle
+  init();
   reset();
+}
+
+void SimilarLuminancePaletteProvider::init() {
+  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+  std::shuffle(palette.begin(), palette.end(), std::default_random_engine(seed));
 }
 
 void SimilarLuminancePaletteProvider::reset() {
   colorUsed.clear();
-
-  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-  std::shuffle(palette.begin(), palette.end(), std::default_random_engine(seed));
 }
 
 int SimilarLuminancePaletteProvider::nextColor(
     love::image::Pixel &inPixel, love::PixelFormat format) {
   if (colorUsed.size() == palette.size()) {
     // all colors were used, start over
-    colorUsed.clear();
+    reset();
   }
 
   float inRgba[4];

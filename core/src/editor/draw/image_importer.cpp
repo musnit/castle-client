@@ -224,6 +224,7 @@ struct ImportImageActionReceiver {
       if (oldProviderType != importer.paletteProviderType) {
         importer.makePaletteProvider();
       }
+      importer.palette->init();
       importer.regeneratePreview();
     }
   }
