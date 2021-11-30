@@ -35,9 +35,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  headerLeft: {
+    flexDirection: 'row',
+    marginRight: 8,
+  },
   headerControls: {
     flexDirection: 'row',
     alignItems: 'center',
+    flexShrink: 1,
   },
   headerControl: {
     padding: 10,
@@ -56,7 +61,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
-    width: '100%',
     marginTop: 4,
   },
   layerRow: {
@@ -75,12 +79,6 @@ const styles = StyleSheet.create({
   addLayerButton: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  addLayerText: {
-    fontSize: 14,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginLeft: 12,
   },
   layerTitle: {
     flexGrow: 1,
@@ -146,11 +144,8 @@ const SelectImageButton = ({ sendLayerAction }) => {
   );
 
   return (
-    <Pressable onPress={selectImage} style={styles.firstCell}>
-      <View style={styles.addLayerButton}>
-        <MCIcon name={'image'} size={ICON_SIZE} color={'#000'} />
-        <Text style={styles.addLayerText}>Add Image</Text>
-      </View>
+    <Pressable onPress={selectImage} style={styles.addLayerButton}>
+      <MCIcon name={'image'} size={32} color={'#000'} />
     </Pressable>
   );
 };
@@ -456,7 +451,6 @@ const DrawingLayers = ({ sendLayerAction }) => {
     [sendLayerAction, layers?.length, showActionSheetWithOptions]
   );
 
-  const onAddLayer = useCallback(() => sendLayerAction('addLayer'), [sendLayerAction]);
   const onAddFrame = useCallback(() => sendLayerAction('addFrame'), [sendLayerAction]);
   const showFrameActionSheet = useCallback(
     (frame) => {
@@ -507,13 +501,7 @@ const DrawingLayers = ({ sendLayerAction }) => {
         showsHorizontalScrollIndicator={false}>
         <View style={{ flex: 1 }}>
           <View style={styles.layerRow}>
-            <SelectImageButton sendLayerAction={sendLayerAction} />
-            {/* <Pressable onPress={onAddLayer} style={styles.firstCell}>
-              <View style={styles.addLayerButton}>
-                <MCIcon name={'plus'} size={ICON_SIZE} color={'#000'} />
-                <Text style={styles.addLayerText}>Add Layer</Text>
-              </View>
-            </Pressable> */}
+            <View style={styles.firstCell} />
             {layers?.length > 0
               ? layers[0].frames.map((frame, idx) => {
                   let isSelected = selectedFrameIndex === idx + 1;
@@ -592,14 +580,21 @@ const DrawingLayers = ({ sendLayerAction }) => {
 const DrawingLayersHeader = ({ sendLayerAction }) => {
   const { numFrames, isOnionSkinningEnabled, isPlayingAnimation } =
     useCoreState('EDITOR_DRAW_LAYERS') || {};
+  const onAddLayer = useCallback(() => sendLayerAction('addLayer'), [sendLayerAction]);
 
   return (
     <View style={styles.header}>
+      <View style={styles.headerLeft}>
+        <Pressable onPress={onAddLayer} style={styles.addLayerButton}>
+          <MCIcon name={'plus'} size={32} color="#000" />
+        </Pressable>
+        <SelectImageButton sendLayerAction={sendLayerAction} />
+      </View>
       <View style={{ flexDirection: 'row', flexShrink: 1, padding: 8 }}>
         <FeatherIcon name="layers" size={22} color="#000" style={{ marginRight: 12 }} />
         <Text style={styles.headingLabel}>Layers</Text>
       </View>
-      {numFrames > 1 && (
+      {numFrames > 1 ? (
         <View style={styles.headerControls}>
           <Pressable
             style={styles.headerControl}
@@ -632,6 +627,8 @@ const DrawingLayersHeader = ({ sendLayerAction }) => {
             <FeatherIcon name="skip-forward" size={ICON_SIZE} color="#000" />
           </Pressable>
         </View>
+      ) : (
+        <View style={{ width: 64, height: 16, flexShrink: 1 }} />
       )}
     </View>
   );
