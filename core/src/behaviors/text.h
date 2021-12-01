@@ -8,7 +8,11 @@
 
 struct TextFontResource {
   love::StrongRef<love::Data> data;
-  std::vector<std::unique_ptr<love::Font>> fonts;
+  struct Entry {
+    int pixelSize;
+    std::unique_ptr<love::Font> font;
+  };
+  std::vector<Entry> entries;
 };
 
 struct TextComponent : BaseComponent {
@@ -105,7 +109,7 @@ private:
 
   std::unordered_map<std::string, TextFontResource> fontResources;
   void loadFontResources();
-  love::Font *getFont(TextFontResource *fontResource, float height) const;
+  love::Font *getFont(TextFontResource *fontResource, float pixelSize) const;
 
   void updateFont(TextComponent &component);
 
