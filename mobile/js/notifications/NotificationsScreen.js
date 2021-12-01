@@ -8,6 +8,7 @@ import {
   TouchableHighlight,
   TouchableOpacity,
   View,
+  Platform,
 } from 'react-native';
 import { AuthPrompt } from '../auth/AuthPrompt';
 import { Amplitude } from '@amplitude/react-native';
@@ -251,6 +252,11 @@ const NotificationsScreenAuthenticated = () => {
 
   const handlePushNotificationClicked = React.useCallback(
     (notifications, data) => {
+      // NavigationActivity already handles this on android
+      if (Platform.OS === 'android') {
+        return;
+      }
+
       if ((data.type === 'new_deck' || data.type === 'suggested_deck') && data.notificationId) {
         const notificationTapped = notifications.find(
           (n) => n.notificationId.toString() === data.notificationId.toString()
