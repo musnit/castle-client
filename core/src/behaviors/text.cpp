@@ -199,6 +199,10 @@ bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &com
   if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
     if (auto info = getBehaviors().byType<BodyBehavior>().getRenderInfo(actorId);
         info.visible || (options && options->drawInvisibleActors)) {
+      constexpr float fontHeight = 1; // Desired height in world units, make configurable later
+      auto font = component.font ? component.font : defaultFont.get();
+      auto downscale = fontHeight / font->getHeight();
+
       auto [x, y] = body->GetPosition();
 
       auto bounds = bodyBehavior.getEditorBounds(actorId);
@@ -212,7 +216,6 @@ bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &com
       lv.graphics.rotate(body->GetAngle());
 
       // Downscale since fonts are large
-      constexpr float downscale = 0.08;
       lv.graphics.scale(downscale, downscale);
       bounds.minX() *= info.widthScale / downscale;
       bounds.maxX() *= info.widthScale / downscale;
@@ -221,11 +224,7 @@ bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &com
 
       // Draw
       auto wrap = bounds.maxX() - bounds.minX();
-      if (component.font) {
-        lv.graphics.setFont(component.font);
-      } else {
-        lv.graphics.setFont(defaultFont.get());
-      }
+      lv.graphics.setFont(font);
       lv.graphics.printf({ { formatContent(component.props.content()), { 0, 0, 0, 1 } } }, wrap,
           love::Font::ALIGN_LEFT, love::Matrix4(bounds.minX(), bounds.minY(), 0, 1, 1, 0, 0, 0, 0));
 
