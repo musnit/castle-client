@@ -174,7 +174,6 @@ int SimilarLuminancePaletteProvider::nextColor(
   }
 
   float inRgba[4];
-  float colorRgba[4];
   int closestColor = 0;
   float minDist = std::numeric_limits<float>::max();
   DrawUtil::getRGBAFloat(inPixel, format, inRgba);
