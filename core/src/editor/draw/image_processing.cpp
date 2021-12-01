@@ -101,7 +101,7 @@ void ImageProcessing::kMeans(love::image::ImageData *data, uint8 k, int numItera
     memset(clusterSize, 0, sizeof(int) * k);
 
     // assign each pixel to the segment with the nearest mean
-    love::image::Pixel p;
+    love::image::Pixel p {};
     float rgba1[4];
     float rgba2[4];
     for (auto y = 0; y < height; y++) {
@@ -140,7 +140,7 @@ void ImageProcessing::kMeans(love::image::ImageData *data, uint8 k, int numItera
     }
   }
 
-  love::image::Pixel zero;
+  love::image::Pixel zero {};
   memset(&zero, 0, data->getPixelSize());
 
   // replace pixels with the mean of their assigned segment
@@ -165,7 +165,7 @@ void ImageProcessing::kMeans(love::image::ImageData *data, uint8 k, int numItera
 
 void ImageProcessing::testOnlyRedChannel(love::image::ImageData *data) {
   auto width = data->getWidth(), height = data->getHeight();
-  love::image::Pixel blankPixel, p;
+  love::image::Pixel blankPixel = {}, p = {};
   for (auto y = 0; y < height; y++) {
     for (auto x = 0; x < width; x++) {
       data->getPixel(x, y, p);
@@ -198,7 +198,7 @@ void ImageProcessing::paletteSwap(love::image::ImageData *data, PaletteProvider 
   auto width = data->getWidth(), height = data->getHeight();
   auto format = data->getFormat();
 
-  love::image::Pixel p;
+  love::image::Pixel p {};
   float rgba[4];
   std::unordered_map<int, love::image::Pixel> swaps;
 
@@ -211,7 +211,7 @@ void ImageProcessing::paletteSwap(love::image::ImageData *data, PaletteProvider 
       DrawUtil::getRGBAFloat(p, format, rgba);
       auto found = swaps.find(hash);
       if (found == swaps.end()) {
-        love::image::Pixel swap;
+        love::image::Pixel swap {};
         auto hexValue = palette.nextColor(p, format);
         setChannel(swap, 0, ((hexValue >> 16) & 0xFF), format);
         setChannel(swap, 1, ((hexValue >> 8) & 0xFF), format);
@@ -284,7 +284,7 @@ void ImageProcessing::gaussianBlur(love::image::ImageData *data) {
   auto outData = new love::image::ImageData(width, height, format);
 
   love::image::Pixel buf[9];
-  love::image::Pixel outPixel;
+  love::image::Pixel outPixel {};
   for (auto y = 0; y < height; y++) {
     for (auto x = 0; x < width; x++) {
       copyRegionOverflowClamp(data, width, height, buf, x - 1, y - 1, 3, 3);
@@ -303,7 +303,7 @@ int pixelRGBA8ToHex(love::image::Pixel &p) {
 
 void compareNeighbors(love::image::Pixel &p, love::image::ImageData *data, int nx, int ny,
     uint8 *numNeighborsEqual, std::unordered_map<int, int> &neighborColors) {
-  love::image::Pixel neighborPixel;
+  love::image::Pixel neighborPixel {};
   if (!data->inside(nx, ny))
     return;
   data->getPixel(nx, ny, neighborPixel);
@@ -341,8 +341,8 @@ void ImageProcessing::removeIslands(love::image::ImageData *data, uint8 minEqual
   auto numNeighborsEqual = new uint8[width * height];
   auto mostCommonNeighbor = new love::image::ImageData(width, height, format);
 
-  love::image::Pixel currentPixel;
-  love::image::Pixel outPixel;
+  love::image::Pixel currentPixel {};
+  love::image::Pixel outPixel {};
   float outRgb[3];
   setChannel(outPixel, 3, 255.0f, format);
   std::unordered_map<int, int> neighborColors;
@@ -375,7 +375,7 @@ void ImageProcessing::removeIslands(love::image::ImageData *data, uint8 minEqual
     }
   }
 
-  love::image::Pixel subPixel;
+  love::image::Pixel subPixel {};
   for (auto y = 0; y < height; y++) {
     for (auto x = 0; x < width; x++) {
       // if this pixel has numNeighborsEqual below threshold, replace with most common neighbor
