@@ -118,6 +118,7 @@ struct DrawLayersEvent {
   PROP(love::DrawDataLayerId, selectedLayerId);
   PROP(int, selectedFrameIndex);
   PROP(bool, canPasteCell);
+  PROP(bool, copiedCellIsBitmap);
   PROP(bool, isOnionSkinningEnabled);
   PROP(bool, isPlayingAnimation);
   PROP((std::vector<Layer>), layers);
@@ -157,6 +158,7 @@ void DrawTool::sendLayersEvent() {
   ev.selectedLayerId = selectedLayerId;
   ev.selectedFrameIndex = selectedFrameIndex.value;
   ev.canPasteCell = copiedFrameData != "";
+  ev.copiedCellIsBitmap = ev.canPasteCell() && copiedFrameIsBitmap;
   ev.isOnionSkinningEnabled = isOnionSkinningEnabled;
   ev.isPlayingAnimation = isPlayingAnimation;
 
@@ -313,10 +315,12 @@ struct DrawToolLayerActionReceiver {
           sourceFrame->write(writer);
         });
         drawTool.copiedFrameData = frameArchive.toJson();
+        drawTool.copiedFrameIsBitmap = sourceLayer->isBitmap;
         drawTool.sendLayersEvent();
       }
     } else if (action == "pasteCell") {
-      if (drawTool.copiedFrameData != "") {
+      auto destLayer = drawTool.drawData->layerForId(params.layerId());
+      if (drawTool.copiedFrameData != "" && drawTool.copiedFrameIsBitmap == destLayer->isBitmap) {
         auto newFrame = std::make_shared<love::DrawDataFrame>();
         auto frameArchive = Archive::fromJson(drawTool.copiedFrameData.c_str());
         frameArchive.read([&](Reader &reader) {

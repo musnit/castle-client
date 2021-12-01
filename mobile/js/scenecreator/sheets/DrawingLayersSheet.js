@@ -312,6 +312,7 @@ const LayerRow = ({
               showCellActionSheet({
                 isLinked: frame.isLinked,
                 layerId: layer.id,
+                isBitmap: layer.isBitmap,
                 frame: idx + 1,
               })
           : () => onSelectLayer({ layer, frame: idx + 1 });
@@ -336,6 +337,7 @@ const DrawingLayers = ({ sendLayerAction }) => {
     selectedLayerId,
     selectedFrameIndex,
     canPasteCell,
+    copiedCellIsBitmap,
     collisionBase64Png,
     isCollisionVisible,
   } = useCoreState('EDITOR_DRAW_LAYERS') || {
@@ -372,17 +374,17 @@ const DrawingLayers = ({ sendLayerAction }) => {
   const { showActionSheetWithOptions } = useActionSheet();
 
   const showCellActionSheet = useCallback(
-    ({ frame, layerId, isLinked }) => {
+    ({ frame, layerId, isBitmap, isLinked }) => {
       let options = [
         {
-          name: 'Copy',
+          name: isBitmap ? 'Copy Bitmap' : 'Copy',
           action: () => sendLayerAction('copyCell', { frameIndex: frame, layerId }),
         },
       ];
 
-      if (canPasteCell) {
+      if (canPasteCell && isBitmap === copiedCellIsBitmap) {
         options.push({
-          name: 'Paste',
+          name: copiedCellIsBitmap ? 'Paste Bitmap' : 'Paste',
           action: () => sendLayerAction('pasteCell', { frameIndex: frame, layerId }),
         });
       }
@@ -415,7 +417,7 @@ const DrawingLayers = ({ sendLayerAction }) => {
         }
       );
     },
-    [canPasteCell, sendLayerAction, showActionSheetWithOptions]
+    [canPasteCell, copiedCellIsBitmap, sendLayerAction, showActionSheetWithOptions]
   );
 
   const showLayerActionSheet = useCallback(

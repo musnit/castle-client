@@ -112,6 +112,7 @@ private:
 
   // for 'copy cell'
   std::string copiedFrameData;
+  bool copiedFrameIsBitmap = false;
 
   bool isCollisionVisible = true;
   bool viewInContext = false;
