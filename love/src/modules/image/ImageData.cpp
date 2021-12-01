@@ -431,8 +431,8 @@ void ImageData::getBounds(int * result)
 	
 	Pixel p;
 
-	for (int x = 0; x < width; x++) {
-		for (int y = 0; y < height; y++) {
+	for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++) {
 			getPixel(x, y, p);
 			if (isAlphaSet(p)) {
 				if (result[0] == -1 || x < result[0]) {
