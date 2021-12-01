@@ -940,6 +940,7 @@ void DrawTool::makeNewLayerFromImageImporter() {
     auto &selectedFrame = getDrawDataFrame();
     selectedFrame.fillImageData = imageImporter.getFilteredImageData();
     selectedFrame.fillImageData->retain();
+    dirtySelectedFrameBounds();
 
     // initially center the bitmap
     auto width = selectedFrame.fillImageData->getWidth(),

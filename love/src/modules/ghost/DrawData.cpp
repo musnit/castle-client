@@ -351,7 +351,11 @@ namespace ghost {
       auto layer = layers[l].get();
       auto realFrame = getRealFrameIndexForLayerId(layer->id, frame);
       auto frame = layer->frames[realFrame].get();
-      bounds = frame->getPathDataBounds(bounds);
+      if (layer->isBitmap) {
+        bounds = frame->getFillImageBoundsInPathCoordinates();
+      } else {
+        bounds = frame->getPathDataBounds(bounds);
+      }
     }
     framesBounds[frame] = bounds;
     return *bounds;

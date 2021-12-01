@@ -135,6 +135,21 @@ namespace ghost {
     return newBounds;
   }
 
+  Bounds DrawDataFrame::getFillImageBoundsInPathCoordinates() {
+    Bounds newBounds;
+    if (fillImageData) {
+      int boundsResult[4] = { -1, -1, -1, -1 };
+      int halfWidth = fillImageData->getWidth() / 2, halfHeight = fillImageData->getHeight() / 2;
+      fillImageData->getBounds(boundsResult);
+      auto fillPixelsPerUnit = parentLayer()->parent()->fillPixelsPerUnit;
+      newBounds.minX = (boundsResult[0] - halfWidth) / fillPixelsPerUnit;
+      newBounds.minY = (boundsResult[1] - halfHeight) / fillPixelsPerUnit;
+      newBounds.maxX = (boundsResult[2] - halfWidth) / fillPixelsPerUnit;
+      newBounds.maxY = (boundsResult[3] - halfHeight) / fillPixelsPerUnit;
+    }
+    return newBounds;
+  }
+
   void DrawDataFrame::resetGraphics() {
     _graphicsNeedsReset = true;
   }
@@ -501,9 +516,14 @@ namespace ghost {
     auto previewCanvas = newCanvas(size, size);
 
     renderToCanvas(previewCanvas, [this, size]() {
-      auto pathBounds = getPathDataBounds(std::nullopt);
-      float width = pathBounds.maxX - pathBounds.minX;
-      float height = pathBounds.maxY - pathBounds.minY;
+      Bounds bounds;
+      if (parentLayer()->isBitmap) {
+        bounds = getFillImageBoundsInPathCoordinates();
+      } else {
+        bounds = getPathDataBounds(std::nullopt);
+      }
+      float width = bounds.maxX - bounds.minX;
+      float height = bounds.maxY - bounds.minY;
 
       float maxDimension = width;
       if (height > maxDimension) {
@@ -521,7 +541,7 @@ namespace ghost {
       graphicsModule->origin();
       graphicsModule->scale(size / (maxDimension * 1.05), size / (maxDimension * 1.05));
       graphicsModule->translate(
-          (padding - pathBounds.minX) + widthPadding, (padding - pathBounds.minY) + heightPadding);
+          (padding - bounds.minX) + widthPadding, (padding - bounds.minY) + heightPadding);
       graphicsModule->clear(Colorf(0.0f, 0.0f, 0.0f, 0.0f), 0, 1.0);
       graphicsModule->setColor({ 1.0, 1.0, 1.0, 1.0 });
 

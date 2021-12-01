@@ -122,6 +122,7 @@ namespace ghost {
     void cleanUpPaths();
     Bounds getPathDataBounds(std::optional<Bounds> bounds);
     Bounds getPathDataBoundsInPixelCoordinates();
+    Bounds getFillImageBoundsInPathCoordinates();
     void resetGraphics();
     ToveGraphicsHolder *graphics();
     void renderFill();
