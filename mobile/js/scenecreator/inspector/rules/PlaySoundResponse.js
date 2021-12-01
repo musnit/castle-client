@@ -23,6 +23,8 @@ import Feather from 'react-native-vector-icons/Feather';
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import Permissions from 'react-native-permissions';
 import DocumentPicker from 'react-native-document-picker';
+import { launchImageLibrary as ImagePickerLaunchImageLibrary } from 'react-native-image-picker';
+import { useActionSheet } from '@expo/react-native-action-sheet';
 
 import { uploadAudioFile } from '../../../Session';
 
@@ -471,6 +473,8 @@ class SoundRecording extends React.Component {
 }
 
 const SoundUpload = ({ onChangeSound, response, onChangeResponse, children, ...props }) => {
+  const { showActionSheetWithOptions } = useActionSheet();
+
   const [state, setState] = React.useState('ready');
 
   const onChangeUploadUrl = React.useCallback(
@@ -492,7 +496,7 @@ const SoundUpload = ({ onChangeSound, response, onChangeResponse, children, ...p
     [onChangeUploadUrl]
   );
 
-  const onStartUpload = React.useCallback(async () => {
+  const onStartDocumentUpload = React.useCallback(async () => {
     setState('processing');
 
     try {
@@ -514,6 +518,46 @@ const SoundUpload = ({ onChangeSound, response, onChangeResponse, children, ...p
     setState('ready');
   }, [onChangeUploadUrl, setState]);
 
+  const onStartCameraUpload = React.useCallback(async () => {
+    setState('processing');
+
+    ImagePickerLaunchImageLibrary(
+      {
+        mediaType: 'video',
+      },
+      async ({ didCancel, error, uri }) => {
+        if (!didCancel) {
+          if (error) {
+            console.log(error);
+            Alert.alert('Upload Error', `Error uploading audio file. Please try again.`);
+          } else {
+            let uploadResult = await uploadAudioFile(uri, false);
+            onChangeUploadUrl(uploadResult.url);
+          }
+        }
+
+        setState('ready');
+      }
+    );
+  }, [onChangeUploadUrl, setState]);
+
+  const onSelectUploadType = React.useCallback(async () => {
+    showActionSheetWithOptions(
+      {
+        title: 'Select File Type',
+        options: ['Downloaded File', 'Video from Camera', 'Cancel'],
+        cancelButtonIndex: 2,
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 0) {
+          onStartDocumentUpload();
+        } else if (buttonIndex === 1) {
+          onStartCameraUpload();
+        }
+      }
+    );
+  }, [onStartDocumentUpload, onStartCameraUpload]);
+
   const onPlayAudio = React.useCallback(async () => {
     sendAsync('EDITOR_PREVIEW_SOUND', response.params);
   }, [response.params]);
@@ -532,7 +576,7 @@ const SoundUpload = ({ onChangeSound, response, onChangeResponse, children, ...p
           styles.chooseFileButton,
           chooseFileDisabled ? { borderColor: '#ccc' } : null,
         ]}
-        onPress={onStartUpload}
+        onPress={onSelectUploadType}
         disabled={chooseFileDisabled}>
         <Text
           style={[
@@ -543,7 +587,6 @@ const SoundUpload = ({ onChangeSound, response, onChangeResponse, children, ...p
         </Text>
       </TouchableOpacity>
       <InspectorTextInput
-        optimistic
         value={soundId}
         onChangeText={onChangeSoundId}
         placeholder="Sound id"
