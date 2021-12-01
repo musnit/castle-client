@@ -38,11 +38,16 @@ public:
       clampedDiff.x = 0;
       clampedDiff.y = 0;
 
-      auto pathDataBounds = drawTool.getDrawDataFrame().getPathDataBounds(std::nullopt);
-      bounds.minX = -DRAW_MAX_SIZE - pathDataBounds.minX - DRAW_LINE_WIDTH * 0.5;
-      bounds.minY = -DRAW_MAX_SIZE - pathDataBounds.minY - DRAW_LINE_WIDTH * 0.5;
-      bounds.maxX = DRAW_MAX_SIZE - pathDataBounds.maxX + DRAW_LINE_WIDTH * 0.5;
-      bounds.maxY = DRAW_MAX_SIZE - pathDataBounds.maxY + DRAW_LINE_WIDTH * 0.5;
+      love::ghost::Bounds frameBounds;
+      if (isBitmap) {
+        frameBounds = drawTool.getDrawDataFrame().getFillImageBoundsInPathCoordinates();
+      } else {
+        frameBounds = drawTool.getDrawDataFrame().getPathDataBounds(std::nullopt);
+      }
+      bounds.minX = -DRAW_MAX_SIZE - frameBounds.minX - DRAW_LINE_WIDTH * 0.5;
+      bounds.minY = -DRAW_MAX_SIZE - frameBounds.minY - DRAW_LINE_WIDTH * 0.5;
+      bounds.maxX = DRAW_MAX_SIZE - frameBounds.maxX + DRAW_LINE_WIDTH * 0.5;
+      bounds.maxY = DRAW_MAX_SIZE - frameBounds.maxY + DRAW_LINE_WIDTH * 0.5;
     }
 
     clampedDiff.x = clampedDiff.x + touch.touchX - lastCoord.x;
