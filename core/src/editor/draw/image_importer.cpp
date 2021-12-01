@@ -60,7 +60,7 @@ void ImageImporter::reset() {
   numColors = 4;
   imageScale = 1.0f;
   paletteProviderType = "luminance";
-  minEqualNeighbors = 0;
+  minEqualNeighbors = 1;
 }
 
 void ImageImporter::importImage(std::string uri) {

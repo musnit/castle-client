@@ -304,7 +304,8 @@ int pixelRGBA8ToHex(love::image::Pixel &p) {
 void compareNeighbors(love::image::Pixel &p, love::image::ImageData *data, int nx, int ny,
     uint8 *numNeighborsEqual, std::unordered_map<int, int> &neighborColors) {
   love::image::Pixel neighborPixel;
-  *numNeighborsEqual = 0;
+  if (!data->inside(nx, ny))
+    return;
   data->getPixel(nx, ny, neighborPixel);
   if (data->arePixelsEqual(p, neighborPixel)) {
     (*numNeighborsEqual)++;
@@ -353,20 +354,15 @@ void ImageProcessing::removeIslands(love::image::ImageData *data, uint8 minEqual
 
       // for each neighbor, get the pixel color; if same, increment same-neighbors;
       // populate map of neighbor color counts
-      for (int dy = -1; dy <= 1; dy++) {
-        for (int dx = -1; dx <= 1; dx++) {
-          bool skip = false;
-          if (dy == 0 && dx == 0) {
-            skip = true;
-          } else if (!data->inside(x + dx, y + dy)) {
-            skip = true;
-          }
-          if (!skip) {
-            compareNeighbors(currentPixel, data, x + dx, y + dy,
-                numNeighborsEqual + (y * width + x), neighborColors);
-          }
-        }
-      }
+      numNeighborsEqual[y * width + x] = 0;
+      compareNeighbors(
+          currentPixel, data, x + 1, y, numNeighborsEqual + (y * width + x), neighborColors);
+      compareNeighbors(
+          currentPixel, data, x - 1, y, numNeighborsEqual + (y * width + x), neighborColors);
+      compareNeighbors(
+          currentPixel, data, x, y + 1, numNeighborsEqual + (y * width + x), neighborColors);
+      compareNeighbors(
+          currentPixel, data, x, y - 1, numNeighborsEqual + (y * width + x), neighborColors);
 
       // find the most common neighbor pixel color
       if (numNeighborsEqual[y * width + x] < minEqualNeighbors) {
