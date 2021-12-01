@@ -679,7 +679,6 @@ void DrawTool::resetState() {
   tempTranslateX = 0;
   tempTranslateY = 0;
 
-  isDrawToolEventDirty = true;
   isPlayingAnimation = false;
 
   selectedSubtools["root"] = "artwork";
@@ -885,10 +884,8 @@ void DrawTool::loadLastSave() {
   physicsBodyData = std::make_shared<PhysicsBodyData>(component->physicsBodyData);
   if (selectedLayerId == "") {
     selectFirstLayerAndFrame();
-  } else {
-    validateSelection();
   }
-  sendDrawToolEvent();
+  validateSelection();
 }
 
 void DrawTool::selectFirstLayerAndFrame() {
@@ -986,11 +983,6 @@ void DrawTool::update(double dt) {
 
   if (imageImporter.isImportingImage) {
     imageImporter.update(dt);
-  }
-
-  if (isDrawToolEventDirty) {
-    isDrawToolEventDirty = false;
-    sendDrawToolEvent();
   }
 
   const Gesture &gesture = scene.getGesture();

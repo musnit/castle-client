@@ -76,7 +76,6 @@ private:
   friend struct DrawToolViewInContextReceiver;
   friend struct DrawToolTmpGridSettingsReceiver;
 
-  bool isDrawToolEventDirty = false;
   float tempTranslateX = 0;
   float tempTranslateY = 0;
 
