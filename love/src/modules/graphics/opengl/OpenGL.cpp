@@ -1669,7 +1669,10 @@ bool OpenGL::isPixelFormatSupported(PixelFormat pixelformat, bool rendertarget, 
 			return false;
 	case PIXELFORMAT_RGBA8:
 		if (rendertarget)
-			return GLAD_VERSION_1_0 || GLAD_ES_VERSION_3_0 || GLAD_OES_rgb8_rgba8 || GLAD_ARM_rgba8;
+			// XXX(castle): this was returning `false` in some circumstances and causing Love to fall back to RGBA4 textures,
+			// which look bad, and as far as we know that was the wrong behavior and everything should support RGBA8
+			// return GLAD_VERSION_1_0 || GLAD_ES_VERSION_3_0 || GLAD_OES_rgb8_rgba8 || GLAD_ARM_rgba8;
+			return true;
 		else
 			return true;
 	case PIXELFORMAT_sRGBA8:
