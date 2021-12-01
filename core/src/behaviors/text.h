@@ -6,6 +6,11 @@
 #include "props.h"
 
 
+struct TextFontResource {
+  love::StrongRef<love::Data> data;
+  std::vector<std::unique_ptr<love::Font>> fonts;
+};
+
 struct TextComponent : BaseComponent {
   struct Props {
     PROP(
@@ -63,7 +68,7 @@ struct TextComponent : BaseComponent {
     love::Vector2 max { 0, 0 };
   };
   mutable std::optional<TouchRectangle> touchRectangle;
-  love::Font *font = nullptr;
+  TextFontResource *fontResource = nullptr;
 };
 
 class TextBehavior : public BaseBehavior<TextBehavior, TextComponent> {
@@ -97,9 +102,11 @@ private:
   Lv &lv { Lv::getInstance() };
 
   std::unique_ptr<love::Font> defaultFont;
-  std::unordered_map<std::string, std::unique_ptr<love::Font>> fonts;
 
-  void loadFonts();
+  std::unordered_map<std::string, TextFontResource> fontResources;
+  void loadFontResources();
+  love::Font *getFont(TextFontResource *fontResource, float height) const;
+
   void updateFont(TextComponent &component);
 
   std::string formatContent(const std::string &content) const;

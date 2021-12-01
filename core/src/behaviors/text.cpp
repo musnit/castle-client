@@ -111,7 +111,7 @@ struct HideResponse : BaseResponse {
 
 TextBehavior::TextBehavior(Scene &scene_)
     : BaseBehavior(scene_) {
-  loadFonts();
+  loadFontResources();
 }
 
 
@@ -190,6 +190,10 @@ void TextBehavior::handlePrePerform() {
 // Draw
 //
 
+love::Font *TextBehavior::getFont(TextFontResource *fontResource, float height) const {
+  return fontResource->fonts[0].get();
+}
+
 bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &component,
     std::optional<SceneDrawingOptions> options) const {
   if (!component.props.visible()) {
@@ -200,7 +204,7 @@ bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &com
     if (auto info = getBehaviors().byType<BodyBehavior>().getRenderInfo(actorId);
         info.visible || (options && options->drawInvisibleActors)) {
       constexpr float fontHeight = 1; // Desired height in world units, make configurable later
-      auto font = component.font ? component.font : defaultFont.get();
+      auto font = component.fontResource ? getFont(component.fontResource, 1) : defaultFont.get();
       auto downscale = fontHeight / font->getHeight();
 
       auto [x, y] = body->GetPosition();
@@ -327,10 +331,8 @@ void TextBehavior::handleSetProperty(
 }
 
 void TextBehavior::updateFont(TextComponent &component) {
-  if (auto found = fonts.find(component.props.fontName()); found != fonts.end()) {
-    component.font = found->second.get();
-  } else {
-    component.font = defaultFont.get();
+  if (auto found = fontResources.find(component.props.fontName()); found != fontResources.end()) {
+    component.fontResource = &found->second;
   }
 }
 
