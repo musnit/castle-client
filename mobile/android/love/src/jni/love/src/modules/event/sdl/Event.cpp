@@ -114,12 +114,15 @@ Event::~Event()
 	SDL_QuitSubSystem(SDL_INIT_EVENTS);
 }
 
+extern "C" void Castle_clearExtraTouch();
+
 void Event::pump()
 {
 	exceptionIfInRenderPass("love.event.pump");
 
 	SDL_Event e;
 
+	Castle_clearExtraTouch();
 	while (SDL_PollEvent(&e))
 	{
 		Message *msg = convert(e);
@@ -167,6 +170,8 @@ void Event::exceptionIfInRenderPass(const char *name)
 	if (gfx != nullptr && gfx->isCanvasActive())
 		throw love::Exception("%s cannot be called while a Canvas is active in love.graphics.", name);
 }
+
+extern "C" void Castle_trackExtraTouch(love::touch::Touch::TouchInfo touch);
 
 Message *Event::convert(const SDL_Event &e)
 {
@@ -347,8 +352,10 @@ Message *Event::convert(const SDL_Event &e)
 
 		if (e.type == SDL_FINGERDOWN)
 			txt = "touchpressed";
-		else if (e.type == SDL_FINGERUP)
+		else if (e.type == SDL_FINGERUP) {
+			Castle_trackExtraTouch(touchinfo);
 			txt = "touchreleased";
+		}
 		else
 			txt = "touchmoved";
 		msg = new Message(txt, vargs);

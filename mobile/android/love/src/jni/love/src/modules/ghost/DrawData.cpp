@@ -351,7 +351,11 @@ namespace ghost {
       auto layer = layers[l].get();
       auto realFrame = getRealFrameIndexForLayerId(layer->id, frame);
       auto frame = layer->frames[realFrame].get();
-      bounds = frame->getPathDataBounds(bounds);
+      if (layer->isBitmap) {
+        bounds = frame->getFillImageBoundsInPathCoordinates();
+      } else {
+        bounds = frame->getPathDataBounds(bounds);
+      }
     }
     framesBounds[frame] = bounds;
     return *bounds;
@@ -384,17 +388,19 @@ namespace ghost {
 
   void DrawData::addLayer(std::string title, DrawDataLayerId id, int order) {
     auto newLayer = std::make_shared<DrawDataLayer>(title, id);
+    newLayer->setParent(this);
 
     auto frameCount = layers.size() > 0 ? layers[0]->frames.size() : 1;
     for (int i = 0; i < frameCount; i++) {
-      auto newFrame = std::make_shared<DrawDataFrame>(i > 0, this);
+      auto newFrame = std::make_shared<DrawDataFrame>(i > 0, newLayer.get());
       newLayer->frames.push_back(std::move(newFrame));
     }
 
-    newLayer->setParent(this);
     layers.push_back(std::move(newLayer));
     if (order > -1 && order < layers.size() - 1) {
-      std::iter_swap(layers.begin() + order, layers.rbegin());
+      for (int ii = order; ii < layers.size() - 1; ii++) {
+        std::iter_swap(layers.begin() + ii, layers.rbegin());
+      }
     }
   }
 
@@ -437,7 +443,7 @@ namespace ghost {
       auto isLinked = layers[0]->frames.size() > 0;
       auto zeroFrameIndex = frameIndex.toZeroIndex();
       for (auto &layer : layers) {
-        auto newFrame = std::make_shared<DrawDataFrame>(isLinked, this);
+        auto newFrame = std::make_shared<DrawDataFrame>(isLinked, layer.get());
         if (zeroFrameIndex >= layer->frames.size()) {
           layer->frames.push_back(std::move(newFrame));
         } else {
@@ -481,7 +487,7 @@ namespace ghost {
       OneIndexFrame destFrameIndex) {
     auto destLayer = layerForId(destLayerId);
     if (destLayer && destFrameIndex.toZeroIndex() < destLayer->frames.size()) {
-      sourceFrame->setParent(this);
+      sourceFrame->setParentLayer(destLayer);
       destLayer->frames[destFrameIndex.toZeroIndex()] = std::move(sourceFrame);
     }
   }
@@ -502,7 +508,7 @@ namespace ghost {
       newFrameArchive.read([&](Reader &reader) {
         reader.read(*newFrame);
       });
-      newFrame->setParent(this);
+      newFrame->setParentLayer(destLayer);
 
       destLayer->frames[destFrameIndex.toZeroIndex()] = std::move(newFrame);
     }
@@ -517,7 +523,7 @@ namespace ghost {
       return;
     }
     if (isLinked) {
-      auto newFrame = std::make_shared<DrawDataFrame>(true, this);
+      auto newFrame = std::make_shared<DrawDataFrame>(true, layer);
       layer->frames[frameIndex.toZeroIndex()] = std::move(newFrame);
     } else {
       OneIndexFrame realFrameIndex;
@@ -529,7 +535,7 @@ namespace ghost {
   void DrawData::clearFrame(DrawDataLayerId layerId, OneIndexFrame frameIndex) {
     auto realFrame = getRealFrameIndexForLayerId(layerId, frameIndex);
     auto selectedLayer = layerForId(layerId);
-    auto emptyFrame = std::make_shared<DrawDataFrame>(false, this);
+    auto emptyFrame = std::make_shared<DrawDataFrame>(false, selectedLayer);
     selectedLayer->frames[realFrame] = std::move(emptyFrame);
   }
 
