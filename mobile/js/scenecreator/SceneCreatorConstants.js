@@ -39,6 +39,7 @@ export const styles = {
     paddingVertical: 4,
   },
   buttonLabel: {
+    color: '#000',
     fontSize: 16,
   },
   behaviorContainer: {
