@@ -946,10 +946,10 @@ void DrawTool::makeNewLayerFromImageImporter() {
     // initially center the bitmap
     auto width = selectedFrame.fillImageData->getWidth(),
          height = selectedFrame.fillImageData->getHeight();
-    selectedFrame.fillImageBounds.minX = -(width / 2);
-    selectedFrame.fillImageBounds.minY = -(height / 2);
-    selectedFrame.fillImageBounds.maxX = width / 2;
-    selectedFrame.fillImageBounds.maxY = height / 2;
+    selectedFrame.fillImageBounds.minX = -float(width / 2);
+    selectedFrame.fillImageBounds.minY = -float(height / 2);
+    selectedFrame.fillImageBounds.maxX = float(width / 2);
+    selectedFrame.fillImageBounds.maxY = float(height / 2);
 
     imageImporter.reset();
   }

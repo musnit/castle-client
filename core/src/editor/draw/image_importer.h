@@ -45,7 +45,7 @@ private:
   class FilterThread : public love::thread::Threadable {
   public:
     FilterThread(ImageImporter *owner_, love::image::ImageData *imageData);
-    virtual ~FilterThread();
+    virtual ~FilterThread() = default;
     void threadFunction();
 
   private:

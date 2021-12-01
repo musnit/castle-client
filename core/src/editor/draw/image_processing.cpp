@@ -224,7 +224,7 @@ void ImageProcessing::paletteSwap(love::image::ImageData *data, PaletteProvider 
       data->setPixel(x, y, swaps[hash]);
 
       // maintain original alpha
-      love::image::Pixel *dest = (love::image::Pixel *)((uint8 *)data->getData()
+      auto dest = (love::image::Pixel *)((uint8 *)data->getData()
           + ((y * width + x) * data->getPixelSize()));
       setChannel(*dest, 3, rgba[3], format);
     }
@@ -321,8 +321,7 @@ void compareNeighbors(love::image::Pixel &p, love::image::ImageData *data, int n
 int findMostCommonNeighbor(std::unordered_map<int, int> &neighborColors) {
   int mostCommonNeighborHex = 0;
   int highestNeighborCount = 0;
-  for (auto it = neighborColors.begin(); it != neighborColors.end(); it++) {
-    auto neighborHex = it->first, neighborCount = it->second;
+  for (auto &[neighborHex, neighborCount] : neighborColors) {
     if (neighborCount > highestNeighborCount) {
       mostCommonNeighborHex = neighborHex;
       highestNeighborCount = neighborCount;

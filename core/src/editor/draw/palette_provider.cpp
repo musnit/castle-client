@@ -74,9 +74,8 @@ void PaletteProvider::init() {
 // RandomPaletteProvider: shuffle castle palette and cycle through it
 //
 
-RandomPaletteProvider::RandomPaletteProvider() {
-  // copy so we can shuffle ours
-  palette = CASTLE_PALETTE;
+RandomPaletteProvider::RandomPaletteProvider()
+    : palette(CASTLE_PALETTE) {
   init();
 }
 
@@ -141,7 +140,8 @@ float luminance(float *rgb) {
   return 0.2126f * rgb[0] + 0.7152f * rgb[1] + 0.0722f * rgb[2];
 }
 
-SimilarLuminancePaletteProvider::SimilarLuminancePaletteProvider() {
+SimilarLuminancePaletteProvider::SimilarLuminancePaletteProvider()
+    : palette(CASTLE_PALETTE) {
   float colorRgba[4];
   for (auto color : CASTLE_PALETTE) {
     DrawUtil::hexToRGBFloat(color, colorRgba);
@@ -152,7 +152,6 @@ SimilarLuminancePaletteProvider::SimilarLuminancePaletteProvider() {
     luminances.emplace(color, approxLuminance);
   }
 
-  palette = CASTLE_PALETTE; // copy so we can shuffle
   init();
   reset();
 }

@@ -16,9 +16,6 @@ ImageImporter::FilterThread::FilterThread(ImageImporter *owner_, love::image::Im
   imageData = imageData_;
 }
 
-ImageImporter::FilterThread::~FilterThread() {
-}
-
 void ImageImporter::FilterThread::threadFunction() {
   for (uint8 ii = 0; ii < owner->numBlurs; ii++) {
     ImageProcessing::gaussianBlur(imageData);
@@ -115,7 +112,8 @@ void ImageImporter::generateImportedImageFilteredPreview(love::image::ImageData 
 
   auto imageData = original->clone();
   if (imageScale < 1.0f && imageScale > 0.0f) {
-    imageData = ImageProcessing::fitToMaxSize(imageData, int(getMaxImageSize() * imageScale));
+    imageData
+        = ImageProcessing::fitToMaxSize(imageData, int(float(getMaxImageSize()) * imageScale));
   }
 
   filterThread = new FilterThread(this, imageData);

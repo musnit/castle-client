@@ -125,13 +125,13 @@ bool DrawUtil::getRGBAFloat(love::image::Pixel &p, love::PixelFormat format, flo
 float DrawUtil::distanceSquared(float *rgba1, float *rgba2) {
   float sum = 0.0f;
   for (auto ii = 0; ii < 3; ii++) { // ignore alpha
-    sum += std::powf(rgba1[ii] - rgba2[ii], 2.0f);
+    sum += powf(rgba1[ii] - rgba2[ii], 2.0f);
   }
   return sum;
 }
 
 void DrawUtil::hexToRGBFloat(int hexValue, float *out) {
-  out[0] = ((hexValue >> 16) & 0xFF);
-  out[1] = ((hexValue >> 8) & 0xFF);
-  out[2] = ((hexValue >> 0) & 0xFF);
+  out[0] = float((hexValue >> 16) & 0xFF);
+  out[1] = float((hexValue >> 8) & 0xFF);
+  out[2] = float((hexValue >> 0) & 0xFF);
 }
