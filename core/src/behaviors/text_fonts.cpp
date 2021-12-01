@@ -41,10 +41,6 @@ void TextBehavior::loadFontResources() {
   const auto loadFontResource = [&](const std::string &name, auto &xxdData) {
     TextFontResource resource;
     resource.data = love::StrongRef<love::Data>(new EmbeddedFontData(xxdData), love::Acquire::NORETAIN);
-    love::StrongRef rasterizer(lv.font.newTrueTypeRasterizer(
-                                   resource.data, defaultFontSize, love::TrueTypeRasterizer::HINTING_NORMAL),
-        love::Acquire::NORETAIN);
-    resource.fonts.push_back(std::unique_ptr<love::Font>(lv.graphics.newFont(rasterizer)));
     fontResources[name] = std::move(resource);
   };
 

@@ -190,8 +190,25 @@ void TextBehavior::handlePrePerform() {
 // Draw
 //
 
-love::Font *TextBehavior::getFont(TextFontResource *fontResource, float height) const {
-  return fontResource->fonts[0].get();
+love::Font *TextBehavior::getFont(TextFontResource *fontResource, float pixelSize) const {
+  pixelSize /= 8; // Kind of an arbitrary constant to keep texture sizes sane...
+  for (auto &entry : fontResource->entries) {
+    if (float(entry.pixelSize) > pixelSize) {
+      return entry.font.get();
+    }
+  }
+  for (auto powerSize = 12;; powerSize *= 2) {
+    if (powerSize > 1024 || float(powerSize) > pixelSize) {
+      love::StrongRef rasterizer(lv.font.newTrueTypeRasterizer(fontResource->data, int(pixelSize),
+                                     love::TrueTypeRasterizer::HINTING_NORMAL),
+          love::Acquire::NORETAIN);
+      fontResource->entries.push_back({
+          powerSize,
+          std::unique_ptr<love::Font>(lv.graphics.newFont(rasterizer)),
+      });
+      return fontResource->entries.back().font.get();
+    }
+  }
 }
 
 bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &component,
@@ -199,12 +216,17 @@ bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &com
   if (!component.props.visible()) {
     return false;
   }
+  auto &scene = getScene();
+  auto cameraScale = 800.0f / scene.getCameraSize().x;
+  auto fontPixelScale = float(lv.window.getDPIScale()) * cameraScale;
   auto &bodyBehavior = getBehaviors().byType<BodyBehavior>();
   if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
     if (auto info = getBehaviors().byType<BodyBehavior>().getRenderInfo(actorId);
         info.visible || (options && options->drawInvisibleActors)) {
       constexpr float fontHeight = 1; // Desired height in world units, make configurable later
-      auto font = component.fontResource ? getFont(component.fontResource, 1) : defaultFont.get();
+      auto font = component.fontResource
+          ? getFont(component.fontResource, fontHeight * fontPixelScale)
+          : defaultFont.get();
       auto downscale = fontHeight / font->getHeight();
 
       auto [x, y] = body->GetPosition();
