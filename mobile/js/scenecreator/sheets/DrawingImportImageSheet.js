@@ -72,6 +72,18 @@ const TestImportImage = ({ importData, sendAction }) => {
     <View style={testStyles.importSettings}>
       <View style={testStyles.row}>
         <View>
+          <Text style={testStyles.label}>Normalize?</Text>
+        </View>
+        <InspectorNumberInput
+          style={{ maxWidth: '40%' }}
+          onChange={(value) => sendAction('setNormalizeRgb', { value })}
+          value={importData.normalizeRgb === true ? 1 : 0}
+          min={0}
+          max={1}
+        />
+      </View>
+      <View style={testStyles.row}>
+        <View>
           <Text style={testStyles.label}>Pre-blur (0-3, more is slower)</Text>
         </View>
         <InspectorNumberInput

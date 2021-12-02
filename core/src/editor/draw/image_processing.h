@@ -11,4 +11,5 @@ void kMeans(love::image::ImageData *data, uint8 k, int numIterations);
 void paletteSwap(love::image::ImageData *data, PaletteProvider &paletteProvider);
 void gaussianBlur(love::image::ImageData *data);
 void removeIslands(love::image::ImageData *data, uint8 minEqualNeighbors);
+void normalizeRgb(love::image::ImageData *data);
 }

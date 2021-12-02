@@ -389,3 +389,54 @@ void ImageProcessing::removeIslands(love::image::ImageData *data, uint8 minEqual
   delete[] numNeighborsEqual;
   mostCommonNeighbor->release();
 }
+
+// stratify the r, g, and b channels as much as possible.
+// do each channel independently (we don't care about preserving hue)
+void ImageProcessing::normalizeRgb(love::image::ImageData *data) {
+  auto width = data->getWidth(), height = data->getHeight();
+  auto format = data->getFormat();
+
+  float minRgb[3];
+  float maxRgb[3];
+  float currentRgba[4];
+  for (auto c = 0; c < 3; c++) {
+    minRgb[c] = std::numeric_limits<float>::max();
+    maxRgb[c] = std::numeric_limits<float>::min();
+  }
+
+  love::image::Pixel p {};
+  for (auto y = 0; y < height; y++) {
+    for (auto x = 0; x < width; x++) {
+      data->getPixel(x, y, p);
+      DrawUtil::getRGBAFloat(p, format, currentRgba);
+      for (auto c = 0; c < 3; c++) {
+        if (currentRgba[c] < minRgb[c]) {
+          minRgb[c] = currentRgba[c];
+        }
+        if (currentRgba[c] > maxRgb[c]) {
+          maxRgb[c] = currentRgba[c];
+        }
+      }
+    }
+  }
+
+  float diffRgb[3];
+  for (auto c = 0; c < 3; c++) {
+    diffRgb[c] = (maxRgb[c] - minRgb[c]);
+    if (diffRgb[c] < 1.0f) {
+      diffRgb[c] = 1.0f;
+    }
+  }
+
+  for (auto y = 0; y < height; y++) {
+    for (auto x = 0; x < width; x++) {
+      data->getPixel(x, y, p);
+      DrawUtil::getRGBAFloat(p, format, currentRgba);
+      for (auto c = 0; c < 3; c++) {
+        currentRgba[c] = ((currentRgba[c] - minRgb[c]) / diffRgb[c]) * 255.0f;
+        setChannel(p, c, currentRgba[c], format);
+      }
+      data->setPixel(x, y, p);
+    }
+  }
+}

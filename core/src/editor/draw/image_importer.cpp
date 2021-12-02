@@ -17,6 +17,9 @@ ImageImporter::FilterThread::FilterThread(ImageImporter *owner_, love::image::Im
 }
 
 void ImageImporter::FilterThread::threadFunction() {
+  if (owner->normalizeRgb) {
+    ImageProcessing::normalizeRgb(imageData);
+  }
   for (uint8 ii = 0; ii < owner->numBlurs; ii++) {
     ImageProcessing::gaussianBlur(imageData);
   }
@@ -58,6 +61,7 @@ void ImageImporter::reset() {
   imageScale = 1.0f;
   paletteProviderType = "luminance";
   minEqualNeighbors = 1;
+  normalizeRgb = false;
 }
 
 void ImageImporter::importImage(std::string uri) {
@@ -148,6 +152,7 @@ struct ImageImporterEvent {
   PROP(int, numBlurs);
   PROP(float, imageScale);
   PROP(int, minEqualNeighbors);
+  PROP(bool, normalizeRgb);
 };
 
 void ImageImporter::sendEvent() {
@@ -169,6 +174,7 @@ void ImageImporter::sendEvent() {
   ev.numBlurs() = numBlurs;
   ev.imageScale() = imageScale;
   ev.minEqualNeighbors() = minEqualNeighbors;
+  ev.normalizeRgb() = normalizeRgb;
   drawTool.editor.getBridge().sendEvent("EDITOR_IMPORT_IMAGE", ev);
 }
 
@@ -221,6 +227,11 @@ struct ImportImageActionReceiver {
         value = 1.0f;
       }
       importer.imageScale = value;
+      importer.regeneratePreview();
+      importer.sendEvent();
+    } else if (action == "setNormalizeRgb") {
+      auto value = int(params.value());
+      importer.normalizeRgb = value == 1 ? true : false;
       importer.regeneratePreview();
       importer.sendEvent();
     } else if (action == "setMinEqualNeighbors") {

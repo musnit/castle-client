@@ -43,6 +43,7 @@ private:
   uint8 numBlurs = 1;
   uint8 numColors = 4;
   uint8 minEqualNeighbors = 1;
+  bool normalizeRgb = false;
 
   love::image::ImageData *importedImageOriginalData;
   love::image::ImageData *importedImageFilteredData;
