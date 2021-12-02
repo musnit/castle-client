@@ -53,6 +53,8 @@ const ROOT_SHEETS = [
   {
     key: 'drawingImportImage',
     Component: DrawingImportImageSheet,
+    makeSnapPoints: ({ insets }) => [48 + insets.bottom, 256, 450 + insets.bottom],
+    initialSnap: 1,
   },
 ];
 
