@@ -13,7 +13,13 @@ public:
   const ImageImporter &operator=(const ImageImporter &) = delete;
   ~ImageImporter();
 
-  bool isImportingImage = false;
+  enum class Status {
+    None,
+    Importing,
+    Error,
+  };
+  Status status = Status::None;
+
   void importImage(std::string uri);
   void generateImportedImageFilteredPreview(love::image::ImageData *original);
   void regeneratePreview();

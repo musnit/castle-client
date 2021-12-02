@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   addLayerButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 4,
+    padding: 4,
     borderRadius: 3,
   },
   layerTitle: {

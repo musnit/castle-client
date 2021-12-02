@@ -94,7 +94,7 @@ void DrawTool::sendDrawToolEvent() {
   }
 
   ev.color() = selectedColor;
-  ev.isImportingImage() = imageImporter.isImportingImage;
+  ev.isImportingImage() = imageImporter.status != ImageImporter::Status::None;
   editor.getBridge().sendEvent("EDITOR_DRAW_TOOL", ev);
 }
 
@@ -930,7 +930,7 @@ void DrawTool::dirtySelectedFrameBounds() {
 }
 
 void DrawTool::makeNewLayerFromImageImporter() {
-  if (imageImporter.isImportingImage) {
+  if (imageImporter.status == ImageImporter::Status::Importing) {
     makeNewLayer();
     selectedSubtools["root"] = "bitmap";
 
@@ -981,7 +981,7 @@ void DrawTool::update(double dt) {
     drawData->runAnimation(animationState, animationProperties, float(dt));
   }
 
-  if (imageImporter.isImportingImage) {
+  if (imageImporter.status == ImageImporter::Status::Importing) {
     imageImporter.update(dt);
   }
 

@@ -52,7 +52,7 @@ void ImageImporter::reset() {
     importedImageFilteredPreview = nullptr;
   }
   loading = false;
-  isImportingImage = false;
+  status = Status::None;
   numBlurs = 1;
   numColors = 4;
   imageScale = 1.0f;
@@ -73,8 +73,9 @@ void ImageImporter::importImage(std::string uri) {
   try {
     imageData = new love::image::ImageData(data);
   } catch (const love::Exception &e) {
-    // most likely love couldn't decode the image, or something else bad happened
-    // TODO: mark status failed
+    // most likely love couldn't decode the image
+    status = Status::Error;
+    sendEvent();
     return;
   }
   file->release();
@@ -84,7 +85,7 @@ void ImageImporter::importImage(std::string uri) {
     importedImageOriginalData = imageData;
     regeneratePreview();
 
-    isImportingImage = true;
+    status = Status::Importing;
     sendEvent();
   }
 }
@@ -141,6 +142,7 @@ void ImageImporter::imageFilterFinished(love::image::ImageData *imageData) {
 //
 
 struct ImageImporterEvent {
+  PROP(std::string, status) = "none";
   PROP(bool, loading) = false;
   PROP(int, numColors);
   PROP(int, numBlurs);
@@ -150,6 +152,18 @@ struct ImageImporterEvent {
 
 void ImageImporter::sendEvent() {
   ImageImporterEvent ev;
+  switch (status) {
+  case Status::Importing:
+    ev.status() = "importing";
+    break;
+  case Status::Error:
+    ev.status() = "error";
+    break;
+  case Status::None:
+  default:
+    ev.status() = "none";
+    break;
+  }
   ev.loading() = loading;
   ev.numColors() = numColors;
   ev.numBlurs() = numBlurs;

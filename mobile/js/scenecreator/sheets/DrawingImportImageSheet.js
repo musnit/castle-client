@@ -36,6 +36,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingRight: 8,
   },
+  errorLabel: {
+    fontSize: 16,
+  },
 });
 
 const testStyles = StyleSheet.create({
@@ -183,8 +186,16 @@ const ImportImage = ({ importData, sendAction }) => {
   );
 };
 
+const ImportImageError = () => (
+  <View style={styles.importSettings}>
+    <Text style={styles.errorLabel}>
+      Castle couldn't import the image you chose. Try picking a different image.
+    </Text>
+  </View>
+);
+
 export const DrawingImportImageSheet = ({ isOpen, ...props }) => {
-  const importData = useCoreState('EDITOR_IMPORT_IMAGE');
+  const importData = useCoreState('EDITOR_IMPORT_IMAGE') || { status: 'none' };
   const sendImportAction = React.useCallback(
     (action, params) => sendAsync('IMPORT_IMAGE_ACTION', { action, ...params }),
     []
@@ -202,11 +213,16 @@ export const DrawingImportImageSheet = ({ isOpen, ...props }) => {
     <BottomSheetHeader
       title="Import Image"
       onClose={cancelImport}
-      onDone={confirmImport}
+      onDone={importData.status === 'importing' ? confirmImport : null}
       loading={importData?.loading}
     />
   );
-  const Component = USE_TEST_UI ? TestImportImage : ImportImage;
+  let Component;
+  if (importData.status === 'error') {
+    Component = ImportImageError;
+  } else {
+    Component = USE_TEST_UI ? TestImportImage : ImportImage;
+  }
   const renderContent = () =>
     !isOpen ? null : <Component sendAction={sendImportAction} importData={importData} />;
 
