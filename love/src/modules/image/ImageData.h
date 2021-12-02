@@ -103,7 +103,7 @@ public:
 	 **/
 	void getPixel(int x, int y, Pixel &p) const;
 	
-	int floodFill(int x, int y, ImageData *paths, const Pixel &p);
+	int floodFill(int x, int y, ImageData *paths, const Pixel &p, bool allowUnboundedFill);
 	int floodFillErase(int x, int y, int radius, ImageData *paths);
 	bool isAlphaSet(const Pixel &p);
 	bool arePixelsEqual(const Pixel &p1, const Pixel &p2);
@@ -156,8 +156,9 @@ private:
 	int floodFillTest(int x, int y, ImageData *paths, const Pixel &p);
 	int floodFillTest2(int x, int y, ImageData *paths, int * pixels);
 	void clearPixel(Pixel &p);
-	int floodFillColorAtPoint(int x, int y, ImageData *paths, const Pixel &p);
-	int runFloodFill(std::queue<flood_pixel_t> &pixelQueue, ImageData *paths, const Pixel &fillPixel, const Pixel &regionInitialPixel);
+	int floodFillColorAtPoint(int x, int y, ImageData *paths, const Pixel &p, bool allowUnboundedFill);
+	int runFloodFill(std::queue<flood_pixel_t> &pixelQueue, ImageData *paths,
+					 const Pixel &fillPixel, const Pixel &regionInitialPixel, bool allowUnboundedFill);
 
 	// The actual data.
 	unsigned char *data = nullptr;

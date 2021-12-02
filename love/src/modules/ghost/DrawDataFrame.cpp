@@ -287,13 +287,13 @@ namespace ghost {
 
     if (parentLayer()->isBitmap) {
       pixelCount = fillImageData->floodFill(floor((x * fillPixelsPerUnit) - fillImageBounds.minX),
-          floor((y * fillPixelsPerUnit) - fillImageBounds.minY), nullptr, p);
+          floor((y * fillPixelsPerUnit) - fillImageBounds.minY), nullptr, p, true);
     } else {
       updatePathsCanvas();
       auto pathsImageData = canvasToImageData(pathsCanvas);
       resizeFillImageDataToPathBounds();
       pixelCount = fillImageData->floodFill(floor((x * fillPixelsPerUnit) - fillImageBounds.minX),
-          floor((y * fillPixelsPerUnit) - fillImageBounds.minY), pathsImageData, p);
+          floor((y * fillPixelsPerUnit) - fillImageBounds.minY), pathsImageData, p, false);
       pathsImageData->release();
     }
     compressFillCanvas();
