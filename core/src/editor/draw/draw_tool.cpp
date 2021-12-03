@@ -15,6 +15,7 @@
 #include "subtools/draw_move_all_subtool.h"
 #include "subtools/draw_move_subtool.h"
 #include "subtools/draw_bend_subtool.h"
+#include "subtools/draw_eyedropper_subtool.h"
 #include "subtools/collision_shape_subtool.h"
 #include "subtools/collision_erase_subtool.h"
 #include "subtools/collision_move_all_subtool.h"
@@ -643,6 +644,7 @@ DrawTool::DrawTool(Editor &editor_)
   subtools.push_back(std::make_unique<DrawMoveAllSubtool>(*this, false));
   subtools.push_back(std::make_unique<DrawMoveSubtool>(*this));
   subtools.push_back(std::make_unique<DrawBendSubtool>(*this));
+  subtools.push_back(std::make_unique<DrawEyedropperSubtool>(*this, false));
   subtools.push_back(
       std::make_unique<CollisionShapeSubtool>(*this, CollisionShapeSubtool::Shape::Rectangle));
   subtools.push_back(
@@ -663,6 +665,7 @@ DrawTool::DrawTool(Editor &editor_)
   subtools.push_back(
       std::make_unique<BitmapEraseBrushSubtool>(*this, BitmapEraseBrushSubtool::Size::Large));
   subtools.push_back(std::make_unique<DrawMoveAllSubtool>(*this, true));
+  subtools.push_back(std::make_unique<DrawEyedropperSubtool>(*this, true));
 }
 
 DrawTool::~DrawTool() {

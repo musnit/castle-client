@@ -4,6 +4,7 @@ import { useCoreState, sendGlobalAction, sendAsync } from '../../core/CoreEvents
 import { OverlayDrawingSubtools } from './OverlayDrawingSubtools';
 
 import ColorPicker from '../inspector/components/ColorPicker';
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as Constants from '../../Constants';
 const CastleIcon = Constants.CastleIcon;
@@ -76,6 +77,11 @@ const TOOL_GROUPS = {
       IconComponent: CastleIcon,
       icon: 'erase',
     },
+    {
+      name: 'eyedropper',
+      IconComponent: MCIcon,
+      icon: 'eyedropper',
+    },
   ],
   collision: [
     {
@@ -109,6 +115,11 @@ const TOOL_GROUPS = {
       name: 'bitmap_erase',
       IconComponent: CastleIcon,
       icon: 'erase',
+    },
+    {
+      name: 'eyedropper',
+      IconComponent: MCIcon,
+      icon: 'eyedropper',
     },
   ],
 };
@@ -174,7 +185,8 @@ export const OverlayDrawing = ({ setActiveSheet }) => {
   const showColorPicker =
     currentDrawingToolGroup === 'artwork_draw' ||
     currentDrawingToolGroup === 'artwork_fill' ||
-    currentDrawingToolGroup === 'bitmap_fill';
+    currentDrawingToolGroup === 'bitmap_fill' ||
+    currentDrawingToolGroup === 'eyedropper';
 
   return (
     <View style={styles.container} pointerEvents="box-none">

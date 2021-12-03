@@ -151,7 +151,7 @@ bool DrawUtil::pickColor(
   auto fillPixelsPerUnit = frame.parentLayer()->parent()->fillPixelsPerUnit;
   int fillX = floor((x * fillPixelsPerUnit) - frame.fillImageBounds.minX),
       fillY = floor((y * fillPixelsPerUnit) - frame.fillImageBounds.minY);
-  if (frame.fillImageData->inside(fillX, fillY)) {
+  if (frame.fillImageData && frame.fillImageData->inside(fillX, fillY)) {
     love::image::Pixel pixel {};
     float rgba[4];
     frame.fillImageData->getPixel(fillX, fillY, pixel);
