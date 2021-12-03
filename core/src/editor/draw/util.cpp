@@ -135,3 +135,31 @@ void DrawUtil::hexToRGBFloat(int hexValue, float *out) {
   out[1] = float((hexValue >> 8) & 0xFF);
   out[2] = float((hexValue >> 0) & 0xFF);
 }
+
+bool DrawUtil::pickColor(
+    love::DrawDataFrame &frame, float x, float y, float radius, love::Colorf &outColor) {
+  // test paths first
+  if (!frame.parentLayer()->isBitmap) {
+    for (auto &pathData : frame.pathDataList) {
+      if (pathIntersectsCircle(pathData, x, y, radius)) {
+        outColor.set(pathData.color->r, pathData.color->g, pathData.color->b, pathData.color->a);
+        return true;
+      }
+    }
+  }
+  // test fill
+  auto fillPixelsPerUnit = frame.parentLayer()->parent()->fillPixelsPerUnit;
+  int fillX = floor((x * fillPixelsPerUnit) - frame.fillImageBounds.minX),
+      fillY = floor((y * fillPixelsPerUnit) - frame.fillImageBounds.minY);
+  if (frame.fillImageData->inside(fillX, fillY)) {
+    love::image::Pixel pixel {};
+    float rgba[4];
+    frame.fillImageData->getPixel(fillX, fillY, pixel);
+    getRGBAFloat(pixel, frame.fillImageData->getFormat(), rgba);
+    if (rgba[3] == 255.0f) { // don't pick transparency
+      outColor.set(rgba[0] / 255.0f, rgba[1] / 255.0f, rgba[2] / 255.0f, rgba[3] / 255.0f);
+      return true;
+    }
+  }
+  return false;
+}

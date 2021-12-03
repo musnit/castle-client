@@ -13,11 +13,11 @@ public:
   }
 
   std::string category() {
-    return "artwork";
+    return "artwork_fill";
   }
 
   std::string name() {
-    return "fill";
+    return "flood_fill";
   }
 
   void onReset() {

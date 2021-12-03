@@ -19,6 +19,7 @@ float distanceSquared(float *rgba1, float *rgba2); // ignores alpha
 void hexToRGBFloat(int hexColor, float *out);
 
 bool pathIntersectsCircle(love::PathData &path, float x, float y, float radius);
+bool pickColor(love::DrawDataFrame &frame, float x, float y, float radius, love::Colorf &outColor);
 }
 
 inline bool DrawUtil::isPointInBounds(float x, float y) {

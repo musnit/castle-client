@@ -194,6 +194,36 @@ void ImageProcessing::testOnlyRedChannel(love::image::ImageData *data) {
   }
 }
 
+int ImageProcessing::paletteSwap(
+    love::image::ImageData *data, const love::Colorf &fromColor, const love::Colorf &toColor) {
+  auto width = data->getWidth(), height = data->getHeight();
+  auto format = data->getFormat();
+
+  love::image::Pixel fromPixel = {}, toPixel = {};
+  setChannel(fromPixel, 0, fromColor.r * 255.0f, format);
+  setChannel(fromPixel, 1, fromColor.g * 255.0f, format);
+  setChannel(fromPixel, 2, fromColor.b * 255.0f, format);
+  setChannel(fromPixel, 3, 255.0f, format);
+  setChannel(toPixel, 0, toColor.r * 255.0f, format);
+  setChannel(toPixel, 1, toColor.g * 255.0f, format);
+  setChannel(toPixel, 2, toColor.b * 255.0f, format);
+  setChannel(toPixel, 3, 255.0f, format);
+
+  love::image::Pixel currentPixel {};
+  int count = 0;
+
+  for (auto y = 0; y < height; y++) {
+    for (auto x = 0; x < width; x++) {
+      data->getPixel(x, y, currentPixel);
+      if (data->arePixelsEqual(currentPixel, fromPixel)) {
+        data->setPixel(x, y, toPixel);
+        count++;
+      }
+    }
+  }
+  return count;
+}
+
 void ImageProcessing::paletteSwap(love::image::ImageData *data, PaletteProvider &palette) {
   auto width = data->getWidth(), height = data->getHeight();
   auto format = data->getFormat();

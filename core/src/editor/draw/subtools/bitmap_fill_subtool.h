@@ -12,11 +12,11 @@ public:
   }
 
   std::string category() {
-    return "bitmap";
+    return "bitmap_fill";
   }
 
   std::string name() {
-    return "fill";
+    return "flood_fill";
   }
 
   void onReset() {

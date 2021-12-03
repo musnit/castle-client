@@ -11,6 +11,7 @@
 #include "subtools/draw_erase_subtool.h"
 #include "subtools/draw_erase_segment_subtool.h"
 #include "subtools/draw_fill_subtool.h"
+#include "subtools/draw_palette_swap_subtool.h"
 #include "subtools/draw_move_all_subtool.h"
 #include "subtools/draw_move_subtool.h"
 #include "subtools/draw_bend_subtool.h"
@@ -638,6 +639,7 @@ DrawTool::DrawTool(Editor &editor_)
   subtools.push_back(std::make_unique<DrawEraseSubtool>(*this, DrawEraseSubtool::Size::Large));
   subtools.push_back(std::make_unique<DrawEraseSegmentSubtool>(*this));
   subtools.push_back(std::make_unique<DrawFillSubtool>(*this));
+  subtools.push_back(std::make_unique<DrawPaletteSwapSubtool>(*this, false));
   subtools.push_back(std::make_unique<DrawMoveAllSubtool>(*this, false));
   subtools.push_back(std::make_unique<DrawMoveSubtool>(*this));
   subtools.push_back(std::make_unique<DrawBendSubtool>(*this));
@@ -652,6 +654,7 @@ DrawTool::DrawTool(Editor &editor_)
   subtools.push_back(std::make_unique<CollisionMoveSubtool>(*this));
   subtools.push_back(std::make_unique<CollisionScaleSubtool>(*this));
   subtools.push_back(std::make_unique<BitmapFillSubtool>(*this));
+  subtools.push_back(std::make_unique<DrawPaletteSwapSubtool>(*this, true));
   subtools.push_back(std::make_unique<BitmapEraseFillSubtool>(*this));
   subtools.push_back(
       std::make_unique<BitmapEraseBrushSubtool>(*this, BitmapEraseBrushSubtool::Size::Small));
@@ -684,12 +687,14 @@ void DrawTool::resetState() {
   selectedSubtools["root"] = "artwork";
   selectedSubtools["artwork"] = "artwork_draw";
   selectedSubtools["artwork_draw"] = "pencil_no_grid";
+  selectedSubtools["artwork_fill"] = "flood_fill";
   selectedSubtools["artwork_move"] = "move";
   selectedSubtools["artwork_erase"] = "erase_medium";
   selectedSubtools["collision"] = "collision_draw";
   selectedSubtools["collision_draw"] = "rectangle";
   selectedSubtools["collision_move"] = "move";
-  selectedSubtools["bitmap"] = "fill";
+  selectedSubtools["bitmap"] = "bitmap_fill";
+  selectedSubtools["bitmap_fill"] = "flood_fill";
   selectedSubtools["bitmap_erase"] = "erase_fill";
 
   // don't reset `copiedFrame`

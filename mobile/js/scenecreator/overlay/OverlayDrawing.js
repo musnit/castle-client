@@ -62,7 +62,7 @@ const TOOL_GROUPS = {
       icon: 'draw',
     },
     {
-      name: 'fill',
+      name: 'artwork_fill',
       IconComponent: CastleIcon,
       icon: 'fill',
     },
@@ -96,7 +96,7 @@ const TOOL_GROUPS = {
   ],
   bitmap: [
     {
-      name: 'fill',
+      name: 'bitmap_fill',
       IconComponent: CastleIcon,
       icon: 'fill',
     },
@@ -172,7 +172,9 @@ export const OverlayDrawing = ({ setActiveSheet }) => {
   const { color } = drawToolState;
 
   const showColorPicker =
-    currentDrawingToolGroup === 'artwork_draw' || currentDrawingToolGroup === 'fill';
+    currentDrawingToolGroup === 'artwork_draw' ||
+    currentDrawingToolGroup === 'artwork_fill' ||
+    currentDrawingToolGroup === 'bitmap_fill';
 
   return (
     <View style={styles.container} pointerEvents="box-none">

@@ -85,6 +85,18 @@ const DRAW_SUBTOOLS = {
       icon: 'draw-triangle',
     },
   ],
+  artwork_fill: [
+    {
+      name: 'flood_fill',
+      IconComponent: CastleIcon,
+      icon: 'fill',
+    },
+    {
+      name: 'palette_swap',
+      IconComponent: MCIcon,
+      icon: 'swap-horizontal',
+    },
+  ],
   artwork_move: [
     {
       name: 'move',
@@ -156,6 +168,18 @@ const DRAW_SUBTOOLS = {
       name: 'move_all',
       IconComponent: MCIcon,
       icon: 'cursor-move',
+    },
+  ],
+  bitmap_fill: [
+    {
+      name: 'flood_fill',
+      IconComponent: CastleIcon,
+      icon: 'fill',
+    },
+    {
+      name: 'palette_swap',
+      IconComponent: MCIcon,
+      icon: 'swap-horizontal',
     },
   ],
   bitmap_erase: [
@@ -251,9 +275,11 @@ export const OverlayDrawingSubtools = ({ currentToolGroup }) => {
 
   switch (currentToolGroup) {
     case 'artwork_draw':
+    case 'artwork_fill':
     case 'artwork_move':
     case 'collision_draw':
     case 'collision_move':
+    case 'bitmap_fill':
     case 'bitmap_erase':
       return (
         <DrawSubtools category={currentToolGroup} value={currentSubtool} onChange={selectSubtool} />
