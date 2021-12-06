@@ -764,9 +764,13 @@ void DrawTool::deleteLayerAndValidate(const love::DrawDataLayerId &layerId) {
       }
     }
     if (auto layer = drawData->layerForId(selectedLayerId); layer && layer->isBitmap) {
-      selectedSubtools["root"] = "bitmap";
+      if (selectedSubtools["root"] == "artwork") {
+        selectedSubtools["root"] = "bitmap";
+      }
     } else {
-      selectedSubtools["root"] = "artwork";
+      if (selectedSubtools["root"] == "bitmap") {
+        selectedSubtools["root"] = "artwork";
+      }
     }
     sendDrawToolEvent();
   }
@@ -924,9 +928,13 @@ void DrawTool::validateSelection() {
     }
   }
   if (auto layer = drawData->layerForId(selectedLayerId); layer && layer->isBitmap) {
-    selectedSubtools["root"] = "bitmap";
+    if (selectedSubtools["root"] == "artwork") {
+      selectedSubtools["root"] = "bitmap";
+    }
   } else {
-    selectedSubtools["root"] = "artwork";
+    if (selectedSubtools["root"] == "bitmap") {
+      selectedSubtools["root"] = "artwork";
+    }
   }
   sendLayersEvent();
   sendDrawToolEvent();
