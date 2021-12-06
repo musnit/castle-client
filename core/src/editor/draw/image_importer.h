@@ -45,9 +45,9 @@ private:
   uint8 minEqualNeighbors = 1;
   bool normalizeRgb = false;
 
-  love::image::ImageData *importedImageOriginalData;
-  love::image::ImageData *importedImageFilteredData;
-  love::Image *importedImageFilteredPreview;
+  love::image::ImageData *importedImageOriginalData = nullptr;
+  love::image::ImageData *importedImageFilteredData = nullptr;
+  love::Image *importedImageFilteredPreview = nullptr;
 
   class FilterThread : public love::thread::Threadable {
   public:

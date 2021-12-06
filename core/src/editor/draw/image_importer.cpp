@@ -17,19 +17,21 @@ ImageImporter::FilterThread::FilterThread(ImageImporter *owner_, love::image::Im
 }
 
 void ImageImporter::FilterThread::threadFunction() {
-  if (owner->normalizeRgb) {
-    ImageProcessing::normalizeRgb(imageData);
-  }
-  for (uint8 ii = 0; ii < owner->numBlurs; ii++) {
-    ImageProcessing::gaussianBlur(imageData);
-  }
-  ImageProcessing::kMeans(imageData, owner->numColors, 4);
-  ImageProcessing::removeIslands(imageData, owner->minEqualNeighbors);
-  ImageProcessing::paletteSwap(imageData, *(owner->palette));
-  // ImageProcessing::testOnlyRedChannel(imageData);
+  if (imageData && owner) {
+    if (owner->normalizeRgb) {
+      ImageProcessing::normalizeRgb(imageData);
+    }
+    for (uint8 ii = 0; ii < owner->numBlurs; ii++) {
+      ImageProcessing::gaussianBlur(imageData);
+    }
+    ImageProcessing::kMeans(imageData, owner->numColors, 4);
+    ImageProcessing::removeIslands(imageData, owner->minEqualNeighbors);
+    ImageProcessing::paletteSwap(imageData, *(owner->palette));
+    // ImageProcessing::testOnlyRedChannel(imageData);
 
-  owner->imageFilterFinished(imageData);
-  imageData = nullptr;
+    owner->imageFilterFinished(imageData);
+    imageData = nullptr;
+  }
 }
 
 ImageImporter::~ImageImporter() {
@@ -39,19 +41,19 @@ ImageImporter::~ImageImporter() {
 void ImageImporter::reset() {
   if (filterThread) {
     filterThread->wait();
-    // TODO: is love deleting these somewhere?
+    filterThread->release();
     filterThread = nullptr;
   }
   if (importedImageOriginalData) {
-    // TODO: is love deleting these somewhere?
+    importedImageOriginalData->release();
     importedImageOriginalData = nullptr;
   }
   if (importedImageFilteredData) {
-    // TODO: is love deleting these somewhere?
+    importedImageFilteredData->release();
     importedImageFilteredData = nullptr;
   }
   if (importedImageFilteredPreview) {
-    // TODO: is love deleting these somewhere?
+    importedImageFilteredPreview->release();
     importedImageFilteredPreview = nullptr;
   }
   loading = false;
@@ -85,7 +87,10 @@ void ImageImporter::importImage(std::string uri) {
   file->release();
   if (imageData) {
     imageData = ImageProcessing::fitToMaxSize(imageData, getMaxImageSize());
-    // TODO: is love freeing the previous value?
+    if (importedImageOriginalData) {
+      importedImageOriginalData->release();
+      importedImageOriginalData = nullptr;
+    }
     importedImageOriginalData = imageData;
     regeneratePreview();
 
@@ -120,14 +125,16 @@ void ImageImporter::generateImportedImageFilteredPreview(love::image::ImageData 
 
   if (filterThread) {
     filterThread->wait();
-    // TODO: is love deleting these somewhere?
+    filterThread->release();
     filterThread = nullptr;
   }
 
   auto imageData = original->clone();
   if (imageScale < 1.0f && imageScale > 0.0f) {
-    imageData
+    auto resizeImageData
         = ImageProcessing::fitToMaxSize(imageData, int(float(getMaxImageSize()) * imageScale));
+    imageData->release();
+    imageData = resizeImageData;
   }
 
   filterThread = new FilterThread(this, imageData);
@@ -137,6 +144,10 @@ void ImageImporter::generateImportedImageFilteredPreview(love::image::ImageData 
 }
 
 void ImageImporter::imageFilterFinished(love::image::ImageData *imageData) {
+  if (importedImageFilteredData) {
+    importedImageFilteredData->release();
+    importedImageFilteredData = nullptr;
+  }
   importedImageFilteredData = imageData;
   hasNewFilteredData = true;
 }
@@ -268,7 +279,9 @@ void ImageImporter::update(double dt) {
     // `imageDataToImage` only works on the main thread
     auto loadedImage = love::DrawDataFrame::imageDataToImage(importedImageFilteredData);
 
-    // TODO: is love freeing the previous value?
+    if (importedImageFilteredPreview) {
+      importedImageFilteredPreview->release();
+    }
     importedImageFilteredPreview = loadedImage;
 
     hasNewFilteredData = false;
