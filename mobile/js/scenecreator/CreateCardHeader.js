@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import {
   ActivityIndicator,
   StatusBar,
@@ -70,7 +70,11 @@ export const CreateCardHeader = ({
   creatorUsername,
   saveAction,
 }) => {
-  const data = useCoreState('EDITOR_GLOBAL_ACTIONS');
+  const data = useCoreState('EDITOR_GLOBAL_ACTIONS') || {
+    performing: false,
+    editMode: 'default',
+    actionsAvailable: {},
+  };
 
   const { showActionSheetWithOptions } = useActionSheet();
   const maybeClone = React.useCallback(() => {
@@ -96,60 +100,66 @@ So just hide the StatusBar on Android.
 https://github.com/th3rdwave/react-native-safe-area-context/issues/124
        */}
       <StatusBar barStyle="dark-content" hidden={Constants.Android} />
-      {!data?.performing ? (
+      {!data.performing ? (
         <TouchableOpacity style={styles.back} onPress={onPressBack}>
           <CastleIcon name="back" size={22} color="#000" />
         </TouchableOpacity>
       ) : null}
-      {data ? (
-        <View
-          style={[
-            styles.actionsContainer,
-            data.performing ? styles.actionsContainerPerforming : null,
-          ]}>
-          {data.performing ? (
-            <Fragment>
-              <TouchableOpacity style={styles.action} onPress={() => sendGlobalAction('onRewind')}>
-                <CastleIcon name="rewind" size={22} color="#000" />
-              </TouchableOpacity>
-              <CreateCardCaptureActions />
-            </Fragment>
-          ) : (
-            <Fragment>
-              <TouchableOpacity style={styles.action} onPress={() => sendGlobalAction('onPlay')}>
-                <CastleIcon name="play" size={22} color="#000" />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.action}
-                disabled={!data.actionsAvailable.onUndo}
-                onPress={() => sendGlobalAction('onUndo')}>
-                <CastleIcon
-                  name="undo"
-                  size={22}
-                  color={data.actionsAvailable.onUndo ? '#000' : Constants.colors.grayOnWhiteIcon}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.action}
-                disabled={!data.actionsAvailable.onRedo}
-                onPress={() => sendGlobalAction('onRedo')}>
-                <CastleIcon
-                  name="redo"
-                  size={22}
-                  color={data.actionsAvailable.onRedo ? '#000' : Constants.colors.grayOnWhiteIcon}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.action}
-                disabled={data.performing}
-                onPress={onPressSettings}>
-                <CastleIcon name="settings" size={22} color="#000" />
-              </TouchableOpacity>
-            </Fragment>
-          )}
-        </View>
-      ) : null}
-      {!data?.performing ? (
+      <View
+        style={[
+          styles.actionsContainer,
+          data.performing ? styles.actionsContainerPerforming : null,
+        ]}>
+        {data.performing ? (
+          <>
+            <TouchableOpacity style={styles.action} onPress={() => sendGlobalAction('onRewind')}>
+              <CastleIcon name="rewind" size={22} color="#000" />
+            </TouchableOpacity>
+            <CreateCardCaptureActions />
+          </>
+        ) : (
+          <>
+            <TouchableOpacity style={styles.action} onPress={() => sendGlobalAction('onPlay')}>
+              <CastleIcon name="play" size={22} color="#000" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.action}
+              disabled={!data.actionsAvailable.onUndo}
+              onPress={() => sendGlobalAction('onUndo')}>
+              <CastleIcon
+                name="undo"
+                size={22}
+                color={data.actionsAvailable.onUndo ? '#000' : Constants.colors.grayOnWhiteIcon}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.action}
+              disabled={!data.actionsAvailable.onRedo}
+              onPress={() => sendGlobalAction('onRedo')}>
+              <CastleIcon
+                name="redo"
+                size={22}
+                color={data.actionsAvailable.onRedo ? '#000' : Constants.colors.grayOnWhiteIcon}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.action}
+              disabled={data.performing || data.editMode !== 'default'}
+              onPress={onPressSettings}>
+              <CastleIcon
+                name="settings"
+                size={22}
+                color={
+                  data.performing || data.editMode !== 'default'
+                    ? Constants.colors.grayOnWhiteIcon
+                    : '#000'
+                }
+              />
+            </TouchableOpacity>
+          </>
+        )}
+      </View>
+      {!data.performing ? (
         saveAction === 'save' ? (
           <Pressable
             style={({ pressed }) => [
