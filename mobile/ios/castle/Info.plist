@@ -55,7 +55,7 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>$(PRODUCT_NAME) would like access to your microphone to record an audio snippet to use in a deck</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>$(PRODUCT_NAME) would like access to your photo gallery to choose an avatar</string>
+	<string>You can use photos in $(PRODUCT_NAME) as your avatar, and you can also use them as artwork when you create cards.</string>
 	<key>SceneCreatorApiVersion</key>
 	<string>100</string>
 	<key>UIAppFonts</key>
