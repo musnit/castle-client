@@ -65,6 +65,7 @@ public:
 
   ImageImporter imageImporter { *this };
   void confirmImportImage();
+  bool isImportingImage();
 
 private:
   friend class ImageImporter;
@@ -154,4 +155,8 @@ inline bool DrawTool::getIsPlayingAnimation() {
 
 inline int DrawTool::getCurrentAnimationFrame() {
   return animationProperties.currentFrame.toZeroIndex();
+}
+
+inline bool DrawTool::isImportingImage() {
+  return imageImporter.status != ImageImporter::Status::None;
 }

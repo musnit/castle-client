@@ -196,33 +196,39 @@ export const OverlayDrawing = ({ setActiveSheet }) => {
             <CastleIcon name="close" size={22} color="#000" />
           </Pressable>
         </View>
-        <View style={styles.toolbar}>
-          <ToolGroups category={rootToolCategory} value={currentDrawingToolGroup} />
-        </View>
-        <View style={styles.toolbar}>
-          <Pressable
-            style={styles.button}
-            onPressIn={() => setViewInContext(true)}
-            onPressOut={() => setViewInContext(false)}>
-            <CastleIcon name="view-context" size={22} />
-          </Pressable>
-        </View>
-      </View>
-      <View style={styles.rightContainer}>
-        {showColorPicker ? (
-          <View style={styles.toolbar}>
-            <View style={styles.button}>
-              <ColorPicker
-                value={color}
-                setValue={(color) => {
-                  sendAsync('DRAW_TOOL_SELECT_COLOR', { color });
-                }}
-              />
+        {!drawToolState.isImportingImage ? (
+          <>
+            <View style={styles.toolbar}>
+              <ToolGroups category={rootToolCategory} value={currentDrawingToolGroup} />
             </View>
-          </View>
+            <View style={styles.toolbar}>
+              <Pressable
+                style={styles.button}
+                onPressIn={() => setViewInContext(true)}
+                onPressOut={() => setViewInContext(false)}>
+                <CastleIcon name="view-context" size={22} />
+              </Pressable>
+            </View>
+          </>
         ) : null}
-        <OverlayDrawingSubtools currentToolGroup={currentDrawingToolGroup} />
       </View>
+      {!drawToolState.isImportingImage ? (
+        <View style={styles.rightContainer}>
+          {showColorPicker ? (
+            <View style={styles.toolbar}>
+              <View style={styles.button}>
+                <ColorPicker
+                  value={color}
+                  setValue={(color) => {
+                    sendAsync('DRAW_TOOL_SELECT_COLOR', { color });
+                  }}
+                />
+              </View>
+            </View>
+          ) : null}
+          <OverlayDrawingSubtools currentToolGroup={currentDrawingToolGroup} />
+        </View>
+      ) : null}
     </View>
   );
 };

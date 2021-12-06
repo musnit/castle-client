@@ -814,8 +814,9 @@ void Editor::sendGlobalActions() {
       });
     }
 
-    ev.actionsAvailable().onUndo = commands.canUndo();
-    ev.actionsAvailable().onRedo = commands.canRedo();
+    auto importingImage = drawTool.isImportingImage();
+    ev.actionsAvailable().onUndo = commands.canUndo() && !importingImage;
+    ev.actionsAvailable().onRedo = commands.canRedo() && !importingImage;
   }
 
   switch (editMode) {

@@ -96,7 +96,7 @@ void DrawTool::sendDrawToolEvent() {
   }
 
   ev.color() = selectedColor;
-  ev.isImportingImage() = imageImporter.status != ImageImporter::Status::None;
+  ev.isImportingImage() = isImportingImage();
   editor.getBridge().sendEvent("EDITOR_DRAW_TOOL", ev);
 }
 
@@ -395,13 +395,16 @@ struct DrawToolLayerActionReceiver {
       auto uri = params.stringValue();
       drawTool.imageImporter.importImage(uri);
       drawTool.sendDrawToolEvent(); // indicate to ui that import started
+      editor->isEditorStateDirty = true; // top level undo/redo state changes during import
     } else if (action == "cancelImportImage") {
       drawTool.imageImporter.reset();
       drawTool.sendDrawToolEvent();
+      editor->isEditorStateDirty = true; // top level undo/redo state changes during import
     } else if (action == "confirmImportImage") {
       drawTool.makeNewLayerFromImageImporter();
       drawTool.saveDrawing("import image to layer");
       drawTool.sendDrawToolEvent();
+      editor->isEditorStateDirty = true; // top level undo/redo state changes during import
     }
   }
 };
@@ -1013,7 +1016,7 @@ void DrawTool::update(double dt) {
   };
 
   if (gesture.getCount() == 1 && gesture.getMaxCount() == 1) {
-    if (!isPlayingAnimation) {
+    if (!isPlayingAnimation && imageImporter.status == ImageImporter::Status::None) {
       gesture.withSingleTouch([&](const Touch &touch) {
         love::Vector2 originalTouchPosition = { touch.screenPos.x, touch.screenPos.y };
         auto transformedTouchPosition = viewTransform.inverseTransformPoint(originalTouchPosition);
