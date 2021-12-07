@@ -181,19 +181,6 @@ const ImportImage = ({ importData, sendAction }) => {
           max={5}
         />
       </View>
-      <View style={styles.row}>
-        <View>
-          <Text style={styles.label}>Input Scale</Text>
-        </View>
-        <InspectorNumberInput
-          style={{ maxWidth: 128 }}
-          onChange={(value) => sendAction('setImageScale', { value })}
-          value={importData.imageScale}
-          step={0.05}
-          min={0.05}
-          max={1}
-        />
-      </View>
     </View>
   );
 };
