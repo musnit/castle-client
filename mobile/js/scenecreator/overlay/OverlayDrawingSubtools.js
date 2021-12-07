@@ -259,6 +259,32 @@ const CollisionEraseSubtools = () => {
   return null;
 };
 
+const BitmapMoveSubtools = () => {
+  const sendLayerAction = React.useCallback(
+    (action, params) => sendAsync('DRAW_TOOL_LAYER_ACTION', { action, ...params }),
+    []
+  );
+  return (
+    <>
+      <View style={styles.toolbar}>
+        <Pressable
+          style={styles.button}
+          onPress={() => sendLayerAction('scaleBitmapLayer', { doubleValue: 0.05 })}>
+          <MCIcon name="arrow-expand-all" size={ICON_SIZE} color="#000" />
+        </Pressable>
+      </View>
+      <View style={[styles.toolbar, { marginTop: 8 }]}>
+        <Pressable
+          style={styles.button}
+          onPress={() => sendLayerAction('scaleBitmapLayer', { doubleValue: -0.05 })}>
+          <MCIcon name="arrow-collapse-all" size={ICON_SIZE} color="#000" />
+        </Pressable>
+      </View>
+    </>
+  );
+  return null;
+};
+
 export const OverlayDrawingSubtools = ({ currentToolGroup }) => {
   const drawToolState = useCoreState('EDITOR_DRAW_TOOL');
   const selectSubtool = React.useCallback(
@@ -284,6 +310,8 @@ export const OverlayDrawingSubtools = ({ currentToolGroup }) => {
       return (
         <DrawSubtools category={currentToolGroup} value={currentSubtool} onChange={selectSubtool} />
       );
+    case 'move_all':
+      return <BitmapMoveSubtools />;
     case 'artwork_erase':
       return <EraseSubtools value={currentSubtool} onChange={selectSubtool} />;
     case 'collision_erase':

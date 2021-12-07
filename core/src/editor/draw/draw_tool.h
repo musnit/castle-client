@@ -109,6 +109,7 @@ private:
   void makeNewLayer();
   void makeNewLayerFromImageImporter();
   void deleteLayerAndValidate(const love::DrawDataLayerId &layerId);
+  bool resizeSelectedBitmapLayer(float delta);
 
   // for 'copy cell'
   std::string copiedFrameData;

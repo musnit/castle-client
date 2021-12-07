@@ -137,16 +137,11 @@ namespace ghost {
 
   Bounds DrawDataFrame::getFillImageBoundsInPathCoordinates() {
     Bounds newBounds;
-    if (fillImageData) {
-      int boundsResult[4] = { -1, -1, -1, -1 };
-      int halfWidth = fillImageData->getWidth() / 2, halfHeight = fillImageData->getHeight() / 2;
-      fillImageData->getBounds(boundsResult);
-      auto fillPixelsPerUnit = parentLayer()->parent()->fillPixelsPerUnit;
-      newBounds.minX = (boundsResult[0] - halfWidth) / fillPixelsPerUnit;
-      newBounds.minY = (boundsResult[1] - halfHeight) / fillPixelsPerUnit;
-      newBounds.maxX = (boundsResult[2] - halfWidth) / fillPixelsPerUnit;
-      newBounds.maxY = (boundsResult[3] - halfHeight) / fillPixelsPerUnit;
-    }
+    auto fillPixelsPerUnit = parentLayer()->parent()->fillPixelsPerUnit;
+    newBounds.minX = fillImageBounds.minX / fillPixelsPerUnit;
+    newBounds.minY = fillImageBounds.minY / fillPixelsPerUnit;
+    newBounds.maxX = fillImageBounds.maxX / fillPixelsPerUnit;
+    newBounds.maxY = fillImageBounds.maxY / fillPixelsPerUnit;
     return newBounds;
   }
 

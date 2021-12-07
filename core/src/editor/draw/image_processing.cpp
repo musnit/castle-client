@@ -31,6 +31,33 @@ love::image::ImageData *ImageProcessing::fitToMaxSize(love::image::ImageData *da
   return result;
 }
 
+love::image::ImageData *ImageProcessing::fitToSize(love::image::ImageData *data, int maxSize) {
+  auto img = love::DrawDataFrame::imageDataToImage(data);
+  auto width = img->getWidth(), height = img->getHeight();
+  auto scale = float(maxSize) / std::max(float(width), float(height));
+
+  love::graphics::Texture::Filter filter { love::graphics::Texture::FILTER_NEAREST,
+    love::graphics::Texture::FILTER_NEAREST, love::graphics::Texture::FILTER_NONE, 1.0f };
+  img->setFilter(filter);
+
+  auto resizeCanvas = love::DrawDataFrame::newCanvas(width * scale, height * scale);
+  resizeCanvas->setFilter(filter);
+
+  love::DrawDataFrame::renderToCanvas(resizeCanvas, [img, scale]() {
+    auto &lv = Lv::getInstance();
+    lv.graphics.push(love::Graphics::STACK_ALL);
+    lv.graphics.clear(love::Colorf(0, 0, 0, 0), {}, {});
+    lv.graphics.setColor({ 1, 1, 1, 1 });
+
+    img->draw(&lv.graphics, love::Matrix4(0, 0, 0, scale, scale, 0, 0, 0, 0));
+    lv.graphics.pop();
+  });
+  img->release();
+  auto result = love::DrawDataFrame::newImageData(resizeCanvas);
+  resizeCanvas->release();
+  return result;
+}
+
 bool sumPixel(love::image::Pixel &p, float *sum, love::PixelFormat format, bool includeAlpha) {
   int n = 3;
   if (includeAlpha) {

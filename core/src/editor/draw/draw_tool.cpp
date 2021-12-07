@@ -385,6 +385,10 @@ struct DrawToolLayerActionReceiver {
       }
 
       drawTool.saveDrawing("set cell linked");
+    } else if (action == "scaleBitmapLayer") {
+      float delta = float(params.doubleValue());
+      drawTool.resizeSelectedBitmapLayer(delta);
+      drawTool.saveDrawing("scale layer");
     } else if (action == "enableOnionSkinning") {
       drawTool.isOnionSkinningEnabled = bool(params.doubleValue());
       drawTool.sendLayersEvent();
@@ -946,6 +950,45 @@ love::PathDataList *DrawTool::selectedFramePathDataList() {
 
 void DrawTool::dirtySelectedFrameBounds() {
   drawData->updateFrameBounds(selectedFrameIndex);
+}
+
+bool DrawTool::resizeSelectedBitmapLayer(float delta) {
+  if (auto layer = drawData->layerForId(selectedLayerId); layer && layer->isBitmap) {
+    auto &selectedFrame = getDrawDataFrame();
+    auto maxImageSize = DRAW_MAX_SIZE * 2.0f * drawData->fillPixelsPerUnit;
+
+    int initialWidth = selectedFrame.fillImageData->getWidth(),
+        initialHeight = selectedFrame.fillImageData->getHeight();
+    float absoluteScale = std::max(float(initialWidth), float(initialHeight)) / maxImageSize;
+    absoluteScale += delta;
+    if (absoluteScale > 1.0f)
+      absoluteScale = 1.0f;
+    if (absoluteScale < 0.05f)
+      absoluteScale = 0.05f;
+
+    int size = int(absoluteScale * maxImageSize);
+    auto oldFillImageData = selectedFrame.fillImageData;
+    selectedFrame.fillImageData = ImageProcessing::fitToSize(selectedFrame.fillImageData, size);
+
+    // recompute bounds and clamp
+    dirtySelectedFrameBounds();
+    int finalWidth = selectedFrame.fillImageData->getWidth(),
+        finalHeight = selectedFrame.fillImageData->getHeight();
+    auto &bounds = selectedFrame.fillImageBounds;
+    bounds.minX += (initialWidth - finalWidth) * 0.5f;
+    bounds.minY += (initialHeight - finalHeight) * 0.5f;
+    if (bounds.minX < -maxImageSize * 0.5f)
+      bounds.minX = -maxImageSize * 0.5f;
+    if (bounds.minY < -maxImageSize * 0.5f)
+      bounds.minY = -maxImageSize * 0.5f;
+    bounds.maxX = bounds.minX + finalWidth;
+    bounds.maxY = bounds.minY + finalHeight;
+
+    selectedFrame.updateFillImageWithFillImageData();
+    oldFillImageData->release();
+    return true;
+  }
+  return false;
 }
 
 void DrawTool::makeNewLayerFromImageImporter() {
