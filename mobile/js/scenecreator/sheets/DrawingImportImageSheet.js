@@ -3,6 +3,7 @@ import { ActivityIndicator, StyleSheet, Pressable, Text, View } from 'react-nati
 import { BottomSheet } from '../../components/BottomSheet';
 import { BottomSheetHeader } from '../../components/BottomSheetHeader';
 import { InspectorNumberInput } from '../inspector/components/InspectorNumberInput';
+import { InspectorSegmentedControl } from '../inspector/components/InspectorSegmentedControl';
 import { useCoreState, sendAsync } from '../../core/CoreEvents';
 
 import * as Constants from '../../Constants';
@@ -151,7 +152,38 @@ const TestImportImage = ({ importData, sendAction }) => {
   );
 };
 
+const NUM_COLOR_ITEMS = [
+  {
+    name: '2',
+    value: 2,
+  },
+  {
+    name: '3',
+    value: 3,
+  },
+  {
+    name: '4',
+    value: 4,
+  },
+  {
+    name: '5',
+    value: 5,
+  },
+];
+
+const PALETTE_ITEMS = [
+  {
+    name: 'Similar Luminance',
+    value: 1,
+  },
+  {
+    name: 'Random',
+    value: 0,
+  },
+];
+
 const ImportImage = ({ importData, sendAction }) => {
+  const [selectedPaletteType, setSelectedPaletteType] = React.useState(1);
   if (!importData) {
     return null;
   }
@@ -162,23 +194,41 @@ const ImportImage = ({ importData, sendAction }) => {
       </View>
     );
   }
+  const swapColors = () => sendAction('swapColors', { value: selectedPaletteType });
+  const selectedColorIndex = NUM_COLOR_ITEMS.findIndex(
+    (item) => item.value === importData.numColors
+  );
+  const onChangeNumColors = (index) =>
+    sendAction('setNumColors', { value: NUM_COLOR_ITEMS[index].value });
+  const selectedPaletteIndex = PALETTE_ITEMS.findIndex(
+    (item) => item.value === selectedPaletteType
+  );
+  const onChangePaletteIndex = (index) => {
+    const newPaletteType = PALETTE_ITEMS[index].value;
+    setSelectedPaletteType(newPaletteType);
+    sendAction('swapColors', { value: newPaletteType });
+  };
   return (
     <View style={styles.importSettings}>
       <View style={styles.row}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Text style={styles.label}>Colors</Text>
-          <Pressable
-            style={[SceneCreatorConstants.styles.button, {}]}
-            onPress={() => sendAction('swapColors', { value: 1 })}>
+          <Pressable style={[SceneCreatorConstants.styles.button, {}]} onPress={swapColors}>
             <Feather name="refresh-cw" size={18} />
           </Pressable>
         </View>
-        <InspectorNumberInput
-          style={{ maxWidth: 128 }}
-          onChange={(value) => sendAction('setNumColors', { value })}
-          value={importData.numColors}
-          min={2}
-          max={5}
+        <InspectorSegmentedControl
+          style={{ maxWidth: 256 }}
+          items={NUM_COLOR_ITEMS}
+          selectedItemIndex={selectedColorIndex}
+          onChange={onChangeNumColors}
+        />
+      </View>
+      <View style={styles.row}>
+        <InspectorSegmentedControl
+          items={PALETTE_ITEMS}
+          selectedItemIndex={selectedPaletteIndex}
+          onChange={onChangePaletteIndex}
         />
       </View>
     </View>
