@@ -8,6 +8,7 @@ import {
 } from '../../../core/CoreEvents';
 import { BehaviorPropertyInputRow } from '../components/BehaviorPropertyInputRow';
 import { InspectorCheckbox } from '../components/InspectorCheckbox';
+import { InspectorSegmentedControl } from '../components/InspectorSegmentedControl';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -82,32 +83,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     paddingBottom: 16,
     fontSize: 16,
-  },
-  segmentedControl: {
-    flexDirection: 'row',
-    borderRadius: 4,
-    borderColor: Constants.colors.black,
-    borderWidth: 1,
-    backgroundColor: '#fff',
-    ...Constants.styles.dropShadow,
-  },
-  segmentedControlLabels: {
-    flexDirection: 'row',
-    marginBottom: 16,
-    justifyContent: 'space-between',
-  },
-  segmentedControlItem: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 3,
-    fontSize: 16,
-  },
-  segmentedControlItemSelected: {
-    backgroundColor: Constants.colors.black,
-  },
-  segmentedControlLabelSelected: {
-    color: Constants.colors.white,
   },
 });
 
@@ -274,25 +249,12 @@ export default InspectorDrawing = ({ drawing2 }) => {
         <View style={{ width: '50%' }}>
           <Text style={{ fontSize: 16 }}>Animation</Text>
         </View>
-        <View style={[styles.segmentedControl, { width: '50%' }]}>
-          {items.map((item, ii) => (
-            <TouchableOpacity
-              key={`item-${ii}`}
-              onPress={() => onChangePlayMode(ii)}
-              style={[
-                styles.segmentedControlItem,
-                ii === selectedItemIndex ? styles.segmentedControlItemSelected : null,
-              ]}>
-              <Text
-                style={[
-                  styles.segmentedControlItem,
-                  ii === selectedItemIndex ? styles.segmentedControlLabelSelected : null,
-                ]}>
-                {item.name}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+        <InspectorSegmentedControl
+          style={{ width: '50%' }}
+          items={items}
+          onChange={onChangePlayMode}
+          selectedItemIndex={selectedItemIndex}
+        />
       </View>
 
       <BehaviorPropertyInputRow

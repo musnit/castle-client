@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BehaviorPropertyInputRow } from '../components/BehaviorPropertyInputRow';
+import { InspectorSegmentedControl } from '../components/InspectorSegmentedControl';
 import { useCoreState, sendBehaviorAction } from '../../../core/CoreEvents';
 
 import * as Constants from '../../../Constants';
@@ -13,32 +14,10 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   properties: {},
-  segmentedControl: {
-    flexDirection: 'row',
-    borderRadius: 4,
-    borderColor: Constants.colors.black,
-    borderWidth: 1,
-    backgroundColor: '#fff',
-    ...Constants.styles.dropShadow,
-    marginBottom: 8,
-  },
   segmentedControlLabels: {
     flexDirection: 'row',
     marginBottom: 16,
     justifyContent: 'space-between',
-  },
-  segmentedControlItem: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 4,
-    fontSize: 16,
-    flex: 1,
-  },
-  segmentedControlItemSelected: {
-    backgroundColor: Constants.colors.black,
-  },
-  segmentedControlLabelSelected: {
-    color: Constants.colors.white,
   },
   segmentedControlLabel: {
     alignItems: 'center',
@@ -102,33 +81,22 @@ const BodyTypeControl = ({ isMovingActive, isRotatingMotionActive }) => {
   ];
 
   const selectedItemIndex = isMovingActive ? 2 : isRotatingMotionActive ? 1 : 0;
-  const onChange = (index) => {
-    if (index !== selectedItemIndex) {
-      items[index].onSelect();
-    }
-  };
+  const onChange = React.useCallback(
+    (index) => {
+      if (index !== selectedItemIndex) {
+        items[index].onSelect();
+      }
+    },
+    [items, selectedItemIndex]
+  );
 
   return (
-    <React.Fragment>
-      <View style={styles.segmentedControl}>
-        {items.map((item, ii) => (
-          <TouchableOpacity
-            key={`item-${ii}`}
-            onPress={() => onChange(ii)}
-            style={[
-              styles.segmentedControlItem,
-              ii === selectedItemIndex ? styles.segmentedControlItemSelected : null,
-            ]}>
-            <Text
-              style={[
-                styles.segmentedControlItem,
-                ii === selectedItemIndex ? styles.segmentedControlLabelSelected : null,
-              ]}>
-              {item.name}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+    <>
+      <InspectorSegmentedControl
+        items={items}
+        onChange={onChange}
+        selectedItemIndex={selectedItemIndex}
+      />
       <View style={styles.segmentedControlLabels}>
         {items.map((item, ii) => (
           <View
@@ -144,7 +112,7 @@ const BodyTypeControl = ({ isMovingActive, isRotatingMotionActive }) => {
           </View>
         ))}
       </View>
-    </React.Fragment>
+    </>
   );
 };
 
