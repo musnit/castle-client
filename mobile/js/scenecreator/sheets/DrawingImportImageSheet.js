@@ -190,11 +190,11 @@ const NUM_COLOR_ITEMS = [
 
 const PALETTE_ITEMS = [
   {
-    name: 'Similar',
+    name: 'Similar Brightness',
     value: 1,
   },
   {
-    name: 'Random',
+    name: 'Random Palette',
     value: 0,
   },
 ];
@@ -279,7 +279,6 @@ const ImportImage = ({ importData, sendAction }) => {
         />
       </View>
       <View style={styles.row}>
-        <Text style={styles.label}>Palette</Text>
         <InspectorSegmentedControl
           style={{ flex: 1 }}
           items={PALETTE_ITEMS}
