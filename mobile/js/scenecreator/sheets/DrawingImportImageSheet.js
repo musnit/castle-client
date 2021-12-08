@@ -32,19 +32,29 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingBottom: 12,
+    marginBottom: 8,
   },
   label: {
+    width: '50%',
     fontSize: 16,
-    paddingRight: 8,
+    paddingBottom: 8,
   },
   errorLabel: {
     fontSize: 16,
   },
+  paletteRefresh: {
+    ...SceneCreatorConstants.styles.button,
+    borderRadius: 8,
+    width: 42,
+    height: 42,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
   paletteSwatch: {
     ...SceneCreatorConstants.styles.button,
-    padding: 0,
+    borderRadius: 8,
+    paddingHorizontal: 4,
     marginRight: 12,
   },
 });
@@ -180,7 +190,7 @@ const NUM_COLOR_ITEMS = [
 
 const PALETTE_ITEMS = [
   {
-    name: 'Similar Luminance',
+    name: 'Similar',
     value: 1,
   },
   {
@@ -260,28 +270,26 @@ const ImportImage = ({ importData, sendAction }) => {
   return (
     <View style={styles.importSettings}>
       <View style={styles.row}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Text style={styles.label}>Max Colors</Text>
-        </View>
+        <Text style={styles.label}>Maximum Colors</Text>
         <InspectorSegmentedControl
-          style={{ maxWidth: 256 }}
+          style={{ flex: 1 }}
           items={NUM_COLOR_ITEMS}
           selectedItemIndex={selectedColorIndex}
           onChange={onChangeNumColors}
         />
       </View>
       <View style={styles.row}>
+        <Text style={styles.label}>Palette</Text>
         <InspectorSegmentedControl
+          style={{ flex: 1 }}
           items={PALETTE_ITEMS}
           selectedItemIndex={selectedPaletteIndex}
           onChange={onChangePaletteIndex}
         />
       </View>
       <View style={[styles.row, { justifyContent: 'flex-start' }]}>
-        <Pressable
-          style={[SceneCreatorConstants.styles.button, { marginRight: 12 }]}
-          onPress={swapColors}>
-          <Feather name="refresh-cw" size={18} />
+        <Pressable style={styles.paletteRefresh} onPress={swapColors}>
+          <Feather name="refresh-cw" size={20} />
         </Pressable>
         {finalColors.map((intColor, ii) => {
           const rgba = intColorToRgbaArray(intColor);
