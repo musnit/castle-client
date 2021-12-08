@@ -600,7 +600,12 @@ const DrawingLayers = ({ sendLayerAction }) => {
               : null}
             <Pressable
               onPress={onAddFrame}
-              style={[styles.cell, styles.cellTopBorder, styles.cellLeftBorder]}>
+              style={[
+                styles.cell,
+                styles.cellTopBorder,
+                styles.cellLeftBorder,
+                styles.cellRightBorder,
+              ]}>
               <MCIcon name="plus" size={ICON_SIZE} color="#000" style={{ marginTop: 0 }} />
               <Text style={{ fontSize: 14, letterSpacing: 0.5, paddingTop: 1 }}>ADD</Text>
             </Pressable>
