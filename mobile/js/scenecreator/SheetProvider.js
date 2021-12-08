@@ -48,7 +48,7 @@ const ROOT_SHEETS = [
   {
     key: 'drawingLayers',
     Component: DrawingLayersSheet,
-    makeSnapPoints: ({ insets }) => [90, 285, Viewport.vh * 100 - insets.top - 100],
+    makeSnapPoints: ({ insets }) => [90, 300, Viewport.vh * 100 - insets.top - 100],
   },
   {
     key: 'drawingImportImage',

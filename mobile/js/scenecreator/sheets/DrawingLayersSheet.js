@@ -8,6 +8,7 @@ import { useCoreState, sendAsync } from '../../core/CoreEvents';
 
 import * as Constants from '../../Constants';
 import * as Utilities from '../../common/utilities';
+import * as SceneCreatorConstants from '../SceneCreatorConstants';
 
 import FastImage from 'react-native-fast-image';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -28,7 +29,8 @@ const styles = StyleSheet.create({
     borderColor: '#000',
   },
   header: {
-    padding: 8,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
@@ -48,12 +50,12 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   image: {
-    width: 50,
-    height: 50,
+    width: 36,
+    height: 36,
   },
   linkedImage: {
-    width: 64,
-    height: 40,
+    width: 54,
+    height: 54,
   },
   headingLabel: {
     color: '#000',
@@ -64,17 +66,36 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   layerRow: {
-    height: 64,
+    height: 54,
     flexDirection: 'row',
+  },
+  lastLayerRow: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
   },
   firstCell: {
     flexDirection: 'row',
-    width: 165,
+    width: 180,
     alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: '#ccc',
+    padding: 16,
+    paddingRight: 6,
+  },
+  newLayerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    paddingLeft: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
-    padding: 16,
-    paddingRight: 8,
+    marginBottom: -1,
+  },
+  newLayerLabel: {
+    flex: 1,
+    fontSize: 14,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   addLayerButton: {
     flexDirection: 'row',
@@ -96,25 +117,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cell: {
-    width: 64,
-    height: 64,
+    width: 54,
+    height: 54,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  cellBottomBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+  cellTopBorder: {
+    borderTopWidth: 1,
+    borderTopColor: '#ccc',
   },
   cellLeftBorder: {
     borderLeftWidth: 1,
     borderLeftColor: '#ccc',
   },
   cellRightBorder: {
-    width: 65,
+    width: 55,
     borderRightWidth: 1,
     borderRightColor: '#ccc',
   },
   cellSelected: {
+    height: 55,
+    position: 'relative',
     borderWidth: 2,
     borderColor: '#000',
   },
@@ -146,13 +169,14 @@ const SelectImageButton = ({ sendLayerAction }) => {
   );
 
   return (
-    <Pressable
-      onPress={selectImage}
-      style={({ pressed }) => [
-        styles.addLayerButton,
-        { backgroundColor: pressed ? '#ddd' : 'transparent' },
-      ]}>
-      <MCIcon name="image" size={28} color="#000" />
+    <Pressable onPress={selectImage} style={SceneCreatorConstants.styles.button}>
+      <MCIcon
+        name="file-image-outline"
+        size={22}
+        color="#000"
+        style={SceneCreatorConstants.styles.buttonIcon}
+      />
+      <Text style={SceneCreatorConstants.styles.buttonLabel}>Image</Text>
     </Pressable>
   );
 };
@@ -167,7 +191,7 @@ const CollisionRow = ({ isSelected, onSelect, previewPng, numFrames, isVisible, 
           key={`placeholder-${ii}`}
           style={[
             styles.cell,
-            styles.cellBottomBorder,
+            styles.cellTopBorder,
             isLastFrame ? styles.cellRightBorder : undefined,
           ]}>
           <FastImage
@@ -182,6 +206,14 @@ const CollisionRow = ({ isSelected, onSelect, previewPng, numFrames, isVisible, 
       );
     }
   }
+  let cellStyle = [styles.cell];
+  if (isSelected) {
+    cellStyle.push(styles.cellSelected);
+  } else {
+    cellStyle.push(styles.cellTopBorder);
+    cellStyle.push(styles.cellLeftBorder);
+  }
+
   return (
     <Pressable style={styles.layerRow} onPress={() => onSelect(true)}>
       <View style={styles.firstCell}>
@@ -193,7 +225,7 @@ const CollisionRow = ({ isSelected, onSelect, previewPng, numFrames, isVisible, 
           />
         </Pressable>
         <View style={styles.layerTitle}>
-          <Text style={[styles.layerTitleText, { fontWeight: isSelected ? 'bold' : 'normal' }]}>
+          <Text style={[styles.layerTitleText, { fontWeight: isSelected ? '600' : 'normal' }]}>
             Collision
           </Text>
         </View>
@@ -202,13 +234,7 @@ const CollisionRow = ({ isSelected, onSelect, previewPng, numFrames, isVisible, 
           <MCIcon name={'dots-horizontal'} size={ICON_SIZE} color={'#fff'} />
         </View>
       </View>
-      <View
-        style={[
-          styles.cell,
-          styles.cellLeftBorder,
-          styles.cellBottomBorder,
-          numFrames < 2 ? styles.cellRightBorder : undefined,
-        ]}>
+      <View style={[...cellStyle, numFrames < 2 ? styles.cellRightBorder : undefined]}>
         <FastImage source={{ uri: `data:image/png;base64,${previewPng}` }} style={styles.image} />
       </View>
       {placeholderFrames}
@@ -223,7 +249,7 @@ const FrameCell = ({ frames, frame, idx, onPress, isSelected }) => {
   if (isSelected) {
     cellStyle.push(styles.cellSelected);
   } else {
-    cellStyle.push(styles.cellBottomBorder);
+    cellStyle.push(styles.cellTopBorder);
 
     if (!frame.isLinked) {
       cellStyle.push(styles.cellLeftBorder);
@@ -294,16 +320,18 @@ const LayerRow = ({
           <Text
             style={[
               styles.layerTitleText,
-              { fontWeight: isSelected && !isCollisionActive ? 'bold' : 'normal' },
+              { fontWeight: isSelected && !isCollisionActive ? '600' : 'normal' },
             ]}>
             {layer.title}
           </Text>
         </View>
-        <Pressable onPress={() => showLayerActionSheet({ layerId: layer.id, index })}>
-          <View style={styles.layerMenuButton}>
-            <MCIcon name={'dots-horizontal'} size={ICON_SIZE} color={'#000'} />
-          </View>
-        </Pressable>
+        {isSelected ? (
+          <Pressable onPress={() => showLayerActionSheet({ layerId: layer.id, index })}>
+            <View style={styles.layerMenuButton}>
+              <MCIcon name={'dots-horizontal'} size={ICON_SIZE} color={'#000'} />
+            </View>
+          </Pressable>
+        ) : null}
       </Pressable>
       {layer.frames.map((frame, idx) => {
         let isFrameSelected = selectedFrameIndex === idx + 1 && isSelected && !isCollisionActive;
@@ -509,47 +537,6 @@ const DrawingLayers = ({ sendLayerAction }) => {
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}>
         <View style={{ flex: 1 }}>
-          <View style={styles.layerRow}>
-            <View style={styles.firstCell} />
-            {layers?.length > 0
-              ? layers[0].frames.map((frame, idx) => {
-                  let isSelected = selectedFrameIndex === idx + 1;
-                  let onPress = isSelected
-                    ? () => showFrameActionSheet(idx + 1)
-                    : () => sendLayerAction('selectFrame', { frameIndex: idx + 1 });
-
-                  return (
-                    <Pressable
-                      onPress={onPress}
-                      style={[styles.cell, styles.cellLeftBorder, styles.cellBottomBorder]}
-                      key={idx}>
-                      <Text
-                        style={[
-                          isSelected && { fontWeight: 'bold', paddingTop: 12, paddingBottom: 2 },
-                          { fontSize: 16 },
-                        ]}>
-                        {idx + 1}
-                      </Text>
-
-                      {isSelected && (
-                        <MCIcon name={'dots-horizontal'} size={ICON_SIZE} color={'#000'} />
-                      )}
-                    </Pressable>
-                  );
-                })
-              : null}
-            <Pressable
-              onPress={onAddFrame}
-              style={[
-                styles.cell,
-                styles.cellLeftBorder,
-                styles.cellBottomBorder,
-                styles.cellRightBorder,
-              ]}>
-              <MCIcon name="plus" size={ICON_SIZE} color="#000" style={{ marginTop: 5 }} />
-              <Text style={{ letterSpacing: 0.5, paddingTop: 1 }}>FRAME</Text>
-            </Pressable>
-          </View>
           <View style={{ flexDirection: 'column-reverse' }}>
             <CollisionRow
               onSelect={onSelectCollision}
@@ -580,6 +567,44 @@ const DrawingLayers = ({ sendLayerAction }) => {
                 })
               : null}
           </View>
+          <View style={[styles.layerRow, styles.lastLayerRow]}>
+            <View style={styles.firstCell}>
+              <Text style={styles.newLayerLabel}>Animation Frames</Text>
+            </View>
+            {layers?.length > 0
+              ? layers[0].frames.map((frame, idx) => {
+                  let isSelected = selectedFrameIndex === idx + 1;
+                  let onPress = isSelected
+                    ? () => showFrameActionSheet(idx + 1)
+                    : () => sendLayerAction('selectFrame', { frameIndex: idx + 1 });
+
+                  return (
+                    <Pressable
+                      onPress={onPress}
+                      style={[styles.cell, styles.cellLeftBorder, styles.cellTopBorder]}
+                      key={idx}>
+                      <Text
+                        style={[
+                          isSelected && { fontWeight: '600', paddingTop: 8 },
+                          { fontSize: 16 },
+                        ]}>
+                        {idx + 1}
+                      </Text>
+
+                      {isSelected && (
+                        <MCIcon name={'dots-horizontal'} size={ICON_SIZE} color={'#000'} />
+                      )}
+                    </Pressable>
+                  );
+                })
+              : null}
+            <Pressable
+              onPress={onAddFrame}
+              style={[styles.cell, styles.cellTopBorder, styles.cellLeftBorder]}>
+              <MCIcon name="plus" size={ICON_SIZE} color="#000" style={{ marginTop: 0 }} />
+              <Text style={{ fontSize: 14, letterSpacing: 0.5, paddingTop: 1 }}>ADD</Text>
+            </Pressable>
+          </View>
         </View>
       </ScrollView>
     </ScrollView>
@@ -592,58 +617,67 @@ const DrawingLayersHeader = ({ sendLayerAction }) => {
   const onAddLayer = useCallback(() => sendLayerAction('addLayer'), [sendLayerAction]);
 
   return (
-    <View style={styles.header}>
-      <View style={styles.headerLeft}>
+    <>
+      <View style={styles.header}>
+        <View style={{ flexDirection: 'row', flexShrink: 1, padding: 8 }}>
+          <Text style={styles.headingLabel}>Layers</Text>
+        </View>
+        {numFrames > 1 ? (
+          <View style={styles.headerControls}>
+            <Pressable
+              style={styles.headerControl}
+              onPress={() =>
+                sendLayerAction('enableOnionSkinning', {
+                  doubleValue: isOnionSkinningEnabled ? 0 : 1,
+                })
+              }>
+              <MCIcon
+                name={isOnionSkinningEnabled ? 'eye-outline' : 'eye-off-outline'}
+                size={ICON_SIZE}
+                color="#000"
+              />
+            </Pressable>
+            <Pressable style={styles.headerControl} onPress={() => sendLayerAction('stepBackward')}>
+              <FeatherIcon name="skip-back" size={ICON_SIZE} color="#000" />
+            </Pressable>
+            <Pressable
+              style={styles.headerControl}
+              onPress={() =>
+                sendLayerAction('setIsPlayingAnimation', {
+                  doubleValue: isPlayingAnimation ? 0 : 1,
+                })
+              }>
+              <FeatherIcon
+                name={isPlayingAnimation ? 'pause' : 'play'}
+                size={ICON_SIZE - 2}
+                color="#000"
+              />
+            </Pressable>
+            <Pressable style={styles.headerControl} onPress={() => sendLayerAction('stepForward')}>
+              <FeatherIcon name="skip-forward" size={ICON_SIZE} color="#000" />
+            </Pressable>
+          </View>
+        ) : (
+          <View style={{ width: 64, height: 16, flexShrink: 1 }} />
+        )}
+      </View>
+
+      <View style={styles.newLayerRow}>
+        <Text style={styles.newLayerLabel}>New Layer</Text>
         <Pressable
           onPress={onAddLayer}
-          style={({ pressed }) => [
-            styles.addLayerButton,
-            { backgroundColor: pressed ? '#ddd' : 'transparent' },
-          ]}>
-          <MCIcon name="plus" size={28} color="#000" />
+          style={[SceneCreatorConstants.styles.button, { marginRight: 8 }]}>
+          <MCIcon
+            name="shape-outline"
+            size={22}
+            color="#000"
+            style={SceneCreatorConstants.styles.buttonIcon}
+          />
+          <Text style={SceneCreatorConstants.styles.buttonLabel}>Drawing</Text>
         </Pressable>
         <SelectImageButton sendLayerAction={sendLayerAction} />
       </View>
-      <View style={{ flexDirection: 'row', flexShrink: 1, padding: 8 }}>
-        <Text style={styles.headingLabel}>Layers</Text>
-      </View>
-      {numFrames > 1 ? (
-        <View style={styles.headerControls}>
-          <Pressable
-            style={styles.headerControl}
-            onPress={() =>
-              sendLayerAction('enableOnionSkinning', {
-                doubleValue: isOnionSkinningEnabled ? 0 : 1,
-              })
-            }>
-            <MCIcon
-              name={isOnionSkinningEnabled ? 'eye-outline' : 'eye-off-outline'}
-              size={ICON_SIZE}
-              color="#000"
-            />
-          </Pressable>
-          <Pressable style={styles.headerControl} onPress={() => sendLayerAction('stepBackward')}>
-            <FeatherIcon name="skip-back" size={ICON_SIZE} color="#000" />
-          </Pressable>
-          <Pressable
-            style={styles.headerControl}
-            onPress={() =>
-              sendLayerAction('setIsPlayingAnimation', { doubleValue: isPlayingAnimation ? 0 : 1 })
-            }>
-            <FeatherIcon
-              name={isPlayingAnimation ? 'pause' : 'play'}
-              size={ICON_SIZE - 2}
-              color="#000"
-            />
-          </Pressable>
-          <Pressable style={styles.headerControl} onPress={() => sendLayerAction('stepForward')}>
-            <FeatherIcon name="skip-forward" size={ICON_SIZE} color="#000" />
-          </Pressable>
-        </View>
-      ) : (
-        <View style={{ width: 64, height: 16, flexShrink: 1 }} />
-      )}
-    </View>
+    </>
   );
 };
 

@@ -37,6 +37,12 @@ export const styles = {
     borderRadius: 4,
     paddingHorizontal: 8,
     paddingVertical: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  buttonIcon: {
+    marginLeft: -2,
+    marginRight: 4,
   },
   buttonLabel: {
     color: '#000',
