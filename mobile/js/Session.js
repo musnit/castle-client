@@ -217,6 +217,10 @@ export class Provider extends React.Component {
 
       await this.useNewAuthTokenAsync(result.data.login);
       Amplitude.getInstance().logEvent('SIGN_IN'); // user id already set for amplitude
+
+      // Send our push token to the new user id
+      await PushNotifications.clearTokenAsync();
+      PushNotifications.requestTokenAsync();
     }
   };
 
@@ -863,6 +867,17 @@ export const reportDeck = async (deckId) => {
     variables: { deckId },
   });
   return result?.data?.reportDeck;
+};
+
+export const markPushNotificationClicked = async (pushNotificationId) => {
+  await apolloClient.mutate({
+    mutation: gql`
+      mutation ($pushNotificationId: ID!) {
+        markPushNotificationClicked(pushNotificationId: $pushNotificationId)
+      }
+    `,
+    variables: { pushNotificationId },
+  });
 };
 
 export const createShortLink = async (url) => {

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Amplitude } from '@amplitude/react-native';
 import { NativeModules, Platform, DeviceEventEmitter, NativeEventEmitter } from 'react-native';
 import { CastleAsyncStorage } from './common/CastleAsyncStorage';
+import { markPushNotificationClicked } from './Session';
 
 let gListenerId = 0;
 let gInitialData = null;
@@ -29,6 +30,10 @@ eventEmitter.addListener('CastlePushNotificationClicked', (event) => {
   let dataString = event.dataString;
   setClickedData(dataString);
   let data = _parsePushDataString(dataString);
+
+  if (data?.pushNotificationId) {
+    markPushNotificationClicked(data?.pushNotificationId);
+  }
 
   Amplitude.getInstance().logEvent('OPEN_PUSH_NOTIFICATION', {
     type: data?.type, // category of notif, e.g. 'play_deck'
@@ -112,7 +117,11 @@ export const addTokenListener = (listener) => {
 
   eventEmitter.addListener('onNewPushNotificationToken', async (event) => {
     const existingToken = await CastleAsyncStorage.getItem(PUSH_TOKEN_STORAGE_KEY);
-    if (!existingToken || existingToken !== event.token) {
+    // It seems like updating the token on the server can fail after logging in,
+    // so just call this every time for now.
+    // If we bring this back, we should make sure the api call is successful
+    // before writing to async storage
+    //if (!existingToken || existingToken !== event.token) {
       if (event.token) {
         if (await listener(event.token)) {
           CastleAsyncStorage.setItem(PUSH_TOKEN_STORAGE_KEY, event.token);
@@ -120,7 +129,7 @@ export const addTokenListener = (listener) => {
       } else {
         CastleAsyncStorage.removeItem(PUSH_TOKEN_STORAGE_KEY);
       }
-    }
+    //}
   });
 };
 
