@@ -9,7 +9,9 @@ import { useCoreState, sendAsync } from '../../core/CoreEvents';
 import * as Constants from '../../Constants';
 import * as SceneCreatorConstants from '../SceneCreatorConstants';
 
+import ColorPicker from '../inspector/components/ColorPicker';
 import Feather from 'react-native-vector-icons/Feather';
+import tinycolor from 'tinycolor2';
 
 const USE_TEST_UI = false;
 
@@ -39,6 +41,11 @@ const styles = StyleSheet.create({
   },
   errorLabel: {
     fontSize: 16,
+  },
+  paletteSwatch: {
+    ...SceneCreatorConstants.styles.button,
+    padding: 0,
+    marginRight: 12,
   },
 });
 
@@ -182,11 +189,66 @@ const PALETTE_ITEMS = [
   },
 ];
 
+const intColorToRgbaArray = (intColor) => {
+  return [
+    ((intColor >> 16) & 0xff) / 255.0,
+    ((intColor >> 8) & 0xff) / 255.0,
+    ((intColor >> 0) & 0xff) / 255.0,
+    1.0,
+  ];
+};
+
+const rgbaArrayToIntColor = (rgba) => {
+  return (
+    (((rgba[0] * 255.0) & 0xff) << 16) +
+    (((rgba[1] * 255.0) & 0xff) << 8) +
+    ((rgba[2] * 255.0) & 0xff)
+  );
+};
+
 const ImportImage = ({ importData, sendAction }) => {
   const [selectedPaletteType, setSelectedPaletteType] = React.useState(1);
-  if (!importData) {
-    return null;
-  }
+  const swapColors = React.useCallback(
+    () => sendAction('swapColors', { value: selectedPaletteType }),
+    [selectedPaletteType]
+  );
+  const selectedColorIndex = NUM_COLOR_ITEMS.findIndex(
+    (item) => item.value === importData.numColors
+  );
+  const onChangeNumColors = React.useCallback(
+    (index) => sendAction('setNumColors', { value: NUM_COLOR_ITEMS[index].value }),
+    []
+  );
+  const selectedPaletteIndex = PALETTE_ITEMS.findIndex(
+    (item) => item.value === selectedPaletteType
+  );
+  const onChangePaletteIndex = React.useCallback(
+    (index) => {
+      const newPaletteType = PALETTE_ITEMS[index].value;
+      setSelectedPaletteType(newPaletteType);
+      sendAction('swapColors', { value: newPaletteType });
+    },
+    [setSelectedPaletteType]
+  );
+
+  // based on the palette colors used and the overrides, compute which colors to show
+  let finalColors = [...importData.paletteColorsUsed];
+  Object.entries(importData.paletteOverrides).map(([fromColor, toColor]) => {
+    let index = finalColors.indexOf(parseInt(fromColor, 10));
+    if (index != -1) {
+      finalColors[index] = toColor;
+    }
+  });
+
+  const overrideColor = React.useCallback(
+    (rgba, index) => {
+      sendAction('overrideColor', {
+        valuePair: [importData.paletteColorsUsed[index], rgbaArrayToIntColor(rgba)],
+      });
+    },
+    [importData.paletteColorsUsed]
+  );
+
   if (importData.loading) {
     return (
       <View style={styles.importSettings}>
@@ -194,28 +256,12 @@ const ImportImage = ({ importData, sendAction }) => {
       </View>
     );
   }
-  const swapColors = () => sendAction('swapColors', { value: selectedPaletteType });
-  const selectedColorIndex = NUM_COLOR_ITEMS.findIndex(
-    (item) => item.value === importData.numColors
-  );
-  const onChangeNumColors = (index) =>
-    sendAction('setNumColors', { value: NUM_COLOR_ITEMS[index].value });
-  const selectedPaletteIndex = PALETTE_ITEMS.findIndex(
-    (item) => item.value === selectedPaletteType
-  );
-  const onChangePaletteIndex = (index) => {
-    const newPaletteType = PALETTE_ITEMS[index].value;
-    setSelectedPaletteType(newPaletteType);
-    sendAction('swapColors', { value: newPaletteType });
-  };
+
   return (
     <View style={styles.importSettings}>
       <View style={styles.row}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Text style={styles.label}>Colors</Text>
-          <Pressable style={[SceneCreatorConstants.styles.button, {}]} onPress={swapColors}>
-            <Feather name="refresh-cw" size={18} />
-          </Pressable>
+          <Text style={styles.label}>Max Colors</Text>
         </View>
         <InspectorSegmentedControl
           style={{ maxWidth: 256 }}
@@ -230,6 +276,21 @@ const ImportImage = ({ importData, sendAction }) => {
           selectedItemIndex={selectedPaletteIndex}
           onChange={onChangePaletteIndex}
         />
+      </View>
+      <View style={[styles.row, { justifyContent: 'flex-start' }]}>
+        <Pressable
+          style={[SceneCreatorConstants.styles.button, { marginRight: 12 }]}
+          onPress={swapColors}>
+          <Feather name="refresh-cw" size={18} />
+        </Pressable>
+        {finalColors.map((intColor, ii) => {
+          const rgba = intColorToRgbaArray(intColor);
+          return (
+            <View style={styles.paletteSwatch} key={`color-swatch-${ii}`}>
+              <ColorPicker value={rgba} setValue={(rgba) => overrideColor(rgba, ii)} />
+            </View>
+          );
+        })}
       </View>
     </View>
   );

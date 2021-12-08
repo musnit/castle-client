@@ -251,13 +251,15 @@ int ImageProcessing::paletteSwap(
   return count;
 }
 
-void ImageProcessing::paletteSwap(love::image::ImageData *data, PaletteProvider &palette) {
+void ImageProcessing::paletteSwap(love::image::ImageData *data, PaletteProvider &palette,
+    std::vector<int> &outColors, std::optional<std::unordered_map<int, int>> overrides) {
   auto width = data->getWidth(), height = data->getHeight();
   auto format = data->getFormat();
 
   love::image::Pixel p {};
   float rgba[4];
   std::unordered_map<int, love::image::Pixel> swaps;
+  outColors.clear();
 
   for (auto y = 0; y < height; y++) {
     for (auto x = 0; x < width; x++) {
@@ -270,6 +272,12 @@ void ImageProcessing::paletteSwap(love::image::ImageData *data, PaletteProvider 
       if (found == swaps.end()) {
         love::image::Pixel swap {};
         auto hexValue = palette.nextColor(p, format);
+        outColors.emplace_back(hexValue);
+
+        if (overrides && overrides->find(hexValue) != overrides->end()) {
+          hexValue = (*overrides)[hexValue];
+        }
+
         setChannel(swap, 0, ((hexValue >> 16) & 0xFF), format);
         setChannel(swap, 1, ((hexValue >> 8) & 0xFF), format);
         setChannel(swap, 2, ((hexValue >> 0) & 0xFF), format);

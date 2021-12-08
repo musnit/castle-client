@@ -26,7 +26,8 @@ void ImageImporter::FilterThread::threadFunction() {
     }
     ImageProcessing::kMeans(imageData, owner->numColors, 4);
     ImageProcessing::removeIslands(imageData, owner->minEqualNeighbors);
-    ImageProcessing::paletteSwap(imageData, *(owner->palette));
+    ImageProcessing::paletteSwap(
+        imageData, *(owner->palette), owner->paletteColorsUsed, owner->paletteOverrides);
     // ImageProcessing::testOnlyRedChannel(imageData);
 
     owner->imageFilterFinished(imageData);
@@ -64,6 +65,7 @@ void ImageImporter::reset() {
   paletteProviderType = "luminance";
   minEqualNeighbors = 1;
   normalizeRgb = false;
+  paletteOverrides.clear();
 }
 
 void ImageImporter::importImage(std::string uri) {
@@ -164,6 +166,8 @@ struct ImageImporterEvent {
   PROP(float, imageScale);
   PROP(int, minEqualNeighbors);
   PROP(bool, normalizeRgb);
+  PROP(std::vector<int>, paletteColorsUsed);
+  PROP((std::unordered_map<int, int>), paletteOverrides);
 };
 
 void ImageImporter::sendEvent() {
@@ -186,6 +190,8 @@ void ImageImporter::sendEvent() {
   ev.imageScale() = imageScale;
   ev.minEqualNeighbors() = minEqualNeighbors;
   ev.normalizeRgb() = normalizeRgb;
+  ev.paletteColorsUsed() = paletteColorsUsed;
+  ev.paletteOverrides() = paletteOverrides;
   drawTool.editor.getBridge().sendEvent("EDITOR_IMPORT_IMAGE", ev);
 }
 
@@ -197,6 +203,7 @@ struct ImportImageActionReceiver {
   struct Params {
     PROP(std::string, action);
     PROP(double, value);
+    PROP((std::array<double, 2>), valuePair);
   } params;
 
   void receive(Engine &engine) {
@@ -217,6 +224,8 @@ struct ImportImageActionReceiver {
       }
       importer.numColors = value;
       importer.regeneratePreview();
+      // TODO: maybe clear palette overrides here?
+      // importer.paletteOverrides.clear();
       importer.sendEvent();
     } else if (action == "setNumBlurs") {
       auto value = uint8(params.value());
@@ -268,7 +277,15 @@ struct ImportImageActionReceiver {
         importer.makePaletteProvider();
       }
       importer.palette->init();
+      importer.paletteOverrides.clear();
       importer.regeneratePreview();
+    } else if (action == "overrideColor") {
+      auto valuePair = params.valuePair();
+      int fromColor = int(valuePair[0]);
+      int toColor = int(valuePair[1]);
+      importer.paletteOverrides[fromColor] = toColor;
+      importer.regeneratePreview();
+      importer.sendEvent();
     }
   }
 };

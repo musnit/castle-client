@@ -320,6 +320,8 @@ private:
   template<typename T>
   json::Value write_(const std::unordered_map<std::string, T> &m);
   template<typename T>
+  json::Value write_(const std::unordered_map<int, T> &m);
+  template<typename T>
   json::Value write_(T &&v);
 };
 
@@ -997,6 +999,15 @@ inline json::Value Writer::write_(const std::unordered_map<std::string, T> &m) {
   auto result = json::Value(json::kObjectType);
   for (auto &[key, value] : m) {
     result.AddMember(makeStr(key), write_(value), alloc);
+  }
+  return result;
+}
+
+template<typename T>
+inline json::Value Writer::write_(const std::unordered_map<int, T> &m) {
+  auto result = json::Value(json::kObjectType);
+  for (auto &[key, value] : m) {
+    result.AddMember(makeStr(std::to_string(key)), write_(value), alloc);
   }
   return result;
 }

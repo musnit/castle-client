@@ -39,6 +39,8 @@ private:
 
   std::unique_ptr<PaletteProvider> palette;
   std::string paletteProviderType = "luminance";
+  std::vector<int> paletteColorsUsed;
+  std::unordered_map<int, int> paletteOverrides; // hex -> hex
   float imageScale = 1.0f;
   uint8 numBlurs = 1;
   uint8 numColors = 4;
