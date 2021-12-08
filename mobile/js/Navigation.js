@@ -396,24 +396,24 @@ const MainAppNavigator = () => (
 );
 
 export const RootNavigator = () => {
-  const { isSignedIn, isAnonymous, isNuxCompleted } = useSession();
+  const { isSignedIn, isNuxCompleted } = useSession();
 
   // fetch notifs when we first notice a signed in user (including every app InitialAuth)
   React.useEffect(() => {
-    if (isSignedIn && !isAnonymous) {
+    if (isSignedIn) {
       maybeFetchNotificationsAsync();
     }
-  }, [isSignedIn, isAnonymous]);
+  }, [isSignedIn]);
 
   // fetch notifs when the app foregrounds
   useAppState(
     React.useCallback(
       (state) => {
-        if (state === 'active' && !isAnonymous) {
+        if (state === 'active') {
           maybeFetchNotificationsAsync();
         }
       },
-      [isAnonymous]
+      []
     )
   );
 

@@ -131,14 +131,12 @@ export const HomeScreen = ({ route }) => {
   );
   const closeComments = React.useCallback(() => setCommentsState({ type: 'close' }), []);
 
-  if (Platform.OS === 'android') {
-    React.useEffect(() => {
-      // android doesn't show a permissions alert when requesting a token, so do this asap
-      if (!isAnonymous) {
-        PushNotifications.requestTokenAsync();
-      }
-    }, [isAnonymous]);
-  }
+  React.useEffect(() => {
+    // request permissions and token for push notifs when the home tab is first viewed.
+    // whether they accept or deny, subsequent calls to this method won't pop up anything for
+    // the user.
+    PushNotifications.requestTokenAsync();
+  }, []);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>

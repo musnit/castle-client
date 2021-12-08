@@ -186,32 +186,18 @@ const NotificationItem = ({ notification, navigateToUser, navigateToDeck, naviga
 };
 
 export const NotificationsScreen = () => {
-  const { isAnonymous } = useSession();
-
-  useFocusEffect(
-    React.useCallback(() => {
-      Amplitude.getInstance().logEvent('VIEW_NOTIFICATIONS');
-    }, [])
-  );
-
-  if (isAnonymous) {
-    return (
-      <SafeAreaView>
-        <AuthPrompt title="Stay up to date" message="Get notified when people play your cards." />
-      </SafeAreaView>
-    );
-  } else {
-    return <NotificationsScreenAuthenticated />;
-  }
-};
-
-const NotificationsScreenAuthenticated = () => {
   const { navigate } = useNavigation();
   const [orderedNotifs, setOrderedNotifs] = React.useState([]);
   const [refresh, setRefresh] = React.useState(false);
   const { notifications, markNotificationsReadAsync, isAnonymous } = useSession();
   const isFocused = useIsFocused();
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      Amplitude.getInstance().logEvent('VIEW_NOTIFICATIONS');
+    }, [])
+  );
 
   const navigateToUser = React.useCallback(
     (user) =>
@@ -324,15 +310,6 @@ const NotificationsScreenAuthenticated = () => {
     }
   }, [notifications]);
 
-  React.useEffect(() => {
-    // request permissions and token for push notifs when the notifs tab is first viewed.
-    // whether they accept or deny, subsequent calls to this method won't pop up anything for
-    // the user.
-    if (!isAnonymous) {
-      PushNotifications.requestTokenAsync();
-    }
-  }, [isAnonymous]);
-
   const onRefresh = React.useCallback(async (force = true) => {
     setRefresh(true);
     try {
@@ -405,7 +382,7 @@ const NotificationsScreenAuthenticated = () => {
           <View style={Constants.styles.empty}>
             <Text style={Constants.styles.emptyTitle}>No notifications yet</Text>
             <Text style={Constants.styles.emptyText}>
-              You'll get notified about new followers or activity on your decks.
+              {isAnonymous ? "You'll get notified about new decks." : "You'll get notified about new followers or activity on your decks."}
             </Text>
           </View>
         )}
