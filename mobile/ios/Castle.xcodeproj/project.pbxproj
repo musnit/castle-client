@@ -37,6 +37,7 @@
 		A1376B3326717D3B0095021E /* libcastle-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1376B2F26717D3B0095021E /* libcastle-core.a */; };
 		A1376B3426717D3B0095021E /* libfmt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1376B3026717D3B0095021E /* libfmt.a */; };
 		A1376B3526717D3B0095021E /* libsoloud.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1376B3126717D3B0095021E /* libsoloud.a */; };
+		A146533D2761DB7D0092A450 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = A14653352761DB7D0092A450 /* assets */; };
 		A14FE39F2355CB83003B7EA0 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A14FE39E2355CB83003B7EA0 /* AudioToolbox.framework */; };
 		A14FE3A12355CB8B003B7EA0 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A14FE3A02355CB8B003B7EA0 /* AVFoundation.framework */; };
 		A14FE3A32355CB93003B7EA0 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A14FE3A22355CB93003B7EA0 /* CoreGraphics.framework */; };
@@ -190,6 +191,7 @@
 		A1376B2F26717D3B0095021E /* libcastle-core.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libcastle-core.a"; path = "../../core/binaries/ios/libcastle-core.a"; sourceTree = "<group>"; };
 		A1376B3026717D3B0095021E /* libfmt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfmt.a; path = ../../core/binaries/ios/libfmt.a; sourceTree = "<group>"; };
 		A1376B3126717D3B0095021E /* libsoloud.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsoloud.a; path = ../../core/binaries/ios/libsoloud.a; sourceTree = "<group>"; };
+		A14653352761DB7D0092A450 /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = assets; path = ../../core/assets; sourceTree = "<group>"; };
 		A14FE3892355CA44003B7EA0 /* SDL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL.xcodeproj; path = "../../ghost-extensions/SDL2-2.0.8/Xcode-iOS/SDL/SDL.xcodeproj"; sourceTree = "<group>"; };
 		A14FE3952355CA7B003B7EA0 /* liblove.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = liblove.xcodeproj; path = ../../love/platform/xcode/liblove.xcodeproj; sourceTree = "<group>"; };
 		A14FE39E2355CB83003B7EA0 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -400,6 +402,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				A14653352761DB7D0092A450 /* assets */,
 				A14FE3B92355CE21003B7EA0 /* ghost-extensions */,
 				A101D71726D9AB3F00A515E6 /* core-src-for-debugging */,
 				A14FE3952355CA7B003B7EA0 /* liblove.xcodeproj */,
@@ -736,6 +739,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A146533D2761DB7D0092A450 /* assets in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				B5942AB52627646B003CF6DB /* BootSplash.storyboard in Resources */,
 				B8018AF726EFCB6400137649 /* CastleIcon.ttf in Resources */,
