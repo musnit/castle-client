@@ -95,8 +95,11 @@ export const removeListener = (id) => {
 export const requestTokenAsync = async () => {
   try {
     const status = await NativeModules.GhostPushNotifications.requestToken();
-    Amplitude.getInstance().logEvent('REQUEST_PUSH_TOKEN', {
-      status: Platform.OS === 'android' ? 'granted' : status, // 'granted' or 'denied'
+
+    // don't send an event because this will get silently called by the OS on every app launch
+    // and we only care about the most recent status
+    Amplitude.getInstance().setUserProperties({
+      pushNotificationPermissions: Platform.OS === 'android' ? 'granted' : status, // 'granted' or 'denied'
     });
   } catch (e) {
     console.log(`Error requesting push notifiation token ${e}`);
