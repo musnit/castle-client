@@ -87,7 +87,7 @@ RCT_EXPORT_METHOD(requestToken : (RCTPromiseResolveBlock)resolve : (RCTPromiseRe
                               [[UIApplication sharedApplication] registerForRemoteNotifications];
                             });
 
-                            resolve(nil);
+                            resolve(granted ? @"granted" : @"denied");
                           }
                         }];
 }

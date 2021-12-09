@@ -94,7 +94,10 @@ export const removeListener = (id) => {
 
 export const requestTokenAsync = async () => {
   try {
-    return await NativeModules.GhostPushNotifications.requestToken();
+    const status = await NativeModules.GhostPushNotifications.requestToken();
+    Amplitude.getInstance().logEvent('REQUEST_PUSH_TOKEN', {
+      status: Platform.OS === 'android' ? 'granted' : status, // 'granted' or 'denied'
+    });
   } catch (e) {
     console.log(`Error requesting push notifiation token ${e}`);
   }
@@ -122,13 +125,13 @@ export const addTokenListener = (listener) => {
     // If we bring this back, we should make sure the api call is successful
     // before writing to async storage
     //if (!existingToken || existingToken !== event.token) {
-      if (event.token) {
-        if (await listener(event.token)) {
-          CastleAsyncStorage.setItem(PUSH_TOKEN_STORAGE_KEY, event.token);
-        }
-      } else {
-        CastleAsyncStorage.removeItem(PUSH_TOKEN_STORAGE_KEY);
+    if (event.token) {
+      if (await listener(event.token)) {
+        CastleAsyncStorage.setItem(PUSH_TOKEN_STORAGE_KEY, event.token);
       }
+    } else {
+      CastleAsyncStorage.removeItem(PUSH_TOKEN_STORAGE_KEY);
+    }
     //}
   });
 };
