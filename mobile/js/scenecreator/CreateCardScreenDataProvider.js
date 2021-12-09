@@ -5,6 +5,7 @@ import { withNavigation, withNavigationFocus } from '../ReactNavigation';
 import { CreateCardScreen } from './CreateCardScreen';
 import { sendAsync } from '../core/CoreEvents';
 
+import * as AdjustEvents from '../common/AdjustEvents';
 import * as Constants from '../Constants';
 import * as LocalId from '../common/local-id';
 import * as RulesClipboard from './inspector/rules/RulesClipboard';
@@ -113,6 +114,7 @@ class CreateCardScreenDataProvider extends React.Component {
         }
         deck.deckId = params.deckIdToEdit;
         Amplitude.getInstance().logEvent('START_CREATING_NEW_DECK', { deckId: deck.deckId });
+        AdjustEvents.trackEvent(AdjustEvents.tokens.START_CREATING_NEW_DECK);
       }
 
       if (kitDeckId) {

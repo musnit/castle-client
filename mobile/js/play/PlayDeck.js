@@ -6,6 +6,7 @@ import { CardText } from '../components/CardText';
 import { gql } from '@apollo/client';
 import { sendAsync, useListen } from '../core/CoreEvents';
 
+import * as AdjustEvents from '../common/AdjustEvents';
 import * as Constants from '../Constants';
 import * as Session from '../Session';
 
@@ -51,6 +52,7 @@ export const PlayDeck = ({ deck, visibility, route, paused }) => {
 
   React.useEffect(() => {
     Amplitude.getInstance().logEvent('VIEW_PLAY_DECK', { deckId: deck.deckId, visibility });
+    AdjustEvents.trackEvent(AdjustEvents.tokens.PLAY_DECK);
 
     return () => {
       recordDeckPlay(deck.deckId, playingCardId.current);

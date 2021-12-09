@@ -3,6 +3,8 @@ import { Adjust, AdjustEvent } from 'react-native-adjust';
 
 export const tokens = {
   SIGN_UP: 'a4jmvn',
+  PLAY_DECK: 'tyqiyg',
+  START_CREATING_NEW_DECK: '3us4a1',
 };
 
 export const trackEvent = (eventToken) => {
