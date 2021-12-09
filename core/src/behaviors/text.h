@@ -67,7 +67,13 @@ struct TextComponent : BaseComponent {
            )
          )
             = "Norm Regular";
-    PROP(float, fontSize, .label("Font size")) = 1;
+    PROP(float, fontSize,
+        .label("Font size")
+        ) = 1;
+    PROP(std::string, alignment,
+        .label("Alignment")
+        .allowedValues("left", "right", "center", "justify")
+        ) = "left";
   } props;
 
   struct TouchRectangle {

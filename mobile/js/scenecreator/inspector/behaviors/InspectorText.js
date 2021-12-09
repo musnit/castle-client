@@ -81,6 +81,19 @@ export default InspectorText = () => {
     [setFontSizeValueAndSendAction]
   );
 
+  const [alignmentValue, setAlignmentValueAndSendAction] = useOptimisticBehaviorValue({
+    component: textComponent,
+    propName: 'alignment',
+    propType: 'string',
+    sendAction,
+  });
+  const onChangeAlignmentValue = React.useCallback(
+    (alignment) => {
+      setAlignmentValueAndSendAction('set', alignment);
+    },
+    [setAlignmentValueAndSendAction]
+  );
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Text</Text>
@@ -97,6 +110,7 @@ export default InspectorText = () => {
         label="Visible"
         style={{ marginBottom: 12 }}
       />
+      <Text style={styles.label}>Font name</Text>
       <InspectorDropdown
         value={fontNameValue}
         onChange={onChangeFontNameValue}
@@ -142,6 +156,15 @@ export default InspectorText = () => {
         step={0.2}
         value={fontSizeValue}
         onChange={onChangeFontSizeValue}
+        style={{ marginBottom: 12 }}
+      />
+      <Text style={styles.label}>Alignment</Text>
+      <InspectorDropdown
+        value={alignmentValue}
+        onChange={onChangeAlignmentValue}
+        label="Alignment"
+        allowedValues={['left', 'right', 'center', 'justify']}
+        style={{ marginBottom: 12 }}
       />
     </View>
   );
