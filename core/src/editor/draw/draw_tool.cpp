@@ -1000,7 +1000,10 @@ void DrawTool::makeNewLayerFromImageImporter() {
     drawData->layerForId(selectedLayerId)->isBitmap = true;
 
     // selected frame's bitmap is image importer's data
-    auto &selectedFrame = getDrawDataFrame();
+    auto unlinkedFrameIndex
+        = drawData->getRealFrameIndexForLayerId(selectedLayerId, selectedFrameIndex);
+    auto &selectedFrame = *(drawData->layerForId(selectedLayerId)->frames[unlinkedFrameIndex]);
+
     selectedFrame.fillImageData = imageImporter.getFilteredImageData();
     selectedFrame.fillImageData->retain();
     dirtySelectedFrameBounds();
