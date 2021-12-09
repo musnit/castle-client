@@ -248,11 +248,25 @@ bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &com
       bounds.minY() *= info.heightScale / downscale;
       bounds.maxY() *= info.heightScale / downscale;
 
+      // Alignment
+      auto alignment = love::Font::ALIGN_LEFT;
+      switch (component.props.alignment()[0]) {
+      case 'r':
+        alignment = love::Font::ALIGN_RIGHT;
+        break;
+      case 'c':
+        alignment = love::Font::ALIGN_CENTER;
+        break;
+      case 'j':
+        alignment = love::Font::ALIGN_JUSTIFY;
+        break;
+      }
+
       // Draw
       auto wrap = bounds.maxX() - bounds.minX();
       lv.graphics.setFont(font);
       lv.graphics.printf({ { formatContent(component.props.content()), { 0, 0, 0, 1 } } }, wrap,
-          love::Font::ALIGN_LEFT, love::Matrix4(bounds.minX(), bounds.minY(), 0, 1, 1, 0, 0, 0, 0));
+          alignment, love::Matrix4(bounds.minX(), bounds.minY(), 0, 1, 1, 0, 0, 0, 0));
 
       lv.graphics.pop();
     }
