@@ -261,33 +261,45 @@ void ImageProcessing::paletteSwap(love::image::ImageData *data, PaletteProvider 
   std::unordered_map<int, love::image::Pixel> swaps;
   outColors.clear();
 
+  love::image::Pixel zero {};
+  memset(&zero, 0, data->getPixelSize());
+
   for (auto y = 0; y < height; y++) {
     for (auto x = 0; x < width; x++) {
       data->getPixel(x, y, p);
 
-      // if never seen before, map to next color in palette
       int hash = data->getPixelHash(p);
       DrawUtil::getRGBAFloat(p, format, rgba);
-      auto found = swaps.find(hash);
-      if (found == swaps.end()) {
-        love::image::Pixel swap {};
-        auto hexValue = palette.nextColor(p, format);
-        outColors.emplace_back(hexValue);
 
-        if (overrides && overrides->find(hexValue) != overrides->end()) {
-          hexValue = (*overrides)[hexValue];
+      // TODO: sometimes we get non-transparent full black pixels for some reason,
+      // in this case the hash will just equal the alpha channel
+      bool isBlack = hash == int(rgba[3]);
+
+      if (rgba[3] < 255.0f || isBlack) {
+        // just zero out any pixels with transparency and don't count them as swapped
+        data->setPixel(x, y, zero);
+      } else {
+        // if never seen before, map to next color in palette
+        auto found = swaps.find(hash);
+        if (found == swaps.end()) {
+          love::image::Pixel swap {};
+          auto hexValue = palette.nextColor(p, format);
+          outColors.emplace_back(hexValue);
+
+          if (overrides && overrides->find(hexValue) != overrides->end()) {
+            hexValue = (*overrides)[hexValue];
+          }
+
+          setChannel(swap, 0, ((hexValue >> 16) & 0xFF), format);
+          setChannel(swap, 1, ((hexValue >> 8) & 0xFF), format);
+          setChannel(swap, 2, ((hexValue >> 0) & 0xFF), format);
+          setChannel(swap, 3, 255.0f, format);
+          swaps.emplace(hash, swap);
         }
 
-        setChannel(swap, 0, ((hexValue >> 16) & 0xFF), format);
-        setChannel(swap, 1, ((hexValue >> 8) & 0xFF), format);
-        setChannel(swap, 2, ((hexValue >> 0) & 0xFF), format);
-        setChannel(swap, 3, 255.0f, format);
-        swaps.emplace(hash, swap);
+        // replace with mapping
+        data->setPixel(x, y, swaps[hash]);
       }
-
-      // replace with mapping
-      data->setPixel(x, y, swaps[hash]);
-
       // maintain original alpha
       auto dest = (love::image::Pixel *)((uint8 *)data->getData()
           + ((y * width + x) * data->getPixelSize()));
