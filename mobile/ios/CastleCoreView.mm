@@ -21,6 +21,11 @@ Engine &getEngine() {
   engineInitialized = true;
   return engine;
 }
+
+const char *getAssetsDirectoryPath() {
+  static NSString *path = [[NSBundle mainBundle] pathForResource:@"assets" ofType:@""];
+  return path.UTF8String;
+}
 }
 
 //
