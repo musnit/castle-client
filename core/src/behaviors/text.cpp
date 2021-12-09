@@ -223,11 +223,11 @@ bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &com
   if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
     if (auto info = getBehaviors().byType<BodyBehavior>().getRenderInfo(actorId);
         info.visible || (options && options->drawInvisibleActors)) {
-      constexpr float fontHeight = 1; // Desired height in world units, make configurable later
+      auto fontSize = std::clamp(component.props.fontSize(), 0.2f, 3.0f);
       auto font = component.fontResource
-          ? getFont(component.fontResource, fontHeight * fontPixelScale)
+          ? getFont(component.fontResource, fontSize * fontPixelScale)
           : defaultFont.get();
-      auto downscale = fontHeight / font->getHeight();
+      auto downscale = fontSize / font->getHeight();
 
       auto [x, y] = body->GetPosition();
 

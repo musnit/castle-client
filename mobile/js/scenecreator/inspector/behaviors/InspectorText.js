@@ -4,6 +4,7 @@ import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 import { InspectorTextInput } from '../components/InspectorTextInput';
 import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import { InspectorDropdown } from '../components/InspectorDropdown';
+import { InspectorNumberInput } from '../components/InspectorNumberInput';
 import { useCoreState, sendBehaviorAction } from '../../../core/CoreEvents';
 
 const styles = StyleSheet.create({
@@ -62,7 +63,22 @@ export default InspectorText = () => {
     (fontName) => {
       setFontNameValueAndSendAction('set', fontName);
     },
-    [setVisibleValueAndSendAction]
+    [setFontNameValueAndSendAction]
+  );
+
+  console.log('textComponent', textComponent);
+
+  const [fontSizeValue, setFontSizeValueAndSendAction] = useOptimisticBehaviorValue({
+    component: textComponent,
+    propName: 'fontSize',
+    propType: 'n',
+    sendAction,
+  });
+  const onChangeFontSizeValue = React.useCallback(
+    (fontSize) => {
+      setFontSizeValueAndSendAction('set', fontSize);
+    },
+    [setFontSizeValueAndSendAction]
   );
 
   return (
@@ -118,6 +134,14 @@ export default InspectorText = () => {
           'Zarathustra-Regular',
         ]}
         style={{ marginBottom: 12 }}
+      />
+      <Text style={styles.label}>Font size</Text>
+      <InspectorNumberInput
+        min={0.2}
+        max={3}
+        step={0.2}
+        value={fontSizeValue}
+        onChange={onChangeFontSizeValue}
       />
     </View>
   );
