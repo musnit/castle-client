@@ -67,6 +67,7 @@ struct TextComponent : BaseComponent {
            )
          )
             = "Norm Regular";
+    PROP(float, fontSize, .label("Font size")) = 1;
   } props;
 
   struct TouchRectangle {
