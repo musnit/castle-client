@@ -137,16 +137,11 @@ namespace ghost {
 
   Bounds DrawDataFrame::getFillImageBoundsInPathCoordinates() {
     Bounds newBounds;
-    if (fillImageData) {
-      int boundsResult[4] = { -1, -1, -1, -1 };
-      int halfWidth = fillImageData->getWidth() / 2, halfHeight = fillImageData->getHeight() / 2;
-      fillImageData->getBounds(boundsResult);
-      auto fillPixelsPerUnit = parentLayer()->parent()->fillPixelsPerUnit;
-      newBounds.minX = (boundsResult[0] - halfWidth) / fillPixelsPerUnit;
-      newBounds.minY = (boundsResult[1] - halfHeight) / fillPixelsPerUnit;
-      newBounds.maxX = (boundsResult[2] - halfWidth) / fillPixelsPerUnit;
-      newBounds.maxY = (boundsResult[3] - halfHeight) / fillPixelsPerUnit;
-    }
+    auto fillPixelsPerUnit = parentLayer()->parent()->fillPixelsPerUnit;
+    newBounds.minX = fillImageBounds.minX / fillPixelsPerUnit;
+    newBounds.minY = fillImageBounds.minY / fillPixelsPerUnit;
+    newBounds.maxX = fillImageBounds.maxX / fillPixelsPerUnit;
+    newBounds.maxY = fillImageBounds.maxY / fillPixelsPerUnit;
     return newBounds;
   }
 
@@ -287,13 +282,13 @@ namespace ghost {
 
     if (parentLayer()->isBitmap) {
       pixelCount = fillImageData->floodFill(floor((x * fillPixelsPerUnit) - fillImageBounds.minX),
-          floor((y * fillPixelsPerUnit) - fillImageBounds.minY), nullptr, p);
+          floor((y * fillPixelsPerUnit) - fillImageBounds.minY), nullptr, p, true);
     } else {
       updatePathsCanvas();
       auto pathsImageData = canvasToImageData(pathsCanvas);
       resizeFillImageDataToPathBounds();
       pixelCount = fillImageData->floodFill(floor((x * fillPixelsPerUnit) - fillImageBounds.minX),
-          floor((y * fillPixelsPerUnit) - fillImageBounds.minY), pathsImageData, p);
+          floor((y * fillPixelsPerUnit) - fillImageBounds.minY), pathsImageData, p, false);
       pathsImageData->release();
     }
     compressFillCanvas();

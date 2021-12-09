@@ -508,17 +508,17 @@ int ImageData::floodFillTest(int x, int y, ImageData *paths, const Pixel &p)
 	return 0;
 }
 
-int ImageData::floodFill(int x, int y, ImageData *paths, const Pixel &p)
+int ImageData::floodFill(int x, int y, ImageData *paths, const Pixel &p, bool allowUnboundedFill)
 {
 	if (!inside(x, y)) {
 		return 0;
 	}
 	
-	int result = floodFillColorAtPoint(x, y, paths, p);
+	int result = floodFillColorAtPoint(x, y, paths, p, allowUnboundedFill);
 	if (result == -1) {
 		Pixel clearP;
 		clearPixel(clearP);
-		floodFillColorAtPoint(x, y, paths, clearP);
+		floodFillColorAtPoint(x, y, paths, clearP, allowUnboundedFill);
 
 		return 0;
 	}
@@ -563,10 +563,10 @@ int ImageData::floodFillErase(int x, int y, int radius, ImageData *paths)
 	if (!hasInitialPixel) {
 		return 0;
 	}
-	return runFloodFill(pixelQueue, paths, clearP, regionInitialPixel);
+	return runFloodFill(pixelQueue, paths, clearP, regionInitialPixel, true);
 }
 
-int ImageData::floodFillColorAtPoint(int x, int y, ImageData *paths, const Pixel &p)
+int ImageData::floodFillColorAtPoint(int x, int y, ImageData *paths, const Pixel &p, bool allowUnboundedFill)
 {
 	Lock lock(mutex);
 	thread::EmptyLock lock2;
@@ -587,10 +587,10 @@ int ImageData::floodFillColorAtPoint(int x, int y, ImageData *paths, const Pixel
 	startPixel.y = y;
 
 	pixelQueue.push(startPixel);
-	return runFloodFill(pixelQueue, paths, p, regionInitialPixel);
+	return runFloodFill(pixelQueue, paths, p, regionInitialPixel, allowUnboundedFill);
 }
 
-int ImageData::runFloodFill(std::queue<flood_pixel_t> &pixelQueue, ImageData *paths, const Pixel &fillPixel, const Pixel &regionInitialPixel) {
+int ImageData::runFloodFill(std::queue<flood_pixel_t> &pixelQueue, ImageData *paths, const Pixel &fillPixel, const Pixel &regionInitialPixel, bool allowUnboundedFill) {
 	int count = 0;
 	size_t pixelsize = getPixelSize();
 
@@ -618,7 +618,12 @@ int ImageData::runFloodFill(std::queue<flood_pixel_t> &pixelQueue, ImageData *pa
 					newPixel.y = currentPixel.y + dy;
 
 					if (!inside(newPixel.x, newPixel.y)) {
-						skip = true;
+						if (allowUnboundedFill) {
+							skip = true;
+						} else {
+							// image edge reached and unbounded fill is disallowed, abort the entire fill
+							return -1;
+						}
 					}
 
 					if (!skip) {

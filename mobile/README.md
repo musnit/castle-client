@@ -65,6 +65,7 @@ Troubleshooting:
 ### Android Play Store
 
 - Use branch `beta/release`
+- './copy_cpp_files_to_android.sh'
 - Bump versionCode and versionName in `android/app/build.gradle`
 - `cd tools`
 - `./build-android-prod.sh` will generate a .aab file at tools/build/app-release.aab and also install it to the connected android device for testing

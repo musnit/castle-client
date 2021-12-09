@@ -183,7 +183,7 @@ int w_ImageData_floodFill(lua_State *L)
 
 	int result = 0;
 
-	luax_catchexcept(L, [&](){ result = t->floodFill(x, y, (love::image::ImageData *)paths, p); });
+	luax_catchexcept(L, [&](){ result = t->floodFill(x, y, (love::image::ImageData *)paths, p, false); });
 
 	lua_pushinteger(L, result);
 
