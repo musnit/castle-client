@@ -340,6 +340,7 @@ void Editor::draw() {
           lv.graphics.pop();
         }
       };
+      auto &textBehavior = scene->getBehaviors().byType<TextBehavior>();
       const auto drawCollisionShapes = [&](ActorId actorId) {
         if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
           auto info = bodyBehavior.getRenderInfo(actorId);
@@ -349,7 +350,8 @@ void Editor::draw() {
           lv.graphics.translate(x, y);
           lv.graphics.rotate(body->GetAngle());
           if (auto physicsBodyData = drawingBehavior.maybeGetPhysicsBodyData(actorId)) {
-            physicsBodyData->render({ info.widthScale, info.heightScale });
+            auto diagonalLines = !textBehavior.hasComponent(actorId);
+            physicsBodyData->render({ info.widthScale, info.heightScale }, diagonalLines);
           }
 
           lv.graphics.pop();
