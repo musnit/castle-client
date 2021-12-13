@@ -125,6 +125,9 @@ struct Prop {
     if (rawType.find("ActorRef") != std::string::npos) {
       return "actorRef";
     }
+    if (rawType.find("Color") != std::string::npos) {
+      return "color";
+    }
     return rawType;
   }
 

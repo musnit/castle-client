@@ -150,10 +150,13 @@ export const sendGlobalAction = (action, value) =>
 
 export const sendBehaviorAction = (behavior, action, propertyName, propertyType, value) => {
   let stringValue = '',
-    doubleValue = 0;
+    doubleValue = 0,
+    colorValue = { r: 0, g: 0, b: 0, a: 1 };
   if (action === 'set') {
     if (propertyType === 'string') {
       stringValue = value;
+    } else if (propertyType == 'color') {
+      colorValue = value;
     } else if (propertyType == 'b') {
       doubleValue = value ? 1 : 0;
     } else {
@@ -167,5 +170,6 @@ export const sendBehaviorAction = (behavior, action, propertyName, propertyType,
     propertyType,
     stringValue,
     doubleValue,
+    colorValue,
   });
 };

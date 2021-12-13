@@ -319,13 +319,13 @@ void BaseBehavior<Derived, Component>::handleSetProperty(
   Props::forEach(component.props, [&](auto &prop) {
     if (propId == prop.id) {
       using PropValue = std::remove_reference_t<decltype(prop())>;
-      if constexpr (std::is_arithmetic_v<PropValue>) { // Also includes `bool`
-        if (value.is<double>()) {
-          prop() = value.as<double>();
-        }
-      } else if constexpr (std::is_same_v<std::string, PropValue>) {
+      if constexpr (std::is_same_v<std::string, PropValue>) {
         if (value.is<const char *>()) {
           prop() = value.as<const char *>();
+        }
+      } else if constexpr (std::is_convertible_v<PropValue, ExpressionValue>) {
+        if (value.is<PropValue>()) {
+          prop() = value.as<PropValue>();
         }
       }
     }
@@ -339,10 +339,10 @@ ExpressionValue BaseBehavior<Derived, Component>::handleGetProperty(
   Props::forEach(component.props, [&](auto &prop) {
     if (propId == prop.id) {
       using PropValue = std::remove_cv_t<std::remove_reference_t<decltype(prop())>>;
-      if constexpr (std::is_arithmetic_v<PropValue>) {
-        result = ExpressionValue(prop());
-      } else if constexpr (std::is_same_v<std::string, PropValue>) {
+      if constexpr (std::is_same_v<std::string, PropValue>) {
         result = ExpressionValue(prop().c_str());
+      } else if constexpr (std::is_convertible_v<PropValue, ExpressionValue>) {
+        result = ExpressionValue(prop());
       }
     }
   });
