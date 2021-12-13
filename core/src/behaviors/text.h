@@ -74,6 +74,9 @@ struct TextComponent : BaseComponent {
         .label("Alignment")
         .allowedValues("left", "right", "center", "justify")
         ) = "left";
+    PROP(love::Color, color,
+        .label("Color")
+        ) = { 0x24, 0x22, 0x34, 0xff };
   } props;
 
   struct TouchRectangle {

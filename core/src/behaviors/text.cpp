@@ -235,7 +235,7 @@ bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &com
 
       lv.graphics.push(love::Graphics::STACK_ALL);
 
-      lv.graphics.setColor(love::Colorf(1, 1, 1, 1));
+      lv.graphics.setColor(love::toColorf(component.props.color()));
 
       // Move to and rotate around position
       lv.graphics.translate(x, y);
@@ -265,7 +265,7 @@ bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &com
       // Draw
       auto wrap = bounds.maxX() - bounds.minX();
       lv.graphics.setFont(font);
-      lv.graphics.printf({ { formatContent(component.props.content()), { 0, 0, 0, 1 } } }, wrap,
+      lv.graphics.printf({ { formatContent(component.props.content()), { 1, 1, 1, 1 } } }, wrap,
           alignment, love::Matrix4(bounds.minX(), bounds.minY(), 0, 1, 1, 0, 0, 0, 0));
 
       lv.graphics.pop();
