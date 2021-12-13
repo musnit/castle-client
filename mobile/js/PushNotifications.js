@@ -45,6 +45,16 @@ eventEmitter.addListener('CastlePushNotificationClicked', (event) => {
 
 export const setInitialData = (dataString) => {
   gInitialData = _parsePushDataString(dataString);
+
+  if (gInitialData?.pushNotificationId) {
+    let pushNotificationId = gInitialData?.pushNotificationId;
+    // apolloClient isn't initialized when this is called, so we need to wait a bit
+    // or else the api call will fail
+    setTimeout(() => {
+      markPushNotificationClicked(pushNotificationId);
+    }, 2000);
+  }
+
   Amplitude.getInstance().logEvent('OPEN_PUSH_NOTIFICATION', {
     type: gInitialData?.type, // category of notif, e.g. 'play_deck'
   });
