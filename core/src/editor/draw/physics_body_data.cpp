@@ -103,7 +103,7 @@ void PhysicsBodyData::drawShape(
   }
 }
 
-void PhysicsBodyData::render(love::Vector2 scale) {
+void PhysicsBodyData::render(love::Vector2 scale, bool diagonalLines) {
   if (!shader) {
     // build lazily because we never need to render in play mode
     makeShader();
@@ -113,14 +113,15 @@ void PhysicsBodyData::render(love::Vector2 scale) {
   lv.graphics.setLineJoin(love::Graphics::LINE_JOIN_BEVEL);
 
   // render diagonal line shaderfills of all shapes
-  lv.graphics.setShader(shader.get());
-  lv.graphics.translate(tempTranslateX, tempTranslateY);
-
-  for (auto &shape : shapes) {
-    drawShape(shape, scale, love::Graphics::DRAW_FILL);
-  }
-  if (tempShape) {
-    drawShape(*tempShape, scale, love::Graphics::DRAW_FILL);
+  if (diagonalLines) {
+    lv.graphics.setShader(shader.get());
+    lv.graphics.translate(tempTranslateX, tempTranslateY);
+    for (auto &shape : shapes) {
+      drawShape(shape, scale, love::Graphics::DRAW_FILL);
+    }
+    if (tempShape) {
+      drawShape(*tempShape, scale, love::Graphics::DRAW_FILL);
+    }
   }
 
   // render outlines, no shader

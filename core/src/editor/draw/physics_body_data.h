@@ -318,7 +318,7 @@ public:
   std::string renderPreviewPng();
   void updatePreview();
   void makeShader();
-  void render(love::Vector2 scale = { 1, 1 });
+  void render(love::Vector2 scale = { 1, 1 }, bool diagonalLines = true);
 
   bool commitTempShape() {
     if (tempShape) {
