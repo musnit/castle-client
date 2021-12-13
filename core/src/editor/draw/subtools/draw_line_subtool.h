@@ -31,8 +31,8 @@ public:
     }
 
     love::PathData pathData;
-    pathData.points.push_back(love::ghost::Point(initialCoord.x, initialCoord.y));
-    pathData.points.push_back(love::ghost::Point(touch.roundedX, touch.roundedY));
+    pathData.points.push_back(love::Point(initialCoord.x, initialCoord.y));
+    pathData.points.push_back(love::Point(touch.roundedX, touch.roundedY));
     pathData.style = 1;
     pathData.isTransparent = false;
 

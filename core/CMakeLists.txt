@@ -606,19 +606,6 @@ else()
     ${LOVE_SRC}/libraries/ddsparse/ddsparse.cpp
     ${LOVE_SRC}/libraries/ddsparse/ddsparse.h
 
-    # ghost
-    ${LOVE_SRC}/modules/ghost/DrawAlgorithms.cpp
-    ${LOVE_SRC}/modules/ghost/DrawAlgorithms.hpp
-    ${LOVE_SRC}/modules/ghost/DrawData.cpp
-    ${LOVE_SRC}/modules/ghost/DrawData.hpp
-    ${LOVE_SRC}/modules/ghost/DrawDataFrame.cpp
-    ${LOVE_SRC}/modules/ghost/DrawDataFrame.hpp
-    ${LOVE_SRC}/modules/ghost/Ghost.cpp
-    ${LOVE_SRC}/modules/ghost/Ghost.hpp
-    ${LOVE_SRC}/modules/ghost/GhostTypes.hpp
-    ${LOVE_SRC}/modules/ghost/wrap_Ghost.cpp
-    ${LOVE_SRC}/modules/ghost/wrap_Ghost.hpp
-
     # tove
     ${TOVE_SRC}/src/cpp/version.cpp
     ${TOVE_SRC}/src/cpp/interface/api.cpp

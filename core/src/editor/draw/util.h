@@ -1,5 +1,7 @@
 #pragma once
 #include "lv.h"
+#include "love/GhostTypes.hpp"
+#include "love/DrawData.hpp"
 
 namespace DrawUtil {
 

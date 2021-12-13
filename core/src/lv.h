@@ -2,10 +2,6 @@
 
 #include "precomp.h"
 
-#include <modules/ghost/DrawData.hpp>
-#include <modules/ghost/DrawAlgorithms.hpp>
-
-
 namespace love {
 // Bring a bunch of Love symbols into the top level of its namespace
 using namespace love::data;
@@ -20,7 +16,6 @@ using namespace love::system;
 using namespace love::image;
 using namespace love::font;
 using namespace love::graphics;
-using namespace love::ghost;
 using namespace love::window;
 using Image = love::graphics::Image;
 using Font = love::graphics::Font;

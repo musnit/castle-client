@@ -2,6 +2,7 @@
 
 #include "precomp.h"
 #include "lv.h"
+#include "love/GhostTypes.hpp"
 
 class DrawSubpathIntersections {
 public:

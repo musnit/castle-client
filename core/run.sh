@@ -32,17 +32,12 @@ case "$1" in
   # Format
   format)
     $CLANG_FORMAT --verbose -i -style=file $(find src/ -type f)
-    $CLANG_FORMAT --verbose -i -style=file $(find ../love/src/modules/ghost/ -type f)
     ;;
 
   # Format changed
   format-changed)
     if [[ $(git diff --cached --name-only --diff-filter=ACM --relative src) ]]; then
       $CLANG_FORMAT -i -style=file $(git diff --cached --name-only --diff-filter=ACM --relative src)
-    fi
-
-    if [[ $(git diff --cached --name-only --diff-filter=ACM --relative ../love/src/modules/ghost/) ]]; then
-      $CLANG_FORMAT -i -style=file $(git diff --cached --name-only --diff-filter=ACM --relative ../love/src/modules/ghost/)
     fi
     ;;
 

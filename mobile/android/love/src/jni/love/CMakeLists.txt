@@ -497,26 +497,6 @@ source_group("modules\\font" FILES ${LOVE_SRC_MODULE_FONT_ROOT})
 source_group("modules\\font\\freetype" FILES ${LOVE_SRC_MODULE_FONT_FREETYPE})
 
 #
-# love.ghost
-#
-
-set(LOVE_SRC_MODULE_GHOST
-	src/modules/ghost/DrawAlgorithms.cpp
-	src/modules/ghost/DrawAlgorithms.hpp
-	src/modules/ghost/DrawData.cpp
-	src/modules/ghost/DrawData.hpp
-	src/modules/ghost/DrawDataFrame.cpp
-	src/modules/ghost/DrawDataFrame.hpp
-	src/modules/ghost/Ghost.cpp
-	src/modules/ghost/Ghost.hpp
-	src/modules/ghost/GhostTypes.hpp
-	src/modules/ghost/wrap_Ghost.cpp
-	src/modules/ghost/wrap_Ghost.hpp
-)
-
-source_group("modules\\ghost" FILES ${LOVE_SRC_MODULE_GHOST})
-
-#
 # love.graphics
 #
 

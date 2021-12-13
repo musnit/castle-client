@@ -38,7 +38,7 @@ public:
       clampedDiff.x = 0;
       clampedDiff.y = 0;
 
-      love::ghost::Bounds frameBounds;
+      love::Bounds frameBounds;
       if (isBitmap) {
         frameBounds = drawTool.getDrawDataFrame().getFillImageBoundsInPathCoordinates();
       } else {

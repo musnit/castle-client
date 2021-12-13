@@ -68,11 +68,11 @@ public:
 
       love::image::Pixel zero;
       memset(&zero, 0, frame.fillImageData->getPixelSize());
-      love::ghost::Point eraseCenter(eraseX, eraseY);
+      love::Point eraseCenter(eraseX, eraseY);
       for (auto y = eraseCenter.y - eraseRadius; y < eraseCenter.y + eraseRadius; y++) {
         for (auto x = eraseCenter.x - eraseRadius; x < eraseCenter.x + eraseRadius; x++) {
           if (frame.fillImageData->inside(x, y)) {
-            love::ghost::Point point(x, y);
+            love::Point point(x, y);
             if (eraseCenter.distance(point) <= eraseRadius) {
               pixelCount++;
               frame.fillImageData->setPixel(x, y, zero);

@@ -1,4 +1,5 @@
 #include "screenshot.h"
+#include "love/DrawDataFrame.hpp"
 
 Screenshot::Screenshot(int width) {
   assert(width > 0 && "Can't create a Screenshot with zero width.");

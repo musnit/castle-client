@@ -1,6 +1,7 @@
 #pragma once
 
 #include "precomp.h"
+#include "love/DrawAlgorithms.hpp"
 #include "draw_subtool_interface.h"
 #include "editor/draw/util.h"
 
