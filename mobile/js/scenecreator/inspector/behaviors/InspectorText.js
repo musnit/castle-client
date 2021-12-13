@@ -6,6 +6,7 @@ import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import { InspectorDropdown } from '../components/InspectorDropdown';
 import { InspectorNumberInput } from '../components/InspectorNumberInput';
 import { useCoreState, sendBehaviorAction } from '../../../core/CoreEvents';
+import ColorPicker from '../components/ColorPicker';
 
 const styles = StyleSheet.create({
   container: {
@@ -66,8 +67,6 @@ export default InspectorText = () => {
     [setFontNameValueAndSendAction]
   );
 
-  console.log('textComponent', textComponent);
-
   const [fontSizeValue, setFontSizeValueAndSendAction] = useOptimisticBehaviorValue({
     component: textComponent,
     propName: 'fontSize',
@@ -92,6 +91,19 @@ export default InspectorText = () => {
       setAlignmentValueAndSendAction('set', alignment);
     },
     [setAlignmentValueAndSendAction]
+  );
+
+  const [colorValue, setColorValueAndSendAction] = useOptimisticBehaviorValue({
+    component: textComponent,
+    propName: 'color',
+    propType: 'color',
+    sendAction,
+  });
+  const onChangeColorValue = React.useCallback(
+    (color) => {
+      setColorValueAndSendAction('set', color);
+    },
+    [setColorValueAndSendAction]
   );
 
   return (
@@ -166,6 +178,10 @@ export default InspectorText = () => {
         allowedValues={['left', 'right', 'center', 'justify']}
         style={{ marginBottom: 12 }}
       />
+      <Text style={styles.label}>Color</Text>
+      <View style={{ marginBottom: 12 }}>
+        <ColorPicker value={colorValue} setValue={onChangeColorValue} />
+      </View>
     </View>
   );
 };

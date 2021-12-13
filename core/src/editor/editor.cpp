@@ -1061,6 +1061,7 @@ struct EditorModifyComponentReceiver {
     PROP(std::string, propertyType);
     PROP(double, doubleValue);
     PROP(std::string, stringValue);
+    PROP(love::Color, colorValue);
   } params;
 
   void receive(Engine &engine) {
@@ -1184,6 +1185,33 @@ struct EditorModifyComponentReceiver {
                     updateBase64Png](Editor &editor, bool) {
                   auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
                   behavior.setProperty(actorId, propId, oldValue.c_str(), false);
+                  if (updateBlueprint) {
+                    Editor::UpdateBlueprintParams params;
+                    params.updateBase64Png = updateBase64Png;
+                    editor.updateBlueprint(actorId, params);
+                  }
+                  editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
+                });
+          } else if (propType == "color") {
+            auto oldValue = behavior.getProperty(actorId, propId).template as<love::Color>();
+            auto newValue = params.colorValue();
+            editor->getCommands().execute(
+                description, commandParams,
+                [actorId, propId, newValue, updateBlueprint, updateBase64Png](
+                    Editor &editor, bool) {
+                  auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
+                  behavior.setProperty(actorId, propId, newValue, false);
+                  if (updateBlueprint) {
+                    Editor::UpdateBlueprintParams params;
+                    params.updateBase64Png = updateBase64Png;
+                    editor.updateBlueprint(actorId, params);
+                  }
+                  editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
+                },
+                [actorId, propId, oldValue, updateBlueprint, updateBase64Png](
+                    Editor &editor, bool) {
+                  auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
+                  behavior.setProperty(actorId, propId, oldValue, false);
                   if (updateBlueprint) {
                     Editor::UpdateBlueprintParams params;
                     params.updateBase64Png = updateBase64Png;

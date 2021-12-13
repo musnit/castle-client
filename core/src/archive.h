@@ -145,6 +145,7 @@ public:
   void read(bool &b);
   void read(std::string &s);
   void read(PropId &propId);
+  void read(love::Color &c);
   void read(love::Colorf &c);
   template<typename T, size_t N>
   void read(std::array<T, N> &a);
@@ -309,6 +310,7 @@ private:
   json::Value write_(const bool &b);
   json::Value write_(const std::string &s);
   json::Value write_(const PropId &propId);
+  json::Value write_(const love::Color &c);
   json::Value write_(const love::Colorf &c);
   template<typename T>
   json::Value write_(T *const p);
@@ -642,6 +644,12 @@ inline void Reader::read(PropId &i) {
   }
 }
 
+inline void Reader::read(love::Color &c) {
+  love::Colorf cf;
+  read(cf);
+  c = love::toColor(cf);
+}
+
 inline void Reader::read(love::Colorf &c) {
   switch (cur->GetType()) {
   case json::kArrayType:
@@ -966,6 +974,18 @@ inline json::Value Writer::write_(const PropId &propId) {
   } else {
     return makeStr("");
   }
+}
+
+inline json::Value Writer::write_(const love::Color &c) {
+  auto cf = love::toColorf(c);
+  // Tried to just call `write_(cf)` but that wasn't compiling (calling the props version)...
+  auto result = json::Value(json::kObjectType);
+  result.MemberReserve(4, alloc);
+  result.AddMember("r", json::Value(cf.r), alloc);
+  result.AddMember("g", json::Value(cf.g), alloc);
+  result.AddMember("b", json::Value(cf.b), alloc);
+  result.AddMember("a", json::Value(cf.a), alloc);
+  return result;
 }
 
 inline json::Value Writer::write_(const love::Colorf &c) {

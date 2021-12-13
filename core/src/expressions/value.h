@@ -12,12 +12,15 @@ class ExpressionValue {
   //   `bool`: also stored as `double`, interpreting `0` as `false` and everything else as `true`
   //   `const char *`: stored as `const char *` -- which means the string is not owned and must
   //                  outlive the value (!!)
+  //   `love::Color`: stored as `love::Color` -- this is different from `love::Colorf` (!!), is just
+  //                  4 bytes
 
 public:
   ExpressionValue() = default;
   ExpressionValue(int value_); // Disambiguate `const char *`. NOLINT(google-explicit-constructor)
   ExpressionValue(double value_); // NOLINT(google-explicit-constructor)
   ExpressionValue(const char *value_); // NOLINT(google-explicit-constructor)
+  ExpressionValue(love::Color value_); // NOLINT(google-explicit-constructor)
 
 
   template<typename T>
@@ -32,7 +35,7 @@ public:
 private:
   friend struct ExpressionComparison;
 
-  std::variant<double, const char *> value = 0.0;
+  std::variant<double, const char *, love::Color> value = 0.0;
 };
 
 
@@ -70,6 +73,10 @@ inline ExpressionValue::ExpressionValue(double value_)
 }
 
 inline ExpressionValue::ExpressionValue(const char *value_)
+    : value(value_) {
+}
+
+inline ExpressionValue::ExpressionValue(love::Color value_)
     : value(value_) {
 }
 
