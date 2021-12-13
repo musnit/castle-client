@@ -2,19 +2,11 @@
 #include "api.h"
 #include "js.h"
 
-JS_DEFINE(bool, JS_isAudioReady, (), { return !!window.isAudioReady });
-
 Sound::Sound() {
   initialize();
 }
 
 void Sound::initialize() {
-#ifdef __EMSCRIPTEN__
-  if (!JS_isAudioReady()) {
-    return;
-  }
-#endif
-
   if (!Sound::hasInitializedSoloud) {
     Sound::hasInitializedSoloud = true;
     Sound::soloud.init();
@@ -48,12 +40,6 @@ void Sound::preload(const std::string &type, const std::string &recordingUrl,
 void Sound::play(const std::string &type, float playbackRate, const std::string &recordingUrl,
     const std::string &uploadUrl, const std::string &category, int seed, int mutationSeed,
     int mutationAmount) {
-#ifdef __EMSCRIPTEN__
-  if (!JS_isAudioReady()) {
-    return;
-  }
-#endif
-
   initialize();
 
   if (playbackRate <= 0.0) {

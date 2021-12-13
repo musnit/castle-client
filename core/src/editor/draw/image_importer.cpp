@@ -69,6 +69,8 @@ void ImageImporter::reset() {
 }
 
 void ImageImporter::importImage(std::string uri) {
+// web has the -fno-exceptions flag so the try/catch here doesn't compile
+#ifndef __EMSCRIPTEN__
   // if uri begins with `file://` then physfs will reject it
   if (uri.rfind("file://", 0) == 0) {
     uri = uri.substr(7);
@@ -99,6 +101,7 @@ void ImageImporter::importImage(std::string uri) {
     status = Status::Importing;
     sendEvent();
   }
+#endif
 }
 
 void ImageImporter::regeneratePreview() {
