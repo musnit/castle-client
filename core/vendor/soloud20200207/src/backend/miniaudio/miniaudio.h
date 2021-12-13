@@ -25731,7 +25731,6 @@ ma_result ma_device_start__webaudio(ma_device* pDevice)
 
     if (pDevice->type == ma_device_type_playback || pDevice->type == ma_device_type_duplex) {
         EM_ASM({
-            console.log('blahhh' + miniaudio.get_device_by_index($0).webaudio.state);
             if (miniaudio.get_device_by_index($0).webaudio.state === 'suspended') {
               var resume = function() {
                   miniaudio.get_device_by_index($0).webaudio.resume();
