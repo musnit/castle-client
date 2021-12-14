@@ -191,7 +191,7 @@ void TextBehavior::handlePrePerform() {
 //
 
 love::Font *TextBehavior::getFont(TextFontResource *fontResource, float pixelSize) const {
-  pixelSize /= 8; // Kind of an arbitrary constant to keep texture sizes sane...
+  pixelSize /= 4; // Kind of an arbitrary constant to keep texture sizes sane...
   for (auto &entry : fontResource->entries) {
     if (float(entry.pixelSize) > pixelSize) {
       return entry.font.get();
