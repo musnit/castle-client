@@ -66,7 +66,7 @@ struct TextComponent : BaseComponent {
             "Zarathustra-Regular"
            )
          )
-            = "Norm Regular";
+            = "Norm-Regular";
     PROP(float, fontSize,
         .label("Font size")
         ) = 1;

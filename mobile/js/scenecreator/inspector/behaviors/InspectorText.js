@@ -28,6 +28,8 @@ export default InspectorText = () => {
     [sendBehaviorAction]
   );
 
+  console.log('textComponent', textComponent);
+
   const [contentValue, setContentValueAndSendAction] = useOptimisticBehaviorValue({
     component: textComponent,
     propName: 'content',
@@ -93,12 +95,15 @@ export default InspectorText = () => {
     [setAlignmentValueAndSendAction]
   );
 
-  const [colorValue, setColorValueAndSendAction] = useOptimisticBehaviorValue({
+  let [colorValue, setColorValueAndSendAction] = useOptimisticBehaviorValue({
     component: textComponent,
     propName: 'color',
     propType: 'color',
     sendAction,
   });
+  if (!colorValue) {
+    colorValue = { r: 0x24 / 255.0, g: 0x22 / 255.0, b: 0x34 / 255.0, a: 1 };
+  }
   const onChangeColorValue = React.useCallback(
     (color) => {
       setColorValueAndSendAction('set', color);
@@ -163,9 +168,9 @@ export default InspectorText = () => {
       />
       <Text style={styles.label}>Font size</Text>
       <InspectorNumberInput
-        min={0.2}
+        min={0.5}
         max={3}
-        step={0.2}
+        step={0.25}
         value={fontSizeValue}
         onChange={onChangeFontSizeValue}
         style={{ marginBottom: 12 }}

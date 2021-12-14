@@ -127,8 +127,8 @@
             ],
             "massData": [0, 0, 0, 0],
             "layerName": "main",
-            "widthScale": 0.1,
-            "heightScale": 0.1,
+            "widthScale": 0.3,
+            "heightScale": 0.3,
             "editorBounds": {
               "minX": -5,
               "maxX": 5,
@@ -137,7 +137,12 @@
             }
           },
           "Text": {
-            "content": "Your text goes here"
+            "content": "Your text goes here",
+            "visible": true,
+            "fontName": "Norm-Regular",
+            "fontSize": 1,
+            "alignment": "left",
+            "color": { "r": 0.1411764770746231, "g": 0.13333334028720856, "b": 0.20392157137393951, "a": 1 }
           },
           "Tags": {
             "disabled": false,
