@@ -80,7 +80,8 @@ Engine::PreInit::PreInit() {
 // Constructor, destructor
 //
 
-Engine::Engine() {
+Engine::Engine(int feedVersion_) {
+  feedVersion = feedVersion_;
   // First timer step
   lv.timer.step();
 
@@ -148,7 +149,7 @@ void Engine::setInitialParams(const char *initialParamsJson) {
   } else if (deckId) {
     loadSceneFromDeckId(deckId, deckVariables, initialCardId, initialCardSceneDataUrl);
   } else if (useNativeFeed) {
-    feed = std::make_unique<Feed>(bridge);
+    feed = std::make_unique<Feed>(feedVersion, bridge);
     feed->fetchInitialDecks();
   }
   if (isEditing) {
