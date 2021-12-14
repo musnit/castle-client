@@ -28,8 +28,6 @@ export default InspectorText = () => {
     [sendBehaviorAction]
   );
 
-  console.log('textComponent', textComponent);
-
   const [contentValue, setContentValueAndSendAction] = useOptimisticBehaviorValue({
     component: textComponent,
     propName: 'content',
@@ -69,12 +67,15 @@ export default InspectorText = () => {
     [setFontNameValueAndSendAction]
   );
 
-  const [fontSizeValue, setFontSizeValueAndSendAction] = useOptimisticBehaviorValue({
+  let [fontSizeValue, setFontSizeValueAndSendAction] = useOptimisticBehaviorValue({
     component: textComponent,
     propName: 'fontSize',
     propType: 'n',
     sendAction,
   });
+  if (!fontSizeValue) {
+    fontSizeValue = 1;
+  }
   const onChangeFontSizeValue = React.useCallback(
     (fontSize) => {
       setFontSizeValueAndSendAction('set', fontSize);
