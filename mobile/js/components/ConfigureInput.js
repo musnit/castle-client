@@ -12,6 +12,7 @@ const styles = StyleSheet.create({
     color: Constants.colors.grayText,
   },
   input: {
+    color: Constants.colors.black,
     borderRadius: 3,
     borderWidth: 1,
     borderColor: Constants.colors.grayOnWhiteBorder,

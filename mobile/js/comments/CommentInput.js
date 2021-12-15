@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { AutocompleteTextInput } from '../components/AutocompleteTextInput';
+import * as Constants from '../Constants';
 
 import { CastleIcon } from '../Constants';
 
@@ -22,6 +23,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     paddingHorizontal: 12,
     backgroundColor: '#f1f1f1',
+    color: Constants.colors.black,
     borderRadius: 4,
     fontSize: 15,
   },
@@ -112,6 +114,7 @@ export const CommentInput = ({ onAddComment, replyingToComment, clearReplyingToC
           updateCache={updateCache}
           style={styles.textInput}
           placeholder="Add a comment..."
+          placeholderTextColor={Constants.colors.grayText}
           value={value}
           onChangeText={setValue}
           multiline
