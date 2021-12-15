@@ -22,19 +22,29 @@ void Clock::update(double dt) {
   }
 }
 
-double Clock::getDuration(unsigned int bars, unsigned int beats, double seconds) {
+double Clock::getDuration(double bars, double beats, double seconds) {
   return (((bars * beatsPerBar) + beats) * timePerBeat) + seconds;
 }
 
-double Clock::getTimeUntilNext(Quantize quant, unsigned int count) {
+double Clock::getTimeUntilNext(Quantize quant, double count) {
+  if (!count > 0) {
+    return 0;
+  }
   switch (quant) {
   case Quantize::Bar: {
     auto absolute = getDuration(count, 0, 0);
     auto indexInBar = totalBeatsElapsed % beatsPerBar;
-    return absolute - (indexInBar * timePerBeat) - timeSinceBeat;
+    auto delta = (indexInBar * timePerBeat) + timeSinceBeat;
+    if (delta == 0) {
+      return 0;
+    }
+    return absolute - delta;
   }
   case Quantize::Beat: {
     auto absolute = getDuration(0, count, 0);
+    if (timeSinceBeat == 0) {
+      return 0;
+    }
     return absolute - timeSinceBeat;
   }
   }

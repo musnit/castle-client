@@ -689,15 +689,15 @@ struct WaitResponse : BaseResponse {
         // convert clock units to an absolute duration after current time
         if (params.intervalType() == "beat") {
           if (params.quantize()) {
-            duration = scene.getClock().getTimeUntilNext(Clock::Quantize::Beat, int(duration));
+            duration = scene.getClock().getTimeUntilNext(Clock::Quantize::Beat, duration);
           } else {
-            duration = scene.getClock().getDuration(0, int(duration), 0);
+            duration = scene.getClock().getDuration(0, duration, 0);
           }
         } else if (params.intervalType() == "bar") {
           if (params.quantize()) {
-            duration = scene.getClock().getTimeUntilNext(Clock::Quantize::Bar, int(duration));
+            duration = scene.getClock().getTimeUntilNext(Clock::Quantize::Bar, duration);
           } else {
-            duration = scene.getClock().getDuration(int(duration), 0, 0);
+            duration = scene.getClock().getDuration(duration, 0, 0);
           }
         }
       }

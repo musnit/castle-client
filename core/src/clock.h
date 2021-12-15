@@ -21,8 +21,8 @@ public:
   void reset(unsigned int tempo, unsigned int beatsPerBar);
   void update(double dt);
 
-  double getDuration(unsigned int bars, unsigned int beats, double seconds);
-  double getTimeUntilNext(Quantize quant, unsigned int count);
+  double getDuration(double bars, double beats, double seconds);
+  double getTimeUntilNext(Quantize quant, double count);
 
 private:
   double performTime = 0;
