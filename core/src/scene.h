@@ -6,6 +6,7 @@
 #include "props.h"
 #include "gesture.h"
 #include "variables.h"
+#include "clock.h"
 #include "sound.h"
 #include "bridge.h"
 
@@ -187,12 +188,17 @@ public:
   Sound &getSound();
   const Sound &getSound() const;
 
+  // Clock
+  Clock &getClock();
+  const Clock &getClock() const;
+
 
   // Scene-level props
 
   struct Props {
     PROP(love::Colorf, backgroundColor) = { 186 / 255.0, 190 / 255.0, 246 / 255.0, 1 };
     PROP(int, coordinateSystemVersion) = 2;
+    PROP(int, clockTempo) = 120;
   } props;
 
   bool isBackgroundDark() const;
@@ -235,6 +241,7 @@ private:
   Bridge &bridge;
   bool isEditing;
   Sound sound;
+  Clock clock;
 
   entt::registry registry;
 
@@ -515,6 +522,14 @@ inline Sound &Scene::getSound() {
 
 inline const Sound &Scene::getSound() const {
   return sound;
+}
+
+inline Clock &Scene::getClock() {
+  return clock;
+}
+
+inline const Clock &Scene::getClock() const {
+  return clock;
 }
 
 inline bool Scene::isBackgroundDark() const {

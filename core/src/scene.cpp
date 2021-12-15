@@ -83,6 +83,9 @@ void Scene::read(Reader &reader) {
   reader.obj("sceneProperties", [&]() {
     reader.read(props);
   });
+
+  // Reset clock
+  clock.reset(props.clockTempo(), 4);
 }
 
 void Scene::write(Writer &writer) const {
@@ -336,6 +339,7 @@ void Scene::update(double dt) {
   // Update time
   dt = std::min(dt, 0.1); // Clamp `dt` to avoid huge steps
   performTime += dt; // For now we're always performing
+  clock.update(dt);
 
   // Update gesture first so behaviors can read it
   updateGesture();

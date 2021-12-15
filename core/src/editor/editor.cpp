@@ -1955,6 +1955,20 @@ struct EditorChangeSceneSettingsReceiver {
               editor.getScene().props.backgroundColor().set(
                   oldColorValue.r, oldColorValue.g, oldColorValue.b, oldColorValue.a);
             });
+      } else if (action == "setClockTempo") {
+        auto bpmValue = int(params.doubleValue());
+        auto oldBpmValue = editor->getScene().props.clockTempo();
+        Commands::Params commandParams;
+        commandParams.coalesce = true;
+        commandParams.coalesceLastOnly = false;
+        editor->getCommands().execute(
+            "set clock tempo", commandParams,
+            [bpmValue](Editor &editor, bool) {
+              editor.getScene().props.clockTempo() = bpmValue;
+            },
+            [oldBpmValue](Editor &editor, bool) {
+              editor.getScene().props.clockTempo() = oldBpmValue;
+            });
       }
     } else if (type == "grab") {
       engine.maybeGetEditor()->getGrabTool().changeSettings(action, params.doubleValue());
