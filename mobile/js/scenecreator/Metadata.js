@@ -7,7 +7,7 @@
  *  See also: `getUIProps(entryPath)`
  */
 const data = {
-  triggerCategoryOrder: ['general', 'controls', 'state', 'motion', 'camera', 'draw'],
+  triggerCategoryOrder: ['general', 'controls', 'state', 'motion', 'camera', 'clock', 'draw'],
   responseCategoryOrder: [
     'general',
     'behavior',
@@ -194,6 +194,12 @@ const data = {
     },
     ['exit camera viewport']: {
       category: 'camera',
+    },
+    ['clock reaches beat']: {
+      category: 'clock',
+    },
+    ['clock reaches bar']: {
+      category: 'clock',
     },
     ['animation loop']: {
       category: 'draw',

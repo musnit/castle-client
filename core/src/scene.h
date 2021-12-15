@@ -241,7 +241,7 @@ private:
   Bridge &bridge;
   bool isEditing;
   Sound sound;
-  Clock clock;
+  Clock clock { *this };
 
   entt::registry registry;
 

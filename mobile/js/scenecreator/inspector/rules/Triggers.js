@@ -374,6 +374,22 @@ const AnimationFrameChanges = () => {
   ]);
 };
 
+const ClockReachesBeat = () =>
+  withWhen([
+    {
+      type: 'selectEntry',
+      label: 'the clock reaches a beat',
+    },
+  ]);
+
+const ClockReachesBar = () =>
+  withWhen([
+    {
+      type: 'selectEntry',
+      label: 'the clock reaches a bar',
+    },
+  ]);
+
 const makeCells = (props) => {
   let cells;
   const { trigger } = props;
@@ -410,6 +426,8 @@ export const Triggers = {
   ['stops moving']: StopsMoving,
   ['enter camera viewport']: EnterCameraViewPort,
   ['exit camera viewport']: ExitCameraViewPort,
+  ['clock reaches beat']: ClockReachesBeat,
+  ['clock reaches bar']: ClockReachesBar,
   ['animation loop']: AnimationLoop,
   ['animation end']: AnimationEnd,
   ['animation reaches frame']: AnimationReachesFrame,

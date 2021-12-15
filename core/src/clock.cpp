@@ -1,4 +1,6 @@
 #include "clock.h"
+#include "scene.h"
+#include "behaviors/all.h"
 
 void Clock::reset(unsigned int tempo_, unsigned int beatsPerBar_) {
   tempo = tempo_;
@@ -11,6 +13,7 @@ void Clock::reset() {
   timePerBeat = (1.0 / double(tempo)) * 60.0; // bpm -> seconds per beat
   timeSinceBeat = 0;
   totalBeatsElapsed = 0;
+  fireBeatTriggers();
 }
 
 void Clock::update(double dt) {
@@ -18,7 +21,8 @@ void Clock::update(double dt) {
   timeSinceBeat += dt;
   if (timeSinceBeat >= timePerBeat) {
     totalBeatsElapsed++;
-    timeSinceBeat = 0;
+    timeSinceBeat -= timePerBeat;
+    fireBeatTriggers();
   }
 }
 
@@ -27,7 +31,7 @@ double Clock::getDuration(double bars, double beats, double seconds) {
 }
 
 double Clock::getTimeUntilNext(Quantize quant, double count) {
-  if (!count > 0) {
+  if (count <= 0) {
     return 0;
   }
   switch (quant) {
@@ -48,4 +52,11 @@ double Clock::getTimeUntilNext(Quantize quant, double count) {
     return absolute - timeSinceBeat;
   }
   }
+}
+
+void Clock::fireBeatTriggers() {
+  bool isBarReached = totalBeatsElapsed % beatsPerBar == 0;
+
+  auto &rulesBehavior = scene.getBehaviors().byType<RulesBehavior>();
+  rulesBehavior.fireBeatTriggers(isBarReached);
 }

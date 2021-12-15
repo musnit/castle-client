@@ -2,6 +2,8 @@
 
 #include "precomp.h"
 
+class Scene;
+
 class Clock {
   // Maintains a quantized version of time according to bars, beats, and subbeats
   // according to a tempo (in beats per minute), and converts between absolute scene time
@@ -13,7 +15,7 @@ public:
     Beat,
   };
 
-  Clock() = default;
+  explicit Clock(Scene &scene_);
   Clock(const Clock &) = delete; // Prevent accidental copies
   const Clock &operator=(const Clock &) = delete;
 
@@ -25,6 +27,7 @@ public:
   double getTimeUntilNext(Quantize quant, double count);
 
 private:
+  Scene &scene;
   double performTime = 0;
 
   unsigned int tempo;
@@ -33,4 +36,10 @@ private:
   double timePerBeat;
   double timeSinceBeat;
   int totalBeatsElapsed;
+
+  void fireBeatTriggers();
 };
+
+inline Clock::Clock(Scene &scene_)
+    : scene(scene_) {
+}

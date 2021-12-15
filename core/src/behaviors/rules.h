@@ -206,6 +206,7 @@ public:
   bool hasTrigger(ActorId actorId) const;
 
   void fireVariablesTriggers(Variable variable, const ExpressionValue &value);
+  void fireBeatTriggers(bool isBarReached);
 
 
   // Response scheduling

@@ -683,6 +683,45 @@ struct ActOnOtherResponse : BaseResponse {
 
 
 //
+// Clock triggers
+//
+
+struct ClockReachesBeatTrigger : BaseTrigger {
+  inline static const RuleRegistration<ClockReachesBeatTrigger, RulesBehavior> registration {
+    "clock reaches beat"
+  };
+  static constexpr auto description = "When the clock reaches a beat";
+
+  struct Params {
+  } params;
+};
+
+struct ClockReachesBarTrigger : BaseTrigger {
+  inline static const RuleRegistration<ClockReachesBarTrigger, RulesBehavior> registration {
+    "clock reaches bar"
+  };
+  static constexpr auto description = "When the clock reaches a bar";
+
+  struct Params {
+  } params;
+};
+
+void RulesBehavior::fireBeatTriggers(bool isBarReached) {
+  fireAllIf<ClockReachesBeatTrigger>(
+      {}, [&](ActorId actorId, const ClockReachesBeatTrigger &trigger) {
+        return true;
+      });
+
+  if (isBarReached) {
+    fireAllIf<ClockReachesBarTrigger>(
+        {}, [&](ActorId actorId, const ClockReachesBarTrigger &trigger) {
+          return true;
+        });
+  }
+}
+
+
+//
 // Timing responses
 //
 
