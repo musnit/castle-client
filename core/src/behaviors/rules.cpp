@@ -495,6 +495,30 @@ struct RepeatResponse : BaseResponse {
   }
 };
 
+double evalInterval(double interval, std::string &intervalType, Clock &clock, bool quantize) {
+  static constexpr double minInterval = 1 / 60.0;
+  static constexpr double maxInterval = 30;
+  if (intervalType == "second") {
+    interval = std::clamp(interval, minInterval, maxInterval);
+  } else {
+    // convert clock units to an absolute interval after current time
+    if (intervalType == "beat") {
+      if (quantize) {
+        interval = clock.getTimeUntilNext(Clock::Quantize::Beat, interval);
+      } else {
+        interval = clock.getDuration(0, interval, 0);
+      }
+    } else if (intervalType == "bar") {
+      if (quantize) {
+        interval = clock.getTimeUntilNext(Clock::Quantize::Bar, interval);
+      } else {
+        interval = clock.getDuration(interval, 0, 0);
+      }
+    }
+  }
+  return interval;
+}
+
 struct InfiniteRepeatResponse : BaseResponse {
   inline static const RuleRegistration<InfiniteRepeatResponse, RulesBehavior> registration {
     "infinite repeat"
@@ -503,8 +527,13 @@ struct InfiniteRepeatResponse : BaseResponse {
 
   struct Params {
     PROP(
+         std::string, intervalType,
+         .label("interval type")
+         .allowedValues("second", "beat", "bar")
+         ) = "second";
+    PROP(
          double, interval,
-         .label("interval (seconds)")
+         .label("interval")
          .min(1 / 60.0)
          .max(30)
          ) = 1;
@@ -533,7 +562,8 @@ struct InfiniteRepeatResponse : BaseResponse {
         // Schedule for next frame if interval is close enough to 60Hz.
         auto &scene = ctx.getScene();
         auto &rulesBehavior = scene.getBehaviors().byType<RulesBehavior>();
-        auto interval = params.interval();
+        auto interval
+            = evalInterval(params.interval(), params.intervalType(), scene.getClock(), false);
         auto performTime = interval < 0.02 ? 0 : scene.getPerformTime() + interval;
         ctx.repeatStack.back().count = 2;
         ctx.setNext(this);
@@ -660,9 +690,6 @@ struct WaitResponse : BaseResponse {
   inline static const RuleRegistration<WaitResponse, RulesBehavior> registration { "wait" };
   static constexpr auto description = "Wait before a response";
 
-  static constexpr double minDuration = 1 / 60.0;
-  static constexpr double maxDuration = 30;
-
   struct Params {
     PROP(
          std::string, intervalType,
@@ -672,8 +699,8 @@ struct WaitResponse : BaseResponse {
     PROP(
          ExpressionRef, duration,
          .label("duration")
-         .min(minDuration)
-         .max(maxDuration)
+         .min(1 / 60.0)
+         .max(30)
          ) = 1;
     PROP(bool, quantize, .label("quantize")) = true;
   } params;
@@ -683,24 +710,7 @@ struct WaitResponse : BaseResponse {
       auto &scene = ctx.getScene();
       auto &rulesBehavior = scene.getBehaviors().byType<RulesBehavior>();
       auto duration = params.duration().eval<double>(ctx);
-      if (params.intervalType() == "second") {
-        duration = std::clamp(duration, minDuration, maxDuration);
-      } else {
-        // convert clock units to an absolute duration after current time
-        if (params.intervalType() == "beat") {
-          if (params.quantize()) {
-            duration = scene.getClock().getTimeUntilNext(Clock::Quantize::Beat, duration);
-          } else {
-            duration = scene.getClock().getDuration(0, duration, 0);
-          }
-        } else if (params.intervalType() == "bar") {
-          if (params.quantize()) {
-            duration = scene.getClock().getTimeUntilNext(Clock::Quantize::Bar, duration);
-          } else {
-            duration = scene.getClock().getDuration(duration, 0, 0);
-          }
-        }
-      }
+      duration = evalInterval(duration, params.intervalType(), scene.getClock(), params.quantize());
       rulesBehavior.schedule(ctx.suspend(), scene.getPerformTime() + duration);
     }
   }

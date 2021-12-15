@@ -148,6 +148,11 @@ const Repeat = ({ response, context }) => {
 };
 
 const InfiniteRepeat = ({ response, context }) => {
+  let singular =
+    response.params?.interval === 1 ||
+    (response.params?.interval?.expressionType === 'number' &&
+      response.params.duration.params.value === 1);
+  const intervalType = response.params?.intervalType ?? 'second';
   return [
     {
       type: 'showEntryOptions',
@@ -164,8 +169,10 @@ const InfiniteRepeat = ({ response, context }) => {
       label: makeExpressionSummary(response.params?.interval ?? 0, context),
     },
     {
-      type: 'text',
-      label: response.params?.interval === 1 ? 'second' : 'seconds',
+      type: 'selectParamSheet',
+      paramName: 'intervalType',
+      paramValue: intervalType,
+      label: `${intervalType}${singular ? '' : 's'}`,
     },
   ];
 };
