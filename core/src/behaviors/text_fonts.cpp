@@ -44,11 +44,6 @@ const char *getAssetsDirectoryPath() {
 #endif
 
 void TextBehavior::loadFontResources() {
-  constexpr auto defaultFontSize = 10;
-
-  defaultFont.reset(
-      lv.graphics.newDefaultFont(defaultFontSize, love::TrueTypeRasterizer::HINTING_NORMAL));
-
   const auto loadFontResource = [&](const std::string &name) {
     TextFontResource resource;
     auto fullPath = CastleCore::getAssetsDirectoryPath() + std::string("/") + name + ".ttf";
@@ -56,6 +51,9 @@ void TextBehavior::loadFontResources() {
         lv.filesystem.read(fullPath.c_str()), love::Acquire::NORETAIN);
     fontResources[name] = std::move(resource);
   };
+
+  loadFontResource("Overlay");
+  overlayFont = getFont(&fontResources["Overlay"], 40);
 
   loadFontResource("Twemoji");
   loadFontResource("OpenSansEmoji");
