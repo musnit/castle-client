@@ -184,6 +184,8 @@ const Wait = ({ response, context }) => {
     response.params?.duration === 1 ||
     (response.params?.duration?.expressionType === 'number' &&
       response.params.duration.params.value === 1);
+  const intervalType = response.params?.intervalType ?? 'second';
+  const quantize = response.params?.quantize ?? false;
   return [
     {
       type: 'showEntryOptions',
@@ -191,7 +193,7 @@ const Wait = ({ response, context }) => {
     },
     {
       type: 'text',
-      label: 'for',
+      label: quantize && intervalType !== 'second' ? 'until next' : 'for',
     },
     {
       type: 'selectParamSheet',
@@ -200,8 +202,10 @@ const Wait = ({ response, context }) => {
       label: makeExpressionSummary(response.params?.duration ?? 0, context),
     },
     {
-      type: 'text',
-      label: singular ? 'second' : 'seconds',
+      type: 'selectParamSheet',
+      paramName: 'intervalType',
+      paramValue: intervalType,
+      label: `${intervalType}${singular ? '' : 's'}`,
     },
   ];
 };

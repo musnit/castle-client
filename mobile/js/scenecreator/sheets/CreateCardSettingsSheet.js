@@ -87,6 +87,17 @@ export const CreateCardSettings = () => {
           />
         </View>
       </View>
+      <View style={[styles.settingsRow, styles.numberRow]}>
+        <Text style={styles.numberLabel}>Card clock tempo</Text>
+        <View style={styles.numberInput}>
+          <InspectorNumberInput
+            value={settingsData.sceneProperties.clockTempo}
+            onChange={(value) =>
+              sendAction({ type: 'scene', action: 'setClockTempo', doubleValue: value })
+            }
+          />
+        </View>
+      </View>
       <View style={styles.settingsRow}>
         <InspectorCheckbox
           label="Show text actors"
@@ -118,7 +129,11 @@ export const CreateCardSettings = () => {
               enabled={settingsData.scaleRotateToolProperties.gridEnabled}
               value={settingsData.scaleRotateToolProperties.gridSize}
               onChangeEnabled={(value) =>
-                sendAction({ type: 'scale_rotate', action: 'setGridEnabled', doubleValue: value ? 1 : 0 })
+                sendAction({
+                  type: 'scale_rotate',
+                  action: 'setGridEnabled',
+                  doubleValue: value ? 1 : 0,
+                })
               }
               onChangeValue={(value) =>
                 sendAction({ type: 'scale_rotate', action: 'setGridSize', doubleValue: value })
@@ -131,10 +146,18 @@ export const CreateCardSettings = () => {
               enabled={settingsData.scaleRotateToolProperties.rotateIncrementEnabled}
               value={settingsData.scaleRotateToolProperties.rotateIncrementDegrees}
               onChangeEnabled={(value) =>
-                sendAction({ type: 'scale_rotate', action: 'setRotateIncrementEnabled', doubleValue: value ? 1 : 0 })
+                sendAction({
+                  type: 'scale_rotate',
+                  action: 'setRotateIncrementEnabled',
+                  doubleValue: value ? 1 : 0,
+                })
               }
               onChangeValue={(value) =>
-                sendAction({ type: 'scale_rotate', action: 'setRotateIncrementDegrees', doubleValue: value })
+                sendAction({
+                  type: 'scale_rotate',
+                  action: 'setRotateIncrementDegrees',
+                  doubleValue: value,
+                })
               }
               valueProps={{ min: 0, step: 5 }}
             />

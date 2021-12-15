@@ -4,6 +4,7 @@ import { BehaviorPropertyRule } from './BehaviorPropertyRule';
 import { ConfigureRuleEntry } from './ConfigureRuleEntry';
 import { getEntryByName } from '../InspectorUtilities';
 import { getRuleRenderContext } from './RuleRenderContext';
+import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import { makeResponseActions } from './ResponseActions';
 import { PlaySoundResponse as PlaySound } from './PlaySoundResponse';
 import { Responses } from './Responses';
@@ -29,6 +30,10 @@ const styles = StyleSheet.create({
   responseCells: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+  },
+  checkboxRow: {
+    padding: 12,
+    paddingBottom: 0,
   },
 });
 
@@ -283,6 +288,34 @@ const CreateText = ({ response, onChangeResponse, children, order, ...props }) =
   );
 };
 
+const Wait = ({ response, onChangeResponse, children, order, ...props }) => {
+  const onChangeQuantize = React.useCallback(
+    (quantize) =>
+      onChangeResponse({
+        ...response,
+        params: {
+          ...response.params,
+          quantize,
+        },
+      }),
+    [response, onChangeResponse]
+  );
+  return (
+    <>
+      <View style={styles.responseCells}>{children}</View>
+      {response.params?.intervalType !== 'second' ? (
+        <View style={styles.checkboxRow}>
+          <InspectorCheckbox
+            label="Quantize to clock"
+            value={response.params.quantize}
+            onChange={onChangeQuantize}
+          />
+        </View>
+      ) : null}
+    </>
+  );
+};
+
 const RESPONSE_COMPONENTS = {
   if: If,
   repeat: Repeat,
@@ -297,18 +330,12 @@ const RESPONSE_COMPONENTS = {
   ['set counter']: SetVariable,
   ['change counter']: SetVariable,
   ['play sound']: PlaySound,
+  ['wait']: Wait,
 };
 
 const Response = ({ response, onChangeResponse, order = 0, ...props }) => {
-  const {
-    context,
-    addChildSheet,
-    behaviors,
-    responses,
-    conditions,
-    triggerFilter,
-    parentType,
-  } = props;
+  const { context, addChildSheet, behaviors, responses, conditions, triggerFilter, parentType } =
+    props;
   const entry = getEntryByName(response?.name, responses);
 
   const onShowResponsePicker = React.useCallback(
