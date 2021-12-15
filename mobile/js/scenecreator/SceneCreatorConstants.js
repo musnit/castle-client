@@ -2,6 +2,8 @@ import * as Constants from '../Constants';
 
 export const OVERLAY_BORDER_RADIUS = 8;
 
+export const USE_CLOCK = false;
+
 export const Colors = {
   background: '#fff',
   text: '#222',

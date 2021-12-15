@@ -4,6 +4,7 @@ import { InspectorCheckbox } from '../inspector/components/InspectorCheckbox';
 import { InspectorNumberInput } from '../inspector/components/InspectorNumberInput';
 import { useCardCreator } from '../CreateCardContext';
 import { useCoreState, sendAsync } from '../../core/CoreEvents';
+import { USE_CLOCK } from '../SceneCreatorConstants';
 
 import { BottomSheet } from '../../components/BottomSheet';
 import { BottomSheetHeader } from '../../components/BottomSheetHeader';
@@ -87,17 +88,19 @@ export const CreateCardSettings = () => {
           />
         </View>
       </View>
-      <View style={[styles.settingsRow, styles.numberRow]}>
-        <Text style={styles.numberLabel}>Card clock tempo</Text>
-        <View style={styles.numberInput}>
-          <InspectorNumberInput
-            value={settingsData.sceneProperties.clockTempo}
-            onChange={(value) =>
-              sendAction({ type: 'scene', action: 'setClockTempo', doubleValue: value })
-            }
-          />
+      {USE_CLOCK ? (
+        <View style={[styles.settingsRow, styles.numberRow]}>
+          <Text style={styles.numberLabel}>Card clock tempo</Text>
+          <View style={styles.numberInput}>
+            <InspectorNumberInput
+              value={settingsData.sceneProperties.clockTempo}
+              onChange={(value) =>
+                sendAction({ type: 'scene', action: 'setClockTempo', doubleValue: value })
+              }
+            />
+          </View>
         </View>
-      </View>
+      ) : null}
       <View style={styles.settingsRow}>
         <InspectorCheckbox
           label="Show text actors"

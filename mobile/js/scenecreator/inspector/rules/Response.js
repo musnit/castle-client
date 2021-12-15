@@ -330,7 +330,7 @@ const RESPONSE_COMPONENTS = {
   ['set counter']: SetVariable,
   ['change counter']: SetVariable,
   ['play sound']: PlaySound,
-  ['wait']: Wait,
+  ['wait']: SceneCreatorConstants.USE_CLOCK ? Wait : undefined,
 };
 
 const Response = ({ response, onChangeResponse, order = 0, ...props }) => {
