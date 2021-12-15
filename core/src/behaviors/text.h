@@ -34,6 +34,7 @@ struct TextComponent : BaseComponent {
          .rulesGet(false)
          .rulesSet(false)
          .allowedValues(
+            "Overlay",
             "Twemoji",
             "OpenSansEmoji",
             "3270Condensed-Condensed",
@@ -117,9 +118,8 @@ private:
 
   Lv &lv { Lv::getInstance() };
 
-  std::unique_ptr<love::Font> defaultFont;
-
   std::unordered_map<std::string, TextFontResource> fontResources;
+  love::Font *overlayFont = nullptr;
   void loadFontResources();
   love::Font *getFont(TextFontResource *fontResource, float pixelSize) const;
 
