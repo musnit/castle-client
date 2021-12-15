@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { MessageBody } from '../components/MessageBody';
 import { toRecentDate } from '../common/date-utilities';
 import { UserAvatar } from '../components/UserAvatar';
@@ -225,6 +225,12 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
   );
 
   React.useEffect(() => {
+    if (!isOpen) {
+      setComments(null);
+    }
+  }, [isOpen, setComments]);
+
+  React.useEffect(() => {
     if (isOpen) {
       fetchComments({ variables: { deckId: deck?.deckId } });
     }
@@ -239,7 +245,7 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
         }
       }
     }
-  }, [query.called, query.loading, query.error, query.data]);
+  }, [query, query.called, query.loading, query.error, query.data]);
 
   const navigateToUser = React.useCallback(
     (user) =>
@@ -345,6 +351,14 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
     return (
       <View style={styles.container}>
         <Text style={styles.emptyMessage}>The creator has disabled comments for this deck.</Text>
+      </View>
+    );
+  }
+
+  if (comments === null) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="small" color="#000" />
       </View>
     );
   }
