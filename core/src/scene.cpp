@@ -3,6 +3,7 @@
 #include "behaviors/all.h"
 #include "library.h"
 #include "js.h"
+#include "screenshot.h"
 
 
 //
@@ -481,4 +482,35 @@ void Scene::setNextCardId(std::optional<std::string> value) {
 #else
   nextCardId = std::move(value);
 #endif
+}
+
+//
+// Screenshots
+//
+
+struct SceneMessageEvent {
+  PROP(std::string, messageType);
+  PROP(std::string, data);
+};
+
+void Scene::sendScreenshot() {
+  if (!screenshot) {
+    screenshot = std::make_unique<Screenshot>(1350);
+  }
+  SceneMessageEvent ev;
+  ev.messageType = "SCREENSHOT_DATA";
+
+  // don't use scene camera for screenshot
+  auto oldCameraPosition = getCameraPosition();
+  auto oldViewWidth = getViewWidth();
+  setCameraPosition({ 0, 0 });
+  setViewWidth(Scene::defaultViewWidth);
+
+  ev.data = screenshot->getBase64Screenshot(this);
+
+  // restore scene camera
+  setCameraPosition(oldCameraPosition);
+  setViewWidth(oldViewWidth);
+
+  bridge.sendEvent("SCENE_MESSAGE", ev);
 }

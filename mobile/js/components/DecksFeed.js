@@ -322,8 +322,7 @@ export const DecksFeed = ({
             onCloseComments={onCloseComments}
             isCommentsOpen={isCommentsOpen}
             playingTransition={playingTransition}
-            // On Android we can't pause while comments are open or else the back button won't work
-            paused={Platform.OS === 'android' ? paused : paused || isCommentsOpen}
+            paused={paused || isCommentsOpen}
             isMe={deck?.creator?.userId === signedInUserId}
             isAnonymous={isAnonymous}
             onRefreshFeed={props.onRefresh}

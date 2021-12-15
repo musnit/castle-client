@@ -2,8 +2,11 @@ import * as React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { AutocompleteTextInput } from '../components/AutocompleteTextInput';
 import * as Constants from '../Constants';
+import { useListen, sendAsync, useCoreEvents } from '../core/CoreEvents';
+import * as Session from '../Session';
 
 import { CastleIcon } from '../Constants';
+import FastImage from 'react-native-fast-image';
 
 const styles = StyleSheet.create({
   container: {
@@ -50,10 +53,23 @@ const styles = StyleSheet.create({
   clearReplyButton: {
     marginRight: 12,
   },
+  imageContainer: {
+    padding: 10,
+    alignItems: 'center',
+  },
+  image: {
+    height: 300,
+    aspectRatio: Constants.CARD_RATIO,
+  },
 });
 
 export const CommentInput = ({ onAddComment, replyingToComment, clearReplyingToComment }) => {
   const [value, setValue] = React.useState();
+  const [imageFile, setImageFile] = React.useState(null);
+  const [loadingScreenshot, setLoadingScreenshot] = React.useState(false);
+  // Use eventsReady to determine if we're actually in a game or just on the feed
+  // If we're not in a game, the screenshot button isn't available
+  const { eventsReady } = useCoreEvents();
 
   // maintain cache of entities (e.g. user mentions) to help assemble this comment's body
   // when we send it to the server
@@ -77,7 +93,7 @@ export const CommentInput = ({ onAddComment, replyingToComment, clearReplyingToC
   }, [replyingToComment, setValue, updateCache]);
 
   const addComment = React.useCallback(
-    (message) => {
+    (message, imageFile) => {
       let parentCommentId = null;
       if (replyingToComment) {
         // if reply-to-reply, stay under parent's thread
@@ -87,12 +103,30 @@ export const CommentInput = ({ onAddComment, replyingToComment, clearReplyingToC
           parentCommentId = replyingToComment.commentId;
         }
       }
-      onAddComment(message, parentCommentId, commentBodyCache.current);
+      onAddComment(message, parentCommentId, commentBodyCache.current, imageFile ? imageFile.fileId : null);
       setValue(undefined);
       clearReplyingToComment();
+      setImageFile(null);
+      setLoadingScreenshot(false);
     },
     [replyingToComment, clearReplyingToComment]
   );
+
+  useListen({
+    eventName: 'SCENE_MESSAGE',
+    handler: async (params) => {
+      if (params.messageType == 'SCREENSHOT_DATA') {
+        const imageFile = await Session.uploadBase64(params.data);
+        setImageFile(imageFile);
+        setLoadingScreenshot(false);
+      }
+    },
+  });
+
+  const addScreenshot = React.useCallback(() => {
+    setLoadingScreenshot(true);
+    sendAsync('REQUEST_SCREENSHOT');
+  }, [setLoadingScreenshot]);
 
   return (
     <View style={styles.container}>
@@ -119,13 +153,27 @@ export const CommentInput = ({ onAddComment, replyingToComment, clearReplyingToC
           onChangeText={setValue}
           multiline
         />
+        {eventsReady && !imageFile && (
+          <Pressable
+            style={styles.submitButton}
+            onPress={() => addScreenshot()}
+            disabled={loadingScreenshot}>
+            <Text style={styles.submitButtonText}>{loadingScreenshot ? "Processing..." : "Screenshot"}</Text>
+          </Pressable>
+        )}
         <Pressable
           style={styles.submitButton}
-          onPress={() => addComment(value)}
+          onPress={() => addComment(value, imageFile)}
           disabled={!value || value.length === 0}>
           <Text style={styles.submitButtonText}>Post</Text>
         </Pressable>
       </View>
+
+      {imageFile && (
+        <View style={styles.imageContainer}>
+          <FastImage style={styles.image} source={{ uri: imageFile.url }} />
+        </View>
+      )}
     </View>
   );
 };

@@ -76,12 +76,7 @@ Engine &getEngine() {
   [super removeFromSuperview];
 }
 
-static bool paused = false;
-
 - (void)doFrame {
-  if (paused) {
-    return;
-  }
   CastleCore::getEngine().frame();
 }
 
@@ -97,7 +92,7 @@ extern bool ghostApplyScreenScaling;
 }
 
 - (void)setPaused:(BOOL)paused_ {
-  paused = paused_;
+  CastleCore::getEngine().setPaused(paused_);
 }
 
 /**

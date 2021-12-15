@@ -13,7 +13,6 @@
 #include "commands.h"
 #include "belt.h"
 #include "player.h"
-#include "screenshot.h"
 #include "capture.h"
 
 class Editor {
@@ -95,7 +94,6 @@ private:
   friend struct DrawToolClearCollisionShapesReceiver;
   friend struct DrawToolViewInContextReceiver;
   friend struct DrawToolTmpGridSettingsReceiver;
-  friend struct EditorRequestScreenshotReceiver;
   friend struct ImportImageActionReceiver;
 
   Lv &lv { Lv::getInstance() };
@@ -144,9 +142,7 @@ private:
   std::set<int> selectedComponentStateDirty;
   void sendSelectedComponent(int behaviorId);
 
-  std::unique_ptr<Screenshot> screenshot;
   std::unique_ptr<Capture> capture;
-  void sendScreenshot();
 
   float autoSaveCountdown = 0; // If `> 0`, auto-save after this much time in seconds
   void updateAutoSave(double dt);

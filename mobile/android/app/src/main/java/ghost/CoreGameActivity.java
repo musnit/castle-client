@@ -6,21 +6,6 @@ import org.libsdl.app.SDLActivity;
 
 public class CoreGameActivity extends SDLActivity {
 
-    private boolean pausedState = false;
-    public void setPaused(boolean paused) {
-        if (paused == pausedState ){
-            return;
-        }
-
-        pausedState = paused;
-
-        NativeState newNativeState = paused? NativeState.PAUSED : NativeState.RESUMED;
-        if (mNextNativeState != newNativeState) {
-            mNextNativeState = newNativeState;
-            SDLActivity.handleNativeState();
-        }
-    }
-
     @Override
     protected String[] getLibraries() {
         return new String[]{
@@ -44,4 +29,6 @@ public class CoreGameActivity extends SDLActivity {
     public static native void castleCoreViewSetInitialParams(String s);
 
     public static native void castleCoreViewSetBeltHeightFraction(double f);
+
+    public static native void castleCoreViewSetPaused(boolean f);
 }

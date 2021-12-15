@@ -12,6 +12,7 @@
 
 class AllBehaviors; // Forward declaration otherwise this would be circular...
 class Library;
+class Screenshot;
 
 using ActorId = entt::entity; // Is unique throughout a `Scene`'s lifetime, never recycled
 constexpr ActorId nullActor = entt::null; // An `ActorId`-compatible sentinel value
@@ -225,6 +226,8 @@ public:
   void draw(std::optional<SceneDrawingOptions> options = std::nullopt) const;
   void applyViewTransform(float windowWidth) const;
 
+  void sendScreenshot();
+
 
 private:
   Lv &lv { Lv::getInstance() };
@@ -277,6 +280,8 @@ private:
 
   bool restartRequested = false;
   std::optional<std::string> nextCardId;
+
+  std::unique_ptr<Screenshot> screenshot;
 
 
   void read(Reader &reader);

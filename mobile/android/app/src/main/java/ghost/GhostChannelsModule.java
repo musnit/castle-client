@@ -105,9 +105,7 @@ public class GhostChannelsModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   void globalPause() {
-    if (MainActivity.gameActivity != null) {
-      MainActivity.gameActivity.setPaused(true);
-    }
+    CoreGameActivity.castleCoreViewSetPaused(true);
   }
 
   @ReactMethod

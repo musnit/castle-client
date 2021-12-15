@@ -653,45 +653,6 @@ void Editor::maybeLoadPlayerSnapshot(const char *json) {
   }
 }
 
-struct EditorRequestScreenshotReceiver {
-  inline static const BridgeRegistration<EditorRequestScreenshotReceiver> registration {
-    "REQUEST_SCREENSHOT"
-  };
-
-  struct Params {
-  } params;
-  void receive(Engine &engine) {
-    auto editor = engine.maybeGetEditor();
-    if (!editor)
-      return;
-
-    editor->sendScreenshot();
-  }
-};
-
-void Editor::sendScreenshot() {
-  if (!screenshot) {
-    screenshot = std::make_unique<Screenshot>(1350);
-  }
-  EditorSceneMessageEvent ev;
-  ev.messageType = "SCREENSHOT_DATA";
-
-  // don't use scene camera for screenshot
-  auto &scene = getScene();
-  auto oldCameraPosition = scene.getCameraPosition();
-  auto oldViewWidth = scene.getViewWidth();
-  scene.setCameraPosition({ 0, 0 });
-  scene.setViewWidth(Scene::defaultViewWidth);
-
-  ev.data = screenshot->getBase64Screenshot(&getScene());
-
-  // restore scene camera
-  scene.setCameraPosition(oldCameraPosition);
-  scene.setViewWidth(oldViewWidth);
-
-  bridge.sendEvent("SCENE_MESSAGE", ev);
-}
-
 struct EditorGlobalActionsEvent {
   PROP(bool, performing) = false;
   PROP(int, selectedActorId) = -1;

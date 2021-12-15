@@ -34,6 +34,7 @@ public:
   // Main loop
 
   bool frame();
+  void setPaused(bool paused);
 
 
   // Scene data
@@ -63,6 +64,7 @@ private:
   [[maybe_unused]] int prevWindowWidth = 0, prevWindowHeight = 0;
   bool shouldQuit = false;
   bool pendingSceneLoadedEvent = false;
+  bool paused = false;
 
   struct PreInit {
     // Allows us to run some early initialization steps before the rest of the
@@ -111,4 +113,8 @@ inline bool Engine::getIsEditing() {
 
 inline LibraryClipboard &Engine::getLibraryClipboard() {
   return libraryClipboard;
+}
+
+inline void Engine::setPaused(bool paused_) {
+  paused = paused_;
 }

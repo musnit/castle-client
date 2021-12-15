@@ -290,6 +290,9 @@ export const COMMENT_FRAGMENT = `
   body
   isDeleted
   createdTime
+  image {
+    url
+  }
 `;
 
 export const COMMENTS_LIST_FRAGMENT = `

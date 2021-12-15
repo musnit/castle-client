@@ -51,7 +51,7 @@ public class GhostViewManager extends SimpleViewManager<ViewGroup> implements Li
 
   @ReactProp(name = "paused")
   public void setPaused(ViewGroup view, boolean paused) {
-    MainActivity.gameActivity.setPaused(paused);
+    CoreGameActivity.castleCoreViewSetPaused(paused);
   }
 
   @Override

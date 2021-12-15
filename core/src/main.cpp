@@ -29,6 +29,7 @@ static Engine &getEngine() {
 
 static const char *newInitialParams = NULL;
 static double newBeltHeightFraction = 0.0;
+static bool enginePaused = false;
 
 extern "C" void Java_ghost_CoreGameActivity_castleCoreViewSetInitialParams(
     JNIEnv *env, jclass thiz, jstring initialParamsJString) {
@@ -40,6 +41,11 @@ extern "C" void Java_ghost_CoreGameActivity_castleCoreViewSetBeltHeightFraction(
   newBeltHeightFraction = beltHeightFraction;
 }
 
+extern "C" void Java_ghost_CoreGameActivity_castleCoreViewSetPaused(
+    JNIEnv *env, jclass thiz, bool paused) {
+  enginePaused = paused;
+}
+
 int SDL_main(int argc, char *argv[]) {
   loop([&]() {
     if (newInitialParams) {
@@ -47,7 +53,7 @@ int SDL_main(int argc, char *argv[]) {
       newInitialParams = NULL;
     }
     getEngine().setBeltHeightFraction(newBeltHeightFraction);
-
+    getEngine().setPaused(enginePaused);
 
     return getEngine().frame();
   });

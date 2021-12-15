@@ -9,6 +9,7 @@ import { useNavigation } from '../ReactNavigation';
 import { useSession } from '../Session';
 
 import * as Constants from '../Constants';
+import FastImage from 'react-native-fast-image';
 
 const styles = StyleSheet.create({
   container: {
@@ -58,6 +59,10 @@ const styles = StyleSheet.create({
   },
   emptyMessage: {
     color: '#888',
+  },
+  image: {
+    height: 200,
+    aspectRatio: Constants.CARD_RATIO,
   },
 });
 
@@ -123,11 +128,16 @@ const Comment = ({
           {comment.isDeleted ? (
             <Text style={styles.commentUnavailableLabel}>This comment was deleted</Text>
           ) : (
-            <MessageBody
-              body={comment.body}
-              styles={commentBodyStyles}
-              navigateToUser={navigateToUser}
-            />
+            <View>
+              <MessageBody
+                body={comment.body}
+                styles={commentBodyStyles}
+                navigateToUser={navigateToUser}
+              />
+              {comment.image && (
+                <FastImage style={styles.image} source={{ uri: comment.image.url }} />
+              )}
+            </View>
           )}
         </View>
         <View style={styles.commentActions}>
