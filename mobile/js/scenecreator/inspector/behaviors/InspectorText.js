@@ -134,6 +134,7 @@ export default InspectorText = () => {
         onChange={onChangeFontNameValue}
         label="Font name"
         allowedValues={[
+          'Overlay',
           'Twemoji',
           'OpenSansEmoji',
           '3270Condensed-Condensed',

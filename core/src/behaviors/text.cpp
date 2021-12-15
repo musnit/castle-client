@@ -226,7 +226,7 @@ bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &com
       auto fontSize = std::clamp(component.props.fontSize(), 0.2f, 3.0f);
       auto font = component.fontResource
           ? getFont(component.fontResource, fontSize * fontPixelScale)
-          : defaultFont.get();
+          : overlayFont;
       auto downscale = fontSize / font->getHeight();
 
       auto [x, y] = body->GetPosition();
@@ -311,7 +311,7 @@ void TextBehavior::handleDrawOverlay() const {
   auto boxWidth = cameraSize.x - 2 * margin;
   auto textWidth = boxWidth - 2 * padding;
   auto y = cameraPos.y + 0.5f * cameraSize.y;
-  auto font = defaultFont.get();
+  auto font = overlayFont;
   auto fontHeight = font->getHeight();
   lv.graphics.push(love::Graphics::STACK_ALL);
   lv.graphics.setFont(font);
