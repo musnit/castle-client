@@ -560,23 +560,27 @@ struct InfiniteRepeatResponse : BaseResponse {
       } else if (count == 1) {
         // Wait and come back here, setting count to 2 so we enter body immediately next time.
         // Schedule for next frame if interval is close enough to 60Hz.
+        // Reference the original repeat startTime to avoid drifting future repeats.
         auto &scene = ctx.getScene();
         auto &rulesBehavior = scene.getBehaviors().byType<RulesBehavior>();
         auto interval
             = evalInterval(params.interval(), params.intervalType(), scene.getClock(), false);
-        auto performTime = interval < 0.02 ? 0 : scene.getPerformTime() + interval;
+        auto performTime = interval < 0.02
+            ? 0
+            : ctx.repeatStack.back().startTime + (interval * ctx.repeatStack.back().repeated);
         ctx.repeatStack.back().count = 2;
         ctx.setNext(this);
         rulesBehavior.schedule(ctx.suspend(), performTime);
       } else {
         // Enter the body immediately, setting count to 1 so we wait next time
         ctx.repeatStack.back().count = 1;
+        ctx.repeatStack.back().repeated++;
         ctx.setNext(params.body());
       }
     } else {
       // Haven't started yet -- enter the body immediately, setting count to 1 so we wait next
       // time
-      ctx.repeatStack.push_back({ this, 1 });
+      ctx.repeatStack.push_back({ this, 1, 0, ctx.getScene().getPerformTime() });
       ctx.setNext(params.body());
     }
   }

@@ -81,6 +81,8 @@ public:
   struct RepeatStackElem {
     ResponseRef response = nullptr; // The response we're associated with
     int count = 0; // Remaining repetions. For 'infinite repeat' this is 1 to continue or 0 to stop.
+    int repeated = 0; // Repetitions so far. Used to schedule infinite repeat
+    double startTime = 0; // Time first scheduled. Used to schedule infinite repeat
   };
   SmallVector<RepeatStackElem, 2> repeatStack; // Tracks enclosing repeat responses in progress
 
