@@ -1,3 +1,5 @@
+import { USE_CLOCK } from './SceneCreatorConstants';
+
 /**
  *  This file is an index of frontend-specific metadata for rules, behaviors, and their props.
  *  When possible, prefer to put UI props directly in React components.
@@ -6,8 +8,9 @@
  *
  *  See also: `getUIProps(entryPath)`
  */
+
 const data = {
-  triggerCategoryOrder: ['general', 'controls', 'state', 'motion', 'camera', 'clock', 'draw'],
+  triggerCategoryOrder: ['general', 'controls', 'state', 'motion', 'camera', 'draw'],
   responseCategoryOrder: [
     'general',
     'behavior',
@@ -28,7 +31,6 @@ const data = {
     'spatial relationships',
     'arithmetic',
     'functions',
-    'clock',
   ],
   addMotionBehaviors: [
     {
@@ -454,7 +456,7 @@ const data = {
       category: 'functions',
     },
     time: {
-      category: 'clock',
+      category: USE_CLOCK ? 'clock' : 'functions',
     },
     ['beats elapsed']: {
       category: 'clock',
@@ -491,6 +493,11 @@ const data = {
     },
   },
 };
+
+if (USE_CLOCK) {
+  data.triggerCategoryOrder.splice(-2, 0, 'clock');
+  data.expressionCategoryOrder.splice(-1, 0, 'clock');
+}
 
 export default data;
 
