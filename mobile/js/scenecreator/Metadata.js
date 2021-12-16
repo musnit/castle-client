@@ -28,6 +28,7 @@ const data = {
     'spatial relationships',
     'arithmetic',
     'functions',
+    'clock',
   ],
   addMotionBehaviors: [
     {
@@ -453,7 +454,19 @@ const data = {
       category: 'functions',
     },
     time: {
-      category: 'functions',
+      category: 'clock',
+    },
+    ['beats elapsed']: {
+      category: 'clock',
+    },
+    ['current beat in bar']: {
+      category: 'clock',
+    },
+    ['current bar']: {
+      category: 'clock',
+    },
+    ['time since last beat']: {
+      category: 'clock',
     },
     min: {
       category: 'choices',

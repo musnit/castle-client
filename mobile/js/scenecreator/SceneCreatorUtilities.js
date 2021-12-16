@@ -199,6 +199,13 @@ export const makeExpressionSummary = (expression, context, depth = 0) => {
       const actorRef = makeActorRefSummary(expression.params.actorRef);
       return maybeExpressionParens(`${actorRef}: angle of motion`);
     }
+    default: {
+      if (context?.expressions) {
+        if (context.expressions[expression.expressionType]) {
+          return context.expressions[expression.expressionType].description;
+        }
+      }
+    }
   }
   return null;
 };
