@@ -10,6 +10,7 @@ import { useSession } from '../Session';
 
 import * as Constants from '../Constants';
 import FastImage from 'react-native-fast-image';
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const styles = StyleSheet.create({
   container: {
@@ -64,6 +65,17 @@ const styles = StyleSheet.create({
     height: 200,
     aspectRatio: Constants.CARD_RATIO,
   },
+  reactionContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingHorizontal: 6,
+    marginLeft: 4,
+  },
+  reactionText: {
+    color: '#888',
+    fontSize: 13,
+    marginLeft: 2,
+  },
 });
 
 const commentBodyStyles = StyleSheet.create({
@@ -100,7 +112,9 @@ const Comment = ({
   navigateToUser,
   showCommentActions,
   setReplyingToComment,
+  onToggleCommentReaction,
 }) => {
+  const [optimisticReaction, setOptimisticReaction] = React.useState(null);
   const onReply = React.useCallback(
     ({ isReply }) => {
       if (!isReply) {
@@ -112,6 +126,22 @@ const Comment = ({
     },
     [setReplyingToComment]
   );
+
+  React.useEffect(() => {
+    setOptimisticReaction(null);
+  }, [comment, setOptimisticReaction]);
+
+  let fireReactionCount = 0;
+  let fireIsCurrentUserToggled = false;
+
+  if (comment.reactions && comment.reactions[0] && comment.reactions[0].reactionId === 'fire') {
+    fireReactionCount = comment.reactions[0].count;
+    fireIsCurrentUserToggled = comment.reactions[0].isCurrentUserToggled;
+  }
+
+  if (optimisticReaction !== null) {
+    fireIsCurrentUserToggled = optimisticReaction;
+  }
 
   return (
     <View style={[styles.commentContainer]}>
@@ -142,6 +172,19 @@ const Comment = ({
         </View>
         <View style={styles.commentActions}>
           <Text style={styles.commentDate}>{toRecentDate(comment.createdTime)}</Text>
+          <Pressable
+            onPress={() => {
+              onToggleCommentReaction(
+                Constants.reactionIds.fire,
+                comment.commentId,
+                !fireIsCurrentUserToggled
+              );
+              setOptimisticReaction(!fireIsCurrentUserToggled);
+            }}
+            style={styles.reactionContainer}>
+            <MCIcon name="fire" size={16} color={fireIsCurrentUserToggled ? '#000' : '#888'} />
+            {fireReactionCount > 0 && <Text style={styles.reactionText}>{fireReactionCount}</Text>}
+          </Pressable>
           <Pressable onPress={() => onReply({ isReply, setReplyingToComment })}>
             <Text style={styles.commentAction}>Reply</Text>
           </Pressable>
@@ -161,6 +204,7 @@ const Comment = ({
             navigateToUser={navigateToUser}
             showCommentActions={showCommentActions}
             setReplyingToComment={setReplyingToComment}
+            onToggleCommentReaction={onToggleCommentReaction}
           />
         ) : null}
       </View>
@@ -185,7 +229,11 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
           }
         }
       }
-    `
+    `,
+    {
+      fetchPolicy: 'no-cache',
+      nextFetchPolicy: 'no-cache',
+    }
   );
 
   const [reportComment] = useMutation(
@@ -216,12 +264,35 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
     `
   );
 
+  const [toggleCommentReaction] = useMutation(
+    gql`
+      mutation ($reactionId: ID!, $commentId: ID!, $enabled: Boolean!) {
+        toggleCommentReaction(reactionId: $reactionId, commentId: $commentId, enabled: $enabled) {
+          id
+          reactionId
+          count
+          isCurrentUserToggled
+        }
+      }
+    `
+  );
+
   const onDeleteComment = React.useCallback(
     (comment) =>
       deleteComment({
         variables: { commentId: comment.commentId },
       }),
     [deleteComment]
+  );
+
+  const onToggleCommentReaction = React.useCallback(
+    async (reactionId, commentId, enabled) => {
+      await toggleCommentReaction({
+        variables: { commentId, reactionId, enabled },
+      });
+      fetchComments({ variables: { deckId: deck?.deckId } });
+    },
+    [toggleCommentReaction, fetchComments, deck]
   );
 
   React.useEffect(() => {
@@ -341,6 +412,7 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
           navigateToUser={navigateToUser}
           showCommentActions={showCommentActions}
           setReplyingToComment={setReplyingToComment}
+          onToggleCommentReaction={onToggleCommentReaction}
         />
       );
     },
@@ -357,8 +429,10 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
 
   if (comments === null) {
     return (
-      <View style={styles.container}>
-        <ActivityIndicator size="small" color="#000" />
+      <View style={{ flex: 1 }}>
+        <View style={styles.container}>
+          <ActivityIndicator size="small" color="#000" />
+        </View>
       </View>
     );
   }

@@ -137,7 +137,7 @@ const NotificationItem = ({ notification, navigateToUser, navigateToDeck, naviga
       navigateToUser(user);
     } else if (type === 'new_deck') {
       navigateToDeck(notification.deck);
-    } else if (type === 'reaction') {
+    } else if (type === 'react_deck') {
       navigateToDeck(notification.deck);
     } else if (notification.deck) {
       navigateToDeck(notification.deck);
@@ -176,7 +176,7 @@ const NotificationItem = ({ notification, navigateToUser, navigateToDeck, naviga
           {user && type === 'follow' ? (
             <FollowButton user={user} style={{ marginLeft: 8 }} />
           ) : null}
-          {type === 'reaction' ? (
+          {type === 'react_deck' || type === 'react_comment' ? (
             <FastImage style={styles.reactionSticker} source={REACTION_IMAGE_FIRE} />
           ) : null}
         </View>

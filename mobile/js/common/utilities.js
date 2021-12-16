@@ -269,14 +269,19 @@ export const getCardBackgroundColor = (card) => {
 export const getNotificationType = (n) => {
   if (!n?.type) return null;
   if (n.type.indexOf('react_deck_') === 0) {
-    return 'reaction';
+    return 'react_deck';
+  } else if (n.type.indexOf('react_comment_') === 0) {
+    return 'react_comment';
   }
   return n.type;
 };
 
 export const getNotificationReactionId = (n) => {
-  if (getNotificationType(n) === 'reaction') {
+  if (getNotificationType(n) === 'react_deck') {
     const prefixLength = 'react_deck_'.length;
+    return n.type.substring(prefixLength);
+  } else if (getNotificationType(n) === 'react_comment') {
+    const prefixLength = 'react_comment_'.length;
     return n.type.substring(prefixLength);
   }
   return null;

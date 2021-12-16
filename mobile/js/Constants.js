@@ -293,6 +293,12 @@ export const COMMENT_FRAGMENT = `
   image {
     url
   }
+  reactions {
+    id
+    reactionId
+    count
+    isCurrentUserToggled
+  }
 `;
 
 export const COMMENTS_LIST_FRAGMENT = `
