@@ -13,6 +13,7 @@ void Clock::reset() {
   timePerBeat = (1.0 / double(tempo)) * 60.0; // bpm -> seconds per beat
   timeSinceBeat = 0;
   totalBeatsElapsed = 0;
+  totalBarsElapsed = 0;
   fireBeatTriggers();
 }
 
@@ -22,6 +23,10 @@ void Clock::update(double dt) {
   if (timeSinceBeat >= timePerBeat) {
     totalBeatsElapsed++;
     timeSinceBeat -= timePerBeat;
+    if (totalBeatsElapsed % beatsPerBar == 0) {
+      // keep a running tally in case we later support changing beatsPerBar mid-run
+      totalBarsElapsed++;
+    }
     fireBeatTriggers();
   }
 }

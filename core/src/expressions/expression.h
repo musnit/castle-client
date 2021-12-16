@@ -14,10 +14,12 @@ private:
   static void registerMathExpressions();
   static void registerRandomExpressions();
   static void registerSceneExpressions();
+  static void registerClockExpressions();
 };
 
 inline void ExpressionRegistrar::registerExpressions() {
   registerMathExpressions();
   registerRandomExpressions();
   registerSceneExpressions();
+  registerClockExpressions();
 }
