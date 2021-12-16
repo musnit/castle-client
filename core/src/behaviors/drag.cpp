@@ -5,6 +5,30 @@
 
 static const TouchToken dragToken;
 
+//
+// Triggers
+//
+
+struct DragStartTrigger : BaseTrigger {
+  inline static const RuleRegistration<DragStartTrigger, DragBehavior> registration {
+    "drag start"
+  };
+  static constexpr auto description = "When a drag starts on this";
+
+  struct Params {
+  } params;
+};
+
+struct DragStopTrigger : BaseTrigger {
+  inline static const RuleRegistration<DragStopTrigger, DragBehavior> registration {
+    "drag stop"
+  };
+  static constexpr auto description = "When a drag stops on this";
+
+  struct Params {
+  } params;
+};
+
 
 //
 // Enable, disable
@@ -36,6 +60,7 @@ void DragBehavior::handlePerform(double dt) {
 
   auto &scene = getScene();
   auto &bodyBehavior = getBehaviors().byType<BodyBehavior>();
+  auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
 
   // Create handles on touch presses
   getGesture().forEachTouch([&](TouchId touchId, const Touch &touch) {
@@ -46,6 +71,7 @@ void DragBehavior::handlePerform(double dt) {
       // Find topmost actor at point
       DragComponent *hitComponent = nullptr;
       const b2Body *hitBody = nullptr;
+      ActorId hitActorId = nullActor;
       auto maxDrawOrder = Scene::minDrawOrder;
       for (auto actorId : bodyBehavior.getActorsAtTouch(touchId)) {
         if (auto component = maybeGetComponent(actorId); component && !component->disabled) {
@@ -55,6 +81,7 @@ void DragBehavior::handlePerform(double dt) {
               hitComponent = component;
               hitBody = body;
               maxDrawOrder = *drawOrder;
+              hitActorId = actorId;
             }
           }
         }
@@ -71,7 +98,14 @@ void DragBehavior::handlePerform(double dt) {
             touchId,
             (b2MouseJoint *)scene.getPhysicsWorld().CreateJoint(&jointDef),
             hitBody->GetLocalPoint(jointDef.target),
+            hitActorId,
         });
+        if (hitComponent->attachedActors[hitActorId]) {
+          hitComponent->attachedActors[hitActorId]++;
+        } else {
+          hitComponent->attachedActors[hitActorId] = 1;
+          rulesBehavior.fire<DragStartTrigger>(hitActorId, {});
+        }
       }
     }
   });
@@ -98,6 +132,18 @@ void DragBehavior::handlePerform(double dt) {
         } else {
           // No body -- joint isn't valid anymore so just remove handle
           handle.joint = nullptr;
+        }
+
+        if (handle.joint == nullptr) {
+          auto actorId = handle.actorId;
+          if (component.attachedActors[actorId]) {
+            component.attachedActors[actorId]--;
+
+            if (component.attachedActors[actorId] == 0) {
+              component.attachedActors.erase(actorId);
+              rulesBehavior.fire<DragStopTrigger>(actorId, {});
+            }
+          }
         }
       }
     }

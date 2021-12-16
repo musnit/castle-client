@@ -15,8 +15,10 @@ struct DragComponent : BaseComponent {
     TouchId touchId {};
     b2MouseJoint *joint = nullptr; // Pulls toward the touch position
     b2Vec2 localPos; // Point on actor held onto in local space
+    ActorId actorId;
   };
   SmallVector<Handle, 2> handles;
+  std::map<ActorId, int> attachedActors;
 };
 
 class DragBehavior : public BaseBehavior<DragBehavior, DragComponent> {

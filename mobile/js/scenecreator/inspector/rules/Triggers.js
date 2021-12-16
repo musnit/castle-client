@@ -88,6 +88,24 @@ const TouchUp = () => {
   ]);
 };
 
+const DragStart = () => {
+  return withWhen([
+    {
+      type: 'selectEntry',
+      label: 'a drag starts on this',
+    },
+  ]);
+};
+
+const DragStop = () => {
+  return withWhen([
+    {
+      type: 'selectEntry',
+      label: 'a drag stops on this',
+    },
+  ]);
+};
+
 const Sling = () => {
   return withWhen([
     {
@@ -375,6 +393,8 @@ export const Triggers = {
   press: Press,
   ['touch down']: TouchDown,
   ['touch up']: TouchUp,
+  ['drag start']: DragStart,
+  ['drag stop']: DragStop,
   sling: Sling,
   ['analog stick begins']: AnalogStickBegins,
   ['analog stick ends']: AnalogStickEnds,

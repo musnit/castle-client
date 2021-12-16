@@ -134,6 +134,12 @@ const data = {
     ['touch up']: {
       category: 'controls',
     },
+    ['drag start']: {
+      category: 'controls',
+    },
+    ['drag stop']: {
+      category: 'controls',
+    },
     sling: {
       category: 'controls',
     },
