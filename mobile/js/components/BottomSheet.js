@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets, useSafeAreaFrame } from 'react-native-safe-area-context';
 import { useKeyboard } from '../common/utilities';
 import { AndroidNavigationContext } from '../ReactNavigation';
 
@@ -70,7 +70,7 @@ const BottomSheetIOS = ({
   useViewInsteadOfScrollview,
   style = {},
 }) => {
-  let screenHeight = Viewport.vh * 100;
+  const { height: screenHeight } = useSafeAreaFrame();
 
   const insets = useSafeAreaInsets();
   let lastSnap = React.useRef(initialSnap);
@@ -223,9 +223,10 @@ const BottomSheetAndroid = ({
 }) => {
   let screenHeight;
   const { navigatorWindowHeight } = React.useContext(AndroidNavigationContext);
+  const safeAreaFrame = useSafeAreaFrame();
 
   if (isFullScreen) {
-    screenHeight = Viewport.vh * 100;
+    screenHeight = safeAreaFrame.height;
   } else {
     screenHeight = navigatorWindowHeight;
   }
