@@ -215,6 +215,9 @@ void Sound::play(const Sample &sample, double playbackRate, float amplitude) {
   if (playbackRate <= 0.0) {
     return;
   }
+  if (!Sound::isEnabled) {
+    return;
+  }
 
   auto &type = sample.type();
   if (type == "sfxr") {
@@ -341,6 +344,26 @@ SoLoud::Sfxr *Sound::getOrMakeSfxrSourceForKey(
 }
 
 void Sound::playSfxr(const std::string &sfxrKey, float amplitude) {
+  if (!Sound::isEnabled) {
+    return;
+  }
   int handle = Sound::soloud.play(*Sound::sfxrSounds[sfxrKey]);
   Sound::soloud.setVolume(handle, amplitude);
 }
+
+//
+// Events
+//
+
+struct SoundEnabledReceiver {
+  inline static const BridgeRegistration<SoundEnabledReceiver> registration { "SET_SOUND_ENABLED" };
+
+  struct Params {
+    PROP(bool, enabled) = true;
+  } params;
+
+  void receive(Engine &engine) {
+    Debug::log("Core: Sound enabled: {}", params.enabled());
+    Sound::isEnabled = params.enabled();
+  }
+};

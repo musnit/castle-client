@@ -27,6 +27,8 @@ public:
   Sound();
   ~Sound();
 
+  inline static bool isEnabled = true;
+
   void preload(const Sample &sample);
   void play(const Sample &sample, double playbackRate, float amplitude);
 

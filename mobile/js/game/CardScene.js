@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { PixelRatio, StyleSheet, View, TouchableWithoutFeedback } from 'react-native';
+import { CastleAsyncStorage } from '../common/CastleAsyncStorage';
 import { GameLoading } from './GameLoading';
 import { GameView } from './GameView';
-import * as Constants from '../Constants';
 import { sendAsync } from '../core/CoreEvents';
+import * as Constants from '../Constants';
 import * as CoreViews from '../CoreViews';
 
 const styles = StyleSheet.create({
@@ -42,9 +43,11 @@ export const CardScene = ({
   };
 
   const [loaded, setLoaded] = useState(false);
-  const onLoaded = React.useCallback(() => {
+  const onLoaded = React.useCallback(async () => {
     setLoaded(true);
-  }, []);
+    const isMuted = await CastleAsyncStorage.getItem('IS_MUTED');
+    sendAsync('SET_SOUND_ENABLED', isMuted && !isEditable ? false : true);
+  }, [isEditable]);
 
   const [shouldDisplay, setShouldDisplay] = useState(false);
   useEffect(() => {
