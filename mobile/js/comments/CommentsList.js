@@ -235,8 +235,8 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
       }
     `,
     {
-      fetchPolicy: 'no-cache',
-      nextFetchPolicy: 'no-cache',
+      fetchPolicy: 'cache-and-network',
+      nextFetchPolicy: 'cache-and-network',
     }
   );
 
