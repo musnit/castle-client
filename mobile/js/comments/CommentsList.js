@@ -10,7 +10,7 @@ import { useSession } from '../Session';
 
 import * as Constants from '../Constants';
 import FastImage from 'react-native-fast-image';
-import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { CastleIcon } from '../Constants';
 
 const styles = StyleSheet.create({
   container: {
@@ -27,8 +27,16 @@ const styles = StyleSheet.create({
     marginTop: 2,
     marginRight: 12,
   },
+  commentAuthor: {
+    flexDirection: 'row',
+  },
   commentAuthorText: {
     fontWeight: '600',
+    fontSize: 13,
+    marginRight: 6,
+  },
+  commentDate: {
+    color: '#888',
     fontSize: 13,
   },
   commentBody: {
@@ -38,14 +46,9 @@ const styles = StyleSheet.create({
   commentActions: {
     flexDirection: 'row',
   },
-  commentDate: {
-    color: '#888',
-    fontSize: 13,
-  },
   commentAction: {
     color: '#888',
     fontSize: 13,
-    fontWeight: '600',
     marginLeft: 12,
   },
   commentMenu: {
@@ -64,17 +67,18 @@ const styles = StyleSheet.create({
   image: {
     height: 200,
     aspectRatio: Constants.CARD_RATIO,
+    borderRadius: 8,
+    marginVertical: 8,
   },
   reactionContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    paddingHorizontal: 6,
-    marginLeft: 4,
   },
   reactionText: {
     color: '#888',
     fontSize: 13,
-    marginLeft: 2,
+    marginLeft: 3,
+    fontWeight: '600',
   },
 });
 
@@ -153,6 +157,7 @@ const Comment = ({
           <Pressable onPress={() => navigateToUser(comment.fromUser)}>
             <Text style={styles.commentAuthorText}>{comment.fromUser.username}</Text>
           </Pressable>
+          <Text style={styles.commentDate}>{toRecentDate(comment.createdTime)}</Text>
         </View>
         <View style={styles.commentBody}>
           {comment.isDeleted ? (
@@ -171,7 +176,6 @@ const Comment = ({
           )}
         </View>
         <View style={styles.commentActions}>
-          <Text style={styles.commentDate}>{toRecentDate(comment.createdTime)}</Text>
           <Pressable
             onPress={() => {
               onToggleCommentReaction(
@@ -182,8 +186,8 @@ const Comment = ({
               setOptimisticReaction(!fireIsCurrentUserToggled);
             }}
             style={styles.reactionContainer}>
-            <MCIcon name="fire" size={16} color={fireIsCurrentUserToggled ? '#000' : '#888'} />
-            {fireReactionCount > 0 && <Text style={styles.reactionText}>{fireReactionCount}</Text>}
+            <CastleIcon name={fireIsCurrentUserToggled ? 'fire-on' : 'fire-off'} size={14} color={fireIsCurrentUserToggled ? '#000' : '#888'} />
+            {fireReactionCount > 0 && <Text style={[styles.reactionText, {color: fireIsCurrentUserToggled ? '#000' : '#888'}]}>{fireReactionCount}</Text>}
           </Pressable>
           <Pressable onPress={() => onReply({ isReply, setReplyingToComment })}>
             <Text style={styles.commentAction}>Reply</Text>

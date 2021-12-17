@@ -22,22 +22,16 @@ const styles = StyleSheet.create({
   textInput: {
     width: '100%',
     flexShrink: 1,
-    paddingTop: 10,
-    paddingBottom: 10,
-    paddingHorizontal: 12,
+    paddingTop: 7,
+    paddingBottom: 7,
+    paddingHorizontal: 10,
     backgroundColor: '#f1f1f1',
     color: Constants.colors.black,
     borderRadius: 4,
     fontSize: 15,
   },
-  submitButton: {
-    padding: 8,
+  button: {
     marginLeft: 8,
-  },
-  submitButtonText: {
-    color: '#000',
-    fontWeight: '600',
-    fontSize: 15,
   },
   replyingToRow: {
     flexDirection: 'row',
@@ -54,12 +48,13 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   imageContainer: {
-    padding: 10,
-    alignItems: 'center',
+    padding: 8,
+    paddingBottom: 0,
   },
   image: {
-    height: 300,
+    height: 200,
     aspectRatio: Constants.CARD_RATIO,
+    borderRadius: 8,
   },
 });
 
@@ -155,17 +150,17 @@ export const CommentInput = ({ onAddComment, replyingToComment, clearReplyingToC
         />
         {eventsReady && !imageFile && (
           <Pressable
-            style={styles.submitButton}
+            style={[Constants.styles.buttonOnWhite, styles.button]}
             onPress={() => addScreenshot()}
             disabled={loadingScreenshot}>
-            <Text style={styles.submitButtonText}>{loadingScreenshot ? "Processing..." : "Screenshot"}</Text>
+            <Text style={Constants.styles.buttonLabelOnWhite}>{loadingScreenshot ? "Capturing..." : "Screenshot"}</Text>
           </Pressable>
         )}
         <Pressable
-          style={styles.submitButton}
+          style={[Constants.styles.buttonOnWhite, styles.button]}
           onPress={() => addComment(value, imageFile)}
           disabled={!value || value.length === 0}>
-          <Text style={styles.submitButtonText}>Post</Text>
+          <Text style={Constants.styles.buttonLabelOnWhite}>Post</Text>
         </Pressable>
       </View>
 
