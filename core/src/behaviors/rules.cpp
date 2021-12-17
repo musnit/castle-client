@@ -502,7 +502,13 @@ double evalInterval(double interval, std::string &intervalType, Clock &clock, bo
     interval = std::clamp(interval, minInterval, maxInterval);
   } else {
     // convert clock units to an absolute interval after current time
-    if (intervalType == "beat") {
+    if (intervalType == "step") {
+      if (quantize) {
+        interval = clock.getTimeUntilNext(Clock::Quantize::Step, interval);
+      } else {
+        interval = clock.getDuration(0, 0, interval);
+      }
+    } else if (intervalType == "beat") {
       if (quantize) {
         interval = clock.getTimeUntilNext(Clock::Quantize::Beat, interval);
       } else {
@@ -529,7 +535,7 @@ struct InfiniteRepeatResponse : BaseResponse {
     PROP(
          std::string, intervalType,
          .label("interval type")
-         .allowedValues("second", "beat", "bar")
+         .allowedValues("second", "beat", "bar", "step")
          ) = "second";
     PROP(
          double, interval,
@@ -697,6 +703,16 @@ struct ClockReachesBeatTrigger : BaseTrigger {
   static constexpr auto description = "When the clock reaches a beat";
 
   struct Params {
+    PROP(std::string, intervalType,
+         .label("interval type")
+         .allowedValues("beat", "step")
+         ) = "beat";
+    // count == 0: every beat/step
+    // count == N > 0: every Nth in the superunit, e.g. every 2nd beat of a bar
+    PROP(int, count,
+         .label("count")
+         .min(0)
+         ) = 0;
   } params;
 };
 
@@ -707,20 +723,44 @@ struct ClockReachesBarTrigger : BaseTrigger {
   static constexpr auto description = "When the clock reaches a bar";
 
   struct Params {
+    // every cycle'th bar (so cycle == 1 means every bar)
+    PROP(int, cycle,
+         .label("cycle")
+         .min(1)
+         ) = 1;
   } params;
 };
 
-void RulesBehavior::fireBeatTriggers(bool isBarReached) {
-  fireAllIf<ClockReachesBeatTrigger>(
-      {}, [&](ActorId actorId, const ClockReachesBeatTrigger &trigger) {
-        return true;
-      });
-
-  if (isBarReached) {
+void RulesBehavior::fireBeatTriggers(Clock::Quantize unit, int index) {
+  switch (unit) {
+  case Clock::Quantize::Bar: {
     fireAllIf<ClockReachesBarTrigger>(
         {}, [&](ActorId actorId, const ClockReachesBarTrigger &trigger) {
-          return true;
+          auto cycle = trigger.params.cycle();
+          return (cycle <= 1 || index % cycle == 0);
         });
+    break;
+  }
+  case Clock::Quantize::Beat: {
+    fireAllIf<ClockReachesBeatTrigger>(
+        {}, [&](ActorId actorId, const ClockReachesBeatTrigger &trigger) {
+          if (trigger.params.intervalType() == "beat") {
+            return (trigger.params.count() == 0 || trigger.params.count() == index + 1);
+          }
+          return false;
+        });
+    break;
+  }
+  case Clock::Quantize::Step: {
+    fireAllIf<ClockReachesBeatTrigger>(
+        {}, [&](ActorId actorId, const ClockReachesBeatTrigger &trigger) {
+          if (trigger.params.intervalType() == "step") {
+            return (trigger.params.count() == 0 || trigger.params.count() == index + 1);
+          }
+          return false;
+        });
+    break;
+  }
   }
 }
 
@@ -737,7 +777,7 @@ struct WaitResponse : BaseResponse {
     PROP(
          std::string, intervalType,
          .label("interval type")
-         .allowedValues("second", "beat", "bar")
+         .allowedValues("second", "beat", "bar", "step")
          ) = "second";
     PROP(
          ExpressionRef, duration,

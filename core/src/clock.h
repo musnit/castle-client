@@ -13,6 +13,7 @@ public:
   enum class Quantize {
     Bar,
     Beat,
+    Step,
   };
 
   explicit Clock(Scene &scene_);
@@ -23,7 +24,7 @@ public:
   void reset(unsigned int tempo, unsigned int beatsPerBar);
   void update(double dt);
 
-  double getDuration(double bars, double beats, double seconds);
+  double getDuration(double bars, double beats, double steps);
   double getTimeUntilNext(Quantize quant, double count);
 
   unsigned int getTotalBeatsElapsed();
@@ -37,13 +38,18 @@ private:
 
   unsigned int tempo = 120;
   unsigned int beatsPerBar = 4;
+  unsigned int stepsPerBeat = 4;
 
   double timePerBeat = 0;
   double timeSinceBeat = 0;
+  double timeSinceStep = 0;
   int totalBeatsElapsed = 0;
   int totalBarsElapsed = 0;
+  int totalStepsElapsed = 0;
 
-  void fireBeatTriggers();
+  double currentStepInterval();
+
+  void fireBeatTriggers(Quantize unit, int index);
 };
 
 inline Clock::Clock(Scene &scene_)
