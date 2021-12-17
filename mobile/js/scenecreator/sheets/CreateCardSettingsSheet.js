@@ -94,6 +94,8 @@ export const CreateCardSettings = () => {
             <Text style={styles.numberLabel}>Clock tempo</Text>
             <View style={styles.numberInput}>
               <InspectorNumberInput
+                min={30}
+                max={360}
                 value={settingsData.sceneProperties.clockTempo}
                 onChange={(value) =>
                   sendAction({ type: 'scene', action: 'setClockTempo', doubleValue: value })

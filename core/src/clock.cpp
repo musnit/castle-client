@@ -6,6 +6,15 @@ void Clock::reset(unsigned int tempo_, unsigned int beatsPerBar_, unsigned int s
   tempo = tempo_;
   beatsPerBar = beatsPerBar_;
   stepsPerBeat = stepsPerBeat_;
+  if (tempo < 1.0) {
+    tempo = 1.0;
+  }
+  if (beatsPerBar < 2.0) {
+    beatsPerBar = 2.0;
+  }
+  if (stepsPerBeat < 2.0) {
+    stepsPerBeat = 2.0;
+  }
   reset();
 }
 
