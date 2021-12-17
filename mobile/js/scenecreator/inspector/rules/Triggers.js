@@ -374,21 +374,105 @@ const AnimationFrameChanges = () => {
   ]);
 };
 
-const ClockReachesBeat = () =>
-  withWhen([
-    {
-      type: 'selectEntry',
-      label: 'the clock reaches a beat',
-    },
-  ]);
+const ClockReachesBeat = ({ trigger, isPreview }) => {
+  const intervalType = trigger.params?.intervalType ?? 'beat';
+  const superIntervalType = intervalType == 'beat' ? 'bar' : 'beat';
+  if (isPreview) {
+    // preview:
+    // when the clock reaches a beat
+    // when the clock reaches beat 2 of a bar
+    // when the clock reaches step 2 of a beat
+    if (!trigger.params?.count) {
+      return withWhen([
+        {
+          type: 'selectEntry',
+          label: `the clock reaches a ${intervalType}`,
+        },
+      ]);
+    } else {
+      return withWhen([
+        {
+          type: 'selectEntry',
+          label: `the clock reaches ${intervalType} ${trigger.params.count} of a ${superIntervalType}`,
+        },
+      ]);
+    }
+  } else {
+    return withWhen([
+      {
+        type: 'selectEntry',
+        label: `the clock reaches`,
+      },
+      {
+        type: 'text',
+        label: 'a',
+      },
+      {
+        type: 'selectParamSheet',
+        paramName: 'intervalType',
+        paramValue: intervalType,
+        label: intervalType,
+      },
+      {
+        type: 'text',
+        label: `in a ${superIntervalType}:`,
+      },
+      {
+        type: 'selectParamSheet',
+        paramName: 'count',
+        paramValue: trigger.params?.count ?? 0,
+        label: trigger.params?.count > 0 ? trigger.params.count : 'any',
+      },
+    ]);
+  }
+};
 
-const ClockReachesBar = () =>
-  withWhen([
-    {
-      type: 'selectEntry',
-      label: 'the clock reaches a bar',
-    },
-  ]);
+const ClockReachesBar = ({ trigger, isPreview }) => {
+  let cycle = trigger.params?.cycle;
+  if (!cycle) {
+    cycle = 1;
+  }
+  let suffix = 'th';
+  if (cycle == 2) {
+    suffix = 'nd';
+  } else if (cycle == 3) {
+    suffix = 'rd';
+  }
+  if (isPreview) {
+    if (cycle <= 1) {
+      return withWhen([
+        {
+          type: 'selectEntry',
+          label: `the clock reaches a bar`,
+        },
+      ]);
+    } else {
+      return withWhen([
+        {
+          type: 'selectEntry',
+          label: `the clock reaches every ${cycle}${suffix} bar`,
+        },
+      ]);
+    }
+  } else {
+    return withWhen([
+      {
+        type: 'selectEntry',
+        label: `the clock reaches a bar`,
+      },
+      {
+        type: 'text',
+        label: ':',
+      },
+      {
+        type: 'selectParamSheet',
+        paramName: 'cycle',
+        paramValue: trigger.params?.cycle ?? 1,
+        label: trigger.params?.cycle > 1 ? `every ${cycle}${suffix}` : 'any',
+      },
+    ]);
+  }
+};
 
 const makeCells = (props) => {
   let cells;
