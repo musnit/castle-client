@@ -176,7 +176,11 @@ void ImageProcessing::kMeans(love::image::ImageData *data, uint8 k, int numItera
       auto cluster = whichCluster[y * width + x];
       if (cluster == k) {
         // expect cluster == k for transparent pixels
+        auto dest = (love::image::Pixel *)((uint8 *)data->getData()
+            + ((y * width + x) * data->getPixelSize()));
         data->setPixel(x, y, zero);
+        setChannel(
+            *dest, 3, 0, format); // `setPixel` won't actually zero the alpha channel w/o this
       } else {
         data->setPixel(x, y, means[cluster]);
       }
@@ -270,14 +274,13 @@ void ImageProcessing::paletteSwap(love::image::ImageData *data, PaletteProvider 
 
       int hash = data->getPixelHash(p);
       DrawUtil::getRGBAFloat(p, format, rgba);
+      auto dest = (love::image::Pixel *)((uint8 *)data->getData()
+          + ((y * width + x) * data->getPixelSize()));
 
-      // TODO: sometimes we get non-transparent full black pixels for some reason,
-      // in this case the hash will just equal the alpha channel
-      bool isBlack = hash == int(rgba[3]);
-
-      if (rgba[3] < 255.0f || isBlack) {
+      if (rgba[3] < 255.0f) {
         // just zero out any pixels with transparency and don't count them as swapped
         data->setPixel(x, y, zero);
+        setChannel(*dest, 3, 0, format);
       } else {
         // if never seen before, map to next color in palette
         auto found = swaps.find(hash);
@@ -299,11 +302,9 @@ void ImageProcessing::paletteSwap(love::image::ImageData *data, PaletteProvider 
 
         // replace with mapping
         data->setPixel(x, y, swaps[hash]);
+        // maintain original alpha
+        setChannel(*dest, 3, rgba[3], format);
       }
-      // maintain original alpha
-      auto dest = (love::image::Pixel *)((uint8 *)data->getData()
-          + ((y * width + x) * data->getPixelSize()));
-      setChannel(*dest, 3, rgba[3], format);
     }
   }
 }
