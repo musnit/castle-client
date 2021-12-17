@@ -2,10 +2,10 @@
 #include "scene.h"
 #include "behaviors/all.h"
 
-void Clock::reset(unsigned int tempo_, unsigned int beatsPerBar_) {
+void Clock::reset(unsigned int tempo_, unsigned int beatsPerBar_, unsigned int stepsPerBeat_) {
   tempo = tempo_;
   beatsPerBar = beatsPerBar_;
-  stepsPerBeat = 4;
+  stepsPerBeat = stepsPerBeat_;
   reset();
 }
 

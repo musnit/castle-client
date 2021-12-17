@@ -199,6 +199,8 @@ public:
     PROP(love::Colorf, backgroundColor) = { 186 / 255.0, 190 / 255.0, 246 / 255.0, 1 };
     PROP(int, coordinateSystemVersion) = 2;
     PROP(int, clockTempo) = 120;
+    PROP(int, clockBeatsPerBar, .min(2) .max(12)) = 4;
+    PROP(int, clockStepsPerBeat, .min(2) .max(6)) = 4;
   } props;
 
   bool isBackgroundDark() const;

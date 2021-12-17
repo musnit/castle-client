@@ -21,7 +21,7 @@ public:
   const Clock &operator=(const Clock &) = delete;
 
   void reset();
-  void reset(unsigned int tempo, unsigned int beatsPerBar);
+  void reset(unsigned int tempo, unsigned int beatsPerBar, unsigned int stepsPerBeat);
   void update(double dt);
 
   double getDuration(double bars, double beats, double steps);

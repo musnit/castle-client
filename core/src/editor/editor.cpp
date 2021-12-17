@@ -1969,6 +1969,34 @@ struct EditorChangeSceneSettingsReceiver {
             [oldBpmValue](Editor &editor, bool) {
               editor.getScene().props.clockTempo() = oldBpmValue;
             });
+      } else if (action == "setClockBeatsPerBar") {
+        auto value = int(params.doubleValue());
+        auto oldValue = editor->getScene().props.clockBeatsPerBar();
+        Commands::Params commandParams;
+        commandParams.coalesce = true;
+        commandParams.coalesceLastOnly = false;
+        editor->getCommands().execute(
+            "set clock beats per bar", commandParams,
+            [value](Editor &editor, bool) {
+              editor.getScene().props.clockBeatsPerBar() = value;
+            },
+            [oldValue](Editor &editor, bool) {
+              editor.getScene().props.clockBeatsPerBar() = oldValue;
+            });
+      } else if (action == "setClockStepsPerBeat") {
+        auto value = int(params.doubleValue());
+        auto oldValue = editor->getScene().props.clockStepsPerBeat();
+        Commands::Params commandParams;
+        commandParams.coalesce = true;
+        commandParams.coalesceLastOnly = false;
+        editor->getCommands().execute(
+            "set clock steps per beat", commandParams,
+            [value](Editor &editor, bool) {
+              editor.getScene().props.clockStepsPerBeat() = value;
+            },
+            [oldValue](Editor &editor, bool) {
+              editor.getScene().props.clockStepsPerBeat() = oldValue;
+            });
       }
     } else if (type == "grab") {
       engine.maybeGetEditor()->getGrabTool().changeSettings(action, params.doubleValue());

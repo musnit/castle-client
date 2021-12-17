@@ -89,17 +89,45 @@ export const CreateCardSettings = () => {
         </View>
       </View>
       {USE_CLOCK ? (
-        <View style={[styles.settingsRow, styles.numberRow]}>
-          <Text style={styles.numberLabel}>Card clock tempo</Text>
-          <View style={styles.numberInput}>
-            <InspectorNumberInput
-              value={settingsData.sceneProperties.clockTempo}
-              onChange={(value) =>
-                sendAction({ type: 'scene', action: 'setClockTempo', doubleValue: value })
-              }
-            />
+        <>
+          <View style={[styles.settingsRow, styles.numberRow]}>
+            <Text style={styles.numberLabel}>Clock tempo</Text>
+            <View style={styles.numberInput}>
+              <InspectorNumberInput
+                value={settingsData.sceneProperties.clockTempo}
+                onChange={(value) =>
+                  sendAction({ type: 'scene', action: 'setClockTempo', doubleValue: value })
+                }
+              />
+            </View>
           </View>
-        </View>
+          <View style={[styles.settingsRow, styles.numberRow]}>
+            <Text style={styles.numberLabel}>Clock beats per bar</Text>
+            <View style={styles.numberInput}>
+              <InspectorNumberInput
+                min={2}
+                max={12}
+                value={settingsData.sceneProperties.clockBeatsPerBar}
+                onChange={(value) =>
+                  sendAction({ type: 'scene', action: 'setClockBeatsPerBar', doubleValue: value })
+                }
+              />
+            </View>
+          </View>
+          <View style={[styles.settingsRow, styles.numberRow]}>
+            <Text style={styles.numberLabel}>Clock steps per beat</Text>
+            <View style={styles.numberInput}>
+              <InspectorNumberInput
+                min={2}
+                max={6}
+                value={settingsData.sceneProperties.clockStepsPerBeat}
+                onChange={(value) =>
+                  sendAction({ type: 'scene', action: 'setClockStepsPerBeat', doubleValue: value })
+                }
+              />
+            </View>
+          </View>
+        </>
       ) : null}
       <View style={styles.settingsRow}>
         <InspectorCheckbox
