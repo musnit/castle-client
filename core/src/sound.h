@@ -21,6 +21,8 @@ public:
   Sound();
   ~Sound() = default;
 
+  inline static bool isEnabled = true;
+
   void preload(const std::string &type, const std::string &recordingUrl,
       const std::string &uploadUrl, const std::string &category, int seed, int mutationSeed,
       int mutationAmount);

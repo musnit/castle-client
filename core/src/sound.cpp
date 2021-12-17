@@ -1,6 +1,8 @@
 #include "sound.h"
 #include "api.h"
 #include "js.h"
+#include "bridge.h"
+#include "engine.h"
 
 Sound::Sound() {
   initialize();
@@ -43,6 +45,9 @@ void Sound::play(const std::string &type, float playbackRate, const std::string 
   initialize();
 
   if (playbackRate <= 0.0) {
+    return;
+  }
+  if (!Sound::isEnabled) {
     return;
   }
 
@@ -113,3 +118,20 @@ void Sound::playEffect(float playbackRate, const std::string &category, int seed
   int handle = Sound::soloud.play(*Sound::sfxrSounds[key]);
   Sound::soloud.setRelativePlaySpeed(handle, playbackRate);
 }
+
+//
+// Events
+//
+
+struct SoundEnabledReceiver {
+  inline static const BridgeRegistration<SoundEnabledReceiver> registration { "SET_SOUND_ENABLED" };
+
+  struct Params {
+    PROP(bool, enabled) = true;
+  } params;
+
+  void receive(Engine &engine) {
+    Debug::log("Sound enabled: {}", params.enabled());
+    Sound::isEnabled = params.enabled();
+  }
+};

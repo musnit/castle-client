@@ -20817,9 +20817,10 @@ ma_result ma_context_init__coreaudio(const ma_context_config* pConfig, ma_contex
 
         ma_assert(pAudioSession != NULL);
 
-        // XXX(castle): enforce ambient audio category
+        // XXX(castle): uncomment to enforce ambient audio category
         // ma_ios_session_category category = pConfig->coreaudio.sessionCategory;
-        ma_ios_session_category category = ma_ios_session_category_ambient;
+        // ma_ios_session_category category = ma_ios_session_category_ambient;
+        ma_ios_session_category category = ma_ios_session_category_default;
 
         if (category == ma_ios_session_category_default) {
             /*
