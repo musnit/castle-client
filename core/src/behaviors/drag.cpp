@@ -11,7 +11,7 @@ static const TouchToken dragToken;
 
 struct DragStartTrigger : BaseTrigger {
   inline static const RuleRegistration<DragStartTrigger, DragBehavior> registration {
-    "drag start"
+    "drag start",
   };
   static constexpr auto description = "When a drag starts on this";
 
@@ -21,7 +21,7 @@ struct DragStartTrigger : BaseTrigger {
 
 struct DragStopTrigger : BaseTrigger {
   inline static const RuleRegistration<DragStopTrigger, DragBehavior> registration {
-    "drag stop"
+    "drag stop",
   };
   static constexpr auto description = "When a drag stops on this";
 
@@ -94,18 +94,14 @@ void DragBehavior::handlePerform(double dt) {
         jointDef.maxForce = 1000 * hitBody->GetMass(); // This is what Love does in its `MouseJoint`
         b2LinearStiffness(jointDef.stiffness, jointDef.damping, 5.0, 0.7, jointDef.bodyA,
             jointDef.bodyB); // This is needed in the new Box2D (see its 'test.cpp')
+        if (hitComponent->handles.empty()) { // Trigger drag start if adding first handle
+          rulesBehavior.fire<DragStartTrigger>(hitActorId, {});
+        }
         hitComponent->handles.push_back({
             touchId,
             (b2MouseJoint *)scene.getPhysicsWorld().CreateJoint(&jointDef),
             hitBody->GetLocalPoint(jointDef.target),
-            hitActorId,
         });
-        if (hitComponent->attachedActors[hitActorId]) {
-          hitComponent->attachedActors[hitActorId]++;
-        } else {
-          hitComponent->attachedActors[hitActorId] = 1;
-          rulesBehavior.fire<DragStartTrigger>(hitActorId, {});
-        }
       }
     }
   });
@@ -133,18 +129,6 @@ void DragBehavior::handlePerform(double dt) {
           // No body -- joint isn't valid anymore so just remove handle
           handle.joint = nullptr;
         }
-
-        if (handle.joint == nullptr) {
-          auto actorId = handle.actorId;
-          if (component.attachedActors[actorId]) {
-            component.attachedActors[actorId]--;
-
-            if (component.attachedActors[actorId] == 0) {
-              component.attachedActors.erase(actorId);
-              rulesBehavior.fire<DragStopTrigger>(actorId, {});
-            }
-          }
-        }
       }
     }
     handles.erase(std::remove_if(handles.begin(), handles.end(),
@@ -152,6 +136,9 @@ void DragBehavior::handlePerform(double dt) {
                         return handle.joint == nullptr;
                       }),
         handles.end());
+    if (handles.empty()) { // Trigger drag stop if removed last handle
+      rulesBehavior.fire<DragStopTrigger>(actorId, {});
+    }
   });
 }
 
