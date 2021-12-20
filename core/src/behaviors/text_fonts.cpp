@@ -57,32 +57,16 @@ void TextBehavior::loadFontResources() {
 
   loadFontResource("Twemoji");
   loadFontResource("OpenSansEmoji");
-  loadFontResource("3270Condensed-Condensed");
-  loadFontResource("Abibas-Medium");
-  loadFontResource("AstralMono-Regular");
-  loadFontResource("Avara-Bold");
-  loadFontResource("Avara-BoldItalic");
-  loadFontResource("Betatron-Regular");
-  loadFontResource("Blocus-Regular");
-  loadFontResource("BreiteGrotesk-Regular");
-  loadFontResource("Chicagoland-Medium");
-  loadFontResource("ComicNeue-Bold");
-  loadFontResource("ComicNeueAngular-Bold");
-  loadFontResource("Compagnon-Bold");
-  loadFontResource("Compagnon-Medium");
-  loadFontResource("Compagnon-Roman");
-  loadFontResource("DagsenOutline-Black");
-  loadFontResource("Glacier-Bold");
-  loadFontResource("HappyTimesAtTheIKOB-Regular");
-  loadFontResource("HelicoCentrica-Roman");
-  loadFontResource("Norm-Medium");
-  loadFontResource("Norm-Regular");
-  loadFontResource("Outward-Block");
-  loadFontResource("Piazzolla-Medium");
-  loadFontResource("SnapitMono-Regular");
+
+  loadFontResource("BreiteGrotesk");
+  loadFontResource("Compagnon");
+  loadFontResource("Glacier");
+  loadFontResource("HelicoCentrica");
+  loadFontResource("Piazzolla");
+  loadFontResource("SpaceGrotesk-Medium");
   loadFontResource("SpaceGrotesk-Regular");
-  loadFontResource("StandardGraf-Regular");
-  loadFontResource("Syne-Extra");
-  loadFontResource("YatraOne-Regular");
-  loadFontResource("Zarathustra-Regular");
+  loadFontResource("YatraOne");
+  loadFontResource("Bore");
+  loadFontResource("Synco");
+  loadFontResource("Tektur");
 }
