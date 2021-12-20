@@ -49,6 +49,7 @@ void Editor::clearState() {
   isSelectedActorStateDirty = true;
   currentTool = Tool::Grab;
   drawTool.resetState();
+  soundTool.resetState();
   commands.clear();
   auto &drawingBehavior = scene->getBehaviors().byType<Drawing2Behavior>();
   drawingBehavior.clearEditorDataCache();
@@ -280,7 +281,11 @@ void Editor::update(double dt) {
     case EditMode::Draw:
       drawTool.update(dt);
       break;
+    case EditMode::Sound:
+      soundTool.update(dt);
+      break;
     }
+
 
     updateAutoSave(dt);
   }
@@ -441,6 +446,10 @@ void Editor::draw() {
     } else {
       drawTool.drawOverlay();
     }
+    break;
+  }
+  case EditMode::Sound: {
+    soundTool.drawOverlay();
     break;
   }
   }
@@ -737,6 +746,9 @@ struct EditorGlobalActionReceiver {
       if (newMode == "draw") {
         editor->editMode = Editor::EditMode::Draw;
         editor->drawTool.onSetActive();
+      } else if (newMode == "sound") {
+        editor->editMode = Editor::EditMode::Sound;
+        editor->soundTool.onSetActive();
       } else if (newMode == "default") {
         editor->editMode = Editor::EditMode::Default;
         editor->currentTool = Editor::Tool::Grab;
@@ -796,6 +808,9 @@ void Editor::sendGlobalActions() {
   }
   case EditMode::Draw:
     ev.editMode = "draw";
+    break;
+  case EditMode::Sound:
+    ev.editMode = "sound";
     break;
   }
 

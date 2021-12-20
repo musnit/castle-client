@@ -9,6 +9,7 @@
 #include "grab.h"
 #include "scale_rotate.h"
 #include "draw/draw_tool.h"
+#include "sound/sound_tool.h"
 #include "grid.h"
 #include "commands.h"
 #include "belt.h"
@@ -61,6 +62,7 @@ public:
   enum class EditMode {
     Default, // arrange actors and inspect their behaviors/properties
     Draw, // edit an actor's drawing
+    Sound, // edit sound and music data
   };
   EditMode getEditMode();
 
@@ -120,6 +122,9 @@ private:
 
   // 'Draw'-mode members
   DrawTool drawTool { *this };
+
+  // 'Sound'-mode members
+  SoundTool soundTool { *this };
 
   bool defaultViewApplied = false;
   std::pair<float, float> getDefaultView(); // Width and y offset -- could refactor into a struct
