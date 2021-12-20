@@ -7,6 +7,7 @@
 #include "play_button_feed.h"
 #include "horizontal_tap_feed.h"
 #include "horizontal_swipe_feed.h"
+#include "vertical_swipe_feed.h"
 
 class Feed {
 public:
@@ -18,8 +19,10 @@ public:
       instance = std::make_unique<PlayButtonFeed>(bridge);
     } else if (version == 1) {
       instance = std::make_unique<HorizontalTapFeed>(bridge);
-    } else {
+    } else if (version == 2) {
       instance = std::make_unique<HorizontalSwipeFeed>(bridge);
+    } else {
+      instance = std::make_unique<VerticalSwipeFeed>(bridge);
     }
   }
 
