@@ -325,6 +325,9 @@ const data = {
         },
       },
     },
+    ['play pattern']: {
+      category: 'sound',
+    },
     ['follow with camera']: {
       category: 'camera',
     },

@@ -1011,6 +1011,15 @@ const PlaySound = ({ response }) => {
   }
 };
 
+const PlayPattern = () => {
+  return [
+    {
+      type: 'selectEntry',
+      label: 'Play a pattern',
+    },
+  ];
+};
+
 const IsInCameraViewport = () => {
   return [
     {
@@ -1092,6 +1101,7 @@ export const Responses = {
   ['move toward actor']: MoveTowardActor,
   ['face direction of motion']: FaceDirectionOfMotion,
   ['play sound']: PlaySound,
+  ['play pattern']: PlayPattern,
   ['follow with camera']: FollowWithCamera,
   ['is in camera viewport']: IsInCameraViewport,
   ['animation frame meets condition']: AnimationFrameMeetsCondition,

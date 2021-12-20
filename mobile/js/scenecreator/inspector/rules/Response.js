@@ -7,6 +7,7 @@ import { getRuleRenderContext } from './RuleRenderContext';
 import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import { makeResponseActions } from './ResponseActions';
 import { PlaySoundResponse as PlaySound } from './PlaySoundResponse';
+import { PlayPatternResponse as PlayPattern } from './PlayPatternResponse';
 import { Responses } from './Responses';
 import { SetVariableResponse as SetVariable } from './SetVariableResponse';
 import { useActionSheet } from '@expo/react-native-action-sheet';
@@ -330,6 +331,7 @@ const RESPONSE_COMPONENTS = {
   ['set counter']: SetVariable,
   ['change counter']: SetVariable,
   ['play sound']: PlaySound,
+  ['play pattern']: PlayPattern,
   ['wait']: SceneCreatorConstants.USE_CLOCK ? Wait : undefined,
 };
 

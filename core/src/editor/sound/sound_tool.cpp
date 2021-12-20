@@ -26,4 +26,13 @@ void SoundTool::update(double dt) {
 
 void SoundTool::drawOverlay() {
   // TODO: render edit pattern
+  lv.graphics.push(love::Graphics::STACK_ALL);
+
+  love::Colorf clearColor { 1.0f, 0.0f, 0.0f, 1.0f };
+  love::Colorf drawColor { 0.0f, 0.0f, 0.0f, 1.0f };
+  lv.graphics.clear(clearColor, {}, {});
+  lv.graphics.setColor(drawColor);
+  lv.graphics.circle(love::Graphics::DrawMode::DRAW_FILL, 0.0f, 0.0f, 1.0f);
+
+  lv.graphics.pop();
 }
