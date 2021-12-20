@@ -6,6 +6,7 @@
 #include "api.h"
 #include <thread>
 
+#define TOP_PADDING 60
 #define CARD_WIDTH 800
 #define CARD_HEIGHT 1120
 #define FEED_ITEM_HEIGHT (CARD_WIDTH + 200)
@@ -33,7 +34,7 @@ void HorizontalSwipeFeed::update(double dt) {
   gesture.update();
   gesture.withSingleTouch([&](const Touch &touch) {
     if (touch.pressed) {
-      ignoreCurrentTouch = touch.screenPos.y < CARD_HEIGHT;
+      ignoreCurrentTouch = touch.screenPos.y < CARD_HEIGHT + TOP_PADDING;
     }
 
     if (ignoreCurrentTouch) {
@@ -45,6 +46,7 @@ void HorizontalSwipeFeed::update(double dt) {
     if (!hasTouch) {
       hasTouch = true;
       touchDuration = 0.0;
+      touchVelocity = 0.0;
       touchStartYOffset = yOffset;
     } else {
       touchVelocity = (touch.screenPos.x - lastTouchPosition) * 0.3 + touchVelocity * 0.9;
@@ -154,7 +156,7 @@ void HorizontalSwipeFeed::renderCardAtPosition(int idx, float position, bool isA
   }
 
   viewTransform.reset();
-  viewTransform.translate(position, 0);
+  viewTransform.translate(position, TOP_PADDING);
   lv.graphics.applyTransform(&viewTransform);
 
   static auto quad = [&]() {
@@ -286,7 +288,7 @@ void HorizontalSwipeFeed::draw() {
   for (int i = 0; i < 5; i++) {
     lv.graphics.push(love::Graphics::STACK_ALL);
     viewTransform.reset();
-    viewTransform.translate(CARD_WIDTH / 2.0 + (i - 2.5) * 70, CARD_HEIGHT + 40);
+    viewTransform.translate(CARD_WIDTH / 2.0 + (i - 2.5) * 70, CARD_HEIGHT + 80);
     lv.graphics.applyTransform(&viewTransform);
 
     lv.graphics.polyline(&playButton[0], 3);
