@@ -7,7 +7,7 @@
 #include "gesture.h"
 #include "variables.h"
 #include "clock.h"
-#include "sound.h"
+#include "sound/sound.h"
 #include "bridge.h"
 
 

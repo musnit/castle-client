@@ -3,7 +3,7 @@
 #include "js.h"
 #include "api.h"
 #include "expressions/expression.h"
-#include "sound.h"
+#include "sound/sound.h"
 
 
 //

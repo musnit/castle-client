@@ -3,7 +3,7 @@
 #include "archive.h"
 #include "behaviors/all.h"
 #include "library.h"
-#include "sound.h"
+#include "sound/sound.h"
 
 Editor::Editor(Bridge &bridge_)
     : bridge(bridge_) {
