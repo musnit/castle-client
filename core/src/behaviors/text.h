@@ -53,7 +53,7 @@ struct TextComponent : BaseComponent {
             = "SpaceGrotesk-Regular";
     PROP(float, fontSize,
         .label("Font size")
-        ) = 1;
+        ) = 10;
     PROP(std::string, alignment,
         .label("Alignment")
         .allowedValues("left", "right", "center", "justify")

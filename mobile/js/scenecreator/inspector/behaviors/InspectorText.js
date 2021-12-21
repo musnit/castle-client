@@ -153,9 +153,9 @@ export default InspectorText = () => {
       />
       <Text style={styles.label}>Font size</Text>
       <InspectorNumberInput
-        min={0.5}
-        max={3}
-        step={0.25}
+        min={1}
+        max={30}
+        step={1}
         value={fontSizeValue}
         onChange={onChangeFontSizeValue}
         style={{ marginBottom: 12 }}
