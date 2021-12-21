@@ -192,7 +192,7 @@ void TextBehavior::handlePrePerform() {
 
 love::Font *TextBehavior::getFont(TextFontResource *fontResource, float pixelSize) const {
   for (auto &entry : fontResource->entries) {
-    if (float(entry.pixelSize) > pixelSize) {
+    if (entry.pixelSize > 1024 || float(entry.pixelSize) > pixelSize) {
       return entry.font.get();
     }
   }
