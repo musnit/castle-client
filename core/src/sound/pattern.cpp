@@ -1,5 +1,29 @@
 #include "pattern.h"
 
+Pattern::Pattern(const Pattern &other) {
+  name = other.name;
+  for (auto &[time, notesList] : other.notes) {
+    notes[time] = notesList;
+  }
+}
+
+void Pattern::write(Writer &writer) const {
+  writer.write("notes", notes);
+}
+
+void Pattern::read(Reader &reader) {
+  reader.each([&](const char *key) {
+    if (std::string(key) == "notes") {
+      reader.read(notes);
+    }
+  });
+  for (auto &[time, notesAtTime] : notes) {
+    for (auto &note : notesAtTime) {
+      note.time = time;
+    }
+  }
+}
+
 void Pattern::toggleNote(double step, float key) {
   bool exists = false;
   auto foundNotesItr = notes.find(step);

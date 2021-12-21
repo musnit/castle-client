@@ -1,6 +1,7 @@
 #pragma once
 
 #include "precomp.h"
+#include "archive.h"
 
 class Pattern {
 public:
@@ -12,11 +13,21 @@ public:
     inline bool operator==(const Note &b) {
       return time == b.time && key == b.key;
     }
+
+    inline void write(Writer &writer) const {
+      writer.num("key", key);
+    }
+
+    inline void read(Reader &reader) {
+      key = reader.num("key", 0);
+    }
   };
 
   Pattern() = default;
-  Pattern(const Pattern &) = delete;
+  Pattern(const Pattern &);
   const Pattern &operator=(const Pattern &) = delete;
+  void write(Writer &writer) const;
+  void read(Reader &reader);
 
   void toggleNote(double step, float key);
 

@@ -97,6 +97,7 @@ private:
   friend struct DrawToolViewInContextReceiver;
   friend struct DrawToolTmpGridSettingsReceiver;
   friend struct ImportImageActionReceiver;
+  friend struct SoundToolSetDataReceiver;
 
   Lv &lv { Lv::getInstance() };
   Bridge &bridge;

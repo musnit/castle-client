@@ -153,6 +153,8 @@ public:
   void read(SmallVector<T, N> &v);
   template<typename T>
   void read(std::optional<T> &o);
+  template<typename T>
+  void read(std::map<double, T> &m);
 
   template<typename T>
   void read(T &&v); // Read value into an existing object of custom type. Can be a function, a type
@@ -321,6 +323,8 @@ private:
   json::Value write_(const std::unordered_map<std::string, T> &m);
   template<typename T>
   json::Value write_(const std::unordered_map<int, T> &m);
+  template<typename Numeric, typename T>
+  json::Value write_(const std::map<Numeric, T> &m);
   template<typename T>
   json::Value write_(T &&v);
 };
@@ -696,6 +700,15 @@ void Reader::read(std::optional<T> &o) {
 }
 
 template<typename T>
+void Reader::read(std::map<double, T> &m) {
+  each([&](const char *key) {
+    T value;
+    read(value);
+    m[atof(key)] = value;
+  });
+}
+
+template<typename T>
 void Reader::read(T &&v) {
   static_assert(std::is_invocable_v<T> || hasRead<T> || Props::isReflectable<T>,
       "read: this type is not readable");
@@ -1005,6 +1018,15 @@ inline json::Value Writer::write_(const std::unordered_map<std::string, T> &m) {
 
 template<typename T>
 inline json::Value Writer::write_(const std::unordered_map<int, T> &m) {
+  auto result = json::Value(json::kObjectType);
+  for (auto &[key, value] : m) {
+    result.AddMember(makeStr(std::to_string(key)), write_(value), alloc);
+  }
+  return result;
+}
+
+template<typename Numeric, typename T>
+inline json::Value Writer::write_(const std::map<Numeric, T> &m) {
   auto result = json::Value(json::kObjectType);
   for (auto &[key, value] : m) {
     result.AddMember(makeStr(std::to_string(key)), write_(value), alloc);

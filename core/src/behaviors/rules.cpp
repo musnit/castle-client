@@ -2,7 +2,7 @@
 
 #include "behaviors/all.h"
 #include "engine.h"
-
+#include "sound/pattern.h"
 
 //
 // Serialization
@@ -916,7 +916,11 @@ struct PlayPatternResponse : BaseResponse {
   static constexpr auto description = "Play a pattern";
 
   struct Params {
+    PROP(Pattern, pattern);
   } params;
+
+  void run(RuleContext &ctx) override {
+  }
 };
 
 struct EditorChangeSoundReceiver {

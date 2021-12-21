@@ -22,14 +22,17 @@ public:
   void drawOverlay();
 
   // TODO: extend to support songs
-  void setPattern(Pattern *pattern);
+  void setPattern(Pattern &pattern);
   bool hasPattern();
+
+  std::string sessionId; // used to pass data back to the correct place in editor frontend
+  void sendPatternEvent();
 
 private:
   Lv &lv { Lv::getInstance() };
   Editor &editor;
 
-  std::shared_ptr<Pattern> pattern;
+  std::unique_ptr<Pattern> pattern;
 
   // for pattern editing
   float gridCellSize = 1.0f;
@@ -39,8 +42,8 @@ private:
   mutable love::Transform viewTransform;
 };
 
-inline void SoundTool::setPattern(Pattern *pattern_) {
-  pattern = std::shared_ptr<Pattern>(pattern_);
+inline void SoundTool::setPattern(Pattern &pattern_) {
+  pattern = std::make_unique<Pattern>(pattern_);
 }
 
 inline bool SoundTool::hasPattern() {
