@@ -2,9 +2,12 @@
 
 #include "precomp.h"
 #include "lv.h"
+#include "editor/grid.h"
 #include "sound/pattern.h"
 
 class Editor;
+
+#define SOUND_DEFAULT_VIEW_WIDTH 10.0f
 
 class SoundTool {
 public:
@@ -25,7 +28,15 @@ public:
 private:
   Lv &lv { Lv::getInstance() };
   Editor &editor;
+
   std::shared_ptr<Pattern> pattern;
+
+  // for pattern editing
+  float gridCellSize = 1.0f;
+  Grid grid;
+  void drawGrid(float viewScale);
+  void drawPattern();
+  mutable love::Transform viewTransform;
 };
 
 inline void SoundTool::setPattern(Pattern *pattern_) {
