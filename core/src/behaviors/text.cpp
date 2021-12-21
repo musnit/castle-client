@@ -278,6 +278,20 @@ bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &com
   return true;
 }
 
+struct TextOverlayStyleReceiver {
+  inline static const BridgeRegistration<TextOverlayStyleReceiver> registration {
+    "TEXT_OVERLAY_STYLE"
+  };
+
+  struct Params {
+    PROP(TextBehavior::OverlayStyle, style);
+  } params;
+
+  void receive(Engine &engine) {
+    TextBehavior::overlayStyle = params.style();
+  }
+};
+
 void TextBehavior::handleDrawOverlay() const {
   // Draw texts without bodies as overlays along bottom of screen
 
@@ -304,39 +318,58 @@ void TextBehavior::handleDrawOverlay() const {
     return;
   }
 
-  // Draw bottom to top
-  constexpr float margin = 0.2; // Gap around box, between boxes
-  constexpr float padding = 0.2; // Gap between text and box edge
+  // Parameters
   auto &scene = getScene();
+  auto &style = overlayStyle;
+  auto fontScale = style.fontSize() / 10;
+  auto horizontalPadding = style.horizontalPadding() / 10;
+  auto topPadding = style.topPadding() / 10;
+  auto bottomPadding = style.bottomPadding() / 10;
+  auto horizontalMargin = style.horizontalMargin() / 10;
+  auto betweenMargin = style.betweenMargin() / 10;
+  auto bottomMargin = style.bottomMargin() / 10;
+
+  // Draw bottom to top
   auto cameraPos = scene.getCameraPosition();
   auto cameraSize = scene.getCameraSize();
-  auto x = cameraPos.x - 0.5f * cameraSize.x + margin;
-  auto boxWidth = cameraSize.x - 2 * margin;
-  auto textWidth = boxWidth - 2 * padding;
-  auto y = cameraPos.y + 0.5f * cameraSize.y;
+  auto x = cameraPos.x - 0.5f * cameraSize.x + horizontalMargin;
+  auto boxWidth = cameraSize.x - 2 * horizontalMargin;
+  auto textWidth = boxWidth - 2 * horizontalPadding;
+  auto y = cameraPos.y + 0.5f * cameraSize.y - (bottomMargin - betweenMargin);
   auto font = overlayFont;
   auto fontHeight = font->getHeight();
   lv.graphics.push(love::Graphics::STACK_ALL);
   lv.graphics.setFont(font);
+  auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
   for (auto [actorId, component] : elems) {
+    auto isTappable = rulesBehavior.hasTrigger<TextTapTrigger>(actorId);
+
     // Compute height
-    constexpr float downscale = 0.0342;
+    float downscale = 0.1f * 0.0342f * fontScale;
     auto formatted = formatContent(component->props.content());
     std::vector<std::string> lines;
     font->getWrap({ { formatted, { 1, 1, 1, 1 } } }, textWidth / downscale, lines);
     auto textHeight = downscale * fontHeight * float(lines.size());
-    auto boxHeight = 2 * padding + textHeight;
+    auto boxHeight = topPadding + bottomPadding + textHeight;
 
     // Move up by box height, draw box
-    y -= margin + boxHeight;
-    lv.graphics.setColor({ 0, 0, 0, 1 });
+    y -= betweenMargin + boxHeight;
+    if (isTappable) {
+      lv.graphics.setColor(style.tappableBackgroundColor());
+    } else {
+      lv.graphics.setColor(style.regularBackgroundColor());
+    }
     lv.graphics.rectangle(love::Graphics::DRAW_FILL, x, y, boxWidth, boxHeight, 0.1, 0.1, 6);
 
     // Draw text
     lv.graphics.push();
-    lv.graphics.translate(x + padding, y + padding);
+    lv.graphics.translate(x + horizontalPadding, y + topPadding);
     lv.graphics.scale(downscale, downscale);
-    lv.graphics.setColor({ 1, 1, 1, 1 });
+    if (isTappable) {
+      lv.graphics.setColor(style.tappableForegroundColor());
+    } else {
+      lv.graphics.setColor(style.regularForegroundColor());
+    }
     lv.graphics.printf({ { std::move(formatted), { 1, 1, 1, 1 } } }, textWidth / downscale,
         love::Font::ALIGN_LEFT, love::Matrix4(0, 0, 0, 1, 1, 0, 0, 0, 0));
     lv.graphics.pop();

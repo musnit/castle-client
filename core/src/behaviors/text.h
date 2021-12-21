@@ -93,6 +93,21 @@ public:
 
   inline static const TouchToken overlayTouchToken;
 
+  struct OverlayStyle {
+    PROP(love::Colorf, regularBackgroundColor) = { 1, 1, 1, 1 };
+    PROP(love::Colorf, regularForegroundColor) = { 0, 0, 0, 1 };
+    PROP(love::Colorf, tappableBackgroundColor) = { 0, 0, 0, 1 };
+    PROP(love::Colorf, tappableForegroundColor) = { 1, 1, 1, 1 };
+    PROP(float, fontSize) = 10;
+    PROP(float, horizontalPadding) = 2;
+    PROP(float, topPadding) = 2;
+    PROP(float, bottomPadding) = 2;
+    PROP(float, horizontalMargin) = 2;
+    PROP(float, betweenMargin) = 2;
+    PROP(float, bottomMargin) = 2;
+  };
+  static OverlayStyle overlayStyle;
+
 private:
   friend struct ShowResponse;
   friend struct HideResponse;
@@ -110,3 +125,5 @@ private:
 
   std::string formatContent(const std::string &content) const;
 };
+
+inline TextBehavior::OverlayStyle TextBehavior::overlayStyle;

@@ -9,7 +9,7 @@ import {
   Platform,
   Pressable,
 } from 'react-native';
-import { useCoreState, sendGlobalAction } from '../core/CoreEvents';
+import { useCoreState, sendGlobalAction, sendAsync } from '../core/CoreEvents';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 
 import * as Constants from '../Constants';
@@ -76,6 +76,26 @@ export const CreateCardHeader = ({
     actionsAvailable: {},
   };
 
+  // for david to experiment with overlay text style
+  // TODO: remove
+  React.useEffect(() => {
+    sendAsync('TEXT_OVERLAY_STYLE', {
+      style: {
+        regularBackgroundColor: [1, 1, 1, 1],
+        regularForegroundcolor: [0, 0, 0, 1],
+        tappableBackgroundColor: [0, 0, 0, 1],
+        tappableForegroundColor: [1, 1, 1, 1],
+        fontSize: 18,
+        horizontalPadding: 2,
+        topPadding: 2,
+        bottomPadding: 2,
+        horizontalMargin: 2,
+        betweenMargin: 2,
+        bottomMargin: 2,
+      },
+    });
+  }, []);
+
   const { showActionSheetWithOptions } = useActionSheet();
   const maybeClone = React.useCallback(() => {
     showActionSheetWithOptions(
@@ -109,7 +129,8 @@ https://github.com/th3rdwave/react-native-safe-area-context/issues/124
         style={[
           styles.actionsContainer,
           data.performing ? styles.actionsContainerPerforming : null,
-        ]}>
+        ]}
+      >
         {data.performing ? (
           <>
             <TouchableOpacity style={styles.action} onPress={() => sendGlobalAction('onRewind')}>
@@ -125,7 +146,8 @@ https://github.com/th3rdwave/react-native-safe-area-context/issues/124
             <TouchableOpacity
               style={styles.action}
               disabled={!data.actionsAvailable.onUndo}
-              onPress={() => sendGlobalAction('onUndo')}>
+              onPress={() => sendGlobalAction('onUndo')}
+            >
               <CastleIcon
                 name="undo"
                 size={22}
@@ -135,7 +157,8 @@ https://github.com/th3rdwave/react-native-safe-area-context/issues/124
             <TouchableOpacity
               style={styles.action}
               disabled={!data.actionsAvailable.onRedo}
-              onPress={() => sendGlobalAction('onRedo')}>
+              onPress={() => sendGlobalAction('onRedo')}
+            >
               <CastleIcon
                 name="redo"
                 size={22}
@@ -145,7 +168,8 @@ https://github.com/th3rdwave/react-native-safe-area-context/issues/124
             <TouchableOpacity
               style={styles.action}
               disabled={data.performing || data.editMode !== 'default'}
-              onPress={onPressSettings}>
+              onPress={onPressSettings}
+            >
               <CastleIcon
                 name="settings"
                 size={22}
@@ -168,7 +192,8 @@ https://github.com/th3rdwave/react-native-safe-area-context/issues/124
               isCardChanged && !loading && !pressed ? null : { opacity: 0.33, shadowOpacity: 0 },
             ]}
             onPress={onSave}
-            disabled={!isCardChanged}>
+            disabled={!isCardChanged}
+          >
             {loading ? (
               <ActivityIndicator color="#000"/>
             ) : (
