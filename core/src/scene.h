@@ -234,7 +234,7 @@ public:
   void draw(std::optional<SceneDrawingOptions> options = std::nullopt) const;
   void applyViewTransform(float windowWidth) const;
 
-  void sendScreenshot();
+  void sendScreenshot(bool fixToOrigin);
 
 
 private:

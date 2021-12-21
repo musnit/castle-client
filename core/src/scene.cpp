@@ -497,24 +497,28 @@ struct SceneMessageEvent {
   PROP(std::string, data);
 };
 
-void Scene::sendScreenshot() {
+void Scene::sendScreenshot(bool fixToOrigin) {
   if (!screenshot) {
     screenshot = std::make_unique<Screenshot>(1350);
   }
   SceneMessageEvent ev;
   ev.messageType = "SCREENSHOT_DATA";
 
-  // don't use scene camera for screenshot
-  auto oldCameraPosition = getCameraPosition();
-  auto oldViewWidth = getViewWidth();
-  setCameraPosition({ 0, 0 });
-  setViewWidth(Scene::defaultViewWidth);
+  if (fixToOrigin) {
+    // don't use scene camera for screenshot
+    auto oldCameraPosition = getCameraPosition();
+    auto oldViewWidth = getViewWidth();
+    setCameraPosition({ 0, 0 });
+    setViewWidth(Scene::defaultViewWidth);
 
-  ev.data = screenshot->getBase64Screenshot(this);
-
-  // restore scene camera
-  setCameraPosition(oldCameraPosition);
-  setViewWidth(oldViewWidth);
+    ev.data = screenshot->getBase64Screenshot(this);
+    
+    // restore scene camera
+    setCameraPosition(oldCameraPosition);
+    setViewWidth(oldViewWidth);
+  } else {
+    ev.data = screenshot->getBase64Screenshot(this);
+  }
 
   bridge.sendEvent("SCENE_MESSAGE", ev);
 }

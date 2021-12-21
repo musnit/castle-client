@@ -467,9 +467,9 @@ struct RequestScreenshotReceiver {
   void receive(Engine &engine) {
     auto editor = engine.maybeGetEditor();
     if (editor) {
-      editor->getScene().sendScreenshot();
+      editor->getScene().sendScreenshot(true);
     } else {
-      engine.getScene().sendScreenshot();
+      engine.getScene().sendScreenshot(false);
     }
   }
 };
