@@ -191,19 +191,22 @@ void TextBehavior::handlePrePerform() {
 //
 
 love::Font *TextBehavior::getFont(TextFontResource *fontResource, float pixelSize) const {
-  pixelSize /= 4; // Kind of an arbitrary constant to keep texture sizes sane...
   for (auto &entry : fontResource->entries) {
     if (float(entry.pixelSize) > pixelSize) {
       return entry.font.get();
     }
   }
-  for (auto powerSize = 12;; powerSize *= 2) {
-    if (powerSize > 1024 || float(powerSize) > pixelSize) {
-      love::StrongRef rasterizer(lv.font.newTrueTypeRasterizer(fontResource->data, int(pixelSize),
-                                     love::TrueTypeRasterizer::HINTING_NORMAL),
+  constexpr auto baseSize = 64;
+  for (float dpiScale = 1;; dpiScale *= 2) {
+    auto candidatePixelSize
+        = std::floorf(baseSize * dpiScale + 0.5f); // From 'freetype/TrueTypeRasterizer.cpp'
+    if (candidatePixelSize > 1024 || candidatePixelSize > pixelSize) {
+      Debug::log("dpiScale: {}", dpiScale);
+      love::StrongRef rasterizer(lv.font.newTrueTypeRasterizer(fontResource->data, baseSize,
+                                     dpiScale, love::TrueTypeRasterizer::HINTING_NORMAL),
           love::Acquire::NORETAIN);
       fontResource->entries.push_back({
-          powerSize,
+          int(candidatePixelSize),
           std::unique_ptr<love::Font>(lv.graphics.newFont(rasterizer)),
       });
       return fontResource->entries.back().font.get();
