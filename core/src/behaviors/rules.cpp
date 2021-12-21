@@ -909,20 +909,6 @@ struct PlaySoundResponse : BaseResponse {
 };
 
 
-struct PlayPatternResponse : BaseResponse {
-  inline static const RuleRegistration<PlayPatternResponse, RulesBehavior> registration {
-    "play pattern"
-  };
-  static constexpr auto description = "Play a pattern";
-
-  struct Params {
-    PROP(Pattern, pattern);
-  } params;
-
-  void run(RuleContext &ctx) override {
-  }
-};
-
 struct EditorChangeSoundReceiver {
   inline static const BridgeRegistration<EditorChangeSoundReceiver> registration {
     "EDITOR_CHANGE_SOUND"

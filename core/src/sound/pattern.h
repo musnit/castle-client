@@ -31,9 +31,6 @@ public:
 
   void toggleNote(double step, float key);
 
-  std::string name; // for referencing/stopping/etc.
-
-  // TODO: serialize/deserialize via archive/props
   // TODO: get next time anything happens
   // TODO: get notes at time / since time / in range?
 

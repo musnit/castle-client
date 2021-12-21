@@ -137,8 +137,6 @@ struct RuleEntryData {
   };
   PROP(std::vector<ParamSpec>, paramSpecs);
   PROP(std::string, initialParamsJson);
-
-  // TODO: returnType, triggerFilter, parentTypeFilter
 };
 
 struct RulesEditData {

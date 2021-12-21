@@ -1,7 +1,6 @@
 #include "pattern.h"
 
 Pattern::Pattern(const Pattern &other) {
-  name = other.name;
   for (auto &[time, notesList] : other.notes) {
     notes[time] = notesList;
   }
