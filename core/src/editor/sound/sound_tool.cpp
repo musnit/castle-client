@@ -2,9 +2,7 @@
 #include "editor/editor.h"
 #include "engine.h"
 #include "bridge.h"
-
-// TODO: receive event indicating which pattern to edit
-// expect this before onSetActive()
+#include "sound/instruments/sampler.h"
 
 SoundTool::SoundTool(Editor &editor_)
     : editor(editor_) {
@@ -12,12 +10,12 @@ SoundTool::SoundTool(Editor &editor_)
 }
 
 void SoundTool::resetState() {
-  pattern = nullptr;
+  song = nullptr;
   sessionId = "";
 }
 
 void SoundTool::onSetActive() {
-  if (!hasPattern()) {
+  if (!hasSong()) {
     // pattern = std::make_shared<Pattern>();
   }
 }
@@ -26,7 +24,7 @@ void SoundTool::update(double dt) {
   if (!editor.hasScene()) {
     return;
   }
-  if (!hasPattern()) {
+  if (!hasSong()) {
     return;
   }
   auto &scene = editor.getScene();
@@ -39,9 +37,16 @@ void SoundTool::update(double dt) {
       if (touch.pressed) {
         // grid x is step, grid y is key
         auto step = floor(transformedTouchPosition.x / gridCellSize);
-        auto key = floor(-transformedTouchPosition.y / gridCellSize);
-        pattern->toggleNote(double(step), key);
-        sendPatternEvent();
+        auto key = floor(-transformedTouchPosition.y / gridCellSize) + 48; // set axis to midi C3
+        auto added = song->pattern.toggleNote(double(step), key);
+        // sendPatternEvent();
+
+        // if note added, play it
+        // TODO: other instruments
+        if (added && song->instruments.size()) {
+          auto &firstInstrument = song->instruments[0];
+          firstInstrument->play(scene.getSound(), { step, key });
+        }
       }
     });
   }
@@ -61,8 +66,8 @@ void SoundTool::drawGrid(float viewScale) {
       gridDotRadius, true);
 };
 
-void SoundTool::drawPattern() {
-  if (!hasPattern()) {
+void SoundTool::drawPattern(Pattern *pattern) {
+  if (!hasSong()) {
     return;
   }
 
@@ -72,7 +77,7 @@ void SoundTool::drawPattern() {
   for (auto &[time, notes] : *pattern) {
     auto x = time * gridCellSize;
     for (auto &note : notes) {
-      auto y = (note.key * -gridCellSize) - gridCellSize;
+      auto y = ((note.key - 48) * -gridCellSize) - gridCellSize;
       lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);
     }
   }
@@ -93,7 +98,9 @@ void SoundTool::drawOverlay() {
   lv.graphics.setLineWidth(0.1f);
 
   drawGrid(viewScale);
-  drawPattern();
+  if (hasSong()) {
+    drawPattern(&(song->pattern));
+  }
 
   lv.graphics.pop();
 }
@@ -119,6 +126,11 @@ struct SoundToolSceneMusicReceiver {
 
     if (params.action() == "add") {
       editor->getScene().songs.emplace(params.songId(), Song(params.songId()));
+
+      // for now add a single Sampler to all songs
+      // TODO: support multiple instruments/tracks
+      auto sampler = std::make_unique<Sampler>();
+      editor->getScene().songs[params.songId()].instruments.push_back(std::move(sampler));
     } else if (params.action() == "remove") {
       editor->getScene().songs.erase(params.songId());
     }
@@ -159,7 +171,7 @@ struct SoundToolSetDataReceiver {
     if (params.songId() != "") {
       // TODO: extend to support songs and not just a pattern
       auto &song = editor->getScene().songs[params.songId()];
-      editor->soundTool.setPattern(song.pattern);
+      editor->soundTool.setSong(song);
     }
   }
 };
@@ -170,6 +182,8 @@ struct SoundToolPatternEvent {
 };
 
 void SoundTool::sendPatternEvent() {
-  SoundToolPatternEvent ev { sessionId, pattern };
-  editor.getBridge().sendEvent("EDITOR_SOUND_TOOL_PATTERN", ev);
+  if (hasSong()) {
+    SoundToolPatternEvent ev { sessionId, &(song->pattern) };
+    editor.getBridge().sendEvent("EDITOR_SOUND_TOOL_PATTERN", ev);
+  }
 }

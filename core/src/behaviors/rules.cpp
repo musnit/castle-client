@@ -2,7 +2,7 @@
 
 #include "behaviors/all.h"
 #include "engine.h"
-#include "sound/pattern.h"
+#include "sound/sample.h"
 
 //
 // Serialization
@@ -857,46 +857,13 @@ struct PlaySoundResponse : BaseResponse {
   };
   static constexpr auto description = "Play a sound";
 
-  static constexpr double minPlaybackRate = 0.0;
-  static constexpr double maxPlaybackRate = 10.0;
-
-  struct Params {
-    PROP(
-         std::string, type,
-         .label("sound type")
-         .allowedValues("sfxr", "microphone", "library")
-         ) = "sfxr";
-    PROP(
-        ExpressionRef, playbackRate,
-        .label("playback rate")
-        .min(minPlaybackRate)
-        .max(maxPlaybackRate)
-        ) = 1;
-    PROP(std::string, recordingUrl) = "";
-    PROP(std::string, uploadUrl) = "";
-    PROP(
-         std::string, category,
-         .allowedValues("pickup", "laser", "explosion", "powerup", "hit", "jump", "blip", "random")
-         )
-            = "random";
-    PROP(
-         int, seed,
-         .label("random seed")
-         .min(0)
-         ) = 1337;
-    PROP(int, mutationSeed, .label("mutation seed")) = 0;
-    PROP(
-         int, mutationAmount,
-         .label("mutation amount")
-         .min(0)
-         .max(20)
-         ) = 5;
-  } params;
+  using Params = Sample;
+  Params params;
 
   void run(RuleContext &ctx) override {
     auto &sound = ctx.getScene().getSound();
-    auto playbackRate
-        = std::clamp(params.playbackRate().eval<double>(ctx), minPlaybackRate, maxPlaybackRate);
+    auto playbackRate = std::clamp(
+        params.playbackRate().eval<double>(ctx), Sample::minPlaybackRate, Sample::maxPlaybackRate);
     sound.play(params.type(), playbackRate, params.recordingUrl(), params.uploadUrl(),
         params.category(), params.seed(), params.mutationSeed(), params.mutationAmount());
   }
@@ -914,7 +881,7 @@ struct EditorChangeSoundReceiver {
     "EDITOR_CHANGE_SOUND"
   };
 
-  PlaySoundResponse::Params params;
+  Sample params;
 
   void receive(Engine &engine) {
     if (!engine.getIsEditing())
@@ -937,7 +904,7 @@ struct EditorPreviewSoundReceiver {
     "EDITOR_PREVIEW_SOUND"
   };
 
-  PlaySoundResponse::Params params;
+  Sample params;
 
   void receive(Engine &engine) {
     if (!engine.getIsEditing())

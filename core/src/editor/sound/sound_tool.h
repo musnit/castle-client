@@ -3,7 +3,7 @@
 #include "precomp.h"
 #include "lv.h"
 #include "editor/grid.h"
-#include "sound/pattern.h"
+#include "sound/song.h"
 
 class Editor;
 
@@ -21,9 +21,8 @@ public:
   void update(double dt);
   void drawOverlay();
 
-  // TODO: extend to support songs
-  void setPattern(Pattern &pattern);
-  bool hasPattern();
+  void setSong(Song &song);
+  bool hasSong();
 
   std::string sessionId; // used to pass data back to the correct place in editor frontend
   void sendPatternEvent();
@@ -33,21 +32,21 @@ private:
   Lv &lv { Lv::getInstance() };
   Editor &editor;
 
-  Pattern *pattern;
+  Song *song = nullptr;
 
   // for pattern editing
   float gridCellSize = 1.0f;
   Grid grid;
   void drawGrid(float viewScale);
-  void drawPattern();
+  void drawPattern(Pattern *pattern);
   mutable love::Transform viewTransform;
 };
 
-inline void SoundTool::setPattern(Pattern &pattern_) {
-  // editing in place for now w/o ownership - do something smarter when we support songs
-  pattern = &pattern_;
+inline void SoundTool::setSong(Song &song_) {
+  // editing in place for now w/o ownership - do something smarter when we support headless patterns
+  song = &song_;
 }
 
-inline bool SoundTool::hasPattern() {
-  return pattern != nullptr;
+inline bool SoundTool::hasSong() {
+  return song != nullptr;
 }

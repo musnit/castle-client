@@ -3,6 +3,7 @@
 #include "precomp.h"
 #include "archive.h"
 #include "pattern.h"
+#include "instruments/instrument.h"
 
 class Song {
 public:
@@ -19,5 +20,6 @@ public:
   std::string songId;
 
   // TODO: organize multiple sounds and patterns
+  std::vector<std::unique_ptr<Instrument>> instruments;
   Pattern pattern;
 };

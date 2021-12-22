@@ -23,7 +23,7 @@ void Pattern::read(Reader &reader) {
   }
 }
 
-void Pattern::toggleNote(double step, float key) {
+bool Pattern::toggleNote(double step, float key) {
   bool exists = false;
   auto foundNotesItr = notes.find(step);
   if (foundNotesItr != notes.end()) {
@@ -43,5 +43,7 @@ void Pattern::toggleNote(double step, float key) {
       notes.emplace(step, SmallVector<Note, 2>());
     }
     notes[step].push_back({ step, key });
+    return true;
   }
+  return false;
 }
