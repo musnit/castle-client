@@ -35,6 +35,15 @@ Player::Player(Bridge &bridge_)
     : bridge(bridge_) {
 }
 
+Player::~Player() {
+  clearState();
+}
+
+void Player::clearState() {
+  sound.removeAllClocks();
+  // TODO: maybe scene = nullptr
+}
+
 void Player::tryLoadVariables() {
 #ifdef __EMSCRIPTEN__
   if (auto variablesJson = JS_getVariables()) {
@@ -54,7 +63,7 @@ void Player::tryLoadNextCard() {
     sceneArchive = Archive::fromJson(sceneDataJson);
     sceneArchive.read([&](Reader &reader) {
       reader.obj("snapshot", [&]() {
-        scene = std::make_unique<Scene>(bridge, variables, false, &reader);
+        scene = std::make_unique<Scene>(bridge, variables, sound, clock, false, &reader);
       });
     });
     free(sceneDataJson);
@@ -64,7 +73,7 @@ void Player::tryLoadNextCard() {
 
 void Player::readScene(Reader &reader) {
   sceneArchive = Archive::fromJson(reader.toJson().c_str());
-  scene = std::make_unique<Scene>(bridge, variables, false, &reader);
+  scene = std::make_unique<Scene>(bridge, variables, sound, clock, false, &reader);
 }
 
 void Player::readVariables(Reader &reader) {
@@ -85,10 +94,10 @@ void Player::update(double dt) {
       sceneArchive.read([&](Reader &reader) {
         if (reader.has("snapshot")) {
           reader.obj("snapshot", [&]() {
-            scene = std::make_unique<Scene>(bridge, variables, false, &reader);
+            scene = std::make_unique<Scene>(bridge, variables, sound, clock, false, &reader);
           });
         } else {
-          scene = std::make_unique<Scene>(bridge, variables, false, &reader);
+          scene = std::make_unique<Scene>(bridge, variables, sound, clock, false, &reader);
         }
       });
     }

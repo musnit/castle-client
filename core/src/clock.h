@@ -16,11 +16,16 @@ public:
     Step,
   };
 
-  explicit Clock(Scene &scene_);
+  Clock() = default;
   Clock(const Clock &) = delete; // Prevent accidental copies
   const Clock &operator=(const Clock &) = delete;
 
+  inline static int nextClockId = 0;
+  int clockId = nextClockId++;
+
   void reset();
+  void setScene(Scene *scene);
+  void unlinkScene(Scene *scene);
   void reset(unsigned int tempo, unsigned int beatsPerBar, unsigned int stepsPerBeat);
   void update(double dt);
 
@@ -33,7 +38,7 @@ public:
   double getTimeSinceBeat();
 
 private:
-  Scene &scene;
+  Scene *scene = nullptr;
   double performTime = 0;
 
   unsigned int tempo = 120;
@@ -52,8 +57,14 @@ private:
   void fireBeatTriggers(Quantize unit, int index);
 };
 
-inline Clock::Clock(Scene &scene_)
-    : scene(scene_) {
+inline void Clock::setScene(Scene *scene_) {
+  scene = scene_;
+}
+
+inline void Clock::unlinkScene(Scene *scene_) {
+  if (scene == scene_) {
+    scene = nullptr;
+  }
 }
 
 inline unsigned int Clock::getTotalBeatsElapsed() {

@@ -89,6 +89,8 @@ double Clock::getTimeUntilNext(Quantize quant, double count) {
 }
 
 void Clock::fireBeatTriggers(Clock::Quantize unit, int index) {
-  auto &rulesBehavior = scene.getBehaviors().byType<RulesBehavior>();
-  rulesBehavior.fireBeatTriggers(unit, index);
+  if (scene) {
+    auto &rulesBehavior = scene->getBehaviors().byType<RulesBehavior>();
+    rulesBehavior.fireBeatTriggers(unit, index);
+  }
 }

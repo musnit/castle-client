@@ -14,6 +14,7 @@ public:
   const Player &operator=(const Player &) = delete;
 
   explicit Player(Bridge &bridge_);
+  ~Player();
 
   void update(double dt);
   void draw();
@@ -24,6 +25,8 @@ public:
   bool hasScene();
   Scene &getScene();
 
+  void clearState();
+
 private:
   Lv &lv { Lv::getInstance() };
   Bridge &bridge;
@@ -32,6 +35,8 @@ private:
   void tryLoadNextCard();
 
   Variables variables;
+  Clock clock;
+  Sound sound;
 
   Archive sceneArchive;
   std::unique_ptr<Scene> scene;

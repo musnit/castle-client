@@ -38,6 +38,7 @@ public:
   bool hasScene();
   Scene &getScene();
   bool getIsPlaying();
+  void setIsPlaying(bool playing_);
   Player *maybeGetPlayer();
   void maybeLoadPlayerSnapshot(const char *json);
 
@@ -105,6 +106,9 @@ private:
 
   Variables variables; // Stub empty instance that we can pass to our edited scene
   EditVariables editVariables;
+
+  Clock clock;
+  Sound sound;
 
   bool playing = false;
   std::unique_ptr<Scene> scene; // The edited version of the scene, non-`null` once data is loaded

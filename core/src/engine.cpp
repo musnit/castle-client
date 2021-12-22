@@ -435,8 +435,9 @@ struct ClearSceneReceiver {
     if (engine.getIsEditing()) {
       // TODO: maybe destroy editor, recreate on next editing mount
       engine.maybeGetEditor()->clearState();
+    } else {
+      engine.getPlayer().clearState();
     }
-
     Sound::clearCache();
   }
 };

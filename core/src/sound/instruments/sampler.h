@@ -6,7 +6,7 @@
 // sampler uses the same `Sample` sound source as the PlaySound rule response.
 class Sampler : public Instrument {
 public:
-  Sampler() = default;
+  explicit Sampler();
   ~Sampler();
 
   inline std::string getType() const override {

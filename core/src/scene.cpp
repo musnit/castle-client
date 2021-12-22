@@ -10,15 +10,22 @@
 // Constructor, destructor
 //
 
-Scene::Scene(Bridge &bridge_, Variables &variables_, bool isEditing_, Reader *maybeReader)
+Scene::Scene(Bridge &bridge_, Variables &variables_, Sound &sound_, Clock &clock_, bool isEditing_,
+    Reader *maybeReader)
     : variables(variables_)
     , bridge(bridge_)
+    , clock(clock_)
+    , sound(sound_)
     , isEditing(isEditing_)
     , physicsContactListener(*this)
     , behaviors(std::make_unique<AllBehaviors>(*this))
     , library(std::make_unique<Library>(*this)) {
   // Link to variables
   variables.linkScene(this);
+
+  // Link to clock
+  clock.setScene(this);
+  sound.addClock(clock);
 
   // Physics setup
   {
@@ -42,6 +49,9 @@ Scene::Scene(Bridge &bridge_, Variables &variables_, bool isEditing_, Reader *ma
 Scene::~Scene() {
   // Unlink from variables
   variables.unlinkScene(this);
+
+  // Unlink from clock, but don't remove clock from sound thread
+  clock.unlinkScene(this);
 }
 
 
@@ -339,7 +349,7 @@ void Scene::update(double dt) {
   // Update time
   dt = std::min(dt, 0.1); // Clamp `dt` to avoid huge steps
   performTime += dt; // For now we're always performing
-  clock.update(dt);
+  clock.update(dt); // TODO: move to Sound
 
   // Update gesture first so behaviors can read it
   updateGesture();

@@ -38,8 +38,8 @@ public:
   Scene(const Scene &) = delete; // Prevent accidental copies
   const Scene &operator=(const Scene &) = delete;
 
-  explicit Scene(
-      Bridge &bridge_, Variables &variables_, bool isEditing_, Reader *maybeReader = nullptr);
+  explicit Scene(Bridge &bridge_, Variables &variables_, Sound &sound, Clock &clock,
+      bool isEditing_, Reader *maybeReader = nullptr);
   ~Scene();
 
 
@@ -243,8 +243,8 @@ private:
   Variables &variables;
   Bridge &bridge;
   bool isEditing;
-  Sound sound;
-  Clock clock { *this };
+  Sound &sound;
+  Clock &clock;
 
   entt::registry registry;
 

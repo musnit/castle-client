@@ -6,6 +6,10 @@
 #include "soloud_sfxr.h"
 #include "soloud_wavstream.h"
 
+class Clock;
+class Pattern;
+class Instrument;
+
 class Sound {
   inline static bool hasInitializedSoloud = false;
   inline static SoLoud::Soloud soloud;
@@ -27,6 +31,11 @@ public:
   void play(const std::string &type, float playbackRate, const std::string &recordingUrl,
       const std::string &uploadUrl, const std::string &category, int seed, int mutationSeed,
       int mutationAmount);
+
+  void addClock(Clock &); // start audio thread if not started, add clock if not added
+  void removeAllClocks(); // stop audio thread and unschedule all clocks
+  void play(Pattern &pattern, Instrument &instrument, int clockId);
+
   static void clearCache() {
     sfxrSounds.clear();
     urlSounds.clear();

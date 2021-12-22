@@ -13,6 +13,20 @@ void Sound::initialize() {
   }
 }
 
+void Sound::addClock(Clock &clock) {
+  // TODO: start sound thread if not started
+  // TODO: add clock to sound thread, noop if already added
+}
+
+void Sound::removeAllClocks() {
+  // TODO: stop sound thread, clear references to clocks
+}
+
+void Sound::play(Pattern &pattern, Instrument &instrument, int clockId) {
+  // use clock to convert pattern to event stream
+  // add stream+instrument to audio thread
+}
+
 void Sound::preload(const std::string &type, const std::string &recordingUrl,
     const std::string &uploadUrl, const std::string &category, int seed, int mutationSeed,
     int mutationAmount) {

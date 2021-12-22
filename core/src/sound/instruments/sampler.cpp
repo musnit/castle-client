@@ -1,5 +1,12 @@
 #include "sampler.h"
 
+Sampler::Sampler() {
+  // make a default sfxr that sounds vaguely like a note
+  sample.category() = "blip";
+  sample.seed() = 2211;
+  sample.mutationSeed() = 7920;
+}
+
 Sampler::~Sampler() {
 }
 

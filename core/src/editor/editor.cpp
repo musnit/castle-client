@@ -11,11 +11,48 @@ Editor::Editor(Bridge &bridge_)
   isSelectedActorStateDirty = true;
 }
 
+void Editor::setIsPlaying(bool playing_) {
+  if (playing_ != playing) {
+    Sound::stopAll();
+    isEditorStateDirty = true;
+    if (playing_) {
+      if (hasScene()) {
+        player = std::make_unique<Player>(getBridge());
+        {
+          Archive archive;
+          archive.write([&](Writer &writer) {
+            writer.arr("variables", [&]() {
+              getVariables().write(writer);
+            });
+          });
+          archive.read([&](Reader &reader) {
+            reader.arr("variables", [&]() {
+              player->readVariables(reader);
+            });
+          });
+        }
+        {
+          auto &scene = getScene();
+          Archive archive;
+          archive.write([&](Writer &writer) {
+            scene.write(writer);
+          });
+          archive.read([&](Reader &reader) {
+            player->readScene(reader);
+          });
+        }
+        playing = true;
+      }
+    } else {
+      playing = false;
+      player.reset();
+    }
+  }
+}
+
 bool Editor::androidHandleBackPressed() {
   if (playing) {
-    playing = false;
-    player.reset();
-    isEditorStateDirty = true;
+    setIsPlaying(false);
     return true;
   }
 
@@ -58,12 +95,15 @@ void Editor::clearState() {
   if (capture) {
     capture = nullptr;
   }
+  setIsPlaying(false);
   scene = nullptr;
   editVariables.clear();
+  Sound::stopAll();
+  sound.removeAllClocks();
 }
 
 void Editor::readScene(Reader &reader) {
-  scene = std::make_unique<Scene>(bridge, variables, true, &reader);
+  scene = std::make_unique<Scene>(bridge, variables, sound, clock, true, &reader);
   isEditorStateDirty = true;
   isSelectedActorStateDirty = true;
   Debug::log("editor: read scene");
@@ -76,7 +116,8 @@ void Editor::readVariables(Reader &reader) {
 
 void Editor::loadEmptyScene() {
   editVariables.clear();
-  scene = std::make_unique<Scene>(bridge, variables, true);
+  scene = std::make_unique<Scene>(bridge, variables, sound, clock, true);
+  sound.addClock(clock);
   isEditorStateDirty = true;
   isSelectedActorStateDirty = true;
   Debug::log("editor: init empty scene");
@@ -704,40 +745,9 @@ struct EditorGlobalActionReceiver {
 
     Debug::log("editor received global action: {}", action);
     if (action == "onPlay") {
-      Sound::stopAll();
-      if (editor->hasScene()) {
-        editor->player = std::make_unique<Player>(editor->getBridge());
-        {
-          Archive archive;
-          archive.write([&](Writer &writer) {
-            writer.arr("variables", [&]() {
-              editor->getVariables().write(writer);
-            });
-          });
-          archive.read([&](Reader &reader) {
-            reader.arr("variables", [&]() {
-              editor->player->readVariables(reader);
-            });
-          });
-        }
-        {
-          auto &scene = editor->getScene();
-          Archive archive;
-          archive.write([&](Writer &writer) {
-            scene.write(writer);
-          });
-          archive.read([&](Reader &reader) {
-            editor->player->readScene(reader);
-          });
-        }
-        editor->playing = true;
-        editor->isEditorStateDirty = true;
-      }
+      editor->setIsPlaying(true);
     } else if (action == "onRewind") {
-      Sound::stopAll();
-      editor->playing = false;
-      editor->player.reset();
-      editor->isEditorStateDirty = true;
+      editor->setIsPlaying(false);
     } else if (action == "onUndo") {
       editor->commands.undo();
     } else if (action == "onRedo") {
