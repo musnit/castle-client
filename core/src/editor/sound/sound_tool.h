@@ -27,12 +27,13 @@ public:
 
   std::string sessionId; // used to pass data back to the correct place in editor frontend
   void sendPatternEvent();
+  void sendSceneMusicData();
 
 private:
   Lv &lv { Lv::getInstance() };
   Editor &editor;
 
-  std::unique_ptr<Pattern> pattern;
+  Pattern *pattern;
 
   // for pattern editing
   float gridCellSize = 1.0f;
@@ -43,7 +44,8 @@ private:
 };
 
 inline void SoundTool::setPattern(Pattern &pattern_) {
-  pattern = std::make_unique<Pattern>(pattern_);
+  // editing in place for now w/o ownership - do something smarter when we support songs
+  pattern = &pattern_;
 }
 
 inline bool SoundTool::hasPattern() {

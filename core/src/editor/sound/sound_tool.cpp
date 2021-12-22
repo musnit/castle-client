@@ -18,8 +18,7 @@ void SoundTool::resetState() {
 
 void SoundTool::onSetActive() {
   if (!hasPattern()) {
-    // we're allowed to be set active with an empty or null pattern - make one in that case
-    pattern = std::make_unique<Pattern>();
+    // pattern = std::make_shared<Pattern>();
   }
 }
 
@@ -103,14 +102,14 @@ void SoundTool::drawOverlay() {
 // Events
 //
 
-struct SoundToolSetDataReceiver {
-  inline static const BridgeRegistration<SoundToolSetDataReceiver> registration {
-    "SOUND_TOOL_SET_DATA"
+struct SoundToolSceneMusicReceiver {
+  inline static const BridgeRegistration<SoundToolSceneMusicReceiver> registration {
+    "EDITOR_MUSIC_ACTION"
   };
 
   struct Params {
-    PROP(std::string, sessionId);
-    PROP(std::optional<Pattern>, patternToEdit);
+    PROP(std::string, songId);
+    PROP(std::string, action);
   } params;
 
   void receive(Engine &engine) {
@@ -118,10 +117,49 @@ struct SoundToolSetDataReceiver {
     if (!editor)
       return;
 
-    // TODO: alternatively accept song id to edit
-    editor->soundTool.sessionId = params.sessionId();
-    if (params.patternToEdit()) {
-      editor->soundTool.setPattern(params.patternToEdit().value());
+    if (params.action() == "add") {
+      editor->getScene().songs.emplace(params.songId(), Song(params.songId()));
+    } else if (params.action() == "remove") {
+      editor->getScene().songs.erase(params.songId());
+    }
+    editor->soundTool.sendSceneMusicData();
+  }
+};
+
+struct SoundToolSceneMusicDataEvent {
+  struct SongData {
+    PROP(std::string, songId);
+  };
+  PROP(std::vector<SongData>, songs);
+};
+
+void SoundTool::sendSceneMusicData() {
+  SoundToolSceneMusicDataEvent ev;
+  auto &scene = editor.getScene();
+  for (auto &[songId, song] : scene.songs) {
+    ev.songs().push_back({ songId });
+  }
+  editor.getBridge().sendEvent("EDITOR_MUSIC", ev);
+}
+
+struct SoundToolSetDataReceiver {
+  inline static const BridgeRegistration<SoundToolSetDataReceiver> registration {
+    "SOUND_TOOL_START_EDITING"
+  };
+
+  struct Params {
+    PROP(std::string, songId);
+  } params;
+
+  void receive(Engine &engine) {
+    auto editor = engine.maybeGetEditor();
+    if (!editor)
+      return;
+
+    if (params.songId() != "") {
+      // TODO: extend to support songs and not just a pattern
+      auto &song = editor->getScene().songs[params.songId()];
+      editor->soundTool.setPattern(song.pattern);
     }
   }
 };
@@ -132,6 +170,6 @@ struct SoundToolPatternEvent {
 };
 
 void SoundTool::sendPatternEvent() {
-  SoundToolPatternEvent ev { sessionId, pattern.get() };
+  SoundToolPatternEvent ev { sessionId, pattern };
   editor.getBridge().sendEvent("EDITOR_SOUND_TOOL_PATTERN", ev);
 }
