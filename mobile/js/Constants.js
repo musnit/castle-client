@@ -88,9 +88,8 @@ export const styles = {
   },
   secondaryButton: {
     borderRadius: 4,
-    paddingTop: 4,
-    paddingBottom: 6,
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 5,
     backgroundColor: '#000',
     flexDirection: 'row',
     alignItems: 'center',
@@ -101,7 +100,6 @@ export const styles = {
   secondaryButtonLabel: {
     color: '#fff',
     fontSize: 16,
-    lineHeight: 22,
   },
   secondaryButtonIconLeft: {
     marginLeft: -5,
@@ -174,18 +172,20 @@ export const styles = {
   },
   empty: {
     width: '100%',
-    padding: 16,
-    paddingTop: 32,
+    paddingHorizontal: 32,
+    paddingVertical: 48,
+    alignItems: 'center',
   },
   emptyTitle: {
     color: colors.white,
     fontSize: 20,
-    marginBottom: 16,
+    marginBottom: 12,
   },
   emptyText: {
     color: colors.grayText,
     fontSize: 16,
     lineHeight: 24,
+    textAlign: 'center',
   },
 };
 

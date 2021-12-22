@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Linking,
+  Pressable,
   RefreshControl,
   ScrollView,
   StatusBar,
@@ -76,6 +77,36 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginLeft: 2,
   },
+  help: {
+    paddingRight: 8,
+    paddingBottom: 16,
+    width: '100%',
+  },
+  helpHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  helpHeaderText: {
+    color: '#fff',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  helpRow: {
+    flexDirection: 'row',
+    borderTopWidth: 1,
+    borderColor: '#888',
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  helpRowLabel: {
+    color: '#fff',
+    fontSize: 16,
+    flex: 1,
+    marginRight: 12,
+  },
+  helpRowButton: {
+  },
 });
 
 const EditDecksList = ({ fetchDecks, refreshing, filteredDecks, error }) => {
@@ -95,20 +126,17 @@ const EditDecksList = ({ fetchDecks, refreshing, filteredDecks, error }) => {
 
   if (!refreshing && filteredDecks?.length === 0) {
     return (
-      <View style={Constants.styles.empty}>
-        <Text style={Constants.styles.emptyTitle}>No decks... yet!</Text>
-        <Text style={Constants.styles.emptyText}>
-          Create your first deck by tapping the button above, or remix an existing deck.
-        </Text>
-        <Text style={[Constants.styles.emptyText, { marginTop: 16 }]}>
-          Want help or inspiration?{' '}
-          <Text
-            style={{ color: '#fff' }}
-            onPress={() => Linking.openURL(Constants.DISCORD_INVITE_LINK)}>
-            Join our Discord!
+      <>
+        <View style={Constants.styles.empty}>
+          <Text style={Constants.styles.emptyTitle}>No decks... yet!</Text>
+          <Text style={Constants.styles.emptyText}>
+            Create your first deck by tapping the button above, or remix an existing deck.
           </Text>
-        </Text>
-      </View>
+        </View>
+        <View style={{ paddingLeft: 8, }}>
+          <CreateHelpLinks />
+        </View>
+      </>
     );
   }
 
@@ -132,6 +160,7 @@ const EditDecksList = ({ fetchDecks, refreshing, filteredDecks, error }) => {
               />
             ))
           : null}
+        <CreateHelpLinks />
       </ScrollView>
     );
   }
@@ -162,6 +191,32 @@ const EditDeckCell = (props) => {
             <Text style={styles.playCountLabel}>{deck.reactions[0].count}</Text>
           </View>
         ) : null}
+      </View>
+    </View>
+  );
+};
+
+const CreateHelpLinks = () => {
+  return (
+    <View style={styles.help}>
+      <View style={styles.helpHeader}>
+        <FastImage
+          style={{ width: 23, height: 24, marginRight: 12 }}
+          source={require('../../assets/images/emoji/key-white.png')}
+        />
+        <Text style={styles.helpHeaderText}>Looking for help?</Text>
+      </View>
+      {/* <View style={styles.helpRow}>
+        <Text style={styles.helpRowLabel}>Read through our official written tutorials</Text>
+        <Pressable style={[Constants.styles.secondaryButton, styles.helpRowButton]} onPress={() => Linking.openURL(Constants.DISCORD_INVITE_LINK)}>
+          <Text style={Constants.styles.secondaryButtonLabel}>Browse Docs</Text>
+        </Pressable>
+      </View> */}
+      <View style={styles.helpRow}>
+        <Text style={styles.helpRowLabel}>Ask questions, leave feedback, hang out</Text>
+        <Pressable style={[Constants.styles.secondaryButton, styles.helpRowButton]} onPress={() => Linking.openURL(Constants.DISCORD_INVITE_LINK)}>
+          <Text style={Constants.styles.secondaryButtonLabel}>Join Discord</Text>
+        </Pressable>
       </View>
     </View>
   );
