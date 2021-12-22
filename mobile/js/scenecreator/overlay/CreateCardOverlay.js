@@ -4,6 +4,7 @@ import { useCardCreator } from '../CreateCardContext';
 import { OverlaySelectionActions } from './OverlaySelectionActions';
 import { OverlayBlueprint } from './OverlayBlueprint';
 import { OverlayDrawing } from './OverlayDrawing';
+import { OverlaySound } from './OverlaySound';
 
 const styles = StyleSheet.create({
   container: {
@@ -26,6 +27,12 @@ export const CreateCardOverlay = ({ activeSheet, setActiveSheet, editMode, beltH
     return (
       <View style={styles.container} pointerEvents="box-none">
         <OverlayDrawing setActiveSheet={setActiveSheet} />
+      </View>
+    );
+  } else if (editMode === 'sound') {
+    return (
+      <View style={styles.container} pointerEvents="box-none">
+        <OverlaySound setActiveSheet={setActiveSheet} />
       </View>
     );
   } else {

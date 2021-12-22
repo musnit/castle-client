@@ -3,11 +3,14 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { BottomSheet } from '../../components/BottomSheet';
 import { DeckVariables } from '../DeckVariables';
+import { DeckMusic } from '../DeckMusic';
 import { SceneBackups } from '../SceneBackups';
 import { SegmentedNavigation } from '../../components/SegmentedNavigation';
 import { useCardCreator } from '../CreateCardContext';
 import { CreateCardSettings } from './CreateCardSettingsSheet';
 import { CastleIcon } from './../../Constants';
+
+import { USE_CLOCK } from '../SceneCreatorConstants';
 
 const styles = StyleSheet.create({
   container: {
@@ -62,6 +65,12 @@ export const CardToolsSheet = ({ isOpen, onClose, ...props }) => {
       value: 'layout',
     },
   ];
+  if (USE_CLOCK) {
+    TAB_ITEMS.splice(1, 0, {
+      name: 'Music',
+      value: 'music',
+    });
+  }
   if (saveAction === 'save') {
     // neither 'clone' nor 'none'
     TAB_ITEMS.push({
@@ -77,6 +86,8 @@ export const CardToolsSheet = ({ isOpen, onClose, ...props }) => {
     ? () => null
     : mode === 'variables'
     ? () => <DeckVariables />
+    : mode === 'music'
+    ? () => <DeckMusic />
     : mode === 'layout'
     ? () => <CreateCardSettings />
     : () => <SceneBackups cardId={cardId} onSelectSceneData={onSelectBackupData} />;
