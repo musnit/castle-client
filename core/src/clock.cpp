@@ -19,20 +19,28 @@ void Clock::reset(unsigned int tempo_, unsigned int beatsPerBar_, unsigned int s
 }
 
 void Clock::reset() {
-  performTime = 0;
-  timePerBeat = (1.0 / double(tempo)) * 60.0; // bpm -> seconds per beat
-  timeSinceBeat = 0;
-  timeSinceStep = 0;
-  totalBeatsElapsed = 0;
-  totalBarsElapsed = 0;
-  totalStepsElapsed = 0;
+  {
+    love::thread::Lock lock(mutex);
+    performTime = 0;
+    timePerBeat = (1.0 / double(tempo)) * 60.0; // bpm -> seconds per beat
+    timeSinceBeat = 0;
+    timeSinceStep = 0;
+    totalBeatsElapsed = 0;
+    totalBarsElapsed = 0;
+    totalStepsElapsed = 0;
+    fireBeatTriggerStep = false;
+    fireBeatTriggerBeat = false;
+    fireBeatTriggerBar = false;
+  }
 
   fireBeatTriggers(Quantize::Bar, 0);
   fireBeatTriggers(Quantize::Beat, 0);
   fireBeatTriggers(Quantize::Step, 0);
 }
 
+// not on graphics thread
 void Clock::update(double dt) {
+  love::thread::Lock lock(mutex);
   performTime += dt;
   timeSinceBeat += dt;
   timeSinceStep += dt;
@@ -41,18 +49,35 @@ void Clock::update(double dt) {
     totalStepsElapsed++;
     timeSinceStep -= currentStepInterval();
     // TODO: with swing, compute next interval
-    fireBeatTriggers(Quantize::Step, totalStepsElapsed % stepsPerBeat);
+    fireBeatTriggerStep = true;
   }
 
   if (timeSinceBeat >= timePerBeat) {
     totalBeatsElapsed++;
     timeSinceBeat -= timePerBeat;
-    fireBeatTriggers(Quantize::Beat, totalBeatsElapsed % beatsPerBar);
+    fireBeatTriggerBeat = true;
     if (totalBeatsElapsed % beatsPerBar == 0) {
       // keep a running tally in case we later support changing beatsPerBar mid-run
       totalBarsElapsed++;
-      fireBeatTriggers(Quantize::Bar, totalBarsElapsed);
+      fireBeatTriggerBar = true;
     }
+  }
+}
+
+// guaranteed on graphics thread
+void Clock::frame() {
+  love::thread::Lock lock(mutex);
+  if (fireBeatTriggerStep) {
+    fireBeatTriggers(Quantize::Step, totalStepsElapsed % stepsPerBeat);
+    fireBeatTriggerStep = false;
+  }
+  if (fireBeatTriggerBeat) {
+    fireBeatTriggers(Quantize::Beat, totalBeatsElapsed % beatsPerBar);
+    fireBeatTriggerBeat = false;
+  }
+  if (fireBeatTriggerBar) {
+    fireBeatTriggers(Quantize::Bar, totalBarsElapsed);
+    fireBeatTriggerBar = false;
   }
 }
 
@@ -70,6 +95,7 @@ double Clock::getTimeUntilNext(Quantize quant, double count) {
   if (count <= 0) {
     return 0;
   }
+  love::thread::Lock lock(mutex);
   switch (quant) {
   case Quantize::Bar: {
     auto absolute = getDuration(count, 0, 0);

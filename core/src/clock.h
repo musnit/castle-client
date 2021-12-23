@@ -27,7 +27,12 @@ public:
   void setScene(Scene *scene);
   void unlinkScene(Scene *scene);
   void reset(unsigned int tempo, unsigned int beatsPerBar, unsigned int stepsPerBeat);
+
+  // expect update(dt) and frame() to both be called;
+  // update is not necessarily called from the graphics thread;
+  // frame is called from graphics thread once per frame
   void update(double dt);
+  void frame();
 
   double getDuration(double bars, double beats, double steps);
   double getTimeUntilNext(Quantize quant, double count);
@@ -38,6 +43,7 @@ public:
   double getTimeSinceBeat();
 
 private:
+  love::thread::MutexRef mutex;
   Scene *scene = nullptr;
   double performTime = 0;
 
@@ -51,6 +57,9 @@ private:
   int totalBeatsElapsed = 0;
   int totalBarsElapsed = 0;
   int totalStepsElapsed = 0;
+
+  // flags indicating whether we need to fire a trigger on next frame
+  bool fireBeatTriggerStep = false, fireBeatTriggerBeat = false, fireBeatTriggerBar = false;
 
   double currentStepInterval();
 

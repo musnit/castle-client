@@ -115,7 +115,7 @@ void Editor::readVariables(Reader &reader) {
 void Editor::loadEmptyScene() {
   editVariables.clear();
   scene = std::make_unique<Scene>(bridge, variables, sound, clock, true);
-  sound.addClock(clock);
+  sound.addClock(&clock);
   isEditorStateDirty = true;
   isSelectedActorStateDirty = true;
   Debug::log("editor: init empty scene");
@@ -259,6 +259,7 @@ void Editor::update(double dt) {
 
     // Need to tell scene to update gesture, since we didn't `scene->update()`
     scene->updateGesture();
+    clock.frame();
 
     // Make sure ghost actors exist before tools look for them
     scene->getLibrary().ensureGhostActorsExist();

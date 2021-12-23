@@ -25,7 +25,7 @@ Scene::Scene(Bridge &bridge_, Variables &variables_, Sound &sound_, Clock &clock
 
   // Link to clock
   clock.setScene(this);
-  sound.addClock(clock);
+  sound.addClock(&clock);
 
   // Physics setup
   {
@@ -353,7 +353,7 @@ void Scene::update(double dt) {
   // Update time
   dt = std::min(dt, 0.1); // Clamp `dt` to avoid huge steps
   performTime += dt; // For now we're always performing
-  clock.update(dt); // TODO: move to Sound
+  clock.frame();
 
   // Update gesture first so behaviors can read it
   updateGesture();
