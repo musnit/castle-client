@@ -22,6 +22,10 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 import com.google.android.gms.auth.api.credentials.Credential;
+import com.google.android.play.core.review.ReviewInfo;
+import com.google.android.play.core.review.ReviewManager;
+import com.google.android.play.core.review.ReviewManagerFactory;
+import com.google.android.play.core.tasks.Task;
 import com.reactnativenavigation.react.JsDevReloadHandler;
 import com.reactnativenavigation.react.ReactGateway;
 
@@ -35,6 +39,10 @@ import org.json.JSONObject;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
+
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 import xyz.castle.api.API;
 import xyz.castle.api.GraphQLOperation;
 import xyz.castle.navigation.CastleNavigator;
@@ -67,6 +75,42 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
     private CastleTabNavigator mainTabNavigator;
     private TabBar.Tab notificationsTab;
     private TabBar.Tab followingTab;
+
+    private long datesToDaysInterval(Date d1, Date d2) {
+        return TimeUnit.MILLISECONDS.toDays(d2.getTime() - d1.getTime());
+    }
+
+    private void maybeRequestReview() {
+        int numReviewShown = CastleSharedPreferences.numReviewShown();
+        if (numReviewShown > 0) {
+            return;
+        }
+
+        int numAppOpens = CastleSharedPreferences.numAppOpens();
+        long reviewTimestamp = CastleSharedPreferences.reviewTimestamp();
+        long daysBetween = datesToDaysInterval(new Date(reviewTimestamp), new Date(System.currentTimeMillis()));
+
+        if (numAppOpens < 5 || daysBetween < 7) {
+            return;
+        }
+
+        CastleSharedPreferences.incrementNumReviewShown();
+        CastleSharedPreferences.clearNumAppOpens();
+        CastleSharedPreferences.updateReviewTimestamp();
+
+        ReviewManager manager = ReviewManagerFactory.create(this);
+        Task<ReviewInfo> request = manager.requestReviewFlow();
+        request.addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                ReviewInfo reviewInfo = task.getResult();
+                Task<Void> flow = manager.launchReviewFlow(this, reviewInfo);
+                //CoreGameActivity.castleCoreViewSetPaused(true);
+                flow.addOnCompleteListener(task2 -> {
+                    //CoreGameActivity.castleCoreViewSetPaused(false);
+                });
+            }
+        });
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -141,12 +185,22 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
         navigator.setId("Root");
         navigator.bindViews(null, 0, 0);
 
+        boolean isMovingToScreen = false;
+
         // TODO: should this be before bindViews? don't want feed to load if we're going to a deep link
         if (isLoggedIn) {
             Intent intent = getIntent();
-            if (!handleDeepLink(intent)) {
-                handlePushNotification(intent, true);
+            if (handleDeepLink(intent)) {
+                isMovingToScreen = true;
+            } else {
+                if (handlePushNotification(intent, true)) {
+                    isMovingToScreen = true;
+                }
             }
+        }
+
+        if (!isMovingToScreen) {
+            maybeRequestReview();
         }
     }
 
@@ -243,7 +297,7 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
         return false;
     }
 
-    private void handlePushNotification(Intent intent, boolean initialLoad) {
+    private boolean handlePushNotification(Intent intent, boolean initialLoad) {
         Bundle extras = intent.getExtras();
         boolean isOpeningDeck = false;
         if (extras != null && extras.containsKey(CastleFirebaseMessagingService.NOTIFICATION_DATA_KEY)) {
@@ -275,7 +329,11 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
                     mainTabNavigator.switchToTab(notificationsTab.id);
                 });
             }
+
+            return true;
         }
+
+        return false;
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

@@ -52,6 +52,7 @@ public class MainApplication extends Application implements ReactApplication {
       registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
 
       CastleSharedPreferences.initialize(this);
+      CastleSharedPreferences.incrementNumAppOpens();
       String channel = CastleNativeSettingsModule.reactNativeChannel();
       if (channel == null) {
           channel = "default";
