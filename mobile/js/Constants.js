@@ -14,6 +14,7 @@ export const FEED_ITEM_HEADER_HEIGHT = 48;
 export const TABLET_MAX_FORM_WIDTH = 512;
 
 export const DISCORD_INVITE_LINK = 'https://discord.gg/rQETB4H';
+export const DOCS_LINK = 'https://castle.xyz/docs';
 
 export const colors = {
   black: '#000',

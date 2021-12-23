@@ -105,8 +105,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 12,
   },
-  helpRowButton: {
-  },
+  helpRowButton: {},
 });
 
 const EditDecksList = ({ fetchDecks, refreshing, filteredDecks, error }) => {
@@ -133,7 +132,7 @@ const EditDecksList = ({ fetchDecks, refreshing, filteredDecks, error }) => {
             Create your first deck by tapping the button above, or remix an existing deck.
           </Text>
         </View>
-        <View style={{ paddingLeft: 8, }}>
+        <View style={{ paddingLeft: 8 }}>
           <CreateHelpLinks />
         </View>
       </>
@@ -206,15 +205,19 @@ const CreateHelpLinks = () => {
         />
         <Text style={styles.helpHeaderText}>Looking for help?</Text>
       </View>
-      {/* <View style={styles.helpRow}>
+      <View style={styles.helpRow}>
         <Text style={styles.helpRowLabel}>Read through our official written tutorials</Text>
-        <Pressable style={[Constants.styles.secondaryButton, styles.helpRowButton]} onPress={() => Linking.openURL(Constants.DISCORD_INVITE_LINK)}>
+        <Pressable
+          style={[Constants.styles.secondaryButton, styles.helpRowButton]}
+          onPress={() => Linking.openURL(Constants.DOCS_LINK)}>
           <Text style={Constants.styles.secondaryButtonLabel}>Browse Docs</Text>
         </Pressable>
-      </View> */}
+      </View>
       <View style={styles.helpRow}>
         <Text style={styles.helpRowLabel}>Ask questions, leave feedback, hang out</Text>
-        <Pressable style={[Constants.styles.secondaryButton, styles.helpRowButton]} onPress={() => Linking.openURL(Constants.DISCORD_INVITE_LINK)}>
+        <Pressable
+          style={[Constants.styles.secondaryButton, styles.helpRowButton]}
+          onPress={() => Linking.openURL(Constants.DISCORD_INVITE_LINK)}>
           <Text style={Constants.styles.secondaryButtonLabel}>Join Discord</Text>
         </Pressable>
       </View>
