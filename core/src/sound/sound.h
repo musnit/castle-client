@@ -23,7 +23,7 @@ public:
   Sound &operator=(Sound &&) = default;
 
   Sound();
-  ~Sound() = default;
+  ~Sound();
 
   void preload(const std::string &type, const std::string &recordingUrl,
       const std::string &uploadUrl, const std::string &category, int seed, int mutationSeed,
@@ -32,7 +32,7 @@ public:
       const std::string &uploadUrl, const std::string &category, int seed, int mutationSeed,
       int mutationAmount);
 
-  void addClock(Clock &); // start audio thread if not started, add clock if not added
+  void addClock(Clock *); // start audio thread if not started, add clock if not added
   void removeAllClocks(); // stop audio thread and unschedule all clocks
   void play(Pattern &pattern, Instrument &instrument, int clockId);
 
@@ -56,4 +56,25 @@ private:
   void playUrl(float playbackRate, const std::string &url);
   void playEffect(float playbackRate, const std::string &category, int seed, int mutationSeed,
       int mutationAmount);
+
+  class ClockThread : public love::thread::Threadable {
+  public:
+    ClockThread(Sound &owner_);
+    virtual ~ClockThread() = default;
+    void threadFunction();
+    void addClock(Clock *);
+    void finish();
+
+  private:
+    Sound &owner;
+    love::timer::Timer timer;
+
+    // clocks managed by this thread
+    std::vector<Clock *> clocks;
+
+    volatile bool shouldFinish;
+    love::thread::MutexRef mutex;
+  };
+
+  ClockThread *clockThread = nullptr;
 };

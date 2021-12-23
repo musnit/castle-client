@@ -1,9 +1,61 @@
 #include "sound.h"
+#include "lv.h"
 #include "api.h"
 #include "js.h"
+#include "clock.h"
+
+#include <common/delay.h>
+
+Sound::ClockThread::ClockThread(Sound &owner_)
+    : owner(owner_) {
+  threadName = "SoundClockThread";
+}
+
+void Sound::ClockThread::threadFunction() {
+  while (true) {
+    {
+      love::thread::Lock lock(mutex);
+      if (shouldFinish) {
+        return;
+      }
+    }
+
+    double dt = timer.step();
+    {
+      love::thread::Lock lock(mutex);
+      for (auto &clock : clocks) {
+        clock->update(dt);
+        // TODO:
+        // stream { clockStartTime, pattern, instrument }
+        // for each stream on this clock,
+        //   if the clock time >= stream's nextTime,
+        //     fire stream's next events (play notes)
+        //   if the stream is done, remove the stream
+      }
+    }
+    love::sleep(4);
+  }
+}
+
+void Sound::ClockThread::finish() {
+  love::thread::Lock lock(mutex);
+  shouldFinish = true;
+}
+
+void Sound::ClockThread::addClock(Clock *clock) {
+  // add clock to sound thread, noop if already added
+  love::thread::Lock lock(mutex);
+  if (std::find(clocks.begin(), clocks.end(), clock) == clocks.end()) {
+    clocks.push_back(clock);
+  }
+}
 
 Sound::Sound() {
   initialize();
+}
+
+Sound::~Sound() {
+  removeAllClocks();
 }
 
 void Sound::initialize() {
@@ -13,13 +65,21 @@ void Sound::initialize() {
   }
 }
 
-void Sound::addClock(Clock &clock) {
-  // TODO: start sound thread if not started
-  // TODO: add clock to sound thread, noop if already added
+void Sound::addClock(Clock *clock) {
+  // start sound thread if not started
+  if (!clockThread) {
+    clockThread = new ClockThread(*this);
+    clockThread->start();
+  }
+  clockThread->addClock(clock);
 }
 
 void Sound::removeAllClocks() {
-  // TODO: stop sound thread, clear references to clocks
+  if (clockThread) {
+    clockThread->finish();
+    clockThread->wait();
+    clockThread = nullptr;
+  }
 }
 
 void Sound::play(Pattern &pattern, Instrument &instrument, int clockId) {
