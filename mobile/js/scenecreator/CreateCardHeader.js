@@ -170,7 +170,7 @@ https://github.com/th3rdwave/react-native-safe-area-context/issues/124
             onPress={onSave}
             disabled={!isCardChanged}>
             {loading ? (
-              <ActivityIndicator />
+              <ActivityIndicator color="#000"/>
             ) : (
               <Text style={[Constants.styles.primaryButtonLabel, { textAlign: 'center' }]}>
                 Save
