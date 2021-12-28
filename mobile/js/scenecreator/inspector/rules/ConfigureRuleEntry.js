@@ -34,9 +34,11 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
+    color: Constants.colors.black,
   },
   selectText: {
     fontSize: 16,
+    color: Constants.colors.black,
   },
   placeholderText: {
     fontSize: 16,
