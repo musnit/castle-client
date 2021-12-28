@@ -18,6 +18,7 @@ export const ExploreFeed = ({ route }) => {
     time: undefined,
     lastDeckId: undefined,
   });
+  const [lastQueryData, setLastQueryData] = React.useState(null);
   const [decks, changeDecks] = React.useReducer((decks, action) => {
     switch (action.type) {
       case 'set':
@@ -70,6 +71,12 @@ export const ExploreFeed = ({ route }) => {
 
   React.useEffect(() => {
     if (query.called && !query.loading && !query.error && query.data) {
+      // Without this, both "set" and "appent" get called every time a new page is loaded
+      if (lastQueryData == query.data) {
+        return;
+      }
+      setLastQueryData(query.data);
+
       const decks = query.data.paginateFeed;
       if (lastFetched.lastDeckId && decks[decks.length - 1].deckId !== lastFetched.lastDeckId) {
         // append next page
@@ -79,7 +86,7 @@ export const ExploreFeed = ({ route }) => {
         changeDecks({ type: 'set', decks });
       }
     }
-  }, [query.called, query.loading, query.error, query.data, lastFetched.lastDeckId]);
+  }, [lastQueryData, query.called, query.loading, query.error, query.data, lastFetched.lastDeckId]);
 
   const scrollViewRef = React.useRef(null);
   useScrollToTop(scrollViewRef);
