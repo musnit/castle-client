@@ -149,9 +149,23 @@ const Comment = ({
 
   return (
     <View style={[styles.commentContainer]}>
-      <Pressable onPress={() => navigateToUser(comment.fromUser)}>
-        <UserAvatar url={comment.fromUser.photo?.url} style={styles.authorAvatar} />
-      </Pressable>
+      <View style={{ flexDirection: 'column' }}>
+        <Pressable onPress={() => navigateToUser(comment.fromUser)}>
+          <UserAvatar url={comment.fromUser.photo?.url} style={styles.authorAvatar} />
+        </Pressable>
+        <Pressable
+          onPress={() => {
+            onToggleCommentReaction(
+              Constants.reactionIds.fire,
+              comment.commentId,
+              !fireIsCurrentUserToggled
+            );
+            setOptimisticReaction(!fireIsCurrentUserToggled);
+          }}
+          style={{ flex: 1 }}>
+          <View style={{ flex: 1 }} />
+        </Pressable>
+      </View>
       <View style={{ flex: 1 }}>
         <View style={styles.commentAuthor}>
           <Pressable onPress={() => navigateToUser(comment.fromUser)}>
@@ -159,22 +173,33 @@ const Comment = ({
           </Pressable>
           <Text style={styles.commentDate}>{toRecentDate(comment.createdTime)}</Text>
         </View>
-        <View style={styles.commentBody}>
-          {comment.isDeleted ? (
-            <Text style={styles.commentUnavailableLabel}>This comment was deleted</Text>
-          ) : (
-            <View>
-              <MessageBody
-                body={comment.body}
-                styles={commentBodyStyles}
-                navigateToUser={navigateToUser}
-              />
-              {comment.image && (
-                <FastImage style={styles.image} source={{ uri: comment.image.url }} />
-              )}
-            </View>
-          )}
-        </View>
+        <Pressable
+          onPress={() => {
+            onToggleCommentReaction(
+              Constants.reactionIds.fire,
+              comment.commentId,
+              !fireIsCurrentUserToggled
+            );
+            setOptimisticReaction(!fireIsCurrentUserToggled);
+          }}
+          style={{ flex: 1 }}>
+          <View style={styles.commentBody}>
+            {comment.isDeleted ? (
+              <Text style={styles.commentUnavailableLabel}>This comment was deleted</Text>
+            ) : (
+              <View>
+                <MessageBody
+                  body={comment.body}
+                  styles={commentBodyStyles}
+                  navigateToUser={navigateToUser}
+                />
+                {comment.image && (
+                  <FastImage style={styles.image} source={{ uri: comment.image.url }} />
+                )}
+              </View>
+            )}
+          </View>
+        </Pressable>
         <View style={styles.commentActions}>
           <Pressable
             onPress={() => {
@@ -186,8 +211,20 @@ const Comment = ({
               setOptimisticReaction(!fireIsCurrentUserToggled);
             }}
             style={styles.reactionContainer}>
-            <CastleIcon name={fireIsCurrentUserToggled ? 'fire-on' : 'fire-off'} size={14} color={fireIsCurrentUserToggled ? '#000' : '#888'} />
-            {fireReactionCount > 0 && <Text style={[styles.reactionText, {color: fireIsCurrentUserToggled ? '#000' : '#888'}]}>{fireReactionCount}</Text>}
+            <CastleIcon
+              name={fireIsCurrentUserToggled ? 'fire-on' : 'fire-off'}
+              size={14}
+              color={fireIsCurrentUserToggled ? '#000' : '#888'}
+            />
+            {fireReactionCount > 0 && (
+              <Text
+                style={[
+                  styles.reactionText,
+                  { color: fireIsCurrentUserToggled ? '#000' : '#888' },
+                ]}>
+                {fireReactionCount}
+              </Text>
+            )}
           </Pressable>
           <Pressable onPress={() => onReply({ isReply, setReplyingToComment })}>
             <Text style={styles.commentAction}>Reply</Text>
