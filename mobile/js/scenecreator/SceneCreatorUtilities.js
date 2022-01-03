@@ -95,6 +95,7 @@ export const makeExpressionSummary = (expression, context, depth = 0) => {
     }
     case 'abs':
     case 'floor':
+    case 'round':
     case 'sin':
     case 'rad': {
       let number = makeExpressionSummary(expression.params.number, context, depth + 1);

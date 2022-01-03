@@ -440,6 +440,9 @@ const data = {
     floor: {
       category: 'functions',
     },
+    round: {
+      category: 'functions',
+    },
     mix: {
       category: 'functions',
     },

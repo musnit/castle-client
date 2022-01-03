@@ -152,6 +152,19 @@ struct FloorExpression : BaseExpression {
   }
 };
 
+struct RoundExpression : BaseExpression {
+  inline static const RuleRegistration<RoundExpression> registration { "round" };
+  static constexpr auto description = "round";
+
+  struct Params {
+    PROP(ExpressionRef, number) = 0;
+  } params;
+
+  ExpressionValue eval(RuleContext &ctx) override {
+    return std::round(params.number().eval<double>(ctx));
+  }
+};
+
 struct MixExpression : BaseExpression {
   inline static const RuleRegistration<MixExpression> registration { "mix" };
   static constexpr auto description = "mix two values";
