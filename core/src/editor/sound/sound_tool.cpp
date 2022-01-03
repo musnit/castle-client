@@ -20,6 +20,17 @@ void SoundTool::onSetActive() {
   }
 }
 
+void SoundTool::play() {
+  if (hasSong()) {
+    // schedule current song to play now
+    // TODO: songs are currently just a singleton pattern
+    auto &scene = editor.getScene();
+    auto &firstInstrument = song->instruments[0];
+    auto &firstPattern = song->pattern;
+    scene.getSound().play(scene.getClock().clockId, firstPattern, *firstInstrument);
+  }
+}
+
 void SoundTool::update(double dt) {
   if (!editor.hasScene()) {
     return;
@@ -135,6 +146,26 @@ struct SoundToolSceneMusicReceiver {
       editor->getScene().songs.erase(params.songId());
     }
     editor->soundTool.sendSceneMusicData();
+  }
+};
+
+struct SoundToolActionReceiver {
+  inline static const BridgeRegistration<SoundToolActionReceiver> registration {
+    "EDITOR_SOUND_TOOL_ACTION"
+  };
+
+  struct Params {
+    PROP(std::string, action);
+  } params;
+
+  void receive(Engine &engine) {
+    auto editor = engine.maybeGetEditor();
+    if (!editor)
+      return;
+
+    if (params.action() == "play") {
+      editor->soundTool.play();
+    }
   }
 };
 

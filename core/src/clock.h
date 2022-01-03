@@ -41,6 +41,8 @@ public:
   unsigned int getTotalBarsElapsed();
   unsigned int getBeatIndexInBar();
   double getTimeSinceBeat();
+  double getPerformTime();
+  double getTimePerStep();
 
 private:
   love::thread::MutexRef mutex;
@@ -89,5 +91,15 @@ inline unsigned int Clock::getBeatIndexInBar() {
 }
 
 inline double Clock::getTimeSinceBeat() {
+  love::thread::Lock lock(mutex);
   return timeSinceBeat;
+}
+
+inline double Clock::getPerformTime() {
+  love::thread::Lock lock(mutex);
+  return performTime;
+}
+
+inline double Clock::getTimePerStep() {
+  return timePerBeat / double(stepsPerBeat);
 }

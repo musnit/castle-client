@@ -54,6 +54,13 @@ export const OverlaySound = ({ setActiveSheet }) => {
             <CastleIcon name="close" size={22} color="#000" />
           </Pressable>
         </View>
+        <View style={styles.toolbar}>
+          <Pressable
+            style={styles.button}
+            onPress={() => sendAsync('EDITOR_SOUND_TOOL_ACTION', { action: 'play' })}>
+            <CastleIcon name="play" size={22} color="#000" />
+          </Pressable>
+        </View>
       </View>
     </View>
   );

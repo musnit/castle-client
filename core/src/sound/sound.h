@@ -9,6 +9,7 @@
 class Clock;
 class Pattern;
 class Instrument;
+class Stream;
 
 class Sound {
   inline static bool hasInitializedSoloud = false;
@@ -34,7 +35,7 @@ public:
 
   void addClock(Clock *); // start audio thread if not started, add clock if not added
   void removeAllClocks(); // stop audio thread and unschedule all clocks
-  void play(Pattern &pattern, Instrument &instrument, int clockId);
+  void play(int clockId, Pattern &pattern, Instrument &instrument);
 
   static void clearCache() {
     sfxrSounds.clear();
@@ -63,6 +64,7 @@ private:
     virtual ~ClockThread() = default;
     void threadFunction();
     void addClock(Clock *);
+    void addStream(int clockId, Pattern &pattern, Instrument &instrument);
     void finish();
 
   private:
@@ -70,7 +72,10 @@ private:
     love::timer::Timer timer;
 
     // clocks managed by this thread
-    std::vector<Clock *> clocks;
+    std::unordered_map<int, Clock *> clocks;
+
+    // streams managed by this thread
+    std::unordered_map<int, std::vector<std::unique_ptr<Stream>>> streams;
 
     volatile bool shouldFinish;
     love::thread::MutexRef mutex;
