@@ -7,55 +7,6 @@
 
 
 //
-// Web bindings
-//
-
-JS_DEFINE(int, JS_updateTextActors, (const char *msg, int msgLen), {
-  if (Castle.updateTextActors) {
-    Castle.updateTextActors(UTF8ToString(msg, msgLen));
-  }
-});
-
-JS_DEFINE(int, JS_getClickedTextActorId, (), {
-  if (Castle.clickedTextActorIdsQueue.length > 0) {
-    return Castle.clickedTextActorIdsQueue.shift();
-  } else {
-    return -1;
-  }
-});
-
-// JS_DEFINE(int, JS_preloadCardId, (const char *cardId, int cardIdLen),
-//    { Castle.preloadCardId(UTF8ToString(cardId, cardIdLen)); });
-
-//
-// React native bindings
-//
-
-struct SelectActorReceiver {
-  inline static const BridgeRegistration<SelectActorReceiver> registration { "SELECT_ACTOR" };
-
-  struct Params {
-    PROP(int, actorId) = -1;
-  } params;
-
-  void receive(Engine &engine) {
-    if (!engine.getIsEditing()) {
-      auto &textBehavior = engine.getScene().getBehaviors().byType<TextBehavior>();
-      textBehavior.clickedTextActorIdsQueue.push(params.actorId());
-    } else if (engine.maybeGetEditor()->getIsPlaying()) {
-      // same thing, but scene is derived from editor's player
-      auto &textBehavior = engine.maybeGetEditor()
-                               ->maybeGetPlayer()
-                               ->getScene()
-                               .getBehaviors()
-                               .byType<TextBehavior>();
-      textBehavior.clickedTextActorIdsQueue.push(params.actorId());
-    }
-  }
-};
-
-
-//
 // Triggers
 //
 
@@ -66,6 +17,29 @@ struct TextTapTrigger : BaseTrigger {
   struct Params {
   } params;
 };
+
+bool TextBehavior::hasTapTrigger(ActorId actorId) {
+  auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
+  if (getScene().getIsEditing()) {
+    // can't query `rulesBehavior.hasTrigger` because we don't build trigger components at edit-time
+    if (auto component = rulesBehavior.maybeGetComponent(actorId); component) {
+      Reader reader(component->editData->value);
+      auto found = false;
+      reader.each("rules", [&]() {
+        reader.obj("trigger", [&]() {
+          if (reader.num("behaviorId", -1) == TextBehavior::behaviorId
+              && std::strcmp(reader.str("name", ""), "tap") == 0) {
+            found = true;
+          }
+        });
+      });
+      return found;
+    }
+  } else {
+    return rulesBehavior.hasTrigger<TextTapTrigger>(actorId);
+  }
+  return false;
+}
 
 
 //
@@ -132,6 +106,16 @@ struct HideResponse : BaseResponse {
 
 
 //
+// Constructor, destructor
+//
+
+TextBehavior::TextBehavior(Scene &scene_)
+    : BaseBehavior(scene_) {
+  loadFontResources();
+}
+
+
+//
 // Read, write
 //
 
@@ -147,6 +131,8 @@ void TextBehavior::handleReadComponent(ActorId actorId, TextComponent &component
 
     component.props.order() = maxExistingOrder + 1;
   }
+
+  updateFont(component);
 }
 
 
@@ -154,102 +140,274 @@ void TextBehavior::handleReadComponent(ActorId actorId, TextComponent &component
 // Perform
 //
 
-void TextBehavior::handlePerform(double dt) {
+void TextBehavior::handlePrePerform() {
+  // Fire tap triggers
   auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
-  while (true) {
-#ifdef __EMSCRIPTEN__
-    if (auto actorIdInt = JS_getClickedTextActorId(); actorIdInt >= 0) {
-#else
-    if (!clickedTextActorIdsQueue.empty()) {
-      auto actorIdInt = clickedTextActorIdsQueue.front();
-      clickedTextActorIdsQueue.pop();
-#endif
-      auto actorId = ActorId(actorIdInt);
-      if (auto component = maybeGetComponent(actorId); component && !component->disabled) {
-        rulesBehavior.fire<TextTapTrigger>(actorId, {});
-      }
-    } else {
-      break;
+  auto &bodyBehavior = getBehaviors().byType<BodyBehavior>();
+  auto currTime = lv.timer.getTime();
+  auto fired = false; // Fire on at most one actor
+  getGesture().forEachTouch([&](TouchId touchId, const Touch &touch) {
+    if (fired) {
+      return;
     }
-  }
-
-  maybeSendBridgeData(dt);
-}
-
-//
-// Data
-//
-
-struct TextActorsDataEvent {
-  PROP(std::string, data) = "";
-};
-
-bool TextBehavior::hasTapTrigger(ActorId actorId) {
-  auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
-  if (getScene().getIsEditing()) {
-    // can't query `rulesBehavior.hasTrigger` because we don't build trigger components at edit-time
-    if (auto component = rulesBehavior.maybeGetComponent(actorId); component) {
-      Reader reader(component->editData->value);
-      auto found = false;
-      reader.each("rules", [&]() {
-        reader.obj("trigger", [&]() {
-          if (auto nameCStr = reader.str("name", "")) {
-            if (auto behaviorId = reader.num("behaviorId", -1)) {
-              if (std::strcmp(nameCStr, "tap") == 0
-                  && (int)behaviorId == TextBehavior::behaviorId) {
-                found = true;
-              }
+    if (touch.isUsed() && !touch.isUsed(TextBehavior::overlayTouchToken)) {
+      return;
+    }
+    auto tapped = touch.released && !touch.movedFar && currTime - touch.pressTime < 0.3;
+    if (!(touch.pressed || tapped)) {
+      return;
+    }
+    rulesBehavior.fireAllIf<TextTapTrigger, TextComponent>(
+        {}, [&](ActorId actorId, const TextTapTrigger &trigger, const TextComponent &component) {
+          if (fired) {
+            return false;
+          }
+          if (!component.props.visible()) {
+            return false;
+          }
+          if (bodyBehavior.hasComponent(actorId)) {
+            return false; // Skip if has Body since Body handles its own taps
+          }
+          if (!component.touchRectangle) {
+            return false;
+          }
+          auto &rect = *component.touchRectangle;
+          auto inRect = rect.min.x <= touch.pos.x && touch.pos.x <= rect.max.x
+              && rect.min.y <= touch.pos.y && touch.pos.y <= rect.max.y;
+          if (inRect) {
+            touch.use(TextBehavior::overlayTouchToken);
+            if (tapped) {
+              fired = true;
             }
           }
+          return fired;
         });
+  });
+}
+
+
+//
+// Draw
+//
+
+love::Font *TextBehavior::getFont(TextFontResource *fontResource, float pixelSize) const {
+  for (auto &entry : fontResource->entries) {
+    if (entry.pixelSize > 1024 || float(entry.pixelSize) > pixelSize) {
+      return entry.font.get();
+    }
+  }
+  constexpr auto baseSize = 64;
+  for (float dpiScale = 1;; dpiScale *= 2) {
+    auto candidatePixelSize
+        = std::floorf(baseSize * dpiScale + 0.5f); // From 'freetype/TrueTypeRasterizer.cpp'
+    if (candidatePixelSize > 1024 || candidatePixelSize > pixelSize) {
+      Debug::log("dpiScale: {}", dpiScale);
+      love::StrongRef rasterizer(lv.font.newTrueTypeRasterizer(fontResource->data, baseSize,
+                                     dpiScale, love::TrueTypeRasterizer::HINTING_NORMAL),
+          love::Acquire::NORETAIN);
+      fontResource->entries.push_back({
+          int(candidatePixelSize),
+          std::unique_ptr<love::Font>(lv.graphics.newFont(rasterizer)),
       });
-      return found;
+      return fontResource->entries.back().font.get();
+    }
+  }
+}
+
+bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &component,
+    std::optional<SceneDrawingOptions> options) const {
+  if (!component.props.visible()) {
+    return false;
+  }
+  auto &scene = getScene();
+  auto cameraScale = 800.0f / scene.getCameraSize().x;
+  auto fontPixelScale = float(lv.window.getDPIScale()) * cameraScale;
+  auto &bodyBehavior = getBehaviors().byType<BodyBehavior>();
+  if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
+    if (auto info = getBehaviors().byType<BodyBehavior>().getRenderInfo(actorId);
+        info.visible || (options && options->drawInvisibleActors)) {
+      auto fontSize = std::clamp(component.props.fontSize(), 1.0f, 30.0f) / 10;
+      auto font = component.fontResource
+          ? getFont(component.fontResource, fontSize * fontPixelScale)
+          : overlayFont;
+      auto downscale = fontSize / font->getHeight();
+
+      auto [x, y] = body->GetPosition();
+
+      auto bounds = bodyBehavior.getEditorBounds(actorId);
+
+      lv.graphics.push(love::Graphics::STACK_ALL);
+
+      lv.graphics.setColor(love::toColorf(component.props.color()));
+
+      // Move to and rotate around position
+      lv.graphics.translate(x, y);
+      lv.graphics.rotate(body->GetAngle());
+
+      // Downscale since fonts are large
+      lv.graphics.scale(downscale, downscale);
+      bounds.minX() *= info.widthScale / downscale;
+      bounds.maxX() *= info.widthScale / downscale;
+      bounds.minY() *= info.heightScale / downscale;
+      bounds.maxY() *= info.heightScale / downscale;
+
+      // Alignment
+      auto alignment = love::Font::ALIGN_LEFT;
+      switch (component.props.alignment()[0]) {
+      case 'r':
+        alignment = love::Font::ALIGN_RIGHT;
+        break;
+      case 'c':
+        alignment = love::Font::ALIGN_CENTER;
+        break;
+      case 'j':
+        alignment = love::Font::ALIGN_JUSTIFY;
+        break;
+      }
+
+      // Draw
+      auto wrap = bounds.maxX() - bounds.minX();
+      lv.graphics.setFont(font);
+      lv.graphics.printf({ { formatContent(component.props.content()), { 1, 1, 1, 1 } } }, wrap,
+          alignment, love::Matrix4(bounds.minX(), bounds.minY(), 0, 1, 1, 0, 0, 0, 0));
+
+      lv.graphics.pop();
+    }
+  }
+
+  return true;
+}
+
+struct TextOverlayStyleReceiver {
+  inline static const BridgeRegistration<TextOverlayStyleReceiver> registration {
+    "TEXT_OVERLAY_STYLE"
+  };
+
+  struct Params {
+    PROP(TextBehavior::OverlayStyle, style);
+  } params;
+
+  void receive(Engine &engine) {
+    TextBehavior::overlayStyle = params.style();
+  }
+};
+
+void TextBehavior::handleDrawOverlay() const {
+  // Draw texts without bodies as overlays along bottom of screen
+
+  // Collect in reverse order, because we draw bottom to top
+  auto &bodyBehavior = getBehaviors().byType<BodyBehavior>();
+  struct Elem {
+    ActorId actorId;
+    const TextComponent *component;
+  };
+  SmallVector<Elem, 16> elems;
+  forEachEnabledComponent([&](ActorId actorId, const TextComponent &component) {
+    if (!component.props.visible()) {
+      return;
+    }
+    if (bodyBehavior.hasComponent(actorId)) {
+      return; // Skip if has body
+    }
+    elems.push_back({ actorId, &component });
+  });
+  std::sort(elems.begin(), elems.end(), [&](const Elem &a, const Elem &b) {
+    return a.component->props.order() > b.component->props.order();
+  });
+  if (elems.empty()) {
+    return;
+  }
+
+  // Parameters
+  auto &scene = getScene();
+  auto &style = overlayStyle;
+  auto fontScale = style.fontSize() / 10;
+  auto horizontalPadding = style.horizontalPadding() / 10;
+  auto topPadding = style.topPadding() / 10;
+  auto bottomPadding = style.bottomPadding() / 10;
+  auto horizontalMargin = style.horizontalMargin() / 10;
+  auto betweenMargin = style.betweenMargin() / 10;
+  auto bottomMargin = style.bottomMargin() / 10;
+
+  // Draw bottom to top
+  auto cameraPos = scene.getCameraPosition();
+  auto cameraSize = scene.getCameraSize();
+  auto x = cameraPos.x - 0.5f * cameraSize.x + horizontalMargin;
+  auto boxWidth = cameraSize.x - 2 * horizontalMargin;
+  auto textWidth = boxWidth - 2 * horizontalPadding;
+  auto y = cameraPos.y + 0.5f * cameraSize.y - (bottomMargin - betweenMargin);
+  auto font = overlayFont;
+  auto fontHeight = font->getHeight();
+  lv.graphics.push(love::Graphics::STACK_ALL);
+  lv.graphics.setFont(font);
+  auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
+  for (auto [actorId, component] : elems) {
+    auto isTappable = rulesBehavior.hasTrigger<TextTapTrigger>(actorId);
+
+    // Compute height
+    float downscale = 0.1f * 0.0342f * fontScale;
+    auto formatted = formatContent(component->props.content());
+    std::vector<std::string> lines;
+    font->getWrap({ { formatted, { 1, 1, 1, 1 } } }, textWidth / downscale, lines);
+    auto textHeight = downscale * fontHeight * float(lines.size());
+    auto boxHeight = topPadding + bottomPadding + textHeight;
+
+    // Move up by box height, draw box
+    y -= betweenMargin + boxHeight;
+    if (isTappable) {
+      lv.graphics.setColor(style.tappableBackgroundColor());
+    } else {
+      lv.graphics.setColor(style.regularBackgroundColor());
+    }
+    lv.graphics.rectangle(love::Graphics::DRAW_FILL, x, y, boxWidth, boxHeight, 0.1, 0.1, 6);
+
+    // Draw text
+    lv.graphics.push();
+    lv.graphics.translate(x + horizontalPadding, y + topPadding);
+    lv.graphics.scale(downscale, downscale);
+    if (isTappable) {
+      lv.graphics.setColor(style.tappableForegroundColor());
+    } else {
+      lv.graphics.setColor(style.regularForegroundColor());
+    }
+    lv.graphics.printf({ { std::move(formatted), { 1, 1, 1, 1 } } }, textWidth / downscale,
+        love::Font::ALIGN_LEFT, love::Matrix4(0, 0, 0, 1, 1, 0, 0, 0, 0));
+    lv.graphics.pop();
+
+    // Save touch rectangle
+    component->touchRectangle = {
+      { x, y },
+      { x + boxWidth, y + boxHeight },
+    };
+  }
+  lv.graphics.pop();
+}
+
+
+//
+// Getters, setters
+//
+
+void TextBehavior::handleSetProperty(
+    ActorId actorId, TextComponent &component, PropId propId, const ExpressionValue &value) {
+  auto &props = component.props;
+  if (propId == props.fontName.id) {
+    const char *cStrValue = value.as<const char *>();
+    if (strcmp(cStrValue, component.props.fontName().c_str()) != 0) {
+      component.props.fontName() = cStrValue;
+      updateFont(component);
     }
   } else {
-    return rulesBehavior.hasTrigger<TextTapTrigger>(actorId);
-  }
-  return false;
-}
-
-void TextBehavior::resetState() {
-  lastDataSent = "";
-  timeSinceSentBridgeData = 0;
-}
-
-void TextBehavior::maybeSendBridgeData(double dt) {
-  Archive archive;
-  timeSinceSentBridgeData += dt;
-  if (lastDataSent == "" || timeSinceSentBridgeData >= TextBehavior::bridgeUpdateInterval) {
-    timeSinceSentBridgeData = 0;
-    archive.write([&](Archive::Writer &writer) {
-      writer.arr("textActors", [&]() {
-        forEachEnabledComponent([&](ActorId actorId, TextComponent &component) {
-          if (!getScene().isGhost(actorId)) {
-            writer.obj([&]() {
-              writer.num("actorId", (int)entt::to_integral(actorId));
-              writer.str("content", formatContent(component.props.content()));
-              writer.num("order", component.props.order());
-              writer.boolean("hasTapTrigger", hasTapTrigger(actorId));
-              writer.boolean("visible", component.props.visible());
-            });
-          }
-        });
-      });
-    });
-
-    auto output = archive.toJson();
-    if (lastDataSent.compare(output) != 0) {
-#ifdef __EMSCRIPTEN__
-      JS_updateTextActors(output.c_str(), output.length());
-#else
-      TextActorsDataEvent textActorsData;
-      textActorsData.data = output;
-      getScene().getBridge().sendEvent("TEXT_ACTORS_DATA", textActorsData);
-#endif
-      lastDataSent = output;
-    }
+    BaseBehavior::handleSetProperty(actorId, component, propId, value);
   }
 }
+
+void TextBehavior::updateFont(TextComponent &component) {
+  if (auto found = fontResources.find(component.props.fontName()); found != fontResources.end()) {
+    component.fontResource = &found->second;
+  }
+}
+
 
 //
 // Content formatting

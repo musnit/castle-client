@@ -90,8 +90,6 @@ void Editor::clearState() {
   commands.clear();
   auto &drawingBehavior = scene->getBehaviors().byType<Drawing2Behavior>();
   drawingBehavior.clearEditorDataCache();
-  auto &textBehavior = scene->getBehaviors().byType<TextBehavior>();
-  textBehavior.resetState();
   if (capture) {
     capture = nullptr;
   }
@@ -388,6 +386,7 @@ void Editor::draw() {
           lv.graphics.pop();
         }
       };
+      auto &textBehavior = scene->getBehaviors().byType<TextBehavior>();
       const auto drawCollisionShapes = [&](ActorId actorId) {
         if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
           auto info = bodyBehavior.getRenderInfo(actorId);
@@ -397,7 +396,8 @@ void Editor::draw() {
           lv.graphics.translate(x, y);
           lv.graphics.rotate(body->GetAngle());
           if (auto physicsBodyData = drawingBehavior.maybeGetPhysicsBodyData(actorId)) {
-            physicsBodyData->render({ info.widthScale, info.heightScale });
+            auto diagonalLines = !textBehavior.hasComponent(actorId);
+            physicsBodyData->render({ info.widthScale, info.heightScale }, diagonalLines);
           }
 
           lv.graphics.pop();
@@ -1063,6 +1063,7 @@ struct EditorModifyComponentReceiver {
     PROP(std::string, propertyType);
     PROP(double, doubleValue);
     PROP(std::string, stringValue);
+    PROP(love::Color, colorValue);
   } params;
 
   void receive(Engine &engine) {
@@ -1186,6 +1187,33 @@ struct EditorModifyComponentReceiver {
                     updateBase64Png](Editor &editor, bool) {
                   auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
                   behavior.setProperty(actorId, propId, oldValue.c_str(), false);
+                  if (updateBlueprint) {
+                    Editor::UpdateBlueprintParams params;
+                    params.updateBase64Png = updateBase64Png;
+                    editor.updateBlueprint(actorId, params);
+                  }
+                  editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
+                });
+          } else if (propType == "color") {
+            auto oldValue = behavior.getProperty(actorId, propId).template as<love::Color>();
+            auto newValue = params.colorValue();
+            editor->getCommands().execute(
+                description, commandParams,
+                [actorId, propId, newValue, updateBlueprint, updateBase64Png](
+                    Editor &editor, bool) {
+                  auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
+                  behavior.setProperty(actorId, propId, newValue, false);
+                  if (updateBlueprint) {
+                    Editor::UpdateBlueprintParams params;
+                    params.updateBase64Png = updateBase64Png;
+                    editor.updateBlueprint(actorId, params);
+                  }
+                  editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
+                },
+                [actorId, propId, oldValue, updateBlueprint, updateBase64Png](
+                    Editor &editor, bool) {
+                  auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
+                  behavior.setProperty(actorId, propId, oldValue, false);
                   if (updateBlueprint) {
                     Editor::UpdateBlueprintParams params;
                     params.updateBase64Png = updateBase64Png;
@@ -2072,7 +2100,6 @@ void Editor::maybeSendData(double dt) {
   }
   if (isEditorStateDirty) {
     sendGlobalActions();
-    scene->getBehaviors().byType<TextBehavior>().resetState();
     isEditorStateDirty = false;
   }
   if (auto &library = scene->getLibrary(); library.editorNeedsSend) {
@@ -2089,9 +2116,6 @@ void Editor::maybeSendData(double dt) {
       sendSelectedComponent(behaviorId);
     }
     selectedComponentStateDirty.clear();
-  }
-  if (!playing) {
-    scene->getBehaviors().byType<TextBehavior>().maybeSendBridgeData(dt);
   }
 }
 

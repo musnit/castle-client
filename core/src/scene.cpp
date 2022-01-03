@@ -374,6 +374,11 @@ void Scene::update(double dt) {
 
   // Perform behaviors
   getBehaviors().forEach([&](auto &behavior) {
+    if constexpr (Handlers::hasPrePerform<decltype(behavior)>) {
+      behavior.handlePrePerform();
+    }
+  });
+  getBehaviors().forEach([&](auto &behavior) {
     if constexpr (Handlers::hasPerform<decltype(behavior)>) {
       behavior.handlePerform(dt);
     }

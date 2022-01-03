@@ -55,15 +55,10 @@ export const InspectorSheet = ({ isOpen, addChildSheet }) => {
   }, [isTextActorSelected]);
 
   if (isSceneLoaded) {
-    const tabItems = TAB_ITEMS.filter((tab) => {
-      // hide 'Movement' for text actors
-      return !(isTextActorSelected && tab.value === 'movement');
-    });
-
     const renderHeader = () => (
       <InspectorHeader
         isOpen={isOpen}
-        tabItems={tabItems}
+        tabItems={TAB_ITEMS}
         selectedTab={selectedTab}
         setSelectedTab={setSelectedTabOrScroll}
       />

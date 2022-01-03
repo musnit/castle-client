@@ -44,7 +44,7 @@ public:
   BaseBehavior(BaseBehavior &&) = default; // Allow moves
   BaseBehavior &operator=(BaseBehavior &&) = default;
 
-  BaseBehavior(Scene &scene_) // NOLINT(google-explicit-constructor)
+  explicit BaseBehavior(Scene &scene_)
       : scene(scene_) {
   }
 
@@ -148,6 +148,7 @@ DEFINE_HANDLER(ReadComponent);
 DEFINE_HANDLER(WriteComponent);
 
 // Perform
+DEFINE_HANDLER(PrePerform);
 DEFINE_HANDLER(Perform);
 DEFINE_HANDLER(PerformCamera);
 
@@ -318,13 +319,13 @@ void BaseBehavior<Derived, Component>::handleSetProperty(
   Props::forEach(component.props, [&](auto &prop) {
     if (propId == prop.id) {
       using PropValue = std::remove_reference_t<decltype(prop())>;
-      if constexpr (std::is_arithmetic_v<PropValue>) { // Also includes `bool`
-        if (value.is<double>()) {
-          prop() = value.as<double>();
-        }
-      } else if constexpr (std::is_same_v<std::string, PropValue>) {
+      if constexpr (std::is_same_v<std::string, PropValue>) {
         if (value.is<const char *>()) {
           prop() = value.as<const char *>();
+        }
+      } else if constexpr (std::is_convertible_v<PropValue, ExpressionValue>) {
+        if (value.is<PropValue>()) {
+          prop() = value.as<PropValue>();
         }
       }
     }
@@ -337,8 +338,10 @@ ExpressionValue BaseBehavior<Derived, Component>::handleGetProperty(
   ExpressionValue result;
   Props::forEach(component.props, [&](auto &prop) {
     if (propId == prop.id) {
-      using PropValue = std::remove_reference_t<decltype(prop())>;
-      if constexpr (std::is_arithmetic_v<PropValue>) {
+      using PropValue = std::remove_cv_t<std::remove_reference_t<decltype(prop())>>;
+      if constexpr (std::is_same_v<std::string, PropValue>) {
+        result = ExpressionValue(prop().c_str());
+      } else if constexpr (std::is_convertible_v<PropValue, ExpressionValue>) {
         result = ExpressionValue(prop());
       }
     }
