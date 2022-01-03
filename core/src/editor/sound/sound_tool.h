@@ -28,6 +28,9 @@ public:
   void sendPatternEvent();
   void sendSceneMusicData();
 
+  // play currently edited song
+  void play();
+
 private:
   Lv &lv { Lv::getInstance() };
   Editor &editor;

@@ -3,6 +3,7 @@
 #include "api.h"
 #include "js.h"
 #include "clock.h"
+#include "stream.h"
 
 #include <common/delay.h>
 
@@ -23,14 +24,22 @@ void Sound::ClockThread::threadFunction() {
     double dt = timer.step();
     {
       love::thread::Lock lock(mutex);
-      for (auto &clock : clocks) {
+      for (auto &[clockId, clock] : clocks) {
         clock->update(dt);
-        // TODO:
-        // stream { clockStartTime, pattern, instrument }
-        // for each stream on this clock,
-        //   if the clock time >= stream's nextTime,
-        //     fire stream's next events (play notes)
-        //   if the stream is done, remove the stream
+        auto &streamsForClock = streams[clockId];
+        auto iter = streamsForClock.begin();
+        while (iter != streamsForClock.end()) {
+          auto &stream = *iter;
+          if (stream->hasNext()) {
+            if (clock->getPerformTime() >= stream->nextTime()) {
+              stream->playNextNotes(owner);
+            }
+            ++iter;
+          } else {
+            // stream is exhausted, remove
+            iter = streamsForClock.erase(iter);
+          }
+        }
       }
     }
     love::sleep(4);
@@ -45,8 +54,25 @@ void Sound::ClockThread::finish() {
 void Sound::ClockThread::addClock(Clock *clock) {
   // add clock to sound thread, noop if already added
   love::thread::Lock lock(mutex);
-  if (std::find(clocks.begin(), clocks.end(), clock) == clocks.end()) {
-    clocks.push_back(clock);
+  if (clocks.find(clock->clockId) == clocks.end()) {
+    clocks.emplace(clock->clockId, clock);
+    streams.emplace(clock->clockId, std::vector<std::unique_ptr<Stream>>());
+  }
+}
+
+void Sound::ClockThread::addStream(int clockId, Pattern &pattern, Instrument &instrument) {
+  love::thread::Lock lock(mutex);
+  if (auto found = clocks.find(clockId); found != clocks.end()) {
+    auto clock = found->second;
+    auto clockTime = clock->getPerformTime();
+    auto timePerStep = clock->getTimePerStep(); // TODO: measure differently when we allow changing
+                                                // clocks in real time
+    auto stream = std::make_unique<Stream>(clockTime, timePerStep, pattern, instrument);
+    // play sound immediately if warranted
+    if (clockTime >= stream->nextTime()) {
+      stream->playNextNotes(owner);
+    }
+    streams[clockId].push_back(std::move(stream));
   }
 }
 
@@ -82,9 +108,10 @@ void Sound::removeAllClocks() {
   }
 }
 
-void Sound::play(Pattern &pattern, Instrument &instrument, int clockId) {
-  // use clock to convert pattern to event stream
-  // add stream+instrument to audio thread
+void Sound::play(int clockId, Pattern &pattern, Instrument &instrument) {
+  if (clockThread) {
+    clockThread->addStream(clockId, pattern, instrument);
+  }
 }
 
 void Sound::preload(const std::string &type, const std::string &recordingUrl,

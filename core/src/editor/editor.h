@@ -101,6 +101,7 @@ private:
   friend struct ImportImageActionReceiver;
   friend struct SoundToolSetDataReceiver;
   friend struct SoundToolSceneMusicReceiver;
+  friend struct SoundToolActionReceiver;
 
   Lv &lv { Lv::getInstance() };
   Bridge &bridge;
