@@ -12,12 +12,14 @@ SoundTool::SoundTool(Editor &editor_)
 void SoundTool::resetState() {
   song = nullptr;
   sessionId = "";
+  hasTouch = false;
 }
 
 void SoundTool::onSetActive() {
   if (!hasSong()) {
     // pattern = std::make_shared<Pattern>();
   }
+  hasTouch = false;
 }
 
 void SoundTool::togglePlay() {
@@ -52,21 +54,51 @@ void SoundTool::update(double dt) {
       love::Vector2 originalTouchPosition = { touch.screenPos.x, touch.screenPos.y };
       auto transformedTouchPosition = viewTransform.inverseTransformPoint(originalTouchPosition);
 
-      if (touch.pressed) {
-        // grid x is step, grid y is key
-        auto step = floor(transformedTouchPosition.x / gridCellSize);
-        auto key = floor(-transformedTouchPosition.y / gridCellSize) + 48; // set axis to midi C3
-        auto added = song->pattern.toggleNote(double(step), key);
-        // sendPatternEvent();
+      // grid x is step, grid y is key
+      auto step = double(floor(transformedTouchPosition.x / gridCellSize));
+      auto key = floor(-transformedTouchPosition.y / gridCellSize) + 48; // set axis to midi C3
+      bool playNote = false;
 
-        // if note added, play it
-        // TODO: other instruments
-        if (added && song->instruments.size()) {
-          auto &firstInstrument = song->instruments[0];
-          firstInstrument->play(scene.getSound(), { step, key });
+      if (touch.released) {
+        Commands::Params commandParams;
+        commandParams.coalesce = true;
+        bool oldHasNote = song->pattern.hasNote(step, key);
+        editor.getCommands().execute(
+            "change notes", commandParams,
+            [this, oldHasNote, step, key](Editor &editor, bool) {
+              if (oldHasNote) {
+                song->pattern.removeNote(step, key);
+              } else {
+                song->pattern.addNote(step, key);
+              }
+              // sendPatternEvent();
+            },
+            [this, oldHasNote, step, key](Editor &editor, bool) {
+              if (oldHasNote) {
+                song->pattern.addNote(step, key);
+              } else {
+                song->pattern.removeNote(step, key);
+              }
+            });
+        hasTouch = false;
+      } else {
+        hasTouch = true;
+        if (touch.pressed || key != tempNote.key) {
+          // moved to a different note while touch was active
+          playNote = true;
         }
+        tempNote.time = step;
+        tempNote.key = key;
+      }
+      if (playNote && song->instruments.size()) {
+        // TODO: other instruments
+        auto &firstInstrument = song->instruments[0];
+        firstInstrument->play(scene.getSound(), { step, key });
       }
     });
+  } else if (gesture.getCount() == 2) {
+    hasTouch = false;
+    // cancel touch, don't add note
   }
 }
 
@@ -108,6 +140,12 @@ void SoundTool::drawPattern(Pattern *pattern) {
       auto y = ((note.key - 48) * -gridCellSize) - gridCellSize;
       lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);
     }
+  }
+  if (hasTouch) {
+    // draw temp note
+    auto x = tempNote.time * gridCellSize;
+    auto y = ((tempNote.key - 48) * -gridCellSize) - gridCellSize;
+    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);
   }
 }
 

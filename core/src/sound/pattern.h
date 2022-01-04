@@ -29,7 +29,9 @@ public:
   void write(Writer &writer) const;
   void read(Reader &reader);
 
-  bool toggleNote(double step, float key);
+  bool hasNote(double step, float key);
+  bool addNote(double step, float key);
+  bool removeNote(double step, float key);
 
   // TODO: get next time anything happens
   // TODO: get notes at time / since time / in range?
