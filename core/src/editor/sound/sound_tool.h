@@ -47,6 +47,10 @@ private:
   // for playback
   bool isPlaying;
   double playStartTime;
+
+  // adding notes
+  bool hasTouch = false;
+  Pattern::Note tempNote;
 };
 
 inline void SoundTool::setSong(Song &song_) {
