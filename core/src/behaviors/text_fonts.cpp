@@ -55,9 +55,6 @@ void TextBehavior::loadFontResources() {
   loadFontResource("Overlay");
   overlayFont = getFont(&fontResources["Overlay"], 80);
 
-  loadFontResource("Twemoji");
-  loadFontResource("OpenSansEmoji");
-
   loadFontResource("BreiteGrotesk");
   loadFontResource("Compagnon");
   loadFontResource("Glacier");

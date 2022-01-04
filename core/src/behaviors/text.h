@@ -34,9 +34,6 @@ struct TextComponent : BaseComponent {
          .rulesGet(false)
          .rulesSet(false)
          .allowedValues(
-            "Overlay",
-            "Twemoji",
-            "OpenSansEmoji",
             "BreiteGrotesk",
             "Compagnon",
             "Glacier",
