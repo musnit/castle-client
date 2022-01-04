@@ -28,19 +28,6 @@ export default InspectorText = () => {
     [sendBehaviorAction]
   );
 
-  const [contentValue, setContentValueAndSendAction] = useOptimisticBehaviorValue({
-    component: textComponent,
-    propName: 'content',
-    propType: 'string',
-    sendAction,
-  });
-  const onChangeContentValue = React.useCallback(
-    (content) => {
-      setContentValueAndSendAction('set', content);
-    },
-    [setContentValueAndSendAction]
-  );
-
   const [visibleValue, setVisibleValueAndSendAction] = useOptimisticBehaviorValue({
     component: textComponent,
     propName: 'visible',
@@ -114,14 +101,6 @@ export default InspectorText = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Text</Text>
-      <InspectorTextInput
-        value={contentValue}
-        onChangeText={onChangeContentValue}
-        placeholder="Once upon a time..."
-        style={{ marginBottom: 12 }}
-        multiline
-      />
       <InspectorCheckbox
         value={visibleValue}
         onChange={onChangeVisibleValue}

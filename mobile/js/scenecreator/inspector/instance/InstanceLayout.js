@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
+import { InspectorTextInput } from '../components/InspectorTextInput';
 import { InspectorNumberInput } from '../components/InspectorNumberInput';
 import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import { SaveBlueprintButton } from '../components/SaveBlueprintButton';
@@ -39,6 +40,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingTop: 10,
     paddingBottom: 16,
+  },
+  textContentInput: {
+    marginTop: 16,
+    marginBottom: 12 + 16,
+    paddingRight: 16,
   },
 });
 
@@ -96,31 +102,62 @@ export const EditLayout = ({ isEditingBlueprint }) => {
   const { hasSelection } = useCardCreator();
   const behaviors = useCoreState('EDITOR_ALL_BEHAVIORS');
   const { Body: body } = behaviors || {};
-  const component = useCoreState('EDITOR_SELECTED_COMPONENT:Body');
-  const sendAction = React.useCallback(
+  const bodyComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Body');
+  const bodySendAction = React.useCallback(
     (...args) => sendBehaviorAction('Body', ...args),
     [sendBehaviorAction]
   );
-  if (!hasSelection || !body || !component) return null;
+  const textComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Text');
+  const textSendAction = React.useCallback(
+    (...args) => sendBehaviorAction('Text', ...args),
+    [sendBehaviorAction]
+  );
+
+  const [textContentValue, setContentValueAndSendAction] = useOptimisticBehaviorValue({
+    component: textComponent,
+    propName: 'content',
+    propType: 'string',
+    sendAction: textSendAction,
+  });
+  const onChangeTextContentValue = React.useCallback(
+    (content) => {
+      setContentValueAndSendAction('set', content);
+    },
+    [setContentValueAndSendAction]
+  );
+
+  if (!hasSelection || !body || !bodyComponent) return null;
   return (
     <View>
+      {textComponent ? (
+        <React.Fragment>
+          <Text style={styles.inputLabel}>Text content</Text>
+          <InspectorTextInput
+            value={textContentValue}
+            onChangeText={onChangeTextContentValue}
+            placeholder="Once upon a time..."
+            style={styles.textContentInput}
+            multiline
+          />
+        </React.Fragment>
+      ) : null}
       <View style={styles.properties}>
         <React.Fragment>
           <LayoutInput
             behavior={body}
-            component={component}
+            component={bodyComponent}
             propName="widthScale"
             label="Width Scale"
-            sendAction={sendAction}
+            sendAction={bodySendAction}
             decimalDigits={2}
             step={0.25}
           />
           <LayoutInput
             behavior={body}
-            component={component}
+            component={bodyComponent}
             propName="heightScale"
             label="Height Scale"
-            sendAction={sendAction}
+            sendAction={bodySendAction}
             decimalDigits={2}
             step={0.25}
           />
@@ -129,26 +166,26 @@ export const EditLayout = ({ isEditingBlueprint }) => {
           <>
             <LayoutInput
               behavior={body}
-              component={component}
+              component={bodyComponent}
               propName="x"
               label="X Position"
-              sendAction={sendAction}
+              sendAction={bodySendAction}
             />
             <LayoutInput
               behavior={body}
-              component={component}
+              component={bodyComponent}
               propName="y"
               label="Y Position"
-              sendAction={sendAction}
+              sendAction={bodySendAction}
             />
           </>
         ) : null}
         <LayoutInput
           behavior={body}
-          component={component}
+          component={bodyComponent}
           propName="angle"
           label="Rotation"
-          sendAction={sendAction}
+          sendAction={bodySendAction}
         />
       </View>
       <View style={styles.applyLayoutChangesContainer}>

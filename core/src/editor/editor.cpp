@@ -1159,6 +1159,8 @@ struct EditorModifyComponentReceiver {
                   || propId == decltype(BodyComponent::Props::heightScale)::id);
             } else if constexpr (std::is_same_v<BehaviorType, Drawing2Behavior>) {
               updateBlueprint = !(propId == decltype(Drawing2Component::Props::initialFrame)::id);
+            } else if constexpr (std::is_same_v<BehaviorType, TextBehavior>) {
+              updateBlueprint = !(propId == decltype(TextComponent::Props::content)::id);
             }
           }
           auto updateBase64Png = false;

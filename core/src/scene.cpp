@@ -297,11 +297,10 @@ void Scene::writeActor(ActorId actorId, Writer &writer, WriteActorParams params)
   writer.obj("components", [&]() {
     if (!params.inheritedProperties) {
       // TODO: More generalized system for saying which properties are inherited and which aren't
-      //       (eg. add an attribute in `PropAttribs`). For now just specialcasing to layout
-      //       properties as non-inherited.
+      //       (eg. add an attribute in `PropAttribs`). For now just specialcasing properties that
+      //       are non-inherited.
       if (auto maybeBodyComponent
-          = getBehaviors().byType<BodyBehavior>().maybeGetComponent(actorId);
-          maybeBodyComponent) {
+          = getBehaviors().byType<BodyBehavior>().maybeGetComponent(actorId)) {
         writer.obj("Body", [&]() {
           writer.num("x", maybeBodyComponent->props.x());
           writer.num("y", maybeBodyComponent->props.y());
@@ -313,10 +312,15 @@ void Scene::writeActor(ActorId actorId, Writer &writer, WriteActorParams params)
         });
       }
       if (auto maybeDrawing2Component
-          = getBehaviors().byType<Drawing2Behavior>().maybeGetComponent(actorId);
-          maybeDrawing2Component) {
+          = getBehaviors().byType<Drawing2Behavior>().maybeGetComponent(actorId)) {
         writer.obj("Drawing2", [&]() {
           writer.num("initialFrame", maybeDrawing2Component->props.initialFrame());
+        });
+      }
+      if (auto maybeTextComponent
+          = getBehaviors().byType<TextBehavior>().maybeGetComponent(actorId)) {
+        writer.obj("Text", [&]() {
+          writer.str("content", maybeTextComponent->props.content());
         });
       }
     } else {
@@ -527,7 +531,7 @@ void Scene::sendScreenshot(bool fixToOrigin) {
     setViewWidth(Scene::defaultViewWidth);
 
     ev.data = screenshot->getBase64Screenshot(this);
-    
+
     // restore scene camera
     setCameraPosition(oldCameraPosition);
     setViewWidth(oldViewWidth);
