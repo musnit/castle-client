@@ -42,9 +42,8 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   textContentInput: {
-    marginTop: 16,
     marginBottom: 12 + 16,
-    paddingRight: 16,
+    marginRight: 16,
   },
 });
 
