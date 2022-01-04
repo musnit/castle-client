@@ -20,14 +20,21 @@ void SoundTool::onSetActive() {
   }
 }
 
-void SoundTool::play() {
+void SoundTool::togglePlay() {
   if (hasSong()) {
-    // schedule current song to play now
-    // TODO: songs are currently just a singleton pattern
     auto &scene = editor.getScene();
-    auto &firstInstrument = song->instruments[0];
-    auto &firstPattern = song->pattern;
-    scene.getSound().play(scene.getClock().clockId, firstPattern, *firstInstrument);
+    if (isPlaying) {
+      isPlaying = false;
+      scene.getSound().stopAll();
+    } else {
+      // schedule current song to play now
+      // TODO: songs are currently just a singleton pattern
+      auto &firstInstrument = song->instruments[0];
+      auto &firstPattern = song->pattern;
+      scene.getSound().play(scene.getClock().clockId, firstPattern, *firstInstrument);
+      playStartTime = scene.getClock().getPerformTime();
+      isPlaying = true;
+    }
   }
 }
 
@@ -75,6 +82,16 @@ void SoundTool::drawGrid(float viewScale) {
   lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
   grid.draw(gridCellSize, 10.0f + gridCellSize * 0.5f, viewScale, viewPosition, gridOffset,
       gridDotRadius, true);
+
+  if (isPlaying) {
+    auto &scene = editor.getScene();
+    auto playbackTime = scene.getClock().getPerformTime() - playStartTime;
+    auto timePerStep = scene.getClock().getTimePerStep();
+    auto steps = playbackTime / timePerStep;
+    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL,
+        viewPosition.x + steps * gridCellSize, viewPosition.y, 0.1f,
+        1.5f * SOUND_DEFAULT_VIEW_WIDTH);
+  }
 };
 
 void SoundTool::drawPattern(Pattern *pattern) {
@@ -164,7 +181,7 @@ struct SoundToolActionReceiver {
       return;
 
     if (params.action() == "play") {
-      editor->soundTool.play();
+      editor->soundTool.togglePlay();
     }
   }
 };
