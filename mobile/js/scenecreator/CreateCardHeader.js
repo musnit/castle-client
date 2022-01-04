@@ -81,17 +81,17 @@ export const CreateCardHeader = ({
   React.useEffect(() => {
     sendAsync('TEXT_OVERLAY_STYLE', {
       style: {
-        regularBackgroundColor: [1, 1, 1, 1],
-        regularForegroundcolor: [0, 0, 0, 1],
-        tappableBackgroundColor: [0, 0, 0, 1],
-        tappableForegroundColor: [1, 1, 1, 1],
-        fontSize: 18,
-        horizontalPadding: 2,
-        topPadding: 2,
+        regularBackgroundColor: [.89, .9, .99, 1],
+        regularForegroundcolor: [0.137, 0.133, 0.196, 1],
+        tappableBackgroundColor: [0.137, 0.133, 0.196, 1],
+        tappableForegroundColor: [.89, .9, .99, 1],
+        fontSize: 20,
+        horizontalPadding: 4,
+        topPadding: 2.75,
         bottomPadding: 2,
-        horizontalMargin: 2,
+        horizontalMargin: 4,
         betweenMargin: 2,
-        bottomMargin: 2,
+        bottomMargin: 4,
       },
     });
   }, []);
