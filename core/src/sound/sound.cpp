@@ -76,6 +76,11 @@ void Sound::ClockThread::addStream(int clockId, Pattern &pattern, Instrument &in
   }
 }
 
+void Sound::ClockThread::clearStreams() {
+  love::thread::Lock lock(mutex);
+  streams.clear();
+}
+
 Sound::Sound() {
   initialize();
 }
@@ -105,6 +110,15 @@ void Sound::removeAllClocks() {
     clockThread->finish();
     clockThread->wait();
     clockThread = nullptr;
+  }
+}
+
+void Sound::stopAll() {
+  if (Sound::hasInitializedSoloud) {
+    Sound::soloud.stopAll();
+  }
+  if (clockThread) {
+    clockThread->clearStreams();
   }
 }
 

@@ -46,11 +46,7 @@ public:
     }
   }
 
-  static void stopAll() {
-    if (hasInitializedSoloud) {
-      soloud.stopAll();
-    }
-  }
+  void stopAll();
 
 private:
   void initialize();
@@ -65,6 +61,7 @@ private:
     void threadFunction();
     void addClock(Clock *);
     void addStream(int clockId, Pattern &pattern, Instrument &instrument);
+    void clearStreams();
     void finish();
 
   private:

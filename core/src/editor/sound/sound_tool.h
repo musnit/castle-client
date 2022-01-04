@@ -28,8 +28,8 @@ public:
   void sendPatternEvent();
   void sendSceneMusicData();
 
-  // play currently edited song
-  void play();
+  // play/pause currently edited song
+  void togglePlay();
 
 private:
   Lv &lv { Lv::getInstance() };
@@ -38,11 +38,15 @@ private:
   Song *song = nullptr;
 
   // for pattern editing
-  float gridCellSize = 1.0f;
+  float gridCellSize = 0.5f;
   Grid grid;
   void drawGrid(float viewScale);
   void drawPattern(Pattern *pattern);
   mutable love::Transform viewTransform;
+
+  // for playback
+  bool isPlaying;
+  double playStartTime;
 };
 
 inline void SoundTool::setSong(Song &song_) {

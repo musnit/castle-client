@@ -13,7 +13,7 @@ Editor::Editor(Bridge &bridge_)
 
 void Editor::setIsPlaying(bool playing_) {
   if (playing_ != playing) {
-    Sound::stopAll();
+    sound.stopAll();
     isEditorStateDirty = true;
     if (playing_) {
       if (hasScene()) {
@@ -96,7 +96,7 @@ void Editor::clearState() {
   setIsPlaying(false);
   scene = nullptr;
   editVariables.clear();
-  Sound::stopAll();
+  sound.stopAll();
   sound.removeAllClocks();
 }
 
