@@ -118,8 +118,6 @@ export default InspectorText = () => {
           'Glacier',
           'HelicoCentrica',
           'Piazzolla',
-          'SpaceGrotesk-Medium',
-          'SpaceGrotesk-Regular',
           'YatraOne',
           "Bore",
           "Synco",

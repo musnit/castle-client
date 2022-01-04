@@ -60,8 +60,6 @@ void TextBehavior::loadFontResources() {
   loadFontResource("Glacier");
   loadFontResource("HelicoCentrica");
   loadFontResource("Piazzolla");
-  loadFontResource("SpaceGrotesk-Medium");
-  loadFontResource("SpaceGrotesk-Regular");
   loadFontResource("YatraOne");
   loadFontResource("Bore");
   loadFontResource("Synco");

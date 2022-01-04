@@ -39,15 +39,13 @@ struct TextComponent : BaseComponent {
             "Glacier",
             "HelicoCentrica",
             "Piazzolla",
-            "SpaceGrotesk-Medium",
-            "SpaceGrotesk-Regular",
             "YatraOne",
             "Bore",
             "Synco",
             "Tektur"
            )
          )
-            = "SpaceGrotesk-Regular";
+            = "BreiteGrotesk";
     PROP(float, fontSize,
         .label("Font size")
         ) = 10;
