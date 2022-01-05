@@ -13,6 +13,7 @@ void SoundTool::resetState() {
   song = nullptr;
   sessionId = "";
   hasTouch = false;
+  viewWidth = SOUND_DEFAULT_VIEW_WIDTH;
 }
 
 void SoundTool::onSetActive() {
@@ -20,6 +21,9 @@ void SoundTool::onSetActive() {
     // pattern = std::make_shared<Pattern>();
   }
   hasTouch = false;
+  viewWidth = SOUND_DEFAULT_VIEW_WIDTH;
+  viewPosition.x = 0.0f;
+  viewPosition.y = 0.0f;
 }
 
 void SoundTool::togglePlay() {
@@ -99,31 +103,27 @@ void SoundTool::update(double dt) {
   } else if (gesture.getCount() == 2) {
     hasTouch = false;
     // cancel touch, don't add note
+
+    panZoom.update(gesture, viewTransform);
+    auto newView = panZoom.apply(viewPosition, viewWidth);
+    viewPosition = newView.first;
+    viewWidth = newView.second;
+  }
+
+  if (gesture.getCount() != 2 && panZoom.isActive()) {
+    panZoom.clear();
   }
 }
 
-void SoundTool::drawGrid(float viewScale) {
+void SoundTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
   // TODO: final grid appearance
   lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 0.4f });
   auto gridDotRadius = 3.5f;
-  love::Vector2 viewPosition(0.0f, -0.75f * SOUND_DEFAULT_VIEW_WIDTH);
-  love::Vector2 gridOffset(0.0f, 0.0f);
-  grid.draw(gridCellSize, 10.0f + gridCellSize * 0.5f, viewScale, viewPosition, gridOffset,
-      gridDotRadius, false);
+  auto gridSize = 0.0f; // indicates infinite grid
+  grid.draw(gridCellSize, gridSize, viewScale, viewPosition, viewOffset, gridDotRadius, false);
 
   lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-  grid.draw(gridCellSize, 10.0f + gridCellSize * 0.5f, viewScale, viewPosition, gridOffset,
-      gridDotRadius, true);
-
-  if (isPlaying) {
-    auto &scene = editor.getScene();
-    auto playbackTime = scene.getClock().getPerformTime() - playStartTime;
-    auto timePerStep = scene.getClock().getTimePerStep();
-    auto steps = playbackTime / timePerStep;
-    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL,
-        viewPosition.x + steps * gridCellSize, viewPosition.y, 0.1f,
-        1.5f * SOUND_DEFAULT_VIEW_WIDTH);
-  }
+  grid.draw(gridCellSize, gridSize, viewScale, viewPosition, viewOffset, gridDotRadius, true);
 };
 
 void SoundTool::drawPattern(Pattern *pattern) {
@@ -150,22 +150,40 @@ void SoundTool::drawPattern(Pattern *pattern) {
 }
 
 void SoundTool::drawOverlay() {
-  auto viewScale = 800.0f / SOUND_DEFAULT_VIEW_WIDTH;
-  love::Vector2 viewPosition(0.0f, -0.75f * SOUND_DEFAULT_VIEW_WIDTH);
+  float windowWidth = 800.0f;
+  auto viewScale = windowWidth / viewWidth;
+  love::Vector2 viewOffset;
+  viewOffset.x = gridCellSize; // 1-cell x offset to accommodate axis
+  constexpr auto viewHeightToWidthRatio = 7.0f / 5.0f;
+  viewOffset.y = 0.5f * (viewWidth * viewHeightToWidthRatio - ((50 + 44) / viewScale));
 
   lv.graphics.push(love::Graphics::STACK_ALL);
   viewTransform.reset();
   viewTransform.scale(viewScale, viewScale);
   viewTransform.translate(-viewPosition.x, -viewPosition.y);
+  viewTransform.translate(viewOffset.x, viewOffset.y);
   lv.graphics.applyTransform(&viewTransform);
 
   love::Colorf clearColor { 0.8f, 0.8f, 0.8f, 1.0f };
   lv.graphics.clear(clearColor, {}, {});
   lv.graphics.setLineWidth(0.1f);
 
-  drawGrid(viewScale);
+  drawGrid(viewScale, viewOffset);
   if (hasSong()) {
     drawPattern(&(song->pattern));
+  }
+
+  // draw playhead
+  if (isPlaying) {
+    auto &scene = editor.getScene();
+    auto playbackTime = scene.getClock().getPerformTime() - playStartTime;
+    auto timePerStep = scene.getClock().getTimePerStep();
+    auto steps = playbackTime / timePerStep;
+    auto lineY = -512.0f / viewScale;
+    auto lineHeight = 1024.0f / viewScale;
+    lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+    lv.graphics.rectangle(
+        love::Graphics::DrawMode::DRAW_FILL, steps * gridCellSize, lineY, 0.1f, lineHeight);
   }
 
   lv.graphics.pop();
