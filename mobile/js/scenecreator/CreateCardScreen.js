@@ -158,6 +158,19 @@ export const CreateCardScreen = ({
       // if we exited scale-rotate tool via deselection or changing selection or changing tool,
       // close corresponding layout sheet
       setActiveSheet({ default: null });
+    } else if (
+      hasSelection &&
+      globalActions?.defaultModeCurrentTool === 'textContent' &&
+      activeSheet.default !== 'sceneCreatorTextContent'
+    ) {
+      setActiveSheet({ default: 'sceneCreatorTextContent' });
+    } else if (
+      activeSheet.default === 'sceneCreatorTextContent' &&
+      (!hasSelection || globalActions?.defaultModeCurrentTool !== 'textContent')
+    ) {
+      // if we exited text content tool via deselection or changing selection or changing tool,
+      // close corresponding layout sheet
+      setActiveSheet({ default: null });
     }
   }, [activeSheet.default, setActiveSheet, hasSelection, globalActions?.defaultModeCurrentTool]);
 

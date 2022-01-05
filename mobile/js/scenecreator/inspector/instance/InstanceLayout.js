@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
-import { InspectorTextInput } from '../components/InspectorTextInput';
 import { InspectorNumberInput } from '../components/InspectorNumberInput';
 import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import { SaveBlueprintButton } from '../components/SaveBlueprintButton';
@@ -106,40 +105,10 @@ export const EditLayout = ({ isEditingBlueprint }) => {
     (...args) => sendBehaviorAction('Body', ...args),
     [sendBehaviorAction]
   );
-  const textComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Text');
-  const textSendAction = React.useCallback(
-    (...args) => sendBehaviorAction('Text', ...args),
-    [sendBehaviorAction]
-  );
-
-  const [textContentValue, setContentValueAndSendAction] = useOptimisticBehaviorValue({
-    component: textComponent,
-    propName: 'content',
-    propType: 'string',
-    sendAction: textSendAction,
-  });
-  const onChangeTextContentValue = React.useCallback(
-    (content) => {
-      setContentValueAndSendAction('set', content);
-    },
-    [setContentValueAndSendAction]
-  );
 
   if (!hasSelection || !body || !bodyComponent) return null;
   return (
     <View>
-      {textComponent ? (
-        <React.Fragment>
-          <Text style={styles.inputLabel}>Text content</Text>
-          <InspectorTextInput
-            value={textContentValue}
-            onChangeText={onChangeTextContentValue}
-            placeholder="Once upon a time..."
-            style={styles.textContentInput}
-            multiline
-          />
-        </React.Fragment>
-      ) : null}
       <View style={styles.properties}>
         <React.Fragment>
           <LayoutInput

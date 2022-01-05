@@ -7,6 +7,7 @@ import { DrawingImportImageSheet } from './sheets/DrawingImportImageSheet';
 import { DrawingLayersSheet } from './sheets/DrawingLayersSheet';
 import { InspectorSheet } from './inspector/InspectorSheet';
 import { InstanceSheet } from './inspector/instance/InstanceSheet';
+import { TextContentSheet } from './inspector/instance/TextContentSheet';
 import { SheetBackgroundOverlay } from '../components/SheetBackgroundOverlay';
 import { useCardCreator } from './CreateCardContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -25,6 +26,10 @@ const ROOT_SHEETS = [
   {
     key: 'sceneCreatorInstance',
     Component: InstanceSheet,
+  },
+  {
+    key: 'sceneCreatorTextContent',
+    Component: TextContentSheet,
   },
   {
     key: 'sceneCreatorInspector',

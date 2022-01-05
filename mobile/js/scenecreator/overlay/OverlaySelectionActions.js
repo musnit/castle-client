@@ -43,48 +43,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const makeChangeOrderOptions = ({ isTextActorSelected, sendAction }) => {
-  if (isTextActorSelected) {
-    return {
-      front: {
-        name: 'Move to Top',
-        action: () => sendAction({ eventName: 'EDITOR_CHANGE_TEXT_ORDER', change: 'top' }),
-      },
-      forward: {
-        name: 'Move Up',
-        action: () => sendAction({ eventName: 'EDITOR_CHANGE_TEXT_ORDER', change: 'up' }),
-      },
-      backward: {
-        name: 'Move Down',
-        action: () => sendAction({ eventName: 'EDITOR_CHANGE_TEXT_ORDER', change: 'down' }),
-      },
-      back: {
-        name: 'Move to Bottom',
-        action: () => sendAction({ eventName: 'EDITOR_CHANGE_TEXT_ORDER', change: 'bottom' }),
-      },
-    };
-  } else {
-    return {
-      front: {
-        name: 'Bring to Front',
-        action: () => sendAction({ eventName: 'EDITOR_CHANGE_DRAW_ORDER', change: 'front' }),
-      },
-      forward: {
-        name: 'Bring Forward',
-        action: () => sendAction({ eventName: 'EDITOR_CHANGE_DRAW_ORDER', change: 'forward' }),
-      },
-      backward: {
-        name: 'Send Backward',
-        action: () => sendAction({ eventName: 'EDITOR_CHANGE_DRAW_ORDER', change: 'backward' }),
-      },
-      back: {
-        name: 'Send to Back',
-        action: () => sendAction({ eventName: 'EDITOR_CHANGE_DRAW_ORDER', change: 'back' }),
-      },
-    };
-  }
-};
-
 export const OverlaySelectionActions = () => {
   const globalActions = useCoreState('EDITOR_GLOBAL_ACTIONS');
   const currentTool = globalActions?.defaultModeCurrentTool ?? 'grab';
@@ -102,12 +60,33 @@ export const OverlaySelectionActions = () => {
     [sendAsync]
   );
 
-  const changeOrderOptions = makeChangeOrderOptions({ isTextActorSelected, sendAction });
+  const changeOrderOptions = {
+    front: {
+      name: 'Bring to Front',
+      action: () => sendAction({ eventName: 'EDITOR_CHANGE_DRAW_ORDER', change: 'front' }),
+    },
+    forward: {
+      name: 'Bring Forward',
+      action: () => sendAction({ eventName: 'EDITOR_CHANGE_DRAW_ORDER', change: 'forward' }),
+    },
+    backward: {
+      name: 'Send Backward',
+      action: () => sendAction({ eventName: 'EDITOR_CHANGE_DRAW_ORDER', change: 'backward' }),
+    },
+    back: {
+      name: 'Send to Back',
+      action: () => sendAction({ eventName: 'EDITOR_CHANGE_DRAW_ORDER', change: 'back' }),
+    },
+  };
+
   const onSelectGrab = React.useCallback(() => {
     sendAction('setDefaultModeCurrentTool', { stringValue: 'grab' });
   }, [sendAction]);
   const onSelectScaleRotate = React.useCallback(() => {
     sendAction('setDefaultModeCurrentTool', { stringValue: 'scaleRotate' });
+  }, [sendAction]);
+  const onSelectTextContent = React.useCallback(() => {
+    sendAction('setDefaultModeCurrentTool', { stringValue: 'textContent' });
   }, [sendAction]);
 
   return (
@@ -135,11 +114,25 @@ export const OverlaySelectionActions = () => {
               color={currentTool === 'scaleRotate' ? '#fff' : '#000'}
             />
           </Pressable>
+          {isTextActorSelected ? (
+          <Pressable
+            style={[
+              styles.button,
+              currentTool === 'textContent' ? { backgroundColor: '#000' } : null,
+              { paddingLeft: 3, }
+            ]}
+            onPress={onSelectTextContent}>
+            <MCIcon
+              name="playlist-edit"
+              size={26}
+              color={currentTool === 'textContent' ? '#fff' : '#000'}
+            />
+          </Pressable>) : null}
         </View>
         <OverlayDrawingFramePicker />
       </View>
       <View style={{ flexDirection: 'column' }}>
-        {currentTool === 'grab' ? (
+        {currentTool != 'scaleRotate' ? (
           <>
             <Pressable
               style={[styles.button, styles.singleButton]}
