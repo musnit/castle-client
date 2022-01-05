@@ -9,7 +9,7 @@
 class Editor;
 
 #define SOUND_DEFAULT_VIEW_WIDTH 10.0f
-#define SOUND_MIN_VIEW_WIDTH 1.0f
+#define SOUND_MIN_VIEW_WIDTH 4.0f
 #define SOUND_MAX_VIEW_WIDTH 25.0f
 #define SOUND_DEFAULT_VIEW_BOUND 5.0f
 
@@ -52,6 +52,7 @@ private:
   Grid grid;
   void drawGrid(float viewScale, love::Vector2 &viewOffset);
   void drawPattern(Pattern *pattern);
+  void drawNoteAxis();
   mutable love::Transform viewTransform;
   love::Vector2 viewPosition;
   float viewWidth = SOUND_DEFAULT_VIEW_WIDTH;

@@ -64,26 +64,28 @@ void SoundTool::update(double dt) {
       bool playNote = false;
 
       if (touch.released) {
-        Commands::Params commandParams;
-        commandParams.coalesce = true;
-        bool oldHasNote = song->pattern.hasNote(step, key);
-        editor.getCommands().execute(
-            "change notes", commandParams,
-            [this, oldHasNote, step, key](Editor &editor, bool) {
-              if (oldHasNote) {
-                song->pattern.removeNote(step, key);
-              } else {
-                song->pattern.addNote(step, key);
-              }
-              // sendPatternEvent();
-            },
-            [this, oldHasNote, step, key](Editor &editor, bool) {
-              if (oldHasNote) {
-                song->pattern.addNote(step, key);
-              } else {
-                song->pattern.removeNote(step, key);
-              }
-            });
+        if (step >= 0) {
+          Commands::Params commandParams;
+          commandParams.coalesce = true;
+          bool oldHasNote = song->pattern.hasNote(step, key);
+          editor.getCommands().execute(
+              "change notes", commandParams,
+              [this, oldHasNote, step, key](Editor &editor, bool) {
+                if (oldHasNote) {
+                  song->pattern.removeNote(step, key);
+                } else {
+                  song->pattern.addNote(step, key);
+                }
+                // sendPatternEvent();
+              },
+              [this, oldHasNote, step, key](Editor &editor, bool) {
+                if (oldHasNote) {
+                  song->pattern.addNote(step, key);
+                } else {
+                  song->pattern.removeNote(step, key);
+                }
+              });
+        }
         hasTouch = false;
       } else {
         hasTouch = true;
@@ -149,6 +151,26 @@ void SoundTool::drawPattern(Pattern *pattern) {
   }
 }
 
+void SoundTool::drawNoteAxis() {
+  // TODO: this should be dependent on the instrument we're using
+  // midi 48 is y = 0, go four octaves above and below
+  for (auto note = 0; note < 96; note++) {
+    auto y = ((note - 48) * -gridCellSize) - gridCellSize;
+    auto x = viewPosition.x - gridCellSize; // always on left edge of view
+    auto scaleDegree = note % 12;
+    auto isBlack = scaleDegree == 1 || scaleDegree == 3 || scaleDegree == 6 || scaleDegree == 8
+        || scaleDegree == 10;
+    if (isBlack) {
+      lv.graphics.setColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+    } else {
+      lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+    }
+    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);
+    lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
+    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_LINE, x, y, gridCellSize, gridCellSize);
+  }
+}
+
 void SoundTool::drawOverlay() {
   float windowWidth = 800.0f;
   auto viewScale = windowWidth / viewWidth;
@@ -185,6 +207,8 @@ void SoundTool::drawOverlay() {
     lv.graphics.rectangle(
         love::Graphics::DrawMode::DRAW_FILL, steps * gridCellSize, lineY, 0.1f, lineHeight);
   }
+
+  drawNoteAxis();
 
   lv.graphics.pop();
 }
