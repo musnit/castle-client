@@ -37,6 +37,8 @@ public:
   double getDuration(double bars, double beats, double steps);
   double getTimeUntilNext(Quantize quant, double count);
 
+  unsigned int getBeatsPerBar();
+  unsigned int getStepsPerBeat();
   unsigned int getTotalBeatsElapsed();
   unsigned int getTotalBarsElapsed();
   unsigned int getBeatIndexInBar();
@@ -102,4 +104,12 @@ inline double Clock::getPerformTime() {
 
 inline double Clock::getTimePerStep() {
   return timePerBeat / double(stepsPerBeat);
+}
+
+inline unsigned int Clock::getBeatsPerBar() {
+  return beatsPerBar;
+}
+
+inline unsigned int Clock::getStepsPerBeat() {
+  return stepsPerBeat;
 }

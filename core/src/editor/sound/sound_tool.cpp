@@ -118,7 +118,42 @@ void SoundTool::update(double dt) {
 }
 
 void SoundTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
-  // TODO: final grid appearance
+  // draw lines on each beat and bar
+  auto &scene = editor.getScene();
+  unsigned int stepIndexVisible = int(std::floor(std::max(viewPosition.x, 0.0f) / gridCellSize));
+  float gridX = float(stepIndexVisible) * gridCellSize;
+  unsigned int stepsPerBeat = scene.getClock().getStepsPerBeat(),
+               stepsPerBar = stepsPerBeat * scene.getClock().getBeatsPerBar();
+  auto lineY = -1024.0f / viewScale;
+  auto lineHeight = 2048.0f / viewScale;
+  while (gridX < viewPosition.x + viewWidth) {
+    if (stepIndexVisible % stepsPerBar == 0) {
+      lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
+      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, gridX, lineY, 0.05f, lineHeight);
+    } else if (stepIndexVisible % stepsPerBeat == 0) {
+      lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, gridX, lineY, 0.05f, lineHeight);
+    }
+    stepIndexVisible++;
+    gridX += gridCellSize;
+  }
+
+  // draw lines on each octave
+  lv.graphics.setColor({ 0.4f, 0.4f, 0.4f, 1.0f });
+  int noteIndexVisible = int(std::floor((viewPosition.y - viewOffset.y) / gridCellSize));
+  float gridY = float(noteIndexVisible) * gridCellSize;
+  auto lineX = 0.0f;
+  auto lineWidth = 2048.0f / viewScale;
+  auto viewBottom = viewPosition.y - viewOffset.y + viewWidth * (7.0f / 5.0f);
+  while (gridY < viewBottom) {
+    if (noteIndexVisible % 12 == 0) {
+      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, lineX, gridY, lineWidth, 0.05f);
+    }
+    noteIndexVisible++;
+    gridY += gridCellSize;
+  }
+
+  // draw normal grid dots
   lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 0.4f });
   auto gridDotRadius = 3.5f;
   auto gridSize = 0.0f; // indicates infinite grid
@@ -201,8 +236,8 @@ void SoundTool::drawOverlay() {
     auto playbackTime = scene.getClock().getPerformTime() - playStartTime;
     auto timePerStep = scene.getClock().getTimePerStep();
     auto steps = playbackTime / timePerStep;
-    auto lineY = -512.0f / viewScale;
-    auto lineHeight = 1024.0f / viewScale;
+    auto lineY = -1024.0f / viewScale;
+    auto lineHeight = 2048.0f / viewScale;
     lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
     lv.graphics.rectangle(
         love::Graphics::DrawMode::DRAW_FILL, steps * gridCellSize, lineY, 0.1f, lineHeight);
