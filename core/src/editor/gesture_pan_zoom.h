@@ -10,15 +10,16 @@ public:
   bool isActive();
   void update(const Gesture &gesture, love::Transform &currentViewTransform);
 
-  // set min/max pairs for view width, view x, view y; only affects apply()
-  void setConstraints(
-      love::Vector2 &clampViewWidth, love::Vector2 &clampViewX, love::Vector2 &clampViewY);
-
   // apply the current gesture state to a view
   // return: a pair with: new position, new view width
   std::pair<love::Vector2, float> apply(love::Vector2 &currentViewPosition, float currentViewWidth);
 
   void clear();
+
+  // constraints
+  float minWidth, maxWidth;
+  love::Vector2 viewMin;
+  love::Vector2 viewMax;
 
 private:
   bool hasGesture = false;
@@ -28,11 +29,6 @@ private:
   love::Vector2 center;
   love::Vector2 translate;
   float scale = 1;
-
-  // constraints
-  float minWidth, maxWidth;
-  love::Vector2 viewMin;
-  love::Vector2 viewMax;
 };
 
 inline GesturePanZoom::GesturePanZoom(

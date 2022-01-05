@@ -44,6 +44,14 @@ public:
     return notes.end();
   }
 
+  inline std::map<double, SmallVector<Note, 2>>::reverse_iterator rbegin() {
+    return notes.rbegin();
+  }
+
+  inline std::map<double, SmallVector<Note, 2>>::reverse_iterator rend() {
+    return notes.rend();
+  }
+
 private:
   std::map<double, SmallVector<Note, 2>> notes; // ordered time (in steps) -> notes at step
 };

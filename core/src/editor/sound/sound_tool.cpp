@@ -24,6 +24,21 @@ void SoundTool::onSetActive() {
   viewWidth = SOUND_DEFAULT_VIEW_WIDTH;
   viewPosition.x = 0.0f;
   viewPosition.y = 0.0f;
+  updateViewConstraints();
+}
+
+void SoundTool::updateViewConstraints() {
+  double lastTime = 0;
+  if (hasSong()) {
+    auto endNotes = song->pattern.rbegin();
+    if (endNotes != song->pattern.rend()) {
+      // add some buffer beyond last time
+      auto &scene = editor.getScene();
+      lastTime = endNotes->first;
+      lastTime += scene.getClock().getStepsPerBeat();
+    }
+  }
+  panZoom.viewMax.x = std::max(SOUND_DEFAULT_VIEW_BOUND, float(lastTime * gridCellSize));
 }
 
 void SoundTool::togglePlay() {
@@ -77,6 +92,7 @@ void SoundTool::update(double dt) {
                   song->pattern.addNote(step, key);
                 }
                 // sendPatternEvent();
+                updateViewConstraints();
               },
               [this, oldHasNote, step, key](Editor &editor, bool) {
                 if (oldHasNote) {
@@ -84,6 +100,7 @@ void SoundTool::update(double dt) {
                 } else {
                   song->pattern.removeNote(step, key);
                 }
+                updateViewConstraints();
               });
         }
         hasTouch = false;

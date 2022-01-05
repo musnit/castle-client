@@ -49,6 +49,7 @@ private:
     { 0.0f, -SOUND_DEFAULT_VIEW_BOUND },
     { SOUND_DEFAULT_VIEW_BOUND, SOUND_DEFAULT_VIEW_BOUND },
   };
+  void updateViewConstraints();
   Grid grid;
   void drawGrid(float viewScale, love::Vector2 &viewOffset);
   void drawPattern(Pattern *pattern);
