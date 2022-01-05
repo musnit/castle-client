@@ -56,7 +56,6 @@ export const TextContentSheet = ({ isOpen }) => {
       isOpen={isOpen}
       renderHeader={renderHeader}
       renderContent={renderContent}
-      snapPoints={[200, 400]}
       initialSnap={0}
     />
   );
