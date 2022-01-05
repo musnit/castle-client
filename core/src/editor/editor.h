@@ -70,6 +70,7 @@ public:
   enum class Tool {
     Grab,
     ScaleRotate,
+    TextContent,
   };
   Tool getCurrentTool() const;
   void setCurrentTool(Tool tool);

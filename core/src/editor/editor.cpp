@@ -280,6 +280,8 @@ void Editor::update(double dt) {
       case Tool::ScaleRotate:
         scaleRotate.preUpdate(dt);
         break;
+      case Tool::TextContent:
+        break;
       }
 
       // Update belt -- do this before tools to allow it to steal touches
@@ -312,6 +314,8 @@ void Editor::update(double dt) {
         break;
       case Tool::ScaleRotate:
         scaleRotate.update(dt);
+        break;
+      case Tool::TextContent:
         break;
       }
 
@@ -443,6 +447,8 @@ void Editor::draw() {
           break;
         case Tool::ScaleRotate:
           scaleRotate.drawOverlay();
+          break;
+        case Tool::TextContent:
           break;
         }
       }
@@ -813,6 +819,9 @@ void Editor::sendGlobalActions() {
       break;
     case Tool::ScaleRotate:
       ev.defaultModeCurrentTool = "scaleRotate";
+      break;
+    case Tool::TextContent:
+      ev.defaultModeCurrentTool = "textContent";
       break;
     }
     break;
@@ -1669,6 +1678,8 @@ struct EditorInspectorActionReceiver {
         editor->setCurrentTool(Editor::Tool::Grab);
       } else if (params.stringValue() == "scaleRotate") {
         editor->setCurrentTool(Editor::Tool::ScaleRotate);
+      } else if (params.stringValue() == "textContent") {
+        editor->setCurrentTool(Editor::Tool::TextContent);
       }
       editor->isEditorStateDirty = true;
     }
