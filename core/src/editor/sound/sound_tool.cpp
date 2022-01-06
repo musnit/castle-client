@@ -372,6 +372,35 @@ void SoundTool::sendPatternEvent() {
   }
 }
 
+struct SoundToolChangeInstrumentReceiver {
+  inline static const BridgeRegistration<SoundToolChangeInstrumentReceiver> registration {
+    "SOUND_TOOL_CHANGE_INSTRUMENT"
+  };
+
+  struct Params {
+    // TODO: other instrument types besides sampler
+    PROP(Sample, sampleValue);
+  } params;
+
+  void receive(Engine &engine) {
+    auto editor = engine.maybeGetEditor();
+    if (!editor)
+      return;
+
+    editor->soundTool.changeInstrument(params.sampleValue());
+  }
+};
+
+void SoundTool::changeInstrument(Sample &sample) {
+  if (song->instruments.size() > 0) {
+    // TODO: selected track/instrument
+    auto &firstInstrument = song->instruments[0];
+    Sampler *sampler = (Sampler *)firstInstrument.get();
+    sampler->sample = sample;
+  }
+  sendInstrumentEvent();
+}
+
 struct SoundToolInstrumentEvent {
   PROP(Instrument *, instrument);
 };

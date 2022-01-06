@@ -7,6 +7,7 @@
 #include "sound/song.h"
 
 class Editor;
+struct Sample;
 
 #define SOUND_DEFAULT_VIEW_WIDTH 10.0f
 #define SOUND_MIN_VIEW_WIDTH 4.0f
@@ -35,6 +36,9 @@ public:
 
   // play/pause currently edited song
   void togglePlay();
+
+  // edit current instrument
+  void changeInstrument(Sample &sample);
 
 private:
   Lv &lv { Lv::getInstance() };
