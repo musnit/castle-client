@@ -217,6 +217,9 @@ void SoundTool::drawNoteAxis() {
     } else {
       lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
     }
+    if (hasTouch && note == tempNote.key) {
+      lv.graphics.setColor({ 0.8f, 0.0f, 0.0f, 1.0f });
+    }
     lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);
     lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
     lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_LINE, x, y, gridCellSize, gridCellSize);
