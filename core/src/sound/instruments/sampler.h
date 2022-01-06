@@ -16,4 +16,5 @@ public:
   Sample sample;
 
   void play(Sound &sound, Pattern::Note note) override;
+  void write(Writer &writer) const override;
 };

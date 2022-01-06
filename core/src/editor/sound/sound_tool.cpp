@@ -91,7 +91,7 @@ void SoundTool::update(double dt) {
                 } else {
                   song->pattern.addNote(step, key);
                 }
-                // sendPatternEvent();
+                sendPatternEvent();
                 updateViewConstraints();
               },
               [this, oldHasNote, step, key](Editor &editor, bool) {
@@ -100,6 +100,7 @@ void SoundTool::update(double dt) {
                 } else {
                   song->pattern.removeNote(step, key);
                 }
+                sendPatternEvent();
                 updateViewConstraints();
               });
         }
@@ -368,5 +369,22 @@ void SoundTool::sendPatternEvent() {
   if (hasSong()) {
     SoundToolPatternEvent ev { sessionId, &(song->pattern) };
     editor.getBridge().sendEvent("EDITOR_SOUND_TOOL_PATTERN", ev);
+  }
+}
+
+struct SoundToolInstrumentEvent {
+  PROP(Instrument *, instrument);
+};
+
+void SoundTool::sendInstrumentEvent() {
+  if (hasSong()) {
+    Instrument *instrument = nullptr;
+    if (song->instruments.size() > 0) {
+      // TODO: selected track/instrument
+      auto &firstInstrument = song->instruments[0];
+      instrument = firstInstrument.get();
+    }
+    SoundToolInstrumentEvent ev { instrument };
+    editor.getBridge().sendEvent("EDITOR_SOUND_TOOL_INSTRUMENT", ev);
   }
 }

@@ -30,6 +30,7 @@ public:
 
   std::string sessionId; // used to pass data back to the correct place in editor frontend
   void sendPatternEvent();
+  void sendInstrumentEvent();
   void sendSceneMusicData();
 
   // play/pause currently edited song
@@ -70,6 +71,8 @@ private:
 inline void SoundTool::setSong(Song &song_) {
   // editing in place for now w/o ownership - do something smarter when we support headless patterns
   song = &song_;
+  sendPatternEvent();
+  sendInstrumentEvent();
 }
 
 inline bool SoundTool::hasSong() {
