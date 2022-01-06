@@ -241,7 +241,7 @@ const SampleSfxr = ({ onChangeParams, params, ...props }) => {
     : 0;
 
   return (
-    <View style={[SceneCreatorConstants.styles.button, styles.container]}>
+    <View style={styles.container}>
       <BigPlayButton onPress={() => sendAsync('EDITOR_CHANGE_SOUND', params)} />
       <View style={styles.controls}>
         <View style={styles.segmentedControl}>
@@ -434,8 +434,7 @@ class SampleMicrophone extends React.Component {
       : null;
 
     return (
-      <View
-        style={[SceneCreatorConstants.styles.button, styles.container, { alignItems: 'center' }]}>
+      <View style={[styles.container, { alignItems: 'center' }]}>
         <PlayButton onPress={this.onPlayAudio} disabled={status !== 'ready' || !soundId} />
         <RecordStopButton
           onPress={status === 'ready' ? this.onStartRecord : this.onStopRecord}
@@ -552,7 +551,7 @@ const SampleLibrary = ({ onChangeParams, params, ...props }) => {
   const chooseFileDisabled = status !== 'ready';
 
   return (
-    <View style={[SceneCreatorConstants.styles.button, styles.container, { alignItems: 'center' }]}>
+    <View style={[styles.container, { alignItems: 'center' }]}>
       <PlayButton onPress={onPlayAudio} disabled={status !== 'ready' || !soundId} />
       <TouchableOpacity
         style={[
