@@ -109,7 +109,7 @@ export const CreateCardScreen = ({
       ...state,
       ...action,
     }),
-    { default: null, draw: 'drawingLayers', sound: null }
+    { default: null, draw: 'drawingLayers', sound: 'soundEditInstrument' }
   );
   React.useEffect(Keyboard.dismiss, [activeSheet.default]);
 

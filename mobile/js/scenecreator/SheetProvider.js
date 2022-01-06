@@ -9,6 +9,7 @@ import { InspectorSheet } from './inspector/InspectorSheet';
 import { InstanceSheet } from './inspector/instance/InstanceSheet';
 import { TextContentSheet } from './inspector/instance/TextContentSheet';
 import { SheetBackgroundOverlay } from '../components/SheetBackgroundOverlay';
+import { SoundEditInstrumentSheet } from './sound/sheets/SoundEditInstrumentSheet';
 import { useCardCreator } from './CreateCardContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -60,6 +61,10 @@ const ROOT_SHEETS = [
     Component: DrawingImportImageSheet,
     makeSnapPoints: ({ insets }) => [48 + insets.bottom, 256, 450 + insets.bottom],
     initialSnap: 1,
+  },
+  {
+    key: 'soundEditInstrument',
+    Component: SoundEditInstrumentSheet,
   },
 ];
 

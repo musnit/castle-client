@@ -6,7 +6,7 @@ import {
   readableOperator,
 } from '../../SceneCreatorUtilities';
 import { makeCardPreviewTitle } from '../../../common/utilities';
-import { SOUND_CATEGORIES } from './PlaySoundResponse';
+import { SFXR_CATEGORIES } from '../../sound/components/Sample';
 
 import Metadata from '../../Metadata';
 import { USE_CLOCK } from '../../SceneCreatorConstants';
@@ -989,9 +989,9 @@ const PlaySound = ({ response }) => {
   ];
 
   if (soundType === 'sfxr') {
-    let soundCategory = SOUND_CATEGORIES.find((c) => c.name === response.params.category);
+    let soundCategory = SFXR_CATEGORIES.find((c) => c.name === response.params.category);
     if (!soundCategory) {
-      soundCategory = SOUND_CATEGORIES[SOUND_CATEGORIES.length - 1];
+      soundCategory = SFXR_CATEGORIES[SFXR_CATEGORIES.length - 1];
     }
     return cells.concat([
       {
