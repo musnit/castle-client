@@ -217,41 +217,32 @@ const AudioActivityIndicator = ({ label }) => (
   </View>
 );
 
-const SoundEffect = ({ onChangeSound, response, onChangeResponse, children, ...props }) => {
+const SoundEffect = ({ onChangeParams, params, ...props }) => {
   const [lastNativeUpdate, incrementLastNativeUpdate] = React.useReducer((state) => state + 1, 0);
-  React.useEffect(incrementLastNativeUpdate, [response.params]);
+  React.useEffect(incrementLastNativeUpdate, [params]);
 
   const onChangeCategory = (index) =>
-    onChangeSound({
-      ...response,
-      params: {
-        ...response.params,
-        category: SOUND_CATEGORIES[index].name,
-      },
+    onChangeParams({
+      ...params,
+      category: SOUND_CATEGORIES[index].name,
     });
   const onChangeSeed = (seed) =>
-    onChangeSound({
-      ...response,
-      params: {
-        ...response.params,
-        seed,
-      },
+    onChangeParams({
+      ...params,
+      seed,
     });
   const onChangeMutation = (mutationSeed) =>
-    onChangeSound({
-      ...response,
-      params: {
-        ...response.params,
-        mutationSeed,
-      },
+    onChangeParams({
+      ...params,
+      mutationSeed,
     });
-  const selectedCategoryIndex = response.params?.category
-    ? SOUND_CATEGORIES.findIndex((c) => c.name === response.params.category)
+  const selectedCategoryIndex = params?.category
+    ? SOUND_CATEGORIES.findIndex((c) => c.name === params.category)
     : 0;
 
   return (
     <View style={[SceneCreatorConstants.styles.button, styles.container]}>
-      <BigPlayButton onPress={() => sendAsync('EDITOR_CHANGE_SOUND', response.params)} />
+      <BigPlayButton onPress={() => sendAsync('EDITOR_CHANGE_SOUND', params)} />
       <View style={styles.controls}>
         <View style={styles.segmentedControl}>
           {SOUND_CATEGORIES.map((category, ii) => (
@@ -281,7 +272,7 @@ const SoundEffect = ({ onChangeSound, response, onChangeResponse, children, ...p
                   hideIncrements
                   lastNativeUpdate={lastNativeUpdate}
                   placeholder="Seed"
-                  value={response.params?.seed}
+                  value={params?.seed}
                   onChange={onChangeSeed}
                 />
               </View>
@@ -300,7 +291,7 @@ const SoundEffect = ({ onChangeSound, response, onChangeResponse, children, ...p
                   hideIncrements
                   lastNativeUpdate={lastNativeUpdate}
                   placeholder="Mutation"
-                  value={response.params?.mutationSeed}
+                  value={params?.mutationSeed}
                   onChange={onChangeMutation}
                 />
               </View>
@@ -322,14 +313,14 @@ class SoundRecording extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      state: 'ready',
+      status: 'ready',
     };
   }
 
   async componentWillUnmount() {
-    let { state } = this.state;
+    let { status } = this.state;
 
-    if (state === 'recording') {
+    if (status === 'recording') {
       audioRecorderPlayer.stopRecorder();
       audioRecorderPlayer.removeRecordBackListener();
     }
@@ -338,14 +329,11 @@ class SoundRecording extends React.Component {
   }
 
   onChangeRecordingUrl = async (recordingUrl) => {
-    let { onChangeSound, response } = this.props;
+    let { onChangeParams, params } = this.props;
 
-    onChangeSound({
-      ...response,
-      params: {
-        ...response.params,
-        recordingUrl,
-      },
+    onChangeParams({
+      ...params,
+      recordingUrl,
     });
   };
 
@@ -355,7 +343,7 @@ class SoundRecording extends React.Component {
 
   onStopRecord = async () => {
     this.setState({
-      state: 'processing',
+      status: 'processing',
     });
 
     try {
@@ -378,7 +366,7 @@ class SoundRecording extends React.Component {
     }
 
     this.setState({
-      state: 'ready',
+      status: 'ready',
     });
   };
 
@@ -419,7 +407,7 @@ class SoundRecording extends React.Component {
     }
 
     this.setState({
-      state: 'recording',
+      status: 'recording',
     });
 
     await audioRecorderPlayer.startRecorder();
@@ -433,27 +421,26 @@ class SoundRecording extends React.Component {
   };
 
   onPlayAudio = async () => {
-    let { response } = this.props;
-
-    sendAsync('EDITOR_PREVIEW_SOUND', response.params);
+    let { params } = this.props;
+    sendAsync('EDITOR_CHANGE_SOUND', params);
   };
 
   render() {
-    let { response } = this.props;
-    let { state } = this.state;
+    let { params } = this.props;
+    let { status } = this.state;
 
-    const soundId = response.params?.recordingUrl
-      ? response.params?.recordingUrl.split('audio.castle.xyz/')[1].split('.mp3')[0]
+    const soundId = params?.recordingUrl
+      ? params?.recordingUrl.split('audio.castle.xyz/')[1].split('.mp3')[0]
       : null;
 
     return (
       <View
         style={[SceneCreatorConstants.styles.button, styles.container, { alignItems: 'center' }]}>
-        <PlayButton onPress={this.onPlayAudio} disabled={state !== 'ready' || !soundId} />
+        <PlayButton onPress={this.onPlayAudio} disabled={status !== 'ready' || !soundId} />
         <RecordStopButton
-          onPress={state === 'ready' ? this.onStartRecord : this.onStopRecord}
-          isRecording={state === 'recording'}
-          disabled={state === 'processing'}
+          onPress={status === 'ready' ? this.onStartRecord : this.onStopRecord}
+          isRecording={status === 'recording'}
+          disabled={status === 'processing'}
         />
         <InspectorTextInput
           optimistic
@@ -462,9 +449,9 @@ class SoundRecording extends React.Component {
           placeholder="Sound id"
           style={styles.soundIdInput}
         />
-        {state === 'recording' || state === 'processing' ? (
+        {status === 'recording' || status === 'processing' ? (
           <AudioActivityIndicator
-            label={state === 'recording' ? 'Recording...' : 'Processing...'}
+            label={status === 'recording' ? 'Recording...' : 'Processing...'}
           />
         ) : null}
       </View>
@@ -472,21 +459,18 @@ class SoundRecording extends React.Component {
   }
 }
 
-const SoundUpload = ({ onChangeSound, response, onChangeResponse, children, ...props }) => {
+const SoundUpload = ({ onChangeParams, params, ...props }) => {
   const { showActionSheetWithOptions } = useActionSheet();
 
-  const [state, setState] = React.useState('ready');
+  const [status, setStatus] = React.useState('ready');
 
   const onChangeUploadUrl = React.useCallback(
     (uploadUrl) =>
-      onChangeSound({
-        ...response,
-        params: {
-          ...response.params,
-          uploadUrl,
-        },
+      onChangeParams({
+        ...params,
+        uploadUrl,
       }),
-    [response, onChangeSound]
+    [params, onChangeParams]
   );
 
   const onChangeSoundId = React.useCallback(
@@ -497,7 +481,7 @@ const SoundUpload = ({ onChangeSound, response, onChangeResponse, children, ...p
   );
 
   const onStartDocumentUpload = React.useCallback(async () => {
-    setState('processing');
+    setStatus('processing');
 
     try {
       const res = await DocumentPicker.pick({
@@ -515,11 +499,11 @@ const SoundUpload = ({ onChangeSound, response, onChangeResponse, children, ...p
       }
     }
 
-    setState('ready');
-  }, [onChangeUploadUrl, setState]);
+    setStatus('ready');
+  }, [onChangeUploadUrl, setStatus]);
 
   const onStartCameraUpload = React.useCallback(async () => {
-    setState('processing');
+    setStatus('processing');
 
     ImagePickerLaunchImageLibrary(
       {
@@ -536,10 +520,10 @@ const SoundUpload = ({ onChangeSound, response, onChangeResponse, children, ...p
           }
         }
 
-        setState('ready');
+        setStatus('ready');
       }
     );
-  }, [onChangeUploadUrl, setState]);
+  }, [onChangeUploadUrl, setStatus]);
 
   const onSelectUploadType = React.useCallback(async () => {
     showActionSheetWithOptions(
@@ -559,17 +543,17 @@ const SoundUpload = ({ onChangeSound, response, onChangeResponse, children, ...p
   }, [onStartDocumentUpload, onStartCameraUpload]);
 
   const onPlayAudio = React.useCallback(async () => {
-    sendAsync('EDITOR_PREVIEW_SOUND', response.params);
-  }, [response.params]);
+    sendAsync('EDITOR_CHANGE_SOUND', params);
+  }, [params]);
 
-  const soundId = response.params?.uploadUrl
-    ? response.params?.uploadUrl.split('audio.castle.xyz/')[1].split('.mp3')[0]
+  const soundId = params?.uploadUrl
+    ? params?.uploadUrl.split('audio.castle.xyz/')[1].split('.mp3')[0]
     : '';
-  const chooseFileDisabled = state !== 'ready';
+  const chooseFileDisabled = status !== 'ready';
 
   return (
     <View style={[SceneCreatorConstants.styles.button, styles.container, { alignItems: 'center' }]}>
-      <PlayButton onPress={onPlayAudio} disabled={state !== 'ready' || !soundId} />
+      <PlayButton onPress={onPlayAudio} disabled={status !== 'ready' || !soundId} />
       <TouchableOpacity
         style={[
           SceneCreatorConstants.styles.button,
@@ -592,7 +576,7 @@ const SoundUpload = ({ onChangeSound, response, onChangeResponse, children, ...p
         placeholder="Sound id"
         style={styles.soundIdInput}
       />
-      {state === 'processing' ? <AudioActivityIndicator label="Processing..." /> : null}
+      {status === 'processing' ? <AudioActivityIndicator label="Processing..." /> : null}
     </View>
   );
 };
@@ -603,17 +587,17 @@ const SOUND_COMPONENTS = {
   library: SoundUpload,
 };
 
-export const PlaySoundResponse = ({
-  response,
-  onChangeResponse,
-  children,
-  addChildSheet,
-  ...props
-}) => {
-  const onChangeSound = React.useCallback(
-    (response) => {
-      onChangeResponse(response);
-      sendAsync('EDITOR_CHANGE_SOUND', response.params);
+export const PlaySoundResponse = ({ response, onChangeResponse, children, ...props }) => {
+  const onChangeParams = React.useCallback(
+    (params) => {
+      onChangeResponse({
+        ...response,
+        params,
+      });
+      if (params.type === 'sfxr') {
+        // play sound any time sfxr params change, but don't autoplay for other types
+        sendAsync('EDITOR_CHANGE_SOUND', params);
+      }
     },
     [onChangeResponse]
   );
@@ -624,12 +608,7 @@ export const PlaySoundResponse = ({
     <>
       {children}
       {SoundComponent ? (
-        <SoundComponent
-          onChangeSound={onChangeSound}
-          response={response}
-          onChangeResponse={onChangeResponse}
-          {...props}
-        />
+        <SoundComponent onChangeParams={onChangeParams} params={response.params} {...props} />
       ) : null}
     </>
   );

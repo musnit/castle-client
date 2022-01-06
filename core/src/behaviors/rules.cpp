@@ -887,29 +887,6 @@ struct EditorChangeSoundReceiver {
     if (!engine.getIsEditing())
       return;
 
-    if (params.type() == "sfxr") {
-      auto &scene = engine.maybeGetEditor()->getScene();
-      auto &sound = scene.getSound();
-      RuleContext independent { nullptr, nullActor, {}, scene };
-      sound.play(params.type(), params.playbackRate().eval<double>(independent),
-          params.recordingUrl(), params.uploadUrl(), params.category(), params.seed(),
-          params.mutationSeed(), params.mutationAmount());
-      // TODO: maybe clear unused sounds
-    }
-  }
-};
-
-struct EditorPreviewSoundReceiver {
-  inline static const BridgeRegistration<EditorPreviewSoundReceiver> registration {
-    "EDITOR_PREVIEW_SOUND"
-  };
-
-  Sample params;
-
-  void receive(Engine &engine) {
-    if (!engine.getIsEditing())
-      return;
-
     auto &scene = engine.maybeGetEditor()->getScene();
     auto &sound = scene.getSound();
     RuleContext independent { nullptr, nullActor, {}, scene };
@@ -918,7 +895,6 @@ struct EditorPreviewSoundReceiver {
         params.mutationSeed(), params.mutationAmount());
   }
 };
-
 
 //
 // Meta responses
