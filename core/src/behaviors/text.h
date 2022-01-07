@@ -49,6 +49,9 @@ struct TextComponent : BaseComponent {
     PROP(float, fontSize,
         .label("Font size")
         ) = 10;
+    PROP(float, fontSizeScale,
+        .label("Font size scale")
+        ) = 1;
     PROP(std::string, alignment,
         .label("Alignment")
         .allowedValues("left", "right", "center", "justify")

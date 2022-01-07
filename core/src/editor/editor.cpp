@@ -1171,6 +1171,7 @@ struct EditorModifyComponentReceiver {
               updateBlueprint = !(propId == decltype(Drawing2Component::Props::initialFrame)::id);
             } else if constexpr (std::is_same_v<BehaviorType, TextBehavior>) {
               updateBlueprint = !(propId == decltype(TextComponent::Props::content)::id);
+              updateBlueprint = !(propId == decltype(TextComponent::Props::fontSizeScale)::id);
             }
           }
           auto updateBase64Png = false;

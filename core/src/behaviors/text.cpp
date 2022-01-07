@@ -226,11 +226,12 @@ bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &com
   if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
     if (auto info = getBehaviors().byType<BodyBehavior>().getRenderInfo(actorId);
         info.visible || (options && options->drawInvisibleActors)) {
-      auto fontSize = std::clamp(component.props.fontSize(), 1.0f, 30.0f) / 10;
+      auto scaledFontSize = component.props.fontSizeScale() * component.props.fontSize();
+      auto worldFontSize = std::clamp(scaledFontSize, 1.0f, 30.0f) / 10;
       auto font = component.fontResource
-          ? getFont(component.fontResource, fontSize * fontPixelScale)
+          ? getFont(component.fontResource, worldFontSize * fontPixelScale)
           : overlayFont;
-      auto downscale = fontSize / font->getHeight();
+      auto downscale = worldFontSize / font->getHeight();
 
       auto [x, y] = body->GetPosition();
 

@@ -321,6 +321,7 @@ void Scene::writeActor(ActorId actorId, Writer &writer, WriteActorParams params)
           = getBehaviors().byType<TextBehavior>().maybeGetComponent(actorId)) {
         writer.obj("Text", [&]() {
           writer.str("content", maybeTextComponent->props.content());
+          writer.num("fontSizeScale", maybeTextComponent->props.fontSizeScale());
         });
       }
     } else {

@@ -162,6 +162,8 @@ void ScaleRotateTool::update(double dt) {
     return;
   }
 
+  auto &textBehavior = editor.getScene().getBehaviors().byType<TextBehavior>();
+
   auto &gesture = scene.getGesture();
   gesture.withSingleTouch([&](TouchId touchId, const Touch &touch) {
     if (touch.isUsed() && !touch.isUsed(scaleRotateTouchToken)
@@ -207,6 +209,15 @@ void ScaleRotateTool::update(double dt) {
 
       auto scaleFactor = newSize / size;
 
+      float oldFontSizeScale = 1, newFontSizeScale = 1;
+      if (auto text = textBehavior.maybeGetComponent(actorId)) {
+        oldFontSizeScale = text->props.fontSizeScale();
+        newFontSizeScale = oldFontSizeScale;
+        if (scaleHandle.type == ScaleHandle::Corner) {
+          newFontSizeScale *= scaleFactor.x;
+        }
+      }
+
       auto newScale = oldScale * scaleFactor;
       auto localNewPos = -localOppositeHandlePos * scaleFactor + localOppositeHandlePos;
       auto worldNewPos = convert(body->GetWorldPoint(convert(localNewPos)));
@@ -215,20 +226,28 @@ void ScaleRotateTool::update(double dt) {
       commandParams.coalesce = true;
       editor.getCommands().execute(
           "resize", commandParams,
-          [actorId, worldNewPos, newScale](Editor &editor, bool) {
+          [actorId, worldNewPos, newScale, newFontSizeScale](Editor &editor, bool) {
             auto &bodyBehavior = editor.getScene().getBehaviors().byType<BodyBehavior>();
             if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
               bodyBehavior.setPosition(actorId, convert(worldNewPos));
               bodyBehavior.setScale(actorId, newScale.x, newScale.y);
               editor.setSelectedComponentStateDirty(BodyBehavior::behaviorId);
             }
+            auto &textBehavior = editor.getScene().getBehaviors().byType<TextBehavior>();
+            if (auto text = textBehavior.maybeGetComponent(actorId)) {
+              text->props.fontSizeScale() = newFontSizeScale;
+            }
           },
-          [actorId, worldOldPos, oldScale](Editor &editor, bool) {
+          [actorId, worldOldPos, oldScale, oldFontSizeScale](Editor &editor, bool) {
             auto &bodyBehavior = editor.getScene().getBehaviors().byType<BodyBehavior>();
             if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
               bodyBehavior.setPosition(actorId, convert(worldOldPos));
               bodyBehavior.setScale(actorId, oldScale.x, oldScale.y);
               editor.setSelectedComponentStateDirty(BodyBehavior::behaviorId);
+            }
+            auto &textBehavior = editor.getScene().getBehaviors().byType<TextBehavior>();
+            if (auto text = textBehavior.maybeGetComponent(actorId)) {
+              text->props.fontSizeScale() = oldFontSizeScale;
             }
           });
       if (touch.released) {
