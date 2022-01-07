@@ -8,6 +8,7 @@ import {
   View,
   Alert,
 } from 'react-native';
+import { InspectorDropdown } from '../../inspector/components/InspectorDropdown';
 import { InspectorNumberInput } from '../../inspector/components/InspectorNumberInput';
 import { InspectorTextInput } from '../../inspector/components/InspectorTextInput';
 import { InspectorInlineExpressionInput } from '../../inspector/expressions/InspectorInlineExpressionInput';
@@ -581,6 +582,8 @@ const SampleLibrary = ({ onChangeParams, params, ...props }) => {
   );
 };
 
+const WAVEFORM_ITEMS = ['square', 'sawtooth', 'sine', 'noise'];
+
 const SampleTone = ({ onChangeParams, params, ...props }) => {
   const [lastNativeUpdate, incrementLastNativeUpdate] = React.useReducer((state) => state + 1, 0);
   React.useEffect(incrementLastNativeUpdate, [params]);
@@ -590,6 +593,42 @@ const SampleTone = ({ onChangeParams, params, ...props }) => {
       onChangeParams({
         ...params,
         midiNote,
+      }),
+    [params, onChangeParams]
+  );
+
+  const onChangeWaveform = React.useCallback(
+    (waveform) =>
+      onChangeParams({
+        ...params,
+        waveform,
+      }),
+    [params, onChangeParams]
+  );
+
+  const onChangeAttack = React.useCallback(
+    (attack) =>
+      onChangeParams({
+        ...params,
+        attack,
+      }),
+    [params, onChangeParams]
+  );
+
+  const onChangeSustain = React.useCallback(
+    (sustain) =>
+      onChangeParams({
+        ...params,
+        sustain,
+      }),
+    [params, onChangeParams]
+  );
+
+  const onChangeRelease = React.useCallback(
+    (release) =>
+      onChangeParams({
+        ...params,
+        release,
       }),
     [params, onChangeParams]
   );
@@ -605,30 +644,67 @@ const SampleTone = ({ onChangeParams, params, ...props }) => {
       <BigPlayButton onPress={() => sendAsync('EDITOR_CHANGE_SOUND', params)} />
       <View style={styles.controls}>
         <View style={styles.soundInputsRow}>
-          <View style={{ maxWidth: '40%', marginRight: 8, flexShrink: 1 }}>
-            <View style={{ flexDirection: 'row' }}>
-              <View style={{ flexShrink: 1, marginRight: 8 }}>
-                <ScaleNoteDropdown
-                  style={{ marginBottom: 0 }}
-                  value={note}
-                  onChange={onChangeNote}
-                />
-              </View>
-            </View>
+          <View style={{ maxWidth: '33%', marginRight: 8, flexShrink: 1 }}>
+            <InspectorDropdown
+              style={{ marginBottom: 0 }}
+              allowedValues={WAVEFORM_ITEMS}
+              value={params.waveform}
+              onChange={onChangeWaveform}
+            />
+            <Text style={styles.soundInputsLabel}>Wave</Text>
+          </View>
+          <View style={{ maxWidth: '33%', marginRight: 8, flexShrink: 1 }}>
+            <ScaleNoteDropdown style={{ marginBottom: 0 }} value={note} onChange={onChangeNote} />
             <Text style={styles.soundInputsLabel}>Note</Text>
           </View>
-          <View style={{ maxWidth: '40%', marginRight: 8, flexShrink: 1 }}>
-            <View style={{ flexDirection: 'row' }}>
-              <InspectorNumberInput
-                lastNativeUpdate={lastNativeUpdate}
-                min={0}
-                max={7}
-                placeholder="Octave"
-                value={octave}
-                onChange={onChangeOctave}
-              />
-            </View>
+          <View style={{ maxWidth: '33%', marginRight: 8, flexShrink: 1 }}>
+            <InspectorNumberInput
+              lastNativeUpdate={lastNativeUpdate}
+              min={0}
+              max={7}
+              placeholder="Octave"
+              value={octave}
+              onChange={onChangeOctave}
+            />
             <Text style={styles.soundInputsLabel}>Octave</Text>
+          </View>
+        </View>
+        <View style={[styles.soundInputsRow, { marginTop: 8 }]}>
+          <View style={{ maxWidth: '33%', marginRight: 8, flexShrink: 1 }}>
+            <InspectorNumberInput
+              lastNativeUpdate={lastNativeUpdate}
+              min={0}
+              max={0.5}
+              step={0.05}
+              placeholder="Attack"
+              value={params.attack}
+              onChange={onChangeAttack}
+            />
+            <Text style={styles.soundInputsLabel}>Attack</Text>
+          </View>
+          <View style={{ maxWidth: '33%', marginRight: 8, flexShrink: 1 }}>
+            <InspectorNumberInput
+              lastNativeUpdate={lastNativeUpdate}
+              min={0}
+              max={1}
+              step={0.1}
+              placeholder="Sustain"
+              value={params.sustain}
+              onChange={onChangeSustain}
+            />
+            <Text style={styles.soundInputsLabel}>Sustain</Text>
+          </View>
+          <View style={{ maxWidth: '33%', marginRight: 8, flexShrink: 1 }}>
+            <InspectorNumberInput
+              lastNativeUpdate={lastNativeUpdate}
+              min={0}
+              max={0.5}
+              step={0.05}
+              placeholder="Release"
+              value={params.release}
+              onChange={onChangeRelease}
+            />
+            <Text style={styles.soundInputsLabel}>Release</Text>
           </View>
         </View>
       </View>
