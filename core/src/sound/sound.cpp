@@ -167,7 +167,8 @@ void Sound::play(const Sample &sample, double playbackRate) {
     playEffect(playbackRate, sample.category(), sample.seed(), sample.mutationSeed(),
         sample.mutationAmount());
   } else if (type == "tone") {
-    playTone(playbackRate, sample.midiNote());
+    playTone(playbackRate, sample.midiNote(), sample.waveform(), sample.attack(), sample.sustain(),
+        sample.release());
   } else {
     auto url = type == "microphone" ? sample.recordingUrl() : sample.uploadUrl();
     playUrl(playbackRate, url);
@@ -234,14 +235,29 @@ void Sound::playEffect(float playbackRate, const std::string &category, int seed
   Sound::soloud.setRelativePlaySpeed(handle, playbackRate);
 }
 
-void Sound::playTone(float playbackRate, int midiNote) {
-  std::string key = "midiNote: " + std::to_string(midiNote);
+void Sound::playTone(float playbackRate, int midiNote, const std::string &waveform, float attack,
+    float sustain, float release) {
+  std::string key = "midiNote: " + std::to_string(midiNote) + " waveform: " + waveform
+      + " attack: " + std::to_string(attack) + " sustain: " + std::to_string(sustain)
+      + " release: " + std::to_string(release);
 
   if (Sound::sfxrSounds.find(key) == Sound::sfxrSounds.end()) {
     std::unique_ptr<SoLoud::Sfxr> sound = std::make_unique<SoLoud::Sfxr>();
 
     sound->mParams.p_base_freq
         = Sample::hzToSfxrFreq(Sample::midicps(midiNote), sound->mBaseSamplerate);
+    if (waveform == "square") {
+      sound->mParams.wave_type = 0;
+    } else if (waveform == "sawtooth") {
+      sound->mParams.wave_type = 1;
+    } else if (waveform == "sine") {
+      sound->mParams.wave_type = 2;
+    } else if (waveform == "noise") {
+      sound->mParams.wave_type = 3;
+    }
+    sound->mParams.p_env_attack = attack;
+    sound->mParams.p_env_sustain = sustain;
+    sound->mParams.p_env_decay = release;
     sound->clampLength();
 
     Sound::sfxrSounds.insert(std::make_pair(key, std::move(sound)));

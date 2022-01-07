@@ -44,6 +44,29 @@ struct Sample {
 
   // for 'tone'
   PROP(int, midiNote) = 60;
+  PROP(
+       std::string, waveform,
+       .label("waveform")
+       .allowedValues("square", "sawtooth", "sine", "noise")
+       ) = "square";
+  PROP(
+       float, attack,
+       .label("attack")
+       .min(0.0f)
+       .max(1.0f)
+       ) = 0.0f;
+  PROP(
+       float, sustain,
+       .label("sustain")
+       .min(0.0f)
+       .max(1.0f)
+       ) = 0.3f;
+  PROP(
+       float, release,
+       .label("release")
+       .min(0.0f)
+       .max(1.0f)
+       ) = 0.4f;
 };
 
 inline float Sample::midicps(int midiNote) {

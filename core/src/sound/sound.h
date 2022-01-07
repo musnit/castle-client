@@ -50,7 +50,8 @@ private:
   void playUrl(float playbackRate, const std::string &url);
   void playEffect(float playbackRate, const std::string &category, int seed, int mutationSeed,
       int mutationAmount);
-  void playTone(float playbackRate, int midiNote);
+  void playTone(float playbackRate, int midiNote, const std::string &waveform, float attack,
+      float sustain, float release);
 
   class ClockThread : public love::thread::Threadable {
   public:
