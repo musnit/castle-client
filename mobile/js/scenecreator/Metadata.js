@@ -314,6 +314,10 @@ const data = {
               name: 'generated effect',
             },
             {
+              id: 'tone',
+              name: 'tone',
+            },
+            {
               id: 'microphone',
               name: 'recorded from my microphone',
             },

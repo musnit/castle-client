@@ -134,7 +134,7 @@ export const InspectorDropdown = ({ value, onChange, style, ...props }) => {
     items = props.labeledItems;
   }
   let selectedItem;
-  if (value && value !== 'none') {
+  if ((value || value === 0) && value !== 'none') {
     selectedItem = items.find((item) => item.id === value);
   }
   const popover = {

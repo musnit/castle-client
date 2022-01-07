@@ -12,6 +12,7 @@ import { InspectorNumberInput } from '../../inspector/components/InspectorNumber
 import { InspectorTextInput } from '../../inspector/components/InspectorTextInput';
 import { InspectorInlineExpressionInput } from '../../inspector/expressions/InspectorInlineExpressionInput';
 import { ConfigureExpressionSheet } from '../../inspector/expressions/ConfigureExpressionSheet';
+import { ScaleNoteDropdown } from './ScaleNoteDropdown';
 import { sendAsync } from '../../../core/CoreEvents';
 
 import * as Constants from '../../../Constants';
@@ -580,8 +581,64 @@ const SampleLibrary = ({ onChangeParams, params, ...props }) => {
   );
 };
 
+const SampleTone = ({ onChangeParams, params, ...props }) => {
+  const [lastNativeUpdate, incrementLastNativeUpdate] = React.useReducer((state) => state + 1, 0);
+  React.useEffect(incrementLastNativeUpdate, [params]);
+
+  const onChangeMidiNote = React.useCallback(
+    (midiNote) =>
+      onChangeParams({
+        ...params,
+        midiNote,
+      }),
+    [params, onChangeParams]
+  );
+
+  const note = params.midiNote % 12;
+  const octave = Math.floor(params.midiNote / 12) - 1;
+
+  const onChangeNote = (note) => onChangeMidiNote((octave + 1) * 12 + note);
+  const onChangeOctave = (octave) => onChangeMidiNote((octave + 1) * 12 + note);
+
+  return (
+    <View style={styles.container}>
+      <BigPlayButton onPress={() => sendAsync('EDITOR_CHANGE_SOUND', params)} />
+      <View style={styles.controls}>
+        <View style={styles.soundInputsRow}>
+          <View style={{ maxWidth: '40%', marginRight: 8, flexShrink: 1 }}>
+            <View style={{ flexDirection: 'row' }}>
+              <View style={{ flexShrink: 1, marginRight: 8 }}>
+                <ScaleNoteDropdown
+                  style={{ marginBottom: 0 }}
+                  value={note}
+                  onChange={onChangeNote}
+                />
+              </View>
+            </View>
+            <Text style={styles.soundInputsLabel}>Note</Text>
+          </View>
+          <View style={{ maxWidth: '40%', marginRight: 8, flexShrink: 1 }}>
+            <View style={{ flexDirection: 'row' }}>
+              <InspectorNumberInput
+                lastNativeUpdate={lastNativeUpdate}
+                min={0}
+                max={7}
+                placeholder="Octave"
+                value={octave}
+                onChange={onChangeOctave}
+              />
+            </View>
+            <Text style={styles.soundInputsLabel}>Octave</Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+};
+
 export const SAMPLE_COMPONENTS = {
   sfxr: SampleSfxr,
   microphone: SampleMicrophone,
   library: SampleLibrary,
+  tone: SampleTone,
 };

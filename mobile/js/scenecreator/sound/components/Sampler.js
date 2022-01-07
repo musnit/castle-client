@@ -48,6 +48,7 @@ export const Sampler = ({ instrument }) => {
           <View style={styles.row}>
             <Text style={styles.label}>Sample type:</Text>
             <InspectorDropdown
+              style={{ marginBottom: 0 }}
               value={instrument.sample.type}
               onChange={onChangeType}
               {...Metadata.responses['play sound'].props.type}

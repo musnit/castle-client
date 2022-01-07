@@ -963,12 +963,18 @@ const PlaySound = ({ response }) => {
   let soundId = null;
   if (soundType === 'microphone') {
     soundId = response.params?.recordingUrl
-      ? response.params?.recordingUrl.split('audio.castle.xyz/')[1].split('.mp3')[0]
+      ? response.params.recordingUrl.split('audio.castle.xyz/')[1].split('.mp3')[0]
       : null;
   } else if (soundType === 'library') {
     soundId = response.params?.uploadUrl
-      ? response.params?.uploadUrl.split('audio.castle.xyz/')[1].split('.mp3')[0]
+      ? response.params.uploadUrl.split('audio.castle.xyz/')[1].split('.mp3')[0]
       : null;
+  } else if (soundType === 'tone') {
+    // TODO: convert to something like 'C3'
+    const midiNote = response.params?.midiNote ?? 60;
+    const note = midiNote % 12;
+    const octave = Math.floor(midiNote / 12) - 1;
+    soundId = `${note} ${octave}`;
   }
   let cells = [
     { type: 'showEntryOptions', label: 'Play sound' },
