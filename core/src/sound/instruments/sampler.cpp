@@ -1,10 +1,7 @@
 #include "sampler.h"
 
 Sampler::Sampler() {
-  // make a default sfxr that sounds vaguely like a note
-  sample.category() = "blip";
-  sample.seed() = 2211;
-  sample.mutationSeed() = 7920;
+  sample.type() = "tone";
 }
 
 Sampler::~Sampler() {
@@ -27,6 +24,5 @@ void Sampler::play(Sound &sound, Pattern::Note note) {
   auto keyFromMidiC3 = note.key - 48;
   auto playbackRate = basePlaybackRate * pow(2.0f, keyFromMidiC3 / 12.0f);
 
-  sound.play(sample.type(), playbackRate, sample.recordingUrl(), sample.uploadUrl(),
-      sample.category(), sample.seed(), sample.mutationSeed(), sample.mutationAmount());
+  sound.play(sample, playbackRate);
 }

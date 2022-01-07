@@ -4,6 +4,7 @@
 #include "js.h"
 #include "clock.h"
 #include "stream.h"
+#include "sample.h"
 
 #include <common/delay.h>
 
@@ -128,10 +129,12 @@ void Sound::play(int clockId, Pattern &pattern, Instrument &instrument) {
   }
 }
 
-void Sound::preload(const std::string &type, const std::string &recordingUrl,
-    const std::string &uploadUrl, const std::string &category, int seed, int mutationSeed,
-    int mutationAmount) {
+void Sound::preload(const Sample &sample) {
   initialize();
+
+  auto &type = sample.type();
+  auto &recordingUrl = sample.recordingUrl();
+  auto &uploadUrl = sample.uploadUrl();
 
 #ifndef __EMSCRIPTEN__
   if (type == "microphone" || type == "library") {
@@ -152,19 +155,21 @@ void Sound::preload(const std::string &type, const std::string &recordingUrl,
 #endif
 }
 
-void Sound::play(const std::string &type, float playbackRate, const std::string &recordingUrl,
-    const std::string &uploadUrl, const std::string &category, int seed, int mutationSeed,
-    int mutationAmount) {
+void Sound::play(const Sample &sample, double playbackRate) {
   initialize();
 
   if (playbackRate <= 0.0) {
     return;
   }
 
+  auto &type = sample.type();
   if (type == "sfxr") {
-    playEffect(playbackRate, category, seed, mutationSeed, mutationAmount);
+    playEffect(playbackRate, sample.category(), sample.seed(), sample.mutationSeed(),
+        sample.mutationAmount());
+  } else if (type == "tone") {
+    playTone(playbackRate, sample.midiNote());
   } else {
-    auto url = type == "microphone" ? recordingUrl : uploadUrl;
+    auto url = type == "microphone" ? sample.recordingUrl() : sample.uploadUrl();
     playUrl(playbackRate, url);
   }
 }
@@ -220,6 +225,23 @@ void Sound::playEffect(float playbackRate, const std::string &category, int seed
       sound->mutate(mutationAmount, seed + mutationSeed);
     }
 
+    sound->clampLength();
+
+    Sound::sfxrSounds.insert(std::make_pair(key, std::move(sound)));
+  }
+
+  int handle = Sound::soloud.play(*Sound::sfxrSounds[key]);
+  Sound::soloud.setRelativePlaySpeed(handle, playbackRate);
+}
+
+void Sound::playTone(float playbackRate, int midiNote) {
+  std::string key = "midiNote: " + std::to_string(midiNote);
+
+  if (Sound::sfxrSounds.find(key) == Sound::sfxrSounds.end()) {
+    std::unique_ptr<SoLoud::Sfxr> sound = std::make_unique<SoLoud::Sfxr>();
+
+    sound->mParams.p_base_freq
+        = Sample::hzToSfxrFreq(Sample::midicps(midiNote), sound->mBaseSamplerate);
     sound->clampLength();
 
     Sound::sfxrSounds.insert(std::make_pair(key, std::move(sound)));

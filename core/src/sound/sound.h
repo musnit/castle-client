@@ -10,6 +10,7 @@ class Clock;
 class Pattern;
 class Instrument;
 class Stream;
+struct Sample;
 
 class Sound {
   inline static bool hasInitializedSoloud = false;
@@ -26,12 +27,8 @@ public:
   Sound();
   ~Sound();
 
-  void preload(const std::string &type, const std::string &recordingUrl,
-      const std::string &uploadUrl, const std::string &category, int seed, int mutationSeed,
-      int mutationAmount);
-  void play(const std::string &type, float playbackRate, const std::string &recordingUrl,
-      const std::string &uploadUrl, const std::string &category, int seed, int mutationSeed,
-      int mutationAmount);
+  void preload(const Sample &sample);
+  void play(const Sample &sample, double playbackRate);
 
   void addClock(Clock *); // start audio thread if not started, add clock if not added
   void removeAllClocks(); // stop audio thread and unschedule all clocks
@@ -53,6 +50,7 @@ private:
   void playUrl(float playbackRate, const std::string &url);
   void playEffect(float playbackRate, const std::string &category, int seed, int mutationSeed,
       int mutationAmount);
+  void playTone(float playbackRate, int midiNote);
 
   class ClockThread : public love::thread::Threadable {
   public:

@@ -864,14 +864,12 @@ struct PlaySoundResponse : BaseResponse {
     auto &sound = ctx.getScene().getSound();
     auto playbackRate = std::clamp(
         params.playbackRate().eval<double>(ctx), Sample::minPlaybackRate, Sample::maxPlaybackRate);
-    sound.play(params.type(), playbackRate, params.recordingUrl(), params.uploadUrl(),
-        params.category(), params.seed(), params.mutationSeed(), params.mutationAmount());
+    sound.play(params, playbackRate);
   }
 
   void init(Scene &scene) {
     auto &sound = scene.getSound();
-    sound.preload(params.type(), params.recordingUrl(), params.uploadUrl(), params.category(),
-        params.seed(), params.mutationSeed(), params.mutationAmount());
+    sound.preload(params);
   }
 };
 
@@ -890,9 +888,7 @@ struct EditorChangeSoundReceiver {
     auto &scene = engine.maybeGetEditor()->getScene();
     auto &sound = scene.getSound();
     RuleContext independent { nullptr, nullActor, {}, scene };
-    sound.play(params.type(), params.playbackRate().eval<double>(independent),
-        params.recordingUrl(), params.uploadUrl(), params.category(), params.seed(),
-        params.mutationSeed(), params.mutationAmount());
+    sound.play(params, params.playbackRate().eval<double>(independent));
   }
 };
 
