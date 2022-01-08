@@ -23,6 +23,7 @@ using ActorIdSet = entt::sparse_set; // Good for fast membership checks and main
                                      // take up a lot of memory / may have heavy lifecycle cost.
 
 struct SceneDrawingOptions {
+  bool blueprintHighlight = false;
   bool drawInvisibleActors = false;
   ActorId editorDrawingActorId = nullActor;
   int editorDrawingAnimationFrame = -1;

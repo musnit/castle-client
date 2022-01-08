@@ -268,9 +268,23 @@ bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &com
 
       // Draw
       auto wrap = bounds.maxX() - bounds.minX();
-      lv.graphics.setFont(font);
-      lv.graphics.printf({ { formatContent(component.props.content()), { 1, 1, 1, 1 } } }, wrap,
-          alignment, love::Matrix4(bounds.minX(), bounds.minY(), 0, 1, 1, 0, 0, 0, 0));
+      if (options->blueprintHighlight) {
+        // Only padded rectangle in blueprint highlight mode
+        std::vector<std::string> lines;
+        font->getWrap(
+            { { formatContent(component.props.content()), { 1, 1, 1, 1 } } }, wrap, lines);
+        auto boundsHeight = bounds.maxY() - bounds.minY();
+        auto height = std::max(boundsHeight, font->getHeight() * float(lines.size()));
+        lv.graphics.setColor({ 0, 0, 0, 1 });
+        float padding = 0.2f / downscale;
+        lv.graphics.rectangle(love::Graphics::DRAW_FILL, bounds.minX() - padding,
+            bounds.minY() - padding, wrap + 2 * padding, height + 2 * padding, 0.5f * padding,
+            0.5f * padding, 10);
+      } else {
+        lv.graphics.setFont(font);
+        lv.graphics.printf({ { formatContent(component.props.content()), { 1, 1, 1, 1 } } }, wrap,
+            alignment, love::Matrix4(bounds.minX(), bounds.minY(), 0, 1, 1, 0, 0, 0, 0));
+      }
 
       lv.graphics.pop();
     }

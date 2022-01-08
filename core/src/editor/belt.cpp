@@ -505,32 +505,38 @@ void Belt::drawHighlight() const {
     highlightCanvas2.reset(lv.graphics.newCanvas(settings));
   }
 
-  lv.renderTo(highlightCanvas.get(), [&]() {
-    lv.graphics.clear(love::Colorf(0, 0, 0, 0), {}, {});
-    SceneDrawingOptions options;
-    options.drawInvisibleActors = true;
-    scene.forEachActorByDrawOrder([&](ActorId actorId) {
-      if (auto parentEntryId = scene.maybeGetParentEntryId(actorId);
-          parentEntryId && selectedEntryId == parentEntryId) {
-        scene.getBehaviors().forEach([&](auto &behavior) {
-          if constexpr (Handlers::hasDrawComponent<decltype(behavior)>) {
-            if (auto component = behavior.maybeGetComponent(actorId)) {
-              behavior.handleDrawComponent(actorId, *component, options);
+  const auto drawActorsToCanvas = [&](bool highlight) {
+    lv.renderTo(highlightCanvas.get(), [&]() {
+      lv.graphics.clear(love::Colorf(0, 0, 0, 0), {}, {});
+      SceneDrawingOptions options;
+      options.blueprintHighlight = highlight;
+      options.drawInvisibleActors = true;
+      scene.forEachActorByDrawOrder([&](ActorId actorId) {
+        if (auto parentEntryId = scene.maybeGetParentEntryId(actorId);
+            parentEntryId && selectedEntryId == parentEntryId) {
+          scene.getBehaviors().forEach([&](auto &behavior) {
+            if constexpr (Handlers::hasDrawComponent<decltype(behavior)>) {
+              if (auto component = behavior.maybeGetComponent(actorId)) {
+                behavior.handleDrawComponent(actorId, *component, options);
+              }
             }
-          }
-        });
-      }
+          });
+        }
+      });
     });
-  });
-
-  lv.graphics.push();
-  lv.graphics.origin();
+  };
 
   // Associated actors as transparent overlay (to make obscured ones visible)
-  lv.graphics.push(love::Graphics::STACK_ALL);
+  drawActorsToCanvas(false);
+  lv.graphics.push();
+  lv.graphics.origin();
   lv.graphics.setColor({ 1, 1, 1, 0.7 });
   highlightCanvas->draw(&lv.graphics, highlightCanvas->getQuad(), {});
   lv.graphics.pop();
+
+  drawActorsToCanvas(true);
+  lv.graphics.push();
+  lv.graphics.origin();
 
   // Associated actors through highlight shader (to darken other actors)
   lv.graphics.push(love::Graphics::STACK_ALL);
