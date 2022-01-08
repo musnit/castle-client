@@ -4,6 +4,7 @@
 #include "api.h"
 #include "expressions/expression.h"
 #include "sound/sound.h"
+#include "behaviors/text.h"
 
 
 //
@@ -123,6 +124,9 @@ void Engine::setInitialParams(const char *initialParamsJson) {
     initialSnapshotJson = reader.str("initialSnapshotJson", nullptr);
     isNewScene = reader.boolean("isNewScene", false);
     Scene::uiPixelRatio = float(reader.num("pixelRatio", Scene::uiPixelRatio));
+    reader.obj("textOverlayStyle", [&]() {
+      reader.read(TextBehavior::overlayStyle);
+    });
   });
   if (isEditing) {
     editor = std::make_unique<Editor>(bridge);

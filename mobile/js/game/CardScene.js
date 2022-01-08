@@ -3,6 +3,7 @@ import { PixelRatio, StyleSheet, View, TouchableWithoutFeedback } from 'react-na
 import { GameLoading } from './GameLoading';
 import { GameView } from './GameView';
 import * as Constants from '../Constants';
+import { sendAsync } from '../core/CoreEvents';
 
 const styles = StyleSheet.create({
   overlay: {
@@ -67,6 +68,7 @@ export const CardScene = ({
         isEditable,
         isDebug: !!__DEV__,
         isNewScene,
+        textOverlayStyle: Constants.CORE_OVERLAY_TEXT_STYLE,
       })
     );
   }, [isEditable, deck?.deckId, isNewScene, initialSnapshotJson]);

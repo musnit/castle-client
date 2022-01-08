@@ -2,8 +2,9 @@ import * as Sentry from '@sentry/react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { useListen, useCoreEvents } from '../core/CoreEvents';
+import { useListen, useCoreEvents, sendAsync } from '../core/CoreEvents';
 import CastleCoreView from '../core/CastleCoreView';
+import * as Constants from '../Constants';
 
 import { GameLoading } from './GameLoading';
 
