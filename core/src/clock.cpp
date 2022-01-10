@@ -21,8 +21,9 @@ void Clock::reset(unsigned int tempo_, unsigned int beatsPerBar_, unsigned int s
 void Clock::reset() {
   {
     love::thread::Lock lock(mutex);
-    performTime = 0;
-    timePerBeat = (1.0 / double(tempo)) * 60.0; // bpm -> seconds per beat
+    clockTime = 0;
+    // clock time is measured in steps, so steps = seconds * beatsPerSecond * stepsPerBeat
+    stepsPerSecond = (double(tempo) / 60.0) * stepsPerBeat;
     timeSinceBeat = 0;
     timeSinceStep = 0;
     totalBeatsElapsed = 0;
@@ -41,9 +42,11 @@ void Clock::reset() {
 // not on graphics thread
 void Clock::update(double dt) {
   love::thread::Lock lock(mutex);
-  performTime += dt;
-  timeSinceBeat += dt;
-  timeSinceStep += dt;
+  double dSteps = dt * stepsPerSecond;
+  clockTime += dSteps;
+
+  timeSinceBeat += dSteps;
+  timeSinceStep += dSteps;
 
   if (timeSinceStep >= currentStepInterval()) {
     totalStepsElapsed++;
@@ -52,9 +55,9 @@ void Clock::update(double dt) {
     fireBeatTriggerStep = true;
   }
 
-  if (timeSinceBeat >= timePerBeat) {
+  if (timeSinceBeat >= stepsPerBeat) {
     totalBeatsElapsed++;
-    timeSinceBeat -= timePerBeat;
+    timeSinceBeat -= stepsPerBeat;
     fireBeatTriggerBeat = true;
     if (totalBeatsElapsed % beatsPerBar == 0) {
       // keep a running tally in case we later support changing beatsPerBar mid-run
@@ -83,12 +86,12 @@ void Clock::frame() {
 
 double Clock::currentStepInterval() {
   // TODO: swing would make these alternate long and short
-  return timePerBeat / double(stepsPerBeat);
+  return 1.0f;
 }
 
 double Clock::getDuration(double bars, double beats, double steps) {
   // TODO: swing needs definition here
-  return (((bars * beatsPerBar) + beats) * timePerBeat) + steps * currentStepInterval();
+  return (((bars * beatsPerBar) + beats) * stepsPerBeat) + steps;
 }
 
 double Clock::getTimeUntilNext(Quantize quant, double count) {
@@ -100,7 +103,7 @@ double Clock::getTimeUntilNext(Quantize quant, double count) {
   case Quantize::Bar: {
     auto absolute = getDuration(count, 0, 0);
     auto indexInBar = totalBeatsElapsed % beatsPerBar;
-    auto delta = (indexInBar * timePerBeat) + timeSinceBeat;
+    auto delta = (indexInBar * stepsPerBeat) + timeSinceBeat;
     return absolute - delta;
   }
   case Quantize::Beat: {

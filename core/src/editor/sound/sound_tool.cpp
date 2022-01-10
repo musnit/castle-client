@@ -53,7 +53,7 @@ void SoundTool::togglePlay() {
       auto &firstInstrument = song->instruments[0];
       auto &firstPattern = song->pattern;
       scene.getSound().play(scene.getClock().clockId, firstPattern, *firstInstrument);
-      playStartTime = scene.getClock().getPerformTime();
+      playStartTime = scene.getClock().getTime();
       isPlaying = true;
     }
   }
@@ -254,9 +254,7 @@ void SoundTool::drawOverlay() {
   // draw playhead
   if (isPlaying) {
     auto &scene = editor.getScene();
-    auto playbackTime = scene.getClock().getPerformTime() - playStartTime;
-    auto timePerStep = scene.getClock().getTimePerStep();
-    auto steps = playbackTime / timePerStep;
+    auto steps = scene.getClock().getTime() - playStartTime;
     auto lineY = -1024.0f / viewScale;
     auto lineHeight = 2048.0f / viewScale;
     lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });

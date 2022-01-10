@@ -499,9 +499,10 @@ double evalInterval(double interval, std::string &intervalType, Clock &clock, bo
   static constexpr double minInterval = 1 / 60.0;
   static constexpr double maxInterval = 30;
   if (intervalType == "second") {
+    // return seconds
     interval = std::clamp(interval, minInterval, maxInterval);
   } else {
-    // convert clock units to an absolute interval after current time
+    // return clock duration
     if (intervalType == "step") {
       if (quantize) {
         interval = clock.getTimeUntilNext(Clock::Quantize::Step, interval);
@@ -569,14 +570,18 @@ struct InfiniteRepeatResponse : BaseResponse {
         // Reference the original repeat startTime to avoid drifting future repeats.
         auto &scene = ctx.getScene();
         auto &rulesBehavior = scene.getBehaviors().byType<RulesBehavior>();
+        ctx.repeatStack.back().count = 2;
+        ctx.setNext(this);
         auto interval
             = evalInterval(params.interval(), params.intervalType(), scene.getClock(), false);
         auto performTime = interval < 0.02
             ? 0
             : ctx.repeatStack.back().startTime + (interval * ctx.repeatStack.back().repeated);
-        ctx.repeatStack.back().count = 2;
-        ctx.setNext(this);
-        rulesBehavior.schedule(ctx.suspend(), performTime);
+        if (params.intervalType() == "second") {
+          rulesBehavior.schedule(ctx.suspend(), performTime);
+        } else {
+          rulesBehavior.scheduleClock(ctx.suspend(), performTime);
+        }
       } else {
         // Enter the body immediately, setting count to 1 so we wait next time
         ctx.repeatStack.back().count = 1;
@@ -586,7 +591,9 @@ struct InfiniteRepeatResponse : BaseResponse {
     } else {
       // Haven't started yet -- enter the body immediately, setting count to 1 so we wait next
       // time
-      ctx.repeatStack.push_back({ this, 1, 0, ctx.getScene().getPerformTime() });
+      auto startTime = (params.intervalType() == "second") ? ctx.getScene().getPerformTime()
+                                                           : ctx.getScene().getClock().getTime();
+      ctx.repeatStack.push_back({ this, 1, 0, startTime });
       ctx.setNext(params.body());
     }
   }
@@ -794,7 +801,11 @@ struct WaitResponse : BaseResponse {
       auto &rulesBehavior = scene.getBehaviors().byType<RulesBehavior>();
       auto duration = params.duration().eval<double>(ctx);
       duration = evalInterval(duration, params.intervalType(), scene.getClock(), params.quantize());
-      rulesBehavior.schedule(ctx.suspend(), scene.getPerformTime() + duration);
+      if (params.intervalType() == "second") {
+        rulesBehavior.schedule(ctx.suspend(), scene.getPerformTime() + duration);
+      } else {
+        rulesBehavior.scheduleClock(ctx.suspend(), scene.getClock().getTime() + duration);
+      }
     }
   }
 };
@@ -1269,9 +1280,18 @@ void RulesBehavior::handlePerform(double dt) {
   // `current`. We don't run contexts directly from `scheduleds` because they could schedule new
   // contexts when run, which would modify `scheduleds` and invalidate the iteration.
   auto performTime = scene.getPerformTime();
+  auto clockTime = scene.getClock().getTime();
   Debug::display("scheduled: {}", scheduleds.size());
   scheduleds.erase(std::remove_if(scheduleds.begin(), scheduleds.end(),
                        [&](Scheduled &scheduled) {
+                         if (scheduled.clockTime > 0) {
+                           if (clockTime >= scheduled.clockTime) {
+                             current.push_back(std::move(scheduled.ctx));
+                             return true;
+                           } else {
+                             return false;
+                           }
+                         }
                          if (performTime >= scheduled.performTime) {
                            current.push_back(std::move(scheduled.ctx));
                            return true;

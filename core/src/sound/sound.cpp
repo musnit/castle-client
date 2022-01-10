@@ -32,7 +32,7 @@ void Sound::ClockThread::threadFunction() {
         while (iter != streamsForClock.end()) {
           auto &stream = *iter;
           if (stream->hasNext()) {
-            if (clock->getPerformTime() >= stream->nextTime()) {
+            if (clock->getTime() >= stream->nextTime()) {
               stream->playNextNotes(owner);
             }
             ++iter;
@@ -65,10 +65,8 @@ void Sound::ClockThread::addStream(int clockId, Pattern &pattern, Instrument &in
   love::thread::Lock lock(mutex);
   if (auto found = clocks.find(clockId); found != clocks.end()) {
     auto clock = found->second;
-    auto clockTime = clock->getPerformTime();
-    auto timePerStep = clock->getTimePerStep(); // TODO: measure differently when we allow changing
-                                                // clocks in real time
-    auto stream = std::make_unique<Stream>(clockTime, timePerStep, pattern, instrument);
+    auto clockTime = clock->getTime();
+    auto stream = std::make_unique<Stream>(clockTime, pattern, instrument);
     // play sound immediately if warranted
     if (clockTime >= stream->nextTime()) {
       stream->playNextNotes(owner);

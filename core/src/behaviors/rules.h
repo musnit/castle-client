@@ -215,6 +215,9 @@ public:
       double performTime = 0); // `performTime` is absolute `Scene::getPerformTime()` at or after
                                // which the response should be run. 0 means run immediately.
 
+  // `clockTime` is absolute `Clock::getTime()` at or after which the response should be run.
+  void scheduleClock(RuleContext ctx, double clockTime);
+
 
   // Response <-> index
 
@@ -251,6 +254,7 @@ private:
     // A context scheduled to run soon
     RuleContext ctx;
     double performTime = 0;
+    double clockTime = 0;
   };
   std::vector<Scheduled> scheduleds;
   std::vector<RuleContext> current; // A temporary list of contexts to run in the current frame.
@@ -519,7 +523,13 @@ inline bool RulesBehavior::hasTrigger(ActorId actorId) const {
 
 inline void RulesBehavior::schedule(RuleContext ctx, double performTime) {
   if (ctx.next) {
-    scheduleds.push_back({ std::move(ctx), performTime });
+    scheduleds.push_back({ std::move(ctx), performTime, 0 });
+  }
+}
+
+inline void RulesBehavior::scheduleClock(RuleContext ctx, double clockTime) {
+  if (ctx.next) {
+    scheduleds.push_back({ std::move(ctx), 0, clockTime });
   }
 }
 

@@ -7,31 +7,28 @@ class Sound;
 
 class Stream {
 public:
-  explicit Stream(double startTime, double timePerStep, Pattern &pattern, Instrument &instrument);
-  double startTime;
+  explicit Stream(double startTime, Pattern &pattern, Instrument &instrument);
+  double startTime; // in steps
   Pattern &pattern;
   Instrument &instrument;
 
-  double nextTime();
+  double nextTime(); // in steps
   bool hasNext();
   void playNextNotes(Sound &sound);
 
 private:
   std::map<double, SmallVector<Pattern::Note, 2>>::iterator current;
-  double timePerStep;
 };
 
-inline Stream::Stream(
-    double startTime_, double timePerStep_, Pattern &pattern_, Instrument &instrument_)
+inline Stream::Stream(double startTime_, Pattern &pattern_, Instrument &instrument_)
     : startTime(startTime_)
-    , timePerStep(timePerStep_)
     , pattern(pattern_)
     , instrument(instrument_) {
   current = pattern.begin();
 }
 
 inline double Stream::nextTime() {
-  return startTime + current->first * timePerStep;
+  return startTime + current->first;
 }
 
 inline bool Stream::hasNext() {

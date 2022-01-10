@@ -6,7 +6,7 @@ class Scene;
 
 class Clock {
   // Maintains a quantized version of time according to bars, beats, and subbeats
-  // according to a tempo (in beats per minute), and converts between absolute scene time
+  // according to a tempo (in beats per minute), and converts between scene time
   // and clock time.
 
 public:
@@ -31,7 +31,7 @@ public:
   // expect update(dt) and frame() to both be called;
   // update is not necessarily called from the graphics thread;
   // frame is called from graphics thread once per frame
-  void update(double dt);
+  void update(double performDt);
   void frame();
 
   double getDuration(double bars, double beats, double steps);
@@ -42,20 +42,19 @@ public:
   unsigned int getTotalBeatsElapsed();
   unsigned int getTotalBarsElapsed();
   unsigned int getBeatIndexInBar();
-  double getTimeSinceBeat();
-  double getPerformTime();
-  double getTimePerStep();
+  double getPerformTimeSinceBeat();
+  double getTime(); // steps
 
 private:
   love::thread::MutexRef mutex;
   Scene *scene = nullptr;
-  double performTime = 0;
+  double clockTime = 0; // steps
 
   unsigned int tempo = 120;
   unsigned int beatsPerBar = 4;
   unsigned int stepsPerBeat = 4;
 
-  double timePerBeat = 0;
+  double stepsPerSecond = 0;
   double timeSinceBeat = 0;
   double timeSinceStep = 0;
   int totalBeatsElapsed = 0;
@@ -92,18 +91,15 @@ inline unsigned int Clock::getBeatIndexInBar() {
   return totalBeatsElapsed % beatsPerBar;
 }
 
-inline double Clock::getTimeSinceBeat() {
+// assumes clock hasn't changed tempo since last beat
+inline double Clock::getPerformTimeSinceBeat() {
   love::thread::Lock lock(mutex);
-  return timeSinceBeat;
+  return timeSinceBeat / stepsPerSecond;
 }
 
-inline double Clock::getPerformTime() {
+inline double Clock::getTime() {
   love::thread::Lock lock(mutex);
-  return performTime;
-}
-
-inline double Clock::getTimePerStep() {
-  return timePerBeat / double(stepsPerBeat);
+  return clockTime;
 }
 
 inline unsigned int Clock::getBeatsPerBar() {

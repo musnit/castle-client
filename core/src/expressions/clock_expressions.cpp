@@ -63,6 +63,6 @@ struct TimeSinceLastBeatExpression : BaseExpression {
 
   ExpressionValue eval(RuleContext &ctx) override {
     auto &clock = ctx.getScene().getClock();
-    return double(clock.getTimeSinceBeat());
+    return double(clock.getPerformTimeSinceBeat());
   }
 };
