@@ -114,8 +114,8 @@ void Editor::readVariables(Reader &reader) {
 
 void Editor::loadEmptyScene() {
   editVariables.clear();
+  resetClock();
   scene = std::make_unique<Scene>(bridge, variables, sound, clock, true);
-  sound.addClock(&clock);
   isEditorStateDirty = true;
   isSelectedActorStateDirty = true;
   Debug::log("editor: init empty scene");
@@ -708,6 +708,13 @@ void Editor::maybeLoadPlayerSnapshot(const char *json) {
         });
       });
     });
+  }
+}
+
+void Editor::resetClock() {
+  if (scene) {
+    clock.reset(scene->props.clock().tempo(), scene->props.clock().beatsPerBar(),
+        scene->props.clock().stepsPerBeat());
   }
 }
 
@@ -2026,45 +2033,51 @@ struct EditorChangeSceneSettingsReceiver {
             });
       } else if (action == "setClockTempo") {
         auto bpmValue = int(params.doubleValue());
-        auto oldBpmValue = editor->getScene().props.clockTempo();
+        auto oldBpmValue = editor->getScene().props.clock().tempo();
         Commands::Params commandParams;
         commandParams.coalesce = true;
         commandParams.coalesceLastOnly = false;
         editor->getCommands().execute(
             "set clock tempo", commandParams,
             [bpmValue](Editor &editor, bool) {
-              editor.getScene().props.clockTempo() = bpmValue;
+              editor.getScene().props.clock().tempo() = bpmValue;
+              editor.resetClock();
             },
             [oldBpmValue](Editor &editor, bool) {
-              editor.getScene().props.clockTempo() = oldBpmValue;
+              editor.getScene().props.clock().tempo() = oldBpmValue;
+              editor.resetClock();
             });
       } else if (action == "setClockBeatsPerBar") {
         auto value = int(params.doubleValue());
-        auto oldValue = editor->getScene().props.clockBeatsPerBar();
+        auto oldValue = editor->getScene().props.clock().beatsPerBar();
         Commands::Params commandParams;
         commandParams.coalesce = true;
         commandParams.coalesceLastOnly = false;
         editor->getCommands().execute(
             "set clock beats per bar", commandParams,
             [value](Editor &editor, bool) {
-              editor.getScene().props.clockBeatsPerBar() = value;
+              editor.getScene().props.clock().beatsPerBar() = value;
+              editor.resetClock();
             },
             [oldValue](Editor &editor, bool) {
-              editor.getScene().props.clockBeatsPerBar() = oldValue;
+              editor.getScene().props.clock().beatsPerBar() = oldValue;
+              editor.resetClock();
             });
       } else if (action == "setClockStepsPerBeat") {
         auto value = int(params.doubleValue());
-        auto oldValue = editor->getScene().props.clockStepsPerBeat();
+        auto oldValue = editor->getScene().props.clock().stepsPerBeat();
         Commands::Params commandParams;
         commandParams.coalesce = true;
         commandParams.coalesceLastOnly = false;
         editor->getCommands().execute(
             "set clock steps per beat", commandParams,
             [value](Editor &editor, bool) {
-              editor.getScene().props.clockStepsPerBeat() = value;
+              editor.getScene().props.clock().stepsPerBeat() = value;
+              editor.resetClock();
             },
             [oldValue](Editor &editor, bool) {
-              editor.getScene().props.clockStepsPerBeat() = oldValue;
+              editor.getScene().props.clock().stepsPerBeat() = oldValue;
+              editor.resetClock();
             });
       }
     } else if (type == "grab") {

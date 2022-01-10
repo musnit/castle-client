@@ -41,6 +41,7 @@ public:
   void setIsPlaying(bool playing_);
   Player *maybeGetPlayer();
   void maybeLoadPlayerSnapshot(const char *json);
+  void resetClock();
 
   Belt &getBelt();
 

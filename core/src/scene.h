@@ -196,13 +196,17 @@ public:
 
 
   // Scene-level props
-
   struct Props {
     PROP(love::Colorf, backgroundColor) = { 186 / 255.0, 190 / 255.0, 246 / 255.0, 1 };
     PROP(int, coordinateSystemVersion) = 2;
-    PROP(int, clockTempo, .min(30) .max(360)) = 120;
-    PROP(int, clockBeatsPerBar, .min(2) .max(12)) = 4;
-    PROP(int, clockStepsPerBeat, .min(2) .max(6)) = 4;
+
+    // TODO: impl `read` and `write` on actual clock
+    struct SceneClockProps {
+      PROP(int, tempo, .min(30) .max(360)) = 120;
+      PROP(int, beatsPerBar, .min(2) .max(12)) = 4;
+      PROP(int, stepsPerBeat, .min(2) .max(6)) = 4;
+    };
+    PROP(SceneClockProps, clock);
   } props;
 
   bool isBackgroundDark() const;
