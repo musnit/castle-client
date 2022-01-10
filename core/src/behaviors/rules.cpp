@@ -773,6 +773,28 @@ void RulesBehavior::fireBeatTriggers(Clock::Quantize unit, int index) {
 
 
 //
+// Clock responses
+//
+
+struct SetClockTempoResponse : BaseResponse {
+  inline static const RuleRegistration<SetClockTempoResponse, RulesBehavior> registration {
+    "set clock tempo"
+  };
+  static constexpr auto description = "Set the clock tempo";
+
+  struct Params {
+    PROP(ExpressionRef, tempo, .min(30) .max(360)) = 120;
+  } params;
+
+  void run(RuleContext &ctx) override {
+    auto &scene = ctx.getScene();
+    auto tempo = params.tempo().eval<int>(ctx);
+    scene.getClock().setTempo(tempo);
+  }
+};
+
+
+//
 // Timing responses
 //
 

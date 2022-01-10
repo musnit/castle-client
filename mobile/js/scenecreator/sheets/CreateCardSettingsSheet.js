@@ -96,7 +96,7 @@ export const CreateCardSettings = () => {
               <InspectorNumberInput
                 min={30}
                 max={360}
-                value={settingsData.sceneProperties.clockTempo}
+                value={settingsData.sceneProperties.clock.tempo}
                 onChange={(value) =>
                   sendAction({ type: 'scene', action: 'setClockTempo', doubleValue: value })
                 }
@@ -109,7 +109,7 @@ export const CreateCardSettings = () => {
               <InspectorNumberInput
                 min={2}
                 max={12}
-                value={settingsData.sceneProperties.clockBeatsPerBar}
+                value={settingsData.sceneProperties.clock.beatsPerBar}
                 onChange={(value) =>
                   sendAction({ type: 'scene', action: 'setClockBeatsPerBar', doubleValue: value })
                 }
@@ -122,7 +122,7 @@ export const CreateCardSettings = () => {
               <InspectorNumberInput
                 min={2}
                 max={6}
-                value={settingsData.sceneProperties.clockStepsPerBeat}
+                value={settingsData.sceneProperties.clock.stepsPerBeat}
                 onChange={(value) =>
                   sendAction({ type: 'scene', action: 'setClockStepsPerBeat', doubleValue: value })
                 }

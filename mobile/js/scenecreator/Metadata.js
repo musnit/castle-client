@@ -329,6 +329,9 @@ const data = {
         },
       },
     },
+    ['set clock tempo']: {
+      category: 'clock',
+    },
     ['follow with camera']: {
       category: 'camera',
     },
@@ -477,6 +480,9 @@ const data = {
     ['time since last beat']: {
       category: 'clock',
     },
+    ['clock tempo']: {
+      category: 'clock',
+    },
     min: {
       category: 'choices',
     },
@@ -503,6 +509,7 @@ const data = {
 
 if (USE_CLOCK) {
   data.triggerCategoryOrder.splice(-2, 0, 'clock');
+  data.responseCategoryOrder.splice(-2, 0, 'clock');
   data.expressionCategoryOrder.splice(-1, 0, 'clock');
 }
 

@@ -1026,6 +1026,30 @@ const PlayPattern = () => {
   ];
 };
 
+const SetClockTempo = ({ response, context }) => {
+  const tempo = response.params?.tempo ?? 120;
+  return [
+    {
+      type: 'selectEntry',
+      label: 'Set the clock tempo',
+    },
+    {
+      type: 'text',
+      label: 'to',
+    },
+    {
+      type: 'selectParamSheet',
+      label: makeExpressionSummary(tempo, context),
+      paramName: 'tempo',
+      paramValue: tempo,
+    },
+    {
+      type: 'text',
+      label: 'bpm',
+    },
+  ];
+};
+
 const IsInCameraViewport = () => {
   return [
     {
@@ -1108,6 +1132,7 @@ export const Responses = {
   ['face direction of motion']: FaceDirectionOfMotion,
   ['play sound']: PlaySound,
   ['play pattern']: PlayPattern,
+  ['set clock tempo']: SetClockTempo,
   ['follow with camera']: FollowWithCamera,
   ['is in camera viewport']: IsInCameraViewport,
   ['animation frame meets condition']: AnimationFrameMeetsCondition,

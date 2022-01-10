@@ -66,3 +66,15 @@ struct TimeSinceLastBeatExpression : BaseExpression {
     return double(clock.getPerformTimeSinceBeat());
   }
 };
+
+struct ClockTempoExpression : BaseExpression {
+  inline static const RuleRegistration<ClockTempoExpression> registration { "clock tempo" };
+  static constexpr auto description = "The clock tempo";
+
+  struct Params {
+  } params;
+
+  ExpressionValue eval(RuleContext &ctx) override {
+    return double(ctx.getScene().getClock().getTempo());
+  }
+};

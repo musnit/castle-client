@@ -28,6 +28,9 @@ public:
   void unlinkScene(Scene *scene);
   void reset(unsigned int tempo, unsigned int beatsPerBar, unsigned int stepsPerBeat);
 
+  void setTempo(unsigned int tempo); // don't reset, continue running
+  unsigned int getTempo();
+
   // expect update(dt) and frame() to both be called;
   // update is not necessarily called from the graphics thread;
   // frame is called from graphics thread once per frame
@@ -77,6 +80,10 @@ inline void Clock::unlinkScene(Scene *scene_) {
   if (scene == scene_) {
     scene = nullptr;
   }
+}
+
+inline unsigned int Clock::getTempo() {
+  return tempo;
 }
 
 inline unsigned int Clock::getTotalBeatsElapsed() {

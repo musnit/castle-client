@@ -3,18 +3,15 @@
 #include "behaviors/all.h"
 
 void Clock::reset(unsigned int tempo_, unsigned int beatsPerBar_, unsigned int stepsPerBeat_) {
-  tempo = tempo_;
   beatsPerBar = beatsPerBar_;
   stepsPerBeat = stepsPerBeat_;
-  if (tempo < 1.0) {
-    tempo = 1.0;
-  }
   if (beatsPerBar < 2.0) {
     beatsPerBar = 2.0;
   }
   if (stepsPerBeat < 2.0) {
     stepsPerBeat = 2.0;
   }
+  setTempo(tempo_);
   reset();
 }
 
@@ -22,8 +19,6 @@ void Clock::reset() {
   {
     love::thread::Lock lock(mutex);
     clockTime = 0;
-    // clock time is measured in steps, so steps = seconds * beatsPerSecond * stepsPerBeat
-    stepsPerSecond = (double(tempo) / 60.0) * stepsPerBeat;
     timeSinceBeat = 0;
     timeSinceStep = 0;
     totalBeatsElapsed = 0;
@@ -37,6 +32,18 @@ void Clock::reset() {
   fireBeatTriggers(Quantize::Bar, 0);
   fireBeatTriggers(Quantize::Beat, 0);
   fireBeatTriggers(Quantize::Step, 0);
+}
+
+void Clock::setTempo(unsigned int tempo_) {
+  tempo = tempo_;
+  if (tempo < 1.0) {
+    tempo = 1.0;
+  }
+  {
+    love::thread::Lock lock(mutex);
+    // clock time is measured in steps, so steps = seconds * beatsPerSecond * stepsPerBeat
+    stepsPerSecond = (double(tempo) / 60.0) * stepsPerBeat;
+  }
 }
 
 // not on graphics thread
