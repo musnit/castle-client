@@ -403,7 +403,7 @@ const CreateScreenAuthenticated = () => {
         </View>
       </View>
       <View style={styles.navWrapper}>
-        <ScrollView horizontal>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <SegmentedNavigation
             items={TAB_ITEMS}
             onSelectItem={(item) => setDecks({ type: 'filter', filter: item.value })}
