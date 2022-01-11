@@ -19,7 +19,9 @@ public:
   // TODO: name / some creator-facing way to reference songs
   std::string songId;
 
-  // TODO: organize multiple sounds and patterns
-  std::vector<std::unique_ptr<Instrument>> instruments;
-  Pattern pattern;
+  struct Track {
+    std::unique_ptr<Instrument> instrument;
+    Pattern pattern; // TODO: organize and sequence multiple patterns
+  };
+  std::vector<std::unique_ptr<Track>> tracks;
 };

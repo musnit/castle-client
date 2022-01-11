@@ -70,6 +70,8 @@ private:
   // adding notes
   bool hasTouch = false;
   Pattern::Note tempNote;
+
+  Song::Track *getSelectedTrack();
 };
 
 inline void SoundTool::setSong(Song &song_) {
@@ -81,4 +83,12 @@ inline void SoundTool::setSong(Song &song_) {
 
 inline bool SoundTool::hasSong() {
   return song != nullptr;
+}
+
+inline Song::Track *SoundTool::getSelectedTrack() {
+  if (hasSong() && song->tracks.size() > 0) {
+    // TODO: other tracks / selected track
+    return song->tracks[0].get();
+  }
+  return nullptr;
 }

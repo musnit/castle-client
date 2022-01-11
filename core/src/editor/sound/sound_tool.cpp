@@ -17,9 +17,6 @@ void SoundTool::resetState() {
 }
 
 void SoundTool::onSetActive() {
-  if (!hasSong()) {
-    // pattern = std::make_shared<Pattern>();
-  }
   hasTouch = false;
   viewWidth = SOUND_DEFAULT_VIEW_WIDTH;
   viewPosition.x = 0.0f;
@@ -29,9 +26,9 @@ void SoundTool::onSetActive() {
 
 void SoundTool::updateViewConstraints() {
   double lastTime = 0;
-  if (hasSong()) {
-    auto endNotes = song->pattern.rbegin();
-    if (endNotes != song->pattern.rend()) {
+  if (auto track = getSelectedTrack(); track) {
+    auto endNotes = track->pattern.rbegin();
+    if (endNotes != track->pattern.rend()) {
       // add some buffer beyond last time
       auto &scene = editor.getScene();
       lastTime = endNotes->first;
@@ -49,10 +46,10 @@ void SoundTool::togglePlay() {
       scene.getSound().stopAll();
     } else {
       // schedule current song to play now
-      // TODO: songs are currently just a singleton pattern
-      auto &firstInstrument = song->instruments[0];
-      auto &firstPattern = song->pattern;
-      scene.getSound().play(scene.getClock().clockId, firstPattern, *firstInstrument);
+      // TODO: tracks are currently just a singleton pattern
+      for (auto &track : song->tracks) {
+        scene.getSound().play(scene.getClock().clockId, track->pattern, *track->instrument);
+      }
       playStartTime = scene.getClock().getTime();
       isPlaying = true;
     }
@@ -70,6 +67,10 @@ void SoundTool::update(double dt) {
   const Gesture &gesture = scene.getGesture();
   if (gesture.getCount() == 1 && gesture.getMaxCount() == 1) {
     gesture.withSingleTouch([&](const Touch &touch) {
+      auto track = getSelectedTrack();
+      if (!track) {
+        return;
+      }
       love::Vector2 originalTouchPosition = { touch.screenPos.x, touch.screenPos.y };
       auto transformedTouchPosition = viewTransform.inverseTransformPoint(originalTouchPosition);
 
@@ -82,23 +83,23 @@ void SoundTool::update(double dt) {
         if (step >= 0) {
           Commands::Params commandParams;
           commandParams.coalesce = true;
-          bool oldHasNote = song->pattern.hasNote(step, key);
+          bool oldHasNote = track->pattern.hasNote(step, key);
           editor.getCommands().execute(
               "change notes", commandParams,
-              [this, oldHasNote, step, key](Editor &editor, bool) {
+              [this, oldHasNote, track, step, key](Editor &editor, bool) {
                 if (oldHasNote) {
-                  song->pattern.removeNote(step, key);
+                  track->pattern.removeNote(step, key);
                 } else {
-                  song->pattern.addNote(step, key);
+                  track->pattern.addNote(step, key);
                 }
                 sendPatternEvent();
                 updateViewConstraints();
               },
-              [this, oldHasNote, step, key](Editor &editor, bool) {
+              [this, oldHasNote, track, step, key](Editor &editor, bool) {
                 if (oldHasNote) {
-                  song->pattern.addNote(step, key);
+                  track->pattern.addNote(step, key);
                 } else {
-                  song->pattern.removeNote(step, key);
+                  track->pattern.removeNote(step, key);
                 }
                 sendPatternEvent();
                 updateViewConstraints();
@@ -114,10 +115,11 @@ void SoundTool::update(double dt) {
         tempNote.time = step;
         tempNote.key = key;
       }
-      if (playNote && song->instruments.size()) {
-        // TODO: other instruments
-        auto &firstInstrument = song->instruments[0];
-        firstInstrument->play(scene.getSound(), { step, key });
+      if (playNote) {
+        auto selectedTrack = getSelectedTrack();
+        if (selectedTrack) {
+          selectedTrack->instrument->play(scene.getSound(), { step, key });
+        }
       }
     });
   } else if (gesture.getCount() == 2) {
@@ -182,10 +184,6 @@ void SoundTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
 };
 
 void SoundTool::drawPattern(Pattern *pattern) {
-  if (!hasSong()) {
-    return;
-  }
-
   love::Colorf noteColor { 0.3f, 0.3f, 0.3f, 1.0f };
   lv.graphics.setColor(noteColor);
 
@@ -247,8 +245,8 @@ void SoundTool::drawOverlay() {
   lv.graphics.setLineWidth(0.1f);
 
   drawGrid(viewScale, viewOffset);
-  if (hasSong()) {
-    drawPattern(&(song->pattern));
+  if (auto track = getSelectedTrack(); track) {
+    drawPattern(&(track->pattern));
   }
 
   // draw playhead
@@ -290,9 +288,10 @@ struct SoundToolSceneMusicReceiver {
       editor->getScene().songs.emplace(params.songId(), Song(params.songId()));
 
       // for now add a single Sampler to all songs
-      // TODO: support multiple instruments/tracks
-      auto sampler = std::make_unique<Sampler>();
-      editor->getScene().songs[params.songId()].instruments.push_back(std::move(sampler));
+      // TODO: support adding other instruments
+      auto track = std::make_unique<Song::Track>();
+      track->instrument = std::make_unique<Sampler>();
+      editor->getScene().songs[params.songId()].tracks.push_back(std::move(track));
     } else if (params.action() == "remove") {
       editor->getScene().songs.erase(params.songId());
     }
@@ -364,8 +363,8 @@ struct SoundToolPatternEvent {
 };
 
 void SoundTool::sendPatternEvent() {
-  if (hasSong()) {
-    SoundToolPatternEvent ev { sessionId, &(song->pattern) };
+  if (auto track = getSelectedTrack(); track) {
+    SoundToolPatternEvent ev { sessionId, &(track->pattern) };
     editor.getBridge().sendEvent("EDITOR_SOUND_TOOL_PATTERN", ev);
   }
 }
@@ -390,10 +389,8 @@ struct SoundToolChangeInstrumentReceiver {
 };
 
 void SoundTool::changeInstrument(Sample &sample) {
-  if (song->instruments.size() > 0) {
-    // TODO: selected track/instrument
-    auto &firstInstrument = song->instruments[0];
-    Sampler *sampler = (Sampler *)firstInstrument.get();
+  if (auto selectedTrack = getSelectedTrack(); selectedTrack) {
+    Sampler *sampler = (Sampler *)selectedTrack->instrument.get();
     sampler->sample = sample;
   }
   sendInstrumentEvent();
@@ -406,10 +403,8 @@ struct SoundToolInstrumentEvent {
 void SoundTool::sendInstrumentEvent() {
   if (hasSong()) {
     Instrument *instrument = nullptr;
-    if (song->instruments.size() > 0) {
-      // TODO: selected track/instrument
-      auto &firstInstrument = song->instruments[0];
-      instrument = firstInstrument.get();
+    if (auto selectedTrack = getSelectedTrack(); selectedTrack) {
+      instrument = selectedTrack->instrument.get();
     }
     SoundToolInstrumentEvent ev { instrument };
     editor.getBridge().sendEvent("EDITOR_SOUND_TOOL_INSTRUMENT", ev);
