@@ -114,8 +114,8 @@ private:
 
   Lv &lv { Lv::getInstance() };
 
-  std::unordered_map<std::string, TextFontResource> fontResources;
-  love::Font *overlayFont = nullptr;
+  inline static std::unordered_map<std::string, TextFontResource> fontResources;
+  inline static love::Font *overlayFont = nullptr;
   void loadFontResources();
   love::Font *getFont(TextFontResource *fontResource, float pixelSize) const;
 
