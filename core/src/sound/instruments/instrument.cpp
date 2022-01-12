@@ -1,4 +1,5 @@
 #include "instrument.h"
+#include "sampler.h"
 
 Instrument::Instrument(const Instrument &other) {
   Archive archive;
@@ -19,4 +20,14 @@ void Instrument::write(Writer &writer) const {
 }
 
 void Instrument::read(Reader &reader) {
+}
+
+std::unique_ptr<Instrument> Instrument::readVirtual(Reader &reader) {
+  auto type = std::string(reader.str("type", "instrument"));
+  if (type == "sampler") {
+    auto sampler = std::make_unique<Sampler>();
+    sampler->read(reader);
+    return sampler;
+  }
+  return nullptr;
 }

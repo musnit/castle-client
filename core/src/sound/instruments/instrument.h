@@ -13,6 +13,7 @@ public:
 
   virtual void write(Writer &writer) const;
   virtual void read(Reader &reader);
+  static std::unique_ptr<Instrument> readVirtual(Reader &reader);
 
   virtual std::string getType() const;
   virtual void play(Sound &sound, Pattern::Note note) = 0;

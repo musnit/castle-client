@@ -8,7 +8,6 @@
 #include "variables.h"
 #include "clock.h"
 #include "sound/sound.h"
-#include "sound/song.h"
 #include "bridge.h"
 
 
@@ -141,7 +140,6 @@ public:
 
   Library &getLibrary();
   const Library &getLibrary() const;
-  std::unordered_map<std::string, Song> songs;
 
   // View, camera
 

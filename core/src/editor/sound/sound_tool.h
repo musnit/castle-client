@@ -5,6 +5,7 @@
 #include "editor/gesture_pan_zoom.h"
 #include "editor/grid.h"
 #include "sound/song.h"
+#include "behaviors/music.h"
 
 class Editor;
 struct Sample;
@@ -26,13 +27,11 @@ public:
   void update(double dt);
   void drawOverlay();
 
-  void setSong(Song &song);
+  void setSongFromComponent(MusicComponent *c);
   bool hasSong();
 
-  std::string sessionId; // used to pass data back to the correct place in editor frontend
   void sendPatternEvent();
   void sendInstrumentEvent();
-  void sendSceneMusicData();
 
   // play/pause currently edited song
   void togglePlay();
@@ -74,9 +73,8 @@ private:
   Song::Track *getSelectedTrack();
 };
 
-inline void SoundTool::setSong(Song &song_) {
-  // editing in place for now w/o ownership - do something smarter when we support headless patterns
-  song = &song_;
+inline void SoundTool::setSongFromComponent(MusicComponent *component) {
+  song = &(component->props.song());
   sendPatternEvent();
   sendInstrumentEvent();
 }

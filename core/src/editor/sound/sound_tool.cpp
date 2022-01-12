@@ -2,6 +2,7 @@
 #include "editor/editor.h"
 #include "engine.h"
 #include "bridge.h"
+#include "behaviors/all.h"
 #include "sound/instruments/sampler.h"
 
 SoundTool::SoundTool(Editor &editor_)
@@ -11,7 +12,6 @@ SoundTool::SoundTool(Editor &editor_)
 
 void SoundTool::resetState() {
   song = nullptr;
-  sessionId = "";
   hasTouch = false;
   viewWidth = SOUND_DEFAULT_VIEW_WIDTH;
 }
@@ -269,36 +269,6 @@ void SoundTool::drawOverlay() {
 // Events
 //
 
-struct SoundToolSceneMusicReceiver {
-  inline static const BridgeRegistration<SoundToolSceneMusicReceiver> registration {
-    "EDITOR_MUSIC_ACTION"
-  };
-
-  struct Params {
-    PROP(std::string, songId);
-    PROP(std::string, action);
-  } params;
-
-  void receive(Engine &engine) {
-    auto editor = engine.maybeGetEditor();
-    if (!editor)
-      return;
-
-    if (params.action() == "add") {
-      editor->getScene().songs.emplace(params.songId(), Song(params.songId()));
-
-      // for now add a single Sampler to all songs
-      // TODO: support adding other instruments
-      auto track = std::make_unique<Song::Track>();
-      track->instrument = std::make_unique<Sampler>();
-      editor->getScene().songs[params.songId()].tracks.push_back(std::move(track));
-    } else if (params.action() == "remove") {
-      editor->getScene().songs.erase(params.songId());
-    }
-    editor->soundTool.sendSceneMusicData();
-  }
-};
-
 struct SoundToolActionReceiver {
   inline static const BridgeRegistration<SoundToolActionReceiver> registration {
     "EDITOR_SOUND_TOOL_ACTION"
@@ -319,29 +289,13 @@ struct SoundToolActionReceiver {
   }
 };
 
-struct SoundToolSceneMusicDataEvent {
-  struct SongData {
-    PROP(std::string, songId);
-  };
-  PROP(std::vector<SongData>, songs);
-};
-
-void SoundTool::sendSceneMusicData() {
-  SoundToolSceneMusicDataEvent ev;
-  auto &scene = editor.getScene();
-  for (auto &[songId, song] : scene.songs) {
-    ev.songs().push_back({ songId });
-  }
-  editor.getBridge().sendEvent("EDITOR_MUSIC", ev);
-}
-
 struct SoundToolSetDataReceiver {
   inline static const BridgeRegistration<SoundToolSetDataReceiver> registration {
     "SOUND_TOOL_START_EDITING"
   };
 
   struct Params {
-    PROP(std::string, songId);
+    PROP(int, trackIndex) = 0;
   } params;
 
   void receive(Engine &engine) {
@@ -349,22 +303,30 @@ struct SoundToolSetDataReceiver {
     if (!editor)
       return;
 
-    if (params.songId() != "") {
-      // TODO: extend to support songs and not just a pattern
-      auto &song = editor->getScene().songs[params.songId()];
-      editor->soundTool.setSong(song);
+    // use selected actor's music component
+    auto &scene = editor->getScene();
+    if (!editor->getSelection().hasSelection()) {
+      return;
     }
+    auto &musicBehavior = scene.getBehaviors().byType<MusicBehavior>();
+    auto actorId = editor->getSelection().firstSelectedActorId();
+    auto component = musicBehavior.maybeGetComponent(actorId);
+    if (!component) {
+      return;
+    }
+
+    // TODO: extend to allow selecting a specific track
+    editor->soundTool.setSongFromComponent(component);
   }
 };
 
 struct SoundToolPatternEvent {
-  PROP(std::string, sessionId);
   PROP(Pattern *, pattern);
 };
 
 void SoundTool::sendPatternEvent() {
   if (auto track = getSelectedTrack(); track) {
-    SoundToolPatternEvent ev { sessionId, &(track->pattern) };
+    SoundToolPatternEvent ev { &(track->pattern) };
     editor.getBridge().sendEvent("EDITOR_SOUND_TOOL_PATTERN", ev);
   }
 }

@@ -22,6 +22,7 @@
 #include "behaviors/tags.h"
 #include "behaviors/text.h"
 #include "behaviors/counter.h"
+#include "behaviors/music.h"
 
 
 class AllBehaviors {
@@ -94,7 +95,10 @@ private:
     DebugDrawBehavior,
 #endif
     TextBehavior,
-    Drawing2Behavior
+    Drawing2Behavior,
+
+    // Music
+    MusicBehavior
 
     > behaviors;
   /* clang-format on */

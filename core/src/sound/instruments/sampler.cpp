@@ -10,7 +10,13 @@ Sampler::~Sampler() {
 void Sampler::write(Writer &writer) const {
   Instrument::write(writer);
   writer.write("sample", sample);
-};
+}
+
+void Sampler::read(Reader &reader) {
+  reader.obj("sample", [&]() {
+    reader.read(sample);
+  });
+}
 
 void Sampler::play(Sound &sound, Pattern::Note note) {
   // play our given Sample, pitched up or down according to note.key
