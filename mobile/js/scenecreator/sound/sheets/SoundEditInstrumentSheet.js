@@ -33,7 +33,15 @@ const EditInstrument = (props) => {
 };
 
 export const SoundEditInstrumentSheet = ({ isOpen, ...props }) => {
-  const { instrument } = useCoreState('EDITOR_SOUND_TOOL_INSTRUMENT') || {};
+  const component = useCoreState('EDITOR_SELECTED_COMPONENT:Music') || {
+    props: {
+      song: {
+        tracks: [],
+      },
+    },
+  };
+  const selectedTrack = 0; // TODO: selected track
+  const { instrument } = component.props.song.tracks[0] || {};
 
   const title = 'Sampler'; // TODO: others
   const renderHeader = () => <BottomSheetHeader title={title} />;
