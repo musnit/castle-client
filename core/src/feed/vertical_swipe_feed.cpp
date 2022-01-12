@@ -170,12 +170,18 @@ void VerticalSwipeFeed::renderCardAtPosition(int idx, float position, bool isAct
     shader->updateUniform(info, 1);
   }
 
-  quad->setTexture(decks[idx].canvas.get());
   lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0 });
+
+#ifdef TEST_DISABLE_CANVAS
+  decks[idx].player->draw();
+#else
+  quad->setTexture(decks[idx].canvas.get());
   quad->draw(&lv.graphics,
       love::Matrix4(CARD_WIDTH * (1.0 - cardScale) * 0.5, CARD_HEIGHT * (1.0 - cardScale) * 0.5, 0,
           CARD_WIDTH * cardScale, CARD_HEIGHT * cardScale, 0, 0, 0, 0));
   quad->setTexture(nullptr);
+#endif
+
   lv.graphics.setShader();
 
   lv.graphics.pop();
@@ -240,6 +246,34 @@ void VerticalSwipeFeed::draw() {
 
 void VerticalSwipeFeed::fetchInitialDecks() {
   fetchingDecks = true;
+
+#ifdef TEST_DECK_ID
+  API::graphql("{\n  deck(deckId: \"" TEST_DECK_ID "\") {\n    deckId\n      variables\n   "
+               "   initialCard {\n        sceneDataUrl\n      }\n    }\n  }",
+      [=](APIResponse &response) {
+        if (response.success) {
+          auto &reader = response.reader;
+
+          reader.obj("data", [&]() {
+            reader.obj("deck", [&]() {
+              std::string deckId = reader.str("deckId", "");
+
+              FeedItem feedItem;
+              feedItem.deckJson = reader.toJson();
+              feedItem.isLoaded = false;
+              feedItem.hasRunUpdate = false;
+              feedItem.hasRendered = false;
+              feedItem.shouldFocus = false;
+              feedItem.focusPercent = 1.0;
+              deckIds.insert(deckId);
+              decks.push_back(std::move(feedItem));
+            });
+          });
+
+          loadDeckAtIndex(0);
+        }
+      });
+#else
   API::graphql("{\n  infiniteFeed {\n    sessionId\n    decks {\n      deckId\n      variables\n   "
                "   initialCard {\n        sceneDataUrl\n      }\n    }\n  }\n}",
       [=](APIResponse &response) {
@@ -273,6 +307,7 @@ void VerticalSwipeFeed::fetchInitialDecks() {
           fetchingDecks = false;
         }
       });
+#endif
 }
 
 void VerticalSwipeFeed::fetchMoreDecks() {

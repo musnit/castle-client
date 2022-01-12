@@ -1,5 +1,8 @@
 #pragma once
 
+#define TEST_DECK_ID "TUBN1zYNm"
+#define TEST_DISABLE_CANVAS true
+
 #include "precomp.h"
 #include "bridge.h"
 #include "player.h"
