@@ -13,6 +13,7 @@ public:
   const Song &operator=(const Song &);
   void write(Writer &writer) const;
   void read(Reader &reader);
+  std::string serialize();
 
   struct Track {
     std::unique_ptr<Instrument> instrument;

@@ -27,7 +27,7 @@ public:
   void update(double dt);
   void drawOverlay();
 
-  void setSongFromComponent(MusicComponent *c);
+  void setTrackIndex(int trackIndex);
   bool hasSong();
 
   void sendPatternEvent();
@@ -43,7 +43,9 @@ private:
   Lv &lv { Lv::getInstance() };
   Editor &editor;
 
-  Song *song = nullptr;
+  std::unique_ptr<Song> song;
+  int selectedTrackIndex = 0;
+  void updateSelectedComponent(std::string commandDescription);
 
   // for pattern editing
   float gridCellSize = 0.75f;
@@ -73,10 +75,8 @@ private:
   Song::Track *getSelectedTrack();
 };
 
-inline void SoundTool::setSongFromComponent(MusicComponent *component) {
-  song = &(component->props.song());
-  sendPatternEvent();
-  sendInstrumentEvent();
+inline void SoundTool::setTrackIndex(int trackIndex) {
+  selectedTrackIndex = trackIndex;
 }
 
 inline bool SoundTool::hasSong() {
@@ -84,9 +84,8 @@ inline bool SoundTool::hasSong() {
 }
 
 inline Song::Track *SoundTool::getSelectedTrack() {
-  if (hasSong() && song->tracks.size() > 0) {
-    // TODO: other tracks / selected track
-    return song->tracks[0].get();
+  if (hasSong() && int(song->tracks.size()) > selectedTrackIndex) {
+    return song->tracks[selectedTrackIndex].get();
   }
   return nullptr;
 }

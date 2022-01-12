@@ -12,6 +12,7 @@ SoundTool::SoundTool(Editor &editor_)
 
 void SoundTool::resetState() {
   song = nullptr;
+  selectedTrackIndex = 0;
   hasTouch = false;
   viewWidth = SOUND_DEFAULT_VIEW_WIDTH;
 }
@@ -22,6 +23,19 @@ void SoundTool::onSetActive() {
   viewPosition.x = 0.0f;
   viewPosition.y = 0.0f;
   updateViewConstraints();
+
+  // use selected actor's music component
+  song = nullptr;
+  auto &scene = editor.getScene();
+  if (!editor.getSelection().hasSelection()) {
+    return;
+  }
+  auto &musicBehavior = scene.getBehaviors().byType<MusicBehavior>();
+  auto actorId = editor.getSelection().firstSelectedActorId();
+  auto component = musicBehavior.maybeGetComponent(actorId);
+  if (component) {
+    song = std::make_unique<Song>(component->props.song());
+  }
 }
 
 void SoundTool::updateViewConstraints() {
@@ -81,29 +95,14 @@ void SoundTool::update(double dt) {
 
       if (touch.released) {
         if (step >= 0) {
-          Commands::Params commandParams;
-          commandParams.coalesce = true;
           bool oldHasNote = track->pattern.hasNote(step, key);
-          editor.getCommands().execute(
-              "change notes", commandParams,
-              [this, oldHasNote, track, step, key](Editor &editor, bool) {
-                if (oldHasNote) {
-                  track->pattern.removeNote(step, key);
-                } else {
-                  track->pattern.addNote(step, key);
-                }
-                sendPatternEvent();
-                updateViewConstraints();
-              },
-              [this, oldHasNote, track, step, key](Editor &editor, bool) {
-                if (oldHasNote) {
-                  track->pattern.addNote(step, key);
-                } else {
-                  track->pattern.removeNote(step, key);
-                }
-                sendPatternEvent();
-                updateViewConstraints();
-              });
+          if (oldHasNote) {
+            getSelectedTrack()->pattern.removeNote(step, key);
+            updateSelectedComponent("remove notes");
+          } else {
+            getSelectedTrack()->pattern.addNote(step, key);
+            updateSelectedComponent("add notes");
+          }
         }
         hasTouch = false;
       } else {
@@ -303,33 +302,9 @@ struct SoundToolSetDataReceiver {
     if (!editor)
       return;
 
-    // use selected actor's music component
-    auto &scene = editor->getScene();
-    if (!editor->getSelection().hasSelection()) {
-      return;
-    }
-    auto &musicBehavior = scene.getBehaviors().byType<MusicBehavior>();
-    auto actorId = editor->getSelection().firstSelectedActorId();
-    auto component = musicBehavior.maybeGetComponent(actorId);
-    if (!component) {
-      return;
-    }
-
-    // TODO: extend to allow selecting a specific track
-    editor->soundTool.setSongFromComponent(component);
+    editor->soundTool.setTrackIndex(params.trackIndex());
   }
 };
-
-struct SoundToolPatternEvent {
-  PROP(Pattern *, pattern);
-};
-
-void SoundTool::sendPatternEvent() {
-  if (auto track = getSelectedTrack(); track) {
-    SoundToolPatternEvent ev { &(track->pattern) };
-    editor.getBridge().sendEvent("EDITOR_SOUND_TOOL_PATTERN", ev);
-  }
-}
 
 struct SoundToolChangeInstrumentReceiver {
   inline static const BridgeRegistration<SoundToolChangeInstrumentReceiver> registration {
@@ -355,20 +330,39 @@ void SoundTool::changeInstrument(Sample &sample) {
     Sampler *sampler = (Sampler *)selectedTrack->instrument.get();
     sampler->sample = sample;
   }
-  sendInstrumentEvent();
+  updateSelectedComponent("change instrument");
 }
 
-struct SoundToolInstrumentEvent {
-  PROP(Instrument *, instrument);
-};
+void SoundTool::updateSelectedComponent(std::string commandDescription) {
+  auto &scene = editor.getScene();
+  auto &musicBehavior = scene.getBehaviors().byType<MusicBehavior>();
+  auto actorId = editor.getSelection().firstSelectedActorId();
+  auto component = musicBehavior.maybeGetComponent(actorId);
 
-void SoundTool::sendInstrumentEvent() {
-  if (hasSong()) {
-    Instrument *instrument = nullptr;
-    if (auto selectedTrack = getSelectedTrack(); selectedTrack) {
-      instrument = selectedTrack->instrument.get();
-    }
-    SoundToolInstrumentEvent ev { instrument };
-    editor.getBridge().sendEvent("EDITOR_SOUND_TOOL_INSTRUMENT", ev);
-  }
+  auto newSongJson = song->serialize();
+  auto oldSongJson = component->props.song().serialize();
+
+  static const auto setMusicProps
+      = [](Editor &editor, ActorId actorId, const std::string &songJson) {
+          auto &scene = editor.getScene();
+          auto &musicBehavior = scene.getBehaviors().byType<MusicBehavior>();
+          auto musicComponent = musicBehavior.maybeGetComponent(actorId);
+          auto archive = Archive::fromJson(songJson.c_str());
+          archive.read([&](Archive::Reader &r) {
+            musicComponent->props.song().read(r);
+          });
+          editor.updateBlueprint(actorId, {});
+          editor.setSelectedComponentStateDirty(MusicBehavior::behaviorId);
+        };
+
+  Commands::Params commandParams;
+  editor.getCommands().execute(
+      std::move(commandDescription), commandParams,
+      [actorId, newSongJson](Editor &editor, bool) {
+        setMusicProps(editor, actorId, newSongJson);
+      },
+      [actorId, oldSongJson](Editor &editor, bool) {
+        setMusicProps(editor, actorId, oldSongJson);
+      });
+  updateViewConstraints();
 }

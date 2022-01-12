@@ -48,7 +48,16 @@ void Song::write(Writer &writer) const {
   });
 }
 
+std::string Song::serialize() {
+  Archive archive;
+  archive.write([&](Archive::Writer &w) {
+    write(w);
+  });
+  return archive.toJson();
+}
+
 void Song::read(Reader &reader) {
+  tracks.clear();
   reader.each("tracks", [&]() {
     auto track = std::make_unique<Track>();
     reader.obj("pattern", [&]() {
