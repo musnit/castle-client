@@ -4,10 +4,11 @@
 #include "instruments/instrument.h"
 
 class Sound;
+class Clock;
 
 class Stream {
 public:
-  explicit Stream(double startTime, Pattern &pattern, Instrument &instrument);
+  explicit Stream(Clock &clock, Pattern &pattern, Instrument &instrument);
   double startTime; // in steps
   Pattern &pattern;
   Instrument &instrument;
@@ -18,13 +19,15 @@ public:
 
 private:
   std::map<double, SmallVector<Pattern::Note, 2>>::iterator current;
+  double patternClockLoopLength = 0; // computed loop length from pattern+clock
 };
 
-inline Stream::Stream(double startTime_, Pattern &pattern_, Instrument &instrument_)
-    : startTime(startTime_)
-    , pattern(pattern_)
+inline Stream::Stream(Clock &clock, Pattern &pattern_, Instrument &instrument_)
+    : pattern(pattern_)
     , instrument(instrument_) {
+  startTime = clock.getTime();
   current = pattern.begin();
+  patternClockLoopLength = pattern.getLoopLength(clock);
 }
 
 inline double Stream::nextTime() {
@@ -41,4 +44,10 @@ inline void Stream::playNextNotes(Sound &sound) {
     instrument.play(sound, note);
   }
   current++;
+
+  if (!hasNext() && pattern.loop != Pattern::Loop::None) {
+    // restart according to pattern's loop length
+    current = pattern.begin();
+    startTime += patternClockLoopLength;
+  }
 }

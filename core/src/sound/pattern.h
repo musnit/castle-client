@@ -3,6 +3,8 @@
 #include "precomp.h"
 #include "archive.h"
 
+class Clock;
+
 class Pattern {
 public:
   struct Note {
@@ -33,8 +35,14 @@ public:
   bool addNote(double step, float key);
   bool removeNote(double step, float key);
 
-  // TODO: get next time anything happens
-  // TODO: get notes at time / since time / in range?
+  enum class Loop {
+    None,
+    NextBar,
+    // TODO: specific loop length
+  };
+  Loop loop = Loop::NextBar;
+
+  double getLoopLength(Clock &clock);
 
   inline std::map<double, SmallVector<Note, 2>>::iterator begin() {
     return notes.begin();

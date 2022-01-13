@@ -65,10 +65,9 @@ void Sound::ClockThread::addStream(int clockId, Pattern &pattern, Instrument &in
   love::thread::Lock lock(mutex);
   if (auto found = clocks.find(clockId); found != clocks.end()) {
     auto clock = found->second;
-    auto clockTime = clock->getTime();
-    auto stream = std::make_unique<Stream>(clockTime, pattern, instrument);
+    auto stream = std::make_unique<Stream>(*clock, pattern, instrument);
     // play sound immediately if warranted
-    if (clockTime >= stream->nextTime()) {
+    if (clock->getTime() >= stream->nextTime()) {
       stream->playNextNotes(owner);
     }
     streams[clockId].push_back(std::move(stream));

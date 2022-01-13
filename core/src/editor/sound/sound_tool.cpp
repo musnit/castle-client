@@ -37,7 +37,7 @@ void SoundTool::useSelectedActorMusicComponent() {
 MusicComponent *SoundTool::maybeGetSelectedActorMusicComponent() {
   auto &scene = editor.getScene();
   if (!editor.getSelection().hasSelection()) {
-    return;
+    return nullptr;
   }
   auto &musicBehavior = scene.getBehaviors().byType<MusicBehavior>();
   auto actorId = editor.getSelection().firstSelectedActorId();
@@ -81,6 +81,7 @@ void SoundTool::togglePlay() {
         scene.getSound().play(scene.getClock().clockId, track->pattern, *track->instrument);
       }
       playStartTime = scene.getClock().getTime();
+      playLoopLength = getSelectedTrack()->pattern.getLoopLength(scene.getClock());
       isPlaying = true;
     }
   }
@@ -268,6 +269,9 @@ void SoundTool::drawOverlay() {
   if (isPlaying) {
     auto &scene = editor.getScene();
     auto steps = scene.getClock().getTime() - playStartTime;
+    while (playLoopLength > 0 && steps > playLoopLength) {
+      steps -= playLoopLength;
+    }
     auto lineY = -1024.0f / viewScale;
     auto lineHeight = 2048.0f / viewScale;
     lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });

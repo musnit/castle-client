@@ -1,4 +1,5 @@
 #include "pattern.h"
+#include "clock.h"
 
 Pattern::Pattern(const Pattern &other) {
   for (auto &[time, notesList] : other.notes) {
@@ -20,6 +21,18 @@ void Pattern::read(Reader &reader) {
     for (auto &note : notesAtTime) {
       note.time = time;
     }
+  }
+}
+
+double Pattern::getLoopLength(Clock &clock) {
+  switch (loop) {
+  case Loop::NextBar: {
+    double barLength = double(clock.getBeatsPerBar()) * double(clock.getStepsPerBeat());
+    double lastTimeInBar = (notes.size() > 0) ? notes.rbegin()->first : 0;
+    return std::ceil((lastTimeInBar + 0.01) / barLength) * barLength;
+  }
+  case Loop::None:
+    return 0;
   }
 }
 

@@ -71,7 +71,8 @@ private:
 
   // for playback
   bool isPlaying;
-  double playStartTime;
+  double playStartTime = 0;
+  double playLoopLength = 0;
 
   // adding notes
   bool hasTouch = false;
