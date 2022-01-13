@@ -35,6 +35,8 @@ public:
   bool addNote(double step, float key);
   bool removeNote(double step, float key);
 
+  love::thread::MutexRef mutex;
+
   enum class Loop {
     None,
     NextBar,

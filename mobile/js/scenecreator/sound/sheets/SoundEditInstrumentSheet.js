@@ -40,8 +40,9 @@ export const SoundEditInstrumentSheet = ({ isOpen, ...props }) => {
       },
     },
   };
-  const selectedTrack = 0; // TODO: selected track
-  const { instrument } = component.props.song.tracks[0] || {};
+  const soundToolState = useCoreState('EDITOR_SOUND_TOOL') || {};
+  const { selectedTrackIndex } = soundToolState;
+  const { instrument } = component.props.song.tracks[selectedTrackIndex] || {};
 
   const title = 'Sampler'; // TODO: others
   const renderHeader = () => <BottomSheetHeader title={title} />;

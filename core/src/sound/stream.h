@@ -25,20 +25,24 @@ private:
 inline Stream::Stream(Clock &clock, Pattern &pattern_, Instrument &instrument_)
     : pattern(pattern_)
     , instrument(instrument_) {
+  love::thread::Lock lock(pattern.mutex);
   startTime = clock.getTime();
   current = pattern.begin();
   patternClockLoopLength = pattern.getLoopLength(clock);
 }
 
 inline double Stream::nextTime() {
+  love::thread::Lock lock(pattern.mutex);
   return startTime + current->first;
 }
 
 inline bool Stream::hasNext() {
+  love::thread::Lock lock(pattern.mutex);
   return current != pattern.end();
 }
 
 inline void Stream::playNextNotes(Sound &sound) {
+  love::thread::Lock lock(pattern.mutex);
   auto &notes = current->second;
   for (auto &note : notes) {
     instrument.play(sound, note);

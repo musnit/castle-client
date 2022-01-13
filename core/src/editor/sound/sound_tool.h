@@ -30,8 +30,7 @@ public:
   void setTrackIndex(int trackIndex);
   bool hasSong();
 
-  void sendPatternEvent();
-  void sendInstrumentEvent();
+  void sendUIEvent();
 
   // play/pause currently edited song
   void togglePlay();

@@ -24,6 +24,7 @@ void SoundTool::onSetActive() {
   viewPosition.y = 0.0f;
   updateViewConstraints();
   useSelectedActorMusicComponent();
+  sendUIEvent();
 }
 
 void SoundTool::useSelectedActorMusicComponent() {
@@ -47,6 +48,7 @@ MusicComponent *SoundTool::maybeGetSelectedActorMusicComponent() {
 void SoundTool::updateViewConstraints() {
   double lastTime = 0;
   if (auto track = getSelectedTrack(); track) {
+    love::thread::Lock lock(track->pattern.mutex);
     auto endNotes = track->pattern.rbegin();
     if (endNotes != track->pattern.rend()) {
       // add some buffer beyond last time
@@ -378,6 +380,15 @@ void SoundTool::changeInstrument(Sample &sample) {
   updateSelectedComponent("change instrument");
 }
 
+struct SoundToolEvent {
+  PROP(int, selectedTrackIndex) = 0;
+};
+
+void SoundTool::sendUIEvent() {
+  SoundToolEvent e { selectedTrackIndex };
+  editor.getBridge().sendEvent("EDITOR_SOUND_TOOL", e);
+}
+
 void SoundTool::updateSelectedComponent(std::string commandDescription) {
   auto actorId = editor.getSelection().firstSelectedActorId();
   auto component = maybeGetSelectedActorMusicComponent();
@@ -401,11 +412,14 @@ void SoundTool::updateSelectedComponent(std::string commandDescription) {
   Commands::Params commandParams;
   editor.getCommands().execute(
       std::move(commandDescription), commandParams,
-      [actorId, newSongJson](Editor &editor, bool) {
+      [this, actorId, newSongJson](Editor &editor, bool) {
         setMusicProps(editor, actorId, newSongJson);
+        updateViewConstraints();
+        sendUIEvent();
       },
-      [actorId, oldSongJson](Editor &editor, bool) {
+      [this, actorId, oldSongJson](Editor &editor, bool) {
         setMusicProps(editor, actorId, oldSongJson);
+        updateViewConstraints();
+        sendUIEvent();
       });
-  updateViewConstraints();
 }
