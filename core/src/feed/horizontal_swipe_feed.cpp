@@ -396,6 +396,7 @@ void HorizontalSwipeFeed::loadDeckAtIndex(int i) {
             const std::string readerJson = response.reader.toJson();
             std::thread t2([=] {
               decks[i].player->readScene(readerJson);
+              decks[i].player->getScene().getGesture().setOffset(0, TOP_PADDING);
               decks[i].isLoaded = true;
             });
             t2.detach();
