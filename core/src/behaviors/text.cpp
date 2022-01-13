@@ -106,16 +106,6 @@ struct HideResponse : BaseResponse {
 
 
 //
-// Constructor, destructor
-//
-
-TextBehavior::TextBehavior(Scene &scene_)
-    : BaseBehavior(scene_) {
-  loadFontResources();
-}
-
-
-//
 // Read, write
 //
 
@@ -214,6 +204,13 @@ love::Font *TextBehavior::getFont(TextFontResource *fontResource, float pixelSiz
   }
 }
 
+love::Font *TextBehavior::getOverlayFont() const {
+  if (!overlayFont) {
+    overlayFont = getFont(&fontResources["Overlay"], 80);
+  }
+  return overlayFont;
+}
+
 bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &component,
     std::optional<SceneDrawingOptions> options) const {
   if (!component.props.visible()) {
@@ -230,7 +227,7 @@ bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &com
       auto worldFontSize = std::clamp(scaledFontSize, 1.0f, 30.0f) / 10;
       auto font = component.fontResource
           ? getFont(component.fontResource, worldFontSize * fontPixelScale)
-          : overlayFont;
+          : getOverlayFont();
       auto downscale = worldFontSize / font->getHeight();
 
       auto [x, y] = body->GetPosition();
@@ -351,7 +348,7 @@ void TextBehavior::handleDrawOverlay() const {
   auto boxWidth = cameraSize.x - 2 * horizontalMargin;
   auto textWidth = boxWidth - 2 * horizontalPadding;
   auto y = cameraPos.y + 0.5f * cameraSize.y - (bottomMargin - betweenMargin);
-  auto font = overlayFont;
+  auto font = getOverlayFont();
   auto fontHeight = font->getHeight();
   lv.graphics.push(love::Graphics::STACK_ALL);
   lv.graphics.setFont(font);

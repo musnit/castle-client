@@ -43,30 +43,24 @@ const char *getAssetsDirectoryPath() {
 }
 #endif
 
-void TextBehavior::loadFontResources() {
-  if (fontResources.empty()) {
-    const auto loadFontResource = [&](const std::string &name) {
-      TextFontResource resource;
-      auto fullPath = CastleCore::getAssetsDirectoryPath() + std::string("/") + name + ".ttf";
-      resource.data = love::StrongRef<love::Data>(
-          lv.filesystem.read(fullPath.c_str()), love::Acquire::NORETAIN);
-      fontResources[name] = std::move(resource);
-    };
+void TextBehavior::loadFontResources(Lv &lv) {
+  const auto loadFontResource = [&](const std::string &name) {
+    TextFontResource resource;
+    auto fullPath = CastleCore::getAssetsDirectoryPath() + std::string("/") + name + ".ttf";
+    resource.data = love::StrongRef<love::Data>(
+        lv.filesystem.read(fullPath.c_str()), love::Acquire::NORETAIN);
+    fontResources[name] = std::move(resource);
+  };
 
-    loadFontResource("Overlay");
+  loadFontResource("Overlay");
 
-    loadFontResource("BreiteGrotesk");
-    loadFontResource("Compagnon");
-    loadFontResource("Glacier");
-    loadFontResource("HelicoCentrica");
-    loadFontResource("Piazzolla");
-    loadFontResource("YatraOne");
-    loadFontResource("Bore");
-    loadFontResource("Synco");
-    loadFontResource("Tektur");
-  }
-
-  if (!overlayFont) {
-    overlayFont = getFont(&fontResources["Overlay"], 80);
-  }
+  loadFontResource("BreiteGrotesk");
+  loadFontResource("Compagnon");
+  loadFontResource("Glacier");
+  loadFontResource("HelicoCentrica");
+  loadFontResource("Piazzolla");
+  loadFontResource("YatraOne");
+  loadFontResource("Bore");
+  loadFontResource("Synco");
+  loadFontResource("Tektur");
 }
