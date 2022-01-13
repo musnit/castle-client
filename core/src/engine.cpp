@@ -89,6 +89,8 @@ Engine::Engine(int feedVersion_) {
   lv.filesystem.setIdentity("Castle", true);
 
   ExpressionRegistrar::registerExpressions();
+
+  TextBehavior::loadFontResources(lv);
 }
 
 

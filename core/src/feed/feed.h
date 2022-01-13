@@ -1,6 +1,6 @@
 #pragma once
 
-#define TEST_DECK_ID "TUBN1zYNm"
+#define TEST_DECK_ID "xzq58MkR5"
 #define TEST_DISABLE_CANVAS true
 
 #include "precomp.h"

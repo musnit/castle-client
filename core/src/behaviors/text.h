@@ -76,7 +76,8 @@ public:
   static constexpr auto displayName = "Text";
   static constexpr auto allowsDisableWithoutRemoval = false;
 
-  explicit TextBehavior(Scene &scene_);
+  using BaseBehavior::BaseBehavior;
+
 
   void handleReadComponent(ActorId actorId, TextComponent &component, Reader &reader);
   void handlePrePerform();
@@ -106,6 +107,8 @@ public:
   };
   static OverlayStyle overlayStyle;
 
+  static void loadFontResources(Lv &lv);
+
 private:
   friend struct ShowResponse;
   friend struct HideResponse;
@@ -115,9 +118,9 @@ private:
   Lv &lv { Lv::getInstance() };
 
   inline static std::unordered_map<std::string, TextFontResource> fontResources;
-  inline static love::Font *overlayFont = nullptr;
-  void loadFontResources();
+  mutable love::Font *overlayFont = nullptr;
   love::Font *getFont(TextFontResource *fontResource, float pixelSize) const;
+  love::Font *getOverlayFont() const;
 
   void updateFont(TextComponent &component);
 
