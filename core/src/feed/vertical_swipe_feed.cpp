@@ -85,6 +85,18 @@ void VerticalSwipeFeed::update(double dt) {
   if (!hasTouch && !isAnimating) {
     int idx = getCurrentIndex();
     if (idx >= 0 && idx < (int)decks.size() && decks[idx].player) {
+      if (decks[idx].player->hasScene()) {
+        if (auto nextCardId = decks[idx].player->getScene().getNextCardId(); nextCardId) {
+          API::loadCard(nextCardId->c_str(), true, [=](APIResponse &response) {
+            if (response.success && idx == getCurrentIndex()) {
+              auto reader = response.reader;
+              decks[idx].player->readScene(reader, decks[idx].player->getScene().getDeckId());
+            }
+          });
+          decks[idx].player->getScene().setNextCardId(std::nullopt);
+        }
+      }
+      
       decks[idx].player->update(dt);
     }
 

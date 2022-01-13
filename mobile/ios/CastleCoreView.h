@@ -8,7 +8,7 @@
 
 #ifdef __cplusplus
 
-#define FEED_TYPE 3
+#define FEED_TYPE 2
 
 #include "engine.h"
 

@@ -164,6 +164,7 @@ public:
 
   // Gesture
 
+  Gesture &getGesture();
   const Gesture &getGesture() const;
 
 
@@ -550,6 +551,10 @@ inline bool Scene::isBackgroundDark() const {
   auto col = props.backgroundColor();
   auto brightness = (299 * col.r + 587 * col.g + 114 * col.b) / 1000;
   return brightness < 0.5;
+}
+
+inline Gesture &Scene::getGesture() {
+  return gesture;
 }
 
 inline const Gesture &Scene::getGesture() const {

@@ -111,6 +111,8 @@ public:
 
   void update();
 
+  void setOffset(float x, float y);
+
 
 private:
   Lv &lv { Lv::getInstance() };
@@ -123,6 +125,8 @@ private:
   int count = 0;
   int maxCount = 0;
   bool allReleased = false;
+  float offsetX = 0;
+  float offsetY = 0;
 
 
   void updateTouch(float screenX, float screenY, love::int64 loveTouchId, bool isMouse);
@@ -214,4 +218,9 @@ bool Gesture::hasData(TouchId touchId) const {
 template<typename T>
 T *Gesture::maybeGetData(TouchId touchId) const {
   return hasTouch(touchId) ? const_cast<entt::registry &>(registry).try_get<T>(touchId) : nullptr;
+}
+
+inline void Gesture::setOffset(float x, float y) {
+  offsetX = x;
+  offsetY = y;
 }
