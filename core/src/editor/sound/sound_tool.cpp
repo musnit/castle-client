@@ -23,19 +23,25 @@ void SoundTool::onSetActive() {
   viewPosition.x = 0.0f;
   viewPosition.y = 0.0f;
   updateViewConstraints();
+  useSelectedActorMusicComponent();
+}
 
-  // use selected actor's music component
+void SoundTool::useSelectedActorMusicComponent() {
   song = nullptr;
+  auto component = maybeGetSelectedActorMusicComponent();
+  if (component) {
+    song = std::make_unique<Song>(component->props.song());
+  }
+}
+
+MusicComponent *SoundTool::maybeGetSelectedActorMusicComponent() {
   auto &scene = editor.getScene();
   if (!editor.getSelection().hasSelection()) {
     return;
   }
   auto &musicBehavior = scene.getBehaviors().byType<MusicBehavior>();
   auto actorId = editor.getSelection().firstSelectedActorId();
-  auto component = musicBehavior.maybeGetComponent(actorId);
-  if (component) {
-    song = std::make_unique<Song>(component->props.song());
-  }
+  return musicBehavior.maybeGetComponent(actorId);
 }
 
 void SoundTool::updateViewConstraints() {
@@ -50,6 +56,16 @@ void SoundTool::updateViewConstraints() {
     }
   }
   panZoom.viewMax.x = std::max(SOUND_DEFAULT_VIEW_BOUND, float(lastTime * gridCellSize));
+}
+
+void SoundTool::validateSelection() {
+  if (hasSong()) {
+    if (song->tracks.size() >= selectedTrackIndex) {
+      selectedTrackIndex = song->tracks.size() - 1;
+    }
+  } else {
+    selectedTrackIndex = 0;
+  }
 }
 
 void SoundTool::togglePlay() {
@@ -275,6 +291,7 @@ struct SoundToolActionReceiver {
 
   struct Params {
     PROP(std::string, action);
+    PROP(double, doubleValue);
   } params;
 
   void receive(Engine &engine) {
@@ -282,8 +299,32 @@ struct SoundToolActionReceiver {
     if (!editor)
       return;
 
+    auto &soundTool = editor->soundTool;
+
     if (params.action() == "play") {
-      editor->soundTool.togglePlay();
+      soundTool.togglePlay();
+    } else if (params.action() == "addTrack") {
+      if (editor->editMode != Editor::EditMode::Sound) {
+        soundTool.useSelectedActorMusicComponent();
+      }
+      if (soundTool.hasSong()) {
+        soundTool.song->tracks.push_back(Song::makeDefaultTrack());
+        soundTool.setTrackIndex(soundTool.song->tracks.size() - 1);
+        soundTool.updateSelectedComponent("add track");
+      }
+    } else if (params.action() == "deleteTrack") {
+      int index = int(params.doubleValue());
+      if (editor->editMode != Editor::EditMode::Sound) {
+        soundTool.useSelectedActorMusicComponent();
+      }
+      if (soundTool.hasSong()) {
+        auto &tracks = soundTool.song->tracks;
+        if (index < int(tracks.size())) {
+          tracks.erase(tracks.begin() + index);
+        }
+        soundTool.validateSelection();
+        soundTool.updateSelectedComponent("delete track");
+      }
     }
   }
 };
@@ -334,10 +375,8 @@ void SoundTool::changeInstrument(Sample &sample) {
 }
 
 void SoundTool::updateSelectedComponent(std::string commandDescription) {
-  auto &scene = editor.getScene();
-  auto &musicBehavior = scene.getBehaviors().byType<MusicBehavior>();
   auto actorId = editor.getSelection().firstSelectedActorId();
-  auto component = musicBehavior.maybeGetComponent(actorId);
+  auto component = maybeGetSelectedActorMusicComponent();
 
   auto newSongJson = song->serialize();
   auto oldSongJson = component->props.song().serialize();

@@ -40,12 +40,17 @@ public:
   void changeInstrument(Sample &sample);
 
 private:
+  friend struct SoundToolActionReceiver;
+
   Lv &lv { Lv::getInstance() };
   Editor &editor;
 
   std::unique_ptr<Song> song;
   int selectedTrackIndex = 0;
+  void useSelectedActorMusicComponent();
+  MusicComponent *maybeGetSelectedActorMusicComponent();
   void updateSelectedComponent(std::string commandDescription);
+  void validateSelection();
 
   // for pattern editing
   float gridCellSize = 0.75f;
