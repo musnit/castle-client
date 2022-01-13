@@ -5,6 +5,8 @@ import { useCoreState, sendGlobalAction, sendAsync } from '../../core/CoreEvents
 import * as Constants from '../../Constants';
 const { CastleIcon } = Constants;
 
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
@@ -44,7 +46,7 @@ const styles = StyleSheet.create({
 });
 
 export const OverlaySound = ({ setActiveSheet }) => {
-  // const drawToolState = useCoreState('EDITOR_DRAW_TOOL') || {};
+  const { isPlaying, viewFollowsPlayhead } = useCoreState('EDITOR_SOUND_TOOL') || {};
 
   return (
     <View style={styles.container} pointerEvents="box-none">
@@ -54,11 +56,29 @@ export const OverlaySound = ({ setActiveSheet }) => {
             <CastleIcon name="close" size={22} color="#000" />
           </Pressable>
         </View>
+      </View>
+      <View style={styles.rightContainer}>
         <View style={styles.toolbar}>
           <Pressable
-            style={styles.button}
+            style={[styles.button, isPlaying ? { backgroundColor: '#000' } : null]}
             onPress={() => sendAsync('EDITOR_SOUND_TOOL_ACTION', { action: 'play' })}>
-            <CastleIcon name="play" size={22} color="#000" />
+            <CastleIcon
+              name={isPlaying ? 'rewind' : 'play'}
+              size={22}
+              color={isPlaying ? '#fff' : '#000'}
+            />
+          </Pressable>
+        </View>
+        <View style={styles.toolbar}>
+          <Pressable
+            style={[styles.button, viewFollowsPlayhead ? { backgroundColor: '#000' } : null]}
+            onPress={() =>
+              sendAsync('EDITOR_SOUND_TOOL_ACTION', {
+                action: 'setViewFollowsPlayhead',
+                doubleValue: viewFollowsPlayhead ? 0 : 1,
+              })
+            }>
+            <MCIcon name="arrow-right" size={22} color={viewFollowsPlayhead ? '#fff' : '#000'} />
           </Pressable>
         </View>
       </View>

@@ -87,6 +87,7 @@ void SoundTool::togglePlay() {
       isPlaying = true;
     }
   }
+  sendUIEvent();
 }
 
 void SoundTool::update(double dt) {
@@ -180,8 +181,8 @@ void SoundTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
   lv.graphics.setColor({ 0.4f, 0.4f, 0.4f, 1.0f });
   int noteIndexVisible = int(std::floor((viewPosition.y - viewOffset.y) / gridCellSize));
   float gridY = float(noteIndexVisible) * gridCellSize;
-  auto lineX = 0.0f;
-  auto lineWidth = 2048.0f / viewScale;
+  auto lineX = viewPosition.x;
+  auto lineWidth = viewWidth;
   auto viewBottom = viewPosition.y - viewOffset.y + viewWidth * (7.0f / 5.0f);
   while (gridY < viewBottom) {
     if (noteIndexVisible % 12 == 0) {
@@ -251,6 +252,20 @@ void SoundTool::drawOverlay() {
   constexpr auto viewHeightToWidthRatio = 7.0f / 5.0f;
   viewOffset.y = 0.5f * (viewWidth * viewHeightToWidthRatio - ((50 + 44) / viewScale));
 
+  float playheadX = 0.0f;
+  if (isPlaying) {
+    auto &scene = editor.getScene();
+    auto steps = scene.getClock().getTime() - playStartTime;
+    while (playLoopLength > 0 && steps > playLoopLength) {
+      steps -= playLoopLength;
+    }
+    playheadX = steps * gridCellSize;
+    if (viewFollowsPlayhead) {
+      auto halfWidth = 0.33f * viewWidth;
+      viewPosition.x = std::max(halfWidth, playheadX) - halfWidth;
+    }
+  }
+
   lv.graphics.push(love::Graphics::STACK_ALL);
   viewTransform.reset();
   viewTransform.scale(viewScale, viewScale);
@@ -269,16 +284,10 @@ void SoundTool::drawOverlay() {
 
   // draw playhead
   if (isPlaying) {
-    auto &scene = editor.getScene();
-    auto steps = scene.getClock().getTime() - playStartTime;
-    while (playLoopLength > 0 && steps > playLoopLength) {
-      steps -= playLoopLength;
-    }
     auto lineY = -1024.0f / viewScale;
     auto lineHeight = 2048.0f / viewScale;
     lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-    lv.graphics.rectangle(
-        love::Graphics::DrawMode::DRAW_FILL, steps * gridCellSize, lineY, 0.1f, lineHeight);
+    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, playheadX, lineY, 0.1f, lineHeight);
   }
 
   drawNoteAxis();
@@ -306,10 +315,14 @@ struct SoundToolActionReceiver {
       return;
 
     auto &soundTool = editor->soundTool;
+    auto action = params.action();
 
-    if (params.action() == "play") {
+    if (action == "play") {
       soundTool.togglePlay();
-    } else if (params.action() == "addTrack") {
+    } else if (action == "setViewFollowsPlayhead") {
+      soundTool.viewFollowsPlayhead = (params.doubleValue() == 1.0) ? true : false;
+      soundTool.sendUIEvent();
+    } else if (action == "addTrack") {
       if (editor->editMode != Editor::EditMode::Sound) {
         soundTool.useSelectedActorMusicComponent();
       }
@@ -318,7 +331,7 @@ struct SoundToolActionReceiver {
         soundTool.setTrackIndex(soundTool.song->tracks.size() - 1);
         soundTool.updateSelectedComponent("add track");
       }
-    } else if (params.action() == "deleteTrack") {
+    } else if (action == "deleteTrack") {
       int index = int(params.doubleValue());
       if (editor->editMode != Editor::EditMode::Sound) {
         soundTool.useSelectedActorMusicComponent();
@@ -381,11 +394,13 @@ void SoundTool::changeInstrument(Sample &sample) {
 }
 
 struct SoundToolEvent {
+  PROP(bool, isPlaying) = false;
   PROP(int, selectedTrackIndex) = 0;
+  PROP(bool, viewFollowsPlayhead) = false;
 };
 
 void SoundTool::sendUIEvent() {
-  SoundToolEvent e { selectedTrackIndex };
+  SoundToolEvent e { isPlaying, selectedTrackIndex, viewFollowsPlayhead };
   editor.getBridge().sendEvent("EDITOR_SOUND_TOOL", e);
 }
 

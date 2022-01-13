@@ -70,6 +70,7 @@ private:
 
   // for playback
   bool isPlaying;
+  bool viewFollowsPlayhead = false;
   double playStartTime = 0;
   double playLoopLength = 0;
 
