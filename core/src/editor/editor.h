@@ -103,7 +103,7 @@ private:
   friend struct SoundToolSetDataReceiver;
   friend struct SoundToolSceneMusicReceiver;
   friend struct SoundToolActionReceiver;
-  friend struct SoundToolChangeInstrumentReceiver;
+  friend struct TrackToolChangeInstrumentReceiver;
 
   Lv &lv { Lv::getInstance() };
   Bridge &bridge;

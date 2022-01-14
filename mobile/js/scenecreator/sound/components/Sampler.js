@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
 export const Sampler = ({ instrument }) => {
   const onChangeSample = React.useCallback(
     (sample) => {
-      sendAsync('SOUND_TOOL_CHANGE_INSTRUMENT', {
+      sendAsync('TRACK_TOOL_CHANGE_INSTRUMENT', {
         sampleValue: sample,
       });
       if (sample.type === 'sfxr') {
