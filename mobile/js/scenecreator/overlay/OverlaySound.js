@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
 });
 
 export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
-  const { isPlaying, viewFollowsPlayhead, selectedTrackIndex } =
+  const { mode, isPlaying, viewFollowsPlayhead, selectedTrackIndex } =
     useCoreState('EDITOR_SOUND_TOOL') || {};
   React.useEffect(() => {
     if (selectedTrackIndex >= 0 && activeSheet.sound !== 'soundEditInstrument') {
@@ -56,11 +56,21 @@ export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
     }
   }, [selectedTrackIndex, setActiveSheet, activeSheet.sound]);
 
+  const onPressClose = React.useCallback(() => {
+    if (mode === 'track') {
+      // back out to song view
+      sendAsync('EDITOR_SOUND_TOOL_ACTION', { action: 'selectTrack', doubleValue: -1 });
+    } else {
+      // exit sound tool
+      sendGlobalAction('setMode', 'default');
+    }
+  }, [mode]);
+
   return (
     <View style={styles.container} pointerEvents="box-none">
       <View style={styles.leftContainer}>
         <View style={[styles.close, styles.button]}>
-          <Pressable onPress={() => sendGlobalAction('setMode', 'default')}>
+          <Pressable onPress={onPressClose}>
             <CastleIcon name="close" size={22} color="#000" />
           </Pressable>
         </View>

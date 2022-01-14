@@ -64,6 +64,10 @@ void SoundTool::validateSelection() {
   } else {
     selectedTrackIndex = -1;
   }
+  if (mode == Mode::Track && selectedTrackIndex < 0) {
+    // no selected track, not allowed to be in track mode
+    setMode(Mode::Song);
+  }
 }
 
 void SoundTool::togglePlay() {
@@ -163,6 +167,7 @@ struct SoundToolActionReceiver {
       } else {
         soundTool.setTrackIndex(-1);
       }
+      soundTool.validateSelection();
       soundTool.sendUIEvent();
     } else if (action == "addTrack") {
       if (editor->editMode != Editor::EditMode::Sound) {

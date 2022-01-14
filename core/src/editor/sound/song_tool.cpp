@@ -32,6 +32,7 @@ void SongTool::updateViewConstraints() {
 
 void SongTool::update(double dt) {
   auto &scene = getScene();
+  auto &clock = scene.getClock();
   const Gesture &gesture = scene.getGesture();
   if (gesture.getCount() == 1 && gesture.getMaxCount() == 1) {
     gesture.withSingleTouch([&](const Touch &touch) {
@@ -39,20 +40,35 @@ void SongTool::update(double dt) {
       auto transformedTouchPosition = viewTransform.inverseTransformPoint(originalTouchPosition);
 
       // grid x is bar, grid y is track
-      auto bar = double(floor(transformedTouchPosition.x / gridCellSize));
+      auto bar = double(transformedTouchPosition.x / gridCellSize);
       auto track = floor(transformedTouchPosition.y / gridCellSize);
 
       if (touch.released) {
         // touch track to select track
         if (track >= 0 && soundTool.hasSong() && track < int(soundTool.song->tracks.size())) {
-          soundTool.setTrackIndex(track);
+          // if pattern touched on already selected track, edit pattern
+          bool selectedPattern = false;
+          if (soundTool.selectedTrackIndex == track) {
+            if (auto track = soundTool.getSelectedTrack(); track) {
+              auto patternWidth = stepsToBars(track->pattern.getLoopLength(clock));
+              if (bar > 0 && bar < patternWidth) {
+                soundTool.setMode(SoundTool::Mode::Track);
+              }
+            }
+          }
+          if (!selectedPattern) {
+            soundTool.setTrackIndex(track);
+          }
           soundTool.sendUIEvent();
+        } else if (bar < 0 && track == int(soundTool.song->tracks.size())) {
+          // touched the N+1th track axis, add new
+          soundTool.song->tracks.push_back(Song::makeDefaultTrack());
+          soundTool.setTrackIndex(soundTool.song->tracks.size() - 1);
+          soundTool.updateSelectedComponent("add track");
         } else {
           soundTool.setTrackIndex(-1);
           soundTool.sendUIEvent();
           // TODO:
-          // touch 'new' region to add new track
-          // touch pattern to select track+pattern, or double touch to edit
           // touch empty part of existing track to add pattern
           // drag patterns to other cells to clone
         }
@@ -178,6 +194,12 @@ void SongTool::drawTrackAxis(Song *song) {
     y += gridCellSize;
     trackIndex++;
   }
+
+  // draw 'new track' region
+  lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+  lv.graphics.print({ { "+ track", { 1, 1, 1, 1 } } }, tempFont.get(),
+        love::Matrix4(x + gridCellSize * 0.1f, y + gridCellSize * 0.4f, 0, fontInvScale,
+            fontInvScale, 0, 0, 0, 0));  
 }
 
 void SongTool::drawOverlay() {
