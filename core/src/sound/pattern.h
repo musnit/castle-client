@@ -27,7 +27,10 @@ public:
 
   Pattern() = default;
   Pattern(const Pattern &);
-  const Pattern &operator=(const Pattern &) = delete;
+  const Pattern &operator=(const Pattern &);
+
+  std::string patternId = "";
+
   void write(Writer &writer) const;
   void read(Reader &reader);
 

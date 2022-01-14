@@ -15,11 +15,25 @@ public:
   void read(Reader &reader);
   std::string serialize();
 
+  // bank of all patterns used in this song; patternId -> Pattern
+  std::unordered_map<std::string, Pattern> patterns;
+
+  // a Track is an Instrument that plays sounds, and a sequence of Patterns from the song's pattern
+  // bank.
   struct Track {
     std::unique_ptr<Instrument> instrument;
-    Pattern pattern; // TODO: organize and sequence multiple patterns
+
+    // startTime -> patternId
+    std::map<double, std::string> sequence;
   };
   std::vector<std::unique_ptr<Track>> tracks;
 
+  // compose sequence into one long pattern, suitable for scheduling as a stream.
+  // startTime and endTime are bounds in the overall song;
+  // endTime == 0 indicates to go to the end of the song
+  std::unique_ptr<Pattern> flattenSequence(
+      int trackIndex, double startTime, double endTime, Clock &clock);
+
+  static std::unique_ptr<Pattern> makeEmptyPattern();
   static std::unique_ptr<Track> makeDefaultTrack();
 };

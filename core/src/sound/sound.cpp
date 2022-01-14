@@ -61,11 +61,12 @@ void Sound::ClockThread::addClock(Clock *clock) {
   }
 }
 
-void Sound::ClockThread::addStream(int clockId, Pattern &pattern, Instrument &instrument) {
+void Sound::ClockThread::addStream(
+    int clockId, std::unique_ptr<Pattern> pattern, Instrument &instrument) {
   love::thread::Lock lock(mutex);
   if (auto found = clocks.find(clockId); found != clocks.end()) {
     auto clock = found->second;
-    auto stream = std::make_unique<Stream>(*clock, pattern, instrument);
+    auto stream = std::make_unique<Stream>(*clock, std::move(pattern), instrument);
     // play sound immediately if warranted
     if (stream->hasNext() && clock->getTime() >= stream->nextTime()) {
       stream->playNextNotes(owner);
@@ -120,9 +121,9 @@ void Sound::stopAll() {
   }
 }
 
-void Sound::play(int clockId, Pattern &pattern, Instrument &instrument) {
+void Sound::play(int clockId, std::unique_ptr<Pattern> pattern, Instrument &instrument) {
   if (clockThread) {
-    clockThread->addStream(clockId, pattern, instrument);
+    clockThread->addStream(clockId, std::move(pattern), instrument);
   }
 }
 

@@ -25,12 +25,24 @@ void TrackTool::onSetActive() {
   updateViewConstraints();
 }
 
+Pattern *TrackTool::getSelectedPattern() {
+  Pattern *result = nullptr;
+  if (auto track = soundTool.getSelectedTrack(); track) {
+    // TODO: selected pattern id
+    auto firstSequenceElem = track->sequence.begin();
+    if (firstSequenceElem != track->sequence.end()) {
+      auto patternId = firstSequenceElem->second;
+      return &soundTool.song->patterns[patternId];
+    }
+  }
+  return result;
+}
+
 void TrackTool::updateViewConstraints() {
   double lastTime = 0;
-  if (auto track = soundTool.getSelectedTrack(); track) {
-    love::thread::Lock lock(track->pattern.mutex);
-    auto endNotes = track->pattern.rbegin();
-    if (endNotes != track->pattern.rend()) {
+  if (auto pattern = getSelectedPattern(); pattern) {
+    auto endNotes = pattern->rbegin();
+    if (endNotes != pattern->rend()) {
       // add some buffer beyond last time
       auto &scene = getScene();
       lastTime = endNotes->first;
@@ -49,6 +61,10 @@ void TrackTool::update(double dt) {
       if (!track) {
         return;
       }
+      auto pattern = getSelectedPattern();
+      if (!pattern) {
+        return;
+      }
       love::Vector2 originalTouchPosition = { touch.screenPos.x, touch.screenPos.y };
       auto transformedTouchPosition = viewTransform.inverseTransformPoint(originalTouchPosition);
 
@@ -59,12 +75,12 @@ void TrackTool::update(double dt) {
 
       if (touch.released) {
         if (step >= 0) {
-          bool oldHasNote = track->pattern.hasNote(step, key);
+          bool oldHasNote = pattern->hasNote(step, key);
           if (oldHasNote) {
-            track->pattern.removeNote(step, key);
+            pattern->removeNote(step, key);
             soundTool.updateSelectedComponent("remove notes");
           } else {
-            track->pattern.addNote(step, key);
+            pattern->addNote(step, key);
             soundTool.updateSelectedComponent("add notes");
           }
         }
@@ -146,6 +162,9 @@ void TrackTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
 };
 
 void TrackTool::drawPattern(Pattern *pattern) {
+  if (!pattern) {
+    return;
+  }
   love::Colorf noteColor { 0.3f, 0.3f, 0.3f, 1.0f };
   lv.graphics.setColor(noteColor);
 
@@ -227,7 +246,7 @@ void TrackTool::drawOverlay() {
   lv.graphics.setLineWidth(0.1f);
 
   drawGrid(viewScale, viewOffset);
-  drawPattern(&(track->pattern));
+  drawPattern(getSelectedPattern());
 
   // draw playhead
   if (soundTool.isPlaying) {

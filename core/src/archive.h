@@ -157,6 +157,8 @@ public:
   void read(std::optional<T> &o);
   template<typename T>
   void read(std::map<double, T> &m);
+  template<typename T>
+  void read(std::unordered_map<std::string, T> &m);
 
   template<typename T>
   void read(T &&v); // Read value into an existing object of custom type. Can be a function, a type
@@ -714,6 +716,15 @@ void Reader::read(std::map<double, T> &m) {
     T value;
     read(value);
     m[atof(key)] = value;
+  });
+}
+
+template<typename T>
+void Reader::read(std::unordered_map<std::string, T> &m) {
+  each([&](const char *key) {
+    T value;
+    read(value);
+    m[key] = value;
   });
 }
 

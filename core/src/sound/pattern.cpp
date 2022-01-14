@@ -2,20 +2,45 @@
 #include "clock.h"
 
 Pattern::Pattern(const Pattern &other) {
+  patternId = other.patternId;
+  loop = other.loop;
   for (auto &[time, notesList] : other.notes) {
     notes[time] = notesList;
   }
 }
 
+const Pattern &Pattern::operator=(const Pattern &other) {
+  patternId = other.patternId;
+  loop = other.loop;
+  for (auto &[time, notesList] : other.notes) {
+    notes[time] = notesList;
+  }
+  return *this;
+}
+
 void Pattern::write(Writer &writer) const {
+  switch (loop) {
+  case Loop::None:
+    writer.str("loop", "none");
+    break;
+  case Loop::NextBar:
+    writer.str("loop", "nextBar");
+    break;
+  }
+  writer.str("patternId", patternId);
   writer.write("notes", notes);
 }
 
 void Pattern::read(Reader &reader) {
-  reader.each([&](const char *key) {
-    if (std::string(key) == "notes") {
-      reader.read(notes);
-    }
+  patternId = reader.str("patternId", "");
+  auto loopStr = reader.str("loop", "nextBar");
+  if (loopStr == "none") {
+    loop = Loop::None;
+  } else if (loopStr = "nextBar") {
+    loop = Loop::NextBar;
+  }
+  reader.obj("notes", [&]() {
+    reader.read(notes);
   });
   for (auto &[time, notesAtTime] : notes) {
     for (auto &note : notesAtTime) {

@@ -78,16 +78,19 @@ void SoundTool::togglePlay() {
       scene.getSound().stopAll();
     } else {
       // schedule current song to play now
-      // TODO: tracks are currently just a singleton pattern
       trackLoopLengths.clear();
       songLoopLength = 0;
+      auto trackIndex = 0;
       for (auto &track : song->tracks) {
-        scene.getSound().play(scene.getClock().clockId, track->pattern, *track->instrument);
-        auto trackLoopLength = track->pattern.getLoopLength(scene.getClock());
+        auto pattern = song->flattenSequence(
+            trackIndex, 0, 0, scene.getClock()); // TODO: set bounds if we've selected a range
+        auto trackLoopLength = pattern->getLoopLength(scene.getClock());
+        scene.getSound().play(scene.getClock().clockId, std::move(pattern), *track->instrument);
         trackLoopLengths.push_back(trackLoopLength);
         if (trackLoopLength > songLoopLength) {
           songLoopLength = trackLoopLength;
         }
+        trackIndex++;
       }
       playStartTime = scene.getClock().getTime();
       isPlaying = true;
@@ -169,15 +172,6 @@ struct SoundToolActionReceiver {
       }
       soundTool.validateSelection();
       soundTool.sendUIEvent();
-    } else if (action == "addTrack") {
-      if (editor->editMode != Editor::EditMode::Sound) {
-        soundTool.useSelectedActorMusicComponent();
-      }
-      if (soundTool.hasSong()) {
-        soundTool.song->tracks.push_back(Song::makeDefaultTrack());
-        soundTool.setTrackIndex(soundTool.song->tracks.size() - 1);
-        soundTool.updateSelectedComponent("add track");
-      }
     } else if (action == "deleteTrack") {
       int index = int(params.doubleValue());
       if (editor->editMode != Editor::EditMode::Sound) {

@@ -32,6 +32,7 @@ public:
   // edit current instrument
   void changeInstrument(Sample &sample);
 
+  Pattern *getSelectedPattern();
   void updateViewConstraints();
 
 private:
