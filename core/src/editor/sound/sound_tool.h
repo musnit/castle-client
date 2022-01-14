@@ -52,7 +52,7 @@ private:
   Mode mode = Mode::Song;
 
   std::unique_ptr<Song> song;
-  int selectedTrackIndex = 0;
+  int selectedTrackIndex = -1;
   void useSelectedActorMusicComponent();
   MusicComponent *maybeGetSelectedActorMusicComponent();
   void updateSelectedComponent(std::string commandDescription);
@@ -77,7 +77,7 @@ inline bool SoundTool::hasSong() {
 }
 
 inline Song::Track *SoundTool::getSelectedTrack() {
-  if (hasSong() && int(song->tracks.size()) > selectedTrackIndex) {
+  if (hasSong() && selectedTrackIndex >= 0 && int(song->tracks.size()) > selectedTrackIndex) {
     return song->tracks[selectedTrackIndex].get();
   }
   return nullptr;

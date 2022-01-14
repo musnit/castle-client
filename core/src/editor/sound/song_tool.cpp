@@ -37,12 +37,26 @@ void SongTool::update(double dt) {
     gesture.withSingleTouch([&](const Touch &touch) {
       love::Vector2 originalTouchPosition = { touch.screenPos.x, touch.screenPos.y };
       auto transformedTouchPosition = viewTransform.inverseTransformPoint(originalTouchPosition);
-      // TODO:
-      // touch track axis to play sound of that track? and select track properties
-      // touch 'new' region to add new track
-      // touch pattern to select, or double touch to edit
-      // touch empty part of existing track to add pattern
-      // drag patterns to other cells to clone
+
+      // grid x is bar, grid y is track
+      auto bar = double(floor(transformedTouchPosition.x / gridCellSize));
+      auto track = floor(transformedTouchPosition.y / gridCellSize);
+
+      if (touch.released) {
+        // touch track to select track
+        if (track >= 0 && soundTool.hasSong() && track < int(soundTool.song->tracks.size())) {
+          soundTool.setTrackIndex(track);
+          soundTool.sendUIEvent();
+        } else {
+          soundTool.setTrackIndex(-1);
+          soundTool.sendUIEvent();
+          // TODO:
+          // touch 'new' region to add new track
+          // touch pattern to select track+pattern, or double touch to edit
+          // touch empty part of existing track to add pattern
+          // drag patterns to other cells to clone
+        }
+      }
     });
   } else if (gesture.getCount() == 2) {
     hasTouch = false;
@@ -73,7 +87,7 @@ void SongTool::drawPattern(Pattern *pattern, float unit) {
   lv.graphics.setColor({ 0.8f, 0.8f, 0.8f, 1.0f });
   auto patternWidth = stepsToBars(pattern->getLoopLength(clock));
   lv.graphics.rectangle(
-      love::Graphics::DrawMode::DRAW_FILL, 0, 0, patternWidth * unit, 0.95f * unit);
+      love::Graphics::DrawMode::DRAW_FILL, 0, 0.025f * unit, patternWidth * unit, 0.95f * unit);
 
   // summarize notes
   // TODO: editor maintains min/max per track
@@ -95,6 +109,12 @@ void SongTool::drawTrack(Song::Track *track, int index, double timeInSong, float
   // draw pattern
   // TODO: advance thru entire sequence for this track, draw all patterns, indicate loops
   // TODO: don't need to draw outside viewport
+
+  // highlight row if selected
+  if (index == soundTool.selectedTrackIndex) {
+    lv.graphics.setColor({ 0.4f, 0.4f, 0.4f, 1.0f });
+    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, viewPosition.x, 0, viewWidth, unit);
+  }
   drawPattern(&track->pattern, unit);
 
   // draw track-specific playhead
@@ -106,7 +126,8 @@ void SongTool::drawTrack(Song::Track *track, int index, double timeInSong, float
     auto bars = stepsToBars(timeInSong);
     float playheadX = bars * unit;
     lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, playheadX, 0, 0.1f, 0.95f * unit);
+    lv.graphics.rectangle(
+        love::Graphics::DrawMode::DRAW_FILL, playheadX, 0.025f * unit, 0.1f, 0.95f * unit);
   }
 }
 
@@ -141,15 +162,21 @@ void SongTool::drawTrackAxis(Song *song) {
   lv.graphics.rectangle(
       love::Graphics::DrawMode::DRAW_FILL, x + gridCellSize - 0.05f, axisY, 0.05f, axisHeight);
 
-  lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
   auto y = 0.0f;
   auto fontInvScale = viewWidth / 800.0f;
+  int trackIndex = 0;
   for (auto &track : song->tracks) {
-    // TODO: light up tracks when notes play or when selected
+    // TODO: also light up tracks when notes play
+    if (trackIndex == soundTool.selectedTrackIndex) {
+      lv.graphics.setColor({ 0.4f, 0.4f, 0.4f, 1.0f });
+      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);
+    }
+    lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
     lv.graphics.print({ { track->instrument->getType(), { 1, 1, 1, 1 } } }, tempFont.get(),
         love::Matrix4(x + gridCellSize * 0.1f, y + gridCellSize * 0.4f, 0, fontInvScale,
             fontInvScale, 0, 0, 0, 0));
     y += gridCellSize;
+    trackIndex++;
   }
 }
 

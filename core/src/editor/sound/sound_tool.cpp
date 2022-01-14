@@ -11,7 +11,7 @@ SoundTool::SoundTool(Editor &editor_)
 
 void SoundTool::resetState() {
   song = nullptr;
-  selectedTrackIndex = 0;
+  selectedTrackIndex = -1;
   songTool.resetState();
   trackTool.resetState();
   trackLoopLengths.clear();
@@ -58,11 +58,11 @@ MusicComponent *SoundTool::maybeGetSelectedActorMusicComponent() {
 
 void SoundTool::validateSelection() {
   if (hasSong()) {
-    if (song->tracks.size() >= selectedTrackIndex) {
+    if (selectedTrackIndex >= int(song->tracks.size())) {
       selectedTrackIndex = song->tracks.size() - 1;
     }
   } else {
-    selectedTrackIndex = 0;
+    selectedTrackIndex = -1;
   }
 }
 
@@ -132,6 +132,7 @@ struct SoundToolActionReceiver {
   struct Params {
     PROP(std::string, action);
     PROP(double, doubleValue);
+    PROP(std::string, stringValue);
   } params;
 
   void receive(Engine &engine) {
@@ -146,6 +147,22 @@ struct SoundToolActionReceiver {
       soundTool.togglePlay();
     } else if (action == "setViewFollowsPlayhead") {
       soundTool.viewFollowsPlayhead = (params.doubleValue() == 1.0) ? true : false;
+      soundTool.sendUIEvent();
+    } else if (action == "setMode") {
+      auto modeStr = params.stringValue();
+      if (modeStr == "song") {
+        soundTool.setMode(SoundTool::Mode::Song);
+      } else if (modeStr == "track") {
+        soundTool.setMode(SoundTool::Mode::Track);
+      }
+      soundTool.sendUIEvent();
+    } else if (action == "selectTrack") {
+      auto trackIndex = int(params.doubleValue());
+      if (trackIndex >= 0 && trackIndex < int(soundTool.song->tracks.size())) {
+        soundTool.setTrackIndex(trackIndex);
+      } else {
+        soundTool.setTrackIndex(-1);
+      }
       soundTool.sendUIEvent();
     } else if (action == "addTrack") {
       if (editor->editMode != Editor::EditMode::Sound) {
@@ -173,32 +190,25 @@ struct SoundToolActionReceiver {
   }
 };
 
-struct SoundToolSetDataReceiver {
-  inline static const BridgeRegistration<SoundToolSetDataReceiver> registration {
-    "SOUND_TOOL_START_EDITING"
-  };
-
-  struct Params {
-    PROP(int, trackIndex) = 0;
-  } params;
-
-  void receive(Engine &engine) {
-    auto editor = engine.maybeGetEditor();
-    if (!editor)
-      return;
-
-    editor->soundTool.setTrackIndex(params.trackIndex());
-  }
-};
-
 struct SoundToolEvent {
+  PROP(std::string, mode);
   PROP(bool, isPlaying) = false;
-  PROP(int, selectedTrackIndex) = 0;
+  PROP(int, selectedTrackIndex) = -1;
   PROP(bool, viewFollowsPlayhead) = false;
 };
 
 void SoundTool::sendUIEvent() {
-  SoundToolEvent e { isPlaying, selectedTrackIndex, viewFollowsPlayhead };
+  std::string modeStr;
+  switch (mode) {
+  case Mode::Song:
+    modeStr = "song";
+    break;
+  case Mode::Track:
+    modeStr = "track";
+    break;
+  }
+
+  SoundToolEvent e { modeStr, isPlaying, selectedTrackIndex, viewFollowsPlayhead };
   editor.getBridge().sendEvent("EDITOR_SOUND_TOOL", e);
 }
 

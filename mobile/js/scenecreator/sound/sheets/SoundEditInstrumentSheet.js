@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import { BottomSheet } from '../../../components/BottomSheet';
 import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
 import { Sampler } from '../components/Sampler';
-import { useCoreState } from '../../../core/CoreEvents';
+import { useCoreState, sendAsync } from '../../../core/CoreEvents';
 
 import * as Constants from '../../../Constants';
 
@@ -42,10 +42,17 @@ export const SoundEditInstrumentSheet = ({ isOpen, ...props }) => {
   };
   const soundToolState = useCoreState('EDITOR_SOUND_TOOL') || {};
   const { selectedTrackIndex } = soundToolState;
-  const { instrument } = component.props.song.tracks[selectedTrackIndex] || {};
+  let instrument;
+  if (selectedTrackIndex >= 0) {
+    instrument = component.props.song.tracks[selectedTrackIndex].instrument;
+  }
+
+  const deselectTrack = React.useCallback(() => {
+    sendAsync('EDITOR_SOUND_TOOL_ACTION', { action: 'selectTrack', doubleValue: -1 });
+  }, []);
 
   const title = 'Sampler'; // TODO: others
-  const renderHeader = () => <BottomSheetHeader title={title} />;
+  const renderHeader = () => <BottomSheetHeader title={title} onClose={deselectTrack} />;
 
   const renderContent = () => (!isOpen ? null : <EditInstrument instrument={instrument} />);
 

@@ -32,7 +32,7 @@ export const CreateCardOverlay = ({ activeSheet, setActiveSheet, editMode, beltH
   } else if (editMode === 'sound') {
     return (
       <View style={styles.container} pointerEvents="box-none">
-        <OverlaySound setActiveSheet={setActiveSheet} />
+        <OverlaySound activeSheet={activeSheet} setActiveSheet={setActiveSheet} />
       </View>
     );
   } else {

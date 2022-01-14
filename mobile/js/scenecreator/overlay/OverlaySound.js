@@ -45,8 +45,16 @@ const styles = StyleSheet.create({
   },
 });
 
-export const OverlaySound = ({ setActiveSheet }) => {
-  const { isPlaying, viewFollowsPlayhead } = useCoreState('EDITOR_SOUND_TOOL') || {};
+export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
+  const { isPlaying, viewFollowsPlayhead, selectedTrackIndex } =
+    useCoreState('EDITOR_SOUND_TOOL') || {};
+  React.useEffect(() => {
+    if (selectedTrackIndex >= 0 && activeSheet.sound !== 'soundEditInstrument') {
+      setActiveSheet({ sound: 'soundEditInstrument' });
+    } else if (selectedTrackIndex < 0 && activeSheet.sound == 'soundEditInstrument') {
+      setActiveSheet({ sound: null });
+    }
+  }, [selectedTrackIndex, setActiveSheet, activeSheet.sound]);
 
   return (
     <View style={styles.container} pointerEvents="box-none">

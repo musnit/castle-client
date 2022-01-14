@@ -189,6 +189,10 @@ void TrackTool::drawNoteAxis() {
 }
 
 void TrackTool::drawOverlay() {
+  auto track = soundTool.getSelectedTrack();
+  if (!track) {
+    return;
+  }
   float windowWidth = 800.0f;
   auto viewScale = windowWidth / viewWidth;
   love::Vector2 viewOffset;
@@ -223,9 +227,7 @@ void TrackTool::drawOverlay() {
   lv.graphics.setLineWidth(0.1f);
 
   drawGrid(viewScale, viewOffset);
-  if (auto track = soundTool.getSelectedTrack(); track) {
-    drawPattern(&(track->pattern));
-  }
+  drawPattern(&(track->pattern));
 
   // draw playhead
   if (soundTool.isPlaying) {

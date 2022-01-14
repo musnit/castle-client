@@ -100,7 +100,7 @@ export const SheetProvider = ({ activeSheet, setActiveSheet, editMode, beltHeigh
   const insets = useSafeAreaInsets();
 
   const [sheetStacks, updateSheetStacks] = React.useReducer(sheetStackReducer, {});
-  const closeRootSheet = () => setActiveSheet({ default: null });
+  const closeRootSheet = () => setActiveSheet({ [editMode]: null });
 
   return (
     <React.Fragment>
