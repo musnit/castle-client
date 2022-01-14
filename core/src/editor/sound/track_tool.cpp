@@ -166,10 +166,11 @@ void TrackTool::drawPattern(Pattern *pattern) {
 
 void TrackTool::drawNoteAxis() {
   // TODO: this should be dependent on the instrument we're using
+  auto x = viewPosition.x - gridCellSize; // always on left edge of view
+
   // midi 48 is y = 0, go four octaves above and below
   for (auto note = 0; note < 96; note++) {
     auto y = ((note - 48) * -gridCellSize) - gridCellSize;
-    auto x = viewPosition.x - gridCellSize; // always on left edge of view
     auto scaleDegree = note % 12;
     auto isBlack = scaleDegree == 1 || scaleDegree == 3 || scaleDegree == 6 || scaleDegree == 8
         || scaleDegree == 10;
@@ -199,8 +200,9 @@ void TrackTool::drawOverlay() {
   if (soundTool.isPlaying) {
     auto &scene = getScene();
     auto steps = scene.getClock().getTime() - soundTool.playStartTime;
-    while (soundTool.playLoopLength > 0 && steps > soundTool.playLoopLength) {
-      steps -= soundTool.playLoopLength;
+    auto playLoopLength = soundTool.trackLoopLengths[soundTool.selectedTrackIndex];
+    while (playLoopLength > 0 && steps > playLoopLength) {
+      steps -= playLoopLength;
     }
     playheadX = steps * gridCellSize;
     if (soundTool.viewFollowsPlayhead) {

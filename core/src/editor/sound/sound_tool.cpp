@@ -12,13 +12,30 @@ SoundTool::SoundTool(Editor &editor_)
 void SoundTool::resetState() {
   song = nullptr;
   selectedTrackIndex = 0;
+  songTool.resetState();
   trackTool.resetState();
+  trackLoopLengths.clear();
+  songLoopLength = 0;
 }
 
 void SoundTool::onSetActive() {
   useSelectedActorMusicComponent();
-  trackTool.onSetActive(); // TODO: call in setMode
+  setMode(Mode::Song);
   sendUIEvent();
+}
+
+void SoundTool::setMode(SoundTool::Mode mode_) {
+  if (mode != mode_) {
+    mode = mode_;
+    switch (mode) {
+    case Mode::Song:
+      songTool.onSetActive();
+      break;
+    case Mode::Track:
+      trackTool.onSetActive();
+      break;
+    }
+  }
 }
 
 void SoundTool::useSelectedActorMusicComponent() {
@@ -58,11 +75,17 @@ void SoundTool::togglePlay() {
     } else {
       // schedule current song to play now
       // TODO: tracks are currently just a singleton pattern
+      trackLoopLengths.clear();
+      songLoopLength = 0;
       for (auto &track : song->tracks) {
         scene.getSound().play(scene.getClock().clockId, track->pattern, *track->instrument);
+        auto trackLoopLength = track->pattern.getLoopLength(scene.getClock());
+        trackLoopLengths.push_back(trackLoopLength);
+        if (trackLoopLength > songLoopLength) {
+          songLoopLength = trackLoopLength;
+        }
       }
       playStartTime = scene.getClock().getTime();
-      playLoopLength = getSelectedTrack()->pattern.getLoopLength(scene.getClock());
       isPlaying = true;
     }
   }
@@ -76,11 +99,25 @@ void SoundTool::update(double dt) {
   if (!hasSong()) {
     return;
   }
-  trackTool.update(dt);
+  switch (mode) {
+  case Mode::Song:
+    songTool.update(dt);
+    break;
+  case Mode::Track:
+    trackTool.update(dt);
+    break;
+  }
 }
 
 void SoundTool::drawOverlay() {
-  trackTool.drawOverlay();
+  switch (mode) {
+  case Mode::Song:
+    songTool.drawOverlay();
+    break;
+  case Mode::Track:
+    trackTool.drawOverlay();
+    break;
+  }
 }
 
 //
@@ -190,15 +227,25 @@ void SoundTool::updateSelectedComponent(std::string commandDescription) {
       std::move(commandDescription), commandParams,
       [this, actorId, newSongJson](Editor &editor, bool) {
         setMusicProps(editor, actorId, newSongJson);
-        if (mode == Mode::Track) {
+        switch (mode) {
+        case Mode::Song:
+          songTool.updateViewConstraints();
+          break;
+        case Mode::Track:
           trackTool.updateViewConstraints();
+          break;
         }
         sendUIEvent();
       },
       [this, actorId, oldSongJson](Editor &editor, bool) {
         setMusicProps(editor, actorId, oldSongJson);
-        if (mode == Mode::Track) {
+        switch (mode) {
+        case Mode::Song:
+          songTool.updateViewConstraints();
+          break;
+        case Mode::Track:
           trackTool.updateViewConstraints();
+          break;
         }
         sendUIEvent();
       });

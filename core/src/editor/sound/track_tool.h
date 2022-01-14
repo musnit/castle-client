@@ -14,6 +14,9 @@ class SoundTool;
 #define PATTERN_MAX_VIEW_WIDTH 25.0f
 #define PATTERN_DEFAULT_VIEW_BOUND 5.0f
 
+//
+// TrackTool visualizes and edits (part of) a Track, including an Instrument and a Pattern.
+//
 class TrackTool {
 public:
   TrackTool(const TrackTool &) = delete; // Prevent accidental copies

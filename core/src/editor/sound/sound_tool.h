@@ -4,6 +4,7 @@
 #include "lv.h"
 #include "sound/song.h"
 #include "behaviors/music.h"
+#include "song_tool.h"
 #include "track_tool.h"
 
 class Editor;
@@ -29,19 +30,26 @@ public:
   void togglePlay();
 
   // sound tool edit modes
-  // TODO: outer song view with list of tracks
   enum class Mode {
+    Song,
     Track,
   };
-  Mode mode = Mode::Track;
+  SongTool songTool { *this };
   TrackTool trackTool { *this };
+  inline Mode getMode() {
+    return mode;
+  }
+  void setMode(Mode mode);
 
 private:
   friend class TrackTool;
+  friend class SongTool;
   friend struct SoundToolActionReceiver;
 
   Lv &lv { Lv::getInstance() };
   Editor &editor;
+
+  Mode mode = Mode::Song;
 
   std::unique_ptr<Song> song;
   int selectedTrackIndex = 0;
@@ -51,10 +59,11 @@ private:
   void validateSelection();
 
   // for playback
-  bool isPlaying;
+  bool isPlaying = false;
   bool viewFollowsPlayhead = false;
   double playStartTime = 0;
-  double playLoopLength = 0;
+  double songLoopLength = 0;
+  std::vector<double> trackLoopLengths;
 
   Song::Track *getSelectedTrack();
 };
