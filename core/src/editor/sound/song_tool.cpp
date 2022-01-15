@@ -163,15 +163,25 @@ void SongTool::drawTrack(Song::Track *track, int index, double timeInSong, float
 
   // draw track-specific playhead
   if (soundTool.isPlaying) {
-    auto loopLength = soundTool.trackLoopLengths[index];
-    while (loopLength > 0 && timeInSong > loopLength) {
-      timeInSong -= loopLength;
+    // TODO: starting partway thru a pattern
+    // TODO: compute track start times once, not every frame
+    auto startSeq = track->sequence.lower_bound(soundTool.selectedSequenceStartTime);
+    if ((startSeq == track->sequence.end()
+            || startSeq->first != soundTool.selectedSequenceStartTime)
+        && startSeq != track->sequence.begin()) {
+      startSeq = std::prev(startSeq);
     }
-    auto bars = stepsToBars(timeInSong);
-    float playheadX = bars * unit;
-    lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-    lv.graphics.rectangle(
-        love::Graphics::DrawMode::DRAW_FILL, playheadX, 0.025f * unit, 0.1f, 0.95f * unit);
+    if (startSeq != track->sequence.end()) {
+      auto loopLength = soundTool.trackLoopLengths[index];
+      while (loopLength > 0 && timeInSong > loopLength) {
+        timeInSong -= loopLength;
+      }
+      auto bars = stepsToBars(timeInSong);
+      float playheadX = (bars + stepsToBars(startSeq->first)) * unit;
+      lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+      lv.graphics.rectangle(
+          love::Graphics::DrawMode::DRAW_FILL, playheadX, 0.025f * unit, 0.1f, 0.95f * unit);
+    }
   }
 }
 
@@ -247,6 +257,7 @@ void SongTool::drawOverlay() {
     auto bars = stepsToBars(steps);
     timeInSong = steps;
     playheadX = bars * gridCellSize;
+    playheadX += stepsToBars(soundTool.selectedSequenceStartTime) * gridCellSize;
     if (soundTool.viewFollowsPlayhead) {
       auto halfWidth = 0.33f * viewWidth;
       viewPosition.x = std::max(halfWidth, playheadX) - halfWidth;
