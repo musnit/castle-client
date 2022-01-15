@@ -32,7 +32,7 @@ public:
   // edit current instrument
   void changeInstrument(Sample &sample);
 
-  Pattern *getSelectedPattern();
+  void selectPatternId(std::string &patternId);
   void updateViewConstraints();
 
 private:

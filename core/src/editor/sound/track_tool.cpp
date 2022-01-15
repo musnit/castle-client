@@ -25,22 +25,9 @@ void TrackTool::onSetActive() {
   updateViewConstraints();
 }
 
-Pattern *TrackTool::getSelectedPattern() {
-  Pattern *result = nullptr;
-  if (auto track = soundTool.getSelectedTrack(); track) {
-    // TODO: selected pattern id
-    auto firstSequenceElem = track->sequence.begin();
-    if (firstSequenceElem != track->sequence.end()) {
-      auto patternId = firstSequenceElem->second;
-      return &soundTool.song->patterns[patternId];
-    }
-  }
-  return result;
-}
-
 void TrackTool::updateViewConstraints() {
   double lastTime = 0;
-  if (auto pattern = getSelectedPattern(); pattern) {
+  if (auto pattern = soundTool.getSelectedPattern(); pattern) {
     auto endNotes = pattern->rbegin();
     if (endNotes != pattern->rend()) {
       // add some buffer beyond last time
@@ -61,7 +48,7 @@ void TrackTool::update(double dt) {
       if (!track) {
         return;
       }
-      auto pattern = getSelectedPattern();
+      auto pattern = soundTool.getSelectedPattern();
       if (!pattern) {
         return;
       }
@@ -246,7 +233,7 @@ void TrackTool::drawOverlay() {
   lv.graphics.setLineWidth(0.1f);
 
   drawGrid(viewScale, viewOffset);
-  drawPattern(getSelectedPattern());
+  drawPattern(soundTool.getSelectedPattern());
 
   // draw playhead
   if (soundTool.isPlaying) {

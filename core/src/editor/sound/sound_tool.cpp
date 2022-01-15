@@ -62,6 +62,7 @@ void SoundTool::validateSelection() {
       selectedTrackIndex = song->tracks.size() - 1;
     }
   } else {
+    selectedPatternId = "";
     selectedTrackIndex = -1;
   }
   if (mode == Mode::Track && selectedTrackIndex < 0) {
@@ -166,8 +167,10 @@ struct SoundToolActionReceiver {
     } else if (action == "selectTrack") {
       auto trackIndex = int(params.doubleValue());
       if (trackIndex >= 0 && trackIndex < int(soundTool.song->tracks.size())) {
+        soundTool.setPatternId("");
         soundTool.setTrackIndex(trackIndex);
       } else {
+        soundTool.setPatternId("");
         soundTool.setTrackIndex(-1);
       }
       soundTool.validateSelection();
@@ -182,6 +185,7 @@ struct SoundToolActionReceiver {
         if (index < int(tracks.size())) {
           tracks.erase(tracks.begin() + index);
         }
+        soundTool.setPatternId("");
         soundTool.validateSelection();
         soundTool.updateSelectedComponent("delete track");
       }

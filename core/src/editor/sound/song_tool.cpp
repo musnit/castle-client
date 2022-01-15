@@ -46,22 +46,24 @@ void SongTool::update(double dt) {
       if (touch.released) {
         // touch track to select track
         if (track >= 0 && soundTool.hasSong() && track < int(soundTool.song->tracks.size())) {
-          // if pattern touched on already selected track, edit pattern
-          bool selectedPattern = false;
-          if (soundTool.selectedTrackIndex == track) {
-            if (auto track = soundTool.getSelectedTrack(); track) {
-              for (auto &[startTime, patternId] : track->sequence) {
-                auto &pattern = soundTool.song->patterns[patternId];
-                auto startTimeBars = stepsToBars(startTime) * gridCellSize;
-                auto patternWidth = stepsToBars(pattern.getLoopLength(clock)) * gridCellSize;
-                if (bar > startTimeBars && bar < startTimeBars + patternWidth) {
-                  // TODO: select this patternId
-                  soundTool.setMode(SoundTool::Mode::Track);
-                }
+          std::string patternId;
+          if (auto &selectedTrack = soundTool.song->tracks[track]; selectedTrack) {
+            for (auto &[startTime, patternId_] : selectedTrack->sequence) {
+              auto &pattern = soundTool.song->patterns[patternId];
+              auto startTimeBars = stepsToBars(startTime) * gridCellSize;
+              auto patternWidth = stepsToBars(pattern.getLoopLength(clock)) * gridCellSize;
+              if (bar >= startTimeBars && bar < startTimeBars + patternWidth) {
+                patternId = patternId_;
+                break;
               }
             }
           }
-          if (!selectedPattern) {
+          if (soundTool.selectedTrackIndex == track && soundTool.selectedPatternId == patternId) {
+            // if selected same pattern and track, edit pattern
+            soundTool.setMode(SoundTool::Mode::Track);
+          } else {
+            // select pattern and track
+            soundTool.setPatternId(patternId);
             soundTool.setTrackIndex(track);
           }
           soundTool.sendUIEvent();
@@ -72,9 +74,11 @@ void SongTool::update(double dt) {
           defaultTrack->sequence.emplace(0, emptyPattern->patternId);
           soundTool.song->patterns.emplace(emptyPattern->patternId, *emptyPattern);
           soundTool.song->tracks.push_back(std::move(defaultTrack));
+          soundTool.setPatternId(emptyPattern->patternId);
           soundTool.setTrackIndex(soundTool.song->tracks.size() - 1);
           soundTool.updateSelectedComponent("add track");
         } else {
+          soundTool.setPatternId("");
           soundTool.setTrackIndex(-1);
           soundTool.sendUIEvent();
           // TODO:
@@ -113,7 +117,11 @@ void SongTool::drawSequence(std::map<double, std::string> &sequence, float unit)
     auto startTimeBars = stepsToBars(startTime) * unit;
 
     // draw pattern rectangle
-    lv.graphics.setColor({ 0.8f, 0.8f, 0.8f, 1.0f });
+    if (patternId == soundTool.selectedPatternId) {
+      lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+    } else {
+      lv.graphics.setColor({ 0.8f, 0.8f, 0.8f, 1.0f });
+    }
     auto patternWidth = stepsToBars(pattern.getLoopLength(clock));
     lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, startTimeBars, 0.025f * unit,
         patternWidth * unit, 0.95f * unit);
@@ -138,12 +146,6 @@ void SongTool::drawSequence(std::map<double, std::string> &sequence, float unit)
 void SongTool::drawTrack(Song::Track *track, int index, double timeInSong, float unit) {
   // draw sequence
   // TODO: don't need to draw outside viewport
-
-  // highlight row if selected
-  if (index == soundTool.selectedTrackIndex) {
-    lv.graphics.setColor({ 0.4f, 0.4f, 0.4f, 1.0f });
-    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, viewPosition.x, 0, viewWidth, unit);
-  }
   drawSequence(track->sequence, unit);
 
   // draw track-specific playhead
@@ -161,7 +163,6 @@ void SongTool::drawTrack(Song::Track *track, int index, double timeInSong, float
 }
 
 void SongTool::drawSong(Song *song, double timeInSong) {
-  // TODO: visualize tracks and sequences on grid
   auto trackIndex = 0;
   lv.graphics.push();
   for (auto &track : song->tracks) {
@@ -170,7 +171,6 @@ void SongTool::drawSong(Song *song, double timeInSong) {
     lv.graphics.translate(0, gridCellSize);
   }
   lv.graphics.pop();
-  // TODO: 'add track' region in grid
 }
 
 double SongTool::stepsToBars(double steps) {
@@ -252,6 +252,13 @@ void SongTool::drawOverlay() {
   lv.graphics.setLineWidth(0.1f);
 
   drawGrid(viewScale, viewOffset);
+
+  // highlight selected track if applicable
+  if (soundTool.selectedTrackIndex >= 0) {
+    lv.graphics.setColor({ 0.4f, 0.4f, 0.4f, 1.0f });
+    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, viewPosition.x,
+        gridCellSize * soundTool.selectedTrackIndex, viewWidth, gridCellSize);
+  }
 
   // draw global song playhead under tracks
   if (soundTool.isPlaying) {

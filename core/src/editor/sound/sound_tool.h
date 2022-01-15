@@ -22,6 +22,7 @@ public:
   void drawOverlay();
 
   void setTrackIndex(int trackIndex);
+  void setPatternId(std::string patternId);
   bool hasSong();
 
   void sendUIEvent();
@@ -53,6 +54,7 @@ private:
 
   std::unique_ptr<Song> song;
   int selectedTrackIndex = -1;
+  std::string selectedPatternId;
   void useSelectedActorMusicComponent();
   MusicComponent *maybeGetSelectedActorMusicComponent();
   void updateSelectedComponent(std::string commandDescription);
@@ -66,10 +68,15 @@ private:
   std::vector<double> trackLoopLengths;
 
   Song::Track *getSelectedTrack();
+  Pattern *getSelectedPattern();
 };
 
 inline void SoundTool::setTrackIndex(int trackIndex) {
   selectedTrackIndex = trackIndex;
+}
+
+inline void SoundTool::setPatternId(std::string patternId) {
+  selectedPatternId = patternId;
 }
 
 inline bool SoundTool::hasSong() {
@@ -81,4 +88,12 @@ inline Song::Track *SoundTool::getSelectedTrack() {
     return song->tracks[selectedTrackIndex].get();
   }
   return nullptr;
+}
+
+inline Pattern *SoundTool::getSelectedPattern() {
+  Pattern *result = nullptr;
+  if (hasSong() && selectedPatternId != "") {
+    return &song->patterns[selectedPatternId];
+  }
+  return result;
 }
