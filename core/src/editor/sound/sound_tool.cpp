@@ -12,6 +12,8 @@ SoundTool::SoundTool(Editor &editor_)
 void SoundTool::resetState() {
   song = nullptr;
   selectedTrackIndex = -1;
+  selectedPatternId = "";
+  selectedSequenceStartTime = 0;
   songTool.resetState();
   trackTool.resetState();
   trackLoopLengths.clear();
@@ -63,6 +65,7 @@ void SoundTool::validateSelection() {
     }
   } else {
     selectedPatternId = "";
+    selectedSequenceStartTime = 0;
     selectedTrackIndex = -1;
   }
   if (mode == Mode::Track && selectedTrackIndex < 0) {
@@ -79,7 +82,7 @@ void SoundTool::addPattern(double steps, int trackIndex) {
     auto emptyPattern = Song::makeEmptyPattern();
     track->sequence.emplace(steps, emptyPattern->patternId);
     song->patterns.emplace(emptyPattern->patternId, *emptyPattern);
-    setPatternId(emptyPattern->patternId);
+    setPatternId(emptyPattern->patternId, steps);
     updateSelectedComponent("add pattern");
   }
 }
@@ -95,9 +98,24 @@ void SoundTool::togglePlay() {
       trackLoopLengths.clear();
       songLoopLength = 0;
       auto trackIndex = 0;
+      double songStartTime = 0, songEndTime = 0;
+      if (selectedPatternId != "") {
+        // if editing a specific pattern in a sequence, only loop this part of the sequence
+        if (auto track = getSelectedTrack(); track) {
+          auto itr = track->sequence.find(selectedSequenceStartTime);
+          if (itr != track->sequence.end()) {
+            songStartTime = selectedSequenceStartTime;
+            auto next = std::next(itr);
+            if (next != track->sequence.end()) {
+              // go until next pattern, or end of song
+              songEndTime = next->first;
+            }
+          }
+        }
+      }
       for (auto &track : song->tracks) {
-        auto pattern = song->flattenSequence(
-            trackIndex, 0, 0, scene.getClock()); // TODO: set bounds if we've selected a range
+        auto pattern
+            = song->flattenSequence(trackIndex, songStartTime, songEndTime, scene.getClock());
         auto trackLoopLength = pattern->getLoopLength(scene.getClock());
         scene.getSound().play(scene.getClock().clockId, std::move(pattern), *track->instrument);
         trackLoopLengths.push_back(trackLoopLength);
@@ -180,10 +198,10 @@ struct SoundToolActionReceiver {
     } else if (action == "selectTrack") {
       auto trackIndex = int(params.doubleValue());
       if (trackIndex >= 0 && trackIndex < int(soundTool.song->tracks.size())) {
-        soundTool.setPatternId("");
+        soundTool.setPatternId("", 0);
         soundTool.setTrackIndex(trackIndex);
       } else {
-        soundTool.setPatternId("");
+        soundTool.setPatternId("", 0);
         soundTool.setTrackIndex(-1);
       }
       soundTool.validateSelection();
@@ -198,7 +216,7 @@ struct SoundToolActionReceiver {
         if (index < int(tracks.size())) {
           tracks.erase(tracks.begin() + index);
         }
-        soundTool.setPatternId("");
+        soundTool.setPatternId("", 0);
         soundTool.validateSelection();
         soundTool.updateSelectedComponent("delete track");
       }

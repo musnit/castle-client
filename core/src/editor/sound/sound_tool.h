@@ -22,7 +22,7 @@ public:
   void drawOverlay();
 
   void setTrackIndex(int trackIndex);
-  void setPatternId(std::string patternId);
+  void setPatternId(std::string patternId, double sequenceStartTime);
   bool hasSong();
 
   void sendUIEvent();
@@ -55,6 +55,7 @@ private:
   std::unique_ptr<Song> song;
   int selectedTrackIndex = -1;
   std::string selectedPatternId;
+  double selectedSequenceStartTime = 0;
   void useSelectedActorMusicComponent();
   MusicComponent *maybeGetSelectedActorMusicComponent();
   void updateSelectedComponent(std::string commandDescription);
@@ -77,8 +78,9 @@ inline void SoundTool::setTrackIndex(int trackIndex) {
   selectedTrackIndex = trackIndex;
 }
 
-inline void SoundTool::setPatternId(std::string patternId) {
+inline void SoundTool::setPatternId(std::string patternId, double sequenceStartTime) {
   selectedPatternId = patternId;
+  selectedSequenceStartTime = sequenceStartTime;
 }
 
 inline bool SoundTool::hasSong() {

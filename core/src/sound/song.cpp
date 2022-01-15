@@ -91,7 +91,15 @@ std::unique_ptr<Pattern> Song::flattenSequence(
   // lower_bound : Returns an iterator pointing to the first element that is not less than key.
   auto &track = *tracks[trackIndex];
   auto current = track.sequence.lower_bound(startTime);
-  double timePassed = 0;
+  double timeInOutput = 0;
+  double timeInTrack = startTime;
+
+  if ((current == track.sequence.end() || current->first != startTime)
+      && current != track.sequence.begin()) {
+    // no pattern starts exactly at the requested time, but we may be partway through the previous
+    current = std::prev(current);
+  }
+
   while (current != track.sequence.end()) {
     auto sequenceElemStartTime = current->first;
     auto patternId = current->second;
@@ -99,8 +107,14 @@ std::unique_ptr<Pattern> Song::flattenSequence(
     auto patternLoopLength = pattern.getLoopLength(clock);
     auto next = std::next(current);
 
-    if (timePassed == 0) {
-      timePassed = sequenceElemStartTime - startTime;
+    if (timeInOutput == 0) {
+      timeInOutput = sequenceElemStartTime - startTime;
+      timeInTrack = sequenceElemStartTime;
+      while (timeInTrack < startTime) {
+        // TODO: possibly start partway through a pattern
+        timeInOutput += patternLoopLength;
+        timeInTrack += patternLoopLength;
+      }
     }
 
     // figure out how long this pattern loops for
@@ -110,29 +124,37 @@ std::unique_ptr<Pattern> Song::flattenSequence(
       sequenceElemEndTime = next->first;
     } else if (sequenceElemEndTime <= startTime) {
       // we're the last pattern, no end time specified, so play once and end
-      sequenceElemEndTime = timePassed + patternLoopLength;
+      sequenceElemEndTime = timeInTrack + patternLoopLength;
+      // TODO: if the entire song is longer (from another track), play until all tracks end
     }
 
-    while (timePassed < sequenceElemEndTime) {
+    while (timeInTrack < sequenceElemEndTime) {
       bool interrupted = false;
       for (auto &[step, notes] : pattern) {
-        if (timePassed + step >= sequenceElemEndTime) {
+        if (timeInTrack + step >= sequenceElemEndTime) {
           interrupted = true;
           break;
         } else {
-          for (auto &note : notes) {
-            result->addNote(timePassed + step, note.key);
+          if (timeInOutput + step >= 0) {
+            for (auto &note : notes) {
+              result->addNote(timeInOutput + step, note.key);
+            }
           }
         }
       }
       if (interrupted) {
-        timePassed = sequenceElemEndTime;
+        timeInOutput += (sequenceElemEndTime - timeInTrack);
+        timeInTrack = sequenceElemEndTime;
       } else {
-        timePassed += patternLoopLength;
+        timeInTrack += patternLoopLength;
+        timeInOutput += patternLoopLength;
       }
     }
 
     current++;
+    if (endTime != 0 && timeInTrack >= endTime) {
+      break;
+    }
   }
   return result;
 }

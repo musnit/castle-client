@@ -45,15 +45,18 @@ void SongTool::update(double dt) {
 
       if (touch.released) {
         // touch track to select track
-        if (track >= 0 && soundTool.hasSong() && track < int(soundTool.song->tracks.size())) {
+        if (track >= 0 && bar >= 0 && soundTool.hasSong()
+            && track < int(soundTool.song->tracks.size())) {
           std::string patternId;
+          double patternStartTime = 0;
           if (auto &selectedTrack = soundTool.song->tracks[track]; selectedTrack) {
             for (auto &[startTime, patternId_] : selectedTrack->sequence) {
-              auto &pattern = soundTool.song->patterns[patternId];
+              auto &pattern = soundTool.song->patterns[patternId_];
               auto startTimeBars = stepsToBars(startTime);
               auto patternWidth = stepsToBars(pattern.getLoopLength(clock));
               if (bar >= startTimeBars && bar < startTimeBars + patternWidth) {
                 patternId = patternId_;
+                patternStartTime = startTime;
                 break;
               }
             }
@@ -69,9 +72,14 @@ void SongTool::update(double dt) {
             soundTool.setMode(SoundTool::Mode::Track);
           } else {
             // select existing pattern and track
-            soundTool.setPatternId(patternId);
+            soundTool.setPatternId(patternId, patternStartTime);
             soundTool.setTrackIndex(track);
           }
+          soundTool.sendUIEvent();
+        } else if (bar < 0 && track < int(soundTool.song->tracks.size())) {
+          // just select track
+          soundTool.setPatternId("", 0);
+          soundTool.setTrackIndex(track);
           soundTool.sendUIEvent();
         } else if (bar < 0 && track == int(soundTool.song->tracks.size())) {
           // touched the N+1th track axis, add new track and pattern
@@ -80,11 +88,11 @@ void SongTool::update(double dt) {
           defaultTrack->sequence.emplace(0, emptyPattern->patternId);
           soundTool.song->patterns.emplace(emptyPattern->patternId, *emptyPattern);
           soundTool.song->tracks.push_back(std::move(defaultTrack));
-          soundTool.setPatternId(emptyPattern->patternId);
+          soundTool.setPatternId(emptyPattern->patternId, 0);
           soundTool.setTrackIndex(soundTool.song->tracks.size() - 1);
           soundTool.updateSelectedComponent("add track");
         } else {
-          soundTool.setPatternId("");
+          soundTool.setPatternId("", 0);
           soundTool.setTrackIndex(-1);
           soundTool.sendUIEvent();
           // TODO:
