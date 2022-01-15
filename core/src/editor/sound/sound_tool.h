@@ -68,7 +68,6 @@ private:
   bool viewFollowsPlayhead = false;
   double playStartTime = 0;
   double songLoopLength = 0;
-  std::vector<double> trackLoopLengths;
 
   Song::Track *getSelectedTrack();
   Pattern *getSelectedPattern();

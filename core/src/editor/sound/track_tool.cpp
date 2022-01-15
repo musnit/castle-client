@@ -209,12 +209,16 @@ void TrackTool::drawOverlay() {
   float playheadX = 0.0f;
   if (soundTool.isPlaying) {
     auto &scene = getScene();
-    auto steps = scene.getClock().getTime() - soundTool.playStartTime;
-    auto playLoopLength = soundTool.trackLoopLengths[soundTool.selectedTrackIndex];
-    while (playLoopLength > 0 && steps > playLoopLength) {
-      steps -= playLoopLength;
+    auto timePlaying = scene.getClock().getTime() - soundTool.playStartTime;
+    while (soundTool.songLoopLength > 0 && timePlaying > soundTool.songLoopLength) {
+      timePlaying -= soundTool.songLoopLength;
     }
-    playheadX = steps * gridCellSize;
+    auto loopLength = soundTool.getSelectedPattern()->getLoopLength(getScene().getClock());
+    auto timeInSeq = timePlaying; // because we started at this seq
+    while (loopLength > 0 && timeInSeq > loopLength) {
+      timeInSeq -= loopLength;
+    }
+    playheadX = timeInSeq * gridCellSize;
     if (soundTool.viewFollowsPlayhead) {
       auto halfWidth = 0.33f * viewWidth;
       viewPosition.x = std::max(halfWidth, playheadX) - halfWidth;

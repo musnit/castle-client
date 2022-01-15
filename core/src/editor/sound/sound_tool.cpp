@@ -16,7 +16,6 @@ void SoundTool::resetState() {
   selectedSequenceStartTime = 0;
   songTool.resetState();
   trackTool.resetState();
-  trackLoopLengths.clear();
   songLoopLength = 0;
 }
 
@@ -95,7 +94,6 @@ void SoundTool::togglePlay() {
       scene.getSound().stopAll();
     } else {
       // schedule current song to play now
-      trackLoopLengths.clear();
       songLoopLength = 0;
       auto trackIndex = 0;
       double songStartTime = 0, songEndTime = 0;
@@ -118,7 +116,6 @@ void SoundTool::togglePlay() {
             = song->flattenSequence(trackIndex, songStartTime, songEndTime, scene.getClock());
         auto trackLoopLength = pattern->getLoopLength(scene.getClock());
         scene.getSound().play(scene.getClock().clockId, std::move(pattern), *track->instrument);
-        trackLoopLengths.push_back(trackLoopLength);
         if (trackLoopLength > songLoopLength) {
           songLoopLength = trackLoopLength;
         }

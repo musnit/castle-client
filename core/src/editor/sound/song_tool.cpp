@@ -156,7 +156,7 @@ void SongTool::drawSequence(std::map<double, std::string> &sequence, float unit)
   }
 }
 
-void SongTool::drawTrack(Song::Track *track, int index, double timeInSong, float unit) {
+void SongTool::drawTrack(Song::Track *track, int index, double timePlaying, float unit) {
   // draw sequence
   // TODO: don't need to draw outside viewport
   drawSequence(track->sequence, unit);
@@ -164,19 +164,20 @@ void SongTool::drawTrack(Song::Track *track, int index, double timeInSong, float
   // draw track-specific playhead
   if (soundTool.isPlaying) {
     // TODO: starting partway thru a pattern
-    // TODO: compute track start times once, not every frame
-    auto startSeq = track->sequence.lower_bound(soundTool.selectedSequenceStartTime);
-    if ((startSeq == track->sequence.end()
-            || startSeq->first != soundTool.selectedSequenceStartTime)
+    auto timeInSong = soundTool.selectedSequenceStartTime + timePlaying;
+    auto startSeq = track->sequence.lower_bound(timeInSong);
+    if ((startSeq == track->sequence.end() || startSeq->first != timeInSong)
         && startSeq != track->sequence.begin()) {
       startSeq = std::prev(startSeq);
     }
     if (startSeq != track->sequence.end()) {
-      auto loopLength = soundTool.trackLoopLengths[index];
-      while (loopLength > 0 && timeInSong > loopLength) {
-        timeInSong -= loopLength;
+      auto loopLength
+          = soundTool.song->patterns[startSeq->second].getLoopLength(getScene().getClock());
+      auto timeInSeq = timeInSong - startSeq->first;
+      while (loopLength > 0 && timeInSeq > loopLength) {
+        timeInSeq -= loopLength;
       }
-      auto bars = stepsToBars(timeInSong);
+      auto bars = stepsToBars(timeInSeq);
       float playheadX = (bars + stepsToBars(startSeq->first)) * unit;
       lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
       lv.graphics.rectangle(
@@ -185,11 +186,11 @@ void SongTool::drawTrack(Song::Track *track, int index, double timeInSong, float
   }
 }
 
-void SongTool::drawSong(Song *song, double timeInSong) {
+void SongTool::drawSong(Song *song, double timePlaying) {
   auto trackIndex = 0;
   lv.graphics.push();
   for (auto &track : song->tracks) {
-    drawTrack(track.get(), trackIndex, timeInSong, gridCellSize);
+    drawTrack(track.get(), trackIndex, timePlaying, gridCellSize);
     trackIndex++;
     lv.graphics.translate(0, gridCellSize);
   }
@@ -247,15 +248,14 @@ void SongTool::drawOverlay() {
   viewOffset.y = 0.1f * (viewWidth * viewHeightToWidthRatio);
 
   float playheadX = 0.0f;
-  double timeInSong = 0;
+  double timePlaying = 0;
   if (soundTool.isPlaying) {
     auto &scene = getScene();
-    auto steps = scene.getClock().getTime() - soundTool.playStartTime;
-    while (soundTool.songLoopLength > 0 && steps > soundTool.songLoopLength) {
-      steps -= soundTool.songLoopLength;
+    timePlaying = scene.getClock().getTime() - soundTool.playStartTime;
+    while (soundTool.songLoopLength > 0 && timePlaying > soundTool.songLoopLength) {
+      timePlaying -= soundTool.songLoopLength;
     }
-    auto bars = stepsToBars(steps);
-    timeInSong = steps;
+    auto bars = stepsToBars(timePlaying);
     playheadX = bars * gridCellSize;
     playheadX += stepsToBars(soundTool.selectedSequenceStartTime) * gridCellSize;
     if (soundTool.viewFollowsPlayhead) {
@@ -293,7 +293,7 @@ void SongTool::drawOverlay() {
   }
 
   if (soundTool.hasSong()) {
-    drawSong(soundTool.song.get(), timeInSong);
+    drawSong(soundTool.song.get(), timePlaying);
   }
 
   drawTrackAxis(soundTool.song.get());
