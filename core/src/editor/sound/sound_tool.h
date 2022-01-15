@@ -60,6 +60,8 @@ private:
   void updateSelectedComponent(std::string commandDescription);
   void validateSelection();
 
+  void addPattern(double steps, int trackIndex);
+
   // for playback
   bool isPlaying = false;
   bool viewFollowsPlayhead = false;

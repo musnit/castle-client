@@ -50,25 +50,31 @@ void SongTool::update(double dt) {
           if (auto &selectedTrack = soundTool.song->tracks[track]; selectedTrack) {
             for (auto &[startTime, patternId_] : selectedTrack->sequence) {
               auto &pattern = soundTool.song->patterns[patternId];
-              auto startTimeBars = stepsToBars(startTime) * gridCellSize;
-              auto patternWidth = stepsToBars(pattern.getLoopLength(clock)) * gridCellSize;
+              auto startTimeBars = stepsToBars(startTime);
+              auto patternWidth = stepsToBars(pattern.getLoopLength(clock));
               if (bar >= startTimeBars && bar < startTimeBars + patternWidth) {
                 patternId = patternId_;
                 break;
               }
             }
           }
-          if (soundTool.selectedTrackIndex == track && soundTool.selectedPatternId == patternId) {
-            // if selected same pattern and track, edit pattern
+          if (patternId == "") {
+            // selected a valid track but no pattern, so add a new pattern here
+            soundTool.setTrackIndex(track);
+            auto steps = std::floor(bar) * double(clock.getStepsPerBeat() * clock.getBeatsPerBar());
+            soundTool.addPattern(steps, track);
+          } else if (soundTool.selectedTrackIndex == track
+              && soundTool.selectedPatternId == patternId) {
+            // selected same pattern and track that was already selected, edit pattern
             soundTool.setMode(SoundTool::Mode::Track);
           } else {
-            // select pattern and track
+            // select existing pattern and track
             soundTool.setPatternId(patternId);
             soundTool.setTrackIndex(track);
           }
           soundTool.sendUIEvent();
         } else if (bar < 0 && track == int(soundTool.song->tracks.size())) {
-          // touched the N+1th track axis, add new
+          // touched the N+1th track axis, add new track and pattern
           auto emptyPattern = Song::makeEmptyPattern();
           auto defaultTrack = Song::makeDefaultTrack();
           defaultTrack->sequence.emplace(0, emptyPattern->patternId);
@@ -82,7 +88,6 @@ void SongTool::update(double dt) {
           soundTool.setTrackIndex(-1);
           soundTool.sendUIEvent();
           // TODO:
-          // touch empty part of existing track to add pattern
           // drag patterns to other cells to clone
         }
       }

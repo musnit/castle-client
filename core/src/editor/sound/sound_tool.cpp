@@ -71,6 +71,19 @@ void SoundTool::validateSelection() {
   }
 }
 
+void SoundTool::addPattern(double steps, int trackIndex) {
+  if (!hasSong()) {
+    return;
+  }
+  if (auto &track = song->tracks[trackIndex]; track) {
+    auto emptyPattern = Song::makeEmptyPattern();
+    track->sequence.emplace(steps, emptyPattern->patternId);
+    song->patterns.emplace(emptyPattern->patternId, *emptyPattern);
+    setPatternId(emptyPattern->patternId);
+    updateSelectedComponent("add pattern");
+  }
+}
+
 void SoundTool::togglePlay() {
   if (hasSong()) {
     auto &scene = editor.getScene();
