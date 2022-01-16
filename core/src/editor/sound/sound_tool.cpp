@@ -11,9 +11,7 @@ SoundTool::SoundTool(Editor &editor_)
 
 void SoundTool::resetState() {
   song = nullptr;
-  selectedTrackIndex = -1;
-  selectedPatternId = "";
-  selectedSequenceStartTime = 0;
+  clearSelection();
   songTool.resetState();
   trackTool.resetState();
   lastHash = "";
@@ -22,12 +20,12 @@ void SoundTool::resetState() {
 
 void SoundTool::onSetActive() {
   useSelectedActorMusicComponent();
-  setMode(Mode::Song);
+  setMode(Mode::Song, true);
   sendUIEvent();
 }
 
-void SoundTool::setMode(SoundTool::Mode mode_) {
-  if (mode != mode_) {
+void SoundTool::setMode(SoundTool::Mode mode_, bool init) {
+  if (mode != mode_ || init) {
     mode = mode_;
     switch (mode) {
     case Mode::Song:
@@ -64,15 +62,19 @@ MusicComponent *SoundTool::maybeGetSelectedActorMusicComponent() {
   return musicBehavior.maybeGetComponent(actorId);
 }
 
+void SoundTool::clearSelection() {
+  selectedPatternId = "";
+  selectedSequenceStartTime = 0;
+  selectedTrackIndex = -1;
+}
+
 void SoundTool::validateSelection() {
   if (hasSong()) {
     if (selectedTrackIndex >= int(song->tracks.size())) {
       selectedTrackIndex = song->tracks.size() - 1;
     }
   } else {
-    selectedPatternId = "";
-    selectedSequenceStartTime = 0;
-    selectedTrackIndex = -1;
+    clearSelection();
   }
   if (mode == Mode::Track && selectedTrackIndex < 0) {
     // no selected track, not allowed to be in track mode
@@ -230,6 +232,7 @@ struct SoundToolActionReceiver {
 
 struct SoundToolEvent {
   PROP(std::string, mode);
+  PROP(std::string, subtool);
   PROP(bool, isPlaying) = false;
   PROP(int, selectedTrackIndex) = -1;
   PROP(bool, viewFollowsPlayhead) = false;
@@ -237,18 +240,54 @@ struct SoundToolEvent {
 
 void SoundTool::sendUIEvent() {
   std::string modeStr;
+  std::string subtoolStr;
   switch (mode) {
   case Mode::Song:
     modeStr = "song";
+    switch (songTool.selectedSubtool) {
+    case SongTool::Subtool::Select:
+      subtoolStr = "select";
+      break;
+    case SongTool::Subtool::Erase:
+      subtoolStr = "erase";
+      break;
+    }
     break;
   case Mode::Track:
     modeStr = "track";
     break;
   }
 
-  SoundToolEvent e { modeStr, isPlaying, selectedTrackIndex, viewFollowsPlayhead };
+  SoundToolEvent e { modeStr, subtoolStr, isPlaying, selectedTrackIndex, viewFollowsPlayhead };
   editor.getBridge().sendEvent("EDITOR_SOUND_TOOL", e);
 }
+
+struct SoundToolSetSubtoolReceiver {
+  inline static const BridgeRegistration<SoundToolSetSubtoolReceiver> registration {
+    "EDITOR_SOUND_TOOL_SET_SUBTOOL"
+  };
+
+  struct Params {
+    PROP(std::string, mode);
+    PROP(std::string, subtool);
+  } params;
+
+  void receive(Engine &engine) {
+    auto editor = engine.maybeGetEditor();
+    if (!editor)
+      return;
+
+    if (params.mode() == "song") {
+      if (params.subtool() == "select") {
+        editor->soundTool.songTool.selectedSubtool = SongTool::Subtool::Select;
+      } else if (params.subtool() == "erase") {
+        editor->soundTool.songTool.selectedSubtool = SongTool::Subtool::Erase;
+      }
+      editor->soundTool.clearSelection();
+      editor->soundTool.sendUIEvent();
+    }
+  }
+};
 
 void SoundTool::updateSelectedComponent(std::string commandDescription) {
   auto actorId = editor.getSelection().firstSelectedActorId();

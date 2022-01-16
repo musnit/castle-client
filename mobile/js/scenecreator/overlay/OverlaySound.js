@@ -45,9 +45,36 @@ const styles = StyleSheet.create({
   },
 });
 
+const makeButtonStyles = (value, name) => {
+  return value === name ? [styles.button, { backgroundColor: '#000' }] : [styles.button];
+};
+
+const makeIconColor = (value, name) => {
+  return value === name ? '#fff' : '#000';
+};
+
+const SUBTOOL_GROUPS = {
+  song: [
+    {
+      name: 'select',
+      icon: 'grab',
+    },
+    {
+      name: 'erase',
+      icon: 'erase',
+    },
+  ],
+  track: [],
+};
+
 export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
-  const { mode, isPlaying, viewFollowsPlayhead, selectedTrackIndex } =
-    useCoreState('EDITOR_SOUND_TOOL') || {};
+  const {
+    mode,
+    subtool: selectedSubtool,
+    isPlaying,
+    viewFollowsPlayhead,
+    selectedTrackIndex,
+  } = useCoreState('EDITOR_SOUND_TOOL') || {};
   React.useEffect(() => {
     if (selectedTrackIndex >= 0 && activeSheet.sound !== 'soundEditInstrument') {
       setActiveSheet({ sound: 'soundEditInstrument' });
@@ -66,6 +93,14 @@ export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
     }
   }, [mode]);
 
+  const onChangeSubtool = React.useCallback(
+    (subtool) => {
+      sendAsync('EDITOR_SOUND_TOOL_SET_SUBTOOL', { mode, subtool });
+    },
+    [mode]
+  );
+  const subtools = SUBTOOL_GROUPS[mode];
+
   return (
     <View style={styles.container} pointerEvents="box-none">
       <View style={styles.leftContainer}>
@@ -73,6 +108,19 @@ export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
           <Pressable onPress={onPressClose}>
             <CastleIcon name="close" size={22} color="#000" />
           </Pressable>
+        </View>
+        <View style={styles.toolbar}>
+          {subtools.map((tool, ii) => {
+            const { name, icon } = tool;
+            return (
+              <Pressable
+                key={`toolgroup-${mode}-${ii}`}
+                style={makeButtonStyles(selectedSubtool, name)}
+                onPress={() => onChangeSubtool(name)}>
+                <CastleIcon name={icon} size={22} color={makeIconColor(selectedSubtool, name)} />
+              </Pressable>
+            );
+          })}
         </View>
       </View>
       <View style={styles.rightContainer}>

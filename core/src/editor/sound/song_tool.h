@@ -32,6 +32,12 @@ public:
 
   void updateViewConstraints();
 
+  enum class Subtool {
+    Select,
+    Erase,
+  };
+  Subtool selectedSubtool = Subtool::Select;
+
 private:
   Lv &lv { Lv::getInstance() };
   SoundTool &soundTool;

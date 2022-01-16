@@ -23,6 +23,7 @@ public:
 
   void setTrackIndex(int trackIndex);
   void setPatternId(std::string patternId, double sequenceStartTime);
+  void clearSelection();
   bool hasSong();
 
   void sendUIEvent();
@@ -40,7 +41,7 @@ public:
   inline Mode getMode() {
     return mode;
   }
-  void setMode(Mode mode);
+  void setMode(Mode mode, bool init = false);
 
 private:
   friend class TrackTool;
