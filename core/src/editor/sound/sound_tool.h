@@ -56,6 +56,7 @@ private:
   int selectedTrackIndex = -1;
   std::string selectedPatternId;
   double selectedSequenceStartTime = 0;
+  std::string lastHash;
   void useSelectedActorMusicComponent();
   MusicComponent *maybeGetSelectedActorMusicComponent();
   void updateSelectedComponent(std::string commandDescription);

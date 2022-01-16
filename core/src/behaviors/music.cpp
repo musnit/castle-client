@@ -10,3 +10,12 @@ void MusicBehavior::handleEnableComponent(ActorId actorId, MusicComponent &compo
     song.tracks.push_back(std::move(defaultTrack));
   }
 }
+
+std::string MusicBehavior::hash(const std::string &json) {
+  auto hash = std::hash<std::string> {}(json);
+
+  char str[256];
+  snprintf(str, sizeof str, "%zu", hash);
+
+  return std::string(str);
+}

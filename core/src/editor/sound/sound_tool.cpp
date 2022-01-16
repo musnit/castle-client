@@ -16,6 +16,7 @@ void SoundTool::resetState() {
   selectedSequenceStartTime = 0;
   songTool.resetState();
   trackTool.resetState();
+  lastHash = "";
   songLoopLength = 0;
 }
 
@@ -40,10 +41,16 @@ void SoundTool::setMode(SoundTool::Mode mode_) {
 }
 
 void SoundTool::useSelectedActorMusicComponent() {
-  song = nullptr;
   auto component = maybeGetSelectedActorMusicComponent();
   if (component) {
-    song = std::make_unique<Song>(component->props.song());
+    auto hash = MusicBehavior::hash(component->props.song().serialize());
+    if (hash != lastHash) {
+      song = std::make_unique<Song>(component->props.song());
+      lastHash = hash;
+    }
+  } else {
+    song = nullptr;
+    lastHash = "";
   }
 }
 
@@ -249,6 +256,7 @@ void SoundTool::updateSelectedComponent(std::string commandDescription) {
 
   auto newSongJson = song->serialize();
   auto oldSongJson = component->props.song().serialize();
+  lastHash = MusicBehavior::hash(newSongJson);
 
   static const auto setMusicProps
       = [](Editor &editor, ActorId actorId, const std::string &songJson) {
@@ -261,6 +269,7 @@ void SoundTool::updateSelectedComponent(std::string commandDescription) {
           });
           editor.updateBlueprint(actorId, {});
           editor.setSelectedComponentStateDirty(MusicBehavior::behaviorId);
+          scene.getLibrary().ensureGhostActorsExist();
         };
 
   Commands::Params commandParams;
@@ -268,6 +277,7 @@ void SoundTool::updateSelectedComponent(std::string commandDescription) {
       std::move(commandDescription), commandParams,
       [this, actorId, newSongJson](Editor &editor, bool) {
         setMusicProps(editor, actorId, newSongJson);
+        useSelectedActorMusicComponent();
         switch (mode) {
         case Mode::Song:
           songTool.updateViewConstraints();
@@ -280,6 +290,7 @@ void SoundTool::updateSelectedComponent(std::string commandDescription) {
       },
       [this, actorId, oldSongJson](Editor &editor, bool) {
         setMusicProps(editor, actorId, oldSongJson);
+        useSelectedActorMusicComponent();
         switch (mode) {
         case Mode::Song:
           songTool.updateViewConstraints();

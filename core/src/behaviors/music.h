@@ -21,5 +21,6 @@ public:
 
   using BaseBehavior::BaseBehavior;
 
+  static std::string hash(const std::string &songJson);
   void handleEnableComponent(ActorId actorId, MusicComponent &component);
 };
