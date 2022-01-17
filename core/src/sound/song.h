@@ -34,6 +34,9 @@ public:
   std::unique_ptr<Pattern> flattenSequence(
       int trackIndex, double startTime, double endTime, Clock &clock);
 
+  // compute total song length (max among individual track lengths)
+  double getLength(Clock &clock);
+
   static std::unique_ptr<Pattern> makeEmptyPattern();
   static std::unique_ptr<Track> makeDefaultTrack();
 };

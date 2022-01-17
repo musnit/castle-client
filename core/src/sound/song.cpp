@@ -84,6 +84,23 @@ void Song::read(Reader &reader) {
   });
 }
 
+double Song::getLength(Clock &clock) {
+  double maxLength = 0;
+  for (auto &track : tracks) {
+    double trackLength = 0;
+    if (track->sequence.size() > 0) {
+      auto last = track->sequence.rbegin();
+      auto lastStartTime = last->first;
+      auto lastPatternLength = patterns[last->second].getLoopLength(clock);
+      trackLength = lastStartTime + lastPatternLength;
+    }
+    if (trackLength > maxLength) {
+      maxLength = trackLength;
+    }
+  }
+  return maxLength;
+}
+
 std::unique_ptr<Pattern> Song::flattenSequence(
     int trackIndex, double startTime, double endTime, Clock &clock) {
   auto result = Song::makeEmptyPattern();
@@ -127,7 +144,6 @@ std::unique_ptr<Pattern> Song::flattenSequence(
       }
     } else if (sequenceElemEndTime <= startTime) {
       // we're the last pattern, no end time specified, so play once and end
-      // TODO: this should be max(all tracks length) including "play once and end" on each track
       sequenceElemEndTime = timeInTrack + patternLoopLength;
     }
 

@@ -105,7 +105,7 @@ void SoundTool::togglePlay() {
       // schedule current song to play now
       songLoopLength = 0;
       auto trackIndex = 0;
-      double songStartTime = 0, songEndTime = 0;
+      double songStartTime = 0, songEndTime = song->getLength(scene.getClock());
       if (selectedPatternId != "") {
         // if editing a specific pattern in a sequence, only loop this part of the sequence
         if (auto track = getSelectedTrack(); track) {
