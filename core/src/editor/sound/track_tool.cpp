@@ -65,11 +65,10 @@ void TrackTool::update(double dt) {
           bool oldHasNote = pattern->hasNote(step, key);
           if (oldHasNote) {
             pattern->removeNote(step, key);
-            soundTool.updateSelectedComponent("remove notes");
           } else {
             pattern->addNote(step, key);
-            soundTool.updateSelectedComponent("add notes");
           }
+          soundTool.updateSelectedComponent("change notes");
         }
         hasTouch = false;
       } else {

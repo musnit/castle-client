@@ -108,9 +108,10 @@ std::unique_ptr<Pattern> Song::flattenSequence(
     auto next = std::next(current);
 
     if (timeInOutput == 0) {
+      // fast-forward to the very first time this track will make sound
       timeInOutput = sequenceElemStartTime - startTime;
       timeInTrack = sequenceElemStartTime;
-      while (timeInTrack < startTime) {
+      while (timeInTrack < startTime - patternLoopLength) {
         // TODO: possibly start partway through a pattern
         timeInOutput += patternLoopLength;
         timeInTrack += patternLoopLength;
@@ -120,14 +121,22 @@ std::unique_ptr<Pattern> Song::flattenSequence(
     // figure out how long this pattern loops for
     double sequenceElemEndTime = endTime;
     if (next != track.sequence.end()) {
-      // until next pattern
-      sequenceElemEndTime = next->first;
+      // until next pattern or end of the range
+      if (next->first < endTime) {
+        sequenceElemEndTime = next->first;
+      }
     } else if (sequenceElemEndTime <= startTime) {
       // we're the last pattern, no end time specified, so play once and end
+      // TODO: this should be max(all tracks length) including "play once and end" on each track
       sequenceElemEndTime = timeInTrack + patternLoopLength;
-      // TODO: if the entire song is longer (from another track), play until all tracks end
     }
 
+    // bail early if our nearest notes happen after the stream finished
+    if (endTime != 0 && timeInTrack >= endTime) {
+      break;
+    }
+
+    // loop the current pattern until this sequence elem is finished
     while (timeInTrack < sequenceElemEndTime) {
       bool interrupted = false;
       for (auto &[step, notes] : pattern) {
@@ -151,10 +160,10 @@ std::unique_ptr<Pattern> Song::flattenSequence(
       }
     }
 
-    current++;
     if (endTime != 0 && timeInTrack >= endTime) {
       break;
     }
+    current++; // move to next sequence elem
   }
   return result;
 }
