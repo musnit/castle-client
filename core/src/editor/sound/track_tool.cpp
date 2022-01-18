@@ -57,7 +57,8 @@ void TrackTool::update(double dt) {
 
       // grid x is step, grid y is key
       auto step = double(floor(transformedTouchPosition.x / gridCellSize));
-      auto key = floor(-transformedTouchPosition.y / gridCellSize) + 48; // set axis to midi C3
+      auto key
+          = floor(-transformedTouchPosition.y / gridCellSize) + 60; // set axis to midi middle C
       bool playNote = false;
 
       if (touch.released) {
@@ -157,14 +158,14 @@ void TrackTool::drawPattern(Pattern *pattern) {
   for (auto &[time, notes] : *pattern) {
     auto x = time * gridCellSize;
     for (auto &note : notes) {
-      auto y = ((note.key - 48) * -gridCellSize) - gridCellSize;
+      auto y = ((note.key - 60) * -gridCellSize) - gridCellSize;
       lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);
     }
   }
   if (hasTouch) {
     // draw temp note
     auto x = tempNote.time * gridCellSize;
-    auto y = ((tempNote.key - 48) * -gridCellSize) - gridCellSize;
+    auto y = ((tempNote.key - 60) * -gridCellSize) - gridCellSize;
     lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);
   }
 }
@@ -173,9 +174,9 @@ void TrackTool::drawNoteAxis() {
   // TODO: this should be dependent on the instrument we're using
   auto x = viewPosition.x - gridCellSize; // always on left edge of view
 
-  // midi 48 is y = 0, go four octaves above and below
+  // midi 60 is y = 0, go four octaves above and below
   for (auto note = 0; note < 96; note++) {
-    auto y = ((note - 48) * -gridCellSize) - gridCellSize;
+    auto y = ((note - 60) * -gridCellSize) - gridCellSize;
     auto scaleDegree = note % 12;
     auto isBlack = scaleDegree == 1 || scaleDegree == 3 || scaleDegree == 6 || scaleDegree == 8
         || scaleDegree == 10;

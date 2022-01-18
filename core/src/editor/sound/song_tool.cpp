@@ -197,7 +197,7 @@ void SongTool::drawSequence(std::map<double, std::string> &sequence, float unit)
     for (auto &[time, notes] : pattern) {
       auto x = startTimeBars + stepsToBars(time) * unit;
       for (auto &note : notes) {
-        auto y = ((note.key - 48) * -keyHeight) + centerY;
+        auto y = ((note.key - 60) * -keyHeight) + centerY;
         lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, noteWidth, keyHeight);
       }
     }

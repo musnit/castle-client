@@ -27,8 +27,8 @@ void Sampler::play(Sound &sound, Pattern::Note note) {
      params.playbackRate().eval<double>(ctx), Sample::minPlaybackRate, Sample::maxPlaybackRate); */
 
   auto basePlaybackRate = 1.0f;
-  auto keyFromMidiC3 = note.key - 48;
-  auto playbackRate = basePlaybackRate * pow(2.0f, keyFromMidiC3 / 12.0f);
+  auto keyFromMidiC4 = note.key - 60;
+  auto playbackRate = basePlaybackRate * pow(2.0f, keyFromMidiC4 / 12.0f);
 
   sound.play(sample, playbackRate);
 }
