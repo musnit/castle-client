@@ -93,7 +93,7 @@ double Song::getLength(Clock &clock) {
     if (track->sequence.size() > 0) {
       auto last = track->sequence.rbegin();
       auto lastStartTime = last->first;
-      auto lastPatternLength = patterns[last->second].getLoopLength(clock);
+      auto lastPatternLength = patterns[last->second.patternId()].getLoopLength(clock);
       trackLength = lastStartTime + lastPatternLength;
     }
     if (trackLength > maxLength) {
@@ -121,7 +121,7 @@ std::unique_ptr<Pattern> Song::flattenSequence(
 
   while (current != track.sequence.end()) {
     auto sequenceElemStartTime = current->first;
-    auto patternId = current->second;
+    auto patternId = current->second.patternId();
     auto &pattern = patterns[patternId];
     auto patternLoopLength = pattern.getLoopLength(clock);
     auto next = std::next(current);
@@ -138,6 +138,7 @@ std::unique_ptr<Pattern> Song::flattenSequence(
     }
 
     // figure out how long this pattern loops for
+    // TODO: option not to loop
     double sequenceElemEndTime = endTime;
     if (next != track.sequence.end()) {
       // until next pattern or end of the range

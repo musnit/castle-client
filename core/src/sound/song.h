@@ -23,8 +23,13 @@ public:
   struct Track {
     std::unique_ptr<Instrument> instrument;
 
-    // startTime -> patternId
-    std::map<double, std::string> sequence;
+    struct SequenceElem {
+      PROP(std::string, patternId);
+      PROP(bool, loop) = true;
+    };
+
+    // startTime -> SequenceElem
+    std::map<double, SequenceElem> sequence;
   };
   std::vector<std::unique_ptr<Track>> tracks;
 

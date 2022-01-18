@@ -51,12 +51,12 @@ void SongTool::update(double dt) {
       double patternStartTime = 0;
       if (selectedExistingTrack && bar >= 0) {
         if (auto &selectedTrack = soundTool.song->tracks[track]; selectedTrack) {
-          for (auto &[startTime, patternId_] : selectedTrack->sequence) {
-            auto &pattern = soundTool.song->patterns[patternId_];
+          for (auto &[startTime, sequenceElem] : selectedTrack->sequence) {
+            auto &pattern = soundTool.song->patterns[sequenceElem.patternId()];
             auto startTimeBars = stepsToBars(startTime);
             auto patternWidth = stepsToBars(pattern.getLoopLength(clock));
             if (bar >= startTimeBars && bar < startTimeBars + patternWidth) {
-              patternId = patternId_;
+              patternId = sequenceElem.patternId();
               patternStartTime = startTime;
               break;
             }
@@ -94,7 +94,8 @@ void SongTool::update(double dt) {
             // touched the N+1th track axis, add new track and pattern
             auto emptyPattern = Song::makeEmptyPattern();
             auto defaultTrack = Song::makeDefaultTrack();
-            defaultTrack->sequence.emplace(0, emptyPattern->patternId);
+            Song::Track::SequenceElem firstElem { emptyPattern->patternId, true };
+            defaultTrack->sequence.emplace(0, firstElem);
             soundTool.song->patterns.emplace(emptyPattern->patternId, *emptyPattern);
             soundTool.song->tracks.push_back(std::move(defaultTrack));
             soundTool.setPatternId(emptyPattern->patternId, 0);
@@ -144,12 +145,13 @@ void SongTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
   grid.draw(gridCellSize, gridSize, viewScale, viewPosition, viewOffset, gridDotRadius, false);
 };
 
-void SongTool::drawSequence(std::map<double, std::string> &sequence, float unit) {
+void SongTool::drawSequence(std::map<double, Song::Track::SequenceElem> &sequence, float unit) {
   auto &clock = getScene().getClock();
 
   auto current = sequence.begin();
   while (current != sequence.end()) {
-    auto &[startTime, patternId] = *current;
+    auto &[startTime, sequenceElem] = *current;
+    auto &patternId = sequenceElem.patternId();
     auto &pattern = soundTool.song->patterns[patternId];
     auto startTimeBars = stepsToBars(startTime) * unit;
 
@@ -219,8 +221,8 @@ void SongTool::drawTrack(Song::Track *track, int index, double timePlaying, floa
       startSeq = std::prev(startSeq);
     }
     if (startSeq != track->sequence.end()) {
-      auto loopLength
-          = soundTool.song->patterns[startSeq->second].getLoopLength(getScene().getClock());
+      auto loopLength = soundTool.song->patterns[startSeq->second.patternId()].getLoopLength(
+          getScene().getClock());
       auto timeInSeq = timeInSong - startSeq->first;
       while (loopLength > 0 && timeInSeq > loopLength) {
         timeInSeq -= loopLength;

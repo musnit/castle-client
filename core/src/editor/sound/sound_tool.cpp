@@ -99,7 +99,8 @@ void SoundTool::addPattern(double steps, int trackIndex) {
   }
   if (auto &track = song->tracks[trackIndex]; track) {
     auto emptyPattern = Song::makeEmptyPattern();
-    track->sequence.emplace(steps, emptyPattern->patternId);
+    Song::Track::SequenceElem firstElem { emptyPattern->patternId, true };
+    track->sequence.emplace(steps, firstElem);
     song->patterns.emplace(emptyPattern->patternId, *emptyPattern);
     setPatternId(emptyPattern->patternId, steps);
     updateSelectedComponent("add pattern");

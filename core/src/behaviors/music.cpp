@@ -5,7 +5,8 @@ void MusicBehavior::handleEnableComponent(ActorId actorId, MusicComponent &compo
   if (song.tracks.size() == 0) {
     auto emptyPattern = Song::makeEmptyPattern();
     auto defaultTrack = Song::makeDefaultTrack();
-    defaultTrack->sequence.emplace(0, emptyPattern->patternId);
+    Song::Track::SequenceElem firstElem { emptyPattern->patternId, true };
+    defaultTrack->sequence.emplace(0, firstElem);
     song.patterns.emplace(emptyPattern->patternId, *emptyPattern);
     song.tracks.push_back(std::move(defaultTrack));
   }

@@ -58,7 +58,7 @@ private:
   void drawGrid(float viewScale, love::Vector2 &viewOffset);
   void drawSong(Song *song, double timePlaying);
   void drawTrack(Song::Track *track, int index, double timePlaying, float unit);
-  void drawSequence(std::map<double, std::string> &sequence, float unit);
+  void drawSequence(std::map<double, Song::Track::SequenceElem> &sequence, float unit);
   void drawTrackAxis(Song *song);
   mutable love::Transform viewTransform;
   love::Vector2 viewPosition;
