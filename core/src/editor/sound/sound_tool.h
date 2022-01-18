@@ -70,6 +70,9 @@ private:
   bool viewFollowsPlayhead = false;
   double playStartTime = 0;
   double songLoopLength = 0;
+  double songTotalLength = 0;
+
+  void computeSongLength();
 
   Song::Track *getSelectedTrack();
   Pattern *getSelectedPattern();

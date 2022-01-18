@@ -147,7 +147,9 @@ void SongTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
 void SongTool::drawSequence(std::map<double, std::string> &sequence, float unit) {
   auto &clock = getScene().getClock();
 
-  for (auto &[startTime, patternId] : sequence) {
+  auto current = sequence.begin();
+  while (current != sequence.end()) {
+    auto &[startTime, patternId] = *current;
     auto &pattern = soundTool.song->patterns[patternId];
     auto startTimeBars = stepsToBars(startTime) * unit;
 
@@ -157,9 +159,28 @@ void SongTool::drawSequence(std::map<double, std::string> &sequence, float unit)
     } else {
       lv.graphics.setColor({ 0.8f, 0.8f, 0.8f, 1.0f });
     }
-    auto patternWidth = stepsToBars(pattern.getLoopLength(clock));
+    auto patternLength = pattern.getLoopLength(clock);
     lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, startTimeBars, 0.025f * unit,
-        patternWidth * unit, 0.95f * unit);
+        stepsToBars(patternLength) * unit, 0.95f * unit);
+
+    // draw loop arrows
+    double endTime = startTime + patternLength, currentTime = endTime;
+    auto next = std::next(current);
+    if (next != sequence.end()) {
+      endTime = next->first;
+    } else {
+      endTime = soundTool.songTotalLength;
+    }
+    while (currentTime < endTime) {
+      // arrow start: currentTime
+      // arrow end: min(currentTime + loopLength, endTime)
+      auto loopEndTime = std::min(currentTime + patternLength, endTime);
+      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, stepsToBars(currentTime) * unit,
+          0.475f * unit, stepsToBars(loopEndTime - currentTime) * unit, 0.05f * unit);
+      lv.graphics.circle(love::Graphics::DrawMode::DRAW_FILL, stepsToBars(loopEndTime) * unit,
+          0.5f * unit, 0.07f * unit);
+      currentTime = loopEndTime;
+    }
 
     // summarize notes
     // TODO: editor maintains min/max per track
@@ -175,6 +196,7 @@ void SongTool::drawSequence(std::map<double, std::string> &sequence, float unit)
         lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, noteWidth, keyHeight);
       }
     }
+    current++;
   }
 }
 
@@ -185,7 +207,6 @@ void SongTool::drawTrack(Song::Track *track, int index, double timePlaying, floa
 
   // draw track-specific playhead
   if (soundTool.isPlaying) {
-    // TODO: starting partway thru a pattern
     auto timeInSong = soundTool.selectedSequenceStartTime + timePlaying;
     auto startSeq = track->sequence.lower_bound(timeInSong);
     if ((startSeq == track->sequence.end() || startSeq->first != timeInSong)

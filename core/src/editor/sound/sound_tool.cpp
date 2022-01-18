@@ -16,6 +16,7 @@ void SoundTool::resetState() {
   trackTool.resetState();
   lastHash = "";
   songLoopLength = 0;
+  computeSongLength();
 }
 
 void SoundTool::onSetActive() {
@@ -49,6 +50,16 @@ void SoundTool::useSelectedActorMusicComponent() {
   } else {
     song = nullptr;
     lastHash = "";
+  }
+  computeSongLength();
+}
+
+void SoundTool::computeSongLength() {
+  if (song) {
+    auto &scene = editor.getScene();
+    songTotalLength = song->getLength(scene.getClock());
+  } else {
+    songTotalLength = 0;
   }
 }
 
@@ -105,7 +116,7 @@ void SoundTool::togglePlay() {
       // schedule current song to play now
       songLoopLength = 0;
       auto trackIndex = 0;
-      double songStartTime = 0, songEndTime = song->getLength(scene.getClock());
+      double songStartTime = 0, songEndTime = songTotalLength;
       if (selectedPatternId != "") {
         // if editing a specific pattern in a sequence, only loop this part of the sequence
         if (auto track = getSelectedTrack(); track) {
