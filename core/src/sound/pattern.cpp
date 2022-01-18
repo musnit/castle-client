@@ -3,6 +3,7 @@
 
 Pattern::Pattern(const Pattern &other) {
   patternId = other.patternId;
+  color = other.color;
   loop = other.loop;
   for (auto &[time, notesList] : other.notes) {
     notes[time] = notesList;
@@ -11,6 +12,7 @@ Pattern::Pattern(const Pattern &other) {
 
 const Pattern &Pattern::operator=(const Pattern &other) {
   patternId = other.patternId;
+  color = other.color;
   loop = other.loop;
   for (auto &[time, notesList] : other.notes) {
     notes[time] = notesList;
@@ -28,6 +30,7 @@ void Pattern::write(Writer &writer) const {
     break;
   }
   writer.str("patternId", patternId);
+  writer.write("color", color);
   writer.write("notes", notes);
 }
 
@@ -39,6 +42,9 @@ void Pattern::read(Reader &reader) {
   } else if (loopStr = "nextBar") {
     loop = Loop::NextBar;
   }
+  reader.obj("color", [&]() {
+    reader.read(color);
+  });
   reader.obj("notes", [&]() {
     reader.read(notes);
   });

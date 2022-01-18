@@ -154,13 +154,18 @@ void SongTool::drawSequence(std::map<double, std::string> &sequence, float unit)
     auto startTimeBars = stepsToBars(startTime) * unit;
 
     // draw pattern rectangle
+    lv.graphics.setColor({ 0.8f, 0.8f, 0.8f, 1.0f });
+    auto patternLength = pattern.getLoopLength(clock);
+    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, startTimeBars, 0.025f * unit,
+        stepsToBars(patternLength) * unit, 0.95f * unit);
+
+    // draw pattern outline
     if (patternId == soundTool.selectedPatternId) {
       lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
     } else {
-      lv.graphics.setColor({ 0.8f, 0.8f, 0.8f, 1.0f });
+      lv.graphics.setColor(pattern.color);
     }
-    auto patternLength = pattern.getLoopLength(clock);
-    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, startTimeBars, 0.025f * unit,
+    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_LINE, startTimeBars, 0.025f * unit,
         stepsToBars(patternLength) * unit, 0.95f * unit);
 
     // draw loop arrows

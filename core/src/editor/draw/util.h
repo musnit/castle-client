@@ -4,6 +4,8 @@
 #include "love/DrawData.hpp"
 
 namespace DrawUtil {
+const std::array<int, size_t(60)> &getCastlePalette();
+love::Colorf getRandomCastlePaletteColor();
 
 void makePathsFromPoints(love::PathData *paths, float *points, int numPoints);
 bool isPointInBounds(float x, float y);

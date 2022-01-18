@@ -30,6 +30,7 @@ public:
   const Pattern &operator=(const Pattern &);
 
   std::string patternId = "";
+  love::Colorf color;
 
   void write(Writer &writer) const;
   void read(Reader &reader);

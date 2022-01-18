@@ -32,6 +32,7 @@ public:
   void reset() override;
 
 private:
+  std::array<int, 60> palette;
   std::unordered_set<int> colorUsed;
 };
 
