@@ -75,7 +75,7 @@ private:
     // streams managed by this thread
     std::unordered_map<int, std::vector<std::unique_ptr<Stream>>> streams;
 
-    volatile bool shouldFinish;
+    volatile bool shouldFinish = false;
     love::thread::MutexRef mutex;
   };
 
