@@ -115,19 +115,20 @@ export const OverlaySelectionActions = () => {
             />
           </Pressable>
           {isTextActorSelected ? (
-          <Pressable
-            style={[
-              styles.button,
-              currentTool === 'textContent' ? { backgroundColor: '#000' } : null,
-              { paddingLeft: 3, }
-            ]}
-            onPress={onSelectTextContent}>
-            <MCIcon
-              name="playlist-edit"
-              size={26}
-              color={currentTool === 'textContent' ? '#fff' : '#000'}
-            />
-          </Pressable>) : null}
+            <Pressable
+              style={[
+                styles.button,
+                currentTool === 'textContent' ? { backgroundColor: '#000' } : null,
+                { paddingLeft: 3 },
+              ]}
+              onPress={onSelectTextContent}>
+              <MCIcon
+                name="playlist-edit"
+                size={26}
+                color={currentTool === 'textContent' ? '#fff' : '#000'}
+              />
+            </Pressable>
+          ) : null}
         </View>
         <OverlayDrawingFramePicker />
       </View>

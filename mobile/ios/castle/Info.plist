@@ -78,6 +78,16 @@
 		<string>Basteleur-Bold.otf</string>
 		<string>Fontisto.ttf</string>
 		<string>CastleIcon.ttf</string>
+		<string>Bore.ttf</string>
+		<string>BreiteGrotesk.ttf</string>
+		<string>Compagnon.ttf</string>
+		<string>Glacier.ttf</string>
+		<string>HelicoCentrica.ttf</string>
+		<string>Overlay.ttf</string>
+		<string>Piazzolla.ttf</string>
+		<string>Synco.ttf</string>
+		<string>Tektur.ttf</string>
+		<string>YatraOne.ttf</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>
