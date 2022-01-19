@@ -68,10 +68,12 @@ export const Pattern = ({ pattern, sequenceElem }) => {
           <Text style={styles.label}>Color</Text>
           <ColorPicker value={pattern.color} setValue={setColor} />
         </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Loop here</Text>
-          <InspectorCheckbox value={sequenceElem.loop} onChange={setSequenceLoop} />
-        </View>
+        {sequenceElem ? (
+          <View style={styles.row}>
+            <Text style={styles.label}>Loop here</Text>
+            <InspectorCheckbox value={sequenceElem.loop} onChange={setSequenceLoop} />
+          </View>
+        ) : null}
       </View>
     );
   }
