@@ -24,6 +24,11 @@ void SongTool::onSetActive() {
   viewWidth = SONG_DEFAULT_VIEW_WIDTH;
   viewPosition.x = 0.0f;
   viewPosition.y = 0.0f;
+  dragPatternId = "";
+  dragPatternTouchDelta.x = 0.0f;
+  dragPatternTouchDelta.y = 0.0f;
+  dragPatternStartTime = 0;
+  dragPatternTrackIndex = 0;
   updateViewConstraints();
 }
 
@@ -44,6 +49,7 @@ void SongTool::update(double dt) {
       // grid x is bar, grid y is track
       auto bar = double(transformedTouchPosition.x / gridCellSize);
       auto track = floor(transformedTouchPosition.y / gridCellSize);
+      auto dragDeltaBars = floor(dragPatternTouchDelta.x / gridCellSize);
 
       bool selectedExistingTrack
           = track >= 0 && soundTool.hasSong() && track < int(soundTool.song->tracks.size());
@@ -67,13 +73,30 @@ void SongTool::update(double dt) {
       if (touch.released) {
         switch (selectedSubtool) {
         case Subtool::Select: {
-          // touch track to select track
+          // touch grid on existing track/pattern?
           if (bar >= 0 && selectedExistingTrack) {
-            if (patternId == "") {
+            if (dragPatternId != ""
+                && (dragPatternId != patternId
+                    || dragPatternStartTime + dragDeltaBars != patternStartTime)) {
+              // dragged a different pattern here, clone
+              auto newPatternStartTime = dragPatternStartTime + barsToSteps(dragDeltaBars);
+              if (auto &selectedTrack = soundTool.song->tracks[track]; selectedTrack) {
+                auto oldSequence = soundTool.song->tracks[dragPatternTrackIndex]->sequence.find(
+                    dragPatternStartTime);
+                Song::Track::SequenceElem newElem = oldSequence->second;
+                if (selectedTrack->sequence.find(newPatternStartTime)
+                    != selectedTrack->sequence.end()) {
+                  selectedTrack->sequence.erase(newPatternStartTime);
+                }
+                selectedTrack->sequence.emplace(newPatternStartTime, newElem);
+              }
+              soundTool.setTrackIndex(track);
+              soundTool.setPatternId(dragPatternId, newPatternStartTime);
+              soundTool.updateSelectedComponent("clone pattern");
+            } else if (patternId == "") {
               // selected a valid track but no pattern, so add a new pattern here
               soundTool.setTrackIndex(track);
-              auto steps
-                  = std::floor(bar) * double(clock.getStepsPerBeat() * clock.getBeatsPerBar());
+              auto steps = barsToSteps(std::floor(bar));
               soundTool.addPattern(steps, track);
             } else if (soundTool.selectedTrackIndex == track
                 && soundTool.selectedPatternId == patternId) {
@@ -104,9 +127,8 @@ void SongTool::update(double dt) {
           } else {
             soundTool.clearSelection();
             soundTool.sendUIEvent();
-            // TODO:
-            // drag patterns to other cells to clone
           }
+          dragPatternId = "";
           break; // Subtool::Select
         }
         case Subtool::Erase: {
@@ -120,6 +142,17 @@ void SongTool::update(double dt) {
           }
           break;
         }
+        }
+      } else if (touch.movedFar) {
+        if (selectedSubtool == Subtool::Select) {
+          // move/clone pattern
+          if (dragPatternId == "") {
+            dragPatternTouchStart = transformedTouchPosition;
+            dragPatternId = patternId;
+            dragPatternStartTime = patternStartTime;
+            dragPatternTrackIndex = track;
+          }
+          dragPatternTouchDelta = transformedTouchPosition - dragPatternTouchStart;
         }
       }
     });
@@ -209,6 +242,19 @@ void SongTool::drawSequence(std::map<double, Song::Track::SequenceElem> &sequenc
   }
 }
 
+void SongTool::drawDragPattern(float unit) {
+  if (dragPatternId != "") {
+    auto &clock = getScene().getClock();
+    auto &pattern = soundTool.song->patterns[dragPatternId];
+    auto x = (stepsToBars(dragPatternStartTime) * unit) + dragPatternTouchDelta.x;
+    auto y = (dragPatternTrackIndex * unit) + dragPatternTouchDelta.y;
+    lv.graphics.setColor({ 0.8f, 0.8f, 0.8f, 1.0f });
+    auto patternLength = pattern.getLoopLength(clock);
+    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y + 0.025f * unit,
+        stepsToBars(patternLength) * unit, 0.95f * unit);
+  }
+}
+
 void SongTool::drawTrack(Song::Track *track, int index, double timePlaying, float unit) {
   // draw sequence
   // TODO: don't need to draw outside viewport
@@ -250,6 +296,11 @@ void SongTool::drawSong(Song *song, double timePlaying) {
   }
   lv.graphics.pop();
 }
+
+double SongTool::barsToSteps(double bars) {
+  auto &clock = getScene().getClock();
+  return bars * double(clock.getStepsPerBeat() * clock.getBeatsPerBar());
+};
 
 double SongTool::stepsToBars(double steps) {
   auto &clock = getScene().getClock();
@@ -349,7 +400,7 @@ void SongTool::drawOverlay() {
   if (soundTool.hasSong()) {
     drawSong(soundTool.song.get(), timePlaying);
   }
-
+  drawDragPattern(gridCellSize);
   drawTrackAxis(soundTool.song.get());
 
   lv.graphics.pop();

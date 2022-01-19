@@ -45,6 +45,7 @@ private:
   Scene &getScene();
 
   double stepsToBars(double steps);
+  double barsToSteps(double bars);
 
   // for sequence editing
   float gridCellSize = 1.5f;
@@ -60,9 +61,17 @@ private:
   void drawTrack(Song::Track *track, int index, double timePlaying, float unit);
   void drawSequence(std::map<double, Song::Track::SequenceElem> &sequence, float unit);
   void drawTrackAxis(Song *song);
+  void drawDragPattern(float unit);
   mutable love::Transform viewTransform;
   love::Vector2 viewPosition;
   float viewWidth = SONG_DEFAULT_VIEW_WIDTH;
+
+  // for moving patterns
+  std::string dragPatternId;
+  int dragPatternTrackIndex = 0;
+  double dragPatternStartTime = 0;
+  love::Vector2 dragPatternTouchStart;
+  love::Vector2 dragPatternTouchDelta;
 
   std::unique_ptr<love::Font> tempFont { lv.graphics.newDefaultFont(
       16.0f, love::TrueTypeRasterizer::HINTING_NORMAL) };
