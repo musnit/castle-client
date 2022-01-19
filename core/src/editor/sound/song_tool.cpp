@@ -277,24 +277,18 @@ void SongTool::drawDragPattern(float unit) {
   }
 }
 
-void SongTool::drawTrack(Song::Track *track, int index, double timePlaying, float unit) {
+void SongTool::drawTrack(Song::Track *track, int index, double timeInSong, float unit) {
   // draw sequence
   // TODO: don't need to draw outside viewport
   drawSequence(track->sequence, unit);
 
   // draw track-specific playhead
   if (soundTool.isPlaying) {
-    auto timeInSong = soundTool.selectedSequenceStartTime + timePlaying;
     auto startSeq = Song::sequenceElemAtTime(*track, timeInSong);
     if (startSeq != track->sequence.end()) {
-      auto loopLength = soundTool.song->patterns[startSeq->second.patternId()].getLoopLength(
-          getScene().getClock());
-      auto timeInSeq = timeInSong - startSeq->first;
-      if (startSeq->second.loop() || timeInSeq < loopLength) {
-        while (loopLength > 0 && timeInSeq > loopLength) {
-          timeInSeq -= loopLength;
-        }
-        auto bars = stepsToBars(timeInSeq);
+      auto timeInSeq = soundTool.getPlaybackTimeInSequenceElem(startSeq, timeInSong);
+      if (timeInSeq) {
+        auto bars = stepsToBars(*timeInSeq);
         float playheadX = (bars + stepsToBars(startSeq->first)) * unit;
         lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
         lv.graphics.rectangle(
@@ -304,11 +298,11 @@ void SongTool::drawTrack(Song::Track *track, int index, double timePlaying, floa
   }
 }
 
-void SongTool::drawSong(Song *song, double timePlaying) {
+void SongTool::drawSong(Song *song, double timeInSong) {
   auto trackIndex = 0;
   lv.graphics.push();
   for (auto &track : song->tracks) {
-    drawTrack(track.get(), trackIndex, timePlaying, gridCellSize);
+    drawTrack(track.get(), trackIndex, timeInSong, gridCellSize);
     trackIndex++;
     lv.graphics.translate(0, gridCellSize);
   }
@@ -326,7 +320,7 @@ double SongTool::stepsToBars(double steps) {
   return steps / barLength;
 }
 
-void SongTool::drawTrackAxis(Song *song, double timePlaying) {
+void SongTool::drawTrackAxis(Song *song, double timeInSong) {
   auto x = viewPosition.x - gridCellSize; // always on left edge of view
   auto axisY = viewPosition.y - viewWidth; // idk
   auto axisHeight = viewWidth * 3.0f;
@@ -350,7 +344,6 @@ void SongTool::drawTrackAxis(Song *song, double timePlaying) {
     if (power > 0) {
       // light up track axis when tracks play sound
       if (soundTool.isPlaying) {
-        auto timeInSong = soundTool.selectedSequenceStartTime + timePlaying;
         auto startSeq = Song::sequenceElemAtTime(*track, timeInSong);
         if (startSeq != track->sequence.end()) {
           auto &pattern = soundTool.song->patterns[startSeq->second.patternId()];
@@ -385,16 +378,11 @@ void SongTool::drawOverlay() {
   viewOffset.y = 0.1f * (viewWidth * viewHeightToWidthRatio);
 
   float playheadX = 0.0f;
-  double timePlaying = 0;
+  double timeInSong = 0;
   if (soundTool.isPlaying) {
-    auto &scene = getScene();
-    timePlaying = scene.getClock().getTime() - soundTool.playStartTime;
-    while (soundTool.songLoopLength > 0 && timePlaying > soundTool.songLoopLength) {
-      timePlaying -= soundTool.songLoopLength;
-    }
-    auto bars = stepsToBars(timePlaying);
+    timeInSong = soundTool.getPlaybackTimeInSong();
+    auto bars = stepsToBars(timeInSong);
     playheadX = bars * gridCellSize;
-    playheadX += stepsToBars(soundTool.selectedSequenceStartTime) * gridCellSize;
     if (soundTool.viewFollowsPlayhead) {
       auto halfWidth = 0.33f * viewWidth;
       viewPosition.x = std::max(halfWidth, playheadX) - halfWidth;
@@ -430,10 +418,10 @@ void SongTool::drawOverlay() {
   }
 
   if (soundTool.hasSong()) {
-    drawSong(soundTool.song.get(), timePlaying);
+    drawSong(soundTool.song.get(), timeInSong);
   }
   drawDragPattern(gridCellSize);
-  drawTrackAxis(soundTool.song.get(), timePlaying);
+  drawTrackAxis(soundTool.song.get(), timeInSong /* TODO: BEN */);
 
   lv.graphics.pop();
 }

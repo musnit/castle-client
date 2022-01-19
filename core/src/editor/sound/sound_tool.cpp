@@ -15,7 +15,9 @@ void SoundTool::resetState() {
   songTool.resetState();
   trackTool.resetState();
   lastHash = "";
-  songLoopLength = 0;
+  playStartTime = 0;
+  playStartTimeInSong = 0;
+  playEndTimeInSong = 0;
   playbackMonitor.clear();
   computeSongLength();
 }
@@ -159,7 +161,7 @@ std::vector<std::unique_ptr<Pattern>> SoundTool::flattenTracksForPlayback(
 
     // loop all tracks to full selection length (needed if a track ends with silence)
     pattern->loop = Pattern::Loop::ExplicitLength;
-    pattern->loopLength = songLoopLength;
+    pattern->loopLength = songEndTime - songStartTime;
 
     patterns.push_back(std::move(pattern));
   }
@@ -169,7 +171,6 @@ std::vector<std::unique_ptr<Pattern>> SoundTool::flattenTracksForPlayback(
 void SoundTool::scheduleSongForPlayback(
     double songStartTime, double songEndTime, double initialTimeInSong) {
   auto &scene = editor.getScene();
-  songLoopLength = songEndTime - songStartTime;
   auto patterns = flattenTracksForPlayback(songStartTime, songEndTime);
   for (size_t idx = 0; idx < song->tracks.size(); idx++) {
     auto &pattern = patterns[idx];
@@ -194,6 +195,8 @@ void SoundTool::togglePlay() {
       auto [songStartTime, songEndTime] = getPlaybackEndpoints();
       scheduleSongForPlayback(songStartTime, songEndTime, 0);
       playStartTime = scene.getClock().getTime();
+      playStartTimeInSong = songStartTime;
+      playEndTimeInSong = songEndTime;
       isPlaying = true;
     }
   }
@@ -207,12 +210,35 @@ void SoundTool::updatePlaybackStreams() {
     playbackMonitor.clear();
     scene.getSound().clearStreams();
 
-    // maintain existing `isPlaying` and `playStartTime`,
+    // maintain existing `isPlaying` and `playStartTime` and song endpoints,
     // schedule latest song data to play now, but fast forward the amount we already played
-    auto [songStartTime, songEndTime] = getPlaybackEndpoints();
     auto timePlaying = scene.getClock().getTime() - playStartTime;
-    scheduleSongForPlayback(songStartTime, songEndTime, timePlaying);
+    scheduleSongForPlayback(playStartTimeInSong, playEndTimeInSong, timePlaying);
   }
+}
+
+double SoundTool::getPlaybackTimeInSong() {
+  auto timePlaying = editor.getScene().getClock().getTime() - playStartTime;
+  auto songLoopLength = playEndTimeInSong - playStartTimeInSong;
+  while (songLoopLength > 0 && timePlaying > songLoopLength) {
+    timePlaying -= songLoopLength;
+  }
+  return playStartTimeInSong + timePlaying;
+}
+
+std::optional<double> SoundTool::getPlaybackTimeInSequenceElem(
+    Song::Track::Sequence::iterator startSeq, double timeInSong) {
+  auto loopLength
+      = song->patterns[startSeq->second.patternId()].getLoopLength(editor.getScene().getClock());
+  auto timeInSeq = timeInSong - startSeq->first;
+  if (startSeq->second.loop() || timeInSeq < loopLength) {
+    while (loopLength > 0 && timeInSeq > loopLength) {
+      timeInSeq -= loopLength;
+    }
+    return timeInSeq;
+  }
+  // we aren't in this sequence elem
+  return std::nullopt;
 }
 
 void SoundTool::update(double dt) {

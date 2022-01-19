@@ -71,7 +71,7 @@ private:
   bool isPlaying = false;
   bool viewFollowsPlayhead = false;
   double playStartTime = 0;
-  double songLoopLength = 0;
+  double playStartTimeInSong = 0, playEndTimeInSong = 0;
   double songTotalLength = 0;
   PlaybackMonitor playbackMonitor;
   std::pair<double, double> getPlaybackEndpoints();
@@ -79,6 +79,9 @@ private:
       double songStartTime, double songEndTime);
   void updatePlaybackStreams();
   void scheduleSongForPlayback(double songStartTime, double songEndTime, double initialTimeInSong);
+  double getPlaybackTimeInSong();
+  std::optional<double> getPlaybackTimeInSequenceElem(
+      Song::Track::Sequence::iterator startSeq, double timeInSong);
 
   void computeSongLength();
 
