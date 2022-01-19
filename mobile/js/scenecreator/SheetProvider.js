@@ -9,7 +9,7 @@ import { InspectorSheet } from './inspector/InspectorSheet';
 import { InstanceSheet } from './inspector/instance/InstanceSheet';
 import { TextContentSheet } from './inspector/instance/TextContentSheet';
 import { SheetBackgroundOverlay } from '../components/SheetBackgroundOverlay';
-import { SoundEditInstrumentSheet } from './sound/sheets/SoundEditInstrumentSheet';
+import { SoundTrackInspectorSheet } from './sound/inspector/SoundTrackInspectorSheet';
 import { useCardCreator } from './CreateCardContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -63,8 +63,8 @@ const ROOT_SHEETS = [
     initialSnap: 1,
   },
   {
-    key: 'soundEditInstrument',
-    Component: SoundEditInstrumentSheet,
+    key: 'soundTrackInspector',
+    Component: SoundTrackInspectorSheet,
   },
 ];
 

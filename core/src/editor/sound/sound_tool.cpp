@@ -247,6 +247,8 @@ struct SoundToolEvent {
   PROP(std::string, subtool);
   PROP(bool, isPlaying) = false;
   PROP(int, selectedTrackIndex) = -1;
+  PROP(std::string, selectedPatternId);
+  PROP(double, selectedSequenceStartTime) = 0;
   PROP(bool, viewFollowsPlayhead) = false;
 };
 
@@ -270,7 +272,8 @@ void SoundTool::sendUIEvent() {
     break;
   }
 
-  SoundToolEvent e { modeStr, subtoolStr, isPlaying, selectedTrackIndex, viewFollowsPlayhead };
+  SoundToolEvent e { modeStr, subtoolStr, isPlaying, selectedTrackIndex, selectedPatternId,
+    selectedSequenceStartTime, viewFollowsPlayhead };
   editor.getBridge().sendEvent("EDITOR_SOUND_TOOL", e);
 }
 

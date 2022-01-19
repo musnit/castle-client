@@ -76,9 +76,9 @@ export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
     selectedTrackIndex,
   } = useCoreState('EDITOR_SOUND_TOOL') || {};
   React.useEffect(() => {
-    if (selectedTrackIndex >= 0 && activeSheet.sound !== 'soundEditInstrument') {
-      setActiveSheet({ sound: 'soundEditInstrument' });
-    } else if (selectedTrackIndex < 0 && activeSheet.sound == 'soundEditInstrument') {
+    if (selectedTrackIndex >= 0 && activeSheet.sound !== 'soundTrackInspector') {
+      setActiveSheet({ sound: 'soundTrackInspector' });
+    } else if (selectedTrackIndex < 0 && activeSheet.sound == 'soundTrackInspector') {
       setActiveSheet({ sound: null });
     }
   }, [selectedTrackIndex, setActiveSheet, activeSheet.sound]);
