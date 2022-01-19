@@ -149,7 +149,7 @@ void SoundTool::togglePlay() {
           }
         }
       }
-      songLoopLength = songEndTime;
+      songLoopLength = songEndTime - songStartTime;
       for (auto &track : song->tracks) {
         auto pattern
             = song->flattenSequence(trackIndex, songStartTime, songEndTime, scene.getClock());
