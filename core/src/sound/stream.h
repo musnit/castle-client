@@ -1,10 +1,10 @@
 #pragma once
 
+#include "clock.h"
 #include "pattern.h"
 #include "instruments/instrument.h"
 
 class Sound;
-class Clock;
 
 class Stream {
 public:
@@ -16,6 +16,7 @@ public:
   double nextTime(); // in steps
   bool hasNext();
   void playNextNotes(Sound &sound);
+  void skipToNext();
 
 private:
   std::map<double, SmallVector<Pattern::Note, 2>>::iterator current;
@@ -43,6 +44,10 @@ inline void Stream::playNextNotes(Sound &sound) {
   for (auto &note : notes) {
     instrument.play(sound, note);
   }
+  skipToNext();
+}
+
+inline void Stream::skipToNext() {
   current++;
 
   if (!hasNext() && pattern->loop != Pattern::Loop::None) {

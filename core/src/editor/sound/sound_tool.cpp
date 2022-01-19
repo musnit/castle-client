@@ -16,10 +16,12 @@ void SoundTool::resetState() {
   trackTool.resetState();
   lastHash = "";
   songLoopLength = 0;
+  playbackMonitor.clear();
   computeSongLength();
 }
 
 void SoundTool::onSetActive() {
+  playbackMonitor.clear();
   useSelectedActorMusicComponent();
   setMode(Mode::Song, true);
   sendUIEvent();
@@ -124,6 +126,7 @@ void SoundTool::togglePlay() {
     auto &scene = editor.getScene();
     if (isPlaying) {
       isPlaying = false;
+      playbackMonitor.clear();
       scene.getSound().stopAll();
     } else {
       // schedule current song to play now
@@ -158,6 +161,8 @@ void SoundTool::togglePlay() {
         pattern->loop = Pattern::Loop::ExplicitLength;
         pattern->loopLength = songLoopLength;
 
+        auto patternClone = std::make_unique<Pattern>(*pattern);
+        playbackMonitor.add(scene.getClock(), std::move(patternClone), *track->instrument);
         scene.getSound().play(scene.getClock().clockId, std::move(pattern), *track->instrument);
         trackIndex++;
       }
@@ -174,6 +179,10 @@ void SoundTool::update(double dt) {
   }
   if (!hasSong()) {
     return;
+  }
+  if (isPlaying) {
+    auto &clock = editor.getScene().getClock();
+    playbackMonitor.update(dt, clock.getTime());
   }
   switch (mode) {
   case Mode::Song:

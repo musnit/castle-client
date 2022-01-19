@@ -107,17 +107,10 @@ std::unique_ptr<Pattern> Song::flattenSequence(
     int trackIndex, double startTime, double endTime, Clock &clock) {
   auto result = Song::makeEmptyPattern();
 
-  // lower_bound : Returns an iterator pointing to the first element that is not less than key.
   auto &track = *tracks[trackIndex];
-  auto current = track.sequence.lower_bound(startTime);
+  auto current = Song::sequenceElemAtTime(track, startTime);
   double timeInOutput = 0;
   double timeInTrack = startTime;
-
-  if ((current == track.sequence.end() || current->first != startTime)
-      && current != track.sequence.begin()) {
-    // no pattern starts exactly at the requested time, but we may be partway through the previous
-    current = std::prev(current);
-  }
 
   while (current != track.sequence.end()) {
     auto sequenceElemStartTime = current->first;

@@ -5,6 +5,9 @@
 #include "pattern.h"
 #include "instruments/instrument.h"
 
+//
+// A Song is a bank of Patterns and a list of Tracks.
+//
 class Song {
 public:
   Song() = default;
@@ -23,13 +26,15 @@ public:
   struct Track {
     std::unique_ptr<Instrument> instrument;
 
+    // Track::Sequence is a mapping from startTime to Pattern.
+    // Patterns cannot share the same start time, but they can 'interrupt' the previous one.
     struct SequenceElem {
       PROP(std::string, patternId);
       PROP(bool, loop) = true;
     };
+    using Sequence = std::map<double, SequenceElem>;
 
-    // startTime -> SequenceElem
-    std::map<double, SequenceElem> sequence;
+    Sequence sequence;
   };
   std::vector<std::unique_ptr<Track>> tracks;
 
@@ -42,6 +47,20 @@ public:
   // compute total song length (max among individual track lengths)
   double getLength(Clock &clock);
 
+  static Track::Sequence::iterator sequenceElemAtTime(Track &track, double timeInSong);
+
   static std::unique_ptr<Pattern> makeEmptyPattern();
   static std::unique_ptr<Track> makeDefaultTrack();
 };
+
+inline Song::Track::Sequence::iterator Song::sequenceElemAtTime(
+    Song::Track &track, double timeInSong) {
+  // lower_bound: returns an iterator pointing to the first element that is not less than key.
+  auto result = track.sequence.lower_bound(timeInSong);
+  if ((result == track.sequence.end() || result->first != timeInSong)
+      && result != track.sequence.begin()) {
+    // no sequence starts exactly at the requested time, but we may be partway through the previous
+    result = std::prev(result);
+  }
+  return result;
+}

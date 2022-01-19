@@ -189,7 +189,7 @@ void SongTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
   grid.draw(gridCellSize, gridSize, viewScale, viewPosition, viewOffset, gridDotRadius, false);
 };
 
-void SongTool::drawSequence(std::map<double, Song::Track::SequenceElem> &sequence, float unit) {
+void SongTool::drawSequence(Song::Track::Sequence &sequence, float unit) {
   auto &clock = getScene().getClock();
 
   auto current = sequence.begin();
@@ -283,11 +283,7 @@ void SongTool::drawTrack(Song::Track *track, int index, double timePlaying, floa
   // draw track-specific playhead
   if (soundTool.isPlaying) {
     auto timeInSong = soundTool.selectedSequenceStartTime + timePlaying;
-    auto startSeq = track->sequence.lower_bound(timeInSong);
-    if ((startSeq == track->sequence.end() || startSeq->first != timeInSong)
-        && startSeq != track->sequence.begin()) {
-      startSeq = std::prev(startSeq);
-    }
+    auto startSeq = Song::sequenceElemAtTime(*track, timeInSong);
     if (startSeq != track->sequence.end()) {
       auto loopLength = soundTool.song->patterns[startSeq->second.patternId()].getLoopLength(
           getScene().getClock());
@@ -328,7 +324,7 @@ double SongTool::stepsToBars(double steps) {
   return steps / barLength;
 }
 
-void SongTool::drawTrackAxis(Song *song) {
+void SongTool::drawTrackAxis(Song *song, double timePlaying) {
   auto x = viewPosition.x - gridCellSize; // always on left edge of view
   auto axisY = viewPosition.y - viewWidth; // idk
   auto axisHeight = viewWidth * 3.0f;
@@ -344,9 +340,23 @@ void SongTool::drawTrackAxis(Song *song) {
   auto fontInvScale = viewWidth / 800.0f;
   int trackIndex = 0;
   for (auto &track : song->tracks) {
-    // TODO: also light up tracks when notes play
+    auto power = soundTool.playbackMonitor.getPower(trackIndex);
     if (trackIndex == soundTool.selectedTrackIndex) {
       lv.graphics.setColor({ 0.4f, 0.4f, 0.4f, 1.0f });
+      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);
+    }
+    if (power > 0) {
+      // light up track axis when tracks play sound
+      if (soundTool.isPlaying) {
+        auto timeInSong = soundTool.selectedSequenceStartTime + timePlaying;
+        auto startSeq = Song::sequenceElemAtTime(*track, timeInSong);
+        if (startSeq != track->sequence.end()) {
+          auto &pattern = soundTool.song->patterns[startSeq->second.patternId()];
+          lv.graphics.setColor({ pattern.color.r, pattern.color.g, pattern.color.b, power });
+        }
+      } else {
+        lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, power });
+      }
       lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);
     }
     lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
@@ -421,7 +431,7 @@ void SongTool::drawOverlay() {
     drawSong(soundTool.song.get(), timePlaying);
   }
   drawDragPattern(gridCellSize);
-  drawTrackAxis(soundTool.song.get());
+  drawTrackAxis(soundTool.song.get(), timePlaying);
 
   lv.graphics.pop();
 }

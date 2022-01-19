@@ -6,6 +6,7 @@
 #include "behaviors/music.h"
 #include "song_tool.h"
 #include "track_tool.h"
+#include "playback_monitor.h"
 
 class Editor;
 
@@ -72,6 +73,7 @@ private:
   double playStartTime = 0;
   double songLoopLength = 0;
   double songTotalLength = 0;
+  PlaybackMonitor playbackMonitor;
 
   void computeSongLength();
 
