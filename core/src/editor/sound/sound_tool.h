@@ -74,6 +74,11 @@ private:
   double songLoopLength = 0;
   double songTotalLength = 0;
   PlaybackMonitor playbackMonitor;
+  std::pair<double, double> getPlaybackEndpoints();
+  std::vector<std::unique_ptr<Pattern>> flattenTracksForPlayback(
+      double songStartTime, double songEndTime);
+  void updatePlaybackStreams();
+  void scheduleSongForPlayback(double songStartTime, double songEndTime, double initialTimeInSong);
 
   void computeSongLength();
 

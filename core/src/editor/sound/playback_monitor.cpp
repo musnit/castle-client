@@ -1,8 +1,10 @@
 #include "playback_monitor.h"
 #include "sound/stream.h"
 
-void PlaybackMonitor::add(Clock &clock, std::unique_ptr<Pattern> pattern, Instrument &instrument) {
+void PlaybackMonitor::add(Clock &clock, std::unique_ptr<Pattern> pattern, Instrument &instrument,
+    double initialTimeInStream) {
   auto stream = std::make_unique<Stream>(clock, std::move(pattern), instrument);
+  stream->fastForward(initialTimeInStream);
   tracks.push_back({ std::move(stream), 0.0f });
 }
 

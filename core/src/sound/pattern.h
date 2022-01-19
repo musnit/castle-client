@@ -67,6 +67,10 @@ public:
     return notes.rend();
   }
 
+  inline std::map<double, SmallVector<Note, 2>>::iterator lower_bound(double time) {
+    return notes.lower_bound(time);
+  }
+
 private:
   std::map<double, SmallVector<Note, 2>> notes; // ordered time (in steps) -> notes at step
 };

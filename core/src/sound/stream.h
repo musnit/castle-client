@@ -17,6 +17,7 @@ public:
   bool hasNext();
   void playNextNotes(Sound &sound);
   void skipToNext();
+  void fastForward(double time);
 
 private:
   std::map<double, SmallVector<Pattern::Note, 2>>::iterator current;
@@ -29,6 +30,19 @@ inline Stream::Stream(Clock &clock, std::unique_ptr<Pattern> pattern_, Instrumen
   startTime = clock.getTime();
   current = pattern->begin();
   patternClockLoopLength = pattern->getLoopLength(clock);
+}
+
+inline void Stream::fastForward(double time) {
+  if (time > 0) {
+    while (time > patternClockLoopLength) {
+      time -= patternClockLoopLength;
+    }
+    current = pattern->lower_bound(time);
+    if (!hasNext() && pattern->loop != Pattern::Loop::None) {
+      current = pattern->begin();
+    }
+    startTime -= time;
+  }
 }
 
 inline double Stream::nextTime() {
@@ -49,7 +63,6 @@ inline void Stream::playNextNotes(Sound &sound) {
 
 inline void Stream::skipToNext() {
   current++;
-
   if (!hasNext() && pattern->loop != Pattern::Loop::None) {
     // restart according to pattern's loop length
     current = pattern->begin();

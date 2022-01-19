@@ -54,6 +54,9 @@ void SoundTool::useSelectedActorMusicComponent() {
     lastHash = "";
   }
   computeSongLength();
+  if (isPlaying) {
+    updatePlaybackStreams();
+  }
 }
 
 void SoundTool::computeSongLength() {
@@ -121,6 +124,64 @@ void SoundTool::setSelectedSequenceLoops(bool loop) {
   }
 }
 
+std::pair<double, double> SoundTool::getPlaybackEndpoints() {
+  auto &scene = editor.getScene();
+  double songStartTime = 0, songEndTime = songTotalLength;
+  if (selectedPatternId != "") {
+    // if editing a specific pattern in a sequence, only loop this part of the sequence
+    if (auto track = getSelectedTrack(); track) {
+      auto itr = track->sequence.find(selectedSequenceStartTime);
+      if (itr != track->sequence.end()) {
+        songStartTime = selectedSequenceStartTime;
+        if (!itr->second.loop()) {
+          // selected pattern doesn't loop in song view, so don't capture space after it
+          auto &pattern = song->patterns[itr->second.patternId()];
+          songEndTime = selectedSequenceStartTime + pattern.getLoopLength(scene.getClock());
+        } else {
+          // selected patern loops, so go until next pattern, or end of song
+          auto next = std::next(itr);
+          if (next != track->sequence.end()) {
+            songEndTime = next->first;
+          }
+        }
+      }
+    }
+  }
+  return { songStartTime, songEndTime };
+}
+
+std::vector<std::unique_ptr<Pattern>> SoundTool::flattenTracksForPlayback(
+    double songStartTime, double songEndTime) {
+  auto &scene = editor.getScene();
+  std::vector<std::unique_ptr<Pattern>> patterns;
+  for (size_t idx = 0; idx < song->tracks.size(); idx++) {
+    auto pattern = song->flattenSequence(idx, songStartTime, songEndTime, scene.getClock());
+
+    // loop all tracks to full selection length (needed if a track ends with silence)
+    pattern->loop = Pattern::Loop::ExplicitLength;
+    pattern->loopLength = songLoopLength;
+
+    patterns.push_back(std::move(pattern));
+  }
+  return patterns;
+}
+
+void SoundTool::scheduleSongForPlayback(
+    double songStartTime, double songEndTime, double initialTimeInSong) {
+  auto &scene = editor.getScene();
+  songLoopLength = songEndTime - songStartTime;
+  auto patterns = flattenTracksForPlayback(songStartTime, songEndTime);
+  for (size_t idx = 0; idx < song->tracks.size(); idx++) {
+    auto &pattern = patterns[idx];
+    auto &track = song->tracks[idx];
+    auto patternClone = std::make_unique<Pattern>(*pattern);
+    playbackMonitor.add(
+        scene.getClock(), std::move(patternClone), *track->instrument, initialTimeInSong);
+    scene.getSound().play(
+        scene.getClock().clockId, std::move(pattern), *track->instrument, initialTimeInSong);
+  }
+}
+
 void SoundTool::togglePlay() {
   if (hasSong()) {
     auto &scene = editor.getScene();
@@ -130,47 +191,28 @@ void SoundTool::togglePlay() {
       scene.getSound().stopAll();
     } else {
       // schedule current song to play now
-      auto trackIndex = 0;
-      double songStartTime = 0, songEndTime = songTotalLength;
-      if (selectedPatternId != "") {
-        // if editing a specific pattern in a sequence, only loop this part of the sequence
-        if (auto track = getSelectedTrack(); track) {
-          auto itr = track->sequence.find(selectedSequenceStartTime);
-          if (itr != track->sequence.end()) {
-            songStartTime = selectedSequenceStartTime;
-            if (!itr->second.loop()) {
-              // selected pattern doesn't loop in song view, so don't capture space after it
-              auto &pattern = song->patterns[itr->second.patternId()];
-              songEndTime = selectedSequenceStartTime + pattern.getLoopLength(scene.getClock());
-            } else {
-              // selected patern loops, so go until next pattern, or end of song
-              auto next = std::next(itr);
-              if (next != track->sequence.end()) {
-                songEndTime = next->first;
-              }
-            }
-          }
-        }
-      }
-      songLoopLength = songEndTime - songStartTime;
-      for (auto &track : song->tracks) {
-        auto pattern
-            = song->flattenSequence(trackIndex, songStartTime, songEndTime, scene.getClock());
-
-        // loop all tracks to full selection length (needed if a track ends with silence)
-        pattern->loop = Pattern::Loop::ExplicitLength;
-        pattern->loopLength = songLoopLength;
-
-        auto patternClone = std::make_unique<Pattern>(*pattern);
-        playbackMonitor.add(scene.getClock(), std::move(patternClone), *track->instrument);
-        scene.getSound().play(scene.getClock().clockId, std::move(pattern), *track->instrument);
-        trackIndex++;
-      }
+      auto [songStartTime, songEndTime] = getPlaybackEndpoints();
+      scheduleSongForPlayback(songStartTime, songEndTime, 0);
       playStartTime = scene.getClock().getTime();
       isPlaying = true;
     }
   }
   sendUIEvent();
+}
+
+void SoundTool::updatePlaybackStreams() {
+  if (hasSong() && isPlaying) {
+    // stop old streams
+    auto &scene = editor.getScene();
+    playbackMonitor.clear();
+    scene.getSound().clearStreams();
+
+    // maintain existing `isPlaying` and `playStartTime`,
+    // schedule latest song data to play now, but fast forward the amount we already played
+    auto [songStartTime, songEndTime] = getPlaybackEndpoints();
+    auto timePlaying = scene.getClock().getTime() - playStartTime;
+    scheduleSongForPlayback(songStartTime, songEndTime, timePlaying);
+  }
 }
 
 void SoundTool::update(double dt) {

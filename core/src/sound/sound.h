@@ -34,7 +34,8 @@ public:
   void removeAllClocks(); // stop audio thread and unschedule all clocks
 
   // schedule a pattern on the given clock; clock takes ownership of pattern
-  void play(int clockId, std::unique_ptr<Pattern> pattern, Instrument &instrument);
+  void play(int clockId, std::unique_ptr<Pattern> pattern, Instrument &instrument,
+      double initialTimeInStream = 0);
 
   static void clearCache() {
     sfxrSounds.clear();
@@ -46,6 +47,7 @@ public:
   }
 
   void stopAll();
+  void clearStreams();
 
 private:
   void initialize();
@@ -61,7 +63,8 @@ private:
     virtual ~ClockThread() = default;
     void threadFunction();
     void addClock(Clock *);
-    void addStream(int clockId, std::unique_ptr<Pattern> pattern, Instrument &instrument);
+    void addStream(int clockId, std::unique_ptr<Pattern> pattern, Instrument &instrument,
+        double initialTimeInStream = 0);
     void clearStreams();
     void finish();
 

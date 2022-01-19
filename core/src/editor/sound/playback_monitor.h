@@ -15,7 +15,8 @@ public:
   PlaybackMonitor(const PlaybackMonitor &) = delete;
   const PlaybackMonitor &operator=(const PlaybackMonitor &) = delete;
 
-  void add(Clock &clock, std::unique_ptr<Pattern> pattern, Instrument &instrument);
+  void add(Clock &clock, std::unique_ptr<Pattern> pattern, Instrument &instrument,
+      double initialTimeInStream = 0);
   void clear();
   void update(double dt, double clockTime);
   float getPower(int trackIndex);
