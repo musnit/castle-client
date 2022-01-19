@@ -3,6 +3,8 @@
 #include "sound/instruments/sampler.h"
 #include "editor/draw/util.h"
 
+#include <unordered_set>
+
 std::unique_ptr<Pattern> Song::makeEmptyPattern() {
   static std::random_device rd;
   static uuids::basic_uuid_random_generator gen(rd);
@@ -101,6 +103,23 @@ double Song::getLength(Clock &clock) {
     }
   }
   return maxLength;
+}
+
+void Song::cleanUpUnusedPatterns() {
+  std::unordered_set<std::string> patternIdFound;
+  for (auto &track : tracks) {
+    for (auto &[time, sequenceElem] : track->sequence) {
+      patternIdFound.emplace(sequenceElem.patternId());
+    }
+  }
+  for (auto it = patterns.begin(); it != patterns.end();) {
+    auto const &[patternId, _] = *it;
+    if (patternIdFound.find(patternId) != patternIdFound.end()) {
+      ++it;
+    } else {
+      it = patterns.erase(it);
+    }
+  }
 }
 
 std::unique_ptr<Pattern> Song::flattenSequence(

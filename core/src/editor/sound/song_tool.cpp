@@ -98,6 +98,7 @@ void SongTool::update(double dt) {
                 if (selectedTrack->sequence.find(newPatternStartTime)
                     != selectedTrack->sequence.end()) {
                   selectedTrack->sequence.erase(newPatternStartTime);
+                  soundTool.song->cleanUpUnusedPatterns();
                 }
                 selectedTrack->sequence.emplace(newPatternStartTime, newElem);
               }
@@ -147,6 +148,7 @@ void SongTool::update(double dt) {
             // erase existing sequence elem
             if (auto &selectedTrack = soundTool.song->tracks[track]; selectedTrack) {
               selectedTrack->sequence.erase(patternStartTime);
+              soundTool.song->cleanUpUnusedPatterns();
               soundTool.clearSelection();
               soundTool.updateSelectedComponent("erase pattern");
             }

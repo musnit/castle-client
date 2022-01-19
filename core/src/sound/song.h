@@ -47,6 +47,8 @@ public:
   // compute total song length (max among individual track lengths)
   double getLength(Clock &clock);
 
+  void cleanUpUnusedPatterns();
+
   static Track::Sequence::iterator sequenceElemAtTime(Track &track, double timeInSong);
 
   static std::unique_ptr<Pattern> makeEmptyPattern();
