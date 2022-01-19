@@ -171,7 +171,7 @@ void Engine::loadSceneFromFile(const char *path) {
           if (isEditing) {
             editor->readScene(reader);
           } else {
-            player.readScene(reader);
+            player.readScene(reader, std::nullopt);
           }
           pendingSceneLoadedEvent = true;
         });
@@ -196,7 +196,7 @@ void Engine::loadSceneFromJson(const char *json, bool skipScene) {
           if (isEditing) {
             editor->readScene(reader);
           } else {
-            player.readScene(reader);
+            player.readScene(reader, std::nullopt);
           }
         });
       });
@@ -207,6 +207,7 @@ void Engine::loadSceneFromJson(const char *json, bool skipScene) {
 
 void Engine::loadSceneFromDeckId(const char *deckId, const char *variables,
     const char *initialCardId, const char *initialCardSceneDataUrl) {
+  std::string deckIdStr = deckId;
   API::loadDeck(
       deckId, variables, initialCardId, initialCardSceneDataUrl,
       !isEditing, // don't use cache when editing
@@ -226,14 +227,14 @@ void Engine::loadSceneFromDeckId(const char *deckId, const char *variables,
           if (isEditing) {
             editor->readScene(reader);
           } else {
-            player.readScene(reader);
+            player.readScene(reader, deckIdStr);
           }
           pendingSceneLoadedEvent = true;
         }
       });
 }
 
-void Engine::loadSceneFromCardId(const char *cardId) {
+void Engine::loadSceneFromCardId(const char *cardId, std::optional<std::string> deckId) {
   API::loadCard(cardId,
       !isEditing, // don't use cache when editing
       [=](APIResponse &response) {
@@ -242,7 +243,7 @@ void Engine::loadSceneFromCardId(const char *cardId) {
           if (isEditing) {
             editor->readScene(reader);
           } else {
-            player.readScene(reader);
+            player.readScene(reader, deckId);
           }
           pendingSceneLoadedEvent = true;
         }
@@ -369,7 +370,7 @@ void Engine::update(double dt) {
     if (player.hasScene()) {
       if (auto nextCardId = player.getScene().getNextCardId(); nextCardId) {
         // load next card
-        loadSceneFromCardId(nextCardId->c_str());
+        loadSceneFromCardId(nextCardId->c_str(), player.getScene().getDeckId());
 
         // notify the UI that we moved
         // DID_NAVIGATE_TO_CARD distinguishes from editor's NAVIGATE_TO_CARD

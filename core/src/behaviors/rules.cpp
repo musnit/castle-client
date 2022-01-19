@@ -3,6 +3,7 @@
 #include "behaviors/all.h"
 #include "engine.h"
 #include "sound/sample.h"
+#include "api.h"
 
 //
 // Serialization
@@ -1079,6 +1080,124 @@ struct VariableMeetsConditionResponse : BaseResponse {
   }
 };
 
+struct SaveVariableToLeaderboardResponse : BaseResponse {
+  inline static const RuleRegistration<SaveVariableToLeaderboardResponse, RulesBehavior>
+      registration { "save variable to leaderboard" };
+  static constexpr auto description = "Save a variable to the leaderboard";
+
+  struct Params {
+    PROP(Variable, variableId, .label("variable"));
+  } params;
+
+  void run(RuleContext &ctx) override {
+    if (ctx.getScene().getIsEditing())
+      return;
+
+    auto &variables = ctx.getScene().getVariables();
+    auto name = variables.getName(params.variableId());
+    auto value = std::to_string(variables.get(params.variableId()).as<double>());
+    auto deckId = ctx.getScene().getDeckId();
+    if (name && deckId) {
+      API::enqueueGraphQLRequest("mutation {\n  saveVariableToLeaderboard(deckId: \"" + *deckId
+              + "\", variable: \"" + *name + "\", score: " + value + ")\n}",
+          [=](APIResponse &response) {
+          });
+    }
+  }
+};
+
+struct ShowLeaderboardResponse : BaseResponse {
+  inline static const RuleRegistration<ShowLeaderboardResponse, RulesBehavior> registration {
+    "show leaderboard"
+  };
+  static constexpr auto description = "Show the leaderboard for a variable";
+
+  struct Params {
+    PROP(Variable, variableId, .label("variable"));
+    PROP(
+         std::string, type,
+         .allowedValues(
+             "high",
+             "low"
+           )
+         ) = "high";
+    PROP(
+         std::string, filter,
+         .allowedValues(
+             "each user once",
+             "each user multiple times"
+           )
+         ) = "each user once";
+  } params;
+
+  void showDismissableTextBox(RuleContext &ctx, std::string text) {
+    // Create blueprint of new text actor to add
+    Archive archive;
+    archive.write([&](Archive::Writer &writer) {
+      writer.obj("components", [&]() {
+        // Text component with content
+        writer.obj("Text", [&]() {
+          writer.str("content", text);
+        });
+
+        // Rules component with action
+        writer.obj("Rules", [&]() {
+          writer.arr("rules", [&]() {
+            writer.obj([&]() {
+              // Tap trigger
+              writer.obj("trigger", [&]() {
+                writer.str("name", "tap");
+                writer.num("behaviorId", TextBehavior::behaviorId);
+              });
+
+              // Response
+              writer.obj("response", [&]() {
+                auto &rulesBehavior = ctx.getScene().getBehaviors().byType<RulesBehavior>();
+                writer.num("index", rulesBehavior.getDestroyResponseIndex());
+              });
+            });
+          });
+        });
+      });
+    });
+
+    // Create actor from blueprint
+    archive.read([&](Reader &reader) {
+      Scene::ActorDesc newActorDesc;
+      newActorDesc.reader = &reader;
+      ctx.getScene().addActor(newActorDesc);
+    });
+  }
+
+  void run(RuleContext &ctx) override {
+    auto &variables = ctx.getScene().getVariables();
+    auto name = variables.getName(params.variableId());
+    auto type = params.type();
+    auto filter = params.filter();
+    if (filter == "each user once") {
+      filter = "dedupUsers";
+    } else {
+      filter = "none";
+    }
+    auto deckId = ctx.getScene().getDeckId();
+    if (name && deckId) {
+      API::enqueueGraphQLRequest("{\n  leaderboard(deckId: \"" + *deckId + "\", variable: \""
+              + *name + "\", type: " + type + ", filter: " + filter + ") {\n    text\n  }\n}",
+          [&](APIResponse &response) {
+            auto &reader = response.reader;
+            reader.obj("data", [&]() {
+              reader.obj("leaderboard", [&]() {
+                auto text = reader.str("text", "");
+                showDismissableTextBox(ctx, text);
+              });
+            });
+          });
+    } else {
+      showDismissableTextBox(
+          ctx, "This will show a leaderboard when playing the deck outside the editor.");
+    }
+  }
+};
 
 //
 // Camera responses

@@ -39,7 +39,7 @@ public:
   const Scene &operator=(const Scene &) = delete;
 
   explicit Scene(Bridge &bridge_, Variables &variables_, Sound &sound, Clock &clock,
-      bool isEditing_, Reader *maybeReader = nullptr);
+      std::optional<std::string> deckId, bool isEditing_, Reader *maybeReader = nullptr);
   ~Scene();
 
 
@@ -192,6 +192,9 @@ public:
   Clock &getClock();
   const Clock &getClock() const;
 
+  // Deck id
+  const std::optional<std::string> getDeckId() const;
+
 
   // Scene-level props
   struct Props {
@@ -248,6 +251,7 @@ private:
   bool isEditing;
   Sound &sound;
   Clock &clock;
+  std::optional<std::string> deckId;
 
   entt::registry registry;
 
@@ -536,6 +540,10 @@ inline Clock &Scene::getClock() {
 
 inline const Clock &Scene::getClock() const {
   return clock;
+}
+
+inline const std::optional<std::string> Scene::getDeckId() const {
+  return deckId;
 }
 
 inline bool Scene::isBackgroundDark() const {

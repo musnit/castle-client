@@ -19,7 +19,7 @@ public:
   void update(double dt);
   void draw();
 
-  void readScene(Reader &reader);
+  void readScene(Reader &reader, std::optional<std::string> deckId);
   void readVariables(Reader &reader);
   Variables &getVariables();
   bool hasScene();
@@ -37,6 +37,7 @@ private:
   Variables variables;
   Clock clock;
   Sound sound;
+  std::optional<std::string> deckId;
 
   Archive sceneArchive;
   std::unique_ptr<Scene> scene;

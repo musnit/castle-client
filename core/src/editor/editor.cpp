@@ -38,7 +38,7 @@ void Editor::setIsPlaying(bool playing_) {
             scene.write(writer);
           });
           archive.read([&](Reader &reader) {
-            player->readScene(reader);
+            player->readScene(reader, std::nullopt);
           });
         }
         playing = true;
@@ -101,7 +101,7 @@ void Editor::clearState() {
 }
 
 void Editor::readScene(Reader &reader) {
-  scene = std::make_unique<Scene>(bridge, variables, sound, clock, true, &reader);
+  scene = std::make_unique<Scene>(bridge, variables, sound, clock, std::nullopt, true, &reader);
   isEditorStateDirty = true;
   isSelectedActorStateDirty = true;
   Debug::log("editor: read scene");
@@ -115,7 +115,7 @@ void Editor::readVariables(Reader &reader) {
 void Editor::loadEmptyScene() {
   editVariables.clear();
   resetClock();
-  scene = std::make_unique<Scene>(bridge, variables, sound, clock, true);
+  scene = std::make_unique<Scene>(bridge, variables, sound, clock, std::nullopt, true);
   isEditorStateDirty = true;
   isSelectedActorStateDirty = true;
   Debug::log("editor: init empty scene");
@@ -703,7 +703,7 @@ void Editor::maybeLoadPlayerSnapshot(const char *json) {
       // don't read variables, maintain existing deck state
       reader.obj("sceneData", [&]() {
         reader.obj("snapshot", [&]() {
-          player->readScene(reader);
+          player->readScene(reader, std::nullopt);
         });
       });
     });

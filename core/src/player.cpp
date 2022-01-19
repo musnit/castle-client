@@ -25,6 +25,13 @@ JS_DEFINE(char *, JS_getNextCardSceneData, (), {
     return 0;
   };
 });
+JS_DEFINE(char *, JS_getDeckId, (), {
+  if (Castle.deckId) {
+    return allocate(intArrayFromString(Castle.deckId), ALLOC_NORMAL);
+  } else {
+    return 0;
+  };
+});
 
 
 //
@@ -59,11 +66,13 @@ void Player::tryLoadVariables() {
 
 void Player::tryLoadNextCard() {
 #ifdef __EMSCRIPTEN__
+  deckId = JS_getDeckId();
+
   if (auto sceneDataJson = JS_getNextCardSceneData()) {
     sceneArchive = Archive::fromJson(sceneDataJson);
     sceneArchive.read([&](Reader &reader) {
       reader.obj("snapshot", [&]() {
-        scene = std::make_unique<Scene>(bridge, variables, sound, clock, false, &reader);
+        scene = std::make_unique<Scene>(bridge, variables, sound, clock, deckId, false, &reader);
       });
     });
     free(sceneDataJson);
@@ -71,9 +80,10 @@ void Player::tryLoadNextCard() {
 #endif
 }
 
-void Player::readScene(Reader &reader) {
+void Player::readScene(Reader &reader, std::optional<std::string> deckId_) {
   sceneArchive = Archive::fromJson(reader.toJson().c_str());
-  scene = std::make_unique<Scene>(bridge, variables, sound, clock, false, &reader);
+  deckId = deckId_;
+  scene = std::make_unique<Scene>(bridge, variables, sound, clock, deckId, false, &reader);
 }
 
 void Player::readVariables(Reader &reader) {
@@ -94,10 +104,11 @@ void Player::update(double dt) {
       sceneArchive.read([&](Reader &reader) {
         if (reader.has("snapshot")) {
           reader.obj("snapshot", [&]() {
-            scene = std::make_unique<Scene>(bridge, variables, sound, clock, false, &reader);
+            scene
+                = std::make_unique<Scene>(bridge, variables, sound, clock, deckId, false, &reader);
           });
         } else {
-          scene = std::make_unique<Scene>(bridge, variables, sound, clock, false, &reader);
+          scene = std::make_unique<Scene>(bridge, variables, sound, clock, deckId, false, &reader);
         }
       });
     }

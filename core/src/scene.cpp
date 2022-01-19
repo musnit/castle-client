@@ -10,12 +10,13 @@
 // Constructor, destructor
 //
 
-Scene::Scene(Bridge &bridge_, Variables &variables_, Sound &sound_, Clock &clock_, bool isEditing_,
-    Reader *maybeReader)
+Scene::Scene(Bridge &bridge_, Variables &variables_, Sound &sound_, Clock &clock_,
+    std::optional<std::string> deckId_, bool isEditing_, Reader *maybeReader)
     : variables(variables_)
     , bridge(bridge_)
     , clock(clock_)
     , sound(sound_)
+    , deckId(deckId_)
     , isEditing(isEditing_)
     , physicsContactListener(*this)
     , behaviors(std::make_unique<AllBehaviors>(*this))

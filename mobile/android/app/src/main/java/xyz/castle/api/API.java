@@ -36,6 +36,11 @@ public class API {
                 .addHeader("X-Platform", "mobile")
                 .addHeader("X-Scene-Creator-Version", MainActivity.SCENE_CREATOR_API_VERSION);
 
+        String authToken = CastleSharedPreferences.getAuthToken();
+        if (authToken != null) {
+            builder.addHeader("X-Auth-Token", authToken);
+        }
+
         client.newCall(builder.build()).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {

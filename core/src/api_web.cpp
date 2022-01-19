@@ -3,17 +3,28 @@
 #include "api.h"
 #include "js.h"
 
+JS_DEFINE(int, JS_graphqlPostRequest, (int requestId, const char *body, int bodyLen),
+    { Castle.graphqlPostRequest(requestId, UTF8ToString(body, bodyLen)); });
+
 JS_DEFINE(int, JS_dataRequest, (int requestId, const char *url, int urlLen),
     { Castle.dataRequest(requestId, UTF8ToString(url, urlLen)); });
 
 namespace CastleAPI {
 
 static int requestId = 0;
+static std::map<int, const std::function<void(bool, std::string, std::string)>>
+    activeGraphQLPostRequests;
 static std::map<int, const std::function<void(bool, std::string, unsigned char *, unsigned long)>>
     activeDataRequests;
 
 void graphqlPostRequest(
     const std::string &body, const std::function<void(bool, std::string, std::string)> callback) {
+  int currentRequestId = requestId++;
+  activeGraphQLPostRequests.insert(
+      std::pair<int, const std::function<void(bool, std::string, std::string)>>(
+          currentRequestId, callback));
+
+  JS_graphqlPostRequest(currentRequestId, body.c_str(), body.length());
 }
 
 void getRequest(
@@ -29,6 +40,18 @@ void getDataRequest(const std::string &url,
 
   JS_dataRequest(currentRequestId, url.c_str(), url.length());
 }
+}
+
+extern "C" void jsGraphQLPostRequestComplete(int requestId, int success, char *response) {
+  if (CastleAPI::activeGraphQLPostRequests[requestId]) {
+    if (success) {
+      CastleAPI::activeGraphQLPostRequests[requestId](true, "", response);
+    } else {
+      CastleAPI::activeGraphQLPostRequests[requestId](false, "error", "");
+    }
+
+    CastleAPI::activeGraphQLPostRequests.erase(requestId);
+  }
 }
 
 extern "C" void jsDataRequestCompleted(

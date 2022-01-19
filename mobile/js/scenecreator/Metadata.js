@@ -274,6 +274,12 @@ const data = {
     ['change variable']: {
       category: 'state',
     },
+    ['save variable to leaderboard']: {
+      category: 'state',
+    },
+    ['show leaderboard']: {
+      category: 'state',
+    },
     ['set counter']: {
       category: 'state',
     },

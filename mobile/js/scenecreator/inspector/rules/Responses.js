@@ -773,6 +773,62 @@ const ChangeVariable = ({ response, context }) => {
   ];
 };
 
+const SaveVariableToLeaderboard = ({ response, context }) => {
+  const changeAllParams = {
+    paramNames: ['variableId'],
+    paramValues: {
+      ...response.params,
+    },
+  };
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Save variable',
+    },
+    {
+      type: 'selectParamSheet',
+      label: formatVariableName(getVariableName(response.params?.variableId, context.variables)),
+      ...changeAllParams,
+    },
+    {
+      type: 'text',
+      label: 'to leaderboard',
+    },
+  ];
+};
+
+const ShowLeaderboard = ({ response, context }) => {
+  const changeAllParams = {
+    paramNames: ['variableId'],
+    paramValues: {
+      ...response.params,
+    },
+  };
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Show leaderboard for ',
+    },
+    {
+      type: 'selectParamSheet',
+      label: formatVariableName(getVariableName(response.params?.variableId, context.variables)),
+      ...changeAllParams,
+    },
+    {
+      type: 'selectParamSheet',
+      paramName: 'type',
+      paramValue: response.params?.type ?? 0,
+      label: `${response.params?.type ?? 'high'} on top`,
+    },
+    {
+      type: 'selectParamSheet',
+      paramName: 'filter',
+      paramValue: response.params?.filter ?? 0,
+      label: response.params?.filter,
+    },
+  ];
+};
+
 const SetCounter = ({ response, context }) => {
   return [
     {
@@ -1119,6 +1175,8 @@ export const Responses = {
   ['reset variable']: ResetVariable,
   ['set variable']: SetVariable,
   ['change variable']: ChangeVariable,
+  ['save variable to leaderboard']: SaveVariableToLeaderboard,
+  ['show leaderboard']: ShowLeaderboard,
   ['set counter']: SetCounter,
   ['change counter']: ChangeCounter,
   ['send player to card']: SendPlayerToCard,

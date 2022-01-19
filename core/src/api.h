@@ -73,6 +73,16 @@ private:
     }
   };
 
+  struct QueuedRequest {
+    std::string query;
+    const std::function<void(APIResponse &)> callback;
+
+    QueuedRequest(const std::string &query, const std::function<void(APIResponse &)> &callback)
+        : query(query)
+        , callback(callback) {
+    }
+  };
+
   inline static std::mutex cacheLock;
   inline static std::unordered_map<std::string, std::list<std::function<void(APIResponse &)>>>
       urlToPendingCallbacks;
@@ -81,6 +91,8 @@ private:
   // are handled they'll be moved to cachedResponses
   inline static std::unordered_map<std::string, APICacheResponse> completedRequests;
   inline static std::unordered_map<std::string, std::string> cardIdToSceneDataUrl;
+  inline static std::queue<QueuedRequest> requestQueue;
+  inline static bool isRunningQueuedRequest = false;
 
   static void graphqlThread(
       const std::string &query, const std::function<void(APIResponse &)> &callback) {
@@ -241,9 +253,35 @@ public:
     }
   }
 
+  static void runRequestFromQueue() {
+    if (isRunningQueuedRequest) {
+      return;
+    }
+
+    if (requestQueue.empty()) {
+      return;
+    }
+
+    isRunningQueuedRequest = true;
+    auto request = requestQueue.front();
+    requestQueue.pop();
+
+    graphql(request.query, [=](APIResponse &response) {
+      request.callback(response);
+      isRunningQueuedRequest = false;
+      runRequestFromQueue();
+    });
+  }
+
+  static void enqueueGraphQLRequest(
+      const std::string &query, const std::function<void(APIResponse &)> &callback) {
+    requestQueue.push(QueuedRequest(query, callback));
+    runRequestFromQueue();
+  }
+
   static void graphql(
       const std::string &query, const std::function<void(APIResponse &)> &callback) {
-#ifdef ANDROID
+#if defined(ANDROID) || defined(__EMSCRIPTEN__)
     graphqlThread(query, callback);
 #else
     std::thread { &API::graphqlThread, query, callback }.detach();
@@ -280,7 +318,7 @@ public:
       cacheLock.lock();
       urlToPendingCallbacks.insert({ url, { callback } });
 
-#ifdef ANDROID
+#if defined(ANDROID) || defined(__EMSCRIPTEN__)
       cacheLock.unlock();
       getThread(url);
 #else

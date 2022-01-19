@@ -72,6 +72,7 @@ public:
 
   const ExpressionValue &get(Variable variable) const; // Default `ExpressionValue` if no such
   std::optional<ExpressionValue> get(const std::string &name) const;
+  const std::optional<std::string> getName(Variable variable) const;
   void set(Variable variable, ExpressionValue value);
   void reset(Variable variable);
   void resetAll();
@@ -133,6 +134,14 @@ inline const ExpressionValue &Variables::get(Variable variable) const {
 inline std::optional<ExpressionValue> Variables::get(const std::string &variable) const {
   if (auto found = byName.find(variable); found != byName.end()) {
     return get(found->second);
+  } else {
+    return std::nullopt;
+  }
+}
+
+inline const std::optional<std::string> Variables::getName(Variable variable) const {
+  if (auto elem = map.lookup(variable.token)) {
+    return elem->name;
   } else {
     return std::nullopt;
   }
