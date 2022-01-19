@@ -282,3 +282,29 @@ void TrackTool::changeInstrument(Sample &sample) {
   }
   soundTool.updateSelectedComponent("change instrument");
 }
+
+struct TrackToolChangePatternReceiver {
+  inline static const BridgeRegistration<TrackToolChangePatternReceiver> registration {
+    "TRACK_TOOL_CHANGE_PATTERN"
+  };
+
+  struct Params {
+    PROP(Pattern, value);
+  } params;
+
+  void receive(Engine &engine) {
+    auto editor = engine.maybeGetEditor();
+    if (!editor)
+      return;
+
+    editor->soundTool.trackTool.changePattern(params.value());
+  }
+};
+
+void TrackTool::changePattern(Pattern &pattern) {
+  // this only supports changing pattern props besides notes, such as color
+  if (auto selectedPattern = soundTool.getSelectedPattern(); selectedPattern) {
+    selectedPattern->color = pattern.color;
+  }
+  soundTool.updateSelectedComponent("change pattern");
+}

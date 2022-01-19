@@ -29,8 +29,9 @@ public:
   void update(double dt);
   void drawOverlay();
 
-  // edit current instrument
+  // edit selected instrument or pattern
   void changeInstrument(Sample &sample);
+  void changePattern(Pattern &pattern);
 
   void selectPatternId(std::string &patternId);
   void updateViewConstraints();

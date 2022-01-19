@@ -105,6 +105,7 @@ private:
   friend struct SoundToolActionReceiver;
   friend struct SoundToolSetSubtoolReceiver;
   friend struct TrackToolChangeInstrumentReceiver;
+  friend struct TrackToolChangePatternReceiver;
 
   Lv &lv { Lv::getInstance() };
   Bridge &bridge;
