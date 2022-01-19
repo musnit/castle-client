@@ -64,6 +64,7 @@ private:
   void validateSelection();
 
   void addPattern(double steps, int trackIndex);
+  void setSelectedSequenceLoops(bool loop);
 
   // for playback
   bool isPlaying = false;

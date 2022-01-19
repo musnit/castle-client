@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { InspectorCheckbox } from '../../inspector/components/InspectorCheckbox';
+import { sendAsync } from '../../../core/CoreEvents';
 
 import * as Constants from '../../../Constants';
 import ColorPicker from '../../inspector/components/ColorPicker';
@@ -31,11 +32,29 @@ const styles = StyleSheet.create({
 });
 
 export const Pattern = ({ pattern, sequenceElem }) => {
-  const setColor = React.useCallback((color) => {
-    // TODO:
-  }, []);
+  const onChangePattern = React.useCallback(
+    (pattern) => {
+      sendAsync('TRACK_TOOL_CHANGE_PATTERN', {
+        value: pattern,
+      });
+    },
+    [pattern]
+  );
+  const setColor = React.useCallback(
+    (color) => {
+      onChangePattern({
+        ...pattern,
+        notes: undefined, // not going to be used anyway, avoid parsing
+        color: { r: color[0], g: color[1], b: color[2], a: color[3] },
+      });
+    },
+    [onChangePattern]
+  );
   const setSequenceLoop = React.useCallback((loop) => {
-    // TODO:
+    sendAsync('EDITOR_SOUND_TOOL_ACTION', {
+      action: 'setSequenceLoops',
+      doubleValue: loop ? 1 : 0,
+    });
   }, []);
 
   if (pattern) {

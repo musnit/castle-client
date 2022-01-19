@@ -107,6 +107,18 @@ void SoundTool::addPattern(double steps, int trackIndex) {
   }
 }
 
+void SoundTool::setSelectedSequenceLoops(bool loop) {
+  if (auto track = getSelectedTrack(); track) {
+    auto itr = track->sequence.find(selectedSequenceStartTime);
+    if (itr != track->sequence.end()) {
+      if (itr->second.loop() != loop) {
+        itr->second.loop() = loop;
+        updateSelectedComponent("change loop");
+      }
+    }
+  }
+}
+
 void SoundTool::togglePlay() {
   if (hasSong()) {
     auto &scene = editor.getScene();
@@ -238,6 +250,11 @@ struct SoundToolActionReceiver {
         soundTool.validateSelection();
         soundTool.updateSelectedComponent("delete track");
       }
+    } else if (action == "setSequenceLoops") {
+      // TODO: if we have more complex changes to make to SequenceElem, consider splitting
+      // into separate receiver that just takes SequenceElem prop
+      bool loop = params.doubleValue() == 1 ? true : false;
+      soundTool.setSelectedSequenceLoops(loop);
     }
   }
 };
