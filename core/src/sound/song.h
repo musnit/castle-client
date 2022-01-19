@@ -44,6 +44,10 @@ public:
   std::unique_ptr<Pattern> flattenSequence(
       int trackIndex, double startTime, double endTime, Clock &clock);
 
+  // run `flattenSequence` for all tracks, normalizing all tracks to the maximum play length
+  std::vector<std::unique_ptr<Pattern>> flattenTracksForPlayback(
+      double songStartTime, double songEndTime, Clock &clock);
+
   // compute total song length (max among individual track lengths)
   double getLength(Clock &clock);
 

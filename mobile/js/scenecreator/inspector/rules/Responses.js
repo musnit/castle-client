@@ -1106,6 +1106,31 @@ const SetClockTempo = ({ response, context }) => {
   ];
 };
 
+const PlaySong = ({ response }) => {
+  const loop = response.params?.loop ?? true;
+  return [
+    {
+      type: 'selectEntry',
+      label: `Play this actor's song`,
+    },
+    {
+      type: 'selectParamSheet',
+      label: loop ? 'on loop' : 'once',
+      paramName: 'loop',
+      paramValue: loop,
+    },
+  ];
+};
+
+const StopSong = () => {
+  return [
+    {
+      type: 'selectEntry',
+      label: `Stop this actor's song`,
+    },
+  ];
+};
+
 const IsInCameraViewport = () => {
   return [
     {
@@ -1191,6 +1216,8 @@ export const Responses = {
   ['play sound']: PlaySound,
   ['play pattern']: PlayPattern,
   ['set clock tempo']: SetClockTempo,
+  ['play song']: PlaySong,
+  ['stop song']: StopSong,
   ['follow with camera']: FollowWithCamera,
   ['is in camera viewport']: IsInCameraViewport,
   ['animation frame meets condition']: AnimationFrameMeetsCondition,

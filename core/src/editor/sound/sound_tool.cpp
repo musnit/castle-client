@@ -152,26 +152,10 @@ std::pair<double, double> SoundTool::getPlaybackEndpoints() {
   return { songStartTime, songEndTime };
 }
 
-std::vector<std::unique_ptr<Pattern>> SoundTool::flattenTracksForPlayback(
-    double songStartTime, double songEndTime) {
-  auto &scene = editor.getScene();
-  std::vector<std::unique_ptr<Pattern>> patterns;
-  for (size_t idx = 0; idx < song->tracks.size(); idx++) {
-    auto pattern = song->flattenSequence(idx, songStartTime, songEndTime, scene.getClock());
-
-    // loop all tracks to full selection length (needed if a track ends with silence)
-    pattern->loop = Pattern::Loop::ExplicitLength;
-    pattern->loopLength = songEndTime - songStartTime;
-
-    patterns.push_back(std::move(pattern));
-  }
-  return patterns;
-}
-
 void SoundTool::scheduleSongForPlayback(
     double songStartTime, double songEndTime, double initialTimeInSong) {
   auto &scene = editor.getScene();
-  auto patterns = flattenTracksForPlayback(songStartTime, songEndTime);
+  auto patterns = song->flattenTracksForPlayback(songStartTime, songEndTime, scene.getClock());
   for (size_t idx = 0; idx < song->tracks.size(); idx++) {
     auto &pattern = patterns[idx];
     auto &track = song->tracks[idx];

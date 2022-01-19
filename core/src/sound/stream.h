@@ -13,6 +13,9 @@ public:
   std::unique_ptr<Pattern> pattern;
   Instrument &instrument;
 
+  inline static int nextStreamId = 0;
+  int streamId = nextStreamId++;
+
   double nextTime(); // in steps
   bool hasNext();
   void playNextNotes(Sound &sound);

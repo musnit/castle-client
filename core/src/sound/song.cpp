@@ -203,3 +203,18 @@ std::unique_ptr<Pattern> Song::flattenSequence(
   }
   return result;
 }
+
+std::vector<std::unique_ptr<Pattern>> Song::flattenTracksForPlayback(
+    double songStartTime, double songEndTime, Clock &clock) {
+  std::vector<std::unique_ptr<Pattern>> patterns;
+  for (size_t idx = 0; idx < tracks.size(); idx++) {
+    auto pattern = flattenSequence(idx, songStartTime, songEndTime, clock);
+
+    // loop all tracks to full selection length (needed if a track ends with silence)
+    pattern->loop = Pattern::Loop::ExplicitLength;
+    pattern->loopLength = songEndTime - songStartTime;
+
+    patterns.push_back(std::move(pattern));
+  }
+  return patterns;
+}

@@ -23,4 +23,11 @@ public:
 
   static std::string hash(const std::string &songJson);
   void handleEnableComponent(ActorId actorId, MusicComponent &component);
+  void handleDisableComponent(ActorId actorId, MusicComponent &component, bool removeActor);
+
+  void stopSong(ActorId &actorId, Scene &scene, MusicComponent *component);
+  void playSong(ActorId &actorId, Scene &scene, MusicComponent *component, bool loop);
+
+  // handles to currently-running music streams, by actor
+  std::unordered_map<ActorId, std::vector<int>> activeStreams;
 };

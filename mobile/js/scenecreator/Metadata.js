@@ -335,6 +335,12 @@ const data = {
         },
       },
     },
+    ['play song']: {
+      category: USE_CLOCK ? 'sound' : 'clock',
+    },
+    ['stop song']: {
+      category: USE_CLOCK ? 'sound' : 'clock',
+    },
     ['set clock tempo']: {
       category: 'clock',
     },
