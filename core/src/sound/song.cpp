@@ -137,8 +137,7 @@ std::unique_ptr<Pattern> Song::flattenSequence(
       }
     }
 
-    // figure out how long this pattern loops for
-    // TODO: option not to loop
+    // figure out how long until next sequence (or end of song)
     double sequenceElemEndTime = endTime;
     if (next != track.sequence.end()) {
       // until next pattern or end of the range
@@ -148,6 +147,12 @@ std::unique_ptr<Pattern> Song::flattenSequence(
     } else if (sequenceElemEndTime <= startTime) {
       // we're the last pattern, no end time specified, so play once and end
       sequenceElemEndTime = timeInTrack + patternLoopLength;
+    }
+
+    // figure out how long to actually write this pattern's notes
+    double patternLoopEndTime = sequenceElemEndTime;
+    if (!current->second.loop()) {
+      patternLoopEndTime = timeInTrack + patternLoopLength;
     }
 
     // bail early if our nearest notes happen after the stream finished
@@ -163,7 +168,7 @@ std::unique_ptr<Pattern> Song::flattenSequence(
           interrupted = true;
           break;
         } else {
-          if (timeInOutput + step >= 0) {
+          if (timeInOutput + step >= 0 && timeInTrack + step < patternLoopEndTime) {
             for (auto &note : notes) {
               result->addNote(timeInOutput + step, note.key);
             }

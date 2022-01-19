@@ -5,6 +5,7 @@ Pattern::Pattern(const Pattern &other) {
   patternId = other.patternId;
   color = other.color;
   loop = other.loop;
+  loopLength = other.loopLength;
   for (auto &[time, notesList] : other.notes) {
     notes[time] = notesList;
   }
@@ -14,6 +15,7 @@ const Pattern &Pattern::operator=(const Pattern &other) {
   patternId = other.patternId;
   color = other.color;
   loop = other.loop;
+  loopLength = other.loopLength;
   for (auto &[time, notesList] : other.notes) {
     notes[time] = notesList;
   }
@@ -28,7 +30,11 @@ void Pattern::write(Writer &writer) const {
   case Loop::NextBar:
     writer.str("loop", "nextBar");
     break;
+  case Loop::ExplicitLength:
+    writer.str("loop", "length");
+    break;
   }
+  writer.num("loopLength", loopLength);
   writer.str("patternId", patternId);
   writer.write("color", color);
   writer.write("notes", notes);
@@ -41,7 +47,10 @@ void Pattern::read(Reader &reader) {
     loop = Loop::None;
   } else if (loopStr = "nextBar") {
     loop = Loop::NextBar;
+  } else if (loopStr = "length") {
+    loop = Loop::ExplicitLength;
   }
+  loopLength = reader.num("loopLength", 0.0);
   reader.obj("color", [&]() {
     reader.read(color);
   });
@@ -62,6 +71,8 @@ double Pattern::getLoopLength(Clock &clock) {
     double lastTimeInBar = (notes.size() > 0) ? notes.rbegin()->first : 0;
     return std::ceil((lastTimeInBar + 0.01) / barLength) * barLength;
   }
+  case Loop::ExplicitLength:
+    return loopLength;
   case Loop::None:
     return 0;
   }

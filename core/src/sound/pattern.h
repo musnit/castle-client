@@ -43,10 +43,11 @@ public:
 
   enum class Loop {
     None,
-    NextBar,
-    // TODO: specific loop length
+    NextBar, // from final note, extend to start of next bar based on current clock
+    ExplicitLength, // specify a length in steps, regardless of notes
   };
   Loop loop = Loop::NextBar;
+  double loopLength = 0; // only used for Loop::ExplicitLength
 
   double getLoopLength(Clock &clock);
 

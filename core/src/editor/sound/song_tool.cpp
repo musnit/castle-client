@@ -171,22 +171,24 @@ void SongTool::drawSequence(std::map<double, Song::Track::SequenceElem> &sequenc
         stepsToBars(patternLength) * unit, 0.95f * unit);
 
     // draw loop arrows
-    double endTime = startTime + patternLength, currentTime = endTime;
-    auto next = std::next(current);
-    if (next != sequence.end()) {
-      endTime = next->first;
-    } else {
-      endTime = soundTool.songTotalLength;
-    }
-    while (currentTime < endTime) {
-      // arrow start: currentTime
-      // arrow end: min(currentTime + loopLength, endTime)
-      auto loopEndTime = std::min(currentTime + patternLength, endTime);
-      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, stepsToBars(currentTime) * unit,
-          0.475f * unit, stepsToBars(loopEndTime - currentTime) * unit, 0.05f * unit);
-      lv.graphics.circle(love::Graphics::DrawMode::DRAW_FILL, stepsToBars(loopEndTime) * unit,
-          0.5f * unit, 0.07f * unit);
-      currentTime = loopEndTime;
+    if (sequenceElem.loop()) {
+      double endTime = startTime + patternLength, currentTime = endTime;
+      auto next = std::next(current);
+      if (next != sequence.end()) {
+        endTime = next->first;
+      } else {
+        endTime = soundTool.songTotalLength;
+      }
+      while (currentTime < endTime) {
+        // arrow start: currentTime
+        // arrow end: min(currentTime + loopLength, endTime)
+        auto loopEndTime = std::min(currentTime + patternLength, endTime);
+        lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, stepsToBars(currentTime) * unit,
+            0.475f * unit, stepsToBars(loopEndTime - currentTime) * unit, 0.05f * unit);
+        lv.graphics.circle(love::Graphics::DrawMode::DRAW_FILL, stepsToBars(loopEndTime) * unit,
+            0.5f * unit, 0.07f * unit);
+        currentTime = loopEndTime;
+      }
     }
 
     // summarize notes
@@ -224,14 +226,16 @@ void SongTool::drawTrack(Song::Track *track, int index, double timePlaying, floa
       auto loopLength = soundTool.song->patterns[startSeq->second.patternId()].getLoopLength(
           getScene().getClock());
       auto timeInSeq = timeInSong - startSeq->first;
-      while (loopLength > 0 && timeInSeq > loopLength) {
-        timeInSeq -= loopLength;
+      if (startSeq->second.loop() || timeInSeq < loopLength) {
+        while (loopLength > 0 && timeInSeq > loopLength) {
+          timeInSeq -= loopLength;
+        }
+        auto bars = stepsToBars(timeInSeq);
+        float playheadX = (bars + stepsToBars(startSeq->first)) * unit;
+        lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+        lv.graphics.rectangle(
+            love::Graphics::DrawMode::DRAW_FILL, playheadX, 0.025f * unit, 0.1f, 0.95f * unit);
       }
-      auto bars = stepsToBars(timeInSeq);
-      float playheadX = (bars + stepsToBars(startSeq->first)) * unit;
-      lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-      lv.graphics.rectangle(
-          love::Graphics::DrawMode::DRAW_FILL, playheadX, 0.025f * unit, 0.1f, 0.95f * unit);
     }
   }
 }

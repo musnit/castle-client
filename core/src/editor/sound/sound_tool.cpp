@@ -127,7 +127,6 @@ void SoundTool::togglePlay() {
       scene.getSound().stopAll();
     } else {
       // schedule current song to play now
-      songLoopLength = 0;
       auto trackIndex = 0;
       double songStartTime = 0, songEndTime = songTotalLength;
       if (selectedPatternId != "") {
@@ -136,22 +135,30 @@ void SoundTool::togglePlay() {
           auto itr = track->sequence.find(selectedSequenceStartTime);
           if (itr != track->sequence.end()) {
             songStartTime = selectedSequenceStartTime;
-            auto next = std::next(itr);
-            if (next != track->sequence.end()) {
-              // go until next pattern, or end of song
-              songEndTime = next->first;
+            if (!itr->second.loop()) {
+              // selected pattern doesn't loop in song view, so don't capture space after it
+              auto &pattern = song->patterns[itr->second.patternId()];
+              songEndTime = selectedSequenceStartTime + pattern.getLoopLength(scene.getClock());
+            } else {
+              // selected patern loops, so go until next pattern, or end of song
+              auto next = std::next(itr);
+              if (next != track->sequence.end()) {
+                songEndTime = next->first;
+              }
             }
           }
         }
       }
+      songLoopLength = songEndTime;
       for (auto &track : song->tracks) {
         auto pattern
             = song->flattenSequence(trackIndex, songStartTime, songEndTime, scene.getClock());
-        auto trackLoopLength = pattern->getLoopLength(scene.getClock());
+
+        // loop all tracks to full selection length (needed if a track ends with silence)
+        pattern->loop = Pattern::Loop::ExplicitLength;
+        pattern->loopLength = songLoopLength;
+
         scene.getSound().play(scene.getClock().clockId, std::move(pattern), *track->instrument);
-        if (trackLoopLength > songLoopLength) {
-          songLoopLength = trackLoopLength;
-        }
         trackIndex++;
       }
       playStartTime = scene.getClock().getTime();
