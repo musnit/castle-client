@@ -397,7 +397,7 @@ void PlayButtonFeed::loadDeckAtIndex(int i) {
   std::thread t([=] {
     auto deckArchive = Archive::fromJson(decks[i].deckJson.c_str());
     deckArchive.read([&](Reader &reader) {
-      auto deckId = reader.str("deckId", "");
+      std::string deckId = reader.str("deckId", "");
 
       reader.arr("variables", [&]() {
         decks[i].player->readVariables(reader);
