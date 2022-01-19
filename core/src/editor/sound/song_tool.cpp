@@ -57,15 +57,26 @@ void SongTool::update(double dt) {
       double patternStartTime = 0;
       if (selectedExistingTrack && bar >= 0) {
         if (auto &selectedTrack = soundTool.song->tracks[track]; selectedTrack) {
-          for (auto &[startTime, sequenceElem] : selectedTrack->sequence) {
+          auto &sequence = selectedTrack->sequence;
+          auto current = sequence.begin();
+          while (current != sequence.end()) {
+            auto &[startTime, sequenceElem] = *current;
+            auto next = std::next(current);
             auto &pattern = soundTool.song->patterns[sequenceElem.patternId()];
             auto startTimeBars = stepsToBars(startTime);
-            auto patternWidth = stepsToBars(pattern.getLoopLength(clock));
-            if (bar >= startTimeBars && bar < startTimeBars + patternWidth) {
+            auto patternLength = pattern.getLoopLength(clock);
+            if (next != sequence.end()) {
+              if (startTime + patternLength > next->first) {
+                // interrupted by next pattern
+                patternLength = next->first - startTime;
+              }
+            }
+            if (bar >= startTimeBars && bar < startTimeBars + stepsToBars(patternLength)) {
               patternId = sequenceElem.patternId();
               patternStartTime = startTime;
               break;
             }
+            current++;
           }
         }
       }
@@ -184,6 +195,7 @@ void SongTool::drawSequence(std::map<double, Song::Track::SequenceElem> &sequenc
   auto current = sequence.begin();
   while (current != sequence.end()) {
     auto &[startTime, sequenceElem] = *current;
+    auto next = std::next(current);
     auto &patternId = sequenceElem.patternId();
     auto &pattern = soundTool.song->patterns[patternId];
     auto startTimeBars = stepsToBars(startTime) * unit;
@@ -191,6 +203,12 @@ void SongTool::drawSequence(std::map<double, Song::Track::SequenceElem> &sequenc
     // draw pattern rectangle
     lv.graphics.setColor({ 0.8f, 0.8f, 0.8f, 1.0f });
     auto patternLength = pattern.getLoopLength(clock);
+    if (next != sequence.end()) {
+      if (startTime + patternLength > next->first) {
+        // interrupted by next pattern
+        patternLength = next->first - startTime;
+      }
+    }
     lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, startTimeBars, 0.025f * unit,
         stepsToBars(patternLength) * unit, 0.95f * unit);
 
@@ -206,7 +224,6 @@ void SongTool::drawSequence(std::map<double, Song::Track::SequenceElem> &sequenc
     // draw loop arrows
     if (sequenceElem.loop()) {
       double endTime = startTime + patternLength, currentTime = endTime;
-      auto next = std::next(current);
       if (next != sequence.end()) {
         endTime = next->first;
       } else {
@@ -232,6 +249,9 @@ void SongTool::drawSequence(std::map<double, Song::Track::SequenceElem> &sequenc
     auto noteWidth = stepsToBars(unit);
     auto centerY = unit * 0.5f - keyHeight;
     for (auto &[time, notes] : pattern) {
+      if (time > patternLength) {
+        break;
+      }
       auto x = startTimeBars + stepsToBars(time) * unit;
       for (auto &note : notes) {
         auto y = ((note.key - 60) * -keyHeight) + centerY;
