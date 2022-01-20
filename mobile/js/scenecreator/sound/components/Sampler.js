@@ -28,9 +28,10 @@ export const Sampler = ({ instrument }) => {
   const onChangeSample = React.useCallback(
     (sample) => {
       sendAsync('TRACK_TOOL_CHANGE_INSTRUMENT', {
+        action: 'setSample',
         sampleValue: sample,
       });
-      if (sample.type === 'sfxr') {
+      if (sample.type === 'sfxr' || sample.type === 'tone') {
         sendAsync('EDITOR_CHANGE_SOUND', sample);
       }
     },

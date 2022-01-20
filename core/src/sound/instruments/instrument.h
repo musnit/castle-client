@@ -17,6 +17,10 @@ public:
 
   virtual std::string getType() const;
   virtual void play(Sound &sound, Pattern::Note note) = 0;
+
+  struct Props {
+    PROP(bool, muted) = false;
+  } props;
 };
 
 inline std::string Instrument::getType() const {

@@ -30,7 +30,6 @@ public:
   void drawOverlay();
 
   // edit selected instrument or pattern
-  void changeInstrument(Sample &sample);
   void changePattern(Pattern &pattern);
 
   void selectPatternId(std::string &patternId);

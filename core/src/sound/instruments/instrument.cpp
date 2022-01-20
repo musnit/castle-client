@@ -17,6 +17,7 @@ Instrument::~Instrument() {
 
 void Instrument::write(Writer &writer) const {
   writer.write("type", getType());
+  writer.write("props", props);
 }
 
 void Instrument::read(Reader &reader) {
@@ -24,10 +25,14 @@ void Instrument::read(Reader &reader) {
 
 std::unique_ptr<Instrument> Instrument::readVirtual(Reader &reader) {
   auto type = std::string(reader.str("type", "instrument"));
+  std::unique_ptr<Instrument> result = nullptr;
   if (type == "sampler") {
     auto sampler = std::make_unique<Sampler>();
     sampler->read(reader);
-    return sampler;
+    result = std::move(sampler);
   }
-  return nullptr;
+  reader.obj("props", [&]() {
+    reader.read(result->props);
+  });
+  return result;
 }

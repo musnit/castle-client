@@ -45,16 +45,7 @@ const TAB_ITEMS = [
   },
 ];
 
-const TrackInspectorTabs = ({ soundToolState, selectedTab }) => {
-  const component = useCoreState('EDITOR_SELECTED_COMPONENT:Music') || {
-    props: {
-      song: {
-        patterns: {},
-        tracks: [],
-      },
-    },
-  };
-
+const TrackInspectorTabs = ({ component, soundToolState, selectedTab }) => {
   let selectedTrack;
   const { selectedTrackIndex, selectedPatternId, selectedSequenceStartTime } = soundToolState;
   if (selectedTrackIndex >= 0) {
@@ -85,6 +76,14 @@ const TrackInspectorTabs = ({ soundToolState, selectedTab }) => {
 
 export const SoundTrackInspectorSheet = ({ isOpen, ...props }) => {
   const soundToolState = useCoreState('EDITOR_SOUND_TOOL') || {};
+  const component = useCoreState('EDITOR_SELECTED_COMPONENT:Music') || {
+    props: {
+      song: {
+        patterns: {},
+        tracks: [],
+      },
+    },
+  };
   const [selectedTab, setSelectedTab] = React.useState(TAB_ITEMS[0].value);
 
   const title = 'Track'; // TODO: track identifier of some kind
@@ -96,12 +95,17 @@ export const SoundTrackInspectorSheet = ({ isOpen, ...props }) => {
       selectedTab={selectedTab}
       setSelectedTab={setSelectedTab}
       soundToolState={soundToolState}
+      component={component}
     />
   );
 
   const renderContent = () =>
     !isOpen ? null : (
-      <TrackInspectorTabs soundToolState={soundToolState} selectedTab={selectedTab} />
+      <TrackInspectorTabs
+        soundToolState={soundToolState}
+        component={component}
+        selectedTab={selectedTab}
+      />
     );
 
   return (

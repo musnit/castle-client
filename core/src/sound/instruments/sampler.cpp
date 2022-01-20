@@ -19,16 +19,19 @@ void Sampler::read(Reader &reader) {
 }
 
 void Sampler::play(Sound &sound, Pattern::Note note) {
-  // play our given Sample, pitched up or down according to note.key
+  if (!props.muted()) {
+    // play our given Sample, pitched up or down according to note.key
 
-  // TODO: playbackRate is an expression to be compat with rules, but we don't
-  // care about anything except constant values here
-  /* auto basePlaybackRate = std::clamp(
-     params.playbackRate().eval<double>(ctx), Sample::minPlaybackRate, Sample::maxPlaybackRate); */
+    // TODO: playbackRate is an expression to be compat with rules, but we don't
+    // care about anything except constant values here
+    /* auto basePlaybackRate = std::clamp(
+       params.playbackRate().eval<double>(ctx), Sample::minPlaybackRate, Sample::maxPlaybackRate);
+     */
 
-  auto basePlaybackRate = 1.0f;
-  auto keyFromMidiC4 = note.key - 60;
-  auto playbackRate = basePlaybackRate * pow(2.0f, keyFromMidiC4 / 12.0f);
+    auto basePlaybackRate = 1.0f;
+    auto keyFromMidiC4 = note.key - 60;
+    auto playbackRate = basePlaybackRate * pow(2.0f, keyFromMidiC4 / 12.0f);
 
-  sound.play(sample, playbackRate);
+    sound.play(sample, playbackRate);
+  }
 }

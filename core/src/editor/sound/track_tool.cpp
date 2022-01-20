@@ -260,6 +260,9 @@ struct TrackToolChangeInstrumentReceiver {
   };
 
   struct Params {
+    PROP(std::string, action);
+    PROP(Instrument::Props, props);
+
     // TODO: other instrument types besides sampler
     PROP(Sample, sampleValue);
   } params;
@@ -269,17 +272,21 @@ struct TrackToolChangeInstrumentReceiver {
     if (!editor)
       return;
 
-    editor->soundTool.trackTool.changeInstrument(params.sampleValue());
+    auto &soundTool = editor->soundTool;
+    if (auto selectedTrack = soundTool.getSelectedTrack(); selectedTrack) {
+      auto action = params.action();
+      if (action == "setProps") {
+        Instrument *instrument = selectedTrack->instrument.get();
+        instrument->props = params.props();
+        soundTool.updateSelectedComponent("change track");
+      } else if (action == "setSample") {
+        Sampler *sampler = (Sampler *)selectedTrack->instrument.get();
+        sampler->sample = params.sampleValue();
+        soundTool.updateSelectedComponent("change sample");
+      }
+    }
   }
 };
-
-void TrackTool::changeInstrument(Sample &sample) {
-  if (auto selectedTrack = soundTool.getSelectedTrack(); selectedTrack) {
-    Sampler *sampler = (Sampler *)selectedTrack->instrument.get();
-    sampler->sample = sample;
-  }
-  soundTool.updateSelectedComponent("change instrument");
-}
 
 struct TrackToolChangePatternReceiver {
   inline static const BridgeRegistration<TrackToolChangePatternReceiver> registration {

@@ -48,6 +48,7 @@ private:
   friend class TrackTool;
   friend class SongTool;
   friend struct SoundToolActionReceiver;
+  friend struct TrackToolChangeInstrumentReceiver;
 
   Lv &lv { Lv::getInstance() };
   Editor &editor;

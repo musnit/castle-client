@@ -6,6 +6,8 @@ import { sendAsync } from '../../../core/CoreEvents';
 import * as Constants from '../../../Constants';
 const CastleIcon = Constants.CastleIcon;
 
+import Feather from 'react-native-vector-icons/Feather';
+
 const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
@@ -49,9 +51,12 @@ const styles = StyleSheet.create({
   },
 });
 
-const TrackHeaderActions = ({ onRemoveTrack, onClose }) => {
+const TrackHeaderActions = ({ onRemoveTrack, isMuted, setIsMuted, onClose }) => {
   return (
     <View style={styles.actions}>
+      <TouchableOpacity style={styles.closeButton} onPress={() => setIsMuted(!isMuted)}>
+        <Feather name={isMuted ? 'volume-x' : 'volume-2'} size={22} color="#000" />
+      </TouchableOpacity>
       <TouchableOpacity style={styles.actionButton} onPress={onRemoveTrack}>
         <CastleIcon name="trash" size={22} color="#000" />
       </TouchableOpacity>
@@ -69,8 +74,13 @@ export const SoundTrackInspectorHeader = ({
   selectedTab,
   setSelectedTab,
   soundToolState,
+  component,
 }) => {
   const { selectedTrackIndex } = soundToolState;
+  let selectedTrack;
+  if (component && selectedTrackIndex >= 0) {
+    selectedTrack = component.props.song.tracks[selectedTrackIndex];
+  }
 
   const removeTrack = React.useCallback(async () => {
     await sendAsync('EDITOR_SOUND_TOOL_ACTION', {
@@ -84,13 +94,33 @@ export const SoundTrackInspectorHeader = ({
     sendAsync('EDITOR_SOUND_TOOL_ACTION', { action: 'selectTrack', doubleValue: -1 });
   }, []);
 
+  const instrumentProps = selectedTrack?.instrument.props || {};
+  const isMuted = instrumentProps.muted || false;
+  const setIsMuted = React.useCallback(
+    (muted) => {
+      sendAsync('TRACK_TOOL_CHANGE_INSTRUMENT', {
+        action: 'setProps',
+        props: {
+          ...instrumentProps,
+          muted,
+        },
+      });
+    },
+    [instrumentProps]
+  );
+
   return (
     <View pointerEvents={isOpen ? 'auto' : 'none'}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Text style={styles.trackTitle}>{title}</Text>
         </View>
-        <TrackHeaderActions onRemoveTrack={removeTrack} onClose={deselectTrack} />
+        <TrackHeaderActions
+          onRemoveTrack={removeTrack}
+          isMuted={isMuted}
+          setIsMuted={setIsMuted}
+          onClose={deselectTrack}
+        />
       </View>
       <View style={styles.navigation}>
         <SegmentedNavigation
