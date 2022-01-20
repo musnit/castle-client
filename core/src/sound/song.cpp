@@ -183,6 +183,13 @@ std::unique_ptr<Pattern> Song::flattenSequence(
       } else {
         timeInTrack += patternLoopLength;
         timeInOutput += patternLoopLength;
+        if (timeInTrack > sequenceElemEndTime) {
+          // this only happens if we finished the pattern's notes, but the silence at the end
+          // was interrupted by the next elem
+          auto overshoot = timeInTrack - sequenceElemEndTime;
+          timeInTrack -= overshoot;
+          timeInOutput -= overshoot;
+        }
       }
     }
 
