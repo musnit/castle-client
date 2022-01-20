@@ -194,6 +194,7 @@ export const CORE_OVERLAY_TEXT_STYLE = {
   regularBackgroundColor: [0.89, 0.9, 0.99, 1],
   regularForegroundcolor: [0.137, 0.133, 0.196, 1],
   tappableBackgroundColor: [0.137, 0.133, 0.196, 1],
+  tappingBackgroundColor: [2 * 0.137, 2 * 0.133, 2 * 0.196, 0.9],
   tappableForegroundColor: [0.89, 0.9, 0.99, 1],
   fontSize: 20,
   horizontalPadding: 4,

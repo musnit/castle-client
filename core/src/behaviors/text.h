@@ -66,6 +66,8 @@ struct TextComponent : BaseComponent {
     love::Vector2 max { 0, 0 };
   };
   mutable std::optional<TouchRectangle> touchRectangle;
+  mutable TouchId lastTouchId = nullTouch;
+  mutable bool touching = false;
   TextFontResource *fontResource = nullptr;
 };
 
@@ -98,6 +100,7 @@ public:
     PROP(love::Colorf, regularBackgroundColor) = { 1, 1, 1, 1 };
     PROP(love::Colorf, regularForegroundColor) = { 0, 0, 0, 1 };
     PROP(love::Colorf, tappableBackgroundColor) = { 0, 0, 0, 1 };
+    PROP(love::Colorf, tappingBackgroundColor) = { 0, 0, 0, 1 };
     PROP(love::Colorf, tappableForegroundColor) = { 1, 1, 1, 1 };
     PROP(float, fontSize) = 10;
     PROP(float, horizontalPadding) = 2;

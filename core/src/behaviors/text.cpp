@@ -131,10 +131,17 @@ void TextBehavior::handleReadComponent(ActorId actorId, TextComponent &component
 //
 
 void TextBehavior::handlePrePerform() {
+  auto &bodyBehavior = getBehaviors().byType<BodyBehavior>();
+
+  // Clear touching state
+  forEachComponent([&](ActorId actorId, TextComponent &component) {
+    if (!bodyBehavior.hasComponent(actorId)) {
+      component.touching = false;
+    }
+  });
+
   // Fire tap triggers
   auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
-  auto &bodyBehavior = getBehaviors().byType<BodyBehavior>();
-  auto currTime = lv.timer.getTime();
   auto fired = false; // Fire on at most one actor
   getGesture().forEachTouch([&](TouchId touchId, const Touch &touch) {
     if (fired) {
@@ -143,8 +150,23 @@ void TextBehavior::handlePrePerform() {
     if (touch.isUsed() && !touch.isUsed(TextBehavior::overlayTouchToken)) {
       return;
     }
-    auto tapped = touch.released && !touch.movedFar && currTime - touch.pressTime < 0.3;
-    if (!(touch.pressed || tapped)) {
+
+    forEachComponent([&](ActorId actorId, TextComponent &component) {
+      if (bodyBehavior.hasComponent(actorId)) {
+        return;
+      }
+      auto &rect = *component.touchRectangle;
+      auto inRect = rect.min.x <= touch.pos.x && touch.pos.x <= rect.max.x
+          && rect.min.y <= touch.pos.y && touch.pos.y <= rect.max.y;
+      if (inRect) {
+        if (touch.pressed) {
+          component.lastTouchId = touchId;
+        }
+        component.touching = true;
+      }
+    });
+
+    if (!(touch.pressed || touch.released)) {
       return;
     }
     rulesBehavior.fireAllIf<TextTapTrigger, TextComponent>(
@@ -166,7 +188,7 @@ void TextBehavior::handlePrePerform() {
               && rect.min.y <= touch.pos.y && touch.pos.y <= rect.max.y;
           if (inRect) {
             touch.use(TextBehavior::overlayTouchToken);
-            if (tapped) {
+            if (component.lastTouchId == touchId && touch.released) {
               fired = true;
             }
           }
@@ -353,6 +375,7 @@ void TextBehavior::handleDrawOverlay() const {
   lv.graphics.push(love::Graphics::STACK_ALL);
   lv.graphics.setFont(font);
   auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
+  auto &gesture = scene.getGesture();
   for (auto [actorId, component] : elems) {
     auto isTappable = rulesBehavior.hasTrigger<TextTapTrigger>(actorId);
 
@@ -367,7 +390,11 @@ void TextBehavior::handleDrawOverlay() const {
     // Move up by box height, draw box
     y -= betweenMargin + boxHeight;
     if (isTappable) {
-      lv.graphics.setColor(style.tappableBackgroundColor());
+      if (component->touching && gesture.hasTouch(component->lastTouchId)) {
+        lv.graphics.setColor(style.tappingBackgroundColor());
+      } else {
+        lv.graphics.setColor(style.tappableBackgroundColor());
+      }
     } else {
       lv.graphics.setColor(style.regularBackgroundColor());
     }
