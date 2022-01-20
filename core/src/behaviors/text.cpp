@@ -395,6 +395,62 @@ void TextBehavior::handleDrawOverlay() const {
   lv.graphics.pop();
 }
 
+std::optional<std::string> TextBehavior::handleDrawBase64PreviewPng(
+    ActorId actorId, const TextComponent &component) {
+  constexpr auto canvasSize = 256;
+  auto padding = 22.0f;
+  auto textLines = 3;
+  auto textHeight = canvasSize - 2 * padding;
+  auto fontSize = textHeight / float(textLines);
+  if (!previewCanvas) {
+    previewCanvas.reset(love::DrawDataFrame::newCanvas(canvasSize, canvasSize));
+  }
+  lv.renderTo(previewCanvas.get(), [&]() {
+    lv.graphics.push(love::Graphics::STACK_ALL);
+    lv.graphics.origin();
+    lv.graphics.clear(love::Colorf(0, 0, 0, 0), 0, 0);
+
+    auto font = component.fontResource ? getFont(component.fontResource, float(fontSize))
+                                       : getOverlayFont();
+
+    lv.graphics.setFont(font);
+
+    auto color = love::toColorf(component.props.color());
+    auto luminance = 0.299 * color.r + 0.587 * color.g + 0.114 * color.b;
+    if (luminance > 0.5) {
+      lv.graphics.setColor({ 0.137, 0.133, 0.196, 1 });
+      lv.graphics.rectangle(
+          love::Graphics::DRAW_FILL, 0, 0, canvasSize, canvasSize, 1.2f * padding, 1.2f * padding);
+    }
+
+    auto fontHeight = font->getHeight();
+    auto textScale = (textHeight / float(textLines)) / fontHeight;
+
+    lv.graphics.setColor(color);
+    lv.graphics.push();
+    lv.graphics.scale(textScale, textScale);
+    std::vector<std::string> lines;
+    auto &content = component.props.content();
+    font->getWrap({ { content, { 1, 1, 1, 1 } } }, canvasSize / textScale, lines);
+    for (auto i = 0; i < textLines; ++i) {
+      lv.graphics.print({ { lines[i], { 1, 1, 1, 1 } } },
+          love::Matrix4(padding / textScale, padding / textScale + fontHeight * float(i), 0, 1, 1,
+              0, 0, 0, 0));
+    }
+    lv.graphics.pop();
+
+    if (luminance > 0.5) {
+      lv.graphics.setColor({ 0.137, 0.133, 0.196, 1 });
+      lv.graphics.setLineWidth(padding);
+      lv.graphics.rectangle(love::Graphics::DRAW_FILL, canvasSize - padding, 1.22f * padding,
+          padding, canvasSize - 2 * 1.22f * padding);
+    }
+
+    lv.graphics.pop();
+  });
+  return love::DrawDataFrame::encodeBase64Png(previewCanvas.get());
+}
+
 
 //
 // Getters, setters

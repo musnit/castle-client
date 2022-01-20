@@ -84,6 +84,8 @@ public:
   bool handleDrawComponent(ActorId actorId, const TextComponent &component,
       std::optional<SceneDrawingOptions> options) const;
   void handleDrawOverlay() const;
+  std::optional<std::string> handleDrawBase64PreviewPng(
+      ActorId actorId, const TextComponent &component);
 
   void handleSetProperty(
       ActorId actorId, TextComponent &component, PropId propId, const ExpressionValue &value);
@@ -121,6 +123,8 @@ private:
   mutable love::Font *overlayFont = nullptr;
   love::Font *getFont(TextFontResource *fontResource, float pixelSize) const;
   love::Font *getOverlayFont() const;
+
+  std::unique_ptr<love::Canvas> previewCanvas;
 
   void updateFont(TextComponent &component);
 

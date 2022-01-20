@@ -161,6 +161,7 @@ DEFINE_HANDLER(UpdateComponentPosition);
 // Draw
 DEFINE_HANDLER(DrawComponent);
 DEFINE_HANDLER(DrawOverlay);
+DEFINE_HANDLER(DrawBase64PreviewPng);
 
 #undef DEFINE_HANDLER
 }

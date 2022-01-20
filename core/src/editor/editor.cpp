@@ -543,13 +543,18 @@ void Editor::updateBlueprint(ActorId actorId, UpdateBlueprintParams params) {
       });
       if (oldEntry) {
         if (params.updateBase64Png) {
-          if (auto drawingComponent
+          auto &textBehavior = scene->getBehaviors().byType<TextBehavior>();
+          if (auto textComponent = textBehavior.maybeGetComponent(actorId)) {
+            if (auto base64Png = textBehavior.handleDrawBase64PreviewPng(actorId, *textComponent)) {
+              writer.str("base64Png", base64Png->c_str());
+            }
+          } else if (auto drawingComponent
               = scene->getBehaviors().byType<Drawing2Behavior>().maybeGetComponent(actorId)) {
             auto initialFrameZeroIndex = int(drawingComponent->props.initialFrame()) - 1;
             if (auto base64Png
                 = drawingComponent->drawData->renderPreviewPng(initialFrameZeroIndex, -1);
                 base64Png) {
-              writer.str("base64Png", base64Png.value().c_str());
+              writer.str("base64Png", base64Png->c_str());
             }
           }
         } else {
@@ -1183,6 +1188,11 @@ struct EditorModifyComponentReceiver {
           auto updateBase64Png = false;
           if constexpr (std::is_same_v<BehaviorType, Drawing2Behavior>) {
             updateBase64Png = (propId == decltype(Drawing2Component::Props::initialFrame)::id);
+          }
+          if constexpr (std::is_same_v<BehaviorType, TextBehavior>) {
+            updateBase64Png = (propId == decltype(TextComponent::Props::content)::id)
+                || (propId == decltype(TextComponent::Props::fontName)::id)
+                || (propId == decltype(TextComponent::Props::color)::id);
           }
           if (propType == "string") {
             auto oldValueCStr = behavior.getProperty(actorId, propId).template as<const char *>();
