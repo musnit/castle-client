@@ -1,5 +1,26 @@
 #include "pattern.h"
 #include "clock.h"
+#include "editor/draw/util.h"
+
+std::string Pattern::makePatternId() {
+  static std::random_device rd;
+  static uuids::basic_uuid_random_generator gen(rd);
+  return uuids::to_string(gen());
+}
+
+std::unique_ptr<Pattern> Pattern::makeEmptyPattern() {
+  auto pattern = std::make_unique<Pattern>();
+  pattern->patternId = makePatternId();
+  pattern->color = DrawUtil::getRandomCastlePaletteColor();
+  return pattern;
+}
+
+std::unique_ptr<Pattern> Pattern::fork(Pattern &pattern) {
+  auto fork = std::make_unique<Pattern>(pattern);
+  fork->patternId = makePatternId();
+  fork->color = DrawUtil::getRandomCastlePaletteColor();
+  return fork;
+}
 
 Pattern::Pattern(const Pattern &other) {
   patternId = other.patternId;

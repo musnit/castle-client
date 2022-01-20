@@ -1,9 +1,10 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { InspectorCheckbox } from '../../inspector/components/InspectorCheckbox';
 import { sendAsync } from '../../../core/CoreEvents';
 
 import * as Constants from '../../../Constants';
+import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 import ColorPicker from '../../inspector/components/ColorPicker';
 
 const styles = StyleSheet.create({
@@ -56,17 +57,25 @@ export const Pattern = ({ pattern, sequenceElem }) => {
       doubleValue: loop ? 1 : 0,
     });
   }, []);
+  const forkPattern = React.useCallback((fork) => {
+    sendAsync('EDITOR_SOUND_TOOL_ACTION', {
+      action: 'forkSelectedPattern',
+    });
+  }, []);
 
   if (pattern) {
     return (
       <View style={styles.container}>
         <View style={styles.row}>
-          <Text style={styles.label}>Name</Text>
-          <Text style={styles.title}>{pattern.patternId.substring(0, 18)}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Color</Text>
-          <ColorPicker value={pattern.color} setValue={setColor} />
+          <View style={styles.row}>
+            <View style={{ marginRight: 8 }}>
+              <ColorPicker value={pattern.color} setValue={setColor} />
+            </View>
+            <Text style={styles.title}>{pattern.patternId.substring(0, 18)}</Text>
+          </View>
+          <TouchableOpacity onPress={forkPattern} style={SceneCreatorConstants.styles.button}>
+            <Text style={SceneCreatorConstants.styles.buttonLabel}>Fork</Text>
+          </TouchableOpacity>
         </View>
         {sequenceElem ? (
           <View style={styles.row}>

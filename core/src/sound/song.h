@@ -54,8 +54,6 @@ public:
   void cleanUpUnusedPatterns();
 
   static Track::Sequence::iterator sequenceElemAtTime(Track &track, double timeInSong);
-
-  static std::unique_ptr<Pattern> makeEmptyPattern();
   static std::unique_ptr<Track> makeDefaultTrack();
 };
 

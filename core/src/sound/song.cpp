@@ -1,18 +1,8 @@
 #include "song.h"
 #include "archive.h"
 #include "sound/instruments/sampler.h"
-#include "editor/draw/util.h"
 
 #include <unordered_set>
-
-std::unique_ptr<Pattern> Song::makeEmptyPattern() {
-  static std::random_device rd;
-  static uuids::basic_uuid_random_generator gen(rd);
-  auto pattern = std::make_unique<Pattern>();
-  pattern->patternId = uuids::to_string(gen());
-  pattern->color = DrawUtil::getRandomCastlePaletteColor();
-  return pattern;
-}
 
 std::unique_ptr<Song::Track> Song::makeDefaultTrack() {
   // default sampler
@@ -124,7 +114,7 @@ void Song::cleanUpUnusedPatterns() {
 
 std::unique_ptr<Pattern> Song::flattenSequence(
     int trackIndex, double startTime, double endTime, Clock &clock) {
-  auto result = Song::makeEmptyPattern();
+  auto result = Pattern::makeEmptyPattern();
 
   auto &track = *tracks[trackIndex];
   auto current = Song::sequenceElemAtTime(track, startTime);

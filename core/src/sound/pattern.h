@@ -28,6 +28,8 @@ public:
   Pattern() = default;
   Pattern(const Pattern &);
   const Pattern &operator=(const Pattern &);
+  static std::unique_ptr<Pattern> makeEmptyPattern();
+  static std::unique_ptr<Pattern> fork(Pattern &);
 
   std::string patternId = "";
   love::Colorf color;
@@ -72,5 +74,6 @@ public:
   }
 
 private:
+  static std::string makePatternId();
   std::map<double, SmallVector<Note, 2>> notes; // ordered time (in steps) -> notes at step
 };

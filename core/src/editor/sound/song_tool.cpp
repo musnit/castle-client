@@ -127,7 +127,7 @@ void SongTool::update(double dt) {
             soundTool.sendUIEvent();
           } else if (bar < 0 && track == int(soundTool.song->tracks.size())) {
             // touched the N+1th track axis, add new track and pattern
-            auto emptyPattern = Song::makeEmptyPattern();
+            auto emptyPattern = Pattern::makeEmptyPattern();
             auto defaultTrack = Song::makeDefaultTrack();
             Song::Track::SequenceElem firstElem { emptyPattern->patternId, true };
             defaultTrack->sequence.emplace(0, firstElem);
@@ -425,11 +425,3 @@ void SongTool::drawOverlay() {
 
   lv.graphics.pop();
 }
-
-//
-// Events
-//
-
-// TODO:
-// add and remove tracks
-// edit a particular track/pattern
