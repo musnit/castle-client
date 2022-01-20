@@ -24,6 +24,8 @@ void hexToRGBFloat(int hexColor, float *out);
 
 bool pathIntersectsCircle(love::PathData &path, float x, float y, float radius);
 bool pickColor(love::DrawDataFrame &frame, float x, float y, float radius, love::Colorf &outColor);
+
+float luminance(float *rgb);
 }
 
 inline bool DrawUtil::isPointInBounds(float x, float y) {
@@ -41,3 +43,7 @@ inline float DrawUtil::unit(float f) {
     return -1;
   return 1;
 }
+
+inline float DrawUtil::luminance(float *rgb) {
+  return 0.2126f * rgb[0] + 0.7152f * rgb[1] + 0.0722f * rgb[2];
+};

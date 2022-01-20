@@ -172,8 +172,7 @@ void TrackTool::drawPattern(Pattern *pattern) {
   if (!pattern) {
     return;
   }
-  love::Colorf noteColor { 0.3f, 0.3f, 0.3f, 1.0f };
-  lv.graphics.setColor(noteColor);
+  lv.graphics.setColor(pattern->color);
 
   for (auto &[time, notes] : *pattern) {
     auto x = time * gridCellSize;

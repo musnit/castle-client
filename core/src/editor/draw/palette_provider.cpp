@@ -74,10 +74,6 @@ int NearestGreedyPaletteProvider::nextColor(love::image::Pixel &inPixel, love::P
 // brightness, mark as used, don't repeat
 //
 
-float luminance(float *rgb) {
-  return 0.2126f * rgb[0] + 0.7152f * rgb[1] + 0.0722f * rgb[2];
-}
-
 SimilarLuminancePaletteProvider::SimilarLuminancePaletteProvider() {
   palette = DrawUtil::getCastlePalette();
   float colorRgba[4];
@@ -85,7 +81,7 @@ SimilarLuminancePaletteProvider::SimilarLuminancePaletteProvider() {
     DrawUtil::hexToRGBFloat(color, colorRgba);
 
     // deliberately reduce luminance accuracy so that we can get some wiggle by shuffling
-    float approxLuminance = std::floor(luminance(colorRgba) / 20.0f) * 20.0f;
+    float approxLuminance = std::floor(DrawUtil::luminance(colorRgba) / 20.0f) * 20.0f;
 
     luminances.emplace(color, approxLuminance);
   }
@@ -117,7 +113,7 @@ int SimilarLuminancePaletteProvider::nextColor(
 
   for (auto color : palette) {
     if (colorUsed.find(color) == colorUsed.end()) {
-      auto inLum = luminance(inRgba);
+      auto inLum = DrawUtil::luminance(inRgba);
       auto compareLum = luminances[color];
       auto distance = std::fabs(inLum - compareLum);
       if (distance < minDist) {

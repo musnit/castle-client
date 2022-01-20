@@ -3,6 +3,7 @@
 #include "bridge.h"
 #include "sound/instruments/sampler.h"
 #include "sound_tool.h"
+#include "editor/draw/util.h"
 
 SongTool::SongTool(SoundTool &soundTool_)
     : soundTool(soundTool_) {
@@ -203,7 +204,7 @@ void SongTool::drawSequence(Song::Track::Sequence &sequence, float unit) {
     auto startTimeBars = stepsToBars(startTime) * unit;
 
     // draw pattern rectangle
-    lv.graphics.setColor({ 0.8f, 0.8f, 0.8f, 1.0f });
+    lv.graphics.setColor(pattern.color);
     auto patternLength = pattern.getLoopLength(clock);
     if (next != sequence.end()) {
       if (startTime + patternLength > next->first) {
@@ -217,11 +218,9 @@ void SongTool::drawSequence(Song::Track::Sequence &sequence, float unit) {
     // draw pattern outline
     if (patternId == soundTool.selectedPatternId) {
       lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-    } else {
-      lv.graphics.setColor(pattern.color);
+      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_LINE, startTimeBars, 0.025f * unit,
+          stepsToBars(patternLength) * unit, 0.95f * unit);
     }
-    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_LINE, startTimeBars, 0.025f * unit,
-        stepsToBars(patternLength) * unit, 0.95f * unit);
 
     // draw loop arrows
     if (sequenceElem.loop()) {
@@ -245,7 +244,12 @@ void SongTool::drawSequence(Song::Track::Sequence &sequence, float unit) {
 
     // summarize notes
     // TODO: editor maintains min/max per track
-    lv.graphics.setColor({ 0.3f, 0.3f, 0.3f, 1.0f });
+    auto luminance = DrawUtil::luminance((float *)&pattern.color);
+    if (luminance < 0.5f) {
+      lv.graphics.setColor({ 0.8f, 0.8f, 0.8f, 1.0f });
+    } else {
+      lv.graphics.setColor({ 0.3f, 0.3f, 0.3f, 1.0f });
+    }
     constexpr auto maxKey = 24.0f, minKey = -24.0f;
     auto keyHeight = unit / (maxKey - minKey);
     auto noteWidth = stepsToBars(unit);
