@@ -370,6 +370,14 @@ void SoundTool::sendUIEvent() {
     break;
   case Mode::Track:
     modeStr = "track";
+    switch (trackTool.selectedSubtool) {
+    case TrackTool::Subtool::Select:
+      subtoolStr = "select";
+      break;
+    case TrackTool::Subtool::Erase:
+      subtoolStr = "erase";
+      break;
+    }
     break;
   }
 
@@ -400,8 +408,14 @@ struct SoundToolSetSubtoolReceiver {
         editor->soundTool.songTool.selectedSubtool = SongTool::Subtool::Erase;
       }
       editor->soundTool.clearSelection();
-      editor->soundTool.sendUIEvent();
+    } else if (params.mode() == "track") {
+      if (params.subtool() == "select") {
+        editor->soundTool.trackTool.selectedSubtool = TrackTool::Subtool::Select;
+      } else if (params.subtool() == "erase") {
+        editor->soundTool.trackTool.selectedSubtool = TrackTool::Subtool::Erase;
+      }
     }
+    editor->soundTool.sendUIEvent();
   }
 };
 

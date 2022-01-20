@@ -35,6 +35,12 @@ public:
   void selectPatternId(std::string &patternId);
   void updateViewConstraints();
 
+  enum class Subtool {
+    Select,
+    Erase,
+  };
+  Subtool selectedSubtool = Subtool::Select;
+
 private:
   friend struct TrackToolActionReceiver;
 

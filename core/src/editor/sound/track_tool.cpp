@@ -14,14 +14,18 @@ Scene &TrackTool::getScene() {
 
 void TrackTool::resetState() {
   hasTouch = false;
+  selectedSubtool = Subtool::Select;
   viewWidth = PATTERN_DEFAULT_VIEW_WIDTH;
 }
 
 void TrackTool::onSetActive() {
   hasTouch = false;
+  selectedSubtool = Subtool::Select;
   viewWidth = PATTERN_DEFAULT_VIEW_WIDTH;
   viewPosition.x = 0.0f;
   viewPosition.y = 0.0f;
+  tempNote.time = -1;
+  tempNote.key = 999;
   updateViewConstraints();
 }
 
@@ -62,21 +66,37 @@ void TrackTool::update(double dt) {
       bool playNote = false;
 
       if (touch.released) {
-        if (step >= 0) {
-          bool oldHasNote = pattern->hasNote(step, key);
-          if (oldHasNote) {
-            pattern->removeNote(step, key);
-          } else {
+        switch (selectedSubtool) {
+        case Subtool::Select: {
+          if (step >= 0 && !pattern->hasNote(step, key)) {
             pattern->addNote(step, key);
+            soundTool.updateSelectedComponent("add notes");
           }
-          soundTool.updateSelectedComponent("change notes");
+          break; // Subtool::Select
+        }
+        case Subtool::Erase: {
+          if (step >= 0 && pattern->hasNote(step, key)) {
+            pattern->removeNote(step, key);
+            soundTool.updateSelectedComponent("remove notes");
+          }
+          break; // Subtool::Erase
+        }
         }
         hasTouch = false;
+        tempNote.key = 999; // reset for next gesture
       } else {
         hasTouch = true;
-        if (touch.pressed || key != tempNote.key) {
-          // moved to a different note while touch was active
-          playNote = true;
+        switch (selectedSubtool) {
+        case Subtool::Select: {
+          if (touch.pressed || key != tempNote.key) {
+            // moved to a different note while touch was active
+            playNote = true;
+          }
+          break; // Subtool::Select
+        }
+        case Subtool::Erase: {
+          break; // Subtool::Erase
+        }
         }
         tempNote.time = step;
         tempNote.key = key;
@@ -162,7 +182,7 @@ void TrackTool::drawPattern(Pattern *pattern) {
       lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);
     }
   }
-  if (hasTouch) {
+  if (hasTouch && selectedSubtool == Subtool::Select) {
     // draw temp note
     auto x = tempNote.time * gridCellSize;
     auto y = ((tempNote.key - 60) * -gridCellSize) - gridCellSize;

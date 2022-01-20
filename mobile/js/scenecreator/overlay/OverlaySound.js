@@ -64,7 +64,16 @@ const SUBTOOL_GROUPS = {
       icon: 'erase',
     },
   ],
-  track: [],
+  track: [
+    {
+      name: 'select',
+      icon: 'grab',
+    },
+    {
+      name: 'erase',
+      icon: 'erase',
+    },
+  ],
 };
 
 export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
