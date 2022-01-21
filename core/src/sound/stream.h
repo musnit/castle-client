@@ -41,7 +41,7 @@ inline void Stream::fastForward(double time) {
       time -= patternClockLoopLength;
     }
     current = pattern->lower_bound(time);
-    if (!hasNext() && pattern->loop != Pattern::Loop::None) {
+    if (!hasNext() && pattern->loop() != Pattern::Loop::None) {
       current = pattern->begin();
     }
     startTime -= time;
@@ -66,7 +66,7 @@ inline void Stream::playNextNotes(Sound &sound) {
 
 inline void Stream::skipToNext() {
   current++;
-  if (!hasNext() && pattern->loop != Pattern::Loop::None) {
+  if (!hasNext() && pattern->loop() != Pattern::Loop::None) {
     // restart according to pattern's loop length
     current = pattern->begin();
     startTime += patternClockLoopLength;

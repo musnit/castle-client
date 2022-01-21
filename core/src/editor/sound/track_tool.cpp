@@ -172,7 +172,7 @@ void TrackTool::drawPattern(Pattern *pattern) {
   if (!pattern) {
     return;
   }
-  lv.graphics.setColor(pattern->color);
+  lv.graphics.setColor(pattern->color());
 
   for (auto &[time, notes] : *pattern) {
     auto x = time * gridCellSize;
@@ -328,7 +328,7 @@ struct TrackToolChangePatternReceiver {
 void TrackTool::changePattern(Pattern &pattern) {
   // this only supports changing pattern props besides notes, such as color
   if (auto selectedPattern = soundTool.getSelectedPattern(); selectedPattern) {
-    selectedPattern->color = pattern.color;
+    selectedPattern->color = pattern.color();
   }
   soundTool.updateSelectedComponent("change pattern");
 }

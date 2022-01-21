@@ -130,11 +130,11 @@ void SongTool::update(double dt) {
             // touched the N+1th track axis, add new track and pattern
             auto emptyPattern = Pattern::makeEmptyPattern();
             auto defaultTrack = Song::makeDefaultTrack();
-            Song::Track::SequenceElem firstElem { emptyPattern->patternId, true };
+            Song::Track::SequenceElem firstElem { emptyPattern->patternId(), true };
             defaultTrack->sequence.emplace(0, firstElem);
-            soundTool.song->patterns.emplace(emptyPattern->patternId, *emptyPattern);
+            soundTool.song->patterns.emplace(emptyPattern->patternId(), *emptyPattern);
             soundTool.song->tracks.push_back(std::move(defaultTrack));
-            soundTool.setPatternId(emptyPattern->patternId, 0);
+            soundTool.setPatternId(emptyPattern->patternId(), 0);
             soundTool.setTrackIndex(soundTool.song->tracks.size() - 1);
             soundTool.updateSelectedComponent("add track");
           } else {
@@ -204,7 +204,7 @@ void SongTool::drawSequence(Song::Track::Sequence &sequence, float unit) {
     auto startTimeBars = stepsToBars(startTime) * unit;
 
     // draw pattern rectangle
-    lv.graphics.setColor(pattern.color);
+    lv.graphics.setColor(pattern.color());
     auto patternLength = pattern.getLoopLength(clock);
     if (next != sequence.end()) {
       if (startTime + patternLength > next->first) {
@@ -244,7 +244,7 @@ void SongTool::drawSequence(Song::Track::Sequence &sequence, float unit) {
 
     // summarize notes
     // TODO: editor maintains min/max per track
-    auto luminance = DrawUtil::luminance((float *)&pattern.color);
+    auto luminance = DrawUtil::luminance((float *)&pattern.color());
     if (luminance < 0.5f) {
       lv.graphics.setColor({ 0.8f, 0.8f, 0.8f, 1.0f });
     } else {
@@ -351,7 +351,7 @@ void SongTool::drawTrackAxis(Song *song, double timeInSong) {
         auto startSeq = Song::sequenceElemAtTime(*track, timeInSong);
         if (startSeq != track->sequence.end()) {
           auto &pattern = soundTool.song->patterns[startSeq->second.patternId()];
-          lv.graphics.setColor({ pattern.color.r, pattern.color.g, pattern.color.b, power });
+          lv.graphics.setColor({ pattern.color().r, pattern.color().g, pattern.color().b, power });
         }
       } else {
         lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, power });

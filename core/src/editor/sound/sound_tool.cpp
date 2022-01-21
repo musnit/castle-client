@@ -106,10 +106,10 @@ void SoundTool::addPattern(double steps, int trackIndex) {
   }
   if (auto &track = song->tracks[trackIndex]; track) {
     auto emptyPattern = Pattern::makeEmptyPattern();
-    Song::Track::SequenceElem firstElem { emptyPattern->patternId, true };
+    Song::Track::SequenceElem firstElem { emptyPattern->patternId(), true };
     track->sequence.emplace(steps, firstElem);
-    song->patterns.emplace(emptyPattern->patternId, *emptyPattern);
-    setPatternId(emptyPattern->patternId, steps);
+    song->patterns.emplace(emptyPattern->patternId(), *emptyPattern);
+    setPatternId(emptyPattern->patternId(), steps);
     updateSelectedComponent("add pattern");
   }
 }
@@ -327,8 +327,8 @@ struct SoundToolActionReceiver {
       if (auto selectedPattern = soundTool.getSelectedPattern(); selectedPattern) {
         // fork old pattern
         auto newPattern = Pattern::fork(*selectedPattern);
-        auto newPatternId = newPattern->patternId;
-        soundTool.song->patterns[newPattern->patternId] = *newPattern;
+        auto newPatternId = newPattern->patternId();
+        soundTool.song->patterns[newPattern->patternId()] = *newPattern;
 
         // sub into selected sequence here, update selection
         if (auto selectedTrack = soundTool.getSelectedTrack(); selectedTrack) {
