@@ -16,9 +16,16 @@ void EditVariables::read(Reader &reader) {
     if (!nameCStr) {
       return;
     }
+    auto lifetimeCStr = reader.str("lifetime");
+
     auto name = std::string(*nameCStr);
     auto variableId = std::string(*variableIdCStr);
-    variables.emplace_back(Variable(name, variableId, reader.num("initialValue", 0)));
+    auto lifetime = Variables::Lifetime::Deck;
+    if (lifetimeCStr && std::string(*lifetimeCStr) == "user") {
+      lifetime = Variables::Lifetime::User;
+    }
+
+    variables.emplace_back(Variable(name, variableId, reader.num("initialValue", 0), lifetime));
   });
 }
 
@@ -28,19 +35,20 @@ void EditVariables::write(Writer &writer) const {
       writer.str("id", variable.variableId);
       writer.str("name", variable.name);
       writer.num("initialValue", variable.initialValue.as<double>());
+      writer.str("lifetime", Variables::lifetimeEnumToString(variable.lifetime));
     });
   });
 }
 
-void EditVariables::update(
-    const std::string &variableId, std::string name, ExpressionValue initialValue) {
+void EditVariables::update(const std::string &variableId, std::string name,
+    ExpressionValue initialValue, Variables::Lifetime lifetime) {
   for (auto &variable : variables) {
     if (variable.variableId == variableId) {
-      variable = EditVariables::Variable(std::move(name), variableId, initialValue);
+      variable = EditVariables::Variable(std::move(name), variableId, initialValue, lifetime);
       return;
     }
   }
-  add(std::move(name), variableId, initialValue);
+  add(std::move(name), variableId, initialValue, lifetime);
   return;
 }
 
@@ -58,6 +66,7 @@ struct EditorChangeVariablesReceiver {
     PROP(std::string, variableId);
     PROP(std::string, name);
     PROP(double, initialValue);
+    PROP(std::string, lifetime);
   } params;
 
   void receive(Engine &engine) {
@@ -74,12 +83,13 @@ struct EditorChangeVariablesReceiver {
     auto variableId = params.variableId();
     auto name = params.name();
     auto initialValue = params.initialValue();
+    auto lifetime = Variables::lifetimeStringToEnum(params.lifetime());
 
     if (action == "add") {
       editor->getCommands().execute(
           "add variable", commandParams,
-          [variableId, name, initialValue](Editor &editor, bool) {
-            editor.getVariables().add(name, variableId, initialValue);
+          [variableId, name, initialValue, lifetime](Editor &editor, bool) {
+            editor.getVariables().add(name, variableId, initialValue, lifetime);
             editor.getVariables().sendVariablesData(editor.getBridge(), true);
           },
           [variableId](Editor &editor, bool) {
@@ -91,14 +101,15 @@ struct EditorChangeVariablesReceiver {
       if (existing) {
         auto oldName = existing->name;
         auto oldInitialValue = existing->initialValue;
+        auto oldLifetime = existing->lifetime;
         editor->getCommands().execute(
             "remove variable", commandParams,
             [variableId](Editor &editor, bool) {
               editor.getVariables().remove(variableId);
               editor.getVariables().sendVariablesData(editor.getBridge(), true);
             },
-            [variableId, oldName, oldInitialValue](Editor &editor, bool) {
-              editor.getVariables().add(oldName, variableId, oldInitialValue);
+            [variableId, oldName, oldInitialValue, oldLifetime](Editor &editor, bool) {
+              editor.getVariables().add(oldName, variableId, oldInitialValue, oldLifetime);
               editor.getVariables().sendVariablesData(editor.getBridge(), true);
             });
       }
@@ -107,14 +118,15 @@ struct EditorChangeVariablesReceiver {
       if (existing) {
         auto oldName = existing->name;
         auto oldInitialValue = existing->initialValue;
+        auto oldLifetime = existing->lifetime;
         editor->getCommands().execute(
             "change variable", commandParams,
-            [variableId, name, initialValue](Editor &editor, bool) {
-              editor.getVariables().update(variableId, name, initialValue);
+            [variableId, name, initialValue, lifetime](Editor &editor, bool) {
+              editor.getVariables().update(variableId, name, initialValue, lifetime);
               editor.getVariables().sendVariablesData(editor.getBridge(), true);
             },
-            [variableId, oldName, oldInitialValue](Editor &editor, bool) {
-              editor.getVariables().update(variableId, oldName, oldInitialValue);
+            [variableId, oldName, oldInitialValue, oldLifetime](Editor &editor, bool) {
+              editor.getVariables().update(variableId, oldName, oldInitialValue, oldLifetime);
               editor.getVariables().sendVariablesData(editor.getBridge(), true);
             });
       }
@@ -127,6 +139,7 @@ struct EditorVariablesEvent {
     PROP(std::string, variableId);
     PROP(std::string, name);
     PROP(double, initialValue);
+    PROP(std::string, lifetime);
   };
   PROP(std::vector<VariableData>, variables);
   PROP(bool, isChanged);
@@ -136,7 +149,7 @@ void EditVariables::sendVariablesData(Bridge &bridge, bool isChanged) {
   EditorVariablesEvent ev;
   forEach([&](const EditVariables::Variable &elem) {
     EditorVariablesEvent::VariableData data { elem.variableId, elem.name,
-      elem.initialValue.as<double>() };
+      elem.initialValue.as<double>(), Variables::lifetimeEnumToString(elem.lifetime) };
     ev.variables().push_back(data);
   });
   ev.isChanged = isChanged;

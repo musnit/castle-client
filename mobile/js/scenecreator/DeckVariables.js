@@ -3,6 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { InspectorNumberInput } from './inspector/components/InspectorNumberInput';
 import { InspectorTextInput } from './inspector/components/InspectorTextInput';
+import { InspectorDropdown } from './inspector/components/InspectorDropdown';
 import { useCoreState, sendAsync } from '../core/CoreEvents';
 
 import FeatherIcon from 'react-native-vector-icons/Feather';
@@ -90,7 +91,15 @@ const styles = StyleSheet.create({
 
 const validateVariableName = (name) => name.replace(/\s/g, '');
 
-const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) => {
+function lifetimeDescriptionToEnum(l) {
+  return l == 'until the deck ends' ? 'deck' : 'user';
+}
+
+function lifetimeEnumToDescription(l) {
+  return l == 'deck' ? 'until the deck ends' : 'persistent for each player';
+}
+
+const VariableInput = ({ name, type, lifetime, autoFocus, onChange, onDelete, ...props }) => {
   const nameInputProps = {
     ...props,
     autoFocus,
@@ -102,7 +111,7 @@ const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) 
   };
   return (
     <View style={styles.variableInputContainer}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '50%' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', width: '25%' }}>
         <Text style={styles.variablePrefix}>$</Text>
         <InspectorTextInput
           optimistic
@@ -116,13 +125,20 @@ const VariableInput = ({ name, type, autoFocus, onChange, onDelete, ...props }) 
         />
       </View>
       <InspectorNumberInput
-        style={[styles.input, { width: '50%', paddingRight: 28 }]}
+        style={[styles.input, { width: '25%', paddingRight: 10 }]}
         placeholderTextColor="#666"
         autoCompleteType="off"
         autoCorrect={false}
         hideIncrements
         onChange={(value) => onChange({ initialValue: value })}
         {...valueInputProps}
+      />
+      <InspectorDropdown
+        style={[styles.input, { marginBottom: 0, width: '50%', marginRight: 20 }]}
+        value={lifetimeEnumToDescription(lifetime)}
+        onChange={(value) => onChange({ lifetime: lifetimeDescriptionToEnum(value) })}
+        label="Font name"
+        allowedValues={['until the deck ends', 'persistent for each player']}
       />
       <View style={{ width: 20, position: 'absolute', right: 0 }}>
         <TouchableOpacity onPress={onDelete}>
@@ -186,8 +202,9 @@ export const DeckVariables = () => {
         </TouchableOpacity>
       </View>
       <View style={styles.labels}>
-        <Text style={[styles.label, { width: '50%' }]}>Name</Text>
-        <Text style={[styles.label, { width: '50%' }]}>Initial Value</Text>
+        <Text style={[styles.label, { width: '25%' }]}>Name</Text>
+        <Text style={[styles.label, { width: '25%' }]}>Initial Value</Text>
+        <Text style={[styles.label, { width: '50%' }]}>Lifetime</Text>
       </View>
       <View style={{ flexDirection: 'column-reverse' }}>
         {variables &&

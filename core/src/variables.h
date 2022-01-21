@@ -5,10 +5,15 @@
 #include "expressions/value.h"
 #include "archive.h"
 
-
 class Scene; // Forward declaration because it `#include`s us too
 
 class Variables {
+public:
+  enum Lifetime { Deck, User };
+  static Lifetime lifetimeStringToEnum(std::string s);
+  static std::string lifetimeEnumToString(Lifetime l);
+
+private:
   // Manages state of deck-level variables. New variables can be defined, and values of existing
   // variables updated or queried.
   //
@@ -19,9 +24,11 @@ class Variables {
     std::string name;
     std::string variableId;
     ExpressionValue initialValue;
-    ExpressionValue value = initialValue;
+    ExpressionValue value;
+    Variables::Lifetime lifetime;
 
-    MapElem(std::string name_, std::string variableId_, ExpressionValue initialValue_);
+    MapElem(std::string name_, std::string variableId_, ExpressionValue initialValue_,
+        ExpressionValue value_, Variables::Lifetime lifetime_);
   };
   using Map = TokenMap<MapElem>;
 
@@ -80,6 +87,7 @@ public:
   void forEach(F &&f) const; // `F` takes `(const char *name, const ExpressionValue &)`
   template<typename F>
   void forEachElem(F &&f) const; // `F` takes `(const Variables::MapElem &elem)`
+  void update(double dt);
 
 
 private:
@@ -87,9 +95,12 @@ private:
   std::unordered_map<std::string, Variable> byName;
 
   Scene *scene = nullptr;
+  bool serverVariablesDirty = false;
+  double timeSinceLastUpdateSent = 0.0;
 
 
   void set(Variable variable, MapElem &elem, ExpressionValue value);
+  void flushServerVariables();
 };
 
 using Variable = Variables::Variable;
@@ -97,11 +108,21 @@ using Variable = Variables::Variable;
 
 // Inlined implementations
 
-inline Variables::MapElem::MapElem(
-    std::string name_, std::string variableId_, ExpressionValue initialValue_)
+inline Variables::Lifetime Variables::lifetimeStringToEnum(std::string s) {
+  return s == "deck" ? Lifetime::Deck : Lifetime::User;
+}
+
+inline std::string Variables::lifetimeEnumToString(Variables::Lifetime l) {
+  return l == Variables::Lifetime::Deck ? "deck" : "user";
+}
+
+inline Variables::MapElem::MapElem(std::string name_, std::string variableId_,
+    ExpressionValue initialValue_, ExpressionValue value_, Variables::Lifetime lifetime_)
     : name(std::move(name_))
     , variableId(std::move(variableId_))
-    , initialValue(initialValue_) {
+    , initialValue(initialValue_)
+    , value(value_)
+    , lifetime(lifetime_) {
 }
 
 inline bool Variable::operator==(const Variable &other) const {

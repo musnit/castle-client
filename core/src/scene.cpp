@@ -408,6 +408,8 @@ void Scene::update(double dt) {
       behavior.handlePerformCamera(cameraDeltaX, cameraDeltaY);
     }
   });
+
+  variables.update(dt);
 }
 
 

@@ -1,6 +1,11 @@
 #include "variables.h"
 
 #include "behaviors/all.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
+#include "api.h"
+
+#define VARIABLE_FLUSH_INTERVAL 2.0
 
 //
 // Serialization
@@ -14,6 +19,7 @@ void Variable::write(Writer &writer) const {
       writer.str("id", elem->variableId);
       writer.str("name", elem->name);
       writer.num("initialValue", elem->initialValue.as<double>());
+      writer.str("lifetime", Variables::lifetimeEnumToString(elem->lifetime));
       written = true;
     }
   }
@@ -49,9 +55,22 @@ void Variables::read(Reader &reader) {
     if (!nameCStr) {
       return;
     }
+    auto lifetimeCStr = reader.str("lifetime");
+
     auto name = std::string(*nameCStr);
     auto token = map.getToken(*variableId);
-    map.insert(token, MapElem(name, std::string(*variableId), reader.num("initialValue", 0)));
+    auto lifetime = Variables::Lifetime::Deck;
+    if (lifetimeCStr && std::string(*lifetimeCStr) == "user") {
+      lifetime = Variables::Lifetime::User;
+    }
+
+    auto initialValue = reader.num("initialValue", 0);
+    auto value = reader.num("value");
+    if (!value) {
+      value = initialValue;
+    }
+
+    map.insert(token, MapElem(name, std::string(*variableId), initialValue, *value, lifetime));
     byName.insert_or_assign(std::move(name), Variable { token });
   });
 }
@@ -87,4 +106,56 @@ void Variables::set(Variable variable, MapElem &elem, ExpressionValue value) {
       rulesBehavior.fireVariablesTriggers(variable, value);
     }
   }
+
+  if (elem.lifetime == Variables::Lifetime::User) {
+    serverVariablesDirty = true;
+  }
+}
+
+//
+// Update, flush
+//
+
+void Variables::update(double dt) {
+  timeSinceLastUpdateSent += dt;
+
+  if (serverVariablesDirty && timeSinceLastUpdateSent > VARIABLE_FLUSH_INTERVAL) {
+    timeSinceLastUpdateSent = 0.0;
+    serverVariablesDirty = false;
+    flushServerVariables();
+  }
+}
+
+void Variables::flushServerVariables() {
+  if (!scene) {
+    return;
+  }
+
+  auto deckId = scene->getDeckId();
+  if (!deckId) {
+    return;
+  }
+
+  Archive archive;
+  archive.write([&](Archive::Writer &writer) {
+    map.forEach([&](Map::Token token, MapElem &elem) {
+      if (elem.lifetime == Variables::Lifetime::User) {
+        writer.obj(elem.name, [&]() {
+          writer.num("value", elem.value.as<double>());
+        });
+      }
+    });
+  });
+
+  auto variablesJson = archive.toJson();
+
+  rapidjson::StringBuffer sb;
+  rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+  writer.String(variablesJson.c_str(), variablesJson.size());
+  auto variablesJsonEscaped = sb.GetString();
+
+  API::graphql("mutation {\n  updateVariables(deckId: \"" + *deckId
+          + "\", variables: " + variablesJsonEscaped + ")\n}",
+      [=](APIResponse &response) {
+      });
 }

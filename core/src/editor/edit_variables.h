@@ -4,6 +4,7 @@
 
 #include "expressions/value.h"
 #include "archive.h"
+#include "variables.h"
 
 class Bridge;
 
@@ -16,8 +17,10 @@ class EditVariables {
     std::string name;
     std::string variableId;
     ExpressionValue initialValue;
+    Variables::Lifetime lifetime;
 
-    Variable(std::string name_, std::string variableId_, ExpressionValue initialValue_);
+    Variable(std::string name_, std::string variableId_, ExpressionValue initialValue_,
+        Variables::Lifetime lifetime_);
   };
 
 public:
@@ -41,10 +44,12 @@ public:
   // Get or update variables
 
   std::optional<Variable> get(std::string &variableId);
-  bool add(std::string name, std::string variableId, ExpressionValue initialValue);
+  bool add(std::string name, std::string variableId, ExpressionValue initialValue,
+      Variables::Lifetime lifetime);
   bool remove(const std::string &variableId);
   void clear();
-  void update(const std::string &variableId, std::string name, ExpressionValue initialValue);
+  void update(const std::string &variableId, std::string name, ExpressionValue initialValue,
+      Variables::Lifetime lifetime);
 
   template<typename F>
   void forEach(F &&f) const; // `F` takes `(const EditVariables::Variable &elem)`
@@ -57,11 +62,12 @@ private:
 };
 
 
-inline EditVariables::Variable::Variable(
-    std::string name_, std::string variableId_, ExpressionValue initialValue_)
+inline EditVariables::Variable::Variable(std::string name_, std::string variableId_,
+    ExpressionValue initialValue_, Variables::Lifetime lifetime_)
     : name(std::move(name_))
     , variableId(std::move(variableId_))
-    , initialValue(initialValue_) {
+    , initialValue(initialValue_)
+    , lifetime(lifetime_) {
 }
 
 inline std::optional<EditVariables::Variable> EditVariables::get(std::string &variableId) {
@@ -73,11 +79,12 @@ inline std::optional<EditVariables::Variable> EditVariables::get(std::string &va
   return std::nullopt;
 }
 
-inline bool EditVariables::add(
-    std::string name, std::string variableId, ExpressionValue initialValue) {
+inline bool EditVariables::add(std::string name, std::string variableId,
+    ExpressionValue initialValue, Variables::Lifetime lifetime) {
   auto existing = get(variableId);
   if (!existing) {
-    variables.emplace_back(EditVariables::Variable(std::move(name), variableId, initialValue));
+    variables.emplace_back(
+        EditVariables::Variable(std::move(name), variableId, initialValue, lifetime));
     return true;
   }
   return false;
