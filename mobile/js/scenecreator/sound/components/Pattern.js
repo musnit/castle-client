@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { InspectorCheckbox } from '../../inspector/components/InspectorCheckbox';
+import { InspectorTextInput } from '../../inspector/components/InspectorTextInput';
+import { makeDefaultPatternName } from '../../SceneCreatorUtilities';
 import { sendAsync } from '../../../core/CoreEvents';
 
 import * as Constants from '../../../Constants';
@@ -12,9 +14,11 @@ const styles = StyleSheet.create({
     padding: 16,
     maxWidth: Constants.TABLET_MAX_FORM_WIDTH,
   },
-  title: {
+  nameInput: {
     fontSize: 16,
     color: '#000',
+    width: '66%',
+    flexShrink: 1,
   },
   row: {
     flexDirection: 'row',
@@ -34,23 +38,25 @@ const styles = StyleSheet.create({
 
 export const Pattern = ({ pattern, sequenceElem }) => {
   const onChangePattern = React.useCallback(
-    (pattern) => {
+    (props) => {
       sendAsync('TRACK_TOOL_CHANGE_PATTERN', {
-        value: pattern,
+        value: {
+          ...pattern,
+          notes: undefined, // not going to be used anyway, avoid parsing
+          ...props,
+        },
       });
     },
     [pattern]
   );
   const setColor = React.useCallback(
-    (color) => {
+    (color) =>
       onChangePattern({
-        ...pattern,
-        notes: undefined, // not going to be used anyway, avoid parsing
         color: { r: color[0], g: color[1], b: color[2], a: color[3] },
-      });
-    },
+      }),
     [onChangePattern]
   );
+  const setName = React.useCallback((name) => onChangePattern({ name }), [onChangePattern]);
   const setSequenceLoop = React.useCallback((loop) => {
     sendAsync('EDITOR_SOUND_TOOL_ACTION', {
       action: 'setSequenceLoops',
@@ -67,11 +73,16 @@ export const Pattern = ({ pattern, sequenceElem }) => {
     return (
       <View style={styles.container}>
         <View style={styles.row}>
-          <View style={styles.row}>
+          <View style={[styles.row, { justifyContent: 'flex-start' }]}>
             <View style={{ marginRight: 8 }}>
               <ColorPicker value={pattern.color} setValue={setColor} />
             </View>
-            <Text style={styles.title}>{pattern.patternId.substring(0, 18)}</Text>
+            <InspectorTextInput
+              style={styles.nameInput}
+              value={pattern.name}
+              onChangeText={setName}
+              placeholder={makeDefaultPatternName(pattern)}
+            />
           </View>
           <TouchableOpacity onPress={forkPattern} style={SceneCreatorConstants.styles.button}>
             <Text style={SceneCreatorConstants.styles.buttonLabel}>Fork</Text>

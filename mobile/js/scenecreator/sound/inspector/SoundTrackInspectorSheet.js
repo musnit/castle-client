@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { BottomSheet } from '../../../components/BottomSheet';
+import { TouchableOpacity, View } from 'react-native';
+import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
 import { Pattern } from '../components/Pattern';
 import { Sampler } from '../components/Sampler';
 import { SoundTrackInspectorHeader } from './SoundTrackInspectorHeader';
@@ -8,17 +8,6 @@ import { useCoreState, sendAsync } from '../../../core/CoreEvents';
 
 import * as Constants from '../../../Constants';
 const CastleIcon = Constants.CastleIcon;
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#fff',
-    borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,
-    borderTopRightRadius: Constants.CARD_BORDER_RADIUS,
-    borderWidth: 1,
-    borderBottomWidth: 0,
-    borderColor: '#000',
-  },
-});
 
 const INSTRUMENT_COMPONENTS = {
   sampler: Sampler,
@@ -74,7 +63,7 @@ const TrackInspectorTabs = ({ component, soundToolState, selectedTab }) => {
   return null;
 };
 
-export const SoundTrackInspectorSheet = ({ isOpen, ...props }) => {
+export const SoundTrackInspectorSheet = ({ isOpen }) => {
   const soundToolState = useCoreState('EDITOR_SOUND_TOOL') || {};
   const component = useCoreState('EDITOR_SELECTED_COMPONENT:Music') || {
     props: {
@@ -109,13 +98,13 @@ export const SoundTrackInspectorSheet = ({ isOpen, ...props }) => {
     );
 
   return (
-    <BottomSheet
+    <CardCreatorBottomSheet
       isOpen={isOpen}
-      initialSnap={1}
+      headerHeight={88}
+      contentKey={`tab-${selectedTab}`}
+      extraTopInset={8}
       renderContent={renderContent}
       renderHeader={renderHeader}
-      style={styles.container}
-      {...props}
     />
   );
 };

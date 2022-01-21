@@ -329,6 +329,7 @@ void TrackTool::changePattern(Pattern &pattern) {
   // this only supports changing pattern props besides notes, such as color
   if (auto selectedPattern = soundTool.getSelectedPattern(); selectedPattern) {
     selectedPattern->color = pattern.color();
+    selectedPattern->name = pattern.name();
   }
   soundTool.updateSelectedComponent("change pattern");
 }

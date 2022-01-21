@@ -77,6 +77,7 @@ public:
   bool removeNote(double step, float key);
 
   PROP(std::string, patternId);
+  PROP(std::string, name);
   PROP(love::Colorf, color);
   PROP(Loop, loop) = Loop::NextBar;
   PROP(double, loopLength) = 0; // only used for Loop::ExplicitLength

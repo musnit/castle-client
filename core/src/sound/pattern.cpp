@@ -11,6 +11,7 @@ std::string Pattern::makePatternId() {
 std::unique_ptr<Pattern> Pattern::makeEmptyPattern() {
   auto pattern = std::make_unique<Pattern>();
   pattern->patternId = makePatternId();
+  pattern->name() = "pattern-" + pattern->patternId().substr(0, 4);
   pattern->color = DrawUtil::getRandomCastlePaletteColor();
   return pattern;
 }
@@ -18,6 +19,7 @@ std::unique_ptr<Pattern> Pattern::makeEmptyPattern() {
 std::unique_ptr<Pattern> Pattern::fork(Pattern &pattern) {
   auto fork = std::make_unique<Pattern>(pattern);
   fork->patternId = makePatternId();
+  fork->name() = "pattern-" + fork->patternId().substr(0, 4);
   fork->color = DrawUtil::getRandomCastlePaletteColor();
   return fork;
 }
