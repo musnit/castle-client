@@ -38,7 +38,8 @@ void MusicBehavior::stopSong(ActorId &actorId, Scene &scene, MusicComponent *com
   }
 }
 
-void MusicBehavior::playSong(ActorId &actorId, Scene &scene, MusicComponent *component, bool loop) {
+void MusicBehavior::playSong(ActorId &actorId, Scene &scene, MusicComponent *component, bool loop,
+    Sound::StreamOptions opts) {
   auto &clock = scene.getClock();
 
   // stop any existing for the same actor
@@ -51,7 +52,8 @@ void MusicBehavior::playSong(ActorId &actorId, Scene &scene, MusicComponent *com
     auto &pattern = patterns[idx];
     auto &track = song.tracks[idx];
     pattern->loop = loop ? Pattern::Loop::ExplicitLength : Pattern::Loop::None;
-    auto streamId = scene.getSound().play(clock.clockId, std::move(pattern), *track->instrument);
+    auto streamId
+        = scene.getSound().play(clock.clockId, std::move(pattern), *track->instrument, opts);
     if (streamId >= 0) {
       streamsCreated.push_back(streamId);
     }
@@ -71,6 +73,13 @@ struct PlaySongResponse : BaseResponse {
 
   struct Params {
     PROP(bool, loop) = true;
+    PROP(bool, quantize) = true;
+    PROP(
+         // TODO: add read/write on Clock::Quantize
+         std::string, quantizeUnits,
+         .label("quantize units")
+         .allowedValues("bar", "beat", "step")
+         ) = "bar";
   } params;
 
   void run(RuleContext &ctx) override {
@@ -78,7 +87,17 @@ struct PlaySongResponse : BaseResponse {
     auto &scene = ctx.getScene();
     auto &musicBehavior = scene.getBehaviors().byType<MusicBehavior>();
     if (auto component = musicBehavior.maybeGetComponent(actorId)) {
-      musicBehavior.playSong(actorId, scene, component, params.loop());
+      Sound::StreamOptions opts;
+      opts.quantize = params.quantize();
+      auto quantizeUnitsStr = params.quantizeUnits();
+      if (quantizeUnitsStr == "bar") {
+        opts.quantizeUnits = Clock::Quantize::Bar;
+      } else if (quantizeUnitsStr == "beat") {
+        opts.quantizeUnits = Clock::Quantize::Beat;
+      } else if (quantizeUnitsStr == "step") {
+        opts.quantizeUnits = Clock::Quantize::Step;
+      }
+      musicBehavior.playSong(actorId, scene, component, params.loop(), opts);
     }
   }
 };

@@ -156,14 +156,14 @@ void SoundTool::scheduleSongForPlayback(
     double songStartTime, double songEndTime, double initialTimeInSong) {
   auto &scene = editor.getScene();
   auto patterns = song->flattenTracksForPlayback(songStartTime, songEndTime, scene.getClock());
+  Sound::StreamOptions opts;
+  opts.initialTimeInStream = initialTimeInSong;
   for (size_t idx = 0; idx < song->tracks.size(); idx++) {
     auto &pattern = patterns[idx];
     auto &track = song->tracks[idx];
     auto patternClone = std::make_unique<Pattern>(*pattern);
-    playbackMonitor.add(
-        scene.getClock(), std::move(patternClone), *track->instrument, initialTimeInSong);
-    scene.getSound().play(
-        scene.getClock().clockId, std::move(pattern), *track->instrument, initialTimeInSong);
+    playbackMonitor.add(scene.getClock(), std::move(patternClone), *track->instrument, opts);
+    scene.getSound().play(scene.getClock().clockId, std::move(pattern), *track->instrument, opts);
   }
 }
 

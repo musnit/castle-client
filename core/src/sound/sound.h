@@ -5,8 +5,8 @@
 #include "soloud.h"
 #include "soloud_sfxr.h"
 #include "soloud_wavstream.h"
+#include "clock.h"
 
-class Clock;
 class Pattern;
 class Instrument;
 class Stream;
@@ -33,10 +33,15 @@ public:
   void addClock(Clock *); // start audio thread if not started, add clock if not added
   void removeAllClocks(); // stop audio thread and unschedule all clocks
 
+  struct StreamOptions {
+    double initialTimeInStream = 0; // to start partway thru stream
+    bool quantize = false; // to delay the start until the next clock unit
+    Clock::Quantize quantizeUnits = Clock::Quantize::Bar;
+  };
   // schedule a pattern on the given clock; clock takes ownership of pattern
   // return a streamId
-  int play(int clockId, std::unique_ptr<Pattern> pattern, Instrument &instrument,
-      double initialTimeInStream = 0);
+  int play(
+      int clockId, std::unique_ptr<Pattern> pattern, Instrument &instrument, StreamOptions opts);
 
   static void clearCache() {
     sfxrSounds.clear();
@@ -65,8 +70,8 @@ private:
     virtual ~ClockThread() = default;
     void threadFunction();
     void addClock(Clock *);
-    int addStream(int clockId, std::unique_ptr<Pattern> pattern, Instrument &instrument,
-        double initialTimeInStream = 0);
+    int addStream(
+        int clockId, std::unique_ptr<Pattern> pattern, Instrument &instrument, StreamOptions opts);
     void clearStreams();
     void stopStream(int clockId, int streamId);
     void finish();

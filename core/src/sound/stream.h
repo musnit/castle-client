@@ -8,7 +8,8 @@ class Sound;
 
 class Stream {
 public:
-  explicit Stream(Clock &clock, std::unique_ptr<Pattern> pattern, Instrument &instrument);
+  explicit Stream(
+      Clock &clock, std::unique_ptr<Pattern> pattern, Instrument &instrument, double wait = 0);
   double startTime; // in steps
   std::unique_ptr<Pattern> pattern;
   Instrument &instrument;
@@ -27,10 +28,11 @@ private:
   double patternClockLoopLength = 0; // computed loop length from pattern+clock
 };
 
-inline Stream::Stream(Clock &clock, std::unique_ptr<Pattern> pattern_, Instrument &instrument_)
+inline Stream::Stream(
+    Clock &clock, std::unique_ptr<Pattern> pattern_, Instrument &instrument_, double wait)
     : instrument(instrument_) {
   pattern = std::move(pattern_);
-  startTime = clock.getTime();
+  startTime = clock.getTime() + wait;
   current = pattern->begin();
   patternClockLoopLength = pattern->getLoopLength(clock);
 }

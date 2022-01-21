@@ -101,26 +101,36 @@ double Clock::getDuration(double bars, double beats, double steps) {
   return (((bars * beatsPerBar) + beats) * stepsPerBeat) + steps;
 }
 
-double Clock::getTimeUntilNext(Quantize quant, double count) {
+double Clock::getTimeUntilNext(Quantize quant, double count, bool allowRecentPast) {
   if (count <= 0) {
     return 0;
   }
   love::thread::Lock lock(mutex);
+  double absolute = 0, delta = 0;
   switch (quant) {
   case Quantize::Bar: {
-    auto absolute = getDuration(count, 0, 0);
+    absolute = getDuration(count, 0, 0);
     auto indexInBar = totalBeatsElapsed % beatsPerBar;
-    auto delta = (indexInBar * stepsPerBeat) + timeSinceBeat;
-    return absolute - delta;
+    delta = (indexInBar * stepsPerBeat) + timeSinceBeat;
+    break;
   }
   case Quantize::Beat: {
-    auto absolute = getDuration(0, count, 0);
-    return absolute - timeSinceBeat;
+    absolute = getDuration(0, count, 0);
+    delta = timeSinceBeat;
+    break;
   }
   case Quantize::Step: {
-    auto absolute = getDuration(0, 0, count);
-    return absolute - timeSinceStep;
+    absolute = getDuration(0, 0, count);
+    delta = timeSinceStep;
+    break;
   }
+  }
+
+  // if we would wait almost a full `absolute` time, then the previous time just happened
+  if (allowRecentPast && delta < 0.02) {
+    return -delta;
+  } else {
+    return absolute - delta;
   }
 }
 

@@ -38,7 +38,11 @@ public:
   void frame();
 
   double getDuration(double bars, double beats, double steps);
-  double getTimeUntilNext(Quantize quant, double count);
+
+  // get the time (in steps) until the next `count` `quant`s from now.
+  // if `allowRecentPast` is true and we're within ~1/60th of the previous `quant`,
+  // we may return a small negative value indicating that this time just happened.
+  double getTimeUntilNext(Quantize quant, double count, bool allowRecentPast = true);
 
   unsigned int getBeatsPerBar();
   unsigned int getStepsPerBeat();

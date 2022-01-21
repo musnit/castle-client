@@ -26,7 +26,8 @@ public:
   void handleDisableComponent(ActorId actorId, MusicComponent &component, bool removeActor);
 
   void stopSong(ActorId &actorId, Scene &scene, MusicComponent *component);
-  void playSong(ActorId &actorId, Scene &scene, MusicComponent *component, bool loop);
+  void playSong(ActorId &actorId, Scene &scene, MusicComponent *component, bool loop,
+      Sound::StreamOptions opts);
 
   // handles to currently-running music streams, by actor
   std::unordered_map<ActorId, std::vector<int>> activeStreams;

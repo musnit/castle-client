@@ -1108,7 +1108,9 @@ const SetClockTempo = ({ response, context }) => {
 
 const PlaySong = ({ response }) => {
   const loop = response.params?.loop ?? true;
-  return [
+  const quantize = response.params?.quantize ?? true;
+  const quantizeUnits = response.params?.quantizeUnits ?? 'bar';
+  let cells = [
     {
       type: 'selectEntry',
       label: `Play this actor's song`,
@@ -1119,7 +1121,22 @@ const PlaySong = ({ response }) => {
       paramName: 'loop',
       paramValue: loop,
     },
+    {
+      type: 'selectParamSheet',
+      label: quantize ? 'at the next' : 'now',
+      paramName: 'quantize',
+      paramValue: quantize,
+    },
   ];
+  if (quantize) {
+    cells.push({
+      type: 'selectParamSheet',
+      label: quantizeUnits,
+      paramName: 'quantizeUnits',
+      paramValue: quantizeUnits,
+    });
+  }
+  return cells;
 };
 
 const StopSong = () => {
