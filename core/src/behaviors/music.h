@@ -25,10 +25,18 @@ public:
   void handleEnableComponent(ActorId actorId, MusicComponent &component);
   void handleDisableComponent(ActorId actorId, MusicComponent &component, bool removeActor);
 
-  void stopSong(ActorId &actorId, Scene &scene, MusicComponent *component);
+  void stopMusic(
+      ActorId &actorId, Scene &scene, MusicComponent *component, Sound::StreamOptions opts);
+  void stopPattern(ActorId &actorId, Scene &scene, MusicComponent *component,
+      const std::string &patternId, Sound::StreamOptions opts);
   void playSong(ActorId &actorId, Scene &scene, MusicComponent *component, bool loop,
       Sound::StreamOptions opts);
+  void playPattern(ActorId &actorId, Scene &scene, MusicComponent *component,
+      const std::string &patternId, int trackIndex, bool loop, Sound::StreamOptions opts);
 
-  // handles to currently-running music streams, by actor
-  std::unordered_map<ActorId, std::vector<int>> activeStreams;
+  // handles to currently-running tracks, by actor id
+  std::unordered_map<ActorId, std::vector<int>> activeTracks;
+
+  // handles to currently-running patterns, by pattern id
+  std::unordered_map<std::string, int> activePatterns;
 };

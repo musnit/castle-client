@@ -22,10 +22,12 @@ public:
   void playNextNotes(Sound &sound);
   void skipToNext();
   void fastForward(double time);
+  void stop(double finishTime = 0);
 
 private:
   std::map<double, SmallVector<Pattern::Note, 2>>::iterator current;
   double patternClockLoopLength = 0; // computed loop length from pattern+clock
+  double finishTime = -1;
 };
 
 inline Stream::Stream(
@@ -55,7 +57,7 @@ inline double Stream::nextTime() {
 }
 
 inline bool Stream::hasNext() {
-  return current != pattern->end();
+  return current != pattern->end() && (finishTime < 0 || nextTime() < finishTime);
 }
 
 inline void Stream::playNextNotes(Sound &sound) {
@@ -64,6 +66,10 @@ inline void Stream::playNextNotes(Sound &sound) {
     instrument.play(sound, note);
   }
   skipToNext();
+}
+
+inline void Stream::stop(double finishTime_) {
+  finishTime = finishTime_;
 }
 
 inline void Stream::skipToNext() {

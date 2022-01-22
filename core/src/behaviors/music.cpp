@@ -15,7 +15,7 @@ void MusicBehavior::handleEnableComponent(ActorId actorId, MusicComponent &compo
 
 void MusicBehavior::handleDisableComponent(
     ActorId actorId, MusicComponent &component, bool removeActor) {
-  stopSong(actorId, getScene(), &component);
+  stopMusic(actorId, getScene(), &component, {});
 }
 
 std::string MusicBehavior::hash(const std::string &json) {
@@ -27,14 +27,31 @@ std::string MusicBehavior::hash(const std::string &json) {
   return std::string(str);
 }
 
-void MusicBehavior::stopSong(ActorId &actorId, Scene &scene, MusicComponent *component) {
-  if (auto found = activeStreams.find(actorId); found != activeStreams.end()) {
-    auto &clock = scene.getClock();
+void MusicBehavior::stopMusic(
+    ActorId &actorId, Scene &scene, MusicComponent *component, Sound::StreamOptions opts) {
+  // stop tracks
+  auto &clock = scene.getClock();
+  if (auto found = activeTracks.find(actorId); found != activeTracks.end()) {
     auto &[_, streams] = *found;
     for (auto streamId : streams) {
-      scene.getSound().stopStream(clock.clockId, streamId);
+      scene.getSound().stopStream(clock.clockId, streamId, opts);
     }
-    activeStreams.erase(actorId);
+    activeTracks.erase(actorId);
+  }
+  // stop patterns
+  auto &song = component->props.song();
+  for (auto &[patternId, _] : song.patterns) {
+    stopPattern(actorId, scene, component, patternId, opts);
+  }
+}
+
+void MusicBehavior::stopPattern(ActorId &actorId, Scene &scene, MusicComponent *component,
+    const std::string &patternId, Sound::StreamOptions opts) {
+  auto &clock = scene.getClock();
+  if (auto found = activePatterns.find(patternId); found != activePatterns.end()) {
+    auto &[_, streamId] = *found;
+    scene.getSound().stopStream(clock.clockId, streamId, opts);
+    activePatterns.erase(patternId);
   }
 }
 
@@ -43,7 +60,7 @@ void MusicBehavior::playSong(ActorId &actorId, Scene &scene, MusicComponent *com
   auto &clock = scene.getClock();
 
   // stop any existing for the same actor
-  stopSong(actorId, scene, component);
+  stopMusic(actorId, scene, component, opts);
 
   auto &song = component->props.song();
   std::vector<int> streamsCreated;
@@ -58,7 +75,32 @@ void MusicBehavior::playSong(ActorId &actorId, Scene &scene, MusicComponent *com
       streamsCreated.push_back(streamId);
     }
   }
-  activeStreams.emplace(actorId, streamsCreated);
+  activeTracks.emplace(actorId, streamsCreated);
+}
+
+void MusicBehavior::playPattern(ActorId &actorId, Scene &scene, MusicComponent *component,
+    const std::string &patternId, int trackIndex, bool loop, Sound::StreamOptions opts) {
+  auto &clock = scene.getClock();
+  auto &song = component->props.song();
+  if (auto found = song.patterns.find(patternId); found != song.patterns.end()) {
+    auto &refPattern = found->second;
+    if (trackIndex >= 0 && trackIndex < int(song.tracks.size())) {
+      auto &track = song.tracks[trackIndex];
+
+      // if this pattern is already playing, stop
+      stopPattern(actorId, scene, component, patternId, opts);
+
+      auto pattern = std::make_unique<Pattern>(refPattern);
+      if (!loop) {
+        pattern->loop = Pattern::Loop::None;
+      }
+      auto streamId
+          = scene.getSound().play(clock.clockId, std::move(pattern), *track->instrument, opts);
+      if (streamId >= 0) {
+        activePatterns.emplace(patternId, streamId);
+      }
+    }
+  }
 }
 
 //
@@ -73,7 +115,7 @@ struct PlaySongResponse : BaseResponse {
 
   struct Params {
     PROP(bool, loop) = true;
-    PROP(bool, quantize) = true;
+    PROP(bool, quantize, .label("quantize to clock")) = true;
     PROP(
          // TODO: add read/write on Clock::Quantize
          std::string, quantizeUnits,
@@ -116,7 +158,47 @@ struct StopSongResponse : BaseResponse {
     auto &scene = ctx.getScene();
     auto &musicBehavior = scene.getBehaviors().byType<MusicBehavior>();
     if (auto component = musicBehavior.maybeGetComponent(actorId)) {
-      musicBehavior.stopSong(actorId, scene, component);
+      musicBehavior.stopMusic(actorId, scene, component, {});
+    }
+  }
+};
+
+struct PlayPatternResponse : BaseResponse {
+  inline static const RuleRegistration<PlayPatternResponse, MusicBehavior> registration {
+    "play pattern"
+  };
+  static constexpr auto description = "Play a pattern from this actor's song";
+
+  struct Params {
+    PROP(std::string, patternId, .label("pattern"));
+    PROP(int, trackIndex, .label("track"));
+    PROP(bool, loop) = true;
+    PROP(bool, quantize, .label("quantize to clock")) = true;
+    PROP(
+         // TODO: add read/write on Clock::Quantize
+         std::string, quantizeUnits,
+         .label("quantize units")
+         .allowedValues("bar", "beat", "step")
+         ) = "bar";
+  } params;
+
+  void run(RuleContext &ctx) override {
+    auto actorId = ctx.actorId;
+    auto &scene = ctx.getScene();
+    auto &musicBehavior = scene.getBehaviors().byType<MusicBehavior>();
+    if (auto component = musicBehavior.maybeGetComponent(actorId)) {
+      Sound::StreamOptions opts;
+      opts.quantize = params.quantize();
+      auto quantizeUnitsStr = params.quantizeUnits();
+      if (quantizeUnitsStr == "bar") {
+        opts.quantizeUnits = Clock::Quantize::Bar;
+      } else if (quantizeUnitsStr == "beat") {
+        opts.quantizeUnits = Clock::Quantize::Beat;
+      } else if (quantizeUnitsStr == "step") {
+        opts.quantizeUnits = Clock::Quantize::Step;
+      }
+      musicBehavior.playPattern(
+          actorId, scene, component, params.patternId(), params.trackIndex(), params.loop(), opts);
     }
   }
 };

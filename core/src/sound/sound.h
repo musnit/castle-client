@@ -54,7 +54,7 @@ public:
 
   void stopAll();
   void clearStreams();
-  void stopStream(int clockId, int streamId);
+  void stopStream(int clockId, int streamId, StreamOptions opts);
 
 private:
   void initialize();
@@ -73,7 +73,7 @@ private:
     int addStream(
         int clockId, std::unique_ptr<Pattern> pattern, Instrument &instrument, StreamOptions opts);
     void clearStreams();
-    void stopStream(int clockId, int streamId);
+    void stopStream(int clockId, int streamId, StreamOptions opts);
     void finish();
 
   private:

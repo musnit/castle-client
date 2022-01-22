@@ -67,7 +67,7 @@ int Sound::ClockThread::addStream(
   int result = -1;
   if (auto found = clocks.find(clockId); found != clocks.end()) {
     auto clock = found->second;
-    auto wait = 0;
+    double wait = 0;
     if (opts.quantize) {
       wait = clock->getTimeUntilNext(opts.quantizeUnits, 1);
     }
@@ -83,17 +83,19 @@ int Sound::ClockThread::addStream(
   return result;
 }
 
-void Sound::ClockThread::stopStream(int clockId, int streamId) {
+void Sound::ClockThread::stopStream(int clockId, int streamId, StreamOptions opts) {
   love::thread::Lock lock(mutex);
   auto &streamsForClock = streams[clockId];
-  auto iter = streamsForClock.begin();
-  while (iter != streamsForClock.end()) {
-    auto &stream = *iter;
-    if (stream->streamId == streamId) {
-      iter = streamsForClock.erase(iter);
-      break;
-    } else {
-      ++iter;
+  if (auto found = clocks.find(clockId); found != clocks.end()) {
+    auto clock = found->second;
+    double finishTime = 0;
+    if (opts.quantize) {
+      finishTime = clock->getTime() + clock->getTimeUntilNext(opts.quantizeUnits, 1);
+    }
+    for (auto &stream : streamsForClock) {
+      if (stream->streamId == streamId) {
+        stream->stop(finishTime);
+      }
     }
   }
 }
@@ -156,9 +158,9 @@ int Sound::play(
   return -1;
 }
 
-void Sound::stopStream(int clockId, int streamId) {
+void Sound::stopStream(int clockId, int streamId, StreamOptions opts) {
   if (clockThread) {
-    clockThread->stopStream(clockId, streamId);
+    clockThread->stopStream(clockId, streamId, opts);
   }
 }
 
