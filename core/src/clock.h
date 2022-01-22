@@ -1,6 +1,7 @@
 #pragma once
 
 #include "precomp.h"
+#include "archive.h"
 
 class Scene;
 
@@ -10,10 +11,47 @@ class Clock {
   // and clock time.
 
 public:
-  enum class Quantize {
-    Bar,
-    Beat,
-    Step,
+  class Quantize {
+  public:
+    enum Value {
+      Bar,
+      Beat,
+      Step,
+    };
+    Quantize() = default;
+    constexpr Quantize(Value v)
+        : value(v) {
+    }
+    constexpr operator Value() const {
+      return value;
+    }
+
+    inline void write(Writer &writer) const {
+      switch (value) {
+      case Quantize::Bar:
+        writer.setStr("bar");
+        break;
+      case Quantize::Beat:
+        writer.setStr("beat");
+        break;
+      case Quantize::Step:
+        writer.setStr("step");
+        break;
+      }
+    };
+    inline void read(Reader &reader) {
+      auto quantStr = reader.str();
+      if (quantStr == "bar") {
+        value = Quantize::Bar;
+      } else if (quantStr == "beat") {
+        value = Quantize::Beat;
+      } else if (quantStr == "step") {
+        value = Quantize::Step;
+      }
+    };
+
+  private:
+    Value value;
   };
 
   Clock() = default;

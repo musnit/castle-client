@@ -117,11 +117,10 @@ struct PlaySongResponse : BaseResponse {
     PROP(bool, loop) = true;
     PROP(bool, quantize, .label("quantize to clock")) = true;
     PROP(
-         // TODO: add read/write on Clock::Quantize
-         std::string, quantizeUnits,
+         Clock::Quantize, quantizeUnits,
          .label("quantize units")
          .allowedValues("bar", "beat", "step")
-         ) = "bar";
+         ) = Clock::Quantize::Bar;
   } params;
 
   void run(RuleContext &ctx) override {
@@ -131,14 +130,7 @@ struct PlaySongResponse : BaseResponse {
     if (auto component = musicBehavior.maybeGetComponent(actorId)) {
       Sound::StreamOptions opts;
       opts.quantize = params.quantize();
-      auto quantizeUnitsStr = params.quantizeUnits();
-      if (quantizeUnitsStr == "bar") {
-        opts.quantizeUnits = Clock::Quantize::Bar;
-      } else if (quantizeUnitsStr == "beat") {
-        opts.quantizeUnits = Clock::Quantize::Beat;
-      } else if (quantizeUnitsStr == "step") {
-        opts.quantizeUnits = Clock::Quantize::Step;
-      }
+      opts.quantizeUnits = params.quantizeUnits();
       musicBehavior.playSong(actorId, scene, component, params.loop(), opts);
     }
   }
@@ -175,11 +167,10 @@ struct PlayPatternResponse : BaseResponse {
     PROP(bool, loop) = true;
     PROP(bool, quantize, .label("quantize to clock")) = true;
     PROP(
-         // TODO: add read/write on Clock::Quantize
-         std::string, quantizeUnits,
+         Clock::Quantize, quantizeUnits,
          .label("quantize units")
          .allowedValues("bar", "beat", "step")
-         ) = "bar";
+         ) = Clock::Quantize::Bar;
   } params;
 
   void run(RuleContext &ctx) override {
@@ -189,14 +180,7 @@ struct PlayPatternResponse : BaseResponse {
     if (auto component = musicBehavior.maybeGetComponent(actorId)) {
       Sound::StreamOptions opts;
       opts.quantize = params.quantize();
-      auto quantizeUnitsStr = params.quantizeUnits();
-      if (quantizeUnitsStr == "bar") {
-        opts.quantizeUnits = Clock::Quantize::Bar;
-      } else if (quantizeUnitsStr == "beat") {
-        opts.quantizeUnits = Clock::Quantize::Beat;
-      } else if (quantizeUnitsStr == "step") {
-        opts.quantizeUnits = Clock::Quantize::Step;
-      }
+      opts.quantizeUnits = params.quantizeUnits();
       musicBehavior.playPattern(
           actorId, scene, component, params.patternId(), params.trackIndex(), params.loop(), opts);
     }
