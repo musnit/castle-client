@@ -5,6 +5,7 @@ import { InspectorCheckbox } from './InspectorCheckbox';
 import { InspectorDropdown } from './InspectorDropdown';
 import { InspectorInlineExpressionInput } from '../expressions/InspectorInlineExpressionInput';
 import { InspectorNumberInput } from './InspectorNumberInput';
+import { InspectorPatternPicker } from './InspectorPatternPicker';
 import { InspectorTagPicker } from './InspectorTagPicker';
 import { InspectorTextInput } from './InspectorTextInput';
 import { InspectorVariablePicker } from './InspectorVariablePicker';
@@ -23,7 +24,7 @@ export const ParamInput = ({
   ...props
 }) => {
   let { type } = paramSpec;
-  if (type === 'string' && paramSpec.attribs.allowedValues?.length) {
+  if ((type === 'string' || type === 'quantize') && paramSpec.attribs.allowedValues?.length) {
     type = 'dropdown';
   }
 
@@ -37,6 +38,10 @@ export const ParamInput = ({
     // we explicitly disallow expressions for this param, regardless of
     // what type is provided at the engine level
     type = 'd';
+  }
+
+  if (metadata.type) {
+    type = metadata.type;
   }
 
   switch (type) {
@@ -67,6 +72,8 @@ export const ParamInput = ({
       );
     case 'variable':
       return <InspectorVariablePicker value={value} onChange={setValue} {...metadata} />;
+    case 'pattern':
+      return <InspectorPatternPicker value={value} onChange={setValue} {...metadata} />;
     case 'comparison':
       return (
         <InspectorDropdown

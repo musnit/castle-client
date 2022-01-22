@@ -4,6 +4,7 @@ import {
   formatTag,
   makeExpressionSummary,
   readableOperator,
+  makeDefaultPatternName,
 } from '../../SceneCreatorUtilities';
 import { makeCardPreviewTitle } from '../../../common/utilities';
 import { SFXR_CATEGORIES } from '../../sound/components/Sample';
@@ -1073,15 +1074,6 @@ const PlaySound = ({ response }) => {
   }
 };
 
-const PlayPattern = () => {
-  return [
-    {
-      type: 'selectEntry',
-      label: 'Play a pattern',
-    },
-  ];
-};
-
 const SetClockTempo = ({ response, context }) => {
   const tempo = response.params?.tempo ?? 120;
   return [
@@ -1146,6 +1138,55 @@ const StopSong = () => {
       label: `Stop this actor's song`,
     },
   ];
+};
+
+const PlayPattern = ({ response, context }) => {
+  const loop = response.params?.loop ?? true;
+  const quantize = response.params?.quantize ?? true;
+  const quantizeUnits = response.params?.quantizeUnits ?? 'bar';
+  let patternLabel,
+    hasPattern = false;
+  if (response.params?.patternId) {
+    const pattern = context.patterns[response.params.patternId];
+    if (pattern) {
+      patternLabel =
+        pattern.name && pattern.name.length ? pattern.name : makeDefaultPatternName(pattern);
+      hasPattern = true;
+    }
+  }
+  let cells = [
+    {
+      type: 'selectEntry',
+      label: `Play pattern`,
+    },
+    {
+      type: hasPattern ? 'selectParamSheet' : 'selectParamSheetPlaceholder',
+      label: hasPattern ? patternLabel : '(choose pattern)',
+      paramName: 'patternId',
+      paramValue: response.params?.patternId,
+    },
+    {
+      type: 'selectParamSheet',
+      label: loop ? 'on loop' : 'once',
+      paramName: 'loop',
+      paramValue: loop,
+    },
+    {
+      type: 'selectParamSheet',
+      label: quantize ? 'at the next' : 'now',
+      paramName: 'quantize',
+      paramValue: quantize,
+    },
+  ];
+  if (quantize) {
+    cells.push({
+      type: 'selectParamSheet',
+      label: quantizeUnits,
+      paramName: 'quantizeUnits',
+      paramValue: quantizeUnits,
+    });
+  }
+  return cells;
 };
 
 const IsInCameraViewport = () => {

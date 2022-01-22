@@ -211,4 +211,13 @@ export const makeExpressionSummary = (expression, context, depth = 0) => {
   return null;
 };
 
-export const makeDefaultPatternName = (pattern) => `pattern-${pattern.patternId.substring(0, 4)}`;
+export const makeDefaultPatternName = (pattern) => {
+  if (pattern) {
+    if (pattern.name && pattern.name != '') {
+      return pattern.name;
+    }
+    return `pattern-${pattern.patternId.substring(0, 4)}`;
+  } else {
+    return 'no pattern';
+  }
+};

@@ -15,12 +15,22 @@ export const getRuleRenderContext = () => {
   const behaviors = getCoreStateCache('EDITOR_ALL_BEHAVIORS');
   const library = getCoreStateCache('EDITOR_LIBRARY')?.library;
   const rules = getCoreStateCache('EDITOR_RULES_DATA') ?? {};
+  const musicComponent = getCoreStateCache('EDITOR_SELECTED_COMPONENT:Music') || {
+    props: {
+      song: {
+        patterns: {},
+        tracks: [],
+      },
+    },
+  };
+  const patterns = musicComponent.props.song.patterns;
 
   return {
     deck,
     variables,
     behaviors,
     library,
+    patterns,
     ...rules,
   };
 };

@@ -341,6 +341,14 @@ const data = {
     ['stop song']: {
       category: USE_CLOCK ? 'sound' : 'clock',
     },
+    ['play pattern']: {
+      category: USE_CLOCK ? 'sound' : 'clock',
+      props: {
+        patternId: {
+          type: 'pattern',
+        },
+      },
+    },
     ['set clock tempo']: {
       category: 'clock',
     },
