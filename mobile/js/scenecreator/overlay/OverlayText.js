@@ -1,7 +1,13 @@
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { useCoreState, sendAsync, sendBehaviorAction } from '../../core/CoreEvents';
+import {
+  useCoreState,
+  sendAsync,
+  sendBehaviorAction,
+  sendGlobalAction,
+} from '../../core/CoreEvents';
 import { useOptimisticBehaviorValue } from '../inspector/InspectorUtilities';
+import { OverlayTextInput } from './OverlayTextInput';
 
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -9,6 +15,7 @@ import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ColorPicker from '../inspector/components/ColorPicker';
 
 import * as Constants from '../../Constants';
+const { CastleIcon } = Constants;
 import * as SceneCreatorConstants from '../SceneCreatorConstants';
 
 const styles = StyleSheet.create({
@@ -17,6 +24,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flex: 1,
   },
+  top: { flexDirection: 'row', justifyContent: 'space-between' },
   toolbar: {
     borderRadius: SceneCreatorConstants.OVERLAY_BORDER_RADIUS,
     backgroundColor: Constants.colors.white,
@@ -56,30 +64,6 @@ const styles = StyleSheet.create({
 });
 
 export const OverlayText = () => {
-  const globalActions = useCoreState('EDITOR_GLOBAL_ACTIONS');
-  const currentTool = globalActions?.defaultModeCurrentTool ?? 'grab';
-
-  const sendToolAction = React.useCallback(
-    (action, args) => {
-      if (typeof action === 'string') {
-        sendAsync('EDITOR_INSPECTOR_ACTION', { action, ...args });
-      } else if (action.eventName) {
-        const { eventName, ...params } = action;
-        sendAsync(eventName, params);
-      }
-    },
-    [sendAsync]
-  );
-  const onSelectGrab = React.useCallback(() => {
-    sendToolAction('setDefaultModeCurrentTool', { stringValue: 'grab' });
-  }, [sendToolAction]);
-  const onSelectScaleRotate = React.useCallback(() => {
-    sendToolAction('setDefaultModeCurrentTool', { stringValue: 'scaleRotate' });
-  }, [sendToolAction]);
-  const onSelectTextContent = React.useCallback(() => {
-    sendToolAction('setDefaultModeCurrentTool', { stringValue: 'textContent' });
-  }, [sendToolAction]);
-
   const textComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Text');
   const sendAction = React.useCallback(
     (...args) => sendBehaviorAction('Text', ...args),
@@ -157,50 +141,19 @@ export const OverlayText = () => {
     },
     [setFontNameValueAndSendAction]
   );
+  const onPressClose = React.useCallback(() => {
+    sendGlobalAction('setMode', 'default');
+  }, []);
 
   return (
     <>
+      <OverlayTextInput textComponent={textComponent} sendAction={sendAction} />
       <View style={styles.container} pointerEvents="box-none">
-        <View
-          style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-          pointerEvents="box-none">
-          <View style={{ flexDirection: 'column' }}>
-            <View style={styles.toolbar}>
-              <Pressable
-                style={[styles.button, currentTool === 'grab' ? { backgroundColor: '#000' } : null]}
-                onPress={onSelectGrab}>
-                <FeatherIcon
-                  name="mouse-pointer"
-                  size={22}
-                  color={currentTool === 'grab' ? '#fff' : '#000'}
-                />
-              </Pressable>
-              <Pressable
-                style={[
-                  styles.button,
-                  currentTool === 'scaleRotate' ? { backgroundColor: '#000' } : null,
-                ]}
-                onPress={onSelectScaleRotate}>
-                <Icon
-                  name="crop-rotate"
-                  size={22}
-                  color={currentTool === 'scaleRotate' ? '#fff' : '#000'}
-                />
-              </Pressable>
-              <Pressable
-                style={[
-                  styles.button,
-                  currentTool === 'textContent' ? { backgroundColor: '#000' } : null,
-                  { paddingLeft: 3 },
-                ]}
-                onPress={onSelectTextContent}>
-                <MCIcon
-                  name="playlist-edit"
-                  size={26}
-                  color={currentTool === 'textContent' ? '#fff' : '#000'}
-                />
-              </Pressable>
-            </View>
+        <View style={styles.top} pointerEvents="box-none">
+          <View style={[styles.toolbar, styles.button]}>
+            <Pressable onPress={onPressClose}>
+              <CastleIcon name="close" size={22} color="#000" />
+            </Pressable>
           </View>
           <View style={{ flexDirection: 'column' }}>
             <View style={[styles.button, styles.singleButton]}>

@@ -10,6 +10,7 @@
 #include "scale_rotate.h"
 #include "draw/draw_tool.h"
 #include "sound/sound_tool.h"
+#include "text/text_tool.h"
 #include "grid.h"
 #include "commands.h"
 #include "belt.h"
@@ -65,13 +66,13 @@ public:
     Default, // arrange actors and inspect their behaviors/properties
     Draw, // edit an actor's drawing
     Sound, // edit sound and music data
+    Text, // edit text properties
   };
   EditMode getEditMode();
 
   enum class Tool {
     Grab,
     ScaleRotate,
-    TextContent,
   };
   Tool getCurrentTool() const;
   void setCurrentTool(Tool tool);
@@ -132,11 +133,10 @@ private:
   GrabTool grab { *this };
   ScaleRotateTool scaleRotate { *this };
 
-  // 'Draw'-mode members
+  // Other modes
   DrawTool drawTool { *this };
-
-  // 'Sound'-mode members
   SoundTool soundTool { *this };
+  TextTool textTool { *this };
 
   bool defaultViewApplied = false;
   std::pair<float, float> getDefaultView(); // Width and y offset -- could refactor into a struct

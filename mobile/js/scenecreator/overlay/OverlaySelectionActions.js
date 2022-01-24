@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useCardCreator } from '../CreateCardContext';
-import { useCoreState, sendAsync } from '../../core/CoreEvents';
+import { useCoreState, sendAsync, sendGlobalAction } from '../../core/CoreEvents';
 import { OverlayDrawingFramePicker } from './OverlayDrawingFramePicker';
 
 import FeatherIcon from 'react-native-vector-icons/Feather';
@@ -85,8 +85,8 @@ export const OverlaySelectionActions = () => {
   const onSelectScaleRotate = React.useCallback(() => {
     sendAction('setDefaultModeCurrentTool', { stringValue: 'scaleRotate' });
   }, [sendAction]);
-  const onSelectTextContent = React.useCallback(() => {
-    sendAction('setDefaultModeCurrentTool', { stringValue: 'textContent' });
+  const onSelectTextTool = React.useCallback(() => {
+    sendGlobalAction('setMode', 'text');
   }, [sendAction]);
 
   return (
@@ -114,22 +114,14 @@ export const OverlaySelectionActions = () => {
               color={currentTool === 'scaleRotate' ? '#fff' : '#000'}
             />
           </Pressable>
-          {isTextActorSelected ? (
-            <Pressable
-              style={[
-                styles.button,
-                currentTool === 'textContent' ? { backgroundColor: '#000' } : null,
-                { paddingLeft: 3 },
-              ]}
-              onPress={onSelectTextContent}>
-              <MCIcon
-                name="playlist-edit"
-                size={26}
-                color={currentTool === 'textContent' ? '#fff' : '#000'}
-              />
-            </Pressable>
-          ) : null}
         </View>
+        {isTextActorSelected ? (
+          <View style={[styles.toolbar, { marginTop: 8 }]}>
+            <Pressable style={[styles.button, { paddingLeft: 3 }]} onPress={onSelectTextTool}>
+              <MCIcon name="playlist-edit" size={26} color="#000" />
+            </Pressable>
+          </View>
+        ) : null}
         <OverlayDrawingFramePicker />
       </View>
       <View style={{ flexDirection: 'column' }}>

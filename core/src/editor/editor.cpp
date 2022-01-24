@@ -56,7 +56,7 @@ bool Editor::androidHandleBackPressed() {
     return true;
   }
 
-  if (editMode == EditMode::Draw) {
+  if (editMode != EditMode::Default) {
     editMode = EditMode::Default;
     currentTool = Tool::Grab;
     isEditorStateDirty = true;
@@ -87,6 +87,7 @@ void Editor::clearState() {
   currentTool = Tool::Grab;
   drawTool.resetState();
   soundTool.resetState();
+  textTool.resetState();
   commands.clear();
   auto &drawingBehavior = scene->getBehaviors().byType<Drawing2Behavior>();
   drawingBehavior.clearEditorDataCache();
@@ -281,8 +282,6 @@ void Editor::update(double dt) {
       case Tool::ScaleRotate:
         scaleRotate.preUpdate(dt);
         break;
-      case Tool::TextContent:
-        break;
       }
 
       // Update belt -- do this before tools to allow it to steal touches
@@ -316,8 +315,6 @@ void Editor::update(double dt) {
       case Tool::ScaleRotate:
         scaleRotate.update(dt);
         break;
-      case Tool::TextContent:
-        break;
       }
 
       break; // EditMode::Default
@@ -327,6 +324,8 @@ void Editor::update(double dt) {
       break;
     case EditMode::Sound:
       soundTool.update(dt);
+      break;
+    case EditMode::Text:
       break;
     }
 
@@ -449,8 +448,6 @@ void Editor::draw() {
         case Tool::ScaleRotate:
           scaleRotate.drawOverlay();
           break;
-        case Tool::TextContent:
-          break;
         }
       }
 
@@ -498,6 +495,10 @@ void Editor::draw() {
   }
   case EditMode::Sound: {
     soundTool.drawOverlay();
+    break;
+  }
+  case EditMode::Text: {
+    textTool.drawOverlay();
     break;
   }
   }
@@ -778,6 +779,9 @@ struct EditorGlobalActionReceiver {
       } else if (newMode == "sound") {
         editor->editMode = Editor::EditMode::Sound;
         editor->soundTool.onSetActive();
+      } else if (newMode == "text") {
+        editor->editMode = Editor::EditMode::Text;
+        editor->textTool.onSetActive();
       } else if (newMode == "default") {
         editor->editMode = Editor::EditMode::Default;
         editor->currentTool = Editor::Tool::Grab;
@@ -832,9 +836,6 @@ void Editor::sendGlobalActions() {
     case Tool::ScaleRotate:
       ev.defaultModeCurrentTool = "scaleRotate";
       break;
-    case Tool::TextContent:
-      ev.defaultModeCurrentTool = "textContent";
-      break;
     }
     break;
   }
@@ -843,6 +844,9 @@ void Editor::sendGlobalActions() {
     break;
   case EditMode::Sound:
     ev.editMode = "sound";
+    break;
+  case EditMode::Text:
+    ev.editMode = "text";
     break;
   }
 
@@ -1696,8 +1700,6 @@ struct EditorInspectorActionReceiver {
         editor->setCurrentTool(Editor::Tool::Grab);
       } else if (params.stringValue() == "scaleRotate") {
         editor->setCurrentTool(Editor::Tool::ScaleRotate);
-      } else if (params.stringValue() == "textContent") {
-        editor->setCurrentTool(Editor::Tool::TextContent);
       }
       editor->isEditorStateDirty = true;
     }

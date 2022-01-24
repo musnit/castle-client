@@ -22,7 +22,6 @@ import { CreateCardOverlay } from './overlay/CreateCardOverlay';
 import { PopoverProvider } from '../components/PopoverProvider';
 import { SheetProvider } from './SheetProvider';
 import { useGameViewAndroidBackHandler } from '../common/GameViewAndroidBackHandler';
-import { TextTool } from './TextTool';
 
 const TABLET_BELT_HEIGHT_MULTIPLIER = isTablet() ? 2 : 1;
 const MIN_BELT_HEIGHT = 1.2 * TABLET_BELT_HEIGHT_MULTIPLIER * 48;
@@ -404,14 +403,12 @@ export const CreateCardScreen = ({
                     </View>
                   </View>
                 ) : null}
-                <TextTool visible={globalActions?.defaultModeCurrentTool === 'textContent'} />
               </View>
               <CreateCardOverlay
                 activeSheet={activeSheet}
                 setActiveSheet={setActiveSheet}
                 editMode={editMode}
                 beltHeight={beltHeight}
-                editingText={globalActions?.defaultModeCurrentTool === 'textContent'}
               />
               <CommandsOverlay visible={!isPlaying} />
               {isSceneLoaded ? null : <CardSceneLoading />}
