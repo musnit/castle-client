@@ -7,7 +7,6 @@ import tinycolor from 'tinycolor2';
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    backgroundColor: '#ccc',
     height: '100%',
     paddingTop: 32,
     alignItems: 'center',
