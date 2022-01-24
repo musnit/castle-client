@@ -191,11 +191,11 @@ export const styles = {
 };
 
 export const CORE_OVERLAY_TEXT_STYLE = {
-  regularBackgroundColor: [0.89, 0.9, 0.99, 1],
-  regularForegroundcolor: [0.137, 0.133, 0.196, 1],
-  tappableBackgroundColor: [0.137, 0.133, 0.196, 1],
-  tappingBackgroundColor: [2 * 0.137, 2 * 0.133, 2 * 0.196, 0.9],
-  tappableForegroundColor: [0.89, 0.9, 0.99, 1],
+  regularBackgroundColor: [227 / 255.0, 230 / 255.0, 255 / 255.0, 1],
+  regularForegroundcolor: [36 / 255.0, 34 / 255.0, 52 / 255.0, 1],
+  tappableBackgroundColor: [36 / 255.0, 34 / 255.0, 52 / 255.0, 1],
+  tappingBackgroundColor: [64 / 255.0, 51 / 255.0, 83 / 255.0, 1],
+  tappableForegroundColor: [227 / 255.0, 230 / 255.0, 255 / 255.0, 1],
   fontSize: 20,
   horizontalPadding: 4,
   topPadding: 2.75,
