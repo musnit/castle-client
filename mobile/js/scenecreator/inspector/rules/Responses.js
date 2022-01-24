@@ -1210,6 +1210,50 @@ const PlayPattern = ({ response, context }) => {
   return cells;
 };
 
+const MuteTrack = ({ response, context }) => {
+  let trackLabel,
+    hasTrack = false;
+  if (response.params?.trackIndex !== undefined) {
+    const track = context.tracks[response.params.trackIndex];
+    trackLabel = makeTrackName(track);
+    hasTrack = true;
+  }
+  return [
+    {
+      type: 'selectEntry',
+      label: `Mute track`,
+    },
+    {
+      type: 'selectParamSheet',
+      label: hasTrack ? trackLabel : '(choose track)',
+      paramName: 'trackIndex',
+      paramValue: response.params?.trackIndex,
+    },
+  ];
+};
+
+const UnmuteTrack = ({ response, context }) => {
+  let trackLabel,
+    hasTrack = false;
+  if (response.params?.trackIndex !== undefined) {
+    const track = context.tracks[response.params.trackIndex];
+    trackLabel = makeTrackName(track);
+    hasTrack = true;
+  }
+  return [
+    {
+      type: 'selectEntry',
+      label: `Unmute track`,
+    },
+    {
+      type: 'selectParamSheet',
+      label: hasTrack ? trackLabel : '(choose track)',
+      paramName: 'trackIndex',
+      paramValue: response.params?.trackIndex,
+    },
+  ];
+};
+
 const IsInCameraViewport = () => {
   return [
     {
@@ -1294,6 +1338,8 @@ export const Responses = {
   ['face direction of motion']: FaceDirectionOfMotion,
   ['play sound']: PlaySound,
   ['play pattern']: PlayPattern,
+  ['mute track']: MuteTrack,
+  ['unmute track']: UnmuteTrack,
   ['set clock tempo']: SetClockTempo,
   ['play song']: PlaySong,
   ['stop song']: StopSong,

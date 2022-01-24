@@ -103,6 +103,15 @@ void MusicBehavior::playPattern(ActorId &actorId, Scene &scene, MusicComponent *
   }
 }
 
+void MusicBehavior::setTrackMuted(MusicComponent *component, int trackIndex, bool muted) {
+  auto &song = component->props.song();
+  if (trackIndex >= 0 && trackIndex < int(song.tracks.size())) {
+    auto &track = song.tracks[trackIndex];
+    track->instrument->props.muted() = muted;
+  }
+}
+
+
 //
 // Responses
 //
@@ -163,7 +172,7 @@ struct PlayPatternResponse : BaseResponse {
 
   struct Params {
     PROP(std::string, patternId, .label("pattern"));
-    PROP(int, trackIndex, .label("track"));
+    PROP(int, trackIndex, .label("track")) = 0;
     PROP(bool, loop) = true;
     PROP(bool, quantize, .label("quantize to clock")) = true;
     PROP(
@@ -183,6 +192,46 @@ struct PlayPatternResponse : BaseResponse {
       opts.quantizeUnits = params.quantizeUnits();
       musicBehavior.playPattern(
           actorId, scene, component, params.patternId(), params.trackIndex(), params.loop(), opts);
+    }
+  }
+};
+
+struct MuteTrackResponse : BaseResponse {
+  inline static const RuleRegistration<MuteTrackResponse, MusicBehavior> registration {
+    "mute track"
+  };
+  static constexpr auto description = "Mute a track from this actor's song";
+
+  struct Params {
+    PROP(int, trackIndex, .label("track")) = 0;
+  } params;
+
+  void run(RuleContext &ctx) override {
+    auto actorId = ctx.actorId;
+    auto &scene = ctx.getScene();
+    auto &musicBehavior = scene.getBehaviors().byType<MusicBehavior>();
+    if (auto component = musicBehavior.maybeGetComponent(actorId)) {
+      musicBehavior.setTrackMuted(component, params.trackIndex(), true);
+    }
+  }
+};
+
+struct UnmuteTrackResponse : BaseResponse {
+  inline static const RuleRegistration<UnmuteTrackResponse, MusicBehavior> registration {
+    "unmute track"
+  };
+  static constexpr auto description = "Unmute a track from this actor's song";
+
+  struct Params {
+    PROP(int, trackIndex, .label("track")) = 0;
+  } params;
+
+  void run(RuleContext &ctx) override {
+    auto actorId = ctx.actorId;
+    auto &scene = ctx.getScene();
+    auto &musicBehavior = scene.getBehaviors().byType<MusicBehavior>();
+    if (auto component = musicBehavior.maybeGetComponent(actorId)) {
+      musicBehavior.setTrackMuted(component, params.trackIndex(), false);
     }
   }
 };

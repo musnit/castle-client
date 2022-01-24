@@ -352,6 +352,22 @@ const data = {
         },
       },
     },
+    ['mute track']: {
+      category: USE_CLOCK ? 'sound' : 'clock',
+      props: {
+        trackIndex: {
+          type: 'track',
+        },
+      },
+    },
+    ['unmute track']: {
+      category: USE_CLOCK ? 'sound' : 'clock',
+      props: {
+        trackIndex: {
+          type: 'track',
+        },
+      },
+    },
     ['set clock tempo']: {
       category: 'clock',
     },
