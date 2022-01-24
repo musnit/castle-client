@@ -11,6 +11,7 @@
 #include "editor/editor.h"
 #include "editor/library_clipboard.h"
 #include "feed/feed.h"
+#include "core_views/core_views.h"
 
 class Engine {
   // The top-level instance of Castle core. There should just be one of these for the entire
@@ -24,10 +25,14 @@ public:
   const Engine &operator=(const Engine &) = delete;
 
   explicit Engine(int feedVersion);
-  explicit Engine() : Engine(0) {}
+  explicit Engine()
+      : Engine(0) {
+  }
 
   // expect to set once per engine use, e.g. on mount
   void setInitialParams(const char *initialParamsJson);
+
+  void setCoreViews(const char *coreViewsJson);
 
   // may get sent multiple times per session from JS as UI layout changes
   void setBeltHeightFraction(double beltHeightFraction);
@@ -61,6 +66,7 @@ public:
 
 private:
   Bridge bridge { *this };
+  CoreViews coreViews { bridge };
   Lv lv { 800 / 2, 1120 / 2 };
 
   [[maybe_unused]] bool prevWindowFocused = true;

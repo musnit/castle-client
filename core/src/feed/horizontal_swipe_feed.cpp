@@ -116,6 +116,9 @@ void HorizontalSwipeFeed::update(double dt) {
       fetchMoreDecks();
     }
   }
+
+  coreView->update(dt);
+  coreView->handleGesture(gesture);
 }
 
 void HorizontalSwipeFeed::renderCardAtPosition(int idx, float position, bool isActive) {
@@ -294,9 +297,13 @@ void HorizontalSwipeFeed::draw() {
     lv.graphics.polyline(&playButton[0], 3);
     lv.graphics.pop();
   }
+
+  coreView->render();
 }
 
 void HorizontalSwipeFeed::fetchInitialDecks() {
+  coreView = CoreViews::getInstance().getRenderer("FEED");
+
   fetchingDecks = true;
   API::graphql("{\n  infiniteFeed {\n    sessionId\n    decks {\n      deckId\n      variables\n   "
                "   initialCard {\n        sceneDataUrl\n      }\n    }\n  }\n}",

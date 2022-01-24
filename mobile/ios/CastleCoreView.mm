@@ -109,6 +109,11 @@ extern bool ghostApplyScreenScaling;
   CastleCore::getEngine().setInitialParams(initialParamsCStr);
 }
 
+- (void)setCoreViews:(NSString *)coreViews {
+ const char *coreViewsCStr = [coreViews UTF8String];
+ CastleCore::getEngine().setCoreViews(coreViewsCStr);
+}
+
 - (void)setBeltHeightFraction:(double)beltHeightFraction {
   CastleCore::getEngine().setBeltHeightFraction(beltHeightFraction);
 }
@@ -156,6 +161,7 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_EXPORT_VIEW_PROPERTY(initialParams, NSString);
+RCT_EXPORT_VIEW_PROPERTY(coreViews, NSString);
 RCT_EXPORT_VIEW_PROPERTY(beltHeightFraction, double);
 RCT_EXPORT_VIEW_PROPERTY(screenScaling, double);
 RCT_EXPORT_VIEW_PROPERTY(applyScreenScaling, BOOL);

@@ -159,6 +159,10 @@ void Engine::setInitialParams(const char *initialParamsJson) {
   }
 }
 
+void Engine::setCoreViews(const char *coreViewsJson) {
+  coreViews.setJson(coreViewsJson);
+}
+
 void Engine::setBeltHeightFraction(double beltHeightFraction) {
   Belt::heightFraction = float(beltHeightFraction);
 }
