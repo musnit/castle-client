@@ -75,11 +75,9 @@ export const SoundTrackInspectorSheet = ({ isOpen }) => {
   };
   const [selectedTab, setSelectedTab] = React.useState(TAB_ITEMS[0].value);
 
-  const title = 'Track'; // TODO: track identifier of some kind
   const renderHeader = () => (
     <SoundTrackInspectorHeader
       isOpen={isOpen}
-      title={title}
       tabItems={TAB_ITEMS}
       selectedTab={selectedTab}
       setSelectedTab={setSelectedTab}

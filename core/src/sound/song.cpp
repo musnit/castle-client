@@ -8,18 +8,12 @@ std::unique_ptr<Song::Track> Song::makeDefaultTrack() {
   // default sampler
   auto track = std::make_unique<Song::Track>();
   track->instrument = std::make_unique<Sampler>();
+  track->instrument->props.name() = track->instrument->getType();
   return track;
 }
 
 Song::Song(const Song &other) {
-  Archive archive;
-  archive.write([&](Archive::Writer &w) {
-    other.write(w);
-  });
-
-  archive.read([&](Archive::Reader &r) {
-    read(r);
-  });
+  *this = other;
 }
 
 const Song &Song::operator=(const Song &other) {

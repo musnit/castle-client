@@ -19,6 +19,7 @@ public:
   virtual void play(Sound &sound, Pattern::Note note) = 0;
 
   struct Props {
+    PROP(std::string, name);
     PROP(bool, muted) = false;
   } props;
 };

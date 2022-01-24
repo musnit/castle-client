@@ -221,3 +221,13 @@ export const makeDefaultPatternName = (pattern) => {
     return 'no pattern';
   }
 };
+
+export const makeTrackName = (track) => {
+  if (track?.instrument.props?.name && track.instrument.props.name !== '') {
+    return track.instrument.props.name;
+  }
+  if (track?.instrument.type) {
+    return track.instrument.type;
+  }
+  return 'track';
+};

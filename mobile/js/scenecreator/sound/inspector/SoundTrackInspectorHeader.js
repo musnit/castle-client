@@ -1,10 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SegmentedNavigation } from '../../../components/SegmentedNavigation';
 import { sendAsync } from '../../../core/CoreEvents';
 
 import * as Constants from '../../../Constants';
 const CastleIcon = Constants.CastleIcon;
+import * as SceneCreatorUtilities from '../../SceneCreatorUtilities';
 
 import Feather from 'react-native-vector-icons/Feather';
 
@@ -49,7 +50,57 @@ const styles = StyleSheet.create({
     borderBottomColor: Constants.colors.grayOnWhiteBorder,
     flexDirection: 'row',
   },
+  titleInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexShrink: 1,
+  },
+  titleContainer: {
+    width: '100%',
+    flexShrink: 1,
+  },
 });
+
+export const TrackNameHeader = ({ track, setTitle }) => {
+  const title = track?.instrument.props?.name;
+  const [isEditingTitle, setIsEditingTitle] = React.useState(false);
+  const [titleInputValue, setTitleInputValue] = React.useState(title);
+  React.useEffect(() => {
+    // Stop editing title if the underlying data changed
+    setIsEditingTitle(false);
+  }, [title]);
+  const onStartEditingTitle = React.useCallback(() => {
+    setTitleInputValue(title);
+    setIsEditingTitle(true);
+  }, [title]);
+  const onEndEditingTitle = React.useCallback(() => {
+    if (titleInputValue.length > 0) {
+      setTitle(titleInputValue);
+    }
+    setTimeout(() => setIsEditingTitle(false), 80);
+  }, [titleInputValue, setTitle]);
+
+  return (
+    <View style={styles.titleInputContainer}>
+      {!isEditingTitle ? (
+        <Pressable style={styles.titleContainer} onPress={onStartEditingTitle}>
+          <Text style={styles.trackTitle} numberOfLines={1} ellipsizeMode="middle">
+            {SceneCreatorUtilities.makeTrackName(track)}
+          </Text>
+        </Pressable>
+      ) : (
+        <TextInput
+          style={[styles.titleContainer, styles.titleInput]}
+          value={titleInputValue}
+          onChangeText={(newValue) => setTitleInputValue(newValue)}
+          onBlur={onEndEditingTitle}
+          placeholder={SceneCreatorUtilities.makeTrackName(track)}
+          autofocus
+        />
+      )}
+    </View>
+  );
+};
 
 const TrackHeaderActions = ({ onRemoveTrack, isMuted, setIsMuted, onClose }) => {
   return (
@@ -69,7 +120,6 @@ const TrackHeaderActions = ({ onRemoveTrack, isMuted, setIsMuted, onClose }) => 
 
 export const SoundTrackInspectorHeader = ({
   isOpen,
-  title,
   tabItems,
   selectedTab,
   setSelectedTab,
@@ -96,24 +146,29 @@ export const SoundTrackInspectorHeader = ({
 
   const instrumentProps = selectedTrack?.instrument.props || {};
   const isMuted = instrumentProps.muted || false;
-  const setIsMuted = React.useCallback(
-    (muted) => {
+  const setInstrumentProps = React.useCallback(
+    (props) => {
       sendAsync('TRACK_TOOL_CHANGE_INSTRUMENT', {
         action: 'setProps',
         props: {
           ...instrumentProps,
-          muted,
+          ...props,
         },
       });
     },
     [instrumentProps]
   );
+  const setIsMuted = React.useCallback(
+    (muted) => setInstrumentProps({ muted }),
+    [setInstrumentProps]
+  );
+  const setTitle = React.useCallback((name) => setInstrumentProps({ name }), [setInstrumentProps]);
 
   return (
     <View pointerEvents={isOpen ? 'auto' : 'none'}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Text style={styles.trackTitle}>{title}</Text>
+          <TrackNameHeader track={selectedTrack} setTitle={setTitle} />
         </View>
         <TrackHeaderActions
           onRemoveTrack={removeTrack}

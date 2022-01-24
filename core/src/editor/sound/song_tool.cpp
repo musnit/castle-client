@@ -359,7 +359,7 @@ void SongTool::drawTrackAxis(Song *song, double timeInSong) {
       lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);
     }
     lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-    lv.graphics.print({ { track->instrument->getType(), { 1, 1, 1, 1 } } }, tempFont.get(),
+    lv.graphics.print({ { track->instrument->props.name(), { 1, 1, 1, 1 } } }, tempFont.get(),
         love::Matrix4(x + gridCellSize * 0.1f, y + gridCellSize * 0.4f, 0, fontInvScale,
             fontInvScale, 0, 0, 0, 0));
     y += gridCellSize;
