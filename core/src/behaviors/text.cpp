@@ -459,7 +459,7 @@ std::optional<std::string> TextBehavior::handleDrawBase64PreviewPng(
     std::vector<std::string> lines;
     auto &content = component.props.content();
     font->getWrap({ { content, { 1, 1, 1, 1 } } }, canvasSize / textScale, lines);
-    for (auto i = 0; i < textLines; ++i) {
+    for (auto i = 0; i < int(lines.size()); ++i) {
       lv.graphics.print({ { lines[i], { 1, 1, 1, 1 } } },
           love::Matrix4(padding / textScale, padding / textScale + fontHeight * float(i), 0, 1, 1,
               0, 0, 0, 0));
