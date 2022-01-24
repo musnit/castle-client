@@ -4,14 +4,11 @@ import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import { useCoreState, sendBehaviorAction, sendGlobalAction } from '../../../core/CoreEvents';
 
-import ColorPicker from '../components/ColorPicker';
-
-import * as SceneCreatorConstants from '../../SceneCreatorConstants';
+import * as Constants from '../../../Constants';
+import tinycolor from 'tinycolor2';
 
 const styles = StyleSheet.create({
   container: {
-    borderTopWidth: 1,
-    borderColor: '#ccc',
     padding: 16,
   },
   label: {
@@ -19,7 +16,22 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     fontSize: 16,
   },
+  text: {
+    fontSize: 16,
+  },
 });
+
+const postScriptNames = {
+  BreiteGrotesk: 'BreiteGrotesk-Regular',
+  Compagnon: 'Compagnon-Roman',
+  Glacier: 'Glacier-Bold',
+  HelicoCentrica: 'HelicoCentrica-Roman',
+  Piazzolla: 'Piazzolla-Medium',
+  YatraOne: 'YatraOne-Regular',
+  Bore: 'Bore-Regular',
+  Synco: 'Synco-2020',
+  Tektur: 'TekturTight-Regular',
+};
 
 export default InspectorText = () => {
   const textComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Text');
@@ -44,19 +56,27 @@ export default InspectorText = () => {
     sendGlobalAction('setMode', 'text');
   }, []);
 
+  const hexColor = tinycolor.fromRatio(textComponent.props.color).toHexString();
+
   return (
     <View style={styles.container}>
-      <InspectorCheckbox
-        value={visibleValue}
-        onChange={onChangeVisibleValue}
-        label="Visible"
-        style={{ marginBottom: 12 }}
-      />
-      <View style={{ alignItems: 'flex-start' }}>
-        <TouchableOpacity style={SceneCreatorConstants.styles.button} onPress={selectTextTool}>
-          <Text style={SceneCreatorConstants.styles.buttonLabel}>Edit Text</Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity
+        style={[Constants.styles.textInputWrapperOnWhite, { marginBottom: 16 }]}
+        onPress={selectTextTool}>
+        <View style={Constants.styles.textInputOnWhite}>
+          <Text
+            style={[
+              styles.text,
+              {
+                color: hexColor,
+                fontFamily: postScriptNames[textComponent.props.fontName],
+              },
+            ]}>
+            {textComponent.props.content}
+          </Text>
+        </View>
+      </TouchableOpacity>
+      <InspectorCheckbox value={visibleValue} onChange={onChangeVisibleValue} label="Visible" />
     </View>
   );
 };
