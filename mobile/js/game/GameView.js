@@ -71,6 +71,7 @@ const computeDimensionsSettings = ({ metadata }) => {
 export const GameView = ({
   deckId,
   initialParams,
+  coreViews,
   onMessage,
   onLoaded,
   paused,
@@ -108,6 +109,7 @@ export const GameView = ({
     <View style={styles.container}>
       <CastleCoreView
         initialParams={initialParams}
+        coreViews={coreViews}
         style={styles.container}
         dimensionsSettings={dimensionsSettings}
         paused={paused}

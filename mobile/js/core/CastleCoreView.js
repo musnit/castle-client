@@ -62,6 +62,7 @@ const useDimensions = ({ settings }) => {
 const CastleCoreView = ({
   deckId,
   initialParams,
+  coreViews,
   style,
   dimensionsSettings,
   paused,
@@ -104,6 +105,7 @@ const CastleCoreView = ({
             applyScreenScaling={dimensionsHook.applyScreenScaling}
             paused={paused}
             initialParams={initialParams}
+            coreViews={coreViews}
             beltHeightFraction={beltHeightFraction}
           />
         </View>

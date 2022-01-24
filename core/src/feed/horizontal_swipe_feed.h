@@ -2,6 +2,7 @@
 
 #include "precomp.h"
 #include "feed_interface.h"
+#include "core_views/core_views.h"
 
 class HorizontalSwipeFeed : public FeedInterface {
 public:
@@ -33,6 +34,8 @@ private:
   float lastTouchPosition = 0.0;
   float yOffset = 0.0;
   float elapsedTime = 0.0;
+
+  std::shared_ptr<CoreViewRenderer> coreView;
 
   std::set<std::string> deckIds;
   std::vector<FeedItem> decks;
