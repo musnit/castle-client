@@ -45,7 +45,7 @@ const GeneralTab = ({ behaviors, addChildSheet, isTextActorSelected }) => {
       <Inspector.Tags tags={behaviors.Tags} />
       {SceneCreatorConstants.USE_CLOCK ? <Inspector.Music music={behaviors.Music} /> : null}
 
-      {!isTextActorSelected && <Inspector.Layout body={behaviors.Body} />}
+      {<Inspector.Layout body={behaviors.Body} />}
     </React.Fragment>
   );
 };
