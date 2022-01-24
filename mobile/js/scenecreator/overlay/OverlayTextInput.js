@@ -64,6 +64,7 @@ export const OverlayTextInput = ({ textComponent, sendAction }) => {
             textAlign: textComponent.props.alignment,
           },
         ]}
+        keyboardType={Platform.OS === 'ios' ? 'ascii-capable' : 'visible-password'}
       />
     </View>
   );
