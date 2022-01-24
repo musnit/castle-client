@@ -8,6 +8,7 @@ import { InspectorNumberInput } from './InspectorNumberInput';
 import { InspectorPatternPicker } from './InspectorPatternPicker';
 import { InspectorTagPicker } from './InspectorTagPicker';
 import { InspectorTextInput } from './InspectorTextInput';
+import { InspectorTrackPicker } from './InspectorTrackPicker';
 import { InspectorVariablePicker } from './InspectorVariablePicker';
 
 import * as SceneCreatorUtilities from '../../SceneCreatorUtilities';
@@ -74,6 +75,8 @@ export const ParamInput = ({
       return <InspectorVariablePicker value={value} onChange={setValue} {...metadata} />;
     case 'pattern':
       return <InspectorPatternPicker value={value} onChange={setValue} {...metadata} />;
+    case 'track':
+      return <InspectorTrackPicker value={value} onChange={setValue} {...metadata} />;
     case 'comparison':
       return (
         <InspectorDropdown

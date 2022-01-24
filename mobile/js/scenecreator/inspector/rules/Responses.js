@@ -5,6 +5,7 @@ import {
   makeExpressionSummary,
   readableOperator,
   makeDefaultPatternName,
+  makeTrackName,
 } from '../../SceneCreatorUtilities';
 import { makeCardPreviewTitle } from '../../../common/utilities';
 import { SFXR_CATEGORIES } from '../../sound/components/Sample';
@@ -1149,10 +1150,16 @@ const PlayPattern = ({ response, context }) => {
   if (response.params?.patternId) {
     const pattern = context.patterns[response.params.patternId];
     if (pattern) {
-      patternLabel =
-        pattern.name && pattern.name.length ? pattern.name : makeDefaultPatternName(pattern);
+      patternLabel = makeDefaultPatternName(pattern);
       hasPattern = true;
     }
+  }
+  let trackLabel,
+    hasTrack = false;
+  if (response.params?.trackIndex !== undefined) {
+    const track = context.tracks[response.params.trackIndex];
+    trackLabel = makeTrackName(track);
+    hasTrack = true;
   }
   let cells = [
     {
@@ -1164,6 +1171,20 @@ const PlayPattern = ({ response, context }) => {
       label: hasPattern ? patternLabel : '(choose pattern)',
       paramName: 'patternId',
       paramValue: response.params?.patternId,
+    },
+    {
+      type: 'text',
+      label: ', on track',
+    },
+    {
+      type: 'selectParamSheet',
+      label: hasTrack ? trackLabel : '(choose track)',
+      paramName: 'trackIndex',
+      paramValue: response.params?.trackIndex,
+    },
+    {
+      type: 'text',
+      label: ',',
     },
     {
       type: 'selectParamSheet',

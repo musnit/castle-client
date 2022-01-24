@@ -347,6 +347,9 @@ const data = {
         patternId: {
           type: 'pattern',
         },
+        trackIndex: {
+          type: 'track',
+        },
       },
     },
     ['set clock tempo']: {

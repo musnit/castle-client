@@ -24,6 +24,7 @@ export const getRuleRenderContext = () => {
     },
   };
   const patterns = musicComponent.props.song.patterns;
+  const tracks = musicComponent.props.song.tracks;
 
   return {
     deck,
@@ -31,6 +32,7 @@ export const getRuleRenderContext = () => {
     behaviors,
     library,
     patterns,
+    tracks,
     ...rules,
   };
 };
