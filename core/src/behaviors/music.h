@@ -9,6 +9,11 @@
 struct MusicComponent : BaseComponent {
   struct Props {
     PROP(Song, song);
+    PROP(
+         std::string, autoplay,
+         .label("autoplay when enabled")
+         .allowedValues("none", "once", "loop")
+         ) = "loop";
   } props;
 };
 

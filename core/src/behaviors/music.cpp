@@ -11,11 +11,27 @@ void MusicBehavior::handleEnableComponent(ActorId actorId, MusicComponent &compo
     song.patterns.emplace(emptyPattern->patternId(), *emptyPattern);
     song.tracks.push_back(std::move(defaultTrack));
   }
+  if (!getScene().getIsEditing()) {
+    // possibly autoplay at next bar
+    auto &autoplay = component.props.autoplay();
+    if (autoplay != "none") {
+      Sound::StreamOptions opts;
+      opts.quantize = true;
+      opts.quantizeUnits = Clock::Quantize::Bar;
+      playSong(actorId, getScene(), &component, autoplay == "loop", opts);
+    }
+  }
 }
 
 void MusicBehavior::handleDisableComponent(
     ActorId actorId, MusicComponent &component, bool removeActor) {
-  stopMusic(actorId, getScene(), &component, {});
+  Sound::StreamOptions opts;
+  if (!getScene().getIsEditing()) {
+    // default in play mode is to stop actor's streams at the next bar
+    opts.quantize = true;
+    opts.quantizeUnits = Clock::Quantize::Bar;
+  }
+  stopMusic(actorId, getScene(), &component, opts);
 }
 
 std::string MusicBehavior::hash(const std::string &json) {
