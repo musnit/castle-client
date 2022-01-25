@@ -10,7 +10,71 @@
 #define CARD_WIDTH 800
 #define CARD_HEIGHT 1120
 #define FEED_ITEM_HEIGHT (CARD_WIDTH + 200)
-#define SCROLL_ANIMATION_TIME 0.2
+
+float cubicEaseIn(float p) {
+  return p * p * p;
+}
+
+float cubicEaseInOut(float p) {
+  return 3.0 * p * p - 2.0 * p * p * p;
+}
+
+float quadEaseOut(float t) {
+  return -1.0 * t * (t - 2.0);
+}
+
+float cubicEaseOut(float t) {
+  t -= 1.0;
+  return (t * t * t + 1.0);
+}
+
+float quartEaseOut(float t) {
+  t -= 1.0;
+  return -1.0 * (t * t * t * t - 1.0);
+}
+
+float quintEaseOut(float t) {
+  t -= 1.0;
+  return (t * t * t * t * t + 1.0);
+}
+
+float sinEaseOut(float t) {
+  return sinf(t * (M_PI / 2.0));
+}
+
+float expoEaseOut(float t) {
+  return -powf(2, -10 * t) + 1.0;
+}
+
+float circEaseOut(float t) {
+  t -= 1.0;
+  return sqrtf(1.0 - t * t);
+}
+
+float smoothstep(float a, float b, float t) {
+  int ANIMATION_EASING_FUNCTION
+      = CoreViews::getInstance().getNumConstant("ANIMATION_EASING_FUNCTION");
+  switch (ANIMATION_EASING_FUNCTION) {
+  case 0:
+    return (b - a) * cubicEaseIn(t) + a;
+  case 1:
+    return (b - a) * cubicEaseInOut(t) + a;
+  case 2:
+    return (b - a) * quadEaseOut(t) + a;
+  case 3:
+    return (b - a) * cubicEaseOut(t) + a;
+  case 4:
+    return (b - a) * quartEaseOut(t) + a;
+  case 5:
+    return (b - a) * quintEaseOut(t) + a;
+  case 6:
+    return (b - a) * sinEaseOut(t) + a;
+  case 7:
+    return (b - a) * expoEaseOut(t) + a;
+  case 8:
+    return (b - a) * circEaseOut(t) + a;
+  }
+}
 
 int Feed::getCurrentIndex() {
   int idx = floor((FEED_ITEM_HEIGHT / 2.0 - yOffset) / FEED_ITEM_HEIGHT);
@@ -25,6 +89,17 @@ int Feed::getCurrentIndex() {
 }
 
 void Feed::update(double dt) {
+  float SCROLL_ANIMATION_TIME = CoreViews::getInstance().getNumConstant("SCROLL_ANIMATION_TIME");
+  float DRAG_START_OFFSET = CoreViews::getInstance().getNumConstant("DRAG_START_OFFSET");
+  float SCROLL_MULTIPLIER = CoreViews::getInstance().getNumConstant("SCROLL_MULTIPLIER");
+  float FAST_SWIPE_MAX_DURATION
+      = CoreViews::getInstance().getNumConstant("FAST_SWIPE_MAX_DURATION");
+  float FAST_SWIPE_MIN_OFFSET = CoreViews::getInstance().getNumConstant("FAST_SWIPE_MIN_OFFSET");
+  float FAST_SWIPE_MIN_DRAG_VELOCITY
+      = CoreViews::getInstance().getNumConstant("FAST_SWIPE_MIN_DRAG_VELOCITY");
+  float DRAG_VELOCITY_ROLLING_AVERAGE_TIME
+      = CoreViews::getInstance().getNumConstant("DRAG_VELOCITY_ROLLING_AVERAGE_TIME");
+
   Debug::display("fps: {}", lv.timer.getFPS());
   elapsedTime += dt;
 
@@ -43,11 +118,25 @@ void Feed::update(double dt) {
     if (!hasTouch) {
       hasTouch = true;
       touchDuration = 0.0;
-      touchVelocity = 0.0;
       touchStartYOffset = yOffset;
+      dragStarted = false;
+      preDragOffset = 0.0;
+      dragVelocity = 0.0;
     } else {
-      touchVelocity = (touch.screenPos.x - lastTouchPosition) * 0.3 + touchVelocity * 0.9;
-      yOffset += (touch.screenPos.x - lastTouchPosition) * 1.2;
+      if (!dragStarted) {
+        preDragOffset += touch.screenPos.x - lastTouchPosition;
+
+        if (fabs(preDragOffset) > DRAG_START_OFFSET) {
+          dragStarted = true;
+        }
+      }
+
+      if (dragStarted) {
+        yOffset += (touch.screenPos.x - lastTouchPosition) * SCROLL_MULTIPLIER;
+        float rollingAvgAmt = dt / DRAG_VELOCITY_ROLLING_AVERAGE_TIME;
+        dragVelocity = (touch.screenPos.x - lastTouchPosition) * rollingAvgAmt
+            + dragVelocity * (1.0 - rollingAvgAmt);
+      }
     }
 
     lastTouchPosition = touch.screenPos.x;
@@ -59,17 +148,21 @@ void Feed::update(double dt) {
       animateFromYOffset = yOffset;
       animationTimeElapsed = 0.0;
 
-      if (fabs(touchVelocity) > 20.0) {
-        if (touchVelocity > 0) {
+      if (touchDuration < FAST_SWIPE_MAX_DURATION
+          && fabs(yOffset - touchStartYOffset) > FAST_SWIPE_MIN_OFFSET) {
+        if (yOffset - touchStartYOffset > 0) {
           animateToYOffset = (round(touchStartYOffset / FEED_ITEM_HEIGHT) + 1) * FEED_ITEM_HEIGHT;
         } else {
           animateToYOffset = (round(touchStartYOffset / FEED_ITEM_HEIGHT) - 1) * FEED_ITEM_HEIGHT;
         }
-      } else if (touchDuration < 0.2 && !touch.movedNear) {
-        animateToYOffset = (round(touchStartYOffset / FEED_ITEM_HEIGHT) - 1) * FEED_ITEM_HEIGHT;
+      } else if (fabs(dragVelocity) > FAST_SWIPE_MIN_DRAG_VELOCITY) {
+        if (dragVelocity > 0) {
+          animateToYOffset = (round(touchStartYOffset / FEED_ITEM_HEIGHT) + 1) * FEED_ITEM_HEIGHT;
+        } else {
+          animateToYOffset = (round(touchStartYOffset / FEED_ITEM_HEIGHT) - 1) * FEED_ITEM_HEIGHT;
+        }
       } else {
-        animateToYOffset
-            = round((yOffset - FEED_ITEM_HEIGHT * 0.1) / FEED_ITEM_HEIGHT) * FEED_ITEM_HEIGHT;
+        animateToYOffset = round((yOffset) / FEED_ITEM_HEIGHT) * FEED_ITEM_HEIGHT;
       }
     }
   });
@@ -426,8 +519,7 @@ love::graphics::Canvas *Feed::newCanvas(int width, int height) {
   return lv.graphics.newCanvas(settings);
 }
 
-void Feed::renderToCanvas(
-    love::graphics::Canvas *canvas, const std::function<void()> &lambda) {
+void Feed::renderToCanvas(love::graphics::Canvas *canvas, const std::function<void()> &lambda) {
   love::graphics::Graphics::RenderTarget rt(canvas);
 
   love::graphics::Graphics::RenderTargets oldtargets = lv.graphics.getCanvas();

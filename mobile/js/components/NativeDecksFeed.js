@@ -4,6 +4,45 @@ import { useListen } from '../core/CoreEvents';
 import * as Constants from '../Constants';
 
 let coreViews = {
+  CONSTANTS: {
+    /*
+     * 0 - cubicEaseIn
+     * 1 - cubicEaseInOut
+     * 2 - quadEaseOut
+     * 3 - cubicEaseOut
+     * 4 - quartEaseOut
+     * 5 - quintEaseOut
+     * 6 - sinEaseOut
+     * 7 - expoEaseOut
+     * 8 - circEaseOut
+     */
+    ANIMATION_EASING_FUNCTION: 4,
+
+    // The time it takes to move to the next card after touch is released
+    SCROLL_ANIMATION_TIME: 0.3,
+
+    // How much you have to drag before the card starts moving
+    DRAG_START_OFFSET: 50,
+
+    // The card moves by the drag distance multiplied by this constant while the touch is down
+    SCROLL_MULTIPLIER: 1.7,
+
+    // A drag that moves further than FAST_SWIPE_MIN_OFFSET and lasts for less than FAST_SWIPE_MAX_DURATION
+    // will move to the next card in the drag direction.
+    FAST_SWIPE_MAX_DURATION: 0.5,
+    FAST_SWIPE_MIN_OFFSET: 20,
+
+    // DRAG_VELOCITY_ROLLING_AVERAGE_TIME is used to calculate the rolling average velocity.
+    // A higher value means the velocity adjusts slower.
+    // A drag with velocity greater than FAST_SWIPE_MIN_DRAG_VELOCITY will move to the next card
+    // in the direction of the velocity.
+    // Test this by touching down a drag for longer than FAST_SWIPE_MAX_DURATION, and then
+    // swiping and releasing.
+    FAST_SWIPE_MIN_DRAG_VELOCITY: 3.0,
+    DRAG_VELOCITY_ROLLING_AVERAGE_TIME: 0.1,
+
+    // A drag not classified as a fast swipe will animate to the nearest card
+  },
   FEED: {
     id: 'image1',
     type: 'view',
@@ -11,11 +50,11 @@ let coreViews = {
     y: 200,
     width: 600,
     height: 700,
-    backgroundColor: '#7F0000',
+    //backgroundColor: '#7F0000',
     onTap: () => {
       console.log('on tap');
     },
-    children: [
+    /*children: [
       {
         id: 'image2',
         type: 'image',
@@ -45,7 +84,7 @@ let coreViews = {
         fontSize: 8,
         fontFamily: 'Overlay',
       }
-    ],
+    ],*/
   },
 };
 

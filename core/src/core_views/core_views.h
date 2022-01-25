@@ -81,6 +81,8 @@ public:
 
   static void hexToRGBFloat(std::string hex, float *out);
 
+  float getNumConstant(std::string key);
+
 private:
   friend class CoreViewRenderer;
   friend class CoreView;
@@ -100,6 +102,8 @@ private:
   std::shared_ptr<CoreView> getViewForType(std::string viewType);
 
   inline static CoreViews *instance = nullptr;
+
+  std::unordered_map<std::string, float> numConstantsCache;
 };
 
 inline CoreViews &CoreViews::getInstance() {

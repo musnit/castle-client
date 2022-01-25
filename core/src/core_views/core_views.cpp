@@ -115,6 +115,8 @@ CoreViews::CoreViews(Bridge &bridge_)
 void CoreViews::setJson(std::string json) {
   jsonString = json;
   jsonVersion++;
+
+  numConstantsCache.clear();
 }
 
 std::shared_ptr<CoreViewRenderer> CoreViews::getRenderer(std::string layoutTemplateName) {
@@ -164,6 +166,21 @@ void CoreViews::hexToRGBFloat(std::string hex, float *out) {
   out[0] = rgb[0] / 255.0;
   out[1] = rgb[1] / 255.0;
   out[2] = rgb[2] / 255.0;
+}
+
+float CoreViews::getNumConstant(std::string key) {
+  if (numConstantsCache.find(key) == numConstantsCache.end()) {
+    auto archive = Archive::fromJson(jsonString.c_str());
+    std::shared_ptr<CoreView> result = nullptr;
+
+    archive.read([&](Reader &reader) {
+      reader.obj("CONSTANTS", [&]() {
+        numConstantsCache[key] = reader.num(key.c_str(), 0);
+      });
+    });
+  }
+
+  return numConstantsCache[key];
 }
 
 //

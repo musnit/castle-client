@@ -33,9 +33,9 @@ private:
   Gesture gesture { nullptr };
   std::unique_ptr<love::Shader> shader;
   bool hasTouch = false;
+  bool dragStarted = false;
   bool deckIsFocused = false;
   bool ignoreCurrentTouch = false;
-  float touchVelocity = 0.0;
   float touchStartYOffset = 0.0;
   float touchDuration = 0.0;
   bool isAnimating = false;
@@ -44,8 +44,10 @@ private:
   float animateToYOffset = 0.0;
   float animationTimeElapsed = 0.0;
   float lastTouchPosition = 0.0;
+  float preDragOffset = 0.0;
   float yOffset = 0.0;
   float elapsedTime = 0.0;
+  float dragVelocity = 0.0;
 
   std::shared_ptr<CoreViewRenderer> coreView;
 
@@ -64,12 +66,4 @@ private:
 
   Lv &lv { Lv::getInstance() };
   Bridge &bridge;
-
-  float cubicEaseInOut(float p) {
-    return 3.0 * p * p - 2.0 * p * p * p;
-  }
-
-  float smoothstep(float a, float b, float t) {
-    return (b - a) * cubicEaseInOut(t) + a;
-  }
 };
