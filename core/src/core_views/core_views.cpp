@@ -15,7 +15,7 @@ void CoreViewRenderer::render() {
   if (jsonVersion != CoreViews::getInstance().jsonVersion) {
     jsonVersion = CoreViews::getInstance().jsonVersion;
 
-    layout = CoreViews::getInstance().getView(layoutTemplateName);
+    layout = CoreViews::getInstance().getView(layoutTemplateName, &props);
   }
 
   renderView(layout.get());
@@ -87,6 +87,43 @@ void CoreViewRenderer::handleGesture(Gesture &gesture) {
   });
 }
 
+void CoreViewRenderer::updateProp(std::string viewId, std::string key, std::string value) {
+  if (props.find(viewId) == props.end()) {
+    props[viewId] = std::unordered_map<std::string, std::string>();
+  }
+
+  props[viewId][key] = value;
+
+  auto view = getViewForId(layout.get(), viewId);
+  if (!view) {
+    return;
+  }
+
+  Archive archive;
+  archive.write([&](Archive::Writer &writer) {
+    writer.str(key.c_str(), value.c_str());
+  });
+
+  archive.read([&](Reader &reader) {
+    (*view)->baseRead(reader, nullptr, nullptr);
+  });
+}
+
+std::optional<CoreView *> CoreViewRenderer::getViewForId(CoreView *root, std::string id) {
+  if (root->id == id) {
+    return root;
+  }
+
+  for (size_t i = 0; i < root->children.size(); i++) {
+    auto childResult = getViewForId(root->children[i].get(), id);
+    if (childResult) {
+      return childResult;
+    }
+  }
+
+  return std::nullopt;
+}
+
 std::optional<CoreView *> CoreViewRenderer::getViewAtPoint(CoreView *root, float x, float y) {
   if (x >= root->left && x <= root->left + root->width && y >= root->top
       && y <= root->top + root->height) {
@@ -121,26 +158,44 @@ void CoreViews::setJson(std::string json) {
 
 std::shared_ptr<CoreViewRenderer> CoreViews::getRenderer(std::string layoutTemplateName) {
   return std::make_shared<CoreViewRenderer>(
-      bridge, layoutTemplateName, getView(layoutTemplateName));
+      bridge, layoutTemplateName, getView(layoutTemplateName, nullptr), jsonVersion);
 }
 
-std::shared_ptr<CoreView> CoreViews::getView(std::string layoutTemplateName) {
+std::shared_ptr<CoreView> CoreViews::getView(std::string layoutTemplateName,
+    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> *props) {
   auto archive = Archive::fromJson(jsonString.c_str());
   std::shared_ptr<CoreView> result = nullptr;
 
   archive.read([&](Reader &reader) {
     reader.obj(layoutTemplateName.c_str(), [&]() {
-      result = readViewFromJson(reader, nullptr);
+      result = readViewFromJson(reader, nullptr, props);
     });
   });
 
   return result;
 }
 
-std::shared_ptr<CoreView> CoreViews::readViewFromJson(Reader &reader, CoreView *parent) {
+std::shared_ptr<CoreView> CoreViews::readViewFromJson(Reader &reader, CoreView *parent,
+    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> *props) {
   auto type = reader.str("type", "");
   auto view = getViewForType(type);
-  view->baseRead(reader, parent);
+  view->baseRead(reader, parent, props);
+
+  if (view->id && props && props->find(*(view->id)) != props->end()) {
+    auto viewProps = (*props)[*(view->id)];
+
+    Archive archive;
+    archive.write([&](Archive::Writer &writer) {
+      for (auto it = viewProps.cbegin(); it != viewProps.cend(); ++it) {
+        writer.str(it->first, it->second);
+      }
+    });
+
+    archive.read([&](Reader &reader) {
+      view->baseRead(reader, nullptr, props);
+    });
+  }
+
   return view;
 }
 
@@ -183,7 +238,7 @@ float CoreViews::getNumConstant(std::string key) {
   return numConstantsCache[key];
 }
 
-int CoreViews::readInt(Reader &reader, const char *key) {
+int CoreViews::readInt(Reader &reader, const char *key, float scale) {
   auto num = reader.num(key);
   if (num) {
     return *num;
@@ -195,7 +250,7 @@ int CoreViews::readInt(Reader &reader, const char *key) {
       if (str.at(str.length() - 1) == '%') {
         auto percentStr = str.substr(0, str.length() - 1);
         auto percent = std::stof(percentStr);
-        return percent * 0.01 * 800;
+        return percent * 0.01 * scale;
       }
 
       return std::stoi(str);
@@ -209,28 +264,36 @@ int CoreViews::readInt(Reader &reader, const char *key) {
 // Views
 //
 
-void CoreView::baseRead(Reader &reader, CoreView *parent) {
+void CoreView::baseRead(Reader &reader, CoreView *parent,
+    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> *props) {
   int parentWidth = parent ? parent->width : 800;
   int parentHeight = parent ? parent->height : 800;
 
-  width = CoreViews::getInstance().readInt(reader, "width");
-  height = CoreViews::getInstance().readInt(reader, "height");
+  if (reader.has("width")) {
+    width = CoreViews::getInstance().readInt(reader, "width", parentWidth);
+  }
+  if (reader.has("height")) {
+    height = CoreViews::getInstance().readInt(reader, "height", parentHeight);
+  }
 
   if (reader.has("left")) {
-    left = CoreViews::getInstance().readInt(reader, "left");
+    left = CoreViews::getInstance().readInt(reader, "left", parentWidth);
   } else if (reader.has("right")) {
-    left = parentWidth - CoreViews::getInstance().readInt(reader, "right") - width;
+    left = parentWidth - CoreViews::getInstance().readInt(reader, "right", parentWidth) - width;
   }
 
   if (reader.has("top")) {
-    top = CoreViews::getInstance().readInt(reader, "top");
+    top = CoreViews::getInstance().readInt(reader, "top", parentHeight);
   } else if (reader.has("bottom")) {
-    top = parentHeight - CoreViews::getInstance().readInt(reader, "bottom") - height;
+    top = parentHeight - CoreViews::getInstance().readInt(reader, "bottom", parentHeight) - height;
   }
 
   id = reader.str("id");
   onTapHandlerId = reader.str("onTapHandlerId");
-  borderRadius = reader.num("borderRadius", -1);
+
+  if (reader.has("borderRadius")) {
+    borderRadius = reader.num("borderRadius", -1);
+  }
 
   auto backgroundColorStr = reader.str("backgroundColor");
   if (backgroundColorStr) {
@@ -241,7 +304,7 @@ void CoreView::baseRead(Reader &reader, CoreView *parent) {
   if (reader.has("children")) {
     reader.arr("children", [&]() {
       reader.each([&]() {
-        children.push_back(CoreViews::getInstance().readViewFromJson(reader, this));
+        children.push_back(CoreViews::getInstance().readViewFromJson(reader, this, props));
       });
     });
   }
@@ -358,7 +421,7 @@ class ImageView : public CoreView {
   love::Data *byteData = nullptr;
   love::image::ImageData *imageData = nullptr;
   love::graphics::Image *image = nullptr;
-  ResizeMode resizeMode;
+  ResizeMode resizeMode = ResizeMode::Stretch;
 
   void read(Reader &reader) {
     auto url = reader.str("url");
@@ -377,11 +440,13 @@ class ImageView : public CoreView {
       byteData = lv.filesystem.read(fullPath.c_str());
     }
 
-    std::string resizeModeStr = reader.str("resizeMode", "stretch");
-    if (resizeModeStr == "contain") {
-      resizeMode = ResizeMode::Contain;
-    } else {
-      resizeMode = ResizeMode::Stretch;
+    if (reader.has("resizeMode")) {
+      std::string resizeModeStr = reader.str("resizeMode", "stretch");
+      if (resizeModeStr == "contain") {
+        resizeMode = ResizeMode::Contain;
+      } else {
+        resizeMode = ResizeMode::Stretch;
+      }
     }
   }
 
@@ -443,32 +508,51 @@ class ImageView : public CoreView {
 };
 
 class TextView : public CoreView {
-  std::string text;
+  enum TextAlignVertical {
+    Top,
+    Center,
+  };
+
+  std::string text = "";
   mutable love::Font *font = nullptr;
   love::Font::AlignMode textAlign = love::Font::ALIGN_LEFT;
-  float color[3];
-  float fontSize;
-  std::string fontFamily;
+  TextAlignVertical textAlignVertical = TextAlignVertical::Top;
+  float color[3] = { 0, 0, 0 };
+  float fontSize = 10;
+  std::string fontFamily = "Overlay";
 
   void read(Reader &reader) {
-    text = reader.str("text", "");
-
-    fontSize = reader.num("fontSize", 10);
-
-    fontFamily = reader.str("fontFamily", "Overlay");
-
-    std::string textAlignStr = reader.str("textAlign", "left");
-    if (textAlignStr == "right") {
-      textAlign = love::Font::ALIGN_RIGHT;
-    } else if (textAlignStr == "center") {
-      textAlign = love::Font::ALIGN_CENTER;
-    } else if (textAlignStr == "justify") {
-      textAlign = love::Font::ALIGN_JUSTIFY;
+    if (reader.has("text")) {
+      text = reader.str("text", "");
     }
 
-    color[0] = 0.0;
-    color[1] = 0.0;
-    color[2] = 0.0;
+    if (reader.has("fontSize")) {
+      fontSize = reader.num("fontSize", 10);
+    }
+
+    if (reader.has("fontFamily")) {
+      fontFamily = reader.str("fontFamily", "Overlay");
+    }
+
+    if (reader.has("textAlign")) {
+      std::string textAlignStr = reader.str("textAlign", "left");
+      if (textAlignStr == "right") {
+        textAlign = love::Font::ALIGN_RIGHT;
+      } else if (textAlignStr == "center") {
+        textAlign = love::Font::ALIGN_CENTER;
+      } else if (textAlignStr == "justify") {
+        textAlign = love::Font::ALIGN_JUSTIFY;
+      }
+    }
+
+    if (reader.has("textAlignVertical")) {
+      std::string textAlignVerticalStr = reader.str("textAlignVertical", "top");
+      if (textAlignVerticalStr == "top") {
+        textAlignVertical = TextAlignVertical::Top;
+      } else if (textAlignVerticalStr == "center") {
+        textAlignVertical = TextAlignVertical::Center;
+      }
+    }
 
     auto colorStr = reader.str("color");
     if (colorStr) {
@@ -487,12 +571,18 @@ class TextView : public CoreView {
 
     auto wrap = width / downscale;
 
+    float y = 0;
+
+    if (textAlignVertical == TextAlignVertical::Center) {
+      y = (height - (downscale * font->getHeight())) * 0.5;
+    }
+
     lv.graphics.setColor({ color[0], color[1], color[2], 1.0 });
     lv.graphics.scale(downscale, downscale);
 
     lv.graphics.setFont(font);
     lv.graphics.printf(
-        { { text, { 1, 1, 1, 1 } } }, wrap, textAlign, love::Matrix4(0, 0, 0, 1, 1, 0, 0, 0, 0));
+        { { text, { 1, 1, 1, 1 } } }, wrap, textAlign, love::Matrix4(0, y, 0, 1, 1, 0, 0, 0, 0));
   }
 };
 

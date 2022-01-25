@@ -11,6 +11,13 @@
 #define CARD_HEIGHT 1120
 #define FEED_ITEM_WIDTH (CARD_WIDTH + 200)
 
+const std::string GRAPHQL_DECK_FIELDS
+    = "\ndeckId\nvariables\ncreator {\nusername\nphoto {\nsmallAvatarUrl\n}\n}\ninitialCard {\n    "
+      "    sceneDataUrl\n      }\n    ";
+const char *DEFAULT_AVATAR_URL
+    = "https://castle.imgix.net/"
+      "36a7bdff06fefd3da13194fdff873bc5?auto=compress&fit=crop&max-w=128&max-h=128&ar=1:1";
+
 float cubicEaseIn(float p) {
   return p * p * p;
 }
@@ -222,6 +229,9 @@ void Feed::update(double dt) {
 
       decks[idx].player->update(dt);
       decks[idx].hasRunUpdateSinceLastRender = true;
+
+      decks[idx].coreView->update(dt);
+      decks[idx].coreView->handleGesture(gesture);
     }
 
     for (size_t i = 0; i < decks.size(); i++) {
@@ -236,9 +246,6 @@ void Feed::update(double dt) {
       fetchMoreDecks();
     }
   }
-
-  coreView->update(dt);
-  coreView->handleGesture(gesture);
 }
 
 void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
@@ -327,6 +334,8 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
   quad->setTexture(nullptr);
   lv.graphics.setShader();
 
+  decks[idx].coreView->render();
+
   lv.graphics.pop();
 }
 
@@ -390,38 +399,12 @@ void Feed::draw() {
   for (int i = idx + 4; i < (int)decks.size(); i++) {
     unloadDeckAtIndex(i);
   }
-
-  static auto playButton = [&]() {
-    std::vector<love::Vector2> verts {
-      { 50, 0 },
-      { 0, 25 },
-      { 50, 50 },
-    };
-    return verts;
-  }();
-
-
-  lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0 });
-
-  for (int i = 0; i < 5; i++) {
-    lv.graphics.push(love::Graphics::STACK_ALL);
-    viewTransform.reset();
-    viewTransform.translate(CARD_WIDTH / 2.0 + (i - 2.5) * 70, CARD_HEIGHT + 80);
-    lv.graphics.applyTransform(&viewTransform);
-
-    lv.graphics.polyline(&playButton[0], 3);
-    lv.graphics.pop();
-  }
-
-  coreView->render();
 }
 
 void Feed::fetchInitialDecks() {
-  coreView = CoreViews::getInstance().getRenderer("FEED");
-
   fetchingDecks = true;
-  API::graphql("{\n  infiniteFeed {\n    sessionId\n    decks {\n      deckId\n      variables\n   "
-               "   initialCard {\n        sceneDataUrl\n      }\n    }\n  }\n}",
+  API::graphql(
+      "{\n  infiniteFeed {\n    sessionId\n    decks {" + GRAPHQL_DECK_FIELDS + "}\n  }\n}",
       [=](APIResponse &response) {
         if (response.success) {
           auto &reader = response.reader;
@@ -456,9 +439,8 @@ void Feed::fetchMoreDecks() {
   }
 
   fetchingDecks = true;
-  API::graphql("{\n  infiniteFeed(sessionId: \"" + sessionId
-          + "\") {\n    decks {\n      deckId\n      variables\n      initialCard {\n        "
-            "sceneDataUrl\n      }\n    }\n  }\n}",
+  API::graphql("{\n  infiniteFeed(sessionId: \"" + sessionId + "\") {\n    decks {"
+          + GRAPHQL_DECK_FIELDS + "}\n  }\n}",
       [=](APIResponse &response) {
         if (response.success) {
           auto &reader = response.reader;
@@ -495,6 +477,8 @@ void Feed::loadDeckAtIndex(int i) {
   }
 
   decks[i].player = std::make_shared<Player>(bridge);
+  decks[i].coreView = CoreViews::getInstance().getRenderer("FEED");
+
   std::thread t([=] {
     auto deckArchive = Archive::fromJson(decks[i].deckJson.c_str());
     deckArchive.read([&](Reader &reader) {
@@ -502,6 +486,15 @@ void Feed::loadDeckAtIndex(int i) {
 
       reader.arr("variables", [&]() {
         decks[i].player->readVariables(reader);
+      });
+
+      reader.obj("creator", [&]() {
+        decks[i].coreView->updateProp("username", "text", reader.str("username", ""));
+
+        reader.obj("photo", [&]() {
+          decks[i].coreView->updateProp(
+              "avatar", "url", reader.str("smallAvatarUrl", DEFAULT_AVATAR_URL));
+        });
       });
 
       reader.obj("initialCard", [&]() {
@@ -543,6 +536,7 @@ void Feed::unloadDeckAtIndex(int i) {
   decks[i].hasRendered = false;
   decks[i].player.reset();
   decks[i].canvas.reset();
+  decks[i].coreView.reset();
 }
 
 love::graphics::Canvas *Feed::newCanvas(int width, int height) {

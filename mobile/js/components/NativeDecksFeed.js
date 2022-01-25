@@ -43,50 +43,47 @@ let coreViews = {
     FAST_SWIPE_MIN_DRAG_VELOCITY: 3.0,
     DRAG_VELOCITY_ROLLING_AVERAGE_TIME: 0.1,
 
-    CARD_BORDER_RADIUS: 50,
+    CARD_BORDER_RADIUS: 30,
   },
   FEED: {
-    id: 'image1',
     type: 'view',
-    right: '25%',
-    top: 200,
-    width: '50%',
-    height: 700,
-    backgroundColor: '#7F0000',
+    left: 0,
+    top: 1150,
+    width: '100%',
+    height: 70,
+    //backgroundColor: '#f00',
     onTap: () => {
       console.log('on tap');
     },
-    /*children: [
+    children: [
       {
-        id: 'image2',
+        id: 'avatar',
         type: 'image',
-        //borderRadius: 100,
-        backgroundColor: '#ccc',
-        x: 50,
-        y: 250,
-        width: 100,
-        height: 100,
-        //url: 'https://castle.imgix.net/235c0b44f27876200a91f03912659e8c?auto=compress&fit=crop&min-w=420&ar=5:7',
-        filename: 'fire-selected.png',
+        borderRadius: 35,
+        left: 20,
+        top: 0,
+        width: 70,
+        height: 70,
         resizeMode: 'contain',
         onTap: () => {
           console.log('on tap 2');
         },
       },
       {
+        id: 'username',
         type: 'text',
         text: 'Test text',
-        x: 200,
-        y: 0,
+        left: 110,
+        top: 0,
         width: 400,
-        height: 200,
-        color: '#00FFFF',
-        backgroundColor: '#222',
-        textAlign: 'center',
-        fontSize: 8,
+        height: '100%',
+        color: '#fff',
+        textAlign: 'left',
+        fontSize: 5,
         fontFamily: 'Overlay',
+        textAlignVertical: 'center',
       }
-    ],*/
+    ],
   },
 };
 

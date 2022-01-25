@@ -10,6 +10,7 @@ struct FeedItem {
   std::string deckJson;
   std::shared_ptr<Player> player;
   std::shared_ptr<love::graphics::Canvas> canvas;
+  std::shared_ptr<CoreViewRenderer> coreView;
   bool isLoaded = false;
   bool hasRunUpdate = false;
   bool hasRunUpdateSinceLastRender = false;
@@ -51,8 +52,6 @@ private:
   float offset = 0.0;
   float elapsedTime = 0.0;
   float dragVelocity = 0.0;
-
-  std::shared_ptr<CoreViewRenderer> coreView;
 
   std::set<std::string> deckIds;
   std::vector<FeedItem> decks;
